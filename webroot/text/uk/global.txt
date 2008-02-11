@@ -1,0 +1,8 @@
+#: /api/classes/callcentre.php:214
+msgid @@@ mPoint - Embedded link Indication @@@
+msgstr @@@ mPoint - Embedded link Indication @@@
+
+#: /api/classes/callcentre.php:220
+msgid @@@ mPoint - WAP Push Indication @@@
+msgstr @@@ mPoint - WAP Push Indication @@@
+
