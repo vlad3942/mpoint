@@ -13,7 +13,7 @@ CREATE TABLE Template.General_Tbl
 	enabled		BOOL DEFAULT true
 ) WITHOUT OIDS;
 /* ==================== TEMPLATE SCHEMA END ==================== */
- 
+
 /* ==================== GENERAL TRIGGER FUNCTIONS START ==================== */
 /**
  * General trigger function for updating a table
@@ -22,7 +22,7 @@ CREATE OR REPLACE FUNCTION Public.Update_Table_Proc() RETURNS opaque AS
 '
 BEGIN
 	NEW.modified := NOW();
-	
+
 	RETURN NEW;
 END;
 '
@@ -32,7 +32,7 @@ LANGUAGE 'plpgsql';
 /* ==================== GENERAL FUNCTIONS START ==================== */
 /**
  * Constructs a date from year, month day
- * 
+ *
  * @param	int4 in_year		Year
  * @param	int4 in_month		Month
  * @param	int4 in_day			Day
@@ -62,13 +62,13 @@ GRANT USAGE ON SCHEMA System TO mpoint;
 CREATE TABLE System.Country_Tbl
 (
 	id			SERIAL,
-	
+
 	name		VARCHAR(50),
 	currency	CHAR(3),		-- Currency used in the Country in ISO-4217 format
 	minmob		VARCHAR(15),	-- Minimum Value a vald Mobile Number can be in the Country
 	maxmob		VARCHAR(15),	-- Maximum Value a vald Mobile Number can be in the Country
 	channel		VARCHAR(10),	-- GoMobile Channel used for SMS Communication in the Country
-	
+
 	CONSTRAINT Country_PK PRIMARY KEY (id),
 	LIKE Template.General_Tbl INCLUDING DEFAULTS
 ) WITHOUT OIDS;
@@ -91,9 +91,9 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE System.Country_Tbl TO mpoint;
 CREATE TABLE System.Type_Tbl
 (
 	id			SERIAL,
-	
+
 	name		VARCHAR(50),
-		
+
 	CONSTRAINT Type_PK PRIMARY KEY (id),
 	LIKE Template.General_Tbl INCLUDING DEFAULTS
 ) WITHOUT OIDS;
@@ -107,10 +107,12 @@ EXECUTE PROCEDURE Public.Update_Table_Proc();
 
 -- Internal
 INSERT INTO System.Type_Tbl (id, name, enabled) VALUES (0, 'System Record', false);
-INSERT INTO System.Type_Tbl (id, name) VALUES (10, 'SMS Purchase');
-INSERT INTO System.Type_Tbl (id, name) VALUES (11, 'SMS Subscription');
-INSERT INTO System.Type_Tbl (id, name) VALUES (20, 'Web Purchase');
-INSERT INTO System.Type_Tbl (id, name) VALUES (21, 'Web Subscription');
+INSERT INTO System.Type_Tbl (id, name) VALUES (10, 'Call Centre Purchase');
+INSERT INTO System.Type_Tbl (id, name) VALUES (11, 'Call Centre Subscription');
+INSERT INTO System.Type_Tbl (id, name) VALUES (20, 'SMS Purchase');
+INSERT INTO System.Type_Tbl (id, name) VALUES (21, 'SMS Subscription');
+INSERT INTO System.Type_Tbl (id, name) VALUES (30, 'Web Purchase');
+INSERT INTO System.Type_Tbl (id, name) VALUES (31, 'Web Subscription');
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE System.Type_Tbl TO mpoint;
 
@@ -120,9 +122,9 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE System.Type_Tbl TO mpoint;
 CREATE TABLE System.PSP_Tbl
 (
 	id			SERIAL,
-	
+
 	name		VARCHAR(50),
-		
+
 	CONSTRAINT PSP_PK PRIMARY KEY (id),
 	LIKE Template.General_Tbl INCLUDING DEFAULTS
 ) WITHOUT OIDS;
@@ -147,9 +149,9 @@ CREATE TABLE System.PSPCurrency_Tbl
 	id			SERIAL,
 	countryid	INT4 NOT NULL,	-- ID of the Currency the translation is valid for
 	pspid		INT4 NOT NULL,	-- ID of the Payment Service Provider the translation is valid for
-	
+
 	name		CHAR(3),
-		
+
 	CONSTRAINT PSPCurrency_PK PRIMARY KEY (id),
 	CONSTRAINT PSPCurrency2Country_FK FOREIGN KEY (countryid) REFERENCES System.Country_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
 	CONSTRAINT PSPCurrency2PSP_FK FOREIGN KEY (pspid) REFERENCES System.PSP_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
@@ -173,10 +175,10 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE System.PSPCurrency_Tbl TO mpoint;
 CREATE TABLE System.Card_Tbl
 (
 	id			SERIAL,
-	
+
 	name		VARCHAR(50),
 	logo		BYTEA,
-		
+
 	CONSTRAINT Card_PK PRIMARY KEY (id),
 	LIKE Template.General_Tbl INCLUDING DEFAULTS
 ) WITHOUT OIDS;
@@ -215,17 +217,20 @@ CREATE TABLE Client.Client_Tbl
 (
 	id			SERIAL,
 	countryid	INT4 NOT NULL,	-- ID of the Country the Client can Operate in
-	
+
 	name		VARCHAR(50),
 	username	VARCHAR(50),	-- GoMobile Username
 	passwd		VARCHAR(50),	-- GoMobile Password
-	
+
 	logourl		VARCHAR(255),	-- Absolute URL where the mPoint can fetch the Client Logo
 	cssurl		VARCHAR(255),	-- Absolute URL where the mPoint can fetch custom CSS file
 	callbackurl	VARCHAR(255),	-- Absolute URL where mPoint should send payment status
 	accepturl	VARCHAR(255),	-- Absolute URL where mPoint should direct the customer to upon accepted payment
 	cancelurl	VARCHAR(255),	-- Absolute URL where mPoint should direct the customer to upon the customer cancelling the payment
 	
+	maxamount	INT4,			-- Maximum Amount an mPoint Transaction can be for the client
+	lang		CHAR(2) DEFAULT 'uk',	-- Clients default language that all mPoint payment pages should use 
+
 	CONSTRAINT Client_PK PRIMARY KEY (id),
 	LIKE Template.General_Tbl INCLUDING DEFAULTS
 ) WITHOUT OIDS;
@@ -243,6 +248,7 @@ SELECT setval('Client.Client_Tbl_id_seq', 9999);
 INSERT INTO Client.Client_Tbl (id, countryid, name, enabled) VALUES (0, 0, 'System Record', false);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.Client_Tbl TO mpoint;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.client_tbl_id_seq TO mpoint;
 
 
 -- Table: Client.CardAccess_Tbl
@@ -252,7 +258,7 @@ CREATE TABLE Client.CardAccess_Tbl
 	id			SERIAL,
 	clientid	INT4 NOT NULL,	-- ID of the Client who has access to the credit card
 	cardid		INT4 NOT NULL,	-- ID of the Credit card to which the Client has access
-		
+
 	CONSTRAINT CardAccess_PK PRIMARY KEY (id),
 	CONSTRAINT CardAccess2Client_FK FOREIGN KEY (clientid) REFERENCES Client.Client_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
 	CONSTRAINT CardAccess2Card_FK FOREIGN KEY (cardid) REFERENCES System.Card_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
@@ -269,6 +275,7 @@ EXECUTE PROCEDURE Public.Update_Table_Proc();
 INSERT INTO Client.CardAccess_Tbl (id, clientid, cardid, enabled) VALUES (0, 0, 0, false);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.CardAccess_Tbl TO mpoint;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.cardaccess_tbl_id_seq TO mpoint;
 
 
 -- Table: Client.MerchantAccount_Tbl
@@ -279,9 +286,9 @@ CREATE TABLE Client.MerchantAccount_Tbl
 	id			SERIAL,
 	clientid	INT4 NOT NULL,	-- ID of the Client who has access to the credit card
 	pspid		INT4 NOT NULL,	-- ID of the PSP the Merchant Account is Valid for
-	
+
 	name		VARCHAR(50),	-- Clients account name with the PSP
-		
+
 	CONSTRAINT MerchantAccount_PK PRIMARY KEY (id),
 	CONSTRAINT MerchantAccount2Client_FK FOREIGN KEY (clientid) REFERENCES Client.Client_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
 	CONSTRAINT MerchantAccount2PSP_FK FOREIGN KEY (pspid) REFERENCES System.PSP_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
@@ -298,6 +305,7 @@ EXECUTE PROCEDURE Public.Update_Table_Proc();
 INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name, enabled) VALUES (0, 0, 0, '', false);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.MerchantAccount_Tbl TO mpoint;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.merchantaccount_tbl_id_seq TO mpoint;
 
 
 -- Table: Client.Account_Tbl
@@ -307,10 +315,10 @@ CREATE TABLE Client.Account_Tbl
 (
 	id			SERIAL,
 	clientid	INT4 NOT NULL,	-- ID of the Client who owns the Account
-	
+
 	name		VARCHAR(50),	-- Name of the Account
 	address		VARCHAR(15),	-- MSISDN of the sales person who uses the account
-		
+
 	CONSTRAINT Account_PK PRIMARY KEY (id),
 	CONSTRAINT Account2Client_FK FOREIGN KEY (clientid) REFERENCES Client.Client_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
 	CONSTRAINT Account_UQ UNIQUE (clientid, address),
@@ -330,6 +338,7 @@ SELECT setval('Client.Account_Tbl_id_seq', 99999);
 INSERT INTO Client.Account_Tbl (id, clientid, name, enabled) VALUES (0, 0, 'System Record', false);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.Account_Tbl TO mpoint;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.account_tbl_id_seq TO mpoint;
 
 
 -- Table: Client.MerchantSubAccount_Tbl
@@ -340,9 +349,9 @@ CREATE TABLE Client.MerchantSubAccount_Tbl
 	id			SERIAL,
 	accountid	INT4 NOT NULL,	-- ID of the mPoint Sub-Account
 	pspid		INT4 NOT NULL,	-- ID of the PSP the Sub-Account is valid for
-	
+
 	name		VARCHAR(50),	-- Clients sub-account name with the PSP
-		
+
 	CONSTRAINT MerchantSubAccount_PK PRIMARY KEY (id),
 	CONSTRAINT MerchantSubAccount2Account_FK FOREIGN KEY (accountid) REFERENCES Client.Account_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
 	CONSTRAINT MerchantSubAccount2PSP_FK FOREIGN KEY (pspid) REFERENCES System.PSP_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
@@ -359,6 +368,7 @@ EXECUTE PROCEDURE Public.Update_Table_Proc();
 INSERT INTO Client.MerchantSubAccount_Tbl (id, accountid, pspid, name, enabled) VALUES (0, 0, 0, 'System Record', false);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.MerchantSubAccount_Tbl TO mpoint;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.merchantsubaccount_tbl_id_seq TO mpoint;
 
 
 -- Table: Client.Keyword_Tbl
@@ -367,10 +377,10 @@ CREATE TABLE Client.Keyword_Tbl
 (
 	id			SERIAL,
 	clientid	INT4 NOT NULL,	-- ID of the Client who owns the Keyword
-	
+
 	name		VARCHAR(50),	-- Name of the Keyword
 	price		INT4,			-- Price that any purchase made using this keyword should be charged at in Countrys smallest currency
-		
+
 	CONSTRAINT Keyword_PK PRIMARY KEY (id),
 	CONSTRAINT Keyword2Client_FK FOREIGN KEY (clientid) REFERENCES Client.Client_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
 	LIKE Template.General_Tbl INCLUDING DEFAULTS
@@ -387,6 +397,7 @@ EXECUTE PROCEDURE Public.Update_Table_Proc();
 INSERT INTO Client.Keyword_Tbl (id, clientid, name, enabled) VALUES (0, 0, 'System Record', false);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.Keyword_Tbl TO mpoint;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.keyword_tbl_id_seq TO mpoint;
 
 
 -- Table: Client.Product_Tbl
@@ -395,12 +406,12 @@ CREATE TABLE Client.Product_Tbl
 (
 	id			SERIAL,
 	keywordid	INT4 NOT NULL,	-- ID of the Keyword the Product belongs to
-	
+
 	name		VARCHAR(50),	-- Name of the Product
 	units		INT4 DEFAULT 1,	-- Number of units purchased for this product
 	price		INT4,			-- Price of Product
 	logourl		VARCHAR(255),	-- URL where mPoint can fetch the product logo
-		
+
 	CONSTRAINT Product_PK PRIMARY KEY (id),
 	CONSTRAINT Product2Keyword_FK FOREIGN KEY (keywordid) REFERENCES Client.Keyword_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
 	LIKE Template.General_Tbl INCLUDING DEFAULTS
@@ -415,6 +426,7 @@ EXECUTE PROCEDURE Public.Update_Table_Proc();
 INSERT INTO Client.Product_Tbl (id, keywordid, name, enabled) VALUES (0, 0, 'System Record', false);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.Product_Tbl TO mpoint;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.product_tbl_id_seq TO mpoint;
 /* ==================== CLIENT SCHEMA END ==================== */
 
 
@@ -432,23 +444,24 @@ CREATE TABLE Log.Transaction_Tbl
 	clientid	INT4 NOT NULL,	-- ID of the Client who owns the Transaction
 	accountid	INT4 NOT NULL,	-- ID of the Account the Transaction was made through
 	countryid	INT4 NOT NULL,	-- ID of the Country the Transaction was made in
-	pspid		INT4 NOT NULL,	-- ID of the PSP the Transaction was cleared by
-	cardid		INT4 NOT NULL,	-- ID of the Credit card the customer used to pay for the transaction
+	pspid		INT4,			-- ID of the PSP the Transaction was cleared by
+	cardid		INT4,			-- ID of the Credit card the customer used to pay for the transaction
 	keywordid	INT4,			-- ID of the Keyword the Transaction belongs to
-	amount		INT4 NOT NULL,	-- Total amount charged to the customer for the Transaction
-	
-	orderid		VARCHAR(40) NOT NULL,	-- Clients Order ID of the Transaction
-	extid		VARCHAR(40) NOT NULL,	-- External ID returned by the PSP
-	
+	amount		INT4,			-- Total amount charged to the customer for the Transaction
+
+	orderid		VARCHAR(40),	-- Clients Order ID of the Transaction
+	extid		VARCHAR(40),			-- External ID returned by the PSP
+	lang		CHAR(2) DEFAULT 'uk',	-- Default language for mPoint pages
+
 	address		VARCHAR(15),	-- MSISDN of the customer who made the purchase
 	operatorid	INT4,			-- GoMobile ID for the Customers Mobile Network Operator
-	
+
 	logourl		VARCHAR(255),	-- URL to the logo that was used for the Transaction
 	cssurl		VARCHAR(255),	-- URL to the Stylesheet that was used for the Transaction
 	callbackurl	VARCHAR(255),	-- URL where mPoint sent the order details
 	accepturl	VARCHAR(255),	-- URL where the customer was taken upon successfully completing the payment
 	cancelurl	VARCHAR(255),	-- URL where the customer was taken upon cancelling the payment
-		
+
 	CONSTRAINT Transaction_PK PRIMARY KEY (id),
 	CONSTRAINT Txn2Type_FK FOREIGN KEY (typeid) REFERENCES System.Type_Tbl ON UPDATE CASCADE ON DELETE RESTRICT,
 	CONSTRAINT Txn2Client_FK FOREIGN KEY (clientid) REFERENCES Client.Client_Tbl ON UPDATE CASCADE ON DELETE RESTRICT,
@@ -469,6 +482,7 @@ EXECUTE PROCEDURE Public.Update_Table_Proc();
 INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, cardid, amount, orderid, extid, enabled) VALUES (0, 0, 0, 0, 0, 0, 0, -1, 'System Record', 'System Record', false);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Log.Transaction_Tbl TO mpoint;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Log.transaction_tbl_id_seq TO mpoint;
 
 
 -- Table: Log.State_Tbl
@@ -477,10 +491,10 @@ CREATE TABLE Log.State_Tbl
 (
 	id			SERIAL,
 	name		VARCHAR(50),	-- Name of the State
-	
+
 	module		VARCHAR(255),	-- Name of the Module that logs this State
 	func		VARCHAR(255),	-- Name of the Function that logs this State
-		
+
 	CONSTRAINT State_PK PRIMARY KEY (id),
 	LIKE Template.General_Tbl INCLUDING DEFAULTS
 ) WITHOUT OIDS;
@@ -504,9 +518,9 @@ CREATE TABLE Log.Message_Tbl
 	id			SERIAL,
 	txnid		INT4 NOT NULL,	-- ID of the Transaction the message belongs to
 	stateid		INT4 NOT NULL,	-- ID of the State the message identifies
-	
+
 	data		TEXT,			-- Application data for debugging purposes
-		
+
 	CONSTRAINT Message_PK PRIMARY KEY (id),
 	CONSTRAINT Msg2Txn_FK FOREIGN KEY (txnid) REFERENCES Log.Transaction_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
 	CONSTRAINT Msg2State_FK FOREIGN KEY (stateid) REFERENCES Log.State_Tbl ON UPDATE CASCADE ON DELETE RESTRICT,
@@ -522,4 +536,5 @@ EXECUTE PROCEDURE Public.Update_Table_Proc();
 INSERT INTO Log.Message_Tbl (id, txnid, stateid, data, enabled) VALUES (0, 0, 0, 'System Record', false);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Log.Message_Tbl TO mpoint;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Log.message_tbl_id_seq TO mpoint;
 /* ==================== LOG SCHEMA END ==================== */

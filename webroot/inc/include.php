@@ -58,30 +58,43 @@ require_once(sAPI_CLASS_PATH ."text.php");
 require_once(sAPI_CLASS_PATH ."output.php");
 // Require API for handling resizing of images
 require_once(sAPI_CLASS_PATH ."image.php");
-
-// Require global API functions
-require_once(sAPI_FUNCTION_PATH ."global.php");
+// Require API for determining device capabilities via the User Agent Profile
+require_once(sAPI_CLASS_PATH ."uaprofile.php");
 
 
 // Require API for Web Session handling
 require_once(sCLASS_PATH ."websession.php");
 // Require API for general functionality
 require_once(sCLASS_PATH ."general.php");
+// Require abstract class system wide constants
+require_once(sCLASS_PATH ."/constants.php");
+// Require super class for all Configurations
+require_once(sCLASS_PATH ."/basicconfig.php");
+// Require data class for Country Configurations
+require_once(sCLASS_PATH ."/countryconfig.php");
+// Require data class for Client Configurations
+require_once(sCLASS_PATH ."/clientconfig.php");
+// Require data class for Account Configurations
+require_once(sCLASS_PATH ."/accountconfig.php");
+// Require data class for Keyword Configurations
+require_once(sCLASS_PATH ."/keywordconfig.php");
+// Require data data class for Transaction Information
+require_once(sCLASS_PATH ."/txninfo.php");
 
-// Require global Application functions
-require_once(sFUNCTION_PATH ."global.php");
 
 // Require global settings file
 require_once(sCONF_PATH ."global.php");
 
 // Define Language Path Constant
-define("sLANGUAGE_PATH", sSYSTEM_PATH ."/webroot/text/". sLANG ."/");
+define("sLANGUAGE_PATH", sSYSTEM_PATH ."/webroot/text/");
 
 // Intialise Text Translation Object
-$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH ."global.txt", sLANGUAGE_PATH ."custom.txt"), sSYSTEM_PATH, 0);
+$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0);
+// Instantiate connection to the Database
+$_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
 
 // Set Custom Error & Exception handlers
-new RemoteReport(HTTPConnInfo::produceHTTPConnInfo($aHTTP_CONN_INFO), iOUTPUT_METHOD, sERROR_LOG, iDEBUG_LEVEL);
+new RemoteReport(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO), iOUTPUT_METHOD, sERROR_LOG, iDEBUG_LEVEL);
 
 // Web Request
 if ( eregi("/api/", $_SERVER['PHP_SELF']) == false && eregi("/internal/", $_SERVER['PHP_SELF']) == false && empty($_SERVER['DOCUMENT_ROOT']) === false)

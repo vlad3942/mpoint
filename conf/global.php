@@ -8,7 +8,7 @@ error_reporting(E_ERROR | E_PARSE | E_WARNING | E_NOTICE | E_USER_ERROR | E_USER
 /**
  * Path to Log Files directory
  */
-define("sLOG_PATH", sSYSTEM_PATH ."/log/");
+define("sLOG_PATH", "/Users/Jona/Development/mPoint/");
 /**
  * Output method for the error handler:
  *	0 - Store Internally
@@ -20,7 +20,7 @@ define("sLOG_PATH", sSYSTEM_PATH ."/log/");
  *	6 - Output to screen and send remote server
  *	7 - Output to file & screen and send remote server
  */
-define("iOUTPUT_METHOD", 2);
+define("iOUTPUT_METHOD", 3);
 /**
  * General debug level for the error handler
  *	0 - Output error
@@ -34,24 +34,24 @@ define("iDEBUG_LEVEL", 2);
 define("sERROR_LOG", sLOG_PATH ."app_error_". date("Y-m-d") .".log");
 
 /**
- * Database settings for Application's database
+ * Database settings for mPoint's database
  */
-$aDB_CONN_INFO["app"]["host"] = "localhost";
-$aDB_CONN_INFO["app"]["port"] = 5432;
-$aDB_CONN_INFO["app"]["path"] = "app";
-$aDB_CONN_INFO["app"]["username"] = "app";
-$aDB_CONN_INFO["app"]["password"] = "Jona";
-$aDB_CONN_INFO["app"]["timeout"] = 10;
-$aDB_CONN_INFO["app"]["charset"] = "ISO8859_1";
-$aDB_CONN_INFO["app"]["class"] = "PostGreSQL";
-$aDB_CONN_INFO["app"]["connmode"] = "normal";
-$aDB_CONN_INFO["app"]["errorpath"] = sLOG_PATH ."db_error_". date("Y-m-d") .".log";
-$aDB_CONN_INFO["app"]["errorhandling"] = 3;
-$aDB_CONN_INFO["app"]["exectime"] = 0.3;
-$aDB_CONN_INFO["app"]["execpath"] = sLOG_PATH ."db_exectime_". date("Y-m-d") .".log";
-$aDB_CONN_INFO["app"]["keycase"] = CASE_UPPER;
-$aDB_CONN_INFO["app"]["debuglevel"] = 2;
-$aDB_CONN_INFO["app"]["method"] = 1;
+$aDB_CONN_INFO["mpoint"]["host"] = "localhost";
+$aDB_CONN_INFO["mpoint"]["port"] = 5432;
+$aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
+$aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
+$aDB_CONN_INFO["mpoint"]["password"] = "hspzr735abl";
+$aDB_CONN_INFO["mpoint"]["timeout"] = 10;
+$aDB_CONN_INFO["mpoint"]["charset"] = "ISO8859_1";
+$aDB_CONN_INFO["mpoint"]["class"] = "PostGreSQL";
+$aDB_CONN_INFO["mpoint"]["connmode"] = "normal";
+$aDB_CONN_INFO["mpoint"]["errorpath"] = sLOG_PATH ."db_error_". date("Y-m-d") .".log";
+$aDB_CONN_INFO["mpoint"]["errorhandling"] = 3;
+$aDB_CONN_INFO["mpoint"]["exectime"] = 0.3;
+$aDB_CONN_INFO["mpoint"]["execpath"] = sLOG_PATH ."db_exectime_". date("Y-m-d") .".log";
+$aDB_CONN_INFO["mpoint"]["keycase"] = CASE_UPPER;
+$aDB_CONN_INFO["mpoint"]["debuglevel"] = 2;
+$aDB_CONN_INFO["mpoint"]["method"] = 3;
 
 /**
  * Database settings for Session database
@@ -87,6 +87,52 @@ $aHTTP_CONN_INFO["contenttype"] = "text/xml";
 //$aHTTP_CONN_INFO["password"] = "";
 
 /**
+ * GoMobile Connection Info.
+ * The array should contain the following indexes:
+ * <code>
+ * 
+ * 	- protocol, the protocol used for communicating with GoMobile, should always be: http
+ * 	- host, the host address for GoMobile, should always be: gomobile.cellpointmobile.com
+ * 	- port, the port that requestes are sent to, should always be: 8000
+ * 	- timeout, general timeout in seconds. The time is used in the following instances:
+ * 		- When opening a new connection to GoMobile
+ * 		- When retrieving the response from GoMobile
+ * 	- path, the server side path where requestes are sent to, should always be: /
+ * 	- method, the HTTP method used for the data transfer, should always be: POST
+ * 	- contenttype, the HTTP Mimetype of the data, should always be: text/xml
+ * 	- username, the username used for authenticating the client with GoMobile.
+ * 	- password, the password used for generating the checksum which is sent to GoMobile for authentication
+ * 	- logpath, the path to the directory where the API will write its log files.
+ * 	- mode, the logging mode the API should use:
+ * 		1 - Write log entry to file
+ * 		2 - Output log entry to screen
+ * 		3 - Write log entry to file and output to screen
+ * 
+ * </code>
+ * 
+ * @see 	GoMobileConnInfo::produceConnInfo()
+ * 
+ * @global 	array $aGM_CONN_INFO
+ */
+$aGM_CONN_INFO["protocol"] = "http";
+$aGM_CONN_INFO["host"] = "gomobile.cellpointmobile.com";
+$aGM_CONN_INFO["port"] = 8000;
+$aGM_CONN_INFO["timeout"] = 20;	// In seconds
+$aGM_CONN_INFO["path"] = "/";
+$aGM_CONN_INFO["method"] = "POST";
+$aGM_CONN_INFO["contenttype"] = "text/xml";
+$aGM_CONN_INFO["username"] = "";		// Set from the Client Configuration
+$aGM_CONN_INFO["password"] = "";		// Set from the Client Configuration
+$aGM_CONN_INFO["logpath"] = sLOG_PATH;
+/**
+ * 1 - Write log entry to file
+ * 2 - Output log entry to screen
+ * 3 - Write log entry to file and output to screen
+ * 
+ */
+$aGM_CONN_INFO["mode"] = 1;
+
+/**
  * Template for website design
  */
 define("sTEMPLATE", "default");
@@ -97,8 +143,11 @@ define("sTEMPLATE", "default");
 define("sLANG", "uk");
 
 /**
- * Define min & max lenght for authentication info such as username/password 
+ * Default mPoint Domain
  */
-define("iAUTH_MIN_LENGTH", 4);
-define("iAUTH_MAX_LENGTH", 50);
+define("sDEFAULT_MPOINT_DOMAIN", "mpoint.cellpointmobile.com");
+/**
+ * Specific whitelied domain for Sprint
+ */
+define("sSPRINT_MPOINT_DOMAIN", "m62.sprintpcs.com");
 ?>
