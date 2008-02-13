@@ -2,9 +2,9 @@
 msgid @@@ E-Mail - 11 @@@
 msgstr @@@ No E-Mail Address has been entered, please enter an e-mail address and try again? @@@
 msgid @@@ E-Mail - 12 @@@
-msgstr @@@ E-Mail address is too short, a valid e-mail address must be min {AUTH MIN LENGTH} characters @@@
+msgstr @@@ E-Mail address is too short, a valid e-mail address must be min 5 characters @@@
 msgid @@@ E-Mail - 13 @@@
-msgstr @@@ E-Mail address is too long, a valid e-mail address must be max {AUTH MAX LENGTH} characters @@@
+msgstr @@@ E-Mail address is too long, a valid e-mail address must be max 50 characters @@@
 msgid @@@ E-Mail - 14 @@@
 msgstr @@@ E-Mail address contains invalid characters, an e-mail address may only contain the following chaaracters: 0-9 A-Z a-z ¾ ¿ Œ ® ¯  _ . - @ @@@
 msgid @@@ E-Mail - 15 @@@

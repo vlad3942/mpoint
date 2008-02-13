@@ -138,10 +138,10 @@ if (array_key_exists("return-url", $_POST) === true)
 // Display Status Page
 else
 {
-	$_GET = array_keys($aMsgCds);
+	$_GET['msg'] = array_keys($aMsgCds);
 	
 	$xml = '<?xml version="1.0" encoding="ISO-8859-15"?>';
-	$xml .= '<?xml-stylesheet type="text/xsl" href="/template/'. sTEMPLATE .'/status.xsl"?>';
+	$xml .= '<?xml-stylesheet type="text/xsl" href="/template/'. sTEMPLATE .'/xhtml/status.xsl"?>';
 	$xml .= '<root>';
 	$xml .= $obj_mPoint->getMessages("Status");
 	$xml .= '</root>';

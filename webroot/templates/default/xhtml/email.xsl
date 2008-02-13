@@ -6,7 +6,7 @@
 	<div>
 		<h1>
 			<xsl:value-of select="labels/mpoint" /><br />
-			<img src="{system/protocol}://{system/host}/img/mpoint" width="{mpoint-logo/width}" height="{mpoint-logo/height}" alt="- mPoint -" border="0" />
+			<img src="{system/protocol}://{system/host}/img/mpoint" width="{mpoint-logo/width}" height="{mpoint-logo/height}" alt="- mPoint -" />
 		</h1>
 	</div>
 	<div class="mPoint_info">
@@ -23,7 +23,10 @@
 			<input type="submit" value="{labels/submit}" />
 		</div> 
 	</form>
-
+	
+	<!-- Display Status Messages -->
+	<xsl:apply-templates select="messages" />
+	
 	<div>
 		<br />
 		<a href="{func:constLink('accept.php')}"><xsl:value-of select="labels/back" /></a>

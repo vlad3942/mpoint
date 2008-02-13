@@ -8,11 +8,11 @@
 		<title><xsl:value-of select="/root/title" /></title>
 		<meta http-equiv="content-style-type" content="text/css" />
 		<link href="{/root/transaction/css-url}" type="text/css" rel="stylesheet" />
-		<meta http-equiv="content-type" content="application/xhtml+xml; charset=ISO-8859-15"/>
+		<meta http-equiv="content-type" content="application/xhtml+xml; charset=ISO-8859-15" />
 	</head>
 	<body>
 		<div id="logo">
-			<img src="{/root/system/protocol}://{/root/system/host}/img/client_{/root/client-config/@id}" width="{/root/transaction/logo/width}" height="{/root/transaction/logo/height}" alt="- {/root/client-config/name} -" border="0" />
+			<img src="{/root/system/protocol}://{/root/system/host}/img/client_{/root/client-config/@id}" width="{/root/transaction/logo/width}" height="{/root/transaction/logo/height}" alt="- {/root/client-config/name} -" />
 		</div>
 		<xsl:apply-templates />
 	</body>
@@ -20,21 +20,23 @@
 </xsl:template>
 
 <xsl:template match="messages">
-	<div class="status">
-		<br />
-		<xsl:choose>
-		<xsl:when test="count(item) = 1">
-			<xsl:value-of select="." />
-		</xsl:when>
-		<xsl:otherwise>
-			<ul>
-			<xsl:for-each select="item">
-				<li><xsl:value-of select="." /></li>
-			</xsl:for-each>
-			</ul>
-		</xsl:otherwise>
-		</xsl:choose>
-	</div>
+	<xsl:if test="count(item) &gt; 0">
+		<div class="mPoint_status">
+			<xsl:choose>
+			<xsl:when test="count(item) = 1">
+				<br />
+				<xsl:value-of select="." />
+			</xsl:when>
+			<xsl:otherwise>
+				<ul>
+				<xsl:for-each select="item">
+					<li><xsl:value-of select="." /></li>
+				</xsl:for-each>
+				</ul>
+			</xsl:otherwise>
+			</xsl:choose>
+		</div>
+	</xsl:if>
 </xsl:template>
 
 <func:function name="func:constLink">

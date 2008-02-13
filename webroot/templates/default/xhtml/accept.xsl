@@ -6,17 +6,17 @@
 	<div id="mPoint">
 		<h1>
 			<xsl:value-of select="labels/mpoint" /><br />
-			<img src="{system/protocol}://{system/host}/img/mpoint" width="{mpoint-logo/width}" height="{mpoint-logo/height}" alt="- mPoint -" border="0" />
+			<img src="{system/protocol}://{system/host}/img/mpoint" width="{mpoint-logo/width}" height="{mpoint-logo/height}" alt="- mPoint -" />
 		</h1>
 	</div>
 	<div id="status">
 		<h2>
-			<img src="{system/protocol}://{system/host}/img/success.gif" width="30" height="28" alt="- OK - " border="0" />
+			<img src="{system/protocol}://{system/host}/img/success.gif" width="30" height="28" alt="- OK - " />
 			<xsl:value-of select="labels/status" />
 		</h2>
 	</div>
 	
-	<table id="receipt" border="0" cellpadding="0" cellspacing="0">
+	<table id="receipt">
 	<tr>
 		<td class="mPoint_label"><xsl:value-of select="labels/txn-id" />:</td>
 		<td><xsl:value-of select="transaction/@id" /></td>
@@ -30,6 +30,10 @@
 		<td><xsl:value-of select="transaction/price" /></td>
 	</tr>
 	</table>
+	
+	<!-- Display Status Messages -->
+	<xsl:apply-templates select="messages" />
+	
 	<!-- SMS Receipt Enabled -->
 	<xsl:if test="client-config/sms-receipt = 'true'">
 		<div class="mPoint_info">

@@ -3,7 +3,7 @@
 <xsl:include href="header.xsl"/>
 
 <xsl:template match="/root">
-	<table border="0" cellpadding="0" cellspacing="0" id="products">
+	<table id="products">
 	<tr>
 		<td class="mPoint_label"><xsl:value-of select="labels/name" /></td>
 		<td class="mPoint_label"><xsl:value-of select="labels/quantity" /></td>
@@ -13,7 +13,7 @@
 	<xsl:for-each select="products/item">
 		<tr>
 			<td>
-				<img src="{logo-url}" width="30" height="30" alt="- Logo -" border="0" /><br />
+				<img src="{logo-url}" width="30" height="30" alt="- Logo -" /><br />
 				<xsl:value-of select="name" />
 			</td>
 			<td valign="bottom" class="number"><xsl:value-of select="quantity" /></td>

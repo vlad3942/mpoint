@@ -17,6 +17,9 @@ require_once("inc/include.php");
 // Require Business logic for the Payment Accepted component
 require_once(sCLASS_PATH ."/accept.php");
 
+// Re-Build HTTP GET super global to support arrays
+rebuild_get();
+
 $obj_mPoint = new Accept($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_UA']);
 
 echo '<?xml version="1.0" encoding="ISO-8859-15"?>';
@@ -38,6 +41,8 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 		<submit><?= $_OBJ_TXT->_("Send E-Mail"); ?></submit>
 		<back><?= htmlspecialchars($_OBJ_TXT->_("<< Back") ); ?></back>
 	</labels>
+	
+	<?= $obj_mPoint->getMessages("E-Mail"); ?>
 	
 	<?= $obj_mPoint->getSession(); ?>
 </root>

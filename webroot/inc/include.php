@@ -63,6 +63,9 @@ require_once(sAPI_CLASS_PATH ."image.php");
 // Require API for determining device capabilities via the User Agent Profile
 require_once(sAPI_CLASS_PATH ."uaprofile.php");
 
+// Require Global function file
+require_once(sAPI_FUNCTION_PATH ."global.php");
+
 
 // Require API for Web Session handling
 require_once(sCLASS_PATH ."websession.php");
@@ -102,6 +105,16 @@ if (eregi("/buy/", $_SERVER['PHP_SELF']) == false && eregi("/subscr/", $_SERVER[
 	{
 		$_SESSION['obj_Info'] = new WebSession();
 	}
+	
+	/*
+	 * Use Output buffering to "magically" transform the XML via XSL behind the scene
+	 * This means that all PHP scripts must output a wellformed XML document.
+	 * The XML in turn must refer to an XSL Stylesheet by using the xml-stylesheet tag
+	 */
+	ob_start(array(new Output(), "transform") );
+	
+	// Ensure that output buffer is flushed and ended so transform method is called when a script terminates
+	register_shutdown_function("ob_end_flush");
 }
 
 // Instantiate connection to the Database
@@ -117,14 +130,4 @@ define("sLANG", General::getLanguage() );
 
 // Intialise Text Translation Object
 $_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0);
-
-/*
- * Use Output buffering to "magically" transform the XML via XSL behind the scene
- * This means that all PHP scripts must output a wellformed XML document.
- * The XML in turn must refer to an XSL Stylesheet by using the xml-stylesheet tag
- */
-ob_start(array(new Output(), "transform") );
-
-// Ensure that output buffer is flushed and ended so transform method is called when a script terminates
-register_shutdown_function("ob_end_flush");
 ?>

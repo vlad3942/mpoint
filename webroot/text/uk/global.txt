@@ -46,27 +46,27 @@ msgstr @@@ Step 1 of 2 @@@
 msgid @@@ Please select your Credit Card @@@
 msgstr @@@ Please select your Credit Card @@@
 
-#: /webroot/email.php:26
+#: /webroot/email.php:29
 msgid @@@ E-Mail Receipt @@@
 msgstr @@@ E-Mail Receipt @@@
 
-#: /webroot/email.php:35
+#: /webroot/email.php:38
 msgid @@@ Thank you for using @@@
 msgstr @@@ Thank you for using @@@
 
-#: /webroot/email.php:36
+#: /webroot/email.php:39
 msgid @@@ Please enter your e-mail address below @@@
 msgstr @@@ Please enter your e-mail address below @@@
 
-#: /webroot/email.php:37
+#: /webroot/email.php:40
 msgid @@@ E-Mail @@@
 msgstr @@@ E-Mail @@@
 
-#: /webroot/email.php:38
+#: /webroot/email.php:41
 msgid @@@ Send E-Mail @@@
 msgstr @@@ Send E-Mail @@@
 
-#: /webroot/email.php:39
+#: /webroot/email.php:42
 msgid @@@ << Back @@@
 msgstr @@@ << Back @@@
 
