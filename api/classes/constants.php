@@ -63,6 +63,41 @@ abstract class Constants
 	 *
 	 */
 	const iACTIVATE_LINK_STATE = 1021;
+	/**
+	 * Defines the ID of the State that indicates that mPoint's Callback request has been accepted
+	 *
+	 */
+	const iCB_ACCEPTED_STATE = 1990;
+	/**
+	 * Defines the ID of the State that indicates that the callback request to the Client has been constructed
+	 *
+	 */
+	const iCB_CONSTRUCTED_STATE = 1991;
+	/**
+	 * Defines the ID of the State that mPoint has connected to the Client's server to perform a Callback
+	 *
+	 */
+	const iCB_CONNECTED_STATE = 1992;
+	/**
+	 * Defines the ID of the State that indicates that the connection to the Client's server failed while mPoint was doing a Callback
+	 *
+	 */
+	const iCB_CONN_FAILED_STATE = 1993;
+	/**
+	 * Defines the ID of the State that indicates that the Callback request to the Client while mPoint was transmitting the data
+	 *
+	 */
+	const iCB_SEND_FAILED_STATE = 1994;
+	/**
+	 * Defines the ID of the State that indicates that mPoint's Callback request has been rejected
+	 *
+	 */
+	const iCB_REJECTED_STATE = 1995;
+	/**
+	 * Defines the ID of the State that indicates that the payment has been successfully cleared by the Payment Service Provider (PSP)
+	 *
+	 */
+	const iPAYMENT_ACCEPTED_STATE = 2000;
 	
 	/**
 	 * Defines GoMobile's type identifier for an MT-SMS message
@@ -128,5 +163,10 @@ abstract class Constants
 	 *
 	 */
 	const iAUTH_MAX_LENGTH = 50;
+	/**
+	 * Unique ID for the Payment Service Provider: DIBS
+	 *
+	 */
+	const iDIBS_PSP = 1;
 }
 ?>

@@ -29,7 +29,7 @@ class Overview extends General
 	 *
 	 * @param	RDB $oDB			Reference to the Database Object that holds the active connection to the mPoint Database
 	 * @param	TranslateText $oDB 	Text Translation Object for translating any text into a specific language
-	 * @param 	TxnInfo $oCC 		Data object with the Transaction Information
+	 * @param 	TxnInfo $oTI 		Data object with the Transaction Information
 	 */
 	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI)
 	{
@@ -43,7 +43,7 @@ class Overview extends General
 	/**
 	 * Returns the Data object with the Transaction Information.
 	 *
-	 * @return ClientConfig
+	 * @return TxnInfo
 	 */
 	public function &getTxnInfo() { return $this->_obj_TxnInfo; }
 	

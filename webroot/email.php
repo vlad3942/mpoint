@@ -27,6 +27,8 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 	
 	<?= $obj_mPoint->getSystemInfo(); ?>
 	
+	<?= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']); ?>
+	
 	<?= $obj_mPoint->getmPointLogoInfo(); ?>
 	
 	<labels>
@@ -34,7 +36,7 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 		<info><?= $_OBJ_TXT->_("Please enter your e-mail address below"); ?></info>
 		<email><?= $_OBJ_TXT->_("E-Mail"); ?></email>
 		<submit><?= $_OBJ_TXT->_("Send E-Mail"); ?></submit>
-		<back><?= htmlspecialchars($_OBJ_TXT->_("<< Backe") ); ?></back>
+		<back><?= htmlspecialchars($_OBJ_TXT->_("<< Back") ); ?></back>
 	</labels>
 	
 	<?= $obj_mPoint->getSession(); ?>

@@ -109,6 +109,17 @@ class ClientConfig extends BasicConfig
 	 * @var boolean
 	 */
 	private $_bEmailReceipt;
+	/**
+	 * The method used by mPoint when performing a Callback to the Client.
+	 * This can be one of the following:
+	 * 	- mPoint, Callback is perfomed using mPoint's native protocol
+	 * 	- PSP, Callback is performed using the PSP's protocol by re-constructing the request received from the PSP
+	 *
+	 * @see Callback::notifyClient()
+	 * 
+	 * @var string
+	 */
+	private $_sMethod;
 	
 	/**
 	 * Default Constructor
@@ -129,8 +140,9 @@ class ClientConfig extends BasicConfig
 	 * @param 	string $l 			The language that all payment pages should be rendered in by default for the Client
 	 * @param 	boolean $sms 		Boolean Flag indicating whether mPoint should send out an SMS Receipt to the Customer upon successful completion of the Payment
 	 * @param 	boolean $email		Boolean Flag indicating whether access to the E-Mail Receipt component should be enabled for customers
+	 * @param 	string $mtd			The method used by mPoint when performing a Callback to the Client
 	 */
-	public function __construct($id, $name, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $aurl, $curl, $cburl, $ma, $l, $sms, $email)
+	public function __construct($id, $name, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $aurl, $curl, $cburl, $ma, $l, $sms, $email, $mtd)
 	{
 		parent::__construct($id, $name);
 		
@@ -151,6 +163,7 @@ class ClientConfig extends BasicConfig
 		
 		$this->_bSMSReceipt = (bool) $sms;
 		$this->_bEmailReceipt = (bool) $email;
+		$this->_sMethod = $mtd;
 	}
 	
 	/**
@@ -232,13 +245,24 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	boolean
 	 */
-	public function enableSMSReceipt() { return $this->_bSMSReceipt; }
+	public function smsReceiptEnabled() { return $this->_bSMSReceipt; }
 	/**
 	 * Boolean Flag indicating whether access to the E-Mail Receipt component should be enabled for customers
 	 *
 	 * @return 	boolean
 	 */
-	public function enableEmailReceipt() { return $this->_bEmailReceipt; }
+	public function emailReceiptEnabled() { return $this->_bEmailReceipt; }
+	/**
+	 * Returns the method that mPoint uses to perform a Callback to the Client.
+	 * This can be one of the following:
+	 * 	- mPoint, Callback is perfomed using mPoint's native protocol
+	 * 	- PSP, Callback is performed using the PSP's protocol by re-constructing the request received from the PSP
+	 * 
+	 * @see Callback::notifyClient()
+	 *
+	 * @return 	string
+	 */
+	public function getMethod() { return $this->_sMethod; }
 	
 	public function toXML()
 	{
@@ -266,7 +290,7 @@ class ClientConfig extends BasicConfig
 		$acc = (integer) $acc;
 		$sql = "SELECT Cl.id AS clientid, Cl.name AS client, Cl.username, Cl.passwd,
 					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl,
-					Cl.sms_rcpt, Cl.email_rcpt,
+					Cl.smsrcpt, Cl.emailrcpt, Cl.method,
 					Cl.maxamount, Cl.lang,
 					C.id AS countryid, C.name AS country, C.currency, C.minmob, C.maxmob, C.channel, C.priceformat,
 					Acc.id AS accountid, Acc.name AS account, Acc.address,
@@ -312,7 +336,7 @@ class ClientConfig extends BasicConfig
 		$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["ADDRESS"]);
 		$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
 		
-		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMS_RCPT"], $RS["EMAIL_RCPT"]);
+		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"]);
 	}
 }
 ?>

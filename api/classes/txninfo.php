@@ -268,10 +268,6 @@ class TxnInfo
 	 */
 	public function toXML(UAProfile &$oUA=null)
 	{
-		$sPrice = $this->_obj_ClientConfig->getCountryConfig()->getPriceFormat();
-		$sPrice = str_replace("{CURRENCY}", $this->_obj_ClientConfig->getCountryConfig()->getCurrency(), $sPrice);
-		$sPrice = str_replace("{PRICE}", number_format($this->_iAmount, 2), $sPrice);
-		
 		if (is_null($oUA) === false)
 		{
 			$obj_Image = new Image($this->_sLogoURL);
@@ -290,7 +286,7 @@ class TxnInfo
 		
 		$xml = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'">';
 		$xml .= '<amount currency="'. $this->_obj_ClientConfig->getCountryConfig()->getCurrency() .'">'. $this->_iAmount .'</amount>';
-		$xml .= '<price>'. $sPrice .'</price>';
+		$xml .= '<price>'. General::formatPrice($this) .'</price>';
 		$xml .= '<order-id>'. $this->_sOrderID .'</order-id>';
 		$xml .= '<address>'. $this->_sAddress .'</address>';
 		$xml .= '<operator>'. $this->_iOperatorID .'</operator>';
@@ -321,7 +317,7 @@ class TxnInfo
 	 * @param 	[ClientConfig|RDB] $obj 	Reference to either a Database Object which handles the active connection to mPoint's database or to and instance of the Client Configuration of the Client who owns the Transaction
 	 * @param 	array $misc 				Reference to array of miscelaneous data that is used for instantiating the data object with the Transaction Information
 	 * @return 	TxnInfo
-	 * @throws 	TxnInfoException
+	 * @throws 	E_USER_ERROR, TxnInfoException
 	 */
 	public static function produceInfo($id, &$obj, array &$misc=null)
 	{
@@ -335,7 +331,8 @@ class TxnInfo
 			$sql = "SELECT id, typeid, amount, orderid, address, operatorid, lang, logourl, cssurl, accepturl, cancelurl, callbackurl,
 						clientid, accountid, keywordid
 					FROM Log.Transaction_Tbl
-					WHERE id = ". intval($id) ." AND created LIKE '". $obj->escStr($misc[0]) ."%'";
+					WHERE id = ". intval($id);
+			if (is_array($misc) === true) { $sql .= " AND created LIKE '". $obj->escStr($misc[0]) ."%'"; }
 //			echo $sql ."\n";
 			$RS = $obj->getName($sql);
 			
@@ -350,7 +347,7 @@ class TxnInfo
 			else { throw new TxnInfoException("Transaction with ID: ". $id ." not found using creation timestamp: ". $misc[0], 1001); }
 			break;
 		default:								// Error: Argument 2 is an instance of an invalid class
-			trigger_error("Argument 2 passed to TxnInfo::produceInfo() must be an instance of ClientConfig or of RDB", E_ERROR);
+			trigger_error("Argument 2 passed to TxnInfo::produceInfo() must be an instance of ClientConfig or of RDB", E_USER_ERROR);
 			break;
 		}
 		

@@ -91,16 +91,12 @@ class EMailReceipt extends General
 	 */
 	public function constBody()
 	{
-		// Format amount to be human readable
-		$sPrice = $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getPriceFormat();
-		$sPrice = str_replace("{CURRENCY}", $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getCurrency(), $sPrice);
-		$sPrice = str_replace("{PRICE}", number_format($this->_obj_TxnInfo->getAmount(), 2), $sPrice);
-		
 		$sBody = $this->getText()->_("E-Mail Receipt - Body");
 		$sBody = str_replace("{ADDRESS}", $this->_obj_TxnInfo->getAddress(), $sBody);
 		$sBody = str_replace("{ORDERID}", $this->_obj_TxnInfo->getOrderID(), $sBody);
 		$sBody = str_replace("{MPOINTID}", $this->_obj_TxnInfo->getID(), $sBody);
-		$sBody = str_replace("{PRICE}", $sPrice, $sBody);
+		$sBody = str_replace("{PRICE}", General::formatPrice($this->_obj_TxnInfo), $sBody);
+		$sBody = str_replace("{CLIENT}", $this->_obj_TxnInfo->getClientConfig()->getName(), $sBody);
 		
 		return $sBody;
 	}

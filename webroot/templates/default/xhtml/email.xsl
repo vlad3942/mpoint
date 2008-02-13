@@ -25,6 +25,7 @@
 	</form>
 
 	<div>
+		<br />
 		<a href="{func:constLink('accept.php')}"><xsl:value-of select="labels/back" /></a>
 	</div>
 </xsl:template>

@@ -10,7 +10,10 @@
 		</h1>
 	</div>
 	<div id="status">
-		<h2><xsl:value-of select="labels/status" /></h2>
+		<h2>
+			<img src="{system/protocol}://{system/host}/img/success.gif" width="30" height="28" alt="- OK - " border="0" />
+			<xsl:value-of select="labels/status" />
+		</h2>
 	</div>
 	
 	<table id="receipt" border="0" cellpadding="0" cellspacing="0">

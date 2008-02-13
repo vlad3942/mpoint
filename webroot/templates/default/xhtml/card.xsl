@@ -31,7 +31,7 @@
 				
 				<!-- DIBS Required Data -->
 				<input type="hidden" name="merchant" value="{account}" />
-				<input type="hidden" name="callbackurl" value="{/root/system/protocol}://{/root/system/host}/callback/dibs.php" />
+				<input type="hidden" name="callbackurl" value="http://demo.ois-inc.com/mpoint/sys/callback.php" />
 				<input type="hidden" name="accepturl" value="{/root/system/protocol}://{/root/system/host}/accept.php" />
 				<input type="hidden" name="cancelurl" value="{/root/transaction/cancel-url}" />
 				<input type="hidden" name="amount" value="{/root/transaction/amount}" />
@@ -92,6 +92,8 @@
 				<input type="hidden" name="height" value="{/root/transaction/logo/height}" />
 				<input type="hidden" name="{/root/system/session}" value="{/root/system/session/@id}" />
 				<input type="hidden" name="format" value="xhtml" />
+				<input type="hidden" name="language" value="{/root/system/language}" />
+				<input type="hidden" name="cardid" value="{@id}" />
 				
 				<!-- Card Data -->
 				<xsl:choose>

@@ -468,5 +468,78 @@ class General
 
 		return is_array($RS)===true?unserialize($RS["DATA"]):array();
 	}
+	
+	/**
+	 * Sends an MT to GoMobile
+	 * Prior to sending the message the method will updated the provided Connection Info object with the Client's username / password for GoMobile.
+	 * The method will throw an mPointException with an error code in the following scenarios:
+	 * 	1012. Message rejected by GoMobile
+	 * 	1013. Unable to connect to GoMobile
+	 * 
+	 * @see 	GoMobileClient
+	 * @see 	SMS
+	 *
+	 * @param 	GoMobileConnInfo $oCI 	Connection Info required to communicate with GoMobile
+	 * @param 	SMS $oMI 				Reference to the Message Object for holding the message data which will be sent to GoMobile
+	 * @param 	TxnInfo $oTI 			Data Object for the Transaction for which an MT with the payment link should be send out
+	 * @throws 	mPointException
+	 */
+	protected function sendMT(GoMobileConnInfo &$oCI, SMS &$oMI, TxnInfo &$oTI)
+	{
+		// Re-Instantiate Connection Information for GoMobile using the Client's username / password
+		$oCI = new GoMobileConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), $oCI->getMethod(), $oCI->getContentType(), $oTI->getClientConfig()->getUsername(), $oTI->getClientConfig()->getPassword(), $oCI->getLogPath(), $oCI->getMode() );
+		
+		// Instantiate client object for communicating with GoMobile
+		$obj_GoMobile = new GoMobileClient($oCI);
+		
+		/* ========== Send MT Start ========== */
+		$bSend = true;		// Continue to send messages
+		$iAttempts = 0;		// Number of Attempts
+		// Send messages
+		while ($bSend === true && $iAttempts < 3)
+		{
+			$iAttempts++;
+			try
+			{
+				// Error: Message rejected by GoMobile
+				if ($obj_GoMobile->communicate($oMI) != 200)
+				{
+					$this->newMessage($oTI->getID(), Constants::iMSG_REJECTED_BY_GM_STATE, var_export($oMI, true) );
+					throw new mPointException("Message rejected by GoMobile with code(s): ". $oMI->getReturnCodes(), 1012);
+				}
+				$this->newMessage($oTI->getID(), Constants::iMSG_ACCEPTED_BY_GM_STATE, var_export($oMI, true) );
+				$bSend = false;
+			}
+			// Communication error, retry message sending
+			catch (HTTPException $e)
+			{
+				// Error: Unable to connect to GoMobile
+				if ($iAttempts == 3)
+				{
+					$this->newMessage($oTI->getID(), Constants::iGM_CONN_FAILED_STATE, var_export($oCI, true) );
+					throw new mPointException("Unable to connect to GoMobile", 1013);
+				}
+				else { sleep(pow(5, $iAttempts) ); }
+			}
+		}
+		/* ========== Send MT End ========== */
+	}
+	
+	/**
+	 * Formats the Total Amount for a Transaction into humanreadable format using the price format of
+	 * the Country the Transaction takes place in, i.e. $X.XX for USA, X.XXkr for Denmark etc.
+	 *
+	 * @param 	TxnInfo $oTI 	Reference to the Data Object for the Transaction which should have its amount formatted
+	 * @return 	string
+	 */
+	public static function formatPrice(TxnInfo &$oTI)
+	{
+		// Format amount to be human readable
+		$sPrice = $oTI->getClientConfig()->getCountryConfig()->getPriceFormat();
+		$sPrice = str_replace("{CURRENCY}", $oTI->getClientConfig()->getCountryConfig()->getCurrency(), $sPrice);
+		$sPrice = str_replace("{PRICE}", number_format($oTI->getAmount(), 2), $sPrice);
+		
+		return $sPrice;
+	}
 }
 ?>

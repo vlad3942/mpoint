@@ -31,7 +31,7 @@ LANGUAGE 'plpgsql';
 
 /* ==================== GENERAL FUNCTIONS START ==================== */
 /**
- * Constructs a date from year, month day
+ * Constructs a date from yeacr, month day
  *
  * @param	int4 in_year		Year
  * @param	int4 in_month		Month
@@ -229,12 +229,14 @@ CREATE TABLE Client.Client_Tbl
 	accepturl	VARCHAR(255),	-- Absolute URL where mPoint should direct the customer to upon accepted payment
 	cancelurl	VARCHAR(255),	-- Absolute URL where mPoint should direct the customer to upon the customer cancelling the payment
 	
-	maxamount	INT4,			-- Maximum Amount an mPoint Transaction can be for the client
-	lang		CHAR(2) DEFAULT 'uk',	-- Clients default language that all mPoint payment pages should use 
-	sms_rcpt	BOOL DEFAULT true,		-- Indication of whether mPoint should send out an SMS Receipt to the Customer
-	email_rcpt	BOOL DEFAULT true,		-- Indication of whether mPoint should allow access to the E-Mail Receipt Component
+	maxamount	INT4,						-- Maximum Amount an mPoint Transaction can be for the client
+	lang		CHAR(2) DEFAULT 'uk',		-- Clients default language that all mPoint payment pages should use 
+	smsrcpt		BOOL DEFAULT true,			-- Indication of whether mPoint should send out an SMS Receipt to the Customer
+	emailrcpt	BOOL DEFAULT true,			-- Indication of whether mPoint should allow access to the E-Mail Receipt Component
+	method		VARCHAR(6) DEFAULT 'mPoint', -- Method / Protocol used by mPoint when performing a Callback to the Client
 
 	CONSTRAINT Client_PK PRIMARY KEY (id),
+	CONSTRAINT Client_Chk CHECK (method = 'mPoint' OR method = 'PSP'),
 	LIKE Template.General_Tbl INCLUDING DEFAULTS
 ) WITHOUT OIDS;
 

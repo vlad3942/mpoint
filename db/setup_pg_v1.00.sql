@@ -87,3 +87,12 @@ INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1011, 'Unable to conn
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1012, 'Message rejected by GoMobile', 'Call Centre', 'sendLink');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1020, 'Payment link Constructed', 'Call Centre', 'constLink');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1021, 'Payment link Activated', 'Payment', 'Overview');
+
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1990, 'Callback Accepted', 'Callback', 'send');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1991, 'Callback Constructed', 'Callback', 'send');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1992, 'Callback Conencted', 'Callback', 'send');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1993, 'Callback Connection Failed', 'Callback', 'send');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1994, 'Callback Transmission Failed', 'Callback', 'send');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1995, 'Callback Rejeced', 'Callback', 'send');
+
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (2000, 'Payment successfully cleared by PSP', 'Callback', 'completeTransaction');

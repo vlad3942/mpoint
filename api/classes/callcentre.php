@@ -157,13 +157,7 @@ class CallCentre extends General
 	 * @throws 	mPointException
 	 */
 	public function sendLink(GoMobileConnInfo &$oCI, TxnInfo &$oTI, $url)
-	{
-		// Re-Instantiate Connection Information for GoMobile using the Client's username / password
-		$oCI = new GoMobileConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), $oCI->getMethod(), $oCI->getContentType(), $oTI->getClientConfig()->getUsername(), $oTI->getClientConfig()->getPassword(), $oCI->getLogPath(), $oCI->getMode() );
-		
-		// Instantiate client object for communicating with GoMobile
-		$obj_GoMobile = new GoMobileClient($oCI);
-		
+	{	
 		switch ($oTI->getOperator() )
 		{
 		case (20002):	// Verizon Wireless - USA
@@ -185,38 +179,8 @@ class CallCentre extends General
 			$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_WAP_PUSH_TYPE, $oTI->getClientConfig()->getCountryConfig()->getID(), $oTI->getOperator(), $oTI->getClientConfig()->getCountryConfig()->getChannel(), $oTI->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getAddress(), $this->getText()->_("mPoint - WAP Push Indication"), $url);
 			break;
 		}
-		
-		/* ========== Send MT Start ========== */
-		$bSend = true;		// Continue to send messages
-		$iAttempts = 0;		// Number of Attempts
-		// Send messages
-		while ($bSend === true && $iAttempts < 3)
-		{
-			$iAttempts++;
-			try
-			{
-				// Error: Message rejected by GoMobile
-				if ($obj_GoMobile->communicate($obj_MsgInfo) != 200)
-				{
-					$this->newMessage($this->_iTransactionID, Constants::iMSG_REJECTED_BY_GM_STATE, var_export($obj_MsgInfo, true) );
-					throw new mPointException("Message rejected by GoMobile with code(s): ". $obj_MsgInfo->getReturnCodes(), 1012);
-				}
-				$this->newMessage($this->_iTransactionID, Constants::iMSG_ACCEPTED_BY_GM_STATE, var_export($obj_MsgInfo, true) );
-				$bSend = false;
-			}
-			// Communication error, retry message sending
-			catch (HTTPException $e)
-			{
-				// Error: Unable to connect to GoMobile
-				if ($iAttempts == 3)
-				{
-					$this->newMessage($this->_iTransactionID, Constants::iGM_CONN_FAILED_STATE, var_export($oCI, true) );
-					throw new mPointException("Unable to connect to GoMobile", 1013);
-				}
-				else { sleep(pow(5, $iAttempts) ); }
-			}
-		}
-		/* ========== Send MT End ========== */
+		// Send Link to Customer
+		$this->sendMT($oCI, $obj_MsgInfo, $oTI);
 	}
 }
 ?>
