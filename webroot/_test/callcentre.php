@@ -61,8 +61,8 @@
 	<td><input type="text" name="callback-url" value="http://mpoint.localhost/_test/callback.php" /></td>
 </tr>
 <tr>
-	<td style="font-weight:bold;">Return URL</td>
-	<td><input type="text" name="return-url" value="http://mpoint.localhost/_test/callcentre.php" /></td>
+	<td style="font-weight:bold;">Order ID</td>
+	<td><input type="text" name="orderid" value="123abc" /></td>
 </tr>
 <tr>
 	<td style="font-weight:bold;">Custom Variable</td>

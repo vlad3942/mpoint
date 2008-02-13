@@ -40,6 +40,9 @@ case (strstr($url, "product") ):
 case (strstr($url, "card") ):	// Retrieve Credit Card Logo
 	$obj_Image = $obj_mPoint->getCardLogo(substr($url, strrpos($url, "_")+1) );
 	break;
+case (strstr($url, "/mpoint") ):// Retrieve mPoint Logo
+	$obj_Image = $obj_mPoint->getmPointLogo();
+	break;
 default:					// Error: Unknown Image Type
 	trigger_error("Unknown Image Type {TRACE URL: ".$url ."}", E_USER_ERROR);
 	break;

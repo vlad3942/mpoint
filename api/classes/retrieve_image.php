@@ -85,5 +85,34 @@ class RetrieveImage extends General
 		
 		return $obj_Image;
 	}
+	
+	/**
+	 * Retrieves and resizes mPoint's Logo in accordance with the screen resolution of the customer's Mobile Device.
+	 * The logo is effectively resized to fit within a rectangle, which has a width and height that is equal to or less than 30%
+	 * of the screen's width / height.
+	 * 
+	 * @see 	iMPOINT_LOGO_SCALE
+	 *
+	 * @return 	Image
+	 */
+	public function getmPointLogo()
+	{
+		/* ========== Calculate Logo Dimensions Start ========== */
+		$iWidth = $this->_obj_UA->getWidth() * iMPOINT_LOGO_SCALE / 100;
+		$iHeight = $this->_obj_UA->getHeight() * iMPOINT_LOGO_SCALE / 100;
+		
+		if ($iWidth / 622 > $iHeight / 138) { $fScale = $iHeight / 138; }
+		else { $fScale = $iWidth / 622; }
+		
+		$iWidth = intval($fScale * 622);
+		$iHeight = intval($fScale * 138);
+		/* ========== Calculate Logo Dimensions End ========== */
+		
+		// Re-Size Image to fit the screen resolution of the Customer's Mobile Device using its User Agent Profile
+		$obj_Image = new Image("mPoint.jpg");
+		$obj_Image->resize($iWidth, $iHeight);
+		
+		return $obj_Image;
+	}
 }
 ?>

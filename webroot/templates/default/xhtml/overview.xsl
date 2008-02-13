@@ -9,6 +9,7 @@
 		<td class="mPoint_label"><xsl:value-of select="labels/quantity" /></td>
 		<td class="mPoint_label"><xsl:value-of select="labels/price" /></td>
 	</tr>
+	<!-- List Products -->
 	<xsl:for-each select="products/item">
 		<tr>
 			<td>
@@ -19,6 +20,7 @@
 			<td valign="bottom" class="number"><xsl:value-of select="price" /></td>
 		</tr>
 	</xsl:for-each>
+	<!-- List Total -->
 	<tr>
 		<td colspan="2" class="label"><xsl:value-of select="labels/total" /></td>
 		<td valign="bottom" class="number"><xsl:value-of select="transaction/price" /></td>

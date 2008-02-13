@@ -96,6 +96,19 @@ class ClientConfig extends BasicConfig
 	 * @var string
 	 */
 	private $_sLanguage;
+	/**
+	 * Boolean Flag indicating whether mPoint should send out an SMS Receipt to the Customer by the Callback Module
+	 * upon successful completion of the Payment
+	 *
+	 * @var boolean
+	 */
+	private $_bSMSReceipt;
+	/**
+	 * Boolean Flag indicating whether access to the E-Mail Receipt component should be enabled for customers
+	 *
+	 * @var boolean
+	 */
+	private $_bEmailReceipt;
 	
 	/**
 	 * Default Constructor
@@ -114,8 +127,10 @@ class ClientConfig extends BasicConfig
 	 * @param 	string $cburl 		Absolute URL to the Client's Back Office where mPoint should send the Payment Status to
 	 * @param 	string $ma 			Max Amount an mPoint Transaction can cost the customer for the Client
 	 * @param 	string $l 			The language that all payment pages should be rendered in by default for the Client
+	 * @param 	boolean $sms 		Boolean Flag indicating whether mPoint should send out an SMS Receipt to the Customer upon successful completion of the Payment
+	 * @param 	boolean $email		Boolean Flag indicating whether access to the E-Mail Receipt component should be enabled for customers
 	 */
-	public function __construct($id, $name, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $aurl, $curl, $cburl, $ma, $l)
+	public function __construct($id, $name, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $aurl, $curl, $cburl, $ma, $l, $sms, $email)
 	{
 		parent::__construct($id, $name);
 		
@@ -133,6 +148,9 @@ class ClientConfig extends BasicConfig
 		
 		$this->_iMaxAmount = (integer) $ma;
 		$this->_sLanguage = trim($l);
+		
+		$this->_bSMSReceipt = (bool) $sms;
+		$this->_bEmailReceipt = (bool) $email;
 	}
 	
 	/**
@@ -208,12 +226,27 @@ class ClientConfig extends BasicConfig
 	 * @return 	string
 	 */
 	public function getLanguage() { return $this->_sLanguage; }
+	/**
+	 * Returns the Boolean Flag that indicates whether mPoint should send out an SMS Receipt to the Customer by the Callback Module
+	 * upon successful completion of the Payment
+	 *
+	 * @return 	boolean
+	 */
+	public function enableSMSReceipt() { return $this->_bSMSReceipt; }
+	/**
+	 * Boolean Flag indicating whether access to the E-Mail Receipt component should be enabled for customers
+	 *
+	 * @return 	boolean
+	 */
+	public function enableEmailReceipt() { return $this->_bEmailReceipt; }
 	
 	public function toXML()
 	{
 		$xml = '<client-config id="'. $this->getID() .'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
 		$xml .= '<username>'. htmlspecialchars($this->getUsername(), ENT_NOQUOTES) .'</username>';
+		$xml .= '<sms-receipt>'. General::bool2xml($this->_bSMSReceipt) .'</sms-receipt>';
+		$xml .= '<email-receipt>'. General::bool2xml($this->_bEmailReceipt) .'</email-receipt>';
 		$xml .= '</client-config>';
 		
 		return $xml;
@@ -233,6 +266,7 @@ class ClientConfig extends BasicConfig
 		$acc = (integer) $acc;
 		$sql = "SELECT Cl.id AS clientid, Cl.name AS client, Cl.username, Cl.passwd,
 					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl,
+					Cl.sms_rcpt, Cl.email_rcpt,
 					Cl.maxamount, Cl.lang,
 					C.id AS countryid, C.name AS country, C.currency, C.minmob, C.maxmob, C.channel, C.priceformat,
 					Acc.id AS accountid, Acc.name AS account, Acc.address,
@@ -278,7 +312,7 @@ class ClientConfig extends BasicConfig
 		$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["ADDRESS"]);
 		$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
 		
-		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["MAXAMOUNT"], $RS["LANG"]);
+		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMS_RCPT"], $RS["EMAIL_RCPT"]);
 	}
 }
 ?>

@@ -1,3 +1,39 @@
+#: /webroot/accept.php:28
+msgid @@@ Payment Completed @@@
+msgstr @@@ Payment Completed @@@
+
+#: /webroot/accept.php:41
+msgid @@@ Thank you for using @@@
+msgstr @@@ Thank you for using @@@
+
+#: /webroot/accept.php:42
+msgid @@@ Status - Success @@@
+msgstr @@@ Your payment has been successfully completed @@@
+
+#: /webroot/accept.php:43
+msgid @@@ mPoint ID @@@
+msgstr @@@ mPoint ID @@@
+
+#: /webroot/accept.php:44
+msgid @@@ Order No @@@
+msgstr @@@ Order No @@@
+
+#: /webroot/accept.php:45
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
+#: /webroot/accept.php:46
+msgid @@@ SMS Receipt - Info @@@
+msgstr @@@ These details have also been sent to you via SMS to number {ADDRESS} @@@
+
+#: /webroot/accept.php:47
+msgid @@@ Send receipt via E-Mail @@@
+msgstr @@@ Send receipt via E-Mail @@@
+
+#: /webroot/accept.php:48
+msgid @@@ Continue >> @@@
+msgstr @@@ Continue >> @@@
+
 #: /webroot/card.php:26
 msgid @@@ Select Card @@@
 msgstr @@@ Select Card @@@
@@ -9,6 +45,30 @@ msgstr @@@ Step 1 of 2 @@@
 #: /webroot/card.php:36
 msgid @@@ Please select your Credit Card @@@
 msgstr @@@ Please select your Credit Card @@@
+
+#: /webroot/email.php:26
+msgid @@@ E-Mail Receipt @@@
+msgstr @@@ E-Mail Receipt @@@
+
+#: /webroot/email.php:33
+msgid @@@ Thank you for using @@@
+msgstr @@@ Thank you for using @@@
+
+#: /webroot/email.php:34
+msgid @@@ Please enter your e-mail address below @@@
+msgstr @@@ Please enter your e-mail address below @@@
+
+#: /webroot/email.php:35
+msgid @@@ E-Mail @@@
+msgstr @@@ E-Mail @@@
+
+#: /webroot/email.php:36
+msgid @@@ Send E-Mail @@@
+msgstr @@@ Send E-Mail @@@
+
+#: /webroot/email.php:37
+msgid @@@ << Backe @@@
+msgstr @@@ << Backe @@@
 
 #: /webroot/overview.php:32
 msgid @@@ Order Overview @@@
@@ -34,11 +94,24 @@ msgstr @@@ Total @@@
 msgid @@@ Go to Payment >> @@@
 msgstr @@@ Go to Payment >> @@@
 
-#: /api/classes/callcentre.php:214
+#: /api/classes/callcentre.php:179
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ mPoint - Embedded link Indication @@@
 
-#: /api/classes/callcentre.php:220
+#: /api/classes/callcentre.php:185
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ mPoint - WAP Push Indication @@@
+
+#: /api/classes/email_receipt.php:75
+msgid @@@ E-Mail Receipt - Subject @@@
+msgstr @@@ mPoint Receipt for Order No: {ORDERID} with mPoint ID: {MPOINTID} @@@
+
+#: /api/classes/email_receipt.php:99
+msgid @@@ E-Mail Receipt - Body @@@
+msgstr @@@ Thank you for using mPoint.
+Please find your order details below.
+Mobile No: {ADDRESS}
+mPoint ID: {MPOINTID}
+Order No: {ORDERID}
+Price: {PRICE} @@@
 

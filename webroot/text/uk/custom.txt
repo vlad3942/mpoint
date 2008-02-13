@@ -1,0 +1,15 @@
+#: /api/classes/general.php:95
+msgid @@@ E-Mail - 11 @@@
+msgstr @@@ No E-Mail Address has been entered, please enter an e-mail address and try again? @@@
+msgid @@@ E-Mail - 12 @@@
+msgstr @@@ E-Mail address is too short, a valid e-mail address must be min {AUTH MIN LENGTH} characters @@@
+msgid @@@ E-Mail - 13 @@@
+msgstr @@@ E-Mail address is too long, a valid e-mail address must be max {AUTH MAX LENGTH} characters @@@
+msgid @@@ E-Mail - 14 @@@
+msgstr @@@ E-Mail address contains invalid characters, an e-mail address may only contain the following chaaracters: 0-9 A-Z a-z æ ø å Æ Ø Å _ . - @ @@@
+msgid @@@ E-Mail - 15 @@@
+msgstr @@@ E-Mail has an invalid format, a valid e-mail address must be in the format of: john.doe@cellpointmobile.com @@@
+msgid @@@ E-Mail - 91 @@@
+msgstr @@@ An error occurred while sending your E-Mail Receipt, please try again? @@@
+msgid @@@ Accept - 100 @@@
+msgstr @@@ Your E-Mail receipt has been successfully sent @@@

@@ -17,7 +17,7 @@
 class CreditCard extends General
 {
 	/**
-	 * Data object with the Transaction Information
+	 * Data object with the Transaction InformaStion
 	 *
 	 * @var TxnInfo
 	 */
@@ -48,6 +48,28 @@ class CreditCard extends General
 	
 	/**
 	 * Fetch meta-data for all Credit Cards that are available to the Client.
+	 * The card data is returned as an XML Document in the following format:
+	 * 	<cards>
+	 * 		<item id="{UNIQUE ID FOR THE CARD}" pspid="{UNIQUE ID FOR THE PSP THAT WILL AUTHORISE THE PAYMENT}">
+	 *			<name>{CREDIT CARD NAME}</name>
+	 *			<width>{CALCUALTED WIDTH FOR THE LOGO}</width>
+	 *			<height>{CALCUALTED HEIGHT FOR THE LOGO}</height>
+	 *			<account>{PSPS ACCOUNT}</account>
+	 *			<subaccount>{PSP SUBACCOUNT}</subaccount>
+	 *			<currency>{PSP'S CURRENCY THAT THE TRANSACTION WILL BE CHARGED IN}</currency>
+	 *		</item>
+	 *		<item id="{UNIQUE ID FOR THE CARD}" pspid="{UNIQUE ID FOR THE PSP THAT WILL AUTHORISE THE PAYMENT}">
+	 *			<name>{CREDIT CARD NAME}</name>
+	 *			<width>{CALCUALTED WIDTH FOR THE LOGO}</width>
+	 *			<height>{CALCUALTED HEIGHT FOR THE LOGO}</height>
+	 *			<account>{PSPS ACCOUNT}</account>
+	 *			<subaccount>{PSP SUBACCOUNT}</subaccount>
+	 *			<currency>{PSP'S CURRENCY THAT THE TRANSACTION WILL BE CHARGED IN}</currency>
+	 *		</item>
+	 * 		...
+	 * 	</cards>
+	 * Please note that if the Payment Service Provider (PSP) does not support sub-accounts or no sub-account has been 
+	 * configured for the PSP, the subaccount tag will contain -1.
 	 * 
 	 * @see 	iCARD_LOGO_SCALE
 	 *

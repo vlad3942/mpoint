@@ -48,27 +48,6 @@ class Overview extends General
 	public function &getTxnInfo() { return $this->_obj_TxnInfo; }
 	
 	/**
-	 * Retrieves the data for a given transaction state from the Message database table.
-	 * The retrieved data is unserialised before being returned.
-	 * 
-	 * @see 	unserialize()
-	 *
-	 * @param 	integer $txnid 		ID of the Transaction that message data should be retrieved from
-	 * @param 	integer $stateid 	ID of the State to which the data belongs
-	 * @return 	mixed
-	 */
-	protected function getMessageData($txnid, $stateid)
-	{
-		$sql = "SELECT data
-				FROM Log.Message_Tbl
-				WHERE txnid = ". intval($txnid) ." AND stateid = ". intval($stateid);
-//		echo $sql ."\n";
-		$RS = $this->getDBConn()->getName($sql);
-
-		return unserialize($RS["DATA"]);
-	}
-	
-	/**
 	 * Returns all products for the current Transaction.
 	 * The products will be returned as an XML document in the following format:
 	 * 	<products>

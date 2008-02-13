@@ -231,6 +231,8 @@ CREATE TABLE Client.Client_Tbl
 	
 	maxamount	INT4,			-- Maximum Amount an mPoint Transaction can be for the client
 	lang		CHAR(2) DEFAULT 'uk',	-- Clients default language that all mPoint payment pages should use 
+	sms_rcpt	BOOL DEFAULT true,		-- Indication of whether mPoint should send out an SMS Receipt to the Customer
+	email_rcpt	BOOL DEFAULT true,		-- Indication of whether mPoint should allow access to the E-Mail Receipt Component
 
 	CONSTRAINT Client_PK PRIMARY KEY (id),
 	LIKE Template.General_Tbl INCLUDING DEFAULTS
@@ -478,6 +480,8 @@ CREATE TRIGGER Update_Transaction
 BEFORE UPDATE
 ON Log.Transaction_Tbl FOR EACH ROW
 EXECUTE PROCEDURE Public.Update_Table_Proc();
+
+SELECT setval('Log.Transaction_Tbl_id_seq', 999999);
 
 -- Internal
 INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, cardid, amount, orderid, extid, enabled) VALUES (0, 0, 0, 0, 0, 0, 0, -1, 'System Record', 'System Record', false);

@@ -60,7 +60,7 @@ a:hover
 	color: red;
 }
 
-div#logo, div#progress
+div#logo, div#progress, div#mPoint
 {
 	text-align: center;
 }

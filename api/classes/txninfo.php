@@ -135,7 +135,7 @@ class TxnInfo
 		$this->_iTypeID =  (integer) $tid;
 		$this->_obj_ClientConfig = $oCC;
 		$this->_iAmount =  (integer) $a;
-		$this->_iOrderID =  trim($orid);
+		$this->_sOrderID =  trim($orid);
 		$this->_sAddress = trim($addr);
 		$this->_iOperatorID =  (integer) $oid;
 		

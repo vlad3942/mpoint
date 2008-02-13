@@ -172,4 +172,10 @@ define("iCLIENT_LOGO_SCALE", 20);
  *
  */
 define("iCARD_LOGO_SCALE", 15);
+/**
+ * Determines what size the mPoint Logo is scaled to.
+ * The constant represents the percentage of the screen width / height that the logo can cover.
+ *
+ */
+define("iMPOINT_LOGO_SCALE", 30);
 ?>

@@ -168,7 +168,7 @@ class Validate
 	 * 	1. Undefined E-Mail address
 	 * 	2. E-Mail address is too short, as defined by iAUTH_MIN_LENGTH
 	 * 	3. E-Mail address is too long, as defined by iAUTH_MAX_LENGTH
-	 *  4. E-Mail address contains invalid characters: [^0-9A-Za-zæøåÆØÅ_.-@]
+	 *  4. E-Mail address contains invalid characters: [^0-9A-Za-z¾¿Œ®¯_.-@]
 	 *  5. E-Mail has an invalid form: ^[^@ ]+@[^@ ]+\.[^@ \.]+$
 	 *	10. Success
 	 * 

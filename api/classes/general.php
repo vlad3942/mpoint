@@ -92,7 +92,7 @@ class General
 			// Loop through all returned message codes
 			for ($i=0; $i<count($_GET['msg']); $i++)
 			{
-				$xml .= '<item id="'. $_GET['msg'][$i] .'">'. $this->_obj_Text->_($type ." - ". $_GET['msg'][$i]) .'</item>';
+				$xml .= '<item id="'. $_GET['msg'][$i] .'">'. $this->_obj_Txt->_($type ." - ". $_GET['msg'][$i]) .'</item>';
 			}
 		}
 		$xml .= '</messages>';
@@ -160,7 +160,7 @@ class General
 	 * @param boolean $b 	Boolean flag as retrieved from the Database
 	 * @return string 		"true" if flag is true, "false" if flag is false
 	 */
-	public function bool2xml($b)
+	public static function bool2xml($b)
 	{
 		if ($b === true)  { $b = "true"; }
 		elseif ($b === false)  { $b = "false"; }
@@ -238,7 +238,7 @@ class General
 		parse_str($_SERVER['QUERY_STRING'], $_GET);
 		
 		// Decode Transaction Information from URL
-		list(, $chk) = explode("/", $aURLInfo["path"]);
+		list(, , $chk) = explode("/", $aURLInfo["path"]);
 		list($sTimestamp, $iTxnID) = spliti("Z", $chk);
 		$sTimestamp = date("Y-m-d H:i:s", base_convert($sTimestamp, 32, 10) );
 		$iTxnID = base_convert($iTxnID, 32, 10);
@@ -389,7 +389,7 @@ class General
 		$sql = "INSERT INTO Log.Transaction_Tbl
 					(id, typeid, clientid, accountid, countryid, keywordid)
 				VALUES
-					(". $this->_iTransactionID .", ". intval($tid) .", ". $this->getClientConfig()->getID() .", ". $this->getClientConfig()->getAccountConfig()->getID() .", ". $this->getClientConfig()->getCountryConfig()->getID() .", ". $this->getClientConfig()->getKeywordConfig()->getID() .")";
+					(". $RS["ID"] .", ". intval($tid) .", ". $this->getClientConfig()->getID() .", ". $this->getClientConfig()->getAccountConfig()->getID() .", ". $this->getClientConfig()->getCountryConfig()->getID() .", ". $this->getClientConfig()->getKeywordConfig()->getID() .")";
 //		echo $sql ."\n";
 		// Error: Unable to insert a new record in the Transaction Log
 		if (is_resource($this->getDBConn()->query($sql) ) === false)
@@ -446,6 +446,27 @@ class General
 		{
 			throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003);
 		}
+	}
+	
+	/**
+	 * Retrieves the data for a given transaction state from the Message database table.
+	 * The retrieved data is unserialised before being returned.
+	 * 
+	 * @see 	unserialize()
+	 *
+	 * @param 	integer $txnid 		ID of the Transaction that message data should be retrieved from
+	 * @param 	integer $stateid 	ID of the State to which the data belongs
+	 * @return 	mixed
+	 */
+	protected function getMessageData($txnid, $stateid)
+	{
+		$sql = "SELECT data
+				FROM Log.Message_Tbl
+				WHERE txnid = ". intval($txnid) ." AND stateid = ". intval($stateid);
+//		echo $sql ."\n";
+		$RS = $this->getDBConn()->getName($sql);
+
+		return is_array($RS)===true?unserialize($RS["DATA"]):array();
 	}
 }
 ?>

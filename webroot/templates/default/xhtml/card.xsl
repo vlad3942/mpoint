@@ -90,7 +90,9 @@
 				<!-- mPoint Required Data -->
 				<input type="hidden" name="width" value="{/root/transaction/logo/width}" />
 				<input type="hidden" name="height" value="{/root/transaction/logo/height}" />
+				<input type="hidden" name="{/root/system/session}" value="{/root/system/session/@id}" />
 				<input type="hidden" name="format" value="xhtml" />
+				
 				<!-- Card Data -->
 				<xsl:choose>
 					<!-- American Express -->
