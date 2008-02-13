@@ -276,8 +276,8 @@ class Validate
 	 * Validates the total Amount the customer is paying.
 	 * The method will return the following status codes:
 	 * 	1. Undefined Amount
-	 * 	2. Recipient is too small, amount must be greater than 1 (0,01 of the country's currency)
-	 * 	3. Recipient is too big, amount must be smaller than the max amount specified by the client
+	 * 	2. Amount is too small, amount must be greater than 1 (0,01 of the country's currency)
+	 * 	3. Amount is too big, amount must be smaller than the max amount specified by the client
 	 * 	10. Success
 	 * 
 	 * @param 	integer $prc 	The price of the merchandise the customer is buying in the country's smallest currency (cents for USA, ¿re for Denmark etc.)
@@ -390,7 +390,7 @@ class Validate
 	 * Validates that the language exists.
 	 * The method will return the following status codes:
 	 * 	1. Undefined Language
-	 * 	2. Invalid Language, language contains invalid characters NOT a-z or _
+	 * 	2. Invalid Language, language contains invalid characters which are NOT a-z or _
 	 * 	3. Language not supported (language folder not found)
 	 * 	10. Success
 	 * 

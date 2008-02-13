@@ -96,15 +96,19 @@ msgstr @@@ Go to Payment >> @@@
 
 #: /api/classes/callback.php:193
 msgid @@@ mPoint - SMS Receipt @@@
-msgstr @@@ mPoint - SMS Receipt @@@
+msgstr @@@ Thank you for using mPoint.
+mPoint ID: {MPOINTID}
+Merchant: {CLIENT}
+Order No: {ORDERID}
+Price: {PRICE} @@@
 
 #: /api/classes/callcentre.php:173
 msgid @@@ mPoint - Embedded link Indication @@@
-msgstr @@@ mPoint - Embedded link Indication @@@
+msgstr @@@ Welcome to mPoint, please activate the link below @@@
 
 #: /api/classes/callcentre.php:179
 msgid @@@ mPoint - WAP Push Indication @@@
-msgstr @@@ mPoint - WAP Push Indication @@@
+msgstr @@@ Welcome to mPoint @@@
 
 #: /api/classes/email_receipt.php:75
 msgid @@@ E-Mail Receipt - Subject @@@
