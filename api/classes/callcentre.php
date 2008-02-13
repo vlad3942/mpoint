@@ -45,6 +45,24 @@ class CallCentre extends General
 	protected function &getClientConfig() { return $this->_obj_ClientConfig; }
 	
 	/**
+	 * Starts a new Transaction and generates a unique ID for the log entry.
+	 * Additionally the method sets the private variable: _iTransactionID and returns the generated Transaction ID.
+	 * The method will throw an mPointException with either code 1001 or 1002 if one of the database queries fails.
+	 * 
+	 * @see 	General::newTransaction()
+	 *
+	 * @param 	integer $tid 	Unique ID for the Type of Transaction that is started 
+	 * @return 	integer
+	 * @throws 	mPointException
+	 */
+	public function newTransaction($tid)
+	{
+		$this->_iTransactionID = parent::newTransaction($tid);
+		
+		return $this->_iTransactionID;
+	}
+	
+	/**
 	 * Logs the data for the Products the Customer is purchasing for easy future retrieval.
 	 * 
 	 * @see 	Constants::iPRODUCTS_STATE
@@ -61,7 +79,7 @@ class CallCentre extends General
 						   "quantities" => $aQuantities,
 						   "prices" => $aPrices,
 						   "logos" => $aLogos);
-		$this->newMessage(Constants::iPRODUCTS_STATE, serialize($aProducts) );
+		$this->newMessage($this->_iTransactionID, Constants::iPRODUCTS_STATE, serialize($aProducts) );
 	}
 	
 	/**
@@ -78,60 +96,7 @@ class CallCentre extends General
 		{
 			if (substr($key, 0, 4) == "var_") { $aClientVars[$key] = $val; }
 		}
-		if (count($aClientVars) > 0) { $this->newMessage(Constants::iCLIENT_VARS_STATE, serialize($aClientVars) ); }
-	}
-	
-	/**
-	 * Starts a new Transaction and generates a unique ID for the log entry.
-	 * Additionally the method sets the private variable: _iTransactionID and returns the generated Transaction ID.
-	 * The method will throw an mPointException with either code 1001 or 1002 if one of the database queries fails.
-	 *
-	 * @param 	integer $tid 	Unique ID for the Type of Transaction that is started 
-	 * @return 	integer
-	 * @throws 	mPointException
-	 */
-	public function newTransaction($tid)
-	{
-		$sql = "SELECT Nextval('Log.Transaction_Tbl_id_seq') AS id";
-		$RS = $this->getDBConn()->getName($sql);
-		// Error: Unable to generate a new Transaction ID
-		if (is_array($RS) === false) { throw new mPointException("Unable to generate new Transaction ID", 1001); }
-		$this->_iTransactionID = $RS["ID"];
-		
-		$sql = "INSERT INTO Log.Transaction_Tbl
-					(id, typeid, clientid, accountid, countryid, keywordid)
-				VALUES
-					(". $this->_iTransactionID .", ". intval($tid) .", ". $this->getClientConfig()->getID() .", ". $this->getClientConfig()->getAccountConfig()->getID() .", ". $this->getClientConfig()->getCountryConfig()->getID() .", ". $this->getClientConfig()->getKeywordConfig()->getID() .")";
-//		echo $sql ."\n";
-		// Error: Unable to insert a new record in the Transaction Log
-		if (is_resource($this->getDBConn()->query($sql) ) === false)
-		{
-			if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for Transaction: ". $this->_iTransactionID, 1002); }
-		}
-		
-		return $this->_iTransactionID;
-	}
-	
-	/**
-	 * Adds a new entry to the Message log with the provided debug data.
-	 * The method will throw an mPointException with code 1003 if the database query fails.
-	 *
-	 * @param 	integer $sid 	Unique ID of the State that the data is associated with
-	 * @param 	string $data 	Debug data to associate with the state
-	 * @throws 	mPointException
-	 */
-	public function newMessage($sid, $data)
-	{
-		$sql = "INSERT INTO Log.Message_Tbl
-					(txnid, stateid, data)
-				VALUES
-					(". $this->_iTransactionID ." , ". $sid .", '". $this->getDBConn()->escStr($data) ."')";
-//		echo $sql ."\n";
-		// Error: Unable to insert a new message for Transaction
-		if (is_resource($this->getDBConn()->query($sql) ) === false)
-		{
-			throw new mPointException("Unable to insert new message for Transaction: ". $this->_iTransactionID ." and State: ". $sid, 1003);
-		}
+		if (count($aClientVars) > 0) { $this->newMessage($this->_iTransactionID, Constants::iCLIENT_VARS_STATE, serialize($aClientVars) ); }
 	}
 	
 	/**
@@ -166,7 +131,7 @@ class CallCentre extends General
 		else { $sLink .= sDEFAULT_MPOINT_DOMAIN; }
 		$sLink .= "/txn/". base_convert(intval($RS["TIMESTAMP"]), 10, 32) ."Z". base_convert($this->_iTransactionID, 10, 32);
 		
-		$this->newMessage(Constants::iCONST_LINK_STATE, $sLink);
+		$this->newMessage($this->_iTransactionID, Constants::iCONST_LINK_STATE, $sLink);
 		
 		return $sLink;
 	}
@@ -206,7 +171,7 @@ class CallCentre extends General
 		case (20006):	// Boost - USA
 		case (20007):	// Alltel - USA
 		case (20010):	// US Cellular - USA
-			$this->newMessage(Constants::iUNSUPPORTED_OPERATOR, var_export($obj_MsgInfo, true) );
+			$this->newMessage($this->_iTransactionID, Constants::iUNSUPPORTED_OPERATOR, var_export($obj_MsgInfo, true) );
 			throw new mPointException("Operator: ". $oTI->getOperator() ." not supported", 1011);
 			break;
 		case (20004):	// Sprint - USA
@@ -233,10 +198,10 @@ class CallCentre extends General
 				// Error: Message rejected by GoMobile
 				if ($obj_GoMobile->communicate($obj_MsgInfo) != 200)
 				{
-					$this->newMessage(Constants::iMSG_REJECTED_BY_GM_STATE, var_export($obj_MsgInfo, true) );
+					$this->newMessage($this->_iTransactionID, Constants::iMSG_REJECTED_BY_GM_STATE, var_export($obj_MsgInfo, true) );
 					throw new mPointException("Message rejected by GoMobile with code(s): ". $obj_MsgInfo->getReturnCodes(), 1012);
 				}
-				$this->newMessage(Constants::iMSG_ACCEPTED_BY_GM_STATE, var_export($obj_MsgInfo, true) );
+				$this->newMessage($this->_iTransactionID, Constants::iMSG_ACCEPTED_BY_GM_STATE, var_export($obj_MsgInfo, true) );
 				$bSend = false;
 			}
 			// Communication error, retry message sending
@@ -245,38 +210,13 @@ class CallCentre extends General
 				// Error: Unable to connect to GoMobile
 				if ($iAttempts == 3)
 				{
-					$this->newMessage(Constants::iGM_CONN_FAILED_STATE, var_export($oCI, true) );
+					$this->newMessage($this->_iTransactionID, Constants::iGM_CONN_FAILED_STATE, var_export($oCI, true) );
 					throw new mPointException("Unable to connect to GoMobile", 1013);
 				}
 				else { sleep(pow(5, $iAttempts) ); }
 			}
 		}
 		/* ========== Send MT End ========== */
-	}
-	
-	/**
-	 * Updates the Transaction Log record for the provided transaction with all data.
-	 * The method will throw an mPointException with code 1004 if the database update fails.
-	 *
-	 * @param 	TxnInfo $oTI 	Data Object for the Transaction which should be updated
-	 * @throws 	mPointException
-	 */
-	public function logTransaction(TxnInfo &$oTI)
-	{
-		$sql = "UPDATE Log.Transaction_Tbl
-				SET typeid = ". $oTI->getTypeID() .", clientid = ". $oTI->getClientConfig()->getID() .", accountid = ". $oTI->getClientConfig()->getAccountConfig()->getID() .",
-					countryid = ". $oTI->getClientConfig()->getCountryConfig()->getID() .", keywordid = ". $this->getClientConfig()->getKeywordConfig()->getID() .",
-					amount = ". $oTI->getAmount() .", orderid = '". $this->getDBConn()->escStr($oTI->getOrderID() ) ."', lang = '". $this->getDBConn()->escStr($oTI->getLanguage() ) ."',
-					address = ". floatval($oTI->getAddress() ) .", operatorid = ". $oTI->getOperator() .", logourl = '". $this->getDBConn()->escStr($oTI->getLogoURL() ) ."',
-					cssurl = '". $this->getDBConn()->escStr($oTI->getCSSURL() ) ."', accepturl = '". $this->getDBConn()->escStr($oTI->getAcceptURL() ) ."',
-					cancelurl = '". $this->getDBConn()->escStr($oTI->getCancelURL() ) ."', callbackurl = '". $this->getDBConn()->escStr($oTI->getCallbackURL() ) ."'
-				WHERE id = ". $oTI->getID(); 
-//		echo $sql ."\n";
-		// Error: Unable to update Transaction
-		if (is_resource($this->getDBConn()->query($sql) ) === false)
-		{
-			throw new mPointException("Unable to update Transaction: ". $oTI->getID(), 1004);
-		}
 	}
 }
 ?>

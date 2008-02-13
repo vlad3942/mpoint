@@ -4,6 +4,7 @@
  * Obvious choices for functionality in this class are:
  * 	- Authentication
  * 	- Access Validation
+ * 	- Logging
  *
  * @author Jonatan Evald Buus
  * @copyright Cellpoint Mobile
@@ -367,6 +368,84 @@ class General
 		$xml .= '</system>';
 		
 		return $xml;
+	}
+	
+	/**
+	 * Starts a new Transaction and generates a unique ID for the log entry.
+	 * Additionally the method sets the private variable: _iTransactionID and returns the generated Transaction ID.
+	 * The method will throw an mPointException with either code 1001 or 1002 if one of the database queries fails.
+	 *
+	 * @param 	integer $tid 	Unique ID for the Type of Transaction that is started 
+	 * @return 	integer
+	 * @throws 	mPointException
+	 */
+	public function newTransaction($tid)
+	{
+		$sql = "SELECT Nextval('Log.Transaction_Tbl_id_seq') AS id";
+		$RS = $this->getDBConn()->getName($sql);
+		// Error: Unable to generate a new Transaction ID
+		if (is_array($RS) === false) { throw new mPointException("Unable to generate new Transaction ID", 1001); }
+		
+		$sql = "INSERT INTO Log.Transaction_Tbl
+					(id, typeid, clientid, accountid, countryid, keywordid)
+				VALUES
+					(". $this->_iTransactionID .", ". intval($tid) .", ". $this->getClientConfig()->getID() .", ". $this->getClientConfig()->getAccountConfig()->getID() .", ". $this->getClientConfig()->getCountryConfig()->getID() .", ". $this->getClientConfig()->getKeywordConfig()->getID() .")";
+//		echo $sql ."\n";
+		// Error: Unable to insert a new record in the Transaction Log
+		if (is_resource($this->getDBConn()->query($sql) ) === false)
+		{
+			if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for Transaction: ". $this->_iTransactionID, 1002); }
+		}
+		
+		return $RS["ID"];
+	}
+	
+	/**
+	 * Updates the Transaction Log record for the provided transaction with all data.
+	 * The method will throw an mPointException with code 1004 if the database update fails.
+	 *
+	 * @param 	TxnInfo $oTI 	Data Object for the Transaction which should be updated
+	 * @throws 	mPointException
+	 */
+	public function logTransaction(TxnInfo &$oTI)
+	{
+		$sql = "UPDATE Log.Transaction_Tbl
+				SET typeid = ". $oTI->getTypeID() .", clientid = ". $oTI->getClientConfig()->getID() .", accountid = ". $oTI->getClientConfig()->getAccountConfig()->getID() .",
+					countryid = ". $oTI->getClientConfig()->getCountryConfig()->getID() .", keywordid = ". $this->getClientConfig()->getKeywordConfig()->getID() .",
+					amount = ". $oTI->getAmount() .", orderid = '". $this->getDBConn()->escStr($oTI->getOrderID() ) ."', lang = '". $this->getDBConn()->escStr($oTI->getLanguage() ) ."',
+					address = ". floatval($oTI->getAddress() ) .", operatorid = ". $oTI->getOperator() .", logourl = '". $this->getDBConn()->escStr($oTI->getLogoURL() ) ."',
+					cssurl = '". $this->getDBConn()->escStr($oTI->getCSSURL() ) ."', accepturl = '". $this->getDBConn()->escStr($oTI->getAcceptURL() ) ."',
+					cancelurl = '". $this->getDBConn()->escStr($oTI->getCancelURL() ) ."', callbackurl = '". $this->getDBConn()->escStr($oTI->getCallbackURL() ) ."'
+				WHERE id = ". $oTI->getID(); 
+//		echo $sql ."\n";
+		// Error: Unable to update Transaction
+		if (is_resource($this->getDBConn()->query($sql) ) === false)
+		{
+			throw new mPointException("Unable to update Transaction: ". $oTI->getID(), 1004);
+		}
+	}
+	
+	/**
+	 * Adds a new entry to the Message log with the provided debug data.
+	 * The method will throw an mPointException with code 1003 if the database query fails.
+	 *
+	 * @param 	integer $txnid 	Unique ID of the Transaction the Message should be logged for
+	 * @param 	integer $sid 	Unique ID of the State that the data is associated with
+	 * @param 	string $data 	Debug data to associate with the state
+	 * @throws 	mPointException
+	 */
+	public function newMessage($txnid, $sid, $data)
+	{
+		$sql = "INSERT INTO Log.Message_Tbl
+					(txnid, stateid, data)
+				VALUES
+					(". intval($txnid) ." , ". intval($sid) .", '". $this->getDBConn()->escStr($data) ."')";
+//		echo $sql ."\n";
+		// Error: Unable to insert a new message for Transaction
+		if (is_resource($this->getDBConn()->query($sql) ) === false)
+		{
+			throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003);
+		}
 	}
 }
 ?>

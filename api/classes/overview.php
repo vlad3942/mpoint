@@ -36,6 +36,8 @@ class Overview extends General
 		parent::__construct($oDB, $oTxt);
 		
 		$this->_obj_TxnInfo = $oTI;
+		
+		$this->newMessage($oTI->getID(), Constants::iACTIVATE_LINK_STATE, $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF']);
 	}
 	
 	/**

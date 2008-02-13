@@ -81,7 +81,7 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 		{
 			// Update Transaction State
 			$_POST['typeid'] = Constants::iCALL_CENTRE_PURCHASE_TYPE;
-			$obj_mPoint->newMessage(Constants::iINPUT_VALID_STATE, var_export($_POST, true) );
+			$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, var_export($_POST, true) );
 			// Update Transaction Log
 			$obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $_POST);
 			$obj_mPoint->logTransaction($obj_TxnInfo);
@@ -106,7 +106,7 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 		// Log Errors
 		foreach ($aMsgCds as $state => $debug)
 		{
-			$obj_mPoint->newMessage($state, $debug);
+			$obj_mPoint->newMessage($iTxnID, $state, $debug);
 		}
 	}
 }

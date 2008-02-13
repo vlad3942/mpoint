@@ -39,11 +39,6 @@ abstract class Constants
 	 */
 	const iCLIENT_VARS_STATE = 1003;
 	/**
-	 * Defines the ID of the State that should be logged when the payment link has been constructed
-	 *
-	 */
-	const iCONST_LINK_STATE = 1004;
-	/**
 	 * Defines the ID of the State that should be logged if a message is accepted by GoMobile
 	 *
 	 */
@@ -58,6 +53,16 @@ abstract class Constants
 	 *
 	 */
 	const iMSG_REJECTED_BY_GM_STATE = 1012;
+	/**
+	 * Defines the ID of the State that should be logged when the payment link has been constructed
+	 *
+	 */
+	const iCONST_LINK_STATE = 1020;
+	/**
+	 * Defines the ID of the State that indicates the mPoint link has been activated by the customer
+	 *
+	 */
+	const iACTIVATE_LINK_STATE = 1021;
 	
 	/**
 	 * Defines GoMobile's type identifier for an MT-SMS message

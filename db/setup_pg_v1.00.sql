@@ -82,7 +82,8 @@ INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (133, 'Language not su
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1001, 'Input Valid', 'API', 'Controller');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1002, 'Products', 'Call Centre', 'logProducts');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1003, 'Client Variables', 'API', 'logClientVars');
-INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1004, 'Payment link Constructed', 'Call Centre', 'constLink');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1010, 'Message accepted by GoMobile', 'Call Centre', 'sendLink');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1011, 'Unable to connect to GoMobile', 'Call Centre', 'sendLink');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1012, 'Message rejected by GoMobile', 'Call Centre', 'sendLink');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1020, 'Payment link Constructed', 'Call Centre', 'constLink');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1021, 'Payment link Activated', 'Payment', 'Overview');
