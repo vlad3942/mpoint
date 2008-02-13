@@ -20,7 +20,7 @@ require_once(sAPI_CLASS_PATH ."/gomobile.php");
 require_once(sCLASS_PATH ."/validate.php");
 // Require Business logic for the Call Centre module
 require_once(sCLASS_PATH ."/callcentre.php");
-header("content-type: text/plain");
+
 $aMsgCds = array();
 
 // Set Global Defaults
@@ -103,7 +103,6 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 	// Error: Invalid Input
 	else
 	{
-		var_dump($aMsgCds);die();
 		// Log Errors
 		foreach ($aMsgCds as $state => $debug)
 		{

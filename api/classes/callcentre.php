@@ -164,7 +164,7 @@ class CallCentre extends General
 		// Customer's Operator is Sprint
 		if ($oid == 20004) { $sLink .= sSPRINT_MPOINT_DOMAIN; }
 		else { $sLink .= sDEFAULT_MPOINT_DOMAIN; }
-		$sLink .= "/". base_convert(intval($RS["TIMESTAMP"]), 10, 32) ."Z". base_convert($this->_iTransactionID, 10, 32);
+		$sLink .= "/txn/". base_convert(intval($RS["TIMESTAMP"]), 10, 32) ."Z". base_convert($this->_iTransactionID, 10, 32);
 		
 		$this->newMessage(Constants::iCONST_LINK_STATE, $sLink);
 		
@@ -177,9 +177,9 @@ class CallCentre extends General
 	 * Additionally the method will determine from the customer's Mobile Network Operator whether to send an MT-WAP Push (default) or an MT-SMS 
 	 * with the link embedded.
 	 * The method will throw an mPointException with an error code in the following scenarios:
-	 * 	1005. Operator not supported
-	 * 	1006. Message rejected by GoMobile
-	 * 	1007. Unable to connect to GoMobile
+	 * 	1011. Operator not supported
+	 * 	1012. Message rejected by GoMobile
+	 * 	1013. Unable to connect to GoMobile
 	 * 
 	 * @see 	GoMobileClient
 	 * @see 	Constants::iMT_SMS_TYPE
@@ -207,7 +207,7 @@ class CallCentre extends General
 		case (20007):	// Alltel - USA
 		case (20010):	// US Cellular - USA
 			$this->newMessage(Constants::iUNSUPPORTED_OPERATOR, var_export($obj_MsgInfo, true) );
-			throw new mPointException("Operator: ". $oTI->getOperator() ." not supported", 1005);
+			throw new mPointException("Operator: ". $oTI->getOperator() ." not supported", 1011);
 			break;
 		case (20004):	// Sprint - USA
 		case (13003):	// 3 - UK
@@ -234,7 +234,7 @@ class CallCentre extends General
 				if ($obj_GoMobile->communicate($obj_MsgInfo) != 200)
 				{
 					$this->newMessage(Constants::iMSG_REJECTED_BY_GM_STATE, var_export($obj_MsgInfo, true) );
-					throw new mPointException("Message rejected by GoMobile with code(s): ". $obj_MsgInfo->getReturnCodes(), 1006);
+					throw new mPointException("Message rejected by GoMobile with code(s): ". $obj_MsgInfo->getReturnCodes(), 1012);
 				}
 				$this->newMessage(Constants::iMSG_ACCEPTED_BY_GM_STATE, var_export($obj_MsgInfo, true) );
 				$bSend = false;
@@ -246,7 +246,7 @@ class CallCentre extends General
 				if ($iAttempts == 3)
 				{
 					$this->newMessage(Constants::iGM_CONN_FAILED_STATE, var_export($oCI, true) );
-					throw new mPointException("Unable to connect to GoMobile", 1007);
+					throw new mPointException("Unable to connect to GoMobile", 1013);
 				}
 				else { sleep(pow(5, $iAttempts) ); }
 			}

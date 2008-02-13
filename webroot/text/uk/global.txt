@@ -1,3 +1,39 @@
+#: /webroot/card.php:26
+msgid @@@ Select Card @@@
+msgstr @@@ Select Card @@@
+
+#: /webroot/card.php:35
+msgid @@@ Step 1 of 2 @@@
+msgstr @@@ Step 1 of 2 @@@
+
+#: /webroot/card.php:36
+msgid @@@ Please select your Credit Card @@@
+msgstr @@@ Please select your Credit Card @@@
+
+#: /webroot/overview.php:32
+msgid @@@ Order Overview @@@
+msgstr @@@ Order Overview @@@
+
+#: /webroot/overview.php:41
+msgid @@@ Name @@@
+msgstr @@@ Name @@@
+
+#: /webroot/overview.php:42
+msgid @@@ Quantity @@@
+msgstr @@@ Quantity @@@
+
+#: /webroot/overview.php:43
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
+#: /webroot/overview.php:44
+msgid @@@ Total @@@
+msgstr @@@ Total @@@
+
+#: /webroot/overview.php:45
+msgid @@@ Go to Payment >> @@@
+msgstr @@@ Go to Payment >> @@@
+
 #: /api/classes/callcentre.php:214
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ mPoint - Embedded link Indication @@@

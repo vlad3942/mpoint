@@ -36,6 +36,8 @@ define("sINTERFACE_PATH", sSYSTEM_PATH ."/api/interfaces/");
 define("sFUNCTION_PATH", sSYSTEM_PATH ."/api/functions/");
 // Define path to the System Configuration
 define("sCONF_PATH", sSYSTEM_PATH ."/conf/");
+// Define Language Path Constant
+define("sLANGUAGE_PATH", sSYSTEM_PATH ."/webroot/text/");
 
 // Require API for defining the Database interface
 require_once(sAPI_INTERFACE_PATH ."database.php");
@@ -85,19 +87,11 @@ require_once(sCLASS_PATH ."/txninfo.php");
 // Require global settings file
 require_once(sCONF_PATH ."global.php");
 
-// Define Language Path Constant
-define("sLANGUAGE_PATH", sSYSTEM_PATH ."/webroot/text/");
-
-// Intialise Text Translation Object
-$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0);
-// Instantiate connection to the Database
-$_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
-
 // Set Custom Error & Exception handlers
 new RemoteReport(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO), iOUTPUT_METHOD, sERROR_LOG, iDEBUG_LEVEL);
 
 // Web Request
-if ( eregi("/api/", $_SERVER['PHP_SELF']) == false && eregi("/internal/", $_SERVER['PHP_SELF']) == false && empty($_SERVER['DOCUMENT_ROOT']) === false)
+if (eregi("/buy/", $_SERVER['PHP_SELF']) == false && eregi("/subscr/", $_SERVER['PHP_SELF']) == false && empty($_SERVER['DOCUMENT_ROOT']) === false)
 {
 	// Start user session
 	new Session($aDB_CONN_INFO["session"], iOUTPUT_METHOD, sERROR_LOG);
@@ -108,6 +102,20 @@ if ( eregi("/api/", $_SERVER['PHP_SELF']) == false && eregi("/internal/", $_SERV
 		$_SESSION['obj_Info'] = new WebSession();
 	}
 }
+
+// Instantiate connection to the Database
+$_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
+
+// HTTP: 404 Page Not found, use overview.php through htaccess 
+if (isset($_SESSION) === true && array_key_exists("obj_TxnInfo", $_SESSION) === false && array_key_exists("REDIRECT_URL", $_SERVER) === true)
+{
+	$_SESSION['obj_TxnInfo'] = General::produceTxnInfo($_OBJ_DB);
+}
+// Define language for page translations
+define("sLANG", General::getLanguage() );
+
+// Intialise Text Translation Object
+$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0);
 
 /*
  * Use Output buffering to "magically" transform the XML via XSL behind the scene

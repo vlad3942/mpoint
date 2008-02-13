@@ -1,0 +1,92 @@
+body, table, div
+{
+	font-size: 1em;
+	font-family: "Trebuchet MS",arial,sans-serif;
+	background-color: #fff;
+	color: #000;
+}
+
+body, table
+{
+	text-align: left;
+}
+
+h1
+{
+	font-size: 2em;
+	white-space: nowrap;
+	text-align: center;
+	color: #000;
+}
+
+h2
+{
+	font-size: 1.5em;
+	white-space: nowrap;
+	text-align: center;
+	color: #000;
+}
+
+a
+{
+	color: #cc0000;
+	text-decoration: none;
+}
+
+a:hover
+{
+	text-decoration: underline;
+}
+
+.mPoint_label
+{
+	font-weight: bold;
+	font-size: 110%;
+	padding-right: 0.5em;
+}
+
+.mPoint_info
+{
+	font-weight: normal;
+	font-style: italic;
+	color: #000;
+	text-align: left;
+	padding: 0px;
+	margin: 0px;	
+}
+
+.mPoint_status
+{
+	color: red;
+}
+
+div#logo, div#progress
+{
+	text-align: center;
+}
+
+input.button
+{
+	border-style: none;
+	background-color: #fff;
+	color: blue;
+	text-decoration: underline;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 2px 0px;
+}
+
+.center
+{
+	text-align: center;
+}
+
+input.number
+{
+	-wap-input-format: '*N';
+}
+
+td.number
+{
+	padding-right: 0.5em;
+	text-align: right;
+}

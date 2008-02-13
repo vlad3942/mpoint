@@ -8,7 +8,7 @@ error_reporting(E_ERROR | E_PARSE | E_WARNING | E_NOTICE | E_USER_ERROR | E_USER
 /**
  * Path to Log Files directory
  */
-define("sLOG_PATH", "/Users/Jona/Development/mPoint/");
+define("sLOG_PATH", "/Users/Jona/Development/mPoint/log/");
 /**
  * Output method for the error handler:
  *	0 - Store Internally
@@ -140,7 +140,7 @@ define("sTEMPLATE", "default");
 /**
  * Language for GUI
  */
-define("sLANG", "uk");
+define("sDEFAULT_LANGUAGE", "uk");
 
 /**
  * Default mPoint Domain
@@ -150,4 +150,26 @@ define("sDEFAULT_MPOINT_DOMAIN", "mpoint.cellpointmobile.com");
  * Specific whitelied domain for Sprint
  */
 define("sSPRINT_MPOINT_DOMAIN", "m62.sprintpcs.com");
+
+/**
+ * Default User Agent Profile URLs.
+ * This URL is used if the Mobile Device doesn't supply a URL to its User Agent Profile
+ * and is intended to provide an easy mean of defining af default device
+ * The constant must be set to nothing for device detection to work on Verizon via mBlox as
+ * mBlox doesn't supply a URL to the device's User Agent Profile but only a User Agent.
+ */
+define("sDEFAULT_UA_PROFILE", "");
+
+/**
+ * Determines what size Client Logos are scaled to.
+ * The constant represents the percentage of the screen height that the logo can cover.
+ *
+ */
+define("iCLIENT_LOGO_SCALE", 20);
+/**
+ * Determines what size Credit Card Logos are scaled to.
+ * The constant represents the percentage of the screen width / height that the logo can cover.
+ *
+ */
+define("iCARD_LOGO_SCALE", 15);
 ?>

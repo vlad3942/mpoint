@@ -209,6 +209,16 @@ class ClientConfig extends BasicConfig
 	 */
 	public function getLanguage() { return $this->_sLanguage; }
 	
+	public function toXML()
+	{
+		$xml = '<client-config id="'. $this->getID() .'">';
+		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
+		$xml .= '<username>'. htmlspecialchars($this->getUsername(), ENT_NOQUOTES) .'</username>';
+		$xml .= '</client-config>';
+		
+		return $xml;
+	}
+	
 	/**
 	 * Produces a new instance of a Client Configuration Object.
 	 *
@@ -224,7 +234,7 @@ class ClientConfig extends BasicConfig
 		$sql = "SELECT Cl.id AS clientid, Cl.name AS client, Cl.username, Cl.passwd,
 					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl,
 					Cl.maxamount, Cl.lang,
-					C.id AS countryid, C.name AS country, C.currency, C.minmob, C.maxmob, C.channel,
+					C.id AS countryid, C.name AS country, C.currency, C.minmob, C.maxmob, C.channel, C.priceformat,
 					Acc.id AS accountid, Acc.name AS account, Acc.address,
 					KW.id AS keywordid, KW.name AS keyword, KW.price
 				FROM Client.Client_Tbl Cl
@@ -257,14 +267,14 @@ class ClientConfig extends BasicConfig
 		// Use Account ID
 		else
 		{
-			$sql = " AND Acc.id = ". $acc ."
+			$sql .= " AND Acc.id = ". $acc ."
 					ORDER BY KW.id ASC
 					LIMIT 1";
 		}
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 		
-		$obj_CountryConfig = new CountryConfig($RS["COUNTRYID"], $RS["COUNTRY"], $RS["CURRENCY"], $RS["MINMOB"], $RS["MAXMOB"], $RS["CHANNEL"]);
+		$obj_CountryConfig = new CountryConfig($RS["COUNTRYID"], $RS["COUNTRY"], $RS["CURRENCY"], $RS["MINMOB"], $RS["MAXMOB"], $RS["CHANNEL"], $RS["PRICEFORMAT"]);
 		$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["ADDRESS"]);
 		$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
 		

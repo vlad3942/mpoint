@@ -42,6 +42,13 @@ class CountryConfig extends BasicConfig
 	 * @var string
 	 */
 	private $_sChannel;
+	/**
+	 * Price Format used in the Country.
+	 * $X.XX for USA, X.XXkr for Denmark etc.
+	 *
+	 * @var string
+	 */
+	private $_sPriceFormat;
 	
 	/**
 	 * Default Constructor
@@ -52,8 +59,9 @@ class CountryConfig extends BasicConfig
 	 * @param 	string $minmob 		Min value a valid Mobile Number can have in the Country
 	 * @param 	string $maxmob 		Max value a valid Mobile Number can have in the Country
 	 * @param 	string $ch 			GoMobile channel used for communicating with the customers in the Country
+	 * @param 	string $pf 			Price Format used in the Country
 	 */
-	public function __construct($id, $name, $currency, $minmob, $maxmob, $ch)
+	public function __construct($id, $name, $currency, $minmob, $maxmob, $ch, $pf)
 	{
 		parent::__construct($id, $name);
 		
@@ -61,6 +69,7 @@ class CountryConfig extends BasicConfig
 		$this->_sMinMobile = trim($minmob);
 		$this->_sMaxMobile = trim($maxmob);
 		$this->_sChannel = trim($ch);
+		$this->_sPriceFormat = trim($pf);
 	}
 	
 	/**
@@ -87,5 +96,12 @@ class CountryConfig extends BasicConfig
 	 * @return 	string
 	 */
 	public function getChannel() { return $this->_sChannel; }
+	/**
+	 * Returns the Price Format used in the Country.
+	 * $X.XX for USA, X.XXkr for Denmark etc.
+	 *
+	 * @return 	string
+	 */
+	public function getPriceFormat() { return $this->_sPriceFormat; }
 }
 ?>

@@ -11,6 +11,13 @@
  * @version 1.0
  */
 
+/* ==================== Transaction Information Exception Classes Start ==================== */
+/**
+ * Exception class for all Transaction Information exceptions
+ */
+class TxnInfoException extends mPointException { }
+/* ==================== Transaction Information Exception Classes End ==================== */
+
 /**
  * Data class for hold all data relevant for a Transaction
  *
@@ -230,36 +237,117 @@ class TxnInfo
 	public function getLanguage() { return $this->_sLanguage; }
 	
 	/**
+	 * Converts the data object into XML.
+	 * If a User Agent Profile is provided, the method will automatically calculate the width and height of the client logo
+	 * after it has been resized to fit the screen resolution of the customer's mobile device.
+	 * If not, the width and height will be set to -1.
+	 * 
+	 * The method will return an XML document in the following format:
+	 * 	<transaction id="{UNIQUE ID FOR THE TRANSACTION}" type="{ID FOR THE TRANSACTION TYPE}">
+	 *		<amount currency="{CURRENCY AMOUNT IS CHARGED IN}">{TOTAL AMOUNT THE CUSTOMER IS CHARGED FOR THE TRANSACTION}</amount>
+	 * 		<price>{AMOUNT FORMATTED FOR BEING DISPLAYED IN THE GIVEN COUNTRY}</price>
+	 *		<order-id>{CLIENT'S ORDER ID FOR THE TRANSACTION}</order-id>
+	 *		<address>{CUSTOMER'S MSISDN WHERE SMS MESSAGE CAN BE SENT TO}</address>
+	 *		<operator>{GOMOBILE ID FOR THE CUSTOMER'S MOBILE NETWORK OPERATOR}</operator>
+	 *		<logo>
+	 * 			<url>{ABSOLUTE URL TO THE CLIENT'S LOGO}</url>
+	 * 			<width>{WIDTH OF THE LOGO AFTER IT HAS BEEN SCALED TO FIT THE SCREENSIZE OF THE CUSTOMER'S MOBILE DEVICE}</width>
+	 * 			<height>{HEIGHT OF THE LOGO AFTER IT HAS BEEN SCALED TO FIT THE SCREENSIZE OF THE CUSTOMER'S MOBILE DEVICE}</height>
+	 *		</logo>
+	 *		<css-url>{ABSOLUTE URL TO THE CSS FILE PROVIDED BY THE CLINET}</css-url>
+	 *		<accept-url>{ABSOLUTE URL TO WHERE THE CUSTOMER SHOULD BE DIRECTED UPON SUCCESSFULLY COMPLETING THE PAYMENT}</accept-url>
+	 *		<cancel-url>{ABSOLUTE URL TO WHERE THE CUSTOMER SHOULD BE DIRECTED IF THE TRANSACTION IS CANCELLED}</accept-url>
+	 *		<callback-url>{ABSOLUTE URL TO WHERE MPOINT SHOULD SEND THE PAYMENT STATUS}</callback-url>
+	 *		<language>{LANGUAGE THAT ALL PAYMENT PAGES SHOULD BE TRANSLATED INTO}</language>
+	 *	</transaction>
+	 *
+	 * @see 	iCLIENT_LOGO_SCALE
+	 * 
+	 * @param 	UAProfile $oUA 	Reference to the User Agent Profile for the Customer's Mobile Device (optional)
+	 * @return 	string
+	 */
+	public function toXML(UAProfile &$oUA=null)
+	{
+		$sPrice = $this->_obj_ClientConfig->getCountryConfig()->getPriceFormat();
+		$sPrice = str_replace("{CURRENCY}", $this->_obj_ClientConfig->getCountryConfig()->getCurrency(), $sPrice);
+		$sPrice = str_replace("{PRICE}", number_format($this->_iAmount, 2), $sPrice);
+		
+		if (is_null($oUA) === false)
+		{
+			$obj_Image = new Image($this->_sLogoURL);
+			if ($oUA->getHeight() * iCLIENT_LOGO_SCALE / 100 < $obj_Image->getSrcHeight() ) { $iHeight = $oUA->getHeight() * iCLIENT_LOGO_SCALE / 100; }
+			else { $iHeight = $obj_Image->getSrcHeight(); }
+			$obj_Image->resize($oUA->getWidth(), $iHeight);
+			
+			$iWidth = $obj_Image->getTgtWidth();
+			$iHeight = $obj_Image->getTgtHeight();
+		}
+		else
+		{
+			$iWidth = -1;
+			$iHeight = -1;
+		}
+		
+		$xml = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'">';
+		$xml .= '<amount currency="'. $this->_obj_ClientConfig->getCountryConfig()->getCurrency() .'">'. $this->_iAmount .'</amount>';
+		$xml .= '<price>'. $sPrice .'</price>';
+		$xml .= '<order-id>'. $this->_sOrderID .'</order-id>';
+		$xml .= '<address>'. $this->_sAddress .'</address>';
+		$xml .= '<operator>'. $this->_iOperatorID .'</operator>';
+		$xml .= '<logo>';
+		$xml .= '<url>'. htmlspecialchars($this->_sLogoURL, ENT_NOQUOTES) .'</url>';
+		$xml .= '<width>'. $iWidth .'</width>';
+		$xml .= '<height>'. $iHeight .'</height>';
+		$xml .= '</logo>';
+		$xml .= '<css-url>'. htmlspecialchars($this->_sCSSURL, ENT_NOQUOTES) .'</css-url>';
+		$xml .= '<accept-url>'. htmlspecialchars($this->_sAcceptURL, ENT_NOQUOTES) .'</accept-url>';
+		$xml .= '<cancel-url>'. htmlspecialchars($this->_sCancelURL, ENT_NOQUOTES) .'</cancel-url>';
+		$xml .= '<callback-url>'. htmlspecialchars($this->_sCallbackURL, ENT_NOQUOTES) .'</callback-url>';
+		$xml .= '<language>'. $this->_sLanguage .'</language>';
+		$xml .= '</transaction>';
+		
+		return $xml;
+	}
+	
+	/**
 	 * Overloaded factory method for producing a new instance of a Transaction Info object.
 	 * The data object can either be instantiated from an array of Client Input or from the Transaction Log.
 	 * In the latter case the method will first instantiate a new object with the correct Client Configuration for the Transaction.
+	 * The method will throw a TxnInfoException with code 1001 if it's unable to instantiate the data object with the Transaction Information.
 	 * 
 	 * @see 	ClientConfig::produceConfig
 	 * 
 	 * @param 	integer $id 				Unique ID for the Transaction that should be instantiated
 	 * @param 	[ClientConfig|RDB] $obj 	Reference to either a Database Object which handles the active connection to mPoint's database or to and instance of the Client Configuration of the Client who owns the Transaction
-	 * @param 	array $input 				Reference to the array of Client Input, this parameter is only needed if the Client Configuration is passed as argument 2.
+	 * @param 	array $misc 				Reference to array of miscelaneous data that is used for instantiating the data object with the Transaction Information
 	 * @return 	TxnInfo
+	 * @throws 	TxnInfoException
 	 */
-	public static function produceInfo($id, &$obj, array &$input=null)
+	public static function produceInfo($id, &$obj, array &$misc=null)
 	{
 		$obj_TxnInfo = null;
 		switch (true)
 		{
 		case ($obj instanceof ClientConfig):	// Instantiate from array of Client Input
-			$obj_TxnInfo = new TxnInfo($id, $input["typeid"], $obj, $input["amount"], $input["orderid"], $input["recipient"], $input["operator"], $input["logo-url"], $input["css-url"], $input["accept-url"], $input["cancel-url"], $input["callback-url"], $input["language"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["amount"], $misc["orderid"], $misc["recipient"], $misc["operator"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"]);
 			break;
 		case ($obj instanceof RDB):				// Instantiate from Transaction Log
-			$sql = "SELECT id, typeid, amount, orderid, address, operatorid, logourl, cssurl, accepturl, cancelurl, callbackurl,
-						clientid, accountid, keywordid, 
+			$sql = "SELECT id, typeid, amount, orderid, address, operatorid, lang, logourl, cssurl, accepturl, cancelurl, callbackurl,
+						clientid, accountid, keywordid
 					FROM Log.Transaction_Tbl
-					WHERE id = ". intval($id);
-			echo $sql ."\n";
+					WHERE id = ". intval($id) ." AND created LIKE '". $obj->escStr($misc[0]) ."%'";
+//			echo $sql ."\n";
 			$RS = $obj->getName($sql);
 			
-			$obj_ClientConfig = ClientConfig::produceConfig($obj, $RS["CLIENTID"], $RS["ACCOUNTID"], $RS["KEYWORDID"]);
-			
-			$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $RS["AMOUNT"], $RS["ORDERID"], $RS["ADDRESS"], $RS["OPERATORID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["LANGUAGE"]);
+			// Transaction found
+			if (is_array($RS) === true)
+			{
+				$obj_ClientConfig = ClientConfig::produceConfig($obj, $RS["CLIENTID"], $RS["ACCOUNTID"], $RS["KEYWORDID"]);
+				
+				$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $RS["AMOUNT"], $RS["ORDERID"], $RS["ADDRESS"], $RS["OPERATORID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["LANG"]);
+			}
+			// Error: Transaction not found
+			else { throw new TxnInfoException("Transaction with ID: ". $id ." not found using creation timestamp: ". $misc[0], 1001); }
 			break;
 		default:								// Error: Argument 2 is an instance of an invalid class
 			trigger_error("Argument 2 passed to TxnInfo::produceInfo() must be an instance of ClientConfig or of RDB", E_ERROR);

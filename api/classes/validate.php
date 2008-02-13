@@ -26,7 +26,7 @@ class Validate
 	/**
 	 * Data object with the Client's default configuration
 	 *
-	 * @var ClientInfo
+	 * @var ClientConfig
 	 */
 	private $_obj_ClientConfig;
 	
