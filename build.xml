@@ -1,0 +1,54 @@
+<project name="mPoint" default="deploy" basedir=".">
+	<target name="init">
+		<property name="version" value="v1.00" />
+		<property name="baseDir" value="/Temp/mPoint" />
+		
+		<property name="sourceDir" value="${baseDir}/temp" />
+		
+		<property name="destDir" value="${baseDir}/${version}" />
+		
+		<property name="sshDir" value="/Users/Jona" />
+		<property name="svnDir" value="/Users/Jona/Program Files/Zend Studio/bin/SourceControl/svn" />
+	</target>
+
+	<target name="clean" depends="init">
+		<delete dir="${destDir}" />
+	</target>
+	
+	<target name="prepare" depends="clean">
+		<mkdir dir="${destDir}" />
+		<mkdir dir="${sourceDir}" />
+				
+		<exec dir="${sshDir}" executable="${sshDir}/ssh_node3.sh" spawn="true" />
+		
+		<sleep seconds="10" />
+		
+		<exec dir="${svnDir}" executable="${svnDir}/svn">
+			<arg line="export --force --username Jona --password jb280680 svn://localhost/mpoint/trunk ${sourceDir}" />
+		</exec>
+		
+		<copy todir="${destDir}">
+			<fileset dir="${sourceDir}" />
+		</copy>
+	</target>
+
+	<target name="doc" depends="prepare">
+		<!-- Generate phpDoc for mPoint in PDF and HTML format
+		<get src="http://phpdoc.localhost/default.php?altuserdir=&amp;setting%5Buseconfig%5D=&amp;setting%5Btarget%5D=${sourceDir}%2Fdoc&amp;setting%5Bfilename%5D=D%3A%2Fcydev%2FmPoint%2Fserver%2Fconf%2Fglobal.php%2C+D%3A%2Fcydev%2Fphp5api%2Fclasses%2Freport.php%2C+D%3A%2Fcydev%2Fphp5api%2Fclasses%2Fremote_report.php%2C+D%3A%2Fcydev%2Fphp5api%2Fclasses%2Ftemplate.php%2C+D%3A%2Fcydev%2Fphp5api%2Fclasses%2Fhttp_client.php%2C+D%3A%2Fcydev%2Fphp5api%2Fclasses%2Fsession.php%2C+D%3A%2Fcydev%2Fphp5api%2Fclasses%2Fdatabase.php%2C+D%3A%2Fcydev%2Fphp5api%2Ffunctions%2Fglobal.php%2C+D%3A%2Fcydev%2Fphp5api%2Fconf%2Fglobal.php%2C+D%3A%2Fcydev%2Fphp5api%2Finterfaces%2Fdatabase.php&amp;setting%5Bdirectory%5D=D%3A%2Fcydev%2FmPoint%2Fserver%2Fapi&amp;setting%5Bignore%5D=&amp;setting%5Btitle%5D=mPoint+-+Remote+Debugger&amp;setting%5Bdefaultpackagename%5D=Default&amp;setting%5Bcustomtags%5D=&amp;setting%5Bpackageoutput%5D=&amp;setting%5Boutput%5D=PDF%3Adefault%3Adefault&amp;ConverterSetting=PDF%3Adefault%3Adefault&amp;setting%5Bparseprivate%5D=on&amp;setting%5Bjavadocdesc%5D=on&amp;interface=web&amp;submit=true&amp;submitButton=Create+Documentation"
+			 dest="${sourceDir}/doc/${version}.pdf" />
+		<move file="${ourceDir}/doc/documentation.pdf" tofile="${serverDestDir}/doc/${version}.pdf" />
+		<get src="http://phpdoc.localhost/default.php?altuserdir=&amp;setting%5Buseconfig%5D=&amp;setting%5Btarget%5D=${phpdocDir}%2Fserver&amp;setting%5Bfilename%5D=D%3A%2Fcydev%2FmPoint%2Fserver%2Fserver%2Fconf%2Fglobal.php%2C+D%3A%2Fcydev%2Fphp5api%2Fclasses%2Freport.php%2C+D%3A%2Fcydev%2Fphp5api%2Fclasses%2Fremote_report.php%2C+D%3A%2Fcydev%2Fphp5api%2Fclasses%2Ftemplate.php%2C+D%3A%2Fcydev%2Fphp5api%2Fclasses%2Fhttp_client.php%2C+D%3A%2Fcydev%2Fphp5api%2Fclasses%2Fsession.php%2C+D%3A%2Fcydev%2Fphp5api%2Fclasses%2Fdatabase.php%2C+D%3A%2Fcydev%2Fphp5api%2Ffunctions%2Fglobal.php%2C+D%3A%2Fcydev%2Fphp5api%2Fconf%2Fglobal.php%2C+D%3A%2Fcydev%2Fphp5api%2Finterfaces%2Fdatabase.php&amp;setting%5Bdirectory%5D=D%3A%2Fcydev%2FmPoint%2Fserver%2Fapi&amp;setting%5Bignore%5D=&amp;setting%5Btitle%5D=mPoint+-+Remote+Debugger&amp;setting%5Bdefaultpackagename%5D=Default&amp;setting%5Bcustomtags%5D=&amp;setting%5Bpackageoutput%5D=&amp;setting%5Boutput%5D=HTML%3Aframes%3Adefault&amp;ConverterSetting=HTML%3Aframes%3Adefault&amp;setting%5Bparseprivate%5D=on&amp;setting%5Bjavadocdesc%5D=on&amp;interface=web&amp;submit=true&amp;submitButton=Create+Documentation"
+			 dest="${sourceDir}/doc/phpdoc.html" />
+			 -->
+	</target>
+	
+	<target name="deploy" depends="doc, prepare, init">
+		<!-- Cleanup -->
+		<delete dir="${sourceDir}" />
+		
+		<echo level="info">
+Automatic deployment complete.
+In order to finnish deploying mPoint please ${destDir} to the server.
+		</echo>
+	</target>
+</project>

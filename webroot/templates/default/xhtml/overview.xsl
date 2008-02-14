@@ -16,14 +16,14 @@
 				<img src="{logo-url}" width="30" height="30" alt="- Logo -" /><br />
 				<xsl:value-of select="name" />
 			</td>
-			<td valign="bottom" class="number"><xsl:value-of select="quantity" /></td>
-			<td valign="bottom" class="number"><xsl:value-of select="price" /></td>
+			<td valign="bottom" class="mPoint_number"><xsl:value-of select="quantity" /></td>
+			<td valign="bottom" class="mPoint_number"><xsl:value-of select="price" /></td>
 		</tr>
 	</xsl:for-each>
 	<!-- List Total -->
 	<tr>
-		<td colspan="2" class="label"><xsl:value-of select="labels/total" /></td>
-		<td valign="bottom" class="number"><xsl:value-of select="transaction/price" /></td>
+		<td colspan="2" class="mPoint_label"><xsl:value-of select="labels/total" /></td>
+		<td valign="bottom" class="mPoint_label mPoint_number"><xsl:value-of select="transaction/price" /></td>
 	</tr>
 	</table>
 	

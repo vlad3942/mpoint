@@ -106,22 +106,26 @@ if (eregi("/buy/", $_SERVER['PHP_SELF']) == false && eregi("/subscr/", $_SERVER[
 		$_SESSION['obj_Info'] = new WebSession();
 	}
 	
-	/*
-	 * Use Output buffering to "magically" transform the XML via XSL behind the scene
-	 * This means that all PHP scripts must output a wellformed XML document.
-	 * The XML in turn must refer to an XSL Stylesheet by using the xml-stylesheet tag
-	 */
-	ob_start(array(new Output(), "transform") );
-	
-	// Ensure that output buffer is flushed and ended so transform method is called when a script terminates
-	register_shutdown_function("ob_end_flush");
+	// Not fetching an Image
+	if (eregi("/img/", $_SERVER['PHP_SELF']) == false)
+	{
+		/*
+		 * Use Output buffering to "magically" transform the XML via XSL behind the scene
+		 * This means that all PHP scripts must output a wellformed XML document.
+		 * The XML in turn must refer to an XSL Stylesheet by using the xml-stylesheet tag
+		 */
+		ob_start(array(new Output(), "transform") );
+		
+		// Ensure that output buffer is flushed and ended so transform method is called when a script terminates
+		register_shutdown_function("ob_end_flush");
+	}
 }
 
 // Instantiate connection to the Database
 $_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
 
 // HTTP: 404 Page Not found, use overview.php through htaccess 
-if (isset($_SESSION) === true && array_key_exists("obj_TxnInfo", $_SESSION) === false && array_key_exists("REDIRECT_URL", $_SERVER) === true)
+if (array_key_exists("REDIRECT_URL", $_SERVER) === true && eregi("/txn/", $_SERVER['REDIRECT_URL']) == true)
 {
 	$_SESSION['obj_TxnInfo'] = General::produceTxnInfo($_OBJ_DB);
 }

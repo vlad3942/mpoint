@@ -141,7 +141,7 @@
 					</xsl:otherwise>
 				</xsl:choose>
 				
-				<img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}" width="{width}" height="{height}" alt="- {name} -" />
+				<img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}_{/root/system/session/@id}.jpg" width="{width}" height="{height}" alt="- {name} -" />
 				<input type="submit" value="{name}" class="button" />
 			</div>
 		</form>

@@ -1,4 +1,4 @@
-<form action="http://mpoint.localhost/buy/callcentre.php" method="post">
+<form action="/buy/callcentre.php" method="post">
 <table>
 <tr>
 	<td style="font-weight:bold;">Client ID</td>

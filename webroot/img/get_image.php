@@ -9,6 +9,7 @@
  * The Controller currently provides access to the following images:
  * 	- Client Logo
  * 	- Credit Card Logos
+ * 	- mPoint Logo
  * 
  * @author Jonatan Evald Buus
  * @copyright Cellpoint Mobile
@@ -17,6 +18,10 @@
  * @subpackage Images
  * @version 1.0
  */
+
+// Retrieve Session ID from Image URL
+$_REQUEST[session_name()] = substr($_SERVER['REDIRECT_URL'], strrpos($_SERVER['REDIRECT_URL'], "_")+1);
+$_REQUEST[session_name()] = substr($_REQUEST[session_name()], 0, strlen($_REQUEST[session_name()])-4);
 
 // Require Global Include File
 require_once("../inc/include.php");
@@ -38,7 +43,8 @@ case (strstr($url, "client") ):	// Retrieve Client Logo
 case (strstr($url, "product") ):
 	break;
 case (strstr($url, "card") ):	// Retrieve Credit Card Logo
-	$obj_Image = $obj_mPoint->getCardLogo(substr($url, strrpos($url, "_")+1) );
+	$aTmp = explode("_", $url);
+	$obj_Image = $obj_mPoint->getCardLogo($aTmp[count($aTmp)-2]);
 	break;
 case (strstr($url, "/mpoint") ):// Retrieve mPoint Logo
 	$obj_Image = $obj_mPoint->getmPointLogo();

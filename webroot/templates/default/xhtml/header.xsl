@@ -12,7 +12,7 @@
 	</head>
 	<body>
 		<div id="logo">
-			<img src="{/root/system/protocol}://{/root/system/host}/img/client_{/root/client-config/@id}" width="{/root/transaction/logo/width}" height="{/root/transaction/logo/height}" alt="- {/root/client-config/name} -" />
+			<img src="{/root/system/protocol}://{/root/system/host}/img/client_{/root/system/session/@id}.jpg" width="{/root/transaction/logo/width}" height="{/root/transaction/logo/height}" alt="- {/root/client-config/name} -" />
 		</div>
 		<xsl:apply-templates />
 	</body>
