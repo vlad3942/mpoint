@@ -375,11 +375,12 @@ class General
 	 * Additionally the method sets the private variable: _iTransactionID and returns the generated Transaction ID.
 	 * The method will throw an mPointException with either code 1001 or 1002 if one of the database queries fails.
 	 *
-	 * @param 	integer $tid 	Unique ID for the Type of Transaction that is started 
+	 * @param 	ClientConfig $oCC 	Data object with the Client's configuration
+	 * @param 	integer $tid 		Unique ID for the Type of Transaction that is started 
 	 * @return 	integer
 	 * @throws 	mPointException
 	 */
-	public function newTransaction($tid)
+	public function newTransaction(ClientConfig &$oCC, $tid)
 	{
 		$sql = "SELECT Nextval('Log.Transaction_Tbl_id_seq') AS id";
 		$RS = $this->getDBConn()->getName($sql);
@@ -389,7 +390,7 @@ class General
 		$sql = "INSERT INTO Log.Transaction_Tbl
 					(id, typeid, clientid, accountid, countryid, keywordid)
 				VALUES
-					(". $RS["ID"] .", ". intval($tid) .", ". $this->getClientConfig()->getID() .", ". $this->getClientConfig()->getAccountConfig()->getID() .", ". $this->getClientConfig()->getCountryConfig()->getID() .", ". $this->getClientConfig()->getKeywordConfig()->getID() .")";
+					(". $RS["ID"] .", ". intval($tid) .", ". $oCC->getID() .", ". $oCC->getAccountConfig()->getID() .", ". $oCC->getCountryConfig()->getID() .", ". $oCC->getKeywordConfig()->getID() .")";
 //		echo $sql ."\n";
 		// Error: Unable to insert a new record in the Transaction Log
 		if (is_resource($this->getDBConn()->query($sql) ) === false)
@@ -411,7 +412,7 @@ class General
 	{
 		$sql = "UPDATE Log.Transaction_Tbl
 				SET typeid = ". $oTI->getTypeID() .", clientid = ". $oTI->getClientConfig()->getID() .", accountid = ". $oTI->getClientConfig()->getAccountConfig()->getID() .",
-					countryid = ". $oTI->getClientConfig()->getCountryConfig()->getID() .", keywordid = ". $this->getClientConfig()->getKeywordConfig()->getID() .",
+					countryid = ". $oTI->getClientConfig()->getCountryConfig()->getID() .", keywordid = ". $oTI->getClientConfig()->getKeywordConfig()->getID() .",
 					amount = ". $oTI->getAmount() .", orderid = '". $this->getDBConn()->escStr($oTI->getOrderID() ) ."', lang = '". $this->getDBConn()->escStr($oTI->getLanguage() ) ."',
 					address = ". floatval($oTI->getAddress() ) .", operatorid = ". $oTI->getOperator() .", logourl = '". $this->getDBConn()->escStr($oTI->getLogoURL() ) ."',
 					cssurl = '". $this->getDBConn()->escStr($oTI->getCSSURL() ) ."', accepturl = '". $this->getDBConn()->escStr($oTI->getAcceptURL() ) ."',

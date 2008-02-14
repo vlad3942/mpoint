@@ -1,12 +1,13 @@
 <?php
 /**
  * This files contains the Controller for mPoint's Call Centre API.
- * The file will ensure that all input from the Call Centre is validated and a WAP Link for the started transaction is sent to the Recipient.
+ * The Controller will ensure that all input from the Call Centre is validated and a WAP Link for the started transaction is sent to the Recipient.
  * 
  * @author Jonatan Evald Buus
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
  * @package CallCentre
+ * @subpackage Buy
  * @version 1.0
  */
 
@@ -18,6 +19,8 @@ require_once(sAPI_CLASS_PATH ."/gomobile.php");
 
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
+// Require Business logic for the SMS Purchase module
+require_once(sCLASS_PATH ."/sms_purchase.php");
 // Require Business logic for the Call Centre module
 require_once(sCLASS_PATH ."/callcentre.php");
 

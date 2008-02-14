@@ -80,7 +80,7 @@ msgstr @@@ Name @@@
 
 #: /webroot/overview.php:42
 msgid @@@ Quantity @@@
-msgstr @@@ Quantity @@@
+msgstr @@@ # @@@
 
 #: /webroot/overview.php:43
 msgid @@@ Price @@@
@@ -102,11 +102,11 @@ Merchant: {CLIENT}
 Order No: {ORDERID}
 Price: {PRICE} @@@
 
-#: /api/classes/callcentre.php:173
+#: /api/classes/sms_purchase.php:164
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ Welcome to mPoint, please activate the link below @@@
 
-#: /api/classes/callcentre.php:179
+#: /api/classes/sms_purchase.php:170
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Welcome to mPoint @@@
 
