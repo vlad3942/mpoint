@@ -193,7 +193,7 @@ class Callback extends General
 		$sBody = $this->getText()->_("mPoint - SMS Receipt");
 		$sBody = str_replace("{MPOINTID}", $this->_obj_TxnInfo->getID(), $sBody);
 		$sBody = str_replace("{ORDERID}", $this->_obj_TxnInfo->getOrderID(), $sBody);
-		$sBody = str_replace("{PRICE}", General::formatPrice($this->_obj_TxnInfo), $sBody);
+		$sBody = str_replace("{PRICE}", General::formatAmount($this->_obj_TxnInfo->getClientConfig()->getCountryConfig(), $this->_obj_TxnInfo->getAmount() ), $sBody);
 		$sBody = str_replace("{CLIENT}", $this->_obj_TxnInfo->getClientConfig()->getName(), $sBody);
 		
 		// Instantiate Message Object for holding the message data which will be sent to GoMobile

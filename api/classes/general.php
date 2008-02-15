@@ -527,18 +527,20 @@ class General
 	}
 	
 	/**
-	 * Formats the Total Amount for a Transaction into humanreadable format using the price format of
-	 * the Country the Transaction takes place in, i.e. $X.XX for USA, X.XXkr for Denmark etc.
+	 * Formats the Total Amount for a Transaction into humanreadable format.
+	 * The method will divide the amount by 100 and format it using the price format of the provided Country,
+	 * i.e. $X.XX for USA, X.XXkr for Denmark etc.
 	 *
-	 * @param 	TxnInfo $oTI 	Reference to the Data Object for the Transaction which should have its amount formatted
+	 * @param 	CountryConfig $oCC 	Reference to the Data Object for the Country Configuration that should be used for formatting the Amount
+	 * @param 	integer $amount 	Amount to format
 	 * @return 	string
 	 */
-	public static function formatPrice(TxnInfo &$oTI)
+	public static function formatAmount(CountryConfig &$oCC, $amount)
 	{
 		// Format amount to be human readable
-		$sPrice = $oTI->getClientConfig()->getCountryConfig()->getPriceFormat();
-		$sPrice = str_replace("{CURRENCY}", $oTI->getClientConfig()->getCountryConfig()->getCurrency(), $sPrice);
-		$sPrice = str_replace("{PRICE}", number_format($oTI->getAmount(), 2), $sPrice);
+		$sPrice = $oCC->getPriceFormat();
+		$sPrice = str_replace("{CURRENCY}", $oCC->getCurrency(), $sPrice);
+		$sPrice = str_replace("{PRICE}", number_format($amount / 100, 2), $sPrice);
 		
 		return $sPrice;
 	}

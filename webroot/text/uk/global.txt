@@ -102,11 +102,11 @@ Merchant: {CLIENT}
 Order No: {ORDERID}
 Price: {PRICE} @@@
 
-#: /api/classes/sms_purchase.php:164
+#: /api/classes/sms_purchase.php:179
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ Welcome to mPoint, please activate the link below @@@
 
-#: /api/classes/sms_purchase.php:170
+#: /api/classes/sms_purchase.php:185
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Welcome to mPoint @@@
 

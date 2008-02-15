@@ -178,4 +178,10 @@ define("iCARD_LOGO_SCALE", 15);
  *
  */
 define("iMPOINT_LOGO_SCALE", 30);
+
+/**
+ * URL for the Default Product Logo to display on the Order Overview if no other URL has been provided.
+ *
+ */
+define("sDEFAULT_PRODUCT_LOGO", "http://". $_SERVER['HTTP_HOST'] ."/img/default_product_logo.gif");
 ?>

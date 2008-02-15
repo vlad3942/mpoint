@@ -76,7 +76,8 @@ if ($_SESSION['obj_Info']->getInfo($etag ."_logo") !== false)
 {
 	// Set HTTP Headers
 	header("HTTP/1.1 304 Not Modified");
-	header("Date: ". date("D, d M Y H:i:s T", time() ) );
+	header("Date: ". gmdate("D, d M Y H:i:s T", time() ) );
+	header("Expires: ". gmdate("D, d M Y H:i:s T", time() + 24*60*60) );
 	header("Etag: ".  $_SESSION['obj_Info']->getInfo($etag ."_logo") );
 }
 else
@@ -102,10 +103,11 @@ else
 	// Set HTTP Headers
 	header("HTTP/1.1 200 OK");
 	header("Content-Type: ". $obj_Image->getTgtMimeType() );
-	header("Content-Size: ". strlen($sImage) );
+	header("Content-Length: ". strlen($sImage) );
 	header("Cache-Control: max-age=". (24*60*60) .", public");
-	header("Last-Modified: ". date("D, d M Y H:i:s T", time() ) );
-	header("Expires: ". date("D, d M Y H:i:s T", time() + 24*60*60) );
+	header("Pragma: cache");
+	header("Last-Modified: ". gmdate("D, d M Y H:i:s T", time() ) );
+	header("Expires: ". gmdate("D, d M Y H:i:s T", time() + 24*60*60) );
 	header("Etag: ".  $_SESSION['obj_Info']->getInfo($etag ."_logo") );
 	
 	echo $sImage;

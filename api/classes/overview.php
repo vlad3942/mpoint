@@ -65,6 +65,8 @@ class Overview extends General
 	 * 		</item>
 	 * 		...
 	 * 	</products>
+	 * 
+	 * @see 	sDEFAULT_PRODUCT_LOGO
 	 *
 	 * @return 	string
 	 */
@@ -76,17 +78,16 @@ class Overview extends General
 		$xml = '<products>';
 		foreach ($aProducts["names"] as $key => $name)
 		{
-			// Format Product Price
-			$sPrice = $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getPriceFormat();
-			$sPrice = str_replace("{CURRENCY}", $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getCurrency(), $sPrice);
-			$sPrice = str_replace("{PRICE}", number_format($aProducts["prices"][$key], 2), $sPrice);
 			// Create XML for mandatory product information
 			$xml .= '<item>';
 			$xml .= '<name>'. htmlspecialchars($name, ENT_NOQUOTES) .'</name>';
 			$xml .= '<quantity>'. $aProducts["quantities"][$key] .'</quantity>';
-			$xml .= '<price>'.$sPrice .'</price>';
+			$xml .= '<price>'. General::formatAmount($this->_obj_TxnInfo->getClientConfig()->getCountryConfig(), $aProducts["prices"][$key]) .'</price>';
 			// Product logo included as part of request from Client
-			if (array_key_exists($key, $aProducts["logos"]) === true) { $xml .= '<logo-url>'. htmlspecialchars($aProducts["logos"][$key], ENT_NOQUOTES) .'</logo-url>'; }
+			if (array_key_exists($key, $aProducts["logos"]) === true && empty($aProducts["logos"][$key]) === false)
+			{
+				$xml .= '<logo-url>'. htmlspecialchars($aProducts["logos"][$key], ENT_NOQUOTES) .'</logo-url>';
+			}
 			else { $xml .= '<logo-url>'. sDEFAULT_PRODUCT_LOGO .'</logo-url>'; }
 			
 			$xml .= '</item>';

@@ -286,7 +286,7 @@ class TxnInfo
 		
 		$xml = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'">';
 		$xml .= '<amount currency="'. $this->_obj_ClientConfig->getCountryConfig()->getCurrency() .'">'. $this->_iAmount .'</amount>';
-		$xml .= '<price>'. General::formatPrice($this) .'</price>';
+		$xml .= '<price>'. General::formatAmount($this->_obj_ClientConfig->getCountryConfig(), $this->_iAmount) .'</price>';
 		$xml .= '<order-id>'. $this->_sOrderID .'</order-id>';
 		$xml .= '<address>'. $this->_sAddress .'</address>';
 		$xml .= '<operator>'. $this->_iOperatorID .'</operator>';

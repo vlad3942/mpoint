@@ -339,7 +339,7 @@ class ClientConfig extends BasicConfig
 					LIMIT 1";
 		}
 		// Remove Account clause if it hasn't been already
-		$sql = str_replace("{ACCOUNT CLAUSE}", "". $acc, $sql);
+		$sql = str_replace("{ACCOUNT CLAUSE}", "", $sql);
 				
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
