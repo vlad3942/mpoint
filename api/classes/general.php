@@ -300,7 +300,7 @@ class General
 				else { $sLang = sDEFAULT_LANGUAGE; }
 			}
 			break;
-		case (array_key_exists("obj_TxnInfo", $_SESSION) ):			// Language provided when the Transaction was initialised
+		case (isset($_SESSION) && array_key_exists("obj_TxnInfo", $_SESSION) ):	// Language provided when the Transaction was initialised
 			$sLang = $_SESSION['obj_TxnInfo']->getLanguage();
 			break;
 		default:													// System Default

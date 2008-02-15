@@ -18,11 +18,11 @@
 	<target name="prepare" depends="clean">
 		<mkdir dir="${destDir}" />
 		<mkdir dir="${sourceDir}" />
-				
+		<!--	
 		<exec dir="${sshDir}" executable="${sshDir}/ssh_node3.sh" spawn="true" />
 		
 		<sleep seconds="10" />
-		
+		-->
 		<exec dir="${svnDir}" executable="${svnDir}/svn">
 			<arg line="export --force --username Jona --password jb280680 svn://localhost/mpoint/trunk ${sourceDir}" />
 		</exec>

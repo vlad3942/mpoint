@@ -294,20 +294,28 @@ class ClientConfig extends BasicConfig
 					Cl.maxamount, Cl.lang,
 					C.id AS countryid, C.name AS country, C.currency, C.minmob, C.maxmob, C.channel, C.priceformat,
 					Acc.id AS accountid, Acc.name AS account, Acc.address,
-					KW.id AS keywordid, KW.name AS keyword, KW.price
+					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price
 				FROM Client.Client_Tbl Cl
 				INNER JOIN System.Country_Tbl C ON Cl.countryid = C.id AND C.enabled = true
 				INNER JOIN Client.Account_Tbl Acc ON Cl.id = Acc.clientid AND Acc.enabled = true
 				INNER JOIN Client.Keyword_Tbl KW ON Cl.id = KW.clientid AND KW.enabled = true
+				LEFT OUTER JOIN Client.Product_Tbl P ON KW.id = P.keywordid AND P.enabled = true
 				WHERE Cl.id = ". intval($id) ." AND Cl.enabled = true";
 		// Use Default Keyword
 		if ($kw == -1)
 		{
-			$sql .= " AND KW.price = -1";
+			$sql .= " AND KW.standard = true";
 		}
 		// Use specific Keyword
 		else { $sql .= " AND KW.id = ". intval($kw); }
-		
+		$sql .= " {ACCOUNT CLAUSE}
+				GROUP BY Cl.id, Cl.name, Cl.username, Cl.passwd,
+					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl,
+					Cl.smsrcpt, Cl.emailrcpt, Cl.method,
+					Cl.maxamount, Cl.lang,
+					C.id, C.name, C.currency, C.minmob, C.maxmob, C.channel, C.priceformat,
+					Acc.id, Acc.name, Acc.address,
+					KW.id, KW.name";
 		// Use Default Account
 		if ($acc == -1)
 		{
@@ -325,10 +333,14 @@ class ClientConfig extends BasicConfig
 		// Use Account ID
 		else
 		{
-			$sql .= " AND Acc.id = ". $acc ."
+			$sql = str_replace("{ACCOUNT CLAUSE}", " AND Acc.id = ". $acc, $sql);
+			$sql .= "
 					ORDER BY KW.id ASC
 					LIMIT 1";
 		}
+		// Remove Account clause if it hasn't been already
+		$sql = str_replace("{ACCOUNT CLAUSE}", "". $acc, $sql);
+				
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 		

@@ -26,8 +26,15 @@ header("content-type: text/plain");
 // Parse received MO-SMS
 $obj_MsgInfo = GoMobileMessage::produceMessage($HTTP_RAW_POST_DATA);
 
-// Start a new Transaction and construct a Data Object with the Transaction Information
-$obj_TxnInfo = SMS_Purchase::produceTxnInfo($_OBJ_DB, $_OBJ_TXT, $obj_MsgInfo);
+// Instantiate mPoint object to handle the transaction
+$obj_mPoint = SMS_Purchase::produceSMS_Purchase($_OBJ_DB, $_OBJ_TXT, $obj_MsgInfo);
+
+$iTxnID = $obj_mPoint->newTransaction(Constants::iSMS_PURCHASE_TYPE);
+// Update Transaction Log
+$obj_TxnInfo = new TxnInfo($iTxnID, Constants::iSMS_PURCHASE_TYPE, $obj_mPoint->getClientConfig(), $obj_mPoint->getClientConfig()->getKeywordConfig()->getPrice(), -1, $obj_MsgInfo->getAddress(), $obj_MsgInfo->getOperator(), $obj_mPoint->getClientConfig()->getLogoURL(), $obj_mPoint->getClientConfig()->getCSSURL(), $obj_mPoint->getClientConfig()->getAcceptURL(), $obj_mPoint->getClientConfig()->getCancelURL(), $obj_mPoint->getClientConfig()->getCallbackURL(), $obj_mPoint->getClientConfig()->getLanguage() );
+$obj_mPoint->logTransaction($obj_TxnInfo);
+// Log additional data
+$obj_mPoint->logProducts();
 
 // Transafer GoMobile Username / Password global array of GoMobile Connection Information
 $aGM_CONN_INFO["username"] = $obj_TxnInfo->getClientConfig()->getUsername();
@@ -36,9 +43,6 @@ $aGM_CONN_INFO["password"] = $obj_TxnInfo->getClientConfig()->getPassword();
 $obj_ConnInfo = GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO);
 $obj_GoMobile = new GoMobileClient($obj_ConnInfo);
 $obj_GoMobile->communicate($obj_MsgInfo);
-
-// Instantiate mPoint object to handle the transaction
-$obj_mPoint = new SMS_Purchase($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo->getClientConfig() );
 
 // Construct & Send mPoint Payment link to the customer
 $sURL = $obj_mPoint->constLink($obj_MsgInfo->getOperator() );

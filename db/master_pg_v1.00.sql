@@ -384,7 +384,7 @@ CREATE TABLE Client.Keyword_Tbl
 	clientid	INT4 NOT NULL,	-- ID of the Client who owns the Keyword
 
 	name		VARCHAR(50),	-- Name of the Keyword
-	price		INT4,			-- Price that any purchase made using this keyword should be charged at in Countrys smallest currency
+	standard	BOOL DEFAULT false,	-- Boolean Flag indicating whether a keyword is the Default for the client
 
 	CONSTRAINT Keyword_PK PRIMARY KEY (id),
 	CONSTRAINT Keyword2Client_FK FOREIGN KEY (clientid) REFERENCES Client.Client_Tbl ON UPDATE CASCADE ON DELETE CASCADE,

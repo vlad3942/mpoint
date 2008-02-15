@@ -15,7 +15,28 @@
  *
  */
 class CallCentre extends SMS_Purchase
-{	
+{
+	/**
+	 * Logs the data for the Products the Customer is purchasing for easy future retrieval.
+	 * 
+	 * @see 	Constants::iPRODUCTS_STATE
+	 * @see 	General::newMessage()
+	 * 
+	 * @param 	array $aNames 		Reference to the list of Product Names
+	 * @param 	array $aQuantities 	Reference to the list of Product Qantities
+	 * @param 	array $aPrices 		Reference to the list of Product Prices
+	 * @param 	array $aLogos 		Reference to the list of URLs to the Logo for each Product
+	 */
+	public function logProducts(array &$aNames, array &$aQuantities, array &$aPrices, array &$aLogos)
+	{
+		// Construct list of Products
+		$aProducts = array("names" => $aNames,
+						   "quantities" => $aQuantities,
+						   "prices" => $aPrices,
+						   "logos" => $aLogos);
+		$this->newMessage($this->getTransactionID(), Constants::iPRODUCTS_STATE, serialize($aProducts) );
+	}
+	
 	/**
 	 * Logs the custom variables provided by the Client for easy future retrieval.
 	 * Custom variables are defined as an entry in the input arrays which key starts with var_

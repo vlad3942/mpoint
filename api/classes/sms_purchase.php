@@ -48,7 +48,13 @@ class SMS_Purchase extends General
 	 *
 	 * @return integer
 	 */
-	protected function &getTransactionID() { return $this->_iTransactionID; }
+	protected function getTransactionID() { return $this->_iTransactionID; }
+	/**
+	 * Returns the Data object with the Client's configuration
+	 *
+	 * @return ClientConfig
+	 */
+	public function &getClientConfig() { return $this->_obj_ClientConfig; }
 	
 	/**
 	 * Starts a new Transaction and generates a unique ID for the log entry.
@@ -67,25 +73,34 @@ class SMS_Purchase extends General
 		
 		return $this->_iTransactionID;
 	}
-	
 	/**
 	 * Logs the data for the Products the Customer is purchasing for easy future retrieval.
 	 * 
 	 * @see 	Constants::iPRODUCTS_STATE
 	 * @see 	General::newMessage()
-	 * 
-	 * @param 	array $aNames 		Reference to the list of Product Names
-	 * @param 	array $aQuantities 	Reference to the list of Product Qantities
-	 * @param 	array $aPrices 		Reference to the list of Product Prices
-	 * @param 	array $aLogos 		Reference to the list of URLs to the Logo for each Product
 	 */
-	public function logProducts(array &$aNames, array &$aQuantities, array &$aPrices, array &$aLogos)
+	public function logProducts()
 	{
+		$sql = "SELECT id, name, quantity, price, logourl
+				FROM Client.Product_Tbl
+				WHERE keywordid = ". $this->_obj_ClientConfig->getKeywordConfig()->getID();
+//		echo $sql ."\n";
+		$aRS = $this->getDBConn()->getAllNames($sql);
+		
 		// Construct list of Products
-		$aProducts = array("names" => $aNames,
-						   "quantities" => $aQuantities,
-						   "prices" => $aPrices,
-						   "logos" => $aLogos);
+		$aProducts = array("names" => array(),
+						   "quantities" => array(),
+						   "prices" => array(),
+						   "logos" => array());
+		for ($i=0; $i<count($aRS); $i++)
+		{
+			$aProducts["names"][$aRS[$i]["ID"] ] = $aRS[$i]["NAME"];
+			$aProducts["quantity"][$aRS[$i]["ID"] ] = $aRS[$i]["QUANTITY"];
+			$aProducts["price"][$aRS[$i]["ID"] ] = $aRS[$i]["PRICE"];
+			$aProducts["logourl"][$aRS[$i]["ID"] ] = $aRS[$i]["LOGOURL"];
+		}
+		
+		
 		$this->newMessage($this->_iTransactionID, Constants::iPRODUCTS_STATE, serialize($aProducts) );
 	}
 	
@@ -175,53 +190,29 @@ class SMS_Purchase extends General
 	}
 	
 	/**
-	 * Creates a new Transaction using the MO-SMS received from GoMobile and returns a reference to the Data object which holds 
-	 * the Transaction Information.
-	 * Additionally the method will add the products associated with the keyword to the Message table.
-	 * The method will temporarily create an instance of SMS_Purchase in order to do this.
+	 * Creates a new instance of the SMS Purchase class using the provied Message Info object.
+	 * The method will query the database in order to fetch the correct Client and Keyword ID using the
+	 * Country, Channel and Keyword contained in the Message Information object.
 	 * 
-	 * @see 	SMS_Purchase::newTransaction()
-	 * @see 	SMS_Purchase::logProducts()
 	 * @see 	ClientConfig::produceConfig()
-	 * @see 	TxnInfo
 	 *
 	 * @param	RDB $oDB			Reference to the Database Object that holds the active connection to the mPoint Database
-	 * @param	TranslateText $oDB 	Text Translation Object for translating any text into a specific language
+	 * @param	TranslateText $oTxt Text Translation Object for translating any text into a specific language
 	 * @param 	SMS $oMI 			GoMobile Message Info object which holds the relevant data for the message
-	 * @return 	TxnInfo
+	 * @return 	SMS_Purchase
 	 */
-	public static function &produceTxnInfo(RDB &$oDB, SMS &$oMI)
+	public static function produceSMS_Purchase(RDB &$oDB, TranslateText &$oTxt, SMS &$oMI)
 	{
-		$sql = "SELECT KW.id AS keywordid, KW.price AS amount, 
-					Cl.id AS clientid,
-					P.name, P.quantity, P.price, P.logourl
+		$sql = "SELECT KW.id AS keywordid, Cl.id AS clientid
 				FROM Client.Keyword_Tbl KW
 				INNER JOIN Client.Client_Tbl Cl ON KW.clientid = Cl.id AND Cl.enabled = true
-				INNER JOIN Client.Country_Tbl C ON Cl.countryid = C.id AND C.enabled = true
-				INNER JOIN Client.Product_Tbl P ON KW.id = P.keywordid AND P.enabled = true
+				INNER JOIN System.Country_Tbl C ON Cl.countryid = C.id AND C.enabled = true
 				WHERE C.id = ". $oMI->getCountry() ." AND C.channel = '". $oMI->getChannel() ."'
 					AND Upper(KW.name) = Upper('". $oMI->getKeyword() ."') AND KW.enabled = true";
 //		echo $sql ."\n";
-		$aRS = $oDB->getAllNames($sql);
+		$RS = $oDB->getName($sql);
 		
-		$obj_ClientConfig = ClientConfig::produceConfig($oDB, $aRS[0]["CLIENTID"], -1, $aRS[0]["KEYWORDID"]);
-		$obj_SMS_Purchase = new SMS_Purchase($oDB, $oTxt, $obj_ClientConfig);
-		$iTxnID = $obj_mPoint->newTransaction(Constants::iSMS_PURCHASE_TYPE);
-		
-		$aNames = array();
-		$aQuantities = array();
-		$aPrices = array();
-		$aLogoURLs = array();
-		for ($i=0; $i<count($aRS); $i++)
-		{
-			$aNames[] = $aRS[$i]["NAME"];
-			$aQuantities[] = $aRS[$i]["QUANTITY"];
-			$aPrices[] = $aRS[$i]["PRICE"];
-			$aLogoURLs[] = $aRS[$i]["LOGOURL"];
-		}
-		$obj_mPoint->logProducts($aNames, $aQuantities, $aPrices, $aLogoURLs);
-		
-		return new TxnInfo($iTxnID, Constants::iSMS_PURCHASE_TYPE, $obj_ClientConfig, $aRS[0]["AMOUNT"], -1, $oMI->getAddress(), $oMI->getOperator(), $obj_ClientConfig->getLogoURL(), $obj_ClientConfig->getCSSURL(), $obj_ClientConfig->getAcceptURL(), $obj_ClientConfig->getCancelURL(), $obj_ClientConfig->getCallbackURL(), $obj_ClientConfig->getLanguage() );
+		return new SMS_Purchase($oDB, $oTxt, ClientConfig::produceConfig($oDB, $RS["CLIENTID"], -1, $RS["KEYWORDID"]) );
 	}
 }
 ?>
