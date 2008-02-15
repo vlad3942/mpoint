@@ -95,9 +95,9 @@ class SMS_Purchase extends General
 		for ($i=0; $i<count($aRS); $i++)
 		{
 			$aProducts["names"][$aRS[$i]["ID"] ] = $aRS[$i]["NAME"];
-			$aProducts["quantity"][$aRS[$i]["ID"] ] = $aRS[$i]["QUANTITY"];
-			$aProducts["price"][$aRS[$i]["ID"] ] = $aRS[$i]["PRICE"];
-			$aProducts["logourl"][$aRS[$i]["ID"] ] = $aRS[$i]["LOGOURL"];
+			$aProducts["quantities"][$aRS[$i]["ID"] ] = $aRS[$i]["QUANTITY"];
+			$aProducts["prices"][$aRS[$i]["ID"] ] = $aRS[$i]["PRICE"];
+			$aProducts["logos"][$aRS[$i]["ID"] ] = $aRS[$i]["LOGOURL"];
 		}
 		
 		
@@ -134,7 +134,7 @@ class SMS_Purchase extends General
 		// Customer's Operator is Sprint
 		if ($oid == 20004) { $sLink .= sSPRINT_MPOINT_DOMAIN; }
 		else { $sLink .= sDEFAULT_MPOINT_DOMAIN; }
-		$sLink .= "/txn/". base_convert(intval($RS["TIMESTAMP"]), 10, 32) ."Z". base_convert($this->_iTransactionID, 10, 32);
+		$sLink .= "/pay/". base_convert(intval($RS["TIMESTAMP"]), 10, 32) ."Z". base_convert($this->_iTransactionID, 10, 32);
 		
 		$this->newMessage($this->_iTransactionID, Constants::iCONST_LINK_STATE, $sLink);
 		
