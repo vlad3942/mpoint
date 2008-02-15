@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-15"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:func="http://exslt.org/functions" extension-element-prefixes="func">
-<xsl:include href="header.xsl"/>
+<xsl:output method="xml" version="1.0" encoding="ISO-8859-15" indent="yes" media-type="application/xhtml+xml" doctype-public="-//WAPFORUM//DTD XHTML Mobile 1.0//EN" doctype-system="http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd" omit-xml-declaration="no" />
+<xsl:include href="header.xsl" />
 
 <xsl:template match="/root">
 	<table id="products">
@@ -11,14 +12,14 @@
 	</tr>
 	<!-- List Products -->
 	<xsl:for-each select="products/item">
-		<tr>
-			<td>
-				<img src="{logo-url}" width="30" height="30" alt="- Logo -" /><br />
-				<xsl:value-of select="name" />
-			</td>
-			<td valign="bottom" class="mPoint_number"><xsl:value-of select="quantity" /></td>
-			<td valign="bottom" class="mPoint_number"><xsl:value-of select="price" /></td>
-		</tr>
+	<tr>
+		<td colspan="3"><img src="{logo-url}" width="30" height="30" alt="- Logo -" /></td>
+	</tr>
+	<tr>
+		<td><xsl:value-of select="name" /></td>
+		<td class="mPoint_number"><xsl:value-of select="quantity" /></td>
+		<td class="mPoint_number"><xsl:value-of select="price" /></td>
+	</tr>
 	</xsl:for-each>
 	<!-- List Total -->
 	<tr>

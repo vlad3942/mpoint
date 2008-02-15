@@ -7,7 +7,8 @@ INSERT INTO System.Country_Tbl (id, name, currency, minmob, maxmob, channel, pri
 INSERT INTO System.Country_Tbl (id, name, currency, minmob, maxmob, channel, priceformat) VALUES (20, 'USA', '$', '1000000000', '9999999999', '20100', '{CURRENCY}{PRICE}');
 
 INSERT INTO System.PSP_Tbl (name) VALUES ('DIBS');
-INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) SELECT 20, Max(id), 208 FROM System.PSP_Tbl;
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) SELECT 10, Max(id), 208 FROM System.PSP_Tbl;
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) SELECT 20, Max(id), 840 FROM System.PSP_Tbl;
 
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (10, 'Undefined Client ID', 'Validate', 'valBasic');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (12, 'Invalid Client ID', 'Validate', 'valBasic');

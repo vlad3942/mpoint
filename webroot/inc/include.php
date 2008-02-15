@@ -124,10 +124,10 @@ if (eregi("/buy/", $_SERVER['PHP_SELF']) == false && eregi("/subscr/", $_SERVER[
 // Instantiate connection to the Database
 $_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
 
-// HTTP: 404 Page Not found, use overview.php through htaccess 
-if (array_key_exists("REDIRECT_URL", $_SERVER) === true && eregi("/pay/", $_SERVER['REDIRECT_URL']) == true)
+// Payment link activated, use overview.php through a rewrite rule defined by htaccess 
+if (eregi("/pay/", $_SERVER['PHP_SELF']) == true)
 {
-	$_SESSION['obj_TxnInfo'] = General::produceTxnInfo($_OBJ_DB);
+	$_SESSION['obj_TxnInfo'] = General::produceTxnInfo($_OBJ_DB, $_GET['checksum']);
 }
 // Define language for page translations
 define("sLANG", General::getLanguage() );

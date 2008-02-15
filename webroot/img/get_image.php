@@ -29,15 +29,12 @@ require_once("../inc/include.php");
 // Require Business logic for the Image Component
 require_once(sCLASS_PATH ."/retrieve_image.php");
 
-// Re-Create the URL
-$url = General::rebuildURL();
-
 $obj_mPoint = new RetrieveImage($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_UA']);
 
 // Determine Image type to be retrieved
 switch (true)
 {
-case (strstr($url, "client") ):	// Retrieve Client Logo
+case (strstr($_GET['file'], "client") ):	// Retrieve Client Logo
 	// Client logo not previously returned
 	if ($_SESSION['obj_Info']->getInfo("client_logo") === false)
 	{
@@ -45,11 +42,11 @@ case (strstr($url, "client") ):	// Retrieve Client Logo
 	}
 	$etag = "client";
 	break;
-case (strstr($url, "product") ):
+case (strstr($_GET['file'], "product") ):
 	$etag = "product";
 	break;
-case (strstr($url, "card") ):	// Retrieve Credit Card Logo
-	$aTmp = explode("_", $url);
+case (strstr($_GET['file'], "card") ):	// Retrieve Credit Card Logo
+	$aTmp = explode("_", $_GET['file']);
 	$id = $aTmp[count($aTmp)-2];
 	// Credit Card logo not previously returned
 	if ($_SESSION['obj_Info']->getInfo("card_". $id ."_logo") === false)
@@ -58,7 +55,7 @@ case (strstr($url, "card") ):	// Retrieve Credit Card Logo
 	}
 	$etag = "card_". $id;
 	break;
-case (strstr($url, "/mpoint") ):// Retrieve mPoint Logo
+case (strstr($_GET['file'], "/mpoint") ):// Retrieve mPoint Logo
 	// mPoint logo not previously returned
 	if ($_SESSION['obj_Info']->getInfo("mpoint_logo") === false)
 	{
@@ -67,7 +64,7 @@ case (strstr($url, "/mpoint") ):// Retrieve mPoint Logo
 	$etag = "mpoint";
 	break;
 default:					// Error: Unknown Image Type
-	trigger_error("Unknown Image Type {TRACE URL: ".$url ."}", E_USER_ERROR);
+	trigger_error("Unknown Image Type {TRACE URL: ".$_GET['file'] ."}", E_USER_ERROR);
 	break;
 }
 

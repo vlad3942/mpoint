@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="ISO-8859-15"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:func="http://exslt.org/functions" extension-element-prefixes="func">
-<xsl:output method="xml" version="1.0" encoding="ISO-8859-15" indent="yes" media-type="application/xhtml+xml" doctype-public="-//W3C//DTD XHTML Basic 1.0//EN" doctype-system="http://www.w3.org/TR/2000/REC-xhtml-basic-20001219/xhtml-basic10.dtd" omit-xml-declaration="no" />
+<xsl:output method="xml" version="1.0" encoding="ISO-8859-15" indent="yes" media-type="application/xhtml+xml" doctype-public="-//WAPFORUM//DTD XHTML Mobile 1.0//EN" doctype-system="http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd" omit-xml-declaration="no" />
 	
 <xsl:template match="/">
 	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{/root/transaction/language}">
 	<head>
 		<title><xsl:value-of select="/root/title" /></title>
-		<meta http-equiv="content-style-type" content="text/css" />
-		<link href="{/root/transaction/css-url}" type="text/css" rel="stylesheet" />
-		<meta http-equiv="content-type" content="application/xhtml+xml; charset=ISO-8859-15" />
+		<link href="{/root/transaction/css-url}" type="text/css" rel="stylesheet" media="handheld" />
+		<!-- Pre-load pages -->
+		<xsl:choose>
+			<!-- Select Credit Card -->
+			<xsl:when test="/root/system/file = 'overview.php'">
+				<link href="{func:constLink('card.php')}" rel="next" type="application/xhtml+xml" />
+			</xsl:when>
+			<!-- E-Mail Receipt -->
+			<xsl:when test="/root/system/file = 'accept.php'">
+				<link href="{func:constLink('email.php')}" rel="next" type="application/xhtml+xml" />
+			</xsl:when>
+		</xsl:choose>
+		<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=ISO-8859-15" />
+		<meta http-equiv="Cache-Control" content="max-age=86400" />
+		<meta http-equiv="Content-Style-Type" content="text/css" />
 	</head>
 	<body>
 		<div id="logo">

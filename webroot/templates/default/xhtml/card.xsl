@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-15"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:func="http://exslt.org/functions" extension-element-prefixes="func">
-<xsl:include href="header.xsl"/>
+<xsl:output method="xml" version="1.0" encoding="ISO-8859-15" indent="yes" media-type="application/xhtml+xml" doctype-public="-//WAPFORUM//DTD XHTML Mobile 1.0//EN" doctype-system="http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd" omit-xml-declaration="no" />
+<xsl:include href="header.xsl" />
 
 <xsl:template match="/root">
 	<div id="progress" class="mPoint_info">
@@ -141,8 +142,12 @@
 					</xsl:otherwise>
 				</xsl:choose>
 				
-				<img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}_{/root/system/session/@id}.jpg" width="{width}" height="{height}" alt="- {name} -" />
-				<input type="submit" value="{name}" class="button" />
+				<table class="mPoint_card">
+				<tr>
+					<td><img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}_{/root/system/session/@id}.jpg" width="{width}" height="{height}" alt="- {name} -" /></td>
+					<td><input type="submit" value="{name}" class="button" /></td>
+				</tr>
+				</table>
 			</div>
 		</form>
 	</div>

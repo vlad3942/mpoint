@@ -1,1 +1,2 @@
-ErrorDocument 404 /img/get_image.php
+RewriteEngine on
+RewriteRule ^([^/\.]+)\.(jpg|png|gif|bmp)?$ get_image.php?file=$1 [L]
