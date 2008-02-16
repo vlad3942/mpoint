@@ -125,7 +125,7 @@ if (eregi("/buy/", $_SERVER['PHP_SELF']) == false && eregi("/subscr/", $_SERVER[
 $_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
 
 // Payment link activated, use overview.php through a rewrite rule defined by htaccess 
-if (eregi("/pay/", $_SERVER['PHP_SELF']) == true)
+if (array_key_exists("checksum", $_GET) === true)
 {
 	$_SESSION['obj_TxnInfo'] = General::produceTxnInfo($_OBJ_DB, $_GET['checksum']);
 }

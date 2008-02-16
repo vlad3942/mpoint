@@ -20,8 +20,7 @@
  */
 
 // Retrieve Session ID from Image URL
-$_REQUEST[session_name()] = substr($_SERVER['REDIRECT_URL'], strrpos($_SERVER['REDIRECT_URL'], "_")+1);
-$_REQUEST[session_name()] = substr($_REQUEST[session_name()], 0, strlen($_REQUEST[session_name()])-4);
+$_REQUEST[session_name()] = substr($_GET['file'], strrpos($_GET['file'], "_")+1);
 
 // Require Global Include File
 require_once("../inc/include.php");

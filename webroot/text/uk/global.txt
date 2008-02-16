@@ -102,14 +102,6 @@ Merchant: {CLIENT}
 Order No: {ORDERID}
 Price: {PRICE} @@@
 
-#: /api/classes/sms_purchase.php:179
-msgid @@@ mPoint - Embedded link Indication @@@
-msgstr @@@ Welcome to mPoint, please activate the link below @@@
-
-#: /api/classes/sms_purchase.php:185
-msgid @@@ mPoint - WAP Push Indication @@@
-msgstr @@@ Welcome to mPoint @@@
-
 #: /api/classes/email_receipt.php:75
 msgid @@@ E-Mail Receipt - Subject @@@
 msgstr @@@ mPoint Receipt for Order No: {ORDERID} with mPoint ID: {MPOINTID} @@@
@@ -123,4 +115,12 @@ mPoint ID: {MPOINTID}
 Merchant: {CLIENT}
 Order No: {ORDERID}
 Price: {PRICE} @@@
+
+#: /api/classes/sms_purchase.php:179
+msgid @@@ mPoint - Embedded link Indication @@@
+msgstr @@@ Welcome to mPoint, please activate the link below @@@
+
+#: /api/classes/sms_purchase.php:185
+msgid @@@ mPoint - WAP Push Indication @@@
+msgstr @@@ Welcome to mPoint @@@
 
