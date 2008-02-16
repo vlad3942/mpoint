@@ -35,7 +35,7 @@ switch (true)
 {
 case (strstr($_GET['file'], "client") ):	// Retrieve Client Logo
 	// Client logo not previously returned
-	if ($_SESSION['obj_Info']->getInfo("client_logo") === false)
+	if (array_key_exists("HTTP_IF_NONE_MATCH", $_SERVER) === false)
 	{
 		$obj_Image = $obj_mPoint->getClientLogo($_SESSION['obj_TxnInfo']->getLogoURL() );
 	}
@@ -48,7 +48,7 @@ case (strstr($_GET['file'], "card") ):	// Retrieve Credit Card Logo
 	$aTmp = explode("_", $_GET['file']);
 	$id = $aTmp[count($aTmp)-2];
 	// Credit Card logo not previously returned
-	if ($_SESSION['obj_Info']->getInfo("card_". $id ."_logo") === false)
+	if (array_key_exists("HTTP_IF_NONE_MATCH", $_SERVER) === false)
 	{
 		$obj_Image = $obj_mPoint->getCardLogo($id);
 	}
@@ -56,7 +56,7 @@ case (strstr($_GET['file'], "card") ):	// Retrieve Credit Card Logo
 	break;
 case (strstr($_GET['file'], "/mpoint") ):// Retrieve mPoint Logo
 	// mPoint logo not previously returned
-	if ($_SESSION['obj_Info']->getInfo("mpoint_logo") === false)
+	if (array_key_exists("HTTP_IF_NONE_MATCH", $_SERVER) === false)
 	{
 		$obj_Image = $obj_mPoint->getmPointLogo();
 	}
@@ -68,13 +68,16 @@ default:					// Error: Unknown Image Type
 }
 
 // Image has previously been returned
-if ($_SESSION['obj_Info']->getInfo($etag ."_logo") !== false)
+if (array_key_exists("HTTP_IF_NONE_MATCH", $_SERVER) === true)
 {
 	// Set HTTP Headers
 	header("HTTP/1.1 304 Not Modified");
 	header("Date: ". gmdate("D, d M Y H:i:s T", time() ) );
+	header("Cache-Control: max-age=". (24*60*60) .", public");
+	header("Pragma: public");
+	header("Last-Modified: ". gmdate("D, d M Y H:i:s T", base_convert(substr($_SERVER['HTTP_IF_NONE_MATCH'], strrpos("-")+1), 32, 10) ) );
 	header("Expires: ". gmdate("D, d M Y H:i:s T", time() + 24*60*60) );
-	header("Etag: ".  $_SESSION['obj_Info']->getInfo($etag ."_logo") );
+	header("Etag: ".  $_SERVER['HTTP_IF_NONE_MATCH']);
 }
 else
 {
@@ -94,17 +97,16 @@ else
 		trigger_error("Image formats not supported by Device {TRACE {OBJ_UA} }", E_USER_ERROR);
 		break;
 	}
-	$_SESSION['obj_Info']->setInfo($etag ."_logo", $etag ."-". base_convert(strlen($sImage), 10, 32) ."-". base_convert(date("YmdHis"), 10, 32) );
 	
 	// Set HTTP Headers
 	header("HTTP/1.1 200 OK");
 	header("Content-Type: ". $obj_Image->getTgtMimeType() );
 	header("Content-Length: ". strlen($sImage) );
 	header("Cache-Control: max-age=". (24*60*60) .", public");
-	header("Pragma: cache");
+	header("Pragma: public");
 	header("Last-Modified: ". gmdate("D, d M Y H:i:s T", time() ) );
 	header("Expires: ". gmdate("D, d M Y H:i:s T", time() + 24*60*60) );
-	header("Etag: ".  $_SESSION['obj_Info']->getInfo($etag ."_logo") );
+	header("Etag: ".  $etag ."-". base_convert(strlen($sImage), 10, 32) ."-". base_convert(date("YmdHis"), 10, 32) );
 	
 	echo $sImage;
 }
