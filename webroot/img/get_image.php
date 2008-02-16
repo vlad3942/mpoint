@@ -75,7 +75,6 @@ if (array_key_exists("HTTP_IF_NONE_MATCH", $_SERVER) === true)
 	header("Date: ". gmdate("D, d M Y H:i:s T", time() ) );
 	header("Cache-Control: max-age=". (24*60*60) .", public");
 	header("Pragma: public");
-	header("Last-Modified: ". gmdate("D, d M Y H:i:s T", base_convert(substr($_SERVER['HTTP_IF_NONE_MATCH'], strrpos("-")+1), 32, 10) ) );
 	header("Expires: ". gmdate("D, d M Y H:i:s T", time() + 24*60*60) );
 	header("Etag: ".  $_SERVER['HTTP_IF_NONE_MATCH']);
 }
