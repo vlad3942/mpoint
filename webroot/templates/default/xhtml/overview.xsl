@@ -6,25 +6,25 @@
 <xsl:template match="/root">
 	<table id="products">
 	<tr>
-		<td class="mPoint_label" style="text-align:center"><xsl:value-of select="labels/name" /></td>
+		<td colspan="3" class="mPoint_label" style="text-align:center"><xsl:value-of select="labels/name" /></td>
 		<td class="mPoint_label" style="text-align:center"><xsl:value-of select="labels/quantity" /></td>
-		<td class="mPoint_label" style="text-align:center"><xsl:value-of select="labels/price" /></td>
+		<td colspan="2" class="mPoint_label" style="text-align:center"><xsl:value-of select="labels/price" /></td>
 	</tr>
 	<!-- List Products -->
 	<xsl:for-each select="products/item">
 	<tr>
-		<td colspan="3"><img src="{logo-url}" width="30" height="30" alt="- Logo -" /></td>
+		<td colspan="5"><img src="{logo-url}" width="30" height="30" alt="- Logo -" /></td>
 	</tr>
 	<tr>
-		<td><xsl:value-of select="name" /></td>
+		<td colspan="3"><xsl:value-of select="name" /></td>
 		<td class="mPoint_number"><xsl:value-of select="quantity" /></td>
-		<td class="mPoint_number"><xsl:value-of select="price" /></td>
+		<td colspan="2" class="mPoint_number"><xsl:value-of select="price" /></td>
 	</tr>
 	</xsl:for-each>
 	<!-- List Total -->
 	<tr>
-		<td colspan="2" class="mPoint_label"><xsl:value-of select="labels/total" /></td>
-		<td valign="bottom" class="mPoint_label mPoint_number"><xsl:value-of select="transaction/price" /></td>
+		<td colspan="3" class="mPoint_label"><xsl:value-of select="labels/total" /></td>
+		<td colspan="3" valign="bottom" class="mPoint_label mPoint_number"><xsl:value-of select="transaction/price" /></td>
 	</tr>
 	</table>
 	

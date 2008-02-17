@@ -14,7 +14,7 @@
 		<table>
 		<tr>
 			<td><img src="{system/protocol}://{system/host}/img/success.gif" width="30" height="28" alt="- OK - " /></td>
-			<td class="mPoint_info"><xsl:value-of select="labels/status" /></td>
+			<td colspan="2" class="mPoint_info"><xsl:value-of select="labels/status" /></td>
 		</tr>
 		</table>
 	</div>
