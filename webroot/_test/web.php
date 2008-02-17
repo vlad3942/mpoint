@@ -27,23 +27,23 @@
 </tr>
 <tr>
 	<td style="font-weight:bold;">Logo URL</td>
-	<td><input type="text" name="logo-url" value="http://mpoint.localhost/_test/client_logo.jpg" /></td>
+	<td><input type="text" name="logo-url" value="http://demo.ois-inc.com/mpoint/_test/client_logo.jpg" /></td>
 </tr>
 <tr>
 	<td style="font-weight:bold;">CSS URL</td>
-	<td><input type="text" name="css-url" value="http://mpoint.localhost/_test/styles.css" /></td>
+	<td><input type="text" name="css-url" value="http://demo.ois-inc.com/mpoint/_test/styles.css" /></td>
 </tr>
 <tr>
 	<td style="font-weight:bold;">Accept URL</td>
-	<td><input type="text" name="accept-url" value="http://mpoint.localhost/_test/accept.php" /></td>
+	<td><input type="text" name="accept-url" value="http://demo.ois-inc.com/mpoint/_test/accept.php" /></td>
 </tr>
 <tr>
 	<td style="font-weight:bold;">Cancel URL</td>
-	<td><input type="text" name="cancel-url" value="http://mpoint.localhost/_test/cancel.php" /></td>
+	<td><input type="text" name="cancel-url" value="http://demo.ois-inc.com/mpoint/_test/cancel.php" /></td>
 </tr>
 <tr>
 	<td style="font-weight:bold;">Callback URL</td>
-	<td><input type="text" name="callback-url" value="http://mpoint.localhost/_test/callback.php" /></td>
+	<td><input type="text" name="callback-url" value="http://demo.ois-inc.com/mpoint/_test/callback.php" /></td>
 </tr>
 <tr>
 	<td style="font-weight:bold;">Order ID</td>

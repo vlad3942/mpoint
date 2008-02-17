@@ -54,7 +54,7 @@ case (strstr($_GET['file'], "card") ):	// Retrieve Credit Card Logo
 	}
 	$etag = "card_". $id;
 	break;
-case (strstr($_GET['file'], "/mpoint") ):// Retrieve mPoint Logo
+case (strstr($_GET['file'], "mpoint") ):// Retrieve mPoint Logo
 	// mPoint logo not previously returned
 	if (array_key_exists("HTTP_IF_NONE_MATCH", $_SERVER) === false)
 	{
@@ -102,7 +102,7 @@ else
 	header("Content-Type: ". $obj_Image->getTgtMimeType() );
 	header("Content-Length: ". strlen($sImage) );
 	header("Cache-Control: max-age=". (24*60*60) .", public");
-	header("Pragma: public");
+	header("Pragma: cache");
 	header("Last-Modified: ". gmdate("D, d M Y H:i:s T", time() ) );
 	header("Expires: ". gmdate("D, d M Y H:i:s T", time() + 24*60*60) );
 	header("Etag: ".  $etag ."-". base_convert(strlen($sImage), 10, 32) ."-". base_convert(date("YmdHis"), 10, 32) );

@@ -80,8 +80,8 @@ $aGM_CONN_INFO["timeout"] = 20;	// In seconds
 $aGM_CONN_INFO["path"] = "/buy/sms.php";
 $aGM_CONN_INFO["method"] = "POST";
 $aGM_CONN_INFO["contenttype"] = "text/xml";
-$aGM_CONN_INFO["username"] = "";		// Set from the Client Configuration
-$aGM_CONN_INFO["password"] = "";		// Set from the Client Configuration
+$aGM_CONN_INFO["username"] = "CPMDemo";		// Set from the Client Configuration
+$aGM_CONN_INFO["password"] = "DEMOisNO_2";	// Set from the Client Configuration
 $aGM_CONN_INFO["logpath"] = "../../log/";
 /**
  * 1 - Write log entry to file

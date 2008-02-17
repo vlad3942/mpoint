@@ -19,10 +19,12 @@ require_once(sCLASS_PATH ."/validate.php");
 // Require Business logic for the E-Mail Receipt Component
 require_once(sCLASS_PATH ."/email_receipt.php");
 
+$_SESSION['temp'] = $_POST;
+
 $aMsgCds = array();
 $obj_Validator = new Validate($_SESSION['obj_TxnInfo']->getClientConfig() );
 	
-if ($obj_Validator->valEMail($_POST['email']) != 10) { $aMsgCds[] = $obj_Validator->valEMail($_POST['email']); }
+if ($obj_Validator->valEMail($_POST['email']) != 10) { $aMsgCds[] = $obj_Validator->valEMail($_POST['email']) + 10; }
 
 // Success: Input Valid
 if (count($aMsgCds) == 0)
@@ -31,6 +33,7 @@ if (count($aMsgCds) == 0)
 	if (mail($_POST['email'], $obj_mPoint->constSubject(), $obj_mPoint->constBody(), $obj_mPoint->constHeaders($_POST['email']) ) === true)
 	{
 		$aMsgCds[] = 100;
+		unset($_SESSION['temp']);
 	}
 	else { $aMsgCds[] = 91; }
 }

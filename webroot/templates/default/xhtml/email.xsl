@@ -7,7 +7,7 @@
 	<div>
 		<h1>
 			<xsl:value-of select="labels/mpoint" /><br />
-			<img src="{system/protocol}://{system/host}/img/mpoint" width="{mpoint-logo/width}" height="{mpoint-logo/height}" alt="- mPoint -" />
+			<img src="{system/protocol}://{system/host}/img/mpoint_{/root/system/session/@id}.jpg" width="{mpoint-logo/width}" height="{mpoint-logo/height}" alt="- mPoint -" />
 		</h1>
 	</div>
 	<div class="mPoint_info">

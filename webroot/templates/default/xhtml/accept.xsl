@@ -7,28 +7,30 @@
 	<div id="mPoint">
 		<h1>
 			<xsl:value-of select="labels/mpoint" /><br />
-			<img src="{system/protocol}://{system/host}/img/mpoint" width="{mpoint-logo/width}" height="{mpoint-logo/height}" alt="- mPoint -" />
+			<img src="{system/protocol}://{system/host}/img/mpoint_{/root/system/session/@id}.jpg" width="{mpoint-logo/width}" height="{mpoint-logo/height}" alt="- mPoint -" />
 		</h1>
 	</div>
 	<div id="status">
-		<h2>
-			<img src="{system/protocol}://{system/host}/img/success.gif" width="30" height="28" alt="- OK - " />
-			<xsl:value-of select="labels/status" />
-		</h2>
+		<table>
+		<tr>
+			<td><img src="{system/protocol}://{system/host}/img/success.gif" width="30" height="28" alt="- OK - " /></td>
+			<td class="mPoint_info"><xsl:value-of select="labels/status" /></td>
+		</tr>
+		</table>
 	</div>
 	
 	<table id="receipt">
 	<tr>
 		<td class="mPoint_label"><xsl:value-of select="labels/txn-id" />:</td>
-		<td><xsl:value-of select="transaction/@id" /></td>
+		<td class="mPoint_number"><xsl:value-of select="transaction/@id" /></td>
 	</tr>
 	<tr>
 		<td class="mPoint_label"><xsl:value-of select="labels/order-id" />:</td>
-		<td><xsl:value-of select="transaction/order-id" /></td>
+		<td class="mPoint_number"><xsl:value-of select="transaction/order-id" /></td>
 	</tr>
 	<tr>
 		<td class="mPoint_label"><xsl:value-of select="labels/price" />:</td>
-		<td><xsl:value-of select="transaction/price" /></td>
+		<td class="mPoint_number"><xsl:value-of select="transaction/price" /></td>
 	</tr>
 	</table>
 	

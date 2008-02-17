@@ -6,9 +6,9 @@
 <xsl:template match="/root">
 	<table id="products">
 	<tr>
-		<td class="mPoint_label"><xsl:value-of select="labels/name" /></td>
-		<td class="mPoint_label"><xsl:value-of select="labels/quantity" /></td>
-		<td class="mPoint_label"><xsl:value-of select="labels/price" /></td>
+		<td class="mPoint_label" style="text-align:center"><xsl:value-of select="labels/name" /></td>
+		<td class="mPoint_label" style="text-align:center"><xsl:value-of select="labels/quantity" /></td>
+		<td class="mPoint_label" style="text-align:center"><xsl:value-of select="labels/price" /></td>
 	</tr>
 	<!-- List Products -->
 	<xsl:for-each select="products/item">

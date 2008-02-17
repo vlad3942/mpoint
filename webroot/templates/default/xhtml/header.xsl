@@ -36,7 +36,6 @@
 		<div class="mPoint_status">
 			<xsl:choose>
 			<xsl:when test="count(item) = 1">
-				<br />
 				<xsl:value-of select="." />
 			</xsl:when>
 			<xsl:otherwise>
