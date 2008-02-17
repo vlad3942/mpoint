@@ -21,16 +21,16 @@
 	
 	<table id="receipt">
 	<tr>
-		<td class="mPoint_label"><xsl:value-of select="labels/txn-id" />:</td>
-		<td class="mPoint_number"><xsl:value-of select="transaction/@id" /></td>
+		<td colspan="4" class="mPoint_label"><xsl:value-of select="labels/txn-id" />:</td>
+		<td colspan="3" class="mPoint_number"><xsl:value-of select="transaction/@id" /></td>
 	</tr>
 	<tr>
-		<td class="mPoint_label"><xsl:value-of select="labels/order-id" />:</td>
-		<td class="mPoint_number"><xsl:value-of select="transaction/order-id" /></td>
+		<td colspan="4" class="mPoint_label"><xsl:value-of select="labels/order-id" />:</td>
+		<td colspan="3" class="mPoint_number"><xsl:value-of select="transaction/order-id" /></td>
 	</tr>
 	<tr>
-		<td class="mPoint_label"><xsl:value-of select="labels/price" />:</td>
-		<td class="mPoint_number"><xsl:value-of select="transaction/price" /></td>
+		<td colspan="4" class="mPoint_label"><xsl:value-of select="labels/price" />:</td>
+		<td colspan="3" class="mPoint_number"><xsl:value-of select="transaction/price" /></td>
 	</tr>
 	</table>
 	
