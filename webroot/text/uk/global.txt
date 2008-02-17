@@ -34,6 +34,18 @@ msgstr @@@ Send receipt via E-Mail @@@
 msgid @@@ Continue >> @@@
 msgstr @@@ Continue >> @@@
 
+#: /webroot/buy/web.php:117
+msgid @@@ Select Card @@@
+msgstr @@@ Select Card @@@
+
+#: /webroot/buy/web.php:122
+msgid @@@ Step 1 of 2 @@@
+msgstr @@@ Step 1 of 2 @@@
+
+#: /webroot/buy/web.php:123
+msgid @@@ Please select your Credit Card @@@
+msgstr @@@ Please select your Credit Card @@@
+
 #: /webroot/card.php:26
 msgid @@@ Select Card @@@
 msgstr @@@ Select Card @@@
@@ -116,11 +128,11 @@ Merchant: {CLIENT}
 Order No: {ORDERID}
 Price: {PRICE} @@@
 
-#: /api/classes/sms_purchase.php:179
+#: /api/classes/sms_purchase.php:121
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ Welcome to mPoint, please activate the link below @@@
 
-#: /api/classes/sms_purchase.php:185
+#: /api/classes/sms_purchase.php:127
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Welcome to mPoint @@@
 

@@ -18,6 +18,8 @@ require_once("../inc/include.php");
 // Require the PHP API for handling the connection to GoMobile
 require_once(sAPI_CLASS_PATH ."/gomobile.php");
 
+// Require Business logic for the Mobile Web module
+require_once(sCLASS_PATH ."/mobile_web.php");
 // Require Business logic for the SMS Purchase module
 require_once(sCLASS_PATH ."/sms_purchase.php");
 

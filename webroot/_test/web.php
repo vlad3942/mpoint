@@ -1,5 +1,5 @@
-<h1>Call Centre Purchase Test</h1>
-<form action="/buy/callcentre.php" method="post">
+<h1>Mobile Web Purchase Test</h1>
+<form action="/buy/web.php" method="post">
 <table>
 <tr>
 	<td style="font-weight:bold;">Client ID</td>
@@ -18,20 +18,8 @@
 	<td><input type="text" name="operator" value="20000" /></td>
 </tr>
 <tr>
-	<td style="font-weight:bold;">Product Name</td>
-	<td><input type="text" name="prod-names[test]" value="Test Product" /></td>
-</tr>
-<tr>
-	<td style="font-weight:bold;">Product Quantity</td>
-	<td><input type="text" name="prod-quantities[test]" value="3" /></td>
-</tr>
-<tr>
-	<td style="font-weight:bold;">Product Price</td>
-	<td><input type="text" name="prod-prices[test]" value="100" /></td>
-</tr>
-<tr>
-	<td style="font-weight:bold;">Product Logo</td>
-	<td><input type="text" name="prod-logos[test]" value="http://mpoint.localhost/_test/product_logo.jpg" /></td>
+	<td style="font-weight:bold;">Amount</td>
+	<td><input type="text" name="amount" value="100" /></td>
 </tr>
 <tr>
 	<td style="font-weight:bold;">Language</td>

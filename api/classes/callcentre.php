@@ -36,24 +36,5 @@ class CallCentre extends SMS_Purchase
 						   "logos" => $aLogos);
 		$this->newMessage($this->getTransactionID(), Constants::iPRODUCTS_STATE, serialize($aProducts) );
 	}
-	
-	/**
-	 * Logs the custom variables provided by the Client for easy future retrieval.
-	 * Custom variables are defined as an entry in the input arrays which key starts with var_
-	 * 
-	 * @see 	Constants::iCLIENT_VARS_STATE
-	 * @see 	General::newMessage()
-	 * 
-	 * @param 	array $aInput 	Array of Input as received from the Client.
-	 */
-	public function logClientVars(array &$aInput)
-	{
-		$aClientVars = array();
-		foreach ($aInput as $key => $val)
-		{
-			if (substr($key, 0, 4) == "var_") { $aClientVars[$key] = $val; }
-		}
-		if (count($aClientVars) > 0) { $this->newMessage($this->getTransactionID(), Constants::iCLIENT_VARS_STATE, serialize($aClientVars) ); }
-	}
 }
 ?>

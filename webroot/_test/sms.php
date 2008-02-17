@@ -112,6 +112,7 @@ $obj_MsgInfo = GoMobileMessage::produceMessage($iType, $iCountry, $iOperator, $s
 $obj_MsgInfo->enableConcatenation();
 /* ========== Create fake MO-SMS End ========== */
 
+echo '<h1>SMS Purchase Test</h1>';
 // Send fake MO-SMS to GoMobile
 if ($obj_GoMobile->send($obj_MsgInfo) == 200)
 {
@@ -122,6 +123,4 @@ else
 {
 	echo "Message sending failed with return codes: ". $obj_MsgInfo->getReturnCodes();
 }
-echo "<pre>";
-var_dump($obj_GoMobile);
 ?>

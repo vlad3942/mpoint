@@ -14,65 +14,8 @@
  * Model Class containing all the Business Logic for handling an mPoint Transaction initiated by the Customer via SMS.
  *
  */
-class SMS_Purchase extends General
+class SMS_Purchase extends MobileWeb
 {
-	/**
-	 * Data object with the Client's configuration
-	 *
-	 * @var ClientConfig
-	 */
-	private $_obj_ClientConfig;
-	/**
-	 * Unique ID for the Started Transaction
-	 *
-	 * @var integer
-	 */
-	private $_iTransactionID;
-	
-	/**
-	 * Default Constructor.
-	 *
-	 * @param	RDB $oDB			Reference to the Database Object that holds the active connection to the mPoint Database
-	 * @param	TranslateText $oDB 	Text Translation Object for translating any text into a specific language
-	 * @param 	ClientConfig $oCC 	Data object with the Client's configuration
-	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt, ClientConfig &$oCC)
-	{
-		parent::__construct($oDB, $oTxt);
-		
-		$this->_obj_ClientConfig = $oCC;
-	}
-	
-	/**
-	 * Returns the Unique ID for the Started Transaction.
-	 *
-	 * @return integer
-	 */
-	protected function getTransactionID() { return $this->_iTransactionID; }
-	/**
-	 * Returns the Data object with the Client's configuration
-	 *
-	 * @return ClientConfig
-	 */
-	public function &getClientConfig() { return $this->_obj_ClientConfig; }
-	
-	/**
-	 * Starts a new Transaction and generates a unique ID for the log entry.
-	 * Additionally the method sets the private variable: _iTransactionID and returns the generated Transaction ID.
-	 * The method will throw an mPointException with either code 1001 or 1002 if one of the database queries fails.
-	 * 
-	 * @see 	General::newTransaction()
-	 *
-	 * @param 	integer $tid 	Unique ID for the Type of Transaction that is started 
-	 * @return 	integer
-	 * @throws 	mPointException
-	 */
-	public function newTransaction($tid)
-	{
-		$this->_iTransactionID = parent::newTransaction($this->_obj_ClientConfig, $tid);
-		
-		return $this->_iTransactionID;
-	}
 	/**
 	 * Logs the data for the Products the Customer is purchasing for easy future retrieval.
 	 * 
@@ -83,7 +26,7 @@ class SMS_Purchase extends General
 	{
 		$sql = "SELECT id, name, quantity, price, logourl
 				FROM Client.Product_Tbl
-				WHERE keywordid = ". $this->_obj_ClientConfig->getKeywordConfig()->getID();
+				WHERE keywordid = ". $this->getClientConfig()->getKeywordConfig()->getID();
 //		echo $sql ."\n";
 		$aRS = $this->getDBConn()->getAllNames($sql);
 		
@@ -100,8 +43,7 @@ class SMS_Purchase extends General
 			$aProducts["logos"][$aRS[$i]["ID"] ] = $aRS[$i]["LOGOURL"];
 		}
 		
-		
-		$this->newMessage($this->_iTransactionID, Constants::iPRODUCTS_STATE, serialize($aProducts) );
+		$this->newMessage($this->getTransactionID(), Constants::iPRODUCTS_STATE, serialize($aProducts) );
 	}
 	
 	/**
@@ -126,7 +68,7 @@ class SMS_Purchase extends General
 	{
 		$sql = "SELECT Extract('epoch' from created) AS timestamp
 				FROM Log.Transaction_Tbl
-				WHERE id = ". $this->_iTransactionID;
+				WHERE id = ". $this->getTransactionID();
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 		
@@ -134,9 +76,9 @@ class SMS_Purchase extends General
 		// Customer's Operator is Sprint
 		if ($oid == 20004) { $sLink .= sSPRINT_MPOINT_DOMAIN; }
 		else { $sLink .= sDEFAULT_MPOINT_DOMAIN; }
-		$sLink .= "/pay/". base_convert(intval($RS["TIMESTAMP"]), 10, 32) ."Z". base_convert($this->_iTransactionID, 10, 32);
+		$sLink .= "/pay/". base_convert(intval($RS["TIMESTAMP"]), 10, 32) ."Z". base_convert($this->getTransactionID(), 10, 32);
 		
-		$this->newMessage($this->_iTransactionID, Constants::iCONST_LINK_STATE, $sLink);
+		$this->newMessage($this->getTransactionID(), Constants::iCONST_LINK_STATE, $sLink);
 		
 		return $sLink;
 	}
@@ -171,7 +113,7 @@ class SMS_Purchase extends General
 		case (20006):	// Boost - USA
 		case (20007):	// Alltel - USA
 		case (20010):	// US Cellular - USA
-			$this->newMessage($this->_iTransactionID, Constants::iUNSUPPORTED_OPERATOR, var_export($obj_MsgInfo, true) );
+			$this->newMessage($this->getTransactionID(), Constants::iUNSUPPORTED_OPERATOR, var_export($obj_MsgInfo, true) );
 			throw new mPointException("Operator: ". $oTI->getOperator() ." not supported", 1011);
 			break;
 		case (20004):	// Sprint - USA
