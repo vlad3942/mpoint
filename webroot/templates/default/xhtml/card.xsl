@@ -145,7 +145,7 @@
 				<table class="mPoint_card">
 				<tr>
 					<td><img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}_{/root/system/session/@id}.jpg" width="{width}" height="{height}" alt="- {name} -" /></td>
-					<td><input type="submit" value="{name}" class="button" /></td>
+					<td colspan="3"><input type="submit" value="{name}" class="button" /></td>
 				</tr>
 				</table>
 			</div>
