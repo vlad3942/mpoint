@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="ISO-8859-15"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" PML_xml:lang="cgi.lang">
+<head>
+	<title><PML_VAL>cgi.title</PML_VAL></title>
+	<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=ISO-8859-15" />
+	<meta http-equiv="Cache-Control" content="max-age=86400" />
+	<meta http-equiv="Content-Style-Type" content="text/css" />
+	<style type="text/css" media="handheld">
+		body, table, div
+		{
+			font-size: 1em;
+			font-family: "Trebuchet MS",arial,sans-serif;
+			background-color: #fff;
+			color: #000;
+		}
+		
+		body, table
+		{
+			text-align: left;
+		}
+		
+		h1
+		{
+			font-size: 130%;
+			white-space: nowrap;
+			text-align: center;
+			color: #000;
+		}
+		
+		a
+		{
+			color: #ccff00;
+			text-decoration: none;
+		}
+		
+		a:hover
+		{
+			text-decoration: underline;
+		}
+		
+		.mPoint_Label
+		{
+			font-weight: bold;
+			padding-right: 0.5em;
+			padding-top: 0.3em;
+		}
+		
+		.mPoint_Info
+		{
+			font-weight: normal;
+			font-style: italic;
+			color: #000;
+			text-align: left;
+			padding: 0px;
+			margin: 0px;	
+		}
+		
+		.mPoint_Status
+		{
+			color: red;
+			padding-top: 0.5em;
+			padding-bottom: 0.5em;
+		}
+		
+		table#products tr td
+		{
+			padding-left: 0.1em;
+		}
+		
+		table#receipt
+		{
+			margin-top: 0.5em;
+			margin-bottom: 0.5em;
+		}
+		
+		div#logo, div#progress, div#mPoint, div#status
+		{
+			text-align: center;
+		}
+		
+		div#status table tr td
+		{
+			vertical-align: middle;
+			padding-left: 0.5em;
+		}
+		
+		input.button, input.submit
+		{
+			border-style: none;
+			background-color: #fff;
+			color: blue;
+			text-decoration: underline;
+			margin: 0px 0px 0px 0px;
+			padding: 0px 0px 2px 0px;
+		}
+		
+		.center
+		{
+			text-align: center;
+		}
+		
+		input.number
+		{
+			-wap-input-format: '*N';
+		}
+		
+		td.mPoint_Number
+		{
+			padding-right: 0.5em;
+			text-align: right;
+			vertical-align: bottom;
+		}
+	</style>
+</head>
+<body>
+	<div id="logo">
+		<img src="images/client_logo.jpg" PML_width="cgi.width" PML_height="cgi.height" PML_alt="'- '@cgi.client@' -'" />
+	</div>
+		<h1>
+			<PML_VAL>cgi.mpoint</PML_VAL><br />
+			<img src="images/mpoint_logo.jpg" PML_width="cgi.mpoint_width" PML_height="cgi.mpoint_height" alt="- mPoint -" />
+		</h1>
+	<div id="status">
+		<!--
+		  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
+		  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
+		  - the phone will assign 33% of the screen width to the "OK Image" and 66% of the screen width to the "OK Text"
+		  -->
+		<table>
+		<tr>
+			<td><img src="images/success.gif" width="30" height="28" alt="- OK - " /></td>
+			<td colspan="2" class="mPoint_Info"><PML_VAL>cgi.status</PML_VAL></td>
+		</tr>
+		</table>
+	</div>
+	<!--
+	  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
+	  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
+	  - the phone will assign 57% of the screen width to the receipt label and 43% of the screen width to the receipt data
+	  -->
+	<table id="receipt">
+	<tr>
+		<td colspan="4" class="mPoint_Label"><PML_VAL>cgi.txn_id_label</PML_VAL>:</td>
+		<td colspan="3" class="mPoint_number"><PML_VAL>cgi.orderid</PML_VAL></td>
+	</tr>
+	<tr>
+		<td colspan="4" class="mPoint_Label"><PML_VAL>cgi.order_no_label</PML_VAL>:</td>
+		<td colspan="3" class="mPoint_number"><PML_VAL>cgi.order_no</PML_VAL></td>
+	</tr>
+	<tr>
+		<td colspan="4" class="mPoint_Label"><PML_VAL>cgi.price_label</PML_VAL>:</td>
+		<td colspan="3" class="mPoint_number"><PML_VAL>cgi.price</PML_VAL></td>
+	</tr>
+	</table>
+	
+	<!-- SMS Receipt Enabled -->
+	<PML_IF COND="cgi.sms_receipt = true">
+		<div class="mPoint_Info">
+			<PML_VAL>cgi.sms_receipt_text</PML_VAL>
+		</div>
+	</PML_IF>
+	<!-- Allow Access to E-Mail Receipt -->
+	<PML_IF COND="cgi.email_receipt = true">
+		<div class="mPoint_Info">
+			<br />
+			<a PML_href="cgi.email_url"><PML_VAL>cgi.email_receipt_text</PML_VAL></a>
+		</div>
+	</PML_IF>
+	
+	<!-- Client has specified a return URL for successful payments -->
+	<PML_IF COND="string.length(cgi.accept_url) > 0">
+		<div>
+			<form PML_action="cgi.accept_url" method="post">
+				<p>
+				<PML_SCRIPT>
+				// Transfer Custom Variables
+				foreach(i ; cgi)
+				{
+					if (string.substring(cgi[i], 0, 4) = 'var_')
+					{
+						out.put('<input type="hidden" name="'@ cgi[i] @'" value="'@ cgi[i+1] @'" />');
+					}
+				}
+				</PML_SCRIPT>
+				</p>
+				
+				<p>
+					<input type="submit" PML_value="cgi.continue" />
+				</p>
+			</form>
+		</div>
+	</PML_IF>
+</body>
+</html>

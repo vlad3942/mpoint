@@ -502,7 +502,7 @@ class General
 		// Format amount to be human readable
 		$sPrice = $oCC->getPriceFormat();
 		$sPrice = str_replace("{CURRENCY}", $oCC->getCurrency(), $sPrice);
-		$sPrice = str_replace("{PRICE}", number_format($amount / 100, 2), $sPrice);
+		$sPrice = str_replace("{PRICE}", number_format($amount / 100, $oCC->getDecimals() ), $sPrice);
 		
 		return $sPrice;
 	}

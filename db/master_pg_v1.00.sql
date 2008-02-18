@@ -68,7 +68,9 @@ CREATE TABLE System.Country_Tbl
 	minmob		VARCHAR(15),	-- Minimum Value a vald Mobile Number can be in the Country
 	maxmob		VARCHAR(15),	-- Maximum Value a vald Mobile Number can be in the Country
 	channel		VARCHAR(10),	-- GoMobile Channel used for SMS Communication in the Country
+	
 	priceformat	VARCHAR(18),	-- The Price format used in the country, i.e. $X.XX for USA and X.XXkr for Denmark etc.
+	decimals	INT4,			-- Number of Decimals used for Prices in the Country, i.e. 2 for USA, 0 for Denmark etc.
 	
 	CONSTRAINT Country_PK PRIMARY KEY (id),
 	LIKE Template.General_Tbl INCLUDING DEFAULTS

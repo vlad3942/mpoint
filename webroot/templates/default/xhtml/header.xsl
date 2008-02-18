@@ -33,7 +33,7 @@
 
 <xsl:template match="messages">
 	<xsl:if test="count(item) &gt; 0">
-		<div class="mPoint_status">
+		<div class="mPoint_Status">
 			<xsl:choose>
 			<xsl:when test="count(item) = 1">
 				<xsl:value-of select="." />

@@ -49,6 +49,13 @@ class CountryConfig extends BasicConfig
 	 * @var string
 	 */
 	private $_sPriceFormat;
+	/**
+	 * Number of Decimals used for Prices in the Country:
+	 * 2 for USA, 0 for Denmark etc.
+	 *
+	 * @var integer
+	 */
+	private $_iNumDecimals;
 	
 	/**
 	 * Default Constructor
@@ -60,8 +67,9 @@ class CountryConfig extends BasicConfig
 	 * @param 	string $maxmob 		Max value a valid Mobile Number can have in the Country
 	 * @param 	string $ch 			GoMobile channel used for communicating with the customers in the Country
 	 * @param 	string $pf 			Price Format used in the Country
+	 * @param 	integer $dec 		Number of Decimals used for Prices in the Country
 	 */
-	public function __construct($id, $name, $currency, $minmob, $maxmob, $ch, $pf)
+	public function __construct($id, $name, $currency, $minmob, $maxmob, $ch, $pf, $dec)
 	{
 		parent::__construct($id, $name);
 		
@@ -70,6 +78,7 @@ class CountryConfig extends BasicConfig
 		$this->_sMaxMobile = trim($maxmob);
 		$this->_sChannel = trim($ch);
 		$this->_sPriceFormat = trim($pf);
+		$this->_iNumDecimals = (integer) $dec;
 	}
 	
 	/**
@@ -103,5 +112,12 @@ class CountryConfig extends BasicConfig
 	 * @return 	string
 	 */
 	public function getPriceFormat() { return $this->_sPriceFormat; }
+	/**
+	 * Returns the Number of Decimals used for Prices in the Country:
+	 * 2 for USA, 0 for Denmark etc.
+	 *
+	 * @return integer
+	 */
+	public function getDecimals() { return $this->_iNumDecimals; }
 }
 ?>

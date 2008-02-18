@@ -21,7 +21,7 @@ h1
 
 a
 {
-	color: #cc0000;
+	color: #ccff00;
 	text-decoration: none;
 }
 
@@ -30,15 +30,16 @@ a:hover
 	text-decoration: underline;
 }
 
-.mPoint_label
+.mPoint_Label
 {
 	font-weight: bold;
 	padding-right: 0.5em;
 	padding-top: 0.3em;
 }
 
-.mPoint_info
+.mPoint_Info
 {
+	font-weight: normal;
 	font-style: italic;
 	color: #000;
 	text-align: left;
@@ -46,7 +47,7 @@ a:hover
 	margin: 0px;	
 }
 
-.mPoint_status
+.mPoint_Status
 {
 	color: red;
 	padding-top: 0.5em;
@@ -95,7 +96,7 @@ input.number
 	-wap-input-format: '*N';
 }
 
-td.mPoint_number
+td.mPoint_Number
 {
 	padding-right: 0.5em;
 	text-align: right;

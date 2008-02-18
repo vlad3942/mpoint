@@ -262,6 +262,7 @@ class TxnInfo
 	 *	</transaction>
 	 *
 	 * @see 	iCLIENT_LOGO_SCALE
+	 * @see 	General::formatAmount()
 	 * 
 	 * @param 	UAProfile $oUA 	Reference to the User Agent Profile for the Customer's Mobile Device (optional)
 	 * @return 	string

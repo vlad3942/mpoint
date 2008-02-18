@@ -38,6 +38,7 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 	<?= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']); ?>
 	
 	<labels>
+		<info><?= $_OBJ_TXT->_("Product - Info"); ?></info>
 		<name><?= $_OBJ_TXT->_("Name"); ?></name>
 		<quantity><?= $_OBJ_TXT->_("Quantity"); ?></quantity>
 		<price><?= $_OBJ_TXT->_("Price"); ?></price>

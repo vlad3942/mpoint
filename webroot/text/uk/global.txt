@@ -34,29 +34,185 @@ msgstr @@@ Send receipt via E-Mail @@@
 msgid @@@ Continue >> @@@
 msgstr @@@ Continue back to Client Site >> @@@
 
-#: /webroot/buy/web.php:117
+#: /webroot/buy/web.php:120
 msgid @@@ Select Card @@@
 msgstr @@@ Select Card @@@
 
-#: /webroot/buy/web.php:122
+#: /webroot/buy/web.php:125
 msgid @@@ Step 1 of 2 @@@
 msgstr @@@ Step 1 of 2 @@@
 
-#: /webroot/buy/web.php:123
+#: /webroot/buy/web.php:126
 msgid @@@ Please select your Credit Card @@@
 msgstr @@@ Please select your Credit Card @@@
 
-#: /webroot/card.php:26
+#: /webroot/buy/web.php:131
+msgid @@@ Card Information @@@
+msgstr @@@ Card Information @@@
+
+#: /webroot/buy/web.php:132
+msgid @@@ Step 2 of 2 @@@
+msgstr @@@ Step 2 of 2 @@@
+
+#: /webroot/buy/web.php:133
+msgid @@@ Selected Card @@@
+msgstr @@@ Selected Card @@@
+
+#: /webroot/buy/web.php:134
+msgid @@@ Please enter your card information below @@@
+msgstr @@@ Please enter your card information below @@@
+
+#: /webroot/buy/web.php:135
+msgid @@@ Card Number @@@
+msgstr @@@ Card Number @@@
+
+#: /webroot/buy/web.php:136
+msgid @@@ Expiry date @@@
+msgstr @@@ Expiry date @@@
+
+#: /webroot/buy/web.php:137
+msgid @@@ mm @@@
+msgstr @@@ mm @@@
+
+#: /webroot/buy/web.php:138
+msgid @@@ yy @@@
+msgstr @@@ yy @@@
+
+#: /webroot/buy/web.php:139
+msgid @@@ CVC / CVS @@@
+msgstr @@@ CVC / CVS @@@
+
+#: /webroot/buy/web.php:140
+msgid @@@ 3 digits (printed on the backside of the card) @@@
+msgstr @@@ 3 digits (printed on the backside of the card) @@@
+
+#: /webroot/buy/web.php:141
+msgid @@@ Complete Payment @@@
+msgstr @@@ Complete Payment @@@
+
+#: /webroot/buy/web.php:148
+msgid @@@ Payment Completed @@@
+msgstr @@@ Payment Completed @@@
+
+#: /webroot/buy/web.php:149
+msgid @@@ Thank you for using @@@
+msgstr @@@ Thank you for using @@@
+
+#: /webroot/buy/web.php:150
+msgid @@@ Status - Success @@@
+msgstr @@@ Your payment has been successfully completed @@@
+
+#: /webroot/buy/web.php:151
+msgid @@@ mPoint ID @@@
+msgstr @@@ mPoint ID @@@
+
+#: /webroot/buy/web.php:152
+msgid @@@ Order No @@@
+msgstr @@@ Order No @@@
+
+#: /webroot/buy/web.php:153
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
+#: /webroot/buy/web.php:154
+msgid @@@ SMS Receipt - Info @@@
+msgstr @@@ These details have also been sent to you via SMS to number {ADDRESS} @@@
+
+#: /webroot/buy/web.php:155
+msgid @@@ Send receipt via E-Mail @@@
+msgstr @@@ Send receipt via E-Mail @@@
+
+#: /webroot/buy/web.php:156
+msgid @@@ Continue >> @@@
+msgstr @@@ Continue back to Client Site >> @@@
+
+#: /webroot/card.php:32
 msgid @@@ Select Card @@@
 msgstr @@@ Select Card @@@
 
-#: /webroot/card.php:35
+#: /webroot/card.php:41
 msgid @@@ Step 1 of 2 @@@
 msgstr @@@ Step 1 of 2 @@@
 
-#: /webroot/card.php:36
+#: /webroot/card.php:42
 msgid @@@ Please select your Credit Card @@@
 msgstr @@@ Please select your Credit Card @@@
+
+#: /webroot/card.php:49
+msgid @@@ Card Information @@@
+msgstr @@@ Card Information @@@
+
+#: /webroot/card.php:50
+msgid @@@ Step 2 of 2 @@@
+msgstr @@@ Step 2 of 2 @@@
+
+#: /webroot/card.php:51
+msgid @@@ Selected Card @@@
+msgstr @@@ Selected Card @@@
+
+#: /webroot/card.php:52
+msgid @@@ Please enter your card information below @@@
+msgstr @@@ Please enter your card information below @@@
+
+#: /webroot/card.php:53
+msgid @@@ Card Number @@@
+msgstr @@@ Card Number @@@
+
+#: /webroot/card.php:54
+msgid @@@ Expiry date @@@
+msgstr @@@ Expiry date @@@
+
+#: /webroot/card.php:55
+msgid @@@ mm @@@
+msgstr @@@ mm @@@
+
+#: /webroot/card.php:56
+msgid @@@ yy @@@
+msgstr @@@ yy @@@
+
+#: /webroot/card.php:57
+msgid @@@ CVC / CVS @@@
+msgstr @@@ CVC / CVS @@@
+
+#: /webroot/card.php:58
+msgid @@@ 3 digits (printed on the backside of the card) @@@
+msgstr @@@ 3 digits (printed on the backside of the card) @@@
+
+#: /webroot/card.php:59
+msgid @@@ Complete Payment @@@
+msgstr @@@ Complete Payment @@@
+
+#: /webroot/card.php:68
+msgid @@@ Thank you for using @@@
+msgstr @@@ Thank you for using @@@
+
+#: /webroot/card.php:69
+msgid @@@ Status - Success @@@
+msgstr @@@ Your payment has been successfully completed @@@
+
+#: /webroot/card.php:70
+msgid @@@ mPoint ID @@@
+msgstr @@@ mPoint ID @@@
+
+#: /webroot/card.php:71
+msgid @@@ Order No @@@
+msgstr @@@ Order No @@@
+
+#: /webroot/card.php:72
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
+#: /webroot/card.php:73
+msgid @@@ SMS Receipt - Info @@@
+msgstr @@@ These details have also been sent to you via SMS to number {ADDRESS} @@@
+
+#: /webroot/card.php:74
+msgid @@@ Send receipt via E-Mail @@@
+msgstr @@@ Send receipt via E-Mail @@@
+
+#: /webroot/card.php:75
+msgid @@@ Continue >> @@@
+msgstr @@@ Continue back to Client Site >> @@@
 
 #: /webroot/email.php:29
 msgid @@@ E-Mail Receipt @@@
@@ -87,22 +243,26 @@ msgid @@@ Order Overview @@@
 msgstr @@@ Order Overview @@@
 
 #: /webroot/overview.php:41
-msgid @@@ Name @@@
-msgstr @@@ Name @@@
+msgid @@@ Product - Info @@@
+msgstr @@@ Please find your ordered items listed below @@@
 
 #: /webroot/overview.php:42
+msgid @@@ Name @@@
+msgstr @@@ Product @@@
+
+#: /webroot/overview.php:43
 msgid @@@ Quantity @@@
 msgstr @@@ # @@@
 
-#: /webroot/overview.php:43
+#: /webroot/overview.php:44
 msgid @@@ Price @@@
 msgstr @@@ Price @@@
 
-#: /webroot/overview.php:44
+#: /webroot/overview.php:45
 msgid @@@ Total @@@
 msgstr @@@ Total @@@
 
-#: /webroot/overview.php:45
+#: /webroot/overview.php:46
 msgid @@@ Go to Payment >> @@@
 msgstr @@@ Go to Payment >> @@@
 

@@ -10,11 +10,11 @@
 			<img src="{system/protocol}://{system/host}/img/mpoint_{/root/system/session/@id}.jpg" width="{mpoint-logo/width}" height="{mpoint-logo/height}" alt="- mPoint -" />
 		</h1>
 	</div>
-	<div class="mPoint_info">
+	<div class="mPoint_Info">
 		<xsl:value-of select="labels/info" />
 	</div>
 	
-	<div class="mPoint_label">
+	<div class="mPoint_Label">
 		<xsl:value-of select="labels/email" />
 	</div>
 	

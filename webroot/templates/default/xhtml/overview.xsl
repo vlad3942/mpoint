@@ -4,11 +4,18 @@
 <xsl:include href="header.xsl" />
 
 <xsl:template match="/root">
+	<div class="mPoint_Info"><xsl:value-of select="labels/info" /></div>
+	<!--
+	  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
+	  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
+	  - the phone will assign 50% of the screen width to the product name, 17% of the screen width to the product quantity and
+	  - 33% of the screen width to the product price.
+	  -->
 	<table id="products">
 	<tr>
-		<td colspan="3" class="mPoint_label" style="text-align:center"><xsl:value-of select="labels/name" /></td>
-		<td class="mPoint_label" style="text-align:center"><xsl:value-of select="labels/quantity" /></td>
-		<td colspan="2" class="mPoint_label" style="text-align:center"><xsl:value-of select="labels/price" /></td>
+		<td colspan="3" class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/name" /></td>
+		<td class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/quantity" /></td>
+		<td colspan="2" class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/price" /></td>
 	</tr>
 	<!-- List Products -->
 	<xsl:for-each select="products/item">
@@ -17,14 +24,14 @@
 	</tr>
 	<tr>
 		<td colspan="3"><xsl:value-of select="name" /></td>
-		<td class="mPoint_number"><xsl:value-of select="quantity" /></td>
-		<td colspan="2" class="mPoint_number"><xsl:value-of select="price" /></td>
+		<td class="mPoint_Number"><xsl:value-of select="quantity" /></td>
+		<td colspan="2" class="mPoint_Number"><xsl:value-of select="price" /></td>
 	</tr>
 	</xsl:for-each>
 	<!-- List Total -->
 	<tr>
-		<td colspan="3" class="mPoint_label"><xsl:value-of select="labels/total" /></td>
-		<td colspan="3" valign="bottom" class="mPoint_label mPoint_number"><xsl:value-of select="transaction/price" /></td>
+		<td colspan="3" class="mPoint_Label"><xsl:value-of select="labels/total" /></td>
+		<td colspan="3" valign="bottom" class="mPoint_Label mPoint_Number"><xsl:value-of select="transaction/price" /></td>
 	</tr>
 	</table>
 	

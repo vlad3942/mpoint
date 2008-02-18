@@ -126,6 +126,7 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 // Error: Basic information is invalid
 else
 {
+	$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 	$aMsgCds[Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account'])+10] = "Client: ". $_POST['clientid'] .", Account: ". $_POST['account'];
 }
 
@@ -154,7 +155,7 @@ else
 	$_GET['msg'] = array_keys($aMsgCds);
 	
 	$xml = '<?xml version="1.0" encoding="ISO-8859-15"?>';
-	$xml .= '<?xml-stylesheet type="text/xsl" href="/template/'. sTEMPLATE .'/xhtml/status.xsl"?>';
+	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/xhtml/status.xsl"?>';
 	$xml .= '<root>';
 	$xml .= $obj_mPoint->getMessages("Status");
 	$xml .= '</root>';

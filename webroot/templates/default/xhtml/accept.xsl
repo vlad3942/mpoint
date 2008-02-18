@@ -11,26 +11,36 @@
 		</h1>
 	</div>
 	<div id="status">
+		<!--
+		  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
+		  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
+		  - the phone will assign 33% of the screen width to the "OK Image" and 66% of the screen width to the "OK Text"
+		  -->
 		<table>
 		<tr>
 			<td><img src="{system/protocol}://{system/host}/img/success.gif" width="30" height="28" alt="- OK - " /></td>
-			<td colspan="2" class="mPoint_info"><xsl:value-of select="labels/status" /></td>
+			<td colspan="2" class="mPoint_Info"><xsl:value-of select="labels/status" /></td>
 		</tr>
 		</table>
 	</div>
 	
+	<!--
+	  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
+	  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
+	  - the phone will assign 57% of the screen width to the receipt label and 43% of the screen width to the receipt data
+	  -->
 	<table id="receipt">
 	<tr>
-		<td colspan="4" class="mPoint_label"><xsl:value-of select="labels/txn-id" />:</td>
-		<td colspan="3" class="mPoint_number"><xsl:value-of select="transaction/@id" /></td>
+		<td colspan="4" class="mPoint_Label"><xsl:value-of select="labels/txn-id" />:</td>
+		<td colspan="3" class="mPoint_Number"><xsl:value-of select="transaction/@id" /></td>
 	</tr>
 	<tr>
-		<td colspan="4" class="mPoint_label"><xsl:value-of select="labels/order-id" />:</td>
-		<td colspan="3" class="mPoint_number"><xsl:value-of select="transaction/order-id" /></td>
+		<td colspan="4" class="mPoint_Label"><xsl:value-of select="labels/order-id" />:</td>
+		<td colspan="3" class="mPoint_Number"><xsl:value-of select="transaction/order-id" /></td>
 	</tr>
 	<tr>
-		<td colspan="4" class="mPoint_label"><xsl:value-of select="labels/price" />:</td>
-		<td colspan="3" class="mPoint_number"><xsl:value-of select="transaction/price" /></td>
+		<td colspan="4" class="mPoint_Label"><xsl:value-of select="labels/price" />:</td>
+		<td colspan="3" class="mPoint_Number"><xsl:value-of select="transaction/price" /></td>
 	</tr>
 	</table>
 	
@@ -39,7 +49,7 @@
 	
 	<!-- SMS Receipt Enabled -->
 	<xsl:if test="client-config/sms-receipt = 'true'">
-		<div class="mPoint_info">
+		<div class="mPoint_Info">
 			<xsl:value-of select="labels/sms-receipt" />
 		</div>
 	</xsl:if>
