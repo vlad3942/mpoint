@@ -34,10 +34,13 @@
 		<td colspan="4" class="mPoint_Label"><xsl:value-of select="labels/txn-id" />:</td>
 		<td colspan="3" class="mPoint_Number"><xsl:value-of select="transaction/@id" /></td>
 	</tr>
+	<!-- Order Number provided by Merchant -->
+	<xsl:if test="transaction/order-id &gt; -1">
 	<tr>
 		<td colspan="4" class="mPoint_Label"><xsl:value-of select="labels/order-id" />:</td>
 		<td colspan="3" class="mPoint_Number"><xsl:value-of select="transaction/order-id" /></td>
 	</tr>
+	</xsl:if>
 	<tr>
 		<td colspan="4" class="mPoint_Label"><xsl:value-of select="labels/price" />:</td>
 		<td colspan="3" class="mPoint_Number"><xsl:value-of select="transaction/price" /></td>

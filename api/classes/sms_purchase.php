@@ -136,14 +136,15 @@ class SMS_Purchase extends MobileWeb
 	 * The method will query the database in order to fetch the correct Client and Keyword ID using the
 	 * Country, Channel and Keyword contained in the Message Information object.
 	 * 
+	 * @see 	sLANGUAGE_PATH
+	 * @see 	TranslateText
 	 * @see 	ClientConfig::produceConfig()
 	 *
 	 * @param	RDB $oDB			Reference to the Database Object that holds the active connection to the mPoint Database
-	 * @param	TranslateText $oTxt Text Translation Object for translating any text into a specific language
 	 * @param 	SMS $oMI 			GoMobile Message Info object which holds the relevant data for the message
 	 * @return 	SMS_Purchase
 	 */
-	public static function produceSMS_Purchase(RDB &$oDB, TranslateText &$oTxt, SMS &$oMI)
+	public static function produceSMS_Purchase(RDB &$oDB, SMS &$oMI)
 	{
 		$sql = "SELECT KW.id AS keywordid, Cl.id AS clientid
 				FROM Client.Keyword_Tbl KW
@@ -154,7 +155,10 @@ class SMS_Purchase extends MobileWeb
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 		
-		return new SMS_Purchase($oDB, $oTxt, ClientConfig::produceConfig($oDB, $RS["CLIENTID"], -1, $RS["KEYWORDID"]) );
+		$obj_ClientConfig = ClientConfig::produceConfig($oDB, $RS["CLIENTID"], -1, $RS["KEYWORDID"]);
+		$obj_Txt = new TranslateText(array(sLANGUAGE_PATH . $obj_ClientConfig->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_ClientConfig->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0);
+		
+		return new SMS_Purchase($oDB, $obj_Txt, $obj_ClientConfig);
 	}
 }
 ?>

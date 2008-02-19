@@ -1,9 +1,71 @@
 <PML_META nospace="true">
+<PML_SCRIPT>
+// Payment Gateay is in Test Mode, set default card info
+if (cgi.test = true)
+{
+	// American Express
+	if (cgi.cardid = 1) { test_cardnum := 3700100000000000; }
+	// Dankort
+	elsif (cgi.cardid = 2) { test_cardnum := 5019100000000000; }
+	// Diners Club
+	elsif (cgi.cardid = 3) { test_cardnum := 30401000000000; }
+	// EuroCard
+	elsif (cgi.cardid = 4) { test_cardnum := 5100100000000000; }
+	// JCB
+	elsif (cgi.cardid = 5) { test_cardnum := 3528100000000000; }
+	// Maestro
+	elsif (cgi.cardid = 6) { test_cardnum := 5020100000000000; }
+	// MasterCard
+	elsif (cgi.cardid = 7) { test_cardnum := 5100100000000000; }
+	// VISA
+	elsif (cgi.cardid = 8) { test_cardnum := 4711100000000000; }
+	// VISA Electron
+	elsif (cgi.cardid = 9) { test_cardnum := 4711100000000000; }
+	// Unknown Card
+	else { test_cardnum := ''; }
+	test_expmon := '06';
+	test_expyear := 24;
+	test_cvc := 684;
+}
+
+/* ========== Language Translataion Start ========== */
+// Danish
+if (cgi.lang = 'da')
+{
+	title := 'Kort Info';
+	progress := 'Trin 2 af 2';
+	label_selected_card := 'Valgte Kort';
+	info := 'Udfyld venligst nedenst&aring;ende felter med dine kort informationer';
+	label_card_number := 'Kort Nummer';
+	label_expiry := 'Udl&oslash;bsdato';
+	expiry_month := 'mm';
+	expiry_year := '&aring;&aring;';
+	label_cvc := 'CVC / CVS';
+	cvc_help := '3 tal (trykt p&aring; bagsiden af dit kort)';
+	submit := 'F&aelig;rdigg&oslash;r Betaling';
+}
+// English
+else
+{
+	title := 'Card Info';
+	progress := 'Step 2 of 2';
+	label_selected_card := 'Selected Card';
+	info := 'Please enter your card information below';
+	label_card_number := 'Card Number';
+	label_expiry := 'Expiry date';
+	expiry_month := 'mm';
+	expiry_year := 'yy';
+	label_cvc := 'CVC / CVS';
+	cvc_help := '3 digits (printed on the back of the card)';
+	submit := 'Complete Payment';
+}
+/* ========== Language Translataion End ========== */
+</PML_SCRIPT>
 <?xml version="1.0" encoding="ISO-8859-15"?>
 <!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" PML_xml:lang="cgi.lang">
 <head>
-	<title><PML_VAL>cgi.pay_title</PML_VAL></title>
+	<title><PML_VAL>title</PML_VAL></title>
 	<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=ISO-8859-15" />
 	<meta http-equiv="Cache-Control" content="max-age=86400" />
 	<meta http-equiv="Content-Style-Type" content="text/css" />
@@ -118,40 +180,10 @@
 	<div id="logo">
 		<img src="images/client_logo.jpg" PML_width="cgi.width" PML_height="cgi.height" PML_alt="'- '@cgi.client@' -'" />
 	</div>
-	<div id="progress" class="mPoint_Info"><PML_VAL>cgi.progress</PML_VAL></div>
+	<div id="progress" class="mPoint_Info"><PML_VAL>progress</PML_VAL></div>
 	
 	<form action="auth.pml" method="post">
 		<div>
-			<PML_SCRIPT>
-			// Payment Gateay is in Test Mode, set default card info
-			if (cgi.test = true)
-			{
-				// American Express
-				if (cgi.cardid = 1) { test_cardnum := 3700100000000000; }
-				// Dankort
-				elsif (cgi.cardid = 2) { test_cardnum := 5019100000000000; }
-				// Diners Club
-				elsif (cgi.cardid = 3) { test_cardnum := 30401000000000; }
-				// EuroCard
-				elsif (cgi.cardid = 4) { test_cardnum := 5100100000000000; }
-				// JCB
-				elsif (cgi.cardid = 5) { test_cardnum := 3528100000000000; }
-				// Maestro
-				elsif (cgi.cardid = 6) { test_cardnum := 5020100000000000; }
-				// MasterCard
-				elsif (cgi.cardid = 7) { test_cardnum := 5100100000000000; }
-				// VISA
-				elsif (cgi.cardid = 8) { test_cardnum := 4711100000000000; }
-				// VISA Electron
-				elsif (cgi.cardid = 9) { test_cardnum := 4711100000000000; }
-				// Unknown Card
-				else { test_cardnum := ''; }
-				test_expmon := '06';
-				test_expyear := 24;
-				test_cvc := 684;
-			}
-			</PML_SCRIPT>
-			
 			<!-- DIBS Required Data -->
 			<input type="hidden" name="merchant" PML_value="cgi.merchant" />
 			<input type="hidden" name="callbackurl" PML_value="string.HTMLencode(cgi.callbackurl)" />
@@ -174,26 +206,17 @@
 			<input type="hidden" name="PHPSESSID" PML_value="cgi.PHPSESSID" />
 			<input type="hidden" name="language" PML_value="cgi.language" />
 			<input type="hidden" name="cardid" PML_value="cgi.cardid" />
-			<!-- Shared Page Data -->
+			<!-- Dynamic Page Data -->
 			<input type="hidden" name="client" PML_value="cgi.client" />
-			<!-- Accept Page Data -->
-			<input type="hidden" name="title" PML_value="cgi.acc_title" />
-			<input type="hidden" name="mpoint" PML_value="cgi.acc_mpoint" />
-			<input type="hidden" name="mpoint_width" PML_value="cgi.acc_mpoint_width" />
-			<input type="hidden" name="mpoint_height" PML_value="cgi.acc_mpoint_height" />
-			<input type="hidden" name="status" PML_value="cgi.acc_status" />
-			<input type="hidden" name="txn_id_label" PML_value="cgi.acc_txn_id_label" />
-			<input type="hidden" name="order_no" PML_value="cgi.acc_order_no" />
-			<input type="hidden" name="order_no_label" PML_value="cgi.acc_order_no_label" />
-			<input type="hidden" name="price" PML_value="cgi.acc_price" />
-			<input type="hidden" name="price_label" PML_value="cgi.acc_price_label" />
-			<input type="hidden" name="sms_receipt" PML_value="cgi.acc_sms_receipt" />
-			<input type="hidden" name="sms_receipt_text" PML_value="cgi.acc_sms_receipt_text" />
-			<input type="hidden" name="email_receipt" PML_value="cgi.acc_email_receipt" />
-			<input type="hidden" name="email_receipt_text" PML_value="cgi.acc_email_receipt_text" />
-			<input type="hidden" name="email_url" PML_value="cgi.acc_email_url" />
-			<input type="hidden" name="accept_url"  PML_value="cgi.acc_accept_url" />
-			<input type="hidden" name="continue" PML_value="cgi.acc_continue" />
+			<input type="hidden" name="mpoint_width" PML_value="cgi.mpoint_width" />
+			<input type="hidden" name="mpoint_height" PML_value="cgi.mpoint_height" />
+			<input type="hidden" name="sms_receipt" PML_value="cgi.sms_receipt" />
+			<input type="hidden" name="email_receipt" PML_value="cgi.email_receipt" />
+			<input type="hidden" name="email_url" PML_value="cgi.email_url" />
+			<input type="hidden" name="accept_url"  PML_value="cgi.accept_url" />
+			<input type="hidden" name="recipient"  PML_value="cgi.recipient" />
+			<input type="hidden" name="order_no"  PML_value="cgi.order_no" />
+			<input type="hidden" name="price"  PML_value="cgi.price" />
 			<PML_SCRIPT>
 			// Transfer Custom Variables
 			foreach(i ; cgi)
@@ -207,44 +230,44 @@
 			</PML_SCRIPT>
 		</div>
 		<div>
-			<span class="mPoint_Label"><PML_VAL>cgi.pay_sel_card</PML_VAL>:</span>
+			<span class="mPoint_Label"><PML_VAL>label_selected_card</PML_VAL>:</span>
 			<table style="padding-bottom:0.5em;">
 			<tr>
 			<PML_SWITCH EXPR="cgi.cardid">
 				<PML_CASE VALUE="1">
-					<td><img src="images/amex.jpg" PML_width="cgi.pay_card_width" PML_height="cgi.pay_card_height" alt="- American Express -" /></td>
+					<td><img src="images/amex.jpg" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- American Express -" /></td>
 					<td colspan="3" class="status">&nbsp;American Express</td>
 				</PML_CASE>
 				<PML_CASE VALUE="2">
-					<td><img src="images/dankort.gif" PML_width="cgi.pay_card_width" PML_height="cgi.pay_card_height" alt="- Dankort -" /></td>
+					<td><img src="images/dankort.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Dankort -" /></td>
 					<td colspan="3" class="status">&nbsp;Dankort</td>
 				</PML_CASE>
 				<PML_CASE VALUE="3">
-					<td><img src="images/diners.jpg" PML_width="cgi.pay_card_width" PML_height="cgi.pay_card_height" alt="- Diners Club -" /></td>
+					<td><img src="images/diners.jpg" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Diners Club -" /></td>
 					<td colspan="3" class="status">&nbsp;Diners Club</td>
 				</PML_CASE>
 				<PML_CASE VALUE="4">
-					<td><img src="images/mastercard.gif" PML_width="cgi.pay_card_width" PML_height="cgi.pay_card_height" alt="- EuroCard -" /></td>
+					<td><img src="images/mastercard.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- EuroCard -" /></td>
 					<td colspan="3" class="status">&nbsp;EuroCard</td>
 				</PML_CASE>
 				<PML_CASE VALUE="5">
-					<td><img src="images/jcb.gif" PML_width="cgi.pay_card_width" PML_height="cgi.pay_card_height" alt="- JCB -" /></td>
+					<td><img src="images/jcb.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- JCB -" /></td>
 					<td colspan="3" class="status">&nbsp;JCB</td>
 				</PML_CASE>
 				<PML_CASE VALUE="6">
-					<td><img src="images/maestro.gif" PML_width="cgi.pay_card_width" PML_height="cgi.pay_card_height" alt="- Maestro -" /></td>
+					<td><img src="images/maestro.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Maestro -" /></td>
 					<td colspan="3" class="status">&nbsp;Maestro</td>
 				</PML_CASE>
 				<PML_CASE VALUE="7">
-					<td><img src="images/mastercard.gif" PML_width="cgi.pay_card_width" PML_height="cgi.pay_card_height" alt="- MasterCard -" /></td>
+					<td><img src="images/mastercard.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- MasterCard -" /></td>
 					<td colspan="3" class="status">&nbsp;MasterCard</td>
 				</PML_CASE>
 				<PML_CASE VALUE="8">
-					<td><img src="images/visa.gif" PML_width="cgi.pay_card_width" PML_height="cgi.pay_card_height" alt="- VISA -" /></td>
+					<td><img src="images/visa.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- VISA -" /></td>
 					<td colspan="3" class="status">&nbsp;VISA</td>
 				</PML_CASE>
 				<PML_CASE VALUE="9">
-					<td><img src="images/visa_electron.gif" PML_width="cgi.pay_card_width" PML_height="cgi.pay_card_height" alt="- VISA Electron -" /></td>
+					<td><img src="images/visa_electron.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- VISA Electron -" /></td>
 					<td colspan="3" class="status">&nbsp;VISA Electron</td>
 				</PML_CASE>
 			</PML_SWITCH>
@@ -252,9 +275,9 @@
 			</table>
 		</div>
 		<!-- Credit Card Information -->
-		<div><PML_VAL>cgi.pay_info</PML_VAL></div>
+		<div><PML_VAL>info</PML_VAL></div>
 		<div class="mPoint_Label">
-			<PML_VAL>cgi.pay_card_number</PML_VAL>:<br />
+			<PML_VAL>label_card_number</PML_VAL>:<br />
 			<PML_IF COND="cgi.test = true">
 				<input name="cardno" maxlength="19" PML_value="string.precision(test_cardnum, 0)" size="19" style="-wap-input-format:'*N';" />
 			</PML_IF>
@@ -263,10 +286,10 @@
 			</PML_ELSE>
 		</div>
 		<div class="mPoint_Label">
-			<PML_VAL>cgi.pay_expiry</PML_VAL> <span class="mPoint_Info">(<PML_VAL>cgi.pay_em</PML_VAL>/<PML_VAL>cgi.pay_ey</PML_VAL>)</span>:<br />
+			<PML_VAL>label_expiry</PML_VAL> <span class="mPoint_Info">(<PML_VAL>expiry_month</PML_VAL>/<PML_VAL>expiry_year</PML_VAL>)</span>:<br />
 			<!-- Construct dropdown for Expiry Month -->
 			<select name="expmon">
-				<option value="">( <PML_VAL>cgi.pay_em</PML_VAL> )</option>
+				<option value="">( <PML_VAL>expiry_month</PML_VAL> )</option>
 				<PML_FOR INIT="i:=1" COND="i<=12" INCR="i++">
 					<PML_IF COND="i < 10">
 						<PML_ASSIGN NAME="n" VALUE="'0'@ i">
@@ -286,7 +309,7 @@
 			&nbsp;/&nbsp;
 			<!-- Construct dropdown for Expiry Year -->
 			<select name="expyear">
-				<option value="">( <PML_VAL>cgi.pay_ey</PML_VAL> )</option>
+				<option value="">( <PML_VAL>expiry_year</PML_VAL> )</option>
 				<PML_FOR INIT="i:=date.get(date.now).year" COND="i<=date.get(date.now).year+25" INCR="i++">
 					<PML_IF COND="string.substring(i, 2, 2) = test_expyear">
 						<option PML_value="string.substring(i, 2, 2)" selected="selected"><PML_VAL>string.substring(i, 2, 2)</PML_VAL></option>
@@ -298,7 +321,7 @@
 		 	</select>
 		</div>
 		<div class="mPoint_Label">
-			<PML_VAL>cgi.pay_cvc</PML_VAL>:<br />
+			<PML_VAL>label_cvc</PML_VAL>:<br />
 			<PML_IF COND="cgi.test = true">
 				<input name="cvc" maxlength="3" PML_value="string.precision(test_cvc, 0)" size="3" style="-wap-input-format:'*N';" />
 			</PML_IF>
@@ -306,11 +329,11 @@
 				<input name="cvc" maxlength="3" value="" size="3" style="-wap-input-format:'*N';" />
 			</PML_ELSE>
 		</div>
-		<div class="mPoint_Info"><PML_VAL>cgi.pay_cvc_help</PML_VAL></div>
+		<div class="mPoint_Info"><PML_VAL>cvc_help</PML_VAL></div>
 
 		<!-- Send Data-->
 		<p>
-			<input type="submit" PML_value="cgi.pay_submit" />
+			<input type="submit" PML_value="submit" />
 		</p>
 	</form>
 </body>

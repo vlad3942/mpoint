@@ -3,8 +3,11 @@
 <xsl:output method="xml" version="1.0" encoding="ISO-8859-15" indent="yes" media-type="application/xhtml+xml" doctype-public="-//WAPFORUM//DTD XHTML Mobile 1.0//EN" doctype-system="http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd" omit-xml-declaration="no" />
 	
 <xsl:template match="/">
-	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{/root/transaction/language}">
+	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{func:transLanguage(/root/transaction/language)}">
 	<head>
+		<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=ISO-8859-15" />
+		<meta http-equiv="Cache-Control" content="max-age=86400" />
+		<meta http-equiv="Content-Style-Type" content="text/css" />	
 		<title><xsl:value-of select="/root/title" /></title>
 		<link href="{/root/transaction/css-url}" type="text/css" rel="stylesheet" media="handheld" />
 		<!-- Pre-load pages -->
@@ -18,9 +21,6 @@
 				<link href="{func:constLink('email.php')}" rel="next" type="application/xhtml+xml" />
 			</xsl:when>
 		</xsl:choose>
-		<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=ISO-8859-15" />
-		<meta http-equiv="Cache-Control" content="max-age=86400" />
-		<meta http-equiv="Content-Style-Type" content="text/css" />
 	</head>
 	<body>
 		<div id="logo">
@@ -135,5 +135,52 @@
 	</xsl:choose>
 </func:function>
 
-</xsl:stylesheet>
+<func:function name="func:transLanguage">
+	<xsl:param name="lang" />
 	
+	<!-- Perform Language conversion -->
+	<xsl:choose>
+		<!-- British English -->
+		<xsl:when test="$lang = 'gb'">
+			<func:result>en</func:result>
+		</xsl:when>
+		<!-- American English -->
+		<xsl:when test="$lang = 'us'">
+			<func:result>en</func:result>
+		</xsl:when>
+		<!-- Danish -->
+		<xsl:when test="$lang = 'da'">
+			<func:result>da</func:result>
+		</xsl:when>
+		<!-- Norwegian -->
+		<xsl:when test="$lang = 'no'">
+			<func:result>no</func:result>
+		</xsl:when>
+		<!-- Swedish -->
+		<xsl:when test="$lang = 'se'">
+			<func:result>sv</func:result>
+		</xsl:when>
+		<!-- German -->
+		<xsl:when test="$lang = 'de'">
+			 <func:result>de</func:result>
+		</xsl:when>
+		<!-- Spanish -->
+		<xsl:when test="$lang = 'es'">
+			<func:result>es</func:result>
+		</xsl:when>
+		<!-- Finish -->
+		<xsl:when test="$lang = 'fi'">
+			<func:result>fi</func:result>
+		</xsl:when>
+		<!-- French -->
+		<xsl:when test="$lang = 'fr'">
+			<func:result>fr</func:result>
+		</xsl:when>
+		<!-- Error -->
+		<xsl:otherwise>
+			
+		</xsl:otherwise>
+	</xsl:choose>
+</func:function>
+
+</xsl:stylesheet>

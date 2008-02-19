@@ -126,34 +126,11 @@ if (array_key_exists(1000, $aMsgCds) === true)
 	$xml .= '<info>'. $_OBJ_TXT->_("Please select your Credit Card") .'</info>';
 	$xml .= '</labels>';
 	$xml .= $obj_mPoint->getCards();
-	// DIBS Custom Pages: Credit Card Information
-	$xml .= '<payment>';
-	$xml .= '<title>'. $_OBJ_TXT->_("Card Information") .'</title>';
-	$xml .= '<progress>'. $_OBJ_TXT->_("Step 2 of 2") .'</progress>';
-	$xml .= '<selected>'. $_OBJ_TXT->_("Selected Card") .'</selected>';
-	$xml .= '<info>'. $_OBJ_TXT->_("Please enter your card information below") .'</info>';
-	$xml .= '<card-number>'. $_OBJ_TXT->_("Card Number") .'</card-number>';
-	$xml .= '<expiry>'. $_OBJ_TXT->_("Expiry date") .'</expiry>';
-	$xml .= '<expiry-month>'. $_OBJ_TXT->_("mm") .'</expiry-month>';
-	$xml .= '<expiry-year>'. $_OBJ_TXT->_("yy") .'</expiry-year>';
-	$xml .= '<cvc>'. $_OBJ_TXT->_("CVC / CVS") .'</cvc>';
-	$xml .= '<cvc-help>'. $_OBJ_TXT->_("3 digits (printed on the backside of the card)") .'</cvc-help>';
-	$xml .= '<submit>'. $_OBJ_TXT->_("Complete Payment") .'</submit>';
-	$xml .= '</payment>';
 	// DIBS Custom Pages: Payment Accepted
 	$obj_mPoint = new Accept($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_UA']);
 	$xml .= '<accept>';
 	$xml .= $obj_mPoint->getmPointLogoInfo();
 	$xml .= $obj_mPoint->getClientVars($iTxnID);
-	$xml .= '<title>'. $_OBJ_TXT->_("Payment Completed") .'</title>';
-	$xml .= '<mpoint>'. $_OBJ_TXT->_("Thank you for using") .'</mpoint>';
-	$xml .= '<status>'. $_OBJ_TXT->_("Status - Success") .'</status>';
-	$xml .= '<txn-id>'. $_OBJ_TXT->_("mPoint ID") .'</txn-id>';
-	$xml .= '<order-id>'. $_OBJ_TXT->_("Order No") .'</order-id>';
-	$xml .= '<price>'. $_OBJ_TXT->_("Price") .'</price>';
-	$xml .= '<sms-receipt>'. str_replace("{ADDRESS}", $_SESSION['obj_TxnInfo']->getAddress(), $_OBJ_TXT->_("SMS Receipt - Info") ) .'</sms-receipt>';
-	$xml .= '<email-receipt>'. $_OBJ_TXT->_("Send receipt via E-Mail") .'</email-receipt>';
-	$xml .= '<continue>'. htmlspecialchars($_OBJ_TXT->_("Continue >>") ) .'</continue>';
 	$xml .= '</accept>';
 	
 	$xml .= '</root>';

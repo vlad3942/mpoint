@@ -140,7 +140,7 @@ define("sTEMPLATE", "default");
 /**
  * Language for GUI
  */
-define("sDEFAULT_LANGUAGE", "uk");
+define("sDEFAULT_LANGUAGE", "gb");
 
 /**
  * Default mPoint Domain

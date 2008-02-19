@@ -219,9 +219,10 @@ class General
 	 * Once the language has been determined, the method will update the user session to expedite future
 	 * queries.
 	 * 
+	 * @see 	sDEFAULT_LANGUAGE
+	 * @see 	sLANGUAGE_PATH
 	 * @see 	Websession::getInfo()
 	 * @see 	TxnInfo::getLanguage()
-	 * @see 	sDEFAULT_LANGUAGE
 	 *
 	 * @return 	string
 	 */
@@ -233,34 +234,54 @@ class General
 			$sLang = $_SESSION['obj_Info']->getInfo("language");
 			break;
 		case (array_key_exists("HTTP_ACCEPT_LANGUAGE", $_SERVER) ):	// Analyse HTTP Header
-			// Get language part from Browser headers
-			$sLang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
-			// User has specified an English language
-			if($sLang == "en")
+			/* ========== Determine Language from HTTP Header Start ========== */
+			// Open current directory
+			$dh = opendir(sLANGUAGE_PATH);
+			// Directory opened successfully
+			if (is_resource($dh) === true)
 			{
-				// British English is available and Browser specifies language as British English
-				if(stristr("gb", $_SERVER['HTTP_ACCEPT_LANGUAGE']) == true)
+				// Lopp through files in directory
+				while ( ($dir = readdir($dh) ) !== false && isset($sLang) === false)
 				{
-					$sLang = "uk";
+					// Current entry is a directory with a language translation
+					if ($dir != "." && $dir != ".." && is_dir(sLANGUAGE_PATH ."/". $dir) === true)
+					{
+						// Language directory found in HTTP Header
+						if (stristr($_SERVER['HTTP_ACCEPT_LANGUAGE'], $dir) == true)
+						{
+							$sLang = $dir;
+						}
+					}
 				}
-				// Default to American English
-				else
-				{
-					$sLang = "us";
-				}
+				closedir($dh);
 			}
+			/* ========== Determine Language from HTTP Header End ========== */
 			
-			// User's selected language is unavailable
-			if(is_dir(sLANGUAGE_PATH . $sLang) === false)
+			/* ========== Determine Configuration Start ========== */
+			// User's selected language is unavailable as a translation
+			if (isset($sLang) === false)
 			{
-				// Language provided when the Transaction was initialised
-				if (isset($_SESSION) === true && array_key_exists("obj_TxnInfo", $_SESSION) === true)
+				// Customer has set the Mobile Device to English
+				if (stristr($_SERVER['HTTP_ACCEPT_LANGUAGE'], "en") == true)
+				{
+					// Language provided when the Transaction was initialised is either British or American English
+					if (isset($_SESSION) === true && array_key_exists("obj_TxnInfo", $_SESSION) === true
+						&& ($_SESSION['obj_TxnInfo']->getLanguage() == "gb" || $_SESSION['obj_TxnInfo']->getLanguage() == "us") )
+					{
+						$sLang = $_SESSION['obj_TxnInfo']->getLanguage();
+					}
+					// Default to British English
+					else { $sLang = "gb"; }
+				}
+				// Language has been provided when the Transaction was initialised
+				elseif (isset($_SESSION) === true && array_key_exists("obj_TxnInfo", $_SESSION) === true)
 				{
 					$sLang = $_SESSION['obj_TxnInfo']->getLanguage();
 				}
 				// Use system default
 				else { $sLang = sDEFAULT_LANGUAGE; }
 			}
+			/* ========== Determine Configuration End ========== */
 			break;
 		case (isset($_SESSION) && array_key_exists("obj_TxnInfo", $_SESSION) ):	// Language provided when the Transaction was initialised
 			$sLang = $_SESSION['obj_TxnInfo']->getLanguage();

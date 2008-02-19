@@ -28,54 +28,6 @@
 	</xsl:for-each>
 </xsl:template>
 
-<func:function name="func:transLanguage">
-	<xsl:param name="lang" />
-	
-	<!-- Perform Language conversion -->
-	<xsl:choose>
-		<!-- British English -->
-		<xsl:when test="$lang = 'uk'">
-			<func:result>en</func:result>
-		</xsl:when>
-		<!-- American English -->
-		<xsl:when test="$lang = 'us'">
-			<func:result>en</func:result>
-		</xsl:when>
-		<!-- Danish -->
-		<xsl:when test="$lang = 'dk'">
-			<func:result>da</func:result>
-		</xsl:when>
-		<!-- Norwegian -->
-		<xsl:when test="$lang = 'no'">
-			<func:result>no</func:result>
-		</xsl:when>
-		<!-- Swedish -->
-		<xsl:when test="$lang = 'se'">
-			<func:result>sv</func:result>
-		</xsl:when>
-		<!-- German -->
-		<xsl:when test="$lang = 'ge'">
-			 <func:result>de</func:result>
-		</xsl:when>
-		<!-- Spanish -->
-		<xsl:when test="$lang = 'es'">
-			<func:result>es</func:result>
-		</xsl:when>
-		<!-- Finish -->
-		<xsl:when test="$lang = 'fi'">
-			<func:result>en</func:result>
-		</xsl:when>
-		<!-- French -->
-		<xsl:when test="$lang = 'fr'">
-			<func:result>fr</func:result>
-		</xsl:when>
-		<!-- Error -->
-		<xsl:otherwise>
-			
-		</xsl:otherwise>
-	</xsl:choose>
-</func:function>
-
 <func:function name="func:transCard">
 	<xsl:param name="cardid" />
 	
@@ -211,42 +163,23 @@
 				<input type="hidden" name="client" value="{/root/client-config/name}" />
 				
 				<!-- Payment Page Data -->
-				<input type="hidden" name="pay_title" value="{/root/payment/title}" />
-				<input type="hidden" name="pay_card_width" value="{width}" />
-				<input type="hidden" name="pay_card_height" value="{height}" />
-				<input type="hidden" name="pay_progress" value="{/root/payment/progress}" />
-				<input type="hidden" name="pay_sel_card" value="{/root/payment/selected}" />
-				<input type="hidden" name="pay_info" value="{/root/payment/info}" />
-				<input type="hidden" name="pay_card_number" value="{/root/payment/card-number}" />
-				<input type="hidden" name="pay_expiry" value="{/root/payment/expiry}" />
-				<input type="hidden" name="pay_em" value="{/root/payment/expiry-month}" />
-				<input type="hidden" name="pay_ey" value="{/root/payment/expiry-year}" />
-				<input type="hidden" name="pay_cvc" value="{/root/payment/cvc}" />
-				<input type="hidden" name="pay_cvc_help" value="{/root/payment/cvc-help}" />
-				<input type="hidden" name="pay_submit" value="{/root/payment/submit}" />
+				<input type="hidden" name="card_width" value="{width}" />
+				<input type="hidden" name="card_height" value="{height}" />
 				
 				<!-- Accept Page Data -->
-				<input type="hidden" name="acc_title" value="{/root/accept/title}" />
-				<input type="hidden" name="acc_mpoint" value="{/root/accept/mpoint}" />
-				<input type="hidden" name="acc_mpoint_width" value="{/root/accept/mpoint-logo/width}" />
-				<input type="hidden" name="acc_mpoint_height" value="{/root/accept/mpoint-logo/height}" />
-				<input type="hidden" name="acc_status" value="{/root/accept/status}" />
-				<input type="hidden" name="acc_txn_id_label" value="{/root/accept/txn-id}" />
-				<input type="hidden" name="acc_order_no" value="{/root/transaction/order-id}" />
-				<input type="hidden" name="acc_order_no_label" value="{/root/accept/order-id}" />
-				<input type="hidden" name="acc_price" value="{/root/transaction/price}" />
-				<input type="hidden" name="acc_price_label" value="{/root/accept/price}" />
-				<input type="hidden" name="acc_sms_receipt" value="{/root/client-config/sms-receipt}" />
-				<input type="hidden" name="acc_sms_receipt_text" value="{/root/accept/sms-receipt}" />
-				<input type="hidden" name="acc_email_receipt" value="{/root/client-config/sms-receipt}" />
-				<input type="hidden" name="acc_email_receipt_text" value="{/root/accept/email-receipt}" />
-				<input type="hidden" name="acc_email_url" value="{func:constLink('/email.php')}" />
-				<input type="hidden" name="acc_accept_url"  value="{/root/transaction/accept-url}" />
-				<input type="hidden" name="acc_continue" value="{/root/accept/continue}" />
+				<input type="hidden" name="mpoint_width" value="{/root/accept/mpoint-logo/width}" />
+				<input type="hidden" name="mpoint_height" value="{/root/accept/mpoint-logo/height}" />
+				<input type="hidden" name="sms_receipt" value="{/root/client-config/sms-receipt}" />
+				<input type="hidden" name="email_receipt" value="{/root/client-config/sms-receipt}" />
+				<input type="hidden" name="email_url" value="{func:constLink('/email.php')}" />
+				<input type="hidden" name="accept_url"  value="{/root/transaction/accept-url}" />
+				<input type="hidden" name="recipient"  value="{/root/transaction/address}" />
+				<input type="hidden" name="order_no"  value="{/root/transaction/order-id}" />
+				<input type="hidden" name="price"  value="{/root/transaction/price}" />
 				<!-- Transfer Custom Variables -->
 				<xsl:for-each select="/root/accept/client-vars/item">
-					<input type="hidden" name="acc_client_vars_names_{position()}" value="{name}" />
-					<input type="hidden" name="acc_client_vars_data_{position()}" value="{value}" />
+					<input type="hidden" name="client_vars_names_{position()}" value="{name}" />
+					<input type="hidden" name="client_vars_data_{position()}" value="{value}" />
 				</xsl:for-each>
 				
 				<!--

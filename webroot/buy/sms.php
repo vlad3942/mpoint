@@ -29,7 +29,7 @@ header("content-type: text/plain");
 $obj_MsgInfo = GoMobileMessage::produceMessage($HTTP_RAW_POST_DATA);
 
 // Instantiate mPoint object to handle the transaction
-$obj_mPoint = SMS_Purchase::produceSMS_Purchase($_OBJ_DB, $_OBJ_TXT, $obj_MsgInfo);
+$obj_mPoint = SMS_Purchase::produceSMS_Purchase($_OBJ_DB, $obj_MsgInfo);
 
 $iTxnID = $obj_mPoint->newTransaction(Constants::iSMS_PURCHASE_TYPE);
 // Update Transaction Log

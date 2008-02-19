@@ -44,34 +44,10 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 	
 	<?= $obj_mPoint->getCards(); ?>
 	
-	<!-- DIBS Custom Pages: Credit Card Information -->
-	<payment>
-		<title><?= $_OBJ_TXT->_("Card Information"); ?></title>
-		<progress><?= $_OBJ_TXT->_("Step 2 of 2"); ?></progress>
-		<selected><?= $_OBJ_TXT->_("Selected Card"); ?></selected>
-		<info><?= $_OBJ_TXT->_("Please enter your card information below"); ?></info>
-		<card-number><?= $_OBJ_TXT->_("Card Number"); ?></card-number>
-		<expiry><?= $_OBJ_TXT->_("Expiry date"); ?></expiry>
-		<expiry-month><?= $_OBJ_TXT->_("mm"); ?></expiry-month>
-		<expiry-year><?= $_OBJ_TXT->_("yy"); ?></expiry-year>
-		<cvc><?= $_OBJ_TXT->_("CVC / CVS"); ?></cvc>
-		<cvc-help><?= $_OBJ_TXT->_("3 digits (printed on the backside of the card)"); ?></cvc-help>
-		<submit><?= $_OBJ_TXT->_("Complete Payment"); ?></submit>
-	</payment>
-	
 	<!-- DIBS Custom Pages: Payment Accepted -->
 	<accept>
 		<?= $obj_Accept->getmPointLogoInfo(); ?>
 	
 		<?= $obj_Accept->getClientVars($_SESSION['obj_TxnInfo']->getID() ); ?>
-		
-		<mpoint><?= $_OBJ_TXT->_("Thank you for using"); ?></mpoint>
-		<status><?= $_OBJ_TXT->_("Status - Success"); ?></status>
-		<txn-id><?= $_OBJ_TXT->_("mPoint ID"); ?></txn-id>
-		<order-id><?= $_OBJ_TXT->_("Order No"); ?></order-id>
-		<price><?= $_OBJ_TXT->_("Price"); ?></price>
-		<sms-receipt><?= str_replace("{ADDRESS}", $_SESSION['obj_TxnInfo']->getAddress(), $_OBJ_TXT->_("SMS Receipt - Info") ); ?></sms-receipt>
-		<email-receipt><?= $_OBJ_TXT->_("Send receipt via E-Mail"); ?></email-receipt>
-		<continue><?= htmlspecialchars($_OBJ_TXT->_("Continue >>") ); ?></continue>
 	</accept>
 </root>

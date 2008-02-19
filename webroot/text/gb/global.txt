@@ -1,0 +1,142 @@
+#: /webroot/accept.php:28
+msgid @@@ Payment Completed @@@
+msgstr @@@ Payment Completed @@@
+
+#: /webroot/accept.php:41
+msgid @@@ Thank you for using @@@
+msgstr @@@ Thank you for using @@@
+
+#: /webroot/accept.php:42
+msgid @@@ Status - Success @@@
+msgstr @@@ Your payment has been successfully completed @@@
+
+#: /webroot/accept.php:43
+msgid @@@ mPoint ID @@@
+msgstr @@@ mPoint ID @@@
+
+#: /webroot/accept.php:44
+msgid @@@ Order No @@@
+msgstr @@@ Order No @@@
+
+#: /webroot/accept.php:45
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
+#: /webroot/accept.php:46
+msgid @@@ SMS Receipt - Info @@@
+msgstr @@@ These details have also been sent to you via SMS to number {ADDRESS} @@@
+
+#: /webroot/accept.php:47
+msgid @@@ Send receipt via E-Mail @@@
+msgstr @@@ Send receipt via E-Mail @@@
+
+#: /webroot/accept.php:48
+msgid @@@ Continue >> @@@
+msgstr @@@ Continue back to Client Site >> @@@
+
+#: /webroot/buy/web.php:120
+msgid @@@ Select Card @@@
+msgstr @@@ Select Card @@@
+
+#: /webroot/buy/web.php:125
+msgid @@@ Step 1 of 2 @@@
+msgstr @@@ Step 1 of 2 @@@
+
+#: /webroot/buy/web.php:126
+msgid @@@ Please select your Credit Card @@@
+msgstr @@@ Please select your Credit Card @@@
+
+#: /webroot/card.php:32
+msgid @@@ Select Card @@@
+msgstr @@@ Select Card @@@
+
+#: /webroot/card.php:41
+msgid @@@ Step 1 of 2 @@@
+msgstr @@@ Step 1 of 2 @@@
+
+#: /webroot/card.php:42
+msgid @@@ Please select your Credit Card @@@
+msgstr @@@ Please select your Credit Card @@@
+
+#: /webroot/email.php:29
+msgid @@@ E-Mail Receipt @@@
+msgstr @@@ E-Mail Receipt @@@
+
+#: /webroot/email.php:40
+msgid @@@ Thank you for using @@@
+msgstr @@@ Thank you for using @@@
+
+#: /webroot/email.php:41
+msgid @@@ Please enter your e-mail address below @@@
+msgstr @@@ Please enter your e-mail address below @@@
+
+#: /webroot/email.php:42
+msgid @@@ E-Mail @@@
+msgstr @@@ E-Mail @@@
+
+#: /webroot/email.php:43
+msgid @@@ Send E-Mail @@@
+msgstr @@@ Send E-Mail @@@
+
+#: /webroot/email.php:44
+msgid @@@ << Back @@@
+msgstr @@@ << Back @@@
+
+#: /webroot/overview.php:32
+msgid @@@ Order Overview @@@
+msgstr @@@ Order Overview @@@
+
+#: /webroot/overview.php:41
+msgid @@@ Product - Info @@@
+msgstr @@@ Please find your ordered items listed below @@@
+
+#: /webroot/overview.php:42
+msgid @@@ Name @@@
+msgstr @@@ Product @@@
+
+#: /webroot/overview.php:43
+msgid @@@ Quantity @@@
+msgstr @@@ # @@@
+
+#: /webroot/overview.php:44
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
+#: /webroot/overview.php:45
+msgid @@@ Total @@@
+msgstr @@@ Total @@@
+
+#: /webroot/overview.php:46
+msgid @@@ Go to Payment >> @@@
+msgstr @@@ Go to Payment >> @@@
+
+#: /api/classes/callback.php:193
+msgid @@@ mPoint - SMS Receipt @@@
+msgstr @@@ Thank you for using mPoint, your order details are:
+mPoint ID: {MPOINTID}
+Merchant: {CLIENT}
+Order No: {ORDERID}
+Price: {PRICE} @@@
+
+#: /api/classes/email_receipt.php:75
+msgid @@@ E-Mail Receipt - Subject @@@
+msgstr @@@ mPoint Receipt for Order No: {ORDERID} with mPoint ID: {MPOINTID} @@@
+
+#: /api/classes/email_receipt.php:94
+msgid @@@ E-Mail Receipt - Body @@@
+msgstr @@@ Thank you for using mPoint.
+Please find your order details below.
+Mobile No: {ADDRESS}
+mPoint ID: {MPOINTID}
+Merchant: {CLIENT}
+Order No: {ORDERID}
+Price: {PRICE} @@@
+
+#: /api/classes/sms_purchase.php:121
+msgid @@@ mPoint - Embedded link Indication @@@
+msgstr @@@ Welcome to mPoint, please activate the link below @@@
+
+#: /api/classes/sms_purchase.php:127
+msgid @@@ mPoint - WAP Push Indication @@@
+msgstr @@@ Welcome to mPoint @@@
+

@@ -1,8 +1,39 @@
+<PML_META nospace="true">
+<PML_SCRIPT>
+/* ========== Language Translataion Start ========== */
+// Danish
+if (cgi.lang = 'da')
+{
+	title := 'Betaling Gennemf&oslash;rt';
+	mpoint := 'Tak fordi du brugte';
+	status := 'Din betaling er blevet gennemf&oslash;rt';
+	label_mpoint_id := 'mPoint ID';
+	label_order_no := 'Order Nr';
+	label_price := 'Pris';
+	sms_receipt := 'Ovenst&aring;ende kvittering er ogs&aring; blevet sendt via SMS til: ADDRESS';
+	email_receipt := 'Send kvittering via E-Mail';
+	submit := 'Forts&aelig;t tilbage til S&aelig;lgers site >>';
+}
+// English
+else
+{
+	title := 'Payment Completed';
+	mpoint := 'Thank you for using';
+	status := 'Your payment has been successfully completed';
+	label_mpoint_id := 'mPoint ID';
+	label_order_no := 'Order No';
+	label_price := 'Price';
+	sms_receipt := 'These details have also been sent to you via SMS to number: ADDRESS';
+	email_receipt := 'Send receipt via E-Mail';
+	submit := 'Continue back to Merchant Site >>';
+}
+/* ========== Language Translataion End ========== */
+</PML_SCRIPT>
 <?xml version="1.0" encoding="ISO-8859-15"?>
 <!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" PML_xml:lang="cgi.lang">
 <head>
-	<title><PML_VAL>cgi.title</PML_VAL></title>
+	<title><PML_VAL>title</PML_VAL></title>
 	<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=ISO-8859-15" />
 	<meta http-equiv="Cache-Control" content="max-age=86400" />
 	<meta http-equiv="Content-Style-Type" content="text/css" />
@@ -118,7 +149,7 @@
 		<img src="images/client_logo.jpg" PML_width="cgi.width" PML_height="cgi.height" PML_alt="'- '@cgi.client@' -'" />
 	</div>
 		<h1>
-			<PML_VAL>cgi.mpoint</PML_VAL><br />
+			<PML_VAL>mpoint</PML_VAL><br />
 			<img src="images/mpoint_logo.jpg" PML_width="cgi.mpoint_width" PML_height="cgi.mpoint_height" alt="- mPoint -" />
 		</h1>
 	<div id="status">
@@ -130,7 +161,7 @@
 		<table>
 		<tr>
 			<td><img src="images/success.gif" width="30" height="28" alt="- OK - " /></td>
-			<td colspan="2" class="mPoint_Info"><PML_VAL>cgi.status</PML_VAL></td>
+			<td colspan="2" class="mPoint_Info"><PML_VAL>status</PML_VAL></td>
 		</tr>
 		</table>
 	</div>
@@ -141,15 +172,17 @@
 	  -->
 	<table id="receipt">
 	<tr>
-		<td colspan="4" class="mPoint_Label"><PML_VAL>cgi.txn_id_label</PML_VAL>:</td>
+		<td colspan="4" class="mPoint_Label"><PML_VAL>label_mpoint_id</PML_VAL>:</td>
 		<td colspan="3" class="mPoint_number"><PML_VAL>cgi.orderid</PML_VAL></td>
 	</tr>
+	<PML_IF COND="cgi.order_no > -1">
 	<tr>
-		<td colspan="4" class="mPoint_Label"><PML_VAL>cgi.order_no_label</PML_VAL>:</td>
+		<td colspan="4" class="mPoint_Label"><PML_VAL>label_order_no</PML_VAL>:</td>
 		<td colspan="3" class="mPoint_number"><PML_VAL>cgi.order_no</PML_VAL></td>
 	</tr>
+	</PML_IF>
 	<tr>
-		<td colspan="4" class="mPoint_Label"><PML_VAL>cgi.price_label</PML_VAL>:</td>
+		<td colspan="4" class="mPoint_Label"><PML_VAL>label_price</PML_VAL>:</td>
 		<td colspan="3" class="mPoint_number"><PML_VAL>cgi.price</PML_VAL></td>
 	</tr>
 	</table>
@@ -157,14 +190,14 @@
 	<!-- SMS Receipt Enabled -->
 	<PML_IF COND="cgi.sms_receipt = true">
 		<div class="mPoint_Info">
-			<PML_VAL>cgi.sms_receipt_text</PML_VAL>
+			<PML_VAL>string.replace(sms_receipt, 'ADDRESS', cgi.recipient, 'g')</PML_VAL>
 		</div>
 	</PML_IF>
 	<!-- Allow Access to E-Mail Receipt -->
 	<PML_IF COND="cgi.email_receipt = true">
 		<div class="mPoint_Info">
 			<br />
-			<a PML_href="cgi.email_url"><PML_VAL>cgi.email_receipt_text</PML_VAL></a>
+			<a PML_href="cgi.email_url"><PML_VAL>email_receipt</PML_VAL></a>
 		</div>
 	</PML_IF>
 	
@@ -186,7 +219,7 @@
 				</p>
 				
 				<p>
-					<input type="submit" PML_value="cgi.continue" />
+					<input type="submit" PML_value="submit" />
 				</p>
 			</form>
 		</div>

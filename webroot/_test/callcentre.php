@@ -35,7 +35,7 @@
 </tr>
 <tr>
 	<td style="font-weight:bold;">Language</td>
-	<td><input type="text" name="language" value="uk" /></td>
+	<td><input type="text" name="language" value="gb" /></td>
 </tr>
 <tr>
 	<td style="font-weight:bold;">Logo URL</td>
