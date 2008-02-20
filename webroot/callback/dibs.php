@@ -25,7 +25,7 @@ require_once(sCLASS_PATH ."/dibs.php");
 // Intialise Text Translation Object
 $_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $_POST['language'] ."/global.txt", sLANGUAGE_PATH . $_POST['language'] ."/custom.txt"), sSYSTEM_PATH, 0);
 
-$obj_mPoint = new DIBS($_OBJ_DB, $_OBJ_TXT, TxnInfo::produceInfo($_POST['orderid'], $_OBJ_DB) );
+$obj_mPoint = new DIBS($_OBJ_DB, $_OBJ_TXT, TxnInfo::produceInfo($_POST['mpointid'], $_OBJ_DB) );
 
 // 
 $obj_mPoint->completeTransaction(Constants::iDIBS_PSP, $_POST['transact'], $_POST['cardid'], Constants::iPAYMENT_ACCEPTED_STATE);

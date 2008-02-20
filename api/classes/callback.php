@@ -190,7 +190,7 @@ class Callback extends General
 	 */
 	public function sendReceipt(GoMobileConnInfo &$oCI)
 	{
-		$sBody = $this->getText()->_("mPoint - SMS Receipt");
+		$sBody = utf8_decode($this->getText()->_("mPoint - SMS Receipt") );
 		$sBody = str_replace("{MPOINTID}", $this->_obj_TxnInfo->getID(), $sBody);
 		$sBody = str_replace("{ORDERID}", $this->_obj_TxnInfo->getOrderID(), $sBody);
 		$sBody = str_replace("{PRICE}", General::formatAmount($this->_obj_TxnInfo->getClientConfig()->getCountryConfig(), $this->_obj_TxnInfo->getAmount() ), $sBody);

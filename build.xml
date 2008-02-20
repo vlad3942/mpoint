@@ -48,7 +48,8 @@
 		
 		<echo level="info">
 Automatic deployment complete.
-In order to finnish deploying mPoint please ${destDir} to the server.
+In order to finnish deploying mPoint please ${destDir} to the server and the global configuration file: ${destDir}/conf/global.php must be edited to correspond with the server.
+Additionally ${destDir}/webroot/img/.htaccess and ${destDir}/webroot/pay/.htaccess must be copied to the server manually using scp if on a Mac.
 		</echo>
 	</target>
 </project>

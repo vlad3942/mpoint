@@ -131,6 +131,7 @@ class TxnInfo
 	 */
 	public function __construct($id, $tid, ClientConfig &$oCC, $a, $orid, $addr, $oid, $lurl, $cssurl, $aurl, $curl, $cburl, $l)
 	{
+		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
 		$this->_iTypeID =  (integer) $tid;
 		$this->_obj_ClientConfig = $oCC;

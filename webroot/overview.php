@@ -17,9 +17,6 @@ require_once("inc/include.php");
 // Require Business logic for the Product Overview Component
 require_once(sCLASS_PATH ."/overview.php");
 
-// Set default HTTP Headers
-header("HTTP/1.1 200 OK");
-
 // Instantiate data object with the User Agent Profile for the customer's mobile device.
 $_SESSION['obj_UA'] = UAProfile::produceUAProfile();
 

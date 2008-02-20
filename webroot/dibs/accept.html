@@ -2,7 +2,7 @@
 <PML_SCRIPT>
 /* ========== Language Translataion Start ========== */
 // Danish
-if (cgi.lang = 'da')
+if (cgi.language = 'da')
 {
 	title := 'Betaling Gennemf&oslash;rt';
 	mpoint := 'Tak fordi du brugte';
@@ -14,7 +14,7 @@ if (cgi.lang = 'da')
 	email_receipt := 'Send kvittering via E-Mail';
 	submit := 'Forts&aelig;t tilbage til S&aelig;lgers site >>';
 }
-// English
+// British English
 else
 {
 	title := 'Payment Completed';
@@ -34,7 +34,7 @@ else
 <html xmlns="http://www.w3.org/1999/xhtml" PML_xml:lang="cgi.lang">
 <head>
 	<title><PML_VAL>title</PML_VAL></title>
-	<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=ISO-8859-15" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta http-equiv="Cache-Control" content="max-age=86400" />
 	<meta http-equiv="Content-Style-Type" content="text/css" />
 	<style type="text/css" media="handheld">
@@ -173,14 +173,12 @@ else
 	<table id="receipt">
 	<tr>
 		<td colspan="4" class="mPoint_Label"><PML_VAL>label_mpoint_id</PML_VAL>:</td>
-		<td colspan="3" class="mPoint_number"><PML_VAL>cgi.orderid</PML_VAL></td>
+		<td colspan="3" class="mPoint_number"><PML_VAL>cgi.mpointid</PML_VAL></td>
 	</tr>
-	<PML_IF COND="cgi.order_no > -1">
 	<tr>
 		<td colspan="4" class="mPoint_Label"><PML_VAL>label_order_no</PML_VAL>:</td>
-		<td colspan="3" class="mPoint_number"><PML_VAL>cgi.order_no</PML_VAL></td>
+		<td colspan="3" class="mPoint_number"><PML_VAL>cgi.orderid</PML_VAL></td>
 	</tr>
-	</PML_IF>
 	<tr>
 		<td colspan="4" class="mPoint_Label"><PML_VAL>label_price</PML_VAL>:</td>
 		<td colspan="3" class="mPoint_number"><PML_VAL>cgi.price</PML_VAL></td>
@@ -195,7 +193,7 @@ else
 	</PML_IF>
 	<!-- Allow Access to E-Mail Receipt -->
 	<PML_IF COND="cgi.email_receipt = true">
-		<div class="mPoint_Info">
+		<div>
 			<br />
 			<a PML_href="cgi.email_url"><PML_VAL>email_receipt</PML_VAL></a>
 		</div>

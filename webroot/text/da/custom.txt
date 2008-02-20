@@ -156,16 +156,16 @@ msgid @@@ Status - 1013 @@@
 msgstr @@@ Internal Communication Error - Unable to connect to GoMobile. Please contact support@cellpointmobile.com @@@
 
 msgid @@@ E-Mail - 11 @@@
-msgstr @@@ Du har ikke opgivet en e-mail adresse, pr¿v venligst igen? @@@
+msgstr @@@ Du har ikke opgivet en e-mail adresse, prÃ¸v venligst igen? @@@
 msgid @@@ E-Mail - 12 @@@
-msgstr @@@ E-Mail adressen er for kort, en e-mail adresse skal v¾re pŒ mindst 5 tegn @@@
+msgstr @@@ E-Mail adressen er for kort, en e-mail adresse skal vÃ¦re pÃ¥ mindst 5 tegn @@@
 msgid @@@ E-Mail - 13 @@@
-msgstr @@@ E-Mail adressen er for lang, en e-mail adresse skal v¾re pŒ h¿jst 50 tegn @@@
+msgstr @@@ E-Mail adressen er for lang, en e-mail adresse skal vÃ¦re pÃ¥ hÃ¸jst 50 tegn @@@
 msgid @@@ E-Mail - 14 @@@
-msgstr @@@ E-Mail adressen indeholder ugyldige tegn, en e-mail adresse mŒ kun indeholde f¿lgende tegn: 0-9 A-Z a-z ¾ ¿ Œ ® ¯  _ . - @ @@@
+msgstr @@@ E-Mail adressen indeholder ugyldige tegn, en e-mail adresse mÃ¥ kun indeholde fÃ¸lgende tegn: 0-9 A-Z a-z Ã¦ Ã¸ Ã¥ Ã† Ã˜ Ã… _ . - @ @@@
 msgid @@@ E-Mail - 15 @@@
-msgstr @@@ E-Mail adressen har et ugyldigt format, en e-mail adresse skal v¾re i formatet: anders.and@cellpointmobile.com @@@
+msgstr @@@ E-Mail adressen har et ugyldigt format, en e-mail adresse skal vÃ¦re i formatet: anders.and@cellpointmobile.com @@@
 msgid @@@ E-Mail - 91 @@@
-msgstr @@@ Vi beklager, der opstod desv¾rre en fejl under udsendelse af din e-mail. Pr¿v venligst igen? @@@
+msgstr @@@ Vi beklager, der opstod desvÃ¦rre en fejl under udsendelse af din e-mail. PrÃ¸v venligst igen? @@@
 msgid @@@ Accept - 100 @@@
 msgstr @@@ Din E-Mail kvittering er blevet sendt @@@

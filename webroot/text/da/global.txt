@@ -1,6 +1,6 @@
 #: /webroot/accept.php:28
 msgid @@@ Payment Completed @@@
-msgstr @@@ Betaling Gennmført @@@
+msgstr @@@ Betaling Gennmf√∏rt @@@
 
 #: /webroot/accept.php:41
 msgid @@@ Thank you for using @@@
@@ -8,7 +8,7 @@ msgstr @@@ Tak fordi du brugte @@@
 
 #: /webroot/accept.php:42
 msgid @@@ Status - Success @@@
-msgstr @@@ Din betaling er blevet gennemført @@@
+msgstr @@@ Din betaling er blevet gennemf√∏rt @@@
 
 #: /webroot/accept.php:43
 msgid @@@ mPoint ID @@@
@@ -24,7 +24,7 @@ msgstr @@@ Pris @@@
 
 #: /webroot/accept.php:46
 msgid @@@ SMS Receipt - Info @@@
-msgstr @@@ Ovenstående kvittering er også blevet sendt via SMS til: {ADDRESS} @@@
+msgstr @@@ Ovenst√•ende kvittering er ogs√• blevet sendt via SMS til: {ADDRESS} @@@
 
 #: /webroot/accept.php:47
 msgid @@@ Send receipt via E-Mail @@@
@@ -32,11 +32,11 @@ msgstr @@@ Send kvittering via E-Mail @@@
 
 #: /webroot/accept.php:48
 msgid @@@ Continue >> @@@
-msgstr @@@ Fortsæt tilbage til Sælgers site >> @@@
+msgstr @@@ Forts√¶t tilbage til S√¶lgers site >> @@@
 
 #: /webroot/buy/web.php:120
 msgid @@@ Select Card @@@
-msgstr @@@ Vælg Kort @@@
+msgstr @@@ V√¶lg Kort @@@
 
 #: /webroot/buy/web.php:125
 msgid @@@ Step 1 of 2 @@@
@@ -44,11 +44,11 @@ msgstr @@@ Trin 1 af 2 @@@
 
 #: /webroot/buy/web.php:126
 msgid @@@ Please select your Credit Card @@@
-msgstr @@@ Vælg venligst dit Kredit Kort @@@
+msgstr @@@ V√¶lg venligst dit Kredit Kort @@@
 
 #: /webroot/card.php:32
 msgid @@@ Select Card @@@
-msgstr @@@ Vælg Kort @@@
+msgstr @@@ V√¶lg Kort @@@
 
 #: /webroot/card.php:41
 msgid @@@ Step 1 of 2 @@@
@@ -56,7 +56,7 @@ msgstr @@@ Trin 1 af 2 @@@
 
 #: /webroot/card.php:42
 msgid @@@ Please select your Credit Card @@@
-msgstr @@@ Vælg venligst dit Kredit Kort @@@
+msgstr @@@ V√¶lg venligst dit Kredit Kort @@@
 
 #: /webroot/email.php:29
 msgid @@@ E-Mail Receipt @@@
@@ -82,39 +82,39 @@ msgstr @@@ Send E-Mail @@@
 msgid @@@ << Back @@@
 msgstr @@@ << Tilbage @@@
 
-#: /webroot/overview.php:32
+#: /webroot/overview.php:29
 msgid @@@ Order Overview @@@
-msgstr @@@ Ordre Bekræftelse @@@
+msgstr @@@ Ordre Bekr√¶ftelse @@@
 
-#: /webroot/overview.php:41
+#: /webroot/overview.php:38
 msgid @@@ Product - Info @@@
-msgstr @@@ Nedenstående er opstilling af din ordre @@@
+msgstr @@@ Nedenst√•ende er detaljerne omkring din ordre @@@
 
-#: /webroot/overview.php:42
+#: /webroot/overview.php:39
 msgid @@@ Name @@@
 msgstr @@@ Produkt @@@
 
-#: /webroot/overview.php:43
+#: /webroot/overview.php:40
 msgid @@@ Quantity @@@
 msgstr @@@ # @@@
 
-#: /webroot/overview.php:44
+#: /webroot/overview.php:41
 msgid @@@ Price @@@
 msgstr @@@ Pris @@@
 
-#: /webroot/overview.php:45
+#: /webroot/overview.php:42
 msgid @@@ Total @@@
 msgstr @@@ Total @@@
 
-#: /webroot/overview.php:46
+#: /webroot/overview.php:43
 msgid @@@ Go to Payment >> @@@
-msgstr @@@ Gå til Betaling >> @@@
+msgstr @@@ G√• til Betaling >> @@@
 
 #: /api/classes/callback.php:193
 msgid @@@ mPoint - SMS Receipt @@@
 msgstr @@@ Tak fordi du brugte mPoint, dine ordre informationer er:
 mPoint ID: {MPOINTID}
-Sælger: {CLIENT}
+S√¶lger: {CLIENT}
 Order Nr: {ORDERID}
 Pris: {PRICE} @@@
 
@@ -125,16 +125,16 @@ msgstr @@@ mPoint Kvittering for Order Nr: {ORDERID} med mPoint ID: {MPOINTID} @
 #: /api/classes/email_receipt.php:94
 msgid @@@ E-Mail Receipt - Body @@@
 msgstr @@@ Tak fordi du brugte mPoint.
-Nedenstående er dine ordre informationer.
+Nedenst√•ende er dine ordre informationer.
 Mobil Nr: {ADDRESS}
 mPoint ID: {MPOINTID}
-Sælger: {CLIENT}
+S√¶lger: {CLIENT}
 Order Nr: {ORDERID}
 Pris: {PRICE} @@@
 
 #: /api/classes/sms_purchase.php:121
 msgid @@@ mPoint - Embedded link Indication @@@
-msgstr @@@ Velkommen til mPoint, aktiver venligst nedenstående link @@@
+msgstr @@@ Velkommen til mPoint, aktiver venligst nedenst√•ende link @@@
 
 #: /api/classes/sms_purchase.php:127
 msgid @@@ mPoint - WAP Push Indication @@@

@@ -90,8 +90,7 @@
 				<input type="hidden" name="cancelurl" value="{/root/transaction/cancel-url}" />
 				<input type="hidden" name="amount" value="{/root/transaction/amount}" />
 				<input type="hidden" name="currency" value="{currency}" />
-				<input type="hidden" name="orderid" value="{/root/transaction/@id}" />
-				<input type="hidden" name="uniqueoid" value="true" />
+				<input type="hidden" name="orderid" value="{/root/transaction/order-id}" />
 				<input type="hidden" name="capturenow" value="true" />
 				<!-- Sub-Account configured for DIBS -->
 				<xsl:if test="subaccount &gt; 0">
@@ -106,6 +105,7 @@
 				<input type="hidden" name="format" value="xhtml" />
 				<input type="hidden" name="language" value="{/root/system/language}" />
 				<input type="hidden" name="cardid" value="{@id}" />
+				<input type="hidden" name="mpointid" value="{/root/transaction/@id}" />
 				
 				<!-- Card Data -->
 				<input type="hidden" name="paytype" value="{func:transCard(@id)}" />
@@ -139,8 +139,7 @@
 				<input type="hidden" name="cancelurl" value="{/root/transaction/cancel-url}" />
 				<input type="hidden" name="amount" value="{/root/transaction/amount}" />
 				<input type="hidden" name="currency" value="{currency}" />
-				<input type="hidden" name="orderid" value="{/root/transaction/@id}" />
-				<input type="hidden" name="uniqueoid" value="true" />
+				<input type="hidden" name="orderid" value="{/root/transaction/order-id}" />
 				<input type="hidden" name="capturenow" value="true" />
 				<!-- Sub-Account configured for DIBS -->
 				<xsl:if test="subaccount &gt; 0">
@@ -155,6 +154,7 @@
 				<input type="hidden" name="format" value="xhtml" />
 				<input type="hidden" name="language" value="{/root/system/language}" />
 				<input type="hidden" name="cardid" value="{@id}" />
+				<input type="hidden" name="mpointid" value="{/root/transaction/@id}" />
 				
 				<!-- Card Data -->
 				<input type="hidden" name="paytype" value="{func:transCard(@id)}" />
@@ -172,10 +172,9 @@
 				<input type="hidden" name="sms_receipt" value="{/root/client-config/sms-receipt}" />
 				<input type="hidden" name="email_receipt" value="{/root/client-config/sms-receipt}" />
 				<input type="hidden" name="email_url" value="{func:constLink('/email.php')}" />
-				<input type="hidden" name="accept_url"  value="{/root/transaction/accept-url}" />
-				<input type="hidden" name="recipient"  value="{/root/transaction/address}" />
-				<input type="hidden" name="order_no"  value="{/root/transaction/order-id}" />
-				<input type="hidden" name="price"  value="{/root/transaction/price}" />
+				<input type="hidden" name="accept_url" value="{/root/transaction/accept-url}" />
+				<input type="hidden" name="recipient" value="{/root/transaction/address}" />
+				<input type="hidden" name="price" value="{/root/transaction/price}" />
 				<!-- Transfer Custom Variables -->
 				<xsl:for-each select="/root/accept/client-vars/item">
 					<input type="hidden" name="client_vars_names_{position()}" value="{name}" />

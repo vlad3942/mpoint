@@ -1,33 +1,5 @@
 <PML_META nospace="true">
 <PML_SCRIPT>
-// Payment Gateay is in Test Mode, set default card info
-if (cgi.test = true)
-{
-	// American Express
-	if (cgi.cardid = 1) { sess_cardno := 3700100000000000; }
-	// Dankort
-	elsif (cgi.cardid = 2) { sess_cardno := 5019100000000000; }
-	// Diners Club
-	elsif (cgi.cardid = 3) { sess_cardno := 30401000000000; }
-	// EuroCard
-	elsif (cgi.cardid = 4) { sess_cardno := 5100100000000000; }
-	// JCB
-	elsif (cgi.cardid = 5) { sess_cardno := 3528100000000000; }
-	// Maestro
-	elsif (cgi.cardid = 6) { sess_cardno := 5020100000000000; }
-	// MasterCard
-	elsif (cgi.cardid = 7) { sess_cardno := 5100100000000000; }
-	// VISA
-	elsif (cgi.cardid = 8) { sess_cardno := 4711100000000000; }
-	// VISA Electron
-	elsif (cgi.cardid = 9) { sess_cardno := 4711100000000000; }
-	// Unknown Card
-	else { sess_cardno := ''; }
-	sess_expmon := '06';
-	sess_expyear := 24;
-	sess_cvc := 684;
-}
-
 /* ========== Language Translataion Start ========== */
 // Danish
 if (cgi.language = 'da')
@@ -43,6 +15,20 @@ if (cgi.language = 'da')
 	label_cvc := 'CVC / CVS';
 	cvc_help := '3 tal (trykt p&aring; bagsiden af dit kort)';
 	submit := 'F&aelig;rdigg&oslash;r Betaling';
+	
+	// Error Messages
+	error_0 := 'Dit Kredit Kort blev afvist af PBS, pr&oslash;v venligst med et andet kort?';
+	error_1 := 'Intern Kommunikations fejl, pr&oslash;v venligst igen?';
+	error_2 := 'Intern Fejl: Foresp&oslash;rgslen indeholdt ugyldigt data ('@ auth.message @')';
+	error_3 := 'Der opstod en fejl hos PBS, pr&oslash;v venligst igen?';
+	error_4 := 'Dit kredit kort er udl&oslash;bet, pr&oslash;v venligst med et andet kort?';
+	error_5 := 'Dit kort nummer er ugyldigt, ret venligst kort numret og pr&oslash;v igen?';
+	error_6 := 'Kunne ikke tr&aelig;kke pengene fra din konto, pr&oslash;v venligst med et andet kort?';
+	error_7 := 'Intern Fejl: "orderid" skal v&aelig;re unikt';
+	error_8 := 'Intern Fejl: For f&aring; "amount" felter tilg&aelig;ngelige til at beregne split';
+	error_9 := 'Card Verification Code (CVC / CVS) mangler, indtast venligst din CVC og pr&oslash;v igen?';
+	error_10 := 'Dit kort nummer er ugyligt for den valgte kort type, ret venligst kort numret og pr&oslash;v igen?';
+	error_unknown := 'Ukendt Fejl';
 }
 // British English
 else
@@ -58,6 +44,20 @@ else
 	label_cvc := 'CVC / CVS';
 	cvc_help := '3 digits (printed on the back of the card)';
 	submit := 'Complete Payment';
+	
+	// Error Messages
+	error_0 := 'Credit Card declined by Clearance House, please try again?';
+	error_1 := 'Internal Communication error, please try again?';
+	error_2 := 'Internal Error: Request contained invalid parameters ('@ auth.message @')';
+	error_3 := 'An error occurred at the Clearance House, please try again?';
+	error_4 := 'Your card has expired, please with another card?';
+	error_5 := 'The entered card number is invalid, please check the card number and try again?';
+	error_6 := 'Instant Capture failed, please try with another card?';
+	error_7 := 'Internal Error: "orderid" must be unique';
+	error_8 := 'Internal Error: Too few amount-fields for split';
+	error_9 := 'Card Verification Code (CVC / CVS) is missing, please enter your CVC and try again?';
+	error_10 := 'The entered card number is invalid for the selected card type, please check the card number and try again?';
+	error_unknown := 'Unknown Error';
 }
 /* ========== Language Translataion End ========== */
 </PML_SCRIPT>
@@ -182,10 +182,26 @@ else
 	</div>
 	<div id="progress" class="mPoint_Info"><PML_VAL>progress</PML_VAL></div>
 	
+	<div class="mPoint_Status">
+	<PML_SWITCH EXPR="auth.reason">
+		<PML_CASE VALUE="0"><PML_VAL>error_0</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="1"><PML_VAL>error_1</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="2"><PML_VAL>error_2</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="3"><PML_VAL>error_3</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="4"><PML_VAL>error_4</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="5"><PML_VAL>error_5</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="6"><PML_VAL>error_6</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="7"><PML_VAL>error_7</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="8"><PML_VAL>error_8</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="9"><PML_VAL>error_9</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="10"><PML_VAL>error_10</PML_VAL></PML_CASE>
+		<PML_DEFAULT><PML_VAL>error_unknown</PML_VAL</PML_DEFAULT>
+	</PML_SWITCH>
+	</div>
+	
 	<form action="auth.pml" method="post">
 		<div>
 			<!-- DIBS Required Data -->
-			<input type="hidden" name="merchant" PML_value="cgi.merchant" />
 			<input type="hidden" name="callbackurl" PML_value="string.HTMLencode(cgi.callbackurl)" />
 			<input type="hidden" name="accepturl" PML_value="string.HTMLencode(cgi.accepturl)" />
 			<input type="hidden" name="amount" PML_value="cgi.amount" />

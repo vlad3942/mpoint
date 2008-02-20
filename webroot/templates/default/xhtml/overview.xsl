@@ -20,7 +20,7 @@
 	<!-- List Products -->
 	<xsl:for-each select="products/item">
 	<tr>
-		<td colspan="5"><img src="{logo-url}" width="30" height="30" alt="- Logo -" /></td>
+		<td colspan="6"><img src="{logo-url}" width="30" height="30" alt="- Logo -" /></td>
 	</tr>
 	<tr>
 		<td colspan="3"><xsl:value-of select="name" /></td>

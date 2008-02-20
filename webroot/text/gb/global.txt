@@ -82,31 +82,31 @@ msgstr @@@ Send E-Mail @@@
 msgid @@@ << Back @@@
 msgstr @@@ << Back @@@
 
-#: /webroot/overview.php:32
+#: /webroot/overview.php:29
 msgid @@@ Order Overview @@@
 msgstr @@@ Order Overview @@@
 
-#: /webroot/overview.php:41
+#: /webroot/overview.php:38
 msgid @@@ Product - Info @@@
 msgstr @@@ Please find your ordered items listed below @@@
 
-#: /webroot/overview.php:42
+#: /webroot/overview.php:39
 msgid @@@ Name @@@
 msgstr @@@ Product @@@
 
-#: /webroot/overview.php:43
+#: /webroot/overview.php:40
 msgid @@@ Quantity @@@
 msgstr @@@ # @@@
 
-#: /webroot/overview.php:44
+#: /webroot/overview.php:41
 msgid @@@ Price @@@
 msgstr @@@ Price @@@
 
-#: /webroot/overview.php:45
+#: /webroot/overview.php:42
 msgid @@@ Total @@@
 msgstr @@@ Total @@@
 
-#: /webroot/overview.php:46
+#: /webroot/overview.php:43
 msgid @@@ Go to Payment >> @@@
 msgstr @@@ Go to Payment >> @@@
 
