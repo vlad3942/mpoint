@@ -12,7 +12,7 @@
  */
 
 // Require Global Include File
-require_once("../inc/include.php");
+require_once("../../inc/include.php");
 
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
@@ -45,5 +45,5 @@ header("content-length: 0");
 
 if ($aMsgCds[0] == 100) { $sFile = "accept.php"; }
 else { $sFile = "email.php"; }
-header("location: http://". $_SERVER['HTTP_HOST'] ."/". $sFile ."?". session_name() ."=". session_id() ."&". $msg);
+header("location: http://". $_SERVER['HTTP_HOST'] ."/pay/". $sFile ."?". session_name() ."=". session_id() ."&". $msg);
 ?>

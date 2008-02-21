@@ -115,7 +115,7 @@ if (array_key_exists(1000, $aMsgCds) === true)
 {
 	$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SESSION['obj_UA']);
 	
-	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/card.xsl"?>';
+	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/pay/card.xsl"?>';
 	$xml .= '<root>';
 	$xml .= '<title>'. $_OBJ_TXT->_("Select Card") .'</title>';
 	$xml .= $obj_mPoint->getSystemInfo();

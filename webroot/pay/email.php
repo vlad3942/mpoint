@@ -12,7 +12,7 @@
  */
 
 // Require Global Include File
-require_once("inc/include.php");
+require_once("../inc/include.php");
 
 // Require Business logic for the Payment Accepted component
 require_once(sCLASS_PATH ."/accept.php");
@@ -23,7 +23,7 @@ rebuild_get();
 $obj_mPoint = new Accept($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_UA']);
 
 echo '<?xml version="1.0" encoding="ISO-8859-15"?>';
-echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/email.xsl"?>';
+echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/pay/email.xsl"?>';
 ?>
 <root>
 	<title><?= $_OBJ_TXT->_("E-Mail Receipt"); ?></title>

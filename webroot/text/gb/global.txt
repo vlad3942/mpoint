@@ -1,36 +1,36 @@
-#: /webroot/accept.php:28
+#: /webroot/pay/accept.php:28
 msgid @@@ Payment Completed @@@
 msgstr @@@ Payment Completed @@@
 
-#: /webroot/accept.php:41
+#: /webroot/pay/accept.php:41
 msgid @@@ Thank you for using @@@
 msgstr @@@ Thank you for using @@@
 
-#: /webroot/accept.php:42
+#: /webroot/pay/accept.php:42
 msgid @@@ Status - Success @@@
 msgstr @@@ Your payment has been successfully completed @@@
 
-#: /webroot/accept.php:43
+#: /webroot/pay/accept.php:43
 msgid @@@ mPoint ID @@@
 msgstr @@@ mPoint ID @@@
 
-#: /webroot/accept.php:44
+#: /webroot/pay/accept.php:44
 msgid @@@ Order No @@@
 msgstr @@@ Order No @@@
 
-#: /webroot/accept.php:45
+#: /webroot/pay/accept.php:45
 msgid @@@ Price @@@
 msgstr @@@ Price @@@
 
-#: /webroot/accept.php:46
+#: /webroot/pay/accept.php:46
 msgid @@@ SMS Receipt - Info @@@
 msgstr @@@ These details have also been sent to you via SMS to number {ADDRESS} @@@
 
-#: /webroot/accept.php:47
+#: /webroot/pay/accept.php:47
 msgid @@@ Send receipt via E-Mail @@@
 msgstr @@@ Send receipt via E-Mail @@@
 
-#: /webroot/accept.php:48
+#: /webroot/pay/accept.php:48
 msgid @@@ Continue >> @@@
 msgstr @@@ Continue back to Client Site >> @@@
 
@@ -46,39 +46,39 @@ msgstr @@@ Step 1 of 2 @@@
 msgid @@@ Please select your Credit Card @@@
 msgstr @@@ Please select your Credit Card @@@
 
-#: /webroot/card.php:32
+#: /webroot/pay/card.php:32
 msgid @@@ Select Card @@@
 msgstr @@@ Select Card @@@
 
-#: /webroot/card.php:41
+#: /webroot/pay/card.php:41
 msgid @@@ Step 1 of 2 @@@
 msgstr @@@ Step 1 of 2 @@@
 
-#: /webroot/card.php:42
+#: /webroot/pay/card.php:42
 msgid @@@ Please select your Credit Card @@@
 msgstr @@@ Please select your Credit Card @@@
 
-#: /webroot/email.php:29
+#: /webroot/pay/email.php:29
 msgid @@@ E-Mail Receipt @@@
 msgstr @@@ E-Mail Receipt @@@
 
-#: /webroot/email.php:40
+#: /webroot/pay/email.php:40
 msgid @@@ Thank you for using @@@
 msgstr @@@ Thank you for using @@@
 
-#: /webroot/email.php:41
+#: /webroot/pay/email.php:41
 msgid @@@ Please enter your e-mail address below @@@
 msgstr @@@ Please enter your e-mail address below @@@
 
-#: /webroot/email.php:42
+#: /webroot/pay/email.php:42
 msgid @@@ E-Mail @@@
 msgstr @@@ E-Mail @@@
 
-#: /webroot/email.php:43
+#: /webroot/pay/email.php:43
 msgid @@@ Send E-Mail @@@
 msgstr @@@ Send E-Mail @@@
 
-#: /webroot/email.php:44
+#: /webroot/pay/email.php:44
 msgid @@@ << Back @@@
 msgstr @@@ << Back @@@
 

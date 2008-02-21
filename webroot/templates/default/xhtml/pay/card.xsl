@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-15"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:func="http://exslt.org/functions" extension-element-prefixes="func">
 <xsl:output method="xml" version="1.0" encoding="ISO-8859-15" indent="yes" media-type="application/xhtml+xml" doctype-public="-//WAPFORUM//DTD XHTML Mobile 1.0//EN" doctype-system="http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd" omit-xml-declaration="no" />
-<xsl:include href="header.xsl" />
+<xsl:include href="../header.xsl" />
 
 <xsl:template match="/root">
 	<div id="progress" class="mPoint_Info">
@@ -86,7 +86,7 @@
 				<!-- DIBS Required Data -->
 				<input type="hidden" name="merchant" value="{account}" />
 				<input type="hidden" name="callbackurl" value="{/root/system/protocol}://{/root/system/host}/callback/dibs.php" />
-				<input type="hidden" name="accepturl" value="{/root/system/protocol}://{/root/system/host}/accept.php" />
+				<input type="hidden" name="accepturl" value="{/root/system/protocol}://{/root/system/host}/pay/accept.php" />
 				<input type="hidden" name="cancelurl" value="{/root/transaction/cancel-url}" />
 				<input type="hidden" name="amount" value="{/root/transaction/amount}" />
 				<input type="hidden" name="currency" value="{currency}" />
@@ -135,7 +135,7 @@
 				<!-- DIBS Required Data -->
 				<input type="hidden" name="merchant" value="{account}" />
 				<input type="hidden" name="callbackurl" value="{/root/system/protocol}://{/root/system/host}/callback/dibs.php" />
-				<input type="hidden" name="accepturl" value="{/root/system/protocol}://{/root/system/host}/accept.php" />
+				<input type="hidden" name="accepturl" value="{/root/system/protocol}://{/root/system/host}/pay/accept.php" />
 				<input type="hidden" name="cancelurl" value="{/root/transaction/cancel-url}" />
 				<input type="hidden" name="amount" value="{/root/transaction/amount}" />
 				<input type="hidden" name="currency" value="{currency}" />

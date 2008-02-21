@@ -35,6 +35,6 @@
 	</tr>
 	</table>
 	
-	<div><a href="{func:constLink('card.php')}"><xsl:value-of select="labels/payment" /></a></div>
+	<div><a href="{func:constLink('/pay/card.php')}"><xsl:value-of select="labels/payment" /></a></div>
 </xsl:template>
 </xsl:stylesheet>

@@ -340,10 +340,12 @@ class General
 	{
 		if (array_key_exists("QUERY_STRING", $_SERVER) === false) { $_SERVER['QUERY_STRING'] = ""; }
 		
+		$dir = dirname($_SERVER['PHP_SELF']);
+		if (substr($dir, -1) != "/") { $dir .= "/"; }
 		$xml = '<system>';
 		$xml .= '<protocol>http</protocol>';
 		$xml .= '<host>'. $_SERVER['HTTP_HOST'] .'</host>';
-		$xml .= '<dir>'. dirname($_SERVER['PHP_SELF']) .'</dir>';
+		$xml .= '<dir>'. $dir .'</dir>';
 		$xml .= '<file>'. substr($_SERVER['PHP_SELF'], strrpos($_SERVER['PHP_SELF'], "/")+1) .'</file>';
 		$xml .= '<query-string>'. htmlspecialchars($_SERVER['QUERY_STRING'], ENT_NOQUOTES) .'</query-string>';
 		$xml .= '<session id="'. session_id() .'">'. session_name() .'</session>';
