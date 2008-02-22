@@ -47,6 +47,14 @@ $obj_GoMobile = new GoMobileClient($obj_ConnInfo);
 $obj_GoMobile->communicate($obj_MsgInfo);
 
 // Construct & Send mPoint Payment link to the customer
-$sURL = $obj_mPoint->constLink($obj_MsgInfo->getOperator() );
+try
+{
+	$obj_ShopConfig = ShopConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig() );
+	$sURL = $obj_mPoint->constLink($obj_MsgInfo->getOperator(), "shop");
+}
+catch (mPointException $e)
+{
+	$sURL = $obj_mPoint->constLink($obj_MsgInfo->getOperator(), "pay");
+}
 $obj_mPoint->sendLink(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo, $sURL);
 ?>

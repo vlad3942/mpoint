@@ -2,9 +2,10 @@
 /**
  * This files contains the both Controller for mPoint's Mobile Web API.
  * The Controller will ensure that all input from a Mobile Internet Site or Mobile Application is validated and a new payment transaction is started.
- * Finally the Controller will return the XML document used by the either the Card Viewer or the Status Viewer to generate one of 2 pages:
- * 	- The "Select Credit Card" page using the card.xsl viewer for the template
-* 	- The "Status" page using the status.xsl viewer for the template
+ * Finally, assuming the Client Input is valid, the Controller will redirect the Customer to one of the following flow start pages:
+ * 	- Payment Flow: /pay/card.php
+ * 	- Shop Flow: /shop/delivery.php
+ * If the input provided was determined to be invalid, an error page will be generated.
  * 
  * @author Jonatan Evald Buus
  * @copyright Cellpoint Mobile
@@ -24,11 +25,6 @@ require_once(sAPI_CLASS_PATH ."/gomobile.php");
 require_once(sCLASS_PATH ."/validate.php");
 // Require Business logic for the Mobile Web module
 require_once(sCLASS_PATH ."/mobile_web.php");
-
-// Require Business logic for the Select Credit Card component
-require_once(sCLASS_PATH ."/credit_card.php");
-// Require Business logic for the Payment Accepted component
-require_once(sCLASS_PATH ."/accept.php");
 
 $aMsgCds = array();
 
@@ -82,6 +78,12 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 			// Log additional data
 			$obj_mPoint->logClientVars($_POST);
 			
+			// Client is using the Physical Product Flow, ensure Shop has been Configured
+			if ($_SESSION['obj_TxnInfo']->getClientConfig()->getFlowID() == Constants::iPHYSICAL_FLOW)
+			{
+				$_SESSION['obj_ShopConfig'] = ShopConfig::produceConfig($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig() );
+			}
+			
 			$aMsgCds[1000] = "Success";
 		}
 		// Internal Error
@@ -109,43 +111,31 @@ else
 // Instantiate data object with the User Agent Profile for the customer's mobile device.
 $_SESSION['obj_UA'] = UAProfile::produceUAProfile();
 
-$xml = '<?xml version="1.0" encoding="ISO-8859-15"?>';
 // Success: Construct "Select Credit Card" page
 if (array_key_exists(1000, $aMsgCds) === true)
 {
-	$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SESSION['obj_UA']);
-	
-	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/pay/card.xsl"?>';
-	$xml .= '<root>';
-	$xml .= '<title>'. $_OBJ_TXT->_("Select Card") .'</title>';
-	$xml .= $obj_mPoint->getSystemInfo();
-	$xml .= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML();
-	$xml .= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']);
-	$xml .= '<labels>';
-	$xml .= '<progress>'. $_OBJ_TXT->_("Step 1 of 2") .'</progress>';
-	$xml .= '<info>'. $_OBJ_TXT->_("Please select your Credit Card") .'</info>';
-	$xml .= '</labels>';
-	$xml .= $obj_mPoint->getCards();
-	// DIBS Custom Pages: Payment Accepted
-	$obj_mPoint = new Accept($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_UA']);
-	$xml .= '<accept>';
-	$xml .= $obj_mPoint->getmPointLogoInfo();
-	$xml .= $obj_mPoint->getClientVars($iTxnID);
-	$xml .= '</accept>';
-	
-	$xml .= '</root>';
+	// Start Shop Flow
+	if ($_SESSION['obj_TxnInfo']->getClientConfig()->getFlowID() == Constants::iPHYSICAL_FLOW)
+	{
+		$_SESSION['obj_Info']->setInfo("order_cost", $_SESSION['obj_TxnInfo']->getAmount() );
+		
+		header("Location: http://". $_SERVER['HTTP_HOST'] ."/shop/delivery.php?". session_name() ."=". session_id() );
+	}
+	// Start Payment Flow
+	else { header("Location: http://". $_SERVER['HTTP_HOST'] ."/pay/card.php?". session_name() ."=". session_id() ); }
 }
 // Error: Construct Status Page
 else
 {
 	$_GET['msg'] = array_keys($aMsgCds);
 	
+	$xml = '<?xml version="1.0" encoding="ISO-8859-15"?>';
 	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/status.xsl"?>';
 	$xml .= '<root>';
 	$xml .= $obj_mPoint->getMessages("Status");
 	$xml .= '</root>';
+	
+	// Display page
+	echo $xml;
 }
-
-// Display page
-echo $xml;
 ?>

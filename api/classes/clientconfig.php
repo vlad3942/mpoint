@@ -24,6 +24,12 @@
 class ClientConfig extends BasicConfig
 {
 	/**
+	 * ID of the Flow the Client's customers have to go through in order to complete the Payment Transaction
+	 *
+	 * @var integer
+	 */
+	private $_iFlowID;
+	/**
 	 * Configuration for the Account the Transaction will be associated with
 	 *
 	 * @var AccountConfig
@@ -132,6 +138,7 @@ class ClientConfig extends BasicConfig
 	 * Default Constructor
 	 *
 	 * @param 	integer $id 		Unique ID for the Client in mPoint
+	 * @param 	integer $fid 		ID of the Flow the Client's customers have to go through in order to complete the Payment Transaction
 	 * @param 	string $name 		Client's name in mPoint
 	 * @param 	AccountConfig $oAC 	Configuration for the Account the Transaction will be associated with
 	 * @param 	string $un 			Client's Username for GoMobile
@@ -150,9 +157,11 @@ class ClientConfig extends BasicConfig
 	 * @param 	string $mtd			The method used by mPoint when performing a Callback to the Client
 	 * @param 	string $terms 		Terms & Conditions for the Shop
 	 */
-	public function __construct($id, $name, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $aurl, $curl, $cburl, $ma, $l, $sms, $email, $mtd, $terms)
+	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $aurl, $curl, $cburl, $ma, $l, $sms, $email, $mtd, $terms)
 	{
 		parent::__construct($id, $name);
+		
+		$this->_iFlowID = (integer) $fid;
 		
 		$this->_obj_AccountConfig = $oAC;
 		$this->_sUsername = trim($un);
@@ -176,6 +185,12 @@ class ClientConfig extends BasicConfig
 		$this->_sTerms = trim($terms);
 	}
 	
+	/**
+	 * Returns the ID of the Flow the Client's customers have to go through in order to complete the Payment Transaction
+	 *
+	 * @return 	integer
+	 */
+	public function getFlowID() { return $this->_iFlowID; }
 	/**
 	 * Returns the Configuration for the Account the Transaction will be associated with
 	 *
@@ -282,9 +297,11 @@ class ClientConfig extends BasicConfig
 	
 	public function toXML()
 	{
-		$xml = '<client-config id="'. $this->getID() .'">';
+		$xml = '<client-config id="'. $this->getID() .'" flow-id="'. $this->_iFlowID .'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
 		$xml .= '<username>'. htmlspecialchars($this->getUsername(), ENT_NOQUOTES) .'</username>';
+		$xml .= '<logo-url>'. htmlspecialchars($this->getLogoURL(), ENT_NOQUOTES) .'</logo-url>';
+		$xml .= '<css-url>'. htmlspecialchars($this->getCSSURL(), ENT_NOQUOTES) .'</css-url>';
 		$xml .= '<sms-receipt>'. General::bool2xml($this->_bSMSReceipt) .'</sms-receipt>';
 		$xml .= '<email-receipt>'. General::bool2xml($this->_bEmailReceipt) .'</email-receipt>';
 		$xml .= '</client-config>';
@@ -304,7 +321,7 @@ class ClientConfig extends BasicConfig
 	public static function produceConfig(RDB &$oDB, $id, $acc, $kw=-1)
 	{
 		$acc = (integer) $acc;
-		$sql = "SELECT Cl.id AS clientid, Cl.name AS client, Cl.username, Cl.passwd,
+		$sql = "SELECT Cl.id AS clientid, Cl.name AS client, Cl.flowid, Cl.username, Cl.passwd,
 					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl,
 					Cl.smsrcpt, Cl.emailrcpt, Cl.method,
 					Cl.maxamount, Cl.lang, Cl.terms,
@@ -326,7 +343,7 @@ class ClientConfig extends BasicConfig
 		// Use specific Keyword
 		else { $sql .= " AND KW.id = ". intval($kw); }
 		$sql .= " {ACCOUNT CLAUSE}
-				GROUP BY Cl.id, Cl.name, Cl.username, Cl.passwd,
+				GROUP BY Cl.id, Cl.name, Cl.flowid, Cl.username, Cl.passwd,
 					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl,
 					Cl.smsrcpt, Cl.emailrcpt, Cl.method,
 					Cl.maxamount, Cl.lang, Cl.terms,
@@ -366,7 +383,7 @@ class ClientConfig extends BasicConfig
 		$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["ADDRESS"]);
 		$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
 		
-		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], $RS["TERMS"]);
+		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], $RS["TERMS"]);
 	}
 }
 ?>

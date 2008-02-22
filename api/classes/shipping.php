@@ -54,16 +54,15 @@ class Shipping extends General
 	 * @return 	integer
 	 */
 	public function calcShippingCost($cost)
-	{	
+	{
+		
 		// Free Shipping due to Order Size
 		if ($this->_obj_ShopConfig->getMinFreeShipping() > 0 && $cost > $this->_obj_ShopConfig->getMinFreeShipping() )
 		{
 			$iShippingCost = 0;
 		}
-		// Free Shipping due to Shop Config
-		elseif ($this->_obj_ShopConfig->getMinFreeShipping() < 0) { $iShippingCost = 0; }
 		// Shipping Cost
-		else { $iShippingCost = $this->_obj_ShopConfig->getMinFreeShipping(); }
+		else { $iShippingCost = $this->_obj_ShopConfig->getShippingCost(); }
 		
 		return $iShippingCost;	
 	}

@@ -125,6 +125,7 @@ class ShopConfig extends BasicConfig
 	 * @param 	RDB $oDB 			Reference to the Database Object that holds the active connection to the mPoint Database
 	 * @param 	ClientConfig $oCC 	Configuration for the Client who owns the Transaction
 	 * @return 	ShopConfig
+	 * @throws 	mPointException
 	 */
 	public static function produceConfig(RDB &$oDB, ClientConfig &$oCC)
 	{
@@ -135,6 +136,10 @@ class ShopConfig extends BasicConfig
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 		
+		if (is_array($RS) === false)
+		{
+			throw new mPointException("No Shop Configuration found for Client: ". $oCC->getID() ." using Keyword: ". $oCC->getKeywordConfig()->getID(), 1021);
+		}
 		return new ShopConfig($RS["ID"], $oCC->getCountryConfig(), $RS["SHIPPING"], $RS["SHIP_COST"], $RS["FREE_SHIP"], $RS["DEL_DATE"]);
 	}
 }

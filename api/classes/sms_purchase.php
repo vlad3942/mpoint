@@ -62,9 +62,10 @@ class SMS_Purchase extends MobileWeb
 	 * @see 	Constants::iCONST_LINK_STATE
 	 *
 	 * @param 	integer $oid 	GoMobile's ID for the Customer's Mobile Network Operator
+	 * @param 	string $dir 	Directory where the Customer should start his mPoint Flow
 	 * @return 	string
 	 */
-	public function constLink($oid)
+	public function constLink($oid, $dir)
 	{
 		$sql = "SELECT Extract('epoch' from created) AS timestamp
 				FROM Log.Transaction_Tbl
@@ -76,7 +77,8 @@ class SMS_Purchase extends MobileWeb
 		// Customer's Operator is Sprint
 		if ($oid == 20004) { $sLink .= sSPRINT_MPOINT_DOMAIN; }
 		else { $sLink .= sDEFAULT_MPOINT_DOMAIN; }
-		$sLink .= "/pay/". base_convert(intval($RS["TIMESTAMP"]), 10, 32) ."Z". base_convert($this->getTransactionID(), 10, 32);
+		
+		$sLink .= "/". $dir ."/". base_convert(intval($RS["TIMESTAMP"]), 10, 32) ."Z". base_convert($this->getTransactionID(), 10, 32);
 		
 		$this->newMessage($this->getTransactionID(), Constants::iCONST_LINK_STATE, $sLink);
 		

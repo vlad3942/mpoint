@@ -177,6 +177,17 @@ abstract class Constants
 	 * Unique ID for the Payment Service Provider: DIBS
 	 *
 	 */
-	const iDIBS_PSP = 1;
+	const iDIBS_PSP = 2;
+	
+	/**
+	 * Unique ID for the Electronic Payment Flow
+	 *
+	 */
+	const iELECTRONIC_FLOW = 1;
+	/**
+	 * Unique ID for the Physical Payment Flow
+	 *
+	 */
+	const iPHYSICAL_FLOW = 2;
 }
 ?>

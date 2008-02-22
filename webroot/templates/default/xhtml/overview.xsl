@@ -29,7 +29,7 @@
 	</tr>
 	</xsl:for-each>
 	<!-- List Shipping Information -->
-	<xsl:if test="count(shipping-info) &gt; 0">
+	<xsl:if test="count(shipping-info/name) &gt; 0">
 		<tr>
 			<td colspan="6"><img src="{system/protocol}://{system/host}/img/shipping.gif" width="40" height="40" alt="- Logo -" /></td>
 		</tr>
@@ -45,7 +45,7 @@
 	</tr>
 	</table>
 	<!-- List Delivery Information -->
-	<xsl:if test="count(delivery-info) &gt; 0">
+	<xsl:if test="count(delivery-info/name) &gt; 0">
 		<div class="mPoint_Label"><xsl:value-of select="labels/delivery-info/name" /></div>
 		<div><xsl:value-of select="delivery-info/name" /></div>
 		
@@ -64,13 +64,45 @@
 		</xsl:if>
 	</xsl:if>
 	
-	<div>
-		<xsl:variable name="link-part" select="substring-after(labels/terms, '{LINK}')" />
-		<xsl:value-of select="substring-before(labels/terms, '{LINK}')" />
-		<a href="{func:constLink('terms.php')}"><xsl:value-of select="substring-before($link-part, '{/LINK}')" /></a>
-		<xsl:value-of select="substring-after($link-part, '{/LINK}')" />
-	</div>
-	
-	<div><a href="{func:constLink('/pay/card.php')}"><xsl:value-of select="labels/payment" /></a></div>
+	<!-- Determine where to go next based on the Flow Type -->
+	<xsl:choose>
+		<!-- Electronic Product Flow -->
+		<xsl:when test="/root/client-config/@flow-id = 1">
+			<div>
+				<xsl:variable name="link-part" select="substring-after(labels/terms, '{LINK}')" />
+				<xsl:value-of select="substring-before(labels/terms, '{LINK}')" />
+				<a href="{func:constLink('terms.php')}"><xsl:value-of select="substring-before($link-part, '{/LINK}')" /></a>
+				<xsl:value-of select="substring-after($link-part, '{/LINK}')" />
+			</div>
+			<div>
+				<a href="{func:constLink('/pay/card.php')}"><xsl:value-of select="labels/next" /></a>
+			</div>
+		</xsl:when>
+		<!-- Physical Product Flow -->
+		<xsl:when test="/root/client-config/@flow-id = 2">
+			<xsl:choose>
+				<!-- Start of Physical Product Flow -->
+				<xsl:when test="count(delivery-info/name) = 0 and count(shipping-info/name) = 0">
+					<a href="{func:constLink('/shop/delivery.php')}"><xsl:value-of select="labels/next" /></a>
+				</xsl:when>
+				<!-- End of Physical Product Flow -->
+				<xsl:otherwise>
+					<div>
+						<xsl:variable name="link-part" select="substring-after(labels/terms, '{LINK}')" />
+						<xsl:value-of select="substring-before(labels/terms, '{LINK}')" />
+						<a href="{func:constLink('terms.php')}"><xsl:value-of select="substring-before($link-part, '{/LINK}')" /></a>
+						<xsl:value-of select="substring-after($link-part, '{/LINK}')" />
+					</div>
+					<div>
+						<a href="{func:constLink('/pay/card.php')}"><xsl:value-of select="labels/next" /></a>
+					</div>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:when>
+		<!-- Error: Unknown Flow -->
+		<xsl:otherwise>
+			ERROR - Unknown Flow: <xsl:value-of select="/root/client-config/@flow-id" />
+		</xsl:otherwise>
+	</xsl:choose>
 </xsl:template>
 </xsl:stylesheet>

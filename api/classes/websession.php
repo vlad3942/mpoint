@@ -95,7 +95,7 @@ class WebSession
 		/* ---------- Error Handling Start ---------- */
 		$aErrCd = array();
 		if (empty($k) === true) { $aErrCd[11] = "Invalid Key"; }
-		if (empty($d) === true) { $aErrCd[21] = "Invalid Info"; }
+		if (empty($d) === true && strval($d) != "0") { $aErrCd[21] = "Invalid Info"; }
 		/* ---------- Error Handling End ---------- */
 		$bStatus = false;
 		

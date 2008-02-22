@@ -22,6 +22,15 @@ $_SESSION['obj_UA'] = UAProfile::produceUAProfile();
 
 $obj_mPoint = new Overview($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
 
+// Use Physical Product Flow
+if ($_SESSION['obj_TxnInfo']->getClientConfig()->getFlowID() == Constants::iPHYSICAL_FLOW)
+{
+	// Instantiate Data Object for Holding the Shop's Configuration
+	$_SESSION['obj_ShopConfig'] = ShopConfig::produceConfig($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig() );
+	// Ensure Total Order Amount is available for Calculating Shipping Cost
+	$_SESSION['obj_Info']->setInfo("order_cost", $_SESSION['obj_TxnInfo']->getAmount() );
+}
+
 echo '<?xml version="1.0" encoding="ISO-8859-15"?>';
 echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/overview.xsl"?>';
 ?>
@@ -50,6 +59,7 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 			<city><?= htmlspecialchars($_OBJ_TXT->_("City"), ENT_NOQUOTES); ?></city>
 			<delivery-date><?= htmlspecialchars($_OBJ_TXT->_("Delivery Date"), ENT_NOQUOTES); ?></delivery-date>
 		</delivery-info>
+		<next><?= htmlspecialchars($_OBJ_TXT->_("Next >>"), ENT_NOQUOTES); ?></next>
 		<payment><?= htmlspecialchars($_OBJ_TXT->_("Go to Payment >>"), ENT_NOQUOTES); ?></payment>
 	</labels>
 	

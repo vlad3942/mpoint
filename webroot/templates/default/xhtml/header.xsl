@@ -14,7 +14,23 @@
 		<xsl:choose>
 			<!-- Select Credit Card -->
 			<xsl:when test="/root/system/file = 'overview.php'">
+				<!-- Physical Payment Flow -->
+				<xsl:if test="/root/client-config/@flow-id = 2">
+					<link href="{func:constLink('/shop/delivery.php')}" rel="next" type="application/xhtml+xml" />
+				</xsl:if>
 				<link href="{func:constLink('card.php')}" rel="next" type="application/xhtml+xml" />
+			</xsl:when>
+			<!-- Purchase Products -->
+			<xsl:when test="/root/system/file = 'products.php'">
+				<link href="{func:constLink('delivery.php')}" rel="next" type="application/xhtml+xml" />
+			</xsl:when>
+			<!-- Delivery Information -->
+			<xsl:when test="/root/system/file = 'delivery.php'">
+				<link href="{func:constLink('shipping.php')}" rel="next" type="application/xhtml+xml" />
+			</xsl:when>
+			<!-- Shipping Information -->
+			<xsl:when test="/root/system/file = 'shipping.php'">
+				<link href="{func:constLink('/overview.php')}" rel="next" type="application/xhtml+xml" />
 			</xsl:when>
 			<!-- E-Mail Receipt -->
 			<xsl:when test="/root/system/file = 'accept.php'">
@@ -36,7 +52,7 @@
 		<div class="mPoint_Status">
 			<xsl:choose>
 			<xsl:when test="count(item) = 1">
-				<xsl:value-of select="." />
+				<xsl:value-of select="item" />
 			</xsl:when>
 			<xsl:otherwise>
 				<ul>

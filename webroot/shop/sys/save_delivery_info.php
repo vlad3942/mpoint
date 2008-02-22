@@ -22,7 +22,7 @@ require_once(sCLASS_PATH ."/delivery.php");
 
 $_SESSION['temp'] = $_POST;
 
-$obj_mPoint = new Delivery($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO[$_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->getID()]) );
+$obj_mPoint = new Delivery($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
 $obj_Validator = new Validate($_SESSION['obj_TxnInfo']->getClientConfig() );
 
 $aMsgCds = array();
@@ -31,7 +31,7 @@ if ($obj_Validator->valName($_POST['name']) != 10) { $aMsgCds[] = $obj_Validator
 $iCode = $obj_Validator->valName($_POST['company']);
 if ($iCode != 10 && $iCode != 1) { $aMsgCds[] = $iCode + 30; }
 if ($obj_Validator->valName($_POST['street']) != 10) { $aMsgCds[] = $obj_Validator->valName($_POST['street']) + 40; }
-if ($obj_Validator->valZipCode($_POST['zipcode']) != 10) { $aMsgCds[] = $obj_mPoint->valZipCode($_POST['zipcode']) + 50; }
+if ($obj_Validator->valZipCode($_POST['zipcode']) != 10) { $aMsgCds[] = $obj_Validator->valZipCode($_POST['zipcode']) + 50; }
 if ($obj_Validator->valName($_POST['city']) != 10) { $aMsgCds[] = $obj_Validator->valName($_POST['city']) + 60; }
 if ($_SESSION['obj_ShopConfig']->useDeliveryDate() === true && $obj_Validator->valDeliveryDate($_POST['year'], $_POST['month'], $_POST['day']) != 10)
 {
@@ -52,7 +52,11 @@ if (count($aMsgCds) == 0)
 	$aMsgCds[] = 100;
 }
 
-$msg = "&msg=". $aMsgCds[0];
+$msg = "";
+for ($i=0; $i<count($aMsgCds); $i++)
+{
+	$msg .= "&msg=". $aMsgCds[$i];
+}
 
 header("content-type: text/plain");
 header("content-length: 0");

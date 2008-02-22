@@ -121,6 +121,33 @@ INSERT INTO System.Type_Tbl (id, name) VALUES (31, 'Web Subscription');
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE System.Type_Tbl TO mpoint;
 
 
+-- Table: System.Flow_Tbl
+-- Data table for all available Flows
+CREATE TABLE System.Flow_Tbl
+(
+	id			SERIAL,
+
+	name		VARCHAR(50),
+
+	CONSTRAINT Flow_PK PRIMARY KEY (id),
+	LIKE Template.General_Tbl INCLUDING DEFAULTS
+) WITHOUT OIDS;
+
+CREATE UNIQUE INDEX Flow_UQ ON System.Flow_Tbl (Upper(name) );
+
+CREATE TRIGGER Update_Flow
+BEFORE UPDATE
+ON System.Flow_Tbl FOR EACH ROW
+EXECUTE PROCEDURE Public.Update_Table_Proc();
+
+-- Internal
+INSERT INTO System.Flow_Tbl (id, name, enabled) VALUES (0, 'System Record', false);
+INSERT INTO System.Flow_Tbl (name) VALUES ('Electronic');
+INSERT INTO System.Flow_Tbl (name) VALUES ('Physical');
+
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE System.Flow_Tbl TO mpoint;
+
+
 -- Table: System.PSP_Tbl
 -- Data table for all Payment Service Provider mPoint is connected to
 CREATE TABLE System.PSP_Tbl
@@ -221,6 +248,7 @@ CREATE TABLE Client.Client_Tbl
 (
 	id			SERIAL,
 	countryid	INT4 NOT NULL,	-- ID of the Country the Client can Operate in
+	flowid		INT4 NOT NULL,	-- ID of the Flow the Customer has to go through in order to complete the Payment
 
 	name		VARCHAR(50),
 	username	VARCHAR(50),	-- GoMobile Username
@@ -241,6 +269,8 @@ CREATE TABLE Client.Client_Tbl
 	terms		TEXT,			-- Terms & Conditions for the Client
 
 	CONSTRAINT Client_PK PRIMARY KEY (id),
+	CONSTRAINT Client2Country_FK FOREIGN KEY (countryid) REFERENCES Client.Country_Tbl ON UPDATE CASCADE ON DELETE RESTRICT,
+	CONSTRAINT Client2Flow_FK FOREIGN KEY (flowid) REFERENCES Client.Flow_Tbl ON UPDATE CASCADE ON DELETE RESTRICT,
 	CONSTRAINT Client_Chk CHECK (method = 'mPoint' OR method = 'PSP'),
 	LIKE Template.General_Tbl INCLUDING DEFAULTS
 ) WITHOUT OIDS;

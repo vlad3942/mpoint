@@ -101,8 +101,14 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 			// Log additional data
 			$obj_mPoint->logProducts($_POST['prod-names'], $_POST['prod-quantities'], $_POST['prod-prices'], $_POST['prod-logos']);
 			$obj_mPoint->logClientVars($_POST);
-			// Construct and send mPoint link
-			$sURL = $obj_mPoint->constLink($_POST['operator']);
+			
+			// Client is using the Physical Product Flow, ensure Shop has been Configured
+			if ($obj_ClientConfig->getFlowID() == Constants::iPHYSICAL_FLOW)
+			{
+				$obj_ShopConfig = ShopConfig::produceConfig($_OBJ_DB, $obj_ClientConfig);
+			}
+			// Construct and send mPoint link for Payment Module
+			$sURL = $obj_mPoint->constLink($_POST['operator'], "pay");
 			$obj_mPoint->sendLink(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo, $sURL);
 			
 			$aMsgCds[1000] = "Success";
@@ -157,6 +163,11 @@ else
 	$xml = '<?xml version="1.0" encoding="ISO-8859-15"?>';
 	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/xhtml/status.xsl"?>';
 	$xml .= '<root>';
+	$xml .= $obj_mPoint->getSystemInfo();
+	if (isset($obj_ClientConfig) === true)
+	{
+		$xml .= $obj_ClientConfig->toXML();
+	}
 	$xml .= $obj_mPoint->getMessages("Status");
 	$xml .= '</root>';
 	

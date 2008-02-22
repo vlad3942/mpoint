@@ -20,7 +20,14 @@ require_once(sCLASS_PATH ."/delivery.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 
-$obj_mPoint = new Delivery($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO[$_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->getID()]) );
+rebuild_get();
+
+// Country has Address Lookup Service Enabled
+if ($_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->hasAddressLookup() === true)
+{
+	$obj_mPoint = new Delivery($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO[$_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->getID()]) );
+}
+else { $obj_mPoint = new Delivery($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']); }
 
 // No data previously transmitted
 if (array_key_exists("temp", $_SESSION) === false)

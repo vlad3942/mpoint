@@ -154,6 +154,8 @@ msgid @@@ Status - 1012 @@@
 msgstr @@@ Internal Communication Error - Message rejected by GoMobile. Please contact support@cellpointmobile.com @@@
 msgid @@@ Status - 1013 @@@
 msgstr @@@ Internal Communication Error - Unable to connect to GoMobile. Please contact support@cellpointmobile.com @@@
+msgid @@@ Status - 1021 @@@
+msgstr @@@ Configuration Error - No Shop Configuration found for Client @@@
 
 msgid @@@ E-Mail - 11 @@@
 msgstr @@@ No E-Mail Address has been entered, please enter an e-mail address and try again? @@@
@@ -185,3 +187,57 @@ msgid @@@ Delivery - 13 @@@
 msgstr @@@ The entered number is too long @@@
 msgid @@@ Delivery - 19 @@@
 msgstr @@@ We're sorry, but we couldn't find any address using the entered number @@@
+msgid @@@ Delivery - 21 @@@
+msgstr @@@ You haven't entered a Name @@@
+msgid @@@ Delivery - 22 @@@
+msgstr @@@ The entered Name is too short @@@
+msgid @@@ Delivery - 23 @@@
+msgstr @@@ The entered Name is too long @@@
+msgid @@@ Delivery - 24 @@@
+msgstr @@@ The entered Name contains invalid characters @@@
+msgid @@@ Delivery - 31 @@@
+msgstr @@@ You haven't entered a Company or C/O @@@
+msgid @@@ Delivery - 32 @@@
+msgstr @@@ The entered Company or C/O is too short @@@
+msgid @@@ Delivery - 33 @@@
+msgstr @@@ The entered Company or C/O is too long @@@
+msgid @@@ Delivery - 34 @@@
+msgstr @@@ The entered Company or C/O contains invalid characters @@@
+msgid @@@ Delivery - 41 @@@
+msgstr @@@ You haven't entered a Street name @@@
+msgid @@@ Delivery - 42 @@@
+msgstr @@@ The entered Street name is too short @@@
+msgid @@@ Delivery - 43 @@@
+msgstr @@@ The entered Street name is too long @@@
+msgid @@@ Delivery - 44 @@@
+msgstr @@@ The entered Street name contains invalid characters @@@
+msgid @@@ Delivery - 51 @@@
+msgstr @@@ You haven't entered a Postal Code @@@
+msgid @@@ Delivery - 52 @@@
+msgstr @@@ The entered Postal Code is too short @@@
+msgid @@@ Delivery - 53 @@@
+msgstr @@@ The entered Postal Code is too long @@@
+msgid @@@ Delivery - 54 @@@
+msgstr @@@ The entered Zip code has an invalid length @@@
+msgid @@@ Delivery - 61 @@@
+msgstr @@@ You haven't entered a City @@@
+msgid @@@ Delivery - 62 @@@
+msgstr @@@ The entered City is too short @@@
+msgid @@@ Delivery - 63 @@@
+msgstr @@@ The entered City is too long @@@
+msgid @@@ Delivery - 64 @@@
+msgstr @@@ The entered City contains invalid characters @@@
+msgid @@@ Delivery - 71 @@@
+msgstr @@@ You haven't entered a Year @@@
+msgid @@@ Delivery - 72 @@@
+msgstr @@@ The entered Year is in the Past @@@
+msgid @@@ Delivery - 73 @@@
+msgstr @@@ You haven't entered a Month @@@
+msgid @@@ Delivery - 74 @@@
+msgstr @@@ The entered Month is in the Past @@@
+msgid @@@ Delivery - 75 @@@
+msgstr @@@ You haven't entered a Day @@@
+msgid @@@ Delivery - 76 @@@
+msgstr @@@ The entered Day is in the Past @@@
+msgid @@@ Delivery - 77 @@@
+msgstr @@@ The entered Delivery Date is in the Past @@@
