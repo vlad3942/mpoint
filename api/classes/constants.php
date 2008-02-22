@@ -39,6 +39,16 @@ abstract class Constants
 	 */
 	const iCLIENT_VARS_STATE = 1003;
 	/**
+	 * Defines the ID of the State that is used for providing easy access to the Delivery Information for a Customer's Order
+	 *
+	 */
+	const iDELIVERY_INFO_STATE = 1004;
+	/**
+	 * Defines the ID of the State that is used for providing easy access to the Shipping Information for a Customer's Order
+	 *
+	 */
+	const iSHIPPING_INFO_STATE = 1005;
+	/**
 	 * Defines the ID of the State that should be logged if a message is accepted by GoMobile
 	 *
 	 */

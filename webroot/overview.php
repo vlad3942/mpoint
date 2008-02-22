@@ -36,12 +36,26 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 	
 	<labels>
 		<info><?= $_OBJ_TXT->_("Product - Info"); ?></info>
-		<name><?= $_OBJ_TXT->_("Name"); ?></name>
+		<product><?= $_OBJ_TXT->_("Product"); ?></product>
 		<quantity><?= $_OBJ_TXT->_("Quantity"); ?></quantity>
 		<price><?= $_OBJ_TXT->_("Price"); ?></price>
 		<total><?= $_OBJ_TXT->_("Total"); ?></total>
+		<terms><?= htmlspecialchars(str_replace("{CLIENT}", $_SESSION['obj_TxnInfo']->getClientConfig()->getName(), $_OBJ_TXT->_("Terms - Info") ), ENT_NOQUOTES); ?></terms>
+		<delivery-info>
+			<info><?= htmlspecialchars($_OBJ_TXT->_("Delivery - Info"), ENT_NOQUOTES); ?></info>
+			<name><?= htmlspecialchars($_OBJ_TXT->_("Name"), ENT_NOQUOTES); ?></name>
+			<company><?= htmlspecialchars($_OBJ_TXT->_("Company / CO"), ENT_NOQUOTES); ?></company>
+			<street><?= htmlspecialchars($_OBJ_TXT->_("Street"), ENT_NOQUOTES); ?></street>
+			<zipcode><?= htmlspecialchars($_OBJ_TXT->_("Zip Code"), ENT_NOQUOTES); ?></zipcode>
+			<city><?= htmlspecialchars($_OBJ_TXT->_("City"), ENT_NOQUOTES); ?></city>
+			<delivery-date><?= htmlspecialchars($_OBJ_TXT->_("Delivery Date"), ENT_NOQUOTES); ?></delivery-date>
+		</delivery-info>
 		<payment><?= htmlspecialchars($_OBJ_TXT->_("Go to Payment >>"), ENT_NOQUOTES); ?></payment>
 	</labels>
 	
 	<?= $obj_mPoint->getProducts(); ?>
+	
+	<?= $obj_mPoint->getDeliveryInfo(); ?>
+	
+	<?= $obj_mPoint->getShippingInfo(); ?>
 </root>

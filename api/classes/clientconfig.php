@@ -122,6 +122,13 @@ class ClientConfig extends BasicConfig
 	private $_sMethod;
 	
 	/**
+	 * Terms & Conditions for the Shop
+	 *
+	 * @var string
+	 */
+	private $_sTerms;
+	
+	/**
 	 * Default Constructor
 	 *
 	 * @param 	integer $id 		Unique ID for the Client in mPoint
@@ -141,8 +148,9 @@ class ClientConfig extends BasicConfig
 	 * @param 	boolean $sms 		Boolean Flag indicating whether mPoint should send out an SMS Receipt to the Customer upon successful completion of the Payment
 	 * @param 	boolean $email		Boolean Flag indicating whether access to the E-Mail Receipt component should be enabled for customers
 	 * @param 	string $mtd			The method used by mPoint when performing a Callback to the Client
+	 * @param 	string $terms 		Terms & Conditions for the Shop
 	 */
-	public function __construct($id, $name, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $aurl, $curl, $cburl, $ma, $l, $sms, $email, $mtd)
+	public function __construct($id, $name, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $aurl, $curl, $cburl, $ma, $l, $sms, $email, $mtd, $terms)
 	{
 		parent::__construct($id, $name);
 		
@@ -164,6 +172,8 @@ class ClientConfig extends BasicConfig
 		$this->_bSMSReceipt = (bool) $sms;
 		$this->_bEmailReceipt = (bool) $email;
 		$this->_sMethod = $mtd;
+		
+		$this->_sTerms = trim($terms);
 	}
 	
 	/**
@@ -263,6 +273,12 @@ class ClientConfig extends BasicConfig
 	 * @return 	string
 	 */
 	public function getMethod() { return $this->_sMethod; }
+	/**
+	 * Returns the Terms & Conditions for the Shop
+	 *
+	 * @return 	string
+	 */
+	public function getTerms() { return $this->_sTerms; }
 	
 	public function toXML()
 	{
@@ -291,9 +307,9 @@ class ClientConfig extends BasicConfig
 		$sql = "SELECT Cl.id AS clientid, Cl.name AS client, Cl.username, Cl.passwd,
 					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl,
 					Cl.smsrcpt, Cl.emailrcpt, Cl.method,
-					Cl.maxamount, Cl.lang,
+					Cl.maxamount, Cl.lang, Cl.terms,
 					C.id AS countryid, C.name AS country, C.currency, C.minmob, C.maxmob, C.channel,
-					C.priceformat, C.decimals,
+					C.priceformat, C.decimals, C.als,
 					Acc.id AS accountid, Acc.name AS account, Acc.address,
 					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price
 				FROM Client.Client_Tbl Cl
@@ -313,9 +329,9 @@ class ClientConfig extends BasicConfig
 				GROUP BY Cl.id, Cl.name, Cl.username, Cl.passwd,
 					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl,
 					Cl.smsrcpt, Cl.emailrcpt, Cl.method,
-					Cl.maxamount, Cl.lang,
+					Cl.maxamount, Cl.lang, Cl.terms,
 					C.id, C.name, C.currency, C.minmob, C.maxmob, C.channel,
-					C.priceformat, C.decimals,
+					C.priceformat, C.decimals, C.als,
 					Acc.id, Acc.name, Acc.address,
 					KW.id, KW.name";
 		// Use Default Account
@@ -346,11 +362,11 @@ class ClientConfig extends BasicConfig
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 		
-		$obj_CountryConfig = new CountryConfig($RS["COUNTRYID"], $RS["COUNTRY"], $RS["CURRENCY"], $RS["MINMOB"], $RS["MAXMOB"], $RS["CHANNEL"], $RS["PRICEFORMAT"], $RS["DECIMALS"]);
+		$obj_CountryConfig = new CountryConfig($RS["COUNTRYID"], $RS["COUNTRY"], $RS["CURRENCY"], $RS["MINMOB"], $RS["MAXMOB"], $RS["CHANNEL"], $RS["PRICEFORMAT"], $RS["DECIMALS"], $RS["ALS"]);
 		$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["ADDRESS"]);
 		$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
 		
-		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"]);
+		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], $RS["TERMS"]);
 	}
 }
 ?>

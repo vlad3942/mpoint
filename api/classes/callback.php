@@ -35,9 +35,9 @@ class Callback extends General
 	/**
 	 * Default Constructor.
 	 *
-	 * @param	RDB $oDB			Reference to the Database Object that holds the active connection to the mPoint Database
-	 * @param	TranslateText $oDB 	Text Translation Object for translating any text into a specific language
-	 * @param 	TxnInfo $oTI 		Data object with the Transaction Information
+	 * @param	RDB $oDB				Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param	TranslateText $oTxt 	Text Translation Object for translating any text into a specific language
+	 * @param 	TxnInfo $oTI 			Data object with the Transaction Information
 	 */
 	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI)
 	{
@@ -53,6 +53,20 @@ class Callback extends General
 	 */
 	public function &getTxnInfo() { return $this->_obj_TxnInfo; }
 	
+	/**
+	 * Completes the Transaction by updating the Transaction Log with the final details for the Payment.
+	 * Additionally the method will insert a final entry in the Message Log with the provided debug data.
+	 * The method will throw a Callback Exception wit code 1001 if the update fails.
+	 * 
+	 * @see 	General::newMessage()
+	 *
+	 * @param 	integer $pspid 	Unique ID for the Payment Service Provider (PSP) mPoint used to clear the transaction
+	 * @param 	integer $txnid 	Transaction ID returned by the PSP
+	 * @param 	integer $cid 	Unique ID for the Credit Card the customer used to pay for the Purchase
+	 * @param 	integer $sid 	Unique ID indicating that final state of the Transaction
+	 * @param 	array $debug 	Array of Debug data which should be logged for the state (optional)
+	 * @throws 	CallbackException
+	 */
 	public function completeTransaction($pspid, $txnid, $cid, $sid, array $debug=null)
 	{
 		$sql = "UPDATE Log.Transaction_Tbl
@@ -62,29 +76,11 @@ class Callback extends General
 		$res = $this->getDBConn()->query($sql);
 		
 		$this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true) );
-		
+		// Error: Unable to complete log for Transaction
 		if (is_resource($res) === false)
 		{
 			throw new CallbackException("Unable to complete log for Transaction: ". $this->_obj_TxnInfo->getID(), 1001);
 		}
-	}
-	
-	/**
-	 * Construct standard mPoint HTTP Headers for notifying the Client via HTTP.
-	 *
-	 * @return string
-	 */
-	protected function constHeaders()
-	{
-		/* ----- Construct HTTP Header Start ----- */
-		$h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
-		$h .= "host: {HOST}" .HTTPClient::CRLF;
-		$h .= "referer: {REFERER}" .HTTPClient::CRLF;
-		$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
-		$h .= "content-type: {CONTENTTYPE}; charset=ISO-8859-15" .HTTPClient::CRLF;
-		/* ----- Construct HTTP Header End ----- */
-		
-		return $h;
 	}
 	
 	/**

@@ -67,6 +67,8 @@ class Overview extends General
 	 * 	</products>
 	 * 
 	 * @see 	sDEFAULT_PRODUCT_LOGO
+	 * @see 	Constants::iPRODUCTS_STATE
+	 * @see 	General::getMessageData()
 	 *
 	 * @return 	string
 	 */
@@ -93,6 +95,80 @@ class Overview extends General
 			$xml .= '</item>';
 		}
 		$xml .= '</products>';
+		
+		return $xml;
+	}
+	
+	/**
+	 * Returns the Shipping Information for the current Transaction.
+	 * The Shipping Information will be returned as an XML document in the following format:
+	 * 	<delivery-info>
+	 * 		<name>{NAME OF THE RECIPIENT FOR THE ORDER}</name>
+	 * 		<company>{COMPANY NAME OR C/O}</company>
+	 * 		<street>{NAME OF THE STREET THE ORDER SHOULD BE DELIVERD TO}</street>
+	 * 		<zipcode>{POSTAL CODE THE ORDER SHOULD BE DELIVERD TO}</zipcode>
+	 * 		<city>{NAME OF THE CITY THE ORDER SHOULD BE DELIVERD IN}</city>
+	 * 		<delivery-date>{DATE WHEN THE ORDER SHOULD BE DELIVERED}</delivery-date>
+	 * 	</delivery-info>
+	 * The delivery-date tag might be empyt, otherwise it contains a date in the format: YYYY-MM-DD
+	 * 
+	 * @see 	Constants::iDELIVERY_INFO_STATE
+	 * @see 	General::getMessageData()
+	 *
+	 * @return 	string
+	 */
+	public function getDeliveryInfo()
+	{
+		// Get Delivery Information
+		$aDeliveryInfo = $this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iDELIVERY_INFO_STATE);
+		
+		$xml = '<delivery-info>';
+		// Create XML for Delivery Information
+		if (count($aDeliveryInfo) > 0)
+		{
+			$xml .= '<name>'. htmlspecialchars($aDeliveryInfo["name"], ENT_NOQUOTES) .'</name>';
+			$xml .= '<company>'. htmlspecialchars($aDeliveryInfo["company"], ENT_NOQUOTES) .'</company>';
+			$xml .= '<street>'. htmlspecialchars($aDeliveryInfo["street"], ENT_NOQUOTES) .'</street>';
+			$xml .= '<zipcode>'. htmlspecialchars($aDeliveryInfo["zipcode"], ENT_NOQUOTES) .'</zipcode>';
+			$xml .= '<city>'. htmlspecialchars($aDeliveryInfo["city"], ENT_NOQUOTES) .'</city>';
+			// Delivery Date part of the Delivery Information
+			if (array_key_exists("delivery-date", $aDeliveryInfo) === true)
+			{
+				$xml .= '<delivery-date>'. htmlspecialchars($aDeliveryInfo["delivery-date"], ENT_NOQUOTES) .'</delivery-date>';
+			}
+			else { $xml .= '<delivery-date />'; }
+		}
+		$xml .= '</delivery-info>';
+		
+		return $xml;
+	}
+	
+	/**
+	 * Returns the Shipping Information for the current Transaction.
+	 * The Shipping Information will be returned as an XML document in the following format:
+	 * 	<shipping-info>
+	 * 		<name>{NAME OF THE PRODUCT}</name>
+	 * 		<price>{TOTAL PRICE FOR ALL THE UNITS</price>
+	 * 	</shipping-info>
+	 * 
+	 * @see 	Constants::iSHIPPING_INFO_STATE
+	 * @see 	General::getMessageData()
+	 *
+	 * @return 	string
+	 */
+	public function getShippingInfo()
+	{
+		// Get Shipping Information
+		$aShippingInfo = $this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iSHIPPING_INFO_STATE);
+		
+		$xml = '<shipping-info>';
+		// Create XML for Shipping Information
+		if (count($aShippingInfo) > 0)
+		{
+			$xml .= '<name>'. htmlspecialchars($aShippingInfo["company"], ENT_NOQUOTES) .'</name>';
+			$xml .= '<price>'. $aShippingInfo["price"] .'</price>';
+		}
+		$xml .= '</shipping-info>';
 		
 		return $xml;
 	}

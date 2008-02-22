@@ -136,9 +136,9 @@ class General
 				{
 					$xml .= '<'. $key .'>';
 					// Loop through all array items for the session variable
-					for ($i=0; $i<count($val); $i++)
+					foreach ($val as $k => $v)
 					{
-						$xml .= '<item id="'. $i .'">'. htmlspecialchars($val[$i], ENT_QUOTES) .'</item>';
+						$xml .= '<item id="'. $k .'">'. htmlspecialchars($v, ENT_QUOTES) .'</item>';
 					}
 					$xml .= '</'. $key .'>';
 				}
@@ -448,11 +448,13 @@ class General
 	{
 		$sql = "SELECT data
 				FROM Log.Message_Tbl
-				WHERE txnid = ". intval($txnid) ." AND stateid = ". intval($stateid);
+				WHERE txnid = ". intval($txnid) ." AND stateid = ". intval($stateid) ."
+				ORDER BY id DESC
+				LIMIT 1";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 
-		return is_array($RS)===true?unserialize($RS["DATA"]):array();
+		return is_array($RS)===true?unserialize(utf8_decode($RS["DATA"]) ):array();
 	}
 	
 	/**
@@ -528,6 +530,24 @@ class General
 		$sPrice = str_replace("{PRICE}", number_format($amount / 100, $oCC->getDecimals() ), $sPrice);
 		
 		return $sPrice;
+	}
+	
+	/**
+	 * Construct standard mPoint HTTP Headers for notifying the Client via HTTP.
+	 *
+	 * @return string
+	 */
+	protected function constHeaders()
+	{
+		/* ----- Construct HTTP Header Start ----- */
+		$h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
+		$h .= "host: {HOST}" .HTTPClient::CRLF;
+		$h .= "referer: {REFERER}" .HTTPClient::CRLF;
+		$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
+		$h .= "content-type: {CONTENTTYPE}; charset=ISO-8859-15" .HTTPClient::CRLF;
+		/* ----- Construct HTTP Header End ----- */
+		
+		return $h;
 	}
 }
 ?>

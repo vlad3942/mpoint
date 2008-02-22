@@ -3,8 +3,8 @@
  * The file include any necesarry queries to populate an empty database with initial configuration data
  */
 
-INSERT INTO System.Country_Tbl (id, name, currency, minmob, maxmob, channel, priceformat, decimals) VALUES (10, 'Denmark', 'kr', '10000000', '99999999', '1230', '{PRICE}{CURRENCY}', 0);
-INSERT INTO System.Country_Tbl (id, name, currency, minmob, maxmob, channel, priceformat, decimals) VALUES (20, 'USA', '$', '1000000000', '9999999999', '20100', '{CURRENCY}{PRICE}', 2);
+INSERT INTO System.Country_Tbl (id, name, currency, minmob, maxmob, channel, priceformat, decimals, als) VALUES (10, 'Denmark', 'kr', '10000000', '99999999', '1230', '{PRICE}{CURRENCY}', 0, true);
+INSERT INTO System.Country_Tbl (id, name, currency, minmob, maxmob, channel, priceformat, decimals, als) VALUES (20, 'USA', '$', '1000000000', '9999999999', '20100', '{CURRENCY}{PRICE}', 2, false);
 
 INSERT INTO System.PSP_Tbl (name) VALUES ('DIBS - Flexwin');
 INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) SELECT 10, Max(id), 208 FROM System.PSP_Tbl;
@@ -87,6 +87,8 @@ INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (133, 'Language not su
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1001, 'Input Valid', 'API', 'Controller');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1002, 'Products', 'Call Centre', 'logProducts');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1003, 'Client Variables', 'API', 'logClientVars');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1004, 'Delivery Information', 'Shop', 'logDeliveryInfo');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1005, 'Shipping Information', 'Shop', 'logShippingInfo');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1010, 'Message accepted by GoMobile', 'Call Centre', 'sendLink');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1011, 'Unable to connect to GoMobile', 'Call Centre', 'sendLink');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1012, 'Message rejected by GoMobile', 'Call Centre', 'sendLink');

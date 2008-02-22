@@ -112,7 +112,7 @@ class Validate
 	 * 	1. Undefined Username
 	 * 	2. Username is too short, as defined by iAUTH_MIN_LENGTH
 	 * 	3. Username is too long, as defined by iAUTH_MAX_LENGTH
-	 *  4. Username contains invalid characters: [^a-z0-9 ._-]
+	 *  4. Username contains invalid characters: [^a-z0-9 √¶√∏√•√Ü√ò√Ö._-]
 	 * 	10. Success
 	 * 
 	 * @see		Constants::iAUTH_MIN_LENGTH
@@ -125,11 +125,11 @@ class Validate
 	{
 		$un = trim($un);
 		// Validate Username
-		if (empty($un) === true){ $code = 1; }													// Username is undefined
-		elseif (strlen($un) < Constants::iAUTH_MIN_LENGTH) { $code = 2; }						// Username is too short
-		elseif (strlen($un) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }						// Username is too long
-		elseif (eregi("[^a-z0-9 æøåÆØÅ._-]", html_entity_decode($un) ) == true) { $code = 4; }	// Username contains Invalid Characters
-		else { $code = 10; }																	// Username is valid
+		if (empty($un) === true){ $code = 1; }											// Username is undefined
+		elseif (strlen($un) < Constants::iAUTH_MIN_LENGTH) { $code = 2; }				// Username is too short
+		elseif (strlen($un) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }				// Username is too long
+		elseif (eregi("[^a-z0-9 √¶√∏√•√Ü√ò√Ö.-]", utf8_encode($un) ) == true) { $code = 4; }	// Username contains Invalid Characters
+		else { $code = 10; }															// Username is valid
 		
 		return $code;
 	}
@@ -168,7 +168,7 @@ class Validate
 	 * 	1. Undefined E-Mail address
 	 * 	2. E-Mail address is too short, as defined by iAUTH_MIN_LENGTH
 	 * 	3. E-Mail address is too long, as defined by iAUTH_MAX_LENGTH
-	 *  4. E-Mail address contains invalid characters: [^0-9A-Za-zæøåÆØÅ_.-@]
+	 *  4. E-Mail address contains invalid characters: [^0-9A-Za-z√¶√∏√•√Ü√ò√Ö_.-@]
 	 *  5. E-Mail has an invalid form: ^[^@ ]+@[^@ ]+\.[^@ \.]+$
 	 *	10. Success
 	 * 
@@ -185,7 +185,7 @@ class Validate
 		if (empty($email) === true) { $code = 1; }									// E-Mail is undefined
 		elseif (strlen($email) < Constants::iAUTH_MIN_LENGTH) { $code = 2; }		// E-Mail is too short
 		elseif (strlen($email) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }		// E-Mail is too long
-		elseif (eregi("[^0-9a-zøæå.@-]", $email) == true) { $code = 4; }			// E-Mail contains Invalid Characters
+		elseif (eregi("[^0-9a-z√¶√∏√•.@-]", $email) == true) { $code = 4; }			// E-Mail contains Invalid Characters
 		elseif (ereg("^[^@ ]+@[^@ ]+\.[^@ \.]+$", $email) == false) { $code = 5; }	// E-Mail has an invalid form
 		else { $code = 10; }														// E-Mail is valid
 		
@@ -198,7 +198,7 @@ class Validate
 	 * 	1. Undefined Name
 	 * 	2. Name is too short, as defined by iAUTH_MIN_LENGTH
 	 * 	3. Name is too long, must be shorter than 100 characters
-	 *  4. Name contains invalid characters: [^a-z0-9 ._-]
+	 *  4. Name contains invalid characters: [^a-z0-9 √¶√∏√•√Ü√ò√Ö._-]
 	 * 	10. Success
 	 * 
 	 * @see		Constants::iAUTH_MIN_LENGTH
@@ -280,7 +280,7 @@ class Validate
 	 * 	3. Amount is too big, amount must be smaller than the max amount specified by the client
 	 * 	10. Success
 	 * 
-	 * @param 	integer $prc 	The price of the merchandise the customer is buying in the country's smallest currency (cents for USA, øre for Denmark etc.)
+	 * @param 	integer $prc 	The price of the merchandise the customer is buying in the country's smallest currency (cents for USA, ÔøΩre for Denmark etc.)
 	 * @return 	integer
 	 */
 	public function valAmount($prc)
@@ -404,6 +404,105 @@ class Validate
 		if (empty($lang) === true) { $code = 1;}							// Undefined Language
 		elseif (eregi("[^a-z_]", $lang) == true) { $code = 2; }				// Invalid Language
 		elseif (is_dir(sLANGUAGE_PATH . $lang) === false) { $code = 3; }	// Language not supported
+		else { $code = 10; }
+		
+		return $code;
+	}
+	
+	/**
+	 * Validates the entered postal code for country.
+	 * The method will return the following status code:
+	 * 	1. Zip code is Undefined
+	 * 	2. Zip code is too small
+	 * 	3. Zip code is too great
+	 * 	4. Zip code has an invalid length
+	 * 	10. Success
+	 * The method currently supports the following countries:
+	 * 	- Denmark
+	 * 	- Sweden
+	 * 	- Norway
+	 * 	- UK
+	 * 	- Finland
+	 * 	- USA
+	 *
+	 * @param 	string $zip 	Entered zip code to validate
+	 * @return 	integer
+	 * 
+	 * @throws 	mPointException
+	 */
+	public function valZipCode($zip)
+	{
+		if (empty($zip) === true) { $code = 1; }
+		else
+		{
+			switch ($this->_obj_ClientConfig->getCountryConfig()->getID() )
+			{
+			case (10):	// Denmark
+				if (intval($zip) < 800) { $code = 2; }
+				elseif (intval($zip) > 9999) { $code = 3; }
+				else { $code = 10; }
+				break;
+			case (11):	// Sweden
+				if (intval($zip) < 10000) { $code = 2; }
+				elseif (intval($zip) > 99999) { $code = 3; }
+				else { $code = 10; }
+				break;
+			case (12):	// Norway
+				if (intval($zip) < 100) { $code = 2; }
+				elseif (intval($zip) > 9999) { $code = 3; }
+				else { $code = 10; }
+				break;
+			case (13):	// UK
+				if (preg_match('/(GIR 0AA|[A-PR-UWYZ]([0-9]{1,2}|([A-HK-Y][0-9]|[A-HK-Y][0-9]([0-9]|[ABEHMNPRV-Y]))|[0-9][A-HJKS-UW]) [0-9][ABD-HJLNP-UW-Z]{2})/i') == false) { $code = 5; }
+				else { $code = 10; }
+				break;
+			case (14):	// Finland
+				if (intval($zip) < 0) { $code = 2; }
+				elseif (intval($zip) > 99999) { $code = 3; }
+				elseif (strlen($zip) != 5) { $code = 4; }
+				else { $code = 10; }
+				break;
+			case (20):	// USA
+				if (intval($zip) < 10000) { $code = 2; }
+				elseif (intval($zip) > 99999) { $code = 3; }
+				else { $code = 10; }
+				break;
+			default:	// Error: Invalid Country
+				$code = -1;
+				throw new mPointException("Invalid Country: ". $this->_obj_ClientConfig->getCountryConfig()->getID(), 1101);
+				break;
+			}
+		}
+		
+		return $code;
+	}
+	
+	/**
+	 * Validates that a Delivery date appears sensible.
+	 * The method will return the following status code:
+	 * 	1. Year is Undefined
+	 * 	2. Year is in the Past
+	 * 	3. Month is undefined
+	 * 	4. Month is in the Past
+	 * 	5. Day is undefined
+	 * 	6. Day is in the Past
+	 * 	7. Delivery Date is in the Past
+	 * 	10. Success
+	 *
+	 * @param 	integer $year 	Year part of the Delivery Data which should be validated
+	 * @param 	integer $month 	Momth part of the Delivery Data which should be validated
+	 * @param 	integer $day 	Day part of the Delivery Data which should be validated
+	 * @return 	integer
+	 */
+	public function valDeliveryDate($year, $month, $day)
+	{
+		if (empty($year) === true) { $code = 1; }
+		elseif (date("Y") > intval($year) ) { $code = 2; }
+		elseif (empty($month) === true) { $code = 3; }
+		elseif (date("m") > intval($month) ) { $code = 4; }
+		elseif (empty($day) === true) { $code = 5; }
+		elseif (date("d") > intval($day) ) { $code = 6; }
+		elseif (strtotime(date("Y-m-d") ) > strtotime($year ."-". $month ."-". $day) ) { $code = 7; }
 		else { $code = 10; }
 		
 		return $code;

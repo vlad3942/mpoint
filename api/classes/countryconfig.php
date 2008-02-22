@@ -56,6 +56,12 @@ class CountryConfig extends BasicConfig
 	 * @var integer
 	 */
 	private $_iNumDecimals;
+	/**
+	 * Boolean Flag indicating whether an Address Lookup Service is available in the Country
+	 *
+	 * @var boolean
+	 */
+	private $_bAddressLookup;
 	
 	/**
 	 * Default Constructor
@@ -68,8 +74,9 @@ class CountryConfig extends BasicConfig
 	 * @param 	string $ch 			GoMobile channel used for communicating with the customers in the Country
 	 * @param 	string $pf 			Price Format used in the Country
 	 * @param 	integer $dec 		Number of Decimals used for Prices in the Country
+	 * @param 	boolean $lus 		Boolean Flag indicating whether an Address Lookup Service is available in the Country
 	 */
-	public function __construct($id, $name, $currency, $minmob, $maxmob, $ch, $pf, $dec)
+	public function __construct($id, $name, $currency, $minmob, $maxmob, $ch, $pf, $dec, $als)
 	{
 		parent::__construct($id, $name);
 		
@@ -79,6 +86,7 @@ class CountryConfig extends BasicConfig
 		$this->_sChannel = trim($ch);
 		$this->_sPriceFormat = trim($pf);
 		$this->_iNumDecimals = (integer) $dec;
+		$this->_bAddressLookup = $als;
 	}
 	
 	/**
@@ -119,5 +127,27 @@ class CountryConfig extends BasicConfig
 	 * @return integer
 	 */
 	public function getDecimals() { return $this->_iNumDecimals; }
+	/**
+	 * Returns True if an Address Lookup Service is available in the Country otherwise false.
+	 *
+	 * @return boolean
+	 */
+	public function hasAddressLookup() { return $this->_bAddressLookup; }
+	
+	public function toXML()
+	{
+		$xml = '<country-config id="'. $this->getID() .'">';
+		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
+		$xml .= '<currency>'. $this->_sCurrency .'</currency>';
+		$xml .= '<min-mobile>'. $this->_sMaxMobile .'</min-mobile>';
+		$xml .= '<max-mobile>'. $this->_sMinMobile .'</max-mobile>';
+		$xml .= '<channel>'. $this->_sChannel .'</channel>';
+		$xml .= '<price-format>'. $this->_sPriceFormat .'</price-format>';
+		$xml .= '<num-decimals>'. $this->_iNumDecimals .'</num-decimals>';
+		$xml .= '<address-lookup>'. General::bool2xml($this->_bAddressLookup) .'</address-lookup>';
+		$xml .= '</country-config>';
+		
+		return $xml;
+	}
 }
 ?>

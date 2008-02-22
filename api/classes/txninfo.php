@@ -315,9 +315,12 @@ class TxnInfo
 	 * 
 	 * @see 	ClientConfig::produceConfig
 	 * 
-	 * @param 	integer $id 				Unique ID for the Transaction that should be instantiated
-	 * @param 	[ClientConfig|RDB] $obj 	Reference to either a Database Object which handles the active connection to mPoint's database or to and instance of the Client Configuration of the Client who owns the Transaction
-	 * @param 	array $misc 				Reference to array of miscelaneous data that is used for instantiating the data object with the Transaction Information
+	 * @param 	integer $id 						Unique ID for the Transaction that should be instantiated
+	 * @param 	[TxnInfo|ClientConfig|RDB] $obj 	Reference to one of the following objects:
+	 * 												- An instance of the Data Object with the Transaction Information that the new Data Object should be based on
+	 * 												- An instance of the Client Configuration of the Client who owns the Transaction
+	 * 												- A Database Object which handles the active connection to mPoint's database
+	 * @param 	array $misc 						Reference to array of miscelaneous data that is used for instantiating the data object with the Transaction Information
 	 * @return 	TxnInfo
 	 * @throws 	E_USER_ERROR, TxnInfoException
 	 */
@@ -326,6 +329,23 @@ class TxnInfo
 		$obj_TxnInfo = null;
 		switch (true)
 		{
+		case ($obj instanceof TxnInfo):	// Instantiate from array of new Transaction Information
+			// Use data from provided Data Object for all unspecified values
+			if (array_key_exists("typeid", $misc) === false) { $misc["typeid"] = $obj->getTypeID(); }
+			if (array_key_exists("client_config", $misc) === false) { $misc["client_config"] = $obj->getClientConfig(); }
+			if (array_key_exists("amount", $misc) === false) { $misc["amount"] = $obj->getAmount(); }
+			if (array_key_exists("orderid", $misc) === false) { $misc["orderid"] = $obj->getOrderID(); }
+			if (array_key_exists("recipient", $misc) === false) { $misc["recipient"] = $obj->getAddress(); }
+			if (array_key_exists("operator", $misc) === false) { $misc["operator"] = $obj->getOperator(); }
+			if (array_key_exists("logo-url", $misc) === false) { $misc["logo-url"] = $obj->getLogoURL(); }
+			if (array_key_exists("css-url", $misc) === false) { $misc["css-url"] = $obj->getCSSURL(); }
+			if (array_key_exists("accept-url", $misc) === false) { $misc["accept-url"] = $obj->getAcceptURL(); }
+			if (array_key_exists("cancel-url", $misc) === false) { $misc["cancel-url"] = $obj->getCancelURL(); }
+			if (array_key_exists("callback-url", $misc) === false) { $misc["callback-url"] = $obj->getCallbackURL(); }
+			if (array_key_exists("language", $misc) === false) { $misc["language"] = $obj->getLanguage(); }
+			
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client_config"], $misc["amount"], $misc["orderid"], $misc["recipient"], $misc["operator"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"]);
+			break;
 		case ($obj instanceof ClientConfig):	// Instantiate from array of Client Input
 			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["amount"], $misc["orderid"], $misc["recipient"], $misc["operator"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"]);
 			break;

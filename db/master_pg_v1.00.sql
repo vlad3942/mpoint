@@ -71,6 +71,7 @@ CREATE TABLE System.Country_Tbl
 	
 	priceformat	VARCHAR(18),	-- The Price format used in the country, i.e. $X.XX for USA and X.XXkr for Denmark etc.
 	decimals	INT4,			-- Number of Decimals used for Prices in the Country, i.e. 2 for USA, 0 for Denmark etc.
+	als			BOOL DEFAULT false,	-- Boolean Flag indicating whether an Address Lookup Service is available in the Country
 	
 	CONSTRAINT Country_PK PRIMARY KEY (id),
 	LIKE Template.General_Tbl INCLUDING DEFAULTS
@@ -215,7 +216,7 @@ CREATE SCHEMA Client AUTHORIZATION jona;
 GRANT USAGE ON SCHEMA Client TO mpoint;
 
 -- Table: Client.Client_Tbl
--- Data table for all Countries mPoint can be used in
+-- Data table for all Client Configurations
 CREATE TABLE Client.Client_Tbl
 (
 	id			SERIAL,
@@ -232,10 +233,12 @@ CREATE TABLE Client.Client_Tbl
 	cancelurl	VARCHAR(255),	-- Absolute URL where mPoint should direct the customer to upon the customer cancelling the payment
 	
 	maxamount	INT4,						-- Maximum Amount an mPoint Transaction can be for the client
-	lang		CHAR(2) DEFAULT 'uk',		-- Clients default language that all mPoint payment pages should use 
+	lang		CHAR(2) DEFAULT 'gb',		-- Clients default language that all mPoint payment pages should use 
 	smsrcpt		BOOL DEFAULT true,			-- Indication of whether mPoint should send out an SMS Receipt to the Customer
 	emailrcpt	BOOL DEFAULT true,			-- Indication of whether mPoint should allow access to the E-Mail Receipt Component
 	method		VARCHAR(6) DEFAULT 'mPoint', -- Method / Protocol used by mPoint when performing a Callback to the Client
+	
+	terms		TEXT,			-- Terms & Conditions for the Client
 
 	CONSTRAINT Client_PK PRIMARY KEY (id),
 	CONSTRAINT Client_Chk CHECK (method = 'mPoint' OR method = 'PSP'),
@@ -415,7 +418,7 @@ CREATE TABLE Client.Product_Tbl
 	keywordid	INT4 NOT NULL,	-- ID of the Keyword the Product belongs to
 
 	name		VARCHAR(50),	-- Name of the Product
-	units		INT4 DEFAULT 1,	-- Number of units purchased for this product
+	quantity	INT4 DEFAULT 1,	-- Number of units purchased for this product
 	price		INT4,			-- Price of Product
 	logourl		VARCHAR(255),	-- URL where mPoint can fetch the product logo
 
@@ -434,6 +437,37 @@ INSERT INTO Client.Product_Tbl (id, keywordid, name, enabled) VALUES (0, 0, 'Sys
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.Product_Tbl TO mpoint;
 GRANT USAGE, SELECT, UPDATE ON TABLE Client.product_tbl_id_seq TO mpoint;
+
+
+-- Table: Client.Shop_Tbl
+-- Data table for the Shop Configuration for each Client
+CREATE TABLE Client.Shop_Tbl
+(
+	id			SERIAL,
+	clientid	INT4 NOT NULL,	-- ID of the Client the Shop belongs to
+	keywordid	INT4 NOT NULL,	-- ID of the Keyword used to Access the Shop
+
+	shipping	VARCHAR(50),	-- Name of the Shipping company used
+	ship_cost	INT4,			-- Cost of Shipping in Countrys smallest currency
+	free_ship	INT4,			-- Min amount for Orders for Free Shipping
+	del_date	BOOL,			-- Boolean Flag indicating whether the customer can select a Delivery Date
+
+	CONSTRAINT Shop_PK PRIMARY KEY (id),
+	CONSTRAINT Shop2Client_FK FOREIGN KEY (clientid) REFERENCES Client.Client_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT Shop2Keyword_FK FOREIGN KEY (keywordid) REFERENCES Client.Keyword_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
+	LIKE Template.General_Tbl INCLUDING DEFAULTS
+) WITHOUT OIDS;
+
+CREATE TRIGGER Update_Shop
+BEFORE UPDATE
+ON Client.Shop_Tbl FOR EACH ROW
+EXECUTE PROCEDURE Public.Update_Table_Proc();
+
+-- Internal
+INSERT INTO Client.Shop_Tbl (id, clientid, keywordid, enabled) VALUES (0, 0, 0, false);
+
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.Shop_Tbl TO mpoint;
+GRANT USAGE, SELECT, UPDATE ON TABLE Client.Shop_tbl_id_seq TO mpoint;
 /* ==================== CLIENT SCHEMA END ==================== */
 
 
@@ -458,7 +492,7 @@ CREATE TABLE Log.Transaction_Tbl
 
 	orderid		VARCHAR(40),	-- Clients Order ID of the Transaction
 	extid		VARCHAR(40),			-- External ID returned by the PSP
-	lang		CHAR(2) DEFAULT 'uk',	-- Default language for mPoint pages
+	lang		CHAR(2) DEFAULT 'gb',	-- Default language for mPoint pages
 
 	address		VARCHAR(15),	-- MSISDN of the customer who made the purchase
 	operatorid	INT4,			-- GoMobile ID for the Customers Mobile Network Operator
@@ -485,7 +519,7 @@ BEFORE UPDATE
 ON Log.Transaction_Tbl FOR EACH ROW
 EXECUTE PROCEDURE Public.Update_Table_Proc();
 
-SELECT setval('Log.Transaction_Tbl_id_seq', 999999);
+SELECT setval('Log.Transaction_Tbl_id_seq', 100000999);
 
 -- Internal
 INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, cardid, amount, orderid, extid, enabled) VALUES (0, 0, 0, 0, 0, 0, 0, -1, 'System Record', 'System Record', false);

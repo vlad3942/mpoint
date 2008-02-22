@@ -83,6 +83,8 @@ require_once(sCLASS_PATH ."/clientconfig.php");
 require_once(sCLASS_PATH ."/accountconfig.php");
 // Require data class for Keyword Configurations
 require_once(sCLASS_PATH ."/keywordconfig.php");
+// Require data class for Shop Configuration
+require_once(sCLASS_PATH ."/shopconfig.php");
 // Require data data class for Transaction Information
 require_once(sCLASS_PATH ."/txninfo.php");
 
@@ -91,7 +93,7 @@ require_once(sCLASS_PATH ."/txninfo.php");
 require_once(sCONF_PATH ."global.php");
 
 // Set Custom Error & Exception handlers
-new RemoteReport(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO), iOUTPUT_METHOD, sERROR_LOG, iDEBUG_LEVEL);
+new RemoteReport(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["iemendo"]), iOUTPUT_METHOD, sERROR_LOG, iDEBUG_LEVEL);
 
 // Web Request
 if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_SERVER['PHP_SELF']) == true)
@@ -116,9 +118,6 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 		 * The XML in turn must refer to an XSL Stylesheet by using the xml-stylesheet tag
 		 */
 		ob_start(array(new Output(), "transform") );
-		
-		// Ensure that output buffer is flushed and ended so transform method is called when a script terminates
-		register_shutdown_function("ob_end_flush");
 	}
 }
 
@@ -126,7 +125,7 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 $_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
 
 // Payment link activated, use overview.php through a rewrite rule defined by htaccess 
-if (array_key_exists("checksum", $_GET) === true)
+if (array_key_exists("checksum", $_GET) === true && $_SERVER['REQUEST_METHOD'] == "GET")
 {
 	$_SESSION['obj_TxnInfo'] = General::produceTxnInfo($_OBJ_DB, $_GET['checksum']);
 }

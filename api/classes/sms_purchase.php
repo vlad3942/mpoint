@@ -34,7 +34,7 @@ class SMS_Purchase extends MobileWeb
 		$aProducts = array("names" => array(),
 						   "quantities" => array(),
 						   "prices" => array(),
-						   "logos" => array());
+						   "logos" => array() );
 		for ($i=0; $i<count($aRS); $i++)
 		{
 			$aProducts["names"][$aRS[$i]["ID"] ] = $aRS[$i]["NAME"];

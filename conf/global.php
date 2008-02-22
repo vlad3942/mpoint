@@ -76,15 +76,28 @@ $aDB_CONN_INFO["session"]["method"] = 1;
 /**
  * Connection info for sending error reports to a remote host
  */
-$aHTTP_CONN_INFO["protocol"] = "http";
-$aHTTP_CONN_INFO["host"] = "iemendo.cydev.biz";
-$aHTTP_CONN_INFO["port"] = 80;
-$aHTTP_CONN_INFO["timeout"] = 20;
-$aHTTP_CONN_INFO["path"] = "/api/receive_report.php";
-$aHTTP_CONN_INFO["method"] = "POST";
-$aHTTP_CONN_INFO["contenttype"] = "text/xml";
-//$aHTTP_CONN_INFO["username"] = "";
-//$aHTTP_CONN_INFO["password"] = "";
+$aHTTP_CONN_INFO["iemendo"]["protocol"] = "http";
+$aHTTP_CONN_INFO["iemendo"]["host"] = "iemendo.cydev.biz";
+$aHTTP_CONN_INFO["iemendo"]["port"] = 80;
+$aHTTP_CONN_INFO["iemendo"]["timeout"] = 20;
+$aHTTP_CONN_INFO["iemendo"]["path"] = "/api/receive_report.php";
+$aHTTP_CONN_INFO["iemendo"]["method"] = "POST";
+$aHTTP_CONN_INFO["iemendo"]["contenttype"] = "text/xml";
+//$aHTTP_CONN_INFO["iemendo"]["username"] = "";
+//$aHTTP_CONN_INFO["iemendo"]["password"] = "";
+
+/**
+ * HTTP Connection Information for using Interflora's Lookup Service in Denmark
+ */
+$aHTTP_CONN_INFO[10]["protocol"] = "http";
+$aHTTP_CONN_INFO[10]["host"] = "www.interflora.dk";
+$aHTTP_CONN_INFO[10]["port"] = 80;
+$aHTTP_CONN_INFO[10]["timeout"] = 20;
+$aHTTP_CONN_INFO[10]["path"] = "/rpc/tdc_lookup.php";
+$aHTTP_CONN_INFO[10]["method"] = "GET";
+$aHTTP_CONN_INFO[10]["contenttype"] = "application/www-url-form-encoded";
+//$aHTTP_CONN_INFO[10]["username"] = "";
+//$aHTTP_CONN_INFO[10]["password"] = "";
 
 /**
  * GoMobile Connection Info.

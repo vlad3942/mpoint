@@ -162,10 +162,26 @@ msgstr @@@ E-Mail address is too short, a valid e-mail address must be min 5 cha
 msgid @@@ E-Mail - 13 @@@
 msgstr @@@ E-Mail address is too long, a valid e-mail address must be max 50 characters @@@
 msgid @@@ E-Mail - 14 @@@
-msgstr @@@ E-Mail address contains invalid characters, an e-mail address may only contain the following chaaracters: 0-9 A-Z a-z ¾ ¿ Œ ® ¯  _ . - @ @@@
+msgstr @@@ E-Mail address contains invalid characters, an e-mail address may only contain the following chaaracters: 0-9 A-Z a-z ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ _ . - @ @@@
 msgid @@@ E-Mail - 15 @@@
 msgstr @@@ E-Mail has an invalid format, a valid e-mail address must be in the format of: john.doe@cellpointmobile.com @@@
 msgid @@@ E-Mail - 91 @@@
 msgstr @@@ An error occurred while sending your E-Mail Receipt, please try again? @@@
 msgid @@@ Accept - 100 @@@
 msgstr @@@ Your E-Mail receipt has been successfully sent @@@
+
+msgid @@@ Products - 11 @@@
+msgstr @@@ No Products selected for Purchase. Please enter the quantity for each product in the text field to the left? @@@
+msgid @@@ Products - 12 @@@
+msgstr @@@ Quantity for all selected products are 0. Please enter the quantity for each product in the text field to the left? @@@
+
+msgid @@@ Delivery - 10 @@@
+msgstr @@@ We're sorry, but we couldn't find any address using your number @@@
+msgid @@@ Delivery - 11 @@@
+msgstr @@@ You have not entered a number @@@
+msgid @@@ Delivery - 12 @@@
+msgstr @@@ The entered number is too short @@@
+msgid @@@ Delivery - 13 @@@
+msgstr @@@ The entered number is too long @@@
+msgid @@@ Delivery - 19 @@@
+msgstr @@@ We're sorry, but we couldn't find any address using the entered number @@@

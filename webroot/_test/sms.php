@@ -99,12 +99,12 @@ $obj_GoMobile = new GoMobileClient($obj_ConnInfo);
 
 /* ========== Create fake MO-SMS Start ========== */
 $iType = 1;					// MO-SMS
-$iCountry = 20;				// USA
-$iOperator = 20001;			// Bulk Operator for the US
-$sChannel = "20100";		// Internal channel for testing
+$iCountry = 10;				// USA
+$iOperator = 10002;			// Bulk Operator for the US
+$sChannel = "1230";		// Internal channel for testing
 $sKeyword = "CPT";
 $iPrice = 0;				// Non-Premium SMS
-$sSender = "3053315242";	// MSISDN of the Sender, must be a string as PHP only supports 32 bit integers
+$sSender = "28882861";	// MSISDN of the Sender, must be a string as PHP only supports 32 bit integers
 $sBody = "Fake MO-SMS generated through GoMobile";
 
 // Instantiate Message Object for holding the message data which will be sent to GoMobile

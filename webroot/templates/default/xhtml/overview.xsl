@@ -13,14 +13,14 @@
 	  -->
 	<table id="products">
 	<tr>
-		<td colspan="3" class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/name" /></td>
+		<td colspan="3" class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/product" /></td>
 		<td class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/quantity" /></td>
 		<td colspan="2" class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/price" /></td>
 	</tr>
 	<!-- List Products -->
 	<xsl:for-each select="products/item">
 	<tr>
-		<td colspan="6"><img src="{logo-url}" width="30" height="30" alt="- Logo -" /></td>
+		<td colspan="6"><img src="{logo-url}" width="40" height="40" alt="- Logo -" /></td>
 	</tr>
 	<tr>
 		<td colspan="3"><xsl:value-of select="name" /></td>
@@ -28,12 +28,48 @@
 		<td colspan="2" class="mPoint_Number"><xsl:value-of select="price" /></td>
 	</tr>
 	</xsl:for-each>
+	<!-- List Shipping Information -->
+	<xsl:if test="count(shipping-info) &gt; 0">
+		<tr>
+			<td colspan="6"><img src="{system/protocol}://{system/host}/img/shipping.gif" width="40" height="40" alt="- Logo -" /></td>
+		</tr>
+		<tr>
+			<td colspan="4"><xsl:value-of select="shipping-info/name" /></td>
+			<td colspan="2" class="mPoint_Number"><xsl:value-of select="shipping-info/price" /></td>
+		</tr>
+	</xsl:if>
 	<!-- List Total -->
 	<tr>
 		<td colspan="3" class="mPoint_Label"><xsl:value-of select="labels/total" /></td>
 		<td colspan="3" valign="bottom" class="mPoint_Label mPoint_Number"><xsl:value-of select="transaction/price" /></td>
 	</tr>
 	</table>
+	<!-- List Delivery Information -->
+	<xsl:if test="count(delivery-info) &gt; 0">
+		<div class="mPoint_Label"><xsl:value-of select="labels/delivery-info/name" /></div>
+		<div><xsl:value-of select="delivery-info/name" /></div>
+		
+		<div class="mPoint_Label"><xsl:value-of select="labels/delivery-info/company" /></div>
+		<div><xsl:value-of select="delivery-info/company" /></div>
+		<div class="mPoint_Label"><xsl:value-of select="labels/delivery-info/street" /></div>
+		<div><xsl:value-of select="delivery-info/street" /></div>
+		
+		<div class="mPoint_Label"><xsl:value-of select="labels/delivery-info/zipcode" /> &amp; <xsl:value-of select="labels/delivery-info/city" /></div>
+		<div><xsl:value-of select="delivery-info/zipcode" /> <xsl:value-of select="delivery-info/city" /></div>
+		
+		<!-- Include Delivery Date -->
+		<xsl:if test="string-length(delivery-info/delivery-date) &gt; 0">
+			<div class="mPoint_Label"><xsl:value-of select="labels/delivery-info/delivery-date" /></div>
+			<div><xsl:value-of select="delivery-info/delivery-date" /></div>
+		</xsl:if>
+	</xsl:if>
+	
+	<div>
+		<xsl:variable name="link-part" select="substring-after(labels/terms, '{LINK}')" />
+		<xsl:value-of select="substring-before(labels/terms, '{LINK}')" />
+		<a href="{func:constLink('terms.php')}"><xsl:value-of select="substring-before($link-part, '{/LINK}')" /></a>
+		<xsl:value-of select="substring-after($link-part, '{/LINK}')" />
+	</div>
 	
 	<div><a href="{func:constLink('/pay/card.php')}"><xsl:value-of select="labels/payment" /></a></div>
 </xsl:template>

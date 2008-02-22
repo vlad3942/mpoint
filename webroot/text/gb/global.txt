@@ -1,3 +1,75 @@
+#: /webroot/buy/web.php:120
+msgid @@@ Select Card @@@
+msgstr @@@ Select Card @@@
+
+#: /webroot/buy/web.php:125
+msgid @@@ Step 1 of 2 @@@
+msgstr @@@ Step 1 of 2 @@@
+
+#: /webroot/buy/web.php:126
+msgid @@@ Please select your Credit Card @@@
+msgstr @@@ Please select your Credit Card @@@
+
+#: /webroot/overview.php:29
+msgid @@@ Order Overview @@@
+msgstr @@@ Order Overview @@@
+
+#: /webroot/overview.php:38
+msgid @@@ Product - Info @@@
+msgstr @@@ Please find your ordered items listed below @@@
+
+#: /webroot/overview.php:39
+msgid @@@ Product @@@
+msgstr @@@ Product @@@
+
+#: /webroot/overview.php:40
+msgid @@@ Quantity @@@
+msgstr @@@ # @@@
+
+#: /webroot/overview.php:41
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
+#: /webroot/overview.php:42
+msgid @@@ Total @@@
+msgstr @@@ Total @@@
+
+#: /webroot/overview.php:43
+msgid @@@ Terms - Info @@@
+msgstr @@@ By clicking the link below, you accept the {LINK}Terms & Conditions{/LINK} for {CLIENT} @@@
+
+#: /webroot/overview.php:45
+msgid @@@ Delivery - Info @@@
+msgstr @@@ Delivery - Info @@@
+
+#: /webroot/overview.php:46
+msgid @@@ Name @@@
+msgstr @@@ Name @@@
+
+#: /webroot/overview.php:47
+msgid @@@ Company / CO @@@
+msgstr @@@ Company / CO @@@
+
+#: /webroot/overview.php:48
+msgid @@@ Street @@@
+msgstr @@@ Street @@@
+
+#: /webroot/overview.php:49
+msgid @@@ Zip Code @@@
+msgstr @@@ Zip Code @@@
+
+#: /webroot/overview.php:50
+msgid @@@ City @@@
+msgstr @@@ City @@@
+
+#: /webroot/overview.php:51
+msgid @@@ Delivery Date @@@
+msgstr @@@ Delivery Date @@@
+
+#: /webroot/overview.php:53
+msgid @@@ Go to Payment >> @@@
+msgstr @@@ Go to Payment >> @@@
+
 #: /webroot/pay/accept.php:28
 msgid @@@ Payment Completed @@@
 msgstr @@@ Payment Completed @@@
@@ -33,18 +105,6 @@ msgstr @@@ Send receipt via E-Mail @@@
 #: /webroot/pay/accept.php:48
 msgid @@@ Continue >> @@@
 msgstr @@@ Continue back to Client Site >> @@@
-
-#: /webroot/buy/web.php:120
-msgid @@@ Select Card @@@
-msgstr @@@ Select Card @@@
-
-#: /webroot/buy/web.php:125
-msgid @@@ Step 1 of 2 @@@
-msgstr @@@ Step 1 of 2 @@@
-
-#: /webroot/buy/web.php:126
-msgid @@@ Please select your Credit Card @@@
-msgstr @@@ Please select your Credit Card @@@
 
 #: /webroot/pay/card.php:32
 msgid @@@ Select Card @@@
@@ -82,35 +142,123 @@ msgstr @@@ Send E-Mail @@@
 msgid @@@ << Back @@@
 msgstr @@@ << Back @@@
 
-#: /webroot/overview.php:29
-msgid @@@ Order Overview @@@
-msgstr @@@ Order Overview @@@
+#: /webroot/shop/delivery.php:42
+msgid @@@ Delivery Info @@@
+msgstr @@@ Delivery Info @@@
 
-#: /webroot/overview.php:38
-msgid @@@ Product - Info @@@
-msgstr @@@ Please find your ordered items listed below @@@
+#: /webroot/shop/delivery.php:55
+msgid @@@ Delivery - Info @@@
+msgstr @@@ Delivery - Info @@@
 
-#: /webroot/overview.php:39
+#: /webroot/shop/delivery.php:56
+msgid @@@ Phone No @@@
+msgstr @@@ Phone No @@@
+
+#: /webroot/shop/delivery.php:57
+msgid @@@ Find @@@
+msgstr @@@ Find @@@
+
+#: /webroot/shop/delivery.php:58
 msgid @@@ Name @@@
-msgstr @@@ Product @@@
+msgstr @@@ Name @@@
 
-#: /webroot/overview.php:40
+#: /webroot/shop/delivery.php:59
+msgid @@@ Company / CO @@@
+msgstr @@@ Company / CO @@@
+
+#: /webroot/shop/delivery.php:60
+msgid @@@ Street @@@
+msgstr @@@ Street @@@
+
+#: /webroot/shop/delivery.php:61
+msgid @@@ Zip Code @@@
+msgstr @@@ Zip Code @@@
+
+#: /webroot/shop/delivery.php:62
+msgid @@@ City @@@
+msgstr @@@ City @@@
+
+#: /webroot/shop/delivery.php:64
+msgid @@@ Delivery Date @@@
+msgstr @@@ Delivery Date @@@
+
+#: /webroot/shop/delivery.php:65
+msgid @@@ YYYY @@@
+msgstr @@@ YYYY @@@
+
+#: /webroot/shop/delivery.php:66
+msgid @@@ MM @@@
+msgstr @@@ MM @@@
+
+#: /webroot/shop/delivery.php:67
+msgid @@@ DD @@@
+msgstr @@@ DD @@@
+
+#: /webroot/shop/delivery.php:69
+msgid @@@ Next >> @@@
+msgstr @@@ Next >> @@@
+
+#: /webroot/shop/products.php:34
+msgid @@@ Mobile Shop @@@
+msgstr @@@ Mobile Shop @@@
+
+#: /webroot/shop/products.php:43
+msgid @@@ Product - Info @@@
+msgstr @@@ Product - Info @@@
+
+#: /webroot/shop/products.php:44
+msgid @@@ Name @@@
+msgstr @@@ Name @@@
+
+#: /webroot/shop/products.php:45
 msgid @@@ Quantity @@@
-msgstr @@@ # @@@
+msgstr @@@ Quantity @@@
 
-#: /webroot/overview.php:41
+#: /webroot/shop/products.php:46
 msgid @@@ Price @@@
 msgstr @@@ Price @@@
 
-#: /webroot/overview.php:42
+#: /webroot/shop/products.php:47
 msgid @@@ Total @@@
 msgstr @@@ Total @@@
 
-#: /webroot/overview.php:43
-msgid @@@ Go to Payment >> @@@
-msgstr @@@ Go to Payment >> @@@
+#: /webroot/shop/products.php:48
+msgid @@@ Next >> @@@
+msgstr @@@ Next >> @@@
 
-#: /api/classes/callback.php:193
+#: /webroot/shop/shipping.php:28
+msgid @@@ Shipping Info @@@
+msgstr @@@ Shipping Info @@@
+
+#: /webroot/shop/shipping.php:41
+msgid @@@ Shipping - Info @@@
+msgstr @@@ Shipping - Info @@@
+
+#: /webroot/shop/shipping.php:42
+msgid @@@ Company @@@
+msgstr @@@ Company @@@
+
+#: /webroot/shop/shipping.php:43
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
+#: /webroot/shop/shipping.php:44
+msgid @@@ Next >> @@@
+msgstr @@@ Next >> @@@
+
+#: /webroot/shop/shipping.php:47
+msgid @@@ FREE @@@
+msgstr @@@ FREE @@@
+
+#: /webroot/terms.php:29
+msgid @@@ Terms & Conditions @@@
+msgstr @@@ Terms & Conditions @@@
+
+#: /webroot/terms.php:37
+msgid @@@ << Back @@@
+msgstr @@@ << Back @@@
+
+#: /api/classes/callback.php:189
 msgid @@@ mPoint - SMS Receipt @@@
 msgstr @@@ Thank you for using mPoint, your order details are:
 mPoint ID: {MPOINTID}

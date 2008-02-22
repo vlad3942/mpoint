@@ -169,3 +169,19 @@ msgid @@@ E-Mail - 91 @@@
 msgstr @@@ Vi beklager, der opstod desværre en fejl under udsendelse af din e-mail. Prøv venligst igen? @@@
 msgid @@@ Accept - 100 @@@
 msgstr @@@ Din E-Mail kvittering er blevet sendt @@@
+
+msgid @@@ Products - 11 @@@
+msgstr @@@ Du har ikke valgt nogen produkter. Angiv venligst antallet af hvert produkt i tekst feltet til venstre? @@@
+msgid @@@ Products - 12 @@@
+msgstr @@@ Antallet for alle valgte produkter er 0. Ret venligst antallet for hvert produkt i tekst feltet til venstre? @@@
+
+msgid @@@ Delivery - 10 @@@
+msgstr @@@ Vi beklager, men vi kunne ikke finde nogen adresse på dit nummer. @@@
+msgid @@@ Delivery - 11 @@@
+msgstr @@@ Du har ikke angivet et nummer @@@
+msgid @@@ Delivery - 12 @@@
+msgstr @@@ Det angivne nummer er for kort @@@
+msgid @@@ Delivery - 13 @@@
+msgstr @@@ Det angivne nummer er for langt @@@
+msgid @@@ Delivery - 19 @@@
+msgstr @@@ Vi beklager, men vi kunne ikke finde nogen adresse på det angivne nummer. @@@
