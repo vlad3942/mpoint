@@ -31,6 +31,7 @@ class DIBS extends Callback
 	 * 
 	 * @see 	Callback::notifyClient()
 	 * @see 	Callback::send()
+	 * @see 	Callback::getVariables()
 	 *
 	 * @param 	integer $sid 	Unique ID of the State that the Transaction terminated in
 	 * @param 	array $_post 	Array of data received from DIBS via HTTP POST
@@ -46,25 +47,19 @@ class DIBS extends Callback
 		else
 		{
 			// Remove mPoint specific data fields from Callback request
-			unset($_post["width"]);
-			unset($_post["height"]);
-			unset($_post["format"]);
-			unset($_post[session_name()]);
-			unset($_post["language"]);
-			unset($_post["cardid"]);
+			unset($_post["width"], $_post["height"], $_post["format"], $_post[session_name()], $_post["language"], $_post["cardid"]);
 			// Replace data fields previously overwritten by mPoint
 			$_post["orderid"] = $this->getTxnInfo()->getOrderID();
 			$_post["callbackurl"] = $this->getTxnInfo()->getCallbackURL();
-			$_post["accepturl"] = $this->getTxnInfo()->getAcceptURL();
-			// Get custom Client Variables
-			$_post = array_merge($_post, $this->getMessageData($txnid, Constants::iCLIENT_VARS_STATE) );
-			
+			$_post["accepturl"] = $this->getTxnInfo()->getAcceptURL();			
 			// Re-Construct DIBS request
 			$sBody = "mpoint-id=". $this->getTxnInfo()->getID();
 			foreach ($_post as $key => $val)
 			{
 				$sBody .= "&". $key ."=". urlencode($val);
 			}
+			// Append Custom Client Variables and Customer Input
+			$sBody .= "&". $this->getVariables();
 			
 			$this->send($sBody);
 		}

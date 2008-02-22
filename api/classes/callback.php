@@ -146,16 +146,19 @@ class Callback extends General
 	 *	&currency={CURRENCY AMOUNT IS CHARGED IN}
 	 *	&recipient={CUSTOMER'S MSISDN WHERE SMS MESSAGE CAN BE SENT TO}
 	 *	&operator={GOMOBILE ID FOR THE CUSTOMER'S MOBILE NETWORK OPERATOR}
-	 * Additionally the method will append all custom Client Variables that were sent to mPoint as part of the original request.
+	 * Additionally the method will append all custom Client Variables that were sent to mPoint as part of the original request
+	 * as well as the following Customer Input:
+	 * 	- Purchased Products
+	 * 	- Delivery Information
+	 * 	- Shipping Information
 	 * 
 	 * @see 	Callback::send()
+	 * @see 	Callback::getVariables()
 	 *
 	 * @param 	integer $sid 	Unique ID of the State that the Transaction terminated in
 	 */
 	public function notifyClient($sid)
 	{
-		// Get custom Client Variables
-		$aClientVars = $this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iCLIENT_VARS_STATE);
 		/* ----- Construct Body Start ----- */
 		$sBody = "";
 		$sBody .= "mpoint-id=". $this->_obj_TxnInfo->getID();
@@ -165,11 +168,7 @@ class Callback extends General
 		$sBody .= "&currency=". urlencode($this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getCurrency() );
 		$sBody .= "&recipient=". urlencode($this->_obj_TxnInfo->getAddress() );
 		$sBody .= "&operator=". urlencode($this->_obj_TxnInfo->getOperator() );
-		// Add custom Client Variables to Callback Body
-		foreach ($aClientVars as $name => $value)
-		{
-			$sBody .= "&". $name ."=". urlencode($value);
-		}
+		$sBody .= "&". $this->getVariables();
 		/* ----- Construct Body End ----- */
 		
 		$this->send($sBody);
@@ -195,6 +194,72 @@ class Callback extends General
 		// Instantiate Message Object for holding the message data which will be sent to GoMobile
 		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID(), $this->_obj_TxnInfo->getOperator(), $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getChannel(), $this->_obj_TxnInfo->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $this->_obj_TxnInfo->getAddress(), $sBody);
 		$this->sendMT($oCI, $obj_MsgInfo, $this->_obj_TxnInfo);
+	}
+	
+	/**
+	 * Retrieves all Custom Client Variables and Customer Input from the Database and serialises them
+	 * into a urlencoded string.
+	 * The method will return each variable class with the following prefix:
+	 * 	- Custom Client Variable: var_
+	 * 	- Purchased Products: prod_
+	 * 	- Delivery Information: addr_
+	 * 	- Shipping Information: ship_
+	 * For Purchased Producs the following data will be returned for each product:
+	 * 	- prod_{ID}_name, The name of the Product Purchased
+	 * 	- prod_{ID}_quantity, The number of Units Purchased of the Product
+	 * 	- prod_{ID}_price, The price for each unit
+	 * For Delivery Information the following data will be returned:
+	 * 	- addr_name, The recipient's name
+	 * 	- addr_company, The company or C/O of the recipient
+	 * 	- addr_street, The streetname where the purchase should be delivered
+	 * 	- addr_zipcode, The Zip Code identifying the region where the purchase should be delivered
+	 * 	- addr_city, The City the purchase should be delivered in
+	 * 	- addr_delivery-date, The date the purchase should be delivered
+	 * For Shipping Information the following data will be returned:
+	 * 	- ship_company
+	 * 	- ship_price
+	 * 
+	 * @see 	Constants::iCLIENT_VARS_STATE
+	 * @see 	Constants::iPRODUCTS_STATE
+	 * @see 	Constants::iDELIVERY_INFO_STATE
+	 * @see 	Constants::iSHIPPING_INFO_STATE
+	 * @see 	General::getMessageData()
+	 *
+	 * @return 	string
+	 */
+	protected function getVariables()
+	{
+		// Get custom Client Variables and Customer Input
+		$aClientVars = $this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iCLIENT_VARS_STATE);
+		$aProducts = $this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iPRODUCTS_STATE);
+		$aDeliveryInfo = $this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iDELIVERY_INFO_STATE);
+		$aShippingInfo = $this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iSHIPPING_INFO_STATE);
+		
+		$sBody = "";
+		// Add custom Client Variables to Callback Body
+		foreach ($aClientVars as $name => $value)
+		{
+			$sBody .= "&". $name ."=". urlencode($value);
+		}
+		// Add Purchased Products to Callback Body
+		foreach ($aProducts["names"] as $key => $name)
+		{
+			$sBody .= "&prod_". $key ."_name=". urlencode($name);
+			$sBody .= "&prod_". $key ."_quantity=". intval($aProducts["quantities"][$key]);
+			$sBody .= "&prod_". $key ."_price=". intval($aProducts["prices"][$key]);
+		}
+		// Add Delivery Information to Callback Body
+		foreach ($aDeliveryInfo as $name => $value)
+		{
+			$sBody .= "&addr_". $name ."=". urlencode($value);
+		}
+		// Add Shipping Information to Callback Body
+		foreach ($aShippingInfo as $name => $value)
+		{
+			$sBody .= "&ship_". $name ."=". urlencode($value);
+		}
+		
+		return $sBody;
 	}
 }
 ?>
