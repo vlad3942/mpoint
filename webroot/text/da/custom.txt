@@ -185,3 +185,57 @@ msgid @@@ Delivery - 13 @@@
 msgstr @@@ Det angivne nummer er for langt @@@
 msgid @@@ Delivery - 19 @@@
 msgstr @@@ Vi beklager, men vi kunne ikke finde nogen adresse på det angivne nummer. @@@
+msgid @@@ Delivery - 21 @@@
+msgstr @@@ Du har ikke angivet et Navn på modtageren @@@
+msgid @@@ Delivery - 22 @@@
+msgstr @@@ Det angivne Navn er for kort @@@
+msgid @@@ Delivery - 23 @@@
+msgstr @@@ Det angivne Navn er for langt @@@
+msgid @@@ Delivery - 24 @@@
+msgstr @@@ Det angivne Navn indeholder ugyldige tegn @@@
+msgid @@@ Delivery - 31 @@@
+msgstr @@@ Du har ikke angivet et Firmanavn eller C/O til modtageren @@@
+msgid @@@ Delivery - 32 @@@
+msgstr @@@ Det angivne Firmanavn eller C/O er for kort @@@
+msgid @@@ Delivery - 33 @@@
+msgstr @@@ Det angivne Firmanavn eller C/O er for langt @@@
+msgid @@@ Delivery - 34 @@@
+msgstr @@@ Det angivne Firmanavn eller C/O indeholder ugyldige tegn @@@
+msgid @@@ Delivery - 41 @@@
+msgstr @@@ Du har ikke angivet et Gadenavn @@@
+msgid @@@ Delivery - 42 @@@
+msgstr @@@ Det angivne Gadenavn er for kort @@@
+msgid @@@ Delivery - 43 @@@
+msgstr @@@ Det angivne Gadenavn er for langt @@@
+msgid @@@ Delivery - 44 @@@
+msgstr @@@ Det angivne Gadenavn indeholder ugyldige tegn @@@
+msgid @@@ Delivery - 51 @@@
+msgstr @@@ Du har ikke angivet et Post Nr. @@@
+msgid @@@ Delivery - 52 @@@
+msgstr @@@ Det angivne Post Nr. er for kort @@@
+msgid @@@ Delivery - 53 @@@
+msgstr @@@ Det angivne Post Nr. er for langt @@@
+msgid @@@ Delivery - 54 @@@
+msgstr @@@ Det angivne Post Nr. har en ugyldig længde @@@
+msgid @@@ Delivery - 61 @@@
+msgstr @@@ Du har ikke angivet en By @@@
+msgid @@@ Delivery - 62 @@@
+msgstr @@@ Den angivne By er for kort @@@
+msgid @@@ Delivery - 63 @@@
+msgstr @@@ Den angivne By er for langt @@@
+msgid @@@ Delivery - 64 @@@
+msgstr @@@ Den angivne By indeholder ugyldige tegn @@@
+msgid @@@ Delivery - 71 @@@
+msgstr @@@ Du har ikke angivet et Leveringsår @@@
+msgid @@@ Delivery - 72 @@@
+msgstr @@@ Det angivne Leveringsår er ugyldig @@@
+msgid @@@ Delivery - 73 @@@
+msgstr @@@ Du har ikke angivet en Leveringsmåned @@@
+msgid @@@ Delivery - 74 @@@
+msgstr @@@ Den angivne Leveringsmåned er ugyldig @@@
+msgid @@@ Delivery - 75 @@@
+msgstr @@@ Du har ikke angivet en Leveringsdag @@@
+msgid @@@ Delivery - 76 @@@
+msgstr @@@ Den angivne Leveringsdag er ugyldig @@@
+msgid @@@ Delivery - 77 @@@
+msgstr @@@ Den angiven Leveringsdato er ugyldig @@@

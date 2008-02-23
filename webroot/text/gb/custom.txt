@@ -164,9 +164,9 @@ msgstr @@@ E-Mail address is too short, a valid e-mail address must be min 5 cha
 msgid @@@ E-Mail - 13 @@@
 msgstr @@@ E-Mail address is too long, a valid e-mail address must be max 50 characters @@@
 msgid @@@ E-Mail - 14 @@@
-msgstr @@@ E-Mail address contains invalid characters, an e-mail address may only contain the following chaaracters: 0-9 A-Z a-z � � � � � � _ . - @ @@@
+msgstr @@@ E-Mail address contains invalid characters, an e-mail address may only contain the following chaaracters: 0-9 A-Z a-z æ ø å Æ Ø Å _ . - @ @@@
 msgid @@@ E-Mail - 15 @@@
-msgstr @@@ E-Mail has an invalid format, a valid e-mail address must be in the format of: john.doe@cellpointmobile.com @@@
+msgstr @@@ E-Mail has an invalid format, a valid e-mail address must be in the format of: donald.duck@cellpointmobile.com @@@
 msgid @@@ E-Mail - 91 @@@
 msgstr @@@ An error occurred while sending your E-Mail Receipt, please try again? @@@
 msgid @@@ Accept - 100 @@@
