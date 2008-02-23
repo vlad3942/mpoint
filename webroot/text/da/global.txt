@@ -1,3 +1,67 @@
+#: /webroot/overview.php:38
+msgid @@@ Order Overview @@@
+msgstr @@@ Ordre Bekræftelse @@@
+
+#: /webroot/overview.php:47
+msgid @@@ Product - Info @@@
+msgstr @@@ Nedenstående er detaljerne omkring din ordre @@@
+
+#: /webroot/overview.php:48
+msgid @@@ Product @@@
+msgstr @@@ Produkt @@@
+
+#: /webroot/overview.php:49
+msgid @@@ Quantity @@@
+msgstr @@@ # @@@
+
+#: /webroot/overview.php:50
+msgid @@@ Price @@@
+msgstr @@@ Pris @@@
+
+#: /webroot/overview.php:51
+msgid @@@ Total @@@
+msgstr @@@ Total @@@
+
+#: /webroot/overview.php:52
+msgid @@@ Terms - Info @@@
+msgstr @@@ Ved at aktivere nedenstående link accepterer du the {LINK}Handelsbetingelserne{/LINK} for {CLIENT} @@@
+
+#: /webroot/overview.php:54
+msgid @@@ Delivery - Info @@@
+msgstr @@@ Nedenstående er modtagers navn og adresse @@@
+
+#: /webroot/overview.php:55
+msgid @@@ Name @@@
+msgstr @@@ Navn @@@
+
+#: /webroot/overview.php:56
+msgid @@@ Company / CO @@@
+msgstr @@@ Firma / CO @@@
+
+#: /webroot/overview.php:57
+msgid @@@ Street @@@
+msgstr @@@ Gadenavn @@@
+
+#: /webroot/overview.php:58
+msgid @@@ Zip Code @@@
+msgstr @@@ Post Nr. @@@
+
+#: /webroot/overview.php:59
+msgid @@@ City @@@
+msgstr @@@ By @@@
+
+#: /webroot/overview.php:60
+msgid @@@ Delivery Date @@@
+msgstr @@@ Leverings Dato @@@
+
+#: /webroot/overview.php:62
+msgid @@@ Next >> @@@
+msgstr @@@ Næste >> @@@
+
+#: /webroot/overview.php:63
+msgid @@@ Go to Payment >> @@@
+msgstr @@@ Gå til Betaling >> @@@
+
 #: /webroot/pay/accept.php:28
 msgid @@@ Payment Completed @@@
 msgstr @@@ Betaling Gennmført @@@
@@ -33,18 +97,6 @@ msgstr @@@ Send kvittering via E-Mail @@@
 #: /webroot/pay/accept.php:48
 msgid @@@ Continue >> @@@
 msgstr @@@ Fortsæt tilbage til Sælgers site >> @@@
-
-#: /webroot/buy/web.php:120
-msgid @@@ Select Card @@@
-msgstr @@@ Vælg Kort @@@
-
-#: /webroot/buy/web.php:125
-msgid @@@ Step 1 of 2 @@@
-msgstr @@@ Trin 1 af 2 @@@
-
-#: /webroot/buy/web.php:126
-msgid @@@ Please select your Credit Card @@@
-msgstr @@@ Vælg venligst dit Kredit Kort @@@
 
 #: /webroot/pay/card.php:32
 msgid @@@ Select Card @@@
@@ -82,35 +134,124 @@ msgstr @@@ Send E-Mail @@@
 msgid @@@ << Back @@@
 msgstr @@@ << Tilbage @@@
 
-#: /webroot/overview.php:29
-msgid @@@ Order Overview @@@
-msgstr @@@ Ordre Bekræftelse @@@
+#: /webroot/shop/delivery.php:49
+msgid @@@ Recipient @@@
+msgstr @@@ Modtager @@@
 
-#: /webroot/overview.php:38
-msgid @@@ Product - Info @@@
-msgstr @@@ Nedenstående er detaljerne omkring din ordre @@@
+#: /webroot/shop/delivery.php:62
+msgid @@@ Delivery - Info @@@
+msgstr @@@ Udfyld venligst nedenstående form med modtagers navn og adresse @@@
 
-#: /webroot/overview.php:39
+#: /webroot/shop/delivery.php:63
+msgid @@@ Phone No @@@
+msgstr @@@ Telefon Nr. @@@
+
+#: /webroot/shop/delivery.php:64
+msgid @@@ Find @@@
+msgstr @@@ Find @@@
+
+#: /webroot/shop/delivery.php:65
 msgid @@@ Name @@@
+msgstr @@@ Navn @@@
+
+#: /webroot/shop/delivery.php:66
+msgid @@@ Company / CO @@@
+msgstr @@@ Firma / CO @@@
+
+#: /webroot/shop/delivery.php:67
+msgid @@@ Street @@@
+msgstr @@@ Gadenavn @@@
+
+#: /webroot/shop/delivery.php:68
+msgid @@@ Zip Code @@@
+msgstr @@@ Post Nr. @@@
+
+#: /webroot/shop/delivery.php:69
+msgid @@@ City @@@
+msgstr @@@ By @@@
+
+#: /webroot/shop/delivery.php:71
+msgid @@@ Delivery Date @@@
+msgstr @@@ Leverings Dato @@@
+
+#: /webroot/shop/delivery.php:72
+msgid @@@ YYYY @@@
+msgstr @@@ ÅÅÅÅ @@@
+
+#: /webroot/shop/delivery.php:73
+msgid @@@ MM @@@
+msgstr @@@ MM @@@
+
+#: /webroot/shop/delivery.php:74
+msgid @@@ DD @@@
+msgstr @@@ DD @@@
+
+#: /webroot/shop/delivery.php:76
+msgid @@@ Next >> @@@
+msgstr @@@ Næste >> @@@
+
+#: /webroot/shop/products.php:34
+msgid @@@ Mobile Shop @@@
+msgstr @@@ Mobil Forreting @@@
+
+#: /webroot/shop/products.php:43
+msgid @@@ Product - Info @@@
+msgstr @@@ Udfyld venligst feltet til venstre for hver af de produkter du ønsker at købe.
+Efterlad feltet blank for produkter du ikke er interesseret i. @@@
+
+#: /webroot/shop/products.php:44
+msgid @@@ Product @@@
 msgstr @@@ Produkt @@@
 
-#: /webroot/overview.php:40
+#: /webroot/shop/products.php:45
 msgid @@@ Quantity @@@
-msgstr @@@ # @@@
+msgstr @@@ Antal @@@
 
-#: /webroot/overview.php:41
+#: /webroot/shop/products.php:46
 msgid @@@ Price @@@
 msgstr @@@ Pris @@@
 
-#: /webroot/overview.php:42
+#: /webroot/shop/products.php:47
 msgid @@@ Total @@@
 msgstr @@@ Total @@@
 
-#: /webroot/overview.php:43
-msgid @@@ Go to Payment >> @@@
-msgstr @@@ Gå til Betaling >> @@@
+#: /webroot/shop/products.php:48
+msgid @@@ Next >> @@@
+msgstr @@@ Næste >> @@@
 
-#: /api/classes/callback.php:193
+#: /webroot/shop/shipping.php:28
+msgid @@@ Shipping Info @@@
+msgstr @@@ Levering @@@
+
+#: /webroot/shop/shipping.php:41
+msgid @@@ Shipping - Info @@@
+msgstr @@@ Nedenstående er leverings information for din bestilling. @@@
+
+#: /webroot/shop/shipping.php:42
+msgid @@@ Company @@@
+msgstr @@@ Firma @@@
+
+#: /webroot/shop/shipping.php:43
+msgid @@@ Price @@@
+msgstr @@@ Pris @@@
+
+#: /webroot/shop/shipping.php:44
+msgid @@@ Next >> @@@
+msgstr @@@ Næste >> @@@
+
+#: /webroot/shop/shipping.php:47
+msgid @@@ FREE @@@
+msgstr @@@ GRATIS @@@
+
+#: /webroot/terms.php:29
+msgid @@@ Terms & Conditions @@@
+msgstr @@@ Handelsbetingelser @@@
+
+#: /webroot/terms.php:37
+msgid @@@ << Back @@@
+msgstr @@@ << Tilbage @@@
+
+#: /api/classes/callback.php:188
 msgid @@@ mPoint - SMS Receipt @@@
 msgstr @@@ Tak fordi du brugte mPoint, dine ordre informationer er:
 mPoint ID: {MPOINTID}
@@ -132,11 +273,11 @@ Sælger: {CLIENT}
 Order Nr: {ORDERID}
 Pris: {PRICE} @@@
 
-#: /api/classes/sms_purchase.php:121
+#: /api/classes/sms_purchase.php:123
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ Velkommen til mPoint, aktiver venligst nedenstående link @@@
 
-#: /api/classes/sms_purchase.php:127
+#: /api/classes/sms_purchase.php:129
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Velkommen til mPoint @@@
 

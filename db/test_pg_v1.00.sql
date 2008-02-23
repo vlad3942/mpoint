@@ -3,7 +3,7 @@
  * The file include queries for populating an empty database with test data
  */
  
-INSERT INTO Client.Client_Tbl (countryid, flowid, name, username, passwd, maxamount, logourl, cssurl, callbackurl, accepturl, cancelurl, terms) VALUES (20, 2, 'Cellpoint Mobile Test', 'CPMDemo', 'DEMOisNO_2', 10000, 'http://mpoint.localhost/_test/client_logo.jpg', 'http://mpoint.localhost/_test/styles.css', 'http://mpoint.localhost/_test/callback.php', 'http://mpoint.localhost/_test/accept.php', 'http://mpoint.localhost/_test/cancel.php', 'Very nice Terms & Conditions');
+INSERT INTO Client.Client_Tbl (countryid, flowid, name, username, passwd, maxamount, language, logourl, cssurl, callbackurl, accepturl, cancelurl, terms) VALUES (20, 2, 'Cellpoint Mobile Test', 'CPMDemo', 'DEMOisNO_2', 1000000, 'gb', 'http://demo.ois-inc.com/mpoint/_test/client_logo.jpg', 'http://demo.ois-inc.com/mpoint/_test/styles.css', 'http://demo.ois-inc.com/mpoint/_test/callback.php', 'http://demo.ois-inc.com/mpoint/_test/accept.php', 'http://demo.ois-inc.com/mpoint/_test/cancel.php', 'Very nice Terms & Conditions');
 INSERT INTO Client.Account_Tbl (clientid, name, address) SELECT Max(id), 'Test 1', '3053315242' FROM Client.Client_Tbl;
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid) SELECT Max(Cl.id), C.id FROM System.Card_Tbl C, Client.Client_Tbl Cl WHERE C.id > 0 GROUP BY C.id;
 INSERT INTO Client.Keyword_Tbl (clientid, name, standard) SELECT Max(id), 'CPT', true FROM Client.Client_Tbl;
@@ -14,7 +14,7 @@ INSERT INTO Client.Shop_Tbl (clientid, keywordid, shipping, ship_cost, free_ship
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name) SELECT Max(id), 1, '4216310' FROM Client.Client_Tbl;
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT Max(id), 1, '-1'  FROM Client.Account_Tbl;
 
-INSERT INTO Client.Client_Tbl (countryid, flowid, name, username, passwd, maxamount, logourl, cssurl, callbackurl, accepturl, cancelurl, terms) VALUES (10, 2, 'Cellpoint Mobile Test DK', 'CPMDemo', 'DEMOisNO_2', 10000, 'http://mpoint.localhost/_test/client_logo.jpg', 'http://mpoint.localhost/_test/styles.css', 'http://mpoint.localhost/_test/callback.php', 'http://mpoint.localhost/_test/accept.php', 'http://mpoint.localhost/_test/cancel.php', 'All your moneys are belong to us');
+INSERT INTO Client.Client_Tbl (countryid, flowid, name, username, passwd, maxamount, language, logourl, cssurl, callbackurl, accepturl, cancelurl, terms) VALUES (10, 2, 'Cellpoint Mobile Test DK', 'CPMDemo', 'DEMOisNO_2', 1000000, 'da', 'http://demo.ois-inc.com/mpoint/_test/client_logo.jpg', 'http://demo.ois-inc.com/mpoint/_test/styles.css', 'http://demo.ois-inc.com/mpoint/_test/callback.php', 'http://demo.ois-inc.com/mpoint/_test/accept.php', 'http://demo.ois-inc.com/mpoint/_test/cancel.php', 'All your moneys are belong to us');
 INSERT INTO Client.Account_Tbl (clientid, name, address) SELECT Max(id), 'DK Test 1', '28882861' FROM Client.Client_Tbl;
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid) SELECT Max(Cl.id), C.id FROM System.Card_Tbl C, Client.Client_Tbl Cl WHERE C.id > 0 GROUP BY C.id;
 INSERT INTO Client.Keyword_Tbl (clientid, name, standard) SELECT Max(id), 'CPT', true FROM Client.Client_Tbl;

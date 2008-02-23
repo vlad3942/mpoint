@@ -34,6 +34,6 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 	
 	<?= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']); ?>
 	
-	<back><?= htmlspecialchars($_OBJ_TXT->_("<< Back") ); ?></back>
-	<terms><?= $_SESSION['obj_TxnInfo']->getClientConfig()->getTerms(); ?></terms>
+	<back><?= htmlspecialchars($_OBJ_TXT->_("<< Back"), ENT_NOQUOTES); ?></back>
+	<terms><?= htmlspecialchars($_SESSION['obj_TxnInfo']->getClientConfig()->getTerms(), ENT_NOQUOTES); ?></terms>
 </root>

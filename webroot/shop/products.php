@@ -41,7 +41,7 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 	
 	<labels>
 		<info><?= $_OBJ_TXT->_("Product - Info"); ?></info>
-		<name><?= $_OBJ_TXT->_("Name"); ?></name>
+		<product><?= $_OBJ_TXT->_("Product"); ?></product>
 		<quantity><?= $_OBJ_TXT->_("Quantity"); ?></quantity>
 		<price><?= $_OBJ_TXT->_("Price"); ?></price>
 		<total><?= $_OBJ_TXT->_("Total"); ?></total>

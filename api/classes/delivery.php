@@ -184,16 +184,17 @@ class Delivery extends General
 		$obj_HTTP->connect();
 		$obj_HTTP->send(str_replace("{PATH}", "{PATH}?number=". $msisdn, $this->constHeaders() ) );
 		$obj_HTTP->disconnect();
-		
-		$aAddressInfo = $this->_decode($obj_HTTP->getReplyBody() );
-		if (count($aAddressInfo) > 0)
+		file_put_contents(sLOG_PATH ."/jona.log", $obj_HTTP->getReplyBody()  );
+		$aDeliveryInfo = $this->_decode($obj_HTTP->getReplyBody() );
+		if (count($aDeliveryInfo) > 0)
 		{
-			$aAddressInfo["street"] = $aAddressInfo["address"];
-			unset($aAddressInfo["address"]);
-			unset($aAddressInfo["phoneno"]);
+			$aDeliveryInfo["street"] = $aDeliveryInfo["address"];
+			unset($aDeliveryInfo["address"]);
+			unset($aDeliveryInfo["phoneno"]);
 		}
+		else { $aDeliveryInfo = array(); }
 				
-		return $aAddressInfo;
+		return $aDeliveryInfo;
 	}
 	
 	/**
@@ -207,14 +208,14 @@ class Delivery extends General
 		switch ($this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID() )
 		{
 		case (10):	// Denmark
-			$aAddressInfo = $this->_lookupViaInterflora($msisdn);
+			$aDeliveryInfo = $this->_lookupViaInterflora($msisdn);
 			break;
 		default:	// No Lookup Service available for Country
-			$aAddressInfo = array();
+			$aDeliveryInfo = array();
 			break;
 		}
 		
-		return $aAddressInfo;
+		return $aDeliveryInfo;
 	}
 	
 	public function logDeliveryInfo(array &$aInfo)

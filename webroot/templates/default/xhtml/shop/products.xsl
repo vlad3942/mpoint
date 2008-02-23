@@ -20,7 +20,7 @@
 		<table id="products">
 		<tr>
 			<td class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/quantity" /></td>
-			<td colspan="3" class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/name" /></td>
+			<td colspan="3" class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/product" /></td>
 			<td colspan="2" class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/price" /></td>
 		</tr>
 		<!-- List Products -->

@@ -269,8 +269,8 @@ CREATE TABLE Client.Client_Tbl
 	terms		TEXT,			-- Terms & Conditions for the Client
 
 	CONSTRAINT Client_PK PRIMARY KEY (id),
-	CONSTRAINT Client2Country_FK FOREIGN KEY (countryid) REFERENCES Client.Country_Tbl ON UPDATE CASCADE ON DELETE RESTRICT,
-	CONSTRAINT Client2Flow_FK FOREIGN KEY (flowid) REFERENCES Client.Flow_Tbl ON UPDATE CASCADE ON DELETE RESTRICT,
+	CONSTRAINT Client2Country_FK FOREIGN KEY (countryid) REFERENCES System.Country_Tbl ON UPDATE CASCADE ON DELETE RESTRICT,
+	CONSTRAINT Client2Flow_FK FOREIGN KEY (flowid) REFERENCES System.Flow_Tbl ON UPDATE CASCADE ON DELETE RESTRICT,
 	CONSTRAINT Client_Chk CHECK (method = 'mPoint' OR method = 'PSP'),
 	LIKE Template.General_Tbl INCLUDING DEFAULTS
 ) WITHOUT OIDS;
@@ -285,10 +285,10 @@ EXECUTE PROCEDURE Public.Update_Table_Proc();
 SELECT setval('Client.Client_Tbl_id_seq', 9999);
 
 -- Internal
-INSERT INTO Client.Client_Tbl (id, countryid, name, enabled) VALUES (0, 0, 'System Record', false);
+INSERT INTO Client.Client_Tbl (id, countryid, flowid, name, enabled) VALUES (0, 0, 0, 'System Record', false);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.Client_Tbl TO mpoint;
-GRANT USAGE, SELECT, UPDATE ON TABLE Client.client_tbl_id_seq TO mpoint;
+GRANT SELECT, UPDATE, INSERT ON TABLE Client.client_tbl_id_seq TO mpoint;
 
 
 -- Table: Client.CardAccess_Tbl
@@ -315,7 +315,7 @@ EXECUTE PROCEDURE Public.Update_Table_Proc();
 INSERT INTO Client.CardAccess_Tbl (id, clientid, cardid, enabled) VALUES (0, 0, 0, false);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.CardAccess_Tbl TO mpoint;
-GRANT USAGE, SELECT, UPDATE ON TABLE Client.cardaccess_tbl_id_seq TO mpoint;
+GRANT SELECT, UPDATE, INSERT ON TABLE Client.cardaccess_tbl_id_seq TO mpoint;
 
 
 -- Table: Client.MerchantAccount_Tbl
@@ -345,7 +345,7 @@ EXECUTE PROCEDURE Public.Update_Table_Proc();
 INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name, enabled) VALUES (0, 0, 0, '', false);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.MerchantAccount_Tbl TO mpoint;
-GRANT USAGE, SELECT, UPDATE ON TABLE Client.merchantaccount_tbl_id_seq TO mpoint;
+GRANT SELECT, UPDATE, INSERT ON TABLE Client.merchantaccount_tbl_id_seq TO mpoint;
 
 
 -- Table: Client.Account_Tbl
@@ -378,7 +378,7 @@ SELECT setval('Client.Account_Tbl_id_seq', 99999);
 INSERT INTO Client.Account_Tbl (id, clientid, name, enabled) VALUES (0, 0, 'System Record', false);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.Account_Tbl TO mpoint;
-GRANT USAGE, SELECT, UPDATE ON TABLE Client.account_tbl_id_seq TO mpoint;
+GRANT SELECT, UPDATE, INSERT ON TABLE Client.account_tbl_id_seq TO mpoint;
 
 
 -- Table: Client.MerchantSubAccount_Tbl
@@ -408,7 +408,7 @@ EXECUTE PROCEDURE Public.Update_Table_Proc();
 INSERT INTO Client.MerchantSubAccount_Tbl (id, accountid, pspid, name, enabled) VALUES (0, 0, 0, 'System Record', false);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.MerchantSubAccount_Tbl TO mpoint;
-GRANT USAGE, SELECT, UPDATE ON TABLE Client.merchantsubaccount_tbl_id_seq TO mpoint;
+GRANT SELECT, UPDATE, INSERT ON TABLE Client.merchantsubaccount_tbl_id_seq TO mpoint;
 
 
 -- Table: Client.Keyword_Tbl
@@ -437,7 +437,7 @@ EXECUTE PROCEDURE Public.Update_Table_Proc();
 INSERT INTO Client.Keyword_Tbl (id, clientid, name, enabled) VALUES (0, 0, 'System Record', false);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.Keyword_Tbl TO mpoint;
-GRANT USAGE, SELECT, UPDATE ON TABLE Client.keyword_tbl_id_seq TO mpoint;
+GRANT SELECT, UPDATE, INSERT ON TABLE Client.keyword_tbl_id_seq TO mpoint;
 
 
 -- Table: Client.Product_Tbl
@@ -466,7 +466,7 @@ EXECUTE PROCEDURE Public.Update_Table_Proc();
 INSERT INTO Client.Product_Tbl (id, keywordid, name, enabled) VALUES (0, 0, 'System Record', false);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.Product_Tbl TO mpoint;
-GRANT USAGE, SELECT, UPDATE ON TABLE Client.product_tbl_id_seq TO mpoint;
+GRANT SELECT, UPDATE, INSERT ON TABLE Client.product_tbl_id_seq TO mpoint;
 
 
 -- Table: Client.Shop_Tbl
@@ -497,7 +497,7 @@ EXECUTE PROCEDURE Public.Update_Table_Proc();
 INSERT INTO Client.Shop_Tbl (id, clientid, keywordid, enabled) VALUES (0, 0, 0, false);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.Shop_Tbl TO mpoint;
-GRANT USAGE, SELECT, UPDATE ON TABLE Client.Shop_tbl_id_seq TO mpoint;
+GRANT SELECT, UPDATE, INSERT ON TABLE Client.Shop_tbl_id_seq TO mpoint;
 /* ==================== CLIENT SCHEMA END ==================== */
 
 
@@ -549,13 +549,13 @@ BEFORE UPDATE
 ON Log.Transaction_Tbl FOR EACH ROW
 EXECUTE PROCEDURE Public.Update_Table_Proc();
 
-SELECT setval('Log.Transaction_Tbl_id_seq', 100000999);
+SELECT setval('Log.Transaction_Tbl_id_seq', 100009999);
 
 -- Internal
 INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, cardid, amount, orderid, extid, enabled) VALUES (0, 0, 0, 0, 0, 0, 0, -1, 'System Record', 'System Record', false);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Log.Transaction_Tbl TO mpoint;
-GRANT USAGE, SELECT, UPDATE ON TABLE Log.transaction_tbl_id_seq TO mpoint;
+GRANT SELECT, UPDATE, INSERT ON TABLE Log.transaction_tbl_id_seq TO mpoint;
 
 
 -- Table: Log.State_Tbl
@@ -609,5 +609,5 @@ EXECUTE PROCEDURE Public.Update_Table_Proc();
 INSERT INTO Log.Message_Tbl (id, txnid, stateid, data, enabled) VALUES (0, 0, 0, 'System Record', false);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Log.Message_Tbl TO mpoint;
-GRANT USAGE, SELECT, UPDATE ON TABLE Log.message_tbl_id_seq TO mpoint;
+GRANT SELECT, UPDATE, INSERT ON TABLE Log.message_tbl_id_seq TO mpoint;
 /* ==================== LOG SCHEMA END ==================== */

@@ -28,7 +28,7 @@ msgstr @@@ By clicking the link below, you accept the {LINK}Terms & Conditions{/
 
 #: /webroot/overview.php:54
 msgid @@@ Delivery - Info @@@
-msgstr @@@ Delivery - Info @@@
+msgstr @@@ The following is the recipient's name and address @@@
 
 #: /webroot/overview.php:55
 msgid @@@ Name @@@
@@ -135,12 +135,12 @@ msgid @@@ << Back @@@
 msgstr @@@ << Back @@@
 
 #: /webroot/shop/delivery.php:49
-msgid @@@ Delivery Info @@@
-msgstr @@@ Delivery Info @@@
+msgid @@@ Recipient @@@
+msgstr @@@ Recipient @@@
 
 #: /webroot/shop/delivery.php:62
 msgid @@@ Delivery - Info @@@
-msgstr @@@ Delivery - Info @@@
+msgstr @@@ Please complete the form below with the recipient's name and address @@@
 
 #: /webroot/shop/delivery.php:63
 msgid @@@ Phone No @@@
@@ -196,15 +196,16 @@ msgstr @@@ Mobile Shop @@@
 
 #: /webroot/shop/products.php:43
 msgid @@@ Product - Info @@@
-msgstr @@@ Product - Info @@@
+msgstr @@@ Please enter the quantity you'd like to purchase of each product in the textbox to the left.
+Leave the textbox blank for any products you're not interested in. @@@
 
 #: /webroot/shop/products.php:44
-msgid @@@ Name @@@
-msgstr @@@ Name @@@
+msgid @@@ Product @@@
+msgstr @@@ Product @@@
 
 #: /webroot/shop/products.php:45
 msgid @@@ Quantity @@@
-msgstr @@@ Quantity @@@
+msgstr @@@ # @@@
 
 #: /webroot/shop/products.php:46
 msgid @@@ Price @@@
@@ -224,7 +225,7 @@ msgstr @@@ Shipping Info @@@
 
 #: /webroot/shop/shipping.php:41
 msgid @@@ Shipping - Info @@@
-msgstr @@@ Shipping - Info @@@
+msgstr @@@ Please find your delivery details listed below @@@
 
 #: /webroot/shop/shipping.php:42
 msgid @@@ Company @@@

@@ -46,7 +46,7 @@ echo '<?xml version="1.0" encoding="ISO-8859-15"?>';
 echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/shop/delivery.xsl"?>';
 ?>
 <root>
-	<title><?= $_OBJ_TXT->_("Delivery Info"); ?></title>
+	<title><?= $_OBJ_TXT->_("Recipient"); ?></title>
 	
 	<?= $obj_mPoint->getSystemInfo(); ?>
 	

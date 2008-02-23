@@ -51,9 +51,9 @@
 		<xsl:if test="shop-config/delivery-date = 'true'">
 			<div class="mPoint_Label">
 				<xsl:value-of select="labels/delivery-date/label" />
-				(<span class="mPoint_Info">
-					<xsl:value-of select="labels/delivery-date/year" />-<xsl:value-of select="labels/delivery-date/month" />-<xsl:value-of select="labels/delivery-date/day" />
-				</span>)
+				<span class="mPoint_Info">
+					(<xsl:value-of select="labels/delivery-date/year" />-<xsl:value-of select="labels/delivery-date/month" />-<xsl:value-of select="labels/delivery-date/day" />)
+				</span>
 				<br />
 				<input name="year" value="{session/year}" size="4" maxlength="4" style="-wap-input-format:'*N';" />-
 				<input name="month" value="{session/month}" size="2" maxlength="2" style="-wap-input-format:'*N';" />-

@@ -48,14 +48,17 @@
 	<xsl:if test="count(delivery-info/name) &gt; 0">
 		<div class="mPoint_Label"><xsl:value-of select="labels/delivery-info/name" /></div>
 		<div><xsl:value-of select="delivery-info/name" /></div>
+		<!-- List Company / CO -->
+		<xsl:if test="string-length(delivery-info/company) &gt; 0">
+			<div class="mPoint_Label"><xsl:value-of select="labels/delivery-info/company" /></div>
+			<div><xsl:value-of select="delivery-info/company" /></div>
+		</xsl:if>
 		
-		<div class="mPoint_Label"><xsl:value-of select="labels/delivery-info/company" /></div>
-		<div><xsl:value-of select="delivery-info/company" /></div>
 		<div class="mPoint_Label"><xsl:value-of select="labels/delivery-info/street" /></div>
 		<div><xsl:value-of select="delivery-info/street" /></div>
 		
 		<div class="mPoint_Label"><xsl:value-of select="labels/delivery-info/zipcode" /> &amp; <xsl:value-of select="labels/delivery-info/city" /></div>
-		<div><xsl:value-of select="delivery-info/zipcode" /> <xsl:value-of select="delivery-info/city" /></div>
+		<div><xsl:value-of select="concat(delivery-info/zipcode, ' ', delivery-info/city)" /></div>
 		
 		<!-- Include Delivery Date -->
 		<xsl:if test="string-length(delivery-info/delivery-date) &gt; 0">
@@ -68,7 +71,7 @@
 	<xsl:choose>
 		<!-- Electronic Product Flow -->
 		<xsl:when test="/root/client-config/@flow-id = 1">
-			<div>
+			<div style="padding-top:0.5em;">
 				<xsl:variable name="link-part" select="substring-after(labels/terms, '{LINK}')" />
 				<xsl:value-of select="substring-before(labels/terms, '{LINK}')" />
 				<a href="{func:constLink('terms.php')}"><xsl:value-of select="substring-before($link-part, '{/LINK}')" /></a>
@@ -87,7 +90,7 @@
 				</xsl:when>
 				<!-- End of Physical Product Flow -->
 				<xsl:otherwise>
-					<div>
+					<div style="padding-top:0.5em;">
 						<xsl:variable name="link-part" select="substring-after(labels/terms, '{LINK}')" />
 						<xsl:value-of select="substring-before(labels/terms, '{LINK}')" />
 						<a href="{func:constLink('terms.php')}"><xsl:value-of select="substring-before($link-part, '{/LINK}')" /></a>
