@@ -549,7 +549,7 @@ BEFORE UPDATE
 ON Log.Transaction_Tbl FOR EACH ROW
 EXECUTE PROCEDURE Public.Update_Table_Proc();
 
-SELECT setval('Log.Transaction_Tbl_id_seq', 100009999);
+SELECT setval('Log.Transaction_Tbl_id_seq', 1000999);
 
 -- Internal
 INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, cardid, amount, orderid, extid, enabled) VALUES (0, 0, 0, 0, 0, 0, 0, -1, 'System Record', 'System Record', false);

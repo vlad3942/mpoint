@@ -205,7 +205,7 @@ msgstr @@@ Produkt @@@
 
 #: /webroot/shop/products.php:45
 msgid @@@ Quantity @@@
-msgstr @@@ Antal @@@
+msgstr @@@ # @@@
 
 #: /webroot/shop/products.php:46
 msgid @@@ Price @@@

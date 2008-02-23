@@ -32,7 +32,7 @@ if ($obj_Validator->valAddress($_POST['address']) != 10) { $aMsgCds[] = $obj_mPo
 if (count($aMsgCds) == 0)
 {
 	$aDeliveryAddress = $obj_mPoint->getDeliveryAddressFromMSISDN($_POST['address']);
-	var_dump($_SESSION['temp']);
+	
 	// Address found
 	if (count($aDeliveryAddress) > 0)
 	{

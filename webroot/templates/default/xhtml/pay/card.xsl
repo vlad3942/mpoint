@@ -171,7 +171,7 @@
 				<input type="hidden" name="mpoint_height" value="{/root/accept/mpoint-logo/height}" />
 				<input type="hidden" name="sms_receipt" value="{/root/client-config/sms-receipt}" />
 				<input type="hidden" name="email_receipt" value="{/root/client-config/sms-receipt}" />
-				<input type="hidden" name="email_url" value="{func:constLink('/email.php')}" />
+				<input type="hidden" name="email_url" value="{func:constLink('email.php')}" />
 				<input type="hidden" name="accept_url" value="{/root/transaction/accept-url}" />
 				<input type="hidden" name="recipient" value="{/root/transaction/address}" />
 				<input type="hidden" name="price" value="{/root/transaction/price}" />
