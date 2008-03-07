@@ -133,6 +133,15 @@ class ClientConfig extends BasicConfig
 	 * @var string
 	 */
 	private $_sTerms;
+	/**
+	 * Client mode in which all Transactions are Processed
+	 * 	0. Production
+	 * 	1. Test Mode with prefilled card Info
+	 * 	2. Certification Mode
+	 *
+	 * @var integer
+	 */
+	private $_iMode;
 	
 	/**
 	 * Default Constructor
@@ -156,8 +165,9 @@ class ClientConfig extends BasicConfig
 	 * @param 	boolean $email		Boolean Flag indicating whether access to the E-Mail Receipt component should be enabled for customers
 	 * @param 	string $mtd			The method used by mPoint when performing a Callback to the Client
 	 * @param 	string $terms 		Terms & Conditions for the Shop
+	 * @param 	integer $m 			Client mode: 0 = Production, 1 = Test Mode with prefilled card Info, 2 = Certification Mode
 	 */
-	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $aurl, $curl, $cburl, $ma, $l, $sms, $email, $mtd, $terms)
+	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $aurl, $curl, $cburl, $ma, $l, $sms, $email, $mtd, $terms, $m)
 	{
 		parent::__construct($id, $name);
 		
@@ -183,6 +193,7 @@ class ClientConfig extends BasicConfig
 		$this->_sMethod = $mtd;
 		
 		$this->_sTerms = trim($terms);
+		$this->_iMode = (integer) $m;
 	}
 	
 	/**
@@ -294,10 +305,19 @@ class ClientConfig extends BasicConfig
 	 * @return 	string
 	 */
 	public function getTerms() { return $this->_sTerms; }
+	/**
+	 * Returns the Client Mode in which all Transactions are Processed
+	 * 	0. Production
+	 * 	1. Test Mode with prefilled card Info
+	 * 	2. Certification Mode
+	 *
+	 * @return 	integer
+	 */
+	public function getMode() { return $this->_iMode; }
 	
 	public function toXML()
 	{
-		$xml = '<client-config id="'. $this->getID() .'" flow-id="'. $this->_iFlowID .'">';
+		$xml = '<client-config id="'. $this->getID() .'" flow-id="'. $this->_iFlowID .'" mode="'. $this->_iMode .'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
 		$xml .= '<username>'. htmlspecialchars($this->getUsername(), ENT_NOQUOTES) .'</username>';
 		$xml .= '<logo-url>'. htmlspecialchars($this->getLogoURL(), ENT_NOQUOTES) .'</logo-url>';
@@ -324,7 +344,7 @@ class ClientConfig extends BasicConfig
 		$sql = "SELECT Cl.id AS clientid, Cl.name AS client, Cl.flowid, Cl.username, Cl.passwd,
 					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl,
 					Cl.smsrcpt, Cl.emailrcpt, Cl.method,
-					Cl.maxamount, Cl.lang, Cl.terms,
+					Cl.maxamount, Cl.lang, Cl.terms, Cl.mode,
 					C.id AS countryid, C.name AS country, C.currency, C.minmob, C.maxmob, C.channel,
 					C.priceformat, C.decimals, C.als,
 					Acc.id AS accountid, Acc.name AS account, Acc.address,
@@ -346,7 +366,7 @@ class ClientConfig extends BasicConfig
 				GROUP BY Cl.id, Cl.name, Cl.flowid, Cl.username, Cl.passwd,
 					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl,
 					Cl.smsrcpt, Cl.emailrcpt, Cl.method,
-					Cl.maxamount, Cl.lang, Cl.terms,
+					Cl.maxamount, Cl.lang, Cl.terms, Cl.mode,
 					C.id, C.name, C.currency, C.minmob, C.maxmob, C.channel,
 					C.priceformat, C.decimals, C.als,
 					Acc.id, Acc.name, Acc.address,
@@ -383,7 +403,7 @@ class ClientConfig extends BasicConfig
 		$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["ADDRESS"]);
 		$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
 		
-		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], $RS["TERMS"]);
+		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], $RS["TERMS"], $RS["MODE"]);
 	}
 }
 ?>

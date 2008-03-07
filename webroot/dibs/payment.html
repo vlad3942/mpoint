@@ -1,7 +1,7 @@
 <PML_META nospace="true">
 <PML_SCRIPT>
 // Payment Gateay is in Test Mode, set default card info
-if (cgi.test = true)
+if (cgi.test = 1)
 {
 	// American Express
 	if (cgi.cardid = 1) { sess_cardno := 3700100000000000; }
@@ -122,6 +122,7 @@ else
 		.mPoint_Status
 		{
 			color: red;
+			font-style: italic;
 			padding-top: 0.5em;
 			padding-bottom: 0.5em;
 		}

@@ -101,7 +101,8 @@ class CreditCard extends General
 				WHERE CA.clientid = ". $this->_obj_TxnInfo->getClientConfig()->getID() ."
 					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
 					AND PC.countryid = ". $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID() ."
-					AND C.enabled = true";
+					AND C.enabled = true
+				ORDER BY C.position ASC, C.name ASC";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 		

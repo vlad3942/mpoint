@@ -90,6 +90,7 @@ else
 		.mPoint_Status
 		{
 			color: red;
+			font-style: italic;
 			padding-top: 0.5em;
 			padding-bottom: 0.5em;
 		}
@@ -165,23 +166,19 @@ else
 		</tr>
 		</table>
 	</div>
-	<!--
-	  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
-	  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
-	  - the phone will assign 57% of the screen width to the receipt label and 43% of the screen width to the receipt data
-	  -->
+	
 	<table id="receipt">
 	<tr>
-		<td colspan="4" class="mPoint_Label"><PML_VAL>label_mpoint_id</PML_VAL>:</td>
-		<td colspan="3" class="mPoint_number"><PML_VAL>cgi.mpointid</PML_VAL></td>
+		<td class="mPoint_Label"><PML_VAL>label_mpoint_id</PML_VAL>:</td>
+		<td class="mPoint_number"><PML_VAL>cgi.mpointid</PML_VAL></td>
 	</tr>
 	<tr>
-		<td colspan="4" class="mPoint_Label"><PML_VAL>label_order_no</PML_VAL>:</td>
-		<td colspan="3" class="mPoint_number"><PML_VAL>cgi.orderid</PML_VAL></td>
+		<td class="mPoint_Label"><PML_VAL>label_order_no</PML_VAL>:</td>
+		<td class="mPoint_number"><PML_VAL>cgi.orderid</PML_VAL></td>
 	</tr>
 	<tr>
-		<td colspan="4" class="mPoint_Label"><PML_VAL>label_price</PML_VAL>:</td>
-		<td colspan="3" class="mPoint_number"><PML_VAL>cgi.price</PML_VAL></td>
+		<td class="mPoint_Label"><PML_VAL>label_price</PML_VAL>:</td>
+		<td class="mPoint_number"><PML_VAL>cgi.price</PML_VAL></td>
 	</tr>
 	</table>
 	

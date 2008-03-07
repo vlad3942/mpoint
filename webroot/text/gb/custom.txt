@@ -178,7 +178,7 @@ msgid @@@ Products - 12 @@@
 msgstr @@@ Quantity for all selected products are 0. Please enter the quantity for each product in the text field to the left? @@@
 
 msgid @@@ Delivery - 10 @@@
-msgstr @@@ We're sorry, but we couldn't find any address using your number @@@
+msgstr @@@ We couldn't find any address using your number @@@
 msgid @@@ Delivery - 11 @@@
 msgstr @@@ You have not entered a number @@@
 msgid @@@ Delivery - 12 @@@

@@ -35,6 +35,7 @@ a:hover
 	font-weight: bold;
 	padding-right: 0.5em;
 	padding-top: 0.3em;
+	white-space: nowrap;
 }
 
 .mPoint_Info
@@ -50,6 +51,7 @@ a:hover
 .mPoint_Status
 {
 	color: red;
+	font-style: italic;
 	padding-top: 0.5em;
 	padding-bottom: 0.5em;
 }

@@ -111,6 +111,15 @@ class TxnInfo
 	 * @var string
 	 */
 	private $_sLanguage;
+	/**
+	 * The Client Mode in which the Transaction is Processed
+	 * 	0. Production
+	 * 	1. Test Mode with prefilled card Info
+	 * 	2. Certification Mode
+	 *
+	 * @var integer
+	 */
+	private $_iMode;
 	
 	/**
 	 * Default Constructor
@@ -128,8 +137,9 @@ class TxnInfo
 	 * @param 	string $curl 		Absolute URL where the Customer should be returned to in case he / she cancels the Transaction midway
 	 * @param 	string $cburl 		Absolute URL to the Client's Back Office where mPoint should send the Payment Status to
 	 * @param 	string $l 			The language that all payment pages should be rendered in by default for the Client
+	 * @param 	integer $m 			The Client Mode in which the Transaction should be Processed
 	 */
-	public function __construct($id, $tid, ClientConfig &$oCC, $a, $orid, $addr, $oid, $lurl, $cssurl, $aurl, $curl, $cburl, $l)
+	public function __construct($id, $tid, ClientConfig &$oCC, $a, $orid, $addr, $oid, $lurl, $cssurl, $aurl, $curl, $cburl, $l, $m)
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -147,6 +157,7 @@ class TxnInfo
 		$this->_sCallbackURL = trim($cburl);
 		
 		$this->_sLanguage = trim($l);
+		$this->_iMode = (integer) $m;
 	}
 	
 	/**
@@ -236,6 +247,15 @@ class TxnInfo
 	 * @return 	string
 	 */
 	public function getLanguage() { return $this->_sLanguage; }
+	/**
+	 * Returns the Client Mode in which the Transaction is Processed
+	 * 	0. Production
+	 * 	1. Test Mode with prefilled card Info
+	 * 	2. Certification Mode
+	 *
+	 * @return 	integer
+	 */
+	public function getMode() { return $this->_iMode; }
 	
 	/**
 	 * Converts the data object into XML.
@@ -286,7 +306,7 @@ class TxnInfo
 			$iHeight = -1;
 		}
 		
-		$xml = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'">';
+		$xml = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'" mode="'. $this->_iMode .'">';
 		$xml .= '<amount currency="'. $this->_obj_ClientConfig->getCountryConfig()->getCurrency() .'">'. $this->_iAmount .'</amount>';
 		$xml .= '<price>'. General::formatAmount($this->_obj_ClientConfig->getCountryConfig(), $this->_iAmount) .'</price>';
 		$xml .= '<order-id>'. $this->_sOrderID .'</order-id>';
@@ -343,14 +363,15 @@ class TxnInfo
 			if (array_key_exists("cancel-url", $misc) === false) { $misc["cancel-url"] = $obj->getCancelURL(); }
 			if (array_key_exists("callback-url", $misc) === false) { $misc["callback-url"] = $obj->getCallbackURL(); }
 			if (array_key_exists("language", $misc) === false) { $misc["language"] = $obj->getLanguage(); }
+			if (array_key_exists("mode", $misc) === false) { $misc["mode"] = $obj->getMode(); }
 			
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client_config"], $misc["amount"], $misc["orderid"], $misc["recipient"], $misc["operator"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client_config"], $misc["amount"], $misc["orderid"], $misc["recipient"], $misc["operator"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $misc["mode"]);
 			break;
 		case ($obj instanceof ClientConfig):	// Instantiate from array of Client Input
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["amount"], $misc["orderid"], $misc["recipient"], $misc["operator"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["amount"], $misc["orderid"], $misc["recipient"], $misc["operator"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $misc["mode"]);
 			break;
 		case ($obj instanceof RDB):				// Instantiate from Transaction Log
-			$sql = "SELECT id, typeid, amount, orderid, address, operatorid, lang, logourl, cssurl, accepturl, cancelurl, callbackurl,
+			$sql = "SELECT id, typeid, amount, orderid, address, operatorid, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, mode,
 						clientid, accountid, keywordid
 					FROM Log.Transaction_Tbl
 					WHERE id = ". intval($id);
@@ -363,7 +384,7 @@ class TxnInfo
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($obj, $RS["CLIENTID"], $RS["ACCOUNTID"], $RS["KEYWORDID"]);
 				
-				$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $RS["AMOUNT"], $RS["ORDERID"], $RS["ADDRESS"], $RS["OPERATORID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["LANG"]);
+				$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $RS["AMOUNT"], $RS["ORDERID"], $RS["ADDRESS"], $RS["OPERATORID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["LANG"], $RS["MODE"]);
 			}
 			// Error: Transaction not found
 			else { throw new TxnInfoException("Transaction with ID: ". $id ." not found using creation timestamp: ". $misc[0], 1001); }

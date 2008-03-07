@@ -373,9 +373,9 @@ class General
 		if (is_array($RS) === false) { throw new mPointException("Unable to generate new Transaction ID", 1001); }
 		
 		$sql = "INSERT INTO Log.Transaction_Tbl
-					(id, typeid, clientid, accountid, countryid, keywordid)
+					(id, typeid, clientid, accountid, countryid, keywordid, mode)
 				VALUES
-					(". $RS["ID"] .", ". intval($tid) .", ". $oCC->getID() .", ". $oCC->getAccountConfig()->getID() .", ". $oCC->getCountryConfig()->getID() .", ". $oCC->getKeywordConfig()->getID() .")";
+					(". $RS["ID"] .", ". intval($tid) .", ". $oCC->getID() .", ". $oCC->getAccountConfig()->getID() .", ". $oCC->getCountryConfig()->getID() .", ". $oCC->getKeywordConfig()->getID() .", ". $oCC->getMode() .")";
 //		echo $sql ."\n";
 		// Error: Unable to insert a new record in the Transaction Log
 		if (is_resource($this->getDBConn()->query($sql) ) === false)

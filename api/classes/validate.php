@@ -209,7 +209,7 @@ class Validate
 	 */
 	public function valName($name)
 	{
-		$code = $this->valUsername($name);
+		$code = $this->valPassword($name);
 		/**
 		 * Name succesfully validated by valUsername or valUsername returned "username too long"
 		 * but name is less than database retriction

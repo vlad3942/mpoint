@@ -14,14 +14,14 @@
 		<!--
 		  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
 		  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
-		  - the phone will assign 50% of the screen width to the product name, 17% of the screen width to the product quantity and
-		  - 33% of the screen width to the product price.
+		  - the phone will assign 60% of the screen width to the product name, 20% of the screen width to the product quantity and
+		  - 20% of the screen width to the product price.
 		  -->
 		<table id="products">
 		<tr>
 			<td class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/quantity" /></td>
 			<td colspan="3" class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/product" /></td>
-			<td colspan="2" class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/price" /></td>
+			<td class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/price" /></td>
 		</tr>
 		<!-- List Products -->
 		<xsl:for-each select="products/item">
@@ -29,11 +29,11 @@
 		
 			<tr>
 				<td rowspan="2" style="vertical-align:bottom;"><input type="text" name="products[{$id}]" value="{/root/session/products/item[@id = $id]}" size="2" maxlength="2" style="-wap-input-format:'*N';" /></td>
-				<td colspan="5"><img src="{logo-url}" width="40" height="40" alt="- Logo -" /></td>
+				<td colspan="4"><img src="{logo-url}" width="40" height="40" alt="- Logo -" /></td>
 			</tr>
 			<tr>
 				<td colspan="3"><xsl:value-of select="name" /></td>
-				<td colspan="2" class="mPoint_Number"><xsl:value-of select="price" /></td>
+				<td class="mPoint_Number"><xsl:value-of select="price" /></td>
 			</tr>
 		</xsl:for-each>
 		</table>

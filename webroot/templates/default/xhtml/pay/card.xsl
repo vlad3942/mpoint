@@ -130,8 +130,10 @@
 	<div>
 		<form action="https://payment.architrade.com/shoppages/{account}/payment.pml" method="post">
 			<div>
-				<input type="hidden" name="test" value="yes" />
-				
+				<!-- Client is in Test or Certification mode -->
+				<xsl:if test="/root/transaction/@mode &gt; 0">
+					<input type="hidden" name="test" value="{/root/transaction/@mode}" />
+				</xsl:if>
 				<!-- DIBS Required Data -->
 				<input type="hidden" name="merchant" value="{account}" />
 				<input type="hidden" name="callbackurl" value="{/root/system/protocol}://{/root/system/host}/callback/dibs.php" />

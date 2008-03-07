@@ -24,23 +24,18 @@
 		</table>
 	</div>
 	
-	<!--
-	  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
-	  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
-	  - the phone will assign 57% of the screen width to the receipt label and 43% of the screen width to the receipt data
-	  -->
 	<table id="receipt">
 	<tr>
-		<td colspan="4" class="mPoint_Label"><xsl:value-of select="labels/txn-id" />:</td>
-		<td colspan="3" class="mPoint_Number"><xsl:value-of select="transaction/@id" /></td>
+		<td class="mPoint_Label"><xsl:value-of select="labels/txn-id" />:</td>
+		<td class="mPoint_Number"><xsl:value-of select="transaction/@id" /></td>
 	</tr>
 	<tr>
-		<td colspan="4" class="mPoint_Label"><xsl:value-of select="labels/order-id" />:</td>
-		<td colspan="3" class="mPoint_Number"><xsl:value-of select="transaction/order-id" /></td>
+		<td class="mPoint_Label"><xsl:value-of select="labels/order-id" />:</td>
+		<td class="mPoint_Number"><xsl:value-of select="transaction/order-id" /></td>
 	</tr>
 	<tr>
-		<td colspan="4" class="mPoint_Label"><xsl:value-of select="labels/price" />:</td>
-		<td colspan="3" class="mPoint_Number"><xsl:value-of select="transaction/price" /></td>
+		<td class="mPoint_Label"><xsl:value-of select="labels/price" />:</td>
+		<td class="mPoint_Number"><xsl:value-of select="transaction/price" /></td>
 	</tr>
 	</table>
 	
