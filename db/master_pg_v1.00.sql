@@ -368,7 +368,7 @@ CREATE TABLE Client.Account_Tbl
 	LIKE Template.General_Tbl INCLUDING DEFAULTS
 ) WITHOUT OIDS;
 
-CREATE UNIQUE INDEX AccountName_UQ ON Client.Account_Tbl (Upper(name) );
+CREATE UNIQUE INDEX AccountName_UQ ON Client.Account_Tbl (clientid, Upper(name) );
 
 CREATE TRIGGER Update_Account
 BEFORE UPDATE

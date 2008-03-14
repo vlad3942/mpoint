@@ -26,7 +26,7 @@ class SMS_Purchase extends MobileWeb
 	{
 		$sql = "SELECT id, name, quantity, price, logourl
 				FROM Client.Product_Tbl
-				WHERE keywordid = ". $this->getClientConfig()->getKeywordConfig()->getID();
+				WHERE keywordid = ". $this->getClientConfig()->getKeywordConfig()->getID() ." AND enabled = true";
 //		echo $sql ."\n";
 		$aRS = $this->getDBConn()->getAllNames($sql);
 		
