@@ -239,3 +239,6 @@ msgid @@@ Delivery - 76 @@@
 msgstr @@@ The entered Day is in the Past @@@
 msgid @@@ Delivery - 77 @@@
 msgstr @@@ The entered Delivery Date is in the Past @@@
+
+msgid @@@ Overview - 11 @@@
+msgstr @@@ Please accept the Terms & Conditions to continue @@@

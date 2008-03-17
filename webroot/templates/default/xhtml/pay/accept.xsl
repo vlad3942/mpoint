@@ -48,13 +48,7 @@
 			<xsl:value-of select="labels/sms-receipt" />
 		</div>
 	</xsl:if>
-	<!-- Allow Access to E-Mail Receipt -->
-	<xsl:if test="client-config/email-receipt = 'true'">
-		<div>
-			<br />
-			<a href="{func:constLink('email.php')}"><xsl:value-of select="labels/email-receipt" /></a>
-		</div>
-	</xsl:if>
+	
 	<!-- Client has specified a return URL for successful payments -->
 	<xsl:if test="string-length(transaction/accept-url) &gt; 0">
 		<div>

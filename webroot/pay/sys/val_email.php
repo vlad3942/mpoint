@@ -21,6 +21,7 @@ $_SESSION['temp'] = $_POST;
 
 $aMsgCds = array();
 $obj_Validator = new Validate($_SESSION['obj_TxnInfo']->getClientConfig() );
+$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 	
 if ($obj_Validator->valEMail($_POST['email']) != 10) { $aMsgCds[] = $obj_Validator->valEMail($_POST['email']) + 10; }
 
@@ -28,15 +29,16 @@ if ($obj_Validator->valEMail($_POST['email']) != 10) { $aMsgCds[] = $obj_Validat
 if (count($aMsgCds) == 0)
 {
 	$_SESSION['obj_TxnInfo']->setEmail($_POST['email']);
+	$obj_mPoint->logTransaction($_SESSION['obj_TxnInfo']);
+	$msg = "";
 }
-
-$msg = "msg=". $aMsgCds[0];
+else { $msg = "&msg=". $aMsgCds[0]; }
 
 header("content-type: text/plain");
 header("content-length: 0");
 
-if ($aMsgCds[0] == 100) { $sFile = "card.php"; }
+if (empty($msg) === true) { $sFile = "card.php"; }
 else { $sFile = "email.php"; }
 
-header("location: http://". $_SERVER['HTTP_HOST'] ."/pay/". $sFile ."?". session_name() ."=". session_id() ."&". $msg);
+header("location: http://". $_SERVER['HTTP_HOST'] ."/pay/". $sFile ."?". session_name() ."=". session_id() . $msg);
 ?>

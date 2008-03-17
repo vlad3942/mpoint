@@ -52,12 +52,12 @@
 		<div class="mPoint_Status">
 			<xsl:choose>
 			<xsl:when test="count(item) = 1">
-				<xsl:value-of select="item" />
+				<xsl:copy-of select="item" />
 			</xsl:when>
 			<xsl:otherwise>
 				<ul>
 				<xsl:for-each select="item">
-					<li><xsl:value-of select="." /></li>
+					<li><xsl:copy-of select="." /></li>
 				</xsl:for-each>
 				</ul>
 			</xsl:otherwise>

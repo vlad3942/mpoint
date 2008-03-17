@@ -237,3 +237,6 @@ msgid @@@ Delivery - 76 @@@
 msgstr @@@ Den angivne Leveringsdag er ugyldig @@@
 msgid @@@ Delivery - 77 @@@
 msgstr @@@ Den angiven Leveringsdato er ugyldig @@@
+
+msgid @@@ Overview - 11 @@@
+msgstr @@@ Accepter venligst handelsbetingelserne for at gå videre @@@

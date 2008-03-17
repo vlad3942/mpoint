@@ -85,6 +85,8 @@
 					<input type="submit" value="{labels/next}" />
 				</div>
 			</form>
+			<!-- Display Status Messages -->
+			<xsl:apply-templates select="messages" />
 		</xsl:when>
 		<!-- Physical Product Flow -->
 		<xsl:when test="/root/client-config/@flow-id = 2">
@@ -108,6 +110,8 @@
 							<input type="submit" value="{labels/next}" />
 						</div>
 					</form>
+					<!-- Display Status Messages -->
+					<xsl:apply-templates select="messages" />
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:when>
@@ -116,5 +120,6 @@
 			ERROR - Unknown Flow: <xsl:value-of select="/root/client-config/@flow-id" />
 		</xsl:otherwise>
 	</xsl:choose>
+	
 </xsl:template>
 </xsl:stylesheet>

@@ -37,7 +37,7 @@ else
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta http-equiv="Cache-Control" content="max-age=86400" />
 	<meta http-equiv="Content-Style-Type" content="text/css" />
-	<style type="text/css" media="handheld">
+	<style type="text/css">
 		body, table, div
 		{
 			font-size: 1em;
@@ -61,7 +61,7 @@ else
 		
 		a
 		{
-			color: #ccff00;
+			color: blue;
 			text-decoration: none;
 		}
 		
@@ -186,13 +186,6 @@ else
 	<PML_IF COND="cgi.sms_receipt = true">
 		<div class="mPoint_Info">
 			<PML_VAL>string.replace(sms_receipt, 'ADDRESS', cgi.recipient, 'g')</PML_VAL>
-		</div>
-	</PML_IF>
-	<!-- Allow Access to E-Mail Receipt -->
-	<PML_IF COND="cgi.email_receipt = true">
-		<div>
-			<br />
-			<a PML_href="cgi.email_url"><PML_VAL>email_receipt</PML_VAL></a>
 		</div>
 	</PML_IF>
 	

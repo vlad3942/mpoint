@@ -38,7 +38,7 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 	<?= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']); ?>
 	
 	<labels>
-		<progress><?= $_OBJ_TXT->_("Step 1 of 2"); ?></progress>
+		<progress><?= $_OBJ_TXT->_("Step 2 of 3"); ?></progress>
 		<info><?= $_OBJ_TXT->_("Please select your Credit Card"); ?></info>
 	</labels>
 	

@@ -92,7 +92,7 @@ class General
 			// Loop through all returned message codes
 			for ($i=0; $i<count($_GET['msg']); $i++)
 			{
-				$xml .= '<item id="'. $_GET['msg'][$i] .'">'. $this->_obj_Txt->_($type ." - ". $_GET['msg'][$i]) .'</item>';
+				$xml .= '<item id="'. $_GET['msg'][$i] .'">'. htmlspecialchars($this->_obj_Txt->_($type ." - ". $_GET['msg'][$i]), ENT_NOQUOTES) .'</item>';
 			}
 		}
 		$xml .= '</messages>';

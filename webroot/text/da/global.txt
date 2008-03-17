@@ -24,7 +24,7 @@ msgstr @@@ Total @@@
 
 #: /webroot/overview.php:52
 msgid @@@ Terms - Info @@@
-msgstr @@@ Ved at aktivere nedenstående link accepterer du the {LINK}Handelsbetingelserne{/LINK} for {CLIENT} @@@
+msgstr @@@ Accepter {LINK}Handelsbetingelserne{/LINK} for {CLIENT} @@@
 
 #: /webroot/overview.php:54
 msgid @@@ Delivery - Info @@@
@@ -103,8 +103,8 @@ msgid @@@ Select Card @@@
 msgstr @@@ Vælg Kort @@@
 
 #: /webroot/pay/card.php:41
-msgid @@@ Step 1 of 2 @@@
-msgstr @@@ Trin 1 af 2 @@@
+msgid @@@ Step 2 of 3 @@@
+msgstr @@@ Step 2 of 3 @@@
 
 #: /webroot/pay/card.php:42
 msgid @@@ Please select your Credit Card @@@
@@ -115,8 +115,8 @@ msgid @@@ E-Mail Receipt @@@
 msgstr @@@ E-Mail Kvittering @@@
 
 #: /webroot/pay/email.php:40
-msgid @@@ Thank you for using @@@
-msgstr @@@ Tak fordi du brugte @@@
+msgid @@@ Step 1 of 3 @@@
+msgstr @@@ Step 1 of 3 @@@
 
 #: /webroot/pay/email.php:41
 msgid @@@ Please enter your e-mail address below @@@
@@ -127,8 +127,8 @@ msgid @@@ E-Mail @@@
 msgstr @@@ E-Mail @@@
 
 #: /webroot/pay/email.php:43
-msgid @@@ Send E-Mail @@@
-msgstr @@@ Send E-Mail @@@
+msgid @@@ Next >> @@@
+msgstr @@@ Next >> @@@
 
 #: /webroot/pay/email.php:44
 msgid @@@ << Back @@@

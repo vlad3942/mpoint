@@ -379,7 +379,7 @@ class TxnInfo
 			if (array_key_exists("orderid", $misc) === false) { $misc["orderid"] = $obj->getOrderID(); }
 			if (array_key_exists("recipient", $misc) === false) { $misc["recipient"] = $obj->getAddress(); }
 			if (array_key_exists("operator", $misc) === false) { $misc["operator"] = $obj->getOperator(); }
-			if (array_key_exists("email", $misc) === false) { $misc["email"] = $obj->getEMails(); }
+			if (array_key_exists("email", $misc) === false) { $misc["email"] = $obj->getEMail(); }
 			if (array_key_exists("logo-url", $misc) === false) { $misc["logo-url"] = $obj->getLogoURL(); }
 			if (array_key_exists("css-url", $misc) === false) { $misc["css-url"] = $obj->getCSSURL(); }
 			if (array_key_exists("accept-url", $misc) === false) { $misc["accept-url"] = $obj->getAcceptURL(); }

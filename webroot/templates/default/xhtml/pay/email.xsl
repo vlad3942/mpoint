@@ -4,13 +4,12 @@
 <xsl:include href="../header.xsl"/>
 
 <xsl:template match="/root">
-	<div>
-		<h1>
-			<xsl:value-of select="labels/mpoint" /><br />
-			<img src="{system/protocol}://{system/host}/img/mpoint_{/root/system/session/@id}.jpg" width="{mpoint-logo/width}" height="{mpoint-logo/height}" alt="- mPoint -" />
-		</h1>
+	<div id="progress" class="mPoint_Info">
+		<xsl:value-of select="labels/progress" />
+		<br /><br />
 	</div>
-	<div class="mPoint_Info">
+	
+	<div>
 		<xsl:value-of select="labels/info" />
 	</div>
 	

@@ -37,11 +37,11 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 	<?= $obj_mPoint->getmPointLogoInfo(); ?>
 	
 	<labels>
-		<mpoint><?= $_OBJ_TXT->_("Thank you for using"); ?></mpoint>
+		<progress><?= $_OBJ_TXT->_("Step 1 of 3"); ?></progress>
 		<info><?= $_OBJ_TXT->_("Please enter your e-mail address below"); ?></info>
 		<email><?= $_OBJ_TXT->_("E-Mail"); ?></email>
-		<submit><?= $_OBJ_TXT->_("Send E-Mail"); ?></submit>
-		<back><?= htmlspecialchars($_OBJ_TXT->_("<< Back") ); ?></back>
+		<submit><?= htmlspecialchars($_OBJ_TXT->_("Next >>"), ENT_NOQUOTES); ?></submit>
+		<back><?= htmlspecialchars($_OBJ_TXT->_("<< Back"), ENT_NOQUOTES); ?></back>
 	</labels>
 	
 	<?= $obj_mPoint->getMessages("E-Mail"); ?>

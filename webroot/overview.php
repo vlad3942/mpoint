@@ -68,4 +68,6 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 	<?= $obj_mPoint->getDeliveryInfo(); ?>
 	
 	<?= $obj_mPoint->getShippingInfo(); ?>
+	
+	<?= $obj_mPoint->getMessages("Overview"); ?>
 </root>
