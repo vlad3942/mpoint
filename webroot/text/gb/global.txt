@@ -259,11 +259,11 @@ Merchant: {CLIENT}
 Order No: {ORDERID}
 Price: {PRICE} @@@
 
-#: /api/classes/email_receipt.php:75
+#: /api/classes/email_receipt.php:74
 msgid @@@ E-Mail Receipt - Subject @@@
 msgstr @@@ mPoint Receipt for Order No: {ORDERID} with mPoint ID: {MPOINTID} @@@
 
-#: /api/classes/email_receipt.php:94
+#: /api/classes/email_receipt.php:93
 msgid @@@ E-Mail Receipt - Body @@@
 msgstr @@@ Thank you for using mPoint.
 Please find your order details below.

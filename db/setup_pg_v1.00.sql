@@ -94,6 +94,8 @@ INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1011, 'Unable to conn
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1012, 'Message rejected by GoMobile', 'Call Centre', 'sendLink');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1020, 'Payment link Constructed', 'Call Centre', 'constLink');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1021, 'Payment link Activated', 'Payment', 'Overview');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1030, 'E-Mail accepted', 'Callback', 'sendEMailReceipt');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1031, 'E-Mail Rejected', 'Callback', 'sendEMailReceipt');
 
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1990, 'Callback Accepted', 'Callback', 'send');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1991, 'Callback Constructed', 'Callback', 'send');

@@ -74,6 +74,16 @@ abstract class Constants
 	 */
 	const iACTIVATE_LINK_STATE = 1021;
 	/**
+	 * Defines the ID of the State that should be logged if tan E-Mail is accepted by the local SMTP Server
+	 *
+	 */
+	const iEMAIL_ACCEPTED_STATE = 1030;
+	/**
+	 * Defines the ID of the State that should be logged if an E-Mail is rejected by the local SMTP Server
+	 *
+	 */
+	const iEMAIL_REJECTED_START = 1031;
+	/**
 	 * Defines the ID of the State that indicates that mPoint's Callback request has been accepted
 	 *
 	 */

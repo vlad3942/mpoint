@@ -259,11 +259,11 @@ Sælger: {CLIENT}
 Order Nr: {ORDERID}
 Pris: {PRICE} @@@
 
-#: /api/classes/email_receipt.php:75
+#: /api/classes/email_receipt.php:74
 msgid @@@ E-Mail Receipt - Subject @@@
 msgstr @@@ mPoint Kvittering for Order Nr: {ORDERID} med mPoint ID: {MPOINTID} @@@
 
-#: /api/classes/email_receipt.php:94
+#: /api/classes/email_receipt.php:93
 msgid @@@ E-Mail Receipt - Body @@@
 msgstr @@@ Tak fordi du brugte mPoint.
 Nedenstående er dine ordre informationer.

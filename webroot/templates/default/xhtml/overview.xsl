@@ -29,7 +29,7 @@
 	</tr>
 	</xsl:for-each>
 	<!-- List Shipping Information -->
-	<xsl:if test="count(shipping-info/name) &gt; 0">
+	<xsl:if test="string-length(shipping-info/name) &gt; 0">
 		<tr>
 			<td colspan="6"><img src="{system/protocol}://{system/host}/img/shipping.gif" width="40" height="40" alt="- Logo -" /></td>
 		</tr>
@@ -45,7 +45,7 @@
 	</tr>
 	</table>
 	<!-- List Delivery Information -->
-	<xsl:if test="count(delivery-info/name) &gt; 0">
+	<xsl:if test="string-length(delivery-info/name) &gt; 0">
 		<div><hr /></div>
 		<div class="mPoint_Label"><xsl:value-of select="labels/delivery-info/name" /></div>
 		<div><xsl:value-of select="delivery-info/name" /></div>
@@ -73,35 +73,41 @@
 		<!-- Electronic Product Flow -->
 		<xsl:when test="/root/client-config/@flow-id = 1">
 			<div style="padding-top:0.5em;"><hr /></div>
-			<div>
-				<xsl:variable name="link-part" select="substring-after(labels/terms, '{LINK}')" />
-				<xsl:value-of select="substring-before(labels/terms, '{LINK}')" />
-				<a href="{func:constLink('terms.php')}"><xsl:value-of select="substring-before($link-part, '{/LINK}')" /></a>
-				<xsl:value-of select="substring-after($link-part, '{/LINK}')" />
-			</div>
-			<div>
-				<a href="{func:constLink('/pay/card.php')}"><xsl:value-of select="labels/next" /></a>
-			</div>
+			<form name="terms" action="{func:constLink('sys/val_terms.php')}" method="post">
+				<div>
+					<input type="checkbox" name="terms" value="1" />
+					<xsl:variable name="link-part" select="substring-after(labels/terms, '{LINK}')" />
+					<xsl:value-of select="substring-before(labels/terms, '{LINK}')" />
+					<a href="{func:constLink('terms.php')}"><xsl:value-of select="substring-before($link-part, '{/LINK}')" /></a>
+					<xsl:value-of select="substring-after($link-part, '{/LINK}')" />
+				</div>
+				<div>
+					<input type="submit" value="{labels/next}" />
+				</div>
+			</form>
 		</xsl:when>
 		<!-- Physical Product Flow -->
 		<xsl:when test="/root/client-config/@flow-id = 2">
 			<xsl:choose>
 				<!-- Start of Physical Product Flow -->
-				<xsl:when test="count(delivery-info/name) = 0 and count(shipping-info/name) = 0">
+				<xsl:when test="string-length(delivery-info/name) = 0 and string-length(shipping-info/name) = 0">
 					<a href="{func:constLink('/shop/delivery.php')}"><xsl:value-of select="labels/next" /></a>
 				</xsl:when>
 				<!-- End of Physical Product Flow -->
 				<xsl:otherwise>
 					<div style="padding-top:0.5em;"><hr /></div>
-					<div>
-						<xsl:variable name="link-part" select="substring-after(labels/terms, '{LINK}')" />
-						<xsl:value-of select="substring-before(labels/terms, '{LINK}')" />
-						<a href="{func:constLink('terms.php')}"><xsl:value-of select="substring-before($link-part, '{/LINK}')" /></a>
-						<xsl:value-of select="substring-after($link-part, '{/LINK}')" />
-					</div>
-					<div>
-						<a href="{func:constLink('/pay/card.php')}"><xsl:value-of select="labels/next" /></a>
-					</div>
+					<form name="terms" action="{func:constLink('sys/val_terms.php')}" method="post">
+						<div>
+							<input type="checkbox" name="terms" value="1" />
+							<xsl:variable name="link-part" select="substring-after(labels/terms, '{LINK}')" />
+							<xsl:value-of select="substring-before(labels/terms, '{LINK}')" />
+							<a href="{func:constLink('terms.php')}"><xsl:value-of select="substring-before($link-part, '{/LINK}')" /></a>
+							<xsl:value-of select="substring-after($link-part, '{/LINK}')" />
+						</div>
+						<div>
+							<input type="submit" value="{labels/next}" />
+						</div>
+					</form>
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:when>

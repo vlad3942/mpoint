@@ -48,13 +48,12 @@ class EMailReceipt extends General
 	 *	Reply-To: no-reply@cellpointmobile.com
 	 *	Content-Type: text/plain
 	 *
-	 * @param 	string $email 	Customer's E-Mail address
 	 * @return 	string
 	 */
-	public function constHeaders($email)
+	public function constHeaders()
 	{
 		// Construct Mail headers
-		$sHeaders = "To: ". $email ."\n";
+		$sHeaders = "To: ". $this->_obj_TxnInfo->getEMail() ."\n";
 		$sHeaders .= "From: mPoint <no-reply@cellpointmobile.com>" ."\n";
 		$sHeaders .= "Reply-To: no-reply@cellpointmobile.com" ."\n";
 		$sHeaders .= "Content-Type: text/plain" ."\n";

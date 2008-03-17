@@ -33,7 +33,12 @@ $obj_mPoint->completeTransaction(Constants::iDIBS_PSP, $_POST['transact'], $_POS
 // Client has SMS Receipt enabled
 if ($obj_mPoint->getTxnInfo()->getClientConfig()->smsReceiptEnabled() === true)
 {
-	$obj_mPoint->sendReceipt(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
+	$obj_mPoint->sendSMSReceipt(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
+}
+// Client has E-Mail Receipt enabled
+if ($obj_mPoint->getTxnInfo()->getClientConfig()->emailReceiptEnabled() === true)
+{
+	$obj_mPoint->sendEMailReceipt();
 }
 
 // Callback URL has been defined for Client

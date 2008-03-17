@@ -399,9 +399,10 @@ class General
 				SET typeid = ". $oTI->getTypeID() .", clientid = ". $oTI->getClientConfig()->getID() .", accountid = ". $oTI->getClientConfig()->getAccountConfig()->getID() .",
 					countryid = ". $oTI->getClientConfig()->getCountryConfig()->getID() .", keywordid = ". $oTI->getClientConfig()->getKeywordConfig()->getID() .",
 					amount = ". $oTI->getAmount() .", orderid = '". $this->getDBConn()->escStr($oTI->getOrderID() ) ."', lang = '". $this->getDBConn()->escStr($oTI->getLanguage() ) ."',
-					address = ". floatval($oTI->getAddress() ) .", operatorid = ". $oTI->getOperator() .", logourl = '". $this->getDBConn()->escStr($oTI->getLogoURL() ) ."',
-					cssurl = '". $this->getDBConn()->escStr($oTI->getCSSURL() ) ."', accepturl = '". $this->getDBConn()->escStr($oTI->getAcceptURL() ) ."',
-					cancelurl = '". $this->getDBConn()->escStr($oTI->getCancelURL() ) ."', callbackurl = '". $this->getDBConn()->escStr($oTI->getCallbackURL() ) ."'
+					address = ". floatval($oTI->getAddress() ) .", operatorid = ". $oTI->getOperator() .", email = '". $this->getDBConn()->escStr($oTI->getEMail() ) ."',
+					logourl = '". $this->getDBConn()->escStr($oTI->getLogoURL() ) ."', cssurl = '". $this->getDBConn()->escStr($oTI->getCSSURL() ) ."',
+					accepturl = '". $this->getDBConn()->escStr($oTI->getAcceptURL() ) ."', cancelurl = '". $this->getDBConn()->escStr($oTI->getCancelURL() ) ."',
+					callbackurl = '". $this->getDBConn()->escStr($oTI->getCallbackURL() ) ."'
 				WHERE id = ". $oTI->getID(); 
 //		echo $sql ."\n";
 		// Error: Unable to update Transaction

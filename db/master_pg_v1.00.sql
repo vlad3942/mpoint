@@ -529,6 +529,7 @@ CREATE TABLE Log.Transaction_Tbl
 
 	address		VARCHAR(15),	-- MSISDN of the customer who made the purchase
 	operatorid	INT4,			-- GoMobile ID for the Customers Mobile Network Operator
+	email		VARCHAR(50),	-- Customers e-mail address to where a Receipt will be sent when the purchase has been completed
 
 	logourl		VARCHAR(255),	-- URL to the logo that was used for the Transaction
 	cssurl		VARCHAR(255),	-- URL to the Stylesheet that was used for the Transaction

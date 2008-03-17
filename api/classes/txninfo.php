@@ -74,6 +74,12 @@ class TxnInfo
 	 * @var integer
 	 */
 	private $_iOperatorID;
+	/**
+	 * Customer's E-Mail Address where a receipt is sent to upon successful completion of the payment transaction
+	 *
+	 * @var string
+	 */
+	private $_sEMail;
 	
 	/**
 	 * Absolute URL to the Client's Logo which will be displayed on all payment pages
@@ -131,6 +137,7 @@ class TxnInfo
 	 * @param 	string $orid 		Clients Order ID of the Transaction
 	 * @param 	string $addr 		Customer's Device Address, this is most likely the customer's MSISDN to his / her mobile phone
 	 * @param 	integer $oid 		GoMobile's ID for the Customer's Mobile Network Operator
+	 * @param 	string $email 		Customer's E-Mail Address where a receipt is sent to upon successful completion of the payment transaction
 	 * @param 	string $lurl 		Absolute URL to the Client's Logo which will be displayed on all payment pages
 	 * @param 	string $cssurl 		Absolute URL to the CSS file that should be used to customising the payment pages
 	 * @param 	string $aurl 		Absolute URL where the Customer should be returned to upon successfully completing the Transaction
@@ -139,7 +146,7 @@ class TxnInfo
 	 * @param 	string $l 			The language that all payment pages should be rendered in by default for the Client
 	 * @param 	integer $m 			The Client Mode in which the Transaction should be Processed
 	 */
-	public function __construct($id, $tid, ClientConfig &$oCC, $a, $orid, $addr, $oid, $lurl, $cssurl, $aurl, $curl, $cburl, $l, $m)
+	public function __construct($id, $tid, ClientConfig &$oCC, $a, $orid, $addr, $oid, $email, $lurl, $cssurl, $aurl, $curl, $cburl, $l, $m)
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -209,6 +216,12 @@ class TxnInfo
 	 * @return 	integer
 	 */
 	public function getOperator() { return $this->_iOperatorID; }
+	/**
+	 * Returns the Customer's E-Mail Address where a receipt is sent to upon successful completion of the payment transaction
+	 *
+	 * @return 	string
+	 */
+	public function getEMail() { return $this->_sEMail; }
 	
 	/**
 	 * Returns the Absolute URL to the Client's Logo which will be displayed on all payment pages
@@ -258,6 +271,13 @@ class TxnInfo
 	public function getMode() { return $this->_iMode; }
 	
 	/**
+	 * Updates the information for the Transaction with the Customer's E-Mail Address where a receipt is sent to upon successful completion of the payment transaction
+	 *
+	 * @param 	string $email 	Customer's E-Mail Address where a receipt is sent to upon successful completion of the payment transaction
+	 */
+	public function setEMail($email) { $this->_sEMail = $email; }
+	
+	/**
 	 * Converts the data object into XML.
 	 * If a User Agent Profile is provided, the method will automatically calculate the width and height of the client logo
 	 * after it has been resized to fit the screen resolution of the customer's mobile device.
@@ -270,6 +290,7 @@ class TxnInfo
 	 *		<order-id>{CLIENT'S ORDER ID FOR THE TRANSACTION}</order-id>
 	 *		<address>{CUSTOMER'S MSISDN WHERE SMS MESSAGE CAN BE SENT TO}</address>
 	 *		<operator>{GOMOBILE ID FOR THE CUSTOMER'S MOBILE NETWORK OPERATOR}</operator>
+	 * 		<e-mail>{CUSTOMER'S E-MAIL ADDRESS WHERE RECEIPT WILL BE SENT TO}</e-mail>
 	 *		<logo>
 	 * 			<url>{ABSOLUTE URL TO THE CLIENT'S LOGO}</url>
 	 * 			<width>{WIDTH OF THE LOGO AFTER IT HAS BEEN SCALED TO FIT THE SCREENSIZE OF THE CUSTOMER'S MOBILE DEVICE}</width>
@@ -312,6 +333,7 @@ class TxnInfo
 		$xml .= '<order-id>'. $this->_sOrderID .'</order-id>';
 		$xml .= '<address>'. $this->_sAddress .'</address>';
 		$xml .= '<operator>'. $this->_iOperatorID .'</operator>';
+		$xml .= '<e-mail>'. $this->_sEMail .'</e-mail>';
 		$xml .= '<logo>';
 		$xml .= '<url>'. htmlspecialchars($this->_sLogoURL, ENT_NOQUOTES) .'</url>';
 		$xml .= '<width>'. $iWidth .'</width>';
@@ -357,6 +379,7 @@ class TxnInfo
 			if (array_key_exists("orderid", $misc) === false) { $misc["orderid"] = $obj->getOrderID(); }
 			if (array_key_exists("recipient", $misc) === false) { $misc["recipient"] = $obj->getAddress(); }
 			if (array_key_exists("operator", $misc) === false) { $misc["operator"] = $obj->getOperator(); }
+			if (array_key_exists("email", $misc) === false) { $misc["email"] = $obj->getEMails(); }
 			if (array_key_exists("logo-url", $misc) === false) { $misc["logo-url"] = $obj->getLogoURL(); }
 			if (array_key_exists("css-url", $misc) === false) { $misc["css-url"] = $obj->getCSSURL(); }
 			if (array_key_exists("accept-url", $misc) === false) { $misc["accept-url"] = $obj->getAcceptURL(); }
@@ -365,13 +388,14 @@ class TxnInfo
 			if (array_key_exists("language", $misc) === false) { $misc["language"] = $obj->getLanguage(); }
 			if (array_key_exists("mode", $misc) === false) { $misc["mode"] = $obj->getMode(); }
 			
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client_config"], $misc["amount"], $misc["orderid"], $misc["recipient"], $misc["operator"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $misc["mode"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client_config"], $misc["amount"], $misc["orderid"], $misc["recipient"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $misc["mode"]);
 			break;
 		case ($obj instanceof ClientConfig):	// Instantiate from array of Client Input
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["amount"], $misc["orderid"], $misc["recipient"], $misc["operator"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $misc["mode"]);
+			if (array_key_exists("email", $misc) === false) { $misc["email"] = ""; }
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["amount"], $misc["orderid"], $misc["recipient"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $misc["mode"]);
 			break;
 		case ($obj instanceof RDB):				// Instantiate from Transaction Log
-			$sql = "SELECT id, typeid, amount, orderid, address, operatorid, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, mode,
+			$sql = "SELECT id, typeid, amount, orderid, address, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, mode,
 						clientid, accountid, keywordid
 					FROM Log.Transaction_Tbl
 					WHERE id = ". intval($id);
@@ -384,7 +408,7 @@ class TxnInfo
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($obj, $RS["CLIENTID"], $RS["ACCOUNTID"], $RS["KEYWORDID"]);
 				
-				$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $RS["AMOUNT"], $RS["ORDERID"], $RS["ADDRESS"], $RS["OPERATORID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["LANG"], $RS["MODE"]);
+				$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $RS["AMOUNT"], $RS["ORDERID"], $RS["ADDRESS"], $RS["OPERATORID"], $RS["EMAIL"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["LANG"], $RS["MODE"]);
 			}
 			// Error: Transaction not found
 			else { throw new TxnInfoException("Transaction with ID: ". $id ." not found using creation timestamp: ". $misc[0], 1001); }

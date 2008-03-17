@@ -183,7 +183,7 @@ class Callback extends General
 	 *
 	 * @param 	GoMobileConnInfo $oCI 	Connection Info required to communicate with GoMobile
 	 */
-	public function sendReceipt(GoMobileConnInfo &$oCI)
+	public function sendSMSReceipt(GoMobileConnInfo &$oCI)
 	{
 		$sBody = utf8_decode($this->getText()->_("mPoint - SMS Receipt") );
 		$sBody = str_replace("{MPOINTID}", $this->_obj_TxnInfo->getID(), $sBody);
@@ -194,6 +194,23 @@ class Callback extends General
 		// Instantiate Message Object for holding the message data which will be sent to GoMobile
 		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID(), $this->_obj_TxnInfo->getOperator(), $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getChannel(), $this->_obj_TxnInfo->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $this->_obj_TxnInfo->getAddress(), $sBody);
 		$this->sendMT($oCI, $obj_MsgInfo, $this->_obj_TxnInfo);
+	}
+	
+	/**
+	 * Sends an E-Mail Receipt with Payment Information to the Customer.
+	 * 
+	 * @see 	EMailReceipt
+	 *
+	 */
+	public function sendEMailReceipt()
+	{
+		$obj_EMail = new EMailReceipt($this->getDBConn(), $this->getText(), $this->_obj_TxnInfo);
+		
+		if (mail($this->_obj_TxnInfo->getEMail(), $obj_EMail->constSubject(), $obj_EMail->constBody(), $obj_EMail->constHeaders() ) === true)
+		{
+			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iEMAIL_ACCEPTED_STATE, $obj_EMail->constSubject() );
+		}
+		else { $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iEMAIL_REJECTED_START, $obj_EMail->constSubject() ); }
 	}
 	
 	/**

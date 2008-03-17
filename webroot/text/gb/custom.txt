@@ -169,8 +169,6 @@ msgid @@@ E-Mail - 15 @@@
 msgstr @@@ E-Mail has an invalid format, a valid e-mail address must be in the format of: donald.duck@cellpointmobile.com @@@
 msgid @@@ E-Mail - 91 @@@
 msgstr @@@ An error occurred while sending your E-Mail Receipt, please try again? @@@
-msgid @@@ Accept - 100 @@@
-msgstr @@@ Your E-Mail receipt has been successfully sent @@@
 
 msgid @@@ Products - 11 @@@
 msgstr @@@ No Products selected for Purchase. Please enter the quantity for each product in the text field to the left? @@@

@@ -18,7 +18,7 @@
 		<xsl:value-of select="labels/email" />
 	</div>
 	
-	<form action="{func:constLink('sys/send_mail.php')}" method="post">
+	<form action="{func:constLink('sys/val_email.php')}" method="post">
 		<div>
 			<input type="text" name="email" value="{session/email}" maxlength="50" /><br />
 			<input type="submit" value="{labels/submit}" />
