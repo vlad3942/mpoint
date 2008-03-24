@@ -145,6 +145,16 @@ $aGM_CONN_INFO["logpath"] = sLOG_PATH;
  */
 $aGM_CONN_INFO["mode"] = 1;
 
+$aCPM_CONN_INFO["protocol"] = "http";
+$aCPM_CONN_INFO["host"] = "CPM.localhost";
+$aCPM_CONN_INFO["port"] = 80;
+$aCPM_CONN_INFO["timeout"] = 20;
+$aCPM_CONN_INFO["path"] = "/callback/cpm.php";
+$aCPM_CONN_INFO["method"] = "POST";
+$aCPM_CONN_INFO["contenttype"] = "application/www-url-form-encoded";
+//$aCPM_CONN_INFO["username"] = "";
+//$aCPM_CONN_INFO["password"] = "";
+
 /**
  * Template for website design
  */
@@ -171,7 +181,7 @@ define("sSPRINT_MPOINT_DOMAIN", "m62.sprintpcs.com");
  * The constant must be set to nothing for device detection to work on Verizon via mBlox as
  * mBlox doesn't supply a URL to the device's User Agent Profile but only a User Agent.
  */
-define("sDEFAULT_UA_PROFILE", "");
+define("sDEFAULT_UA_PROFILE", "http://wap.sonyericsson.com/UAprof/K790iR201.xml");
 
 /**
  * Determines what size Client Logos are scaled to.

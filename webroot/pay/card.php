@@ -42,7 +42,7 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 		<info><?= $_OBJ_TXT->_("Please select your Credit Card"); ?></info>
 	</labels>
 	
-	<?= $obj_mPoint->getCards(); ?>
+	<?= $obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount()); ?>
 	
 	<!-- DIBS Custom Pages: Payment Accepted -->
 	<accept>
@@ -50,4 +50,6 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 	
 		<?= $obj_Accept->getClientVars($_SESSION['obj_TxnInfo']->getID() ); ?>
 	</accept>
+	
+	<?= $obj_mPoint->getMessages("Select Card"); ?>
 </root>

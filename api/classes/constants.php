@@ -118,6 +118,11 @@ abstract class Constants
 	 *
 	 */
 	const iPAYMENT_ACCEPTED_STATE = 2000;
+	/**
+	 * Defines the ID of the State that indicates that the payment was rejected by the Payment Service Provider (PSP)
+	 *
+	 */
+	const iPAYMENT_REJECTED_STATE = 2001;
 	
 	/**
 	 * Defines GoMobile's type identifier for an MT-SMS message
@@ -183,6 +188,11 @@ abstract class Constants
 	 *
 	 */
 	const iAUTH_MAX_LENGTH = 50;
+	/**
+	 * Unique ID for the Payment Service Provider: Cellpoint Mobile
+	 *
+	 */
+	const iCPM_PSP = 2;
 	/**
 	 * Unique ID for the Payment Service Provider: DIBS
 	 *

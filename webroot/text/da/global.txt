@@ -259,6 +259,10 @@ Sælger: {CLIENT}
 Order Nr: {ORDERID}
 Pris: {PRICE} @@@
 
+#: /api/classes/cpm.php:31
+msgid @@@ Billing SMS @@@
+msgstr @@@ Tak fordi du brugte mPoint, vi har trukket {PRICE} fra din Mobil Regning. @@@
+
 #: /api/classes/email_receipt.php:74
 msgid @@@ E-Mail Receipt - Subject @@@
 msgstr @@@ mPoint Kvittering for Order Nr: {ORDERID} med mPoint ID: {MPOINTID} @@@

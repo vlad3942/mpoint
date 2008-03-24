@@ -12,13 +12,13 @@
 	<div class="mPoint_Label"><xsl:value-of select="labels/info" /></div>
 	<xsl:for-each select="cards/item">
 		<xsl:choose>
-			<!-- DIBS FlexWin -->
+			<!-- Cellpoint Mobile -->
 			<xsl:when test="@pspid = 1">
-				<xsl:apply-templates select="." mode="dibs_flexwin" />
+				<xsl:apply-templates select="." mode="cpm" />
 			</xsl:when>
-			<!-- DIBS "Custom Pages" -->
+			<!-- DIBS -->
 			<xsl:when test="@pspid = 2">
-				<xsl:apply-templates select="." mode="dibs_custom" />
+				<xsl:apply-templates select="." mode="dibs" />
 			</xsl:when>
 			<!-- Error -->
 			<xsl:otherwise>
@@ -26,6 +26,9 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:for-each>
+	
+	<!-- Display Status Messages -->
+	<xsl:apply-templates select="messages" />
 </xsl:template>
 
 <func:function name="func:transCard">
@@ -77,6 +80,26 @@
 	</xsl:choose>
 </func:function>
 
+<xsl:template match="item" mode="cpm">
+	<div>
+		<form action="{func:constLink('/cpm/payment.php')}" method="post">
+			<div>
+				<!--
+				  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
+				  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
+				  - the phone will assign 25% of the screen width to the card logo and 75% of the screen width to the card name.
+				  -->
+				<table class="mPoint_card">
+				<tr>
+					<td><img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}_{/root/system/session/@id}.jpg" width="{width}" height="{height}" alt="" /></td>
+					<td colspan="3"><input type="submit" value="{name}" class="button" /></td>
+				</tr>
+				</table>
+			</div>
+		</form>
+	</div>
+</xsl:template>
+
 <xsl:template match="item" mode="dibs_flexwin">
 	<div>
 		<form action="https://payment.architrade.com/paymentweb/mobiwin.action" method="post">
@@ -126,7 +149,7 @@
 	</div>
 </xsl:template>
 
-<xsl:template match="item" mode="dibs_custom">
+<xsl:template match="item" mode="dibs">
 	<div>
 		<form action="https://payment.architrade.com/shoppages/{account}/payment.pml" method="post">
 			<div>

@@ -259,6 +259,10 @@ Merchant: {CLIENT}
 Order No: {ORDERID}
 Price: {PRICE} @@@
 
+#: /api/classes/cpm.php:31
+msgid @@@ Billing SMS @@@
+msgstr @@@ Thank you for using mPoint, you've been charged {PRICE} through your Mobile Operator @@@
+
 #: /api/classes/email_receipt.php:74
 msgid @@@ E-Mail Receipt - Subject @@@
 msgstr @@@ mPoint Receipt for Order No: {ORDERID} with mPoint ID: {MPOINTID} @@@

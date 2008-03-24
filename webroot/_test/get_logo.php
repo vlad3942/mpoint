@@ -34,6 +34,8 @@ require_once(sAPI_CLASS_PATH ."report.php");
 // Require Database Abstraction API
 require_once(sAPI_CLASS_PATH ."database.php");
 
+define("sLOG_PATH", "../../log/");
+
 /**
  * Database settings for mPoint's database
  */
@@ -56,13 +58,5 @@ $aDB_CONN_INFO["method"] = 3;
 
 $obj_DB = RDB::produceDatabase($aDB_CONN_INFO);
 
-echo "INSERT INTO System.Card_Tbl (name, logo) VALUES ('American Express', '". $obj_DB->escBin(file_get_contents("../img/amex.jpg") ) ."');" ."\n";
-echo "INSERT INTO System.Card_Tbl (name, logo) VALUES ('Dankort', '". $obj_DB->escBin(file_get_contents("../img/dankort.gif") ) ."');" ."\n";
-echo "INSERT INTO System.Card_Tbl (name, logo) VALUES ('Diners Club', '". $obj_DB->escBin(file_get_contents("../img/diners.jpg") ) ."');" ."\n";
-echo "INSERT INTO System.Card_Tbl (name, enabled, logo) VALUES ('EuroCard', false, '". $obj_DB->escBin(file_get_contents("../img/mastercard.gif") ) ."');" ."\n";
-echo "INSERT INTO System.Card_Tbl (name, logo) VALUES ('JCB', '". $obj_DB->escBin(file_get_contents("../img/jcb.gif") ) ."');" ."\n";
-echo "INSERT INTO System.Card_Tbl (name, logo) VALUES ('Maestro', '". $obj_DB->escBin(file_get_contents("../img/maestro.gif") ) ."');" ."\n";
-echo "INSERT INTO System.Card_Tbl (name, logo) VALUES ('Master Card', '". $obj_DB->escBin(file_get_contents("../img/mastercard.gif") ) ."');" ."\n";
-echo "INSERT INTO System.Card_Tbl (name, logo) VALUES ('VISA', '". $obj_DB->escBin(file_get_contents("../img/visa.gif") ) ."');" ."\n";
-echo "INSERT INTO System.Card_Tbl (name, logo) VALUES ('VISA Electron', '". $obj_DB->escBin(file_get_contents("../img/visa_electron.gif") ) ."');" ."\n";
+echo "INSERT INTO System.Card_Tbl (name, position, logo) VALUES ('SMS', 0, '". $obj_DB->escBin(file_get_contents("../img/psms.jpg") ) ."');" ."\n";
 ?>

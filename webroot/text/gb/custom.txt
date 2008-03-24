@@ -242,3 +242,6 @@ msgstr @@@ The entered Delivery Date is in the Past @@@
 
 msgid @@@ Overview - 11 @@@
 msgstr @@@ Please accept the Terms & Conditions to continue @@@
+
+msgid @@@ Select Card - 99 @@@
+msgstr @@@ We're sorry but we could not complete the payment through your selected payment method. Please select another one to try again? @@@

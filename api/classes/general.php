@@ -402,7 +402,7 @@ class General
 					address = ". floatval($oTI->getAddress() ) .", operatorid = ". $oTI->getOperator() .", email = '". $this->getDBConn()->escStr($oTI->getEMail() ) ."',
 					logourl = '". $this->getDBConn()->escStr($oTI->getLogoURL() ) ."', cssurl = '". $this->getDBConn()->escStr($oTI->getCSSURL() ) ."',
 					accepturl = '". $this->getDBConn()->escStr($oTI->getAcceptURL() ) ."', cancelurl = '". $this->getDBConn()->escStr($oTI->getCancelURL() ) ."',
-					callbackurl = '". $this->getDBConn()->escStr($oTI->getCallbackURL() ) ."'
+					callbackurl = '". $this->getDBConn()->escStr($oTI->getCallbackURL() ) ."', gomobileid = ". $oTI->getGoMobileID() ."
 				WHERE id = ". $oTI->getID(); 
 //		echo $sql ."\n";
 		// Error: Unable to update Transaction

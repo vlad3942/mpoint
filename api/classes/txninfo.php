@@ -126,6 +126,13 @@ class TxnInfo
 	 * @var integer
 	 */
 	private $_iMode;
+	/**
+	 * GoMobile's Unique ID for the MO-SMS that was used to start the payment transaction.
+	 * The ID is used for payment via Premium SMS.
+	 *
+	 * @var integer
+	 */
+	private $_iGoMobileID;
 	
 	/**
 	 * Default Constructor
@@ -145,8 +152,9 @@ class TxnInfo
 	 * @param 	string $cburl 		Absolute URL to the Client's Back Office where mPoint should send the Payment Status to
 	 * @param 	string $l 			The language that all payment pages should be rendered in by default for the Client
 	 * @param 	integer $m 			The Client Mode in which the Transaction should be Processed
+	 * @param 	integer $gmid 		GoMobile's Unique ID for the MO-SMS that was used to start the payment transaction. Defaults to -1.
 	 */
-	public function __construct($id, $tid, ClientConfig &$oCC, $a, $orid, $addr, $oid, $email, $lurl, $cssurl, $aurl, $curl, $cburl, $l, $m)
+	public function __construct($id, $tid, ClientConfig &$oCC, $a, $orid, $addr, $oid, $email, $lurl, $cssurl, $aurl, $curl, $cburl, $l, $m, $gmid=-1)
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -165,6 +173,7 @@ class TxnInfo
 		
 		$this->_sLanguage = trim($l);
 		$this->_iMode = (integer) $m;
+		$this->_iGoMobileID = (integer) $gmid;
 	}
 	
 	/**
@@ -269,6 +278,13 @@ class TxnInfo
 	 * @return 	integer
 	 */
 	public function getMode() { return $this->_iMode; }
+	/**
+	 * Returns the GoMobile's Unique ID for the MO-SMS that was used to start the payment transaction.
+	 * The ID is used for payment via Premium SMS.
+	 *
+	 * @return 	integer
+	 */
+	public function getGoMobileID() { return $this->_iGoMobileID; }
 	
 	/**
 	 * Updates the information for the Transaction with the Customer's E-Mail Address where a receipt is sent to upon successful completion of the payment transaction
@@ -327,7 +343,7 @@ class TxnInfo
 			$iHeight = -1;
 		}
 		
-		$xml = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'" mode="'. $this->_iMode .'">';
+		$xml = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'" gmid="'. $this->_iGoMobileID .'" mode="'. $this->_iMode .'">';
 		$xml .= '<amount currency="'. $this->_obj_ClientConfig->getCountryConfig()->getCurrency() .'">'. $this->_iAmount .'</amount>';
 		$xml .= '<price>'. General::formatAmount($this->_obj_ClientConfig->getCountryConfig(), $this->_iAmount) .'</price>';
 		$xml .= '<order-id>'. $this->_sOrderID .'</order-id>';
@@ -387,15 +403,16 @@ class TxnInfo
 			if (array_key_exists("callback-url", $misc) === false) { $misc["callback-url"] = $obj->getCallbackURL(); }
 			if (array_key_exists("language", $misc) === false) { $misc["language"] = $obj->getLanguage(); }
 			if (array_key_exists("mode", $misc) === false) { $misc["mode"] = $obj->getMode(); }
+			if (array_key_exists("gomobileid", $misc) === false) { $misc["gomobileid"] = $obj->getGoMobileID(); }
 			
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client_config"], $misc["amount"], $misc["orderid"], $misc["recipient"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $misc["mode"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client_config"], $misc["amount"], $misc["orderid"], $misc["recipient"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $misc["mode"], $misc["gomobileid"]);
 			break;
 		case ($obj instanceof ClientConfig):	// Instantiate from array of Client Input
 			if (array_key_exists("email", $misc) === false) { $misc["email"] = ""; }
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["amount"], $misc["orderid"], $misc["recipient"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $misc["mode"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["amount"], $misc["orderid"], $misc["recipient"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $obj->getMode(), $misc["gomobileid"]);
 			break;
 		case ($obj instanceof RDB):				// Instantiate from Transaction Log
-			$sql = "SELECT id, typeid, amount, orderid, address, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, mode,
+			$sql = "SELECT id, typeid, amount, orderid, address, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, mode, gomobileid,
 						clientid, accountid, keywordid
 					FROM Log.Transaction_Tbl
 					WHERE id = ". intval($id);
@@ -408,7 +425,7 @@ class TxnInfo
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($obj, $RS["CLIENTID"], $RS["ACCOUNTID"], $RS["KEYWORDID"]);
 				
-				$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $RS["AMOUNT"], $RS["ORDERID"], $RS["ADDRESS"], $RS["OPERATORID"], $RS["EMAIL"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["LANG"], $RS["MODE"]);
+				$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $RS["AMOUNT"], $RS["ORDERID"], $RS["ADDRESS"], $RS["OPERATORID"], $RS["EMAIL"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["LANG"], $RS["MODE"], $RS["GOMOBILEID"]);
 			}
 			// Error: Transaction not found
 			else { throw new TxnInfoException("Transaction with ID: ". $id ." not found using creation timestamp: ". $misc[0], 1001); }

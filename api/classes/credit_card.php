@@ -76,7 +76,7 @@ class CreditCard extends General
 	 * @param 	integer $id 	Unique Card ID that should be fetched
 	 * @return 	Image
 	 */
-	public function getCards()
+	public function getCards($amount)
 	{
 		/* ========== Calculate Logo Dimensions Start ========== */
 		$iWidth = $this->_obj_UA->getWidth() * iCARD_LOGO_SCALE / 100;
@@ -96,11 +96,16 @@ class CreditCard extends General
 				INNER JOIN Client.MerchantAccount_Tbl MA ON CA.clientid = MA.clientid
 				INNER JOIN Client.Account_Tbl A ON CA.clientid = A.clientid AND A.enabled = true
 				INNER JOIN Client.MerchantSubAccount_Tbl MSA ON A.id = MSA.accountid
-				INNER JOIN System.PSP_Tbl PSP ON MA.pspid = PSP.id AND MSA.pspid = PSP.id AND PSP.enabled = true
+				INNER JOIN System.PSP_Tbl PSP ON MA.pspid = PSP.id AND MSA.pspid = PSP.id AND CA.pspid = PSP.id AND PSP.enabled = true
 				INNER JOIN System.PSPCurrency_Tbl PC ON PSP.id = PC.pspid
+				INNER JOIN System.PSPCard_Tbl PCD ON PSP.id = PCD.pspid AND C.id = PCD.cardid
+				INNER JOIN System.CardPricing_Tbl CP ON C.id = CP.cardid
+				INNER JOIN System.PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PC.countryid = PP.countryid AND PP.enabled = true
 				WHERE CA.clientid = ". $this->_obj_TxnInfo->getClientConfig()->getID() ."
 					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
 					AND PC.countryid = ". $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID() ."
+					AND PP.countryid = ". $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID() ."
+					AND (PP.amount = -1 OR PP.amount = ". intval($amount) .")
 					AND C.enabled = true
 				ORDER BY C.position ASC, C.name ASC";
 //		echo $sql ."\n";
@@ -109,15 +114,19 @@ class CreditCard extends General
 		$xml = '<cards>';
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
-			// Construct XML Document with card data
-			$xml .= '<item id="'. $RS["ID"] .'" pspid="'. $RS["PSPID"] .'">';
-			$xml .= '<name>'. $RS["NAME"] .'</name>';
-			$xml .= '<width>'. $iWidth .'</width>';
-			$xml .= '<height>'. $iHeight .'</height>';
-			$xml .= '<account>'. $RS["ACCOUNT"] .'</account>';
-			$xml .= '<subaccount>'. $RS["SUBACCOUNT"] .'</subaccount>';
-			$xml .= '<currency>'. $RS["CURRENCY"] .'</currency>';
-			$xml .= '</item>';
+			// Transaction instantiated via SMS or "Card" is NOT Premium SMS
+			if ($this->_obj_TxnInfo->getGoMobileID() > -1 || $RS["ID"] != 10)
+			{
+				// Construct XML Document with card data
+				$xml .= '<item id="'. $RS["ID"] .'" pspid="'. $RS["PSPID"] .'">';
+				$xml .= '<name>'. $RS["NAME"] .'</name>';
+				$xml .= '<width>'. $iWidth .'</width>';
+				$xml .= '<height>'. $iHeight .'</height>';
+				$xml .= '<account>'. $RS["ACCOUNT"] .'</account>';
+				$xml .= '<subaccount>'. $RS["SUBACCOUNT"] .'</subaccount>';
+				$xml .= '<currency>'. $RS["CURRENCY"] .'</currency>';
+				$xml .= '</item>';
+			}
 		}
 		$xml .= '</cards>';
 		

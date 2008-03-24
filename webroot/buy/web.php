@@ -71,6 +71,7 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 		{
 			// Update Transaction State
 			$_POST['typeid'] = Constants::iWEB_PURCHASE_TYPE;
+			$_POST['gomobileid'] = -1;
 			$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, var_export($_POST, true) );
 			// Update Transaction Log
 			$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $_POST);

@@ -62,6 +62,12 @@ class CountryConfig extends BasicConfig
 	 * @var boolean
 	 */
 	private $_bAddressLookup;
+	/**
+	 * Boolean Flag indicating whether an Operators in the Country required Double Opt-In for payments made via Premium SMS
+	 *
+	 * @var boolean
+	 */
+	private $_bDoubleOptIn;
 	
 	/**
 	 * Default Constructor
@@ -74,9 +80,10 @@ class CountryConfig extends BasicConfig
 	 * @param 	string $ch 			GoMobile channel used for communicating with the customers in the Country
 	 * @param 	string $pf 			Price Format used in the Country
 	 * @param 	integer $dec 		Number of Decimals used for Prices in the Country
-	 * @param 	boolean $lus 		Boolean Flag indicating whether an Address Lookup Service is available in the Country
+	 * @param 	boolean $als 		Boolean Flag indicating whether an Address Lookup Service is available in the Country
+	 * @param 	boolean $doi 		Boolean Flag indicating whether an Operators in the Country required Double Opt-In for payments made via Premium SMS
 	 */
-	public function __construct($id, $name, $currency, $minmob, $maxmob, $ch, $pf, $dec, $als)
+	public function __construct($id, $name, $currency, $minmob, $maxmob, $ch, $pf, $dec, $als, $doi)
 	{
 		parent::__construct($id, $name);
 		
@@ -87,6 +94,7 @@ class CountryConfig extends BasicConfig
 		$this->_sPriceFormat = trim($pf);
 		$this->_iNumDecimals = (integer) $dec;
 		$this->_bAddressLookup = $als;
+		$this->_bDoubleOptIn = $doi;
 	}
 	
 	/**
@@ -133,6 +141,12 @@ class CountryConfig extends BasicConfig
 	 * @return boolean
 	 */
 	public function hasAddressLookup() { return $this->_bAddressLookup; }
+	/**
+	 * Returns True if the Mobile Network Operators in the Country requires Double Opt-In for payments made via Premiums SMS.
+	 *
+	 * @return boolean
+	 */
+	public function hasDoubleOptIn() { return $this->_bDoubleOptIn; }
 	
 	public function toXML()
 	{
@@ -145,6 +159,7 @@ class CountryConfig extends BasicConfig
 		$xml .= '<price-format>'. $this->_sPriceFormat .'</price-format>';
 		$xml .= '<num-decimals>'. $this->_iNumDecimals .'</num-decimals>';
 		$xml .= '<address-lookup>'. General::bool2xml($this->_bAddressLookup) .'</address-lookup>';
+		$xml .= '<double-opt-in>'. General::bool2xml($this->_bDoubleOptIn) .'</double-opt-in>';
 		$xml .= '</country-config>';
 		
 		return $xml;
