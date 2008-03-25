@@ -277,11 +277,30 @@ Merchant: {CLIENT}
 Order No: {ORDERID}
 Price: {PRICE} @@@
 
-#: /api/classes/sms_purchase.php:123
+#: /api/classes/general.php:630
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ Welcome to mPoint, please activate the link below @@@
 
-#: /api/classes/sms_purchase.php:129
+#: /api/classes/general.php:636
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Welcome to mPoint @@@
+
+#: /api/classes/surepay.php:130
+msgid @@@ mPoint - Embedded link Resend Indication @@@
+msgstr @@@ We have detected that you haven't accessed the link to mPoint.
+Please activate the link below to complete your payment to {CLIENT} @@@
+
+#: /api/classes/surepay.php:150
+msgid @@@ SurePay Notification - Subject @@@
+msgstr @@@ mPoint payment link for Order: {ORDERID} has not yet been accessed @@@
+
+#: /api/classes/surepay.php:154
+msgid @@@ SurePay Notification - Body @@@
+msgstr @@@ mPoint payment link has not yet been accessed
+Mobile No: {ADDRESS}
+mPoint ID: {MPOINTID}
+Order No: {ORDERID}
+Price: {PRICE} 
+Order created: {TIMESTAMP}
+Thank you for using SurePay @@@
 

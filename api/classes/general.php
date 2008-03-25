@@ -551,5 +551,93 @@ class General
 		
 		return $h;
 	}
+	
+	/**
+	 * Constructs the download link for the transaction.
+	 * The link is contructed through the following alghorithm:
+	 * 	- {TXN CREATED} is an integer representing the timestamp for when the transaction was created since unix epoch
+	 * 	- {TXN ID} is the ID of the outgoing MT-SMS transaction
+	 *	The fields are separated by a Z and are using 32 digit numbering (as opposed to "standard" decimal).
+	 * 
+	 * The returned link has the following format:
+	 * 	http://{DOMAIN}/base_convert({TXN CREATED}, 10, 32)Zbase_convert({TXN ID}, 10, 32)
+	 * 
+	 * A new log entry is created in the Message Log with the constructed link under state "Link Constructed"
+	 * 
+	 * @see 	General::newMessage()
+	 * @see 	Constants::iCONST_LINK_STATE
+	 *
+	 * @param 	integer $txnid 	ID of the Transaction that the Payment Link should be constructed for
+	 * @param 	integer $oid 	GoMobile's ID for the Customer's Mobile Network Operator
+	 * @param 	string $dir 	Directory where the Customer should start his mPoint Flow
+	 * @return 	string
+	 */
+	public function constLink($txnid, $oid, $dir)
+	{
+		$sql = "SELECT Extract('epoch' from created) AS timestamp
+				FROM Log.Transaction_Tbl
+				WHERE id = ". intval($txnid);
+//		echo $sql ."\n";
+		$RS = $this->getDBConn()->getName($sql);
+		
+		$sLink = "http://";
+		// Customer's Operator is Sprint
+		if ($oid == 20004) { $sLink .= sSPRINT_MPOINT_DOMAIN; }
+		else { $sLink .= sDEFAULT_MPOINT_DOMAIN; }
+		
+		$sLink .= "/". $dir ."/". base_convert(intval($RS["TIMESTAMP"]), 10, 32) ."Z". base_convert($txnid, 10, 32);
+		
+		$this->newMessage($txnid, Constants::iCONST_LINK_STATE, $sLink);
+		
+		return $sLink;
+	}
+	
+	/**
+	 * Constructs an MT and sends it to GoMobile.
+	 * Prior to sending the message the method will updated the provided Connection Info object with the Client's username / password for GoMobile.
+	 * Additionally the method will determine from the customer's Mobile Network Operator whether to send an MT-WAP Push (default) or an MT-SMS 
+	 * with the link embedded.
+	 * The method will throw an mPointException with an error code in the following scenarios:
+	 * 	1011. Operator not supported
+	 * 	1012. Message rejected by GoMobile
+	 * 	1013. Unable to connect to GoMobile
+	 * 
+	 * @see 	GoMobileClient
+	 * @see 	Constants::iMT_SMS_TYPE
+	 * @see 	Constants::iMT_WAP_PUSH_TYPE
+	 * @see 	Constants::iMT_PRICE
+	 * @see 	General::newMessage()
+	 *
+	 * @param 	GoMobileConnInfo $oCI 	Connection Info required to communicate with GoMobile
+	 * @param 	TxnInfo $oTI 			Data Object for the Transaction for which an MT with the payment link should be send out
+	 * @param 	string $url 			Absolute URL to mPoint that will be sent to the customer
+	 * @throws 	mPointException
+	 */
+	public function sendLink(GoMobileConnInfo &$oCI, TxnInfo &$oTI, $url)
+	{	
+		switch ($oTI->getOperator() )
+		{
+		case (20002):	// Verizon Wireless - USA
+		case (20005):	// Nextel - USA
+		case (20006):	// Boost - USA
+		case (20007):	// Alltel - USA
+		case (20010):	// US Cellular - USA
+			$this->newMessage($oTI->getID(), Constants::iUNSUPPORTED_OPERATOR, var_export($obj_MsgInfo, true) );
+			throw new mPointException("Operator: ". $oTI->getOperator() ." not supported", 1011);
+			break;
+		case (20004):	// Sprint - USA
+		case (13003):	// 3 - UK
+			$sBody = $this->getText()->_("mPoint - Embedded link Indication") ."\n". $url;
+			// Instantiate Message Object for holding the message data which will be sent to GoMobile
+			$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $oTI->getClientConfig()->getCountryConfig()->getID(), $oTI->getOperator(), $oTI->getClientConfig()->getCountryConfig()->getChannel(), $oTI->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getAddress(), $sBody);
+			break;
+		default:
+			// Instantiate Message Object for holding the message data which will be sent to GoMobile
+			$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_WAP_PUSH_TYPE, $oTI->getClientConfig()->getCountryConfig()->getID(), $oTI->getOperator(), $oTI->getClientConfig()->getCountryConfig()->getChannel(), $oTI->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getAddress(), $this->getText()->_("mPoint - WAP Push Indication"), $url);
+			break;
+		}
+		// Send Link to Customer
+		$this->sendMT($oCI, $obj_MsgInfo, $oTI);
+	}
 }
 ?>

@@ -109,7 +109,7 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 				$obj_ShopConfig = ShopConfig::produceConfig($_OBJ_DB, $obj_ClientConfig);
 			}
 			// Construct and send mPoint link for Payment Module
-			$sURL = $obj_mPoint->constLink($_POST['operator'], "pay");
+			$sURL = $obj_mPoint->constLink($obj_TxnInfo->getID(), $_POST['operator'], "pay");
 			$obj_mPoint->sendLink(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo, $sURL);
 			
 			$aMsgCds[1000] = "Success";

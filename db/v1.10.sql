@@ -45,6 +45,35 @@ INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 2 FROM System.Card_Tbl
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE System.PSPCard_Tbl TO mpoint;
 
 
+-- Table: SurePay_Tbl
+-- Configuration table for all SurePay modules for each Client
+CREATE TABLE Client.SurePay_Tbl
+(
+	id			SERIAL,
+	clientid	INT4,	-- Client ID
+	
+	resend		INT4,	-- Number of Minutes elapsed before the Payment Link will be resent
+	notify		INT4,	-- Number of Minutes elapsed after the Payment Link has been resent twice before Customer Service is notified
+	
+	email		VARCHAR(50),	-- E-Mail address to Customer Service
+
+	CONSTRAINT SurePay_PK PRIMARY KEY (id),
+	CONSTRAINT SurePay2Client_FK FOREIGN KEY (clientid) REFERENCES Client.Client_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT SurePay_UQ UNIQUE (clientid),
+	LIKE Template.General_Tbl INCLUDING DEFAULTS
+) WITHOUT OIDS;
+
+CREATE TRIGGER Update_SurePay
+BEFORE UPDATE
+ON Client.SurePay_Tbl FOR EACH ROW
+EXECUTE PROCEDURE Update_Table_Proc();
+
+-- Internal
+INSERT INTO Client.SurePay_Tbl (id, clientid, resend, notify, email) VALUES (0, 0, 0, 0, 'Internal');
+
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.SurePay_Tbl TO mpoint;
+
+
 -- Table: PricePoint_Tbl
 -- Definition table for all available Price Points in a given country
 -- The amount is in the smallest currency possible, i.e. cents, pence, øre etc.
@@ -185,3 +214,6 @@ UPDATE System.PSP_Tbl SET name = 'Cellpoint Mboile' WHERE id = 1;
 
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name) VALUES (10000, 1, 'CPMDemo');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100000, 1, '-1');
+
+INSERT INTO Client.SurePay_Tbl (clientid, resend, notify, email) VALUES (10000, 2, 10, 'jona@oismail.com');
+INSERT INTO Client.SurePay_Tbl (clientid, resend, notify, email) VALUES (10001, 2, 10, 'jona@oismail.com');

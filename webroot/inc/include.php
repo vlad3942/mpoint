@@ -98,7 +98,7 @@ new RemoteReport(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["iemendo"]), iOU
 // Web Request
 if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_SERVER['PHP_SELF']) == true)
 	&& eregi("/subscr/", $_SERVER['PHP_SELF']) == false && eregi("/callback/", $_SERVER['PHP_SELF']) == false
-	 && eregi("/callback/", $_SERVER['PHP_SELF']) == false&& empty($_SERVER['DOCUMENT_ROOT']) === false)
+	 && eregi("/surepay/", $_SERVER['PHP_SELF']) == false && empty($_SERVER['DOCUMENT_ROOT']) === false)
 {
 	// Start user session
 	new Session($aDB_CONN_INFO["session"], iOUTPUT_METHOD, sERROR_LOG);
