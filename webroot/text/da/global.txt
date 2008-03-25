@@ -287,8 +287,8 @@ msgstr @@@ Velkommen til mPoint @@@
 
 #: /api/classes/surepay.php:130
 msgid @@@ mPoint - Embedded link Resend Indication @@@
-msgstr @@@ Du har endnu ikke aktiveret dit link til mPoint.
-Aktiver venligst nedenstående link for at færdiggøre din betaling til {CLIENT} @@@
+msgstr @@@ Du har endnu ikke aktiveret dit link til {CLIENT}.
+Aktiver venligst nedenstående link @@@
 
 #: /api/classes/surepay.php:150
 msgid @@@ SurePay Notification - Subject @@@
@@ -296,11 +296,14 @@ msgstr @@@ mPoint betalings link for ordre: {ORDERID} er ikke blevet aktiveret @
 
 #: /api/classes/surepay.php:154
 msgid @@@ SurePay Notification - Body @@@
-msgstr @@@ mPoint betalings link er ikke blevet aktiveret
+msgstr @@@ Nedenstående kunde har endnu ikke aktiveret sit betalings til mPoint betalings
 Mobil Nr: {ADDRESS}
 mPoint ID: {MPOINTID}
 Ordre Nr: {ORDERID}
 Pris: {PRICE}
 Ordre oprettet: {TIMESTAMP}
+
+Vi anbefaler at kunden kontaktes og betalingen færddigøres manuelt.
+
 Tak fordi i benytter SurePay @@@
 

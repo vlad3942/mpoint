@@ -1,0 +1,1 @@
+* * * * * lynx -dump http://mpoint.cellpointmobile.com/surepay/monitor.php >> /var/log/mPoint/surepay.log

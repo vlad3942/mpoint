@@ -287,8 +287,8 @@ msgstr @@@ Welcome to mPoint @@@
 
 #: /api/classes/surepay.php:130
 msgid @@@ mPoint - Embedded link Resend Indication @@@
-msgstr @@@ We have detected that you haven't accessed the link to mPoint.
-Please activate the link below to complete your payment to {CLIENT} @@@
+msgstr @@@ We have detected that you haven't accessed the link for {CLIENT}.
+Please activate the link below @@@
 
 #: /api/classes/surepay.php:150
 msgid @@@ SurePay Notification - Subject @@@
@@ -296,11 +296,14 @@ msgstr @@@ mPoint payment link for Order: {ORDERID} has not yet been accessed @@
 
 #: /api/classes/surepay.php:154
 msgid @@@ SurePay Notification - Body @@@
-msgstr @@@ mPoint payment link has not yet been accessed
+msgstr @@@ The following customer hasn't activated the mPoint payment link
 Mobile No: {ADDRESS}
 mPoint ID: {MPOINTID}
 Order No: {ORDERID}
 Price: {PRICE} 
 Order created: {TIMESTAMP}
+
+We recommend that you contact this customer directly and complete the payment process manually.
+
 Thank you for using SurePay @@@
 
