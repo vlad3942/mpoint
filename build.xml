@@ -1,6 +1,6 @@
 <project name="mPoint" default="deploy" basedir=".">
 	<target name="init">
-		<property name="version" value="v1.00" />
+		<property name="version" value="v1.10" />
 		<property name="baseDir" value="/Temp/mPoint" />
 		
 		<property name="sourceDir" value="${baseDir}/temp" />

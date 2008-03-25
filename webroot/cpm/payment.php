@@ -29,14 +29,15 @@ $obj_mPoint = new CellpointMobile($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'])
 try
 {
 	// Send Billing SMS through GoMobile
-	$obj_mPoint->sendBillingSMS(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
-	
+	$obj_MsgInfo = $obj_mPoint->sendBillingSMS(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
+
 	ignore_user_abort(true);
 	// Re-Direct customer
 	header("Content-Length: 0");
 	header("location: http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?". session_name() ."=". session_id() );
 	header("Connection: close");
 	flush();
+
 	// Initialise Callback to Client
 	$obj_mPoint->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), $obj_MsgInfo);
 }

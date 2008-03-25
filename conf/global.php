@@ -146,7 +146,7 @@ $aGM_CONN_INFO["logpath"] = sLOG_PATH;
 $aGM_CONN_INFO["mode"] = 1;
 
 $aCPM_CONN_INFO["protocol"] = "http";
-$aCPM_CONN_INFO["host"] = "CPM.localhost";
+$aCPM_CONN_INFO["host"] = "mpoint.localhost";
 $aCPM_CONN_INFO["port"] = 80;
 $aCPM_CONN_INFO["timeout"] = 20;
 $aCPM_CONN_INFO["path"] = "/callback/cpm.php";

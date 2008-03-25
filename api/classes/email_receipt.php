@@ -53,10 +53,10 @@ class EMailReceipt extends General
 	public function constHeaders()
 	{
 		// Construct Mail headers
-		$sHeaders = "To: ". $this->_obj_TxnInfo->getEMail() ."\n";
-		$sHeaders .= "From: mPoint <no-reply@cellpointmobile.com>" ."\n";
-		$sHeaders .= "Reply-To: no-reply@cellpointmobile.com" ."\n";
-		$sHeaders .= "Content-Type: text/plain" ."\n";
+//		$sHeaders = 'To: '. $this->_obj_TxnInfo->getEMail() ."\n";
+		$sHeaders = 'From: "mPoint" <no-reply@cellpointmobile.com>' ."\n";
+		$sHeaders .= 'Reply-To: no-reply@cellpointmobile.com' ."\n";
+		$sHeaders .= 'Content-Type: text/plain' ."\n";
 		
 		return $sHeaders;
 	}

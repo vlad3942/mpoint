@@ -259,7 +259,7 @@ Sælger: {CLIENT}
 Order Nr: {ORDERID}
 Pris: {PRICE} @@@
 
-#: /api/classes/cpm.php:31
+#: /api/classes/cpm.php:32
 msgid @@@ Billing SMS @@@
 msgstr @@@ Tak fordi du brugte mPoint, vi har trukket {PRICE} fra din Mobil Regning. @@@
 

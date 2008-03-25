@@ -20,6 +20,7 @@ class CellpointMobile extends Callback
 	 * Constructs and sends the Billing SMS through GoMobile.
 	 *
 	 * @param 	GoMobileConnInfo $oCI 	Connection Info required to communicate with GoMobile
+	 * @return 	SMS
 	 */
 	public function sendBillingSMS(GoMobileConnInfo &$oCI)
 	{
@@ -28,12 +29,14 @@ class CellpointMobile extends Callback
 		else { $iAmount = 0; }
 
 		// Construct body for the Premium SMS
-		$sBody = str_replace("{PRICE", General::formatAmount($this->getTxnInfo()->getClientConfig()->getCountryConfig(), $this->getTxnInfo()->getAmount() ), $this->getText()->_("Billing SMS") );
+		$sBody = str_replace("{PRICE}", General::formatAmount($this->getTxnInfo()->getClientConfig()->getCountryConfig(), $this->getTxnInfo()->getAmount() ), $this->getText()->_("Billing SMS") );
 		
 		// Create Premium MT-SMS
 		$obj_MsgInfo = GoMobileMessage::produceMessage(2, $this->getTxnInfo()->getClientConfig()->getCountryConfig()->getID(), $this->getTxnInfo()->getOperator(), $this->getTxnInfo()->getClientConfig()->getCountryConfig()->getChannel(), $this->getTxnInfo()->getClientConfig()->getKeywordConfig()->getKeyword(), $iAmount, $this->getTxnInfo()->getAddress(), $sBody);
 		
-		$this->sendMT($oCI, $obj_MsgInfo, $this->getTxnInfo());
+		$this->sendMT($oCI, $obj_MsgInfo, $this->getTxnInfo() );
+		
+		return $obj_MsgInfo;
 	}
 	
 	/**
@@ -50,6 +53,7 @@ class CellpointMobile extends Callback
 		$obj_HTTP->connect();
 		$obj_HTTP->send($this->constHeaders(), $b);
 		$obj_HTTP->disConnect();
+		var_dump($obj_HTTP);
 	}
 }
 ?>

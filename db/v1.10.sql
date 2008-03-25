@@ -70,6 +70,83 @@ INSERT INTO System.PricePoint_Tbl (id, countryid, amount) VALUES (0, 0, 0);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE System.PricePoint_Tbl TO mpoint;
 
+-- Denmark
+INSERT INTO System.PricePoint_Tbl (id, countryid, amount) VALUES (-10, 10, -1);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 0);
+--INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 50);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 100);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 150);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 200);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 250);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 300);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 350);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 400);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 450);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 500);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 550);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 600);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 650);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 700);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 750);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 800);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 850);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 900);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 950);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 1000);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 1100);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 1200);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 1300);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 1400);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 1500);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 1600);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 1700);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 1800);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 1900);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 2000);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 2100);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 2200);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 2300);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 2400);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 2500);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 2600);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 2700);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 2800);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 2900);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 3000);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 3500);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 3900);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 4000);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 4500);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 4900);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 5000);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 5500);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 5900);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 6000);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 6500);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 6900);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 7000);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (10, 7500);
+-- Sweden
+--INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (11, 0);
+--INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (11, 50);
+-- USA
+INSERT INTO System.PricePoint_Tbl (id, countryid, amount) VALUES (-20, 20, -1);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (20, 0);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (20, 30);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (20, 50);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (20, 99);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (20, 100);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (20, 199);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (20, 249);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (20, 299);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (20, 399);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (20, 499);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (20, 599);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (20, 699);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (20, 799);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (20, 899);
+INSERT INTO System.PricePoint_Tbl (countryid, amount) VALUES (20, 999);
+
 
 -- Table: CardPricing_Tbl
 -- Definition table for defining which Price Points a Credit Card accepts.
@@ -104,10 +181,7 @@ INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (2001, 'Payment reject
 
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10000, 10, 1);
 
-UPDATE System.PSP_Tbl SET name = 'DIBS', id = 10 WHERE id = 1;
-UPDATE System.PSP_Tbl SET name = 'Cellpoint Mboile', id = 1 WHERE id = 2;
-UPDATE System.PSP_Tbl SET name = 'DIBS', id = 11 WHERE id = 10;
+UPDATE System.PSP_Tbl SET name = 'Cellpoint Mboile' WHERE id = 1;
 
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name) VALUES (10000, 1, 'CPMDemo');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100000, 1, '-1');
-
