@@ -7,7 +7,7 @@
  * @link http://www.cellpointmobile.com
  * @package Billing
  * @subpackage CellpointMobile
- * @version 1.0
+ * @version 1.01
  */
 
 /**
@@ -47,13 +47,12 @@ class CellpointMobile extends Callback
 	 */
 	public function initCallback(HTTPConnInfo &$oCI, SMS &$oMI)
 	{
-		$b = "mpointid=". $this->getTxnInfo()->getID() ."&gomobileid=". $oMI->getGoMobileID() ."&language=". $this->getTxnInfo()->getLanguage() ."&status=". $oMI->getReturnCodes();
+		$b = "mpoint-id=". $this->getTxnInfo()->getID() ."&gomobile-id=". $oMI->getGoMobileID() ."&language=". $this->getTxnInfo()->getLanguage() ."&status=". $oMI->getReturnCodes();
 
 		$obj_HTTP = new HTTPClient(new Template(), $oCI);
 		$obj_HTTP->connect();
 		$obj_HTTP->send($this->constHeaders(), $b);
 		$obj_HTTP->disConnect();
-		var_dump($obj_HTTP);
 	}
 }
 ?>

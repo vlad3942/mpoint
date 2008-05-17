@@ -9,7 +9,7 @@
 		<meta http-equiv="Cache-Control" content="max-age=86400" />
 		<meta http-equiv="Content-Style-Type" content="text/css" />	
 		<title><xsl:value-of select="/root/title" /></title>
-		<link href="{/root/transaction/css-url}" type="text/css" rel="stylesheet" media="handheld" />
+		<link href="{/root/transaction/css-url}" type="text/css" rel="stylesheet" />
 		<!-- Pre-load pages -->
 		<xsl:choose>
 			<!-- Select Credit Card -->

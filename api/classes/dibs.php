@@ -9,7 +9,7 @@
  * @link http://www.cellpointmobile.com
  * @package Callback
  * @subpackage DIBS
- * @version 1.0
+ * @version 1.01
  */
 
 /**
@@ -41,7 +41,7 @@ class DIBS extends Callback
 		// Client is configured to use mPoint's protocol
 		if ($this->getTxnInfo()->getClientConfig()->getMethod() == "mPoint")
 		{
-			parent::notifyClient($sid);
+			parent::notifyClient($sid, $_post["transact"]);
 		}
 		// Client is configured to use DIBS' protocol
 		else

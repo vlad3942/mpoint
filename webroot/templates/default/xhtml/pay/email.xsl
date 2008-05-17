@@ -29,7 +29,7 @@
 	
 	<div>
 		<br />
-		<a href="{func:constLink('accept.php')}"><xsl:value-of select="labels/back" /></a>
+		<a href="{func:constLink('/overview.php')}"><xsl:value-of select="labels/back" /></a>
 	</div>
 </xsl:template>
 

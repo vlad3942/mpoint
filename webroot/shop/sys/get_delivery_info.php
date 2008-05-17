@@ -26,7 +26,7 @@ $obj_Validator = new Validate($_SESSION['obj_TxnInfo']->getClientConfig() );
 
 $aMsgCds = array();
 	
-if ($obj_Validator->valAddress($_POST['address']) != 10) { $aMsgCds[] = $obj_mPoint->valAddress($_POST['address']) + 10; }
+if ($obj_Validator->valAddress($_POST['address']) != 10) { $aMsgCds[] = $obj_Validator->valAddress($_POST['address']) + 10; }
 
 // Success: Input Valid
 if (count($aMsgCds) == 0)

@@ -251,7 +251,7 @@ msgstr @@@ Terms & Conditions @@@
 msgid @@@ << Back @@@
 msgstr @@@ << Back @@@
 
-#: /api/classes/callback.php:188
+#: /api/classes/callback.php:193
 msgid @@@ mPoint - SMS Receipt @@@
 msgstr @@@ Thank you for using mPoint, your order details are:
 mPoint ID: {MPOINTID}
@@ -279,11 +279,11 @@ Price: {PRICE} @@@
 
 #: /api/classes/general.php:630
 msgid @@@ mPoint - Embedded link Indication @@@
-msgstr @@@ Welcome to mPoint, please activate the link below @@@
+msgstr @@@ Welcome to {CLIENT}, please activate the link below @@@
 
 #: /api/classes/general.php:636
 msgid @@@ mPoint - WAP Push Indication @@@
-msgstr @@@ Welcome to mPoint @@@
+msgstr @@@ Welcome to {CLIENT} @@@
 
 #: /api/classes/surepay.php:130
 msgid @@@ mPoint - Embedded link Resend Indication @@@

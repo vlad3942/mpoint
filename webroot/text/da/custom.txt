@@ -174,7 +174,7 @@ msgid @@@ Products - 12 @@@
 msgstr @@@ Antallet for alle valgte produkter er 0. Ret venligst antallet for hvert produkt i tekst feltet til venstre? @@@
 
 msgid @@@ Delivery - 10 @@@
-msgstr @@@ Vi kunne ikke finde nogen adresse på dit nummer. @@@
+msgstr @@@ Vi kunne ikke finde nogen adresse på dit nr: {ADDRESS} @@@
 msgid @@@ Delivery - 11 @@@
 msgstr @@@ Du har ikke angivet et nummer @@@
 msgid @@@ Delivery - 12 @@@

@@ -99,7 +99,7 @@ INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1031, 'E-Mail Rejecte
 
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1990, 'Callback Accepted', 'Callback', 'send');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1991, 'Callback Constructed', 'Callback', 'send');
-INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1992, 'Callback Conencted', 'Callback', 'send');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1992, 'Callback Connected', 'Callback', 'send');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1993, 'Callback Connection Failed', 'Callback', 'send');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1994, 'Callback Transmission Failed', 'Callback', 'send');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1995, 'Callback Rejeced', 'Callback', 'send');

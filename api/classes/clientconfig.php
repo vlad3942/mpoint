@@ -9,7 +9,7 @@
  * @link http://www.cellpointmobile.com
  * @package Config
  * @subpackage ClientConfig
- * @version 1.0
+ * @version 1.10
  */
 
 /**
@@ -142,6 +142,18 @@ class ClientConfig extends BasicConfig
 	 * @var integer
 	 */
 	private $_iMode;
+	/**
+	 * Boolean Flag indicating whether mPoint should use Auto Capture for the Client.
+	 *
+	 * @var boolean
+	 */
+	private $_bAutoCapture;
+	/**
+	 * Boolean Flag indicating whether mPoint should include the PSP's ID for the Payment in the Callback to the Client.
+	 *
+	 * @var boolean
+	 */
+	private $_bSendPSPID;
 	
 	/**
 	 * Default Constructor
@@ -166,8 +178,10 @@ class ClientConfig extends BasicConfig
 	 * @param 	string $mtd			The method used by mPoint when performing a Callback to the Client
 	 * @param 	string $terms 		Terms & Conditions for the Shop
 	 * @param 	integer $m 			Client mode: 0 = Production, 1 = Test Mode with prefilled card Info, 2 = Certification Mode
+	 * @param 	boolean $ac			Boolean Flag indicating whether Auto Capture should be used for the transactions
+	 * @param 	boolean $sp			Boolean Flag indicating whether the PSP's ID for the Payment should be included in the Callback
 	 */
-	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $aurl, $curl, $cburl, $ma, $l, $sms, $email, $mtd, $terms, $m)
+	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $aurl, $curl, $cburl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp)
 	{
 		parent::__construct($id, $name);
 		
@@ -194,6 +208,8 @@ class ClientConfig extends BasicConfig
 		
 		$this->_sTerms = trim($terms);
 		$this->_iMode = (integer) $m;
+		$this->_bAutoCapture = (bool) $ac;
+		$this->_bSendPSPID = (bool) $sp;
 	}
 	
 	/**
@@ -314,6 +330,18 @@ class ClientConfig extends BasicConfig
 	 * @return 	integer
 	 */
 	public function getMode() { return $this->_iMode; }
+	/**
+	 * Boolean Flag indicating whether mPoint should use Auto Capture for the Client.
+	 *
+	 * @return 	boolean
+	 */
+	public function useAutoCapture() { return $this->_bAutoCapture; }
+	/**
+	 * Boolean Flag indicating whether mPoint should include the PSP's ID for the Payment in the Callback to the Client.
+	 *
+	 * @return 	boolean
+	 */
+	public function sendPSPID() { return $this->_bSendPSPID; }
 	
 	public function toXML()
 	{
@@ -324,6 +352,7 @@ class ClientConfig extends BasicConfig
 		$xml .= '<css-url>'. htmlspecialchars($this->getCSSURL(), ENT_NOQUOTES) .'</css-url>';
 		$xml .= '<sms-receipt>'. General::bool2xml($this->_bSMSReceipt) .'</sms-receipt>';
 		$xml .= '<email-receipt>'. General::bool2xml($this->_bEmailReceipt) .'</email-receipt>';
+		$xml .= '<auto-capture>'. General::bool2xml($this->_bAutoCapture) .'</auto-capture>';
 		$xml .= '</client-config>';
 		
 		return $xml;
@@ -344,7 +373,7 @@ class ClientConfig extends BasicConfig
 		$sql = "SELECT Cl.id AS clientid, Cl.name AS client, Cl.flowid, Cl.username, Cl.passwd,
 					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl,
 					Cl.smsrcpt, Cl.emailrcpt, Cl.method,
-					Cl.maxamount, Cl.lang, Cl.terms, Cl.mode,
+					Cl.maxamount, Cl.lang, Cl.terms, Cl.mode, Cl.auto_capture, Cl.send_pspid,
 					C.id AS countryid, C.name AS country, C.currency, C.minmob, C.maxmob, C.channel,
 					C.priceformat, C.decimals, C.als, C.doi,
 					Acc.id AS accountid, Acc.name AS account, Acc.address,
@@ -366,7 +395,7 @@ class ClientConfig extends BasicConfig
 				GROUP BY Cl.id, Cl.name, Cl.flowid, Cl.username, Cl.passwd,
 					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl,
 					Cl.smsrcpt, Cl.emailrcpt, Cl.method,
-					Cl.maxamount, Cl.lang, Cl.terms, Cl.mode,
+					Cl.maxamount, Cl.lang, Cl.terms, Cl.mode, Cl.auto_capture, Cl.send_pspid,
 					C.id, C.name, C.currency, C.minmob, C.maxmob, C.channel,
 					C.priceformat, C.decimals, C.als, C.doi,
 					Acc.id, Acc.name, Acc.address,
@@ -403,7 +432,7 @@ class ClientConfig extends BasicConfig
 		$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["ADDRESS"]);
 		$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
 		
-		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], $RS["TERMS"], $RS["MODE"]);
+		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], $RS["TERMS"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"]);
 	}
 }
 ?>

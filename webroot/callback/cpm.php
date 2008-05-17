@@ -26,17 +26,17 @@ require_once(sCLASS_PATH ."/email_receipt.php");
 // Intialise Text Translation Object
 $_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $_POST['language'] ."/global.txt", sLANGUAGE_PATH . $_POST['language'] ."/custom.txt"), sSYSTEM_PATH, 0);
 
-$obj_mPoint = new Callback($_OBJ_DB, $_OBJ_TXT, TxnInfo::produceInfo($_POST['mpointid'], $_OBJ_DB) );
+$obj_mPoint = new Callback($_OBJ_DB, $_OBJ_TXT, TxnInfo::produceInfo($_POST['mpoint-id'], $_OBJ_DB) );
 
 // Success: Premium SMS accepted by GoMobile
-if ($_POST['gomobileid'] == 200)
+if ($_POST['status'] == 200)
 {
 	$iStatus = Constants::iPAYMENT_ACCEPTED_STATE;
 }
 // Error: Premium SMS rejected by GoMobile
 else { $iStatus = Constants::iPAYMENT_REJECTED_STATE; }
 // 
-$obj_mPoint->completeTransaction(Constants::iCPM_PSP, $_POST['gomobileid'], 10, $iStatus);
+$obj_mPoint->completeTransaction(Constants::iCPM_PSP, $_POST['gomobile-id'], 10, $iStatus);
 
 // Client has SMS Receipt enabled
 if ($obj_mPoint->getTxnInfo()->getClientConfig()->smsReceiptEnabled() === true)
@@ -52,6 +52,7 @@ if ($obj_mPoint->getTxnInfo()->getClientConfig()->emailReceiptEnabled() === true
 // Callback URL has been defined for Client
 if ($obj_mPoint->getTxnInfo()->getCallbackURL() != "")
 {
-	$obj_mPoint->notifyClient($iStatus);
+	$obj_mPoint->notifyClient($iStatus, $_POST['gomobile-id']);
+	$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST['gomobile-id']);
 }
 ?>

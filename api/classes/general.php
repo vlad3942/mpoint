@@ -10,7 +10,7 @@
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
  * @package General
- * @version 1.0
+ * @version 1.10
  */
 
 /* ==================== mPoint Exception Classes Start ==================== */
@@ -402,7 +402,7 @@ class General
 					address = ". floatval($oTI->getAddress() ) .", operatorid = ". $oTI->getOperator() .", email = '". $this->getDBConn()->escStr($oTI->getEMail() ) ."',
 					logourl = '". $this->getDBConn()->escStr($oTI->getLogoURL() ) ."', cssurl = '". $this->getDBConn()->escStr($oTI->getCSSURL() ) ."',
 					accepturl = '". $this->getDBConn()->escStr($oTI->getAcceptURL() ) ."', cancelurl = '". $this->getDBConn()->escStr($oTI->getCancelURL() ) ."',
-					callbackurl = '". $this->getDBConn()->escStr($oTI->getCallbackURL() ) ."', gomobileid = ". $oTI->getGoMobileID() ."
+					callbackurl = '". $this->getDBConn()->escStr($oTI->getCallbackURL() ) ."', gomobileid = ". $oTI->getGoMobileID() .", auto_capture = ". General::bool2xml($oTI->useAutoCapture() ) ."
 				WHERE id = ". $oTI->getID(); 
 //		echo $sql ."\n";
 		// Error: Unable to update Transaction
@@ -426,7 +426,7 @@ class General
 		$sql = "INSERT INTO Log.Message_Tbl
 					(txnid, stateid, data)
 				VALUES
-					(". intval($txnid) ." , ". intval($sid) .", '". $this->getDBConn()->escStr($data) ."')";
+					(". intval($txnid) ." , ". intval($sid) .", '". $this->getDBConn()->escStr(utf8_encode($data) ) ."')";
 //		echo $sql ."\n";
 		// Error: Unable to insert a new message for Transaction
 		if (is_resource($this->getDBConn()->query($sql) ) === false)
@@ -628,12 +628,15 @@ class General
 		case (20004):	// Sprint - USA
 		case (13003):	// 3 - UK
 			$sBody = $this->getText()->_("mPoint - Embedded link Indication") ."\n". $url;
+			$sBody = str_replace("{CLIENT}", $oTI->getClientConfig()->getName(), $sBody);
 			// Instantiate Message Object for holding the message data which will be sent to GoMobile
-			$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $oTI->getClientConfig()->getCountryConfig()->getID(), $oTI->getOperator(), $oTI->getClientConfig()->getCountryConfig()->getChannel(), $oTI->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getAddress(), $sBody);
+			$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $oTI->getClientConfig()->getCountryConfig()->getID(), $oTI->getOperator(), $oTI->getClientConfig()->getCountryConfig()->getChannel(), $oTI->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getAddress(), utf8_decode($sBody) );
 			break;
 		default:
+			$sIndication = $this->getText()->_("mPoint - WAP Push Indication");
+			$sIndication = str_replace("{CLIENT}", $oTI->getClientConfig()->getName(), $sIndication);
 			// Instantiate Message Object for holding the message data which will be sent to GoMobile
-			$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_WAP_PUSH_TYPE, $oTI->getClientConfig()->getCountryConfig()->getID(), $oTI->getOperator(), $oTI->getClientConfig()->getCountryConfig()->getChannel(), $oTI->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getAddress(), $this->getText()->_("mPoint - WAP Push Indication"), $url);
+			$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_WAP_PUSH_TYPE, $oTI->getClientConfig()->getCountryConfig()->getID(), $oTI->getOperator(), $oTI->getClientConfig()->getCountryConfig()->getChannel(), $oTI->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getAddress(), $sIndication, $url);
 			break;
 		}
 		// Send Link to Customer

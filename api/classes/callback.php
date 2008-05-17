@@ -7,7 +7,7 @@
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
  * @package Callback
- * @version 1.0
+ * @version 1.10
  */
 
 /* ==================== Callback Exception Classes Start ==================== */
@@ -80,6 +80,12 @@ class Callback extends General
 		if (is_resource($res) === false)
 		{
 			throw new CallbackException("Unable to complete log for Transaction: ". $this->_obj_TxnInfo->getID(), 1001);
+		}
+		
+		// Auto Capture enabled for Transaction
+		if ($this->_obj_TxnInfo->useAutoCapture() === true && $sid == Constants::iPAYMENT_ACCEPTED_STATE)
+		{
+			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
 		}
 	}
 	
@@ -156,8 +162,9 @@ class Callback extends General
 	 * @see 	Callback::getVariables()
 	 *
 	 * @param 	integer $sid 	Unique ID of the State that the Transaction terminated in
+	 * @param 	string $pspid 	The Payment Service Provider's (PSP) unique ID for the transaction
 	 */
-	public function notifyClient($sid)
+	public function notifyClient($sid, $pspid)
 	{
 		/* ----- Construct Body Start ----- */
 		$sBody = "";
@@ -168,7 +175,8 @@ class Callback extends General
 		$sBody .= "&currency=". urlencode($this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getCurrency() );
 		$sBody .= "&recipient=". urlencode($this->_obj_TxnInfo->getAddress() );
 		$sBody .= "&operator=". urlencode($this->_obj_TxnInfo->getOperator() );
-		$sBody .= "&". $this->getVariables();
+		if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true) { $sBody .= "&pspid=". urlencode($pspid); }
+		$sBody .= $this->getVariables();
 		/* ----- Construct Body End ----- */
 		
 		$this->send($sBody);

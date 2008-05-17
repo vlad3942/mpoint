@@ -29,22 +29,22 @@ require_once(sCLASS_PATH ."/mobile_web.php");
 $aMsgCds = array();
 
 // Set Global Defaults
-if (array_key_exists("account", $_POST) === false) { $_POST['account'] = -1; }
-if (array_key_exists("orderid", $_POST) === false) { $_POST['orderid'] = null; }
+if (array_key_exists("account", $_REQUEST) === false) { $_REQUEST['account'] = -1; }
+if (array_key_exists("orderid", $_REQUEST) === false) { $_REQUEST['orderid'] = null; }
 
 // Validate basic information
-if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
+if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) == 100)
 {
-	$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $_POST['clientid'], $_POST['account']);
+	$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']);
 	
 	// Set Client Defaults
-	if (array_key_exists("operator", $_POST) === false) { $_POST['operator'] = $obj_ClientConfig->getCountryConfig()->getID() * 1000; }
-	if (array_key_exists("logo-url", $_POST) === false) { $_POST['logo-url'] = $obj_ClientConfig->getLogoURL(); }
-	if (array_key_exists("css-url", $_POST) === false) { $_POST['css-url'] = $obj_ClientConfig->getCSSURL(); }
-	if (array_key_exists("accept-url", $_POST) === false) { $_POST['accept-url'] = $obj_ClientConfig->getAcceptURL(); }
-	if (array_key_exists("cancel-url", $_POST) === false) { $_POST['cancel-url'] = $obj_ClientConfig->getCancelURL(); }
-	if (array_key_exists("callback-url", $_POST) === false) { $_POST['callback-url'] = $obj_ClientConfig->getCallbackURL(); }
-	if (array_key_exists("language", $_POST) === false) { $_POST['language'] = $obj_ClientConfig->getLanguage(); }
+	if (array_key_exists("operator", $_REQUEST) === false) { $_REQUEST['operator'] = $obj_ClientConfig->getCountryConfig()->getID() * 1000; }
+	if (array_key_exists("logo-url", $_REQUEST) === false) { $_REQUEST['logo-url'] = $obj_ClientConfig->getLogoURL(); }
+	if (array_key_exists("css-url", $_REQUEST) === false) { $_REQUEST['css-url'] = $obj_ClientConfig->getCSSURL(); }
+	if (array_key_exists("accept-url", $_REQUEST) === false) { $_REQUEST['accept-url'] = $obj_ClientConfig->getAcceptURL(); }
+	if (array_key_exists("cancel-url", $_REQUEST) === false) { $_REQUEST['cancel-url'] = $obj_ClientConfig->getCancelURL(); }
+	if (array_key_exists("callback-url", $_REQUEST) === false) { $_REQUEST['callback-url'] = $obj_ClientConfig->getCallbackURL(); }
+	if (array_key_exists("language", $_REQUEST) === false) { $_REQUEST['language'] = $obj_ClientConfig->getLanguage(); }
 	
 	$obj_mPoint = new MobileWeb($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 	$iTxnID = $obj_mPoint->newTransaction(Constants::iWEB_PURCHASE_TYPE);
@@ -52,16 +52,16 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 	/* ========== Input Validation Start ========== */
 	$obj_Validator = new Validate($obj_ClientConfig);
 	
-	if ($obj_Validator->valAddress($_POST['recipient']) != 10) { $aMsgCds[$obj_Validator->valAddress($_POST['recipient']) + 30] = $_POST['recipient']; }
-	if ($obj_Validator->valOperator($_POST['operator']) != 10) { $aMsgCds[$obj_Validator->valOperator($_POST['operator']) + 40] = $_POST['operator']; }
-	if ($obj_Validator->valAmount($_POST['amount']) != 10) { $aMsgCds[$obj_Validator->valAmount($_POST['amount']) + 50] = $_POST['amount']; }
+	if ($obj_Validator->valAddress($_REQUEST['recipient']) != 10) { $aMsgCds[$obj_Validator->valAddress($_REQUEST['recipient']) + 30] = $_REQUEST['recipient']; }
+	if ($obj_Validator->valOperator($_REQUEST['operator']) != 10) { $aMsgCds[$obj_Validator->valOperator($_REQUEST['operator']) + 40] = $_REQUEST['operator']; }
+	if ($obj_Validator->valAmount($_REQUEST['amount']) != 10) { $aMsgCds[$obj_Validator->valAmount($_REQUEST['amount']) + 50] = $_REQUEST['amount']; }
 	// Validate URLs
-	if ($obj_Validator->valURL($_POST['logo-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_POST['logo-url']) + 70] = $_POST['logo-url']; }
-	if ($obj_Validator->valURL($_POST['css-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_POST['css-url']) + 80]= $_POST['css-url']; }
-	if ($obj_Validator->valURL($_POST['accept-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_POST['accept-url']) + 90] = $_POST['accept-url']; }
-	if ($obj_Validator->valURL($_POST['cancel-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_POST['cancel-url']) + 100] = $_POST['cancel-url']; }
-	if ($obj_Validator->valURL($_POST['callback-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_POST['callback-url']) + 110] = $_POST['callback-url']; }
-	if ($obj_Validator->valLanguage($_POST['language']) != 10) { $aMsgCds[$obj_Validator->valLanguage($_POST['language']) + 130] = $_POST['language']; }
+	if ($obj_Validator->valURL($_REQUEST['logo-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['logo-url']) + 70] = $_REQUEST['logo-url']; }
+	if ($obj_Validator->valURL($_REQUEST['css-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['css-url']) + 80]= $_REQUEST['css-url']; }
+	if ($obj_Validator->valURL($_REQUEST['accept-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['accept-url']) + 90] = $_REQUEST['accept-url']; }
+	if ($obj_Validator->valURL($_REQUEST['cancel-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['cancel-url']) + 100] = $_REQUEST['cancel-url']; }
+	if ($obj_Validator->valURL($_REQUEST['callback-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['callback-url']) + 110] = $_REQUEST['callback-url']; }
+	if ($obj_Validator->valLanguage($_REQUEST['language']) != 10) { $aMsgCds[$obj_Validator->valLanguage($_REQUEST['language']) + 130] = $_REQUEST['language']; }
 	/* ========== Input Validation End ========== */
 	
 	// Success: Input Valid
@@ -70,14 +70,14 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 		try
 		{
 			// Update Transaction State
-			$_POST['typeid'] = Constants::iWEB_PURCHASE_TYPE;
-			$_POST['gomobileid'] = -1;
-			$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, var_export($_POST, true) );
+			$_REQUEST['typeid'] = Constants::iWEB_PURCHASE_TYPE;
+			$_REQUEST['gomobileid'] = -1;
+			$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, var_export($_REQUEST, true) );
 			// Update Transaction Log
-			$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $_POST);
+			$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $_REQUEST);
 			$obj_mPoint->logTransaction($_SESSION['obj_TxnInfo']);
 			// Log additional data
-			$obj_mPoint->logClientVars($_POST);
+			$obj_mPoint->logClientVars($_REQUEST);
 			
 			// Client is using the Physical Product Flow, ensure Shop has been Configured
 			if ($_SESSION['obj_TxnInfo']->getClientConfig()->getFlowID() == Constants::iPHYSICAL_FLOW)
@@ -106,7 +106,7 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 // Error: Basic information is invalid
 else
 {
-	$aMsgCds[Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account'])+10] = "Client: ". $_POST['clientid'] .", Account: ". $_POST['account'];
+	$aMsgCds[Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account'])+10] = "Client: ". $_REQUEST['clientid'] .", Account: ". $_REQUEST['account'];
 }
 
 // Instantiate data object with the User Agent Profile for the customer's mobile device.

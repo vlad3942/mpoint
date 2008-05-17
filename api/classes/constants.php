@@ -9,7 +9,7 @@
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
  * @package Constants
- * @version 1.0
+ * @version 1.01
  */
 
 /**
@@ -119,10 +119,15 @@ abstract class Constants
 	 */
 	const iPAYMENT_ACCEPTED_STATE = 2000;
 	/**
+	 * Defines the ID of the State that indicates that the payment has been successfully captured by the Payment Service Provider (PSP)
+	 *
+	 */
+	const iPAYMENT_CAPTURED_STATE = 2001;
+	/**
 	 * Defines the ID of the State that indicates that the payment was rejected by the Payment Service Provider (PSP)
 	 *
 	 */
-	const iPAYMENT_REJECTED_STATE = 2001;
+	const iPAYMENT_REJECTED_STATE = 2010;
 	
 	/**
 	 * Defines GoMobile's type identifier for an MT-SMS message

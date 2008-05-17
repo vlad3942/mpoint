@@ -8,7 +8,7 @@
  * @link http://www.cellpointmobile.com
  * @package Info
  * @subpackage TxnInfo
- * @version 1.0
+ * @version 1.10
  */
 
 /* ==================== Transaction Information Exception Classes Start ==================== */
@@ -127,6 +127,12 @@ class TxnInfo
 	 */
 	private $_iMode;
 	/**
+	 * Boolean Flag indicating whether mPoint should use Auto Capture for the Transaction.
+	 *
+	 * @var boolean
+	 */
+	private $_bAutoCapture;
+	/**
 	 * GoMobile's Unique ID for the MO-SMS that was used to start the payment transaction.
 	 * The ID is used for payment via Premium SMS.
 	 *
@@ -152,9 +158,10 @@ class TxnInfo
 	 * @param 	string $cburl 		Absolute URL to the Client's Back Office where mPoint should send the Payment Status to
 	 * @param 	string $l 			The language that all payment pages should be rendered in by default for the Client
 	 * @param 	integer $m 			The Client Mode in which the Transaction should be Processed
+	 * @param 	boolean $ac			Boolean Flag indicating whether Auto Capture should be used for the transaction
 	 * @param 	integer $gmid 		GoMobile's Unique ID for the MO-SMS that was used to start the payment transaction. Defaults to -1.
 	 */
-	public function __construct($id, $tid, ClientConfig &$oCC, $a, $orid, $addr, $oid, $email, $lurl, $cssurl, $aurl, $curl, $cburl, $l, $m, $gmid=-1)
+	public function __construct($id, $tid, ClientConfig &$oCC, $a, $orid, $addr, $oid, $email, $lurl, $cssurl, $aurl, $curl, $cburl, $l, $m, $ac, $gmid=-1)
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -164,6 +171,7 @@ class TxnInfo
 		$this->_sOrderID =  trim($orid);
 		$this->_sAddress = trim($addr);
 		$this->_iOperatorID =  (integer) $oid;
+		$this->_sEMail = trim($email);
 		
 		$this->_sLogoURL = trim($lurl);
 		$this->_sCSSURL = trim($cssurl);
@@ -173,6 +181,7 @@ class TxnInfo
 		
 		$this->_sLanguage = trim($l);
 		$this->_iMode = (integer) $m;
+		$this->_bAutoCapture = (bool) $ac;
 		$this->_iGoMobileID = (integer) $gmid;
 	}
 	
@@ -279,6 +288,12 @@ class TxnInfo
 	 */
 	public function getMode() { return $this->_iMode; }
 	/**
+	 * Boolean Flag indicating whether mPoint should use Auto Capture for the Client.
+	 *
+	 * @return 	boolean
+	 */
+	public function useAutoCapture() { return $this->_bAutoCapture; }
+	/**
 	 * Returns the GoMobile's Unique ID for the MO-SMS that was used to start the payment transaction.
 	 * The ID is used for payment via Premium SMS.
 	 *
@@ -317,6 +332,7 @@ class TxnInfo
 	 *		<cancel-url>{ABSOLUTE URL TO WHERE THE CUSTOMER SHOULD BE DIRECTED IF THE TRANSACTION IS CANCELLED}</accept-url>
 	 *		<callback-url>{ABSOLUTE URL TO WHERE MPOINT SHOULD SEND THE PAYMENT STATUS}</callback-url>
 	 *		<language>{LANGUAGE THAT ALL PAYMENT PAGES SHOULD BE TRANSLATED INTO}</language>
+	 * 		<auto-capture>{FLAG INDICATING WHETHER MPOINT SHOULD USE AUTO CAPTURE FOR THE TRANSACTION}</auto-capture>
 	 *	</transaction>
 	 *
 	 * @see 	iCLIENT_LOGO_SCALE
@@ -360,6 +376,7 @@ class TxnInfo
 		$xml .= '<cancel-url>'. htmlspecialchars($this->_sCancelURL, ENT_NOQUOTES) .'</cancel-url>';
 		$xml .= '<callback-url>'. htmlspecialchars($this->_sCallbackURL, ENT_NOQUOTES) .'</callback-url>';
 		$xml .= '<language>'. $this->_sLanguage .'</language>';
+		$xml .= '<auto-capture>'. General::bool2xml($this->_bAutoCapture) .'</auto-capture>';
 		$xml .= '</transaction>';
 		
 		return $xml;
@@ -403,16 +420,17 @@ class TxnInfo
 			if (array_key_exists("callback-url", $misc) === false) { $misc["callback-url"] = $obj->getCallbackURL(); }
 			if (array_key_exists("language", $misc) === false) { $misc["language"] = $obj->getLanguage(); }
 			if (array_key_exists("mode", $misc) === false) { $misc["mode"] = $obj->getMode(); }
+			if (array_key_exists("auto-capture", $misc) === false) { $misc["auto-capture"] = $obj->useAutoCapture(); }
 			if (array_key_exists("gomobileid", $misc) === false) { $misc["gomobileid"] = $obj->getGoMobileID(); }
 			
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client_config"], $misc["amount"], $misc["orderid"], $misc["recipient"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $misc["mode"], $misc["gomobileid"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client_config"], $misc["amount"], $misc["orderid"], $misc["recipient"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["gomobileid"]);
 			break;
 		case ($obj instanceof ClientConfig):	// Instantiate from array of Client Input
 			if (array_key_exists("email", $misc) === false) { $misc["email"] = ""; }
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["amount"], $misc["orderid"], $misc["recipient"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $obj->getMode(), $misc["gomobileid"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["amount"], $misc["orderid"], $misc["recipient"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["gomobileid"]);
 			break;
 		case ($obj instanceof RDB):				// Instantiate from Transaction Log
-			$sql = "SELECT id, typeid, amount, orderid, address, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, mode, gomobileid,
+			$sql = "SELECT id, typeid, amount, orderid, address, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, mode, auto_capture, gomobileid,
 						clientid, accountid, keywordid
 					FROM Log.Transaction_Tbl
 					WHERE id = ". intval($id);
@@ -425,7 +443,7 @@ class TxnInfo
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($obj, $RS["CLIENTID"], $RS["ACCOUNTID"], $RS["KEYWORDID"]);
 				
-				$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $RS["AMOUNT"], $RS["ORDERID"], $RS["ADDRESS"], $RS["OPERATORID"], $RS["EMAIL"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["LANG"], $RS["MODE"], $RS["GOMOBILEID"]);
+				$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $RS["AMOUNT"], $RS["ORDERID"], $RS["ADDRESS"], $RS["OPERATORID"], $RS["EMAIL"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["GOMOBILEID"]);
 				$obj_TxnInfo->setEMail($RS["EMAIL"]);
 			}
 			// Error: Transaction not found

@@ -34,7 +34,7 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT Max(id
 INSERT INTO Client.Client_Tbl (countryid, flowid, name, username, passwd, maxamount, lang, logourl, cssurl, callbackurl, accepturl, cancelurl, terms, mode) VALUES (10, 1, 'DSB', 'CPMDemo', 'DEMOisNO_2', 1000000, 'da', 'http://demo.ois-inc.com/mpoint/_test/dsb.gif', 'http://demo.ois-inc.com/mpoint/_test/dsb.css', 'http://demo.ois-inc.com/mpoint/_test/callback.php', '', '', 'DSB Terms and Conditions', 1);
 INSERT INTO Client.Account_Tbl (clientid, name, address) SELECT Max(id), 'Default', '' FROM Client.Client_Tbl;
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid) SELECT Max(Cl.id), C.id FROM System.Card_Tbl C, Client.Client_Tbl Cl WHERE C.id > 0 GROUP BY C.id;
---INSERT INTO Client.Keyword_Tbl (clientid, name, standard) SELECT Max(id), 'ILOOP', true FROM Client.Client_Tbl;
+INSERT INTO Client.Keyword_Tbl (clientid, name, standard) SELECT Max(id), 'MPOINT', true FROM Client.Client_Tbl;
 INSERT INTO Client.Product_Tbl (keywordid, name, quantity, price, logourl) VALUES (3, 'DSB Wildcard', 3, 20000, 'http://demo.ois-inc.com/mpoint/_test/wildcard.jpg');
 INSERT INTO Client.Shop_Tbl (clientid, keywordid, shipping, ship_cost, free_ship, del_date) SELECT Max(CL.id), 3, 'Post Danmark', 2900, 50000, true FROM Client.Client_Tbl Cl;
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name) SELECT Max(id), 2, '4216310' FROM Client.Client_Tbl;

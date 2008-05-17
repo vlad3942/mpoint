@@ -104,7 +104,7 @@ msgstr @@@ Vælg Kort @@@
 
 #: /webroot/pay/card.php:41
 msgid @@@ Step 2 of 3 @@@
-msgstr @@@ Step 2 of 3 @@@
+msgstr @@@ Trin 2 af 3 @@@
 
 #: /webroot/pay/card.php:42
 msgid @@@ Please select your Credit Card @@@
@@ -116,7 +116,7 @@ msgstr @@@ E-Mail Kvittering @@@
 
 #: /webroot/pay/email.php:40
 msgid @@@ Step 1 of 3 @@@
-msgstr @@@ Step 1 of 3 @@@
+msgstr @@@ Trin 1 af 3 @@@
 
 #: /webroot/pay/email.php:41
 msgid @@@ Please enter your e-mail address below @@@
@@ -251,7 +251,7 @@ msgstr @@@ Handelsbetingelser @@@
 msgid @@@ << Back @@@
 msgstr @@@ << Tilbage @@@
 
-#: /api/classes/callback.php:188
+#: /api/classes/callback.php:193
 msgid @@@ mPoint - SMS Receipt @@@
 msgstr @@@ Tak fordi du brugte mPoint, dine ordre informationer er:
 mPoint ID: {MPOINTID}
@@ -279,11 +279,11 @@ Pris: {PRICE} @@@
 
 #: /api/classes/general.php:630
 msgid @@@ mPoint - Embedded link Indication @@@
-msgstr @@@ Velkommen til mPoint, aktiver venligst nedenstående link @@@
+msgstr @@@ Velkommen til {CLIENT}, aktiver venligst nedenstående link @@@
 
 #: /api/classes/general.php:636
 msgid @@@ mPoint - WAP Push Indication @@@
-msgstr @@@ Velkommen til mPoint @@@
+msgstr @@@ Velkommen til {CLIENT} @@@
 
 #: /api/classes/surepay.php:130
 msgid @@@ mPoint - Embedded link Resend Indication @@@

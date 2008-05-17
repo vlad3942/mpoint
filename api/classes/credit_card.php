@@ -7,7 +7,7 @@
  * @link http://www.cellpointmobile.com
  * @package Payment
  * @subpackage CreditCard
- * @version 1.0
+ * @version 1.10
  */
 
 /**

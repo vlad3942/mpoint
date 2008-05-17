@@ -114,7 +114,10 @@
 				<input type="hidden" name="amount" value="{/root/transaction/amount}" />
 				<input type="hidden" name="currency" value="{currency}" />
 				<input type="hidden" name="orderid" value="{/root/transaction/order-id}" />
-				<input type="hidden" name="capturenow" value="true" />
+				<!-- Use Auto Capture -->
+				<xsl:if test="/root/transaction/auto-capture = true">
+					<input type="hidden" name="capturenow" value="true" />
+				</xsl:if>
 				<!-- Sub-Account configured for DIBS -->
 				<xsl:if test="subaccount &gt; 0">
 					<input type="hidden" name="account" value="{subaccount}" />
@@ -165,7 +168,10 @@
 				<input type="hidden" name="amount" value="{/root/transaction/amount}" />
 				<input type="hidden" name="currency" value="{currency}" />
 				<input type="hidden" name="orderid" value="{/root/transaction/order-id}" />
-				<input type="hidden" name="capturenow" value="true" />
+				<!-- Use Auto Capture -->
+				<xsl:if test="/root/transaction/auto-capture = 'true'">
+					<input type="hidden" name="capturenow" value="true" />
+				</xsl:if>
 				<!-- Sub-Account configured for DIBS -->
 				<xsl:if test="subaccount &gt; 0">
 					<input type="hidden" name="account" value="{subaccount}" />
@@ -199,6 +205,7 @@
 				<input type="hidden" name="email_url" value="{func:constLink('email.php')}" />
 				<input type="hidden" name="accept_url" value="{/root/transaction/accept-url}" />
 				<input type="hidden" name="recipient" value="{/root/transaction/address}" />
+				<input type="hidden" name="operator" value="{/root/transaction/operator}" />
 				<input type="hidden" name="price" value="{/root/transaction/price}" />
 				<!-- Transfer Custom Variables -->
 				<xsl:for-each select="/root/accept/client-vars/item">

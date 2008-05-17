@@ -47,5 +47,7 @@ if ($obj_mPoint->getTxnInfo()->getClientConfig()->emailReceiptEnabled() === true
 if ($obj_mPoint->getTxnInfo()->getCallbackURL() != "")
 {
 	$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, $_POST);
+	// Transaction uses Auto Capture
+	if ($obj_mPoint->getTxnInfo()->useAutoCapture() === true) {	$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST); }
 }
 ?>

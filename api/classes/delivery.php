@@ -220,7 +220,7 @@ class Delivery extends General
 	
 	public function logDeliveryInfo(array &$aInfo)
 	{
-		$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iDELIVERY_INFO_STATE, utf8_encode(serialize($aInfo) ) );
+		$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iDELIVERY_INFO_STATE, serialize($aInfo) );
 	}
 }
 ?>

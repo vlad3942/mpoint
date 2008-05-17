@@ -185,7 +185,7 @@ class Validate
 		if (empty($email) === true) { $code = 1; }									// E-Mail is undefined
 		elseif (strlen($email) < Constants::iAUTH_MIN_LENGTH) { $code = 2; }		// E-Mail is too short
 		elseif (strlen($email) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }		// E-Mail is too long
-		elseif (eregi("[^0-9a-zæøå.@-]", $email) == true) { $code = 4; }			// E-Mail contains Invalid Characters
+		elseif (eregi("[^0-9a-zæøå_.@-]", $email) == true) { $code = 4; }			// E-Mail contains Invalid Characters
 		elseif (ereg("^[^@ ]+@[^@ ]+\.[^@ \.]+$", $email) == false) { $code = 5; }	// E-Mail has an invalid form
 		else { $code = 10; }														// E-Mail is valid
 		
