@@ -35,7 +35,12 @@ if (array_key_exists("temp", $_SESSION) === false)
 	if ($_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->hasAddressLookup() === true)
 	{
 		$_SESSION['temp'] = $obj_mPoint->getDeliveryAddressFromMSISDN($_SESSION['obj_TxnInfo']->getAddress() );
-		if (count($_SESSION['temp']) == 0) { $_GET['msg'] = 10; }
+		if (count($_SESSION['temp']) == 0)
+		{
+			$_GET['msg'] = 10;
+			// Add Address to the list of constants used for Text Tag Replacement
+			$_OBJ_TXT->loadConstants(array("ADDRESS" => $_SESSION['obj_TxnInfo']->getAddress() ) );
+		}
 	}
 	$_SESSION['temp']['year'] = date("Y");
 	$_SESSION['temp']['month'] = date("m");

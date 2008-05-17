@@ -107,7 +107,7 @@ class Callback extends General
 		if (array_key_exists("port", $aURLInfo) === false) { $aURLInfo["port"] = 80; }
 		if (array_key_exists("query", $aURLInfo) === true) { $aURLInfo["path"] .= "?". $aURLInfo["query"]; }
 		
-		$obj_ConnInfo = new HTTPConnInfo($aURLInfo["scheme"], $aURLInfo["host"], $aURLInfo["port"], 20, $aURLInfo["path"], "POST", "application/www-url-form-encoded");
+		$obj_ConnInfo = new HTTPConnInfo($aURLInfo["scheme"], $aURLInfo["host"], $aURLInfo["port"], 20, $aURLInfo["path"], "POST", "application/x-www-form-urlencoded");
 		/* ========== Instantiate Connection Info End ========== */
 		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
 		

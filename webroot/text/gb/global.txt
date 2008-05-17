@@ -134,59 +134,59 @@ msgstr @@@ Next >> @@@
 msgid @@@ << Back @@@
 msgstr @@@ << Back @@@
 
-#: /webroot/shop/delivery.php:49
+#: /webroot/shop/delivery.php:54
 msgid @@@ Recipient @@@
 msgstr @@@ Recipient @@@
 
-#: /webroot/shop/delivery.php:62
+#: /webroot/shop/delivery.php:67
 msgid @@@ Delivery - Info @@@
 msgstr @@@ Please complete the form below with the recipient's name and address @@@
 
-#: /webroot/shop/delivery.php:63
+#: /webroot/shop/delivery.php:68
 msgid @@@ Phone No @@@
 msgstr @@@ Phone No @@@
 
-#: /webroot/shop/delivery.php:64
+#: /webroot/shop/delivery.php:69
 msgid @@@ Find @@@
 msgstr @@@ Find @@@
 
-#: /webroot/shop/delivery.php:65
+#: /webroot/shop/delivery.php:70
 msgid @@@ Name @@@
 msgstr @@@ Name @@@
 
-#: /webroot/shop/delivery.php:66
+#: /webroot/shop/delivery.php:71
 msgid @@@ Company / CO @@@
 msgstr @@@ Company / CO @@@
 
-#: /webroot/shop/delivery.php:67
+#: /webroot/shop/delivery.php:72
 msgid @@@ Street @@@
 msgstr @@@ Street @@@
 
-#: /webroot/shop/delivery.php:68
+#: /webroot/shop/delivery.php:73
 msgid @@@ Zip Code @@@
 msgstr @@@ Zip Code @@@
 
-#: /webroot/shop/delivery.php:69
+#: /webroot/shop/delivery.php:74
 msgid @@@ City @@@
 msgstr @@@ City @@@
 
-#: /webroot/shop/delivery.php:71
+#: /webroot/shop/delivery.php:76
 msgid @@@ Delivery Date @@@
 msgstr @@@ Delivery Date @@@
 
-#: /webroot/shop/delivery.php:72
+#: /webroot/shop/delivery.php:77
 msgid @@@ YYYY @@@
 msgstr @@@ YYYY @@@
 
-#: /webroot/shop/delivery.php:73
+#: /webroot/shop/delivery.php:78
 msgid @@@ MM @@@
 msgstr @@@ MM @@@
 
-#: /webroot/shop/delivery.php:74
+#: /webroot/shop/delivery.php:79
 msgid @@@ DD @@@
 msgstr @@@ DD @@@
 
-#: /webroot/shop/delivery.php:76
+#: /webroot/shop/delivery.php:81
 msgid @@@ Next >> @@@
 msgstr @@@ Next >> @@@
 
@@ -251,7 +251,7 @@ msgstr @@@ Terms & Conditions @@@
 msgid @@@ << Back @@@
 msgstr @@@ << Back @@@
 
-#: /api/classes/callback.php:193
+#: /api/classes/callback.php:196
 msgid @@@ mPoint - SMS Receipt @@@
 msgstr @@@ Thank you for using mPoint, your order details are:
 mPoint ID: {MPOINTID}

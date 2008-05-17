@@ -49,7 +49,11 @@
 		<echo level="info">
 Automatic deployment complete.
 In order to finnish deploying mPoint please upload ${destDir} to the server and the global configuration file: ${destDir}/conf/global.php must be edited to correspond with the server.
-Additionally ${destDir}/webroot/img/.htaccess and ${destDir}/webroot/pay/.htaccess must be copied to the server manually using scp if on a Mac.
+Additionally the following .htaccess files must be copied to the server manually using scp if on a Mac.
+- ${destDir}/webroot/img/.htaccess
+- ${destDir}/webroot/pay/.htaccess
+- ${destDir}/webroot/shop/.htaccess
+Finally the global include file ${destDir}/webroot/inc/include.php needs to be modified so the API Class paths are correct (generally each path needs to have ../ inserted before the directory) 
 		</echo>
 	</target>
 </project>

@@ -33,7 +33,7 @@ $obj_mPoint = SMS_Purchase::produceSMS_Purchase($_OBJ_DB, $obj_MsgInfo);
 
 $iTxnID = $obj_mPoint->newTransaction(Constants::iSMS_PURCHASE_TYPE);
 // Update Transaction Log
-$obj_TxnInfo = new TxnInfo($iTxnID, Constants::iSMS_PURCHASE_TYPE, $obj_mPoint->getClientConfig(), $obj_mPoint->getClientConfig()->getKeywordConfig()->getPrice(), -1, $obj_MsgInfo->getAddress(), $obj_MsgInfo->getOperator(), "", $obj_mPoint->getClientConfig()->getLogoURL(), $obj_mPoint->getClientConfig()->getCSSURL(), $obj_mPoint->getClientConfig()->getAcceptURL(), $obj_mPoint->getClientConfig()->getCancelURL(), $obj_mPoint->getClientConfig()->getCallbackURL(), $obj_mPoint->getClientConfig()->getLanguage(),  $obj_mPoint->getClientConfig()->getMode(), $obj_MsgInfo->getGoMobileID() );
+$obj_TxnInfo = new TxnInfo($iTxnID, Constants::iSMS_PURCHASE_TYPE, $obj_mPoint->getClientConfig(), $obj_mPoint->getClientConfig()->getKeywordConfig()->getPrice(), -1, $obj_MsgInfo->getAddress(), $obj_MsgInfo->getOperator(), "", $obj_mPoint->getClientConfig()->getLogoURL(), $obj_mPoint->getClientConfig()->getCSSURL(), $obj_mPoint->getClientConfig()->getAcceptURL(), $obj_mPoint->getClientConfig()->getCancelURL(), $obj_mPoint->getClientConfig()->getCallbackURL(), $obj_mPoint->getClientConfig()->getLanguage(),  $obj_mPoint->getClientConfig()->getMode(), $obj_mPoint->getClientConfig()->useAutoCapture(), $obj_MsgInfo->getGoMobileID() );
 $obj_mPoint->logTransaction($obj_TxnInfo);
 // Log additional data
 $obj_mPoint->logProducts();
