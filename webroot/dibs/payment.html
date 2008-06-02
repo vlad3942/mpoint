@@ -185,6 +185,9 @@ else
 	
 	<form action="auth.pml" method="post">
 		<div>
+			<PML_IF COND="cgi.test > 0">
+				<input type="hidden" name="test" PML_value="cgi.test" />
+			</PML_IF>
 			<!-- DIBS Required Data -->
 			<input type="hidden" name="merchant" PML_value="cgi.merchant" />
 			<input type="hidden" name="callbackurl" PML_value="string.HTMLencode(cgi.callbackurl)" />
@@ -192,7 +195,9 @@ else
 			<input type="hidden" name="amount" PML_value="cgi.amount" />
 			<input type="hidden" name="currency" PML_value="cgi.currency" />
 			<input type="hidden" name="orderid" PML_value="cgi.orderid" />
-			<input type="hidden" name="capturenow" PML_value="cgi.capturenow" />
+			<PML_IF COND="cgi.capturenow = 'true'">
+				<input type="hidden" name="capturenow" PML_value="cgi.capturenow" />
+			</PML_IF>
 			<PML_IF COND="cgi.accounts > 0">
 				<input type="hidden" name="account" PML_value="cgi.accounts" />
 			</PML_IF>			
@@ -207,6 +212,7 @@ else
 			<input type="hidden" name="cardid" PML_value="cgi.cardid" />
 			<input type="hidden" name="mpointid" PML_value="cgi.mpointid" />
 			<!-- Dynamic Page Data -->
+			<input type="hidden" name="clientid" PML_value="cgi.clientid" />
 			<input type="hidden" name="client" PML_value="cgi.client" />
 			<input type="hidden" name="mpoint_width" PML_value="cgi.mpoint_width" />
 			<input type="hidden" name="mpoint_height" PML_value="cgi.mpoint_height" />
@@ -217,7 +223,7 @@ else
 			<input type="hidden" name="recipient" PML_value="cgi.recipient" />
 			<input type="hidden" name="price" PML_value="cgi.price" />
 			<input type="hidden" name="card_width" PML_value="cgi.card_width" />
-			<input type="hidden" name="card_heigth" PML_value="cgi.card_heigth" />
+			<input type="hidden" name="card_height" PML_value="cgi.card_height" />
 			<PML_SCRIPT>
 			// Transfer Custom Variables
 			foreach(i ; cgi)

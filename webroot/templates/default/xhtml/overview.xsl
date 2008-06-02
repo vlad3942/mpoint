@@ -13,8 +13,8 @@
 	  -->
 	<table id="products">
 	<tr>
-		<td colspan="4" class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/product" /></td>
 		<td class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/quantity" /></td>
+		<td colspan="4" class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/product" /></td>
 		<td class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/price" /></td>
 	</tr>
 	<!-- List Products -->
@@ -23,8 +23,8 @@
 		<td colspan="6"><img src="{logo-url}" width="40" height="40" alt="- Logo -" /></td>
 	</tr>
 	<tr>
-		<td colspan="4"><xsl:value-of select="name" /></td>
 		<td class="mPoint_Number"><xsl:value-of select="quantity" /></td>
+		<td colspan="4"><xsl:value-of select="name" /></td>
 		<td class="mPoint_Number"><xsl:value-of select="price" /></td>
 	</tr>
 	</xsl:for-each>

@@ -70,7 +70,7 @@ class General
 	 * 		<item id="{MESSAGE CODE}">{MESSAGE TEXT}</item>
 	 * 		<item id="{MESSAGE CODE}">{MESSAGE TEXT}</item>
 	 * 		...
-	 * </messages>
+	 * 	</messages>
 	 * The input argument can be used to differentiate between message codes in different files
 	 * when translating the the message text into the appropriate language.
 	 * The messages should be translated by the TranslateText module in the PHP4API
@@ -380,7 +380,7 @@ class General
 		// Error: Unable to insert a new record in the Transaction Log
 		if (is_resource($this->getDBConn()->query($sql) ) === false)
 		{
-			if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for Transaction: ". $this->_iTransactionID, 1002); }
+			if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for Transaction: ". $RS["ID"], 1002); }
 		}
 		
 		return $RS["ID"];

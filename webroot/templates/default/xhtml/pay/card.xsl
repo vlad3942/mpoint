@@ -191,6 +191,7 @@
 				<input type="hidden" name="paytype" value="{func:transCard(@id)}" />
 				
 				<!-- Shared Data -->
+				<input type="hidden" name="clientid" value="{/root/client-config/@id}" />
 				<input type="hidden" name="client" value="{/root/client-config/name}" />
 				
 				<!-- Payment Page Data -->

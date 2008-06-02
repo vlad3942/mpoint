@@ -5,7 +5,7 @@
 
 <xsl:template match="/root">
 	<div><a href="{func:constLink('overview.php')}"><xsl:value-of select="back" /></a></div>
-	<div>
+	<div id="terms">
 		<xsl:copy-of select="terms" />
 	</div>
 </xsl:template>
