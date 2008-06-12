@@ -11,6 +11,14 @@
 	
 	<form action="{func:constLink('sys/purchase.php')}" method="post">
 	<div>
+		<xsl:for-each select="products/item">
+			<xsl:variable name="id" select="@id" />
+			
+			<input type="hidden" name="products[{$id}]" value="{/root/session/products/item[@id = $id]}" />
+		</xsl:for-each>
+	</div>
+	
+	<div>
 		<!--
 		  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
 		  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
@@ -18,22 +26,20 @@
 		  - 20% of the screen width to the product price.
 		  -->
 		<table id="products">
-		<tr>
-			<td class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/quantity" /></td>
-			<td colspan="3" class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/product" /></td>
-			<td class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/price" /></td>
-		</tr>
 		<!-- List Products -->
 		<xsl:for-each select="products/item">
 			<xsl:variable name="id" select="@id" />
 		
 			<tr>
-				<td rowspan="2" style="vertical-align:bottom;"><input type="text" name="products[{$id}]" value="{/root/session/products/item[@id = $id]}" size="2" maxlength="2" style="-wap-input-format:'*N';" /></td>
-				<td colspan="4"><img src="{logo-url}" width="40" height="40" alt="- Logo -" /></td>
-			</tr>
-			<tr>
-				<td colspan="3"><xsl:value-of select="name" /></td>
-				<td class="mPoint_Number"><xsl:value-of select="price" /></td>
+				<td><img src="{logo-url}" width="40" height="40" alt="- Logo -" /></td>
+				<td colspan="2">
+					<xsl:value-of select="name" /><br />
+					<span class="mPoint_Number"><xsl:value-of select="price" /></span><br />
+					<a href="{func:constLink(concat('products.php?id=', $id) )}"><xsl:value-of select="//labels/add-to-basket" /></a>
+					<xsl:if test="/root/session/products/item[@id = $id] &gt; 0">
+						<span class="mPoint_Info"> (<xsl:value-of select="/root/session/products/item[@id = $id]" />)</span>
+					</xsl:if>
+				</td>
 			</tr>
 		</xsl:for-each>
 		</table>

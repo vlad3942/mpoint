@@ -9,7 +9,7 @@
  * @link http://www.cellpointmobile.com
  * @package Shop
  * @subpackage Products
- * @version 1.0
+ * @version 1.10
  */
 
 // Require Global Include File
@@ -24,6 +24,15 @@ require_once(sCLASS_PATH ."/products.php");
 $_SESSION['obj_UA'] = UAProfile::produceUAProfile();
 // Instantiate Data Object for Holding the Shop's Configuration
 $_SESSION['obj_ShopConfig'] = ShopConfig::produceConfig($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig() );
+
+if (array_key_exists("temp", $_SESSION) === false) { $_SESSION['temp'] = array(); }
+if (array_key_exists("products", $_SESSION['temp']) === false) { $_SESSION['temp']['products'] = array(); }
+if (array_key_exists("id", $_GET) === true)
+{
+	if (array_key_exists($_GET['id'], $_SESSION['temp']['products']) === false) { $_SESSION['temp']['products'][$_GET['id'] ] = 0; }
+	$_SESSION['temp']['products'][$_GET['id'] ]++;
+	$_GET['msg'] = 100;
+}
 
 $obj_mPoint = new Products($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
 
@@ -41,10 +50,7 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 	
 	<labels>
 		<info><?= $_OBJ_TXT->_("Product - Info"); ?></info>
-		<product><?= $_OBJ_TXT->_("Product"); ?></product>
-		<quantity><?= $_OBJ_TXT->_("Quantity"); ?></quantity>
-		<price><?= $_OBJ_TXT->_("Price"); ?></price>
-		<total><?= $_OBJ_TXT->_("Total"); ?></total>
+		<add-to-basket><?= $_OBJ_TXT->_("Add to Basket"); ?></add-to-basket>
 		<next><?= htmlspecialchars($_OBJ_TXT->_("Next >>"), ENT_NOQUOTES); ?></next>
 	</labels>
 	

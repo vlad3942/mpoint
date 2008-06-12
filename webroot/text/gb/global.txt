@@ -190,32 +190,19 @@ msgstr @@@ DD @@@
 msgid @@@ Next >> @@@
 msgstr @@@ Next >> @@@
 
-#: /webroot/shop/products.php:34
+#: /webroot/shop/products.php:43
 msgid @@@ Mobile Shop @@@
 msgstr @@@ Mobile Shop @@@
 
-#: /webroot/shop/products.php:43
+#: /webroot/shop/products.php:52
 msgid @@@ Product - Info @@@
-msgstr @@@ Please enter the quantity you'd like to purchase of each product in the textbox to the left.
-Leave the textbox blank for any products you're not interested in. @@@
+msgstr @@@ Click the "Add to Basket" link next to the product to purchase it. @@@
 
-#: /webroot/shop/products.php:44
-msgid @@@ Product @@@
-msgstr @@@ Product @@@
+#: /webroot/shop/products.php:53
+msgid @@@ Add to Basket @@@
+msgstr @@@ Add to Basket @@@
 
-#: /webroot/shop/products.php:45
-msgid @@@ Quantity @@@
-msgstr @@@ # @@@
-
-#: /webroot/shop/products.php:46
-msgid @@@ Price @@@
-msgstr @@@ Price @@@
-
-#: /webroot/shop/products.php:47
-msgid @@@ Total @@@
-msgstr @@@ Total @@@
-
-#: /webroot/shop/products.php:48
+#: /webroot/shop/products.php:54
 msgid @@@ Next >> @@@
 msgstr @@@ Next >> @@@
 

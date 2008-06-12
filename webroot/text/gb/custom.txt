@@ -171,9 +171,11 @@ msgid @@@ E-Mail - 91 @@@
 msgstr @@@ An error occurred while sending your E-Mail Receipt, please try again? @@@
 
 msgid @@@ Products - 11 @@@
-msgstr @@@ No Products selected for Purchase. Please enter the quantity for each product in the text field to the left? @@@
+msgstr @@@ You haven't added anything to your basket. Click "Add to Basket" to add a product. @@@
 msgid @@@ Products - 12 @@@
-msgstr @@@ Quantity for all selected products are 0. Please enter the quantity for each product in the text field to the left? @@@
+msgstr @@@ You haven't added anything to your basket. Click "Add to Basket" to add a product. @@@
+msgid @@@ Products - 100 @@@
+msgstr @@@ The product has been added to your shopping basket. @@@
 
 msgid @@@ Delivery - 10 @@@
 msgstr @@@ We couldn't find any address using your no: {ADDRESS} @@@

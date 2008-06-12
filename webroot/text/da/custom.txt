@@ -169,9 +169,11 @@ msgid @@@ E-Mail - 91 @@@
 msgstr @@@ Vi beklager, der opstod desværre en fejl under udsendelse af din e-mail. Prøv venligst igen? @@@
 
 msgid @@@ Products - 11 @@@
-msgstr @@@ Du har ikke valgt nogen produkter. Angiv venligst antallet af hvert produkt i tekst feltet til venstre? @@@
+msgstr @@@ Du har ikke lagt noget i din kurv. Klik på "Læg i Kurv" for at tilføje et produkt. @@@
 msgid @@@ Products - 12 @@@
-msgstr @@@ Antallet for alle valgte produkter er 0. Ret venligst antallet for hvert produkt i tekst feltet til venstre? @@@
+msgstr @@@ Du har ikke lagt noget i din kurv. Klik på "Læg i Kurv" for at tilføje et produkt. @@@
+msgid @@@ Products - 100 @@@
+msgstr @@@ Produktet er blevet lagt i din indkøbs kurv @@@
 
 msgid @@@ Delivery - 10 @@@
 msgstr @@@ Vi kunne ikke finde nogen adresse på dit nr: {ADDRESS} @@@

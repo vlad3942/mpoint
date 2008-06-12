@@ -8,7 +8,7 @@
  * @link http://www.cellpointmobile.com
  * @package Callback
  * @subpackage DIBS
- * @version 1.0
+ * @version 1.01
  */
 
 // Require Global Include File
@@ -24,9 +24,19 @@ require_once(sCLASS_PATH ."/dibs.php");
 // Require Business logic for the E-Mail Receipt Component
 require_once(sCLASS_PATH ."/email_receipt.php");
 
-// Intialise Text Translation Object
-$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $_POST['language'] ."/global.txt", sLANGUAGE_PATH . $_POST['language'] ."/custom.txt"), sSYSTEM_PATH, 0);
-
+try
+{
+	if (array_key_exists("language", $_POST) === false) { $sLang = $_POST['lang']; }
+	else { $sLang = $_POST['language']; }
+	// Intialise Text Translation Object
+	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $sLang ."/global.txt", sLANGUAGE_PATH . $sLang ."/custom.txt"), sSYSTEM_PATH, 0);
+}
+catch (TranslateTextException $e)
+{
+	// Intialise Text Translation Object
+	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH ."gb/global.txt", sLANGUAGE_PATH ."gb/custom.txt"), sSYSTEM_PATH, 0);
+	trigger_error("Unknown Language received from DIBS. language: ". $_POST['language'] .", lang: ". $_POST['lang'], E_USER_WARNING);
+}
 $obj_mPoint = new DIBS($_OBJ_DB, $_OBJ_TXT, TxnInfo::produceInfo($_POST['mpointid'], $_OBJ_DB) );
 
 // 
