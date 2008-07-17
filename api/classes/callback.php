@@ -151,6 +151,7 @@ class Callback extends General
 	 *	&amount={TOTAL AMOUNT THE CUSTOMER WAS CHARGED FOR THE TRANSACTION}
 	 *	&currency={CURRENCY AMOUNT IS CHARGED IN}
 	 *	&recipient={CUSTOMER'S MSISDN WHERE SMS MESSAGE CAN BE SENT TO}
+	 *	&email={CUSTOMER'S EMAIL ADDRESS WHERE ORDER STATUS CAN BE SENT TO}
 	 *	&operator={GOMOBILE ID FOR THE CUSTOMER'S MOBILE NETWORK OPERATOR}
 	 * Additionally the method will append all custom Client Variables that were sent to mPoint as part of the original request
 	 * as well as the following Customer Input:
@@ -174,6 +175,7 @@ class Callback extends General
 		$sBody .= "&amount=". $this->_obj_TxnInfo->getAmount();
 		$sBody .= "&currency=". urlencode($this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getCurrency() );
 		$sBody .= "&recipient=". urlencode($this->_obj_TxnInfo->getAddress() );
+		$sBody .= "&email=". urlencode($this->_obj_TxnInfo->getEMail() );
 		$sBody .= "&operator=". urlencode($this->_obj_TxnInfo->getOperator() );
 		if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true) { $sBody .= "&pspid=". urlencode($pspid); }
 		$sBody .= $this->getVariables();

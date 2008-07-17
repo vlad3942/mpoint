@@ -122,7 +122,12 @@ if (array_key_exists(1000, $aMsgCds) === true)
 		
 		header("Location: http://". $_SERVER['HTTP_HOST'] ."/shop/delivery.php?". session_name() ."=". session_id() );
 	}
-	// Start Payment Flow
+	// Start Payment Flow with obtaining the E-Mail address (step 1)
+	elseif ($_SESSION['obj_TxnInfo']->getClientConfig()->emailReceiptEnabled() === true)
+	{
+		header("Location: http://". $_SERVER['HTTP_HOST'] ."/pay/email.php?". session_name() ."=". session_id() );
+	}
+	// Start Payment Flow with selecting the Credit Card (step 2)
 	else { header("Location: http://". $_SERVER['HTTP_HOST'] ."/pay/card.php?". session_name() ."=". session_id() ); }
 }
 // Error: Construct Status Page
