@@ -1,0 +1,58 @@
+<!--
+ - Example HTML form for initialising a new payment with DIBS ensuring that the required data / configuration
+ - is transmittede as part of the request.
+ - This ensures that the payment pages are capable of being optimized for the customer's mobile device based on variables
+ - such as screensize and language.
+ -
+ - @author Jonatan Evald Buus
+ - @package Payment
+ - @subpackage DIBS
+ - @license Cellpoint Mobile
+ -->
+<form action="https://" method="post">
+	<input type="hidden" name="test" value="{INTEGER FLAG}" />
+	<!-- DIBS Required Data -->
+	<input type="hidden" name="merchant" value="{INTEGER}" />
+	<input type="hidden" name="callbackurl" value="{URL}" />
+	<input type="hidden" name="accepturl" value="{URL}" />
+	<input type="hidden" name="cancelurl" value="{URL}" />
+	<input type="hidden" name="amount" value="{INTEGER}" />
+	<input type="hidden" name="currency" value="{ENUM}" />
+	<input type="hidden" name="orderid" value="{INTEGER}" />
+	<input type="hidden" name="capturenow" value="{BOOLEAN}" />
+	<input type="hidden" name="account" value="{INTEGER}" />
+	<input type="hidden" name="lang" value="{ENUM}" />
+	<!-- mPoint Required Data -->
+	<input type="hidden" name="width" value="{INTEGER}" />
+	<input type="hidden" name="height" value="{INTEGER}" />
+	<input type="hidden" name="PHPSESSID" value="{INTEGER}" />
+	<input type="hidden" name="format" value="xhtml" />
+	<input type="hidden" name="language" value="{ENUM}" />
+	<input type="hidden" name="cardid" value="{INTEGER}" />
+	<input type="hidden" name="mpointid" value="{INTEGER}" />
+	
+	<!-- Card Data -->
+	<input type="hidden" name="paytype" value="{ENUM}" />
+	
+	<!-- Shared Data -->
+	<input type="hidden" name="clientid" value="{INTEGER}" />
+	<input type="hidden" name="client" value="{STRING}" />
+	
+	<!-- Payment Page Data -->
+	<input type="hidden" name="card_width" value="{INTEGER}" />
+	<input type="hidden" name="card_height" value="{INTEGER}" />
+	
+	<!-- Accept Page Data -->
+	<input type="hidden" name="mpoint_width" value="{INTEGER}" />
+	<input type="hidden" name="mpoint_height" value="{INTEGER}" />
+	<input type="hidden" name="sms_receipt" value="{BOOLEAN}" />
+	<input type="hidden" name="email_receipt" value="{BOOLEAN}" />
+	<input type="hidden" name="email_url" value="{URL}" />
+	<input type="hidden" name="accept_url" value="{URL}" />
+	<input type="hidden" name="recipient" value="{64-BIT INTEGER}" />
+	<input type="hidden" name="operator" value="{INTEGER}" />
+	<input type="hidden" name="price" value="{INTEGER}" />
+	<!-- Transfer Custom Variables -->
+	<input type="hidden" name="client_vars_names_{LOOP COUNTER}" value="{STRING}" />
+	<input type="hidden" name="client_vars_data_{LOOP COUNTER}" value="{STRING}" />
+</form>
