@@ -1,10 +1,10 @@
 #: /webroot/overview.php:38
 msgid @@@ Order Overview @@@
-msgstr @@@ Ordre BekrÃ¦ftelse @@@
+msgstr @@@ Ordre Bekræftelse @@@
 
 #: /webroot/overview.php:47
 msgid @@@ Product - Info @@@
-msgstr @@@ NedenstÃ¥ende er detaljerne omkring din ordre @@@
+msgstr @@@ Nedenstående er detaljerne omkring din ordre @@@
 
 #: /webroot/overview.php:48
 msgid @@@ Product @@@
@@ -28,7 +28,7 @@ msgstr @@@ Accepter {LINK}Handelsbetingelserne{/LINK} for {CLIENT} @@@
 
 #: /webroot/overview.php:54
 msgid @@@ Delivery - Info @@@
-msgstr @@@ NedenstÃ¥ende er modtagers navn og adresse @@@
+msgstr @@@ Nedenstående er modtagers navn og adresse @@@
 
 #: /webroot/overview.php:55
 msgid @@@ Name @@@
@@ -56,15 +56,15 @@ msgstr @@@ Leverings Dato @@@
 
 #: /webroot/overview.php:62
 msgid @@@ Next >> @@@
-msgstr @@@ NÃ¦ste >> @@@
+msgstr @@@ Næste >> @@@
 
 #: /webroot/overview.php:63
 msgid @@@ Go to Payment >> @@@
-msgstr @@@ GÃ¥ til Betaling >> @@@
+msgstr @@@ Gå til Betaling >> @@@
 
 #: /webroot/pay/accept.php:28
 msgid @@@ Payment Completed @@@
-msgstr @@@ Betaling GennmfÃ¸rt @@@
+msgstr @@@ Betaling Gennmført @@@
 
 #: /webroot/pay/accept.php:41
 msgid @@@ Thank you for using @@@
@@ -72,7 +72,7 @@ msgstr @@@ Tak fordi du brugte @@@
 
 #: /webroot/pay/accept.php:42
 msgid @@@ Status - Success @@@
-msgstr @@@ Din betaling er blevet gennemfÃ¸rt @@@
+msgstr @@@ Din betaling er blevet gennemført @@@
 
 #: /webroot/pay/accept.php:43
 msgid @@@ mPoint ID @@@
@@ -88,7 +88,7 @@ msgstr @@@ Pris @@@
 
 #: /webroot/pay/accept.php:46
 msgid @@@ SMS Receipt - Info @@@
-msgstr @@@ OvenstÃ¥ende kvittering er ogsÃ¥ blevet sendt via SMS til: {ADDRESS} @@@
+msgstr @@@ Ovenstående kvittering er også blevet sendt via SMS til: {ADDRESS} @@@
 
 #: /webroot/pay/accept.php:47
 msgid @@@ Send receipt via E-Mail @@@
@@ -96,11 +96,11 @@ msgstr @@@ Send kvittering via E-Mail @@@
 
 #: /webroot/pay/accept.php:48
 msgid @@@ Continue >> @@@
-msgstr @@@ FortsÃ¦t tilbage til SÃ¦lgers site >> @@@
+msgstr @@@ Fortsæt tilbage til Sælgers site >> @@@
 
 #: /webroot/pay/card.php:32
 msgid @@@ Select Card @@@
-msgstr @@@ VÃ¦lg Kort @@@
+msgstr @@@ Vælg Kort @@@
 
 #: /webroot/pay/card.php:41
 msgid @@@ Step 2 of 3 @@@
@@ -108,7 +108,7 @@ msgstr @@@ Trin 2 af 3 @@@
 
 #: /webroot/pay/card.php:42
 msgid @@@ Please select your Credit Card @@@
-msgstr @@@ VÃ¦lg venligst dit Kredit Kort @@@
+msgstr @@@ Vælg venligst dit Kredit Kort @@@
 
 #: /webroot/pay/email.php:29
 msgid @@@ E-Mail Receipt @@@
@@ -128,7 +128,7 @@ msgstr @@@ E-Mail @@@
 
 #: /webroot/pay/email.php:43
 msgid @@@ Next >> @@@
-msgstr @@@ NÃ¦ste >> @@@
+msgstr @@@ Næste >> @@@
 
 #: /webroot/pay/email.php:44
 msgid @@@ << Back @@@
@@ -140,7 +140,7 @@ msgstr @@@ Modtager @@@
 
 #: /webroot/shop/delivery.php:67
 msgid @@@ Delivery - Info @@@
-msgstr @@@ Udfyld venligst nedenstÃ¥ende form med modtagers navn og adresse @@@
+msgstr @@@ Udfyld venligst nedenstående form med modtagers navn og adresse @@@
 
 #: /webroot/shop/delivery.php:68
 msgid @@@ Phone No @@@
@@ -176,7 +176,7 @@ msgstr @@@ Leverings Dato @@@
 
 #: /webroot/shop/delivery.php:77
 msgid @@@ YYYY @@@
-msgstr @@@ Ã…Ã…Ã…Ã… @@@
+msgstr @@@ ÅÅÅÅ @@@
 
 #: /webroot/shop/delivery.php:78
 msgid @@@ MM @@@
@@ -188,7 +188,7 @@ msgstr @@@ DD @@@
 
 #: /webroot/shop/delivery.php:81
 msgid @@@ Next >> @@@
-msgstr @@@ NÃ¦ste >> @@@
+msgstr @@@ Næste >> @@@
 
 #: /webroot/shop/products.php:43
 msgid @@@ Mobile Shop @@@
@@ -196,15 +196,15 @@ msgstr @@@ Mobil Forreting @@@
 
 #: /webroot/shop/products.php:52
 msgid @@@ Product - Info @@@
-msgstr @@@ Klik pÃ¥ "LÃ¦g i Kurv" linket ud for det pÃ¥gÃ¦lende produkt @@@
+msgstr @@@ Klik på "Læg i Kurv" linket ud for det pågælende produkt @@@
 
 #: /webroot/shop/products.php:53
 msgid @@@ Add to Basket @@@
-msgstr @@@ LÃ¦g i Kurv @@@
+msgstr @@@ Læg i Kurv @@@
 
 #: /webroot/shop/products.php:54
 msgid @@@ Next >> @@@
-msgstr @@@ NÃ¦ste >> @@@
+msgstr @@@ Næste >> @@@
 
 #: /webroot/shop/shipping.php:28
 msgid @@@ Shipping Info @@@
@@ -212,7 +212,7 @@ msgstr @@@ Levering @@@
 
 #: /webroot/shop/shipping.php:41
 msgid @@@ Shipping - Info @@@
-msgstr @@@ NedenstÃ¥ende er leverings information for din bestilling. @@@
+msgstr @@@ Nedenstående er leverings information for din bestilling. @@@
 
 #: /webroot/shop/shipping.php:42
 msgid @@@ Company @@@
@@ -224,7 +224,7 @@ msgstr @@@ Pris @@@
 
 #: /webroot/shop/shipping.php:44
 msgid @@@ Next >> @@@
-msgstr @@@ NÃ¦ste >> @@@
+msgstr @@@ Næste >> @@@
 
 #: /webroot/shop/shipping.php:47
 msgid @@@ FREE @@@
@@ -238,11 +238,11 @@ msgstr @@@ Handelsbetingelser @@@
 msgid @@@ << Back @@@
 msgstr @@@ << Tilbage @@@
 
-#: /api/classes/callback.php:196
+#: /api/classes/callback.php:198
 msgid @@@ mPoint - SMS Receipt @@@
 msgstr @@@ Tak fordi du brugte mPoint, dine ordre informationer er:
 mPoint ID: {MPOINTID}
-SÃ¦lger: {CLIENT}
+Sælger: {CLIENT}
 Order Nr: {ORDERID}
 Pris: {PRICE} @@@
 
@@ -257,16 +257,16 @@ msgstr @@@ mPoint Kvittering for Order Nr: {ORDERID} med mPoint ID: {MPOINTID} @
 #: /api/classes/email_receipt.php:93
 msgid @@@ E-Mail Receipt - Body @@@
 msgstr @@@ Tak fordi du brugte mPoint.
-NedenstÃ¥ende er dine ordre informationer.
+Nedenstående er dine ordre informationer.
 Mobil Nr: {ADDRESS}
 mPoint ID: {MPOINTID}
-SÃ¦lger: {CLIENT}
+Sælger: {CLIENT}
 Ordre Nr: {ORDERID}
 Pris: {PRICE} @@@
 
 #: /api/classes/general.php:630
 msgid @@@ mPoint - Embedded link Indication @@@
-msgstr @@@ Velkommen til {CLIENT}, aktiver venligst nedenstÃ¥ende link @@@
+msgstr @@@ Velkommen til {CLIENT}, aktiver venligst nedenstående link @@@
 
 #: /api/classes/general.php:636
 msgid @@@ mPoint - WAP Push Indication @@@
@@ -275,7 +275,7 @@ msgstr @@@ Velkommen til {CLIENT} @@@
 #: /api/classes/surepay.php:130
 msgid @@@ mPoint - Embedded link Resend Indication @@@
 msgstr @@@ Du har endnu ikke aktiveret dit link til {CLIENT}.
-Aktiver venligst nedenstÃ¥ende link @@@
+Aktiver venligst nedenstående link @@@
 
 #: /api/classes/surepay.php:150
 msgid @@@ SurePay Notification - Subject @@@
@@ -283,14 +283,13 @@ msgstr @@@ mPoint betalings link for ordre: {ORDERID} er ikke blevet aktiveret @
 
 #: /api/classes/surepay.php:154
 msgid @@@ SurePay Notification - Body @@@
-msgstr @@@ NedenstÃ¥ende kunde har endnu ikke aktiveret sit betalings til mPoint betalings
+msgstr @@@ Nedenstående kunde har endnu ikke aktiveret sit betalings til mPoint betalings
 Mobil Nr: {ADDRESS}
 mPoint ID: {MPOINTID}
 Ordre Nr: {ORDERID}
 Pris: {PRICE}
 Ordre oprettet: {TIMESTAMP}
 
-Vi anbefaler at kunden kontaktes og betalingen fÃ¦rddigÃ¸res manuelt.
+Vi anbefaler at kunden kontaktes og betalingen færddigøres manuelt.
 
 Tak fordi i benytter SurePay @@@
-

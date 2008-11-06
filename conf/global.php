@@ -89,13 +89,13 @@ $aHTTP_CONN_INFO["iemendo"]["contenttype"] = "text/xml";
 /**
  * HTTP Connection Information for using Interflora's Lookup Service in Denmark
  */
-$aHTTP_CONN_INFO[10]["protocol"] = "http";
-$aHTTP_CONN_INFO[10]["host"] = "www.interflora.dk";
-$aHTTP_CONN_INFO[10]["port"] = 80;
-$aHTTP_CONN_INFO[10]["timeout"] = 20;
-$aHTTP_CONN_INFO[10]["path"] = "/rpc/tdc_lookup.php";
-$aHTTP_CONN_INFO[10]["method"] = "GET";
-$aHTTP_CONN_INFO[10]["contenttype"] = "application/www-url-form-encoded";
+$aHTTP_CONN_INFO[100]["protocol"] = "http";
+$aHTTP_CONN_INFO[100]["host"] = "www.interflora.dk";
+$aHTTP_CONN_INFO[100]["port"] = 80;
+$aHTTP_CONN_INFO[100]["timeout"] = 20;
+$aHTTP_CONN_INFO[100]["path"] = "/rpc/tdc_lookup.php";
+$aHTTP_CONN_INFO[100]["method"] = "GET";
+$aHTTP_CONN_INFO[100]["contenttype"] = "application/www-url-form-encoded";
 //$aHTTP_CONN_INFO[10]["username"] = "";
 //$aHTTP_CONN_INFO[10]["password"] = "";
 
@@ -103,7 +103,7 @@ $aHTTP_CONN_INFO[10]["contenttype"] = "application/www-url-form-encoded";
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>
- * 
+ *
  * 	- protocol, the protocol used for communicating with GoMobile, should always be: http
  * 	- host, the host address for GoMobile, should always be: gomobile.cellpointmobile.com
  * 	- port, the port that requestes are sent to, should always be: 8000
@@ -120,11 +120,11 @@ $aHTTP_CONN_INFO[10]["contenttype"] = "application/www-url-form-encoded";
  * 		1 - Write log entry to file
  * 		2 - Output log entry to screen
  * 		3 - Write log entry to file and output to screen
- * 
+ *
  * </code>
- * 
+ *
  * @see 	GoMobileConnInfo::produceConnInfo()
- * 
+ *
  * @global 	array $aGM_CONN_INFO
  */
 $aGM_CONN_INFO["protocol"] = "http";
@@ -141,7 +141,7 @@ $aGM_CONN_INFO["logpath"] = sLOG_PATH;
  * 1 - Write log entry to file
  * 2 - Output log entry to screen
  * 3 - Write log entry to file and output to screen
- * 
+ *
  */
 $aGM_CONN_INFO["mode"] = 1;
 

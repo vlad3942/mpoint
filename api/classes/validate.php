@@ -265,8 +265,8 @@ class Validate
 	{
 		// Validate the Recipient's Mobile Network Operator
 		if (empty($id) === true) { $code = 1; }																		// Operator ID is undefined
-		elseif (floatval($id) < $this->_obj_ClientConfig->getCountryConfig()->getID() * 1000) { $code = 2; }		// Operator ID is too small
-		elseif (floatval($id) > $this->_obj_ClientConfig->getCountryConfig()->getID() * 1000 + 99) { $code = 3; }	// Operator ID is too big
+		elseif (floatval($id) < $this->_obj_ClientConfig->getCountryConfig()->getID() * 100) { $code = 2; }		// Operator ID is too small
+		elseif (floatval($id) > $this->_obj_ClientConfig->getCountryConfig()->getID() * 100 + 99) { $code = 3; }	// Operator ID is too big
 		else { $code = 10; }
 		
 		return $code;

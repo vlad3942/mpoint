@@ -156,27 +156,27 @@ msgid @@@ Status - 1013 @@@
 msgstr @@@ Internal Communication Error - Unable to connect to GoMobile. Please contact support@cellpointmobile.com @@@
 
 msgid @@@ E-Mail - 11 @@@
-msgstr @@@ Du har ikke opgivet en e-mail adresse, prÃ¸v venligst igen? @@@
+msgstr @@@ Du har ikke opgivet en e-mail adresse, prøv venligst igen? @@@
 msgid @@@ E-Mail - 12 @@@
-msgstr @@@ E-Mail adressen er for kort, en e-mail adresse skal vÃ¦re pÃ¥ mindst 5 tegn @@@
+msgstr @@@ E-Mail adressen er for kort, en e-mail adresse skal være på mindst 5 tegn @@@
 msgid @@@ E-Mail - 13 @@@
-msgstr @@@ E-Mail adressen er for lang, en e-mail adresse skal vÃ¦re pÃ¥ hÃ¸jst 50 tegn @@@
+msgstr @@@ E-Mail adressen er for lang, en e-mail adresse skal være på højst 50 tegn @@@
 msgid @@@ E-Mail - 14 @@@
-msgstr @@@ E-Mail adressen indeholder ugyldige tegn, en e-mail adresse mÃ¥ kun indeholde fÃ¸lgende tegn: 0-9 A-Z a-z Ã¦ Ã¸ Ã¥ Ã† Ã˜ Ã… _ . - @ @@@
+msgstr @@@ E-Mail adressen indeholder ugyldige tegn, en e-mail adresse må kun indeholde følgende tegn: 0-9 A-Z a-z æ ø å Ã† Ã˜ Ã… _ . - @ @@@
 msgid @@@ E-Mail - 15 @@@
-msgstr @@@ E-Mail adressen har et ugyldigt format, en e-mail adresse skal vÃ¦re i formatet: anders.and@cellpointmobile.com @@@
+msgstr @@@ E-Mail adressen har et ugyldigt format, en e-mail adresse skal være i formatet: anders.and@cellpointmobile.com @@@
 msgid @@@ E-Mail - 91 @@@
-msgstr @@@ Vi beklager, der opstod desvÃ¦rre en fejl under udsendelse af din e-mail. PrÃ¸v venligst igen? @@@
+msgstr @@@ Vi beklager, der opstod desværre en fejl under udsendelse af din e-mail. Prøv venligst igen? @@@
 
 msgid @@@ Products - 11 @@@
-msgstr @@@ Du har ikke lagt noget i din kurv. Klik pÃ¥ "LÃ¦g i Kurv" for at tilfÃ¸je et produkt. @@@
+msgstr @@@ Du har ikke lagt noget i din kurv. Klik på "Læg i Kurv" for at tilføje et produkt. @@@
 msgid @@@ Products - 12 @@@
-msgstr @@@ Du har ikke lagt noget i din kurv. Klik pÃ¥ "LÃ¦g i Kurv" for at tilfÃ¸je et produkt. @@@
+msgstr @@@ Du har ikke lagt noget i din kurv. Klik på "Læg i Kurv" for at tilføje et produkt. @@@
 msgid @@@ Products - 100 @@@
-msgstr @@@ Produktet er blevet lagt i din indkÃ¸bs kurv @@@
+msgstr @@@ Produktet er blevet lagt i din indkøbs kurv @@@
 
 msgid @@@ Delivery - 10 @@@
-msgstr @@@ Vi kunne ikke finde nogen adresse pÃ¥ dit nr: {ADDRESS} @@@
+msgstr @@@ Vi kunne ikke finde nogen adresse på dit nr: {ADDRESS} @@@
 msgid @@@ Delivery - 11 @@@
 msgstr @@@ Du har ikke angivet et nummer @@@
 msgid @@@ Delivery - 12 @@@
@@ -184,9 +184,9 @@ msgstr @@@ Det angivne nummer er for kort @@@
 msgid @@@ Delivery - 13 @@@
 msgstr @@@ Det angivne nummer er for langt @@@
 msgid @@@ Delivery - 19 @@@
-msgstr @@@ Vi beklager, men vi kunne ikke finde nogen adresse pÃ¥ det angivne nummer. @@@
+msgstr @@@ Vi beklager, men vi kunne ikke finde nogen adresse på det angivne nummer. @@@
 msgid @@@ Delivery - 21 @@@
-msgstr @@@ Du har ikke angivet et Navn pÃ¥ modtageren @@@
+msgstr @@@ Du har ikke angivet et Navn på modtageren @@@
 msgid @@@ Delivery - 22 @@@
 msgstr @@@ Det angivne Navn er for kort @@@
 msgid @@@ Delivery - 23 @@@
@@ -216,7 +216,7 @@ msgstr @@@ Det angivne Post Nr. er for kort @@@
 msgid @@@ Delivery - 53 @@@
 msgstr @@@ Det angivne Post Nr. er for langt @@@
 msgid @@@ Delivery - 54 @@@
-msgstr @@@ Det angivne Post Nr. har en ugyldig lÃ¦ngde @@@
+msgstr @@@ Det angivne Post Nr. har en ugyldig længde @@@
 msgid @@@ Delivery - 61 @@@
 msgstr @@@ Du har ikke angivet en By @@@
 msgid @@@ Delivery - 62 @@@
@@ -226,13 +226,13 @@ msgstr @@@ Den angivne By er for langt @@@
 msgid @@@ Delivery - 64 @@@
 msgstr @@@ Den angivne By indeholder ugyldige tegn @@@
 msgid @@@ Delivery - 71 @@@
-msgstr @@@ Du har ikke angivet et LeveringsÃ¥r @@@
+msgstr @@@ Du har ikke angivet et Leveringsår @@@
 msgid @@@ Delivery - 72 @@@
-msgstr @@@ Det angivne LeveringsÃ¥r er ugyldig @@@
+msgstr @@@ Det angivne Leveringsår er ugyldig @@@
 msgid @@@ Delivery - 73 @@@
-msgstr @@@ Du har ikke angivet en LeveringsmÃ¥ned @@@
+msgstr @@@ Du har ikke angivet en Leveringsmåned @@@
 msgid @@@ Delivery - 74 @@@
-msgstr @@@ Den angivne LeveringsmÃ¥ned er ugyldig @@@
+msgstr @@@ Den angivne Leveringsmåned er ugyldig @@@
 msgid @@@ Delivery - 75 @@@
 msgstr @@@ Du har ikke angivet en Leveringsdag @@@
 msgid @@@ Delivery - 76 @@@
@@ -241,4 +241,4 @@ msgid @@@ Delivery - 77 @@@
 msgstr @@@ Den angiven Leveringsdato er ugyldig @@@
 
 msgid @@@ Overview - 11 @@@
-msgstr @@@ Accepter venligst handelsbetingelserne for at gÃ¥ videre @@@
+msgstr @@@ Accepter venligst handelsbetingelserne for at gå videre @@@
