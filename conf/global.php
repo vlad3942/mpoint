@@ -8,7 +8,7 @@ error_reporting(E_ERROR | E_PARSE | E_WARNING | E_NOTICE | E_USER_ERROR | E_USER
 /**
  * Path to Log Files directory
  */
-define("sLOG_PATH", "/Users/Jona/Development/mPoint/log/");
+define("sLOG_PATH", sSYSTEM_PATH ."/log/");
 /**
  * Output method for the error handler:
  *	0 - Store Internally
@@ -60,7 +60,7 @@ $aDB_CONN_INFO["session"]["host"] = "localhost";
 $aDB_CONN_INFO["session"]["port"] = 5432;
 $aDB_CONN_INFO["session"]["path"] = "session";
 $aDB_CONN_INFO["session"]["username"] = "session";
-$aDB_CONN_INFO["session"]["password"] = "Jona";
+$aDB_CONN_INFO["session"]["password"] = "2a2ac8447e";
 $aDB_CONN_INFO["session"]["timeout"] = 10;
 $aDB_CONN_INFO["session"]["charset"] = "ISO8859_1";
 $aDB_CONN_INFO["session"]["class"] = "PostGreSQL";

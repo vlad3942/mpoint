@@ -29,17 +29,17 @@ class Validate
 	 * @var ClientConfig
 	 */
 	private $_obj_ClientConfig;
-	
+
 	/**
 	 * Default Constructor.
-	 * 
+	 *
 	 * @param 	ClientConfig $oCC 	Data object with the Client's default configuration
 	 */
 	public function __construct(ClientConfig &$oCC)
 	{
 		$this->_obj_ClientConfig = $oCC;
 	}
-	
+
 	/**
 	 * Performs basic validation ensuring that the client exists and the account is valid.
 	 * The method will return the following status codes:
@@ -92,7 +92,7 @@ class Validate
 				$sql = " AND Acc.id = ". $acc;
 			}
 			$RS = $oDB->getName($sql);
-			
+
 			if (is_array($RS) === true)
 			{
 				if ($RS["CLIENTACTIVE"] === false) { $code = 4; }		// Client Disabled
@@ -102,10 +102,10 @@ class Validate
 			}
 			else { $code = 3; }	// Unknown Client ID
 		}
-		
+
 		return $code;
 	}
-	
+
 	/**
 	 * Validates that a Username has a valid format.
 	 * The method will return the following status codes:
@@ -114,7 +114,7 @@ class Validate
 	 * 	3. Username is too long, as defined by iAUTH_MAX_LENGTH
 	 *  4. Username contains invalid characters: [^a-z0-9 æøåÆØÅ._-]
 	 * 	10. Success
-	 * 
+	 *
 	 * @see		Constants::iAUTH_MIN_LENGTH
 	 * @see 	Constants::iAUTH_MAX_LENGTH
 	 *
@@ -130,10 +130,10 @@ class Validate
 		elseif (strlen($un) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }				// Username is too long
 		elseif (eregi("[^a-z0-9 æøåÆØÅ.-]", utf8_encode($un) ) == true) { $code = 4; }	// Username contains Invalid Characters
 		else { $code = 10; }															// Username is valid
-		
+
 		return $code;
 	}
-	
+
 	/**
 	 * Validates that a Password has a valid format.
 	 * The method will return the following status codes:
@@ -142,7 +142,7 @@ class Validate
 	 * 	3. Password is too long, as defined by iAUTH_MAX_LENGTH
 	 *  4. Password contains invalid characters: [\"']
 	 *	10. Success
-	 * 
+	 *
 	 * @see		Constants::iAUTH_MIN_LENGTH
 	 * @see		Constants::iAUTH_MAX_LENGTH
 	 *
@@ -152,16 +152,16 @@ class Validate
 	public function valPassword($pwd)
 	{
 		$pwd = trim($pwd);
-		// Validate Password	
+		// Validate Password
 		if (empty($pwd) === true) { $code = 1; }							// Password is undefined
 		elseif (strlen($pwd) < Constants::iAUTH_MIN_LENGTH) { $code = 2; }	// Password is too short
 		elseif (strlen($pwd) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }	// Password is too long
 		elseif (ereg("[\"']", $pwd) == true) { $code = 4; }					// Password contains Invalid Characters
 		else { $code = 10; }												// Password is valid
-		
+
 		return $code;
 	}
-	
+
 	/**
 	 * Validates that an E-Mail address has a valid format.
 	 * The method will return the following status codes:
@@ -171,7 +171,7 @@ class Validate
 	 *  4. E-Mail address contains invalid characters: [^0-9A-Za-zæøåÆØÅ_.-@]
 	 *  5. E-Mail has an invalid form: ^[^@ ]+@[^@ ]+\.[^@ \.]+$
 	 *	10. Success
-	 * 
+	 *
 	 * @see		Constants::iAUTH_MIN_LENGTH
 	 * @see		Constants::iAUTH_MAX_LENGTH
 	 *
@@ -182,16 +182,16 @@ class Validate
 	{
 		$email = trim($email);
 		// Validate E-Mail
-		if (empty($email) === true) { $code = 1; }									// E-Mail is undefined
-		elseif (strlen($email) < Constants::iAUTH_MIN_LENGTH) { $code = 2; }		// E-Mail is too short
-		elseif (strlen($email) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }		// E-Mail is too long
-		elseif (eregi("[^0-9a-zæøå_.@-]", $email) == true) { $code = 4; }			// E-Mail contains Invalid Characters
-		elseif (ereg("^[^@ ]+@[^@ ]+\.[^@ \.]+$", $email) == false) { $code = 5; }	// E-Mail has an invalid form
-		else { $code = 10; }														// E-Mail is valid
-		
+		if (empty($email) === true) { $code = 1; }								// E-Mail is undefined
+		elseif (strlen($email) < Constants::iAUTH_MIN_LENGTH) { $code = 2; }	// E-Mail is too short
+		elseif (strlen($email) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }	// E-Mail is too long
+		elseif (eregi("[^0-9a-z���_.@-]", $email) == true) { $code = 4; }		// E-Mail contains Invalid Characters
+		elseif (ereg("^[^@]+@[^@]+\.[^@\.]+$", $email) == false) { $code = 5; }	// E-Mail has an invalid form
+		else { $code = 10; }													// E-Mail is valid
+
 		return $code;
 	}
-	
+
 	/**
 	 * Validates that a Name has a valid format.
 	 * The method will return the following status codes:
@@ -200,7 +200,7 @@ class Validate
 	 * 	3. Name is too long, must be shorter than 100 characters
 	 *  4. Name contains invalid characters: [^a-z0-9 æøåÆØÅ._-]
 	 * 	10. Success
-	 * 
+	 *
 	 * @see		Constants::iAUTH_MIN_LENGTH
 	 * @see		General::valUsername()
 	 *
@@ -213,20 +213,20 @@ class Validate
 		/**
 		 * Name succesfully validated by valUsername or valUsername returned "username too long"
 		 * but name is less than database retriction
-		 */		
+		 */
 		if ($code == 10 || ($code == 3 && strlen($name) < 100) ) { $code = 10; }
-		
+
 		return $code;
 	}
-	
+
 	/**
-	 * Validates that the Address is a valid MSISDN for the client's country.
+	 * Validates that the Mobile Number is a valid MSISDN for the client's country.
 	 * The method will return the following status codes:
 	 * 	1. Undefined Address
 	 * 	2. Address is too short, as defined by the database field: minmob for the Country
 	 * 	3. Address is too long, as defined by the database field: maxmob for the Country
 	 * 	10. Success
-	 * 
+	 *
 	 * @see 	CountryInfo::getMinMobile()
 	 * @see 	CountryInfo::getMaxMobile()
 	 *
@@ -241,10 +241,10 @@ class Validate
 		elseif (floatval($addr) < $this->_obj_ClientConfig->getCountryConfig()->getMinMobile() ) { $code = 2; }	// Recipient is too short
 		elseif (floatval($addr) > $this->_obj_ClientConfig->getCountryConfig()->getMaxMobile() ) { $code = 3; }	// Recipient is too long
 		else { $code = 10; }
-		
+
 		return $code;
 	}
-	
+
 	/**
 	 * Performs basic validation of the recipient's Mobile Network Operator ensuring that there's a fair chance
 	 * the Operator is available in the client's country.
@@ -255,10 +255,10 @@ class Validate
 	 * 	3. Operator ID is too big, the ID is greater than Country ID * 1000 + 99
 	 * 	10. Success
 	 * Please refer to: GoMobile - Overview for details on which Mobile Network Operators are available in each Country.
-	 * 
+	 *
 	 * @see 	CountryInfo::getID()
-	 * 
-	 * @param 	integer $id 	GoMoble's Unique ID for the Recipient's Mobile Network Operator 
+	 *
+	 * @param 	integer $id 	GoMoble's Unique ID for the Recipient's Mobile Network Operator
 	 * @return 	integer
 	 */
 	public function valOperator($id)
@@ -268,10 +268,10 @@ class Validate
 		elseif (floatval($id) < $this->_obj_ClientConfig->getCountryConfig()->getID() * 100) { $code = 2; }		// Operator ID is too small
 		elseif (floatval($id) > $this->_obj_ClientConfig->getCountryConfig()->getID() * 100 + 99) { $code = 3; }	// Operator ID is too big
 		else { $code = 10; }
-		
+
 		return $code;
 	}
-	
+
 	/**
 	 * Validates the total Amount the customer is paying.
 	 * The method will return the following status codes:
@@ -279,7 +279,7 @@ class Validate
 	 * 	2. Amount is too small, amount must be greater than 1 (0,01 of the country's currency)
 	 * 	3. Amount is too big, amount must be smaller than the max amount specified by the client
 	 * 	10. Success
-	 * 
+	 *
 	 * @param 	integer $prc 	The price of the merchandise the customer is buying in the country's smallest currency (cents for USA, �re for Denmark etc.)
 	 * @return 	integer
 	 */
@@ -290,10 +290,10 @@ class Validate
 		elseif (intval($prc) < 1) { $code = 2; }		// Amount is too small
 		elseif (intval($prc) > $this->_obj_ClientConfig->getMaxAmount() ) { $code = 3; }	// Amount is too big
 		else { $code = 10; }
-		
+
 		return $code;
 	}
-	
+
 	/**
 	 * Validates the URL appears to be useful.
 	 * Please note that the method will only validate the format of the URL, it will not actually make lookups
@@ -307,7 +307,7 @@ class Validate
 	 * 	6. URL is Invalid, no Host specified
 	 * 	7. URL is Invalid, no Path specified
 	 * 	10. Success
-	 * 
+	 *
 	 * @param 	integer $url 	The URL that should be validated
 	 * @return 	integer
 	 */
@@ -330,10 +330,10 @@ class Validate
 			}
 			else { $code = 4; } 									// URL is malformed
 		}
-		
+
 		return $code;
 	}
-	
+
 	/**
 	 * Validates the Product Information used to generate the Order Overview page.
 	 * The method will return the following status codes:
@@ -366,7 +366,7 @@ class Validate
 			reset($aNames);
 			reset($aQuantities);
 			reset($aPrices);
-			
+
 			while ( (list($key) = each($aNames) ) && $code == 10)
 			{
 				if (array_key_exists($key, $aQuantities) === false) { $code = 5; }	// Array key not found in Product Quantities
@@ -382,10 +382,10 @@ class Validate
 				}
 			}
 		}
-		
+
 		return $code;
 	}
-	
+
 	/**
 	 * Validates that the language exists.
 	 * The method will return the following status codes:
@@ -393,7 +393,7 @@ class Validate
 	 * 	2. Invalid Language, language contains invalid characters which are NOT a-z or _
 	 * 	3. Language not supported (language folder not found)
 	 * 	10. Success
-	 * 
+	 *
 	 * @see 	sLANGUAGE_PATH
 	 *
 	 * @param 	string $lang 	Language that should be used as the default for the customer's purchase experience
@@ -405,10 +405,10 @@ class Validate
 		elseif (eregi("[^a-z_]", $lang) == true) { $code = 2; }				// Invalid Language
 		elseif (is_dir(sLANGUAGE_PATH . $lang) === false) { $code = 3; }	// Language not supported
 		else { $code = 10; }
-		
+
 		return $code;
 	}
-	
+
 	/**
 	 * Validates the entered postal code for country.
 	 * The method will return the following status code:
@@ -427,7 +427,7 @@ class Validate
 	 *
 	 * @param 	string $zip 	Entered zip code to validate
 	 * @return 	integer
-	 * 
+	 *
 	 * @throws 	mPointException
 	 */
 	public function valZipCode($zip)
@@ -437,32 +437,32 @@ class Validate
 		{
 			switch ($this->_obj_ClientConfig->getCountryConfig()->getID() )
 			{
-			case (10):	// Denmark
+			case (100):	// Denmark
 				if (intval($zip) < 800) { $code = 2; }
 				elseif (intval($zip) > 9999) { $code = 3; }
 				else { $code = 10; }
 				break;
-			case (11):	// Sweden
+			case (101):	// Sweden
 				if (intval($zip) < 10000) { $code = 2; }
 				elseif (intval($zip) > 99999) { $code = 3; }
 				else { $code = 10; }
 				break;
-			case (12):	// Norway
+			case (102):	// Norway
 				if (intval($zip) < 100) { $code = 2; }
 				elseif (intval($zip) > 9999) { $code = 3; }
 				else { $code = 10; }
 				break;
-			case (13):	// UK
+			case (103):	// UK
 				if (preg_match('/(GIR 0AA|[A-PR-UWYZ]([0-9]{1,2}|([A-HK-Y][0-9]|[A-HK-Y][0-9]([0-9]|[ABEHMNPRV-Y]))|[0-9][A-HJKS-UW]) [0-9][ABD-HJLNP-UW-Z]{2})/i') == false) { $code = 5; }
 				else { $code = 10; }
 				break;
-			case (14):	// Finland
+			case (104):	// Finland
 				if (intval($zip) < 0) { $code = 2; }
 				elseif (intval($zip) > 99999) { $code = 3; }
 				elseif (strlen($zip) != 5) { $code = 4; }
 				else { $code = 10; }
 				break;
-			case (20):	// USA
+			case (200):	// USA
 				if (intval($zip) < 10000) { $code = 2; }
 				elseif (intval($zip) > 99999) { $code = 3; }
 				else { $code = 10; }
@@ -473,10 +473,10 @@ class Validate
 				break;
 			}
 		}
-		
+
 		return $code;
 	}
-	
+
 	/**
 	 * Validates that a Delivery date appears sensible.
 	 * The method will return the following status code:
@@ -504,7 +504,7 @@ class Validate
 		elseif (date("d") > intval($day) ) { $code = 6; }
 		elseif (strtotime(date("Y-m-d") ) > strtotime($year ."-". $month ."-". $day) ) { $code = 7; }
 		else { $code = 10; }
-		
+
 		return $code;
 	}
 }

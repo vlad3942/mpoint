@@ -2,7 +2,7 @@
 /* ========== Define System path Start ========== */
 // HTTP Request
 if(isset($_SERVER['DOCUMENT_ROOT']) === true && empty($_SERVER['DOCUMENT_ROOT']) === false)
-{  
+{
 	$_SERVER['DOCUMENT_ROOT'] = str_replace("\\", "/", $_SERVER['DOCUMENT_ROOT']);
 	// Define system path constant
 	define("sSYSTEM_PATH", substr($_SERVER['DOCUMENT_ROOT'], 0, strrpos($_SERVER['DOCUMENT_ROOT'], "/") ) );
@@ -102,13 +102,13 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 {
 	// Start user session
 	new Session($aDB_CONN_INFO["session"], iOUTPUT_METHOD, sERROR_LOG);
-	
+
 	// Session object not initialized
 	if (isset($_SESSION['obj_Info']) === false)
 	{
 		$_SESSION['obj_Info'] = new WebSession();
 	}
-	
+
 	// Not fetching an Image
 	if (eregi("/img/", $_SERVER['PHP_SELF']) == false && eregi("/sys/", $_SERVER['PHP_SELF']) == false && eregi("/cpm/", $_SERVER['PHP_SELF']) == false)
 	{
@@ -117,14 +117,14 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 		 * This means that all PHP scripts must output a wellformed XML document.
 		 * The XML in turn must refer to an XSL Stylesheet by using the xml-stylesheet tag
 		 */
-		ob_start(array(new Output(""), "transform") );
+		ob_start(array(new Output("screen"), "transform") );
 	}
 }
 
 // Instantiate connection to the Database
 $_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
 
-// Payment link activated, use overview.php through a rewrite rule defined by htaccess 
+// Payment link activated, use overview.php through a rewrite rule defined by htaccess
 if (array_key_exists("checksum", $_GET) === true && $_SERVER['REQUEST_METHOD'] == "GET")
 {
 	$_SESSION['obj_TxnInfo'] = General::produceTxnInfo($_OBJ_DB, $_GET['checksum']);

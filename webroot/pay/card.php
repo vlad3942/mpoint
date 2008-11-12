@@ -2,7 +2,7 @@
 /**
  * This file contains the Controller for mPoint's Card Selection component.
  * The component will generate a page using the Client Configuration listing the credit cards available to the Customer.
- * 
+ *
  * @author Jonatan Evald Buus
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
@@ -30,26 +30,26 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 ?>
 <root>
 	<title><?= $_OBJ_TXT->_("Select Card"); ?></title>
-	
+
 	<?= $obj_mPoint->getSystemInfo(); ?>
-	
+
 	<?= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML(); ?>
-	
+
 	<?= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']); ?>
-	
+
 	<labels>
-		<progress><?= $_OBJ_TXT->_("Step 2 of 3"); ?></progress>
+		<progress><?= $_OBJ_TXT->_("Step 1 of 2"); ?></progress>
 		<info><?= $_OBJ_TXT->_("Please select your Credit Card"); ?></info>
 	</labels>
-	
+
 	<?= $obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount()); ?>
-	
+
 	<!-- DIBS Custom Pages: Payment Accepted -->
 	<accept>
 		<?= $obj_Accept->getmPointLogoInfo(); ?>
-	
+
 		<?= $obj_Accept->getClientVars($_SESSION['obj_TxnInfo']->getID() ); ?>
 	</accept>
-	
+
 	<?= $obj_mPoint->getMessages("Select Card"); ?>
 </root>

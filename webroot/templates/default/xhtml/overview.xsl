@@ -11,35 +11,73 @@
 	  - the phone will assign 66% of the screen width to the product name, 17% of the screen width to the product quantity and
 	  - 17% of the screen width to the product price.
 	  -->
-	<table id="products">
+	<table id="products" cellpadding="0" cellspacing="0">
 	<tr>
-		<td class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/quantity" /></td>
+		<td class="mPoint_Label" style="text-align:right"><xsl:value-of select="labels/quantity" /></td>
 		<td colspan="4" class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/product" /></td>
 		<td class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/price" /></td>
 	</tr>
 	<!-- List Products -->
 	<xsl:for-each select="products/item">
-	<tr>
-		<td colspan="6"><img src="{logo-url}" width="40" height="40" alt="- Logo -" /></td>
-	</tr>
-	<tr>
-		<td class="mPoint_Number"><xsl:value-of select="quantity" /></td>
-		<td colspan="4"><xsl:value-of select="name" /></td>
-		<td class="mPoint_Number"><xsl:value-of select="price" /></td>
-	</tr>
+		<xsl:variable name="css">
+			<xsl:choose>
+				<!-- Even row -->
+				<xsl:when test="position() mod 2 = 0">
+					<xsl:text>mPoint_Even</xsl:text>
+				</xsl:when>
+				<!-- Uneven row -->
+				<xsl:otherwise>
+					<xsl:text>mPoint_Uneven</xsl:text>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		<tr class="{$css}">
+			<td class="mPoint_Number" rowspan="2"  style="vertical-align:bottom"><xsl:value-of select="quantity" /></td>
+			<td colspan="5"><img src="{logo-url}" width="40" height="40" alt="- Logo -" /></td>
+		</tr>
+		<tr class="{$css}">
+			<td colspan="4"><xsl:value-of select="name" /></td>
+			<td class="mPoint_Number"><xsl:value-of select="price" /></td>
+		</tr>
 	</xsl:for-each>
 	<!-- List Shipping Information -->
 	<xsl:if test="string-length(shipping-info/name) &gt; 0">
-		<tr>
+		<xsl:variable name="css">
+			<xsl:choose>
+				<!-- Product listing ended on even numbering -->
+				<xsl:when test="count(products/item) mod 2 = 0">
+					<xsl:text>mPoint_Uneven</xsl:text>
+				</xsl:when>
+				<!-- Product listing ended on uneven numbering -->
+				<xsl:otherwise>
+					<xsl:text>mPoint_Even</xsl:text>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		<tr class="{$css}">
 			<td colspan="6"><img src="{system/protocol}://{system/host}/img/shipping.gif" width="40" height="40" alt="- Logo -" /></td>
 		</tr>
-		<tr>
-			<td colspan="4"><xsl:value-of select="shipping-info/name" /></td>
-			<td colspan="2" class="mPoint_Number"><xsl:value-of select="shipping-info/price" /></td>
+		<tr class="{$css}">
+			<td colspan="5"><xsl:value-of select="shipping-info/name" /></td>
+			<td colspan="1" class="mPoint_Number"><xsl:value-of select="shipping-info/price" /></td>
 		</tr>
 	</xsl:if>
 	<!-- List Total -->
-	<tr>
+	<xsl:variable name="css">
+		<xsl:choose>
+			<!-- Product listing ended on even numbering -->
+			<xsl:when test="count(products/item) mod 2 = 0">
+				<xsl:text>mPoint_Even</xsl:text>
+			</xsl:when>
+			<!-- Product listing ended on uneven numbering -->
+			<xsl:otherwise>
+				<xsl:text>mPoint_Uneven</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
+	<tr class="{$css}">
 		<td colspan="4" class="mPoint_Label"><xsl:value-of select="labels/total" /></td>
 		<td colspan="2" valign="bottom" class="mPoint_Label mPoint_Number"><xsl:value-of select="transaction/price" /></td>
 	</tr>
@@ -82,7 +120,7 @@
 					<xsl:value-of select="substring-after($link-part, '{/LINK}')" />
 				</div>
 				<div>
-					<input type="submit" value="{labels/next}" />
+					<input type="submit" value="{labels/next}" class="mPoint_Button" />
 				</div>
 			</form>
 			<!-- Display Status Messages -->
@@ -107,7 +145,7 @@
 							<xsl:value-of select="substring-after($link-part, '{/LINK}')" />
 						</div>
 						<div>
-							<input type="submit" value="{labels/next}" />
+							<input type="submit" value="{labels/next}" class="mPoint_Button" />
 						</div>
 					</form>
 					<!-- Display Status Messages -->

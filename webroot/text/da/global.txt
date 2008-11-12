@@ -103,34 +103,30 @@ msgid @@@ Select Card @@@
 msgstr @@@ Vælg Kort @@@
 
 #: /webroot/pay/card.php:41
-msgid @@@ Step 2 of 3 @@@
-msgstr @@@ Trin 2 af 3 @@@
+msgid @@@ Step 1 of 2 @@@
+msgstr @@@ Trin 1 af 2 @@@
 
 #: /webroot/pay/card.php:42
 msgid @@@ Please select your Credit Card @@@
 msgstr @@@ Vælg venligst dit Kredit Kort @@@
 
-#: /webroot/pay/email.php:29
+#: /webroot/pay/email.php:31
 msgid @@@ E-Mail Receipt @@@
 msgstr @@@ E-Mail Kvittering @@@
 
-#: /webroot/pay/email.php:40
-msgid @@@ Step 1 of 3 @@@
-msgstr @@@ Trin 1 af 3 @@@
-
-#: /webroot/pay/email.php:41
+#: /webroot/pay/email.php:42
 msgid @@@ Please enter your e-mail address below @@@
 msgstr @@@ Udfyld venligst din e-mail adresse nedenfor @@@
 
-#: /webroot/pay/email.php:42
+#: /webroot/pay/email.php:43
 msgid @@@ E-Mail @@@
 msgstr @@@ E-Mail @@@
 
-#: /webroot/pay/email.php:43
+#: /webroot/pay/email.php:44
 msgid @@@ Next >> @@@
 msgstr @@@ Næste >> @@@
 
-#: /webroot/pay/email.php:44
+#: /webroot/pay/email.php:45
 msgid @@@ << Back @@@
 msgstr @@@ << Tilbage @@@
 
@@ -238,7 +234,7 @@ msgstr @@@ Handelsbetingelser @@@
 msgid @@@ << Back @@@
 msgstr @@@ << Tilbage @@@
 
-#: /api/classes/callback.php:198
+#: /api/classes/callback.php:197
 msgid @@@ mPoint - SMS Receipt @@@
 msgstr @@@ Tak fordi du brugte mPoint, dine ordre informationer er:
 mPoint ID: {MPOINTID}
@@ -293,3 +289,4 @@ Ordre oprettet: {TIMESTAMP}
 Vi anbefaler at kunden kontaktes og betalingen færddigøres manuelt.
 
 Tak fordi i benytter SurePay @@@
+

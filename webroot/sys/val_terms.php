@@ -1,7 +1,7 @@
 <?php
 /**
  * This files contains the Controller for validating that the Customer has accepted the Terms & Conditions
- * 
+ *
  * @author Jonatan Evald Buus
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
@@ -21,11 +21,7 @@ header("content-length: 0");
 $msg = "";
 if (array_key_exists("terms", $_POST) === true)
 {
-	if ($_SESSION['obj_TxnInfo']->getClientConfig()->emailReceiptEnabled() === true)
-	{
-		$sPath = "pay/email.php";
-	}
-	else { $sPath = "pay/card.php"; }
+	 $sPath = "pay/card.php";
 }
 else
 {

@@ -11,7 +11,7 @@
 			<div class="mPoint_Label">
 				<xsl:value-of select="labels/phone-no" /><br />
 				<input name="address" value="{session/address}" size="{string-length(country-config/max-mobile)}" maxlength="{string-length(country-config/max-mobile)}" style="-wap-input-format:'*N';" />
-				<input type="submit" value="{labels/find}" />
+				<input type="submit" value="{labels/find}" class="mPoint_Button" />
 			</div>
 		</form>
 	</xsl:if>
@@ -20,49 +20,50 @@
 	<xsl:apply-templates select="messages" />
 	
 	<form action="{func:constLink('sys/save_delivery_info.php')}" method="post">
-		<div class="mPoint_Label">
-			<xsl:value-of select="labels/name" /><br />
-			<input name="name" value="{session/name}" />
-		</div>
-		<div class="mPoint_Label">
-			<xsl:value-of select="labels/company" /><br />
-			<input name="company" value="{session/company}" />
-		</div>
-		<div class="mPoint_Label">
-			<xsl:value-of select="labels/street" /><br />
-			<input name="street" value="{session/street}" />
-		</div>
-		<div class="mPoint_Label">
-			<xsl:value-of select="labels/zipcode" /> &amp; <xsl:value-of select="labels/city" /><br />
-			<!-- Construct Zip Code Input -->
-			<xsl:choose>
-				<xsl:when test="country-config/@id = 10">
-					<input name="zipcode" value="{session/zipcode}" size="4" maxlength="4" style="-wap-input-format:'*N';" />
-				</xsl:when>
-				<xsl:when test="country-config/@id = 20">
-					<input name="zipcode" value="{session/zipcode}" size="5" maxlength="5" style="-wap-input-format:'*N';" />
-				</xsl:when>
-				<xsl:otherwise>
-					<input name="zipcode" value="{session/zipcode}" size="6" maxlength="6" />
-				</xsl:otherwise>
-			</xsl:choose>
-			<input name="city" value="{session/city}" size="15" />
-		</div>
-		<xsl:if test="shop-config/delivery-date = 'true'">
+		<div id="delivery">
 			<div class="mPoint_Label">
-				<xsl:value-of select="labels/delivery-date/label" />
-				<span class="mPoint_Info">
-					(<xsl:value-of select="labels/delivery-date/year" />-<xsl:value-of select="labels/delivery-date/month" />-<xsl:value-of select="labels/delivery-date/day" />)
-				</span>
-				<br />
-				<input name="year" value="{session/year}" size="4" maxlength="4" style="-wap-input-format:'*N';" />-
-				<input name="month" value="{session/month}" size="2" maxlength="2" style="-wap-input-format:'*N';" />-
-				<input name="day" value="{session/day}" size="2" maxlength="2" style="-wap-input-format:'*N';" />
+				<xsl:value-of select="labels/name" /><br />
+				<input name="name" value="{session/name}" />
 			</div>
-		</xsl:if>
-		
+			<div class="mPoint_Label">
+				<xsl:value-of select="labels/company" /><br />
+				<input name="company" value="{session/company}" />
+			</div>
+			<div class="mPoint_Label">
+				<xsl:value-of select="labels/street" /><br />
+				<input name="street" value="{session/street}" />
+			</div>
+			<div class="mPoint_Label">
+				<xsl:value-of select="labels/zipcode" /> &amp; <xsl:value-of select="labels/city" /><br />
+				<!-- Construct Zip Code Input -->
+				<xsl:choose>
+					<xsl:when test="country-config/@id = 10">
+						<input name="zipcode" value="{session/zipcode}" size="4" maxlength="4" style="-wap-input-format:'*N';" />
+					</xsl:when>
+					<xsl:when test="country-config/@id = 20">
+						<input name="zipcode" value="{session/zipcode}" size="5" maxlength="5" style="-wap-input-format:'*N';" />
+					</xsl:when>
+					<xsl:otherwise>
+						<input name="zipcode" value="{session/zipcode}" size="6" maxlength="6" />
+					</xsl:otherwise>
+				</xsl:choose>
+				<input name="city" value="{session/city}" size="15" />
+			</div>
+			<xsl:if test="shop-config/delivery-date = 'true'">
+				<div class="mPoint_Label">
+					<xsl:value-of select="labels/delivery-date/label" />
+					<span class="mPoint_Info">
+						(<xsl:value-of select="labels/delivery-date/year" />-<xsl:value-of select="labels/delivery-date/month" />-<xsl:value-of select="labels/delivery-date/day" />)
+					</span>
+					<br />
+					<input name="year" value="{session/year}" size="4" maxlength="4" style="-wap-input-format:'*N';" />-
+					<input name="month" value="{session/month}" size="2" maxlength="2" style="-wap-input-format:'*N';" />-
+					<input name="day" value="{session/day}" size="2" maxlength="2" style="-wap-input-format:'*N';" />
+				</div>
+			</xsl:if>
+		</div>
 		<div>
-			<input type="submit" value="{labels/next}" />
+			<input type="submit" value="{labels/next}" class="mPoint_Button" />
 		</div>
 	</form>
 </xsl:template>

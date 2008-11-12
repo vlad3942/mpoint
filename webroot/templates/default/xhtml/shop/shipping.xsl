@@ -11,7 +11,7 @@
 	  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
 	  - the phone will assign 66% of the screen width to the shipping company and 34% of the screen width to the shipping price.
 	  -->
-	<table id="products">
+	<table id="shipping">
 	<tr>
 		<td colspan="2" class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/company" /></td>
 		<td class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/price" /></td>
@@ -25,6 +25,12 @@
 	</tr>
 	</table>
 	
-	<div><a href="{func:constLink('sys/checkout.php')}"><xsl:value-of select="labels/next" /></a></div>
+	<div>
+		<form action="{func:constLink('sys/checkout.php')}" method="get">
+			<div class="mPoint_Label">
+				<input type="submit" value="{labels/next}" class="mPoint_Button" />
+			</div>
+		</form>
+	</div>
 </xsl:template>
 </xsl:stylesheet>

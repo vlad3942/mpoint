@@ -25,16 +25,28 @@
 		  - the phone will assign 60% of the screen width to the product name, 20% of the screen width to the product quantity and
 		  - 20% of the screen width to the product price.
 		  -->
-		<table id="products">
+		<table id="products" cellpadding="0" cellspacing="0">
 		<!-- List Products -->
 		<xsl:for-each select="products/item">
 			<xsl:variable name="id" select="@id" />
-		
-			<tr>
+			<xsl:variable name="css">
+				<xsl:choose>
+					<!-- Even row -->
+					<xsl:when test="position() mod 2 = 0">
+						<xsl:text>mPoint_Even</xsl:text>
+					</xsl:when>
+					<!-- Uneven row -->
+					<xsl:otherwise>
+						<xsl:text>mPoint_Uneven</xsl:text>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
+			
+			<tr class="{$css}">
 				<td><img src="{logo-url}" width="40" height="40" alt="- Logo -" /></td>
 				<td colspan="2">
-					<xsl:value-of select="name" /><br />
-					<span class="mPoint_Number"><xsl:value-of select="price" /></span><br />
+					<div class="mPoint_Label"><xsl:value-of select="name" /></div>
+					<div class="mPoint_Number"><xsl:value-of select="price" /></div>
 					<a href="{func:constLink(concat('products.php?id=', $id) )}"><xsl:value-of select="//labels/add-to-basket" /></a>
 					<xsl:if test="/root/session/products/item[@id = $id] &gt; 0">
 						<span class="mPoint_Info"> (<xsl:value-of select="/root/session/products/item[@id = $id]" />)</span>
@@ -45,7 +57,7 @@
 		</table>
 	</div>
 	<div>
-		<input type="submit" value="{labels/next}" />
+		<input type="submit" value="{labels/next}" class="mPoint_Button" />
 	</div>
 	</form>
 </xsl:template>

@@ -89,10 +89,10 @@
 				  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
 				  - the phone will assign 25% of the screen width to the card logo and 75% of the screen width to the card name.
 				  -->
-				<table class="mPoint_card">
+				<table class="mPoint_Card">
 				<tr>
 					<td><img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}_{/root/system/session/@id}.jpg" width="{width}" height="{height}" alt="" /></td>
-					<td colspan="3"><input type="submit" value="{name}" class="button" /></td>
+					<td colspan="3"><input type="submit" value="{name}" class="mPoint_Card_Button" /></td>
 				</tr>
 				</table>
 			</div>
@@ -141,10 +141,10 @@
 				  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
 				  - the phone will assign 25% of the screen width to the card logo and 75% of the screen width to the card name.
 				  -->
-				<table class="mPoint_card">
+				<table class="mPoint_Card">
 				<tr>
 					<td><img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}_{/root/system/session/@id}.jpg" width="{width}" height="{height}" alt="" /></td>
-					<td colspan="3"><input type="submit" value="{name}" class="button" /></td>
+					<td colspan="3"><input type="submit" value="{name}" class="mPoint_Card_Button" /></td>
 				</tr>
 				</table>
 			</div>
@@ -219,10 +219,10 @@
 				  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
 				  - the phone will assign 25% of the screen width to the card logo and 75% of the screen width to the card name.
 				  -->
-				<table class="mPoint_card">
+				<table class="mPoint_Card">
 				<tr>
 					<td><img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}_{/root/system/session/@id}.jpg" width="{width}" height="{height}" alt="" /></td>
-					<td colspan="3"><input type="submit" value="{name}" class="button" /></td>
+					<td colspan="3"><input type="submit" value="{name}" class="mPoint_Card_Button" /></td>
 				</tr>
 				</table>
 			</div>

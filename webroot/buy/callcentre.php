@@ -2,7 +2,7 @@
 /**
  * This files contains the Controller for mPoint's Call Centre API.
  * The Controller will ensure that all input from the Call Centre is validated and a WAP Link for the started transaction is sent to the Recipient.
- * 
+ *
  * @author Jonatan Evald Buus
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
@@ -41,7 +41,7 @@ if (array_key_exists("orderid", $_POST) === false) { $_POST['orderid'] = null; }
 if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 {
 	$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $_POST['clientid'], $_POST['account']);
-	
+
 	// Set Client Defaults
 	if (array_key_exists("operator", $_POST) === false) { $_POST['operator'] = $obj_ClientConfig->getCountryConfig()->getID() * 1000; }
 	if (array_key_exists("logo-url", $_POST) === false) { $_POST['logo-url'] = $obj_ClientConfig->getLogoURL(); }
@@ -50,14 +50,14 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 	if (array_key_exists("cancel-url", $_POST) === false) { $_POST['cancel-url'] = $obj_ClientConfig->getCancelURL(); }
 	if (array_key_exists("callback-url", $_POST) === false) { $_POST['callback-url'] = $obj_ClientConfig->getCallbackURL(); }
 	if (array_key_exists("language", $_POST) === false) { $_POST['language'] = $obj_ClientConfig->getLanguage(); }
-	
+
 	$obj_mPoint = new CallCentre($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 	$iTxnID = $obj_mPoint->newTransaction(Constants::iCALL_CENTRE_PURCHASE_TYPE);
-	
+
 	/* ========== Input Validation Start ========== */
 	$obj_Validator = new Validate($obj_ClientConfig);
-	
-	if ($obj_Validator->valAddress($_POST['recipient']) != 10) { $aMsgCds[$obj_Validator->valAddress($_POST['recipient']) + 30] = $_POST['recipient']; }
+
+	if ($obj_Validator->valAddress($_POST['mobile']) != 10) { $aMsgCds[$obj_Validator->valAddress($_POST['mobile']) + 30] = $_POST['mobile']; }
 	if ($obj_Validator->valOperator($_POST['operator']) != 10) { $aMsgCds[$obj_Validator->valOperator($_POST['operator']) + 40] = $_POST['operator']; }
 	// Calculate Total Amount from Product Prices
 	$_POST['amount'] = 0;
@@ -74,7 +74,7 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 		$debug .= "prod-quantities: ". var_export($_POST['prod-quantities'], true) ."\n";
 		$debug .= "prod-prices: ". var_export($_POST['prod-prices'], true) ."\n";
 		$debug .= "prod-logos: ". var_export($_POST['prod-logos'], true);
-		
+
 		$aMsgCds[$obj_Validator->valProducts($_POST['prod-names'], $_POST['prod-quantities'], $_POST['prod-prices'], $_POST['prod-logos']) + 60] = $debug;
 	}
 	// Validate URLs
@@ -85,8 +85,9 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 	if ($obj_Validator->valURL($_POST['callback-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_POST['callback-url']) + 110] = $_POST['callback-url']; }
 	if (array_key_exists("return-url", $_POST) === true && $obj_Validator->valURL($_POST['return-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_POST['return-url']) + 120] = $_POST['return-url']; }
 	if ($obj_Validator->valLanguage($_POST['language']) != 10) { $aMsgCds[$obj_Validator->valLanguage($_POST['language']) + 130] = $_POST['language']; }
+	if ($obj_Validator->valEMail($_POST['email']) != 1 && $obj_Validator->valEMail($_POST['email']) != 10) { $aMsgCds[$obj_Validator->valLanguage($_POST['email']) + 140] = $_POST['email']; }
 	/* ========== Input Validation End ========== */
-	
+
 	// Success: Input Valid
 	if (count($aMsgCds) == 0)
 	{
@@ -102,7 +103,7 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 			// Log additional data
 			$obj_mPoint->logProducts($_POST['prod-names'], $_POST['prod-quantities'], $_POST['prod-prices'], $_POST['prod-logos']);
 			$obj_mPoint->logClientVars($_POST);
-			
+
 			// Client is using the Physical Product Flow, ensure Shop has been Configured
 			if ($obj_ClientConfig->getFlowID() == Constants::iPHYSICAL_FLOW)
 			{
@@ -111,7 +112,7 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 			// Construct and send mPoint link for Payment Module
 			$sURL = $obj_mPoint->constLink($obj_TxnInfo->getID(), $_POST['operator'], "pay");
 			$obj_mPoint->sendLink(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo, $sURL);
-			
+
 			$aMsgCds[1000] = "Success";
 		}
 		// Internal Error
@@ -153,14 +154,14 @@ if (array_key_exists("return-url", $_POST) === true)
 		$sQS .= substr($_POST['return-url'], strpos($_POST['return-url'], "#")+1);
 		$_POST['return-url'] = substr($_POST['return-url'], 0, strpos($_POST['return-url'], "#") );
 	}
-	
+
 	header("location: ". $_POST['return-url'] . $sQS);
 }
 // Display Status Page
 else
 {
 	$_GET['msg'] = array_keys($aMsgCds);
-	
+
 	$xml = '<?xml version="1.0" encoding="ISO-8859-15"?>';
 	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/xhtml/status.xsl"?>';
 	$xml .= '<root>';
@@ -171,10 +172,10 @@ else
 	}
 	$xml .= $obj_mPoint->getMessages("Status");
 	$xml .= '</root>';
-	
+
 	header("content-type: text/xml; charset=ISO-8859-15");
 	header("content-length: ". strlen($xml) );
-	
+
 	echo $xml;
 }
 ?>

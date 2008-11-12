@@ -13,23 +13,26 @@
 		<xsl:value-of select="labels/info" />
 	</div>
 	
-	<div class="mPoint_Label">
-		<xsl:value-of select="labels/email" />
-	</div>
-	
-	<form action="{func:constLink('sys/val_email.php')}" method="post">
-		<div>
-			<input type="text" name="email" value="{session/email}" maxlength="50" /><br />
-			<input type="submit" value="{labels/submit}" />
-		</div> 
-	</form>
+		<form action="{func:constLink('sys/val_email.php')}" method="post">
+			<div id="email">
+				<div class="mPoint_Label">
+					<xsl:value-of select="labels/email" />
+				</div>		
+				<div>
+					<input type="text" name="email" value="{session/email}" maxlength="50" />
+				</div>
+			</div>
+			<div>
+				<input type="submit" value="{labels/submit}" class="mPoint_Button" />
+			</div>
+		</form>
 	
 	<!-- Display Status Messages -->
 	<xsl:apply-templates select="messages" />
 	
 	<div>
 		<br />
-		<a href="{func:constLink('/overview.php')}"><xsl:value-of select="labels/back" /></a>
+		<a href="{func:constLink('accept.php')}"><xsl:value-of select="labels/back" /></a>
 	</div>
 </xsl:template>
 

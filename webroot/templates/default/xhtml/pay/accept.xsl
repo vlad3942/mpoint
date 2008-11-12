@@ -49,6 +49,13 @@
 		</div>
 	</xsl:if>
 	
+	<!-- E-Mail Receipt Enabled -->
+	<xsl:if test="client-config/email-receipt = 'true'">
+		<div>
+			<a href="{func:constLink('email.php')}"><xsl:value-of select="labels/email-receipt" /></a>
+		</div>
+	</xsl:if>
+	
 	<!-- Client has specified a return URL for successful payments -->
 	<xsl:if test="string-length(transaction/accept-url) &gt; 0">
 		<div>
@@ -60,7 +67,7 @@
 				</p>
 				
 				<p>
-					<input type="submit" value="{labels/continue}" />
+					<input type="submit" value="{labels/continue}" class="mPoint_Button" />
 				</p>
 			</form>
 		</div>

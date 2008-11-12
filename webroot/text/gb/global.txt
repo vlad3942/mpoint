@@ -103,34 +103,30 @@ msgid @@@ Select Card @@@
 msgstr @@@ Select Card @@@
 
 #: /webroot/pay/card.php:41
-msgid @@@ Step 2 of 3 @@@
-msgstr @@@ Step 2 of 3 @@@
+msgid @@@ Step 1 of 2 @@@
+msgstr @@@ Step 1 of 2 @@@
 
 #: /webroot/pay/card.php:42
 msgid @@@ Please select your Credit Card @@@
 msgstr @@@ Please select your Credit Card @@@
 
-#: /webroot/pay/email.php:29
+#: /webroot/pay/email.php:31
 msgid @@@ E-Mail Receipt @@@
 msgstr @@@ E-Mail Receipt @@@
 
-#: /webroot/pay/email.php:40
-msgid @@@ Step 1 of 3 @@@
-msgstr @@@ Step 1 of 3 @@@
-
-#: /webroot/pay/email.php:41
+#: /webroot/pay/email.php:42
 msgid @@@ Please enter your e-mail address below @@@
 msgstr @@@ Please enter your e-mail address below @@@
 
-#: /webroot/pay/email.php:42
+#: /webroot/pay/email.php:43
 msgid @@@ E-Mail @@@
 msgstr @@@ E-Mail @@@
 
-#: /webroot/pay/email.php:43
+#: /webroot/pay/email.php:44
 msgid @@@ Next >> @@@
 msgstr @@@ Next >> @@@
 
-#: /webroot/pay/email.php:44
+#: /webroot/pay/email.php:45
 msgid @@@ << Back @@@
 msgstr @@@ << Back @@@
 
@@ -238,7 +234,7 @@ msgstr @@@ Terms & Conditions @@@
 msgid @@@ << Back @@@
 msgstr @@@ << Back @@@
 
-#: /api/classes/callback.php:196
+#: /api/classes/callback.php:197
 msgid @@@ mPoint - SMS Receipt @@@
 msgstr @@@ Thank you for using mPoint, your order details are:
 mPoint ID: {MPOINTID}

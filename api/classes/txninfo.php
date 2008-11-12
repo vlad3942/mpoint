@@ -49,7 +49,7 @@ class TxnInfo
 	 * @var ClientConfig
 	 */
 	private $_obj_ClientConfig;
-	
+
 	/**
 	 * Total amount the customer will pay for the Transaction
 	 *
@@ -80,7 +80,7 @@ class TxnInfo
 	 * @var string
 	 */
 	private $_sEMail;
-	
+
 	/**
 	 * Absolute URL to the Client's Logo which will be displayed on all payment pages
 	 *
@@ -139,7 +139,7 @@ class TxnInfo
 	 * @var integer
 	 */
 	private $_iGoMobileID;
-	
+
 	/**
 	 * Default Constructor
 	 *
@@ -172,19 +172,19 @@ class TxnInfo
 		$this->_sAddress = trim($addr);
 		$this->_iOperatorID =  (integer) $oid;
 		$this->_sEMail = trim($email);
-		
+
 		$this->_sLogoURL = trim($lurl);
 		$this->_sCSSURL = trim($cssurl);
 		$this->_sAcceptURL = trim($aurl);
 		$this->_sCancelURL = trim($curl);
 		$this->_sCallbackURL = trim($cburl);
-		
+
 		$this->_sLanguage = trim($l);
 		$this->_iMode = (integer) $m;
 		$this->_bAutoCapture = (bool) $ac;
 		$this->_iGoMobileID = (integer) $gmid;
 	}
-	
+
 	/**
 	 * Returns the Unique ID for the Transaction
 	 *
@@ -240,7 +240,7 @@ class TxnInfo
 	 * @return 	string
 	 */
 	public function getEMail() { return $this->_sEMail; }
-	
+
 	/**
 	 * Returns the Absolute URL to the Client's Logo which will be displayed on all payment pages
 	 *
@@ -259,7 +259,7 @@ class TxnInfo
 	 * @return 	string
 	 */
 	public function getAcceptURL() { return $this->_sAcceptURL; }
-	
+
 	/**
 	 * Returns the Absolute URL where the Customer should be returned to in case he / she cancels the Transaction midway
 	 *
@@ -300,20 +300,20 @@ class TxnInfo
 	 * @return 	integer
 	 */
 	public function getGoMobileID() { return $this->_iGoMobileID; }
-	
+
 	/**
 	 * Updates the information for the Transaction with the Customer's E-Mail Address where a receipt is sent to upon successful completion of the payment transaction
 	 *
 	 * @param 	string $email 	Customer's E-Mail Address where a receipt is sent to upon successful completion of the payment transaction
 	 */
 	public function setEMail($email) { $this->_sEMail = $email; }
-	
+
 	/**
 	 * Converts the data object into XML.
 	 * If a User Agent Profile is provided, the method will automatically calculate the width and height of the client logo
 	 * after it has been resized to fit the screen resolution of the customer's mobile device.
 	 * If not, the width and height will be set to -1.
-	 * 
+	 *
 	 * The method will return an XML document in the following format:
 	 * 	<transaction id="{UNIQUE ID FOR THE TRANSACTION}" type="{ID FOR THE TRANSACTION TYPE}">
 	 *		<amount currency="{CURRENCY AMOUNT IS CHARGED IN}">{TOTAL AMOUNT THE CUSTOMER IS CHARGED FOR THE TRANSACTION}</amount>
@@ -337,7 +337,7 @@ class TxnInfo
 	 *
 	 * @see 	iCLIENT_LOGO_SCALE
 	 * @see 	General::formatAmount()
-	 * 
+	 *
 	 * @param 	UAProfile $oUA 	Reference to the User Agent Profile for the Customer's Mobile Device (optional)
 	 * @return 	string
 	 */
@@ -349,7 +349,7 @@ class TxnInfo
 			if ($oUA->getHeight() * iCLIENT_LOGO_SCALE / 100 < $obj_Image->getSrcHeight() ) { $iHeight = $oUA->getHeight() * iCLIENT_LOGO_SCALE / 100; }
 			else { $iHeight = $obj_Image->getSrcHeight(); }
 			$obj_Image->resize($oUA->getWidth(), $iHeight);
-			
+
 			$iWidth = $obj_Image->getTgtWidth();
 			$iHeight = $obj_Image->getTgtHeight();
 		}
@@ -358,7 +358,7 @@ class TxnInfo
 			$iWidth = -1;
 			$iHeight = -1;
 		}
-		
+
 		$xml = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'" gmid="'. $this->_iGoMobileID .'" mode="'. $this->_iMode .'">';
 		$xml .= '<amount currency="'. $this->_obj_ClientConfig->getCountryConfig()->getCurrency() .'">'. $this->_iAmount .'</amount>';
 		$xml .= '<price>'. General::formatAmount($this->_obj_ClientConfig->getCountryConfig(), $this->_iAmount) .'</price>';
@@ -378,18 +378,18 @@ class TxnInfo
 		$xml .= '<language>'. $this->_sLanguage .'</language>';
 		$xml .= '<auto-capture>'. General::bool2xml($this->_bAutoCapture) .'</auto-capture>';
 		$xml .= '</transaction>';
-		
+
 		return $xml;
 	}
-	
+
 	/**
 	 * Overloaded factory method for producing a new instance of a Transaction Info object.
 	 * The data object can either be instantiated from an array of Client Input or from the Transaction Log.
 	 * In the latter case the method will first instantiate a new object with the correct Client Configuration for the Transaction.
 	 * The method will throw a TxnInfoException with code 1001 if it's unable to instantiate the data object with the Transaction Information.
-	 * 
+	 *
 	 * @see 	ClientConfig::produceConfig
-	 * 
+	 *
 	 * @param 	integer $id 						Unique ID for the Transaction that should be instantiated
 	 * @param 	[TxnInfo|ClientConfig|RDB] $obj 	Reference to one of the following objects:
 	 * 												- An instance of the Data Object with the Transaction Information that the new Data Object should be based on
@@ -410,7 +410,7 @@ class TxnInfo
 			if (array_key_exists("client_config", $misc) === false) { $misc["client_config"] = $obj->getClientConfig(); }
 			if (array_key_exists("amount", $misc) === false) { $misc["amount"] = $obj->getAmount(); }
 			if (array_key_exists("orderid", $misc) === false) { $misc["orderid"] = $obj->getOrderID(); }
-			if (array_key_exists("recipient", $misc) === false) { $misc["recipient"] = $obj->getAddress(); }
+			if (array_key_exists("mobile", $misc) === false) { $misc["mobile"] = $obj->getAddress(); }
 			if (array_key_exists("operator", $misc) === false) { $misc["operator"] = $obj->getOperator(); }
 			if (array_key_exists("email", $misc) === false) { $misc["email"] = $obj->getEMail(); }
 			if (array_key_exists("logo-url", $misc) === false) { $misc["logo-url"] = $obj->getLogoURL(); }
@@ -422,27 +422,27 @@ class TxnInfo
 			if (array_key_exists("mode", $misc) === false) { $misc["mode"] = $obj->getMode(); }
 			if (array_key_exists("auto-capture", $misc) === false) { $misc["auto-capture"] = $obj->useAutoCapture(); }
 			if (array_key_exists("gomobileid", $misc) === false) { $misc["gomobileid"] = $obj->getGoMobileID(); }
-			
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client_config"], $misc["amount"], $misc["orderid"], $misc["recipient"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["gomobileid"]);
+
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client_config"], $misc["amount"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["gomobileid"]);
 			break;
 		case ($obj instanceof ClientConfig):	// Instantiate from array of Client Input
 			if (array_key_exists("email", $misc) === false) { $misc["email"] = ""; }
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["amount"], $misc["orderid"], $misc["recipient"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["gomobileid"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["amount"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["gomobileid"]);
 			break;
 		case ($obj instanceof RDB):				// Instantiate from Transaction Log
 			$sql = "SELECT id, typeid, amount, orderid, address, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, mode, auto_capture, gomobileid,
 						clientid, accountid, keywordid
 					FROM Log.Transaction_Tbl
 					WHERE id = ". intval($id);
-			if (is_array($misc) === true) { $sql .= " AND created LIKE '". $obj->escStr($misc[0]) ."%'"; }
+			if (is_array($misc) === true) { $sql .= " AND date_trunc('second', created) = '". $obj->escStr($misc[0]) ."'"; }
 //			echo $sql ."\n";
 			$RS = $obj->getName($sql);
-			
+
 			// Transaction found
 			if (is_array($RS) === true)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($obj, $RS["CLIENTID"], $RS["ACCOUNTID"], $RS["KEYWORDID"]);
-				
+
 				$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $RS["AMOUNT"], $RS["ORDERID"], $RS["ADDRESS"], $RS["OPERATORID"], $RS["EMAIL"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["GOMOBILEID"]);
 				$obj_TxnInfo->setEMail($RS["EMAIL"]);
 			}
@@ -453,7 +453,7 @@ class TxnInfo
 			trigger_error("Argument 2 passed to TxnInfo::produceInfo() must be an instance of ClientConfig or of RDB", E_USER_ERROR);
 			break;
 		}
-		
+
 		return $obj_TxnInfo;
 	}
 }

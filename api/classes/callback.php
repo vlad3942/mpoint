@@ -31,7 +31,7 @@ class Callback extends General
 	 * @var TxnInfo
 	 */
 	private $_obj_TxnInfo;
-	
+
 	/**
 	 * Default Constructor.
 	 *
@@ -42,22 +42,22 @@ class Callback extends General
 	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI)
 	{
 		parent::__construct($oDB, $oTxt);
-		
+
 		$this->_obj_TxnInfo = $oTI;
 	}
-	
+
 	/**
 	 * Returns the Data object with the Transaction Information.
 	 *
 	 * @return TxnInfo
 	 */
 	public function &getTxnInfo() { return $this->_obj_TxnInfo; }
-	
+
 	/**
 	 * Completes the Transaction by updating the Transaction Log with the final details for the Payment.
 	 * Additionally the method will insert a final entry in the Message Log with the provided debug data.
 	 * The method will throw a Callback Exception wit code 1001 if the update fails.
-	 * 
+	 *
 	 * @see 	General::newMessage()
 	 *
 	 * @param 	integer $pspid 	Unique ID for the Payment Service Provider (PSP) mPoint used to clear the transaction
@@ -74,21 +74,21 @@ class Callback extends General
 				WHERE id = ". $this->_obj_TxnInfo->getID();
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
-		
+
 		$this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true) );
 		// Error: Unable to complete log for Transaction
 		if (is_resource($res) === false)
 		{
 			throw new CallbackException("Unable to complete log for Transaction: ". $this->_obj_TxnInfo->getID(), 1001);
 		}
-		
+
 		// Auto Capture enabled for Transaction
 		if ($this->_obj_TxnInfo->useAutoCapture() === true && $sid == Constants::iPAYMENT_ACCEPTED_STATE)
 		{
 			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
 		}
 	}
-	
+
 	/**
 	 * Performs the Callback request via HTTP POST and sends the Payment Status to the Client.
 	 * The method will update the message log with the progression of the Callback request.
@@ -103,14 +103,14 @@ class Callback extends General
 		$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_CONSTRUCTED_STATE, $body);
 		/* ========== Instantiate Connection Info Start ========== */
 		$aURLInfo = parse_url($this->_obj_TxnInfo->getCallbackURL() );
-		
+
 		if (array_key_exists("port", $aURLInfo) === false) { $aURLInfo["port"] = 80; }
 		if (array_key_exists("query", $aURLInfo) === true) { $aURLInfo["path"] .= "?". $aURLInfo["query"]; }
-		
+
 		$obj_ConnInfo = new HTTPConnInfo($aURLInfo["scheme"], $aURLInfo["host"], $aURLInfo["port"], 20, $aURLInfo["path"], "POST", "application/x-www-form-urlencoded");
 		/* ========== Instantiate Connection Info End ========== */
 		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
-		
+
 		/* ========== Perform Callback Start ========== */
 		$iCode = -1;
 		try
@@ -137,11 +137,11 @@ class Callback extends General
 			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_SEND_FAILED_STATE, $e->getMessage() ."(". $e->getCode() .")");
 		}
 		/* ========== Perform Callback End ========== */
-		
+
 		if ($iCode == 200) { trigger_error("mPoint Callback request succeeded for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_NOTICE); }
 		else { trigger_error("mPoint Callback request failed for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_WARNING); }
 	}
-	
+
 	/**
 	 * Notifies the Client of the Payment Status by performing a callback via HTTP.
 	 * The method will construct the default mPoint callback:
@@ -158,7 +158,7 @@ class Callback extends General
 	 * 	- Purchased Products
 	 * 	- Delivery Information
 	 * 	- Shipping Information
-	 * 
+	 *
 	 * @see 	Callback::send()
 	 * @see 	Callback::getVariables()
 	 *
@@ -174,16 +174,15 @@ class Callback extends General
 		$sBody .= "&status=". $sid;
 		$sBody .= "&amount=". $this->_obj_TxnInfo->getAmount();
 		$sBody .= "&currency=". urlencode($this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getCurrency() );
-		$sBody .= "&recipient=". urlencode($this->_obj_TxnInfo->getAddress() );
-		$sBody .= "&email=". urlencode($this->_obj_TxnInfo->getEMail() );
+		$sBody .= "&mobile=". urlencode($this->_obj_TxnInfo->getAddress() );
 		$sBody .= "&operator=". urlencode($this->_obj_TxnInfo->getOperator() );
 		if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true) { $sBody .= "&pspid=". urlencode($pspid); }
 		$sBody .= $this->getVariables();
 		/* ----- Construct Body End ----- */
-		
+
 		$this->send($sBody);
 	}
-	
+
 	/**
 	 * Sends an SMS Receipt with Payment Information to the Customer through GoMobile.
 	 *
@@ -200,29 +199,29 @@ class Callback extends General
 		$sBody = str_replace("{ORDERID}", $this->_obj_TxnInfo->getOrderID(), $sBody);
 		$sBody = str_replace("{PRICE}", General::formatAmount($this->_obj_TxnInfo->getClientConfig()->getCountryConfig(), $this->_obj_TxnInfo->getAmount() ), $sBody);
 		$sBody = str_replace("{CLIENT}", $this->_obj_TxnInfo->getClientConfig()->getName(), $sBody);
-		
+
 		// Instantiate Message Object for holding the message data which will be sent to GoMobile
 		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID(), $this->_obj_TxnInfo->getOperator(), $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getChannel(), $this->_obj_TxnInfo->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $this->_obj_TxnInfo->getAddress(), $sBody);
 		$this->sendMT($oCI, $obj_MsgInfo, $this->_obj_TxnInfo);
 	}
-	
+
 	/**
 	 * Sends an E-Mail Receipt with Payment Information to the Customer.
-	 * 
+	 *
 	 * @see 	EMailReceipt
 	 *
 	 */
 	public function sendEMailReceipt()
 	{
 		$obj_EMail = new EMailReceipt($this->getDBConn(), $this->getText(), $this->_obj_TxnInfo);
-		
+
 		if (mail($this->_obj_TxnInfo->getEMail(), $obj_EMail->constSubject(), $obj_EMail->constBody(), $obj_EMail->constHeaders() ) === true)
 		{
 			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iEMAIL_ACCEPTED_STATE, $obj_EMail->constSubject() );
 		}
 		else { $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iEMAIL_REJECTED_START, $obj_EMail->constSubject() ); }
 	}
-	
+
 	/**
 	 * Retrieves all Custom Client Variables and Customer Input from the Database and serialises them
 	 * into a urlencoded string.
@@ -245,7 +244,7 @@ class Callback extends General
 	 * For Shipping Information the following data will be returned:
 	 * 	- ship_company
 	 * 	- ship_price
-	 * 
+	 *
 	 * @see 	Constants::iCLIENT_VARS_STATE
 	 * @see 	Constants::iPRODUCTS_STATE
 	 * @see 	Constants::iDELIVERY_INFO_STATE
@@ -261,7 +260,7 @@ class Callback extends General
 		$aProducts = $this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iPRODUCTS_STATE);
 		$aDeliveryInfo = $this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iDELIVERY_INFO_STATE);
 		$aShippingInfo = $this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iSHIPPING_INFO_STATE);
-		
+
 		$sBody = "";
 		// Add custom Client Variables to Callback Body
 		foreach ($aClientVars as $name => $value)
@@ -285,7 +284,7 @@ class Callback extends General
 		{
 			$sBody .= "&ship_". $name ."=". urlencode($value);
 		}
-		
+
 		return $sBody;
 	}
 }
