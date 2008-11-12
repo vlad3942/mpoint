@@ -6,31 +6,41 @@
 <xsl:template match="/root">
 	<div class="mPoint_Info"><xsl:value-of select="labels/info" /></div>
 	
-	<!--
-	  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
-	  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
-	  - the phone will assign 66% of the screen width to the shipping company and 34% of the screen width to the shipping price.
-	  -->
-	<table id="shipping">
-	<tr>
-		<td colspan="2" class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/company" /></td>
-		<td class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/price" /></td>
-	</tr>
-	<tr>
-		<td colspan="3"><img src="{system/protocol}://{system/host}/img/shipping.gif" width="40" height="40" alt="- Logo -" /></td>
-	</tr>
-	<tr>
-		<td colspan="2"><xsl:value-of select="shop-config/shipping/company" /></td>
-		<td class="mPoint_Number"><xsl:value-of select="shipping-cost" /></td>
-	</tr>
-	</table>
-	
-	<div>
-		<form action="{func:constLink('sys/checkout.php')}" method="get">
-			<div class="mPoint_Label">
-				<input type="submit" value="{labels/next}" class="mPoint_Button" />
+	<div id="shipping">
+		<!-- List Shipping Companies -->
+		<xsl:for-each select="shipping/company">
+			<xsl:variable name="css">
+				<xsl:choose>
+					<!-- Even row -->
+					<xsl:when test="position() mod 2 = 0">
+						<xsl:text>mPoint_Even</xsl:text>
+					</xsl:when>
+					<!-- Uneven row -->
+					<xsl:otherwise>
+						<xsl:text>mPoint_Uneven</xsl:text>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:variable>
+			
+			<div>
+				<a href="{func:constLink(concat('sys/checkout.php?id=', @id, '&amp;cost=', cost) )}">
+					<!--
+					  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
+					  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
+					  - the phone will assign 25% of the screen width to the card logo and 75% of the screen width to the card name.
+					  -->
+					<table cellpadding="0" cellspacing="0">
+					<tr class="{$css}">
+						<td style="vertical-align:top;"><img src="{logo-url}" width="40" height="40" alt="" style="border-style:none;" /></td>
+						<td colspan="3">
+							<div class="mPoint_Label"><xsl:value-of select="name" /></div>
+							<div><xsl:value-of select="price" /></div>
+						</td>
+					</tr>
+					</table>
+				</a>
 			</div>
-		</form>
+		</xsl:for-each>
 	</div>
 </xsl:template>
 </xsl:stylesheet>

@@ -202,29 +202,25 @@ msgstr @@@ Læg i Kurv @@@
 msgid @@@ Next >> @@@
 msgstr @@@ Næste >> @@@
 
-#: /webroot/shop/shipping.php:28
+#: /webroot/shop/shipping.php:26
 msgid @@@ Shipping Info @@@
 msgstr @@@ Levering @@@
 
-#: /webroot/shop/shipping.php:41
+#: /webroot/shop/shipping.php:39
 msgid @@@ Shipping - Info @@@
-msgstr @@@ Nedenstående er leverings information for din bestilling. @@@
+msgstr @@@ Vælg venligst leverings metode @@@
 
-#: /webroot/shop/shipping.php:42
+#: /webroot/shop/shipping.php:40
 msgid @@@ Company @@@
 msgstr @@@ Firma @@@
 
-#: /webroot/shop/shipping.php:43
+#: /webroot/shop/shipping.php:41
 msgid @@@ Price @@@
 msgstr @@@ Pris @@@
 
-#: /webroot/shop/shipping.php:44
-msgid @@@ Next >> @@@
-msgstr @@@ Næste >> @@@
-
-#: /webroot/shop/shipping.php:47
-msgid @@@ FREE @@@
-msgstr @@@ GRATIS @@@
+#: /webroot/shop/shipping.php:42
+msgid @@@ Select >> @@@
+msgstr @@@ Select >> @@@
 
 #: /webroot/terms.php:29
 msgid @@@ Terms & Conditions @@@
@@ -267,6 +263,10 @@ msgstr @@@ Velkommen til {CLIENT}, aktiver venligst nedenstående link @@@
 #: /api/classes/general.php:636
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Velkommen til {CLIENT} @@@
+
+#: /api/classes/shipping.php:114
+msgid @@@ FREE @@@
+msgstr @@@ FREE @@@
 
 #: /api/classes/surepay.php:130
 msgid @@@ mPoint - Embedded link Resend Indication @@@

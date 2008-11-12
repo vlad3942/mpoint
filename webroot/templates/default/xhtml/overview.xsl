@@ -57,7 +57,7 @@
 		</xsl:variable>
 		
 		<tr class="{$css}">
-			<td colspan="6"><img src="{system/protocol}://{system/host}/img/shipping.gif" width="40" height="40" alt="- Logo -" /></td>
+			<td colspan="6"><img src="{shipping-info/logo-url}" width="40" height="40" alt="" /></td>
 		</tr>
 		<tr class="{$css}">
 			<td colspan="5"><xsl:value-of select="shipping-info/name" /></td>

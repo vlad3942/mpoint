@@ -23,7 +23,7 @@ class Overview extends General
 	 * @var TxnInfo
 	 */
 	private $_obj_TxnInfo;
-	
+
 	/**
 	 * Default Constructor.
 	 *
@@ -34,19 +34,19 @@ class Overview extends General
 	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI)
 	{
 		parent::__construct($oDB, $oTxt);
-		
+
 		$this->_obj_TxnInfo = $oTI;
-		
+
 		$this->newMessage($oTI->getID(), Constants::iACTIVATE_LINK_STATE, $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF']);
 	}
-	
+
 	/**
 	 * Returns the Data object with the Transaction Information.
 	 *
 	 * @return TxnInfo
 	 */
 	public function &getTxnInfo() { return $this->_obj_TxnInfo; }
-	
+
 	/**
 	 * Returns all products for the current Transaction.
 	 * The products will be returned as an XML document in the following format:
@@ -65,7 +65,7 @@ class Overview extends General
 	 * 		</item>
 	 * 		...
 	 * 	</products>
-	 * 
+	 *
 	 * @see 	sDEFAULT_PRODUCT_LOGO
 	 * @see 	Constants::iPRODUCTS_STATE
 	 * @see 	General::getMessageData()
@@ -76,7 +76,7 @@ class Overview extends General
 	{
 		// Get Product Data
 		$aProducts = $this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iPRODUCTS_STATE);
-		
+
 		$xml = '<products>';
 		foreach ($aProducts["names"] as $key => $name)
 		{
@@ -91,14 +91,14 @@ class Overview extends General
 				$xml .= '<logo-url>'. htmlspecialchars($aProducts["logos"][$key], ENT_NOQUOTES) .'</logo-url>';
 			}
 			else { $xml .= '<logo-url>'. sDEFAULT_PRODUCT_LOGO .'</logo-url>'; }
-			
+
 			$xml .= '</item>';
 		}
 		$xml .= '</products>';
-		
+
 		return $xml;
 	}
-	
+
 	/**
 	 * Returns the Shipping Information for the current Transaction.
 	 * The Shipping Information will be returned as an XML document in the following format:
@@ -111,7 +111,7 @@ class Overview extends General
 	 * 		<delivery-date>{DATE WHEN THE ORDER SHOULD BE DELIVERED}</delivery-date>
 	 * 	</delivery-info>
 	 * The delivery-date tag might be empyt, otherwise it contains a date in the format: YYYY-MM-DD
-	 * 
+	 *
 	 * @see 	Constants::iDELIVERY_INFO_STATE
 	 * @see 	General::getMessageData()
 	 *
@@ -121,7 +121,7 @@ class Overview extends General
 	{
 		// Get Delivery Information
 		$aDeliveryInfo = $this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iDELIVERY_INFO_STATE);
-		
+
 		$xml = '<delivery-info>';
 		// Create XML for Delivery Information
 		if (count($aDeliveryInfo) > 0)
@@ -139,10 +139,10 @@ class Overview extends General
 			else { $xml .= '<delivery-date />'; }
 		}
 		$xml .= '</delivery-info>';
-		
+
 		return $xml;
 	}
-	
+
 	/**
 	 * Returns the Shipping Information for the current Transaction.
 	 * The Shipping Information will be returned as an XML document in the following format:
@@ -150,7 +150,7 @@ class Overview extends General
 	 * 		<name>{NAME OF THE PRODUCT}</name>
 	 * 		<price>{TOTAL PRICE FOR ALL THE UNITS</price>
 	 * 	</shipping-info>
-	 * 
+	 *
 	 * @see 	Constants::iSHIPPING_INFO_STATE
 	 * @see 	General::getMessageData()
 	 *
@@ -160,16 +160,17 @@ class Overview extends General
 	{
 		// Get Shipping Information
 		$aShippingInfo = $this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iSHIPPING_INFO_STATE);
-		
+
 		$xml = '<shipping-info>';
 		// Create XML for Shipping Information
 		if (count($aShippingInfo) > 0)
 		{
 			$xml .= '<name>'. htmlspecialchars($aShippingInfo["company"], ENT_NOQUOTES) .'</name>';
+			$xml .= '<logo-url>'. htmlspecialchars($aShippingInfo["logo-url"], ENT_NOQUOTES) .'</logo-url>';
 			$xml .= '<price>'. $aShippingInfo["price"] .'</price>';
 		}
 		$xml .= '</shipping-info>';
-		
+
 		return $xml;
 	}
 }

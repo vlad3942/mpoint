@@ -79,12 +79,12 @@ td.mPoint_Number
 	vertical-align: bottom;
 }
 
-tr.mPoint_Even
+tr.mPoint_Even, div.mPoint_Even
+{
+}
+tr.mPoint_Uneven, div.mPoint_Uneven
 {
 	background-color: #E0E0E0;
-}
-tr.mPoint_Uneven
-{
 }
 
 input.mPoint_Button
@@ -135,10 +135,15 @@ div#terms
 	white-space: pre;
 }
 
-div#delivery, table#shipping, div#email, div#cardinfo
+div#delivery, div#email, div#cardinfo
 {
 	background-color: #E0E0E0;
 	padding-left: 3px;
 	padding-bottom: 3px;
+}
+div#shipping div table tr td
+{
+	padding-top: 3px;
+	padding-left: 3px;
 }
 /* ========== ID Classes End ========== */
