@@ -208,19 +208,7 @@ msgstr @@@ Shipping Info @@@
 
 #: /webroot/shop/shipping.php:39
 msgid @@@ Shipping - Info @@@
-msgstr @@@ Please select shipping company @@@
-
-#: /webroot/shop/shipping.php:40
-msgid @@@ Company @@@
-msgstr @@@ Company @@@
-
-#: /webroot/shop/shipping.php:41
-msgid @@@ Price @@@
-msgstr @@@ Price @@@
-
-#: /webroot/shop/shipping.php:42
-msgid @@@ Select >> @@@
-msgstr @@@ Select >> @@@
+msgstr @@@ Please select shipping method @@@
 
 #: /webroot/terms.php:29
 msgid @@@ Terms & Conditions @@@

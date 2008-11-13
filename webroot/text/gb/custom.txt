@@ -170,6 +170,9 @@ msgstr @@@ E-Mail has an invalid format, a valid e-mail address must be in the f
 msgid @@@ E-Mail - 91 @@@
 msgstr @@@ An error occurred while sending your E-Mail Receipt, please try again? @@@
 
+msgid @@@ Accept - 100 @@@
+msgstr @@@ Your receipt has been sent @@@
+
 msgid @@@ Products - 11 @@@
 msgstr @@@ You haven't added anything to your basket. Click "Add to Basket" to add a product. @@@
 msgid @@@ Products - 12 @@@

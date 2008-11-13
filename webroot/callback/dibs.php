@@ -2,7 +2,7 @@
 /**
  * This files contains the for the Callback component which handles transactions processed through DIBS.
  * The file will update the Transaction status and add
- * 
+ *
  * @author Jonatan Evald Buus
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
@@ -21,8 +21,6 @@ require_once(sAPI_CLASS_PATH ."/gomobile.php");
 require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
-// Require Business logic for the E-Mail Receipt Component
-require_once(sCLASS_PATH ."/email_receipt.php");
 
 try
 {
@@ -39,18 +37,13 @@ catch (TranslateTextException $e)
 }
 $obj_mPoint = new DIBS($_OBJ_DB, $_OBJ_TXT, TxnInfo::produceInfo($_POST['mpointid'], $_OBJ_DB) );
 
-// 
+//
 $obj_mPoint->completeTransaction(Constants::iDIBS_PSP, $_POST['transact'], $_POST['cardid'], Constants::iPAYMENT_ACCEPTED_STATE);
 
 // Client has SMS Receipt enabled
 if ($obj_mPoint->getTxnInfo()->getClientConfig()->smsReceiptEnabled() === true)
 {
 	$obj_mPoint->sendSMSReceipt(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
-}
-// Client has E-Mail Receipt enabled
-if ($obj_mPoint->getTxnInfo()->getClientConfig()->emailReceiptEnabled() === true)
-{
-	$obj_mPoint->sendEMailReceipt();
 }
 
 // Callback URL has been defined for Client

@@ -1,7 +1,7 @@
 <?php
 /**
  * The Receipt sub-package contains Business Logic for constructing either an SMS or an E-Mail Receipt.
- * 
+ *
  * @author Jonatan Evald Buus
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
@@ -25,7 +25,7 @@ class EMailReceipt extends General
 	 * @var TxnInfo
 	 */
 	private $_obj_TxnInfo;
-	
+
 	/**
 	 * Default Constructor
 	 *
@@ -36,10 +36,10 @@ class EMailReceipt extends General
 	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI)
 	{
 		parent::__construct($oDB, $oTxt);
-		
+
 		$this->_obj_TxnInfo = $oTI;
 	}
-	
+
 	/**
 	 * Constructs the SMTP Headers for the E-Mail Receipt.
 	 * The method will return a string in the following format:
@@ -57,10 +57,10 @@ class EMailReceipt extends General
 		$sHeaders = 'From: "mPoint" <no-reply@cellpointmobile.com>' ."\n";
 		$sHeaders .= 'Reply-To: no-reply@cellpointmobile.com' ."\n";
 		$sHeaders .= 'Content-Type: text/plain' ."\n";
-		
+
 		return $sHeaders;
 	}
-	
+
 	/**
 	 * Constructs the Subject for the E-Mail Receipt.
 	 * The method will replace the following text tags:
@@ -74,10 +74,10 @@ class EMailReceipt extends General
 		$sSubject = $this->getText()->_("E-Mail Receipt - Subject");
 		$sSubject = str_replace("{ORDERID}", $this->_obj_TxnInfo->getOrderID(), $sSubject);
 		$sSubject = str_replace("{MPOINTID}", $this->_obj_TxnInfo->getID(), $sSubject);
-		
+
 		return $sSubject;
 	}
-	
+
 	/**
 	 * Constructs the Body for the E-Mail Receipt.
 	 * The method will replace the following text tags:
@@ -96,8 +96,25 @@ class EMailReceipt extends General
 		$sBody = str_replace("{MPOINTID}", $this->_obj_TxnInfo->getID(), $sBody);
 		$sBody = str_replace("{PRICE}", General::formatAmount($this->_obj_TxnInfo->getClientConfig()->getCountryConfig(), $this->_obj_TxnInfo->getAmount() ), $sBody);
 		$sBody = str_replace("{CLIENT}", $this->_obj_TxnInfo->getClientConfig()->getName(), $sBody);
-		
+
 		return $sBody;
+	}
+
+	/**
+	 * Sends an E-Mail Receipt with Payment Information to the Customer.
+	 *
+	 */
+	public function sendReceipt($addr)
+	{
+		$bStatus = mail($addr, $this->constSubject(), $this->constBody(), $this->constHeaders() );
+
+		if ($bStatus === true)
+		{
+			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iEMAIL_ACCEPTED_STATE, $this->constSubject() );
+		}
+		else { $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iEMAIL_REJECTED_START, $this->constSubject() ); }
+
+		return $bStatus;
 	}
 }
 ?>

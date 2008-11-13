@@ -59,7 +59,7 @@ class ClientConfig extends BasicConfig
 	 * @var KeywordConfig
 	 */
 	private $_obj_KeywordConfig;
-	
+
 	/**
 	 * Absolute URL to the Client's Logo which will be displayed on all payment pages
 	 *
@@ -122,11 +122,11 @@ class ClientConfig extends BasicConfig
 	 * 	- PSP, Callback is performed using the PSP's protocol by re-constructing the request received from the PSP
 	 *
 	 * @see Callback::notifyClient()
-	 * 
+	 *
 	 * @var string
 	 */
 	private $_sMethod;
-	
+
 	/**
 	 * Terms & Conditions for the Shop
 	 *
@@ -154,7 +154,7 @@ class ClientConfig extends BasicConfig
 	 * @var boolean
 	 */
 	private $_bSendPSPID;
-	
+
 	/**
 	 * Default Constructor
 	 *
@@ -184,34 +184,34 @@ class ClientConfig extends BasicConfig
 	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $aurl, $curl, $cburl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp)
 	{
 		parent::__construct($id, $name);
-		
+
 		$this->_iFlowID = (integer) $fid;
-		
+
 		$this->_obj_AccountConfig = $oAC;
 		$this->_sUsername = trim($un);
 		$this->_sPassword = trim($pw);
 		$this->_obj_CountryConfig = $oCC;
 		$this->_obj_KeywordConfig = $oKC;
-		
+
 		$this->_sLogoURL = trim($lurl);
 		$this->_sCSSURL = trim($cssurl);
 		$this->_sAcceptURL = trim($aurl);
 		$this->_sCancelURL = trim($curl);
 		$this->_sCallbackURL = trim($cburl);
-		
+
 		$this->_iMaxAmount = (integer) $ma;
 		$this->_sLanguage = trim($l);
-		
+
 		$this->_bSMSReceipt = (bool) $sms;
 		$this->_bEmailReceipt = (bool) $email;
 		$this->_sMethod = $mtd;
-		
+
 		$this->_sTerms = trim($terms);
 		$this->_iMode = (integer) $m;
 		$this->_bAutoCapture = (bool) $ac;
 		$this->_bSendPSPID = (bool) $sp;
 	}
-	
+
 	/**
 	 * Returns the ID of the Flow the Client's customers have to go through in order to complete the Payment Transaction
 	 *
@@ -266,7 +266,7 @@ class ClientConfig extends BasicConfig
 	 * @return 	string
 	 */
 	public function getAcceptURL() { return $this->_sAcceptURL; }
-	
+
 	/**
 	 * Returns the Absolute URL where the Customer should be returned to in case he / she cancels the Transaction midway
 	 *
@@ -309,7 +309,7 @@ class ClientConfig extends BasicConfig
 	 * This can be one of the following:
 	 * 	- mPoint, Callback is perfomed using mPoint's native protocol
 	 * 	- PSP, Callback is performed using the PSP's protocol by re-constructing the request received from the PSP
-	 * 
+	 *
 	 * @see Callback::notifyClient()
 	 *
 	 * @return 	string
@@ -342,7 +342,7 @@ class ClientConfig extends BasicConfig
 	 * @return 	boolean
 	 */
 	public function sendPSPID() { return $this->_bSendPSPID; }
-	
+
 	public function toXML()
 	{
 		$xml = '<client-config id="'. $this->getID() .'" flow-id="'. $this->_iFlowID .'" mode="'. $this->_iMode .'">';
@@ -354,10 +354,10 @@ class ClientConfig extends BasicConfig
 		$xml .= '<email-receipt>'. General::bool2xml($this->_bEmailReceipt) .'</email-receipt>';
 		$xml .= '<auto-capture>'. General::bool2xml($this->_bAutoCapture) .'</auto-capture>';
 		$xml .= '</client-config>';
-		
+
 		return $xml;
 	}
-	
+
 	/**
 	 * Produces a new instance of a Client Configuration Object.
 	 *
@@ -424,15 +424,15 @@ class ClientConfig extends BasicConfig
 		}
 		// Remove Account clause if it hasn't been already
 		$sql = str_replace("{ACCOUNT CLAUSE}", "", $sql);
-				
+
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
-		
+
 		$obj_CountryConfig = new CountryConfig($RS["COUNTRYID"], $RS["COUNTRY"], $RS["CURRENCY"], $RS["MINMOB"], $RS["MAXMOB"], $RS["CHANNEL"], $RS["PRICEFORMAT"], $RS["DECIMALS"], $RS["ALS"], $RS["DOI"]);
 		$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["ADDRESS"]);
 		$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
-		
-		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], $RS["TERMS"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"]);
+
+		return new ClientConfig($RS["CLIENTID"], utf8_decode($RS["CLIENT"]), $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"]);
 	}
 }
 ?>

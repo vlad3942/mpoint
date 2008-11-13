@@ -13,7 +13,7 @@
 		<xsl:value-of select="labels/info" />
 	</div>
 	
-		<form action="{func:constLink('sys/val_email.php')}" method="post">
+		<form action="{func:constLink('sys/send_email.php')}" method="post">
 			<div id="email">
 				<div class="mPoint_Label">
 					<xsl:value-of select="labels/email" />

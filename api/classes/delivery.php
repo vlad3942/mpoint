@@ -31,7 +31,7 @@ class Delivery extends General
 	 * @var HTTPConnInfo
 	 */
 	private $_obj_ConnInfo;
-	
+
 	/**
 	 * Default Constructor.
 	 *
@@ -43,11 +43,11 @@ class Delivery extends General
 	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, HTTPConnInfo &$oCI=null)
 	{
 		parent::__construct($oDB, $oTxt);
-		
+
 		$this->_obj_TxnInfo = $oTI;
 		$this->_obj_ConnInfo = $oCI;
 	}
-	
+
 	/**
 	 * Decodes a string in JSON format and turns it into an array.
 	 * The method will return an associative array for objects using the variable names as named keys or
@@ -63,7 +63,7 @@ class Delivery extends General
 	 * 	: = Key End
 	 * 	, = Key / Value Pair End
 	 * 	\ = Escape character
-	 * 
+	 *
 	 * @link 	www.json.org
 	 *
 	 * @param 	string $str 	JSON String which should be decoded
@@ -82,7 +82,7 @@ class Delivery extends General
 		$key = "";
 		// Current Value, each character will be appended to this variable unless some specific action needs to be taken
 		$val = "";
-		
+
 		// Loop through each character in the JSON String
 		for ($i=0; $i<strlen($str); $i++)
 		{
@@ -167,10 +167,10 @@ class Delivery extends General
 				break;
 			}
 		}
-		
+
 		return $aReturn;
 	}
-	
+
 	/**
 	 * Uses Interflora's RPC Service to translate an MSISDN to an Address.
 	 * The service uses Interflora (whoever they use in turn is anyone's guess)
@@ -184,8 +184,8 @@ class Delivery extends General
 		$obj_HTTP->connect();
 		$obj_HTTP->send(str_replace("{PATH}", "{PATH}?number=". $msisdn, $this->constHeaders() ) );
 		$obj_HTTP->disconnect();
-		file_put_contents(sLOG_PATH ."/jona.log", $obj_HTTP->getReplyBody()  );
-		$aDeliveryInfo = $this->_decode($obj_HTTP->getReplyBody() );
+
+		$aDeliveryInfo = $this->_decode(utf8_decode($obj_HTTP->getReplyBody() ) );
 		if (count($aDeliveryInfo) > 0)
 		{
 			$aDeliveryInfo["street"] = $aDeliveryInfo["address"];
@@ -193,13 +193,13 @@ class Delivery extends General
 			unset($aDeliveryInfo["phoneno"]);
 		}
 		else { $aDeliveryInfo = array(); }
-				
+
 		return $aDeliveryInfo;
 	}
-	
+
 	/**
 	 * Translates an MSISDN to an Address using the provided lookup server.
-	 * 
+	 *
 	 * @param 	string $msisdn 	MSISDN to use for the Lookup
 	 * @return 	array
 	 */
@@ -207,17 +207,17 @@ class Delivery extends General
 	{
 		switch ($this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID() )
 		{
-		case (10):	// Denmark
+		case (100):	// Denmark
 			$aDeliveryInfo = $this->_lookupViaInterflora($msisdn);
 			break;
 		default:	// No Lookup Service available for Country
 			$aDeliveryInfo = array();
 			break;
 		}
-		
+
 		return $aDeliveryInfo;
 	}
-	
+
 	public function logDeliveryInfo(array &$aInfo)
 	{
 		$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iDELIVERY_INFO_STATE, serialize($aInfo) );

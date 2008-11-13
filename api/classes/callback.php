@@ -206,23 +206,6 @@ class Callback extends General
 	}
 
 	/**
-	 * Sends an E-Mail Receipt with Payment Information to the Customer.
-	 *
-	 * @see 	EMailReceipt
-	 *
-	 */
-	public function sendEMailReceipt()
-	{
-		$obj_EMail = new EMailReceipt($this->getDBConn(), $this->getText(), $this->_obj_TxnInfo);
-
-		if (mail($this->_obj_TxnInfo->getEMail(), $obj_EMail->constSubject(), $obj_EMail->constBody(), $obj_EMail->constHeaders() ) === true)
-		{
-			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iEMAIL_ACCEPTED_STATE, $obj_EMail->constSubject() );
-		}
-		else { $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iEMAIL_REJECTED_START, $obj_EMail->constSubject() ); }
-	}
-
-	/**
 	 * Retrieves all Custom Client Variables and Customer Input from the Database and serialises them
 	 * into a urlencoded string.
 	 * The method will return each variable class with the following prefix:

@@ -29,10 +29,10 @@
 					  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
 					  - the phone will assign 25% of the screen width to the card logo and 75% of the screen width to the card name.
 					  -->
-					<table cellpadding="0" cellspacing="0">
+					<table cellpadding="0" cellspacing="0" style="width:100%;">
 					<tr class="{$css}">
-						<td style="vertical-align:top;"><img src="{logo-url}" width="40" height="40" alt="" style="border-style:none;" /></td>
-						<td colspan="3">
+						<td style="width:40px; vertical-align:top;"><img src="{logo-url}" width="40" height="40" alt="" style="border-style:none;" /></td>
+						<td colspan="3" style="text-align:left;">
 							<div class="mPoint_Label"><xsl:value-of select="name" /></div>
 							<div><xsl:value-of select="price" /></div>
 						</td>

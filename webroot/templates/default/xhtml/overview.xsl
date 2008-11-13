@@ -11,7 +11,7 @@
 	  - the phone will assign 66% of the screen width to the product name, 17% of the screen width to the product quantity and
 	  - 17% of the screen width to the product price.
 	  -->
-	<table id="products" cellpadding="0" cellspacing="0">
+	<table id="products" style="width:100%;" cellpadding="0" cellspacing="0">
 	<tr>
 		<td class="mPoint_Label" style="text-align:right"><xsl:value-of select="labels/quantity" /></td>
 		<td colspan="4" class="mPoint_Label" style="text-align:center"><xsl:value-of select="labels/product" /></td>
@@ -33,11 +33,12 @@
 		</xsl:variable>
 		
 		<tr class="{$css}">
-			<td class="mPoint_Number" rowspan="2"  style="vertical-align:bottom"><xsl:value-of select="quantity" /></td>
+			<td> </td>
 			<td colspan="5"><img src="{logo-url}" width="40" height="40" alt="- Logo -" /></td>
 		</tr>
 		<tr class="{$css}">
-			<td colspan="4"><xsl:value-of select="name" /></td>
+			<td class="mPoint_Number" style="vertical-align:top;"><xsl:value-of select="quantity" /></td>
+			<td colspan="4" style="width:100%"><xsl:value-of select="name" /></td>
 			<td class="mPoint_Number"><xsl:value-of select="price" /></td>
 		</tr>
 	</xsl:for-each>
@@ -57,10 +58,11 @@
 		</xsl:variable>
 		
 		<tr class="{$css}">
-			<td colspan="6"><img src="{shipping-info/logo-url}" width="40" height="40" alt="" /></td>
+			<td rowspan="2"> </td>
+			<td colspan="5"><img src="{shipping-info/logo-url}" width="40" height="40" alt="" /></td>
 		</tr>
 		<tr class="{$css}">
-			<td colspan="5"><xsl:value-of select="shipping-info/name" /></td>
+			<td colspan="4"><xsl:value-of select="shipping-info/name" /></td>
 			<td colspan="1" class="mPoint_Number"><xsl:value-of select="shipping-info/price" /></td>
 		</tr>
 	</xsl:if>

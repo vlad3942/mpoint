@@ -24,23 +24,21 @@
 		</table>
 	</div>
 	
-	<table id="receipt">
+	<table id="receipt" style="width:100%">
 	<tr>
-		<td class="mPoint_Label"><xsl:value-of select="labels/txn-id" />:</td>
+		<td class="mPoint_Label" style="white-space:nowrap;"><xsl:value-of select="labels/txn-id" />:</td>
 		<td class="mPoint_Number"><xsl:value-of select="transaction/@id" /></td>
+		<td style="width:100%" rowspan="3"></td>
 	</tr>
 	<tr>
-		<td class="mPoint_Label"><xsl:value-of select="labels/order-id" />:</td>
+		<td class="mPoint_Label" style="white-space:nowrap;"><xsl:value-of select="labels/order-id" />:</td>
 		<td class="mPoint_Number"><xsl:value-of select="transaction/order-id" /></td>
 	</tr>
 	<tr>
-		<td class="mPoint_Label"><xsl:value-of select="labels/price" />:</td>
+		<td class="mPoint_Label" style="white-space:nowrap;"><xsl:value-of select="labels/price" />:</td>
 		<td class="mPoint_Number"><xsl:value-of select="transaction/price" /></td>
 	</tr>
 	</table>
-	
-	<!-- Display Status Messages -->
-	<xsl:apply-templates select="messages" />
 	
 	<!-- SMS Receipt Enabled -->
 	<xsl:if test="client-config/sms-receipt = 'true'">
@@ -48,6 +46,9 @@
 			<xsl:value-of select="labels/sms-receipt" />
 		</div>
 	</xsl:if>
+	
+	<!-- Display Status Messages -->
+	<xsl:apply-templates select="messages" />
 	
 	<!-- E-Mail Receipt Enabled -->
 	<xsl:if test="client-config/email-receipt = 'true'">

@@ -82,7 +82,7 @@ class Overview extends General
 		{
 			// Create XML for mandatory product information
 			$xml .= '<item>';
-			$xml .= '<name>'. htmlspecialchars($name, ENT_NOQUOTES) .'</name>';
+			$xml .= '<name>'. htmlspecialchars(utf8_decode($name), ENT_NOQUOTES) .'</name>';
 			$xml .= '<quantity>'. $aProducts["quantities"][$key] .'</quantity>';
 			$xml .= '<price>'. General::formatAmount($this->_obj_TxnInfo->getClientConfig()->getCountryConfig(), $aProducts["prices"][$key]) .'</price>';
 			// Product logo included as part of request from Client

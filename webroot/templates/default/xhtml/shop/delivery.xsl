@@ -37,10 +37,10 @@
 				<xsl:value-of select="labels/zipcode" /> &amp; <xsl:value-of select="labels/city" /><br />
 				<!-- Construct Zip Code Input -->
 				<xsl:choose>
-					<xsl:when test="country-config/@id = 10">
+					<xsl:when test="country-config/@id = 100">
 						<input name="zipcode" value="{session/zipcode}" size="4" maxlength="4" style="-wap-input-format:'*N';" />
 					</xsl:when>
-					<xsl:when test="country-config/@id = 20">
+					<xsl:when test="country-config/@id = 200">
 						<input name="zipcode" value="{session/zipcode}" size="5" maxlength="5" style="-wap-input-format:'*N';" />
 					</xsl:when>
 					<xsl:otherwise>

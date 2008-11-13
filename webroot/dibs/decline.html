@@ -17,27 +17,27 @@ if (cgi.language = 'da')
 	title := 'Kort Info';
 	progress := 'Trin 2 af 2';
 	label_selected_card := 'Valgte Kort';
-	info := 'Udfyld venligst nedenst&aring;ende felter med dine kort informationer';
+	info := 'Udfyld venligst nedenstående felter med dine kort informationer';
 	label_card_number := 'Kort Nummer';
-	label_expiry := 'Udl&oslash;bsdato';
+	label_expiry := 'Udløbsdato';
 	expiry_month := 'mm';
-	expiry_year := '&aring;&aring;';
+	expiry_year := 'åå';
 	label_cvc := 'CVC / CVS';
-	cvc_help := '3 tal (trykt p&aring; bagsiden af dit kort)';
-	submit := 'F&aelig;rdigg&oslash;r Betaling';
+	cvc_help := '3 tal (trykt på bagsiden af dit kort)';
+	submit := 'Gennemfør Betaling';
 	
 	// Error Messages
-	error_0 := 'Dit Kredit Kort blev afvist af PBS, pr&oslash;v venligst med et andet kort?';
-	error_1 := 'Intern Kommunikations fejl, pr&oslash;v venligst igen?';
-	error_2 := 'Intern Fejl: Foresp&oslash;rgslen indeholdt ugyldigt data ('@ auth.message @')';
-	error_3 := 'Der opstod en fejl hos PBS, pr&oslash;v venligst igen?';
-	error_4 := 'Dit kredit kort er udl&oslash;bet, pr&oslash;v venligst med et andet kort?';
-	error_5 := 'Dit kort nummer er ugyldigt, ret venligst kort numret og pr&oslash;v igen?';
-	error_6 := 'Kunne ikke tr&aelig;kke pengene fra din konto, pr&oslash;v venligst med et andet kort?';
-	error_7 := 'Intern Fejl: "orderid" skal v&aelig;re unikt';
-	error_8 := 'Intern Fejl: For f&aring; "amount" felter tilg&aelig;ngelige til at beregne split';
-	error_9 := 'Card Verification Code (CVC / CVS) mangler, indtast venligst din CVC og pr&oslash;v igen?';
-	error_10 := 'Dit kort nummer er ugyligt for den valgte kort type, ret venligst kort numret og pr&oslash;v igen?';
+	error_0 := 'Dit Kredit Kort blev afvist af PBS, prøv venligst med et andet kort?';
+	error_1 := 'Intern Kommunikations fejl, prøv venligst igen?';
+	error_2 := 'Intern Fejl: Forespørgslen indeholdt ugyldigt data ('@ auth.message @')';
+	error_3 := 'Der opstod en fejl hos PBS, prøv venligst igen?';
+	error_4 := 'Dit kredit kort er udløbet, prøv venligst med et andet kort?';
+	error_5 := 'Dit kort nummer er ugyldigt, ret venligst kort numret og prøv igen?';
+	error_6 := 'Kunne ikke trække pengene fra din konto, prøv venligst med et andet kort?';
+	error_7 := 'Intern Fejl: "orderid" skal være unikt';
+	error_8 := 'Intern Fejl: For få "amount" felter tilgængelige til at beregne split';
+	error_9 := 'Card Verification Code (CVC / CVS) mangler, indtast venligst din CVC og prøv igen?';
+	error_10 := 'Dit kort nummer er ugyligt for den valgte kort type, ret venligst kort numret og prøv igen?';
 	error_unknown := 'Ukendt Fejl';
 }
 // British English
@@ -60,7 +60,7 @@ else
 	error_1 := 'Internal Communication error, please try again?';
 	error_2 := 'Internal Error: Request contained invalid parameters ('@ auth.message @')';
 	error_3 := 'An error occurred at the Clearance House, please try again?';
-	error_4 := 'Your card has expired, please with another card?';
+	error_4 := 'Your card has expired, please try another card?';
 	error_5 := 'The entered card number is invalid, please check the card number and try again?';
 	error_6 := 'Instant Capture failed, please try with another card?';
 	error_7 := 'Internal Error: "orderid" must be unique';
@@ -76,14 +76,14 @@ else
 <html xmlns="http://www.w3.org/1999/xhtml" PML_xml:lang="cgi.lang">
 <head>
 	<title><PML_VAL>title</PML_VAL></title>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15" />
 	<meta http-equiv="Cache-Control" content="max-age=86400" />
 	<meta http-equiv="Content-Style-Type" content="text/css" />
 	<style type="text/css">
 		/* ========== Tag Classes Start ========== */
 		body
 		{
-			margin: 0px 5px 0px 5px;
+			margin: 5px 5px 5px 5px;
 		}
 		body, table
 		{
@@ -380,11 +380,10 @@ else
 			</div>
 			<div class="mPoint_Info"><PML_VAL>cvc_help</PML_VAL></div>
 		</div>
-
 		<!-- Send Data-->
-		<p>
+		<div>
 			<input type="submit" PML_value="submit" class="mPoint_Button" />
-		</p>
+		</div>
 	</form>
 </body>
 </html>

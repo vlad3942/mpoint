@@ -166,7 +166,10 @@ msgstr @@@ E-Mail adressen indeholder ugyldige tegn, en e-mail adresse må kun in
 msgid @@@ E-Mail - 15 @@@
 msgstr @@@ E-Mail adressen har et ugyldigt format, en e-mail adresse skal være i formatet: anders.and@cellpointmobile.com @@@
 msgid @@@ E-Mail - 91 @@@
-msgstr @@@ Vi beklager, der opstod desværre en fejl under udsendelse af din e-mail. Prøv venligst igen? @@@
+msgstr @@@ Vi beklager, der opstod desværre en fejl under udsendelse af din E-Mail. Prøv venligst igen? @@@
+
+msgid @@@ Accept - 100 @@@
+msgstr @@@ Din kvittering er blevet afsendt @@@
 
 msgid @@@ Products - 11 @@@
 msgstr @@@ Du har ikke lagt noget i din kurv. Klik på "Læg i Kurv" for at tilføje et produkt. @@@
