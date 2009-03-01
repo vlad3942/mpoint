@@ -1,7 +1,10 @@
 <?php
 /**
  * This files contains the for the Callback component which handles transactions processed through DIBS.
- * The file will update the Transaction status and add
+ * The file will update the Transaction status and add the following data fields:
+ * 	- DIBS' Transaction ID
+ * 	- ID of the selected Card
+ * Additionally the component sends out SMS Receipts and performs a callback to the client.
  *
  * @author Jonatan Evald Buus
  * @copyright Cellpoint Mobile

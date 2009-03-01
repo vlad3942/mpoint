@@ -10,7 +10,7 @@
  * 	- Client Logo
  * 	- Credit Card Logos
  * 	- mPoint Logo
- * 
+ *
  * @author Jonatan Evald Buus
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
@@ -96,17 +96,17 @@ else
 		trigger_error("Image formats not supported by Device {TRACE {OBJ_UA} }", E_USER_ERROR);
 		break;
 	}
-	
+
 	// Set HTTP Headers
 	header("HTTP/1.1 200 OK");
 	header("Content-Type: ". $obj_Image->getTgtMimeType() );
 	header("Content-Length: ". strlen($sImage) );
 	header("Cache-Control: max-age=". (24*60*60) .", public");
-	header("Pragma: cache");
+	header("Pragma: public");
 	header("Last-Modified: ". gmdate("D, d M Y H:i:s T", time() ) );
 	header("Expires: ". gmdate("D, d M Y H:i:s T", time() + 24*60*60) );
 	header("Etag: ".  $etag ."-". base_convert(strlen($sImage), 10, 32) ."-". base_convert(date("YmdHis"), 10, 32) );
-	
+
 	echo $sImage;
 }
 ?>

@@ -62,7 +62,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if ($obj_Validator->valURL($_REQUEST['cancel-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['cancel-url']) + 100] = $_REQUEST['cancel-url']; }
 	if ($obj_Validator->valURL($_REQUEST['callback-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['callback-url']) + 110] = $_REQUEST['callback-url']; }
 	if ($obj_Validator->valLanguage($_REQUEST['language']) != 10) { $aMsgCds[$obj_Validator->valLanguage($_REQUEST['language']) + 130] = $_REQUEST['language']; }
-	if ($obj_Validator->valEMail($_POST['email']) != 1 && $obj_Validator->valEMail($_POST['email']) != 10) { $aMsgCds[$obj_Validator->valLanguage($_POST['email']) + 140] = $_POST['email']; }
+	if ($obj_Validator->valEMail($_REQUEST['email']) != 1 && $obj_Validator->valEMail($_REQUEST['email']) != 10) { $aMsgCds[$obj_Validator->valLanguage($_REQUEST['email']) + 140] = $_REQUEST['email']; }
 	/* ========== Input Validation End ========== */
 
 	// Success: Input Valid
@@ -123,12 +123,7 @@ if (array_key_exists(1000, $aMsgCds) === true)
 
 		header("Location: http://". $_SERVER['HTTP_HOST'] ."/shop/delivery.php?". session_name() ."=". session_id() );
 	}
-	// Start Payment Flow with obtaining the E-Mail address (step 1)
-	elseif ($_SESSION['obj_TxnInfo']->getClientConfig()->emailReceiptEnabled() === true)
-	{
-		header("Location: http://". $_SERVER['HTTP_HOST'] ."/pay/email.php?". session_name() ."=". session_id() );
-	}
-	// Start Payment Flow with selecting the Credit Card (step 2)
+	// Start Payment Flow with selecting the Credit Card (step 1)
 	else { header("Location: http://". $_SERVER['HTTP_HOST'] ."/pay/card.php?". session_name() ."=". session_id() ); }
 }
 // Error: Construct Status Page

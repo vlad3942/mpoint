@@ -128,7 +128,7 @@ abstract class Constants
 	 *
 	 */
 	const iPAYMENT_REJECTED_STATE = 2010;
-	
+
 	/**
 	 * Defines GoMobile's type identifier for an MT-SMS message
 	 *
@@ -144,7 +144,7 @@ abstract class Constants
 	 *
 	 */
 	const iMT_PRICE = 0;
-	
+
 	/**
 	 * Defines Type ID for a purchase initiated by a Call Centre
 	 *
@@ -175,7 +175,7 @@ abstract class Constants
 	 *
 	 */
 	const iWEB_SUBSCR_TYPE = 31;
-	
+
 	/**
 	 * Defines the min length for all authentication data:
 	 * 	- Username
@@ -197,13 +197,18 @@ abstract class Constants
 	 * Unique ID for the Payment Service Provider: Cellpoint Mobile
 	 *
 	 */
-	const iCPM_PSP = 2;
+	const iCPM_PSP = 1;
 	/**
 	 * Unique ID for the Payment Service Provider: DIBS
 	 *
 	 */
 	const iDIBS_PSP = 2;
-	
+	/**
+	 * Unique ID for the Payment Service Provider: IHI
+	 *
+	 */
+	const iIHI_PSP = 3;
+
 	/**
 	 * Unique ID for the Electronic Payment Flow
 	 *

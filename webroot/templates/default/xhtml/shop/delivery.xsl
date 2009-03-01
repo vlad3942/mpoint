@@ -40,6 +40,9 @@
 					<xsl:when test="country-config/@id = 100">
 						<input name="zipcode" value="{session/zipcode}" size="4" maxlength="4" style="-wap-input-format:'*N';" />
 					</xsl:when>
+					<xsl:when test="country-config/@id = 101">
+						<input name="zipcode" value="{session/zipcode}" size="4" maxlength="5" style="-wap-input-format:'*N';" />
+					</xsl:when>
 					<xsl:when test="country-config/@id = 200">
 						<input name="zipcode" value="{session/zipcode}" size="5" maxlength="5" style="-wap-input-format:'*N';" />
 					</xsl:when>

@@ -23,7 +23,7 @@
 		
 		<sleep seconds="10" />
 		-->
-		<exec dir="${svnDir}" executable="${svnDir}/svn">
+		<exec dir="${svnDir}" executable="${svnDir}/TortoiseProc.exe">
 			<arg line="export --force --username Jona --password jb280680 svn://localhost/mpoint/trunk ${sourceDir}" />
 		</exec>
 		

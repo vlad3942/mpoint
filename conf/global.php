@@ -96,8 +96,8 @@ $aHTTP_CONN_INFO[100]["timeout"] = 20;
 $aHTTP_CONN_INFO[100]["path"] = "/rpc/tdc_lookup.php";
 $aHTTP_CONN_INFO[100]["method"] = "GET";
 $aHTTP_CONN_INFO[100]["contenttype"] = "application/www-url-form-encoded";
-//$aHTTP_CONN_INFO[10]["username"] = "";
-//$aHTTP_CONN_INFO[10]["password"] = "";
+//$aHTTP_CONN_INFO[100]["username"] = "";
+//$aHTTP_CONN_INFO[100]["password"] = "";
 
 /**
  * GoMobile Connection Info.
