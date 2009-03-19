@@ -9,7 +9,7 @@
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
  * @package Constants
- * @version 1.01
+ * @version 1.02
  */
 
 /**
@@ -73,6 +73,22 @@ abstract class Constants
 	 *
 	 */
 	const iACTIVATE_LINK_STATE = 1021;
+	/**
+	 * Defines the ID of the State that indicates that SurePay has resent the payment link embedded in an MT-SMS
+	 *
+	 */
+	const iPAYMENT_LINK_RESENT_AS_EMBEDDED_STATE = 1022;
+	/**
+	 * Defines the ID of the State that indicates that SurePay has resent the payment link as an MT-WAP Push
+	 *
+	 */
+	const iPAYMENT_LINK_RESENT_AS_WAPPUSH_STATE = 1023;
+	/**
+	 * Defines the ID of the State that indicates that SurePay has automatically notified the
+	 * Client's Customer Service team that the payment link hasn't been activated
+	 *
+	 */
+	const iCUSTOMER_SERVICE_NOTIFIED_STATE = 1029;
 	/**
 	 * Defines the ID of the State that should be logged if tan E-Mail is accepted by the local SMTP Server
 	 *
