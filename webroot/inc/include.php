@@ -117,7 +117,7 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 		 * This means that all PHP scripts must output a wellformed XML document.
 		 * The XML in turn must refer to an XSL Stylesheet by using the xml-stylesheet tag
 		 */
-		ob_start(array(new Output("screen", false), "transform") );
+		ob_start(array(new Output("all", false), "transform") );
 	}
 }
 

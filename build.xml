@@ -8,7 +8,7 @@
 		<property name="destDir" value="${baseDir}/${version}" />
 		
 		<property name="sshDir" value="C:\Program Files (x86)\Network Tools" />
-		<property name="svnDir" value="C:\Program Files\TortoiseSVN\bin" />
+		<property name="svnDir" value="C:\Program Files (x86)\TortoiseSVN\bin" />
 	</target>
 
 	<target name="clean" depends="init">
@@ -24,7 +24,7 @@
 		<sleep seconds="10" />
 		-->
 		<exec dir="${svnDir}" executable="${svnDir}/TortoiseProc.exe">
-			<arg line="export --force --username Jona --password jb280680 svn://localhost/mpoint/trunk ${sourceDir}" />
+			<arg line="/command:export /closeonend:1 --force --username Jona --password jb280680 svn://localhost/mpoint/trunk ${sourceDir}" />
 		</exec>
 		
 		<copy todir="${destDir}">

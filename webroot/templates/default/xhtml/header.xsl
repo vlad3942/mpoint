@@ -173,7 +173,7 @@
 			<func:result>no</func:result>
 		</xsl:when>
 		<!-- Swedish -->
-		<xsl:when test="$lang = 'se'">
+		<xsl:when test="$lang = 'sv'">
 			<func:result>sv</func:result>
 		</xsl:when>
 		<!-- German -->

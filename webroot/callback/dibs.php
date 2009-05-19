@@ -38,22 +38,29 @@ catch (TranslateTextException $e)
 	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH ."gb/global.txt", sLANGUAGE_PATH ."gb/custom.txt"), sSYSTEM_PATH, 0);
 	trigger_error("Unknown Language received from DIBS. language: ". $_POST['language'] .", lang: ". $_POST['lang'], E_USER_WARNING);
 }
-$obj_mPoint = new DIBS($_OBJ_DB, $_OBJ_TXT, TxnInfo::produceInfo($_POST['mpointid'], $_OBJ_DB) );
-
-//
-$obj_mPoint->completeTransaction(Constants::iDIBS_PSP, $_POST['transact'], $_POST['cardid'], Constants::iPAYMENT_ACCEPTED_STATE);
-
-// Client has SMS Receipt enabled
-if ($obj_mPoint->getTxnInfo()->getClientConfig()->smsReceiptEnabled() === true)
+try
 {
-	$obj_mPoint->sendSMSReceipt(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
+	$obj_mPoint = new DIBS($_OBJ_DB, $_OBJ_TXT, TxnInfo::produceInfo($_POST['mpointid'], $_OBJ_DB) );
+
+	//
+	$obj_mPoint->completeTransaction(Constants::iDIBS_PSP, $_POST['transact'], $_POST['cardid'], Constants::iPAYMENT_ACCEPTED_STATE);
+
+	// Client has SMS Receipt enabled
+	if ($obj_mPoint->getTxnInfo()->getClientConfig()->smsReceiptEnabled() === true)
+	{
+		$obj_mPoint->sendSMSReceipt(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
+	}
+
+	// Callback URL has been defined for Client
+	if ($obj_mPoint->getTxnInfo()->getCallbackURL() != "")
+	{
+		$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, $_POST);
+		// Transaction uses Auto Capture
+		if ($obj_mPoint->getTxnInfo()->useAutoCapture() === true) {	$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST); }
+	}
 }
-
-// Callback URL has been defined for Client
-if ($obj_mPoint->getTxnInfo()->getCallbackURL() != "")
+catch (TxnInfoException $e)
 {
-	$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, $_POST);
-	// Transaction uses Auto Capture
-	if ($obj_mPoint->getTxnInfo()->useAutoCapture() === true) {	$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST); }
+	trigger_error($e->getMessage() ." (". $e->getCode() .")" ."\n". "HTTP POST Data: " ."\n". var_export($_POST, true), E_USER_ERROR);
 }
 ?>

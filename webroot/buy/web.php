@@ -32,6 +32,8 @@ $aMsgCds = array();
 if (array_key_exists("account", $_REQUEST) === false) { $_REQUEST['account'] = -1; }
 if (array_key_exists("orderid", $_REQUEST) === false) { $_REQUEST['orderid'] = null; }
 
+$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
+
 // Validate basic information
 if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) == 100)
 {

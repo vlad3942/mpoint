@@ -40,6 +40,35 @@ if (cgi.language = 'da')
 	error_10 := 'Dit kort nummer er ugyligt for den valgte kort type, ret venligst kort numret og prøv igen?';
 	error_unknown := 'Ukendt Fejl';
 }
+// Swedish
+else if (cgi.language = 'sv')
+{
+	title := 'Card Info';
+	progress := 'Step 2 of 2';
+	label_selected_card := 'Selected Card';
+	info := 'Please enter your card information below';
+	label_card_number := 'Card Number';
+	label_expiry := 'Expiry date';
+	expiry_month := 'mm';
+	expiry_year := 'yy';
+	label_cvc := 'CVC / CVS';
+	cvc_help := '3 digits (printed on the back of the card)';
+	submit := 'Complete Payment';
+	
+	// Error Messages
+	error_0 := 'Credit Card declined by Clearance House, please try again?';
+	error_1 := 'Internal Communication error, please try again?';
+	error_2 := 'Internal Error: Request contained invalid parameters ('@ auth.message @')';
+	error_3 := 'An error occurred at the Clearance House, please try again?';
+	error_4 := 'Your card has expired, please try another card?';
+	error_5 := 'The entered card number is invalid, please check the card number and try again?';
+	error_6 := 'Instant Capture failed, please try with another card?';
+	error_7 := 'Internal Error: "orderid" must be unique';
+	error_8 := 'Internal Error: Too few amount-fields for split';
+	error_9 := 'Card Verification Code (CVC / CVS) is missing, please enter your CVC and try again?';
+	error_10 := 'The entered card number is invalid for the selected card type, please check the card number and try again?';
+	error_unknown := 'Unknown Error';
+}
 // British English
 else
 {

@@ -1,0 +1,252 @@
+#: /api/classes/general.php:95
+msgid @@@ Status - 11 @@@
+msgstr @@@ Okänd Säljare @@@
+msgid @@@ Status - 12 @@@
+msgstr @@@ Felaktig Säljare @@@
+msgid @@@ Status - 13 @@@
+msgstr @@@ Okänd Säljare @@@
+msgid @@@ Status - 14 @@@
+msgstr @@@ Säljaren avaktiverat @@@
+msgid @@@ Status - 21 @@@
+msgstr @@@ Okänt konto ID @@@
+msgid @@@ Status - 22 @@@
+msgstr @@@ Felaktigt konto ID @@@
+msgid @@@ Status - 23 @@@
+msgstr @@@ Okänt konto ID @@@
+msgid @@@ Status - 24 @@@
+msgstr @@@ Kontot avaktiverat @@@
+msgid @@@ Status - 31 @@@
+msgstr @@@ Okänd mottagare @@@
+msgid @@@ Status - 32 @@@
+msgstr @@@ Motagaren är för kort @@@
+msgid @@@ Status - 33 @@@
+msgstr @@@ Mottagaren är för lång @@@
+msgid @@@ Status - 41 @@@
+msgstr @@@ Okänd Operatörs ID @@@
+msgid @@@ Status - 42 @@@
+msgstr @@@ Operatörs ID är för kort @@@
+msgid @@@ Status - 43 @@@
+msgstr @@@ Operatörs ID är för kort @@@
+msgid @@@ Status - 51 @@@
+msgstr @@@ Okänd summa @@@
+msgid @@@ Status - 52 @@@
+msgstr @@@ Summan är för liten, summan måste vara mer än 1 (0,01 av landets valuta) @@@
+msgid @@@ Status - 53 @@@
+msgstr @@@ Summan är för stor, summan måste vara mindre än det maxbelopp som säljaren har satt @@@
+msgid @@@ Status - 61 @@@
+msgstr @@@ Okända produktnamn (array size = 0) @@@
+msgid @@@ Status - 62 @@@
+msgstr @@@ Okända produktkvantiteter (array size = 0) @@@
+msgid @@@ Status - 63 @@@
+msgstr @@@ Okända produktpriser (array size = 0) @@@
+msgid @@@ Status - 64 @@@
+msgstr @@@ Felaktig array storlek (the 3 arrays differs in size) @@@
+msgid @@@ Status - 65 @@@
+msgstr @@@ Nyckel saknas i produktkvantiteter @@@
+msgid @@@ Status - 66 @@@
+msgstr @@@ Nyckel saknas i produktpriser @@@
+msgid @@@ Status - 67 @@@
+msgstr @@@ Felaktig URL funnen i Logo URL @@@
+msgid @@@ Status - 71 @@@
+msgstr @@@ Logo URL saknas @@@
+msgid @@@ Status - 72 @@@
+msgstr @@@ Logo URL är för kort, ska vara minst 11 tecken @@@
+msgid @@@ Status - 73 @@@
+msgstr @@@ Logo URL är för lång, ska vara max 255 tecken @@@
+msgid @@@ Status - 74 @@@
+msgstr @@@ Logo URL är felformaterad @@@
+msgid @@@ Status - 75 @@@
+msgstr @@@ Logo URL är felaktig, protokoll saknas @@@
+msgid @@@ Status - 76 @@@
+msgstr @@@ Logo URL är felaktig, host saknas @@@
+msgid @@@ Status - 77 @@@
+msgstr @@@ Logo URL är felaktig, sökväg saknas @@@
+msgid @@@ Status - 81 @@@
+msgstr @@@ Okänd CSS URL @@@
+msgid @@@ Status - 82 @@@
+msgstr @@@ CSS URL är för kort, ska vara minst 11 tecken @@@
+msgid @@@ Status - 83 @@@
+msgstr @@@ CSS URL är för lång, ska vara max 255 tecken @@@
+msgid @@@ Status - 84 @@@
+msgstr @@@ CSS URL är felformaterad @@@
+msgid @@@ Status - 85 @@@
+msgstr @@@ CSS URL är felaktig, protokol saknas @@@
+msgid @@@ Status - 86 @@@
+msgstr @@@ CSS URL är felaktig, host saknas @@@
+msgid @@@ Status - 87 @@@
+msgstr @@@ CSS URL är fleaktig, sökväg saknas @@@
+msgid @@@ Status - 91 @@@
+msgstr @@@ Okänd Accept URL @@@
+msgid @@@ Status - 92 @@@
+msgstr @@@ Accept URL är för kort, ska vara minst 11 tecken @@@
+msgid @@@ Status - 93 @@@
+msgstr @@@ Accept URL är för lång, ska vara max 255 tecken @@@
+msgid @@@ Status - 94 @@@
+msgstr @@@ Accept URL är felformaterad @@@
+msgid @@@ Status - 95 @@@
+msgstr @@@ Accept URL är felaktig, protokoll saknas @@@
+msgid @@@ Status - 96 @@@
+msgstr @@@ Accept URL är felaktig, host saknas @@@
+msgid @@@ Status - 97 @@@
+msgstr @@@ Accept URL är felaktig, sökväg saknas @@@
+msgid @@@ Status - 101 @@@
+msgstr @@@ Okänd Cancel URL @@@
+msgid @@@ Status - 102 @@@
+msgstr @@@ Cancel URL är för kort, ska vara minst 11 tecken @@@
+msgid @@@ Status - 103 @@@
+msgstr @@@ Cancel URL är för lång, ska vara max 255 tecken @@@
+msgid @@@ Status - 104 @@@
+msgstr @@@ Cancel URL är felformaterad @@@
+msgid @@@ Status - 105 @@@
+msgstr @@@ Cancel URL är felaktig, protokoll saknas @@@
+msgid @@@ Status - 106 @@@
+msgstr @@@ Cancel URL är felaktig, protokoll saknas @@@
+msgid @@@ Status - 107 @@@
+msgstr @@@ Cancel URL är felaktig, sökväg saknas @@@
+msgid @@@ Status - 111 @@@
+msgstr @@@ Okänd Callback URL @@@
+msgid @@@ Status - 112 @@@
+msgstr @@@ Callback URL är för kort, ska vara minst 11 tecken @@@
+msgid @@@ Status - 113 @@@
+msgstr @@@ Callback URL är för lång, ska vara minst 255 tecken @@@
+msgid @@@ Status - 14 @@@
+msgstr @@@ Callback URL är felformaterad @@@
+msgid @@@ Status - 115 @@@
+msgstr @@@ Callback URL är felaktig, protokoll saknas @@@
+msgid @@@ Status - 116 @@@
+msgstr @@@ Callback URL är felaktig, host saknas @@@
+msgid @@@ Status - 117 @@@
+msgstr @@@ Callback URL är felaktig, sökväg saknas @@@
+msgid @@@ Status - 121 @@@
+msgstr @@@ Okänd Return URL @@@
+msgid @@@ Status - 122 @@@
+msgstr @@@ Return URL är för kort, ska vara minst 11 tecken @@@
+msgid @@@ Status - 123 @@@
+msgstr @@@ Return URL är för lång, ska vara minst 255 tecken @@@
+msgid @@@ Status - 124 @@@
+msgstr @@@ Return URL är felformaterad @@@
+msgid @@@ Status - 125 @@@
+msgstr @@@ Return URL är felaktig, protokol saknas @@@
+msgid @@@ Status - 126 @@@
+msgstr @@@ Return URL är felaktig, host saknas @@@
+msgid @@@ Status - 127 @@@
+msgstr @@@ Return URL är felaktig, sökväg saknas @@@
+msgid @@@ Status - 131 @@@
+msgstr @@@ Okänt Språk @@@
+msgid @@@ Status - 132 @@@
+msgstr @@@ Felaktigt Språk, språket innehåller tecken som inte är a-z eller _ @@@
+msgid @@@ Status - 133 @@@
+msgstr @@@ Språket stöds ej @@@
+
+msgid @@@ Status - 1000 @@@
+msgstr @@@ Betalningstransaktionen har initierats @@@
+msgid @@@ Status - 1001 @@@
+msgstr @@@ Databasfel - Kunde inte skapa Transaktions ID. Vänligen kontakta support@cellpointmobile.com @@@
+msgid @@@ Status - 1002 @@@
+msgstr @@@ Databasfel - Kunde inte skapa en ny Transaktion. Vänligen kontakta support@cellpointmobile.com @@@
+msgid @@@ Status - 1003 @@@
+msgstr @@@ Databasfel - Kunde inte skapa ett nytt meddelande för Transaktionen. Vänligen kontakta  support@cellpointmobile.com @@@
+msgid @@@ Status - 1004 @@@
+msgstr @@@ Databasfel - Kunde inte uppdatera Transaktionen. Vänligen kontakta support@cellpointmobile.com @@@
+msgid @@@ Status - 1011 @@@
+msgstr @@@ Operatören stöds ej @@@
+msgid @@@ Status - 1012 @@@
+msgstr @@@ Kommunikationsfel - Meddelandet vägrades av GoMobile. Vänligen kontakta support@cellpointmobile.com @@@
+msgid @@@ Status - 1013 @@@
+msgstr @@@ Kommunikationsfel - Kunde inte ansluta till GoMobile. Vänligen kontakta support@cellpointmobile.com @@@
+msgid @@@ Status - 1021 @@@
+msgstr @@@ Konfigurationsfel - Det finns ingen shop för säljaren @@@
+
+msgid @@@ E-Mail - 11 @@@
+msgstr @@@ Ingen Epostadress har angivits, ange en Epostadress och försök igen? @@@
+msgid @@@ E-Mail - 12 @@@
+msgstr @@@ Epostadressen är för kort, skall vara minst 5 tecken @@@
+msgid @@@ E-Mail - 13 @@@
+msgstr @@@ Epostadressen är för lång, skall vara max 50 tecken @@@
+msgid @@@ E-Mail - 14 @@@
+msgstr @@@ Epostadressen innehåller felaktiga tecken, den får enbart innehålla: 0-9 A-Z a-z æ ø å Æ Ø Å _ . - @ @@@
+msgid @@@ E-Mail - 15 @@@
+msgstr @@@ Epostadressen har ett felaktigt format, ett korrekt format är: donald.duck@cellpointmobile.com @@@
+msgid @@@ E-Mail - 91 @@@
+msgstr @@@ Ett fel uppstod när vi skulle skicka ditt epost kvitto, försöka igen? @@@
+
+msgid @@@ Accept - 100 @@@
+msgstr @@@ Ditt kvitto har skickats @@@
+
+msgid @@@ Products - 11 @@@
+msgstr @@@ Du har inte lagt till några produkter i din varukrog. Klicka på "Lägg till i korg" för att lägga till en produkt. @@@
+msgid @@@ Products - 12 @@@
+msgstr @@@ Du har inte lagt till några produkter i din varukrog. Klicka på "Lägg till i korg" för att lägga till en produkt. @@@
+msgid @@@ Products - 100 @@@
+msgstr @@@ Produkten har lagts till i din varukorg. @@@
+
+msgid @@@ Delivery - 10 @@@
+msgstr @@@ Vi kunde inte hitta någon adress som använder ditt nummer: {ADDRESS} @@@
+msgid @@@ Delivery - 11 @@@
+msgstr @@@ Du har inte angivit något nummer @@@
+msgid @@@ Delivery - 12 @@@
+msgstr @@@ Det angivna numret är för kort @@@
+msgid @@@ Delivery - 13 @@@
+msgstr @@@ Det angivna numret är för långt @@@
+msgid @@@ Delivery - 19 @@@
+msgstr @@@ Vi kunde inte hitta någon adress för det angivna numret @@@
+msgid @@@ Delivery - 21 @@@
+msgstr @@@ Du har inte anget något namn @@@
+msgid @@@ Delivery - 22 @@@
+msgstr @@@ Det angivna namnet är för kort @@@
+msgid @@@ Delivery - 23 @@@
+msgstr @@@ Det angivna namnet är för långt @@@
+msgid @@@ Delivery - 24 @@@
+msgstr @@@ Det angivna namnet innehåller felaktiga tecken @@@
+msgid @@@ Delivery - 31 @@@
+msgstr @@@ Du har inte anget ett företag eller C/O @@@
+msgid @@@ Delivery - 32 @@@
+msgstr @@@ Det angivna företaget eller C/O är för kort @@@
+msgid @@@ Delivery - 33 @@@
+msgstr @@@ Det angivna företaget eller C/O är för långt @@@
+msgid @@@ Delivery - 34 @@@
+msgstr @@@ Det angivna företaget eller C/O innehåller felaktiga tecken @@@
+msgid @@@ Delivery - 41 @@@
+msgstr @@@ Du har inte angivit någon gatuadress @@@
+msgid @@@ Delivery - 42 @@@
+msgstr @@@ Den angivna gatuadressen är för kort @@@
+msgid @@@ Delivery - 43 @@@
+msgstr @@@ Den angvina gatuadressen är för lång @@@
+msgid @@@ Delivery - 44 @@@
+msgstr @@@ Den angvina gatuadressen innehåller felaktiga tecken @@@
+msgid @@@ Delivery - 51 @@@
+msgstr @@@ Du har inte angivit något postnummer @@@
+msgid @@@ Delivery - 52 @@@
+msgstr @@@ Det angivna postnummret är för kort @@@
+msgid @@@ Delivery - 53 @@@
+msgstr @@@ Det angivna postnummret är för långt @@@
+msgid @@@ Delivery - 54 @@@
+msgstr @@@ Det angivna postnummret har fel längd @@@
+msgid @@@ Delivery - 61 @@@
+msgstr @@@ Du har inte angivit någon stad @@@
+msgid @@@ Delivery - 62 @@@
+msgstr @@@ Den angivna staden är för kort @@@
+msgid @@@ Delivery - 63 @@@
+msgstr @@@ Den angivna staden är för lång @@@
+msgid @@@ Delivery - 64 @@@
+msgstr @@@ Den angivna staden innehåller felaktiga tecken @@@
+msgid @@@ Delivery - 71 @@@
+msgstr @@@ Du har inte angivit något år @@@
+msgid @@@ Delivery - 72 @@@
+msgstr @@@ Det angivna året är i det förflutna @@@
+msgid @@@ Delivery - 73 @@@
+msgstr @@@ Du har inte angivit någon månad @@@
+msgid @@@ Delivery - 74 @@@
+msgstr @@@ Den angivna månaden är i det förflutna @@@
+msgid @@@ Delivery - 75 @@@
+msgstr @@@ Du har inte anget någon dag @@@
+msgid @@@ Delivery - 76 @@@
+msgstr @@@ Den angivna dagen är i det förflutna @@@
+msgid @@@ Delivery - 77 @@@
+msgstr @@@ Det angivna leveransdatumet är i det förflutna @@@
+
+msgid @@@ Overview - 11 @@@
+msgstr @@@ Godkänn försäljningsvilkoren för att fortsätta @@@
+
+msgid @@@ Select Card - 99 @@@
+msgstr @@@ Vi kunde inte genomföra betalningen med din valda betalningsmetod. Välj en annan betalningsmetod och försök igen. @@@

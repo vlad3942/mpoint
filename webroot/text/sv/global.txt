@@ -1,0 +1,277 @@
+#: /webroot/overview.php:38
+msgid @@@ Order Overview @@@
+msgstr @@@ Orderöversikt @@@
+
+#: /webroot/overview.php:47
+msgid @@@ Product - Info @@@
+msgstr @@@ Beställda saker @@@
+
+#: /webroot/overview.php:48
+msgid @@@ Product @@@
+msgstr @@@ Produkt @@@
+
+#: /webroot/overview.php:49
+msgid @@@ Quantity @@@
+msgstr @@@ # @@@
+
+#: /webroot/overview.php:50
+msgid @@@ Price @@@
+msgstr @@@ Pris @@@
+
+#: /webroot/overview.php:51
+msgid @@@ Total @@@
+msgstr @@@ Summa @@@
+
+#: /webroot/overview.php:52
+msgid @@@ Terms - Info @@@
+msgstr @@@ Godkänn {LINK}försäljningsvilkor{/LINK} för {CLIENT} @@@
+
+#: /webroot/overview.php:54
+msgid @@@ Delivery - Info @@@
+msgstr @@@ Mottagarens namn och adress @@@
+
+#: /webroot/overview.php:55
+msgid @@@ Name @@@
+msgstr @@@ Namn @@@
+
+#: /webroot/overview.php:56
+msgid @@@ Company / CO @@@
+msgstr @@@ Företag / CO @@@
+
+#: /webroot/overview.php:57
+msgid @@@ Street @@@
+msgstr @@@ Gatuadress @@@
+
+#: /webroot/overview.php:58
+msgid @@@ Zip Code @@@
+msgstr @@@ Postnummer @@@
+
+#: /webroot/overview.php:59
+msgid @@@ City @@@
+msgstr @@@ Stad @@@
+
+#: /webroot/overview.php:60
+msgid @@@ Delivery Date @@@
+msgstr @@@ Leveransdatum @@@
+
+#: /webroot/overview.php:62
+msgid @@@ Next >> @@@
+msgstr @@@ Nästa >> @@@
+
+#: /webroot/overview.php:63
+msgid @@@ Go to Payment >> @@@
+msgstr @@@ Fortsätt till betalning >> @@@
+
+#: /webroot/pay/accept.php:28
+msgid @@@ Payment Completed @@@
+msgstr @@@ Betalningen genomförd @@@
+
+#: /webroot/pay/accept.php:41
+msgid @@@ Thank you for using @@@
+msgstr @@@ Tack för att du använder @@@
+
+#: /webroot/pay/accept.php:42
+msgid @@@ Status - Success @@@
+msgstr @@@ Din betalning har genomförts @@@
+
+#: /webroot/pay/accept.php:43
+msgid @@@ mPoint ID @@@
+msgstr @@@ mPoint ID @@@
+
+#: /webroot/pay/accept.php:44
+msgid @@@ Order No @@@
+msgstr @@@ Ordernummer @@@
+
+#: /webroot/pay/accept.php:45
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
+#: /webroot/pay/accept.php:46
+msgid @@@ SMS Receipt - Info @@@
+msgstr @@@ Kvittot har även skickats via SMS till nummer {ADDRESS} @@@
+
+#: /webroot/pay/accept.php:47
+msgid @@@ Send receipt via E-Mail @@@
+msgstr @@@ Skicka kvitto med Epost @@@
+
+#: /webroot/pay/accept.php:48
+msgid @@@ Continue >> @@@
+msgstr @@@ Återvänd till försäljarens webplats >> @@@
+
+#: /webroot/pay/card.php:32
+msgid @@@ Select Card @@@
+msgstr @@@ Välj kort @@@
+
+#: /webroot/pay/card.php:41
+msgid @@@ Step 1 of 2 @@@
+msgstr @@@ Steg 1 av 2 @@@
+
+#: /webroot/pay/card.php:42
+msgid @@@ Please select your Credit Card @@@
+msgstr @@@ Välj ditt kredit kort @@@
+
+#: /webroot/pay/email.php:31
+msgid @@@ E-Mail Receipt @@@
+msgstr @@@ Epost kvitto @@@
+
+#: /webroot/pay/email.php:42
+msgid @@@ Please enter your e-mail address below @@@
+msgstr @@@ Ange din epost adress nedan @@@
+
+#: /webroot/pay/email.php:43
+msgid @@@ E-Mail @@@
+msgstr @@@ Epost @@@
+
+#: /webroot/pay/email.php:44
+msgid @@@ Next >> @@@
+msgstr @@@ Nästa >> @@@
+
+#: /webroot/pay/email.php:45
+msgid @@@ << Back @@@
+msgstr @@@ << Föregående @@@
+
+#: /webroot/shop/delivery.php:54
+msgid @@@ Recipient @@@
+msgstr @@@ Mottagare @@@
+
+#: /webroot/shop/delivery.php:67
+msgid @@@ Delivery - Info @@@
+msgstr @@@ Fyll i mottagarens namn och adress nedan @@@
+
+#: /webroot/shop/delivery.php:68
+msgid @@@ Phone No @@@
+msgstr @@@ Telefonnummer @@@
+
+#: /webroot/shop/delivery.php:69
+msgid @@@ Find @@@
+msgstr @@@ Sök @@@
+
+#: /webroot/shop/delivery.php:70
+msgid @@@ Name @@@
+msgstr @@@ Namn @@@
+
+#: /webroot/shop/delivery.php:71
+msgid @@@ Company / CO @@@
+msgstr @@@ Företag / CO @@@
+
+#: /webroot/shop/delivery.php:72
+msgid @@@ Street @@@
+msgstr @@@ Gatuadress @@@
+
+#: /webroot/shop/delivery.php:73
+msgid @@@ Zip Code @@@
+msgstr @@@ Postnummer @@@
+
+#: /webroot/shop/delivery.php:74
+msgid @@@ City @@@
+msgstr @@@ Stad @@@
+
+#: /webroot/shop/delivery.php:76
+msgid @@@ Delivery Date @@@
+msgstr @@@ Leveransdatum @@@
+
+#: /webroot/shop/delivery.php:77
+msgid @@@ YYYY @@@
+msgstr @@@ ÅÅÅÅ @@@
+
+#: /webroot/shop/delivery.php:78
+msgid @@@ MM @@@
+msgstr @@@ MM @@@
+
+#: /webroot/shop/delivery.php:79
+msgid @@@ DD @@@
+msgstr @@@ DD @@@
+
+#: /webroot/shop/delivery.php:81
+msgid @@@ Next >> @@@
+msgstr @@@ Nästa >> @@@
+
+#: /webroot/shop/products.php:43
+msgid @@@ Mobile Shop @@@
+msgstr @@@ Mobil Shop @@@
+
+#: /webroot/shop/products.php:52
+msgid @@@ Product - Info @@@
+msgstr @@@ Klicka på "Lägg till i korg" bredvid produkten för att köpa den. @@@
+
+#: /webroot/shop/products.php:53
+msgid @@@ Add to Basket @@@
+msgstr @@@ Lägg till i korg @@@
+
+#: /webroot/shop/products.php:54
+msgid @@@ Next >> @@@
+msgstr @@@ Nästa >> @@@
+
+#: /webroot/shop/shipping.php:26
+msgid @@@ Shipping Info @@@
+msgstr @@@ Leveransinformation @@@
+
+#: /webroot/shop/shipping.php:39
+msgid @@@ Shipping - Info @@@
+msgstr @@@ Välj leveransmetod @@@
+
+#: /webroot/terms.php:29
+msgid @@@ Terms & Conditions @@@
+msgstr @@@ Försäljningsvilkor @@@
+
+#: /webroot/terms.php:37
+msgid @@@ << Back @@@
+msgstr @@@ << Tillbaka @@@
+
+#: /api/classes/callback.php:197
+msgid @@@ mPoint - SMS Receipt @@@
+msgstr @@@ Tack för att du använder mPoint, information om din order:
+mPoint ID: {MPOINTID}
+Säljare: {CLIENT}
+Ordernummer: {ORDERID}
+Pris: {PRICE} @@@
+
+#: /api/classes/cpm.php:32
+msgid @@@ Billing SMS @@@
+msgstr @@@ Tack för att du använder mPoint, du har betalat {PRICE} via din telefonräkning @@@
+
+#: /api/classes/email_receipt.php:74
+msgid @@@ E-Mail Receipt - Subject @@@
+msgstr @@@ mPoint kvitto för ordernummer: {ORDERID} med mPoint ID: {MPOINTID} @@@
+
+#: /api/classes/email_receipt.php:93
+msgid @@@ E-Mail Receipt - Body @@@
+msgstr @@@ Tack för att du använder mPoint.
+Vi har lagrat följande information om din order.
+Mobiltelefonnummer: {ADDRESS}
+mPoint ID: {MPOINTID}
+Säljare: {CLIENT}
+Ordernummer: {ORDERID}
+Pris: {PRICE} @@@
+
+#: /api/classes/general.php:630
+msgid @@@ mPoint - Embedded link Indication @@@
+msgstr @@@ Välkommen till {CLIENT}, klicka på länken nedan @@@
+
+#: /api/classes/general.php:636
+msgid @@@ mPoint - WAP Push Indication @@@
+msgstr @@@ Välkommen till {CLIENT} @@@
+
+#: /api/classes/shipping.php:114
+msgid @@@ FREE @@@
+msgstr @@@ GRATIS @@@
+
+#: /api/classes/surepay.php:130
+msgid @@@ mPoint - Embedded link Resend Indication @@@
+msgstr @@@ Du har inte klickat på länken för {CLIENT}.
+Please activate the link below @@@
+
+#: /api/classes/surepay.php:150
+msgid @@@ SurePay Notification - Subject @@@
+msgstr @@@ betalningslänken för mPoint: {ORDERID} har inte klickats @@@
+
+#: /api/classes/surepay.php:154
+msgid @@@ SurePay Notification - Body @@@
+msgstr @@@ Följande kund har inte klickat på betalningslänken
+Mobiltelefonnummer: {ADDRESS}
+mPoint ID: {MPOINTID}
+Ordernummer: {ORDERID}
+Pris: {PRICE}
+Orderdatum: {TIMESTAMP}
+
+We rekommenderar att ni kontaktar den här kunden manuellt för att slutföra köpet. @@@

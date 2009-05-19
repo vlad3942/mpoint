@@ -98,7 +98,7 @@ abstract class Constants
 	 * Defines the ID of the State that should be logged if an E-Mail is rejected by the local SMTP Server
 	 *
 	 */
-	const iEMAIL_REJECTED_START = 1031;
+	const iEMAIL_REJECTED_STATE = 1031;
 	/**
 	 * Defines the ID of the State that indicates that mPoint's Callback request has been accepted
 	 *

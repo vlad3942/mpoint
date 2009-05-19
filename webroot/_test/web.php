@@ -11,11 +11,15 @@
 </tr>
 <tr>
 	<td style="font-weight:bold;">Recipient</td>
-	<td><input type="text" name="recipient" value="3053315242" /></td>
+	<td><input type="text" name="mobile" value="3053315242" /></td>
 </tr>
 <tr>
 	<td style="font-weight:bold;">Operator</td>
 	<td><input type="text" name="operator" value="20000" /></td>
+</tr>
+<tr>
+	<td style="font-weight:bold;">E-Mail</td>
+	<td><input type="text" name="email" value="jona@oismail.com" /></td>
 </tr>
 <tr>
 	<td style="font-weight:bold;">Amount</td>

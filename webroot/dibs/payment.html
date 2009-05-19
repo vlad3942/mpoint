@@ -55,6 +55,21 @@ if (cgi.language = 'da')
 	cvc_help := '3 tal (trykt på bagsiden af dit kort)';
 	submit := 'Gennemfør Betaling';
 }
+// Swedish
+else if (cgi.language = 'sv')
+{
+	title := 'Card Info';
+	progress := 'Step 2 of 2';
+	label_selected_card := 'Selected Card';
+	info := 'Please enter your card information below';
+	label_card_number := 'Card Number';
+	label_expiry := 'Expiry date';
+	expiry_month := 'mm';
+	expiry_year := 'yy';
+	label_cvc := 'CVC / CVS';
+	cvc_help := '3 digits (printed on the back of the card)';
+	submit := 'Complete Payment';
+}
 // British English
 else
 {
