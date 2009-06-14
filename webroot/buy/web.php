@@ -31,6 +31,7 @@ $aMsgCds = array();
 // Set Global Defaults
 if (array_key_exists("account", $_REQUEST) === false) { $_REQUEST['account'] = -1; }
 if (array_key_exists("orderid", $_REQUEST) === false) { $_REQUEST['orderid'] = null; }
+if (array_key_exists("email", $_REQUEST) === false) { $_REQUEST['email'] = ""; }
 
 $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 
@@ -52,11 +53,11 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	$iTxnID = $obj_mPoint->newTransaction(Constants::iWEB_PURCHASE_TYPE);
 
 	/* ========== Input Validation Start ========== */
-	$obj_Validator = new Validate($obj_ClientConfig);
+	$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 
-	if ($obj_Validator->valAddress($_REQUEST['mobile']) != 10) { $aMsgCds[$obj_Validator->valAddress($_REQUEST['mobile']) + 30] = $_REQUEST['mobile']; }
+	if ($obj_Validator->valMobile($_REQUEST['mobile']) != 10) { $aMsgCds[$obj_Validator->valMobile($_REQUEST['mobile']) + 30] = $_REQUEST['mobile']; }
 	if ($obj_Validator->valOperator($_REQUEST['operator']) != 10) { $aMsgCds[$obj_Validator->valOperator($_REQUEST['operator']) + 40] = $_REQUEST['operator']; }
-	if ($obj_Validator->valAmount($_REQUEST['amount']) != 10) { $aMsgCds[$obj_Validator->valAmount($_REQUEST['amount']) + 50] = $_REQUEST['amount']; }
+	if ($obj_Validator->valAmount($obj_ClientConfig->getMaxAmount(), $_REQUEST['amount']) != 10) { $aMsgCds[$obj_Validator->valAmount($obj_ClientConfig->getMaxAmount(), $_REQUEST['amount']) + 50] = $_REQUEST['amount']; }
 	// Validate URLs
 	if ($obj_Validator->valURL($_REQUEST['logo-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['logo-url']) + 70] = $_REQUEST['logo-url']; }
 	if ($obj_Validator->valURL($_REQUEST['css-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['css-url']) + 80]= $_REQUEST['css-url']; }
@@ -64,7 +65,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if ($obj_Validator->valURL($_REQUEST['cancel-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['cancel-url']) + 100] = $_REQUEST['cancel-url']; }
 	if ($obj_Validator->valURL($_REQUEST['callback-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['callback-url']) + 110] = $_REQUEST['callback-url']; }
 	if ($obj_Validator->valLanguage($_REQUEST['language']) != 10) { $aMsgCds[$obj_Validator->valLanguage($_REQUEST['language']) + 130] = $_REQUEST['language']; }
-	if ($obj_Validator->valEMail($_REQUEST['email']) != 1 && $obj_Validator->valEMail($_REQUEST['email']) != 10) { $aMsgCds[$obj_Validator->valLanguage($_REQUEST['email']) + 140] = $_REQUEST['email']; }
+	if ($obj_Validator->valEMail($_REQUEST['email']) != 1 && $obj_Validator->valEMail($_REQUEST['email']) != 10) { $aMsgCds[$obj_Validator->valEMail($_REQUEST['email']) + 140] = $_REQUEST['email']; }
 	/* ========== Input Validation End ========== */
 
 	// Success: Input Valid

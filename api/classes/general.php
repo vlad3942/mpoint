@@ -213,9 +213,10 @@ class General
 	 * Determines the language that all payment pages should be translated into.
 	 * The method will select the language by going through the following steps:
 	 * 	1. Check if a language has already been determined for the Session
-	 * 	2. Analyse the HTTP Header: Accept-Language provided by the customer's browser
-	 * 	3. Use the language provided when the transaction was initialised
-	 * 	4. Use the default system language: British English (uk)
+	 * 	2. Check if the Client has specified a language as part of the Transaction data
+	 * 	3. Analyse the HTTP Header: Accept-Language provided by the customer's browser
+	 * 	4. Use the language provided when the transaction was initialised
+	 * 	5. Use the default system language: British English (gb)
 	 * Once the language has been determined, the method will update the user session to expedite future
 	 * queries.
 	 *
@@ -228,12 +229,20 @@ class General
 	 */
 	public static function getLanguage()
 	{
-		switch (true)
+		// Language has previously been determined
+		if (isset($_SESSION) === true && $_SESSION['obj_Info']->getInfo("language") !== false)
 		{
-		case (isset($_SESSION) && $_SESSION['obj_Info']->getInfo("language") ):			// Language has previously been determined
 			$sLang = $_SESSION['obj_Info']->getInfo("language");
-			break;
-		case (array_key_exists("HTTP_ACCEPT_LANGUAGE", $_SERVER) ):	// Analyse HTTP Header
+		}
+		// Language provided by Client as part of the Transaction data
+		elseif (array_key_exists("language", $_REQUEST) === true && empty($_REQUEST['language']) === false
+				&& is_dir(sLANGUAGE_PATH ."/". $_REQUEST['language']) === true)
+		{
+			$sLang = $_REQUEST['language'];
+		}
+		// Analyse HTTP Header
+		elseif (array_key_exists("HTTP_ACCEPT_LANGUAGE", $_SERVER) === true)
+		{
 			/* ========== Determine Language from HTTP Header Start ========== */
 			// Open current directory
 			$dh = opendir(sLANGUAGE_PATH);
@@ -282,13 +291,16 @@ class General
 				else { $sLang = sDEFAULT_LANGUAGE; }
 			}
 			/* ========== Determine Configuration End ========== */
-			break;
-		case (isset($_SESSION) && array_key_exists("obj_TxnInfo", $_SESSION) ):	// Language provided when the Transaction was initialised
+		}
+		// Language provided when the Transaction was initialised
+		elseif (isset($_SESSION) === true && array_key_exists("obj_TxnInfo", $_SESSION) === true)
+		{
 			$sLang = $_SESSION['obj_TxnInfo']->getLanguage();
-			break;
-		default:													// System Default
+		}
+		// System Default
+		else
+		{
 			$sLang = sDEFAULT_LANGUAGE;
-			break;
 		}
 		// Update session
 		if (isset($_SESSION) === true) { $_SESSION['obj_Info']->setInfo("language", $sLang); }
@@ -399,7 +411,7 @@ class General
 				SET typeid = ". $oTI->getTypeID() .", clientid = ". $oTI->getClientConfig()->getID() .", accountid = ". $oTI->getClientConfig()->getAccountConfig()->getID() .",
 					countryid = ". $oTI->getClientConfig()->getCountryConfig()->getID() .", keywordid = ". $oTI->getClientConfig()->getKeywordConfig()->getID() .",
 					amount = ". $oTI->getAmount() .", orderid = '". $this->getDBConn()->escStr($oTI->getOrderID() ) ."', lang = '". $this->getDBConn()->escStr($oTI->getLanguage() ) ."',
-					address = ". floatval($oTI->getAddress() ) .", operatorid = ". $oTI->getOperator() .", email = '". $this->getDBConn()->escStr($oTI->getEMail() ) ."',
+					mobile = ". floatval($oTI->getMobile() ) .", operatorid = ". $oTI->getOperator() .", email = '". $this->getDBConn()->escStr($oTI->getEMail() ) ."',
 					logourl = '". $this->getDBConn()->escStr($oTI->getLogoURL() ) ."', cssurl = '". $this->getDBConn()->escStr($oTI->getCSSURL() ) ."',
 					accepturl = '". $this->getDBConn()->escStr($oTI->getAcceptURL() ) ."', cancelurl = '". $this->getDBConn()->escStr($oTI->getCancelURL() ) ."',
 					callbackurl = '". $this->getDBConn()->escStr($oTI->getCallbackURL() ) ."', gomobileid = ". $oTI->getGoMobileID() .", auto_capture = ". General::bool2xml($oTI->useAutoCapture() ) ."
@@ -553,46 +565,6 @@ class General
 	}
 
 	/**
-	 * Constructs the download link for the transaction.
-	 * The link is contructed through the following alghorithm:
-	 * 	- {TXN CREATED} is an integer representing the timestamp for when the transaction was created since unix epoch
-	 * 	- {TXN ID} is the ID of the outgoing MT-SMS transaction
-	 *	The fields are separated by a Z and are using 32 digit numbering (as opposed to "standard" decimal).
-	 *
-	 * The returned link has the following format:
-	 * 	http://{DOMAIN}/base_convert({TXN CREATED}, 10, 32)Zbase_convert({TXN ID}, 10, 32)
-	 *
-	 * A new log entry is created in the Message Log with the constructed link under state "Link Constructed"
-	 *
-	 * @see 	General::newMessage()
-	 * @see 	Constants::iCONST_LINK_STATE
-	 *
-	 * @param 	integer $txnid 	ID of the Transaction that the Payment Link should be constructed for
-	 * @param 	integer $oid 	GoMobile's ID for the Customer's Mobile Network Operator
-	 * @param 	string $dir 	Directory where the Customer should start his mPoint Flow
-	 * @return 	string
-	 */
-	public function constLink($txnid, $oid, $dir)
-	{
-		$sql = "SELECT Extract('epoch' from created) AS timestamp
-				FROM Log.Transaction_Tbl
-				WHERE id = ". intval($txnid);
-//		echo $sql ."\n";
-		$RS = $this->getDBConn()->getName($sql);
-
-		$sLink = "http://";
-		// Customer's Operator is Sprint
-		if ($oid == 20004) { $sLink .= sSPRINT_MPOINT_DOMAIN; }
-		else { $sLink .= sDEFAULT_MPOINT_DOMAIN; }
-
-		$sLink .= "/". $dir ."/". base_convert(intval($RS["TIMESTAMP"]), 10, 32) ."Z". base_convert($txnid, 10, 32);
-
-		$this->newMessage($txnid, Constants::iCONST_LINK_STATE, $sLink);
-
-		return $sLink;
-	}
-
-	/**
 	 * Constructs an MT and sends it to GoMobile.
 	 * Prior to sending the message the method will updated the provided Connection Info object with the Client's username / password for GoMobile.
 	 * Additionally the method will determine from the customer's Mobile Network Operator whether to send an MT-WAP Push (default) or an MT-SMS
@@ -630,17 +602,137 @@ class General
 			$sBody = $this->getText()->_("mPoint - Embedded link Indication") ."\n". $url;
 			$sBody = str_replace("{CLIENT}", $oTI->getClientConfig()->getName(), $sBody);
 			// Instantiate Message Object for holding the message data which will be sent to GoMobile
-			$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $oTI->getClientConfig()->getCountryConfig()->getID(), $oTI->getOperator(), $oTI->getClientConfig()->getCountryConfig()->getChannel(), $oTI->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getAddress(), utf8_decode($sBody) );
+			$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $oTI->getClientConfig()->getCountryConfig()->getID(), $oTI->getOperator(), $oTI->getClientConfig()->getCountryConfig()->getChannel(), $oTI->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getMobile(), utf8_decode($sBody) );
 			break;
 		default:
 			$sIndication = $this->getText()->_("mPoint - WAP Push Indication");
 			$sIndication = str_replace("{CLIENT}", $oTI->getClientConfig()->getName(), $sIndication);
 			// Instantiate Message Object for holding the message data which will be sent to GoMobile
-			$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_WAP_PUSH_TYPE, $oTI->getClientConfig()->getCountryConfig()->getID(), $oTI->getOperator(), $oTI->getClientConfig()->getCountryConfig()->getChannel(), $oTI->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getAddress(), $sIndication, $url);
+			$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_WAP_PUSH_TYPE, $oTI->getClientConfig()->getCountryConfig()->getID(), $oTI->getOperator(), $oTI->getClientConfig()->getCountryConfig()->getChannel(), $oTI->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getMobile(), $sIndication, $url);
 			break;
 		}
 		// Send Link to Customer
 		$this->sendMT($oCI, $obj_MsgInfo, $oTI);
+	}
+
+	/**
+	 * Authenticates user for access to the system as well as access to the current report
+	 *	1000. Success: Access granted
+	 *	1001. Unauthorized System Access
+	 *	1002. Unauthorized Module Access
+	 *
+	 * @return	integer 	1000 if access is granted
+	 */
+	public static function val()
+	{
+		// Success: Access granted
+		if ($_SESSION['obj_Info']->getInfo("accountid") > 0)
+		{
+			$code = 1000;
+		}
+		// Error: Unauthorized system access
+		else
+		{
+			$code = 1001;
+		}
+
+		return $code;
+	}
+
+	/**
+	 * Fetches all active countries from the database.
+	 * The countries are returned as an XML Document in the following format:
+	 * 	<countries>
+	 * 		<item id="{UNIQUE ID FOR THE COUNTRY}">
+	 *			<name>{NAME OF THE COUNTRY}</name>
+	 *			<currency>{CURRENCY USED IN THE COUNTRY}</currency>
+	 *			<minmobile>{MIN VALUE FOR A VALID MOBILE NUMBER (MSISDN) IN THE COUNTRY}</minmobile>
+	 *			<maxmobile>{MAX VALUE FOR A VALID MOBILE NUMBER (MSISDN) IN THE COUNTRY}</maxmobile>
+	 *			<channel>{CHANNEL USED FOR SENDING MESSAGE'S TO AN END-USER'S MOBILE PHONE}</channel>
+	 *			<priceformat>{PRICE FORMAT USED IN THE COUNTRY, i.e. $XX.XX for USA and XX,XXkr FOR DENMARK}</priceformat>
+	 *			<decimals>{NUMBER OF DECIMALS USED WHEN DISPLAYING PRICES}</decimals>
+	 *			<addresslookup>{BOOLEAN FLAG INDICATING WHETHER ADDRESS LOOKUP BASED ON A MOBILE NUMBER IS AVAILABLE IN THE COUNTRY}</addresslookup>
+	 *			<doubleoptin>{BOOLEAN FLAG INDICATING WHETHER THE MOBILE NETWORK OPERATOR'S IN THE COUNTRY REQUIRE DOUBLE OPT-IN WHEN CHARGING VIA PREMIUM SMS}</doubleoptin>
+	 *		</item>
+	 *		<item id="{UNIQUE ID FOR THE COUNTRY}">
+	 *			<name>{NAME OF THE COUNTRY}</name>
+	 *			<currency>{CURRENCY USED IN THE COUNTRY}</currency>
+	 *			<minmobile>{MIN VALUE FOR A VALID MOBILE NUMBER (MSISDN) IN THE COUNTRY}</minmobile>
+	 *			<maxmobile>{MAX VALUE FOR A VALID MOBILE NUMBER (MSISDN) IN THE COUNTRY}</maxmobile>
+	 *			<channel>{CHANNEL USED FOR SENDING MESSAGE'S TO AN END-USER'S MOBILE PHONE}</channel>
+	 *			<priceformat>{PRICE FORMAT USED IN THE COUNTRY, i.e. $XX.XX for USA and XX,XXkr FOR DENMARK}</priceformat>
+	 *			<decimals>{NUMBER OF DECIMALS USED WHEN DISPLAYING PRICES}</decimals>
+	 *			<addresslookup>{BOOLEAN FLAG INDICATING WHETHER ADDRESS LOOKUP BASED ON A MOBILE NUMBER IS AVAILABLE IN THE COUNTRY}</addresslookup>
+	 *			<doubleoptin>{BOOLEAN FLAG INDICATING WHETHER THE MOBILE NETWORK OPERATOR'S IN THE COUNTRY REQUIRE DOUBLE OPT-IN WHEN CHARGING VIA PREMIUM SMS}</doubleoptin>
+	 *		</item>
+	 *		...
+	 * 	</countries>
+	 *
+	 * @return 	string
+	 */
+	public function getCountries()
+	{
+		$sql = "SELECT id, name, currency, minmob, maxmob, channel, priceformat, decimals, als, doi
+				FROM System.Country_Tbl
+				WHERE enabled = true
+				ORDER BY name ASC";
+//		echo $sql ."\n";
+		$res = $this->getDBConn()->query($sql);
+
+		$xml = '<countries>';
+		while ($RS = $this->getDBConn()->fetchName($res) )
+		{
+			$xml .= '<item id="'. $RS["ID"] .'">';
+			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';
+			$xml .= '<currency>'. $RS["CURRENCY"] .'</currency>';
+			$xml .= '<minmobile>'. $RS["MINMOB"] .'</minmobile>';
+			$xml .= '<maxmobile>'. $RS["MAXMOB"] .'</maxmobile>';
+			$xml .= '<channel>'. $RS["CHANNEL"] .'</channel>';
+			$xml .= '<priceformat>'. $RS["PRICEFORMAT"] .'</priceformat>';
+			$xml .= '<decimals>'. $RS["DECIMALS"] .'</decimals>';
+			$xml .= '<addresslookup>'. General::bool2xml($RS["ALS"]) .'</addresslookup>';
+			$xml .= '<doubleoptin>'. General::bool2xml($RS["DOI"]) .'</doubleoptin>';
+			$xml .= '</item>';
+		}
+		$xml .= '</countries>';
+
+		return $xml;
+	}
+
+	/**
+	 * Attempts to determine the user's country based on the IP address.
+	 * The method will return one of the following:
+	 *     0. Country not found
+	 *	  -1. IP address is invalid
+	 * 	100+. Unique ID of the user's country based on the IP address
+	 * The method will automatically use the IP Address found in $_SERVER['REMOTE_ADDR'] if no address parameter
+	 * is passed.
+	 *
+	 * @see		http://dk.php.net/manual/en/reserved.variables.server.php
+	 *
+	 * @param	string		IP address that should be used to determine the user's country. Defaults to $_SERVER['REMOTE_ADDR'].
+	 * @return	integer 	   0. Country not found
+	 * 						  -1. IP address is invalid
+	 * 						100+. Unique ID of the user's country based on the IP address
+	 */
+	public function getCountryFromIP($ip="")
+	{
+		if (empty($ip) === true) { $ip = $_SERVER['REMOTE_ADDR']; }
+		$ip = ip2long($ip);
+
+		if ($ip !== false)
+		{
+			$sql = "SELECT countryid
+					FROM System.IPRange_Tbl
+					WHERE min <= ". $ip ." AND max >= ". $ip;
+//			echo nl2br($strSQL);
+			$RS = $this->getDBConn()->getName($sql);
+			// Unable to determine country based on IP Address
+			if (is_array($RS) === false) { $RS["COUNTRYID"] = 0; }
+		}
+		else { $RS["COUNTRYID"] = -1; }
+
+		return $RS["COUNTRYID"];
 	}
 }
 ?>

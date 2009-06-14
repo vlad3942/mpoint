@@ -10,8 +10,8 @@
 	<td><input type="text" name="account" value="-1" /></td>
 </tr>
 <tr>
-	<td style="font-weight:bold;">Recipient</td>
-	<td><input type="text" name="recipient" value="3053315242" /></td>
+	<td style="font-weight:bold;">Mobile</td>
+	<td><input type="text" name="mobile" value="3053315242" /></td>
 </tr>
 <tr>
 	<td style="font-weight:bold;">Operator</td>

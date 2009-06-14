@@ -14,6 +14,8 @@
 // Require Global Include File
 require_once("../inc/include.php");
 
+// Require Business logic for the End-User Account Component
+require_once(sCLASS_PATH ."/enduser_account.php");
 // Require Business logic for the Select Credit Card component
 require_once(sCLASS_PATH ."/credit_card.php");
 
@@ -29,7 +31,7 @@ echo '<?xml version="1.0" encoding="ISO-8859-15"?>';
 echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/pay/card.xsl"?>';
 ?>
 <root>
-	<title><?= $_OBJ_TXT->_("Select Card"); ?></title>
+	<title><?= $_OBJ_TXT->_("Select Payment Method"); ?></title>
 
 	<?= $obj_mPoint->getSystemInfo(); ?>
 
@@ -39,10 +41,10 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 
 	<labels>
 		<progress><?= $_OBJ_TXT->_("Step 1 of 2"); ?></progress>
-		<info><?= $_OBJ_TXT->_("Please select your Credit Card"); ?></info>
+		<info><?= $_OBJ_TXT->_("Please select your Payment Method"); ?></info>
 	</labels>
 
-	<?= $obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount()); ?>
+	<?= $obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount() ); ?>
 
 	<!-- DIBS Custom Pages: Payment Accepted -->
 	<accept>

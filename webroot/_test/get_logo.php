@@ -2,7 +2,7 @@
 /* ========== Define System path Start ========== */
 // HTTP Request
 if(isset($_SERVER['DOCUMENT_ROOT']) === true && empty($_SERVER['DOCUMENT_ROOT']) === false)
-{  
+{
 	$_SERVER['DOCUMENT_ROOT'] = str_replace("\\", "/", $_SERVER['DOCUMENT_ROOT']);
 	// Define system path constant
 	define("sSYSTEM_PATH", substr($_SERVER['DOCUMENT_ROOT'], 0, strrpos($_SERVER['DOCUMENT_ROOT'], "/") ) );
@@ -58,5 +58,6 @@ $aDB_CONN_INFO["method"] = 3;
 
 $obj_DB = RDB::produceDatabase($aDB_CONN_INFO);
 
-echo "INSERT INTO System.Card_Tbl (name, position, logo) VALUES ('SMS', 0, '". $obj_DB->escBin(file_get_contents("../img/psms.jpg") ) ."');" ."\n";
+//echo "INSERT INTO System.Card_Tbl (name, position, logo) VALUES ('My Account', -1, '". $obj_DB->escBin(file_get_contents("../img/my_account.png") ) ."');" ."\n";
+echo "UPDATE System.Card_Tbl SET logo = '". $obj_DB->escBin(file_get_contents("../img/my_account.gif") ) ."' WHERE id = 11;" ."\n";
 ?>

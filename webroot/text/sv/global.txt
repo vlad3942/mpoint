@@ -1,3 +1,271 @@
+#: /webroot/cpm/payment.php:67
+msgid @@@ Pay using Account @@@
+msgstr @@@ Pay using Account @@@
+
+#: /webroot/cpm/payment.php:76
+msgid @@@ Step 2 of 2 @@@
+msgstr @@@ Step 2 of 2 @@@
+
+#: /webroot/cpm/payment.php:77
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
+#: /webroot/cpm/payment.php:78
+msgid @@@ Account - Info @@@
+msgstr @@@ Please select a payment method and confirm the payment by entering your password @@@
+
+#: /webroot/cpm/payment.php:79
+msgid @@@ My Account @@@
+msgstr @@@ My Account @@@
+
+#: /webroot/cpm/payment.php:80
+msgid @@@ Balance @@@
+msgstr @@@ Balance @@@
+
+#: /webroot/cpm/payment.php:81
+msgid @@@ Stored Card @@@
+msgstr @@@ Stored Card @@@
+
+#: /webroot/cpm/payment.php:82
+msgid @@@ Stored Cards @@@
+msgstr @@@ Stored Cards @@@
+
+#: /webroot/cpm/payment.php:83
+msgid @@@ Password @@@
+msgstr @@@ Password @@@
+
+#: /webroot/cpm/payment.php:84
+msgid @@@ Complete Payment @@@
+msgstr @@@ Complete Payment @@@
+
+#: /webroot/default.php:19
+msgid @@@ mPoint @@@
+msgstr @@@ mPoint @@@
+
+#: /webroot/default.php:20
+msgid @@@ Unsupported Browser @@@
+msgstr @@@ Unsupported Browser @@@
+
+#: /webroot/home/content.php:34
+msgid @@@ mPoint - User Admin @@@
+msgstr @@@ mPoint - User Admin @@@
+
+#: /webroot/home/content.php:37
+msgid @@@ My Account @@@
+msgstr @@@ My Account @@@
+
+#: /webroot/home/content.php:38
+msgid @@@ Top-Up Account @@@
+msgstr @@@ Top-Up Account @@@
+
+#: /webroot/home/content.php:39
+msgid @@@ Stored Cards @@@
+msgstr @@@ Stored Cards @@@
+
+#: /webroot/home/content.php:42
+msgid @@@ mPoint - User Admin - Overview @@@
+msgstr @@@ mPoint - User Admin - Overview @@@
+
+#: /webroot/home/content.php:45
+msgid @@@ My Account - Help @@@
+msgstr @@@ My Account - Help @@@
+
+#: /webroot/home/content.php:46
+msgid @@@ Top-Up Account - Help @@@
+msgstr @@@ Top-Up Account - Help @@@
+
+#: /webroot/home/content.php:47
+msgid @@@ Stored Cards - Help @@@
+msgstr @@@ Stored Cards - Help @@@
+
+#: /webroot/home/history.php:37
+msgid @@@ Transaction History @@@
+msgstr @@@ Transaction History @@@
+
+#: /webroot/home/history.php:40
+msgid @@@ Purchase History @@@
+msgstr @@@ Purchase History @@@
+
+#: /webroot/home/history.php:41
+msgid @@@ Transfer History @@@
+msgstr @@@ Transfer History @@@
+
+#: /webroot/home/history.php:42
+msgid @@@ Top-Up History @@@
+msgstr @@@ Top-Up History @@@
+
+#: /webroot/home/history.php:43
+msgid @@@ ID @@@
+msgstr @@@ ID @@@
+
+#: /webroot/home/history.php:44
+msgid @@@ mPoint ID @@@
+msgstr @@@ mPoint ID @@@
+
+#: /webroot/home/history.php:45
+msgid @@@ Amount @@@
+msgstr @@@ Amount @@@
+
+#: /webroot/home/history.php:46
+msgid @@@ Method @@@
+msgstr @@@ Method @@@
+
+#: /webroot/home/history.php:47
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
+#: /webroot/home/history.php:48
+msgid @@@ Merchant @@@
+msgstr @@@ Merchant @@@
+
+#: /webroot/home/history.php:49
+msgid @@@ Order No. @@@
+msgstr @@@ Order No. @@@
+
+#: /webroot/home/history.php:50
+msgid @@@ Sender @@@
+msgstr @@@ Sender @@@
+
+#: /webroot/home/history.php:51
+msgid @@@ Recipient @@@
+msgstr @@@ Recipient @@@
+
+#: /webroot/home/history.php:52
+msgid @@@ Timestamp @@@
+msgstr @@@ Timestamp @@@
+
+#: /webroot/home/my_account.php:37
+msgid @@@ My Account @@@
+msgstr @@@ My Account @@@
+
+#: /webroot/home/my_account.php:42
+msgid @@@ Account Details @@@
+msgstr @@@ Account Details @@@
+
+#: /webroot/home/my_account.php:43
+msgid @@@ Stored Card @@@
+msgstr @@@ Stored Card @@@
+
+#: /webroot/home/my_account.php:44
+msgid @@@ Stored Cards @@@
+msgstr @@@ Stored Cards @@@
+
+#: /webroot/home/my_account.php:46
+msgid @@@ Account ID @@@
+msgstr @@@ Account ID @@@
+
+#: /webroot/home/my_account.php:47
+msgid @@@ Country @@@
+msgstr @@@ Country @@@
+
+#: /webroot/home/my_account.php:48
+msgid @@@ Firstname @@@
+msgstr @@@ Firstname @@@
+
+#: /webroot/home/my_account.php:49
+msgid @@@ Lastname @@@
+msgstr @@@ Lastname @@@
+
+#: /webroot/home/my_account.php:50
+msgid @@@ Mobile @@@
+msgstr @@@ Mobile @@@
+
+#: /webroot/home/my_account.php:51
+msgid @@@ E-Mail @@@
+msgstr @@@ E-Mail @@@
+
+#: /webroot/home/my_account.php:52
+msgid @@@ Password @@@
+msgstr @@@ Password @@@
+
+#: /webroot/home/my_account.php:53
+msgid @@@ Repeat Password @@@
+msgstr @@@ Repeat Password @@@
+
+#: /webroot/home/my_account.php:54
+msgid @@@ Save @@@
+msgstr @@@ Save @@@
+
+#: /webroot/home/my_account.php:55
+msgid @@@ Preferred @@@
+msgstr @@@ Preferred @@@
+
+#: /webroot/home/my_account.php:56
+msgid @@@ Other @@@
+msgstr @@@ Other @@@
+
+#: /webroot/home/topmenu.php:38
+msgid @@@ My Account @@@
+msgstr @@@ My Account @@@
+
+#: /webroot/home/topmenu.php:42
+msgid @@@ Top-Up Account @@@
+msgstr @@@ Top-Up Account @@@
+
+#: /webroot/home/topmenu.php:46
+msgid @@@ Transaction History @@@
+msgstr @@@ Transaction History @@@
+
+#: /webroot/home/topmenu.php:50
+msgid @@@ Transfer @@@
+msgstr @@@ Transfer @@@
+
+#: /webroot/home/topmenu.php:55
+msgid @@@ Balance @@@
+msgstr @@@ Balance @@@
+
+#: /webroot/home/topup.php:34
+msgid @@@ Top-Up Account @@@
+msgstr @@@ Top-Up Account @@@
+
+#: /webroot/home/topup.php:37
+msgid @@@ Balance @@@
+msgstr @@@ Balance @@@
+
+#: /webroot/home/transfer.php:34
+msgid @@@ Transfer @@@
+msgstr @@@ Transfer @@@
+
+#: /webroot/home/transfer.php:37
+msgid @@@ Balance @@@
+msgstr @@@ Balance @@@
+
+#: /webroot/internal/unauthorized.php:24
+msgid @@@ Unauthorized system access @@@
+msgstr @@@ Unauthorized system access @@@
+
+#: /webroot/login/content.php:27
+msgid @@@ Welcome to mPoint - User Admin. Please login? @@@
+msgstr @@@ Welcome to mPoint - User Admin. Please login? @@@
+
+#: /webroot/login/content.php:28
+msgid @@@ Country @@@
+msgstr @@@ Country @@@
+
+#: /webroot/login/content.php:29
+msgid @@@ ( Select ) @@@
+msgstr @@@ ( Select ) @@@
+
+#: /webroot/login/content.php:30
+msgid @@@ Username @@@
+msgstr @@@ Username @@@
+
+#: /webroot/login/content.php:31
+msgid @@@ Password @@@
+msgstr @@@ Password @@@
+
+#: /webroot/login/content.php:32
+msgid @@@ Login @@@
+msgstr @@@ Login @@@
+
+#: /webroot/login/sys/auth.php:140
+msgid @@@ auth - code: 10 @@@
+msgstr @@@ auth - code: 10 @@@
+
+#: /webroot/login/sys/auth.php:158
+msgid @@@ internal - code: 2 @@@
+msgstr @@@ internal - code: 2 @@@
+
 #: /webroot/overview.php:38
 msgid @@@ Order Overview @@@
 msgstr @@@ Orderöversikt @@@
@@ -88,7 +356,7 @@ msgstr @@@ Price @@@
 
 #: /webroot/pay/accept.php:46
 msgid @@@ SMS Receipt - Info @@@
-msgstr @@@ Kvittot har även skickats via SMS till nummer {ADDRESS} @@@
+msgstr @@@ Kvittot har även skickats via SMS till nummer: {MOBILE} @@@
 
 #: /webroot/pay/accept.php:47
 msgid @@@ Send receipt via E-Mail @@@
@@ -98,16 +366,16 @@ msgstr @@@ Skicka kvitto med Epost @@@
 msgid @@@ Continue >> @@@
 msgstr @@@ Återvänd till försäljarens webplats >> @@@
 
-#: /webroot/pay/card.php:32
-msgid @@@ Select Card @@@
+#: /webroot/pay/card.php:34
+msgid @@@ Select Payment Method @@@
 msgstr @@@ Välj kort @@@
 
-#: /webroot/pay/card.php:41
+#: /webroot/pay/card.php:43
 msgid @@@ Step 1 of 2 @@@
 msgstr @@@ Steg 1 av 2 @@@
 
-#: /webroot/pay/card.php:42
-msgid @@@ Please select your Credit Card @@@
+#: /webroot/pay/card.php:44
+msgid @@@ Please select your Payment Method @@@
 msgstr @@@ Välj ditt kredit kort @@@
 
 #: /webroot/pay/email.php:31
@@ -123,66 +391,86 @@ msgid @@@ E-Mail @@@
 msgstr @@@ Epost @@@
 
 #: /webroot/pay/email.php:44
-msgid @@@ Next >> @@@
-msgstr @@@ Nästa >> @@@
+msgid @@@ Send Receipt @@@
+msgstr @@@ Send kvitto @@@
 
 #: /webroot/pay/email.php:45
 msgid @@@ << Back @@@
 msgstr @@@ << Föregående @@@
 
-#: /webroot/shop/delivery.php:54
+#: /webroot/pay/pwd.php:34
+msgid @@@ Create Account @@@
+msgstr @@@ Create Account @@@
+
+#: /webroot/pay/pwd.php:47
+msgid @@@ Please complete the form below to set the password for your account @@@
+msgstr @@@ Please complete the form below to set the password for your account @@@
+
+#: /webroot/pay/pwd.php:48
+msgid @@@ Password @@@
+msgstr @@@ Password @@@
+
+#: /webroot/pay/pwd.php:49
+msgid @@@ Repeat Password @@@
+msgstr @@@ Repeat Password @@@
+
+#: /webroot/pay/pwd.php:50
+msgid @@@ Save @@@
+msgstr @@@ Save @@@
+
+#: /webroot/shop/delivery.php:55
 msgid @@@ Recipient @@@
 msgstr @@@ Mottagare @@@
 
-#: /webroot/shop/delivery.php:67
+#: /webroot/shop/delivery.php:68
 msgid @@@ Delivery - Info @@@
 msgstr @@@ Fyll i mottagarens namn och adress nedan @@@
 
-#: /webroot/shop/delivery.php:68
+#: /webroot/shop/delivery.php:69
 msgid @@@ Phone No @@@
 msgstr @@@ Telefonnummer @@@
 
-#: /webroot/shop/delivery.php:69
+#: /webroot/shop/delivery.php:70
 msgid @@@ Find @@@
 msgstr @@@ Sök @@@
 
-#: /webroot/shop/delivery.php:70
+#: /webroot/shop/delivery.php:71
 msgid @@@ Name @@@
 msgstr @@@ Namn @@@
 
-#: /webroot/shop/delivery.php:71
+#: /webroot/shop/delivery.php:72
 msgid @@@ Company / CO @@@
 msgstr @@@ Företag / CO @@@
 
-#: /webroot/shop/delivery.php:72
+#: /webroot/shop/delivery.php:73
 msgid @@@ Street @@@
 msgstr @@@ Gatuadress @@@
 
-#: /webroot/shop/delivery.php:73
+#: /webroot/shop/delivery.php:74
 msgid @@@ Zip Code @@@
 msgstr @@@ Postnummer @@@
 
-#: /webroot/shop/delivery.php:74
+#: /webroot/shop/delivery.php:75
 msgid @@@ City @@@
 msgstr @@@ Stad @@@
 
-#: /webroot/shop/delivery.php:76
+#: /webroot/shop/delivery.php:77
 msgid @@@ Delivery Date @@@
 msgstr @@@ Leveransdatum @@@
 
-#: /webroot/shop/delivery.php:77
+#: /webroot/shop/delivery.php:78
 msgid @@@ YYYY @@@
 msgstr @@@ ÅÅÅÅ @@@
 
-#: /webroot/shop/delivery.php:78
+#: /webroot/shop/delivery.php:79
 msgid @@@ MM @@@
 msgstr @@@ MM @@@
 
-#: /webroot/shop/delivery.php:79
+#: /webroot/shop/delivery.php:80
 msgid @@@ DD @@@
 msgstr @@@ DD @@@
 
-#: /webroot/shop/delivery.php:81
+#: /webroot/shop/delivery.php:82
 msgid @@@ Next >> @@@
 msgstr @@@ Nästa >> @@@
 
@@ -238,17 +526,17 @@ msgstr @@@ mPoint kvitto för ordernummer: {ORDERID} med mPoint ID: {MPOINTID} @@
 msgid @@@ E-Mail Receipt - Body @@@
 msgstr @@@ Tack för att du använder mPoint.
 Vi har lagrat följande information om din order.
-Mobiltelefonnummer: {ADDRESS}
+Mobiltelefonnummer: {MOBILE}
 mPoint ID: {MPOINTID}
 Säljare: {CLIENT}
 Ordernummer: {ORDERID}
 Pris: {PRICE} @@@
 
-#: /api/classes/general.php:630
+#: /api/classes/general.php:602
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ Välkommen till {CLIENT}, klicka på länken nedan @@@
 
-#: /api/classes/general.php:636
+#: /api/classes/general.php:608
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Välkommen till {CLIENT} @@@
 
@@ -268,10 +556,11 @@ msgstr @@@ betalningslänken för mPoint: {ORDERID} har inte klickats @@@
 #: /api/classes/surepay.php:154
 msgid @@@ SurePay Notification - Body @@@
 msgstr @@@ Följande kund har inte klickat på betalningslänken
-Mobiltelefonnummer: {ADDRESS}
+Mobiltelefonnummer: {MOBILE}
 mPoint ID: {MPOINTID}
 Ordernummer: {ORDERID}
 Pris: {PRICE}
 Orderdatum: {TIMESTAMP}
 
 We rekommenderar att ni kontaktar den här kunden manuellt för att slutföra köpet. @@@
+

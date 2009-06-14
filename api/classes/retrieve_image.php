@@ -21,30 +21,21 @@
 class RetrieveImage extends General
 {
 	/**
-	 * Data object with the User Agent Profile for the customer's mobile device.
-	 *
-	 * @var UAProfile
-	 */
-	private $_obj_UA;
-	
-	/**
 	 * Default Constructor
 	 *
 	 * @param	RDB $oDB			Reference to the Database Object that holds the active connection to the mPoint Database
 	 * @param	TranslateText $oDB 	Reference to the Text Translation Object for translating any text into a specific language
 	 * @param	UAProfile $oUA 		Reference to the data object with the User Agent Profile for the customer's mobile device
 	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt, UAProfile &$oUA)
+	public function __construct(RDB &$oDB, TranslateText &$oTxt)
 	{
 		parent::__construct($oDB, $oTxt);
-		
-		$this->_obj_UA = $oUA;
 	}
-	
+
 	/**
 	 * Retrieves and resizes a Client Logo in accordance with the screen resolution of the customer's Mobile Device.
 	 * The image is resized so it will fit within the screen's width and will be no larger than 20% of the screen's height.
-	 * 
+	 *
 	 * @see 	iCLIENT_LOGO_SCALE
 	 *
 	 * @param 	string $url 	Absolute URL to the Client Logo
@@ -54,18 +45,15 @@ class RetrieveImage extends General
 	{
 		// Re-Size Image to fit the screen resolution of the Customer's Mobile Device using its User Agent Profile
 		$obj_Image = new Image($url);
-		if ($this->_obj_UA->getHeight() * iCLIENT_LOGO_SCALE / 100 < $obj_Image->getSrcHeight() ) { $iHeight = $this->_obj_UA->getHeight() * iCLIENT_LOGO_SCALE / 100; }
-		else { $iHeight = $obj_Image->getSrcHeight(); }
-		$obj_Image->resize($this->_obj_UA->getWidth(), $iHeight);
-		
+
 		return $obj_Image;
 	}
-	
+
 	/**
 	 * Fetches the logo of a Credit Card from the Database and resizes it to take up approximately 1% of screen space.
 	 * The logo is effectively resized to fit within a rectangle, which has a width and height that is equal to or less than 10%
 	 * of the screen's width / height.
-	 * 
+	 *
 	 * @see 	iCARD_LOGO_SCALE
 	 *
 	 * @param 	integer $id 	Unique Card ID that should be fetched
@@ -78,40 +66,26 @@ class RetrieveImage extends General
 				WHERE id = ". intval($id);
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
-		
+
 		$obj_Image =  new Image($this->getDBConn()->unescBin($RS["LOGO"]), true);
-		
-		$obj_Image->resize($this->_obj_UA->getWidth() * iCARD_LOGO_SCALE / 100, $this->_obj_UA->getHeight() * iCARD_LOGO_SCALE / 100);
-		
+
 		return $obj_Image;
 	}
-	
+
 	/**
 	 * Retrieves and resizes mPoint's Logo in accordance with the screen resolution of the customer's Mobile Device.
 	 * The logo is effectively resized to fit within a rectangle, which has a width and height that is equal to or less than 30%
 	 * of the screen's width / height.
-	 * 
+	 *
 	 * @see 	iMPOINT_LOGO_SCALE
 	 *
 	 * @return 	Image
 	 */
 	public function getmPointLogo()
 	{
-		/* ========== Calculate Logo Dimensions Start ========== */
-		$iWidth = $this->_obj_UA->getWidth() * iMPOINT_LOGO_SCALE / 100;
-		$iHeight = $this->_obj_UA->getHeight() * iMPOINT_LOGO_SCALE / 100;
-		
-		if ($iWidth / 622 > $iHeight / 138) { $fScale = $iHeight / 138; }
-		else { $fScale = $iWidth / 622; }
-		
-		$iWidth = intval($fScale * 622);
-		$iHeight = intval($fScale * 138);
-		/* ========== Calculate Logo Dimensions End ========== */
-		
 		// Re-Size Image to fit the screen resolution of the Customer's Mobile Device using its User Agent Profile
 		$obj_Image = new Image("mPoint.jpg");
-		$obj_Image->resize($iWidth, $iHeight);
-		
+
 		return $obj_Image;
 	}
 }

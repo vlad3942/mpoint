@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="ISO-8859-15"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:func="http://exslt.org/functions" extension-element-prefixes="func">
 <xsl:output method="xml" version="1.0" encoding="ISO-8859-15" indent="yes" media-type="application/xhtml+xml" doctype-public="-//WAPFORUM//DTD XHTML Mobile 1.0//EN" doctype-system="http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd" omit-xml-declaration="no" />
-<xsl:include href="../header.xsl" />
+<xsl:include href="../mobile.xsl" />
 
 <xsl:template match="/root">
-	<div class="mPoint_Info"><xsl:value-of select="labels/info" /></div>
+	<div class="mPoint_Info">
+		<br />
+		<xsl:value-of select="labels/info" />
+	</div>
 	
 	<!-- Display Status Messages -->
 	<xsl:apply-templates select="messages" />
@@ -44,7 +47,7 @@
 			
 			<tr class="{$css}">
 				<td><img src="{logo-url}" width="40" height="40" alt="- Logo -" /></td>
-				<td colspan="2">
+				<td colspan="2" style="width:100%">
 					<div class="mPoint_Label"><xsl:value-of select="name" /></div>
 					<div class="mPoint_Number"><xsl:value-of select="price" /></div>
 					<a href="{func:constLink(concat('products.php?id=', $id) )}"><xsl:value-of select="//labels/add-to-basket" /></a>

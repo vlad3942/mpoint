@@ -23,7 +23,7 @@ class CallbackException extends mPointException { }
  * and sends out an SMS Receipt to the Customer.
  *
  */
-class Callback extends General
+class Callback extends EndUserAccount
 {
 	/**
 	 * Data object with the Transaction Information
@@ -41,7 +41,7 @@ class Callback extends General
 	 */
 	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI)
 	{
-		parent::__construct($oDB, $oTxt);
+		parent::__construct($oDB, $oTxt, $oTI->getClientConfig() );
 
 		$this->_obj_TxnInfo = $oTI;
 	}
@@ -98,7 +98,7 @@ class Callback extends General
 	 * @param 	string $body 	HTTP Body to send as the Callback to the Client
 	 * @throws 	E_USER_WARNING, E_USER_NOTICE
 	 */
-	protected function send($body)
+	protected function performCallback($body)
 	{
 		$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_CONSTRUCTED_STATE, $body);
 		/* ========== Instantiate Connection Info Start ========== */
@@ -150,7 +150,7 @@ class Callback extends General
 	 *	&status={STATUS CODE FOR THE TRANSACTION}
 	 *	&amount={TOTAL AMOUNT THE CUSTOMER WAS CHARGED FOR THE TRANSACTION}
 	 *	&currency={CURRENCY AMOUNT IS CHARGED IN}
-	 *	&recipient={CUSTOMER'S MSISDN WHERE SMS MESSAGE CAN BE SENT TO}
+	 *	&mobile={CUSTOMER'S MSISDN WHERE SMS MESSAGE CAN BE SENT TO}
 	 *	&email={CUSTOMER'S EMAIL ADDRESS WHERE ORDER STATUS CAN BE SENT TO}
 	 *	&operator={GOMOBILE ID FOR THE CUSTOMER'S MOBILE NETWORK OPERATOR}
 	 * Additionally the method will append all custom Client Variables that were sent to mPoint as part of the original request
@@ -174,13 +174,13 @@ class Callback extends General
 		$sBody .= "&status=". $sid;
 		$sBody .= "&amount=". $this->_obj_TxnInfo->getAmount();
 		$sBody .= "&currency=". urlencode($this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getCurrency() );
-		$sBody .= "&mobile=". urlencode($this->_obj_TxnInfo->getAddress() );
+		$sBody .= "&mobile=". urlencode($this->_obj_TxnInfo->getMobile() );
 		$sBody .= "&operator=". urlencode($this->_obj_TxnInfo->getOperator() );
 		if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true) { $sBody .= "&pspid=". urlencode($pspid); }
 		$sBody .= $this->getVariables();
 		/* ----- Construct Body End ----- */
 
-		$this->send($sBody);
+		$this->performCallback($sBody);
 	}
 
 	/**
@@ -201,7 +201,7 @@ class Callback extends General
 		$sBody = str_replace("{CLIENT}", $this->_obj_TxnInfo->getClientConfig()->getName(), $sBody);
 
 		// Instantiate Message Object for holding the message data which will be sent to GoMobile
-		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID(), $this->_obj_TxnInfo->getOperator(), $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getChannel(), $this->_obj_TxnInfo->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $this->_obj_TxnInfo->getAddress(), $sBody);
+		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID(), $this->_obj_TxnInfo->getOperator(), $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getChannel(), $this->_obj_TxnInfo->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $this->_obj_TxnInfo->getMobile(), $sBody);
 		$this->sendMT($oCI, $obj_MsgInfo, $this->_obj_TxnInfo);
 	}
 
@@ -251,11 +251,14 @@ class Callback extends General
 			$sBody .= "&". $name ."=". urlencode($value);
 		}
 		// Add Purchased Products to Callback Body
-		foreach ($aProducts["names"] as $key => $name)
+		if (count($aProducts) > 0)
 		{
-			$sBody .= "&prod_". $key ."_name=". urlencode($name);
-			$sBody .= "&prod_". $key ."_quantity=". intval($aProducts["quantities"][$key]);
-			$sBody .= "&prod_". $key ."_price=". intval($aProducts["prices"][$key]);
+			foreach ($aProducts["names"] as $key => $name)
+			{
+				$sBody .= "&prod_". $key ."_name=". urlencode($name);
+				$sBody .= "&prod_". $key ."_quantity=". intval($aProducts["quantities"][$key]);
+				$sBody .= "&prod_". $key ."_price=". intval($aProducts["prices"][$key]);
+			}
 		}
 		// Add Delivery Information to Callback Body
 		foreach ($aDeliveryInfo as $name => $value)
@@ -269,6 +272,43 @@ class Callback extends General
 		}
 
 		return $sBody;
+	}
+
+	/**
+	 * Performs the HTTP Request to the specified URL using the provided headers and body
+	 *
+	 * @see		HTTPConnInfo
+	 * @see		HTTPClient
+	 *
+	 * @param 	string $url Absolute URL the request should be made to
+	 * @param 	string $h 	HTTP Headers to send as part of the request
+	 * @param 	string $b 	HTTP Body to send as part of the request
+	 * @return	HTTPClient	Reference to the created HTTP Client object
+	 * @throws 	HTTPException
+	 */
+	public function &send($url, $h, $b)
+	{
+		/* ========== Instantiate Connection Info Start ========== */
+		$aURLInfo = parse_url($url);
+
+		if (array_key_exists("port", $aURLInfo) === false)
+		{
+			if ($aURLInfo["scheme"] == "https") { $aURLInfo["port"] = 443; }
+			else { $aURLInfo["port"] = 80; }
+		}
+		if (array_key_exists("query", $aURLInfo) === true) { $aURLInfo["path"] .= "?". $aURLInfo["query"]; }
+
+		$obj_ConnInfo = new HTTPConnInfo($aURLInfo["scheme"], $aURLInfo["host"], $aURLInfo["port"], 20, $aURLInfo["path"], "POST", "application/x-www-form-urlencoded");
+		/* ========== Instantiate Connection Info End ========== */
+		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+
+		/* ========== Perform HTTP request Start ========== */
+		$obj_HTTP->connect();
+		$iCode = $obj_HTTP->send($h, $b);
+		$obj_HTTP->disConnect();
+		/* ========== Perform HTTP request End ========== */
+
+		return $obj_HTTP;
 	}
 }
 ?>

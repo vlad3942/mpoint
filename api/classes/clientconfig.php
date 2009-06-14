@@ -154,6 +154,15 @@ class ClientConfig extends BasicConfig
 	 * @var boolean
 	 */
 	private $_bSendPSPID;
+	/**
+	 * Setting determining if / how the end-user's Card Info is stored:
+	 * 	0. Off
+	 * 	1. Client Only
+	 * 	2. Global
+	 *
+	 * @var integer
+	 */
+	private $_iStoreCard;
 
 	/**
 	 * Default Constructor
@@ -181,7 +190,7 @@ class ClientConfig extends BasicConfig
 	 * @param 	boolean $ac			Boolean Flag indicating whether Auto Capture should be used for the transactions
 	 * @param 	boolean $sp			Boolean Flag indicating whether the PSP's ID for the Payment should be included in the Callback
 	 */
-	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $aurl, $curl, $cburl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp)
+	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $aurl, $curl, $cburl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc)
 	{
 		parent::__construct($id, $name);
 
@@ -210,6 +219,7 @@ class ClientConfig extends BasicConfig
 		$this->_iMode = (integer) $m;
 		$this->_bAutoCapture = (bool) $ac;
 		$this->_bSendPSPID = (bool) $sp;
+		$this->_iStoreCard = (integer) $sc;
 	}
 
 	/**
@@ -342,6 +352,15 @@ class ClientConfig extends BasicConfig
 	 * @return 	boolean
 	 */
 	public function sendPSPID() { return $this->_bSendPSPID; }
+	/**
+	 * Returns the setting determining if / how the end-user's Card Info is stored:
+	 * 	0. Off
+	 * 	1. Client Only
+	 * 	2. Global
+	 *
+	 * @return 	integer
+	 */
+	public function getStoreCard() { return $this->_iStoreCard; }
 
 	public function toXML()
 	{
@@ -353,6 +372,7 @@ class ClientConfig extends BasicConfig
 		$xml .= '<sms-receipt>'. General::bool2xml($this->_bSMSReceipt) .'</sms-receipt>';
 		$xml .= '<email-receipt>'. General::bool2xml($this->_bEmailReceipt) .'</email-receipt>';
 		$xml .= '<auto-capture>'. General::bool2xml($this->_bAutoCapture) .'</auto-capture>';
+		$xml .= '<store-card>'. $this->_iStoreCard .'</store-card>';
 		$xml .= '</client-config>';
 
 		return $xml;
@@ -373,10 +393,11 @@ class ClientConfig extends BasicConfig
 		$sql = "SELECT Cl.id AS clientid, Cl.name AS client, Cl.flowid, Cl.username, Cl.passwd,
 					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl,
 					Cl.smsrcpt, Cl.emailrcpt, Cl.method,
-					Cl.maxamount, Cl.lang, Cl.terms, Cl.mode, Cl.auto_capture, Cl.send_pspid,
+					Cl.maxamount, Cl.lang, Cl.terms,
+					Cl.mode, Cl.auto_capture, Cl.send_pspid, Cl.store_card,
 					C.id AS countryid, C.name AS country, C.currency, C.minmob, C.maxmob, C.channel,
 					C.priceformat, C.decimals, C.als, C.doi,
-					Acc.id AS accountid, Acc.name AS account, Acc.address,
+					Acc.id AS accountid, Acc.name AS account, Acc.mobile,
 					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price
 				FROM Client.Client_Tbl Cl
 				INNER JOIN System.Country_Tbl C ON Cl.countryid = C.id AND C.enabled = true
@@ -395,10 +416,11 @@ class ClientConfig extends BasicConfig
 				GROUP BY Cl.id, Cl.name, Cl.flowid, Cl.username, Cl.passwd,
 					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl,
 					Cl.smsrcpt, Cl.emailrcpt, Cl.method,
-					Cl.maxamount, Cl.lang, Cl.terms, Cl.mode, Cl.auto_capture, Cl.send_pspid,
+					Cl.maxamount, Cl.lang, Cl.terms,
+					Cl.mode, Cl.auto_capture, Cl.send_pspid, Cl.store_card,
 					C.id, C.name, C.currency, C.minmob, C.maxmob, C.channel,
 					C.priceformat, C.decimals, C.als, C.doi,
-					Acc.id, Acc.name, Acc.address,
+					Acc.id, Acc.name, Acc.mobile,
 					KW.id, KW.name";
 		// Use Default Account
 		if ($acc == -1)
@@ -429,10 +451,10 @@ class ClientConfig extends BasicConfig
 		$RS = $oDB->getName($sql);
 
 		$obj_CountryConfig = new CountryConfig($RS["COUNTRYID"], $RS["COUNTRY"], $RS["CURRENCY"], $RS["MINMOB"], $RS["MAXMOB"], $RS["CHANNEL"], $RS["PRICEFORMAT"], $RS["DECIMALS"], $RS["ALS"], $RS["DOI"]);
-		$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["ADDRESS"]);
+		$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["MOBILE"]);
 		$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
 
-		return new ClientConfig($RS["CLIENTID"], utf8_decode($RS["CLIENT"]), $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"]);
+		return new ClientConfig($RS["CLIENTID"], utf8_decode($RS["CLIENT"]), $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"]);
 	}
 }
 ?>

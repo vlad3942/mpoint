@@ -30,7 +30,7 @@ GRANT SELECT, UPDATE, INSERT ON TABLE System.Shipping_Tbl_id_seq TO mpoint;
 CREATE TABLE Client.Shipping_Tbl
 (
 	id			SERIAL,
-	Shippingid	INT4 NOT NULL,	-- ID of the Shipping Company that delivers merchandise bought in the Shop
+	shippingid	INT4 NOT NULL,	-- ID of the Shipping Company that delivers merchandise bought in the Shop
 	shopid		INT4 NOT NULL,	-- ID of the Shop
 
 	cost		INT4,			-- Cost of Shipping in Countrys smallest currency

@@ -23,6 +23,8 @@ require_once(sAPI_CLASS_PATH ."/gomobile.php");
 
 // Require general Business logic for the SurePay module
 require_once(sCLASS_PATH ."/surepay.php");
+// Require Business logic for the End-User Account Component
+require_once(sCLASS_PATH ."/enduser_account.php");
 // Require Business logic for the E-Mail Receipt Component
 require_once(sCLASS_PATH ."/email_receipt.php");
 

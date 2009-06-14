@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="ISO-8859-15"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:func="http://exslt.org/functions" extension-element-prefixes="func">
 <xsl:output method="xml" version="1.0" encoding="ISO-8859-15" indent="yes" media-type="application/xhtml+xml" doctype-public="-//WAPFORUM//DTD XHTML Mobile 1.0//EN" doctype-system="http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd" omit-xml-declaration="no" />
-<xsl:include href="../header.xsl" />
+<xsl:include href="../mobile.xsl" />
 
 <xsl:template match="/root">
-	<div class="mPoint_Info"><xsl:value-of select="labels/info" /></div>
+	<div class="mPoint_Info">
+		<br />
+		<xsl:value-of select="labels/info" />
+	</div>
 	
 	<xsl:if test="country-config/address-lookup = 'true'">
 		<form action="{func:constLink('sys/get_delivery_info.php')}" method="post">
 			<div class="mPoint_Label">
 				<xsl:value-of select="labels/phone-no" /><br />
-				<input name="address" value="{session/address}" size="{string-length(country-config/max-mobile)}" maxlength="{string-length(country-config/max-mobile)}" style="-wap-input-format:'*N';" />
+				<input name="mobile" value="{session/mobile}" size="{string-length(country-config/max-mobile)}" maxlength="{string-length(country-config/max-mobile) }" style="-wap-input-format:'*N';" />
 				<input type="submit" value="{labels/find}" class="mPoint_Button" />
 			</div>
 		</form>

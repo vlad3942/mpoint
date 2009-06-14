@@ -4,7 +4,7 @@
  * The component will generate a page using the Client Configuration providing Post Payment options:
  * 	- Send E-Mail Receipt
  * 	- Go to Client's Accept URL
- * 
+ *
  * @author Jonatan Evald Buus
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
@@ -26,27 +26,27 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 ?>
 <root>
 	<title><?= $_OBJ_TXT->_("Payment Completed"); ?></title>
-	
+
 	<?= $obj_mPoint->getSystemInfo(); ?>
-	
+
 	<?= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML(); ?>
-	
+
 	<?= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']); ?>
-	
+
 	<?= $obj_mPoint->getmPointLogoInfo(); ?>
-	
+
 	<?= $obj_mPoint->getClientVars($_SESSION['obj_TxnInfo']->getID() ); ?>
-	
+
 	<labels>
 		<mpoint><?= $_OBJ_TXT->_("Thank you for using"); ?></mpoint>
 		<status><?= $_OBJ_TXT->_("Status - Success"); ?></status>
-		<txn-id><?= $_OBJ_TXT->_("mPoint ID"); ?></txn-id>
-		<order-id><?= $_OBJ_TXT->_("Order No"); ?></order-id>
+		<txnid><?= $_OBJ_TXT->_("mPoint ID"); ?></txnid>
+		<orderid><?= $_OBJ_TXT->_("Order No"); ?></orderid>
 		<price><?= $_OBJ_TXT->_("Price"); ?></price>
-		<sms-receipt><?= str_replace("{ADDRESS}", $_SESSION['obj_TxnInfo']->getAddress(), $_OBJ_TXT->_("SMS Receipt - Info") ); ?></sms-receipt>
+		<sms-receipt><?= str_replace("{MOBILE}", $_SESSION['obj_TxnInfo']->getMobile(), $_OBJ_TXT->_("SMS Receipt - Info") ); ?></sms-receipt>
 		<email-receipt><?= $_OBJ_TXT->_("Send receipt via E-Mail"); ?></email-receipt>
 		<continue><?= htmlspecialchars($_OBJ_TXT->_("Continue >>") ); ?></continue>
 	</labels>
-	
+
 	<?= $obj_mPoint->getMessages("Accept"); ?>
 </root>

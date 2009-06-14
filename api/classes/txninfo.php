@@ -63,11 +63,11 @@ class TxnInfo
 	 */
 	private $_sOrderID;
 	/**
-	 * Customer's Device Address, this is most likely the customer's MSISDN to his / her mobile phone
+	 * Customer's Mobile Number (MSISDN)
 	 *
 	 * @var string
 	 */
-	private $_sAddress;
+	private $_sMobile;
 	/**
 	 * GoMobile's ID for the Customer's Mobile Network Operator
 	 *
@@ -148,7 +148,7 @@ class TxnInfo
 	 * @param 	ClientConfig $oCC 	Configuration for the Client who owns the Transaction
 	 * @param 	integer $a 			Total amount the customer will pay for the Transaction
 	 * @param 	string $orid 		Clients Order ID of the Transaction
-	 * @param 	string $addr 		Customer's Device Address, this is most likely the customer's MSISDN to his / her mobile phone
+	 * @param 	string $addr 		Customer's Mobile Number (MSISDN)
 	 * @param 	integer $oid 		GoMobile's ID for the Customer's Mobile Network Operator
 	 * @param 	string $email 		Customer's E-Mail Address where a receipt is sent to upon successful completion of the payment transaction
 	 * @param 	string $lurl 		Absolute URL to the Client's Logo which will be displayed on all payment pages
@@ -169,7 +169,7 @@ class TxnInfo
 		$this->_obj_ClientConfig = $oCC;
 		$this->_iAmount =  (integer) $a;
 		$this->_sOrderID =  trim($orid);
-		$this->_sAddress = trim($addr);
+		$this->_sMobile = trim($addr);
 		$this->_iOperatorID =  (integer) $oid;
 		$this->_sEMail = trim($email);
 
@@ -223,11 +223,11 @@ class TxnInfo
 	 */
 	public function getOrderID() { return $this->_sOrderID; }
 	/**
-	 * Returns the Customer's Device Address, this is most likely the customer's MSISDN to his / her mobile phone
+	 * Returns the Customer's Mobile Number (MSISDN)
 	 *
 	 * @return 	string
 	 */
-	public function getAddress() { return $this->_sAddress; }
+	public function getMobile() { return $this->_sMobile; }
 	/**
 	 * Returns the GoMobile's ID for the Customer's Mobile Network Operator
 	 *
@@ -312,16 +312,15 @@ class TxnInfo
 	 * Converts the data object into XML.
 	 * If a User Agent Profile is provided, the method will automatically calculate the width and height of the client logo
 	 * after it has been resized to fit the screen resolution of the customer's mobile device.
-	 * If not, the width and height will be set to -1.
 	 *
 	 * The method will return an XML document in the following format:
 	 * 	<transaction id="{UNIQUE ID FOR THE TRANSACTION}" type="{ID FOR THE TRANSACTION TYPE}">
 	 *		<amount currency="{CURRENCY AMOUNT IS CHARGED IN}">{TOTAL AMOUNT THE CUSTOMER IS CHARGED FOR THE TRANSACTION}</amount>
 	 * 		<price>{AMOUNT FORMATTED FOR BEING DISPLAYED IN THE GIVEN COUNTRY}</price>
 	 *		<order-id>{CLIENT'S ORDER ID FOR THE TRANSACTION}</order-id>
-	 *		<address>{CUSTOMER'S MSISDN WHERE SMS MESSAGE CAN BE SENT TO}</address>
+	 *		<mobile>{CUSTOMER'S MSISDN WHERE SMS MESSAGE CAN BE SENT TO}</mobile>
 	 *		<operator>{GOMOBILE ID FOR THE CUSTOMER'S MOBILE NETWORK OPERATOR}</operator>
-	 * 		<e-mail>{CUSTOMER'S E-MAIL ADDRESS WHERE RECEIPT WILL BE SENT TO}</e-mail>
+	 * 		<email>{CUSTOMER'S E-MAIL ADDRESS WHERE RECEIPT WILL BE SENT TO}</email>
 	 *		<logo>
 	 * 			<url>{ABSOLUTE URL TO THE CLIENT'S LOGO}</url>
 	 * 			<width>{WIDTH OF THE LOGO AFTER IT HAS BEEN SCALED TO FIT THE SCREENSIZE OF THE CUSTOMER'S MOBILE DEVICE}</width>
@@ -355,17 +354,17 @@ class TxnInfo
 		}
 		else
 		{
-			$iWidth = -1;
-			$iHeight = -1;
+			$iWidth = "100%";
+			$iHeight = iCLIENT_LOGO_SCALE ."%";
 		}
 
 		$xml = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'" gmid="'. $this->_iGoMobileID .'" mode="'. $this->_iMode .'">';
 		$xml .= '<amount currency="'. $this->_obj_ClientConfig->getCountryConfig()->getCurrency() .'">'. $this->_iAmount .'</amount>';
 		$xml .= '<price>'. General::formatAmount($this->_obj_ClientConfig->getCountryConfig(), $this->_iAmount) .'</price>';
-		$xml .= '<order-id>'. $this->_sOrderID .'</order-id>';
-		$xml .= '<address>'. $this->_sAddress .'</address>';
+		$xml .= '<orderid>'. $this->_sOrderID .'</orderid>';
+		$xml .= '<mobile>'. $this->_sMobile .'</mobile>';
 		$xml .= '<operator>'. $this->_iOperatorID .'</operator>';
-		$xml .= '<e-mail>'. $this->_sEMail .'</e-mail>';
+		$xml .= '<email>'. $this->_sEMail .'</email>';
 		$xml .= '<logo>';
 		$xml .= '<url>'. htmlspecialchars($this->_sLogoURL, ENT_NOQUOTES) .'</url>';
 		$xml .= '<width>'. $iWidth .'</width>';
@@ -410,7 +409,7 @@ class TxnInfo
 			if (array_key_exists("client_config", $misc) === false) { $misc["client_config"] = $obj->getClientConfig(); }
 			if (array_key_exists("amount", $misc) === false) { $misc["amount"] = $obj->getAmount(); }
 			if (array_key_exists("orderid", $misc) === false) { $misc["orderid"] = $obj->getOrderID(); }
-			if (array_key_exists("mobile", $misc) === false) { $misc["mobile"] = $obj->getAddress(); }
+			if (array_key_exists("mobile", $misc) === false) { $misc["mobile"] = $obj->getMobile(); }
 			if (array_key_exists("operator", $misc) === false) { $misc["operator"] = $obj->getOperator(); }
 			if (array_key_exists("email", $misc) === false) { $misc["email"] = $obj->getEMail(); }
 			if (array_key_exists("logo-url", $misc) === false) { $misc["logo-url"] = $obj->getLogoURL(); }
@@ -430,7 +429,7 @@ class TxnInfo
 			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["amount"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["gomobileid"]);
 			break;
 		case ($obj instanceof RDB):				// Instantiate from Transaction Log
-			$sql = "SELECT id, typeid, amount, orderid, address, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, mode, auto_capture, gomobileid,
+			$sql = "SELECT id, typeid, amount, orderid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, mode, auto_capture, gomobileid,
 						clientid, accountid, keywordid
 					FROM Log.Transaction_Tbl
 					WHERE id = ". intval($id);
@@ -443,7 +442,7 @@ class TxnInfo
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($obj, $RS["CLIENTID"], $RS["ACCOUNTID"], $RS["KEYWORDID"]);
 
-				$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $RS["AMOUNT"], $RS["ORDERID"], $RS["ADDRESS"], $RS["OPERATORID"], $RS["EMAIL"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["GOMOBILEID"]);
+				$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $RS["AMOUNT"], $RS["ORDERID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["GOMOBILEID"]);
 				$obj_TxnInfo->setEMail($RS["EMAIL"]);
 			}
 			// Error: Transaction not found

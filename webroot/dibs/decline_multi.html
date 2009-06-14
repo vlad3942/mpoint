@@ -1,0 +1,452 @@
+<PML_META nospace="true">
+<PML_SCRIPT>
+/**
+ * Page providing customers with the opportunity to re-enter the Credit Card information if it was initially rejected.
+ * The page is translated into several languages as defined by mPoint.
+ *
+ * @author Jonatan Evald Buus
+ * @package Payment
+ * @subpackage DIBS
+ * @license Cellpoint Mobile
+ */
+ 
+/* ========== Language Translataion Start ========== */
+switch(cgi.language)
+{
+	// Danish
+	case ('da')
+	{
+		title := 'Kort Info';
+		progress := 'Trin 2 af 2';
+		label_selected_card := 'Valgte Kort';
+		label_price := 'Pris';
+		info := 'Udfyld venligst nedenstående felter med dine kort informationer';
+		label_card_number := 'Kort Nummer';
+		label_expiry := 'Udløbsdato';
+		expiry_month := 'mm';
+		expiry_year := 'åå';
+		label_cvc := 'CVC / CVS';
+		cvc_help := '3 tal (trykt på bagsiden af dit kort)';
+		label_store := 'Gem kort informationer';
+		submit := 'Gennemfør Betaling';
+		
+		// Error Messages
+		error_0 := 'Dit Kredit Kort blev afvist af PBS, prøv venligst med et andet kort?';
+		error_1 := 'Intern Kommunikations fejl, prøv venligst igen?';
+		error_2 := 'Intern Fejl: Forespørgslen indeholdt ugyldigt data ('@ auth.message @')';
+		error_3 := 'Der opstod en fejl hos PBS, prøv venligst igen?';
+		error_4 := 'Dit kredit kort er udløbet, prøv venligst med et andet kort?';
+		error_5 := 'Dit kort nummer er ugyldigt, ret venligst kort numret og prøv igen?';
+		error_6 := 'Kunne ikke trække pengene fra din konto, prøv venligst med et andet kort?';
+		error_7 := 'Intern Fejl: "orderid" skal være unikt';
+		error_8 := 'Intern Fejl: For få "amount" felter tilgængelige til at beregne split';
+		error_9 := 'Card Verification Code (CVC / CVS) mangler, indtast venligst din CVC og prøv igen?';
+		error_10 := 'Dit kort nummer er ugyligt for den valgte kort type, ret venligst kort numret og prøv igen?';
+		error_unknown := 'Ukendt Fejl';
+	}
+	// Swedish
+	case ('sv')
+	{
+		title := 'Kortinformation';
+		progress := 'Steg 2 av 2';
+		label_selected_card := 'Valt kort';
+		label_price := 'Pris';
+		info := 'Vänligen fyll i din kortinformation nedan';
+		label_card_number := 'Kortnummer';
+		label_expiry := 'Giltighetstid';
+		expiry_month := 'mm';
+		expiry_year := 'åå';
+		label_cvc := 'CVC / CVS';
+		cvc_help := '3 siffror (tryckta på baksidan av kortet)';
+		label_store := 'Gem kortinformation';
+		submit := 'Betalningen genomförd';
+		
+		// Error Messages
+		error_0 := 'Kortköpet vägrades av banken, försök igen?';
+		error_1 := 'Kommunikationsfel, försök igen?';
+		error_2 := 'Anropet innehöll en ogiltig parameter ('@ auth.message @')';
+		error_3 := 'Ett fel uppstod i kontakt med banken, försök igen?';
+		error_4 := 'Detta kort har upphört att gälla, prova ett annat kort?';
+		error_5 := 'Kortnummret är inte giltigt, kontrollera det och försök igen';
+		error_6 := 'Kunde inte belasta kortet, försök med ett annat kort';
+		error_7 := 'Order Nr måste vara unikt';
+		error_8 := 'För få amount fält i splitten';
+		error_9 := 'CVC/CVS saknas, ange ditt CVC/CVS nummer och försök igen';
+		error_10 := 'Kortnummret är fel för denna korttyp, kontrollera och försök igen';
+		error_unknown := 'Okänt fel';
+	}
+	// British English
+	default
+	{
+		title := 'Card Info';
+		progress := 'Step 2 of 2';
+		label_selected_card := 'Selected Card';
+		label_price := 'Price';
+		info := 'Please enter your card information below';
+		label_card_number := 'Card Number';
+		label_expiry := 'Expiry date';
+		expiry_month := 'mm';
+		expiry_year := 'yy';
+		label_cvc := 'CVC / CVS';
+		cvc_help := '3 digits (printed on the back of the card)';
+		label_store := 'Save card info';
+		submit := 'Complete Payment';
+		
+		// Error Messages
+		error_0 := 'Credit Card declined by Clearance House, please try again?';
+		error_1 := 'Internal Communication error, please try again?';
+		error_2 := 'Internal Error: Request contained invalid parameters ('@ auth.message @')';
+		error_3 := 'An error occurred at the Clearance House, please try again?';
+		error_4 := 'Your card has expired, please try another card?';
+		error_5 := 'The entered card number is invalid, please check the card number and try again?';
+		error_6 := 'Instant Capture failed, please try with another card?';
+		error_7 := 'Internal Error: "orderid" must be unique';
+		error_8 := 'Internal Error: Too few amount-fields for split';
+		error_9 := 'Card Verification Code (CVC / CVS) is missing, please enter your CVC and try again?';
+		error_10 := 'The entered card number is invalid for the selected card type, please check the card number and try again?';
+		error_unknown := 'Unknown Error';
+	}
+}
+/* ========== Language Translataion End ========== */
+</PML_SCRIPT>
+<?xml version="1.0" encoding="ISO-8859-15"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" PML_xml:lang="cgi.lang">
+<head>
+	<title><PML_VAL>title</PML_VAL></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15" />
+	<meta http-equiv="Cache-Control" content="max-age=86400" />
+	<meta http-equiv="Content-Style-Type" content="text/css" />
+	<style type="text/css">
+		/* ========== Tag Classes Start ========== */
+		body
+		{
+			margin: 5px 5px 5px 5px;
+		}
+		body, table
+		{
+			background-color: #fff;
+			text-align: left;
+		}
+		body, table, div
+		{
+			font-size: 1em;
+			font-family: "Trebuchet MS",arial,sans-serif;
+			color: #000;
+		}
+		
+		h1
+		{
+			font-size: 130%;
+			white-space: nowrap;
+			text-align: center;
+			color: #000;
+		}
+		
+		form, table
+		{
+			margin: 0px 0px 0px 0px;
+			padding: 0px 0px 0px 0px;
+		}
+		
+		a
+		{
+			color: blue;
+			text-decoration: none;
+		}
+		
+		a:hover
+		{
+			text-decoration: underline;
+		}
+		
+		input.number
+		{
+			-wap-input-format: '*N';
+		}
+		/* ========== Tag Classes End ========== */
+		
+		/* ========== mPoint Classes Start ========== */
+		.mPoint_Label
+		{
+			font-weight: bold;
+			padding-right: 0.5em;
+			padding-top: 0.3em;
+			white-space: nowrap;
+		}
+		
+		.mPoint_Info
+		{
+			font-weight: normal;
+			font-style: italic;
+			color: #000;
+			text-align: left;
+			padding: 0px;
+			margin: 0px;	
+		}
+		
+		.mPoint_Status
+		{
+			color: red;
+			font-style: italic;
+			padding-top: 0.5em;
+			padding-bottom: 0.5em;
+		}
+		
+		td.mPoint_Number
+		{
+			padding-right: 0.5em;
+			text-align: right;
+			vertical-align: bottom;
+		}
+		
+		tr.mPoint_Even
+		{
+			background-color: #8FBFD5;
+		}
+		tr.mPoint_Uneven
+		{
+		}
+		
+		input.mPoint_Button
+		{
+			font-weight: bold;
+			border-color: #6DAADD;
+			background-color: #6c8ca3;
+		}
+		
+		input.mPoint_Card_Button
+		{
+			border-style: none;
+			background-color: #fff;
+			color: blue;
+			text-decoration: underline;
+			margin: 0px 0px 0px 0px;
+			padding: 0px 0px 2px 0px;
+		}
+		/* ========== mPoint Classes Start ========== */
+		
+		/* ========== ID Classes Start ========== */
+		table#products tr td
+		{
+			padding-left: 3px;
+			padding-top: 3px;
+		}
+		
+		table#receipt
+		{
+			background-color: #8FBFD5;
+			margin-top: 0.5em;
+			margin-bottom: 0.5em;
+		}
+		
+		div#logo, div#progress, div#mPoint, div#status
+		{
+			text-align: center;
+		}
+		
+		div#status table tr td
+		{
+			vertical-align: middle;
+			padding-left: 0.5em;
+		}
+		
+		div#terms
+		{
+			white-space: pre;
+		}
+		
+		div#delivery, table#shipping, div#email, div#cardinfo, div#accountinfo
+		{
+			background-color: #8FBFD5;
+			padding-left: 3px;
+			padding-bottom: 3px;
+		}
+		
+		div#price
+		{
+			 padding-bottom: 0.5em;
+		}
+		/* ========== ID Classes End ========== */
+	</style>
+</head>
+<body>
+	<div id="logo">
+		<img PML_src="'images/client_logo_'@cgi.clientid@'.jpg'" PML_width="cgi.width" PML_height="cgi.height" PML_alt="'- '@cgi.client@' -'" />
+	</div>
+	<div id="progress" class="mPoint_Info"><PML_VAL>progress</PML_VAL></div>
+	
+	<div class="mPoint_Status">
+	<PML_SWITCH EXPR="auth.reason">
+		<PML_CASE VALUE="0"><PML_VAL>error_0</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="1"><PML_VAL>error_1</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="2"><PML_VAL>error_2</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="3"><PML_VAL>error_3</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="4"><PML_VAL>error_4</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="5"><PML_VAL>error_5</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="6"><PML_VAL>error_6</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="7"><PML_VAL>error_7</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="8"><PML_VAL>error_8</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="9"><PML_VAL>error_9</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="10"><PML_VAL>error_10</PML_VAL></PML_CASE>
+		<PML_DEFAULT><PML_VAL>error_unknown</PML_VAL</PML_DEFAULT>
+	</PML_SWITCH>
+	</div>
+	
+	<form action="auth.pml" method="post">
+		<div>
+			<!-- DIBS Required Data -->
+			<input type="hidden" name="callbackurl" PML_value="string.HTMLencode(cgi.callbackurl)" />
+			<input type="hidden" name="accepturl" PML_value="string.HTMLencode(cgi.accepturl)" />
+			<input type="hidden" name="amount" PML_value="cgi.amount" />
+			<input type="hidden" name="currency" PML_value="cgi.currency" />
+			<input type="hidden" name="orderid" PML_value="cgi.orderid" />
+			<input type="hidden" name="fullreply" value="true" />
+			<PML_IF COND="cgi.capturenow = 'true'">
+				<input type="hidden" name="capturenow" PML_value="cgi.capturenow" />
+			</PML_IF>
+			<PML_IF COND="cgi.accounts > 0">
+				<input type="hidden" name="account" PML_value="cgi.accounts" />
+			</PML_IF>			
+			<input type="hidden" name="lang" PML_value="cgi.lang" />
+			<input type="hidden" name="paytype" PML_value="cgi.paytype" />
+			<!-- mPoint Required Data -->
+			<input type="hidden" name="width" PML_value="cgi.width" />
+			<input type="hidden" name="height" PML_value="cgi.height" />
+			<input type="hidden" name="format" PML_value="cgi.format" />
+			<input type="hidden" name="PHPSESSID" PML_value="cgi.PHPSESSID" />
+			<input type="hidden" name="language" PML_value="cgi.language" />
+			<input type="hidden" name="cardid" PML_value="cgi.cardid" />
+			<input type="hidden" name="mpointid" PML_value="cgi.mpointid" />
+			<input type="hidden" name="euaid" PML_value="cgi.euaid" />
+			<!-- Store Credit Card -->
+			<PML_IF COND="cgi.store_card > 0">
+				<input type="hidden" name="store_card" PML_value="cgi.store_card" />
+			</PML_IF>
+			<!-- Dynamic Page Data -->
+			<input type="hidden" name="clientid" PML_value="cgi.clientid" />
+			<input type="hidden" name="client" PML_value="cgi.client" />
+			<input type="hidden" name="mpoint_width" PML_value="cgi.mpoint_width" />
+			<input type="hidden" name="mpoint_height" PML_value="cgi.mpoint_height" />
+			<input type="hidden" name="sms_receipt" PML_value="cgi.sms_receipt" />
+			<input type="hidden" name="email_receipt" PML_value="cgi.email_receipt" />
+			<input type="hidden" name="email_url" PML_value="cgi.email_url" />
+			<input type="hidden" name="accept_url" PML_value="cgi.accept_url" />
+			<input type="hidden" name="mobile" PML_value="cgi.mobile" />
+			<input type="hidden" name="price" PML_value="cgi.price" />
+			<input type="hidden" name="card_width" PML_value="cgi.card_width" />
+			<input type="hidden" name="card_heigth" PML_value="cgi.card_heigth" />
+			<PML_SCRIPT>
+			// Transfer Custom Variables
+			foreach(i ; cgi)
+			{
+				if (string.substring(cgi[i+1], 0, 4) = 'var_')
+				{
+					out.put('<input type="hidden" name="client_vars_names_'@ i @'" value="'@ cgi[i] @'" />');
+					out.put('<input type="hidden" name="client_vars_data_'@ i @'" value="'@ cgi[i+1] @'" />');
+				}
+			}
+			</PML_SCRIPT>
+		</div>
+		<div>
+			<span class="mPoint_Label"><PML_VAL>label_selected_card</PML_VAL>:</span>
+			<table>
+			<tr>
+			<PML_SWITCH EXPR="cgi.cardid">
+				<PML_CASE VALUE="1">
+					<td><img src="images/amex.jpg" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- American Express -" /></td>
+					<td colspan="3" class="status">&nbsp;American Express</td>
+				</PML_CASE>
+				<PML_CASE VALUE="2">
+					<td><img src="images/dankort.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Dankort -" /></td>
+					<td colspan="3" class="status">&nbsp;Dankort</td>
+				</PML_CASE>
+				<PML_CASE VALUE="3">
+					<td><img src="images/diners.jpg" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Diners Club -" /></td>
+					<td colspan="3" class="status">&nbsp;Diners Club</td>
+				</PML_CASE>
+				<PML_CASE VALUE="4">
+					<td><img src="images/mastercard.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- EuroCard -" /></td>
+					<td colspan="3" class="status">&nbsp;EuroCard</td>
+				</PML_CASE>
+				<PML_CASE VALUE="5">
+					<td><img src="images/jcb.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- JCB -" /></td>
+					<td colspan="3" class="status">&nbsp;JCB</td>
+				</PML_CASE>
+				<PML_CASE VALUE="6">
+					<td><img src="images/maestro.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Maestro -" /></td>
+					<td colspan="3" class="status">&nbsp;Maestro</td>
+				</PML_CASE>
+				<PML_CASE VALUE="7">
+					<td><img src="images/mastercard.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- MasterCard -" /></td>
+					<td colspan="3" class="status">&nbsp;MasterCard</td>
+				</PML_CASE>
+				<PML_CASE VALUE="8">
+					<td><img src="images/visa.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- VISA -" /></td>
+					<td colspan="3" class="status">&nbsp;VISA</td>
+				</PML_CASE>
+				<PML_CASE VALUE="9">
+					<td><img src="images/visa_electron.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- VISA Electron -" /></td>
+					<td colspan="3" class="status">&nbsp;VISA Electron</td>
+				</PML_CASE>
+			</PML_SWITCH>
+			</tr>
+			</table>
+		</div>
+		<!-- Price -->
+		<div id="price">
+			<span class="mPoint_Label"><PML_VAL>label_price</PML_VAL>:</span>
+			<PML_VAL>cgi.price</PML_VAL>
+		</div>
+		<!-- Credit Card Information -->
+		<div><PML_VAL>info</PML_VAL></div>
+		<div id="cardinfo">
+			<div class="mPoint_Label">
+				<PML_VAL>label_card_number</PML_VAL>:<br />
+				<PML_IF COND="sess_cardno > 0">
+					<input name="cardno" maxlength="19" PML_value="string.precision(sess_cardno, 0)" size="19" style="-wap-input-format:'*N';" />
+				</PML_IF>
+				<PML_ELSE>
+					<input name="cardno" maxlength="19" value="" size="19" style="-wap-input-format:'*N';" />
+				</PML_ELSE>
+			</div>
+			<div class="mPoint_Label">
+				<PML_VAL>label_expiry</PML_VAL> <span class="mPoint_Info">(<PML_VAL>expiry_month</PML_VAL>/<PML_VAL>expiry_year</PML_VAL>)</span>:<br />
+				<PML_IF COND="sess_expmon > 0">
+					<input name="expmon" maxlength="2" PML_value="string.precision(sess_expmon, 0)" size="2" style="-wap-input-format:'*N';" />
+				</PML_IF>
+				<PML_ELSE>
+					<input name="expmon" maxlength="2" value="" size="2" style="-wap-input-format:'*N';" />
+				</PML_ELSE>
+				&nbsp;/&nbsp;
+				<PML_IF COND="sess_expyear > 0">
+					<input name="expyear" maxlength="2" PML_value="string.precision(sess_expyear, 0)" size="2" style="-wap-input-format:'*N';" />
+				</PML_IF>
+				<PML_ELSE>
+					<input name="expyear" maxlength="2" value="" size="2" style="-wap-input-format:'*N';" />
+				</PML_ELSE>
+			</div>
+			<div class="mPoint_Label">
+				<PML_VAL>label_cvc</PML_VAL>:<br />
+				<PML_IF COND="sess_cvc > 0">
+					<input name="cvc" maxlength="3" PML_value="string.precision(sess_cvc, 0)" size="3" style="-wap-input-format:'*N';" />
+				</PML_IF>
+				<PML_ELSE>
+					<input name="cvc" maxlength="3" value="" size="3" style="-wap-input-format:'*N';" />
+				</PML_ELSE>
+			</div>
+			<div class="mPoint_Info"><PML_VAL>cvc_help</PML_VAL></div>
+		</div>
+		<!-- Store Credit Card -->
+		<PML_IF COND="cgi.store_card > 0">
+			<div>
+				<input type="checkbox" name="preauth" value="true" /><PML_VAL>label_store</PML_VAL>
+			</div>
+		</PML_IF>
+		<!-- Complete Payment -->
+		<div>
+			<input type="submit" PML_value="submit" class="mPoint_Button" />
+		</div>
+	</form>
+</body>
+</html>

@@ -17,7 +17,7 @@
  * 	- Body
  *
  */
-class EMailReceipt extends General
+class EMailReceipt extends EndUserAccount
 {
 	/**
 	 * Data object with the Transaction InformaStion
@@ -35,7 +35,7 @@ class EMailReceipt extends General
 	 */
 	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI)
 	{
-		parent::__construct($oDB, $oTxt);
+		parent::__construct($oDB, $oTxt, $oTI->getClientConfig() );
 
 		$this->_obj_TxnInfo = $oTI;
 	}
@@ -81,7 +81,7 @@ class EMailReceipt extends General
 	/**
 	 * Constructs the Body for the E-Mail Receipt.
 	 * The method will replace the following text tags:
-	 * 	- {ADDRESS}, will be replaced with the customer's MSISDN as provided by the Client
+	 * 	- {MOBILE}, will be replaced with the customer's MSISDN as provided by the Client
 	 * 	- {ORDERID}, will be replaced with the Order ID provided by the Client
 	 * 	- {MPOINTID}, will be replaced with mPoint's unique ID for the Transaction
 	 * 	- {PRICE}, will be replaced with a formatted version of the total the customer was charged for the Transaction
@@ -91,7 +91,7 @@ class EMailReceipt extends General
 	public function constBody()
 	{
 		$sBody = $this->getText()->_("E-Mail Receipt - Body");
-		$sBody = str_replace("{ADDRESS}", $this->_obj_TxnInfo->getAddress(), $sBody);
+		$sBody = str_replace("{MOBILE}", $this->_obj_TxnInfo->getMobile(), $sBody);
 		$sBody = str_replace("{ORDERID}", $this->_obj_TxnInfo->getOrderID(), $sBody);
 		$sBody = str_replace("{MPOINTID}", $this->_obj_TxnInfo->getID(), $sBody);
 		$sBody = str_replace("{PRICE}", General::formatAmount($this->_obj_TxnInfo->getClientConfig()->getCountryConfig(), $this->_obj_TxnInfo->getAmount() ), $sBody);
@@ -103,16 +103,18 @@ class EMailReceipt extends General
 	/**
 	 * Sends an E-Mail Receipt with Payment Information to the Customer.
 	 *
+	 * @param	string $email	Customer's E-Mail address
+	 * @return	boolean			True if E-Mail is successfully sent to the Customer, otherwise false
 	 */
-	public function sendReceipt($addr)
+	public function sendReceipt($email)
 	{
-		$bStatus = mail($addr, $this->constSubject(), $this->constBody(), $this->constHeaders() );
+		$bStatus = mail($email, $this->constSubject(), $this->constBody(), $this->constHeaders() );
 
 		if ($bStatus === true)
 		{
 			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iEMAIL_ACCEPTED_STATE, $this->constSubject() );
 		}
-		else { $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iEMAIL_REJECTED_START, $this->constSubject() ); }
+		else { $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iEMAIL_REJECTED_STATE, $this->constSubject() ); }
 
 		return $bStatus;
 	}

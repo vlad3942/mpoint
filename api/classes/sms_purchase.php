@@ -18,7 +18,7 @@ class SMS_Purchase extends MobileWeb
 {
 	/**
 	 * Logs the data for the Products the Customer is purchasing for easy future retrieval.
-	 * 
+	 *
 	 * @see 	Constants::iPRODUCTS_STATE
 	 * @see 	General::newMessage()
 	 */
@@ -29,7 +29,7 @@ class SMS_Purchase extends MobileWeb
 				WHERE keywordid = ". $this->getClientConfig()->getKeywordConfig()->getID() ." AND enabled = true";
 //		echo $sql ."\n";
 		$aRS = $this->getDBConn()->getAllNames($sql);
-		
+
 		// Construct list of Products
 		$aProducts = array("names" => array(),
 						   "quantities" => array(),
@@ -42,15 +42,55 @@ class SMS_Purchase extends MobileWeb
 			$aProducts["prices"][$aRS[$i]["ID"] ] = $aRS[$i]["PRICE"];
 			$aProducts["logos"][$aRS[$i]["ID"] ] = $aRS[$i]["LOGOURL"];
 		}
-		
+
 		$this->newMessage($this->getTransactionID(), Constants::iPRODUCTS_STATE, serialize($aProducts) );
 	}
-	
+
+	/**
+	 * Constructs the download link for the transaction.
+	 * The link is contructed through the following alghorithm:
+	 * 	- {TXN CREATED} is an integer representing the timestamp for when the transaction was created since unix epoch
+	 * 	- {TXN ID} is the ID of the outgoing MT-SMS transaction
+	 *	The fields are separated by a Z and are using 32 digit numbering (as opposed to "standard" decimal).
+	 *
+	 * The returned link has the following format:
+	 * 	http://{DOMAIN}/base_convert({TXN CREATED}, 10, 32)Zbase_convert({TXN ID}, 10, 32)
+	 *
+	 * A new log entry is created in the Message Log with the constructed link under state "Link Constructed"
+	 *
+	 * @see 	General::newMessage()
+	 * @see 	Constants::iCONST_LINK_STATE
+	 *
+	 * @param 	integer $txnid 	ID of the Transaction that the Payment Link should be constructed for
+	 * @param 	integer $oid 	GoMobile's ID for the Customer's Mobile Network Operator
+	 * @param 	string $dir 	Directory where the Customer should start his mPoint Flow
+	 * @return 	string
+	 */
+	public function constLink($txnid, $oid, $dir)
+	{
+		$sql = "SELECT Extract('epoch' from created) AS timestamp
+				FROM Log.Transaction_Tbl
+				WHERE id = ". intval($txnid);
+//		echo $sql ."\n";
+		$RS = $this->getDBConn()->getName($sql);
+
+		$sLink = "http://";
+		// Customer's Operator is Sprint
+		if ($oid == 20004) { $sLink .= sSPRINT_MPOINT_DOMAIN; }
+		else { $sLink .= sDEFAULT_MPOINT_DOMAIN; }
+
+		$sLink .= "/". $dir ."/". base_convert(intval($RS["TIMESTAMP"]), 10, 32) ."Z". base_convert($txnid, 10, 32);
+
+		$this->newMessage($txnid, Constants::iCONST_LINK_STATE, $sLink);
+
+		return $sLink;
+	}
+
 	/**
 	 * Creates a new instance of the SMS Purchase class using the provied Message Info object.
 	 * The method will query the database in order to fetch the correct Client and Keyword ID using the
 	 * Country, Channel and Keyword contained in the Message Information object.
-	 * 
+	 *
 	 * @see 	sLANGUAGE_PATH
 	 * @see 	TranslateText
 	 * @see 	ClientConfig::produceConfig()
@@ -69,10 +109,10 @@ class SMS_Purchase extends MobileWeb
 					AND Upper(KW.name) = Upper('". $oMI->getKeyword() ."') AND KW.enabled = true";
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
-		
+
 		$obj_ClientConfig = ClientConfig::produceConfig($oDB, $RS["CLIENTID"], -1, $RS["KEYWORDID"]);
 		$obj_Txt = new TranslateText(array(sLANGUAGE_PATH . $obj_ClientConfig->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_ClientConfig->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0);
-		
+
 		return new SMS_Purchase($oDB, $obj_Txt, $obj_ClientConfig);
 	}
 }

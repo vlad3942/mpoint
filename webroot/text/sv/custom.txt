@@ -172,6 +172,8 @@ msgstr @@@ Ett fel uppstod när vi skulle skicka ditt epost kvitto, försöka igen?
 
 msgid @@@ Accept - 100 @@@
 msgstr @@@ Ditt kvitto har skickats @@@
+msgid @@@ Accept - 101 @@@
+msgstr @@@ Your account has been successfully created @@@
 
 msgid @@@ Products - 11 @@@
 msgstr @@@ Du har inte lagt till några produkter i din varukrog. Klicka på "Lägg till i korg" för att lägga till en produkt. @@@
@@ -181,7 +183,7 @@ msgid @@@ Products - 100 @@@
 msgstr @@@ Produkten har lagts till i din varukorg. @@@
 
 msgid @@@ Delivery - 10 @@@
-msgstr @@@ Vi kunde inte hitta någon adress som använder ditt nummer: {ADDRESS} @@@
+msgstr @@@ Vi kunde inte hitta någon adress som använder ditt nummer: {MOBILE} @@@
 msgid @@@ Delivery - 11 @@@
 msgstr @@@ Du har inte angivit något nummer @@@
 msgid @@@ Delivery - 12 @@@
@@ -248,5 +250,57 @@ msgstr @@@ Det angivna leveransdatumet är i det förflutna @@@
 msgid @@@ Overview - 11 @@@
 msgstr @@@ Godkänn försäljningsvilkoren för att fortsätta @@@
 
-msgid @@@ Select Card - 99 @@@
+msgid @@@ Select Payment Method - 99 @@@
 msgstr @@@ Vi kunde inte genomföra betalningen med din valda betalningsmetod. Välj en annan betalningsmetod och försök igen. @@@
+
+msgid @@@ CPM Payment - 11 @@@
+msgstr @@@ Please select your prepaid account or one of your stored cards? @@@
+msgid @@@ CPM Payment - 12 @@@
+msgstr @@@ Account not specified, please try again? @@@
+msgid @@@ CPM Payment - 13 @@@
+msgstr @@@ Selected account is invalid, please try again? @@@
+msgid @@@ CPM Payment - 14 @@@
+msgstr @@@ Prepaid account not found, please select one of your stored card instead? @@@
+msgid @@@ CPM Payment - 15 @@@
+msgstr @@@ Your prepaid account is inactive, please select one of your stored card instead? @@@
+msgid @@@ CPM Payment - 16 @@@
+msgstr @@@ The balance on your prepaid account is too low, please select one of your stored card instead? @@@
+msgid @@@ CPM Payment - 21 @@@
+msgstr @@@ Please select one of your stored cards? @@@
+msgid @@@ CPM Payment - 22 @@@
+msgstr @@@ The selected card is invalid, please try again? @@@
+msgid @@@ CPM Payment - 23 @@@
+msgstr @@@ The selected card couldn't be found, please try again? @@@
+msgid @@@ CPM Payment - 24 @@@
+msgstr @@@ The selected card is inactive, please try again? @@@
+msgid @@@ CPM Payment - 31 @@@
+msgstr @@@ Please enter your password? @@@
+msgid @@@ CPM Payment - 32 @@@
+msgstr @@@ The entered password is too short @@@
+msgid @@@ CPM Payment - 33 @@@
+msgstr @@@ The entered password is too long @@@
+msgid @@@ CPM Payment - 41 @@@
+msgstr @@@ The payment could not be authorised with the provided password, please re-enter your password? @@@
+msgid @@@ CPM Payment - 51 @@@
+msgstr @@@ The selected card was rejected, please select another card? @@@
+msgid @@@ CPM Payment - 59 @@@
+msgstr @@@ Internal Error - Acquirer not available, please select another card? @@@
+
+msgid @@@ Create Account - 11 @@@
+msgstr @@@ Please enter a password? @@@
+msgid @@@ Create Account - 12 @@@
+msgstr @@@ Password is too short, min length is {AUTH MIN LENGTH} characters @@@
+msgid @@@ Create Account - 13 @@@
+msgstr @@@ Password is too long, max length is {AUTH MAX LENGTH} characters @@@
+msgid @@@ Create Account - 14 @@@
+msgstr @@@ Password may not contain the following characters: " and ' @@@
+msgid @@@ Create Account - 21 @@@
+msgstr @@@ Please repeat your password? @@@
+msgid @@@ Create Account - 22 @@@
+msgstr @@@ Repeated password is too short, min length is {AUTH MIN LENGTH} characters @@@
+msgid @@@ Create Account - 23 @@@
+msgstr @@@ Repeated password is too long, max length is {AUTH MAX LENGTH} characters @@@
+msgid @@@ Create Account - 24 @@@
+msgstr @@@ Repeated password may not contain the following characters: " and ' @@@
+msgid @@@ Create Account - 31 @@@
+msgstr @@@ Entered passwords doesn't match, please try again? @@@

@@ -16,8 +16,8 @@
  * Model Class containing all the Business Logic for handling Callback requests from DIBS.
  *
  */
-class DIBS extends Callback 
-{	
+class DIBS extends Callback
+{
 	/**
 	 * Notifies the Client of the Payment Status by performing a callback via HTTP.
 	 * The method will re-construct the data received from DIBS after having removed the following mPoint specific fields:
@@ -28,7 +28,7 @@ class DIBS extends Callback
 	 * 	- language
 	 * 	- cardid
 	 * Additionally the method will add mPoint's Unique ID for the Transaction.
-	 * 
+	 *
 	 * @see 	Callback::notifyClient()
 	 * @see 	Callback::send()
 	 * @see 	Callback::getVariables()
@@ -51,7 +51,7 @@ class DIBS extends Callback
 			// Replace data fields previously overwritten by mPoint
 			$_post["orderid"] = $this->getTxnInfo()->getOrderID();
 			$_post["callbackurl"] = $this->getTxnInfo()->getCallbackURL();
-			$_post["accepturl"] = $this->getTxnInfo()->getAcceptURL();			
+			$_post["accepturl"] = $this->getTxnInfo()->getAcceptURL();
 			// Re-Construct DIBS request
 			$sBody = "mpoint-id=". $this->getTxnInfo()->getID();
 			foreach ($_post as $key => $val)
@@ -60,9 +60,108 @@ class DIBS extends Callback
 			}
 			// Append Custom Client Variables and Customer Input
 			$sBody .= "&". $this->getVariables();
-			
-			$this->send($sBody);
+
+			$this->performCallback($sBody);
 		}
+	}
+
+	public function getMerchantAccount($clid, $pspid)
+	{
+		$sql = "SELECT name
+				FROM Client.MerchantAccount_Tbl
+				WHERE clientid = ". intval($clid) ." AND pspid = ". intval($pspid) ." AND enabled = true";
+//		echo $sql ."\n";
+		$RS = $this->getDBConn($sql)->getName($sql);
+
+		return $RS["NAME"];
+	}
+
+	public function getCurrency($cid, $pspid)
+	{
+		$sql = "SELECT name
+				FROM System.PSPCurrency_Tbl
+				WHERE countryid = ". intval($cid) ." AND pspid = ". intval($pspid) ." AND enabled = true";
+//		echo $sql ."\n";
+		$RS = $this->getDBConn($sql)->getName($sql);
+
+		return $RS["NAME"];
+	}
+
+	public function delTicket($ticket)
+	{
+		$h = $this->constHeaders();
+//		$h .= "authorization: Basic ". base64_encode($this->_obj_ConnInfo->getUsername() .":". $this->_obj_ConnInfo->getPassword() ) .HTTPClient::CRLF;
+		$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP). "&ticket=". $ticket;
+
+//		parent::send("https://payment.architrade.com/cgi-adm/delticket.cgi", $h, $b);
+	}
+
+	public function authTicket($ticket)
+	{
+		$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
+		$b .= "&mpointid=". $this->getTxnInfo()->getID();
+		$b .= "&ticket=". $ticket;
+		$b .= "&amount=". $this->getTxnInfo()->getAmount();
+		$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getClientConfig()->getCountryConfig()->getID(), Constants::iDIBS_PSP);
+		$b .= "&orderid=". $this->getTxnInfo()->getOrderID() ."-". date("Y-m-d H:i:s");
+		if ($this->getTxnInfo()->getClientConfig()->useAutoCapture() === true) { $b .= "&capturenow=true"; }
+		if ($this->getTxnInfo()->getClientConfig()->getMode() > 0) { $b .= "&test=". $this->getTxnInfo()->getClientConfig()->getMode(); }
+		$b .= "&uniqueoid=true";
+		$b .= "&textreply=true";
+
+		$obj_HTTP = parent::send("https://payment.architrade.com/cgi-ssl/ticket_auth.cgi", $this->constHeaders(), $b);
+		$aStatus = array();
+		parse_str($obj_HTTP->getReplyBody(), $aStatus);
+		// Auhtorisation Declined
+		if (strtoupper($aStatus["status"]) != "ACCEPTED")
+		{
+			trigger_error("Authorisation declined by DIBS for Ticket: ". $ticket .", Reason Code: ". $aStatus["reason"], E_USER_WARNING);
+			$aStatus["transact"] = -1;
+		}
+
+		return $aStatus["transact"];
+	}
+
+	public function capture($txn)
+	{
+		$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
+		$b .= "&mpointid=". $this->getTxnInfo()->getID();
+		$b .= "&transact=". $txn;
+		$b .= "&amount=". $this->getTxnInfo()->getAmount();
+		$b .= "&orderid=". $this->getTxnInfo()->getOrderID();
+		if ($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID() > -1) { $b .= "&account=". $this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(); }
+		$b .= "&textreply=true";
+
+		$obj_HTTP = parent::send("https://payment.architrade.com/cgi-bin/capture.cgi", $this->constHeaders(), $b);
+		$aStatus = array();
+		parse_str($obj_HTTP->getReplyBody(), $aStatus);
+		// Capture Declined
+		if (strtoupper($aStatus["result"]) > 0)
+		{
+			trigger_error("Capture declined by DIBS for Transaction: ". $txn .", Result Code: ". $aStatus["result"], E_USER_WARNING);
+		}
+	}
+
+/**
+	 * Initialises Callback to the Client.
+	 *
+	 * @param 	HTTPConnInfo $oCI 	Connection Info required to communicate with the Callback component for Cellpoint Mobile
+	 * @param 	integer $cardid		Unique ID of the Card Type that was used in the payment transaction
+	 * @param 	integer $txnid		Transaction ID from DIBS returned in the "transact" parameter
+	 */
+	public function initCallback(HTTPConnInfo &$oCI, $cardid, $txnid)
+	{
+		$b = "mpointid=". $this->getTxnInfo()->getID();
+		$b .= "&transact=". $txnid;
+		$b .= "&cardid=". $cardid;
+		$b .= "&language=". $this->getTxnInfo()->getLanguage();
+		$b .= "&capturenow=". General::bool2xml($this->getTxnInfo()->getClientConfig()->useAutoCapture() );
+		$b .= "preauth=false";
+
+		$obj_HTTP = new HTTPClient(new Template(), $oCI);
+		$obj_HTTP->connect();
+		$obj_HTTP->send($this->constHeaders(), $b);
+		$obj_HTTP->disConnect();
 	}
 }
 ?>

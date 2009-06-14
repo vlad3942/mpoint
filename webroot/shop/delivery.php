@@ -3,7 +3,7 @@
  * This file contains the Controller for the List Products component in mPoint's shopping flow.
  * The component will generate a page using the transaction data, which lists all of the available products and allows the customer to
  * select the quantity to purchase for each product.
- * 
+ *
  * @author Jonatan Evald Buus
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
@@ -20,6 +20,7 @@ require_once(sCLASS_PATH ."/delivery.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 
+// Re-Build HTTP GET super global to support arrays
 rebuild_get();
 
 // Country has Address Lookup Service Enabled
@@ -34,12 +35,12 @@ if (array_key_exists("temp", $_SESSION) === false)
 {
 	if ($_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->hasAddressLookup() === true)
 	{
-		$_SESSION['temp'] = $obj_mPoint->getDeliveryAddressFromMSISDN($_SESSION['obj_TxnInfo']->getAddress() );
+		$_SESSION['temp'] = $obj_mPoint->getDeliveryAddressFromMSISDN($_SESSION['obj_TxnInfo']->getMobile() );
 		if (count($_SESSION['temp']) == 0)
 		{
 			$_GET['msg'] = 10;
-			// Add Address to the list of constants used for Text Tag Replacement
-			$_OBJ_TXT->loadConstants(array("ADDRESS" => $_SESSION['obj_TxnInfo']->getAddress() ) );
+			// Add Mobile Number (MSISDN) to the list of constants used for Text Tag Replacement
+			$_OBJ_TXT->loadConstants(array("MOBILE" => $_SESSION['obj_TxnInfo']->getMobile() ) );
 		}
 	}
 	$_SESSION['temp']['year'] = date("Y");
@@ -52,17 +53,17 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 ?>
 <root>
 	<title><?= $_OBJ_TXT->_("Recipient"); ?></title>
-	
+
 	<?= $obj_mPoint->getSystemInfo(); ?>
-	
+
 	<?= $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->toXML(); ?>
-	
+
 	<?= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML(); ?>
-	
+
 	<?= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']); ?>
-	
+
 	<?= $_SESSION['obj_ShopConfig']->toXML(); ?>
-	
+
 	<labels>
 		<info><?= $_OBJ_TXT->_("Delivery - Info"); ?></info>
 		<phone-no><?= htmlspecialchars($_OBJ_TXT->_("Phone No"), ENT_NOQUOTES); ?></phone-no>
@@ -80,8 +81,8 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 		</delivery-date>
 		<next><?= htmlspecialchars($_OBJ_TXT->_("Next >>"), ENT_NOQUOTES); ?></next>
 	</labels>
-		
+
 	<?= $obj_mPoint->getMessages("Delivery"); ?>
-	
+
 	<?= $obj_mPoint->getSession(); ?>
 </root>

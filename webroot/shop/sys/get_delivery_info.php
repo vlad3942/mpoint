@@ -2,7 +2,7 @@
 /**
  * This files contains the Controller for doing an Address Lookup using the provided MSISDN.
  * The file will ensure that the provided MSISDN is valid in country and make a lookup using the Address Lookup Service available in the Country.
- * 
+ *
  * @author Jonatan Evald Buus
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
@@ -22,21 +22,21 @@ require_once(sCLASS_PATH ."/delivery.php");
 $_SESSION['temp'] = array_merge($_SESSION['temp'], $_POST);
 
 $obj_mPoint = new Delivery($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO[$_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->getID()]) );
-$obj_Validator = new Validate($_SESSION['obj_TxnInfo']->getClientConfig() );
+$obj_Validator = new Validate($_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig() );
 
 $aMsgCds = array();
-	
-if ($obj_Validator->valAddress($_POST['address']) != 10) { $aMsgCds[] = $obj_Validator->valAddress($_POST['address']) + 10; }
+
+if ($obj_Validator->valMobile($_POST['mobile']) != 10) { $aMsgCds[] = $obj_Validator->valMobile($_POST['mobile']) + 10; }
 
 // Success: Input Valid
 if (count($aMsgCds) == 0)
 {
-	$aDeliveryAddress = $obj_mPoint->getDeliveryAddressFromMSISDN($_POST['address']);
-	
+	$aDeliveryAddress = $obj_mPoint->getDeliveryAddressFromMSISDN($_POST['mobile']);
+
 	// Address found
 	if (count($aDeliveryAddress) > 0)
 	{
-		$_SESSION['temp'] = array_merge($_SESSION['temp'], $aDeliveryAddress);	
+		$_SESSION['temp'] = array_merge($_SESSION['temp'], $aDeliveryAddress);
 	}
 	// Unable to find Address using the provided MSISDN
 	else

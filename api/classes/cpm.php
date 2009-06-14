@@ -14,7 +14,7 @@
  * Model Class containing all the Business Logic for handling Billing through GoMobile.
  *
  */
-class CellpointMobile extends Callback 
+class CellpointMobile extends Callback
 {
 	/**
 	 * Constructs and sends the Billing SMS through GoMobile.
@@ -30,24 +30,34 @@ class CellpointMobile extends Callback
 
 		// Construct body for the Premium SMS
 		$sBody = str_replace("{PRICE}", General::formatAmount($this->getTxnInfo()->getClientConfig()->getCountryConfig(), $this->getTxnInfo()->getAmount() ), $this->getText()->_("Billing SMS") );
-		
+
 		// Create Premium MT-SMS
-		$obj_MsgInfo = GoMobileMessage::produceMessage(2, $this->getTxnInfo()->getClientConfig()->getCountryConfig()->getID(), $this->getTxnInfo()->getOperator(), $this->getTxnInfo()->getClientConfig()->getCountryConfig()->getChannel(), $this->getTxnInfo()->getClientConfig()->getKeywordConfig()->getKeyword(), $iAmount, $this->getTxnInfo()->getAddress(), $sBody);
-		
+		$obj_MsgInfo = GoMobileMessage::produceMessage(2, $this->getTxnInfo()->getClientConfig()->getCountryConfig()->getID(), $this->getTxnInfo()->getOperator(), $this->getTxnInfo()->getClientConfig()->getCountryConfig()->getChannel(), $this->getTxnInfo()->getClientConfig()->getKeywordConfig()->getKeyword(), $iAmount, $this->getTxnInfo()->getMobile(), $sBody);
+
 		$this->sendMT($oCI, $obj_MsgInfo, $this->getTxnInfo() );
-		
+
 		return $obj_MsgInfo;
 	}
-	
+
 	/**
 	 * Initialises Callback to the Client.
 	 *
 	 * @param 	HTTPConnInfo $oCI 	Connection Info required to communicate with the Callback component for Cellpoint Mobile
-	 * @param 	SMS $oMI 			Reference to the Message Object for holding the message data which was sent to GoMobile to bill the customer
+	 * @param	integer $cardid		Unique ID of the "card" that was used to pay for the transaction:
+	 * 									10 - Premium SMS
+	 * 									11 - Prepaid Account
+	 * @param	integer $status		Status Code for the transaction:
+	 * 									 200 - Success for Premium SMS
+	 * 									2000 - Success for Prepaid Account
+	 * @param	integer $gmid		GoMobile's unique ID for the transaction if payment was made via Premium SMS (defaults to 0)
 	 */
-	public function initCallback(HTTPConnInfo &$oCI, SMS &$oMI)
+	public function initCallback(HTTPConnInfo &$oCI, $cardid, $status, $gmid=0)
 	{
-		$b = "mpoint-id=". $this->getTxnInfo()->getID() ."&gomobile-id=". $oMI->getGoMobileID() ."&language=". $this->getTxnInfo()->getLanguage() ."&status=". $oMI->getReturnCodes();
+		$b = "mpointid=". $this->getTxnInfo()->getID();
+		$b .= "&cardid=". $cardid;
+		$b .= "&gomobileid=". $gmid;
+		$b .= "&language=". $this->getTxnInfo()->getLanguage();
+		$b .= "&status=". $status;
 
 		$obj_HTTP = new HTTPClient(new Template(), $oCI);
 		$obj_HTTP->connect();

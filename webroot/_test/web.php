@@ -3,7 +3,7 @@
 <table>
 <tr>
 	<td style="font-weight:bold;">Client ID</td>
-	<td><input type="text" name="clientid" value="10000" /></td>
+	<td><input type="text" name="clientid" value="10001" /></td>
 </tr>
 <tr>
 	<td style="font-weight:bold;">Account</td>
@@ -11,11 +11,11 @@
 </tr>
 <tr>
 	<td style="font-weight:bold;">Recipient</td>
-	<td><input type="text" name="mobile" value="3053315242" /></td>
+	<td><input type="text" name="mobile" value="28882861" /></td>
 </tr>
 <tr>
 	<td style="font-weight:bold;">Operator</td>
-	<td><input type="text" name="operator" value="20000" /></td>
+	<td><input type="text" name="operator" value="10002" /></td>
 </tr>
 <tr>
 	<td style="font-weight:bold;">E-Mail</td>
@@ -27,7 +27,7 @@
 </tr>
 <tr>
 	<td style="font-weight:bold;">Language</td>
-	<td><input type="text" name="language" value="gb" /></td>
+	<td><input type="text" name="language" value="da" /></td>
 </tr>
 <tr>
 	<td style="font-weight:bold;">Logo URL</td>
@@ -35,7 +35,7 @@
 </tr>
 <tr>
 	<td style="font-weight:bold;">CSS URL</td>
-	<td><input type="text" name="css-url" value="http://demo.ois-inc.com/mpoint/_test/styles.css" /></td>
+	<td><input type="text" name="css-url" value="http://<?= $_SERVER['HTTP_HOST']; ?>/css/mobile.css" /></td>
 </tr>
 <tr>
 	<td style="font-weight:bold;">Accept URL</td>

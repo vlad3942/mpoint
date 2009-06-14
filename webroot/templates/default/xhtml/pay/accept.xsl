@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="ISO-8859-15"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:func="http://exslt.org/functions" extension-element-prefixes="func">
 <xsl:output method="xml" version="1.0" encoding="ISO-8859-15" indent="yes" media-type="application/xhtml+xml" doctype-public="-//WAPFORUM//DTD XHTML Mobile 1.0//EN" doctype-system="http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd" omit-xml-declaration="no" />
-<xsl:include href="../header.xsl"/>
+<xsl:include href="../mobile.xsl"/>
 
 <xsl:template match="/root">
 	<div id="mPoint">
 		<h1>
 			<xsl:value-of select="labels/mpoint" /><br />
-			<img src="{system/protocol}://{system/host}/img/mpoint_{/root/system/session/@id}.jpg" width="{mpoint-logo/width}" height="{mpoint-logo/height}" alt="- mPoint -" />
+			<img src="{system/protocol}://{system/host}/img/{mpoint-logo/width}x{mpoint-logo/height}_mpoint_{/root/system/session/@id}.png" width="{mpoint-logo/width}" height="{mpoint-logo/height}" alt="- mPoint -" />
 		</h1>
 	</div>
 	<div id="status">
@@ -26,13 +26,13 @@
 	
 	<table id="receipt" style="width:100%">
 	<tr>
-		<td class="mPoint_Label" style="white-space:nowrap;"><xsl:value-of select="labels/txn-id" />:</td>
+		<td class="mPoint_Label" style="white-space:nowrap;"><xsl:value-of select="labels/txnid" />:</td>
 		<td class="mPoint_Number"><xsl:value-of select="transaction/@id" /></td>
 		<td style="width:100%" rowspan="3"></td>
 	</tr>
 	<tr>
-		<td class="mPoint_Label" style="white-space:nowrap;"><xsl:value-of select="labels/order-id" />:</td>
-		<td class="mPoint_Number"><xsl:value-of select="transaction/order-id" /></td>
+		<td class="mPoint_Label" style="white-space:nowrap;"><xsl:value-of select="labels/orderid" />:</td>
+		<td class="mPoint_Number"><xsl:value-of select="transaction/orderid" /></td>
 	</tr>
 	<tr>
 		<td class="mPoint_Label" style="white-space:nowrap;"><xsl:value-of select="labels/price" />:</td>
@@ -62,6 +62,15 @@
 		<div>
 			<form action="{func:constLink(transaction/accept-url)}" method="post">
 				<p>
+				<!-- Standard mPoint Variables -->
+				<input type="hidden" name="mpoint-id" value="{transaction/@id}" />
+				<input type="hidden" name="orderid" value="{transaction/orderid}" />
+				<input type="hidden" name="status" value="2000" />
+				<input type="hidden" name="amount" value="{transaction/amount}" />
+				<input type="hidden" name="currency" value="{transaction/amount/@currency}" />
+				<input type="hidden" name="mobile" value="{transaction/mobile}" />
+				<input type="hidden" name="operator" value="{transaction/operator}" />
+				<!-- Custom Client Variables -->
 				<xsl:for-each select="client-vars/item">
 					<input type="hidden" name="{name}" value="{value}" />
 				</xsl:for-each>

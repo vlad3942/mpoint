@@ -71,7 +71,7 @@ require_once(sAPI_FUNCTION_PATH ."global.php");
 require_once(sCLASS_PATH ."websession.php");
 // Require API for general functionality
 require_once(sCLASS_PATH ."general.php");
-// Require abstract class system wide constants
+// Require abstract class with system wide constants
 require_once(sCLASS_PATH ."/constants.php");
 // Require super class for all Configurations
 require_once(sCLASS_PATH ."/basicconfig.php");
@@ -87,6 +87,8 @@ require_once(sCLASS_PATH ."/keywordconfig.php");
 require_once(sCLASS_PATH ."/shopconfig.php");
 // Require data data class for Transaction Information
 require_once(sCLASS_PATH ."/txninfo.php");
+// Require Business logic for the End-User Administration Component
+require_once(sCLASS_PATH ."/home.php");
 
 
 // Require global settings file
@@ -109,8 +111,9 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 		$_SESSION['obj_Info'] = new WebSession();
 	}
 
-	// Not fetching an Image
-	if (eregi("/img/", $_SERVER['PHP_SELF']) == false && eregi("/sys/", $_SERVER['PHP_SELF']) == false && eregi("/cpm/", $_SERVER['PHP_SELF']) == false)
+	// Not fetching an Image, performing a back-end process or accessing the AJAX enabled web interface
+	if (eregi("/img/", $_SERVER['PHP_SELF']) == false && eregi("/sys/", $_SERVER['PHP_SELF']) == false && eregi("/cpm/", $_SERVER['PHP_SELF']) == false
+		&& eregi("/home/", $_SERVER['PHP_SELF']) == false && eregi("/login/", $_SERVER['PHP_SELF']) == false && eregi("/internal/", $_SERVER['PHP_SELF']) == false)
 	{
 		/*
 		 * Use Output buffering to "magically" transform the XML via XSL behind the scene
@@ -119,6 +122,7 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 		 */
 		ob_start(array(new Output("all", false), "transform") );
 	}
+	else { header('Content-Type: text/xml; charset="ISO-8859-15"'); }
 }
 
 // Instantiate connection to the Database

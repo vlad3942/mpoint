@@ -1,0 +1,13 @@
+INSERT INTO EndUser.Account_Tbl (countryid, firstname, lastname, mobile, email, passwd) VALUES (100, 'Jonatan Evald', 'Buus', '28882861', 'jonatan.buus@cellpointmobile.com', 'oisJona');
+INSERT INTO EndUser.Card_Tbl (accountid, cardid, pspid, ticket, mask, expiry, preferred) VALUES (1, 2, 2, 211503237, '501910******0000', '06/24', true);
+INSERT INTO EndUser.Card_Tbl (accountid, cardid, pspid, ticket, mask, expiry, preferred) VALUES (1, 8, 2, 211518280, '471110******0000', '06/24', false);
+INSERT INTO EndUser.Transaction_Tbl (accountid, amount) VALUES (1, 10000);
+INSERT INTO EndUser.Transaction_Tbl (accountid, amount) VALUES (1, 15000);
+INSERT INTO EndUser.Transaction_Tbl (accountid, amount) VALUES (1, 100000);
+INSERT INTO EndUser.Transaction_Tbl (accountid, fromid, toid, amount) VALUES (2, 2, 1, -10000);
+INSERT INTO EndUser.Transaction_Tbl (accountid, fromid, toid, amount) VALUES (2, 2, 1, -5000);
+INSERT INTO EndUser.Transaction_Tbl (accountid, fromid, toid, amount) VALUES (1, 2, 1, 10000);
+INSERT INTO EndUser.Transaction_Tbl (accountid, fromid, toid, amount) VALUES (1, 2, 1, 5000);
+INSERT INTO EndUser.Transaction_Tbl (accountid, txnid, amount) VALUES (1, 1002214, -100);
+INSERT INTO EndUser.Transaction_Tbl (accountid, txnid, amount) VALUES (1, 1002204, -100);
+INSERT INTO EndUser.Transaction_Tbl (accountid, txnid, amount) VALUES (1, 1002173, -100);

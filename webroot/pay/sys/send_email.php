@@ -16,13 +16,15 @@ require_once("../../inc/include.php");
 
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
+// Require Business logic for the End-User Account Component
+require_once(sCLASS_PATH ."/enduser_account.php");
 // Require Business logic for the E-Mail Receipt Component
 require_once(sCLASS_PATH ."/email_receipt.php");
 
 $_SESSION['temp'] = $_POST;
 
 $aMsgCds = array();
-$obj_Validator = new Validate($_SESSION['obj_TxnInfo']->getClientConfig() );
+$obj_Validator = new Validate($_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig() );
 $obj_mPoint = new EMailReceipt($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
 
 if ($obj_Validator->valEMail($_POST['email']) != 10) { $aMsgCds[] = $obj_Validator->valEMail($_POST['email']) + 10; }
@@ -32,6 +34,7 @@ if (count($aMsgCds) == 0)
 {
 	$_SESSION['obj_TxnInfo']->setEmail($_POST['email']);
 	$obj_mPoint->logTransaction($_SESSION['obj_TxnInfo']);
+	$obj_mPoint->saveEmail($_SESSION['obj_TxnInfo']->getMobile(), $_POST['email']);
 	if ($obj_mPoint->sendReceipt($_POST['email']) === true) { $msg = 100; }
 	else { $msg = 91; }
 }

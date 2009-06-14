@@ -1,4 +1,4 @@
-<form action="http://mpoint.cellpointmobile.com/callback/dibs.php" method="post">
+<form action="http://mpoint.localhost/callback/dibs.php" method="post">
 <table>
 <tr>
 	<td>mPoint ID:</td>
@@ -9,12 +9,16 @@
 	<td><input type="text" name="orderid" value="" /></td>
 </tr>
 <tr>
+	<td>transact:</td>
+	<td><input type="text" name="transact" value="" /></td>
+</tr>
+<tr>
 	<td>paytype:</td>
 	<td><input type="text" name="paytype" value="DK" /></td>
 </tr>
 <tr>
 	<td>accepturl:</td>
-	<td><input type="text" name="accepturl" value="http://mpoint.cellpointmobile.com/accept.php" /></td>
+	<td><input type="text" name="accepturl" value="http://mpoint.localhost/accept.php" /></td>
 </tr>
 <tr>
 	<td>amount:</td>
@@ -22,7 +26,7 @@
 </tr>
 <tr>
 	<td>callbackurl:</td>
-	<td><input type="text" name="callbackurl" value="http://mpoint.cellpointmobile.com/callback/dibs.php" /></td>
+	<td><input type="text" name="callbackurl" value="http://demo.ois-inc.com/mpoint/_test/callback.php" /></td>
 </tr>
 <tr>
 	<td>cancelurl:</td>
@@ -33,10 +37,6 @@
 	<td><input type="text" name="capturenow" value="true" /></td>
 </tr>
 <tr>
-	<td>cardholderSetting_name:</td>
-	<td><input type="text" name="cardholderSetting_name" value="0" /></td>
-</tr>
-<tr>
 	<td>cardid:</td>
 	<td><input type="text" name="cardid" value="2" /></td>
 </tr>
@@ -45,16 +45,8 @@
 	<td><input type="text" name="currency" value="208" /></td>
 </tr>
 <tr>
-	<td>declineurl:</td>
-	<td><input type="text" name="declineurl" value="https://payment.architrade.com/paymentweb/reply.action;jsessionid=Zu36qwS0CRZ9SrhBbOAh5g**" /></td>
-</tr>
-<tr>
 	<td>format:</td>
 	<td><input type="text" name="currency" value="xhtml" /></td>
-</tr>
-<tr>
-	<td>fullreply:</td>
-	<td><input type="text" name="fullreply" value="1" /></td>
 </tr>
 <tr>
 	<td>height:</td>
@@ -77,18 +69,6 @@
 	<td><input type="text" name="PHPSESSID" value="3" /></td>
 </tr>
 <tr>
-	<td>postype:</td>
-	<td><input type="text" name="postype" value="ssl" /></td>
-</tr>
-<tr>
-	<td>struts_token:</td>
-	<td><input type="text" name="struts_token" value="AKCE1OC35HXUHKDT1SH5B9PIFQH4F4IU" /></td>
-</tr>
-<tr>
-	<td>struts_token_name:</td>
-	<td><input type="text" name="PHPSESSID" value="struts.token" /></td>
-</tr>
-<tr>
 	<td>test:</td>
 	<td><input type="text" name="test" value="yes" /></td>
 </tr>
@@ -105,8 +85,20 @@
 	<td><input type="text" name="width" value="192" /></td>
 </tr>
 <tr>
-	<td>transact:</td>
-	<td><input type="text" name="transact" value="135365993" /></td>
+	<td>preauth:</td>
+	<td><input type="radio" name="preauth" value="true" /> True <input type="radio" name="preauth" value="false" /> False</td>
+</tr>
+<tr>
+	<td>Card Prefix:</td>
+	<td><input type="text" name="cardprefix" value="501910" /></td>
+</tr>
+<tr>
+	<td>Masked Card Number:</td>
+	<td><input type="text" name="cardnomask" value="XXXXXXXXXXXX0000" /></td>
+</tr>
+<tr>
+	<td>Card Expiry Date:</td>
+	<td><input type="text" name="cardexpdate" value="2406" /></td>
 </tr>
 <tr>
 	<td colspan="2"><input type="submit" value="Send" /></td>

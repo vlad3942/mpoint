@@ -41,7 +41,7 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 	<labels>
 		<info><?= $_OBJ_TXT->_("Please enter your e-mail address below"); ?></info>
 		<email><?= $_OBJ_TXT->_("E-Mail"); ?></email>
-		<submit><?= htmlspecialchars($_OBJ_TXT->_("Next >>"), ENT_NOQUOTES); ?></submit>
+		<submit><?= htmlspecialchars($_OBJ_TXT->_("Send Receipt"), ENT_NOQUOTES); ?></submit>
 		<back><?= htmlspecialchars($_OBJ_TXT->_("<< Back"), ENT_NOQUOTES); ?></back>
 	</labels>
 

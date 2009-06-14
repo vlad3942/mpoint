@@ -44,6 +44,15 @@ input.number
 {
 	-wap-input-format: '*N';
 }
+ul, ul li
+{
+	padding: 0;
+	margin: 0;
+}
+ul li
+{
+	margin-left: 1em;
+}
 /* ========== Tag Classes End ========== */
 
 /* ========== mPoint Classes Start ========== */
@@ -52,6 +61,7 @@ input.number
 	font-weight: bold;
 	padding-right: 0.5em;
 	padding-top: 0.3em;
+	white-space: nowrap;
 }
 
 .mPoint_Info
@@ -66,6 +76,7 @@ input.number
 
 .mPoint_Status
 {
+	font-size: 90%;
 	color: red;
 	font-style: italic;
 	padding-top: 0.5em;
@@ -84,7 +95,7 @@ tr.mPoint_Even, div.mPoint_Even
 }
 tr.mPoint_Uneven, div.mPoint_Uneven
 {
-	background-color: #E0E0E0;
+	background-color: #8FBFD5;
 }
 
 input.mPoint_Button
@@ -96,12 +107,29 @@ input.mPoint_Button
 
 input.mPoint_Card_Button
 {
+	border-width: 0px;
 	border-style: none;
+	border-color: #fff;
 	background-color: #fff;
 	color: blue;
 	text-decoration: underline;
 	margin: 0px 0px 0px 0px;
 	padding: 0px 0px 2px 0px;
+}
+
+div.mPoint_Card
+{
+}
+
+div.mPoint_Account
+{
+	width: 100%;
+}
+div.mPoint_Account, div.mPoint_Account table, div.mPoint_Account table * input.mPoint_Card_Button
+{
+	background-color: #8FBFD5;
+	color: #000;
+	font-weight: bold;
 }
 /* ========== mPoint Classes Start ========== */
 
@@ -114,7 +142,7 @@ table#products tr td
 
 table#receipt
 {
-	background-color: #E0E0E0;
+	background-color: #8FBFD5;
 	margin-top: 0.5em;
 	margin-bottom: 0.5em;
 }
@@ -135,15 +163,42 @@ div#terms
 	white-space: pre;
 }
 
-div#delivery, div#email, div#cardinfo
+div#delivery, div#email, div#cardinfo, div#prepaid, div#accountinfo, div#my-account table
 {
-	background-color: #E0E0E0;
+	background-color: #8FBFD5;
+}
+div#delivery, div#email, div#cardinfo, div#prepaid, div#accountinfo
+{
 	padding-left: 3px;
 	padding-bottom: 3px;
 }
+
 div#shipping div table tr td
 {
 	padding-top: 3px;
 	padding-left: 3px;
+}
+
+div#cards
+{
+	border-style: solid;
+	border-color: #8FBFD5;
+}
+
+div#my-account
+{
+}
+div#my-account div#cardinfo, div#my-account div#accountinfo, div#email
+{
+	margin-bottom: 5px;
+}
+div#my-account div#password
+{
+	padding-top: 5px;
+}
+
+div#price
+{
+	 padding-bottom: 0.5em;
 }
 /* ========== ID Classes End ========== */

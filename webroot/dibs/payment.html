@@ -40,50 +40,59 @@ if (cgi.test = 1)
 }
 
 /* ========== Language Translataion Start ========== */
-// Danish
-if (cgi.language = 'da')
+switch(cgi.language)
 {
-	title := 'Kort Info';
-	progress := 'Trin 2 af 2';
-	label_selected_card := 'Valgte Kort';
-	info := 'Udfyld venligst nedenstående felter med dine kort informationer';
-	label_card_number := 'Kort Nummer';
-	label_expiry := 'Udløbsdato';
-	expiry_month := 'mm';
-	expiry_year := 'åå';
-	label_cvc := 'CVC / CVS';
-	cvc_help := '3 tal (trykt på bagsiden af dit kort)';
-	submit := 'Gennemfør Betaling';
-}
-// Swedish
-else if (cgi.language = 'sv')
-{
-	title := 'Card Info';
-	progress := 'Step 2 of 2';
-	label_selected_card := 'Selected Card';
-	info := 'Please enter your card information below';
-	label_card_number := 'Card Number';
-	label_expiry := 'Expiry date';
-	expiry_month := 'mm';
-	expiry_year := 'yy';
-	label_cvc := 'CVC / CVS';
-	cvc_help := '3 digits (printed on the back of the card)';
-	submit := 'Complete Payment';
-}
-// British English
-else
-{
-	title := 'Card Info';
-	progress := 'Step 2 of 2';
-	label_selected_card := 'Selected Card';
-	info := 'Please enter your card information below';
-	label_card_number := 'Card Number';
-	label_expiry := 'Expiry date';
-	expiry_month := 'mm';
-	expiry_year := 'yy';
-	label_cvc := 'CVC / CVS';
-	cvc_help := '3 digits (printed on the back of the card)';
-	submit := 'Complete Payment';
+	// Danish
+	case ('da')
+	{
+		title := 'Kort Info';
+		progress := 'Trin 2 af 2';
+		label_selected_card := 'Valgte Kort';
+		label_price := 'Pris';
+		info := 'Udfyld venligst nedenstående felter med dine kort informationer';
+		label_card_number := 'Kort Nummer';
+		label_expiry := 'Udløbsdato';
+		expiry_month := 'mm';
+		expiry_year := 'åå';
+		label_cvc := 'CVC / CVS';
+		cvc_help := '3 tal (trykt på bagsiden af dit kort)';
+		label_store := 'Gem kort informationer';
+		submit := 'Gennemfør Betaling';
+	}
+	// Swedish
+	case ('sv')
+	{
+		title := 'Kortinformation';
+		progress := 'Steg 2 av 2';
+		label_selected_card := 'Valt kort';
+		label_price := 'Pris';
+		info := 'Vänligen fyll i din kortinformation nedan';
+		label_card_number := 'Kortnummer';
+		label_expiry := 'Giltighetstid';
+		expiry_month := 'mm';
+		expiry_year := 'åå';
+		label_cvc := 'CVC / CVS';
+		cvc_help := '3 siffror (tryckta på baksidan av kortet)';
+		label_store := 'Gem kortinformation';
+		submit := 'Betalningen genomförd';
+	}
+	// British English
+	default
+	{
+		title := 'Card Info';
+		progress := 'Step 2 of 2';
+		label_selected_card := 'Selected Card';
+		label_price := 'Price';
+		info := 'Please enter your card information below';
+		label_card_number := 'Card Number';
+		label_expiry := 'Expiry date';
+		expiry_month := 'mm';
+		expiry_year := 'yy';
+		label_cvc := 'CVC / CVS';
+		cvc_help := '3 digits (printed on the back of the card)';
+		label_store := 'Save card info';
+		submit := 'Complete Payment';
+	}
 }
 /* ========== Language Translataion End ========== */
 </PML_SCRIPT>
@@ -150,6 +159,7 @@ else
 			font-weight: bold;
 			padding-right: 0.5em;
 			padding-top: 0.3em;
+			white-space: nowrap;
 		}
 		
 		.mPoint_Info
@@ -233,11 +243,16 @@ else
 			white-space: pre;
 		}
 		
-		div#delivery, table#shipping, div#email, div#cardinfo
+		div#delivery, table#shipping, div#email, div#cardinfo, div#accountinfo
 		{
 			background-color: #E0E0E0;
 			padding-left: 3px;
 			padding-bottom: 3px;
+		}
+
+		div#price
+		{
+			 padding-bottom: 0.5em;
 		}
 		/* ========== ID Classes End ========== */
 	</style>
@@ -260,6 +275,7 @@ else
 			<input type="hidden" name="amount" PML_value="cgi.amount" />
 			<input type="hidden" name="currency" PML_value="cgi.currency" />
 			<input type="hidden" name="orderid" PML_value="cgi.orderid" />
+			<input type="hidden" name="fullreply" value="true" />
 			<PML_IF COND="cgi.capturenow = 'true'">
 				<input type="hidden" name="capturenow" PML_value="cgi.capturenow" />
 			</PML_IF>
@@ -276,6 +292,11 @@ else
 			<input type="hidden" name="language" PML_value="cgi.language" />
 			<input type="hidden" name="cardid" PML_value="cgi.cardid" />
 			<input type="hidden" name="mpointid" PML_value="cgi.mpointid" />
+			<input type="hidden" name="euaid" PML_value="cgi.euaid" />
+			<!-- Store Credit Card -->
+			<PML_IF COND="cgi.store_card > 0">
+				<input type="hidden" name="store_card" PML_value="cgi.store_card" />
+			</PML_IF>
 			<!-- Dynamic Page Data -->
 			<input type="hidden" name="clientid" PML_value="cgi.clientid" />
 			<input type="hidden" name="client" PML_value="cgi.client" />
@@ -285,7 +306,7 @@ else
 			<input type="hidden" name="email_receipt" PML_value="cgi.email_receipt" />
 			<input type="hidden" name="email_url" PML_value="cgi.email_url" />
 			<input type="hidden" name="accept_url" PML_value="cgi.accept_url" />
-			<input type="hidden" name="recipient" PML_value="cgi.recipient" />
+			<input type="hidden" name="mobile" PML_value="cgi.mobile" />
 			<input type="hidden" name="price" PML_value="cgi.price" />
 			<input type="hidden" name="card_width" PML_value="cgi.card_width" />
 			<input type="hidden" name="card_height" PML_value="cgi.card_height" />
@@ -303,7 +324,7 @@ else
 		</div>
 		<div>
 			<span class="mPoint_Label"><PML_VAL>label_selected_card</PML_VAL>:</span>
-			<table style="padding-bottom:0.5em;">
+			<table>
 			<tr>
 			<PML_SWITCH EXPR="cgi.cardid">
 				<PML_CASE VALUE="1">
@@ -346,6 +367,11 @@ else
 			</tr>
 			</table>
 		</div>
+		<!-- Price -->
+		<div id="price">
+			<span class="mPoint_Label"><PML_VAL>label_price</PML_VAL>:</span>
+			<PML_VAL>cgi.price</PML_VAL>
+		</div>
 		<!-- Credit Card Information -->
 		<div><PML_VAL>info</PML_VAL></div>
 		<div id="cardinfo">
@@ -385,7 +411,13 @@ else
 			</div>
 			<div class="mPoint_Info"><PML_VAL>cvc_help</PML_VAL></div>
 		</div>
-		<!-- Send Data-->
+		<!-- Store Credit Card -->
+		<PML_IF COND="cgi.store_card > 0">
+			<div>
+				<input type="checkbox" name="preauth" value="true" /><PML_VAL>label_store</PML_VAL>
+			</div>
+		</PML_IF>
+		<!-- Complete Payment -->
 		<div>
 			<input type="submit" PML_value="submit" class="mPoint_Button" />
 		</div>

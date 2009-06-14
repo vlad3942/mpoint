@@ -1,0 +1,73 @@
+==================== Requirements ====================
+mPoint:
+- Implement User Accounts to store customer's MSISDN, Password and Ticket returned from DIBS (1 week)
+- New "Capture" API (1 week)
+- Extend Payment API: (1 week)
+	- New parameters:
+		- "account-logo-url"
+		- "payment type": purchase, subscription, usage
+		- "e-mail address"
+	- Rename "recipient" to "mobile"
+- Transaction tracking, ensure double billing via SMS doesn't occur
+- Extend implementation to DIBS to include "Make Ticket" functionality
+- Extend "Select Card" page to include "Pay with My Account"
+- Move "Enter e-mail" to the back of the payment flow
+Estimate: 4-5 weeks
+
+Mobile Ticket:
+- Dynamically create picture for MMS based on: (1 week)
+	- Issue date / time
+	- Expiry date / time
+	- Number of valid Zones
+	- Start Zone
+	- Price
+	- Device resolution
+	- Client logo / colour scheme
+	- Digital Rights Management: Interval
+- Implement Locus Web Services: (1 week)
+	- Receive Base Data (Push from Locus to CPM):
+		- Regions
+		- Zones
+		- Routes
+		- Stops
+	- Calculate Price based on route (Pull from CPM to Locus)
+		- Send: region, from, to
+		- Receive: transaction-id, price (possibly estimated for post paid), usage information (only applicable for post paid)
+	- Callback upon ticket issued (Push from CPM to Locus)
+		- transaction-id
+		- payment status
+		- delivery status
+- User Interface: (3-4 weeks)
+	- "Simple" HTML only version
+	- "Advanced" Mobile AJAX version
+	- "Text" SMS only version, metaphone algorithm / spellchecker
+- Adaption logic: (1-2 weeks)
+	- Auto-Select from / to and calculate price based on initial SMS
+	- Select appropriate payment method based on user state and client config:
+		- 10-trip card available to cover trip
+		- Customer credit card previously stored
+		- Premium SMS enabled for billing
+- Fallback logic: (1 week)
+	- Resend ticket as SMS if MMS delivery not confirmed within X minutes
+	- Send ticket as SMS for 3 due to lack of MMS support
+	- Resend ticket as SMS if MMS delivery fails
+- User accounts for keeping track of 10-trip / post paid usage
+- Resend Ticket
+- Help
+- SurePay
+Estimate: 8-10 weeks
+
+Total: 12-15 weeks (480 to 600 hours)
+
+==================== Mobile Server Unit ====================
+- Mobile Front Side Bus:
+	- GoMobile
+	- FIONA
+	- Device Orchestrator (with Device Repository & Mobile Internet Engine)
+- Mobile Enterprise Service Bus:
+	- Security Manager
+	- Transaction Repository
+	- Custom Data Connectors to Locus
+- Products:
+	- mPoint (with Basic & SurePay)
+	- Mobile Ticket (new)

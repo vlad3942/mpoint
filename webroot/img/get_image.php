@@ -20,55 +20,16 @@
  */
 
 // Retrieve Session ID from Image URL
-$_REQUEST[session_name()] = substr($_GET['file'], strrpos($_GET['file'], "_")+1);
+$_REQUEST[session_name()] = substr($_GET['file'], strrpos($_GET['file'], "_") + 1);
 
 // Require Global Include File
 require_once("../inc/include.php");
 
 // Require Business logic for the Image Component
 require_once(sCLASS_PATH ."/retrieve_image.php");
-
-$obj_mPoint = new RetrieveImage($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_UA']);
-
-// Determine Image type to be retrieved
-switch (true)
-{
-case (strstr($_GET['file'], "client") ):	// Retrieve Client Logo
-	// Client logo not previously returned
-	if (array_key_exists("HTTP_IF_NONE_MATCH", $_SERVER) === false)
-	{
-		$obj_Image = $obj_mPoint->getClientLogo($_SESSION['obj_TxnInfo']->getLogoURL() );
-	}
-	$etag = "client";
-	break;
-case (strstr($_GET['file'], "product") ):
-	$etag = "product";
-	break;
-case (strstr($_GET['file'], "card") ):	// Retrieve Credit Card Logo
-	$aTmp = explode("_", $_GET['file']);
-	$id = $aTmp[count($aTmp)-2];
-	// Credit Card logo not previously returned
-	if (array_key_exists("HTTP_IF_NONE_MATCH", $_SERVER) === false)
-	{
-		$obj_Image = $obj_mPoint->getCardLogo($id);
-	}
-	$etag = "card_". $id;
-	break;
-case (strstr($_GET['file'], "mpoint") ):// Retrieve mPoint Logo
-	// mPoint logo not previously returned
-	if (array_key_exists("HTTP_IF_NONE_MATCH", $_SERVER) === false)
-	{
-		$obj_Image = $obj_mPoint->getmPointLogo();
-	}
-	$etag = "mpoint";
-	break;
-default:					// Error: Unknown Image Type
-	trigger_error("Unknown Image Type {TRACE URL: ".$_GET['file'] ."}", E_USER_ERROR);
-	break;
-}
-
+	header("Content-Type: text/plain");
 // Image has previously been returned
-if (array_key_exists("HTTP_IF_NONE_MATCH", $_SERVER) === true)
+if (array_key_exists("HTTP_IF_NONE_MATCH", $_SERVER) === true && 1 == 2)
 {
 	// Set HTTP Headers
 	header("HTTP/1.1 304 Not Modified");
@@ -80,22 +41,60 @@ if (array_key_exists("HTTP_IF_NONE_MATCH", $_SERVER) === true)
 }
 else
 {
-	// Convert image into format supported by the Mobile Device
+	$obj_mPoint = new RetrieveImage($_OBJ_DB, $_OBJ_TXT);
+
+	@list($w, $h) = explode("x", substr($_GET['file'], 0, strpos($_GET['file'], "_") ) );
+	// Image size incuded in URL
+	if (empty($w) === false && empty($h) === false) { $_GET['file'] = substr($_GET['file'], strpos($_GET['file'], "_") + 1); }
+
+	// Determine Image type to be retrieved
 	switch (true)
 	{
-	case ($_SESSION['obj_UA']->hasJPG() ):	// Device supports JPEG Images
-		$sImage = $obj_Image->getTgtImage("jpg");
+	case (strstr($_GET['file'], "client") ):	// Retrieve Client Logo
+		$obj_Image = $obj_mPoint->getClientLogo($_SESSION['obj_TxnInfo']->getLogoURL() );
+		$etag = "client";
 		break;
-	case ($_SESSION['obj_UA']->hasPNG() ):	// Device supports PNG Images
-		$sImage = $obj_Image->getTgtImage("png");
+	case (strstr($_GET['file'], "product") ):
+		$etag = "product";
 		break;
-	case ($_SESSION['obj_UA']->hasGIF() ):	// Device supports GIF Images
-		$sImage = $obj_Image->getTgtImage("gif");
+	case (strstr($_GET['file'], "card") ):	// Retrieve Credit Card Logo
+		$aTmp = explode("_", $_GET['file']);
+		$id = $aTmp[count($aTmp)-2];
+		$obj_Image = $obj_mPoint->getCardLogo($id);
+		$etag = "card_". $id;
 		break;
-	default:					// Error: Image formats not supported by Device
-		trigger_error("Image formats not supported by Device {TRACE {OBJ_UA} }", E_USER_ERROR);
+	case (strstr($_GET['file'], "mpoint") ):// Retrieve mPoint Logo
+		$obj_Image = $obj_mPoint->getmPointLogo();
+		$etag = "mpoint";
+		break;
+	default:					// Error: Unknown Image Type
+		trigger_error("Unknown Image Type {TRACE URL: ".$_GET['file'] ."}", E_USER_ERROR);
 		break;
 	}
+	$obj_Image->resize($w, $h);
+
+	// Mobile Device
+	if (array_key_exists("obj_UA", $_SESSION) === true)
+	{
+		// Convert image into format supported by the Mobile Device
+		switch (true)
+		{
+		case ($_SESSION['obj_UA']->hasPNG() ):	// Device supports PNG Images
+			$sImage = $obj_Image->getTgtImage("png");
+			break;
+		case ($_SESSION['obj_UA']->hasJPG() ):	// Device supports JPEG Images
+			$sImage = $obj_Image->getTgtImage("jpg");
+			break;
+		case ($_SESSION['obj_UA']->hasGIF() ):	// Device supports GIF Images
+			$sImage = $obj_Image->getTgtImage("gif");
+			break;
+		default:					// Image formats not supported by Device
+			$sImage = $obj_Image->getTgtImage(substr($_GET['file'], -3) );
+			break;
+		}
+	}
+	// Web Browser
+	else { $sImage = $obj_Image->getTgtImage(substr($_GET['file'], -3) ); }
 
 	// Set HTTP Headers
 	header("HTTP/1.1 200 OK");

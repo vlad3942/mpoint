@@ -191,6 +191,32 @@ abstract class Constants
 	 *
 	 */
 	const iWEB_SUBSCR_TYPE = 31;
+	/**
+	 * Defines Type ID for a Top-Up of the End-User's prepaid account
+	 *
+	 */
+	const iEMONEY_TOPUP_TYPE = 100;
+	/**
+	 * Defines Type ID for an E-Money based purchase made using the End-User's prepaid account
+	 *
+	 */
+	const iEMONEY_PURCHASE_TYPE = 101;
+	/**
+	 * Defines Type ID for an E-Money based transfer between 2 End-Users' prepaid accounts
+	 *
+	 */
+	const iEMONEY_TRANSFER_TYPE = 102;
+	/**
+	 * Defines Type ID for a Withdrawal from the End-User's prepaid account
+	 *
+	 */
+	const iEMONEY_WITHDRAWAL_TYPE = 103;
+	/**
+	 * Defines Type ID for a Card / Premium SMS based purchase that should be associated with the End-User's prepaid account.
+	 * Please note that the "amount" for this type of transaction MUST be 0.
+	 *
+	 */
+	const iCARD_PURCHASE_TYPE = 109;
 
 	/**
 	 * Defines the min length for all authentication data:
@@ -235,5 +261,23 @@ abstract class Constants
 	 *
 	 */
 	const iPHYSICAL_FLOW = 2;
+
+	/**
+	 * Default amount that is added to an End-User's account when a new account is created and the client is
+	 * running in test mode.
+	 *
+	 */
+	const iEMONEY_GRANT = 100000;
+
+	/**
+	 * Unique Card ID for transaction's made using Premium SMS
+	 *
+	 */
+	const iPSMS_CARD = 10;
+	/**
+	 * Unique Card ID for transaction's made using e-money
+	 *
+	 */
+	const iEMONEY_CARD = 11;
 }
 ?>

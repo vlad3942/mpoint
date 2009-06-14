@@ -11,10 +11,10 @@
  */
 
 /**
- * 
+ *
  *
  */
-class CreditCard extends General
+class CreditCard extends EndUserAccount
 {
 	/**
 	 * Data object with the Transaction InformaStion
@@ -28,7 +28,7 @@ class CreditCard extends General
 	 * @var UAProfile
 	 */
 	private $_obj_UA;
-	
+
 	/**
 	 * Default Constructor
 	 *
@@ -39,38 +39,38 @@ class CreditCard extends General
 	 */
 	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, UAProfile &$oUA)
 	{
-		parent::__construct($oDB, $oTxt);
-		
+		parent::__construct($oDB, $oTxt, $oTI->getClientConfig() );
+
 		$this->_obj_TxnInfo = $oTI;
 		$this->_obj_UA = $oUA;
 
 	}
-	
+
 	/**
 	 * Fetch meta-data for all Credit Cards that are available to the Client.
 	 * The card data is returned as an XML Document in the following format:
-	 * 	<cards>
+	 * 	<cards accountid="{UNIQUE ID FOR THE END-USER'S ACCOUNT}>
 	 * 		<item id="{UNIQUE ID FOR THE CARD}" pspid="{UNIQUE ID FOR THE PSP THAT WILL AUTHORISE THE PAYMENT}">
 	 *			<name>{CREDIT CARD NAME}</name>
-	 *			<width>{CALCUALTED WIDTH FOR THE LOGO}</width>
-	 *			<height>{CALCUALTED HEIGHT FOR THE LOGO}</height>
+	 *			<logo-width>{CALCUALTED WIDTH FOR THE LOGO}</logo-width>
+	 *			<logo-height>{CALCUALTED HEIGHT FOR THE LOGO}</logo-height>
 	 *			<account>{PSPS ACCOUNT}</account>
 	 *			<subaccount>{PSP SUBACCOUNT}</subaccount>
 	 *			<currency>{PSP'S CURRENCY THAT THE TRANSACTION WILL BE CHARGED IN}</currency>
 	 *		</item>
 	 *		<item id="{UNIQUE ID FOR THE CARD}" pspid="{UNIQUE ID FOR THE PSP THAT WILL AUTHORISE THE PAYMENT}">
 	 *			<name>{CREDIT CARD NAME}</name>
-	 *			<width>{CALCUALTED WIDTH FOR THE LOGO}</width>
-	 *			<height>{CALCUALTED HEIGHT FOR THE LOGO}</height>
+	 *			<logo-width>{CALCUALTED WIDTH FOR THE LOGO}</logo-width>
+	 *			<logo-height>{CALCUALTED HEIGHT FOR THE LOGO}</logo-height>
 	 *			<account>{PSPS ACCOUNT}</account>
 	 *			<subaccount>{PSP SUBACCOUNT}</subaccount>
 	 *			<currency>{PSP'S CURRENCY THAT THE TRANSACTION WILL BE CHARGED IN}</currency>
 	 *		</item>
 	 * 		...
 	 * 	</cards>
-	 * Please note that if the Payment Service Provider (PSP) does not support sub-accounts or no sub-account has been 
+	 * Please note that if the Payment Service Provider (PSP) does not support sub-accounts or no sub-account has been
 	 * configured for the PSP, the subaccount tag will contain -1.
-	 * 
+	 *
 	 * @see 	iCARD_LOGO_SCALE
 	 *
 	 * @param 	integer $id 	Unique Card ID that should be fetched
@@ -81,14 +81,14 @@ class CreditCard extends General
 		/* ========== Calculate Logo Dimensions Start ========== */
 		$iWidth = $this->_obj_UA->getWidth() * iCARD_LOGO_SCALE / 100;
 		$iHeight = $this->_obj_UA->getHeight() * iCARD_LOGO_SCALE / 100;
-		
+
 		if ($iWidth / 180 > $iHeight / 115) { $fScale = $iHeight / 115; }
 		else { $fScale = $iWidth / 180; }
-		
+
 		$iWidth = intval($fScale * 180);
 		$iHeight = intval($fScale * 115);
 		/* ========== Calculate Logo Dimensions End ========== */
-		
+
 		$sql = "SELECT C.id, C.name,
 					PSP.id AS pspid, MA.name AS account, MSA.name AS subaccount, PC.name AS currency
 				FROM System.Card_Tbl C
@@ -105,13 +105,13 @@ class CreditCard extends General
 					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
 					AND PC.countryid = ". $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID() ."
 					AND PP.countryid = ". $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID() ."
-					AND (PP.amount = -1 OR PP.amount = ". intval($amount) .")
+					AND PP.amount IN (-1, ". intval($amount) .")
 					AND C.enabled = true
 				ORDER BY C.position ASC, C.name ASC";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
-		
-		$xml = '<cards>';
+
+		$xml = '<cards accountid="'. $this->getAccountID($this->_obj_TxnInfo->getMobile() ) .'">';
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
 			// Transaction instantiated via SMS or "Card" is NOT Premium SMS
@@ -120,8 +120,8 @@ class CreditCard extends General
 				// Construct XML Document with card data
 				$xml .= '<item id="'. $RS["ID"] .'" pspid="'. $RS["PSPID"] .'">';
 				$xml .= '<name>'. $RS["NAME"] .'</name>';
-				$xml .= '<width>'. $iWidth .'</width>';
-				$xml .= '<height>'. $iHeight .'</height>';
+				$xml .= '<logo-width>'. $iWidth .'</logo-width>';
+				$xml .= '<logo-height>'. $iHeight .'</logo-height>';
 				$xml .= '<account>'. $RS["ACCOUNT"] .'</account>';
 				$xml .= '<subaccount>'. $RS["SUBACCOUNT"] .'</subaccount>';
 				$xml .= '<currency>'. $RS["CURRENCY"] .'</currency>';
@@ -129,7 +129,7 @@ class CreditCard extends General
 			}
 		}
 		$xml .= '</cards>';
-		
+
 		return $xml;
 	}
 }

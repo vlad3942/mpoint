@@ -170,6 +170,8 @@ msgstr @@@ Vi beklager, der opstod desværre en fejl under udsendelse af din E-Ma
 
 msgid @@@ Accept - 100 @@@
 msgstr @@@ Din kvittering er blevet afsendt @@@
+msgid @@@ Accept - 101 @@@
+msgstr @@@ Din konto er blevet oprettet @@@
 
 msgid @@@ Products - 11 @@@
 msgstr @@@ Du har ikke lagt noget i din kurv. Klik på "Læg i Kurv" for at tilføje et produkt. @@@
@@ -179,7 +181,7 @@ msgid @@@ Products - 100 @@@
 msgstr @@@ Produktet er blevet lagt i din indkøbs kurv @@@
 
 msgid @@@ Delivery - 10 @@@
-msgstr @@@ Vi kunne ikke finde nogen adresse på dit nr: {ADDRESS} @@@
+msgstr @@@ Vi kunne ikke finde nogen adresse på dit nr: {MOBILE} @@@
 msgid @@@ Delivery - 11 @@@
 msgstr @@@ Du har ikke angivet et nummer @@@
 msgid @@@ Delivery - 12 @@@
@@ -245,3 +247,58 @@ msgstr @@@ Den angiven Leveringsdato er ugyldig @@@
 
 msgid @@@ Overview - 11 @@@
 msgstr @@@ Accepter venligst handelsbetingelserne for at gå videre @@@
+
+msgid @@@ Select Payment Method - 99 @@@
+msgstr @@@ Vi kunne desværre ikke gennemfører betalingen vha. det valgte kort. Vælg venligst et andet? @@@
+
+msgid @@@ CPM Payment - 11 @@@
+msgstr @@@ Vælg venligst din konto eller et af dine gemte kort? @@@
+msgid @@@ CPM Payment - 12 @@@
+msgstr @@@ Uspecificeret konto, prøv venligst igen? @@@
+msgid @@@ CPM Payment - 13 @@@
+msgstr @@@ Den valgte konto er ugyldig, prøv venligst igen? @@@
+msgid @@@ CPM Payment - 14 @@@
+msgstr @@@ Kontoen kunne ikke findes, vælg venligst et af dine gemte kort i steddet? @@@
+msgid @@@ CPM Payment - 15 @@@
+msgstr @@@ Din konto er ikke aktiv, vælg venligst et af dine gemte kort i steddet? @@@
+msgid @@@ CPM Payment - 16 @@@
+msgstr @@@ Saldoen på din konto er for lav, vælg venligst et af dine gemte kort i steddet? @@@
+msgid @@@ CPM Payment - 21 @@@
+msgstr @@@ Vælg venligst et af dine gemte kort? @@@
+msgid @@@ CPM Payment - 22 @@@
+msgstr @@@ Det valgte kort er ugyldigt, prøv venligst igen? @@@
+msgid @@@ CPM Payment - 23 @@@
+msgstr @@@ Det valgte kort kunne ikke findes, prøv venligst igen? @@@
+msgid @@@ CPM Payment - 24 @@@
+msgstr @@@ Det valgte kort er inaktivt, vælg venligst et andet? @@@
+msgid @@@ CPM Payment - 31 @@@
+msgstr @@@ Indtast venligst dit kodeord? @@@
+msgid @@@ CPM Payment - 32 @@@
+msgstr @@@ Det indtastede kodeord er for kort @@@
+msgid @@@ CPM Payment - 33 @@@
+msgstr @@@ Det indtastede kodeord er for langt @@@
+msgid @@@ CPM Payment - 41 @@@
+msgstr @@@ Betalingen kunne ikke autoriseres med det angivne kodeord, indtast venligst dit kodeord igen? @@@
+msgid @@@ CPM Payment - 51 @@@
+msgstr @@@ Det valgte kort blev afvist, prøv venligst med et andet kort? @@@
+msgid @@@ CPM Payment - 59 @@@
+msgstr @@@ Intern Fejl - Indløser ikke tilgængelig, prøv venligst med et andet kort? @@@
+
+msgid @@@ Create Account - 11 @@@
+msgstr @@@ Indtast venligst et kodeord? @@@
+msgid @@@ Create Account - 12 @@@
+msgstr @@@ Kodeordet er for kort, min længde er {AUTH MIN LENGTH} tegn @@@
+msgid @@@ Create Account - 13 @@@
+msgstr @@@ Kodeordet er for langt, max længde er {AUTH MAX LENGTH} tegn @@@
+msgid @@@ Create Account - 14 @@@
+msgstr @@@ Kodeordet må ikke indeholde følgende tegn: " og ' @@@
+msgid @@@ Create Account - 21 @@@
+msgstr @@@ Gentag venligst kodeordet? @@@
+msgid @@@ Create Account - 22 @@@
+msgstr @@@ Det gentagede kodeord er for kort, min længde er {AUTH MIN LENGTH} tegn @@@
+msgid @@@ Create Account - 23 @@@
+msgstr @@@ Det gentagede kodeord er for langt, max længde er {AUTH MAX LENGTH} tegn @@@
+msgid @@@ Create Account - 24 @@@
+msgstr @@@ Det gentagede kodeord må ikke indeholde følgende tegn: " og ' @@@
+msgid @@@ Create Account - 31 @@@
+msgstr @@@ De to kodeord er ikke ens, prøv venligst igen? @@@

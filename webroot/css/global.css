@@ -1,0 +1,218 @@
+/* ========== General Start ========== */
+html, body
+{
+	margin: 0;
+	padding: 0;
+}
+body
+{
+	padding: 20px;
+}
+body, table
+{
+	font: 12px "Trebuchet MS", arial,sans-serif;
+}
+
+h1, h2
+{
+	padding-left: 15px;
+	color: #555;
+	text-align: center;
+	vertical-align: top;
+	white-space: nowrap;
+}
+h1
+{
+	font-size: 140%;
+}
+h2, .menu
+{
+	font-size: 120%;
+	text-align: left;
+	margin: 0;
+	padding: 5px 10px 0px 10px; 
+}
+
+label, .label
+{
+	text-align: left;
+	font-weight: bold;
+	padding-right: 5px;
+	white-space: nowrap;
+}
+
+form
+{
+	margin: 0;
+	padding: 0;
+}
+
+.hidden
+{
+	visibility: hidden;
+}
+
+.visible
+{
+	visibility: visible;
+}
+.text
+{
+	width: 150px;
+}
+.info
+{
+	font-style: italic;
+}
+
+div#main table#page
+{
+	width: 1280px;
+	height: 600px;
+}
+
+tr.mPoint_Even, div.mPoint_Even
+{
+}
+tr.mPoint_Uneven, tr.mPoint_Uneven td, div.mPoint_Uneven
+{
+	background-color: #8FBFD5;
+}
+tr.mPoint_Uneven td, tr.mPoint_Even td
+{
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+td.mPoint_Number
+{
+	text-align: right;
+	vertical-align: bottom;
+}
+/* ========== General End ========== */
+
+/* ========== Top Menu Start ========== */
+td#top-menu
+{
+	width: 1280px;
+	height: 23px;
+	background-color: #709EB5;
+}
+td#top-menu ul#info
+{
+	float: right;
+}
+td#top-menu ul, td#top-menu ul li
+{
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+td#top-menu ul li
+{
+	float: left;
+	width: 150px;
+	margin-right: 2px;
+	text-align: center;
+	font-weight: bold;
+	vertical-align: middle;
+}
+td#top-menu ul a
+{
+	display: block;
+	width: 100%;
+	height: 23px;
+	vertical-align: text-bottom;
+	text-decoration: none;
+	color: #FFF;
+	white-space: nowrap;
+}
+
+td#top-menu a.current, td#top-menu a:hover
+{
+	background-color: #5B8DA4; 
+}
+/* ========== Top Menu End ========== */
+
+/* ========== Left Menu Start ========== */
+td#left-menu
+{
+/*	width: 150px; */
+	height: 100%;
+	vertical-align: top;
+}
+
+td#left-menu ul, td#left-menu ul li
+{
+	list-style-type: none;
+	margin: 0;
+	padding: 5px 0px 0px 10px;
+}
+/* ========== Left Menu End ========== */
+
+/* ========== Page Content Start ========== */
+td#content
+{
+	width: 1000px;
+	height: 350px;
+	vertical-align: top;
+}
+
+div#messages
+{
+	height: 45px;
+	padding-top: 5px;
+	color: red;
+	font-style: italic;
+	overflow: auto;
+	text-align: center;
+}
+/* ========== Page Content End ========== */
+
+/* ========== Pages Start ========== */
+div#login, div#my-account, div#topup, div#stored-cards, div#view-transactions
+{
+	text-align: center;
+}
+div#login table td, div#my-account table td, div#view-transactions table td
+{
+	text-align: left;
+	vertical-align: top;
+}
+div#login table td#submit, div#my-account table td#submit
+{
+	text-align: right;
+}
+
+div#view-transactions table td h2, div#view-transactions td.label, div#my-account table td h2
+{
+	text-align: center;
+}
+div#view-transactions td#purchase-history, div#view-transactions td#transfer-history, div#view-transactions td#topup-history
+{
+	padding: 0px 10px 0px 10px;
+}
+div#view-transactions td#purchase-history
+{
+	border-left: solid;
+	border-right: solid;
+}
+div#view-transactions td.mPoint_Number
+{
+	text-align: right;
+}
+
+div#control
+{
+	width: 200px;
+	text-align: left;
+}
+
+object#charts, embed#charts
+{
+	margin: 0;
+	padding: 0;
+	width: 800px;
+	height: 260px;
+}
+/* ========== Pages End ========== */

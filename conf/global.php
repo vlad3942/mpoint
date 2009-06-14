@@ -151,7 +151,7 @@ $aCPM_CONN_INFO["port"] = 80;
 $aCPM_CONN_INFO["timeout"] = 20;
 $aCPM_CONN_INFO["path"] = "/callback/cpm.php";
 $aCPM_CONN_INFO["method"] = "POST";
-$aCPM_CONN_INFO["contenttype"] = "application/www-url-form-encoded";
+$aCPM_CONN_INFO["contenttype"] = "application/x-www-form-urlencoded";
 //$aCPM_CONN_INFO["username"] = "";
 //$aCPM_CONN_INFO["password"] = "";
 

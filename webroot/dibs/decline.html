@@ -11,92 +11,101 @@
  */
  
 /* ========== Language Translataion Start ========== */
-// Danish
-if (cgi.language = 'da')
+switch(cgi.language)
 {
-	title := 'Kort Info';
-	progress := 'Trin 2 af 2';
-	label_selected_card := 'Valgte Kort';
-	info := 'Udfyld venligst nedenstående felter med dine kort informationer';
-	label_card_number := 'Kort Nummer';
-	label_expiry := 'Udløbsdato';
-	expiry_month := 'mm';
-	expiry_year := 'åå';
-	label_cvc := 'CVC / CVS';
-	cvc_help := '3 tal (trykt på bagsiden af dit kort)';
-	submit := 'Gennemfør Betaling';
-	
-	// Error Messages
-	error_0 := 'Dit Kredit Kort blev afvist af PBS, prøv venligst med et andet kort?';
-	error_1 := 'Intern Kommunikations fejl, prøv venligst igen?';
-	error_2 := 'Intern Fejl: Forespørgslen indeholdt ugyldigt data ('@ auth.message @')';
-	error_3 := 'Der opstod en fejl hos PBS, prøv venligst igen?';
-	error_4 := 'Dit kredit kort er udløbet, prøv venligst med et andet kort?';
-	error_5 := 'Dit kort nummer er ugyldigt, ret venligst kort numret og prøv igen?';
-	error_6 := 'Kunne ikke trække pengene fra din konto, prøv venligst med et andet kort?';
-	error_7 := 'Intern Fejl: "orderid" skal være unikt';
-	error_8 := 'Intern Fejl: For få "amount" felter tilgængelige til at beregne split';
-	error_9 := 'Card Verification Code (CVC / CVS) mangler, indtast venligst din CVC og prøv igen?';
-	error_10 := 'Dit kort nummer er ugyligt for den valgte kort type, ret venligst kort numret og prøv igen?';
-	error_unknown := 'Ukendt Fejl';
-}
-// Swedish
-else if (cgi.language = 'sv')
-{
-	title := 'Card Info';
-	progress := 'Step 2 of 2';
-	label_selected_card := 'Selected Card';
-	info := 'Please enter your card information below';
-	label_card_number := 'Card Number';
-	label_expiry := 'Expiry date';
-	expiry_month := 'mm';
-	expiry_year := 'yy';
-	label_cvc := 'CVC / CVS';
-	cvc_help := '3 digits (printed on the back of the card)';
-	submit := 'Complete Payment';
-	
-	// Error Messages
-	error_0 := 'Credit Card declined by Clearance House, please try again?';
-	error_1 := 'Internal Communication error, please try again?';
-	error_2 := 'Internal Error: Request contained invalid parameters ('@ auth.message @')';
-	error_3 := 'An error occurred at the Clearance House, please try again?';
-	error_4 := 'Your card has expired, please try another card?';
-	error_5 := 'The entered card number is invalid, please check the card number and try again?';
-	error_6 := 'Instant Capture failed, please try with another card?';
-	error_7 := 'Internal Error: "orderid" must be unique';
-	error_8 := 'Internal Error: Too few amount-fields for split';
-	error_9 := 'Card Verification Code (CVC / CVS) is missing, please enter your CVC and try again?';
-	error_10 := 'The entered card number is invalid for the selected card type, please check the card number and try again?';
-	error_unknown := 'Unknown Error';
-}
-// British English
-else
-{
-	title := 'Card Info';
-	progress := 'Step 2 of 2';
-	label_selected_card := 'Selected Card';
-	info := 'Please enter your card information below';
-	label_card_number := 'Card Number';
-	label_expiry := 'Expiry date';
-	expiry_month := 'mm';
-	expiry_year := 'yy';
-	label_cvc := 'CVC / CVS';
-	cvc_help := '3 digits (printed on the back of the card)';
-	submit := 'Complete Payment';
-	
-	// Error Messages
-	error_0 := 'Credit Card declined by Clearance House, please try again?';
-	error_1 := 'Internal Communication error, please try again?';
-	error_2 := 'Internal Error: Request contained invalid parameters ('@ auth.message @')';
-	error_3 := 'An error occurred at the Clearance House, please try again?';
-	error_4 := 'Your card has expired, please try another card?';
-	error_5 := 'The entered card number is invalid, please check the card number and try again?';
-	error_6 := 'Instant Capture failed, please try with another card?';
-	error_7 := 'Internal Error: "orderid" must be unique';
-	error_8 := 'Internal Error: Too few amount-fields for split';
-	error_9 := 'Card Verification Code (CVC / CVS) is missing, please enter your CVC and try again?';
-	error_10 := 'The entered card number is invalid for the selected card type, please check the card number and try again?';
-	error_unknown := 'Unknown Error';
+	// Danish
+	case ('da')
+	{
+		title := 'Kort Info';
+		progress := 'Trin 2 af 2';
+		label_selected_card := 'Valgte Kort';
+		label_price := 'Pris';
+		info := 'Udfyld venligst nedenstående felter med dine kort informationer';
+		label_card_number := 'Kort Nummer';
+		label_expiry := 'Udløbsdato';
+		expiry_month := 'mm';
+		expiry_year := 'åå';
+		label_cvc := 'CVC / CVS';
+		cvc_help := '3 tal (trykt på bagsiden af dit kort)';
+		label_store := 'Gem kort informationer';
+		submit := 'Gennemfør Betaling';
+		
+		// Error Messages
+		error_0 := 'Dit Kredit Kort blev afvist af PBS, prøv venligst med et andet kort?';
+		error_1 := 'Intern Kommunikations fejl, prøv venligst igen?';
+		error_2 := 'Intern Fejl: Forespørgslen indeholdt ugyldigt data ('@ auth.message @')';
+		error_3 := 'Der opstod en fejl hos PBS, prøv venligst igen?';
+		error_4 := 'Dit kredit kort er udløbet, prøv venligst med et andet kort?';
+		error_5 := 'Dit kort nummer er ugyldigt, ret venligst kort numret og prøv igen?';
+		error_6 := 'Kunne ikke trække pengene fra din konto, prøv venligst med et andet kort?';
+		error_7 := 'Intern Fejl: "orderid" skal være unikt';
+		error_8 := 'Intern Fejl: For få "amount" felter tilgængelige til at beregne split';
+		error_9 := 'Card Verification Code (CVC / CVS) mangler, indtast venligst din CVC og prøv igen?';
+		error_10 := 'Dit kort nummer er ugyligt for den valgte kort type, ret venligst kort numret og prøv igen?';
+		error_unknown := 'Ukendt Fejl';
+	}
+	// Swedish
+	case ('sv')
+	{
+		title := 'Kortinformation';
+		progress := 'Steg 2 av 2';
+		label_selected_card := 'Valt kort';
+		label_price := 'Pris';
+		info := 'Vänligen fyll i din kortinformation nedan';
+		label_card_number := 'Kortnummer';
+		label_expiry := 'Giltighetstid';
+		expiry_month := 'mm';
+		expiry_year := 'åå';
+		label_cvc := 'CVC / CVS';
+		cvc_help := '3 siffror (tryckta på baksidan av kortet)';
+		label_store := 'Gem kortinformation';
+		submit := 'Betalningen genomförd';
+		
+		// Error Messages
+		error_0 := 'Kortköpet vägrades av banken, försök igen?';
+		error_1 := 'Kommunikationsfel, försök igen?';
+		error_2 := 'Anropet innehöll en ogiltig parameter ('@ auth.message @')';
+		error_3 := 'Ett fel uppstod i kontakt med banken, försök igen?';
+		error_4 := 'Detta kort har upphört att gälla, prova ett annat kort?';
+		error_5 := 'Kortnummret är inte giltigt, kontrollera det och försök igen';
+		error_6 := 'Kunde inte belasta kortet, försök med ett annat kort';
+		error_7 := 'Order Nr måste vara unikt';
+		error_8 := 'För få amount fält i splitten';
+		error_9 := 'CVC/CVS saknas, ange ditt CVC/CVS nummer och försök igen';
+		error_10 := 'Kortnummret är fel för denna korttyp, kontrollera och försök igen';
+		error_unknown := 'Okänt fel';
+	}
+	// British English
+	default
+	{
+		title := 'Card Info';
+		progress := 'Step 2 of 2';
+		label_selected_card := 'Selected Card';
+		label_price := 'Price';
+		info := 'Please enter your card information below';
+		label_card_number := 'Card Number';
+		label_expiry := 'Expiry date';
+		expiry_month := 'mm';
+		expiry_year := 'yy';
+		label_cvc := 'CVC / CVS';
+		cvc_help := '3 digits (printed on the back of the card)';
+		label_store := 'Save card info';
+		submit := 'Complete Payment';
+		
+		// Error Messages
+		error_0 := 'Credit Card declined by acquirer, please try again?';
+		error_1 := 'Internal Communication error, please try again?';
+		error_2 := 'Internal Error: Request contained invalid parameters ('@ auth.message @')';
+		error_3 := 'An error occurred at the Clearance House, please try again?';
+		error_4 := 'Your card has expired, please try another card?';
+		error_5 := 'The entered card number is invalid, please check the card number and try again?';
+		error_6 := 'Instant Capture failed, please try with another card?';
+		error_7 := 'Internal Error: "orderid" must be unique';
+		error_8 := 'Internal Error: Too few amount-fields for split';
+		error_9 := 'Card Verification Code (CVC / CVS) is missing, please enter your CVC and try again?';
+		error_10 := 'The entered card number is invalid for the selected card type, please check the card number and try again?';
+		error_unknown := 'Unknown Error';
+	}
 }
 /* ========== Language Translataion End ========== */
 </PML_SCRIPT>
@@ -163,6 +172,7 @@ else
 			font-weight: bold;
 			padding-right: 0.5em;
 			padding-top: 0.3em;
+			white-space: nowrap;
 		}
 		
 		.mPoint_Info
@@ -246,11 +256,16 @@ else
 			white-space: pre;
 		}
 		
-		div#delivery, table#shipping, div#email, div#cardinfo
+		div#delivery, table#shipping, div#email, div#cardinfo, div#accountinfo
 		{
 			background-color: #E0E0E0;
 			padding-left: 3px;
 			padding-bottom: 3px;
+		}
+		
+		div#price
+		{
+			 padding-bottom: 0.5em;
 		}
 		/* ========== ID Classes End ========== */
 	</style>
@@ -286,7 +301,10 @@ else
 			<input type="hidden" name="amount" PML_value="cgi.amount" />
 			<input type="hidden" name="currency" PML_value="cgi.currency" />
 			<input type="hidden" name="orderid" PML_value="cgi.orderid" />
-			<input type="hidden" name="capturenow" PML_value="cgi.capturenow" />
+			<input type="hidden" name="fullreply" value="true" />
+			<PML_IF COND="cgi.capturenow = 'true'">
+				<input type="hidden" name="capturenow" PML_value="cgi.capturenow" />
+			</PML_IF>
 			<PML_IF COND="cgi.accounts > 0">
 				<input type="hidden" name="account" PML_value="cgi.accounts" />
 			</PML_IF>			
@@ -300,6 +318,11 @@ else
 			<input type="hidden" name="language" PML_value="cgi.language" />
 			<input type="hidden" name="cardid" PML_value="cgi.cardid" />
 			<input type="hidden" name="mpointid" PML_value="cgi.mpointid" />
+			<input type="hidden" name="euaid" PML_value="cgi.euaid" />
+			<!-- Store Credit Card -->
+			<PML_IF COND="cgi.store_card > 0">
+				<input type="hidden" name="store_card" PML_value="cgi.store_card" />
+			</PML_IF>
 			<!-- Dynamic Page Data -->
 			<input type="hidden" name="clientid" PML_value="cgi.clientid" />
 			<input type="hidden" name="client" PML_value="cgi.client" />
@@ -309,7 +332,7 @@ else
 			<input type="hidden" name="email_receipt" PML_value="cgi.email_receipt" />
 			<input type="hidden" name="email_url" PML_value="cgi.email_url" />
 			<input type="hidden" name="accept_url" PML_value="cgi.accept_url" />
-			<input type="hidden" name="recipient" PML_value="cgi.recipient" />
+			<input type="hidden" name="mobile" PML_value="cgi.mobile" />
 			<input type="hidden" name="price" PML_value="cgi.price" />
 			<input type="hidden" name="card_width" PML_value="cgi.card_width" />
 			<input type="hidden" name="card_heigth" PML_value="cgi.card_heigth" />
@@ -327,7 +350,7 @@ else
 		</div>
 		<div>
 			<span class="mPoint_Label"><PML_VAL>label_selected_card</PML_VAL>:</span>
-			<table style="padding-bottom:0.5em;">
+			<table>
 			<tr>
 			<PML_SWITCH EXPR="cgi.cardid">
 				<PML_CASE VALUE="1">
@@ -370,6 +393,11 @@ else
 			</tr>
 			</table>
 		</div>
+		<!-- Price -->
+		<div id="price">
+			<span class="mPoint_Label"><PML_VAL>label_price</PML_VAL>:</span>
+			<PML_VAL>cgi.price</PML_VAL>
+		</div>
 		<!-- Credit Card Information -->
 		<div><PML_VAL>info</PML_VAL></div>
 		<div id="cardinfo">
@@ -409,7 +437,13 @@ else
 			</div>
 			<div class="mPoint_Info"><PML_VAL>cvc_help</PML_VAL></div>
 		</div>
-		<!-- Send Data-->
+		<!-- Store Credit Card -->
+		<PML_IF COND="cgi.store_card > 0">
+			<div>
+				<input type="checkbox" name="preauth" value="true" /><PML_VAL>label_store</PML_VAL>
+			</div>
+		</PML_IF>
+		<!-- Complete Payment -->
 		<div>
 			<input type="submit" PML_value="submit" class="mPoint_Button" />
 		</div>

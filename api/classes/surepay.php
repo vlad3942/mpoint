@@ -130,7 +130,7 @@ class SurePay extends General
 			$sBody = $this->getText()->_("mPoint - Embedded link Resend Indication") ."\n". $url;
 			$sBody = str_replace("{CLIENT}", $oTI->getClientConfig()->getName(), $sBody);
 			// Instantiate Message Object for holding the message data which will be sent to GoMobile
-			$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $oTI->getClientConfig()->getCountryConfig()->getID(), $oTI->getOperator(), $oTI->getClientConfig()->getCountryConfig()->getChannel(), $oTI->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getAddress(), $sBody);
+			$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $oTI->getClientConfig()->getCountryConfig()->getID(), $oTI->getOperator(), $oTI->getClientConfig()->getCountryConfig()->getChannel(), $oTI->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getMobile(), $sBody);
 			break;
 		}
 		// Send Link to Customer
@@ -152,7 +152,7 @@ class SurePay extends General
 		$sSubject = str_replace("{MPOINTID}", $this->_obj_TxnInfo->getID(), $sSubject);
 		// Construct Notification Body
 		$sBody = $this->getText()->_("SurePay Notification - Body");
-		$sBody = str_replace("{ADDRESS}", $this->_obj_TxnInfo->getAddress(), $sBody);
+		$sBody = str_replace("{MOBILE}", $this->_obj_TxnInfo->getMobile(), $sBody);
 		$sBody = str_replace("{ORDERID}", $this->_obj_TxnInfo->getOrderID(), $sBody);
 		$sBody = str_replace("{MPOINTID}", $this->_obj_TxnInfo->getID(), $sBody);
 		$sBody = str_replace("{PRICE}", General::formatAmount($this->_obj_TxnInfo->getClientConfig()->getCountryConfig(), $this->_obj_TxnInfo->getAmount() ), $sBody);

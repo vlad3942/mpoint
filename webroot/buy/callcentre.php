@@ -55,9 +55,9 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 	$iTxnID = $obj_mPoint->newTransaction(Constants::iCALL_CENTRE_PURCHASE_TYPE);
 
 	/* ========== Input Validation Start ========== */
-	$obj_Validator = new Validate($obj_ClientConfig);
+	$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 
-	if ($obj_Validator->valAddress($_POST['mobile']) != 10) { $aMsgCds[$obj_Validator->valAddress($_POST['mobile']) + 30] = $_POST['mobile']; }
+	if ($obj_Validator->valMobile($_POST['mobile']) != 10) { $aMsgCds[$obj_Validator->valMobile($_POST['mobile']) + 30] = $_POST['mobile']; }
 	if ($obj_Validator->valOperator($_POST['operator']) != 10) { $aMsgCds[$obj_Validator->valOperator($_POST['operator']) + 40] = $_POST['operator']; }
 	// Calculate Total Amount from Product Prices
 	$_POST['amount'] = 0;
@@ -65,7 +65,7 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 	{
 		$_POST['amount'] += $price;
 	}
-	if ($obj_Validator->valAmount($_POST['amount']) != 10) { $aMsgCds[$obj_Validator->valAmount($_POST['amount']) + 50] = $_POST['amount']; }
+	if ($obj_Validator->valAmount($obj_ClientConfig->getMaxAmount(), $_POST['amount']) != 10) { $aMsgCds[$obj_Validator->valAmount($obj_ClientConfig->getMaxAmount(), $_POST['amount']) + 50] = $_POST['amount']; }
 	// Validate Product Data
 	if ($obj_Validator->valProducts($_POST['prod-names'], $_POST['prod-quantities'], $_POST['prod-prices'], $_POST['prod-logos']) != 10)
 	{

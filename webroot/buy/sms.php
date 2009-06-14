@@ -3,7 +3,7 @@
  * This files contains the Controller for mPoint's SMS API.
  * The Controller will receive an MO-SMS from GoMobile, construct a payment link for mPoint and send it to the customer
  * as an MT-WAP Push or an MT-SMS depending on the Mobile Network Operator
- * 
+ *
  * @author Jonatan Evald Buus
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
