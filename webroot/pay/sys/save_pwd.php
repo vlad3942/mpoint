@@ -32,7 +32,12 @@ if (count($aMsgCds) == 0 && $_POST['pwd'] != $_POST['rpt']) { $aMsgCds[] = 31; }
 // Success: Input Valid
 if (count($aMsgCds) == 0)
 {
-	$obj_mPoint->savePassword($_SESSION['obj_TxnInfo']->getMobile(), $_POST['pwd'], $_SESSION['obj_TxnInfo']->getEMail() );
+	$iStatus = $obj_mPoint->savePassword($_SESSION['obj_TxnInfo']->getMobile(), $_POST['pwd'], $_SESSION['obj_TxnInfo']->getEMail() );
+	// New Account automatically created when Password was saved
+	if ($iStatus == 1)
+	{
+		$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
+	}
 	$aMsgCds[] = 101;
 }
 

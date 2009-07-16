@@ -27,8 +27,13 @@ require_once(sCLASS_PATH ."/cpm.php");
 // Re-Build HTTP GET super global to support arrays
 rebuild_get();
 
+// Resume original transaction after account top-up has been completed
+if (array_key_exists("resume", $_POST) === true && $_POST['resume'] == "true" && array_key_exists("obj_OrgTxnInfo", $_SESSION) === true)
+{
+	$_SESSION['obj_TxnInfo'] = $_SESSION['obj_OrgTxnInfo'];
+	unset($_SESSION['obj_OrgTxnInfo']);
+}
 // Set Defaults
-if (array_key_exists("euaid", $_POST) === true) { $_SESSION['temp']['euaid'] = $_POST['euaid']; }
 if (array_key_exists("cardtype", $_POST) === true) { $_SESSION['temp']['cardtype'] = $_POST['cardtype']; }
 
 $obj_mPoint = new CellpointMobile($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
@@ -82,11 +87,12 @@ try
 				<multiple-stored-cards><?= $_OBJ_TXT->_("Stored Cards"); ?></multiple-stored-cards>
 				<password><?= $_OBJ_TXT->_("Password"); ?></password>
 				<submit><?= $_OBJ_TXT->_("Complete Payment"); ?></submit>
+				<top-up><?= $_OBJ_TXT->_("Top-Up"); ?></top-up>
 			</labels>
 
-			<?= $obj_mPoint->getAccountInfo($_SESSION['temp']['euaid'], $_SESSION['obj_UA']); ?>
+			<?= $obj_mPoint->getAccountInfo($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_UA']); ?>
 
-			<?= $obj_mPoint->getStoredCards($_SESSION['temp']['euaid'], $_SESSION['obj_UA']); ?>
+			<?= $obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_UA']); ?>
 
 			<?= $obj_mPoint->getMessages("CPM Payment"); ?>
 

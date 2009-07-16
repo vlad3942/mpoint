@@ -4,6 +4,19 @@
 <xsl:include href="../mobile.xsl" />
 
 <xsl:template match="/root">
+	<xsl:variable name="css">
+		<xsl:choose>
+			<!-- Insufficient Funds -->
+			<xsl:when test="account/balance &lt; transaction/amount">
+				<xsl:text>passive</xsl:text>
+			</xsl:when>
+			<!-- Sufficient Funds -->
+			<xsl:otherwise>
+				<xsl:text></xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
+
 	<div id="progress" class="mPoint_Info">
 		<xsl:value-of select="labels/progress" />
 		<br /><br />
@@ -24,15 +37,15 @@
 			<!-- Price -->
 			<div id="price">
 				<span class="mPoint_Label"><xsl:value-of select="labels/price" />:</span>
-				<xsl:value-of select="//transaction/price" />
+				<xsl:value-of select="transaction/price" />
 			</div>
 			<div><xsl:value-of select="labels/info" /></div>
 			
-			
-			<xsl:if test="account/balance &gt;= transaction/amount">
+			<!-- Not Account Top-Up -->
+			<xsl:if test="transaction/@type &lt; 100 or transaction/@type &gt; 109">
 				<!-- Prepaid Account -->
 				<div id="prepaid">
-					<div class="mPoint_Label"><xsl:value-of select="labels/my-account" />:</div>
+					<div class="mPoint_Label {$css}"><xsl:value-of select="labels/my-account" />:</div>
 					<!--
 					  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
 					  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
@@ -42,24 +55,34 @@
 					<tr>
 						<td>
 							<xsl:choose>
-							<xsl:when test="count(stored-cards/card) =  0">
-								<input type="hidden" name="cardid" value="-1" />
+							<!-- Insufficient Funds -->
+							<xsl:when test="account/balance &lt; transaction/amount">
+								<a id="top-up" href="{func:constLink('/shop/topup.php?msg=1') }"><xsl:value-of select="labels/top-up" /></a>
 							</xsl:when>
-							<xsl:when test="count(session/cardid) = 0 or session/cardid = -1">
-								<input type="radio" name="cardid" value="-1" checked="true" />
-							</xsl:when>
+							<!-- Sufficient Funds -->
 							<xsl:otherwise>
-								<input type="radio" name="cardid" value="-1" />
+								<xsl:choose>
+								<xsl:when test="count(stored-cards/card) =  0">
+									<input type="hidden" name="cardid" value="-1" />
+								</xsl:when>
+								<xsl:when test="count(session/cardid) = 0 or session/cardid = -1">
+									<input type="radio" name="cardid" value="-1" checked="true" />
+								</xsl:when>
+								<xsl:otherwise>
+									<input type="radio" name="cardid" value="-1" />
+								</xsl:otherwise>
+								</xsl:choose>
 							</xsl:otherwise>
 							</xsl:choose>
 						</td>
+	
 						<td><img src="{/root/system/protocol}://{/root/system/host}/img/{account/logo-width}x{account/logo-height}_card_11_{/root/system/session/@id}.png" width="{account/logo-width}" height="{account/logo-height}" alt="" /></td>
-						<td colspan="3"><xsl:value-of select="labels/balance" />: <xsl:value-of select="account/funds" /></td>
+						<td colspan="3" class="{$css}"><xsl:value-of select="labels/balance" />: <xsl:value-of select="account/funds" /></td>
 					</tr>
 					</table>
 				</div>
 			</xsl:if>
-			<!-- Credit Card Information -->
+			<!-- Stored Credit Cards -->
 			<div id="cardinfo">
 				<xsl:choose>
 				<xsl:when test="count(stored-cards/card) = 1">
@@ -110,7 +133,7 @@
 			</xsl:choose>
 		
 		</td>
-		<td><img src="{/root/system/protocol}://{/root/system/host}/img/{logo-width}x{logo-height}_card_{@type}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
+		<td><img src="{/root/system/protocol}://{/root/system/host}/img/{logo-width}x{logo-height}_card_{type/@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="{type}" /></td>
 		<td colspan="3"><xsl:value-of select="mask" /></td>
 		<td class="mPoint_Info">(<xsl:value-of select="expiry" />)</td>
 	</tr>

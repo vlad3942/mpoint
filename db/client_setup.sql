@@ -26,7 +26,7 @@ Reklamationsret
 DU HAR 2 ÅRS REKLAMATIONSRET. SÅFREMT DU MODTAGER EN FORKERT VARE I FORHOLD TIL DIN BESTILLING ELLER EN BESKADIGET VARE, SKAL DU REKLAMERE INDEN EN RIMELIG TID, EFTER DU HAR KONSTATERET MANGLEN. REKLAMERER DU INDEN 2 MÅNEDER, ANSES REKLAMATIONEN FOR VÆRENDE RETTIDIG. REKLAMATIONER KAN MEDDELES PÅ TELEFON 38150510 ELLER PER E-MAIL: INFO@SAXO.COM. DU KAN UDNYTTE DIN REKLAMATIONSRET VED AT SENDE VAREN RETUR ELLER MØDE OP PÅ VORES FYSISKE ADRESSE OG REKLAMERE DER. VI BETALER DIN UDGIFT TIL FORSENDELSE, HVIS VI HAR LEVERET EN FORKERT ELLER BESKADIGET VARE. VI FORBEHOLDER OS RET TIL AT AFHJÆLPE EN MANGEL/ERSTATTE MED EN UBESKADIGET VARE FREMFOR AT BETALE KØBESUMMEN TILBAGE.' WHERE id = 10001;
 
 INSERT INTO Client.Client_Tbl (countryid, flowid, name, username, passwd, maxamount, lang, logourl, cssurl, callbackurl, accepturl, cancelurl, terms) VALUES (101, 1, 'mBiljett', 'CPMDemo', 'DEMOisNO_2', 1000000, 'en', 'http://demo.ois-inc.com/mpoint/_test/mbiljett.jpg', 'http://mpoint.cellpointmobile.com/css/mobile.css', '', '', '', 'mBiljett Terms & Conditions');
-INSERT INTO Client.Account_Tbl (clientid, name, address) SELECT Max(id), 'Default', '' FROM Client.Client_Tbl;
+INSERT INTO Client.Account_Tbl (clientid, name, mobile) SELECT Max(id), 'Default', '' FROM Client.Client_Tbl;
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) SELECT Max(Cl.id), PC.cardid, PC.pspid FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid > 0 AND PC.pspid = 2 GROUP BY PC.cardid, PC.pspid;
 INSERT INTO Client.Keyword_Tbl (clientid, name, standard) SELECT Max(id), 'MBILJETT', true FROM Client.Client_Tbl;
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name) SELECT Max(id), 2, '2133334' FROM Client.Client_Tbl;

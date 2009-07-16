@@ -111,7 +111,7 @@ class CreditCard extends EndUserAccount
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 
-		$xml = '<cards accountid="'. $this->getAccountID($this->_obj_TxnInfo->getMobile() ) .'">';
+		$xml = '<cards accountid="'. $this->_obj_TxnInfo->getAccountID() .'">';
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
 			// Transaction instantiated via SMS or "Card" is NOT Premium SMS

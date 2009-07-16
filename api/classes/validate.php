@@ -89,7 +89,7 @@ class Validate
 			// Use Account ID
 			else
 			{
-				$sql = " AND Acc.id = ". $acc;
+				$sql .= " AND Acc.id = ". $acc;
 			}
 			$RS = $oDB->getName($sql);
 

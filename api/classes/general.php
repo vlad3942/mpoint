@@ -414,7 +414,9 @@ class General
 					mobile = ". floatval($oTI->getMobile() ) .", operatorid = ". $oTI->getOperator() .", email = '". $this->getDBConn()->escStr($oTI->getEMail() ) ."',
 					logourl = '". $this->getDBConn()->escStr($oTI->getLogoURL() ) ."', cssurl = '". $this->getDBConn()->escStr($oTI->getCSSURL() ) ."',
 					accepturl = '". $this->getDBConn()->escStr($oTI->getAcceptURL() ) ."', cancelurl = '". $this->getDBConn()->escStr($oTI->getCancelURL() ) ."',
-					callbackurl = '". $this->getDBConn()->escStr($oTI->getCallbackURL() ) ."', gomobileid = ". $oTI->getGoMobileID() .", auto_capture = ". General::bool2xml($oTI->useAutoCapture() ) ."
+					callbackurl = '". $this->getDBConn()->escStr($oTI->getCallbackURL() ) ."', gomobileid = ". $oTI->getGoMobileID() .", auto_capture = ". General::bool2xml($oTI->useAutoCapture() );
+		if ($oTI->getAccountID() > 0) { $sql .= ", euaid = ". $oTI->getAccountID(); } 
+		$sql .= "
 				WHERE id = ". $oTI->getID();
 //		echo $sql ."\n";
 		// Error: Unable to update Transaction
@@ -672,7 +674,7 @@ class General
 	 */
 	public function getCountries()
 	{
-		$sql = "SELECT id, name, currency, minmob, maxmob, channel, priceformat, decimals, als, doi
+		$sql = "SELECT id, name, currency, maxbalance, minmob, maxmob, channel, priceformat, decimals, als, doi
 				FROM System.Country_Tbl
 				WHERE enabled = true
 				ORDER BY name ASC";
@@ -685,6 +687,7 @@ class General
 			$xml .= '<item id="'. $RS["ID"] .'">';
 			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';
 			$xml .= '<currency>'. $RS["CURRENCY"] .'</currency>';
+			$xml .= '<maxbalance>'. $RS["MAXBALANCE"] .'</maxbalance>';
 			$xml .= '<minmobile>'. $RS["MINMOB"] .'</minmobile>';
 			$xml .= '<maxmobile>'. $RS["MAXMOB"] .'</maxmobile>';
 			$xml .= '<channel>'. $RS["CHANNEL"] .'</channel>';
@@ -733,6 +736,26 @@ class General
 		else { $RS["COUNTRYID"] = -1; }
 
 		return $RS["COUNTRYID"];
+	}
+	
+	/**
+	 * Logs the custom variables provided by the Client for easy future retrieval.
+	 * Custom variables are defined as an entry in the input arrays which key starts with var_
+	 * 
+	 * @see 	Constants::iCLIENT_VARS_STATE
+	 * @see 	General::newMessage()
+	 *
+	 * @param 	integer $txnid 	integer $txnid 	Unique ID of the Transaction the Message should be logged for
+	 * @param 	array $aInput 	Array of Input as received from the Client.
+	 */
+	public function logClientVars($txnid, array &$aInput)
+	{
+		$aClientVars = array();
+		foreach ($aInput as $key => $val)
+		{
+			if (substr($key, 0, 4) == "var_") { $aClientVars[$key] = $val; }
+		}
+		if (count($aClientVars) > 0) { $this->newMessage($txnid, Constants::iCLIENT_VARS_STATE, serialize($aClientVars) ); }
 	}
 }
 ?>

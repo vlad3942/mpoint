@@ -22,7 +22,7 @@ switch(cgi.language)
 		mpoint := 'Tak fordi du brugte';
 		status := 'Din betaling er blevet gennemført';
 		label_mpoint_id := 'mPoint ID';
-		label_order_no := 'Order Nr';
+		label_order_no := 'Ordre Nr';
 		label_price := 'Pris';
 		label_password := 'Kodeord';
 		label_repeat := 'Gentag kodeord';
@@ -30,7 +30,8 @@ switch(cgi.language)
 		sms_receipt := 'Ovenstående kvittering er også blevet sendt via SMS til: MOBILE';
 		email_receipt := 'Send kvittering via E-Mail';
 		save := 'Gem';
-		submit := 'Fortsæt tilbage til Sælgers site >>';
+		continue := 'Fortsæt tilbage til Sælgers site >>';
+		resume := 'Genoptag Betaling >>';
 	}
 	// Swedish
 	case ('sv')
@@ -48,7 +49,8 @@ switch(cgi.language)
 		sms_receipt := 'Denna information har även skickats till dig via ett SMS till nummer: MOBILE';
 		email_receipt := 'Skicka kvitto via epost';
 		save := 'Gem';
-		submit := 'Återvänd till försäljarens webbplats >>';
+		continue := 'Återvänd till försäljarens webbplats >>';
+		resume := 'Resume Payment >>';
 	}
 	// British English
 	default
@@ -66,7 +68,8 @@ switch(cgi.language)
 		sms_receipt := 'These details have also been sent to you via SMS to number: MOBILE';
 		email_receipt := 'Send receipt via E-Mail';
 		save := 'Save';
-		submit := 'Continue back to Merchant Site >>';
+		continue := 'Continue back to Merchant Site >>';
+		resume := 'Resume Payment >>';
 	}
 }
 /* ========== Language Translataion End ========== */
@@ -239,6 +242,7 @@ switch(cgi.language)
 	<div id="logo">
 		<img src="images/client_logo.jpg" PML_width="cgi.width" PML_height="cgi.height" PML_alt="'- '@cgi.client@' -'" />
 	</div>
+	<!-- Create New Account -->
 	<PML_IF COND="cgi.preauth = 'true'">
 		<div id="my-account">
 			<form PML_action="'http://mpoint.cellpointmobile.com/pay/sys/save_pwd.php?PHPSESSID='@cgi.PHPSESSID" method="post">
@@ -262,6 +266,7 @@ switch(cgi.language)
 		</div>
 	</PML_IF>
 	<PML_ELSE>
+		<!-- Payment Completed -->
 		<h1>
 			<PML_VAL>mpoint</PML_VAL><br />
 			<img src="images/mpoint_logo.jpg" PML_width="cgi.mpoint_width" PML_height="cgi.mpoint_height" alt="- mPoint -" />
@@ -309,38 +314,51 @@ switch(cgi.language)
 			</div>
 		</PML_IF>
 		
-		<!-- Client has specified a return URL for successful payments -->
-		<PML_IF COND="string.length(cgi.accept_url) > 0">
+		<!-- Current transaction is an Account Top-Up and a previous transaction is in progress -->
+		<PML_IF COND="cgi.org_mpointid > 0">
 			<div>
-				<form PML_action="cgi.accept_url" method="post">
+				<form PML_action="'http://mpoint.cellpointmobile.com/cpm/payment.php?PHPSESSID='@ cgi.PHPSESSID @'&msg=1'" method="post">
 					<p>
-					<!-- Standard mPoint Variables -->
-					<input type="hidden" name="mpoint-id" PML_value="cgi.mpointid" />
-					<input type="hidden" name="orderid" PML_value="cgi.orderid" />
-					<input type="hidden" name="status" value="2000" />
-					<input type="hidden" name="amount" PML_value="cgi.amount" />
-					<input type="hidden" name="currency" PML_value="cgi.currency" />
-					<input type="hidden" name="mobile" PML_value="cgi.mobile" />
-					<input type="hidden" name="operator" PML_value="cgi.operator" />
-					<!-- Custom Client Variables -->
-					<PML_SCRIPT>
-					// Transfer Custom Variables
-					foreach(i ; cgi)
-					{
-						if (string.substring(cgi[i], 0, 4) = 'var_')
-						{
-							out.put('<input type="hidden" name="'@ cgi[i] @'" value="'@ cgi[i+1] @'" />');
-						}
-					}
-					</PML_SCRIPT>
+						<input type="hidden" name="resume" value="true" />
 					</p>
-					
 					<p>
-						<input type="submit" PML_value="submit" class="mPoint_Button" />
+						<input type="submit" PML_value="resume" class="mPoint_Button" />
 					</p>
 				</form>
 			</div>
 		</PML_IF>
+		<PML_ELSIF COND="string.length(cgi.accept_url) > 0">
+			<!-- Client has specified a return URL for successful payments -->
+			<div>
+				<form PML_action="cgi.accept_url" method="post">
+					<p>
+						<!-- Standard mPoint Variables -->
+						<input type="hidden" name="mpoint-id" PML_value="cgi.mpointid" />
+						<input type="hidden" name="orderid" PML_value="cgi.orderid" />
+						<input type="hidden" name="status" value="2000" />
+						<input type="hidden" name="amount" PML_value="cgi.amount" />
+						<input type="hidden" name="currency" PML_value="cgi.currency" />
+						<input type="hidden" name="mobile" PML_value="cgi.mobile" />
+						<input type="hidden" name="operator" PML_value="cgi.operator" />
+						<!-- Custom Client Variables -->
+						<PML_SCRIPT>
+						// Transfer Custom Variables
+						foreach(i ; cgi)
+						{
+							if (string.substring(cgi[i], 0, 4) = 'var_')
+							{
+								out.put('<input type="hidden" name="'@ cgi[i] @'" value="'@ cgi[i+1] @'" />');
+							}
+						}
+						</PML_SCRIPT>
+					</p>
+					
+					<p>
+						<input type="submit" PML_value="continue" class="mPoint_Button" />
+					</p>
+				</form>
+			</div>
+		</PML_ELSIF>
 	</PML_ELSE>
 </body>
 </html>

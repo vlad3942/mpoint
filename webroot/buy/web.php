@@ -1,6 +1,6 @@
 <?php
 /**
- * This files contains the both Controller for mPoint's Mobile Web API.
+ * This files contains the Controller for mPoint's Mobile Web API.
  * The Controller will ensure that all input from a Mobile Internet Site or Mobile Application is validated and a new payment transaction is started.
  * Finally, assuming the Client Input is valid, the Controller will redirect the Customer to one of the following flow start pages:
  * 	- Payment Flow: /pay/card.php
@@ -12,7 +12,7 @@
  * @link http://www.cellpointmobile.com
  * @package Web
  * @subpackage Buy
- * @version 1.0
+ * @version 1.10
  */
 
 // Require Global Include File
@@ -25,6 +25,9 @@ require_once(sAPI_CLASS_PATH ."/gomobile.php");
 require_once(sCLASS_PATH ."/validate.php");
 // Require Business logic for the Mobile Web module
 require_once(sCLASS_PATH ."/mobile_web.php");
+
+// Require Business logic for the End-User Account Component
+require_once(sCLASS_PATH ."/enduser_account.php");
 
 $aMsgCds = array();
 
@@ -77,8 +80,14 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			$_REQUEST['typeid'] = Constants::iWEB_PURCHASE_TYPE;
 			$_REQUEST['gomobileid'] = -1;
 			$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, var_export($_REQUEST, true) );
-			// Update Transaction Log
+
 			$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $_REQUEST);
+			// Associate End-User Account (if exists) with Transaction
+			$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getMobile() );
+			if ($iAccountID == -1 ) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getEMail() ); }
+			$_SESSION['obj_TxnInfo']->setAccountID($iAccountID);
+			
+			// Update Transaction Log
 			$obj_mPoint->logTransaction($_SESSION['obj_TxnInfo']);
 			// Log additional data
 			$obj_mPoint->logClientVars($_REQUEST);

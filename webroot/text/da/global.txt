@@ -1,42 +1,46 @@
-#: /webroot/cpm/payment.php:67
+#: /webroot/cpm/payment.php:72
 msgid @@@ Pay using Account @@@
 msgstr @@@ Betal med Konto @@@
 
-#: /webroot/cpm/payment.php:76
+#: /webroot/cpm/payment.php:81
 msgid @@@ Step 2 of 2 @@@
 msgstr @@@ Trin 2 af 2 @@@
 
-#: /webroot/cpm/payment.php:77
+#: /webroot/cpm/payment.php:82
 msgid @@@ Price @@@
 msgstr @@@ Pris @@@
 
-#: /webroot/cpm/payment.php:78
+#: /webroot/cpm/payment.php:83
 msgid @@@ Account - Info @@@
 msgstr @@@ Vælg venligst en betalingsmetode og bekræft betalingen ved at indtaste dit kodeord @@@
 
-#: /webroot/cpm/payment.php:79
+#: /webroot/cpm/payment.php:84
 msgid @@@ My Account @@@
 msgstr @@@ Min Konto @@@
 
-#: /webroot/cpm/payment.php:80
+#: /webroot/cpm/payment.php:85
 msgid @@@ Balance @@@
 msgstr @@@ Saldo @@@
 
-#: /webroot/cpm/payment.php:81
+#: /webroot/cpm/payment.php:86
 msgid @@@ Stored Card @@@
 msgstr @@@ Gemt Kort @@@
 
-#: /webroot/cpm/payment.php:82
+#: /webroot/cpm/payment.php:87
 msgid @@@ Stored Cards @@@
 msgstr @@@ Gemte Kort @@@
 
-#: /webroot/cpm/payment.php:83
+#: /webroot/cpm/payment.php:88
 msgid @@@ Password @@@
 msgstr @@@ Kodeord @@@
 
-#: /webroot/cpm/payment.php:84
+#: /webroot/cpm/payment.php:89
 msgid @@@ Complete Payment @@@
 msgstr @@@ Gennemfør Betaling @@@
+
+#: /webroot/cpm/payment.php:90
+msgid @@@ Top-Up @@@
+msgstr @@@ Top-Up @@@
 
 #: /webroot/default.php:19
 msgid @@@ mPoint @@@
@@ -194,6 +198,22 @@ msgstr @@@ Preferred @@@
 msgid @@@ Other @@@
 msgstr @@@ Other @@@
 
+#: /webroot/home/my_account.php:58
+msgid @@@ Edit @@@
+msgstr @@@ Edit @@@
+
+#: /webroot/home/sys/save_info.php:94
+msgid @@@ save - code: 100 @@@
+msgstr @@@ save - code: 100 @@@
+
+#: /webroot/home/sys/save_info.php:100
+msgid @@@ auth - code: 91 @@@
+msgstr @@@ auth - code: 91 @@@
+
+#: /webroot/home/sys/save_info.php:105
+msgid @@@ internal - code: 2 @@@
+msgstr @@@ internal - code: 2 @@@
+
 #: /webroot/home/topmenu.php:38
 msgid @@@ My Account @@@
 msgstr @@@ My Account @@@
@@ -348,7 +368,7 @@ msgstr @@@ mPoint ID @@@
 
 #: /webroot/pay/accept.php:44
 msgid @@@ Order No @@@
-msgstr @@@ Order Nr @@@
+msgstr @@@ Ordre Nr @@@
 
 #: /webroot/pay/accept.php:45
 msgid @@@ Price @@@
@@ -365,6 +385,10 @@ msgstr @@@ Send kvittering via E-Mail @@@
 #: /webroot/pay/accept.php:48
 msgid @@@ Continue >> @@@
 msgstr @@@ Fortsæt tilbage til Sælgers site >> @@@
+
+#: /webroot/pay/accept.php:49
+msgid @@@ Resume Payment >> @@@
+msgstr @@@ Resume Payment >> @@@
 
 #: /webroot/pay/card.php:34
 msgid @@@ Select Payment Method @@@
@@ -498,6 +522,22 @@ msgstr @@@ Levering @@@
 msgid @@@ Shipping - Info @@@
 msgstr @@@ Vælg venligst leverings metode @@@
 
+#: /webroot/shop/topup.php:29
+msgid @@@ Top-Up Account @@@
+msgstr @@@ Top-Up Account @@@
+
+#: /webroot/shop/topup.php:39
+msgid @@@ Account Top-Up - Info @@@
+msgstr @@@ Account Top-Up - Info @@@
+
+#: /webroot/shop/topup.php:40
+msgid @@@ Amount @@@
+msgstr @@@ Amount @@@
+
+#: /webroot/shop/topup.php:41
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
 #: /webroot/terms.php:29
 msgid @@@ Terms & Conditions @@@
 msgstr @@@ Handelsbetingelser @@@
@@ -532,11 +572,18 @@ Sælger: {CLIENT}
 Ordre Nr: {ORDERID}
 Pris: {PRICE} @@@
 
-#: /api/classes/general.php:602
+#: /api/classes/enduser_account.php:387
+msgid @@@ mPoint - Account Info @@@
+msgstr @@@ Din konto er blevet oprettet og er nu klar til brug.
+Husk, du kan altid administrere kontoen på {URL}.
+MVH.
+{CLIENT} @@@
+
+#: /api/classes/general.php:604
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ Velkommen til {CLIENT}, aktiver venligst nedenstående link @@@
 
-#: /api/classes/general.php:608
+#: /api/classes/general.php:610
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Velkommen til {CLIENT} @@@
 

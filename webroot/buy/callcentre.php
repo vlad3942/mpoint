@@ -8,7 +8,7 @@
  * @link http://www.cellpointmobile.com
  * @package CallCentre
  * @subpackage Buy
- * @version 1.0
+ * @version 1.10
  */
 
 // Require Global Include File
@@ -25,6 +25,9 @@ require_once(sCLASS_PATH ."/mobile_web.php");
 require_once(sCLASS_PATH ."/sms_purchase.php");
 // Require Business logic for the Call Centre module
 require_once(sCLASS_PATH ."/callcentre.php");
+
+// Require Business logic for the End-User Account Component
+require_once(sCLASS_PATH ."/enduser_account.php");
 
 $aMsgCds = array();
 
@@ -97,8 +100,14 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 			$_POST['typeid'] = Constants::iCALL_CENTRE_PURCHASE_TYPE;
 			$_POST['gomobileid'] = -1;
 			$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, var_export($_POST, true) );
-			// Update Transaction Log
+
 			$obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $_POST);
+			// Associate End-User Account (if exists) with Transaction
+			$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getMobile() );
+			if ($iAccountID == -1 ) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getEMail() ); }
+			$obj_TxnInfo->setAccountID($iAccountID);
+			
+			// Update Transaction Log
 			$obj_mPoint->logTransaction($obj_TxnInfo);
 			// Log additional data
 			$obj_mPoint->logProducts($_POST['prod-names'], $_POST['prod-quantities'], $_POST['prod-prices'], $_POST['prod-logos']);

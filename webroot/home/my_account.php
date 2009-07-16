@@ -54,6 +54,8 @@ else
 				<submit><?= $_OBJ_TXT->_("Save"); ?></submit>
 				<preferred><?= $_OBJ_TXT->_("Preferred"); ?></preferred>
 				<other><?= $_OBJ_TXT->_("Other"); ?></other>
+				
+				<edit><?= $_OBJ_TXT->_("Edit"); ?></edit>
 			</labels>
 
 			<?= $obj_mPoint->getAccountInfo($_SESSION['obj_Info']->getInfo("accountid") ); ?>

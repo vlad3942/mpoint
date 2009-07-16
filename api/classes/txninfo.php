@@ -139,6 +139,12 @@ class TxnInfo
 	 * @var integer
 	 */
 	private $_iGoMobileID;
+	/**
+	 * Unique ID for the End-User's prepaid account that has been associated with this Transaction
+	 *
+	 * @var integer
+	 */
+	private $_iAccountID = -1;
 
 	/**
 	 * Default Constructor
@@ -159,9 +165,10 @@ class TxnInfo
 	 * @param 	string $l 			The language that all payment pages should be rendered in by default for the Client
 	 * @param 	integer $m 			The Client Mode in which the Transaction should be Processed
 	 * @param 	boolean $ac			Boolean Flag indicating whether Auto Capture should be used for the transaction
+	 * @param 	integer $accid 		Unique ID for the End-User's prepaid account that the transaction should be associated with
 	 * @param 	integer $gmid 		GoMobile's Unique ID for the MO-SMS that was used to start the payment transaction. Defaults to -1.
 	 */
-	public function __construct($id, $tid, ClientConfig &$oCC, $a, $orid, $addr, $oid, $email, $lurl, $cssurl, $aurl, $curl, $cburl, $l, $m, $ac, $gmid=-1)
+	public function __construct($id, $tid, ClientConfig &$oCC, $a, $orid, $addr, $oid, $email, $lurl, $cssurl, $aurl, $curl, $cburl, $l, $m, $ac, $accid=-1, $gmid=-1)
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -182,6 +189,8 @@ class TxnInfo
 		$this->_sLanguage = trim($l);
 		$this->_iMode = (integer) $m;
 		$this->_bAutoCapture = (bool) $ac;
+		
+		$this->_iAccountID = (integer) $accid;
 		$this->_iGoMobileID = (integer) $gmid;
 	}
 
@@ -300,6 +309,12 @@ class TxnInfo
 	 * @return 	integer
 	 */
 	public function getGoMobileID() { return $this->_iGoMobileID; }
+	/**
+	 * Returns the associated End-User prepaid account associated with the Transaction.
+	 *
+	 * @return 	integer		Unique ID for the End-User's prepaid account or -1 if no account has been associated
+	 */
+	public function getAccountID() { return $this->_iAccountID; }
 
 	/**
 	 * Updates the information for the Transaction with the Customer's E-Mail Address where a receipt is sent to upon successful completion of the payment transaction
@@ -307,6 +322,12 @@ class TxnInfo
 	 * @param 	string $email 	Customer's E-Mail Address where a receipt is sent to upon successful completion of the payment transaction
 	 */
 	public function setEMail($email) { $this->_sEMail = $email; }
+	/**
+	 * Associates an End-User's prepaid account with the Transaction.
+	 *
+	 * @param 	integer $id 	Unique ID for the End-User's prepaid account
+	 */
+	public function setAccountID($id) { $this->_iAccountID = $id; }
 
 	/**
 	 * Converts the data object into XML.
@@ -421,16 +442,19 @@ class TxnInfo
 			if (array_key_exists("mode", $misc) === false) { $misc["mode"] = $obj->getMode(); }
 			if (array_key_exists("auto-capture", $misc) === false) { $misc["auto-capture"] = $obj->useAutoCapture(); }
 			if (array_key_exists("gomobileid", $misc) === false) { $misc["gomobileid"] = $obj->getGoMobileID(); }
+			if (array_key_exists("accountid", $misc) === false) { $misc["accountid"] = $obj->getAccountID(); }
 
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client_config"], $misc["amount"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["gomobileid"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client_config"], $misc["amount"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], $misc["gomobileid"]);
 			break;
 		case ($obj instanceof ClientConfig):	// Instantiate from array of Client Input
 			if (array_key_exists("email", $misc) === false) { $misc["email"] = ""; }
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["amount"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["gomobileid"]);
+			if (array_key_exists("accountid", $misc) === false) { $misc["accountid"] = -1; }
+			
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["amount"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], $misc["gomobileid"]);
 			break;
 		case ($obj instanceof RDB):				// Instantiate from Transaction Log
 			$sql = "SELECT id, typeid, amount, orderid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, mode, auto_capture, gomobileid,
-						clientid, accountid, keywordid
+						clientid, accountid, keywordid, COALESCE(euaid, -1) AS euaid
 					FROM Log.Transaction_Tbl
 					WHERE id = ". intval($id);
 			if (is_array($misc) === true) { $sql .= " AND date_trunc('second', created) = '". $obj->escStr($misc[0]) ."'"; }
@@ -442,8 +466,7 @@ class TxnInfo
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($obj, $RS["CLIENTID"], $RS["ACCOUNTID"], $RS["KEYWORDID"]);
 
-				$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $RS["AMOUNT"], $RS["ORDERID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["GOMOBILEID"]);
-				$obj_TxnInfo->setEMail($RS["EMAIL"]);
+				$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $RS["AMOUNT"], $RS["ORDERID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["GOMOBILEID"]);
 			}
 			// Error: Transaction not found
 			else { throw new TxnInfoException("Transaction with ID: ". $id ." not found using creation timestamp: ". $misc[0], 1001); }

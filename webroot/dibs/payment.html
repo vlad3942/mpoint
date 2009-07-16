@@ -281,7 +281,7 @@ switch(cgi.language)
 			</PML_IF>
 			<PML_IF COND="cgi.accounts > 0">
 				<input type="hidden" name="account" PML_value="cgi.accounts" />
-			</PML_IF>			
+			</PML_IF>
 			<input type="hidden" name="lang" PML_value="cgi.lang" />
 			<input type="hidden" name="paytype" PML_value="cgi.paytype" />
 			<!-- mPoint Required Data -->
@@ -292,6 +292,10 @@ switch(cgi.language)
 			<input type="hidden" name="language" PML_value="cgi.language" />
 			<input type="hidden" name="cardid" PML_value="cgi.cardid" />
 			<input type="hidden" name="mpointid" PML_value="cgi.mpointid" />
+			<!-- Current transaction is an Account Top-Up and a previous transaction is in progress -->
+			<PML_IF COND="cgi.org_mpointid > 0">
+				<input type="hidden" name="org_mpointid" PML_value="cgi.org_mpointid" />
+			</PML_IF>
 			<input type="hidden" name="euaid" PML_value="cgi.euaid" />
 			<!-- Store Credit Card -->
 			<PML_IF COND="cgi.store_card > 0">

@@ -57,23 +57,38 @@
 		</div>
 	</xsl:if>
 	
+	<xsl:choose>
+	<!-- Current transaction is an Account Top-Up and a previous transaction is in progress -->
+	<xsl:when test="original-transaction-id &gt; 0">
+		<div>
+			<form action="{func:constLink('/cpm/payment.php?msg=1')}" method="post">
+				<p>
+					<input type="hidden" name="resume" value="true" />
+				</p>
+				
+				<p>
+					<input type="submit" value="{labels/resume}" class="mPoint_Button" />
+				</p>
+			</form>
+		</div>
+	</xsl:when>
 	<!-- Client has specified a return URL for successful payments -->
-	<xsl:if test="string-length(transaction/accept-url) &gt; 0">
+	<xsl:when test="string-length(transaction/accept-url) &gt; 0">
 		<div>
 			<form action="{func:constLink(transaction/accept-url)}" method="post">
 				<p>
-				<!-- Standard mPoint Variables -->
-				<input type="hidden" name="mpoint-id" value="{transaction/@id}" />
-				<input type="hidden" name="orderid" value="{transaction/orderid}" />
-				<input type="hidden" name="status" value="2000" />
-				<input type="hidden" name="amount" value="{transaction/amount}" />
-				<input type="hidden" name="currency" value="{transaction/amount/@currency}" />
-				<input type="hidden" name="mobile" value="{transaction/mobile}" />
-				<input type="hidden" name="operator" value="{transaction/operator}" />
-				<!-- Custom Client Variables -->
-				<xsl:for-each select="client-vars/item">
-					<input type="hidden" name="{name}" value="{value}" />
-				</xsl:for-each>
+					<!-- Standard mPoint Variables -->
+					<input type="hidden" name="mpoint-id" value="{transaction/@id}" />
+					<input type="hidden" name="orderid" value="{transaction/orderid}" />
+					<input type="hidden" name="status" value="2000" />
+					<input type="hidden" name="amount" value="{transaction/amount}" />
+					<input type="hidden" name="currency" value="{transaction/amount/@currency}" />
+					<input type="hidden" name="mobile" value="{transaction/mobile}" />
+					<input type="hidden" name="operator" value="{transaction/operator}" />
+					<!-- Custom Client Variables -->
+					<xsl:for-each select="client-vars/item">
+						<input type="hidden" name="{name}" value="{value}" />
+					</xsl:for-each>
 				</p>
 				
 				<p>
@@ -81,7 +96,8 @@
 				</p>
 			</form>
 		</div>
-	</xsl:if>
+	</xsl:when>
+	</xsl:choose>
 </xsl:template>
 
 </xsl:stylesheet>

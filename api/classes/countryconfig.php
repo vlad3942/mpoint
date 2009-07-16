@@ -25,6 +25,12 @@ class CountryConfig extends BasicConfig
 	 */
 	private $_sCurrency;
 	/**
+	 * Max balance that a prepaid end-user account may contain in order to comply with the local regulations
+	 *
+	 * @var integer
+	 */
+	private $_iMaxBalance;
+	/**
 	 * Min value a valid Mobile Number can have in the Country
 	 *
 	 * @var string
@@ -75,6 +81,7 @@ class CountryConfig extends BasicConfig
 	 * @param 	integer $id 		Unique ID for the Country, this MUST match the GoMobile's ID for the Country
 	 * @param 	string $name 		mPoint's Name for the Country
 	 * @param 	string $currency 	Currency used in the Country
+	 * @param 	integer $maxbal 	Max balance, in country's smallest currency, that a prepaid end-user account may contain 
 	 * @param 	string $minmob 		Min value a valid Mobile Number can have in the Country
 	 * @param 	string $maxmob 		Max value a valid Mobile Number can have in the Country
 	 * @param 	string $ch 			GoMobile channel used for communicating with the customers in the Country
@@ -83,11 +90,12 @@ class CountryConfig extends BasicConfig
 	 * @param 	boolean $als 		Boolean Flag indicating whether an Address Lookup Service is available in the Country
 	 * @param 	boolean $doi 		Boolean Flag indicating whether an Operators in the Country required Double Opt-In for payments made via Premium SMS
 	 */
-	public function __construct($id, $name, $currency, $minmob, $maxmob, $ch, $pf, $dec, $als, $doi)
+	public function __construct($id, $name, $currency, $maxbal, $minmob, $maxmob, $ch, $pf, $dec, $als, $doi)
 	{
 		parent::__construct($id, $name);
 		
 		$this->_sCurrency = trim($currency);
+		$this->_iMaxBalance = (integer) $maxbal;
 		$this->_sMinMobile = trim($minmob);
 		$this->_sMaxMobile = trim($maxmob);
 		$this->_sChannel = trim($ch);
@@ -103,6 +111,12 @@ class CountryConfig extends BasicConfig
 	 * @return 	string
 	 */
 	public function getCurrency() { return $this->_sCurrency; }
+	/**
+	 * Returns the Max balance that a prepaid end-user account may contain in order to comply with the local regulations
+	 *
+	 * @return 	integer
+	 */
+	public function getMaxBalance() { return $this->_iMaxBalance; }
 	/**
 	 * Returns the Min value a valid Mobile Number can have in the Country
 	 *
@@ -153,6 +167,7 @@ class CountryConfig extends BasicConfig
 		$xml = '<country-config id="'. $this->getID() .'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
 		$xml .= '<currency>'. $this->_sCurrency .'</currency>';
+		$xml .= '<max-balance>'. $this->_iMaxBalance .'</max-balance>';
 		$xml .= '<min-mobile>'. $this->_sMaxMobile .'</min-mobile>';
 		$xml .= '<max-mobile>'. $this->_sMinMobile .'</max-mobile>';
 		$xml .= '<channel>'. $this->_sChannel .'</channel>';

@@ -253,6 +253,8 @@ msgstr @@@ Godkänn försäljningsvilkoren för att fortsätta @@@
 msgid @@@ Select Payment Method - 99 @@@
 msgstr @@@ Vi kunde inte genomföra betalningen med din valda betalningsmetod. Välj en annan betalningsmetod och försök igen. @@@
 
+msgid @@@ CPM Payment - 101 @@@
+msgstr @@@ Your account has been topped up and the original payment has been resumed @@@
 msgid @@@ CPM Payment - 11 @@@
 msgstr @@@ Please select your prepaid account or one of your stored cards? @@@
 msgid @@@ CPM Payment - 12 @@@
@@ -285,6 +287,9 @@ msgid @@@ CPM Payment - 51 @@@
 msgstr @@@ The selected card was rejected, please select another card? @@@
 msgid @@@ CPM Payment - 59 @@@
 msgstr @@@ Internal Error - Acquirer not available, please select another card? @@@
+
+msgid @@@ Shop Top-Up - 1 @@@
+msgstr @@@ Your current payment has been paused and will automatically be resumed once you've topped up your account @@@
 
 msgid @@@ Create Account - 11 @@@
 msgstr @@@ Please enter a password? @@@

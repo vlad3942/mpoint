@@ -9,7 +9,7 @@
  * @link http://www.cellpointmobile.com
  * @package SMS_Purchase
  * @subpackage Buy
- * @version 1.0
+ * @version 1.10
  */
 
 // Require Global Include File
@@ -23,6 +23,10 @@ require_once(sCLASS_PATH ."/mobile_web.php");
 // Require Business logic for the SMS Purchase module
 require_once(sCLASS_PATH ."/sms_purchase.php");
 
+
+// Require Business logic for the End-User Account Component
+require_once(sCLASS_PATH ."/enduser_account.php");
+
 header("content-type: text/plain");
 
 // Parse received MO-SMS
@@ -32,8 +36,10 @@ $obj_MsgInfo = GoMobileMessage::produceMessage($HTTP_RAW_POST_DATA);
 $obj_mPoint = SMS_Purchase::produceSMS_Purchase($_OBJ_DB, $obj_MsgInfo);
 
 $iTxnID = $obj_mPoint->newTransaction(Constants::iSMS_PURCHASE_TYPE);
+
+$obj_TxnInfo = new TxnInfo($iTxnID, Constants::iSMS_PURCHASE_TYPE, $obj_mPoint->getClientConfig(), $obj_mPoint->getClientConfig()->getKeywordConfig()->getPrice(), -1, $obj_MsgInfo->getAddress(), $obj_MsgInfo->getOperator(), "", $obj_mPoint->getClientConfig()->getLogoURL(), $obj_mPoint->getClientConfig()->getCSSURL(), $obj_mPoint->getClientConfig()->getAcceptURL(), $obj_mPoint->getClientConfig()->getCancelURL(), $obj_mPoint->getClientConfig()->getCallbackURL(), $obj_mPoint->getClientConfig()->getLanguage(),  $obj_mPoint->getClientConfig()->getMode(), $obj_mPoint->getClientConfig()->useAutoCapture(), EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getMobile() ), $obj_MsgInfo->getGoMobileID() );
+
 // Update Transaction Log
-$obj_TxnInfo = new TxnInfo($iTxnID, Constants::iSMS_PURCHASE_TYPE, $obj_mPoint->getClientConfig(), $obj_mPoint->getClientConfig()->getKeywordConfig()->getPrice(), -1, $obj_MsgInfo->getAddress(), $obj_MsgInfo->getOperator(), "", $obj_mPoint->getClientConfig()->getLogoURL(), $obj_mPoint->getClientConfig()->getCSSURL(), $obj_mPoint->getClientConfig()->getAcceptURL(), $obj_mPoint->getClientConfig()->getCancelURL(), $obj_mPoint->getClientConfig()->getCallbackURL(), $obj_mPoint->getClientConfig()->getLanguage(),  $obj_mPoint->getClientConfig()->getMode(), $obj_mPoint->getClientConfig()->useAutoCapture(), $obj_MsgInfo->getGoMobileID() );
 $obj_mPoint->logTransaction($obj_TxnInfo);
 // Log additional data
 $obj_mPoint->logProducts();

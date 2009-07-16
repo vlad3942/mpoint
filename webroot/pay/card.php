@@ -8,7 +8,7 @@
  * @link http://www.cellpointmobile.com
  * @package Payment
  * @subpackage CreditCard
- * @version 1.0
+ * @version 1.10
  */
 
 // Require Global Include File
@@ -54,4 +54,12 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 	</accept>
 
 	<?= $obj_mPoint->getMessages("Select Card"); ?>
+	
+	<?php
+	// Current transaction is an Account Top-Up and a previous transaction is in progress
+	if ($_SESSION['obj_TxnInfo']->getTypeID() >= 100 && $_SESSION['obj_TxnInfo']->getTypeID() <= 109 && array_key_exists("obj_OrgTxnInfo", $_SESSION) === true)
+	{
+		echo '<original-transaction-id>'. $_SESSION['obj_OrgTxnInfo']->getID() .'</original-transaction-id>';
+	}
+	?>
 </root>

@@ -37,25 +37,24 @@ $aMsgCds = array();
 $obj_Validator = new Validate($_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig() );
 $obj_mPoint = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']->getClientConfig() );
 
-$iAccountID = $obj_mPoint->getAccountID($_SESSION['obj_TxnInfo']->getMobile() );
 if ($_POST['prepaid'] == "true")
 {
 	switch ($_POST['cardid'])
 	{
 	case (-1):	// Pre-Paid account selected
 	case "-1":
-		if ($obj_Validator->valAccount($_OBJ_DB, $iAccountID, $_SESSION['obj_TxnInfo']->getAmount() ) != 10) { $aMsgCds[] = $obj_Validator->valAccount($_OBJ_DB, $iAccountID, $_SESSION['obj_TxnInfo']->getAmount() ) + 11; }
+		if ($obj_Validator->valAccount($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_TxnInfo']->getAmount() ) != 10) { $aMsgCds[] = $obj_Validator->valAccount($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_TxnInfo']->getAmount() ) + 11; }
 		break;
 	case (0):	// Account available but nothing has been selected
 	case "0":
 		$aMsgCds[] = 11;
 		break;
 	default:	// Stored Card selected
-		if ($obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, $_POST['cardid']) != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, $_POST['cardid']) + 20; }
+		if ($obj_Validator->valStoredCard($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAccountID(), $_POST['cardid']) != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAccountID(), $_POST['cardid']) + 20; }
 		break;
 	}
 }
-elseif ($obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, $_POST['cardid']) != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, $_POST['cardid']) + 20; }
+elseif ($obj_Validator->valStoredCard($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAccountID(), $_POST['cardid']) != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAccountID(), $_POST['cardid']) + 20; }
 if ($obj_Validator->valPassword($_POST['pwd']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_POST['pwd']) + 30; }
 
 // Success: Input Valid
@@ -66,15 +65,15 @@ if (count($aMsgCds) == 0)
 	{
 		if ($_POST['cardid'] == -1)
 		{
-			$obj_mPoint->purchase($iAccountID, $_SESSION['obj_TxnInfo']->getID(), $_SESSION['obj_TxnInfo']->getAmount() );
+			$obj_mPoint->purchase($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_TxnInfo']->getID(), $_SESSION['obj_TxnInfo']->getAmount() );
 			$obj_PSP = new CellpointMobile($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
 			// Initialise Callback to Client
-			$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), 11, Constants::iPAYMENT_ACCEPTED_STATE);
+			$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iEMONEY_CARD, Constants::iPAYMENT_ACCEPTED_STATE);
 			$aMsgCds[] = 100;
 		}
 		else
 		{
-			$obj_XML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID) );
+			$obj_XML = simplexml_load_string($obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID() ) );
 			$obj_XML = $obj_XML->xpath("/stored-cards/card[@id = ". $_POST['cardid'] ."]");
 			$obj_XML = $obj_XML[0];
 

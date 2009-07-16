@@ -59,5 +59,15 @@ class AccountConfig extends BasicConfig
 	 * @return 	string
 	 */
 	public function getMobile() { return $this->_sMobile; }
+	
+	public function toXML()
+	{
+		$xml = '<account-config id="'. $this->getID() .'" client-id="'. $this->_iClientID .'">';
+		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
+		$xml .= '<mobile>'. $this->_sMobile .'</mobile>';
+		$xml .= '</account-config>';
+
+		return $xml;
+	}
 }
 ?>

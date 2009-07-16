@@ -172,6 +172,9 @@ ALTER TABLE Client.Client_Tbl ADD CONSTRAINT StoreCard_Chk CHECK (store_card >= 
 ALTER TABLE Log.Transaction_Tbl RENAME address TO mobile;
 ALTER TABLE Client.Account_Tbl RENAME address TO mobile;
 
+ALTER TABLE Log.Transaction_Tbl ADD euaid INT4;
+ALTER TABLE Log.Transaction_Tbl ADD CONSTRAINT Txn2EUA_FK FOREIGN KEY (euaid) REFERENCES EndUser.Account_Tbl ON UPDATE CASCADE ON DELETE RESTRICT;
+
 /* ==================== SYSTEM SCHEMA START ==================== */
 CREATE TABLE System.IPRange_Tbl
 (
@@ -192,4 +195,25 @@ CREATE TABLE System.IPRange_Tbl
 INSERT INTO System.IPRange_Tbl (id, countryid, country, enabled) VALUES (0, 0, 'System Record', false);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE System.IPRange_Tbl TO mpoint;
+
+
+CREATE TABLE System.DepositOption_Tbl
+(
+	id 			SERIAL,
+	countryid	INT4 NOT NULL,
+	
+	amount		INT4,
+	
+	CONSTRAINT DepositOption_PK PRIMARY KEY (id),
+	CONSTRAINT DepositOption2Country_FK FOREIGN KEY (countryid) REFERENCES System.Country_tbl ON UPDATE CASCADE ON DELETE NO ACTION,
+	CONSTRAINT DepositOption_UQ UNIQUE (countryid, amount),
+  	LIKE Template.General_Tbl INCLUDING DEFAULTS
+) WITHOUT OIDS;
+
+-- Internal
+INSERT INTO System.DepositOption_Tbl (id, countryid, amount, enabled) VALUES (0, 0, 0, false);
+
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE System.DepositOption_Tbl TO mpoint;
+
+ALTER TABLE System.Country_Tbl ADD maxbalance INT4;
 /* ==================== SYSTEM SCHEMA END ==================== */

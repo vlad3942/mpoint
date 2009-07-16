@@ -395,7 +395,7 @@ class ClientConfig extends BasicConfig
 					Cl.smsrcpt, Cl.emailrcpt, Cl.method,
 					Cl.maxamount, Cl.lang, Cl.terms,
 					Cl.mode, Cl.auto_capture, Cl.send_pspid, Cl.store_card,
-					C.id AS countryid, C.name AS country, C.currency, C.minmob, C.maxmob, C.channel,
+					C.id AS countryid, C.name AS country, C.currency, C.maxbalance, C.minmob, C.maxmob, C.channel,
 					C.priceformat, C.decimals, C.als, C.doi,
 					Acc.id AS accountid, Acc.name AS account, Acc.mobile,
 					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price
@@ -418,7 +418,7 @@ class ClientConfig extends BasicConfig
 					Cl.smsrcpt, Cl.emailrcpt, Cl.method,
 					Cl.maxamount, Cl.lang, Cl.terms,
 					Cl.mode, Cl.auto_capture, Cl.send_pspid, Cl.store_card,
-					C.id, C.name, C.currency, C.minmob, C.maxmob, C.channel,
+					C.id, C.name, C.currency, C.maxbalance, C.minmob, C.maxmob, C.channel,
 					C.priceformat, C.decimals, C.als, C.doi,
 					Acc.id, Acc.name, Acc.mobile,
 					KW.id, KW.name";
@@ -450,7 +450,7 @@ class ClientConfig extends BasicConfig
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 
-		$obj_CountryConfig = new CountryConfig($RS["COUNTRYID"], $RS["COUNTRY"], $RS["CURRENCY"], $RS["MINMOB"], $RS["MAXMOB"], $RS["CHANNEL"], $RS["PRICEFORMAT"], $RS["DECIMALS"], $RS["ALS"], $RS["DOI"]);
+		$obj_CountryConfig = new CountryConfig($RS["COUNTRYID"], $RS["COUNTRY"], $RS["CURRENCY"], $RS["MAXBALANCE"], $RS["MINMOB"], $RS["MAXMOB"], $RS["CHANNEL"], $RS["PRICEFORMAT"], $RS["DECIMALS"], $RS["ALS"], $RS["DOI"]);
 		$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["MOBILE"]);
 		$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
 

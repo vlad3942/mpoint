@@ -5,7 +5,7 @@
  * 	- Access Validation
  * 	- General validation methods: valEMail, valUsername, valPassword etc.
  * The Home subpackage provides general features accessible to a user that has successfully logged in as
- * well as basic navigation between the different modules in Direct Participation.
+ * well as basic navigation between the different modules in mPoint
  *
  * @author Jonatan Evald Buus
  * @package General
@@ -14,7 +14,7 @@
  */
 
 /**
- * The Home class provides general methods for basic navigation between the different modules in Direct Participation.
+ * The Home class provides general methods for basic navigation between the different modules in mPoint
  *
  */
 class Home extends General
@@ -30,8 +30,8 @@ class Home extends General
 	 * Default Constructor.
 	 *
 	 * @param	RDB $oDB				Reference to the Database Object that holds the active connection to the mPoint Database
-	 * @param	TranslateText $oTxt 	Text Translation Object for translating any text into a specific language
-	 * @param 	CountryConfig $oCI 		Data object with the Country Configuration
+	 * @param	TranslateText $oTxt 	Reference to the Text Translation Object for translating any text into a specific language
+	 * @param 	CountryConfig $oCI 		Reference to the data object with the Country Configuration
 	 */
 	public function __construct(RDB &$oDB, TranslateText &$oTxt, CountryConfig &$oCI)
 	{
@@ -39,6 +39,13 @@ class Home extends General
 
 		$this->_obj_CountryConfig = $oCI;
 	}
+	
+	/**
+	 * Returns a reference to the data object with the Country Configuration
+	 * 
+	 * @return CountryConfig
+	 */
+	public function &getCountryConfig() { return $this->_obj_CountryConfig; }
 
 	/**
 	 * Authenticates the End-User using the provided address (MSISDN or E-Mail) and Password.
@@ -110,7 +117,8 @@ class Home extends General
 	 *		<lastname>{END-USER'S LASTNAME}</lastname>
 	 *		<mobile>{END-USER'S MOBILE NUMBER (MSISDN) }</mobile>
 	 *		<email>{END-USER'S E-MAIL ADDRESS}</email>
-	 *		<password>{END-USER'S PASSWRD}</password>
+	 *		<password>{END-USER'S PASSWORD}</password>
+	 *		<masked-password>{A STRING OF * WITH A LENGTH EQUIVALENT TO THE LENGTH OF THE PASSWORD}</masked-password>
 	 *		<balance currency="{CURRENCY BALANCE IS REPRESENTED IN}">{PRE-PAID BALANCE AVAILABLE ON THE END-USER ACCOUNT IN COUNTRY'S SMALLEST CURRENCY}</balance>
 	 *		<funds>{PRE-PAID BALANCE FORMATTED FOR BEING DISPLAYED IN THE GIVEN COUNTRY}</funds>
 	 *		<logo-width>{CALCULATED WIDTH OF THE ACCOUNT LOGO}</logo-width>
@@ -156,6 +164,7 @@ class Home extends General
 		$xml .= '<mobile>'. $RS["MOBILE"] .'</mobile>';
 		$xml .= '<email>'. htmlspecialchars($RS["EMAIL"], ENT_NOQUOTES) .'</email>';
 		$xml .= '<password>'. htmlspecialchars($RS["PASSWORD"], ENT_NOQUOTES) .'</password>';
+		$xml .= '<masked-password>'. str_repeat("*", strlen($RS["PASSWORD"]) ) .'</masked-password>';
 		$xml .= '<balance currency="'. $this->_obj_CountryConfig->getCurrency() .'">'. $RS["BALANCE"] .'</balance>';
 		$xml .= '<funds>'. General::formatAmount($this->_obj_CountryConfig, $RS["BALANCE"]) .'</funds>';
 		$xml .= '<logo-width>'. $iWidth .'</logo-width>';
@@ -215,7 +224,7 @@ class Home extends General
 		/* ========== Calculate Logo Dimensions End ========== */
 
 		// Select all active cards that are not yet expired
-		$sql = "SELECT EUC.id, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, SC.id AS type
+		$sql = "SELECT EUC.id, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, SC.id AS typeid, SC.name AS type
 				FROM EndUser.Card_Tbl EUC
 				INNER JOIN System.PSP_Tbl PSP ON EUC.pspid = PSP.id AND PSP.enabled = true
 				INNER JOIN System.Card_Tbl SC ON EUC.cardid = SC.id AND SC.enabled = true
@@ -228,7 +237,8 @@ class Home extends General
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
 			// Construct XML Document with data for saved cards
-			$xml .= '<card id="'. $RS["ID"] .'" type="'. $RS["TYPE"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'">';
+			$xml .= '<card id="'. $RS["ID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'">';
+			$xml .= '<type id="'. $RS["TYPEID"] .'">'. $RS["TYPE"] .'</type>';
 			$xml .= '<mask>'. chunk_split($RS["MASK"], 4, " ") .'</mask>';
 			$xml .= '<expiry>'. $RS["EXPIRY"] .'</expiry>';
 			$xml .= '<ticket>'. $RS["TICKET"] .'</ticket>';
@@ -271,7 +281,7 @@ class Home extends General
 	public function getTxnHistory($id)
 	{
 		// Fetch Transaction history for End-User
-		$sql = "SELECT EUT.id,EUT.typeid, EUT.toid, EUT.fromid, Extract('epoch' from EUT.created) AS timestamp,
+		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, Extract('epoch' from EUT.created) AS timestamp,
 					(CASE
 					 WHEN EUT.amount = 0 THEN Txn.amount
 					 WHEN EUT.amount IS NULL THEN Txn.amount
@@ -301,8 +311,8 @@ class Home extends General
 			// E-Money Top-Up
 			if ($RS["TYPEID"] == Constants::iEMONEY_TOPUP_TYPE)
 			{
-				$xml .= '<transaction id="'. $RS["ID"] .'"  type="'. $RS["TYPEID"] .'">';
-				$xml .= '<amount currency="'. $RS["CURRENCY"] .'">'. $RS["AMOUNT"] .'</amount>';
+				$xml .= '<transaction id="'. $RS["ID"] .'"  type="'. $RS["TYPEID"] .'" mpointid="'. $RS["MPOINTID"] .'">';
+				$xml .= '<amount currency="'. trim($RS["CURRENCY"]) .'">'. $RS["AMOUNT"] .'</amount>';
 				$xml .= '<price>'. General::formatAmount($this->_obj_CountryConfig, $RS["AMOUNT"]) .'</price>';
 				$xml .= '<timestamp>'. date("Y-m-d H:i:s", $RS["TIMESTAMP"]) .'</timestamp>';
 				$xml .= '</transaction>';
@@ -311,7 +321,7 @@ class Home extends General
 			elseif ($RS["TYPEID"] == Constants::iEMONEY_TRANSFER_TYPE)
 			{
 				$xml .= '<transaction id="'. $RS["ID"] .'"  type="'. $RS["TYPEID"] .'">';
-				$xml .= '<amount currency="'. $RS["CURRENCY"] .'">'. $RS["AMOUNT"] .'</amount>';
+				$xml .= '<amount currency="'. trim($RS["CURRENCY"]) .'">'. $RS["AMOUNT"] .'</amount>';
 				$xml .= '<price>'. General::formatAmount($this->_obj_CountryConfig, $RS["AMOUNT"]) .'</price>';
 				$xml .= '<from accountid="'. $RS["FROMID"] .'">';
 				$xml .= '<name>'. htmlspecialchars($RS["FROM_NAME"], ENT_NOQUOTES) .'</name>';
@@ -332,7 +342,7 @@ class Home extends General
 				$xml .= '<transaction id="'. $RS["ID"] .'" mpointid="'. $RS["MPOINTID"] .'" type="'. $RS["TYPEID"] .'">';
 				$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
 				$xml .= '<orderid>'. $RS["ORDERID"] .'</orderid>';
-				$xml .= '<amount currency="'. $RS["CURRENCY"] .'">'. $RS["AMOUNT"] .'</amount>';
+				$xml .= '<amount currency="'. trim($RS["CURRENCY"]) .'">'. $RS["AMOUNT"] .'</amount>';
 				$xml .= '<price>'. General::formatAmount($this->_obj_CountryConfig, abs($RS["AMOUNT"]) ) .'</price>';
 				$xml .= '<card id="'. $RS["CARDID"] .'">'. htmlspecialchars($RS["CARD"], ENT_NOQUOTES) .'</card>';
 				$xml .= '<timestamp>'. date("Y-m-d H:i:s", $RS["TIMESTAMP"]) .'</timestamp>';
@@ -342,6 +352,23 @@ class Home extends General
 		$xml .= '</history>';
 
 		return $xml;
+	}
+	
+	/**
+	 * Saves the specified Password for the End-User Account.
+	 *
+	 * @param	integer $id 	Unqiue ID of the End-User's Account
+	 * @param 	string $pwd 	Password for the created End-User Account
+	 * @return	boolean
+	 */
+	public function savePassword($id, $pwd)
+	{
+		$sql = "UPDATE EndUser.Account_Tbl
+				SET passwd = '". $this->getDBConn()->escStr($pwd) ."'
+				WHERE id = ". intval($id);
+//		echo $sql ."\n";
+		
+		return is_resource($this->getDBConn()->query($sql) );
 	}
 }
 ?>

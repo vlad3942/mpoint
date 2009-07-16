@@ -251,6 +251,8 @@ msgstr @@@ Accepter venligst handelsbetingelserne for at gå videre @@@
 msgid @@@ Select Payment Method - 99 @@@
 msgstr @@@ Vi kunne desværre ikke gennemfører betalingen vha. det valgte kort. Vælg venligst et andet? @@@
 
+msgid @@@ CPM Payment - 1 @@@
+msgstr @@@ Pengene er blevet indsat på din konto og den oprindelig betaling er blevet genoptaget @@@
 msgid @@@ CPM Payment - 11 @@@
 msgstr @@@ Vælg venligst din konto eller et af dine gemte kort? @@@
 msgid @@@ CPM Payment - 12 @@@
@@ -283,6 +285,9 @@ msgid @@@ CPM Payment - 51 @@@
 msgstr @@@ Det valgte kort blev afvist, prøv venligst med et andet kort? @@@
 msgid @@@ CPM Payment - 59 @@@
 msgstr @@@ Intern Fejl - Indløser ikke tilgængelig, prøv venligst med et andet kort? @@@
+
+msgid @@@ Shop Top-Up - 1 @@@
+msgstr @@@ Din nuværende betaling er blevet sat på hold og vil automatisk blive genoptaget når du har indsat penge på din konto @@@
 
 msgid @@@ Create Account - 11 @@@
 msgstr @@@ Indtast venligst et kodeord? @@@

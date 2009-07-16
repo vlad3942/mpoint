@@ -253,6 +253,8 @@ msgstr @@@ Please accept the Terms & Conditions to continue @@@
 msgid @@@ Select Payment Method - 99 @@@
 msgstr @@@ We're sorry but we could not complete the payment through your selected payment method. Please select another one to try again? @@@
 
+msgid @@@ CPM Payment - 1 @@@
+msgstr @@@ Your account has been topped up and the original payment has been resumed @@@
 msgid @@@ CPM Payment - 11 @@@
 msgstr @@@ Please select your prepaid account or one of your stored cards? @@@
 msgid @@@ CPM Payment - 12 @@@
@@ -285,6 +287,9 @@ msgid @@@ CPM Payment - 51 @@@
 msgstr @@@ The selected card was rejected, please select another card? @@@
 msgid @@@ CPM Payment - 59 @@@
 msgstr @@@ Internal Error - Acquirer not available, please select another card? @@@
+
+msgid @@@ Shop Top-Up - 1 @@@
+msgstr @@@ Your current payment has been paused and will automatically be resumed once you've topped up your account @@@
 
 msgid @@@ Create Account - 11 @@@
 msgstr @@@ Please enter a password? @@@
@@ -383,7 +388,7 @@ msgstr @@@ Entered E-Mail address is too short, min length is: {AUTH MIN LENGTH}
 msgid @@@ username - code: 13 @@@
 msgstr @@@ Entered E-Mail address is too long, max length is: {AUTH MAX LENGTH} @@@
 msgid @@@ username - code: 14 @@@
-msgstr @@@ E-Mail address contains invalid characters, an e-mail address can only contain the following charcters: a-z זרו A-Z ֶ״ֵ 0-9 and _-.@ @@@
+msgstr @@@ E-Mail address contains invalid characters, an e-mail address can only contain the following characters: a-z זרו A-Z ֶ״ֵ 0-9 and _-.@ @@@
 msgid @@@ username - code: 15 @@@
 msgstr @@@ E-Mail address has an invalid format, an e-mail address must have the following format: user@domain.topdomain, i.e. john.doe@hotmail.com or john_joe@mail.hot.com @@@
 
@@ -392,3 +397,55 @@ msgid @@@ auth - code: 1 @@@
 msgstr @@@ Mobile Number / E-Mail address and Password doesn't match @@@
 msgid @@@ auth - code: 10 @@@
 msgstr @@@ Login successful, please wait while the internal cache is being updated @@@
+
+#: /webroot/home/sys/save_info.php:60
+msgid @@@ firstname - code: 1 @@@
+msgstr @@@ Please enter your first name? @@@
+msgid @@@ firstname - code: 2 @@@
+msgstr @@@ First name is too short, min length is: {AUTH MIN LENGTH} @@@
+msgid @@@ firstname - code: 3 @@@
+msgstr @@@ First name is too long, max length is: {AUTH MAX LENGTH} @@@
+msgid @@@ firstname - code: 4 @@@
+msgstr @@@ First name contains invalid characters, a name may not contain the following characters: ' and " @@@
+msgid @@@ firstname - code: 100 @@@
+msgstr @@@  @@@
+msgid @@@ lastname - code: 1 @@@
+msgstr @@@ Please enter your Last name? @@@
+msgid @@@ lastname - code: 2 @@@
+msgstr @@@ Last name is too short, min length is: {AUTH MIN LENGTH} @@@
+msgid @@@ lastname - code: 3 @@@
+msgstr @@@ Last name is too long, max length is: {AUTH MAX LENGTH} @@@
+msgid @@@ lastname - code: 4 @@@
+msgstr @@@ Last name contains invalid characters, a name may not contain the following characters: ' and " @@@
+msgid @@@ lastname - code: 100 @@@
+msgstr @@@  @@@
+
+#: /webroot/home/sys/save_info.php:75
+msgid @@@ firstname - code: 1 @@@
+msgstr @@@ Please enter your first name? @@@
+msgid @@@ firstname - code: 2 @@@
+msgstr @@@ First name is too short, min length is: {AUTH MIN LENGTH} @@@
+msgid @@@ firstname - code: 3 @@@
+msgstr @@@ First name is too long, max length is: {AUTH MAX LENGTH} @@@
+msgid @@@ firstname - code: 4 @@@
+msgstr @@@ First name contains invalid characters, a name may not contain the following characters: ' and " @@@
+msgid @@@ firstname - code: 100 @@@
+msgstr @@@  @@@
+msgid @@@ lastname - code: 1 @@@
+msgstr @@@ Please enter your Last name? @@@
+msgid @@@ lastname - code: 2 @@@
+msgstr @@@ Last name is too short, min length is: {AUTH MIN LENGTH} @@@
+msgid @@@ lastname - code: 3 @@@
+msgstr @@@ Last name is too long, max length is: {AUTH MAX LENGTH} @@@
+msgid @@@ lastname - code: 4 @@@
+msgstr @@@ Last name contains invalid characters, a name may not contain the following characters: ' and " @@@
+msgid @@@ lastname - code: 100 @@@
+msgstr @@@  @@@
+
+#: /webroot/home/sys/save_info.php:94
+msgid @@@ save - code: 100 @@@
+msgstr @@@ Information Saved @@@
+
+#: /webroot/home/sys/save_info.php:100
+msgid @@@ save - code: 91 @@@
+msgstr @@@ Internal Error - Information could not be saved, please select try again? @@@

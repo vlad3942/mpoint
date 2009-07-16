@@ -113,7 +113,7 @@ class EndUserAccount extends Home
 	 */
 	public function saveCard($addr, $cardid, $pspid, $ticket, $mask, $exp)
 	{
-		$iAccountID = $this->getAccountID($addr);
+		$iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr);
 		$iStatus = 0;
 
 		// End-User Account already exists
@@ -177,17 +177,13 @@ class EndUserAccount extends Home
 	 */
 	public function savePassword($addr, $pwd)
 	{
-		$iAccountID = $this->getAccountID($addr);
+		$iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr);
 		$iStatus = 0;
 
 		// End-User Account already exists, update password
 		if ($iAccountID > 0)
 		{
-			$sql = "UPDATE EndUser.Account_Tbl
-					SET passwd = '". $this->getDBConn()->escStr($pwd) ."'
-					WHERE id = ". $iAccountID;
-//			echo $sql ."\n";
-			$res = $this->getDBConn()->query($sql);
+			parent::savePassword($iAccountID, $pwd);
 		}
 		// End-User Account doesn't exist, create new account
 		else
@@ -225,25 +221,27 @@ class EndUserAccount extends Home
 	 * The account must either be available to the specific clients or globally available to all clients
 	 * as defined by the entries in database table: EndUser.CLAccess_Tbl.
 	 *
-	 * @param	string $addr 	End-User's mobile number or E-Mail address
-	 * @return	integer			Unqiue ID of the End-User's Account or -1 if no account was found
+	 * @param	RDB $oDB			Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param 	ClientConfig $oCI 	Data object with the Client Configuration
+	 * @param	string $addr 		End-User's mobile number or E-Mail address
+	 * @return	integer				Unqiue ID of the End-User's Account or -1 if no account was found
 	 */
-	public function getAccountID($addr)
+	public static function getAccountID(RDB &$oDB, ClientConfig &$oCI, $addr)
 	{
-		if (floatval($addr) > $this->_obj_ClientConfig->getCountryConfig()->getMinMobile() ) { $sql = "mobile = '". floatval($addr) ."'"; }
-		else { $sql = "Upper(email) = Upper('". $this->getDBConn()->escStr($email) ."')"; }
+		if (floatval($addr) > $oCI->getCountryConfig()->getMinMobile() ) { $sql = "mobile = '". floatval($addr) ."'"; }
+		else { $sql = "Upper(email) = Upper('". $oDB->escStr($addr) ."')"; }
 
 		$sql = "SELECT DISTINCT EUA.id
 				FROM EndUser.Account_Tbl EUA
 				LEFT OUTER JOIN EndUser.CLAccess_Tbl CLA ON EUA.id = CLA.accountid
-				WHERE EUA.countryid = ". $this->_obj_ClientConfig->getCountryConfig()->getID() ."
+				WHERE EUA.countryid = ". $oCI->getCountryConfig()->getID() ."
 					AND ". $sql ." AND EUA.enabled = true
-					AND (CLA.clientid = ". $this->_obj_ClientConfig->getID() ."
+					AND (CLA.clientid = ". $oCI->getID() ."
 						 OR NOT EXISTS (SELECT id
 									 	FROM EndUser.CLAccess_Tbl
 									 	WHERE accountid = EUA.id) )";
 //		echo $sql ."\n";
-		$RS = $this->getDBConn()->getName($sql);
+		$RS = $oDB->getName($sql);
 
 		return is_array($RS)===true?$RS["ID"]:-1;
 	}
@@ -254,15 +252,16 @@ class EndUserAccount extends Home
 	 * @see		Constants::iEMONEY_TOPUP_TYPE
 	 *
 	 * @param	integer $id 	Unqiue ID of the End-User's Account
+	 * @param	integer $txnid 	Unqiue ID of the mPoint Transaction that was used for the Top-Up
 	 * @param 	integer $amount Amount that the End-User's prepaid account should be topped up with
 	 * @return 	boolean
 	 */
-	public function topup($id, $amount)
+	public function topup($id, $txnid, $amount)
 	{
 		$sql = "INSERT INTO EndUser.Transaction_Tbl
-					(accountid, typeid, amount)
+					(accountid, typeid, txnid, amount)
 				VALUES
-					(". intval($id) .", ". Constants::iEMONEY_TOPUP_TYPE .", ". abs(intval($amount) ) .")";
+					(". intval($id) .", ". Constants::iEMONEY_TOPUP_TYPE .", ". intval($txnid) .", ". abs(intval($amount) ) .")";
 //		echo $sql ."\n";
 
 		return is_resource($this->getDBConn()->query($sql) );
@@ -371,6 +370,27 @@ class EndUserAccount extends Home
 		}
 
 		return $code;
+	}
+	
+
+	/**
+	 * Sends an SMS with information about the newly created account
+	 *
+	 * @see 	GoMobileClient
+	 * @see 	Constants::iMT_SMS_TYPE
+	 * @see 	Constants::iMT_PRICE
+	 *
+	 * @param 	GoMobileConnInfo $oCI 	Connection Info required to communicate with GoMobile
+	 */
+	public function sendAccountInfo(GoMobileConnInfo &$oCI)
+	{
+		$sBody = $this->getText()->_("mPoint - Account Info");
+		$sBody = str_replace("{URL}", "http://". sDEFAULT_MPOINT_DOMAIN, $sBody);
+		$sBody = str_replace("{CLIENT}", $this->_obj_TxnInfo->getClientConfig()->getName(), $sBody);
+		
+		// Instantiate Message Object for holding the message data which will be sent to GoMobile
+		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID(), $this->_obj_TxnInfo->getOperator(), $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getChannel(), $this->_obj_TxnInfo->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $this->_obj_TxnInfo->getMobile(), $sBody);
+		$this->sendMT($oCI, $obj_MsgInfo, $this->_obj_TxnInfo);
 	}
 
 	/**

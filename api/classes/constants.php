@@ -192,31 +192,41 @@ abstract class Constants
 	 */
 	const iWEB_SUBSCR_TYPE = 31;
 	/**
+	 * Defines Type ID for a top-up of an End-User's prepaid account
+	 *
+	 */
+	const iTOPUP_PURCHASE_TYPE = 100;
+	/**
+	 * Defines Type ID for a subscription for automatically topping an End-User's prepaid account up
+	 *
+	 */
+	const iTOPUP_SUBSCR_TYPE = 101;
+	/**
 	 * Defines Type ID for a Top-Up of the End-User's prepaid account
 	 *
 	 */
-	const iEMONEY_TOPUP_TYPE = 100;
+	const iEMONEY_TOPUP_TYPE = 1000;
 	/**
 	 * Defines Type ID for an E-Money based purchase made using the End-User's prepaid account
 	 *
 	 */
-	const iEMONEY_PURCHASE_TYPE = 101;
+	const iEMONEY_PURCHASE_TYPE = 1001;
 	/**
 	 * Defines Type ID for an E-Money based transfer between 2 End-Users' prepaid accounts
 	 *
 	 */
-	const iEMONEY_TRANSFER_TYPE = 102;
+	const iEMONEY_TRANSFER_TYPE = 1002;
 	/**
 	 * Defines Type ID for a Withdrawal from the End-User's prepaid account
 	 *
 	 */
-	const iEMONEY_WITHDRAWAL_TYPE = 103;
+	const iEMONEY_WITHDRAWAL_TYPE = 1003;
 	/**
 	 * Defines Type ID for a Card / Premium SMS based purchase that should be associated with the End-User's prepaid account.
 	 * Please note that the "amount" for this type of transaction MUST be 0.
 	 *
 	 */
-	const iCARD_PURCHASE_TYPE = 109;
+	const iCARD_PURCHASE_TYPE = 1009;
 
 	/**
 	 * Defines the min length for all authentication data:

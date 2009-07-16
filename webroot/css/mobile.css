@@ -93,9 +93,31 @@ td.mPoint_Number
 tr.mPoint_Even, div.mPoint_Even
 {
 }
+input.mPoint_Even_Card_Button
+{
+	border-width: 0px;
+	border-style: none;
+	background-color: #fff;
+	border-color: #fff;
+	color: blue;
+	text-decoration: underline;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 2px 0px;
+}
 tr.mPoint_Uneven, div.mPoint_Uneven
 {
 	background-color: #8FBFD5;
+}
+input.mPoint_Uneven_Card_Button
+{
+	border-width: 0px;
+	border-style: none;
+	background-color: #8FBFD5;
+	border-color: #8FBFD5;
+	color: blue;
+	text-decoration: underline;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 2px 0px;
 }
 
 input.mPoint_Button
@@ -109,8 +131,8 @@ input.mPoint_Card_Button
 {
 	border-width: 0px;
 	border-style: none;
-	border-color: #fff;
 	background-color: #fff;
+	border-color: #fff;
 	color: blue;
 	text-decoration: underline;
 	margin: 0px 0px 0px 0px;
@@ -187,6 +209,14 @@ div#cards
 
 div#my-account
 {
+}
+div#my-account .passive
+{
+	color: #708090;
+}
+div#my-account a#top-up
+{
+	color: red;
 }
 div#my-account div#cardinfo, div#my-account div#accountinfo, div#email
 {

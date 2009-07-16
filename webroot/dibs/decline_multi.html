@@ -10,6 +10,34 @@
  * @license Cellpoint Mobile
  */
  
+// Payment Gateay is in Test Mode, set default card info
+if (cgi.test = 1)
+{
+	// American Express
+	if (cgi.cardid = 1) { sess_cardno := 3700100000000000; }
+	// Dankort
+	elsif (cgi.cardid = 2) { sess_cardno := 5019100000000000; }
+	// Diners Club
+	elsif (cgi.cardid = 3) { sess_cardno := 30401000000000; }
+	// EuroCard
+	elsif (cgi.cardid = 4) { sess_cardno := 5100100000000000; }
+	// JCB
+	elsif (cgi.cardid = 5) { sess_cardno := 3528100000000000; }
+	// Maestro
+	elsif (cgi.cardid = 6) { sess_cardno := 5020100000000000; }
+	// MasterCard
+	elsif (cgi.cardid = 7) { sess_cardno := 5100100000000000; }
+	// VISA
+	elsif (cgi.cardid = 8) { sess_cardno := 4711100000000000; }
+	// VISA Electron
+	elsif (cgi.cardid = 9) { sess_cardno := 4711100000000000; }
+	// Unknown Card
+	else { sess_cardno := ''; }
+	sess_expmon := '06';
+	sess_expyear := 24;
+	sess_cvc := 684;
+}
+ 
 /* ========== Language Translataion Start ========== */
 switch(cgi.language)
 {
@@ -36,7 +64,7 @@ switch(cgi.language)
 		error_2 := 'Intern Fejl: Forespørgslen indeholdt ugyldigt data ('@ auth.message @')';
 		error_3 := 'Der opstod en fejl hos PBS, prøv venligst igen?';
 		error_4 := 'Dit kredit kort er udløbet, prøv venligst med et andet kort?';
-		error_5 := 'Dit kort nummer er ugyldigt, ret venligst kort numret og prøv igen?';
+		error_5 := 'Dit kort nummer er ugyldigt, ret venligst kort nummeret og prøv igen?';
 		error_6 := 'Kunne ikke trække pengene fra din konto, prøv venligst med et andet kort?';
 		error_7 := 'Intern Fejl: "orderid" skal være unikt';
 		error_8 := 'Intern Fejl: For få "amount" felter tilgængelige til at beregne split';
@@ -295,6 +323,9 @@ switch(cgi.language)
 	
 	<form action="auth.pml" method="post">
 		<div>
+			<PML_IF COND="cgi.test > 0">
+				<input type="hidden" name="test" PML_value="cgi.test" />
+			</PML_IF>
 			<!-- DIBS Required Data -->
 			<input type="hidden" name="callbackurl" PML_value="string.HTMLencode(cgi.callbackurl)" />
 			<input type="hidden" name="accepturl" PML_value="string.HTMLencode(cgi.accepturl)" />
@@ -318,6 +349,10 @@ switch(cgi.language)
 			<input type="hidden" name="language" PML_value="cgi.language" />
 			<input type="hidden" name="cardid" PML_value="cgi.cardid" />
 			<input type="hidden" name="mpointid" PML_value="cgi.mpointid" />
+			<!-- Current transaction is an Account Top-Up and a previous transaction is in progress -->
+			<PML_IF COND="cgi.org_mpointid > 0">
+				<input type="hidden" name="org_mpointid" PML_value="cgi.org_mpointid" />
+			</PML_IF>
 			<input type="hidden" name="euaid" PML_value="cgi.euaid" />
 			<!-- Store Credit Card -->
 			<PML_IF COND="cgi.store_card > 0">

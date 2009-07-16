@@ -38,7 +38,7 @@
 					<xsl:when test="position() mod 2 = 0">
 						<xsl:text>mPoint_Even</xsl:text>
 					</xsl:when>
-					<!-- Uneven row -->
+					<!-- Odd row -->
 					<xsl:otherwise>
 						<xsl:text>mPoint_Uneven</xsl:text>
 					</xsl:otherwise>

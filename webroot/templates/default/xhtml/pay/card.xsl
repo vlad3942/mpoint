@@ -218,6 +218,10 @@
 				<input type="hidden" name="language" value="{/root/system/language}" />
 				<input type="hidden" name="cardid" value="{@id}" />
 				<input type="hidden" name="mpointid" value="{/root/transaction/@id}" />
+				<!-- Current transaction is an Account Top-Up and a previous transaction is in progress -->
+				<xsl:if test="/root/original-transaction-id &gt; 0">
+					<input type="hidden" name="org_mpointid" value="{/root/original-transaction-id}" />
+				</xsl:if>
 				<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
 				
 				<!-- Card Data -->
