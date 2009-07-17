@@ -126,11 +126,13 @@ case "form":
 	{
 		// Initialize Standard content Object
 		$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT, $obj_CountryConfig);
-		$code = $obj_mPoint->auth( (string) $obj_XML->form->username, (string) $obj_XML->form->password);
+		$iAccountID = $obj_mPoint->getAccountID( (string) $obj_XML->form->username);
+		$code = $obj_mPoint->auth($iAccountID, (string) $obj_XML->form->password);
 
 		// Authentication succesful, return URLs for fetching next page
 		if ($code == 10)
 		{
+			$_SESSION['obj_Info']->setInfo("accountid", $iAccountID);
 			$_SESSION['obj_CountryConfig'] = $obj_CountryConfig;
 			$sType = "multipart";
 			$xml = '<document type="command">

@@ -167,7 +167,43 @@ div#messages
 	overflow: auto;
 	text-align: center;
 }
+
+div#progress
+{
+	font-style: italic;
+	text-align: center;
+}
+
+div.status
+{
+	color: red;
+	font-style: italic;
+	overflow: auto;
+	text-align: center;
+	
+}
 /* ========== Page Content End ========== */
+
+/* ========== Window Navigations Start ========== */
+div.window-bar
+{
+	width: 100%;
+	background-color: #5B8DA4;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+	text-align: right;
+}
+
+div.window-bar:hover, img.iehover, div.iehover
+{
+	cursor: pointer; cursor: hand;
+}
+
+div.window-content
+{
+	padding: 5px 5px 5px 5px;
+}
+/* ========== Window Navigations End ========== */
 
 /* ========== Pages Start ========== */
 div#login, div#my-account, div#topup, div#stored-cards, div#view-transactions
@@ -179,7 +215,7 @@ div#login table td, div#my-account table td, div#view-transactions table td
 	text-align: left;
 	vertical-align: top;
 }
-div#login table td#submit, div#my-account table td#submit
+div#login table td.submit, div#my-account table td.submit, div#edit-password table td.submit
 {
 	text-align: right;
 }
@@ -216,3 +252,32 @@ object#charts, embed#charts
 	height: 260px;
 }
 /* ========== Pages End ========== */
+
+/* ---------- New Site Window Start ---------- */
+div#edit-password, div#edit-mobile, div#edit-email
+{
+	position: absolute;
+	color: #000;
+	left: 500px;
+	top: 200px;
+	width: 300px;
+	height: 175px;
+	border-style: solid;
+	visibility: visible;
+	background-color: #FFF;
+	text-align: left;
+}
+
+div#edit-mobile, div#edit-email
+{
+	height: 250px;
+}
+div#edit-password h2, div#edit-mobile h2, div#edit-email h2
+{
+	text-align: center;
+}
+div#edit-mobile .info, div#edit-email .info
+{
+	white-space: pre-wrap;
+}
+/* ---------- New Site Window End ---------- */

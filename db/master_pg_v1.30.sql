@@ -163,6 +163,32 @@ EXECUTE PROCEDURE Modify_EndUserTxn_Proc();
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE EndUser.Transaction_Tbl TO mpoint;
 GRANT SELECT, UPDATE, INSERT ON TABLE EndUser.Transaction_Tbl_id_seq TO mpoint;
+
+
+-- Table: EndUser.Activation_Tbl
+-- Data table for holding all pending activations
+CREATE TABLE EndUser.Activation_Tbl
+(
+	id			SERIAL,
+	accountid	INT4 NOT NULL,
+	
+	code 		INT4,
+	address		VARCHAR(50),
+	
+	active 		BOOL DEFAULT false,
+	
+	CONSTRAINT Activation_PK PRIMARY KEY (id),
+	CONSTRAINT Activation2Account_FK FOREIGN KEY (accountid) REFERENCES EndUser.Account_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT Activate_UQ UNIQUE (accountid, code)
+) INHERITS (Template.General_Tbl) WITHOUT OIDS;
+
+CREATE TRIGGER Insert_Activation
+BEFORE UPDATE
+ON EndUser.Activation_Tbl FOR EACH ROW
+EXECUTE PROCEDURE Public.Update_Table_Proc();
+
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE EndUser.Activation_Tbl TO mpoint;
+GRANT SELECT, UPDATE, INSERT ON TABLE EndUser.Activation_Tbl_id_seq TO mpoint;
 /* ==================== END-USER SCHEMA END ==================== */
 
 ALTER TABLE Client.Client_Tbl ADD store_card INT4;

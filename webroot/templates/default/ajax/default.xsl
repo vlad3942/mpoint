@@ -51,7 +51,7 @@
 			{
 				// Instantiate AJAX Client for handling the GUI
 				var obj_Client = new Client("obj_Client");
-				obj_Client.changePage("/login/default.php");
+				obj_Client.changePage("<xsl:value-of select="root/url" />");
 				obj_Client.keepAlive("/internal/keepalive.php", 5*60);
 		
 				// Instantiate global Window object

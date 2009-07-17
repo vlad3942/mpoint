@@ -41,27 +41,6 @@ class EMailReceipt extends EndUserAccount
 	}
 
 	/**
-	 * Constructs the SMTP Headers for the E-Mail Receipt.
-	 * The method will return a string in the following format:
-	 * 	To: {CUSTOMER'S EMAIL ADDRESS}
-	 *	From: mPoint <no-reply@cellpointmobile.com>
-	 *	Reply-To: no-reply@cellpointmobile.com
-	 *	Content-Type: text/plain
-	 *
-	 * @return 	string
-	 */
-	public function constHeaders()
-	{
-		// Construct Mail headers
-//		$sHeaders = 'To: '. $this->_obj_TxnInfo->getEMail() ."\n";
-		$sHeaders = 'From: "mPoint" <no-reply@cellpointmobile.com>' ."\n";
-		$sHeaders .= 'Reply-To: no-reply@cellpointmobile.com' ."\n";
-		$sHeaders .= 'Content-Type: text/plain' ."\n";
-
-		return $sHeaders;
-	}
-
-	/**
 	 * Constructs the Subject for the E-Mail Receipt.
 	 * The method will replace the following text tags:
 	 * 	- {ORDERID}, will be replaced with the Order ID provided by the Client

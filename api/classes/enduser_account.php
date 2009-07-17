@@ -205,6 +205,7 @@ class EndUserAccount extends Home
 	 *
 	 * @param	string $mob 	End-User's mobile number
 	 * @param 	string $email	End-User's e-mail address
+	 * @return	boolean
 	 */
 	public function saveEmail($mob, $email)
 	{
@@ -213,7 +214,8 @@ class EndUserAccount extends Home
 				WHERE countryid = ". $this->_obj_ClientConfig->getCountryConfig()->getID() ." AND mobile = '". floatval($mob) ."'
 					AND (email IS NULL OR email = '') AND enabled = true";
 //		echo $sql ."\n";
-		$res = $this->getDBConn()->query($sql);
+
+		return is_resource($this->getDBConn()->query($sql) );
 	}
 
 	/**
@@ -380,17 +382,20 @@ class EndUserAccount extends Home
 	 * @see 	Constants::iMT_SMS_TYPE
 	 * @see 	Constants::iMT_PRICE
 	 *
-	 * @param 	GoMobileConnInfo $oCI 	Connection Info required to communicate with GoMobile
+	 * @param 	GoMobileConnInfo $oCI 	Reference to the data object with the Connection Info required to communicate with GoMobile
+	 * @param 	TxnInfo $oTI 			Reference to the data object holding the Transaction for which an MT should be send out
 	 */
-	public function sendAccountInfo(GoMobileConnInfo &$oCI)
+	public function sendAccountInfo(GoMobileConnInfo &$oCI, TxnInfo &$oTI)
 	{
 		$sBody = $this->getText()->_("mPoint - Account Info");
 		$sBody = str_replace("{URL}", "http://". sDEFAULT_MPOINT_DOMAIN, $sBody);
-		$sBody = str_replace("{CLIENT}", $this->_obj_TxnInfo->getClientConfig()->getName(), $sBody);
+		$sBody = str_replace("{CLIENT}", $this->_obj_ClientConfig->getName(), $sBody);
 		
 		// Instantiate Message Object for holding the message data which will be sent to GoMobile
-		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID(), $this->_obj_TxnInfo->getOperator(), $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getChannel(), $this->_obj_TxnInfo->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $this->_obj_TxnInfo->getMobile(), $sBody);
-		$this->sendMT($oCI, $obj_MsgInfo, $this->_obj_TxnInfo);
+		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->_obj_ClientConfig->getCountryConfig()->getID(), $this->_obj_TxnInfo->getOperator(), $this->_obj_ClientConfig->getCountryConfig()->getChannel(), $this->_obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getMobile(), $sBody);
+		
+		// Send MT with Account Info
+		$this->sendMT($oCI, $obj_MsgInfo, $oTI);
 	}
 
 	/**

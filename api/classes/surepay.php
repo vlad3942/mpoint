@@ -109,7 +109,7 @@ class SurePay extends General
 	 * @see 	Constants::iMT_PRICE
 	 * @see 	General::newMessage()
 	 *
-	 * @param 	GoMobileConnInfo $oCI 	Connection Info required to communicate with GoMobile
+	 * @param 	GoMobileConnInfo $oCI 	Reference to the data object with the Connection Info required to communicate with GoMobile
 	 * @param 	TxnInfo $oTI 			Data Object for the Transaction for which an MT with the payment link should be send out
 	 * @param 	string $url 			Absolute URL to mPoint that will be sent to the customer
 	 * @throws 	mPointException

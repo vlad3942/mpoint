@@ -3,7 +3,7 @@
 
 <xsl:template match="messages">
 	<xsl:if test="count(item) &gt; 0">
-		<div class="mPoint_Status">
+		<div class="status">
 			<xsl:choose>
 			<xsl:when test="count(item) = 1">
 				<xsl:copy-of select="item" />

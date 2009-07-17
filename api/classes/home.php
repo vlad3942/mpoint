@@ -33,7 +33,7 @@ class Home extends General
 	 * @param	TranslateText $oTxt 	Reference to the Text Translation Object for translating any text into a specific language
 	 * @param 	CountryConfig $oCI 		Reference to the data object with the Country Configuration
 	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt, CountryConfig &$oCI)
+	public function __construct(RDB &$oDB, TranslateText &$oTxt, CountryConfig &$oCI=null)
 	{
 		parent::__construct($oDB, $oTxt);
 
@@ -46,32 +46,50 @@ class Home extends General
 	 * @return CountryConfig
 	 */
 	public function &getCountryConfig() { return $this->_obj_CountryConfig; }
+	
+	/**
+	 * Fetches the unique ID of the End-User's account from the database.
+	 *
+	 * @param	string $addr 		End-User's mobile number or E-Mail address
+	 * @return	integer				Unqiue ID of the End-User's Account or -1 if no account was found
+	 */
+	public function getAccountID($addr)
+	{
+		if (floatval($addr) > $this->_obj_CountryConfig->getMinMobile() ) { $sql = "mobile = '". floatval($addr) ."'"; }
+		else { $sql = "Upper(email) = Upper('". $this->getDBConn()->escStr($addr) ."')"; }
+
+		$sql = "SELECT DISTINCT EUA.id
+				FROM EndUser.Account_Tbl EUA
+				WHERE EUA.countryid = ". $this->_obj_CountryConfig->getID() ."
+					AND ". $sql ." AND EUA.enabled = true";
+//		echo $sql ."\n";
+		$RS = $this->getDBConn()->getName($sql);
+
+		return is_array($RS)===true?$RS["ID"]:-1;
+	}
 
 	/**
 	 * Authenticates the End-User using the provided address (MSISDN or E-Mail) and Password.
 	 * The method will return the following status codes:
-	 * 	 1. Address / Password doesn't match
+	 * 	 1. Account / Password doesn't match
 	 * 	10. Success
 	 *
-	 * @param	string $addr 	End-User's mobile number or E-Mail address
+	 * @param	integer $id 	Unqiue ID of the End-User's Account
 	 * @param	string $pwd 	Password provided by the End-User
 	 * @return	integer
 	 */
-	public function auth($addr, $pwd)
+	public function auth($id, $pwd)
 	{
-		if (floatval($addr) > $this->_obj_CountryConfig->getMinMobile() ) { $sql = "mobile = '". floatval($addr) ."'"; }
-		else { $sql = "Upper(email) = Upper('". $this->getDBConn()->escStr($email) ."')"; }
 		$sql = "SELECT id
 				FROM EndUser.Account_Tbl
-				WHERE countryid = ". $this->_obj_CountryConfig->getID() ."
-					AND ". $sql ." AND passwd = '". $this->getDBConn()->escStr($pwd) ."' AND enabled = true";
+				WHERE id = ". intval($id) ." AND countryid = ". $this->_obj_CountryConfig->getID() ."
+					AND passwd = '". $this->getDBConn()->escStr($pwd) ."' AND enabled = true";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 
 		if (is_array($RS) === true)
 		{
 			$code = 10;
-			$_SESSION['obj_Info']->setInfo("accountid", $RS["ID"]);
 		}
 		else { $code = 1; }
 
@@ -369,6 +387,27 @@ class Home extends General
 //		echo $sql ."\n";
 		
 		return is_resource($this->getDBConn()->query($sql) );
+	}
+	
+	/**
+	 * Constructs the SMTP Headers for the E-Mail Receipt.
+	 * The method will return a string in the following format:
+	 * 	To: {CUSTOMER'S EMAIL ADDRESS}
+	 *	From: mPoint <no-reply@cellpointmobile.com>
+	 *	Reply-To: no-reply@cellpointmobile.com
+	 *	Content-Type: text/plain
+	 *
+	 * @return 	string
+	 */
+	public function constHeaders()
+	{
+		// Construct Mail headers
+//		$sHeaders = 'To: '. $this->_obj_TxnInfo->getEMail() ."\n";
+		$sHeaders = 'From: "mPoint" <no-reply@cellpointmobile.com>' ."\n";
+		$sHeaders .= 'Reply-To: no-reply@cellpointmobile.com' ."\n";
+		$sHeaders .= 'Content-Type: text/plain' ."\n";
+
+		return $sHeaders;
 	}
 }
 ?>

@@ -63,7 +63,7 @@ try
 		// New Account automatically created when Card was saved
 		if ($iStatus == 1)
 		{
-			$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
+			$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo);
 		}
 		// E-Mail has been provided for the transaction
 		if ($obj_mPoint->getTxnInfo()->getEMail() != "")

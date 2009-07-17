@@ -42,13 +42,45 @@ msgstr @@@ Complete Payment @@@
 msgid @@@ Top-Up @@@
 msgstr @@@ Top-Up @@@
 
-#: /webroot/default.php:19
+#: /webroot/default.php:22
 msgid @@@ mPoint @@@
 msgstr @@@ mPoint @@@
 
-#: /webroot/default.php:20
+#: /webroot/default.php:23
 msgid @@@ Unsupported Browser @@@
 msgstr @@@ Unsupported Browser @@@
+
+#: /webroot/home/activate.php:26
+msgid @@@ Activate E-Mail @@@
+msgstr @@@ Activate E-Mail @@@
+
+#: /webroot/home/activate.php:29
+msgid @@@ Step 2 of 2 @@@
+msgstr @@@ Step 2 of 2 @@@
+
+#: /webroot/home/activate.php:32
+msgid @@@ Edit E-Mail Guide - Step 3 @@@
+msgstr @@@ Edit E-Mail Guide - Step 3 @@@
+
+#: /webroot/home/code.php:37
+msgid @@@ Edit Mobile @@@
+msgstr @@@ Edit Mobile @@@
+
+#: /webroot/home/code.php:42
+msgid @@@ Step 2 of 2 @@@
+msgstr @@@ Step 2 of 2 @@@
+
+#: /webroot/home/code.php:43
+msgid @@@ Activation Code @@@
+msgstr @@@ Activation Code @@@
+
+#: /webroot/home/code.php:44
+msgid @@@ Save Mobile @@@
+msgstr @@@ Save Mobile @@@
+
+#: /webroot/home/code.php:47
+msgid @@@ Edit Mobile Guide - Step 2 @@@
+msgstr @@@ Edit Mobile Guide - Step 2 @@@
 
 #: /webroot/home/content.php:34
 msgid @@@ mPoint - User Admin @@@
@@ -81,6 +113,76 @@ msgstr @@@ Top-Up Account - Help @@@
 #: /webroot/home/content.php:47
 msgid @@@ Stored Cards - Help @@@
 msgstr @@@ Stored Cards - Help @@@
+
+#: /webroot/home/edit_email.php:37
+msgid @@@ Edit E-Mail @@@
+msgstr @@@ Edit E-Mail @@@
+
+#: /webroot/home/edit_email.php:42
+msgid @@@ Step 1 of 2 @@@
+msgstr @@@ Step 1 of 2 @@@
+
+#: /webroot/home/edit_email.php:43
+msgid @@@ Old E-Mail @@@
+msgstr @@@ Old E-Mail @@@
+
+#: /webroot/home/edit_email.php:44
+msgid @@@ New E-Mail @@@
+msgstr @@@ New E-Mail @@@
+
+#: /webroot/home/edit_email.php:45
+msgid @@@ Send @@@
+msgstr @@@ Send @@@
+
+#: /webroot/home/edit_email.php:48
+msgid @@@ Edit E-Mail Guide - Step 1 @@@
+msgstr @@@ Please enter your new e-mail address below.
+An activation link will automatically be sent to the entered e-mail address. @@@
+
+#: /webroot/home/edit_mobile.php:37
+msgid @@@ Edit Mobile @@@
+msgstr @@@ Edit Mobile @@@
+
+#: /webroot/home/edit_mobile.php:42
+msgid @@@ Step 1 of 2 @@@
+msgstr @@@ Step 1 of 2 @@@
+
+#: /webroot/home/edit_mobile.php:43
+msgid @@@ Old Mobile @@@
+msgstr @@@ Old Mobile @@@
+
+#: /webroot/home/edit_mobile.php:44
+msgid @@@ New Mobile @@@
+msgstr @@@ New Mobile @@@
+
+#: /webroot/home/edit_mobile.php:45
+msgid @@@ Send @@@
+msgstr @@@ Send @@@
+
+#: /webroot/home/edit_mobile.php:48
+msgid @@@ Edit Mobile Guide - Step 1 @@@
+msgstr @@@ Please enter your new mobile number below?
+An SMS with an activation code will automatically be sent to the entered number. @@@
+
+#: /webroot/home/edit_password.php:37
+msgid @@@ Edit Password @@@
+msgstr @@@ Edit Password @@@
+
+#: /webroot/home/edit_password.php:42
+msgid @@@ Old Password @@@
+msgstr @@@ Old Password @@@
+
+#: /webroot/home/edit_password.php:43
+msgid @@@ New Password @@@
+msgstr @@@ New Password @@@
+
+#: /webroot/home/edit_password.php:44
+msgid @@@ Repeat Password @@@
+msgstr @@@ Repeat Password @@@
+
+#: /webroot/home/edit_password.php:45
+msgid @@@ Save @@@
+msgstr @@@ Save @@@
 
 #: /webroot/home/history.php:37
 msgid @@@ Transaction History @@@
@@ -137,6 +239,18 @@ msgstr @@@ Recipient @@@
 #: /webroot/home/history.php:52
 msgid @@@ Timestamp @@@
 msgstr @@@ Timestamp @@@
+
+#: /webroot/home/link.php:37
+msgid @@@ Edit E-Mail @@@
+msgstr @@@ Edit E-Mail @@@
+
+#: /webroot/home/link.php:42
+msgid @@@ Step 2 of 2 @@@
+msgstr @@@ Step 2 of 2 @@@
+
+#: /webroot/home/link.php:45
+msgid @@@ Edit E-Mail Guide - Step 2 @@@
+msgstr @@@ Edit E-Mail Guide - Step 2 @@@
 
 #: /webroot/home/my_account.php:37
 msgid @@@ My Account @@@
@@ -207,10 +321,58 @@ msgid @@@ save - code: 100 @@@
 msgstr @@@ save - code: 100 @@@
 
 #: /webroot/home/sys/save_info.php:100
-msgid @@@ auth - code: 91 @@@
-msgstr @@@ auth - code: 91 @@@
+msgid @@@ save - code: 91 @@@
+msgstr @@@ save - code: 91 @@@
 
 #: /webroot/home/sys/save_info.php:105
+msgid @@@ internal - code: 2 @@@
+msgstr @@@ internal - code: 2 @@@
+
+#: /webroot/home/sys/save_mobile.php:92
+msgid @@@ save - code: 100 @@@
+msgstr @@@ save - code: 100 @@@
+
+#: /webroot/home/sys/save_mobile.php:103
+msgid @@@ save - code: 91 @@@
+msgstr @@@ save - code: 91 @@@
+
+#: /webroot/home/sys/save_mobile.php:108
+msgid @@@ internal - code: 2 @@@
+msgstr @@@ internal - code: 2 @@@
+
+#: /webroot/home/sys/save_password.php:106
+msgid @@@ save - code: 100 @@@
+msgstr @@@ save - code: 100 @@@
+
+#: /webroot/home/sys/save_password.php:117
+msgid @@@ save - code: 91 @@@
+msgstr @@@ save - code: 91 @@@
+
+#: /webroot/home/sys/save_password.php:122
+msgid @@@ internal - code: 2 @@@
+msgstr @@@ internal - code: 2 @@@
+
+#: /webroot/home/sys/send_code.php:93
+msgid @@@ send - code: 100 @@@
+msgstr @@@ send - code: 100 @@@
+
+#: /webroot/home/sys/send_code.php:99
+msgid @@@ send - code: 91 @@@
+msgstr @@@ send - code: 91 @@@
+
+#: /webroot/home/sys/send_code.php:104
+msgid @@@ internal - code: 2 @@@
+msgstr @@@ internal - code: 2 @@@
+
+#: /webroot/home/sys/send_link.php:90
+msgid @@@ send - code: 100 @@@
+msgstr @@@ send - code: 100 @@@
+
+#: /webroot/home/sys/send_link.php:96
+msgid @@@ send - code: 91 @@@
+msgstr @@@ send - code: 91 @@@
+
+#: /webroot/home/sys/send_link.php:101
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
@@ -278,13 +440,17 @@ msgstr @@@ Password @@@
 msgid @@@ Login @@@
 msgstr @@@ Login @@@
 
-#: /webroot/login/sys/auth.php:140
+#: /webroot/login/sys/auth.php:142
 msgid @@@ auth - code: 10 @@@
 msgstr @@@ auth - code: 10 @@@
 
-#: /webroot/login/sys/auth.php:158
+#: /webroot/login/sys/auth.php:160
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
+
+#: /webroot/login/topmenu.php:21
+msgid @@@ Login @@@
+msgstr @@@ Login @@@
 
 #: /webroot/overview.php:38
 msgid @@@ Order Overview @@@
@@ -558,11 +724,11 @@ Price: {PRICE} @@@
 msgid @@@ Billing SMS @@@
 msgstr @@@ Thank you for using mPoint, you've been charged {PRICE} through your Mobile Operator @@@
 
-#: /api/classes/email_receipt.php:74
+#: /api/classes/email_receipt.php:53
 msgid @@@ E-Mail Receipt - Subject @@@
 msgstr @@@ mPoint Receipt for Order No: {ORDERID} with mPoint ID: {MPOINTID} @@@
 
-#: /api/classes/email_receipt.php:93
+#: /api/classes/email_receipt.php:72
 msgid @@@ E-Mail Receipt - Body @@@
 msgstr @@@ Thank you for using mPoint.
 Please find your order details below.
@@ -572,7 +738,7 @@ Merchant: {CLIENT}
 Order No: {ORDERID}
 Price: {PRICE} @@@
 
-#: /api/classes/enduser_account.php:387
+#: /api/classes/enduser_account.php:390
 msgid @@@ mPoint - Account Info @@@
 msgstr @@@ Your account has been created and is ready for use.
 Please go to {URL} to manage your account at any time.
@@ -586,6 +752,23 @@ msgstr @@@ Welcome to {CLIENT}, please activate the link below @@@
 #: /api/classes/general.php:610
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Welcome to {CLIENT} @@@
+
+#: /api/classes/my_account.php:81
+msgid @@@ mPoint - Send Activation Code @@@
+msgstr @@@ Thank you for updating your mobile number.
+Please enter the activation code: {CODE} on the website to complete your update. @@@
+
+#: /api/classes/my_account.php:211
+msgid @@@ mPoint - Activation Link Subject @@@
+msgstr @@@ Please verify your E-Mail address? @@@
+
+#: /api/classes/my_account.php:212
+msgid @@@ mPoint - Activation Link Body @@@
+msgstr @@@ Thank you for updating your e-mail address.
+Please click the link below to verify your new e-mail address and complete your update.
+{URL}
+
+Please note that this is an autogenerate e-mail which you cannot respond to. @@@
 
 #: /api/classes/shipping.php:114
 msgid @@@ FREE @@@

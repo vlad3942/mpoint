@@ -482,9 +482,9 @@ class General
 	 * @see 	GoMobileClient
 	 * @see 	SMS
 	 *
-	 * @param 	GoMobileConnInfo $oCI 	Connection Info required to communicate with GoMobile
+	 * @param 	GoMobileConnInfo $oCI 	Reference to the data object with the Connection Info required to communicate with GoMobile
 	 * @param 	SMS $oMI 				Reference to the Message Object for holding the message data which will be sent to GoMobile
-	 * @param 	TxnInfo $oTI 			Data Object for the Transaction for which an MT with the payment link should be send out
+	 * @param 	TxnInfo $oTI 			Reference to the data object holding the Transaction for which an MT should be send out
 	 * @throws 	mPointException
 	 */
 	protected function sendMT(GoMobileConnInfo &$oCI, SMS &$oMI, TxnInfo &$oTI)

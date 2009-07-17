@@ -14,6 +14,9 @@
 // Require Global Include File
 require_once("../../inc/include.php");
 
+// Require the PHP API for handling the connection to GoMobile
+require_once(sAPI_CLASS_PATH ."/gomobile.php");
+
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 // Require Business logic for the End-User Account Component
@@ -36,7 +39,7 @@ if (count($aMsgCds) == 0)
 	// New Account automatically created when Password was saved
 	if ($iStatus == 1)
 	{
-		$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
+		$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $_SESSION['obj_TxnInfo');
 	}
 	$aMsgCds[] = 101;
 }

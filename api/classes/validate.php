@@ -262,7 +262,7 @@ class Validate
 	 * @see 	CountryInfo::getMinMobile()
 	 * @see 	CountryInfo::getMaxMobile()
 	 *
-	 * @param 	string $mob 	The Mobile Number (MSISDN), please note this should be treated as a 64-bit Integer
+	 * @param 	string $mob 	The Mobile Number (MSISDN) which should be validated, please note this should be treated as a 64-bit Integer
 	 * @return 	integer
 	 */
 	public function valMobile($mob)
@@ -587,7 +587,7 @@ class Validate
 	 *
 	 * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
 	 * @param 	integer $id 	Unique ID of the End-User's account
-	 * @param 	integer $amount	Unique ID of the Saved Card which should be validated
+	 * @param 	integer $amount	Total amount for the transaction that the End-User will be charged upon completion
 	 * @return 	integer
 	 */
 	public function valAccount(RDB &$oDB, $id, $amount)
@@ -607,6 +607,27 @@ class Validate
 			elseif ($RS["BALANCE"] < $amount) { $code = 5;}
 			else { $code = 10; }
 		}
+
+		return $code;
+	}
+	
+	/**
+	 * Validates the Activation Code.
+	 * The method will return the following status codes:
+	 * 	 1. Undefined Activation Code
+	 * 	 2. Activation Code is too small, min value is 100.000
+	 * 	 3. Activation Code is too great, max value is 999.999
+	 * 	10. Success
+	 *
+	 * @param 	integer $ac		Activation code which should be validated
+	 * @return 	integer
+	 */
+	public function valCode($ac)
+	{
+		if (empty($ac) === true) { $code = 1; }			// Activation Code is undefined
+		elseif (intval($ac) < 100000) { $code = 2; }	// Activation Code is too small
+		elseif (intval($ac) > 999999) { $code = 3; }	// Activation Code is too great
+		else { $code = 10; }
 
 		return $code;
 	}

@@ -13,10 +13,11 @@
 			<table cellpadding="0" cellspacing="0">
 				<tr class="mPoint_Even">
 					<td class="label"><xsl:value-of select="labels/id" /></td>
+					<td class="label"><xsl:value-of select="labels/mpointid" /></td>
 					<td class="label"><xsl:value-of select="labels/amount" /></td>
 					<td class="label"><xsl:value-of select="labels/timestamp" /></td>
 				</tr>
-				<xsl:apply-templates select="history/transaction[@type = 100]" mode="topup" />
+				<xsl:apply-templates select="history/transaction[@type = 1000]" mode="topup" />
 			</table>
 			</td>
 			<td id="purchase-history">
@@ -31,7 +32,7 @@
 					<td class="label"><xsl:value-of select="labels/orderid" /></td>
 					<td class="label"><xsl:value-of select="labels/timestamp" /></td>
 				</tr>
-				<xsl:apply-templates select="history/transaction[@type = 101]" mode="purchase" />
+				<xsl:apply-templates select="history/transaction[@type = 1001]" mode="purchase" />
 			</table>
 			</td>
 			<td id="transfer-history">
@@ -44,7 +45,7 @@
 					<td class="label"><xsl:value-of select="labels/amount" /></td>
 					<td class="label"><xsl:value-of select="labels/timestamp" /></td>
 				</tr>
-				<xsl:apply-templates select="history/transaction[@type = 102]" mode="transfer" />
+				<xsl:apply-templates select="history/transaction[@type = 1002]" mode="transfer" />
 			</table>
 			</td>
 		</tr>
@@ -68,6 +69,7 @@
 	
 	<tr class="{$css}">
 		<td class="mPoint_Number"><xsl:value-of select="@id" /></td>
+		<td class="mPoint_Number"><xsl:value-of select="@mpointid" /></td>
 		<td class="mPoint_Number"><xsl:value-of select="price" /></td>
 		<td><xsl:value-of select="timestamp" /></td>
 	</tr>

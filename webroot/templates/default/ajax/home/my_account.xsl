@@ -10,7 +10,11 @@
 		<tr>
 			<td id="account-info">
 				<h2><xsl:value-of select="labels/account-info" /></h2>
-				<xsl:apply-templates select="account" />
+				<form id="edit-info" action="/home/sys/save_info.php" method="post">
+					<div>
+						<xsl:apply-templates select="account" />
+					</div>
+				</form>
 			</td>
 			<td id="stored-cards">
 				<h2><xsl:value-of select="labels/multiple-stored-cards" /></h2>
@@ -53,34 +57,43 @@
 	</tr>
 	<tr>
 		<td>
+			<label for="password" accesskey="P"><xsl:value-of select="//labels/password" /></label>
+		</td>
+		<td><xsl:value-of select="masked-password" /></td>
+		<td><a href="#" onclick="javascript:obj_Window.openWindow('edit-password', 'my-account', '/home/edit_password.php', 'edit-password', new Array(obj_Client, obj_Client.changePage) );" tabindex="1" title="password"><xsl:value-of select="//labels/edit" /></a></td>
+	</tr>
+	<tr>
+		<td>
 			<label for="firstname" accesskey="F"><xsl:value-of select="//labels/firstname" /></label>
 		</td>
-		<td><input type="text" id="firstname" name="firstname" class="text" onfocus="javascript:obj_Client.clear(this);" onblur="javascript:obj_Client.sendLinkedData(document.getElementById('send_login'), new Array(this, document.getElementById('send_login').countryid) );" tabindex="1" title="firstname" value="{firstname}" /></td>
+		<td><input type="text" id="firstname" name="firstname" class="text" onfocus="javascript:obj_Client.clear(this);" onblur="javascript:obj_Client.sendInputData(document.getElementById('edit-info'), this);" tabindex="2" title="firstname" value="{firstname}" /></td>
 		<td><img class="hidden" name="firstname_img" id="firstname_img" src="/img/rederrorarrow.gif" width="13" height="10" alt="" border="0" /></td>
 	</tr>
 	<tr>
 		<td>
 			<label for="lastname" accesskey="L"><xsl:value-of select="//labels/lastname" /></label>
 		</td>
-		<td><input type="text" id="lastname" name="lastname" class="text" onfocus="javascript:obj_Client.clear(this);" onblur="javascript:obj_Client.sendLinkedData(document.getElementById('send_login'), new Array(this, document.getElementById('send_login').countryid) );" tabindex="2" title="lastname" value="{lastname}" /></td>
+		<td><input type="text" id="lastname" name="lastname" class="text" onfocus="javascript:obj_Client.clear(this);" onblur="javascript:obj_Client.sendInputData(document.getElementById('edit-info'), this);" tabindex="3" title="lastname" value="{lastname}" /></td>
 		<td><img class="hidden" name="lastname_img" id="lastname_img" src="/img/rederrorarrow.gif" width="13" height="10" alt="" border="0" /></td>
 	</tr>
 	<tr>
 		<td>
 			<label for="mobile" accesskey="M"><xsl:value-of select="//labels/mobile" /></label>
 		</td>
-		<td><input type="text" id="mobile" name="mobile" class="text" onfocus="javascript:obj_Client.clear(this);" onblur="javascript:obj_Client.sendLinkedData(document.getElementById('send_login'), new Array(this, document.getElementById('send_login').countryid) );" tabindex="3" title="mobile" value="{mobile}" /></td>
-		<td><img class="hidden" name="mobile_img" id="mobile_img" src="/img/rederrorarrow.gif" width="13" height="10" alt="" border="0" /></td>
+		<td><xsl:value-of select="mobile" /></td>
+		<td><a href="#" onclick="javascript:obj_Window.openWindow('edit-mobile', 'my-account', '/home/edit_mobile.php', 'edit-mobile', new Array(obj_Client, obj_Client.changePage) );" tabindex="4" title="mobile"><xsl:value-of select="//labels/edit" /></a></td>
 	</tr>
 	<tr>
 		<td>
 			<label for="email" accesskey="E"><xsl:value-of select="//labels/email" /></label>
 		</td>
-		<td><input type="text" id="email" name="email" class="text" onfocus="javascript:obj_Client.clear(this);" onblur="javascript:obj_Client.sendLinkedData(document.getElementById('send_login'), new Array(this, document.getElementById('send_login').countryid) );" tabindex="4" title="email" value="{email}" /></td>
-		<td><img class="hidden" name="email_img" id="email_img" src="/img/rederrorarrow.gif" width="13" height="10" alt="" border="0" /></td>
+		<td><xsl:value-of select="email" /></td>
+		<td><a href="#" onclick="javascript:obj_Window.openWindow('edit-email', 'my-account', '/home/edit_email.php', 'edit-email', new Array(obj_Client, obj_Client.changePage) );" tabindex="5" title="email"><xsl:value-of select="//labels/edit" /></a></td>
 	</tr>
 	<tr>
-		<td id="submit" colspan="2"><input type="button" value="{//labels/submit}" class="button" onclick="javascript:obj_Client.sendFormData(document.getElementById('send_login') );" tabindex="5" title="save" /></td>
+		<td class="submit" colspan="2">
+			<input type="button" value="{//labels/submit}" class="button" onclick="javascript:obj_Client.sendFormData(document.getElementById('edit-info') );" tabindex="6" title="save" />
+		</td>
 	</tr>
 	</table>
 </xsl:template>
@@ -88,7 +101,7 @@
 <xsl:template match="card">
 	<tr>
 		<td><input type="hidden" name="id" value="{@id}" /></td>
-		<td><img src="/img/card_{@type}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
+		<td><img src="/img/card_{type/@id}.png" width="31" height="20" alt="{type}" /></td>
 		<td><xsl:value-of select="mask" /></td>
 		<td class="info">(<xsl:value-of select="expiry" />)</td>
 	</tr>

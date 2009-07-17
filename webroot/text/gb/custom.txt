@@ -164,7 +164,7 @@ msgstr @@@ E-Mail address is too short, a valid e-mail address must be min 5 cha
 msgid @@@ E-Mail - 13 @@@
 msgstr @@@ E-Mail address is too long, a valid e-mail address must be max 50 characters @@@
 msgid @@@ E-Mail - 14 @@@
-msgstr @@@ E-Mail address contains invalid characters, an e-mail address may only contain the following chaaracters: 0-9 A-Z a-z Ã¦ Ã¸ Ã¥ Ã† Ã˜ Ã… _ . - @ @@@
+msgstr @@@ E-Mail address contains invalid characters, an e-mail address may only contain the following characters: 0-9 A-Z a-z æ ø å ä ö Æ Ø Å Ä Ö _ . - @ @@@
 msgid @@@ E-Mail - 15 @@@
 msgstr @@@ E-Mail has an invalid format, a valid e-mail address must be in the format of: donald.duck@cellpointmobile.com @@@
 msgid @@@ E-Mail - 91 @@@
@@ -310,6 +310,38 @@ msgstr @@@ Repeated password may not contain the following characters: " and ' @
 msgid @@@ Create Account - 31 @@@
 msgstr @@@ Entered passwords doesn't match, please try again? @@@
 
+msgid @@@ Activate E-Mail - 11 @@@
+msgstr @@@ Undefined Account ID @@@
+msgid @@@ Activate E-Mail - 12 @@@
+msgstr @@@ Invalid Account ID @@@
+msgid @@@ Activate E-Mail - 13 @@@
+msgstr @@@ Account not found @@@
+msgid @@@ Activate E-Mail - 14 @@@
+msgstr @@@ Account disabled @@@
+msgid @@@ Activate E-Mail - 15 @@@
+msgstr @@@   @@@
+msgid @@@ Activate E-Mail - 21 @@@
+msgstr @@@ Undefined Activation Code @@@
+msgid @@@ Activate E-Mail - 22 @@@
+msgstr @@@ Activation Code is too small, min value is 100.000 @@@
+msgid @@@ Activate E-Mail - 23 @@@
+msgstr @@@ Activation Code is too great, max value is 999.999 @@@
+msgid @@@ Activate E-Mail - 24 @@@
+msgstr @@@ Activation Code not found for Account @@@
+msgid @@@ Activate E-Mail - 25 @@@
+msgstr @@@ Activation Code disabled @@@
+msgid @@@ Activate E-Mail - 26 @@@
+msgstr @@@ Activation code already been used, please login again and start over? @@@
+msgid @@@ Activate E-Mail - 27 @@@
+msgstr @@@ Internal Error - Activation code could not be used, please try again? @@@
+msgid @@@ Activate E-Mail - 31 @@@
+msgstr @@@ Invalid checksum, please go back to your e-mail client and verify that the link hasn't been broken into 2 lines?
+You need to manually copy + paste the link into your browsers address bar if the link is in 2 lines. @@@
+msgid @@@ Activate E-Mail - 32 @@@
+msgstr @@@ Internal Error - E-Mail address could not be saved, please try again? @@@
+msgid @@@ Activate E-Mail - 100 @@@
+msgstr @@@ E-Mail address saved @@@
+
 #: /webroot/login/sys/auth.php:57
 msgid @@@ countryid - code: 1 @@@
 msgstr @@@ Please select a country from the dropdown? @@@
@@ -392,11 +424,13 @@ msgstr @@@ E-Mail address contains invalid characters, an e-mail address can onl
 msgid @@@ username - code: 15 @@@
 msgstr @@@ E-Mail address has an invalid format, an e-mail address must have the following format: user@domain.topdomain, i.e. john.doe@hotmail.com or john_joe@mail.hot.com @@@
 
-#: /webroot/login/sys/auth.php:140
-msgid @@@ auth - code: 1 @@@
-msgstr @@@ Mobile Number / E-Mail address and Password doesn't match @@@
+#: /webroot/login/sys/auth.php:142
 msgid @@@ auth - code: 10 @@@
 msgstr @@@ Login successful, please wait while the internal cache is being updated @@@
+
+#: /webroot/login/sys/auth.php:155
+msgid @@@ auth - code: 1 @@@
+msgstr @@@ Mobile Number / E-Mail address and Password doesn't match @@@
 
 #: /webroot/home/sys/save_info.php:60
 msgid @@@ firstname - code: 1 @@@
@@ -448,4 +482,184 @@ msgstr @@@ Information Saved @@@
 
 #: /webroot/home/sys/save_info.php:100
 msgid @@@ save - code: 91 @@@
-msgstr @@@ Internal Error - Information could not be saved, please select try again? @@@
+msgstr @@@ Internal Error - Information could not be saved, please try again? @@@
+
+#: /webroot/home/sys/save_password.php:64
+msgid @@@ oldpassword - code: 1 @@@
+msgstr @@@ Please enter your old password? @@@
+msgid @@@ oldpassword - code: 2 @@@
+msgstr @@@ Old password is too short, min length is: {AUTH MIN LENGTH} @@@
+msgid @@@ oldpassword - code: 3 @@@
+msgstr @@@ Old password is too long, max length is: {AUTH MAX LENGTH} @@@
+msgid @@@ oldpassword - code: 4 @@@
+msgstr @@@ Old password contains invalid characters, a password may not contain the following characters: ' and " @@@
+msgid @@@ oldpassword - code: 5 @@@
+msgstr @@@ Unable to authenticate using the entered old password, please try again? @@@
+msgid @@@ oldpassword - code: 100 @@@
+msgstr @@@  @@@
+msgid @@@ newpassword - code: 1 @@@
+msgstr @@@ Please enter your New password? @@@
+msgid @@@ newpassword - code: 2 @@@
+msgstr @@@ New password is too short, min length is: {AUTH MIN LENGTH} @@@
+msgid @@@ newpassword - code: 3 @@@
+msgstr @@@ New password is too long, max length is: {AUTH MAX LENGTH} @@@
+msgid @@@ newpassword - code: 4 @@@
+msgstr @@@ New password contains invalid characters, a password may not contain the following characters: ' and " @@@
+msgid @@@ newpassword - code: 100 @@@
+msgstr @@@  @@@
+msgid @@@ repeatpassword - code: 1 @@@
+msgstr @@@ Please enter your Repeated password? @@@
+msgid @@@ repeatpassword - code: 2 @@@
+msgstr @@@ Repeated password is too short, min length is: {AUTH MIN LENGTH} @@@
+msgid @@@ repeatpassword - code: 3 @@@
+msgstr @@@ Repeated password is too long, max length is: {AUTH MAX LENGTH} @@@
+msgid @@@ repeatpassword - code: 4 @@@
+msgstr @@@ Repeated password contains invalid characters, a password may not contain the following characters: ' and " @@@
+msgid @@@ repeatpassword - code: 100 @@@
+msgstr @@@  @@@
+
+#: /webroot/home/sys/save_password.php:87
+msgid @@@ oldpassword - code: 1 @@@
+msgstr @@@ Please enter your old password? @@@
+msgid @@@ oldpassword - code: 2 @@@
+msgstr @@@ Old password is too short, min length is: {AUTH MIN LENGTH} @@@
+msgid @@@ oldpassword - code: 3 @@@
+msgstr @@@ Old password is too long, max length is: {AUTH MAX LENGTH} @@@
+msgid @@@ oldpassword - code: 4 @@@
+msgstr @@@ Old password contains invalid characters, a password may not contain the following characters: ' and " @@@
+msgid @@@ oldpassword - code: 5 @@@
+msgstr @@@ Unable to authenticate using the entered old password, please try again? @@@
+msgid @@@ oldpassword - code: 100 @@@
+msgstr @@@  @@@
+msgid @@@ newpassword - code: 1 @@@
+msgstr @@@ Please enter your New password? @@@
+msgid @@@ newpassword - code: 2 @@@
+msgstr @@@ New password is too short, min length is: {AUTH MIN LENGTH} @@@
+msgid @@@ newpassword - code: 3 @@@
+msgstr @@@ New password is too long, max length is: {AUTH MAX LENGTH} @@@
+msgid @@@ newpassword - code: 4 @@@
+msgstr @@@ New password is too long, max length is: {AUTH MAX LENGTH} @@@
+msgid @@@ newpassword - code: 5 @@@
+msgstr @@@ Entered passwords doesn't match, please try again? @@@
+msgid @@@ newpassword - code: 100 @@@
+msgstr @@@  @@@
+msgid @@@ repeatpassword - code: 1 @@@
+msgstr @@@ Please repeat your new password? @@@
+msgid @@@ repeatpassword - code: 2 @@@
+msgstr @@@ Repeated password is too short, min length is: {AUTH MIN LENGTH} @@@
+msgid @@@ repeatpassword - code: 3 @@@
+msgstr @@@ Repeated password is too long, max length is: {AUTH MAX LENGTH} @@@
+msgid @@@ repeatpassword - code: 4 @@@
+msgstr @@@ Repeated password contains invalid characters, a password may not contain the following characters: ' and " @@@
+msgid @@@ repeatpassword - code: 5 @@@
+msgstr @@@   @@@
+msgid @@@ repeatpassword - code: 100 @@@
+msgstr @@@  @@@
+
+#: /webroot/home/sys/save_password.php:106
+msgid @@@ save - code: 100 @@@
+msgstr @@@ Password Saved @@@
+
+#: /webroot/home/sys/save_password.php:117
+msgid @@@ save - code: 91 @@@
+msgstr @@@ Internal Error - Password could not be saved, please try again? @@@
+
+#: /webroot/home/sys/send_code.php:60
+msgid @@@ mobile - code: 1 @@@
+msgstr @@@ Please enter your new mobile number? @@@
+msgid @@@ mobile - code: 2 @@@
+msgstr @@@ Entered mobile number is too short @@@
+msgid @@@ mobile - code: 3 @@@
+msgstr @@@ Entered mobile number is too long @@@
+msgid @@@ mobile - code: 100 @@@
+msgstr @@@  @@@
+
+#: /webroot/home/sys/send_code.php:74
+msgid @@@ mobile - code: 1 @@@
+msgstr @@@ Please enter your new mobile number? @@@
+msgid @@@ mobile - code: 2 @@@
+msgstr @@@ Entered mobile number is too short @@@
+msgid @@@ mobile - code: 3 @@@
+msgstr @@@ Entered mobile number is too long @@@
+msgid @@@ mobile - code: 100 @@@
+msgstr @@@  @@@
+
+#: /webroot/home/sys/send_code.php:93
+msgid @@@ send - code: 100 @@@
+msgstr @@@ A one time code has been sent to your new mobile number @@@
+
+#: /webroot/home/sys/send_code.php:99
+msgid @@@ send - code: 91 @@@
+msgstr @@@ Internal Error - Code could not be sent, please try again? @@@
+
+#: /webroot/home/sys/save_mobile.php:57
+msgid @@@ code - code: 1 @@@
+msgstr @@@ Please enter the received activation code? @@@
+msgid @@@ code - code: 2 @@@
+msgstr @@@ The entered activation code is too short, min value is 100.000 @@@
+msgid @@@ code - code: 3 @@@
+msgstr @@@ The entered activation code is too short, max value is 999.999 @@@
+msgid @@@ code - code: 100 @@@
+msgstr @@@  @@@
+
+#: /webroot/home/sys/save_mobile.php:72
+msgid @@@ code - code: 1 @@@
+msgstr @@@ Please enter the received activation code? @@@
+msgid @@@ code - code: 2 @@@
+msgstr @@@ The entered activation code is too short, min value is 100.000 @@@
+msgid @@@ code - code: 3 @@@
+msgstr @@@ The entered activation code is too short, max value is 999.999 @@@
+msgid @@@ code - code: 4 @@@
+msgstr @@@ The entered activation code could not be not found for your account @@@
+msgid @@@ code - code: 5 @@@
+msgstr @@@ The entered activation code is not active, please close the window and start over to receive a new code? @@@
+msgid @@@ code - code: 6 @@@
+msgstr @@@ The entered activation code has already been used, please close the window and start over to receive a new code? @@@
+msgid @@@ code - code: 7 @@@
+msgstr @@@ Internal Error - Activation code could not be used, please try again? @@@
+msgid @@@ code - code: 100 @@@
+msgstr @@@  @@@
+
+#: /webroot/home/sys/save_mobile.php:92
+msgid @@@ save - code: 100 @@@
+msgstr @@@ Your new mobile number has been saved @@@
+
+#: /webroot/home/sys/save_mobile.php:103
+msgid @@@ save - code: 91 @@@
+msgstr @@@ Internal Error - Mobile number could not be saved, please try again? @@@
+
+#: /webroot/home/sys/send_link.php:57
+msgid @@@ email - code: 1 @@@
+msgstr @@@ Please enter your new e-mail address? @@@
+msgid @@@ email - code: 2 @@@
+msgstr @@@ The entered e-mail address is too short @@@
+msgid @@@ email - code: 3 @@@
+msgstr @@@ The entered e-mail address is too long @@@
+msgid @@@ email - code: 4 @@@
+msgstr @@@ E-Mail address contains invalid characters, an e-mail address may only contain the following characters: 0-9 A-Z a-z æ ø å ä ö Æ Ø Å Ä Ö _ . - @ @@@
+msgid @@@ email - code: 5 @@@
+msgstr @@@ E-Mail has an invalid format, a valid e-mail address must be in the format of: donald.duck@cellpointmobile.com @@@
+msgid @@@ email - code: 100 @@@
+msgstr @@@  @@@
+
+#: /webroot/home/sys/send_link.php:71
+msgid @@@ email - code: 1 @@@
+msgstr @@@ Please enter your new e-mail address? @@@
+msgid @@@ email - code: 2 @@@
+msgstr @@@ The entered e-mail address is too short @@@
+msgid @@@ email - code: 3 @@@
+msgstr @@@ The entered e-mail address is too long @@@
+msgid @@@ email - code: 4 @@@
+msgstr @@@ E-Mail address contains invalid characters, an e-mail address may only contain the following characters: 0-9 A-Z a-z æ ø å ä ö Æ Ø Å Ä Ö _ . - @ @@@
+msgid @@@ email - code: 5 @@@
+msgstr @@@ E-Mail has an invalid format, a valid e-mail address must be in the format of: donald.duck@cellpointmobile.com @@@
+msgid @@@ email - code: 100 @@@
+msgstr @@@  @@@
+
+#: /webroot/home/sys/send_link.php:90
+msgid @@@ send - code: 100 @@@
+msgstr @@@ An activation link has been sent to the entered e-mail address @@@
+
+#: /webroot/home/sys/send_link.php:96
+msgid @@@ send - code: 91 @@@
+msgstr @@@ Internal Error - Activation link could not be sent, please try again? @@@
