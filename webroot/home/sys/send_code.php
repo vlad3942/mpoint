@@ -45,6 +45,7 @@ case "input":
 		{
 		case "mobile":	// Validate Mobile
 			$aErrCd["mobile"] = $obj_Validator->valMobile( (string) $input);
+			if ($aErrCd["mobile"] == 10) { $aErrCd["mobile"] = $obj_mPoint->valMobile($_SESSION['obj_Info']->getInfo("accountid"), (string) $input) + 3; }
 			break;
 		default:			// Error: Unknown tag
 			$aErrCd["internal"] = 2;
@@ -64,6 +65,7 @@ case "input":
 case "form":
 	// Validate Input
 	$aErrCd["mobile"] = $obj_Validator->valMobile( (string) $obj_XML->form->mobile);
+	if ($aErrCd["mobile"] == 10) { $aErrCd["mobile"] = $obj_mPoint->valMobile($_SESSION['obj_Info']->getInfo("accountid"), (string) $obj_XML->form->mobile) + 3; }
 	
 	// Check return codes for errors
 	while (list($tag, $code) = each($aErrCd) )

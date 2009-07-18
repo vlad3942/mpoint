@@ -564,31 +564,39 @@ msgstr @@@ Password Saved @@@
 msgid @@@ save - code: 91 @@@
 msgstr @@@ Internal Error - Password could not be saved, please try again? @@@
 
-#: /webroot/home/sys/send_code.php:60
+#: /webroot/home/sys/send_code.php:61
 msgid @@@ mobile - code: 1 @@@
 msgstr @@@ Please enter your new mobile number? @@@
 msgid @@@ mobile - code: 2 @@@
 msgstr @@@ Entered mobile number is too short @@@
 msgid @@@ mobile - code: 3 @@@
 msgstr @@@ Entered mobile number is too long @@@
+msgid @@@ mobile - code: 4 @@@
+msgstr @@@ The entered mobile number is already registered to your account @@@
+msgid @@@ mobile - code: 5 @@@
+msgstr @@@ The entered mobile number is already registered to another user account @@@
 msgid @@@ mobile - code: 100 @@@
 msgstr @@@  @@@
 
-#: /webroot/home/sys/send_code.php:74
+#: /webroot/home/sys/send_code.php:76
 msgid @@@ mobile - code: 1 @@@
 msgstr @@@ Please enter your new mobile number? @@@
 msgid @@@ mobile - code: 2 @@@
 msgstr @@@ Entered mobile number is too short @@@
 msgid @@@ mobile - code: 3 @@@
 msgstr @@@ Entered mobile number is too long @@@
+msgid @@@ mobile - code: 4 @@@
+msgstr @@@ The entered mobile number is already registered to your account @@@
+msgid @@@ mobile - code: 5 @@@
+msgstr @@@ The entered mobile number is already registered to another user account @@@
 msgid @@@ mobile - code: 100 @@@
 msgstr @@@  @@@
 
-#: /webroot/home/sys/send_code.php:93
+#: /webroot/home/sys/send_code.php:95
 msgid @@@ send - code: 100 @@@
 msgstr @@@ A one time code has been sent to your new mobile number @@@
 
-#: /webroot/home/sys/send_code.php:99
+#: /webroot/home/sys/send_code.php:101
 msgid @@@ send - code: 91 @@@
 msgstr @@@ Internal Error - Code could not be sent, please try again? @@@
 
@@ -628,7 +636,7 @@ msgstr @@@ Your new mobile number has been saved @@@
 msgid @@@ save - code: 91 @@@
 msgstr @@@ Internal Error - Mobile number could not be saved, please try again? @@@
 
-#: /webroot/home/sys/send_link.php:57
+#: /webroot/home/sys/send_link.php:58
 msgid @@@ email - code: 1 @@@
 msgstr @@@ Please enter your new e-mail address? @@@
 msgid @@@ email - code: 2 @@@
@@ -639,10 +647,14 @@ msgid @@@ email - code: 4 @@@
 msgstr @@@ E-Mail address contains invalid characters, an e-mail address may only contain the following characters: 0-9 A-Z a-z æ ø å ä ö Æ Ø Å Ä Ö _ . - @ @@@
 msgid @@@ email - code: 5 @@@
 msgstr @@@ E-Mail has an invalid format, a valid e-mail address must be in the format of: donald.duck@cellpointmobile.com @@@
+msgid @@@ email - code: 6 @@@
+msgstr @@@ The entered E-Mail address is already registered to your account @@@
+msgid @@@ email - code: 7 @@@
+msgstr @@@ The entered E-Mail address is already registered to another user account @@@
 msgid @@@ email - code: 100 @@@
 msgstr @@@  @@@
 
-#: /webroot/home/sys/send_link.php:71
+#: /webroot/home/sys/send_link.php:73
 msgid @@@ email - code: 1 @@@
 msgstr @@@ Please enter your new e-mail address? @@@
 msgid @@@ email - code: 2 @@@
@@ -653,14 +665,18 @@ msgid @@@ email - code: 4 @@@
 msgstr @@@ E-Mail address contains invalid characters, an e-mail address may only contain the following characters: 0-9 A-Z a-z æ ø å ä ö Æ Ø Å Ä Ö _ . - @ @@@
 msgid @@@ email - code: 5 @@@
 msgstr @@@ E-Mail has an invalid format, a valid e-mail address must be in the format of: donald.duck@cellpointmobile.com @@@
+msgid @@@ email - code: 6 @@@
+msgstr @@@ The entered E-Mail address is already registered to your account @@@
+msgid @@@ email - code: 7 @@@
+msgstr @@@ The entered E-Mail address is already registered to another user account @@@
 msgid @@@ email - code: 100 @@@
 msgstr @@@  @@@
 
-#: /webroot/home/sys/send_link.php:90
+#: /webroot/home/sys/send_link.php:92
 msgid @@@ send - code: 100 @@@
 msgstr @@@ An activation link has been sent to the entered e-mail address @@@
 
-#: /webroot/home/sys/send_link.php:96
+#: /webroot/home/sys/send_link.php:98
 msgid @@@ send - code: 91 @@@
 msgstr @@@ Internal Error - Activation link could not be sent, please try again? @@@
 

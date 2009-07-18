@@ -361,27 +361,27 @@ msgstr @@@ save - code: 91 @@@
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
-#: /webroot/home/sys/send_code.php:93
+#: /webroot/home/sys/send_code.php:95
 msgid @@@ send - code: 100 @@@
 msgstr @@@ send - code: 100 @@@
 
-#: /webroot/home/sys/send_code.php:99
+#: /webroot/home/sys/send_code.php:101
 msgid @@@ send - code: 91 @@@
 msgstr @@@ send - code: 91 @@@
 
-#: /webroot/home/sys/send_code.php:104
+#: /webroot/home/sys/send_code.php:106
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
-#: /webroot/home/sys/send_link.php:90
+#: /webroot/home/sys/send_link.php:92
 msgid @@@ send - code: 100 @@@
 msgstr @@@ send - code: 100 @@@
 
-#: /webroot/home/sys/send_link.php:96
+#: /webroot/home/sys/send_link.php:98
 msgid @@@ send - code: 91 @@@
 msgstr @@@ send - code: 91 @@@
 
-#: /webroot/home/sys/send_link.php:101
+#: /webroot/home/sys/send_link.php:103
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 

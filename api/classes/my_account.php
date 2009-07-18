@@ -208,5 +208,63 @@ class MyAccount extends Home
 
 		return is_resource($this->getDBConn()->query($sql) );
 	}
+	
+	/**
+	 * Validates the specified mobile number (MSISDN) against the content of database table: EndUser.Account_Tbl.
+	 * The method will return the following status codes:
+	 * 	 1. Mobile Number already belongs to the end-user's account
+	 * 	 2. Mobile Number already belongs to another end-user's account
+	 * 	10. Success
+	 * 
+	 * @param	integer $id		Unqiue ID of the End-User's Account
+	 * @param 	string $mob		The End-User's new Mobile Number (MSISDN) which should be validated
+	 * @return 	integer
+	 */
+	public function valMobile($id, $mob)
+	{
+		$sql = "SELECT id
+				FROM EndUser.Account_Tbl
+				WHERE countryid = ". $this->getCountryConfig()->getID() ." AND mobile = '". floatval($mob) ."'";
+//		echo $sql ."\n";
+		$RS = $this->getDBConn()->getName($sql);
+		
+		if (is_array($RS) === true)
+		{
+			if ($RS["ID"] == $id) { $code = 1; }
+			else { $code = 2; }
+		}
+		else { $code = 10; }
+		
+		return $code;
+	}
+	
+	/**
+	 * Validates the specified e-mail address against the content of database table: EndUser.Account_Tbl.
+	 * The method will return the following status codes:
+	 * 	 1. E-Mail address already belongs to the end-user's account
+	 * 	 2. E-Mail address already belongs to another end-user's account
+	 * 	10. Success
+	 * 
+	 * @param	integer $id		Unqiue ID of the End-User's Account
+	 * @param 	string $email	The End-User's new e-mail address which should be validated
+	 * @return 	integer
+	 */
+	public function valEMail($id, $email)
+	{
+		$sql = "SELECT id
+				FROM EndUser.Account_Tbl
+				WHERE countryid = ". $this->getCountryConfig()->getID() ." AND Upper(email) = Upper('". $this->getDBConn()->escStr($email) ."')";
+//		echo $sql ."\n";
+		$RS = $this->getDBConn()->getName($sql);
+		
+		if (is_array($RS) === true)
+		{
+			if ($RS["ID"] == $id) { $code = 1; }
+			else { $code = 2; }
+		}
+		else { $code = 10; }
+		
+		return $code;
+	}
 }
 ?>

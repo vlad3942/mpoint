@@ -42,6 +42,7 @@ case "input":
 		{
 		case "email":	// Validate E-Mail
 			$aErrCd["email"] = $obj_Validator->valEMail( (string) $input);
+			if ($aErrCd["email"] == 10) { $aErrCd["email"] = $obj_mPoint->valEMail($_SESSION['obj_Info']->getInfo("accountid"), (string) $input) + 5; }
 			break;
 		default:			// Error: Unknown tag
 			$aErrCd["internal"] = 2;
@@ -61,6 +62,7 @@ case "input":
 case "form":
 	// Validate Input
 	$aErrCd["email"] = $obj_Validator->valEMail( (string) $obj_XML->form->email);
+	if ($aErrCd["email"] == 10) { $aErrCd["email"] = $obj_mPoint->valEMail($_SESSION['obj_Info']->getInfo("accountid"), (string) $obj_XML->form->email) + 5; }
 	
 	// Check return codes for errors
 	while (list($tag, $code) = each($aErrCd) )
