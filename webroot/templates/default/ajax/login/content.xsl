@@ -54,7 +54,7 @@
 					<td><img class="hidden" name="password_img" id="password_img" src="/img/rederrorarrow.gif" width="13" height="10" alt="" border="0" /></td>
 				</tr>
 				<tr>
-					<td id="submit" colspan="2"><input type="button" value="{submit}" class="button" onclick="javascript:obj_Client.sendFormData(document.getElementById('send_login') );" tabindex="4" title="login" /></td>
+					<td class="submit" colspan="2"><input type="button" value="{submit}" class="button" onclick="javascript:obj_Client.sendFormData(document.getElementById('send_login') );" tabindex="4" title="login" /></td>
 				</tr>
 				</table>
 			</p>

@@ -39,7 +39,7 @@ else
 			<?= $_SESSION['obj_CountryConfig']->toXML(); ?>
 
 			<labels>
-				<progress><?= $_OBJ_TXT->_("Step 2 of 2"); ?></progress>
+				<progress><?= $_OBJ_TXT->_("Step 2 of 3"); ?></progress>
 			</labels>
 			
 			<guide><?= $_OBJ_TXT->_("Edit E-Mail Guide - Step 2"); ?></guide>

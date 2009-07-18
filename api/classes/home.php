@@ -31,13 +31,13 @@ class Home extends General
 	 *
 	 * @param	RDB $oDB				Reference to the Database Object that holds the active connection to the mPoint Database
 	 * @param	TranslateText $oTxt 	Reference to the Text Translation Object for translating any text into a specific language
-	 * @param 	CountryConfig $oCI 		Reference to the data object with the Country Configuration
+	 * @param 	CountryConfig $oCC 		Reference to the data object with the Country Configuration
 	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt, CountryConfig &$oCI=null)
+	public function __construct(RDB &$oDB, TranslateText &$oTxt, CountryConfig &$oCC=null)
 	{
 		parent::__construct($oDB, $oTxt);
 
-		$this->_obj_CountryConfig = $oCI;
+		$this->_obj_CountryConfig = $oCC;
 	}
 	
 	/**
@@ -135,10 +135,10 @@ class Home extends General
 	 *		<lastname>{END-USER'S LASTNAME}</lastname>
 	 *		<mobile>{END-USER'S MOBILE NUMBER (MSISDN) }</mobile>
 	 *		<email>{END-USER'S E-MAIL ADDRESS}</email>
-	 *		<password>{END-USER'S PASSWORD}</password>
-	 *		<masked-password>{A STRING OF * WITH A LENGTH EQUIVALENT TO THE LENGTH OF THE PASSWORD}</masked-password>
-	 *		<balance currency="{CURRENCY BALANCE IS REPRESENTED IN}">{PRE-PAID BALANCE AVAILABLE ON THE END-USER ACCOUNT IN COUNTRY'S SMALLEST CURRENCY}</balance>
+	 *		<password mask="{A STRING OF * WITH A LENGTH EQUIVALENT TO THE LENGTH OF THE PASSWORD}">{END-USER'S PASSWORD}</password>
+	 *		<balance currency="{CURRENCY BALANCE IS REPRESENTED IN}" symbol="{SYMBOL USED TO REPRESENT THE CURRENCY}">{PRE-PAID BALANCE AVAILABLE ON THE END-USER ACCOUNT IN COUNTRY'S SMALLEST CURRENCY}</balance>
 	 *		<funds>{PRE-PAID BALANCE FORMATTED FOR BEING DISPLAYED IN THE GIVEN COUNTRY}</funds>
+	 *		<created timestamp="{CREATION TIME IN SECONDS SINCE EPOCH}">{TIMESTAMP IDENTIFYING WHEN THE ACCOUNT WAS CREATED}</created>
 	 *		<logo-width>{CALCULATED WIDTH OF THE ACCOUNT LOGO}</logo-width>
 	 *		<logo-height>{CALCULATED HEIGHT OF THE ACCOUNT LOGO}</logo-height>
 	 * 	</account>
@@ -169,7 +169,7 @@ class Home extends General
 		/* ========== Calculate Logo Dimensions End ========== */
 
 		// Select information for the End-User's account
-		$sql = "SELECT id, countryid, firstname, lastname, mobile, email, passwd AS password, balance
+		$sql = "SELECT id, countryid, firstname, lastname, mobile, email, passwd AS password, balance, date_trunc('second', created) AS created, Extract('epoch' from created) AS timestamp
 				FROM EndUser.Account_Tbl
 				WHERE id = ". intval($id) ." AND enabled = true";
 //		echo $sql ."\n";
@@ -181,10 +181,10 @@ class Home extends General
 		$xml .= '<lastname>'. htmlspecialchars($RS["LASTNAME"], ENT_NOQUOTES) .'</lastname>';
 		$xml .= '<mobile>'. $RS["MOBILE"] .'</mobile>';
 		$xml .= '<email>'. htmlspecialchars($RS["EMAIL"], ENT_NOQUOTES) .'</email>';
-		$xml .= '<password>'. htmlspecialchars($RS["PASSWORD"], ENT_NOQUOTES) .'</password>';
-		$xml .= '<masked-password>'. str_repeat("*", strlen($RS["PASSWORD"]) ) .'</masked-password>';
-		$xml .= '<balance currency="'. $this->_obj_CountryConfig->getCurrency() .'">'. $RS["BALANCE"] .'</balance>';
+		$xml .= '<password mask="'. str_repeat("*", strlen($RS["PASSWORD"]) ) .'">'. htmlspecialchars($RS["PASSWORD"], ENT_NOQUOTES) .'</password>';
+		$xml .= '<balance currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'">'. $RS["BALANCE"] .'</balance>';
 		$xml .= '<funds>'. General::formatAmount($this->_obj_CountryConfig, $RS["BALANCE"]) .'</funds>';
+		$xml .= '<created timestamp="'. $RS["TIMESTAMP"] .'">'. $RS["CREATED"] .'</created>';
 		$xml .= '<logo-width>'. $iWidth .'</logo-width>';
 		$xml .= '<logo-height>'. $iHeight .'</logo-height>';
 		$xml .= '</account>';
@@ -408,6 +408,67 @@ class Home extends General
 		$sHeaders .= 'Content-Type: text/plain' ."\n";
 
 		return $sHeaders;
+	}
+	
+	/**
+	 * Creates a new End-User Account.
+	 *
+	 * @param	integer $cid 	ID of the country the End-User Account should be created in
+	 * @param	string $mob 	End-User's mobile number
+	 * @param 	string $pwd 	Password for the created End-User Account (optional)
+	 * @param 	string $email	End-User's e-mail address (optional)
+	 * @return	integer 		The unique ID of the created End-User Account
+	 */
+	public function newAccount($cid, $mob, $pwd="", $email="")
+	{
+		$sql = "SELECT Nextval('EndUser.Account_Tbl_id_seq') AS id";
+		$RS = $this->getDBConn()->getName($sql);
+		$sql = "INSERT INTO EndUser.Account_Tbl
+					(id, countryid, mobile, passwd, email)
+				VALUES
+					(". $RS["ID"] .", ". intval($cid) .", '". floatval($mob) ."', '". $this->getDBConn()->escStr($pwd) ."', '". $this->getDBConn()->escStr($email) ."')";
+//		echo $sql ."\n";
+		$res = $this->getDBConn()->query($sql);
+
+		return $RS["ID"];
+	}
+	
+	public function sendMessage(GoMobileConnInfo &$oCI, ClientConfig &$oCC, SMS &$oMI)
+	{
+		$iCode = -1;
+		// Re-Instantiate Connection Information for GoMobile using the Client's username / password
+		$oCI = new GoMobileConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), $oCI->getMethod(), $oCI->getContentType(), $oCC->getUsername(), $oCC->getPassword(), $oCI->getLogPath(), $oCI->getMode() );
+
+		// Instantiate client object for communicating with GoMobile
+		$obj_GoMobile = new GoMobileClient($oCI);
+
+		/* ========== Send MT Start ========== */
+		$bSend = true;		// Continue to send messages
+		$iAttempts = 0;		// Number of Attempts
+		// Send messages
+		while ($bSend === true && $iAttempts < 3)
+		{
+			$iAttempts++;
+			try
+			{
+				$iCode = $obj_GoMobile->communicate($oMI);
+				// Error: Message rejected by GoMobile
+				if ($iCode == 200){ $bSend = false; }
+			}
+			// Communication error, retry message sending
+			catch (HTTPException $e)
+			{
+				// Error: Unable to connect to GoMobile
+				if ($iAttempts == 3)
+				{
+					throw new mPointException("Unable to connect to GoMobile", 1013);
+				}
+				else { sleep(pow(5, $iAttempts) ); }
+			}
+		}
+		/* ========== Send MT End ========== */
+		
+		return $iCode;
 	}
 }
 ?>

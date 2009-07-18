@@ -79,7 +79,7 @@ class Shipping extends General
 	 * 		<company id="{INTERNAL ID FOR THE SHIPPING COMPANY}">
 	 * 			<name>{NAME OF THE SHIPPING COMPANY}</name>
 	 * 			<logo-url>{ABSOLUTE URL TO THE SHIPPING COMPANY'S LOGO}</logo-url>
-	 * 			<cost currency="{CURRENCY USED IN THE COUNTRY}">{TOTAL COST FOR USING THE SHIPPING COMPANY IN COUNTRY'S SMALLEST CURRENCY}</cost>
+	 * 			<cost currency="{CURRENCY USED IN THE COUNTRY}" symbol="{SYMBOL USED TO REPRESENT THE CURRENCY}">{TOTAL COST FOR USING THE SHIPPING COMPANY IN COUNTRY'S SMALLEST CURRENCY}</cost>
 	 * 			<price>{TOTAL PRICE FOR USING THE SHIPPING COMPANY}</price>
 	 * 		</company>
 	 * 		...
@@ -110,7 +110,7 @@ class Shipping extends General
 			}
 			// Shipping Cost
 			else { $iShippingCost = $aRS[$i]["COST"]; }
-			$xml .= '<cost currency="'. $this->_obj_ShopConfig->getCountryConfig()->getCurrency() .'">'. $iShippingCost .'</cost>';
+			$xml .= '<cost currency="'. $this->_obj_ShopConfig->getCountryConfig()->getCurrency() .' symbol="'. $this->_obj_ShopConfig->getCountryConfig()->getSymbol() .'">'. $iShippingCost .'</cost>';
 			$xml .= '<price>'. ($iShippingCost==0?$this->getText()->_("FREE"):General::formatAmount($this->_obj_ShopConfig->getCountryConfig(), $aRS[$i]["COST"]) ) .'</price>';
 			$xml .= '</company>';
 		}

@@ -61,38 +61,20 @@ class EndUserAccount extends Home
 	 */
 	public function newAccount($cid, $mob, $pwd="", $email="")
 	{
-		$sql = "SELECT Nextval('EndUser.Account_Tbl_id_seq') AS id";
-		$RS = $this->getDBConn()->getName($sql);
-		$sql = "INSERT INTO EndUser.Account_Tbl
-					(id, countryid, mobile, passwd, email)
-				VALUES
-					(". $RS["ID"] .", ". intval($cid) .", '". floatval($mob) ."', '". $this->getDBConn()->escStr($pwd) ."', '". $this->getDBConn()->escStr($email) ."')";
-//		echo $sql ."\n";
-		$res = $this->getDBConn()->query($sql);
-
-		// Test mode - Grant new account E-Money
-		if ($this->_obj_ClientConfig->getMode() == 1)
-		{
-			$sql = "INSERT INTO EndUser.Transaction_Tbl
-						(accountid, typeid, amount)
-					VALUES
-						(". $RS["ID"] .", ". Constants::iEMONEY_TOPUP_TYPE .", ". Constants::iEMONEY_GRANT .")";
-//			echo $sql ."\n";
-			$res = $this->getDBConn()->query($sql);
-		}
+		$iAccountID = parent::newAccount($cid, $mob, $pwd, $email);
 
 		// Created account should only be available to Client
-		if ($this->_obj_ClientConfig->getStoreCard() == 1)
+		if ($iAccountID > 0 && $this->_obj_ClientConfig->getStoreCard() == 1)
 		{
 			$sql = "INSERT INTO EndUser.CLAccess_Tbl
 						(clientid, accountid)
 					VALUES
-						(". $this->_obj_ClientConfig->getID() .", ". $RS["ID"] .")";
+						(". $this->_obj_ClientConfig->getID() .", ". $iAccountID .")";
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
 		}
 
-		return $RS["ID"];
+		return $iAccountID;
 	}
 
 	/**
@@ -311,69 +293,6 @@ class EndUserAccount extends Home
 
 		return is_resource($this->getDBConn()->query($sql) );
 	}
-
-	/**
-	 * Makes a transfer between 2 End-Users' e-money based prepaid accounts.
-	 * The method will credit the recipient's account and debit the sender's account with the specified amount.
-	 * All database operations are run within an ATOMIC transaction to ensure that the entire transfer either
-	 * fails or succeeds.
-	 * The method will return the following status codes:
-	 * 	 1. Unable to debit sender's account
-	 * 	 2. Unable to credit recipient's account
-	 * 	10. Transfer successful
-	 *
-	 * @see		Constants::iEMONEY_TRANSFER_TYPE
-	 *
-	 * @param	integer $toid 	Unqiue ID of the recipient's account
-	 * @param	integer $fromid Unqiue ID of the sender's account
-	 * @param 	integer $amount Amount that should be transferred between the prepaid accounts
-	 * @return 	integer
-	 */
-	public function transfer($toid, $fromid, $amount)
-	{
-		// Start Transaction
-		$this->getDBConn()->query("BEGIN");
-
-		$amount = abs(intval($amount) );
-		$sql = "INSERT INTO EndUser.Transaction_Tbl
-					(accountid, typeid, toid, fromid, amount)
-				VALUES
-					(". intval($fromid) .", ". Constants::iEMONEY_TRANSFER_TYPE .", ". intval($toid) .", ". intval($fromid) .", ". ($amount * -1) .")";
-//		echo $sql ."\n";
-
-		// Sender's account successfully debited
-		if (is_resource($this->getDBConn()->query($sql) ) === true)
-		{
-			$sql = "INSERT INTO EndUser.Transaction_Tbl
-						(accountid, typeid, toid, fromid, amount)
-					VALUES
-						(". intval($toid) .", ". Constants::iEMONEY_TRANSFER_TYPE .", ". intval($toid) .", ". intval($fromid) .", ". $amount .")";
-//			echo $sql ."\n";
-
-			// Recipient's account successfully credited
-			if (is_resource($this->getDBConn()->query($sql) ) === true)
-			{
-				// Commit Transfer
-				$this->getDBConn()->query("COMMIT");
-				$code = 10;
-			}
-			// Error: Unable to credit recipient's account
-			else
-			{
-				$this->getDBConn()->query("ROLLBACK");
-				$code = 2;
-			}
-		}
-		// Error: Unable to debit sender's account
-		else
-		{
-			$this->getDBConn()->query("ROLLBACK");
-			$code = 1;
-		}
-
-		return $code;
-	}
-	
 
 	/**
 	 * Sends an SMS with information about the newly created account

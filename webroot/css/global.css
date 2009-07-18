@@ -184,7 +184,7 @@ div.status
 }
 /* ========== Page Content End ========== */
 
-/* ========== Window Navigations Start ========== */
+/* ========== Window Content Start ========== */
 div.window-bar
 {
 	width: 100%;
@@ -203,19 +203,19 @@ div.window-content
 {
 	padding: 5px 5px 5px 5px;
 }
-/* ========== Window Navigations End ========== */
+/* ========== Window Content End ========== */
 
 /* ========== Pages Start ========== */
-div#login, div#my-account, div#topup, div#stored-cards, div#view-transactions
+div#login, div#my-account, div#topup, div#stored-cards, div#view-transactions, div#transfer
 {
 	text-align: center;
 }
-div#login table td, div#my-account table td, div#view-transactions table td
+table td, div#view-transactions table td
 {
 	text-align: left;
 	vertical-align: top;
 }
-div#login table td.submit, div#my-account table td.submit, div#edit-password table td.submit
+td.submit, td.data
 {
 	text-align: right;
 }
@@ -224,7 +224,7 @@ div#view-transactions table td h2, div#view-transactions td.label, div#my-accoun
 {
 	text-align: center;
 }
-div#view-transactions td#purchase-history, div#view-transactions td#transfer-history, div#view-transactions td#topup-history
+div#my-account td#account-info, div#my-account td#stored-cards, div#view-transactions td#purchase-history, div#view-transactions td#transfer-history, div#view-transactions td#topup-history
 {
 	padding: 0px 10px 0px 10px;
 }
@@ -234,6 +234,29 @@ div#view-transactions td#purchase-history
 	border-right: solid;
 }
 div#view-transactions td.mPoint_Number
+{
+	text-align: right;
+}
+
+div#my-account td#account-info
+{
+	border-right: solid;
+}
+
+div#login table tr td, td#account-info table tr td, div#transfer table tr td
+{
+	height: 30px;
+	vertical-align: middle;
+}
+div#transfer input#amount
+{
+	width: 75px;
+}
+div#transfer div.info
+{
+	font-size: 90%;
+}
+div#transfer input.text
 {
 	text-align: right;
 }
@@ -253,7 +276,7 @@ object#charts, embed#charts
 }
 /* ========== Pages End ========== */
 
-/* ---------- New Site Window Start ---------- */
+/* ========== Windows Start ========== */
 div#edit-password, div#edit-mobile, div#edit-email
 {
 	position: absolute;
@@ -280,4 +303,4 @@ div#edit-mobile .info, div#edit-email .info
 {
 	white-space: pre-wrap;
 }
-/* ---------- New Site Window End ---------- */
+/* ========== Windows End ========== */

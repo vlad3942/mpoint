@@ -66,7 +66,12 @@ class MyAccount extends Home
 	}
 	
 	/**
-	 * Generates and sends an Activation Code to the End-User using the provided MSISDN 
+	 * Generates and sends an Activation Code to the End-User using the provided MSISDN.
+	 * 
+	 * @see		GoMobileMessage::produceMessage()
+	 * @see		General::getText()
+	 * @see		Home::sendMessage()
+	 * @see		ClientConfig::produceConfig()
 	 *
 	 * @param 	GoMobileConnInfo $oCI 	Reference to the data object with the Connection Info required to communicate with GoMobile
 	 * @param	integer $id 			Unqiue ID of the End-User's Account
@@ -76,8 +81,6 @@ class MyAccount extends Home
 	 */
 	public function sendCode(GoMobileConnInfo &$oCI, $id, $mob)
 	{
-		$iCode = 91;
-		
 		$sBody = $this->getText()->_("mPoint - Send Activation Code");
 		$sBody = str_replace("{CODE}", $this->_genActivationCode($id, $mob), $sBody);
 		
@@ -85,38 +88,8 @@ class MyAccount extends Home
 		
 		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->getCountryConfig()->getID(), $this->getCountryConfig()->getID()*100, $this->getCountryConfig()->getChannel(), $obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $mob, $sBody);
 		
-		// Re-Instantiate Connection Information for GoMobile using the Client's username / password
-		$oCI = new GoMobileConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), $oCI->getMethod(), $oCI->getContentType(), $obj_ClientConfig->getUsername(), $obj_ClientConfig->getPassword(), $oCI->getLogPath(), $oCI->getMode() );
-
-		// Instantiate client object for communicating with GoMobile
-		$obj_GoMobile = new GoMobileClient($oCI);
-
-		/* ========== Send MT Start ========== */
-		$bSend = true;		// Continue to send messages
-		$iAttempts = 0;		// Number of Attempts
-		// Send messages
-		while ($bSend === true && $iAttempts < 3)
-		{
-			$iAttempts++;
-			try
-			{
-				$iCode = $obj_GoMobile->communicate($obj_MsgInfo);
-				// Error: Message rejected by GoMobile
-				if ($iCode == 200){ $bSend = false; }
-				
-			}
-			// Communication error, retry message sending
-			catch (HTTPException $e)
-			{
-				// Error: Unable to connect to GoMobile
-				if ($iAttempts == 3)
-				{
-					throw new mPointException("Unable to connect to GoMobile", 1013);
-				}
-				else { sleep(pow(5, $iAttempts) ); }
-			}
-		}
-		/* ========== Send MT End ========== */
+		$iCode = $this->sendMessage($oCI, $obj_ClientConfig, $obj_MsgInfo);
+		if ($iCode != 200) { $iCode = 91; }
 		
 		return $iCode;
 	}

@@ -541,7 +541,7 @@ class General
 	{
 		// Format amount to be human readable
 		$sPrice = $oCC->getPriceFormat();
-		$sPrice = str_replace("{CURRENCY}", $oCC->getCurrency(), $sPrice);
+		$sPrice = str_replace("{CURRENCY}", $oCC->getSymbol(), $sPrice);
 		$sPrice = str_replace("{PRICE}", number_format($amount / 100, $oCC->getDecimals() ), $sPrice);
 
 		return $sPrice;
@@ -648,6 +648,8 @@ class General
 	 * 		<item id="{UNIQUE ID FOR THE COUNTRY}">
 	 *			<name>{NAME OF THE COUNTRY}</name>
 	 *			<currency>{CURRENCY USED IN THE COUNTRY}</currency>
+	 *			<maxbalance>{MAX BALANCE, IN COUNTRY'S SMALLEST CURRENCY, THAT A PREPAID ACCOUNT MAY CONTAIN}</maxbalance>
+	 *			<mintransfer>{MIN AMOUNT WHICH MAY BE TRANSFERRED BETWEEN ACCOUNTS IN COUNTRY'S SMALLEST CURRENCY}</mintransfer>
 	 *			<minmobile>{MIN VALUE FOR A VALID MOBILE NUMBER (MSISDN) IN THE COUNTRY}</minmobile>
 	 *			<maxmobile>{MAX VALUE FOR A VALID MOBILE NUMBER (MSISDN) IN THE COUNTRY}</maxmobile>
 	 *			<channel>{CHANNEL USED FOR SENDING MESSAGE'S TO AN END-USER'S MOBILE PHONE}</channel>
@@ -659,6 +661,8 @@ class General
 	 *		<item id="{UNIQUE ID FOR THE COUNTRY}">
 	 *			<name>{NAME OF THE COUNTRY}</name>
 	 *			<currency>{CURRENCY USED IN THE COUNTRY}</currency>
+	 *			<maxbalance>{MAX BALANCE, IN COUNTRY'S SMALLEST CURRENCY, THAT A PREPAID ACCOUNT MAY CONTAIN}</maxbalance>
+	 *			<mintransfer>{MIN AMOUNT WHICH MAY BE TRANSFERRED BETWEEN ACCOUNTS IN COUNTRY'S SMALLEST CURRENCY}</mintransfer>
 	 *			<minmobile>{MIN VALUE FOR A VALID MOBILE NUMBER (MSISDN) IN THE COUNTRY}</minmobile>
 	 *			<maxmobile>{MAX VALUE FOR A VALID MOBILE NUMBER (MSISDN) IN THE COUNTRY}</maxmobile>
 	 *			<channel>{CHANNEL USED FOR SENDING MESSAGE'S TO AN END-USER'S MOBILE PHONE}</channel>
@@ -674,7 +678,7 @@ class General
 	 */
 	public function getCountries()
 	{
-		$sql = "SELECT id, name, currency, maxbalance, minmob, maxmob, channel, priceformat, decimals, als, doi
+		$sql = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmob, maxmob, channel, priceformat, decimals, als, doi
 				FROM System.Country_Tbl
 				WHERE enabled = true
 				ORDER BY name ASC";
@@ -686,8 +690,9 @@ class General
 		{
 			$xml .= '<item id="'. $RS["ID"] .'">';
 			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';
-			$xml .= '<currency>'. $RS["CURRENCY"] .'</currency>';
+			$xml .= '<currency symbol="'. $RS["SYMBOL"] .'">'. $RS["CURRENCY"] .'</currency>';
 			$xml .= '<maxbalance>'. $RS["MAXBALANCE"] .'</maxbalance>';
+			$xml .= '<mintransfer>'. $RS["MINTRANSFER"] .'</mintransfer>';
 			$xml .= '<minmobile>'. $RS["MINMOB"] .'</minmobile>';
 			$xml .= '<maxmobile>'. $RS["MAXMOB"] .'</maxmobile>';
 			$xml .= '<channel>'. $RS["CHANNEL"] .'</channel>';

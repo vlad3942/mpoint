@@ -80,7 +80,7 @@ msgstr @@@ Save Mobile @@@
 
 #: /webroot/home/code.php:47
 msgid @@@ Edit Mobile Guide - Step 2 @@@
-msgstr @@@ Edit Mobile Guide - Step 2 @@@
+msgstr @@@ Please enter the activation code you've just received via SMS into the form field below? @@@
 
 #: /webroot/home/content.php:34
 msgid @@@ mPoint - User Admin @@@
@@ -119,8 +119,8 @@ msgid @@@ Edit E-Mail @@@
 msgstr @@@ Edit E-Mail @@@
 
 #: /webroot/home/edit_email.php:42
-msgid @@@ Step 1 of 2 @@@
-msgstr @@@ Step 1 of 2 @@@
+msgid @@@ Step 1 of 3 @@@
+msgstr @@@ Step 1 of 3 @@@
 
 #: /webroot/home/edit_email.php:43
 msgid @@@ Old E-Mail @@@
@@ -245,12 +245,13 @@ msgid @@@ Edit E-Mail @@@
 msgstr @@@ Edit E-Mail @@@
 
 #: /webroot/home/link.php:42
-msgid @@@ Step 2 of 2 @@@
-msgstr @@@ Step 2 of 2 @@@
+msgid @@@ Step 2 of 3 @@@
+msgstr @@@ Step 2 of 3 @@@
 
 #: /webroot/home/link.php:45
 msgid @@@ Edit E-Mail Guide - Step 2 @@@
-msgstr @@@ Edit E-Mail Guide - Step 2 @@@
+msgstr @@@ An e-mail with a verification link has been sent to the entered e-mail address.
+Please open the e-mail in your e-mail client and click the link in the mail to activate your new e-mail address? @@@
 
 #: /webroot/home/my_account.php:37
 msgid @@@ My Account @@@
@@ -316,6 +317,14 @@ msgstr @@@ Other @@@
 msgid @@@ Edit @@@
 msgstr @@@ Edit @@@
 
+#: /webroot/home/sys/make_transfer.php:226
+msgid @@@ transfer - code: 91 @@@
+msgstr @@@ transfer - code: 91 @@@
+
+#: /webroot/home/sys/make_transfer.php:237
+msgid @@@ internal - code: 2 @@@
+msgstr @@@ internal - code: 2 @@@
+
 #: /webroot/home/sys/save_info.php:94
 msgid @@@ save - code: 100 @@@
 msgstr @@@ save - code: 100 @@@
@@ -340,7 +349,7 @@ msgstr @@@ save - code: 91 @@@
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
-#: /webroot/home/sys/save_password.php:106
+#: /webroot/home/sys/save_password.php:101
 msgid @@@ save - code: 100 @@@
 msgstr @@@ save - code: 100 @@@
 
@@ -404,13 +413,45 @@ msgstr @@@ Top-Up Account @@@
 msgid @@@ Balance @@@
 msgstr @@@ Balance @@@
 
-#: /webroot/home/transfer.php:34
+#: /webroot/home/transfer.php:41
 msgid @@@ Transfer @@@
 msgstr @@@ Transfer @@@
 
-#: /webroot/home/transfer.php:37
+#: /webroot/home/transfer.php:44
 msgid @@@ Balance @@@
 msgstr @@@ Balance @@@
+
+#: /webroot/home/transfer.php:45
+msgid @@@ Country @@@
+msgstr @@@ Country @@@
+
+#: /webroot/home/transfer.php:46
+msgid @@@ ( Select ) @@@
+msgstr @@@ ( Select ) @@@
+
+#: /webroot/home/transfer.php:48
+msgid @@@ Recipient @@@
+msgstr @@@ Recipient @@@
+
+#: /webroot/home/transfer.php:49
+msgid @@@ Mobile or E-Mail @@@
+msgstr @@@ Mobile or E-Mail @@@
+
+#: /webroot/home/transfer.php:52
+msgid @@@ Amount @@@
+msgstr @@@ Amount @@@
+
+#: /webroot/home/transfer.php:53
+msgid @@@ Min @@@
+msgstr @@@ Min @@@
+
+#: /webroot/home/transfer.php:55
+msgid @@@ Transfer @@@
+msgstr @@@ Transfer @@@
+
+#: /webroot/home/transfer.php:58
+msgid @@@ Transfer - Overview @@@
+msgstr @@@ Transfer - Overview @@@
 
 #: /webroot/internal/unauthorized.php:24
 msgid @@@ Unauthorized system access @@@
@@ -738,7 +779,7 @@ Merchant: {CLIENT}
 Order No: {ORDERID}
 Price: {PRICE} @@@
 
-#: /api/classes/enduser_account.php:390
+#: /api/classes/enduser_account.php:309
 msgid @@@ mPoint - Account Info @@@
 msgstr @@@ Your account has been created and is ready for use.
 Please go to {URL} to manage your account at any time.
@@ -753,16 +794,16 @@ msgstr @@@ Welcome to {CLIENT}, please activate the link below @@@
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Welcome to {CLIENT} @@@
 
-#: /api/classes/my_account.php:81
+#: /api/classes/my_account.php:84
 msgid @@@ mPoint - Send Activation Code @@@
 msgstr @@@ Thank you for updating your mobile number.
 Please enter the activation code: {CODE} on the website to complete your update. @@@
 
-#: /api/classes/my_account.php:211
+#: /api/classes/my_account.php:184
 msgid @@@ mPoint - Activation Link Subject @@@
 msgstr @@@ Please verify your E-Mail address? @@@
 
-#: /api/classes/my_account.php:212
+#: /api/classes/my_account.php:185
 msgid @@@ mPoint - Activation Link Body @@@
 msgstr @@@ Thank you for updating your e-mail address.
 Please click the link below to verify your new e-mail address and complete your update.
@@ -795,4 +836,24 @@ Order created: {TIMESTAMP}
 We recommend that you contact this customer directly and complete the payment process manually.
 
 Thank you for using SurePay @@@
+
+#: /api/classes/transfer.php:212
+msgid @@@ mPoint - New Account SMS @@@
+msgstr @@@ You've received a transfer of {AMOUNT} from {SENDER}.
+Please create an account at {DOMAIN} quoting code: {CODE} or click the link below to complete your registration directly from your mobile phone.
+{URL}
+Kind Regards
+mPoint @@@
+
+#: /api/classes/transfer.php:247
+msgid @@@ mPoint - New Account E-Mail Subject @@@
+msgstr @@@ You've received a transfer of {AMOUNT} from {SENDER} @@@
+
+#: /api/classes/transfer.php:250
+msgid @@@ mPoint - New Account E-Mail Body @@@
+msgstr @@@ You've received a transfer of {AMOUNT} from {SENDER}.
+Please activate the link below to complete your registration
+{URL}
+Kind Regards
+mPoint @@@
 

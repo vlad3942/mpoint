@@ -32,12 +32,12 @@ class Products extends Overview
 	 * 	<products>
 	 * 		<item id="{UNIQUE ID FOR THE PRODUCT}">
 	 * 			<name>{NAME OF THE PRODUCT}</name>
-	 * 			<amount currency="{CURRENCY AMOUNT IS CHARGED IN}">{AMOUNT THE CUSTOMER IS CHARGED FOR THE PRODUCT}</amount>
+	 * 			<amount currency="{CURRENCY AMOUNT IS CHARGED IN}" symbol="{SYMBOL USED TO REPRESENT THE CURRENCY}">{AMOUNT THE CUSTOMER IS CHARGED FOR THE PRODUCT}</amount>
 	 * 			<price>{AMOUNT FORMATTED FOR BEING DISPLAYED IN THE GIVEN COUNTRY}</price>
 	 * 			<logo-url>{ABSOLUTE URL TO THE PRODUCT LOGO}</logo-url>
 	 * 		</item>
 	 * 		<item id="{UNIQUE ID FOR THE PRODUCT}">
-	 * 			<amount currency="{CURRENCY AMOUNT IS CHARGED IN}">{AMOUNT THE CUSTOMER IS CHARGED FOR THE PRODUCT}</amount>
+	 * 			<amount currency="{CURRENCY AMOUNT IS CHARGED IN}" symbol="{SYMBOL USED TO REPRESENT THE CURRENCY}">{AMOUNT THE CUSTOMER IS CHARGED FOR THE PRODUCT}</amount>
 	 * 			<name>{NAME OF THE PRODUCT}</name>
 	 * 			<price>{AMOUNT FORMATTED FOR BEING DISPLAYED IN THE GIVEN COUNTRY}</price>
 	 * 			<logo-url>{ABSOLUTE URL TO THE PRODUCT LOGO}</logo-url>
@@ -65,7 +65,7 @@ class Products extends Overview
 			// Create XML for mandatory product information
 			$xml .= '<item id="'. $aRS[$i]["ID"] .'">';
 			$xml .= '<name>'. htmlspecialchars(utf8_decode($aRS[$i]["NAME"]), ENT_NOQUOTES) .'</name>';
-			$xml .= '<amount currency="'. $this->getTxnInfo()->getClientConfig()->getCountryConfig()->getCurrency() .'">'. $aRS[$i]["PRICE"] .'</amount>';
+			$xml .= '<amount currency="'. $this->getTxnInfo()->getClientConfig()->getCountryConfig()->getCurrency() .' symbol="'. $this->getTxnInfo()->getClientConfig()->getCountryConfig()->getSymbol() .'">'. $aRS[$i]["PRICE"] .'</amount>';
 			$xml .= '<price>'. General::formatAmount($this->getTxnInfo()->getClientConfig()->getCountryConfig(), $aRS[$i]["PRICE"]) .'</price>';
 			// Product logo included as part of request from Client
 			if (empty($aRS[$i]["LOGOURL"]) === false)

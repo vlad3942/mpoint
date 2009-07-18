@@ -75,7 +75,7 @@ case "form":
 		}
 	}
 
-	// Username / Password validated
+	// New Mobile Number validated
 	if (empty($xml) === true)
 	{
 		$code = $obj_mPoint->sendCode(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $_SESSION['obj_Info']->getInfo("accountid"), (string) $obj_XML->form->mobile);

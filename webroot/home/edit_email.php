@@ -39,7 +39,7 @@ else
 			<?= $_SESSION['obj_CountryConfig']->toXML(); ?>
 
 			<labels>
-				<progress><?= $_OBJ_TXT->_("Step 1 of 2"); ?></progress>
+				<progress><?= $_OBJ_TXT->_("Step 1 of 3"); ?></progress>
 				<old-email><?= $_OBJ_TXT->_("Old E-Mail"); ?></old-email>
 				<new-email><?= $_OBJ_TXT->_("New E-Mail"); ?></new-email>
 				<submit><?= $_OBJ_TXT->_("Send"); ?></submit>

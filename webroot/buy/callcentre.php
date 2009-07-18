@@ -68,7 +68,7 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 	{
 		$_POST['amount'] += $price;
 	}
-	if ($obj_Validator->valAmount($obj_ClientConfig->getMaxAmount(), $_POST['amount']) != 10) { $aMsgCds[$obj_Validator->valAmount($obj_ClientConfig->getMaxAmount(), $_POST['amount']) + 50] = $_POST['amount']; }
+	if ($obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), $_POST['amount']) != 10) { $aMsgCds[$obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), $_POST['amount']) + 50] = $_POST['amount']; }
 	// Validate Product Data
 	if ($obj_Validator->valProducts($_POST['prod-names'], $_POST['prod-quantities'], $_POST['prod-prices'], $_POST['prod-logos']) != 10)
 	{

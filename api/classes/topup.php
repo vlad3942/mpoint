@@ -20,11 +20,11 @@ class TopUp extends Home
 	 * The Deposit Options are returned as an XML document in the following format:
 	 * 	<deposits>
 	 * 		<option id="{UNIQUE ID OF THE DEPOSIT OPTION}">
-	 * 			<amount currency="{CURRENCY AMOUNT IS CHARGED IN}">{AMOUNT THE CUSTOMER IS CHARGED FOR THE TOP-UP}</amount>
+	 * 			<amount currency="{CURRENCY AMOUNT IS CHARGED IN}" symbol="{SYMBOL USED TO REPRESENT THE CURRENCY}">{AMOUNT THE CUSTOMER IS CHARGED FOR THE TOP-UP}</amount>
 	 * 			<price>{AMOUNT FORMATTED FOR BEING DISPLAYED IN THE GIVEN COUNTRY}</price>
 	 * 		</option>
 	 * 		<option id="{UNIQUE ID OF THE DEPOSIT OPTION}">
-	 * 			<amount currency="{CURRENCY AMOUNT IS CHARGED IN}">{AMOUNT THE CUSTOMER IS CHARGED FOR THE TOP-UP}</amount>
+	 * 			<amount currency="{CURRENCY AMOUNT IS CHARGED IN}" symbol="{SYMBOL USED TO REPRESENT THE CURRENCY}">{AMOUNT THE CUSTOMER IS CHARGED FOR THE TOP-UP}</amount>
 	 * 			<price>{AMOUNT FORMATTED FOR BEING DISPLAYED IN THE GIVEN COUNTRY}</price>
 	 * 		</option>
 	 * 		...
@@ -44,7 +44,7 @@ class TopUp extends Home
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
 			$xml .= '<option id="'. $RS["ID"] .'">';
-			$xml .= '<amount currency="'. $this->getCountryConfig()->getCurrency() .'">'. $RS["AMOUNT"] .'</amount>';
+			$xml .= '<amount currency="'. $this->getCountryConfig()->getCurrency() .' symbol="'. $this->getCountryConfig()->getSymbol() .'">'. $RS["AMOUNT"] .'</amount>';
 			$xml .= '<price>'. General::formatAmount($this->getCountryConfig(), $RS["AMOUNT"]) .'</price>';
 			$xml .= '</option>';
 		}

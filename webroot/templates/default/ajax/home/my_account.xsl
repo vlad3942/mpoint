@@ -18,7 +18,7 @@
 			</td>
 			<td id="stored-cards">
 				<h2><xsl:value-of select="labels/multiple-stored-cards" /></h2>
-				<table>
+				<table cellpadding="0" cellspacing="0">
 					<!-- Show Preferred Card -->
 					<tr>
 						<td colspan="4" class="label"><xsl:value-of select="labels/preferred" /></td>
@@ -59,7 +59,7 @@
 		<td>
 			<label for="password" accesskey="P"><xsl:value-of select="//labels/password" /></label>
 		</td>
-		<td><xsl:value-of select="masked-password" /></td>
+		<td><xsl:value-of select="password/@mask" /></td>
 		<td><a href="#" onclick="javascript:obj_Window.openWindow('edit-password', 'my-account', '/home/edit_password.php', 'edit-password', new Array(obj_Client, obj_Client.changePage) );" tabindex="1" title="password"><xsl:value-of select="//labels/edit" /></a></td>
 	</tr>
 	<tr>
@@ -99,9 +99,22 @@
 </xsl:template>
 
 <xsl:template match="card">
-	<tr>
+	<xsl:variable name="css">
+		<xsl:choose>
+			<!-- Even row -->
+			<xsl:when test="position()+1 mod 2 = 0">
+				<xsl:text>mPoint_Even</xsl:text>
+			</xsl:when>
+			<!-- Odd row -->
+			<xsl:otherwise>
+				<xsl:text>mPoint_Uneven</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
+			
+	<tr class="{$css}">
 		<td><input type="hidden" name="id" value="{@id}" /></td>
-		<td><img src="/img/card_{type/@id}.png" width="31" height="20" alt="{type}" /></td>
+		<td><img src="/img/card_{type/@id}.png" width="31" height="20" alt="- {type} -" /></td>
 		<td><xsl:value-of select="mask" /></td>
 		<td class="info">(<xsl:value-of select="expiry" />)</td>
 	</tr>

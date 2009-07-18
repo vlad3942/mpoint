@@ -316,7 +316,7 @@ class Validate
 	 * @param 	integer $prc 	The price of the merchandise the customer is buying in the country's smallest currency (cents for USA, �re for Denmark etc.)
 	 * @return 	integer
 	 */
-	public function valAmount($max, $prc)
+	public function valPrice($max, $prc)
 	{
 		// Validate the total Amount the customer will be paying
 		if (empty($prc) === true) { $code = 1; }	// Amount is undefined
@@ -627,6 +627,32 @@ class Validate
 		if (empty($ac) === true) { $code = 1; }			// Activation Code is undefined
 		elseif (intval($ac) < 100000) { $code = 2; }	// Activation Code is too small
 		elseif (intval($ac) > 999999) { $code = 3; }	// Activation Code is too great
+		else { $code = 10; }
+
+		return $code;
+	}
+	
+	/**
+	 * Validates that the Amount to transfer is valid within the End-User's country.
+	 * The method will return the following status codes:
+	 * 	 1. Undefined Amount
+	 * 	 2. Amount is too small, as defined by the database field: mintransfer for the Country
+	 * 	 3. Amount is too great, as defined by the database field: maxbalance for the Country
+	 * 	10. Success
+	 *
+	 * @see 	CountryInfo::getMinTransfer()
+	 * @see 	CountryInfo::getMaxBalance()
+	 *
+	 * @param 	integer $bal 		Balance on the End-User's account
+	 * @param 	integer $amount 	The Amount which should be validated
+	 * @return 	integer
+	 */
+	public function valAmount($max, $amount)
+	{
+		// Validate Amount to be transferred
+		if (empty($amount) === true) { $code = 1; }													// Amount is undefined
+		elseif (intval($amount) * 100 < $this->_obj_CountryConfig->getMinTransfer() ) { $code = 2; }// Amount is too small
+		elseif (intval($amount) * 100 > $max) { $code = 3; }										// Amount is too great
 		else { $code = 10; }
 
 		return $code;

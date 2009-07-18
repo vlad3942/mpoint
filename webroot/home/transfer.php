@@ -6,11 +6,18 @@
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
  * @package Admin
- * @subpackage General
+ * @subpackage Transfer
  */
 
 // Require include file for including all Shared and General APIs
 require_once("../inc/include.php");
+
+// Initialize Standard content Object
+$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_CountryConfig']);
+
+// Set Defaults
+if (array_key_exists("temp", $_SESSION) === false) { $_SESSION['temp'] = array(); }
+if (array_key_exists("countryid", $_SESSION['temp']) === false || $_SESSION['temp']['countryid'] == 0) { $_SESSION['temp']['countryid'] = $_SESSION['obj_CountryConfig']->getID(); }
 
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 // Error: Unauthorized access
@@ -35,7 +42,26 @@ else
 
 			<labels>
 				<balance><?= $_OBJ_TXT->_("Balance"); ?></balance>
+				<country><?= $_OBJ_TXT->_("Country"); ?></country>
+				<select><?= $_OBJ_TXT->_("( Select )"); ?></select>
+				<recipient>
+					<label><?= $_OBJ_TXT->_("Recipient"); ?></label>
+					<help><?= $_OBJ_TXT->_("Mobile or E-Mail"); ?></help>
+				</recipient>
+				<amount>
+					<label><?= $_OBJ_TXT->_("Amount"); ?></label>
+					<help><?= $_OBJ_TXT->_("Min") ." ". General::formatAmount($_SESSION['obj_CountryConfig'], $_SESSION['obj_CountryConfig']->getMinTransfer() ); ?></help>
+				</amount>
+				<submit><?= $_OBJ_TXT->_("Transfer"); ?></submit>
 			</labels>
+			
+			<overview><?= $_OBJ_TXT->_("Transfer - Overview"); ?></overview>
+			
+			<?= $obj_mPoint->getAccountInfo($_SESSION['obj_Info']->getInfo("accountid") ); ?>
+			
+			<?= $obj_mPoint->getCountries(); ?>
+			
+			<?= $obj_mPoint->getSession(); ?>
 		</content>
 	</root>
 <?php

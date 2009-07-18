@@ -71,7 +71,7 @@ case "linked":
 				$oXML = $oXML->xpath("/countries/item[@id = ". $obj_XML->countryid ."]");
 				$oXML = $oXML[0];
 
-				$obj_CountryConfig = new CountryConfig($oXML["id"], (string) $oXML->name, (string) $oXML->currency, (integer) $oXML->maxbalance, (float) $oXML->minmobile, (float) $oXML->maxmobile, (string) $oXML->channel, (string) $oXML->priceformat, (integer) $oXML->decimals, General::xml2bool( (string) $oXML->addresslookup), General::xml2bool( (string) $oXML->doubleoptin) );
+				$obj_CountryConfig = new CountryConfig($oXML["id"], (string) $oXML->name, (string) $oXML->currency, (string) $oXML->currency["symbol"], (integer) $oXML->maxbalance, (integer) $oXML->mintransfer, (float) $oXML->minmobile, (float) $oXML->maxmobile, (string) $oXML->channel, (string) $oXML->priceformat, (integer) $oXML->decimals, General::xml2bool( (string) $oXML->addresslookup), General::xml2bool( (string) $oXML->doubleoptin) );
 				$obj_Validator = new Validate($obj_CountryConfig);
 
 				$aErrCd["username"] = $obj_Validator->valMobile( (string) $obj_XML->username);
@@ -102,7 +102,7 @@ case "form":
 		$oXML = $oXML->xpath("/countries/item[@id = ". $obj_XML->form->countryid ."]");
 		$oXML = $oXML[0];
 
-		$obj_CountryConfig = new CountryConfig($oXML["id"], (string) $oXML->name, (string) $oXML->currency, (integer) $oXML->maxbalance, (float) $oXML->minmobile, (float) $oXML->maxmobile, (string) $oXML->channel, (string) $oXML->priceformat, (integer) $oXML->decimals, General::xml2bool( (string) $oXML->addresslookup), General::xml2bool( (string) $oXML->doubleoptin) );
+		$obj_CountryConfig = new CountryConfig($oXML["id"], (string) $oXML->name, (string) $oXML->currency, (string) $oXML->currency["symbol"], (integer) $oXML->maxbalance, (integer) $oXML->mintransfer, (float) $oXML->minmobile, (float) $oXML->maxmobile, (string) $oXML->channel, (string) $oXML->priceformat, (integer) $oXML->decimals, General::xml2bool( (string) $oXML->addresslookup), General::xml2bool( (string) $oXML->doubleoptin) );
 		$obj_Validator = new Validate($obj_CountryConfig);
 
 		$aErrCd["username"] = $obj_Validator->valMobile( (string) $obj_XML->form->username);

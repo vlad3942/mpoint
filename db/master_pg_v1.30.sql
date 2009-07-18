@@ -242,4 +242,6 @@ INSERT INTO System.DepositOption_Tbl (id, countryid, amount, enabled) VALUES (0,
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE System.DepositOption_Tbl TO mpoint;
 
 ALTER TABLE System.Country_Tbl ADD maxbalance INT4;
+ALTER TABLE System.Country_Tbl ADD mintransfer INT4;
+ALTER TABLE System.Country_Tbl ADD symbol VARCHAR(3);
 /* ==================== SYSTEM SCHEMA END ==================== */
