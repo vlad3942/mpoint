@@ -853,7 +853,10 @@ function Client(name)
 						this.recache(oElems[i].getElementsByTagName("url") );
 						break;
 					default:			// User should be redirected or several page sections updated
-						this.loadPage(oElems[i].getElementsByTagName("url")[0].firstChild.nodeValue, disp);
+						for (var n=0; n<oElems[i].getElementsByTagName("url").length; n++)
+						{
+							this.loadPage(oElems[i].getElementsByTagName("url")[n].firstChild.nodeValue, disp);
+						}
 						break;
 					}	
 				}

@@ -766,11 +766,11 @@ msgstr @@@ Transfer completed - recipient notified via SMS @@@
 msgid @@@ transfer - code: 102 @@@
 msgstr @@@ Transfer completed - recipient notified via E-Mail @@@
 
-#: /webroot/home/sys/make_transfer.php:226
+#: /webroot/home/sys/make_transfer.php:224
 msgid @@@ transfer - code: 91 @@@
 msgstr @@@ Internal Error - Unable to make transfer. Please try again? @@@
 
-#: /webroot/home/sys/make_transfer.php:230
+#: /webroot/home/sys/make_transfer.php:228
 msgid @@@ account - code: 1 @@@
 msgstr @@@ Internal Error: Transfer aborted - Unable to automatically create new account for recipient. @@@
 msgid @@@ account - code: 2 @@@
@@ -778,7 +778,7 @@ msgstr @@@ Internal Error: Transfer aborted  - Unable to notify recipient of the
 msgid @@@ account - code: 3 @@@
 msgstr @@@ Internal Error: Transfer aborted  - Unable to notify recipient of the awaiting transfer. @@@
 
-#: /webroot/home/sys/make_transfer.php:233
+#: /webroot/home/sys/make_transfer.php:231
 msgid @@@ amount - code: 4 @@@
 msgstr @@@ Internal Error - Unable to retrieve currency conversion rates from the Central European Bank. Please try again later? @@@
 msgid @@@ amount - code: 5 @@@

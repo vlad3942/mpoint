@@ -214,8 +214,6 @@ case "form":
 							<document type="command">
 								<redirect>
 							 		<url>/home/topmenu.php</url>
-							 	</redirect>
-							 	<redirect>
 							 		<url>/home/transfer.php</url>
 							 	</redirect>
 							</document>';
