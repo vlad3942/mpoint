@@ -110,7 +110,7 @@ class Shipping extends General
 			}
 			// Shipping Cost
 			else { $iShippingCost = $aRS[$i]["COST"]; }
-			$xml .= '<cost currency="'. $this->_obj_ShopConfig->getCountryConfig()->getCurrency() .' symbol="'. $this->_obj_ShopConfig->getCountryConfig()->getSymbol() .'">'. $iShippingCost .'</cost>';
+			$xml .= '<cost currency="'. $this->_obj_ShopConfig->getCountryConfig()->getCurrency() .'" symbol="'. $this->_obj_ShopConfig->getCountryConfig()->getSymbol() .'">'. $iShippingCost .'</cost>';
 			$xml .= '<price>'. ($iShippingCost==0?$this->getText()->_("FREE"):General::formatAmount($this->_obj_ShopConfig->getCountryConfig(), $aRS[$i]["COST"]) ) .'</price>';
 			$xml .= '</company>';
 		}

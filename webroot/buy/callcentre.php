@@ -46,7 +46,7 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 	$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $_POST['clientid'], $_POST['account']);
 
 	// Set Client Defaults
-	if (array_key_exists("operator", $_POST) === false) { $_POST['operator'] = $obj_ClientConfig->getCountryConfig()->getID() * 1000; }
+	if (array_key_exists("operator", $_POST) === false) { $_POST['operator'] = $obj_ClientConfig->getCountryConfig()->getID() * 100; }
 	if (array_key_exists("logo-url", $_POST) === false) { $_POST['logo-url'] = $obj_ClientConfig->getLogoURL(); }
 	if (array_key_exists("css-url", $_POST) === false) { $_POST['css-url'] = $obj_ClientConfig->getCSSURL(); }
 	if (array_key_exists("accept-url", $_POST) === false) { $_POST['accept-url'] = $obj_ClientConfig->getAcceptURL(); }

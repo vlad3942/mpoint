@@ -150,7 +150,7 @@ case "form":
 			$iAmountReceived = $obj_mPoint->convert($obj_CountryConfig, intval($obj_XML->form->amount) * 100);
 		}
 		
-		$iAccountID = $obj_mPoint->getAccountID( (string) $obj_XML->form->recipient);
+		$iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, (string) $obj_XML->form->recipient);
 		// Currency conversion successful for Amount - Verify that recipient's balance doesn't exceed allowed amount
 		if ($iAccountID > 0 && $iAmountReceived > 0)
 		{
@@ -206,10 +206,11 @@ case "form":
 								<form id="'. ($code + 90) .'" name="'. (string) $obj_XML->form['name'] .'">'. htmlspecialchars($_OBJ_TXT->_("transfer - code: ". ($code + 90) ), ENT_NOQUOTES) .'</form>
 							</document>
 							<document type="command">
-							<recache>
-							 	<url>/home/topmenu.php</url>
-							 	<url>/home/transfer.php</url>
-							</recache>
+								<recache>
+								 	<url>/home/topmenu.php</url>
+								 	<url>/home/transfer.php</url>
+								 	<url>/home/transfer.php</url>
+								</recache>
 							</document>
 							<document type="command">
 								<redirect>
@@ -228,7 +229,7 @@ case "form":
 			else { $xml .= '<form id="'. $code .'">'. htmlspecialchars($_OBJ_TXT->_("account - code: ". $code), ENT_NOQUOTES) .'</form>'; }
 		}
 		// Error: Unable to make currency conversion for Amount
-		else { $xml .= '<amount id="'. abs($iAmountReceived) + 3 .'">'. htmlspecialchars($_OBJ_TXT->_("amount - code: ". abs($iAmountReceived) + 3), ENT_NOQUOTES) .'</amount>'; }
+		else { $xml .= '<amount id="'. (abs($iAmountReceived) + 3) .'">'. htmlspecialchars($_OBJ_TXT->_("amount - code: ". (abs($iAmountReceived) + 3) ), ENT_NOQUOTES) .'</amount>'; }
 	}
 	break;
 default:

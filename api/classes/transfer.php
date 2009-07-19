@@ -212,9 +212,10 @@ class Transfer extends Home
 		$sBody = $this->getText()->_("mPoint - New Account SMS");
 		$sBody = $this->_constNewAccountMessage($sBody, $oRcpt, $oSndr, General::formatAmount($obj_ClientConfig->getCountryConfig(), $amount) );
 		// Create data object with the Message Information
-		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->getCountryConfig()->getID(), $this->getCountryConfig()->getID()*100, $this->getCountryConfig()->getChannel(), $obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, (float) $oRcpt->mobile, $sBody);
+		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $obj_ClientConfig->getCountryConfig()->getID(), $obj_ClientConfig->getCountryConfig()->getID()*100, $obj_ClientConfig->getCountryConfig()->getChannel(), $obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, (float) $oRcpt->mobile, $sBody);
 		$obj_MsgInfo->enableConcatenation();
-		$obj_MsgInfo->setSender("mPoint");
+		$obj_MsgInfo->setDescription("mPoint - New Account");
+//		if ($obj_ClientConfig->getCountryConfig()->getID() != 200) { $obj_MsgInfo->setSender("mPoint"); }
 		
 		// Send SMS to GoMobile with information about how a new account may be created
 		if ($this->sendMessage($oCI, $obj_ClientConfig, $obj_MsgInfo) == 200) { $iCode = 10; }

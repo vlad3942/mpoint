@@ -206,24 +206,29 @@ class EndUserAccount extends Home
 	 * as defined by the entries in database table: EndUser.CLAccess_Tbl.
 	 *
 	 * @param	RDB $oDB			Reference to the Database Object that holds the active connection to the mPoint Database
-	 * @param 	ClientConfig $oCI 	Data object with the Client Configuration
+	 * @param 	ClientConfig $oCC 	Data object with the Client Configuration
 	 * @param	string $addr 		End-User's mobile number or E-Mail address
 	 * @return	integer				Unqiue ID of the End-User's Account or -1 if no account was found
 	 */
-	public static function getAccountID(RDB &$oDB, ClientConfig &$oCI, $addr)
+	public function getAccountID(RDB &$oDB, ClientConfig &$oCC, $addr)
 	{
-		if (floatval($addr) > $oCI->getCountryConfig()->getMinMobile() ) { $sql = "mobile = '". floatval($addr) ."'"; }
+		if (floatval($addr) > $oCC->getCountryConfig()->getMinMobile() ) { $sql = "mobile = '". floatval($addr) ."'"; }
 		else { $sql = "Upper(email) = Upper('". $oDB->escStr($addr) ."')"; }
 
 		$sql = "SELECT DISTINCT EUA.id
 				FROM EndUser.Account_Tbl EUA
 				LEFT OUTER JOIN EndUser.CLAccess_Tbl CLA ON EUA.id = CLA.accountid
-				WHERE EUA.countryid = ". $oCI->getCountryConfig()->getID() ."
-					AND ". $sql ." AND EUA.enabled = true
-					AND (CLA.clientid = ". $oCI->getID() ."
-						 OR NOT EXISTS (SELECT id
-									 	FROM EndUser.CLAccess_Tbl
-									 	WHERE accountid = EUA.id) )";
+				WHERE EUA.countryid = ". $oCC->getCountryConfig()->getID() ."
+					AND ". $sql ." AND EUA.enabled = true";
+				// Not a System Client
+				if ($oCC->getCountryConfig()->getID() != $oCC->getID() )
+				{
+					$sql .= "
+							AND (CLA.clientid = ". $oCC->getID() ." OR EUA.countryid = CLA.clientid 
+							OR NOT EXISTS (SELECT id
+										   FROM EndUser.CLAccess_Tbl
+										   WHERE accountid = EUA.id) )";
+				}
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 
@@ -231,7 +236,7 @@ class EndUserAccount extends Home
 	}
 
 	/**
-	 * Tops an End-User's  e-money based prepaid account up with the specified amount
+	 * Tops an End-User's e-money based prepaid account up with the specified amount
 	 *
 	 * @see		Constants::iEMONEY_TOPUP_TYPE
 	 *
@@ -312,6 +317,7 @@ class EndUserAccount extends Home
 		
 		// Instantiate Message Object for holding the message data which will be sent to GoMobile
 		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->_obj_ClientConfig->getCountryConfig()->getID(), $this->_obj_TxnInfo->getOperator(), $this->_obj_ClientConfig->getCountryConfig()->getChannel(), $this->_obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getMobile(), $sBody);
+		$obj_MsgInfo->setDescription("mPoint - Account Info");
 		
 		// Send MT with Account Info
 		$this->sendMT($oCI, $obj_MsgInfo, $oTI);

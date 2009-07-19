@@ -613,6 +613,7 @@ class General
 			$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_WAP_PUSH_TYPE, $oTI->getClientConfig()->getCountryConfig()->getID(), $oTI->getOperator(), $oTI->getClientConfig()->getCountryConfig()->getChannel(), $oTI->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getMobile(), $sIndication, $url);
 			break;
 		}
+		$obj_MsgInfo->setDescription("mPoint - WAP Link");
 		// Send Link to Customer
 		$this->sendMT($oCI, $obj_MsgInfo, $oTI);
 	}

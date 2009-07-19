@@ -32,7 +32,7 @@ $aMsgCds = array();
 if (array_key_exists("account", $_REQUEST) === false) { $_REQUEST['account'] = -1; }
 if (array_key_exists("orderid", $_REQUEST) === false) { $_REQUEST['orderid'] = null; }
 if (array_key_exists("email", $_REQUEST) === false) { $_REQUEST['email'] = ""; }
-var_dump($_REQUEST);
+
 $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 
 // Validate basic information
@@ -41,7 +41,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']);
 
 	// Set Client Defaults
-	if (array_key_exists("operator", $_REQUEST) === false) { $_REQUEST['operator'] = $obj_ClientConfig->getCountryConfig()->getID() * 1000; }
+	if (array_key_exists("operator", $_REQUEST) === false) { $_REQUEST['operator'] = $obj_ClientConfig->getCountryConfig()->getID() * 100; }
 	if (array_key_exists("logo-url", $_REQUEST) === false) { $_REQUEST['logo-url'] = $obj_ClientConfig->getLogoURL(); }
 	if (array_key_exists("css-url", $_REQUEST) === false) { $_REQUEST['css-url'] = $obj_ClientConfig->getCSSURL(); }
 	if (array_key_exists("accept-url", $_REQUEST) === false) { $_REQUEST['accept-url'] = $obj_ClientConfig->getAcceptURL(); }
@@ -62,8 +62,8 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if ($obj_Validator->valURL($_REQUEST['logo-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['logo-url']) + 70] = $_REQUEST['logo-url']; }
 	if ($obj_Validator->valURL($_REQUEST['css-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['css-url']) + 80]= $_REQUEST['css-url']; }
 	if ($obj_Validator->valURL($_REQUEST['accept-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['accept-url']) + 90] = $_REQUEST['accept-url']; }
-	if ($obj_Validator->valURL($_REQUEST['cancel-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['cancel-url']) + 100] = $_REQUEST['cancel-url']; }
-	if ($obj_Validator->valURL($_REQUEST['callback-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['callback-url']) + 110] = $_REQUEST['callback-url']; }
+	if ($obj_Validator->valURL($_REQUEST['cancel-url']) > 1 && $obj_Validator->valURL($_REQUEST['cancel-url']) < 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['cancel-url']) + 100] = $_REQUEST['cancel-url']; }
+	if ($obj_Validator->valURL($_REQUEST['callback-url']) > 1 && $obj_Validator->valURL($_REQUEST['callback-url']) < 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['callback-url']) + 110] = $_REQUEST['callback-url']; }
 	if ($obj_Validator->valLanguage($_REQUEST['language']) != 10) { $aMsgCds[$obj_Validator->valLanguage($_REQUEST['language']) + 130] = $_REQUEST['language']; }
 	if ($obj_Validator->valEMail($_REQUEST['email']) != 1 && $obj_Validator->valEMail($_REQUEST['email']) != 10) { $aMsgCds[$obj_Validator->valEMail($_REQUEST['email']) + 140] = $_REQUEST['email']; }
 	/* ========== Input Validation End ========== */
@@ -129,7 +129,7 @@ if (array_key_exists(1000, $aMsgCds) === true)
 else
 {
 	$_GET['msg'] = array_keys($aMsgCds);
-
+	
 	$xml = '<?xml version="1.0" encoding="ISO-8859-15"?>';
 	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/status.xsl"?>';
 	$xml .= '<root>';

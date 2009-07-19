@@ -44,7 +44,7 @@ class TopUp extends Home
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
 			$xml .= '<option id="'. $RS["ID"] .'">';
-			$xml .= '<amount currency="'. $this->getCountryConfig()->getCurrency() .' symbol="'. $this->getCountryConfig()->getSymbol() .'">'. $RS["AMOUNT"] .'</amount>';
+			$xml .= '<amount currency="'. $this->getCountryConfig()->getCurrency() .'" symbol="'. $this->getCountryConfig()->getSymbol() .'">'. $RS["AMOUNT"] .'</amount>';
 			$xml .= '<price>'. General::formatAmount($this->getCountryConfig(), $RS["AMOUNT"]) .'</price>';
 			$xml .= '</option>';
 		}

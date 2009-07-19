@@ -162,14 +162,14 @@ table#products tr td
 	padding-top: 3px;
 }
 
-table#receipt
+table#receipt, div#top-up div.mPoint_Info
 {
 	background-color: #8FBFD5;
 	margin-top: 0.5em;
 	margin-bottom: 0.5em;
 }
 
-div#logo, div#progress, div#mPoint, div#status
+div#logo, div#progress, div#mPoint, div#status, div#top-up div#close
 {
 	text-align: center;
 }

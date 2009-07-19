@@ -126,7 +126,7 @@ case "form":
 	{
 		// Initialize Standard content Object
 		$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT, $obj_CountryConfig);
-		$iAccountID = $obj_mPoint->getAccountID( (string) $obj_XML->form->username);
+		$iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, (string) $obj_XML->form->username);
 		$code = $obj_mPoint->auth($iAccountID, (string) $obj_XML->form->password);
 
 		// Authentication succesful, return URLs for fetching next page

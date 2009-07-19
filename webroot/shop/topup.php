@@ -20,7 +20,7 @@ require_once(sCLASS_PATH ."/topup.php");
 $obj_mPoint = new TopUp($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig() );
 
 // Store Original data object with Transaction Information so original payment flow may be resumed 
-if (array_key_exists("obj_OrgTxnInfo", $_SESSION) === false) { $_SESSION['obj_OrgTxnInfo'] = $_SESSION['obj_TxnInfo']; }
+if (array_key_exists("obj_TxnInfo", $_SESSION) === true && array_key_exists("obj_OrgTxnInfo", $_SESSION) === false) { $_SESSION['obj_OrgTxnInfo'] = $_SESSION['obj_TxnInfo']; }
 
 echo '<?xml version="1.0" encoding="ISO-8859-15"?>';
 echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/shop/topup.xsl"?>';

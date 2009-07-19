@@ -65,7 +65,7 @@ class Products extends Overview
 			// Create XML for mandatory product information
 			$xml .= '<item id="'. $aRS[$i]["ID"] .'">';
 			$xml .= '<name>'. htmlspecialchars(utf8_decode($aRS[$i]["NAME"]), ENT_NOQUOTES) .'</name>';
-			$xml .= '<amount currency="'. $this->getTxnInfo()->getClientConfig()->getCountryConfig()->getCurrency() .' symbol="'. $this->getTxnInfo()->getClientConfig()->getCountryConfig()->getSymbol() .'">'. $aRS[$i]["PRICE"] .'</amount>';
+			$xml .= '<amount currency="'. $this->getTxnInfo()->getClientConfig()->getCountryConfig()->getCurrency() .'" symbol="'. $this->getTxnInfo()->getClientConfig()->getCountryConfig()->getSymbol() .'">'. $aRS[$i]["PRICE"] .'</amount>';
 			$xml .= '<price>'. General::formatAmount($this->getTxnInfo()->getClientConfig()->getCountryConfig(), $aRS[$i]["PRICE"]) .'</price>';
 			// Product logo included as part of request from Client
 			if (empty($aRS[$i]["LOGOURL"]) === false)

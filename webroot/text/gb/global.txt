@@ -50,6 +50,28 @@ msgstr @@@ mPoint @@@
 msgid @@@ Unsupported Browser @@@
 msgstr @@@ Unsupported Browser @@@
 
+#: /webroot/home/accept.php:30
+msgid @@@ Top-Up Account @@@
+msgstr @@@ Top-Up Account @@@
+
+#: /webroot/home/accept.php:38
+msgid @@@ Account Top-Up - Completed @@@
+msgstr @@@ Account Top-Up - Completed @@@
+msgid @@@ Account Top-Up - Authentication Error @@@
+msgstr @@@ Account Top-Up - Authentication Error @@@
+
+#: /webroot/home/accept.php:39
+msgid @@@ Amount @@@
+msgstr @@@ Amount @@@
+
+#: /webroot/home/accept.php:40
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
+#: /webroot/home/accept.php:41
+msgid @@@ Close @@@
+msgstr @@@ Close @@@
+
 #: /webroot/home/activate.php:26
 msgid @@@ Activate E-Mail @@@
 msgstr @@@ Activate E-Mail @@@
@@ -317,11 +339,11 @@ msgstr @@@ Other @@@
 msgid @@@ Edit @@@
 msgstr @@@ Edit @@@
 
-#: /webroot/home/sys/make_transfer.php:226
+#: /webroot/home/sys/make_transfer.php:225
 msgid @@@ transfer - code: 91 @@@
 msgstr @@@ transfer - code: 91 @@@
 
-#: /webroot/home/sys/make_transfer.php:237
+#: /webroot/home/sys/make_transfer.php:236
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
@@ -405,13 +427,21 @@ msgstr @@@ Transfer @@@
 msgid @@@ Balance @@@
 msgstr @@@ Balance @@@
 
-#: /webroot/home/topup.php:34
+#: /webroot/home/topup.php:42
 msgid @@@ Top-Up Account @@@
 msgstr @@@ Top-Up Account @@@
 
-#: /webroot/home/topup.php:37
+#: /webroot/home/topup.php:45
 msgid @@@ Balance @@@
 msgstr @@@ Balance @@@
+
+#: /webroot/home/topup.php:46
+msgid @@@ Amount @@@
+msgstr @@@ Amount @@@
+
+#: /webroot/home/topup.php:47
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
 
 #: /webroot/home/transfer.php:41
 msgid @@@ Transfer @@@
@@ -779,7 +809,7 @@ Merchant: {CLIENT}
 Order No: {ORDERID}
 Price: {PRICE} @@@
 
-#: /api/classes/enduser_account.php:309
+#: /api/classes/enduser_account.php:314
 msgid @@@ mPoint - Account Info @@@
 msgstr @@@ Your account has been created and is ready for use.
 Please go to {URL} to manage your account at any time.
@@ -820,11 +850,11 @@ msgid @@@ mPoint - Embedded link Resend Indication @@@
 msgstr @@@ We have detected that you haven't accessed the link for {CLIENT}.
 Please activate the link below @@@
 
-#: /api/classes/surepay.php:150
+#: /api/classes/surepay.php:151
 msgid @@@ SurePay Notification - Subject @@@
 msgstr @@@ mPoint payment link for Order: {ORDERID} has not yet been accessed @@@
 
-#: /api/classes/surepay.php:154
+#: /api/classes/surepay.php:155
 msgid @@@ SurePay Notification - Body @@@
 msgstr @@@ The following customer hasn't activated the mPoint payment link
 Mobile No: {MOBILE}
@@ -845,11 +875,11 @@ Please create an account at {DOMAIN} quoting code: {CODE} or click the link belo
 Kind Regards
 mPoint @@@
 
-#: /api/classes/transfer.php:247
+#: /api/classes/transfer.php:248
 msgid @@@ mPoint - New Account E-Mail Subject @@@
 msgstr @@@ You've received a transfer of {AMOUNT} from {SENDER} @@@
 
-#: /api/classes/transfer.php:250
+#: /api/classes/transfer.php:251
 msgid @@@ mPoint - New Account E-Mail Body @@@
 msgstr @@@ You've received a transfer of {AMOUNT} from {SENDER}.
 Please activate the link below to complete your registration

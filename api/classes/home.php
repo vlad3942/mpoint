@@ -50,17 +50,18 @@ class Home extends General
 	/**
 	 * Fetches the unique ID of the End-User's account from the database.
 	 *
+	 * @param	CountryConfig $oCC	Reference to the data object with the Configuration for the Country that the End-User Account must be active in
 	 * @param	string $addr 		End-User's mobile number or E-Mail address
 	 * @return	integer				Unqiue ID of the End-User's Account or -1 if no account was found
 	 */
-	public function getAccountID($addr)
+	public function getAccountID(CountryConfig &$oCC, $addr)
 	{
-		if (floatval($addr) > $this->_obj_CountryConfig->getMinMobile() ) { $sql = "mobile = '". floatval($addr) ."'"; }
+		if (floatval($addr) > $oCC->getMinMobile() ) { $sql = "mobile = '". floatval($addr) ."'"; }
 		else { $sql = "Upper(email) = Upper('". $this->getDBConn()->escStr($addr) ."')"; }
 
 		$sql = "SELECT DISTINCT EUA.id
 				FROM EndUser.Account_Tbl EUA
-				WHERE EUA.countryid = ". $this->_obj_CountryConfig->getID() ."
+				WHERE EUA.countryid = ". $oCC->getID() ."
 					AND ". $sql ." AND EUA.enabled = true";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);

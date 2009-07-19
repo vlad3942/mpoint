@@ -50,6 +50,28 @@ msgstr @@@ mPoint @@@
 msgid @@@ Unsupported Browser @@@
 msgstr @@@ Unsupported Browser @@@
 
+#: /webroot/home/accept.php:30
+msgid @@@ Top-Up Account @@@
+msgstr @@@ Top-Up Account @@@
+
+#: /webroot/home/accept.php:38
+msgid @@@ Account Top-Up - Completed @@@
+msgstr @@@ Account Top-Up - Completed @@@
+msgid @@@ Account Top-Up - Authentication Error @@@
+msgstr @@@ Account Top-Up - Authentication Error @@@
+
+#: /webroot/home/accept.php:39
+msgid @@@ Amount @@@
+msgstr @@@ Amount @@@
+
+#: /webroot/home/accept.php:40
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
+#: /webroot/home/accept.php:41
+msgid @@@ Close @@@
+msgstr @@@ Close @@@
+
 #: /webroot/home/activate.php:26
 msgid @@@ Activate E-Mail @@@
 msgstr @@@ Activate E-Mail @@@
@@ -314,11 +336,11 @@ msgstr @@@ Other @@@
 msgid @@@ Edit @@@
 msgstr @@@ Edit @@@
 
-#: /webroot/home/sys/make_transfer.php:226
+#: /webroot/home/sys/make_transfer.php:225
 msgid @@@ transfer - code: 91 @@@
 msgstr @@@ transfer - code: 91 @@@
 
-#: /webroot/home/sys/make_transfer.php:237
+#: /webroot/home/sys/make_transfer.php:236
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
@@ -402,13 +424,21 @@ msgstr @@@ Transfer @@@
 msgid @@@ Balance @@@
 msgstr @@@ Balance @@@
 
-#: /webroot/home/topup.php:34
+#: /webroot/home/topup.php:42
 msgid @@@ Top-Up Account @@@
 msgstr @@@ Top-Up Account @@@
 
-#: /webroot/home/topup.php:37
+#: /webroot/home/topup.php:45
 msgid @@@ Balance @@@
 msgstr @@@ Balance @@@
+
+#: /webroot/home/topup.php:46
+msgid @@@ Amount @@@
+msgstr @@@ Amount @@@
+
+#: /webroot/home/topup.php:47
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
 
 #: /webroot/home/transfer.php:41
 msgid @@@ Transfer @@@
@@ -776,7 +806,7 @@ Sælger: {CLIENT}
 Ordre Nr: {ORDERID}
 Pris: {PRICE} @@@
 
-#: /api/classes/enduser_account.php:309
+#: /api/classes/enduser_account.php:314
 msgid @@@ mPoint - Account Info @@@
 msgstr @@@ Din konto er blevet oprettet og er nu klar til brug.
 Husk, du kan altid administrere kontoen på {URL}.
@@ -812,11 +842,11 @@ msgid @@@ mPoint - Embedded link Resend Indication @@@
 msgstr @@@ Du har endnu ikke aktiveret dit link til {CLIENT}.
 Aktiver venligst nedenstående link @@@
 
-#: /api/classes/surepay.php:150
+#: /api/classes/surepay.php:151
 msgid @@@ SurePay Notification - Subject @@@
 msgstr @@@ mPoint betalings link for ordre: {ORDERID} er ikke blevet aktiveret @@@
 
-#: /api/classes/surepay.php:154
+#: /api/classes/surepay.php:155
 msgid @@@ SurePay Notification - Body @@@
 msgstr @@@ Nedenstående kunde har endnu ikke aktiveret sit betalings til mPoint betalings
 Mobil Nr: {MOBILE}
@@ -833,11 +863,11 @@ Tak fordi i benytter SurePay @@@
 msgid @@@ mPoint - New Account SMS @@@
 msgstr @@@ mPoint - New Account SMS @@@
 
-#: /api/classes/transfer.php:247
+#: /api/classes/transfer.php:248
 msgid @@@ mPoint - New Account E-Mail Subject @@@
 msgstr @@@ mPoint - New Account E-Mail Subject @@@
 
-#: /api/classes/transfer.php:250
+#: /api/classes/transfer.php:251
 msgid @@@ mPoint - New Account E-Mail Body @@@
 msgstr @@@ mPoint - New Account E-Mail Body @@@
 

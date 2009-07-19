@@ -33,7 +33,7 @@ class CellpointMobile extends Callback
 
 		// Create Premium MT-SMS
 		$obj_MsgInfo = GoMobileMessage::produceMessage(2, $this->getTxnInfo()->getClientConfig()->getCountryConfig()->getID(), $this->getTxnInfo()->getOperator(), $this->getTxnInfo()->getClientConfig()->getCountryConfig()->getChannel(), $this->getTxnInfo()->getClientConfig()->getKeywordConfig()->getKeyword(), $iAmount, $this->getTxnInfo()->getMobile(), $sBody);
-
+		$obj_MsgInfo->setDescription("mPoint - PSMS Charge");
 		$this->sendMT($oCI, $obj_MsgInfo, $this->getTxnInfo() );
 
 		return $obj_MsgInfo;

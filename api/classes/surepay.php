@@ -133,6 +133,7 @@ class SurePay extends General
 			$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $oTI->getClientConfig()->getCountryConfig()->getID(), $oTI->getOperator(), $oTI->getClientConfig()->getCountryConfig()->getChannel(), $oTI->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getMobile(), $sBody);
 			break;
 		}
+		$obj_MsgInfo->setDescription("mPoint - SurePay Link");
 		// Send Link to Customer
 		$this->sendMT($oCI, $obj_MsgInfo, $oTI);
 	}

@@ -61,9 +61,9 @@ class Validate
 	public static function valBasic(RDB &$oDB, $id, $acc)
 	{
 		if (empty($id) === true) { $code = 1; }			// Undefined Client ID
-		elseif (intval($id) < 10000) { $code = 2; }		// Invalid Client ID
+		elseif (intval($id) < 100 || (intval($id) > 999 && intval($id) < 10000) ) { $code = 2; }		// Invalid Client ID
 		elseif (empty($acc) === true) { $code = 11; }	// Undefined Account
-		elseif (intval($acc) < -1 || (intval($acc) >= 1000 && intval($acc) < 100000) || intval($acc) == 0) { $code = 12; }	// Invalid Account
+		elseif (intval($acc) < -1 || (intval($acc) >= 10000 && intval($acc) < 100000) || intval($acc) == 0) { $code = 12; }	// Invalid Account
 		else
 		{
 			$acc = (integer) $acc;

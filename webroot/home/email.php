@@ -12,9 +12,6 @@
 // Require include file for including all Shared and General APIs
 require_once("../inc/include.php");
 
-// Initialize Standard content Object
-$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
-
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 ?>
 <root type="multipart">
