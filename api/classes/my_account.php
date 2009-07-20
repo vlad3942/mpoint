@@ -188,8 +188,8 @@ class MyAccount extends Home
 		$sURL = "http://". sDEFAULT_MPOINT_DOMAIN ."/home/sys/save_email.php?id=". $id ."&c=". $iCode ."&chk=". md5($id . $iCode . $email);
 		
 		$sBody = str_replace("{URL}", $sURL, $sBody);
-		@mail($email, $sSubject, $sBody, $this->constHeaders() );
-		return true;
+		
+		return mail($email, $sSubject, $sBody, $this->constHeaders() );
 	}
 	
 	/**

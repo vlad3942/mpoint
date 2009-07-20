@@ -1,0 +1,2 @@
+RewriteEngine on
+RewriteRule ^([^/\.]+)/?$ /new/?checksum=$1 [L]

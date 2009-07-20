@@ -339,71 +339,71 @@ msgstr @@@ Other @@@
 msgid @@@ Edit @@@
 msgstr @@@ Edit @@@
 
-#: /webroot/home/sys/make_transfer.php:225
+#: /webroot/home/sys/make_transfer.php:240
 msgid @@@ transfer - code: 91 @@@
 msgstr @@@ transfer - code: 91 @@@
 
-#: /webroot/home/sys/make_transfer.php:236
+#: /webroot/home/sys/make_transfer.php:251
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
-#: /webroot/home/sys/save_info.php:94
+#: /webroot/home/sys/save_info.php:108
 msgid @@@ save - code: 100 @@@
 msgstr @@@ save - code: 100 @@@
 
-#: /webroot/home/sys/save_info.php:100
+#: /webroot/home/sys/save_info.php:114
 msgid @@@ save - code: 91 @@@
 msgstr @@@ save - code: 91 @@@
 
-#: /webroot/home/sys/save_info.php:105
+#: /webroot/home/sys/save_info.php:119
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
-#: /webroot/home/sys/save_mobile.php:92
+#: /webroot/home/sys/save_mobile.php:106
 msgid @@@ save - code: 100 @@@
 msgstr @@@ save - code: 100 @@@
 
-#: /webroot/home/sys/save_mobile.php:103
+#: /webroot/home/sys/save_mobile.php:117
 msgid @@@ save - code: 91 @@@
 msgstr @@@ save - code: 91 @@@
 
-#: /webroot/home/sys/save_mobile.php:108
+#: /webroot/home/sys/save_mobile.php:122
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
-#: /webroot/home/sys/save_password.php:101
+#: /webroot/home/sys/save_password.php:115
 msgid @@@ save - code: 100 @@@
 msgstr @@@ save - code: 100 @@@
 
-#: /webroot/home/sys/save_password.php:117
+#: /webroot/home/sys/save_password.php:131
 msgid @@@ save - code: 91 @@@
 msgstr @@@ save - code: 91 @@@
 
-#: /webroot/home/sys/save_password.php:122
+#: /webroot/home/sys/save_password.php:136
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
-#: /webroot/home/sys/send_code.php:95
+#: /webroot/home/sys/send_code.php:109
 msgid @@@ send - code: 100 @@@
 msgstr @@@ send - code: 100 @@@
 
-#: /webroot/home/sys/send_code.php:101
+#: /webroot/home/sys/send_code.php:115
 msgid @@@ send - code: 91 @@@
 msgstr @@@ send - code: 91 @@@
 
-#: /webroot/home/sys/send_code.php:106
+#: /webroot/home/sys/send_code.php:120
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
-#: /webroot/home/sys/send_link.php:92
+#: /webroot/home/sys/send_link.php:106
 msgid @@@ send - code: 100 @@@
 msgstr @@@ send - code: 100 @@@
 
-#: /webroot/home/sys/send_link.php:98
+#: /webroot/home/sys/send_link.php:112
 msgid @@@ send - code: 91 @@@
 msgstr @@@ send - code: 91 @@@
 
-#: /webroot/home/sys/send_link.php:103
+#: /webroot/home/sys/send_link.php:117
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
@@ -491,25 +491,33 @@ msgstr @@@ Unauthorized system access @@@
 msgid @@@ Welcome to mPoint - User Admin. Please login? @@@
 msgstr @@@ Welcome to mPoint - User Admin. Please login? @@@
 
-#: /webroot/login/content.php:28
+#: /webroot/login/content.php:30
 msgid @@@ Country @@@
 msgstr @@@ Country @@@
 
-#: /webroot/login/content.php:29
+#: /webroot/login/content.php:31
 msgid @@@ ( Select ) @@@
 msgstr @@@ ( Select ) @@@
 
-#: /webroot/login/content.php:30
+#: /webroot/login/content.php:32
 msgid @@@ Username @@@
 msgstr @@@ Mobile / E-Mail @@@
 
-#: /webroot/login/content.php:31
+#: /webroot/login/content.php:33
 msgid @@@ Password @@@
 msgstr @@@ Password @@@
 
-#: /webroot/login/content.php:32
+#: /webroot/login/content.php:34
 msgid @@@ Login @@@
 msgstr @@@ Login @@@
+
+#: /webroot/login/content.php:35
+msgid @@@ Forgot Password @@@
+msgstr @@@ Forgot Password @@@
+
+#: /webroot/login/content.php:36
+msgid @@@ Don't have an account yet? Sign up now! @@@
+msgstr @@@ Don't have an account yet? Sign up now! @@@
 
 #: /webroot/login/sys/auth.php:142
 msgid @@@ auth - code: 10 @@@
@@ -522,6 +530,128 @@ msgstr @@@ internal - code: 2 @@@
 #: /webroot/login/topmenu.php:21
 msgid @@@ Login @@@
 msgstr @@@ Login @@@
+
+#: /webroot/new/default.php:30
+msgid @@@ mPoint @@@
+msgstr @@@ mPoint @@@
+
+#: /webroot/new/default.php:31
+msgid @@@ Unsupported Browser @@@
+msgstr @@@ Unsupported Browser @@@
+
+#: /webroot/new/step1.php:28
+msgid @@@ Create Account @@@
+msgstr @@@ Create Account @@@
+
+#: /webroot/new/step1.php:31
+msgid @@@ Step 1 of 2 @@@
+msgstr @@@ Step 1 of 2 @@@
+
+#: /webroot/new/step1.php:32
+msgid @@@ Country @@@
+msgstr @@@ Country @@@
+
+#: /webroot/new/step1.php:33
+msgid @@@ Transfer Code @@@
+msgstr @@@ Transfer Code @@@
+
+#: /webroot/new/step1.php:34
+msgid @@@ Firstname @@@
+msgstr @@@ Firstname @@@
+
+#: /webroot/new/step1.php:35
+msgid @@@ Lastname @@@
+msgstr @@@ Lastname @@@
+
+#: /webroot/new/step1.php:36
+msgid @@@ Mobile @@@
+msgstr @@@ Mobile @@@
+
+#: /webroot/new/step1.php:37
+msgid @@@ E-Mail @@@
+msgstr @@@ E-Mail @@@
+
+#: /webroot/new/step1.php:38
+msgid @@@ Password @@@
+msgstr @@@ Password @@@
+
+#: /webroot/new/step1.php:39
+msgid @@@ Repeat Password @@@
+msgstr @@@ Repeat Password @@@
+
+#: /webroot/new/step1.php:40
+msgid @@@ Create Account @@@
+msgstr @@@ Create Account @@@
+
+#: /webroot/new/step1.php:41
+msgid @@@ ( Select ) @@@
+msgstr @@@ ( Select ) @@@
+
+#: /webroot/new/step1.php:44
+msgid @@@ Create Account Guide - Step 1 @@@
+msgstr @@@ Please complete all fields in the form below @@@
+
+#: /webroot/new/step2.php:23
+msgid @@@ Create Account @@@
+msgstr @@@ Create Account @@@
+
+#: /webroot/new/step2.php:26
+msgid @@@ Step 2 of 2 @@@
+msgstr @@@ Step 2 of 2 @@@
+
+#: /webroot/new/step2.php:27
+msgid @@@ Account ID @@@
+msgstr @@@ Account ID @@@
+
+#: /webroot/new/step2.php:28
+msgid @@@ Activation Code @@@
+msgstr @@@ Activation Code @@@
+
+#: /webroot/new/step2.php:29
+msgid @@@ Verify Mobile @@@
+msgstr @@@ Verify Mobile @@@
+
+#: /webroot/new/step2.php:32
+msgid @@@ Create Account Guide - Step 2 @@@
+msgstr @@@ An activation code has been sent to your mobile phone and a verification link sent to your e-mail address.
+Please enter the activation code from the SMS in the field below? @@@
+
+#: /webroot/new/step3.php:23
+msgid @@@ Create Account @@@
+msgstr @@@ Create Account @@@
+
+#: /webroot/new/step3.php:25
+msgid @@@ Create Account Guide - Step 3 @@@
+msgstr @@@ Thank you for creating your new account and validating your mobile number.
+You may now log into your account using the top menu. @@@
+
+#: /webroot/new/sys/create_account.php:180
+msgid @@@ save - code: 100 @@@
+msgstr @@@ save - code: 100 @@@
+
+#: /webroot/new/sys/create_account.php:202
+msgid @@@ save - code: 92 @@@
+msgstr @@@ save - code: 92 @@@
+
+#: /webroot/new/sys/create_account.php:209
+msgid @@@ save - code: 91 @@@
+msgstr @@@ save - code: 91 @@@
+
+#: /webroot/new/sys/create_account.php:214
+msgid @@@ internal - code: 2 @@@
+msgstr @@@ internal - code: 2 @@@
+
+#: /webroot/new/sys/save_mobile.php:90
+msgid @@@ save - code: 100 @@@
+msgstr @@@ save - code: 100 @@@
+
+#: /webroot/new/sys/save_mobile.php:107
+msgid @@@ save - code: 91 @@@
+msgstr @@@ save - code: 91 @@@
+
+#: /webroot/new/sys/save_mobile.php:112
+msgid @@@ internal - code: 2 @@@
+msgstr @@@ internal - code: 2 @@@
 
 #: /webroot/overview.php:38
 msgid @@@ Order Overview @@@
@@ -826,8 +956,7 @@ msgstr @@@ Welcome to {CLIENT} @@@
 
 #: /api/classes/my_account.php:84
 msgid @@@ mPoint - Send Activation Code @@@
-msgstr @@@ Thank you for updating your mobile number.
-Please enter the activation code: {CODE} on the website to complete your update. @@@
+msgstr @@@ Please enter the activation code: {CODE} on the website to verify your mobile number. @@@
 
 #: /api/classes/my_account.php:184
 msgid @@@ mPoint - Activation Link Subject @@@
@@ -835,8 +964,7 @@ msgstr @@@ Please verify your E-Mail address? @@@
 
 #: /api/classes/my_account.php:185
 msgid @@@ mPoint - Activation Link Body @@@
-msgstr @@@ Thank you for updating your e-mail address.
-Please click the link below to verify your new e-mail address and complete your update.
+msgstr @@@ Please click the link below to verify your new e-mail address.
 {URL}
 
 Please note that this is an autogenerate e-mail which you cannot respond to. @@@
@@ -870,7 +998,7 @@ Thank you for using SurePay @@@
 #: /api/classes/transfer.php:212
 msgid @@@ mPoint - New Account SMS @@@
 msgstr @@@ You've received a transfer of {AMOUNT} from {SENDER}.
-Please create an account at {DOMAIN} quoting code: {CODE} or click the link below to complete your registration directly from your mobile phone.
+Please create an account at {DOMAIN} entering transfer code: {CODE} or click the link below to complete your registration directly from your mobile phone.
 {URL}
 Kind Regards
 mPoint @@@
