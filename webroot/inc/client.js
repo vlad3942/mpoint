@@ -662,7 +662,7 @@ function Client(name)
 		// Callback object given
 		if (oCB != null) { var obj = oCB; }
 		else { var obj = this; }
-
+		
 		obj.loadPage(url, true);
 	}
 
@@ -689,6 +689,7 @@ function Client(name)
 		try
 		{
 			report(4, "Cache: "+ url +" - "+ this._aCache[url]);
+			
 			if (this._aCache[url] != null && this._aCache[url].getXML() != null)
 			{
 				this.processReply(this._aCache[url], disp);
@@ -1338,11 +1339,23 @@ function Client(name)
 				if (a1[i].match(/rel=["']nocache["']/i) == null)
 				{
 					// Isolate the URL part of the call to the changePage method
-					var a2 = a1[i].split(/.changePage\(["']/i);
-					for (var n=1; n<a2.length; n=n+2)
+					var a2 = a1[i].split(/.changePage/i);
+					
+					// URL contains call to the openWindow method which references changePage as a callback
+					if (a2.length == 2 && a2[0].match(/.openWindow\(["']/i) != null)
 					{
-						var a3 = a2[n].split(/["']/gim);
-						aLinks[aLinks.length] = a3[0];
+						var a3 = a2[0].split(/,/i);
+						a3[2] = a3[2].replace(/["']/g, "");
+						aLinks[aLinks.length] = a3[2].trim();
+					}
+					// URL contains direct call to changePage
+					else
+					{
+						for (var n=1; n<a2.length; n=n+2)
+						{
+							var a3 = a2[n].split(/["']/gim);
+							aLinks[aLinks.length] = a3[1].trim();
+						}
 					}
 				}
 			}
