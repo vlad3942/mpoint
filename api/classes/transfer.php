@@ -152,7 +152,7 @@ class Transfer extends Home
 	/**
 	 * Constructs the message that should be sent to a recipient who receives a transfer without having an account.
 	 * The method will perform the following Text Tag replacements:
-	 * 	- {CODE}, the transfer code created from: base_convert({ACCOUNT CREATED}, 10, 32)Zbase_convert({ACCOUNT ID}, 10, 32)
+	 * 	- {CODE}, the transfer code created from: base_convert({ACCOUNT CREATED}, 10, 32)Zbase_convert({ACCOUNT ID FOR RECIPIENT}, 10, 32)Zbase_convert({ACCOUNT ID FOR SENDER}, 10, 32)
 	 * 	- {DOMAIN}, the domain that mPoint is currently using
 	 * 	- {AMOUNT}, the amount that was transferred
 	 * 	- {SENDER}, metadata about the sender of the transfer, will be replaced with either {ADDRESS} or {NAME} ({ADDRESS})
@@ -168,7 +168,7 @@ class Transfer extends Home
 	 */
 	private function _constNewAccountMessage($msg, SimpleXMLElement &$oRcpt, SimpleXMLElement &$oSndr, $amount)
 	{
-		$code = base_convert( (integer) $oRcpt->created["timestamp"], 10, 32) ."Z". base_convert( (integer) $oRcpt["id"], 10, 32);
+		$code = base_convert( (integer) $oRcpt->created["timestamp"], 10, 32) ."Z". base_convert( (integer) $oRcpt["id"], 10, 32) ."Z". base_convert( (integer) $oSndr["id"], 10, 32);
 		$msg = str_replace("{CODE}", strtoupper($code), $msg);
 		$msg = str_replace("{DOMAIN}", "http://". sDEFAULT_MPOINT_DOMAIN, $msg);
 		$msg = str_replace("{AMOUNT}", $amount, $msg);

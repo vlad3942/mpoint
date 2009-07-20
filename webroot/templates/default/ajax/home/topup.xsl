@@ -5,7 +5,7 @@
 <xsl:template match="/root/content">
 	<div id="top-up">
 		<h1><xsl:value-of select="headline" /></h1>
-		
+		<br />
 		<h2>
 			<label><xsl:value-of select="labels/balance" /></label>
 			<xsl:value-of select="account/funds" />

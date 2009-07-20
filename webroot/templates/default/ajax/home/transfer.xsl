@@ -5,6 +5,7 @@
 <xsl:template match="/root/content">
 	<div id="transfer">
 		<h1><xsl:value-of select="headline" /></h1>
+		<br />
 		<div id="overview">
 			<xsl:value-of select="overview" />
 		</div>

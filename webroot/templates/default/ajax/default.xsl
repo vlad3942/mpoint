@@ -11,7 +11,7 @@
 		<meta http-equiv="Content-Style-Type" content="text/css" />
 		<meta http-equiv="Content-Script-Type" content="text/javascript" />
 		<title><xsl:value-of select="/root/title" /></title>
-		<link href="css/global.css" type="text/css" rel="stylesheet" />
+		<link href="/css/global.css" type="text/css" rel="stylesheet" />
 		
 		<script type="text/javascript" src="/inc/global.js"></script>
 		<script type="text/javascript" src="/inc/client.js"></script>
@@ -21,7 +21,7 @@
 		<div id="main">
 			<table id="page" cellpadding="0" cellspacing="0" align="center" border="0">
 			<tr>
-				<td bgcolor="#709EB5"><img src="img/top.jpg" width="1280" height="111" alt=" - Top - " /></td>
+				<td bgcolor="#709EB5"><img src="/img/top.jpg" width="1280" height="111" alt=" - Top - " /></td>
 			</tr>
 			<tr>
 				<td valign="top">
@@ -40,7 +40,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td><img src="img/bottom.jpg" width="1280" height="93" alt=" - Bottom - "/></td>
+				<td><img src="/img/bottom.jpg" width="1280" height="93" alt=" - Bottom - "/></td>
 			</tr>
 			</table>
 		</div>

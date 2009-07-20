@@ -212,8 +212,8 @@ class EndUserAccount extends Home
 	 */
 	public function getAccountID(RDB &$oDB, ClientConfig &$oCC, $addr)
 	{
-		if (floatval($addr) > $oCC->getCountryConfig()->getMinMobile() ) { $sql = "mobile = '". floatval($addr) ."'"; }
-		else { $sql = "Upper(email) = Upper('". $oDB->escStr($addr) ."')"; }
+		if (floatval($addr) > $oCC->getCountryConfig()->getMinMobile() ) { $sql = "EUA.mobile = '". floatval($addr) ."'"; }
+		else { $sql = "Upper(EUA.email) = Upper('". $oDB->escStr($addr) ."')"; }
 
 		$sql = "SELECT DISTINCT EUA.id
 				FROM EndUser.Account_Tbl EUA

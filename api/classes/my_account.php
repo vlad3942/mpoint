@@ -66,7 +66,7 @@ class MyAccount extends Home
 	}
 	
 	/**
-	 * Generates and sends an Activation Code to the End-User using the provided MSISDN.
+	 * Generates and sends an Activation Code to the End-User using the provided Mobile Number (MSISDN).
 	 * 
 	 * @see		GoMobileMessage::produceMessage()
 	 * @see		General::getText()
@@ -159,13 +159,13 @@ class MyAccount extends Home
 	 * Saves the specified Mobile Number for the End-User Account. 
 	 *
 	 * @param	integer $id 	Unqiue ID of the End-User's Account
-	 * @param	string $mob 	The End-User's new Mobile Number (MSISDN) which should be saved to the account
+	 * @param	string $mob 	The End-User's new Mobile Number (MSISDN) which should be saved to the account. Set to NULL to clear.
 	 * @return	boolean
 	 */
 	public function saveMobile($id, $mob)
 	{
 		$sql = "UPDATE EndUser.Account_Tbl
-				SET mobile = '". floatval($mob) ."'  
+				SET mobile = ". (is_null($mob) === true ? "NULL" : "'". floatval($mob) ."'") ."
 				WHERE id = ". intval($id);
 //		echo $sql ."\n";
 		
@@ -173,7 +173,7 @@ class MyAccount extends Home
 	}
 	
 	/**
-	 * Generates and sends an Activation Code to the End-User using the provided MSISDN 
+	 * Generates and sends an Activation Code to the End-User using the provided E-Mail Address 
 	 *
 	 * @param	integer $id 	Unqiue ID of the End-User's Account
 	 * @param	string $email 	End-User's new E-Mail address
@@ -188,21 +188,21 @@ class MyAccount extends Home
 		$sURL = "http://". sDEFAULT_MPOINT_DOMAIN ."/home/sys/save_email.php?id=". $id ."&c=". $iCode ."&chk=". md5($id . $iCode . $email);
 		
 		$sBody = str_replace("{URL}", $sURL, $sBody);
-		
-		return mail($email, $sSubject, $sBody, $this->constHeaders() );
+		@mail($email, $sSubject, $sBody, $this->constHeaders() );
+		return true;
 	}
 	
 	/**
 	 * Saves the specified E-Mail address for the End-User Account
 	 *
 	 * @param	integer $id 	Unqiue ID of the End-User's Account
-	 * @param 	string $email	End-User's e-mail address
+	 * @param 	string $email	End-User's e-mail address, set to NULL to clear
 	 * @return	boolean
 	 */
-	public function saveEmail($id, $email)
+	public function saveEMail($id, $email)
 	{
 		$sql = "UPDATE EndUser.Account_Tbl
-				SET email = '". $this->getDBConn()->escStr($email) ."'
+				SET email = ". (is_null($email) === true ? "NULL" : "'". $this->getDBConn()->escStr($email) ."'") ."
 				WHERE id = ". intval($id);
 //		echo $sql ."\n";
 
@@ -263,6 +263,52 @@ class MyAccount extends Home
 			else { $code = 2; }
 		}
 		else { $code = 10; }
+		
+		return $code;
+	}
+	
+	/**
+	 * Validates the Account Information for the specified Transfer Checksum against the provided address .
+	 * The method will return the following status codes:
+	 * 	 0. Specified Address not registered for Account
+	 * 	 1. Account Information doesn't match provided Mobile Number (MSISDN)
+	 * 	 2. Account Information doesn't match provided E-Mail Address
+	 * 	 9. Invalid address provided
+	 * 	10. Success
+	 * 
+	 * @param 	string $chk 	Transfer Checksum that should be validated
+	 * @param 	string $addr	End-User's mobile number or E-Mail address
+	 * @return 	integer
+	 */
+	public function valChecksum($chk, $addr)
+	{
+		list(, $id) = spliti("Z", $chk);
+		$id = base_convert($id, 32, 10);
+		$obj_XML = simplexml_load_string($this->getAccountInfo($id) );
+		
+		// Mobile Number (MSISDN) provided for validation
+		if (floatval($addr) > $this->getCountryConfig()->getMinMobile() )
+		{
+			// Mobile Number (MSISDN) registered for Account
+			if (floatval($obj_XML->mobile) > $this->getCountryConfig()->getMinMobile() )
+			{
+				if (strval($obj_XML->mobile) != $addr) { $code = 1; }
+				else { $code = 10; }
+			}
+			else { $code = 0; }
+		}
+		// E-Mail Address provided for validation
+		elseif (strstr($addr, "@") == true)
+		{
+			// E-Mail Address registered for Account
+			if (strval($obj_XML->mobile) != "")
+			{
+				if (strval($obj_XML->email) != $addr) { $code = 2; }
+				else { $code = 10; }
+			}
+			else { $code = 0; }
+		}
+		else { $code = 9; }
 		
 		return $code;
 	}

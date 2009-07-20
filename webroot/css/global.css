@@ -24,6 +24,7 @@ h1, h2
 h1
 {
 	font-size: 140%;
+	margin-bottom: 0px;
 }
 h2, .menu
 {
@@ -63,6 +64,7 @@ form
 .info
 {
 	font-style: italic;
+	white-space: pre-wrap;
 }
 
 div#main table#page
@@ -233,7 +235,7 @@ div.window-content
 /* ========== Window Content End ========== */
 
 /* ========== Pages Start ========== */
-div#login, div#my-account, div#topup, div#stored-cards, div#view-transactions, div#transfer
+div#login, div#sign-up h2, div#my-account, div#topup, div#stored-cards, div#view-transactions, div#transfer, div#create-account
 {
 	text-align: center;
 }
@@ -340,9 +342,5 @@ div#edit-mobile, div#edit-email
 div#edit-password h2, div#edit-mobile h2, div#edit-email h2
 {
 	text-align: center;
-}
-div#edit-mobile .info, div#edit-email .info
-{
-	white-space: pre-wrap;
 }
 /* ========== Windows End ========== */

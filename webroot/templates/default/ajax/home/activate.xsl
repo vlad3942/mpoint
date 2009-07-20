@@ -3,7 +3,7 @@
 <xsl:include href="../web.xsl" />
 
 <xsl:template match="/root/content">
-	<div id="home">
+	<div id="activate">
 		<h1><xsl:value-of select="headline" /></h1>
 		<div id="progress">
 			<xsl:value-of select="labels/progress" />

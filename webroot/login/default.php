@@ -6,7 +6,7 @@
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
  * @package Admin
- * @subpackage General
+ * @subpackage Login
  */
 
 // Require include file for including all Shared and General APIs

@@ -6,7 +6,7 @@
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
  * @package Admin
- * @subpackage General
+ * @subpackage Login
  */
 
 // Require include file for including all Shared and General APIs
@@ -124,7 +124,7 @@ case "form":
 	// Username / Password validated
 	if (empty($xml) === true)
 	{
-		// Initialize Standard content Object
+		// Re-Initialize Standard content Object
 		$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT, $obj_CountryConfig);
 		$iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, (string) $obj_XML->form->username);
 		$code = $obj_mPoint->auth($iAccountID, (string) $obj_XML->form->password);

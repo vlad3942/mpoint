@@ -90,7 +90,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			$obj_mPoint->logClientVars($iTxnID, $_REQUEST);
 			
 			$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getCountryConfig()->getID(), -1);
-			$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $_REQUEST);
+			$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, array_merge($_REQUEST, array("accountid" => $iAccountID) ) );
 
 			$aMsgCds[1000] = "Success";
 		}

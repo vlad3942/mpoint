@@ -59,10 +59,10 @@ class Home extends General
 		if (floatval($addr) > $oCC->getMinMobile() ) { $sql = "mobile = '". floatval($addr) ."'"; }
 		else { $sql = "Upper(email) = Upper('". $this->getDBConn()->escStr($addr) ."')"; }
 
-		$sql = "SELECT DISTINCT EUA.id
-				FROM EndUser.Account_Tbl EUA
-				WHERE EUA.countryid = ". $oCC->getID() ."
-					AND ". $sql ." AND EUA.enabled = true";
+		$sql = "SELECT id
+				FROM EndUser.Account_Tbl
+				WHERE countryid = ". $oCC->getID() ."
+					AND ". $sql ." AND enabled = true";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 
@@ -415,19 +415,19 @@ class Home extends General
 	 * Creates a new End-User Account.
 	 *
 	 * @param	integer $cid 	ID of the country the End-User Account should be created in
-	 * @param	string $mob 	End-User's mobile number
+	 * @param	string $mob 	End-User's mobile number (optional)
 	 * @param 	string $pwd 	Password for the created End-User Account (optional)
 	 * @param 	string $email	End-User's e-mail address (optional)
 	 * @return	integer 		The unique ID of the created End-User Account
 	 */
-	public function newAccount($cid, $mob, $pwd="", $email="")
+	public function newAccount($cid, $mob="", $pwd="", $email="")
 	{
 		$sql = "SELECT Nextval('EndUser.Account_Tbl_id_seq') AS id";
 		$RS = $this->getDBConn()->getName($sql);
 		$sql = "INSERT INTO EndUser.Account_Tbl
 					(id, countryid, mobile, passwd, email)
 				VALUES
-					(". $RS["ID"] .", ". intval($cid) .", '". floatval($mob) ."', '". $this->getDBConn()->escStr($pwd) ."', '". $this->getDBConn()->escStr($email) ."')";
+					(". $RS["ID"] .", ". intval($cid) .", ". (floatval($mob) > 0 ? "'". floatval($mob) ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". (strlen($email) > 0 ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .")";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 

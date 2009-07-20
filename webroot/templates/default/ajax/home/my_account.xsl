@@ -5,7 +5,7 @@
 <xsl:template match="/root/content">
 	<div id="my-account">
 		<h1><xsl:value-of select="headline" /></h1>
-		
+		<br />
 		<table align="center">
 		<tr>
 			<td id="account-info">

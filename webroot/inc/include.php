@@ -113,7 +113,8 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 
 	// Not fetching an Image, performing a back-end process or accessing the AJAX enabled web interface
 	if (eregi("/img/", $_SERVER['PHP_SELF']) == false && eregi("/sys/", $_SERVER['PHP_SELF']) == false && eregi("/cpm/", $_SERVER['PHP_SELF']) == false
-		&& eregi("/home/", $_SERVER['PHP_SELF']) == false && eregi("/login/", $_SERVER['PHP_SELF']) == false && eregi("/internal/", $_SERVER['PHP_SELF']) == false)
+		&& eregi("/home/", $_SERVER['PHP_SELF']) == false && eregi("/login/", $_SERVER['PHP_SELF']) == false && eregi("/new/", $_SERVER['PHP_SELF']) == false
+		&& eregi("/internal/", $_SERVER['PHP_SELF']) == false)
 	{
 		/*
 		 * Use Output buffering to "magically" transform the XML via XSL behind the scene
@@ -128,8 +129,8 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 // Instantiate connection to the Database
 $_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
 
-// Payment link activated, use overview.php through a rewrite rule defined by htaccess
-if (array_key_exists("checksum", $_GET) === true && $_SERVER['REQUEST_METHOD'] == "GET")
+// Payment link activated, use /overview.php og /shop/products.php through a rewrite rule defined by .htaccess
+if (array_key_exists("checksum", $_GET) === true && $_SERVER['REQUEST_METHOD'] == "GET" && eregi("/new/", $_SERVER['PHP_SELF']) == false)
 {
 	$_SESSION['obj_TxnInfo'] = General::produceTxnInfo($_OBJ_DB, $_GET['checksum']);
 }

@@ -734,7 +734,7 @@ class General
 			$sql = "SELECT countryid
 					FROM System.IPRange_Tbl
 					WHERE min <= ". $ip ." AND max >= ". $ip;
-//			echo nl2br($strSQL);
+//			echo nl2br($sql);
 			$RS = $this->getDBConn()->getName($sql);
 			// Unable to determine country based on IP Address
 			if (is_array($RS) === false) { $RS["COUNTRYID"] = 0; }

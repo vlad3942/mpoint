@@ -128,6 +128,7 @@ class Validate
 			$sql = "SELECT enabled
 					FROM System.Country_Tbl
 					WHERE id = ". intval($id);
+//			echo $sql ."\n";
 			$RS = $oDB->getName($sql);
 
 			if (is_array($RS) === false) { $code = 3; }		// Unknown Country
@@ -654,6 +655,43 @@ class Validate
 		elseif (intval($amount) * 100 < $this->_obj_CountryConfig->getMinTransfer() ) { $code = 2; }// Amount is too small
 		elseif (intval($amount) * 100 > $max) { $code = 3; }										// Amount is too great
 		else { $code = 10; }
+
+		return $code;
+	}
+	/**
+	 * Performs basic validation of the Transfer Checksum ensuring that the transaction can be found.
+	 * The method will return the following status codes:
+	 * 	 1. Undefined Checksum
+	 * 	 2. Unknown Checksum
+	 * 	 3. Checksum Disabled
+	 * 	10. Success
+	 *
+	 * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param 	string $chk 	Transfer Checksum that should be validated
+	 * @return 	integer
+	 */
+	public function valChecksum(RDB &$oDB, $chk)
+	{
+		if (empty($chk) === true) { $code = 1; }			// Undefined Checksum
+		else
+		{
+			list($sTimestamp, $iToID, $iFromID) = spliti("Z", $chk);
+			$sTimestamp = date("Y-m-d H:i:s", base_convert($sTimestamp, 32, 10) );
+			$iToID = base_convert($iToID, 32, 10);
+			$iFromID = base_convert($iFromID, 32, 10);
+			
+			$sql = "SELECT Txn.enabled
+					FROM EndUser.Transaction_Tbl Txn
+					INNER JOIN EndUser.Account_Tbl Acc ON Txn.accountid = Acc.id AND Acc.enabled = true
+					WHERE Acc.id = ". intval($iToID) ." AND date_trunc('second', Acc.created) = '". $oDB->escStr($sTimestamp) ."' 
+						AND Txn.toid = ". intval($iToID) ." AND Txn.fromid = ". intval($iFromID);
+//			echo $sql ."\n";
+			$RS = $oDB->getName($sql);
+
+			if (is_array($RS) === false) { $code = 2; }		// Unknown Checksum
+			elseif ($RS["ENABLED"] === false) { $code = 3; }// Checksum Disabled
+			else { $code = 10; }							// Success
+		}
 
 		return $code;
 	}
