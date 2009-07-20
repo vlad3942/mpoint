@@ -625,19 +625,19 @@ msgid @@@ Create Account Guide - Step 3 @@@
 msgstr @@@ Thank you for creating your new account and validating your mobile number.
 You may now log into your account using the top menu. @@@
 
-#: /webroot/new/sys/create_account.php:180
+#: /webroot/new/sys/create_account.php:253
 msgid @@@ save - code: 100 @@@
 msgstr @@@ save - code: 100 @@@
 
-#: /webroot/new/sys/create_account.php:202
+#: /webroot/new/sys/create_account.php:275
 msgid @@@ save - code: 92 @@@
 msgstr @@@ save - code: 92 @@@
 
-#: /webroot/new/sys/create_account.php:209
+#: /webroot/new/sys/create_account.php:282
 msgid @@@ save - code: 91 @@@
 msgstr @@@ save - code: 91 @@@
 
-#: /webroot/new/sys/create_account.php:214
+#: /webroot/new/sys/create_account.php:287
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
@@ -954,15 +954,15 @@ msgstr @@@ Welcome to {CLIENT}, please activate the link below @@@
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Welcome to {CLIENT} @@@
 
-#: /api/classes/my_account.php:84
+#: /api/classes/my_account.php:85
 msgid @@@ mPoint - Send Activation Code @@@
 msgstr @@@ Please enter the activation code: {CODE} on the website to verify your mobile number. @@@
 
-#: /api/classes/my_account.php:184
+#: /api/classes/my_account.php:185
 msgid @@@ mPoint - Activation Link Subject @@@
 msgstr @@@ Please verify your E-Mail address? @@@
 
-#: /api/classes/my_account.php:185
+#: /api/classes/my_account.php:186
 msgid @@@ mPoint - Activation Link Body @@@
 msgstr @@@ Please click the link below to verify your new e-mail address.
 {URL}

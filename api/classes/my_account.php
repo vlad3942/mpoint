@@ -43,18 +43,19 @@ class MyAccount extends Home
 	 *
 	 * @param	integer $id 	Unqiue ID of the End-User's Account
 	 * @param	string $addr 	End-User's mobile number or E-Mail address
+	 * @param	timestamp $exp 	Timestamp indicating when the generated activation code should expire in the format: YYYY-MM-DD hh:mm:ss, set to null for default (24 hours from "now")
 	 * @return 	integer
 	 * 
 	 * @throws	mPointException
 	 */
-	private function _genActivationCode($id, $addr)
+	private function _genActivationCode($id, $addr, $exp=null)
 	{
 		$iCode = mt_rand(100000, 999999);
 		// Insert generated activation code in the database
 		$sql = "INSERT INTO EndUser.Activation_Tbl
-					(accountid, address, code)
+					(accountid, address, code". (is_null($exp) == false ? ", expiry" : "") .")
 				VALUES
-					(". intval($id) .", '". $this->getDBConn()->escStr($addr) ."', ". $iCode .")";
+					(". intval($id) .", '". $this->getDBConn()->escStr($addr) ."', ". $iCode .", ". (is_null($exp) == false ? "'". $this->getDBConn()->escStr($exp) ."'" : "") .")";
 //		echo $sql ."\n";
 		
 		if (is_resource($this->getDBConn()->query($sql) ) === false)
@@ -98,9 +99,10 @@ class MyAccount extends Home
 	 * Activates the provided code.
 	 * The method will return the following status codes:
 	 * 	 1. Activation Code not found for Account
-	 * 	 2. Activation Code disabled
+	 * 	 2. Activation Code expired
 	 * 	 3. Activation Code already consumed
-	 * 	 4. Unable to consume Activation Code
+	 * 	 4. Activation Code disabled
+	 * 	 5. Unable to consume Activation Code
 	 * 	10. Success
 	 *
 	 * @param	integer $id 	Unqiue ID of the End-User's Account
@@ -109,15 +111,16 @@ class MyAccount extends Home
 	 */
 	public function activateCode($id, $code)
 	{
-		$sql = "SELECT id, enabled, active
+		$sql = "SELECT id, enabled, active, extract('epocth' from expiry) AS expiry
 				FROM EndUser.Activation_Tbl
 				WHERE accountid = ". intval($id) ." AND code = ". intval($code);
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 
-		if (is_array($RS) === false) { $iStatus = 1;}
-		elseif ($RS["ENABLED"] === false) { $iStatus = 2;}
-		elseif ($RS["ACTIVE"] === true) { $iStatus = 3;}
+		if (is_array($RS) === false) { $iStatus = 1; }		// Activation Code not found for Account
+		elseif ($RS["EXPIRY"] < time() ) { $iStatus = 2; }	// Activation Code expired
+		elseif ($RS["ACTIVE"] === true) { $iStatus = 3; }	// Activation Code already consumed
+		elseif ($RS["ENABLED"] === false) { $iStatus = 4; }	// Activation Code disabled
 		else
 		{
 			$sql = "UPDATE EndUser.Activation_Tbl
@@ -128,7 +131,7 @@ class MyAccount extends Home
 			{
 				$iStatus = 10; 
 			}
-			else { $iStatus = 4; }
+			else { $iStatus = 5; }
 		}
 			
 		return $iStatus;

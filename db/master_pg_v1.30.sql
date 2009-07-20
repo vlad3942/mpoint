@@ -165,6 +165,7 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE EndUser.Transaction_Tbl TO mpoint;
 GRANT SELECT, UPDATE, INSERT ON TABLE EndUser.Transaction_Tbl_id_seq TO mpoint;
 
 
+DROP TABLE EndUser.Activation_Tbl;
 -- Table: EndUser.Activation_Tbl
 -- Data table for holding all pending activations
 CREATE TABLE EndUser.Activation_Tbl
@@ -176,6 +177,7 @@ CREATE TABLE EndUser.Activation_Tbl
 	address		VARCHAR(50),
 	
 	active 		BOOL DEFAULT false,
+	expiry		TIMESTAMP DEFAULT NOW() + interval '86400',
 	
 	CONSTRAINT Activation_PK PRIMARY KEY (id),
 	CONSTRAINT Activation2Account_FK FOREIGN KEY (accountid) REFERENCES EndUser.Account_Tbl ON UPDATE CASCADE ON DELETE CASCADE,

@@ -620,19 +620,19 @@ msgstr @@@ Create Account @@@
 msgid @@@ Create Account Guide - Step 3 @@@
 msgstr @@@ Create Account Guide - Step 3 @@@
 
-#: /webroot/new/sys/create_account.php:180
+#: /webroot/new/sys/create_account.php:253
 msgid @@@ save - code: 100 @@@
 msgstr @@@ save - code: 100 @@@
 
-#: /webroot/new/sys/create_account.php:202
+#: /webroot/new/sys/create_account.php:275
 msgid @@@ save - code: 92 @@@
 msgstr @@@ save - code: 92 @@@
 
-#: /webroot/new/sys/create_account.php:209
+#: /webroot/new/sys/create_account.php:282
 msgid @@@ save - code: 91 @@@
 msgstr @@@ save - code: 91 @@@
 
-#: /webroot/new/sys/create_account.php:214
+#: /webroot/new/sys/create_account.php:287
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
@@ -949,15 +949,15 @@ msgstr @@@ Velkommen til {CLIENT}, aktiver venligst nedenstående link @@@
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Velkommen til {CLIENT} @@@
 
-#: /api/classes/my_account.php:84
+#: /api/classes/my_account.php:85
 msgid @@@ mPoint - Send Activation Code @@@
 msgstr @@@ mPoint - Send Activation Code @@@
 
-#: /api/classes/my_account.php:184
+#: /api/classes/my_account.php:185
 msgid @@@ mPoint - Activation Link Subject @@@
 msgstr @@@ mPoint - Activation Link Subject @@@
 
-#: /api/classes/my_account.php:185
+#: /api/classes/my_account.php:186
 msgid @@@ mPoint - Activation Link Body @@@
 msgstr @@@ mPoint - Activation Link Body @@@
 

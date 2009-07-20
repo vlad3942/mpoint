@@ -321,18 +321,20 @@ msgstr @@@ Account disabled @@@
 msgid @@@ Activate E-Mail - 15 @@@
 msgstr @@@   @@@
 msgid @@@ Activate E-Mail - 21 @@@
-msgstr @@@ Undefined Activation Code @@@
+msgstr @@@ Undefined Verification Code @@@
 msgid @@@ Activate E-Mail - 22 @@@
-msgstr @@@ Activation Code is too small, min value is 100.000 @@@
+msgstr @@@ Verification Code is too small, min value is 100.000 @@@
 msgid @@@ Activate E-Mail - 23 @@@
-msgstr @@@ Activation Code is too great, max value is 999.999 @@@
+msgstr @@@ Verification Code is too great, max value is 999.999 @@@
 msgid @@@ Activate E-Mail - 24 @@@
-msgstr @@@ Activation Code not found for Account @@@
+msgstr @@@ Verification Code not found for Account @@@
 msgid @@@ Activate E-Mail - 25 @@@
-msgstr @@@ Activation Code disabled @@@
+msgstr @@@ Verification code has expired, please login again and start over? @@@
 msgid @@@ Activate E-Mail - 26 @@@
-msgstr @@@ Activation code already been used, please login again and start over? @@@
+msgstr @@@ Verification code already been used, please login again and start over? @@@
 msgid @@@ Activate E-Mail - 27 @@@
+msgstr @@@ Verification Code disabled @@@
+msgid @@@ Activate E-Mail - 28 @@@
 msgstr @@@ Internal Error - Activation code could not be used, please try again? @@@
 msgid @@@ Activate E-Mail - 31 @@@
 msgstr @@@ Invalid checksum, please go back to your e-mail client and verify that the link hasn't been broken into 2 lines?
@@ -622,10 +624,12 @@ msgstr @@@ The entered activation code is too short, max value is 999.999 @@@
 msgid @@@ code - code: 4 @@@
 msgstr @@@ The entered activation code could not be not found for your account @@@
 msgid @@@ code - code: 5 @@@
-msgstr @@@ The entered activation code is not active, please close the window and start over to receive a new code? @@@
+msgstr @@@ The entered activation code has expired, please close the window and start over to receive a new code? @@@
 msgid @@@ code - code: 6 @@@
 msgstr @@@ The entered activation code has already been used, please close the window and start over to receive a new code? @@@
 msgid @@@ code - code: 7 @@@
+msgstr @@@ The entered activation code is not active, please close the window and start over to receive a new code? @@@
+msgid @@@ code - code: 8 @@@
 msgstr @@@ Internal Error - Activation code could not be used, please try again? @@@
 msgid @@@ code - code: 100 @@@
 msgstr @@@  @@@
@@ -1024,10 +1028,12 @@ msgstr @@@ The entered activation code is too short, max value is 999.999 @@@
 msgid @@@ code - code: 4 @@@
 msgstr @@@ The entered activation code could not be not found for your account @@@
 msgid @@@ code - code: 5 @@@
-msgstr @@@ The entered activation code is not active, please close the window and start over to receive a new code? @@@
+msgstr @@@ The entered activation code has expired, please create a new account to receive a new a code? @@@
 msgid @@@ code - code: 6 @@@
-msgstr @@@ The entered activation code has already been used, please close the window and start over to receive a new code? @@@
+msgstr @@@ The entered activation code has already been used, please login to change your mobile number? @@@
 msgid @@@ code - code: 7 @@@
+msgstr @@@ The entered activation code is not active, please create a new account to receive a new a code? @@@
+msgid @@@ code - code: 8 @@@
 msgstr @@@ Internal Error - Activation code could not be used, please try again? @@@
 msgid @@@ code - code: 100 @@@
 msgstr @@@  @@@
