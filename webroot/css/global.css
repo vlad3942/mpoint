@@ -69,7 +69,7 @@ form
 
 div#main table#page
 {
-	width: 1280px;
+	width: 800px;
 	height: 600px;
 }
 
@@ -118,12 +118,20 @@ td.mPoint_Number
 	text-align: right;
 	vertical-align: bottom;
 }
+
+span.hidden-data
+{
+	visibility: hidden;
+	position: absolute;
+	left: 1px;
+	top: 1px;
+}
 /* ========== General End ========== */
 
 /* ========== Top Menu Start ========== */
 td#top-menu
 {
-	width: 1280px;
+	width: 800px;
 	height: 23px;
 	background-color: #709EB5;
 }
@@ -162,6 +170,64 @@ td#top-menu a.current, td#top-menu a:hover
 	background-color: #5B8DA4; 
 }
 /* ========== Top Menu End ========== */
+
+/* ========== Local Menu Start ========== */
+ul.menu, ul.menu li
+{
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+ul.menu li
+{
+	float: left;
+	text-align: center;
+	font-weight: bold;
+	vertical-align: middle;
+}
+ul.menu a
+{
+	display: block;
+	vertical-align: text-bottom;
+	text-decoration: none;
+	color: #000;
+	white-space: nowrap;
+}
+ul.menu li a div
+{
+	border-width: 1px;
+	border-color: #000;
+	border-left-style: solid;
+}
+ul.menu li a span
+{
+	vertical-align: top;
+	padding-left: 5px;
+	border-width: 1px;
+	border-color: #000;
+	border-top-style: solid;
+}
+
+ul.menu a.current, ul.menu a:hover
+{
+	background-color: #5B8DA4;
+	color: #FFF;
+}
+ul.menu li a.current div, ul.menu li a:hover div
+{
+	border-width: 1px;
+	border-color: #000;
+	border-left-style: solid;
+}
+ul.menu li a.current span, ul.menu li a:hover span
+{
+	vertical-align: top;
+	padding-left: 5px;
+	border-color: #000;
+	border-width: 1px;
+	border-top-style: solid;
+}
+/* ========== Local Menu End ========== */
 
 /* ========== Left Menu Start ========== */
 td#left-menu
@@ -249,27 +315,35 @@ td.submit, td.data
 	text-align: right;
 }
 
-div#view-transactions table td h2, div#view-transactions td.label, div#my-account table td h2
+div#my-account div#account-data
+{
+	width: 300px;
+	height: 250px;
+	overflow: auto;
+}
+
+div#view-transactions h2, div#view-transactions td.label, div#my-account h2
 {
 	text-align: center;
 }
-div#my-account td#account-info, div#my-account td#stored-cards, div#view-transactions td#purchase-history, div#view-transactions td#transfer-history, div#view-transactions td#topup-history
+div#view-transactions div#transaction-data
 {
-	padding: 0px 10px 0px 10px;
+	width: 550px;
+	height: 250px;
+	overflow: auto;
 }
-div#view-transactions td#purchase-history
+div#view-transactions div#transaction-data table
 {
-	border-left: solid;
-	border-right: solid;
+	width: 100%;
+	white-space: nowrap;
 }
-div#view-transactions td.mPoint_Number
+div#view-transactions div#transaction-data table td
+{
+	text-align: center;
+}
+div#view-transactions div#transaction-data table  td.mPoint_Number
 {
 	text-align: right;
-}
-
-div#my-account td#account-info
-{
-	border-right: solid;
 }
 
 div#login table tr td, td#account-info table tr td, div#transfer table tr td

@@ -3,41 +3,59 @@
 <xsl:include href="../web.xsl" />
 
 <xsl:template match="/root/content">
+	<span id="account-info-data" class="hidden-data">
+		<h2><xsl:value-of select="labels/account-info" /></h2>
+		<form id="edit-info" action="/home/sys/save_info.php" method="post">
+			<div>
+				<xsl:apply-templates select="account" />
+			</div>
+		</form>
+	</span>
+	<span id="stored-card-data" class="hidden-data">
+		<h2><xsl:value-of select="labels/multiple-stored-cards" /></h2>
+		<table cellpadding="0" cellspacing="0">
+			<!-- Show Preferred Card -->
+			<tr>
+				<td colspan="4" class="label"><xsl:value-of select="labels/preferred" /></td>
+			</tr>
+			<xsl:apply-templates select="stored-cards/card[@preferred = 'true']" />
+			<!-- List Other Cards -->
+			<tr>
+				<td colspan="4" class="label"><xsl:value-of select="labels/other" /></td>
+			</tr>
+			<xsl:apply-templates select="stored-cards/card[@preferred = 'false']" />
+		</table>
+	</span>
 	<div id="my-account">
 		<h1><xsl:value-of select="headline" /></h1>
 		<br />
-		<table align="center">
-		<tr>
-			<td id="account-info">
-				<h2><xsl:value-of select="labels/account-info" /></h2>
-				<form id="edit-info" action="/home/sys/save_info.php" method="post">
-					<div>
-						<xsl:apply-templates select="account" />
-					</div>
-				</form>
-			</td>
-			<td id="stored-cards">
-				<h2><xsl:value-of select="labels/multiple-stored-cards" /></h2>
-				<table cellpadding="0" cellspacing="0">
-					<!-- Show Preferred Card -->
-					<tr>
-						<td colspan="4" class="label"><xsl:value-of select="labels/preferred" /></td>
-					</tr>
-					<xsl:apply-templates select="stored-cards/card[@preferred = 'true']" />
-					<!-- List Other Cards -->
-					<tr>
-						<td colspan="4" class="label"><xsl:value-of select="labels/other" /></td>
-					</tr>
-					<xsl:apply-templates select="stored-cards/card[@preferred = 'false']" />
-				</table>
-			</td>
-		</tr>
-		</table>
+		<div>
+			<ul class="menu">
+				<li>
+					<a href="#" onclick="javascript:selectMenu(this, 'current'); document.getElementById('account-data').innerHTML = document.getElementById('account-info-data').innerHTML;">
+						<div>
+							<span><xsl:value-of select="labels/account-info" /></span>
+							<img src="/img/folder.png" width="20" height="20" alt="" border="0" />
+						</div>
+					</a>
+				</li>
+				<li>
+					<a href="#" onclick="javascript:selectMenu(this, 'current'); document.getElementById('account-data').innerHTML = document.getElementById('stored-card-data').innerHTML;">
+						<div>
+							<span><xsl:value-of select="labels/multiple-stored-cards" /></span>
+							<img src="/img/folder.png" width="20" height="20" alt="" border="0" />
+						</div>
+					</a>
+				</li>
+			</ul>
+		</div>
+		<br /><br />
+		<div id="account-data"><!-- Completed dynamically by JavaScript --></div>
 	</div>
 </xsl:template>
 
 <xsl:template match="account">
-	<table>
+	<table align="center">
 	<tr>
 		<td>
 			<label for="id" accesskey="C"><xsl:value-of select="//labels/id" /></label>
