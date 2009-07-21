@@ -703,7 +703,7 @@ function Client(name)
 				 * Synonym for the "this" pointer as the Timer call back method cannot reference "this"
 				 */
 				var obj_This = this;
-					
+				
 				/**
 				 * Private method used to let a timer check whether the XML Document has been loaded from the server
 				 * The intention of this method is to effectively turn the asynchronious communication with the server
@@ -809,6 +809,32 @@ function Client(name)
 	}
 	
 	/**
+	 * Deletes pages from the cache
+	 *
+	 * @member 	Client
+	 *
+	 * @param	{NodeList} oElems	List of Nodes with URLs of the pages which whould be deleted from cache
+	 */
+	Client.prototype.delcache = function (oElems)
+	{
+		// Delete Entire Cache
+		if (oElems.length == 0)
+		{
+			for (var url in this._aCache)
+			{
+				delete this._aCache[url];
+			}
+		}
+		// Delete specified URLs from Cache
+		else
+		{
+			for (var i=0; i<oElems.length; i++)
+			{
+				delete this._aCache[oElems[i].firstChild.nodeValue];
+			}
+		}
+	}
+	/**
 	 * Deletes pages from the cache and re-caches them from the server
 	 *
 	 * @member 	Client
@@ -818,10 +844,7 @@ function Client(name)
 	Client.prototype.recache = function (oElems)
 	{
 		// Delete URLs from Cache
-		for (var i=0; i<oElems.length; i++)
-		{
-			delete this._aCache[oElems[i].firstChild.nodeValue];
-		}
+		this.delcache(oElems);
 		// Load URLs into cache
 		for (var i=0; i<oElems.length; i++)
 		{
@@ -850,7 +873,10 @@ function Client(name)
 				{
 					switch (oElems[i].tagName)
 					{
-					case ("recache"):	// User status has changed, some cached pages must be rechached
+					case ("delcache"):	// User status has changed, some / all cached pages must be deleted
+						this.delcache(oElems[i].getElementsByTagName("url") );
+						break;
+					case ("recache"):	// User status has changed, some cached pages must be recached
 						this.recache(oElems[i].getElementsByTagName("url") );
 						break;
 					default:			// User should be redirected or several page sections updated

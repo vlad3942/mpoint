@@ -3,9 +3,10 @@
 <xsl:include href="../web.xsl" />
 
 <xsl:template match="/root/content">
+	<!-- Hidden Data Fields Start -->
 	<span id="topup-data" class="hidden-data">
 		<h2><xsl:value-of select="labels/topup-history" /></h2>
-		<table id="topup-history" cellpadding="0" cellspacing="0">
+		<table cellpadding="0" cellspacing="0">
 			<tr class="mPoint_Even">
 				<td class="label"><xsl:value-of select="labels/id" /></td>
 				<td class="label"><xsl:value-of select="labels/mpointid" /></td>
@@ -15,10 +16,9 @@
 			<xsl:apply-templates select="history/transaction[@type = 1000]" mode="topup" />
 		</table>
 	</span>
-	
 	<span id="purchase-data" class="hidden-data">
 		<h2><xsl:value-of select="labels/purchase-history" /></h2>
-		<table id="purchase-history" cellpadding="0" cellspacing="0">
+		<table cellpadding="0" cellspacing="0">
 			<tr class="mPoint_Even">
 				<td class="label"><xsl:value-of select="labels/id" /></td>
 				<td class="label"><xsl:value-of select="labels/mpointid" /></td>
@@ -31,10 +31,9 @@
 			<xsl:apply-templates select="history/transaction[@type = 1001]" mode="purchase" />
 		</table>
 	</span>
-	
 	<span id="transfer-data" class="hidden-data">
 		<h2><xsl:value-of select="labels/transfer-history" /></h2>
-		<table id="transfer-history" cellpadding="0" cellspacing="0">
+		<table cellpadding="0" cellspacing="0">
 			<tr class="mPoint_Even">
 				<td class="label"><xsl:value-of select="labels/id" /></td>
 				<td class="label"><xsl:value-of select="labels/sender" /></td>
@@ -45,11 +44,14 @@
 			<xsl:apply-templates select="history/transaction[@type = 1002]" mode="transfer" />
 		</table>
 	</span>
+	<!-- Hidden Data Fields End -->
 	
 	<div id="view-transactions">
 		<h1><xsl:value-of select="headline" /></h1>
 		<br />
-		<div>
+		<table align="center">
+		<tr>
+			<td class="folder">
 			<ul class="menu">
 				<li>
 					<a href="#" onclick="javascript:selectMenu(this, 'current'); document.getElementById('transaction-data').innerHTML = document.getElementById('topup-data').innerHTML;">
@@ -60,7 +62,7 @@
 					</a>
 				</li>
 				<li>
-					<a href="#" onclick="javascript:selectMenu(this, 'current'); document.getElementById('transaction-data').innerHTML = document.getElementById('purchase-data').innerHTML;">
+					<a class="current" href="#" onclick="javascript:selectMenu(this, 'current'); document.getElementById('transaction-data').innerHTML = document.getElementById('purchase-data').innerHTML;">
 						<div>
 							<span><xsl:value-of select="labels/purchase-history" /></span>
 							<img src="/img/folder.png" width="20" height="20" alt="" border="0" />
@@ -76,16 +78,15 @@
 					</a>
 				</li>
 			</ul>
-		</div>
-		<br /><br />
-		<div id="transaction-data"><!-- Completed dynamically by JavaScript --></div>
+			</td>
+		</tr>
+		<tr>
+			<td><div id="transaction-data"><!-- Completed dynamically by JavaScript --></div></td>
+		</tr>
+		</table>
 	</div>
 	<script type="text/javascript">
-	/*
-		
-		
-		document.getElementById('transaction-data').innerHTML = document.getElementById('transfer-data').innerHTML;
-	*/
+		document.getElementById('transaction-data').innerHTML = document.getElementById('purchase-data').innerHTML;
 	</script>
 </xsl:template>
 

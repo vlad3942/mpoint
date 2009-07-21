@@ -3,6 +3,7 @@
 <xsl:include href="../web.xsl" />
 
 <xsl:template match="/root/content">
+	<!-- Hidden Data Fields Start -->
 	<span id="account-info-data" class="hidden-data">
 		<h2><xsl:value-of select="labels/account-info" /></h2>
 		<form id="edit-info" action="/home/sys/save_info.php" method="post">
@@ -26,13 +27,17 @@
 			<xsl:apply-templates select="stored-cards/card[@preferred = 'false']" />
 		</table>
 	</span>
+	<!-- Hidden Data Fields End -->
+	
 	<div id="my-account">
 		<h1><xsl:value-of select="headline" /></h1>
 		<br />
-		<div>
+		<table align="center">
+		<tr>
+			<td class="folder">
 			<ul class="menu">
 				<li>
-					<a href="#" onclick="javascript:selectMenu(this, 'current'); document.getElementById('account-data').innerHTML = document.getElementById('account-info-data').innerHTML;">
+					<a class="current" href="#" onclick="javascript:selectMenu(this, 'current'); document.getElementById('account-data').innerHTML = document.getElementById('account-info-data').innerHTML;">
 						<div>
 							<span><xsl:value-of select="labels/account-info" /></span>
 							<img src="/img/folder.png" width="20" height="20" alt="" border="0" />
@@ -48,10 +53,16 @@
 					</a>
 				</li>
 			</ul>
-		</div>
-		<br /><br />
-		<div id="account-data"><!-- Completed dynamically by JavaScript --></div>
+			</td>
+		</tr>
+		<tr>
+			<td><div id="account-data"><!-- Completed dynamically by JavaScript --></div></td>
+		</tr>
+		</table>
 	</div>
+	<script type="text/javascript">
+		document.getElementById('account-data').innerHTML = document.getElementById('account-info-data').innerHTML;
+	</script>
 </xsl:template>
 
 <xsl:template match="account">

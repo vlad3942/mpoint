@@ -412,18 +412,22 @@ msgid @@@ My Account @@@
 msgstr @@@ My Account @@@
 
 #: /webroot/home/topmenu.php:42
-msgid @@@ Top-Up Account @@@
-msgstr @@@ Top-Up Account @@@
+msgid @@@ Top-Up @@@
+msgstr @@@ Top-Up @@@
 
 #: /webroot/home/topmenu.php:46
-msgid @@@ Transaction History @@@
-msgstr @@@ Transaction History @@@
+msgid @@@ History @@@
+msgstr @@@ History @@@
 
 #: /webroot/home/topmenu.php:50
 msgid @@@ Transfer @@@
 msgstr @@@ Transfer @@@
 
-#: /webroot/home/topmenu.php:55
+#: /webroot/home/topmenu.php:54
+msgid @@@ Logout @@@
+msgstr @@@ Logout @@@
+
+#: /webroot/home/topmenu.php:59
 msgid @@@ Balance @@@
 msgstr @@@ Balance @@@
 
@@ -519,6 +523,22 @@ msgstr @@@ Forgot Password @@@
 msgid @@@ Don't have an account yet? Sign up now! @@@
 msgstr @@@ Don't have an account yet? Sign up now! @@@
 
+#: /webroot/login/forgot_password.php:27
+msgid @@@ Forgot Password @@@
+msgstr @@@ Forgot Password @@@
+
+#: /webroot/login/forgot_password.php:30
+msgid @@@ Country @@@
+msgstr @@@ Country @@@
+
+#: /webroot/login/forgot_password.php:31
+msgid @@@ Mobile / E-Mail @@@
+msgstr @@@ Mobile / E-Mail @@@
+
+#: /webroot/login/forgot_password.php:32
+msgid @@@ Send Password @@@
+msgstr @@@ Send Password @@@
+
 #: /webroot/login/sys/auth.php:142
 msgid @@@ auth - code: 10 @@@
 msgstr @@@ auth - code: 10 @@@
@@ -527,9 +547,17 @@ msgstr @@@ auth - code: 10 @@@
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
+#: /webroot/login/sys/logout.php:42
+msgid @@@ You've successfully been logged out @@@
+msgstr @@@ You've successfully been logged out @@@
+
 #: /webroot/login/topmenu.php:21
 msgid @@@ Login @@@
 msgstr @@@ Login @@@
+
+#: /webroot/login/topmenu.php:25
+msgid @@@ Create Account @@@
+msgstr @@@ Create Account @@@
 
 #: /webroot/new/default.php:30
 msgid @@@ mPoint @@@
@@ -958,11 +986,11 @@ msgstr @@@ Welcome to {CLIENT} @@@
 msgid @@@ mPoint - Send Activation Code @@@
 msgstr @@@ Please enter the activation code: {CODE} on the website to verify your mobile number. @@@
 
-#: /api/classes/my_account.php:185
+#: /api/classes/my_account.php:187
 msgid @@@ mPoint - Activation Link Subject @@@
 msgstr @@@ Please verify your E-Mail address? @@@
 
-#: /api/classes/my_account.php:186
+#: /api/classes/my_account.php:188
 msgid @@@ mPoint - Activation Link Body @@@
 msgstr @@@ Please click the link below to verify your new e-mail address.
 {URL}

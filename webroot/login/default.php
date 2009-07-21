@@ -30,6 +30,9 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 	else
 	{
 	?>
+		<top-menu>
+			<url>/login/topmenu.php</url>
+		</top-menu>
 		<content>
 			<url>/login/content.php</url>
 		</content>

@@ -17,9 +17,13 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/ajax/hom
 ?>
 <root type="page">
 	<top-menu>
-		<link>
+		<link id="login">
 			<name><?= $_OBJ_TXT->_("Login"); ?></name>
 			<url>/login/content.php</url>
+		</link>
+		<link id="sign-up">
+			<name><?= $_OBJ_TXT->_("Create Account"); ?></name>
+			<url>/new/step1.php</url>
 		</link>
 	</top-menu>
 </root>

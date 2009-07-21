@@ -34,21 +34,25 @@ else
 ?>
 	<root type="page">
 		<top-menu>
-			<link>
+			<link id="my-account">
 				<name><?= $_OBJ_TXT->_("My Account"); ?></name>
 				<url>/home/my_account.php</url>
 			</link>
-			<link>
-				<name><?= $_OBJ_TXT->_("Top-Up Account"); ?></name>
+			<link id="top-up">
+				<name><?= $_OBJ_TXT->_("Top-Up"); ?></name>
 				<url>/home/topup.php</url>
 			</link>
-			<link>
-				<name><?= $_OBJ_TXT->_("Transaction History"); ?></name>
+			<link id="history">
+				<name><?= $_OBJ_TXT->_("History"); ?></name>
 				<url>/home/history.php</url>
 			</link>
-			<link>
+			<link id="transfer">
 				<name><?= $_OBJ_TXT->_("Transfer"); ?></name>
 				<url>/home/transfer.php</url>
+			</link>
+			<link id="logout">
+				<name><?= $_OBJ_TXT->_("Logout"); ?></name>
+				<url>/login/sys/logout.php</url>
 			</link>
 
 			<info>
