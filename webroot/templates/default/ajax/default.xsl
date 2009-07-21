@@ -19,28 +19,29 @@
 	</head>
 	<body>
 		<div id="main">
-			<table id="page" cellpadding="0" cellspacing="0" align="center" border="0">
+			<table id="page" cellpadding="0" cellspacing="0" align="center">
 			<tr>
-				<td bgcolor="#709EB5"><img src="/img/top.jpg" width="800" height="111" alt=" - Top - " /></td>
+				<td id="top"><img src="/img/top.jpg" width="800" height="111" alt=" - Top - " /></td>
 			</tr>
 			<tr>
 				<td valign="top">
 					<table cellpadding="0" cellspacing="0">
 					<tr>
-						<td id="top-menu" colspan="2"></td>
+						<td id="top-menu" colspan="3"></td>
 					</tr>
 					<tr>
 						<td id="left-menu" rowspan="2"></td>
-						<td id="content"></td>
+						<td id="content" colspan="2"></td>
 					</tr>
 					<tr>
-						<td><div id="messages" /></td>
+						<td width="100%"><div id="messages" /></td>
+						<td id="provider"><img src="/img/provider.jpg" width="145" height="21" alt=" - Provider - "/></td>
 					</tr>
 					</table>
 				</td>
 			</tr>
 			<tr>
-				<td><img src="/img/bottom.jpg" width="800" height="93" alt=" - Bottom - "/></td>
+				<td id="bottom"><img src="/img/bottom.jpg" width="800" height="58" alt=" - Bottom - "/></td>
 			</tr>
 			</table>
 		</div>

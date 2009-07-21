@@ -429,7 +429,7 @@ msgstr @@@ Logout @@@
 
 #: /webroot/home/topmenu.php:59
 msgid @@@ Balance @@@
-msgstr @@@ Balance @@@
+msgstr @@@ Balance: @@@
 
 #: /webroot/home/topup.php:42
 msgid @@@ Top-Up Account @@@

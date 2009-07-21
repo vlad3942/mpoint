@@ -250,16 +250,27 @@ td#left-menu ul, td#left-menu ul li
 /* ========== Left Menu End ========== */
 
 /* ========== Page Content Start ========== */
+td#top
+{
+	background-color: #709EB5;
+}
+td#provider
+{
+	vertical-align: bottom;
+	padding-right: 30px;
+}
 td#content
 {
-	width: 1000px;
-	height: 350px;
+	width: 800px;
+	height: 365px;
 	vertical-align: top;
 }
 
 div#messages
 {
-	height: 45px;
+	float: right;
+	width: 425px;
+	height: 50px;
 	padding-top: 5px;
 	color: red;
 	font-style: italic;

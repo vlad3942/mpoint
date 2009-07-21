@@ -22,7 +22,7 @@
 	</ul>
 	<ul id="info">
 		<li>
-			<xsl:value-of select="info/balance" />: <xsl:value-of select="account/funds" />
+			<xsl:value-of select="info/balance" /> <xsl:value-of select="account/funds" />
 		</li>
 	</ul>
 </xsl:template>
