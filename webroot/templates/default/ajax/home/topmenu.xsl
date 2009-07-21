@@ -8,13 +8,13 @@
 			<li>
 				<xsl:choose>
 				<xsl:when test="@id = 'login'">
-					<a href="#" onclick="javascript:selectMenu(this, 'current'); obj_Client.changePage('{url}');" class="current"><xsl:value-of select="name" /></a>
+					<a href="#" onclick="javascript:selectMenu(this, 'current'); obj_Client.clear(); obj_Client.changePage('{url}');" class="current"><xsl:value-of select="name" /></a>
 				</xsl:when>
 				<xsl:when test="@id = 'logout'">
-					<a href="#" onclick="javascript:selectMenu(this, 'current'); obj_Client.changePage('{url}');" rel="nocache"><xsl:value-of select="name" /></a>
+					<a href="#" onclick="javascript:selectMenu(this, 'current'); obj_Client.clear(); obj_Client.changePage('{url}');" rel="nocache"><xsl:value-of select="name" /></a>
 				</xsl:when>
 				<xsl:otherwise>
-					<a href="#" onclick="javascript:selectMenu(this, 'current'); obj_Client.changePage('{url}');"><xsl:value-of select="name" /></a>
+					<a href="#" onclick="javascript:selectMenu(this, 'current'); obj_Client.clear(); obj_Client.changePage('{url}');"><xsl:value-of select="name" /></a>
 				</xsl:otherwise>
 				</xsl:choose>
 			</li>

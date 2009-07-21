@@ -227,7 +227,7 @@ else
 									 	<url>/home/history.php</url>
 									</recache>
 								</document>
-								<document type="command">
+								<document type="command" msg="status">
 									<redirect>
 								 		<url>/home/topmenu.php</url>
 								 		<url>/home/transfer.php</url>

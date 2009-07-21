@@ -544,7 +544,7 @@ msgstr @@@ auth - code: 10 @@@
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
-#: /webroot/login/sys/logout.php:42
+#: /webroot/login/sys/logout.php:43
 msgid @@@ You've successfully been logged out @@@
 msgstr @@@ You've successfully been logged out @@@
 

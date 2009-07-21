@@ -97,7 +97,7 @@ else
 			if ($code === true)
 			{
 				$sType = "multipart";
-				$xml = '<document type="command">
+				$xml = '<document type="command" msg="status">
 							<redirect>
 						 		<url>/home/link.php</url>
 						 	</redirect>

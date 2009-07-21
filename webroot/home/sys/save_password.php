@@ -119,7 +119,7 @@ else
 							 	<url>/home/my_account.php</url>
 							</recache>
 						</document>
-						<document type="command">
+						<document type="command" msg="status">
 							<redirect>
 						 		<url>/home/my_account.php</url>
 						 	</redirect>

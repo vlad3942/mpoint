@@ -716,8 +716,8 @@ function Client(name)
 				 */
 				var _timerMethod = function()
 				{
-					// XML document with data and XSL document with design has been loaded for URL
-					if (obj_This._aCache[url].getXML() == null)
+					// XML document with data and XSL document with design has NOT been loaded for URL
+					if (obj_This._aCache[url] == null || obj_This._aCache[url].getXML() == null)
 					{
 						setTimeout(_timerMethod, 500);
 					}
@@ -781,7 +781,7 @@ function Client(name)
 				case "status":	// Status code returned by server
 					this.dispStatus(oRootElems[i].childNodes);
 					break;
-				case "command":	// Command which doesn't requie user interaction returned by server
+				case "command":	// Command which doesn't require user interaction returned by server
 					this.msg2keep = oRootElems[i].getAttribute("msg");
 					this.processCommand(oRootElems[i].childNodes, disp);
 					break;

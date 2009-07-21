@@ -100,7 +100,7 @@ else
 			if ($code == 200)
 			{
 				$sType = "multipart";
-				$xml = '<document type="command">
+				$xml = '<document type="command" msg="status">
 							<redirect>
 						 		<url>/home/code.php</url>
 						 	</redirect>

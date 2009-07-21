@@ -12,7 +12,8 @@
 // Require include file for including all Shared and General APIs
 require_once("../../inc/include.php");
 
-$_SESSION['temp']['countryid'] = $_SESSION['obj_CountryConfig']->getID();
+// Store Country to simplify login
+if (array_key_exists("obj_CountryConfig", $_SESSION) === true) { $_SESSION['temp']['countryid'] = $_SESSION['obj_CountryConfig']->getID(); }
 
 // Clear session object
 unset($_SESSION['obj_Info']);

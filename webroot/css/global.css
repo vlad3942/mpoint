@@ -382,6 +382,10 @@ div#transfer input.text
 {
 	text-align: right;
 }
+div#top-up td#deposit-options
+{
+	width: 400px;
+}
 div#top-up h2
 {
 	text-align: center;
