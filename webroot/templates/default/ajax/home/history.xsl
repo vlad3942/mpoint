@@ -3,7 +3,6 @@
 <xsl:include href="../web.xsl" />
 
 <xsl:template match="/root/content">
-	
 	<span id="data-source" class="hidden-data">
 		<!-- Hidden Data Fields Start -->
 		<span id="topup-data">
@@ -48,7 +47,7 @@
 		</span>
 		<!-- Hidden Data Fields End -->
 	</span>
-	
+
 	<div id="view-transactions">
 		<h1><xsl:value-of select="headline" /></h1>
 		<br />

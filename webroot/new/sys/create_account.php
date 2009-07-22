@@ -98,7 +98,7 @@ case "linked":
 			case "mobile":	// Validate Mobile Number
 				$aErrCd["mobile"] = $obj_Validator->valMobile( (string) $input);
 				if ($aErrCd["mobile"] == 10) { $aErrCd["mobile"] = $obj_mPoint->valMobile(-1, (string) $input) + 3; }
-				if ($aErrCd["mobile"] == 5 && $obj_Validator->valChecksum($_OBJ_DB, (string) $obj_XML->checksum) == 10)
+				if ( ($aErrCd["mobile"] == 5  || $aErrCd["mobile"] == 6) && $obj_Validator->valChecksum($_OBJ_DB, (string) $obj_XML->checksum) == 10)
 				{
 					list(, $id) = spliti("Z", (string) $obj_XML->checksum);
 					$id = base_convert($id, 32, 10);
@@ -108,11 +108,13 @@ case "linked":
 						$aErrCd["mobile"] = 10;
 					}
 				}
+				// Mobile Number already belongs to an end-user account which has not yet been activated isn't considered an error at this point
+				elseif ($aErrCd["mobile"] == 6) { $aErrCd["mobile"] = 10; }
 				break;
 			case "email":	// Validate E-Mail Address
 				$aErrCd["email"] = $obj_Validator->valEMail( (string) $input);
 				if ($aErrCd["email"] == 10) { $aErrCd["email"] = $obj_mPoint->valEMail(-1, (string) $input) + 5; }
-				if ($aErrCd["email"] == 7 && $obj_Validator->valChecksum($_OBJ_DB, (string) $obj_XML->checksum) == 10)
+				if ( ($aErrCd["email"] == 7 || $aErrCd["email"] == 8) && $obj_Validator->valChecksum($_OBJ_DB, (string) $obj_XML->checksum) == 10)
 				{
 					list(, $id) = spliti("Z", (string) $obj_XML->checksum);
 					$id = base_convert($id, 32, 10);
@@ -122,6 +124,8 @@ case "linked":
 						$aErrCd["email"] = 10;
 					}
 				}
+				// E-Mail Address already belongs to an end-user account which has not yet been activated isn't considered an error at this point
+				elseif ($aErrCd["email"] == 8) { $aErrCd["email"] = 10; }
 				break;
 			default:			// Error: Unknown tag
 				break;
@@ -180,21 +184,21 @@ case "form":
 		switch ($aErrCd["checksum"])
 		{
 		case (5):
-			$aErrCd["mobile"] = 6;
+			$aErrCd["mobile"] = 7;
 			break;
 		case (6):
-			$aErrCd["email"] = 8;
+			$aErrCd["email"] = 9;
 			break;
 		default:
 			list(, $id) = spliti("Z", (string) $obj_XML->form->checksum);
 			$id = base_convert($id, 32, 10);
 			// Mobile Number belongs to the same End-User Account as the Account ID for the Transfer Code
-			if ($aErrCd["mobile"] == 5 && $obj_mPoint->getAccountID($obj_CountryConfig, (string) $obj_XML->form->mobile) == $id)
+			if ( ($aErrCd["mobile"] == 5 || $aErrCd["mobile"] == 6) && $obj_mPoint->getAccountID($obj_CountryConfig, (string) $obj_XML->form->mobile) == $id)
 			{
 				$aErrCd["mobile"] = 10;
 			}
 			// E-Mail Address belongs to the same End-User Account as the Account ID for the Transfer Code
-			if ($aErrCd["email"] == 7 && $obj_mPoint->getAccountID($obj_CountryConfig, (string) $obj_XML->form->email) == $id)
+			if ( ($aErrCd["email"] == 7 || $aErrCd["email"] == 8) && $obj_mPoint->getAccountID($obj_CountryConfig, (string) $obj_XML->form->email) == $id)
 			{
 				$aErrCd["email"] = 10;
 			}

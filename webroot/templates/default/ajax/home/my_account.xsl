@@ -146,7 +146,7 @@
 			
 	<tr class="{$css}">
 		<td><input type="hidden" name="id" value="{@id}" /></td>
-		<td><img src="/img/card_{type/@id}.png" width="31" height="20" alt="- {type} -" /></td>
+		<td><img src="/img/31x20_card_{type/@id}.png" width="31" height="20" alt="- {type} -" /></td>
 		<td><xsl:value-of select="mask" /></td>
 		<td class="info">(<xsl:value-of select="expiry" />)</td>
 	</tr>

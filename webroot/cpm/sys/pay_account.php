@@ -87,7 +87,7 @@ if (count($aMsgCds) == 0)
 				{
 					// Initialise Callback to Client
 					$aCPM_CONN_INFO["path"] = "/callback/dibs.php";
-					$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_XML["type"]), $iTxnID);
+					$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_XML->type["id"]), $iTxnID);
 					$aMsgCds[] = 100;
 				}
 				else { $aMsgCds[] = 51; }

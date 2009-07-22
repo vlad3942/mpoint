@@ -200,14 +200,18 @@ class Home extends General
 	 *
 	 * The card data is returned as an XML Document in the following format:
 	 * 	<stored-cards accountid="{UNIQUE ID FOR THE END-USER ACCOUNT}">
-	 * 		<card id="{UNIQUE ID FOR THE SAVED CARD}" type="{UNIQUE ID FOR THE CARD TYPE}" pspid="{UNIQUE ID FOR THE PSP THE CARD WAS SAVED THROUGH}" preferred="{BOOLEAN FLAG INDICATING WHETHER THE SAVED CARD IS THE END-USER'S PREFERRED}">
+	 * 		<card id="{UNIQUE ID FOR THE SAVED CARD}" pspid="{UNIQUE ID FOR THE PSP THE CARD WAS SAVED THROUGH}" preferred="{BOOLEAN FLAG INDICATING WHETHER THE SAVED CARD IS THE END-USER'S PREFERRED}">
+	 * 			<client id="{UNIQUE ID FOR THE CLIENT WITH WHOM THE CARD IS REGISTERED}">{NAME OF THE WITH WHOM THE CARD IS REGISTERED}</client>
+	 * 			<type id="{UNIQUE ID FOR THE CARD TYPE}">{NAME OF THE CARD TYPE: DANKORT / VISA / MASTER CARD ETC.}</type>
 	 *			<mask>{MASKED CARD NUMBER IN THE FORMAT: [CARD PREFIX]** **** [LAST 4 DIGITS]}</mask>
 	 *			<expiry>{CARD EXPIRY DATE IN THE FORMAT: MM/YY}</expiry>
 	 *			<ticket>{TICKET ID REPRESENTING THE STORED CARD WITH THE PSP}</ticket>
 	 *			<logo-width>{CALCULATED WIDTH OF THE CARD LOGO}</logo-width>
 	 *			<logo-height>{CALCULATED HEIGHT OF THE CARD LOGO}</logo-height>
 	 *		</card>
-	 *		<card id="{UNIQUE ID FOR THE SAVED CARD}" type="{UNIQUE ID FOR THE CARD TYPE}" pspid="{UNIQUE ID FOR THE PSP THE CARD WAS SAVED THROUGH}" preferred="{BOOLEAN FLAG INDICATING WHETHER THE SAVED CARD IS THE END-USER'S PREFERRED}">
+	 *		<card id="{UNIQUE ID FOR THE SAVED CARD}" pspid="{UNIQUE ID FOR THE PSP THE CARD WAS SAVED THROUGH}" preferred="{BOOLEAN FLAG INDICATING WHETHER THE SAVED CARD IS THE END-USER'S PREFERRED}">
+	 *			<client id="{UNIQUE ID FOR THE CLIENT WITH WHOM THE CARD IS REGISTERED}">{NAME OF THE WITH WHOM THE CARD IS REGISTERED}</client>
+	 * 			<type id="{UNIQUE ID FOR THE CARD TYPE}">{NAME OF THE CARD TYPE: DANKORT / VISA / MASTER CARD ETC.}</type>
 	 *			<mask>{MASKED CARD NUMBER IN THE FORMAT: [CARD PREFIX]** **** [LAST 4 DIGITS]}</mask>
 	 *			<expiry>{CARD EXPIRY DATE IN THE FORMAT: MM/YY}</expiry>
 	 *			<ticket>{TICKET ID REPRESENTING THE STORED CARD WITH THE PSP}</ticket>
@@ -243,10 +247,13 @@ class Home extends General
 		/* ========== Calculate Logo Dimensions End ========== */
 
 		// Select all active cards that are not yet expired
-		$sql = "SELECT EUC.id, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, SC.id AS typeid, SC.name AS type
+		$sql = "SELECT EUC.id, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred,
+					SC.id AS typeid, SC.name AS type,
+					CL.id AS clientid, CL.name AS client
 				FROM EndUser.Card_Tbl EUC
 				INNER JOIN System.PSP_Tbl PSP ON EUC.pspid = PSP.id AND PSP.enabled = true
 				INNER JOIN System.Card_Tbl SC ON EUC.cardid = SC.id AND SC.enabled = true
+				INNER JOIN Client.Client_Tbl CL ON EUC.clientid = CL.id AND CL.enabled = true 
 				WHERE EUC.accountid = ". intval($id) ." AND EUC.enabled = true
 					AND (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."'";
 //		echo $sql ."\n";
@@ -257,6 +264,7 @@ class Home extends General
 		{
 			// Construct XML Document with data for saved cards
 			$xml .= '<card id="'. $RS["ID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'">';
+			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. $RS["CLIENT"] .'</client>';
 			$xml .= '<type id="'. $RS["TYPEID"] .'">'. $RS["TYPE"] .'</type>';
 			$xml .= '<mask>'. chunk_split($RS["MASK"], 4, " ") .'</mask>';
 			$xml .= '<expiry>'. $RS["EXPIRY"] .'</expiry>';

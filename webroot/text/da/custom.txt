@@ -154,6 +154,8 @@ msgid @@@ Status - 1012 @@@
 msgstr @@@ Internal Communication Error - Message rejected by GoMobile. Please contact support@cellpointmobile.com @@@
 msgid @@@ Status - 1013 @@@
 msgstr @@@ Internal Communication Error - Unable to connect to GoMobile. Please contact support@cellpointmobile.com @@@
+msgid @@@ Status - 1021 @@@
+msgstr @@@ Configuration Error - No Shop Configuration found for Client @@@
 
 msgid @@@ E-Mail - 11 @@@
 msgstr @@@ Du har ikke opgivet en e-mail adresse, prøv venligst igen? @@@
@@ -762,7 +764,7 @@ msgstr @@@ E-Mail address contains invalid characters, an e-mail address can onl
 msgid @@@ recipient - code: 15 @@@
 msgstr @@@ E-Mail address has an invalid format, an e-mail address must have the following format: user@domain.topdomain, i.e. john.doe@hotmail.com or john_joe@mail.hot.com @@@
 
-#: /webroot/home/sys/make_transfer.php:220
+#: /webroot/home/sys/make_transfer.php:225
 msgid @@@ transfer - code: 100 @@@
 msgstr @@@ Transfer completed @@@
 msgid @@@ transfer - code: 101 @@@
@@ -770,11 +772,11 @@ msgstr @@@ Transfer completed - recipient notified via SMS @@@
 msgid @@@ transfer - code: 102 @@@
 msgstr @@@ Transfer completed - recipient notified via E-Mail @@@
 
-#: /webroot/home/sys/make_transfer.php:240
+#: /webroot/home/sys/make_transfer.php:247
 msgid @@@ transfer - code: 91 @@@
 msgstr @@@ Internal Error - Unable to make transfer. Please try again? @@@
 
-#: /webroot/home/sys/make_transfer.php:244
+#: /webroot/home/sys/make_transfer.php:255
 msgid @@@ account - code: 1 @@@
 msgstr @@@ Internal Error: Transfer aborted - Unable to automatically create new account for recipient. @@@
 msgid @@@ account - code: 2 @@@
@@ -782,7 +784,7 @@ msgstr @@@ Internal Error: Transfer aborted  - Unable to notify recipient of the
 msgid @@@ account - code: 3 @@@
 msgstr @@@ Internal Error: Transfer aborted  - Unable to notify recipient of the awaiting transfer. @@@
 
-#: /webroot/home/sys/make_transfer.php:247
+#: /webroot/home/sys/make_transfer.php:259
 msgid @@@ amount - code: 4 @@@
 msgstr @@@ Internal Error - Unable to retrieve currency conversion rates from the Central European Bank. Please try again later? @@@
 msgid @@@ amount - code: 5 @@@

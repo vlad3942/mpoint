@@ -16,11 +16,11 @@
  * @link http://www.cellpointmobile.com
  * @package Payment
  * @subpackage Images
- * @version 1.0
+ * @version 1.10
  */
 
 // Retrieve Session ID from Image URL
-$_REQUEST[session_name()] = substr($_GET['file'], strrpos($_GET['file'], "_") + 1);
+$_REQUEST[session_name()] = (integer) substr($_GET['file'], strrpos($_GET['file'], "_") + 1, strlen($_GET['file']) - strrpos($_GET['file'], ".") );
 
 // Require Global Include File
 require_once("../inc/include.php");
@@ -59,7 +59,14 @@ else
 		break;
 	case (strstr($_GET['file'], "card") ):	// Retrieve Credit Card Logo
 		$aTmp = explode("_", $_GET['file']);
-		$id = $aTmp[count($aTmp)-2];
+		for ($i=0; $i<count($aTmp); $i++)
+		{
+			if ($aTmp[$i] == "card")
+			{
+				$id = $aTmp[$i+1];
+				$i = count($aTmp);
+			}
+		}
 		$obj_Image = $obj_mPoint->getCardLogo($id);
 		$etag = "card_". $id;
 		break;

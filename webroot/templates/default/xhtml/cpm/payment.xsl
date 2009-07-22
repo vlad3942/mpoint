@@ -31,7 +31,8 @@
 				<input type="hidden" name="euaid" value="{stored-cards/@accountid}" />
 				<input type="hidden" name="cardtype" value="11" />
 				<xsl:choose>
-					<xsl:when test="account/balance &gt;= transaction/amount">
+					<!-- Prepaid Account available -->
+					<xsl:when test="account/balance &gt;= transaction/amount and (transaction/@type &lt; 100 or transaction/@type &gt; 109)">
 						<input type="hidden" name="prepaid" value="true" />
 					</xsl:when>
 					<xsl:otherwise>
@@ -90,13 +91,13 @@
 			<!-- Stored Credit Cards -->
 			<div id="cardinfo">
 				<xsl:choose>
-				<xsl:when test="count(stored-cards/card) = 1">
+				<xsl:when test="count(stored-cards/card[client/@id = //client-config/@id]) = 1">
 					<div class="mPoint_Label"><xsl:value-of select="labels/stored-card" />:</div>
-					<xsl:apply-templates select="stored-cards/card" />
+					<xsl:apply-templates select="stored-cards/card[client/@id = //client-config/@id]" />
 				</xsl:when>
-				<xsl:when test="count(stored-cards/card) &gt; 1">
+				<xsl:when test="count(stored-cards/card[client/@id = //client-config/@id]) &gt; 1">
 					<div class="mPoint_Label"><xsl:value-of select="labels/multiple-stored-cards" />:</div>
-					<xsl:apply-templates select="stored-cards/card" />
+					<xsl:apply-templates select="stored-cards/card[client/@id = //client-config/@id]" />
 				</xsl:when>
 				</xsl:choose>
 				<div id="password">
@@ -123,13 +124,24 @@
 	<tr>
 		<td>
 			<xsl:choose>
-			<xsl:when test="(count(//stored-cards/card) &gt; 1 or //account/balance &gt;= //transaction/amount) and //session/cardid = @id">
+			<!-- Card previously selected by user -->
+			<xsl:when test="(count(//stored-cards/card[client/@id = //client-config/@id]) &gt; 1 or //account/balance &gt;= //transaction/amount) and //session/cardid = @id and (//transaction/@type &lt; 100 or //transaction/@type &gt; 109)">
 				<input type="radio" name="cardid" value="{@id}" checked="true" />
 			</xsl:when>
-			<xsl:when test="count(//stored-cards/card) &gt; 1 and count(//session/cardid) = 0 and //account/balance &lt; //transaction/amount and @preferred = 'true'">
+			<!-- Card is user's preferred and no other card has been selected nor is there enough money on the prepaid account to pay for the transaction -->
+			<xsl:when test="count(//stored-cards/card[client/@id = //client-config/@id]) &gt; 1 and @preferred = 'true' and count(//session/cardid) = 0 and //account/balance &lt; //transaction/amount">
 				<input type="radio" name="cardid" value="{@id}" checked="true" />
 			</xsl:when>
-			<xsl:when test="count(//stored-cards/card) = 1 and //account/balance &lt; //transaction/amount">
+			<!-- Card is user's preferred and no other card has been selected and the transaction type is an Account Top-Up -->
+			<xsl:when test="count(//stored-cards/card[client/@id = //client-config/@id]) &gt; 1 and @preferred = 'true' and count(//session/cardid) = 0 and //transaction/@type &gt;= 100 and //transaction/@type &lt;= 109">
+				<input type="radio" name="cardid" value="{@id}" checked="true" />
+			</xsl:when>
+			<!-- Only one card has been stored and there isn't enough money on the prepaid account to pay for the transaction -->
+			<xsl:when test="count(//stored-cards/card[client/@id = //client-config/@id]) = 1 and //account/balance &lt; //transaction/amount">
+				<input type="hidden" name="cardid" value="{@id}" />
+			</xsl:when>
+			<!-- Only one card has been stored and the transaction type is an Account Top-Up -->
+			<xsl:when test="count(//stored-cards/card[client/@id = //client-config/@id]) = 1 and //transaction/@type &gt;= 100 and //transaction/@type &lt;= 109">
 				<input type="hidden" name="cardid" value="{@id}" />
 			</xsl:when>
 			<xsl:otherwise>
