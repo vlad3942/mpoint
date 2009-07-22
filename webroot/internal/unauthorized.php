@@ -15,7 +15,19 @@ require_once("../inc/include.php");
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 ?>
 <root type="multipart">
+	<document type="command">
+		<delcache />
+	</document>
+	<document type="command">
+		<recache>
+			<url>/login/topmenu.php</url>
+			<url>/login/content.php</url>
+		</recache>
+	</document>
 	<document type="command" msg="internal">
+		<top-menu>
+			<url>/login/topmenu.php</url>
+		</top-menu>
 		<content>
 			<url>/login/content.php</url>
 		</content>

@@ -139,7 +139,7 @@ case "form":
 						'. Home::getRecacheLogin() .'
 					</document>
 					<document type="status">
-						<form id="'. ($code + 90) .'" name="'. (string) $obj_XML->form['name'] .'">'. htmlspecialchars($_OBJ_TXT->_("auth - code: 10"), ENT_NOQUOTES) .'</form>
+						<form id="'. ($code + 90) .'" name="'. (string) $obj_XML->form['name'] .'">'. htmlspecialchars($_OBJ_TXT->_("auth - code: ". $code), ENT_NOQUOTES) .'</form>
 					</document>
 					<document type="command">
 						<redirect>

@@ -100,7 +100,7 @@ else
 					$_OBJ_TXT->loadConstants(array("MIN MOBILE" => $obj_CountryConfig->getMinMobile(), "MAX MOBILE" => $obj_CountryConfig->getMaxMobile() ) );
 	
 					$aErrCd["recipient"] = $obj_Validator->valMobile( (string) $obj_XML->recipient);
-					if ($aErrCd["recipient"] < 10 && floatval($obj_XML->recipient) == 0) { $aErrCd["recipient"] = $obj_Validator->valEMail( (string) $obj_XML->recipient) + 10; }
+					if ($aErrCd["recipient"] < 10 && floatval($obj_XML->recipient) == 0) { $aErrCd["recipient"] = $obj_Validator->valEMail( (string) $obj_XML->recipient) + 3; }
 				}
 				else { $aErrCd["countryid"] = 1; }
 				break;
@@ -112,7 +112,7 @@ else
 		while (list($tag, $code) = each($aErrCd) )
 		{
 			// Error found in Input
-			if ($code != 10)
+			if ($code < 10)
 			{
 				$xml .= '<'. $tag .' id="'. $code .'">'. htmlspecialchars($_OBJ_TXT->_($tag ." - code: ". $code), ENT_NOQUOTES) .'</'. $tag .'>';
 			}
@@ -178,6 +178,8 @@ else
 			// Currency conversion successful for Amount and recipient's balance doesn't exceed allowed amount
 			if ($iAmountReceived > 0)
 			{
+				// Start database transaction
+				$_OBJ_DB->query("BEGIN");
 				// Recipient doesn't have an account yet
 				if ($iAccountID <= 0)
 				{
@@ -215,6 +217,9 @@ else
 					// Transfer sucessful
 					if ($code >= 10)
 					{
+						// Commit database transaction
+						$_OBJ_DB->query("COMMIT");
+						
 						$sType = "multipart";
 						$xml = '<document type="status">
 									<form id="'. ($code + 90) .'" name="'. (string) $obj_XML->form['name'] .'">'. htmlspecialchars($_OBJ_TXT->_("transfer - code: ". ($code + 90) ), ENT_NOQUOTES) .'</form>
@@ -237,11 +242,18 @@ else
 					// Error during transfer, return status code and message
 					else
 					{
+						// Abort database transaction and rollback to previous state
+						$_OBJ_DB->query("ROLLBACK");
 						$xml = '<form id="91" name="'. (string) $obj_XML->form['name'] .'">'. htmlspecialchars($_OBJ_TXT->_("transfer - code: 91"), ENT_NOQUOTES) .'</form>';
 					}
 				}
 				// Error during account creation
-				else { $xml .= '<form id="'. $code .'">'. htmlspecialchars($_OBJ_TXT->_("account - code: ". $code), ENT_NOQUOTES) .'</form>'; }
+				else
+				{
+					// Abort database transaction and rollback to previous state
+					$_OBJ_DB->query("ROLLBACK");
+					$xml .= '<form id="'. $code .'">'. htmlspecialchars($_OBJ_TXT->_("account - code: ". $code), ENT_NOQUOTES) .'</form>';
+				}
 			}
 			// Error: Unable to make currency conversion for Amount
 			else { $xml .= '<amount id="'. (abs($iAmountReceived) + 3) .'">'. htmlspecialchars($_OBJ_TXT->_("amount - code: ". (abs($iAmountReceived) + 3) ), ENT_NOQUOTES) .'</amount>'; }

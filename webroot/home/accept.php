@@ -12,19 +12,11 @@
 // Require include file for including all Shared and General APIs
 require_once("../inc/include.php");
 
-/*
- * Use Output buffering to "magically" transform the XML via XSL behind the scene
- * This means that all PHP scripts must output a wellformed XML document.
- * The XML in turn must refer to an XSL Stylesheet by using the xml-stylesheet tag
- */
-ob_start(array(new Output("all", false), "transform") );
-
 // Initialize Standard content Object
 $obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig() );
 
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/ajax/home/accept.xsl"?>';
-
 ?>
 <root>
 	<title><?= $_OBJ_TXT->_("Top-Up Account"); ?></title>

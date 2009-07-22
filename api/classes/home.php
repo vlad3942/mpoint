@@ -400,7 +400,7 @@ class Home extends General
 	 *
 	 * @return 	string
 	 */
-	public function constHeaders()
+	public function constSMTPHeaders()
 	{
 		// Construct Mail headers
 //		$sHeaders = 'To: '. $this->_obj_TxnInfo->getEMail() ."\n";
@@ -434,6 +434,14 @@ class Home extends General
 		return $RS["ID"];
 	}
 	
+	/**
+	 * Sends the provided SMS Message to GoMobile on behalf of the provided Client.
+	 * 
+	 * @param 	GoMobileConnInfo $oCI	Reference to the data object with the Connection Info required to communicate with GoMobile
+	 * @param 	ClientConfig $oCC		Reference to the data object with the Client Configuration
+	 * @param 	SMS $oMI				Reference to the Message Object for holding the message data which will be sent to GoMobile
+	 * @return 	integer
+	 */
 	public function sendMessage(GoMobileConnInfo &$oCI, ClientConfig &$oCC, SMS &$oMI)
 	{
 		$iCode = -1;

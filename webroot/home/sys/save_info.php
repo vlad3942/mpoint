@@ -99,13 +99,14 @@ else
 			if ($code === true)
 			{
 				$sType = "multipart";
-				$xml = '<document type="command">
+				$xml = '<document type="status">
+							<form id="100" name="'. (string) $obj_XML->form['name'] .'">'. htmlspecialchars($_OBJ_TXT->_("save - code: 100"), ENT_NOQUOTES) .'</form>
+						</document>
+						<document type="command">
 							<recache>
 							 	<url>/home/my_account.php</url>
+							 	<url>/home/history.php</url>
 							</recache>
-						</document>
-						<document type="status">
-							<form id="100" name="'. (string) $obj_XML->form['name'] .'">'. htmlspecialchars($_OBJ_TXT->_("save - code: 100"), ENT_NOQUOTES) .'</form>
 						</document>';
 			}
 			// Error in authentication, return status code and message

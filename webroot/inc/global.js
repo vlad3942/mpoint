@@ -317,124 +317,39 @@ function populateChild(oSel, aData, pid, cid)
 	}
 }
 
-function loadGraph(oForm, oGraph, type)
+/**
+ * Changes the data displayed in a folder by copying the data currently being displayed in the target container
+ * into the empty information object which originally held the data before it was displayed and then copying
+ * the data that should be displayed from its information object into the target container.
+ * Once the new data has been displayed, the information object that held it is cleared to prepare the object
+ * for the next change of folder.
+ *
+ * @param 	{object} oSrc	Data Source Object containing all information objects
+ * @param 	{object} oTgt	Target object where the data should be displayed
+ * @param 	{object} oNew	Data object with the information that should be dislayed
+ * @param 	{string} tag	Tagname for the information objects in the Data Source, defaults to "span"
+ */
+function changeFolder(oSrc, oTgt, oNew, tag)
 {
-	var aProcessedTags = new Array();
-	var sQueryString = "";
+	// Set Defaults
+	if (tag == null) { tag = 'span'; }
 	
-	var iSiteID = 0;
-	
-	try
+	// Data already displayed in the folder
+	if (oTgt.innerHTML != '')
 	{
-		for (var i=0; i<oForm.length; i++)
+		// Find empty information object to copy displayed data to
+		var obj_Elems = oSrc.getElementsByTagName(tag);
+		for (var i=0; i<obj_Elems.length; i++)
 		{
-			// Tag is valid
-			if (oForm.elements[i].name != null && oForm.elements[i].name != "" && oForm.elements[i].name != "undefined")
+			// Information object which data is currently being displayed
+			if (obj_Elems[i].innerHTML == '')
 			{
-				// Tag has not been processed yet
-				if (aProcessedTags[oForm.elements[i].name] == "undefined" || aProcessedTags[oForm.elements[i].name] == null)
-				{
-					var oElems = oForm[oForm.elements[i].name];
-					/**
-					 * Tag consists of multiple elements, i.e. a checkbox
-					 * Create a container using the tag name and add each value as an item
-					 */
-					if (oElems.length > 1)
-					{
-						for (var n=0; n<oElems.length; n++)
-						{
-							if(oElems[n].checked == true || oElems[n].selected == true)
-							{
-								sQueryString += '%26'+ oForm.elements[i].name +'='+ oElems[n].value;
-							}
-						}
-						aProcessedTags[oForm.elements[i].name] = oElems.length;
-					}
-					// Tag exists only once
-					else if (oForm.elements[i].checked == true || oForm.elements[i].selected == true || oForm.elements[i].type != "checkbox")
-					{
-						sQueryString += '%26'+ oForm.elements[i].name +'='+ oForm.elements[i].value;
-						if (oForm.elements[i].name == "site-id") { iSiteID = oForm.elements[i].name.value; }
-						aProcessedTags[oForm.elements[i].name] = 1;
-					}
-				}
+				obj_Elems[i].innerHTML = oTgt.innerHTML;
+				i = obj_Elems.length;
 			}
 		}
-		sQueryString = sQueryString.substring(3);
 	}
-	catch (e)
-	{
-		// Ignore
-	}
-	
-	var html = '';
-	html = '<object id="charts" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" align="" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0">';
-	html += '<param name="movie" value="../img/charts.swf?library_path=../img/charts_library&amp;xml_source=/'+ type +'/sys/get_stat.php?'+ sQueryString +'" />';
-	html += '<param name="quality" value="high" />';
-	html += '<param name="bgcolor" value="#fff" />';
-	html += '<embed src="../img/charts.swf?library_path=../img/charts_library&amp;xml_source=/'+ type +'/sys/get_stat.php?'+ sQueryString +'"';
-	html += ' quality="high"';
-	html += ' bgcolor="#fff"';
-	html += ' id="charts"';
-	html += ' align=""';
-	html += ' swLiveConnect="true"';
-	html += ' type="application/x-shockwave-flash"';
-	html += ' pluginspage="http://www.macromedia.com/go/getflashplayer">';
-	html += '</embed>';
-	html += '</object>';
-	
-	oGraph.innerHTML = html;
-}
-
-function exportData(oForm, oGraph, type)
-{
-	var aProcessedTags = new Array();
-	var sQueryString = "";
-	
-	var iSiteID = 0;
-	
-	try
-	{
-		for (var i=0; i<oForm.length; i++)
-		{
-			// Tag is valid
-			if (oForm.elements[i].name != null && oForm.elements[i].name != "" && oForm.elements[i].name != "undefined")
-			{
-				// Tag has not been processed yet
-				if (aProcessedTags[oForm.elements[i].name] == "undefined" || aProcessedTags[oForm.elements[i].name] == null)
-				{
-					var oElems = oForm[oForm.elements[i].name];
-					/**
-					 * Tag consists of multiple elements, i.e. a checkbox
-					 * Create a container using the tag name and add each value as an item
-					 */
-					if (oElems.length > 1)
-					{
-						for (var n=0; n<oElems.length; n++)
-						{
-							if(oElems[n].checked == true || oElems[n].selected == true)
-							{
-								sQueryString += '%26'+ oForm.elements[i].name +'='+ oElems[n].value;
-							}
-						}
-						aProcessedTags[oForm.elements[i].name] = oElems.length;
-					}
-					// Tag exists only once
-					else if (oForm.elements[i].checked == true || oForm.elements[i].selected == true || oForm.elements[i].type != "checkbox")
-					{
-						sQueryString += '&'+ oForm.elements[i].name +'='+ oForm.elements[i].value;
-						if (oForm.elements[i].name == "site-id") { iSiteID = oForm.elements[i].name.value; }
-						aProcessedTags[oForm.elements[i].name] = 1;
-					}
-				}
-			}
-		}
-		sQueryString = sQueryString.substring(1);
-	}
-	catch (e)
-	{
-		// Ignore
-	}
-	
-	location.href = '/'+ type +'/sys/export_stat.php?'+ sQueryString;
+	// Display new data
+	oTgt.innerHTML = oNew.innerHTML;
+	oNew.innerHTML = '';
 }

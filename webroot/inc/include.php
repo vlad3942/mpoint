@@ -111,10 +111,10 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 		$_SESSION['obj_Info'] = new WebSession();
 	}
 
-	// Not fetching an Image, performing a back-end process or accessing the AJAX enabled web interface
-	if (eregi("/img/", $_SERVER['PHP_SELF']) == false && eregi("/sys/", $_SERVER['PHP_SELF']) == false && eregi("/cpm/", $_SERVER['PHP_SELF']) == false
-		&& eregi("/home/", $_SERVER['PHP_SELF']) == false && eregi("/login/", $_SERVER['PHP_SELF']) == false && eregi("/new/", $_SERVER['PHP_SELF']) == false
-		&& eregi("/internal/", $_SERVER['PHP_SELF']) == false)
+	// Not fetching an Image or performing a back-end process and accessing the mobile website
+	if (eregi("/img/", $_SERVER['PHP_SELF']) == false && eregi("/sys/", $_SERVER['PHP_SELF']) == false
+		&& (eregi("/pay/", $_SERVER['PHP_SELF']) == true || eregi("/shop/", $_SERVER['PHP_SELF']) == true
+			|| $_SERVER['PHP_SELF'] == "/overview.php" || $_SERVER['PHP_SELF'] == "/terms.php") )
 	{
 		/*
 		 * Use Output buffering to "magically" transform the XML via XSL behind the scene
@@ -123,7 +123,7 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 		 */
 		ob_start(array(new Output("all", false), "transform") );
 	}
-	else { header('Content-Type: text/xml; charset="ISO-8859-15"'); }
+	else { header('Content-Type: text/xml; charset="UTF-8"'); }
 }
 
 // Instantiate connection to the Database

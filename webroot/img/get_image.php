@@ -27,7 +27,7 @@ require_once("../inc/include.php");
 
 // Require Business logic for the Image Component
 require_once(sCLASS_PATH ."/retrieve_image.php");
-	header("Content-Type: text/plain");
+
 // Image has previously been returned
 if (array_key_exists("HTTP_IF_NONE_MATCH", $_SERVER) === true && 1 == 2)
 {
@@ -42,7 +42,7 @@ if (array_key_exists("HTTP_IF_NONE_MATCH", $_SERVER) === true && 1 == 2)
 else
 {
 	$obj_mPoint = new RetrieveImage($_OBJ_DB, $_OBJ_TXT);
-
+	
 	@list($w, $h) = explode("x", substr($_GET['file'], 0, strpos($_GET['file'], "_") ) );
 	// Image size incuded in URL
 	if (empty($w) === false && empty($h) === false) { $_GET['file'] = substr($_GET['file'], strpos($_GET['file'], "_") + 1); }

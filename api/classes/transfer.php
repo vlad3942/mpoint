@@ -71,6 +71,7 @@ class Transfer extends Home
 			// Error: Unable to credit recipient's account
 			else
 			{
+				// Abort transaction and rollback to previous state
 				$this->getDBConn()->query("ROLLBACK");
 				$code = 2;
 			}
@@ -78,6 +79,7 @@ class Transfer extends Home
 		// Error: Unable to debit sender's account
 		else
 		{
+			// Abort transaction and rollback to previous state
 			$this->getDBConn()->query("ROLLBACK");
 			$code = 1;
 		}
@@ -252,7 +254,7 @@ class Transfer extends Home
 		$sBody = $this->_constNewAccountMessage($sBody, $oRcpt, $oSndr, General::formatAmount($obj_ClientConfig->getCountryConfig(), $amount) );
 		
 		// Send E-Mail with information about how a new account may be created
-		if (mail( (string) $oRcpt->email, $sSubject, $sBody, $this->constHeaders() ) === true)
+		if (mail( (string) $oRcpt->email, $sSubject, $sBody, $this->constSMTPHeaders() ) === true)
 		{
 			$iCode = 10;
 		}

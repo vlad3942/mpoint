@@ -118,7 +118,7 @@ class Callback extends EndUserAccount
 			$obj_HTTP->connect();
 			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_CONNECTED_STATE, "Host: ". $obj_ConnInfo->getHost() .", Port: ". $obj_ConnInfo->getPort() .", Path: ". $obj_ConnInfo->getPath() );
 			// Send Callback data
-			$iCode = $obj_HTTP->send($this->constHeaders(), $body);
+			$iCode = $obj_HTTP->send($this->constHTTPHeaders(), $body);
 			if ($iCode == 200)
 			{
 				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_ACCEPTED_STATE, $obj_HTTP->getReplyHeader() );
@@ -190,7 +190,7 @@ class Callback extends EndUserAccount
 	 * @see 	Constants::iMT_SMS_TYPE
 	 * @see 	Constants::iMT_PRICE
 	 *
-	 * @param 	GoMobileConnInfo $oCI 	Connection Info required to communicate with GoMobile
+	 * @param 	GoMobileConnInfo $oCI 	Reference to the data object with the Connection Info required to communicate with GoMobile
 	 */
 	public function sendSMSReceipt(GoMobileConnInfo &$oCI)
 	{

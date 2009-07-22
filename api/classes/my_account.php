@@ -55,7 +55,7 @@ class MyAccount extends Home
 		$sql = "INSERT INTO EndUser.Activation_Tbl
 					(accountid, address, code". (is_null($exp) == false ? ", expiry" : "") .")
 				VALUES
-					(". intval($id) .", '". $this->getDBConn()->escStr($addr) ."', ". $iCode .", ". (is_null($exp) == false ? "'". $this->getDBConn()->escStr($exp) ."'" : "") .")";
+					(". intval($id) .", '". $this->getDBConn()->escStr($addr) ."', ". $iCode . (is_null($exp) == false ? ", '". $this->getDBConn()->escStr($exp) ."'" : "") .")";
 //		echo $sql ."\n";
 		
 		if (is_resource($this->getDBConn()->query($sql) ) === false)
@@ -111,7 +111,7 @@ class MyAccount extends Home
 	 */
 	public function activateCode($id, $code)
 	{
-		$sql = "SELECT id, enabled, active, extract('epocth' from expiry) AS expiry
+		$sql = "SELECT id, enabled, active, extract('epoch' from expiry) AS expiry
 				FROM EndUser.Activation_Tbl
 				WHERE accountid = ". intval($id) ." AND code = ". intval($code);
 //		echo $sql ."\n";
@@ -192,7 +192,7 @@ class MyAccount extends Home
 		
 		$sBody = str_replace("{URL}", $sURL, $sBody);
 		
-		return mail($email, $sSubject, $sBody, $this->constHeaders() );
+		return mail($email, $sSubject, $sBody, $this->constSMTPHeaders() );
 	}
 	
 	/**
@@ -217,6 +217,7 @@ class MyAccount extends Home
 	 * The method will return the following status codes:
 	 * 	 1. Mobile Number already belongs to the end-user's account
 	 * 	 2. Mobile Number already belongs to another end-user's account
+	 * 	 3. Mobile Number already belongs to an end-user account which has not yet been activated
 	 * 	10. Success
 	 * 
 	 * @param	integer $id		Unqiue ID of the End-User's Account
@@ -225,7 +226,7 @@ class MyAccount extends Home
 	 */
 	public function valMobile($id, $mob)
 	{
-		$sql = "SELECT id
+		$sql = "SELECT id, passwd AS password
 				FROM EndUser.Account_Tbl
 				WHERE countryid = ". $this->getCountryConfig()->getID() ." AND mobile = '". floatval($mob) ."'";
 //		echo $sql ."\n";
@@ -234,7 +235,8 @@ class MyAccount extends Home
 		if (is_array($RS) === true)
 		{
 			if ($RS["ID"] == $id) { $code = 1; }
-			else { $code = 2; }
+			elseif (empty($RS["PASSWORD"]) === false) { $code = 2; }
+			else { $code = 3; }
 		}
 		else { $code = 10; }
 		
@@ -244,8 +246,9 @@ class MyAccount extends Home
 	/**
 	 * Validates the specified e-mail address against the content of database table: EndUser.Account_Tbl.
 	 * The method will return the following status codes:
-	 * 	 1. E-Mail address already belongs to the end-user's account
-	 * 	 2. E-Mail address already belongs to another end-user's account
+	 * 	 1. E-Mail Address already belongs to the end-user's account
+	 * 	 2. E-Mail Address already belongs to another end-user's account
+	 * 	 3. E-Mail Address already belongs to an end-user account which has not yet been activated
 	 * 	10. Success
 	 * 
 	 * @param	integer $id		Unqiue ID of the End-User's Account
@@ -254,7 +257,7 @@ class MyAccount extends Home
 	 */
 	public function valEMail($id, $email)
 	{
-		$sql = "SELECT id
+		$sql = "SELECT id, passwd AS password
 				FROM EndUser.Account_Tbl
 				WHERE countryid = ". $this->getCountryConfig()->getID() ." AND Upper(email) = Upper('". $this->getDBConn()->escStr($email) ."')";
 //		echo $sql ."\n";
@@ -263,7 +266,8 @@ class MyAccount extends Home
 		if (is_array($RS) === true)
 		{
 			if ($RS["ID"] == $id) { $code = 1; }
-			else { $code = 2; }
+			elseif (empty($RS["PASSWORD"]) === false) { $code = 2; }
+			else { $code = 3; }
 		}
 		else { $code = 10; }
 		
@@ -276,7 +280,7 @@ class MyAccount extends Home
 	 * 	 0. Specified Address not registered for Account
 	 * 	 1. Account Information doesn't match provided Mobile Number (MSISDN)
 	 * 	 2. Account Information doesn't match provided E-Mail Address
-	 * 	 9. Invalid address provided
+	 * 	 9. Invalid Address provided
 	 * 	10. Success
 	 * 
 	 * @param 	string $chk 	Transfer Checksum that should be validated
@@ -304,7 +308,7 @@ class MyAccount extends Home
 		elseif (strstr($addr, "@") == true)
 		{
 			// E-Mail Address registered for Account
-			if (strval($obj_XML->mobile) != "")
+			if (strval($obj_XML->email) != "")
 			{
 				if (strval($obj_XML->email) != $addr) { $code = 2; }
 				else { $code = 10; }

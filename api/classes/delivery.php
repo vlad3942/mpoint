@@ -182,7 +182,7 @@ class Delivery extends General
 	{
 		$obj_HTTP = new HTTPClient(new Template(), $this->_obj_ConnInfo);
 		$obj_HTTP->connect();
-		$obj_HTTP->send(str_replace("{PATH}", "{PATH}?number=". $msisdn, $this->constHeaders() ) );
+		$obj_HTTP->send(str_replace("{PATH}", "{PATH}?number=". $msisdn, $this->constHTTPHeaders() ) );
 		$obj_HTTP->disconnect();
 
 		$aDeliveryInfo = $this->_decode(utf8_decode($obj_HTTP->getReplyBody() ) );

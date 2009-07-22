@@ -38,8 +38,8 @@ class EndUserAccount extends Home
 	 * Default Constructor.
 	 *
 	 * @param	RDB $oDB				Reference to the Database Object that holds the active connection to the mPoint Database
-	 * @param	TranslateText $oTxt 	Text Translation Object for translating any text into a specific language
-	 * @param 	ClientConfig $oCI 		Data object with the Client Configuration
+	 * @param	TranslateText $oTxt 	Reference to the Text Translation Object for translating any text into a specific language
+	 * @param 	ClientConfig $oCI 		Reference to the data object with the Client Configuration
 	 */
 	public function __construct(RDB &$oDB, TranslateText &$oTxt, ClientConfig &$oCI)
 	{
@@ -116,7 +116,7 @@ class EndUserAccount extends Home
 		// Check of card has already been saved
 		$sql = "SELECT id, ticket, pspid
 				FROM EndUser.Card_Tbl
-				WHERE accountid = ". $iAccountID ." AND cardid = ". intval($cardid) ." AND id = ". intval($cardid) ." AND mask = '". $this->getDBConn()->escStr($mask) ."' AND expiry = '". $this->getDBConn()->escStr($exp) ."'";
+				WHERE accountid = ". $iAccountID ." AND clientid = ". $this->_obj_ClientConfig->getID() ." AND cardid = ". intval($cardid) ." AND mask = '". $this->getDBConn()->escStr($mask) ."' AND expiry = '". $this->getDBConn()->escStr($exp) ."'";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 
@@ -124,17 +124,33 @@ class EndUserAccount extends Home
 		if (is_array($RS) === false)
 		{
 			$sql = "INSERT INTO EndUser.Card_Tbl
-						(accountid, cardid, pspid, ticket, mask, expiry, preferred)
+						(accountid, clientid, cardid, pspid, ticket, mask, expiry, preferred)
 					VALUES
-						(". $iAccountID .", ". intval($cardid) .", ". intval($pspid) .", ". intval($ticket) .", '". $this->getDBConn()->escStr($mask) ."', '". $this->getDBConn()->escStr($exp) ."', ". $bPreferred .")";
+						(". $iAccountID .", ". $this->_obj_ClientConfig->getID() .", ". intval($cardid) .", ". intval($pspid) .", ". intval($ticket) .", '". $this->getDBConn()->escStr($mask) ."', '". $this->getDBConn()->escStr($exp) ."', ". $bPreferred .")";
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
+			
+			$sql = "SELECT id
+					FROM EndUser.CLAccess_Tbl
+					WHERE clientid = ". $this->_obj_ClientConfig->getID() ." AND accountid = ". $iAccountID;
+//			echo $sql ."\n";
+			$RS = $this->getDBConn()->getName($sql);
+			// Link between End-User Account and Client doesn't exist
+			if (is_array($RS) === false)
+			{
+				$sql = "INSERT INTO EndUser.CLAccess_Tbl
+							(clientid, accountid)
+						VALUES
+							(". $this->_obj_ClientConfig->getID() .", ". $iAccountID .")";
+//				echo $sql ."\n";
+				$res = $this->getDBConn()->query($sql);
+			}
 		}
 		// Card previously saved by End-User
 		else
 		{
 			$sql = "UPDATE EndUser.Card_Tbl
-					SET pspid ". intval($pspid) .", ticket = ". intval($ticket) ."
+					SET pspid = ". intval($pspid) .", ticket = ". intval($ticket) ."
 					WHERE id = ". $RS["ID"];
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
@@ -204,6 +220,10 @@ class EndUserAccount extends Home
 	 * Fetches the unique ID of the End-User's account from the database.
 	 * The account must either be available to the specific clients or globally available to all clients
 	 * as defined by the entries in database table: EndUser.CLAccess_Tbl.
+	 * This method may be called as a static method but is not defined as such because PHP doesn't support
+	 * a static function overriding a non-static method.
+	 * 
+	 * @static
 	 *
 	 * @param	RDB $oDB			Reference to the Database Object that holds the active connection to the mPoint Database
 	 * @param 	ClientConfig $oCC 	Data object with the Client Configuration
@@ -231,7 +251,7 @@ class EndUserAccount extends Home
 				}
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
-
+	
 		return is_array($RS)===true?$RS["ID"]:-1;
 	}
 

@@ -3,48 +3,51 @@
 <xsl:include href="../web.xsl" />
 
 <xsl:template match="/root/content">
-	<!-- Hidden Data Fields Start -->
-	<span id="topup-data" class="hidden-data">
-		<h2><xsl:value-of select="labels/topup-history" /></h2>
-		<table cellpadding="0" cellspacing="0">
-			<tr class="mPoint_Even">
-				<td class="label"><xsl:value-of select="labels/id" /></td>
-				<td class="label"><xsl:value-of select="labels/mpointid" /></td>
-				<td class="label"><xsl:value-of select="labels/amount" /></td>
-				<td class="label"><xsl:value-of select="labels/timestamp" /></td>
-			</tr>
-			<xsl:apply-templates select="history/transaction[@type = 1000]" mode="topup" />
-		</table>
+	
+	<span id="data-source" class="hidden-data">
+		<!-- Hidden Data Fields Start -->
+		<span id="topup-data">
+			<br />
+			<table cellpadding="0" cellspacing="0">
+				<tr class="mPoint_Even">
+					<td class="label"><xsl:value-of select="labels/id" /></td>
+					<td class="label mPoint_Number"><xsl:value-of select="labels/mpointid" /></td>
+					<td class="label mPoint_Number"><xsl:value-of select="labels/amount" /></td>
+					<td class="label"><xsl:value-of select="labels/timestamp" /></td>
+				</tr>
+				<xsl:apply-templates select="history/transaction[@type = 1000]" mode="topup" />
+			</table>
+		</span>
+		<span id="purchase-data">
+			<br />
+			<table cellpadding="0" cellspacing="0">
+				<tr class="mPoint_Even">
+					<td class="label"><xsl:value-of select="labels/id" /></td>
+					<td class="label"><xsl:value-of select="labels/mpointid" /></td>
+					<td class="label"><xsl:value-of select="labels/card" /></td>
+					<td class="label"><xsl:value-of select="labels/price" /></td>
+					<td class="label"><xsl:value-of select="labels/client" /></td>
+					<td class="label"><xsl:value-of select="labels/orderid" /></td>
+					<td class="label"><xsl:value-of select="labels/timestamp" /></td>
+				</tr>
+				<xsl:apply-templates select="history/transaction[@type = 1001 or @type = 1009]" mode="purchase" />
+			</table>
+		</span>
+		<span id="transfer-data">
+			<br />
+			<table cellpadding="0" cellspacing="0">
+				<tr class="mPoint_Even">
+					<td class="label"><xsl:value-of select="labels/id" /></td>
+					<td class="label"><xsl:value-of select="labels/sender" /></td>
+					<td class="label"><xsl:value-of select="labels/recipient" /></td>
+					<td class="label"><xsl:value-of select="labels/amount" /></td>
+					<td class="label"><xsl:value-of select="labels/timestamp" /></td>
+				</tr>
+				<xsl:apply-templates select="history/transaction[@type = 1002]" mode="transfer" />
+			</table>
+		</span>
+		<!-- Hidden Data Fields End -->
 	</span>
-	<span id="purchase-data" class="hidden-data">
-		<h2><xsl:value-of select="labels/purchase-history" /></h2>
-		<table cellpadding="0" cellspacing="0">
-			<tr class="mPoint_Even">
-				<td class="label"><xsl:value-of select="labels/id" /></td>
-				<td class="label"><xsl:value-of select="labels/mpointid" /></td>
-				<td class="label"><xsl:value-of select="labels/card" /></td>
-				<td class="label"><xsl:value-of select="labels/price" /></td>
-				<td class="label"><xsl:value-of select="labels/client" /></td>
-				<td class="label"><xsl:value-of select="labels/orderid" /></td>
-				<td class="label"><xsl:value-of select="labels/timestamp" /></td>
-			</tr>
-			<xsl:apply-templates select="history/transaction[@type = 1001]" mode="purchase" />
-		</table>
-	</span>
-	<span id="transfer-data" class="hidden-data">
-		<h2><xsl:value-of select="labels/transfer-history" /></h2>
-		<table cellpadding="0" cellspacing="0">
-			<tr class="mPoint_Even">
-				<td class="label"><xsl:value-of select="labels/id" /></td>
-				<td class="label"><xsl:value-of select="labels/sender" /></td>
-				<td class="label"><xsl:value-of select="labels/recipient" /></td>
-				<td class="label"><xsl:value-of select="labels/amount" /></td>
-				<td class="label"><xsl:value-of select="labels/timestamp" /></td>
-			</tr>
-			<xsl:apply-templates select="history/transaction[@type = 1002]" mode="transfer" />
-		</table>
-	</span>
-	<!-- Hidden Data Fields End -->
 	
 	<div id="view-transactions">
 		<h1><xsl:value-of select="headline" /></h1>
@@ -54,7 +57,7 @@
 			<td class="folder">
 			<ul class="menu">
 				<li>
-					<a href="#" onclick="javascript:selectMenu(this, 'current'); document.getElementById('transaction-data').innerHTML = document.getElementById('topup-data').innerHTML;">
+					<a href="#" onclick="javascript:selectMenu(this, 'current'); changeFolder(document.getElementById('data-source'), document.getElementById('transaction-data'), document.getElementById('topup-data') );">
 						<div>
 							<span><xsl:value-of select="labels/topup-history" /></span>
 							<img src="/img/folder.png" width="20" height="20" alt="" border="0" />
@@ -62,7 +65,7 @@
 					</a>
 				</li>
 				<li>
-					<a class="current" href="#" onclick="javascript:selectMenu(this, 'current'); document.getElementById('transaction-data').innerHTML = document.getElementById('purchase-data').innerHTML;">
+					<a class="current" href="#" onclick="javascript:selectMenu(this, 'current'); changeFolder(document.getElementById('data-source'), document.getElementById('transaction-data'), document.getElementById('purchase-data') );">
 						<div>
 							<span><xsl:value-of select="labels/purchase-history" /></span>
 							<img src="/img/folder.png" width="20" height="20" alt="" border="0" />
@@ -70,7 +73,7 @@
 					</a>
 				</li>
 				<li>
-					<a href="#" onclick="javascript:selectMenu(this, 'current'); document.getElementById('transaction-data').innerHTML = document.getElementById('transfer-data').innerHTML;">
+					<a href="#" onclick="javascript:selectMenu(this, 'current'); changeFolder(document.getElementById('data-source'), document.getElementById('transaction-data'), document.getElementById('transfer-data') );">
 						<div>
 							<span><xsl:value-of select="labels/transfer-history" /></span>
 							<img src="/img/folder.png" width="20" height="20" alt="" border="0" />
@@ -86,7 +89,7 @@
 		</table>
 	</div>
 	<script type="text/javascript">
-		document.getElementById('transaction-data').innerHTML = document.getElementById('purchase-data').innerHTML;
+		changeFolder(document.getElementById('data-source'), document.getElementById('transaction-data'), document.getElementById('purchase-data') );
 	</script>
 </xsl:template>
 

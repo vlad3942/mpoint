@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-15"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:func="http://exslt.org/functions" extension-element-prefixes="func">
-<xsl:output method="xml" version="1.0" encoding="ISO-8859-15" indent="yes" media-type="application/xhtml+xml" doctype-public="-//WAPFORUM//DTD XHTML Mobile 1.0//EN" doctype-system="http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd" omit-xml-declaration="no" />
+<xsl:output method="xml" version="1.0" encoding="ISO-8859-15" indent="yes" media-type="text/html" doctype-public="-//WAPFORUM//DTD XHTML Mobile 1.0//EN" doctype-system="http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd" omit-xml-declaration="no" />
 <xsl:include href="../mobile.xsl" />
 
 <xsl:template match="/root">
@@ -30,9 +30,14 @@
 			<div>
 				<input type="hidden" name="euaid" value="{stored-cards/@accountid}" />
 				<input type="hidden" name="cardtype" value="11" />
-				<xsl:if test="account/balance &gt;= transaction/amount">
-					<input type="hidden" name="prepaid" value="true" />
-				</xsl:if>
+				<xsl:choose>
+					<xsl:when test="account/balance &gt;= transaction/amount">
+						<input type="hidden" name="prepaid" value="true" />
+					</xsl:when>
+					<xsl:otherwise>
+						<input type="hidden" name="prepaid" value="false" />
+					</xsl:otherwise>
+				</xsl:choose>
 			</div>
 			<!-- Price -->
 			<div id="price">

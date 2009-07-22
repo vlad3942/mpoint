@@ -37,7 +37,7 @@ $aMsgCds = array();
 $obj_Validator = new Validate($_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig() );
 $obj_mPoint = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']->getClientConfig() );
 
-if ($_POST['prepaid'] == "true")
+if (array_key_exists("prepaid", $_POST) === true && $_POST['prepaid'] == "true")
 {
 	switch ($_POST['cardid'])
 	{
@@ -60,7 +60,7 @@ if ($obj_Validator->valPassword($_POST['pwd']) != 10) { $aMsgCds[] = $obj_Valida
 // Success: Input Valid
 if (count($aMsgCds) == 0)
 {
-	$msg = $obj_mPoint->auth($_SESSION['obj_TxnInfo']->getMobile(), $_POST['pwd']);
+	$msg = $obj_mPoint->auth($_SESSION['obj_TxnInfo']->getAccountID(), $_POST['pwd']);
 	if ($msg == 10)
 	{
 		if ($_POST['cardid'] == -1)

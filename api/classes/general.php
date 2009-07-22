@@ -552,7 +552,7 @@ class General
 	 *
 	 * @return string
 	 */
-	protected function constHeaders()
+	protected function constHTTPHeaders()
 	{
 		/* ----- Construct HTTP Header Start ----- */
 		$h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;

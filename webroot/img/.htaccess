@@ -1,5 +1,5 @@
 RewriteEngine on
-RewriteRule ^(client[^/\.]+)\.(jpg|png|gif|bmp)?$ get_image.php?file=$1 [L]
-RewriteRule ^(card[^/\.]+)\.(jpg|png|gif|bmp)?$ get_image.php?file=$1 [L]
-RewriteRule ^(mpoint[^/\.]+)\.(jpg|png|gif|bmp)?$ get_image.php?file=$1 [L]
-RewriteRule ^(product[^/\.]+)\.(jpg|png|gif|bmp)?$ get_image.php?file=$1 [L]
+RewriteRule (.*?client[^/\.]+)\.(jpg|png|gif|bmp)?$ get_image.php?file=$1 [L]
+RewriteRule (.*?card[^/\.]+)\.(jpg|png|gif|bmp)?$ get_image.php?file=$1 [L]
+RewriteRule (.*?mpoint[^/\.]+)\.(jpg|png|gif|bmp)?$ get_image.php?file=$1 [L]
+RewriteRule (.*?product[^/\.]+)\.(jpg|png|gif|bmp)?$ get_image.php?file=$1 [L]

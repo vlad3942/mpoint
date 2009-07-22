@@ -89,7 +89,7 @@ class DIBS extends Callback
 
 	public function delTicket($ticket)
 	{
-		$h = $this->constHeaders();
+		$h = $this->constHTTPHeaders();
 //		$h .= "authorization: Basic ". base64_encode($this->_obj_ConnInfo->getUsername() .":". $this->_obj_ConnInfo->getPassword() ) .HTTPClient::CRLF;
 		$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP). "&ticket=". $ticket;
 
@@ -103,13 +103,13 @@ class DIBS extends Callback
 		$b .= "&ticket=". $ticket;
 		$b .= "&amount=". $this->getTxnInfo()->getAmount();
 		$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getClientConfig()->getCountryConfig()->getID(), Constants::iDIBS_PSP);
-		$b .= "&orderid=". $this->getTxnInfo()->getOrderID() ."-". date("Y-m-d H:i:s");
+		$b .= "&orderid=". $this->getTxnInfo()->getOrderID() ."-". urlencode(date("Y-m-d H:i:s") );
 		if ($this->getTxnInfo()->getClientConfig()->useAutoCapture() === true) { $b .= "&capturenow=true"; }
 		if ($this->getTxnInfo()->getClientConfig()->getMode() > 0) { $b .= "&test=". $this->getTxnInfo()->getClientConfig()->getMode(); }
 		$b .= "&uniqueoid=true";
 		$b .= "&textreply=true";
 
-		$obj_HTTP = parent::send("https://payment.architrade.com/cgi-ssl/ticket_auth.cgi", $this->constHeaders(), $b);
+		$obj_HTTP = parent::send("https://payment.architrade.com/cgi-ssl/ticket_auth.cgi", $this->constHTTPHeaders(), $b);
 		$aStatus = array();
 		parse_str($obj_HTTP->getReplyBody(), $aStatus);
 		// Auhtorisation Declined
@@ -132,7 +132,7 @@ class DIBS extends Callback
 		if ($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID() > -1) { $b .= "&account=". $this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(); }
 		$b .= "&textreply=true";
 
-		$obj_HTTP = parent::send("https://payment.architrade.com/cgi-bin/capture.cgi", $this->constHeaders(), $b);
+		$obj_HTTP = parent::send("https://payment.architrade.com/cgi-bin/capture.cgi", $this->constHTTPHeaders(), $b);
 		$aStatus = array();
 		parse_str($obj_HTTP->getReplyBody(), $aStatus);
 		// Capture Declined
@@ -160,7 +160,7 @@ class DIBS extends Callback
 
 		$obj_HTTP = new HTTPClient(new Template(), $oCI);
 		$obj_HTTP->connect();
-		$obj_HTTP->send($this->constHeaders(), $b);
+		$obj_HTTP->send($this->constHTTPHeaders(), $b);
 		$obj_HTTP->disConnect();
 	}
 }

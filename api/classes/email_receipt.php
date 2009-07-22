@@ -87,7 +87,7 @@ class EMailReceipt extends EndUserAccount
 	 */
 	public function sendReceipt($email)
 	{
-		$bStatus = mail($email, $this->constSubject(), $this->constBody(), $this->constHeaders() );
+		$bStatus = mail($email, $this->constSubject(), $this->constBody(), $this->constSMTPHeaders() );
 
 		if ($bStatus === true)
 		{

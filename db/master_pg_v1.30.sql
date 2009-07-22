@@ -46,6 +46,7 @@ CREATE TABLE EndUser.Card_Tbl
 (
 	id			SERIAL,
 	accountid	INT4 NOT NULL,	-- ID of the end-user account that the account belongs to
+	clientid	INT4,			-- ID of the Client that the card has been registered for, NULL for "Global Client"
 	cardid		INT4 NOT NULL,	-- ID of the card type
 	pspid		INT4 NOT NULL,	-- ID of the Payment Service Provider the saved card is valid through
 
@@ -58,9 +59,10 @@ CREATE TABLE EndUser.Card_Tbl
 
 	CONSTRAINT Card_PK PRIMARY KEY (id),
 	CONSTRAINT Card2Account_FK FOREIGN KEY (accountid) REFERENCES EndUser.Account_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT Card2Client_FK FOREIGN KEY (clientid) REFERENCES Client.Client_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
 	CONSTRAINT Card2Card_FK FOREIGN KEY (cardid) REFERENCES System.Card_Tbl ON UPDATE CASCADE ON DELETE RESTRICT,
 	CONSTRAINT Card2PSP_FK FOREIGN KEY (pspid) REFERENCES System.PSP_Tbl ON UPDATE CASCADE ON DELETE RESTRICT,
-	CONSTRAINT Card_UQ UNIQUE (accountid, cardid, mask, expiry),
+	CONSTRAINT Card_UQ UNIQUE (accountid, clientid, cardid, mask, expiry),
 	CONSTRAINT Ticket_UQ UNIQUE (accountid, ticket),
 	LIKE Template.General_Tbl INCLUDING DEFAULTS
 ) WITHOUT OIDS;
@@ -123,6 +125,7 @@ CREATE TABLE EndUser.Transaction_Tbl
 	CONSTRAINT TxnTo2Account_FK FOREIGN KEY (toid) REFERENCES EndUser.Account_Tbl ON UPDATE CASCADE ON DELETE NO ACTION,
 	CONSTRAINT Txn2Txn_FK FOREIGN KEY (txnid) REFERENCES Log.Transaction_Tbl ON UPDATE CASCADE ON DELETE NO ACTION,
 	CONSTRAINT Transaction_Chk CHECK ( (fromid IS NULL AND toid IS NULL) OR txnid IS NULL),
+	CONSTRAINT Transaction_UQ UNIQUE (typeid, txnid),
 	LIKE Template.General_Tbl INCLUDING DEFAULTS
 ) WITHOUT OIDS;
 
@@ -165,7 +168,6 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE EndUser.Transaction_Tbl TO mpoint;
 GRANT SELECT, UPDATE, INSERT ON TABLE EndUser.Transaction_Tbl_id_seq TO mpoint;
 
 
-DROP TABLE EndUser.Activation_Tbl;
 -- Table: EndUser.Activation_Tbl
 -- Data table for holding all pending activations
 CREATE TABLE EndUser.Activation_Tbl

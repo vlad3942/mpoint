@@ -159,7 +159,7 @@ class SurePay extends General
 		$sBody = str_replace("{PRICE}", General::formatAmount($this->_obj_TxnInfo->getClientConfig()->getCountryConfig(), $this->_obj_TxnInfo->getAmount() ), $sBody);
 		$sBody = str_replace("{TIMESTAMP}", $this->_sTxnCreated, $sBody);
 
-		if (mail($this->_sEMail, $sSubject, $sBody, $obj_EMail->constHeaders() ) === true)
+		if (mail($this->_sEMail, $sSubject, $sBody, $obj_EMail->constSMTPHeaders() ) === true)
 		{
 			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iEMAIL_ACCEPTED_STATE, $sSubject);
 		}

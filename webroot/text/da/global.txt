@@ -50,25 +50,25 @@ msgstr @@@ mPoint @@@
 msgid @@@ Unsupported Browser @@@
 msgstr @@@ Unsupported Browser @@@
 
-#: /webroot/home/accept.php:30
+#: /webroot/home/accept.php:22
 msgid @@@ Top-Up Account @@@
 msgstr @@@ Top-Up Account @@@
 
-#: /webroot/home/accept.php:38
+#: /webroot/home/accept.php:30
 msgid @@@ Account Top-Up - Completed @@@
 msgstr @@@ Account Top-Up - Completed @@@
 msgid @@@ Account Top-Up - Authentication Error @@@
 msgstr @@@ Account Top-Up - Authentication Error @@@
 
-#: /webroot/home/accept.php:39
+#: /webroot/home/accept.php:31
 msgid @@@ Amount @@@
 msgstr @@@ Amount @@@
 
-#: /webroot/home/accept.php:40
+#: /webroot/home/accept.php:32
 msgid @@@ Price @@@
 msgstr @@@ Price @@@
 
-#: /webroot/home/accept.php:41
+#: /webroot/home/accept.php:33
 msgid @@@ Close @@@
 msgstr @@@ Close @@@
 
@@ -336,35 +336,35 @@ msgstr @@@ Other @@@
 msgid @@@ Edit @@@
 msgstr @@@ Edit @@@
 
-#: /webroot/home/sys/make_transfer.php:240
+#: /webroot/home/sys/make_transfer.php:247
 msgid @@@ transfer - code: 91 @@@
 msgstr @@@ transfer - code: 91 @@@
 
-#: /webroot/home/sys/make_transfer.php:251
+#: /webroot/home/sys/make_transfer.php:263
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
-#: /webroot/home/sys/save_info.php:108
+#: /webroot/home/sys/save_info.php:103
 msgid @@@ save - code: 100 @@@
 msgstr @@@ save - code: 100 @@@
 
-#: /webroot/home/sys/save_info.php:114
+#: /webroot/home/sys/save_info.php:115
 msgid @@@ save - code: 91 @@@
 msgstr @@@ save - code: 91 @@@
 
-#: /webroot/home/sys/save_info.php:119
+#: /webroot/home/sys/save_info.php:120
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
-#: /webroot/home/sys/save_mobile.php:106
+#: /webroot/home/sys/save_mobile.php:101
 msgid @@@ save - code: 100 @@@
 msgstr @@@ save - code: 100 @@@
 
-#: /webroot/home/sys/save_mobile.php:117
+#: /webroot/home/sys/save_mobile.php:118
 msgid @@@ save - code: 91 @@@
 msgstr @@@ save - code: 91 @@@
 
-#: /webroot/home/sys/save_mobile.php:122
+#: /webroot/home/sys/save_mobile.php:123
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
@@ -484,7 +484,7 @@ msgstr @@@ Transfer @@@
 msgid @@@ Transfer - Overview @@@
 msgstr @@@ Transfer - Overview @@@
 
-#: /webroot/internal/unauthorized.php:24
+#: /webroot/internal/unauthorized.php:36
 msgid @@@ Unauthorized system access @@@
 msgstr @@@ Unauthorized system access @@@
 
@@ -536,10 +536,6 @@ msgstr @@@ Mobile / E-Mail @@@
 msgid @@@ Send Password @@@
 msgstr @@@ Send Password @@@
 
-#: /webroot/login/sys/auth.php:142
-msgid @@@ auth - code: 10 @@@
-msgstr @@@ auth - code: 10 @@@
-
 #: /webroot/login/sys/auth.php:160
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
@@ -556,11 +552,11 @@ msgstr @@@ Login @@@
 msgid @@@ Create Account @@@
 msgstr @@@ Create Account @@@
 
-#: /webroot/new/default.php:30
+#: /webroot/new/default.php:23
 msgid @@@ mPoint @@@
 msgstr @@@ mPoint @@@
 
-#: /webroot/new/default.php:31
+#: /webroot/new/default.php:24
 msgid @@@ Unsupported Browser @@@
 msgstr @@@ Unsupported Browser @@@
 
@@ -648,19 +644,19 @@ msgstr @@@ Create Account @@@
 msgid @@@ Create Account Guide - Step 3 @@@
 msgstr @@@ Create Account Guide - Step 3 @@@
 
-#: /webroot/new/sys/create_account.php:253
+#: /webroot/new/sys/create_account.php:257
 msgid @@@ save - code: 100 @@@
 msgstr @@@ save - code: 100 @@@
 
-#: /webroot/new/sys/create_account.php:275
+#: /webroot/new/sys/create_account.php:279
 msgid @@@ save - code: 92 @@@
 msgstr @@@ save - code: 92 @@@
 
-#: /webroot/new/sys/create_account.php:282
+#: /webroot/new/sys/create_account.php:286
 msgid @@@ save - code: 91 @@@
 msgstr @@@ save - code: 91 @@@
 
-#: /webroot/new/sys/create_account.php:287
+#: /webroot/new/sys/create_account.php:291
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
@@ -962,7 +958,7 @@ Sælger: {CLIENT}
 Ordre Nr: {ORDERID}
 Pris: {PRICE} @@@
 
-#: /api/classes/enduser_account.php:314
+#: /api/classes/enduser_account.php:334
 msgid @@@ mPoint - Account Info @@@
 msgstr @@@ Din konto er blevet oprettet og er nu klar til brug.
 Husk, du kan altid administrere kontoen på {URL}.
@@ -1015,15 +1011,15 @@ Vi anbefaler at kunden kontaktes og betalingen færddigøres manuelt.
 
 Tak fordi i benytter SurePay @@@
 
-#: /api/classes/transfer.php:212
+#: /api/classes/transfer.php:214
 msgid @@@ mPoint - New Account SMS @@@
 msgstr @@@ mPoint - New Account SMS @@@
 
-#: /api/classes/transfer.php:248
+#: /api/classes/transfer.php:250
 msgid @@@ mPoint - New Account E-Mail Subject @@@
 msgstr @@@ mPoint - New Account E-Mail Subject @@@
 
-#: /api/classes/transfer.php:251
+#: /api/classes/transfer.php:253
 msgid @@@ mPoint - New Account E-Mail Body @@@
 msgstr @@@ mPoint - New Account E-Mail Body @@@
 

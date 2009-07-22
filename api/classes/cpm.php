@@ -61,7 +61,7 @@ class CellpointMobile extends Callback
 
 		$obj_HTTP = new HTTPClient(new Template(), $oCI);
 		$obj_HTTP->connect();
-		$obj_HTTP->send($this->constHeaders(), $b);
+		$obj_HTTP->send($this->constHTTPHeaders(), $b);
 		$obj_HTTP->disConnect();
 	}
 }
