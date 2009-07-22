@@ -131,7 +131,7 @@
 	<tr class="{$css}">
 		<td class="mPoint_Number"><xsl:value-of select="@id" /></td>
 		<td class="mPoint_Number"><xsl:value-of select="@mpointid" /></td>
-		<td><img src="/img/36x23_card_{card/@id}_{/root/system/session/@id}.png" width="36" height="23" alt="- {card} -" /></td>
+		<td><img src="/img/31x20_card_{card/@id}.png" width="31" height="20" alt="- {card} -" /></td>
 		<td class="mPoint_Number"><xsl:value-of select="price" /></td>
 		<td><xsl:value-of select="client" /></td>
 		<td><xsl:value-of select="orderid" /></td>

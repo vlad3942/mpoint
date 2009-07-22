@@ -982,7 +982,7 @@ function Client(name)
 								 * Additionally Firefox appears to truncate embedded Javascript code when doing DOM manipulation
 								 * unless is has been added to the document's DOM Structure.
 								 */
-								if (sHTML.length > o.innerHTML.length) { obj_This._processJavaScript(sHTML); }
+								if (sHTML.length != o.innerHTML.length) { obj_This._processJavaScript(sHTML); }
 								else { obj_This._processJavaScript(o.innerHTML); }
 							}
 							// Break loop

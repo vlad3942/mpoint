@@ -134,7 +134,7 @@
 	<xsl:variable name="css">
 		<xsl:choose>
 			<!-- Even row -->
-			<xsl:when test="position()+1 mod 2 = 0">
+			<xsl:when test="position() mod 2 = 0">
 				<xsl:text>mPoint_Even</xsl:text>
 			</xsl:when>
 			<!-- Odd row -->

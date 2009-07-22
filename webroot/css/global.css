@@ -94,8 +94,7 @@ tr.mPoint_Uneven, tr.mPoint_Uneven td, div.mPoint_Uneven
 }
 tr.mPoint_Uneven td, tr.mPoint_Even td
 {
-	padding-left: 5px;
-	padding-right: 5px;
+	padding: 2px 5px 2px 5px;
 }
 input.mPoint_Uneven_Card_Button
 {
@@ -360,11 +359,14 @@ div#view-transactions div#transaction-data table td
 {
 	text-align: center;
 }
-div#view-transactions div#transaction-data table  td.mPoint_Number
+div#view-transactions div#transaction-data table td.mPoint_Number
 {
 	text-align: right;
 }
-
+div#view-transactions div#transaction-data table td img
+{
+	padding-top: 3px;
+}
 div#login table tr td, td#account-info table tr td, div#transfer table tr td
 {
 	height: 30px;
