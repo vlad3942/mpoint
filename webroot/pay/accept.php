@@ -21,7 +21,7 @@ require_once(sCLASS_PATH ."/accept.php");
 
 $obj_mPoint = new Accept($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_UA']);
 
-echo '<?xml version="1.0" encoding="ISO-8859-15"?>';
+echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/pay/accept.xsl"?>';
 ?>
 <root>

@@ -148,8 +148,23 @@ function Cache(name, xmlPath, xslPath)
 		
 		obj_This._obj_HTTP = httpProducer();
 		obj_This._obj_HTTP.onreadystatechange = _callback;
-		obj_This._obj_HTTP.open("GET", path, true);
-		obj_This._obj_HTTP.send("");
+		obj_This._obj_HTTP.open('GET', path, true);
+		try
+		{
+			obj_This._obj_HTTP.send('');
+		}
+		catch (e)
+		{
+			switch (path)
+			{
+			case "chrome://global/locale/intl.css":
+				report(1,  "Error: "+ e.message +" at line: "+ e.lineNumber +" for path: "+ path +". This is most likely because the server returned an invalid XML Document.");
+				break;
+			default:
+				report(1, "Error: "+ e.message +" at line: "+ e.lineNumber +", Path: "+ path);
+				break;
+			}
+		}
 	}
 	
 	/**
@@ -536,9 +551,24 @@ function Client(name)
 		}
 		var obj_HTTP = httpProducer();
 		obj_HTTP.onreadystatechange = _callback;
-		obj_HTTP.open("POST", path, true);
-		obj_HTTP.setRequestHeader("content-type", "text/xml; charset=\"UTF-8\"");
-		obj_HTTP.send(xml);
+		obj_HTTP.open('POST', path, true);
+		obj_HTTP.setRequestHeader('content-type', 'text/xml; charset="UTF-8"');
+		try
+		{
+			obj_HTTP.send(xml);
+		}
+		catch (e)
+		{
+			switch (path)
+			{
+			case "chrome://global/locale/intl.css":
+				report(1,  "Error: "+ e.message +" at line: "+ e.lineNumber +" for path: "+ path +". This is most likely because the server returned an invalid XML Document.");
+				break;
+			default:
+				report(1, "Error: "+ e.message +" at line: "+ e.lineNumber +", Path: "+ path);
+				break;
+			}
+		}
 	}
 	
 	/**
@@ -772,32 +802,39 @@ function Client(name)
 		try
 		{
 			// Get child nodes of current element
-			var oRootElems = obj_Cache.getXML().getElementsByTagName(doctype);
+			var obj_RootElements = obj_Cache.getXML().getElementsByTagName(doctype);
 			
-			for (var i=0; i<oRootElems.length; i++)
+			for (var i=0; i<obj_RootElements.length; i++)
 			{
-				switch (oRootElems[i].getAttribute("type") )
+				switch (obj_RootElements[i].getAttribute("type") )
 				{
 				case "status":	// Status code returned by server
-					this.dispStatus(oRootElems[i].childNodes);
+					this.dispStatus(obj_RootElements[i].childNodes);
 					break;
 				case "command":	// Command which doesn't require user interaction returned by server
-					this.msg2keep = oRootElems[i].getAttribute("msg");
-					this.processCommand(oRootElems[i].childNodes, disp);
+					this.msg2keep = obj_RootElements[i].getAttribute("msg");
+					this.processCommand(obj_RootElements[i].childNodes, disp);
 					break;
 				case "page":	// Page to display
 					// Generate HTML for page using the XML document and XSL stylesheet
 					if (disp == true) { this.generatePage(obj_Cache, false, this.msg2keep); }
 					break;
 				case "element":	// Element to be updated with new Data
-					// Generate report as HTML using the XML document and XSL stylesheet
+					// Generate HTML for element using the XML document and XSL stylesheet
 					if (disp == true) { this.generatePage(obj_Cache, true); }
+					break;
+				case "popup":	// Popup to be opened
+					// Open a new Popup Window using the XML document as the data source
+					for (var n=0; n<obj_RootElements[i].getElementsByTagName("popup").length; n++)
+					{
+						this.openPopup(obj_RootElements[i].getElementsByTagName("popup")[n]);
+					}
 					break;
 				case "multipart":
 					this.processReply(obj_Cache, disp, "document");
 					break;
 				default:
-					report(2, doctype +": unknown document type: "+ oRootElems[i].getAttribute("type") );
+					report(2, doctype +": unknown document type: "+ obj_RootElements[i].getAttribute("type") );
 					break;
 				}
 			}
@@ -999,6 +1036,32 @@ function Client(name)
 			obj_This.cacheLinks(sHTML);
 		}
 		setTimeout(timerMethod, 500);
+	}
+	/**
+	 * Opens a new Popup Window based on the data in the provided XML Document.
+	 *
+	 * @member 	Client
+	 *
+	 * @param	{DOM Document} oXML		XML DOM Object with data for the popup window
+	 */
+	Client.prototype.openPopup = function (oXML)
+	{
+		try
+		{
+			// Get data for the Popup Window
+			var name = oXML.getElementsByTagName("name")[0].firstChild.nodeValue;
+			var parent = oXML.getElementsByTagName("parent")[0].firstChild.nodeValue;
+			var url = oXML.getElementsByTagName("url")[0].firstChild.nodeValue;
+			var css = oXML.getElementsByTagName("css")[0].firstChild.nodeValue;
+			// Instantiate Global Window object if no such object exists
+			if (obj_Window == null || obj_Window == "undefined") { obj_Window = new Window("obj_Window"); }
+			// Open new Popup Window
+			obj_Window.openWindow(name, parent, url, css, new Array(this, this.changePage) );
+		}
+		catch (e)
+		{
+			report(1, "Error: "+ e.message +" at line: "+ e.lineNumber);
+		}
 	}
 	
 	/**

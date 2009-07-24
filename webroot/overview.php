@@ -31,7 +31,7 @@ if ($_SESSION['obj_TxnInfo']->getClientConfig()->getFlowID() == Constants::iPHYS
 	$_SESSION['obj_Info']->setInfo("order_cost", $_SESSION['obj_TxnInfo']->getAmount() );
 }
 
-echo '<?xml version="1.0" encoding="ISO-8859-15"?>';
+echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/overview.xsl"?>';
 ?>
 <root>

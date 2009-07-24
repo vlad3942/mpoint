@@ -24,7 +24,7 @@ $obj_mPoint = new Accept($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_UA']);
 
 if (array_key_exists("temp", $_SESSION) === false || array_key_exists("email", $_SESSION['temp']) === false) { $_SESSION['temp']['email'] = $_SESSION['obj_TxnInfo']->getEMail(); }
 
-echo '<?xml version="1.0" encoding="ISO-8859-15"?>';
+echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/pay/email.xsl"?>';
 ?>
 <root>

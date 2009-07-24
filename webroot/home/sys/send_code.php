@@ -109,7 +109,7 @@ else
 							<form id="100" name="'. (string) $obj_XML->form['name'] .'">'. htmlspecialchars($_OBJ_TXT->_("send - code: 100"), ENT_NOQUOTES) .'</form>
 						</document>';
 			}
-			// Error in authentication, return status code and message
+			// Error: Unable to send Activation Code
 			else
 			{
 				$xml = '<form id="91" name="'. (string) $obj_XML->form['name'] .'">'. htmlspecialchars($_OBJ_TXT->_("send - code: 91"), ENT_NOQUOTES) .'</form>';

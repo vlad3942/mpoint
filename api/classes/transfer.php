@@ -168,13 +168,14 @@ class Transfer extends Home
 	 * @param 	integer $amount			Total amount transferred
 	 * @return 	string
 	 */
-	private function _constNewAccountMessage($msg, SimpleXMLElement &$oRcpt, SimpleXMLElement &$oSndr, $amount)
+	private function _constNewAccountMessage($msg, SimpleXMLElement &$oRcpt, SimpleXMLElement &$oSndr, $amount, $url)
 	{
 		$code = base_convert( (integer) $oRcpt->created["timestamp"], 10, 32) ."Z". base_convert( (integer) $oRcpt["id"], 10, 32) ."Z". base_convert( (integer) $oSndr["id"], 10, 32);
 		$msg = str_replace("{CODE}", strtoupper($code), $msg);
 		$msg = str_replace("{DOMAIN}", "http://". sDEFAULT_MPOINT_DOMAIN, $msg);
 		$msg = str_replace("{AMOUNT}", $amount, $msg);
-		$msg = str_replace("{URL}", "http://". sDEFAULT_MPOINT_DOMAIN ."/new/". $code, $msg);
+		$msg = str_replace("{URL}", $url, $msg);
+		$msg = str_replace("{CODE}", $code, $msg);
 		// Insert sender information
 		$sName = trim($oSndr->firstname ." ". $oSndr->lastname);
 		if (empty($sName) === true) { $msg = str_replace("{SENDER}", "{ADDRESS}", $msg); }
@@ -212,9 +213,9 @@ class Transfer extends Home
 		$obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), (integer) $oRcpt["countryid"], -1);
 		// Construct Message Body
 		$sBody = $this->getText()->_("mPoint - New Account SMS");
-		$sBody = $this->_constNewAccountMessage($sBody, $oRcpt, $oSndr, General::formatAmount($obj_ClientConfig->getCountryConfig(), $amount) );
+		$sBody = $this->_constNewAccountMessage($sBody, $oRcpt, $oSndr, General::formatAmount($obj_ClientConfig->getCountryConfig(), $amount), "http://". sDEFAULT_MPOINT_DOMAIN ."/new/{CODE}");
 		// Create data object with the Message Information
-		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $obj_ClientConfig->getCountryConfig()->getID(), $obj_ClientConfig->getCountryConfig()->getID()*100, $obj_ClientConfig->getCountryConfig()->getChannel(), $obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, (float) $oRcpt->mobile, $sBody);
+		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $obj_ClientConfig->getCountryConfig()->getID(), $obj_ClientConfig->getCountryConfig()->getID()*100, $obj_ClientConfig->getCountryConfig()->getChannel(), $obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, (float) $oRcpt->mobile, utf8_decode($sBody) );
 		$obj_MsgInfo->enableConcatenation();
 		$obj_MsgInfo->setDescription("mPoint - New Account");
 //		if ($obj_ClientConfig->getCountryConfig()->getID() != 200) { $obj_MsgInfo->setSender("mPoint"); }
@@ -246,12 +247,13 @@ class Transfer extends Home
 	{	
 		$oRcpt = simplexml_load_string($this->getAccountInfo($id) );
 		$obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), (integer) $oRcpt["countryid"], -1);
+		$url = "http://". sDEFAULT_MPOINT_DOMAIN ."/new/{CODE}?email=".$oRcpt->email;
 		// Construct E-Mail Subject
 		$sSubject = $this->getText()->_("mPoint - New Account E-Mail Subject");
-		$sSubject = $this->_constNewAccountMessage($sSubject, $oRcpt, $oSndr, General::formatAmount($obj_ClientConfig->getCountryConfig(), $amount) );
+		$sSubject = $this->_constNewAccountMessage($sSubject, $oRcpt, $oSndr, General::formatAmount($obj_ClientConfig->getCountryConfig(), $amount), "");
 		// Construct E-Mail Body
 		$sBody = $this->getText()->_("mPoint - New Account E-Mail Body");
-		$sBody = $this->_constNewAccountMessage($sBody, $oRcpt, $oSndr, General::formatAmount($obj_ClientConfig->getCountryConfig(), $amount) );
+		$sBody = $this->_constNewAccountMessage($sBody, $oRcpt, $oSndr, General::formatAmount($obj_ClientConfig->getCountryConfig(), $amount), $url);
 		
 		// Send E-Mail with information about how a new account may be created
 		if (mail( (string) $oRcpt->email, $sSubject, $sBody, $this->constSMTPHeaders() ) === true)

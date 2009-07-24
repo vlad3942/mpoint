@@ -336,7 +336,7 @@ class EndUserAccount extends Home
 		$sBody = str_replace("{CLIENT}", $this->_obj_ClientConfig->getName(), $sBody);
 		
 		// Instantiate Message Object for holding the message data which will be sent to GoMobile
-		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->_obj_ClientConfig->getCountryConfig()->getID(), $this->_obj_TxnInfo->getOperator(), $this->_obj_ClientConfig->getCountryConfig()->getChannel(), $this->_obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getMobile(), $sBody);
+		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->_obj_ClientConfig->getCountryConfig()->getID(), $this->_obj_TxnInfo->getOperator(), $this->_obj_ClientConfig->getCountryConfig()->getChannel(), $this->_obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getMobile(), utf8_decode($sBody) );
 		$obj_MsgInfo->setDescription("mPoint - Account Info");
 		
 		// Send MT with Account Info

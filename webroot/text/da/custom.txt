@@ -291,6 +291,8 @@ msgstr @@@ Intern Fejl - Indløser ikke tilgængelig, prøv venligst med et andet k
 msgid @@@ Shop Top-Up - 1 @@@
 msgstr @@@ Din nuværende betaling er blevet sat på hold og vil automatisk blive genoptaget når du har indsat penge på din konto @@@
 
+msgid @@@ Create Account - 1 @@@
+msgstr @@@ Vi kunne desværre ikke identificere dit telefonnummer automatisk @@@
 msgid @@@ Create Account - 11 @@@
 msgstr @@@ Indtast venligst et kodeord? @@@
 msgid @@@ Create Account - 12 @@@
@@ -309,6 +311,56 @@ msgid @@@ Create Account - 24 @@@
 msgstr @@@ Det gentagede kodeord må ikke indeholde følgende tegn: " og ' @@@
 msgid @@@ Create Account - 31 @@@
 msgstr @@@ De to kodeord er ikke ens, prøv venligst igen? @@@
+msgid @@@ Create Account - 41 @@@
+msgstr @@@ Vælg venligst et land fra dropdown boksen? @@@
+msgid @@@ Create Account - 42 @@@
+msgstr @@@ Det valgt land er ikke gyldigt, prøv venligst igen? @@@
+msgid @@@ Create Account - 43 @@@
+msgstr @@@ Det valgt land kunne ikke findes, prøv venligst igen? @@@
+msgid @@@ Create Account - 44 @@@
+msgstr @@@ Det valgt land er ikke aktivt, prøv venligst igen? @@@
+msgid @@@ Create Account - 51 @@@
+msgstr @@@ Angiv venligst dit mobil nummer? @@@
+msgid @@@ Create Account - 52 @@@
+msgstr @@@ Det angivne mobil nummer er for kort @@@
+msgid @@@ Create Account - 53 @@@
+msgstr @@@ Det angivne mobil nummer er for langt @@@
+msgid @@@ Create Account - 54 @@@
+msgstr @@@ Det angivne mobil nummer er allerede registreret @@@
+msgid @@@ Create Account - 55 @@@
+msgstr @@@ Det angivne mobil nummer er allerede registreret @@@
+msgid @@@ Create Account - 61 @@@
+msgstr @@@ Angiv venligst en overførselskode? @@@
+msgid @@@ Create Account - 62 @@@
+msgstr @@@ Den angivne overførselskode kunne ikke findes, tjek venligst koden og prøv igen? @@@
+msgid @@@ Create Account - 63 @@@
+msgstr @@@ Den angivne overførselskode er ikke aktiv, kontakt contact support@cellpointmobile.com for at få hjælp til at oprette en konto? @@@
+msgid @@@ Create Account - 64 @@@
+msgstr @@@ Oplys venligst dit mobil nummer for at verificerer overførselskoden? @@@
+msgid @@@ Create Account - 65 @@@
+msgstr @@@ Den angivne overførselskode er ikke registreret for dit mobil nummer, tjek venligst koden og prøv igen? @@@
+msgid @@@ Create Account - 66 @@@
+msgstr @@@ Den angivne overførselskode er ikke registreret for dit e-mail adresse, tjek venligst koden og prøv igen? @@@
+msgid @@@ Create Account - 69 @@@
+msgstr @@@ Oplys venligst dit mobil nummer eller din e-mail adresse for at verificerer overførselskoden? @@@
+msgid @@@ Create Account - 71 @@@
+msgstr @@@ Angiv venligst din aktiveringskode @@@
+msgid @@@ Create Account - 72 @@@
+msgstr @@@ Den angivne aktiverings kode er for lille, en aktiverings kode skal være større end 100.000 @@@
+msgid @@@ Create Account - 73 @@@
+msgstr @@@ Den angivne aktiverings kode er for stor, en aktiverings kode skal være mindre end 999.999 @@@
+msgid @@@ Create Account - 91 @@@
+msgstr @@@ Intern Fejl - Din konto kunne ikke oprettes, prøv venligst igen? @@@
+msgid @@@ Create Account - 92 @@@
+msgstr @@@ Intern Fejl - Din konto kunne ikke oprettes, prøv venligst igen? @@@
+msgid @@@ Create Account - 93 @@@
+msgstr @@@ Intern Fejl - Aktiveringskoden kunne ikke sendes til dit mobil nummer, prøv venligst igen? @@@
+msgid @@@ Create Account - 94 @@@
+msgstr @@@ Intern Fejl - Dit mobil nummer kunne ikke gemmes, prøv venligst igen? @@@
+msgid @@@ Create Account - 101 @@@
+msgstr @@@ Dit kodeord er blevet gemt og din konto oprettet @@@
+msgid @@@ Create Account - 102 @@@
+msgstr @@@ En aktiveringskode er blevet sendt til dit mobil nr. via SMS @@@
 
 msgid @@@ Activate E-Mail - 11 @@@
 msgstr @@@ Undefined Account ID @@@
@@ -344,7 +396,7 @@ msgstr @@@ Internal Error - E-Mail address could not be saved, please try again?
 msgid @@@ Activate E-Mail - 100 @@@
 msgstr @@@ E-Mail address saved @@@
 
-#: /webroot/login/sys/auth.php:57
+#: /webroot/login/sys/send_otp.php:60
 msgid @@@ countryid - code: 1 @@@
 msgstr @@@ Please select a country from the dropdown? @@@
 msgid @@@ countryid - code: 2 @@@
@@ -366,7 +418,7 @@ msgstr @@@ The entered password may not contain the following characters: " and 
 msgid @@@ password - code: 10 @@@
 msgstr @@@  @@@
 
-#: /webroot/login/sys/auth.php:92
+#: /webroot/login/sys/send_otp.php:95
 msgid @@@ countryid - code: 1 @@@
 msgstr @@@ Please select a country from the dropdown? @@@
 msgid @@@ username - code: 1 @@@
@@ -388,7 +440,7 @@ msgstr @@@ E-Mail address contains invalid characters, an e-mail address can onl
 msgid @@@ username - code: 15 @@@
 msgstr @@@ E-Mail address has an invalid format, an e-mail address must have the following format: user@domain.topdomain, i.e. john.doe@hotmail.com or john_joe@mail.hot.com @@@
 
-#: /webroot/login/sys/auth.php:120
+#: /webroot/login/sys/send_otp.php:123
 msgid @@@ countryid - code: 1 @@@
 msgstr @@@ Please select a country from the dropdown? @@@
 msgid @@@ countryid - code: 2 @@@
@@ -428,13 +480,55 @@ msgstr @@@ E-Mail address contains invalid characters, an e-mail address can onl
 msgid @@@ username - code: 15 @@@
 msgstr @@@ E-Mail address has an invalid format, an e-mail address must have the following format: user@domain.topdomain, i.e. john.doe@hotmail.com or john_joe@mail.hot.com @@@
 
-#: /webroot/login/sys/auth.php:142
-msgid @@@ auth - code: 10 @@@
-msgstr @@@ Login successful, please wait while the internal cache is being updated @@@
+#: /webroot/login/sys/send_otp.php:151
+msgid @@@ auth - code: 100 @@@
+msgstr @@@ A One Time Password has been sent to your mobile number. @@@
 
-#: /webroot/login/sys/auth.php:155
-msgid @@@ auth - code: 1 @@@
+#: /webroot/login/sys/send_otp.php:165
+msgid @@@ auth - code: 92 @@@
+msgstr @@@ Internal Error - One Time Password could not be sent to your mobile number, please try again? @@@
+
+#: /webroot/login/sys/send_otp.php:177
+msgid @@@ auth - code: 102 @@@
+msgstr @@@ You haven't registered your mobile number. Please go to "My Account" and update your profile? @@@
+
+#: /webroot/login/sys/send_otp.php:189
+msgid @@@ auth - code: 91 @@@
 msgstr @@@ Mobile Number / E-Mail address and Password doesn't match @@@
+
+#: /webroot/login/sys/auth.php:54
+msgid @@@ otp - code: 1 @@@
+msgstr @@@ Please enter the received One Time Password? @@@
+msgid @@@ otp - code: 2 @@@
+msgstr @@@ The entered One Time Password is too short, min value is 100.000 @@@
+msgid @@@ otp - code: 3 @@@
+msgstr @@@ The entered One Time Password is too short, max value is 999.999 @@@
+msgid @@@ otp - code: 100 @@@
+msgstr @@@  @@@
+
+#: /webroot/login/sys/auth.php:69
+msgid @@@ otp - code: 1 @@@
+msgstr @@@ Please enter the received One Time Password? @@@
+msgid @@@ otp - code: 2 @@@
+msgstr @@@ The entered One Time Password is too short, min value is 100.000 @@@
+msgid @@@ otp - code: 3 @@@
+msgstr @@@ The entered One Time Password is too short, max value is 999.999 @@@
+msgid @@@ otp - code: 4 @@@
+msgstr @@@ The entered One Time Password could not be not found for your account @@@
+msgid @@@ otp - code: 5 @@@
+msgstr @@@ The entered One Time Password has expired, please close the window and start over to receive a new password? @@@
+msgid @@@ otp - code: 6 @@@
+msgstr @@@ The entered One Time Password has already been used, please close the window and start over to receive a new password? @@@
+msgid @@@ otp - code: 7 @@@
+msgstr @@@ The entered One Time Password is not active, please close the window and start over to receive a new password? @@@
+msgid @@@ otp - code: 8 @@@
+msgstr @@@ Internal Error - One Time Password could not be used, please try again? @@@
+msgid @@@ otp - code: 100 @@@
+msgstr @@@  @@@
+
+#: /webroot/login/sys/auth.php:83
+msgid @@@ auth - code: 100 @@@
+msgstr @@@ Login successful, please wait while the internal cache is being updated @@@
 
 #: /webroot/home/sys/save_info.php:74
 msgid @@@ firstname - code: 1 @@@

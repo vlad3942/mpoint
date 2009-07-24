@@ -77,6 +77,10 @@ else
 		$obj_Image = $obj_mPoint->getmPointLogo();
 		$etag = "mpoint";
 		break;
+	case (strstr($_GET['file'], "logo") ):	// Retrieve Web Interface Logo
+		$obj_Image = new Image($_SERVER['DOCUMENT_ROOT'] ."/img/logo.jpg");
+		$etag = "logo";
+		break;
 	default:					// Error: Unknown Image Type
 		trigger_error("Unknown Image Type {TRACE URL: ".$_GET['file'] ."}", E_USER_ERROR);
 		break;

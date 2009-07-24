@@ -92,7 +92,7 @@ else
 		{
 			$code = $obj_mPoint->saveMobile($_SESSION['obj_Info']->getInfo("accountid"), $obj_mPoint->getActivationAddress($_SESSION['obj_Info']->getInfo("accountid"), (integer) $obj_XML->form->code) );
 	
-			// Activation code sent
+			// Mobile Number Saved
 			if ($code == 10)
 			{
 				$_SESSION['temp'] = array();
@@ -112,7 +112,7 @@ else
 						 	</redirect>
 						</document>';
 			}
-			// Error in authentication, return status code and message
+			// Error while saving Mobile Number
 			else
 			{
 				$xml = '<form id="91" name="'. (string) $obj_XML->form['name'] .'">'. htmlspecialchars($_OBJ_TXT->_("save - code: 91"), ENT_NOQUOTES) .'</form>';

@@ -1,2 +1,2 @@
 RewriteEngine on
-RewriteRule ^([^/\.]+)/?$ /new/?checksum=$1 [L]
+RewriteRule ^([^/\.]+)/?$ /new/?checksum=$1&%{QUERY_STRING} [L]

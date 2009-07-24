@@ -8,7 +8,7 @@
  * @link http://www.cellpointmobile.com
  * @package Payment
  * @subpackage EndUserAccount
- * @version 1.0
+ * @version 1.10
  */
 
 // Require Global Include File
@@ -35,11 +35,11 @@ if (count($aMsgCds) == 0 && $_POST['pwd'] != $_POST['rpt']) { $aMsgCds[] = 31; }
 // Success: Input Valid
 if (count($aMsgCds) == 0)
 {
-	$iStatus = $obj_mPoint->savePassword($_SESSION['obj_TxnInfo']->getMobile(), $_POST['pwd'], $_SESSION['obj_TxnInfo']->getEMail() );
+	$iStatus = $obj_mPoint->savePassword($_SESSION['obj_TxnInfo']->getMobile(), $_POST['pwd']);
 	// New Account automatically created when Password was saved
 	if ($iStatus == 1)
 	{
-		$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $_SESSION['obj_TxnInfo');
+		$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $_SESSION['obj_TxnInfo']);
 	}
 	$aMsgCds[] = 101;
 }

@@ -48,7 +48,7 @@ if (array_key_exists("temp", $_SESSION) === false)
 	$_SESSION['temp']['day'] = date("d");
 }
 
-echo '<?xml version="1.0" encoding="ISO-8859-15"?>';
+echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/shop/delivery.xsl"?>';
 ?>
 <root>

@@ -79,7 +79,7 @@ case "form":
 		$mob = $obj_mPoint->getActivationAddress($_SESSION['temp']['accountid'], (integer) $obj_XML->form->code);
 		$code = $obj_mPoint->saveMobile($_SESSION['temp']['accountid'], $mob);
 
-		// Activation code sent
+		// Mobile Number saved to Account
 		if ($code == 10)
 		{
 			$_SESSION['temp'] = array("countryid" => $_SESSION['temp']['obj_CountryConfig']->getID(),

@@ -114,14 +114,15 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 	// Not fetching an Image or performing a back-end process and accessing the mobile website
 	if (eregi("/img/", $_SERVER['PHP_SELF']) == false && eregi("/sys/", $_SERVER['PHP_SELF']) == false
 		&& (eregi("/pay/", $_SERVER['PHP_SELF']) == true || eregi("/shop/", $_SERVER['PHP_SELF']) == true
-			|| $_SERVER['PHP_SELF'] == "/overview.php" || $_SERVER['PHP_SELF'] == "/terms.php") )
+			|| $_SERVER['PHP_SELF'] == "/overview.php" || $_SERVER['PHP_SELF'] == "/terms.php"
+			|| (eregi("/new/", $_SERVER['PHP_SELF']) == true && array_key_exists("obj_UA", $_SESSION) === true) ) )
 	{
 		/*
 		 * Use Output buffering to "magically" transform the XML via XSL behind the scene
 		 * This means that all PHP scripts must output a wellformed XML document.
 		 * The XML in turn must refer to an XSL Stylesheet by using the xml-stylesheet tag
 		 */
-		ob_start(array(new Output("all", false), "transform") );
+		ob_start(array(new Output("all", false, $_SESSION['obj_UA']), "transform") );
 	}
 	else { header('Content-Type: text/xml; charset="UTF-8"'); }
 }
@@ -138,5 +139,5 @@ if (array_key_exists("checksum", $_GET) === true && $_SERVER['REQUEST_METHOD'] =
 define("sLANG", General::getLanguage() );
 
 // Intialise Text Translation Object
-$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0);
+$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 ?>

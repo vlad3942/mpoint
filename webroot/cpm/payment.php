@@ -65,7 +65,7 @@ try
 		 */
 		ob_start(array(new Output("all", false), "transform") );
 
-		echo '<?xml version="1.0" encoding="ISO-8859-15"?>';
+		echo '<?xml version="1.0" encoding="UTF-8"?>';
 		echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/cpm/payment.xsl"?>';
 ?>
 		<root>

@@ -171,7 +171,7 @@ else
 {
 	$_GET['msg'] = array_keys($aMsgCds);
 
-	$xml = '<?xml version="1.0" encoding="ISO-8859-15"?>';
+	$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/xhtml/status.xsl"?>';
 	$xml .= '<root>';
 	$xml .= $obj_mPoint->getSystemInfo();

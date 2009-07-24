@@ -143,7 +143,7 @@ class General
 					$xml .= '</'. $key .'>';
 				}
 				// Single value in current data field
-				else
+				elseif (is_object($val) === false)
 				{
 					$xml .= '<'. $key .'>'. htmlspecialchars($val, ENT_QUOTES) .'</'. $key .'>';
 				}
@@ -610,7 +610,7 @@ class General
 			$sIndication = $this->getText()->_("mPoint - WAP Push Indication");
 			$sIndication = str_replace("{CLIENT}", $oTI->getClientConfig()->getName(), $sIndication);
 			// Instantiate Message Object for holding the message data which will be sent to GoMobile
-			$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_WAP_PUSH_TYPE, $oTI->getClientConfig()->getCountryConfig()->getID(), $oTI->getOperator(), $oTI->getClientConfig()->getCountryConfig()->getChannel(), $oTI->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getMobile(), $sIndication, $url);
+			$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_WAP_PUSH_TYPE, $oTI->getClientConfig()->getCountryConfig()->getID(), $oTI->getOperator(), $oTI->getClientConfig()->getCountryConfig()->getChannel(), $oTI->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getMobile(), utf8_decode($sIndication), $url);
 			break;
 		}
 		$obj_MsgInfo->setDescription("mPoint - WAP Link");
@@ -762,6 +762,80 @@ class General
 			if (substr($key, 0, 4) == "var_") { $aClientVars[$key] = $val; }
 		}
 		if (count($aClientVars) > 0) { $this->newMessage($txnid, Constants::iCLIENT_VARS_STATE, serialize($aClientVars) ); }
+	}
+	
+	/**
+	 * Attempts to determine the browser type based on the available HTTP Headers.
+	 * The method will return one of the following:
+	 * 	- mobile
+	 * 	- web
+	 * 	- unknown
+	 * 
+	 * @return 	string
+	 */
+	public static function getBrowserType()
+	{
+		// Mobile Browser
+		if (array_key_exists("HTTP_X_WAP_PROFILE", $_SERVER) === true)
+		{
+			$sBrowser = "mobile";
+		}
+		// Determine whether browser type is web or mobile based on the HTTP User-Agent
+		elseif (array_key_exists("HTTP_USER_AGENT", $_SERVER) === true)
+		{
+			// Determine whether browser is Mobile or Web Browser based on the vendor name in the HTTP User-Agent
+			switch (true)
+			{
+			// Mobile Device Vendors
+			case (eregi("Alcatel", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Amoi Electronics", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Asustek", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Audiovox", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Ericsson", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Fujitsu", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Handspring", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("HP", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Hewlett[^a-z]Packard", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Hitachi", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("High Tech Computer Corporation", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("HTC", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Huawei", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Kyocera", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("LG", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Motorola", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("NEC", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Nokia", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Openwave", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Palm", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Panasonic", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Pantech", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("RIM", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Research In Motion", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Sagem", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Samsung", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Sanyo", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Sharp", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Siemens", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Sony Ericsson", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Toshiba", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("UTStar", $_SERVER['HTTP_USER_AGENT']) ):
+			// Specific Mobile Devices
+			case (eregi("Android", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Blackberry", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("iPhone", $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi("Pocket", $_SERVER['HTTP_USER_AGENT']) ):	// Pocket Internet Explorer
+			case (eregi("Mini", $_SERVER['HTTP_USER_AGENT']) ):		// Opera Mini
+				$sBrowser = "mobile";
+				break;
+			default:	// Web Browser
+				$sBrowser = "web";
+				break;
+			}
+		}
+		// Browser unknown
+		else { $sBrowser = "unknown"; }
+		
+		return $sBrowser;
 	}
 }
 ?>

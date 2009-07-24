@@ -27,7 +27,7 @@ $obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SE
 // Instantiate main special object in order to pass all relevant data for the Accept Payment page through DIBS: Custom Pages
 $obj_Accept = new Accept($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_UA']);
 
-echo '<?xml version="1.0" encoding="ISO-8859-15"?>';
+echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/pay/card.xsl"?>';
 ?>
 <root>

@@ -77,8 +77,8 @@ msgid @@@ Activate E-Mail @@@
 msgstr @@@ Activate E-Mail @@@
 
 #: /webroot/home/activate.php:29
-msgid @@@ Step 2 of 2 @@@
-msgstr @@@ Step 2 of 2 @@@
+msgid @@@ Step 3 of 3 @@@
+msgstr @@@ Step 3 of 3 @@@
 
 #: /webroot/home/activate.php:32
 msgid @@@ Edit E-Mail Guide - Step 3 @@@
@@ -536,13 +536,49 @@ msgstr @@@ Mobile / E-Mail @@@
 msgid @@@ Send Password @@@
 msgstr @@@ Send Password @@@
 
-#: /webroot/login/sys/auth.php:160
+#: /webroot/login/otp.php:23
+msgid @@@ One Time Password @@@
+msgstr @@@ One Time Password @@@
+
+#: /webroot/login/otp.php:28
+msgid @@@ Password @@@
+msgstr @@@ Password @@@
+
+#: /webroot/login/otp.php:29
+msgid @@@ Login @@@
+msgstr @@@ Login @@@
+
+#: /webroot/login/otp.php:32
+msgid @@@ One Time Password Guide @@@
+msgstr @@@ One Time Password Guide @@@
+
+#: /webroot/login/sys/auth.php:83
+msgid @@@ auth - code: 100 @@@
+msgstr @@@ auth - code: 100 @@@
+
+#: /webroot/login/sys/auth.php:93
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
 #: /webroot/login/sys/logout.php:43
 msgid @@@ You've successfully been logged out @@@
 msgstr @@@ You've successfully been logged out @@@
+
+#: /webroot/login/sys/send_otp.php:151
+msgid @@@ auth - code: 100 @@@
+msgstr @@@ auth - code: 100 @@@
+
+#: /webroot/login/sys/send_otp.php:165
+msgid @@@ send - code: 92 @@@
+msgstr @@@ send - code: 92 @@@
+
+#: /webroot/login/sys/send_otp.php:177
+msgid @@@ auth - code: 102 @@@
+msgstr @@@ auth - code: 102 @@@
+
+#: /webroot/login/sys/send_otp.php:194
+msgid @@@ internal - code: 2 @@@
+msgstr @@@ internal - code: 2 @@@
 
 #: /webroot/login/topmenu.php:21
 msgid @@@ Login @@@
@@ -552,97 +588,121 @@ msgstr @@@ Login @@@
 msgid @@@ Create Account @@@
 msgstr @@@ Create Account @@@
 
-#: /webroot/new/default.php:23
+#: /webroot/new/default.php:62
 msgid @@@ mPoint @@@
 msgstr @@@ mPoint @@@
 
-#: /webroot/new/default.php:24
+#: /webroot/new/default.php:63
 msgid @@@ Unsupported Browser @@@
 msgstr @@@ Unsupported Browser @@@
-
-#: /webroot/new/step1.php:28
-msgid @@@ Create Account @@@
-msgstr @@@ Create Account @@@
-
-#: /webroot/new/step1.php:31
-msgid @@@ Step 1 of 2 @@@
-msgstr @@@ Step 1 of 2 @@@
-
-#: /webroot/new/step1.php:32
-msgid @@@ Country @@@
-msgstr @@@ Country @@@
-
-#: /webroot/new/step1.php:33
-msgid @@@ Transfer Code @@@
-msgstr @@@ Transfer Code @@@
-
-#: /webroot/new/step1.php:34
-msgid @@@ Firstname @@@
-msgstr @@@ Firstname @@@
-
-#: /webroot/new/step1.php:35
-msgid @@@ Lastname @@@
-msgstr @@@ Lastname @@@
-
-#: /webroot/new/step1.php:36
-msgid @@@ Mobile @@@
-msgstr @@@ Mobile @@@
-
-#: /webroot/new/step1.php:37
-msgid @@@ E-Mail @@@
-msgstr @@@ E-Mail @@@
-
-#: /webroot/new/step1.php:38
-msgid @@@ Password @@@
-msgstr @@@ Password @@@
-
-#: /webroot/new/step1.php:39
-msgid @@@ Repeat Password @@@
-msgstr @@@ Repeat Password @@@
 
 #: /webroot/new/step1.php:40
 msgid @@@ Create Account @@@
 msgstr @@@ Create Account @@@
 
-#: /webroot/new/step1.php:41
+#: /webroot/new/step1.php:50
+msgid @@@ Create Account @@@
+msgstr @@@ Create Account @@@
+
+#: /webroot/new/step1.php:53
+msgid @@@ Step 1 of 2 @@@
+msgstr @@@ Step 1 of 2 @@@
+
+#: /webroot/new/step1.php:54
+msgid @@@ Country @@@
+msgstr @@@ Country @@@
+
+#: /webroot/new/step1.php:55
+msgid @@@ Transfer Code @@@
+msgstr @@@ Transfer Code @@@
+
+#: /webroot/new/step1.php:56
+msgid @@@ Firstname @@@
+msgstr @@@ Firstname @@@
+
+#: /webroot/new/step1.php:57
+msgid @@@ Lastname @@@
+msgstr @@@ Lastname @@@
+
+#: /webroot/new/step1.php:58
+msgid @@@ Mobile @@@
+msgstr @@@ Mobile @@@
+
+#: /webroot/new/step1.php:59
+msgid @@@ E-Mail @@@
+msgstr @@@ E-Mail @@@
+
+#: /webroot/new/step1.php:60
+msgid @@@ Password @@@
+msgstr @@@ Password @@@
+
+#: /webroot/new/step1.php:61
+msgid @@@ Repeat Password @@@
+msgstr @@@ Repeat Password @@@
+
+#: /webroot/new/step1.php:62
+msgid @@@ Create Account @@@
+msgstr @@@ Create Account @@@
+
+#: /webroot/new/step1.php:63
 msgid @@@ ( Select ) @@@
 msgstr @@@ ( Select ) @@@
 
-#: /webroot/new/step1.php:44
+#: /webroot/new/step1.php:64
+msgid @@@ Please complete the form below to set the password for your account @@@
+msgstr @@@ Please complete the form below to set the password for your account @@@
+
+#: /webroot/new/step1.php:67
 msgid @@@ Create Account Guide - Step 1 @@@
 msgstr @@@ Create Account Guide - Step 1 @@@
 
-#: /webroot/new/step2.php:23
+#: /webroot/new/step2.php:34
 msgid @@@ Create Account @@@
 msgstr @@@ Create Account @@@
 
-#: /webroot/new/step2.php:26
+#: /webroot/new/step2.php:41
+msgid @@@ Create Account @@@
+msgstr @@@ Create Account @@@
+
+#: /webroot/new/step2.php:44
 msgid @@@ Step 2 of 2 @@@
 msgstr @@@ Step 2 of 2 @@@
 
-#: /webroot/new/step2.php:27
+#: /webroot/new/step2.php:45
 msgid @@@ Account ID @@@
 msgstr @@@ Account ID @@@
 
-#: /webroot/new/step2.php:28
+#: /webroot/new/step2.php:46
 msgid @@@ Activation Code @@@
 msgstr @@@ Activation Code @@@
 
-#: /webroot/new/step2.php:29
+#: /webroot/new/step2.php:47
 msgid @@@ Verify Mobile @@@
 msgstr @@@ Verify Mobile @@@
 
-#: /webroot/new/step2.php:32
+#: /webroot/new/step2.php:50
 msgid @@@ Create Account Guide - Step 2 @@@
 msgstr @@@ Create Account Guide - Step 2 @@@
 
-#: /webroot/new/step3.php:23
+#: /webroot/new/step3.php:34
 msgid @@@ Create Account @@@
 msgstr @@@ Create Account @@@
 
-#: /webroot/new/step3.php:25
-msgid @@@ Create Account Guide - Step 3 @@@
-msgstr @@@ Create Account Guide - Step 3 @@@
+#: /webroot/new/step3.php:42
+msgid @@@ Create Account @@@
+msgstr @@@ Create Account @@@
+
+#: /webroot/new/step3.php:44
+msgid @@@ Thank you for signing up for @@@
+msgstr @@@ Thank you for signing up for @@@
+
+#: /webroot/new/step3.php:47
+msgid @@@ Create Account Guide - Web Step 3 @@@
+msgstr @@@ Create Account Guide - Web Step 3 @@@
+
+#: /webroot/new/step3.php:48
+msgid @@@ Create Account Guide - Mobile Step 3 @@@
+msgstr @@@ Create Account Guide - Mobile Step 3 @@@
 
 #: /webroot/new/sys/create_account.php:257
 msgid @@@ save - code: 100 @@@
@@ -973,15 +1033,19 @@ msgstr @@@ Välkommen till {CLIENT}, klicka på länken nedan @@@
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Välkommen till {CLIENT} @@@
 
-#: /api/classes/my_account.php:85
+#: /api/classes/home.php:579
+msgid @@@ mPoint - Send One Time Password @@@
+msgstr @@@ mPoint - Send One Time Password @@@
+
+#: /api/classes/my_account.php:57
 msgid @@@ mPoint - Send Activation Code @@@
 msgstr @@@ mPoint - Send Activation Code @@@
 
-#: /api/classes/my_account.php:187
+#: /api/classes/my_account.php:117
 msgid @@@ mPoint - Activation Link Subject @@@
 msgstr @@@ mPoint - Activation Link Subject @@@
 
-#: /api/classes/my_account.php:188
+#: /api/classes/my_account.php:118
 msgid @@@ mPoint - Activation Link Body @@@
 msgstr @@@ mPoint - Activation Link Body @@@
 
@@ -1009,15 +1073,15 @@ Orderdatum: {TIMESTAMP}
 
 We rekommenderar att ni kontaktar den här kunden manuellt för att slutföra köpet. @@@
 
-#: /api/classes/transfer.php:214
+#: /api/classes/transfer.php:215
 msgid @@@ mPoint - New Account SMS @@@
 msgstr @@@ mPoint - New Account SMS @@@
 
-#: /api/classes/transfer.php:250
+#: /api/classes/transfer.php:252
 msgid @@@ mPoint - New Account E-Mail Subject @@@
 msgstr @@@ mPoint - New Account E-Mail Subject @@@
 
-#: /api/classes/transfer.php:253
+#: /api/classes/transfer.php:255
 msgid @@@ mPoint - New Account E-Mail Body @@@
 msgstr @@@ mPoint - New Account E-Mail Body @@@
 

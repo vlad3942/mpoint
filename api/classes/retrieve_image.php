@@ -84,7 +84,7 @@ class RetrieveImage extends General
 	public function getmPointLogo()
 	{
 		// Re-Size Image to fit the screen resolution of the Customer's Mobile Device using its User Agent Profile
-		$obj_Image = new Image("mPoint.jpg");
+		$obj_Image = new Image("mpoint.jpg");
 
 		return $obj_Image;
 	}

@@ -15,10 +15,28 @@ require_once("../inc/include.php");
 // Initialize Standard content Object
 $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 
+// Account being created via a Mobile Device
+if (array_key_exists("obj_UA", $_SESSION) === true)
+{
+	$sMarkup = General::getMarkupLanguage($_SESSION['obj_UA']);
+}
+else { $sMarkup = "ajax"; }
+
 echo '<?xml version="1.0" encoding="UTF-8"?>';
-echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/ajax/new/step2.xsl"?>';
+echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. $sMarkup .'/new/step2.xsl"?>';
 ?>
 <root type="page">
+<?php
+// Account being created via a Mobile Device
+if (array_key_exists("obj_UA", $_SESSION) === true)
+{
+?>
+	<title><?= $_OBJ_TXT->_("Create Account"); ?></title>
+	
+	<?= $obj_mPoint->getSystemInfo(); ?>
+<?php
+}
+?>
 	<content>
 		<headline><?= $_OBJ_TXT->_("Create Account"); ?></headline>
 
@@ -32,5 +50,7 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/ajax/new
 		<guide><?= $_OBJ_TXT->_("Create Account Guide - Step 2"); ?></guide>
 		
 		<?= $obj_mPoint->getSession(); ?>
+		
+		<?= $obj_mPoint->getMessages("Create Account"); ?>
 	</content>
 </root>

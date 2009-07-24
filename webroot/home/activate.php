@@ -26,7 +26,7 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/ajax/hom
 		<headline><?= $_OBJ_TXT->_("Activate E-Mail"); ?></headline>
 		
 		<labels>
-			<progress><?= $_OBJ_TXT->_("Step 2 of 2"); ?></progress>
+			<progress><?= $_OBJ_TXT->_("Step 3 of 3"); ?></progress>
 		</labels>
 
 		<guide><?= $_OBJ_TXT->_("Edit E-Mail Guide - Step 3"); ?></guide>

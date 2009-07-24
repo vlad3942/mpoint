@@ -420,25 +420,26 @@ object#charts, embed#charts
 /* ========== Pages End ========== */
 
 /* ========== Windows Start ========== */
-div#edit-password, div#edit-mobile, div#edit-email
+div#edit-password, div#edit-mobile, div#edit-email, div#one-time-password
 {
 	position: absolute;
 	color: #000;
-	left: 500px;
+	left: 50%;
 	top: 200px;
 	width: 300px;
 	height: 175px;
+	margin-left: -150px;
 	border-style: solid;
 	visibility: visible;
 	background-color: #FFF;
 	text-align: left;
 }
 
-div#edit-mobile, div#edit-email
+div#edit-mobile, div#edit-email, div#one-time-password
 {
 	height: 250px;
 }
-div#edit-password h2, div#edit-mobile h2, div#edit-email h2
+div#edit-password h2, div#edit-mobile h2, div#edit-email h2, div#one-time-password h2
 {
 	text-align: center;
 }

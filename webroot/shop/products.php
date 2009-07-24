@@ -36,7 +36,7 @@ if (array_key_exists("id", $_GET) === true)
 
 $obj_mPoint = new Products($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
 
-echo '<?xml version="1.0" encoding="ISO-8859-15"?>';
+echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/shop/products.xsl"?>';
 ?>
 <root>

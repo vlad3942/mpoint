@@ -27,7 +27,7 @@
  *
  * @type integer
  */
-var iDEBUG_MODE = 16;
+var iDEBUG_MODE = 3;
 
 /**
  * Factory for producing an XML HTTP object
