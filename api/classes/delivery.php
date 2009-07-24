@@ -209,6 +209,11 @@ class Delivery extends General
 		{
 		case (100):	// Denmark
 			$aDeliveryInfo = $this->_lookupViaInterflora($msisdn);
+			
+			foreach ($aDeliveryInfo as $key => $val)
+			{
+				$aDeliveryInfo[$key] = utf8_encode($val);
+			}
 			break;
 		default:	// No Lookup Service available for Country
 			$aDeliveryInfo = array();

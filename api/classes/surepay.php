@@ -217,7 +217,7 @@ class SurePay extends General
 		{
 			$obj_TxnInfo = TxnInfo::produceInfo($RS["ID"], $oDB);
 			// Intialise Text Translation Object
-			$obj_Txt = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0);
+			$obj_Txt = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 
 			$aObj_mPoints[] = new SurePay($oDB, $obj_Txt, $obj_TxnInfo, $RS["URL"], $RS["EMAIL"], date("Y-m-d H:i:s", $RS["CREATED"]) );
 			$aObj_mPoints[count($aObj_mPoints)-1]->newMessage($RS["ID"], $iState, "");

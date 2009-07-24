@@ -21,6 +21,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 		 	<url>/home/topup.php</url>
 		 	<url>/home/transfer.php</url>
 		 	<url>/home/history.php</url>
+		 	<url>/home/my_account.php</url>
 		</recache>
 	</document>
 	<document type="command">

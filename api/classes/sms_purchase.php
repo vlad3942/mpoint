@@ -111,7 +111,7 @@ class SMS_Purchase extends MobileWeb
 		$RS = $oDB->getName($sql);
 
 		$obj_ClientConfig = ClientConfig::produceConfig($oDB, $RS["CLIENTID"], -1, $RS["KEYWORDID"]);
-		$obj_Txt = new TranslateText(array(sLANGUAGE_PATH . $obj_ClientConfig->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_ClientConfig->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0);
+		$obj_Txt = new TranslateText(array(sLANGUAGE_PATH . $obj_ClientConfig->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_ClientConfig->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 
 		return new SMS_Purchase($oDB, $obj_Txt, $obj_ClientConfig);
 	}

@@ -35,5 +35,5 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 	<?= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']); ?>
 	
 	<back><?= htmlspecialchars($_OBJ_TXT->_("<< Back"), ENT_NOQUOTES); ?></back>
-	<terms><?= nl2br($_SESSION['obj_TxnInfo']->getClientConfig()->getTerms() ); ?></terms>
+	<terms><?= nl2br(utf8_encode($_SESSION['obj_TxnInfo']->getClientConfig()->getTerms() ) ); ?></terms>
 </root>
