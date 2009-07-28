@@ -105,6 +105,39 @@ msgstr @@@ Save Mobile @@@
 msgid @@@ Edit Mobile Guide - Step 2 @@@
 msgstr @@@ Please enter the activation code you've just received via SMS into the form field below? @@@
 
+#: /webroot/home/confirm.php:40
+msgid @@@ Confirm Transfer @@@
+msgstr @@@ Confirm Transfer @@@
+
+#: /webroot/home/confirm.php:43
+msgid @@@ Recipient @@@
+msgstr @@@ Recipient @@@
+
+#: /webroot/home/confirm.php:44
+msgid @@@ Total @@@
+msgstr @@@ Total @@@
+
+#: /webroot/home/confirm.php:45
+msgid @@@ Password @@@
+msgstr @@@ Password @@@
+
+#: /webroot/home/confirm.php:46
+msgid @@@ Confirmation Code @@@
+msgstr @@@ Confirmation Code @@@
+
+#: /webroot/home/confirm.php:47
+msgid @@@ Transfer @@@
+msgstr @@@ Transfer @@@
+
+#: /webroot/home/confirm.php:51
+msgid @@@ Confirm Transfer Guide - Confirmation Code @@@
+msgstr @@@ A confirmation code which will automatically will expire in an hour has been sent to your mobile number.
+Please confirm your transfer by entering your password and the received code in the fields below? @@@
+
+#: /webroot/home/confirm.php:52
+msgid @@@ Confirm Transfer Guide - Password Only @@@
+msgstr @@@ Please confirm your transfer by entering your password in the field below? @@@
+
 #: /webroot/home/content.php:34
 msgid @@@ mPoint - User Admin @@@
 msgstr @@@ mPoint - User Admin @@@
@@ -244,22 +277,30 @@ msgid @@@ Price @@@
 msgstr @@@ Price @@@
 
 #: /webroot/home/history.php:48
+msgid @@@ Fee @@@
+msgstr @@@ Fee @@@
+
+#: /webroot/home/history.php:49
 msgid @@@ Merchant @@@
 msgstr @@@ Merchant @@@
 
-#: /webroot/home/history.php:49
+#: /webroot/home/history.php:50
 msgid @@@ Order No. @@@
 msgstr @@@ Order No. @@@
 
-#: /webroot/home/history.php:50
+#: /webroot/home/history.php:51
 msgid @@@ Sender @@@
 msgstr @@@ Sender @@@
 
-#: /webroot/home/history.php:51
+#: /webroot/home/history.php:52
 msgid @@@ Recipient @@@
 msgstr @@@ Recipient @@@
 
-#: /webroot/home/history.php:52
+#: /webroot/home/history.php:53
+msgid @@@ IP @@@
+msgstr @@@ IP @@@
+
+#: /webroot/home/history.php:54
 msgid @@@ Timestamp @@@
 msgstr @@@ Timestamp @@@
 
@@ -340,11 +381,15 @@ msgstr @@@ Other @@@
 msgid @@@ Edit @@@
 msgstr @@@ Edit @@@
 
-#: /webroot/home/sys/make_transfer.php:247
+#: /webroot/home/sys/make_transfer.php:299
 msgid @@@ transfer - code: 91 @@@
 msgstr @@@ transfer - code: 91 @@@
 
-#: /webroot/home/sys/make_transfer.php:263
+#: /webroot/home/sys/make_transfer.php:352
+msgid @@@ transfer - code: 92 @@@
+msgstr @@@ transfer - code: 92 @@@
+
+#: /webroot/home/sys/make_transfer.php:361
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
@@ -448,43 +493,59 @@ msgstr @@@ Amount @@@
 msgid @@@ Price @@@
 msgstr @@@ Price @@@
 
-#: /webroot/home/transfer.php:41
+#: /webroot/home/transfer.php:44
 msgid @@@ Transfer @@@
 msgstr @@@ Transfer @@@
 
-#: /webroot/home/transfer.php:44
+#: /webroot/home/transfer.php:49
 msgid @@@ Balance @@@
 msgstr @@@ Balance @@@
 
-#: /webroot/home/transfer.php:45
+#: /webroot/home/transfer.php:50
 msgid @@@ Country @@@
 msgstr @@@ Country @@@
 
-#: /webroot/home/transfer.php:46
+#: /webroot/home/transfer.php:51
 msgid @@@ ( Select ) @@@
 msgstr @@@ ( Select ) @@@
 
-#: /webroot/home/transfer.php:48
+#: /webroot/home/transfer.php:53
 msgid @@@ Recipient @@@
 msgstr @@@ Recipient @@@
 
-#: /webroot/home/transfer.php:49
+#: /webroot/home/transfer.php:54
 msgid @@@ Mobile or E-Mail @@@
 msgstr @@@ Mobile or E-Mail @@@
 
-#: /webroot/home/transfer.php:52
+#: /webroot/home/transfer.php:57
 msgid @@@ Amount @@@
 msgstr @@@ Amount @@@
 
-#: /webroot/home/transfer.php:53
+#: /webroot/home/transfer.php:58
 msgid @@@ Min @@@
 msgstr @@@ Min @@@
 
-#: /webroot/home/transfer.php:55
+#: /webroot/home/transfer.php:60
+msgid @@@ Transfer Fee @@@
+msgstr @@@ Transfer Fee @@@
+
+#: /webroot/home/transfer.php:61
+msgid @@@ Exchange Rate @@@
+msgstr @@@ Exchange Rate @@@
+
+#: /webroot/home/transfer.php:62
+msgid @@@ Local Amount @@@
+msgstr @@@ Local Amount @@@
+
+#: /webroot/home/transfer.php:63
+msgid @@@ Total @@@
+msgstr @@@ Total @@@
+
+#: /webroot/home/transfer.php:64
 msgid @@@ Transfer @@@
 msgstr @@@ Transfer @@@
 
-#: /webroot/home/transfer.php:58
+#: /webroot/home/transfer.php:67
 msgid @@@ Transfer - Overview @@@
 msgstr @@@ Transfer - Overview @@@
 
@@ -557,37 +618,29 @@ msgid @@@ One Time Password Guide @@@
 msgstr @@@ A One Time Password which will expire in an hour has been sent to your mobile number.
 Please enter the received password in the field below? @@@
 
-#: /webroot/login/sys/auth.php:163
+#: /webroot/login/sys/auth.php:160
 msgid @@@ auth - code: 100 @@@
 msgstr @@@ auth - code: 100 @@@
 
-#: /webroot/login/sys/auth.php:187
+#: /webroot/login/sys/auth.php:194
 msgid @@@ auth - code: 100 @@@
 msgstr @@@ auth - code: 100 @@@
 
-#: /webroot/login/sys/auth.php:201
-msgid @@@ send - code: 92 @@@
-msgstr @@@ send - code: 92 @@@
+#: /webroot/login/sys/auth.php:208
+msgid @@@ auth - code: 92 @@@
+msgstr @@@ auth - code: 92 @@@
 
-#: /webroot/login/sys/auth.php:215
+#: /webroot/login/sys/auth.php:222
 msgid @@@ auth - code: 102 @@@
 msgstr @@@ auth - code: 102 @@@
 
-#: /webroot/login/sys/auth.php:232
+#: /webroot/login/sys/auth.php:239
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
 #: /webroot/login/sys/logout.php:43
 msgid @@@ You've successfully been logged out @@@
 msgstr @@@ You've successfully been logged out @@@
-
-#: /webroot/login/sys/OLDauth.php:83
-msgid @@@ auth - code: 100 @@@
-msgstr @@@ auth - code: 100 @@@
-
-#: /webroot/login/sys/OLDauth.php:93
-msgid @@@ internal - code: 2 @@@
-msgstr @@@ internal - code: 2 @@@
 
 #: /webroot/login/topmenu.php:21
 msgid @@@ Login @@@
@@ -1034,7 +1087,7 @@ Merchant: {CLIENT}
 Order No: {ORDERID}
 Price: {PRICE} @@@
 
-#: /api/classes/enduser_account.php:334
+#: /api/classes/enduser_account.php:349
 msgid @@@ mPoint - Account Info @@@
 msgstr @@@ Your account has been created and is ready for use.
 Please go to {URL} to manage your account at any time.
@@ -1049,7 +1102,7 @@ msgstr @@@ Welcome to {CLIENT}, please activate the link below @@@
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Welcome to {CLIENT} @@@
 
-#: /api/classes/home.php:579
+#: /api/classes/home.php:572
 msgid @@@ mPoint - Send One Time Password @@@
 msgstr @@@ Please enter the one time password: {OTP} on the website to login.
 The password will automatically expire in an hour. @@@
@@ -1094,7 +1147,7 @@ We recommend that you contact this customer directly and complete the payment pr
 
 Thank you for using SurePay @@@
 
-#: /api/classes/transfer.php:215
+#: /api/classes/transfer.php:230
 msgid @@@ mPoint - New Account SMS @@@
 msgstr @@@ You've received a transfer of {AMOUNT} from {SENDER}.
 Please create an account at {DOMAIN} entering transfer code: {CODE} or click the link below to complete your registration directly from your mobile phone.
@@ -1102,15 +1155,20 @@ Please create an account at {DOMAIN} entering transfer code: {CODE} or click the
 Kind Regards
 mPoint @@@
 
-#: /api/classes/transfer.php:252
+#: /api/classes/transfer.php:267
 msgid @@@ mPoint - New Account E-Mail Subject @@@
 msgstr @@@ You've received a transfer of {AMOUNT} from {SENDER} @@@
 
-#: /api/classes/transfer.php:255
+#: /api/classes/transfer.php:270
 msgid @@@ mPoint - New Account E-Mail Body @@@
 msgstr @@@ You've received a transfer of {AMOUNT} from {SENDER}.
 Please activate the link below to complete your registration
 {URL}
 Kind Regards
 mPoint @@@
+
+#: /api/classes/transfer.php:300
+msgid @@@ mPoint - Confirmation Code @@@
+msgstr @@@ Please enter the confirmation code: {CODE} on the website to authenticate your transfer.
+The code will automatically expire in an hour. @@@
 

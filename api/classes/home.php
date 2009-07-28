@@ -278,29 +278,8 @@ class Home extends General
 		return $xml;
 	}
 
-/**
-	 * Fetches the Credit Cards that have been stored for the specific End-User Account.
-	 * If a User Agent Profile is provided, the method will automatically calculate the width and height of the account logo
-	 * after it has been resized to fit the screen resolution of the end-user's mobile device.
+	/**
 	 *
-	 * The card data is returned as an XML Document in the following format:
-	 * 	<stored-cards accountid="{UNIQUE ID FOR THE END-USER ACCOUNT}">
-	 * 		<card id="{UNIQUE ID FOR THE SAVED CARD}" type="{UNIQUE ID FOR THE CARD TYPE}" pspid="{UNIQUE ID FOR THE PSP THE CARD WAS SAVED THROUGH}" preferred="{BOOLEAN FLAG INDICATING WHETHER THE SAVED CARD IS THE END-USER'S PREFERRED}">
-	 *			<mask>{MASKED CARD NUMBER IN THE FORMAT: [CARD PREFIX]** **** [LAST 4 DIGITS]}</mask>
-	 *			<expiry>{CARD EXPIRY DATE IN THE FORMAT: MM/YY}</expiry>
-	 *			<ticket>{TICKET ID REPRESENTING THE STORED CARD WITH THE PSP}</ticket>
-	 *			<logo-width>{CALCULATED WIDTH OF THE CARD LOGO}</logo-width>
-	 *			<logo-height>{CALCULATED HEIGHT OF THE CARD LOGO}</logo-height>
-	 *		</card>
-	 *		<card id="{UNIQUE ID FOR THE SAVED CARD}" type="{UNIQUE ID FOR THE CARD TYPE}" pspid="{UNIQUE ID FOR THE PSP THE CARD WAS SAVED THROUGH}" preferred="{BOOLEAN FLAG INDICATING WHETHER THE SAVED CARD IS THE END-USER'S PREFERRED}">
-	 *			<mask>{MASKED CARD NUMBER IN THE FORMAT: [CARD PREFIX]** **** [LAST 4 DIGITS]}</mask>
-	 *			<expiry>{CARD EXPIRY DATE IN THE FORMAT: MM/YY}</expiry>
-	 *			<ticket>{TICKET ID REPRESENTING THE STORED CARD WITH THE PSP}</ticket>
-	 *			<logo-width>{CALCULATED WIDTH OF THE CARD LOGO}</logo-width>
-	 *			<logo-height>{CALCULATED HEIGHT OF THE CARD LOGO}</logo-height>
-	 *		</card>
-	 *		...
-	 * 	</account>
 	 *
 	 * @param	integer $id 	Unqiue ID of the End-User's Account
 	 * @return 	string
@@ -314,6 +293,11 @@ class Home extends General
 					 WHEN EUT.amount IS NULL THEN Txn.amount
 					 ELSE abs(EUT.amount)
 					 END) AS amount,
+					EUT.fee, EUT.address,
+					(CASE
+					 WHEN EUT.typeid = ". Constants::iEMONEY_PURCHASE_TYPE ." THEN Txn.ip
+					 ELSE EUT.ip
+					 END) AS ip,
 					C.currency,
 					CL.id AS clientid, CL.name AS client,
 					(EUAT.firstname || ' ' || EUAT.lastname) AS to_name, EUAT.mobile AS to_mobile, EUAT.email AS to_email,
@@ -341,6 +325,9 @@ class Home extends General
 				$xml .= '<transaction id="'. $RS["ID"] .'"  type="'. $RS["TYPEID"] .'" mpointid="'. $RS["MPOINTID"] .'">';
 				$xml .= '<amount currency="'. trim($RS["CURRENCY"]) .'">'. $RS["AMOUNT"] .'</amount>';
 				$xml .= '<price>'. General::formatAmount($this->_obj_CountryConfig, $RS["AMOUNT"]) .'</price>';
+				$xml .= '<fee currency="'. trim($RS["CURRENCY"]) .'">'. General::formatAmount($this->_obj_CountryConfig, $RS["FEE"]) .'</fee>';
+				$xml .= '<ip>'. $RS["IP"] .'</ip>';
+				$xml .= '<address>'. htmlspecialchars($RS["ADDRESS"], ENT_NOQUOTES) .'</address>';
 				$xml .= '<timestamp>'. date("Y-m-d H:i:s", $RS["TIMESTAMP"]) .'</timestamp>';
 				$xml .= '</transaction>';
 			}
@@ -350,6 +337,9 @@ class Home extends General
 				$xml .= '<transaction id="'. $RS["ID"] .'"  type="'. $RS["TYPEID"] .'">';
 				$xml .= '<amount currency="'. trim($RS["CURRENCY"]) .'">'. $RS["AMOUNT"] .'</amount>';
 				$xml .= '<price>'. General::formatAmount($this->_obj_CountryConfig, $RS["AMOUNT"]) .'</price>';
+				$xml .= '<fee currency="'. trim($RS["CURRENCY"]) .'">'. General::formatAmount($this->_obj_CountryConfig, $RS["FEE"]) .'</fee>';
+				$xml .= '<ip>'. $RS["IP"] .'</ip>';
+				$xml .= '<address>'. htmlspecialchars($RS["ADDRESS"], ENT_NOQUOTES) .'</address>';
 				$xml .= '<from accountid="'. $RS["FROMID"] .'">';
 				$xml .= '<name>'. htmlspecialchars($RS["FROM_NAME"], ENT_NOQUOTES) .'</name>';
 				$xml .= '<mobile>'. $RS["FROM_MOBILE"] .'</mobile>';
@@ -371,6 +361,9 @@ class Home extends General
 				$xml .= '<orderid>'. $RS["ORDERID"] .'</orderid>';
 				$xml .= '<amount currency="'. trim($RS["CURRENCY"]) .'">'. $RS["AMOUNT"] .'</amount>';
 				$xml .= '<price>'. General::formatAmount($this->_obj_CountryConfig, abs($RS["AMOUNT"]) ) .'</price>';
+				$xml .= '<fee currency="'. trim($RS["CURRENCY"]) .'">'. General::formatAmount($this->_obj_CountryConfig, $RS["FEE"]) .'</fee>';
+				$xml .= '<ip>'. $RS["IP"] .'</ip>';
+				$xml .= '<address>'. htmlspecialchars($RS["ADDRESS"], ENT_NOQUOTES) .'</address>';
 				$xml .= '<card id="'. $RS["CARDID"] .'">'. htmlspecialchars($RS["CARD"], ENT_NOQUOTES) .'</card>';
 				$xml .= '<timestamp>'. date("Y-m-d H:i:s", $RS["TIMESTAMP"]) .'</timestamp>';
 				$xml .= '</transaction>';

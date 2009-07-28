@@ -68,7 +68,7 @@ case "input":
 		}
 	}
 	// Check return codes for errors
-	while (list($tag, $code) = each($aErrCd) )
+	foreach ($aErrCd as $tag => $code)
 	{
 		// Error found in Input
 		if ($code < 10)
@@ -134,7 +134,7 @@ case "linked":
 	}
 	else { $aErrCd["countryid"] = 1; }
 	// Check return codes for errors
-	while (list($tag, $code) = each($aErrCd) )
+	foreach ($aErrCd as $tag => $code)
 	{
 		// Error found in Input
 		if ($code < 10)
@@ -208,7 +208,7 @@ case "form":
 	elseif ($aErrCd["checksum"] == 1) { $aErrCd["checksum"] = 10; }
 
 	// Check return codes for errors
-	while (list($tag, $code) = each($aErrCd) )
+	foreach ($aErrCd as $tag => $code)
 	{
 		// Error found in Input
 		if ($code < 10)

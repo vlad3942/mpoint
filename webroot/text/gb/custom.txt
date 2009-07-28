@@ -778,7 +778,7 @@ msgstr @@@ A verification link has been sent to the entered e-mail address @@@
 msgid @@@ send - code: 91 @@@
 msgstr @@@ Internal Error - Verification link could not be sent, please try again? @@@
 
-#: /webroot/home/sys/make_transfer.php:80
+#: /webroot/home/sys/make_transfer.php:83
 msgid @@@ countryid - code: 1 @@@
 msgstr @@@ Please select a country from the dropdown? @@@
 msgid @@@ countryid - code: 2 @@@
@@ -789,16 +789,26 @@ msgid @@@ countryid - code: 4 @@@
 msgstr @@@ Selected country is inactive, please select another country? @@@
 msgid @@@ countryid - code: 10 @@@
 msgstr @@@  @@@
-msgid @@@ amount - code: 1 @@@
-msgstr @@@ Please enter an amount to be transferred? @@@
-msgid @@@ amount - code: 2 @@@
-msgstr @@@ The entered amount is too small, min amount is {MIN TRANSFER} @@@
-msgid @@@ amount - code: 3 @@@
-msgstr @@@ The entered amount is too great, max amount is {ACCOUNT BALANCE} @@@
-msgid @@@ amount - code: 10 @@@
+msgid @@@ password - code: 1 @@@
+msgstr @@@ Please enter a password? @@@
+msgid @@@ password - code: 2 @@@
+msgstr @@@ The entered password is too short @@@
+msgid @@@ password - code: 3 @@@
+msgstr @@@ The entered password is too long @@@
+msgid @@@ password - code: 4 @@@
+msgstr @@@ The entered password may not contain the following characters: " and ' @@@
+msgid @@@ password - code: 10 @@@
+msgstr @@@  @@@
+msgid @@@ code - code: 1 @@@
+msgstr @@@ Please enter the received One Time Password? @@@
+msgid @@@ code - code: 2 @@@
+msgstr @@@ The entered One Time Password is too short, min value is 100.000 @@@
+msgid @@@ code - code: 3 @@@
+msgstr @@@ The entered One Time Password is too short, max value is 999.999 @@@
+msgid @@@ code - code: 100 @@@
 msgstr @@@  @@@
 
-#: /webroot/home/sys/make_transfer.php:117
+#: /webroot/home/sys/make_transfer.php:130
 msgid @@@ recipient - code: 1 @@@
 msgstr @@@ Please enter the recipient's mobile number or E-Mail address? @@@
 msgid @@@ recipient - code: 2 @@@
@@ -817,8 +827,16 @@ msgid @@@ recipient - code: 8 @@@
 msgstr @@@ E-Mail address has an invalid format, an e-mail address must have the following format: user@domain.topdomain, i.e. john.doe@hotmail.com or john_joe@mail.hot.com @@@
 msgid @@@ recipient - code: 10 @@@
 msgstr @@@  @@@
+msgid @@@ amount - code: 1 @@@
+msgstr @@@ Please enter an amount to be transferred? @@@
+msgid @@@ amount - code: 2 @@@
+msgstr @@@ The entered amount is too small, min amount is {MIN TRANSFER} @@@
+msgid @@@ amount - code: 3 @@@
+msgstr @@@ The entered amount is too great, max amount is {ACCOUNT BALANCE} @@@
+msgid @@@ amount - code: 10 @@@
+msgstr @@@  @@@
 
-#: /webroot/home/sys/make_transfer.php:147
+#: /webroot/home/sys/make_transfer.php:177
 msgid @@@ countryid - code: 1 @@@
 msgstr @@@ Please select a country from the dropdown? @@@
 msgid @@@ countryid - code: 2 @@@
@@ -855,8 +873,26 @@ msgid @@@ recipient - code: 14 @@@
 msgstr @@@ E-Mail address contains invalid characters, an e-mail address can only contain the following charcters: a-z זרו A-Z ֶ״ֵ 0-9 and _-.@ @@@
 msgid @@@ recipient - code: 15 @@@
 msgstr @@@ E-Mail address has an invalid format, an e-mail address must have the following format: user@domain.topdomain, i.e. john.doe@hotmail.com or john_joe@mail.hot.com @@@
+msgid @@@ password - code: 1 @@@
+msgstr @@@ Please enter a password? @@@
+msgid @@@ password - code: 2 @@@
+msgstr @@@ The entered password is too short @@@
+msgid @@@ password - code: 3 @@@
+msgstr @@@ The entered password is too long @@@
+msgid @@@ password - code: 4 @@@
+msgstr @@@ The entered password may not contain the following characters: " and ' @@@
+msgid @@@ password - code: 10 @@@
+msgstr @@@  @@@
+msgid @@@ code - code: 1 @@@
+msgstr @@@ Please enter the received One Time Password? @@@
+msgid @@@ code - code: 2 @@@
+msgstr @@@ The entered One Time Password is too short, min value is 100.000 @@@
+msgid @@@ code - code: 3 @@@
+msgstr @@@ The entered One Time Password is too short, max value is 999.999 @@@
+msgid @@@ code - code: 100 @@@
+msgstr @@@  @@@
 
-#: /webroot/home/sys/make_transfer.php:225
+#: /webroot/home/sys/make_transfer.php:272
 msgid @@@ transfer - code: 100 @@@
 msgstr @@@ Transfer completed @@@
 msgid @@@ transfer - code: 101 @@@
@@ -864,11 +900,11 @@ msgstr @@@ Transfer completed - recipient notified via SMS @@@
 msgid @@@ transfer - code: 102 @@@
 msgstr @@@ Transfer completed - recipient notified via E-Mail @@@
 
-#: /webroot/home/sys/make_transfer.php:247
+#: /webroot/home/sys/make_transfer.php:299
 msgid @@@ transfer - code: 91 @@@
 msgstr @@@ Internal Error - Unable to make transfer. Please try again? @@@
 
-#: /webroot/home/sys/make_transfer.php:255
+#: /webroot/home/sys/make_transfer.php:307
 msgid @@@ account - code: 1 @@@
 msgstr @@@ Internal Error: Transfer aborted - Unable to automatically create new account for recipient. @@@
 msgid @@@ account - code: 2 @@@
@@ -876,7 +912,33 @@ msgstr @@@ Internal Error: Transfer aborted  - Unable to notify recipient of the
 msgid @@@ account - code: 3 @@@
 msgstr @@@ Internal Error: Transfer aborted  - Unable to notify recipient of the awaiting transfer. @@@
 
-#: /webroot/home/sys/make_transfer.php:259
+#: /webroot/home/sys/make_transfer.php:322
+msgid @@@ password - code: 4 @@@
+msgstr @@@ Authentication failed - Password doesn't match for the account, please try again? @@@
+msgid @@@ code - code: 4 @@@
+msgstr @@@ The entered One Time Password could not be not found for your account @@@
+msgid @@@ code - code: 5 @@@
+msgstr @@@ The entered One Time Password has expired, please close the window and start over to receive a new password? @@@
+msgid @@@ code - code: 6 @@@
+msgstr @@@ The entered One Time Password has already been used, please close the window and start over to receive a new password? @@@
+msgid @@@ code - code: 7 @@@
+msgstr @@@ The entered One Time Password is not active, please close the window and start over to receive a new password? @@@
+msgid @@@ code - code: 8 @@@
+msgstr @@@ Internal Error - One Time Password could not be used, please try again? @@@
+msgid @@@ code - code: 100 @@@
+msgstr @@@  @@@
+
+#: /webroot/home/sys/make_transfer.php:338
+msgid @@@ transfer - code: 199 @@@
+msgstr @@@ Please enter your password to confirm your transfer? @@@
+msgid @@@ transfer - code: 200 @@@
+msgstr @@@ A Confirmation Code has been sent to your mobile number. @@@
+
+#: /webroot/home/sys/make_transfer.php:352
+msgid @@@ transfer - code: 92 @@@
+msgstr @@@ Internal Error - Confirmation Code could not be sent to your mobile number, please try again? @@@
+
+#: /webroot/home/sys/make_transfer.php:357
 msgid @@@ amount - code: 4 @@@
 msgstr @@@ Internal Error - Unable to retrieve currency conversion rates from the Central European Bank. Please try again later? @@@
 msgid @@@ amount - code: 5 @@@

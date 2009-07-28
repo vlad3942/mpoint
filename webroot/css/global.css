@@ -420,7 +420,7 @@ object#charts, embed#charts
 /* ========== Pages End ========== */
 
 /* ========== Windows Start ========== */
-div#edit-password, div#edit-mobile, div#edit-email, div#one-time-password
+div#edit-password, div#edit-mobile, div#edit-email, div#one-time-password, div#confirm-transfer
 {
 	position: absolute;
 	color: #000;
@@ -439,7 +439,11 @@ div#edit-mobile, div#edit-email, div#one-time-password
 {
 	height: 250px;
 }
-div#edit-password h2, div#edit-mobile h2, div#edit-email h2, div#one-time-password h2
+div#confirm-transfer
+{
+	height: 325px;
+}
+div#edit-password h2, div#edit-mobile h2, div#edit-email h2, div#one-time-password h2, div#confirm-transfer h2
 {
 	text-align: center;
 }

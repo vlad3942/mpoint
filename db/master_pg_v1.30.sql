@@ -108,15 +108,19 @@ GRANT SELECT, UPDATE, INSERT ON TABLE EndUser.CLAccess_Tbl_id_seq TO mpoint;
 CREATE TABLE EndUser.Transaction_Tbl
 (
 	id			SERIAL,
-	accountid	INT4 NOT NULL,	-- Account ID of the Transaction owner
-	typeid		INT4 NOT NULL,	-- Unique ID of the Transaction type
+	accountid	INT4 NOT NULL,			-- Account ID of the Transaction owner
+	typeid		INT4 NOT NULL,			-- Unique ID of the Transaction type
 		
-	fromid		INT4,			-- Account ID of the sender, NULL if transaction is a purchase
-	toid		INT4,			-- Account ID of the recipient, NULL if transaction is a purchase
+	fromid		INT4,					-- Account ID of the sender, NULL if transaction is a purchase
+	toid		INT4,					-- Account ID of the recipient, NULL if transaction is a purchase
 
-	txnid		INT4,			-- Transaction ID for purchase, only applicable
+	txnid		INT4,					-- Transaction ID for purchase, only applicable
 	
-	amount		INT4,
+	amount		INT4,					-- Total amount Sender is transferring
+	fee			INT4 DEFAULT 0,			-- Fee Sender is paying for the Transfer
+	
+	ip			INET NOT NULL,			-- IP Address of Sender
+	address		VARCHAR(50) NOT NULL,	-- Mobile Number or E-Mail Address of Sender
 
 	CONSTRAINT Transaction_PK PRIMARY KEY (id),
 	CONSTRAINT TxnOwner2Account_FK FOREIGN KEY (accountid) REFERENCES EndUser.Account_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
@@ -144,7 +148,7 @@ BEGIN
 	
 	-- Update available balance on EndUser's Account
 	UPDATE EndUser.Account_Tbl
-	SET balance = (SELECT Sum(amount)
+	SET balance = (SELECT (Sum(amount) + Sum(Abs(fee) * -1) )
 				   FROM EndUser.Transaction_Tbl
 				   WHERE accountid = iAccountID AND enabled = true)
 	WHERE id = iAccountID;
@@ -204,6 +208,9 @@ ALTER TABLE Client.Account_Tbl RENAME address TO mobile;
 
 ALTER TABLE Log.Transaction_Tbl ADD euaid INT4;
 ALTER TABLE Log.Transaction_Tbl ADD CONSTRAINT Txn2EUA_FK FOREIGN KEY (euaid) REFERENCES EndUser.Account_Tbl ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE Log.Transaction_Tbl ADD ip INET;
+UPDATE Log.Transaction_Tbl SET ip = '127.0.0.1';
+ALTER TABLE Log.Transaction_Tbl ALTER ip SET NOT NULL;
 
 /* ==================== SYSTEM SCHEMA START ==================== */
 CREATE TABLE System.IPRange_Tbl
@@ -235,7 +242,7 @@ CREATE TABLE System.DepositOption_Tbl
 	amount		INT4,
 	
 	CONSTRAINT DepositOption_PK PRIMARY KEY (id),
-	CONSTRAINT DepositOption2Country_FK FOREIGN KEY (countryid) REFERENCES System.Country_tbl ON UPDATE CASCADE ON DELETE NO ACTION,
+	CONSTRAINT DepositOption2Country_FK FOREIGN KEY (countryid) REFERENCES System.Country_tbl ON UPDATE CASCADE ON DELETE CASCADE,
 	CONSTRAINT DepositOption_UQ UNIQUE (countryid, amount),
   	LIKE Template.General_Tbl INCLUDING DEFAULTS
 ) WITHOUT OIDS;
@@ -244,8 +251,65 @@ CREATE TABLE System.DepositOption_Tbl
 INSERT INTO System.DepositOption_Tbl (id, countryid, amount, enabled) VALUES (0, 0, 0, false);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE System.DepositOption_Tbl TO mpoint;
+GRANT SELECT, UPDATE, INSERT ON TABLE System.depositoption_tbl_id_seq TO mpoint;
 
 ALTER TABLE System.Country_Tbl ADD maxbalance INT4;
 ALTER TABLE System.Country_Tbl ADD mintransfer INT4;
 ALTER TABLE System.Country_Tbl ADD symbol VARCHAR(3);
+
+
+-- Table: System.FeeType_Tbl
+-- Data table for all Fee Types that mPoint offers
+CREATE TABLE System.FeeType_Tbl
+(
+	id			SERIAL,
+
+	name		VARCHAR(50),
+
+	CONSTRAINT FeeType_PK PRIMARY KEY (id),
+	LIKE Template.General_Tbl INCLUDING DEFAULTS
+) WITHOUT OIDS;
+
+CREATE UNIQUE INDEX FeeType_UQ ON System.FeeType_Tbl (Upper(name) );
+
+CREATE TRIGGER Update_FeeType
+BEFORE UPDATE
+ON System.FeeType_Tbl FOR EACH ROW
+EXECUTE PROCEDURE Public.Update_Table_Proc();
+
+-- Internal
+INSERT INTO System.FeeType_Tbl (id, name, enabled) VALUES (0, 'System Record', false);
+INSERT INTO System.FeeType_Tbl (id, name) VALUES (1, 'Top-Up');
+INSERT INTO System.FeeType_Tbl (id, name) VALUES (2, 'Transfer');
+INSERT INTO System.FeeType_Tbl (id, name) VALUES (3, 'Withdrawal');
+
+GRANT SELECT ON TABLE System.FeeType_Tbl TO mpoint;
+
+
+-- Table: System.Fee_Tbl
+-- Data table for all Fees that mPoint collects
+CREATE TABLE System.Fee_Tbl
+(
+	id 			SERIAL,
+	typeid		INT4 NOT NULL,	-- Fee Type: Top-Up, Transfer, Withdrawal
+	fromid		INT4 NOT NULL,
+	toid		INT4 NOT NULL,
+	
+	minfee		INT4,			-- Minimum fee charged for the operation
+	basefee		INT4,			-- Base fee charged for the operation
+	share		FLOAT,			-- Percentage of the amount involved with the operation that the end-user will be charged
+	
+	CONSTRAINT Fee_PK PRIMARY KEY (id),
+	CONSTRAINT Fee2Type_FK FOREIGN KEY (typeid) REFERENCES System.FeeType_tbl ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT Fee2FromCountry_FK FOREIGN KEY (fromid) REFERENCES System.Country_tbl ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT Fee2ToCountry_FK FOREIGN KEY (toid) REFERENCES System.Country_tbl ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT Fee_UQ UNIQUE (typeid, fromid, toid),
+  	LIKE Template.General_Tbl INCLUDING DEFAULTS
+) WITHOUT OIDS;
+
+-- Internal
+INSERT INTO System.Fee_Tbl (id, typeid, fromid, toid, enabled) VALUES (0, 0, 0, 0, false);
+
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE System.Fee_tbl TO mpoint;
+GRANT SELECT, UPDATE, INSERT ON TABLE System.fee_tbl_id_seq TO mpoint;
 /* ==================== SYSTEM SCHEMA END ==================== */

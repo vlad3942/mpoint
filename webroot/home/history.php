@@ -45,10 +45,12 @@ else
 				<amount><?= $_OBJ_TXT->_("Amount"); ?></amount>
 				<card><?= $_OBJ_TXT->_("Method"); ?></card>
 				<price><?= $_OBJ_TXT->_("Price"); ?></price>
+				<fee><?= $_OBJ_TXT->_("Fee"); ?></fee>
 				<client><?= $_OBJ_TXT->_("Merchant"); ?></client>
 				<orderid><?= $_OBJ_TXT->_("Order No."); ?></orderid>
 				<sender><?= $_OBJ_TXT->_("Sender"); ?></sender>
 				<recipient><?= $_OBJ_TXT->_("Recipient"); ?></recipient>
+				<ip><?= $_OBJ_TXT->_("IP"); ?></ip>
 				<timestamp><?= $_OBJ_TXT->_("Timestamp"); ?></timestamp>
 			</labels>
 

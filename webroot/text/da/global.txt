@@ -105,6 +105,39 @@ msgstr @@@ Gem Mobilnummer @@@
 msgid @@@ Edit Mobile Guide - Step 2 @@@
 msgstr @@@ Indtast venligst den aktiverings kode du netop har modtaget via SMS i nedenstående felt? @@@
 
+#: /webroot/home/confirm.php:40
+msgid @@@ Confirm Transfer @@@
+msgstr @@@ Bekræft Overførsel @@@
+
+#: /webroot/home/confirm.php:43
+msgid @@@ Recipient @@@
+msgstr @@@ Modtager @@@
+
+#: /webroot/home/confirm.php:44
+msgid @@@ Total @@@
+msgstr @@@ Total @@@
+
+#: /webroot/home/confirm.php:45
+msgid @@@ Password @@@
+msgstr @@@ Kodeord @@@
+
+#: /webroot/home/confirm.php:46
+msgid @@@ Confirmation Code @@@
+msgstr @@@ Overførsels Kode @@@
+
+#: /webroot/home/confirm.php:47
+msgid @@@ Transfer @@@
+msgstr @@@ Overfør @@@
+
+#: /webroot/home/confirm.php:51
+msgid @@@ Confirm Transfer Guide - Confirmation Code @@@
+msgstr @@@ En overførsels kode som vil udløbe om en time er blevet sendt til dit mobilnummer.
+Bekræft venligst overførslen ved at angive dit kodeord og den modtage kode i felterne nedenfor? @@@
+
+#: /webroot/home/confirm.php:52
+msgid @@@ Confirm Transfer Guide - Password Only @@@
+msgstr @@@ Bekræft venligst overførslen ved at angive dit kodeord feltet nedenfor? @@@
+
 #: /webroot/home/content.php:34
 msgid @@@ mPoint - User Admin @@@
 msgstr @@@ mPoint - Bruger Administration @@@
@@ -244,22 +277,30 @@ msgid @@@ Price @@@
 msgstr @@@ Pris @@@
 
 #: /webroot/home/history.php:48
+msgid @@@ Fee @@@
+msgstr @@@ Gebyr @@@
+
+#: /webroot/home/history.php:49
 msgid @@@ Merchant @@@
 msgstr @@@ Sælger @@@
 
-#: /webroot/home/history.php:49
+#: /webroot/home/history.php:50
 msgid @@@ Order No. @@@
 msgstr @@@ Ordre Nr. @@@
 
-#: /webroot/home/history.php:50
+#: /webroot/home/history.php:51
 msgid @@@ Sender @@@
 msgstr @@@ Afsender @@@
 
-#: /webroot/home/history.php:51
+#: /webroot/home/history.php:52
 msgid @@@ Recipient @@@
 msgstr @@@ Modtager @@@
 
-#: /webroot/home/history.php:52
+#: /webroot/home/history.php:53
+msgid @@@ IP @@@
+msgstr @@@ IP @@@
+
+#: /webroot/home/history.php:54
 msgid @@@ Timestamp @@@
 msgstr @@@ Tidspunkt @@@
 
@@ -340,11 +381,15 @@ msgstr @@@ Andre Kort @@@
 msgid @@@ Edit @@@
 msgstr @@@ Skift @@@
 
-#: /webroot/home/sys/make_transfer.php:247
+#: /webroot/home/sys/make_transfer.php:299
 msgid @@@ transfer - code: 91 @@@
 msgstr @@@ transfer - code: 91 @@@
 
-#: /webroot/home/sys/make_transfer.php:263
+#: /webroot/home/sys/make_transfer.php:352
+msgid @@@ transfer - code: 92 @@@
+msgstr @@@ transfer - code: 92 @@@
+
+#: /webroot/home/sys/make_transfer.php:361
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
@@ -448,43 +493,59 @@ msgstr @@@ Beløb @@@
 msgid @@@ Price @@@
 msgstr @@@ Pris @@@
 
-#: /webroot/home/transfer.php:41
+#: /webroot/home/transfer.php:44
 msgid @@@ Transfer @@@
 msgstr @@@ Overfør Penge @@@
 
-#: /webroot/home/transfer.php:44
+#: /webroot/home/transfer.php:49
 msgid @@@ Balance @@@
 msgstr @@@ Saldo @@@
 
-#: /webroot/home/transfer.php:45
+#: /webroot/home/transfer.php:50
 msgid @@@ Country @@@
 msgstr @@@ Land @@@
 
-#: /webroot/home/transfer.php:46
+#: /webroot/home/transfer.php:51
 msgid @@@ ( Select ) @@@
 msgstr @@@ ( Vælg ) @@@
 
-#: /webroot/home/transfer.php:48
+#: /webroot/home/transfer.php:53
 msgid @@@ Recipient @@@
-msgstr @@@ Modtage @@@
+msgstr @@@ Modtager @@@
 
-#: /webroot/home/transfer.php:49
+#: /webroot/home/transfer.php:54
 msgid @@@ Mobile or E-Mail @@@
 msgstr @@@ Mobil Nr. eller E-Mail @@@
 
-#: /webroot/home/transfer.php:52
+#: /webroot/home/transfer.php:57
 msgid @@@ Amount @@@
 msgstr @@@ Beløb @@@
 
-#: /webroot/home/transfer.php:53
+#: /webroot/home/transfer.php:58
 msgid @@@ Min @@@
 msgstr @@@ Min. @@@
 
-#: /webroot/home/transfer.php:55
+#: /webroot/home/transfer.php:60
+msgid @@@ Transfer Fee @@@
+msgstr @@@ Gebyr @@@
+
+#: /webroot/home/transfer.php:61
+msgid @@@ Exchange Rate @@@
+msgstr @@@ Valutakurs @@@
+
+#: /webroot/home/transfer.php:62
+msgid @@@ Local Amount @@@
+msgstr @@@ Lokalt Beløb @@@
+
+#: /webroot/home/transfer.php:63
+msgid @@@ Total @@@
+msgstr @@@ Total @@@
+
+#: /webroot/home/transfer.php:64
 msgid @@@ Transfer @@@
 msgstr @@@ Overfør @@@
 
-#: /webroot/home/transfer.php:58
+#: /webroot/home/transfer.php:67
 msgid @@@ Transfer - Overview @@@
 msgstr @@@ Transfer - Overview @@@
 
@@ -557,37 +618,29 @@ msgid @@@ One Time Password Guide @@@
 msgstr @@@ Et én gangs kodeord som vil udløbe om en time er blevet sendt til dit mobilnummer.
 Indtast venligst det modtagne kodeord i feltet nedenfor? @@@
 
-#: /webroot/login/sys/auth.php:163
+#: /webroot/login/sys/auth.php:160
 msgid @@@ auth - code: 100 @@@
 msgstr @@@ auth - code: 100 @@@
 
-#: /webroot/login/sys/auth.php:187
+#: /webroot/login/sys/auth.php:194
 msgid @@@ auth - code: 100 @@@
 msgstr @@@ auth - code: 100 @@@
 
-#: /webroot/login/sys/auth.php:201
-msgid @@@ send - code: 92 @@@
-msgstr @@@ send - code: 92 @@@
+#: /webroot/login/sys/auth.php:208
+msgid @@@ auth - code: 92 @@@
+msgstr @@@ auth - code: 92 @@@
 
-#: /webroot/login/sys/auth.php:215
+#: /webroot/login/sys/auth.php:222
 msgid @@@ auth - code: 102 @@@
 msgstr @@@ auth - code: 102 @@@
 
-#: /webroot/login/sys/auth.php:232
+#: /webroot/login/sys/auth.php:239
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
 #: /webroot/login/sys/logout.php:43
 msgid @@@ You've successfully been logged out @@@
 msgstr @@@ Du er nu logget ud @@@
-
-#: /webroot/login/sys/OLDauth.php:83
-msgid @@@ auth - code: 100 @@@
-msgstr @@@ auth - code: 100 @@@
-
-#: /webroot/login/sys/OLDauth.php:93
-msgid @@@ internal - code: 2 @@@
-msgstr @@@ internal - code: 2 @@@
 
 #: /webroot/login/topmenu.php:21
 msgid @@@ Login @@@
@@ -1037,7 +1090,7 @@ Sælger: {CLIENT}
 Ordre Nr: {ORDERID}
 Pris: {PRICE} @@@
 
-#: /api/classes/enduser_account.php:334
+#: /api/classes/enduser_account.php:349
 msgid @@@ mPoint - Account Info @@@
 msgstr @@@ Din konto er blevet oprettet og er nu klar til brug.
 Husk, du kan altid administrere kontoen på {URL}.
@@ -1052,7 +1105,7 @@ msgstr @@@ Velkommen til {CLIENT}, aktiver venligst nedenstående link @@@
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Velkommen til {CLIENT} @@@
 
-#: /api/classes/home.php:579
+#: /api/classes/home.php:572
 msgid @@@ mPoint - Send One Time Password @@@
 msgstr @@@ Indtast venligst følgende én gangs kodeord: {OTP} på websitet for at logge ind.
 Kodeordet vil automatisk udløbe om en time. @@@
@@ -1097,7 +1150,7 @@ Vi anbefaler at kunden kontaktes og betalingen færddigøres manuelt.
 
 Tak fordi i benytter SurePay @@@
 
-#: /api/classes/transfer.php:215
+#: /api/classes/transfer.php:230
 msgid @@@ mPoint - New Account SMS @@@
 msgstr @@@ Du har modtaget en overførsel på {AMOUNT} fra {SENDER}.
 Opret venligst en konto på {DOMAIN} og angiv overførsels koden: {CODE} eller klik på nedenstående link for at færdiggøre din registrering direkte på din mobiltelefon.
@@ -1105,15 +1158,20 @@ Opret venligst en konto på {DOMAIN} og angiv overførsels koden: {CODE} eller kli
 Med Venlig Hilsen
 mPoint @@@
 
-#: /api/classes/transfer.php:252
+#: /api/classes/transfer.php:267
 msgid @@@ mPoint - New Account E-Mail Subject @@@
 msgstr @@@ Du har modtaget en overførsel på {AMOUNT} fra {SENDER} @@@
 
-#: /api/classes/transfer.php:255
+#: /api/classes/transfer.php:270
 msgid @@@ mPoint - New Account E-Mail Body @@@
 msgstr @@@ Du har modtaget en overførsel på {AMOUNT} fra {SENDER}.
 Klik venligst på nedenstående link for at færdiggøre din registrering
 {URL}
 Med Venlig Hilsen
 mPoint @@@
+
+#: /api/classes/transfer.php:300
+msgid @@@ mPoint - Confirmation Code @@@
+msgstr @@@ Indtast venligst følgende overførsels kode: {CODE} på websitet for at bekræfte din overførsel.
+Koden vil automatisk udløbe om en time. @@@
 

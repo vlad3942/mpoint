@@ -63,7 +63,7 @@ else
 			}
 		}
 		// Check return codes for errors
-		while (list($tag, $code) = each($aErrCd) )
+		foreach ($aErrCd as $tag => $code)
 		{
 			// Error found in Input
 			if ($code < 10)
@@ -78,7 +78,7 @@ else
 		if ($aErrCd["code"] == 10) { $aErrCd["code"] = $obj_mPoint->activateCode($_SESSION['obj_Info']->getInfo("accountid"), (integer) $obj_XML->form->code) + 3; }
 		
 		// Check return codes for errors
-		while (list($tag, $code) = each($aErrCd) )
+		foreach ($aErrCd as $tag => $code)
 		{
 			// Error found in Input
 			if ($code < 10)

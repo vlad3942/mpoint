@@ -55,7 +55,7 @@ case "input":
 		}
 	}
 	// Check return codes for errors
-	while (list($tag, $code) = each($aErrCd) )
+	foreach ($aErrCd as $tag => $code)
 	{
 		// Error found in Input
 		if ($code < 10)
@@ -90,7 +90,7 @@ case "linked":
 		}
 	}
 	// Check return codes for errors
-	while (list($tag, $code) = each($aErrCd) )
+	foreach ($aErrCd as $tag => $code)
 	{
 		// Error found in Input
 		if ($code < 10)
@@ -115,14 +115,14 @@ case "form":
 		if ($aErrCd["username"] < 10 && floatval($obj_XML->username) == 0) { $aErrCd["username"] = $obj_Validator->valEMail( (string) $obj_XML->username) + 10; }
 	}
 	else { $aErrCd["countryid"] = 1; }
-	$aErrCd["password"] = $obj_Validator->valPassword( (string) $obj_XML->form->password);	
+	$aErrCd["password"] = $obj_Validator->valPassword( (string) $obj_XML->form->password);
 	if (count($obj_XML->form->otp) > 0)
 	{
 		$aErrCd["otp"] = $obj_Validator->valCode( (integer) $obj_XML->form->otp);
 	}
 	
 	// Check return codes for errors
-	while (list($tag, $code) = each($aErrCd) )
+	foreach ($aErrCd as $tag => $code)
 	{
 		// Error found in Input
 		if ($code < 10)
@@ -157,7 +157,7 @@ case "form":
 						
 						$sType = "multipart";
 						$xml = '<document type="status">
-									<form id="100" name="send-otp">'. htmlspecialchars($_OBJ_TXT->_("auth - code: 100"), ENT_NOQUOTES) .'</form>
+									<form id="100" name="'. $obj_XML["name"] .'">'. htmlspecialchars($_OBJ_TXT->_("auth - code: 100"), ENT_NOQUOTES) .'</form>
 								</document>
 								<document type="command">
 									'. Home::getRecacheLogin() .'
@@ -191,7 +191,7 @@ case "form":
 					{
 						$sType = "multipart";
 						$xml = '<document type="status">
-									<form id="100" name="send-login">'. htmlspecialchars($_OBJ_TXT->_("auth - code: 100"), ENT_NOQUOTES) .'</form>
+									<form id="100" name="'. $obj_XML["name"] .'">'. htmlspecialchars($_OBJ_TXT->_("auth - code: 100"), ENT_NOQUOTES) .'</form>
 								</document>
 								<document type="popup">
 									<popup>
@@ -205,7 +205,7 @@ case "form":
 					// Error: Unable to send One Time Password
 					else
 					{
-						$xml = '<form id="92" name="send-login">'. htmlspecialchars($_OBJ_TXT->_("send - code: 92"), ENT_NOQUOTES) .'</form>';
+						$xml = '<form id="92" name="'. $obj_XML["name"] .'">'. htmlspecialchars($_OBJ_TXT->_("auth - code: 92"), ENT_NOQUOTES) .'</form>';
 					}
 				}
 			}
@@ -219,7 +219,7 @@ case "form":
 							'. Home::getRecacheLogin() .'
 						</document>
 						<document type="status">
-							<form id="102" name="send-login">'. htmlspecialchars($_OBJ_TXT->_("auth - code: 102"), ENT_NOQUOTES) .'</form>
+							<form id="102" name="'. $obj_XML["name"] .'">'. htmlspecialchars($_OBJ_TXT->_("auth - code: 102"), ENT_NOQUOTES) .'</form>
 						</document>
 						<document type="command" msg="status">
 							<redirect>
@@ -231,7 +231,7 @@ case "form":
 		// Error in authentication, return status code and message
 		else
 		{
-			$xml = '<form id="'. ($code + 90) .'" name="send-login">'. htmlspecialchars($_OBJ_TXT->_("auth - code: ". ($code + 90) ), ENT_NOQUOTES) .'</form>';
+			$xml = '<form id="'. ($code + 90) .'" name="'. $obj_XML["name"] .'">'. htmlspecialchars($_OBJ_TXT->_("auth - code: ". ($code + 90) ), ENT_NOQUOTES) .'</form>';
 		}
 	}
 	break;

@@ -67,7 +67,7 @@ else
 			}
 		}
 		// Check return codes for errors
-		while (list($tag, $code) = each($aErrCd) )
+		foreach ($aErrCd as $tag => $code)
 		{
 			// Error found in Input
 			if ($code < 10)
@@ -82,7 +82,7 @@ else
 		if ($aErrCd["mobile"] == 10) { $aErrCd["mobile"] = $obj_mPoint->valMobile($_SESSION['obj_Info']->getInfo("accountid"), (string) $obj_XML->form->mobile) + 3; }
 		
 		// Check return codes for errors
-		while (list($tag, $code) = each($aErrCd) )
+		foreach ($aErrCd as $tag => $code)
 		{
 			// Error found in Input
 			if ($code < 10)

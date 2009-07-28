@@ -35,30 +35,45 @@ class Transfer extends Home
 	 *
 	 * @param	integer $toid 	Unqiue ID of the recipient's account
 	 * @param	integer $fromid Unqiue ID of the sender's account
-	 * @param 	integer $ar 	Amount that should be credited the recipient's account
-	 * @param 	integer $as 	Amount that should be debited the sender's account
+	 * @param 	integer $ar 	Amount that should be credited the recipient's account in the smallest currency of sender's country 
+	 * @param 	integer $as 	Amount that should be debited the sender's account in the smallest currency of recipient's country
+	 * @param 	integer $fee 	Fee that the sender is paying for the transfer in the smallest currency of sender's country
 	 * @return 	integer
 	 */
-	public function makeTransfer($toid, $fromid, $ar, $as)
+	public function makeTransfer($toid, $fromid, $ar, $as, $fee)
 	{
 		// Start Transaction
 		$this->getDBConn()->query("BEGIN");
 
 		$as = abs(intval($as) );
 		$ar = abs(intval($ar) );
+		$fee = abs(intval($fee) );
+		
+		// Construct SQL Query for debiting Sender
 		$sql = "INSERT INTO EndUser.Transaction_Tbl
-					(accountid, typeid, toid, fromid, amount)
-				VALUES
-					(". intval($fromid) .", ". Constants::iEMONEY_TRANSFER_TYPE .", ". intval($toid) .", ". intval($fromid) .", ". ($as * -1) .")";
+					(accountid, typeid, toid, fromid, amount, fee, ip, address)
+				SELECT ". intval($fromid) .", ". Constants::iEMONEY_TRANSFER_TYPE .", ". intval($toid) .", ". intval($fromid) .", ". ($as * -1) .", ". ($fee * -1) .", '". $_SERVER['REMOTE_ADDR'] ."',
+					(CASE
+					 WHEN mobile::int8 > 0 THEN mobile
+					 ELSE email
+					 END) AS address
+				FROM EndUser.Account_Tbl
+				WHERE id = ". intval($fromid);
 //		echo $sql ."\n";
 
 		// Sender's account successfully debited
 		if (is_resource($this->getDBConn()->query($sql) ) === true)
 		{
+			// Construct SQL Query for crediting recipient
 			$sql = "INSERT INTO EndUser.Transaction_Tbl
-						(accountid, typeid, toid, fromid, amount)
-					VALUES
-						(". intval($toid) .", ". Constants::iEMONEY_TRANSFER_TYPE .", ". intval($toid) .", ". intval($fromid) .", ". $ar .")";
+						(accountid, typeid, toid, fromid, amount, ip, address)
+					SELECT ". intval($toid) .", ". Constants::iEMONEY_TRANSFER_TYPE .", ". intval($toid) .", ". intval($fromid) .", ". $ar .", '". $_SERVER['REMOTE_ADDR'] ."',
+						(CASE
+						 WHEN mobile::int8 > 0 THEN mobile
+						 ELSE email
+						 END) AS address
+					FROM EndUser.Account_Tbl
+					WHERE id = ". intval($fromid);
 //			echo $sql ."\n";
 
 			// Recipient's account successfully credited
@@ -263,6 +278,91 @@ class Transfer extends Home
 		else { $iCode = 1; }
 		
 		return $iCode;
+	}
+	
+	/**
+	 * Generates and sends a Confirmation Code to the End-User using the provided Mobile Number (MSISDN).
+	 * 
+	 * @see		GoMobileMessage::produceMessage()
+	 * @see		General::getText()
+	 * @see		Home::genActivationCode()
+	 * @see		Home::sendMessage()
+	 * @see		ClientConfig::produceConfig()
+	 *
+	 * @param 	GoMobileConnInfo $oCI 	Reference to the data object with the Connection Info required to communicate with GoMobile
+	 * @param	integer $id 			Unqiue ID of the End-User's Account
+	 * @param	string $mob 			End-User's mobile number
+	 * @return	integer
+	 * @throws 	mPointException
+	 */
+	public function sendConfirmationCode(GoMobileConnInfo &$oCI, $id, $mob)
+	{
+		$sBody = $this->getText()->_("mPoint - Confirmation Code");
+		$sBody = str_replace("{CODE}", $this->genActivationCode($id, $mob, date("Y-m-d H:i:s", time() + 60 * 60) ), $sBody);
+		
+		$obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $this->getCountryConfig()->getID(), -1);
+		
+		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->getCountryConfig()->getID(), $this->getCountryConfig()->getID()*100, $this->getCountryConfig()->getChannel(), $obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $mob, utf8_decode($sBody) );
+		
+		$iCode = $this->sendMessage($oCI, $obj_ClientConfig, $obj_MsgInfo);
+		if ($iCode != 200) { $iCode = 91; }
+		
+		return $iCode;
+	}
+	
+	public function getExchangeRates()
+	{
+		// Get Exchange rates from the Central European Bank
+		$obj_XML = simplexml_load_file("http://www.ecb.int/stats/eurofxref/eurofxref-daily.xml");
+		
+		// Error: Unable to fetch conversion rates from the European Central Bank
+		if ($obj_XML === false)
+		{
+			$xml = '<exchangerates />';
+		}
+		else
+		{
+			$obj_XML = $obj_XML->children("http://www.ecb.int/vocabulary/2002-08-01/eurofxref")->Cube->Cube->children();
+			
+			$xml = '<exchangerates>';
+			for ($i=0; $i<count($obj_XML->Cube); $i++)
+			{
+				$xml .= '<rate currency="'. $obj_XML->Cube[$i]["currency"] .'">'. (1 / (float) $obj_XML->Cube[$i]["rate"]) .'</rate>';
+			}
+			$xml .= '</exchangerates>';
+		}
+					
+		return $xml;
+	}
+	
+	public function getFees($typeid=-1, $cid=-1)
+	{
+		$sql = "SELECT F.id, F.fromid, F.toid, F.minfee, F.basefee, F.share,
+					FT.id AS typeid, FT.name AS type, C.currency
+				FROM System.Fee_Tbl F
+				INNER JOIN System.FeeType_Tbl FT ON F.typeid = FT.id AND FT.enabled = true
+				INNER JOIN System.Country_Tbl C ON F.fromid = C.id AND C.enabled = true
+				WHERE F.enabled = true";
+		if ($typeid > 0) { $sql .= " AND FT.id = ". intval($typeid); }
+		if ($cid > 0) { $sql .= " AND C.id = ". intval($cid); }
+		$sql .= "
+				ORDER BY FT.id ASC";
+//		echo $sql ."\n";
+		$res = $this->getDBConn()->query($sql);
+
+		$xml = '<fees>';
+		while ($RS = $this->getDBConn()->fetchName($res) )
+		{
+			$xml .= '<item id="'. $RS["ID"] .'" fromid="'. $RS["FROMID"] .'" toid="'. $RS["TOID"] .'">';
+			$xml .= '<type id="'. $RS["ID"] .'">'. htmlspecialchars($RS["TYPE"], ENT_NOQUOTES).'</type>';
+			$xml .= '<minfee currency="'. $RS["CURRENCY"] .'">'. $RS["MINFEE"].'</minfee>';
+			$xml .= '<basefee currency="'. $RS["CURRENCY"] .'">'. $RS["BASEFEE"].'</basefee>';
+			$xml .= '<share>'. $RS["SHARE"].'</share>';
+			$xml .= '</item>';
+		}
+		$xml .= '</fees>';
+					
+		return $xml;
 	}
 }
 ?>

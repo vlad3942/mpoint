@@ -289,5 +289,21 @@ abstract class Constants
 	 *
 	 */
 	const iEMONEY_CARD = 11;
+	
+	/**
+	 * Unique Fee Type ID for Top-Ups
+	 *
+	 */
+	const iTOPUP_FEE = 1;
+	/**
+	 * Unique Fee Type ID for Transfers
+	 *
+	 */
+	const iTRANSFER_FEE = 2;
+	/**
+	 * Unique Fee Type ID for Withdrawals
+	 *
+	 */
+	const iWITHDRAWAL_FEE = 3;
 }
 ?>

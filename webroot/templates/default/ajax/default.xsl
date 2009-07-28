@@ -16,6 +16,7 @@
 		<script type="text/javascript" src="/inc/global.js"></script>
 		<script type="text/javascript" src="/inc/client.js"></script>
 		<script type="text/javascript" src="/inc/window.js"></script>
+		<script type="text/javascript" src="/inc/mpoint.js"></script>
 	</head>
 	<body>
 		<div id="main">

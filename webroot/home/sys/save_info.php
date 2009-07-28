@@ -66,7 +66,7 @@ else
 			}
 		}
 		// Check return codes for errors
-		while (list($tag, $code) = each($aErrCd) )
+		foreach ($aErrCd as $tag => $code)
 		{
 			// Error found in Input
 			if ($code < 10)
@@ -81,7 +81,7 @@ else
 		$aErrCd["lastname"] = $obj_Validator->valName( (string) $obj_XML->form->lastname);
 	
 		// Check return codes for errors
-		while (list($tag, $code) = each($aErrCd) )
+		foreach ($aErrCd as $tag => $code)
 		{
 			// Error found in Input
 			if ($code != 10)

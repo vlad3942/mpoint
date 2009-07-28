@@ -268,9 +268,14 @@ class EndUserAccount extends Home
 	public function topup($id, $txnid, $amount)
 	{
 		$sql = "INSERT INTO EndUser.Transaction_Tbl
-					(accountid, typeid, txnid, amount)
-				VALUES
-					(". intval($id) .", ". Constants::iEMONEY_TOPUP_TYPE .", ". intval($txnid) .", ". abs(intval($amount) ) .")";
+					(accountid, typeid, txnid, amount, ip, address)
+				SELECT ". intval($id) .", ". Constants::iEMONEY_TOPUP_TYPE .", ". intval($txnid) .", ". abs(intval($amount) ) .", '". $_SERVER['REMOTE_ADDR'] ."'
+					(CASE
+					 WHEN mobile::int8 > 0 THEN mobile
+					 ELSE email
+					 END) AS address
+				FROM EndUser.Account_Tbl
+				WHERE id = ". intval($id);
 //		echo $sql ."\n";
 
 		return is_resource($this->getDBConn()->query($sql) );
@@ -288,12 +293,17 @@ class EndUserAccount extends Home
 	 */
 	public function purchase($id, $txnid, $amount)
 	{
-		if ($amount > 0) { $amount = $amount * -1; }
+		$amount = abs($amount) * -1;
 
 		$sql = "INSERT INTO EndUser.Transaction_Tbl
-					(accountid, typeid, txnid, amount)
-				VALUES
-					(". intval($id) .", ". Constants::iEMONEY_PURCHASE_TYPE .", ". intval($txnid) .", ". intval($amount) .")";
+					(accountid, typeid, txnid, amount, ip, address)
+				SELECT ". intval($id) .", ". Constants::iEMONEY_PURCHASE_TYPE .", ". intval($txnid) .", ". intval($amount) .", '". $_SERVER['REMOTE_ADDR'] ."'
+					(CASE
+					 WHEN mobile::int8 > 0 THEN mobile
+					 ELSE email
+					 END) AS address
+				FROM EndUser.Account_Tbl
+				WHERE id = ". intval($id);
 //		echo $sql ."\n";
 
 		return is_resource($this->getDBConn()->query($sql) );
@@ -311,9 +321,14 @@ class EndUserAccount extends Home
 	public function associate($id, $txnid)
 	{
 		$sql = "INSERT INTO EndUser.Transaction_Tbl
-					(accountid, typeid, txnid)
-				VALUES
-					(". intval($id) .", ". Constants::iCARD_PURCHASE_TYPE .", ". intval($txnid) .")";
+					(accountid, typeid, txnid, ip, address)
+				SELECT ". intval($id) .", ". Constants::iCARD_PURCHASE_TYPE .", ". intval($txnid) .", '". $_SERVER['REMOTE_ADDR'] ."'
+					(CASE
+					 WHEN mobile::int8 > 0 THEN mobile
+					 ELSE email
+					 END) AS address
+				FROM EndUser.Account_Tbl
+				WHERE id = ". intval($id);
 //		echo $sql ."\n";
 
 		return is_resource($this->getDBConn()->query($sql) );

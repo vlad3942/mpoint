@@ -63,8 +63,11 @@ else
 			case "countryid":	// Validate Country
 				$aErrCd["countryid"] = $obj_Validator->valCountry($_OBJ_DB, (integer) $input);
 				break;
-			case "amount":	// Validate Amount
-				$aErrCd["amount"] = $obj_Validator->valAmount(iACCOUNT_BALANCE, (integer) $input);
+			case "password":	// Validate password
+				$aErrCd["password"] = $obj_Validator->valPassword( (string) $input);
+				break;
+			case "code":	// Validate Confirmation Code
+				$aErrCd["code"] = $obj_Validator->valCode( (integer) $input);
 				break;
 			default:			// Error: Unknown tag
 				$aErrCd["internal"] = 2;
@@ -72,7 +75,7 @@ else
 			}
 		}
 		// Check return codes for errors
-		while (list($tag, $code) = each($aErrCd) )
+		foreach ($aErrCd as $tag => $code)
 		{
 			// Error found in Input
 			if ($code < 10)
@@ -82,34 +85,44 @@ else
 		}
 		break;
 	case "linked":
-		// Validate Input
-		foreach ($obj_XML as $input)
+		if ($obj_Validator->valCountry($_OBJ_DB, (integer) $obj_XML->countryid) == 10)
 		{
-			switch ($input->getName() )
+			$oXML = simplexml_load_string($obj_mPoint->getCountries() );
+			$oXML = $oXML->xpath("/countries/item[@id = ". $obj_XML->countryid ."]");
+			$oXML = $oXML[0];
+
+			$obj_CountryConfig = new CountryConfig($oXML["id"], (string) $oXML->name, (string) $oXML->currency, (string) $oXML->currency["symbol"], (integer) $oXML->maxbalance, (integer) $oXML->mintransfer, (float) $oXML->minmobile, (float) $oXML->maxmobile, (string) $oXML->channel, (string) $oXML->priceformat, (integer) $oXML->decimals, General::xml2bool( (string) $oXML->addresslookup), General::xml2bool( (string) $oXML->doubleoptin) );
+			$obj_Validator = new Validate($obj_CountryConfig);
+			
+			$_OBJ_TXT->loadConstants(array("MIN MOBILE" => $obj_CountryConfig->getMinMobile(), "MAX MOBILE" => $obj_CountryConfig->getMaxMobile() ) );
+
+			// Validate Input
+			foreach ($obj_XML as $input)
 			{
-			case "recipient":	// Validate recipient
-				if ($obj_Validator->valCountry($_OBJ_DB, (integer) $obj_XML->countryid) == 10)
+				switch ($input->getName() )
 				{
-					$oXML = simplexml_load_string($obj_mPoint->getCountries() );
-					$oXML = $oXML->xpath("/countries/item[@id = ". $obj_XML->countryid ."]");
-					$oXML = $oXML[0];
-	
-					$obj_CountryConfig = new CountryConfig($oXML["id"], (string) $oXML->name, (string) $oXML->currency, (string) $oXML->currency["symbol"], (integer) $oXML->maxbalance, (integer) $oXML->mintransfer, (float) $oXML->minmobile, (float) $oXML->maxmobile, (string) $oXML->channel, (string) $oXML->priceformat, (integer) $oXML->decimals, General::xml2bool( (string) $oXML->addresslookup), General::xml2bool( (string) $oXML->doubleoptin) );
-					$obj_Validator = new Validate($obj_CountryConfig);
-					
-					$_OBJ_TXT->loadConstants(array("MIN MOBILE" => $obj_CountryConfig->getMinMobile(), "MAX MOBILE" => $obj_CountryConfig->getMaxMobile() ) );
-	
+				case "recipient":	// Validate recipient
 					$aErrCd["recipient"] = $obj_Validator->valMobile( (string) $obj_XML->recipient);
 					if ($aErrCd["recipient"] < 10 && floatval($obj_XML->recipient) == 0) { $aErrCd["recipient"] = $obj_Validator->valEMail( (string) $obj_XML->recipient) + 3; }
+					break;
+				case "amount":	// Validate Amount
+					$oXML = simplexml_load_string($obj_mPoint->getFees(Constants::iTRANSFER_FEE, $_SESSION['obj_CountryConfig']->getID() ) );
+					$oXML = $oXML->xpath("/fees/item[@toid = ". $obj_CountryConfig->getID() ."]");
+					$oXML = $oXML[0];
+					$iAmount = (integer) $obj_XML->amount;
+					if (intval($oXML->basefee) + $iAmount * floatval($oXML->share) > intval($oXML->minfee) ) { $iAmount += intval($oXML->basefee) + $iAmount * floatval($oXML->share); }
+					else { $iAmount += (integer) $oXML->minfee; }
+					$aErrCd["amount"] = $obj_Validator->valAmount(iACCOUNT_BALANCE, $iAmount);
+					break;
+				default:			// Error: Unknown tag
+					break;
 				}
-				else { $aErrCd["countryid"] = 1; }
-				break;
-			default:			// Error: Unknown tag
-				break;
 			}
 		}
+		else { $aErrCd["countryid"] = 1; }
+		
 		// Check return codes for errors
-		while (list($tag, $code) = each($aErrCd) )
+		foreach ($aErrCd as $tag => $code)
 		{
 			// Error found in Input
 			if ($code < 10)
@@ -134,12 +147,29 @@ else
 	
 			$aErrCd["recipient"] = $obj_Validator->valMobile( (string) $obj_XML->form->recipient);
 			if ($aErrCd["recipient"] < 10 && floatval($obj_XML->recipient) == 0) { $aErrCd["recipient"] = $obj_Validator->valEMail( (string) $obj_XML->recipient) + 10; }
+			
+			$oXML = simplexml_load_string($obj_mPoint->getFees(Constants::iTRANSFER_FEE, $_SESSION['obj_CountryConfig']->getID() ) );
+			$oXML = $oXML->xpath("/fees/item[@toid = ". $obj_CountryConfig->getID() ."]");
+			$oXML = $oXML[0];
+			if (intval($oXML->basefee) + intval($obj_XML->form->amount) * floatval($oXML->share) > intval($oXML->minfee) ) { $iFee = intval($oXML->basefee) + intval($obj_XML->form->amount) * floatval($oXML->share); }
+			else { $iFee = (integer) $oXML->minfee; }
+			$aErrCd["amount"] = $obj_Validator->valAmount(iACCOUNT_BALANCE, intval($obj_XML->form->amount) + $iFee);
+			
 		}
 		else { $aErrCd["countryid"] = 1; }
-		$aErrCd["amount"] = $obj_Validator->valAmount(iACCOUNT_BALANCE, (integer) $obj_XML->form->amount);
+		// Password provided
+		if (count($obj_XML->form->password) > 0)
+		{
+			$aErrCd["password"] = $obj_Validator->valPassword( (string) $obj_XML->form->password);
+		}
+		// One Time Password provided
+		if (count($obj_XML->form->code) > 0)
+		{
+			$aErrCd["code"] = $obj_Validator->valCode( (integer) $obj_XML->form->code);
+		}
 		
 		// Check return codes for errors
-		while (list($tag, $code) = each($aErrCd) )
+		foreach ($aErrCd as $tag => $code)
 		{
 			// Error found in Input
 			if ($code < 10)
@@ -148,7 +178,7 @@ else
 			}
 		}
 	
-		// recipient / Password validated
+		// Transfer Data validated
 		if (empty($xml) === true)
 		{
 			// National Transfer
@@ -168,8 +198,8 @@ else
 			// Currency conversion successful for Amount - Verify that recipient's balance doesn't exceed allowed amount
 			if ($iAccountID > 0 && $iAmountReceived > 0)
 			{
-				$obj_XML = simplexml_load_string($obj_mPoint->getAccountInfo($iAccountID) );
-				if (intval($obj_XML->balance) + $iAmountReceived > $obj_CountryConfig->getMaxBalance() )
+				$obj_AccountXML = simplexml_load_string($obj_mPoint->getAccountInfo($iAccountID) );
+				if (intval($obj_AccountXML->balance) + $iAmountReceived > $obj_CountryConfig->getMaxBalance() )
 				{
 					$iAmountReceived = -4;
 				}
@@ -178,81 +208,149 @@ else
 			// Currency conversion successful for Amount and recipient's balance doesn't exceed allowed amount
 			if ($iAmountReceived > 0)
 			{
-				// Start database transaction
-				$_OBJ_DB->query("BEGIN");
-				// Recipient doesn't have an account yet
-				if ($iAccountID <= 0)
-				{
-					if ($obj_Validator->valMobile( (string) $obj_XML->form->recipient) == 10)
-					{
-						$mob = (string) $obj_XML->form->recipient;
-						$email = "";
-					}
-					else
-					{
-						$mob = "";
-						$email = (string) $obj_XML->form->recipient;
-					}
-					$iAccountID = $obj_mPoint->newAccount($obj_CountryConfig->getID(), $mob, "", $email);
-					// Account successfully created - send notification SMS to recipient
-					if ($iAccountID > 0 && empty($mob) === false)
-					{
-						$code = $obj_mPoint->sendNewAccountSMS(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $iAccountID, $obj_AccountXML, $iAmountReceived) + 1;
-					}
-					// Account successfully created - send notification E-Mail to recipient
-					elseif ($iAccountID > 0)
-					{
-						$code = $obj_mPoint->sendNewAccountEMail($iAccountID, $obj_AccountXML, $iAmountReceived) + 2;
-					}
-					// Error: Unable to create new account
-					else { $code = 1; }
-				}
-				else { $code = 10; }
+				// Fetch sender's account info
+				$obj_AccountXML = simplexml_load_string($obj_mPoint->getAccountInfo($_SESSION['obj_Info']->getInfo("accountid") ) );
 				
-				// Success: Make Transfer
-				if ($code >= 10)
+				// Both Password has been and either no mobile number is registered for the account or a One Time Password has been provided as well
+				if (count($obj_XML->form->password) > 0 && (floatval($obj_AccountXML->mobile) < $obj_CountryConfig->getMinMobile() || count($obj_XML->form->code) > 0) )
 				{
-					$code = $obj_mPoint->makeTransfer($iAccountID, $_SESSION['obj_Info']->getInfo("accountid"), $iAmountReceived, $iAmountSent) + $code - 10;
+					// Start database transaction
+					$_OBJ_DB->query("BEGIN");
 					
-					// Transfer sucessful
-					if ($code >= 10)
+					// Authenticate sender
+					$aErrCd["password"] = $obj_mPoint->auth($_SESSION['obj_Info']->getInfo("accountid"), (string) $obj_XML->form->password) + 3;
+					if (count($obj_XML->form->code) > 0) { $aErrCd["code"] = $obj_mPoint->activateCode($_SESSION['obj_Info']->getInfo("accountid"), (integer) $obj_XML->form->code) + 3; }
+					else { $aErrCd["code"] = 10; }
+					
+					// Authentication successful
+					if ($aErrCd["password"] >= 10 && $aErrCd["code"] >= 10)
 					{
-						// Commit database transaction
-						$_OBJ_DB->query("COMMIT");
+						// Recipient doesn't have an account yet
+						if ($iAccountID <= 0)
+						{
+							// Recipient's Mobile Number provided by sender
+							if ($obj_Validator->valMobile( (string) $obj_XML->form->recipient) == 10)
+							{
+								$mob = (string) $obj_XML->form->recipient;
+								$email = "";
+							}
+							// Recipient's E-Mail Address provided by sender							
+							else
+							{
+								$mob = "";
+								$email = (string) $obj_XML->form->recipient;
+							}
+							$iAccountID = $obj_mPoint->newAccount($obj_CountryConfig->getID(), $mob, "", $email);
+							// Account successfully created - send notification SMS to recipient
+							if ($iAccountID > 0 && empty($mob) === false)
+							{
+								$code = $obj_mPoint->sendNewAccountSMS(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $iAccountID, $obj_AccountXML, $iAmountReceived) + 1;
+							}
+							// Account successfully created - send notification E-Mail to recipient
+							elseif ($iAccountID > 0)
+							{
+								$code = $obj_mPoint->sendNewAccountEMail($iAccountID, $obj_AccountXML, $iAmountReceived) + 2;
+							}
+							// Error: Unable to create new account
+							else { $code = 1; }
+						}
+						else { $code = 10; }
 						
-						$sType = "multipart";
-						$xml = '<document type="status">
-									<form id="'. ($code + 90) .'" name="'. (string) $obj_XML->form['name'] .'">'. htmlspecialchars($_OBJ_TXT->_("transfer - code: ". ($code + 90) ), ENT_NOQUOTES) .'</form>
-								</document>
-								<document type="command">
-									<recache>
-									 	<url>/home/topmenu.php</url>
-									 	<url>/home/transfer.php</url>
-									 	<url>/home/topup.php</url>
-									 	<url>/home/history.php</url>
-									</recache>
-								</document>
-								<document type="command" msg="status">
-									<redirect>
-								 		<url>/home/topmenu.php</url>
-								 		<url>/home/transfer.php</url>
-								 	</redirect>
-								</document>';
+						// Success: Make Transfer
+						if ($code >= 10)
+						{
+							$code = $obj_mPoint->makeTransfer($iAccountID, $_SESSION['obj_Info']->getInfo("accountid"), $iAmountReceived, $iAmountSent, $iFee) + $code - 10;
+							
+							// Transfer sucessful
+							if ($code >= 10)
+							{
+								// Commit database transaction
+								$_OBJ_DB->query("COMMIT");
+								
+								$sType = "multipart";
+								$xml = '<document type="status">
+											<form id="'. ($code + 90) .'" name="'. (string) $obj_XML->form['name'] .'">'. htmlspecialchars($_OBJ_TXT->_("transfer - code: ". ($code + 90) ), ENT_NOQUOTES) .'</form>
+										</document>
+										<document type="command">
+											<recache>
+											 	<url>/home/topmenu.php</url>
+											 	<url>/home/transfer.php</url>
+											 	<url>/home/topup.php</url>
+											 	<url>/home/history.php</url>
+											</recache>
+										</document>
+										<document type="command">
+											<close>
+												<popup>confirm-transfer</popup>
+											</close>
+										</document>
+										<document type="command" msg="status">
+											<redirect>
+										 		<url>/home/topmenu.php</url>
+										 		<url>/home/transfer.php</url>
+										 	</redirect>
+										</document>';
+							}
+							// Error during transfer, return status code and message
+							else
+							{
+								// Abort database transaction and rollback to previous state
+								$_OBJ_DB->query("ROLLBACK");
+								$xml = '<form id="91" name="'. (string) $obj_XML->form['name'] .'">'. htmlspecialchars($_OBJ_TXT->_("transfer - code: 91"), ENT_NOQUOTES) .'</form>';
+							}
+						}
+						// Error during account creation
+						else
+						{
+							// Abort database transaction and rollback to previous state
+							$_OBJ_DB->query("ROLLBACK");
+							$xml .= '<form id="'. $code .'">'. htmlspecialchars($_OBJ_TXT->_("account - code: ". $code), ENT_NOQUOTES) .'</form>';
+						}
 					}
-					// Error during transfer, return status code and message
+					// Error during authentication
 					else
 					{
 						// Abort database transaction and rollback to previous state
 						$_OBJ_DB->query("ROLLBACK");
-						$xml = '<form id="91" name="'. (string) $obj_XML->form['name'] .'">'. htmlspecialchars($_OBJ_TXT->_("transfer - code: 91"), ENT_NOQUOTES) .'</form>';
+						
+						// Check return codes for errors
+						foreach ($aErrCd as $tag => $code)
+						{
+							// Error found in Input
+							if ($code < 10)
+							{
+								$xml .= '<'. $tag .' id="'. $code .'">'. htmlspecialchars($_OBJ_TXT->_($tag ." - code: ". $code), ENT_NOQUOTES) .'</'. $tag .'>';
+							}
+						}
 					}
 				}
-				// Error during account creation
+				// Send Confirmation Code
 				else
 				{
-					// Abort database transaction and rollback to previous state
-					$_OBJ_DB->query("ROLLBACK");
-					$xml .= '<form id="'. $code .'">'. htmlspecialchars($_OBJ_TXT->_("account - code: ". $code), ENT_NOQUOTES) .'</form>';
+					if (floatval($obj_AccountXML->mobile) < $obj_CountryConfig->getMinMobile() ) { $code = 199; }
+					else { $code = $obj_mPoint->sendConfirmationCode(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $_SESSION['obj_Info']->getInfo("accountid"), (string) $obj_AccountXML->mobile); }
+					
+					// Confirmation Code sent
+					if ($code == 200 || $code == 199)
+					{
+						$sType = "multipart";
+						$xml = '<document type="status">
+									<form id="'. $code .'" name="make-transfer">'. htmlspecialchars($_OBJ_TXT->_("transfer - code: ". $code), ENT_NOQUOTES) .'</form>
+								</document>
+								<document type="popup">
+									<popup>
+										<name>confirm-transfer</name>
+										<parent>left-menu</parent>
+										<url>/home/confirm.php</url>
+								 		<css>confirm-transfer</css>
+								 	</popup>
+								</document>';
+					}
+					// Error: Unable to send Confirmation Code
+					else
+					{
+						$xml = '<form id="92" name="'. $obj_XML["name"] .'">'. htmlspecialchars($_OBJ_TXT->_("transfer - code: 92"), ENT_NOQUOTES) .'</form>';
+					}
 				}
 			}
 			// Error: Unable to make currency conversion for Amount

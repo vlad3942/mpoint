@@ -1080,7 +1080,11 @@ function Client(name)
 		{
 			report(4, "Closing: "+ oElems[i].firstChild.nodeValue);
 			obj_Window.closeWindow(oElems[i].firstChild.nodeValue);
-			delete document.getElementById(oElems[i].firstChild.nodeValue);
+			try
+			{
+				delete document.getElementById(oElems[i].firstChild.nodeValue);
+			}
+			catch (ignore) { /* Ignore */ }
 		}
 	}
 	

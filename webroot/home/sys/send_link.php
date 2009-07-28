@@ -64,7 +64,7 @@ else
 			}
 		}
 		// Check return codes for errors
-		while (list($tag, $code) = each($aErrCd) )
+		foreach ($aErrCd as $tag => $code)
 		{
 			// Error found in Input
 			if ($code < 10)
@@ -79,7 +79,7 @@ else
 		if ($aErrCd["email"] == 10) { $aErrCd["email"] = $obj_mPoint->valEMail($_SESSION['obj_Info']->getInfo("accountid"), (string) $obj_XML->form->email) + 5; }
 		
 		// Check return codes for errors
-		while (list($tag, $code) = each($aErrCd) )
+		foreach ($aErrCd as $tag => $code)
 		{
 			// Error found in Input
 			if ($code < 10)
