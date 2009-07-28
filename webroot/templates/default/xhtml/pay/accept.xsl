@@ -30,10 +30,13 @@
 		<td class="mPoint_Number"><xsl:value-of select="transaction/@id" /></td>
 		<td style="width:100%" rowspan="3"></td>
 	</tr>
-	<tr>
-		<td class="mPoint_Label" style="white-space:nowrap;"><xsl:value-of select="labels/orderid" />:</td>
-		<td class="mPoint_Number"><xsl:value-of select="transaction/orderid" /></td>
-	</tr>
+	<!-- Order Number Provided -->
+	<xsl:if test="string-length(transaction/orderid) &gt; 0">
+		<tr>
+			<td class="mPoint_Label" style="white-space:nowrap;"><xsl:value-of select="labels/orderid" />:</td>
+			<td class="mPoint_Number"><xsl:value-of select="transaction/orderid" /></td>
+		</tr>
+	</xsl:if>
 	<tr>
 		<td class="mPoint_Label" style="white-space:nowrap;"><xsl:value-of select="labels/price" />:</td>
 		<td class="mPoint_Number"><xsl:value-of select="transaction/price" /></td>

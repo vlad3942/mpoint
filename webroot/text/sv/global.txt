@@ -540,23 +540,35 @@ msgstr @@@ Send Password @@@
 msgid @@@ One Time Password @@@
 msgstr @@@ One Time Password @@@
 
-#: /webroot/login/otp.php:28
+#: /webroot/login/otp.php:26
 msgid @@@ Password @@@
 msgstr @@@ Password @@@
 
-#: /webroot/login/otp.php:29
+#: /webroot/login/otp.php:27
 msgid @@@ Login @@@
 msgstr @@@ Login @@@
 
-#: /webroot/login/otp.php:32
+#: /webroot/login/otp.php:30
 msgid @@@ One Time Password Guide @@@
 msgstr @@@ One Time Password Guide @@@
 
-#: /webroot/login/sys/auth.php:83
+#: /webroot/login/sys/auth.php:163
 msgid @@@ auth - code: 100 @@@
 msgstr @@@ auth - code: 100 @@@
 
-#: /webroot/login/sys/auth.php:93
+#: /webroot/login/sys/auth.php:187
+msgid @@@ auth - code: 100 @@@
+msgstr @@@ auth - code: 100 @@@
+
+#: /webroot/login/sys/auth.php:201
+msgid @@@ send - code: 92 @@@
+msgstr @@@ send - code: 92 @@@
+
+#: /webroot/login/sys/auth.php:215
+msgid @@@ auth - code: 102 @@@
+msgstr @@@ auth - code: 102 @@@
+
+#: /webroot/login/sys/auth.php:232
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
@@ -564,19 +576,11 @@ msgstr @@@ internal - code: 2 @@@
 msgid @@@ You've successfully been logged out @@@
 msgstr @@@ You've successfully been logged out @@@
 
-#: /webroot/login/sys/send_otp.php:151
+#: /webroot/login/sys/OLDauth.php:83
 msgid @@@ auth - code: 100 @@@
 msgstr @@@ auth - code: 100 @@@
 
-#: /webroot/login/sys/send_otp.php:165
-msgid @@@ send - code: 92 @@@
-msgstr @@@ send - code: 92 @@@
-
-#: /webroot/login/sys/send_otp.php:177
-msgid @@@ auth - code: 102 @@@
-msgstr @@@ auth - code: 102 @@@
-
-#: /webroot/login/sys/send_otp.php:194
+#: /webroot/login/sys/OLDauth.php:93
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 

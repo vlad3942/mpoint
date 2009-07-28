@@ -22,8 +22,6 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/ajax/log
 	<one-time-password>
 		<headline><?= $_OBJ_TXT->_("One Time Password"); ?></headline>
 
-		<?= $_SESSION['obj_CountryConfig']->toXML(); ?>
-
 		<labels>
 			<password><?= $_OBJ_TXT->_("Password"); ?></password>
 			<submit><?= $_OBJ_TXT->_("Login"); ?></submit>

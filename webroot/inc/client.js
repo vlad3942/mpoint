@@ -916,6 +916,9 @@ function Client(name)
 					case ("recache"):	// User status has changed, some cached pages must be recached
 						this.recache(oElems[i].getElementsByTagName("url") );
 						break;
+					case ("close"):		// Popup should be closed
+						this.closePopup(oElems[i].getElementsByTagName("popup") );
+						break;
 					default:			// User should be redirected or several page sections updated
 						for (var n=0; n<oElems[i].getElementsByTagName("url").length; n++)
 						{
@@ -1061,6 +1064,23 @@ function Client(name)
 		catch (e)
 		{
 			report(1, "Error: "+ e.message +" at line: "+ e.lineNumber);
+		}
+	}
+	/**
+	 * Closes the specified Popup Windows
+	 *
+	 * @member 	Client
+	 *
+	 * @param	{NodeList} oElems	List of Nodes with Names of the Popup Windows that should be closed
+	 */
+	Client.prototype.closePopup = function (oElems)
+	{
+		// Close Popup Windows
+		for (var i=0; i<oElems.length; i++)
+		{
+			report(4, "Closing: "+ oElems[i].firstChild.nodeValue);
+			obj_Window.closeWindow(oElems[i].firstChild.nodeValue);
+			delete document.getElementById(oElems[i].firstChild.nodeValue);
 		}
 	}
 	
@@ -1419,32 +1439,30 @@ function Client(name)
 		
 		try
 		{
-			// Retrieve all anchor tags from the HTML code
-			var a1 = sHTML.match(/<a .*?>/gim);
+			sHTML = '<root>'+ sHTML +'</root>';
+			var obj_XML = domProducer(sHTML);
 			
-			for (var i=0; i<a1.length; i++)
+			// Get all anchor tags from the HTML code
+			var aObj_Nodes = obj_XML.getElementsByTagName("a");
+			
+			for (var i=0; i<aObj_Nodes.length; i++)
 			{
-				// Remove any anchor tags with rel="nocache"
-				if (a1[i].match(/rel=["']nocache["']/i) == null)
+				// Anchor URL should be cached
+				if (aObj_Nodes[i].getAttribute("rel") != "nocache")
 				{
-					// Isolate the URL part of the call to the changePage method
-					var a2 = a1[i].split(/.changePage/i);
-					
 					// URL contains call to the openWindow method which references changePage as a callback
-					if (a2.length == 2 && a2[0].match(/.openWindow\(["']/i) != null)
+					if (aObj_Nodes[i].getAttribute("onclick").match(/\.openWindow\(["']/i) != null)
 					{
-						var a3 = a2[0].split(/,/i);
-						a3[2] = a3[2].replace(/["']/g, "");
-						aLinks[aLinks.length] = a3[2].trim();
+						var a = aObj_Nodes[i].getAttribute("onclick").split(/,/i);
+						a[2] = a[2].replace(/["']/g, "");
+						aLinks[aLinks.length] = a[2].trim();
 					}
-					// URL contains direct call to changePage
-					else
+					// Isolate the URL part of the call to the changePage method
+					else if (aObj_Nodes[i].getAttribute("onclick").match(/\.changePage\(["']/i) != null)
 					{
-						for (var n=1; n<a2.length; n=n+2)
-						{
-							var a3 = a2[n].split(/["']/gim);
-							aLinks[aLinks.length] = a3[1].trim();
-						}
+						var a = aObj_Nodes[i].getAttribute("onclick").match(/\.changePage\(["'](.+)["']\)/gim);
+						a = a[0].split(/['"]/i);
+						aLinks[aLinks.length] = a[1].trim();
 					}
 				}
 			}

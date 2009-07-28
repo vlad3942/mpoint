@@ -17,6 +17,11 @@
 		<br />
 		<form id="send-otp" action="/login/sys/auth.php" method="post">
 			<div>
+				<input type="hidden" name="countryid" value="" />
+				<input type="hidden" name="username" value="" />
+				<input type="hidden" name="password" value="" />
+			</div>
+			<div>
 				<table>	
 				<tr>
 					<td>
@@ -34,5 +39,11 @@
 			</div>
 		</form>
 	</div>
+	<script type="text/javascript">
+		// Transfer authentication data from initial login form
+		document.getElementById('send-otp').countryid.value = document.getElementById('send-login').countryid.value;
+		document.getElementById('send-otp').username.value = document.getElementById('send-login').username.value;
+		document.getElementById('send-otp').password.value = document.getElementById('send-login').password.value;
+	</script>
 </xsl:template>
 </xsl:stylesheet>

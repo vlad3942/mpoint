@@ -86,10 +86,11 @@
 			<td><div id="transaction-data"><!-- Completed dynamically by JavaScript --></div></td>
 		</tr>
 		</table>
+		
+		<script type="text/javascript">
+			changeFolder(document.getElementById('data-source'), document.getElementById('transaction-data'), document.getElementById('purchase-data') );
+		</script>
 	</div>
-	<script type="text/javascript">
-		changeFolder(document.getElementById('data-source'), document.getElementById('transaction-data'), document.getElementById('purchase-data') );
-	</script>
 </xsl:template>
 
 <xsl:template match="transaction" mode="topup">

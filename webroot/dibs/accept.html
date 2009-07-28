@@ -291,10 +291,13 @@ switch(cgi.language)
 			<td class="mPoint_Number"><PML_VAL>cgi.mpointid</PML_VAL></td>
 			<td rowspan="3" style="width:50%;"></td>
 		</tr>
-		<tr>
-			<td class="mPoint_Label"><PML_VAL>label_order_no</PML_VAL>:</td>
-			<td class="mPoint_Number"><PML_VAL>cgi.orderid</PML_VAL></td>
-		</tr>
+		<!-- Order Number Provided -->
+		<PML_IF COND="string.length(cgi.orderid) > 0">
+			<tr>
+				<td class="mPoint_Label"><PML_VAL>label_order_no</PML_VAL>:</td>
+				<td class="mPoint_Number"><PML_VAL>cgi.orderid</PML_VAL></td>
+			</tr>
+		</PML_IF>
 		<tr>
 			<td class="mPoint_Label"><PML_VAL>label_price</PML_VAL>:</td>
 			<td class="mPoint_Number"><PML_VAL>cgi.price</PML_VAL></td>

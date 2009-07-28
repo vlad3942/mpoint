@@ -6,7 +6,7 @@
 	
 	<div id="login">
 		<h1><xsl:value-of select="headline" /></h1>
-		<form id="send-login" action="/login/sys/send_otp.php" method="post">
+		<form id="send-login" action="/login/sys/auth.php" method="post">
 			<p>
 				<table align="center">
 				<tr>
@@ -59,7 +59,7 @@
 					<td><img class="hidden" name="password_img" id="password_img" src="/img/rederrorarrow.gif" width="13" height="10" alt="" border="0" /></td>
 				</tr>
 				<tr>
-					<td class="submit" colspan="2"><input type="button" value="{labels/submit}" class="button" onclick="javascript:obj_Client.sendFormData(document.getElementById('send-login') );" tabindex="4" title="login" /></td>
+					<td class="submit" colspan="2"><button type="button" class="button" onclick="javascript:obj_Client.sendFormData(document.getElementById('send-login') );" tabindex="4" title="login"><xsl:value-of select="labels/submit" /></button></td>
 				</tr>
 				</table>
 			</p>

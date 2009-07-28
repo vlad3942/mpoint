@@ -396,7 +396,7 @@ msgstr @@@ Internal Error - E-Mail address could not be saved, please try again?
 msgid @@@ Activate E-Mail - 100 @@@
 msgstr @@@ E-Mail address saved @@@
 
-#: /webroot/login/sys/send_otp.php:60
+#: /webroot/login/sys/auth.php:63
 msgid @@@ countryid - code: 1 @@@
 msgstr @@@ Please select a country from the dropdown? @@@
 msgid @@@ countryid - code: 2 @@@
@@ -417,8 +417,16 @@ msgid @@@ password - code: 4 @@@
 msgstr @@@ The entered password may not contain the following characters: " and ' @@@
 msgid @@@ password - code: 10 @@@
 msgstr @@@  @@@
+msgid @@@ otp - code: 1 @@@
+msgstr @@@ Please enter the received One Time Password? @@@
+msgid @@@ otp - code: 2 @@@
+msgstr @@@ The entered One Time Password is too short, min value is 100.000 @@@
+msgid @@@ otp - code: 3 @@@
+msgstr @@@ The entered One Time Password is too short, max value is 999.999 @@@
+msgid @@@ otp - code: 100 @@@
+msgstr @@@  @@@
 
-#: /webroot/login/sys/send_otp.php:95
+#: /webroot/login/sys/auth.php:98
 msgid @@@ countryid - code: 1 @@@
 msgstr @@@ Please select a country from the dropdown? @@@
 msgid @@@ username - code: 1 @@@
@@ -440,7 +448,7 @@ msgstr @@@ E-Mail address contains invalid characters, an e-mail address can onl
 msgid @@@ username - code: 15 @@@
 msgstr @@@ E-Mail address has an invalid format, an e-mail address must have the following format: user@domain.topdomain, i.e. john.doe@hotmail.com or john_joe@mail.hot.com @@@
 
-#: /webroot/login/sys/send_otp.php:123
+#: /webroot/login/sys/auth.php:130
 msgid @@@ countryid - code: 1 @@@
 msgstr @@@ Please select a country from the dropdown? @@@
 msgid @@@ countryid - code: 2 @@@
@@ -479,40 +487,18 @@ msgid @@@ username - code: 14 @@@
 msgstr @@@ E-Mail address contains invalid characters, an e-mail address can only contain the following characters: a-z זרו A-Z ֶ״ֵ 0-9 and _-.@ @@@
 msgid @@@ username - code: 15 @@@
 msgstr @@@ E-Mail address has an invalid format, an e-mail address must have the following format: user@domain.topdomain, i.e. john.doe@hotmail.com or john_joe@mail.hot.com @@@
+msgid @@@ otp - code: 1 @@@
+msgstr @@@ Please enter the received One Time Password? @@@
+msgid @@@ otp - code: 2 @@@
+msgstr @@@ The entered One Time Password is too short, min value is 100.000 @@@
+msgid @@@ otp - code: 3 @@@
+msgstr @@@ The entered One Time Password is too short, max value is 999.999 @@@
 
-#: /webroot/login/sys/send_otp.php:151
+#: /webroot/login/sys/auth.php:160
 msgid @@@ auth - code: 100 @@@
-msgstr @@@ A One Time Password has been sent to your mobile number. @@@
+msgstr @@@ Login successful, please wait while the internal cache is being updated @@@
 
-#: /webroot/login/sys/send_otp.php:165
-msgid @@@ auth - code: 92 @@@
-msgstr @@@ Internal Error - One Time Password could not be sent to your mobile number, please try again? @@@
-
-#: /webroot/login/sys/send_otp.php:177
-msgid @@@ auth - code: 102 @@@
-msgstr @@@ You haven't registered your mobile number. Please go to "My Account" and update your profile? @@@
-
-#: /webroot/login/sys/send_otp.php:189
-msgid @@@ auth - code: 91 @@@
-msgstr @@@ Mobile Number / E-Mail address and Password doesn't match @@@
-
-#: /webroot/login/sys/auth.php:54
-msgid @@@ otp - code: 1 @@@
-msgstr @@@ Please enter the received One Time Password? @@@
-msgid @@@ otp - code: 2 @@@
-msgstr @@@ The entered One Time Password is too short, min value is 100.000 @@@
-msgid @@@ otp - code: 3 @@@
-msgstr @@@ The entered One Time Password is too short, max value is 999.999 @@@
-msgid @@@ otp - code: 100 @@@
-msgstr @@@  @@@
-
-#: /webroot/login/sys/auth.php:69
-msgid @@@ otp - code: 1 @@@
-msgstr @@@ Please enter the received One Time Password? @@@
-msgid @@@ otp - code: 2 @@@
-msgstr @@@ The entered One Time Password is too short, min value is 100.000 @@@
-msgid @@@ otp - code: 3 @@@
-msgstr @@@ The entered One Time Password is too short, max value is 999.999 @@@
+#: /webroot/login/sys/auth.php:181
 msgid @@@ otp - code: 4 @@@
 msgstr @@@ The entered One Time Password could not be not found for your account @@@
 msgid @@@ otp - code: 5 @@@
@@ -526,9 +512,21 @@ msgstr @@@ Internal Error - One Time Password could not be used, please try agai
 msgid @@@ otp - code: 100 @@@
 msgstr @@@  @@@
 
-#: /webroot/login/sys/auth.php:83
+#: /webroot/login/sys/auth.php:194
 msgid @@@ auth - code: 100 @@@
-msgstr @@@ Login successful, please wait while the internal cache is being updated @@@
+msgstr @@@ A One Time Password has been sent to your mobile number. @@@
+
+#: /webroot/login/sys/auth.php:208
+msgid @@@ auth - code: 92 @@@
+msgstr @@@ Internal Error - One Time Password could not be sent to your mobile number, please try again? @@@
+
+#: /webroot/login/sys/auth.php:222
+msgid @@@ auth - code: 102 @@@
+msgstr @@@ You haven't registered your mobile number. Please go to "My Account" and update your profile? @@@
+
+#: /webroot/login/sys/auth.php:234
+msgid @@@ auth - code: 91 @@@
+msgstr @@@ Mobile Number / E-Mail address and Password doesn't match @@@
 
 #: /webroot/home/sys/save_info.php:74
 msgid @@@ firstname - code: 1 @@@

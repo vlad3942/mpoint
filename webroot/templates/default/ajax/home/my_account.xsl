@@ -62,10 +62,11 @@
 			<td><div id="account-data"><!-- Completed dynamically by JavaScript --></div></td>
 		</tr>
 		</table>
+		
+		<script type="text/javascript">
+			changeFolder(document.getElementById('data-source'), document.getElementById('account-data'), document.getElementById('account-info-data') );
+		</script>
 	</div>
-	<script type="text/javascript">
-		changeFolder(document.getElementById('data-source'), document.getElementById('account-data'), document.getElementById('account-info-data') );
-	</script>
 </xsl:template>
 
 <xsl:template match="account">
