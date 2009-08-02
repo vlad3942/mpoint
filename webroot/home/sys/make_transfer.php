@@ -43,7 +43,7 @@ else
 	$obj_AccountXML = simplexml_load_string($obj_mPoint->getAccountInfo($_SESSION['obj_Info']->getInfo("accountid") ) );
 	define("iACCOUNT_BALANCE", (integer) $obj_AccountXML->balance); 
 	$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH,
-								   "MIN TRANSFER" => $_SESSION['obj_CountryConfig']->getMinTransfer(), "ACCOUNT BALANCE" => iACCOUNT_BALANCE / 100) );
+								   "MIN TRANSFER" => $_SESSION['obj_CountryConfig']->getMinTransfer() / 100, "ACCOUNT BALANCE" => iACCOUNT_BALANCE / 100) );
 	
 	$obj_XML = simplexml_load_string(trim($HTTP_RAW_POST_DATA) );
 	
@@ -111,7 +111,7 @@ else
 					$oXML = $oXML[0];
 					$iAmount = (integer) $obj_XML->amount;
 					if (intval($oXML->basefee) + $iAmount * floatval($oXML->share) > intval($oXML->minfee) ) { $iAmount += intval($oXML->basefee) + $iAmount * floatval($oXML->share); }
-					else { $iAmount += (integer) $oXML->minfee; }
+					else { $iAmount += (integer) $oXML->minfee / 100; }
 					$aErrCd["amount"] = $obj_Validator->valAmount(iACCOUNT_BALANCE, $iAmount);
 					break;
 				default:			// Error: Unknown tag
@@ -152,7 +152,7 @@ else
 			$oXML = $oXML->xpath("/fees/item[@toid = ". $obj_CountryConfig->getID() ."]");
 			$oXML = $oXML[0];
 			if (intval($oXML->basefee) + intval($obj_XML->form->amount) * floatval($oXML->share) > intval($oXML->minfee) ) { $iFee = intval($oXML->basefee) + intval($obj_XML->form->amount) * floatval($oXML->share); }
-			else { $iFee = (integer) $oXML->minfee; }
+			else { $iFee = (integer) $oXML->minfee / 100; }
 			$aErrCd["amount"] = $obj_Validator->valAmount(iACCOUNT_BALANCE, intval($obj_XML->form->amount) + $iFee);
 			
 		}
@@ -212,7 +212,7 @@ else
 				$obj_AccountXML = simplexml_load_string($obj_mPoint->getAccountInfo($_SESSION['obj_Info']->getInfo("accountid") ) );
 				
 				// Both Password has been and either no mobile number is registered for the account or a One Time Password has been provided as well
-				if (count($obj_XML->form->password) > 0 && (floatval($obj_AccountXML->mobile) < $obj_CountryConfig->getMinMobile() || count($obj_XML->form->code) > 0) )
+				if (count($obj_XML->form->password) > 0 && (floatval($obj_AccountXML->mobile) < $_SESSION['obj_CountryConfig']->getMinMobile() || count($obj_XML->form->code) > 0) )
 				{
 					// Start database transaction
 					$_OBJ_DB->query("BEGIN");
@@ -259,7 +259,7 @@ else
 						// Success: Make Transfer
 						if ($code >= 10)
 						{
-							$code = $obj_mPoint->makeTransfer($iAccountID, $_SESSION['obj_Info']->getInfo("accountid"), $iAmountReceived, $iAmountSent, $iFee) + $code - 10;
+							$code = $obj_mPoint->makeTransfer($iAccountID, $_SESSION['obj_Info']->getInfo("accountid"), $iAmountReceived, $iAmountSent, $iFee * 100) + $code - 10;
 							
 							// Transfer sucessful
 							if ($code >= 10)
@@ -327,7 +327,7 @@ else
 				// Send Confirmation Code
 				else
 				{
-					if (floatval($obj_AccountXML->mobile) < $obj_CountryConfig->getMinMobile() ) { $code = 199; }
+					if (floatval($obj_AccountXML->mobile) < $_SESSION['obj_CountryConfig']->getMinMobile() ) { $code = 199; }
 					else { $code = $obj_mPoint->sendConfirmationCode(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $_SESSION['obj_Info']->getInfo("accountid"), (string) $obj_AccountXML->mobile); }
 					
 					// Confirmation Code sent

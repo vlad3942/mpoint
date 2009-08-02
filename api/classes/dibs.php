@@ -154,6 +154,7 @@ class DIBS extends Callback
 		$b = "mpointid=". $this->getTxnInfo()->getID();
 		$b .= "&transact=". $txnid;
 		$b .= "&cardid=". $cardid;
+		$b .= "&clientid=". $this->getTxnInfo()->getClientConfig()->getID();
 		$b .= "&language=". $this->getTxnInfo()->getLanguage();
 		$b .= "&capturenow=". General::bool2xml($this->getTxnInfo()->getClientConfig()->useAutoCapture() );
 		$b .= "preauth=false";

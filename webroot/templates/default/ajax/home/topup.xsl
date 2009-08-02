@@ -35,7 +35,7 @@
 		</xsl:choose>
 	</xsl:variable>
 		
-	<form id="purchase-top-up" name="purchase-top-up" action="/buy/topup.php" method="post" target="Top-Up" onsubmit="javascript:window.open('', 'Top-Up', 'width=450,height=400,status=yes,resizable=no,scrollbars=no');">
+	<form id="purchase-top-up" name="purchase-top-up" action="/buy/topup.php" method="post" target="Top-Up" onsubmit="javascript:window.open('', 'Top-Up', 'width=450,height=600,status=yes,resizable=no,scrollbars=no');">
 		<div>
 			<!-- mPoint client parameters -->
 			<input type="hidden" name="clientid" value="{//client-config/@id}" />

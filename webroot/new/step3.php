@@ -42,6 +42,7 @@ if (array_key_exists("obj_UA", $_SESSION) === true)
 		<headline><?= $_OBJ_TXT->_("Create Account"); ?></headline>
 		<labels>
 			<mpoint><?= $_OBJ_TXT->_("Thank you for signing up for"); ?></mpoint>
+			<top-up><?= $_OBJ_TXT->_("Top-Up Account"); ?></top-up>
 		</labels>
 		<guide>
 			<web><?= $_OBJ_TXT->_("Create Account Guide - Web Step 3"); ?></web>

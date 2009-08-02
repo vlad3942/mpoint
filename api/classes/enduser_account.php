@@ -269,7 +269,7 @@ class EndUserAccount extends Home
 	{
 		$sql = "INSERT INTO EndUser.Transaction_Tbl
 					(accountid, typeid, txnid, amount, ip, address)
-				SELECT ". intval($id) .", ". Constants::iEMONEY_TOPUP_TYPE .", ". intval($txnid) .", ". abs(intval($amount) ) .", '". $_SERVER['REMOTE_ADDR'] ."'
+				SELECT ". intval($id) .", ". Constants::iEMONEY_TOPUP_TYPE .", ". intval($txnid) .", ". abs(intval($amount) ) .", '". $_SERVER['REMOTE_ADDR'] ."',
 					(CASE
 					 WHEN mobile::int8 > 0 THEN mobile
 					 ELSE email
@@ -297,7 +297,7 @@ class EndUserAccount extends Home
 
 		$sql = "INSERT INTO EndUser.Transaction_Tbl
 					(accountid, typeid, txnid, amount, ip, address)
-				SELECT ". intval($id) .", ". Constants::iEMONEY_PURCHASE_TYPE .", ". intval($txnid) .", ". intval($amount) .", '". $_SERVER['REMOTE_ADDR'] ."'
+				SELECT ". intval($id) .", ". Constants::iEMONEY_PURCHASE_TYPE .", ". intval($txnid) .", ". intval($amount) .", '". $_SERVER['REMOTE_ADDR'] ."',
 					(CASE
 					 WHEN mobile::int8 > 0 THEN mobile
 					 ELSE email
@@ -322,7 +322,7 @@ class EndUserAccount extends Home
 	{
 		$sql = "INSERT INTO EndUser.Transaction_Tbl
 					(accountid, typeid, txnid, ip, address)
-				SELECT ". intval($id) .", ". Constants::iCARD_PURCHASE_TYPE .", ". intval($txnid) .", '". $_SERVER['REMOTE_ADDR'] ."'
+				SELECT ". intval($id) .", ". Constants::iCARD_PURCHASE_TYPE .", ". intval($txnid) .", '". $_SERVER['REMOTE_ADDR'] ."',
 					(CASE
 					 WHEN mobile::int8 > 0 THEN mobile
 					 ELSE email

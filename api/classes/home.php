@@ -293,9 +293,10 @@ class Home extends General
 					 WHEN EUT.amount IS NULL THEN Txn.amount
 					 ELSE abs(EUT.amount)
 					 END) AS amount,
-					EUT.fee, EUT.address,
+					Abs(EUT.fee) AS fee, EUT.address,
 					(CASE
 					 WHEN EUT.typeid = ". Constants::iEMONEY_PURCHASE_TYPE ." THEN Txn.ip
+					 WHEN EUT.typeid = ". Constants::iCARD_PURCHASE_TYPE ." THEN Txn.ip
 					 ELSE EUT.ip
 					 END) AS ip,
 					C.currency,

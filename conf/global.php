@@ -181,7 +181,7 @@ define("sSPRINT_MPOINT_DOMAIN", "m62.sprintpcs.com");
  * The constant must be set to nothing for device detection to work on Verizon via mBlox as
  * mBlox doesn't supply a URL to the device's User Agent Profile but only a User Agent.
  */
-define("sDEFAULT_UA_PROFILE", "http://wap.sonyericsson.com/UAprof/K790iR201.xml");
+define("sDEFAULT_UA_PROFILE", General::getBrowserType() === "web" ? "http://iemendo.cellpointmobile.com/data/mpoint-ajax.xml" : "http://wap.sonyericsson.com/UAprof/K790iR201.xml");
 
 /**
  * Determines what size Client Logos are scaled to.

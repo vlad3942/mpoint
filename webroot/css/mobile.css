@@ -173,6 +173,10 @@ div#logo, div#progress, div#mPoint, div#status, div#top-up div#close
 {
 	text-align: center;
 }
+div#logo
+{
+	margin-right: 5px;
+}
 
 div#status table tr td
 {

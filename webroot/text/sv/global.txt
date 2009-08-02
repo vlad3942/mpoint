@@ -752,11 +752,15 @@ msgstr @@@ Create Account @@@
 msgid @@@ Thank you for signing up for @@@
 msgstr @@@ Thank you for signing up for @@@
 
-#: /webroot/new/step3.php:47
+#: /webroot/new/step3.php:45
+msgid @@@ Top-Up Account @@@
+msgstr @@@ Top-Up Account @@@
+
+#: /webroot/new/step3.php:48
 msgid @@@ Create Account Guide - Web Step 3 @@@
 msgstr @@@ Create Account Guide - Web Step 3 @@@
 
-#: /webroot/new/step3.php:48
+#: /webroot/new/step3.php:49
 msgid @@@ Create Account Guide - Mobile Step 3 @@@
 msgstr @@@ Create Account Guide - Mobile Step 3 @@@
 

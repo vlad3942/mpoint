@@ -14,6 +14,9 @@
 	<div id="accountinfo">
 		<xsl:copy-of select="guide/mobile" />
 	</div>
+	<div>
+		<a href="{func:constLink('/shop/topup.php') }"><xsl:value-of select="labels/top-up" /></a>
+	</div>
 </xsl:template>
 
 </xsl:stylesheet>

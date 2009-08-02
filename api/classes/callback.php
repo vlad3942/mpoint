@@ -201,6 +201,16 @@ class Callback extends EndUserAccount
 		{
 			$sBody = str_replace("{ORDERID}", $this->_obj_TxnInfo->getOrderID(), $sBody);
 		}
+		else
+		{
+			$aLines = explode("\n", $sBody);
+			$sBody = "";
+			foreach ($aLines as $line)
+			{
+				if (stristr($line, "{ORDERID}") == false) { $sBody .= trim($line) ."\n"; }
+			}
+			$sBody = trim($sBody);
+		}
 		$sBody = str_replace("{PRICE}", General::formatAmount($this->_obj_TxnInfo->getClientConfig()->getCountryConfig(), $this->_obj_TxnInfo->getAmount() ), $sBody);
 		$sBody = str_replace("{CLIENT}", $this->_obj_TxnInfo->getClientConfig()->getName(), $sBody);
 

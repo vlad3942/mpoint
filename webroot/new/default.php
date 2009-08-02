@@ -26,7 +26,7 @@ if (General::getBrowserType() == "mobile")
 	// Initiate new user identification via Ericsson IPX's WAP Identification API 
 	if ($_SESSION['obj_Info']->getInfo("ipx-session-id") === false)
 	{
-		$obj_XML = $obj_mPoint->start("http://". $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF']);
+		$obj_XML = $obj_mPoint->start("http://". $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] ."?". session_name() ."=". sessionid() );
 		$_SESSION['obj_Info']->setInfo("ipx-session-id", (string) $obj_XML->sessionId);
 		
 		header("Location: ". $obj_XML->redirectURL);
