@@ -32,7 +32,7 @@
 					</tr>
 					<tr>
 						<td id="left-menu" rowspan="2"></td>
-						<td id="content" colspan="2"></td>
+						<td colspan="2"><div id="content" /></td>
 					</tr>
 					<tr>
 						<td width="100%"><div id="messages" /></td>

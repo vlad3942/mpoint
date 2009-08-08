@@ -258,11 +258,12 @@ td#provider
 	vertical-align: bottom;
 	padding-right: 30px;
 }
-td#content
+div#content
 {
 	width: 800px;
 	height: 365px;
 	vertical-align: top;
+	overflow: auto;
 }
 
 div#messages
