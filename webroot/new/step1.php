@@ -66,7 +66,7 @@ if (array_key_exists("obj_UA", $_SESSION) === true)
 		
 		<guide><?= $_OBJ_TXT->_("Create Account Guide - Step 1"); ?></guide>
 		
-		<?= $obj_mPoint->getCountries(); ?>
+		<?= $obj_mPoint->getCountryConfigs(); ?>
 
 		<?= $obj_mPoint->getSession(); ?>
 		

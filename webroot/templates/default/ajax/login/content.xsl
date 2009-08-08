@@ -15,11 +15,11 @@
 					</td>
 					<td>
 					<xsl:choose>
-					<xsl:when test="count(countries/item) &gt; 1">
+					<xsl:when test="count(country-configs/config) &gt; 1">
 						<select id="countryid" name="countryid" onchange="javascript:obj_Client.clear(this); obj_Client.sendInputData(document.getElementById('send-login'), this);" tabindex="1">
 							<option value="0"><xsl:value-of select="labels/select" /></option>
 							
-							<xsl:for-each select="countries/item">
+							<xsl:for-each select="country-configs/config">
 								<xsl:choose>
 								<xsl:when test="@id = //session/countryid">
 									<option value="{@id}" selected="selected"><xsl:value-of select="name" /></option>
@@ -32,8 +32,8 @@
 						</select>
 					</xsl:when>
 					<xsl:otherwise>
-						<xsl:value-of select="countries/item/name" />
-						<input type="hidden" id="countryid" name="countryid" value="{countries/item/@id}" />
+						<xsl:value-of select="country-configs/config/name" />
+						<input type="hidden" id="countryid" name="countryid" value="{country-configs/config/@id}" />
 					</xsl:otherwise>
 					</xsl:choose>
 					</td>
@@ -67,7 +67,7 @@
 	</div>
 	<div id="sign-up">
 		<h2>
-			<a href="#" onclick="javascript:obj_Client.changePage('/new/step1.php');" tabindex="6" title="sign-up">
+			<a href="#" onclick="javascript:selectMenu(document.getElementById('topmenu-sign-up'), 'current'); obj_Client.changePage('/new/step1.php');" tabindex="6" title="sign-up">
 				<xsl:value-of select="labels/sign-up" />
 			</a>
 		</h2>

@@ -172,17 +172,19 @@ class General
 	}
 
 	/**
-	 * Translaters an XML boolean (true/false string) into a PHP boolean.
+	 * Translates an XML boolean (true/false string) into a PHP boolean.
 	 *
 	 * @param string $b 	String with XML boolean string
-	 * @return boolean 		true if string is "true" or "yes", false if string is "false" or "no"
+	 * @return boolean 		true if string is "true", "yes" or "1", false if string is "false", "no" or "0"
 	 */
 	public function xml2bool($b)
 	{
 		if ($b == "true")  { $b = true; }
 		elseif ($b == "yes")  { $b = true; }
+		elseif (strval($b) == "1")  { $b = true; }
 		elseif ($b == "false")  { $b = false; }
 		elseif ($b == "no")  { $b = true; }
+		elseif (strval($b) == "0")  { $b = false; }
 
 		return $b;
 	}
@@ -645,65 +647,68 @@ class General
 	/**
 	 * Fetches all active countries from the database.
 	 * The countries are returned as an XML Document in the following format:
-	 * 	<countries>
-	 * 		<item id="{UNIQUE ID FOR THE COUNTRY}">
+	 * 	<country-configs>
+	 * 		<config id="{UNIQUE ID FOR THE COUNTRY}">
 	 *			<name>{NAME OF THE COUNTRY}</name>
 	 *			<currency>{CURRENCY USED IN THE COUNTRY}</currency>
-	 *			<maxbalance>{MAX BALANCE, IN COUNTRY'S SMALLEST CURRENCY, THAT A PREPAID ACCOUNT MAY CONTAIN}</maxbalance>
-	 *			<mintransfer>{MIN AMOUNT WHICH MAY BE TRANSFERRED BETWEEN ACCOUNTS IN COUNTRY'S SMALLEST CURRENCY}</mintransfer>
-	 *			<minmobile>{MIN VALUE FOR A VALID MOBILE NUMBER (MSISDN) IN THE COUNTRY}</minmobile>
-	 *			<maxmobile>{MAX VALUE FOR A VALID MOBILE NUMBER (MSISDN) IN THE COUNTRY}</maxmobile>
+	 *			<max-balance>{MAX BALANCE, IN COUNTRY'S SMALLEST CURRENCY, THAT A PREPAID ACCOUNT MAY CONTAIN}</max-balance>
+	 *			<min-transfer>{MIN AMOUNT WHICH MAY BE TRANSFERRED BETWEEN ACCOUNTS IN COUNTRY'S SMALLEST CURRENCY}</min-transfer>
+	 *			<min-mobile>{MIN VALUE FOR A VALID MOBILE NUMBER (MSISDN) IN THE COUNTRY}</min-mobile>
+	 *			<max-mobile>{MAX VALUE FOR A VALID MOBILE NUMBER (MSISDN) IN THE COUNTRY}</max-mobile>
 	 *			<channel>{CHANNEL USED FOR SENDING MESSAGE'S TO AN END-USER'S MOBILE PHONE}</channel>
-	 *			<priceformat>{PRICE FORMAT USED IN THE COUNTRY, i.e. $XX.XX for USA and XX,XXkr FOR DENMARK}</priceformat>
+	 *			<price-format>{PRICE FORMAT USED IN THE COUNTRY, i.e. $XX.XX for USA and XX,XXkr FOR DENMARK}</price-format>
 	 *			<decimals>{NUMBER OF DECIMALS USED WHEN DISPLAYING PRICES}</decimals>
-	 *			<addresslookup>{BOOLEAN FLAG INDICATING WHETHER ADDRESS LOOKUP BASED ON A MOBILE NUMBER IS AVAILABLE IN THE COUNTRY}</addresslookup>
-	 *			<doubleoptin>{BOOLEAN FLAG INDICATING WHETHER THE MOBILE NETWORK OPERATOR'S IN THE COUNTRY REQUIRE DOUBLE OPT-IN WHEN CHARGING VIA PREMIUM SMS}</doubleoptin>
-	 *		</item>
-	 *		<item id="{UNIQUE ID FOR THE COUNTRY}">
+	 *			<address-lookup>{BOOLEAN FLAG INDICATING WHETHER ADDRESS LOOKUP BASED ON A MOBILE NUMBER IS AVAILABLE IN THE COUNTRY}</address-lookup>
+	 *			<double-opt-in>{BOOLEAN FLAG INDICATING WHETHER THE MOBILE NETWORK OPERATOR'S IN THE COUNTRY REQUIRE DOUBLE OPT-IN WHEN CHARGING VIA PREMIUM SMS}</double-opt-in>
+	 *			<add-card-amount>{AMOUNT THAT THE END-USER'S ACCOUNT IS TOPPED UP WITH WHEN CARD DETAILS FOR A NEW CARD IS STORED}</add-card-amount>
+	 *		</config>
+	 *		<config id="{UNIQUE ID FOR THE COUNTRY}">
 	 *			<name>{NAME OF THE COUNTRY}</name>
 	 *			<currency>{CURRENCY USED IN THE COUNTRY}</currency>
-	 *			<maxbalance>{MAX BALANCE, IN COUNTRY'S SMALLEST CURRENCY, THAT A PREPAID ACCOUNT MAY CONTAIN}</maxbalance>
-	 *			<mintransfer>{MIN AMOUNT WHICH MAY BE TRANSFERRED BETWEEN ACCOUNTS IN COUNTRY'S SMALLEST CURRENCY}</mintransfer>
-	 *			<minmobile>{MIN VALUE FOR A VALID MOBILE NUMBER (MSISDN) IN THE COUNTRY}</minmobile>
-	 *			<maxmobile>{MAX VALUE FOR A VALID MOBILE NUMBER (MSISDN) IN THE COUNTRY}</maxmobile>
+	 *			<max-balance>{MAX BALANCE, IN COUNTRY'S SMALLEST CURRENCY, THAT A PREPAID ACCOUNT MAY CONTAIN}</max-balance>
+	 *			<min-transfer>{MIN AMOUNT WHICH MAY BE TRANSFERRED BETWEEN ACCOUNTS IN COUNTRY'S SMALLEST CURRENCY}</min-transfer>
+	 *			<min-mobile>{MIN VALUE FOR A VALID MOBILE NUMBER (MSISDN) IN THE COUNTRY}</min-mobile>
+	 *			<max-mobile>{MAX VALUE FOR A VALID MOBILE NUMBER (MSISDN) IN THE COUNTRY}</max-mobile>
 	 *			<channel>{CHANNEL USED FOR SENDING MESSAGE'S TO AN END-USER'S MOBILE PHONE}</channel>
-	 *			<priceformat>{PRICE FORMAT USED IN THE COUNTRY, i.e. $XX.XX for USA and XX,XXkr FOR DENMARK}</priceformat>
+	 *			<price-format>{PRICE FORMAT USED IN THE COUNTRY, i.e. $XX.XX for USA and XX,XXkr FOR DENMARK}</price-format>
 	 *			<decimals>{NUMBER OF DECIMALS USED WHEN DISPLAYING PRICES}</decimals>
-	 *			<addresslookup>{BOOLEAN FLAG INDICATING WHETHER ADDRESS LOOKUP BASED ON A MOBILE NUMBER IS AVAILABLE IN THE COUNTRY}</addresslookup>
-	 *			<doubleoptin>{BOOLEAN FLAG INDICATING WHETHER THE MOBILE NETWORK OPERATOR'S IN THE COUNTRY REQUIRE DOUBLE OPT-IN WHEN CHARGING VIA PREMIUM SMS}</doubleoptin>
-	 *		</item>
+	 *			<address-lookup>{BOOLEAN FLAG INDICATING WHETHER ADDRESS LOOKUP BASED ON A MOBILE NUMBER IS AVAILABLE IN THE COUNTRY}</address-lookup>
+	 *			<double-opt-in>{BOOLEAN FLAG INDICATING WHETHER THE MOBILE NETWORK OPERATOR'S IN THE COUNTRY REQUIRE DOUBLE OPT-IN WHEN CHARGING VIA PREMIUM SMS}</double-opt-in>
+	 *			<add-card-amount>{AMOUNT THAT THE END-USER'S ACCOUNT IS TOPPED UP WITH WHEN CARD DETAILS FOR A NEW CARD IS STORED}</add-card-amount>
+	 *		</config>
 	 *		...
-	 * 	</countries>
+	 * 	</country-configs>
 	 *
 	 * @return 	string
 	 */
-	public function getCountries()
+	public function getCountryConfigs()
 	{
-		$sql = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmob, maxmob, channel, priceformat, decimals, als, doi
+		$sql = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmob, maxmob, channel, priceformat, decimals, als, doi, aca
 				FROM System.Country_Tbl
 				WHERE enabled = true
 				ORDER BY name ASC";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 
-		$xml = '<countries>';
+		$xml = '<country-configs>';
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
-			$xml .= '<item id="'. $RS["ID"] .'">';
+			$xml .= '<config id="'. $RS["ID"] .'">';
 			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';
 			$xml .= '<currency symbol="'. $RS["SYMBOL"] .'">'. $RS["CURRENCY"] .'</currency>';
-			$xml .= '<maxbalance>'. $RS["MAXBALANCE"] .'</maxbalance>';
-			$xml .= '<mintransfer>'. $RS["MINTRANSFER"] .'</mintransfer>';
-			$xml .= '<minmobile>'. $RS["MINMOB"] .'</minmobile>';
-			$xml .= '<maxmobile>'. $RS["MAXMOB"] .'</maxmobile>';
+			$xml .= '<max-balance>'. $RS["MAXBALANCE"] .'</max-balance>';
+			$xml .= '<min-transfer>'. $RS["MINTRANSFER"] .'</min-transfer>';
+			$xml .= '<min-mobile>'. $RS["MINMOB"] .'</min-mobile>';
+			$xml .= '<max-mobile>'. $RS["MAXMOB"] .'</max-mobile>';
 			$xml .= '<channel>'. $RS["CHANNEL"] .'</channel>';
-			$xml .= '<priceformat>'. $RS["PRICEFORMAT"] .'</priceformat>';
+			$xml .= '<price-format>'. $RS["PRICEFORMAT"] .'</price-format>';
 			$xml .= '<decimals>'. $RS["DECIMALS"] .'</decimals>';
-			$xml .= '<addresslookup>'. General::bool2xml($RS["ALS"]) .'</addresslookup>';
-			$xml .= '<doubleoptin>'. General::bool2xml($RS["DOI"]) .'</doubleoptin>';
-			$xml .= '</item>';
+			$xml .= '<address-lookup>'. General::bool2xml($RS["ALS"]) .'</address-lookup>';
+			$xml .= '<double-opt-in>'. General::bool2xml($RS["DOI"]) .'</double-opt-in>';
+			$xml .= '<add-card-amount>'. $RS["ACA"] .'</add-card-amount>';
+			$xml .= '</config>';
 		}
-		$xml .= '</countries>';
+		$xml .= '</country-configs>';
 
 		return $xml;
 	}

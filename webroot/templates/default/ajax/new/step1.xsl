@@ -6,8 +6,8 @@
 	<script type="text/javascript">
 		aCountries = new Array();
 		 
-		<xsl:for-each select="countries/item">
-			aCountries[<xsl:value-of select="@id" />] = <xsl:value-of select="string-length(maxmobile)" />
+		<xsl:for-each select="country-configs/config">
+			aCountries[<xsl:value-of select="@id" />] = <xsl:value-of select="string-length(max-mobile)" />
 		</xsl:for-each>
 	</script>
 	
@@ -37,11 +37,11 @@
 				</td>
 				<td>
 				<xsl:choose>
-				<xsl:when test="count(//countries/item) &gt; 1">
+				<xsl:when test="count(//country-configs/config) &gt; 1">
 					<select id="countryid" name="countryid" onchange="javascript:document.getElementById('mobile').maxLength=aCountries[this.value]; obj_Client.clear(this); obj_Client.sendInputData(document.getElementById('new-account'), this);" tabindex="1">
 						<option value="0"><xsl:value-of select="select" /></option>
 						
-						<xsl:for-each select="//countries/item">
+						<xsl:for-each select="//country-configs/config">
 							<xsl:choose>
 							<xsl:when test="@id = //session/countryid">
 								<option value="{@id}" selected="selected"><xsl:value-of select="name" /></option>
@@ -54,8 +54,8 @@
 					</select>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:value-of select="//countries/item/name" />
-					<input type="hidden" id="countryid" name="countryid" value="{//countries/item/@id}" />
+					<xsl:value-of select="//country-configs/config/name" />
+					<input type="hidden" id="countryid" name="countryid" value="{//country-configs/config/@id}" />
 				</xsl:otherwise>
 				</xsl:choose>
 				</td>

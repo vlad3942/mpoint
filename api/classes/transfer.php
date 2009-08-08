@@ -119,32 +119,24 @@ class Transfer extends Home
 	 */
 	public function convert(CountryConfig &$oCC, $amount)
 	{
-		// Get Exchange rates from the Central European Bank
-		$obj_XML = simplexml_load_file("http://www.ecb.int/stats/eurofxref/eurofxref-daily.xml");
+		// Get exchange rates 
+		$obj_XML = simplexml_load_string($this->getExchangeRates() );
 		
-		// Error: Unable to fetch conversion rates from the European Central Bank
+		// Error: Unable to fetch exchange rates
 		if ($obj_XML === false)
 		{
 			$amount = -1;
 		}
 		else
 		{
-			// Register namespaces for use with XPath
-			$aNamespaces = $obj_XML->getNamespaces(true);
-			foreach ($aNamespaces as $prefix => $url)
-			{
-				if (empty($prefix) == true) { $prefix = "default"; }
-				$obj_XML->registerXPathNamespace($prefix, $url);  
-			}
-			
 			// Convert from sender's local currency into Euro
 			if ($this->getCountryConfig()->getCurrency() != "EUR")
 			{
-				$obj_Elem = $obj_XML->xpath('//default:Cube/default:Cube/default:Cube[@currency = "'. $this->getCountryConfig()->getCurrency() .'"]');
+				$obj_Elem = $obj_XML->xpath('/exchangerates/rate[@currency = "'. $this->getCountryConfig()->getCurrency() .'"]');
 				if (is_array($obj_Elem) === true && count($obj_Elem) > 0)
 				{
 					$obj_Elem = $obj_Elem[0];
-					$amount = $amount / (float) $obj_Elem["rate"];
+					$amount = $amount * (float) $obj_Elem;
 				}
 				// Error: Unable to convert from source currency into Euro
 				else { $amount = -2; }
@@ -152,11 +144,11 @@ class Transfer extends Home
 			// Convert from Euro into recipient's local currency
 			if ($oCC->getCurrency() != "EUR")
 			{
-				$obj_Elem = $obj_XML->xpath('//default:Cube/default:Cube/default:Cube[@currency = "'. $oCC->getCurrency() .'"]');
+				$obj_Elem = $obj_XML->xpath('/exchangerates/rate[@currency = "'. $oCC->getCurrency() .'"]');
 				if (is_array($obj_Elem) === true && count($obj_Elem) > 0)
 				{
 					$obj_Elem = $obj_Elem[0];
-					$amount = $amount * (float) $obj_Elem["rate"];
+					$amount = $amount * (float) $obj_Elem;
 				}
 				// Error: Unable to convert from Euro into target currency
 				else { $amount = -3; }

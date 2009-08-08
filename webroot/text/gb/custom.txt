@@ -6,7 +6,7 @@ msgstr @@@ Invalid Client ID @@@
 msgid @@@ Status - 13 @@@
 msgstr @@@ Unknown Client ID @@@
 msgid @@@ Status - 14 @@@
-msgstr @@@ Client Disabled @@@
+msgstr @@@ Callback URL is malformed @@@
 msgid @@@ Status - 21 @@@
 msgstr @@@ Undefined Account ID @@@
 msgid @@@ Status - 22 @@@
@@ -109,8 +109,6 @@ msgid @@@ Status - 112 @@@
 msgstr @@@ Callback URL is too short, min length is 11 characters @@@
 msgid @@@ Status - 113 @@@
 msgstr @@@ Callback URL is too long, max length is 255 characters @@@
-msgid @@@ Status - 14 @@@
-msgstr @@@ Callback URL is malformed @@@
 msgid @@@ Status - 115 @@@
 msgstr @@@ Callback URL is Invalid, no Protocol specified @@@
 msgid @@@ Status - 116 @@@
@@ -137,7 +135,18 @@ msgid @@@ Status - 132 @@@
 msgstr @@@ Invalid Language, language contains invalid characters which are NOT a-z or _ @@@
 msgid @@@ Status - 133 @@@
 msgstr @@@ Language not supported @@@
-
+msgid @@@ Status - 141 @@@
+msgstr @@@ Undefined E-Mail Address @@@
+msgid @@@ Status - 142 @@@
+msgstr @@@ E-Mail address is too short, min length is {AUTH MIN LENGTH} @@@
+msgid @@@ Status - 143 @@@
+msgstr @@@ E-Mail address contains invalid characters, an e-mail may only contain the following characters: 0-9 a-z A-Z æ ø å Æ Ø Å ä ö Ä Ö _ . @ and - @@@
+msgid @@@ Status - 144 @@@
+msgstr @@@  E-Mail has an invalid form, an e-mail should have the form: john.doe@hotmail.com @@@
+msgid @@@ Status - 151 @@@
+msgstr @@@ Undefined Store Card Flag @@@
+msgid @@@ Status - 152 @@@
+msgstr @@@ Invalid Store Card Flag @@@
 msgid @@@ Status - 1000 @@@
 msgstr @@@ Payment Transaction has been successfully initialised @@@
 msgid @@@ Status - 1001 @@@
@@ -156,7 +165,6 @@ msgid @@@ Status - 1013 @@@
 msgstr @@@ Internal Communication Error - Unable to connect to GoMobile. Please contact support@cellpointmobile.com @@@
 msgid @@@ Status - 1021 @@@
 msgstr @@@ Configuration Error - No Shop Configuration found for Client @@@
-
 msgid @@@ E-Mail - 11 @@@
 msgstr @@@ No E-Mail Address has been entered, please enter an e-mail address and try again? @@@
 msgid @@@ E-Mail - 12 @@@
@@ -169,19 +177,16 @@ msgid @@@ E-Mail - 15 @@@
 msgstr @@@ E-Mail has an invalid format, a valid e-mail address must be in the format of: donald.duck@cellpointmobile.com @@@
 msgid @@@ E-Mail - 91 @@@
 msgstr @@@ An error occurred while sending your E-Mail Receipt, please try again? @@@
-
 msgid @@@ Accept - 100 @@@
 msgstr @@@ Your receipt has been sent @@@
 msgid @@@ Accept - 101 @@@
 msgstr @@@ Your account has been successfully created @@@
-
 msgid @@@ Products - 11 @@@
 msgstr @@@ You haven't added anything to your basket. Click "Add to Basket" to add a product. @@@
 msgid @@@ Products - 12 @@@
 msgstr @@@ You haven't added anything to your basket. Click "Add to Basket" to add a product. @@@
 msgid @@@ Products - 100 @@@
 msgstr @@@ The product has been added to your shopping basket. @@@
-
 msgid @@@ Delivery - 10 @@@
 msgstr @@@ We couldn't find any address using your no: {MOBILE} @@@
 msgid @@@ Delivery - 11 @@@
@@ -246,13 +251,10 @@ msgid @@@ Delivery - 76 @@@
 msgstr @@@ The entered Day is in the Past @@@
 msgid @@@ Delivery - 77 @@@
 msgstr @@@ The entered Delivery Date is in the Past @@@
-
 msgid @@@ Overview - 11 @@@
 msgstr @@@ Please accept the Terms & Conditions to continue @@@
-
 msgid @@@ Select Payment Method - 99 @@@
 msgstr @@@ We're sorry but we could not complete the payment through your selected payment method. Please select another one to try again? @@@
-
 msgid @@@ CPM Payment - 1 @@@
 msgstr @@@ Your account has been topped up and the original payment has been resumed @@@
 msgid @@@ CPM Payment - 11 @@@
@@ -287,10 +289,8 @@ msgid @@@ CPM Payment - 51 @@@
 msgstr @@@ The selected card was rejected, please select another card? @@@
 msgid @@@ CPM Payment - 59 @@@
 msgstr @@@ Internal Error - Acquirer not available, please select another card? @@@
-
 msgid @@@ Shop Top-Up - 1 @@@
 msgstr @@@ Your current payment has been paused and will automatically be resumed once you've topped up your account @@@
-
 msgid @@@ Create Account - 1 @@@
 msgstr @@@ Unable to automatically determine mobile number @@@
 msgid @@@ Create Account - 11 @@@
@@ -361,7 +361,6 @@ msgid @@@ Create Account - 101 @@@
 msgstr @@@ Your password has been saved and your account created @@@
 msgid @@@ Create Account - 102 @@@
 msgstr @@@ An Activation code has been sent to your mobile number via SMS @@@
-
 msgid @@@ Activate E-Mail - 11 @@@
 msgstr @@@ Undefined Account ID @@@
 msgid @@@ Activate E-Mail - 12 @@@
@@ -426,7 +425,7 @@ msgstr @@@ The entered One Time Password is too short, max value is 999.999 @@@
 msgid @@@ otp - code: 100 @@@
 msgstr @@@  @@@
 
-#: /webroot/login/sys/auth.php:98
+#: /webroot/login/sys/auth.php:94
 msgid @@@ countryid - code: 1 @@@
 msgstr @@@ Please select a country from the dropdown? @@@
 msgid @@@ username - code: 1 @@@
@@ -448,7 +447,7 @@ msgstr @@@ E-Mail address contains invalid characters, an e-mail address can onl
 msgid @@@ username - code: 15 @@@
 msgstr @@@ E-Mail address has an invalid format, an e-mail address must have the following format: user@domain.topdomain, i.e. john.doe@hotmail.com or john_joe@mail.hot.com @@@
 
-#: /webroot/login/sys/auth.php:130
+#: /webroot/login/sys/auth.php:122
 msgid @@@ countryid - code: 1 @@@
 msgstr @@@ Please select a country from the dropdown? @@@
 msgid @@@ countryid - code: 2 @@@
@@ -494,11 +493,11 @@ msgstr @@@ The entered One Time Password is too short, min value is 100.000 @@@
 msgid @@@ otp - code: 3 @@@
 msgstr @@@ The entered One Time Password is too short, max value is 999.999 @@@
 
-#: /webroot/login/sys/auth.php:160
+#: /webroot/login/sys/auth.php:152
 msgid @@@ auth - code: 100 @@@
 msgstr @@@ Login successful, please wait while the internal cache is being updated @@@
 
-#: /webroot/login/sys/auth.php:181
+#: /webroot/login/sys/auth.php:173
 msgid @@@ otp - code: 4 @@@
 msgstr @@@ The entered One Time Password could not be not found for your account @@@
 msgid @@@ otp - code: 5 @@@
@@ -512,19 +511,19 @@ msgstr @@@ Internal Error - One Time Password could not be used, please try agai
 msgid @@@ otp - code: 100 @@@
 msgstr @@@  @@@
 
-#: /webroot/login/sys/auth.php:194
+#: /webroot/login/sys/auth.php:186
 msgid @@@ auth - code: 100 @@@
 msgstr @@@ A One Time Password has been sent to your mobile number. @@@
 
-#: /webroot/login/sys/auth.php:208
+#: /webroot/login/sys/auth.php:200
 msgid @@@ auth - code: 92 @@@
 msgstr @@@ Internal Error - One Time Password could not be sent to your mobile number, please try again? @@@
 
-#: /webroot/login/sys/auth.php:222
+#: /webroot/login/sys/auth.php:214
 msgid @@@ auth - code: 102 @@@
 msgstr @@@ You haven't registered your mobile number. Please go to "My Account" and update your profile? @@@
 
-#: /webroot/login/sys/auth.php:234
+#: /webroot/login/sys/auth.php:226
 msgid @@@ auth - code: 91 @@@
 msgstr @@@ Mobile Number / E-Mail address and Password doesn't match @@@
 
@@ -808,7 +807,7 @@ msgstr @@@ The entered One Time Password is too short, max value is 999.999 @@@
 msgid @@@ code - code: 100 @@@
 msgstr @@@  @@@
 
-#: /webroot/home/sys/make_transfer.php:130
+#: /webroot/home/sys/make_transfer.php:126
 msgid @@@ recipient - code: 1 @@@
 msgstr @@@ Please enter the recipient's mobile number or E-Mail address? @@@
 msgid @@@ recipient - code: 2 @@@
@@ -836,7 +835,7 @@ msgstr @@@ The entered amount is too great, max amount is {ACCOUNT BALANCE} @@@
 msgid @@@ amount - code: 10 @@@
 msgstr @@@  @@@
 
-#: /webroot/home/sys/make_transfer.php:177
+#: /webroot/home/sys/make_transfer.php:169
 msgid @@@ countryid - code: 1 @@@
 msgstr @@@ Please select a country from the dropdown? @@@
 msgid @@@ countryid - code: 2 @@@
@@ -892,7 +891,7 @@ msgstr @@@ The entered One Time Password is too short, max value is 999.999 @@@
 msgid @@@ code - code: 100 @@@
 msgstr @@@  @@@
 
-#: /webroot/home/sys/make_transfer.php:272
+#: /webroot/home/sys/make_transfer.php:264
 msgid @@@ transfer - code: 100 @@@
 msgstr @@@ Transfer completed @@@
 msgid @@@ transfer - code: 101 @@@
@@ -900,11 +899,11 @@ msgstr @@@ Transfer completed - recipient notified via SMS @@@
 msgid @@@ transfer - code: 102 @@@
 msgstr @@@ Transfer completed - recipient notified via E-Mail @@@
 
-#: /webroot/home/sys/make_transfer.php:299
+#: /webroot/home/sys/make_transfer.php:291
 msgid @@@ transfer - code: 91 @@@
 msgstr @@@ Internal Error - Unable to make transfer. Please try again? @@@
 
-#: /webroot/home/sys/make_transfer.php:307
+#: /webroot/home/sys/make_transfer.php:299
 msgid @@@ account - code: 1 @@@
 msgstr @@@ Internal Error: Transfer aborted - Unable to automatically create new account for recipient. @@@
 msgid @@@ account - code: 2 @@@
@@ -912,7 +911,7 @@ msgstr @@@ Internal Error: Transfer aborted  - Unable to notify recipient of the
 msgid @@@ account - code: 3 @@@
 msgstr @@@ Internal Error: Transfer aborted  - Unable to notify recipient of the awaiting transfer. @@@
 
-#: /webroot/home/sys/make_transfer.php:322
+#: /webroot/home/sys/make_transfer.php:314
 msgid @@@ password - code: 4 @@@
 msgstr @@@ Authentication failed - Password doesn't match for the account, please try again? @@@
 msgid @@@ code - code: 4 @@@
@@ -928,17 +927,17 @@ msgstr @@@ Internal Error - One Time Password could not be used, please try agai
 msgid @@@ code - code: 100 @@@
 msgstr @@@  @@@
 
-#: /webroot/home/sys/make_transfer.php:338
+#: /webroot/home/sys/make_transfer.php:330
 msgid @@@ transfer - code: 199 @@@
 msgstr @@@ Please enter your password to confirm your transfer? @@@
 msgid @@@ transfer - code: 200 @@@
 msgstr @@@ A Confirmation Code has been sent to your mobile number. @@@
 
-#: /webroot/home/sys/make_transfer.php:352
+#: /webroot/home/sys/make_transfer.php:344
 msgid @@@ transfer - code: 92 @@@
 msgstr @@@ Internal Error - Confirmation Code could not be sent to your mobile number, please try again? @@@
 
-#: /webroot/home/sys/make_transfer.php:357
+#: /webroot/home/sys/make_transfer.php:349
 msgid @@@ amount - code: 4 @@@
 msgstr @@@ Internal Error - Unable to retrieve currency conversion rates from the Central European Bank. Please try again later? @@@
 msgid @@@ amount - code: 5 @@@
@@ -947,6 +946,32 @@ msgid @@@ amount - code: 6 @@@
 msgstr @@@ Internal Error - Unable to make currency conversion. Please try again later? @@@
 msgid @@@ amount - code: 7 @@@
 msgstr @@@ The recipient's balance will exceed the maximum allowed amount. Please transfer a smaller amount? @@@
+
+#: /webroot/home/sys/manage_card.php:58
+msgid @@@ cardid - code: 1 @@@
+msgstr @@@ Please select one of your stored cards? @@@
+msgid @@@ cardid - code: 2 @@@
+msgstr @@@ The selected card is invalid, please try again? @@@
+msgid @@@ cardid - code: 3 @@@
+msgstr @@@ The selected card couldn't be found, please try again? @@@
+msgid @@@ cardid - code: 4 @@@
+msgstr @@@ The selected card is inactive, please try again? @@@
+
+#: /webroot/home/sys/manage_card.php:88
+msgid @@@ manage card - code: 101 @@@
+msgstr @@@ The selected card has been deleted @@@
+msgid @@@ manage card - code: 102 @@@
+msgstr @@@ The selected card has been set as the preferred @@@
+
+#: /webroot/home/sys/manage_card.php:104
+msgid @@@ manage card - code: 91 @@@
+msgstr @@@ Internal Error - Command Unknown, please try again? @@@
+msgid @@@ manage card - code: 92 @@@
+msgstr @@@ Internal Error - Unable to delete selected card, please try again? @@@
+msgid @@@ manage card - code: 93 @@@
+msgstr @@@ Internal Error - Unable to change preferred card, please try again? @@@
+msgid @@@ manage card - code: 94 @@@
+msgstr @@@ Internal Error - Unable to change preferred card, please try again? @@@
 
 #: /webroot/new/sys/create_account.php:76
 msgid @@@ countryid - code: 1 @@@
@@ -1006,7 +1031,7 @@ msgstr @@@ The entered transfer code could not be found, please check the code a
 msgid @@@ checksum - code: 3 @@@
 msgstr @@@ The entered transfer code has been disabled, please contact support@cellpointmobile.com to get assistance with creating your account? @@@
 
-#: /webroot/new/sys/create_account.php:142
+#: /webroot/new/sys/create_account.php:138
 msgid @@@ countryid - code: 1 @@@
 msgstr @@@ Please select a country from the dropdown? @@@
 msgid @@@ mobile - code: 1 @@@
@@ -1038,7 +1063,7 @@ msgstr @@@ The entered E-Mail address is already registered to another user acco
 msgid @@@ email - code: 10 @@@
 msgstr @@@  @@@
 
-#: /webroot/new/sys/create_account.php:216
+#: /webroot/new/sys/create_account.php:208
 msgid @@@ countryid - code: 1 @@@
 msgstr @@@ Please select a country from the dropdown? @@@
 msgid @@@ countryid - code: 2 @@@
@@ -1146,11 +1171,11 @@ msgstr @@@ Please provide your mobile number or e-mail address to verify the tra
 msgid @@@ checksum - code: 10 @@@
 msgstr @@@  @@@
 
-#: /webroot/new/sys/create_account.php:257
+#: /webroot/new/sys/create_account.php:249
 msgid @@@ save - code: 100 @@@
 msgstr @@@ Account created @@@
 
-#: /webroot/new/sys/create_account.php:272
+#: /webroot/new/sys/create_account.php:264
 msgid @@@ save - code: 93 @@@
 msgstr @@@ Internal Error - Mobile activation code could not be sent, please try again? @@@
 msgid @@@ save - code: 94 @@@
@@ -1158,11 +1183,11 @@ msgstr @@@ Internal Error - E-Mail verification link could not be sent, please t
 msgid @@@ save - code: 95 @@@
 msgstr @@@ Internal Error - Mobile activation code and E-Mail verification link could not be sent, please try again? @@@
 
-#: /webroot/new/sys/create_account.php:279
+#: /webroot/new/sys/create_account.php:271
 msgid @@@ save - code: 92 @@@
 msgstr @@@ Internal Error - Unable to save account information, please try again? @@@
 
-#: /webroot/new/sys/create_account.php:286
+#: /webroot/new/sys/create_account.php:278
 msgid @@@ save - code: 91 @@@
 msgstr @@@ Internal Error - Unable to create new account, please try again? @@@
 
@@ -1203,3 +1228,4 @@ msgstr @@@ Your new mobile number has been saved @@@
 #: /webroot/new/sys/save_mobile.php:107
 msgid @@@ save - code: 91 @@@
 msgstr @@@ Internal Error - Mobile number could not be saved, please try again? @@@
+

@@ -36,7 +36,7 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/ajax/log
 			<sign-up><?= $_OBJ_TXT->_("Don't have an account yet? Sign up now!"); ?></sign-up>
 		</labels>
 
-		<?= $obj_mPoint->getCountries(); ?>
+		<?= $obj_mPoint->getCountryConfigs(); ?>
 
 		<?= $obj_mPoint->getSession(); ?>
 	</content>

@@ -249,5 +249,81 @@ class MyAccount extends Home
 		
 		return $code;
 	}
+	
+	/**
+	 * Deletes a stored card from an End-User Account.
+	 * 
+	 * @param 	integer $id			Unqiue ID of the End-User's Account
+	 * @param 	integer $cardid		Unique ID of the Stored Card that should be deleted
+	 * @return 	boolean
+	 */
+	public function delStoredCard($id, $cardid)
+	{
+		$sql = "DELETE FROM EndUser.Card_Tbl
+				WHERE accountid = ". intval($id) ." AND id = ". intval($cardid);
+//		echo $sql ."\n";
+		
+		return is_resource($this->getDBConn()->query($sql) );
+	}
+	
+	/**
+	 * Sets a new preferred card for a specific client.
+	 * The method will reset the "preferred" flag for all other cards the End-User has stored for the Client
+	 * to ensure that there's only one preferred card pr Client.
+	 * The method will return the following status codes:
+	 * 	 1. Unable to reset "preferred" flags for all the cards the End-User has stored for the Client
+	 * 	 2. Unable to set specified card as preferred
+	 * 	10. Success, preferred card has been changed
+	 * 
+	 * @param 	integer $id			Unqiue ID of the End-User's Account
+	 * @param 	integer $cardid		Unique ID of the Stored Card that should be set as preferred
+	 * @return 	integer
+	 */
+	public function setPreferredCard($id, $cardid)
+	{
+		// Start database transaction
+		$this->getDBConn()->query("BEGIN");
+		
+		$sql = "UPDATE EndUser.Card_Tbl
+				SET preferred = false
+				WHERE clientid = (SELECT clientid
+								  FROM EndUser.Card_Tbl
+								  WHERE id = ". intval($cardid) .")
+					AND accountid = ". intval($id);
+//		echo $sql ."\n";
+		
+		// Reset "preferred" flag for all the cards the End-User has stored for the Client
+		if (is_resource($this->getDBConn()->query($sql) ) === true)
+		{
+			$sql = "UPDATE EndUser.Card_Tbl
+					SET preferred = true
+					WHERE accountid = ". intval($id) ." AND id = ". intval($cardid);
+//			echo $sql ."\n";
+			// Set specified as preferred
+			if (is_resource($this->getDBConn()->query($sql) ) === true)
+			{
+				// Commit database transaction
+				$this->getDBConn()->query("COMMIT");
+				
+				$code = 10;
+			}
+			else
+			{
+				// Abort database transaction and rollback to previous state
+				$this->getDBConn()->query("ROLLBACK");
+				
+				$code = 2;
+			}
+		}
+		else
+		{
+			// Abort database transaction and rollback to previous state
+			$this->getDBConn()->query("ROLLBACK");
+				
+			$code = 1;
+		}
+		
+		return $code; 
+	}
 }
 ?>

@@ -14,21 +14,90 @@
 				</div>
 			</form>
 		</span>
+		
 		<span id="stored-card-data">
-			<br />
 			<table cellpadding="0" cellspacing="0">
-				<!-- Show Preferred Card -->
+			<xsl:choose>
+			<xsl:when test="count(stored-cards/card) = 0">
+				<td colspan="2" class="info"><xsl:value-of select="help" /></td> 
+			</xsl:when>
+			<xsl:otherwise>
 				<tr>
-					<td colspan="4" class="label"><xsl:value-of select="labels/preferred" /></td>
+					<td id="clients">
+					<select onchange="javascript:document.getElementById('card-data').innerHTML = document.getElementById('stored-card-data-'+ this.value).innerHTML;">
+					<xsl:for-each select="stored-cards/card">
+						<xsl:variable name="current" select="position()" />
+						
+						<xsl:if test="$current = 1 or //stored-cards/card[position() = $current - 1]/client/@id != client/@id">
+							<xsl:apply-templates select="client" />
+						</xsl:if>
+					</xsl:for-each>
+					</select>
+					</td>
 				</tr>
-				<xsl:apply-templates select="stored-cards/card[@preferred = 'true']" />
-				<!-- List Other Cards -->
 				<tr>
-					<td colspan="4" class="label"><xsl:value-of select="labels/other" /></td>
+					<td>
+						<div id="card-data">
+							<form id="edit-card" action="/home/sys/manage_card.php" method="post">
+								<div>
+									<input type="hidden" id="command" name="command" value="" />
+								</div>
+								<table cellpadding="0" cellspacing="0">
+								<!-- Show Preferred Card -->
+								<tr>
+									<td colspan="4" class="label"><xsl:value-of select="labels/preferred" /></td>
+								</tr>
+								<xsl:apply-templates select="stored-cards/card[//stored-cards/card[position() = 1]/client/@id = client/@id and @preferred = 'true']" />
+								<!-- List Other Cards -->
+								<tr>
+									<td colspan="4" class="label"><xsl:value-of select="labels/other" /></td>
+								</tr>
+								<xsl:apply-templates select="stored-cards/card[//stored-cards/card[position() = 1]/client/@id = client/@id and @preferred = 'false']" />
+								</table>
+							</form>
+						</div>
+					</td>
 				</tr>
-				<xsl:apply-templates select="stored-cards/card[@preferred = 'false']" />
+			</xsl:otherwise>
+			</xsl:choose>
+			<tr>
+				<td colspan="2">
+					<br />
+					<button type="button" onclick="javascript:obj_Window.openWindow('new-card', 'my-account', '/home/new_card.php', 'new-card', new Array(obj_Client, obj_Client.changePage) );"><xsl:value-of select="commands/new" /></button>
+					<xsl:if test="count(stored-cards/card) &gt; 0">
+						<button type="button" class="button" onclick="javascript:document.getElementById('command').value=this.value; obj_Client.sendFormData(document.getElementById('edit-card') );" value="preferred"><xsl:value-of select="commands/preferred" /></button>
+						<button type="button" class="button" onclick="javascript:document.getElementById('command').value=this.value; obj_Client.sendFormData(document.getElementById('edit-card') );" value="delete"><xsl:value-of select="commands/delete" /></button>
+					</xsl:if>
+				</td>
+			</tr>
 			</table>
 		</span>
+		
+		<xsl:for-each select="stored-cards/card">
+			<xsl:variable name="current" select="position()" />
+			
+			<xsl:if test="$current = 1 or //stored-cards/card[position() = $current - 1]/client/@id != client/@id">
+				<span id="stored-card-data-{client/@id}">
+					<table cellpadding="0" cellspacing="0">
+					<tr>
+						<td colspan="4">
+							<h2><xsl:value-of select="client" /></h2>
+						</td>
+					</tr>
+					<!-- Show Preferred Card -->
+					<tr>
+						<td colspan="4" class="label"><xsl:value-of select="//labels/preferred" /></td>
+					</tr>
+					<xsl:apply-templates select="//stored-cards/card[//stored-cards/card[position() = $current]/client/@id = client/@id and @preferred = 'true']" />
+					<!-- List Other Cards -->
+					<tr>
+						<td colspan="4" class="label"><xsl:value-of select="//labels/other" /></td>
+					</tr>
+					<xsl:apply-templates select="//stored-cards/card[//stored-cards/card[position() = $current]/client/@id = client/@id and @preferred = 'false']" />
+					</table>
+				</span>
+			</xsl:if>
+		</xsl:for-each>
 		<!-- Hidden Data Fields End -->
 	</span>
 	
@@ -93,7 +162,7 @@
 			<label for="password" accesskey="P"><xsl:value-of select="//labels/password" /></label>
 		</td>
 		<td><xsl:value-of select="password/@mask" /></td>
-		<td><a href="#" onclick="javascript:obj_Window.openWindow('edit-password', 'my-account', '/home/edit_password.php', 'edit-password', new Array(obj_Client, obj_Client.changePage) );" tabindex="1" title="password"><xsl:value-of select="//labels/edit" /></a></td>
+		<td><a href="#" onclick="javascript:obj_Window.openWindow('edit-password', 'my-account', '/home/edit_password.php', 'edit-password', new Array(obj_Client, obj_Client.changePage) );" tabindex="1" title="password"><xsl:value-of select="//commands/edit" /></a></td>
 	</tr>
 	<tr>
 		<td>
@@ -114,18 +183,18 @@
 			<label for="mobile" accesskey="M"><xsl:value-of select="//labels/mobile" /></label>
 		</td>
 		<td><xsl:value-of select="mobile" /></td>
-		<td><a href="#" onclick="javascript:obj_Window.openWindow('edit-mobile', 'my-account', '/home/edit_mobile.php', 'edit-mobile', new Array(obj_Client, obj_Client.changePage) );" tabindex="4" title="mobile"><xsl:value-of select="//labels/edit" /></a></td>
+		<td><a href="#" onclick="javascript:obj_Window.openWindow('edit-mobile', 'my-account', '/home/edit_mobile.php', 'edit-mobile', new Array(obj_Client, obj_Client.changePage) );" tabindex="4" title="mobile"><xsl:value-of select="//commands/edit" /></a></td>
 	</tr>
 	<tr>
 		<td>
 			<label for="email" accesskey="E"><xsl:value-of select="//labels/email" /></label>
 		</td>
 		<td><xsl:value-of select="email" /></td>
-		<td><a href="#" onclick="javascript:obj_Window.openWindow('edit-email', 'my-account', '/home/edit_email.php', 'edit-email', new Array(obj_Client, obj_Client.changePage) );" tabindex="5" title="email"><xsl:value-of select="//labels/edit" /></a></td>
+		<td><a href="#" onclick="javascript:obj_Window.openWindow('edit-email', 'my-account', '/home/edit_email.php', 'edit-email', new Array(obj_Client, obj_Client.changePage) );" tabindex="5" title="email"><xsl:value-of select="//commands/edit" /></a></td>
 	</tr>
 	<tr>
 		<td class="submit" colspan="2">
-			<input type="button" value="{//labels/submit}" class="button" onclick="javascript:obj_Client.sendFormData(document.getElementById('edit-info') );" tabindex="6" title="save" />
+			<button type="button" class="button" onclick="javascript:obj_Client.sendFormData(document.getElementById('edit-info') );" tabindex="6" title="save"><xsl:value-of select="//commands/save" /></button>
 		</td>
 	</tr>
 	</table>
@@ -146,11 +215,24 @@
 	</xsl:variable>
 			
 	<tr class="{$css}">
-		<td><input type="hidden" name="id" value="{@id}" /></td>
 		<td><img src="/img/31x20_card_{type/@id}.png" width="31" height="20" alt="- {type} -" /></td>
 		<td><xsl:value-of select="mask" /></td>
-		<td class="info">(<xsl:value-of select="expiry" />)</td>
+		<td class="info">(<xsl:value-of select="expiry" />)<xsl:value-of select="position()" /></td>
+		<td>
+			<xsl:choose>
+			<xsl:when test="position() = 1">
+				<input type="radio" name="cardid" value="{@id}" checked="true" />
+			</xsl:when>
+			<xsl:otherwise>
+				<input type="radio" name="cardid" value="{@id}" />
+			</xsl:otherwise>
+			</xsl:choose>
+		</td>
 	</tr>
+</xsl:template>
+
+<xsl:template match="client">
+	<option value="{@id}"><xsl:value-of select="." /></option>
 </xsl:template>
 
 </xsl:stylesheet>

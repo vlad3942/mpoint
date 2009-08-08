@@ -695,5 +695,27 @@ class Validate
 
 		return $code;
 	}
+	/**
+	 * Performs basic validation of a boolean flag.
+	 * The method will return the following status codes:
+	 * 	 1. Undefined Flag
+	 * 	 2. Invalid Flag
+	 * 	10. Success
+	 *
+	 * @param 	mixed $flag 	Boolean flag to validate
+	 * @return 	integer
+	 */
+	public function valBoolean($flag)
+	{
+		if (empty($flag) === true) { $code = 1; }					// Undefined Flag
+		elseif ($flag === true || $flag === false) { $code = 10; }	// Success
+		elseif (strtolower($flag) == "true") { $code = 10; }		// Success
+		elseif (strtolower($flag) == "false") { $code = 10; }		// Success
+		elseif (strval($flag) == "1") { $code = 10; }				// Success
+		elseif (strval($flag) == "0") { $code = 10; }				// Success
+		else { $code = 2; }											// Invalid Flag
+
+		return $code;
+	}
 }
 ?>

@@ -15,7 +15,10 @@
 		<br />
 		<div class="info"><xsl:value-of select="guide" /></div>
 		<br />
-		<form id="edit-mob" action="/home/sys/send_code.php" method="post">
+		<form id="edit-mob" action="/home/sys/save_mobile.php" method="post">
+			<div>
+				<input type="hidden" name="mobile" value="" />
+			</div>
 			<div>
 				<table>	
 				<tr>

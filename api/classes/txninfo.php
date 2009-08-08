@@ -145,6 +145,12 @@ class TxnInfo
 	 * @var integer
 	 */
 	private $_iAccountID = -1;
+	/**
+	 * Boolean Flag indicating whether the "Save Card Info" box should automatically be checked on the payment page
+	 *
+	 * @var boolean
+	 */
+	private $_bAutoStoreCard;
 
 	/**
 	 * Default Constructor
@@ -167,8 +173,9 @@ class TxnInfo
 	 * @param 	boolean $ac			Boolean Flag indicating whether Auto Capture should be used for the transaction
 	 * @param 	integer $accid 		Unique ID for the End-User's prepaid account that the transaction should be associated with
 	 * @param 	integer $gmid 		GoMobile's Unique ID for the MO-SMS that was used to start the payment transaction. Defaults to -1.
+	 * @param 	boolean $asc		Boolean Flag indicating whether the "Save Card Info" box should automatically be checked on the payment page
 	 */
-	public function __construct($id, $tid, ClientConfig &$oCC, $a, $orid, $addr, $oid, $email, $lurl, $cssurl, $aurl, $curl, $cburl, $l, $m, $ac, $accid=-1, $gmid=-1)
+	public function __construct($id, $tid, ClientConfig &$oCC, $a, $orid, $addr, $oid, $email, $lurl, $cssurl, $aurl, $curl, $cburl, $l, $m, $ac, $accid=-1, $gmid=-1, $asc=false)
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -192,6 +199,7 @@ class TxnInfo
 		
 		$this->_iAccountID = (integer) $accid;
 		$this->_iGoMobileID = (integer) $gmid;
+		$this->_bAutoStoreCard = (bool) $asc;
 	}
 
 	/**
@@ -297,7 +305,7 @@ class TxnInfo
 	 */
 	public function getMode() { return $this->_iMode; }
 	/**
-	 * Boolean Flag indicating whether mPoint should use Auto Capture for the Client.
+	 * Returns true mPoint should use Auto Capture for the Client.
 	 *
 	 * @return 	boolean
 	 */
@@ -315,6 +323,12 @@ class TxnInfo
 	 * @return 	integer		Unique ID for the End-User's prepaid account or -1 if no account has been associated
 	 */
 	public function getAccountID() { return $this->_iAccountID; }
+	/**
+	 * Returns true if mPoint should automatically check the "Save Card Info" box on the payment page
+	 *
+	 * @return 	boolean
+	 */
+	public function autoStoreCard() { return $this->_bAutoStoreCard; }
 
 	/**
 	 * Updates the information for the Transaction with the Customer's E-Mail Address where a receipt is sent to upon successful completion of the payment transaction
@@ -397,6 +411,7 @@ class TxnInfo
 		$xml .= '<callback-url>'. htmlspecialchars($this->_sCallbackURL, ENT_NOQUOTES) .'</callback-url>';
 		$xml .= '<language>'. $this->_sLanguage .'</language>';
 		$xml .= '<auto-capture>'. General::bool2xml($this->_bAutoCapture) .'</auto-capture>';
+		$xml .= '<auto-store-card>'. General::bool2xml($this->_bAutoStoreCard) .'</auto-store-card>';
 		$xml .= '</transaction>';
 
 		return $xml;
@@ -443,14 +458,15 @@ class TxnInfo
 			if (array_key_exists("auto-capture", $misc) === false) { $misc["auto-capture"] = $obj->useAutoCapture(); }
 			if (array_key_exists("gomobileid", $misc) === false) { $misc["gomobileid"] = $obj->getGoMobileID(); }
 			if (array_key_exists("accountid", $misc) === false) { $misc["accountid"] = $obj->getAccountID(); }
-
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client_config"], $misc["amount"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], $misc["gomobileid"]);
+			if (array_key_exists("auto-store-card", $misc) === false) { $misc["auto-store-card"] = false; }
+			
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client_config"], $misc["amount"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], $misc["gomobileid"], $misc["auto-store-card"]);
 			break;
 		case ($obj instanceof ClientConfig):	// Instantiate from array of Client Input
 			if (array_key_exists("email", $misc) === false) { $misc["email"] = ""; }
 			if (array_key_exists("accountid", $misc) === false) { $misc["accountid"] = -1; }
 			
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["amount"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], $misc["gomobileid"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["amount"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], $misc["gomobileid"], $misc["auto-store-card"]);
 			break;
 		case ($obj instanceof RDB):				// Instantiate from Transaction Log
 			$sql = "SELECT id, typeid, amount, orderid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, mode, auto_capture, gomobileid,

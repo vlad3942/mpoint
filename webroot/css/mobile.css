@@ -138,6 +138,10 @@ input.mPoint_Card_Button
 	margin: 0px 0px 0px 0px;
 	padding: 0px 0px 2px 0px;
 }
+input.mPoint_Card_Button:hover
+{
+	cursor: pointer; cursor: hand;
+}
 
 div.mPoint_Card
 {

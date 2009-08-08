@@ -73,11 +73,7 @@ case "linked":
 		case "username":	// Validate username
 			if ($obj_Validator->valCountry($_OBJ_DB, (integer) $obj_XML->countryid) == 10)
 			{
-				$oXML = simplexml_load_string($obj_mPoint->getCountries() );
-				$oXML = $oXML->xpath("/countries/item[@id = ". $obj_XML->countryid ."]");
-				$oXML = $oXML[0];
-
-				$obj_CountryConfig = new CountryConfig($oXML["id"], (string) $oXML->name, (string) $oXML->currency, (string) $oXML->currency["symbol"], (integer) $oXML->maxbalance, (integer) $oXML->mintransfer, (float) $oXML->minmobile, (float) $oXML->maxmobile, (string) $oXML->channel, (string) $oXML->priceformat, (integer) $oXML->decimals, General::xml2bool( (string) $oXML->addresslookup), General::xml2bool( (string) $oXML->doubleoptin) );
+				$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_XML->countryid);
 				$obj_Validator = new Validate($obj_CountryConfig);
 
 				$aErrCd["username"] = $obj_Validator->valMobile( (string) $obj_XML->username);
@@ -104,11 +100,7 @@ case "form":
 	$aErrCd["countryid"] = $obj_Validator->valCountry($_OBJ_DB, (integer) $obj_XML->form->countryid);
 	if ($aErrCd["countryid"] == 10)
 	{
-		$oXML = simplexml_load_string($obj_mPoint->getCountries() );
-		$oXML = $oXML->xpath("/countries/item[@id = ". $obj_XML->form->countryid ."]");
-		$oXML = $oXML[0];
-
-		$obj_CountryConfig = new CountryConfig($oXML["id"], (string) $oXML->name, (string) $oXML->currency, (string) $oXML->currency["symbol"], (integer) $oXML->maxbalance, (integer) $oXML->mintransfer, (float) $oXML->minmobile, (float) $oXML->maxmobile, (string) $oXML->channel, (string) $oXML->priceformat, (integer) $oXML->decimals, General::xml2bool( (string) $oXML->addresslookup), General::xml2bool( (string) $oXML->doubleoptin) );
+		$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_XML->form->countryid);
 		$obj_Validator = new Validate($obj_CountryConfig);
 
 		$aErrCd["username"] = $obj_Validator->valMobile( (string) $obj_XML->form->username);

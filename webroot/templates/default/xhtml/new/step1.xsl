@@ -23,13 +23,13 @@
 					<div class="mPoint_Label"><xsl:value-of select="labels/country" />:</div>
 					<xsl:choose>
 					<xsl:when test="//user-info/mobile/@countryid &gt;= 100">
-						<xsl:value-of select="countries/item[@id = //user-info/mobile/@countryid]/name" />
+						<xsl:value-of select="country-configs/config[@id = //user-info/mobile/@countryid]/name" />
 					</xsl:when>
-					<xsl:when test="count(//countries/item) &gt; 1">
+					<xsl:when test="count(//country-configs/config) &gt; 1">
 						<select id="countryid" name="countryid">
 							<option value="0"><xsl:value-of select="labels/select" /></option>
 							
-							<xsl:for-each select="//countries/item">
+							<xsl:for-each select="//country-configs/config">
 								<xsl:choose>
 								<xsl:when test="@id = //session/countryid">
 									<option value="{@id}" selected="selected"><xsl:value-of select="name" /></option>
@@ -42,8 +42,8 @@
 						</select>
 					</xsl:when>
 					<xsl:otherwise>
-						<xsl:value-of select="//countries/item/name" />
-						<input type="hidden" id="countryid" name="countryid" value="{//countries/item/@id}" />
+						<xsl:value-of select="//country-configs/config/name" />
+						<input type="hidden" id="countryid" name="countryid" value="{//country-configs/config/@id}" />
 					</xsl:otherwise>
 					</xsl:choose>
 				</div>
@@ -51,7 +51,7 @@
 				<div>
 					<div class="mPoint_Label"><xsl:value-of select="labels/mobile" />:</div>
 					<xsl:choose>
-					<xsl:when test="//user-info/mobile &gt;= 10000000">
+					<xsl:when test="//user-info/mobile &gt; 10000">
 						<xsl:value-of select="//user-info/mobile" />
 					</xsl:when>
 					<xsl:otherwise>

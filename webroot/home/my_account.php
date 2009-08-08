@@ -51,12 +51,18 @@ else
 				<email><?= $_OBJ_TXT->_("E-Mail"); ?></email>
 				<password><?= $_OBJ_TXT->_("Password"); ?></password>
 				<repeat-password><?= $_OBJ_TXT->_("Repeat Password"); ?></repeat-password>
-				<submit><?= $_OBJ_TXT->_("Save"); ?></submit>
 				<preferred><?= $_OBJ_TXT->_("Preferred"); ?></preferred>
 				<other><?= $_OBJ_TXT->_("Other"); ?></other>
-				
-				<edit><?= $_OBJ_TXT->_("Edit"); ?></edit>
 			</labels>
+			<commands>
+				<edit><?= $_OBJ_TXT->_("Edit"); ?></edit>
+				<save><?= $_OBJ_TXT->_("Save"); ?></save>
+				<delete><?= $_OBJ_TXT->_("Delete"); ?></delete>
+				<preferred><?= $_OBJ_TXT->_("Make Preferred"); ?></preferred>
+				<new><?= $_OBJ_TXT->_("Add Card"); ?></new>
+			</commands>
+			
+			<help><?= $_OBJ_TXT->_("Stored Cards - Help"); ?></help>
 
 			<?= $obj_mPoint->getAccountInfo($_SESSION['obj_Info']->getInfo("accountid") ); ?>
 

@@ -317,7 +317,7 @@ switch(cgi.language)
 		<PML_CASE VALUE="8"><PML_VAL>error_8</PML_VAL></PML_CASE>
 		<PML_CASE VALUE="9"><PML_VAL>error_9</PML_VAL></PML_CASE>
 		<PML_CASE VALUE="10"><PML_VAL>error_10</PML_VAL></PML_CASE>
-		<PML_DEFAULT><PML_VAL>error_unknown</PML_VAL</PML_DEFAULT>
+		<PML_DEFAULT><PML_VAL>error_unknown</PML_VAL></PML_DEFAULT>
 	</PML_SWITCH>
 	</div>
 	
@@ -357,6 +357,7 @@ switch(cgi.language)
 			<!-- Store Credit Card -->
 			<PML_IF COND="cgi.store_card > 0">
 				<input type="hidden" name="store_card" PML_value="cgi.store_card" />
+				<input type="hidden" name="auto_store_card" PML_value="cgi.auto_store_card" />
 			</PML_IF>
 			<!-- Dynamic Page Data -->
 			<input type="hidden" name="clientid" PML_value="cgi.clientid" />
@@ -475,7 +476,13 @@ switch(cgi.language)
 		<!-- Store Credit Card -->
 		<PML_IF COND="cgi.store_card > 0">
 			<div>
-				<input type="checkbox" name="preauth" value="true" /><PML_VAL>label_store</PML_VAL>
+				<PML_IF COND="cgi.auto_store_card = 'true">
+					<input type="checkbox" name="preauth" value="true" checked="true" />
+				</PML_IF>
+				<PML_ELSE>
+					<input type="checkbox" name="preauth" value="true" />
+				</PML_ELSE>
+				<PML_VAL>label_store</PML_VAL>
 			</div>
 		</PML_IF>
 		<!-- Complete Payment -->

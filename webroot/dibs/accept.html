@@ -243,7 +243,7 @@ switch(cgi.language)
 		<img src="images/client_logo.jpg" PML_width="cgi.width" PML_height="cgi.height" PML_alt="'- '@cgi.client@' -'" />
 	</div>
 	<!-- Create New Account -->
-	<PML_IF COND="cgi.preauth = 'true'">
+	<PML_IF COND="cgi.preauth = 'true' && cgi.euaid < 0">
 		<div id="my-account">
 			<form PML_action="'http://mpoint.cellpointmobile.com/pay/sys/save_pwd.php?PHPSESSID='@cgi.PHPSESSID" method="post">
 				<div><PML_VAL>info</PML_VAL></div>

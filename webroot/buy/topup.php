@@ -11,7 +11,7 @@
  * @link http://www.cellpointmobile.com
  * @package TopUp
  * @subpackage Buy
- * @version 1.00
+ * @version 1.10
  */
 
 // Require Global Include File
@@ -48,6 +48,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if (array_key_exists("cancel-url", $_REQUEST) === false) { $_REQUEST['cancel-url'] = $obj_ClientConfig->getCancelURL(); }
 	if (array_key_exists("callback-url", $_REQUEST) === false) { $_REQUEST['callback-url'] = $obj_ClientConfig->getCallbackURL(); }
 	if (array_key_exists("language", $_REQUEST) === false) { $_REQUEST['language'] = $obj_ClientConfig->getLanguage(); }
+	if (array_key_exists("auto-store-card", $_REQUEST) === false) { $_REQUEST['auto-store-card'] = "false"; }
 
 	$obj_mPoint = new TopUp($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig->getCountryConfig() );
 	$iTxnID = $obj_mPoint->newTransaction($obj_ClientConfig, Constants::iTOPUP_PURCHASE_TYPE);
@@ -66,6 +67,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if ($obj_Validator->valURL($_REQUEST['callback-url']) > 1 && $obj_Validator->valURL($_REQUEST['callback-url']) < 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['callback-url']) + 110] = $_REQUEST['callback-url']; }
 	if ($obj_Validator->valLanguage($_REQUEST['language']) != 10) { $aMsgCds[$obj_Validator->valLanguage($_REQUEST['language']) + 130] = $_REQUEST['language']; }
 	if ($obj_Validator->valEMail($_REQUEST['email']) != 1 && $obj_Validator->valEMail($_REQUEST['email']) != 10) { $aMsgCds[$obj_Validator->valEMail($_REQUEST['email']) + 140] = $_REQUEST['email']; }
+	if ($obj_Validator->valBoolean($_REQUEST['auto-store-card']) != 10) { $aMsgCds[$obj_Validator->valBoolean($_REQUEST['auto-store-card']) + 150] = $_REQUEST['auto-store-card']; }
 	/* ========== Input Validation End ========== */
 
 	// Success: Input Valid
@@ -73,6 +75,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	{
 		try
 		{
+			$_REQUEST['auto-store-card'] = General::xml2bool($_REQUEST['auto-store-card']);
 			// Update Transaction State
 			$_REQUEST['typeid'] = Constants::iTOPUP_PURCHASE_TYPE;
 			$_REQUEST['gomobileid'] = -1;

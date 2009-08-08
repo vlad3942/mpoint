@@ -88,6 +88,13 @@ class CountryConfig extends BasicConfig
 	private $_bDoubleOptIn;
 	
 	/**
+	 * The amount charged to the end-user when storing the card details for a new card as part of the end-user's account.
+	 *
+	 * @var integer
+	 */
+	private $_iAddCardAmount;
+	
+	/**
 	 * Default Constructor
 	 *
 	 * @param 	integer $id 		Unique ID for the Country, this MUST match the GoMobile's ID for the Country
@@ -103,8 +110,9 @@ class CountryConfig extends BasicConfig
 	 * @param 	integer $dec 		Number of Decimals used for Prices in the Country
 	 * @param 	boolean $als 		Boolean Flag indicating whether an Address Lookup Service is available in the Country
 	 * @param 	boolean $doi 		Boolean Flag indicating whether an Operators in the Country required Double Opt-In for payments made via Premium SMS
+	 * @param	integer $aca		The amount charged to the end-user when storing the card details for a new card as part of the end-user's account.
 	 */
-	public function __construct($id, $name, $currency, $sym, $maxbal, $mt, $minmob, $maxmob, $ch, $pf, $dec, $als, $doi)
+	public function __construct($id, $name, $currency, $sym, $maxbal, $mt, $minmob, $maxmob, $ch, $pf, $dec, $als, $doi, $aca)
 	{
 		parent::__construct($id, $name);
 		
@@ -119,6 +127,7 @@ class CountryConfig extends BasicConfig
 		$this->_iNumDecimals = (integer) $dec;
 		$this->_bAddressLookup = $als;
 		$this->_bDoubleOptIn = $doi;
+		$this->_iAddCardAmount = (integer) $aca;
 	}
 	
 	/**
@@ -190,6 +199,13 @@ class CountryConfig extends BasicConfig
 	 */
 	public function hasDoubleOptIn() { return $this->_bDoubleOptIn; }
 	
+	/**
+	 * Returns the amount charged to the end-user when storing the card details for a new card as part of the end-user's account.
+	 *
+	 * @return integer
+	 */
+	public function getAddCardAmount() { return $this->_iAddCardAmount; }
+	
 	public function toXML()
 	{
 		$xml = '<country-config id="'. $this->getID() .'">';
@@ -204,9 +220,28 @@ class CountryConfig extends BasicConfig
 		$xml .= '<num-decimals>'. $this->_iNumDecimals .'</num-decimals>';
 		$xml .= '<address-lookup>'. General::bool2xml($this->_bAddressLookup) .'</address-lookup>';
 		$xml .= '<double-opt-in>'. General::bool2xml($this->_bDoubleOptIn) .'</double-opt-in>';
+		$xml .= '<add-card-amount>'. $this->_iAddCardAmount .'</add-card-amount>';
 		$xml .= '</country-config>';
 		
 		return $xml;
+	}
+	
+	/**
+	 * Produces a new instance of a Country Configuration Object.
+	 *
+	 * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param 	integer $id 	Unique ID for the Country the request is performed in
+	 * @return 	CountryConfig
+	 */
+	public static function produceConfig(RDB &$oDB, $id)
+	{
+		$sql = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmob, maxmob, channel, priceformat, decimals, als, doi, aca
+				FROM System.Country_Tbl
+				WHERE id = ". intval($id) ." AND enabled = true";
+//		echo $sql ."\n";
+		$RS = $oDB->getName($sql);
+		
+		return new CountryConfig($RS["ID"], $RS["NAME"], $RS["CURRENCY"], $RS["SYMBOL"], $RS["MAXBALANCE"], $RS["MINTRANSFER"], $RS["MINMOB"], $RS["MAXMOB"], $RS["CHANNEL"], $RS["PRICEFORMAT"], $RS["DECIMALS"], $RS["ALS"], $RS["DOI"], $RS["ACA"]);
 	}
 }
 ?>

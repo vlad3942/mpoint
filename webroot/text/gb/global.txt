@@ -366,14 +366,10 @@ msgid @@@ Repeat Password @@@
 msgstr @@@ Repeat Password @@@
 
 #: /webroot/home/my_account.php:54
-msgid @@@ Save @@@
-msgstr @@@ Save @@@
-
-#: /webroot/home/my_account.php:55
 msgid @@@ Preferred @@@
 msgstr @@@ Preferred @@@
 
-#: /webroot/home/my_account.php:56
+#: /webroot/home/my_account.php:55
 msgid @@@ Other @@@
 msgstr @@@ Other @@@
 
@@ -381,15 +377,53 @@ msgstr @@@ Other @@@
 msgid @@@ Edit @@@
 msgstr @@@ Edit @@@
 
-#: /webroot/home/sys/make_transfer.php:299
+#: /webroot/home/my_account.php:59
+msgid @@@ Save @@@
+msgstr @@@ Save @@@
+
+#: /webroot/home/my_account.php:60
+msgid @@@ Delete @@@
+msgstr @@@ Delete @@@
+
+#: /webroot/home/my_account.php:61
+msgid @@@ Make Preferred @@@
+msgstr @@@ Make Preferred @@@
+
+#: /webroot/home/my_account.php:62
+msgid @@@ Add Card @@@
+msgstr @@@ Add Card @@@
+
+#: /webroot/home/my_account.php:65
+msgid @@@ Stored Cards - Help @@@
+msgstr @@@ You haven't stored any cards to your account yet.
+Please click the "Add Card" button below to add the card details for one of your cards? @@@
+
+#: /webroot/home/new_card.php:39
+msgid @@@ Add New Card @@@
+msgstr @@@ Add New Card @@@
+
+#: /webroot/home/new_card.php:42
+msgid @@@ OK @@@
+msgstr @@@ OK @@@
+
+#: /webroot/home/new_card.php:45
+msgid @@@ Add New Card Guide @@@
+msgstr @@@ In order to store a new card with your account, the account must be topped up with a small amount using your card.
+This process ensures that the card is properly authenticated with the card issuer and the card data is registered with mPoint. @@@
+
+#: /webroot/home/sys/make_transfer.php:291
 msgid @@@ transfer - code: 91 @@@
 msgstr @@@ transfer - code: 91 @@@
 
-#: /webroot/home/sys/make_transfer.php:352
+#: /webroot/home/sys/make_transfer.php:344
 msgid @@@ transfer - code: 92 @@@
 msgstr @@@ transfer - code: 92 @@@
 
-#: /webroot/home/sys/make_transfer.php:361
+#: /webroot/home/sys/make_transfer.php:353
+msgid @@@ internal - code: 2 @@@
+msgstr @@@ internal - code: 2 @@@
+
+#: /webroot/home/sys/manage_card.php:109
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
@@ -618,23 +652,23 @@ msgid @@@ One Time Password Guide @@@
 msgstr @@@ A One Time Password which will expire in an hour has been sent to your mobile number.
 Please enter the received password in the field below? @@@
 
-#: /webroot/login/sys/auth.php:160
+#: /webroot/login/sys/auth.php:152
 msgid @@@ auth - code: 100 @@@
 msgstr @@@ auth - code: 100 @@@
 
-#: /webroot/login/sys/auth.php:194
+#: /webroot/login/sys/auth.php:186
 msgid @@@ auth - code: 100 @@@
 msgstr @@@ auth - code: 100 @@@
 
-#: /webroot/login/sys/auth.php:208
+#: /webroot/login/sys/auth.php:200
 msgid @@@ auth - code: 92 @@@
 msgstr @@@ auth - code: 92 @@@
 
-#: /webroot/login/sys/auth.php:222
+#: /webroot/login/sys/auth.php:214
 msgid @@@ auth - code: 102 @@@
 msgstr @@@ auth - code: 102 @@@
 
-#: /webroot/login/sys/auth.php:239
+#: /webroot/login/sys/auth.php:231
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
@@ -778,19 +812,19 @@ msgstr @@@ Please go to http://mpoint.cellpointmobile.com via your Web Browser t
 </ul>
 Please click the link below to top your account up immediately? @@@
 
-#: /webroot/new/sys/create_account.php:257
+#: /webroot/new/sys/create_account.php:249
 msgid @@@ save - code: 100 @@@
 msgstr @@@ save - code: 100 @@@
 
-#: /webroot/new/sys/create_account.php:279
+#: /webroot/new/sys/create_account.php:271
 msgid @@@ save - code: 92 @@@
 msgstr @@@ save - code: 92 @@@
 
-#: /webroot/new/sys/create_account.php:286
+#: /webroot/new/sys/create_account.php:278
 msgid @@@ save - code: 91 @@@
 msgstr @@@ save - code: 91 @@@
 
-#: /webroot/new/sys/create_account.php:291
+#: /webroot/new/sys/create_account.php:283
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
@@ -1092,22 +1126,22 @@ Merchant: {CLIENT}
 Order No: {ORDERID}
 Price: {PRICE} @@@
 
-#: /api/classes/enduser_account.php:349
+#: /api/classes/enduser_account.php:337
 msgid @@@ mPoint - Account Info @@@
 msgstr @@@ Your account has been created and is ready for use.
 Please go to {URL} to manage your account at any time.
 Kind Regards
 {CLIENT} @@@
 
-#: /api/classes/general.php:604
+#: /api/classes/general.php:606
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ Welcome to {CLIENT}, please activate the link below @@@
 
-#: /api/classes/general.php:610
+#: /api/classes/general.php:612
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Welcome to {CLIENT} @@@
 
-#: /api/classes/home.php:572
+#: /api/classes/home.php:574
 msgid @@@ mPoint - Send One Time Password @@@
 msgstr @@@ Please enter the one time password: {OTP} on the website to login.
 The password will automatically expire in an hour. @@@
@@ -1152,7 +1186,7 @@ We recommend that you contact this customer directly and complete the payment pr
 
 Thank you for using SurePay @@@
 
-#: /api/classes/transfer.php:230
+#: /api/classes/transfer.php:222
 msgid @@@ mPoint - New Account SMS @@@
 msgstr @@@ You've received a transfer of {AMOUNT} from {SENDER}.
 Please create an account at {DOMAIN} entering transfer code: {CODE} or click the link below to complete your registration directly from your mobile phone.
@@ -1160,11 +1194,11 @@ Please create an account at {DOMAIN} entering transfer code: {CODE} or click the
 Kind Regards
 mPoint @@@
 
-#: /api/classes/transfer.php:267
+#: /api/classes/transfer.php:259
 msgid @@@ mPoint - New Account E-Mail Subject @@@
 msgstr @@@ You've received a transfer of {AMOUNT} from {SENDER} @@@
 
-#: /api/classes/transfer.php:270
+#: /api/classes/transfer.php:262
 msgid @@@ mPoint - New Account E-Mail Body @@@
 msgstr @@@ You've received a transfer of {AMOUNT} from {SENDER}.
 Please activate the link below to complete your registration
@@ -1172,7 +1206,7 @@ Please activate the link below to complete your registration
 Kind Regards
 mPoint @@@
 
-#: /api/classes/transfer.php:300
+#: /api/classes/transfer.php:292
 msgid @@@ mPoint - Confirmation Code @@@
 msgstr @@@ Please enter the confirmation code: {CODE} on the website to authenticate your transfer.
 The code will automatically expire in an hour. @@@

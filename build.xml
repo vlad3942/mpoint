@@ -19,6 +19,8 @@
 		<mkdir dir="${destDir}" />
 		<mkdir dir="${sourceDir}" />
 		
+		<get src="http://mpoint.localhost/parse_text.php" dest="${sourceDir}/parse.html" />
+		
 		<copy todir="${sourceDir}">
 			<fileset dir="D:\Development\mPoint" casesensitive="yes">
 				<exclude name="**\.svn" />
@@ -29,7 +31,7 @@
 			</fileset>
 		</copy>
 	</target>
-
+	
 	<target name="doc" depends="prepare">
 		<delete dir="${sourceDir}\.cache" />
 		<delete dir="${sourceDir}\.settings" />
@@ -38,10 +40,14 @@
 			<fileset dir="${sourceDir}">
 				<exclude name="**\~$*.doc" />
 				<exclude name="**\~WRL*.*" />
+				<exclude name="parse.html" />
 			</fileset>
 		</copy>
 		
+		<!-- Generate phpDoc for mPoint in HTML format -->
 		<replace file="${destDir}/doc/phpdoc.ini" token="@VERSION@" value="${version}" />
+		<get src="http://phpdoc.localhost/docbuilder/builder.php?altuserdir=&amp;setting_useconfig=D%3A%5CTemp%5CmPoint%5C${version}%5Cdoc%2Fphpdoc&amp;submitButton=Go&amp;setting_filename=&amp;setting_directory=&amp;setting_ignore=&amp;setting_packageoutput=&amp;setting_target=&amp;setting_output=HTML%3ASmarty%3Adefault&amp;ConverterSetting=HTML%3ASmarty%3Adefault&amp;setting_title=Generated+Documentation&amp;setting_defaultpackagename=default&amp;setting_defaultcategoryname=default&amp;setting_customtags=&amp;interface=web&amp;dataform=true"
+			 dest="${sourceDir}/doc/phpdoc.html" />
 	</target>
 	
 	<target name="deploy" depends="doc, prepare, init">

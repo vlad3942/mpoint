@@ -255,7 +255,8 @@ class Home extends General
 				INNER JOIN System.Card_Tbl SC ON EUC.cardid = SC.id AND SC.enabled = true
 				INNER JOIN Client.Client_Tbl CL ON EUC.clientid = CL.id AND CL.enabled = true 
 				WHERE EUC.accountid = ". intval($id) ." AND EUC.enabled = true
-					AND (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."'";
+					AND (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."'
+				ORDER BY CL.name ASC";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 

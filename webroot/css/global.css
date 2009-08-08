@@ -339,6 +339,10 @@ div#my-account div#account-data
 	text-align: left;
 	overflow: auto;
 }
+div#my-account div#account-data td#clients
+{
+	text-align: center;
+}
 
 div#view-transactions h2, div#view-transactions td.label, div#my-account h2
 {
@@ -420,7 +424,7 @@ object#charts, embed#charts
 /* ========== Pages End ========== */
 
 /* ========== Windows Start ========== */
-div#edit-password, div#edit-mobile, div#edit-email, div#one-time-password, div#confirm-transfer
+div#edit-password, div#edit-mobile, div#edit-email, div#new-card, div#one-time-password, div#confirm-transfer
 {
 	position: absolute;
 	color: #000;
@@ -434,7 +438,10 @@ div#edit-password, div#edit-mobile, div#edit-email, div#one-time-password, div#c
 	background-color: #FFF;
 	text-align: left;
 }
-
+div#new-card
+{
+	height: 210px;
+}
 div#edit-mobile, div#edit-email, div#one-time-password
 {
 	height: 250px;
@@ -443,7 +450,8 @@ div#confirm-transfer
 {
 	height: 325px;
 }
-div#edit-password h2, div#edit-mobile h2, div#edit-email h2, div#one-time-password h2, div#confirm-transfer h2
+
+div#edit-password h2, div#edit-mobile h2, div#edit-email h2, div#one-time-password h2, div#confirm-transfer h2, div#new-card div.submit
 {
 	text-align: center;
 }

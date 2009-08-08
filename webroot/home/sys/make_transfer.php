@@ -66,7 +66,7 @@ else
 			case "password":	// Validate password
 				$aErrCd["password"] = $obj_Validator->valPassword( (string) $input);
 				break;
-			case "code":	// Validate Confirmation Code
+			case "code":	// Validate Confirmation Code (OTP)
 				$aErrCd["code"] = $obj_Validator->valCode( (integer) $input);
 				break;
 			default:			// Error: Unknown tag
@@ -87,11 +87,7 @@ else
 	case "linked":
 		if ($obj_Validator->valCountry($_OBJ_DB, (integer) $obj_XML->countryid) == 10)
 		{
-			$oXML = simplexml_load_string($obj_mPoint->getCountries() );
-			$oXML = $oXML->xpath("/countries/item[@id = ". $obj_XML->countryid ."]");
-			$oXML = $oXML[0];
-
-			$obj_CountryConfig = new CountryConfig($oXML["id"], (string) $oXML->name, (string) $oXML->currency, (string) $oXML->currency["symbol"], (integer) $oXML->maxbalance, (integer) $oXML->mintransfer, (float) $oXML->minmobile, (float) $oXML->maxmobile, (string) $oXML->channel, (string) $oXML->priceformat, (integer) $oXML->decimals, General::xml2bool( (string) $oXML->addresslookup), General::xml2bool( (string) $oXML->doubleoptin) );
+			$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_XML->countryid);
 			$obj_Validator = new Validate($obj_CountryConfig);
 			
 			$_OBJ_TXT->loadConstants(array("MIN MOBILE" => $obj_CountryConfig->getMinMobile(), "MAX MOBILE" => $obj_CountryConfig->getMaxMobile() ) );
@@ -136,11 +132,7 @@ else
 		$aErrCd["countryid"] = $obj_Validator->valCountry($_OBJ_DB, (integer) $obj_XML->form->countryid);
 		if ($aErrCd["countryid"] == 10)
 		{
-			$oXML = simplexml_load_string($obj_mPoint->getCountries() );
-			$oXML = $oXML->xpath("/countries/item[@id = ". $obj_XML->form->countryid ."]");
-			$oXML = $oXML[0];
-	
-			$obj_CountryConfig = new CountryConfig($oXML["id"], (string) $oXML->name, (string) $oXML->currency, (string) $oXML->currency["symbol"], (integer) $oXML->maxbalance, (integer) $oXML->mintransfer, (float) $oXML->minmobile, (float) $oXML->maxmobile, (string) $oXML->channel, (string) $oXML->priceformat, (integer) $oXML->decimals, General::xml2bool( (string) $oXML->addresslookup), General::xml2bool( (string) $oXML->doubleoptin) );
+			$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_XML->form->countryid);
 			$obj_Validator = new Validate($obj_CountryConfig);
 			
 			$_OBJ_TXT->loadConstants(array("MIN MOBILE" => $obj_CountryConfig->getMinMobile(), "MAX MOBILE" => $obj_CountryConfig->getMaxMobile() ) );
@@ -162,7 +154,7 @@ else
 		{
 			$aErrCd["password"] = $obj_Validator->valPassword( (string) $obj_XML->form->password);
 		}
-		// One Time Password provided
+		// Confirmation Code (OTP) provided
 		if (count($obj_XML->form->code) > 0)
 		{
 			$aErrCd["code"] = $obj_Validator->valCode( (integer) $obj_XML->form->code);
@@ -193,7 +185,7 @@ else
 				$iAmountSent = intval($obj_XML->form->amount) * 100;
 				$iAmountReceived = $obj_mPoint->convert($obj_CountryConfig, intval($obj_XML->form->amount) * 100);
 			}
-			
+			echo $iAmountReceived; die();
 			$iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, (string) $obj_XML->form->recipient);
 			// Currency conversion successful for Amount - Verify that recipient's balance doesn't exceed allowed amount
 			if ($iAccountID > 0 && $iAmountReceived > 0)
@@ -211,7 +203,7 @@ else
 				// Fetch sender's account info
 				$obj_AccountXML = simplexml_load_string($obj_mPoint->getAccountInfo($_SESSION['obj_Info']->getInfo("accountid") ) );
 				
-				// Both Password has been and either no mobile number is registered for the account or a One Time Password has been provided as well
+				// Both Password has been and either no mobile number is registered for the account or a Confirmation Code (OTP) has been provided as well
 				if (count($obj_XML->form->password) > 0 && (floatval($obj_AccountXML->mobile) < $_SESSION['obj_CountryConfig']->getMinMobile() || count($obj_XML->form->code) > 0) )
 				{
 					// Start database transaction
@@ -324,13 +316,13 @@ else
 						}
 					}
 				}
-				// Send Confirmation Code
+				// Send Confirmation Code (OTP)
 				else
 				{
 					if (floatval($obj_AccountXML->mobile) < $_SESSION['obj_CountryConfig']->getMinMobile() ) { $code = 199; }
 					else { $code = $obj_mPoint->sendConfirmationCode(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $_SESSION['obj_Info']->getInfo("accountid"), (string) $obj_AccountXML->mobile); }
 					
-					// Confirmation Code sent
+					// Confirmation Code (OTP) sent
 					if ($code == 200 || $code == 199)
 					{
 						$sType = "multipart";
@@ -346,7 +338,7 @@ else
 								 	</popup>
 								</document>';
 					}
-					// Error: Unable to send Confirmation Code
+					// Error: Unable to send Confirmation Code (OTP)
 					else
 					{
 						$xml = '<form id="92" name="'. $obj_XML["name"] .'">'. htmlspecialchars($_OBJ_TXT->_("transfer - code: 92"), ENT_NOQUOTES) .'</form>';

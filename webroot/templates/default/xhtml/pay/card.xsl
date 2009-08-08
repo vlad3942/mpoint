@@ -236,6 +236,7 @@
 				<input type="hidden" name="card_height" value="{logo-height}" />
 				<!-- Allow user to Store Credit Card -->
 				<input type="hidden" name="store_card" value="{/root/client-config/store-card}" />
+				<input type="hidden" name="auto_store_card" value="{/root/transaction/auto-store-card}" />
 				
 				<!-- Accept Page Data -->
 				<input type="hidden" name="mpoint_width" value="{/root/accept/mpoint-logo/width}" />
