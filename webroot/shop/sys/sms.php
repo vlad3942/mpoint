@@ -1,19 +1,19 @@
 <?php
 /**
- * This files contains the Controller for mPoint's SMS API.
+ * This files contains the Controller for mPoint's SMS Shop API.
  * The Controller will receive an MO-SMS from GoMobile, construct a payment link for mPoint and send it to the customer
  * as an MT-WAP Push or an MT-SMS depending on the Mobile Network Operator
  *
  * @author Jonatan Evald Buus
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
- * @package SMS_Purchase
- * @subpackage Buy
+ * @package Shop
+ * @subpackage SMS
  * @version 1.10
  */
 
 // Require Global Include File
-require_once("../inc/include.php");
+require_once("../../inc/include.php");
 
 // Require the PHP API for handling the connection to GoMobile
 require_once(sAPI_CLASS_PATH ."/gomobile.php");

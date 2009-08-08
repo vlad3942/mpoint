@@ -6,8 +6,9 @@
  * @author Jonatan Evald Buus
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
- * @package MobileWeb
- * @version 1.0
+ * @package API
+ * @subpackage MobileWeb
+ * @version 1.00
  */
 
 /**

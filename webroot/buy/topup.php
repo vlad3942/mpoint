@@ -9,8 +9,8 @@
  * @author Jonatan Evald Buus
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
- * @package TopUp
- * @subpackage Buy
+ * @package API
+ * @subpackage TopUp
  * @version 1.10
  */
 
@@ -27,6 +27,9 @@ require_once(sCLASS_PATH ."/validate.php");
 require_once(sCLASS_PATH ."/enduser_account.php");
 
 $aMsgCds = array();
+
+// Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
+$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 
 // Set Global Defaults
 if (array_key_exists("account", $_REQUEST) === false) { $_REQUEST['account'] = -1; }

@@ -6,8 +6,9 @@
  * @author Jonatan Evald Buus
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
- * @package SMS_Purchase
- * @version 1.0
+ * @package API
+ * @subpackage SMS_Purchase
+ * @version 1.00
  */
 
 /**
