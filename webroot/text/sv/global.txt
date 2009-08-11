@@ -312,6 +312,30 @@ msgstr @@@ Step 2 of 3 @@@
 msgid @@@ Edit E-Mail Guide - Step 2 @@@
 msgstr @@@ Edit E-Mail Guide - Step 2 @@@
 
+#: /webroot/home/missing_data.php:37
+msgid @@@ Missing Data @@@
+msgstr @@@ Missing Data @@@
+
+#: /webroot/home/missing_data.php:40
+msgid @@@ OK @@@
+msgstr @@@ OK @@@
+
+#: /webroot/home/missing_data.php:41
+msgid @@@ My Account @@@
+msgstr @@@ My Account @@@
+
+#: /webroot/home/missing_data.php:45
+msgid @@@ Missing Mobile Number Guide @@@
+msgstr @@@ Missing Mobile Number Guide @@@
+
+#: /webroot/home/missing_data.php:46
+msgid @@@ Missing E-Mail Address Guide @@@
+msgstr @@@ Missing E-Mail Address Guide @@@
+
+#: /webroot/home/missing_data.php:47
+msgid @@@ Missing Profile Info Guide @@@
+msgstr @@@ Missing Profile Info Guide @@@
+
 #: /webroot/home/my_account.php:37
 msgid @@@ My Account @@@
 msgstr @@@ My Account @@@
@@ -404,15 +428,15 @@ msgstr @@@ OK @@@
 msgid @@@ Add New Card Guide @@@
 msgstr @@@ Add New Card Guide @@@
 
-#: /webroot/home/sys/make_transfer.php:291
+#: /webroot/home/sys/make_transfer.php:294
 msgid @@@ transfer - code: 91 @@@
 msgstr @@@ transfer - code: 91 @@@
 
-#: /webroot/home/sys/make_transfer.php:344
+#: /webroot/home/sys/make_transfer.php:347
 msgid @@@ transfer - code: 92 @@@
 msgstr @@@ transfer - code: 92 @@@
 
-#: /webroot/home/sys/make_transfer.php:353
+#: /webroot/home/sys/make_transfer.php:356
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
@@ -645,8 +669,8 @@ msgid @@@ One Time Password Guide @@@
 msgstr @@@ One Time Password Guide @@@
 
 #: /webroot/login/sys/auth.php:152
-msgid @@@ auth - code: 100 @@@
-msgstr @@@ auth - code: 100 @@@
+msgid @@@ auth - code: 101 @@@
+msgstr @@@ auth - code: 101 @@@
 
 #: /webroot/login/sys/auth.php:186
 msgid @@@ auth - code: 100 @@@

@@ -149,7 +149,7 @@ case "form":
 						
 						$sType = "multipart";
 						$xml = '<document type="status">
-									<form id="100" name="'. $obj_XML["name"] .'">'. htmlspecialchars($_OBJ_TXT->_("auth - code: 100"), ENT_NOQUOTES) .'</form>
+									<form id="101" name="'. $obj_XML["name"] .'">'. htmlspecialchars($_OBJ_TXT->_("auth - code: 101"), ENT_NOQUOTES) .'</form>
 								</document>
 								<document type="command">
 									'. Home::getRecacheLogin() .'

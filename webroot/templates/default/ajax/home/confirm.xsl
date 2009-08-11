@@ -64,7 +64,7 @@
 				</xsl:if>
 				<tr>
 					<td class="submit" colspan="2">
-						<input type="button" value="{labels/submit}" class="button" onclick="javascript:obj_Client.sendFormData(document.getElementById('make-transfer') );" tabindex="13" title="make-transfer" />
+						<button type="button" onclick="javascript:obj_Client.sendFormData(document.getElementById('make-transfer') );" tabindex="13" title="make-transfer"><xsl:value-of select="labels/submit" /></button>
 					</td>
 				</tr>
 				</table>

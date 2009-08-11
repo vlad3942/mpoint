@@ -317,6 +317,37 @@ msgid @@@ Edit E-Mail Guide - Step 2 @@@
 msgstr @@@ An e-mail with a verification link has been sent to the entered e-mail address.
 Please open the e-mail in your e-mail client and click the link in the mail to activate your new e-mail address? @@@
 
+#: /webroot/home/missing_data.php:37
+msgid @@@ Missing Data @@@
+msgstr @@@ Missing Data @@@
+
+#: /webroot/home/missing_data.php:40
+msgid @@@ OK @@@
+msgstr @@@ OK @@@
+
+#: /webroot/home/missing_data.php:41
+msgid @@@ My Account @@@
+msgstr @@@ My Account @@@
+
+#: /webroot/home/missing_data.php:45
+msgid @@@ Missing Mobile Number Guide @@@
+msgstr @@@ Your mobile number has not yet been registered with your account.
+Registering your mobile number allows us to improve security for login and transfer by sending one-time codes via SMS.
+This service is free of charge.
+Please go to "My Account" to register your mobile number? @@@
+
+#: /webroot/home/missing_data.php:46
+msgid @@@ Missing E-Mail Address Guide @@@
+msgstr @@@ Your e-mail address has not yet been registered with your account.
+Registering your e-mail address allows us to assist you in case you've forgotten your password.
+Please go to "My Account" to register your e-mail address? @@@
+
+#: /webroot/home/missing_data.php:47
+msgid @@@ Missing Profile Info Guide @@@
+msgstr @@@ Your profile information is not yet complete.
+Completing your profile information allows us to personalise the user experience. 
+Please go to "My Account" to complete your profile information? @@@
+
 #: /webroot/home/my_account.php:37
 msgid @@@ My Account @@@
 msgstr @@@ My Account @@@
@@ -408,18 +439,18 @@ msgstr @@@ OK @@@
 
 #: /webroot/home/new_card.php:45
 msgid @@@ Add New Card Guide @@@
-msgstr @@@ In order to store a new card with your account, the account must be topped up with a small amount using your card.
+msgstr @@@ In order to store a new card with your account, the account must be topped up with a small amount of: {AMOUNT} using the card to be stored.
 This process ensures that the card is properly authenticated with the card issuer and the card data is registered with mPoint. @@@
 
-#: /webroot/home/sys/make_transfer.php:291
+#: /webroot/home/sys/make_transfer.php:294
 msgid @@@ transfer - code: 91 @@@
 msgstr @@@ transfer - code: 91 @@@
 
-#: /webroot/home/sys/make_transfer.php:344
+#: /webroot/home/sys/make_transfer.php:347
 msgid @@@ transfer - code: 92 @@@
 msgstr @@@ transfer - code: 92 @@@
 
-#: /webroot/home/sys/make_transfer.php:353
+#: /webroot/home/sys/make_transfer.php:356
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
@@ -653,8 +684,8 @@ msgstr @@@ A One Time Password which will expire in an hour has been sent to you
 Please enter the received password in the field below? @@@
 
 #: /webroot/login/sys/auth.php:152
-msgid @@@ auth - code: 100 @@@
-msgstr @@@ auth - code: 100 @@@
+msgid @@@ auth - code: 101 @@@
+msgstr @@@ auth - code: 101 @@@
 
 #: /webroot/login/sys/auth.php:186
 msgid @@@ auth - code: 100 @@@

@@ -43,7 +43,7 @@ else
 	$obj_AccountXML = simplexml_load_string($obj_mPoint->getAccountInfo($_SESSION['obj_Info']->getInfo("accountid") ) );
 	define("iACCOUNT_BALANCE", (integer) $obj_AccountXML->balance); 
 	$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH,
-								   "MIN TRANSFER" => $_SESSION['obj_CountryConfig']->getMinTransfer() / 100, "ACCOUNT BALANCE" => iACCOUNT_BALANCE / 100) );
+								   "MIN TRANSFER" => General::formatAmount($_SESSION['obj_CountryConfig'], $_SESSION['obj_CountryConfig']->getMinTransfer() ), "ACCOUNT BALANCE" => General::formatAmount($_SESSION['obj_CountryConfig'], iACCOUNT_BALANCE) ) );
 	
 	$obj_XML = simplexml_load_string(trim($HTTP_RAW_POST_DATA) );
 	
@@ -91,7 +91,7 @@ else
 			$obj_Validator = new Validate($obj_CountryConfig);
 			
 			$_OBJ_TXT->loadConstants(array("MIN MOBILE" => $obj_CountryConfig->getMinMobile(), "MAX MOBILE" => $obj_CountryConfig->getMaxMobile() ) );
-
+			
 			// Validate Input
 			foreach ($obj_XML as $input)
 			{
@@ -105,10 +105,11 @@ else
 					$oXML = simplexml_load_string($obj_mPoint->getFees(Constants::iTRANSFER_FEE, $_SESSION['obj_CountryConfig']->getID() ) );
 					$oXML = $oXML->xpath("/fees/item[@toid = ". $obj_CountryConfig->getID() ."]");
 					$oXML = $oXML[0];
-					$iAmount = (integer) $obj_XML->amount;
-					if (intval($oXML->basefee) + $iAmount * floatval($oXML->share) > intval($oXML->minfee) ) { $iAmount += intval($oXML->basefee) + $iAmount * floatval($oXML->share); }
-					else { $iAmount += (integer) $oXML->minfee / 100; }
-					$aErrCd["amount"] = $obj_Validator->valAmount(iACCOUNT_BALANCE, $iAmount);
+					if (intval($oXML->basefee) + intval($obj_XML->amount) * floatval($oXML->share) > intval($oXML->minfee) ) { $iFee = intval($oXML->basefee) + intval($obj_XML->amount) * floatval($oXML->share); }
+					else { $iFee = (integer) $oXML->minfee / 100; }
+					$_OBJ_TXT->loadConstants(array("ACCOUNT BALANCE" => General::formatAmount($_SESSION['obj_CountryConfig'], iACCOUNT_BALANCE - $iFee * 100) ) );
+					
+					$aErrCd["amount"] = $obj_Validator->valAmount(iACCOUNT_BALANCE, intval($obj_XML->amount) + $iFee);
 					break;
 				default:			// Error: Unknown tag
 					break;
@@ -145,6 +146,8 @@ else
 			$oXML = $oXML[0];
 			if (intval($oXML->basefee) + intval($obj_XML->form->amount) * floatval($oXML->share) > intval($oXML->minfee) ) { $iFee = intval($oXML->basefee) + intval($obj_XML->form->amount) * floatval($oXML->share); }
 			else { $iFee = (integer) $oXML->minfee / 100; }
+			$_OBJ_TXT->loadConstants(array("ACCOUNT BALANCE" => General::formatAmount($_SESSION['obj_CountryConfig'], iACCOUNT_BALANCE + $iFee) ) );
+			
 			$aErrCd["amount"] = $obj_Validator->valAmount(iACCOUNT_BALANCE, intval($obj_XML->form->amount) + $iFee);
 			
 		}
@@ -185,7 +188,7 @@ else
 				$iAmountSent = intval($obj_XML->form->amount) * 100;
 				$iAmountReceived = $obj_mPoint->convert($obj_CountryConfig, intval($obj_XML->form->amount) * 100);
 			}
-			echo $iAmountReceived; die();
+			
 			$iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, (string) $obj_XML->form->recipient);
 			// Currency conversion successful for Amount - Verify that recipient's balance doesn't exceed allowed amount
 			if ($iAccountID > 0 && $iAmountReceived > 0)

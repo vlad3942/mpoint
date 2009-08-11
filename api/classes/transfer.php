@@ -148,7 +148,7 @@ class Transfer extends Home
 				if (is_array($obj_Elem) === true && count($obj_Elem) > 0)
 				{
 					$obj_Elem = $obj_Elem[0];
-					$amount = $amount * (float) $obj_Elem;
+					$amount = $amount / (float) $obj_Elem;
 				}
 				// Error: Unable to convert from Euro into target currency
 				else { $amount = -3; }

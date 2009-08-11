@@ -494,7 +494,7 @@ msgid @@@ otp - code: 3 @@@
 msgstr @@@ The entered One Time Password is too short, max value is 999.999 @@@
 
 #: /webroot/login/sys/auth.php:152
-msgid @@@ auth - code: 100 @@@
+msgid @@@ auth - code: 101 @@@
 msgstr @@@ Login successful, please wait while the internal cache is being updated @@@
 
 #: /webroot/login/sys/auth.php:173
@@ -521,7 +521,7 @@ msgstr @@@ Internal Error - One Time Password could not be sent to your mobile n
 
 #: /webroot/login/sys/auth.php:214
 msgid @@@ auth - code: 102 @@@
-msgstr @@@ You haven't registered your mobile number. Please go to "My Account" and update your profile? @@@
+msgstr @@@ Login successful, please wait while the internal cache is being updated @@@
 
 #: /webroot/login/sys/auth.php:226
 msgid @@@ auth - code: 91 @@@
@@ -807,7 +807,7 @@ msgstr @@@ The entered One Time Password is too short, max value is 999.999 @@@
 msgid @@@ code - code: 100 @@@
 msgstr @@@  @@@
 
-#: /webroot/home/sys/make_transfer.php:126
+#: /webroot/home/sys/make_transfer.php:127
 msgid @@@ recipient - code: 1 @@@
 msgstr @@@ Please enter the recipient's mobile number or E-Mail address? @@@
 msgid @@@ recipient - code: 2 @@@
@@ -835,7 +835,7 @@ msgstr @@@ The entered amount is too great, max amount is {ACCOUNT BALANCE} @@@
 msgid @@@ amount - code: 10 @@@
 msgstr @@@  @@@
 
-#: /webroot/home/sys/make_transfer.php:169
+#: /webroot/home/sys/make_transfer.php:172
 msgid @@@ countryid - code: 1 @@@
 msgstr @@@ Please select a country from the dropdown? @@@
 msgid @@@ countryid - code: 2 @@@
@@ -891,7 +891,7 @@ msgstr @@@ The entered One Time Password is too short, max value is 999.999 @@@
 msgid @@@ code - code: 100 @@@
 msgstr @@@  @@@
 
-#: /webroot/home/sys/make_transfer.php:264
+#: /webroot/home/sys/make_transfer.php:267
 msgid @@@ transfer - code: 100 @@@
 msgstr @@@ Transfer completed @@@
 msgid @@@ transfer - code: 101 @@@
@@ -899,11 +899,11 @@ msgstr @@@ Transfer completed - recipient notified via SMS @@@
 msgid @@@ transfer - code: 102 @@@
 msgstr @@@ Transfer completed - recipient notified via E-Mail @@@
 
-#: /webroot/home/sys/make_transfer.php:291
+#: /webroot/home/sys/make_transfer.php:294
 msgid @@@ transfer - code: 91 @@@
 msgstr @@@ Internal Error - Unable to make transfer. Please try again? @@@
 
-#: /webroot/home/sys/make_transfer.php:299
+#: /webroot/home/sys/make_transfer.php:302
 msgid @@@ account - code: 1 @@@
 msgstr @@@ Internal Error: Transfer aborted - Unable to automatically create new account for recipient. @@@
 msgid @@@ account - code: 2 @@@
@@ -911,7 +911,7 @@ msgstr @@@ Internal Error: Transfer aborted  - Unable to notify recipient of the
 msgid @@@ account - code: 3 @@@
 msgstr @@@ Internal Error: Transfer aborted  - Unable to notify recipient of the awaiting transfer. @@@
 
-#: /webroot/home/sys/make_transfer.php:314
+#: /webroot/home/sys/make_transfer.php:317
 msgid @@@ password - code: 4 @@@
 msgstr @@@ Authentication failed - Password doesn't match for the account, please try again? @@@
 msgid @@@ code - code: 4 @@@
@@ -927,17 +927,17 @@ msgstr @@@ Internal Error - One Time Password could not be used, please try agai
 msgid @@@ code - code: 100 @@@
 msgstr @@@  @@@
 
-#: /webroot/home/sys/make_transfer.php:330
+#: /webroot/home/sys/make_transfer.php:333
 msgid @@@ transfer - code: 199 @@@
 msgstr @@@ Please enter your password to confirm your transfer? @@@
 msgid @@@ transfer - code: 200 @@@
 msgstr @@@ A Confirmation Code has been sent to your mobile number. @@@
 
-#: /webroot/home/sys/make_transfer.php:344
+#: /webroot/home/sys/make_transfer.php:347
 msgid @@@ transfer - code: 92 @@@
 msgstr @@@ Internal Error - Confirmation Code could not be sent to your mobile number, please try again? @@@
 
-#: /webroot/home/sys/make_transfer.php:349
+#: /webroot/home/sys/make_transfer.php:352
 msgid @@@ amount - code: 4 @@@
 msgstr @@@ Internal Error - Unable to retrieve currency conversion rates from the Central European Bank. Please try again later? @@@
 msgid @@@ amount - code: 5 @@@

@@ -121,7 +121,7 @@
 			</tr>
 			<tr>
 				<td class="submit" colspan="2">
-					<input type="button" value="{submit}" class="button" onclick="javascript:obj_Client.sendFormData(document.getElementById('new-account') );" tabindex="9" title="save" />
+					<button type="button" onclick="javascript:obj_Client.sendFormData(document.getElementById('new-account') );" tabindex="9" title="save"><xsl:value-of select="submit" /></button>
 				</td>
 			</tr>
 			</table>

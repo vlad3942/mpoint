@@ -22,7 +22,7 @@
 				<xsl:value-of select="labels/info" />
 			</div>
 			<div id="close">
-				<input type="button" class="button" value="{labels/close}" onclick="javascript:window.close();" />
+				<button type="button" onclick="javascript:window.close();"><xsl:value-of select="labels/close" /></button>
 			</div>
 		</div>
 	</body>

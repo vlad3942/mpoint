@@ -115,7 +115,7 @@
 				</tr>
 				<tr>
 					<td class="submit" colspan="2">
-						<input type="button" value="{labels/submit}" class="button" onclick="javascript:obj_Client.sendFormData(document.getElementById('init-transfer') );" tabindex="4" title="init-transfer" />
+						<button type="button" onclick="javascript:obj_Client.sendFormData(document.getElementById('init-transfer') );" tabindex="4" title="init-transfer"><xsl:value-of select="labels/submit" /></button>
 					</td>
 				</tr>
 				</table>

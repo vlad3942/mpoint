@@ -42,7 +42,7 @@ else
 				<submit><?= $_OBJ_TXT->_("OK"); ?></submit>
 			</labels>
 			
-			<guide><?= $_OBJ_TXT->_("Add New Card Guide"); ?></guide>
+			<guide><?= str_replace("{AMOUNT}", General::formatAmount($_SESSION['obj_CountryConfig'], $_SESSION['obj_CountryConfig']->getAddCardAmount() ), $_OBJ_TXT->_("Add New Card Guide") ); ?></guide>
 			
 			<?= $obj_mPoint->getAccountInfo($_SESSION['obj_Info']->getInfo("accountid") ); ?>
 			<?= $obj_ClientConfig->toXML(); ?>

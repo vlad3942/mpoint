@@ -15,10 +15,7 @@
 		<br />
 		<div class="info"><xsl:value-of select="guide" /></div>
 		<br />
-		<form id="edit-mob" action="/home/sys/save_mobile.php" method="post">
-			<div>
-				<input type="hidden" name="mobile" value="" />
-			</div>
+		<form id="edit-mob" action="/home/sys/send_code.php" method="post">
 			<div>
 				<table>	
 				<tr>
@@ -37,7 +34,7 @@
 				</tr>
 				<tr>
 					<td class="submit" colspan="2">
-						<input type="button" value="{labels/submit}" class="button" onclick="javascript:obj_Client.sendFormData(document.getElementById('edit-mob') );" tabindex="12" title="save" />
+						<button type="button" onclick="javascript:obj_Client.sendFormData(document.getElementById('edit-mob') );" tabindex="12" title="save"><xsl:value-of select="labels/submit" /></button>
 					</td>
 				</tr>
 				</table>

@@ -34,7 +34,7 @@
 				</tr>
 				<tr>
 					<td class="submit" colspan="2">
-						<input type="button" value="{labels/submit}" class="button" onclick="javascript:obj_Client.sendFormData(document.getElementById('edit-mail') );" tabindex="12" title="save" />
+						<button type="button" onclick="javascript:obj_Client.sendFormData(document.getElementById('edit-mail') );" tabindex="12" title="save"><xsl:value-of select="labels/submit" /></button>
 					</td>
 				</tr>
 				</table>
