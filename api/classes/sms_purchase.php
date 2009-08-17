@@ -8,7 +8,7 @@
  * @link http://www.cellpointmobile.com
  * @package API
  * @subpackage SMS_Purchase
- * @version 1.00
+ * @version 1.10
  */
 
 /**
@@ -85,6 +85,24 @@ class SMS_Purchase extends MobileWeb
 		$this->newMessage($txnid, Constants::iCONST_LINK_STATE, $sLink);
 
 		return $sLink;
+	}
+	
+	public function findTxnIDFromSMS(&$oMI)
+	{
+		$sql = "SELECT Txn.id
+				FROM Log.Transaction_Tbl Txn
+				WHERE Txn.typeid = ". Constants::iSMS_PURCHASE_TYPE ." AND Txn.clientid = ". $this->getClientConfig()->getID() ."
+					AND Txn.countryid = ". $oMI->getCountry() ." AND Txn.mobile = '". $oMI->getSender() ."'
+					AND NOT EXISTS (SELECT id
+									FROM Log.Message_Tbl
+									WHERE Txn.id = txnid AND stateid IN (". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_REJECTED_STATE .")
+									LIMIT 1)
+				ORDER BY Txn.id DESC
+				LIMIT 1";
+//		echo $sql ."\n";
+		$RS = $this->getDBConn()->getName($sql);
+		
+		return is_array($RS) === true ? $RS["ID"]: -1;
 	}
 
 	/**

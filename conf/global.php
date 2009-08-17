@@ -77,7 +77,7 @@ $aDB_CONN_INFO["session"]["method"] = 1;
  * Connection info for sending error reports to a remote host
  */
 $aHTTP_CONN_INFO["iemendo"]["protocol"] = "http";
-$aHTTP_CONN_INFO["iemendo"]["host"] = "iemendo.cydev.biz";
+$aHTTP_CONN_INFO["iemendo"]["host"] = "iemendo.cellpointmobile.com";
 $aHTTP_CONN_INFO["iemendo"]["port"] = 80;
 $aHTTP_CONN_INFO["iemendo"]["timeout"] = 20;
 $aHTTP_CONN_INFO["iemendo"]["path"] = "/api/receive_report.php";
@@ -207,4 +207,17 @@ define("iMPOINT_LOGO_SCALE", 30);
  *
  */
 define("sDEFAULT_PRODUCT_LOGO", "http://". $_SERVER['HTTP_HOST'] ."/img/default_product_logo.gif");
+
+/**
+ * List of Words used to Accept an SMS Purchase
+ * 
+ * @var array
+ */
+$aACCEPT_WORDS = array("JA", "OK", "YES", "GO", "YUP", "YEAH", "Y");
+/**
+ * List of Words used to Reject an SMS Purchase
+ * 
+ * @var array
+ */
+$aREJECT_WORDS = array("NEJ", "NO", "NOPE", "N", "CANCEL", "QUIT", "END");
 ?>

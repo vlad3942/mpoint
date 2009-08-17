@@ -10,7 +10,7 @@
  * @link http://www.cellpointmobile.com
  * @package Payment
  * @subpackage EndUserAccount
- * @version 1.00
+ * @version 1.01
  */
 
 /* ==================== End-User Account Exception Classes Start ==================== */
@@ -47,6 +47,13 @@ class EndUserAccount extends Home
 
 		$this->_obj_ClientConfig = $oCI;
 	}
+	
+	/**
+	 * Returns a reference to the data object with the Client's configuration
+	 *
+	 * @return ClientConfig
+	 */
+	public function &getClientConfig() { return $this->_obj_ClientConfig; }
 
 	/**
 	 * Creates a new End-User Account.
@@ -243,11 +250,11 @@ class EndUserAccount extends Home
 				// Not a System Client
 				if ($oCC->getCountryConfig()->getID() != $oCC->getID() )
 				{
-					$sql .= "
+/*					$sql .= "
 							AND (CLA.clientid = ". $oCC->getID() ." OR EUA.countryid = CLA.clientid 
 							OR NOT EXISTS (SELECT id
 										   FROM EndUser.CLAccess_Tbl
-										   WHERE accountid = EUA.id) )";
+										   WHERE accountid = EUA.id) )"; */
 				}
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
@@ -269,7 +276,7 @@ class EndUserAccount extends Home
 	{
 		$sql = "INSERT INTO EndUser.Transaction_Tbl
 					(accountid, typeid, txnid, amount, ip, address)
-				SELECT ". intval($id) .", ". Constants::iEMONEY_TOPUP_TYPE .", ". intval($txnid) .", ". abs(intval($amount) ) .", Txn.ip, Txn.mobile
+				SELECT ". intval($id) .", ". Constants::iEMONEY_TOPUP_TYPE .", ". intval($txnid) .", ". abs(intval($amount) ) .", ip, mobile
 				FROM Log.Transaction_Tbl
 				WHERE id = ". intval($txnid);
 //		echo $sql ."\n";
@@ -293,7 +300,7 @@ class EndUserAccount extends Home
 
 		$sql = "INSERT INTO EndUser.Transaction_Tbl
 					(accountid, typeid, txnid, amount, ip, address)
-				SELECT ". intval($id) .", ". Constants::iEMONEY_PURCHASE_TYPE .", ". intval($txnid) .", ". intval($amount) .", Txn.ip, Txn.mobile
+				SELECT ". intval($id) .", ". Constants::iEMONEY_PURCHASE_TYPE .", ". intval($txnid) .", ". intval($amount) .", ip, mobile
 				FROM Log.Transaction_Tbl
 				WHERE id = ". intval($txnid);
 //		echo $sql ."\n";
@@ -314,7 +321,7 @@ class EndUserAccount extends Home
 	{
 		$sql = "INSERT INTO EndUser.Transaction_Tbl
 					(accountid, typeid, txnid, ip, address)
-				SELECT ". intval($id) .", ". Constants::iCARD_PURCHASE_TYPE .", ". intval($txnid) .", Txn.ip, Txn.mobile
+				SELECT ". intval($id) .", ". Constants::iCARD_PURCHASE_TYPE .", ". intval($txnid) .", ip, mobile
 				FROM Log.Transaction_Tbl
 				WHERE id = ". intval($txnid);
 //		echo $sql ."\n";

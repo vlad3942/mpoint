@@ -8,7 +8,7 @@
  * @link http://www.cellpointmobile.com
  * @package Payment
  * @subpackage EndUserAccount
- * @version 1.0
+ * @version 1.10
  */
 
 // Require Global Include File

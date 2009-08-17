@@ -45,6 +45,8 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 	</labels>
 
 	<?= $obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount() ); ?>
+	
+	<?= $obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_UA']); ?>
 
 	<!-- DIBS Custom Pages: Payment Accepted -->
 	<accept>

@@ -103,8 +103,14 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:variable>
-
-	<xsl:if test="/root/cards/@accountid &gt; 0 or @id != 11">
+	
+	<!--
+	  - Only display option if:
+	  - "Card" is NOT "My Account"
+	  - Transaction type is NOT a Top-Up
+	  - Transaction type is a Top-Up but NOT a Card Registration and the End-User has previously stored a payment card
+	  -->
+	<xsl:if test="@id != 11 or /root/transaction/@type &lt; 100 or /root/transaction/@type &gt; 109 or (/root/transaction/auto-store-card = 'false' and count(/root/stored-cards/card) &gt; 0)">
 		<div>
 			<form action="{func:constLink('/cpm/payment.php') }" method="post">
 				<div class="{$css}">

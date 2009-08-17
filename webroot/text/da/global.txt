@@ -1,44 +1,55 @@
-#: /webroot/cpm/payment.php:72
+#: /webroot/buy/sms.php:97
+msgid @@@ SMS Purchase MT @@@
+msgstr @@@ Du er ved at lave et køb hos en sælger der bruger mPoint.
+Sælger: {CLIENT}
+Pris: {AMOUNT}
+Bekræft venligst købet ved at svare JA til denne SMS? @@@
+
+#: /webroot/cpm/payment.php:81
 msgid @@@ Pay using Account @@@
 msgstr @@@ Betal med Konto @@@
 
-#: /webroot/cpm/payment.php:81
+#: /webroot/cpm/payment.php:90
 msgid @@@ Step 2 of 2 @@@
 msgstr @@@ Trin 2 af 2 @@@
 
-#: /webroot/cpm/payment.php:82
+#: /webroot/cpm/payment.php:91
 msgid @@@ Price @@@
 msgstr @@@ Pris @@@
 
-#: /webroot/cpm/payment.php:83
+#: /webroot/cpm/payment.php:92
 msgid @@@ Account - Info @@@
 msgstr @@@ Vælg venligst en betalingsmetode og bekræft betalingen ved at indtaste dit kodeord @@@
 
-#: /webroot/cpm/payment.php:84
+#: /webroot/cpm/payment.php:93
 msgid @@@ My Account @@@
 msgstr @@@ Min Konto @@@
 
-#: /webroot/cpm/payment.php:85
+#: /webroot/cpm/payment.php:94
 msgid @@@ Balance @@@
 msgstr @@@ Saldo @@@
 
-#: /webroot/cpm/payment.php:86
+#: /webroot/cpm/payment.php:95
 msgid @@@ Stored Card @@@
 msgstr @@@ Gemt Kort @@@
 
-#: /webroot/cpm/payment.php:87
+#: /webroot/cpm/payment.php:96
 msgid @@@ Stored Cards @@@
 msgstr @@@ Gemte Kort @@@
 
-#: /webroot/cpm/payment.php:88
+#: /webroot/cpm/payment.php:97
 msgid @@@ Password @@@
 msgstr @@@ Kodeord @@@
 
-#: /webroot/cpm/payment.php:89
+#: /webroot/cpm/payment.php:98
 msgid @@@ Complete Payment @@@
 msgstr @@@ Gennemfør Betaling @@@
 
-#: /webroot/cpm/payment.php:90
+#: /webroot/cpm/payment.php:99
+msgid @@@ Create Account @@@
+msgstr @@@ Create Account @@@
+
+#: /webroot/cpm/payment.php:100
 msgid @@@ Top-Up @@@
 msgstr @@@ Indsæt @@@
 
@@ -706,72 +717,72 @@ msgstr @@@ Log ind @@@
 msgid @@@ Create Account @@@
 msgstr @@@ Opret Konto @@@
 
-#: /webroot/new/default.php:62
+#: /webroot/new/default.php:71
 msgid @@@ mPoint @@@
 msgstr @@@ mPoint @@@
 
-#: /webroot/new/default.php:63
+#: /webroot/new/default.php:72
 msgid @@@ Unsupported Browser @@@
 msgstr @@@ Din browser er ikke understøttet @@@
 
-#: /webroot/new/step1.php:40
-msgid @@@ Create Account @@@
-msgstr @@@ Opret Konto @@@
-
-#: /webroot/new/step1.php:50
+#: /webroot/new/step1.php:43
 msgid @@@ Create Account @@@
 msgstr @@@ Opret Konto @@@
 
 #: /webroot/new/step1.php:53
-msgid @@@ Step 1 of 2 @@@
-msgstr @@@ Trin 1 af 2 @@@
-
-#: /webroot/new/step1.php:54
-msgid @@@ Country @@@
-msgstr @@@ Land @@@
-
-#: /webroot/new/step1.php:55
-msgid @@@ Transfer Code @@@
-msgstr @@@ Overførsels Kode @@@
-
-#: /webroot/new/step1.php:56
-msgid @@@ Firstname @@@
-msgstr @@@ Fornavn @@@
-
-#: /webroot/new/step1.php:57
-msgid @@@ Lastname @@@
-msgstr @@@ Efternavn @@@
-
-#: /webroot/new/step1.php:58
-msgid @@@ Mobile @@@
-msgstr @@@ Mobil Nr. @@@
-
-#: /webroot/new/step1.php:59
-msgid @@@ E-Mail @@@
-msgstr @@@ E-Mail @@@
-
-#: /webroot/new/step1.php:60
-msgid @@@ Password @@@
-msgstr @@@ Kodeord @@@
-
-#: /webroot/new/step1.php:61
-msgid @@@ Repeat Password @@@
-msgstr @@@ Gentag Kodeord @@@
-
-#: /webroot/new/step1.php:62
 msgid @@@ Create Account @@@
 msgstr @@@ Opret Konto @@@
 
+#: /webroot/new/step1.php:56
+msgid @@@ Step 1 of 2 @@@
+msgstr @@@ Trin 1 af 2 @@@
+
+#: /webroot/new/step1.php:57
+msgid @@@ Country @@@
+msgstr @@@ Land @@@
+
+#: /webroot/new/step1.php:58
+msgid @@@ Transfer Code @@@
+msgstr @@@ Overførsels Kode @@@
+
+#: /webroot/new/step1.php:59
+msgid @@@ Firstname @@@
+msgstr @@@ Fornavn @@@
+
+#: /webroot/new/step1.php:60
+msgid @@@ Lastname @@@
+msgstr @@@ Efternavn @@@
+
+#: /webroot/new/step1.php:61
+msgid @@@ Mobile @@@
+msgstr @@@ Mobil Nr. @@@
+
+#: /webroot/new/step1.php:62
+msgid @@@ E-Mail @@@
+msgstr @@@ E-Mail @@@
+
 #: /webroot/new/step1.php:63
+msgid @@@ Password @@@
+msgstr @@@ Kodeord @@@
+
+#: /webroot/new/step1.php:64
+msgid @@@ Repeat Password @@@
+msgstr @@@ Gentag Kodeord @@@
+
+#: /webroot/new/step1.php:65
+msgid @@@ Create Account @@@
+msgstr @@@ Opret Konto @@@
+
+#: /webroot/new/step1.php:66
 msgid @@@ ( Select ) @@@
 msgstr @@@ ( Vælg ) @@@
 
-#: /webroot/new/step1.php:64
+#: /webroot/new/step1.php:67
 msgid @@@ Please complete the form below to set the password for your account @@@
 msgstr @@@ Udfyld venligst nedenstående felter for at oprette en konto.
 Har du ikke en overførsels kode kan dette felt efterlades blankt. @@@
 
-#: /webroot/new/step1.php:67
+#: /webroot/new/step1.php:70
 msgid @@@ Create Account Guide - Step 1 @@@
 msgstr @@@ Udfyld venligst nedenstående felter for at oprette en konto.
 Har du ikke en overførsels kode kan dette felt efterlades blankt. @@@
@@ -1021,6 +1032,10 @@ msgstr @@@ Gentag kodeord @@@
 msgid @@@ Save @@@
 msgstr @@@ Gem @@@
 
+#: /webroot/pay/sys/sms.php:71
+msgid @@@ SMS Purchase - Unknown Reponse @@@
+msgstr @@@ SMS Purchase - Unknown Reponse @@@
+
 #: /webroot/shop/delivery.php:55
 msgid @@@ Recipient @@@
 msgstr @@@ Modtager @@@
@@ -1151,7 +1166,7 @@ Sælger: {CLIENT}
 Ordre Nr: {ORDERID}
 Pris: {PRICE} @@@
 
-#: /api/classes/enduser_account.php:337
+#: /api/classes/enduser_account.php:344
 msgid @@@ mPoint - Account Info @@@
 msgstr @@@ Din konto er blevet oprettet og er nu klar til brug.
 Husk, du kan altid administrere kontoen på {URL}.

@@ -79,11 +79,6 @@
 			<xsl:if test="$current = 1 or //stored-cards/card[position() = $current - 1]/client/@id != client/@id">
 				<span id="stored-card-data-{client/@id}">
 					<table cellpadding="0" cellspacing="0">
-					<tr>
-						<td colspan="4">
-							<h2><xsl:value-of select="client" /></h2>
-						</td>
-					</tr>
 					<!-- Show Preferred Card -->
 					<tr>
 						<td colspan="4" class="label"><xsl:value-of select="//labels/preferred" /></td>
@@ -217,7 +212,7 @@
 	<tr class="{$css}">
 		<td><img src="/img/31x20_card_{type/@id}.png" width="31" height="20" alt="- {type} -" /></td>
 		<td><xsl:value-of select="mask" /></td>
-		<td class="info">(<xsl:value-of select="expiry" />)<xsl:value-of select="position()" /></td>
+		<td class="info">(<xsl:value-of select="expiry" />)</td>
 		<td>
 			<xsl:choose>
 			<xsl:when test="position() = 1">

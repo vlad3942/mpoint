@@ -293,6 +293,8 @@ msgid @@@ Shop Top-Up - 1 @@@
 msgstr @@@ Din nuværende betaling er blevet sat på hold og vil automatisk blive genoptaget når du har indsat penge på din konto @@@
 msgid @@@ Create Account - 1 @@@
 msgstr @@@ Vi kunne desværre ikke identificere dit telefonnummer automatisk @@@
+msgid @@@ Create Account - 2 @@@
+msgstr @@@ Unable to automatically determine mobile number @@@
 msgid @@@ Create Account - 11 @@@
 msgstr @@@ Indtast venligst et kodeord? @@@
 msgid @@@ Create Account - 12 @@@

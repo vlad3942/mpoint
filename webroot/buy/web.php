@@ -21,13 +21,13 @@ require_once("../inc/include.php");
 // Require the PHP API for handling the connection to GoMobile
 require_once(sAPI_CLASS_PATH ."/gomobile.php");
 
-// Require Business logic for the validating client Input
-require_once(sCLASS_PATH ."/validate.php");
+// Require Business logic for the End-User Account Component
+require_once(sCLASS_PATH ."/enduser_account.php");
 // Require Business logic for the Mobile Web module
 require_once(sCLASS_PATH ."/mobile_web.php");
 
-// Require Business logic for the End-User Account Component
-require_once(sCLASS_PATH ."/enduser_account.php");
+// Require Business logic for the validating client Input
+require_once(sCLASS_PATH ."/validate.php");
 
 $aMsgCds = array();
 
@@ -54,7 +54,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if (array_key_exists("cancel-url", $_REQUEST) === false) { $_REQUEST['cancel-url'] = $obj_ClientConfig->getCancelURL(); }
 	if (array_key_exists("callback-url", $_REQUEST) === false) { $_REQUEST['callback-url'] = $obj_ClientConfig->getCallbackURL(); }
 	if (array_key_exists("language", $_REQUEST) === false) { $_REQUEST['language'] = $obj_ClientConfig->getLanguage(); }
-
+	
 	$obj_mPoint = new MobileWeb($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 	$iTxnID = $obj_mPoint->newTransaction(Constants::iWEB_PURCHASE_TYPE);
 
@@ -67,8 +67,8 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	// Validate URLs
 	if ($obj_Validator->valURL($_REQUEST['logo-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['logo-url']) + 70] = $_REQUEST['logo-url']; }
 	if ($obj_Validator->valURL($_REQUEST['css-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['css-url']) + 80]= $_REQUEST['css-url']; }
-	if ($obj_Validator->valURL($_REQUEST['accept-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['accept-url']) + 90] = $_REQUEST['accept-url']; }
-	if ($obj_Validator->valURL($_REQUEST['cancel-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['cancel-url']) + 100] = $_REQUEST['cancel-url']; }
+	if ($obj_Validator->valURL($_REQUEST['accept-url']) > 1 && $obj_Validator->valURL($_REQUEST['accept-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['accept-url']) + 90] = $_REQUEST['accept-url']; }
+	if ($obj_Validator->valURL($_REQUEST['cancel-url']) > 1 && $obj_Validator->valURL($_REQUEST['cancel-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['cancel-url']) + 100] = $_REQUEST['cancel-url']; }
 	if ($obj_Validator->valURL($_REQUEST['callback-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['callback-url']) + 110] = $_REQUEST['callback-url']; }
 	if ($obj_Validator->valLanguage($_REQUEST['language']) != 10) { $aMsgCds[$obj_Validator->valLanguage($_REQUEST['language']) + 130] = $_REQUEST['language']; }
 	if ($obj_Validator->valEMail($_REQUEST['email']) != 1 && $obj_Validator->valEMail($_REQUEST['email']) != 10) { $aMsgCds[$obj_Validator->valEMail($_REQUEST['email']) + 140] = $_REQUEST['email']; }
@@ -87,7 +87,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $_REQUEST);
 			// Associate End-User Account (if exists) with Transaction
 			$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getMobile() );
-			if ($iAccountID == -1 ) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getEMail() ); }
+			if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getEMail() ); }
 			$_SESSION['obj_TxnInfo']->setAccountID($iAccountID);
 			
 			// Update Transaction Log

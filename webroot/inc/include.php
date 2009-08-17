@@ -100,7 +100,8 @@ new RemoteReport(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["iemendo"]), iOU
 // Web Request
 if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_SERVER['PHP_SELF']) == true || eregi("/buy/topup.php", $_SERVER['PHP_SELF']) == true)
 	&& eregi("/subscr/", $_SERVER['PHP_SELF']) == false && eregi("/callback/", $_SERVER['PHP_SELF']) == false
-	&& eregi("/surepay/", $_SERVER['PHP_SELF']) == false && empty($_SERVER['DOCUMENT_ROOT']) === false)
+	&& eregi("/surepay/", $_SERVER['PHP_SELF']) == false && empty($_SERVER['DOCUMENT_ROOT']) === false
+	&& eregi("/pay/sys/sms.php", $_SERVER['PHP_SELF']) == false)
 {
 	// Start user session
 	new Session($aDB_CONN_INFO["session"], iOUTPUT_METHOD, sERROR_LOG);
@@ -121,8 +122,7 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 		 * Use Output buffering to "magically" transform the XML via XSL behind the scene
 		 * This means that all PHP scripts must output a wellformed XML document.
 		 * The XML in turn must refer to an XSL Stylesheet by using the xml-stylesheet tag
-		 */
-		ob_start(array(new Output("all", false, $_SESSION['obj_UA']), "transform") );
+		 */		ob_start(array(new Output("all", false, $_SESSION['obj_UA']), "transform") );
 	}
 	else { header('Content-Type: text/xml; charset="UTF-8"'); }
 }

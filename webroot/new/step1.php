@@ -15,6 +15,9 @@ require_once("../inc/include.php");
 // Initialize Standard content Object
 $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 
+// Re-Build HTTP GET super global to support arrays
+rebuild_get();
+
 // Set Defaults
 if (array_key_exists("temp", $_SESSION) === false) { $_SESSION['temp'] = array(); }
 if (array_key_exists("countryid", $_SESSION['temp']) === false) { $_SESSION['temp']['countryid'] = $obj_mPoint->getCountryFromIP($_SERVER['REMOTE_ADDR']); }
@@ -22,7 +25,7 @@ if (array_key_exists("checksum", $_GET) === true) { $_SESSION['temp']['checksum'
 if (array_key_exists("email", $_GET) === true) { $_SESSION['temp']['email'] = strtolower($_GET['email']); }
 
 // Account being created via a Mobile Device
-if (array_key_exists("obj_UA", $_SESSION) === true)
+if (General::getBrowserType() == "mobile")
 {	
 	$sMarkup = General::getMarkupLanguage($_SESSION['obj_UA']);
 }
@@ -34,7 +37,7 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. $sMar
 <root type="page">
 <?php
 // Account being created via a Mobile Device
-if (array_key_exists("obj_UA", $_SESSION) === true)
+if (General::getBrowserType() == "mobile")
 {
 ?>
 	<title><?= $_OBJ_TXT->_("Create Account"); ?></title>

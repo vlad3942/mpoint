@@ -21,12 +21,16 @@ if (General::getBrowserType() == "mobile")
 	// Instantiate data object with the User Agent Profile for the customer's mobile device.
 	$_SESSION['obj_UA'] = UAProfile::produceUAProfile();
 	if (array_key_exists("checksum", $_GET) === true) { $_SESSION['temp']['checksum'] = strtoupper($_GET['checksum']); }
-	
+
 	$obj_mPoint = new IPX("cellpoint", "KMs3M6rt36");
 	// Initiate new user identification via Ericsson IPX's WAP Identification API 
 	if ($_SESSION['obj_Info']->getInfo("ipx-session-id") === false)
 	{
-		$obj_XML = $obj_mPoint->start("http://". $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] ."?". session_name() ."=". sessionid() );
+		$_SESSION['temp']['query_string'] = str_replace("&". session_name() ."=". session_id(), "", $_SERVER['QUERY_STRING']);
+		$_SESSION['temp']['query_string'] = str_replace(session_name() ."=". session_id() ."&", "", $_SESSION['temp']['query_string']);
+		$_SESSION['temp']['query_string'] = str_replace(session_name() ."=". session_id(), "", $_SESSION['temp']['query_string']);
+		
+		$obj_XML = $obj_mPoint->start("http://". $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] ."?". session_name() ."=". session_id() );
 		$_SESSION['obj_Info']->setInfo("ipx-session-id", (string) $obj_XML->sessionId);
 		
 		header("Location: ". $obj_XML->redirectURL);
@@ -35,12 +39,17 @@ if (General::getBrowserType() == "mobile")
 	else
 	{
 		$obj_XML = $obj_mPoint->identify($_SESSION['obj_Info']->getInfo("ipx-session-id") );
+		
 		$_SESSION['obj_Info']->setInfo("countryid", $obj_mPoint->getCountryID( (string) $obj_XML->consumerId) );
 		$_SESSION['obj_Info']->setInfo("mobile", $obj_mPoint->getMobile( (string) $obj_XML->consumerId) );
-		if ( floatval($_SESSION['obj_Info']->getInfo("mobile") ) == 0) { $msg = "msg=1"; }
 		$_SESSION['obj_Info']->delInfo("ipx-session-id");
 		
-		header("Location: http://". $_SERVER['HTTP_HOST'] ."/new/step1.php?". session_name() ."=". session_id() ."&". $msg);
+		$msg = "";
+		if ( floatval($_SESSION['obj_Info']->getInfo("mobile") ) == 0) { $msg .= "&msg=1"; }
+		if (empty($_SESSION['temp']['query_string']) === false) { $msg .= "&". $_SESSION['temp']['query_string']; }
+		
+		header("Location: http://". $_SERVER['HTTP_HOST'] ."/new/step1.php?". session_name() ."=". session_id() . $msg);
+		unset($_SESSION['temp']['query_string']);
 	}
 }
 // Web Browser

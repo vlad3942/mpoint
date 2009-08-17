@@ -61,6 +61,10 @@
 					<tr>
 						<td>
 							<xsl:choose>
+							<!-- End-User does not have an account -->
+							<xsl:when test="string-length(account/@id) = 0">
+								<a id="top-up" href="{func:constLink('/new/?msg=2') }"><xsl:value-of select="labels/create-account" /></a>
+							</xsl:when>
 							<!-- Insufficient Funds -->
 							<xsl:when test="account/balance &lt; transaction/amount">
 								<a id="top-up" href="{func:constLink('/shop/topup.php?msg=1') }"><xsl:value-of select="labels/top-up" /></a>
@@ -83,7 +87,7 @@
 						</td>
 	
 						<td><img src="{/root/system/protocol}://{/root/system/host}/img/{account/logo-width}x{account/logo-height}_card_11_{/root/system/session/@id}.png" width="{account/logo-width}" height="{account/logo-height}" alt="" /></td>
-						<td colspan="3" class="{$css}"><xsl:value-of select="labels/balance" />: <xsl:value-of select="account/funds" /></td>
+						<td colspan="3"><xsl:value-of select="labels/balance" />: <xsl:value-of select="account/funds" /></td>
 					</tr>
 					</table>
 				</div>

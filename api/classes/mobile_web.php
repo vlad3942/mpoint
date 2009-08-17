@@ -8,21 +8,15 @@
  * @link http://www.cellpointmobile.com
  * @package API
  * @subpackage MobileWeb
- * @version 1.00
+ * @version 1.10
  */
 
 /**
  * Model Class containing all the Business Logic for handling an mPoint Transaction from either a Mobile Internet site or an Mobile Application.
  *
  */
-class MobileWeb extends General
+class MobileWeb extends EndUserAccount
 {
-	/**
-	 * Data object with the Client's configuration
-	 *
-	 * @var ClientConfig
-	 */
-	private $_obj_ClientConfig;
 	/**
 	 * Unique ID for the Started Transaction
 	 *
@@ -31,31 +25,11 @@ class MobileWeb extends General
 	private $_iTransactionID;
 	
 	/**
-	 * Default Constructor.
-	 *
-	 * @param	RDB $oDB			Reference to the Database Object that holds the active connection to the mPoint Database
-	 * @param	TranslateText $oDB 	Text Translation Object for translating any text into a specific language
-	 * @param 	ClientConfig $oCC 	Data object with the Client's configuration
-	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt, ClientConfig &$oCC)
-	{
-		parent::__construct($oDB, $oTxt);
-		
-		$this->_obj_ClientConfig = $oCC;
-	}
-	
-	/**
 	 * Returns the Unique ID for the Started Transaction.
 	 *
 	 * @return integer
 	 */
 	protected function getTransactionID() { return $this->_iTransactionID; }
-	/**
-	 * Returns the Data object with the Client's configuration
-	 *
-	 * @return ClientConfig
-	 */
-	public function &getClientConfig() { return $this->_obj_ClientConfig; }
 	
 	/**
 	 * Starts a new Transaction and generates a unique ID for the log entry.
@@ -70,7 +44,7 @@ class MobileWeb extends General
 	 */
 	public function newTransaction($tid)
 	{
-		$this->_iTransactionID = parent::newTransaction($this->_obj_ClientConfig, $tid);
+		$this->_iTransactionID = parent::newTransaction($this->getClientConfig(), $tid);
 		
 		return $this->_iTransactionID;
 	}

@@ -46,6 +46,13 @@ if (count($aMsgCds) == 0)
 	// Mobile Number saved to Account
 	if ($code == 10)
 	{
+		// Account created as part of a payment transaction
+		if (array_key_exists("obj_TxnInfo", $_SESSION) === true)
+		{
+			$_SESSION['obj_TxnInfo']->setAccountID($_SESSION['temp']['accountid']);
+			// Update Transaction Log
+			$obj_mPoint->logTransaction($_SESSION['obj_TxnInfo']);
+		}
 		$_SESSION['temp'] = array("countryid" => $_SESSION['temp']['obj_CountryConfig']->getID(),
 								  "username" => $mob);
 		$aMsgCds[] = 101;

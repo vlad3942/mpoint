@@ -58,47 +58,58 @@ try
 		$obj_mPoint->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), $_SESSION['temp']['cardtype'], $obj_MsgInfo->getReturnCodes(), $obj_MsgInfo->getGoMobileID() );
 		break;
 	case (Constants::iEMONEY_CARD):	// My Account
-		/*
-		 * Use Output buffering to "magically" transform the XML via XSL behind the scene
-		 * This means that all PHP scripts must output a wellformed XML document.
-		 * The XML in turn must refer to an XSL Stylesheet by using the xml-stylesheet tag
-		 */
-		ob_start(array(new Output("all", false), "transform") );
-
-		echo '<?xml version="1.0" encoding="UTF-8"?>';
-		echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/cpm/payment.xsl"?>';
-?>
-		<root>
-			<title><?= $_OBJ_TXT->_("Pay using Account"); ?></title>
-
-			<?= $obj_mPoint->getSystemInfo(); ?>
-
-			<?= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML(); ?>
-
-			<?= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']); ?>
-
-			<labels>
-				<progress><?= $_OBJ_TXT->_("Step 2 of 2"); ?></progress>
-				<price><?= $_OBJ_TXT->_("Price"); ?></price>
-				<info><?= $_OBJ_TXT->_("Account - Info"); ?></info>
-				<my-account><?= $_OBJ_TXT->_("My Account"); ?></my-account>
-				<balance><?= $_OBJ_TXT->_("Balance"); ?></balance>
-				<stored-card><?= $_OBJ_TXT->_("Stored Card"); ?></stored-card>
-				<multiple-stored-cards><?= $_OBJ_TXT->_("Stored Cards"); ?></multiple-stored-cards>
-				<password><?= $_OBJ_TXT->_("Password"); ?></password>
-				<submit><?= $_OBJ_TXT->_("Complete Payment"); ?></submit>
-				<top-up><?= $_OBJ_TXT->_("Top-Up"); ?></top-up>
-			</labels>
-
-			<?= $obj_mPoint->getAccountInfo($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_UA']); ?>
-
-			<?= $obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_UA']); ?>
-
-			<?= $obj_mPoint->getMessages("CPM Payment"); ?>
-
-			<?= $obj_mPoint->getSession(); ?>
-		</root>
+		$obj_XML = simplexml_load_string($obj_mPoint->getAccountInfo($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_UA']) );
+		// End-User does not have an account yet, automatically redirect to "Create New Account"
+/*		if (intval($obj_XML["id"]) == 0)
+		{
+			header("Location: http://". $_SERVER['HTTP_HOST'] ."/new/?msg=2");
+		}
+		// Display "My Account" page
+		else
+		{
+			/*
+			 * Use Output buffering to "magically" transform the XML via XSL behind the scene
+			 * This means that all PHP scripts must output a wellformed XML document.
+			 * The XML in turn must refer to an XSL Stylesheet by using the xml-stylesheet tag
+			 */
+			ob_start(array(new Output("all", false), "transform") );
+	
+			echo '<?xml version="1.0" encoding="UTF-8"?>';
+			echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/cpm/payment.xsl"?>';
+	?>
+			<root>
+				<title><?= $_OBJ_TXT->_("Pay using Account"); ?></title>
+	
+				<?= $obj_mPoint->getSystemInfo(); ?>
+	
+				<?= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML(); ?>
+	
+				<?= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']); ?>
+	
+				<labels>
+					<progress><?= $_OBJ_TXT->_("Step 2 of 2"); ?></progress>
+					<price><?= $_OBJ_TXT->_("Price"); ?></price>
+					<info><?= $_OBJ_TXT->_("Account - Info"); ?></info>
+					<my-account><?= $_OBJ_TXT->_("My Account"); ?></my-account>
+					<balance><?= $_OBJ_TXT->_("Balance"); ?></balance>
+					<stored-card><?= $_OBJ_TXT->_("Stored Card"); ?></stored-card>
+					<multiple-stored-cards><?= $_OBJ_TXT->_("Stored Cards"); ?></multiple-stored-cards>
+					<password><?= $_OBJ_TXT->_("Password"); ?></password>
+					<submit><?= $_OBJ_TXT->_("Complete Payment"); ?></submit>
+					<create-account><?= $_OBJ_TXT->_("Create Account"); ?></create-account>
+					<top-up><?= $_OBJ_TXT->_("Top-Up"); ?></top-up>
+				</labels>
+	
+				<?= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() ) ?>
+	
+				<?= $obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_UA']); ?>
+	
+				<?= $obj_mPoint->getMessages("CPM Payment"); ?>
+	
+				<?= $obj_mPoint->getSession(); ?>
+			</root>
 <?php
+//		}
 		break;
 	}
 }

@@ -17,14 +17,15 @@
 // Require Global Include File
 require_once("../inc/include.php");
 
+// Require Business logic for the End-User Account Component
+require_once(sCLASS_PATH ."/enduser_account.php");
+
 // Require Business logic for the Top-Up Component
 require_once(sCLASS_PATH ."/topup.php");
 
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 
-// Require Business logic for the End-User Account Component
-require_once(sCLASS_PATH ."/enduser_account.php");
 
 $aMsgCds = array();
 
@@ -65,7 +66,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	// Validate URLs
 	if ($obj_Validator->valURL($_REQUEST['logo-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['logo-url']) + 70] = $_REQUEST['logo-url']; }
 	if ($obj_Validator->valURL($_REQUEST['css-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['css-url']) + 80]= $_REQUEST['css-url']; }
-	if ($obj_Validator->valURL($_REQUEST['accept-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['accept-url']) + 90] = $_REQUEST['accept-url']; }
+	if ($obj_Validator->valURL($_REQUEST['accept-url']) > 1 && $obj_Validator->valURL($_REQUEST['accept-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['accept-url']) + 90] = $_REQUEST['accept-url']; }
 	if ($obj_Validator->valURL($_REQUEST['cancel-url']) > 1 && $obj_Validator->valURL($_REQUEST['cancel-url']) < 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['cancel-url']) + 100] = $_REQUEST['cancel-url']; }
 	if ($obj_Validator->valURL($_REQUEST['callback-url']) > 1 && $obj_Validator->valURL($_REQUEST['callback-url']) < 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['callback-url']) + 110] = $_REQUEST['callback-url']; }
 	if ($obj_Validator->valLanguage($_REQUEST['language']) != 10) { $aMsgCds[$obj_Validator->valLanguage($_REQUEST['language']) + 130] = $_REQUEST['language']; }
@@ -87,7 +88,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $_REQUEST);
 			// Associate End-User Account (if exists) with Transaction
 			$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getMobile() );
-			if ($iAccountID == -1 ) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getEMail() ); }
+			if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getEMail() ); }
 			$_SESSION['obj_TxnInfo']->setAccountID($iAccountID);
 			
 			// Update Transaction Log

@@ -293,6 +293,8 @@ msgid @@@ Shop Top-Up - 1 @@@
 msgstr @@@ Your current payment has been paused and will automatically be resumed once you've topped up your account @@@
 msgid @@@ Create Account - 1 @@@
 msgstr @@@ Unable to automatically determine mobile number @@@
+msgid @@@ Create Account - 2 @@@
+msgstr @@@ Your current payment has been paused and will automatically be resumed once you've created an account @@@
 msgid @@@ Create Account - 11 @@@
 msgstr @@@ Please enter a password? @@@
 msgid @@@ Create Account - 12 @@@

@@ -16,7 +16,7 @@ require_once("../inc/include.php");
 $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 
 // Account being created via a Mobile Device
-if (array_key_exists("obj_UA", $_SESSION) === true)
+if (General::getBrowserType() == "mobile")
 {
 	$sMarkup = General::getMarkupLanguage($_SESSION['obj_UA']);
 }
@@ -28,7 +28,7 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. $sMar
 <root type="page">
 <?php
 // Account being created via a Mobile Device
-if (array_key_exists("obj_UA", $_SESSION) === true)
+if (General::getBrowserType() == "mobile")
 {
 ?>
 	<title><?= $_OBJ_TXT->_("Create Account"); ?></title>

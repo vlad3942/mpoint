@@ -46,8 +46,10 @@
 		
 		<!-- Generate phpDoc for mPoint in HTML format -->
 		<replace file="${destDir}/doc/phpdoc.ini" token="@VERSION@" value="${version}" />
+<!--
 		<get src="http://phpdoc.localhost/docbuilder/builder.php?altuserdir=&amp;setting_useconfig=D%3A%5CTemp%5CmPoint%5C${version}%5Cdoc%2Fphpdoc&amp;submitButton=Go&amp;setting_filename=&amp;setting_directory=&amp;setting_ignore=&amp;setting_packageoutput=&amp;setting_target=&amp;setting_output=HTML%3ASmarty%3Adefault&amp;ConverterSetting=HTML%3ASmarty%3Adefault&amp;setting_title=Generated+Documentation&amp;setting_defaultpackagename=default&amp;setting_defaultcategoryname=default&amp;setting_customtags=&amp;interface=web&amp;dataform=true"
 			 dest="${sourceDir}/doc/phpdoc.html" />
+-->
 	</target>
 	
 	<target name="deploy" depends="doc, prepare, init">

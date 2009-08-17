@@ -17,8 +17,8 @@ require_once("../inc/include.php");
 // Require the PHP API for handling the connection to GoMobile
 require_once(sAPI_CLASS_PATH ."/gomobile.php");
 
-// Require Business logic for the validating client Input
-require_once(sCLASS_PATH ."/validate.php");
+// Require Business logic for the End-User Account Component
+require_once(sCLASS_PATH ."/enduser_account.php");
 // Require Business logic for the Mobile Web module
 require_once(sCLASS_PATH ."/mobile_web.php");
 // Require Business logic for the SMS Purchase module
@@ -26,8 +26,8 @@ require_once(sCLASS_PATH ."/sms_purchase.php");
 // Require Business logic for the Call Centre module
 require_once(sCLASS_PATH ."/callcentre.php");
 
-// Require Business logic for the End-User Account Component
-require_once(sCLASS_PATH ."/enduser_account.php");
+// Require Business logic for the validating client Input
+require_once(sCLASS_PATH ."/validate.php");
 
 $aMsgCds = array();
 
@@ -86,8 +86,8 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 	// Validate URLs
 	if ($obj_Validator->valURL($_POST['logo-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_POST['logo-url']) + 70] = $_POST['logo-url']; }
 	if ($obj_Validator->valURL($_POST['css-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_POST['css-url']) + 80]= $_POST['css-url']; }
-	if ($obj_Validator->valURL($_POST['accept-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_POST['accept-url']) + 90] = $_POST['accept-url']; }
-	if ($obj_Validator->valURL($_POST['cancel-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_POST['cancel-url']) + 100] = $_POST['cancel-url']; }
+	if ($obj_Validator->valURL($_POST['accept-url']) > 1 && $obj_Validator->valURL($_POST['accept-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_POST['accept-url']) + 90] = $_POST['accept-url']; }
+	if ($obj_Validator->valURL($_POST['cancel-url']) > 1 && $obj_Validator->valURL($_POST['cancel-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_POST['cancel-url']) + 100] = $_POST['cancel-url']; }
 	if ($obj_Validator->valURL($_POST['callback-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_POST['callback-url']) + 110] = $_POST['callback-url']; }
 	if (array_key_exists("return-url", $_POST) === true && $obj_Validator->valURL($_POST['return-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_POST['return-url']) + 120] = $_POST['return-url']; }
 	if ($obj_Validator->valLanguage($_POST['language']) != 10) { $aMsgCds[$obj_Validator->valLanguage($_POST['language']) + 130] = $_POST['language']; }
@@ -107,7 +107,7 @@ if (Validate::valBasic($_OBJ_DB, $_POST['clientid'], $_POST['account']) == 100)
 			$obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $_POST);
 			// Associate End-User Account (if exists) with Transaction
 			$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getMobile() );
-			if ($iAccountID == -1 ) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getEMail() ); }
+			if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getEMail() ); }
 			$obj_TxnInfo->setAccountID($iAccountID);
 			
 			// Update Transaction Log

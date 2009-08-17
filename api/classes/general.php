@@ -267,7 +267,7 @@ class General
 				closedir($dh);
 			}
 			/* ========== Determine Language from HTTP Header End ========== */
-
+			
 			/* ========== Determine Configuration Start ========== */
 			// User's selected language is unavailable as a translation
 			if (isset($sLang) === false)
@@ -306,7 +306,7 @@ class General
 		}
 		// Update session
 		if (isset($_SESSION) === true) { $_SESSION['obj_Info']->setInfo("language", $sLang); }
-
+		
 		return $sLang;
 	}
 
@@ -489,7 +489,7 @@ class General
 	 * @param 	TxnInfo $oTI 			Reference to the data object holding the Transaction for which an MT should be send out
 	 * @throws 	mPointException
 	 */
-	protected function sendMT(GoMobileConnInfo &$oCI, SMS &$oMI, TxnInfo &$oTI)
+	public function sendMT(GoMobileConnInfo &$oCI, SMS &$oMI, TxnInfo &$oTI)
 	{
 		// Re-Instantiate Connection Information for GoMobile using the Client's username / password
 		$oCI = new GoMobileConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), $oCI->getMethod(), $oCI->getContentType(), $oTI->getClientConfig()->getUsername(), $oTI->getClientConfig()->getPassword(), $oCI->getLogPath(), $oCI->getMode() );

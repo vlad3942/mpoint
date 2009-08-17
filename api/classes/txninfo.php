@@ -465,6 +465,7 @@ class TxnInfo
 		case ($obj instanceof ClientConfig):	// Instantiate from array of Client Input
 			if (array_key_exists("email", $misc) === false) { $misc["email"] = ""; }
 			if (array_key_exists("accountid", $misc) === false) { $misc["accountid"] = -1; }
+			if (array_key_exists("auto-store-card", $misc) === false) { $misc["auto-store-card"] = false; }
 			
 			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["amount"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], $misc["gomobileid"], $misc["auto-store-card"]);
 			break;
