@@ -12,7 +12,7 @@
  * @link http://www.cellpointmobile.com
  * @package API
  * @subpackage SMS
- * @version 1.00
+ * @version 1.10
  */
 
 // Require Global Include File
@@ -25,6 +25,8 @@ require_once(sAPI_CLASS_PATH ."/gomobile.php");
 require_once(sCLASS_PATH ."/enduser_account.php");
 // Require Business logic for the Mobile Web module
 require_once(sCLASS_PATH ."/mobile_web.php");
+// Require Business logic for the SMS Purchase module
+require_once(sCLASS_PATH ."/sms_purchase.php");
 
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
@@ -55,7 +57,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if (array_key_exists("callback-url", $_REQUEST) === false) { $_REQUEST['callback-url'] = $obj_ClientConfig->getCallbackURL(); }
 	if (array_key_exists("language", $_REQUEST) === false) { $_REQUEST['language'] = $obj_ClientConfig->getLanguage(); }
 	
-	$obj_mPoint = new MobileWeb($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
+	$obj_mPoint = new SMS_Purchase($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 	$iTxnID = $obj_mPoint->newTransaction(Constants::iSMS_PURCHASE_TYPE);
 
 	/* ========== Input Validation Start ========== */
@@ -63,11 +65,48 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 
 	if ($obj_Validator->valMobile($_REQUEST['mobile']) != 10) { $aMsgCds[$obj_Validator->valMobile($_REQUEST['mobile']) + 30] = $_REQUEST['mobile']; }
 	if ($obj_Validator->valOperator($_REQUEST['operator']) != 10) { $aMsgCds[$obj_Validator->valOperator($_REQUEST['operator']) + 40] = $_REQUEST['operator']; }
-	if ($obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), $_REQUEST['amount']) != 10) { $aMsgCds[$obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), $_REQUEST['amount']) + 50] = $_REQUEST['amount']; }
+	
+	if ($obj_ClientConfig->getMaxAmount() < $obj_ClientConfig->getCountryConfig()->getMaxPSMSAmount() ) {  $iMaxAmount = $obj_ClientConfig->getMaxAmount(); }
+	else { $iMaxAmount = $obj_ClientConfig->getCountryConfig()->getMaxPSMSAmount(); }
+	$code = $obj_Validator->valPrice($iMaxAmount, $_REQUEST['amount']);
+	if ($code != 10)
+	{
+		if ($obj_ClientConfig->getMaxAmount() > $obj_ClientConfig->getCountryConfig()->getMaxPSMSAmount() )
+		{
+			$aMsgCds[1011] = "Amount requires additional authentication, please invoke Call Centre API"; 
+		}
+		else { $aMsgCds[$code + 50] = $_REQUEST['amount']; }
+	}
 	// Validate URLs
 	if ($obj_Validator->valURL($_REQUEST['callback-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['callback-url']) + 110] = $_REQUEST['callback-url']; }
 	if ($obj_Validator->valLanguage($_REQUEST['language']) != 10) { $aMsgCds[$obj_Validator->valLanguage($_REQUEST['language']) + 130] = $_REQUEST['language']; }
 	if ($obj_Validator->valEMail($_REQUEST['email']) != 1 && $obj_Validator->valEMail($_REQUEST['email']) != 10) { $aMsgCds[$obj_Validator->valEMail($_REQUEST['email']) + 140] = $_REQUEST['email']; }
+	
+	// Verify whether Transaction is possible via SMS
+	$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, @$_REQUEST['mobile']);
+	if ($iAccountID > 0)
+	{
+		$obj_AccountXML = simplexml_load_string($obj_mPoint->getAccountInfo($iAccountID) );
+		// End-User's Account balance is too low to pay for Transaction
+		if (intval($obj_AccountXML->balance) < $_REQUEST['amount'])
+		{
+			$obj_CardsXML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID) );
+			// End-User doesn't have any Stored Cards available for Client or System User
+			if (count($obj_CardsXML->xpath("/stored-cards/card[client/@id = ". $obj_ClientConfig->getID() ." or client/@id = ". $obj_ClientConfig->getCountryConfig()->getID() ."]") ) == 0)
+			{
+				// Transaction cannot be charged through Premium SMS
+				if ($obj_mPoint->psmsAvailable($_REQUEST['amount']) === false)
+				{
+					$aMsgCds[1013] = "Customer account balance too low, please invoke Call Centre API";
+				}
+			}
+		}
+	}
+	// Transaction cannot be charged through Premium SMS
+	elseif ($obj_mPoint->psmsAvailable($_REQUEST['amount']) === false)
+	{
+		$aMsgCds[1012] = "Customer doesn't have an account, please invoke Call Centre API";
+	}
 	/* ========== Input Validation End ========== */
 
 	// Success: Input Valid

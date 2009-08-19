@@ -65,6 +65,13 @@ class DIBS extends Callback
 		}
 	}
 
+	/**
+	 * Returns the Client's Merchant Account ID for the PSP
+	 * 
+	 * @param 	integer $clid	Unique ID of the Client whose Merchant Account should be found
+	 * @param 	integer $pspid	Unique ID for the PSP the Merchant Account should be found for
+	 * @return 	string
+	 */
 	public function getMerchantAccount($clid, $pspid)
 	{
 		$sql = "SELECT name
@@ -76,6 +83,13 @@ class DIBS extends Callback
 		return $RS["NAME"];
 	}
 
+	/**
+	 * Returns the specified PSP's currency code for the provided country 
+	 * 
+	 * @param 	integer $cid	Unique ID for the Country that the Currency should be found in
+	 * @param 	integer $pspid	Unique ID for the PSP that the currency code should be found for
+	 * @return unknown_type
+	 */
 	public function getCurrency($cid, $pspid)
 	{
 		$sql = "SELECT name
@@ -87,6 +101,10 @@ class DIBS extends Callback
 		return $RS["NAME"];
 	}
 
+	/**
+	 * (non-PHPdoc)
+	 * @see api/classes/EndUserAccount#delTicket($pspid, $ticket)
+	 */
 	public function delTicket($ticket)
 	{
 		$h = $this->constHTTPHeaders();
@@ -96,19 +114,33 @@ class DIBS extends Callback
 //		parent::send("https://payment.architrade.com/cgi-adm/delticket.cgi", $h, $b);
 	}
 
+	/**
+	 * Authorises a payment with DIBS for the transaction using the provided ticket.
+	 * The ticket represents a previously stored card.
+	 * The method will return DIBS' transaction ID if the authorisation is accepted or -1 if the authorisation is declined.
+	 *  
+	 * @param 	integer $ticket	Valid ticket which references a previously stored card 
+	 * @return 	integer
+	 * @throws	E_USER_WARNING
+	 */
 	public function authTicket($ticket)
 	{
+		// Construct Order ID
+		$oid = $this->getTxnInfo()->getOrderID();
+		if (empty($oid) === true) { $oid = $this->getTxnInfo()->getID(); }
+		$oid .= "-". date("Y-m-d H:i:s");
+		
 		$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
 		$b .= "&mpointid=". $this->getTxnInfo()->getID();
 		$b .= "&ticket=". $ticket;
 		$b .= "&amount=". $this->getTxnInfo()->getAmount();
 		$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getClientConfig()->getCountryConfig()->getID(), Constants::iDIBS_PSP);
-		$b .= "&orderid=". $this->getTxnInfo()->getOrderID() ."-". urlencode(date("Y-m-d H:i:s") );
+		$b .= "&orderid=". urlencode($oid);
 		if ($this->getTxnInfo()->getClientConfig()->useAutoCapture() === true) { $b .= "&capturenow=true"; }
 		if ($this->getTxnInfo()->getClientConfig()->getMode() > 0) { $b .= "&test=". $this->getTxnInfo()->getClientConfig()->getMode(); }
 		$b .= "&uniqueoid=true";
 		$b .= "&textreply=true";
-
+		
 		$obj_HTTP = parent::send("https://payment.architrade.com/cgi-ssl/ticket_auth.cgi", $this->constHTTPHeaders(), $b);
 		$aStatus = array();
 		parse_str($obj_HTTP->getReplyBody(), $aStatus);
@@ -122,6 +154,12 @@ class DIBS extends Callback
 		return $aStatus["transact"];
 	}
 
+	/**
+	 * Performs a capture operation with DIBS for the provided transaction.
+	 * 
+	 * @param 	integer $txn	Transaction ID previously returned by DIBS during authorisation
+	 * @throws	E_USER_WARNING
+	 */
 	public function capture($txn)
 	{
 		$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
@@ -142,7 +180,7 @@ class DIBS extends Callback
 		}
 	}
 
-/**
+	/**
 	 * Initialises Callback to the Client.
 	 *
 	 * @param 	HTTPConnInfo $oCI 	Connection Info required to communicate with the Callback component for Cellpoint Mobile

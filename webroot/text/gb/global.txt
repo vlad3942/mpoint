@@ -1,4 +1,4 @@
-#: /webroot/buy/sms.php:97
+#: /webroot/buy/sms.php:136
 msgid @@@ SMS Purchase MT @@@
 msgstr @@@ You've made an order from a merchant using mPoint.
 Merchant: {CLIENT}
@@ -1040,9 +1040,13 @@ msgstr @@@ Repeat Password @@@
 msgid @@@ Save @@@
 msgstr @@@ Save @@@
 
-#: /webroot/pay/sys/sms.php:71
+#: /webroot/pay/sys/sms.php:206
 msgid @@@ SMS Purchase - Unknown Reponse @@@
 msgstr @@@ SMS Purchase - Unknown Reponse @@@
+
+#: /webroot/pay/sys/sms.php:225
+msgid @@@ SMS Purchase - Transaction not found @@@
+msgstr @@@ SMS Purchase - Transaction not found @@@
 
 #: /webroot/shop/delivery.php:55
 msgid @@@ Recipient @@@

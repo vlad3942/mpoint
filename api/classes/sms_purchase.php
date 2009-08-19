@@ -87,7 +87,15 @@ class SMS_Purchase extends MobileWeb
 		return $sLink;
 	}
 	
-	public function findTxnIDFromSMS(&$oMI)
+	/**
+	 * Finds the Transaction ID based on the specified SMS.
+	 * The method uses the Country and the Sender from the SMS to query the Transaction log and will return the transaction id
+	 * if found or -1 if no transaction could be found for the provided SMS.
+	 * 
+	 * @param	GoMobileMessage $oMI	Reference to the data object which holds the message information
+	 * @return 	integer
+	 */
+	public function findTxnIDFromSMS(GoMobileMessage &$oMI)
 	{
 		$sql = "SELECT Txn.id
 				FROM Log.Transaction_Tbl Txn
@@ -104,6 +112,31 @@ class SMS_Purchase extends MobileWeb
 		
 		return is_array($RS) === true ? $RS["ID"]: -1;
 	}
+	
+	/**
+	 * Verifies whether the Premium SMS is available based on the Client's Payment Schemes and the transaction amount.
+	 * Returns true if Premium SMS is available, otherwise false is returned.
+	 * 
+	 * @param 	integer $amount
+	 * @return 	boolean
+	 */
+	public function psmsAvailable($amount)
+	{
+		$sql = "SELECT CA.id
+				FROM Client.CardAccess_Tbl CA
+				INNER JOIN Client.MerchantAccount_Tbl MA ON CA.clientid = MA.clientid
+				INNER JOIN System.CardPricing_Tbl CP ON CA.cardid = CP.cardid
+				INNER JOIN System.PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PP.enabled = true
+				WHERE CA.clientid = ". $this->getClientConfig()->getID() ."
+					AND PP.countryid = ". $this->getClientConfig()->getCountryConfig()->getID() ."
+					AND PP.amount IN (-1, ". intval($amount) .")
+					AND CA.cardid = ". Constants::iPSMS_CARD ."
+				LIMIT 1";
+//		echo $sql ."\n";
+		$RS = $this->getDBConn()->getName($sql);
+		
+		return is_array($RS);
+	} 
 
 	/**
 	 * Creates a new instance of the SMS Purchase class using the provied Message Info object.
