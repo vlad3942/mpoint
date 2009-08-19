@@ -2,51 +2,51 @@
 msgid @@@ SMS Purchase MT @@@
 msgstr @@@ SMS Purchase MT @@@
 
-#: /webroot/cpm/payment.php:81
+#: /webroot/cpm/payment.php:99
 msgid @@@ Pay using Account @@@
 msgstr @@@ Pay using Account @@@
 
-#: /webroot/cpm/payment.php:90
+#: /webroot/cpm/payment.php:108
 msgid @@@ Step 2 of 2 @@@
 msgstr @@@ Step 2 of 2 @@@
 
-#: /webroot/cpm/payment.php:91
+#: /webroot/cpm/payment.php:109
 msgid @@@ Price @@@
 msgstr @@@ Price @@@
 
-#: /webroot/cpm/payment.php:92
+#: /webroot/cpm/payment.php:110
 msgid @@@ Account - Info @@@
 msgstr @@@ Please select a payment method and confirm the payment by entering your password @@@
 
-#: /webroot/cpm/payment.php:93
+#: /webroot/cpm/payment.php:111
 msgid @@@ My Account @@@
 msgstr @@@ My Account @@@
 
-#: /webroot/cpm/payment.php:94
+#: /webroot/cpm/payment.php:112
 msgid @@@ Balance @@@
 msgstr @@@ Balance @@@
 
-#: /webroot/cpm/payment.php:95
+#: /webroot/cpm/payment.php:113
 msgid @@@ Stored Card @@@
 msgstr @@@ Stored Card @@@
 
-#: /webroot/cpm/payment.php:96
+#: /webroot/cpm/payment.php:114
 msgid @@@ Stored Cards @@@
 msgstr @@@ Stored Cards @@@
 
-#: /webroot/cpm/payment.php:97
+#: /webroot/cpm/payment.php:115
 msgid @@@ Password @@@
 msgstr @@@ Password @@@
 
-#: /webroot/cpm/payment.php:98
+#: /webroot/cpm/payment.php:116
 msgid @@@ Complete Payment @@@
 msgstr @@@ Complete Payment @@@
 
-#: /webroot/cpm/payment.php:99
+#: /webroot/cpm/payment.php:117
 msgid @@@ Create Account @@@
 msgstr @@@ Create Account @@@
 
-#: /webroot/cpm/payment.php:100
+#: /webroot/cpm/payment.php:118
 msgid @@@ Top-Up @@@
 msgstr @@@ Top-Up @@@
 
@@ -436,15 +436,15 @@ msgstr @@@ OK @@@
 msgid @@@ Add New Card Guide @@@
 msgstr @@@ Add New Card Guide @@@
 
-#: /webroot/home/sys/make_transfer.php:294
+#: /webroot/home/sys/make_transfer.php:325
 msgid @@@ transfer - code: 91 @@@
 msgstr @@@ transfer - code: 91 @@@
 
-#: /webroot/home/sys/make_transfer.php:347
+#: /webroot/home/sys/make_transfer.php:378
 msgid @@@ transfer - code: 92 @@@
 msgstr @@@ transfer - code: 92 @@@
 
-#: /webroot/home/sys/make_transfer.php:356
+#: /webroot/home/sys/make_transfer.php:387
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
@@ -964,11 +964,11 @@ msgstr @@@ Resume Payment >> @@@
 msgid @@@ Select Payment Method @@@
 msgstr @@@ Välj kort @@@
 
-#: /webroot/pay/card.php:43
+#: /webroot/pay/card.php:45
 msgid @@@ Step 1 of 2 @@@
 msgstr @@@ Steg 1 av 2 @@@
 
-#: /webroot/pay/card.php:44
+#: /webroot/pay/card.php:46
 msgid @@@ Please select your Payment Method @@@
 msgstr @@@ Välj ditt kredit kort @@@
 

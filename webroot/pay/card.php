@@ -35,6 +35,8 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 
 	<?= $obj_mPoint->getSystemInfo(); ?>
 
+	<?= $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->toXML(); ?>
+	
 	<?= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML(); ?>
 
 	<?= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']); ?>

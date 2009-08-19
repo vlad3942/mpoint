@@ -5,51 +5,51 @@ Sælger: {CLIENT}
 Pris: {AMOUNT}
 Bekræft venligst købet ved at svare JA til denne SMS? @@@
 
-#: /webroot/cpm/payment.php:81
+#: /webroot/cpm/payment.php:99
 msgid @@@ Pay using Account @@@
 msgstr @@@ Betal med Konto @@@
 
-#: /webroot/cpm/payment.php:90
+#: /webroot/cpm/payment.php:108
 msgid @@@ Step 2 of 2 @@@
 msgstr @@@ Trin 2 af 2 @@@
 
-#: /webroot/cpm/payment.php:91
+#: /webroot/cpm/payment.php:109
 msgid @@@ Price @@@
 msgstr @@@ Pris @@@
 
-#: /webroot/cpm/payment.php:92
+#: /webroot/cpm/payment.php:110
 msgid @@@ Account - Info @@@
 msgstr @@@ Vælg venligst en betalingsmetode og bekræft betalingen ved at indtaste dit kodeord @@@
 
-#: /webroot/cpm/payment.php:93
+#: /webroot/cpm/payment.php:111
 msgid @@@ My Account @@@
 msgstr @@@ Min Konto @@@
 
-#: /webroot/cpm/payment.php:94
+#: /webroot/cpm/payment.php:112
 msgid @@@ Balance @@@
 msgstr @@@ Saldo @@@
 
-#: /webroot/cpm/payment.php:95
+#: /webroot/cpm/payment.php:113
 msgid @@@ Stored Card @@@
 msgstr @@@ Gemt Kort @@@
 
-#: /webroot/cpm/payment.php:96
+#: /webroot/cpm/payment.php:114
 msgid @@@ Stored Cards @@@
 msgstr @@@ Gemte Kort @@@
 
-#: /webroot/cpm/payment.php:97
+#: /webroot/cpm/payment.php:115
 msgid @@@ Password @@@
 msgstr @@@ Kodeord @@@
 
-#: /webroot/cpm/payment.php:98
+#: /webroot/cpm/payment.php:116
 msgid @@@ Complete Payment @@@
 msgstr @@@ Gennemfør Betaling @@@
 
-#: /webroot/cpm/payment.php:99
+#: /webroot/cpm/payment.php:117
 msgid @@@ Create Account @@@
 msgstr @@@ Create Account @@@
 
-#: /webroot/cpm/payment.php:100
+#: /webroot/cpm/payment.php:118
 msgid @@@ Top-Up @@@
 msgstr @@@ Indsæt @@@
 
@@ -444,15 +444,15 @@ msgstr @@@ OK @@@
 msgid @@@ Add New Card Guide @@@
 msgstr @@@ Add New Card Guide @@@
 
-#: /webroot/home/sys/make_transfer.php:294
+#: /webroot/home/sys/make_transfer.php:325
 msgid @@@ transfer - code: 91 @@@
 msgstr @@@ transfer - code: 91 @@@
 
-#: /webroot/home/sys/make_transfer.php:347
+#: /webroot/home/sys/make_transfer.php:378
 msgid @@@ transfer - code: 92 @@@
 msgstr @@@ transfer - code: 92 @@@
 
-#: /webroot/home/sys/make_transfer.php:356
+#: /webroot/home/sys/make_transfer.php:387
 msgid @@@ internal - code: 2 @@@
 msgstr @@@ internal - code: 2 @@@
 
@@ -984,11 +984,11 @@ msgstr @@@ Resume Payment >> @@@
 msgid @@@ Select Payment Method @@@
 msgstr @@@ Vælg Betalingsmetode @@@
 
-#: /webroot/pay/card.php:43
+#: /webroot/pay/card.php:45
 msgid @@@ Step 1 of 2 @@@
 msgstr @@@ Trin 1 af 2 @@@
 
-#: /webroot/pay/card.php:44
+#: /webroot/pay/card.php:46
 msgid @@@ Please select your Payment Method @@@
 msgstr @@@ Vælg venligst din betalingsmetode @@@
 

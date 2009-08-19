@@ -650,7 +650,7 @@ class General
 	 * 	<country-configs>
 	 * 		<config id="{UNIQUE ID FOR THE COUNTRY}">
 	 *			<name>{NAME OF THE COUNTRY}</name>
-	 *			<currency>{CURRENCY USED IN THE COUNTRY}</currency>
+	 *			<currency symbol="{SYMBOL USED TO REPRESENT THE CURRENCY}">{ISO-4217 CURRENCY CODE USED IN THE COUNTRY}</currency>
 	 *			<max-balance>{MAX BALANCE, IN COUNTRY'S SMALLEST CURRENCY, THAT A PREPAID ACCOUNT MAY CONTAIN}</max-balance>
 	 *			<min-transfer>{MIN AMOUNT WHICH MAY BE TRANSFERRED BETWEEN ACCOUNTS IN COUNTRY'S SMALLEST CURRENCY}</min-transfer>
 	 *			<min-mobile>{MIN VALUE FOR A VALID MOBILE NUMBER (MSISDN) IN THE COUNTRY}</min-mobile>
@@ -661,10 +661,13 @@ class General
 	 *			<address-lookup>{BOOLEAN FLAG INDICATING WHETHER ADDRESS LOOKUP BASED ON A MOBILE NUMBER IS AVAILABLE IN THE COUNTRY}</address-lookup>
 	 *			<double-opt-in>{BOOLEAN FLAG INDICATING WHETHER THE MOBILE NETWORK OPERATOR'S IN THE COUNTRY REQUIRE DOUBLE OPT-IN WHEN CHARGING VIA PREMIUM SMS}</double-opt-in>
 	 *			<add-card-amount>{AMOUNT THAT THE END-USER'S ACCOUNT IS TOPPED UP WITH WHEN CARD DETAILS FOR A NEW CARD IS STORED}</add-card-amount>
+	 *			<max-psms-amount>{MAX AMOUNT THAT CAN BE CHARGED WITH A PREMIUM SMS BASED FLOW (NO AUTHENTICATION)}</max-psms-amount>
+	 *			<min-pwd-amount>{MIN AMOUNT BEFORE A TRANSACTION REQUIRES PASSWORD AUTHENTICATION}</min-pwd-amount>
+	 *			<min-2fa-amount>{MIN AMOUNT BEFORE A TRANSACTION REQUIRES 2-FACTOR AUTHENTICATION}</min-2fa-amount>
 	 *		</config>
 	 *		<config id="{UNIQUE ID FOR THE COUNTRY}">
 	 *			<name>{NAME OF THE COUNTRY}</name>
-	 *			<currency>{CURRENCY USED IN THE COUNTRY}</currency>
+	 *			<currency symbol="{SYMBOL USED TO REPRESENT THE CURRENCY}">{ISO-4217 CURRENCY CODE USED IN THE COUNTRY}</currency>
 	 *			<max-balance>{MAX BALANCE, IN COUNTRY'S SMALLEST CURRENCY, THAT A PREPAID ACCOUNT MAY CONTAIN}</max-balance>
 	 *			<min-transfer>{MIN AMOUNT WHICH MAY BE TRANSFERRED BETWEEN ACCOUNTS IN COUNTRY'S SMALLEST CURRENCY}</min-transfer>
 	 *			<min-mobile>{MIN VALUE FOR A VALID MOBILE NUMBER (MSISDN) IN THE COUNTRY}</min-mobile>
@@ -675,15 +678,19 @@ class General
 	 *			<address-lookup>{BOOLEAN FLAG INDICATING WHETHER ADDRESS LOOKUP BASED ON A MOBILE NUMBER IS AVAILABLE IN THE COUNTRY}</address-lookup>
 	 *			<double-opt-in>{BOOLEAN FLAG INDICATING WHETHER THE MOBILE NETWORK OPERATOR'S IN THE COUNTRY REQUIRE DOUBLE OPT-IN WHEN CHARGING VIA PREMIUM SMS}</double-opt-in>
 	 *			<add-card-amount>{AMOUNT THAT THE END-USER'S ACCOUNT IS TOPPED UP WITH WHEN CARD DETAILS FOR A NEW CARD IS STORED}</add-card-amount>
+	 *			<max-psms-amount>{MAX AMOUNT THAT CAN BE CHARGED WITH A PREMIUM SMS BASED FLOW (NO AUTHENTICATION)}</max-psms-amount>
+	 *			<min-pwd-amount>{MIN AMOUNT BEFORE A TRANSACTION REQUIRES PASSWORD AUTHENTICATION}</min-pwd-amount>
+	 *			<min-2fa-amount>{MIN AMOUNT BEFORE A TRANSACTION REQUIRES 2-FACTOR AUTHENTICATION}</min-2fa-amount>
 	 *		</config>
 	 *		...
 	 * 	</country-configs>
 	 *
-	 * @return 	string
+	 * @return 	xml
 	 */
 	public function getCountryConfigs()
 	{
-		$sql = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmob, maxmob, channel, priceformat, decimals, als, doi, aca
+		$sql = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmob, maxmob, channel, priceformat, decimals,
+					addr_lookup, doi, add_card_amount, max_psms_amount, min_pwd_amount, min_2fa_amount
 				FROM System.Country_Tbl
 				WHERE enabled = true
 				ORDER BY name ASC";
@@ -703,9 +710,12 @@ class General
 			$xml .= '<channel>'. $RS["CHANNEL"] .'</channel>';
 			$xml .= '<price-format>'. $RS["PRICEFORMAT"] .'</price-format>';
 			$xml .= '<decimals>'. $RS["DECIMALS"] .'</decimals>';
-			$xml .= '<address-lookup>'. General::bool2xml($RS["ALS"]) .'</address-lookup>';
+			$xml .= '<address-lookup>'. General::bool2xml($RS["ADDR_LOOKUP"]) .'</address-lookup>';
 			$xml .= '<double-opt-in>'. General::bool2xml($RS["DOI"]) .'</double-opt-in>';
-			$xml .= '<add-card-amount>'. $RS["ACA"] .'</add-card-amount>';
+			$xml .= '<add-card-amount>'. $RS["ADD_CARD_AMOUNT"] .'</add-card-amount>';
+			$xml .= '<max-psms-amount>'. $RS["MAX_PSMS_AMOUNT"] .'</max-psms-amount>';
+			$xml .= '<min-pwd-amount>'. $RS["MIN_PWD_AMOUNT"] .'</min-pwd-amount>';
+			$xml .= '<min-2fa-amount>'. $RS["MIN_2FA_AMOUNT"] .'</min-2fa-amount>';
 			$xml .= '</config>';
 		}
 		$xml .= '</country-configs>';

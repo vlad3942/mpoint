@@ -137,7 +137,7 @@ class Home extends General
 	 *		<mobile>{END-USER'S MOBILE NUMBER (MSISDN) }</mobile>
 	 *		<email>{END-USER'S E-MAIL ADDRESS}</email>
 	 *		<password mask="{A STRING OF * WITH A LENGTH EQUIVALENT TO THE LENGTH OF THE PASSWORD}">{END-USER'S PASSWORD}</password>
-	 *		<balance currency="{CURRENCY BALANCE IS REPRESENTED IN}" symbol="{SYMBOL USED TO REPRESENT THE CURRENCY}">{PRE-PAID BALANCE AVAILABLE ON THE END-USER ACCOUNT IN COUNTRY'S SMALLEST CURRENCY}</balance>
+	 *		<balance currency="{ISO-4217 CURRENCY CODE THAT THE BALANCE IS REPRESENTED IN}" symbol="{SYMBOL USED TO REPRESENT THE CURRENCY}">{PRE-PAID BALANCE AVAILABLE ON THE END-USER ACCOUNT IN COUNTRY'S SMALLEST CURRENCY}</balance>
 	 *		<funds>{PRE-PAID BALANCE FORMATTED FOR BEING DISPLAYED IN THE GIVEN COUNTRY}</funds>
 	 *		<created timestamp="{CREATION TIME IN SECONDS SINCE EPOCH}">{TIMESTAMP IDENTIFYING WHEN THE ACCOUNT WAS CREATED}</created>
 	 *		<logo-width>{CALCULATED WIDTH OF THE ACCOUNT LOGO}</logo-width>
@@ -219,7 +219,7 @@ class Home extends General
 	 *			<logo-height>{CALCULATED HEIGHT OF THE CARD LOGO}</logo-height>
 	 *		</card>
 	 *		...
-	 * 	</account>
+	 * 	</stored-cards>
 	 *
 	 * @param	integer $id 	Unqiue ID of the End-User's Account
 	 * @param 	UAProfile $oUA 	Reference to the User Agent Profile for the Customer's Mobile Device (optional)

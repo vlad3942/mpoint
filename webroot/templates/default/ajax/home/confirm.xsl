@@ -15,7 +15,7 @@
 		<br />
 		<div class="info">
 			<xsl:choose>
-			<xsl:when test="string-length(account/mobile) &gt; 0">
+			<xsl:when test="string-length(account/mobile) &gt; 0 and amount >= country-config/min-2fa-amount">
 				<xsl:value-of select="guide/confirmation-code" />
 			</xsl:when>
 			<xsl:otherwise>
@@ -53,7 +53,8 @@
 					<td><input type="password" id="password" name="password" class="text" onfocus="javascript:obj_Client.clear(this);" onblur="javascript:obj_Client.sendInputData(document.getElementById('make-transfer'), this);" tabindex="11" title="password" value="" maxlength="50" /></td>
 					<td><img class="hidden" name="password_img" id="password_img" src="/img/rederrorarrow.gif" width="13" height="10" alt="" border="0" /></td>
 				</tr>
-				<xsl:if test="string-length(account/mobile) &gt; 0">
+				<!-- Transfer requires 2-Factor Authentication -->
+				<xsl:if test="string-length(account/mobile) &gt; 0 and amount >= country-config/min-2fa-amount">
 					<tr>
 						<td>
 							<label for="code" accesskey="C"><xsl:value-of select="labels/confirmation-code" /></label>

@@ -83,7 +83,7 @@ class Callback extends EndUserAccount
 		}
 
 		// Auto Capture enabled for Transaction
-		if ($this->_obj_TxnInfo->useAutoCapture() === true && $sid == Constants::iPAYMENT_ACCEPTED_STATE)
+		if ($pspid == Constants::iCPM_PSP || ($this->_obj_TxnInfo->useAutoCapture() === true && $sid == Constants::iPAYMENT_ACCEPTED_STATE) )
 		{
 			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
 		}

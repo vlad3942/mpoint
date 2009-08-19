@@ -72,7 +72,7 @@
 							<!-- Sufficient Funds -->
 							<xsl:otherwise>
 								<xsl:choose>
-								<xsl:when test="count(stored-cards/card) =  0">
+								<xsl:when test="count(stored-cards/card) = 0">
 									<input type="hidden" name="cardid" value="-1" />
 								</xsl:when>
 								<xsl:when test="count(session/cardid) = 0 or session/cardid = -1">

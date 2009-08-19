@@ -38,17 +38,28 @@ else { $iStatus = Constants::iPAYMENT_REJECTED_STATE; }
 //
 $obj_mPoint->completeTransaction(Constants::iCPM_PSP, $_POST['gomobileid'], $_POST['cardid'], $iStatus);
 
+// Premium SMS Purchase, associate transaction with End-User Account
+if ($_POST['cardid'] == Constants::iPSMS_CARD && $obj_mPoint->getTxnInfo()->getAccountID() > 0)
+{
+	$obj_mPoint->associate($obj_mPoint->getTxnInfo()->getAccountID(), $obj_mPoint->getTxnInfo()->getID() );
+}
+
 // Payment completed via Prepaid Account and Client has SMS Receipt enabled
 if ($_POST['cardid'] == Constants::iEMONEY_CARD && $obj_mPoint->getTxnInfo()->getClientConfig()->smsReceiptEnabled() === true)
 {
 	$obj_mPoint->sendSMSReceipt(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
+}
+// Account Top-Up
+if ($obj_mPoint->getTxnInfo()->getTypeID() >= 100 && $obj_mPoint->getTxnInfo()->getTypeID() <= 109)
+{
+	$obj_mPoint->topup($obj_mPoint->getTxnInfo()->getAccountID(), $obj_mPoint->getTxnInfo()->getID(), $obj_mPoint->getTxnInfo()->getAmount() );
 }
 
 // Callback URL has been defined for Client
 if ($obj_mPoint->getTxnInfo()->getCallbackURL() != "")
 {
 	$obj_mPoint->notifyClient($iStatus, $_POST['gomobileid']);
-	// Payment completed via Prepaid Account, notify client of automatic capture
-	if ($_POST['cardid'] == Constants::iEMONEY_CARD) { $obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST['gomobileid']); }
+	// Notify client of automatic capture
+	$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST['gomobileid']);
 }
 ?>

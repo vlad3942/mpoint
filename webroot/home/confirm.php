@@ -52,7 +52,11 @@ else
 				<password-only><?= $_OBJ_TXT->_("Confirm Transfer Guide - Password Only"); ?></password-only>
 			</guide>
 			
+			<?= $_SESSION['obj_CountryConfig']->toXML(); ?>
+			
 			<?= $obj_mPoint->getAccountInfo($_SESSION['obj_Info']->getInfo("accountid") ); ?>
+			
+			<amount><?= $_GET['amount']; ?></amount>
 		</confirm-transfer>
 	</root>
 <?php

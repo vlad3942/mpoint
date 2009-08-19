@@ -256,7 +256,11 @@ GRANT SELECT, UPDATE, INSERT ON TABLE System.depositoption_tbl_id_seq TO mpoint;
 ALTER TABLE System.Country_Tbl ADD maxbalance INT4;
 ALTER TABLE System.Country_Tbl ADD mintransfer INT4;
 ALTER TABLE System.Country_Tbl ADD symbol VARCHAR(3);
-ALTER TABLE System.Country_Tbl ADD aca INT4;
+ALTER TABLE System.Country_Tbl ADD add_card_amount INT4;
+ALTER TABLE System.Country_Tbl RENAME als TO addr_lookup;
+ALTER TABLE System.Country_Tbl ADD max_psms_amount INT4;
+ALTER TABLE System.Country_Tbl ADD min_pwd_amount INT4;
+ALTER TABLE System.Country_Tbl ADD min_2fa_amount INT4;
 
 -- Table: System.FeeType_Tbl
 -- Data table for all Fee Types that mPoint offers

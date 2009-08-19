@@ -58,11 +58,29 @@ try
 		$obj_mPoint->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), $_SESSION['temp']['cardtype'], $obj_MsgInfo->getReturnCodes(), $obj_MsgInfo->getGoMobileID() );
 		break;
 	case (Constants::iEMONEY_CARD):	// My Account
-		$obj_XML = simplexml_load_string($obj_mPoint->getAccountInfo($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_UA']) );
+		$obj_AccountXML = simplexml_load_string($obj_mPoint->getAccountInfo($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_UA']) );
+		$obj_CardsXML = simplexml_load_string($obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_UA']) );
+		
 		// End-User does not have an account yet, automatically redirect to "Create New Account"
-/*		if (intval($obj_XML["id"]) == 0)
+		if (intval($obj_AccountXML["id"]) == 0)
 		{
 			header("Location: http://". $_SERVER['HTTP_HOST'] ."/new/?msg=2");
+		}
+		// Transaction amount doesn't require Authentication and no Stored Cards available
+		elseif (intval($obj_AccountXML->balance) >= $_SESSION['obj_TxnInfo']->getAmount() && $_SESSION['obj_TxnInfo']->getAmount() < $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->getMaxPSMSAmount()
+			&& count($obj_CardsXML->xpath("/stored-cards/card[client/@id = ". $_SESSION['obj_TxnInfo']->getClientConfig()->getID() ."]") ) == 0)
+		{
+			$obj_mPoint->purchase($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_TxnInfo']->getID(), $_SESSION['obj_TxnInfo']->getAmount() );
+			
+			ignore_user_abort(true);
+			// Re-Direct customer
+			header("Content-Length: 0");
+			header("location: http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?". session_name() ."=". session_id() );
+			header("Connection: close");
+			flush();
+			
+			// Initialise Callback to Client
+			$obj_mPoint->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iEMONEY_CARD, Constants::iPAYMENT_ACCEPTED_STATE);
 		}
 		// Display "My Account" page
 		else
@@ -100,16 +118,16 @@ try
 					<top-up><?= $_OBJ_TXT->_("Top-Up"); ?></top-up>
 				</labels>
 	
-				<?= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() ) ?>
+				<?= str_replace('<?xml version="1.0"?>', '', $obj_AccountXML->asXML() ) ?>
 	
-				<?= $obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_UA']); ?>
+				<?= str_replace('<?xml version="1.0"?>', '', $obj_CardsXML->asXML() ) ?>
 	
 				<?= $obj_mPoint->getMessages("CPM Payment"); ?>
 	
 				<?= $obj_mPoint->getSession(); ?>
 			</root>
 <?php
-//		}
+		}
 		break;
 	}
 }

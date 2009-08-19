@@ -122,7 +122,8 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 		 * Use Output buffering to "magically" transform the XML via XSL behind the scene
 		 * This means that all PHP scripts must output a wellformed XML document.
 		 * The XML in turn must refer to an XSL Stylesheet by using the xml-stylesheet tag
-		 */		ob_start(array(new Output("all", false, $_SESSION['obj_UA']), "transform") );
+		 */
+		ob_start(array(new Output("all", false, $_SESSION['obj_UA']), "transform") );
 	}
 	else { header('Content-Type: text/xml; charset="UTF-8"'); }
 }

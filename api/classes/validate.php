@@ -638,13 +638,13 @@ class Validate
 	 * The method will return the following status codes:
 	 * 	 1. Undefined Amount
 	 * 	 2. Amount is too small, as defined by the database field: mintransfer for the Country
-	 * 	 3. Amount is too great, as defined by the database field: maxbalance for the Country
+	 * 	 3. Amount is too great, as defined by the $max parameter
 	 * 	10. Success
 	 *
 	 * @see 	CountryInfo::getMinTransfer()
 	 * @see 	CountryInfo::getMaxBalance()
 	 *
-	 * @param 	integer $bal 		Balance on the End-User's account
+	 * @param 	integer $max 		Max amount that the End-User may use for a transaction
 	 * @param 	integer $amount 	The Amount which should be validated
 	 * @return 	integer
 	 */

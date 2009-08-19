@@ -109,7 +109,20 @@ else
 					else { $iFee = (integer) $oXML->minfee / 100; }
 					$_OBJ_TXT->loadConstants(array("ACCOUNT BALANCE" => General::formatAmount($_SESSION['obj_CountryConfig'], iACCOUNT_BALANCE - $iFee * 100) ) );
 					
-					$aErrCd["amount"] = $obj_Validator->valAmount(iACCOUNT_BALANCE, intval($obj_XML->amount) + $iFee);
+					// End-User has not provided a mobile number so 2-Factor Authentication isn't possible
+					if (floatval($obj_AccountXML->mobile) < $_SESSION['obj_CountryConfig']->getMinMobile() && intval($obj_XML->amount) * 100 >= $_SESSION['obj_CountryConfig']->getMin2FAAmount() )
+					{
+						if (iACCOUNT_BALANCE < $_SESSION['obj_CountryConfig']->getMin2FAAmount() ) { $iMaxAmount = iACCOUNT_BALANCE; }
+						else { $iMaxAmount = $_SESSION['obj_CountryConfig']->getMin2FAAmount(); }
+					}
+					else { $iMaxAmount = iACCOUNT_BALANCE; }
+					$aErrCd["amount"] = $obj_Validator->valAmount($iMaxAmount, intval($obj_XML->amount) + $iFee);
+					// Amount too great because End-User has not provided a mobile number so 2-Factor Authentication isn't possible
+					if ($aErrCd["amount"] == 3 && floatval($obj_AccountXML->mobile) < $_SESSION['obj_CountryConfig']->getMinMobile() && intval($obj_XML->amount) * 100 >= $_SESSION['obj_CountryConfig']->getMin2FAAmount() )
+					{
+						$aErrCd["amount"] = 4;
+						$_OBJ_TXT->loadConstants(array("MAX TRANSFER AMOUNT" => General::formatAmount($_SESSION['obj_CountryConfig'], $_SESSION['obj_CountryConfig']->getMin2FAAmount() ) ) );
+					}
 					break;
 				default:			// Error: Unknown tag
 					break;
@@ -148,8 +161,20 @@ else
 			else { $iFee = (integer) $oXML->minfee / 100; }
 			$_OBJ_TXT->loadConstants(array("ACCOUNT BALANCE" => General::formatAmount($_SESSION['obj_CountryConfig'], iACCOUNT_BALANCE + $iFee) ) );
 			
-			$aErrCd["amount"] = $obj_Validator->valAmount(iACCOUNT_BALANCE, intval($obj_XML->form->amount) + $iFee);
-			
+			// End-User has not provided a mobile number so 2-Factor Authentication isn't possible
+			if (floatval($obj_AccountXML->mobile) < $_SESSION['obj_CountryConfig']->getMinMobile() && intval($obj_XML->form->amount) * 100 >= $_SESSION['obj_CountryConfig']->getMin2FAAmount() )
+			{
+				if (iACCOUNT_BALANCE < $_SESSION['obj_CountryConfig']->getMin2FAAmount() ) { $iMaxAmount = iACCOUNT_BALANCE; }
+				else { $iMaxAmount = $_SESSION['obj_CountryConfig']->getMin2FAAmount(); }
+			}
+			else { $iMaxAmount = iACCOUNT_BALANCE; }
+			$aErrCd["amount"] = $obj_Validator->valAmount($iMaxAmount, intval($obj_XML->form->amount) + $iFee);
+			// Amount too great because End-User has not provided a mobile number so 2-Factor Authentication isn't possible
+			if ($aErrCd["amount"] == 3 && floatval($obj_AccountXML->mobile) < $_SESSION['obj_CountryConfig']->getMinMobile() && intval($obj_XML->form->amount) * 100 >= $_SESSION['obj_CountryConfig']->getMin2FAAmount() )
+			{
+				$aErrCd["amount"] = 4;
+				$_OBJ_TXT->loadConstants(array("MAX TRANSFER AMOUNT" => General::formatAmount($_SESSION['obj_CountryConfig'], $_SESSION['obj_CountryConfig']->getMin2FAAmount() ) ) );
+			}
 		}
 		else { $aErrCd["countryid"] = 1; }
 		// Password provided
@@ -196,7 +221,7 @@ else
 				$obj_AccountXML = simplexml_load_string($obj_mPoint->getAccountInfo($iAccountID) );
 				if (intval($obj_AccountXML->balance) + $iAmountReceived > $obj_CountryConfig->getMaxBalance() )
 				{
-					$iAmountReceived = -4;
+					$iAmountReceived = -5;
 				}
 			}
 			
@@ -206,14 +231,20 @@ else
 				// Fetch sender's account info
 				$obj_AccountXML = simplexml_load_string($obj_mPoint->getAccountInfo($_SESSION['obj_Info']->getInfo("accountid") ) );
 				
-				// Both Password has been and either no mobile number is registered for the account or a Confirmation Code (OTP) has been provided as well
-				if (count($obj_XML->form->password) > 0 && (floatval($obj_AccountXML->mobile) < $_SESSION['obj_CountryConfig']->getMinMobile() || count($obj_XML->form->code) > 0) )
+				/*
+				 * Amount sent is less than or equal to what is allowed for Premium SMS transactions in the country which requires no authentication.
+				 * OR 
+				 * Password has been provided AND either no mobile number is registered for the account AND the amount sent is less than what is required for 2-FA OR a Confirmation Code (OTP) has been provided as well
+				 */
+				if ($iAmountSent < $_SESSION['obj_CountryConfig']->getMinPwdAmount() || (count($obj_XML->form->password) > 0
+					&& ( (floatval($obj_AccountXML->mobile) < $_SESSION['obj_CountryConfig']->getMinMobile() && $iAmountSent < $_SESSION['obj_CountryConfig']->getMin2FAAmount() ) || count($obj_XML->form->code) > 0) ) )
 				{
 					// Start database transaction
 					$_OBJ_DB->query("BEGIN");
 					
 					// Authenticate sender
-					$aErrCd["password"] = $obj_mPoint->auth($_SESSION['obj_Info']->getInfo("accountid"), (string) $obj_XML->form->password) + 3;
+					if ($iAmountSent < $_SESSION['obj_CountryConfig']->getMinPwdAmount() ) { $aErrCd["password"] = 10; }
+					else { $aErrCd["password"] = $obj_mPoint->auth($_SESSION['obj_Info']->getInfo("accountid"), (string) $obj_XML->form->password) + 3; }
 					if (count($obj_XML->form->code) > 0) { $aErrCd["code"] = $obj_mPoint->activateCode($_SESSION['obj_Info']->getInfo("accountid"), (integer) $obj_XML->form->code) + 3; }
 					else { $aErrCd["code"] = 10; }
 					
@@ -322,10 +353,10 @@ else
 				// Send Confirmation Code (OTP)
 				else
 				{
-					if (floatval($obj_AccountXML->mobile) < $_SESSION['obj_CountryConfig']->getMinMobile() ) { $code = 199; }
+					if (floatval($obj_AccountXML->mobile || $iAmountSent < $_SESSION['obj_CountryConfig']->getMin2FAAmount() ) < $_SESSION['obj_CountryConfig']->getMinMobile() ) { $code = 199; }
 					else { $code = $obj_mPoint->sendConfirmationCode(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $_SESSION['obj_Info']->getInfo("accountid"), (string) $obj_AccountXML->mobile); }
 					
-					// Confirmation Code (OTP) sent
+					// Confirmation Code (OTP) sent or not required
 					if ($code == 200 || $code == 199)
 					{
 						$sType = "multipart";
@@ -336,7 +367,7 @@ else
 									<popup>
 										<name>confirm-transfer</name>
 										<parent>left-menu</parent>
-										<url>/home/confirm.php</url>
+										<url>/home/confirm.php?amount='. $iAmountSent .'</url>
 								 		<css>confirm-transfer</css>
 								 	</popup>
 								</document>';
@@ -349,7 +380,7 @@ else
 				}
 			}
 			// Error: Unable to make currency conversion for Amount
-			else { $xml .= '<amount id="'. (abs($iAmountReceived) + 3) .'">'. htmlspecialchars($_OBJ_TXT->_("amount - code: ". (abs($iAmountReceived) + 3) ), ENT_NOQUOTES) .'</amount>'; }
+			else { $xml .= '<amount id="'. (abs($iAmountReceived) + 4) .'">'. htmlspecialchars($_OBJ_TXT->_("amount - code: ". (abs($iAmountReceived) + 3) ), ENT_NOQUOTES) .'</amount>'; }
 		}
 		break;
 	default:

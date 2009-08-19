@@ -110,7 +110,7 @@
 	  - Transaction type is NOT a Top-Up
 	  - Transaction type is a Top-Up but NOT a Card Registration and the End-User has previously stored a payment card
 	  -->
-	<xsl:if test="@id != 11 or /root/transaction/@type &lt; 100 or /root/transaction/@type &gt; 109 or (/root/transaction/auto-store-card = 'false' and count(/root/stored-cards/card) &gt; 0)">
+	<xsl:if test="(@id != 11 and /root/transaction/auto-store-card = 'false') or /root/transaction/@type &lt; 100 or /root/transaction/@type &gt; 109 or (/root/transaction/auto-store-card = 'false' and count(/root/stored-cards/card) &gt; 0)">
 		<div>
 			<form action="{func:constLink('/cpm/payment.php') }" method="post">
 				<div class="{$css}">
