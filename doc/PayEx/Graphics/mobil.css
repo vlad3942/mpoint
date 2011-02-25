@@ -1,0 +1,372 @@
+body, h1, h2, h3, h4, h5, h6, p, ul, li, table, tr, th, td, form, input, textarea, select, fieldset {
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
+    list-style: none;
+    font-size: 1em;
+    color: #3d3d3d;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: left;
+    border: none;
+}
+
+
+table {
+    border-collapse: collapse;
+}
+
+h1, h2 {
+    font-size: 0.9em;
+    background: #e9e7e0 url("img/purchase/header-bg.png") repeat-x;
+    clear: both;
+    padding: 5px 20px;
+    border-top: 3px solid #d2cebe;
+    border-bottom: 1px solid #d2cebe;
+}
+
+a {
+    color: #2DA944;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+#body {
+    text-align: center;
+    background: #fff;
+    margin: 0;
+}
+
+
+#page {
+/* 360 ok */
+/* 240 x 320 std mobil */
+    width: 240px;
+    margin: 0 auto;
+}
+
+#header {
+	display:none;
+    background: transparent url("img/purchase/logo-bg.png") repeat-x top;
+    overflow: hidden;
+    position: relative;
+}
+
+#header #sitelogo {
+
+	/* display:none; */
+    position: absolute;
+    top: 28px;
+    left: 20px;
+}
+
+#header #payexlogo {
+    display:none;
+    position: absolute;
+    top: 28px;
+    right: 20px;
+}
+
+#header img {
+    position: relative;
+}
+
+#header h1 {
+    margin: 80px 0 0 0;
+}
+
+#order {
+    border-left: 1px solid #e9e7e0;
+    border-right: 1px solid #e9e7e0;
+    padding: 15px 20px 10px 20px;
+    background: #fcfbfa;
+    position: relative;
+}
+
+#paymentreference {
+    position: relative;
+    margin-top: -20px;
+    padding-top: 0.2em;
+    top: -18px;
+    font-size: 0.7em;
+    text-align: right;
+}
+
+#order table {
+	/* display:none; */
+    font-size: 0.7em;
+}
+
+#order table thead th {
+    background: #e9e7e0 url("img/purchase/th-bg.png") repeat-x;
+    border-top: 1px solid #d2cebe;
+    border-bottom: 2px solid #d2cebe;
+}
+
+#ordersummary {
+    position: relative;
+    overflow: hidden;
+}
+
+#ordersummary th,
+#ordersummary td {
+    padding: 2px 10px 2px 0;
+}
+
+
+a {
+    color: #2DA944;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.tooltip {
+    display: none;
+    background: transparent url("img/purchase/tooltip-bottom.png") no-repeat bottom;
+    padding: 0 0 20px 0;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    z-index: 100;
+    font-size: 0.7em;
+    cursor: pointer;
+    width: 200px;
+}
+
+.tooltip .content {
+    background: transparent url("img/purchase/tooltip-top.png") no-repeat;
+    padding: 35px 20px 10px 35px;
+}
+
+#ordersummary th {
+    font-weight: bold;
+}
+
+#ordersummary .button {
+	display: none;
+    background: transparent url("img/purchase/detailbutton-right.png") no-repeat top right;
+    float: right;
+    margin: -30px 0 0 0;
+}
+
+#ordersummary .button a {
+    height: 30px;
+    display: block;
+    color: #3d3d3d;
+    font-size: 0.7em;
+    background: transparent url("img/purchase/detailbutton-left.png") no-repeat top left;
+    cursor: pointer;
+    text-align: center;
+    padding: 7px 0 0 10px;
+    margin: 0 10px 0 0;
+    overflow: visible;
+    position: relative;
+    text-decoration: none;
+}
+
+#ordersummary .button a span {
+    display: block;
+    padding: 0 15px 0 0;
+    background: transparent url("img/purchase/gray-arrow-down.png") no-repeat right;
+}
+
+#ordersummary .button a span.visible {
+    background-image: url("img/purchase/gray-arrow-up.png");
+}
+
+#orderdetails {
+	display:none;
+    margin: 10px 0 0 0;
+    clear: both;
+    position: relative;
+}
+
+#orderdetails table {
+	display:none;
+    width: 100%;
+    background: #fff;
+}
+
+#orderdetails tbody .odd {
+	display:none;
+    background: #fcfbfa;
+}
+
+#orderdetails th,
+#orderdetails td {
+    padding: 2px 10px;
+    border-bottom: 1px solid #e9e7e0;
+}
+
+#orderdetails tfoot th,
+#orderdetails tfoot td {
+	display:none;
+    font-weight: bold;
+    background: #fcfbfa;
+    padding-top: 7px;
+    border-bottom: 3px  double #e9e7e0;
+}
+
+#orderdetails .total {
+   text-transform: uppercase;
+}
+
+#addresses h2 {
+    display: none;
+}
+
+#addresses {
+	display:none;
+    border-top: 1px solid #e9e7e0;
+    border-right: 1px solid #e9e7e0;
+    border-left: 1px solid #e9e7e0;
+    overflow: hidden;
+    background: #fcfbfa;
+    position: relative;
+}
+
+#addresses .address {
+    width: 49%;
+    float: left;
+    font-size: 0.7em;
+    padding: 10px 0 5px 0;
+}
+
+#addresses h3 {
+    font-weight: bold;
+    padding: 0 20px 5px 20px;
+}
+
+#addresses p {
+    padding: 0 20px 5px 20px;
+}
+
+#payment form {
+    padding: 2px;
+    font-size: 0.7em;
+    border-right: 1px solid #e9e7e0;
+    border-left: 1px solid #e9e7e0;
+    border-bottom: 1px solid #e9e7e0;
+    background: #fcfbfa;
+    position: relative;
+}
+
+#payment .row {
+    overflow: hidden;
+    padding: 0 0 4px 0;
+}
+
+#payment label {
+    width: 220px;
+    float: left;
+    font-weight: bold;
+    padding: 4px 1em 4px 0;
+    text-align: left;
+    cursor: pointer;
+}
+
+
+
+#payment .select select,
+#payment .text input,
+#payment .date select {
+    border: 1px solid #979383;
+    padding: 2px;     
+}
+
+
+
+#payment .select select {
+    width: 126px;
+}
+
+#payment .text input {
+    width: 120px;
+}
+
+#payment .agreement label {
+	/* Warning: the display:none must not be used if merchant will use Autopay */
+	display:none;
+    width: 550px;
+    float: left;
+    text-align: left;
+}
+
+#payment .cvc input {
+    width: 2em;
+}
+
+#payment .cvc img {
+    /* display:none; */
+    height:4;
+    vertical-align: top;    
+}
+
+#payment .cvc a {
+	display:none;   
+}
+
+#payment #logos {
+    display:none;  
+}
+
+
+
+#payment .payexlogo-small {
+    display:none;
+ 
+}
+
+
+.buttons {
+   margin:15px 10px 15px -3px;
+   overflow:hidden;
+   position:relative;
+}
+
+
+.buttons .button input {
+  background-color:transparent;
+  background-position:right top;
+  background-repeat:no-repeat;
+  cursor:pointer;
+  display:block;
+  font-size:1.1em;
+  font-weight:bold;
+  height:30px;
+  margin:0 0 0 10px;
+  overflow:visible;
+  padding:0 20px 0 10px;
+  position:relative;
+  text-align:center;
+}
+
+
+.buttons .cancel  {
+background-image:url(cancelbutton-left.png);
+}
+
+.buttons .cancel input {
+background-image:url(cancelbutton-right.png);
+}
+
+
+.buttons .submit  {
+background-image:url(submitbutton-left.png);
+}
+
+.buttons .submit input {
+background-image:url(submitbutton-right.png);
+}
+
+
+#footer {
+    display:none;  
+}
+
+
+
+#payment-methods select,
+#languages select {
+    display: none;
+}
+
