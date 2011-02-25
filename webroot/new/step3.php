@@ -18,7 +18,7 @@ $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 // Account being created via a Mobile Device
 if (General::getBrowserType() == "mobile")
 {
-	$sMarkup = General::getMarkupLanguage($_SESSION['obj_UA']);
+	$sMarkup = General::getMarkupLanguage($_SESSION['obj_UA'], $_SESSION['obj_TxnInfo']);
 }
 else { $sMarkup = "ajax"; }
 

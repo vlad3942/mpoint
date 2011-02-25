@@ -51,6 +51,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if (array_key_exists("accept-url", $_REQUEST) === false) { $_REQUEST['accept-url'] = $obj_ClientConfig->getAcceptURL(); }
 	if (array_key_exists("cancel-url", $_REQUEST) === false) { $_REQUEST['cancel-url'] = $obj_ClientConfig->getCancelURL(); }
 	if (array_key_exists("callback-url", $_REQUEST) === false) { $_REQUEST['callback-url'] = $obj_ClientConfig->getCallbackURL(); }
+	if (array_key_exists("icon-url", $_REQUEST) === false) { $_REQUEST['icon-url'] = $obj_ClientConfig->getIconURL(); }
 	if (array_key_exists("language", $_REQUEST) === false) { $_REQUEST['language'] = $obj_ClientConfig->getLanguage(); }
 	if (array_key_exists("auto-store-card", $_REQUEST) === false) { $_REQUEST['auto-store-card'] = "false"; }
 
@@ -72,6 +73,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if ($obj_Validator->valLanguage($_REQUEST['language']) != 10) { $aMsgCds[$obj_Validator->valLanguage($_REQUEST['language']) + 130] = $_REQUEST['language']; }
 	if ($obj_Validator->valEMail($_REQUEST['email']) != 1 && $obj_Validator->valEMail($_REQUEST['email']) != 10) { $aMsgCds[$obj_Validator->valEMail($_REQUEST['email']) + 140] = $_REQUEST['email']; }
 	if ($obj_Validator->valBoolean($_REQUEST['auto-store-card']) != 10) { $aMsgCds[$obj_Validator->valBoolean($_REQUEST['auto-store-card']) + 150] = $_REQUEST['auto-store-card']; }
+	if ($obj_Validator->valURL($_REQUEST['icon-url']) > 1 && $obj_Validator->valURL($_REQUEST['icon-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['icon-url']) + 160] = $_REQUEST['icon-url']; }
 	/* ========== Input Validation End ========== */
 
 	// Success: Input Valid
@@ -87,8 +89,8 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 
 			$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $_REQUEST);
 			// Associate End-User Account (if exists) with Transaction
-			$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getMobile() );
-			if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getEMail() ); }
+			$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getMobile(), false);
+			if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getEMail(), false); }
 			$_SESSION['obj_TxnInfo']->setAccountID($iAccountID);
 			
 			// Update Transaction Log
@@ -138,7 +140,7 @@ else
 	$_GET['msg'] = array_keys($aMsgCds);
 	
 	$xml = '<?xml version="1.0" encoding="UTF-8"?>';
-	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/status.xsl"?>';
+	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA'], $_SESSION['obj_TxnInfo']) .'/status.xsl"?>';
 	$xml .= '<root>';
 	$xml .= $obj_mPoint->getMessages("Status");
 	$xml .= '</root>';

@@ -7,7 +7,7 @@
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
  * @package Callback
- * @version 1.10
+ * @version 1.11
  */
 
 /* ==================== Callback Exception Classes Start ==================== */
@@ -54,7 +54,48 @@ class Callback extends EndUserAccount
 	public function &getTxnInfo() { return $this->_obj_TxnInfo; }
 
 	/**
+	 * Sends an SMS Receipt with Payment Information to the Customer through GoMobile.
+	 *
+	 * @see 	GoMobileClient
+	 * @see 	Constants::iMT_SMS_TYPE
+	 * @see 	Constants::iMT_PRICE
+	 *
+	 * @param 	GoMobileConnInfo $oCI 	Reference to the data object with the Connection Info required to communicate with GoMobile
+	 */
+	public function sendSMSReceipt(GoMobileConnInfo &$oCI)
+	{
+		$sBody = $this->getText()->_("mPoint - SMS Receipt");
+		$sBody = str_replace("{MPOINTID}", $this->_obj_TxnInfo->getID(), $sBody);
+		// Order Number Provided
+		if (strlen($this->_obj_TxnInfo->getOrderID() ) > 0)
+		{
+			$sBody = str_replace("{ORDERID}", $this->_obj_TxnInfo->getOrderID(), $sBody);
+		}
+		else
+		{
+			$aLines = explode("\n", $sBody);
+			$sBody = "";
+			foreach ($aLines as $line)
+			{
+				if (stristr($line, "{ORDERID}") == false) { $sBody .= trim($line) ."\n"; }
+			}
+			$sBody = trim($sBody);
+		}
+		$sBody = str_replace("{PRICE}", General::formatAmount($this->_obj_TxnInfo->getClientConfig()->getCountryConfig(), $this->_obj_TxnInfo->getAmount() ), $sBody);
+		$sBody = str_replace("{CLIENT}", $this->_obj_TxnInfo->getClientConfig()->getName(), $sBody);
+
+		// Instantiate Message Object for holding the message data which will be sent to GoMobile
+		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID(), $this->_obj_TxnInfo->getOperator(), $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getChannel(), $this->_obj_TxnInfo->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $this->_obj_TxnInfo->getMobile(), utf8_decode($sBody) );
+		$obj_MsgInfo->setDescription("mPoint - Receipt");
+		if ($this->getCountryConfig()->getID() != 200) { $obj_MsgInfo->setSender(substr($this->_obj_TxnInfo->getClientConfig()->getName(), 0, 11) ); }
+		
+		$this->sendMT($oCI, $obj_MsgInfo, $this->_obj_TxnInfo);
+	}
+
+	/**
 	 * Completes the Transaction by updating the Transaction Log with the final details for the Payment.
+	 * The method will verify that the transaction hasn't accidentally been duplicated by the Payment Service Provider due to
+	 * bugs or network issues.
 	 * Additionally the method will insert a final entry in the Message Log with the provided debug data.
 	 * The method will throw a Callback Exception wit code 1001 if the update fails.
 	 *
@@ -65,28 +106,35 @@ class Callback extends EndUserAccount
 	 * @param 	integer $cid 	Unique ID for the Credit Card the customer used to pay for the Purchase
 	 * @param 	integer $sid 	Unique ID indicating that final state of the Transaction
 	 * @param 	array $debug 	Array of Debug data which should be logged for the state (optional)
+	 * @return	integer
 	 * @throws 	CallbackException
 	 */
 	public function completeTransaction($pspid, $txnid, $cid, $sid, array $debug=null)
 	{
 		$sql = "UPDATE Log.Transaction_Tbl
 				SET pspid = ". intval($pspid) .", extid = '". $this->getDBConn()->escStr($txnid) ."', cardid = ". intval($cid) ."
-				WHERE id = ". $this->_obj_TxnInfo->getID();
+				WHERE id = ". $this->_obj_TxnInfo->getID() ." AND ( (extid IS NULL OR extid = '') AND (cardid IS NULL OR cardid = 0) )";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 
-		$this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true) );
-		// Error: Unable to complete log for Transaction
-		if (is_resource($res) === false)
+		// Transaction completed successfully
+		if (is_resource($res) === true)
 		{
+			if ($this->getDBConn()->countAffectedRows($res) == 1) { $this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true) ); }
+			else
+			{
+				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_DUPLICATED_STATE, var_export($debug, true) );
+				$sid = Constants::iPAYMENT_DUPLICATED_STATE;
+			}
+		}
+		// Error: Unable to complete log for Transaction
+		else
+		{
+			$this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true) );
 			throw new CallbackException("Unable to complete log for Transaction: ". $this->_obj_TxnInfo->getID(), 1001);
 		}
-
-		// Auto Capture enabled for Transaction
-		if ($pspid == Constants::iCPM_PSP || ($this->_obj_TxnInfo->useAutoCapture() === true && $sid == Constants::iPAYMENT_ACCEPTED_STATE) )
-		{
-			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
-		}
+		
+		return $sid;
 	}
 
 	/**
@@ -181,43 +229,6 @@ class Callback extends EndUserAccount
 		/* ----- Construct Body End ----- */
 
 		$this->performCallback($sBody);
-	}
-
-	/**
-	 * Sends an SMS Receipt with Payment Information to the Customer through GoMobile.
-	 *
-	 * @see 	GoMobileClient
-	 * @see 	Constants::iMT_SMS_TYPE
-	 * @see 	Constants::iMT_PRICE
-	 *
-	 * @param 	GoMobileConnInfo $oCI 	Reference to the data object with the Connection Info required to communicate with GoMobile
-	 */
-	public function sendSMSReceipt(GoMobileConnInfo &$oCI)
-	{
-		$sBody = $this->getText()->_("mPoint - SMS Receipt");
-		$sBody = str_replace("{MPOINTID}", $this->_obj_TxnInfo->getID(), $sBody);
-		// Order Number Provided
-		if (strlen($this->_obj_TxnInfo->getOrderID() ) > 0)
-		{
-			$sBody = str_replace("{ORDERID}", $this->_obj_TxnInfo->getOrderID(), $sBody);
-		}
-		else
-		{
-			$aLines = explode("\n", $sBody);
-			$sBody = "";
-			foreach ($aLines as $line)
-			{
-				if (stristr($line, "{ORDERID}") == false) { $sBody .= trim($line) ."\n"; }
-			}
-			$sBody = trim($sBody);
-		}
-		$sBody = str_replace("{PRICE}", General::formatAmount($this->_obj_TxnInfo->getClientConfig()->getCountryConfig(), $this->_obj_TxnInfo->getAmount() ), $sBody);
-		$sBody = str_replace("{CLIENT}", $this->_obj_TxnInfo->getClientConfig()->getName(), $sBody);
-
-		// Instantiate Message Object for holding the message data which will be sent to GoMobile
-		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID(), $this->_obj_TxnInfo->getOperator(), $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getChannel(), $this->_obj_TxnInfo->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $this->_obj_TxnInfo->getMobile(), utf8_decode($sBody) );
-		$obj_MsgInfo->setDescription("mPoint - Receipt");
-		$this->sendMT($oCI, $obj_MsgInfo, $this->_obj_TxnInfo);
 	}
 
 	/**

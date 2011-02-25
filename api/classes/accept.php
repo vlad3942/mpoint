@@ -7,7 +7,7 @@
  * @link http://www.cellpointmobile.com
  * @package Payment
  * @subpackage Accept
- * @version 1.0
+ * @version 1.00
  */
 
 /**
@@ -100,7 +100,7 @@ class Accept extends General
 			// Create XML for custom Client Variables
 			$xml .= '<item>';
 			$xml .= '<name>'. htmlspecialchars($name, ENT_NOQUOTES) .'</name>';
-			$xml .= '<value>'. htmlspecialchars(htmlspecialchars($value, ENT_NOQUOTES), ENT_NOQUOTES) .'</value>';
+			$xml .= '<value>'. htmlspecialchars(utf8_encode($value), ENT_NOQUOTES) .'</value>';
 			
 			$xml .= '</item>';
 		}

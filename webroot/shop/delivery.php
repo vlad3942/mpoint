@@ -49,7 +49,7 @@ if (array_key_exists("temp", $_SESSION) === false)
 }
 
 echo '<?xml version="1.0" encoding="UTF-8"?>';
-echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/shop/delivery.xsl"?>';
+echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA'], $_SESSION['obj_TxnInfo']) .'/shop/delivery.xsl"?>';
 ?>
 <root>
 	<title><?= $_OBJ_TXT->_("Recipient"); ?></title>

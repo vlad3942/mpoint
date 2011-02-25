@@ -3,7 +3,7 @@
  * Set error types that are to be reported by the error handler
  * Both errors and warnings are reported, notices however are not
  */
-error_reporting(E_ERROR | E_PARSE | E_WARNING | E_NOTICE | E_USER_ERROR | E_USER_WARNING | E_USER_NOTICE);
+error_reporting(E_ERROR | E_PARSE | E_WARNING | E_USER_ERROR | E_USER_WARNING | E_USER_NOTICE);
 
 /**
  * Path to Log Files directory
@@ -20,7 +20,7 @@ define("sLOG_PATH", sSYSTEM_PATH ."/log/");
  *	6 - Output to screen and send remote server
  *	7 - Output to file & screen and send remote server
  */
-define("iOUTPUT_METHOD", 3);
+define("iOUTPUT_METHOD", 1);
 /**
  * General debug level for the error handler
  *	0 - Output error
@@ -42,7 +42,7 @@ $aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["password"] = "hspzr735abl";
 $aDB_CONN_INFO["mpoint"]["timeout"] = 10;
-$aDB_CONN_INFO["mpoint"]["charset"] = "ISO8859_1";
+$aDB_CONN_INFO["mpoint"]["charset"] = "UTF8";
 $aDB_CONN_INFO["mpoint"]["class"] = "PostGreSQL";
 $aDB_CONN_INFO["mpoint"]["connmode"] = "normal";
 $aDB_CONN_INFO["mpoint"]["errorpath"] = sLOG_PATH ."db_error_". date("Y-m-d") .".log";
@@ -51,7 +51,7 @@ $aDB_CONN_INFO["mpoint"]["exectime"] = 0.3;
 $aDB_CONN_INFO["mpoint"]["execpath"] = sLOG_PATH ."db_exectime_". date("Y-m-d") .".log";
 $aDB_CONN_INFO["mpoint"]["keycase"] = CASE_UPPER;
 $aDB_CONN_INFO["mpoint"]["debuglevel"] = 2;
-$aDB_CONN_INFO["mpoint"]["method"] = 3;
+$aDB_CONN_INFO["mpoint"]["method"] = 1;
 
 /**
  * Database settings for Session database
@@ -77,7 +77,7 @@ $aDB_CONN_INFO["session"]["method"] = 1;
  * Connection info for sending error reports to a remote host
  */
 $aHTTP_CONN_INFO["iemendo"]["protocol"] = "http";
-$aHTTP_CONN_INFO["iemendo"]["host"] = "iemendo.cellpointmobile.com";
+$aHTTP_CONN_INFO["iemendo"]["host"] = "iemendo.localhost";
 $aHTTP_CONN_INFO["iemendo"]["port"] = 80;
 $aHTTP_CONN_INFO["iemendo"]["timeout"] = 20;
 $aHTTP_CONN_INFO["iemendo"]["path"] = "/api/receive_report.php";
@@ -85,6 +85,20 @@ $aHTTP_CONN_INFO["iemendo"]["method"] = "POST";
 $aHTTP_CONN_INFO["iemendo"]["contenttype"] = "text/xml";
 //$aHTTP_CONN_INFO["iemendo"]["username"] = "";
 //$aHTTP_CONN_INFO["iemendo"]["password"] = "";
+
+/**
+ * Connection info for identifying a mobile device by sending its UA Profile information to iEmendo
+ */
+$aUA_CONN_INFO["protocol"] = "http";
+$aUA_CONN_INFO["host"] = "iemendo.localhost";
+$aUA_CONN_INFO["port"] = 80;
+$aUA_CONN_INFO["timeout"] = 20;
+$aUA_CONN_INFO["path"] = "/api/uaprofile.php";
+$aUA_CONN_INFO["method"] = "POST";
+$aUA_CONN_INFO["contenttype"] = "text/xml";
+
+//$aUA_CONN_INFO["username"] = "";
+//$aUA_CONN_INFO["password"] = "";
 
 /**
  * HTTP Connection Information for using Interflora's Lookup Service in Denmark
@@ -98,6 +112,32 @@ $aHTTP_CONN_INFO[100]["method"] = "GET";
 $aHTTP_CONN_INFO[100]["contenttype"] = "application/www-url-form-encoded";
 //$aHTTP_CONN_INFO[100]["username"] = "";
 //$aHTTP_CONN_INFO[100]["password"] = "";
+
+/**
+ * Connection info for connecting to WorldPay
+ */
+$aHTTP_CONN_INFO["worldpay"]["protocol"] = "https";
+$aHTTP_CONN_INFO["worldpay"]["host"] = "secure.wp3.rbsworldpay.com";
+$aHTTP_CONN_INFO["worldpay"]["port"] = 443;
+$aHTTP_CONN_INFO["worldpay"]["timeout"] = 20;
+$aHTTP_CONN_INFO["worldpay"]["path"] = "/jsp/merchant/xml/paymentService.jsp";
+$aHTTP_CONN_INFO["worldpay"]["method"] = "POST";
+$aHTTP_CONN_INFO["worldpay"]["contenttype"] = "text/xml";
+//$aHTTP_CONN_INFO["worldpay"]["username"] = "";	// Set from the Client Configuration 
+$aHTTP_CONN_INFO["worldpay"]["password"] = "hspzr735abl";
+
+/**
+ * Connection info for connecting to PayEx
+ */
+$aHTTP_CONN_INFO["payex"]["protocol"] = "https";
+$aHTTP_CONN_INFO["payex"]["host"] = "external.payex.com";
+$aHTTP_CONN_INFO["payex"]["port"] = 443;
+$aHTTP_CONN_INFO["payex"]["timeout"] = 20;
+$aHTTP_CONN_INFO["payex"]["path"] = "/PxOrder/Pxorder.asmx?WSDL";
+$aHTTP_CONN_INFO["payex"]["method"] = "POST";
+$aHTTP_CONN_INFO["payex"]["contenttype"] = "text/xml";
+//$aHTTP_CONN_INFO["payex"]["username"] = "";	// Set from the Client Configuration 
+$aHTTP_CONN_INFO["payex"]["password"] = "b9ppZDPbRcJNEgHM57BV";
 
 /**
  * GoMobile Connection Info.
@@ -194,7 +234,7 @@ define("iCLIENT_LOGO_SCALE", 20);
  * The constant represents the percentage of the screen width / height that the logo can cover.
  *
  */
-define("iCARD_LOGO_SCALE", 15);
+define("iCARD_LOGO_SCALE", 20);
 /**
  * Determines what size the mPoint Logo is scaled to.
  * The constant represents the percentage of the screen width / height that the logo can cover.

@@ -181,6 +181,8 @@ msgid @@@ Accept - 100 @@@
 msgstr @@@ Your receipt has been sent @@@
 msgid @@@ Accept - 101 @@@
 msgstr @@@ Your account has been successfully created @@@
+msgid @@@ Accept - 102 @@@
+msgstr @@@ Your card details have been saved @@@
 msgid @@@ Products - 11 @@@
 msgstr @@@ You haven't added anything to your basket. Click "Add to Basket" to add a product. @@@
 msgid @@@ Products - 12 @@@
@@ -253,6 +255,10 @@ msgid @@@ Delivery - 77 @@@
 msgstr @@@ The entered Delivery Date is in the Past @@@
 msgid @@@ Overview - 11 @@@
 msgstr @@@ Please accept the Terms & Conditions to continue @@@
+msgid @@@ Select Card - 43 @@@
+msgstr @@@ The payment could not be authorised with the provided password, your account has been deleted. @@@
+msgid @@@ Select Card - 49 @@@
+msgstr @@@ The specified account is not active. @@@
 msgid @@@ Select Payment Method - 99 @@@
 msgstr @@@ We're sorry but we could not complete the payment through your selected payment method. Please select another one to try again? @@@
 msgid @@@ CPM Payment - 1 @@@
@@ -268,7 +274,7 @@ msgstr @@@ Prepaid account not found, please select one of your stored card inst
 msgid @@@ CPM Payment - 15 @@@
 msgstr @@@ Your prepaid account is inactive, please select one of your stored card instead? @@@
 msgid @@@ CPM Payment - 16 @@@
-msgstr @@@ The balance on your prepaid account is too low, please select one of your stored card instead? @@@
+msgstr @@@ The balance on your prepaid account is too low, please top the account up or select a stored card instead? @@@
 msgid @@@ CPM Payment - 21 @@@
 msgstr @@@ Please select one of your stored cards? @@@
 msgid @@@ CPM Payment - 22 @@@
@@ -285,6 +291,12 @@ msgid @@@ CPM Payment - 33 @@@
 msgstr @@@ The entered password is too long @@@
 msgid @@@ CPM Payment - 41 @@@
 msgstr @@@ The payment could not be authorised with the provided password, please re-enter your password? @@@
+msgid @@@ CPM Payment - 42 @@@
+msgstr @@@ The payment could not be authorised with the provided password, another invalid attempt will result in the account being deleted! @@@
+msgid @@@ CPM Payment - 43 @@@
+msgstr @@@ The payment could not be authorised with the provided password, your account has been deleted. @@@
+msgid @@@ CPM Payment - 49 @@@
+msgstr @@@ The specified account is not active. @@@
 msgid @@@ CPM Payment - 51 @@@
 msgstr @@@ The selected card was rejected, please select another card? @@@
 msgid @@@ CPM Payment - 59 @@@
@@ -313,6 +325,12 @@ msgid @@@ Create Account - 24 @@@
 msgstr @@@ Repeated password may not contain the following characters: " and ' @@@
 msgid @@@ Create Account - 31 @@@
 msgstr @@@ The entered passwords doesn't match, please try again? @@@
+msgid @@@ Create Account - 35 @@@
+msgstr @@@ The entered card name is too short, min length is 2 characters @@@
+msgid @@@ Create Account - 36 @@@
+msgstr @@@ The entered card name is too long, max length is 50 characters @@@
+msgid @@@ Create Account - 37 @@@
+msgstr @@@ A card name may only consist of the following characters: 0-9 a-z æ ø å Æ Ø Å ä ö Ä Ö _ . @ and - @@@
 msgid @@@ Create Account - 41 @@@
 msgstr @@@ Please select a country from the dropdown? @@@
 msgid @@@ Create Account - 42 @@@

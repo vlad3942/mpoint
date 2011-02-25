@@ -27,7 +27,7 @@ if (array_key_exists("email", $_GET) === true) { $_SESSION['temp']['email'] = st
 // Account being created via a Mobile Device
 if (General::getBrowserType() == "mobile")
 {	
-	$sMarkup = General::getMarkupLanguage($_SESSION['obj_UA']);
+	$sMarkup = General::getMarkupLanguage($_SESSION['obj_UA'], $_SESSION['obj_TxnInfo']);
 }
 else { $sMarkup = "ajax"; }
 

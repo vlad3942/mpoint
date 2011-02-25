@@ -8,7 +8,7 @@
  * @link http://www.cellpointmobile.com
  * @package Payment
  * @subpackage Overview
- * @version 1.0
+ * @version 1.00
  */
 
 // Require Global Include File
@@ -32,7 +32,7 @@ if ($_SESSION['obj_TxnInfo']->getClientConfig()->getFlowID() == Constants::iPHYS
 }
 
 echo '<?xml version="1.0" encoding="UTF-8"?>';
-echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/overview.xsl"?>';
+echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA'], $_SESSION['obj_TxnInfo']) .'/overview.xsl"?>';
 ?>
 <root>
 	<title><?= $_OBJ_TXT->_("Order Overview"); ?></title>

@@ -1,6 +1,25 @@
 <?php
-// Require include file for including all Shared and General APIs
-require_once("inc/include.php");
+$_SERVER['DOCUMENT_ROOT'] = str_replace("\\", "/", $_SERVER['DOCUMENT_ROOT']);
+// Define system path constant
+define("sSYSTEM_PATH", substr($_SERVER['DOCUMENT_ROOT'], 0, strrpos($_SERVER['DOCUMENT_ROOT'], "/") ) );
+
+// Define path to the General API classes
+define("sAPI_CLASS_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/php5api/classes/");
+
+// Define path to the System classes
+define("sCLASS_PATH", sSYSTEM_PATH ."/api/classes/");
+// Define path to the System interfaces
+define("sINTERFACE_PATH", sSYSTEM_PATH ."/api/interfaces/");
+// Define path to the System functions
+define("sFUNCTION_PATH", sSYSTEM_PATH ."/api/functions/");
+// Define path to the System Configuration
+define("sCONF_PATH", sSYSTEM_PATH ."/conf/");
+// Define Language Path Constant
+define("sLANGUAGE_PATH", sSYSTEM_PATH ."/webroot/text/");
+
+
+// Require API for Text Transalation
+require_once(sAPI_CLASS_PATH ."text.php");
 
 header("content-type: text/plain");
 

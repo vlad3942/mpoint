@@ -58,6 +58,7 @@ else
 		$etag = "client";
 		break;
 	case (strstr($_GET['file'], "product") ):
+		$obj_Image = new Image($_SERVER['DOCUMENT_ROOT'] ."/img/". $_GET['file']);
 		$etag = "product";
 		break;
 	case (strstr($_GET['file'], "card") ):	// Retrieve Credit Card Logo
@@ -70,7 +71,9 @@ else
 				$i = count($aTmp);
 			}
 		}
-		$obj_Image = $obj_mPoint->getCardLogo($id);
+		// URL for My Account Icon provided
+		if ($id == 11 && strlen($_SESSION['obj_TxnInfo']->getIconURL() ) > 0) { $obj_Image = new Image($_SESSION['obj_TxnInfo']->getIconURL() ); }
+		else { $obj_Image = $obj_mPoint->getCardLogo($id); }
 		$etag = "card_". $id;
 		break;
 	case (strstr($_GET['file'], "mpoint") ):// Retrieve mPoint Logo
@@ -82,10 +85,11 @@ else
 		$etag = "logo";
 		break;
 	default:					// Error: Unknown Image Type
-		trigger_error("Unknown Image Type {TRACE URL: ".$_GET['file'] ."}", E_USER_ERROR);
+		trigger_error("Unknown Image Type {TRACE URL: ". $_GET['file'] ."}", E_USER_ERROR);
 		break;
 	}
-	$obj_Image->resize($w, $h);
+	// Image size incuded in URL
+	if (empty($w) === false && empty($h) === false) { $obj_Image->resize($w, $h); }
 
 	// Mobile Device
 	if (array_key_exists("obj_UA", $_SESSION) === true)

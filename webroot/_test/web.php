@@ -1,9 +1,9 @@
 <h1>Mobile Web Purchase Test</h1>
-<form action="/buy/web.php" method="post">
+<form action="http://<?= $_SERVER['HTTP_HOST']; ?>/buy/web.php" method="post">
 <table>
 <tr>
 	<td style="font-weight:bold;">Client ID</td>
-	<td><input type="text" name="clientid" value="10001" /></td>
+	<td><input type="text" name="clientid" value="10014" /></td>
 </tr>
 <tr>
 	<td style="font-weight:bold;">Account</td>

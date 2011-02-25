@@ -55,6 +55,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	// Set Client Defaults
 	if (array_key_exists("operator", $_REQUEST) === false) { $_REQUEST['operator'] = $obj_ClientConfig->getCountryConfig()->getID() * 100; }	
 	if (array_key_exists("callback-url", $_REQUEST) === false) { $_REQUEST['callback-url'] = $obj_ClientConfig->getCallbackURL(); }
+	if (array_key_exists("icon-url", $_REQUEST) === false) { $_REQUEST['icon-url'] = $obj_ClientConfig->getIconURL(); }
 	if (array_key_exists("language", $_REQUEST) === false) { $_REQUEST['language'] = $obj_ClientConfig->getLanguage(); }
 	
 	$obj_mPoint = new SMS_Purchase($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
@@ -83,7 +84,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if ($obj_Validator->valEMail($_REQUEST['email']) != 1 && $obj_Validator->valEMail($_REQUEST['email']) != 10) { $aMsgCds[$obj_Validator->valEMail($_REQUEST['email']) + 140] = $_REQUEST['email']; }
 	
 	// Verify whether Transaction is possible via SMS
-	$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, @$_REQUEST['mobile']);
+	$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, @$_REQUEST['mobile'], false);
 	if ($iAccountID > 0)
 	{
 		$obj_AccountXML = simplexml_load_string($obj_mPoint->getAccountInfo($iAccountID) );

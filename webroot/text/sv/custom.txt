@@ -181,6 +181,8 @@ msgid @@@ Accept - 100 @@@
 msgstr @@@ Ditt kvitto har skickats @@@
 msgid @@@ Accept - 101 @@@
 msgstr @@@ Your account has been successfully created @@@
+msgid @@@ Accept - 102 @@@
+msgstr @@@ Your card details have been saved @@@
 msgid @@@ Products - 11 @@@
 msgstr @@@ Du har inte lagt till några produkter i din varukrog. Klicka på "Lägg till i korg" för att lägga till en produkt. @@@
 msgid @@@ Products - 12 @@@
@@ -253,6 +255,10 @@ msgid @@@ Delivery - 77 @@@
 msgstr @@@ Det angivna leveransdatumet är i det förflutna @@@
 msgid @@@ Overview - 11 @@@
 msgstr @@@ Godkänn försäljningsvilkoren för att fortsätta @@@
+msgid @@@ Select Card - 43 @@@
+msgstr @@@ The payment could not be authorised with the provided password, your account has been deleted. @@@
+msgid @@@ Select Card - 49 @@@
+msgstr @@@ The specified account is not active. @@@
 msgid @@@ Select Payment Method - 99 @@@
 msgstr @@@ Vi kunde inte genomföra betalningen med din valda betalningsmetod. Välj en annan betalningsmetod och försök igen. @@@
 msgid @@@ CPM Payment - 1 @@@
@@ -285,6 +291,12 @@ msgid @@@ CPM Payment - 33 @@@
 msgstr @@@ The entered password is too long @@@
 msgid @@@ CPM Payment - 41 @@@
 msgstr @@@ The payment could not be authorised with the provided password, please re-enter your password? @@@
+msgid @@@ CPM Payment - 42 @@@
+msgstr @@@ The payment could not be authorised with the provided password, another invalid attempt will result in the account being deleted! @@@
+msgid @@@ CPM Payment - 43 @@@
+msgstr @@@ The payment could not be authorised with the provided password, your account has been deleted. @@@
+msgid @@@ CPM Payment - 49 @@@
+msgstr @@@ The specified account is not active. @@@
 msgid @@@ CPM Payment - 51 @@@
 msgstr @@@ The selected card was rejected, please select another card? @@@
 msgid @@@ CPM Payment - 59 @@@
@@ -313,6 +325,12 @@ msgid @@@ Create Account - 24 @@@
 msgstr @@@ Repeated password may not contain the following characters: " and ' @@@
 msgid @@@ Create Account - 31 @@@
 msgstr @@@ Entered passwords doesn't match, please try again? @@@
+msgid @@@ Create Account - 35 @@@
+msgstr @@@ The entered card name is too short, min length is 2 characters @@@
+msgid @@@ Create Account - 36 @@@
+msgstr @@@ The entered card name is too long, max length is 50 characters @@@
+msgid @@@ Create Account - 37 @@@
+msgstr @@@ A card name may only consist of the following characters: 0-9 a-z æ ø å Æ Ø Å ä ö Ä Ö _ . @ and - @@@
 msgid @@@ Create Account - 41 @@@
 msgstr @@@ Please select a country from the dropdown? @@@
 msgid @@@ Create Account - 42 @@@

@@ -8,33 +8,42 @@
 		<xsl:value-of select="labels/progress" />
 		<br /><br />
 	</div>
-			
-	<div><xsl:value-of select="labels/info" /></div>
-	<div id="cards">
-		<xsl:for-each select="cards/item">
-			<xsl:choose>
-				<!-- Cellpoint Mobile -->
-				<xsl:when test="@pspid = 1">
-					<xsl:apply-templates select="." mode="cpm" />
-				</xsl:when>
-				<!-- DIBS -->
-				<xsl:when test="@pspid = 2">
-					<xsl:apply-templates select="." mode="dibs" />
-				</xsl:when>
-				<!-- IHI -->
-				<xsl:when test="@pspid = 3">
-					<xsl:apply-templates select="." mode="ihi" />
-				</xsl:when>
-				<!-- Error -->
-				<xsl:otherwise>
-					
-				</xsl:otherwise>
-			</xsl:choose>
-		</xsl:for-each>
-	</div>
 	
 	<!-- Display Status Messages -->
 	<xsl:apply-templates select="messages" />
+	<div id="outer-border">
+		<div class="mPoint_Help"><xsl:value-of select="labels/info" /></div>
+		<div id="cards">		
+			<xsl:for-each select="cards/item">
+				<xsl:choose>
+					<!-- Cellpoint Mobile -->
+					<xsl:when test="@pspid = 1">
+						<xsl:apply-templates select="." mode="cpm" />
+					</xsl:when>
+					<!-- DIBS -->
+					<xsl:when test="@pspid = 2">
+						<xsl:apply-templates select="." mode="dibs" />
+					</xsl:when>
+					<!-- IHI -->
+					<xsl:when test="@pspid = 3">
+						<xsl:apply-templates select="." mode="ihi" />
+					</xsl:when>
+					<!-- WorldPay -->
+					<xsl:when test="@pspid = 4">
+						<xsl:apply-templates select="." mode="worldpay" />
+					</xsl:when>
+					<!-- PayEx -->
+					<xsl:when test="@pspid = 5">
+						<xsl:apply-templates select="." mode="payex" />
+					</xsl:when>
+					<!-- Error -->
+					<xsl:otherwise>
+						
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:for-each>
+		</div>
+	</div>
 </xsl:template>
 
 <func:function name="func:transCard">
@@ -103,14 +112,15 @@
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:variable>
-	
+
 	<!--
 	  - Only display option if:
-	  - "Card" is NOT "My Account"
-	  - Transaction type is NOT a Top-Up
-	  - Transaction type is a Top-Up but NOT a Card Registration and the End-User has previously stored a payment card
+	  - Card shouldn't be "auto stored" AND
+	  - "Card" is NOT "My Account" OR
+	  - "Cards" stored for Merchant OR
+	  - E-Money based Prepaid Account is available AND Transaction is not an Account Top-Up
 	  -->
-	<xsl:if test="(@id != 11 and /root/transaction/auto-store-card = 'false') or /root/transaction/@type &lt; 100 or /root/transaction/@type &gt; 109 or (/root/transaction/auto-store-card = 'false' and count(/root/stored-cards/card) &gt; 0)">
+	<xsl:if test="/root/transaction/auto-store-card = 'false' and (@id != 11 or count(/root/stored-cards/card[client/@id = /root/client-config/@id]) &gt; 0 or (floor(/root/client-config/store-card div 1) mod 2 != 1 and (/root/transaction/@type &lt; 100 or /root/transaction/@type &gt; 109) ) )">
 		<div>
 			<form action="{func:constLink('/cpm/payment.php') }" method="post">
 				<div class="{$css}">
@@ -162,6 +172,7 @@
 				<input type="hidden" name="lang" value="{func:transLanguage(/root/system/language)}" />
 				
 				<!-- mPoint Required Data -->
+				<input type="hidden" name="logo-url" value="{/root/transaction/logo/url}" />
 				<input type="hidden" name="width" value="{/root/transaction/logo/width}" />
 				<input type="hidden" name="height" value="{/root/transaction/logo/height}" />
 				<input type="hidden" name="{/root/system/session}" value="{/root/system/session/@id}" />
@@ -206,10 +217,6 @@
 				<input type="hidden" name="currency" value="{currency}" />
 				<input type="hidden" name="orderid" value="{/root/transaction/orderid}" />
 				<input type="hidden" name="fullreply" value="true" />
-				<!-- Use Auto Capture -->
-				<xsl:if test="/root/transaction/auto-capture = 'true' and /root/client-config/store-card = 0">
-					<input type="hidden" name="capturenow" value="true" />
-				</xsl:if>
 				<!-- Sub-Account configured for DIBS -->
 				<xsl:if test="subaccount &gt; 0">
 					<input type="hidden" name="account" value="{subaccount}" />
@@ -217,13 +224,18 @@
 				<input type="hidden" name="lang" value="{func:transLanguage(/root/system/language)}" />
 				
 				<!-- mPoint Required Data -->
-				<input type="hidden" name="width" value="{/root/transaction/logo/width}" />
-				<input type="hidden" name="height" value="{/root/transaction/logo/height}" />
+				<input type="hidden" name="device_name" value="{/root/uaprofile/device}" />
+				<input type="hidden" name="device_width" value="{/root/uaprofile/width}" />
+				<input type="hidden" name="device_height" value="{/root/uaprofile/height}" />
+				<input type="hidden" name="logo_url" value="{/root/transaction/logo/url}" />
+				<input type="hidden" name="logo_width" value="{/root/transaction/logo/width}" />
+				<input type="hidden" name="logo_height" value="{/root/transaction/logo/height}" />
 				<input type="hidden" name="{/root/system/session}" value="{/root/system/session/@id}" />
 				<input type="hidden" name="format" value="xhtml" />
 				<input type="hidden" name="language" value="{/root/system/language}" />
 				<input type="hidden" name="cardid" value="{@id}" />
 				<input type="hidden" name="mpointid" value="{/root/transaction/@id}" />
+				<input type="hidden" name="markup" value="{/root/transaction/markup-language}" />
 				<!-- Current transaction is an Account Top-Up and a previous transaction is in progress -->
 				<xsl:if test="/root/original-transaction-id &gt; 0">
 					<input type="hidden" name="org_mpointid" value="{/root/original-transaction-id}" />
@@ -345,6 +357,62 @@
 			</div>
 		</form>
 	</div>
+</xsl:template>
+
+<xsl:template match="item" mode="worldpay">
+	<div>
+			<form action="{func:constLink('/worldpay/sys/rxml.php') }" method="post">
+				<div>
+					<!-- WorldPay data -->
+					<input type="hidden" name="cardid" value="{@id}" />
+					<input type="hidden" name="merchantcode" value="{account}" />
+					<input type="hidden" name="currency" value="{currency}" />
+					<!-- Payment Page Data -->
+					<input type="hidden" name="card_width" value="{logo-width}" />
+					<input type="hidden" name="card_height" value="{logo-height}" />
+					
+					<!--
+					  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
+					  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
+					  - the phone will assign 25% of the screen width to the card logo and 75% of the screen width to the card name.
+					  -->
+					<table>
+					<tr>
+						<td><img src="{/root/system/protocol}://{/root/system/host}/img/{logo-width}x{logo-height}_card_{@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
+						<td colspan="3"><input type="submit" value="{name}" class="mPoint_Card_Button" /></td>
+					</tr>
+					</table>
+				</div>
+			</form>
+		</div>
+</xsl:template>
+
+<xsl:template match="item" mode="payex">
+	<div>
+			<form action="{func:constLink('/payex/sys/redirect.php') }" method="post">
+				<div>
+					<!-- WorldPay data -->
+					<input type="hidden" name="cardid" value="{@id}" />
+					<input type="hidden" name="accountNumber" value="{account}" />
+					<input type="hidden" name="currency" value="{currency}" />
+					<!-- Payment Page Data -->
+					<input type="hidden" name="card_width" value="{logo-width}" />
+					<input type="hidden" name="card_height" value="{logo-height}" />
+					
+					<!--
+					  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
+					  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
+					  - the phone will assign 25% of the screen width to the card logo and 75% of the screen width to the card name.
+					  -->
+					<table>
+					<tr>
+						<td><img src="{/root/system/protocol}://{/root/system/host}/img/{logo-width}x{logo-height}_card_{@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
+						<td colspan="3"><input type="submit" value="{name}" class="mPoint_Card_Button" /></td>
+					</tr>
+					</table>
+				</div>
+			</form>
+		</div>
 </xsl:template>
 
 </xsl:stylesheet>

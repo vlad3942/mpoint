@@ -1,6 +1,6 @@
 <project name="mPoint" default="deploy" basedir=".">
 	<target name="init">
-		<property name="version" value="v1.30" />
+		<property name="version" value="v1.40" />
 		<property name="baseDir" value="D:\Temp\mPoint" />
 		
 		<property name="sourceDir" value="${baseDir}/temp" />
@@ -28,6 +28,7 @@
 				<exclude name="**\.settings" />
 				<exclude name="**\.buildpath" />
 				<exclude name="**\.project" />
+				<exclude name="**\log" />
 			</fileset>
 		</copy>
 	</target>

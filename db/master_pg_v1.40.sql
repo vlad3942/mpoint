@@ -1,0 +1,6 @@
+ALTER TABLE Client.Account_Tbl ADD markup VARCHAR(5);
+ALTER TABLE Log.Transaction_Tbl ADD markup VARCHAR(5);
+
+DELETE FROM EndUser.CLAccess_Tbl WHERE accountid NOT IN (SELECT id FROM EndUser.Account_Tbl);
+ALTER TABLE EndUser.CLAccess_Tbl ADD CONSTRAINT Access2Account_FK FOREIGN KEY (accountid) REFERENCES EndUser.Account_Tbl ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE EndUser.CLAccess_Tbl ADD CONSTRAINT Access2Client_FK FOREIGN KEY (clientid) REFERENCES Client.Client_Tbl ON UPDATE CASCADE ON DELETE CASCADE;

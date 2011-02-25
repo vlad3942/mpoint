@@ -23,7 +23,7 @@ $obj_mPoint = new TopUp($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']->getClient
 if (array_key_exists("obj_TxnInfo", $_SESSION) === true && array_key_exists("obj_OrgTxnInfo", $_SESSION) === false) { $_SESSION['obj_OrgTxnInfo'] = $_SESSION['obj_TxnInfo']; }
 
 echo '<?xml version="1.0" encoding="UTF-8"?>';
-echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/shop/topup.xsl"?>';
+echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA'], $_SESSION['obj_TxnInfo']) .'/shop/topup.xsl"?>';
 ?>
 <root>
 	<title><?= $_OBJ_TXT->_("Top-Up Account"); ?></title>

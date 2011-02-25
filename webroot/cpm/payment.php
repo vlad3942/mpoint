@@ -8,7 +8,7 @@
  * @link http://www.cellpointmobile.com
  * @package Payment
  * @subpackage CellpointMobile
- * @version 1.0
+ * @version 1.01
  */
 
 // Require Global Include File
@@ -21,6 +21,8 @@ require_once(sAPI_CLASS_PATH ."/gomobile.php");
 require_once(sCLASS_PATH ."/enduser_account.php");
 // Require general Business logic for the Callback module
 require_once(sCLASS_PATH ."/callback.php");
+// Require specific Business logic for the DIBS component
+require_once(sCLASS_PATH ."/dibs.php");
 // Require general Business logic for the Cellpoint Mobile module
 require_once(sCLASS_PATH ."/cpm.php");
 
@@ -34,7 +36,7 @@ if (array_key_exists("resume", $_POST) === true && $_POST['resume'] == "true" &&
 	unset($_SESSION['obj_OrgTxnInfo']);
 }
 // Set Defaults
-if (array_key_exists("cardtype", $_POST) === true) { $_SESSION['temp']['cardtype'] = $_POST['cardtype']; }
+if (array_key_exists("cardtype", $_REQUEST) === true) { $_SESSION['temp']['cardtype'] = $_REQUEST['cardtype']; }
 
 $obj_mPoint = new CellpointMobile($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
 
@@ -48,7 +50,7 @@ try
 		$obj_MsgInfo = $obj_mPoint->sendBillingSMS(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
 
 		ignore_user_abort(true);
-		// Re-Direct customer
+		// Redirect customer
 		header("Content-Length: 0");
 		header("location: http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?". session_name() ."=". session_id() );
 		header("Connection: close");
@@ -58,22 +60,39 @@ try
 		$obj_mPoint->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), $_SESSION['temp']['cardtype'], $obj_MsgInfo->getReturnCodes(), $obj_MsgInfo->getGoMobileID() );
 		break;
 	case (Constants::iEMONEY_CARD):	// My Account
-		$obj_AccountXML = simplexml_load_string($obj_mPoint->getAccountInfo($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_UA']) );
+		if ($_SESSION['obj_TxnInfo']->getAccountID() > 0) { $iAccountID = $_SESSION['obj_TxnInfo']->getAccountID(); }
+		else
+		{
+			$obj_Home = new Home($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig() );
+			$iAccountID = $obj_Home->getAccountID($_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig(), $_SESSION['obj_TxnInfo']->getMobile() );
+			if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = $obj_Home->getAccountID($_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig(), $_SESSION['obj_TxnInfo']->getEMail() ); }
+		}
+		$obj_AccountXML = simplexml_load_string($obj_mPoint->getAccountInfo($iAccountID, $_SESSION['obj_UA']) );
 		$obj_CardsXML = simplexml_load_string($obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_UA']) );
+		if (count($obj_CardsXML) > 0) { $obj_ClientCardsXML = $obj_CardsXML->xpath("/stored-cards/card[client/@id = ". $_SESSION['obj_TxnInfo']->getClientConfig()->getID() ."]"); }
 		
-		// End-User does not have an account yet, automatically redirect to "Create New Account"
-		if (intval($obj_AccountXML["id"]) == 0)
+		/*
+		 * End-User does not have an account yet AND account hasn't just been disabled
+		 * Automatically redirect to "Create New Account"
+		 */
+		if (intval($obj_AccountXML["id"]) == 0 && array_key_exists("msg", $_GET) === false)
 		{
 			header("Location: http://". $_SERVER['HTTP_HOST'] ."/new/?msg=2");
 		}
-		// Transaction amount doesn't require Authentication and no Stored Cards available
+		/*
+		 * Transaction amount doesn't require Authentication
+		 * AND
+		 * The balance on the End-User's e-money based prepaid account is equal to or greater than the transaction amount
+		 * AND
+		 * No Stored Cards available AND no error has occurred
+		 */
 		elseif (intval($obj_AccountXML->balance) >= $_SESSION['obj_TxnInfo']->getAmount() && $_SESSION['obj_TxnInfo']->getAmount() < $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->getMaxPSMSAmount()
-			&& count($obj_CardsXML->xpath("/stored-cards/card[client/@id = ". $_SESSION['obj_TxnInfo']->getClientConfig()->getID() ."]") ) == 0)
+			&& count($obj_ClientCardsXML) == 0 && array_key_exists("msg", $_GET) === false)
 		{
 			$obj_mPoint->purchase($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_TxnInfo']->getID(), $_SESSION['obj_TxnInfo']->getAmount() );
 			
 			ignore_user_abort(true);
-			// Re-Direct customer
+			// Redirect customer
 			header("Content-Length: 0");
 			header("location: http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?". session_name() ."=". session_id() );
 			header("Connection: close");
@@ -93,13 +112,13 @@ try
 			ob_start(array(new Output("all", false), "transform") );
 	
 			echo '<?xml version="1.0" encoding="UTF-8"?>';
-			echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/cpm/payment.xsl"?>';
+			echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA'], $_SESSION['obj_TxnInfo']) .'/cpm/payment.xsl"?>';
 	?>
 			<root>
 				<title><?= $_OBJ_TXT->_("Pay using Account"); ?></title>
-	
 				<?= $obj_mPoint->getSystemInfo(); ?>
-	
+				
+				<?= $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->toXML(); ?>
 				<?= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML(); ?>
 	
 				<?= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']); ?>
@@ -116,11 +135,12 @@ try
 					<submit><?= $_OBJ_TXT->_("Complete Payment"); ?></submit>
 					<create-account><?= $_OBJ_TXT->_("Create Account"); ?></create-account>
 					<top-up><?= $_OBJ_TXT->_("Top-Up"); ?></top-up>
+					<add-card><?= $_OBJ_TXT->_("Add Card"); ?></add-card>
 				</labels>
 	
 				<?= str_replace('<?xml version="1.0"?>', '', $obj_AccountXML->asXML() ) ?>
 	
-				<?= str_replace('<?xml version="1.0"?>', '', $obj_CardsXML->asXML() ) ?>
+				<?= count($obj_CardsXML) > 0 ? str_replace('<?xml version="1.0"?>', '', $obj_CardsXML->asXML() ) : ""; ?>
 	
 				<?= $obj_mPoint->getMessages("CPM Payment"); ?>
 	

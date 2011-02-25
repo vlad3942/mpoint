@@ -28,7 +28,7 @@ $obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SE
 $obj_Accept = new Accept($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_UA']);
 
 echo '<?xml version="1.0" encoding="UTF-8"?>';
-echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA']) .'/pay/card.xsl"?>';
+echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA'], $_SESSION['obj_TxnInfo']) .'/pay/card.xsl"?>';
 ?>
 <root>
 	<title><?= $_OBJ_TXT->_("Select Payment Method"); ?></title>
@@ -40,7 +40,9 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 	<?= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML(); ?>
 
 	<?= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']); ?>
-
+	
+	<?= $_SESSION['obj_UA']->toXML(); ?>
+	
 	<labels>
 		<progress><?= $_OBJ_TXT->_("Step 1 of 2"); ?></progress>
 		<info><?= $_OBJ_TXT->_("Please select your Payment Method"); ?></info>

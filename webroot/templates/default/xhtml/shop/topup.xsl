@@ -46,9 +46,8 @@
 					<!-- mPoint customization parameters -->
 					<input type="hidden" name="logo-url" value="{//transaction/logo/url}" />
 					<input type="hidden" name="css-url" value="{//transaction/css-url}" />
-					<input type="hidden" name="callback-url" value="{//transaction/callback-url}" />
-					<input type="hidden" name="accept-url" value="{//transaction/accept-url}" />
-					<input type="hidden" name="cancel-url" value="{//transaction/cancel-url}" />
+					<input type="hidden" name="accept-url" value="{/root/system/protocol}://{/root/system/host}/cpm/payment.php?{/root/system/session}={/root/system/session/@id}&amp;msg=1" />
+					<input type="hidden" name="cancel-url" value="{/root/system/protocol}://{/root/system/host}/cpm/payment.php?{/root/system/session}={/root/system/session/@id}&amp;msg=2" />
 					<input type="hidden" name="language" value="{/root/system/language}" />
 					<input type="hidden" name="mode" value="{//transaction/@mode}" />
 					

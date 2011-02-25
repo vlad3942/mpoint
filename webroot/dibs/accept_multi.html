@@ -19,8 +19,9 @@ switch(cgi.language)
 	// Danish
 	case ('da')
 	{
-		title_pay := 'Betaling Gennemført';
-		title_account := 'Opret Konto';
+		title_payment_completed := 'Betaling Gennemført';
+		title_create_account := 'Opret Konto';
+		title_save_card := 'Gem Kort';
 		mpoint := 'Tak fordi du brugte';
 		status := 'Din betaling er blevet gennemført';
 		label_mpoint_id := 'mPoint ID';
@@ -28,18 +29,23 @@ switch(cgi.language)
 		label_price := 'Pris';
 		label_password := 'Kodeord';
 		label_repeat := 'Gentag kodeord';
-		info := 'Udfyld venligst nedenstående for at sætte kodeordet til din konto';
+		label_card_name := 'Kort navn';
+		card_name_help := 'F.eks. "privat" eller "firma" (ikke påkrævet)';
+		create_account_info := 'Udfyld venligst nedenstående for at sætte kodeordet til din konto';
+		save_card_info := 'Angiv venligst et navn for det gemte kort nedenfor?';
 		sms_receipt := 'Ovenstående kvittering er også blevet sendt via SMS til: MOBILE';
 		email_receipt := 'Send kvittering via E-Mail';
 		save := 'Gem';
-		continue := 'Fortsæt tilbage til Sælgers site >>';
+		continue := 'Fortsæt tilbage til sælgers site >>';
 		resume := 'Genoptag Betaling >>';
+		label_loading := 'Henter...';
 	}
 	// Swedish
 	case ('sv')
 	{
-		title_pay := 'Betalningen genomförd';
-		title_account := 'Create Account';
+		title_payment_completed := 'Betalningen genomförd';
+		title_create_account := 'Create Account';
+		title_save_card := 'Save Card';
 		mpoint := 'Tack för att du använder';
 		status := 'Din betalning har genomförts';
 		label_mpoint_id := 'mPoint ID';
@@ -47,18 +53,23 @@ switch(cgi.language)
 		label_price := 'Pris';
 		label_password := 'Password';
 		label_repeat := 'Repeat password';
-		info := 'Please complete the form below to set the password for your account';
+		label_card_name := 'Card name';
+		card_name_help := 'F.ex. "private" or "company" (optional)';
+		create_account_info := 'Please complete the form below to finnish creating your account';
+		save_card_info := 'Please enter a name for the stored card below?';
 		sms_receipt := 'Denna information har även skickats till dig via ett SMS till nummer: MOBILE';
 		email_receipt := 'Skicka kvitto via epost';
 		save := 'Gem';
 		continue := 'Återvänd till försäljarens webbplats >>';
 		resume := 'Resume Payment >>';
+		label_loading := 'Loading...';
 	}
 	// British English
 	default
 	{
-		title_pay := 'Payment Completed';
-		title_account := 'Create Account';
+		title_payment_completed := 'Payment Completed';
+		title_create_account := 'Create Account';
+		title_save_card := 'Save Card';
 		mpoint := 'Thank you for using';
 		status := 'Your payment has been successfully completed';
 		label_mpoint_id := 'mPoint ID';
@@ -66,31 +77,87 @@ switch(cgi.language)
 		label_price := 'Price';
 		label_password := 'Password';
 		label_repeat := 'Repeat password';
-		info := 'Please complete the form below to set the password for your account';
+		label_card_name := 'Card name';
+		card_name_help := 'F.ex. "private" or "company" (optional)';
+		create_account_info := 'Please complete the form below to finnish creating your account';
+		save_card_info := 'Please enter a name for the stored card below?';
 		sms_receipt := 'These details have also been sent to you via SMS to number: MOBILE';
 		email_receipt := 'Send receipt via E-Mail';
 		save := 'Save';
 		continue := 'Continue back to Merchant Site >>';
 		resume := 'Resume Payment >>';
+		label_loading := 'Loading...';
 	}
 }
 /* ========== Language Translataion End ========== */
+
+
+/* ========== Client Customization Start ========== */
+switch(cgi.clientid)
+{
+	// mPoint - Mobile Proximity Payment Demo (US)
+	case (10000)
+	{
+		background_colour := 'E8E8E8';
+		border_colour := '5B94B1';
+	}
+	// mPoint - Mobile Proximity Payment Demo (DK)
+	case (10001)
+	{
+		background_colour := 'E8E8E8';
+		border_colour := '5B94B1';
+	}
+	// Insurance renewal demo
+	case (10012)
+	{
+		background_colour := 'fff';
+		border_colour := '000';
+	}
+	// Other Client
+	default
+	{
+		background_colour := '8FBFD5';
+		border_colour := '000';
+	}
+}
+/* ========== Client Customization End ========== */
 </PML_SCRIPT>
-<?xml version="1.0" encoding="ISO-8859-15"?>
-<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" PML_xml:lang="cgi.lang">
+<PML_SWITCH EXPR="cgi.markup">
+	<PML_CASE VALUE="'html5'">
+		<!DOCTYPE html>
+		<html PML_xml:lang="cgi.lang">
+	</PML_CASE>
+	<PML_CASE VALUE="'xhtml'">
+		<?xml version="1.0" encoding="ISO-8859-15"?>
+		<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
+		<html xmlns="http://www.w3.org/1999/xhtml" PML_xml:lang="cgi.lang">
+	</PML_CASE>
+	<PML_DEFAULT>
+		<?xml version="1.0" encoding="ISO-8859-15"?>
+		<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
+		<html xmlns="http://www.w3.org/1999/xhtml" PML_xml:lang="cgi.lang">
+	</PML_DEFAULT>
+</PML_SWITCH>
 <head>
 	<title>
-		<PML_IF COND="cgi.maketicket = 'true'">
-			<PML_VAL>title_account</PML_VAL>
+		<PML_IF COND="cgi.preauth = 'true' && cgi.euaid < 0">
+			<PML_VAL>title_create_account</PML_VAL>
 		</PML_IF>
+		<PML_ELSIF COND="cgi.preauth = 'true'">
+			<PML_VAL>title_save_card</PML_VAL>
+		</PML_ELSIF>
 		<PML_ELSE>
-			<PML_VAL>title_pay</PML_VAL>
+			<PML_VAL>title_payment_completed</PML_VAL>
 		</PML_ELSE>
 	</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15" />
 	<meta http-equiv="Cache-Control" content="max-age=86400" />
 	<meta http-equiv="Content-Style-Type" content="text/css" />
+	<meta name="format-detection" content="telephone=no" />
+	<PML_IF COND="cgi.markup = 'html5'">
+		<meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	</PML_IF>
+	
 	<style type="text/css">
 		/* ========== Tag Classes Start ========== */
 		body
@@ -99,13 +166,21 @@ switch(cgi.language)
 		}
 		body, table
 		{
-			background-color: #fff;
+			background-color: #<PML_VAL>background_colour</PML_VAL>;
 			text-align: left;
 		}
 		body, table, div
 		{
 			font-size: 1em;
 			font-family: "Trebuchet MS",arial,sans-serif;
+			color: #000;
+		}
+		table, table * div, table * .mPoint_Info
+		{
+			color: #000;
+		}
+		div#status table, div#status table * div, div#status table * .mPoint_Info
+		{
 			color: #000;
 		}
 		
@@ -121,6 +196,7 @@ switch(cgi.language)
 		{
 			margin: 0px 0px 0px 0px;
 			padding: 0px 0px 0px 0px;
+			text-align: left;
 		}
 		
 		a
@@ -147,6 +223,7 @@ switch(cgi.language)
 			padding-right: 0.5em;
 			padding-top: 0.3em;
 			white-space: nowrap;
+			text-align: left;
 		}
 		
 		.mPoint_Info
@@ -166,6 +243,11 @@ switch(cgi.language)
 			padding-top: 0.5em;
 			padding-bottom: 0.5em;
 		}
+		.mPoint_Help
+		{
+			text-align: center;
+			padding-bottom: 5px;
+		}
 		
 		td.mPoint_Number
 		{
@@ -176,7 +258,7 @@ switch(cgi.language)
 		
 		tr.mPoint_Even
 		{
-			background-color: #8FBFD5;
+			background-color: #<PML_VAL>background_colour</PML_VAL>;
 		}
 		tr.mPoint_Uneven
 		{
@@ -184,9 +266,9 @@ switch(cgi.language)
 		
 		input.mPoint_Button
 		{
+			font-size: 1em;
 			font-weight: bold;
-			border-color: #6DAADD;
-			background-color: #6c8ca3;
+			color: #000;
 		}
 		
 		input.mPoint_Card_Button
@@ -209,8 +291,7 @@ switch(cgi.language)
 		
 		table#receipt
 		{
-			width: 100%;
-			background-color: #8FBFD5;
+			background-color: #<PML_VAL>background_colour</PML_VAL>;
 			margin-top: 0.5em;
 			margin-bottom: 0.5em;
 		}
@@ -233,45 +314,142 @@ switch(cgi.language)
 		
 		div#delivery, table#shipping, div#email, div#cardinfo, div#accountinfo
 		{
-			background-color: #8FBFD5;
+			background-color: #<PML_VAL>background_colour</PML_VAL>;
 			padding-left: 3px;
 			padding-bottom: 3px;
+			color: #000;
+		}
+		div#cardinfo .mPoint_Info, div#cardinfo * .mPoint_Info, div#cardinfo .mPoint_Label
+		{
+			color: #000;
+		}
+
+		div#price
+		{
+			 padding-bottom: 0.5em;
+		}
+		table#receipt, div#my-account
+		{
+			background-color: #<PML_VAL>background_colour</PML_VAL>;
+			padding-left: 10px;
+			padding-top: 2px;
+			padding-bottom: 5px;
+			margin-right: 10px;
+			color: #000;
+			border: 2px solid #<PML_VAL>border_colour</PML_VAL>;
+			-moz-border-radius: 10px;
+			-webkit-border-radius: 10px;
+			border-radius: 10px;
+		}
+		div#submit
+		{
+			text-align: center;
 		}
 		/* ========== ID Classes End ========== */
+
+		/* ========== Loader Start ========== */
+		span#loader
+		{
+			visibility: hidden;
+			position: absolute;
+			left: 40%;
+			top: 50%;
+			width: 50px;
+			height: 50px;
+			text-align: center;
+			color: #000;
+			font-size: 10px;
+			background-color: #fff;
+			border: 2px solid #<PML_VAL>border_colour</PML_VAL>;
+			-moz-border-radius: 10px;
+			-webkit-border-radius: 10px;
+			border-radius: 10px;
+			padding: 5px;
+			z-index: 30;
+		}
+		/* ========== Loader End ========== */
 	</style>
 </head>
 <body>
-	<div id="logo">
-		<img PML_src="'images/client_logo_'@cgi.clientid@'.jpg'" PML_width="cgi.width" PML_height="cgi.height" PML_alt="'- '@cgi.client@' -'" />
-	</div>
+	<PML_IF COND="cgi.logo_url != ''">
+		<div id="logo">
+			<img PML_src="'images/client_logo_'@cgi.clientid@'.jpg'" PML_width="cgi.logo_width" PML_height="cgi.logo_height" PML_alt="'- '@cgi.client@' -'" />
+		</div>
+	</PML_IF>
 	<!-- Create New Account -->
 	<PML_IF COND="cgi.preauth = 'true' && cgi.euaid < 0">
 		<div id="my-account">
-			<form PML_action="'http://mpoint.cellpointmobile.com/pay/sys/save_pwd.php?PHPSESSID='@cgi.PHPSESSID" method="post">
-				<div><PML_VAL>info</PML_VAL></div>
+			<PML_SWITCH EXPR="cgi.markup">
+				<PML_CASE VALUE="'html5'">
+					<form PML_action="string.replace(cgi.callbackurl, '/callback/dibs.php', '') @'/pay/sys/save_pwd.php?PHPSESSID='@cgi.PHPSESSID" method="post" onsubmit="javascript:document.getElementById('loader').style.visibility='visible'; document.getElementById('complete-payment').disabled=true;">
+				</PML_CASE>
+				<PML_DEFAULT>
+					<form PML_action="string.replace(cgi.callbackurl, '/callback/dibs.php', '') @'/pay/sys/save_pwd.php?PHPSESSID='@cgi.PHPSESSID" method="post">
+				</PML_DEFAULT>
+			</PML_SWITCH>
+				<div>
+					<!-- Standard mPoint Variables -->
+					<input type="hidden" name="cardid" PML_value="cgi.cardid" />
+				</div>
+				<div><PML_VAL>create_account_info</PML_VAL></div>
 				<div id="accountinfo">
 					<!-- Password Info -->
 					<div class="mPoint_Label">
 						<PML_VAL>label_password</PML_VAL>:<br />
-						<input type="password" name="pwd" value="" />
+						<input type="password" name="pwd" value="" oninput="javascript:parent.postMessage('reposition', '*');" onblur="javascript:parent.postMessage('reposition', '*');" />
 					</div>
 					<!-- Repeat Password -->
 					<div class="mPoint_Label">
 						<PML_VAL>label_repeat</PML_VAL>:<br />
-						<input type="password" name="rpt" value="" />
+						<input type="password" name="rpt" value="" oninput="javascript:parent.postMessage('reposition', '*');" onblur="javascript:parent.postMessage('reposition', '*');" />
 					</div>
+					<!-- Card Name -->
+					<div class="mPoint_Label">
+						<PML_VAL>label_card_name</PML_VAL>:<br />
+						<input type="text" name="name" value="" maxlength="50" oninput="javascript:parent.postMessage('reposition', '*');" onblur="javascript:parent.postMessage('reposition', '*');" />
+					</div>
+					<div class="mPoint_Info"><PML_VAL>card_name_help</PML_VAL></div>
 				</div>		
-				<div>
+				<div id="submit">
 					<input type="submit" PML_value="save" class="mPoint_Button" />
 				</div>
 			</form>
 		</div>
 	</PML_IF>
+	<PML_ELSIF COND="cgi.preauth = 'true'">
+		<div id="my-account">
+			<PML_SWITCH EXPR="cgi.markup">
+				<PML_CASE VALUE="'html5'">
+					<form PML_action="string.replace(cgi.callbackurl, '/callback/dibs.php', '') @'/pay/sys/save_name.php?PHPSESSID='@cgi.PHPSESSID" method="post" onsubmit="javascript:document.getElementById('loader').style.visibility='visible';">
+				</PML_CASE>
+				<PML_DEFAULT>
+					<form PML_action="string.replace(cgi.callbackurl, '/callback/dibs.php', '') @'/pay/sys/save_name.php?PHPSESSID='@cgi.PHPSESSID" method="post">
+				</PML_DEFAULT>
+			</PML_SWITCH>
+				<div>
+					<!-- Standard mPoint Variables -->
+					<input type="hidden" name="cardid" PML_value="cgi.cardid" />
+				</div>
+				<div><PML_VAL>save_card_info</PML_VAL></div>
+				<div id="accountinfo">
+					<!-- Card Name -->
+					<div class="mPoint_Label">
+						<PML_VAL>label_card_name</PML_VAL>:<br />
+						<input type="text" name="name" value="" maxlength="50" oninput="javascript:parent.postMessage('reposition', '*');" onblur="javascript:parent.postMessage('reposition', '*');" />
+					</div>
+					<div class="mPoint_Info"><PML_VAL>card_name_help</PML_VAL></div>
+				</div>		
+				<div id="submit">
+					<input type="submit" PML_value="save" class="mPoint_Button" />
+				</div>
+			</form>
+		</div>
+	</PML_ELSIF>
 	<PML_ELSE>
 		<!-- Payment Completed -->
 		<h1>
 			<PML_VAL>mpoint</PML_VAL><br />
-			<img src="images/mpoint_logo.jpg" PML_width="cgi.mpoint_width" PML_height="cgi.mpoint_height" alt="- mPoint -" />
+			<img src="images/mpoint_logo.png" PML_width="cgi.mpoint_width" PML_height="cgi.mpoint_height" alt="- mPoint -" />
 		</h1>
 		<div id="status">
 			<!--
@@ -315,14 +493,14 @@ switch(cgi.language)
 		<!-- E-Mail Receipt Enabled -->
 		<PML_IF COND="cgi.email_receipt = 'true'">
 			<div>
-				<a PML_href="'http://mpoint.cellpointmobile.com/pay/email.php?PHPSESSID='@ cgi.PHPSESSID"><PML_VAL>email_receipt</PML_VAL></a>
+				<a PML_href="'http://mpoint.demo.cellpointmobile.com/pay/email.php?PHPSESSID='@ cgi.PHPSESSID"><PML_VAL>email_receipt</PML_VAL></a>
 			</div>
 		</PML_IF>
 		
 		<!-- Current transaction is an Account Top-Up and a previous transaction is in progress -->
 		<PML_IF COND="cgi.org_mpointid > 0">
 			<div>
-				<form PML_action="'http://mpoint.cellpointmobile.com/cpm/payment.php?PHPSESSID='@ cgi.PHPSESSID @'&msg=1'" method="post">
+				<form PML_action="'http://mpoint.demo.cellpointmobile.com/cpm/payment.php?PHPSESSID='@ cgi.PHPSESSID @'&msg=1'" method="post">
 					<p>
 						<input type="hidden" name="resume" value="true" />
 					</p>
@@ -336,7 +514,7 @@ switch(cgi.language)
 			<!-- Client has specified a return URL for successful payments -->
 			<div>
 				<form PML_action="cgi.accept_url" method="post">
-					<p>
+					<div>
 						<!-- Standard mPoint Variables -->
 						<input type="hidden" name="mpoint-id" PML_value="cgi.mpointid" />
 						<input type="hidden" name="orderid" PML_value="cgi.orderid" />
@@ -352,18 +530,31 @@ switch(cgi.language)
 						{
 							if (string.substring(cgi[i], 0, 4) = 'var_')
 							{
-								out.put('<input type="hidden" name="'@ cgi[i] @'" value="'@ cgi[i+1] @'" />');
+								out.put('<input type="hidden" name="'@ cgi[i] @'" value="'@ cgi[i-7] @'" />');
 							}
 						}
 						</PML_SCRIPT>
-					</p>
+					</div>
 					
-					<p>
-						<input type="submit" PML_value="continue" class="mPoint_Button" />
-					</p>
+					<div id="submit">
+						<input id="complete-payment" type="submit" PML_value="continue" class="mPoint_Button" />
+					</div>
 				</form>
 			</div>
 		</PML_ELSIF>
+		<PML_IF COND="cgi.markup = 'html5'">
+			<script type="text/javascript">
+				parent.postMessage('completed,<PML_VAL>cgi.mpointid</PML_VAL>', '*');
+			</script>
+		</PML_IF>
 	</PML_ELSE>
+	<PML_IF COND="cgi.markup = 'html5'">
+		<!-- Hidden Data Fields Start -->
+		<span id="loader">
+			<img src="images/loader.gif" width="28" height="28" PML_alt="'- '@label_loading@' -'" border="0" />
+			<br />
+			<span><PML_VAL>label_loading</PML_VAL></span>
+		</span>
+	</PML_IF>
 </body>
 </html>

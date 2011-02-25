@@ -40,9 +40,12 @@
 		</xsl:choose>
 	</head>
 	<body>
-		<div id="logo">
-			<img src="{/root/system/protocol}://{/root/system/host}/img/{/root/transaction/logo/width}x{/root/transaction/logo/height}_client_{/root/system/session/@id}.png" width="{/root/transaction/logo/width}" height="{/root/transaction/logo/height}" alt="- {/root/client-config/name} -" />
-		</div>
+		<!-- Display Client Logo using the provided URL -->
+		<xsl:if test="string-length(/root/transaction/logo/url) &gt; 0">
+			<div id="logo">
+				<img src="{/root/system/protocol}://{/root/system/host}/img/{/root/transaction/logo/width}x{/root/transaction/logo/height}_client_{/root/system/session/@id}.png" width="{/root/transaction/logo/width}" height="{/root/transaction/logo/height}" alt="- {/root/client-config/name} -" />
+			</div>
+		</xsl:if>
 		<xsl:apply-templates />
 	</body>
 	</html>

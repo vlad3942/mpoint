@@ -40,7 +40,7 @@ define("sLOG_PATH", "../../log/");
  * Database settings for mPoint's database
  */
 $aDB_CONN_INFO["host"] = "localhost";
-$aDB_CONN_INFO["port"] = 5432;
+$aDB_CONN_INFO["port"] = 5000;
 $aDB_CONN_INFO["path"] = "mpoint";
 $aDB_CONN_INFO["username"] = "mpoint";
 $aDB_CONN_INFO["password"] = "hspzr735abl";
@@ -59,5 +59,6 @@ $aDB_CONN_INFO["method"] = 3;
 $obj_DB = RDB::produceDatabase($aDB_CONN_INFO);
 
 //echo "INSERT INTO System.Card_Tbl (name, position, logo) VALUES ('My Account', -1, '". $obj_DB->escBin(file_get_contents("../img/my_account.png") ) ."');" ."\n";
-echo "UPDATE System.Card_Tbl SET logo = '". $obj_DB->escBin(file_get_contents("../img/my_account.gif") ) ."' WHERE id = 11;" ."\n";
+$sql = "UPDATE System.Card_Tbl SET logo = '". $obj_DB->escBin(file_get_contents("../img/dankort.gif") ) ."' WHERE id = 2;" ."\n";
+$obj_DB->query($sql);
 ?>

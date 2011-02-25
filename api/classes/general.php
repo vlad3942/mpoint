@@ -315,13 +315,19 @@ class General
 	 * If the method is unable to determine markup language support, it will throw an mPointException with code 1021.
 	 *
 	 * @param 	UAProfile $oUA 	Data object with the User Agent Profile for the Customer's Mobile Device
+	 * @param 	TxnInfo $oTI 	Data object with the customer's Transaction Info
 	 * @return 	string
 	 * @throws 	mPointException
 	 */
-	public static function getMarkupLanguage(UAProfile &$oUA)
+	public static function getMarkupLanguage(UAProfile &$oUA, TxnInfo &$oTI)
 	{
 		switch (true)
 		{
+		case (eregi('iPhone', $_SERVER['HTTP_USER_AGENT']) ):	// Mobile Device supports HTML5
+		case (eregi('iPod', $_SERVER['HTTP_USER_AGENT']) ):
+		case (eregi('Android', $_SERVER['HTTP_USER_AGENT']) ):
+			return (is_null($oTI) === false ? $oTI->getMarkupLanguage() : "xhtml");
+			break;
 		case ($oUA->hasXHTML() ):	// Mobile Device supports XHTML
 			return "xhtml";
 			break;
@@ -353,7 +359,25 @@ class General
 	public function getSystemInfo()
 	{
 		if (array_key_exists("QUERY_STRING", $_SERVER) === false) { $_SERVER['QUERY_STRING'] = ""; }
-
+		switch (true)
+		{
+		case eregi("iPod", $_SERVER['HTTP_USER_AGENT']):
+		case eregi("iPhone", $_SERVER['HTTP_USER_AGENT']):
+			$platform = "iPhone";
+			break;
+		case eregi("iPad", $_SERVER['HTTP_USER_AGENT']):
+			$platform = "iPad";
+			break;
+		case eregi("DROIDX", $_SERVER['HTTP_USER_AGENT']):
+			$platform = "Droid X";
+			break;
+		case eregi("Android", $_SERVER['HTTP_USER_AGENT']):
+			$platform = "Android";
+			break;
+		default:
+			$platform = "Unknown";
+			break;
+		}
 		$dir = str_replace("\\", "/", dirname($_SERVER['PHP_SELF']) );
 		if (substr($dir, -1) != "/") { $dir .= "/"; }
 		$xml = '<system>';
@@ -364,6 +388,9 @@ class General
 		$xml .= '<query-string>'. htmlspecialchars($_SERVER['QUERY_STRING'], ENT_NOQUOTES) .'</query-string>';
 		$xml .= '<session id="'. session_id() .'">'. session_name() .'</session>';
 		$xml .= '<language>'. sLANG .'</language>';
+		$xml .= '<spinner format="base64">'. base64_encode(file_get_contents($_SERVER['DOCUMENT_ROOT'] ."/img/loader.gif") ) .'</spinner>';
+		$xml .= '<loading>'. $this->getText()->_("Loading...") .'</loading>';
+		$xml .= '<platform>'. $platform .'</platform>';
 		$xml .= '</system>';
 
 		return $xml;
@@ -416,7 +443,8 @@ class General
 					mobile = ". floatval($oTI->getMobile() ) .", operatorid = ". $oTI->getOperator() .", email = '". $this->getDBConn()->escStr($oTI->getEMail() ) ."',
 					logourl = '". $this->getDBConn()->escStr($oTI->getLogoURL() ) ."', cssurl = '". $this->getDBConn()->escStr($oTI->getCSSURL() ) ."',
 					accepturl = '". $this->getDBConn()->escStr($oTI->getAcceptURL() ) ."', cancelurl = '". $this->getDBConn()->escStr($oTI->getCancelURL() ) ."',
-					callbackurl = '". $this->getDBConn()->escStr($oTI->getCallbackURL() ) ."', gomobileid = ". $oTI->getGoMobileID() .", auto_capture = ". General::bool2xml($oTI->useAutoCapture() );
+					callbackurl = '". $this->getDBConn()->escStr($oTI->getCallbackURL() ) ."', iconurl = '". $this->getDBConn()->escStr($oTI->getIconURL() ) ."',
+					gomobileid = ". $oTI->getGoMobileID() .", auto_capture = ". General::bool2xml($oTI->useAutoCapture() ) .", markup = '". $this->getDBConn()->escStr($oTI->getMarkupLanguage() ) ."'";
 		if ($oTI->getAccountID() > 0) { $sql .= ", euaid = ". $oTI->getAccountID(); } 
 		$sql .= "
 				WHERE id = ". $oTI->getID();
@@ -459,9 +487,9 @@ class General
 	 *
 	 * @param 	integer $txnid 		ID of the Transaction that message data should be retrieved from
 	 * @param 	integer $stateid 	ID of the State to which the data belongs
-	 * @return 	mixed
+	 * @return 	array
 	 */
-	protected function getMessageData($txnid, $stateid)
+	public function getMessageData($txnid, $stateid)
 	{
 		$sql = "SELECT data
 				FROM Log.Message_Tbl
@@ -544,7 +572,7 @@ class General
 		// Format amount to be human readable
 		$sPrice = $oCC->getPriceFormat();
 		$sPrice = str_replace("{CURRENCY}", $oCC->getSymbol(), $sPrice);
-		$sPrice = str_replace("{PRICE}", number_format($amount / 100, $oCC->getDecimals() ), $sPrice);
+		$sPrice = str_replace("{PRICE}", number_format($amount / 100, $oCC->getDecimals(), ",", ""), $sPrice);
 
 		return $sPrice;
 	}
@@ -554,7 +582,7 @@ class General
 	 *
 	 * @return string
 	 */
-	protected function constHTTPHeaders()
+	public function constHTTPHeaders()
 	{
 		/* ----- Construct HTTP Header Start ----- */
 		$h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
