@@ -30,6 +30,13 @@ class AccountConfig extends BasicConfig
 	 * @var string
 	 */
 	private $_sMobile;
+	/**
+	 * String indicating the markup language used to render the payment pages.
+	 * The value must match a folder in /templates/[TEMPLATE NAME]/
+	 *
+	 * @var string
+	 */
+	private $_sMarkupLanguage;
 
 	/**
 	 * Default Constructor
@@ -38,14 +45,16 @@ class AccountConfig extends BasicConfig
 	 * @param 	integer $clid 	Unique ID for the Client to whom the Account belongs
 	 * @param 	string $name 	Name of the Account
 	 * @param 	string $mob 	Mobile Number (MSISDN) for the account holder.
+	 * @param 	string $mrk 	String indicating the markup language used to render the payment pages
 	 */
-	public function __construct($id, $clid, $name, $mob)
+	public function __construct($id, $clid, $name, $mob, $mrk)
 	{
 		parent::__construct($id, $name);
 
 		$this->_iClientID = (integer) $clid;
 		$this->_sMobile = trim($mob);
 
+		$this->_sMarkupLanguage = trim($mrk);
 	}
 	/**
 	 * Returns the Unique ID for the Client to whom the Account belongs
@@ -59,6 +68,14 @@ class AccountConfig extends BasicConfig
 	 * @return 	string
 	 */
 	public function getMobile() { return $this->_sMobile; }
+	
+	/**
+	 * Returns the the markup language used to render the payment pages.
+	 * The value must match a folder in /templates/[TEMPLATE NAME]/
+	 *
+	 * @return 	string
+	 */
+	public function getMarkupLanguage() { return $this->_sMarkupLanguage; }
 	
 	public function toXML()
 	{

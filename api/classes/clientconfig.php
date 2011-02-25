@@ -91,6 +91,12 @@ class ClientConfig extends BasicConfig
 	 */
 	private $_sCallbackURL;
 	/**
+	 * Absolute URL to the Client's My Account Icon
+	 *
+	 * @var string
+	 */
+	private $_sIconURL;
+	/**
 	 * Max Amount an mPoint Transaction can cost the customer for the Client
 	 *
 	 * @var integer
@@ -180,6 +186,7 @@ class ClientConfig extends BasicConfig
 	 * @param 	string $aurl 		Absolute URL where the Customer should be returned to upon successfully completing the Transaction
 	 * @param 	string $curl 		Absolute URL where the Customer should be returned to in case he / she cancels the Transaction midway
 	 * @param 	string $cburl 		Absolute URL to the Client's Back Office where mPoint should send the Payment Status to
+	 * @param 	string $iurl 		Absolute URL to the Client's My Account Icon
 	 * @param 	string $ma 			Max Amount an mPoint Transaction can cost the customer for the Client
 	 * @param 	string $l 			The language that all payment pages should be rendered in by default for the Client
 	 * @param 	boolean $sms 		Boolean Flag indicating whether mPoint should send out an SMS Receipt to the Customer upon successful completion of the Payment
@@ -190,7 +197,7 @@ class ClientConfig extends BasicConfig
 	 * @param 	boolean $ac			Boolean Flag indicating whether Auto Capture should be used for the transactions
 	 * @param 	boolean $sp			Boolean Flag indicating whether the PSP's ID for the Payment should be included in the Callback
 	 */
-	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $aurl, $curl, $cburl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc)
+	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $aurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc)
 	{
 		parent::__construct($id, $name);
 
@@ -207,6 +214,7 @@ class ClientConfig extends BasicConfig
 		$this->_sAcceptURL = trim($aurl);
 		$this->_sCancelURL = trim($curl);
 		$this->_sCallbackURL = trim($cburl);
+		$this->_sIconURL = trim($iurl);
 
 		$this->_iMaxAmount = (integer) $ma;
 		$this->_sLanguage = trim($l);
@@ -290,6 +298,12 @@ class ClientConfig extends BasicConfig
 	 */
 	public function getCallbackURL() { return $this->_sCallbackURL; }
 	/**
+	 * Returns the Absolute URL to the Client's Icon for My Account
+	 *
+	 * @return 	string
+	 */
+	public function getIconURL() { return $this->_sIconURL; }
+	/**
 	 * Returns the Max Amount an mPoint Transaction can cost the customer for the Client
 	 *
 	 * @return 	integer
@@ -354,9 +368,12 @@ class ClientConfig extends BasicConfig
 	public function sendPSPID() { return $this->_bSendPSPID; }
 	/**
 	 * Returns the setting determining if / how the end-user's Card Info is stored:
-	 * 	0. Off
-	 * 	1. Client Only
-	 * 	2. Global
+	 * 	0. OFF - Cards are not stored 
+	 * 	1. INVALID!!!
+	 * 	2. Stored cards are available only for the specific client
+	 * 	3. Only use Stored Cards and only make the cards available for the specific client (e-money based prepaid account will be unavailable)
+	 * 	4. Stored cards are globally available (mPoint must be hosted by a Master Merchant)
+	 * 	5. Only use Stored Cards but make them globally available (mPoint must be hosted by a Master Merchant and e-money based prepaid account will be unavailable)
 	 *
 	 * @return 	integer
 	 */
@@ -369,6 +386,10 @@ class ClientConfig extends BasicConfig
 		$xml .= '<username>'. htmlspecialchars($this->getUsername(), ENT_NOQUOTES) .'</username>';
 		$xml .= '<logo-url>'. htmlspecialchars($this->getLogoURL(), ENT_NOQUOTES) .'</logo-url>';
 		$xml .= '<css-url>'. htmlspecialchars($this->getCSSURL(), ENT_NOQUOTES) .'</css-url>';
+		$xml .= '<accept-url>'. htmlspecialchars($this->getAcceptURL(), ENT_NOQUOTES) .'</accept-url>';
+		$xml .= '<cancel-url>'. htmlspecialchars($this->getCancelURL(), ENT_NOQUOTES) .'</cancel-url>';
+		$xml .= '<callback-url>'. htmlspecialchars($this->getCallbackURL(), ENT_NOQUOTES) .'</callback-url>';
+		$xml .= '<icon-url>'. htmlspecialchars($this->getIconURL(), ENT_NOQUOTES) .'</icon-url>';
 		$xml .= '<sms-receipt>'. General::bool2xml($this->_bSMSReceipt) .'</sms-receipt>';
 		$xml .= '<email-receipt>'. General::bool2xml($this->_bEmailReceipt) .'</email-receipt>';
 		$xml .= '<auto-capture>'. General::bool2xml($this->_bAutoCapture) .'</auto-capture>';
@@ -391,12 +412,12 @@ class ClientConfig extends BasicConfig
 	{
 		$acc = (integer) $acc;
 		$sql = "SELECT Cl.id AS clientid, Cl.name AS client, Cl.flowid, Cl.username, Cl.passwd,
-					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl,
+					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl, Cl.iconurl,
 					Cl.smsrcpt, Cl.emailrcpt, Cl.method,
 					Cl.maxamount, Cl.lang, Cl.terms,
 					Cl.mode, Cl.auto_capture, Cl.send_pspid, Cl.store_card,
 					C.id AS countryid,
-					Acc.id AS accountid, Acc.name AS account, Acc.mobile,
+					Acc.id AS accountid, Acc.name AS account, Acc.mobile, Acc.markup,
 					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price
 				FROM Client.Client_Tbl Cl
 				INNER JOIN System.Country_Tbl C ON Cl.countryid = C.id AND C.enabled = true
@@ -413,12 +434,12 @@ class ClientConfig extends BasicConfig
 		else { $sql .= " AND KW.id = ". intval($kw); }
 		$sql .= " {ACCOUNT CLAUSE}
 				GROUP BY Cl.id, Cl.name, Cl.flowid, Cl.username, Cl.passwd,
-					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl,
+					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl, Cl.iconurl,
 					Cl.smsrcpt, Cl.emailrcpt, Cl.method,
 					Cl.maxamount, Cl.lang, Cl.terms,
 					Cl.mode, Cl.auto_capture, Cl.send_pspid, Cl.store_card,
 					C.id,
-					Acc.id, Acc.name, Acc.mobile,
+					Acc.id, Acc.name, Acc.mobile, Acc.markup,
 					KW.id, KW.name";
 		// Use Default Account
 		if ($acc == -1)
@@ -449,10 +470,10 @@ class ClientConfig extends BasicConfig
 		$RS = $oDB->getName($sql);
 
 		$obj_CountryConfig = CountryConfig::produceConfig($oDB, $RS["COUNTRYID"]);
-		$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["MOBILE"]);
+		$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["MOBILE"], $RS["MARKUP"]);
 		$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
-
-		return new ClientConfig($RS["CLIENTID"], utf8_decode($RS["CLIENT"]), $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"]);
+		
+		return new ClientConfig($RS["CLIENTID"], utf8_decode($RS["CLIENT"]), $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"]);
 	}
 }
 ?>

@@ -112,6 +112,12 @@ class TxnInfo
 	 */
 	private $_sCallbackURL;
 	/**
+	 * Absolute URL to the Client's My Account Icon
+	 *
+	 * @var string
+	 */
+	private $_sIconURL;
+	/**
 	 * The language that all payment pages should be rendered in by default for the Client
 	 *
 	 * @var string
@@ -151,6 +157,14 @@ class TxnInfo
 	 * @var boolean
 	 */
 	private $_bAutoStoreCard;
+	
+	/**
+	 * String indicating the markup language used to render the payment pages.
+	 * The value must match a folder in /templates/[TEMPLATE NAME]/
+	 *
+	 * @var string
+	 */
+	private $_sMarkupLanguage;
 
 	/**
 	 * Default Constructor
@@ -168,14 +182,16 @@ class TxnInfo
 	 * @param 	string $aurl 		Absolute URL where the Customer should be returned to upon successfully completing the Transaction
 	 * @param 	string $curl 		Absolute URL where the Customer should be returned to in case he / she cancels the Transaction midway
 	 * @param 	string $cburl 		Absolute URL to the Client's Back Office where mPoint should send the Payment Status to
+	 * @param 	string $iurl 		Absolute URL to the Client's My Account Icon
 	 * @param 	string $l 			The language that all payment pages should be rendered in by default for the Client
 	 * @param 	integer $m 			The Client Mode in which the Transaction should be Processed
 	 * @param 	boolean $ac			Boolean Flag indicating whether Auto Capture should be used for the transaction
 	 * @param 	integer $accid 		Unique ID for the End-User's prepaid account that the transaction should be associated with
 	 * @param 	integer $gmid 		GoMobile's Unique ID for the MO-SMS that was used to start the payment transaction. Defaults to -1.
 	 * @param 	boolean $asc		Boolean Flag indicating whether the "Save Card Info" box should automatically be checked on the payment page
+	 * @param 	string $mrk 		String indicating the markup language used to render the payment pages
 	 */
-	public function __construct($id, $tid, ClientConfig &$oCC, $a, $orid, $addr, $oid, $email, $lurl, $cssurl, $aurl, $curl, $cburl, $l, $m, $ac, $accid=-1, $gmid=-1, $asc=false)
+	public function __construct($id, $tid, ClientConfig &$oCC, $a, $orid, $addr, $oid, $email, $lurl, $cssurl, $aurl, $curl, $cburl, $iurl, $l, $m, $ac, $accid=-1, $gmid=-1, $asc=false, $mrk="xhtml")
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -192,6 +208,7 @@ class TxnInfo
 		$this->_sAcceptURL = trim($aurl);
 		$this->_sCancelURL = trim($curl);
 		$this->_sCallbackURL = trim($cburl);
+		$this->_sIconURL = trim($iurl);
 
 		$this->_sLanguage = trim($l);
 		$this->_iMode = (integer) $m;
@@ -200,6 +217,8 @@ class TxnInfo
 		$this->_iAccountID = (integer) $accid;
 		$this->_iGoMobileID = (integer) $gmid;
 		$this->_bAutoStoreCard = (bool) $asc;
+		
+		$this->_sMarkupLanguage = trim($mrk);
 	}
 
 	/**
@@ -290,6 +309,12 @@ class TxnInfo
 	 */
 	public function getCallbackURL() { return $this->_sCallbackURL; }
 	/**
+	 * Returns the Absolute URL to the Client's My Account Icon
+	 *
+	 * @return 	string
+	 */
+	public function getIconURL() { return $this->_sIconURL; }
+	/**
 	 * Returns the language that all payment pages should be rendered in by default for the Client
 	 *
 	 * @return 	string
@@ -329,6 +354,13 @@ class TxnInfo
 	 * @return 	boolean
 	 */
 	public function autoStoreCard() { return $this->_bAutoStoreCard; }
+	/**
+	 * Returns the the markup language used to render the payment pages.
+	 * The value must match a folder in /templates/[TEMPLATE NAME]/
+	 *
+	 * @return 	string
+	 */
+	public function getMarkupLanguage() { return $this->_sMarkupLanguage; }
 
 	/**
 	 * Updates the information for the Transaction with the Customer's E-Mail Address where a receipt is sent to upon successful completion of the payment transaction
@@ -367,6 +399,7 @@ class TxnInfo
 	 *		<callback-url>{ABSOLUTE URL TO WHERE MPOINT SHOULD SEND THE PAYMENT STATUS}</callback-url>
 	 *		<language>{LANGUAGE THAT ALL PAYMENT PAGES SHOULD BE TRANSLATED INTO}</language>
 	 * 		<auto-capture>{FLAG INDICATING WHETHER MPOINT SHOULD USE AUTO CAPTURE FOR THE TRANSACTION}</auto-capture>
+	 * 		<markup-language>{THE MARKUP LANGUAGE USED TO RENDER THE PAYMENT PAGES}</markup-language>
 	 *	</transaction>
 	 *
 	 * @see 	iCLIENT_LOGO_SCALE
@@ -377,7 +410,7 @@ class TxnInfo
 	 */
 	public function toXML(UAProfile &$oUA=null)
 	{
-		if (is_null($oUA) === false)
+		if (is_null($oUA) === false && strlen($this->_sLogoURL) > 0)
 		{
 			$obj_Image = new Image($this->_sLogoURL);
 			if ($oUA->getHeight() * iCLIENT_LOGO_SCALE / 100 < $obj_Image->getSrcHeight() ) { $iHeight = $oUA->getHeight() * iCLIENT_LOGO_SCALE / 100; }
@@ -409,9 +442,11 @@ class TxnInfo
 		$xml .= '<accept-url>'. htmlspecialchars($this->_sAcceptURL, ENT_NOQUOTES) .'</accept-url>';
 		$xml .= '<cancel-url>'. htmlspecialchars($this->_sCancelURL, ENT_NOQUOTES) .'</cancel-url>';
 		$xml .= '<callback-url>'. htmlspecialchars($this->_sCallbackURL, ENT_NOQUOTES) .'</callback-url>';
+		$xml .= '<icon-url>'. htmlspecialchars($this->_sIconURL, ENT_NOQUOTES) .'</icon-url>';
 		$xml .= '<language>'. $this->_sLanguage .'</language>';
 		$xml .= '<auto-capture>'. General::bool2xml($this->_bAutoCapture) .'</auto-capture>';
 		$xml .= '<auto-store-card>'. General::bool2xml($this->_bAutoStoreCard) .'</auto-store-card>';
+		$xml .= '<markup-language>'. $this->_sMarkupLanguage .'</markup-language>';
 		$xml .= '</transaction>';
 
 		return $xml;
@@ -453,28 +488,36 @@ class TxnInfo
 			if (array_key_exists("accept-url", $misc) === false) { $misc["accept-url"] = $obj->getAcceptURL(); }
 			if (array_key_exists("cancel-url", $misc) === false) { $misc["cancel-url"] = $obj->getCancelURL(); }
 			if (array_key_exists("callback-url", $misc) === false) { $misc["callback-url"] = $obj->getCallbackURL(); }
+			if (array_key_exists("icon-url", $misc) === false) { $misc["icon-url"] = $obj->getIconURL(); }
 			if (array_key_exists("language", $misc) === false) { $misc["language"] = $obj->getLanguage(); }
 			if (array_key_exists("mode", $misc) === false) { $misc["mode"] = $obj->getMode(); }
 			if (array_key_exists("auto-capture", $misc) === false) { $misc["auto-capture"] = $obj->useAutoCapture(); }
 			if (array_key_exists("gomobileid", $misc) === false) { $misc["gomobileid"] = $obj->getGoMobileID(); }
 			if (array_key_exists("accountid", $misc) === false) { $misc["accountid"] = $obj->getAccountID(); }
+			if (array_key_exists("markup", $misc) === false) { $misc["markup"] = $obj->getMarkupLanguage(); }
 			if (array_key_exists("auto-store-card", $misc) === false) { $misc["auto-store-card"] = false; }
 			
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client_config"], $misc["amount"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], $misc["gomobileid"], $misc["auto-store-card"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client_config"], $misc["amount"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"]);
 			break;
 		case ($obj instanceof ClientConfig):	// Instantiate from array of Client Input
 			if (array_key_exists("email", $misc) === false) { $misc["email"] = ""; }
 			if (array_key_exists("accountid", $misc) === false) { $misc["accountid"] = -1; }
 			if (array_key_exists("auto-store-card", $misc) === false) { $misc["auto-store-card"] = false; }
 			
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["amount"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], $misc["gomobileid"], $misc["auto-store-card"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["amount"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"]);
 			break;
 		case ($obj instanceof RDB):				// Instantiate from Transaction Log
-			$sql = "SELECT id, typeid, amount, orderid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, mode, auto_capture, gomobileid,
-						clientid, accountid, keywordid, COALESCE(euaid, -1) AS euaid
+			$sql = "SELECT id, typeid, amount, orderid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, iconurl, mode, auto_capture, gomobileid,
+						clientid, accountid, keywordid, COALESCE(euaid, -1) AS euaid, markup
 					FROM Log.Transaction_Tbl
 					WHERE id = ". intval($id);
-			if (is_array($misc) === true) { $sql .= " AND date_trunc('second', created) = '". $obj->escStr($misc[0]) ."'"; }
+			if (is_array($misc) === true)
+			{
+				// Order ID for Transaction provided
+				if (strtotime($misc[0]) === false) { $sql .= " AND orderid = '". $obj->escStr($misc[0]) ."'"; }
+				// Creation Timestamp for Transaction provided
+				else { $sql .= " AND date_trunc('second', created) = '". $obj->escStr($misc[0]) ."'"; }
+			}
 //			echo $sql ."\n";
 			$RS = $obj->getName($sql);
 
@@ -483,7 +526,7 @@ class TxnInfo
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($obj, $RS["CLIENTID"], $RS["ACCOUNTID"], $RS["KEYWORDID"]);
 
-				$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $RS["AMOUNT"], $RS["ORDERID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["GOMOBILEID"]);
+				$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $RS["AMOUNT"], $RS["ORDERID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["GOMOBILEID"], false, $RS["MARKUP"]);
 			}
 			// Error: Transaction not found
 			else { throw new TxnInfoException("Transaction with ID: ". $id ." not found using creation timestamp: ". $misc[0], 1001); }
