@@ -8,11 +8,14 @@
  * @link http://www.cellpointmobile.com
  * @package Payment
  * @subpackage EndUserAccount
- * @version 1.10
+ * @version 1.20
  */
 
 // Require Global Include File
 require_once("../../inc/include.php");
+
+// Require the PHP API for handling the connection to GoMobile
+require_once(sAPI_CLASS_PATH ."/gomobile.php");
 
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
@@ -43,7 +46,7 @@ if (array_key_exists("prepaid", $_POST) === true && $_POST['prepaid'] == "true")
 	{
 	case (-1):	// Pre-Paid account selected
 	case "-1":
-		if ($obj_Validator->valAccount($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_TxnInfo']->getAmount() ) != 10) { $aMsgCds[] = $obj_Validator->valAccount($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_TxnInfo']->getAmount() ) + 11; }
+		if ($obj_Validator->valAccount($_OBJ_DB, $_POST['euaid'], $_SESSION['obj_TxnInfo']->getAmount() ) != 10) { $aMsgCds[] = $obj_Validator->valAccount($_OBJ_DB, $_POST['euaid'], $_SESSION['obj_TxnInfo']->getAmount() ) + 11; }
 		break;
 	case (0):	// Account available but nothing has been selected
 	case "0":
@@ -55,57 +58,93 @@ if (array_key_exists("prepaid", $_POST) === true && $_POST['prepaid'] == "true")
 	}
 }
 elseif ($obj_Validator->valStoredCard($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAccountID(), $_POST['cardid']) != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAccountID(), $_POST['cardid']) + 20; }
-if ($obj_Validator->valPassword($_POST['pwd']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_POST['pwd']) + 30; }
+if ($obj_Validator->valPassword($_POST['pwd']) != 10 && $_SESSION['obj_TxnInfo']->getAmount() > $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->getMaxPSMSAmount() ) { $aMsgCds[] = $obj_Validator->valPassword($_POST['pwd']) + 30; }
 
 // Success: Input Valid
 if (count($aMsgCds) == 0)
 {
-	$msg = $obj_mPoint->auth($_SESSION['obj_TxnInfo']->getAccountID(), $_POST['pwd']);
+	if ($_SESSION['obj_TxnInfo']->getAmount() > $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->getMaxPSMSAmount() ) { $msg = $obj_mPoint->auth($_POST['euaid'], $_POST['pwd']); }
+	else { $msg = 10; }
 	if ($msg == 10)
 	{
-		if ($_POST['cardid'] == -1)
+		// Payment has not previously been attempted for transaction
+		if (count($obj_mPoint->getMessageData($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE) ) == 0)
 		{
-			$obj_mPoint->purchase($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_TxnInfo']->getID(), $_SESSION['obj_TxnInfo']->getAmount() );
-			$obj_PSP = new CellpointMobile($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
-			// Initialise Callback to Client
-			$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iEMONEY_CARD, Constants::iPAYMENT_ACCEPTED_STATE);
-			$aMsgCds[] = 100;
-		}
-		else
-		{
-			$obj_XML = simplexml_load_string($obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID() ) );
-			$obj_XML = $obj_XML->xpath("/stored-cards/card[@id = ". $_POST['cardid'] ."]");
-			$obj_XML = $obj_XML[0];
-
-			switch (intval($obj_XML["pspid"]) )
+			// Add control state and immediately commit database transaction
+			$obj_mPoint->newMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, serialize(array("cardid" => $_POST['cardid']) ) );
+			$_OBJ_DB->query("COMMIT");
+			
+			// Pay using the End-User's e-money based prepaid account.
+			if ($_POST['cardid'] == -1)
 			{
-			case (Constants::iDIBS_PSP):	// DIBS
-				// Authorise payment with PSP based on Ticket
-				$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
-				$iTxnID = $obj_PSP->authTicket( (integer) $obj_XML->ticket);
-				if ($iTxnID > 0)
+				// End-User has an e-money based prepaid account but no link between the Account and the Client exists
+				if ($_SESSION['obj_TxnInfo']->getAccountID() <= 0)
 				{
-					// Initialise Callback to Client
-					$aCPM_CONN_INFO["path"] = "/callback/dibs.php";
-					$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_XML->type["id"]), $iTxnID);
-					$aMsgCds[] = 100;
+					// Find the unique ID for the End-User's Account
+					$obj_Home = new Home($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig() );
+					$iAccountID = $obj_Home->getAccountID($_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig(), $_SESSION['obj_TxnInfo']->getMobile() );
+					if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = $obj_Home->getAccountID($_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig(), $_SESSION['obj_TxnInfo']->getEMail() ); }
+					$_SESSION['obj_TxnInfo']->setAccountID($iAccountID);
+					// Create a link between the End-User Account and the Client
+					$obj_mPoint->link($iAccountID);
 				}
-				else { $aMsgCds[] = 51; }
-				break;
-			default:	// Unkown Error
-				$aMsgCds[] = 59;
-				break;
+				// Complete the e-money based purchase
+				$obj_mPoint->purchase($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_TxnInfo']->getID(), $_SESSION['obj_TxnInfo']->getAmount() );
+				$obj_PSP = new CellpointMobile($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
+				// Initialise Callback to Client
+				$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iEMONEY_CARD, Constants::iPAYMENT_ACCEPTED_STATE);
+				$aMsgCds[] = 100;
+			}
+			// Pay using a Stored Payment Card
+			else
+			{
+				$obj_XML = simplexml_load_string($obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID() ) );
+				$obj_XML = $obj_XML->xpath("/stored-cards/card[@id = ". $_POST['cardid'] ."]");
+				$obj_XML = $obj_XML[0];
+	
+				switch (intval($obj_XML["pspid"]) )
+				{
+				case (Constants::iDIBS_PSP):	// DIBS
+					// Authorise payment with PSP based on Ticket
+					$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
+					$iTxnID = $obj_PSP->authTicket( (integer) $obj_XML->ticket);
+					// Authorization succeeded
+					if ($iTxnID > 0)
+					{
+						// Initialise Callback to Client
+						$aCPM_CONN_INFO["path"] = "/callback/dibs.php";
+						$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_XML->type["id"]), $iTxnID);
+						$aMsgCds[] = 100;
+					}
+					else { $aMsgCds[] = 51; }
+					break;
+				default:	// Unkown Error
+					$aMsgCds[] = 59;
+					break;
+				}
 			}
 		}
+		else { $aMsgCds[] = 100; }
 	}
-	else { $aMsgCds[] = $msg + 40; }
+	else
+	{
+		// Account disabled due to too many failed login attempts
+		if ($msg == 3)
+		{
+			$obj_mPoint->sendAccountDisabledNotification(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $_SESSION['obj_TxnInfo']->getMobile() );
+			$_SESSION['obj_TxnInfo']->setAccountID(-1);
+			$_SESSION['temp'] = array();
+			$sPath = "pay/card.php";
+		}
+		$aMsgCds[] = $msg + 40;
+	}
 }
 
 $msg = "";
 if ($aMsgCds[0] == 100) { $sPath = "pay/accept.php"; }
 else
 {
-	$sPath = "cpm/payment.php";
+	if (isset($sPath) === false) { $sPath = "cpm/payment.php"; }
 	for ($i=0; $i<count($aMsgCds); $i++)
 	{
 		$msg .= "&msg=". $aMsgCds[$i];

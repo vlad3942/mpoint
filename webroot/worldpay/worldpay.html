@@ -1,0 +1,492 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- layout.templ $Revision: 1.5 $ -->
+<html lang="en">
+<head>
+<meta http-equiv=Cache-Control CONTENT="no-cache,no-store">
+<meta http-equiv=Pragma CONTENT="no-cache">
+<meta http-equiv=Expires CONTENT="Thu, 01 Jan 1970 00:00:00 GMT">
+<title>RBS WorldPay Card Payment</title>
+<style type="text/css">
+.JONA {
+	
+}
+</style>
+<meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+<style type="text/css" media="screen">
+td.error {
+	background-color: #FFFFFF;
+	width: 100%;
+}
+
+td.one {
+	background-color: #FFFFFF;
+}
+
+A.one:Link {
+	text-decoration: none;
+	color: #002469;
+	font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif;
+	font-size: 10pt;
+}
+
+A.one:Visited {
+	text-decoration: none;
+	color: #002469;
+	font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif;
+	font-size: 10pt;
+}
+
+A.one:Active {
+	text-decoration: none;
+	color: #002469;
+	font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif;
+	font-size: 10pt;
+}
+
+A.one:Hover {
+	text-decoration: underlined;
+	color: #002469;
+	font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif;
+	font-size: 10pt;
+}
+
+td.width190 {
+	width: 190px;
+}
+
+td.cardlabel {
+	background-color: #FFFFFF;
+}
+
+td.two {
+	background-color: #EAF1EE;
+}
+
+A.twoinstr:Link {
+	text-decoration: underlined;
+	color: #002469;
+}
+
+A.twoinstr:Visited {
+	text-decoration: underlined;
+	color: #002469;
+}
+
+A.twoinstr:Active {
+	text-decoration: underlined;
+	color: #002469;
+}
+
+A.twoinstr:Hover {
+	text-decoration: underlined;
+	color: #002469;
+}
+
+td.three {
+	background-color: #002469;
+	width: 100%;
+}
+
+A.three:Link {
+	text-decoration: none;
+	color: #002469;
+	font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif;
+	font-size: 10pt;
+}
+
+A.three:Visited {
+	text-decoration: none;
+	color: #002469;
+	font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif;
+	font-size: 10pt;
+}
+
+A.three:Active {
+	text-decoration: none;
+	color: #002469;
+	font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif;
+	font-size: 10pt;
+}
+
+A.three:Hover {
+	text-decoration: underlined;
+	color: #002469;
+	font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif;
+	font-size: 10pt;
+}
+
+A.brand:Link {
+	text-decoration: underlined;
+	color: #000000;
+}
+
+A.brand:Visited {
+	text-decoration: underlined;
+	color: #000000;
+}
+
+A.brand:Active {
+	text-decoration: underlined;
+	color: #000000;
+}
+
+A.brand:Hover {
+	text-decoration: underlined;
+	color: #002469;
+}
+
+td.brand {
+	background-color: #FFFFFF;
+	vertical-align: top;
+	text-align: left;
+}
+
+img.printonly {
+	display: none;
+}
+</style>
+
+</head>
+
+<form action=/wcc/card method=post autocomplete=off><!-- cardPage.templ $Revision: 1.10 $ -->
+<INPUT TYPE=hidden NAME=PaymentID VALUE="mm2imscs4p-dppr-1285932840210" />
+<!--WP start testModeMessage -->
+
+<tr>
+	<td colspan="2" class="error" align="center"><span
+		style="font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif; font-size: 10pt; color: #FF0000;">TEST
+	MODE - this is not a live transaction</span></td>
+</tr>
+
+<!--WP end testModeMessage --> <!--WP Feedback messages - uses comp.common.error etc. -->
+
+<!--WP end Feedback messages --> <!--WP Description -->
+<tr>
+	<td colspan="2" class="one">
+	<table width="100%" cellspacing="0" cellpadding="0" border="0">
+
+		<!--WP language select -->
+
+		<!--WP language select -->
+
+
+
+		<!--Customer Description -->
+
+
+
+
+		<!--END Customer Description -->
+
+		<!-- display Payment reference to XML merchants -->
+
+		<tr>
+			<td class="one width190" align="left" valign="top"><span
+				style="font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif; font-size: 10pt; color: #002469;">Payment
+			Reference</span>&nbsp;&nbsp;</td>
+			<td class="one" align="left" valign="top"><span
+				style="font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif; font-size: 10pt; color: #002469;"><strong>T2833830</strong></span>&nbsp;</td>
+
+		</tr>
+
+
+
+		<!--WP Card Type selected -->
+		<tr>
+			<td class="one width190" align="left" valign="top"><span
+				style="font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif; font-size: 10pt; color: #002469;">Payment
+			Method</span>&nbsp;&nbsp;</td>
+			<td class="one width190" align="left" valign="top"><span
+				style="font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif; font-size: 10pt; color: #002469;"><strong>Visa
+			Electron</strong></span>&nbsp;</td>
+			<td rowspan="3" class="one" valign="top" align="right"><img
+				src="/mpoint/images/logos/VISA_ELECTRON.gif" style="border: 0px;"
+				alt="Visa Electron" />&nbsp;&nbsp;&nbsp;</td>
+
+		</tr>
+
+
+
+
+
+		<tr>
+
+			<td class="one width190" align="left" valign="top"><span
+				style="font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif; font-size: 10pt; color: #002469;">Description</span>&nbsp;&nbsp;</td>
+			<td class="one width190" align="left" valign="top"><span
+				style="font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif; font-size: 10pt; color: #002469;"><strong>Things
+			to buy</strong></span></td>
+		</tr>
+
+
+
+
+		<tr>
+			<td class="one width190" align="left" valign="top"><span
+				style="font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif; font-size: 10pt; color: #002469;">Amount</span>&nbsp;&nbsp;</td>
+			<td class="one" align="left" valign="top"><span
+				style="font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif; font-size: 10pt; color: #002469;"><strong>GBP
+			1.00</strong></span>&nbsp;</td>
+
+		</tr>
+
+		<!--WP END Description -->
+
+		<!--WP RFP attributes-->
+
+		<!--WP RFP END-->
+
+		<!--WP LFP attributes-->
+
+		<!--WP END LFP -->
+
+		<!--WP END FP -->
+	</table>
+	</td>
+
+</tr>
+<!--WP end description --> <!--WP Login --> <!--WP Login END--> <!-- start Bibit Order Contents -->
+
+Dummy Order Contents.. <!-- end Bibit Order Contents --> <!--WP spacer row -->
+<tr>
+	<td colspan="2" class="one" height="5"><img
+		src="/mpoint/images/wp/magic.gif" style="width: 1px; height: 5px;" alt="" /></td>
+
+</tr>
+<!--WP end spacer row --> <!--WP form contents --> <!--WP merchant top upload -->
+
+<!--WP merchant top upload END --> <!--WP start cardDetailsRows -->
+<tr valign=middle>
+	<td colspan=2 class="one" align="left">
+	<table width="100%" cellpadding="0" cellspacing="0" border="0">
+		<tr valign="top">
+
+			<td class="three" align="left" valign="middle">
+			<h2>&nbsp;Card Details</h2>
+			</td>
+			<td class="one" align="right"><a
+				href="/global3/payment/default/help_card_xml_en.html#card"
+				target="_blank"
+				title="Help with your card details - Opens in a new window"><img
+				src="/mpoint/images/buttons/help.gif"
+				alt="Help with your card details - Opens in a new window"
+				style="border: 0px;" /></a></td>
+		</tr>
+		<tr>
+			<td class="two" width="100%">
+			<table cellpadding="0" cellspacing="0" border="0">
+
+				<tr>
+					<td colspan="2" class="two"><nobr>&nbsp;<span
+						style="font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif; font-size: 8pt; color: #002469;"><em>You
+					must fill in fields marked with *</em></span></nobr></td>
+				</tr>
+				<!--WP start card number row -->
+				<tr>
+					<td class="two width190"><label for="cardNoInput"><span
+						style="font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif; font-size: 10pt; color: #002469;">&#42;&nbsp;Card
+					number</span></label></td>
+					<td class="two"><input type="text" id="cardNoInput"
+						name="cardNoInput" tabindex="60" value='' maxlength="20"
+						autocomplete=off /> <input type=hidden name=cardNoJS value="" />
+
+					<input type=hidden name=cardNoHidden value="*hidden*" /></td>
+				</tr>
+				<!--WP end card number row -->
+				<!--WP start security code row -->
+
+				<tr>
+					<td class="two width190"><label for="cardCVV"> <span
+						style="font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif; font-size: 10pt; color: #002469;">&nbsp;&nbsp;&nbsp;</span><a
+						href="/global3/payment/default/help_securitycode_en.html"
+						class="twoinstr" target="_blank"
+						title="Security code help - Opens in new window"><span
+						style="font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif; font-size: 10pt; color: #002469;">Security
+					code</span></a></label></td>
+					<td class="two"><input type="text" id="cardCVV" name="cardCVV"
+						tabindex="70" size="4" maxlength="4" autocomplete=off value="" /></td>
+
+				</tr>
+
+				<!--WP end security code row -->
+				<!--WP start cardIssueNo -->
+
+				<!--WP end cardIssueNo -->
+				<!--WP start cardStart -->
+
+				<!--WP end cardStart -->
+				<!--WP start card exp date row -->
+
+				<tr>
+					<td class="two width190"><span
+						style="font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif; font-size: 10pt; color: #002469;">&#42;&nbsp;Expiry
+					Date</span></td>
+					<td class="two"><input type="hidden" name="cardExp.day"
+						value="32" /><input type="hidden" name="cardExp.time"
+						value="23:59:59" /><!-- selection.comp $Revision: 1.3 $ --> <SELECT
+						NAME="cardExp.month" tabindex=110>
+						<OPTION VALUE="" selected=selected>--
+						<OPTION VALUE="1">01
+						<OPTION VALUE="2">02
+						<OPTION VALUE="3">03
+						<OPTION VALUE="4">04
+						<OPTION VALUE="5">05
+						<OPTION VALUE="6">06
+						<OPTION VALUE="7">07
+						<OPTION VALUE="8">08
+						<OPTION VALUE="9">09
+						<OPTION VALUE="10">10
+						<OPTION VALUE="11">11
+						<OPTION VALUE="12">12
+					</SELECT> <!-- selection.comp $Revision: 1.3 $ --> <SELECT
+						NAME="cardExp.year" tabindex=120>
+
+						<OPTION VALUE="" selected=selected>----
+						<OPTION VALUE="2010">2010
+						<OPTION VALUE="2011">2011
+						<OPTION VALUE="2012">2012
+						<OPTION VALUE="2013">2013
+						<OPTION VALUE="2014">2014
+						<OPTION VALUE="2015">2015
+						<OPTION VALUE="2016">2016
+						<OPTION VALUE="2017">2017
+						<OPTION VALUE="2018">2018
+						<OPTION VALUE="2019">2019
+						<OPTION VALUE="2020">2020
+						<OPTION VALUE="2021">2021
+						<OPTION VALUE="2022">2022
+						<OPTION VALUE="2023">2023
+						<OPTION VALUE="2024">2024
+						<OPTION VALUE="2025">2025
+
+						<OPTION VALUE="2026">2026
+						<OPTION VALUE="2027">2027
+						<OPTION VALUE="2028">2028
+						<OPTION VALUE="2029">2029
+						<OPTION VALUE="2030">2030
+					</SELECT></td>
+				</tr>
+
+				<!-- just to satisfy the mandatory check for the cards that don't display expiry date like AURORE card -->
+
+				<!--WP end card exp date row -->
+				<!--WP start Birthdate -->
+
+
+				<!--WP end Birthdate -->
+				<!--WP start card holder name row -->
+				<tr>
+					<td class="two width190"><label for="name"><span
+						style="font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif; font-size: 10pt; color: #002469;">&#42;&nbsp;Cardholder's
+					Name</span></label></td>
+					<td class="two"><input type="text" id="name" name="name"
+						tabindex="130" maxlength="40" size="25" value="" /></td>
+				</tr>
+				<!--WP end card holder name row -->
+			</table>
+			</td>
+		</tr>
+
+	</table>
+	</td>
+</tr>
+<!--WP spacer row -->
+<tr>
+	<td colspan="2" class="one" height="5"><img
+		src="/mpoint/images/wp/magic.gif" style="width: 1px; height: 5px;" alt="" /></td>
+</tr>
+<!--WP end spacer row --> <!--WP end cardDetailsRows --> <!--WP merchant middle upload -->
+
+<!--WP merchant middle upload END --> <!-- AVS checks for the XML merchant -->
+
+<!-- end AVS checks for the XML merchant --> <!-- Special case for bibit migrated merchants for handling Visa Electron payment when
+     AVS is switched off --> <input type=hidden name=streetName value=1 />
+<input type=hidden name=houseNumber value=1 /> <input type=hidden
+	name=townCity value=1 /> <!--WP merchant bottom upload --> <!--WP merchant bottom upload END -->
+<!--WP end form contents--> <!--WP makepayment button --> <!--Show WP start again -->
+
+<tr valign="top">
+	<td class="one" valign="top"><nobr><a
+		href="https://secure-test.wp3.rbsworldpay.com/wcc/dispatcher?op-DPStartAgain&PaymentID=mm2imscs4p-dppr-1285932840210&date=01%2FOct%2F2010+11%3A34%3A12&Lang=en"
+		tabindex="250" style="text-decoration: none;"><img
+		src="/mpoint/images/buttons/startagain.gif" style="border: 0px;"
+		alt="START AGAIN" /></a>&nbsp;<span
+		style="font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif; font-size: 10pt; color: #002469;"><strong>START
+	AGAIN</strong></span></nobr></td>
+
+
+	<!--Hide WP start again -->
+
+
+	<!--WP end start again -->
+	<td class="one" valign="top" rowspan="2" align="right"><label
+		for="op-PMMakePayment"> <nobr><span
+		style="font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif; font-size: 12pt; color: #002469;"><strong>MAKE
+	PAYMENT</strong></span><input name="op-PMMakePayment" id="op-PMMakePayment"
+		tabindex="240" type="image" src="/mpoint/images/buttons/makepayment.gif"
+		alt="MAKE PAYMENT" /></nobr> </label></td>
+</tr>
+<!--WP cancel button -->
+<tr valign="top">
+
+	<td class="one" valign="top" align="left"><nobr><a
+		href="https://secure-test.wp3.rbsworldpay.com/wcc/dispatcher?op-DPCancel&PaymentID=mm2imscs4p-dppr-1285932840210&date=01%2FOct%2F2010+11%3A34%3A12&Lang=en"
+		tabindex="260" style="text-decoration: none;"><img
+		src="/mpoint/images/buttons/cancel.gif" alt="CANCEL PURCHASE"
+		style="border: 0px;" /></a>&nbsp;<span
+		style="font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif; font-size: 10pt; color: #002469;"><strong>CANCEL
+	PURCHASE</strong></span></nobr></td>
+</tr>
+<!--WP end cancelButton --> <!--WP end makepayment button --> <!--Branding fixed -->
+
+<tr>
+	<!-- Break Line -->
+
+	<td class="one" colspan="2">
+	<hr />
+	</td>
+	<!-- Break Line -->
+</tr>
+<!--WP start refunds.comp -->
+<div class="print_buttons">
+<tr id="print_buttons">
+	<td colspan="2" class="two">
+	<h3>Refunds and Returns</h3>
+	<span
+		style="font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif; font-size: 8pt; color: #002469;"><em>For
+	more information visit our <a
+		href="/global3/brands/rbsworldpay/payment/default/help_refunds_en.html"
+		class="twoinstr" target="_blank"
+		title="Refund and returns policy - Opens in a new window">refund
+	and returns policy</a>.</em></span></td>
+</tr>
+</div>
+<!--WP end refunds.comp --> <!-- start brand.comp -->
+<tr>
+	<td colspan="2" class="brand">
+	<table width="100%" cellpadding="0" cellspacing="0" border="0">
+		<tr>
+			<td class="brand" style="width: 140px;"><a
+				href="http://www.rbsworldpay.com" target="_blank"
+				title="www.rbsworldpay.com - Opens in a new window"><img
+				src="/mpoint/images/rbswp/brand.gif" style="border: 0;"
+				alt="Powered by RBS WorldPay" /></a></td>
+			<td class="brand"><span
+				style="font-family: Verdana, Geneva, Arial, Helvetica, Sans-Serif; font-size: 8pt; color: #000000;">RBS
+			WorldPay is part of the Royal Bank of Scotland Group. <br />
+			For help with your payment visit the: <A
+				HREF="/global3/brands/rbsworldpay/payment/fixed/help_brand_en.html"
+				target="_blank" title="RBS WorldPay Help - Opens in a new window"
+				class="brand">RBS WorldPay Help</A>.</span></td>
+		</tr>
+	</table>
+	</td>
+</tr>
+
+<!-- end brand.comp --> <!--WP end Branding fixed --> <!--WP cardPage.templ end -->
+
+
+
+</form>
+
+</html>

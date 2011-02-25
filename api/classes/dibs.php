@@ -82,6 +82,24 @@ class DIBS extends Callback
 
 		return $RS["NAME"];
 	}
+	
+	/**
+	 * Returns the Client's Merchant Sub-Account ID for the PSP
+	 * 
+	 * @param 	integer $accid	Unique ID for the Account
+	 * @param 	integer $pspid	Unique ID for the PSP the Merchant Account should be found for
+	 * @return 	string
+	 */
+	public function getMerchantSubAccount($accid, $pspid)
+	{
+		$sql = "SELECT name
+				FROM Client.MerchantSubAccount_Tbl
+				WHERE accountid = ". intval($accid) ." AND pspid = ". intval($pspid) ." AND enabled = true";
+//		echo $sql ."\n";
+		$RS = $this->getDBConn($sql)->getName($sql);
+
+		return $RS["NAME"];
+	}
 
 	/**
 	 * Returns the specified PSP's currency code for the provided country 
@@ -117,9 +135,24 @@ class DIBS extends Callback
 	/**
 	 * Authorises a payment with DIBS for the transaction using the provided ticket.
 	 * The ticket represents a previously stored card.
-	 * The method will return DIBS' transaction ID if the authorisation is accepted or -1 if the authorisation is declined.
+	 * The method will return DIBS' transaction ID if the authorisation is accepted or one of the following status codes if the authorisation is declined:
+	 * 	  0. Rejected by acquirer.
+	 *   -1. Communication problems.
+	 *   -2. Error in the parameters sent to the DIBS server.
+	 *   -3. Error at the acquirer. 
+	 *   -4. Credit card expired. 
+	 *   -5. Your shop does not support this credit card type, the credit card type could not be identified, or the credit card number was not modulus correct.
+	 *   -6. Instant capture failed.
+	 *   -7. The order number (orderid) is not unique. 
+	 *   -8. There number of amount parameters does not correspond to the number given in the split parameter.
+	 *   -9. Control numbers (cvc) are missing.
+	 *  -10. The credit card does not comply with the credit card type.
+	 *  -11. Declined by DIBS Defender.
+	 *  -20. Cancelled by user at 3D Secure authentication step
 	 *  
-	 * @param 	integer $ticket	Valid ticket which references a previously stored card 
+	 * @link	http://tech.dibs.dk/toolbox/dibs-error-codes/
+	 *  
+	 * @param 	integer $ticket		Valid ticket which references a previously stored card 
 	 * @return 	integer
 	 * @throws	E_USER_WARNING
 	 */
@@ -128,7 +161,7 @@ class DIBS extends Callback
 		// Construct Order ID
 		$oid = $this->getTxnInfo()->getOrderID();
 		if (empty($oid) === true) { $oid = $this->getTxnInfo()->getID(); }
-		$oid .= "-". date("Y-m-d H:i:s");
+//		$oid .= "-". date("Y-m-d H:i:s");
 		
 		$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
 		$b .= "&mpointid=". $this->getTxnInfo()->getID();
@@ -136,9 +169,7 @@ class DIBS extends Callback
 		$b .= "&amount=". $this->getTxnInfo()->getAmount();
 		$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getClientConfig()->getCountryConfig()->getID(), Constants::iDIBS_PSP);
 		$b .= "&orderid=". urlencode($oid);
-		if ($this->getTxnInfo()->getClientConfig()->useAutoCapture() === true) { $b .= "&capturenow=true"; }
 		if ($this->getTxnInfo()->getClientConfig()->getMode() > 0) { $b .= "&test=". $this->getTxnInfo()->getClientConfig()->getMode(); }
-		$b .= "&uniqueoid=true";
 		$b .= "&textreply=true";
 		
 		$obj_HTTP = parent::send("https://payment.architrade.com/cgi-ssl/ticket_auth.cgi", $this->constHTTPHeaders(), $b);
@@ -147,8 +178,8 @@ class DIBS extends Callback
 		// Auhtorisation Declined
 		if (strtoupper($aStatus["status"]) != "ACCEPTED")
 		{
-			trigger_error("Authorisation declined by DIBS for Ticket: ". $ticket .", Reason Code: ". $aStatus["reason"], E_USER_WARNING);
-			$aStatus["transact"] = -1;
+			trigger_error(trim("Authorisation declined by DIBS for Ticket: ". $ticket .", Reason Code: ". $aStatus["reason"] ."\n". @$aStatus["message"]), E_USER_WARNING);
+			$aStatus["transact"] = $aStatus["reason"] * -1;
 		}
 
 		return $aStatus["transact"];
@@ -156,8 +187,27 @@ class DIBS extends Callback
 
 	/**
 	 * Performs a capture operation with DIBS for the provided transaction.
+	 * The method will log one the following status codes from DIBS:
+	 * 	0. Capture succeeded
+	 * 	1. No response from acquirer.
+	 * 	2. Error in the parameters sent to the DIBS server. An additional parameter called "message" is returned, with a value that may help identifying the error.
+	 * 	3. Credit card expired.
+	 * 	4. Rejected by acquirer.
+	 * 	5. Authorisation older than7 days.
+	 * 	6. Transaction status on the DIBS server does not allow capture.
+	 * 	7. Amount too high.
+	 * 	8. Amount is zero.
+	 * 	9. Order number (orderid) does not correspond to the authorisation order number.
+	 * 10. Re-authorisation of the transaction was rejected.
+	 * 11. Not able to communicate with the acquier.
+	 * 12. Confirm request error
+	 * 14. Capture is called for a transaction which is pending for batch - i.e. capture was already called
+	 * 15. Capture was blocked by DIBS.
+	 * 
+	 * @link	http://tech.dibs.dk/toolbox/dibs-error-codes/
 	 * 
 	 * @param 	integer $txn	Transaction ID previously returned by DIBS during authorisation
+	 * @return	integer
 	 * @throws	E_USER_WARNING
 	 */
 	public function capture($txn)
@@ -166,17 +216,28 @@ class DIBS extends Callback
 		$b .= "&mpointid=". $this->getTxnInfo()->getID();
 		$b .= "&transact=". $txn;
 		$b .= "&amount=". $this->getTxnInfo()->getAmount();
-		$b .= "&orderid=". $this->getTxnInfo()->getOrderID();
-		if ($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID() > -1) { $b .= "&account=". $this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(); }
+		$b .= "&orderid=". urlencode($this->getTxnInfo()->getOrderID() );
+		if ($this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP) > -1) { $b .= "&account=". $this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP); }
 		$b .= "&textreply=true";
-
+		
 		$obj_HTTP = parent::send("https://payment.architrade.com/cgi-bin/capture.cgi", $this->constHTTPHeaders(), $b);
 		$aStatus = array();
 		parse_str($obj_HTTP->getReplyBody(), $aStatus);
+		
 		// Capture Declined
-		if (strtoupper($aStatus["result"]) > 0)
+		if (array_key_exists("result", $aStatus) === false || $aStatus["result"] > 0)
 		{
-			trigger_error("Capture declined by DIBS for Transaction: ". $txn .", Result Code: ". $aStatus["result"], E_USER_WARNING);
+			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_DECLINED_STATE, var_export($aStatus, true) );
+			trigger_error("Capture declined by DIBS for Transaction: ". $txn .", Result Code: ". @$aStatus["result"], E_USER_WARNING);
+			
+			return $aStatus["result"];
+		}
+		// Payment successfully captured
+		else
+		{
+			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
+			
+			return 0;
 		}
 	}
 

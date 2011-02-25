@@ -1,0 +1,11 @@
+<!-- redirect.templ $Revision: 1.0 $ -->
+<div id="redirect">
+	<div class="mPoint_Info">
+		<wpdisplay msg=disp.redirect.info>
+	</div>
+</div>
+<div id="link">
+	<a href="<wpdisplay payment=frontEndURL>?<wpdisplay payment=dispatch_params>&date=<wpdisplay system=now-urlenc>">
+		<img src="<wpdisplay disp=proceed.button>" alt="<wpdisplay msg=disp.submit.butt>" border="0" />
+	</a>
+</div>

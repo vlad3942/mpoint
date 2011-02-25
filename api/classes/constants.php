@@ -131,6 +131,7 @@ abstract class Constants
 	const iCB_REJECTED_STATE = 1995;
 	/**
 	 * Defines the ID of the State that indicates that the payment has been successfully cleared by the Payment Service Provider (PSP)
+	 * during the Authorisation
 	 *
 	 */
 	const iPAYMENT_ACCEPTED_STATE = 2000;
@@ -140,10 +141,32 @@ abstract class Constants
 	 */
 	const iPAYMENT_CAPTURED_STATE = 2001;
 	/**
+	 * Defines the ID of the State that indicates that payment is being using the End-User's account
+	 *
+	 */
+	const iPAYMENT_WITH_ACCOUNT_STATE = 2008;
+	/**
+	 * Defines the ID of the State that indicates that a new Ticket has been created using pre-authorization
+	 *
+	 */
+	const iTICKET_CREATED_STATE = 2009;
+	/**
 	 * Defines the ID of the State that indicates that the payment was rejected by the Payment Service Provider (PSP)
+	 * when doing an Authorisation
 	 *
 	 */
 	const iPAYMENT_REJECTED_STATE = 2010;
+	/**
+	 * Defines the ID of the State that indicates that the payment was declined by the Payment Service Provider (PSP)
+	 * when doing a Capture
+	 *
+	 */
+	const iPAYMENT_DECLINED_STATE = 2011;
+	/**
+	 * Defines the ID of the State that indicates that payment has accidentally been duplicated by DIBS
+	 *
+	 */
+	const iPAYMENT_DUPLICATED_STATE = 2019;
 
 	/**
 	 * Defines GoMobile's type identifier for an MT-SMS message
@@ -236,7 +259,7 @@ abstract class Constants
 	 * 	- Name
 	 *
 	 */
-	const iAUTH_MIN_LENGTH = 4;
+	const iAUTH_MIN_LENGTH = 6;
 	/**
 	 * Defines the max length for all authentication data:
 	 * 	- Username
@@ -245,6 +268,11 @@ abstract class Constants
 	 *
 	 */
 	const iAUTH_MAX_LENGTH = 50;
+	/**
+	 * Number of invalid login attempts before the End-User account is disabled
+	 * 
+	 */
+	const iMAX_LOGIN_ATTEMPTS = 3;
 	/**
 	 * Unique ID for the Payment Service Provider: Cellpoint Mobile
 	 *
@@ -260,6 +288,16 @@ abstract class Constants
 	 *
 	 */
 	const iIHI_PSP = 3;
+	/**
+	 * Unique ID for the Payment Service Provider: WorldPay
+	 *
+	 */
+	const iWORLDPAY_PSP = 4;
+	/**
+	 * Unique ID for the Payment Service Provider: PayEx
+	 *
+	 */
+	const iPAYEX_PSP = 5;
 
 	/**
 	 * Unique ID for the Electronic Payment Flow

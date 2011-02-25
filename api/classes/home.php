@@ -39,6 +39,70 @@ class Home extends General
 
 		$this->_obj_CountryConfig = $oCC;
 	}
+
+	/**
+	 * Generates and sends a One Time Password to the End-User using the provided Mobile Number (MSISDN).
+	 * 
+	 * @see		GoMobileMessage::produceMessage()
+	 * @see		General::getText()
+	 * @see		Home::genActivationCode()
+	 * @see		Home::sendMessage()
+	 * @see		ClientConfig::produceConfig()
+	 *
+	 * @param 	GoMobileConnInfo $oCI 	Reference to the data object with the Connection Info required to communicate with GoMobile
+	 * @param	integer $id 			Unqiue ID of the End-User's Account
+	 * @param	string $mob 			End-User's mobile number
+	 * @return	integer
+	 * @throws 	mPointException
+	 */
+	public function sendOneTimePassword(GoMobileConnInfo &$oCI, $id, $mob)
+	{
+		$sBody = $this->getText()->_("mPoint - Send One Time Password");
+		$sBody = str_replace("{OTP}", $this->genActivationCode($id, $mob, date("Y-m-d H:i:s", time() + 60 * 60) ), $sBody);
+		
+		$obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $this->getCountryConfig()->getID(), -1);
+		
+		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->getCountryConfig()->getID(), $this->getCountryConfig()->getID()*100, $this->getCountryConfig()->getChannel(), $obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $mob, utf8_decode($sBody) );
+		$obj_MsgInfo->setDescription("mPoint - OTP");
+		
+		$iCode = $this->sendMessage($oCI, $obj_ClientConfig, $obj_MsgInfo);
+		if ($iCode != 200) { $iCode = 91; }
+		
+		return $iCode;
+	}
+	
+	/**
+	 * Sends an SMS message which notifies the end-user that the account has been disabled.
+	 * 
+	 * @see		GoMobileMessage::produceMessage()
+	 * @see		General::getText()
+	 * @see		Home::sendMessage()
+	 * @see		ClientConfig::produceConfig()
+	 *
+	 * @param 	GoMobileConnInfo $oCI 	Reference to the data object with the Connection Info required to communicate with GoMobile
+	 * @param	TxnInfo $oTI 			Reference to the Data object with the Transaction Information
+	 * @return	integer
+	 * @throws 	mPointException
+	 */
+	public function sendAccountDisabledNotification(GoMobileConnInfo &$oCI, TxnInfo &$oTI)
+	{
+		// Only use Stored Cards (e-money based prepaid account will be unavailable)
+		if ( ($oTI->getClientConfig()->getStoreCard()&1) == 1)
+		{
+			$sBody = $this->getText()->_("mPoint - Stored Cards Disabled");	
+		}
+		else { $sBody = $this->getText()->_("mPoint - Account Disabled"); }
+		$sBody = str_replace("{CLIENT}", $oTI->getClientConfig()->getName(), $sBody);
+		
+		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->getCountryConfig()->getID(), $this->getCountryConfig()->getID()*100, $this->getCountryConfig()->getChannel(), $obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $mob, utf8_decode($sBody) );
+		$obj_MsgInfo->setDescription("mPoint - Account Del");
+		if ($this->getCountryConfig()->getID() != 200) { $obj_MsgInfo->setSender(substr($oTI->getClientConfig()->getName(), 0, 11) ); }
+		
+		$iCode = $this->sendMessage($oCI, $obj_ClientConfig, $obj_MsgInfo);
+		if ($iCode != 200) { $iCode = 91; }
+		
+		return $iCode;
+	}
 	
 	/**
 	 * Returns a reference to the data object with the Country Configuration
@@ -70,10 +134,15 @@ class Home extends General
 	}
 
 	/**
-	 * Authenticates the End-User using the provided address (MSISDN or E-Mail) and Password.
+	 * Authenticates the End-User using the provided Account ID and Password.
 	 * The method will return the following status codes:
-	 * 	 1. Account / Password doesn't match
+	 * 	 1. Account ID / Password doesn't match
+	 * 	 2. Account ID / Password doesn't match - Next invalid login will disable the account
+	 * 	 3. Account ID / Password doesn't match - Account has been disabled
+	 * 	 9. Account disabled
 	 * 	10. Success
+	 * 
+	 * @see		Constants::iMAX_LOGIN_ATTEMPTS
 	 *
 	 * @param	integer $id 	Unqiue ID of the End-User's Account
 	 * @param	string $pwd 	Password provided by the End-User
@@ -81,18 +150,58 @@ class Home extends General
 	 */
 	public function auth($id, $pwd)
 	{
-		$sql = "SELECT id
+		$sql = "SELECT id, attempts, passwd AS password, mobile
 				FROM EndUser.Account_Tbl
-				WHERE id = ". intval($id) ." AND countryid = ". $this->_obj_CountryConfig->getID() ."
-					AND passwd = '". $this->getDBConn()->escStr($pwd) ."' AND enabled = true";
+				WHERE id = ". intval($id) ." AND countryid = ". $this->_obj_CountryConfig->getID() ." AND enabled = true";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 
 		if (is_array($RS) === true)
 		{
-			$code = 10;
+			// Invalid logins exceeded
+ 			if ($RS["ATTEMPTS"] + 1 > Constants::iMAX_LOGIN_ATTEMPTS)
+			{
+				$code = 9;
+				$iAttempts = $RS["ATTEMPTS"] + 1;
+				$bEnabled = false;
+			}
+			// Login successful
+			elseif ($RS["PASSWORD"] == $pwd)
+			{
+				$code = 10;
+				$iAttempts = 0;
+				$bEnabled = true;
+			}
+			// Invalid login - Account has been disabled
+			elseif ($RS["ATTEMPTS"] + 1 == Constants::iMAX_LOGIN_ATTEMPTS)
+			{
+				$code = 3;
+				$iAttempts = $RS["ATTEMPTS"] + 1;
+				$bEnabled = false;
+			}
+			// Invalid login - Next invalid login will disable the account
+			elseif ($RS["ATTEMPTS"] + 2 == Constants::iMAX_LOGIN_ATTEMPTS)
+			{
+				$code = 2;
+				$iAttempts = $RS["ATTEMPTS"] + 1;
+				$bEnabled = true;
+			}
+			// Invalid login
+			else
+			{
+				$code = 1;
+				$iAttempts = $RS["ATTEMPTS"] + 1;
+				$bEnabled = true;
+			}
+			// Update number of login attempts for End-User
+			$sql = "UPDATE EndUser.Account_Tbl
+					SET attempts = ". $iAttempts .", enabled = '". General::bool2xml($bEnabled) ."'
+					WHERE id = ". intval($id) ." AND countryid = ". $this->_obj_CountryConfig->getID();
+//			echo $sql ."\n";
+			$this->getDBConn()->query($sql);
 		}
-		else { $code = 1; }
+		// Account disabled
+		else { $code = 9; }
 
 		return $code;
 	}
@@ -183,7 +292,7 @@ class Home extends General
 		$xml .= '<mobile>'. $RS["MOBILE"] .'</mobile>';
 		$xml .= '<email>'. htmlspecialchars($RS["EMAIL"], ENT_NOQUOTES) .'</email>';
 		$xml .= '<password mask="'. str_repeat("*", strlen($RS["PASSWORD"]) ) .'">'. htmlspecialchars($RS["PASSWORD"], ENT_NOQUOTES) .'</password>';
-		$xml .= '<balance currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'">'. $RS["BALANCE"] .'</balance>';
+		$xml .= '<balance currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'">'. intval($RS["BALANCE"]) .'</balance>';
 		$xml .= '<funds>'. General::formatAmount($this->_obj_CountryConfig, $RS["BALANCE"]) .'</funds>';
 		$xml .= '<created timestamp="'. $RS["TIMESTAMP"] .'">'. $RS["CREATED"] .'</created>';
 		$xml .= '<logo-width>'. $iWidth .'</logo-width>';
@@ -247,15 +356,21 @@ class Home extends General
 		/* ========== Calculate Logo Dimensions End ========== */
 
 		// Select all active cards that are not yet expired
-		$sql = "SELECT EUC.id, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred,
+		$sql = "SELECT EUC.id, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name,
 					SC.id AS typeid, SC.name AS type,
 					CL.id AS clientid, CL.name AS client
 				FROM EndUser.Card_Tbl EUC
 				INNER JOIN System.PSP_Tbl PSP ON EUC.pspid = PSP.id AND PSP.enabled = true
 				INNER JOIN System.Card_Tbl SC ON EUC.cardid = SC.id AND SC.enabled = true
-				INNER JOIN Client.Client_Tbl CL ON EUC.clientid = CL.id AND CL.enabled = true 
+				INNER JOIN Client.Client_Tbl CL ON EUC.clientid = CL.id AND CL.enabled = true
+				INNER JOIN EndUser.Account_Tbl EUA ON EUC.accountid = EUA.id AND EUA.enabled = true
+				LEFT OUTER JOIN EndUser.CLAccess_Tbl CLA ON EUA.id = CLA.accountid
 				WHERE EUC.accountid = ". intval($id) ." AND EUC.enabled = true
 					AND (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."'
+					AND (CLA.clientid = CL.id OR EUA.countryid = CLA.clientid 
+						 OR NOT EXISTS (SELECT id
+									    FROM EndUser.CLAccess_Tbl
+										WHERE accountid = EUA.id) )
 				ORDER BY CL.name ASC";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
@@ -267,6 +382,7 @@ class Home extends General
 			$xml .= '<card id="'. $RS["ID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'">';
 			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. $RS["CLIENT"] .'</client>';
 			$xml .= '<type id="'. $RS["TYPEID"] .'">'. $RS["TYPE"] .'</type>';
+			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';
 			$xml .= '<mask>'. chunk_split($RS["MASK"], 4, " ") .'</mask>';
 			$xml .= '<expiry>'. $RS["EXPIRY"] .'</expiry>';
 			$xml .= '<ticket>'. $RS["TICKET"] .'</ticket>';
@@ -552,36 +668,6 @@ class Home extends General
 		}
 			
 		return $iStatus;
-	}
-	
-	/**
-	 * Generates and sends a One Time Password to the End-User using the provided Mobile Number (MSISDN).
-	 * 
-	 * @see		GoMobileMessage::produceMessage()
-	 * @see		General::getText()
-	 * @see		Home::genActivationCode()
-	 * @see		Home::sendMessage()
-	 * @see		ClientConfig::produceConfig()
-	 *
-	 * @param 	GoMobileConnInfo $oCI 	Reference to the data object with the Connection Info required to communicate with GoMobile
-	 * @param	integer $id 			Unqiue ID of the End-User's Account
-	 * @param	string $mob 			End-User's mobile number
-	 * @return	integer
-	 * @throws 	mPointException
-	 */
-	public function sendOneTimePassword(GoMobileConnInfo &$oCI, $id, $mob)
-	{
-		$sBody = $this->getText()->_("mPoint - Send One Time Password");
-		$sBody = str_replace("{OTP}", $this->genActivationCode($id, $mob, date("Y-m-d H:i:s", time() + 60 * 60) ), $sBody);
-		
-		$obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $this->getCountryConfig()->getID(), -1);
-		
-		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->getCountryConfig()->getID(), $this->getCountryConfig()->getID()*100, $this->getCountryConfig()->getChannel(), $obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $mob, utf8_decode($sBody) );
-		
-		$iCode = $this->sendMessage($oCI, $obj_ClientConfig, $obj_MsgInfo);
-		if ($iCode != 200) { $iCode = 91; }
-		
-		return $iCode;
 	}
 }
 ?>

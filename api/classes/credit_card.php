@@ -117,9 +117,20 @@ class CreditCard extends EndUserAccount
 			// Transaction instantiated via SMS or "Card" is NOT Premium SMS
 			if ($this->_obj_TxnInfo->getGoMobileID() > -1 || $RS["ID"] != 10)
 			{
+				// My Account
+				if ($RS["ID"] == 11)
+				{
+					// Only use Stored Cards (e-money based prepaid account will be unavailable)
+					if ( ($this->_obj_TxnInfo->getClientConfig()->getStoreCard()&1) == 1)
+					{
+						$sName = $this->getText()->_("Stored Cards");	
+					}
+					else { $sName = str_replace("{CLIENT}", $this->_obj_TxnInfo->getClientConfig()->getName(), $this->getText()->_("My Account") ); }
+				}
+				else { $sName = $RS["NAME"]; }
 				// Construct XML Document with card data
 				$xml .= '<item id="'. $RS["ID"] .'" pspid="'. $RS["PSPID"] .'">';
-				$xml .= '<name>'. $RS["NAME"] .'</name>';
+				$xml .= '<name>'. htmlspecialchars($sName, ENT_NOQUOTES) .'</name>';
 				$xml .= '<logo-width>'. $iWidth .'</logo-width>';
 				$xml .= '<logo-height>'. $iHeight .'</logo-height>';
 				$xml .= '<account>'. $RS["ACCOUNT"] .'</account>';

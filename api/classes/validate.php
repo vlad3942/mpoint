@@ -143,7 +143,7 @@ class Validate
 	 * Validates that a Username has a valid format.
 	 * The method will return the following status codes:
 	 * 	 1. Undefined Username
-	 * 	 2. Username is too short, as defined by iAUTH_MIN_LENGTH
+	 * 	 2. Username is too short, min length is 3 characters
 	 * 	 3. Username is too long, as defined by iAUTH_MAX_LENGTH
 	 *   4. Username contains invalid characters: [^a-z0-9 Ê¯Â∆ÿ≈‰ˆƒ÷.-]
 	 * 	10. Success
@@ -159,7 +159,7 @@ class Validate
 		$un = trim($un);
 		// Validate Username
 		if (empty($un) === true){ $code = 1; }											// Username is undefined
-		elseif (strlen($un) < Constants::iAUTH_MIN_LENGTH) { $code = 2; }				// Username is too short
+		elseif (strlen($un) < 3) { $code = 2; }											// Username is too short
 		elseif (strlen($un) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }				// Username is too long
 		elseif (eregi("[^a-z0-9 Ê¯Â∆ÿ≈‰ˆƒ÷.-]", utf8_encode($un) ) == true) { $code = 4; }	// Username contains Invalid Characters
 		else { $code = 10; }															// Username is valid
@@ -229,12 +229,11 @@ class Validate
 	 * Validates that a Name has a valid format.
 	 * The method will return the following status codes:
 	 * 	 1. Undefined Name
-	 * 	 2. Name is too short, as defined by iAUTH_MIN_LENGTH
+	 * 	 2. Name is too short, must be 2 characters or longer
 	 * 	 3. Name is too long, must be shorter than 100 characters
 	 *   4. Name contains invalid characters: [^0-9a-zÊ¯Â∆ÿ≈‰ˆƒ÷_.@-]
 	 * 	10. Success
 	 *
-	 * @see		Constants::iAUTH_MIN_LENGTH
 	 * @see		General::valUsername()
 	 *
 	 * @param	string $name 	Name to validate
@@ -244,10 +243,10 @@ class Validate
 	{
 		$code = $this->valPassword($name);
 		/**
-		 * Name succesfully validated by valUsername or valUsername returned "username too long"
+		 * Name succesfully validated by valUsername or valUsername returned "username too short" or "username too long"
 		 * but name is less than database retriction
 		 */
-		if ($code == 10 || ($code == 3 && strlen($name) < 100) ) { $code = 10; }
+		if ($code == 10 || ($code == 2 && strlen($name) >= 2) || ($code == 3 && strlen($name) < 100) ) { $code = 10; }
 
 		return $code;
 	}
@@ -714,6 +713,97 @@ class Validate
 		elseif (strval($flag) == "1") { $code = 10; }				// Success
 		elseif (strval($flag) == "0") { $code = 10; }				// Success
 		else { $code = 2; }											// Invalid Flag
+
+		return $code;
+	}
+	/**
+	 * Performs complete validation of the mPoint ID supplied for the Capture operation.
+	 * The method will return the following status codes:
+	 * 	 1. Undefined mPoint ID
+	 * 	 2. Invalid mPoint ID
+	 * 	 3. Transaction not found for mPoint ID
+	 * 	 4. Transaction for mPoint ID has been disabled
+	 * 	 5. Payment Rejected for Transaction
+	 * 	 6. Payment already Captured for Transaction
+	 * 	10. Success
+	 *
+	 * @param 	RDB $oDB 			Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param 	integer $mpointid 	Unique ID for the mPoint transaction 
+	 * @param 	integer $clientid 	Unique ID for the Client performing the request
+	 * @return 	integer
+	 */
+	public function valmPointID(RDB &$oDB, $mpointid, $clientid)
+	{
+		if (empty($mpointid) === true) { $code = 1; }			// Undefined mPoint ID
+		elseif(intval($mpointid) < 1001000)  { $code = 2; }		// Invalid mPoint ID
+		else
+		{
+			$sql = "SELECT Txn.enabled, Msg.stateid
+					FROM Log.Transaction_Tbl Txn
+					INNER JOIN Log.Message_Tbl Msg ON Txn.id = Msg.txnid AND Msg.enabled = true
+					WHERE Txn.id = ". intval($mpointid) ." AND Txn.clientid = ". intval($clientid) ."
+						AND Msg.stateid >= ". Constants::iPAYMENT_ACCEPTED_STATE ."
+					ORDER BY Msg.stateid ASC";
+//			echo $sql ."\n";
+			$aRS = $oDB->getAllNames($sql);
+
+			if (is_array($aRS) === false) { $code = 3; }		// Transaction not found
+			elseif ($aRS[0]["ENABLED"] === false) { $code = 4; }// Transaction Disabled
+			elseif (count($aRS) > 1 && $aRS[1]["STATEID"] == Constants::iPAYMENT_REJECTED_STATE) { $code = 5; }// Payment Rejected for Transaction
+			elseif (count($aRS) > 1 && $aRS[1]["STATEID"] == Constants::iPAYMENT_CAPTURED_STATE) { $code = 6; }// Payment already Captured for Transaction
+			else { $code = 10; }							// Success
+		}
+
+		return $code;
+	}
+	/**
+	 * Performs complete validation of the Order ID supplied for the Capture operation.
+	 * The method will return the following status codes:
+	 * 	 1. Undefined Order ID
+	 * 	 2. Transaction not found
+	 * 	 3. Order ID doesn't match Transaction
+	 * 	 4. Transaction Disabled
+	 * 	10. Success
+	 *
+	 * @param 	RDB $oDB 			Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param 	integer $orderid 	Unique ID for the order as originally provided by the Client
+	 * @param 	integer $mpointid 	Unique ID for the mPoint transaction
+	 * @return 	integer
+	 */
+	public function valOrderID(RDB &$oDB, $orderid, $mpointid)
+	{
+		if (empty($orderid) === true) { $code = 1; }			// Undefined Order ID
+		else
+		{
+			$sql = "SELECT orderid, enabled
+					FROM Log.Transaction_Tbl
+					WHERE id = ". intval($mpointid);
+//			echo $sql ."\n";
+			$RS = $oDB->getName($sql);
+
+			if (is_array($RS) === false) { $code = 2; }		// Transaction not found
+			elseif ($RS["ORDERID"] != $orderid) { $code = 3; }	// Order ID doesn't match Transaction
+			elseif ($RS["ENABLED"] === false) { $code = 4; }	// Transaction Disabled
+			else { $code = 10; }								// Success
+		}
+
+		return $code;
+	}
+	/**
+	 * Performs complete validation of markup language used to render the payment pages for the template.
+	 * The method will return the following status codes:
+	 * 	 1. Undefined Markup Language
+	 * 	 2. Markup Language doesn't exist in Template 
+	 * 	10. Success
+	 *
+	 * @param 	string $mrk		String indicating the markup language used to render the payment pages
+	 * @return 	integer
+	 */
+	public function valMarkupLanguage($mrk)
+	{
+		if (empty($mrk) === true) { $code = 1; }			// Undefined Markup Language
+		elseif(is_dir($_SERVER['DOCUMENT_ROOT'] ."/templates/". sTEMPLATE ."/". $mrk) === false) { $code = 2; }	// Markup Language doesn't exist in Template
+		else { $code = 10; }								// Success
 
 		return $code;
 	}

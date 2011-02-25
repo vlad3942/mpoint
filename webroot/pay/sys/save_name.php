@@ -1,14 +1,14 @@
 <?php
 /**
- * This file contains the Controller for saving the password for a newly created account.
- * The file will ensure that the provided password is valid and if a name is provided that the card name is valid as well.
+ * This file contains the Controller for saving the name of a card.
+ * The file will ensure that the card name is valid if a name is provided.
  *
  * @author Jonatan Evald Buus
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
  * @package Payment
- * @subpackage EndUserAccount
- * @version 1.10
+ * @subpackage SaveName
+ * @version 1.00
  */
 
 // Require Global Include File
@@ -28,27 +28,18 @@ $aMsgCds = array();
 $obj_Validator = new Validate($_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig() );
 $obj_mPoint = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']->getClientConfig() );
 
-if ($obj_Validator->valPassword($_POST['pwd']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_POST['pwd']) + 10; }
-if ($obj_Validator->valPassword($_POST['rpt']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_POST['rpt']) + 20; }
-if (count($aMsgCds) == 0 && $_POST['pwd'] != $_POST['rpt']) { $aMsgCds[] = 31; }
 if ($obj_Validator->valName($_POST['name']) > 1 && $obj_Validator->valName($_POST['name']) != 10) { $aMsgCds[] = $obj_Validator->valName($_POST['name']) + 33; }
 
 // Success: Input Valid
 if (count($aMsgCds) == 0)
 {
-	$iStatus = $obj_mPoint->savePassword($_SESSION['obj_TxnInfo']->getMobile(), $_POST['pwd']);
-	if (strlen(@$_POST['name']) > 0) { $obj_mPoint->saveCardName($_SESSION['obj_TxnInfo']->getMobile(), $_POST['cardid'], $_POST['name'], true); }
-	// New Account automatically created when Password was saved
-	if ($iStatus == 1 && $obj_mPoint->getClientConfig()->smsReceiptEnabled() === true)
-	{
-		$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $_SESSION['obj_TxnInfo']);
-	}
+	if (strlen(@$_POST['name']) > 0) { $iStatus = $obj_mPoint->saveCardName($_SESSION['obj_TxnInfo']->getMobile(), $_POST['cardid'], $_POST['name']); }
+	$aMsgCds[] = 102;
 	$_SESSION['temp'] = array();
-	$aMsgCds[] = 101;
 }
 
-if ($aMsgCds[0] == 101) { $sFile = "accept.php"; }
-else { $sFile = "pwd.php"; }
+if ($aMsgCds[0] == 102) { $sFile = "accept.php"; }
+else { $sFile = "name.php"; }
 
 $msg = "";
 for ($i=0; $i<count($aMsgCds); $i++)

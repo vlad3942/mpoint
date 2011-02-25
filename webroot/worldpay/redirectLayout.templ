@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-15"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
+<!-- redirectLayout.templ $Revision: 1.0 $ -->
+<html lang="<wpdisplay msg=lang.code.name>">
+<head>
+<title><wpdisplay response=title-reparse></title>
+<meta http-equiv="refresh" content="0; URL=<wpdisplay payment=frontEndURL>?<wpdisplay payment=dispatch_params>" />
+<style type="text/css">
+<wpdisplay file=stylesheet.css>
+</style>
+<wpdisplay file=head.html>
+<wpdisplay component=styles>
+</head>
+<body>
+<wpdisplay file=header.html>
+<form action="<wpdisplay payment=frontEndURL>" method="post">
+<wpdisplay file=tableHead.html>
+<wpdisplay response=page>
+<wpdisplay file=tableFoot.html>
+</form>
+<wpdisplay file=footer.html>
+</body>
+</html>

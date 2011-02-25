@@ -1,13 +1,13 @@
 <?php
 /**
  * This file contains the Controller for a part of mPoint's Payment Completed component.
- * The component will generate a page using the Client Configuration to allow the user to provide a password for the newly created account.
+ * The component will generate a page using the Client Configuration offering the user the opportunity to name the card just stored.
  *
  * @author Jonatan Evald Buus
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
  * @package Payment
- * @subpackage SavePassword
+ * @subpackage SaveCardName
  * @version 1.10
  */
 
@@ -28,10 +28,10 @@ $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH,
 $obj_mPoint =  new CreditCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SESSION['obj_UA']);
 
 echo '<?xml version="1.0" encoding="UTF-8"?>';
-echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA'], $_SESSION['obj_TxnInfo']) .'/pay/pwd.xsl"?>';
+echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA'], $_SESSION['obj_TxnInfo']) .'/pay/name.xsl"?>';
 ?>
 <root>
-	<title><?= $_OBJ_TXT->_("Create Account"); ?></title>
+	<title><?= $_OBJ_TXT->_("Save Card"); ?></title>
 
 	<?= $obj_mPoint->getSystemInfo(); ?>
 
@@ -40,12 +40,10 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 	<?= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']); ?>
 
 	<labels>
-		<info><?= $_OBJ_TXT->_("Please complete the form below to finnish creating your account"); ?></info>
 		<selected-card><?= $_OBJ_TXT->_("Selected Card"); ?></selected-card>
-		<password><?= $_OBJ_TXT->_("Password"); ?></password>
-		<repeat-password><?= $_OBJ_TXT->_("Repeat Password"); ?></repeat-password>
-		<card-name><?= $_OBJ_TXT->_("Card Name"); ?></card-name>
-		<card-name-help><?= $_OBJ_TXT->_("Card Name - Help"); ?></card-name-help>
+		<info><?= $_OBJ_TXT->_("Please enter a name for the stored card below?"); ?></info>
+		<name><?= $_OBJ_TXT->_("Card Name"); ?></name>
+		<help><?= $_OBJ_TXT->_("Card Name - Help"); ?></help>
 		<submit><?= $_OBJ_TXT->_("Save"); ?></submit>
 	</labels>
 	
