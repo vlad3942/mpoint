@@ -24,3 +24,27 @@ function convert(aExchangeRates, aCountries, aFees, srcid, tgtid, amount, er, la
 	document.getElementById('fee').innerHTML = aCountries[srcid] +' '+ Number(fee).toFixed(2);
 	document.getElementById('total').innerHTML = aCountries[srcid] +' '+ Number(amount + fee).toFixed(2);
 }
+
+function selectCard(obj, id)
+{
+	obj.className += ' selected';
+	var _select = function()
+	{
+		var img = document.getElementById('card-'+ id +'-image').src;
+		var name = document.getElementById('card-'+ id +'-name').innerHTML;
+
+		document.getElementById('card-'+ id +'-image').src = document.getElementById('selected-card-image').src;
+		document.getElementById('card-'+ id +'-image').setAttribute('id', 'card-'+ document.getElementById('cardid').value +'-image');
+		document.getElementById('card-'+ id +'-name').innerHTML = document.getElementById('selected-card-name').innerHTML;
+		document.getElementById('card-'+ id +'-name').setAttribute('id', 'card-'+ document.getElementById('cardid').value +'-name');
+		obj.setAttribute('onclick', 'javascript:obj_Menu.select(this, \'selected\'); selectCard(this, '+ document.getElementById('cardid').value +');');
+
+		document.getElementById('selected-card-image').src = img;
+		document.getElementById('selected-card-name').innerHTML = name;
+		document.getElementById('cardid').value = id;
+		
+		obj.className = obj.className.replace(' selected', '');
+		obj.className = obj.className.replace('selected', '');
+	}
+	setTimeout(_select, 200);
+}

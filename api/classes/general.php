@@ -231,16 +231,16 @@ class General
 	 */
 	public static function getLanguage()
 	{
-		// Language has previously been determined
-		if (isset($_SESSION) === true && $_SESSION['obj_Info']->getInfo("language") !== false)
-		{
-			$sLang = $_SESSION['obj_Info']->getInfo("language");
-		}
 		// Language provided by Client as part of the Transaction data
-		elseif (array_key_exists("language", $_REQUEST) === true && empty($_REQUEST['language']) === false
+		if (array_key_exists("language", $_REQUEST) === true && empty($_REQUEST['language']) === false
 				&& is_dir(sLANGUAGE_PATH ."/". $_REQUEST['language']) === true)
 		{
 			$sLang = $_REQUEST['language'];
+		}
+		// Language has previously been determined
+		elseif (isset($_SESSION) === true && $_SESSION['obj_Info']->getInfo("language") !== false)
+		{
+			$sLang = $_SESSION['obj_Info']->getInfo("language");
 		}
 		// Analyse HTTP Header
 		elseif (array_key_exists("HTTP_ACCEPT_LANGUAGE", $_SERVER) === true)
@@ -359,7 +359,7 @@ class General
 	public function getSystemInfo()
 	{
 		if (array_key_exists("QUERY_STRING", $_SERVER) === false) { $_SERVER['QUERY_STRING'] = ""; }
-		switch (true)
+	switch (true)
 		{
 		case eregi("iPod", $_SERVER['HTTP_USER_AGENT']):
 		case eregi("iPhone", $_SERVER['HTTP_USER_AGENT']):
@@ -368,8 +368,11 @@ class General
 		case eregi("iPad", $_SERVER['HTTP_USER_AGENT']):
 			$platform = "iPad";
 			break;
-		case eregi("DROIDX", $_SERVER['HTTP_USER_AGENT']):
-			$platform = "Droid X";
+		case eregi("Firefox", $_SERVER['HTTP_USER_AGENT']):
+			$platform = "Firefox";
+			break;
+		case eregi("Skyfire", $_SERVER['HTTP_USER_AGENT']):
+			$platform = "Skyfire";
 			break;
 		case eregi("Android", $_SERVER['HTTP_USER_AGENT']):
 			$platform = "Android";

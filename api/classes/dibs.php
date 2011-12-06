@@ -82,6 +82,23 @@ class DIBS extends Callback
 
 		return $RS["NAME"];
 	}
+	/**
+	 * Returns the Client's Merchant Login (Username / Password) for the PSP
+	 * 
+	 * @param 	integer $clid	Unique ID of the Client whose Merchant Account should be found
+	 * @param 	integer $pspid	Unique ID for the PSP the Merchant Account should be found for
+	 * @return 	array
+	 */
+	public function getMerchantLogin($clid, $pspid)
+	{
+		$sql = "SELECT username, passwd AS password
+				FROM Client.MerchantAccount_Tbl
+				WHERE clientid = ". intval($clid) ." AND pspid = ". intval($pspid) ." AND enabled = true";
+//		echo $sql ."\n";
+		$RS = $this->getDBConn($sql)->getName($sql);
+
+		return is_array($RS) === true ? array_change_key_case($RS, CASE_LOWER) : array();
+	}
 	
 	/**
 	 * Returns the Client's Merchant Sub-Account ID for the PSP
@@ -212,33 +229,166 @@ class DIBS extends Callback
 	 */
 	public function capture($txn)
 	{
-		$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
-		$b .= "&mpointid=". $this->getTxnInfo()->getID();
-		$b .= "&transact=". $txn;
-		$b .= "&amount=". $this->getTxnInfo()->getAmount();
-		$b .= "&orderid=". urlencode($this->getTxnInfo()->getOrderID() );
-		if ($this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP) > -1) { $b .= "&account=". $this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP); }
-		$b .= "&textreply=true";
-		
-		$obj_HTTP = parent::send("https://payment.architrade.com/cgi-bin/capture.cgi", $this->constHTTPHeaders(), $b);
-		$aStatus = array();
-		parse_str($obj_HTTP->getReplyBody(), $aStatus);
-		
-		// Capture Declined
-		if (array_key_exists("result", $aStatus) === false || $aStatus["result"] > 0)
+		$code = $this->status($txn);
+		// Transaction ready for Capture
+		if ($code == 2)
 		{
-			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_DECLINED_STATE, var_export($aStatus, true) );
-			trigger_error("Capture declined by DIBS for Transaction: ". $txn .", Result Code: ". @$aStatus["result"], E_USER_WARNING);
+			$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
+			$b .= "&mpointid=". $this->getTxnInfo()->getID();
+			$b .= "&transact=". $txn;
+			$b .= "&amount=". $this->getTxnInfo()->getAmount();
+			$b .= "&orderid=". urlencode($this->getTxnInfo()->getOrderID() );
+			if ($this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP) > -1) { $b .= "&account=". $this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP); }
+			$b .= "&textreply=true";
 			
-			return $aStatus["result"];
+			$obj_HTTP = parent::send("https://payment.architrade.com/cgi-bin/capture.cgi", $this->constHTTPHeaders(), $b);
+			$aStatus = array();
+			parse_str($obj_HTTP->getReplyBody(), $aStatus);
+			
+			// Capture Declined
+			if (array_key_exists("result", $aStatus) === false || $aStatus["result"] > 0)
+			{
+				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_DECLINED_STATE, var_export($aStatus, true) );
+				trigger_error("Capture declined by DIBS for Transaction: ". $txn .", Result Code: ". @$aStatus["result"], E_USER_WARNING);
+				
+				return $aStatus["result"];
+			}
+			// Payment successfully captured
+			else
+			{
+				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
+				
+				return 0;
+			}
 		}
-		// Payment successfully captured
-		else
+		// Capture already completed
+		elseif ($code == 11)
 		{
-			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
+			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURED_STATE, "DIBS returned code: ". $code ." from status call");
 			
 			return 0;
 		}
+		else { return $code; }
+	}
+	
+	/**
+	 * Performs a refund operation with DIBS for the provided transaction.
+	 * The method will log one the following status codes from DIBS:
+	 * 	0. Refund succeeded
+	 * 	1. No response from acquirer.
+	 * 	2. Error in the parameters sent to the DIBS server. An additional parameter called "message" is returned, with a value that may help identifying the error.
+	 * 	3. Credit card expired.
+	 * 	4. Rejected by acquirer.
+	 * 	5. Authorisation older than 7 days.
+	 * 	6. Transaction status on the DIBS server does not allow capture.
+	 * 	7. Amount too high.
+	 * 	8. Amount is zero.
+	 * 	9. Order number (orderid) does not correspond to the authorisation order number.
+	 * 10. Re-authorisation of the transaction was rejected.
+	 * 11. Not able to communicate with the acquier.
+	 * 12. Confirm request error
+	 * 14. Refund is called for a transaction which is pending for batch - i.e. capture was already called
+	 * 15. Refund was blocked by DIBS.
+	 * 
+	 * @link	http://tech.dibs.dk/toolbox/dibs-error-codes/
+	 * 
+	 * @param 	integer $txn	Transaction ID previously returned by DIBS during authorisation
+	 * @return	integer
+	 * @throws	E_USER_WARNING
+	 */
+	public function refund($txn)
+	{
+		$code = $this->status($txn);
+		// Transaction ready for Refund
+		if ($code == 5)
+		{
+			$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
+			$b .= "&mpointid=". $this->getTxnInfo()->getID();
+			$b .= "&transact=". $txn;
+			$b .= "&amount=". $this->getTxnInfo()->getAmount();
+			$b .= "&orderid=". urlencode($this->getTxnInfo()->getOrderID() );
+			if ($this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP) > -1) { $b .= "&account=". $this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP); }
+			$b .= "&textreply=true";
+			$aLogin = $this->getMerchantLogin($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
+			
+			$obj_HTTP = parent::send("https://payment.architrade.com/cgi-adm/refund.cgi", $this->constHTTPHeaders(), $b, $aLogin["username"], $aLogin["password"]);
+			if ($obj_HTTP->getReturnCode() == 200)
+			{
+				$aStatus = array();
+				parse_str($obj_HTTP->getReplyBody(), $aStatus);
+				// Refund Declined
+				if (array_key_exists("result", $aStatus) === false || $aStatus["result"] > 0)
+				{
+					trigger_error("Refund declined by DIBS for Transaction: ". $txn .", Result Code: ". @$aStatus["result"], E_USER_WARNING);
+					
+					return $aStatus["result"];
+				}
+				// Payment successfully refunded
+				else
+				{
+					$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUNDED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
+					
+					return 0;
+				}
+			}
+			else
+			{
+				trigger_error("Refund declined by DIBS for Transaction: ". $txn .", HTTP Response Code: ". $obj_HTTP->getReturnCode(), E_USER_WARNING);
+				
+				return 20;
+			}
+		}
+		// Refund already completed
+		elseif ($code == 11)
+		{
+			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUNDED_STATE, "DIBS returned code: ". $code ." from status call");
+			
+			return 0;
+		}
+		else { return $code; }
+	}
+	
+	/**
+	 * Performs a status operation with DIBS for the provided transaction.
+	 * The method will log one the following status codes from DIBS:
+	 * 	 0. transaction inserted (not approved)
+	 * 	 1. declined
+	 * 	 2. authorization approved
+	 * 	 3. capture sent to acquirer
+	 * 	 4. capture declined by acquirer
+	 * 	 5. capture completed
+	 * 	 6. authorization deleted
+	 * 	 7. capture balanced
+	 * 	 8. partially refunded and balanced
+	 * 	 9. refund sent to acquirer
+	 * 	10. refund declined
+	 * 	11. refund completed
+	 * 	12. capture pending
+	 * 	13. "ticket" transaction
+	 * 	14. deleted "ticket" transaction
+	 * 	15. refund pending
+	 * 	16. waiting for shop approval
+	 * 	17. declined by DIBS
+	 * 	18. multicap transaction open
+	 * 	19. multicap transaction closed
+	 * 
+	 * @link	http://http://tech.dibs.dk/dibs_api/status_functions/transstatuspml/
+	 * 
+	 * @param 	integer $txn	Transaction ID previously returned by DIBS during authorisation
+	 * @return	integer
+	 * @throws	E_USER_WARNING
+	 */
+	public function status($txn)
+	{
+		$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
+		$b .= "&transact=". $txn;
+		
+		$obj_HTTP = parent::send("http://payment.architrade.com/transstatus.pml", $this->constHTTPHeaders(), $b);
+		if ($obj_HTTP->getReturnCode() == 200)
+		{
+			return trim($obj_HTTP->getReplyBody() );
+		}
+		else { return -1; }
 	}
 
 	/**

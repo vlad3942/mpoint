@@ -141,6 +141,16 @@ abstract class Constants
 	 */
 	const iPAYMENT_CAPTURED_STATE = 2001;
 	/**
+	 * Defines the ID of the State that indicates that a previously authorized payment has been successfully cancelled by the Payment Service Provider (PSP)
+	 *
+	 */
+	const iPAYMENT_CANCELLED_STATE = 2002;
+	/**
+	 * Defines the ID of the State that indicates that previously captured payment has been successfully refunded by the Payment Service Provider (PSP)
+	 *
+	 */
+	const iPAYMENT_REFUNDED_STATE = 2003;
+	/**
 	 * Defines the ID of the State that indicates that payment is being using the End-User's account
 	 *
 	 */
@@ -298,6 +308,11 @@ abstract class Constants
 	 *
 	 */
 	const iPAYEX_PSP = 5;
+	/**
+	 * Unique ID for the Payment Service Provider: Authorize.Net
+	 *
+	 */
+	const iANET_PSP = 6;
 
 	/**
 	 * Unique ID for the Electronic Payment Flow

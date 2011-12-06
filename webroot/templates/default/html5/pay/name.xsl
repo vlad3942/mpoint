@@ -23,6 +23,9 @@
 			</div>
 		</form>
 	</div>
+	<script type="text/javascript">
+		parent.postMessage('mpoint-save-card,<xsl:value-of select="system/session/@id" />', '*');
+	</script>
 </xsl:template>
 
 </xsl:stylesheet>

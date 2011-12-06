@@ -14,6 +14,7 @@
 		<meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 		<title><xsl:value-of select="/root/title" /></title>
 		<title><xsl:value-of select="/root/title" /></title>
+		<link href="/css/mobile.css" type="text/css" rel="stylesheet" />
 		<link href="{/root/transaction/css-url}" type="text/css" rel="stylesheet" />
 		<!-- Pre-load pages -->
 		<xsl:choose>
@@ -42,278 +43,147 @@
 				<link href="{func:constLink('email.php')}" rel="next" type="text/html" />
 			</xsl:when>
 		</xsl:choose>
-		<script type="text/javascript" src="/inc/iscroll.js"></script>
-		<xsl:choose>
-			<!-- Select Card -->
-			<xsl:when test="/root/system/file = 'card.php'">
-				<xsl:choose>
-				<!-- Too much data to fit on screen -->
-				<xsl:when test="count(/root/cards/item) &gt; 5 and /root/transaction/auto-store-card = 'false' and (@id != 11 or count(/root/stored-cards/card[client/@id = /root/client-config/@id]) &gt; 0 or (floor(/root/client-config/store-card div 1) mod 2 != 1 and (/root/transaction/@type &lt; 100 or /root/transaction/@type &gt; 109) ) )">
-					<style>
-						#cards
-						{
-						<xsl:choose>
-						<xsl:when test="count(/root/messages/item) &gt; 0">
-							<xsl:choose>
-							<xsl:when test="/root/system/platform = 'iPhone'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 120" />px;*/
-								height: 210px;
-							</xsl:when>
-							<xsl:when test="/root/system/platform = 'Droid X'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 565" />px;*/
-								height: 359px;
-							</xsl:when>
-							<xsl:when test="/root/system/platform = 'Android'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 565" />px;*/
-								height: 305px;
-							</xsl:when>
-							<xsl:otherwise>
-								height: <xsl:value-of select="/root/uaprofile/height - 120" />px;
-							</xsl:otherwise>
-							</xsl:choose>
-						</xsl:when>
-						<xsl:otherwise>
-							<xsl:choose>
-							<xsl:when test="/root/system/platform = 'iPhone'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 120" />px;*/
-								height: 240px;
-							</xsl:when>
-							<xsl:when test="/root/system/platform = 'Droid X'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 565" />px;*/
-								height: 389px;
-							</xsl:when>
-							<xsl:when test="/root/system/platform = 'Android'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 565" />px;*/
-								height: 335px;
-							</xsl:when>
-							<xsl:otherwise>
-								height: <xsl:value-of select="/root/uaprofile/height - 120" />px;
-							</xsl:otherwise>
-							</xsl:choose>
-						</xsl:otherwise>
-						</xsl:choose>	
-						}
-						#content
-						{
-							height: <xsl:value-of select="count(/root/cards/item) * /root/cards/item/logo-height + 100" />px;
-						}
-					</style>
-				</xsl:when>
-				<!-- Too much data to fit on screen -->
-				<xsl:when test="count(/root/cards/item) &gt; 6">
-					<style>
-						#cards
-						{
-						<xsl:choose>
-						<xsl:when test="count(/root/messages/item) &gt; 0">
-							<xsl:choose>
-							<xsl:when test="/root/system/platform = 'iPhone'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 120" />px;*/
-								height: 210px;
-							</xsl:when>
-							<xsl:when test="/root/system/platform = 'Droid X'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 565" />px;*/
-								height: 359px;
-							</xsl:when>
-							<xsl:when test="/root/system/platform = 'Android'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 565" />px;*/
-								height: 305px;
-							</xsl:when>
-							<xsl:otherwise>
-								height: <xsl:value-of select="/root/uaprofile/height - 120" />px;
-							</xsl:otherwise>
-							</xsl:choose>
-						</xsl:when>
-						<xsl:otherwise>
-							<xsl:choose>
-							<xsl:when test="/root/system/platform = 'iPhone'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 120" />px;*/
-								height: 240px;
-							</xsl:when>
-							<xsl:when test="/root/system/platform = 'Droid X'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 565" />px;*/
-								height: 389px;
-							</xsl:when>
-							<xsl:when test="/root/system/platform = 'Android'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 565" />px;*/
-								height: 335px;
-							</xsl:when>
-							<xsl:otherwise>
-								height: <xsl:value-of select="/root/uaprofile/height - 120" />px;
-							</xsl:otherwise>
-							</xsl:choose>
-						</xsl:otherwise>
-						</xsl:choose>	
-						}
-						#content
-						{
-							height: <xsl:value-of select="count(/root/cards/item) * /root/cards/item/logo-height + 70" />px;
-						}
-					</style>
-				</xsl:when>
-				</xsl:choose>
-				<script type="text/javascript">
-					var myScroll;
-					function loaded()
-					{
-						document.addEventListener('touchmove', function(e){ e.preventDefault(); }, false);
-						myScroll = new iScroll('content', { checkDOMChanges:false, snap:false, momentum:true, hScrollbar:false, vScrollbar:true });
-					}
-								
-					// Load iScroll when DOM content is ready.
-					document.addEventListener('DOMContentLoaded', loaded, false);
-				</script>
+		<style>
+			<xsl:choose>
+			<xsl:when test="root/system/platform = 'iPhone'">
+				body
+				{
+					height: 330px;
+				}
+				#messages
+				{
+					bottom: 115px;
+				}
 			</xsl:when>
-			<!-- My Account -->
-			<xsl:when test="/root/system/file = 'payment.php'">
-				<xsl:choose>
-				<!-- Too much data to fit on screen -->
-				<xsl:when test="count(/root/stored-cards/card[client/@id = //client-config/@id]) &gt; 0 and floor(/root/client-config/store-card div 1) mod 2 != 1 and (/root/transaction/@type &lt; 100 or /root/transaction/@type &gt; 109)">
-					<style>
-						#my-account
-						{
-						<xsl:choose>
-						<xsl:when test="count(/root/messages/item) &gt; 0">
-							<xsl:choose>
-							<xsl:when test="/root/system/platform = 'iPhone'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 120" />px;*/
-								height: 230px;
-							</xsl:when>
-							<xsl:when test="/root/system/platform = 'Droid X'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 565" />px;*/
-								height: 379px;
-							</xsl:when>
-							<xsl:when test="/root/system/platform = 'Android'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 565" />px;*/
-								height: 325px;
-							</xsl:when>
-							<xsl:otherwise>
-								height: <xsl:value-of select="/root/uaprofile/height - 120" />px;
-							</xsl:otherwise>
-							</xsl:choose>
-						</xsl:when>
-						<xsl:otherwise>
-							<xsl:choose>
-							<xsl:when test="/root/system/platform = 'iPhone'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 120" />px;*/
-								height: 260px;
-							</xsl:when>
-							<xsl:when test="/root/system/platform = 'Droid X'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 565" />px;*/
-								height: 409px;
-							</xsl:when>
-							<xsl:when test="/root/system/platform = 'Android'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 565" />px;*/
-								height: 355px;
-							</xsl:when>
-							<xsl:otherwise>
-								height: <xsl:value-of select="/root/uaprofile/height - 120" />px;
-							</xsl:otherwise>
-							</xsl:choose>
-						</xsl:otherwise>
-						</xsl:choose>
-						}
-						#content
-						{
-							height: <xsl:value-of select="count(/root/stored-cards/card[client/@id = //client-config/@id]) * /root/stored-cards/card[client/@id = //client-config/@id]/logo-height + 350" />px;
-						}
-					</style>
-				</xsl:when>
-				<!-- Too much data to fit on screen -->
-				<xsl:when test="count(/root/stored-cards/card[client/@id = //client-config/@id]) &gt; 3">
-					<style>
-						#my-account
-						{
-						<xsl:choose>
-						<xsl:when test="count(/root/messages/item) &gt; 0">
-							<xsl:choose>
-							<xsl:when test="/root/system/platform = 'iPhone'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 120" />px;*/
-								height: 230px;
-							</xsl:when>
-							<xsl:when test="/root/system/platform = 'Droid X'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 565" />px;*/
-								height: 379px;
-							</xsl:when>
-							<xsl:when test="/root/system/platform = 'Android'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 565" />px;*/
-								height: 325px;
-							</xsl:when>
-							<xsl:otherwise>
-								height: <xsl:value-of select="/root/uaprofile/height - 120" />px;
-							</xsl:otherwise>
-							</xsl:choose>
-						</xsl:when>
-						<xsl:otherwise>
-							<xsl:choose>
-							<xsl:when test="/root/system/platform = 'iPhone'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 120" />px;*/
-								height: 260px;
-							</xsl:when>
-							<xsl:when test="/root/system/platform = 'Droid X'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 565" />px;*/
-								height: 409px;
-							</xsl:when>
-							<xsl:when test="/root/system/platform = 'Android'">
-								/*height: <xsl:value-of select="/root/uaprofile/height - 565" />px;*/
-								height: 355px;
-							</xsl:when>
-							<xsl:otherwise>
-								height: <xsl:value-of select="/root/uaprofile/height - 120" />px;
-							</xsl:otherwise>
-							</xsl:choose>
-						</xsl:otherwise>
-						</xsl:choose>
-/*							height: <xsl:value-of select="count(/root/stored-cards/card[client/@id = //client-config/@id]) * /root/stored-cards/card[client/@id = //client-config/@id]/logo-height + 130" />px; */
-						}
-						#content
-						{
-							height: <xsl:value-of select="count(/root/stored-cards/card[client/@id = //client-config/@id]) * /root/stored-cards/card[client/@id = //client-config/@id]/logo-height + 250" />px;
-						}
-					</style>
-				</xsl:when>
-				<xsl:when test="count(/root/messages/item) &gt; 0">
-					<style>
-						#my-account
-						{
-						<xsl:choose>
-						<xsl:when test="/root/system/platform = 'iPhone'">
-							/*height: <xsl:value-of select="/root/uaprofile/height - 120" />px;*/
-							height: 210px;
-						</xsl:when>
-						<xsl:when test="/root/system/platform = 'Droid X'">
-							/*height: <xsl:value-of select="/root/uaprofile/height - 565" />px;*/
-							height: 359px;
-						</xsl:when>
-						<xsl:when test="/root/system/platform = 'Android'">
-							/*height: <xsl:value-of select="/root/uaprofile/height - 565" />px;*/
-							height: 305px;
-						</xsl:when>
-						<xsl:otherwise>
-							height: <xsl:value-of select="/root/uaprofile/height - 150" />px;
-						</xsl:otherwise>
-						</xsl:choose>
-						}
-						#content
-						{
-							height: <xsl:value-of select="count(/root/stored-cards/card[client/@id = //client-config/@id]) * /root/stored-cards/card[client/@id = //client-config/@id]/logo-height + 250" />px;
-						}
-					</style>
-				</xsl:when>
-				</xsl:choose>
-				<script type="text/javascript">
-					var myScroll;
-					function loaded()
-					{
-						document.addEventListener('touchmove', function(e){ e.preventDefault(); }, false);
-						myScroll = new iScroll('content', { checkDOMChanges:false, snap:false, momentum:true, hScrollbar:false, vScrollbar:true });
-					}
-								
-					// Load iScroll when DOM content is ready.
-					document.addEventListener('DOMContentLoaded', loaded, false);
-				</script>
+			<xsl:when test="root/system/platform = 'iPad'">
+				body
+				{
+					height: 630px;
+				}
+				#messages
+				{
+					bottom: 115px;
+				}
 			</xsl:when>
-		</xsl:choose>
+			<xsl:when test="root/system/platform = 'Galaxy Tab'">
+				body
+				{
+					height: 400px;
+				}
+				#content #console #data
+				{
+					height: 150px;
+				}
+				#view-details #account-info
+				{
+					width: 70%;
+				}
+				#view-details #commands
+				{
+					width: 30%;
+				}
+			</xsl:when>
+			<xsl:when test="root/system/platform = 'Android' or root/system/platform = 'Skyfire'">
+				body
+				{
+					<xsl:choose>
+					<!-- UA Profile not found for Device -->
+					<xsl:when test="number(root/uaprofile/height) &gt; 0 and root/uaprofile/height - 400 &gt; 0">
+						height: <xsl:value-of select="root/uaprofile/height - 400" />px;
+					</xsl:when>
+					<xsl:otherwise>
+						height: 400px;
+					</xsl:otherwise>
+					</xsl:choose>
+				}
+			</xsl:when>
+			<xsl:when test="root/system/platform = 'Firefox'">
+				body
+				{
+					<xsl:choose>
+					<!-- UA Profile not found for Device -->
+					<xsl:when test="number(root/uaprofile/height) &gt; 0">
+						height: <xsl:value-of select="root/uaprofile/height - 400" />px;
+					</xsl:when>
+					<xsl:otherwise>
+						height: 400px;
+					</xsl:otherwise>
+					</xsl:choose>
+				}
+                #content
+				{
+					<xsl:choose>
+					<!-- UA Profile not found for Device -->
+					<xsl:when test="number(root/uaprofile/height) &gt; 0">
+						height: <xsl:value-of select="root/uaprofile/height - 450" />px;
+					</xsl:when>
+					<xsl:otherwise>
+						height: 350px;
+					</xsl:otherwise>
+					</xsl:choose>
+					overflow: auto;
+				}
+			</xsl:when>
+			<xsl:otherwise>
+				body
+				{
+					<xsl:choose>
+					<!-- UA Profile not found for Device -->
+					<xsl:when test="number(root/uaprofile/height) &gt; 0">
+						height: <xsl:value-of select="root/uaprofile/height - 84" />px;
+					</xsl:when>
+					<xsl:otherwise>
+						height: 420px;
+					</xsl:otherwise>
+					</xsl:choose>
+				}
+			</xsl:otherwise>
+			</xsl:choose>
+		</style>
+		<script type="text/javascript" src="/inc/iScroll.js"></script>
+		<script type="text/javascript" src="/inc/menu.js"></script>
+		<script type="text/javascript" src="/inc/mpoint.js"></script>
+		<script type="text/javascript">
+			var myScroll;
+			function loaded()
+			{
+				document.addEventListener('touchmove', function(e) { e.preventDefault(); }, false);
+				if (myScroll == null)
+				{
+					myScroll = new iScroll('wrapper', { // checkDOMChanges:false,
+//														snap:false,
+//														momentum:true,
+//														hScrollbar:false,
+//														vScrollbar:true,
+														useTransform:false,
+														onBeforeScrollStart: function (e)
+														{
+															var target = e.target;
+															while (target.nodeType != 1)
+															{
+																target = target.parentNode;
+															}
+															try
+															{
+																switch (target.tagName.toLowerCase() )
+																{
+																case "select":
+																case "input":
+																case "textarea":
+//																	e.stopPropagation();
+																	break;
+																default:
+																	e.preventDefault();
+																	break;
+																}
+															}
+															catch (ignore) { /* Ignore */ }
+														}
+			                                           });
+				}
+			}
+//			document.addEventListener('DOMContentLoaded', loaded, false);
+		</script>
 	</head>
 	<body>
 		<!-- Display Client Logo using the provided URL -->
@@ -332,6 +202,8 @@
 		<!-- Hidden Data Fields End -->
 		<script type="text/javascript">
 			 document.getElementById('loader').style.visibility = 'hidden';
+			 obj_Menu = new Menu();
+			 setTimeout(function () { myScroll.refresh(); }, 0);
 		</script>
 	</body>
 	</html>

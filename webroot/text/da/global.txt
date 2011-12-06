@@ -1,3 +1,59 @@
+#: /webroot/anet/dpm.php:51
+msgid @@@ Card Info @@@
+msgstr @@@ Card Info @@@
+
+#: /webroot/anet/dpm.php:58
+msgid @@@ Step 2 of 2 @@@
+msgstr @@@ Step 2 of 2 @@@
+
+#: /webroot/anet/dpm.php:59
+msgid @@@ Please enter your card information below @@@
+msgstr @@@ Please enter your card information below @@@
+
+#: /webroot/anet/dpm.php:60
+msgid @@@ Selected Card @@@
+msgstr @@@ Selected Card @@@
+
+#: /webroot/anet/dpm.php:61
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
+#: /webroot/anet/dpm.php:62
+msgid @@@ Card Number @@@
+msgstr @@@ Card Number @@@
+
+#: /webroot/anet/dpm.php:63
+msgid @@@ Expiry Date @@@
+msgstr @@@ Expiry Date @@@
+
+#: /webroot/anet/dpm.php:64
+msgid @@@ mm @@@
+msgstr @@@ mm @@@
+
+#: /webroot/anet/dpm.php:65
+msgid @@@ yy @@@
+msgstr @@@ yy @@@
+
+#: /webroot/anet/dpm.php:66
+msgid @@@ CVC / CVS @@@
+msgstr @@@ CVC / CVS @@@
+
+#: /webroot/anet/dpm.php:67
+msgid @@@ 3 digits (printed on the back of the card) @@@
+msgstr @@@ 3 digits (printed on the back of the card) @@@
+
+#: /webroot/anet/dpm.php:68
+msgid @@@ 4 digits (printed on the back of the card) @@@
+msgstr @@@ 4 digits (printed on the back of the card) @@@
+
+#: /webroot/anet/dpm.php:69
+msgid @@@ Save Card Info @@@
+msgstr @@@ Save Card Info @@@
+
+#: /webroot/anet/dpm.php:70
+msgid @@@ Complete Payment @@@
+msgstr @@@ Complete Payment @@@
+
 #: /webroot/buy/sms.php:137
 msgid @@@ SMS Purchase MT @@@
 msgstr @@@ Du er ved at lave et køb hos en sælger der bruger mPoint.
@@ -1232,15 +1288,15 @@ For at betale med dit gemte kort i fremtiden skal du bruge kodeordet: {PASSWORD}
 MVH.
 {CLIENT} @@@
 
-#: /api/classes/general.php:392
+#: /api/classes/general.php:395
 msgid @@@ Loading... @@@
 msgstr @@@ Henter... @@@
 
-#: /api/classes/general.php:634
+#: /api/classes/general.php:637
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ Velkommen til {CLIENT}, aktiver venligst nedenstående link @@@
 
-#: /api/classes/general.php:640
+#: /api/classes/general.php:643
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Velkommen til {CLIENT} @@@
 
@@ -1249,17 +1305,9 @@ msgid @@@ mPoint - Send One Time Password @@@
 msgstr @@@ Indtast venligst følgende én-gangs kodeord: {OTP} på websitet for at logge ind.
 Kodeordet vil automatisk udløbe om en time. @@@
 
-#: /api/classes/home.php:92
-msgid @@@ mPoint - Stored Cards Disabled @@@
-msgstr @@@ Dine kortinformationer hos {CLIENT} er blevet slettet fordi du har angivet et forkert kodeord tre gange.
-Venlig hilsen
-{CLIENT} @@@
-
-#: /api/classes/home.php:94
+#: /api/classes/home.php:90
 msgid @@@ mPoint - Account Disabled @@@
-msgstr @@@ Din mPoint konto hos {CLIENT} er blevet slettet fordi du har angivet et forkert kodeord tre gange.
-Venlig hilsen
-{CLIENT} @@@
+msgstr @@@ Din konto hos {CLIENT} er blevet slettet pga. for mange forkerte log ind forsøg @@@
 
 #: /api/classes/my_account.php:57
 msgid @@@ mPoint - Send Activation Code @@@

@@ -163,7 +163,7 @@ class Validate
 		elseif (strlen($un) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }				// Username is too long
 		elseif (eregi("[^a-z0-9 æøåÆØÅäöÄÖ.-]", utf8_encode($un) ) == true) { $code = 4; }	// Username contains Invalid Characters
 		else { $code = 10; }															// Username is valid
-
+file_put_contents(sLOG_PATH ."/jona.log", "Username:". $un .":");
 		return $code;
 	}
 
@@ -725,6 +725,7 @@ class Validate
 	 * 	 4. Transaction for mPoint ID has been disabled
 	 * 	 5. Payment Rejected for Transaction
 	 * 	 6. Payment already Captured for Transaction
+	 * 	 7. Payment already Refunded for Transaction
 	 * 	10. Success
 	 *
 	 * @param 	RDB $oDB 			Reference to the Database Object that holds the active connection to the mPoint Database
@@ -750,6 +751,7 @@ class Validate
 			if (is_array($aRS) === false) { $code = 3; }		// Transaction not found
 			elseif ($aRS[0]["ENABLED"] === false) { $code = 4; }// Transaction Disabled
 			elseif (count($aRS) > 1 && $aRS[1]["STATEID"] == Constants::iPAYMENT_REJECTED_STATE) { $code = 5; }// Payment Rejected for Transaction
+			elseif (count($aRS) > 2 && $aRS[2]["STATEID"] == Constants::iPAYMENT_REFUNDED_STATE) { $code = 7; }// Payment already Refunded for Transaction
 			elseif (count($aRS) > 1 && $aRS[1]["STATEID"] == Constants::iPAYMENT_CAPTURED_STATE) { $code = 6; }// Payment already Captured for Transaction
 			else { $code = 10; }							// Success
 		}

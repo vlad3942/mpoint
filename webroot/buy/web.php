@@ -37,7 +37,7 @@ $aMsgCds = array();
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 
 // Set Global Defaults
-if (array_key_exists("account", $_REQUEST) === false) { $_REQUEST['account'] = -1; }
+if (array_key_exists("account", $_REQUEST) === false || intval($_REQUEST['account']) < 0) { $_REQUEST['account'] = -1; }
 if (array_key_exists("orderid", $_REQUEST) === false) { $_REQUEST['orderid'] = null; }
 if (array_key_exists("email", $_REQUEST) === false) { $_REQUEST['email'] = ""; }
 
@@ -132,7 +132,7 @@ else
 }
 
 // Instantiate data object with the User Agent Profile for the customer's mobile device.
-$_SESSION['obj_UA'] = UAProfile::produceUAProfile();
+$_SESSION['obj_UA'] = UAProfile::produceUAProfile(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["iemendo"]) );
 
 // Success: Construct "Select Credit Card" page
 if (array_key_exists(1000, $aMsgCds) === true)
@@ -177,7 +177,7 @@ if (array_key_exists(1000, $aMsgCds) === true)
 else
 {
 	$_GET['msg'] = array_keys($aMsgCds);
-
+	
 	$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA'], $_SESSION['obj_TxnInfo']) .'/status.xsl"?>';
 	$xml .= '<root>';

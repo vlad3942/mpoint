@@ -37,7 +37,7 @@ define("sERROR_LOG", sLOG_PATH ."app_error_". date("Y-m-d") .".log");
  * Database settings for mPoint's database
  */
 $aDB_CONN_INFO["mpoint"]["host"] = "localhost";
-$aDB_CONN_INFO["mpoint"]["port"] = 5432;
+$aDB_CONN_INFO["mpoint"]["port"] = 5000;
 $aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["password"] = "hspzr735abl";
@@ -138,6 +138,20 @@ $aHTTP_CONN_INFO["payex"]["method"] = "POST";
 $aHTTP_CONN_INFO["payex"]["contenttype"] = "text/xml";
 //$aHTTP_CONN_INFO["payex"]["username"] = "";	// Set from the Client Configuration 
 $aHTTP_CONN_INFO["payex"]["password"] = "b9ppZDPbRcJNEgHM57BV";
+
+
+/**
+ * Connection info for connecting to Authorize.Net
+ */
+$aHTTP_CONN_INFO["authorize.net"]["protocol"] = "https";
+$aHTTP_CONN_INFO["authorize.net"]["host"] = "secure.authorize.net";
+$aHTTP_CONN_INFO["authorize.net"]["port"] = 443;
+$aHTTP_CONN_INFO["authorize.net"]["timeout"] = 20;
+$aHTTP_CONN_INFO["authorize.net"]["path"] = "/gateway/transact.dll";
+$aHTTP_CONN_INFO["authorize.net"]["method"] = "POST";
+$aHTTP_CONN_INFO["authorize.net"]["contenttype"] = "application/x-www-form-urlencoded";
+//$aHTTP_CONN_INFO["worldpay"]["username"] = "";		// Set from the Client Configuration 
+//$aHTTP_CONN_INFO["authorize.net"]["password"] = "";	// Set from the Client Configuration 
 
 /**
  * GoMobile Connection Info.

@@ -11,25 +11,25 @@
 		<div class="mPoint_Help">
 			<xsl:value-of select="labels/info" />
 		</div>
-		<form action="{func:constLink('sys/send_email.php')}" method="post">
+		<form id="send-email" action="{func:constLink('sys/send_email.php')}" method="post">
 			<div id="email">
-				<div class="mPoint_Label">
-					<xsl:value-of select="labels/email" />
-				</div>		
-				<div>
-					<input type="email" name="email" value="{session/email}" maxlength="50" />
-				</div>
+				<table cellpadding="0" cellspacing="0" class="grouped">
+				<tr class="first-row last-row">
+					<th class="left-column mPoint_Label"><xsl:value-of select="labels/email" /></th>
+					<td class="right-column stretch"><input type="email" name="email" value="{session/email}" maxlength="50" /></td>
+				</tr>
+				</table>
 			</div>
 			<div id="submit">
-				<input type="submit" value="{labels/submit}" class="mPoint_Button" />
+				<a id="send" class="submit-button" onclick="javascript:this.className='submit-button-clicked'; document.getElementById('loader').style.visibility='visible'; this.disabled=true; document.getElementById('send-email').submit();">
+					<h2><xsl:value-of select="labels/submit" /></h2>
+				</a>
 			</div>
 		</form>
 	</div>
-	
-	<div id="link">
-		<br />
-		<a onclick="javascript:document.location.href='{func:constLink('accept.php') }';"><xsl:value-of select="labels/back" /></a>
-	</div>
+	<script type="text/javascript">
+		parent.postMessage('mpoint-send-email,<xsl:value-of select="system/session/@id" />', '*');
+	</script>
 </xsl:template>
 
 </xsl:stylesheet>

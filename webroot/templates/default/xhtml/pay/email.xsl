@@ -4,27 +4,30 @@
 <xsl:include href="../mobile.xsl"/>
 
 <xsl:template match="/root">
+	<div id="progress" class="mPoint_Info">
+		<xsl:value-of select="labels/progress" />
+		<br /><br />
+	</div>
+	
 	<!-- Display Status Messages -->
 	<xsl:apply-templates select="messages" />
 	
-	<div id="outer-border">
-		<div class="mPoint_Help">
-			<xsl:value-of select="labels/info" />
-		</div>
-		<form action="{func:constLink('sys/send_email.php')}" method="post">
-			<div id="email">
-				<div class="mPoint_Label">
-					<xsl:value-of select="labels/email" />
-				</div>		
-				<div>
-					<input type="email" name="email" value="{session/email}" maxlength="50" />
-				</div>
-			</div>
-			<div id="submit">
-				<input type="submit" value="{labels/submit}" class="mPoint_Button" />
-			</div>
-		</form>
+	<div class="mPoint_Help">
+		<xsl:value-of select="labels/info" />
 	</div>
+	<form action="{func:constLink('sys/send_email.php')}" method="post">
+		<div id="email">
+			<div class="mPoint_Label">
+				<xsl:value-of select="labels/email" />
+			</div>		
+			<div>
+				<input type="text" name="email" value="{session/email}" maxlength="50" />
+			</div>
+		</div>
+		<div id="submit">
+			<input type="submit" value="{labels/submit}" class="mPoint_Button" />
+		</div>
+	</form>
 	
 	<div id="link">
 		<br />

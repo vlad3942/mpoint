@@ -33,6 +33,9 @@
 			</div>
 		</form>
 	</div>
+	<script type="text/javascript">
+		parent.postMessage('mpoint-create-account,<xsl:value-of select="system/session/@id" />', '*');
+	</script>
 </xsl:template>
 
 </xsl:stylesheet>

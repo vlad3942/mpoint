@@ -25,14 +25,14 @@ FRAGTUDGIFTEN VED AT RETURNERE VAREN TIL SAXO.COM, PÅHVILER DIG SOM FORBRUGER. S
 Reklamationsret
 DU HAR 2 ÅRS REKLAMATIONSRET. SÅFREMT DU MODTAGER EN FORKERT VARE I FORHOLD TIL DIN BESTILLING ELLER EN BESKADIGET VARE, SKAL DU REKLAMERE INDEN EN RIMELIG TID, EFTER DU HAR KONSTATERET MANGLEN. REKLAMERER DU INDEN 2 MÅNEDER, ANSES REKLAMATIONEN FOR VÆRENDE RETTIDIG. REKLAMATIONER KAN MEDDELES PÅ TELEFON 38150510 ELLER PER E-MAIL: INFO@SAXO.COM. DU KAN UDNYTTE DIN REKLAMATIONSRET VED AT SENDE VAREN RETUR ELLER MØDE OP PÅ VORES FYSISKE ADRESSE OG REKLAMERE DER. VI BETALER DIN UDGIFT TIL FORSENDELSE, HVIS VI HAR LEVERET EN FORKERT ELLER BESKADIGET VARE. VI FORBEHOLDER OS RET TIL AT AFHJÆLPE EN MANGEL/ERSTATTE MED EN UBESKADIGET VARE FREMFOR AT BETALE KØBESUMMEN TILBAGE.' WHERE id = 10001;
 
-INSERT INTO Client.Client_Tbl (countryid, flowid, name, username, passwd, maxamount, lang, logourl, cssurl, callbackurl, accepturl, cancelurl, terms, mode) VALUES (100, 1, 'DSB DK Demo', 'CPMDemo', 'DEMOisNO_2', 1000000, 'da', '', 'http://demo.ois-inc.com/dsb/mpoint.css', '', '', '', 'DSB Test Terms & Conditions', 1);
+INSERT INTO Client.Client_Tbl (countryid, flowid, name, username, passwd, maxamount, lang, logourl, cssurl, callbackurl, accepturl, cancelurl, terms, mode) VALUES (200, 1, 'PBS Kids Test', 'CPMDemo', 'DEMOisNO_2', 1000000, 'gb', '', 'http://pbskids.mretail.demo.cellpointmobile.com/css/pbskids_mpoint.css', 'http://pbskids.mretail.demo.cellpointmobile.com/mOrder/sys/mpoint.php', '', '', 'PBS Kids Test Terms & Conditions', 1);
 INSERT INTO Client.Account_Tbl (clientid, name, mobile) SELECT Max(id), 'Default', '' FROM Client.Client_Tbl;
-INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) SELECT Max(Cl.id), PC.cardid, PC.pspid FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid > 0 AND PC.pspid = 1 GROUP BY PC.cardid, PC.pspid;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) SELECT Max(Cl.id), PC.cardid, PC.pspid FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid > 0 AND PC.pspid IN (1, 6) GROUP BY PC.cardid, PC.pspid;
 INSERT INTO Client.Keyword_Tbl (clientid, name, standard) SELECT Max(id), 'CPT', true FROM Client.Client_Tbl;
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name) SELECT Max(id), 1, 'CPMDemo' FROM Client.Client_Tbl;
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT Max(id), 1, '-1'  FROM Client.Account_Tbl;
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name) SELECT Max(id), 5, '50242617' FROM Client.Client_Tbl;
-INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT Max(id), 5, '-1'  FROM Client.Account_Tbl;
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name) SELECT Max(id), 6, 'ID ### KEY' FROM Client.Client_Tbl;
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT Max(id), 6, '-1'  FROM Client.Account_Tbl;
 
 INSERT INTO Client.Shop_Tbl (clientid, keywordid, shipping, ship_cost, free_ship, del_date) SELECT Max(CL.id), 5, 'Post Danmark', 2900, -1, true FROM Client.Client_Tbl Cl;
 INSERT INTO Client.Shipping_Tbl (shippingid, shopid, cost, free_ship) SELECT 1, Max(id), 2900, -1 FROM Client.Shop_Tbl;

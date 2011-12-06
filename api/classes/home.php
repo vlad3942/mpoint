@@ -80,23 +80,19 @@ class Home extends General
 	 * @see		ClientConfig::produceConfig()
 	 *
 	 * @param 	GoMobileConnInfo $oCI 	Reference to the data object with the Connection Info required to communicate with GoMobile
-	 * @param	TxnInfo $oTI 			Reference to the Data object with the Transaction Information
+	 * @param	string $mob 			End-User's mobile number
 	 * @return	integer
 	 * @throws 	mPointException
 	 */
-	public function sendAccountDisabledNotification(GoMobileConnInfo &$oCI, TxnInfo &$oTI)
+	public function sendAccountDisabledNotification(GoMobileConnInfo &$oCI, $mob)
 	{
-		// Only use Stored Cards (e-money based prepaid account will be unavailable)
-		if ( ($oTI->getClientConfig()->getStoreCard()&1) == 1)
-		{
-			$sBody = $this->getText()->_("mPoint - Stored Cards Disabled");	
-		}
-		else { $sBody = $this->getText()->_("mPoint - Account Disabled"); }
-		$sBody = str_replace("{CLIENT}", $oTI->getClientConfig()->getName(), $sBody);
+		$obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $this->getCountryConfig()->getID(), -1);
+		$sBody = $this->getText()->_("mPoint - Account Disabled");
+		$sBody = str_replace("{CLIENT}", $obj_ClientConfig->getName(), $sBody);
 		
 		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->getCountryConfig()->getID(), $this->getCountryConfig()->getID()*100, $this->getCountryConfig()->getChannel(), $obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $mob, utf8_decode($sBody) );
 		$obj_MsgInfo->setDescription("mPoint - Account Del");
-		if ($this->getCountryConfig()->getID() != 200) { $obj_MsgInfo->setSender(substr($oTI->getClientConfig()->getName(), 0, 11) ); }
+		if ($this->getCountryConfig()->getID() != 200) { $obj_MsgInfo->setSender(substr($obj_ClientConfig->getName(), 0, 11) ); }
 		
 		$iCode = $this->sendMessage($oCI, $obj_ClientConfig, $obj_MsgInfo);
 		if ($iCode != 200) { $iCode = 91; }

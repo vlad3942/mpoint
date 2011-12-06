@@ -173,997 +173,1573 @@ switch(cgi.clientid)
 <PML_SWITCH EXPR="cgi.markup">
 	<PML_CASE VALUE="'html5'">
 		<!DOCTYPE html>
-		<html PML_xml:lang="cgi.lang">
-	</PML_CASE>
-	<PML_CASE VALUE="'xhtml'">
-		<?xml version="1.0" encoding="ISO-8859-15"?>
-		<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
-		<html xmlns="http://www.w3.org/1999/xhtml" PML_xml:lang="cgi.lang">
+			<html PML_xml:lang="cgi.lang">
+			<title><PML_VAL>title</PML_VAL></title>
+			<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15" />
+			<meta http-equiv="Cache-Control" content="max-age=86400" />
+			<meta http-equiv="Content-Style-Type" content="text/css" />
+			<meta name="format-detection" content="telephone=no" />
+			<meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+			<style>
+				/* ========== Tag Classes Start ========== */
+				body
+				{
+					width: 100%;
+					margin: 0px;
+					padding: 0px;
+					-webkit-user-select: none;
+				    -webkit-text-size-adjust: none;
+					
+				}
+				body
+				{
+					background-color: #e5e8ed;
+					text-align: left;
+				}
+				body, table, div
+				{
+					font-size: 1em;
+					font-family: "Trebuchet MS", arial,sans-serif;
+					color: #000;
+				}
+				
+				h1
+				{
+					font-size: 130%;
+					white-space: nowrap;
+					text-align: center;
+					color: #000;
+				}
+				h2
+				{
+					font-size: 110%;
+					white-space: nowrap;
+					text-align: center;
+					color: #fff;
+					margin-bottom: 5px;
+				}
+				
+				form, table
+				{
+					margin: 0px 0px 0px 0px;
+					padding: 0px 0px 0px 0px;
+				}
+				
+				a
+				{
+					color: blue;
+					text-decoration: none;
+				}
+				
+				a:hover
+				{
+					text-decoration: underline;
+				}
+				
+				input.number
+				{
+					-wap-input-format: '*N';
+				}
+				ul, ul li
+				{
+					padding: 0;
+					margin: 0;
+				}
+				ul li
+				{
+					margin-left: 1em;
+				}
+				/* ========== Tag Classes End ========== */
+				
+				/* ========== Input Fields Start ========== */
+				input.text 
+				{
+				    width: 140px;
+				}
+				input[type="password"] 
+				{
+				    width: 100px;
+				}
+				input.control-scroll
+				{
+					position: relative;
+					top: -27px;
+					left: 0px;
+					width: 172px;
+					height: 21px;
+					z-index: 1;
+					margin: 0px 0px -35px 0px;
+					padding: 0px 0px -35px 0px;
+					border: none;
+				/*	border: 1px solid red; */
+					background-color: transparent;
+					-webkit-appearance: none;
+				}
+				.control-scroll
+				{
+					position: relative;
+					top: -25px;
+					left: 0px;
+					height: 21px;
+					margin: 0px 0px -20px 0px;
+					z-index: 1;
+				}
+				.control-scroll input[type="button"]
+				{
+					position: absolute;
+					top: 0px;
+					left: 0px;
+					width: 172px;
+					height: 21px;
+					border: none;
+					background-color: transparent;
+					-webkit-appearance: none;
+				}
+				.control-focus
+				{
+					position: relative;
+					top: -25px;
+					left: 0px;
+					height: 35px;
+					margin: 0px 0px -35px 0px;
+					z-index: 1;
+				}
+				.control-focus input[type="button"]
+				{
+					position: absolute;
+					top: 0px;
+					left: 0px;
+					width: 100%;
+					height: 35px;
+					border: none;
+					background-color: transparent;
+					-webkit-appearance: none;
+				}
+				/* ========== Input Fields End ========== */
+
+				/* ========== Table List Start ========== */
+				table.grouped
+				{
+					padding-right: 10px;
+					width: 100%;
+				}
+				table.grouped tr th
+				{
+					white-space: nowrap;
+				}
+				tr.row, tr.first-row, tr.last-row
+				{
+					padding: 0px;
+					background-color: white;
+					height: 45px;
+				}
+				.stretch
+				{
+					width: 100%;
+				}
+				table.grouped tr.row > th, table.grouped tr.first-row > th, table.grouped tr.last-row > th, table.grouped tr.row > td, table.grouped tr.first-row > td, table.grouped tr.last-row > td
+				{
+					padding-left: 5px;
+					border-bottom: 1px solid rgb(217, 217, 217);
+				}
+				table.grouped tr.combined-row
+				{
+					height: 22px;
+				}
+				table.grouped tr.row th.combined-row, table.grouped tr.row td.combined-row, table.grouped tr.first-row th.combined-row, table.grouped tr.first-row td.combined-row
+				{
+					border-bottom: none;
+				}
+				
+				table.grouped tr.row img, table.grouped tr.first-row img, table.grouped tr.last-row img
+				{
+					border: none;
+					vertical-align: middle;
+				}
+				table.grouped tr.first-row > th, table.grouped tr.first-row > td
+				{
+					border-top: 1px solid rgb(217, 217, 217);
+				}
+				table.grouped tr.last-row > th, table.grouped tr.last-row > td
+				{
+					
+				}
+				table.grouped th.left-column, table.grouped td.left-column, table.grouped th.column, table.grouped td.column
+				{
+					border-left: 1px solid rgb(217, 217, 217);
+				}
+				table.grouped th.right-column, table.grouped td.right-column
+				{
+					border-right: 1px solid rgb(217, 217, 217);
+					padding-right: 5px;
+				}
+				table.grouped tr.first-row th.left-column, table.grouped tr.first-row td.left-column
+				{
+					-moz-border-top-left-radius: 8px;
+					-webkit-border-top-left-radius: 8px;
+					-o-border-border-top-left-radius: 8px;	
+				}
+				table.grouped tr.last-row th.left-column, table.grouped tr.last-row td.left-column
+				{
+					-moz-border-bottom-left-radius: 8px;
+					-webkit-border-bottom-left-radius: 8px;
+					-o-border-border-bottom-left-radius: 8px;	
+				}
+				table.grouped tr.first-row th.right-column, table.grouped tr.first-row td.right-column
+				{
+					-moz-border-top-right-radius: 8px;
+					-webkit-border-top-right-radius: 8px;
+					-o-border-border-top-right-radius: 8px;	
+				}
+				table.grouped tr.last-row th.right-column, table.grouped tr.last-row td.right-column
+				{
+					-moz-border-bottom-right-radius: 8px;
+					-webkit-border-bottom-right-radius: 8px;
+					-o-border-border-bottom-right-radius: 8px;	
+				}
+				table.grouped tr.selected, table.grouped th.selected, table.grouped td.selected
+				{
+					background-color: #015A7D;
+					color: #fff;
+				}
+				table.grouped tr.selected th, table.grouped tr.selected td, table.grouped th.selected, table.grouped td.selected
+				{
+					color: #fff;
+				}
+				table.grouped .info
+				{
+					padding-top: 0px;
+					font-style: italic;
+					font-size: 90%;
+				}
+				table.grouped h2
+				{
+					color: #000;
+					font-weight: bold;
+					margin: 0px;
+				}
+				/* ========== Table List End ========== */
+				
+				/* ========== Large Submit Button Start ========== */
+				a.submit-button
+				{
+					height: 30px;
+					width: 200px;
+					color: #fff;
+					text-decoration: none;
+					background: -webkit-gradient(
+												linear,
+												left top,
+												left bottom,
+												color-stop(0.00, #86C28C),
+												color-stop(0.50, #009F11),
+												color-stop(0.51, #009F11),
+												color-stop(1.00, #008F0B)
+												);
+					-moz-border-radius: 10px;
+					-webkit-border-radius: 10px;
+					-o-border-radius: 10px;
+					border-radius: 10px;
+					border-top: 1px solid #D0D0D0;
+					border-bottom: 2px solid #2A422C;
+					border-left: 1px solid #5A5A5C;
+					border-right: 2px solid #374139;
+					display: block;
+					padding: 5px 10px;
+					margin: 15px auto;
+				}
+				a.submit-button h2
+				{
+					height: 30px;
+					width: 200px;
+					vertical-align: middle;
+					text-align: center;
+					display: table-cell;
+				}
+				a.submit-button-clicked
+				{
+					opacity: 0.4;
+					filter: alpha(opacity=40);
+					height: 30px;
+					width: 200px;
+					color: #374139;
+					text-decoration: none;
+					-moz-border-radius: 10px;
+					-webkit-border-radius: 10px;
+					-o-border-radius: 10px;
+					border-radius: 10px;
+					border-top: 1px solid #D0D0D0;
+					border-bottom: 1px solid #2A422C;
+					border-left: 1px solid #5A5A5C;
+					border-right: 1px solid #374139;
+					display: block;
+					padding: 5px 10px;
+					margin: 15px auto;
+				}
+				/* ========== Large Button End ========== */
+				
+				/* ========== Loader Start ========== */
+				span#loader
+				{
+					visibility: hidden;
+					position: absolute;
+					left: 40%;
+					top: 50%;
+					width: 50px;
+					height: 50px;
+					text-align: center;
+					color: #000;
+					font-size: 10px;
+					background-color: #fff;
+					border: 2px solid #013C64;
+					-moz-border-radius: 10px;
+					-webkit-border-radius: 10px;
+					border-radius: 10px;
+					padding: 5px;
+					z-index: 30;
+				}
+				/* ========== Loader End ========== */
+				
+				/* ========== Button Start ========== */
+				.button
+				{
+					position: fixed;
+					top: 5px;
+					right: 20px;
+					width: 43px;
+					height: 30px;
+					margin: 0px 3px;
+					border-top: 1px solid #fff;
+					border-left: 1px solid #fff;
+					border-bottom: 2px solid #494949;
+					border-right: 2px solid #494949;
+					-moz-border-radius: 4px;
+					-webkit-border-radius: 4px;
+					-o-border-radius: 4px;
+					border-radius: 4px;
+					line-height: 30px;
+					z-index: 1;
+					background: -webkit-gradient(
+												linear,
+												left top,
+												left bottom,
+												color-stop(0.00, #3E82FF),
+												color-stop(0.50, #1164FF),
+												color-stop(0.51, #0052EA),
+												color-stop(1.00, #00318C)
+												);
+					font-weight: bold;
+					color: white;
+					text-align: center;
+				}
+				.clicked
+				{
+					opacity: 0.4;
+					filter: alpha(opacity=40);
+					border-top: 0px;
+					border-left: 0px;
+					border-bottom-width: 1px;
+					border-right-width: 1px;
+				}
+				/* ========== Button End ========== */
+				
+				/* ========== Content Start ========== */
+				#wrapper
+				{
+					width: 100%;
+					height: 99%;
+					position: relative;
+				    z-index: 1;
+				    overflow: auto;
+				}
+				#content
+				{
+				/*	-webkit-touch-callout: none;
+					-webkit-tap-highlight-color: rgba(0, 0, 0, 0); */
+					width: 97%;
+					position: absolute;
+					z-index: 1;
+					padding-top: 10px;
+					padding-bottom: 5px;
+					padding-left: 10px;
+				}
+				span.hidden-data
+				{
+					visibility: hidden;
+					position: absolute;
+					left: 1px;
+					top: 1px;
+				}
+				/* ========== Content End ========== */
+				
+				/* ========== Checkbox Start ========== */
+				.checkbox
+				{
+					width: 30px;
+					height: 30px;
+					border: 1px solid #000;
+					-moz-border-radius: 10px;
+					-webkit-border-radius: 10px;
+					-o-border-radius: 10px;
+					border-radius: 10px;
+					margin: 5px 10px 0px 5px;
+				}
+				.checkbox img
+				{
+					visibility: hidden;
+				}
+				.checkbox-checked img
+				{
+					visibility: visible;
+				}
+				/* ========== Checkbox End ========== */
+				
+				/* ========== mPoint Classes Start ========== */
+				.mPoint_Label
+				{
+					font-weight: bold;
+					padding-right: 0.5em;
+					white-space: nowrap;
+				}
+				
+				.mPoint_Info
+				{
+					font-weight: normal;
+					color: #000;
+					text-align: left;
+					padding: 0px;
+					margin: 0px;	
+				}
+				
+				.mPoint_Help
+				{
+					margin-left: 15px;
+				}
+				
+				.mPoint_Status
+				{
+					font-size: 90%;
+					color: red;
+					font-style: italic;
+					padding-top: 0.5em;
+					padding-bottom: 0.5em;
+				}
+				div#info .mPoint_Status
+				{
+					color: darkgreen;
+				}
+				
+				td.mPoint_Number
+				{
+					padding-right: 0.5em;
+					text-align: right;
+					white-space: nowrap;
+				}
+				.mPoint_Card
+				{
+					width: 50%;
+				}
+				/* ========== mPoint Classes End ========== */
+
+				/* ========== ID Classes Start ========== */
+				div#logo, div#progress
+				{
+					text-align: center;
+				}
+				#price
+				{
+					white-space: nowrap;
+				}
+				/* ========== ID Classes End ========== */
+			</style>
+			<script type="text/javascript">
+			(function(){
+				var m = Math,
+					vendor = (/webkit/i).test(navigator.appVersion) ? 'webkit' :
+						(/firefox/i).test(navigator.userAgent) ? 'Moz' :
+						'opera' in window ? 'O' : '',
+
+					// Browser capabilities
+					has3d = 'WebKitCSSMatrix' in window && 'm11' in new WebKitCSSMatrix(),
+					hasTouch = 'ontouchstart' in window,
+					hasTransform = vendor + 'Transform' in document.documentElement.style,
+					isIDevice = (/iphone|ipad/gi).test(navigator.appVersion),
+					isPlaybook = (/playbook/gi).test(navigator.appVersion),
+					hasTransitionEnd = isIDevice || isPlaybook,
+					nextFrame = (function() {
+					    return window.requestAnimationFrame
+							|| window.webkitRequestAnimationFrame
+							|| window.mozRequestAnimationFrame
+							|| window.oRequestAnimationFrame
+							|| window.msRequestAnimationFrame
+							|| function(callback) { return setTimeout(callback, 17); }
+					})(),
+					cancelFrame = (function () {
+					    return window.cancelRequestAnimationFrame
+							|| window.webkitCancelRequestAnimationFrame
+							|| window.mozCancelRequestAnimationFrame
+							|| window.oCancelRequestAnimationFrame
+							|| window.msCancelRequestAnimationFrame
+							|| clearTimeout
+					})(),
+
+					// Events
+					RESIZE_EV = 'onorientationchange' in window ? 'orientationchange' : 'resize',
+					START_EV = hasTouch ? 'touchstart' : 'mousedown',
+					MOVE_EV = hasTouch ? 'touchmove' : 'mousemove',
+					END_EV = hasTouch ? 'touchend' : 'mouseup',
+					CANCEL_EV = hasTouch ? 'touchcancel' : 'mouseup',
+
+					// Helpers
+					trnOpen = 'translate' + (has3d ? '3d(' : '('),
+					trnClose = has3d ? ',0)' : ')',
+
+					// Constructor
+					iScroll = function (el, options) {
+						var that = this,
+							doc = document,
+							i;
+
+						that.wrapper = typeof el == 'object' ? el : doc.getElementById(el);
+						that.wrapper.style.overflow = 'hidden';
+						that.scroller = that.wrapper.children[0];
+
+						// Default options
+						that.options = {
+							hScroll: true,
+							vScroll: true,
+							bounce: true,
+							bounceLock: false,
+							momentum: true,
+							lockDirection: true,
+							useTransform: true,
+							useTransition: false,
+
+							// Events
+							onRefresh: null,
+							onBeforeScrollStart: function (e) { e.preventDefault(); },
+							onScrollStart: null,
+							onBeforeScrollMove: null,
+							onScrollMove: null,
+							onBeforeScrollEnd: null,
+							onScrollEnd: null,
+							onTouchEnd: null,
+							onDestroy: null
+						};
+
+						// User defined options
+						for (i in options) that.options[i] = options[i];
+
+						// Normalize options
+						that.options.useTransform = hasTransform ? that.options.useTransform : false;
+						that.options.hScrollbar = that.options.hScroll && that.options.hScrollbar;
+						that.options.vScrollbar = that.options.vScroll && that.options.vScrollbar;
+						that.options.useTransition = hasTransitionEnd && that.options.useTransition;
+
+						// Set some default styles
+						that.scroller.style[vendor + 'TransitionProperty'] = that.options.useTransform ? '-' + vendor.toLowerCase() + '-transform' : 'top left';
+						that.scroller.style[vendor + 'TransitionDuration'] = '0';
+						that.scroller.style[vendor + 'TransformOrigin'] = '0 0';
+						if (that.options.useTransition) that.scroller.style[vendor + 'TransitionTimingFunction'] = 'cubic-bezier(0.33,0.66,0.66,1)';
+						
+						if (that.options.useTransform) that.scroller.style[vendor + 'Transform'] = trnOpen + '0,0' + trnClose;
+						else that.scroller.style.cssText += ';top:0;left:0';
+								
+						that.refresh();
+
+						that._bind(RESIZE_EV, window);
+						that._bind(START_EV);
+						if (!hasTouch) that._bind('mouseout', that.wrapper);
+					};
+
+				// Prototype
+				iScroll.prototype = {
+					enabled: true,
+					x: 0,
+					y: 0,
+					steps: [],
+					scale: 1,
+					
+					handleEvent: function (e) {
+						var that = this;
+						switch(e.type) {
+							case START_EV: that._start(e); break;
+							case MOVE_EV: that._move(e); break;
+							case END_EV:
+							case CANCEL_EV: that._end(e); break;
+							case RESIZE_EV: that._resize(); break;
+							case 'mouseout': that._mouseout(e); break;
+							case 'webkitTransitionEnd': that._transitionEnd(e); break;
+						}
+					},
+
+					_resize: function () {
+						this.refresh();
+					},
+					
+					_pos: function (x, y) {
+						x = this.hScroll ? x : 0;
+						y = this.vScroll ? y : 0;
+
+						if (this.options.useTransform) {
+							this.scroller.style[vendor + 'Transform'] = trnOpen + x + 'px,' + y + 'px' + trnClose + ' scale(' + this.scale + ')';
+						} else {
+							x = m.round(x);
+							y = m.round(y);
+							this.scroller.style.left = x + 'px';
+							this.scroller.style.top = y + 'px';
+						}
+
+						this.x = x;
+						this.y = y;
+					},
+
+					_start: function (e) {
+						var that = this,
+							point = hasTouch ? e.touches[0] : e,
+							matrix, x, y;
+
+						if (!that.enabled) return;
+
+						if (that.options.onBeforeScrollStart) that.options.onBeforeScrollStart.call(that, e);
+						
+						if (that.options.useTransition) that._transitionTime(0);
+
+						that.moved = false;
+						that.animating = false;
+						that.zoomed = false;
+						that.distX = 0;
+						that.distY = 0;
+						that.absDistX = 0;
+						that.absDistY = 0;
+						that.dirX = 0;
+						that.dirY = 0;
+
+						if (that.options.momentum) {
+							if (that.options.useTransform) {
+								// Very lame general purpose alternative to CSSMatrix
+								matrix = getComputedStyle(that.scroller, null)[vendor + 'Transform'].replace(/[^0-9-.,]/g, '').split(',');
+								x = matrix[4] * 1;
+								y = matrix[5] * 1;
+							} else {
+								x = getComputedStyle(that.scroller, null).left.replace(/[^0-9-]/g, '') * 1;
+								y = getComputedStyle(that.scroller, null).top.replace(/[^0-9-]/g, '') * 1;
+							}
+							
+							if (x != that.x || y != that.y) {
+								if (that.options.useTransition) that._unbind('webkitTransitionEnd');
+								else cancelFrame(that.aniTime);
+								that.steps = [];
+								that._pos(x, y);
+							}
+						}
+
+						that.absStartX = that.x;	// Needed by snap threshold
+						that.absStartY = that.y;
+
+						that.startX = that.x;
+						that.startY = that.y;
+						that.pointX = point.pageX;
+						that.pointY = point.pageY;
+
+						that.startTime = e.timeStamp || (new Date()).getTime();
+
+						if (that.options.onScrollStart) that.options.onScrollStart.call(that, e);
+
+						that._bind(MOVE_EV);
+						that._bind(END_EV);
+						that._bind(CANCEL_EV);
+					},
+					
+					_move: function (e) {
+						var that = this,
+							point = hasTouch ? e.touches[0] : e,
+							deltaX = point.pageX - that.pointX,
+							deltaY = point.pageY - that.pointY,
+							newX = that.x + deltaX,
+							newY = that.y + deltaY,
+							timestamp = e.timeStamp || (new Date()).getTime();
+
+						if (that.options.onBeforeScrollMove) that.options.onBeforeScrollMove.call(that, e);
+
+						that.pointX = point.pageX;
+						that.pointY = point.pageY;
+
+						// Slow down if outside of the boundaries
+						if (newX > 0 || newX < that.maxScrollX) {
+							newX = that.options.bounce ? that.x + (deltaX / 2) : newX >= 0 || that.maxScrollX >= 0 ? 0 : that.maxScrollX;
+						}
+						if (newY > 0 || newY < that.maxScrollY) { 
+							newY = that.options.bounce ? that.y + (deltaY / 2) : newY >= 0 || that.maxScrollY >= 0 ? 0 : that.maxScrollY;
+						}
+
+						if (that.absDistX < 6 && that.absDistY < 6) {
+							that.distX += deltaX;
+							that.distY += deltaY;
+							that.absDistX = m.abs(that.distX);
+							that.absDistY = m.abs(that.distY);
+
+							return;
+						}
+
+						// Lock direction
+						if (that.options.lockDirection) {
+							if (that.absDistX > that.absDistY + 5) {
+								newY = that.y;
+								deltaY = 0;
+							} else if (that.absDistY > that.absDistX + 5) {
+								newX = that.x;
+								deltaX = 0;
+							}
+						}
+
+						that.moved = true;
+						that._pos(newX, newY);
+						that.dirX = deltaX > 0 ? -1 : deltaX < 0 ? 1 : 0;
+						that.dirY = deltaY > 0 ? -1 : deltaY < 0 ? 1 : 0;
+
+						if (timestamp - that.startTime > 300) {
+							that.startTime = timestamp;
+							that.startX = that.x;
+							that.startY = that.y;
+						}
+						
+						if (that.options.onScrollMove) that.options.onScrollMove.call(that, e);
+					},
+					
+					_end: function (e) {
+						if (hasTouch && e.touches.length != 0) return;
+
+						var that = this,
+							point = hasTouch ? e.changedTouches[0] : e,
+							target, ev,
+							momentumX = { dist:0, time:0 },
+							momentumY = { dist:0, time:0 },
+							duration = (e.timeStamp || (new Date()).getTime()) - that.startTime,
+							newPosX = that.x,
+							newPosY = that.y,
+							newDuration;
+
+						that._unbind(MOVE_EV);
+						that._unbind(END_EV);
+						that._unbind(CANCEL_EV);
+
+						if (that.options.onBeforeScrollEnd) that.options.onBeforeScrollEnd.call(that, e);
+
+						if (!that.moved) {
+							if (hasTouch) {
+								// Find the last touched element
+								target = point.target;
+								while (target.nodeType != 1) target = target.parentNode;
+
+								if (target.tagName != 'SELECT' && target.tagName != 'INPUT' && target.tagName != 'TEXTAREA') {
+									ev = document.createEvent('MouseEvents');
+									ev.initMouseEvent('click', true, true, e.view, 1,
+										point.screenX, point.screenY, point.clientX, point.clientY,
+										e.ctrlKey, e.altKey, e.shiftKey, e.metaKey,
+										0, null);
+									ev._fake = true;
+									target.dispatchEvent(ev);
+								}
+							}
+
+							that._resetPos(200);
+
+							if (that.options.onTouchEnd) that.options.onTouchEnd.call(that, e);
+							return;
+						}
+
+						if (duration < 300 && that.options.momentum) {
+							momentumX = newPosX ? that._momentum(newPosX - that.startX, duration, -that.x, that.scrollerW - that.wrapperW + that.x, that.options.bounce ? that.wrapperW : 0) : momentumX;
+							momentumY = newPosY ? that._momentum(newPosY - that.startY, duration, -that.y, (that.maxScrollY < 0 ? that.scrollerH - that.wrapperH + that.y : 0), that.options.bounce ? that.wrapperH : 0) : momentumY;
+
+							newPosX = that.x + momentumX.dist;
+							newPosY = that.y + momentumY.dist;
+
+				 			if ((that.x > 0 && newPosX > 0) || (that.x < that.maxScrollX && newPosX < that.maxScrollX)) momentumX = { dist:0, time:0 };
+				 			if ((that.y > 0 && newPosY > 0) || (that.y < that.maxScrollY && newPosY < that.maxScrollY)) momentumY = { dist:0, time:0 };
+						}
+
+						if (momentumX.dist || momentumY.dist) {
+							newDuration = m.max(m.max(momentumX.time, momentumY.time), 10);
+
+							that.scrollTo(newPosX, newPosY, newDuration);
+
+							if (that.options.onTouchEnd) that.options.onTouchEnd.call(that, e);
+							return;
+						}
+
+						that._resetPos(200);
+						if (that.options.onTouchEnd) that.options.onTouchEnd.call(that, e);
+					},
+					
+					_resetPos: function (time) {
+						var that = this,
+							resetX = that.x >= 0 ? 0 : that.x < that.maxScrollX ? that.maxScrollX : that.x,
+							resetY = that.y >= 0 || that.maxScrollY > 0 ? 0 : that.y < that.maxScrollY ? that.maxScrollY : that.y;
+
+						if (resetX == that.x && resetY == that.y) {
+							if (that.moved) {
+								if (that.options.onScrollEnd) that.options.onScrollEnd.call(that);		// Execute custom code on scroll end
+								that.moved = false;
+							}
+
+							return;
+						}
+
+						that.scrollTo(resetX, resetY, time || 0);
+					},
+					
+					_mouseout: function (e) {
+						var t = e.relatedTarget;
+
+						if (!t) {
+							this._end(e);
+							return;
+						}
+
+						while (t = t.parentNode) if (t == this.wrapper) return;
+						
+						this._end(e);
+					},
+
+					_transitionEnd: function (e) {
+						var that = this;
+
+						if (e.target != that.scroller) return;
+
+						that._unbind('webkitTransitionEnd');
+						
+						that._startAni();
+					},
+
+					/**
+					 *
+					 * Utilities
+					 *
+					 */
+					_startAni: function () {
+						var that = this,
+							startX = that.x, startY = that.y,
+							startTime = (new Date).getTime(),
+							step, easeOut;
+
+						if (that.animating) return;
+
+						if (!that.steps.length) {
+							that._resetPos(400);
+							return;
+						}
+
+						step = that.steps.shift();
+
+						if (step.x == startX && step.y == startY) step.time = 0;
+
+						that.animating = true;
+						that.moved = true;
+
+						if (that.options.useTransition) {
+							that._transitionTime(step.time);
+							that._pos(step.x, step.y);
+							that.animating = false;
+							if (step.time) that._bind('webkitTransitionEnd');
+							else that._resetPos(0);
+							return;
+						}
+
+						(function animate () {
+							var now = (new Date).getTime(),
+								newX, newY;
+
+							if (now >= startTime + step.time) {
+								that._pos(step.x, step.y);
+								that.animating = false;
+								if (that.options.onAnimationEnd) that.options.onAnimationEnd.call(that);			// Execute custom code on animation end
+								that._startAni();
+								return;
+							}
+
+							now = (now - startTime) / step.time - 1;
+							easeOut = m.sqrt(1 - now * now);
+							newX = (step.x - startX) * easeOut + startX;
+							newY = (step.y - startY) * easeOut + startY;
+							that._pos(newX, newY);
+							if (that.animating) that.aniTime = nextFrame(animate);
+						})();
+					},
+
+					_transitionTime: function (time) {
+						this.scroller.style[vendor + 'TransitionDuration'] = time + 'ms';
+					},
+					
+					_momentum: function (dist, time, maxDistUpper, maxDistLower, size) {
+						var deceleration = 0.0006,
+							speed = m.abs(dist) / time,
+							newDist = (speed * speed) / (2 * deceleration),
+							newTime = 0, outsideDist = 0;
+
+						// Proportinally reduce speed if we are outside of the boundaries 
+						if (dist > 0 && newDist > maxDistUpper) {
+							outsideDist = size / (6 / (newDist / speed * deceleration));
+							maxDistUpper = maxDistUpper + outsideDist;
+							speed = speed * maxDistUpper / newDist;
+							newDist = maxDistUpper;
+						} else if (dist < 0 && newDist > maxDistLower) {
+							outsideDist = size / (6 / (newDist / speed * deceleration));
+							maxDistLower = maxDistLower + outsideDist;
+							speed = speed * maxDistLower / newDist;
+							newDist = maxDistLower;
+						}
+
+						newDist = newDist * (dist < 0 ? -1 : 1);
+						newTime = speed / deceleration;
+
+						return { dist: newDist, time: m.round(newTime) };
+					},
+
+					_offset: function (el) {
+						var left = -el.offsetLeft,
+							top = -el.offsetTop;
+							
+						while (el = el.offsetParent) {
+							left -= el.offsetLeft;
+							top -= el.offsetTop;
+						} 
+
+						return { left: left, top: top };
+					},
+
+					_bind: function (type, el, bubble) {
+						(el || this.scroller).addEventListener(type, this, !!bubble);
+					},
+
+					_unbind: function (type, el, bubble) {
+						(el || this.scroller).removeEventListener(type, this, !!bubble);
+					},
+
+
+					/**
+					 *
+					 * Public methods
+					 *
+					 */
+					destroy: function () {
+						var that = this;
+
+						that.scroller.style[vendor + 'Transform'] = '';
+
+						// Remove the event listeners
+						that._unbind(RESIZE_EV, window);
+						that._unbind(START_EV);
+						that._unbind(MOVE_EV);
+						that._unbind(END_EV);
+						that._unbind(CANCEL_EV);
+						that._unbind('mouseout', that.wrapper);
+						if (that.options.useTransition) that._unbind('webkitTransitionEnd');
+						
+						if (that.options.onDestroy) that.options.onDestroy.call(that);
+					},
+
+					refresh: function () {
+						var that = this,
+							offset;
+
+						that.wrapperW = that.wrapper.clientWidth;
+						that.wrapperH = that.wrapper.clientHeight;
+
+						that.scrollerW = that.scroller.offsetWidth;
+						that.scrollerH = that.scroller.offsetHeight;
+						that.maxScrollX = that.wrapperW - that.scrollerW;
+						that.maxScrollY = that.wrapperH - that.scrollerH;
+						that.dirX = 0;
+						that.dirY = 0;
+				//alert(that.scroller.getAttribute("id") +": "+ that.wrapperH +" - "+ that.scrollerH +" = "+ that.maxScrollY);
+						that.hScroll = that.options.hScroll && that.maxScrollX < 0;
+						that.vScroll = that.options.vScroll && (!that.options.bounceLock && !that.hScroll || that.scrollerH > that.wrapperH);
+
+						offset = that._offset(that.wrapper);
+						that.wrapperOffsetLeft = -offset.left;
+						that.wrapperOffsetTop = -offset.top;
+
+
+						that.scroller.style[vendor + 'TransitionDuration'] = '0';
+
+						that._resetPos(200);
+					},
+
+					scrollTo: function (x, y, time, relative) {
+						var that = this,
+							step = x,
+							i, l;
+
+						that.stop();
+
+						if (!step.length) step = [{ x: x, y: y, time: time, relative: relative }];
+						
+						for (i=0, l=step.length; i<l; i++) {
+							if (step[i].relative) { step[i].x = that.x - step[i].x; step[i].y = that.y - step[i].y; }
+							that.steps.push({ x: step[i].x, y: step[i].y, time: step[i].time || 0 });
+						}
+
+						that._startAni();
+					},
+
+					scrollToElement: function (el, time) {
+						var that = this, pos;
+						el = el.nodeType ? el : that.scroller.querySelector(el);
+						if (!el) return;
+
+						pos = that._offset(el);
+						pos.left += that.wrapperOffsetLeft;
+						pos.top += that.wrapperOffsetTop;
+
+						pos.left = pos.left > 0 ? 0 : pos.left < that.maxScrollX ? that.maxScrollX : pos.left;
+						pos.top = pos.top > 0 ? 0 : pos.top < that.maxScrollY ? that.maxScrollY : pos.top;
+						time = time === undefined ? m.max(m.abs(pos.left)*2, m.abs(pos.top)*2) : time;
+
+						that.scrollTo(pos.left, pos.top, time);
+					},
+
+					disable: function () {
+						this.stop();
+						this._resetPos(0);
+						this.enabled = false;
+
+						// If disabled after touchstart we make sure that there are no left over events
+						this._unbind(MOVE_EV);
+						this._unbind(END_EV);
+						this._unbind(CANCEL_EV);
+					},
+					
+					enable: function () {
+						this.enabled = true;
+					},
+					
+					stop: function () {
+						cancelFrame(this.aniTime);
+						this.steps = [];
+						this.moved = false;
+						this.animating = false;
+					}
+				};
+
+				if (typeof exports !== 'undefined') exports.iScroll = iScroll;
+				else window.iScroll = iScroll;
+
+				})();
+			</script>
+			<style>
+				body
+				{
+					height: <PML_VAL>cgi.device_height - 55</PML_VAL>px;
+				}
+			</style>
+			<script type="text/javascript">
+				var myScroll;
+				function toggleCheckmark(obj_This)
+				{
+					if (obj_This.className.match("checkbox-checked") == null)
+					{
+						obj_This.className += ' checkbox-checked';
+					}
+					else
+					{
+						obj_This.className = obj_This.className.replace(" checkbox-checked", "");
+						obj_This.className = obj_This.className.replace("checkbox-checked", "");
+					}
+					if (document.getElementById('preauth').value == 'true') { document.getElementById('preauth').value = 'false'; }
+					else { document.getElementById('preauth').value = 'true'; }
+				}
+				function loaded()
+				{
+					document.addEventListener('touchmove', function(e) { e.preventDefault(); }, false);
+					if (myScroll == null)
+					{
+						myScroll = new iScroll('wrapper', { // checkDOMChanges:false,
+//															snap:false,
+//															momentum:true,
+//															hScrollbar:false,
+//															vScrollbar:true,
+															useTransform:false,
+															onBeforeScrollStart: function (e)
+															{
+																var target = e.target;
+																while (target.nodeType != 1)
+																{
+																	target = target.parentNode;
+																}
+																try
+																{
+																	switch (target.tagName.toLowerCase() )
+																	{
+																	case "select":
+																	case "input":
+																	case "textarea":
+//																		e.stopPropagation();
+																		break;
+																	default:
+																		e.preventDefault();
+																		break;
+																	}
+																}
+																catch (ignore) { /* Ignore */ }
+															}
+				                                           });
+					}
+				}
+				document.addEventListener('DOMContentLoaded', loaded, false);
+			</script>
+		</head>
+		<body>
+			<PML_IF COND="cgi.logo_url != ''">
+				<div id="logo">
+					<img PML_src="'images/client_logo_'@cgi.clientid@'.jpg'" PML_width="cgi.logo_width" PML_height="cgi.logo_height" PML_alt="'- '@cgi.client@' -'" />
+				</div>
+			</PML_IF>
+			<div id="progress" class="mPoint_Info"><PML_VAL>progress</PML_VAL></div>
+			<div id="wrapper">
+				<div id="content">
+					<div class="mPoint_Status">
+					<PML_SWITCH EXPR="auth.reason">
+						<PML_CASE VALUE="0"><PML_VAL>error_0</PML_VAL></PML_CASE>
+						<PML_CASE VALUE="1"><PML_VAL>error_1</PML_VAL></PML_CASE>
+						<PML_CASE VALUE="2"><PML_VAL>error_2</PML_VAL></PML_CASE>
+						<PML_CASE VALUE="3"><PML_VAL>error_3</PML_VAL></PML_CASE>
+						<PML_CASE VALUE="4"><PML_VAL>error_4</PML_VAL></PML_CASE>
+						<PML_CASE VALUE="5"><PML_VAL>error_5</PML_VAL></PML_CASE>
+						<PML_CASE VALUE="6"><PML_VAL>error_6</PML_VAL></PML_CASE>
+						<PML_CASE VALUE="7"><PML_VAL>error_7</PML_VAL></PML_CASE>
+						<PML_CASE VALUE="8"><PML_VAL>error_8</PML_VAL></PML_CASE>
+						<PML_CASE VALUE="9"><PML_VAL>error_9</PML_VAL></PML_CASE>
+						<PML_CASE VALUE="10"><PML_VAL>error_10</PML_VAL></PML_CASE>
+						<PML_DEFAULT><PML_VAL>error_unknown</PML_VAL></PML_DEFAULT>
+					</PML_SWITCH>
+					</div>
+					<form id="pay-card" action="auth.pml" method="post" onsubmit="javascript:document.getElementById('loader').style.visibility='visible'; document.getElementById('pay').disabled=true;">
+						<div>
+							<PML_IF COND="cgi.test > 0">
+								<input type="hidden" name="test" PML_value="cgi.test" />
+							</PML_IF>
+							<!-- DIBS Required Data -->
+							<input type="hidden" name="callbackurl" PML_value="string.HTMLencode(cgi.callbackurl)" />
+							<input type="hidden" name="accepturl" PML_value="string.HTMLencode(cgi.accepturl)" />
+							<input type="hidden" name="amount" PML_value="cgi.amount" />
+							<input type="hidden" name="currency" PML_value="cgi.currency" />
+							<input type="hidden" name="orderid" PML_value="cgi.orderid" />
+							<input type="hidden" name="fullreply" value="true" />
+							<PML_IF COND="cgi.capturenow = 'true'">
+								<input type="hidden" name="capturenow" PML_value="cgi.capturenow" />
+							</PML_IF>
+							<PML_IF COND="cgi.accounts > 0">
+								<input type="hidden" name="account" PML_value="cgi.accounts" />
+							</PML_IF>			
+							<input type="hidden" name="lang" PML_value="cgi.lang" />
+							<input type="hidden" name="paytype" PML_value="cgi.paytype" />
+							<input type="hidden" id="preauth" name="preauth" value="false" />
+							<!-- mPoint Required Data -->
+							<input type="hidden" name="device_name" PML_value="cgi.device_name" />
+							<input type="hidden" name="device_width" PML_value="cgi.device_width" />
+							<input type="hidden" name="device_height" PML_value="cgi.device_height" />
+							<input type="hidden" name="logo_url" PML_value="cgi.logo_url" />
+							<input type="hidden" name="logo_width" PML_value="cgi.logo_width" />
+							<input type="hidden" name="logo_height" PML_value="cgi.logo_height" />
+							<input type="hidden" name="format" PML_value="cgi.format" />
+							<input type="hidden" name="PHPSESSID" PML_value="cgi.PHPSESSID" />
+							<input type="hidden" name="language" PML_value="cgi.language" />
+							<input type="hidden" name="cardid" PML_value="cgi.cardid" />
+							<input type="hidden" name="mpointid" PML_value="cgi.mpointid" />
+							<input type="hidden" name="markup" PML_value="cgi.markup" />
+							<!-- Current transaction is an Account Top-Up and a previous transaction is in progress -->
+							<PML_IF COND="cgi.org_mpointid > 0">
+								<input type="hidden" name="org_mpointid" PML_value="cgi.org_mpointid" />
+							</PML_IF>
+							<input type="hidden" name="euaid" PML_value="cgi.euaid" />
+							<!-- Store Credit Card -->
+							<PML_IF COND="cgi.store_card > 0">
+								<input type="hidden" name="store_card" PML_value="cgi.store_card" />
+								<input type="hidden" name="auto_store_card" PML_value="cgi.auto_store_card" />
+							</PML_IF>
+							<!-- Dynamic Page Data -->
+							<input type="hidden" name="clientid" PML_value="cgi.clientid" />
+							<input type="hidden" name="client" PML_value="cgi.client" />
+							<input type="hidden" name="mpoint_width" PML_value="cgi.mpoint_width" />
+							<input type="hidden" name="mpoint_height" PML_value="cgi.mpoint_height" />
+							<input type="hidden" name="sms_receipt" PML_value="cgi.sms_receipt" />
+							<input type="hidden" name="email_receipt" PML_value="cgi.email_receipt" />
+							<input type="hidden" name="email_url" PML_value="cgi.email_url" />
+							<input type="hidden" name="accept_url" PML_value="cgi.accept_url" />
+							<input type="hidden" name="mobile" PML_value="cgi.mobile" />
+							<input type="hidden" name="price" PML_value="cgi.price" />
+							<input type="hidden" name="card_width" PML_value="cgi.card_width" />
+							<input type="hidden" name="card_heigth" PML_value="cgi.card_heigth" />
+							<PML_SCRIPT>
+							// Transfer Custom Variables
+							foreach(i ; cgi)
+							{
+								if (string.substring(cgi[i], 0, 4) = 'var_')
+								{
+									out.put('<input type="hidden" name="client_vars_names_'@ i @'" value="'@ cgi[i] @'" />');
+									out.put('<input type="hidden" name="client_vars_data_'@ i @'" value="'@ cgi[i-7] @'" />');
+								}
+							}
+							</PML_SCRIPT>
+						</div>
+						<div>
+						<table cellpadding="0" cellspacing="0" class="grouped">
+						<tr>
+							<th colspan="3" class="mPoint_Help"><PML_VAL>label_selected_card</PML_VAL></th>
+						</tr>
+						<tr class="first-row last-row">
+							<td colspan="3" class="left-column right-column stretch">
+							<table cellpadding="0" cellspacing="0" class="grouped">
+							<tr>
+								<PML_SWITCH EXPR="cgi.cardid">
+									<PML_CASE VALUE="1">
+										<td><img src="images/amex.jpg" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- American Express -" />&nbsp;</td>
+										<td class="mPoint_Card">American Express</td>
+									</PML_CASE>
+									<PML_CASE VALUE="2">
+										<td><img src="images/dankort.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Dankort -" />&nbsp;</td>
+										<td class="mPoint_Card">Dankort</td>
+									</PML_CASE>
+									<PML_CASE VALUE="3">
+										<td><img src="images/diners.jpg" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Diners Club -" />&nbsp;</td>
+										<td class="mPoint_Card">Diners Club</td>
+									</PML_CASE>
+									<PML_CASE VALUE="4">
+										<td><img src="images/mastercard.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- EuroCard -" />&nbsp;</td>
+										<td class="mPoint_Card">EuroCard</td>
+									</PML_CASE>
+									<PML_CASE VALUE="5">
+										<td><img src="images/jcb.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- JCB -" />&nbsp;</td>
+										<td class="mPoint_Card">JCB</td>
+									</PML_CASE>
+									<PML_CASE VALUE="6">
+										<td><img src="images/maestro.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Maestro -" />&nbsp;</td>
+										<td class="mPoint_Card">Maestro</td>
+									</PML_CASE>
+									<PML_CASE VALUE="7">
+										<td><img src="images/mastercard.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- MasterCard -" />&nbsp;</td>
+										<td class="mPoint_Card">MasterCard</td>
+									</PML_CASE>
+									<PML_CASE VALUE="8">
+										<td><img src="images/visa.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- VISA -" />&nbsp;</td>
+										<td class="mPoint_Card">VISA</td>
+									</PML_CASE>
+									<PML_CASE VALUE="9">
+										<td><img src="images/visa_electron.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- VISA Electron -" />&nbsp;</td>
+										<td class="mPoint_Card">VISA Electron</td>
+									</PML_CASE>
+								</PML_SWITCH>
+								</td>
+								<td id="price">
+									<div class="mPoint_Label"><PML_VAL>label_price</PML_VAL>:</div>
+									<PML_VAL>cgi.price</PML_VAL>
+								</td>
+							</tr>
+							</table>
+						</tr>
+						<tr>
+							<td colspan="3"><br /></td>
+						</tr>
+						<tr>
+							<th colspan="3" class="mPoint_Help"><PML_VAL>info</PML_VAL></th>
+						</tr>
+						<tr class="first-row">
+							<th class="left-column"><PML_VAL>label_card_number</PML_VAL>:</th>
+							<td colspan="2" class="right-column stretch">
+								<PML_IF COND="sess_cardno > 0">
+									<input name="cardno" type="number" maxlength="19" class="text" PML_value="string.precision(sess_cardno, 0)" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
+								</PML_IF>
+								<PML_ELSE>
+									<input name="cardno" type="number" maxlength="19" class="text" value="" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
+								</PML_ELSE>
+							</td>
+						</tr>
+						<tr class="row">
+							<th class="left-column">
+								<PML_VAL>label_expiry</PML_VAL>:
+								<div class="mPoint_Info">(<PML_VAL>expiry_month</PML_VAL>/<PML_VAL>expiry_year</PML_VAL>)</div>
+							</th>
+							<td colspan="2" class="right-column stretch">
+								<PML_IF COND="sess_expmon > 0">
+									<input name="expmon" type="number" maxlength="2" PML_value="string.precision(sess_expmon, 0)" size="3" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
+								</PML_IF>
+								<PML_ELSE>
+									<input name="expmon" type="number" maxlength="2" value="" size="3" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" />
+								</PML_ELSE>
+								&nbsp;/&nbsp;
+								<PML_IF COND="sess_expyear > 0">
+									<input name="expyear" type="number" maxlength="2" PML_value="string.precision(sess_expyear, 0)" size="3" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
+								</PML_IF>
+								<PML_ELSE>
+									<input name="expyear" type="number" maxlength="2" value="" size="3" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
+								</PML_ELSE>
+							</td>
+						</tr>
+						<tr class="row combined-row">
+							<th class="left-column combined-row"><PML_VAL>label_cvc</PML_VAL>:</th>
+							<td colspan="2" class="right-column combined-row stretch">
+								<PML_IF COND="sess_cvc > 0">
+									<input name="cvc" type="number" maxlength="3" PML_value="string.precision(sess_cvc, 0)" size="4" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
+								</PML_IF>
+								<PML_ELSE>
+									<input name="cvc" type="number" maxlength="3" value="" size="4" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
+								</PML_ELSE>
+							</td>
+						</tr>
+						<tr class="last-row combined-row">
+							<td colspan="3" class="left-column right-column info stretch"><PML_VAL>cvc_help</PML_VAL></td>
+						</tr>
+						<!-- Store Credit Card -->
+						<PML_IF COND="cgi.store_card > 0">
+						<tr>
+							<td colspan="3">
+							<table cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<div id="store-card" class="checkbox" onclick="javascript:toggleCheckmark(this);">
+										<img src="images/checkmark.png" width="30" height="30" alt="" />
+									</div>
+								</td>
+								<td class="stretch"><PML_VAL>label_store</PML_VAL></td>
+							</tr>
+							</table>
+							</td>
+						</tr>
+						</table>
+						</PML_IF>
+						<!-- Complete Payment -->
+						<div id="submit">
+							<a id="pay" class="submit-button" onclick="javascript:document.getElementById('loader').style.visibility='visible'; this.className='submit-button-clicked'; this.disabled=true; document.getElementById('pay-card').submit();">
+								<h2><PML_VAL>submit</PML_VAL></h2>
+							</a>
+						</div>
+					</form>
+				</div>
+			</div>
+			<!-- Hidden Data Fields Start -->
+			<span id="loader">
+				<img src="images/loader.gif" width="28" height="28" PML_alt="'- '@label_loading@' -'" border="0" />
+				<br />
+				<span><PML_VAL>label_loading</PML_VAL></span>
+			</span>
+			<script type="text/javascript">
+				<PML_IF COND="cgi.auto_store_card = 'true'">
+					toggleCheckmark(document.getElementById('store-card') );
+				</PML_IF>
+				parent.postMessage('mpoint-card-declined,<PML_VAL>cgi.PHPSESSID</PML_VAL>', '*');
+			</script>
+		</body>
+		</html>
 	</PML_CASE>
 	<PML_DEFAULT>
 		<?xml version="1.0" encoding="ISO-8859-15"?>
 		<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
 		<html xmlns="http://www.w3.org/1999/xhtml" PML_xml:lang="cgi.lang">
-	</PML_DEFAULT>
-</PML_SWITCH>
-<head>
-	<title><PML_VAL>title</PML_VAL></title>
-	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15" />
-	<meta http-equiv="Cache-Control" content="max-age=86400" />
-	<meta http-equiv="Content-Style-Type" content="text/css" />
-	<style type="text/css">
-		/* ========== Tag Classes Start ========== */
-		body
-		{
-			margin: 5px 5px 5px 5px;
-		}
-		body, table
-		{
-			background-color: #<PML_VAL>background_colour</PML_VAL>;
-			text-align: left;
-		}
-		body, table, div
-		{
-			font-size: 1em;
-			font-family: "Trebuchet MS",arial,sans-serif;
-			color: #000;
-		}
-		table, table * div, table * .mPoint_Info
-		{
-			color: #000;
-		}
-		div#status table, div#status table * div, div#status table * .mPoint_Info
-		{
-			color: #000;
-		}
-		
-		h1
-		{
-			font-size: 130%;
-			white-space: nowrap;
-			text-align: center;
-			color: #000;
-		}
-		
-		form, table
-		{
-			margin: 0px 0px 0px 0px;
-			padding: 0px 0px 0px 0px;
-			text-align: left;
-		}
-		
-		a
-		{
-			color: blue;
-			text-decoration: none;
-		}
-		
-		a:hover
-		{
-			text-decoration: underline;
-		}
-		
-		input.number
-		{
-			-wap-input-format: '*N';
-		}
-		/* ========== Tag Classes End ========== */
-		
-		/* ========== mPoint Classes Start ========== */
-		.mPoint_Label
-		{
-			font-weight: bold;
-			padding-right: 0.5em;
-			padding-top: 0.3em;
-			white-space: nowrap;
-			text-align: left;
-		}
-		
-		.mPoint_Info
-		{
-			font-weight: normal;
-			font-style: italic;
-			color: #000;
-			text-align: left;
-			padding: 0px;
-			margin: 0px;	
-		}
-		
-		.mPoint_Status
-		{
-			color: red;
-			font-style: italic;
-			padding-top: 0.5em;
-			padding-bottom: 0.5em;
-		}
-		.mPoint_Help
-		{
-			text-align: center;
-			padding-bottom: 5px;
-		}
-		
-		td.mPoint_Number
-		{
-			padding-right: 0.5em;
-			text-align: right;
-			vertical-align: bottom;
-		}
-		
-		tr.mPoint_Even
-		{
-			background-color: #<PML_VAL>background_colour</PML_VAL>;
-		}
-		tr.mPoint_Uneven
-		{
-		}
-		
-		input.mPoint_Button
-		{
-			font-size: 1em;
-			font-weight: bold;
-			color: #000;
-		}
-		
-		input.mPoint_Card_Button
-		{
-			border-style: none;
-			background-color: #fff;
-			color: blue;
-			text-decoration: underline;
-			margin: 0px 0px 0px 0px;
-			padding: 0px 0px 2px 0px;
-		}
-		/* ========== mPoint Classes Start ========== */
-		
-		/* ========== ID Classes Start ========== */
-		table#products tr td
-		{
-			padding-left: 3px;
-			padding-top: 3px;
-		}
-		
-		table#receipt
-		{
-			background-color: #<PML_VAL>background_colour</PML_VAL>;
-			margin-top: 0.5em;
-			margin-bottom: 0.5em;
-		}
-		
-		div#logo, div#progress, div#mPoint, div#status
-		{
-			text-align: center;
-		}
-		
-		div#status table tr td
-		{
-			vertical-align: middle;
-			padding-left: 0.5em;
-		}
-		
-		div#terms
-		{
-			white-space: pre;
-		}
-		
-		div#delivery, table#shipping, div#email, div#cardinfo, div#accountinfo
-		{
-			background-color: #<PML_VAL>background_colour</PML_VAL>;
-			padding-left: 3px;
-			padding-bottom: 3px;
-			color: #000;
-		}
-		div#cardinfo .mPoint_Info, div#cardinfo * .mPoint_Info, div#cardinfo .mPoint_Label
-		{
-			color: #000;
-		}
-
-		div#price
-		{
-			 padding-bottom: 0.5em;
-		}
-		div#cardinfo
-		{
-			background-color: #<PML_VAL>background_colour</PML_VAL>;
-			padding-left: 10px;
-			padding-top: 2px;
-			padding-bottom: 5px;
-			margin-right: 10px;
-			color: #000;
-			border: 2px solid #<PML_VAL>border_colour</PML_VAL>;
-			-moz-border-radius: 10px;
-			-webkit-border-radius: 10px;
-			border-radius: 10px;
-		}
-		div#submit
-		{
-			text-align: center;
-		}
-		/* ========== ID Classes End ========== */
-
-		/* ========== Loader Start ========== */
-		span#loader
-		{
-			visibility: hidden;
-			position: absolute;
-			left: 40%;
-			top: 50%;
-			width: 50px;
-			height: 50px;
-			text-align: center;
-			color: #000;
-			font-size: 10px;
-			background-color: #fff;
-			border: 2px solid #<PML_VAL>border_colour</PML_VAL>;
-			-moz-border-radius: 10px;
-			-webkit-border-radius: 10px;
-			border-radius: 10px;
-			padding: 5px;
-			z-index: 30;
-		}
-		/* ========== Loader End ========== */
-	</style>
-	<PML_IF COND="cgi.markup = 'html5' && cgi.device_height < 450">
-		<script type="text/javascript">
-		/**
-		 * 
-		 * Find more about the scrolling function at
-		 * http://cubiq.org/iscroll
-		 *
-		 * Copyright (c) 2010 Matteo Spinelli, http://cubiq.org/
-		 * Released under MIT license
-		 * http://cubiq.org/dropbox/mit-license.txt
-		 * 
-		 * Version 3.7.1 - Last updated: 2010.10.08
-		 * 
-		 */
-	
-		(function(){
-		function iScroll (el, options) {
-			var that = this, i;
-			that.element = typeof el == 'object' ? el : document.getElementById(el);
-			that.wrapper = that.element.parentNode;
-	
-			that.element.style.webkitTransitionProperty = '-webkit-transform';
-			that.element.style.webkitTransitionTimingFunction = 'cubic-bezier(0,0,0.25,1)';
-			that.element.style.webkitTransitionDuration = '0';
-			that.element.style.webkitTransform = translateOpen + '0,0' + translateClose;
-	
-			// Default options
-			that.options = {
-				bounce: has3d,
-				momentum: has3d,
-				checkDOMChanges: true,
-				topOnDOMChanges: false,
-				hScrollbar: has3d,
-				vScrollbar: has3d,
-				fadeScrollbar: isIthing || !isTouch,
-				shrinkScrollbar: isIthing || !isTouch,
-				desktopCompatibility: false,
-				overflow: 'auto',
-				snap: false,
-				bounceLock: false,
-				scrollbarColor: 'rgba(0,0,0,0.5)',
-				onScrollEnd: function () {}
-			};
-			
-			// User defined options
-			if (typeof options == 'object') {
-				for (i in options) {
-					that.options[i] = options[i];
-				}
-			}
-	
-			if (that.options.desktopCompatibility) {
-				that.options.overflow = 'hidden';
-			}
-			
-			that.onScrollEnd = that.options.onScrollEnd;
-			delete that.options.onScrollEnd;
-			
-			that.wrapper.style.overflow = that.options.overflow;
-			
-			that.refresh();
-	
-			window.addEventListener('onorientationchange' in window ? 'orientationchange' : 'resize', that, false);
-	
-			if (isTouch || that.options.desktopCompatibility) {
-				that.element.addEventListener(START_EVENT, that, false);
-				that.element.addEventListener(MOVE_EVENT, that, false);
-				that.element.addEventListener(END_EVENT, that, false);
-			}
-			
-			if (that.options.checkDOMChanges) {
-				that.element.addEventListener('DOMSubtreeModified', that, false);
-			}
-		}
-	
-		iScroll.prototype = {
-			x: 0,
-			y: 0,
-			enabled: true,
-	
-			handleEvent: function (e) {
-				var that = this;
-				switch (e.type) {
-					case START_EVENT:
-						that.touchStart(e);
-						break;
-					case MOVE_EVENT:
-						that.touchMove(e);
-						break;
-					case END_EVENT:
-						that.touchEnd(e);
-						break;
-					case 'webkitTransitionEnd':
-						that.transitionEnd();
-						break;
-					case 'orientationchange':
-					case 'resize':
-						that.refresh();
-						break;
-					case 'DOMSubtreeModified':
-						that.onDOMModified(e);
-						break;
-				}
-			},
-			
-			onDOMModified: function (e) {
-				var that = this;
-	
-				// (Hopefully) execute onDOMModified only once
-				if (e.target.parentNode != that.element) {
-					return;
-				}
-	
-				setTimeout(function () { that.refresh(); }, 0);
-	
-				if (that.options.topOnDOMChanges && (that.x!=0 || that.y!=0)) {
-					that.scrollTo(0,0,'0');
-				}
-			},
-	
-			refresh: function () {
-				var that = this,
-					resetX = that.x, resetY = that.y,
-					snap;
-				
-				that.scrollWidth = that.wrapper.clientWidth;
-				that.scrollHeight = that.wrapper.clientHeight;
-				that.scrollerWidth = that.element.offsetWidth;
-				that.scrollerHeight = that.element.offsetHeight;
-				that.maxScrollX = that.scrollWidth - that.scrollerWidth;
-				that.maxScrollY = that.scrollHeight - that.scrollerHeight;
-				that.directionX = 0;
-				that.directionY = 0;
-	
-				if (that.scrollX) {
-					if (that.maxScrollX >= 0) {
-						resetX = 0;
-					} else if (that.x < that.maxScrollX) {
-						resetX = that.maxScrollX;
-					}
-				}
-				if (that.scrollY) {
-					if (that.maxScrollY >= 0) {
-						resetY = 0;
-					} else if (that.y < that.maxScrollY) {
-						resetY = that.maxScrollY;
-					}
-				}
-	
-				// Snap
-				if (that.options.snap) {
-					that.maxPageX = -Math.floor(that.maxScrollX/that.scrollWidth);
-					that.maxPageY = -Math.floor(that.maxScrollY/that.scrollHeight);
-	
-					snap = that.snap(resetX, resetY);
-					resetX = snap.x;
-					resetY = snap.y;
-				}
-	
-				if (resetX!=that.x || resetY!=that.y) {
-					that.setTransitionTime('0');
-					that.setPosition(resetX, resetY, true);
-				}
-				
-				that.scrollX = that.scrollerWidth > that.scrollWidth;
-				that.scrollY = !that.options.bounceLock && !that.scrollX || that.scrollerHeight > that.scrollHeight;
-	
-				// Update horizontal scrollbar
-				if (that.options.hScrollbar && that.scrollX) {
-					that.scrollBarX = that.scrollBarX || new scrollbar('horizontal', that.wrapper, that.options.fadeScrollbar, that.options.shrinkScrollbar, that.options.scrollbarColor);
-					that.scrollBarX.init(that.scrollWidth, that.scrollerWidth);
-				} else if (that.scrollBarX) {
-					that.scrollBarX = that.scrollBarX.remove();
-				}
-	
-				// Update vertical scrollbar
-				if (that.options.vScrollbar && that.scrollY && that.scrollerHeight > that.scrollHeight) {
-					that.scrollBarY = that.scrollBarY || new scrollbar('vertical', that.wrapper, that.options.fadeScrollbar, that.options.shrinkScrollbar, that.options.scrollbarColor);
-					that.scrollBarY.init(that.scrollHeight, that.scrollerHeight);
-				} else if (that.scrollBarY) {
-					that.scrollBarY = that.scrollBarY.remove();
-				}
-			},
-	
-			setPosition: function (x, y, hideScrollBars) {
-				var that = this;
-				
-				that.x = x;
-				that.y = y;
-	
-				that.element.style.webkitTransform = translateOpen + that.x + 'px,' + that.y + 'px' + translateClose;
-	
-				// Move the scrollbars
-				if (!hideScrollBars) {
-					if (that.scrollBarX) {
-						that.scrollBarX.setPosition(that.x);
-					}
-					if (that.scrollBarY) {
-						that.scrollBarY.setPosition(that.y);
-					}
-				}
-			},
-			
-			setTransitionTime: function(time) {
-				var that = this;
-				
-				time = time || '0';
-				that.element.style.webkitTransitionDuration = time;
-				
-				if (that.scrollBarX) {
-					that.scrollBarX.bar.style.webkitTransitionDuration = time;
-					that.scrollBarX.wrapper.style.webkitTransitionDuration = has3d && that.options.fadeScrollbar ? '300ms' : '0';
-				}
-				if (that.scrollBarY) {
-					that.scrollBarY.bar.style.webkitTransitionDuration = time;
-					that.scrollBarY.wrapper.style.webkitTransitionDuration = has3d && that.options.fadeScrollbar ? '300ms' : '0';
-				}
-			},
-				
-			touchStart: function(e) {
-				var that = this,
-					matrix;
-				
-				if (!that.enabled || e.target.nodeName.toLowerCase() == "select" || e.target.nodeName.toLowerCase() == "input" || e.target.nodeName.toLowerCase() == "textarea") {
-					return;
-				}
-	
-				e.preventDefault();
-				e.stopPropagation();
-				
-				that.scrolling = true;		// This is probably not needed, but may be useful if iScroll is used in conjuction with other frameworks
-	
-				that.moved = false;
-				that.distX = 0;
-				that.distY = 0;
-	
-				that.setTransitionTime('0');
-	
-				// Check if the scroller is really where it should be
-				if (that.options.momentum || that.options.snap) {
-					matrix = new WebKitCSSMatrix(window.getComputedStyle(that.element).webkitTransform);
-					if (matrix.e != that.x || matrix.f != that.y) {
-						document.removeEventListener('webkitTransitionEnd', that, false);
-						that.setPosition(matrix.e, matrix.f);
-						that.moved = true;
-					}
-				}
-	
-				that.touchStartX = isTouch ? e.changedTouches[0].pageX : e.pageX;
-				that.scrollStartX = that.x;
-	
-				that.touchStartY = isTouch ? e.changedTouches[0].pageY : e.pageY;
-				that.scrollStartY = that.y;
-	
-				that.scrollStartTime = e.timeStamp;
-	
-				that.directionX = 0;
-				that.directionY = 0;
-			},
-			
-			touchMove: function(e) {
-				if (!this.scrolling) {
-					return;
-				}
-	
-				var that = this,
-					pageX = isTouch ? e.changedTouches[0].pageX : e.pageX,
-					pageY = isTouch ? e.changedTouches[0].pageY : e.pageY,
-					leftDelta = that.scrollX ? pageX - that.touchStartX : 0,
-					topDelta = that.scrollY ? pageY - that.touchStartY : 0,
-					newX = that.x + leftDelta,
-					newY = that.y + topDelta;
-	
-				//e.preventDefault();
-				e.stopPropagation();	// Stopping propagation just saves some cpu cycles (I presume)
-	
-				that.touchStartX = pageX;
-				that.touchStartY = pageY;
-	
-				// Slow down if outside of the boundaries
-				if (newX >= 0 || newX < that.maxScrollX) {
-					newX = that.options.bounce ? Math.round(that.x + leftDelta / 3) : (newX >= 0 || that.maxScrollX>=0) ? 0 : that.maxScrollX;
-				}
-				if (newY >= 0 || newY < that.maxScrollY) { 
-					newY = that.options.bounce ? Math.round(that.y + topDelta / 3) : (newY >= 0 || that.maxScrollY>=0) ? 0 : that.maxScrollY;
-				}
-	
-				if (that.distX + that.distY > 5) {			// 5 pixels threshold
-	
-					// Lock scroll direction
-					if (that.distX-3 > that.distY) {
-						newY = that.y;
-						topDelta = 0;
-					} else if (that.distY-3 > that.distX) {
-						newX = that.x;
-						leftDelta = 0;
-					}
-	
-					that.setPosition(newX, newY);
-					that.moved = true;
-					that.directionX = leftDelta > 0 ? -1 : 1;
-					that.directionY = topDelta > 0 ? -1 : 1;
-				} else {
-					that.distX+= Math.abs(leftDelta);
-					that.distY+= Math.abs(topDelta);
-	//				that.dist+= Math.abs(leftDelta) + Math.abs(topDelta);
-				}
-			},
-			
-			touchEnd: function(e) {
-				if (!this.scrolling) {
-					return;
-				}
-	
-				var that = this,
-					time = e.timeStamp - that.scrollStartTime,
-					point = isTouch ? e.changedTouches[0] : e,
-					target, ev,
-					momentumX, momentumY,
-					newDuration = 0,
-					newPositionX = that.x, newPositionY = that.y,
-					snap;
-	
-				that.scrolling = false;
-	
-				if (!that.moved) {
-					that.resetPosition();
-	
-					if (isTouch) {
-						// Find the last touched element
-						target = point.target;
-						while (target.nodeType != 1) {
-							target = target.parentNode;
-						}
-	
-						// Create the fake event
-						ev = document.createEvent('MouseEvents');
-						ev.initMouseEvent('click', true, true, e.view, 1,
-							point.screenX, point.screenY, point.clientX, point.clientY,
-							e.ctrlKey, e.altKey, e.shiftKey, e.metaKey,
-							0, null);
-						ev._fake = true;
-						target.dispatchEvent(ev);
-					}
-	
-					return;
-				}
-	
-				if (!that.options.snap && time > 250) {			// Prevent slingshot effect
-					that.resetPosition();
-					return;
-				}
-	
-				if (that.options.momentum) {
-					momentumX = that.scrollX === true
-						? that.momentum(that.x - that.scrollStartX,
-										time,
-										that.options.bounce ? -that.x + that.scrollWidth/5 : -that.x,
-										that.options.bounce ? that.x + that.scrollerWidth - that.scrollWidth + that.scrollWidth/5 : that.x + that.scrollerWidth - that.scrollWidth)
-						: { dist: 0, time: 0 };
-	
-					momentumY = that.scrollY === true
-						? that.momentum(that.y - that.scrollStartY,
-										time,
-										that.options.bounce ? -that.y + that.scrollHeight/5 : -that.y,
-										that.options.bounce ? (that.maxScrollY < 0 ? that.y + that.scrollerHeight - that.scrollHeight : 0) + that.scrollHeight/5 : that.y + that.scrollerHeight - that.scrollHeight)
-						: { dist: 0, time: 0 };
-	
-					newDuration = Math.max(Math.max(momentumX.time, momentumY.time), 1);		// The minimum animation length must be 1ms
-					newPositionX = that.x + momentumX.dist;
-					newPositionY = that.y + momentumY.dist;
-				}
-	
-				if (that.options.snap) {
-					snap = that.snap(newPositionX, newPositionY);
-					newPositionX = snap.x;
-					newPositionY = snap.y;
-					newDuration = Math.max(snap.time, newDuration);
-				}
-	
-				that.scrollTo(newPositionX, newPositionY, newDuration + 'ms');
-			},
-	
-			transitionEnd: function () {
-				var that = this;
-				document.removeEventListener('webkitTransitionEnd', that, false);
-				that.resetPosition();
-			},
-	
-			resetPosition: function () {
-				var that = this,
-					resetX = that.x,
-				 	resetY = that.y;
-	
-				if (that.x >= 0) {
-					resetX = 0;
-				} else if (that.x < that.maxScrollX) {
-					resetX = that.maxScrollX;
-				}
-	
-				if (that.y >= 0 || that.maxScrollY > 0) {
-					resetY = 0;
-				} else if (that.y < that.maxScrollY) {
-					resetY = that.maxScrollY;
-				}
-	//			alert(resetX +" "+ that.x +" - "+ resetY +" "+ that.maxScrollY +" "+ that.y);
-				if (resetX != that.x || resetY != that.y) {
-					that.scrollTo(resetX, resetY);
-				} else {
-					if (that.moved) {
-						that.onScrollEnd();		// Execute custom code on scroll end
-						that.moved = false;
-					}
-	
-					// Hide the scrollbars
-					if (that.scrollBarX) {
-						that.scrollBarX.hide();
-					}
-					if (that.scrollBarY) {
-						that.scrollBarY.hide();
-					}
-				}
-			},
-			
-			snap: function (x, y) {
-				var that = this, time;
-	
-				if (that.directionX > 0) {
-					x = Math.floor(x/that.scrollWidth);
-				} else if (that.directionX < 0) {
-					x = Math.ceil(x/that.scrollWidth);
-				} else {
-					x = Math.round(x/that.scrollWidth);
-				}
-				that.pageX = -x;
-				x = x * that.scrollWidth;
-				if (x > 0) {
-					x = that.pageX = 0;
-				} else if (x < that.maxScrollX) {
-					that.pageX = that.maxPageX;
-					x = that.maxScrollX;
-				}
-	
-				if (that.directionY > 0) {
-					y = Math.floor(y/that.scrollHeight);
-				} else if (that.directionY < 0) {
-					y = Math.ceil(y/that.scrollHeight);
-				} else {
-					y = Math.round(y/that.scrollHeight);
-				}
-				that.pageY = -y;
-				y = y * that.scrollHeight;
-				if (y > 0) {
-					y = that.pageY = 0;
-				} else if (y < that.maxScrollY) {
-					that.pageY = that.maxPageY;
-					y = that.maxScrollY;
-				}
-	
-				// Snap with constant speed (proportional duration)
-				time = Math.round(Math.max(
-						Math.abs(that.x - x) / that.scrollWidth * 500,
-						Math.abs(that.y - y) / that.scrollHeight * 500
-					));
-					
-				return { x: x, y: y, time: time };
-			},
-	
-			scrollTo: function (destX, destY, runtime) {
-				var that = this;
-	
-				if (that.x == destX && that.y == destY) {
-					that.resetPosition();
-					return;
-				}
-	
-				that.moved = true;
-				that.setTransitionTime(runtime || '350ms');
-				that.setPosition(destX, destY);
-	
-				if (runtime==='0' || runtime=='0s' || runtime=='0ms') {
-					that.resetPosition();
-				} else {
-					document.addEventListener('webkitTransitionEnd', that, false);	// At the end of the transition check if we are still inside of the boundaries
-				}
-			},
-			
-			scrollToPage: function (pageX, pageY, runtime) {
-				var that = this, snap;
-	
-				if (!that.options.snap) {
-					that.pageX = -Math.round(that.x / that.scrollWidth);
-					that.pageY = -Math.round(that.y / that.scrollHeight);
-				}
-	
-				if (pageX == 'next') {
-					pageX = ++that.pageX;
-				} else if (pageX == 'prev') {
-					pageX = --that.pageX;
-				}
-	
-				if (pageY == 'next') {
-					pageY = ++that.pageY;
-				} else if (pageY == 'prev') {
-					pageY = --that.pageY;
-				}
-	
-				pageX = -pageX*that.scrollWidth;
-				pageY = -pageY*that.scrollHeight;
-	
-				snap = that.snap(pageX, pageY);
-				pageX = snap.x;
-				pageY = snap.y;
-	
-				that.scrollTo(pageX, pageY, runtime || '500ms');
-			},
-	
-			scrollToElement: function (el, runtime) {
-				el = typeof el == 'object' ? el : this.element.querySelector(el);
-	
-				if (!el) {
-					return;
-				}
-	
-				var that = this,
-					x = that.scrollX ? -el.offsetLeft : 0,
-					y = that.scrollY ? -el.offsetTop : 0;
-	
-				if (x >= 0) {
-					x = 0;
-				} else if (x < that.maxScrollX) {
-					x = that.maxScrollX;
-				}
-	
-				if (y >= 0) {
-					y = 0;
-				} else if (y < that.maxScrollY) {
-					y = that.maxScrollY;
-				}
-	
-				that.scrollTo(x, y, runtime);
-			},
-	
-			momentum: function (dist, time, maxDistUpper, maxDistLower) {
-				var friction = 2.5,
-					deceleration = 1.2,
-					speed = Math.abs(dist) / time * 1000,
-					newDist = speed * speed / friction / 1000,
-					newTime = 0;
-	
-				// Proportinally reduce speed if we are outside of the boundaries 
-				if (dist > 0 && newDist > maxDistUpper) {
-					speed = speed * maxDistUpper / newDist / friction;
-					newDist = maxDistUpper;
-				} else if (dist < 0 && newDist > maxDistLower) {
-					speed = speed * maxDistLower / newDist / friction;
-					newDist = maxDistLower;
-				}
-				
-				newDist = newDist * (dist < 0 ? -1 : 1);
-				newTime = speed / deceleration;
-	
-				return { dist: Math.round(newDist), time: Math.round(newTime) };
-			},
-			
-			destroy: function (full) {
-				var that = this;
-	
-				window.removeEventListener('onorientationchange' in window ? 'orientationchange' : 'resize', that, false);		
-				that.element.removeEventListener(START_EVENT, that, false);
-				that.element.removeEventListener(MOVE_EVENT, that, false);
-				that.element.removeEventListener(END_EVENT, that, false);
-				document.removeEventListener('webkitTransitionEnd', that, false);
-	
-				if (that.options.checkDOMChanges) {
-					that.element.removeEventListener('DOMSubtreeModified', that, false);
-				}
-	
-				if (that.scrollBarX) {
-					that.scrollBarX = that.scrollBarX.remove();
-				}
-	
-				if (that.scrollBarY) {
-					that.scrollBarY = that.scrollBarY.remove();
-				}
-				
-				if (full) {
-					that.wrapper.parentNode.removeChild(that.wrapper);
-				}
-				
-				return null;
-			}
-		};
-	
-		function scrollbar (dir, wrapper, fade, shrink, color) {
-			var that = this,
-				doc = document;
-			
-			that.dir = dir;
-			that.fade = fade;
-			that.shrink = shrink;
-			that.uid = ++uid;
-	
-			// Create main scrollbar
-			that.bar = doc.createElement('div');
-	
-			that.bar.style.cssText = 'position:absolute;top:0;left:0;-webkit-transition-timing-function:cubic-bezier(0,0,0.25,1);pointer-events:none;-webkit-transition-duration:0;-webkit-transition-delay:0;-webkit-transition-property:-webkit-transform;z-index:10;background:' + color + ';' +
-				'-webkit-transform:' + translateOpen + '0,0' + translateClose + ';' +
-				(dir == 'horizontal' ? '-webkit-border-radius:3px 2px;min-width:6px;min-height:5px' : '-webkit-border-radius:2px 3px;min-width:5px;min-height:6px');
-	
-			// Create scrollbar wrapper
-			that.wrapper = doc.createElement('div');
-			that.wrapper.style.cssText = '-webkit-mask:-webkit-canvas(scrollbar' + that.uid + that.dir + ');position:absolute;z-index:10;pointer-events:none;overflow:hidden;opacity:0;-webkit-transition-duration:' + (fade ? '300ms' : '0') + ';-webkit-transition-delay:0;-webkit-transition-property:opacity;' +
-				(that.dir == 'horizontal' ? 'bottom:2px;left:2px;right:7px;height:5px' : 'top:2px;right:2px;bottom:7px;width:5px;');
-	
-			// Add scrollbar to the DOM
-			that.wrapper.appendChild(that.bar);
-			wrapper.appendChild(that.wrapper);
-		}
-	
-		scrollbar.prototype = {
-			init: function (scroll, size) {
-				var that = this,
-					doc = document,
-					pi = Math.PI,
-					ctx;
-	
-				// Create scrollbar mask
-				if (that.dir == 'horizontal') {
-					if (that.maxSize != that.wrapper.offsetWidth) {
-						that.maxSize = that.wrapper.offsetWidth;
-						ctx = doc.getCSSCanvasContext("2d", "scrollbar" + that.uid + that.dir, that.maxSize, 5);
-						ctx.fillStyle = "rgb(0,0,0)";
-						ctx.beginPath();
-						ctx.arc(2.5, 2.5, 2.5, pi/2, -pi/2, false);
-						ctx.lineTo(that.maxSize-2.5, 0);
-						ctx.arc(that.maxSize-2.5, 2.5, 2.5, -pi/2, pi/2, false);
-						ctx.closePath();
-						ctx.fill();
-					}
-				} else {
-					if (that.maxSize != that.wrapper.offsetHeight) {
-						that.maxSize = that.wrapper.offsetHeight;
-						ctx = doc.getCSSCanvasContext("2d", "scrollbar" + that.uid + that.dir, 5, that.maxSize);
-						ctx.fillStyle = "rgb(0,0,0)";
-						ctx.beginPath();
-						ctx.arc(2.5, 2.5, 2.5, pi, 0, false);
-						ctx.lineTo(5, that.maxSize-2.5);
-						ctx.arc(2.5, that.maxSize-2.5, 2.5, 0, pi, false);
-						ctx.closePath();
-						ctx.fill();
-					}
-				}
-	
-				that.size = Math.max(Math.round(that.maxSize * that.maxSize / size), 6);
-				that.maxScroll = that.maxSize - that.size;
-				that.toWrapperProp = that.maxScroll / (scroll - size);
-				that.bar.style[that.dir == 'horizontal' ? 'width' : 'height'] = that.size + 'px';
-			},
-			
-			setPosition: function (pos) {
-				var that = this;
-				
-				if (that.wrapper.style.opacity != '1') {
-					that.show();
-				}
-	
-				pos = Math.round(that.toWrapperProp * pos);
-	
-				if (pos < 0) {
-					pos = that.shrink ? pos + pos*3 : 0;
-					if (that.size + pos < 7) {
-						pos = -that.size + 6;
-					}
-				} else if (pos > that.maxScroll) {
-					pos = that.shrink ? pos + (pos-that.maxScroll)*3 : that.maxScroll;
-					if (that.size + that.maxScroll - pos < 7) {
-						pos = that.size + that.maxScroll - 6;
-					}
-				}
-	
-				pos = that.dir == 'horizontal'
-					? translateOpen + pos + 'px,0' + translateClose
-					: translateOpen + '0,' + pos + 'px' + translateClose;
-	
-				that.bar.style.webkitTransform = pos;
-			},
-	
-			show: function () {
-				if (has3d) {
-					this.wrapper.style.webkitTransitionDelay = '0';
-				}
-				this.wrapper.style.opacity = '1';
-			},
-	
-			hide: function () {
-				if (has3d) {
-					this.wrapper.style.webkitTransitionDelay = '350ms';
-				}
-				this.wrapper.style.opacity = '0';
-			},
-			
-			remove: function () {
-				this.wrapper.parentNode.removeChild(this.wrapper);
-				return null;
-			}
-		};
-	
-		// Is translate3d compatible?
-		var has3d = ('WebKitCSSMatrix' in window && 'm11' in new WebKitCSSMatrix()),
-			// Device sniffing
-			isIthing = (/iphone|ipad/gi).test(navigator.appVersion),
-			isTouch = ('ontouchstart' in window),
-			// Event sniffing
-			START_EVENT = isTouch ? 'touchstart' : 'mousedown',
-			MOVE_EVENT = isTouch ? 'touchmove' : 'mousemove',
-			END_EVENT = isTouch ? 'touchend' : 'mouseup',
-			// Translate3d helper
-			translateOpen = 'translate' + (has3d ? '3d(' : '('),
-			translateClose = has3d ? ',0)' : ')',
-			// Unique ID
-			uid = 0;
-	
-		// Expose iScroll to the world
-		window.iScroll = iScroll;
-		})();
-		</script>
-		<meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-		<script type="text/javascript">
-			var myScroll;
-			function loaded()
+		<title><PML_VAL>title</PML_VAL></title>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15" />
+		<meta http-equiv="Cache-Control" content="max-age=86400" />
+		<meta http-equiv="Content-Style-Type" content="text/css" />
+		<style type="text/css">
+			/* ========== Tag Classes Start ========== */
+			body
 			{
-				document.addEventListener('touchmove', function(e){ e.preventDefault(); }, false);
-				myScroll = new iScroll('content', { checkDOMChanges:false, snap:false, momentum:true, hScrollbar:false, vScrollbar:true });
+				margin: 5px 5px 5px 5px;
 			}
-						
-			// Load iScroll when DOM content is ready.
-			document.addEventListener('DOMContentLoaded', loaded, false);
-		</script>
-		<style>
-			#wrapper
+			body, table
 			{
-				height: 300px;
+				background-color: #<PML_VAL>background_colour</PML_VAL>;
+				text-align: left;
 			}
-			#content
+			body, table, div
 			{
-				height: 440px;
+				font-size: 1em;
+				font-family: "Trebuchet MS",arial,sans-serif;
+				color: #000;
 			}
+			table, table * div, table * .mPoint_Info
+			{
+				color: #000;
+			}
+			div#status table, div#status table * div, div#status table * .mPoint_Info
+			{
+				color: #000;
+			}
+			
+			h1
+			{
+				font-size: 130%;
+				white-space: nowrap;
+				text-align: center;
+				color: #000;
+			}
+			
+			form, table
+			{
+				margin: 0px 0px 0px 0px;
+				padding: 0px 0px 0px 0px;
+				text-align: left;
+			}
+			
+			a
+			{
+				color: blue;
+				text-decoration: none;
+			}
+			
+			a:hover
+			{
+				text-decoration: underline;
+			}
+			
+			input.number
+			{
+				-wap-input-format: '*N';
+			}
+			/* ========== Tag Classes End ========== */
+			
+			/* ========== mPoint Classes Start ========== */
+			.mPoint_Label
+			{
+				font-weight: bold;
+				padding-right: 0.5em;
+				padding-top: 0.3em;
+				white-space: nowrap;
+				text-align: left;
+			}
+			
+			.mPoint_Info
+			{
+				font-weight: normal;
+				font-style: italic;
+				color: #000;
+				text-align: left;
+				padding: 0px;
+				margin: 0px;	
+			}
+			
+			.mPoint_Status
+			{
+				color: red;
+				font-style: italic;
+				padding-top: 0.5em;
+				padding-bottom: 0.5em;
+			}
+			.mPoint_Help
+			{
+				text-align: center;
+				padding-bottom: 5px;
+			}
+			
+			td.mPoint_Number
+			{
+				padding-right: 0.5em;
+				text-align: right;
+				vertical-align: bottom;
+			}
+			
+			tr.mPoint_Even
+			{
+				background-color: #<PML_VAL>background_colour</PML_VAL>;
+			}
+			tr.mPoint_Uneven
+			{
+			}
+			
+			input.mPoint_Button
+			{
+				font-size: 1em;
+				font-weight: bold;
+				color: #000;
+			}
+			
+			input.mPoint_Card_Button
+			{
+				border-style: none;
+				background-color: #fff;
+				color: blue;
+				text-decoration: underline;
+				margin: 0px 0px 0px 0px;
+				padding: 0px 0px 2px 0px;
+			}
+			/* ========== mPoint Classes Start ========== */
+			
+			/* ========== ID Classes Start ========== */
+			table#products tr td
+			{
+				padding-left: 3px;
+				padding-top: 3px;
+			}
+			
+			table#receipt
+			{
+				background-color: #<PML_VAL>background_colour</PML_VAL>;
+				margin-top: 0.5em;
+				margin-bottom: 0.5em;
+			}
+			
+			div#logo, div#progress, div#mPoint, div#status
+			{
+				text-align: center;
+			}
+			
+			div#status table tr td
+			{
+				vertical-align: middle;
+				padding-left: 0.5em;
+			}
+			
+			div#terms
+			{
+				white-space: pre;
+			}
+			
+			div#delivery, table#shipping, div#email, div#cardinfo, div#accountinfo
+			{
+				background-color: #<PML_VAL>background_colour</PML_VAL>;
+				padding-left: 3px;
+				padding-bottom: 3px;
+				color: #000;
+			}
+			div#cardinfo .mPoint_Info, div#cardinfo * .mPoint_Info, div#cardinfo .mPoint_Label
+			{
+				color: #000;
+			}
+	
+			div#price
+			{
+				 padding-bottom: 0.5em;
+			}
+			div#cardinfo
+			{
+				background-color: #<PML_VAL>background_colour</PML_VAL>;
+				padding-left: 10px;
+				padding-top: 2px;
+				padding-bottom: 5px;
+				margin-right: 10px;
+				color: #000;
+				border: 2px solid #<PML_VAL>border_colour</PML_VAL>;
+				-moz-border-radius: 10px;
+				-webkit-border-radius: 10px;
+				border-radius: 10px;
+			}
+			div#submit
+			{
+				text-align: center;
+			}
+			/* ========== ID Classes End ========== */
 		</style>
-	</PML_IF>
-</head>
-<body>
-	<PML_IF COND="cgi.logo_url != ''">
-		<div id="logo">
-			<img PML_src="'images/client_logo_'@cgi.clientid@'.jpg'" PML_width="cgi.logo_width" PML_height="cgi.logo_height" PML_alt="'- '@cgi.client@' -'" />
-		</div>
-	</PML_IF>
-	<div id="progress" class="mPoint_Info"><PML_VAL>progress</PML_VAL></div>
-	
-	<div id="wrapper">
-		<div id="content">
-			<div class="mPoint_Status">
+	</head>
+	<body>
+		<PML_IF COND="cgi.logo_url != ''">
+			<div id="logo">
+				<img PML_src="'images/client_logo_'@cgi.clientid@'.jpg'" PML_width="cgi.logo_width" PML_height="cgi.logo_height" PML_alt="'- '@cgi.client@' -'" />
+			</div>
+		</PML_IF>
+		<div id="progress" class="mPoint_Info"><PML_VAL>progress</PML_VAL></div>
+		
+		<div class="mPoint_Status">
 			<PML_SWITCH EXPR="auth.reason">
 				<PML_CASE VALUE="0"><PML_VAL>error_0</PML_VAL></PML_CASE>
 				<PML_CASE VALUE="1"><PML_VAL>error_1</PML_VAL></PML_CASE>
@@ -1179,15 +1755,7 @@ switch(cgi.clientid)
 				<PML_DEFAULT><PML_VAL>error_unknown</PML_VAL></PML_DEFAULT>
 			</PML_SWITCH>
 			</div>
-	
-			<PML_SWITCH EXPR="cgi.markup">
-				<PML_CASE VALUE="'html5'">
-					<form action="auth.pml" method="post" onsubmit="javascript:document.getElementById('loader').style.visibility='visible';">
-				</PML_CASE>
-				<PML_DEFAULT>
-					<form action="auth.pml" method="post">
-				</PML_DEFAULT>
-			</PML_SWITCH>
+			<form action="auth.pml" method="post">
 				<div>
 					<PML_IF COND="cgi.test > 0">
 						<input type="hidden" name="test" PML_value="cgi.test" />
@@ -1306,40 +1874,40 @@ switch(cgi.clientid)
 					<PML_VAL>cgi.price</PML_VAL>
 				</div>
 				<!-- Credit Card Information -->
-				<div><PML_VAL>info</PML_VAL></div>
+				<div class="mPoint_Help"><PML_VAL>info</PML_VAL></div>
 				<div id="cardinfo">
 					<div class="mPoint_Label">
 						<PML_VAL>label_card_number</PML_VAL>:<br />
 						<PML_IF COND="sess_cardno > 0">
-							<input name="cardno" maxlength="19" PML_value="string.precision(sess_cardno, 0)" size="21" style="-wap-input-format:'*N';" oninput="javascript:parent.postMessage('reposition', '*');" onblur="javascript:parent.postMessage('reposition', '*');" />
+							<input name="cardno" type="number" maxlength="19" PML_value="string.precision(sess_cardno, 0)" size="21" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
 						</PML_IF>
 						<PML_ELSE>
-							<input name="cardno" maxlength="19" value="" size="21" style="-wap-input-format:'*N';" oninput="javascript:parent.postMessage('reposition', '*');" onblur="javascript:parent.postMessage('reposition', '*');" />
+							<input name="cardno" type="number" maxlength="19" value="" size="21" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
 						</PML_ELSE>
 					</div>
 					<div class="mPoint_Label">
 						<PML_VAL>label_expiry</PML_VAL> <span class="mPoint_Info">(<PML_VAL>expiry_month</PML_VAL>/<PML_VAL>expiry_year</PML_VAL>)</span>:<br />
 						<PML_IF COND="sess_expmon > 0">
-							<input name="expmon" maxlength="2" PML_value="string.precision(sess_expmon, 0)" size="3" style="-wap-input-format:'*N';" oninput="javascript:parent.postMessage('reposition', '*');" onblur="javascript:parent.postMessage('reposition', '*');" />
+							<input name="expmon" type="number" maxlength="2" PML_value="string.precision(sess_expmon, 0)" size="3" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
 						</PML_IF>
 						<PML_ELSE>
-							<input name="expmon" maxlength="2" value="" size="3" style="-wap-input-format:'*N';" oninput="javascript:parent.postMessage('reposition', '*');" onblur="javascript:parent.postMessage('reposition', '*');" />
+							<input name="expmon" type="number" maxlength="2" value="" size="3" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" />
 						</PML_ELSE>
 						&nbsp;/&nbsp;
 						<PML_IF COND="sess_expyear > 0">
-							<input name="expyear" maxlength="2" PML_value="string.precision(sess_expyear, 0)" size="3" style="-wap-input-format:'*N';" oninput="javascript:parent.postMessage('reposition', '*');" onblur="javascript:parent.postMessage('reposition', '*');" />
+							<input name="expyear" type="number" maxlength="2" PML_value="string.precision(sess_expyear, 0)" size="3" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
 						</PML_IF>
 						<PML_ELSE>
-							<input name="expyear" maxlength="2" value="" size="3" style="-wap-input-format:'*N';" oninput="javascript:parent.postMessage('reposition', '*');" onblur="javascript:parent.postMessage('reposition', '*');" />
+							<input name="expyear" type="number" maxlength="2" value="" size="3" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
 						</PML_ELSE>
 					</div>
 					<div class="mPoint_Label">
 						<PML_VAL>label_cvc</PML_VAL>:<br />
 						<PML_IF COND="sess_cvc > 0">
-							<input name="cvc" maxlength="3" PML_value="string.precision(sess_cvc, 0)" size="4" style="-wap-input-format:'*N';" oninput="javascript:parent.postMessage('reposition', '*');" onblur="javascript:parent.postMessage('reposition', '*');" />
+							<input name="cvc" type="number" maxlength="3" PML_value="string.precision(sess_cvc, 0)" size="4" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
 						</PML_IF>
 						<PML_ELSE>
-							<input name="cvc" maxlength="3" value="" size="4" style="-wap-input-format:'*N';" oninput="javascript:parent.postMessage('reposition', '*');" onblur="javascript:parent.postMessage('reposition', '*');" />
+							<input name="cvc" type="number" maxlength="3" value="" size="4" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
 						</PML_ELSE>
 					</div>
 					<div class="mPoint_Info"><PML_VAL>cvc_help</PML_VAL></div>
@@ -1347,7 +1915,7 @@ switch(cgi.clientid)
 				<!-- Store Credit Card -->
 				<PML_IF COND="cgi.store_card > 0">
 					<div>
-						<PML_IF COND="cgi.auto_store_card = 'true">
+						<PML_IF COND="cgi.auto_store_card = 'true'">
 							<input type="checkbox" name="preauth" value="true" checked="true" />
 						</PML_IF>
 						<PML_ELSE>
@@ -1358,18 +1926,10 @@ switch(cgi.clientid)
 				</PML_IF>
 				<!-- Complete Payment -->
 				<div id="submit">
-					<input type="submit" PML_value="submit" class="mPoint_Button" />
+					<input id="complete-payment" type="submit" PML_value="submit" class="mPoint_Button" />
 				</div>
 			</form>
-		</div>
-	</div>
-	<PML_IF COND="cgi.markup = 'html5'">
-		<!-- Hidden Data Fields Start -->
-		<span id="loader">
-			<img src="images/loader.gif" width="28" height="28" PML_alt="'- '@label_loading@' -'" border="0" />
-			<br />
-			<span><PML_VAL>label_loading</PML_VAL></span>
-		</span>
-	</PML_IF>
-</body>
-</html>
+		</body>
+		</html>
+	</PML_DEFAULT>
+</PML_SWITCH>

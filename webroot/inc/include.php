@@ -115,6 +115,7 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 	// Not fetching an Image or performing a back-end process and accessing the mobile website
 	if (eregi("/img/", $_SERVER['PHP_SELF']) == false && eregi("/sys/", $_SERVER['PHP_SELF']) == false
 		&& (eregi("/pay/", $_SERVER['PHP_SELF']) == true || eregi("/shop/", $_SERVER['PHP_SELF']) == true
+			|| eregi("/anet/", $_SERVER['PHP_SELF']) == true
 			|| $_SERVER['PHP_SELF'] == "/overview.php" || $_SERVER['PHP_SELF'] == "/terms.php"
 			|| (eregi("/new/", $_SERVER['PHP_SELF']) == true && General::getBrowserType() == "mobile") ) )
 	{
@@ -140,5 +141,5 @@ if (array_key_exists("checksum", $_GET) === true && $_SERVER['REQUEST_METHOD'] =
 define("sLANG", General::getLanguage() );
 
 // Intialise Text Translation Object
-$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), "/usr/local". sSYSTEM_PATH, 0, "UTF-8");
 ?>

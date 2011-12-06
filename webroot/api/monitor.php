@@ -39,7 +39,7 @@ $obj_Validator = new Validate();
 
 // Validate input
 if ($obj_Validator->valUsername($_REQUEST['username']) != 10) { $aMsgCds[] = $obj_Validator->valUsername($_REQUEST['username']) + 10; }
-if ($obj_Validator->valPassword($_REQUEST['password']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_REQUEST['password']) + 10; }
+if ($obj_Validator->valPassword($_REQUEST['password']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_REQUEST['password']) + 20; }
 
 // Success: Input valid
 if (count($aMsgCds) == 0)

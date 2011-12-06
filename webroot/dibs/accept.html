@@ -34,9 +34,8 @@ switch(cgi.language)
 		sms_receipt := 'Ovenstående kvittering er også blevet sendt via SMS til: MOBILE';
 		email_receipt := 'Send kvittering via E-Mail';
 		save := 'Gem';
-		continue := 'Fortsæt tilbage til sælgers site >>';
+		continue := 'Fortsæt tilbage til Sælgers site >>';
 		resume := 'Genoptag Betaling >>';
-		label_loading := 'Henter...';
 	}
 	// Swedish
 	case ('sv')
@@ -60,7 +59,6 @@ switch(cgi.language)
 		save := 'Gem';
 		continue := 'Återvänd till försäljarens webbplats >>';
 		resume := 'Resume Payment >>';
-		label_loading := 'Loading...';
 	}
 	// British English
 	default
@@ -84,27 +82,13 @@ switch(cgi.language)
 		save := 'Save';
 		continue := 'Continue back to Merchant Site >>';
 		resume := 'Resume Payment >>';
-		label_loading := 'Loading...';
 	}
 }
 /* ========== Language Translataion End ========== */
 </PML_SCRIPT>
-<PML_SWITCH EXPR="cgi.markup">
-	<PML_CASE VALUE="'html5'">
-		<!DOCTYPE html>
-		<html PML_xml:lang="cgi.lang">
-	</PML_CASE>
-	<PML_CASE VALUE="'xhtml'">
-		<?xml version="1.0" encoding="ISO-8859-15"?>
-		<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
-		<html xmlns="http://www.w3.org/1999/xhtml" PML_xml:lang="cgi.lang">
-	</PML_CASE>
-	<PML_DEFAULT>
-		<?xml version="1.0" encoding="ISO-8859-15"?>
-		<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
-		<html xmlns="http://www.w3.org/1999/xhtml" PML_xml:lang="cgi.lang">
-	</PML_DEFAULT>
-</PML_SWITCH>
+<?xml version="1.0" encoding="ISO-8859-15"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" PML_xml:lang="cgi.lang">
 <head>
 	<title>
 		<PML_IF COND="cgi.preauth = 'true' && cgi.euaid < 0">
@@ -120,11 +104,6 @@ switch(cgi.language)
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15" />
 	<meta http-equiv="Cache-Control" content="max-age=86400" />
 	<meta http-equiv="Content-Style-Type" content="text/css" />
-	<meta name="format-detection" content="telephone=no" />
-	<PML_IF COND="cgi.markup = 'html5'">
-		<meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-	</PML_IF>
-	
 	<style type="text/css">
 		/* ========== Tag Classes Start ========== */
 		body
@@ -271,52 +250,17 @@ switch(cgi.language)
 			padding-left: 3px;
 			padding-bottom: 3px;
 		}
-		div#submit
-		{
-			text-align: center;
-		}
 		/* ========== ID Classes End ========== */
-
-		/* ========== Loader Start ========== */
-		span#loader
-		{
-			visibility: hidden;
-			position: absolute;
-			left: 40%;
-			top: 50%;
-			width: 50px;
-			height: 50px;
-			text-align: center;
-			color: #000;
-			font-size: 10px;
-			background-color: #fff;
-			border: 2px solid #5B94B1;
-			-moz-border-radius: 10px;
-			-webkit-border-radius: 10px;
-			border-radius: 10px;
-			padding: 5px;
-			z-index: 30;
-		}
-		/* ========== Loader End ========== */
 	</style>
 </head>
 <body>
-	<PML_IF COND="cgi.logo_url != ''">
-		<div id="logo">
-			<img src="images/client_logo.jpg" PML_width="cgi.logo_width" PML_height="cgi.logo_height" PML_alt="'- '@cgi.client@' -'" />
-		</div>
-	</PML_IF>
+	<div id="logo">
+		<img src="images/client_logo.jpg" PML_width="cgi.width" PML_height="cgi.height" PML_alt="'- '@cgi.client@' -'" />
+	</div>
 	<!-- Create New Account -->
 	<PML_IF COND="cgi.preauth = 'true' && cgi.euaid < 0">
 		<div id="my-account">
-			<PML_SWITCH EXPR="cgi.markup">
-				<PML_CASE VALUE="'html5'">
-					<form PML_action="'http://mpoint.cellpointmobile.com/pay/sys/save_pwd.php?PHPSESSID='@cgi.PHPSESSID" method="post" onsubmit="javascript:document.getElementById('loader').style.visibility='visible'; document.getElementById('complete-payment').disabled=true;">
-				</PML_CASE>
-				<PML_DEFAULT>
-					<form PML_action="'http://mpoint.cellpointmobile.com/pay/sys/save_pwd.php?PHPSESSID='@cgi.PHPSESSID" method="post">
-				</PML_DEFAULT>
-			</PML_SWITCH>
+			<form PML_action="'http://mpoint.cellpointmobile.com/pay/sys/save_pwd.php?PHPSESSID='@cgi.PHPSESSID" method="post">
 				<div>
 					<!-- Standard mPoint Variables -->
 					<input type="hidden" name="cardid" PML_value="cgi.cardid" />
@@ -348,14 +292,7 @@ switch(cgi.language)
 	</PML_IF>
 	<PML_ELSIF COND="cgi.preauth = 'true'">
 		<div id="my-account">
-			<PML_SWITCH EXPR="cgi.markup">
-				<PML_CASE VALUE="'html5'">
-					<form PML_action="'http://mpoint.cellpointmobile.com/pay/sys/save_name.php?PHPSESSID='@cgi.PHPSESSID" method="post" onsubmit="javascript:document.getElementById('loader').style.visibility='visible';">
-				</PML_CASE>
-				<PML_DEFAULT>
-					<form PML_action="'http://mpoint.cellpointmobile.com/pay/sys/save_name.php?PHPSESSID='@cgi.PHPSESSID" method="post">
-				</PML_DEFAULT>
-			</PML_SWITCH>
+			<form PML_action="'http://mpoint.cellpointmobile.com/pay/sys/save_name.php?PHPSESSID='@cgi.PHPSESSID" method="post">
 				<div>
 					<!-- Standard mPoint Variables -->
 					<input type="hidden" name="cardid" PML_value="cgi.cardid" />
@@ -467,19 +404,11 @@ switch(cgi.language)
 					</div>
 					
 					<div id="submit">
-						<input id="complete-payment" type="submit" PML_value="continue" class="mPoint_Button" />
+						<input type="submit" PML_value="continue" class="mPoint_Button" />
 					</div>
 				</form>
 			</div>
 		</PML_ELSIF>
 	</PML_ELSE>
-	<PML_IF COND="cgi.markup = 'html5'">
-		<!-- Hidden Data Fields Start -->
-		<span id="loader">
-			<img src="images/loader.gif" width="28" height="28" PML_alt="'- '@label_loading@' -'" border="0" />
-			<br />
-			<span><PML_VAL>label_loading</PML_VAL></span>
-		</span>
-	</PML_IF>
 </body>
 </html>

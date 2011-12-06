@@ -117,12 +117,12 @@ try
 			<root>
 				<title><?= $_OBJ_TXT->_("Pay using Account"); ?></title>
 				<?= $obj_mPoint->getSystemInfo(); ?>
-				
+				<?= $_SESSION['obj_UA']->toXML(); ?>
 				<?= $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->toXML(); ?>
 				<?= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML(); ?>
 	
 				<?= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']); ?>
-	
+				
 				<labels>
 					<progress><?= $_OBJ_TXT->_("Step 2 of 2"); ?></progress>
 					<price><?= $_OBJ_TXT->_("Price"); ?></price>

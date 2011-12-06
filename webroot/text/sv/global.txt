@@ -1,3 +1,59 @@
+#: /webroot/anet/dpm.php:51
+msgid @@@ Card Info @@@
+msgstr @@@ Card Info @@@
+
+#: /webroot/anet/dpm.php:58
+msgid @@@ Step 2 of 2 @@@
+msgstr @@@ Step 2 of 2 @@@
+
+#: /webroot/anet/dpm.php:59
+msgid @@@ Please enter your card information below @@@
+msgstr @@@ Please enter your card information below @@@
+
+#: /webroot/anet/dpm.php:60
+msgid @@@ Selected Card @@@
+msgstr @@@ Selected Card @@@
+
+#: /webroot/anet/dpm.php:61
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
+#: /webroot/anet/dpm.php:62
+msgid @@@ Card Number @@@
+msgstr @@@ Card Number @@@
+
+#: /webroot/anet/dpm.php:63
+msgid @@@ Expiry Date @@@
+msgstr @@@ Expiry Date @@@
+
+#: /webroot/anet/dpm.php:64
+msgid @@@ mm @@@
+msgstr @@@ mm @@@
+
+#: /webroot/anet/dpm.php:65
+msgid @@@ yy @@@
+msgstr @@@ yy @@@
+
+#: /webroot/anet/dpm.php:66
+msgid @@@ CVC / CVS @@@
+msgstr @@@ CVC / CVS @@@
+
+#: /webroot/anet/dpm.php:67
+msgid @@@ 3 digits (printed on the back of the card) @@@
+msgstr @@@ 3 digits (printed on the back of the card) @@@
+
+#: /webroot/anet/dpm.php:68
+msgid @@@ 4 digits (printed on the back of the card) @@@
+msgstr @@@ 4 digits (printed on the back of the card) @@@
+
+#: /webroot/anet/dpm.php:69
+msgid @@@ Save Card Info @@@
+msgstr @@@ Save Card Info @@@
+
+#: /webroot/anet/dpm.php:70
+msgid @@@ Complete Payment @@@
+msgstr @@@ Complete Payment @@@
+
 #: /webroot/buy/sms.php:137
 msgid @@@ SMS Purchase MT @@@
 msgstr @@@ SMS Purchase MT @@@
@@ -52,7 +108,7 @@ msgstr @@@ Top-Up @@@
 
 #: /webroot/cpm/payment.php:138
 msgid @@@ Add Card @@@
-msgstr @@@ New @@@
+msgstr @@@ Add Card @@@
 
 #: /webroot/default.php:22
 msgid @@@ mPoint @@@
@@ -1212,49 +1268,37 @@ Please use password: {PASSWORD} for future purchases with your stored card.
 Kind Regards
 {CLIENT} @@@
 
-#: /api/classes/general.php:392
+#: /api/classes/general.php:395
 msgid @@@ Loading... @@@
 msgstr @@@ Loading... @@@
 
-#: /api/classes/general.php:634
+#: /api/classes/general.php:637
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ Välkommen till {CLIENT}, klicka på länken nedan @@@
 
-#: /api/classes/general.php:640
+#: /api/classes/general.php:643
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Välkommen till {CLIENT} @@@
 
 #: /api/classes/home.php:60
 msgid @@@ mPoint - Send One Time Password @@@
-msgstr @@@ Please enter the one time password: {OTP} on the website to login.
-The password will automatically expire in an hour. @@@
+msgstr @@@ mPoint - Send One Time Password @@@
 
-#: /api/classes/home.php:92
-msgid @@@ mPoint - Stored Cards Disabled @@@
-msgstr @@@ Your card details stored with {CLIENT} have been deleted due to too many invalid login attempts.
-Kind Regards
-{CLIENT} @@@
-
-#: /api/classes/home.php:94
+#: /api/classes/home.php:90
 msgid @@@ mPoint - Account Disabled @@@
-msgstr @@@ Your mPoint account with {CLIENT} has been deleted due to too many invalid login attempts.
-Kind Regards
-{CLIENT} @@@
+msgstr @@@ Your account with {CLIENT} has been deleted due to too many invalid login attempts @@@
 
 #: /api/classes/my_account.php:57
 msgid @@@ mPoint - Send Activation Code @@@
-msgstr @@@ Please enter the activation code: {CODE} on the website to verify your mobile number. @@@
+msgstr @@@ mPoint - Send Activation Code @@@
 
 #: /api/classes/my_account.php:117
 msgid @@@ mPoint - Activation Link Subject @@@
-msgstr @@@ Please verify your E-Mail address? @@@
+msgstr @@@ mPoint - Activation Link Subject @@@
 
 #: /api/classes/my_account.php:118
 msgid @@@ mPoint - Activation Link Body @@@
-msgstr @@@ Please click the link below to verify your new e-mail address.
-{URL}
-
-Please note that this is an autogenerate e-mail which you cannot respond to. @@@
+msgstr @@@ mPoint - Activation Link Body @@@
 
 #: /api/classes/shipping.php:114
 msgid @@@ FREE @@@

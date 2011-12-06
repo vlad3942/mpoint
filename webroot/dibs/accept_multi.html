@@ -126,435 +126,1746 @@ switch(cgi.clientid)
 	<PML_CASE VALUE="'html5'">
 		<!DOCTYPE html>
 		<html PML_xml:lang="cgi.lang">
-	</PML_CASE>
-	<PML_CASE VALUE="'xhtml'">
-		<?xml version="1.0" encoding="ISO-8859-15"?>
-		<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
-		<html xmlns="http://www.w3.org/1999/xhtml" PML_xml:lang="cgi.lang">
+		<head>
+			<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15" />
+			<meta http-equiv="Cache-Control" content="max-age=86400" />
+			<meta http-equiv="Content-Style-Type" content="text/css" />
+			<meta name="format-detection" content="telephone=no" />
+			<meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+			<style>
+				/* ========== Tag Classes Start ========== */
+				body
+				{
+					width: 100%;
+					margin: 0px;
+					padding: 0px;
+					-webkit-user-select: none;
+				    -webkit-text-size-adjust: none;
+					
+				}
+				body
+				{
+					background-color: #e5e8ed;
+					text-align: left;
+				}
+				body, table, div
+				{
+					font-size: 1em;
+					font-family: "Trebuchet MS", arial,sans-serif;
+					color: #000;
+				}
+				
+				h1
+				{
+					font-size: 130%;
+					white-space: nowrap;
+					text-align: center;
+					color: #000;
+				}
+				h2
+				{
+					font-size: 110%;
+					white-space: nowrap;
+					text-align: center;
+					color: #fff;
+					margin-bottom: 5px;
+				}
+				
+				form, table
+				{
+					margin: 0px 0px 0px 0px;
+					padding: 0px 0px 0px 0px;
+				}
+				
+				a
+				{
+					color: blue;
+					text-decoration: none;
+				}
+				
+				a:hover
+				{
+					text-decoration: underline;
+				}
+				
+				input.number
+				{
+					-wap-input-format: '*N';
+				}
+				ul, ul li
+				{
+					padding: 0;
+					margin: 0;
+				}
+				ul li
+				{
+					margin-left: 1em;
+				}
+				/* ========== Tag Classes End ========== */
+				
+				/* ========== Input Fields Start ========== */
+				input.text 
+				{
+				    width: 140px;
+				}
+				input[type="password"] 
+				{
+				    width: 100px;
+				}
+				input.control-scroll
+				{
+					position: relative;
+					top: -27px;
+					left: 0px;
+					width: 172px;
+					height: 21px;
+					z-index: 1;
+					margin: 0px 0px -35px 0px;
+					padding: 0px 0px -35px 0px;
+					border: none;
+				/*	border: 1px solid red; */
+					background-color: transparent;
+					-webkit-appearance: none;
+				}
+				.control-scroll
+				{
+					position: relative;
+					top: -25px;
+					left: 0px;
+					height: 21px;
+					margin: 0px 0px -20px 0px;
+					z-index: 1;
+				}
+				.control-scroll input[type="button"]
+				{
+					position: absolute;
+					top: 0px;
+					left: 0px;
+					width: 172px;
+					height: 21px;
+					border: none;
+					background-color: transparent;
+					-webkit-appearance: none;
+				}
+				.control-focus
+				{
+					position: relative;
+					top: -25px;
+					left: 0px;
+					height: 35px;
+					margin: 0px 0px -35px 0px;
+					z-index: 1;
+				}
+				.control-focus input[type="button"]
+				{
+					position: absolute;
+					top: 0px;
+					left: 0px;
+					width: 100%;
+					height: 35px;
+					border: none;
+					background-color: transparent;
+					-webkit-appearance: none;
+				}
+				/* ========== Input Fields End ========== */
+
+				/* ========== Table List Start ========== */
+				table.grouped
+				{
+					padding-right: 10px;
+					width: 100%;
+				}
+				table.grouped tr th
+				{
+					white-space: nowrap;
+				}
+				tr.row, tr.first-row, tr.last-row
+				{
+					padding: 0px;
+					background-color: white;
+					height: 45px;
+				}
+				.stretch
+				{
+					width: 100%;
+				}
+				table.grouped tr.row > th, table.grouped tr.first-row > th, table.grouped tr.last-row > th, table.grouped tr.row > td, table.grouped tr.first-row > td, table.grouped tr.last-row > td
+				{
+					padding-left: 5px;
+					border-bottom: 1px solid rgb(217, 217, 217);
+				}
+				table.grouped tr.combined-row
+				{
+					height: 22px;
+				}
+				table.grouped tr.row th.combined-row, table.grouped tr.row td.combined-row, table.grouped tr.first-row th.combined-row, table.grouped tr.first-row td.combined-row
+				{
+					border-bottom: none;
+				}
+				
+				table.grouped tr.row img, table.grouped tr.first-row img, table.grouped tr.last-row img
+				{
+					border: none;
+					vertical-align: middle;
+				}
+				table.grouped tr.first-row > th, table.grouped tr.first-row > td
+				{
+					border-top: 1px solid rgb(217, 217, 217);
+				}
+				table.grouped tr.last-row > th, table.grouped tr.last-row > td
+				{
+					
+				}
+				table.grouped th.left-column, table.grouped td.left-column, table.grouped th.column, table.grouped td.column
+				{
+					border-left: 1px solid rgb(217, 217, 217);
+				}
+				table.grouped th.right-column, table.grouped td.right-column
+				{
+					border-right: 1px solid rgb(217, 217, 217);
+					padding-right: 5px;
+				}
+				table.grouped tr.first-row th.left-column, table.grouped tr.first-row td.left-column
+				{
+					-moz-border-top-left-radius: 8px;
+					-webkit-border-top-left-radius: 8px;
+					-o-border-border-top-left-radius: 8px;	
+				}
+				table.grouped tr.last-row th.left-column, table.grouped tr.last-row td.left-column
+				{
+					-moz-border-bottom-left-radius: 8px;
+					-webkit-border-bottom-left-radius: 8px;
+					-o-border-border-bottom-left-radius: 8px;	
+				}
+				table.grouped tr.first-row th.right-column, table.grouped tr.first-row td.right-column
+				{
+					-moz-border-top-right-radius: 8px;
+					-webkit-border-top-right-radius: 8px;
+					-o-border-border-top-right-radius: 8px;	
+				}
+				table.grouped tr.last-row th.right-column, table.grouped tr.last-row td.right-column
+				{
+					-moz-border-bottom-right-radius: 8px;
+					-webkit-border-bottom-right-radius: 8px;
+					-o-border-border-bottom-right-radius: 8px;	
+				}
+				table.grouped tr.selected, table.grouped th.selected, table.grouped td.selected
+				{
+					background-color: #015A7D;
+					color: #fff;
+				}
+				table.grouped tr.selected th, table.grouped tr.selected td, table.grouped th.selected, table.grouped td.selected
+				{
+					color: #fff;
+				}
+				table.grouped .info
+				{
+					padding-top: 0px;
+					font-style: italic;
+					font-size: 90%;
+				}
+				table.grouped h2
+				{
+					color: #000;
+					font-weight: bold;
+					margin: 0px;
+				}
+				/* ========== Table List End ========== */
+				
+				/* ========== Large Submit Button Start ========== */
+				a.submit-button
+				{
+					height: 30px;
+					width: 200px;
+					color: #fff;
+					text-decoration: none;
+					background: -webkit-gradient(
+												linear,
+												left top,
+												left bottom,
+												color-stop(0.00, #86C28C),
+												color-stop(0.50, #009F11),
+												color-stop(0.51, #009F11),
+												color-stop(1.00, #008F0B)
+												);
+					-moz-border-radius: 10px;
+					-webkit-border-radius: 10px;
+					-o-border-radius: 10px;
+					border-radius: 10px;
+					border-top: 1px solid #D0D0D0;
+					border-bottom: 2px solid #2A422C;
+					border-left: 1px solid #5A5A5C;
+					border-right: 2px solid #374139;
+					display: block;
+					padding: 5px 10px;
+					margin: 15px auto;
+				}
+				a.submit-button h2
+				{
+					height: 30px;
+					width: 200px;
+					vertical-align: middle;
+					text-align: center;
+					display: table-cell;
+				}
+				a.submit-button-clicked
+				{
+					opacity: 0.4;
+					filter: alpha(opacity=40);
+					height: 30px;
+					width: 200px;
+					color: #374139;
+					text-decoration: none;
+					-moz-border-radius: 10px;
+					-webkit-border-radius: 10px;
+					-o-border-radius: 10px;
+					border-radius: 10px;
+					border-top: 1px solid #D0D0D0;
+					border-bottom: 1px solid #2A422C;
+					border-left: 1px solid #5A5A5C;
+					border-right: 1px solid #374139;
+					display: block;
+					padding: 5px 10px;
+					margin: 15px auto;
+				}
+				/* ========== Large Button End ========== */
+				
+				/* ========== Loader Start ========== */
+				span#loader
+				{
+					visibility: hidden;
+					position: absolute;
+					left: 40%;
+					top: 50%;
+					width: 50px;
+					height: 50px;
+					text-align: center;
+					color: #000;
+					font-size: 10px;
+					background-color: #fff;
+					border: 2px solid #013C64;
+					-moz-border-radius: 10px;
+					-webkit-border-radius: 10px;
+					border-radius: 10px;
+					padding: 5px;
+					z-index: 30;
+				}
+				/* ========== Loader End ========== */
+				
+				/* ========== Button Start ========== */
+				.button
+				{
+					position: fixed;
+					top: 5px;
+					right: 20px;
+					width: 43px;
+					height: 30px;
+					margin: 0px 3px;
+					border-top: 1px solid #fff;
+					border-left: 1px solid #fff;
+					border-bottom: 2px solid #494949;
+					border-right: 2px solid #494949;
+					-moz-border-radius: 4px;
+					-webkit-border-radius: 4px;
+					-o-border-radius: 4px;
+					border-radius: 4px;
+					line-height: 30px;
+					z-index: 1;
+					background: -webkit-gradient(
+												linear,
+												left top,
+												left bottom,
+												color-stop(0.00, #3E82FF),
+												color-stop(0.50, #1164FF),
+												color-stop(0.51, #0052EA),
+												color-stop(1.00, #00318C)
+												);
+					font-weight: bold;
+					color: white;
+					text-align: center;
+				}
+				.clicked
+				{
+					opacity: 0.4;
+					filter: alpha(opacity=40);
+					border-top: 0px;
+					border-left: 0px;
+					border-bottom-width: 1px;
+					border-right-width: 1px;
+				}
+				/* ========== Button End ========== */
+				
+				/* ========== Content Start ========== */
+				#wrapper
+				{
+					width: 100%;
+					height: 99%;
+					position: relative;
+				    z-index: 1;
+				    overflow: auto;
+				}
+				#content
+				{
+				/*	-webkit-touch-callout: none;
+					-webkit-tap-highlight-color: rgba(0, 0, 0, 0); */
+					width: 97%;
+					position: absolute;
+					z-index: 1;
+					padding-top: 10px;
+					padding-bottom: 5px;
+					padding-left: 10px;
+				}
+				span.hidden-data
+				{
+					visibility: hidden;
+					position: absolute;
+					left: 1px;
+					top: 1px;
+				}
+				/* ========== Content End ========== */
+				
+				/* ========== Checkbox Start ========== */
+				.checkbox
+				{
+					width: 30px;
+					height: 30px;
+					border: 1px solid #000;
+					-moz-border-radius: 10px;
+					-webkit-border-radius: 10px;
+					-o-border-radius: 10px;
+					border-radius: 10px;
+					margin: 0px 10px 0px 5px;
+				}
+				.checkbox img
+				{
+					visibility: hidden;
+				}
+				.checkbox-checked img
+				{
+					visibility: visible;
+				}
+				/* ========== Checkbox End ========== */
+				
+				/* ========== mPoint Classes Start ========== */
+				.mPoint_Label
+				{
+					font-weight: bold;
+					padding-right: 0.5em;
+					padding-top: 0.3em;
+					white-space: nowrap;
+				}
+				
+				.mPoint_Info
+				{
+					font-weight: normal;
+					color: #000;
+					text-align: left;
+					padding: 0px;
+					margin: 0px;	
+				}
+				
+				.mPoint_Help
+				{
+					margin-left: 15px;
+				}
+				
+				.mPoint_Status
+				{
+					font-size: 90%;
+					color: red;
+					font-style: italic;
+					padding-top: 0.5em;
+					padding-bottom: 0.5em;
+				}
+				div#info .mPoint_Status
+				{
+					color: darkgreen;
+				}
+				
+				td.mPoint_Number
+				{
+					padding-right: 0.5em;
+					text-align: right;
+					white-space: nowrap;
+				}
+				.mPoint_Card
+				{
+					white-space: nowrap;
+				}
+				/* ========== mPoint Classes End ========== */
+
+				/* ========== ID Classes Start ========== */
+				div#logo, div#progress
+				{
+					text-align: center;
+				}
+				/* ========== ID Classes End ========== */
+			</style>
+			<script type="text/javascript">
+			(function(){
+				var m = Math,
+					vendor = (/webkit/i).test(navigator.appVersion) ? 'webkit' :
+						(/firefox/i).test(navigator.userAgent) ? 'Moz' :
+						'opera' in window ? 'O' : '',
+
+					// Browser capabilities
+					has3d = 'WebKitCSSMatrix' in window && 'm11' in new WebKitCSSMatrix(),
+					hasTouch = 'ontouchstart' in window,
+					hasTransform = vendor + 'Transform' in document.documentElement.style,
+					isIDevice = (/iphone|ipad/gi).test(navigator.appVersion),
+					isPlaybook = (/playbook/gi).test(navigator.appVersion),
+					hasTransitionEnd = isIDevice || isPlaybook,
+					nextFrame = (function() {
+					    return window.requestAnimationFrame
+							|| window.webkitRequestAnimationFrame
+							|| window.mozRequestAnimationFrame
+							|| window.oRequestAnimationFrame
+							|| window.msRequestAnimationFrame
+							|| function(callback) { return setTimeout(callback, 17); }
+					})(),
+					cancelFrame = (function () {
+					    return window.cancelRequestAnimationFrame
+							|| window.webkitCancelRequestAnimationFrame
+							|| window.mozCancelRequestAnimationFrame
+							|| window.oCancelRequestAnimationFrame
+							|| window.msCancelRequestAnimationFrame
+							|| clearTimeout
+					})(),
+
+					// Events
+					RESIZE_EV = 'onorientationchange' in window ? 'orientationchange' : 'resize',
+					START_EV = hasTouch ? 'touchstart' : 'mousedown',
+					MOVE_EV = hasTouch ? 'touchmove' : 'mousemove',
+					END_EV = hasTouch ? 'touchend' : 'mouseup',
+					CANCEL_EV = hasTouch ? 'touchcancel' : 'mouseup',
+
+					// Helpers
+					trnOpen = 'translate' + (has3d ? '3d(' : '('),
+					trnClose = has3d ? ',0)' : ')',
+
+					// Constructor
+					iScroll = function (el, options) {
+						var that = this,
+							doc = document,
+							i;
+
+						that.wrapper = typeof el == 'object' ? el : doc.getElementById(el);
+						that.wrapper.style.overflow = 'hidden';
+						that.scroller = that.wrapper.children[0];
+
+						// Default options
+						that.options = {
+							hScroll: true,
+							vScroll: true,
+							bounce: true,
+							bounceLock: false,
+							momentum: true,
+							lockDirection: true,
+							useTransform: true,
+							useTransition: false,
+
+							// Events
+							onRefresh: null,
+							onBeforeScrollStart: function (e) { e.preventDefault(); },
+							onScrollStart: null,
+							onBeforeScrollMove: null,
+							onScrollMove: null,
+							onBeforeScrollEnd: null,
+							onScrollEnd: null,
+							onTouchEnd: null,
+							onDestroy: null
+						};
+
+						// User defined options
+						for (i in options) that.options[i] = options[i];
+
+						// Normalize options
+						that.options.useTransform = hasTransform ? that.options.useTransform : false;
+						that.options.hScrollbar = that.options.hScroll && that.options.hScrollbar;
+						that.options.vScrollbar = that.options.vScroll && that.options.vScrollbar;
+						that.options.useTransition = hasTransitionEnd && that.options.useTransition;
+
+						// Set some default styles
+						that.scroller.style[vendor + 'TransitionProperty'] = that.options.useTransform ? '-' + vendor.toLowerCase() + '-transform' : 'top left';
+						that.scroller.style[vendor + 'TransitionDuration'] = '0';
+						that.scroller.style[vendor + 'TransformOrigin'] = '0 0';
+						if (that.options.useTransition) that.scroller.style[vendor + 'TransitionTimingFunction'] = 'cubic-bezier(0.33,0.66,0.66,1)';
+						
+						if (that.options.useTransform) that.scroller.style[vendor + 'Transform'] = trnOpen + '0,0' + trnClose;
+						else that.scroller.style.cssText += ';top:0;left:0';
+								
+						that.refresh();
+
+						that._bind(RESIZE_EV, window);
+						that._bind(START_EV);
+						if (!hasTouch) that._bind('mouseout', that.wrapper);
+					};
+
+				// Prototype
+				iScroll.prototype = {
+					enabled: true,
+					x: 0,
+					y: 0,
+					steps: [],
+					scale: 1,
+					
+					handleEvent: function (e) {
+						var that = this;
+						switch(e.type) {
+							case START_EV: that._start(e); break;
+							case MOVE_EV: that._move(e); break;
+							case END_EV:
+							case CANCEL_EV: that._end(e); break;
+							case RESIZE_EV: that._resize(); break;
+							case 'mouseout': that._mouseout(e); break;
+							case 'webkitTransitionEnd': that._transitionEnd(e); break;
+						}
+					},
+
+					_resize: function () {
+						this.refresh();
+					},
+					
+					_pos: function (x, y) {
+						x = this.hScroll ? x : 0;
+						y = this.vScroll ? y : 0;
+
+						if (this.options.useTransform) {
+							this.scroller.style[vendor + 'Transform'] = trnOpen + x + 'px,' + y + 'px' + trnClose + ' scale(' + this.scale + ')';
+						} else {
+							x = m.round(x);
+							y = m.round(y);
+							this.scroller.style.left = x + 'px';
+							this.scroller.style.top = y + 'px';
+						}
+
+						this.x = x;
+						this.y = y;
+					},
+
+					_start: function (e) {
+						var that = this,
+							point = hasTouch ? e.touches[0] : e,
+							matrix, x, y;
+
+						if (!that.enabled) return;
+
+						if (that.options.onBeforeScrollStart) that.options.onBeforeScrollStart.call(that, e);
+						
+						if (that.options.useTransition) that._transitionTime(0);
+
+						that.moved = false;
+						that.animating = false;
+						that.zoomed = false;
+						that.distX = 0;
+						that.distY = 0;
+						that.absDistX = 0;
+						that.absDistY = 0;
+						that.dirX = 0;
+						that.dirY = 0;
+
+						if (that.options.momentum) {
+							if (that.options.useTransform) {
+								// Very lame general purpose alternative to CSSMatrix
+								matrix = getComputedStyle(that.scroller, null)[vendor + 'Transform'].replace(/[^0-9-.,]/g, '').split(',');
+								x = matrix[4] * 1;
+								y = matrix[5] * 1;
+							} else {
+								x = getComputedStyle(that.scroller, null).left.replace(/[^0-9-]/g, '') * 1;
+								y = getComputedStyle(that.scroller, null).top.replace(/[^0-9-]/g, '') * 1;
+							}
+							
+							if (x != that.x || y != that.y) {
+								if (that.options.useTransition) that._unbind('webkitTransitionEnd');
+								else cancelFrame(that.aniTime);
+								that.steps = [];
+								that._pos(x, y);
+							}
+						}
+
+						that.absStartX = that.x;	// Needed by snap threshold
+						that.absStartY = that.y;
+
+						that.startX = that.x;
+						that.startY = that.y;
+						that.pointX = point.pageX;
+						that.pointY = point.pageY;
+
+						that.startTime = e.timeStamp || (new Date()).getTime();
+
+						if (that.options.onScrollStart) that.options.onScrollStart.call(that, e);
+
+						that._bind(MOVE_EV);
+						that._bind(END_EV);
+						that._bind(CANCEL_EV);
+					},
+					
+					_move: function (e) {
+						var that = this,
+							point = hasTouch ? e.touches[0] : e,
+							deltaX = point.pageX - that.pointX,
+							deltaY = point.pageY - that.pointY,
+							newX = that.x + deltaX,
+							newY = that.y + deltaY,
+							timestamp = e.timeStamp || (new Date()).getTime();
+
+						if (that.options.onBeforeScrollMove) that.options.onBeforeScrollMove.call(that, e);
+
+						that.pointX = point.pageX;
+						that.pointY = point.pageY;
+
+						// Slow down if outside of the boundaries
+						if (newX > 0 || newX < that.maxScrollX) {
+							newX = that.options.bounce ? that.x + (deltaX / 2) : newX >= 0 || that.maxScrollX >= 0 ? 0 : that.maxScrollX;
+						}
+						if (newY > 0 || newY < that.maxScrollY) { 
+							newY = that.options.bounce ? that.y + (deltaY / 2) : newY >= 0 || that.maxScrollY >= 0 ? 0 : that.maxScrollY;
+						}
+
+						if (that.absDistX < 6 && that.absDistY < 6) {
+							that.distX += deltaX;
+							that.distY += deltaY;
+							that.absDistX = m.abs(that.distX);
+							that.absDistY = m.abs(that.distY);
+
+							return;
+						}
+
+						// Lock direction
+						if (that.options.lockDirection) {
+							if (that.absDistX > that.absDistY + 5) {
+								newY = that.y;
+								deltaY = 0;
+							} else if (that.absDistY > that.absDistX + 5) {
+								newX = that.x;
+								deltaX = 0;
+							}
+						}
+
+						that.moved = true;
+						that._pos(newX, newY);
+						that.dirX = deltaX > 0 ? -1 : deltaX < 0 ? 1 : 0;
+						that.dirY = deltaY > 0 ? -1 : deltaY < 0 ? 1 : 0;
+
+						if (timestamp - that.startTime > 300) {
+							that.startTime = timestamp;
+							that.startX = that.x;
+							that.startY = that.y;
+						}
+						
+						if (that.options.onScrollMove) that.options.onScrollMove.call(that, e);
+					},
+					
+					_end: function (e) {
+						if (hasTouch && e.touches.length != 0) return;
+
+						var that = this,
+							point = hasTouch ? e.changedTouches[0] : e,
+							target, ev,
+							momentumX = { dist:0, time:0 },
+							momentumY = { dist:0, time:0 },
+							duration = (e.timeStamp || (new Date()).getTime()) - that.startTime,
+							newPosX = that.x,
+							newPosY = that.y,
+							newDuration;
+
+						that._unbind(MOVE_EV);
+						that._unbind(END_EV);
+						that._unbind(CANCEL_EV);
+
+						if (that.options.onBeforeScrollEnd) that.options.onBeforeScrollEnd.call(that, e);
+
+						if (!that.moved) {
+							if (hasTouch) {
+								// Find the last touched element
+								target = point.target;
+								while (target.nodeType != 1) target = target.parentNode;
+
+								if (target.tagName != 'SELECT' && target.tagName != 'INPUT' && target.tagName != 'TEXTAREA') {
+									ev = document.createEvent('MouseEvents');
+									ev.initMouseEvent('click', true, true, e.view, 1,
+										point.screenX, point.screenY, point.clientX, point.clientY,
+										e.ctrlKey, e.altKey, e.shiftKey, e.metaKey,
+										0, null);
+									ev._fake = true;
+									target.dispatchEvent(ev);
+								}
+							}
+
+							that._resetPos(200);
+
+							if (that.options.onTouchEnd) that.options.onTouchEnd.call(that, e);
+							return;
+						}
+
+						if (duration < 300 && that.options.momentum) {
+							momentumX = newPosX ? that._momentum(newPosX - that.startX, duration, -that.x, that.scrollerW - that.wrapperW + that.x, that.options.bounce ? that.wrapperW : 0) : momentumX;
+							momentumY = newPosY ? that._momentum(newPosY - that.startY, duration, -that.y, (that.maxScrollY < 0 ? that.scrollerH - that.wrapperH + that.y : 0), that.options.bounce ? that.wrapperH : 0) : momentumY;
+
+							newPosX = that.x + momentumX.dist;
+							newPosY = that.y + momentumY.dist;
+
+				 			if ((that.x > 0 && newPosX > 0) || (that.x < that.maxScrollX && newPosX < that.maxScrollX)) momentumX = { dist:0, time:0 };
+				 			if ((that.y > 0 && newPosY > 0) || (that.y < that.maxScrollY && newPosY < that.maxScrollY)) momentumY = { dist:0, time:0 };
+						}
+
+						if (momentumX.dist || momentumY.dist) {
+							newDuration = m.max(m.max(momentumX.time, momentumY.time), 10);
+
+							that.scrollTo(newPosX, newPosY, newDuration);
+
+							if (that.options.onTouchEnd) that.options.onTouchEnd.call(that, e);
+							return;
+						}
+
+						that._resetPos(200);
+						if (that.options.onTouchEnd) that.options.onTouchEnd.call(that, e);
+					},
+					
+					_resetPos: function (time) {
+						var that = this,
+							resetX = that.x >= 0 ? 0 : that.x < that.maxScrollX ? that.maxScrollX : that.x,
+							resetY = that.y >= 0 || that.maxScrollY > 0 ? 0 : that.y < that.maxScrollY ? that.maxScrollY : that.y;
+
+						if (resetX == that.x && resetY == that.y) {
+							if (that.moved) {
+								if (that.options.onScrollEnd) that.options.onScrollEnd.call(that);		// Execute custom code on scroll end
+								that.moved = false;
+							}
+
+							return;
+						}
+
+						that.scrollTo(resetX, resetY, time || 0);
+					},
+					
+					_mouseout: function (e) {
+						var t = e.relatedTarget;
+
+						if (!t) {
+							this._end(e);
+							return;
+						}
+
+						while (t = t.parentNode) if (t == this.wrapper) return;
+						
+						this._end(e);
+					},
+
+					_transitionEnd: function (e) {
+						var that = this;
+
+						if (e.target != that.scroller) return;
+
+						that._unbind('webkitTransitionEnd');
+						
+						that._startAni();
+					},
+
+					/**
+					 *
+					 * Utilities
+					 *
+					 */
+					_startAni: function () {
+						var that = this,
+							startX = that.x, startY = that.y,
+							startTime = (new Date).getTime(),
+							step, easeOut;
+
+						if (that.animating) return;
+
+						if (!that.steps.length) {
+							that._resetPos(400);
+							return;
+						}
+
+						step = that.steps.shift();
+
+						if (step.x == startX && step.y == startY) step.time = 0;
+
+						that.animating = true;
+						that.moved = true;
+
+						if (that.options.useTransition) {
+							that._transitionTime(step.time);
+							that._pos(step.x, step.y);
+							that.animating = false;
+							if (step.time) that._bind('webkitTransitionEnd');
+							else that._resetPos(0);
+							return;
+						}
+
+						(function animate () {
+							var now = (new Date).getTime(),
+								newX, newY;
+
+							if (now >= startTime + step.time) {
+								that._pos(step.x, step.y);
+								that.animating = false;
+								if (that.options.onAnimationEnd) that.options.onAnimationEnd.call(that);			// Execute custom code on animation end
+								that._startAni();
+								return;
+							}
+
+							now = (now - startTime) / step.time - 1;
+							easeOut = m.sqrt(1 - now * now);
+							newX = (step.x - startX) * easeOut + startX;
+							newY = (step.y - startY) * easeOut + startY;
+							that._pos(newX, newY);
+							if (that.animating) that.aniTime = nextFrame(animate);
+						})();
+					},
+
+					_transitionTime: function (time) {
+						this.scroller.style[vendor + 'TransitionDuration'] = time + 'ms';
+					},
+					
+					_momentum: function (dist, time, maxDistUpper, maxDistLower, size) {
+						var deceleration = 0.0006,
+							speed = m.abs(dist) / time,
+							newDist = (speed * speed) / (2 * deceleration),
+							newTime = 0, outsideDist = 0;
+
+						// Proportinally reduce speed if we are outside of the boundaries 
+						if (dist > 0 && newDist > maxDistUpper) {
+							outsideDist = size / (6 / (newDist / speed * deceleration));
+							maxDistUpper = maxDistUpper + outsideDist;
+							speed = speed * maxDistUpper / newDist;
+							newDist = maxDistUpper;
+						} else if (dist < 0 && newDist > maxDistLower) {
+							outsideDist = size / (6 / (newDist / speed * deceleration));
+							maxDistLower = maxDistLower + outsideDist;
+							speed = speed * maxDistLower / newDist;
+							newDist = maxDistLower;
+						}
+
+						newDist = newDist * (dist < 0 ? -1 : 1);
+						newTime = speed / deceleration;
+
+						return { dist: newDist, time: m.round(newTime) };
+					},
+
+					_offset: function (el) {
+						var left = -el.offsetLeft,
+							top = -el.offsetTop;
+							
+						while (el = el.offsetParent) {
+							left -= el.offsetLeft;
+							top -= el.offsetTop;
+						} 
+
+						return { left: left, top: top };
+					},
+
+					_bind: function (type, el, bubble) {
+						(el || this.scroller).addEventListener(type, this, !!bubble);
+					},
+
+					_unbind: function (type, el, bubble) {
+						(el || this.scroller).removeEventListener(type, this, !!bubble);
+					},
+
+
+					/**
+					 *
+					 * Public methods
+					 *
+					 */
+					destroy: function () {
+						var that = this;
+
+						that.scroller.style[vendor + 'Transform'] = '';
+
+						// Remove the event listeners
+						that._unbind(RESIZE_EV, window);
+						that._unbind(START_EV);
+						that._unbind(MOVE_EV);
+						that._unbind(END_EV);
+						that._unbind(CANCEL_EV);
+						that._unbind('mouseout', that.wrapper);
+						if (that.options.useTransition) that._unbind('webkitTransitionEnd');
+						
+						if (that.options.onDestroy) that.options.onDestroy.call(that);
+					},
+
+					refresh: function () {
+						var that = this,
+							offset;
+
+						that.wrapperW = that.wrapper.clientWidth;
+						that.wrapperH = that.wrapper.clientHeight;
+
+						that.scrollerW = that.scroller.offsetWidth;
+						that.scrollerH = that.scroller.offsetHeight;
+						that.maxScrollX = that.wrapperW - that.scrollerW;
+						that.maxScrollY = that.wrapperH - that.scrollerH;
+						that.dirX = 0;
+						that.dirY = 0;
+				//alert(that.scroller.getAttribute("id") +": "+ that.wrapperH +" - "+ that.scrollerH +" = "+ that.maxScrollY);
+						that.hScroll = that.options.hScroll && that.maxScrollX < 0;
+						that.vScroll = that.options.vScroll && (!that.options.bounceLock && !that.hScroll || that.scrollerH > that.wrapperH);
+
+						offset = that._offset(that.wrapper);
+						that.wrapperOffsetLeft = -offset.left;
+						that.wrapperOffsetTop = -offset.top;
+
+
+						that.scroller.style[vendor + 'TransitionDuration'] = '0';
+
+						that._resetPos(200);
+					},
+
+					scrollTo: function (x, y, time, relative) {
+						var that = this,
+							step = x,
+							i, l;
+
+						that.stop();
+
+						if (!step.length) step = [{ x: x, y: y, time: time, relative: relative }];
+						
+						for (i=0, l=step.length; i<l; i++) {
+							if (step[i].relative) { step[i].x = that.x - step[i].x; step[i].y = that.y - step[i].y; }
+							that.steps.push({ x: step[i].x, y: step[i].y, time: step[i].time || 0 });
+						}
+
+						that._startAni();
+					},
+
+					scrollToElement: function (el, time) {
+						var that = this, pos;
+						el = el.nodeType ? el : that.scroller.querySelector(el);
+						if (!el) return;
+
+						pos = that._offset(el);
+						pos.left += that.wrapperOffsetLeft;
+						pos.top += that.wrapperOffsetTop;
+
+						pos.left = pos.left > 0 ? 0 : pos.left < that.maxScrollX ? that.maxScrollX : pos.left;
+						pos.top = pos.top > 0 ? 0 : pos.top < that.maxScrollY ? that.maxScrollY : pos.top;
+						time = time === undefined ? m.max(m.abs(pos.left)*2, m.abs(pos.top)*2) : time;
+
+						that.scrollTo(pos.left, pos.top, time);
+					},
+
+					disable: function () {
+						this.stop();
+						this._resetPos(0);
+						this.enabled = false;
+
+						// If disabled after touchstart we make sure that there are no left over events
+						this._unbind(MOVE_EV);
+						this._unbind(END_EV);
+						this._unbind(CANCEL_EV);
+					},
+					
+					enable: function () {
+						this.enabled = true;
+					},
+					
+					stop: function () {
+						cancelFrame(this.aniTime);
+						this.steps = [];
+						this.moved = false;
+						this.animating = false;
+					}
+				};
+
+				if (typeof exports !== 'undefined') exports.iScroll = iScroll;
+				else window.iScroll = iScroll;
+
+				})();
+			</script>
+			<style>
+				body
+				{
+					height: <PML_VAL>cgi.device_height - 55</PML_VAL>px;
+				}
+			</style>
+			<script type="text/javascript">
+				var myScroll;
+				function loaded()
+				{
+					document.addEventListener('touchmove', function(e){ e.preventDefault(); }, false);
+					myScroll = new iScroll('wrapper', { checkDOMChanges:false, snap:false, momentum:true, hScrollbar:false, vScrollbar:true });
+				}
+				document.addEventListener('DOMContentLoaded', loaded, false);
+			</script>
+		</head>
+		<body>
+			<PML_IF COND="cgi.logo_url != ''">
+				<div id="logo">
+					<img PML_src="'images/client_logo_'@cgi.clientid@'.jpg'" PML_width="cgi.logo_width" PML_height="cgi.logo_height" PML_alt="'- '@cgi.client@' -'" />
+				</div>
+			</PML_IF>
+			<div id="wrapper">
+				<div id="content">
+					<!-- Create New Account -->
+					<PML_IF COND="cgi.preauth = 'true' && cgi.euaid < 0">
+						<div id="my-account">
+							<form id="save-card" PML_action="string.replace(cgi.callbackurl, '/callback/dibs.php', '') @'/pay/sys/save_pwd.php?PHPSESSID='@cgi.PHPSESSID" method="post" onsubmit="javascript:document.getElementById('loader').style.visibility='visible'; document.getElementById('complete-payment').disabled=true;">
+								<div>
+									<!-- Standard mPoint Variables -->
+									<input type="hidden" name="cardid" PML_value="cgi.cardid" />
+								</div>
+								<div><PML_VAL>create_account_info</PML_VAL></div>
+								<div id="accountinfo">
+									<table cellpadding="0" cellspacing="0" class="grouped">
+									<tr class="first-row last-row">
+										<th colspan="2" class="left-column right-column">
+										<PML_SWITCH EXPR="cgi.cardid">
+											<PML_CASE VALUE="1">
+												<img src="images/amex.jpg" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- American Express -" />
+												&nbsp;American Express
+											</PML_CASE>
+											<PML_CASE VALUE="2">
+												<img src="images/dankort.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Dankort -" />
+												&nbsp;Dankort
+											</PML_CASE>
+											<PML_CASE VALUE="3">
+												<img src="images/diners.jpg" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Diners Club -" />
+												&nbsp;Diners Club
+											</PML_CASE>
+											<PML_CASE VALUE="4">
+												<img src="images/mastercard.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- EuroCard -" />
+												&nbsp;EuroCard
+											</PML_CASE>
+											<PML_CASE VALUE="5">
+												<img src="images/jcb.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- JCB -" />
+												&nbsp;JCB
+											</PML_CASE>
+											<PML_CASE VALUE="6">
+												<img src="images/maestro.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Maestro -" />
+												&nbsp;Maestro
+											</PML_CASE>
+											<PML_CASE VALUE="7">
+												<img src="images/mastercard.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- MasterCard -" />
+												&nbsp;MasterCard
+											</PML_CASE>
+											<PML_CASE VALUE="8">
+												<img src="images/visa.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- VISA -" />
+												&nbsp;VISA
+											</PML_CASE>
+											<PML_CASE VALUE="9">
+												<img src="images/visa_electron.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- VISA Electron -" />
+												&nbsp;VISA Electron
+											</PML_CASE>
+										</PML_SWITCH>
+										</th>
+									</tr>
+									<tr>
+										<td colspan="2"><br /></td>
+									</tr>
+									<tr class="first-row">
+										<th class="left-column mPoint_Label"><PML_VAL>label_password</PML_VAL>:</th>
+										<td class="right-column stretch"><input type="password" name="pwd" value="" onblur="javascript:parent.postMessage('reposition', '*');" /></td>
+									</tr>
+									<tr class="row">
+										<th class="left-column mPoint_Label"><PML_VAL>label_repeat</PML_VAL>:</th>
+										<td class="right-column stretch"><input type="password" name="rpt" value="" onblur="javascript:parent.postMessage('reposition', '*');" /></td>
+									</tr>
+									<tr class="row combined-row">
+										<th class="left-column combined-row mPoint_Label"><PML_VAL>label_card_name</PML_VAL>:</th>
+										<td class="right-column combined-row stretch"><input type="text" name="name" value="" class="text" maxlength="50" onblur="javascript:parent.postMessage('reposition', '*');" /></td>
+									</tr>
+									<tr class="last-row combined-row">
+										<td colspan="2" class="left-column right-column combined-row stretch info"><PML_VAL>card_name_help</PML_VAL></td>
+									</tr>
+									</table>
+								</div>		
+								<div id="submit">
+									<a id="save" class="submit-button" onclick="javascript:document.getElementById('loader').style.visibility='visible'; this.className='submit-button-clicked'; this.disabled=true; document.getElementById('save-card').submit();">
+										<h2><PML_VAL>save</PML_VAL></h2>
+									</a>
+								</div>
+							</form>
+						</div>
+						<script type="text/javascript">
+							parent.postMessage('mpoint-create-account,<PML_VAL>cgi.mpointid</PML_VAL>', '*');
+						</script>
+					</PML_IF>
+					<PML_ELSIF COND="cgi.preauth = 'true'">
+						<div id="my-account">
+							<form id="save-card" PML_action="string.replace(cgi.callbackurl, '/callback/dibs.php', '') @'/pay/sys/save_name.php?PHPSESSID='@cgi.PHPSESSID" method="post" onsubmit="javascript:document.getElementById('loader').style.visibility='visible';">
+								<div>
+									<!-- Standard mPoint Variables -->
+									<input type="hidden" name="cardid" PML_value="cgi.cardid" />
+								</div>
+								<div><PML_VAL>save_card_info</PML_VAL></div>
+								<div id="accountinfo">
+									<table cellpadding="0" cellspacing="0" class="grouped">
+									<tr class="first-row">
+										<th colspan="2" class="left-column right-column">
+										<PML_SWITCH EXPR="cgi.cardid">
+											<PML_CASE VALUE="1">
+												<img src="images/amex.jpg" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- American Express -" />
+												&nbsp;American Express
+											</PML_CASE>
+											<PML_CASE VALUE="2">
+												<img src="images/dankort.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Dankort -" />
+												&nbsp;Dankort
+											</PML_CASE>
+											<PML_CASE VALUE="3">
+												<img src="images/diners.jpg" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Diners Club -" />
+												&nbsp;Diners Club
+											</PML_CASE>
+											<PML_CASE VALUE="4">
+												<img src="images/mastercard.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- EuroCard -" />
+												&nbsp;EuroCard
+											</PML_CASE>
+											<PML_CASE VALUE="5">
+												<img src="images/jcb.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- JCB -" />
+												&nbsp;JCB
+											</PML_CASE>
+											<PML_CASE VALUE="6">
+												<img src="images/maestro.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Maestro -" />
+												&nbsp;Maestro
+											</PML_CASE>
+											<PML_CASE VALUE="7">
+												<img src="images/mastercard.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- MasterCard -" />
+												&nbsp;MasterCard
+											</PML_CASE>
+											<PML_CASE VALUE="8">
+												<img src="images/visa.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- VISA -" />
+												&nbsp;VISA
+											</PML_CASE>
+											<PML_CASE VALUE="9">
+												<img src="images/visa_electron.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- VISA Electron -" />
+												&nbsp;VISA Electron
+											</PML_CASE>
+										</PML_SWITCH>
+										</th>
+									</tr>
+									<tr class="row combined-row">
+										<th class="left-column combined-row mPoint_Label"><PML_VAL>label_card_name</PML_VAL>:</th>
+										<td class="right-column combined-row stretch"><input type="text" name="name" value="" class="text" maxlength="50" onblur="javascript:parent.postMessage('reposition', '*');" /></td>
+									</tr>
+									<tr class="last-row combined-row">
+										<td colspan="2" class="left-column right-column combined-row stretch info"><PML_VAL>card_name_help</PML_VAL></td>
+									</tr>
+									</table>
+								</div>		
+								<div id="submit">
+									<a id="save" class="submit-button" onclick="javascript:document.getElementById('loader').style.visibility='visible'; this.className='submit-button-clicked'; this.disabled=true; document.getElementById('save-card').submit();">
+										<h2><PML_VAL>save</PML_VAL></h2>
+									</a>
+								</div>
+							</form>
+						</div>
+						<script type="text/javascript">
+							parent.postMessage('mpoint-save-card,<PML_VAL>cgi.mpointid</PML_VAL>', '*');
+						</script>
+					</PML_ELSIF>
+					<PML_ELSE>
+						<!-- Payment Completed -->
+						<h1>
+							<PML_VAL>mpoint</PML_VAL><br />
+							<img src="images/mpoint_logo.png" PML_width="cgi.mpoint_width" PML_height="cgi.mpoint_height" alt="- mPoint -" />
+						</h1>
+						<div id="status">
+							<!--
+							  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
+							  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
+							  - the phone will assign 33% of the screen width to the "OK Image" and 66% of the screen width to the "OK Text"
+							  -->
+							<table>
+							<tr>
+								<td><img src="images/success.gif" width="30" height="28" alt="- OK - " /></td>
+								<td colspan="2" class="mPoint_Info"><PML_VAL>status</PML_VAL></td>
+							</tr>
+							</table>
+						</div>
+						
+						<table cellpadding="0" cellspacing="0" class="grouped">
+						<tr class="first-row">
+							<th class="left-column mPoint_Label"><PML_VAL>label_mpoint_id</PML_VAL>:</th>
+							<td class="mPoint_Number"><PML_VAL>cgi.mpointid</PML_VAL></td>
+							<td class="right-column stretch"></td>
+						</tr>
+						<!-- Order Number Provided -->
+						<PML_IF COND="string.length(cgi.orderid) > 0">
+							<tr class="row">
+								<th class="left-column mPoint_Label"><PML_VAL>label_order_no</PML_VAL>:</th>
+								<td class="mPoint_Number"><PML_VAL>cgi.orderid</PML_VAL></td>
+								<td class="right-column stretch"></td>
+							</tr>
+						</PML_IF>
+						<tr class="last-row">
+							<th class="left-column mPoint_Label"><PML_VAL>label_price</PML_VAL>:</th>
+							<td class="mPoint_Number"><PML_VAL>cgi.price</PML_VAL></td>
+							<td class="right-column stretch"></td>
+						</tr>
+						</table>
+						
+						<!-- SMS Receipt Enabled -->
+						<PML_IF COND="cgi.sms_receipt = 'true'">
+							<div class="mPoint_Info">
+								<PML_VAL>string.replace(sms_receipt, 'MOBILE', cgi.mobile, 'g')</PML_VAL>
+							</div>
+						</PML_IF>
+						<!-- E-Mail Receipt Enabled -->
+						<PML_IF COND="cgi.email_receipt = 'true'">
+							<div>
+								<a PML_href="'http://mpoint.demo.cellpointmobile.com/pay/email.php?PHPSESSID='@ cgi.PHPSESSID"><PML_VAL>email_receipt</PML_VAL></a>
+							</div>
+						</PML_IF>
+						
+						<!-- Current transaction is an Account Top-Up and a previous transaction is in progress -->
+						<PML_IF COND="cgi.org_mpointid > 0">
+							<div>
+								<form PML_action="'http://mpoint.demo.cellpointmobile.com/cpm/payment.php?PHPSESSID='@ cgi.PHPSESSID @'&msg=1'" method="post">
+									<p>
+										<input type="hidden" name="resume" value="true" />
+									</p>
+									<p>
+										<input type="submit" PML_value="resume" class="mPoint_Button" />
+									</p>
+								</form>
+							</div>
+						</PML_IF>
+						<PML_ELSIF COND="string.length(cgi.accept_url) > 0">
+							<!-- Client has specified a return URL for successful payments -->
+							<div>
+								<form id="continue" PML_action="cgi.accept_url" method="post">
+									<div>
+										<!-- Standard mPoint Variables -->
+										<input type="hidden" name="mpoint-id" PML_value="cgi.mpointid" />
+										<input type="hidden" name="orderid" PML_value="cgi.orderid" />
+										<input type="hidden" name="status" value="2000" />
+										<input type="hidden" name="amount" PML_value="cgi.amount" />
+										<input type="hidden" name="currency" PML_value="cgi.currency" />
+										<input type="hidden" name="mobile" PML_value="cgi.mobile" />
+										<input type="hidden" name="operator" PML_value="cgi.operator" />
+										<!-- Custom Client Variables -->
+										<PML_SCRIPT>
+										// Transfer Custom Variables
+										foreach(i ; cgi)
+										{
+											if (string.substring(cgi[i], 0, 4) = 'var_')
+											{
+												out.put('<input type="hidden" name="'@ cgi[i] @'" value="'@ cgi[i-7] @'" />');
+											}
+										}
+										</PML_SCRIPT>
+									</div>
+									
+									<div id="submit">
+										<a class="submit-button" onclick="javascript:document.getElementById('loader').style.visibility='visible'; this.className='submit-button-clicked'; this.disabled=true; document.getElementById('continue').submit();">
+											<h2><PML_VAL>continue</PML_VAL></h2>
+										</a>
+									</div>
+								</form>
+							</div>
+						</PML_ELSIF>
+						<script type="text/javascript">
+							parent.postMessage('mpoint-payment-completed,<PML_VAL>cgi.mpointid</PML_VAL>', '*');
+						</script>
+					</PML_ELSE>
+				</div>
+			</div>
+			<!-- Hidden Data Fields Start -->
+			<span id="loader">
+				<img src="images/loader.gif" width="28" height="28" PML_alt="'- '@label_loading@' -'" border="0" />
+				<br />
+				<span><PML_VAL>label_loading</PML_VAL></span>
+			</span>
+		</body>
+		</html>
 	</PML_CASE>
 	<PML_DEFAULT>
 		<?xml version="1.0" encoding="ISO-8859-15"?>
 		<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
 		<html xmlns="http://www.w3.org/1999/xhtml" PML_xml:lang="cgi.lang">
-	</PML_DEFAULT>
-</PML_SWITCH>
-<head>
-	<title>
-		<PML_IF COND="cgi.preauth = 'true' && cgi.euaid < 0">
-			<PML_VAL>title_create_account</PML_VAL>
-		</PML_IF>
-		<PML_ELSIF COND="cgi.preauth = 'true'">
-			<PML_VAL>title_save_card</PML_VAL>
-		</PML_ELSIF>
-		<PML_ELSE>
-			<PML_VAL>title_payment_completed</PML_VAL>
-		</PML_ELSE>
-	</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15" />
-	<meta http-equiv="Cache-Control" content="max-age=86400" />
-	<meta http-equiv="Content-Style-Type" content="text/css" />
-	<meta name="format-detection" content="telephone=no" />
-	<PML_IF COND="cgi.markup = 'html5'">
-		<meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-	</PML_IF>
+		<title>
+			<PML_IF COND="cgi.preauth = 'true' && cgi.euaid < 0">
+				<PML_VAL>title_create_account</PML_VAL>
+			</PML_IF>
+			<PML_ELSIF COND="cgi.preauth = 'true'">
+				<PML_VAL>title_save_card</PML_VAL>
+			</PML_ELSIF>
+			<PML_ELSE>
+				<PML_VAL>title_payment_completed</PML_VAL>
+			</PML_ELSE>
+		</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15" />
+		<meta http-equiv="Cache-Control" content="max-age=86400" />
+		<meta http-equiv="Content-Style-Type" content="text/css" />
+		<meta name="format-detection" content="telephone=no" />
+			<style type="text/css">
+			/* ========== Tag Classes Start ========== */
+			body
+			{
+				margin: 5px 5px 5px 5px;
+			}
+			body, table
+			{
+				background-color: #<PML_VAL>background_colour</PML_VAL>;
+				text-align: left;
+			}
+			body, table, div
+			{
+				font-size: 1em;
+				font-family: "Trebuchet MS",arial,sans-serif;
+				color: #000;
+			}
+			table, table * div, table * .mPoint_Info
+			{
+				color: #000;
+			}
+			div#status table, div#status table * div, div#status table * .mPoint_Info
+			{
+				color: #000;
+			}
+			
+			h1
+			{
+				font-size: 130%;
+				white-space: nowrap;
+				text-align: center;
+				color: #000;
+			}
+			
+			form, table
+			{
+				margin: 0px 0px 0px 0px;
+				padding: 0px 0px 0px 0px;
+				text-align: left;
+			}
+			
+			a
+			{
+				color: blue;
+				text-decoration: none;
+			}
+			
+			a:hover
+			{
+				text-decoration: underline;
+			}
+			
+			input.number
+			{
+				-wap-input-format: '*N';
+			}
+			/* ========== Tag Classes End ========== */
+			
+			/* ========== mPoint Classes Start ========== */
+			.mPoint_Label
+			{
+				font-weight: bold;
+				padding-right: 0.5em;
+				padding-top: 0.3em;
+				white-space: nowrap;
+				text-align: left;
+			}
+			
+			.mPoint_Info
+			{
+				font-weight: normal;
+				font-style: italic;
+				color: #000;
+				text-align: left;
+				padding: 0px;
+				margin: 0px;	
+			}
+			
+			.mPoint_Status
+			{
+				color: red;
+				font-style: italic;
+				padding-top: 0.5em;
+				padding-bottom: 0.5em;
+			}
+			.mPoint_Help
+			{
+				text-align: center;
+				padding-bottom: 5px;
+			}
+			
+			td.mPoint_Number
+			{
+				padding-right: 0.5em;
+				text-align: right;
+				vertical-align: bottom;
+			}
+			
+			tr.mPoint_Even
+			{
+				background-color: #<PML_VAL>background_colour</PML_VAL>;
+			}
+			tr.mPoint_Uneven
+			{
+			}
+			
+			input.mPoint_Button
+			{
+				font-size: 1em;
+				font-weight: bold;
+				color: #000;
+			}
+			
+			input.mPoint_Card_Button
+			{
+				border-style: none;
+				background-color: #fff;
+				color: blue;
+				text-decoration: underline;
+				margin: 0px 0px 0px 0px;
+				padding: 0px 0px 2px 0px;
+			}
+			/* ========== mPoint Classes Start ========== */
+			
+			/* ========== ID Classes Start ========== */
+			table#products tr td
+			{
+				padding-left: 3px;
+				padding-top: 3px;
+			}
+			
+			table#receipt
+			{
+				background-color: #<PML_VAL>background_colour</PML_VAL>;
+				margin-top: 0.5em;
+				margin-bottom: 0.5em;
+			}
+			
+			div#logo, div#progress, div#mPoint, div#status
+			{
+				text-align: center;
+			}
+			
+			div#status table tr td
+			{
+				vertical-align: middle;
+				padding-left: 0.5em;
+			}
+			
+			div#terms
+			{
+				white-space: pre;
+			}
+			
+			div#delivery, table#shipping, div#email, div#cardinfo, div#accountinfo
+			{
+				background-color: #<PML_VAL>background_colour</PML_VAL>;
+				padding-left: 3px;
+				padding-bottom: 3px;
+				color: #000;
+			}
+			div#cardinfo .mPoint_Info, div#cardinfo * .mPoint_Info, div#cardinfo .mPoint_Label
+			{
+				color: #000;
+			}
 	
-	<style type="text/css">
-		/* ========== Tag Classes Start ========== */
-		body
-		{
-			margin: 5px 5px 5px 5px;
-		}
-		body, table
-		{
-			background-color: #<PML_VAL>background_colour</PML_VAL>;
-			text-align: left;
-		}
-		body, table, div
-		{
-			font-size: 1em;
-			font-family: "Trebuchet MS",arial,sans-serif;
-			color: #000;
-		}
-		table, table * div, table * .mPoint_Info
-		{
-			color: #000;
-		}
-		div#status table, div#status table * div, div#status table * .mPoint_Info
-		{
-			color: #000;
-		}
-		
-		h1
-		{
-			font-size: 130%;
-			white-space: nowrap;
-			text-align: center;
-			color: #000;
-		}
-		
-		form, table
-		{
-			margin: 0px 0px 0px 0px;
-			padding: 0px 0px 0px 0px;
-			text-align: left;
-		}
-		
-		a
-		{
-			color: blue;
-			text-decoration: none;
-		}
-		
-		a:hover
-		{
-			text-decoration: underline;
-		}
-		
-		input.number
-		{
-			-wap-input-format: '*N';
-		}
-		/* ========== Tag Classes End ========== */
-		
-		/* ========== mPoint Classes Start ========== */
-		.mPoint_Label
-		{
-			font-weight: bold;
-			padding-right: 0.5em;
-			padding-top: 0.3em;
-			white-space: nowrap;
-			text-align: left;
-		}
-		
-		.mPoint_Info
-		{
-			font-weight: normal;
-			font-style: italic;
-			color: #000;
-			text-align: left;
-			padding: 0px;
-			margin: 0px;	
-		}
-		
-		.mPoint_Status
-		{
-			color: red;
-			font-style: italic;
-			padding-top: 0.5em;
-			padding-bottom: 0.5em;
-		}
-		.mPoint_Help
-		{
-			text-align: center;
-			padding-bottom: 5px;
-		}
-		
-		td.mPoint_Number
-		{
-			padding-right: 0.5em;
-			text-align: right;
-			vertical-align: bottom;
-		}
-		
-		tr.mPoint_Even
-		{
-			background-color: #<PML_VAL>background_colour</PML_VAL>;
-		}
-		tr.mPoint_Uneven
-		{
-		}
-		
-		input.mPoint_Button
-		{
-			font-size: 1em;
-			font-weight: bold;
-			color: #000;
-		}
-		
-		input.mPoint_Card_Button
-		{
-			border-style: none;
-			background-color: #fff;
-			color: blue;
-			text-decoration: underline;
-			margin: 0px 0px 0px 0px;
-			padding: 0px 0px 2px 0px;
-		}
-		/* ========== mPoint Classes Start ========== */
-		
-		/* ========== ID Classes Start ========== */
-		table#products tr td
-		{
-			padding-left: 3px;
-			padding-top: 3px;
-		}
-		
-		table#receipt
-		{
-			background-color: #<PML_VAL>background_colour</PML_VAL>;
-			margin-top: 0.5em;
-			margin-bottom: 0.5em;
-		}
-		
-		div#logo, div#progress, div#mPoint, div#status
-		{
-			text-align: center;
-		}
-		
-		div#status table tr td
-		{
-			vertical-align: middle;
-			padding-left: 0.5em;
-		}
-		
-		div#terms
-		{
-			white-space: pre;
-		}
-		
-		div#delivery, table#shipping, div#email, div#cardinfo, div#accountinfo
-		{
-			background-color: #<PML_VAL>background_colour</PML_VAL>;
-			padding-left: 3px;
-			padding-bottom: 3px;
-			color: #000;
-		}
-		div#cardinfo .mPoint_Info, div#cardinfo * .mPoint_Info, div#cardinfo .mPoint_Label
-		{
-			color: #000;
-		}
-
-		div#price
-		{
-			 padding-bottom: 0.5em;
-		}
-		table#receipt, div#my-account
-		{
-			background-color: #<PML_VAL>background_colour</PML_VAL>;
-			padding-left: 10px;
-			padding-top: 2px;
-			padding-bottom: 5px;
-			margin-right: 10px;
-			color: #000;
-			border: 2px solid #<PML_VAL>border_colour</PML_VAL>;
-			-moz-border-radius: 10px;
-			-webkit-border-radius: 10px;
-			border-radius: 10px;
-		}
-		div#submit
-		{
-			text-align: center;
-		}
-		/* ========== ID Classes End ========== */
-
-		/* ========== Loader Start ========== */
-		span#loader
-		{
-			visibility: hidden;
-			position: absolute;
-			left: 40%;
-			top: 50%;
-			width: 50px;
-			height: 50px;
-			text-align: center;
-			color: #000;
-			font-size: 10px;
-			background-color: #fff;
-			border: 2px solid #<PML_VAL>border_colour</PML_VAL>;
-			-moz-border-radius: 10px;
-			-webkit-border-radius: 10px;
-			border-radius: 10px;
-			padding: 5px;
-			z-index: 30;
-		}
-		/* ========== Loader End ========== */
-	</style>
-</head>
-<body>
-	<PML_IF COND="cgi.logo_url != ''">
-		<div id="logo">
-			<img PML_src="'images/client_logo_'@cgi.clientid@'.jpg'" PML_width="cgi.logo_width" PML_height="cgi.logo_height" PML_alt="'- '@cgi.client@' -'" />
-		</div>
-	</PML_IF>
-	<!-- Create New Account -->
-	<PML_IF COND="cgi.preauth = 'true' && cgi.euaid < 0">
-		<div id="my-account">
-			<PML_SWITCH EXPR="cgi.markup">
-				<PML_CASE VALUE="'html5'">
-					<form PML_action="string.replace(cgi.callbackurl, '/callback/dibs.php', '') @'/pay/sys/save_pwd.php?PHPSESSID='@cgi.PHPSESSID" method="post" onsubmit="javascript:document.getElementById('loader').style.visibility='visible'; document.getElementById('complete-payment').disabled=true;">
-				</PML_CASE>
-				<PML_DEFAULT>
-					<form PML_action="string.replace(cgi.callbackurl, '/callback/dibs.php', '') @'/pay/sys/save_pwd.php?PHPSESSID='@cgi.PHPSESSID" method="post">
-				</PML_DEFAULT>
-			</PML_SWITCH>
-				<div>
-					<!-- Standard mPoint Variables -->
-					<input type="hidden" name="cardid" PML_value="cgi.cardid" />
-				</div>
-				<div><PML_VAL>create_account_info</PML_VAL></div>
-				<div id="accountinfo">
-					<!-- Password Info -->
-					<div class="mPoint_Label">
-						<PML_VAL>label_password</PML_VAL>:<br />
-						<input type="password" name="pwd" value="" oninput="javascript:parent.postMessage('reposition', '*');" onblur="javascript:parent.postMessage('reposition', '*');" />
-					</div>
-					<!-- Repeat Password -->
-					<div class="mPoint_Label">
-						<PML_VAL>label_repeat</PML_VAL>:<br />
-						<input type="password" name="rpt" value="" oninput="javascript:parent.postMessage('reposition', '*');" onblur="javascript:parent.postMessage('reposition', '*');" />
-					</div>
-					<!-- Card Name -->
-					<div class="mPoint_Label">
-						<PML_VAL>label_card_name</PML_VAL>:<br />
-						<input type="text" name="name" value="" maxlength="50" oninput="javascript:parent.postMessage('reposition', '*');" onblur="javascript:parent.postMessage('reposition', '*');" />
-					</div>
-					<div class="mPoint_Info"><PML_VAL>card_name_help</PML_VAL></div>
-				</div>		
-				<div id="submit">
-					<input type="submit" PML_value="save" class="mPoint_Button" />
-				</div>
-			</form>
-		</div>
-	</PML_IF>
-	<PML_ELSIF COND="cgi.preauth = 'true'">
-		<div id="my-account">
-			<PML_SWITCH EXPR="cgi.markup">
-				<PML_CASE VALUE="'html5'">
-					<form PML_action="string.replace(cgi.callbackurl, '/callback/dibs.php', '') @'/pay/sys/save_name.php?PHPSESSID='@cgi.PHPSESSID" method="post" onsubmit="javascript:document.getElementById('loader').style.visibility='visible';">
-				</PML_CASE>
-				<PML_DEFAULT>
-					<form PML_action="string.replace(cgi.callbackurl, '/callback/dibs.php', '') @'/pay/sys/save_name.php?PHPSESSID='@cgi.PHPSESSID" method="post">
-				</PML_DEFAULT>
-			</PML_SWITCH>
-				<div>
-					<!-- Standard mPoint Variables -->
-					<input type="hidden" name="cardid" PML_value="cgi.cardid" />
-				</div>
-				<div><PML_VAL>save_card_info</PML_VAL></div>
-				<div id="accountinfo">
-					<!-- Card Name -->
-					<div class="mPoint_Label">
-						<PML_VAL>label_card_name</PML_VAL>:<br />
-						<input type="text" name="name" value="" maxlength="50" oninput="javascript:parent.postMessage('reposition', '*');" onblur="javascript:parent.postMessage('reposition', '*');" />
-					</div>
-					<div class="mPoint_Info"><PML_VAL>card_name_help</PML_VAL></div>
-				</div>		
-				<div id="submit">
-					<input type="submit" PML_value="save" class="mPoint_Button" />
-				</div>
-			</form>
-		</div>
-	</PML_ELSIF>
-	<PML_ELSE>
-		<!-- Payment Completed -->
-		<h1>
-			<PML_VAL>mpoint</PML_VAL><br />
-			<img src="images/mpoint_logo.png" PML_width="cgi.mpoint_width" PML_height="cgi.mpoint_height" alt="- mPoint -" />
-		</h1>
-		<div id="status">
-			<!--
-			  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
-			  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
-			  - the phone will assign 33% of the screen width to the "OK Image" and 66% of the screen width to the "OK Text"
-			  -->
-			<table>
-			<tr>
-				<td><img src="images/success.gif" width="30" height="28" alt="- OK - " /></td>
-				<td colspan="2" class="mPoint_Info"><PML_VAL>status</PML_VAL></td>
-			</tr>
-			</table>
-		</div>
-		
-		<table id="receipt">
-		<tr>
-			<td class="mPoint_Label"><PML_VAL>label_mpoint_id</PML_VAL>:</td>
-			<td class="mPoint_Number"><PML_VAL>cgi.mpointid</PML_VAL></td>
-			<td rowspan="3" style="width:50%;"></td>
-		</tr>
-		<!-- Order Number Provided -->
-		<PML_IF COND="string.length(cgi.orderid) > 0">
-			<tr>
-				<td class="mPoint_Label"><PML_VAL>label_order_no</PML_VAL>:</td>
-				<td class="mPoint_Number"><PML_VAL>cgi.orderid</PML_VAL></td>
-			</tr>
-		</PML_IF>
-		<tr>
-			<td class="mPoint_Label"><PML_VAL>label_price</PML_VAL>:</td>
-			<td class="mPoint_Number"><PML_VAL>cgi.price</PML_VAL></td>
-		</tr>
-		</table>
-		
-		<!-- SMS Receipt Enabled -->
-		<PML_IF COND="cgi.sms_receipt = 'true'">
-			<div class="mPoint_Info">
-				<PML_VAL>string.replace(sms_receipt, 'MOBILE', cgi.mobile, 'g')</PML_VAL>
+			div#price
+			{
+				 padding-bottom: 0.5em;
+			}
+			table#receipt, div#my-account
+			{
+				background-color: #<PML_VAL>background_colour</PML_VAL>;
+				padding-left: 10px;
+				padding-top: 2px;
+				padding-bottom: 5px;
+				margin-right: 10px;
+				color: #000;
+				border: 2px solid #<PML_VAL>border_colour</PML_VAL>;
+				-moz-border-radius: 10px;
+				-webkit-border-radius: 10px;
+				border-radius: 10px;
+			}
+			div#submit
+			{
+				text-align: center;
+			}
+			/* ========== ID Classes End ========== */
+	
+			/* ========== Loader Start ========== */
+			span#loader
+			{
+				visibility: hidden;
+				position: absolute;
+				left: 40%;
+				top: 50%;
+				width: 50px;
+				height: 50px;
+				text-align: center;
+				color: #000;
+				font-size: 10px;
+				background-color: #fff;
+				border: 2px solid #<PML_VAL>border_colour</PML_VAL>;
+				-moz-border-radius: 10px;
+				-webkit-border-radius: 10px;
+				border-radius: 10px;
+				padding: 5px;
+				z-index: 30;
+			}
+			/* ========== Loader End ========== */
+		</style>
+	<head>	
+	</head>
+	<body>
+		<PML_IF COND="cgi.logo_url != ''">
+			<div id="logo">
+				<img PML_src="'images/client_logo_'@cgi.clientid@'.jpg'" PML_width="cgi.logo_width" PML_height="cgi.logo_height" PML_alt="'- '@cgi.client@' -'" />
 			</div>
 		</PML_IF>
-		<!-- E-Mail Receipt Enabled -->
-		<PML_IF COND="cgi.email_receipt = 'true'">
-			<div>
-				<a PML_href="'http://mpoint.demo.cellpointmobile.com/pay/email.php?PHPSESSID='@ cgi.PHPSESSID"><PML_VAL>email_receipt</PML_VAL></a>
-			</div>
-		</PML_IF>
-		
-		<!-- Current transaction is an Account Top-Up and a previous transaction is in progress -->
-		<PML_IF COND="cgi.org_mpointid > 0">
-			<div>
-				<form PML_action="'http://mpoint.demo.cellpointmobile.com/cpm/payment.php?PHPSESSID='@ cgi.PHPSESSID @'&msg=1'" method="post">
-					<p>
-						<input type="hidden" name="resume" value="true" />
-					</p>
-					<p>
-						<input type="submit" PML_value="resume" class="mPoint_Button" />
-					</p>
-				</form>
-			</div>
-		</PML_IF>
-		<PML_ELSIF COND="string.length(cgi.accept_url) > 0">
-			<!-- Client has specified a return URL for successful payments -->
-			<div>
-				<form PML_action="cgi.accept_url" method="post">
+		<!-- Create New Account -->
+		<PML_IF COND="cgi.preauth = 'true' && cgi.euaid < 0">
+			<div id="my-account">
+				<form PML_action="string.replace(cgi.callbackurl, '/callback/dibs.php', '') @'/pay/sys/save_pwd.php?PHPSESSID='@cgi.PHPSESSID" method="post">
 					<div>
 						<!-- Standard mPoint Variables -->
-						<input type="hidden" name="mpoint-id" PML_value="cgi.mpointid" />
-						<input type="hidden" name="orderid" PML_value="cgi.orderid" />
-						<input type="hidden" name="status" value="2000" />
-						<input type="hidden" name="amount" PML_value="cgi.amount" />
-						<input type="hidden" name="currency" PML_value="cgi.currency" />
-						<input type="hidden" name="mobile" PML_value="cgi.mobile" />
-						<input type="hidden" name="operator" PML_value="cgi.operator" />
-						<!-- Custom Client Variables -->
-						<PML_SCRIPT>
-						// Transfer Custom Variables
-						foreach(i ; cgi)
-						{
-							if (string.substring(cgi[i], 0, 4) = 'var_')
-							{
-								out.put('<input type="hidden" name="'@ cgi[i] @'" value="'@ cgi[i-7] @'" />');
-							}
-						}
-						</PML_SCRIPT>
+						<input type="hidden" name="cardid" PML_value="cgi.cardid" />
 					</div>
-					
+					<div><PML_VAL>create_account_info</PML_VAL></div>
+					<div id="accountinfo">
+						<!-- Password Info -->
+						<div class="mPoint_Label">
+							<PML_VAL>label_password</PML_VAL>:<br />
+							<input type="password" name="pwd" value="" onblur="javascript:parent.postMessage('reposition', '*');" />
+						</div>
+						<!-- Repeat Password -->
+						<div class="mPoint_Label">
+							<PML_VAL>label_repeat</PML_VAL>:<br />
+							<input type="password" name="rpt" value="" onblur="javascript:parent.postMessage('reposition', '*');" />
+						</div>
+						<!-- Card Name -->
+						<div class="mPoint_Label">
+							<PML_VAL>label_card_name</PML_VAL>:<br />
+							<input type="text" name="name" value="" maxlength="50" onblur="javascript:parent.postMessage('reposition', '*');" />
+						</div>
+						<div class="mPoint_Info"><PML_VAL>card_name_help</PML_VAL></div>
+					</div>		
 					<div id="submit">
-						<input id="complete-payment" type="submit" PML_value="continue" class="mPoint_Button" />
+						<input type="submit" PML_value="save" class="mPoint_Button" />
+					</div>
+				</form>
+			</div>
+		</PML_IF>
+		<PML_ELSIF COND="cgi.preauth = 'true'">
+			<div id="my-account">
+				<form PML_action="string.replace(cgi.callbackurl, '/callback/dibs.php', '') @'/pay/sys/save_name.php?PHPSESSID='@cgi.PHPSESSID" method="post">
+					<div>
+						<!-- Standard mPoint Variables -->
+						<input type="hidden" name="cardid" PML_value="cgi.cardid" />
+					</div>
+					<div><PML_VAL>save_card_info</PML_VAL></div>
+					<div id="accountinfo">
+						<!-- Card Name -->
+						<div class="mPoint_Label">
+							<PML_VAL>label_card_name</PML_VAL>:<br />
+							<input type="text" name="name" value="" maxlength="50" onblur="javascript:parent.postMessage('reposition', '*');" />
+						</div>
+						<div class="mPoint_Info"><PML_VAL>card_name_help</PML_VAL></div>
+					</div>		
+					<div id="submit">
+						<input type="submit" PML_value="save" class="mPoint_Button" />
 					</div>
 				</form>
 			</div>
 		</PML_ELSIF>
-		<PML_IF COND="cgi.markup = 'html5'">
-			<script type="text/javascript">
-				parent.postMessage('completed,<PML_VAL>cgi.mpointid</PML_VAL>', '*');
-			</script>
-		</PML_IF>
-	</PML_ELSE>
-	<PML_IF COND="cgi.markup = 'html5'">
-		<!-- Hidden Data Fields Start -->
-		<span id="loader">
-			<img src="images/loader.gif" width="28" height="28" PML_alt="'- '@label_loading@' -'" border="0" />
-			<br />
-			<span><PML_VAL>label_loading</PML_VAL></span>
-		</span>
-	</PML_IF>
-</body>
-</html>
+		<PML_ELSE>
+			<!-- Payment Completed -->
+			<h1>
+				<PML_VAL>mpoint</PML_VAL><br />
+				<img src="images/mpoint_logo.png" PML_width="cgi.mpoint_width" PML_height="cgi.mpoint_height" alt="- mPoint -" />
+			</h1>
+			<div id="status">
+				<!--
+				  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
+				  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
+				  - the phone will assign 33% of the screen width to the "OK Image" and 66% of the screen width to the "OK Text"
+				  -->
+				<table>
+				<tr>
+					<td><img src="images/success.gif" width="30" height="28" alt="- OK - " /></td>
+					<td colspan="2" class="mPoint_Info"><PML_VAL>status</PML_VAL></td>
+				</tr>
+				</table>
+			</div>
+			
+			<table id="receipt">
+			<tr>
+				<td class="mPoint_Label"><PML_VAL>label_mpoint_id</PML_VAL>:</td>
+				<td class="mPoint_Number"><PML_VAL>cgi.mpointid</PML_VAL></td>
+				<td rowspan="3" style="width:50%;"></td>
+			</tr>
+			<!-- Order Number Provided -->
+			<PML_IF COND="string.length(cgi.orderid) > 0">
+				<tr>
+					<td class="mPoint_Label"><PML_VAL>label_order_no</PML_VAL>:</td>
+					<td class="mPoint_Number"><PML_VAL>cgi.orderid</PML_VAL></td>
+				</tr>
+			</PML_IF>
+			<tr>
+				<td class="mPoint_Label"><PML_VAL>label_price</PML_VAL>:</td>
+				<td class="mPoint_Number"><PML_VAL>cgi.price</PML_VAL></td>
+			</tr>
+			</table>
+			
+			<!-- SMS Receipt Enabled -->
+			<PML_IF COND="cgi.sms_receipt = 'true'">
+				<div class="mPoint_Info">
+					<PML_VAL>string.replace(sms_receipt, 'MOBILE', cgi.mobile, 'g')</PML_VAL>
+				</div>
+			</PML_IF>
+			<!-- E-Mail Receipt Enabled -->
+			<PML_IF COND="cgi.email_receipt = 'true'">
+				<div>
+					<a PML_href="'http://mpoint.demo.cellpointmobile.com/pay/email.php?PHPSESSID='@ cgi.PHPSESSID"><PML_VAL>email_receipt</PML_VAL></a>
+				</div>
+			</PML_IF>
+			
+			<!-- Current transaction is an Account Top-Up and a previous transaction is in progress -->
+			<PML_IF COND="cgi.org_mpointid > 0">
+				<div>
+					<form PML_action="'http://mpoint.demo.cellpointmobile.com/cpm/payment.php?PHPSESSID='@ cgi.PHPSESSID @'&msg=1'" method="post">
+						<p>
+							<input type="hidden" name="resume" value="true" />
+						</p>
+						<p>
+							<input type="submit" PML_value="resume" class="mPoint_Button" />
+						</p>
+					</form>
+				</div>
+			</PML_IF>
+			<PML_ELSIF COND="string.length(cgi.accept_url) > 0">
+				<!-- Client has specified a return URL for successful payments -->
+				<div>
+					<form PML_action="cgi.accept_url" method="post">
+						<div>
+							<!-- Standard mPoint Variables -->
+							<input type="hidden" name="mpoint-id" PML_value="cgi.mpointid" />
+							<input type="hidden" name="orderid" PML_value="cgi.orderid" />
+							<input type="hidden" name="status" value="2000" />
+							<input type="hidden" name="amount" PML_value="cgi.amount" />
+							<input type="hidden" name="currency" PML_value="cgi.currency" />
+							<input type="hidden" name="mobile" PML_value="cgi.mobile" />
+							<input type="hidden" name="operator" PML_value="cgi.operator" />
+							<!-- Custom Client Variables -->
+							<PML_SCRIPT>
+							// Transfer Custom Variables
+							foreach(i ; cgi)
+							{
+								if (string.substring(cgi[i], 0, 4) = 'var_')
+								{
+									out.put('<input type="hidden" name="'@ cgi[i] @'" value="'@ cgi[i-7] @'" />');
+								}
+							}
+							</PML_SCRIPT>
+						</div>
+						
+						<div id="submit">
+							<input id="complete-payment" type="submit" PML_value="continue" class="mPoint_Button" />
+						</div>
+					</form>
+				</div>
+			</PML_ELSIF>
+		</PML_ELSE>
+	</body>
+	</html>
+	</PML_DEFAULT>
+</PML_SWITCH>
+

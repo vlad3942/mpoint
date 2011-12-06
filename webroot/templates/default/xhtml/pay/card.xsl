@@ -36,6 +36,10 @@
 					<xsl:when test="@pspid = 5">
 						<xsl:apply-templates select="." mode="payex" />
 					</xsl:when>
+					<!-- Authorize.Net -->
+					<xsl:when test="@pspid = 6">
+						<xsl:apply-templates select="." mode="authorize.net" />
+					</xsl:when>
 					<!-- Error -->
 					<xsl:otherwise>
 						
@@ -413,6 +417,36 @@
 				</div>
 			</form>
 		</div>
+</xsl:template>
+
+<xsl:template match="item" mode="authorize.net">
+	<xsl:variable name="url" select="concat(/root/system/protocol, '://', /root/system/host, '/img/', logo-width, 'x', logo-height, '_card_', @id, '_', /root/system/session/@id, '.png')" />
+	<div>
+		<form action="{func:constLink('/anet/dpm.php') }" method="post">
+			<div>
+				<!-- Authorize.Net data -->
+				<input type="hidden" name="account" value="{account}" />
+				<!-- Payment Page Data -->
+				<input type="hidden" name="cardid" value="{@id}" />
+				<input type="hidden" name="card_name" value="{name}" />
+				<input type="hidden" name="card_width" value="{logo-width}" />
+				<input type="hidden" name="card_height" value="{logo-height}" />
+				<input type="hidden" name="card_url" value="{$url}" />
+				
+				<!--
+				  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
+				  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
+				  - the phone will assign 25% of the screen width to the card logo and 75% of the screen width to the card name.
+				  -->
+				<table>
+				<tr>
+					<td><img src="{$url}" width="{logo-width}" height="{logo-height}" alt="" /></td>
+					<td colspan="3"><input type="submit" value="{name}" class="mPoint_Card_Button" /></td>
+				</tr>
+				</table>
+			</div>
+		</form>
+	</div>
 </xsl:template>
 
 </xsl:stylesheet>

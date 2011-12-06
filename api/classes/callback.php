@@ -224,6 +224,7 @@ class Callback extends EndUserAccount
 		$sBody .= "&currency=". urlencode($this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getCurrency() );
 		$sBody .= "&mobile=". urlencode($this->_obj_TxnInfo->getMobile() );
 		$sBody .= "&operator=". urlencode($this->_obj_TxnInfo->getOperator() );
+		$sBody .= "&language=". urlencode($this->_obj_TxnInfo->getLanguage() );
 		if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true) { $sBody .= "&pspid=". urlencode($pspid); }
 		$sBody .= $this->getVariables();
 		/* ----- Construct Body End ----- */
@@ -312,7 +313,7 @@ class Callback extends EndUserAccount
 	 * @return	HTTPClient	Reference to the created HTTP Client object
 	 * @throws 	HTTPException
 	 */
-	public function &send($url, $h, $b)
+	public function &send($url, $h, $b, $un="", $pw="")
 	{
 		/* ========== Instantiate Connection Info Start ========== */
 		$aURLInfo = parse_url($url);
@@ -324,7 +325,7 @@ class Callback extends EndUserAccount
 		}
 		if (array_key_exists("query", $aURLInfo) === true) { $aURLInfo["path"] .= "?". $aURLInfo["query"]; }
 
-		$obj_ConnInfo = new HTTPConnInfo($aURLInfo["scheme"], $aURLInfo["host"], $aURLInfo["port"], 20, $aURLInfo["path"], "POST", "application/x-www-form-urlencoded");
+		$obj_ConnInfo = new HTTPConnInfo($aURLInfo["scheme"], $aURLInfo["host"], $aURLInfo["port"], 20, $aURLInfo["path"], "POST", "application/x-www-form-urlencoded", $un, $pw);
 		/* ========== Instantiate Connection Info End ========== */
 		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
 

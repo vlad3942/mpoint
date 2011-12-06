@@ -8,7 +8,7 @@
  * @link http://www.cellpointmobile.com
  * @package Payment
  * @subpackage SaveCardName
- * @version 1.10
+ * @version 1.01
  */
 
 // Require Global Include File

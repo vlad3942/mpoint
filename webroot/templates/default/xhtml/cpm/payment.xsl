@@ -120,12 +120,10 @@
 							<xsl:apply-templates select="stored-cards/card[client/@id = //client-config/@id]" />
 						</xsl:when>
 						</xsl:choose>
-						<xsl:if test="//transaction/amount &gt; //country-config/max-psms-amount">
-							<div id="password">
-								<div class="mPoint_Label"><xsl:value-of select="labels/password" />:</div>
-								<input type="password" name="pwd" value="" /> 
-							</div>
-						</xsl:if>
+						<div id="password">
+							<div class="mPoint_Label"><xsl:value-of select="labels/password" />:</div>
+							<input type="password" name="pwd" value="" /> 
+						</div>
 					</div>
 				</div>
 			</div>

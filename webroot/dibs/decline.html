@@ -48,16 +48,15 @@ switch(cgi.language)
 		progress := 'Trin 2 af 2';
 		label_selected_card := 'Valgte Kort';
 		label_price := 'Pris';
-		info := 'Udfyld nedenstående felter med dine kortinformationer';
-		label_card_number := 'Kortnummer';
+		info := 'Udfyld venligst nedenstående felter med dine kort informationer';
+		label_card_number := 'Kort Nummer';
 		label_expiry := 'Udløbsdato';
 		expiry_month := 'mm';
 		expiry_year := 'åå';
 		label_cvc := 'CVC / CVS';
 		cvc_help := '3 tal (trykt på bagsiden af dit kort)';
-		label_store := 'Gem kortinformationer';
-		submit := 'Gennemfør betaling';
-		label_loading := 'Henter...';
+		label_store := 'Gem kort informationer';
+		submit := 'Gennemfør Betaling';
 		
 		// Error Messages
 		error_0 := 'Dit Kredit Kort blev afvist af PBS, prøv venligst med et andet kort?';
@@ -89,7 +88,6 @@ switch(cgi.language)
 		cvc_help := '3 siffror (tryckta på baksidan av kortet)';
 		label_store := 'Gem kortinformation';
 		submit := 'Betalningen genomförd';
-		label_loading := 'Loading...';
 		
 		// Error Messages
 		error_0 := 'Kortköpet vägrades av banken, försök igen?';
@@ -112,7 +110,7 @@ switch(cgi.language)
 		progress := 'Step 2 of 2';
 		label_selected_card := 'Selected Card';
 		label_price := 'Price';
-		info := 'Enter your card information below';
+		info := 'Please enter your card information below';
 		label_card_number := 'Card Number';
 		label_expiry := 'Expiry date';
 		expiry_month := 'mm';
@@ -121,7 +119,6 @@ switch(cgi.language)
 		cvc_help := '3 digits (printed on the back of the card)';
 		label_store := 'Save card info';
 		submit := 'Complete Payment';
-		label_loading := 'Loading...';
 		
 		// Error Messages
 		error_0 := 'Credit Card declined by acquirer, please try again?';
@@ -140,22 +137,9 @@ switch(cgi.language)
 }
 /* ========== Language Translataion End ========== */
 </PML_SCRIPT>
-<PML_SWITCH EXPR="cgi.markup">
-	<PML_CASE VALUE="'html5'">
-		<!DOCTYPE html>
-		<html PML_xml:lang="cgi.lang">
-	</PML_CASE>
-	<PML_CASE VALUE="'xhtml'">
-		<?xml version="1.0" encoding="ISO-8859-15"?>
-		<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
-		<html xmlns="http://www.w3.org/1999/xhtml" PML_xml:lang="cgi.lang">
-	</PML_CASE>
-	<PML_DEFAULT>
-		<?xml version="1.0" encoding="ISO-8859-15"?>
-		<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
-		<html xmlns="http://www.w3.org/1999/xhtml" PML_xml:lang="cgi.lang">
-	</PML_DEFAULT>
-</PML_SWITCH>
+<?xml version="1.0" encoding="ISO-8859-15"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" PML_xml:lang="cgi.lang">
 <head>
 	<title><PML_VAL>title</PML_VAL></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15" />
@@ -316,997 +300,199 @@ switch(cgi.language)
 			text-align: center;	
 		}
 		/* ========== ID Classes End ========== */
-
-		/* ========== Loader Start ========== */
-		span#loader
-		{
-			visibility: hidden;
-			position: absolute;
-			left: 40%;
-			top: 50%;
-			width: 50px;
-			height: 50px;
-			text-align: center;
-			color: #000;
-			font-size: 10px;
-			background-color: #fff;
-			border: 2px solid #5B94B1;
-			-moz-border-radius: 10px;
-			-webkit-border-radius: 10px;
-			border-radius: 10px;
-			padding: 5px;
-			z-index: 30;
-		}
-		/* ========== Loader End ========== */
 	</style>
-	<PML_IF COND="cgi.markup = 'html5' && cgi.device_height < 500">
-		<script type="text/javascript">
-		/**
-		 * 
-		 * Find more about the scrolling function at
-		 * http://cubiq.org/iscroll
-		 *
-		 * Copyright (c) 2010 Matteo Spinelli, http://cubiq.org/
-		 * Released under MIT license
-		 * http://cubiq.org/dropbox/mit-license.txt
-		 * 
-		 * Version 3.7.1 - Last updated: 2010.10.08
-		 * 
-		 */
-	
-		(function(){
-		function iScroll (el, options) {
-			var that = this, i;
-			that.element = typeof el == 'object' ? el : document.getElementById(el);
-			that.wrapper = that.element.parentNode;
-	
-			that.element.style.webkitTransitionProperty = '-webkit-transform';
-			that.element.style.webkitTransitionTimingFunction = 'cubic-bezier(0,0,0.25,1)';
-			that.element.style.webkitTransitionDuration = '0';
-			that.element.style.webkitTransform = translateOpen + '0,0' + translateClose;
-	
-			// Default options
-			that.options = {
-				bounce: has3d,
-				momentum: has3d,
-				checkDOMChanges: true,
-				topOnDOMChanges: false,
-				hScrollbar: has3d,
-				vScrollbar: has3d,
-				fadeScrollbar: isIthing || !isTouch,
-				shrinkScrollbar: isIthing || !isTouch,
-				desktopCompatibility: false,
-				overflow: 'auto',
-				snap: false,
-				bounceLock: false,
-				scrollbarColor: 'rgba(0,0,0,0.5)',
-				onScrollEnd: function () {}
-			};
-			
-			// User defined options
-			if (typeof options == 'object') {
-				for (i in options) {
-					that.options[i] = options[i];
-				}
-			}
-	
-			if (that.options.desktopCompatibility) {
-				that.options.overflow = 'hidden';
-			}
-			
-			that.onScrollEnd = that.options.onScrollEnd;
-			delete that.options.onScrollEnd;
-			
-			that.wrapper.style.overflow = that.options.overflow;
-			
-			that.refresh();
-	
-			window.addEventListener('onorientationchange' in window ? 'orientationchange' : 'resize', that, false);
-	
-			if (isTouch || that.options.desktopCompatibility) {
-				that.element.addEventListener(START_EVENT, that, false);
-				that.element.addEventListener(MOVE_EVENT, that, false);
-				that.element.addEventListener(END_EVENT, that, false);
-			}
-			
-			if (that.options.checkDOMChanges) {
-				that.element.addEventListener('DOMSubtreeModified', that, false);
-			}
-		}
-	
-		iScroll.prototype = {
-			x: 0,
-			y: 0,
-			enabled: true,
-	
-			handleEvent: function (e) {
-				var that = this;
-				switch (e.type) {
-					case START_EVENT:
-						that.touchStart(e);
-						break;
-					case MOVE_EVENT:
-						that.touchMove(e);
-						break;
-					case END_EVENT:
-						that.touchEnd(e);
-						break;
-					case 'webkitTransitionEnd':
-						that.transitionEnd();
-						break;
-					case 'orientationchange':
-					case 'resize':
-						that.refresh();
-						break;
-					case 'DOMSubtreeModified':
-						that.onDOMModified(e);
-						break;
-				}
-			},
-			
-			onDOMModified: function (e) {
-				var that = this;
-	
-				// (Hopefully) execute onDOMModified only once
-				if (e.target.parentNode != that.element) {
-					return;
-				}
-	
-				setTimeout(function () { that.refresh(); }, 0);
-	
-				if (that.options.topOnDOMChanges && (that.x!=0 || that.y!=0)) {
-					that.scrollTo(0,0,'0');
-				}
-			},
-	
-			refresh: function () {
-				var that = this,
-					resetX = that.x, resetY = that.y,
-					snap;
-				
-				that.scrollWidth = that.wrapper.clientWidth;
-				that.scrollHeight = that.wrapper.clientHeight;
-				that.scrollerWidth = that.element.offsetWidth;
-				that.scrollerHeight = that.element.offsetHeight;
-				that.maxScrollX = that.scrollWidth - that.scrollerWidth;
-				that.maxScrollY = that.scrollHeight - that.scrollerHeight;
-				that.directionX = 0;
-				that.directionY = 0;
-	
-				if (that.scrollX) {
-					if (that.maxScrollX >= 0) {
-						resetX = 0;
-					} else if (that.x < that.maxScrollX) {
-						resetX = that.maxScrollX;
-					}
-				}
-				if (that.scrollY) {
-					if (that.maxScrollY >= 0) {
-						resetY = 0;
-					} else if (that.y < that.maxScrollY) {
-						resetY = that.maxScrollY;
-					}
-				}
-	
-				// Snap
-				if (that.options.snap) {
-					that.maxPageX = -Math.floor(that.maxScrollX/that.scrollWidth);
-					that.maxPageY = -Math.floor(that.maxScrollY/that.scrollHeight);
-	
-					snap = that.snap(resetX, resetY);
-					resetX = snap.x;
-					resetY = snap.y;
-				}
-	
-				if (resetX!=that.x || resetY!=that.y) {
-					that.setTransitionTime('0');
-					that.setPosition(resetX, resetY, true);
-				}
-				
-				that.scrollX = that.scrollerWidth > that.scrollWidth;
-				that.scrollY = !that.options.bounceLock && !that.scrollX || that.scrollerHeight > that.scrollHeight;
-	
-				// Update horizontal scrollbar
-				if (that.options.hScrollbar && that.scrollX) {
-					that.scrollBarX = that.scrollBarX || new scrollbar('horizontal', that.wrapper, that.options.fadeScrollbar, that.options.shrinkScrollbar, that.options.scrollbarColor);
-					that.scrollBarX.init(that.scrollWidth, that.scrollerWidth);
-				} else if (that.scrollBarX) {
-					that.scrollBarX = that.scrollBarX.remove();
-				}
-	
-				// Update vertical scrollbar
-				if (that.options.vScrollbar && that.scrollY && that.scrollerHeight > that.scrollHeight) {
-					that.scrollBarY = that.scrollBarY || new scrollbar('vertical', that.wrapper, that.options.fadeScrollbar, that.options.shrinkScrollbar, that.options.scrollbarColor);
-					that.scrollBarY.init(that.scrollHeight, that.scrollerHeight);
-				} else if (that.scrollBarY) {
-					that.scrollBarY = that.scrollBarY.remove();
-				}
-			},
-	
-			setPosition: function (x, y, hideScrollBars) {
-				var that = this;
-				
-				that.x = x;
-				that.y = y;
-	
-				that.element.style.webkitTransform = translateOpen + that.x + 'px,' + that.y + 'px' + translateClose;
-	
-				// Move the scrollbars
-				if (!hideScrollBars) {
-					if (that.scrollBarX) {
-						that.scrollBarX.setPosition(that.x);
-					}
-					if (that.scrollBarY) {
-						that.scrollBarY.setPosition(that.y);
-					}
-				}
-			},
-			
-			setTransitionTime: function(time) {
-				var that = this;
-				
-				time = time || '0';
-				that.element.style.webkitTransitionDuration = time;
-				
-				if (that.scrollBarX) {
-					that.scrollBarX.bar.style.webkitTransitionDuration = time;
-					that.scrollBarX.wrapper.style.webkitTransitionDuration = has3d && that.options.fadeScrollbar ? '300ms' : '0';
-				}
-				if (that.scrollBarY) {
-					that.scrollBarY.bar.style.webkitTransitionDuration = time;
-					that.scrollBarY.wrapper.style.webkitTransitionDuration = has3d && that.options.fadeScrollbar ? '300ms' : '0';
-				}
-			},
-				
-			touchStart: function(e) {
-				var that = this,
-					matrix;
-				
-				if (!that.enabled || e.target.nodeName.toLowerCase() == "select" || e.target.nodeName.toLowerCase() == "input" || e.target.nodeName.toLowerCase() == "textarea") {
-					return;
-				}
-	
-				e.preventDefault();
-				e.stopPropagation();
-				
-				that.scrolling = true;		// This is probably not needed, but may be useful if iScroll is used in conjuction with other frameworks
-	
-				that.moved = false;
-				that.distX = 0;
-				that.distY = 0;
-	
-				that.setTransitionTime('0');
-	
-				// Check if the scroller is really where it should be
-				if (that.options.momentum || that.options.snap) {
-					matrix = new WebKitCSSMatrix(window.getComputedStyle(that.element).webkitTransform);
-					if (matrix.e != that.x || matrix.f != that.y) {
-						document.removeEventListener('webkitTransitionEnd', that, false);
-						that.setPosition(matrix.e, matrix.f);
-						that.moved = true;
-					}
-				}
-	
-				that.touchStartX = isTouch ? e.changedTouches[0].pageX : e.pageX;
-				that.scrollStartX = that.x;
-	
-				that.touchStartY = isTouch ? e.changedTouches[0].pageY : e.pageY;
-				that.scrollStartY = that.y;
-	
-				that.scrollStartTime = e.timeStamp;
-	
-				that.directionX = 0;
-				that.directionY = 0;
-			},
-			
-			touchMove: function(e) {
-				if (!this.scrolling) {
-					return;
-				}
-	
-				var that = this,
-					pageX = isTouch ? e.changedTouches[0].pageX : e.pageX,
-					pageY = isTouch ? e.changedTouches[0].pageY : e.pageY,
-					leftDelta = that.scrollX ? pageX - that.touchStartX : 0,
-					topDelta = that.scrollY ? pageY - that.touchStartY : 0,
-					newX = that.x + leftDelta,
-					newY = that.y + topDelta;
-	
-				//e.preventDefault();
-				e.stopPropagation();	// Stopping propagation just saves some cpu cycles (I presume)
-	
-				that.touchStartX = pageX;
-				that.touchStartY = pageY;
-	
-				// Slow down if outside of the boundaries
-				if (newX >= 0 || newX < that.maxScrollX) {
-					newX = that.options.bounce ? Math.round(that.x + leftDelta / 3) : (newX >= 0 || that.maxScrollX>=0) ? 0 : that.maxScrollX;
-				}
-				if (newY >= 0 || newY < that.maxScrollY) { 
-					newY = that.options.bounce ? Math.round(that.y + topDelta / 3) : (newY >= 0 || that.maxScrollY>=0) ? 0 : that.maxScrollY;
-				}
-	
-				if (that.distX + that.distY > 5) {			// 5 pixels threshold
-	
-					// Lock scroll direction
-					if (that.distX-3 > that.distY) {
-						newY = that.y;
-						topDelta = 0;
-					} else if (that.distY-3 > that.distX) {
-						newX = that.x;
-						leftDelta = 0;
-					}
-	
-					that.setPosition(newX, newY);
-					that.moved = true;
-					that.directionX = leftDelta > 0 ? -1 : 1;
-					that.directionY = topDelta > 0 ? -1 : 1;
-				} else {
-					that.distX+= Math.abs(leftDelta);
-					that.distY+= Math.abs(topDelta);
-	//				that.dist+= Math.abs(leftDelta) + Math.abs(topDelta);
-				}
-			},
-			
-			touchEnd: function(e) {
-				if (!this.scrolling) {
-					return;
-				}
-	
-				var that = this,
-					time = e.timeStamp - that.scrollStartTime,
-					point = isTouch ? e.changedTouches[0] : e,
-					target, ev,
-					momentumX, momentumY,
-					newDuration = 0,
-					newPositionX = that.x, newPositionY = that.y,
-					snap;
-	
-				that.scrolling = false;
-	
-				if (!that.moved) {
-					that.resetPosition();
-	
-					if (isTouch) {
-						// Find the last touched element
-						target = point.target;
-						while (target.nodeType != 1) {
-							target = target.parentNode;
-						}
-	
-						// Create the fake event
-						ev = document.createEvent('MouseEvents');
-						ev.initMouseEvent('click', true, true, e.view, 1,
-							point.screenX, point.screenY, point.clientX, point.clientY,
-							e.ctrlKey, e.altKey, e.shiftKey, e.metaKey,
-							0, null);
-						ev._fake = true;
-						target.dispatchEvent(ev);
-					}
-	
-					return;
-				}
-	
-				if (!that.options.snap && time > 250) {			// Prevent slingshot effect
-					that.resetPosition();
-					return;
-				}
-	
-				if (that.options.momentum) {
-					momentumX = that.scrollX === true
-						? that.momentum(that.x - that.scrollStartX,
-										time,
-										that.options.bounce ? -that.x + that.scrollWidth/5 : -that.x,
-										that.options.bounce ? that.x + that.scrollerWidth - that.scrollWidth + that.scrollWidth/5 : that.x + that.scrollerWidth - that.scrollWidth)
-						: { dist: 0, time: 0 };
-	
-					momentumY = that.scrollY === true
-						? that.momentum(that.y - that.scrollStartY,
-										time,
-										that.options.bounce ? -that.y + that.scrollHeight/5 : -that.y,
-										that.options.bounce ? (that.maxScrollY < 0 ? that.y + that.scrollerHeight - that.scrollHeight : 0) + that.scrollHeight/5 : that.y + that.scrollerHeight - that.scrollHeight)
-						: { dist: 0, time: 0 };
-	
-					newDuration = Math.max(Math.max(momentumX.time, momentumY.time), 1);		// The minimum animation length must be 1ms
-					newPositionX = that.x + momentumX.dist;
-					newPositionY = that.y + momentumY.dist;
-				}
-	
-				if (that.options.snap) {
-					snap = that.snap(newPositionX, newPositionY);
-					newPositionX = snap.x;
-					newPositionY = snap.y;
-					newDuration = Math.max(snap.time, newDuration);
-				}
-	
-				that.scrollTo(newPositionX, newPositionY, newDuration + 'ms');
-			},
-	
-			transitionEnd: function () {
-				var that = this;
-				document.removeEventListener('webkitTransitionEnd', that, false);
-				that.resetPosition();
-			},
-	
-			resetPosition: function () {
-				var that = this,
-					resetX = that.x,
-				 	resetY = that.y;
-	
-				if (that.x >= 0) {
-					resetX = 0;
-				} else if (that.x < that.maxScrollX) {
-					resetX = that.maxScrollX;
-				}
-	
-				if (that.y >= 0 || that.maxScrollY > 0) {
-					resetY = 0;
-				} else if (that.y < that.maxScrollY) {
-					resetY = that.maxScrollY;
-				}
-	//			alert(resetX +" "+ that.x +" - "+ resetY +" "+ that.maxScrollY +" "+ that.y);
-				if (resetX != that.x || resetY != that.y) {
-					that.scrollTo(resetX, resetY);
-				} else {
-					if (that.moved) {
-						that.onScrollEnd();		// Execute custom code on scroll end
-						that.moved = false;
-					}
-	
-					// Hide the scrollbars
-					if (that.scrollBarX) {
-						that.scrollBarX.hide();
-					}
-					if (that.scrollBarY) {
-						that.scrollBarY.hide();
-					}
-				}
-			},
-			
-			snap: function (x, y) {
-				var that = this, time;
-	
-				if (that.directionX > 0) {
-					x = Math.floor(x/that.scrollWidth);
-				} else if (that.directionX < 0) {
-					x = Math.ceil(x/that.scrollWidth);
-				} else {
-					x = Math.round(x/that.scrollWidth);
-				}
-				that.pageX = -x;
-				x = x * that.scrollWidth;
-				if (x > 0) {
-					x = that.pageX = 0;
-				} else if (x < that.maxScrollX) {
-					that.pageX = that.maxPageX;
-					x = that.maxScrollX;
-				}
-	
-				if (that.directionY > 0) {
-					y = Math.floor(y/that.scrollHeight);
-				} else if (that.directionY < 0) {
-					y = Math.ceil(y/that.scrollHeight);
-				} else {
-					y = Math.round(y/that.scrollHeight);
-				}
-				that.pageY = -y;
-				y = y * that.scrollHeight;
-				if (y > 0) {
-					y = that.pageY = 0;
-				} else if (y < that.maxScrollY) {
-					that.pageY = that.maxPageY;
-					y = that.maxScrollY;
-				}
-	
-				// Snap with constant speed (proportional duration)
-				time = Math.round(Math.max(
-						Math.abs(that.x - x) / that.scrollWidth * 500,
-						Math.abs(that.y - y) / that.scrollHeight * 500
-					));
-					
-				return { x: x, y: y, time: time };
-			},
-	
-			scrollTo: function (destX, destY, runtime) {
-				var that = this;
-	
-				if (that.x == destX && that.y == destY) {
-					that.resetPosition();
-					return;
-				}
-	
-				that.moved = true;
-				that.setTransitionTime(runtime || '350ms');
-				that.setPosition(destX, destY);
-	
-				if (runtime==='0' || runtime=='0s' || runtime=='0ms') {
-					that.resetPosition();
-				} else {
-					document.addEventListener('webkitTransitionEnd', that, false);	// At the end of the transition check if we are still inside of the boundaries
-				}
-			},
-			
-			scrollToPage: function (pageX, pageY, runtime) {
-				var that = this, snap;
-	
-				if (!that.options.snap) {
-					that.pageX = -Math.round(that.x / that.scrollWidth);
-					that.pageY = -Math.round(that.y / that.scrollHeight);
-				}
-	
-				if (pageX == 'next') {
-					pageX = ++that.pageX;
-				} else if (pageX == 'prev') {
-					pageX = --that.pageX;
-				}
-	
-				if (pageY == 'next') {
-					pageY = ++that.pageY;
-				} else if (pageY == 'prev') {
-					pageY = --that.pageY;
-				}
-	
-				pageX = -pageX*that.scrollWidth;
-				pageY = -pageY*that.scrollHeight;
-	
-				snap = that.snap(pageX, pageY);
-				pageX = snap.x;
-				pageY = snap.y;
-	
-				that.scrollTo(pageX, pageY, runtime || '500ms');
-			},
-	
-			scrollToElement: function (el, runtime) {
-				el = typeof el == 'object' ? el : this.element.querySelector(el);
-	
-				if (!el) {
-					return;
-				}
-	
-				var that = this,
-					x = that.scrollX ? -el.offsetLeft : 0,
-					y = that.scrollY ? -el.offsetTop : 0;
-	
-				if (x >= 0) {
-					x = 0;
-				} else if (x < that.maxScrollX) {
-					x = that.maxScrollX;
-				}
-	
-				if (y >= 0) {
-					y = 0;
-				} else if (y < that.maxScrollY) {
-					y = that.maxScrollY;
-				}
-	
-				that.scrollTo(x, y, runtime);
-			},
-	
-			momentum: function (dist, time, maxDistUpper, maxDistLower) {
-				var friction = 2.5,
-					deceleration = 1.2,
-					speed = Math.abs(dist) / time * 1000,
-					newDist = speed * speed / friction / 1000,
-					newTime = 0;
-	
-				// Proportinally reduce speed if we are outside of the boundaries 
-				if (dist > 0 && newDist > maxDistUpper) {
-					speed = speed * maxDistUpper / newDist / friction;
-					newDist = maxDistUpper;
-				} else if (dist < 0 && newDist > maxDistLower) {
-					speed = speed * maxDistLower / newDist / friction;
-					newDist = maxDistLower;
-				}
-				
-				newDist = newDist * (dist < 0 ? -1 : 1);
-				newTime = speed / deceleration;
-	
-				return { dist: Math.round(newDist), time: Math.round(newTime) };
-			},
-			
-			destroy: function (full) {
-				var that = this;
-	
-				window.removeEventListener('onorientationchange' in window ? 'orientationchange' : 'resize', that, false);		
-				that.element.removeEventListener(START_EVENT, that, false);
-				that.element.removeEventListener(MOVE_EVENT, that, false);
-				that.element.removeEventListener(END_EVENT, that, false);
-				document.removeEventListener('webkitTransitionEnd', that, false);
-	
-				if (that.options.checkDOMChanges) {
-					that.element.removeEventListener('DOMSubtreeModified', that, false);
-				}
-	
-				if (that.scrollBarX) {
-					that.scrollBarX = that.scrollBarX.remove();
-				}
-	
-				if (that.scrollBarY) {
-					that.scrollBarY = that.scrollBarY.remove();
-				}
-				
-				if (full) {
-					that.wrapper.parentNode.removeChild(that.wrapper);
-				}
-				
-				return null;
-			}
-		};
-	
-		function scrollbar (dir, wrapper, fade, shrink, color) {
-			var that = this,
-				doc = document;
-			
-			that.dir = dir;
-			that.fade = fade;
-			that.shrink = shrink;
-			that.uid = ++uid;
-	
-			// Create main scrollbar
-			that.bar = doc.createElement('div');
-	
-			that.bar.style.cssText = 'position:absolute;top:0;left:0;-webkit-transition-timing-function:cubic-bezier(0,0,0.25,1);pointer-events:none;-webkit-transition-duration:0;-webkit-transition-delay:0;-webkit-transition-property:-webkit-transform;z-index:10;background:' + color + ';' +
-				'-webkit-transform:' + translateOpen + '0,0' + translateClose + ';' +
-				(dir == 'horizontal' ? '-webkit-border-radius:3px 2px;min-width:6px;min-height:5px' : '-webkit-border-radius:2px 3px;min-width:5px;min-height:6px');
-	
-			// Create scrollbar wrapper
-			that.wrapper = doc.createElement('div');
-			that.wrapper.style.cssText = '-webkit-mask:-webkit-canvas(scrollbar' + that.uid + that.dir + ');position:absolute;z-index:10;pointer-events:none;overflow:hidden;opacity:0;-webkit-transition-duration:' + (fade ? '300ms' : '0') + ';-webkit-transition-delay:0;-webkit-transition-property:opacity;' +
-				(that.dir == 'horizontal' ? 'bottom:2px;left:2px;right:7px;height:5px' : 'top:2px;right:2px;bottom:7px;width:5px;');
-	
-			// Add scrollbar to the DOM
-			that.wrapper.appendChild(that.bar);
-			wrapper.appendChild(that.wrapper);
-		}
-	
-		scrollbar.prototype = {
-			init: function (scroll, size) {
-				var that = this,
-					doc = document,
-					pi = Math.PI,
-					ctx;
-	
-				// Create scrollbar mask
-				if (that.dir == 'horizontal') {
-					if (that.maxSize != that.wrapper.offsetWidth) {
-						that.maxSize = that.wrapper.offsetWidth;
-						ctx = doc.getCSSCanvasContext("2d", "scrollbar" + that.uid + that.dir, that.maxSize, 5);
-						ctx.fillStyle = "rgb(0,0,0)";
-						ctx.beginPath();
-						ctx.arc(2.5, 2.5, 2.5, pi/2, -pi/2, false);
-						ctx.lineTo(that.maxSize-2.5, 0);
-						ctx.arc(that.maxSize-2.5, 2.5, 2.5, -pi/2, pi/2, false);
-						ctx.closePath();
-						ctx.fill();
-					}
-				} else {
-					if (that.maxSize != that.wrapper.offsetHeight) {
-						that.maxSize = that.wrapper.offsetHeight;
-						ctx = doc.getCSSCanvasContext("2d", "scrollbar" + that.uid + that.dir, 5, that.maxSize);
-						ctx.fillStyle = "rgb(0,0,0)";
-						ctx.beginPath();
-						ctx.arc(2.5, 2.5, 2.5, pi, 0, false);
-						ctx.lineTo(5, that.maxSize-2.5);
-						ctx.arc(2.5, that.maxSize-2.5, 2.5, 0, pi, false);
-						ctx.closePath();
-						ctx.fill();
-					}
-				}
-	
-				that.size = Math.max(Math.round(that.maxSize * that.maxSize / size), 6);
-				that.maxScroll = that.maxSize - that.size;
-				that.toWrapperProp = that.maxScroll / (scroll - size);
-				that.bar.style[that.dir == 'horizontal' ? 'width' : 'height'] = that.size + 'px';
-			},
-			
-			setPosition: function (pos) {
-				var that = this;
-				
-				if (that.wrapper.style.opacity != '1') {
-					that.show();
-				}
-	
-				pos = Math.round(that.toWrapperProp * pos);
-	
-				if (pos < 0) {
-					pos = that.shrink ? pos + pos*3 : 0;
-					if (that.size + pos < 7) {
-						pos = -that.size + 6;
-					}
-				} else if (pos > that.maxScroll) {
-					pos = that.shrink ? pos + (pos-that.maxScroll)*3 : that.maxScroll;
-					if (that.size + that.maxScroll - pos < 7) {
-						pos = that.size + that.maxScroll - 6;
-					}
-				}
-	
-				pos = that.dir == 'horizontal'
-					? translateOpen + pos + 'px,0' + translateClose
-					: translateOpen + '0,' + pos + 'px' + translateClose;
-	
-				that.bar.style.webkitTransform = pos;
-			},
-	
-			show: function () {
-				if (has3d) {
-					this.wrapper.style.webkitTransitionDelay = '0';
-				}
-				this.wrapper.style.opacity = '1';
-			},
-	
-			hide: function () {
-				if (has3d) {
-					this.wrapper.style.webkitTransitionDelay = '350ms';
-				}
-				this.wrapper.style.opacity = '0';
-			},
-			
-			remove: function () {
-				this.wrapper.parentNode.removeChild(this.wrapper);
-				return null;
-			}
-		};
-	
-		// Is translate3d compatible?
-		var has3d = ('WebKitCSSMatrix' in window && 'm11' in new WebKitCSSMatrix()),
-			// Device sniffing
-			isIthing = (/iphone|ipad/gi).test(navigator.appVersion),
-			isTouch = ('ontouchstart' in window),
-			// Event sniffing
-			START_EVENT = isTouch ? 'touchstart' : 'mousedown',
-			MOVE_EVENT = isTouch ? 'touchmove' : 'mousemove',
-			END_EVENT = isTouch ? 'touchend' : 'mouseup',
-			// Translate3d helper
-			translateOpen = 'translate' + (has3d ? '3d(' : '('),
-			translateClose = has3d ? ',0)' : ')',
-			// Unique ID
-			uid = 0;
-	
-		// Expose iScroll to the world
-		window.iScroll = iScroll;
-		})();
-		</script>
-		<meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-		<script type="text/javascript">
-			var myScroll;
-			function loaded()
-			{
-				document.addEventListener('touchmove', function(e){ e.preventDefault(); }, false);
-				myScroll = new iScroll('content', { checkDOMChanges:false, snap:false, momentum:true, hScrollbar:false, vScrollbar:true });
-			}
-						
-			// Load iScroll when DOM content is ready.
-			document.addEventListener('DOMContentLoaded', loaded, false);
-		</script>
-		<style>
-			#wrapper
-			{
-				height: 300px;
-			}
-			#content
-			{
-				height: 530px;
-			}
-		</style>
-	</PML_IF>
 </head>
 <body>
-	<PML_IF COND="cgi.logo_url != ''">
-		<div id="logo">
-			<img src="images/client_logo.jpg" PML_width="cgi.logo_width" PML_height="cgi.logo_height" PML_alt="'- '@cgi.client@' -'" />
-		</div>
-	</PML_IF>
+	<div id="logo">
+		<img src="images/client_logo.jpg" PML_width="cgi.width" PML_height="cgi.height" PML_alt="'- '@cgi.client@' -'" />
+	</div>
 	<div id="progress" class="mPoint_Info"><PML_VAL>progress</PML_VAL></div>
 	
-	<div id="wrapper">
-		<div id="content">
-			<div class="mPoint_Status">
-			<PML_SWITCH EXPR="auth.reason">
-				<PML_CASE VALUE="0"><PML_VAL>error_0</PML_VAL></PML_CASE>
-				<PML_CASE VALUE="1"><PML_VAL>error_1</PML_VAL></PML_CASE>
-				<PML_CASE VALUE="2"><PML_VAL>error_2</PML_VAL></PML_CASE>
-				<PML_CASE VALUE="3"><PML_VAL>error_3</PML_VAL></PML_CASE>
-				<PML_CASE VALUE="4"><PML_VAL>error_4</PML_VAL></PML_CASE>
-				<PML_CASE VALUE="5"><PML_VAL>error_5</PML_VAL></PML_CASE>
-				<PML_CASE VALUE="6"><PML_VAL>error_6</PML_VAL></PML_CASE>
-				<PML_CASE VALUE="7"><PML_VAL>error_7</PML_VAL></PML_CASE>
-				<PML_CASE VALUE="8"><PML_VAL>error_8</PML_VAL></PML_CASE>
-				<PML_CASE VALUE="9"><PML_VAL>error_9</PML_VAL></PML_CASE>
-				<PML_CASE VALUE="10"><PML_VAL>error_10</PML_VAL></PML_CASE>
-				<PML_DEFAULT><PML_VAL>error_unknown</PML_VAL></PML_DEFAULT>
-			</PML_SWITCH>
-			</div>
-			
-			<PML_SWITCH EXPR="cgi.markup">
-				<PML_CASE VALUE="'html5'">
-					<form action="auth.pml" method="post" onsubmit="javascript:document.getElementById('loader').style.visibility='visible';">
-				</PML_CASE>
-				<PML_DEFAULT>
-					<form action="auth.pml" method="post">
-				</PML_DEFAULT>
-			</PML_SWITCH>
-				<div>
-					<PML_IF COND="cgi.test > 0">
-						<input type="hidden" name="test" PML_value="cgi.test" />
-					</PML_IF>
-					<!-- DIBS Required Data -->
-					<input type="hidden" name="callbackurl" PML_value="string.HTMLencode(cgi.callbackurl)" />
-					<input type="hidden" name="accepturl" PML_value="string.HTMLencode(cgi.accepturl)" />
-					<input type="hidden" name="amount" PML_value="cgi.amount" />
-					<input type="hidden" name="currency" PML_value="cgi.currency" />
-					<input type="hidden" name="orderid" PML_value="cgi.orderid" />
-					<input type="hidden" name="fullreply" value="true" />
-					<PML_IF COND="cgi.capturenow = 'true'">
-						<input type="hidden" name="capturenow" PML_value="cgi.capturenow" />
-					</PML_IF>
-					<PML_IF COND="cgi.accounts > 0">
-						<input type="hidden" name="account" PML_value="cgi.accounts" />
-					</PML_IF>			
-					<input type="hidden" name="lang" PML_value="cgi.lang" />
-					<input type="hidden" name="paytype" PML_value="cgi.paytype" />
-					<!-- mPoint Required Data -->
-					<input type="hidden" name="device_name" PML_value="cgi.device_name" />
-					<input type="hidden" name="device_width" PML_value="cgi.device_width" />
-					<input type="hidden" name="device_height" PML_value="cgi.device_height" />
-					<input type="hidden" name="logo_url" PML_value="cgi.logo_url" />
-					<input type="hidden" name="logo_width" PML_value="cgi.logo_width" />
-					<input type="hidden" name="logo_height" PML_value="cgi.logo_height" />
-					<input type="hidden" name="format" PML_value="cgi.format" />
-					<input type="hidden" name="PHPSESSID" PML_value="cgi.PHPSESSID" />
-					<input type="hidden" name="language" PML_value="cgi.language" />
-					<input type="hidden" name="cardid" PML_value="cgi.cardid" />
-					<input type="hidden" name="mpointid" PML_value="cgi.mpointid" />
-					<input type="hidden" name="markup" PML_value="cgi.markup" />
-					<!-- Current transaction is an Account Top-Up and a previous transaction is in progress -->
-					<PML_IF COND="cgi.org_mpointid > 0">
-						<input type="hidden" name="org_mpointid" PML_value="cgi.org_mpointid" />
-					</PML_IF>
-					<input type="hidden" name="euaid" PML_value="cgi.euaid" />
-					<!-- Store Credit Card -->
-					<PML_IF COND="cgi.store_card > 0">
-						<input type="hidden" name="store_card" PML_value="cgi.store_card" />
-						<input type="hidden" name="auto_store_card" PML_value="cgi.auto_store_card" />
-					</PML_IF>
-					<!-- Dynamic Page Data -->
-					<input type="hidden" name="clientid" PML_value="cgi.clientid" />
-					<input type="hidden" name="client" PML_value="cgi.client" />
-					<input type="hidden" name="mpoint_width" PML_value="cgi.mpoint_width" />
-					<input type="hidden" name="mpoint_height" PML_value="cgi.mpoint_height" />
-					<input type="hidden" name="sms_receipt" PML_value="cgi.sms_receipt" />
-					<input type="hidden" name="email_receipt" PML_value="cgi.email_receipt" />
-					<input type="hidden" name="email_url" PML_value="cgi.email_url" />
-					<input type="hidden" name="accept_url" PML_value="cgi.accept_url" />
-					<input type="hidden" name="mobile" PML_value="cgi.mobile" />
-					<input type="hidden" name="price" PML_value="cgi.price" />
-					<input type="hidden" name="card_width" PML_value="cgi.card_width" />
-					<input type="hidden" name="card_heigth" PML_value="cgi.card_heigth" />
-					<PML_SCRIPT>
-					// Transfer Custom Variables
-					foreach(i ; cgi)
-					{
-						if (string.substring(cgi[i], 0, 4) = 'var_')
-						{
-							out.put('<input type="hidden" name="client_vars_names_'@ i @'" value="'@ cgi[i] @'" />');
-							out.put('<input type="hidden" name="client_vars_data_'@ i @'" value="'@ cgi[i-7] @'" />');
-						}
-					}
-					</PML_SCRIPT>
-				</div>
-				<div>
-					<span class="mPoint_Label"><PML_VAL>label_selected_card</PML_VAL>:</span>
-					<table>
-					<tr>
-					<PML_SWITCH EXPR="cgi.cardid">
-						<PML_CASE VALUE="1">
-							<td><img src="images/amex.jpg" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- American Express -" /></td>
-							<td colspan="3" class="status">&nbsp;American Express</td>
-						</PML_CASE>
-						<PML_CASE VALUE="2">
-							<td><img src="images/dankort.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Dankort -" /></td>
-							<td colspan="3" class="status">&nbsp;Dankort</td>
-						</PML_CASE>
-						<PML_CASE VALUE="3">
-							<td><img src="images/diners.jpg" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Diners Club -" /></td>
-							<td colspan="3" class="status">&nbsp;Diners Club</td>
-						</PML_CASE>
-						<PML_CASE VALUE="4">
-							<td><img src="images/mastercard.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- EuroCard -" /></td>
-							<td colspan="3" class="status">&nbsp;EuroCard</td>
-						</PML_CASE>
-						<PML_CASE VALUE="5">
-							<td><img src="images/jcb.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- JCB -" /></td>
-							<td colspan="3" class="status">&nbsp;JCB</td>
-						</PML_CASE>
-						<PML_CASE VALUE="6">
-							<td><img src="images/maestro.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Maestro -" /></td>
-							<td colspan="3" class="status">&nbsp;Maestro</td>
-						</PML_CASE>
-						<PML_CASE VALUE="7">
-							<td><img src="images/mastercard.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- MasterCard -" /></td>
-							<td colspan="3" class="status">&nbsp;MasterCard</td>
-						</PML_CASE>
-						<PML_CASE VALUE="8">
-							<td><img src="images/visa.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- VISA -" /></td>
-							<td colspan="3" class="status">&nbsp;VISA</td>
-						</PML_CASE>
-						<PML_CASE VALUE="9">
-							<td><img src="images/visa_electron.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- VISA Electron -" /></td>
-							<td colspan="3" class="status">&nbsp;VISA Electron</td>
-						</PML_CASE>
-					</PML_SWITCH>
-					</tr>
-					</table>
-				</div>
-				<!-- Price -->
-				<div id="price">
-					<span class="mPoint_Label"><PML_VAL>label_price</PML_VAL>:</span>
-					<PML_VAL>cgi.price</PML_VAL>
-				</div>
-				<!-- Credit Card Information -->
-				<div><PML_VAL>info</PML_VAL></div>
-				<div id="cardinfo">
-					<div class="mPoint_Label">
-						<PML_VAL>label_card_number</PML_VAL>:<br />
-						<PML_IF COND="sess_cardno > 0">
-							<input name="cardno" maxlength="19" PML_value="string.precision(sess_cardno, 0)" size="21" style="-wap-input-format:'*N';" pattern="[0-9]*" />
-						</PML_IF>
-						<PML_ELSE>
-							<input name="cardno" maxlength="19" value="" size="21" style="-wap-input-format:'*N';" pattern="[0-9]*" />
-						</PML_ELSE>
-					</div>
-					<div class="mPoint_Label">
-						<PML_VAL>label_expiry</PML_VAL> <span class="mPoint_Info">(<PML_VAL>expiry_month</PML_VAL>/<PML_VAL>expiry_year</PML_VAL>)</span>:<br />
-						<PML_IF COND="sess_expmon > 0">
-							<input name="expmon" maxlength="2" PML_value="string.precision(sess_expmon, 0)" size="3" style="-wap-input-format:'*N';" pattern="[0-9]*" />
-						</PML_IF>
-						<PML_ELSE>
-							<input name="expmon" maxlength="2" value="" size="3" style="-wap-input-format:'*N';" pattern="[0-9]*" />
-						</PML_ELSE>
-						&nbsp;/&nbsp;
-						<PML_IF COND="sess_expyear > 0">
-							<input name="expyear" maxlength="2" PML_value="string.precision(sess_expyear, 0)" size="3" style="-wap-input-format:'*N';" pattern="[0-9]*" />
-						</PML_IF>
-						<PML_ELSE>
-							<input name="expyear" maxlength="2" value="" size="3" style="-wap-input-format:'*N';" pattern="[0-9]*" />
-						</PML_ELSE>
-					</div>
-					<div class="mPoint_Label">
-						<PML_VAL>label_cvc</PML_VAL>:<br />
-						<PML_IF COND="sess_cvc > 0">
-							<input name="cvc" maxlength="3" PML_value="string.precision(sess_cvc, 0)" size="4" style="-wap-input-format:'*N';" pattern="[0-9]*" />
-						</PML_IF>
-						<PML_ELSE>
-							<input name="cvc" maxlength="3" value="" size="4" style="-wap-input-format:'*N';" pattern="[0-9]*" />
-						</PML_ELSE>
-					</div>
-					<div class="mPoint_Info"><PML_VAL>cvc_help</PML_VAL></div>
-				</div>
-				<!-- Store Credit Card -->
-				<PML_IF COND="cgi.store_card > 0">
-					<div>
-						<PML_IF COND="cgi.auto_store_card = 'true">
-							<input type="checkbox" name="preauth" value="true" checked="true" />
-						</PML_IF>
-						<PML_ELSE>
-							<input type="checkbox" name="preauth" value="true" />
-						</PML_ELSE>
-						<PML_VAL>label_store</PML_VAL>
-					</div>
-				</PML_IF>
-				<!-- Complete Payment -->
-				<div>
-					<input type="submit" PML_value="submit" class="mPoint_Button" />
-				</div>
-			</form>
-		</div>
+	<div class="mPoint_Status">
+	<PML_SWITCH EXPR="auth.reason">
+		<PML_CASE VALUE="0"><PML_VAL>error_0</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="1"><PML_VAL>error_1</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="2"><PML_VAL>error_2</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="3"><PML_VAL>error_3</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="4"><PML_VAL>error_4</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="5"><PML_VAL>error_5</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="6"><PML_VAL>error_6</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="7"><PML_VAL>error_7</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="8"><PML_VAL>error_8</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="9"><PML_VAL>error_9</PML_VAL></PML_CASE>
+		<PML_CASE VALUE="10"><PML_VAL>error_10</PML_VAL></PML_CASE>
+		<PML_DEFAULT><PML_VAL>error_unknown</PML_VAL></PML_DEFAULT>
+	</PML_SWITCH>
 	</div>
-	<PML_IF COND="cgi.markup = 'html5'">
-		<!-- Hidden Data Fields Start -->
-		<span id="loader">
-			<img src="images/loader.gif" width="28" height="28" PML_alt="'- '@label_loading@' -'" border="0" />
-			<br />
-			<span><PML_VAL>label_loading</PML_VAL></span>
-		</span>
-	</PML_IF>
+	
+	<form action="auth.pml" method="post">
+		<div>
+			<PML_IF COND="cgi.test > 0">
+				<input type="hidden" name="test" PML_value="cgi.test" />
+			</PML_IF>
+			<!-- DIBS Required Data -->
+			<input type="hidden" name="callbackurl" PML_value="string.HTMLencode(cgi.callbackurl)" />
+			<input type="hidden" name="accepturl" PML_value="string.HTMLencode(cgi.accepturl)" />
+			<input type="hidden" name="amount" PML_value="cgi.amount" />
+			<input type="hidden" name="currency" PML_value="cgi.currency" />
+			<input type="hidden" name="orderid" PML_value="cgi.orderid" />
+			<input type="hidden" name="fullreply" value="true" />
+			<PML_IF COND="cgi.capturenow = 'true'">
+				<input type="hidden" name="capturenow" PML_value="cgi.capturenow" />
+			</PML_IF>
+			<PML_IF COND="cgi.accounts > 0">
+				<input type="hidden" name="account" PML_value="cgi.accounts" />
+			</PML_IF>			
+			<input type="hidden" name="lang" PML_value="cgi.lang" />
+			<input type="hidden" name="paytype" PML_value="cgi.paytype" />
+			<!-- mPoint Required Data -->
+			<input type="hidden" name="width" PML_value="cgi.width" />
+			<input type="hidden" name="height" PML_value="cgi.height" />
+			<input type="hidden" name="format" PML_value="cgi.format" />
+			<input type="hidden" name="PHPSESSID" PML_value="cgi.PHPSESSID" />
+			<input type="hidden" name="language" PML_value="cgi.language" />
+			<input type="hidden" name="cardid" PML_value="cgi.cardid" />
+			<input type="hidden" name="mpointid" PML_value="cgi.mpointid" />
+			<!-- Current transaction is an Account Top-Up and a previous transaction is in progress -->
+			<PML_IF COND="cgi.org_mpointid > 0">
+				<input type="hidden" name="org_mpointid" PML_value="cgi.org_mpointid" />
+			</PML_IF>
+			<input type="hidden" name="euaid" PML_value="cgi.euaid" />
+			<!-- Store Credit Card -->
+			<PML_IF COND="cgi.store_card > 0">
+				<input type="hidden" name="store_card" PML_value="cgi.store_card" />
+				<input type="hidden" name="auto_store_card" PML_value="cgi.auto_store_card" />
+			</PML_IF>
+			<!-- Dynamic Page Data -->
+			<input type="hidden" name="clientid" PML_value="cgi.clientid" />
+			<input type="hidden" name="client" PML_value="cgi.client" />
+			<input type="hidden" name="mpoint_width" PML_value="cgi.mpoint_width" />
+			<input type="hidden" name="mpoint_height" PML_value="cgi.mpoint_height" />
+			<input type="hidden" name="sms_receipt" PML_value="cgi.sms_receipt" />
+			<input type="hidden" name="email_receipt" PML_value="cgi.email_receipt" />
+			<input type="hidden" name="email_url" PML_value="cgi.email_url" />
+			<input type="hidden" name="accept_url" PML_value="cgi.accept_url" />
+			<input type="hidden" name="mobile" PML_value="cgi.mobile" />
+			<input type="hidden" name="price" PML_value="cgi.price" />
+			<input type="hidden" name="card_width" PML_value="cgi.card_width" />
+			<input type="hidden" name="card_heigth" PML_value="cgi.card_heigth" />
+			<PML_SCRIPT>
+			// Transfer Custom Variables
+			foreach(i ; cgi)
+			{
+				if (string.substring(cgi[i], 0, 4) = 'var_')
+				{
+					out.put('<input type="hidden" name="client_vars_names_'@ i @'" value="'@ cgi[i] @'" />');
+					out.put('<input type="hidden" name="client_vars_data_'@ i @'" value="'@ cgi[i-7] @'" />');
+				}
+			}
+			</PML_SCRIPT>
+		</div>
+		<div>
+			<span class="mPoint_Label"><PML_VAL>label_selected_card</PML_VAL>:</span>
+			<table>
+			<tr>
+			<PML_SWITCH EXPR="cgi.cardid">
+				<PML_CASE VALUE="1">
+					<td><img src="images/amex.jpg" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- American Express -" /></td>
+					<td colspan="3" class="status">&nbsp;American Express</td>
+				</PML_CASE>
+				<PML_CASE VALUE="2">
+					<td><img src="images/dankort.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Dankort -" /></td>
+					<td colspan="3" class="status">&nbsp;Dankort</td>
+				</PML_CASE>
+				<PML_CASE VALUE="3">
+					<td><img src="images/diners.jpg" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Diners Club -" /></td>
+					<td colspan="3" class="status">&nbsp;Diners Club</td>
+				</PML_CASE>
+				<PML_CASE VALUE="4">
+					<td><img src="images/mastercard.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- EuroCard -" /></td>
+					<td colspan="3" class="status">&nbsp;EuroCard</td>
+				</PML_CASE>
+				<PML_CASE VALUE="5">
+					<td><img src="images/jcb.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- JCB -" /></td>
+					<td colspan="3" class="status">&nbsp;JCB</td>
+				</PML_CASE>
+				<PML_CASE VALUE="6">
+					<td><img src="images/maestro.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Maestro -" /></td>
+					<td colspan="3" class="status">&nbsp;Maestro</td>
+				</PML_CASE>
+				<PML_CASE VALUE="7">
+					<td><img src="images/mastercard.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- MasterCard -" /></td>
+					<td colspan="3" class="status">&nbsp;MasterCard</td>
+				</PML_CASE>
+				<PML_CASE VALUE="8">
+					<td><img src="images/visa.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- VISA -" /></td>
+					<td colspan="3" class="status">&nbsp;VISA</td>
+				</PML_CASE>
+				<PML_CASE VALUE="9">
+					<td><img src="images/visa_electron.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- VISA Electron -" /></td>
+					<td colspan="3" class="status">&nbsp;VISA Electron</td>
+				</PML_CASE>
+			</PML_SWITCH>
+			</tr>
+			</table>
+		</div>
+		<!-- Price -->
+		<div id="price">
+			<span class="mPoint_Label"><PML_VAL>label_price</PML_VAL>:</span>
+			<PML_VAL>cgi.price</PML_VAL>
+		</div>
+		<!-- Credit Card Information -->
+		<div><PML_VAL>info</PML_VAL></div>
+		<div id="cardinfo">
+			<div class="mPoint_Label">
+				<PML_VAL>label_card_number</PML_VAL>:<br />
+				<PML_IF COND="sess_cardno > 0">
+					<input name="cardno" maxlength="19" PML_value="string.precision(sess_cardno, 0)" size="19" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+				</PML_IF>
+				<PML_ELSE>
+					<input name="cardno" maxlength="19" value="" size="19" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+				</PML_ELSE>
+			</div>
+			<div class="mPoint_Label">
+				<PML_VAL>label_expiry</PML_VAL> <span class="mPoint_Info">(<PML_VAL>expiry_month</PML_VAL>/<PML_VAL>expiry_year</PML_VAL>)</span>:<br />
+				<PML_IF COND="sess_expmon > 0">
+					<input name="expmon" maxlength="2" PML_value="string.precision(sess_expmon, 0)" size="2" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+				</PML_IF>
+				<PML_ELSE>
+					<input name="expmon" maxlength="2" value="" size="2" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+				</PML_ELSE>
+				&nbsp;/&nbsp;
+				<PML_IF COND="sess_expyear > 0">
+					<input name="expyear" maxlength="2" PML_value="string.precision(sess_expyear, 0)" size="2" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+				</PML_IF>
+				<PML_ELSE>
+					<input name="expyear" maxlength="2" value="" size="2" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+				</PML_ELSE>
+			</div>
+			<div class="mPoint_Label">
+				<PML_VAL>label_cvc</PML_VAL>:<br />
+				<PML_IF COND="sess_cvc > 0">
+					<input name="cvc" maxlength="3" PML_value="string.precision(sess_cvc, 0)" size="3" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+				</PML_IF>
+				<PML_ELSE>
+					<input name="cvc" maxlength="3" value="" size="3" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+				</PML_ELSE>
+			</div>
+			<div class="mPoint_Info"><PML_VAL>cvc_help</PML_VAL></div>
+		</div>
+		<!-- Store Credit Card -->
+		<PML_IF COND="cgi.store_card > 0">
+			<div>
+				<PML_IF COND="cgi.auto_store_card = 'true">
+					<input type="checkbox" name="preauth" value="true" checked="true" />
+				</PML_IF>
+				<PML_ELSE>
+					<input type="checkbox" name="preauth" value="true" />
+				</PML_ELSE>
+				<PML_VAL>label_store</PML_VAL>
+			</div>
+		</PML_IF>
+		<!-- Complete Payment -->
+		<div>
+			<input type="submit" PML_value="submit" class="mPoint_Button" />
+		</div>
+	</form>
 </body>
 </html>

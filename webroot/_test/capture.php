@@ -1,5 +1,5 @@
 <h1>Capture Test</h1>
-<form action="http://mpoint.cellpointmobile.com/buy/capture.php" method="post">
+<form action="http://mpoint.localhost/buy/capture.php" method="post">
 <table>
 <tr>
 	<td style="font-weight:bold;">Client ID</td>
