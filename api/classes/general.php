@@ -504,6 +504,26 @@ class General
 
 		return is_array($RS)===true?unserialize(utf8_decode($RS["DATA"]) ):array();
 	}
+	
+	/**
+	 * Deletes a message state from the database, use with care!!
+	 * This method MUST ONLY be called to remove state: iPAYMENT_WITH_ACCOUNT_STATE if authorization with the
+	 * Payment Service Provider fails.
+	 * 
+	 * @see		Constants::iPAYMENT_WITH_ACCOUNT_STATE
+	 *
+	 * @param 	integer $txnid 	Unique ID of the Transaction the Message should be deleted for
+	 * @param 	integer $sid 	Unique ID of the State that the deleted Message is associated with
+	 * @return 	boolean
+	 */
+	public function delMessage($txnid, $sid)
+	{
+		$sql = "DELETE FROM Log.Message_Tbl
+				WHERE txnid = ". intval($txnid) ." AND stateid = ". intval($sid);
+//		echo $sql ."\n";
+
+		return is_resource($this->getDBConn()->query($sql) );
+	}
 
 	/**
 	 * Sends an MT to GoMobile

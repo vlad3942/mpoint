@@ -116,9 +116,14 @@ if (count($aMsgCds) == 0)
 						$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_XML->type["id"]), $iTxnID);
 						$aMsgCds[] = 100;
 					}
-					else { $aMsgCds[] = 51; }
+					else
+					{
+						$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+						$aMsgCds[] = 51;
+					}
 					break;
 				default:	// Unkown Error
+					$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 					$aMsgCds[] = 59;
 					break;
 				}
