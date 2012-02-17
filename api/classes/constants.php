@@ -215,15 +215,25 @@ abstract class Constants
 	 */
 	const iSMS_SUBSCR_TYPE = 21;
 	/**
-	 * Defines Type ID for a purchase initiated from a Mobile Site or Application
+	 * Defines Type ID for a purchase initiated from a Mobile Site or Mobile App. using an embedded WebView
 	 *
 	 */
 	const iWEB_PURCHASE_TYPE = 30;
 	/**
-	 * Defines Type ID for a subscription initiated from a Mobile Site or Application
+	 * Defines Type ID for a subscription initiated from a Mobile Site or Mobile App. using an embedded WebView
 	 *
 	 */
 	const iWEB_SUBSCR_TYPE = 31;
+	/**
+	 * Defines Type ID for a purchase initiated from a Mobile App. using native controls
+	 *
+	 */
+	const iAPP_PURCHASE_TYPE = 40;
+	/**
+	 * Defines Type ID for a subscription initiated from a Mobile App. using native controls
+	 *
+	 */
+	const iAPP_SUBSCR_TYPE = 41;
 	/**
 	 * Defines Type ID for a top-up of an End-User's prepaid account
 	 *

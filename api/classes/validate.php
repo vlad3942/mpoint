@@ -80,7 +80,7 @@ class Validate
 						LIMIT 1";
 			}
 			// Use Account Number
-			elseif ($acc < 1000)
+			elseif ($acc > 0 && $acc < 1000)
 			{
 				$sql .= "
 						ORDER BY Acc.id ASC
@@ -91,8 +91,9 @@ class Validate
 			{
 				$sql .= " AND Acc.id = ". $acc;
 			}
+//			echo $sql ."\n";
 			$RS = $oDB->getName($sql);
-
+			
 			if (is_array($RS) === true)
 			{
 				if ($RS["CLIENTACTIVE"] === false) { $code = 4; }		// Client Disabled

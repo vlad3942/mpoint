@@ -136,7 +136,8 @@ $_SESSION['obj_UA'] = UAProfile::produceUAProfile(HTTPConnInfo::produceConnInfo(
 
 // Success: Construct "Select Credit Card" page
 if (array_key_exists(1000, $aMsgCds) === true)
-{ 
+{
+	unset($_SESSION['temp']);
 	// Start Shop Flow
 	if ($_SESSION['obj_TxnInfo']->getClientConfig()->getFlowID() == Constants::iPHYSICAL_FLOW)
 	{

@@ -1,0 +1,203 @@
+
+
+
+
+
+
+
+
+
+	
+
+
+
+<html>
+<HEAD>
+  <title>RBS WorldPay Test Issuer - MasterCard SecureCode</title>
+  <META http-equiv='Pragma' content='no-cache'>
+
+  <META http-equiv='Expires' content='0'>
+  <link type="text/css" rel="stylesheet" href="/pictures/wpstyle.css"/>
+</HEAD>
+
+<body>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr>
+		<td align="left" style="width:100%;" valign="top">
+		<table border="0" cellpadding="0" cellspacing="0" width="760">
+			<tr>
+				<td style="width:760px; height:67px;" valign="top">
+
+				<table cellpadding="0" cellspacing="0" class="header">
+					<tr>
+						<td><img alt="WorldPay Logo" src="/images/wp/wplogo.gif" style="logostyle" />
+						</td> 
+						<td class="headerlogo1"><img alt=""	src="/images/wp/magic.gif" /></td>
+					</tr>
+				</table>
+				</td>
+			</tr>
+
+			<tr>
+				<td style="width:760px;">
+				<table cellpadding="0" cellspacing="0" class="nav">
+				<tr>
+					<td colspan="3">
+					<span style="font-family: Verdana,Geneva,Arial,Helvetica,Sans-Serif; font-size: 10pt; color: #002469;">
+					<strong>&nbsp;Welcome to 3D Secure Authentication Page (Simulator)</strong></span></td>
+			    </tr>
+
+				</table>
+				</td>
+			</tr>
+			<tr>
+				<td align="left" colspan="5" style="width:760px;" valign="top">
+				<table border="0" cellpadding="2" cellspacing="0">
+					<tr>
+						<td class="headerlogo2"><img alt="" src="/images/wp/lock.gif" /></td>
+						<td align="left" style="width:488px" valign="top">
+
+						<form method="POST" action="https://secure-test.worldpay.com/wcc/card?op=authenticated-threeDSecureDone&PaymentID=mm2imscs4p-dppr-1328167130775">
+						<table align="center" cellpadding="0" cellspacing="0" class="container">
+							<tr>
+								<td>
+								<table cellpadding="2" cellspacing="0" class="containercell">
+									<tr>
+										<td class="title" colspan="2">
+										<h1>3D Secure Authentication Page</h1>
+
+										</td>
+									</tr>
+									<td class="one" colspan="2">
+										<table border="0" cellpadding="0" cellspacing="0" width="100%">
+											<tr>
+												<td align="left" class="one width190" valign="top">
+												<span class="test">Merchant Name</span>&nbsp;&nbsp;</td>
+												<td align="left" class="one" valign="top">
+
+												<span class="test"><strong>CellPoint Mobile</strong></span>&nbsp;</td>
+											</tr>
+											<tr>
+												<td align="left" class="one width190" valign="top">
+												<span class="test">Card Number</span>&nbsp;&nbsp;</td>
+												<td align="left" class="one width190" valign="top">
+												<span class="test"><strong>5402********7898</strong></span>&nbsp;</td>
+
+												<td align="right" class="one" rowspan="3" valign="top">
+												<img src="/images/logos/spa.gif"/>&nbsp;&nbsp;&nbsp;</td>
+											</tr>
+											<tr>
+												<td align="left" class="one width190" valign="top">
+												<span class="test">Payment</span>&nbsp;&nbsp;</td>
+												<td align="left" class="one width190" valign="top">
+												<span class="test"><strong>DKK 1.00</strong></span></td>
+
+											</tr>
+											<tr>
+												<td align="left" class="one width190" valign="top">
+												<span class="test">Personal Assurance Message</span>&nbsp;&nbsp;</td>
+												<td align="left" class="one" valign="top">
+												<span class="test"><strong>Pam123$</strong></span>&nbsp;</td>
+											</tr>
+										</table>
+
+										</td>
+									</tr>
+									<tr>
+										<td class="one" colspan="2" height="5"><img alt=""
+											src="/images/wp/magic.gif" style="width:1px; height:5px;" /></td>
+									</tr>
+									<tr valign="middle">
+										<td align="left" class="one" colspan="2">
+										<table border="0" cellpadding="0" cellspacing="0" width="100%">
+											<tr>
+
+												<td class="two" width="100%">
+												<table border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td class="two" colspan="2"><nobr>&nbsp;<span
+															style=" font-family: Verdana,Geneva,Arial,Helvetica,Sans-Serif; font-size: 8pt; color: #002469;">
+															<em>Please choose one of the available actions and press Continue button</em></span></nobr></td>
+													</tr>
+													<tr>
+														<td class="two width190" colspan="2">&nbsp;</td>
+
+													</tr>
+													
+													<tr>
+														<td class="two width190"><span
+															style=" font-family: Verdana,Geneva,Arial,Helvetica,Sans-Serif; font-size: 10pt; color: #002469;">&nbsp;
+															&nbsp;Available Actions: </span>
+														</td>
+														<td class="two"> 
+														<select name="PaRes">
+		                                                    <option value="IDENTIFIED" selected="selected">IDENTIFIED</option>
+
+		                                                    <option value="IDENTIFIED_NOXID">IDENTIFIED_NOXID</option>
+		                                                    <option value="NOT_IDENTIFIED">NOT_IDENTIFIED</option>
+		                                                    <option value="NOT_IDENTIFIED_NOXID">NOT_IDENTIFIED_NOXID</option>
+		                                                    <option value="NOT_IDENTIFIED_NOCAVV">NOT_IDENTIFIED_NOCAVV</option>
+		                                                    <option value="ERROR_3DS">ERROR_3DS_VALID_ERROR_CODE</option>
+		                                                    <option value="ERROR_3DS_INVALID_ERROR_CODE">ERROR_3DS_INVALID_ERROR_CODE</option>
+
+		                                                    <option value="UNKNOWN_IDENTITY">UNKNOWN_IDENTITY</option>
+		                                                    <option value="UNKNOWN_IDENTITY">CANCELLED BY SHOPPER</option>                             
+		                                                    <option value="ERROR">ERROR</option>
+														</select>
+														</td>
+													</tr>
+													<input type="hidden" name="MD" size="30" value="MD">
+													<tr>
+
+														<td class="two width190" colspan="2">&nbsp;</td>
+													</tr>
+												</table>
+											</td>
+											</tr>
+										</table>
+										</td>
+									</tr>
+									<tr>
+
+										<td class="one" colspan="2" height="5"><img alt=""
+											src="/images/wp/magic.gif" style="width:1px; height:5px;" /></td>
+									</tr>
+									<tr valign="top">
+										<td align="right" class="one" rowspan="2" valign="top"><label
+											for="Continue"> 
+											<nobr><span style=" font-family: Verdana,Geneva,Arial,Helvetica,Sans-Serif; font-size: 12pt; color: #002469;">
+											<strong>CONTINUE</strong></span>
+											<input alt="Continue" name="continue" src="/images/buttons/makepayment.gif" type="image" />
+											</nobr></label>
+										</td>
+
+									</tr>
+								</table>
+								</td>
+							</tr>
+						</table>
+						</form>
+						</td>
+					</tr>
+					<tr>
+
+						<td align="left" colspan="5" style="height:5px;" valign="top"><img
+							alt="" src="/images/wp/magic.gif" style="height:5px; border:0px;" /></td>
+					</tr>
+				</table>
+				</td>
+			</tr>
+			<tr>
+				<td class="footerdivider" colspan="5"><img alt="" src="/images/wp/magic.gif" style="width:1px; height:1px; border:0px;" /></td>
+			</tr>
+			<tr>
+
+				<td class="footer" colspan="5">
+				<span class="test">Copyright (c) WorldPay (UK) Ltd 2010</span></td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+</table>
+</body>
+</html>

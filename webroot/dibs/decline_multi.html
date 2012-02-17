@@ -615,6 +615,10 @@ switch(cgi.clientid)
 				{
 					margin-left: 15px;
 				}
+				table.grouped tr th.mPoint_Help
+				{
+					white-space: normal;
+				}
 				
 				.mPoint_Status
 				{
@@ -1250,7 +1254,7 @@ switch(cgi.clientid)
 					if (document.getElementById('preauth').value == 'true') { document.getElementById('preauth').value = 'false'; }
 					else { document.getElementById('preauth').value = 'true'; }
 				}
-				function loaded()
+				function loadScroll()
 				{
 					document.addEventListener('touchmove', function(e) { e.preventDefault(); }, false);
 					if (myScroll == null)
@@ -1287,7 +1291,7 @@ switch(cgi.clientid)
 				                                           });
 					}
 				}
-				document.addEventListener('DOMContentLoaded', loaded, false);
+				document.addEventListener('DOMContentLoaded', loadScroll, false);
 			</script>
 		</head>
 		<body>

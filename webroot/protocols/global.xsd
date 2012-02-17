@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+<xs:complexType name="client-info">
+	<xs:all>
+		<xs:element name="mobile" type="mobile" minOccurs="1" maxOccurs="1" />
+		<xs:element name="email" type="email" minOccurs="1" maxOccurs="1" />
+		<xs:element name="device-id" type="device-id" minOccurs="1" maxOccurs="1" />
+	</xs:all>
+	<xs:attribute name="app-id" type="xs:positiveInteger" use="optional" />
+	<xs:attribute name="platform" type="platform" use="required" />
+	<xs:attribute name="version" type="version" use="required" />
+</xs:complexType>
+
+<xs:complexType name="get-updated-core-data">
+	<xs:group ref="get-updated-core-data" />
+</xs:complexType>
+<xs:group name="get-updated-core-data">
+	<xs:sequence>
+		<xs:element name="last-updated" type="xs:dateTime" minOccurs="0" maxOccurs="1" />
+		<xs:element name="client-info" minOccurs="1" maxOccurs="1">
+			<xs:complexType>
+				<xs:all>
+					<xs:element name="mobile" type="mobile" minOccurs="0" maxOccurs="1" />
+					<xs:element name="email" type="email" minOccurs="0" maxOccurs="1" />
+					<xs:element name="device-id" type="device-id" minOccurs="1" maxOccurs="1" />
+				</xs:all>
+				<xs:attribute name="platform" type="platform" use="optional" />
+				<xs:attribute name="version" type="version" use="optional" />
+			</xs:complexType>
+		</xs:element>
+	</xs:sequence>
+</xs:group>
+
+
+<xs:simpleType name="email"> 
+	<xs:restriction base="xs:string"> 
+		<xs:pattern value="[^@]+@[^\.]+\..+" /> 
+	</xs:restriction> 
+</xs:simpleType> 
+
+<xs:complexType name="phone">
+	<xs:simpleContent>
+		<xs:extension base="xs:token">
+			<xs:attribute name="country-id" type="countryid" use="required" />
+		</xs:extension>
+	</xs:simpleContent>
+</xs:complexType>
+
+<xs:complexType name="mobile">
+	<xs:simpleContent>
+		<xs:restriction base="phone">
+			<xs:minLength value="8" />
+			<xs:maxLength value="15" />
+			<xs:pattern value="([0-9])*"/>
+		</xs:restriction>
+	</xs:simpleContent>
+</xs:complexType>
+
+<xs:simpleType name="countryid">
+	<xs:restriction base="xs:positiveInteger">
+		<xs:minInclusive value="100" />
+		<xs:maxInclusive value="999" />
+	</xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name="device-id">
+	<xs:restriction base="xs:string">
+		<xs:maxLength value="40" />
+	</xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name="platform"> 
+	<xs:restriction base="xs:string"> 
+		<xs:enumeration value="iOS" />
+		<xs:enumeration value="Android" />
+		<xs:enumeration value="WP7" />
+		<xs:enumeration value="WinMo" />
+		<xs:enumeration value="HTML5" />
+		<xs:enumeration value="Other" /> 
+	</xs:restriction> 
+</xs:simpleType>
+
+<xs:simpleType name="version">
+	<xs:restriction base="xs:decimal"> 
+		<xs:minExclusive value="0.0" /> 
+	</xs:restriction> 
+</xs:simpleType>
+
+<xs:simpleType name="url"> 
+	<xs:restriction base="xs:string"> 
+		<xs:pattern value="http.?://.+" /> 
+	</xs:restriction> 
+</xs:simpleType> 
+
+</xs:schema>

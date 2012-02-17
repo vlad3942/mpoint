@@ -37,7 +37,7 @@ class CreditCard extends EndUserAccount
 	 * @param	TxnInfo $oTI 		Reference to the Data object with the Transaction Information
 	 * @param	UAProfile $oUA 		Reference to the data object with the User Agent Profile for the customer's mobile device
 	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, UAProfile &$oUA)
+	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, UAProfile &$oUA=null)
 	{
 		parent::__construct($oDB, $oTxt, $oTI->getClientConfig() );
 
@@ -79,14 +79,22 @@ class CreditCard extends EndUserAccount
 	public function getCards($amount)
 	{
 		/* ========== Calculate Logo Dimensions Start ========== */
-		$iWidth = $this->_obj_UA->getWidth() * iCARD_LOGO_SCALE / 100;
-		$iHeight = $this->_obj_UA->getHeight() * iCARD_LOGO_SCALE / 100;
-
-		if ($iWidth / 180 > $iHeight / 115) { $fScale = $iHeight / 115; }
-		else { $fScale = $iWidth / 180; }
-
-		$iWidth = intval($fScale * 180);
-		$iHeight = intval($fScale * 115);
+		if ( ($this->_obj_UA instanceof UAProfile) === true)
+		{
+			$iWidth = $this->_obj_UA->getWidth() * iCARD_LOGO_SCALE / 100;
+			$iHeight = $this->_obj_UA->getHeight() * iCARD_LOGO_SCALE / 100;
+	
+			if ($iWidth / 180 > $iHeight / 115) { $fScale = $iHeight / 115; }
+			else { $fScale = $iWidth / 180; }
+	
+			$iWidth = intval($fScale * 180);
+			$iHeight = intval($fScale * 115);
+		}
+		else
+		{
+			$iWidth = 180;
+			$iHeight = 115;
+		}
 		/* ========== Calculate Logo Dimensions End ========== */
 
 		$sql = "SELECT C.id, C.name,

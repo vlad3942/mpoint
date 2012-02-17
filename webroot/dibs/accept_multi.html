@@ -204,11 +204,7 @@ switch(cgi.clientid)
 				/* ========== Tag Classes End ========== */
 				
 				/* ========== Input Fields Start ========== */
-				input.text 
-				{
-				    width: 140px;
-				}
-				input[type="password"] 
+				input.text, input[type="password"] 
 				{
 				    width: 100px;
 				}
@@ -1185,12 +1181,44 @@ switch(cgi.clientid)
 			</style>
 			<script type="text/javascript">
 				var myScroll;
-				function loaded()
+				function loadScroll()
 				{
-					document.addEventListener('touchmove', function(e){ e.preventDefault(); }, false);
-					myScroll = new iScroll('wrapper', { checkDOMChanges:false, snap:false, momentum:true, hScrollbar:false, vScrollbar:true });
+					document.addEventListener('touchmove', function(e) { e.preventDefault(); }, false);
+					if (myScroll == null)
+					{
+						myScroll = new iScroll('wrapper', { // checkDOMChanges:false,
+//															snap:false,
+//															momentum:true,
+//															hScrollbar:false,
+//															vScrollbar:true,
+															useTransform:false,
+															onBeforeScrollStart: function (e)
+															{
+																var target = e.target;
+																while (target.nodeType != 1)
+																{
+																	target = target.parentNode;
+																}
+																try
+																{
+																	switch (target.tagName.toLowerCase() )
+																	{
+																	case "select":
+																	case "input":
+																	case "textarea":
+//																		e.stopPropagation();
+																		break;
+																	default:
+																		e.preventDefault();
+																		break;
+																	}
+																}
+																catch (ignore) { /* Ignore */ }
+															}
+				                                           });
+					}
 				}
-				document.addEventListener('DOMContentLoaded', loaded, false);
+				document.addEventListener('DOMContentLoaded', loadScroll, false);
 			</script>
 		</head>
 		<body>

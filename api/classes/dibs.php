@@ -319,7 +319,9 @@ class DIBS extends Callback
 				// Refund Declined
 				if (array_key_exists("result", $aStatus) === false || $aStatus["result"] > 0)
 				{
-					trigger_error("Refund declined by DIBS for Transaction: ". $txn .", Result Code: ". @$aStatus["result"], E_USER_WARNING);
+					if (array_key_exists("result", $aStatus) === false) { $str = var_export($aStatus, true); }
+					else { $str = "Result Code: ". $aStatus["result"]; }
+					trigger_error("Refund declined by DIBS for Transaction: ". $txn .", ". $str, E_USER_WARNING);
 					
 					return $aStatus["result"];
 				}

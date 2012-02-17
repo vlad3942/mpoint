@@ -37,7 +37,7 @@ define("sERROR_LOG", sLOG_PATH ."app_error_". date("Y-m-d") .".log");
  * Database settings for mPoint's database
  */
 $aDB_CONN_INFO["mpoint"]["host"] = "localhost";
-$aDB_CONN_INFO["mpoint"]["port"] = 5000;
+$aDB_CONN_INFO["mpoint"]["port"] = 5432;
 $aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["password"] = "hspzr735abl";
@@ -274,4 +274,10 @@ $aACCEPT_WORDS = array("JA", "OK", "YES", "GO", "YUP", "YEAH", "Y");
  * @var array
  */
 $aREJECT_WORDS = array("NEJ", "NO", "NOPE", "N", "CANCEL", "QUIT", "END");
+
+/**
+ * Absolute Path to XML Schemas defining mRetail's different Protocols
+ *
+ */
+define("sPROTOCOL_XSD_PATH", $_SERVER['DOCUMENT_ROOT'] ."/protocols/");
 ?>

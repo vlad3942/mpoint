@@ -2,6 +2,11 @@ INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (2002, 'Payment Cancel
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (2003, 'Payment Refunded', 'Refund', '');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (177, 'Payment already Refunded for Transaction', 'Refund', '');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (179, 'Payment in invalid State for Transaction', '', '');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (141, 'Undefined E-Mail address', 'Validate', 'valEMail');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (142, 'E-Mail address is too short', 'Validate', 'valEMail');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (143, 'E-Mail address is too long', 'Validate', 'valEMail');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (144, 'E-Mail address contains invalid characters', 'Validate', 'valEMail');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (145, 'E-Mail has an invalid form', 'Validate', 'valEMail');
 
 UPDATE Client.MerchantAccount_Tbl SET username = 'dsbmosart', passwd = 'mosart1234' WHERE clientid = 10014 AND pspid = 2;
 UPDATE Client.MerchantAccount_Tbl SET username = 'mosart', passwd = 'nb2kv17' WHERE clientid = 10005 AND pspid = 2;

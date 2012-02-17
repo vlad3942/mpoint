@@ -19,17 +19,17 @@
 	
 	<xsl:variable name="selected-card-id">
 		<xsl:choose>
+		<!-- Only one card has been stored -->
+		<xsl:when test="count(stored-cards/card[client/@id = //client-config/@id]) = 1">
+			<xsl:value-of select="stored-cards/card[client/@id = //client-config/@id]/@id" />
+		</xsl:when>
 		<!-- Card previously selected by user -->
 		<xsl:when test="session/cardid &gt; 0">
 			<xsl:value-of select="session/cardid" />
 		</xsl:when>
 		<!-- Prepaid account available and there's enough money to pay for the transaction and the transaction type is NOT an Account Top-Up -->
 		<xsl:when test="floor(client-config/store-card div 1) mod 2 != 1 and account/balance &gt; transaction/amount and transaction/@type &gt;= 100 and transaction/@type &lt;= 109">
-			<xsl:value-of select="session/cardid" />B
-		</xsl:when>
-		<!-- Only one card has been stored -->
-		<xsl:when test="count(stored-cards/card[client/@id = //client-config/@id]) = 1">
-			<xsl:value-of select="stored-cards/card[client/@id = //client-config/@id]/@id" />
+			<xsl:value-of select="session/cardid" />
 		</xsl:when>
 		<!-- Card is user's preferred -->
 		<xsl:when test="count(stored-cards/card[@preferred = 'true' and client/@id = //client-config/@id]) = 1">

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+<xs:include schemaLocation="global.xsd" />
+
+<xs:element name="root">
+	<xs:complexType>
+		<xs:choice>
+			<xs:group ref="initialize-payment" />
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+		
+<xs:group name="initialize-payment">
+	<xs:sequence>
+		<xs:element name="client-id" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+		<xs:element name="account" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+		<xs:element name="amount" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+		<xs:element name="order-no" type="xs:string" minOccurs="0" maxOccurs="1" />
+		<xs:element name="operator" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+		<xs:element name="mobile" type="mobile" minOccurs="0" maxOccurs="1" />
+		<xs:element name="email" type="email" minOccurs="0" maxOccurs="1" />
+		<xs:element name="device-id" type="device-id" minOccurs="0" maxOccurs="1" />
+		<xs:element name="callback-url" type="url" minOccurs="0" maxOccurs="1" />
+	</xs:sequence>
+</xs:group>
+
+</xs:schema>
