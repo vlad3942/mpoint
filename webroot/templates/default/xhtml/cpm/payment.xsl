@@ -146,16 +146,16 @@
 	<tr>
 		<td>
 			<xsl:choose>
-			<!-- Card previously selected by user -->
-			<xsl:when test="(count(//stored-cards/card[client/@id = //client-config/@id]) &gt; 1 or //account/balance &lt; //transaction/amount) and //session/cardid = @id">
-				<input type="radio" id="cardid-{@id}" name="cardid" value="{@id}" checked="true" />
-			</xsl:when>
 			<!-- Only one card has been stored and prepaid account has been disabled -->
 			<xsl:when test="count(//stored-cards/card[client/@id = //client-config/@id]) = 1 and floor(//client-config/store-card div 1) mod 2 = 1">
 				<input type="hidden" name="cardid" value="{@id}" />
 			</xsl:when>
 			<!-- Only one card has been stored and there isn't enough money on the prepaid account to pay for the transaction -->
 			<xsl:when test="count(//stored-cards/card[client/@id = //client-config/@id]) = 1 and //account/balance &lt; //transaction/amount">
+				<input type="radio" id="cardid-{@id}" name="cardid" value="{@id}" checked="true" />
+			</xsl:when>
+			<!-- Card previously selected by user -->
+			<xsl:when test="(count(//stored-cards/card[client/@id = //client-config/@id]) &gt; 1 or //account/balance &lt; //transaction/amount) and //session/cardid = @id">
 				<input type="radio" id="cardid-{@id}" name="cardid" value="{@id}" checked="true" />
 			</xsl:when>
 			<!-- Card is user's preferred and no other card has been selected and prepaid account has been disabled or there isn't enough money on the prepaid account to pay for the transaction -->
@@ -183,7 +183,11 @@
 		</xsl:when>
 		<xsl:otherwise>
 			<td colspan="3"><xsl:value-of select="mask" /></td>
-			<td class="mPoint_Info">(<xsl:value-of select="expiry" />)</td>
+			<td class="mPoint_Info">
+			<xsl:if test="string-length(expiry) &gt; 0">
+				(<xsl:value-of select="expiry" />)
+			</xsl:if>
+			</td>
 		</xsl:otherwise>
 		</xsl:choose>
 	</tr>

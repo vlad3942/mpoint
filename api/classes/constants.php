@@ -323,6 +323,11 @@ abstract class Constants
 	 *
 	 */
 	const iANET_PSP = 6;
+	/**
+	 * Unique ID for the Payment Service Provider: WannaFind
+	 *
+	 */
+	const iWANNAFIND_PSP = 7;
 
 	/**
 	 * Unique ID for the Electronic Payment Flow

@@ -28,6 +28,8 @@ require_once(sCLASS_PATH ."/callback.php");
 require_once(sCLASS_PATH ."/dibs.php");
 // Require general Business logic for the Cellpoint Mobile module
 require_once(sCLASS_PATH ."/cpm.php");
+// Require specific Business logic for the WannaFind component
+require_once(sCLASS_PATH ."/wannafind.php");
 
 ignore_user_abort(true);
 set_time_limit(0);
@@ -113,6 +115,24 @@ if (count($aMsgCds) == 0)
 					{
 						// Initialise Callback to Client
 						$aCPM_CONN_INFO["path"] = "/callback/dibs.php";
+						$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_XML->type["id"]), $iTxnID);
+						$aMsgCds[] = 100;
+					}
+					else
+					{
+						$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+						$aMsgCds[] = 51;
+					}
+					break;
+				case (Constants::iWANNAFIND_PSP):	// WannaFind
+					// Authorise payment with PSP based on Ticket
+					$obj_PSP = new WannaFind($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
+					$iTxnID = $obj_PSP->authTicket( (integer) $obj_XML->ticket);
+					// Authorization succeeded
+					if ($iTxnID > 0)
+					{
+						// Initialise Callback to Client
+						$aCPM_CONN_INFO["path"] = "/callback/wannafind.php";
 						$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_XML->type["id"]), $iTxnID);
 						$aMsgCds[] = 100;
 					}

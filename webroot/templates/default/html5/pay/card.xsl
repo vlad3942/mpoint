@@ -62,6 +62,19 @@
 									</xsl:with-param>
 								</xsl:apply-templates>
 							</xsl:when>
+							<!-- WannaFind -->
+							<xsl:when test="@pspid = 7">
+								<xsl:apply-templates select="." mode="wannafind">
+									<xsl:with-param name="css">
+										<xsl:choose>
+											<xsl:when test="position() - count(//cards/item[@pspid = 7]) = 1 and position() = count(//cards/item[@pspid = 7])">first-row last-row</xsl:when>
+											<xsl:when test="position() - count(//cards/item[@pspid = 7]) = 1">first-row</xsl:when>
+											<xsl:when test="position() - count(//cards/item[@pspid = 7]) = count(//cards/item[@pspid = 7])">last-row</xsl:when>
+											<xsl:otherwise>row</xsl:otherwise>
+										</xsl:choose>
+									</xsl:with-param>
+								</xsl:apply-templates>
+							</xsl:when>
 							<!-- Error -->
 							<xsl:otherwise>
 								
@@ -326,6 +339,28 @@
 			<div class="mPoint_Card_Button"><xsl:value-of select="name" /></div>
 
 			<form id="card-{@id}" action="{func:constLink('/anet/dpm.php') }" method="post" onsubmit="javascript:document.getElementById('loader').style.visibility='visible';">
+				<!-- Payment Page Data -->
+				<input type="hidden" name="cardid" value="{@id}" />
+			</form>
+		</td>
+		<td class="right-column">
+			<h2>&gt;</h2>
+		</td>
+	</tr>
+</xsl:template>
+
+<xsl:template match="item" mode="wannafind">
+	<xsl:param name="css" />
+	<xsl:variable name="url" select="concat(/root/system/protocol, '://', /root/system/host, '/img/', logo-width, 'x', logo-height, '_card_', @id, '_', /root/system/session/@id, '.png')" />
+	
+	<tr class="{$css}" onclick="javascript:obj_Menu.select(this, 'selected'); document.getElementById('loader').style.visibility='visible'; document.getElementById('card-{@id}').submit();">
+		<td class="left-column">
+			<img src="{$url}" width="{logo-width}" height="{logo-height}" alt="" />
+		</td>
+		<td class="stretch mPoint_Card">
+			<div class="mPoint_Card_Button"><xsl:value-of select="name" /></div>
+
+			<form id="card-{@id}" action="{func:constLink('/wannafind/postform.php') }" method="post" onsubmit="javascript:document.getElementById('loader').style.visibility='visible';">
 				<!-- Payment Page Data -->
 				<input type="hidden" name="cardid" value="{@id}" />
 			</form>

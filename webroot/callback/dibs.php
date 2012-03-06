@@ -59,7 +59,7 @@ try
 		$sMask = $_POST['cardprefix'] . substr($_POST['cardnomask'], strlen($_POST['cardprefix']) );
 		$sExpiry = substr($_POST['cardexpdate'], 2) ."/". substr($_POST['cardexpdate'], 0, 2);
 
-		$iStatus = $obj_mPoint->saveCard($obj_TxnInfo->getMobile(), $_POST['cardid'], Constants::iDIBS_PSP, $_POST['transact'], str_replace("X", "*", $sMask), $sExpiry, $obj_TxnInfo->getEMail() );
+		$iStatus = $obj_mPoint->saveCard($obj_TxnInfo->getMobile(), $_POST['cardid'], Constants::iDIBS_PSP, $_POST['transact'], str_replace("X", "*", $sMask), $sExpiry);
 		// The End-User's existing account was linked to the Client when the card was stored
 		if ($iStatus == 1)
 		{
@@ -114,13 +114,13 @@ try
 	{
 		$obj_mPoint->notifyClient($iStateID, $_POST);
 		// Transaction uses Auto Capture and Authorization was accepted
-		if ($obj_TxnInfo->useAutoCapture() === true && $_POST['transact'] > 0)
+		if ($obj_TxnInfo->useAutoCapture() === true && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 		{
 			// Capture automatically performed by DIBS or invocation of capture operation with DIBS succeeded
 			if (array_key_exists("capturenow", $_POST) === true || $obj_mPoint->capture($_POST['transact']) == 0)
 			{
 				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST);
-				$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
+				if (array_key_exists("capturenow", $_POST) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, ""); }
 			}
 		}
 	}

@@ -362,7 +362,7 @@ class Home extends General
 				INNER JOIN EndUser.Account_Tbl EUA ON EUC.accountid = EUA.id AND EUA.enabled = true
 				LEFT OUTER JOIN EndUser.CLAccess_Tbl CLA ON EUA.id = CLA.accountid
 				WHERE EUC.accountid = ". intval($id) ." AND EUC.enabled = true
-					AND (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."'
+					AND ( (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."' OR length(EUC.expiry) = 0 )
 					AND (CLA.clientid = CL.id OR EUA.countryid = CLA.clientid 
 						 OR NOT EXISTS (SELECT id
 									    FROM EndUser.CLAccess_Tbl

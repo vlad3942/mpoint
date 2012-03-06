@@ -426,7 +426,7 @@ class TxnInfo
 			$iHeight = iCLIENT_LOGO_SCALE ."%";
 		}
 
-		$xml = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'" gmid="'. $this->_iGoMobileID .'" mode="'. $this->_iMode .'">';
+		$xml = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'" gmid="'. $this->_iGoMobileID .'" mode="'. $this->_iMode .'" eua-id="'. $this->_iAccountID .'">';
 		$xml .= '<amount currency="'. $this->_obj_ClientConfig->getCountryConfig()->getCurrency() .'" symbol="'. $this->_obj_ClientConfig->getCountryConfig()->getSymbol() .'">'. $this->_iAmount .'</amount>';
 		$xml .= '<price>'. General::formatAmount($this->_obj_ClientConfig->getCountryConfig(), $this->_iAmount) .'</price>';
 		$xml .= '<orderid>'. $this->_sOrderID .'</orderid>';
