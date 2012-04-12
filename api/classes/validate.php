@@ -164,7 +164,7 @@ class Validate
 		elseif (strlen($un) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }				// Username is too long
 		elseif (eregi("[^a-z0-9 æøåÆØÅäöÄÖ.-]", utf8_encode($un) ) == true) { $code = 4; }	// Username contains Invalid Characters
 		else { $code = 10; }															// Username is valid
-file_put_contents(sLOG_PATH ."/jona.log", "Username:". $un .":");
+		
 		return $code;
 	}
 

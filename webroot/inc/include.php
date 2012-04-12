@@ -115,7 +115,7 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 	// Not fetching an Image or performing a back-end process and accessing the mobile website
 	if (eregi("/img/", $_SERVER['PHP_SELF']) == false && eregi("/sys/", $_SERVER['PHP_SELF']) == false
 		&& (eregi("/pay/", $_SERVER['PHP_SELF']) == true || eregi("/shop/", $_SERVER['PHP_SELF']) == true
-			|| eregi("/anet/", $_SERVER['PHP_SELF']) == true
+			|| eregi("/anet/", $_SERVER['PHP_SELF']) == true || eregi("/wannafind/", $_SERVER['PHP_SELF']) == true
 			|| $_SERVER['PHP_SELF'] == "/overview.php" || $_SERVER['PHP_SELF'] == "/terms.php"
 			|| (eregi("/new/", $_SERVER['PHP_SELF']) == true && General::getBrowserType() == "mobile") ) )
 	{

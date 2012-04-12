@@ -77,7 +77,7 @@ $aDB_CONN_INFO["session"]["method"] = 1;
  * Connection info for sending error reports to a remote host
  */
 $aHTTP_CONN_INFO["iemendo"]["protocol"] = "http";
-$aHTTP_CONN_INFO["iemendo"]["host"] = "iemendo.localhost";
+$aHTTP_CONN_INFO["iemendo"]["host"] = "iemendo.cellpointmobile.com";
 $aHTTP_CONN_INFO["iemendo"]["port"] = 80;
 $aHTTP_CONN_INFO["iemendo"]["timeout"] = 20;
 $aHTTP_CONN_INFO["iemendo"]["path"] = "/api/receive_report.php";
@@ -90,7 +90,7 @@ $aHTTP_CONN_INFO["iemendo"]["contenttype"] = "text/xml";
  * Connection info for identifying a mobile device by sending its UA Profile information to iEmendo
  */
 $aUA_CONN_INFO["protocol"] = "http";
-$aUA_CONN_INFO["host"] = "iemendo.localhost";
+$aUA_CONN_INFO["host"] = "iemendo.cellpointmobile.com";
 $aUA_CONN_INFO["port"] = 80;
 $aUA_CONN_INFO["timeout"] = 20;
 $aUA_CONN_INFO["path"] = "/api/uaprofile.php";
@@ -150,8 +150,22 @@ $aHTTP_CONN_INFO["authorize.net"]["timeout"] = 20;
 $aHTTP_CONN_INFO["authorize.net"]["path"] = "/gateway/transact.dll";
 $aHTTP_CONN_INFO["authorize.net"]["method"] = "POST";
 $aHTTP_CONN_INFO["authorize.net"]["contenttype"] = "application/x-www-form-urlencoded";
-//$aHTTP_CONN_INFO["worldpay"]["username"] = "";		// Set from the Client Configuration 
-//$aHTTP_CONN_INFO["authorize.net"]["password"] = "";	// Set from the Client Configuration 
+//$aHTTP_CONN_INFO["authorize.net"]["username"] = "";	// Set from the Client Configuration 
+//$aHTTP_CONN_INFO["authorize.net"]["password"] = "";	// Set from the Client Configuration
+
+
+/**
+ * Connection info for connecting to WannaFind
+ */
+$aHTTP_CONN_INFO["wannafind"]["protocol"] = "https";
+$aHTTP_CONN_INFO["wannafind"]["host"] = "betaling.wannafind.dk";
+$aHTTP_CONN_INFO["wannafind"]["port"] = 443;
+$aHTTP_CONN_INFO["wannafind"]["timeout"] = 20;
+$aHTTP_CONN_INFO["wannafind"]["path"] = "/auth.php";
+$aHTTP_CONN_INFO["wannafind"]["method"] = "POST";
+$aHTTP_CONN_INFO["wannafind"]["contenttype"] = "application/x-www-form-urlencoded";
+//$aHTTP_CONN_INFO["wannafind"]["username"] = "";	// Set from the Client Configuration 
+//$aHTTP_CONN_INFO["wannafind"]["password"] = "";	// Set from the Client Configuration 
 
 /**
  * GoMobile Connection Info.
