@@ -1242,31 +1242,31 @@ msgstr @@@ << Tilbage @@@
 
 #: /webroot/wannafind/postform.php:44
 msgid @@@ Card Info @@@
-msgstr @@@ Card Info @@@
+msgstr @@@ Kort Info @@@
 
 #: /webroot/wannafind/postform.php:51
 msgid @@@ Step 2 of 2 @@@
-msgstr @@@ Step 2 of 2 @@@
+msgstr @@@ Trin 2 af 2 @@@
 
 #: /webroot/wannafind/postform.php:52
 msgid @@@ Please enter your card information below @@@
-msgstr @@@ Please enter your card information below @@@
+msgstr @@@ Angiv dine kort informationer @@@
 
 #: /webroot/wannafind/postform.php:53
 msgid @@@ Selected Card @@@
-msgstr @@@ Selected Card @@@
+msgstr @@@ Valgte kort @@@
 
 #: /webroot/wannafind/postform.php:54
 msgid @@@ Price @@@
-msgstr @@@ Price @@@
+msgstr @@@ Pris @@@
 
 #: /webroot/wannafind/postform.php:55
 msgid @@@ Card Number @@@
-msgstr @@@ Card Number @@@
+msgstr @@@ Kortnummer @@@
 
 #: /webroot/wannafind/postform.php:56
 msgid @@@ Expiry Date @@@
-msgstr @@@ Expiry Date @@@
+msgstr @@@ Udløbsdato @@@
 
 #: /webroot/wannafind/postform.php:57
 msgid @@@ mm @@@
@@ -1274,7 +1274,7 @@ msgstr @@@ mm @@@
 
 #: /webroot/wannafind/postform.php:58
 msgid @@@ yy @@@
-msgstr @@@ yy @@@
+msgstr @@@ åå @@@
 
 #: /webroot/wannafind/postform.php:59
 msgid @@@ CVC / CVS @@@
@@ -1282,19 +1282,19 @@ msgstr @@@ CVC / CVS @@@
 
 #: /webroot/wannafind/postform.php:60
 msgid @@@ 3 digits (printed on the back of the card) @@@
-msgstr @@@ 3 digits (printed on the back of the card) @@@
+msgstr @@@ 3 tal (på bagsiden af kortet) @@@
 
 #: /webroot/wannafind/postform.php:61
 msgid @@@ 4 digits (printed on the back of the card) @@@
-msgstr @@@ 4 digits (printed on the back of the card) @@@
+msgstr @@@ 4 tal (på bagsiden af kortet) @@@
 
 #: /webroot/wannafind/postform.php:62
 msgid @@@ Save Card Info @@@
-msgstr @@@ Save Card Info @@@
+msgstr @@@ Gem kort informationer @@@
 
 #: /webroot/wannafind/postform.php:63
 msgid @@@ Complete Payment @@@
-msgstr @@@ Complete Payment @@@
+msgstr @@@ Gennemfør Betaling @@@
 
 #: /api/classes/callback.php:67
 msgid @@@ mPoint - SMS Receipt @@@

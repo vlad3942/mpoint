@@ -454,9 +454,9 @@
 </xsl:template>
 
 <xsl:template match="item" mode="wannafind">
-	<xsl:variable name="url" select="concat(/root/system/protocol, '://', /root/system/host, '/img/', logo-width, 'x', logo-height, '_card_', @id, '_', /root/system/session/@id, '.png')" />
+	<xsl:variable name="url" select="concat('https://', /root/system/host, '/img/', logo-width, 'x', logo-height, '_card_', @id, '_', /root/system/session/@id, '.png')" />
 	<div>
-		<form action="{func:constLink('/wannafind/postform.php') }" method="post">
+		<form action="{concat('https://', /root/system/host, '/wannafind/postform.php') }" method="post">
 			<div>
 				<!-- Authorize.Net data -->
 				<input type="hidden" name="account" value="{account}" />

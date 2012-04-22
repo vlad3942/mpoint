@@ -1258,7 +1258,7 @@ msgstr @@@ Step 2 of 2 @@@
 
 #: /webroot/wannafind/postform.php:52
 msgid @@@ Please enter your card information below @@@
-msgstr @@@ Please enter your card information below @@@
+msgstr @@@ Enter your card info below @@@
 
 #: /webroot/wannafind/postform.php:53
 msgid @@@ Selected Card @@@

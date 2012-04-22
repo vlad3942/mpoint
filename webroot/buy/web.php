@@ -143,7 +143,7 @@ if (array_key_exists(1000, $aMsgCds) === true)
 	{
 		$_SESSION['obj_Info']->setInfo("order_cost", $_SESSION['obj_TxnInfo']->getAmount() );
 
-		header("Location: http://". $_SERVER['HTTP_HOST'] ."/shop/delivery.php?". session_name() ."=". session_id() );
+		header("Location: /shop/delivery.php?". session_name() ."=". session_id() );
 	}
 	// Start Payment Flow
 	else
@@ -165,13 +165,13 @@ if (array_key_exists(1000, $aMsgCds) === true)
 			if (count($obj_XML->xpath("/cards[item/@id = 11]") ) > 0 && (count($obj_XML->item) == 1
 				|| count($obj_CardsXML->xpath("/stored-cards/card[client/@id = ". $_SESSION['obj_TxnInfo']->getClientConfig()->getID() ."]") ) > 0) )
 			{
-				header("Location: http://". $_SERVER['HTTP_HOST'] ."/cpm/payment.php?". session_name() ."=". session_id() ."&cardtype=11");
+				header("Location: /cpm/payment.php?". session_name() ."=". session_id() ."&cardtype=11");
 			}
 			// Go to step 1: Select payment method 
-			else { header("Location: http://". $_SERVER['HTTP_HOST'] ."/pay/card.php?". session_name() ."=". session_id() ); }
+			else { header("Location: /pay/card.php?". session_name() ."=". session_id() ); }
 		}
 		// Go to step 1: Select payment method
-		else { header("Location: http://". $_SERVER['HTTP_HOST'] ."/pay/card.php?". session_name() ."=". session_id() ); }
+		else { header("Location: /pay/card.php?". session_name() ."=". session_id() ); }
 	}
 }
 // Error: Construct Status Page
@@ -180,7 +180,7 @@ else
 	$_GET['msg'] = array_keys($aMsgCds);
 	
 	$xml = '<?xml version="1.0" encoding="UTF-8"?>';
-	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA'], $_SESSION['obj_TxnInfo']) .'/status.xsl"?>';
+	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/xhtml/status.xsl"?>';
 	$xml .= '<root>';
 	$xml .= $obj_mPoint->getMessages("Status");
 	$xml .= '</root>';
