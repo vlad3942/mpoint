@@ -24,6 +24,8 @@ require_once(sCLASS_PATH ."/enduser_account.php");
 require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
+// Require specific Business logic for the WannaFind component
+require_once(sCLASS_PATH ."/wannafind.php");
 
 header("Content-Type: application/x-www-form-urlencoded");
 
@@ -92,6 +94,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 				header("HTTP/1.0 502 Bad Gateway");
 					
 				$aMsgCds[998] = "Error while communicating with PSP";
+				trigger_error("Error while communicating with PSP" ."\n". var_export($e, true), E_USER_WARNING);
 			}
 			// Internal Error
 			catch (mPointException $e)
@@ -99,6 +102,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 				header("HTTP/1.0 500 Internal Error");
 				
 				$aMsgCds[$e->getCode()] = $e->getMessage();
+				trigger_error("Internal Error" ."\n". var_export($e, true), E_USER_WARNING);
 			}
 		}
 		// Error: Invalid Input
