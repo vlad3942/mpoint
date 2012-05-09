@@ -111,9 +111,12 @@ class Callback extends EndUserAccount
 	 */
 	public function completeTransaction($pspid, $txnid, $cid, $sid, array $debug=null)
 	{
+		if (intval($txnid) == -1) { $sql = ""; }
+		else { $sql = ", extid = '". $this->getDBConn()->escStr($txnid) ."'"; }
 		$sql = "UPDATE Log.Transaction_Tbl
-				SET pspid = ". intval($pspid) .", extid = '". $this->getDBConn()->escStr($txnid) ."', cardid = ". intval($cid) ."
-				WHERE id = ". $this->_obj_TxnInfo->getID() ." AND ( (extid IS NULL OR extid = '') AND (cardid IS NULL OR cardid = 0) )";
+				SET pspid = ". intval($pspid) .", cardid = ". intval($cid) . $sql ."
+				WHERE id = ". $this->_obj_TxnInfo->getID() ." AND (cardid IS NULL OR cardid = 0)";
+		if (intval($txnid) != -1) { $sql .= "AND (extid IS NULL OR extid = '')"; }
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 

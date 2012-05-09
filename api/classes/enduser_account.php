@@ -153,12 +153,28 @@ class EndUserAccount extends Home
 	public function saveCard($addr, $cardid, $pspid, $ticket, $mask, $exp)
 	{
 		$iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr);
+		// End-User Account not found
 		if ($iAccountID == -1)
 		{
 			$iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, false);
-			$this->link($iAccountID);
-			$iStatus = 1;
 			$bPreferred = "true";
+			// Link End-User Account to Client
+			if ($iAccountID > 0)
+			{
+				$this->link($iAccountID);
+				$iStatus = 1;
+			}
+			// Create new End-User Account
+			else
+			{
+				$mob = "";
+				$email = "";
+				if (floatval($addr) > $this->_obj_ClientConfig->getCountryConfig()->getMinMobile() ) { $mob = $addr; }
+				else { $email = $addr; }
+	
+				$iAccountID = $this->newAccount($this->_obj_ClientConfig->getCountryConfig()->getID(), $mob, "", $email);
+				$iStatus = 2;
+			}
 		} 
 		else
 		{
@@ -166,20 +182,7 @@ class EndUserAccount extends Home
 			$iStatus = 0;
 		}
 
-		// End-User Account doesn't exist, create new account
-		if ($iAccountID == -1)
-		{
-			$mob = "";
-			$email = "";
-			if (floatval($addr) > $this->_obj_ClientConfig->getCountryConfig()->getMinMobile() ) { $mob = $addr; }
-			else { $email = $addr; }
-
-			$iAccountID = $this->newAccount($this->_obj_ClientConfig->getCountryConfig()->getID(), $mob, "", $email);
-			$bPreferred = "true";
-			$iStatus = 2;
-		}
-
-		// Check of card has already been saved
+		// Check if card has already been saved
 		$sql = "SELECT id, ticket, pspid
 				FROM EndUser.Card_Tbl
 				WHERE accountid = ". $iAccountID ." AND clientid = ". $this->_obj_ClientConfig->getID() ." AND cardid = ". intval($cardid) ."

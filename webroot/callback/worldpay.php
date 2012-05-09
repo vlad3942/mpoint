@@ -48,7 +48,7 @@ default:			// Payment Rejected
 	break;
 }
 
-$obj_mPoint->completeTransaction(Constants::iWORLDPAY_PSP, -1, $obj_mPoint->getCardID( (string) $obj_XML->notify->orderStatusEvent->payment->paymentMethod), $iStatus, $HTTP_RAW_POST_DATA);
+$obj_mPoint->completeTransaction(Constants::iWORLDPAY_PSP, -1, $obj_mPoint->getCardID( (string) $obj_XML->notify->orderStatusEvent->payment->paymentMethod), $iStatus, array($HTTP_RAW_POST_DATA) );
 // Account Top-Up
 if ($obj_TxnInfo->getTypeID() >= 100 && $obj_TxnInfo->getTypeID() <= 109)
 {

@@ -33,35 +33,23 @@ class WorldPay extends Callback
 	 * @see 	Callback::send()
 	 * @see 	Callback::getVariables()
 	 *
-	 * @param 	integer $sid 	Unique ID of the State that the Transaction terminated in
-	 * @param 	array $_post 	Array of data received from DIBS via HTTP POST
+	 * @param 	integer $sid 				Unique ID of the State that the Transaction terminated in
+	 * @param 	SimpleXMLElement $obj_XML 	XML Document received from WorldPay via HTTP POST
 	 */
-	public function notifyClient($sid, array $_post)
+	public function notifyClient($sid, SimpleXMLElement &$obj_XML)
 	{
 		// Client is configured to use mPoint's protocol
 		if ($this->getTxnInfo()->getClientConfig()->getMethod() == "mPoint")
 		{
-			parent::notifyClient($sid, $_post["transact"]);
+			parent::notifyClient($sid, -1);
 		}
-		// Client is configured to use DIBS' protocol
+		// Client is configured to use WorldPay's protocol
 		else
 		{
-			// Remove mPoint specific data fields from Callback request
-			unset($_post["width"], $_post["height"], $_post["format"], $_post[session_name()], $_post["language"], $_post["cardid"]);
-			// Replace data fields previously overwritten by mPoint
-			$_post["orderid"] = $this->getTxnInfo()->getOrderID();
-			$_post["callbackurl"] = $this->getTxnInfo()->getCallbackURL();
-			$_post["accepturl"] = $this->getTxnInfo()->getAcceptURL();
-			// Re-Construct DIBS request
-			$sBody = "mpoint-id=". $this->getTxnInfo()->getID();
-			foreach ($_post as $key => $val)
-			{
-				$sBody .= "&". $key ."=". urlencode($val);
-			}
-			// Append Custom Client Variables and Customer Input
-			$sBody .= "&". $this->getVariables();
-
-			$this->performCallback($sBody);
+			$obj_XML->notify->orderStatusEvent["orderCode"] = $this->getTxnInfo()->getOrderID();
+			$obj_XML->notify->orderStatusEvent["mpoint-id"] = $this->getTxnInfo()->getID();
+			
+			$this->performCallback($obj_XML->asXML() );
 		}
 	}
 
@@ -189,13 +177,13 @@ class WorldPay extends Callback
 	 * @param 	integer $cardid		Unique ID of the Card Type that was used in the payment transaction
 	 * @param 	integer $txnid		Transaction ID from WorldPay returned in the "transact" parameter
 	 */
-	public function initialize(HTTPConnInfo &$oCI, $merchantcode, $currency, $card)
-	{	
-		$b = '<?xml version="1.0"?>';
-		$b .= '<!DOCTYPE paymentService PUBLIC "-//RBS WorldPay/DTD RBS WorldPay PaymentService v1//EN" "http://dtd.wp3.rbsworldpay.com/paymentService_v1.dtd">';
+	public function initialize(HTTPConnInfo &$oCI, $merchantcode, $installationid, $currency, $card)
+	{
+		$b = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<!DOCTYPE paymentService PUBLIC "-//WorldPay/DTD WorldPay PaymentService v1//EN" "http://dtd.worldpay.com/paymentService_v1.dtd">';
 		$b .= '<paymentService version="1.4" merchantCode="'. $merchantcode .'">';
 		$b .= '<submit>';
-		$b .= '<order orderCode="'. $this->getTxnInfo()->getID() .'">';
+		$b .= '<order orderCode="'. $this->getTxnInfo()->getID() .'" installationId="'. $installationid .'">';
 		$b .= '<description>mPoint ID: '. $this->getTxnInfo()->getID() .'</description>';
 		$b .= '<amount value="'. $this->getTxnInfo()->getAmount() .'" currencyCode="'. $currency .'" exponent="2"/>';
 		$b .= '<paymentMethodMask>';
@@ -210,7 +198,15 @@ class WorldPay extends Callback
 		$obj_HTTP->send($this->constHTTPHeaders(), $b);
 		$obj_HTTP->disConnect();
 		
-		return simplexml_load_string($obj_HTTP->getReplyBody() );
+		$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+		
+		$sql = "UPDATE Log.Transaction_Tbl
+				SET pspid = ". Constants::iWORLDPAY_PSP .", extid = '". $this->getDBConn()->escStr($obj_XML->reply->orderStatus->reference["id"]) ."'
+				WHERE id = ". $this->getTxnInfo()->getID();
+		echo $sql ."\n";
+		$this->getDBConn()->query($sql);
+		
+		return $obj_XML;
 	}
 }
 ?>

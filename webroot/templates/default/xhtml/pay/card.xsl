@@ -369,30 +369,31 @@
 
 <xsl:template match="item" mode="worldpay">
 	<div>
-			<form action="{func:constLink('/worldpay/sys/rxml.php') }" method="post">
-				<div>
-					<!-- WorldPay data -->
-					<input type="hidden" name="cardid" value="{@id}" />
-					<input type="hidden" name="merchantcode" value="{account}" />
-					<input type="hidden" name="currency" value="{currency}" />
-					<!-- Payment Page Data -->
-					<input type="hidden" name="card_width" value="{logo-width}" />
-					<input type="hidden" name="card_height" value="{logo-height}" />
-					
-					<!--
-					  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
-					  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
-					  - the phone will assign 25% of the screen width to the card logo and 75% of the screen width to the card name.
-					  -->
-					<table>
-					<tr>
-						<td><img src="{/root/system/protocol}://{/root/system/host}/img/{logo-width}x{logo-height}_card_{@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
-						<td colspan="3"><input type="submit" value="{name}" class="mPoint_Card_Button" /></td>
-					</tr>
-					</table>
-				</div>
-			</form>
-		</div>
+		<form action="{func:appendQueryString('/worldpay/sys/rxml.php') }" method="post">
+			<div>
+				<!-- WorldPay data -->
+				<input type="hidden" name="cardid" value="{@id}" />
+				<input type="hidden" name="merchant-code" value="{account}" />
+				<input type="hidden" name="installation-id" value="{subaccount}" />
+				<input type="hidden" name="currency" value="{currency}" />
+				<!-- Payment Page Data -->
+				<input type="hidden" name="card_width" value="{logo-width}" />
+				<input type="hidden" name="card_height" value="{logo-height}" />
+				
+				<!--
+				  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
+				  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
+				  - the phone will assign 25% of the screen width to the card logo and 75% of the screen width to the card name.
+				  -->
+				<table>
+				<tr>
+					<td><img src="{/root/system/protocol}://{/root/system/host}/img/{logo-width}x{logo-height}_card_{@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
+					<td colspan="3"><input type="submit" value="{name}" class="mPoint_Card_Button" /></td>
+				</tr>
+				</table>
+			</div>
+		</form>
+	</div>
 </xsl:template>
 
 <xsl:template match="item" mode="payex">

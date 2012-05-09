@@ -46,24 +46,26 @@ INSERT INTO Client.SurePay_Tbl (clientid, resend, notify, email) SELECT Max(CL.i
 
 
 
-UPDATE Client.Client_tbl SET name = 'Panorama Bio', username = 'CPMDemo', passwd = 'DEMOisNO_2', logourl = '', cssurl = 'http://panorama.mretail.test.cellpointmobile.com/css/integra_mpoint.css', callbackurl = 'http://cinema.mretail.demo.cellpointmobile.com/mOrder/sys/mpoint.php', cancelurl = '', smsrcpt = false, emailrcpt = false, auto_capture = false, send_pspid = true, store_card = 3, iconurl = 'http://panorama.mretail.cellpointmobile.com/img/myaccount.gif' WHERE id = 10009;
-UPDATE Client.Account_Tbl SET clientid = 10009, name = 'iPhone' WHERE id = 100009;
+UPDATE Client.Client_tbl SET name = 'Panorama Bio', username = 'CPMDemo', passwd = 'DEMOisNO_2', logourl = '', cssurl = 'http://panorama.mretail.cellpointmobile.com/css/integra_mpoint.css', callbackurl = 'http://panorama.mretail.cellpointmobile.com/mOrder/sys/mpoint.php', cancelurl = '', smsrcpt = false, emailrcpt = false, auto_capture = false, send_pspid = true, store_card = 3, iconurl = 'http://panorama.mretail.cellpointmobile.com/img/mpoint_mycards.gif', mode = 0 WHERE id = 10009;
+UPDATE Client.Account_Tbl SET clientid = 10009, name = 'iPhone', mobile = NULL WHERE id = 100009;
+UPDATE Client.MerchantAccount_Tbl SET clientid = 10008, pspid = 1, name = 'CPMDemo' WHERE id = 10;
 UPDATE Client.MerchantAccount_Tbl SET clientid = 10009, pspid = 7, name = '201110312771', username = 'WF86795', passwd = 'qbreW@66' WHERE id = 11;
 UPDATE Client.MerchantAccount_Tbl SET clientid = 10009, pspid = 1, name = 'CPMDemo' WHERE id = 12;
+UPDATE Client.MerchantSubAccount_Tbl SET accountid = 100008, pspid = 1 WHERE id = 11;
 UPDATE Client.MerchantSubAccount_Tbl SET accountid = 100009, pspid = 7 WHERE id = 12;
 UPDATE Client.MerchantSubAccount_Tbl SET accountid = 100009, pspid = 1 WHERE id = 13;
 UPDATE Client.CardAccess_Tbl SET pspid = 7 WHERE clientid = 10009 AND pspid = 2;
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10009, 11, 1);
 UPDATE Client.Keyword_tbl SET clientid = 10009, name = 'CPM' WHERE id = 10;
 
-INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (103, 7, '826');
-UPDATE Client.Client_tbl SET countryid = 103, name = 'Pizza Hut', username = 'CPMDemo', passwd = 'DEMOisNO_2', logourl = '', cssurl = 'http://stage.bemoko.com/pizzahut/css/cellpoint.css', callbackurl = 'http://stage.bemoko.com/pizzahut/cellpoint', accepturl = 'http://stage.bemoko.com/pizzahut/orders/confirmation', cancelurl = '', smsrcpt = false, emailrcpt = false, auto_capture = false, send_pspid = true, store_card = 0, iconurl = 'http://panorama.mretail.cellpointmobile.com/img/myaccount.gif' WHERE id = 10010;
-UPDATE Client.Account_Tbl SET clientid = 10010, name = 'Mobile Web' WHERE id = 100010;
-UPDATE Client.MerchantAccount_Tbl SET clientid = 10010, pspid = 7, name = '201110312771', username = 'WF86795', passwd = 'qbreW@66' WHERE id = 13;
+UPDATE System.PSPCurrency_Tbl SET name = 'GBP' WHERE countryid = 103 AND pspid = 4;
+UPDATE Client.Client_tbl SET countryid = 103, name = 'Pizza Hut', username = 'CPMDemo', passwd = 'DEMOisNO_2', logourl = '', cssurl = 'http://stage.bemoko.com/pizzahut/css/cellpoint.css', callbackurl = 'http://stage.bemoko.com/pizzahut/cellpoint', accepturl = 'http://stage.bemoko.com/pizzahut/orders/confirmation', cancelurl = '', smsrcpt = false, emailrcpt = false, auto_capture = false, send_pspid = false, store_card = 0, iconurl = 'http://panorama.mretail.cellpointmobile.com/img/myaccount.gif' WHERE id = 10010;
+UPDATE Client.Account_Tbl SET clientid = 10010, name = 'Mobile Web', mobile = NULL WHERE id = 100010;
+UPDATE Client.MerchantAccount_Tbl SET clientid = 10010, pspid = 4, name = 'PIZZAHUTECOMMT', username = 'PIZZAHUTECOMMT', passwd = '3Pjge5RTT1' WHERE id = 13;
 --UPDATE Client.MerchantAccount_Tbl SET clientid = 10010, pspid = 1, name = 'CPMDemo' WHERE id = 12;
-UPDATE Client.MerchantSubAccount_Tbl SET accountid = 100010, pspid = 7 WHERE id = 14;
---UPDATE Client.MerchantSubAccount_Tbl SET accountid = 100009, pspid = 1 WHERE id = 13;
-UPDATE Client.CardAccess_Tbl SET pspid = 7 WHERE clientid = 10010 AND pspid = 2;
+UPDATE Client.MerchantSubAccount_Tbl SET accountid = 100010, pspid = 4 WHERE id = 14;
+--UPDATE Client.MerchantSubAccount_Tbl SET accountid = 100010, pspid = 1 WHERE id = 13;
+UPDATE Client.CardAccess_Tbl SET pspid = 4 WHERE clientid = 10010 AND pspid = 2;
 DELETE FROM Client.CardAccess_Tbl WHERE clientid = 10010 AND cardid = 2;
 --INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10009, 11, 1);
 UPDATE Client.Keyword_tbl SET clientid = 10010, name = 'CPM' WHERE id = 11;

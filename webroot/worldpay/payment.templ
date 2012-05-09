@@ -1,4 +1,3 @@
-<!-- payment.templ $Revision: 1.00 $ -->
 <div>
 	<div id="progress" class="mPoint_Info"><wpdisplay msg=cpm.progress></div>
 	<INPUT TYPE=hidden NAME=PaymentID VALUE="<WPDISPLAY PAYMENT=payment_id>" />
@@ -8,6 +7,10 @@
 	<div class="mPoint_Status"><wpdisplay msg=card.testMode></div>
 </wpdisplay>
 <!--WP end testModeMessage -->
+
+<!--WP Feedback messages - uses comp.common.error etc. -->
+<wpdisplay result=info componentPrefix=card pre="" post="">
+<!--WP end Feedback messages -->
 
 <!--WP Feedback messages - uses comp.common.error etc. -->
 <wpdisplay result=info componentPrefix=card pre="" post="">
@@ -66,71 +69,6 @@
 		</wpdisplay>
 	</div>
 <!--WP END Description -->
-
-<!--WP RFP attributes-->
-	<wpdisplay futurepay=hasRFP-check contents=true>
-		<div>
-			<wpdisplay futurepay=dateFstPaymtDesc-reparse>
-			<wpdisplay futurepay=dateFstPaymt format="yyyy-'month.'MM-dd">
-			<wpdisplay futurepay=fstPaymtHTML-check true="
-				<wpdisplay msg=fPay.fstPaymt-reparse>
-				<wpdisplay futurepay=fstPaymtHTML>
-			">
-			<wpdisplay futurepay=subsPaymtsDesc-reparse>
-			<wpdisplay futurepay=subsPaymtsHTML>
-			<wpdisplay futurepay=numPaymts-check true="
-				<wpdisplay msg=fPay.numPaymts-reparse>
-				<wpdisplay futurepay=numPaymts>
-			">
-
-			<wpdisplay futurepay=hasInterval-check true="
-				<wpdisplay msg=fPay.int-reparse>
-				<wpdisplay futurepay=paymtInterval-reparse>
-			">
-		</div>
-	</wpdisplay>
-<!--WP RFP END-->
-
-<!--WP LFP attributes-->
-	<wpdisplay futurepay=hasLFP-check contents=true>
-		<div>
-			<wpdisplay futurepay=paymtLimitDesc-reparse>
-			<wpdisplay futurepay=paymtLimitHTML-reparse>
-			<wpdisplay futurepay=numPaymtsLim-check true="
-				<wpdisplay msg=fPay.numLimit-reparse>
-				<wpdisplay futurepay=numPaymtsLim-reparse>
-			">
-			<wpdisplay futurepay=minInterval-check true="
-				<wpdisplay msg=fPay.minInt-reparse>
-				<wpdisplay futurepay=minInterval-reparse>
-			">
-			<wpdisplay futurepay=startDate-check true="
-				<wpdisplay msg=fPay.startDate-reparse>
-				<wpdisplay futurepay=startDate format=&quot;yyyy-'month.'MM-dd&quot;>
-			">
-			<wpdisplay futurepay=endDate-check true="
-				<wpdisplay msg=fPay.endDate-reparse>
-				<wpdisplay futurepay=endDate format=&quot;yyyy-'month.'MM-dd&quot;>
-			">
-		</div>
-	</wpdisplay>
-<!--WP END LFP -->
-	<wpdisplay payment=hasFP-check contents=true>
-		<div>
-			<wpdisplay msg=fPay.cancelPossible-reparse>
-			<wpdisplay futurepay=cancelPossible>
-		</div>
-	</wpdisplay>	
-<!--WP END FP -->
-</div>
-<!--WP end description -->
-
-<!-- start Bibit Order Contents -->
-
-<wpdisplay installation=bibitIntegrationType-check false="" true=|payment=orderContents-check truefalse="" contents=truetrue>
-	<div><wpdisplay payment=orderContents></div>
-</wpdisplay>
-<!-- end Bibit Order Contents -->
 
 <!--WP form contents -->
 <!--WP merchant top upload -->
@@ -233,6 +171,15 @@
 			<input type="text" id="name" name="name" tabindex="8" maxlength="40" value="<wpdisplay request=param_name paramdefault=|payment=name>" />
 		</div>
 	<!--WP end card holder name row -->
+	<!--WP start card holder postal code row -->
+		<div>
+			<label class="mPoint_Label" for="postcode">
+				<wpdisplay msg=card.postcode pre="*">:
+			</label>
+			<br />
+			<input type="text" id="postcode" name="postcode" tabindex="9" maxlength="30" value="<wpdisplay request=param_postcode paramdefault=|payment=postcode>" >
+		</div>
+	<!--WP end card holder postal code row -->
 	</div>
 	<div class="mPoint_Info"><wpdisplay msg=card.instructions></div>
 </div>
@@ -242,43 +189,16 @@
 	<wpdisplay file=paymentMiddleFields.html>
 <!--WP merchant middle upload END -->
 
-<!-- AVS checks for the XML merchant -->
-<wpdisplay payment=xmlMerchant-check contents=false
-		   true=|payment=showAVS-check
-		   truetrue="<wpdisplay component=card.segmentedAddress>"
-		   truefalse="">
-	<wpdisplay component=card.nonSegmentedAddress>
-</wpdisplay>
-<!-- end AVS checks for the XML merchant -->
-
-<!-- Special case for bibit migrated merchants for handling Visa Electron payment when AVS is switched off -->
-<wpdisplay payment=paymentBrand-check value="VISA_ELECTRON" contents=true>
-
-<wpdisplay payment=xmlMerchant-check true=|payment=showAVS-check
-		   truefalse='
-		   <div>
-			   <input type=hidden name=streetName value="1" />
-			   <input type=hidden name=houseNumber value="1" />
-			   <input type=hidden name=townCity value="1" />'>
-		   </div>
-</wpdisplay>
-
-
 <!--WP merchant bottom upload -->
 	<wpdisplay file=paymentBottomFields.html>
 <!--WP merchant bottom upload END -->
 
-<!--WP end form contents-->
 <!--WP makepayment button -->
 <!--Show WP start again -->
 <div id="submit">
-	<input name="op-PMMakePayment" id="op-PMMakePayment" type="submit" class="mPoint_Button" value="<wpdisplay msg=card.makePayment.butt>" tabindex="9" />
+	<input name="op-PMMakePayment" id="op-PMMakePayment" type="submit" class="mPoint_Button" value="<wpdisplay msg=card.makePayment.butt>" tabindex="10" />
 </div>
-<!--WP end makepayment button -->
-<!--Branding fixed -->
-<wpdisplay installation=bibitIntegrationType-check
-		true=|payment=noBranding-check contents=truefalse
-		false=|installation=noBranding-check contents=falsetrue>
-</wpdisplay>
-<!--WP end Branding fixed -->
-<!--WP payment.templ end -->
+<!--WP required fields -->
+<div>
+	
+</div>
