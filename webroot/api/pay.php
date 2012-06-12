@@ -45,7 +45,7 @@ $aMsgCds = array();
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
-
+/*
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
 $HTTP_RAW_POST_DATA .= '<client-id>10002</client-id>';
@@ -57,7 +57,7 @@ $HTTP_RAW_POST_DATA .= '<email>jona@oismail.com</email>';
 $HTTP_RAW_POST_DATA .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
 $HTTP_RAW_POST_DATA .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
 $HTTP_RAW_POST_DATA .= '</root>';
-
+*/
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true)
@@ -188,7 +188,7 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 					break;
 				case (Constants::iWORLDPAY_PSP):
 					$obj_mPoint = new WorldPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-
+					
 					if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["worldpay"]["host"] = str_replace("secure.", "secure-test.", $aHTTP_CONN_INFO["worldpay"]["host"]); }
 					$aHTTP_CONN_INFO["worldpay"]["username"] = (string) $obj_DOM->item[$i]->account; 
 					
@@ -196,25 +196,86 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 					$obj_XML = $obj_mPoint->initialize($obj_ConnInfo, (string) $obj_DOM->item[$i]->account, (string) $obj_DOM->item[$i]->currency, $obj_mPoint->getCardName(7) );
 					$url = $obj_XML->reply->orderStatus->reference ."&preferredPaymentMethod=". $obj_mPoint->getCardName(7) ."&language=". sLANG;
 					$url .= "&successURL=". urlencode("http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php");
-file_put_contents(sLOG_PATH ."/jona.log", $url); die();
+file_put_contents(sLOG_PATH ."/jona.log", $url);
 					$obj_ConnInfo = HTTPConnInfo::produceConnInfo($url);
 					$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
 					$obj_HTTP->connect();
-					$code = $obj_HTTP->send($obj_mPoint->constHTTPHeaders() );
+					/* ----- Construct HTTP Header Start ----- */
+					$aHeaders = array();
+					$aHeaders[] = "HTTP_CONTENT_LENGTH";
+					$aHeaders[] = "HTTP_CONTENT_TYPE";
+					$aHeaders[] = "HTTP_HOST";
+					
+					$h = "GET {PATH} ". $_SERVER['SERVER_PROTOCOL'] .HTTPClient::CRLF;
+					$h .= "Host: {HOST}" .HTTPClient::CRLF;
+					foreach ($_SERVER as $key => $val)
+					{
+						if (in_array($key, $aHeaders) === false && substr($key, 0, 5) == "HTTP_")
+						{
+							$k = strtolower(substr($key, 5) );
+							$k = ucfirst(str_replace("_", "-", $k) );
+							$h .= $k .": ". $val .HTTPClient::CRLF;
+						}
+					}
+					/* ----- Construct HTTP Header End ----- */
+file_put_contents(sLOG_PATH ."/jona.log",  $url ."\n". $h ."\n\n");
+					$code = $obj_HTTP->send($h);
+					$obj_HTTP->disConnect();
 					// HTTP OK or HTTP Moved temporarily
 					if ($code == 200 || $code == 302)
 					{
+file_put_contents(sLOG_PATH ."/response.log", $url ."\n". $obj_HTTP->getReplyHeader() ."\n\n");
+						$a = explode("\n", $obj_HTTP->getReplyHeader() );
+						$aCookies = array();
+						foreach ($a as $s)
+						{
+							list($key, $val) = explode(":", $s);
+							$key = strtolower(trim($key) );
+							if ($key == "set-cookie")
+							{
+								$pos = strpos($val, "=");
+								$name = trim(substr($val, 0, $pos) );
+								$val = substr($val, $pos + 1);
+								$aCookies[$name] = substr($val, 0, strpos($val, ";") ); 
+							}
+						}
+file_put_contents(sLOG_PATH ."/response.log", $url ."\n". var_export($aCookies, true) ."\n\n", FILE_APPEND);
 						$aMatches = array();
 						preg_match('/<meta http-equiv="refresh" content="(.*)" \/>/', $obj_HTTP->getReplyBody(), $aMatches);
 						$url = substr($aMatches[1], strpos(strtolower($aMatches[1]), "url=") + 4);
-file_put_contents(sLOG_PATH ."/jona.log", $url);
 						$obj_HTTP->disConnect();
+						
 						$obj_ConnInfo = HTTPConnInfo::produceConnInfo($url);
 						$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
 						$obj_HTTP->connect();
-						// HTTP OK
-						if ($obj_HTTP->send($obj_mPoint->constHTTPHeaders() ) == 200)
+						/* ----- Construct HTTP Header Start ----- */
+						$h = "GET {PATH} ". $_SERVER['SERVER_PROTOCOL'] .HTTPClient::CRLF;
+						$h .= "Host: {HOST}" .HTTPClient::CRLF;
+						foreach ($_SERVER as $key => $val)
 						{
+							if (in_array($key, $aHeaders) === false && substr($key, 0, 5) == "HTTP_")
+							{
+								$k = strtolower(substr($key, 5) );
+								$k = ucfirst(str_replace("_", "-", $k) );
+								$h .= $k .": ". $val .HTTPClient::CRLF;
+							}
+						}
+						$c = "";
+						if (count($aCookies) > 0)
+						{
+							foreach ($aCookies as $key => $val)
+							{
+								$c .= $key ."=". $val ."; ";
+							}
+							$c = substr($c, 0, strlen($c) - 2);
+							$h .= "Cookie: ". $c .HTTPClient::CRLF;  
+						}
+						/* ----- Construct HTTP Header End ----- */
+file_put_contents(sLOG_PATH ."/jona.log", $url ."\n". $h ."\n\n", FILE_APPEND);
+						// HTTP OK
+						if ($obj_HTTP->send($h) == 200)
+						{
+file_put_contents(sLOG_PATH ."/response.log", $url ."\n". $obj_HTTP->getReplyHeader() ."\n\n", FILE_APPEND);
 							$xml .= '<psp-info id="'. $pspid .'">';
 							$xml .= '<url method="post" content-type="application/x-www-form-urlencoded">'. $aHTTP_CONN_INFO["worldpay"]["protocol"] .'://'. $aHTTP_CONN_INFO["worldpay"]["host"] .'/wcc/card</url>';
 							$xml .= '<card-number>cardNoInput</card-number>';
@@ -227,14 +288,18 @@ file_put_contents(sLOG_PATH ."/jona.log", $url);
 							$xml .= '<PaymentID>'. $aMatches[1] .'</PaymentID>';
 							$xml .= '<cardExp.day>32</cardExp.day>';
 							$xml .= '<cardExp.time>23:59:59</cardExp.time>';
-							$xml .= '<cardNoJS />';
-							$xml .= '<cardNoHidden />';
+							$xml .= '<cardNoJS></cardNoJS>';
+							$xml .= '<cardNoHidden>*hidden*</cardNoHidden>';
+							$xml .= '<op-PMMakePayment>MAKE+PAYMENT</op-PMMakePayment>';
 							$xml .= '</hidden-fields>';
+							$xml .= '<cookies>'. htmlspecialchars($c, ENT_NOQUOTES) .'</cookies>';
 							$xml .= '</psp-info>';
 						}
+						// Error
+						else { file_put_contents(sLOG_PATH ."/jona.log", var_export($obj_HTTP, true) ); }
 						$obj_HTTP->disConnect();
 					}
-					else { $obj_HTTP->disConnect(); }
+					else { file_put_contents(sLOG_PATH ."/jona.log", var_export($obj_HTTP, true) ); }
 					break;
 				}
 			}

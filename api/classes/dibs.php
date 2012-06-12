@@ -337,7 +337,7 @@ class DIBS extends Callback
 		$b .= "&clientid=". $this->getTxnInfo()->getClientConfig()->getID();
 		$b .= "&language=". $this->getTxnInfo()->getLanguage();
 		$b .= "&capturenow=". General::bool2xml($this->getTxnInfo()->getClientConfig()->useAutoCapture() );
-		$b .= "preauth=false";
+		$b .= "&preauth=false";
 
 		$obj_HTTP = new HTTPClient(new Template(), $oCI);
 		$obj_HTTP->connect();

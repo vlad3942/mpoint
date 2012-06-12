@@ -203,7 +203,7 @@ class WorldPay extends Callback
 		$sql = "UPDATE Log.Transaction_Tbl
 				SET pspid = ". Constants::iWORLDPAY_PSP .", extid = '". $this->getDBConn()->escStr($obj_XML->reply->orderStatus->reference["id"]) ."'
 				WHERE id = ". $this->getTxnInfo()->getID();
-		echo $sql ."\n";
+//		echo $sql ."\n";
 		$this->getDBConn()->query($sql);
 		
 		return $obj_XML;

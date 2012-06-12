@@ -33,6 +33,7 @@ $aHTTP_CONN_INFO["worldpay"]["username"] = $aLogin["username"];
 $aHTTP_CONN_INFO["worldpay"]["password"] = $aLogin["password"]; 
 
 $obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["worldpay"]);
+
 $obj_XML = $obj_mPoint->initialize($obj_ConnInfo, $_POST['merchant-code'], $_POST['installation-id'], $_POST['currency'], $obj_mPoint->getCardName($_POST['cardid']) );
 
 $url = $obj_XML->reply->orderStatus->reference ."&preferredPaymentMethod=". $obj_mPoint->getCardName($_POST['cardid']) ."&language=". sLANG;
@@ -54,6 +55,7 @@ foreach ($_SERVER as $key => $val)
 		$h .= $k .": ". $val .HTTPClient::CRLF;
 	}
 }
+
 /* ----- Construct Client HTTP Header End ----- */
 $obj_ConnInfo = HTTPConnInfo::produceConnInfo($url);
 $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);

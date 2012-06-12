@@ -123,7 +123,7 @@ class Capture extends General
 	 * 	2. Error in the parameters sent to the DIBS server. An additional parameter called "message" is returned, with a value that may help identifying the error.
 	 * 	3. Credit card expired.
 	 * 	4. Rejected by acquirer.
-	 * 	5. Authorisation older than7 days.
+	 * 	5. Authorisation older than 7 days.
 	 * 	6. Transaction status on the DIBS server does not allow capture.
 	 * 	7. Amount too high.
 	 * 	8. Amount is zero.
@@ -140,6 +140,21 @@ class Capture extends General
 	 * @return	integer
 	 * @throws	E_USER_WARNING
 	 */
-	public function capture() { return $this->_obj_PSP->capture($this->_sPSPID); }
+	public function capture()
+	{
+		// Serialize capture operations by using the Database as a mutex
+		$sql = "SELECT id
+				FROM Log.Message_Tbl
+				WHERE txnid = ". $this->_obj_TxnInfo->getID() ." AND stateid = ". Constants::iPAYMENT_ACCEPTED_STATE ."
+				FOR UPDATE";
+//		echo $sql ."\n";
+		$res = $this->getDBConn()->query($sql);
+		
+		$code = $this->_obj_PSP->capture($this->_sPSPID);
+		// Release mutex
+		$RS = $this->getDBConn()->fetchName($res);
+		
+		return $code; 
+	}
 }
 ?>

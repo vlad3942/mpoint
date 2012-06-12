@@ -33,7 +33,7 @@ require_once(sCLASS_PATH ."/wannafind.php");
 
 ignore_user_abort(true);
 set_time_limit(0);
-
+set_time_limit(120);
 header("content-type: text/plain");
 
 $_SESSION['temp'] = $_POST;
