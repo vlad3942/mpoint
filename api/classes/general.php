@@ -10,7 +10,7 @@
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
  * @package General
- * @version 1.10
+ * @version 1.11
  */
 
 /* ==================== mPoint Exception Classes Start ==================== */
@@ -485,24 +485,41 @@ class General
 	/**
 	 * Retrieves the data for a given transaction state from the Message database table.
 	 * The retrieved data is unserialised before being returned.
+	 * 
+	 * A BEGIN should be issued prior to calling this method if it is used to serialize requests by passing TRUE
+	 * as the third parameter and a COMMIT / ROLLBACK issued once serialization is no longer needed.
 	 *
 	 * @see 	unserialize()
 	 *
 	 * @param 	integer $txnid 		ID of the Transaction that message data should be retrieved from
 	 * @param 	integer $stateid 	ID of the State to which the data belongs
+	 * @param	boolean $serialize	Serialize the transaction using a FOR UPDATE, defaults to false
 	 * @return 	array
 	 */
-	public function getMessageData($txnid, $stateid)
+	public function getMessageData($txnid, $stateid, $serialize=false)
 	{
 		$sql = "SELECT data
 				FROM Log.Message_Tbl
 				WHERE txnid = ". intval($txnid) ." AND stateid = ". intval($stateid) ."
 				ORDER BY id DESC
 				LIMIT 1";
+		// Serialize the transaction using a FOR UPDATE
+		if ($serialize === true)
+		{
+			$sql .= "
+					FOR UPDATE";
+		}
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
+		$data = array();
+		if (is_array($RS) === true)
+		{
+			$RS["DATA"] = utf8_decode($RS["DATA"]);
+			$data = @unserialize($RS["DATA"]);
+			if ($data === false) { $data = array($RS["DATA"]); }
+		}
 
-		return is_array($RS)===true?unserialize(utf8_decode($RS["DATA"]) ):array();
+		return $data;
 	}
 	
 	/**

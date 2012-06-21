@@ -8,7 +8,7 @@
  * @link http://www.cellpointmobile.com
  * @package Payment
  * @subpackage EndUserAccount
- * @version 1.20
+ * @version 1.21
  */
 
 // Require Global Include File
@@ -70,7 +70,8 @@ if (count($aMsgCds) == 0)
 	if ($msg == 10)
 	{
 		// Payment has not previously been attempted for transaction
-		if (count($obj_mPoint->getMessageData($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE) ) == 0)
+		$_OBJ_DB->query("BEGIN");
+		if (count($obj_mPoint->getMessageData($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, true) ) == 0)
 		{
 			// Add control state and immediately commit database transaction
 			$obj_mPoint->newMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, serialize(array("cardid" => $_POST['cardid']) ) );
@@ -149,7 +150,11 @@ if (count($aMsgCds) == 0)
 				}
 			}
 		}
-		else { $aMsgCds[] = 100; }
+		else
+		{
+			$_OBJ_DB->query("COMMIT");
+			$aMsgCds[] = 100;
+		}
 	}
 	else
 	{

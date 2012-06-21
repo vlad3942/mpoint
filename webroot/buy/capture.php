@@ -9,7 +9,7 @@
  * @link http://www.cellpointmobile.com
  * @package API
  * @subpackage Capture
- * @version 1.10
+ * @version 1.11
  */
 
 // Require Global Include File
@@ -74,14 +74,14 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			try
 			{
 				$obj_mPoint = Capture::produce($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-				
+				$code = $obj_mPoint->capture();
 				// Capture operation succeeded
-				if ($obj_mPoint->capture() == 0)
+				if ($code >= 1000)
 				{
 					header("HTTP/1.0 200 OK");
 					
 					$aMsgCds[1000] = "Success";
-					$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, array("transact" => $obj_mPoint->getPSPID() ) );
+					if ($code == 1000) { $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, array("transact" => $obj_mPoint->getPSPID() ) ); }
 				}
 				else
 				{

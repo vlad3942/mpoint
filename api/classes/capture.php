@@ -7,7 +7,7 @@
  * @link http://www.cellpointmobile.com
  * @package API
  * @subpackage Capture
- * @version 1.00
+ * @version 1.10
  */
 
 /* ==================== Capture Exception Classes Start ==================== */
@@ -143,16 +143,18 @@ class Capture extends General
 	public function capture()
 	{
 		// Serialize capture operations by using the Database as a mutex
-		$sql = "SELECT id
-				FROM Log.Message_Tbl
-				WHERE txnid = ". $this->_obj_TxnInfo->getID() ." AND stateid = ". Constants::iPAYMENT_ACCEPTED_STATE ."
-				FOR UPDATE";
-//		echo $sql ."\n";
-		$res = $this->getDBConn()->query($sql);
+		$this->getDBConn()->query("BEGIN");
+		$this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_ACCEPTED_STATE, true);
 		
-		$code = $this->_obj_PSP->capture($this->_sPSPID);
+		// Payment not Captured
+		if (count($this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE) ) == 0)
+		{
+			$code = $this->_obj_PSP->capture($this->_sPSPID);
+			if ($code === 0) { $code = 1000; }
+		}
+		else { $code = 1001; }
 		// Release mutex
-		$RS = $this->getDBConn()->fetchName($res);
+		$this->getDBConn()->query("COMMIT");
 		
 		return $code; 
 	}
