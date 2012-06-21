@@ -256,6 +256,7 @@
 				<!-- Shared Data -->
 				<input type="hidden" name="clientid" value="{/root/client-config/@id}" />
 				<input type="hidden" name="client" value="{/root/client-config/name}" />
+				<input type="hidden" name="accountid" value="{/root/account-config/@id}" />
 				
 				<!-- Payment Page Data -->
 				<input type="hidden" name="card_width" value="{logo-width}" />

@@ -46,17 +46,17 @@ switch(cgi.language)
 	{
 		title := 'Kort Info';
 		progress := 'Trin 2 af 2';
-		label_selected_card := 'Valgte Kort';
+		label_selected_card := 'Valgte kort';
 		label_price := 'Pris';
-		info := 'Udfyld venligst nedenstående felter med dine kort informationer';
-		label_card_number := 'Kort Nummer';
+		info := 'Udfyld kortinformation';
+		label_card_number := 'Kortnummer';
 		label_expiry := 'Udløbsdato';
 		expiry_month := 'mm';
 		expiry_year := 'åå';
 		label_cvc := 'CVC / CVS';
-		cvc_help := '3 tal (trykt på bagsiden af dit kort)';
-		label_store := 'Gem kort informationer';
-		submit := 'Gennemfør Betaling';
+		cvc_help := 'Tre sidste cifre fra bagsiden af dit kort';
+		label_store := 'Gem kortinformationer';
+		submit := 'Gennemfør betaling';
 		
 		// Error Messages
 		error_0 := 'Dit Kredit Kort blev afvist af PBS, prøv venligst med et andet kort?';
@@ -64,7 +64,7 @@ switch(cgi.language)
 		error_2 := 'Intern Fejl: Forespørgslen indeholdt ugyldigt data ('@ auth.message @')';
 		error_3 := 'Der opstod en fejl hos PBS, prøv venligst igen?';
 		error_4 := 'Dit kredit kort er udløbet, prøv venligst med et andet kort?';
-		error_5 := 'Dit kort nummer er ugyldigt, ret venligst kort numret og prøv igen?';
+		error_5 := 'Dit kort nummer er ugyldigt, ret venligst kort nummeret og prøv igen?';
 		error_6 := 'Kunne ikke trække pengene fra din konto, prøv venligst med et andet kort?';
 		error_7 := 'Intern Fejl: "orderid" skal være unikt';
 		error_8 := 'Intern Fejl: For få "amount" felter tilgængelige til at beregne split';
@@ -108,17 +108,17 @@ switch(cgi.language)
 	{
 		title := 'Card Info';
 		progress := 'Step 2 of 2';
-		label_selected_card := 'Selected Card';
+		label_selected_card := 'Selected card';
 		label_price := 'Price';
-		info := 'Please enter your card information below';
-		label_card_number := 'Card Number';
+		info := 'Please enter your card details';
+		label_card_number := 'Card number';
 		label_expiry := 'Expiry date';
 		expiry_month := 'mm';
 		expiry_year := 'yy';
 		label_cvc := 'CVC / CVS';
-		cvc_help := '3 digits (printed on the back of the card)';
+		cvc_help := '3 digits (printed on the back)';
 		label_store := 'Save card info';
-		submit := 'Complete Payment';
+		submit := 'Complete payment';
 		
 		// Error Messages
 		error_0 := 'Credit Card declined by acquirer, please try again?';
@@ -136,6 +136,21 @@ switch(cgi.language)
 	}
 }
 /* ========== Language Translataion End ========== */
+
+/* ========== App Specific Customizations Start ========== */
+// DSB WildCard
+if (cgi.accountid = 100020 || cgi.accountid = 100021)
+{
+	border_color := '#7f5ca9';
+	text_color := '#fff';
+}
+// DSB Ticket
+else
+{
+	border_color := '#80C435';
+	text_color := '#000';
+}
+/* ========== App Specific Customizations End ========== */
 </PML_SCRIPT>
 <?xml version="1.0" encoding="ISO-8859-15"?>
 <!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
@@ -153,14 +168,14 @@ switch(cgi.language)
 		}
 		body, table
 		{
-			background-color: #fff;
+			background-color: transparent;
 			text-align: left;
 		}
 		body, table, div
 		{
 			font-size: 1em;
 			font-family: "Trebuchet MS",arial,sans-serif;
-			color: #000;
+			color: <PML_VAL>text_color</PML_VAL>;
 		}
 		
 		h1
@@ -168,7 +183,7 @@ switch(cgi.language)
 			font-size: 130%;
 			white-space: nowrap;
 			text-align: center;
-			color: #000;
+			color: <PML_VAL>text_color</PML_VAL>;
 		}
 		
 		form, table
@@ -192,6 +207,15 @@ switch(cgi.language)
 		{
 			-wap-input-format: '*N';
 		}
+		ul, ul li
+		{
+			padding: 0;
+			margin: 0;
+		}
+		ul li
+		{
+			margin-left: 1em;
+		}
 		/* ========== Tag Classes End ========== */
 		
 		/* ========== mPoint Classes Start ========== */
@@ -206,15 +230,21 @@ switch(cgi.language)
 		.mPoint_Info
 		{
 			font-weight: normal;
-			font-style: italic;
-			color: #000;
+			color: <PML_VAL>text_color</PML_VAL>;
 			text-align: left;
 			padding: 0px;
 			margin: 0px;	
 		}
 		
+		.mPoint_Help
+		{
+			margin-left: 15px;
+		}
+		
 		.mPoint_Status
 		{
+			margin-left: 10px;
+			font-size: 90%;
 			color: red;
 			font-style: italic;
 			padding-top: 0.5em;
@@ -226,31 +256,82 @@ switch(cgi.language)
 			padding-right: 0.5em;
 			text-align: right;
 			vertical-align: bottom;
+			white-space: nowrap;
 		}
 		
-		tr.mPoint_Even
+		tr.mPoint_Even, div.mPoint_Even
 		{
-			background-color: #E0E0E0;
+			color: <PML_VAL>text_color</PML_VAL>;
 		}
-		tr.mPoint_Uneven
+		input.mPoint_Even_Card_Button
 		{
+			border-width: 0px;
+			border-style: none;
+			background-color: #eef2f0;
+			border-color: #fff;
+			color: <PML_VAL>text_color</PML_VAL>;
+			text-decoration: underline;
+			margin: 0px 0px 0px 0px;
+			padding: 0px 0px 2px 0px;
+		}
+		tr.mPoint_Uneven, div.mPoint_Uneven
+		{
+			background-color: <PML_VAL>text_color</PML_VAL>045;
+		}
+		input.mPoint_Uneven_Card_Button
+		{
+			border-width: 0px;
+			border-style: none;
+			background-color: <PML_VAL>text_color</PML_VAL>045;
+			border-color: <PML_VAL>text_color</PML_VAL>045;
+			color: #fff;
+			text-decoration: underline;
+			margin: 0px 0px 0px 0px;
+			padding: 0px 0px 2px 0px;
 		}
 		
 		input.mPoint_Button
 		{
+			font-size: 1em;
 			font-weight: bold;
-			border-color: #6DAADD;
-			background-color: #6c8ca3;
+			color: #000;
 		}
-		
 		input.mPoint_Card_Button
 		{
+			font-size: 1em;
+			border-width: 0px;
 			border-style: none;
-			background-color: #fff;
+			background-color: #eef2f0;
+			border-color: #fff;
 			color: blue;
 			text-decoration: underline;
 			margin: 0px 0px 0px 0px;
 			padding: 0px 0px 2px 0px;
+		}
+		input.mPoint_Card_Button:hover
+		{
+			cursor: pointer; cursor: hand;
+		}
+		
+		div.mPoint_Card
+		{
+		}
+		
+		div.mPoint_Account
+		{
+			width: 100%;
+		}
+		div.mPoint_Account
+		{
+			width: 100%;
+			border-bottom-style: dashed;
+			border-color: <PML_VAL>border_color</PML_VAL>;
+			border-width: 2px;
+		}
+		div.mPoint_Account input.mPoint_Card_Button
+		{
+			color: <PML_VAL>text_color</PML_VAL>;
+			font-weight: bold;
 		}
 		/* ========== mPoint Classes Start ========== */
 		
@@ -261,16 +342,23 @@ switch(cgi.language)
 			padding-top: 3px;
 		}
 		
-		table#receipt
+		table#receipt, div#top-up div.mPoint_Info
 		{
-			background-color: #E0E0E0;
 			margin-top: 0.5em;
 			margin-bottom: 0.5em;
 		}
+		table#receipt, table#products tr.mPoint_Uneven
+		{
+			color: <PML_VAL>text_color</PML_VAL>;
+		}
 		
-		div#logo, div#progress, div#mPoint, div#status
+		div#logo, div#progress, div#mPoint, div#status, div#top-up div#close
 		{
 			text-align: center;
+		}
+		div#logo
+		{
+			margin-right: 5px;
 		}
 		
 		div#status table tr td
@@ -284,28 +372,79 @@ switch(cgi.language)
 			white-space: pre;
 		}
 		
-		div#delivery, table#shipping, div#email, div#cardinfo, div#accountinfo
+		div#delivery, div#email, div#cardinfo, div#prepaid, div#accountinfo, div#my-account table
 		{
-			background-color: #E0E0E0;
+
+		}
+		div#delivery, div#email, div#cardinfo, div#prepaid, div#accountinfo
+		{
 			padding-left: 3px;
 			padding-bottom: 3px;
 		}
 		
+		div#shipping div table tr td
+		{
+			padding-top: 3px;
+			padding-left: 3px;
+		}
+		
+		div#cards, div#cardinfo, table#receipt
+		{
+			padding: 0px 10px 0px 10px;
+			border: solid <PML_VAL>border_color</PML_VAL> 2px;
+			-moz-border-radius: 10px;
+			-webkit-border-radius: 10px;
+			border-radius: 10px;
+		}
+		
+		div#my-account
+		{
+		}
+		div#my-account div#prepaid div, div#my-account div#prepaid table, div#my-account div#cardinfo div, div#my-account div#cardinfo table, div#my-account div#cardinfo table * .mPoint_Info
+		{
+			color: <PML_VAL>text_color</PML_VAL>;
+		}
+		div#my-account .passive
+		{
+			color: #708090;
+		}
+		div#my-account a#top-up
+		{
+			color: red;
+		}
+		div#my-account div#cardinfo, div#my-account div#accountinfo, div#email
+		{
+			margin-bottom: 5px;
+		}
+		div#my-account div#password
+		{
+			padding-bottom: 5px;
+			border-top-style: dashed;
+			border-color: <PML_VAL>border_color</PML_VAL>;
+			border-width: 2px;
+		}
+		
 		div#price
 		{
-			 padding-bottom: 0.5em;
+			margin-left: 15px;
+			padding-bottom: 0.5em;
 		}
-		div#submit
+		div#outer-border
 		{
-			text-align: center;	
+			
+		}
+		div#info div#submit
+		{
+			margin-left: 0px;
+		}
+		div#info, div#submit, div#link, div#selected-card, div#store-card
+		{
+			margin-left: 10px;
 		}
 		/* ========== ID Classes End ========== */
 	</style>
 </head>
 <body>
-	<div id="logo">
-		<img src="images/client_logo.jpg" PML_width="cgi.width" PML_height="cgi.height" PML_alt="'- '@cgi.client@' -'" />
-	</div>
 	<div id="progress" class="mPoint_Info"><PML_VAL>progress</PML_VAL></div>
 	
 	<div class="mPoint_Status">
@@ -366,6 +505,7 @@ switch(cgi.language)
 			<!-- Dynamic Page Data -->
 			<input type="hidden" name="clientid" PML_value="cgi.clientid" />
 			<input type="hidden" name="client" PML_value="cgi.client" />
+			<input type="hidden" name="accountid" PML_value="cgi.accountid" />
 			<input type="hidden" name="mpoint_width" PML_value="cgi.mpoint_width" />
 			<input type="hidden" name="mpoint_height" PML_value="cgi.mpoint_height" />
 			<input type="hidden" name="sms_receipt" PML_value="cgi.sms_receipt" />
@@ -388,7 +528,7 @@ switch(cgi.language)
 			}
 			</PML_SCRIPT>
 		</div>
-		<div>
+		<div id="selected-card">
 			<span class="mPoint_Label"><PML_VAL>label_selected_card</PML_VAL>:</span>
 			<table>
 			<tr>
@@ -439,47 +579,47 @@ switch(cgi.language)
 			<PML_VAL>cgi.price</PML_VAL>
 		</div>
 		<!-- Credit Card Information -->
-		<div><PML_VAL>info</PML_VAL></div>
+		<div class="mPoint_Help"><PML_VAL>info</PML_VAL></div>
 		<div id="cardinfo">
 			<div class="mPoint_Label">
 				<PML_VAL>label_card_number</PML_VAL>:<br />
 				<PML_IF COND="sess_cardno > 0">
-					<input name="cardno" maxlength="19" PML_value="string.precision(sess_cardno, 0)" size="19" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+					<input type="number" name="cardno" maxlength="19" PML_value="string.precision(sess_cardno, 0)" size="19" style="-wap-input-format:'*N';" pattern="[0-9]*" />
 				</PML_IF>
 				<PML_ELSE>
-					<input name="cardno" maxlength="19" value="" size="19" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+					<input type="number" name="cardno" maxlength="19" value="" size="19" style="-wap-input-format:'*N';" pattern="[0-9]*" />
 				</PML_ELSE>
 			</div>
 			<div class="mPoint_Label">
 				<PML_VAL>label_expiry</PML_VAL> <span class="mPoint_Info">(<PML_VAL>expiry_month</PML_VAL>/<PML_VAL>expiry_year</PML_VAL>)</span>:<br />
 				<PML_IF COND="sess_expmon > 0">
-					<input name="expmon" maxlength="2" PML_value="string.precision(sess_expmon, 0)" size="2" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+					<input type="number" name="expmon" maxlength="2" PML_value="string.precision(sess_expmon, 0)" size="4" style="-wap-input-format:'*N';" pattern="[0-9]*" />
 				</PML_IF>
 				<PML_ELSE>
-					<input name="expmon" maxlength="2" value="" size="2" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+					<input type="number" name="expmon" maxlength="2" value="" size="4" style="-wap-input-format:'*N';" pattern="[0-9]*" />
 				</PML_ELSE>
 				&nbsp;/&nbsp;
 				<PML_IF COND="sess_expyear > 0">
-					<input name="expyear" maxlength="2" PML_value="string.precision(sess_expyear, 0)" size="2" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+					<input type="number" name="expyear" maxlength="2" PML_value="string.precision(sess_expyear, 0)" size="4" style="-wap-input-format:'*N';" pattern="[0-9]*" />
 				</PML_IF>
 				<PML_ELSE>
-					<input name="expyear" maxlength="2" value="" size="2" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+					<input type="number" name="expyear" maxlength="2" value="" size="4" style="-wap-input-format:'*N';" pattern="[0-9]*" />
 				</PML_ELSE>
 			</div>
 			<div class="mPoint_Label">
 				<PML_VAL>label_cvc</PML_VAL>:<br />
 				<PML_IF COND="sess_cvc > 0">
-					<input name="cvc" maxlength="3" PML_value="string.precision(sess_cvc, 0)" size="3" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+					<input type="number" name="cvc" maxlength="4" PML_value="string.precision(sess_cvc, 0)" size="6" style="-wap-input-format:'*N';" pattern="[0-9]*" />
 				</PML_IF>
 				<PML_ELSE>
-					<input name="cvc" maxlength="3" value="" size="3" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+					<input type="number" name="cvc" maxlength="4" value="" size="6" style="-wap-input-format:'*N';" pattern="[0-9]*" />
 				</PML_ELSE>
 			</div>
 			<div class="mPoint_Info"><PML_VAL>cvc_help</PML_VAL></div>
 		</div>
 		<!-- Store Credit Card -->
 		<PML_IF COND="cgi.store_card > 0">
-			<div>
+			<div id="store-card">
 				<PML_IF COND="cgi.auto_store_card = 'true">
 					<input type="checkbox" name="preauth" value="true" checked="true" />
 				</PML_IF>
@@ -490,9 +630,10 @@ switch(cgi.language)
 			</div>
 		</PML_IF>
 		<!-- Complete Payment -->
-		<div>
+		<div id="submit" style="text-align:center">
 			<input type="submit" PML_value="submit" class="mPoint_Button" />
 		</div>
 	</form>
 </body>
 </html>
+
