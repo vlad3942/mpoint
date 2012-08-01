@@ -7,9 +7,9 @@
 		<xs:element name="email" type="email" minOccurs="1" maxOccurs="1" />
 		<xs:element name="device-id" type="device-id" minOccurs="1" maxOccurs="1" />
 	</xs:all>
-	<xs:attribute name="app-id" type="xs:positiveInteger" use="optional" />
 	<xs:attribute name="platform" type="platform" use="required" />
 	<xs:attribute name="version" type="version" use="required" />
+	<xs:attribute name="language" type="language" use="required" />
 </xs:complexType>
 
 <xs:complexType name="get-updated-core-data">
@@ -43,6 +43,7 @@
 	<xs:simpleContent>
 		<xs:extension base="xs:token">
 			<xs:attribute name="country-id" type="countryid" use="required" />
+			<xs:attribute name="operator-id" type="operatorid" use="optional" />
 		</xs:extension>
 	</xs:simpleContent>
 </xs:complexType>
@@ -56,6 +57,13 @@
 		</xs:restriction>
 	</xs:simpleContent>
 </xs:complexType>
+
+<xs:simpleType name="operatorid">
+	<xs:restriction base="xs:positiveInteger">
+		<xs:minInclusive value="10000" />
+		<xs:maxInclusive value="99999" />
+	</xs:restriction>
+</xs:simpleType>
 
 <xs:simpleType name="countryid">
 	<xs:restriction base="xs:positiveInteger">
@@ -82,9 +90,9 @@
 </xs:simpleType>
 
 <xs:simpleType name="version">
-	<xs:restriction base="xs:decimal"> 
-		<xs:minExclusive value="0.0" /> 
-	</xs:restriction> 
+	<xs:restriction base="xs:string"> 
+		<xs:pattern value="[0-9\.]+-?[0-9]{0,3}" /> 
+	</xs:restriction>  
 </xs:simpleType>
 
 <xs:simpleType name="url"> 
@@ -92,5 +100,15 @@
 		<xs:pattern value="http.?://.+" /> 
 	</xs:restriction> 
 </xs:simpleType> 
+
+<xs:simpleType name="language"> 
+	<xs:restriction base="xs:string"> 
+		<xs:enumeration value="da" />
+		<xs:enumeration value="gb" />
+		<xs:enumeration value="us" />
+		<xs:enumeration value="no" />
+		<xs:enumeration value="sv" />
+	</xs:restriction> 
+</xs:simpleType>
 
 </xs:schema>

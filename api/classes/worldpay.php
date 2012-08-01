@@ -126,6 +126,15 @@ class WorldPay extends Callback
 		case (9):	// VISA Electron
 			$name = "VISA_ELECTRON-SSL";
 			break;
+		case (12):	// Switch
+			$name = "SWITCH-SSL";
+			break;
+		case (13):	// Solo
+			$name = "SOLO_GB-SSL";
+			break;
+		case (14):	// Delta
+			$name = "DELTA-SSL";
+			break;
 		default:	// Unknown
 			break;
 		}
@@ -163,6 +172,15 @@ class WorldPay extends Callback
 		case "VISA_ELECTRON-SSL":	// VISA Electron
 			$id = 9;
 			break;
+		case "SWITCH-SSL":	// Switch
+			$id = 12;
+			break;
+		case "SOLO_GB-SSL":	// Solo
+			$id = 13;
+			break;
+		case "DELTA-SSL":	// Delta
+			$id = 14;
+			break;
 		default:	// Unknown
 			break;
 		}
@@ -177,36 +195,88 @@ class WorldPay extends Callback
 	 * @param 	integer $cardid		Unique ID of the Card Type that was used in the payment transaction
 	 * @param 	integer $txnid		Transaction ID from WorldPay returned in the "transact" parameter
 	 */
-	public function initialize(HTTPConnInfo &$oCI, $merchantcode, $installationid, $currency, $card)
+	public function initialize(HTTPConnInfo &$oCI, $merchantcode, $installationid, $currency, array &$cards)
 	{
-		$b = '<?xml version="1.0" encoding="UTF-8"?>';
-		$b .= '<!DOCTYPE paymentService PUBLIC "-//WorldPay/DTD WorldPay PaymentService v1//EN" "http://dtd.worldpay.com/paymentService_v1.dtd">';
-		$b .= '<paymentService version="1.4" merchantCode="'. $merchantcode .'">';
-		$b .= '<submit>';
-		$b .= '<order orderCode="'. $this->getTxnInfo()->getID() .'" installationId="'. $installationid .'">';
-		$b .= '<description>mPoint ID: '. $this->getTxnInfo()->getID() .'</description>';
-		$b .= '<amount value="'. $this->getTxnInfo()->getAmount() .'" currencyCode="'. $currency .'" exponent="2"/>';
-		$b .= '<paymentMethodMask>';
-		$b .= '<include code="'. $card .'"/>';
-		$b .= '</paymentMethodMask>';
-		$b .= '</order>';
-		$b .= '</submit>';
-		$b .= '</paymentService>';
-		
-		$obj_HTTP = new HTTPClient(new Template(), $oCI);
-		$obj_HTTP->connect();
-		$obj_HTTP->send($this->constHTTPHeaders(), $b);
-		$obj_HTTP->disConnect();
-		
-		$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
-		
-		$sql = "UPDATE Log.Transaction_Tbl
-				SET pspid = ". Constants::iWORLDPAY_PSP .", extid = '". $this->getDBConn()->escStr($obj_XML->reply->orderStatus->reference["id"]) ."'
-				WHERE id = ". $this->getTxnInfo()->getID();
+		$sql = "SELECT data
+				FROM Log.Message_Tbl
+				WHERE txnid = ". $this->getTxnInfo()->getID() ." AND stateid = ". Constants::iPAYMENT_INIT_WITH_PSP_STATE ."
+				ORDER BY id DESC";
 //		echo $sql ."\n";
-		$this->getDBConn()->query($sql);
+		$aRS = $this->getDBConn()->getAllNames($sql);
+		$url = "";
+		if (is_array($aRS) === true)
+		{
+			for ($i=0; $i<count($aRS); $i++)
+			{
+				$data = @unserialize($aRS[$i]["DATA"]);
+				if (is_array($data) === true && $data["psp-id"] == Constants::iWORLDPAY_PSP)
+				{
+					$url = $data["url"];
+					$i = count($aRS);
+				}
+			}
+		}
+		// Payment Transaction not previously initialized with WorldPay
+		if (empty($url) === true)
+		{
+			$oc = htmlspecialchars($this->getTxnInfo()->getOrderID(), ENT_NOQUOTES);
+			if (empty($oc) === true) { $oc = $this->getTxnInfo()->getID(); }
+			$b = '<?xml version="1.0" encoding="UTF-8"?>';
+			$b .= '<!DOCTYPE paymentService PUBLIC "-//WorldPay/DTD WorldPay PaymentService v1//EN" "http://dtd.worldpay.com/paymentService_v1.dtd">';
+			$b .= '<paymentService version="1.4" merchantCode="'. $merchantcode .'">';
+			$b .= '<submit>';
+			$b .= '<order orderCode="'. $oc .'" installationId="'. $installationid .'">';
+			$b .= '<description>Order: '. $oc .' from: '. htmlspecialchars($this->getTxnInfo()->getClientConfig()->getName(), ENT_NOQUOTES) .'</description>';
+			$b .= '<amount value="'. $this->getTxnInfo()->getAmount() .'" currencyCode="'. $currency .'" exponent="2"/>';
+			$b .= '<paymentMethodMask>';
+			foreach ($cards as $id)
+			{
+				$b .= '<include code="'. $this->getCardName($id) .'"/>';
+			}
+			$b .= '</paymentMethodMask>';
+			$b .= '</order>';
+			$b .= '</submit>';
+			$b .= '</paymentService>';
+			
+			$obj_HTTP = new HTTPClient(new Template(), $oCI);
+			$obj_HTTP->connect();
+			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+			$obj_HTTP->disConnect();
+			if ($code == 200)
+			{
+				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+				
+				if (floatval($obj_XML->reply->orderStatus->reference["id"]) > 0)
+				{
+					$data = array("psp-id" => Constants::iWORLDPAY_PSP,
+								  "url" => strval($obj_XML->reply->orderStatus->reference) );
+					$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, serialize($data) );
+					
+					$sql = "UPDATE Log.Transaction_Tbl
+							SET pspid = ". Constants::iWORLDPAY_PSP .", extid = '". $this->getDBConn()->escStr($obj_XML->reply->orderStatus->reference["id"]) ."'
+							WHERE id = ". $this->getTxnInfo()->getID();
+//					echo $sql ."\n";
+					$this->getDBConn()->query($sql);
+					$url = $obj_XML->reply->orderStatus->reference;
+				}
+				// Error: Unable to initialize payment transaction
+				else
+				{
+					trigger_error("Unable to initialize payment transaction with WorldPay, error code: ". $obj_XML->reply->error["code"] ."\n". $obj_XML->reply->error->asXML(), E_USER_WARNING);
+				
+					throw new mPointException("WorldPay returned Error: ". $obj_XML->reply->error ." (". $obj_XML->reply->error["code"] .")", 1101);
+				}
+			}
+			// Error: Unable to initialize payment transaction
+			else
+			{
+				trigger_error("Unable to initialize payment transaction with WorldPay. HTTP Response Code: ". $code ."\n". var_export($obj_HTTP, true), E_USER_WARNING);
+				
+				throw new mPointException("WorldPay returned HTTP Code: ". $code, 1100);
+			}
+		}
 		
-		return $obj_XML;
+		return $url;
 	}
 }
 ?>

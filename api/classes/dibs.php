@@ -344,5 +344,60 @@ class DIBS extends Callback
 		$obj_HTTP->send($this->constHTTPHeaders(), $b);
 		$obj_HTTP->disConnect();
 	}
+	
+	public function initialize(HTTPConnInfo &$oCI, $merchant, $account, $currency, $cardid)
+	{
+		$oid = urlencode($this->getTxnInfo()->getOrderID() );
+		if (empty($oid) === true) { $oid = $this->getTxnInfo()->getID(); }
+		// DIBS Required Data
+		$b = "merchant=". $merchant;
+		// Client is in Test or Certification mode
+		if ($this->getTxnInfo()->getMode() > 0) { $b .= "&test=". $this->getTxnInfo()->getMode(); }
+		$b .= "&callbackurl=". urlencode("http://". $_SERVER['HTTP_HOST'] ."/callback/dibs.php");
+		$b .= "&amount=". $this->getTxnInfo()->getAmount();
+		$b .= "&currency=". $currency;
+		$b .= "&orderid=". $oid;
+		$b .= "&fullreply=true";
+		// Sub-Account configured for DIBS
+		if ($account > 0) { $b .= "&account=". $account; }
+		// mPoint Required data
+		$b .= "&language=". $this->getTxnInfo()->getLanguage();
+		$b .= "&cardid=". $cardid;
+		$b .= "&mpointid=". $this->getTxnInfo()->getID();
+		$b .= "&eauid=". $this->getTxnInfo()->getAccountID();
+		$b .= "&clientid=". $this->getTxnInfo()->getClientConfig()->getID();
+		$b .= "&accountid=". $this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID();
+		$b .= "&store_card=". $this->getTxnInfo()->getClientConfig()->getStoreCard();
+		$b .= "&auto_store_card=". parent::bool2xml($this->getTxnInfo()->autoStoreCard() );
+		
+		$obj_HTTP = new HTTPClient(new Template(), $oCI);
+		$obj_HTTP->connect();
+		$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+		$obj_HTTP->disConnect();
+		
+		if ($code == 200)
+		{
+			$data = array("psp-id" => Constants::iDIBS_PSP,
+						  "url" => $obj_HTTP->getReplyBody() );
+			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, serialize($data) );
+			$xml = str_replace("card_number>", "card-number>", $obj_HTTP->getReplyBody() );
+			$xml = str_replace("expiry_month>", "expiry-month>", $xml);
+			$xml = str_replace("expiry_year>", "expiry-year>", $xml);
+			$xml = str_replace("hidden_fields>", "hidden-fields>", $xml);
+			
+			$obj_XML = simplexml_load_string($xml); 
+			$obj_XML->{'store-card'} = (string) $obj_XML->{'store_card'};
+			unset($obj_XML->{'store_card'});
+		}
+		// Error: Unable to initialize payment transaction
+		else
+		{
+			trigger_error("Unable to initialize payment transaction with DIBS. HTTP Response Code: ". $code ."\n". var_export($obj_HTTP, true), E_USER_WARNING);
+			
+			throw new mPointException("DIBS returned HTTP Code: ". $code, 1100);
+		}
+		
+		return $obj_XML;
+	}
 }
 ?>

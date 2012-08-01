@@ -49,6 +49,12 @@ abstract class Constants
 	 */
 	const iSHIPPING_INFO_STATE = 1005;
 	/**
+	 * Defines the ID of the State that should be logged when the payment transaction has been successfully initialized with the
+	 * Payment Service Provider (PSP)
+	 *
+	 */
+	const iPAYMENT_INIT_WITH_PSP_STATE = 1009;
+	/**
 	 * Defines the ID of the State that should be logged if a message is accepted by GoMobile
 	 *
 	 */
@@ -150,6 +156,7 @@ abstract class Constants
 	 *
 	 */
 	const iPAYMENT_REFUNDED_STATE = 2003;
+	
 	/**
 	 * Defines the ID of the State that indicates that payment is being using the End-User's account
 	 *

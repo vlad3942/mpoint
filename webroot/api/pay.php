@@ -48,8 +48,8 @@ $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH,
 /*
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<client-id>10002</client-id>';
-//$HTTP_RAW_POST_DATA .= '<account></account>';
+$HTTP_RAW_POST_DATA .= '<client-id>10007</client-id>';
+$HTTP_RAW_POST_DATA .= '<account>100007</account>';
 $HTTP_RAW_POST_DATA .= '<amount>100</amount>';
 //$HTTP_RAW_POST_DATA .= '<operator></operator>';
 $HTTP_RAW_POST_DATA .= '<mobile country-id="100">28882861</mobile>';
@@ -164,7 +164,7 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 	}
 	
 	// Instantiate data object with the User Agent Profile for the customer's mobile device.
-	//$obj_UA = UAProfile::produceUAProfile(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["iemendo"]) );
+	$obj_UA = UAProfile::produceUAProfile(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["iemendo"]) );
 	
 	// Success
 	if (array_key_exists(1000, $aMsgCds) === true)
@@ -190,13 +190,15 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 					$obj_mPoint = new WorldPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 					
 					if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["worldpay"]["host"] = str_replace("secure.", "secure-test.", $aHTTP_CONN_INFO["worldpay"]["host"]); }
-					$aHTTP_CONN_INFO["worldpay"]["username"] = (string) $obj_DOM->item[$i]->account; 
+					$aLogin = $obj_mPoint->getMerchantLogin($obj_ClientConfig->getID(), Constants::iWORLDPAY_PSP);
+					$aHTTP_CONN_INFO["worldpay"]["username"] = $aLogin["username"];
+					$aHTTP_CONN_INFO["worldpay"]["password"] = $aLogin["password"];
 					
 					$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["worldpay"]);
-					$obj_XML = $obj_mPoint->initialize($obj_ConnInfo, (string) $obj_DOM->item[$i]->account, (string) $obj_DOM->item[$i]->currency, $obj_mPoint->getCardName(7) );
+					$obj_XML = $obj_mPoint->initialize($obj_ConnInfo, (string) $obj_DOM->item[$i]->account, (integer) $obj_DOM->item[$i]->subaccount, (string) $obj_DOM->item[$i]->currency, $obj_mPoint->getCardName(7) );
 					$url = $obj_XML->reply->orderStatus->reference ."&preferredPaymentMethod=". $obj_mPoint->getCardName(7) ."&language=". sLANG;
 					$url .= "&successURL=". urlencode("http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php");
-file_put_contents(sLOG_PATH ."/jona.log", $url);
+file_put_contents(sLOG_PATH ."/jona.log", "\n". $url, FILE_APPEND);
 					$obj_ConnInfo = HTTPConnInfo::produceConnInfo($url);
 					$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
 					$obj_HTTP->connect();
@@ -218,13 +220,13 @@ file_put_contents(sLOG_PATH ."/jona.log", $url);
 						}
 					}
 					/* ----- Construct HTTP Header End ----- */
-file_put_contents(sLOG_PATH ."/jona.log",  $url ."\n". $h ."\n\n");
+file_put_contents(sLOG_PATH ."/jona.log",  "\n". $url ."\n". $h ."\n\n");
 					$code = $obj_HTTP->send($h);
 					$obj_HTTP->disConnect();
 					// HTTP OK or HTTP Moved temporarily
 					if ($code == 200 || $code == 302)
 					{
-file_put_contents(sLOG_PATH ."/response.log", $url ."\n". $obj_HTTP->getReplyHeader() ."\n\n");
+file_put_contents(sLOG_PATH ."/response.log", "\n". $url ."\n". $obj_HTTP->getReplyHeader() ."\n\n");
 						$a = explode("\n", $obj_HTTP->getReplyHeader() );
 						$aCookies = array();
 						foreach ($a as $s)

@@ -601,7 +601,7 @@ class General
 	/**
 	 * Formats the Total Amount for a Transaction into humanreadable format.
 	 * The method will divide the amount by 100 and format it using the price format of the provided Country,
-	 * i.e. $X.XX for USA, X.XXkr for Denmark etc.
+	 * i.e. $X.XX for USA, X,XXkr for Denmark etc.
 	 *
 	 * @param 	CountryConfig $oCC 	Reference to the Data Object for the Country Configuration that should be used for formatting the Amount
 	 * @param 	integer $amount 	Amount to format
@@ -612,7 +612,9 @@ class General
 		// Format amount to be human readable
 		$sPrice = $oCC->getPriceFormat();
 		$sPrice = str_replace("{CURRENCY}", $oCC->getSymbol(), $sPrice);
-		$sPrice = str_replace("{PRICE}", number_format($amount / 100, $oCC->getDecimals(), ",", ""), $sPrice);
+		if ($oCC->getID() == 103 || $oCC->getID() == 200) { $seperator = "."; }
+		else { $seperator = ","; }
+		$sPrice = str_replace("{PRICE}", number_format($amount / 100, $oCC->getDecimals(), $seperator, ""), $sPrice);
 
 		return $sPrice;
 	}

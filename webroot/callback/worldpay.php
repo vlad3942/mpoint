@@ -28,7 +28,10 @@ header("Content-Type: text/plain");
 
 $obj_XML = simplexml_load_string($HTTP_RAW_POST_DATA);
 
-$obj_TxnInfo = TxnInfo::produceInfo($obj_XML->notify->orderStatusEvent["orderCode"], $_OBJ_DB);
+$id = Callback::getTxnIDFromOrderNo($_OBJ_DB, $obj_XML->notify->orderStatusEvent["orderCode"], Constants::iWORLDPAY_PSP);
+if ($id == -1) { $id = (integer) $obj_XML->notify->orderStatusEvent["orderCode"]; }
+
+$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
 
 // Intialise Text Translation Object
 $_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");

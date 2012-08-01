@@ -137,7 +137,7 @@ class CreditCard extends EndUserAccount
 				}
 				else { $sName = $RS["NAME"]; }
 				// Construct XML Document with card data
-				$xml .= '<item id="'. $RS["ID"] .'" pspid="'. $RS["PSPID"] .'">';
+				$xml .= '<item id="'. $RS["ID"] .'" type-id="'. $RS["ID"] .'" pspid="'. $RS["PSPID"] .'">';
 				$xml .= '<name>'. htmlspecialchars($sName, ENT_NOQUOTES) .'</name>';
 				$xml .= '<logo-width>'. $iWidth .'</logo-width>';
 				$xml .= '<logo-height>'. $iHeight .'</logo-height>';

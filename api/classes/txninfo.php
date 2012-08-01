@@ -477,7 +477,7 @@ class TxnInfo
 		case ($obj instanceof TxnInfo):	// Instantiate from array of new Transaction Information
 			// Use data from provided Data Object for all unspecified values
 			if (array_key_exists("typeid", $misc) === false) { $misc["typeid"] = $obj->getTypeID(); }
-			if (array_key_exists("client_config", $misc) === false) { $misc["client_config"] = $obj->getClientConfig(); }
+			if (array_key_exists("client-config", $misc) === false) { $misc["client-config"] = $obj->getClientConfig(); }
 			if (array_key_exists("amount", $misc) === false) { $misc["amount"] = $obj->getAmount(); }
 			if (array_key_exists("orderid", $misc) === false) { $misc["orderid"] = $obj->getOrderID(); }
 			if (array_key_exists("mobile", $misc) === false) { $misc["mobile"] = $obj->getMobile(); }
@@ -497,7 +497,7 @@ class TxnInfo
 			if (array_key_exists("markup", $misc) === false) { $misc["markup"] = $obj->getMarkupLanguage(); }
 			if (array_key_exists("auto-store-card", $misc) === false) { $misc["auto-store-card"] = false; }
 			
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client_config"], $misc["amount"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["amount"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"]);
 			break;
 		case ($obj instanceof ClientConfig):	// Instantiate from array of Client Input
 			if (array_key_exists("email", $misc) === false) { $misc["email"] = ""; }

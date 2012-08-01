@@ -23,7 +23,18 @@ require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for the WorldPay component
 require_once(sCLASS_PATH ."/worldpay.php");
 
+// Require Business logic for the Select Credit Card component
+require_once(sCLASS_PATH ."/credit_card.php");
+
 header("Content-Type: text/plain");
+
+$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
+$obj_XML = simpledom_load_string($obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount() ) );
+$aCards = array();
+foreach ($obj_XML->children() as $obj_Elem)
+{
+	if ($obj_Elem["pspid"] == Constants::iWORLDPAY_PSP) { $aCards[] = $obj_Elem["type-id"]; }
+}
 
 $obj_mPoint = new WorldPay($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
 
@@ -34,7 +45,7 @@ $aHTTP_CONN_INFO["worldpay"]["password"] = $aLogin["password"];
 
 $obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["worldpay"]);
 
-$obj_XML = $obj_mPoint->initialize($obj_ConnInfo, $_POST['merchant-code'], $_POST['installation-id'], $_POST['currency'], $obj_mPoint->getCardName($_POST['cardid']) );
+$obj_XML = $obj_mPoint->initialize($obj_ConnInfo, $_POST['merchant-code'], $_POST['installation-id'], $_POST['currency'], $aCards);
 
 $url = $obj_XML->reply->orderStatus->reference ."&preferredPaymentMethod=". $obj_mPoint->getCardName($_POST['cardid']) ."&language=". sLANG;
 $url .= "&successURL=". urlencode("http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?". session_name() ."=". session_id() );
@@ -55,8 +66,8 @@ foreach ($_SERVER as $key => $val)
 		$h .= $k .": ". $val .HTTPClient::CRLF;
 	}
 }
-
 /* ----- Construct Client HTTP Header End ----- */
+/*
 $obj_ConnInfo = HTTPConnInfo::produceConnInfo($url);
 $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
 $obj_HTTP->connect();
@@ -82,6 +93,6 @@ default:	// Error
 	break;
 }
 $obj_HTTP->disConnect();
-
+*/
 header("location: ". $url);
 ?>

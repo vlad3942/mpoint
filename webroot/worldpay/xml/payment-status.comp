@@ -1,0 +1,4 @@
+<wpdisplay result=desc>
+<wpdisplay result=all_items itemtag=messageItem contents=itemtemplate>
+	<status code="<wpdisplay messageItem=message-reparse>" />
+</wpdisplay>

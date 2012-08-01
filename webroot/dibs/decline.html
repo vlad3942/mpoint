@@ -141,499 +141,528 @@ switch(cgi.language)
 // DSB WildCard
 if (cgi.accountid = 100020 || cgi.accountid = 100021)
 {
+	background_color := 'transparent';
 	border_color := '#7f5ca9';
 	text_color := '#fff';
 }
 // DSB Ticket
 else
 {
+	background_color := '#eef2f0';
 	border_color := '#80C435';
 	text_color := '#000';
 }
 /* ========== App Specific Customizations End ========== */
-</PML_SCRIPT>
-<?xml version="1.0" encoding="ISO-8859-15"?>
-<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" PML_xml:lang="cgi.lang">
-<head>
-	<title><PML_VAL>title</PML_VAL></title>
-	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15" />
-	<meta http-equiv="Cache-Control" content="max-age=86400" />
-	<meta http-equiv="Content-Style-Type" content="text/css" />
-	<style type="text/css">
-		/* ========== Tag Classes Start ========== */
-		body
-		{
-			margin: 5px 5px 5px 5px;
-		}
-		body, table
-		{
-			background-color: transparent;
-			text-align: left;
-		}
-		body, table, div
-		{
-			font-size: 1em;
-			font-family: "Trebuchet MS",arial,sans-serif;
-			color: <PML_VAL>text_color</PML_VAL>;
-		}
-		
-		h1
-		{
-			font-size: 130%;
-			white-space: nowrap;
-			text-align: center;
-			color: <PML_VAL>text_color</PML_VAL>;
-		}
-		
-		form, table
-		{
-			margin: 0px 0px 0px 0px;
-			padding: 0px 0px 0px 0px;
-		}
-		
-		a
-		{
-			color: blue;
-			text-decoration: none;
-		}
-		
-		a:hover
-		{
-			text-decoration: underline;
-		}
-		
-		input.number
-		{
-			-wap-input-format: '*N';
-		}
-		ul, ul li
-		{
-			padding: 0;
-			margin: 0;
-		}
-		ul li
-		{
-			margin-left: 1em;
-		}
-		/* ========== Tag Classes End ========== */
-		
-		/* ========== mPoint Classes Start ========== */
-		.mPoint_Label
-		{
-			font-weight: bold;
-			padding-right: 0.5em;
-			padding-top: 0.3em;
-			white-space: nowrap;
-		}
-		
-		.mPoint_Info
-		{
-			font-weight: normal;
-			color: <PML_VAL>text_color</PML_VAL>;
-			text-align: left;
-			padding: 0px;
-			margin: 0px;	
-		}
-		
-		.mPoint_Help
-		{
-			margin-left: 15px;
-		}
-		
-		.mPoint_Status
-		{
-			margin-left: 10px;
-			font-size: 90%;
-			color: red;
-			font-style: italic;
-			padding-top: 0.5em;
-			padding-bottom: 0.5em;
-		}
-		
-		td.mPoint_Number
-		{
-			padding-right: 0.5em;
-			text-align: right;
-			vertical-align: bottom;
-			white-space: nowrap;
-		}
-		
-		tr.mPoint_Even, div.mPoint_Even
-		{
-			color: <PML_VAL>text_color</PML_VAL>;
-		}
-		input.mPoint_Even_Card_Button
-		{
-			border-width: 0px;
-			border-style: none;
-			background-color: #eef2f0;
-			border-color: #fff;
-			color: <PML_VAL>text_color</PML_VAL>;
-			text-decoration: underline;
-			margin: 0px 0px 0px 0px;
-			padding: 0px 0px 2px 0px;
-		}
-		tr.mPoint_Uneven, div.mPoint_Uneven
-		{
-			background-color: <PML_VAL>text_color</PML_VAL>045;
-		}
-		input.mPoint_Uneven_Card_Button
-		{
-			border-width: 0px;
-			border-style: none;
-			background-color: <PML_VAL>text_color</PML_VAL>045;
-			border-color: <PML_VAL>text_color</PML_VAL>045;
-			color: #fff;
-			text-decoration: underline;
-			margin: 0px 0px 0px 0px;
-			padding: 0px 0px 2px 0px;
-		}
-		
-		input.mPoint_Button
-		{
-			font-size: 1em;
-			font-weight: bold;
-			color: #000;
-		}
-		input.mPoint_Card_Button
-		{
-			font-size: 1em;
-			border-width: 0px;
-			border-style: none;
-			background-color: #eef2f0;
-			border-color: #fff;
-			color: blue;
-			text-decoration: underline;
-			margin: 0px 0px 0px 0px;
-			padding: 0px 0px 2px 0px;
-		}
-		input.mPoint_Card_Button:hover
-		{
-			cursor: pointer; cursor: hand;
-		}
-		
-		div.mPoint_Card
-		{
-		}
-		
-		div.mPoint_Account
-		{
-			width: 100%;
-		}
-		div.mPoint_Account
-		{
-			width: 100%;
-			border-bottom-style: dashed;
-			border-color: <PML_VAL>border_color</PML_VAL>;
-			border-width: 2px;
-		}
-		div.mPoint_Account input.mPoint_Card_Button
-		{
-			color: <PML_VAL>text_color</PML_VAL>;
-			font-weight: bold;
-		}
-		/* ========== mPoint Classes Start ========== */
-		
-		/* ========== ID Classes Start ========== */
-		table#products tr td
-		{
-			padding-left: 3px;
-			padding-top: 3px;
-		}
-		
-		table#receipt, div#top-up div.mPoint_Info
-		{
-			margin-top: 0.5em;
-			margin-bottom: 0.5em;
-		}
-		table#receipt, table#products tr.mPoint_Uneven
-		{
-			color: <PML_VAL>text_color</PML_VAL>;
-		}
-		
-		div#logo, div#progress, div#mPoint, div#status, div#top-up div#close
-		{
-			text-align: center;
-		}
-		div#logo
-		{
-			margin-right: 5px;
-		}
-		
-		div#status table tr td
-		{
-			vertical-align: middle;
-			padding-left: 0.5em;
-		}
-		
-		div#terms
-		{
-			white-space: pre;
-		}
-		
-		div#delivery, div#email, div#cardinfo, div#prepaid, div#accountinfo, div#my-account table
-		{
 
-		}
-		div#delivery, div#email, div#cardinfo, div#prepaid, div#accountinfo
-		{
-			padding-left: 3px;
-			padding-bottom: 3px;
-		}
-		
-		div#shipping div table tr td
-		{
-			padding-top: 3px;
-			padding-left: 3px;
-		}
-		
-		div#cards, div#cardinfo, table#receipt
-		{
-			padding: 0px 10px 0px 10px;
-			border: solid <PML_VAL>border_color</PML_VAL> 2px;
-			-moz-border-radius: 10px;
-			-webkit-border-radius: 10px;
-			border-radius: 10px;
-		}
-		
-		div#my-account
-		{
-		}
-		div#my-account div#prepaid div, div#my-account div#prepaid table, div#my-account div#cardinfo div, div#my-account div#cardinfo table, div#my-account div#cardinfo table * .mPoint_Info
-		{
-			color: <PML_VAL>text_color</PML_VAL>;
-		}
-		div#my-account .passive
-		{
-			color: #708090;
-		}
-		div#my-account a#top-up
-		{
-			color: red;
-		}
-		div#my-account div#cardinfo, div#my-account div#accountinfo, div#email
-		{
-			margin-bottom: 5px;
-		}
-		div#my-account div#password
-		{
-			padding-bottom: 5px;
-			border-top-style: dashed;
-			border-color: <PML_VAL>border_color</PML_VAL>;
-			border-width: 2px;
-		}
-		
-		div#price
-		{
-			margin-left: 15px;
-			padding-bottom: 0.5em;
-		}
-		div#outer-border
-		{
+/* ========== Platform Specific Customizations Start ========== */
+// iPhone
+if (cgi.accountid = 100005 || cgi.accountid = 100013 || cgi.accountid = 100020 || cgi.accountid = 100021)
+{
+	input_type := 'text';
+}
+// Android
+else { input_type := 'number'; }
+/* ========== Platform Specific Customizations End ========== */
+</PML_SCRIPT>
+<PML_IF COND="cgi.accountid = 100007">
+	<?xml version="1.0" encoding="UTF-8"?>
+	<root>
+		<PML_SWITCH EXPR="auth.reason">
+			<PML_CASE VALUE="0"><status code="2010"><PML_VAL>auth.message</PML_VAL> (<PML_VAL>auth.reason</PML_VAL>)</status></PML_CASE>
+			<PML_CASE VALUE="1"><status code="1099"><PML_VAL>auth.message</PML_VAL> (<PML_VAL>auth.reason</PML_VAL>)</status></PML_CASE>
+			<PML_CASE VALUE="2"><status code="1099"><PML_VAL>auth.message</PML_VAL> (<PML_VAL>auth.reason</PML_VAL>)</status></PML_CASE>
+			<PML_CASE VALUE="3"><status code="1099"><PML_VAL>auth.message</PML_VAL> (<PML_VAL>auth.reason</PML_VAL>)</status></PML_CASE>
+			<PML_CASE VALUE="4"><status code="1003"><PML_VAL>auth.message</PML_VAL> (<PML_VAL>auth.reason</PML_VAL>)</status></PML_CASE>
+			<PML_CASE VALUE="5"><status code="1005"><PML_VAL>auth.message</PML_VAL> (<PML_VAL>auth.reason</PML_VAL>)</status></PML_CASE>
+			<PML_CASE VALUE="6"><status code="2010"><PML_VAL>auth.message</PML_VAL> (<PML_VAL>auth.reason</PML_VAL>)</status></PML_CASE>
+			<PML_CASE VALUE="7"><status code="1099"><PML_VAL>auth.message</PML_VAL> (<PML_VAL>auth.reason</PML_VAL>)</status></PML_CASE>
+			<PML_CASE VALUE="8"><status code="1099"><PML_VAL>auth.message</PML_VAL> (<PML_VAL>auth.reason</PML_VAL>)</status></PML_CASE>
+			<PML_CASE VALUE="9"><status code="1009"><PML_VAL>auth.message</PML_VAL> (<PML_VAL>auth.reason</PML_VAL>)</status></PML_CASE>
+			<PML_CASE VALUE="10"><status code="1005"><PML_VAL>auth.message</PML_VAL> (<PML_VAL>auth.reason</PML_VAL>)</status></PML_CASE>
+			<PML_DEFAULT><status code="1099" /><PML_VAL>auth.message</PML_VAL> (<PML_VAL>auth.reason</PML_VAL>)</status></PML_DEFAULT>
+		</PML_SWITCH>
+	</root>
+</PML_IF>
+<PML_ELSE>
+	<?xml version="1.0" encoding="ISO-8859-15"?>
+	<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
+	<html xmlns="http://www.w3.org/1999/xhtml" PML_xml:lang="cgi.lang">
+	<head>
+		<title><PML_VAL>title</PML_VAL></title>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15" />
+		<meta http-equiv="Cache-Control" content="max-age=86400" />
+		<meta http-equiv="Content-Style-Type" content="text/css" />
+		<style type="text/css">
+			/* ========== Tag Classes Start ========== */
+			body
+			{
+				margin: 5px 5px 5px 5px;
+			}
+			body, table
+			{
+				background-color: <PML_VAL>background_color</PML_VAL>;
+				text-align: left;
+			}
+			body, table, div
+			{
+				font-size: 1em;
+				font-family: "Trebuchet MS",arial,sans-serif;
+				color: <PML_VAL>text_color</PML_VAL>;
+			}
 			
-		}
-		div#info div#submit
-		{
-			margin-left: 0px;
-		}
-		div#info, div#submit, div#link, div#selected-card, div#store-card
-		{
-			margin-left: 10px;
-		}
-		/* ========== ID Classes End ========== */
-	</style>
-</head>
-<body>
-	<div id="progress" class="mPoint_Info"><PML_VAL>progress</PML_VAL></div>
+			h1
+			{
+				font-size: 130%;
+				white-space: nowrap;
+				text-align: center;
+				color: <PML_VAL>text_color</PML_VAL>;
+			}
+			
+			form, table
+			{
+				margin: 0px 0px 0px 0px;
+				padding: 0px 0px 0px 0px;
+			}
+			
+			a
+			{
+				color: blue;
+				text-decoration: none;
+			}
+			
+			a:hover
+			{
+				text-decoration: underline;
+			}
+			
+			input.number
+			{
+				-wap-input-format: '*N';
+			}
+			ul, ul li
+			{
+				padding: 0;
+				margin: 0;
+			}
+			ul li
+			{
+				margin-left: 1em;
+			}
+			/* ========== Tag Classes End ========== */
+			
+			/* ========== mPoint Classes Start ========== */
+			.mPoint_Label
+			{
+				font-weight: bold;
+				padding-right: 0.5em;
+				padding-top: 0.3em;
+				white-space: nowrap;
+			}
+			
+			.mPoint_Info
+			{
+				font-weight: normal;
+				color: <PML_VAL>text_color</PML_VAL>;
+				text-align: left;
+				padding: 0px;
+				margin: 0px;	
+			}
+			
+			.mPoint_Help
+			{
+				margin-left: 15px;
+			}
+			
+			.mPoint_Status
+			{
+				margin-left: 10px;
+				font-size: 90%;
+				color: red;
+				font-style: italic;
+				padding-top: 0.5em;
+				padding-bottom: 0.5em;
+			}
+			
+			td.mPoint_Number
+			{
+				padding-right: 0.5em;
+				text-align: right;
+				vertical-align: bottom;
+				white-space: nowrap;
+			}
+			
+			tr.mPoint_Even, div.mPoint_Even
+			{
+				color: <PML_VAL>text_color</PML_VAL>;
+			}
+			input.mPoint_Even_Card_Button
+			{
+				border-width: 0px;
+				border-style: none;
+				border-color: #fff;
+				color: <PML_VAL>text_color</PML_VAL>;
+				text-decoration: underline;
+				margin: 0px 0px 0px 0px;
+				padding: 0px 0px 2px 0px;
+			}
+			tr.mPoint_Uneven, div.mPoint_Uneven
+			{
+				background-color: <PML_VAL>background_color</PML_VAL>;
+			}
+			input.mPoint_Uneven_Card_Button
+			{
+				border-width: 0px;
+				border-style: none;
+				border-color: <PML_VAL>border_color</PML_VAL>;
+				color: #fff;
+				text-decoration: underline;
+				margin: 0px 0px 0px 0px;
+				padding: 0px 0px 2px 0px;
+			}
+			
+			input.mPoint_Button
+			{
+				font-size: 1em;
+				font-weight: bold;
+				color: #000;
+			}
+			input.mPoint_Card_Button
+			{
+				font-size: 1em;
+				border-width: 0px;
+				border-style: none;
+				border-color: #fff;
+				color: blue;
+				text-decoration: underline;
+				margin: 0px 0px 0px 0px;
+				padding: 0px 0px 2px 0px;
+			}
+			input.mPoint_Card_Button:hover
+			{
+				cursor: pointer; cursor: hand;
+			}
+			
+			div.mPoint_Card
+			{
+			}
+			
+			div.mPoint_Account
+			{
+				width: 100%;
+			}
+			div.mPoint_Account
+			{
+				width: 100%;
+				border-bottom-style: dashed;
+				border-color: <PML_VAL>border_color</PML_VAL>;
+				border-width: 2px;
+			}
+			div.mPoint_Account input.mPoint_Card_Button
+			{
+				color: <PML_VAL>text_color</PML_VAL>;
+				font-weight: bold;
+			}
+			/* ========== mPoint Classes Start ========== */
+			
+			/* ========== ID Classes Start ========== */
+			table#products tr td
+			{
+				padding-left: 3px;
+				padding-top: 3px;
+			}
+			
+			table#receipt, div#top-up div.mPoint_Info
+			{
+				margin-top: 0.5em;
+				margin-bottom: 0.5em;
+			}
+			table#receipt, table#products tr.mPoint_Uneven
+			{
+				color: <PML_VAL>text_color</PML_VAL>;
+			}
+			
+			div#logo, div#progress, div#mPoint, div#status, div#top-up div#close
+			{
+				text-align: center;
+			}
+			div#logo
+			{
+				margin-right: 5px;
+			}
+			
+			div#status table tr td
+			{
+				vertical-align: middle;
+				padding-left: 0.5em;
+			}
+			
+			div#terms
+			{
+				white-space: pre;
+			}
+			
+			div#delivery, div#email, div#cardinfo, div#prepaid, div#accountinfo, div#my-account table
+			{
 	
-	<div class="mPoint_Status">
-	<PML_SWITCH EXPR="auth.reason">
-		<PML_CASE VALUE="0"><PML_VAL>error_0</PML_VAL></PML_CASE>
-		<PML_CASE VALUE="1"><PML_VAL>error_1</PML_VAL></PML_CASE>
-		<PML_CASE VALUE="2"><PML_VAL>error_2</PML_VAL></PML_CASE>
-		<PML_CASE VALUE="3"><PML_VAL>error_3</PML_VAL></PML_CASE>
-		<PML_CASE VALUE="4"><PML_VAL>error_4</PML_VAL></PML_CASE>
-		<PML_CASE VALUE="5"><PML_VAL>error_5</PML_VAL></PML_CASE>
-		<PML_CASE VALUE="6"><PML_VAL>error_6</PML_VAL></PML_CASE>
-		<PML_CASE VALUE="7"><PML_VAL>error_7</PML_VAL></PML_CASE>
-		<PML_CASE VALUE="8"><PML_VAL>error_8</PML_VAL></PML_CASE>
-		<PML_CASE VALUE="9"><PML_VAL>error_9</PML_VAL></PML_CASE>
-		<PML_CASE VALUE="10"><PML_VAL>error_10</PML_VAL></PML_CASE>
-		<PML_DEFAULT><PML_VAL>error_unknown</PML_VAL></PML_DEFAULT>
-	</PML_SWITCH>
-	</div>
-	
-	<form action="auth.pml" method="post">
-		<div>
-			<PML_IF COND="cgi.test > 0">
-				<input type="hidden" name="test" PML_value="cgi.test" />
-			</PML_IF>
-			<!-- DIBS Required Data -->
-			<input type="hidden" name="callbackurl" PML_value="string.HTMLencode(cgi.callbackurl)" />
-			<input type="hidden" name="accepturl" PML_value="string.HTMLencode(cgi.accepturl)" />
-			<input type="hidden" name="amount" PML_value="cgi.amount" />
-			<input type="hidden" name="currency" PML_value="cgi.currency" />
-			<input type="hidden" name="orderid" PML_value="cgi.orderid" />
-			<input type="hidden" name="fullreply" value="true" />
-			<PML_IF COND="cgi.capturenow = 'true'">
-				<input type="hidden" name="capturenow" PML_value="cgi.capturenow" />
-			</PML_IF>
-			<PML_IF COND="cgi.accounts > 0">
-				<input type="hidden" name="account" PML_value="cgi.accounts" />
-			</PML_IF>			
-			<input type="hidden" name="lang" PML_value="cgi.lang" />
-			<input type="hidden" name="paytype" PML_value="cgi.paytype" />
-			<!-- mPoint Required Data -->
-			<input type="hidden" name="width" PML_value="cgi.width" />
-			<input type="hidden" name="height" PML_value="cgi.height" />
-			<input type="hidden" name="format" PML_value="cgi.format" />
-			<input type="hidden" name="PHPSESSID" PML_value="cgi.PHPSESSID" />
-			<input type="hidden" name="language" PML_value="cgi.language" />
-			<input type="hidden" name="cardid" PML_value="cgi.cardid" />
-			<input type="hidden" name="mpointid" PML_value="cgi.mpointid" />
-			<!-- Current transaction is an Account Top-Up and a previous transaction is in progress -->
-			<PML_IF COND="cgi.org_mpointid > 0">
-				<input type="hidden" name="org_mpointid" PML_value="cgi.org_mpointid" />
-			</PML_IF>
-			<input type="hidden" name="euaid" PML_value="cgi.euaid" />
+			}
+			div#delivery, div#email, div#cardinfo, div#prepaid, div#accountinfo
+			{
+				padding-left: 3px;
+				padding-bottom: 3px;
+			}
+			
+			div#shipping div table tr td
+			{
+				padding-top: 3px;
+				padding-left: 3px;
+			}
+			
+			div#cards, div#cardinfo, table#receipt
+			{
+				padding: 0px 10px 0px 10px;
+				border: solid <PML_VAL>border_color</PML_VAL> 2px;
+				-moz-border-radius: 10px;
+				-webkit-border-radius: 10px;
+				border-radius: 10px;
+			}
+			
+			div#my-account
+			{
+			}
+			div#my-account div#prepaid div, div#my-account div#prepaid table, div#my-account div#cardinfo div, div#my-account div#cardinfo table, div#my-account div#cardinfo table * .mPoint_Info
+			{
+				color: <PML_VAL>text_color</PML_VAL>;
+			}
+			div#my-account .passive
+			{
+				color: #708090;
+			}
+			div#my-account a#top-up
+			{
+				color: red;
+			}
+			div#my-account div#cardinfo, div#my-account div#accountinfo, div#email
+			{
+				margin-bottom: 5px;
+			}
+			div#my-account div#password
+			{
+				padding-bottom: 5px;
+				border-top-style: dashed;
+				border-color: <PML_VAL>border_color</PML_VAL>;
+				border-width: 2px;
+			}
+			
+			div#price
+			{
+				margin-left: 15px;
+				padding-bottom: 0.5em;
+			}
+			div#outer-border
+			{
+				
+			}
+			div#info div#submit
+			{
+				margin-left: 0px;
+			}
+			div#info, div#submit, div#link, div#selected-card, div#store-card
+			{
+				margin-left: 10px;
+			}
+			/* ========== ID Classes End ========== */
+		</style>
+	</head>
+	<body>
+		<div id="progress" class="mPoint_Info"><PML_VAL>progress</PML_VAL></div>
+		
+		<div class="mPoint_Status">
+		<PML_SWITCH EXPR="auth.reason">
+			<PML_CASE VALUE="0"><PML_VAL>error_0</PML_VAL></PML_CASE>
+			<PML_CASE VALUE="1"><PML_VAL>error_1</PML_VAL></PML_CASE>
+			<PML_CASE VALUE="2"><PML_VAL>error_2</PML_VAL></PML_CASE>
+			<PML_CASE VALUE="3"><PML_VAL>error_3</PML_VAL></PML_CASE>
+			<PML_CASE VALUE="4"><PML_VAL>error_4</PML_VAL></PML_CASE>
+			<PML_CASE VALUE="5"><PML_VAL>error_5</PML_VAL></PML_CASE>
+			<PML_CASE VALUE="6"><PML_VAL>error_6</PML_VAL></PML_CASE>
+			<PML_CASE VALUE="7"><PML_VAL>error_7</PML_VAL></PML_CASE>
+			<PML_CASE VALUE="8"><PML_VAL>error_8</PML_VAL></PML_CASE>
+			<PML_CASE VALUE="9"><PML_VAL>error_9</PML_VAL></PML_CASE>
+			<PML_CASE VALUE="10"><PML_VAL>error_10</PML_VAL></PML_CASE>
+			<PML_DEFAULT><PML_VAL>error_unknown</PML_VAL></PML_DEFAULT>
+		</PML_SWITCH>
+		</div>
+		
+		<form action="auth.pml" method="post">
+			<div>
+				<PML_IF COND="cgi.test > 0">
+					<input type="hidden" name="test" PML_value="cgi.test" />
+				</PML_IF>
+				<!-- DIBS Required Data -->
+				<input type="hidden" name="callbackurl" PML_value="string.HTMLencode(cgi.callbackurl)" />
+				<input type="hidden" name="accepturl" PML_value="string.HTMLencode(cgi.accepturl)" />
+				<input type="hidden" name="amount" PML_value="cgi.amount" />
+				<input type="hidden" name="currency" PML_value="cgi.currency" />
+				<input type="hidden" name="orderid" PML_value="cgi.orderid" />
+				<input type="hidden" name="fullreply" value="true" />
+				<PML_IF COND="cgi.capturenow = 'true'">
+					<input type="hidden" name="capturenow" PML_value="cgi.capturenow" />
+				</PML_IF>
+				<PML_IF COND="cgi.accounts > 0">
+					<input type="hidden" name="account" PML_value="cgi.accounts" />
+				</PML_IF>			
+				<input type="hidden" name="lang" PML_value="cgi.lang" />
+				<input type="hidden" name="paytype" PML_value="cgi.paytype" />
+				<!-- mPoint Required Data -->
+				<input type="hidden" name="width" PML_value="cgi.width" />
+				<input type="hidden" name="height" PML_value="cgi.height" />
+				<input type="hidden" name="format" PML_value="cgi.format" />
+				<input type="hidden" name="PHPSESSID" PML_value="cgi.PHPSESSID" />
+				<input type="hidden" name="language" PML_value="cgi.language" />
+				<input type="hidden" name="cardid" PML_value="cgi.cardid" />
+				<input type="hidden" name="mpointid" PML_value="cgi.mpointid" />
+				<!-- Current transaction is an Account Top-Up and a previous transaction is in progress -->
+				<PML_IF COND="cgi.org_mpointid > 0">
+					<input type="hidden" name="org_mpointid" PML_value="cgi.org_mpointid" />
+				</PML_IF>
+				<input type="hidden" name="euaid" PML_value="cgi.euaid" />
+				<!-- Store Credit Card -->
+				<PML_IF COND="cgi.store_card > 0">
+					<input type="hidden" name="store_card" PML_value="cgi.store_card" />
+					<input type="hidden" name="auto_store_card" PML_value="cgi.auto_store_card" />
+				</PML_IF>
+				<!-- Dynamic Page Data -->
+				<input type="hidden" name="clientid" PML_value="cgi.clientid" />
+				<input type="hidden" name="client" PML_value="cgi.client" />
+				<input type="hidden" name="accountid" PML_value="cgi.accountid" />
+				<input type="hidden" name="mpoint_width" PML_value="cgi.mpoint_width" />
+				<input type="hidden" name="mpoint_height" PML_value="cgi.mpoint_height" />
+				<input type="hidden" name="sms_receipt" PML_value="cgi.sms_receipt" />
+				<input type="hidden" name="email_receipt" PML_value="cgi.email_receipt" />
+				<input type="hidden" name="email_url" PML_value="cgi.email_url" />
+				<input type="hidden" name="accept_url" PML_value="cgi.accept_url" />
+				<input type="hidden" name="mobile" PML_value="cgi.mobile" />
+				<input type="hidden" name="price" PML_value="cgi.price" />
+				<input type="hidden" name="card_width" PML_value="cgi.card_width" />
+				<input type="hidden" name="card_heigth" PML_value="cgi.card_heigth" />
+				<PML_SCRIPT>
+				// Transfer Custom Variables
+				foreach(i ; cgi)
+				{
+					if (string.substring(cgi[i], 0, 4) = 'var_')
+					{
+						out.put('<input type="hidden" name="client_vars_names_'@ i @'" value="'@ cgi[i] @'" />');
+						out.put('<input type="hidden" name="client_vars_data_'@ i @'" value="'@ cgi[i-7] @'" />');
+					}
+				}
+				</PML_SCRIPT>
+			</div>
+			<div id="selected-card">
+				<span class="mPoint_Label"><PML_VAL>label_selected_card</PML_VAL>:</span>
+				<table>
+				<tr>
+				<PML_SWITCH EXPR="cgi.cardid">
+					<PML_CASE VALUE="1">
+						<td><img src="images/amex.jpg" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- American Express -" /></td>
+						<td colspan="3" class="status">&nbsp;American Express</td>
+					</PML_CASE>
+					<PML_CASE VALUE="2">
+						<td><img src="images/dankort.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Dankort -" /></td>
+						<td colspan="3" class="status">&nbsp;Dankort</td>
+					</PML_CASE>
+					<PML_CASE VALUE="3">
+						<td><img src="images/diners.jpg" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Diners Club -" /></td>
+						<td colspan="3" class="status">&nbsp;Diners Club</td>
+					</PML_CASE>
+					<PML_CASE VALUE="4">
+						<td><img src="images/mastercard.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- EuroCard -" /></td>
+						<td colspan="3" class="status">&nbsp;EuroCard</td>
+					</PML_CASE>
+					<PML_CASE VALUE="5">
+						<td><img src="images/jcb.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- JCB -" /></td>
+						<td colspan="3" class="status">&nbsp;JCB</td>
+					</PML_CASE>
+					<PML_CASE VALUE="6">
+						<td><img src="images/maestro.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Maestro -" /></td>
+						<td colspan="3" class="status">&nbsp;Maestro</td>
+					</PML_CASE>
+					<PML_CASE VALUE="7">
+						<td><img src="images/mastercard.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- MasterCard -" /></td>
+						<td colspan="3" class="status">&nbsp;MasterCard</td>
+					</PML_CASE>
+					<PML_CASE VALUE="8">
+						<td><img src="images/visa.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- VISA -" /></td>
+						<td colspan="3" class="status">&nbsp;VISA</td>
+					</PML_CASE>
+					<PML_CASE VALUE="9">
+						<td><img src="images/visa_electron.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- VISA Electron -" /></td>
+						<td colspan="3" class="status">&nbsp;VISA Electron</td>
+					</PML_CASE>
+				</PML_SWITCH>
+				</tr>
+				</table>
+			</div>
+			<!-- Price -->
+			<div id="price">
+				<span class="mPoint_Label"><PML_VAL>label_price</PML_VAL>:</span>
+				<PML_VAL>cgi.price</PML_VAL>
+			</div>
+			<!-- Credit Card Information -->
+			<div class="mPoint_Help"><PML_VAL>info</PML_VAL></div>
+			<div id="cardinfo">
+				<div class="mPoint_Label">
+					<PML_VAL>label_card_number</PML_VAL>:<br />
+					<PML_IF COND="sess_cardno > 0">
+						<input PML_type="input_type" name="cardno" maxlength="19" PML_value="string.precision(sess_cardno, 0)" size="19" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+					</PML_IF>
+					<PML_ELSE>
+						<input PML_type="input_type" name="cardno" maxlength="19" value="" size="19" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+					</PML_ELSE>
+				</div>
+				<div class="mPoint_Label">
+					<PML_VAL>label_expiry</PML_VAL> <span class="mPoint_Info">(<PML_VAL>expiry_month</PML_VAL>/<PML_VAL>expiry_year</PML_VAL>)</span>:<br />
+					<PML_IF COND="sess_expmon > 0">
+						<input PML_type="input_type" name="expmon" maxlength="2" PML_value="string.precision(sess_expmon, 0)" size="4" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+					</PML_IF>
+					<PML_ELSE>
+						<input PML_type="input_type" name="expmon" maxlength="2" value="" size="4" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+					</PML_ELSE>
+					&nbsp;/&nbsp;
+					<PML_IF COND="sess_expyear > 0">
+						<input PML_type="input_type" name="expyear" maxlength="2" PML_value="string.precision(sess_expyear, 0)" size="4" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+					</PML_IF>
+					<PML_ELSE>
+						<input PML_type="input_type" name="expyear" maxlength="2" value="" size="4" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+					</PML_ELSE>
+				</div>
+				<div class="mPoint_Label">
+					<PML_VAL>label_cvc</PML_VAL>:<br />
+					<PML_IF COND="sess_cvc > 0">
+						<input PML_type="input_type" name="cvc" maxlength="4" PML_value="string.precision(sess_cvc, 0)" size="6" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+					</PML_IF>
+					<PML_ELSE>
+						<input PML_type="input_type" name="cvc" maxlength="4" value="" size="6" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+					</PML_ELSE>
+				</div>
+				<div class="mPoint_Info"><PML_VAL>cvc_help</PML_VAL></div>
+			</div>
 			<!-- Store Credit Card -->
 			<PML_IF COND="cgi.store_card > 0">
-				<input type="hidden" name="store_card" PML_value="cgi.store_card" />
-				<input type="hidden" name="auto_store_card" PML_value="cgi.auto_store_card" />
+				<div id="store-card">
+					<PML_IF COND="cgi.auto_store_card = 'true">
+						<input type="checkbox" name="preauth" value="true" checked="true" />
+					</PML_IF>
+					<PML_ELSE>
+						<input type="checkbox" name="preauth" value="true" />
+					</PML_ELSE>
+					<PML_VAL>label_store</PML_VAL>
+				</div>
 			</PML_IF>
-			<!-- Dynamic Page Data -->
-			<input type="hidden" name="clientid" PML_value="cgi.clientid" />
-			<input type="hidden" name="client" PML_value="cgi.client" />
-			<input type="hidden" name="accountid" PML_value="cgi.accountid" />
-			<input type="hidden" name="mpoint_width" PML_value="cgi.mpoint_width" />
-			<input type="hidden" name="mpoint_height" PML_value="cgi.mpoint_height" />
-			<input type="hidden" name="sms_receipt" PML_value="cgi.sms_receipt" />
-			<input type="hidden" name="email_receipt" PML_value="cgi.email_receipt" />
-			<input type="hidden" name="email_url" PML_value="cgi.email_url" />
-			<input type="hidden" name="accept_url" PML_value="cgi.accept_url" />
-			<input type="hidden" name="mobile" PML_value="cgi.mobile" />
-			<input type="hidden" name="price" PML_value="cgi.price" />
-			<input type="hidden" name="card_width" PML_value="cgi.card_width" />
-			<input type="hidden" name="card_heigth" PML_value="cgi.card_heigth" />
-			<PML_SCRIPT>
-			// Transfer Custom Variables
-			foreach(i ; cgi)
-			{
-				if (string.substring(cgi[i], 0, 4) = 'var_')
-				{
-					out.put('<input type="hidden" name="client_vars_names_'@ i @'" value="'@ cgi[i] @'" />');
-					out.put('<input type="hidden" name="client_vars_data_'@ i @'" value="'@ cgi[i-7] @'" />');
-				}
-			}
-			</PML_SCRIPT>
-		</div>
-		<div id="selected-card">
-			<span class="mPoint_Label"><PML_VAL>label_selected_card</PML_VAL>:</span>
-			<table>
-			<tr>
-			<PML_SWITCH EXPR="cgi.cardid">
-				<PML_CASE VALUE="1">
-					<td><img src="images/amex.jpg" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- American Express -" /></td>
-					<td colspan="3" class="status">&nbsp;American Express</td>
-				</PML_CASE>
-				<PML_CASE VALUE="2">
-					<td><img src="images/dankort.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Dankort -" /></td>
-					<td colspan="3" class="status">&nbsp;Dankort</td>
-				</PML_CASE>
-				<PML_CASE VALUE="3">
-					<td><img src="images/diners.jpg" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Diners Club -" /></td>
-					<td colspan="3" class="status">&nbsp;Diners Club</td>
-				</PML_CASE>
-				<PML_CASE VALUE="4">
-					<td><img src="images/mastercard.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- EuroCard -" /></td>
-					<td colspan="3" class="status">&nbsp;EuroCard</td>
-				</PML_CASE>
-				<PML_CASE VALUE="5">
-					<td><img src="images/jcb.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- JCB -" /></td>
-					<td colspan="3" class="status">&nbsp;JCB</td>
-				</PML_CASE>
-				<PML_CASE VALUE="6">
-					<td><img src="images/maestro.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Maestro -" /></td>
-					<td colspan="3" class="status">&nbsp;Maestro</td>
-				</PML_CASE>
-				<PML_CASE VALUE="7">
-					<td><img src="images/mastercard.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- MasterCard -" /></td>
-					<td colspan="3" class="status">&nbsp;MasterCard</td>
-				</PML_CASE>
-				<PML_CASE VALUE="8">
-					<td><img src="images/visa.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- VISA -" /></td>
-					<td colspan="3" class="status">&nbsp;VISA</td>
-				</PML_CASE>
-				<PML_CASE VALUE="9">
-					<td><img src="images/visa_electron.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- VISA Electron -" /></td>
-					<td colspan="3" class="status">&nbsp;VISA Electron</td>
-				</PML_CASE>
-			</PML_SWITCH>
-			</tr>
-			</table>
-		</div>
-		<!-- Price -->
-		<div id="price">
-			<span class="mPoint_Label"><PML_VAL>label_price</PML_VAL>:</span>
-			<PML_VAL>cgi.price</PML_VAL>
-		</div>
-		<!-- Credit Card Information -->
-		<div class="mPoint_Help"><PML_VAL>info</PML_VAL></div>
-		<div id="cardinfo">
-			<div class="mPoint_Label">
-				<PML_VAL>label_card_number</PML_VAL>:<br />
-				<PML_IF COND="sess_cardno > 0">
-					<input type="number" name="cardno" maxlength="19" PML_value="string.precision(sess_cardno, 0)" size="19" style="-wap-input-format:'*N';" pattern="[0-9]*" />
-				</PML_IF>
-				<PML_ELSE>
-					<input type="number" name="cardno" maxlength="19" value="" size="19" style="-wap-input-format:'*N';" pattern="[0-9]*" />
-				</PML_ELSE>
+			<!-- Complete Payment -->
+			<div id="submit" style="text-align:center">
+				<input type="submit" PML_value="submit" class="mPoint_Button" />
 			</div>
-			<div class="mPoint_Label">
-				<PML_VAL>label_expiry</PML_VAL> <span class="mPoint_Info">(<PML_VAL>expiry_month</PML_VAL>/<PML_VAL>expiry_year</PML_VAL>)</span>:<br />
-				<PML_IF COND="sess_expmon > 0">
-					<input type="number" name="expmon" maxlength="2" PML_value="string.precision(sess_expmon, 0)" size="4" style="-wap-input-format:'*N';" pattern="[0-9]*" />
-				</PML_IF>
-				<PML_ELSE>
-					<input type="number" name="expmon" maxlength="2" value="" size="4" style="-wap-input-format:'*N';" pattern="[0-9]*" />
-				</PML_ELSE>
-				&nbsp;/&nbsp;
-				<PML_IF COND="sess_expyear > 0">
-					<input type="number" name="expyear" maxlength="2" PML_value="string.precision(sess_expyear, 0)" size="4" style="-wap-input-format:'*N';" pattern="[0-9]*" />
-				</PML_IF>
-				<PML_ELSE>
-					<input type="number" name="expyear" maxlength="2" value="" size="4" style="-wap-input-format:'*N';" pattern="[0-9]*" />
-				</PML_ELSE>
-			</div>
-			<div class="mPoint_Label">
-				<PML_VAL>label_cvc</PML_VAL>:<br />
-				<PML_IF COND="sess_cvc > 0">
-					<input type="number" name="cvc" maxlength="4" PML_value="string.precision(sess_cvc, 0)" size="6" style="-wap-input-format:'*N';" pattern="[0-9]*" />
-				</PML_IF>
-				<PML_ELSE>
-					<input type="number" name="cvc" maxlength="4" value="" size="6" style="-wap-input-format:'*N';" pattern="[0-9]*" />
-				</PML_ELSE>
-			</div>
-			<div class="mPoint_Info"><PML_VAL>cvc_help</PML_VAL></div>
-		</div>
-		<!-- Store Credit Card -->
-		<PML_IF COND="cgi.store_card > 0">
-			<div id="store-card">
-				<PML_IF COND="cgi.auto_store_card = 'true">
-					<input type="checkbox" name="preauth" value="true" checked="true" />
-				</PML_IF>
-				<PML_ELSE>
-					<input type="checkbox" name="preauth" value="true" />
-				</PML_ELSE>
-				<PML_VAL>label_store</PML_VAL>
-			</div>
-		</PML_IF>
-		<!-- Complete Payment -->
-		<div id="submit" style="text-align:center">
-			<input type="submit" PML_value="submit" class="mPoint_Button" />
-		</div>
-	</form>
-</body>
-</html>
-
+		</form>
+	</body>
+	</html>
+</PML_ELSE>

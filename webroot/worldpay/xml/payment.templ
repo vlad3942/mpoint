@@ -1,0 +1,25 @@
+<card-number>cardNoInput</card-number>
+<expiry-month>cardExp.month</expiry-month>
+<expiry-year>cardExp.year</expiry-year>
+<cvc>cardCVV</cvc>
+<name>name</name>
+<hidden-fields>
+<PaymentID><WPDISPLAY PAYMENT=payment_id></PaymentID>
+<cardNoJS></cardNoJS>
+<cardNoHidden><wpdisplay msg=payServ.param.hidden></cardNoHidden>
+<wpdisplay payment=cardStart-check contents=true>
+	<cardStart.day>1</cardStart.day>
+	<cardStart.time>00:00:00</cardStart.time>
+</wpdisplay>
+<wpdisplay payment=cardExpiry-check contents=true>
+	<cardExp.day>32</cardExp.day>
+	<cardExp.time>23:59:59</cardExp.time>
+</wpdisplay>
+<!-- just to satisfy the mandatory check for the cards that don't display expiry date like AURORE card -->
+<wpdisplay payment=cardExpiry-check contents=false>
+	<cardExp.day>9</cardExp.day>
+	<cardExp.month>9</cardExp.month>
+	<cardExp.year>9999</cardExp.year>
+</wpdisplay>
+<op-PMMakePayment><wpdisplay msg=card.makePayment.butt></op-PMMakePayment>
+</hidden-fields>

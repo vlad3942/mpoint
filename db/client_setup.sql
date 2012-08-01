@@ -69,3 +69,25 @@ UPDATE Client.CardAccess_Tbl SET pspid = 4 WHERE clientid = 10010 AND pspid = 2;
 DELETE FROM Client.CardAccess_Tbl WHERE clientid = 10010 AND cardid = 2;
 --INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10009, 11, 1);
 UPDATE Client.Keyword_tbl SET clientid = 10010, name = 'CPM' WHERE id = 11;
+
+
+UPDATE Client.Client_tbl SET name = 'Roenne Bio', username = 'CPMDemo', passwd = 'DEMOisNO_2', logourl = '', cssurl = 'http://roenne-bio.mretail.cellpointmobile.com/css/integra_mpoint.css', callbackurl = 'http://roenne-bio.mretail.cellpointmobile.com/mOrder/sys/mpoint.php', cancelurl = '', smsrcpt = false, emailrcpt = false, auto_capture = false, send_pspid = true, store_card = 3, iconurl = 'http://roenne-bio.mretail.cellpointmobile.com/img/mpoint_mycards.gif', mode = 0 WHERE id = 10012;
+UPDATE Client.Account_Tbl SET clientid = 10012, name = 'iPhone', mobile = NULL WHERE id = 100012;
+UPDATE Client.MerchantAccount_Tbl SET clientid = 10012, pspid = 1, name = 'CPMDemo' WHERE id = 7;
+UPDATE Client.MerchantAccount_Tbl SET clientid = 10012, pspid = 7, name = '2006082577772', username = 'ronnebio.dk', passwd = '4z7e3xo8!' WHERE id = 8;
+UPDATE Client.MerchantSubAccount_Tbl SET accountid = 100012, pspid = 1 WHERE id = 7;
+UPDATE Client.MerchantSubAccount_Tbl SET accountid = 100012, pspid = 7 WHERE id = 8;
+--UPDATE Client.MerchantSubAccount_Tbl SET accountid = 100012, pspid = 1 WHERE id = 13;
+UPDATE Client.CardAccess_Tbl SET pspid = 7 WHERE clientid = 10012 AND pspid = 2;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10012, 11, 1);
+UPDATE Client.Keyword_tbl SET clientid = 10012, name = 'CPM' WHERE id = 6;
+
+UPDATE Client.Client_Tbl SET name = 'Pizza Hut Corp', lang = 'gb' WHERE id = 10010;
+UPDATE Client.Client_Tbl SET name = 'Pizza Hut Francise', mode = 0, countryid = 103, logourl = NULL, cssurl = 'http://stage.bemoko.com/pizzahut/css/cellpoint.css', callbackurl = 'http://stage.bemoko.com/pizzahut/cellpoint', accepturl = 'http://stage.bemoko.com/pizzahut/orders/confirmation', lang = 'gb', smsrcpt = false, emailrcpt = false, send_pspid = false, iconurl = 'http://panorama.mretail.cellpointmobile.com/img/myaccount.gif' WHERE id = 10011;
+UPDATE Client.Account_Tbl SET clientid = 10011, name = 'Mobile Web' WHERE id = 100011;
+UPDATE Client.MerchantAccount_Tbl SET clientid = 10011, pspid = 4, name = 'PIZZAHUTECOMMBK', username = 'PIZZAHUTECOMMBK', passwd = '3Pjge5RTT1' WHERE id = 14;
+UPDATE Client.MerchantSubAccount_Tbl SET name = '282897', pspid = 4, accountid = 100011 WHERE id = 29;
+UPDATE Client.Keyword_Tbl SET name = 'BIOAPP' WHERE id IN (10, 6);
+UPDATE Client.Keyword_tbl SET name = 'CPM', clientid = 10011 WHERE id = 11;
+UPDATE Client.CardAccess_Tbl SET pspid = 4 WHERE clientid = 10011 AND cardid IN (6, 7, 8);
+DELETE FROM Client.CardAccess_Tbl WHERE clientid = 10011 AND pspid != 4;

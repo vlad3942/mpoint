@@ -37,7 +37,7 @@ define("sERROR_LOG", sLOG_PATH ."app_error_". date("Y-m-d") .".log");
  * Database settings for mPoint's database
  */
 $aDB_CONN_INFO["mpoint"]["host"] = "localhost";
-$aDB_CONN_INFO["mpoint"]["port"] = 5432;
+$aDB_CONN_INFO["mpoint"]["port"] = 5000;
 $aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["password"] = "hspzr735abl";
@@ -113,13 +113,27 @@ $aHTTP_CONN_INFO[100]["contenttype"] = "application/www-url-form-encoded";
 //$aHTTP_CONN_INFO[100]["username"] = "";
 //$aHTTP_CONN_INFO[100]["password"] = "";
 
+
+/**
+ * Connection info for connecting to DIBS
+ */
+$aHTTP_CONN_INFO["dibs"]["protocol"] = "https";
+$aHTTP_CONN_INFO["dibs"]["host"] = "payment.architrade.com";
+$aHTTP_CONN_INFO["dibs"]["port"] = 443;
+$aHTTP_CONN_INFO["dibs"]["timeout"] = 120;
+$aHTTP_CONN_INFO["dibs"]["path"] = "/shoppages/{account}/payment.pml";
+$aHTTP_CONN_INFO["dibs"]["method"] = "POST";
+$aHTTP_CONN_INFO["dibs"]["contenttype"] = "application/x-www-form-urlencoded";
+//$aHTTP_CONN_INFO["worldpay"]["username"] = ""; 
+//$aHTTP_CONN_INFO["dibs"]["password"] = "";
+
 /**
  * Connection info for connecting to WorldPay
  */
 $aHTTP_CONN_INFO["worldpay"]["protocol"] = "https";
 $aHTTP_CONN_INFO["worldpay"]["host"] = "secure.wp3.rbsworldpay.com";
 $aHTTP_CONN_INFO["worldpay"]["port"] = 443;
-$aHTTP_CONN_INFO["worldpay"]["timeout"] = 20;
+$aHTTP_CONN_INFO["worldpay"]["timeout"] = 120;
 $aHTTP_CONN_INFO["worldpay"]["path"] = "/jsp/merchant/xml/paymentService.jsp";
 $aHTTP_CONN_INFO["worldpay"]["method"] = "POST";
 $aHTTP_CONN_INFO["worldpay"]["contenttype"] = "text/xml";
@@ -132,7 +146,7 @@ $aHTTP_CONN_INFO["worldpay"]["password"] = "hspzr735abl";
 $aHTTP_CONN_INFO["payex"]["protocol"] = "https";
 $aHTTP_CONN_INFO["payex"]["host"] = "external.payex.com";
 $aHTTP_CONN_INFO["payex"]["port"] = 443;
-$aHTTP_CONN_INFO["payex"]["timeout"] = 20;
+$aHTTP_CONN_INFO["payex"]["timeout"] = 120;
 $aHTTP_CONN_INFO["payex"]["path"] = "/PxOrder/Pxorder.asmx?WSDL";
 $aHTTP_CONN_INFO["payex"]["method"] = "POST";
 $aHTTP_CONN_INFO["payex"]["contenttype"] = "text/xml";
@@ -146,7 +160,7 @@ $aHTTP_CONN_INFO["payex"]["password"] = "b9ppZDPbRcJNEgHM57BV";
 $aHTTP_CONN_INFO["authorize.net"]["protocol"] = "https";
 $aHTTP_CONN_INFO["authorize.net"]["host"] = "secure.authorize.net";
 $aHTTP_CONN_INFO["authorize.net"]["port"] = 443;
-$aHTTP_CONN_INFO["authorize.net"]["timeout"] = 20;
+$aHTTP_CONN_INFO["authorize.net"]["timeout"] = 120;
 $aHTTP_CONN_INFO["authorize.net"]["path"] = "/gateway/transact.dll";
 $aHTTP_CONN_INFO["authorize.net"]["method"] = "POST";
 $aHTTP_CONN_INFO["authorize.net"]["contenttype"] = "application/x-www-form-urlencoded";
@@ -160,7 +174,7 @@ $aHTTP_CONN_INFO["authorize.net"]["contenttype"] = "application/x-www-form-urlen
 $aHTTP_CONN_INFO["wannafind"]["protocol"] = "https";
 $aHTTP_CONN_INFO["wannafind"]["host"] = "betaling.wannafind.dk";
 $aHTTP_CONN_INFO["wannafind"]["port"] = 443;
-$aHTTP_CONN_INFO["wannafind"]["timeout"] = 20;
+$aHTTP_CONN_INFO["wannafind"]["timeout"] = 120;
 $aHTTP_CONN_INFO["wannafind"]["path"] = "/auth.php";
 $aHTTP_CONN_INFO["wannafind"]["method"] = "POST";
 $aHTTP_CONN_INFO["wannafind"]["contenttype"] = "application/x-www-form-urlencoded";

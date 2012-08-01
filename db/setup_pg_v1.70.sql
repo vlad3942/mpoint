@@ -1,0 +1,1 @@
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1009, 'Payment Initialized with Payment Service Provider', 'mApp', 'initialize');
