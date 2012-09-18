@@ -72,7 +72,7 @@ $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
-	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true)
+	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_DOM->{'authorize-payment'}) > 0)
 	{	
 		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 		
@@ -113,79 +113,95 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							// Success: Input Valid
 							if (count($aMsgCds) == 0)
 							{
-								$obj_Elem = $obj_XML->xpath("/stored-cards/card[@id = ". $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"] ."]");
-								try
+								$code = $obj_mPoint->auth($obj_TxnInfo->getAccountID(), (string) $obj_DOM->{'authorize-payment'}[$i]->password);
+								// Authentication succeeded
+								if ($code == 10)
 								{
-									switch (intval($obj_Elem["pspid"]) )
+									$obj_Elem = $obj_XML->xpath("/stored-cards/card[@id = ". $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"] ."]");
+									try
 									{
-									case (Constants::iDIBS_PSP):	// DIBS
-										// Authorise payment with PSP based on Ticket
-										$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-										$iTxnID = $obj_PSP->authTicket( (integer) $obj_Elem->ticket);
-										// Authorization succeeded
-										if ($iTxnID > 0)
+										switch (intval($obj_Elem["pspid"]) )
 										{
-											try
+										case (Constants::iDIBS_PSP):	// DIBS
+											// Authorise payment with PSP based on Ticket
+											$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+											$iTxnID = $obj_PSP->authTicket( (integer) $obj_Elem->ticket);
+											// Authorization succeeded
+											if ($iTxnID > 0)
 											{
-												// Initialise Callback to Client
-												$aCPM_CONN_INFO["path"] = "/callback/dibs.php";
-												$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_Elem->type["id"]), $iTxnID);
+												try
+												{
+													// Initialise Callback to Client
+													$aCPM_CONN_INFO["path"] = "/callback/dibs.php";
+													$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_Elem->type["id"]), $iTxnID);
+												}
+												catch (HTTPException $ignore) { /* Ignore */ }
+											
+												$xml = '<status code="100">Payment Authorized</status>';
 											}
-											catch (HTTPException $ignore) { /* Ignore */ }
-										
-											$xml = '<status code="100">Payment Authorized</status>';
-										}
-										// Error: Authorization declined
-										else
-										{
+											// Error: Authorization declined
+											else
+											{
+												$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+												
+												header("HTTP/1.1 502 Bad Gateway");
+												
+												$xml .= '<status code="91">Authorization failed, DIBS returned error code'. $iTxnID .'</status>';
+											}
+											break;
+										case (Constants::iWANNAFIND_PSP):	// WannaFind
+											// Authorise payment with PSP based on Ticket
+											$obj_PSP = new WannaFind($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+											$iTxnID = $obj_PSP->authTicket( (integer) $obj_Elem->ticket);
+											// Authorization succeeded
+											if ($iTxnID > 0)
+											{
+												try
+												{
+													// Initialise Callback to Client
+													$aCPM_CONN_INFO["path"] = "/callback/wannafind.php";
+													$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_Elem->type["id"]), $iTxnID);
+												}
+												catch (HTTPException $ignore) { /* Ignore */ }
+												
+												$xml .= '<status code="100">Payment Authorized</status>';
+											}
+											// Error: Authorization declined
+											else
+											{
+												$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+												
+												header("HTTP/1.1 502 Bad Gateway");
+												
+												$xml .= '<status code="91">Authorization failed, WannaFind returned error code'. $iTxnID .'</status>';
+											}
+											break;
+										default:	// Unkown Error
 											$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 											
-											header("HTTP/1.1 502 Bad Gateway");
+											header("HTTP/1.1 500 Internal Server Error");
 											
-											$xml .= '<status code="91">Authorization failed, DIBS returned error code'. $iTxnID .'</status>';
+											$xml .= '<status code="99">Unknown Payment Service Provider: '. $obj_Elem["pspid"] .'</status>';
+											break;
 										}
-										break;
-									case (Constants::iWANNAFIND_PSP):	// WannaFind
-										// Authorise payment with PSP based on Ticket
-										$obj_PSP = new WannaFind($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-										$iTxnID = $obj_PSP->authTicket( (integer) $obj_Elem->ticket);
-										// Authorization succeeded
-										if ($iTxnID > 0)
-										{
-											try
-											{
-												// Initialise Callback to Client
-												$aCPM_CONN_INFO["path"] = "/callback/wannafind.php";
-												$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_Elem->type["id"]), $iTxnID);
-											}
-											catch (HTTPException $ignore) { /* Ignore */ }
-											
-											$xml .= '<status code="100">Payment Authorized</status>';
-										}
-										// Error: Authorization declined
-										else
-										{
-											$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-											
-											header("HTTP/1.1 502 Bad Gateway");
-											
-											$xml .= '<status code="91">Authorization failed, WannaFind returned error code'. $iTxnID .'</status>';
-										}
-										break;
-									default:	// Unkown Error
-										$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-										
-										header("HTTP/1.1 500 Internal Server Error");
-										
-										$xml .= '<status code="99">Unknown Payment Service Provider: '. $obj_Elem["pspid"] .'</status>';
-										break;
+									}
+									catch (HTTPException $e)
+									{
+										header("HTTP/1.1 504 Gateway Timeout");
+									
+										$xml = '<status code="90">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES) .'</status>';
 									}
 								}
-								catch (HTTPException $e)
+								// Authentication failed
+								else
 								{
-									header("HTTP/1.1 504 Gateway Timeout");
-								
-									$xml = '<status code="90">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES) .'</status>';
+									$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+									// Account disabled due to too many failed login attempts
+									if ($code == 3) { $obj_mPoint->sendAccountDisabledNotification(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo->getMobile() ); }
+									
+									header("HTTP/1.1 403 Forbidden");
+									
+									$xml = '<status code="'. ($code+30) .'" />';
 								}
 							}
 							// Error in Input
@@ -228,6 +244,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		header("HTTP/1.1 415 Unsupported Media Type");
 		
 		$xml = '<status code="415">Invalid XML Document</status>';
+	}
+	// Error: Wrong operation
+	elseif (count($obj_DOM->{'authorize-payment'}) == 0)
+	{
+		header("HTTP/1.1 400 Bad Request");
+	
+		$xml = '';
+		foreach ($obj_DOM->children() as $obj_Elem)
+		{
+			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>'; 
+		}
 	}
 	// Error: Invalid Input
 	else

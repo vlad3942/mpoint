@@ -513,10 +513,14 @@ class TxnInfo
 					WHERE id = ". intval($id);
 			if (is_array($misc) === true)
 			{
-				// Order ID for Transaction provided
-				if (strtotime($misc[0]) === false) { $sql .= " AND orderid = '". $obj->escStr($misc[0]) ."'"; }
+//				preg_match('/2[0-9]{3}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}')
 				// Creation Timestamp for Transaction provided
-				else { $sql .= " AND date_trunc('second', created) = '". $obj->escStr($misc[0]) ."'"; }
+				if (substr_count($misc[0], "-") == 2 && substr_count($misc[0], ":") == 2 && strtotime($misc[0]) > 0)
+				{
+					$sql .= " AND date_trunc('second', created) = '". $obj->escStr($misc[0]) ."'";
+				}
+				// Order ID for Transaction provided
+				else { $sql .= " AND orderid = '". $obj->escStr($misc[0]) ."'"; } 
 			}
 //			echo $sql ."\n";
 			$RS = $obj->getName($sql);

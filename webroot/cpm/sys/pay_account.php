@@ -116,7 +116,7 @@ if (count($aMsgCds) == 0)
 					{
 						// Initialise Callback to Client
 						$aCPM_CONN_INFO["path"] = "/callback/dibs.php";
-						$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_XML->type["id"]), $iTxnID);
+						$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_XML->type["id"]), $iTxnID, (string) $obj_XML->mask, (string) $obj_XML->expiry);
 						$aMsgCds[] = 100;
 					}
 					else
@@ -164,22 +164,22 @@ if (count($aMsgCds) == 0)
 			$obj_mPoint->sendAccountDisabledNotification(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $_SESSION['obj_TxnInfo']->getMobile() );
 			$_SESSION['obj_TxnInfo']->setAccountID(-1);
 			$_SESSION['temp'] = array();
-			$sPath = "pay/card.php";
+			$sPath = "pay/card.php?";
 		}
 		$aMsgCds[] = $msg + 40;
 	}
 }
 
 $msg = "";
-if ($aMsgCds[0] == 100) { $sPath = "pay/accept.php"; }
+if ($aMsgCds[0] == 100) { $sPath = "pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&"; }
 else
 {
-	if (isset($sPath) === false) { $sPath = "cpm/payment.php"; }
+	if (isset($sPath) === false) { $sPath = "cpm/payment.php?"; }
 	for ($i=0; $i<count($aMsgCds); $i++)
 	{
 		$msg .= "&msg=". $aMsgCds[$i];
 	}
 }
 
-header("location: http://". $_SERVER['HTTP_HOST'] ."/". $sPath ."?". session_name() ."=". session_id() . $msg);
+header("location: http://". $_SERVER['HTTP_HOST'] ."/". $sPath . session_name() ."=". session_id() . $msg);
 ?>

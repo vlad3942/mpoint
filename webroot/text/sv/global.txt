@@ -980,43 +980,43 @@ msgstr @@@ Nästa >> @@@
 msgid @@@ Go to Payment >> @@@
 msgstr @@@ Fortsätt till betalning >> @@@
 
-#: /webroot/pay/accept.php:28
+#: /webroot/pay/accept.php:35
 msgid @@@ Payment Completed @@@
 msgstr @@@ Betalningen genomförd @@@
 
-#: /webroot/pay/accept.php:41
+#: /webroot/pay/accept.php:48
 msgid @@@ Thank you for using @@@
 msgstr @@@ Tack för att du använder @@@
 
-#: /webroot/pay/accept.php:42
+#: /webroot/pay/accept.php:49
 msgid @@@ Status - Success @@@
 msgstr @@@ Din betalning har genomförts @@@
 
-#: /webroot/pay/accept.php:43
+#: /webroot/pay/accept.php:50
 msgid @@@ mPoint ID @@@
 msgstr @@@ mPoint ID @@@
 
-#: /webroot/pay/accept.php:44
+#: /webroot/pay/accept.php:51
 msgid @@@ Order No @@@
 msgstr @@@ Ordernummer @@@
 
-#: /webroot/pay/accept.php:45
+#: /webroot/pay/accept.php:52
 msgid @@@ Price @@@
 msgstr @@@ Price @@@
 
-#: /webroot/pay/accept.php:46
+#: /webroot/pay/accept.php:53
 msgid @@@ SMS Receipt - Info @@@
 msgstr @@@ Kvittot har även skickats via SMS till nummer: {MOBILE} @@@
 
-#: /webroot/pay/accept.php:47
+#: /webroot/pay/accept.php:54
 msgid @@@ Send receipt via E-Mail @@@
 msgstr @@@ Skicka kvitto med Epost @@@
 
-#: /webroot/pay/accept.php:48
+#: /webroot/pay/accept.php:55
 msgid @@@ Continue >> @@@
 msgstr @@@ Återvänd till försäljarens webplats >> @@@
 
-#: /webroot/pay/accept.php:49
+#: /webroot/pay/accept.php:56
 msgid @@@ Resume Payment >> @@@
 msgstr @@@ Resume Payment >> @@@
 
@@ -1328,11 +1328,11 @@ Kind Regards
 msgid @@@ Loading... @@@
 msgstr @@@ Loading... @@@
 
-#: /api/classes/general.php:657
+#: /api/classes/general.php:676
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ Välkommen till {CLIENT}, klicka på länken nedan @@@
 
-#: /api/classes/general.php:663
+#: /api/classes/general.php:682
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Välkommen till {CLIENT} @@@
 

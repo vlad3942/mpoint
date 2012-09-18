@@ -37,7 +37,7 @@ $aMsgCds = array();
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 
 // Set Global Defaults
-if (array_key_exists("account", $_REQUEST) === false || intval($_REQUEST['account']) < 0) { $_REQUEST['account'] = -1; }
+if (array_key_exists("account", $_REQUEST) === false || intval($_REQUEST['account']) <= 0) { $_REQUEST['account'] = -1; }
 if (array_key_exists("orderid", $_REQUEST) === false) { $_REQUEST['orderid'] = null; }
 if (array_key_exists("email", $_REQUEST) === false) { $_REQUEST['email'] = ""; }
 
@@ -177,6 +177,11 @@ if (array_key_exists(1000, $aMsgCds) === true)
 // Error: Construct Status Page
 else
 {
+	$s = date("Y-m-d H:i:s") ."\n";
+	$s .= "REQUEST: " ."\n". var_export($_REQUEST) ."\n";
+	$s .= "ERRORS: " ."\n". var_export($aMsgCds) ."\n";
+	file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") .".log", $s);
+	
 	$_GET['msg'] = array_keys($aMsgCds);
 	
 	$xml = '<?xml version="1.0" encoding="UTF-8"?>';

@@ -40,12 +40,12 @@
 					<xsl:otherwise>pwd.php</xsl:otherwise>
 					</xsl:choose>
 				</xsl:variable>
-				document.getElementById('accepturl').value = '<xsl:value-of select="/root/system/protocol" />://<xsl:value-of select="/root/system/host" />/pay/<xsl:value-of select="$file" />';
+				document.getElementById('accepturl').value = '<xsl:value-of select="system/protocol" />://<xsl:value-of select="system/host" />/pay/<xsl:value-of select="$file" />';
 			}
 			else
 			{
 				document.getElementById('authtype').value = 'auth';
-				document.getElementById('accepturl').value = '<xsl:value-of select="/root/system/protocol" />://<xsl:value-of select="/root/system/host" />//pay/accept.php';
+				document.getElementById('accepturl').value = '<xsl:value-of select="system/protocol" />://<xsl:value-of select="system/host" />//pay/accept.php';
 			}
 		}
 	</script>
@@ -66,9 +66,9 @@
 					<input type="hidden" name="currency" value="{card/currency}" />
 					<input type="hidden" id="authtype" name="authtype" value="auth" />
 					<input type="hidden" name="uniqorderid" value="false" />
-					<input type="hidden" id="callbackurl" name="callbackurl" value="{/root/system/protocol}://{/root/system/host}/callback/wannafind.php?mpoint-id={transaction/@id}&amp;cardid={card/@id}&amp;language={system/language}" />
-					<input type="hidden" id="accepturl" name="accepturl" value="{/root/system/protocol}://{/root/system/host}/pay/accept.php" />
-					<input type="hidden" name="declineurl" value="{/root/system/protocol}://{/root/system/host}/wannafind/postform.php" />
+					<input type="hidden" id="callbackurl" name="callbackurl" value="{system/protocol}://{system/host}/callback/wannafind.php?mpoint-id={transaction/@id}&amp;cardid={card/@id}&amp;language={system/language}" />
+					<input type="hidden" id="accepturl" name="accepturl" value="{system/protocol}://{system/host}/pay/accept.php?mpoint-id={transaction/@id}&amp;{system/session}={system/session/@id}" />
+					<input type="hidden" name="declineurl" value="{system/protocol}://{system/host}/wannafind/postform.php?mpoint-id={transaction/@id}&amp;{system/session}={system/session/@id}" />
 					<input type="hidden" name="cardnomask" value="true" />
 					<input type="hidden" name="orderid" value="{transaction/orderid}" />
 					<!-- mPoint Data -->
@@ -112,7 +112,7 @@
 					<tr class="first-row">
 						<th class="left-column"><xsl:value-of select="labels/card-number" /></th>
 						<td class="right-column stretch" colspan="2">
-							<input name="cardnum" pattern="[0-9]*" value="{$card-number}" maxlength="19" class="text" style="-wap-input-format:'*N';" type="number" />
+							<input type="tel" name="cardnum" pattern="[0-9]*" value="{$card-number}" maxlength="19" class="text" style="-wap-input-format:'*N';" />
 						</td>
 					</tr>
 					<tr class="row">
@@ -121,9 +121,9 @@
 							<div class="mPoint_Info">(<xsl:value-of select="labels/expiry-month" />/<xsl:value-of select="labels/expiry-year" />)</div>
 						</th>
 						<td class="right-column stretch" colspan="2">
-							<input type="number" id="expiry-month" name="emonth" maxlength="2" value="{$expiry-month}" size="3" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+							<input type="tel" id="expiry-month" name="emonth" maxlength="2" value="{$expiry-month}" size="3" style="-wap-input-format:'*N';" pattern="[0-9]*" />
 							<xsl:value-of select="concat(' ', '/', ' ')" />
-							<input type="number" id="expiry-year" name="eyear" maxlength="2" value="{$expiry-year}" size="3" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+							<input type="tel" id="expiry-year" name="eyear" maxlength="2" value="{$expiry-year}" size="3" style="-wap-input-format:'*N';" pattern="[0-9]*" />
 						</td>
 					</tr>
 					<tr class="row combined-row">
@@ -132,10 +132,10 @@
 							<xsl:choose>
 							<!--  American Express -->
 							<xsl:when test="card/@id = 1">
-								<input type="number" name="cvc" maxlength="4" value="{$cvc}" size="5" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+								<input type="tel" name="cvc" maxlength="4" value="{$cvc}" size="5" style="-wap-input-format:'*N';" pattern="[0-9]*" />
 							</xsl:when>
 							<xsl:otherwise>
-								<input type="number" name="cvc" maxlength="3" value="{$cvc}" size="4" style="-wap-input-format:'*N';" pattern="[0-9]*" />
+								<input type="tel" name="cvc" maxlength="3" value="{$cvc}" size="4" style="-wap-input-format:'*N';" pattern="[0-9]*" />
 							</xsl:otherwise>
 							</xsl:choose>
 						</td>

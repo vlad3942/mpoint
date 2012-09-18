@@ -313,7 +313,7 @@ class EndUserAccount extends Home
 							FROM EndUser.Card_Tbl
 							WHERE accountid = ". $iAccountID ." AND clientid = ". $this->_obj_ClientConfig->getID() ." AND cardid = ". intval($cardid) ."
 								AND (name IS NULL OR name = '') AND enabled = true)
-					AND created > NOW() - interval '5 minutes'";
+					AND modified > NOW() - interval '5 minutes'";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 		if (is_resource($res) === true) { $iStatus++; }

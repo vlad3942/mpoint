@@ -215,8 +215,10 @@ class Callback extends EndUserAccount
 	 *
 	 * @param 	integer $sid 	Unique ID of the State that the Transaction terminated in
 	 * @param 	string $pspid 	The Payment Service Provider's (PSP) unique ID for the transaction
+	 * @param 	integer $cardid mPoint's unique ID for the card type
+	 * @param 	string $cardno 	The masked card number for the card that was used for the payment
 	 */
-	public function notifyClient($sid, $pspid)
+	public function notifyClient($sid, $pspid, $cardid=0, $cardno="")
 	{
 		/* ----- Construct Body Start ----- */
 		$sBody = "";
@@ -228,6 +230,8 @@ class Callback extends EndUserAccount
 		$sBody .= "&mobile=". urlencode($this->_obj_TxnInfo->getMobile() );
 		$sBody .= "&operator=". urlencode($this->_obj_TxnInfo->getOperator() );
 		$sBody .= "&language=". urlencode($this->_obj_TxnInfo->getLanguage() );
+		if (intval($cardid) > 0) { $sBody .= "&card-id=". $cardid; }
+		if (empty($cardno) === false) { $sBody .= "&card-number=". urlencode($cardno); }
 		if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true) { $sBody .= "&pspid=". urlencode($pspid); }
 		$sBody .= $this->getVariables();
 		/* ----- Construct Body End ----- */

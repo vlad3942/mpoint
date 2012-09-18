@@ -38,7 +38,7 @@ class WannaFind extends Callback
 	 */
 	public function notifyClient($sid, array $_post)
 	{
-		parent::notifyClient($sid, $_post["transact"]);
+		parent::notifyClient($sid, $_post["transact"], $_post["cardid"], str_replace("X", "*", $_post["cardnomask"]) );
 	}
 	
 	/**

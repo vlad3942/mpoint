@@ -58,7 +58,7 @@ $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
-	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true)
+	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_DOM->{'initialize-payment'}) > 0)
 	{	
 		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 		
@@ -134,29 +134,38 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$xml .= '<callback-url>'. htmlspecialchars($obj_TxnInfo->getCallbackURL(), ENT_NOQUOTES) .'</callback-url>';
 						$xml .= '</transaction>';
 						$obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount() ) );
-						$xml .= '<cards>';
-						for ($j=0; $j<count($obj_XML->item); $j++)
-						{
-							$xml .= '<card id="'. $obj_XML->item[$j]["id"] .'" type-id="'. $obj_XML->item[$j]["id"] .'" psp-id="'. $obj_XML->item[$j]["pspid"] .'">'. htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) .'</card>';
-						}
-						$xml .= '</cards>';
+						
 						// End-User already has an account and payment with Account enabled
 						if ($iAccountID > 0 && count($obj_XML->xpath("/cards/item[@type-id = 11]") ) == 1)
 						{
-							
 							$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-							$obj_XML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID) );
-							$obj_XML = $obj_XML->xpath("/stored-cards/card[client/@id = ". $obj_ClientConfig->getID() ."]");
-							if (count($obj_XML) > 0) { $xml .= '<stored-cards>'; }
-							for ($j=0; $j<count($obj_XML); $j++)
+							$aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID) );
+							$aObj_XML = $aObj_XML->xpath("/stored-cards/card[client/@id = ". $obj_ClientConfig->getID() ."]");
+						}
+						else { $aObj_XML = array(); }
+						$xml .= '<cards>';
+						for ($j=0; $j<count($obj_XML->item); $j++)
+						{
+							// Card does not represent "My Account" or the End-User has an acccount with Stored Cards
+							if ($obj_XML->item[$j]["type-id"] != 11 || ($iAccountID > 0 && count($aObj_XML) > 0) )
 							{
-								$xml .= '<card id="'. $obj_XML[$j]["id"] .'" type-id="'. $obj_XML[$j]->type["id"] .'" psp-id="'. $obj_XML[$j]["pspid"] .'" preferred="'. $obj_XML[$j]["preferred"] .'">';
-								if (strlen($obj_XML[$j]->name) > 0) { $xml .= $obj_XML[$j]->name->asXML(); }
-								$xml .= '<card-number-mask>'. $obj_XML[$j]->mask .'</card-number-mask>';
-								$xml .= $obj_XML[$j]->expiry->asXML();
+								$xml .= '<card id="'. $obj_XML->item[$j]["id"] .'" type-id="'. $obj_XML->item[$j]["type-id"] .'" psp-id="'. $obj_XML->item[$j]["pspid"] .'">'. htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) .'</card>';
+							}
+						}
+						$xml .= '</cards>';
+						// End-User has Stored Cards available
+						if (count($aObj_XML) > 0)
+						{
+							$xml .= '<stored-cards>';
+							for ($j=0; $j<count($aObj_XML); $j++)
+							{
+								$xml .= '<card id="'. $aObj_XML[$j]["id"] .'" type-id="'. $aObj_XML[$j]->type["id"] .'" psp-id="'. $aObj_XML[$j]["pspid"] .'" preferred="'. $aObj_XML[$j]["preferred"] .'">';
+								if (strlen($aObj_XML[$j]->name) > 0) { $xml .= $aObj_XML[$j]->name->asXML(); }
+								$xml .= '<card-number-mask>'. $aObj_XML[$j]->mask .'</card-number-mask>';
+								$xml .= $aObj_XML[$j]->expiry->asXML();
 								$xml .= '</card>';
 							}
-							if (count($obj_XML) > 0) { $xml .= '</stored-cards>'; }
+							$xml .= '</stored-cards>';
 						}
 					}
 					// Internal Error
@@ -184,6 +193,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		header("HTTP/1.1 415 Unsupported Media Type");
 		
 		$xml = '<status code="415">Invalid XML Document</status>';
+	}
+	// Error: Wrong operation
+	elseif (count($obj_DOM->{'initialize-payment'}) == 0)
+	{
+		header("HTTP/1.1 400 Bad Request");
+	
+		$xml = '';
+		foreach ($obj_DOM->children() as $obj_Elem)
+		{
+			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>'; 
+		}
 	}
 	// Error: Invalid Input
 	else

@@ -22,11 +22,11 @@ else
 /* ========== Define System path End ========== */
 
 // Define path to the General API classes
-define("sAPI_CLASS_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/php5api/classes/");
+define("sAPI_CLASS_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/../php5api/classes/");
 // Define path to the General API interfaces
-define("sAPI_INTERFACE_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/php5api/interfaces/");
+define("sAPI_INTERFACE_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/../php5api/interfaces/");
 // Define path to the General API functions
-define("sAPI_FUNCTION_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/php5api/functions/");
+define("sAPI_FUNCTION_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/../php5api/functions/");
 
 // Define path to the System classes
 define("sCLASS_PATH", sSYSTEM_PATH ."/api/classes/");
@@ -101,7 +101,7 @@ new RemoteReport(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["iemendo"]), iOU
 if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_SERVER['PHP_SELF']) == true || eregi("/buy/topup.php", $_SERVER['PHP_SELF']) == true)
 	&& eregi("/subscr/", $_SERVER['PHP_SELF']) == false && eregi("/callback/", $_SERVER['PHP_SELF']) == false
 	&& eregi("/surepay/", $_SERVER['PHP_SELF']) == false && empty($_SERVER['DOCUMENT_ROOT']) === false
-	&& eregi("/pay/sys/sms.php", $_SERVER['PHP_SELF']) == false)
+	&& eregi("/pay/sys/sms.php", $_SERVER['PHP_SELF']) == false && eregi("/api/", $_SERVER['PHP_SELF']) == false)
 {
 	// Start user session
 	new Session($aDB_CONN_INFO["session"], iOUTPUT_METHOD, sERROR_LOG);
@@ -119,6 +119,12 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 			|| $_SERVER['PHP_SELF'] == "/overview.php" || $_SERVER['PHP_SELF'] == "/terms.php"
 			|| (eregi("/new/", $_SERVER['PHP_SELF']) == true && General::getBrowserType() == "mobile") ) )
 	{
+		// User Agent Profile not instantiated
+		if (array_key_exists("obj_UA", $_SESSION) === false)
+		{	
+			// Instantiate data object with the User Agent Profile for the customer's mobile device.
+			$_SESSION['obj_UA'] = UAProfile::produceUAProfile(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["iemendo"]) );
+		}
 		/*
 		 * Use Output buffering to "magically" transform the XML via XSL behind the scene
 		 * This means that all PHP scripts must output a wellformed XML document.

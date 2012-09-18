@@ -52,7 +52,7 @@ $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
-	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true)
+	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_DOM->{'save-account'}) > 0)
 	{	
 		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 		
@@ -76,7 +76,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					if ($obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->password) + 10; }
 					if ($obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->{'confirm-password'}) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->{'confirm-password'} ) + 20; }
 					if (count($aMsgCds) == 0 && strval($obj_DOM->{'save-account'}[$i]->password) != strval($obj_DOM->{'save-account'}[$i]->{'confirm-password'}) ) { $aMsgCds[] = 31; }
-					if ($obj_Validator->valName( (string) $obj_DOM->{'save-account'}[$i]->card) != 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-account'}[$i]->card) + 40; }
+					if (count($obj_DOM->{'save-account'}[$i]->card) == 1 && $obj_Validator->valName( (string) $obj_DOM->{'save-account'}[$i]->card) != 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-account'}[$i]->card) + 40; }
 					
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
@@ -128,6 +128,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		header("HTTP/1.1 415 Unsupported Media Type");
 		
 		$xml = '<status code="415">Invalid XML Document</status>';
+	}
+	// Error: Wrong operation
+	elseif (count($obj_DOM->{'save-account'}) == 0)
+	{
+		header("HTTP/1.1 400 Bad Request");
+	
+		$xml = '';
+		foreach ($obj_DOM->children() as $obj_Elem)
+		{
+			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>'; 
+		}
 	}
 	// Error: Invalid Input
 	else

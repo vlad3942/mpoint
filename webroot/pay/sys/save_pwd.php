@@ -24,6 +24,13 @@ require_once(sCLASS_PATH ."/enduser_account.php");
 
 $_SESSION['temp'] = $_POST;
 
+// Re-initialization of Session required
+if (array_key_exists("mpoint-id", $_REQUEST) === true
+	&& (array_key_exists("obj_TxnInfo", $_SESSION) === false || ($_SESSION['obj_TxnInfo'] instanceof TxnInfo) === false) )
+{
+	$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($_REQUEST['mpoint-id'], $_OBJ_DB);
+}
+
 $aMsgCds = array();
 $obj_Validator = new Validate($_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig() );
 $obj_mPoint = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']->getClientConfig() );

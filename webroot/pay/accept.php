@@ -21,6 +21,13 @@ require_once(sCLASS_PATH ."/accept.php");
 
 $obj_mPoint = new Accept($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_UA']);
 
+// Re-initialization of Session required
+if (array_key_exists("mpoint-id", $_REQUEST) === true
+	&& (array_key_exists("obj_TxnInfo", $_SESSION) === false || ($_SESSION['obj_TxnInfo'] instanceof TxnInfo) === false) )
+{
+	$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($_REQUEST['mpoint-id'], $_OBJ_DB);
+}
+
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA'], $_SESSION['obj_TxnInfo']) .'/pay/accept.xsl"?>';
 ?>

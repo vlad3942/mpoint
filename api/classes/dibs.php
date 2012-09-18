@@ -41,7 +41,8 @@ class DIBS extends Callback
 		// Client is configured to use mPoint's protocol
 		if ($this->getTxnInfo()->getClientConfig()->getMethod() == "mPoint")
 		{
-			parent::notifyClient($sid, $_post["transact"]);
+			if ($sid == Constants::iPAYMENT_ACCEPTED_STATE) { parent::notifyClient($sid, $_post["transact"], $_post['cardid'], $_post['cardprefix'] . str_replace("X", "*", substr($_post['cardnomask'], strlen($_post['cardprefix']) ) ) ); }
+			else { parent::notifyClient($sid, $_post["transact"]); }
 		}
 		// Client is configured to use DIBS' protocol
 		else
@@ -329,8 +330,9 @@ class DIBS extends Callback
 	 * @param 	integer $cardid		Unique ID of the Card Type that was used in the payment transaction
 	 * @param 	integer $txnid		Transaction ID from DIBS returned in the "transact" parameter
 	 */
-	public function initCallback(HTTPConnInfo &$oCI, $cardid, $txnid)
+	public function initCallback(HTTPConnInfo &$oCI, $cardid, $txnid, $cardno, $expiry)
 	{
+		$mask = str_replace(" ", "", $cardno);
 		$b = "mpointid=". $this->getTxnInfo()->getID();
 		$b .= "&transact=". $txnid;
 		$b .= "&cardid=". $cardid;
@@ -338,6 +340,9 @@ class DIBS extends Callback
 		$b .= "&language=". $this->getTxnInfo()->getLanguage();
 		$b .= "&capturenow=". General::bool2xml($this->getTxnInfo()->getClientConfig()->useAutoCapture() );
 		$b .= "&preauth=false";
+		$b .= "&cardnomask=". $mask;
+		$b .= "&cardprefix=". substr($mask, 0, strpos($mask, "*") );
+		$b .= "&cardexpdate=". substr($expiry, strpos($expiry, "/") ) . substr($expiry, 0, strpos($expiry, "/") );
 
 		$obj_HTTP = new HTTPClient(new Template(), $oCI);
 		$obj_HTTP->connect();
@@ -364,6 +369,7 @@ class DIBS extends Callback
 		$b .= "&language=". $this->getTxnInfo()->getLanguage();
 		$b .= "&cardid=". $cardid;
 		$b .= "&mpointid=". $this->getTxnInfo()->getID();
+		$b .= "&markup=". $this->getTxnInfo()->getClientConfig()->getAccountConfig()->getMarkupLanguage();
 		$b .= "&eauid=". $this->getTxnInfo()->getAccountID();
 		$b .= "&clientid=". $this->getTxnInfo()->getClientConfig()->getID();
 		$b .= "&accountid=". $this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID();

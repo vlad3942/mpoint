@@ -91,3 +91,26 @@ UPDATE Client.Keyword_Tbl SET name = 'BIOAPP' WHERE id IN (10, 6);
 UPDATE Client.Keyword_tbl SET name = 'CPM', clientid = 10011 WHERE id = 11;
 UPDATE Client.CardAccess_Tbl SET pspid = 4 WHERE clientid = 10011 AND cardid IN (6, 7, 8);
 DELETE FROM Client.CardAccess_Tbl WHERE clientid = 10011 AND pspid != 4;
+
+
+UPDATE Client.Client_tbl SET name = 'Panorama Fredericia', username = 'CPMDemo', passwd = 'DEMOisNO_2', logourl = '', cssurl = 'http://panorama-fredericia.mretail.cellpointmobile.com/css/integra_mpoint.css', callbackurl = 'http://panorama-fredericia.mretail.cellpointmobile.com/mOrder/sys/mpoint.php', cancelurl = '', smsrcpt = false, emailrcpt = false, auto_capture = false, send_pspid = true, store_card = 3, iconurl = 'http://panorama-fredericia.mretail.cellpointmobile.com/img/mpoint_mycards.gif', mode = 0 WHERE id = 10008;
+UPDATE Client.Account_Tbl SET clientid = 10008, name = 'iPhone', mobile = NULL, markup = 'xhtml' WHERE id = 100018;
+--UPDATE Client.MerchantAccount_Tbl SET clientid = 10008, pspid = 1, name = 'CPMDemo' WHERE id = 29;
+UPDATE Client.MerchantAccount_Tbl SET clientid = 10008, pspid = 7, name = '201109202747', username = 'WF86429', passwd = 'gjmzG%81!' WHERE id = 9;
+UPDATE Client.MerchantSubAccount_Tbl SET accountid = 100018, pspid = 1 WHERE id = 31;
+UPDATE Client.MerchantSubAccount_Tbl SET accountid = 100018, pspid = 7 WHERE id = 32;
+--UPDATE Client.MerchantSubAccount_Tbl SET accountid = 100012, pspid = 1 WHERE id = 13;
+UPDATE Client.CardAccess_Tbl SET pspid = 7 WHERE clientid = 10008 AND pspid = 2;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10008, 11, 1);
+UPDATE Client.Keyword_tbl SET clientid = 10008, name = 'CPM' WHERE id = 12;
+
+UPDATE Client.Client_tbl SET name = 'Panorama Middelfart', username = 'CPMDemo', passwd = 'DEMOisNO_2', logourl = '', cssurl = 'http://panorama-middelfart.mretail.cellpointmobile.com/css/integra_mpoint.css', callbackurl = 'http://panorama-middelfart.mretail.cellpointmobile.com/mOrder/sys/mpoint.php', cancelurl = '', smsrcpt = false, emailrcpt = false, auto_capture = false, send_pspid = true, store_card = 3, iconurl = 'http://panorama-middelfart.mretail.cellpointmobile.com/img/mpoint_mycards.gif', mode = 0 WHERE id = 10013;
+UPDATE Client.Account_Tbl SET clientid = 10013, name = 'iPhone', mobile = NULL, markup = 'xhtml' WHERE id = 100019;
+UPDATE Client.MerchantAccount_Tbl SET clientid = 10013, pspid = 1, name = 'CPMDemo' WHERE id = 29;
+UPDATE Client.MerchantAccount_Tbl SET clientid = 10013, pspid = 7, name = '200704161546', username = 'WF73369', passwd = '79qah27e' WHERE id = 30;
+--UPDATE Client.MerchantSubAccount_Tbl SET accountid = 100019, pspid = 1 WHERE id = 33;
+UPDATE Client.MerchantSubAccount_Tbl SET accountid = 100019, pspid = 7 WHERE id = 34;
+--UPDATE Client.MerchantSubAccount_Tbl SET accountid = 100012, pspid = 1 WHERE id = 13;
+UPDATE Client.CardAccess_Tbl SET pspid = 7 WHERE clientid = 10013 AND pspid = 2;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10013, 11, 1);
+UPDATE Client.Keyword_tbl SET clientid = 10013, name = 'CPM' WHERE id = 19;

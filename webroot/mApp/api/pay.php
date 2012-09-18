@@ -69,7 +69,7 @@ $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
-	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true)
+	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_DOM->pay) > 0)
 	{	
 		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 		
@@ -192,6 +192,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		header("HTTP/1.1 415 Unsupported Media Type");
 		
 		$xml = '<status code="415">Invalid XML Document</status>';
+	}
+	// Error: Wrong operation
+	elseif (count($obj_DOM->pay) == 0)
+	{
+		header("HTTP/1.1 400 Bad Request");
+	
+		$xml = '';
+		foreach ($obj_DOM->children() as $obj_Elem)
+		{
+			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>'; 
+		}
 	}
 	// Error: Invalid Input
 	else
