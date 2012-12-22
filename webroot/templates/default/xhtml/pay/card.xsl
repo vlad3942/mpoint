@@ -145,7 +145,7 @@
 					  -->
 					<table>
 					<tr>
-						<td><img src="{/root/system/protocol}://{/root/system/host}/img/{logo-width}x{logo-height}_card_{@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
+						<td><img src="/img/{logo-width}x{logo-height}_card_{@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
 						<td colspan="3"><input type="submit" value="{name}" class="mPoint_Card_Button" /></td>
 					</tr>
 					</table>
@@ -164,7 +164,7 @@
 				<!-- DIBS Required Data -->
 				<input type="hidden" name="merchant" value="{account}" />
 				<input type="hidden" name="callbackurl" value="{/root/system/protocol}://{/root/system/host}/callback/dibs.php" />
-				<input type="hidden" name="accepturl" value="{/root/system/protocol}://{/root/system/host}/pay/accept.php" />
+				<input type="hidden" name="accepturl" value="/pay/accept.php" />
 				<input type="hidden" name="cancelurl" value="{/root/transaction/cancel-url}" />
 				<input type="hidden" name="amount" value="{/root/transaction/amount}" />
 				<input type="hidden" name="currency" value="{currency}" />
@@ -199,7 +199,7 @@
 				  -->
 				<table>
 				<tr>
-					<td><img src="{/root/system/protocol}://{/root/system/host}/img/{logo-width}x{logo-height}_card_{@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
+					<td><img src="/img/{logo-width}x{logo-height}_card_{@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
 					<td colspan="3"><input type="submit" value="{name}" class="mPoint_Card_Button" /></td>
 				</tr>
 				</table>
@@ -219,7 +219,7 @@
 				<!-- DIBS Required Data -->
 				<input type="hidden" name="merchant" value="{account}" />
 				<input type="hidden" name="callbackurl" value="{/root/system/protocol}://{/root/system/host}/callback/dibs.php" />
-				<input type="hidden" name="accepturl" value="{/root/system/protocol}://{/root/system/host}/pay/accept.php?mpoint-id={/root/transaction/@id}&amp;{/root/system/session}={/root/system/session/@id}" />
+				<input type="hidden" name="accepturl" value="/pay/accept.php?mpoint-id={/root/transaction/@id}&amp;{/root/system/session}={/root/system/session/@id}" />
 				<input type="hidden" name="cancelurl" value="{/root/transaction/cancel-url}" />
 				<input type="hidden" name="amount" value="{/root/transaction/amount}" />
 				<input type="hidden" name="currency" value="{currency}" />
@@ -278,7 +278,7 @@
 				<!-- Transfer Custom Variables -->
 				<xsl:for-each select="/root/accept/client-vars/item">
 					<input type="hidden" name="client_vars_names_{position()}" value="{name}" />
-					<input type="hidden" name="client_vars_data_{position()}" value="{value}" />
+					<input type="hidden" name="{name}" value="{value}" />
 				</xsl:for-each>
 				
 				<!--
@@ -288,7 +288,7 @@
 				  -->
 				<table>
 				<tr>
-					<td><img src="{/root/system/protocol}://{/root/system/host}/img/{logo-width}x{logo-height}_card_{@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
+					<td><img src="/img/{logo-width}x{logo-height}_card_{@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
 					<td colspan="3"><input type="submit" value="{name}" class="mPoint_Card_Button" /></td>
 				</tr>
 				</table>
@@ -303,7 +303,7 @@
 			<div class="mPoint_Card">
 				<!-- IHI Required Data -->
 				<input type="hidden" name="callbackurl" value="{/root/system/protocol}://{/root/system/host}/callback/ihi.php" />
-				<input type="hidden" name="accepturl" value="{/root/system/protocol}://{/root/system/host}/pay/accept.php" />
+				<input type="hidden" name="accepturl" value="/pay/accept.php" />
 				<input type="hidden" name="cancelurl" value="{/root/transaction/cancel-url}" />
 				<input type="hidden" name="amount" value="{/root/transaction/amount}" />
 				<input type="hidden" name="currency" value="{currency}" />
@@ -359,7 +359,7 @@
 				  -->
 				<table>
 				<tr>
-					<td><img src="{/root/system/protocol}://{/root/system/host}/img/{logo-width}x{logo-height}_card_{@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
+					<td><img src="/img/{logo-width}x{logo-height}_card_{@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
 					<td colspan="3"><input type="submit" value="{name}" class="mPoint_Card_Button" /></td>
 				</tr>
 				</table>
@@ -388,7 +388,7 @@
 				  -->
 				<table>
 				<tr>
-					<td><img src="{/root/system/protocol}://{/root/system/host}/img/{logo-width}x{logo-height}_card_{@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
+					<td><img src="/img/{logo-width}x{logo-height}_card_{@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
 					<td colspan="3"><input type="submit" value="{name}" class="mPoint_Card_Button" /></td>
 				</tr>
 				</table>
@@ -416,7 +416,7 @@
 					  -->
 					<table>
 					<tr>
-						<td><img src="{/root/system/protocol}://{/root/system/host}/img/{logo-width}x{logo-height}_card_{@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
+						<td><img src="/img/{logo-width}x{logo-height}_card_{@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
 						<td colspan="3"><input type="submit" value="{name}" class="mPoint_Card_Button" /></td>
 					</tr>
 					</table>
@@ -426,7 +426,7 @@
 </xsl:template>
 
 <xsl:template match="item" mode="authorize.net">
-	<xsl:variable name="url" select="concat(/root/system/protocol, '://', /root/system/host, '/img/', logo-width, 'x', logo-height, '_card_', @id, '_', /root/system/session/@id, '.png')" />
+	<xsl:variable name="url" select="concat('/img/', logo-width, 'x', logo-height, '_card_', @id, '_', /root/system/session/@id, '.png')" />
 	<div>
 		<form action="{func:constLink('/anet/dpm.php') }" method="post">
 			<div>

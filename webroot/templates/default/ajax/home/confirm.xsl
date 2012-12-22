@@ -15,7 +15,7 @@
 		<br />
 		<div class="info">
 			<xsl:choose>
-			<xsl:when test="string-length(account/mobile) &gt; 0 and amount >= country-config/min-2fa-amount">
+			<xsl:when test="string-length(account/mobile) &gt; 0 and amount &gt;= country-config/min-2fa-amount">
 				<xsl:value-of select="guide/confirmation-code" />
 			</xsl:when>
 			<xsl:otherwise>
@@ -54,7 +54,7 @@
 					<td><img class="hidden" name="password_img" id="password_img" src="/img/rederrorarrow.gif" width="13" height="10" alt="" border="0" /></td>
 				</tr>
 				<!-- Transfer requires 2-Factor Authentication -->
-				<xsl:if test="string-length(account/mobile) &gt; 0 and amount >= country-config/min-2fa-amount">
+				<xsl:if test="string-length(account/mobile) &gt; 0 and amount &gt;= country-config/min-2fa-amount">
 					<tr>
 						<td>
 							<label for="code" accesskey="C"><xsl:value-of select="labels/confirmation-code" /></label>

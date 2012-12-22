@@ -328,50 +328,54 @@ msgid @@@ Top-Up History @@@
 msgstr @@@ Indsat historik @@@
 
 #: /webroot/home/history.php:43
+msgid @@@ Reward History @@@
+msgstr @@@ Optjente point @@@
+
+#: /webroot/home/history.php:44
 msgid @@@ ID @@@
 msgstr @@@ ID @@@
 
-#: /webroot/home/history.php:44
+#: /webroot/home/history.php:45
 msgid @@@ mPoint ID @@@
 msgstr @@@ mPoint ID @@@
 
-#: /webroot/home/history.php:45
+#: /webroot/home/history.php:46
 msgid @@@ Amount @@@
 msgstr @@@ Beløb @@@
 
-#: /webroot/home/history.php:46
+#: /webroot/home/history.php:47
 msgid @@@ Method @@@
 msgstr @@@ Metode @@@
 
-#: /webroot/home/history.php:47
+#: /webroot/home/history.php:48
 msgid @@@ Price @@@
 msgstr @@@ Pris @@@
 
-#: /webroot/home/history.php:48
+#: /webroot/home/history.php:49
 msgid @@@ Fee @@@
 msgstr @@@ Gebyr @@@
 
-#: /webroot/home/history.php:49
+#: /webroot/home/history.php:50
 msgid @@@ Merchant @@@
 msgstr @@@ Sælger @@@
 
-#: /webroot/home/history.php:50
+#: /webroot/home/history.php:51
 msgid @@@ Order No. @@@
 msgstr @@@ Ordrenr. @@@
 
-#: /webroot/home/history.php:51
+#: /webroot/home/history.php:52
 msgid @@@ Sender @@@
 msgstr @@@ Afsender @@@
 
-#: /webroot/home/history.php:52
+#: /webroot/home/history.php:53
 msgid @@@ Recipient @@@
 msgstr @@@ Modtager @@@
 
-#: /webroot/home/history.php:53
+#: /webroot/home/history.php:54
 msgid @@@ IP @@@
 msgstr @@@ IP @@@
 
-#: /webroot/home/history.php:54
+#: /webroot/home/history.php:55
 msgid @@@ Timestamp @@@
 msgstr @@@ Tidspunkt @@@
 
@@ -604,21 +608,29 @@ msgstr @@@ Log ud @@@
 msgid @@@ Balance @@@
 msgstr @@@ Saldo @@@
 
-#: /webroot/home/topup.php:42
+#: /webroot/home/topup.php:50
 msgid @@@ Top-Up Account @@@
 msgstr @@@ Indsæt penge på konto @@@
 
-#: /webroot/home/topup.php:45
+#: /webroot/home/topup.php:53
 msgid @@@ Balance @@@
 msgstr @@@ Saldo @@@
 
-#: /webroot/home/topup.php:46
+#: /webroot/home/topup.php:54
 msgid @@@ Amount @@@
 msgstr @@@ Beløb @@@
 
-#: /webroot/home/topup.php:47
+#: /webroot/home/topup.php:55
 msgid @@@ Price @@@
 msgstr @@@ Pris @@@
+
+#: /webroot/home/topup.php:56
+msgid @@@ Top-Up Points @@@
+msgstr @@@ Top-Up Points @@@
+
+#: /webroot/home/topup.php:57
+msgid @@@ Top-Up e-Money @@@
+msgstr @@@ Top-Up e-Money @@@
 
 #: /webroot/home/transfer.php:44
 msgid @@@ Transfer @@@
@@ -674,7 +686,7 @@ msgstr @@@ Overfør @@@
 
 #: /webroot/home/transfer.php:67
 msgid @@@ Transfer - Overview @@@
-msgstr @@@ Transfer - Overview @@@
+msgstr @@@ Overfør penge fra din e-penge konto til venner eller familie @@@
 
 #: /webroot/internal/unauthorized.php:36
 msgid @@@ Unauthorized system access @@@
@@ -1348,11 +1360,11 @@ MVH.
 msgid @@@ Loading... @@@
 msgstr @@@ Henter... @@@
 
-#: /api/classes/general.php:676
+#: /api/classes/general.php:677
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ Velkommen til {CLIENT}, aktiver venligst nedenstående link @@@
 
-#: /api/classes/general.php:682
+#: /api/classes/general.php:683
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Velkommen til {CLIENT} @@@
 
@@ -1363,7 +1375,7 @@ Kodeordet vil automatisk udløbe om en time. @@@
 
 #: /api/classes/home.php:90
 msgid @@@ mPoint - Account Disabled @@@
-msgstr @@@ Din konto hos {CLIENT} er blevet slettet pga. for mange forkerte log ind forsøg @@@
+msgstr @@@ Dine kortinformationer er slettet pga. for mange forkerte login forsøg. @@@
 
 #: /api/classes/my_account.php:57
 msgid @@@ mPoint - Send Activation Code @@@

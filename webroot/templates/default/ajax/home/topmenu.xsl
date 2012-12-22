@@ -22,7 +22,13 @@
 	</ul>
 	<ul id="info">
 		<li>
-			<xsl:value-of select="concat(info/balance, ' ', account/funds)" />
+			<xsl:variable name="points">
+			<xsl:choose>
+				<xsl:when test="account/points &lt; 10000"><xsl:value-of select="account/points" /></xsl:when>
+				<xsl:otherwise><xsl:value-of select="concat(substring(account/points, 1, string-length(account/points) - 3), '.', substring(account/points, string-length(account/points) - 2) )" /></xsl:otherwise>
+			</xsl:choose>
+			</xsl:variable>
+			<xsl:value-of select="concat(info/balance, ' ', $points, ' ', account/points/@currency, ' / ', account/funds)" />
 		</li>
 	</ul>
 </xsl:template>

@@ -97,7 +97,7 @@ class CreditCard extends EndUserAccount
 		}
 		/* ========== Calculate Logo Dimensions End ========== */
 
-		$sql = "SELECT C.id, C.name,
+		$sql = "SELECT C.id, C.name, C.minlength, C.maxlength, C.cvclength,
 					PSP.id AS pspid, MA.name AS account, MSA.name AS subaccount, PC.name AS currency
 				FROM System.Card_Tbl C
 				INNER JOIN Client.CardAccess_Tbl CA ON C.id = CA.cardid
@@ -122,6 +122,7 @@ class CreditCard extends EndUserAccount
 		$xml = '<cards accountid="'. $this->_obj_TxnInfo->getAccountID() .'">';
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
+			$aRS = array();
 			// Transaction instantiated via SMS or "Card" is NOT Premium SMS
 			if ($this->_obj_TxnInfo->getGoMobileID() > -1 || $RS["ID"] != 10)
 			{
@@ -135,20 +136,42 @@ class CreditCard extends EndUserAccount
 					}
 					else { $sName = str_replace("{CLIENT}", $this->_obj_TxnInfo->getClientConfig()->getName(), $this->getText()->_("My Account") ); }
 				}
-				else { $sName = $RS["NAME"]; }
+				else
+				{
+					$sName = $RS["NAME"];
+					
+					$sql = "SELECT min, max
+							FROM System.CardPrefix_Tbl
+							WHERE cardid = ". $RS["ID"];
+//					echo $sql ."\n";
+					$aRS = $this->getDBConn()->getAllNames($sql);
+				}
 				// Construct XML Document with card data
-				$xml .= '<item id="'. $RS["ID"] .'" type-id="'. $RS["ID"] .'" pspid="'. $RS["PSPID"] .'">';
+				$xml .= '<item id="'. $RS["ID"] .'" type-id="'. $RS["ID"] .'" pspid="'. $RS["PSPID"] .'" min-length="'. $RS["MINLENGTH"] .'" max-length="'. $RS["MAXLENGTH"] .'" cvc-length="'. $RS["CVCLENGTH"] .'">';
 				$xml .= '<name>'. htmlspecialchars($sName, ENT_NOQUOTES) .'</name>';
 				$xml .= '<logo-width>'. $iWidth .'</logo-width>';
 				$xml .= '<logo-height>'. $iHeight .'</logo-height>';
 				$xml .= '<account>'. $RS["ACCOUNT"] .'</account>';
 				$xml .= '<subaccount>'. $RS["SUBACCOUNT"] .'</subaccount>';
 				$xml .= '<currency>'. $RS["CURRENCY"] .'</currency>';
+				if (is_array($aRS) === true && count($aRS) > 0)
+				{
+					$xml .= '<prefixes>';
+					for ($i=0; $i<count($aRS); $i++)
+					{
+						$xml .= '<prefix>';
+						$xml .= '<min>'. $aRS[$i]["MIN"] .'</min>';
+						$xml .= '<max>'. $aRS[$i]["MAX"] .'</max>';
+						$xml .= '</prefix>';
+					}
+					$xml .= '</prefixes>';
+				}
+				else { $xml .= '<prefixes>A</prefixes>'; } 
 				$xml .= '</item>';
 			}
 		}
 		$xml .= '</cards>';
-
+		
 		return $xml;
 	}
 }

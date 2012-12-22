@@ -41,8 +41,8 @@ class DIBS extends Callback
 		// Client is configured to use mPoint's protocol
 		if ($this->getTxnInfo()->getClientConfig()->getMethod() == "mPoint")
 		{
-			if ($sid == Constants::iPAYMENT_ACCEPTED_STATE) { parent::notifyClient($sid, $_post["transact"], $_post['cardid'], $_post['cardprefix'] . str_replace("X", "*", substr($_post['cardnomask'], strlen($_post['cardprefix']) ) ) ); }
-			else { parent::notifyClient($sid, $_post["transact"]); }
+			if ($sid == Constants::iPAYMENT_ACCEPTED_STATE) { parent::notifyClient($sid, $_post["transact"], $_post["amount"], $_post['cardid'], $_post['cardprefix'] . str_replace("X", "*", substr($_post['cardnomask'], strlen($_post['cardprefix']) ) ) ); }
+			else { parent::notifyClient($sid, $_post["transact"], $_post["amount"]); }
 		}
 		// Client is configured to use DIBS' protocol
 		else
@@ -172,33 +172,47 @@ class DIBS extends Callback
 			$b .= "&textreply=true";
 			
 			$obj_HTTP = parent::send("https://payment.architrade.com/cgi-bin/capture.cgi", $this->constHTTPHeaders(), $b);
-			$aStatus = array();
-			parse_str($obj_HTTP->getReplyBody(), $aStatus);
-			
-			// Capture Declined
-			if (array_key_exists("result", $aStatus) === false || $aStatus["result"] > 0)
+			if ($obj_HTTP->getReturnCode() == 200)
 			{
-				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_DECLINED_STATE, var_export($aStatus, true) );
-				trigger_error("Capture declined by DIBS for Transaction: ". $txn .", Result Code: ". @$aStatus["result"], E_USER_WARNING);
+				$aStatus = array();
+				parse_str($obj_HTTP->getReplyBody(), $aStatus);
 				
-				return $aStatus["result"];
+				// Capture Declined
+				if (array_key_exists("result", $aStatus) === false || $aStatus["result"] > 0)
+				{
+					$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_DECLINED_STATE, var_export($aStatus, true) );
+					trigger_error("Capture declined by DIBS for Transaction: ". $this->getTxnInfo()->getID() ."(". $txn ."), Result Code: ". @$aStatus["result"], E_USER_WARNING);
+					
+					return $aStatus["result"];
+				}
+				// Payment successfully captured
+				else
+				{
+					$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
+					
+					return 0;
+				}
 			}
-			// Payment successfully captured
 			else
 			{
-				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
+				trigger_error("Capture declined by DIBS for Transaction: ". $this->getTxnInfo()->getID() ."(". $txn ."), HTTP Response Code: ". $obj_HTTP->getReturnCode(), E_USER_WARNING);
 				
-				return 0;
+				return 20;
 			}
 		}
 		// Capture already completed
-		elseif ($code == 11)
+		elseif ($code == 5)
 		{
 			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURED_STATE, "DIBS returned code: ". $code ." from status call");
 			
 			return 0;
 		}
-		else { return $code; }
+		else
+		{
+			trigger_error("Transaction: ". $this->getTxnInfo()->getID() ."(". $txn .") not ready for Capture, DIBS returned code: ". $code, E_USER_WARNING);
+			
+			return $code;
+		}
 	}
 	
 	/**
@@ -226,7 +240,7 @@ class DIBS extends Callback
 	 * @return	integer
 	 * @throws	E_USER_WARNING
 	 */
-	public function refund($txn)
+	public function refund($txn, $amount)
 	{
 		$code = $this->status($txn);
 		// Transaction ready for Refund
@@ -235,7 +249,7 @@ class DIBS extends Callback
 			$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
 			$b .= "&mpointid=". $this->getTxnInfo()->getID();
 			$b .= "&transact=". $txn;
-			$b .= "&amount=". $this->getTxnInfo()->getAmount();
+			$b .= "&amount=". $amount;
 			$b .= "&orderid=". urlencode($this->getTxnInfo()->getOrderID() );
 			if ($this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP) > -1) { $b .= "&account=". $this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP); }
 			$b .= "&textreply=true";
@@ -251,7 +265,7 @@ class DIBS extends Callback
 				{
 					if (array_key_exists("result", $aStatus) === false) { $str = var_export($aStatus, true); }
 					else { $str = "Result Code: ". $aStatus["result"]; }
-					trigger_error("Refund declined by DIBS for Transaction: ". $txn .", ". $str, E_USER_WARNING);
+					trigger_error("Refund declined by DIBS for Transaction: ". $this->getTxnInfo()->getID() ."(". $txn ."), ". $str, E_USER_WARNING);
 					
 					return $aStatus["result"];
 				}
@@ -265,7 +279,7 @@ class DIBS extends Callback
 			}
 			else
 			{
-				trigger_error("Refund declined by DIBS for Transaction: ". $txn .", HTTP Response Code: ". $obj_HTTP->getReturnCode(), E_USER_WARNING);
+				trigger_error("Refund declined by DIBS for Transaction: ". $this->getTxnInfo()->getID() ."(". $txn ."), HTTP Response Code: ". $obj_HTTP->getReturnCode(), E_USER_WARNING);
 				
 				return 20;
 			}
@@ -277,7 +291,12 @@ class DIBS extends Callback
 			
 			return 0;
 		}
-		else { return $code; }
+		else
+		{
+			trigger_error("Transaction: ". $this->getTxnInfo()->getID() ."(". $txn .") not ready for Refund, DIBS returned code: ". $code, E_USER_WARNING);
+			
+			return $code;
+		}
 	}
 	
 	/**
@@ -342,7 +361,8 @@ class DIBS extends Callback
 		$b .= "&preauth=false";
 		$b .= "&cardnomask=". $mask;
 		$b .= "&cardprefix=". substr($mask, 0, strpos($mask, "*") );
-		$b .= "&cardexpdate=". substr($expiry, strpos($expiry, "/") ) . substr($expiry, 0, strpos($expiry, "/") );
+		$b .= "&cardexpdate=". substr($expiry, strpos($expiry, "/") + 1) . substr($expiry, 0, strpos($expiry, "/") );
+		$b .= "&amount=". $this->getTxnInfo()->getAmount();
 
 		$obj_HTTP = new HTTPClient(new Template(), $oCI);
 		$obj_HTTP->connect();

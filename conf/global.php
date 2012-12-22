@@ -182,6 +182,19 @@ $aHTTP_CONN_INFO["wannafind"]["contenttype"] = "application/x-www-form-urlencode
 //$aHTTP_CONN_INFO["wannafind"]["password"] = "";	// Set from the Client Configuration 
 
 /**
+ * Connection info for connecting to NetAxept
+ */
+$aHTTP_CONN_INFO["netaxept"]["protocol"] = "https";
+$aHTTP_CONN_INFO["netaxept"]["host"] = "epayment-test.bbs.no";
+$aHTTP_CONN_INFO["netaxept"]["port"] = 443;
+$aHTTP_CONN_INFO["netaxept"]["timeout"] = 120;
+$aHTTP_CONN_INFO["netaxept"]["path"] = "/netaxept.svc?wsdl";
+$aHTTP_CONN_INFO["netaxept"]["method"] = "POST";
+$aHTTP_CONN_INFO["netaxept"]["contenttype"] = "application/x-www-form-urlencoded";
+//$aHTTP_CONN_INFO["netaxept"]["username"] = "";	// Set from the Client Configuration 
+//$aHTTP_CONN_INFO["netaxept"]["password"] = "";	// Set from the Client Configuration 
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>

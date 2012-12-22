@@ -58,6 +58,7 @@ class CellpointMobile extends Callback
 		$b .= "&gomobileid=". $gmid;
 		$b .= "&language=". $this->getTxnInfo()->getLanguage();
 		$b .= "&status=". $status;
+		$b .= "&amount=". $this->getTxnInfo()->getAmount();
 
 		$obj_HTTP = new HTTPClient(new Template(), $oCI);
 		$obj_HTTP->connect();

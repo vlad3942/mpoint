@@ -99,7 +99,7 @@ class SMS_Purchase extends MobileWeb
 	{
 		$sql = "SELECT Txn.id
 				FROM Log.Transaction_Tbl Txn
-				WHERE Txn.typeid = ". Constants::iSMS_PURCHASE_TYPE ." AND Txn.clientid = ". $this->getClientConfig()->getID() ."
+				WHERE Txn.typeid = ". Constants::iPURCHASE_VIA_SMS ." AND Txn.clientid = ". $this->getClientConfig()->getID() ."
 					AND Txn.countryid = ". $oMI->getCountry() ." AND Txn.mobile = '". $oMI->getSender() ."'
 					AND NOT EXISTS (SELECT id
 									FROM Log.Message_Tbl

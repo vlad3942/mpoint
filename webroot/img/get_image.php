@@ -72,7 +72,11 @@ else
 			}
 		}
 		// URL for My Account Icon provided
-		if ($id == 11 && strlen($_SESSION['obj_TxnInfo']->getIconURL() ) > 0) { $obj_Image = new Image($_SESSION['obj_TxnInfo']->getIconURL() ); }
+		if ($id == 11 && array_key_exists("obj_TxnInfo", $_SESSION) === true
+			&& ($_SESSION['obj_TxnInfo'] instanceof TxnInfo) === true && strlen($_SESSION['obj_TxnInfo']->getIconURL() ) > 0)
+		{
+			$obj_Image = new Image($_SESSION['obj_TxnInfo']->getIconURL() );
+		}
 		else { $obj_Image = $obj_mPoint->getCardLogo($id); }
 		$etag = "card_". $id;
 		break;

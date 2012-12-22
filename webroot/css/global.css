@@ -170,7 +170,7 @@ td#top-menu ul#info
 }
 td#top-menu ul#info li
 {
-	width: 150px;
+	width: 250px;
 }
 /* ========== Top Menu End ========== */
 
@@ -351,7 +351,7 @@ div#view-transactions h2, div#view-transactions td.label, div#my-account h2
 }
 div#view-transactions div#transaction-data
 {
-	width: 600px;
+	width: 700px;
 	height: 250px;
 	overflow: auto;
 }

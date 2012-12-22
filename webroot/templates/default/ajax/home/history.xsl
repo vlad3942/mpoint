@@ -16,7 +16,20 @@
 					<td class="label"><xsl:value-of select="labels/ip" /></td>
 					<td class="label"><xsl:value-of select="labels/timestamp" /></td>
 				</tr>
-				<xsl:apply-templates select="history/transaction[@type = 1000]" mode="topup" />
+				<xsl:apply-templates select="history/transaction[@type = 1000 or @type = 1004]" mode="topup" />
+			</table>
+		</span>
+		<span id="reward-data">
+			<br />
+			<table cellpadding="0" cellspacing="0">
+				<tr class="mPoint_Even">
+					<td class="label"><xsl:value-of select="labels/id" /></td>
+					<td class="label mPoint_Number"><xsl:value-of select="labels/mpointid" /></td>
+					<td class="label mPoint_Number"><xsl:value-of select="labels/amount" /></td>
+					<td class="label"><xsl:value-of select="labels/ip" /></td>
+					<td class="label"><xsl:value-of select="labels/timestamp" /></td>
+				</tr>
+				<xsl:apply-templates select="history/transaction[@type = 1007]" mode="reward" />
 			</table>
 		</span>
 		<span id="purchase-data">
@@ -32,7 +45,7 @@
 					<td class="label"><xsl:value-of select="labels/ip" /></td>
 					<td class="label"><xsl:value-of select="labels/timestamp" /></td>
 				</tr>
-				<xsl:apply-templates select="history/transaction[@type = 1001 or @type = 1009]" mode="purchase" />
+				<xsl:apply-templates select="history/transaction[@type = 1001 or @type = 1005 or @type = 1009]" mode="purchase" />
 			</table>
 		</span>
 		<span id="transfer-data">
@@ -59,32 +72,40 @@
 		<table align="center">
 		<tr>
 			<td class="folder">
-			<ul class="menu">
-				<li>
-					<a href="#" onclick="javascript:selectMenu(this, 'current'); changeFolder(document.getElementById('data-source'), document.getElementById('transaction-data'), document.getElementById('topup-data') );">
-						<div>
-							<span><xsl:value-of select="labels/topup-history" /></span>
-							<img src="/img/folder.png" width="20" height="20" alt="" border="0" />
-						</div>
-					</a>
-				</li>
-				<li>
-					<a class="current" href="#" onclick="javascript:selectMenu(this, 'current'); changeFolder(document.getElementById('data-source'), document.getElementById('transaction-data'), document.getElementById('purchase-data') );">
-						<div>
-							<span><xsl:value-of select="labels/purchase-history" /></span>
-							<img src="/img/folder.png" width="20" height="20" alt="" border="0" />
-						</div>
-					</a>
-				</li>
-				<li>
-					<a href="#" onclick="javascript:selectMenu(this, 'current'); changeFolder(document.getElementById('data-source'), document.getElementById('transaction-data'), document.getElementById('transfer-data') );">
-						<div>
-							<span><xsl:value-of select="labels/transfer-history" /></span>
-							<img src="/img/folder.png" width="20" height="20" alt="" border="0" />
-						</div>
-					</a>
-				</li>
-			</ul>
+				<ul class="menu">
+					<li>
+						<a href="#" onclick="javascript:selectMenu(this, 'current'); changeFolder(document.getElementById('data-source'), document.getElementById('transaction-data'), document.getElementById('topup-data') );">
+							<div>
+								<span><xsl:value-of select="labels/topup-history" /></span>
+								<img src="/img/folder.png" width="20" height="20" alt="" border="0" />
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="#" onclick="javascript:selectMenu(this, 'current'); changeFolder(document.getElementById('data-source'), document.getElementById('transaction-data'), document.getElementById('reward-data') );">
+							<div>
+								<span><xsl:value-of select="labels/reward-history" /></span>
+								<img src="/img/folder.png" width="20" height="20" alt="" border="0" />
+							</div>
+						</a>
+					</li>
+					<li>
+						<a class="current" href="#" onclick="javascript:selectMenu(this, 'current'); changeFolder(document.getElementById('data-source'), document.getElementById('transaction-data'), document.getElementById('purchase-data') );">
+							<div>
+								<span><xsl:value-of select="labels/purchase-history" /></span>
+								<img src="/img/folder.png" width="20" height="20" alt="" border="0" />
+							</div>
+						</a>
+					</li>
+					<li>
+						<a href="#" onclick="javascript:selectMenu(this, 'current'); changeFolder(document.getElementById('data-source'), document.getElementById('transaction-data'), document.getElementById('transfer-data') );">
+							<div>
+								<span><xsl:value-of select="labels/transfer-history" /></span>
+								<img src="/img/folder.png" width="20" height="20" alt="" border="0" />
+							</div>
+						</a>
+					</li>
+				</ul>
 			</td>
 		</tr>
 		<tr>
@@ -117,6 +138,29 @@
 		<td class="mPoint_Number"><xsl:value-of select="@mpointid" /></td>
 		<td class="mPoint_Number"><xsl:value-of select="price" /></td>
 		<td class="mPoint_Number"><xsl:value-of select="fee" /></td>
+		<td><xsl:value-of select="ip" /></td>
+		<td><xsl:value-of select="timestamp" /></td>
+	</tr>
+</xsl:template>
+
+<xsl:template match="transaction" mode="reward">
+	<xsl:variable name="css">
+		<xsl:choose>
+			<!-- Even row -->
+			<xsl:when test="position() mod 2 = 0">
+				<xsl:text>mPoint_Even</xsl:text>
+			</xsl:when>
+			<!-- Uneven row -->
+			<xsl:otherwise>
+				<xsl:text>mPoint_Uneven</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
+	
+	<tr class="{$css}">
+		<td class="mPoint_Number"><xsl:value-of select="@id" /></td>
+		<td class="mPoint_Number"><xsl:value-of select="@mpointid" /></td>
+		<td class="mPoint_Number"><xsl:value-of select="price" /></td>
 		<td><xsl:value-of select="ip" /></td>
 		<td><xsl:value-of select="timestamp" /></td>
 	</tr>

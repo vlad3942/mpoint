@@ -143,6 +143,18 @@ switch(cgi.language)
 /* ========== Client Customization Start ========== */
 switch(cgi.clientid)
 {
+	// mPoint - System Account (DK)
+	case (100)
+	{
+		background_colour := 'fff';
+		border_colour := '8FBFD5';
+	}
+	// mPoint - System Account (US)
+	case (200)
+	{
+		background_colour := 'fff';
+		border_colour := '8FBFD5';
+	}
 	// mPoint - Mobile Payment Demo (US)
 	case (10000)
 	{
@@ -1568,7 +1580,7 @@ switch(cgi.clientid)
 		/* ========== Tag Classes Start ========== */
 		body
 		{
-			margin: 5px 5px 5px 5px;
+			margin: 0px;
 		}
 		body, table
 		{
@@ -1580,6 +1592,10 @@ switch(cgi.clientid)
 			font-size: 1em;
 			font-family: "Trebuchet MS",arial,sans-serif;
 			color: #000;
+		}
+		div#content
+		{
+			margin: 10px 0px 10px 10px;
 		}
 		table, table * div, table * .mPoint_Info
 		{
@@ -1762,196 +1778,200 @@ switch(cgi.clientid)
 	</PML_IF>
 	<div id="progress" class="mPoint_Info"><PML_VAL>progress</PML_VAL></div>
 	
-	<div class="mPoint_Status">
-		<PML_SWITCH EXPR="auth.reason">
-			<PML_CASE VALUE="0"><PML_VAL>error_0</PML_VAL></PML_CASE>
-			<PML_CASE VALUE="1"><PML_VAL>error_1</PML_VAL></PML_CASE>
-			<PML_CASE VALUE="2"><PML_VAL>error_2</PML_VAL></PML_CASE>
-			<PML_CASE VALUE="3"><PML_VAL>error_3</PML_VAL></PML_CASE>
-			<PML_CASE VALUE="4"><PML_VAL>error_4</PML_VAL></PML_CASE>
-			<PML_CASE VALUE="5"><PML_VAL>error_5</PML_VAL></PML_CASE>
-			<PML_CASE VALUE="6"><PML_VAL>error_6</PML_VAL></PML_CASE>
-			<PML_CASE VALUE="7"><PML_VAL>error_7</PML_VAL></PML_CASE>
-			<PML_CASE VALUE="8"><PML_VAL>error_8</PML_VAL></PML_CASE>
-			<PML_CASE VALUE="9"><PML_VAL>error_9</PML_VAL></PML_CASE>
-			<PML_CASE VALUE="10"><PML_VAL>error_10</PML_VAL></PML_CASE>
-			<PML_DEFAULT><PML_VAL>error_unknown</PML_VAL></PML_DEFAULT>
-		</PML_SWITCH>
-		</div>
-		<form action="auth.pml" method="post">
-			<div>
-				<PML_IF COND="cgi.test > 0">
-					<input type="hidden" name="test" PML_value="cgi.test" />
-				</PML_IF>
-				<!-- DIBS Required Data -->
-				<input type="hidden" name="callbackurl" PML_value="string.HTMLencode(cgi.callbackurl)" />
-				<input type="hidden" name="accepturl" PML_value="string.HTMLencode(cgi.accepturl)" />
-				<input type="hidden" name="amount" PML_value="cgi.amount" />
-				<input type="hidden" name="currency" PML_value="cgi.currency" />
-				<input type="hidden" name="orderid" PML_value="cgi.orderid" />
-				<input type="hidden" name="fullreply" value="true" />
-				<PML_IF COND="cgi.capturenow = 'true'">
-					<input type="hidden" name="capturenow" PML_value="cgi.capturenow" />
-				</PML_IF>
-				<PML_IF COND="cgi.accounts > 0">
-					<input type="hidden" name="account" PML_value="cgi.accounts" />
-				</PML_IF>			
-				<input type="hidden" name="lang" PML_value="cgi.lang" />
-				<input type="hidden" name="paytype" PML_value="cgi.paytype" />
-				<!-- mPoint Required Data -->
-				<input type="hidden" name="device_name" PML_value="cgi.device_name" />
-				<input type="hidden" name="device_width" PML_value="cgi.device_width" />
-				<input type="hidden" name="device_height" PML_value="cgi.device_height" />
-				<input type="hidden" name="logo_url" PML_value="cgi.logo_url" />
-				<input type="hidden" name="logo_width" PML_value="cgi.logo_width" />
-				<input type="hidden" name="logo_height" PML_value="cgi.logo_height" />
-				<input type="hidden" name="format" PML_value="cgi.format" />
-				<input type="hidden" name="PHPSESSID" PML_value="cgi.PHPSESSID" />
-				<input type="hidden" name="language" PML_value="cgi.language" />
-				<input type="hidden" name="cardid" PML_value="cgi.cardid" />
-				<input type="hidden" name="mpointid" PML_value="cgi.mpointid" />
-				<input type="hidden" name="markup" PML_value="cgi.markup" />
-				<!-- Current transaction is an Account Top-Up and a previous transaction is in progress -->
-				<PML_IF COND="cgi.org_mpointid > 0">
-					<input type="hidden" name="org_mpointid" PML_value="cgi.org_mpointid" />
-				</PML_IF>
-				<input type="hidden" name="euaid" PML_value="cgi.euaid" />
+	<div id="wrapper">
+		<div id="content">
+			<div class="mPoint_Status">
+				<PML_SWITCH EXPR="auth.reason">
+					<PML_CASE VALUE="0"><PML_VAL>error_0</PML_VAL></PML_CASE>
+					<PML_CASE VALUE="1"><PML_VAL>error_1</PML_VAL></PML_CASE>
+					<PML_CASE VALUE="2"><PML_VAL>error_2</PML_VAL></PML_CASE>
+					<PML_CASE VALUE="3"><PML_VAL>error_3</PML_VAL></PML_CASE>
+					<PML_CASE VALUE="4"><PML_VAL>error_4</PML_VAL></PML_CASE>
+					<PML_CASE VALUE="5"><PML_VAL>error_5</PML_VAL></PML_CASE>
+					<PML_CASE VALUE="6"><PML_VAL>error_6</PML_VAL></PML_CASE>
+					<PML_CASE VALUE="7"><PML_VAL>error_7</PML_VAL></PML_CASE>
+					<PML_CASE VALUE="8"><PML_VAL>error_8</PML_VAL></PML_CASE>
+					<PML_CASE VALUE="9"><PML_VAL>error_9</PML_VAL></PML_CASE>
+					<PML_CASE VALUE="10"><PML_VAL>error_10</PML_VAL></PML_CASE>
+					<PML_DEFAULT><PML_VAL>error_unknown</PML_VAL></PML_DEFAULT>
+				</PML_SWITCH>
+			</div>
+			<form action="auth.pml" method="post">
+				<div>
+					<PML_IF COND="cgi.test > 0">
+						<input type="hidden" name="test" PML_value="cgi.test" />
+					</PML_IF>
+					<!-- DIBS Required Data -->
+					<input type="hidden" name="callbackurl" PML_value="string.HTMLencode(cgi.callbackurl)" />
+					<input type="hidden" name="accepturl" PML_value="string.HTMLencode(cgi.accepturl)" />
+					<input type="hidden" name="amount" PML_value="cgi.amount" />
+					<input type="hidden" name="currency" PML_value="cgi.currency" />
+					<input type="hidden" name="orderid" PML_value="cgi.orderid" />
+					<input type="hidden" name="fullreply" value="true" />
+					<PML_IF COND="cgi.capturenow = 'true'">
+						<input type="hidden" name="capturenow" PML_value="cgi.capturenow" />
+					</PML_IF>
+					<PML_IF COND="cgi.accounts > 0">
+						<input type="hidden" name="account" PML_value="cgi.accounts" />
+					</PML_IF>			
+					<input type="hidden" name="lang" PML_value="cgi.lang" />
+					<input type="hidden" name="paytype" PML_value="cgi.paytype" />
+					<!-- mPoint Required Data -->
+					<input type="hidden" name="device_name" PML_value="cgi.device_name" />
+					<input type="hidden" name="device_width" PML_value="cgi.device_width" />
+					<input type="hidden" name="device_height" PML_value="cgi.device_height" />
+					<input type="hidden" name="logo_url" PML_value="cgi.logo_url" />
+					<input type="hidden" name="logo_width" PML_value="cgi.logo_width" />
+					<input type="hidden" name="logo_height" PML_value="cgi.logo_height" />
+					<input type="hidden" name="format" PML_value="cgi.format" />
+					<input type="hidden" name="PHPSESSID" PML_value="cgi.PHPSESSID" />
+					<input type="hidden" name="language" PML_value="cgi.language" />
+					<input type="hidden" name="cardid" PML_value="cgi.cardid" />
+					<input type="hidden" name="mpointid" PML_value="cgi.mpointid" />
+					<input type="hidden" name="markup" PML_value="cgi.markup" />
+					<!-- Current transaction is an Account Top-Up and a previous transaction is in progress -->
+					<PML_IF COND="cgi.org_mpointid > 0">
+						<input type="hidden" name="org_mpointid" PML_value="cgi.org_mpointid" />
+					</PML_IF>
+					<input type="hidden" name="euaid" PML_value="cgi.euaid" />
+					<!-- Store Credit Card -->
+					<PML_IF COND="cgi.store_card > 0">
+						<input type="hidden" name="store_card" PML_value="cgi.store_card" />
+						<input type="hidden" name="auto_store_card" PML_value="cgi.auto_store_card" />
+					</PML_IF>
+					<!-- Dynamic Page Data -->
+					<input type="hidden" name="clientid" PML_value="cgi.clientid" />
+					<input type="hidden" name="client" PML_value="cgi.client" />
+					<input type="hidden" name="mpoint_width" PML_value="cgi.mpoint_width" />
+					<input type="hidden" name="mpoint_height" PML_value="cgi.mpoint_height" />
+					<input type="hidden" name="sms_receipt" PML_value="cgi.sms_receipt" />
+					<input type="hidden" name="email_receipt" PML_value="cgi.email_receipt" />
+					<input type="hidden" name="email_url" PML_value="cgi.email_url" />
+					<input type="hidden" name="accept_url" PML_value="cgi.accept_url" />
+					<input type="hidden" name="mobile" PML_value="cgi.mobile" />
+					<input type="hidden" name="price" PML_value="cgi.price" />
+					<input type="hidden" name="card_width" PML_value="cgi.card_width" />
+					<input type="hidden" name="card_heigth" PML_value="cgi.card_heigth" />
+					<PML_SCRIPT>
+					// Transfer Custom Variables
+					foreach(i ; cgi)
+					{
+						if (string.substring(cgi[i], 0, 4) = 'var_')
+						{
+							out.put('<input type="hidden" name="client_vars_names_'@ i @'" value="'@ cgi[i] @'" />');
+							out.put('<input type="hidden" name="client_vars_data_'@ i @'" value="'@ cgi[i-7] @'" />');
+						}
+					}
+					</PML_SCRIPT>
+				</div>
+				<div>
+					<span class="mPoint_Label"><PML_VAL>label_selected_card</PML_VAL>:</span>
+					<table>
+					<tr>
+					<PML_SWITCH EXPR="cgi.cardid">
+						<PML_CASE VALUE="1">
+							<td><img src="images/amex.jpg" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- American Express -" /></td>
+							<td colspan="3" class="status">&nbsp;American Express</td>
+						</PML_CASE>
+						<PML_CASE VALUE="2">
+							<td><img src="images/dankort.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Dankort -" /></td>
+							<td colspan="3" class="status">&nbsp;Dankort</td>
+						</PML_CASE>
+						<PML_CASE VALUE="3">
+							<td><img src="images/diners.jpg" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Diners Club -" /></td>
+							<td colspan="3" class="status">&nbsp;Diners Club</td>
+						</PML_CASE>
+						<PML_CASE VALUE="4">
+							<td><img src="images/mastercard.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- EuroCard -" /></td>
+							<td colspan="3" class="status">&nbsp;EuroCard</td>
+						</PML_CASE>
+						<PML_CASE VALUE="5">
+							<td><img src="images/jcb.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- JCB -" /></td>
+							<td colspan="3" class="status">&nbsp;JCB</td>
+						</PML_CASE>
+						<PML_CASE VALUE="6">
+							<td><img src="images/maestro.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Maestro -" /></td>
+							<td colspan="3" class="status">&nbsp;Maestro</td>
+						</PML_CASE>
+						<PML_CASE VALUE="7">
+							<td><img src="images/mastercard.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- MasterCard -" /></td>
+							<td colspan="3" class="status">&nbsp;MasterCard</td>
+						</PML_CASE>
+						<PML_CASE VALUE="8">
+							<td><img src="images/visa.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- VISA -" /></td>
+							<td colspan="3" class="status">&nbsp;VISA</td>
+						</PML_CASE>
+						<PML_CASE VALUE="9">
+							<td><img src="images/visa_electron.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- VISA Electron -" /></td>
+							<td colspan="3" class="status">&nbsp;VISA Electron</td>
+						</PML_CASE>
+					</PML_SWITCH>
+					</tr>
+					</table>
+				</div>
+				<!-- Price -->
+				<div id="price">
+					<span class="mPoint_Label"><PML_VAL>label_price</PML_VAL>:</span>
+					<PML_VAL>cgi.price</PML_VAL>
+				</div>
+				<!-- Credit Card Information -->
+				<div class="mPoint_Help"><PML_VAL>info</PML_VAL></div>
+				<div id="cardinfo">
+					<div class="mPoint_Label">
+						<PML_VAL>label_card_number</PML_VAL>:<br />
+						<PML_IF COND="sess_cardno > 0">
+							<input name="cardno" type="number" maxlength="19" PML_value="string.precision(sess_cardno, 0)" size="21" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
+						</PML_IF>
+						<PML_ELSE>
+							<input name="cardno" type="number" maxlength="19" value="" size="21" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
+						</PML_ELSE>
+					</div>
+					<div class="mPoint_Label">
+						<PML_VAL>label_expiry</PML_VAL> <span class="mPoint_Info">(<PML_VAL>expiry_month</PML_VAL>/<PML_VAL>expiry_year</PML_VAL>)</span>:<br />
+						<PML_IF COND="sess_expmon > 0">
+							<input name="expmon" type="number" maxlength="2" PML_value="string.precision(sess_expmon, 0)" size="3" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
+						</PML_IF>
+						<PML_ELSE>
+							<input name="expmon" type="number" maxlength="2" value="" size="3" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" />
+						</PML_ELSE>
+						&nbsp;/&nbsp;
+						<PML_IF COND="sess_expyear > 0">
+							<input name="expyear" type="number" maxlength="2" PML_value="string.precision(sess_expyear, 0)" size="3" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
+						</PML_IF>
+						<PML_ELSE>
+							<input name="expyear" type="number" maxlength="2" value="" size="3" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
+						</PML_ELSE>
+					</div>
+					<div class="mPoint_Label">
+						<PML_VAL>label_cvc</PML_VAL>:<br />
+						<PML_IF COND="sess_cvc > 0">
+							<input name="cvc" type="number" maxlength="3" PML_value="string.precision(sess_cvc, 0)" size="4" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
+						</PML_IF>
+						<PML_ELSE>
+							<input name="cvc" type="number" maxlength="3" value="" size="4" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
+						</PML_ELSE>
+					</div>
+					<div class="mPoint_Info"><PML_VAL>cvc_help</PML_VAL></div>
+				</div>
 				<!-- Store Credit Card -->
 				<PML_IF COND="cgi.store_card > 0">
-					<input type="hidden" name="store_card" PML_value="cgi.store_card" />
-					<input type="hidden" name="auto_store_card" PML_value="cgi.auto_store_card" />
+					<div>
+						<PML_IF COND="cgi.auto_store_card = 'true'">
+							<input type="checkbox" name="preauth" value="true" checked="true" />
+						</PML_IF>
+						<PML_ELSE>
+							<input type="checkbox" name="preauth" value="true" />
+						</PML_ELSE>
+						<PML_VAL>label_store</PML_VAL>
+					</div>
 				</PML_IF>
-				<!-- Dynamic Page Data -->
-				<input type="hidden" name="clientid" PML_value="cgi.clientid" />
-				<input type="hidden" name="client" PML_value="cgi.client" />
-				<input type="hidden" name="mpoint_width" PML_value="cgi.mpoint_width" />
-				<input type="hidden" name="mpoint_height" PML_value="cgi.mpoint_height" />
-				<input type="hidden" name="sms_receipt" PML_value="cgi.sms_receipt" />
-				<input type="hidden" name="email_receipt" PML_value="cgi.email_receipt" />
-				<input type="hidden" name="email_url" PML_value="cgi.email_url" />
-				<input type="hidden" name="accept_url" PML_value="cgi.accept_url" />
-				<input type="hidden" name="mobile" PML_value="cgi.mobile" />
-				<input type="hidden" name="price" PML_value="cgi.price" />
-				<input type="hidden" name="card_width" PML_value="cgi.card_width" />
-				<input type="hidden" name="card_heigth" PML_value="cgi.card_heigth" />
-				<PML_SCRIPT>
-				// Transfer Custom Variables
-				foreach(i ; cgi)
-				{
-					if (string.substring(cgi[i], 0, 4) = 'var_')
-					{
-						out.put('<input type="hidden" name="client_vars_names_'@ i @'" value="'@ cgi[i] @'" />');
-						out.put('<input type="hidden" name="client_vars_data_'@ i @'" value="'@ cgi[i-7] @'" />');
-					}
-				}
-				</PML_SCRIPT>
-			</div>
-			<div>
-				<span class="mPoint_Label"><PML_VAL>label_selected_card</PML_VAL>:</span>
-				<table>
-				<tr>
-				<PML_SWITCH EXPR="cgi.cardid">
-					<PML_CASE VALUE="1">
-						<td><img src="images/amex.jpg" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- American Express -" /></td>
-						<td colspan="3" class="status">&nbsp;American Express</td>
-					</PML_CASE>
-					<PML_CASE VALUE="2">
-						<td><img src="images/dankort.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Dankort -" /></td>
-						<td colspan="3" class="status">&nbsp;Dankort</td>
-					</PML_CASE>
-					<PML_CASE VALUE="3">
-						<td><img src="images/diners.jpg" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Diners Club -" /></td>
-						<td colspan="3" class="status">&nbsp;Diners Club</td>
-					</PML_CASE>
-					<PML_CASE VALUE="4">
-						<td><img src="images/mastercard.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- EuroCard -" /></td>
-						<td colspan="3" class="status">&nbsp;EuroCard</td>
-					</PML_CASE>
-					<PML_CASE VALUE="5">
-						<td><img src="images/jcb.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- JCB -" /></td>
-						<td colspan="3" class="status">&nbsp;JCB</td>
-					</PML_CASE>
-					<PML_CASE VALUE="6">
-						<td><img src="images/maestro.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- Maestro -" /></td>
-						<td colspan="3" class="status">&nbsp;Maestro</td>
-					</PML_CASE>
-					<PML_CASE VALUE="7">
-						<td><img src="images/mastercard.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- MasterCard -" /></td>
-						<td colspan="3" class="status">&nbsp;MasterCard</td>
-					</PML_CASE>
-					<PML_CASE VALUE="8">
-						<td><img src="images/visa.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- VISA -" /></td>
-						<td colspan="3" class="status">&nbsp;VISA</td>
-					</PML_CASE>
-					<PML_CASE VALUE="9">
-						<td><img src="images/visa_electron.gif" PML_width="cgi.card_width" PML_height="cgi.card_height" alt="- VISA Electron -" /></td>
-						<td colspan="3" class="status">&nbsp;VISA Electron</td>
-					</PML_CASE>
-				</PML_SWITCH>
-				</tr>
-				</table>
-			</div>
-			<!-- Price -->
-			<div id="price">
-				<span class="mPoint_Label"><PML_VAL>label_price</PML_VAL>:</span>
-				<PML_VAL>cgi.price</PML_VAL>
-			</div>
-			<!-- Credit Card Information -->
-			<div class="mPoint_Help"><PML_VAL>info</PML_VAL></div>
-			<div id="cardinfo">
-				<div class="mPoint_Label">
-					<PML_VAL>label_card_number</PML_VAL>:<br />
-					<PML_IF COND="sess_cardno > 0">
-						<input name="cardno" type="number" maxlength="19" PML_value="string.precision(sess_cardno, 0)" size="21" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
-					</PML_IF>
-					<PML_ELSE>
-						<input name="cardno" type="number" maxlength="19" value="" size="21" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
-					</PML_ELSE>
+				<!-- Complete Payment -->
+				<div id="submit">
+					<input id="complete-payment" type="submit" PML_value="submit" class="mPoint_Button" />
 				</div>
-				<div class="mPoint_Label">
-					<PML_VAL>label_expiry</PML_VAL> <span class="mPoint_Info">(<PML_VAL>expiry_month</PML_VAL>/<PML_VAL>expiry_year</PML_VAL>)</span>:<br />
-					<PML_IF COND="sess_expmon > 0">
-						<input name="expmon" type="number" maxlength="2" PML_value="string.precision(sess_expmon, 0)" size="3" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
-					</PML_IF>
-					<PML_ELSE>
-						<input name="expmon" type="number" maxlength="2" value="" size="3" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" />
-					</PML_ELSE>
-					&nbsp;/&nbsp;
-					<PML_IF COND="sess_expyear > 0">
-						<input name="expyear" type="number" maxlength="2" PML_value="string.precision(sess_expyear, 0)" size="3" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
-					</PML_IF>
-					<PML_ELSE>
-						<input name="expyear" type="number" maxlength="2" value="" size="3" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
-					</PML_ELSE>
-				</div>
-				<div class="mPoint_Label">
-					<PML_VAL>label_cvc</PML_VAL>:<br />
-					<PML_IF COND="sess_cvc > 0">
-						<input name="cvc" type="number" maxlength="3" PML_value="string.precision(sess_cvc, 0)" size="4" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
-					</PML_IF>
-					<PML_ELSE>
-						<input name="cvc" type="number" maxlength="3" value="" size="4" style="-wap-input-format:'*N';" onblur="javascript:parent.postMessage('reposition', '*');" pattern="[0-9]*" />
-					</PML_ELSE>
-				</div>
-				<div class="mPoint_Info"><PML_VAL>cvc_help</PML_VAL></div>
-			</div>
-			<!-- Store Credit Card -->
-			<PML_IF COND="cgi.store_card > 0">
-				<div>
-					<PML_IF COND="cgi.auto_store_card = 'true'">
-						<input type="checkbox" name="preauth" value="true" checked="true" />
-					</PML_IF>
-					<PML_ELSE>
-						<input type="checkbox" name="preauth" value="true" />
-					</PML_ELSE>
-					<PML_VAL>label_store</PML_VAL>
-				</div>
-			</PML_IF>
-			<!-- Complete Payment -->
-			<div id="submit">
-				<input id="complete-payment" type="submit" PML_value="submit" class="mPoint_Button" />
-			</div>
-		</form>
+			</form>
+		</div>
+	</div>
 	</body>
 	</html>
 </PML_DEFAULT>

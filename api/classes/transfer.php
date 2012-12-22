@@ -31,7 +31,7 @@ class Transfer extends Home
 	 * 	 2. Unable to credit recipient's account
 	 * 	10. Transfer successful
 	 *
-	 * @see		Constants::iEMONEY_TRANSFER_TYPE
+	 * @see		Constants::iTRANSFER_OF_EMONEY
 	 *
 	 * @param	integer $toid 	Unqiue ID of the recipient's account
 	 * @param	integer $fromid Unqiue ID of the sender's account
@@ -52,7 +52,7 @@ class Transfer extends Home
 		// Construct SQL Query for debiting Sender
 		$sql = "INSERT INTO EndUser.Transaction_Tbl
 					(accountid, typeid, toid, fromid, amount, fee, ip, address)
-				SELECT ". intval($fromid) .", ". Constants::iEMONEY_TRANSFER_TYPE .", ". intval($toid) .", ". intval($fromid) .", ". ($as * -1) .", ". ($fee * -1) .", '". $_SERVER['REMOTE_ADDR'] ."',
+				SELECT ". intval($fromid) .", ". Constants::iTRANSFER_OF_EMONEY .", ". intval($toid) .", ". intval($fromid) .", ". ($as * -1) .", ". ($fee * -1) .", '". $_SERVER['REMOTE_ADDR'] ."',
 					(CASE
 					 WHEN mobile::int8 > 0 THEN mobile
 					 ELSE email
@@ -67,7 +67,7 @@ class Transfer extends Home
 			// Construct SQL Query for crediting recipient
 			$sql = "INSERT INTO EndUser.Transaction_Tbl
 						(accountid, typeid, toid, fromid, amount, ip, address)
-					SELECT ". intval($toid) .", ". Constants::iEMONEY_TRANSFER_TYPE .", ". intval($toid) .", ". intval($fromid) .", ". $ar .", '". $_SERVER['REMOTE_ADDR'] ."',
+					SELECT ". intval($toid) .", ". Constants::iTRANSFER_OF_EMONEY .", ". intval($toid) .", ". intval($fromid) .", ". $ar .", '". $_SERVER['REMOTE_ADDR'] ."',
 						(CASE
 						 WHEN mobile::int8 > 0 THEN mobile
 						 ELSE email

@@ -33,9 +33,9 @@ $obj_MsgInfo = GoMobileMessage::produceMessage($HTTP_RAW_POST_DATA);
 // Instantiate mPoint object to handle the transaction
 $obj_mPoint = SMS_Purchase::produceSMS_Purchase($_OBJ_DB, $obj_MsgInfo);
 
-$iTxnID = $obj_mPoint->newTransaction(Constants::iWEB_PURCHASE_TYPE);
+$iTxnID = $obj_mPoint->newTransaction(Constants::iPURCHASE_VIA_WEB);
 
-$obj_TxnInfo = new TxnInfo($iTxnID, Constants::iWEB_PURCHASE_TYPE, $obj_mPoint->getClientConfig(), $obj_mPoint->getClientConfig()->getKeywordConfig()->getPrice(), -1, $obj_MsgInfo->getAddress(), $obj_MsgInfo->getOperator(), "", $obj_mPoint->getClientConfig()->getLogoURL(), $obj_mPoint->getClientConfig()->getCSSURL(), $obj_mPoint->getClientConfig()->getAcceptURL(), $obj_mPoint->getClientConfig()->getCancelURL(), $obj_mPoint->getClientConfig()->getCallbackURL(), $obj_mPoint->getClientConfig()->getIconURL(), $obj_mPoint->getClientConfig()->getLanguage(),  $obj_mPoint->getClientConfig()->getMode(), $obj_mPoint->getClientConfig()->useAutoCapture(), EndUserAccount::getAccountID($_OBJ_DB, $obj_mPoint->getClientConfig(), $obj_MsgInfo->getAddress() ), $obj_MsgInfo->getGoMobileID() );
+$obj_TxnInfo = new TxnInfo($iTxnID, Constants::iPURCHASE_VIA_WEB, $obj_mPoint->getClientConfig(), $obj_mPoint->getClientConfig()->getKeywordConfig()->getPrice(), -1, -1, $obj_MsgInfo->getAddress(), $obj_MsgInfo->getOperator(), "", $obj_mPoint->getClientConfig()->getLogoURL(), $obj_mPoint->getClientConfig()->getCSSURL(), $obj_mPoint->getClientConfig()->getAcceptURL(), $obj_mPoint->getClientConfig()->getCancelURL(), $obj_mPoint->getClientConfig()->getCallbackURL(), $obj_mPoint->getClientConfig()->getIconURL(), $obj_mPoint->getClientConfig()->getLanguage(),  $obj_mPoint->getClientConfig()->getMode(), $obj_mPoint->getClientConfig()->useAutoCapture(), EndUserAccount::getAccountID($_OBJ_DB, $obj_mPoint->getClientConfig(), $obj_MsgInfo->getAddress() ), $obj_MsgInfo->getGoMobileID() );
 
 // Update Transaction Log
 $obj_mPoint->logTransaction($obj_TxnInfo);

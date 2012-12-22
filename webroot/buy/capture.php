@@ -80,14 +80,18 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					header("HTTP/1.0 200 OK");
 					
 					$aMsgCds[1000] = "Success";
-					if ($code == 1000) { $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, array("transact" => $obj_mPoint->getPSPID() ) ); }
+					$args = array("transact" => $obj_mPoint->getPSPID(),
+								  "amount" => $_REQUEST['amount']);
+					if ($code == 1000) { $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args); }
 				}
 				else
 				{
 					header("HTTP/1.0 502 Bad Gateway");
 					
 					$aMsgCds[999] = "Declined";
-					$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, array("transact" => $obj_mPoint->getPSPID() ) );
+					$args = array("transact" => $obj_mPoint->getPSPID(),
+								  "amount" => $_REQUEST['amount']);
+					$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args);
 				}
 			}
 			catch (HTTPException $e)

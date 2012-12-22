@@ -38,7 +38,7 @@ class WannaFind extends Callback
 	 */
 	public function notifyClient($sid, array $_post)
 	{
-		parent::notifyClient($sid, $_post["transact"], $_post["cardid"], str_replace("X", "*", $_post["cardnomask"]) );
+		parent::notifyClient($sid, $_post["transact"], $_post["amount"], $_post["cardid"], str_replace("X", "*", $_post["cardnomask"]) );
 	}
 	
 	/**
@@ -157,6 +157,7 @@ class WannaFind extends Callback
 		$b .= "&cardid=". $cardid;
 		$b .= "&language=". $this->getTxnInfo()->getLanguage();
 		$b .= "&actioncode=0&authtype=auth";
+		$b .= "&amount=". $this->getTxnInfo()->getAmount();
 
 		$obj_HTTP = new HTTPClient(new Template(), $oCI);
 		$obj_HTTP->connect();

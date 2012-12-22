@@ -136,7 +136,22 @@ class Refund extends General
 	 * @return	integer
 	 * @throws	E_USER_WARNING
 	 */
-	public function refund() { return $this->_obj_PSP->refund($this->_sPSPID); }
+	public function refund($amt=0)
+	{
+		if ($amt == 0) { $amt = $this->_obj_TxnInfo->getAmount(); }
+		$code = $this->_obj_PSP->refund($this->_sPSPID, $amt);
+		if ($code == 0)
+		{
+			$sql = "UPDATE Log.Transaction_Tbl
+					SET refund = refund + ". intval($amt) ."
+					WHERE id = ". $this->_obj_TxnInfo->getID();
+//			echo $sql ."\n";
+			$res = $this->getDBConn()->query($sql);
+			$aArgs = array("amount" => $amt);
+			$this->_obj_TxnInfo = TxnInfo::produceInfo($this->_obj_TxnInfo, $aArgs);
+		}
+		return $code;
+	}
 	
 	public function getClientsForUser($id)
 	{

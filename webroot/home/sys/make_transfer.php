@@ -353,7 +353,7 @@ else
 				// Send Confirmation Code (OTP)
 				else
 				{
-					if (floatval($obj_AccountXML->mobile || $iAmountSent < $_SESSION['obj_CountryConfig']->getMin2FAAmount() ) < $_SESSION['obj_CountryConfig']->getMinMobile() ) { $code = 199; }
+					if (floatval($obj_AccountXML->mobile) == 0 || $iAmountSent < $_SESSION['obj_CountryConfig']->getMin2FAAmount() < $_SESSION['obj_CountryConfig']->getMinMobile() ) { $code = 199; }
 					else { $code = $obj_mPoint->sendConfirmationCode(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $_SESSION['obj_Info']->getInfo("accountid"), (string) $obj_AccountXML->mobile); }
 					
 					// Confirmation Code (OTP) sent or not required
@@ -367,7 +367,7 @@ else
 									<popup>
 										<name>confirm-transfer</name>
 										<parent>left-menu</parent>
-										<url>/home/confirm.php?amount='. $iAmountSent .'</url>
+										<url>/home/confirm.php?amount='. $iAmountSent .'&amp;code='. $code .'</url>
 								 		<css>confirm-transfer</css>
 								 	</popup>
 								</document>';

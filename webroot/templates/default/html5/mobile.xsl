@@ -4,7 +4,7 @@
 <xsl:include href="global.xsl"/>
 	
 <xsl:template match="/">
-	<html  xml:lang="{func:transLanguage(/root/transaction/language)}">
+	<html xml:lang="{func:transLanguage(/root/transaction/language)}">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15" />
 		<meta http-equiv="Cache-Control" content="no-cache" />

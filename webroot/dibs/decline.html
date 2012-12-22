@@ -139,17 +139,24 @@ switch(cgi.language)
 
 /* ========== App Specific Customizations Start ========== */
 // DSB WildCard
-if (cgi.accountid = 100020 || cgi.accountid = 100021)
+if (cgi.accountid = 100020 || cgi.accountid = 100021 || cgi.accountid = 100024 || cgi.accountid = 100025)
 {
 	background_color := 'transparent';
 	border_color := '#7f5ca9';
 	text_color := '#fff';
 }
-// DSB Ticket
-else
+// DSB Ticket v2.10
+elsif (cgi.var_version = 'iOS 2.10' || cgi.var_version = 'Android 2.10')
 {
 	background_color := '#eef2f0';
 	border_color := '#80C435';
+	text_color := '#000';
+}
+// DSB Ticket v2.11+
+else
+{
+	background_color := 'transparent';
+	border_color := '#00233c';
 	text_color := '#000';
 }
 /* ========== App Specific Customizations End ========== */
@@ -164,7 +171,7 @@ if (cgi.accountid = 100005 || cgi.accountid = 100013 || cgi.accountid = 100020 |
 else { input_type := 'number'; }
 /* ========== Platform Specific Customizations End ========== */
 </PML_SCRIPT>
-<PML_IF COND="cgi.accountid = 100007">
+<PML_IF COND="cgi.markup = 'app'">
 	<?xml version="1.0" encoding="UTF-8"?>
 	<root>
 		<PML_SWITCH EXPR="auth.reason">
@@ -552,7 +559,7 @@ else { input_type := 'number'; }
 					if (string.substring(cgi[i], 0, 4) = 'var_')
 					{
 						out.put('<input type="hidden" name="client_vars_names_'@ i @'" value="'@ cgi[i] @'" />');
-						out.put('<input type="hidden" name="client_vars_data_'@ i @'" value="'@ cgi[i-7] @'" />');
+						out.put('<input type="hidden" name="'@ cgi[i] @'" value="'@ cgi[cgi[i] ] @'" />');
 					}
 				}
 				</PML_SCRIPT>

@@ -79,7 +79,7 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 		if (count($obj_DOM->{'callback-url'}) == 0) { $obj_DOM->{'callback-url'} = $obj_ClientConfig->getCallbackURL(); }
 		
 		$obj_mPoint = new MobileWeb($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
-		$iTxnID = $obj_mPoint->newTransaction(Constants::iAPP_PURCHASE_TYPE);
+		$iTxnID = $obj_mPoint->newTransaction(Constants::iPURCHASE_VIA_APP);
 	
 		/* ========== Input Validation Start ========== */
 		$obj_Validator = new Validate($obj_CountryConfig);
@@ -100,7 +100,7 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 				// Update Transaction State
 				$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, var_export($obj_DOM->asXML(), true) );
 	
-				$data['typeid'] = Constants::iAPP_PURCHASE_TYPE;
+				$data['typeid'] = Constants::iPURCHASE_VIA_APP;
 				$data['amount'] = (integer) $obj_DOM->amount;
 				$data['gomobileid'] = -1;
 				$data['orderid'] = (string) $obj_DOM->{'order-no'};

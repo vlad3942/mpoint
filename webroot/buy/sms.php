@@ -59,7 +59,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if (array_key_exists("language", $_REQUEST) === false) { $_REQUEST['language'] = $obj_ClientConfig->getLanguage(); }
 	
 	$obj_mPoint = new SMS_Purchase($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
-	$iTxnID = $obj_mPoint->newTransaction(Constants::iSMS_PURCHASE_TYPE);
+	$iTxnID = $obj_mPoint->newTransaction(Constants::iPURCHASE_VIA_SMS);
 
 	/* ========== Input Validation Start ========== */
 	$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
@@ -116,7 +116,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 		try
 		{
 			// Update Transaction State
-			$_REQUEST['typeid'] = Constants::iSMS_PURCHASE_TYPE;
+			$_REQUEST['typeid'] = Constants::iPURCHASE_VIA_SMS;
 			$_REQUEST['gomobileid'] = -1;
 			$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, var_export($_REQUEST, true) );
 

@@ -40,6 +40,7 @@ else
 				<purchase-history><?= $_OBJ_TXT->_("Purchase History"); ?></purchase-history>
 				<transfer-history><?= $_OBJ_TXT->_("Transfer History"); ?></transfer-history>
 				<topup-history><?= $_OBJ_TXT->_("Top-Up History"); ?></topup-history>
+				<reward-history><?= $_OBJ_TXT->_("Reward History"); ?></reward-history>
 				<id><?= $_OBJ_TXT->_("ID"); ?></id>
 				<mpointid><?= $_OBJ_TXT->_("mPoint ID"); ?></mpointid>
 				<amount><?= $_OBJ_TXT->_("Amount"); ?></amount>

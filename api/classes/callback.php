@@ -113,6 +113,7 @@ class Callback extends EndUserAccount
 	{
 		if (intval($txnid) == -1) { $sql = ""; }
 		else { $sql = ", extid = '". $this->getDBConn()->escStr($txnid) ."'"; }
+		if ($this->_obj_TxnInfo->getAccountID() > 0) { $sql .= ", euaid = ". $this->_obj_TxnInfo->getAccountID(); }
 		$sql = "UPDATE Log.Transaction_Tbl
 				SET pspid = ". intval($pspid) .", cardid = ". intval($cid) . $sql ."
 				WHERE id = ". $this->_obj_TxnInfo->getID() ." AND (cardid IS NULL OR cardid = 0)";
@@ -155,7 +156,15 @@ class Callback extends EndUserAccount
 		/* ========== Instantiate Connection Info Start ========== */
 		$aURLInfo = parse_url($this->_obj_TxnInfo->getCallbackURL() );
 
-		if (array_key_exists("port", $aURLInfo) === false) { $aURLInfo["port"] = 80; }
+		if (array_key_exists("port", $aURLInfo) === false)
+		{
+			if (array_key_exists("scheme", $aURLInfo) === true)
+			{
+				if ( $aURLInfo["scheme"] == "https") { $aURLInfo["port"] = 443; }
+				else { $aURLInfo["port"] = 80; } 
+			}
+			else { $aURLInfo["port"] = 80; }
+		}
 		if (array_key_exists("query", $aURLInfo) === true) { $aURLInfo["path"] .= "?". $aURLInfo["query"]; }
 
 		$obj_ConnInfo = new HTTPConnInfo($aURLInfo["scheme"], $aURLInfo["host"], $aURLInfo["port"], 20, $aURLInfo["path"], "POST", "application/x-www-form-urlencoded");
@@ -170,7 +179,7 @@ class Callback extends EndUserAccount
 			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_CONNECTED_STATE, "Host: ". $obj_ConnInfo->getHost() .", Port: ". $obj_ConnInfo->getPort() .", Path: ". $obj_ConnInfo->getPath() );
 			// Send Callback data
 			$iCode = $obj_HTTP->send($this->constHTTPHeaders(), $body);
-			if ($iCode == 200)
+			if ($iCode >= 200 && $iCode < 300)
 			{
 				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_ACCEPTED_STATE, $obj_HTTP->getReplyHeader() );
 			}
@@ -189,7 +198,7 @@ class Callback extends EndUserAccount
 		}
 		/* ========== Perform Callback End ========== */
 
-		if ($iCode == 200) { trigger_error("mPoint Callback request succeeded for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_NOTICE); }
+		if ($iCode >= 200 && $iCode < 300) { trigger_error("mPoint Callback request succeeded for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_NOTICE); }
 		else { trigger_error("mPoint Callback request failed for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_WARNING); }
 	}
 
@@ -218,14 +227,14 @@ class Callback extends EndUserAccount
 	 * @param 	integer $cardid mPoint's unique ID for the card type
 	 * @param 	string $cardno 	The masked card number for the card that was used for the payment
 	 */
-	public function notifyClient($sid, $pspid, $cardid=0, $cardno="")
+	public function notifyClient($sid, $pspid, $amt, $cardid=0, $cardno="")
 	{
 		/* ----- Construct Body Start ----- */
 		$sBody = "";
 		$sBody .= "mpoint-id=". $this->_obj_TxnInfo->getID();
 		$sBody .= "&orderid=". urlencode($this->_obj_TxnInfo->getOrderID() );
 		$sBody .= "&status=". $sid;
-		$sBody .= "&amount=". $this->_obj_TxnInfo->getAmount();
+		$sBody .= "&amount=". $amt;
 		$sBody .= "&currency=". urlencode($this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getCurrency() );
 		$sBody .= "&mobile=". urlencode($this->_obj_TxnInfo->getMobile() );
 		$sBody .= "&operator=". urlencode($this->_obj_TxnInfo->getOperator() );

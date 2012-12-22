@@ -48,8 +48,17 @@ case (1):	// Payment Approved
 			$obj_mPoint->link($iAccountID);
 			$obj_TxnInfo->setAccountID($iAccountID);
 		}
-		$obj_mPoint->topup($iAccountID, $obj_TxnInfo->getID(), $obj_TxnInfo->getAmount() );
+		switch ($obj_TxnInfo->getTypeID() )
+		{
+		case (Constants::iPURCHASE_OF_EMONEY):
+			$obj_mPoint->topup($iAccountID, Constants::iTOPUP_OF_EMONEY, $obj_TxnInfo->getID(), $obj_TxnInfo->getAmount() );
+			break;
+		case (Constants::iPURCHASE_OF_POINTS):
+			$obj_mPoint->topup($iAccountID, Constants::iTOPUP_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getPoints() );
+			break;
+		}
 	}
+	if ($obj_TxnInfo->getReward() > 0 && $obj_TxnInfo->getAccountID() > 0) { $obj_mPoint->topup($obj_TxnInfo->getAccountID(), Constants::iREWARD_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getReward() ); }
 	
 	// Customer has an account
 	if ($obj_TxnInfo->getAccountID() > 0)

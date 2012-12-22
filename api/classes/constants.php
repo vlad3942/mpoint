@@ -205,7 +205,7 @@ abstract class Constants
 	 * Defines Type ID for a purchase initiated by a Call Centre
 	 *
 	 */
-	const iCALL_CENTRE_PURCHASE_TYPE = 10;
+	const iPURCHASE_VIA_CALL_CENTRE = 10;
 	/**
 	 * Defines Type ID for a subscription initiated by a Call Centre
 	 *
@@ -215,7 +215,7 @@ abstract class Constants
 	 * Defines Type ID for a purchase initiated via SMS
 	 *
 	 */
-	const iSMS_PURCHASE_TYPE = 20;
+	const iPURCHASE_VIA_SMS = 20;
 	/**
 	 * Defines Type ID for a subscription initiated via SMS
 	 *
@@ -225,7 +225,7 @@ abstract class Constants
 	 * Defines Type ID for a purchase initiated from a Mobile Site or Mobile App. using an embedded WebView
 	 *
 	 */
-	const iWEB_PURCHASE_TYPE = 30;
+	const iPURCHASE_VIA_WEB = 30;
 	/**
 	 * Defines Type ID for a subscription initiated from a Mobile Site or Mobile App. using an embedded WebView
 	 *
@@ -235,42 +235,67 @@ abstract class Constants
 	 * Defines Type ID for a purchase initiated from a Mobile App. using native controls
 	 *
 	 */
-	const iAPP_PURCHASE_TYPE = 40;
+	const iPURCHASE_VIA_APP = 40;
 	/**
 	 * Defines Type ID for a subscription initiated from a Mobile App. using native controls
 	 *
 	 */
 	const iAPP_SUBSCR_TYPE = 41;
 	/**
-	 * Defines Type ID for a top-up of an End-User's prepaid account
+	 * Defines Type ID for an e-money top-up of an End-User's prepaid account
 	 *
 	 */
-	const iTOPUP_PURCHASE_TYPE = 100;
+	const iPURCHASE_OF_EMONEY = 100;
 	/**
 	 * Defines Type ID for a subscription for automatically topping an End-User's prepaid account up
 	 *
 	 */
 	const iTOPUP_SUBSCR_TYPE = 101;
 	/**
+	 * Defines Type ID for purchasing points to the End-User's loyalty account
+	 *
+	 */
+	const iPURCHASE_OF_POINTS = 102;
+	/**
 	 * Defines Type ID for a Top-Up of the End-User's prepaid account
 	 *
 	 */
-	const iEMONEY_TOPUP_TYPE = 1000;
+	const iTOPUP_OF_EMONEY = 1000;
 	/**
 	 * Defines Type ID for an E-Money based purchase made using the End-User's prepaid account
 	 *
 	 */
-	const iEMONEY_PURCHASE_TYPE = 1001;
+	const iPURCHASE_USING_EMONEY = 1001;
 	/**
 	 * Defines Type ID for an E-Money based transfer between 2 End-Users' prepaid accounts
 	 *
 	 */
-	const iEMONEY_TRANSFER_TYPE = 1002;
+	const iTRANSFER_OF_EMONEY = 1002;
 	/**
 	 * Defines Type ID for a Withdrawal from the End-User's prepaid account
 	 *
 	 */
 	const iEMONEY_WITHDRAWAL_TYPE = 1003;
+	/**
+	 * Defines Type ID for a Top-Up of the End-User's loyalty account
+	 *
+	 */
+	const iTOPUP_OF_POINTS = 1004;
+	/**
+	 * Defines Type ID for a Points based purchase made using the End-User's loyalty account
+	 *
+	 */
+	const iPURCHASE_USING_POINTS = 1005;
+	/**
+	 * Defines Type ID for a Points based transfer between 2 End-Users' loyalty accounts
+	 *
+	 */
+	const iTRANSFER_OF_POINTS = 1006;
+	/**
+	 * Defines Type ID for rewarding points to an end-user for completing a purchase
+	 *
+	 */
+	const iREWARD_OF_POINTS = 1007;
 	/**
 	 * Defines Type ID for a Card / Premium SMS based purchase that should be associated with the End-User's prepaid account.
 	 * Please note that the "amount" for this type of transaction MUST be 0.
@@ -335,6 +360,11 @@ abstract class Constants
 	 *
 	 */
 	const iWANNAFIND_PSP = 7;
+	/**
+	 * Unique ID for the Payment Service Provider: NetAxept
+	 *
+	 */
+	const iNETAXEPT_PSP = 8;
 
 	/**
 	 * Unique ID for the Electronic Payment Flow

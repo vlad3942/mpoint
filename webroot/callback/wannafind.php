@@ -51,23 +51,28 @@ try
 	// Save Ticket ID representing the End-User's stored Card Info
 	if ($_REQUEST['actioncode'] == 0 && $_REQUEST['authtype'] == "subscribe")
 	{
+		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $_REQUEST['transact']);
 		$iStatus = $obj_mPoint->saveCard($obj_TxnInfo->getMobile(), $_REQUEST['cardid'], Constants::iWANNAFIND_PSP, $_REQUEST['transact'], str_replace("x", "*", $_REQUEST['cardnomask']), NULL);
 		// The End-User's existing account was linked to the Client when the card was stored
 		if ($iStatus == 1)
 		{
 			$obj_mPoint->sendLinkedInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo);
 		}
-		// New Account automatically created when Card was saved and SMS communication enabled
-		elseif ($iStatus == 2 && $obj_TxnInfo->getClientConfig()->smsReceiptEnabled() === true)
+		// New Account automatically created when Card was saved
+		elseif ($iStatus == 2)
 		{
-			$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo);
+			$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile() );
+			if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail() ); }
+			$obj_TxnInfo->setAccountID($iAccountID);
+			$obj_mPoint->getTxnInfo()->setAccountID($iAccountID);
+			// SMS communication enabled
+			if ($obj_TxnInfo->getClientConfig()->smsReceiptEnabled() === true)
+			{
+				$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo);
+			}
 		}
 		// E-Mail has been provided for the transaction
-		if ($obj_TxnInfo->getEMail() != "")
-		{
-			$obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() );
-		}
-		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $_REQUEST['transact']);
+		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
 		$_REQUEST['transact'] = $obj_mPoint->authTicket($_REQUEST['transact']);
 		if ($_REQUEST['transact'] == -1) { $_REQUEST['actioncode'] = 1; }
 	}
@@ -87,8 +92,17 @@ try
 			$obj_mPoint->link($iAccountID);
 			$obj_TxnInfo->setAccountID($iAccountID);
 		}
-		$obj_mPoint->topup($iAccountID, $obj_TxnInfo->getID(), $obj_TxnInfo->getAmount() );
+		switch ($obj_TxnInfo->getTypeID() )
+		{
+		case (Constants::iPURCHASE_OF_EMONEY):
+			$obj_mPoint->topup($iAccountID, Constants::iTOPUP_OF_EMONEY, $obj_TxnInfo->getID(), $obj_TxnInfo->getAmount() );
+			break;
+		case (Constants::iPURCHASE_OF_POINTS):
+			$obj_mPoint->topup($iAccountID, Constants::iTOPUP_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getPoints() );
+			break;
+		}
 	}
+	if ($obj_TxnInfo->getReward() > 0 && $obj_TxnInfo->getAccountID() > 0) { $obj_mPoint->topup($obj_TxnInfo->getAccountID(), Constants::iREWARD_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getReward() ); }
 
 	// Not an e-money based purchase
 	if ($_REQUEST['cardid'] != Constants::iEMONEY_CARD && $obj_TxnInfo->getAccountID() > 0)

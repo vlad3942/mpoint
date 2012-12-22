@@ -275,12 +275,19 @@ class Home extends General
 		/* ========== Calculate Logo Dimensions End ========== */
 
 		// Select information for the End-User's account
-		$sql = "SELECT id, countryid, firstname, lastname, mobile, email, passwd AS password, balance, date_trunc('second', created) AS created, Extract('epoch' from created) AS timestamp
+		$sql = "SELECT id, countryid, firstname, lastname, mobile, email, passwd AS password, balance, points, date_trunc('second', created) AS created, Extract('epoch' from created) AS timestamp
 				FROM EndUser.Account_Tbl
 				WHERE id = ". intval($id) ." AND enabled = true";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
-
+		
+		$sql = "SELECT CL.id, CL.store_card, CL.name
+				FROM EndUser.CLAccess_Tbl Acc
+				INNER JOIN Client.Client_Tbl CL ON Acc.clientid = CL.id AND CL.enabled = true
+				WHERE Acc.accountid = ". intval($id);
+//		echo $sql ."\n";
+		$aRS = $this->getDBConn()->getAllNames($sql);
+		
 		// Construct XML Document with account information
 		$xml = '<account id="'. $RS["ID"] .'" countryid="'. $RS["COUNTRYID"] .'">';
 		$xml .= '<firstname>'. htmlspecialchars($RS["FIRSTNAME"], ENT_NOQUOTES) .'</firstname>';
@@ -288,13 +295,20 @@ class Home extends General
 		$xml .= '<mobile>'. $RS["MOBILE"] .'</mobile>';
 		$xml .= '<email>'. htmlspecialchars($RS["EMAIL"], ENT_NOQUOTES) .'</email>';
 		$xml .= '<password mask="'. str_repeat("*", strlen($RS["PASSWORD"]) ) .'">'. htmlspecialchars($RS["PASSWORD"], ENT_NOQUOTES) .'</password>';
-		$xml .= '<balance currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'">'. intval($RS["BALANCE"]) .'</balance>';
+		$xml .= '<balance country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat().'">'. intval($RS["BALANCE"]) .'</balance>';
 		$xml .= '<funds>'. General::formatAmount($this->_obj_CountryConfig, $RS["BALANCE"]) .'</funds>';
+		$xml .= '<points country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">'. $RS["POINTS"] .'</points>';
+		$xml .= '<clients>';
+		for ($i=0; $i<count($aRS); $i++)
+		{
+			$xml .= '<client id="'. $aRS[$i]["ID"] .'" store-card="'. $aRS[$i]["STORE_CARD"] .'">'. htmlspecialchars($aRS[$i]["NAME"], ENT_NOQUOTES) .'</client>';
+		}
+		$xml .= '</clients>';
 		$xml .= '<created timestamp="'. $RS["TIMESTAMP"] .'">'. $RS["CREATED"] .'</created>';
 		$xml .= '<logo-width>'. $iWidth .'</logo-width>';
 		$xml .= '<logo-height>'. $iHeight .'</logo-height>';
 		$xml .= '</account>';
-
+		
 		return $xml;
 	}
 
@@ -352,7 +366,7 @@ class Home extends General
 		/* ========== Calculate Logo Dimensions End ========== */
 
 		// Select all active cards that are not yet expired
-		$sql = "SELECT EUC.id, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name,
+		$sql = "SELECT DISTINCT EUC.id, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name,
 					SC.id AS typeid, SC.name AS type,
 					CL.id AS clientid, CL.name AS client
 				FROM EndUser.Card_Tbl EUC
@@ -370,13 +384,13 @@ class Home extends General
 				ORDER BY CL.name ASC";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
-
+		
 		$xml = '<stored-cards accountid="'. $id .'">';
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
 			// Construct XML Document with data for saved cards
 			$xml .= '<card id="'. $RS["ID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'">';
-			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. $RS["CLIENT"] .'</client>';
+			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
 			$xml .= '<type id="'. $RS["TYPEID"] .'">'. $RS["TYPE"] .'</type>';
 			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';
 			$xml .= '<mask>'. chunk_split($RS["MASK"], 4, " ") .'</mask>';
@@ -408,7 +422,8 @@ class Home extends General
 					 END) AS amount,
 					Abs(EUT.fee) AS fee, EUT.address,
 					(CASE
-					 WHEN EUT.typeid = ". Constants::iEMONEY_PURCHASE_TYPE ." THEN Txn.ip
+					 WHEN EUT.typeid = ". Constants::iPURCHASE_USING_EMONEY ." THEN Txn.ip
+					 WHEN EUT.typeid = ". Constants::iPURCHASE_USING_POINTS ." THEN Txn.ip
 					 WHEN EUT.typeid = ". Constants::iCARD_PURCHASE_TYPE ." THEN Txn.ip
 					 ELSE EUT.ip
 					 END) AS ip,
@@ -433,12 +448,22 @@ class Home extends General
 		// Construct XML Document with data for Transaction
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
-			// E-Money Top-Up
-			if ($RS["TYPEID"] == Constants::iEMONEY_TOPUP_TYPE)
+			// E-Money / Points Top-Up or Points Reward
+			if ($RS["TYPEID"] == Constants::iTOPUP_OF_EMONEY || $RS["TYPEID"] == Constants::iTOPUP_OF_POINTS || $RS["TYPEID"] == Constants::iREWARD_OF_POINTS)
 			{
 				$xml .= '<transaction id="'. $RS["ID"] .'"  type="'. $RS["TYPEID"] .'" mpointid="'. $RS["MPOINTID"] .'">';
-				$xml .= '<amount currency="'. trim($RS["CURRENCY"]) .'">'. $RS["AMOUNT"] .'</amount>';
-				$xml .= '<price>'. General::formatAmount($this->_obj_CountryConfig, $RS["AMOUNT"]) .'</price>';
+				if ($RS["TYPEID"] == Constants::iTOPUP_OF_POINTS || $RS["TYPEID"] == Constants::iREWARD_OF_POINTS)
+				{
+					if ($this->_obj_CountryConfig->getID() == 103 || $this->_obj_CountryConfig->getID() == 200) { $seperator = ","; }
+					else { $seperator = "."; }
+					$xml .= '<amount currency="points">'. $RS["AMOUNT"] .'</amount>';
+					$xml .= '<price>'. number_format($RS["AMOUNT"], 0, "", $seperator) .' points</price>';
+				}
+				else
+				{
+					$xml .= '<amount currency="'. trim($RS["CURRENCY"]) .'">'. $RS["AMOUNT"] .'</amount>';
+					$xml .= '<price>'. General::formatAmount($this->_obj_CountryConfig, abs($RS["AMOUNT"]) ) .'</price>';
+				}
 				$xml .= '<fee currency="'. trim($RS["CURRENCY"]) .'">'. General::formatAmount($this->_obj_CountryConfig, $RS["FEE"]) .'</fee>';
 				$xml .= '<ip>'. $RS["IP"] .'</ip>';
 				$xml .= '<address>'. htmlspecialchars($RS["ADDRESS"], ENT_NOQUOTES) .'</address>';
@@ -446,7 +471,7 @@ class Home extends General
 				$xml .= '</transaction>';
 			}
 			// E-Money Transfer
-			elseif ($RS["TYPEID"] == Constants::iEMONEY_TRANSFER_TYPE)
+			elseif ($RS["TYPEID"] == Constants::iTRANSFER_OF_EMONEY)
 			{
 				$xml .= '<transaction id="'. $RS["ID"] .'"  type="'. $RS["TYPEID"] .'">';
 				$xml .= '<amount currency="'. trim($RS["CURRENCY"]) .'">'. $RS["AMOUNT"] .'</amount>';
@@ -473,9 +498,20 @@ class Home extends General
 				$xml .= '<transaction id="'. $RS["ID"] .'" mpointid="'. $RS["MPOINTID"] .'" type="'. $RS["TYPEID"] .'">';
 				$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
 				$xml .= '<orderid>'. $RS["ORDERID"] .'</orderid>';
-				$xml .= '<amount currency="'. trim($RS["CURRENCY"]) .'">'. $RS["AMOUNT"] .'</amount>';
-				$xml .= '<price>'. General::formatAmount($this->_obj_CountryConfig, abs($RS["AMOUNT"]) ) .'</price>';
-				$xml .= '<fee currency="'. trim($RS["CURRENCY"]) .'">'. General::formatAmount($this->_obj_CountryConfig, $RS["FEE"]) .'</fee>';
+				if ($RS["TYPEID"] == Constants::iPURCHASE_USING_POINTS)
+				{
+					if ($this->_obj_CountryConfig->getID() == 103 || $this->_obj_CountryConfig->getID() == 200) { $seperator = ","; }
+					else { $seperator = "."; }
+					$xml .= '<amount currency="points">'. $RS["AMOUNT"] .'</amount>';
+					$xml .= '<price>'. number_format($RS["AMOUNT"], 0, "", $seperator) .' points</price>';
+					$xml .= '<fee currency="points">'. number_format($RS["FEE"], 0, "", $seperator) .' points</fee>';
+				}
+				else
+				{
+					$xml .= '<amount currency="'. trim($RS["CURRENCY"]) .'">'. $RS["AMOUNT"] .'</amount>';
+					$xml .= '<price>'. General::formatAmount($this->_obj_CountryConfig, abs($RS["AMOUNT"]) ) .'</price>';
+					$xml .= '<fee currency="'. trim($RS["CURRENCY"]) .'">'. General::formatAmount($this->_obj_CountryConfig, $RS["FEE"]) .'</fee>';
+				}
 				$xml .= '<ip>'. $RS["IP"] .'</ip>';
 				$xml .= '<address>'. htmlspecialchars($RS["ADDRESS"], ENT_NOQUOTES) .'</address>';
 				$xml .= '<card id="'. $RS["CARDID"] .'">'. htmlspecialchars($RS["CARD"], ENT_NOQUOTES) .'</card>';

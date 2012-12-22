@@ -70,7 +70,7 @@ if ($obj_TxnInfo instanceof TxnInfo === true)
 			// Pay using prepaid E-Money Account
 			if (intval($obj_XML->balance) >= $obj_TxnInfo->getAmount() )
 			{
-				$obj_mPoint->purchase($obj_TxnInfo->getAccountID(), $obj_TxnInfo->getID(), $obj_TxnInfo->getAmount() );
+				$obj_mPoint->purchase($obj_TxnInfo->getAccountID(), Constants::iPURCHASE_USING_EMONEY, $obj_TxnInfo->getID(), $obj_TxnInfo->getAmount() );
 				// Initialise Callback to Client
 				$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iEMONEY_CARD, Constants::iPAYMENT_ACCEPTED_STATE);			
 			}
@@ -159,7 +159,7 @@ if ($obj_TxnInfo instanceof TxnInfo === true)
 					// Unable to Auto Top-Up account - Payment Transaction rejected by PSP
 					if ($mExternalID != -1)
 					{
-						$obj_mPoint->purchase($obj_TxnInfo->getAccountID(), $obj_TxnInfo->getID(), $obj_TxnInfo->getAmount() );
+						$obj_mPoint->purchase($obj_TxnInfo->getAccountID(), Constants::iPURCHASE_USING_EMONEY, $obj_TxnInfo->getID(), $obj_TxnInfo->getAmount() );
 						// Initialise Callback to Client
 						$obj_PSP = new CellpointMobile($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 						$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iEMONEY_CARD, Constants::iPAYMENT_ACCEPTED_STATE);

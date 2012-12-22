@@ -18,7 +18,15 @@ require_once(sCLASS_PATH ."/topup.php");
 // Initialize Standard content Object
 $obj_mPoint = new TopUp($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_CountryConfig']);
 
-$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $_SESSION['obj_CountryConfig']->getID(), -1);
+$xml = $obj_mPoint->getAccountInfo($_SESSION['obj_Info']->getInfo("accountid") );
+$obj_XML = simplexml_load_string($xml);
+$aObj_XML = $obj_XML->xpath("/clients/client[@store-card = 2]");
+// End-User account is only linked to a single Client, which uses an e-money or loyalty account
+if (count($aObj_XML) == 1)
+{
+	$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $aObj_XML[0]["id"]);
+}
+else { $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $_SESSION['obj_CountryConfig']->getID(), -1); }
 
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 // Error: Unauthorized access
@@ -45,12 +53,11 @@ else
 				<balance><?= $_OBJ_TXT->_("Balance"); ?></balance>
 				<amount><?= $_OBJ_TXT->_("Amount"); ?></amount>
 				<price><?= $_OBJ_TXT->_("Price"); ?></price>
+				<points-topup><?= $_OBJ_TXT->_("Top-Up Points"); ?></points-topup>
+				<emoney-topup><?= $_OBJ_TXT->_("Top-Up e-Money"); ?></emoney-topup>
 			</labels>
 			
-			<?php
-				$obj_XML = simplexml_load_string($obj_mPoint->getAccountInfo($_SESSION['obj_Info']->getInfo("accountid") ) );
-				echo str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
-			?>
+			<?= $xml; ?>
 			
 			<?= $obj_mPoint->getDepositOptions( (integer) $obj_XML->balance); ?>
 			

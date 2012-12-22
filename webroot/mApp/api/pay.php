@@ -37,6 +37,8 @@ require_once(sCLASS_PATH ."/callback.php");
 require_once(sCLASS_PATH ."/dibs.php");
 // Require specific Business logic for the WorldPay component
 require_once(sCLASS_PATH ."/worldpay.php");
+// Require specific Business logic for the NetAxept component
+require_once(sCLASS_PATH ."/netaxept.php");
 
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
@@ -51,8 +53,8 @@ $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<pay client-id="10007" account="100007">';
-$HTTP_RAW_POST_DATA .= '<transaction id="1525970" store-card="false">';
+$HTTP_RAW_POST_DATA .= '<pay client-id="10020" account="100027">';
+$HTTP_RAW_POST_DATA .= '<transaction id="1529523" store-card="false">';
 $HTTP_RAW_POST_DATA .= '<card type-id="2">';
 $HTTP_RAW_POST_DATA .= '<amount country-id="100">300</amount>';
 $HTTP_RAW_POST_DATA .= '</card>';
@@ -148,6 +150,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									break;
 								case (Constants::iWANNAFIND_PSP):
 									break;
+								case (Constants::iNETAXEPT_PSP):
+									$obj_PSP = new NetAxept($_OBJ_DB, $_OBJ_TXT, $oTI);
+									
+									$aHTTP_CONN_INFO["netaxept"]["username"] = $obj_PSPConfig->getUsername();
+									$aHTTP_CONN_INFO["netaxept"]["password"] = $obj_PSPConfig->getPassword();
+									$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["netaxept"]);
+									$obj_XML = $obj_PSP->initialize($obj_ConnInfo, $obj_PSPConfig->getMerchantAccount(), $obj_PSPConfig->getMerchantSubAccount(), (string) $obj_Elem->currency, (integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"]);
+									foreach ($obj_XML->children() as $obj_Elem)
+									{
+										$xml .= $obj_Elem->asXML();
+									}
+									break;
 								}
 								$xml .= '</psp-info>';
 							}
@@ -223,6 +237,9 @@ else
 	
 	$xml = '<status code="401">Authorization required</status>';
 }
+
+header("Content-Type: text/xml; charset=\"UTF-8\"");
+
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';
 echo $xml;

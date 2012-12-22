@@ -57,6 +57,7 @@ else
 			<?= $obj_mPoint->getAccountInfo($_SESSION['obj_Info']->getInfo("accountid") ); ?>
 			
 			<amount><?= $_GET['amount']; ?></amount>
+			<code><?= $_GET['code']; ?></code>
 		</confirm-transfer>
 	</root>
 <?php

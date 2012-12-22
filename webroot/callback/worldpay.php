@@ -41,17 +41,17 @@ $obj_mPoint = new WorldPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 switch(strval($obj_XML->notify->orderStatusEvent->payment->lastEvent) )
 {
 case "AUTHORISED":	// Payment Authorised
-	$iStatus = Constants::iPAYMENT_ACCEPTED_STATE;
+	$iStateID = Constants::iPAYMENT_ACCEPTED_STATE;
 	break;
 case "CAPTURED":	// Payment Captured
-	$iStatus = Constants::iPAYMENT_CAPTURED_STATE;
+	$iStateID = Constants::iPAYMENT_CAPTURED_STATE;
 	break;
 default:			// Payment Rejected
-	$iStatus = Constants::iPAYMENT_REJECTED_STATE;
+	$iStateID = Constants::iPAYMENT_REJECTED_STATE;
 	break;
 }
 
-$obj_mPoint->completeTransaction(Constants::iWORLDPAY_PSP, -1, $obj_mPoint->getCardID( (string) $obj_XML->notify->orderStatusEvent->payment->paymentMethod), $iStatus, array($HTTP_RAW_POST_DATA) );
+$obj_mPoint->completeTransaction(Constants::iWORLDPAY_PSP, -1, $obj_mPoint->getCardID( (string) $obj_XML->notify->orderStatusEvent->payment->paymentMethod), $iStateID, array($HTTP_RAW_POST_DATA) );
 // Account Top-Up
 if ($obj_TxnInfo->getTypeID() >= 100 && $obj_TxnInfo->getTypeID() <= 109)
 {
@@ -65,8 +65,17 @@ if ($obj_TxnInfo->getTypeID() >= 100 && $obj_TxnInfo->getTypeID() <= 109)
 		$obj_mPoint->link($iAccountID);
 		$obj_TxnInfo->setAccountID($iAccountID);
 	}
-	$obj_mPoint->topup($iAccountID, $obj_TxnInfo->getID(), $obj_TxnInfo->getAmount() );
+	switch ($obj_TxnInfo->getTypeID() )
+	{
+	case (Constants::iPURCHASE_OF_EMONEY):
+		$obj_mPoint->topup($iAccountID, Constants::iTOPUP_OF_EMONEY, $obj_TxnInfo->getID(), $obj_TxnInfo->getAmount() );
+		break;
+	case (Constants::iPURCHASE_OF_POINTS):
+		$obj_mPoint->topup($iAccountID, Constants::iTOPUP_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getPoints() );
+		break;
+	}
 }
+if ($obj_TxnInfo->getReward() > 0 && $obj_TxnInfo->getAccountID() > 0) { $obj_mPoint->topup($obj_TxnInfo->getAccountID(), Constants::iREWARD_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getReward() ); }
 
 // Customer has an account
 if ($obj_TxnInfo->getAccountID() > 0)
@@ -83,7 +92,7 @@ if ($obj_TxnInfo->getClientConfig()->smsReceiptEnabled() === true)
 // Callback URL has been defined for Client
 if ($obj_TxnInfo->getCallbackURL() != "")
 {
-	$obj_mPoint->notifyClient($iStatus, $obj_XML);
+	$obj_mPoint->notifyClient($iStateID, $obj_XML);
 }
 ?>
 [OK]

@@ -102,6 +102,18 @@ switch(cgi.language)
 /* ========== Client Customization Start ========== */
 switch(cgi.clientid)
 {
+	// mPoint - System Account (DK)
+	case (100)
+	{
+		background_colour := 'fff';
+		border_colour := '8FBFD5';
+	}
+	// mPoint - System Account (US)
+	case (200)
+	{
+		background_colour := 'fff';
+		border_colour := '8FBFD5';
+	}
 	// mPoint - Mobile Payment Demo (US)
 	case (10000)
 	{
@@ -1542,7 +1554,7 @@ switch(cgi.clientid)
 		/* ========== Tag Classes Start ========== */
 		body
 		{
-			margin: 5px 5px 5px 5px;
+			margin: 0px;
 		}
 		body, table
 		{
@@ -1554,6 +1566,10 @@ switch(cgi.clientid)
 			font-size: 1em;
 			font-family: "Trebuchet MS",arial,sans-serif;
 			color: #000;
+		}
+		div#content
+		{
+			margin: 10px 0px 10px 10px;
 		}
 		table, table * div, table * .mPoint_Info
 		{

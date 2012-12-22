@@ -28,15 +28,15 @@ $_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $_POST['language'] ."/globa
 
 $obj_mPoint = new Callback($_OBJ_DB, $_OBJ_TXT, TxnInfo::produceInfo($_POST['mpointid'], $_OBJ_DB) );
 
-// Success: Premium SMS accepted by GoMobile or Prepaid Account charged
+// Success: Premium SMS accepted by GoMobile or Stored Value Account charged
 if ($_POST['status'] == 200 || $_POST['status'] == 2000)
 {
-	$iStatus = Constants::iPAYMENT_ACCEPTED_STATE;
+	$iStateID = Constants::iPAYMENT_ACCEPTED_STATE;
 }
 // Error: Premium SMS rejected by GoMobile
-else { $iStatus = Constants::iPAYMENT_REJECTED_STATE; }
+else { $iStateID = Constants::iPAYMENT_REJECTED_STATE; }
 //
-$obj_mPoint->completeTransaction(Constants::iCPM_PSP, $_POST['gomobileid'], $_POST['cardid'], $iStatus);
+$obj_mPoint->completeTransaction(Constants::iCPM_PSP, $_POST['gomobileid'], $_POST['cardid'], $iStateID);
 
 // Premium SMS Purchase, associate transaction with End-User Account
 if ($_POST['cardid'] == Constants::iPSMS_CARD && $obj_mPoint->getTxnInfo()->getAccountID() > 0)
@@ -49,16 +49,26 @@ if ($_POST['cardid'] == Constants::iEMONEY_CARD && $obj_mPoint->getTxnInfo()->ge
 {
 	$obj_mPoint->sendSMSReceipt(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
 }
+
 // Account Top-Up
-if ($obj_mPoint->getTxnInfo()->getTypeID() >= 100 && $obj_mPoint->getTxnInfo()->getTypeID() <= 109)
+if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_mPoint->getTxnInfo()->getTypeID() >= 100 && $obj_mPoint->getTxnInfo()->getTypeID() <= 109)
 {
-	$obj_mPoint->topup($obj_mPoint->getTxnInfo()->getAccountID(), $obj_mPoint->getTxnInfo()->getID(), $obj_mPoint->getTxnInfo()->getAmount() );
+	switch ($obj_mPoint->getTxnInfo()->getTypeID() )
+	{
+	case (Constants::iPURCHASE_OF_EMONEY):
+		$obj_mPoint->topup($obj_mPoint->getTxnInfo()->getAccountID(), Constants::iTOPUP_OF_EMONEY, $obj_mPoint->getTxnInfo()->getID(), $obj_mPoint->getTxnInfo()->getAmount() );
+		break;
+	case (Constants::iPURCHASE_OF_POINTS):
+		$obj_mPoint->topup($obj_mPoint->getTxnInfo()->getAccountID(), Constants::iTOPUP_OF_POINTS, $obj_mPoint->getTxnInfo()->getID(), $obj_mPoint->getTxnInfo()->getPoints() );
+		break;
+	}
 }
+if ($obj_mPoint->getTxnInfo()->getReward() > 0 && $obj_mPoint->getTxnInfo()->getAccountID() > 0) { $obj_mPoint->topup($obj_mPoint->getTxnInfo()->getAccountID(), Constants::iREWARD_OF_POINTS, $obj_mPoint->getTxnInfo()->getID(), $obj_mPoint->getTxnInfo()->getReward() ); }
 
 // Callback URL has been defined for Client
 if ($obj_mPoint->getTxnInfo()->getCallbackURL() != "")
 {
-	$obj_mPoint->notifyClient($iStatus, $_POST['gomobileid']);
+	$obj_mPoint->notifyClient($iStateID, $_POST['gomobileid']);
 	// Notify client of automatic capture
 	$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST['gomobileid']);
 }

@@ -134,7 +134,7 @@ class EndUserAccount extends Home
 	/**
 	 * Saves a credit card to an End-User Account.
 	 * If no account can be found for the End-User a new account will automatically be created.
-	 * The method will aupdated the Ticket ID if the card has been saved previously and return the following status codes:
+	 * The method will update the Ticket ID if the card has been saved previously and return the following status codes:
 	 * 	0. Card stored
 	 * 	1. Card stored and Existing account linked
 	 * 	2. Card stored and New account created
@@ -158,8 +158,8 @@ class EndUserAccount extends Home
 		{
 			$iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, false);
 			$bPreferred = "true";
-			// Link End-User Account to Client
-			if ($iAccountID > 0)
+			// Client supports global storage of payment cards: Link End-User Account
+			if ($iAccountID > 0 && $this->getClientConfig()->getStoreCard() > 3)
 			{
 				$this->link($iAccountID);
 				$iStatus = 1;
@@ -260,9 +260,12 @@ class EndUserAccount extends Home
 	 */
 	public function savePassword($addr, $pwd)
 	{
-		$iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, false);
+		$iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr);
 		$iStatus = 0;
-		
+		if ($iAccountID == -1 && $this->getClientConfig()->getStoreCard() > 3)
+		{
+			$iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, false);
+		}		
 		// End-User Account already exists, update password
 		if ($iAccountID > 0)
 		{
@@ -303,8 +306,12 @@ class EndUserAccount extends Home
 	 */
 	public function saveCardName($addr, $cardid, $name, $pref=false)
 	{
-		$iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, false);
+		$iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr);
 		$iStatus = 0;
+		if ($iAccountID == -1 && $this->getClientConfig()->getStoreCard() > 3)
+		{
+			$iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, false);
+		}
 		
 		// Set name for card
 		$sql = "UPDATE EndUser.Card_Tbl
@@ -381,7 +388,7 @@ class EndUserAccount extends Home
 				if ($oCC->getCountryConfig()->getID() != $oCC->getID() && $strict === true)
 				{
 					$sql .= "
-							AND (CLA.clientid = ". $oCC->getID() ." OR EUA.countryid = CLA.clientid 
+							AND (CLA.clientid = ". $oCC->getID() ." /* OR EUA.countryid = CLA.clientid */ 
 							OR NOT EXISTS (SELECT id
 										   FROM EndUser.CLAccess_Tbl
 										   WHERE accountid = EUA.id) )";
@@ -395,18 +402,21 @@ class EndUserAccount extends Home
 	/**
 	 * Tops an End-User's e-money based prepaid account up with the specified amount
 	 *
-	 * @see		Constants::iEMONEY_TOPUP_TYPE
+	 * @see		Constants::iTOPUP_OF_EMONEY
+	 * @see		Constants::iTOPUP_OF_POINTS
+	 * @see		Constants::iREWARD_OF_POINTS
 	 *
-	 * @param	integer $id 	Unqiue ID of the End-User's Account
-	 * @param	integer $txnid 	Unqiue ID of the mPoint Transaction that was used for the Top-Up
-	 * @param 	integer $amount Amount that the End-User's prepaid account should be topped up with
+	 * @param	integer $id 		Unqiue ID of the End-User's Account
+	 * @param	integer $typeid		Unqiue ID of the Top-Up type
+	 * @param	integer $txnid 		Unqiue ID of the mPoint Transaction that was used for the Top-Up
+	 * @param 	integer $amount 	Amount that the End-User's prepaid account should be topped up with
 	 * @return 	boolean
 	 */
-	public function topup($id, $txnid, $amount)
+	public function topup($id, $typeid, $txnid, $amount)
 	{
 		$sql = "INSERT INTO EndUser.Transaction_Tbl
 					(accountid, typeid, txnid, amount, ip, address)
-				SELECT ". intval($id) .", ". Constants::iEMONEY_TOPUP_TYPE .", ". intval($txnid) .", ". abs(intval($amount) ) .", ip, mobile
+				SELECT ". intval($id) .", ". intval($typeid) .", ". intval($txnid) .", ". abs(intval($amount) ) .", ip, mobile
 				FROM Log.Transaction_Tbl
 				WHERE id = ". intval($txnid);
 //		echo $sql ."\n";
@@ -415,22 +425,24 @@ class EndUserAccount extends Home
 	}
 
 	/**
-	 * Makes an e-money based purchase using the End-User's prepaid account.
+	 * Makes a purchase using the End-User's Stored Value Account.
 	 *
-	 * @see		Constants::iEMONEY_PURCHASE_TYPE
+	 * @see		Constants::iPURCHASE_USING_EMONEY
+	 * @see		Constants::iPURCHASE_USING_POINTS
 	 *
-	 * @param	integer $id 	Unqiue ID of the End-User's Account
-	 * @param	integer $txnid 	Unqiue ID of the mPoint Transaction that the purchase is for
-	 * @param 	integer $amount Amount that should be charged to the End-User's prepaid account
+	 * @param	integer $id 		Unqiue ID of the End-User's Account
+	 * @param	integer $typeid		Unqiue ID of the Purchase type
+	 * @param	integer $txnid 		Unqiue ID of the mPoint Transaction that the purchase is for
+	 * @param 	integer $amount 	Amount that should be charged to the End-User's prepaid account
 	 * @return 	boolean
 	 */
-	public function purchase($id, $txnid, $amount)
+	public function purchase($id, $typeid, $txnid, $amount)
 	{
 		$amount = abs($amount) * -1;
 
 		$sql = "INSERT INTO EndUser.Transaction_Tbl
 					(accountid, typeid, txnid, amount, ip, address)
-				SELECT ". intval($id) .", ". Constants::iEMONEY_PURCHASE_TYPE .", ". intval($txnid) .", ". intval($amount) .", ip, mobile
+				SELECT ". intval($id) .", ". intval($typeid) .", ". intval($txnid) .", ". intval($amount) .", ip, mobile
 				FROM Log.Transaction_Tbl
 				WHERE id = ". intval($txnid);
 //		echo $sql ."\n";

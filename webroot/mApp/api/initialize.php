@@ -35,13 +35,13 @@ $aMsgCds = array();
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
-/*
+
 $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<initialize-payment client-id="10007" account="100007">';
+$HTTP_RAW_POST_DATA .= '<initialize-payment client-id="10020" account="100027">';
 $HTTP_RAW_POST_DATA .= '<transaction order-no="1234abc">';
 $HTTP_RAW_POST_DATA .= '<amount country-id="100">200</amount>';
 $HTTP_RAW_POST_DATA .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
@@ -53,7 +53,7 @@ $HTTP_RAW_POST_DATA .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
 $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</initialize-payment>';
 $HTTP_RAW_POST_DATA .= '</root>';
-*/
+
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
@@ -78,14 +78,23 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
 					
 					$obj_mPoint = new MobileWeb($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
-					$iTxnID = $obj_mPoint->newTransaction(Constants::iAPP_PURCHASE_TYPE);
+					$iTxnID = $obj_mPoint->newTransaction(Constants::iPURCHASE_VIA_APP);
 					try
 					{
 						// Update Transaction State
 						$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, $obj_DOM->asXML() );
 			
-						$data['typeid'] = Constants::iAPP_PURCHASE_TYPE;
+						$data['typeid'] = $obj_DOM->{'initialize-payment'}[$i]->transaction["type-id"];
 						$data['amount'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
+						if (count($obj_DOM->{'initialize-payment'}[$i]->transaction->points) == 1)
+						{
+							$data['points'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->points;
+						}
+						if (count($obj_DOM->{'initialize-payment'}[$i]->transaction->reward) == 1)
+						{
+							$data['reward'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->reward;
+							$data['reward-type'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->reward["type-id"];
+						}
 						$data['gomobileid'] = -1;
 						$data['orderid'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction["order-no"];
 						$data['mobile'] = (float) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile;
@@ -102,8 +111,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$data['markup'] = "app";
 						$obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $data);
 						// Associate End-User Account (if exists) with Transaction
-						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getMobile(), false);
-						if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getEMail(), false); }
+						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getMobile() );
+						if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getEMail() ); }
+						// Client supports global storage of payment cards
+						if ($iAccountID == -1 && $obj_ClientConfig->getStoreCard() > 3)
+						{
+							$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getMobile(), false);
+							if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getEMail(), false); }
+						}
 						$obj_TxnInfo->setAccountID($iAccountID);
 						
 						// Update Transaction Log
@@ -123,15 +138,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$obj_mPoint->logClientVars($aVars);
 						}
 						$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+						$obj_XML = simplexml_load_string($obj_TxnInfo->toXML() );
 						$xml = '<client-config id="'. $obj_ClientConfig->getID() .'" account="'. $obj_ClientConfig->getAccountConfig()->getID() .'" store-card="'. $obj_ClientConfig->getStoreCard() .'" auto-capture="'. General::bool2xml($obj_ClientConfig->useAutoCapture() ) .'" mode="'. $obj_ClientConfig->getMode() .'">';
 						$xml .= '<name>'. htmlspecialchars($obj_ClientConfig->getName(), ENT_NOQUOTES) .'</name>';
 						$xml .= '<callback-url>'. htmlspecialchars($obj_ClientConfig->getCallbackURL(), ENT_NOQUOTES) .'</callback-url>';
 						$xml .= '</client-config>';
 						$xml .= '<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. htmlspecialchars($obj_TxnInfo->getOrderID(), ENT_NOQUOTES) .'" type-id="'. $obj_TxnInfo->getTypeID() .'" eua-id="'. $obj_TxnInfo->getAccountID() .'" language="'. $obj_TxnInfo->getLanguage() .'" auto-capture="'. General::bool2xml($obj_TxnInfo->useAutoCapture() ) .'" mode="'. $obj_TxnInfo->getMode() .'">';
-						$xml .= '<amount country-id="'. $obj_TxnInfo->getClientConfig()->getCountryConfig()->getID() .'" currency="'. $obj_TxnInfo->getClientConfig()->getCountryConfig()->getCurrency() .'" symbol="'. $obj_TxnInfo->getClientConfig()->getCountryConfig()->getSymbol() .'">'. intval($obj_TxnInfo->getAmount() ) .'</amount>';
+						$xml .= $obj_XML->amount->asXML();
+						if ($obj_TxnInfo->getPoints() > 0) { $xml .= $obj_XML->points->asXML(); }
+						if ($obj_TxnInfo->getReward() > 0) { $xml .= $obj_XML->reward->asXML(); }
 						$xml .= '<mobile country-id="'. $obj_TxnInfo->getClientConfig()->getCountryConfig()->getID() .'" operator-id="'. $obj_TxnInfo->getOperator() .'">'. floatval($obj_TxnInfo->getMobile() ) .'</mobile>';
-						$xml .= '<email>'. htmlspecialchars($obj_TxnInfo->getEMail(), ENT_NOQUOTES) .'</email>';
-						$xml .= '<callback-url>'. htmlspecialchars($obj_TxnInfo->getCallbackURL(), ENT_NOQUOTES) .'</callback-url>';
+						$xml .= $obj_XML->email->asXML();
+						$xml .= $obj_XML->{'callback-url'}->asXML();
 						$xml .= '</transaction>';
 						$obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount() ) );
 						
@@ -146,13 +164,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$xml .= '<cards>';
 						for ($j=0; $j<count($obj_XML->item); $j++)
 						{
-							// Card does not represent "My Account" or the End-User has an acccount with Stored Cards
-							if ($obj_XML->item[$j]["type-id"] != 11 || ($iAccountID > 0 && count($aObj_XML) > 0) )
+							// Card does not represent "My Account" or the End-User has an acccount with Stored Cards or Stored Value Account is available
+							if ($obj_XML->item[$j]["type-id"] != 11
+								|| ($iAccountID > 0 && (count($aObj_XML) > 0 || $obj_ClientConfig->getStoreCard() == 2) ) )
 							{
-								$xml .= '<card id="'. $obj_XML->item[$j]["id"] .'" type-id="'. $obj_XML->item[$j]["type-id"] .'" psp-id="'. $obj_XML->item[$j]["pspid"] .'">'. htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) .'</card>';
+								$xml .= '<card id="'. $obj_XML->item[$j]["id"] .'" type-id="'. $obj_XML->item[$j]["type-id"] .'" psp-id="'. $obj_XML->item[$j]["pspid"] .'" min-length="'. $obj_XML->item[$j]["min-length"] .'" max-length="'. $obj_XML->item[$j]["max-length"] .'" cvc-length="'. $obj_XML->item[$j]["cvc-length"] .'">';
+								$xml .= '<name>'. htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) .'</name>';
+								$xml .= $obj_XML->item[$j]->prefixes->asXML();
+								$xml .= htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES);	// Backward compatibility
+								$xml .= '</card>';
 							}
 						}
 						$xml .= '</cards>';
+						
 						// End-User has Stored Cards available
 						if (count($aObj_XML) > 0)
 						{
@@ -167,11 +191,23 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 							$xml .= '</stored-cards>';
 						}
+						if ($iAccountID > 0 && $obj_ClientConfig->getStoreCard() == 2)
+						{
+							$obj_XML = simplexml_load_string($obj_mPoint->getAccountInfo($iAccountID) );
+							$xml .= '<account id="'. $iAccountID .'">';
+							$xml .= $obj_XML->balance->asXML();
+							$xml .= $obj_XML->points->asXML();
+							$xml .= '</account>';
+						}
 					}
 					// Internal Error
 					catch (mPointException $e)
 					{
-						$aMsgCds[$e->getCode()] = $e->getMessage();
+						trigger_error("Unknown error: ". $e->getMessage() ."(". $e->getCode() .")" ."\n". $e->getTrace(), E_USER_WARNING);
+						
+						header("HTTP/1.1 500 Internal Server Error");
+						
+						$xml = '<status code="'. $e->getCode() .'">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES) .'</status>';
 					}
 				}
 				else
@@ -184,6 +220,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			else
 			{
 				header("HTTP/1.1 400 Bad Request");
+				
+				$xml = '<status code="'. Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'initialize-payment'}[$i]["account"]) .'">Client ID / Account doesn\'t match</status>';
 			}
 		}
 	}
@@ -224,6 +262,9 @@ else
 	
 	$xml = '<status code="401">Authorization required</status>';
 }
+
+header("Content-Type: text/xml; charset=\"UTF-8\"");
+
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';
 echo $xml;

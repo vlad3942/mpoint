@@ -92,7 +92,7 @@ if (count($aMsgCds) == 0)
 					$obj_mPoint->link($iAccountID);
 				}
 				// Complete the e-money based purchase
-				$obj_mPoint->purchase($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_TxnInfo']->getID(), $_SESSION['obj_TxnInfo']->getAmount() );
+				$obj_mPoint->purchase($_SESSION['obj_TxnInfo']->getAccountID(), Constants::iPURCHASE_USING_EMONEY, $_SESSION['obj_TxnInfo']->getID(), $_SESSION['obj_TxnInfo']->getAmount() );
 				$obj_PSP = new CellpointMobile($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
 				// Initialise Callback to Client
 				$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iEMONEY_CARD, Constants::iPAYMENT_ACCEPTED_STATE);

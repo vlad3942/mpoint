@@ -56,7 +56,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if (array_key_exists("auto-store-card", $_REQUEST) === false) { $_REQUEST['auto-store-card'] = "false"; }
 
 	$obj_mPoint = new TopUp($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig->getCountryConfig() );
-	$iTxnID = $obj_mPoint->newTransaction($obj_ClientConfig, Constants::iTOPUP_PURCHASE_TYPE);
+	$iTxnID = $obj_mPoint->newTransaction($obj_ClientConfig, $_REQUEST['typeid']);
 
 	/* ========== Input Validation Start ========== */
 	$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
@@ -83,7 +83,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 		{
 			$_REQUEST['auto-store-card'] = General::xml2bool($_REQUEST['auto-store-card']);
 			// Update Transaction State
-			$_REQUEST['typeid'] = Constants::iTOPUP_PURCHASE_TYPE;
+//			$_REQUEST['typeid'] = Constants::iPURCHASE_OF_EMONEY;
 			$_REQUEST['gomobileid'] = -1;
 			$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, var_export($_REQUEST, true) );
 

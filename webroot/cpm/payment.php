@@ -89,7 +89,7 @@ try
 		elseif (intval($obj_AccountXML->balance) >= $_SESSION['obj_TxnInfo']->getAmount() && $_SESSION['obj_TxnInfo']->getAmount() < $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->getMaxPSMSAmount()
 			&& count($obj_ClientCardsXML) == 0 && array_key_exists("msg", $_GET) === false)
 		{
-			$obj_mPoint->purchase($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_TxnInfo']->getID(), $_SESSION['obj_TxnInfo']->getAmount() );
+			$obj_mPoint->purchase($_SESSION['obj_TxnInfo']->getAccountID(), Constants::iPURCHASE_USING_EMONEY, $_SESSION['obj_TxnInfo']->getID(), $_SESSION['obj_TxnInfo']->getAmount() );
 			
 			ignore_user_abort(true);
 			// Redirect customer

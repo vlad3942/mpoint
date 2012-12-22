@@ -321,50 +321,54 @@ msgid @@@ Top-Up History @@@
 msgstr @@@ Top-Up History @@@
 
 #: /webroot/home/history.php:43
+msgid @@@ Reward History @@@
+msgstr @@@ Reward History @@@
+
+#: /webroot/home/history.php:44
 msgid @@@ ID @@@
 msgstr @@@ ID @@@
 
-#: /webroot/home/history.php:44
+#: /webroot/home/history.php:45
 msgid @@@ mPoint ID @@@
 msgstr @@@ mPoint ID @@@
 
-#: /webroot/home/history.php:45
+#: /webroot/home/history.php:46
 msgid @@@ Amount @@@
 msgstr @@@ Amount @@@
 
-#: /webroot/home/history.php:46
+#: /webroot/home/history.php:47
 msgid @@@ Method @@@
 msgstr @@@ Method @@@
 
-#: /webroot/home/history.php:47
+#: /webroot/home/history.php:48
 msgid @@@ Price @@@
 msgstr @@@ Price @@@
 
-#: /webroot/home/history.php:48
+#: /webroot/home/history.php:49
 msgid @@@ Fee @@@
 msgstr @@@ Fee @@@
 
-#: /webroot/home/history.php:49
+#: /webroot/home/history.php:50
 msgid @@@ Merchant @@@
 msgstr @@@ Merchant @@@
 
-#: /webroot/home/history.php:50
+#: /webroot/home/history.php:51
 msgid @@@ Order No. @@@
 msgstr @@@ Order No. @@@
 
-#: /webroot/home/history.php:51
+#: /webroot/home/history.php:52
 msgid @@@ Sender @@@
 msgstr @@@ Sender @@@
 
-#: /webroot/home/history.php:52
+#: /webroot/home/history.php:53
 msgid @@@ Recipient @@@
 msgstr @@@ Recipient @@@
 
-#: /webroot/home/history.php:53
+#: /webroot/home/history.php:54
 msgid @@@ IP @@@
 msgstr @@@ IP @@@
 
-#: /webroot/home/history.php:54
+#: /webroot/home/history.php:55
 msgid @@@ Timestamp @@@
 msgstr @@@ Timestamp @@@
 
@@ -596,21 +600,29 @@ msgstr @@@ Logout @@@
 msgid @@@ Balance @@@
 msgstr @@@ Balance @@@
 
-#: /webroot/home/topup.php:42
+#: /webroot/home/topup.php:50
 msgid @@@ Top-Up Account @@@
 msgstr @@@ Top-Up Account @@@
 
-#: /webroot/home/topup.php:45
+#: /webroot/home/topup.php:53
 msgid @@@ Balance @@@
 msgstr @@@ Balance @@@
 
-#: /webroot/home/topup.php:46
+#: /webroot/home/topup.php:54
 msgid @@@ Amount @@@
 msgstr @@@ Amount @@@
 
-#: /webroot/home/topup.php:47
+#: /webroot/home/topup.php:55
 msgid @@@ Price @@@
 msgstr @@@ Price @@@
+
+#: /webroot/home/topup.php:56
+msgid @@@ Top-Up Points @@@
+msgstr @@@ Top-Up Points @@@
+
+#: /webroot/home/topup.php:57
+msgid @@@ Top-Up e-Money @@@
+msgstr @@@ Top-Up e-Money @@@
 
 #: /webroot/home/transfer.php:44
 msgid @@@ Transfer @@@
@@ -1328,11 +1340,11 @@ Kind Regards
 msgid @@@ Loading... @@@
 msgstr @@@ Loading... @@@
 
-#: /api/classes/general.php:676
+#: /api/classes/general.php:677
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ Välkommen till {CLIENT}, klicka på länken nedan @@@
 
-#: /api/classes/general.php:682
+#: /api/classes/general.php:683
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Välkommen till {CLIENT} @@@
 

@@ -24,15 +24,16 @@ FRAGTUDGIFTEN VED AT RETURNERE VAREN TIL SAXO.COM, PÅHVILER DIG SOM FORBRUGER. S
 
 Reklamationsret
 DU HAR 2 ÅRS REKLAMATIONSRET. SÅFREMT DU MODTAGER EN FORKERT VARE I FORHOLD TIL DIN BESTILLING ELLER EN BESKADIGET VARE, SKAL DU REKLAMERE INDEN EN RIMELIG TID, EFTER DU HAR KONSTATERET MANGLEN. REKLAMERER DU INDEN 2 MÅNEDER, ANSES REKLAMATIONEN FOR VÆRENDE RETTIDIG. REKLAMATIONER KAN MEDDELES PÅ TELEFON 38150510 ELLER PER E-MAIL: INFO@SAXO.COM. DU KAN UDNYTTE DIN REKLAMATIONSRET VED AT SENDE VAREN RETUR ELLER MØDE OP PÅ VORES FYSISKE ADRESSE OG REKLAMERE DER. VI BETALER DIN UDGIFT TIL FORSENDELSE, HVIS VI HAR LEVERET EN FORKERT ELLER BESKADIGET VARE. VI FORBEHOLDER OS RET TIL AT AFHJÆLPE EN MANGEL/ERSTATTE MED EN UBESKADIGET VARE FREMFOR AT BETALE KØBESUMMEN TILBAGE.' WHERE id = 10001;
-
-INSERT INTO Client.Client_Tbl (countryid, flowid, name, username, passwd, maxamount, lang, logourl, cssurl, callbackurl, accepturl, cancelurl, terms, mode) VALUES (200, 1, 'PBS Kids Test', 'CPMDemo', 'DEMOisNO_2', 1000000, 'gb', '', 'http://pbskids.mretail.demo.cellpointmobile.com/css/pbskids_mpoint.css', 'http://pbskids.mretail.demo.cellpointmobile.com/mOrder/sys/mpoint.php', '', '', 'PBS Kids Test Terms & Conditions', 1);
-INSERT INTO Client.Account_Tbl (clientid, name, mobile) SELECT Max(id), 'Default', '' FROM Client.Client_Tbl;
-INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) SELECT Max(Cl.id), PC.cardid, PC.pspid FROM System.PSPCard_Tbl PC, Client.Client_Tbl Cl WHERE PC.cardid > 0 AND PC.pspid IN (1, 6) GROUP BY PC.cardid, PC.pspid;
-INSERT INTO Client.Keyword_Tbl (clientid, name, standard) SELECT Max(id), 'CPT', true FROM Client.Client_Tbl;
+--100026
+INSERT INTO Client.Client_Tbl (countryid, flowid, name, username, passwd, lang, callbackurl, mode, store_card, auto_capture, smsrcpt, emailrcpt, maxamount) VALUES (100, 1, '1415', '1415', 'Ghdy4_ah1G', 'da', 'http://1415.mretail.cellpointmobile.com/mOrder/sys/mpoint.php', 1, 3, false, false, false, 1000000);
+INSERT INTO Client.Account_Tbl (clientid, name, markup) SELECT Max(id), 'Travel Card - iPhone', 'app' FROM Client.Client_Tbl;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) SELECT Max(Cl.id), CA.cardid, CA.pspid FROM Client.CardAccess_Tbl CA, Client.Client_Tbl CL WHERE clientid = 10014 GROUP BY CA.cardid, CA.pspid;
+INSERT INTO Client.Keyword_Tbl (clientid, name, standard) SELECT Max(id), 'CPM', true FROM Client.Client_Tbl;
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name) SELECT Max(id), 1, 'CPMDemo' FROM Client.Client_Tbl;
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT Max(id), 1, '-1'  FROM Client.Account_Tbl;
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name) SELECT Max(id), 6, 'ID ### KEY' FROM Client.Client_Tbl;
-INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT Max(id), 6, '-1'  FROM Client.Account_Tbl;
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) SELECT Max(id), 2, '90099481', '90099481', 'greenMelon43' FROM Client.Client_Tbl;
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT Max(id), 2, '-1'  FROM Client.Account_Tbl;
+INSERT INTO Admin.Access_Tbl (userid, clientid) SELECT Acc.userid, Max(CL.id) FROM Admin.Access_Tbl Acc, Client.Client_Tbl CL  WHERE Acc.clientid = 10014 GROUP BY Acc.userid;
 
 INSERT INTO Client.Shop_Tbl (clientid, keywordid, shipping, ship_cost, free_ship, del_date) SELECT Max(CL.id), 5, 'Post Danmark', 2900, -1, true FROM Client.Client_Tbl Cl;
 INSERT INTO Client.Shipping_Tbl (shippingid, shopid, cost, free_ship) SELECT 1, Max(id), 2900, -1 FROM Client.Shop_Tbl;
@@ -114,3 +115,38 @@ UPDATE Client.MerchantSubAccount_Tbl SET accountid = 100019, pspid = 7 WHERE id 
 UPDATE Client.CardAccess_Tbl SET pspid = 7 WHERE clientid = 10013 AND pspid = 2;
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10013, 11, 1);
 UPDATE Client.Keyword_tbl SET clientid = 10013, name = 'CPM' WHERE id = 19;
+
+
+UPDATE Client.Client_tbl SET name = '1415 - mRewards', username = 'CPMDemo', passwd = 'DEMOisNO_2', logourl = '', cssurl = 'http://panorama-middelfart.mretail.cellpointmobile.com/css/integra_mpoint.css', callbackurl = 'http://panorama-middelfart.mretail.cellpointmobile.com/mOrder/sys/mpoint.php', cancelurl = '', smsrcpt = false, emailrcpt = false, auto_capture = false, send_pspid = true, store_card = 3, iconurl = 'http://1415-mrewards.mretail.cellpointmobile.com/img/mpoint_mycards.gif', mode = 1 WHERE id = 10017;
+UPDATE Client.Account_Tbl SET clientid = 10017, name = 'iPhone', mobile = NULL, markup = 'app' WHERE id = 100018;
+--UPDATE Client.MerchantAccount_Tbl SET clientid = 10017, pspid = 1, name = 'CPMDemo' WHERE id = 31;
+UPDATE Client.MerchantAccount_Tbl SET clientid = 10017, pspid = 2, name = '90050943', username = 'dsbmosart', passwd = 'mosart0912' WHERE id = 30;
+--UPDATE Client.MerchantSubAccount_Tbl SET accountid = 100019, pspid = 1 WHERE id = 33;
+UPDATE Client.MerchantSubAccount_Tbl SET accountid = 100018, pspid = 2 WHERE id = 32;
+UPDATE Client.MerchantSubAccount_Tbl SET accountid = 100018, pspid = 1 WHERE id = 33;
+UPDATE Client.CardAccess_Tbl SET pspid = 2 WHERE clientid = 10017 AND pspid = 6;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10017, 11, 1);
+UPDATE Client.Keyword_tbl SET clientid = 10017, name = 'CPM' WHERE id = 19;
+
+
+UPDATE Client.Client_Tbl SET name = 'Pizza Hut Equity', mode = 0, countryid = 103, logourl = NULL, cssurl = 'http://stage.bemoko.com/pizzahut/css/cellpoint.css', callbackurl = 'http://stage.bemoko.com/pizzahut/cellpoint', accepturl = 'http://stage.bemoko.com/pizzahut/orders/confirmation', lang = 'gb', smsrcpt = false, emailrcpt = false, send_pspid = false, iconurl = 'http://panorama.mretail.cellpointmobile.com/img/myaccount.gif' WHERE id = 10018;
+INSERT INTO Client.Account_Tbl (clientid, name, markup) VALUES (10018, 'Mobile Web', 'xhtml');
+--UPDATE Client.Account_Tbl SET name = 'Mobile Web' WHERE id = 100019;
+UPDATE Client.MerchantAccount_Tbl SET pspid = 4, name = 'YUMMOBDEL', username = 'YUMMOBDEL', passwd = '3Pjge5RTT1' WHERE id = 31;
+--UPDATE Client.MerchantAccount_Tbl SET clientid = 10016 WHERE id = 32;
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT Max(id), 4, '282897' FROM Client.Account_Tbl;
+--UPDATE Client.MerchantSubAccount_Tbl SET name = '282897', pspid = 4 WHERE id = 34;
+--UPDATE Client.Keyword_Tbl SET name = 'BIOAPP' WHERE id IN (10, 6);
+UPDATE Client.Keyword_tbl SET name = 'CPM', clientid = 10018 WHERE id = 20;
+UPDATE Client.CardAccess_Tbl SET pspid = 4 WHERE clientid = 10018 AND cardid IN (6, 7, 8);
+DELETE FROM Client.CardAccess_Tbl WHERE clientid = 10018 AND pspid != 4;
+
+INSERT INTO Client.Client_Tbl (countryid, flowid, name, username, passwd, lang, callbackurl, mode, store_card, auto_capture, smsrcpt, emailrcpt, maxamount) VALUES (100, 1, 'NetAxept - Test', 'CPMDemo', 'DEMOisNO_2', 'da', 'http://demo.mretail.cellpointmobile.com/mOrder/sys/mpoint.php', 1, 3, false, false, false, 1000000);
+INSERT INTO Client.Account_Tbl (clientid, name, markup) SELECT Max(id), 'iPhone', 'app' FROM Client.Client_Tbl;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) SELECT Max(Cl.id), CA.cardid, 8 FROM Client.CardAccess_Tbl CA, Client.Client_Tbl CL WHERE clientid = 10019 GROUP BY CA.cardid, CA.pspid;
+INSERT INTO Client.Keyword_Tbl (clientid, name, standard) SELECT Max(id), 'CPM', true FROM Client.Client_Tbl;
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name) SELECT Max(id), 1, 'CPMDemo' FROM Client.Client_Tbl;
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT Max(id), 1, '-1'  FROM Client.Account_Tbl;
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) SELECT Max(id), 2, '11001047', '11001047', 'wS=5D8k*' FROM Client.Client_Tbl;
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT Max(id), 2, '-1'  FROM Client.Account_Tbl;
+INSERT INTO Admin.Access_Tbl (userid, clientid) SELECT Acc.userid, Max(CL.id) FROM Admin.Access_Tbl Acc, Client.Client_Tbl CL  WHERE Acc.clientid = 10014 GROUP BY Acc.userid;

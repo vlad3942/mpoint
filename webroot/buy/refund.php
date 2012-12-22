@@ -90,12 +90,14 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					if (in_array($obj_ClientConfig->getID(), $aClientIDs) === true)
 					{
 						// Refund operation succeeded
-						if ($obj_mPoint->refund() == 0)
+						if ($obj_mPoint->refund($_REQUEST['amount']) == 0)
 						{
 							header("HTTP/1.0 200 OK");
 							
 							$aMsgCds[1000] = "Success";
-							$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, array("transact" => $obj_mPoint->getPSPID() ) );
+							$args = array("transact" => $obj_mPoint->getPSPID(),
+										  "amount" => $_REQUEST['amount']);
+							$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
 						}
 						else
 						{
