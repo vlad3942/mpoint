@@ -810,5 +810,62 @@ class Validate
 
 		return $code;
 	}
+	
+		/**
+		 * Validates the entered CPR number from the user the validations are calulatet using 
+		 * the formular provided by http://cpr.dk/ thereby using a fomular without modulus as this was discarded in 2007.
+		 *
+		 * 	 1. invaled cpr number
+		 * 	10. Success
+		 *
+		 * @param 	cpr1 		the first 8 numbers of the CPR number that the user has entered for validation
+		 */
+		public function valCpr($cpr1, $cpr2)
+		{
+		$valid = true;
+			if (!preg_match('/^[0-9]{6}$/', $cpr1) || !preg_match('/^[0-9]{4}$/', $cpr2)) {
+				$valid = false;
+			}
+			if ($valid) {
+				$dd = substr($cpr1, 0, 2);
+				$mm = substr($cpr1, 2, 2);
+				$yy = substr($cpr1, 4, 2);
+				if (!checkdate($mm, $dd, 1800 + $yy) && !checkdate($mm, $dd, 1900 + $yy)
+					&& !checkdate($mm, $dd, 2000 + $yy)) {
+					$valid = false;
+				}
+			}
+			if ($valid) {
+				$a = str_split($cpr1 . $cpr2, 1);
+				$sum = $a[0] * 4 + $a[1] * 3 + $a[2] * 2 + $a[3] * 7 + $a[4] * 6 + $a[5] * 5 + $a[6] * 4 + $a[7] * 3 + $a[8] * 2 + $a[9];
+				if ($sum % 11 == 0) {
+					$valid = true;
+				} else {
+					$valid = false;
+				}
+			}
+		
+			if (!$valid) {
+		$code =1;
+		
+			}
+			 else {
+		$code = 10;
+			}
+				return $code;
+		}
+	
+		
+		
+	public function valFullname($fullname)
+	{
+	if(!preg_match("/^[a-zæøåA-ZÆØÅ][a-zA-Z -\']+$/",$fullname))
+	{
+	$code = 1 ;
+	}
+	else{$code =10;}
+	return $code;
+	}
+	
 }
 ?>

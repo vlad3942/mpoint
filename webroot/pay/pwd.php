@@ -26,7 +26,7 @@ rebuild_get();
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 
 $obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SESSION['obj_UA']);
-
+$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB,$_SESSION['obj_Info']->getInfo("countryid"), -1);
 if (array_key_exists("cardid", $_REQUEST) === true) { $_SESSION['temp']['cardid'] = $_REQUEST['cardid']; }
 
 echo '<?xml version="1.0" encoding="UTF-8"?>';
@@ -38,7 +38,7 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 	<?= $obj_mPoint->getSystemInfo(); ?>
 
 	<?= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML(); ?>
-
+		
 	<?= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']); ?>
 
 	<labels>
@@ -49,6 +49,11 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 		<card-name><?= $_OBJ_TXT->_("Card Name"); ?></card-name>
 		<card-name-help><?= $_OBJ_TXT->_("Card Name - Help"); ?></card-name-help>
 		<submit><?= $_OBJ_TXT->_("Save"); ?></submit>
+<?php  	if($obj_ClientConfig->getStoreCard()==2 ||$obj_ClientConfig->getStoreCard()==4){?>	
+		<full-name><?= $_OBJ_TXT->_("fullname"); ?></full-name>
+		 <cpr><?= $_OBJ_TXT->_("cpr"); ?></cpr>
+
+<?php }?>
 	</labels>
 	
 	<?= $obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount() ); ?>
