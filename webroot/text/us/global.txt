@@ -1116,37 +1116,45 @@ msgstr @@@ F.ex. "private" or "company" (optional) @@@
 msgid @@@ Save @@@
 msgstr @@@ Save @@@
 
-#: /webroot/pay/pwd.php:36
+#: /webroot/pay/pwd.php:37
 msgid @@@ Create Account @@@
 msgstr @@@ Create Account @@@
 
-#: /webroot/pay/pwd.php:45
+#: /webroot/pay/pwd.php:46
 msgid @@@ Please complete the form below to finnish creating your account @@@
 msgstr @@@ Please complete the form below to finnish creating your account @@@
 
-#: /webroot/pay/pwd.php:46
+#: /webroot/pay/pwd.php:47
 msgid @@@ Selected Card @@@
 msgstr @@@ Selected card @@@
 
-#: /webroot/pay/pwd.php:47
+#: /webroot/pay/pwd.php:48
 msgid @@@ Password @@@
 msgstr @@@ Password @@@
 
-#: /webroot/pay/pwd.php:48
+#: /webroot/pay/pwd.php:49
 msgid @@@ Repeat Password @@@
 msgstr @@@ Repeat Password @@@
 
-#: /webroot/pay/pwd.php:49
+#: /webroot/pay/pwd.php:50
 msgid @@@ Card Name @@@
 msgstr @@@ Card Name @@@
 
-#: /webroot/pay/pwd.php:50
+#: /webroot/pay/pwd.php:51
 msgid @@@ Card Name - Help @@@
 msgstr @@@ F.ex. "private" or "company" (optional) @@@
 
-#: /webroot/pay/pwd.php:51
+#: /webroot/pay/pwd.php:52
 msgid @@@ Save @@@
 msgstr @@@ Save @@@
+
+#: /webroot/pay/pwd.php:53
+msgid @@@ fullname @@@
+msgstr @@@ fullname @@@
+
+#: /webroot/pay/pwd.php:54
+msgid @@@ cpr @@@
+msgstr @@@ cpr @@@
 
 #: /webroot/pay/sys/sms.php:206
 msgid @@@ SMS Purchase - Unknown Reponse @@@
@@ -1328,11 +1336,11 @@ Price: {PRICE} @@@
 msgid @@@ Billing SMS @@@
 msgstr @@@ Thank you for using mPoint, you've been charged {PRICE} through your Mobile Operator @@@
 
-#: /api/classes/credit_card.php:134
+#: /api/classes/credit_card.php:135
 msgid @@@ Stored Cards @@@
 msgstr @@@ Use Stored Card @@@
 
-#: /api/classes/credit_card.php:136
+#: /api/classes/credit_card.php:137
 msgid @@@ My Account @@@
 msgstr @@@ My Account @@@
 
