@@ -38,9 +38,13 @@ $obj_mPoint = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']->
 if ($obj_Validator->valPassword($_POST['pwd']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_POST['pwd']) + 10; }
 if ($obj_Validator->valPassword($_POST['rpt']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_POST['rpt']) + 20; }
 if (count($aMsgCds) == 0 && $_POST['pwd'] != $_POST['rpt']) { $aMsgCds[] = 31; }
+
+
+if($_SESSION['obj_TxnInfo']->getClientConfig()->getStoreCard() == 2 || $_SESSION['obj_TxnInfo']->getClientConfig()->getStoreCard() == 4)
+{
 if ($obj_Validator->valcpr($_POST['cpr1'],$_POST['cpr2']) != 10) { $aMsgCds[] = $obj_Validator->valCpr($_POST['cpr1'],$_POST['cpr2']) + 102; }
 if ($obj_Validator->valFullname($_POST['fullname']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_POST['fullname']) + 103; }
-
+}
 if ($obj_Validator->valName($_POST['name']) > 1 && $obj_Validator->valName($_POST['name']) != 10) { $aMsgCds[] = $obj_Validator->valName($_POST['name']) + 33; }
 
 // Success: Input Valid
