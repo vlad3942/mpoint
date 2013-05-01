@@ -163,14 +163,14 @@
 		<td>
 			<label for="firstname" accesskey="F"><xsl:value-of select="//labels/firstname" /></label>
 		</td>
-		<td><input type="text" id="firstname" name="firstname" class="text" onfocus="javascript:obj_Client.clear(this);" onblur="javascript:obj_Client.sendInputData(document.getElementById('edit-info'), this);" tabindex="2" title="firstname" value="{firstname}" /></td>
+		<td><input type="text" id="firstname" name="firstname" class="text" onfocus="javascript:obj_Client.clear(this);" onblur="javascript:obj_Client.sendInputData(document.getElementById('edit-info'), this);" tabindex="2" title="firstname" value="{first-name}" /></td>
 		<td><img class="hidden" name="firstname_img" id="firstname_img" src="/img/rederrorarrow.gif" width="13" height="10" alt="" border="0" /></td>
 	</tr>
 	<tr>
 		<td>
 			<label for="lastname" accesskey="L"><xsl:value-of select="//labels/lastname" /></label>
 		</td>
-		<td><input type="text" id="lastname" name="lastname" class="text" onfocus="javascript:obj_Client.clear(this);" onblur="javascript:obj_Client.sendInputData(document.getElementById('edit-info'), this);" tabindex="3" title="lastname" value="{lastname}" /></td>
+		<td><input type="text" id="lastname" name="lastname" class="text" onfocus="javascript:obj_Client.clear(this);" onblur="javascript:obj_Client.sendInputData(document.getElementById('edit-info'), this);" tabindex="3" title="lastname" value="{last-name}" /></td>
 		<td><img class="hidden" name="lastname_img" id="lastname_img" src="/img/rederrorarrow.gif" width="13" height="10" alt="" border="0" /></td>
 	</tr>
 	<tr>

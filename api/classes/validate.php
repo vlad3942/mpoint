@@ -76,10 +76,9 @@ class Validate
 			if ($acc == -1)
 			{
 				$sql .= "
-						ORDER BY Acc.id ASC
-						LIMIT 1";
+						ORDER BY Acc.id ASC";
 			}
-			// Use Account Number
+			// Use Account Number (Not supported if using Oracle)
 			elseif ($acc > 0 && $acc < 1000)
 			{
 				$sql .= "
@@ -682,7 +681,7 @@ class Validate
 			
 			$sql = "SELECT Txn.enabled
 					FROM EndUser.Transaction_Tbl Txn
-					INNER JOIN EndUser.Account_Tbl Acc ON Txn.accountid = Acc.id AND Acc.enabled = true
+					INNER JOIN EndUser.Account_Tbl Acc ON Txn.accountid = Acc.id AND Acc.enabled = '1'
 					WHERE Acc.id = ". intval($iToID) ." AND date_trunc('second', Acc.created) = '". $oDB->escStr($sTimestamp) ."' 
 						AND Txn.toid = ". intval($iToID) ." AND Txn.fromid = ". intval($iFromID);
 //			echo $sql ."\n";
@@ -742,7 +741,7 @@ class Validate
 		{
 			$sql = "SELECT Txn.enabled, Msg.stateid
 					FROM Log.Transaction_Tbl Txn
-					INNER JOIN Log.Message_Tbl Msg ON Txn.id = Msg.txnid AND Msg.enabled = true
+					INNER JOIN Log.Message_Tbl Msg ON Txn.id = Msg.txnid AND Msg.enabled = '1'
 					WHERE Txn.id = ". intval($mpointid) ." AND Txn.clientid = ". intval($clientid) ."
 						AND Msg.stateid >= ". Constants::iPAYMENT_ACCEPTED_STATE ."
 					ORDER BY Msg.stateid ASC";
@@ -805,6 +804,7 @@ class Validate
 	public function valMarkupLanguage($mrk)
 	{
 		if (empty($mrk) === true) { $code = 1; }			// Undefined Markup Language
+		elseif (strtolower($mrk) == "app") { $code = 10; }
 		elseif(is_dir($_SERVER['DOCUMENT_ROOT'] ."/templates/". sTEMPLATE ."/". $mrk) === false) { $code = 2; }	// Markup Language doesn't exist in Template
 		else { $code = 10; }								// Success
 

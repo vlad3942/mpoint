@@ -1,5 +1,8 @@
 <div>
-	<div id="progress" class="mPoint_Info"><wpdisplay msg=cpm.progress></div>
+	<div id="progress" class="mPoint_Info">
+		<input name="cancel-payment" id="cancel-payment" type="button" class="mPoint_Button" value="<wpdisplay msg=cpm.cancel>" tabindex="11" onclick="javascript:window.location.assign('https://mpoint.test.cellpointmobile.com/pay/card.php');" />
+		<wpdisplay msg=cpm.progress>
+	</div>
 	<INPUT TYPE=hidden NAME=PaymentID VALUE="<WPDISPLAY PAYMENT=payment_id>" />
 </div>
 <!--WP start testModeMessage -->
@@ -7,10 +10,6 @@
 	<div class="mPoint_Status"><wpdisplay msg=card.testMode></div>
 </wpdisplay>
 <!--WP end testModeMessage -->
-
-<!--WP Feedback messages - uses comp.common.error etc. -->
-<wpdisplay result=info componentPrefix=card pre="" post="">
-<!--WP end Feedback messages -->
 
 <!--WP Feedback messages - uses comp.common.error etc. -->
 <wpdisplay result=info componentPrefix=card pre="" post="">
@@ -87,7 +86,7 @@
 				<wpdisplay msg=card.number pre="*">:
 			</label>
 			<br />
-			<input type="tel" id="cardNoInput" name="cardNoInput" tabindex="1" value="" maxlength="20" style="-wap-input-format:'*N';" pattern="[0-9]*" autocomplete="off" />
+			<input type="text" id="cardNoInput" name="cardNoInput" tabindex="1" value="" maxlength="20" style="-wap-input-format:'*N';" pattern="[0-9]*" autocomplete="off" />
 			<input type=hidden name=cardNoJS value="" />
 			<input type=hidden name=cardNoHidden value="<wpdisplay msg=payServ.param.hidden>" />
 		</div>
@@ -99,7 +98,7 @@
 					<wpdisplay msg=card.issueNo pre="">:
 				</label>
 				<br />
-				<input type="tel" id="cardIssueNo" name="cardIssueNo" tabindex="2" maxlength="3" size="3" value="<wpdisplay request=param_cardIssueNo>" style="-wap-input-format:'*N';" pattern="[0-9]*" autocomplete="off" />
+				<input type="text" id="cardIssueNo" name="cardIssueNo" tabindex="2" maxlength="3" size="3" value="<wpdisplay request=param_cardIssueNo>" style="-wap-input-format:'*N';" pattern="[0-9]*" autocomplete="off" />
 			</wpdisplay>
 		</div>
 	<!--WP end cardIssueNo -->
@@ -145,7 +144,7 @@
 					<wpdisplay msg=card.cvv>:
 				</label>
 				<br />
-				<input type="tel" id="cardCVV" name="cardCVV" tabindex="7" size="4" maxlength="4" value="<wpdisplay request=param_cardCVV>" style="-wap-input-format:'*N';" pattern="[0-9]*" autocomplete="off" />
+				<input type="text" id="cardCVV" name="cardCVV" tabindex="7" size="4" maxlength="4" value="<wpdisplay request=param_cardCVV>" style="-wap-input-format:'*N';" pattern="[0-9]*" autocomplete="off" />
 			</wpdisplay>
 		</div>
 	<!--WP end security code row -->

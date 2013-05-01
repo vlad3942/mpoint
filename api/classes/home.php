@@ -51,18 +51,19 @@ class Home extends General
 	 *
 	 * @param 	GoMobileConnInfo $oCI 	Reference to the data object with the Connection Info required to communicate with GoMobile
 	 * @param	integer $id 			Unqiue ID of the End-User's Account
+	 * @param	CountryConfig $oCC		Configuration for the recipient's country
 	 * @param	string $mob 			End-User's mobile number
 	 * @return	integer
 	 * @throws 	mPointException
 	 */
-	public function sendOneTimePassword(GoMobileConnInfo &$oCI, $id, $mob)
+	public function sendOneTimePassword(GoMobileConnInfo &$oCI, $id, CountryConfig &$oCC, $mob)
 	{
 		$sBody = $this->getText()->_("mPoint - Send One Time Password");
 		$sBody = str_replace("{OTP}", $this->genActivationCode($id, $mob, date("Y-m-d H:i:s", time() + 60 * 60) ), $sBody);
 		
 		$obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $this->getCountryConfig()->getID(), -1);
 		
-		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->getCountryConfig()->getID(), $this->getCountryConfig()->getID()*100, $this->getCountryConfig()->getChannel(), $obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $mob, utf8_decode($sBody) );
+		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $oCC->getID(), $oCC->getID()*100, $oCC->getChannel(), $obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $mob, utf8_decode($sBody) );
 		$obj_MsgInfo->setDescription("mPoint - OTP");
 		
 		$iCode = $this->sendMessage($oCI, $obj_ClientConfig, $obj_MsgInfo);
@@ -122,7 +123,7 @@ class Home extends General
 		$sql = "SELECT id
 				FROM EndUser.Account_Tbl
 				WHERE countryid = ". $oCC->getID() ."
-					AND ". $sql ." AND enabled = true";
+					AND ". $sql ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 
@@ -148,7 +149,7 @@ class Home extends General
 	{
 		$sql = "SELECT id, attempts, passwd AS password, mobile
 				FROM EndUser.Account_Tbl
-				WHERE id = ". intval($id) ." AND countryid = ". $this->_obj_CountryConfig->getID() ." AND enabled = true";
+				WHERE id = ". intval($id) ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 
@@ -191,8 +192,8 @@ class Home extends General
 			}
 			// Update number of login attempts for End-User
 			$sql = "UPDATE EndUser.Account_Tbl
-					SET attempts = ". $iAttempts .", enabled = '". General::bool2xml($bEnabled) ."'
-					WHERE id = ". intval($id) ." AND countryid = ". $this->_obj_CountryConfig->getID();
+					SET attempts = ". $iAttempts .", enabled = '". ($bEnabled === true ? "1" : "0") ."'
+					WHERE id = ". intval($id);
 //			echo $sql ."\n";
 			$this->getDBConn()->query($sql);
 		}
@@ -275,24 +276,24 @@ class Home extends General
 		/* ========== Calculate Logo Dimensions End ========== */
 
 		// Select information for the End-User's account
-		$sql = "SELECT id, countryid, firstname, lastname, mobile, email, passwd AS password, balance, points, date_trunc('second', created) AS created, Extract('epoch' from created) AS timestamp
+		$sql = "SELECT id, countryid, firstname, lastname, mobile, email, passwd AS password, balance, points, Extract('epoch' from created AT TIME ZONE 'Europe/Copenhagen') AS timestamp
 				FROM EndUser.Account_Tbl
-				WHERE id = ". intval($id) ." AND enabled = true";
+				WHERE id = ". intval($id) ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 		
 		$sql = "SELECT CL.id, CL.store_card, CL.name
 				FROM EndUser.CLAccess_Tbl Acc
-				INNER JOIN Client.Client_Tbl CL ON Acc.clientid = CL.id AND CL.enabled = true
+				INNER JOIN Client.Client_Tbl CL ON Acc.clientid = CL.id AND CL.enabled = '1'
 				WHERE Acc.accountid = ". intval($id);
 //		echo $sql ."\n";
 		$aRS = $this->getDBConn()->getAllNames($sql);
 		
 		// Construct XML Document with account information
-		$xml = '<account id="'. $RS["ID"] .'" countryid="'. $RS["COUNTRYID"] .'">';
-		$xml .= '<firstname>'. htmlspecialchars($RS["FIRSTNAME"], ENT_NOQUOTES) .'</firstname>';
-		$xml .= '<lastname>'. htmlspecialchars($RS["LASTNAME"], ENT_NOQUOTES) .'</lastname>';
-		$xml .= '<mobile>'. $RS["MOBILE"] .'</mobile>';
+		$xml = '<account id="'. $RS["ID"] .'" country-id="'. $RS["COUNTRYID"] .'">';
+		$xml .= '<first-name>'. htmlspecialchars($RS["FIRSTNAME"], ENT_NOQUOTES) .'</first-name>';
+		$xml .= '<last-name>'. htmlspecialchars($RS["LASTNAME"], ENT_NOQUOTES) .'</last-name>';
+		$xml .= '<mobile country-id="'. $RS["COUNTRYID"] .'">'. $RS["MOBILE"] .'</mobile>';
 		$xml .= '<email>'. htmlspecialchars($RS["EMAIL"], ENT_NOQUOTES) .'</email>';
 		$xml .= '<password mask="'. str_repeat("*", strlen($RS["PASSWORD"]) ) .'">'. htmlspecialchars($RS["PASSWORD"], ENT_NOQUOTES) .'</password>';
 		$xml .= '<balance country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat().'">'. intval($RS["BALANCE"]) .'</balance>';
@@ -304,7 +305,7 @@ class Home extends General
 			$xml .= '<client id="'. $aRS[$i]["ID"] .'" store-card="'. $aRS[$i]["STORE_CARD"] .'">'. htmlspecialchars($aRS[$i]["NAME"], ENT_NOQUOTES) .'</client>';
 		}
 		$xml .= '</clients>';
-		$xml .= '<created timestamp="'. $RS["TIMESTAMP"] .'">'. $RS["CREATED"] .'</created>';
+		$xml .= '<created timestamp="'. intval($RS["TIMESTAMP"]) .'">'. gmdate("Y-m-d H:i:sP", $RS["TIMESTAMP"]) .'</created>';
 		$xml .= '<logo-width>'. $iWidth .'</logo-width>';
 		$xml .= '<logo-height>'. $iHeight .'</logo-height>';
 		$xml .= '</account>';
@@ -370,12 +371,12 @@ class Home extends General
 					SC.id AS typeid, SC.name AS type,
 					CL.id AS clientid, CL.name AS client
 				FROM EndUser.Card_Tbl EUC
-				INNER JOIN System.PSP_Tbl PSP ON EUC.pspid = PSP.id AND PSP.enabled = true
-				INNER JOIN System.Card_Tbl SC ON EUC.cardid = SC.id AND SC.enabled = true
-				INNER JOIN Client.Client_Tbl CL ON EUC.clientid = CL.id AND CL.enabled = true
-				INNER JOIN EndUser.Account_Tbl EUA ON EUC.accountid = EUA.id AND EUA.enabled = true
+				INNER JOIN System.PSP_Tbl PSP ON EUC.pspid = PSP.id AND PSP.enabled = '1'
+				INNER JOIN System.Card_Tbl SC ON EUC.cardid = SC.id AND SC.enabled = '1'
+				INNER JOIN Client.Client_Tbl CL ON EUC.clientid = CL.id AND CL.enabled = '1'
+				INNER JOIN EndUser.Account_Tbl EUA ON EUC.accountid = EUA.id AND EUA.enabled = '1'
 				LEFT OUTER JOIN EndUser.CLAccess_Tbl CLA ON EUA.id = CLA.accountid
-				WHERE EUC.accountid = ". intval($id) ." AND EUC.enabled = true
+				WHERE EUC.accountid = ". intval($id) ." AND EUC.enabled = '1'
 					AND ( (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."' OR length(EUC.expiry) = 0 )
 					AND (CLA.clientid = CL.id OR EUA.countryid = CLA.clientid 
 						 OR NOT EXISTS (SELECT id
@@ -411,10 +412,10 @@ class Home extends General
 	 * @param	integer $id 	Unqiue ID of the End-User's Account
 	 * @return 	string
 	 */
-	public function getTxnHistory($id)
+	public function getTxnHistory($id, $num=-1, $offset=-1)
 	{
 		// Fetch Transaction history for End-User
-		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, Extract('epoch' from EUT.created) AS timestamp,
+		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, Extract('epoch' from EUT.created AT TIME ZONE 'Europe/Copenhagen') AS timestamp,
 					(CASE
 					 WHEN EUT.amount = 0 THEN Txn.amount
 					 WHEN EUT.amount IS NULL THEN Txn.amount
@@ -427,10 +428,10 @@ class Home extends General
 					 WHEN EUT.typeid = ". Constants::iCARD_PURCHASE_TYPE ." THEN Txn.ip
 					 ELSE EUT.ip
 					 END) AS ip,
-					C.currency,
+					C.id AS countryid, C.currency, C.symbol, C.priceformat,
 					CL.id AS clientid, CL.name AS client,
-					(EUAT.firstname || ' ' || EUAT.lastname) AS to_name, EUAT.mobile AS to_mobile, EUAT.email AS to_email,
-					(EUAF.firstname || ' ' || EUAF.lastname) AS from_name, EUAF.mobile AS from_mobile, EUAF.email AS from_email,
+					(EUAT.firstname || ' ' || EUAT.lastname) AS to_name, EUAT.countryid AS to_countryid, EUAT.mobile AS to_mobile, EUAT.countryid AS to_m, EUAT.email AS to_email,
+					(EUAF.firstname || ' ' || EUAF.lastname) AS from_name, EUAF.countryid AS from_countryid, EUAF.mobile AS from_mobile, EUAF.email AS from_email,
 					Txn.id AS mpointid, Txn.orderid, Txn.cardid, Card.name AS card
 				FROM EndUser.Transaction_Tbl EUT
 				LEFT OUTER JOIN EndUser.Account_Tbl EUAT ON EUT.toid = EUAT.id
@@ -439,83 +440,98 @@ class Home extends General
 				LEFT OUTER JOIN Client.Client_Tbl CL ON Txn.clientid = CL.id
 				LEFT OUTER JOIN System.Country_Tbl C ON Txn.countryid = C.id
 				LEFT OUTER JOIN System.Card_Tbl Card ON Txn.cardid = Card.id
-				WHERE EUT.accountid = ". intval($id) ."
-				ORDER BY EUT.id ASC";
+				WHERE EUT.accountid = ". intval($id);
+		if ($num > 0 && $offset <= 0)
+		{
+			$sql .= "
+					ORDER BY EUT.id DESC";
+		}
+		else
+		{
+			$sql .= "
+					ORDER BY EUT.id ASC";
+		}
+		if ($num > 0)
+		{
+			$sql .= "
+					LIMIT ". intval($num);
+		}
+		if ($offset > 0) { $sql .= " OFFSET ". intval($offset); }
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 
-		$xml = '<history accountid="'. $id .'">';
+		$xml = '<history account-id="'. $id .'">';
 		// Construct XML Document with data for Transaction
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
 			// E-Money / Points Top-Up or Points Reward
 			if ($RS["TYPEID"] == Constants::iTOPUP_OF_EMONEY || $RS["TYPEID"] == Constants::iTOPUP_OF_POINTS || $RS["TYPEID"] == Constants::iREWARD_OF_POINTS)
 			{
-				$xml .= '<transaction id="'. $RS["ID"] .'"  type="'. $RS["TYPEID"] .'" mpointid="'. $RS["MPOINTID"] .'">';
+				$xml .= '<transaction id="'. $RS["ID"] .'"  type-id="'. $RS["TYPEID"] .'" mpoint-id="'. $RS["MPOINTID"] .'">';
 				if ($RS["TYPEID"] == Constants::iTOPUP_OF_POINTS || $RS["TYPEID"] == Constants::iREWARD_OF_POINTS)
 				{
-					if ($this->_obj_CountryConfig->getID() == 103 || $this->_obj_CountryConfig->getID() == 200) { $seperator = ","; }
+					if ($RS["COUNTRYID"] == 103 || $RS["COUNTRYID"] == 200) { $seperator = ","; }
 					else { $seperator = "."; }
-					$xml .= '<amount currency="points">'. $RS["AMOUNT"] .'</amount>';
+					$xml .= '<amount country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">'. $RS["AMOUNT"] .'</amount>';
 					$xml .= '<price>'. number_format($RS["AMOUNT"], 0, "", $seperator) .' points</price>';
+					$xml .= '<fee country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">'. $RS["FEE"] .'</fee>';
 				}
 				else
 				{
-					$xml .= '<amount currency="'. trim($RS["CURRENCY"]) .'">'. $RS["AMOUNT"] .'</amount>';
+					$xml .= '<amount country-id="'. $RS["COUNTRYID"] .'" currency="'. $RS["CURRENCY"] .'" symbol="'. $RS["SYMBOL"] .'" format="'. $RS["PRICEFORMAT"] .'">'. $RS["AMOUNT"] .'</amount>';
 					$xml .= '<price>'. General::formatAmount($this->_obj_CountryConfig, abs($RS["AMOUNT"]) ) .'</price>';
+					$xml .= '<fee country-id="'. $RS["COUNTRYID"] .'" currency="'. $RS["CURRENCY"] .'" symbol="'. $RS["SYMBOL"] .'" format="'. $RS["PRICEFORMAT"] .'">'. $RS["FEE"] .'</fee>';
 				}
-				$xml .= '<fee currency="'. trim($RS["CURRENCY"]) .'">'. General::formatAmount($this->_obj_CountryConfig, $RS["FEE"]) .'</fee>';
 				$xml .= '<ip>'. $RS["IP"] .'</ip>';
 				$xml .= '<address>'. htmlspecialchars($RS["ADDRESS"], ENT_NOQUOTES) .'</address>';
-				$xml .= '<timestamp>'. date("Y-m-d H:i:s", $RS["TIMESTAMP"]) .'</timestamp>';
+				$xml .= '<timestamp>'. gmdate("Y-m-d H:i:sP", $RS["TIMESTAMP"]) .'</timestamp>';
 				$xml .= '</transaction>';
 			}
 			// E-Money Transfer
 			elseif ($RS["TYPEID"] == Constants::iTRANSFER_OF_EMONEY)
 			{
-				$xml .= '<transaction id="'. $RS["ID"] .'"  type="'. $RS["TYPEID"] .'">';
-				$xml .= '<amount currency="'. trim($RS["CURRENCY"]) .'">'. $RS["AMOUNT"] .'</amount>';
+				$xml .= '<transaction id="'. $RS["ID"] .'"  type-id="'. $RS["TYPEID"] .'">';
+				$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $RS["AMOUNT"] .'</amount>';
 				$xml .= '<price>'. General::formatAmount($this->_obj_CountryConfig, $RS["AMOUNT"]) .'</price>';
-				$xml .= '<fee currency="'. trim($RS["CURRENCY"]) .'">'. General::formatAmount($this->_obj_CountryConfig, $RS["FEE"]) .'</fee>';
+				$xml .= '<fee country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $RS["FEE"] .'</fee>';
 				$xml .= '<ip>'. $RS["IP"] .'</ip>';
 				$xml .= '<address>'. htmlspecialchars($RS["ADDRESS"], ENT_NOQUOTES) .'</address>';
-				$xml .= '<from accountid="'. $RS["FROMID"] .'">';
+				$xml .= '<from account-id="'. $RS["FROMID"] .'">';
 				$xml .= '<name>'. htmlspecialchars($RS["FROM_NAME"], ENT_NOQUOTES) .'</name>';
-				$xml .= '<mobile>'. $RS["FROM_MOBILE"] .'</mobile>';
+				$xml .= '<mobile country-id="'. $RS["FROM_COUNTRYID"] .'">'. $RS["FROM_MOBILE"] .'</mobile>';
 				$xml .= '<email>'. htmlspecialchars($RS["FROM_EMAIL"], ENT_NOQUOTES) .'</email>';
 				$xml .= '</from>';
-				$xml .= '<to accountid="'. $RS["TOID"] .'">';
+				$xml .= '<to account-id="'. $RS["TOID"] .'">';
 				$xml .= '<name>'. htmlspecialchars($RS["TO_NAME"], ENT_NOQUOTES) .'</name>';
-				$xml .= '<mobile>'. $RS["TO_MOBILE"] .'</mobile>';
+				$xml .= '<mobile country-id="'. $RS["TO_COUNTRYID"] .'">'. $RS["TO_MOBILE"] .'</mobile>';
 				$xml .= '<email>'. htmlspecialchars($RS["TO_EMAIL"], ENT_NOQUOTES) .'</email>';
 				$xml .= '</to>';
-				$xml .= '<timestamp>'. date("Y-m-d H:i:s", $RS["TIMESTAMP"]) .'</timestamp>';
+				$xml .= '<timestamp>'. gmdate("Y-m-d H:i:sP", $RS["TIMESTAMP"]) .'</timestamp>';
 				$xml .= '</transaction>';
 			}
 			// E-Money Purchase or Card / Premium SMS based purchase associated with the End-User account
 			else
 			{
-				$xml .= '<transaction id="'. $RS["ID"] .'" mpointid="'. $RS["MPOINTID"] .'" type="'. $RS["TYPEID"] .'">';
+				$xml .= '<transaction id="'. $RS["ID"] .'" type-id="'. $RS["TYPEID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" order-no="'. htmlspecialchars($RS["ORDERID"], ENT_NOQUOTES) .'">';
 				$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
-				$xml .= '<orderid>'. $RS["ORDERID"] .'</orderid>';
 				if ($RS["TYPEID"] == Constants::iPURCHASE_USING_POINTS)
 				{
-					if ($this->_obj_CountryConfig->getID() == 103 || $this->_obj_CountryConfig->getID() == 200) { $seperator = ","; }
+					if ($RS["COUNTRYID"] == 103 || $RS["COUNTRYID"] == 200) { $seperator = ","; }
 					else { $seperator = "."; }
-					$xml .= '<amount currency="points">'. $RS["AMOUNT"] .'</amount>';
+					$xml .= '<amount country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">'. $RS["AMOUNT"] .'</amount>';
 					$xml .= '<price>'. number_format($RS["AMOUNT"], 0, "", $seperator) .' points</price>';
-					$xml .= '<fee currency="points">'. number_format($RS["FEE"], 0, "", $seperator) .' points</fee>';
+					$xml .= '<fee country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">'. $RS["FEE"] .'</fee>';
 				}
 				else
 				{
-					$xml .= '<amount currency="'. trim($RS["CURRENCY"]) .'">'. $RS["AMOUNT"] .'</amount>';
+					$xml .= '<amount country-id="'. $RS["COUNTRYID"] .'" currency="'. $RS["CURRENCY"] .'" symbol="'. $RS["SYMBOL"] .'" format="'. $RS["PRICEFORMAT"] .'">'. $RS["AMOUNT"] .'</amount>';
 					$xml .= '<price>'. General::formatAmount($this->_obj_CountryConfig, abs($RS["AMOUNT"]) ) .'</price>';
-					$xml .= '<fee currency="'. trim($RS["CURRENCY"]) .'">'. General::formatAmount($this->_obj_CountryConfig, $RS["FEE"]) .'</fee>';
+					$xml .= '<fee country-id="'. $RS["COUNTRYID"] .'" currency="'. $RS["CURRENCY"] .'" symbol="'. $RS["SYMBOL"] .'" format="'. $RS["PRICEFORMAT"] .'">'. $RS["FEE"] .'</fee>';
 				}
 				$xml .= '<ip>'. $RS["IP"] .'</ip>';
 				$xml .= '<address>'. htmlspecialchars($RS["ADDRESS"], ENT_NOQUOTES) .'</address>';
 				$xml .= '<card id="'. $RS["CARDID"] .'">'. htmlspecialchars($RS["CARD"], ENT_NOQUOTES) .'</card>';
-				$xml .= '<timestamp>'. date("Y-m-d H:i:s", $RS["TIMESTAMP"]) .'</timestamp>';
+				$xml .= '<timestamp>'. gmdate("Y-m-d H:i:sP", $RS["TIMESTAMP"]) .'</timestamp>';
 				$xml .= '</transaction>';
 			}
 		}
@@ -535,6 +551,23 @@ class Home extends General
 	{
 		$sql = "UPDATE EndUser.Account_Tbl
 				SET passwd = '". $this->getDBConn()->escStr($pwd) ."'
+				WHERE id = ". intval($id);
+//		echo $sql ."\n";
+		
+		return is_resource($this->getDBConn()->query($sql) );
+	}
+	/**
+	 * Saves the specified Information for the End-User Account. 
+	 *
+	 * @param	integer $id 	Unqiue ID of the End-User's Account
+	 * @param	string $fn 		End-User's first name
+	 * @param	string $ln 		End-User's last name
+	 * @return	boolean
+	 */
+	public function saveInfo($id, $fn, $ln)
+	{
+		$sql = "UPDATE EndUser.Account_Tbl
+				SET firstname = '". $this->getDBConn()->escStr($fn) ."', lastname = '". $this->getDBConn()->escStr($ln) ."'  
 				WHERE id = ". intval($id);
 //		echo $sql ."\n";
 		
@@ -573,7 +606,7 @@ class Home extends General
 	 */
 	public function newAccount($cid, $mob="", $pwd="", $email="")
 	{
-		$sql = "SELECT Nextval('EndUser.Account_Tbl_id_seq') AS id";
+		$sql = "SELECT Nextvalue('EndUser.Account_Tbl_id_seq') AS id FROM DUAL";
 		$RS = $this->getDBConn()->getName($sql);
 		$sql = "INSERT INTO EndUser.Account_Tbl
 					(id, countryid, mobile, passwd, email)
@@ -689,7 +722,7 @@ class Home extends General
 		else
 		{
 			$sql = "UPDATE EndUser.Activation_Tbl
-					SET active = true
+					SET active = '1'
 					WHERE id = ". $RS["ID"];
 //			echo $sql ."\n";
 			if (is_resource($this->getDBConn()->query($sql) ) === true)
@@ -700,6 +733,15 @@ class Home extends General
 		}
 			
 		return $iStatus;
+	}
+	public function verifyMobile($id)
+	{
+		$sql = "UPDATE EndUser.Account_Tbl
+				SET mobile_verified = true
+				WHERE id = ". intval($id);
+//		echo $sql ."\n";
+		
+		return is_resource($this->getDBConn()->query($sql) ) === true ? 10 : 1;
 	}
 }
 ?>

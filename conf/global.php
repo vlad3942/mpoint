@@ -36,14 +36,31 @@ define("sERROR_LOG", sLOG_PATH ."app_error_". date("Y-m-d") .".log");
 /**
  * Database settings for mPoint's database
  */
+/*
+// Emirates Lab
+$aDB_CONN_INFO["mpoint"]["host"] = "localhost";
+$aDB_CONN_INFO["mpoint"]["port"] = 6516;
+$aDB_CONN_INFO["mpoint"]["path"] = "mpontod";
+$aDB_CONN_INFO["mpoint"]["username"] = "mpoint_user";
+$aDB_CONN_INFO["mpoint"]["password"] = "mpoint_user";
+$aDB_CONN_INFO["mpoint"]["class"] = "Oracle";
+/*
+// Solar
+$aDB_CONN_INFO["mpoint"]["host"] = "192.168.1.61";
+$aDB_CONN_INFO["mpoint"]["port"] = 1521;
+$aDB_CONN_INFO["mpoint"]["path"] = "xe";
+$aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
+$aDB_CONN_INFO["mpoint"]["password"] = "mpoint";
+$aDB_CONN_INFO["mpoint"]["class"] = "Oracle";
+*/
 $aDB_CONN_INFO["mpoint"]["host"] = "localhost";
 $aDB_CONN_INFO["mpoint"]["port"] = 5000;
 $aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["password"] = "hspzr735abl";
+$aDB_CONN_INFO["mpoint"]["class"] = "PostGreSQL";
 $aDB_CONN_INFO["mpoint"]["timeout"] = 10;
 $aDB_CONN_INFO["mpoint"]["charset"] = "UTF8";
-$aDB_CONN_INFO["mpoint"]["class"] = "PostGreSQL";
 $aDB_CONN_INFO["mpoint"]["connmode"] = "normal";
 $aDB_CONN_INFO["mpoint"]["errorpath"] = sLOG_PATH ."db_error_". date("Y-m-d") .".log";
 $aDB_CONN_INFO["mpoint"]["errorhandling"] = 3;
@@ -72,6 +89,21 @@ $aDB_CONN_INFO["session"]["execpath"] = sLOG_PATH ."db_exectime_". date("Y-m-d")
 $aDB_CONN_INFO["session"]["keycase"] = CASE_UPPER;
 $aDB_CONN_INFO["session"]["debuglevel"] = 2;
 $aDB_CONN_INFO["session"]["method"] = 1;
+
+
+/**
+ * Connection info for sending error reports to a remote host
+ */
+$aHTTP_CONN_INFO["mesb"]["protocol"] = "http";
+//$aHTTP_CONN_INFO["mesb"]["host"] = "213.173.252.92";
+$aHTTP_CONN_INFO["mesb"]["host"] = "localhost";
+$aHTTP_CONN_INFO["mesb"]["port"] = 10080;
+$aHTTP_CONN_INFO["mesb"]["timeout"] = 120;
+$aHTTP_CONN_INFO["mesb"]["path"] = "/";
+$aHTTP_CONN_INFO["mesb"]["method"] = "POST";
+$aHTTP_CONN_INFO["mesb"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["mesb"]["username"] = "";
+$aHTTP_CONN_INFO["mesb"]["password"] = "";
 
 /**
  * Connection info for sending error reports to a remote host

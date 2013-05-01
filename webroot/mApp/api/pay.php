@@ -53,10 +53,10 @@ $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<pay client-id="10020" account="100027">';
-$HTTP_RAW_POST_DATA .= '<transaction id="1529523" store-card="false">';
-$HTTP_RAW_POST_DATA .= '<card type-id="2">';
-$HTTP_RAW_POST_DATA .= '<amount country-id="100">300</amount>';
+$HTTP_RAW_POST_DATA .= '<pay client-id="10007" account="100007">';
+$HTTP_RAW_POST_DATA .= '<transaction id="1" store-card="false">';
+$HTTP_RAW_POST_DATA .= '<card type-id="7">';
+$HTTP_RAW_POST_DATA .= '<amount country-id="100">200</amount>';
 $HTTP_RAW_POST_DATA .= '</card>';
 $HTTP_RAW_POST_DATA .= '</transaction>';
 $HTTP_RAW_POST_DATA .= '<client-info platform="iOS" version="1.00" language="da">';
@@ -81,7 +81,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			if (empty($obj_DOM->pay[$i]["account"]) === true || intval($obj_DOM->pay[$i]["account"]) < 1) { $obj_DOM->pay[$i]["account"] = -1; }
 		
 			// Validate basic information
-			if (Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]) == 100)
+			$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]);
+			if ($code == 100)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]);
 				
@@ -132,7 +133,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$obj_XML = $obj_PSP->initialize($obj_ConnInfo, $obj_PSPConfig->getMerchantAccount(), $obj_PSPConfig->getMerchantSubAccount(), (string) $obj_Elem->currency, (integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"]);
 									foreach ($obj_XML->children() as $obj_Elem)
 									{
-										$xml .= $obj_Elem->asXML();
+										// Hidden Fields
+										if (count($obj_Elem->children() ) > 0)
+										{
+											$xml .= '<'. $obj_Elem->getName() .'>';
+											foreach ($obj_Elem->children() as $obj_Child)
+											{
+												$xml .= $obj_Child->asXML();
+											}
+											$xml .= '</'. $obj_Elem->getName() .'>';
+										} 
+										else { $xml .= $obj_Elem->asXML(); }
 									}
 									break;
 								case (Constants::iWORLDPAY_PSP):
@@ -159,7 +170,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$obj_XML = $obj_PSP->initialize($obj_ConnInfo, $obj_PSPConfig->getMerchantAccount(), $obj_PSPConfig->getMerchantSubAccount(), (string) $obj_Elem->currency, (integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"]);
 									foreach ($obj_XML->children() as $obj_Elem)
 									{
-										$xml .= $obj_Elem->asXML();
+										$xml .= trim($obj_Elem->asXML() );
 									}
 									break;
 								}
@@ -197,6 +208,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			else
 			{
 				header("HTTP/1.1 400 Bad Request");
+				
+				$xml = '<status code="'. $code .'">Client ID / Account doesn\'t match</status>';
 			}
 		}
 	}
@@ -237,7 +250,6 @@ else
 	
 	$xml = '<status code="401">Authorization required</status>';
 }
-
 header("Content-Type: text/xml; charset=\"UTF-8\"");
 
 echo '<?xml version="1.0" encoding="UTF-8"?>';

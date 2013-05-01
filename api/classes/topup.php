@@ -36,7 +36,7 @@ class TopUp extends Home
 	{
 		$sql = "SELECT id, amount
 				FROM System.DepositOption_Tbl
-				WHERE countryid = ". $this->getCountryConfig()->getID() ." AND enabled = true";
+				WHERE countryid = ". $this->getCountryConfig()->getID() ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 		

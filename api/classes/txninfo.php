@@ -49,7 +49,12 @@ class TxnInfo
 	 * @var ClientConfig
 	 */
 	private $_obj_ClientConfig;
-
+	/**
+	 * Configuration for the Country the transactions was processed in
+	 *
+	 * @var CountryConfig
+	 */
+	private $_obj_CountryConfig;
 	/**
 	 * Total amount the customer will pay for the Transaction
 	 *
@@ -189,7 +194,7 @@ class TxnInfo
 	 *
 	 * @param 	integer $id 		Unique ID for the Transaction
 	 * @param 	integer $tid 		Unique ID for the Transaction Type
-	 * @param 	ClientConfig $oCC 	Configuration for the Client who owns the Transaction
+	 * @param 	ClientConfig $oClC 	Configuration for the Client who owns the Transaction
 	 * @param 	integer $amt 		Total amount the customer will pay for the Transaction
 	 * @param 	integer $pnt 		Total number of points the customer will pay for the Transaction
 	 * @param 	integer $rwd 		Total number of points the customer will be rewarded for completing the transaction
@@ -212,12 +217,13 @@ class TxnInfo
 	 * @param 	boolean $asc		Boolean Flag indicating whether the "Save Card Info" box should automatically be checked on the payment page
 	 * @param 	string $mrk 		String indicating the markup language used to render the payment pages
 	 */
-	public function __construct($id, $tid, ClientConfig &$oCC, $amt, $pnt, $rwd, $rfnd, $orid, $addr, $oid, $email, $lurl, $cssurl, $aurl, $curl, $cburl, $iurl, $l, $m, $ac, $accid=-1, $gmid=-1, $asc=false, $mrk="xhtml")
+	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, $amt, $pnt, $rwd, $rfnd, $orid, $addr, $oid, $email, $lurl, $cssurl, $aurl, $curl, $cburl, $iurl, $l, $m, $ac, $accid=-1, $gmid=-1, $asc=false, $mrk="xhtml")
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
 		$this->_iTypeID =  (integer) $tid;
-		$this->_obj_ClientConfig = $oCC;
+		$this->_obj_ClientConfig = $oClC;
+		$this->_obj_CountryConfig = $oCC;
 		$this->_iAmount =  (integer) $amt;
 		$this->_iPoints =  (integer) $pnt;
 		$this->_iReward =  (integer) $rwd;
@@ -270,6 +276,12 @@ class TxnInfo
 	 * @return 	ClientConfig
 	 */
 	public function getClientConfig() { return $this->_obj_ClientConfig; }
+	/**
+	 * Returns the Configuration for the Country the transactions was processed in
+	 *
+	 * @return 	CountryConfig
+	 */
+	public function getCountryConfig() { return $this->_obj_CountryConfig; }
 	/**
 	 * Returns the Total amount the customer will pay for the Transaction
 	 *
@@ -475,7 +487,7 @@ class TxnInfo
 		$xml .= '<reward country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">'. $this->_iReward .'</reward>';
 		$xml .= '<refund country-id="'. $this->_obj_ClientConfig->getCountryConfig()->getID() .'" currency="'. $this->_obj_ClientConfig->getCountryConfig()->getCurrency() .'" symbol="'. $this->_obj_ClientConfig->getCountryConfig()->getSymbol() .'" format="'. $this->_obj_ClientConfig->getCountryConfig()->getPriceFormat() .'">'. $this->_iRefund .'</refund>';
 		$xml .= '<orderid>'. $this->_sOrderID .'</orderid>';
-		$xml .= '<mobile country-id="'. $this->_obj_ClientConfig->getCountryConfig()->getID() .'">'. $this->_sMobile .'</mobile>';
+		$xml .= '<mobile country-id="'. intval($this->_iOperatorID/100) .'">'. $this->_sMobile .'</mobile>';
 		$xml .= '<operator>'. $this->_iOperatorID .'</operator>';
 		$xml .= '<email>'. $this->_sEMail .'</email>';
 		$xml .= '<logo>';
@@ -523,6 +535,7 @@ class TxnInfo
 			// Use data from provided Data Object for all unspecified values
 			if (array_key_exists("typeid", $misc) === false) { $misc["typeid"] = $obj->getTypeID(); }
 			if (array_key_exists("client-config", $misc) === false) { $misc["client-config"] = $obj->getClientConfig(); }
+			if (array_key_exists("country-config", $misc) === false) { $misc["country-config"] = $obj->getCountryConfig(); }
 			if (array_key_exists("amount", $misc) === false) { $misc["amount"] = $obj->getAmount(); }
 			if (array_key_exists("points", $misc) === false) { $misc["points"] = $obj->getPoints(); }
 			if (array_key_exists("reward", $misc) === false) { $misc["reward"] = $obj->getReward(); }
@@ -545,7 +558,7 @@ class TxnInfo
 			if (array_key_exists("auto-store-card", $misc) === false) { $misc["auto-store-card"] = false; }
 			if (array_key_exists("refund", $misc) === false) { $misc["refund"] = 0; }
 			
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["country-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"]);
 			break;
 		case ($obj instanceof ClientConfig):	// Instantiate from array of Client Input
 			if (array_key_exists("points", $misc) === false) { $misc["points"] = -1; }
@@ -555,10 +568,10 @@ class TxnInfo
 			if (array_key_exists("auto-store-card", $misc) === false) { $misc["auto-store-card"] = false; }
 			if (array_key_exists("refund", $misc) === false) { $misc["refund"] = 0; }
 			
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $obj->getCountryConfig(), $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"]);
 			break;
 		case ($obj instanceof RDB):				// Instantiate from Transaction Log
-			$sql = "SELECT id, typeid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, iconurl, mode, auto_capture, gomobileid,
+			$sql = "SELECT id, typeid, countryid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, iconurl, \"mode\", auto_capture, gomobileid,
 						clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, markup, refund
 					FROM Log.Transaction_Tbl
 					WHERE id = ". intval($id);
@@ -580,8 +593,9 @@ class TxnInfo
 			if (is_array($RS) === true)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($obj, $RS["CLIENTID"], $RS["ACCOUNTID"], $RS["KEYWORDID"]);
+				$obj_CountryConfig = CountryConfig::produceConfig($obj, $RS["COUNTRYID"]);
 
-				$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["GOMOBILEID"], false, $RS["MARKUP"]);
+				$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["GOMOBILEID"], false, $RS["MARKUP"]);
 			}
 			// Error: Transaction not found
 			else { throw new TxnInfoException("Transaction with ID: ". $id ." not found using creation timestamp: ". $misc[0], 1001); }

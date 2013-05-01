@@ -52,7 +52,7 @@ try
 	if ($_REQUEST['actioncode'] == 0 && $_REQUEST['authtype'] == "subscribe")
 	{
 		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $_REQUEST['transact']);
-		$iStatus = $obj_mPoint->saveCard($obj_TxnInfo->getMobile(), $_REQUEST['cardid'], Constants::iWANNAFIND_PSP, $_REQUEST['transact'], str_replace("x", "*", $_REQUEST['cardnomask']), NULL);
+		$iStatus = $obj_mPoint->saveCard($obj_TxnInfo, $obj_TxnInfo->getMobile(), $_REQUEST['cardid'], Constants::iWANNAFIND_PSP, $_REQUEST['transact'], str_replace("x", "*", $_REQUEST['cardnomask']), NULL);
 		// The End-User's existing account was linked to the Client when the card was stored
 		if ($iStatus == 1)
 		{

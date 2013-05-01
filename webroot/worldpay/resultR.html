@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-15"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
+<!-- resultR.html $Revision$ -->
+<html lang="<wpdisplay msg=lang.code.name>">
+<head>
+	<wpdisplay response=hdr_Cache_Control pre="<meta http-equiv=Cache-Control CONTENT=&quot;" post="&quot;>">
+	<wpdisplay response=hdr_Pragma pre="<meta http-equiv=Pragma CONTENT=&quot;" post="&quot;>">
+	<wpdisplay response=hdr_Expires pre="<meta http-equiv=Expires CONTENT=&quot;" post="&quot;>">
+	<title><wpdisplay response=title-reparse></title>
+	<style type="text/css">
+		<wpdisplay file=stylesheet.css>
+	</style>
+	<wpdisplay file=head.html>
+	<wpdisplay component=styles>
+</head>
+<body>
+	<div id="transaction-info">
+		<div id="progress" class="mPoint_Info">
+			<h1><wpdisplay msg=PFFailed.sorry></h1>
+		</div>
+		<div id="inner-border">
+			<wpdisplay item=banner default="">
+		</div>
+		<div class="mPoint_Status">
+			<wpdisplay msg=payment_refused>
+		</div>
+		<div id="submit">
+			<input name="cancel-payment" id="cancel-payment" type="button" class="mPoint_Button" value="<wpdisplay msg=cpm.return.to.cart>" tabindex="11" onclick="javascript:window.location.assign('http://212.46.142.211/CellpointPayment_1213_DeliveryWeb/Checkout.aspx');" />
+		</div>
+	</div>
+</body>
+</html>

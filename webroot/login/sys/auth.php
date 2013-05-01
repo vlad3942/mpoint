@@ -176,7 +176,7 @@ case "form":
 				// Send One Time Password
 				else
 				{
-					$code = $obj_mPoint->sendOneTimePassword(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $iAccountID, (string) $obj_AccountXML->mobile);
+					$code = $obj_mPoint->sendOneTimePassword(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $iAccountID, $obj_CountryConfig, (string) $obj_AccountXML->mobile);
 					
 					// One Time Password sent
 					if ($code == 200)

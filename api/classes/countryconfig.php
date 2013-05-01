@@ -306,7 +306,7 @@ class CountryConfig extends BasicConfig
 		$sql = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmob, maxmob, channel, priceformat, decimals,
 					addr_lookup, doi, add_card_amount, max_psms_amount, min_pwd_amount, min_2fa_amount
 				FROM System.Country_Tbl
-				WHERE id = ". intval($id) ." AND enabled = true";
+				WHERE id = ". intval($id) ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 		

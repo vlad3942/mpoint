@@ -54,9 +54,9 @@ $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
 $HTTP_RAW_POST_DATA .= '<authorize-payment client-id="10007" account="100007">';
-$HTTP_RAW_POST_DATA .= '<transaction id="1526123">';
-$HTTP_RAW_POST_DATA .= '<card id="59235" type-id="2">';
-$HTTP_RAW_POST_DATA .= '<amount country-id="100">300</amount>';
+$HTTP_RAW_POST_DATA .= '<transaction id="1">';
+$HTTP_RAW_POST_DATA .= '<card id="1" type-id="7">';
+$HTTP_RAW_POST_DATA .= '<amount country-id="100">200</amount>';
 $HTTP_RAW_POST_DATA .= '</card>';
 $HTTP_RAW_POST_DATA .= '</transaction>';
 $HTTP_RAW_POST_DATA .= '<password>oisJona</password>';
@@ -83,14 +83,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			if (empty($obj_DOM->{'authorize-payment'}[$i]["account"]) === true || intval($obj_DOM->{'authorize-payment'}[$i]["account"]) < 1) { $obj_DOM->{'authorize-payment'}[$i]["account"] = -1; }
 		
 			// Validate basic information
-			if (Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'authorize-payment'}[$i]["account"]) == 100)
+			$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'authorize-payment'}[$i]["account"]);
+			if ($code == 100)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'authorize-payment'}[$i]["account"]);
-				
+
 				// Client successfully authenticated
 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']) )
 				{
 					$obj_TxnInfo = TxnInfo::produceInfo( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction["id"], $_OBJ_DB);
+					// Re-Intialise Text Translation Object based on transaction
+					$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 					$obj_mPoint = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 					
 					// Payment has not previously been attempted for transaction
@@ -107,8 +110,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 //							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"]);
 //							if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
 							$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
-							if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) == Constants::iCARD_PURCHASE_TYPE && $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) + 10; }
-							if ($obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) + 20; }
+							if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) == Constants::iCARD_PURCHASE_TYPE && $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) + 20; }
+							if ($obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) + 25; }
 							
 							// Success: Input Valid
 							if (count($aMsgCds) == 0)
@@ -155,8 +158,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iEMONEY_CARD, Constants::iPAYMENT_ACCEPTED_STATE);
 												}
 												catch (HTTPException $ignore) { /* Ignore */ }
-												
-												$xml .= '<status code="100">Payment Authorized</status>';
+												if ($iTypeID == Constants::iPURCHASE_USING_POINTS) { $xml .= '<status code="102">Payment Authorized using Loyalty Account (Points)</status>'; }
+												else { $xml .= '<status code="101">Payment Authorized using Pre-Paid Account (E-Money)</status>'; }
 											}
 											// Error: Unable to debit account 
 											else
@@ -198,7 +201,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													}
 													catch (HTTPException $ignore) { /* Ignore */ }
 												
-													$xml = '<status code="100">Payment Authorized</status>';
+													$xml = '<status code="100">Payment Authorized using Stored Card</status>';
 												}
 												// Error: Authorization declined
 												else
@@ -207,7 +210,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													
 													header("HTTP/1.1 502 Bad Gateway");
 													
-													$xml .= '<status code="91">Authorization failed, DIBS returned error code'. $iTxnID .'</status>';
+													$xml .= '<status code="92">Authorization failed, DIBS returned error code'. $iTxnID .'</status>';
 												}
 												break;
 											case (Constants::iWANNAFIND_PSP):	// WannaFind
@@ -225,7 +228,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													}
 													catch (HTTPException $ignore) { /* Ignore */ }
 													
-													$xml .= '<status code="100">Payment Authorized</status>';
+													$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
 												}
 												// Error: Authorization declined
 												else
@@ -234,7 +237,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													
 													header("HTTP/1.1 502 Bad Gateway");
 													
-													$xml .= '<status code="91">Authorization failed, WannaFind returned error code'. $iTxnID .'</status>';
+													$xml .= '<status code="92">Authorization failed, WannaFind returned error code'. $iTxnID .'</status>';
 												}
 												break;
 											default:	// Unkown Error
@@ -287,7 +290,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					{
 						$_OBJ_DB->query("COMMIT");
 						
-						$xml .= '<status code="101">Authorization already in progress</status>';
+						$xml .= '<status code="103">Authorization already in progress</status>';
 					}
 				}
 				else
@@ -300,6 +303,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			else
 			{
 				header("HTTP/1.1 400 Bad Request");
+				
+				$xml = '<status code="'. $code .'">Client ID / Account doesn\'t match</status>';
 			}
 		}
 	}
@@ -340,6 +345,8 @@ else
 	
 	$xml = '<status code="401">Authorization required</status>';
 }
+header("Content-Type: text/xml; charset=\"UTF-8\"");
+
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';
 echo $xml;

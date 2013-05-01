@@ -54,7 +54,7 @@ class Products extends Overview
 		// Get Product Data
 		$sql = "SELECT id, name, price, logourl
 				FROM Client.Product_Tbl
-				WHERE keywordid = ". $this->getTxnInfo()->getClientConfig()->getKeywordConfig()->getID() ." AND enabled = true
+				WHERE keywordid = ". $this->getTxnInfo()->getClientConfig()->getKeywordConfig()->getID() ." AND enabled = '1'
 				ORDER BY name ASC";
 //		echo $sql ."\n";
 		$aRS = $this->getDBConn()->getAllNames($sql);

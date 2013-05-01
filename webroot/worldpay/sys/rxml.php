@@ -47,7 +47,8 @@ $obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["worldpay"]);
 
 $url = $obj_mPoint->initialize($obj_ConnInfo, $_POST['merchant-code'], $_POST['installation-id'], $_POST['currency'], $aCards);
 $url .= "&preferredPaymentMethod=". $obj_mPoint->getCardName($_POST['cardid']) ."&language=". sLANG;
-$url .= "&successURL=". urlencode("http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() );
+$url .= "&successURL=". urlencode("https://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() );
+$url .= "&failureURL=". urlencode("https://". $_SERVER['HTTP_HOST'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=99");
 
 /* ----- Construct Client HTTP Header Start ----- */
 $aHeaders = array();

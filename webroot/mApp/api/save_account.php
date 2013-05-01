@@ -27,6 +27,8 @@ require_once(sAPI_CLASS_PATH ."simpledom.php");
 require_once(sCLASS_PATH ."/validate.php");
 // Require Business logic for the End-User Account Component
 require_once(sCLASS_PATH ."/enduser_account.php");
+// Require Data Class for Client Information
+require_once(sCLASS_PATH ."/clientinfo.php");
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
@@ -36,9 +38,11 @@ $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<save-account client-id="10007" account="100007">';
+$HTTP_RAW_POST_DATA .= '<save-account client-id="10007" account="100006">';
 $HTTP_RAW_POST_DATA .= '<password>oisJona</password>';
 $HTTP_RAW_POST_DATA .= '<confirm-password>oisJona</confirm-password>';
+$HTTP_RAW_POST_DATA .= '<full-name>Jonatan Evald Buus</full-name>';
+$HTTP_RAW_POST_DATA .= '<social-security-number>3008990017</social-security-number>';
 $HTTP_RAW_POST_DATA .= '<card type-id="2">My Card</card>';
 $HTTP_RAW_POST_DATA .= '<client-info platform="iOS" version="1.00" language="da">';
 $HTTP_RAW_POST_DATA .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
@@ -62,38 +66,106 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			if (empty($obj_DOM->{'save-account'}[$i]["account"]) === true || intval($obj_DOM->{'save-account'}[$i]["account"]) < 1) { $obj_DOM->{'save-account'}[$i]["account"] = -1; }
 		
 			// Validate basic information
-			if (Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'save-account'}[$i]["client-id"], (integer) $obj_DOM->{'save-account'}[$i]["account"]) == 100)
+			$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'save-account'}[$i]["client-id"], (integer) $obj_DOM->{'save-account'}[$i]["account"]);
+			if ($code == 100)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-account'}[$i]["client-id"], (integer) $obj_DOM->{'save-account'}[$i]["account"]);
 				
 				// Client successfully authenticated
 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']) )
 				{
+					// Re-Intialise Text Translation Object based on transaction
+					$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_DOM->{'save-account'}[$i]->{'client-info'}["language"] ."/global.txt", sLANGUAGE_PATH . $obj_DOM->{'save-account'}[$i]->{'client-info'}["language"] ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+					
 					$obj_mPoint = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 					$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 					$aMsgCds = array();
 					
-					if ($obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->password) + 10; }
-					if ($obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->{'confirm-password'}) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->{'confirm-password'} ) + 20; }
-					if (count($aMsgCds) == 0 && strval($obj_DOM->{'save-account'}[$i]->password) != strval($obj_DOM->{'save-account'}[$i]->{'confirm-password'}) ) { $aMsgCds[] = 31; }
-					if (count($obj_DOM->{'save-account'}[$i]->card) == 1 && $obj_Validator->valName( (string) $obj_DOM->{'save-account'}[$i]->card) != 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-account'}[$i]->card) + 40; }
+					if ($obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->password) + 20; }
+					if ($obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->{'confirm-password'}) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->{'confirm-password'} ) + 30; }
+					if (count($aMsgCds) == 0 && strval($obj_DOM->{'save-account'}[$i]->password) != strval($obj_DOM->{'save-account'}[$i]->{'confirm-password'}) ) { $aMsgCds[] = 41; }
+					if (count($obj_DOM->{'save-account'}[$i]->card) == 1 && $obj_Validator->valName( (string) $obj_DOM->{'save-account'}[$i]->card) != 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-account'}[$i]->card) + 50; }
+
+					// Seperate Full Name into First- and Last Name
+					if (count($obj_DOM->{'save-account'}[$i]->{'full-name'}) == 1)
+					{
+						$obj_DOM->{'save-account'}[$i]->{'full-name'} = trim($obj_DOM->{'save-account'}[$i]->{'full-name'});
+						$pos = strrpos($obj_DOM->{'save-account'}[$i]->{'full-name'}, " ");
+						if ($pos === false) { $pos = strlen($obj_DOM->{'save-account'}[$i]->{'full-name'}); }
+						else { $obj_DOM->{'save-account'}[$i]->{'last-name'} = substr($obj_DOM->{'save-account'}[$i]->{'full-name'}, $pos + 1); }
+						$obj_DOM->{'save-account'}[$i]->{'first-name'} = substr($obj_DOM->{'save-account'}[$i]->{'full-name'}, 0 , $pos);
+					}
+					// Validate First Name
+					if (count($obj_DOM->{'save-account'}[$i]->{'first-name'}) == 1)
+					{
+						if ($obj_Validator->valName( (string) $obj_DOM->{'save-account'}[$i]->{'first-name'}) < 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-account'}[$i]->{'first-name'}) + 60; }
+					}
+					// Validate Last Name
+					if (count($obj_DOM->{'save-account'}[$i]->{'last-name'}) == 1)
+					{
+						if ($obj_Validator->valName( (string) $obj_DOM->{'save-account'}[$i]->{'last-name'}) < 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-account'}[$i]->{'last-name'}) + 64; }
+					}
 					
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
 					{
-						$code = $obj_mPoint->savePassword( (float) $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, (string) $obj_DOM->{'save-account'}[$i]->password);
-
+						$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile["country-id"]);
+						// Construct Client Info
+						$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'save-account'}[$i]->{'client-info'}, $obj_CountryConfig, @$_SERVER['HTTP_X_FORWARDED_FOR']);
+						$iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_CountryConfig);
+						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
+						
+						$code = $obj_mPoint->savePassword( (float) $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, (string) $obj_DOM->{'save-account'}[$i]->password, $obj_CountryConfig);
 						// New Account automatically created when Password was saved
-						if ($code == 1 && $obj_mPoint->getClientConfig()->smsReceiptEnabled() === true)
+						if ($code == 1 && $obj_ClientConfig->smsReceiptEnabled() === true)
 						{
 //							$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $_SESSION['obj_TxnInfo']);
 						}
 						$obj_mPoint->saveCardName( (float) $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->card["type-id"], (string) $obj_DOM->{'save-account'}[$i]->card, true);
-						
+						$obj_mPoint->saveInfo($iAccountID, (string) $obj_DOM->{'save-account'}[$i]->{'first-name'}, (string)  $obj_DOM->{'save-account'}[$i]->{'last-name'});
+							
 						// Success: Account Information Saved
 						if ($code >= 0)
-						{
-							$xml = '<status code="'. ($code+100) .'">Account information successfully saved</status>';
+						{							// Customer Data should be imported from Client System
+							if ($obj_ClientConfig->getCustomerImportURL() != "")
+							{
+								$aURL_Info = parse_url($obj_ClientConfig->getCustomerImportURL() );
+								$aHTTP_CONN_INFO["mesb"]["protocol"] = $aURL_Info["scheme"];
+								$aHTTP_CONN_INFO["mesb"]["host"] = $aURL_Info["host"];
+								$aHTTP_CONN_INFO["mesb"]["port"] = $aURL_Info["port"];
+								$aHTTP_CONN_INFO["mesb"]["path"] = $aURL_Info["path"];
+								if (array_key_exists("query", $aURL_Info) === true) { $aHTTP_CONN_INFO["mesb"]["path"] .= "?". $aURL_Info["query"]; }
+								$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
+								try
+								{
+									$obj_mPoint->import($obj_ConnInfo, $obj_ClientInfo, $iAccountID, (float) $obj_DOM->{'save-account'}[$i]->{'social-security-number'});
+								}
+								// Error: No response received from External System
+								catch (HTTPSendException $e)
+								{
+									$code = 7;
+								}
+								// Error: Unable to connect to External System
+								catch (HTTPConnectionException $e)
+								{
+									$code = 6;
+								}
+							}
+							if ($obj_mPoint->getClientConfig()->smsReceiptEnabled() === true)
+							{
+								// One Time Password sent
+								if ($obj_mPoint->sendOneTimePassword(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $iAccountID, $obj_CountryConfig, (float) $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile) == 200)
+								{
+									$xml = '<status code="'. ($code+110) .'">Account information successfully saved and OTP sent</status>';
+								}
+								else
+								{
+									header("HTTP/1.1 500 Internal Server Error");
+									
+									$xml = '<status code="91">Unable to send One Time Password</status>';
+								}
+							}
+							else { $xml = '<status code="'. ($code+100) .'">Account information successfully saved</status>'; }
 						}
 						else 
 						{
@@ -119,6 +191,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			else
 			{
 				header("HTTP/1.1 400 Bad Request");
+				
+				$xml = '<status code="'. $code .'">Client ID / Account doesn\'t match</status>';
 			}
 		}
 	}
@@ -159,6 +233,7 @@ else
 	
 	$xml = '<status code="401">Authorization required</status>';
 }
+header("Content-Type: text/xml; charset=\"UTF-8\"");
 
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';

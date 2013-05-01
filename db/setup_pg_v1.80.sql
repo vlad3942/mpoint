@@ -185,3 +185,5 @@ UPDATE System.Card_Tbl SET minlength = 16, maxlength = 19, cvclength = 3 WHERE i
 UPDATE System.Card_Tbl SET minlength = 16, maxlength = 16, cvclength = 3 WHERE id = 7;
 UPDATE System.Card_Tbl SET minlength = 13, maxlength = 19, cvclength = 3 WHERE id = 8;
 UPDATE System.Card_Tbl SET minlength = 13, maxlength = 19, cvclength = 3 WHERE id = 9;
+
+UPDATE Client.Client_Tbl SET username = 'DSB', passwd = 'hdfy28abdl' WHERE id IN (10005, 10014);

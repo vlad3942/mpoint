@@ -43,7 +43,7 @@ class Transfer extends Home
 	public function makeTransfer($toid, $fromid, $ar, $as, $fee)
 	{
 		// Start Transaction
-		$this->getDBConn()->query("BEGIN");
+		$this->getDBConn()->query("START TRANSACTION");
 
 		$as = abs(intval($as) );
 		$ar = abs(intval($ar) );
@@ -332,9 +332,9 @@ class Transfer extends Home
 		$sql = "SELECT F.id, F.fromid, F.toid, F.minfee, F.basefee, F.share,
 					FT.id AS typeid, FT.name AS type, C.currency
 				FROM System.Fee_Tbl F
-				INNER JOIN System.FeeType_Tbl FT ON F.typeid = FT.id AND FT.enabled = true
-				INNER JOIN System.Country_Tbl C ON F.fromid = C.id AND C.enabled = true
-				WHERE F.enabled = true";
+				INNER JOIN System.FeeType_Tbl FT ON F.typeid = FT.id AND FT.enabled = '1'
+				INNER JOIN System.Country_Tbl C ON F.fromid = C.id AND C.enabled = '1'
+				WHERE F.enabled = '1'";
 		if ($typeid > 0) { $sql .= " AND FT.id = ". intval($typeid); }
 		if ($cid > 0) { $sql .= " AND C.id = ". intval($cid); }
 		$sql .= "

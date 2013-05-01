@@ -16,7 +16,7 @@
 					<td class="label"><xsl:value-of select="labels/ip" /></td>
 					<td class="label"><xsl:value-of select="labels/timestamp" /></td>
 				</tr>
-				<xsl:apply-templates select="history/transaction[@type = 1000 or @type = 1004]" mode="topup" />
+				<xsl:apply-templates select="history/transaction[@type-id = 1000 or @type-id = 1004]" mode="topup" />
 			</table>
 		</span>
 		<span id="reward-data">
@@ -29,7 +29,7 @@
 					<td class="label"><xsl:value-of select="labels/ip" /></td>
 					<td class="label"><xsl:value-of select="labels/timestamp" /></td>
 				</tr>
-				<xsl:apply-templates select="history/transaction[@type = 1007]" mode="reward" />
+				<xsl:apply-templates select="history/transaction[@type-id = 1007]" mode="reward" />
 			</table>
 		</span>
 		<span id="purchase-data">
@@ -45,7 +45,7 @@
 					<td class="label"><xsl:value-of select="labels/ip" /></td>
 					<td class="label"><xsl:value-of select="labels/timestamp" /></td>
 				</tr>
-				<xsl:apply-templates select="history/transaction[@type = 1001 or @type = 1005 or @type = 1009]" mode="purchase" />
+				<xsl:apply-templates select="history/transaction[@type-id = 1001 or @type-id = 1005 or @type-id = 1009]" mode="purchase" />
 			</table>
 		</span>
 		<span id="transfer-data">
@@ -60,7 +60,7 @@
 					<td class="label"><xsl:value-of select="labels/ip" /></td>
 					<td class="label"><xsl:value-of select="labels/timestamp" /></td>
 				</tr>
-				<xsl:apply-templates select="history/transaction[@type = 1002]" mode="transfer" />
+				<xsl:apply-templates select="history/transaction[@type-id = 1002]" mode="transfer" />
 			</table>
 		</span>
 		<!-- Hidden Data Fields End -->
@@ -135,7 +135,7 @@
 	
 	<tr class="{$css}">
 		<td class="mPoint_Number"><xsl:value-of select="@id" /></td>
-		<td class="mPoint_Number"><xsl:value-of select="@mpointid" /></td>
+		<td class="mPoint_Number"><xsl:value-of select="@mpoint-id" /></td>
 		<td class="mPoint_Number"><xsl:value-of select="price" /></td>
 		<td class="mPoint_Number"><xsl:value-of select="fee" /></td>
 		<td><xsl:value-of select="ip" /></td>
@@ -159,7 +159,7 @@
 	
 	<tr class="{$css}">
 		<td class="mPoint_Number"><xsl:value-of select="@id" /></td>
-		<td class="mPoint_Number"><xsl:value-of select="@mpointid" /></td>
+		<td class="mPoint_Number"><xsl:value-of select="@mpoint-id" /></td>
 		<td class="mPoint_Number"><xsl:value-of select="price" /></td>
 		<td><xsl:value-of select="ip" /></td>
 		<td><xsl:value-of select="timestamp" /></td>
@@ -182,11 +182,11 @@
 	
 	<tr class="{$css}">
 		<td class="mPoint_Number"><xsl:value-of select="@id" /></td>
-		<td class="mPoint_Number"><xsl:value-of select="@mpointid" /></td>
+		<td class="mPoint_Number"><xsl:value-of select="@mpoint-id" /></td>
 		<td><img src="/img/31x20_card_{card/@id}.png" width="31" height="20" alt="- {card} -" /></td>
 		<td class="mPoint_Number"><xsl:value-of select="price" /></td>
 		<td><xsl:value-of select="client" /></td>
-		<td><xsl:value-of select="orderid" /></td>
+		<td><xsl:value-of select="@order-no" /></td>
 		<td><xsl:value-of select="ip" /></td>
 		<td><xsl:value-of select="timestamp" /></td>
 	</tr>

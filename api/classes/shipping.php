@@ -57,7 +57,7 @@ class Shipping extends General
 	{
 		$sql = "SELECT name, logourl
 				FROM System.Shipping_Tbl
-				WHERE id = ". intval($id) ." AND enabled = true";
+				WHERE id = ". intval($id) ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 
@@ -92,7 +92,7 @@ class Shipping extends General
 	{
 		$sql = "SELECT SS.id, SS.name, SS.logourl, CS.cost, CS.free_ship
 				FROM Client.Shipping_Tbl CS
-				INNER JOIN System.Shipping_Tbl SS ON CS.shippingid = SS.id AND SS.enabled = true
+				INNER JOIN System.Shipping_Tbl SS ON CS.shippingid = SS.id AND SS.enabled = '1'
 				WHERE CS.shopid = ". $this->_obj_ShopConfig->getID();
 //		echo $sql ."\n";
 		$aRS = $this->getDBConn()->getAllNames($sql);

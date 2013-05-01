@@ -46,6 +46,7 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 	<labels>
 		<progress><?= $_OBJ_TXT->_("Step 1 of 2"); ?></progress>
 		<info><?= $_OBJ_TXT->_("Please select your Payment Method"); ?></info>
+		<cancel><?= $_OBJ_TXT->_("Cancel Payment"); ?></cancel>
 	</labels>
 
 	<?= $obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount() ); ?>

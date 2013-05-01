@@ -319,7 +319,7 @@ class General
 	 * @return 	string
 	 * @throws 	mPointException
 	 */
-	public static function getMarkupLanguage(UAProfile &$oUA, TxnInfo &$oTI)
+	public static function getMarkupLanguage(UAProfile &$oUA, TxnInfo &$oTI=null)
 	{
 		switch (true)
 		{
@@ -411,13 +411,13 @@ class General
 	 */
 	public function newTransaction(ClientConfig &$oCC, $tid)
 	{
-		$sql = "SELECT Nextval('Log.Transaction_Tbl_id_seq') AS id";
+		$sql = "SELECT Nextvalue('Log.Transaction_Tbl_id_seq') AS id FROM DUAL";
 		$RS = $this->getDBConn()->getName($sql);
 		// Error: Unable to generate a new Transaction ID
 		if (is_array($RS) === false) { throw new mPointException("Unable to generate new Transaction ID", 1001); }
 
 		$sql = "INSERT INTO Log.Transaction_Tbl
-					(id, typeid, clientid, accountid, countryid, keywordid, mode, ip)
+					(id, typeid, clientid, accountid, countryid, keywordid, \"mode\", ip)
 				VALUES
 					(". $RS["ID"] .", ". intval($tid) .", ". $oCC->getID() .", ". $oCC->getAccountConfig()->getID() .", ". $oCC->getCountryConfig()->getID() .", ". $oCC->getKeywordConfig()->getID() .", ". $oCC->getMode() .", '". $_SERVER['REMOTE_ADDR'] ."')";
 //		echo $sql ."\n";
@@ -448,7 +448,7 @@ class General
 					logourl = '". $this->getDBConn()->escStr($oTI->getLogoURL() ) ."', cssurl = '". $this->getDBConn()->escStr($oTI->getCSSURL() ) ."',
 					accepturl = '". $this->getDBConn()->escStr($oTI->getAcceptURL() ) ."', cancelurl = '". $this->getDBConn()->escStr($oTI->getCancelURL() ) ."',
 					callbackurl = '". $this->getDBConn()->escStr($oTI->getCallbackURL() ) ."', iconurl = '". $this->getDBConn()->escStr($oTI->getIconURL() ) ."',
-					gomobileid = ". $oTI->getGoMobileID() .", auto_capture = ". General::bool2xml($oTI->useAutoCapture() ) .", markup = '". $this->getDBConn()->escStr($oTI->getMarkupLanguage() ) ."'";
+					gomobileid = ". $oTI->getGoMobileID() .", auto_capture = '". ($oTI->useAutoCapture() === true ? "1" : "0") ."', markup = '". $this->getDBConn()->escStr($oTI->getMarkupLanguage() ) ."'";
 		if ($oTI->getAccountID() > 0) { $sql .= ", euaid = ". $oTI->getAccountID(); } 
 		$sql .= "
 				WHERE id = ". $oTI->getID();
@@ -487,7 +487,7 @@ class General
 	 * Retrieves the data for a given transaction state from the Message database table.
 	 * The retrieved data is unserialised before being returned.
 	 * 
-	 * A BEGIN should be issued prior to calling this method if it is used to serialize requests by passing TRUE
+	 * A START TRANSACTION should be issued prior to calling this method if it is used to serialize requests by passing TRUE
 	 * as the third parameter and a COMMIT / ROLLBACK issued once serialization is no longer needed.
 	 *
 	 * @see 	unserialize()
@@ -763,7 +763,7 @@ class General
 		$sql = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmob, maxmob, channel, priceformat, decimals,
 					addr_lookup, doi, add_card_amount, max_psms_amount, min_pwd_amount, min_2fa_amount
 				FROM System.Country_Tbl
-				WHERE enabled = true
+				WHERE enabled = '1'
 				ORDER BY name ASC";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
@@ -922,6 +922,19 @@ class General
 		else { $sBrowser = "unknown"; }
 		
 		return $sBrowser;
+	}
+	
+	public static function genToken($id, $secret, $min=30)
+	{
+		$minutes = date('i', time() );
+		$minutes += $min - ($minutes % 15);
+		return sha1($id . $secret . gmdate("Y-m-D H:") . $minutes .":00+00:00");
+	}
+	public static function authToken($id, $secret, $token)
+	{
+		if (self::genToken($id, $secret) == $token) { return 10; }			// Token is valid
+		elseif (self::genToken($id, $secret, 15) == $token) { return 11; }	// Token is valid but about to expire and a new token should be generated
+		else { return 1; }													// Invalid Token
 	}
 }
 ?>

@@ -4,9 +4,10 @@
 <xs:complexType name="client-info">
 	<xs:all>
 		<xs:element name="mobile" type="mobile" minOccurs="1" maxOccurs="1" />
-		<xs:element name="email" type="email" minOccurs="1" maxOccurs="1" />
+		<xs:element name="email" type="email" minOccurs="0" maxOccurs="1" />
 		<xs:element name="device-id" type="device-id" minOccurs="1" maxOccurs="1" />
 	</xs:all>
+	<xs:attribute name="app-id" type="xs:positiveInteger" use="optional" />
 	<xs:attribute name="platform" type="platform" use="required" />
 	<xs:attribute name="version" type="version" use="required" />
 	<xs:attribute name="language" type="language" use="required" />

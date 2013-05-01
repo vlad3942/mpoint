@@ -5,6 +5,11 @@
 
 <xsl:template match="/root">
 	<div id="progress" class="mPoint_Info">
+		<xsl:if test="string-length(transaction/cancel-url) &gt; 0">
+			<form action="{transaction/cancel-url}" method="get">
+				<input name="cancel-payment" id="cancel-payment" type="submit" class="mPoint_Button" value="{labels/cancel}" />
+			</form>
+		</xsl:if>
 		<xsl:value-of select="labels/progress" />
 		<br /><br />
 	</div>

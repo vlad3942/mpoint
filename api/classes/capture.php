@@ -93,7 +93,7 @@ class Capture extends General
 	{
 		$sql = "SELECT pspid, extid
 				FROM Log.Transaction_Tbl
-				WHERE id = ". $oTI->getID() ." AND enabled = true";
+				WHERE id = ". $oTI->getID() ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 		
@@ -143,7 +143,7 @@ class Capture extends General
 	public function capture()
 	{
 		// Serialize capture operations by using the Database as a mutex
-		$this->getDBConn()->query("BEGIN");
+		$this->getDBConn()->query("START TRANSACTION");
 		$this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_ACCEPTED_STATE, true);
 		
 		// Payment not Captured

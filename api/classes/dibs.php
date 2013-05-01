@@ -410,10 +410,9 @@ class DIBS extends Callback
 			$xml = str_replace("expiry_month>", "expiry-month>", $xml);
 			$xml = str_replace("expiry_year>", "expiry-year>", $xml);
 			$xml = str_replace("hidden_fields>", "hidden-fields>", $xml);
+			$xml = str_replace("store-card>", "store_card>", $xml);
 			
 			$obj_XML = simplexml_load_string($xml); 
-			$obj_XML->{'store-card'} = (string) $obj_XML->{'store_card'};
-			unset($obj_XML->{'store_card'});
 		}
 		// Error: Unable to initialize payment transaction
 		else

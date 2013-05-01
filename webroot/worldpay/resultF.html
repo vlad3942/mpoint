@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="ISO-8859-15"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
+<!-- default.templ $Revision: 1.5 $ -->
+<html lang="<wpdisplay msg=lang.code.name>">
+<head>
+	<wpdisplay response=hdr_Cache_Control pre="<meta http-equiv=Cache-Control CONTENT=&quot;" post="&quot;>">
+	<wpdisplay response=hdr_Pragma pre="<meta http-equiv=Pragma CONTENT=&quot;" post="&quot;>">
+	<wpdisplay response=hdr_Expires pre="<meta http-equiv=Expires CONTENT=&quot;" post="&quot;>">
+	<title><wpdisplay response=title-reparse></title>
+	<style type="text/css">
+		<wpdisplay file=stylesheet.css>
+	</style>
+	<wpdisplay file=head.html>
+	<wpdisplay component=styles>
+</head>
+<body>
+<wpdisplay file=header.html>
+<form action="<wpdisplay request=servlet_url>" method="post">
+
+	<wpdisplay file=tableHead.html>
+	<div>
+		<div id="progress" class="mPoint_Info">
+			<wpdisplay msg=cpm.progress>
+			<input name="cancel-payment" id="cancel-payment" type="button" class="mPoint_Button" value="<wpdisplay msg=cpm.cancel>" tabindex="11" onclick="javascript:window.location.assign('http://212.46.142.211/CellpointPayment_1213_DeliveryWeb/basket.aspx');" />
+		</div>
+		<INPUT TYPE=hidden NAME=PaymentID VALUE="<WPDISPLAY PAYMENT=payment_id>" />
+	</div>
+	<!--WP start testModeMessage -->
+	<wpdisplay payment=test-check contents=true false="">
+		<div class="mPoint_Status"><wpdisplay msg=card.testMode></div>
+	</wpdisplay>
+	<!--WP end testModeMessage -->
+	
+	<!--WP Feedback messages - uses comp.common.error etc. -->
+	<wpdisplay result=info componentPrefix=card pre="" post="">
+	<!--WP end Feedback messages -->
+	
+	<!--WP Description -->
+	<div id="transaction-info">
+		<div>
+			<wpdisplay component="languageOptions">
+			
+			<!--Customer Description -->
+			<wpdisplay installation=bibitIntegrationType-check contents=false>
+				<wpdisplay installation=customerDescription-style-ppe-reparse pre="" post="">
+			</wpdisplay>
+			<wpdisplay installation=bibitIntegrationType-check contents=true>
+				<wpdisplay payment=customerDescription-style-ppe-reparse pre="" post="">
+			</wpdisplay>
+			
+			<!-- Display Payment reference to XML merchants -->
+			<wpdisplay installation=bibitIntegrationType-check contents=true false="">
+				<div>
+					<span class="mPoint_Label"><wpdisplay msg=payment.refernce>:</span>
+				    <wpdisplay payment=cart_id-style-ppe-reparse>
+				</div>
+			</wpdisplay>
+			
+			<!--WP Card Type selected -->
+			<wpdisplay payment=hasFP-check-reparse contents=false>
+				<div>
+					<div class="mPoint_Label"><wpdisplay msg=card.method-reparse>:</div>
+					<wpdisplay payment=authenticationCheck-check-reparse
+						true="<img src=&quot;<wpdisplay disp=card.authentication.<wpdisplay payment=cardType> >&quot; width=&quot;81&quot; alt=&quot;<wpdisplay msg=card.authentication.<wpdisplay payment=paymentType> >&quot; />"
+						false="<img src=&quot;/images/logos/<wpdisplay payment=cardType>.gif&quot; alt=&quot;<wpdisplay msg=card.method.<wpdisplay payment=cardType> >&quot; />">
+					&nbsp;<wpdisplay msg=card.method.<wpdisplay payment=cardType>>
+				</div>
+			</wpdisplay>
+			
+			<wpdisplay payment=hasFP-check contents=true>
+				<wpdisplay futurepay=fpDescMsg-reparse>
+			</wpdisplay>
+			
+			<wpdisplay payment=hasFP-check contents=true>
+				<div>
+					<wpdisplay payment=amountDueNow-check true='
+						<span class="mPoint_Label"><wpdisplay msg=fPay.immedPay-reparse>:</span>
+						<wpdisplay payment=amount>
+					'>
+				</div>
+			</wpdisplay>
+			
+			<wpdisplay payment=hasFP-check-reparse contents=false>
+				<div>
+					<span class="mPoint_Label"><wpdisplay msg=card.price-reparse>:</span>
+					<wpdisplay payment=amount>
+				</div>
+			</wpdisplay>
+		</div>
+	<!--WP END Description -->
+	
+	<!--WP form contents -->
+	<!--WP merchant top upload -->
+	<wpdisplay file=paymentTopFields.html>
+	<!--WP merchant top upload END -->
+	
+	<!--WP start cardDetailsRows -->
+	<div id="outer-border">
+		<div class="mPoint_Label">
+			<wpdisplay msg=card.cardDetails>
+		</div>
+		<div id="cardinfo">
+		<!--WP start card number row -->
+			<div>
+				<label class="mPoint_Label" for="cardNoInput">
+					<wpdisplay msg=card.number pre="*">:
+				</label>
+				<br />
+				<input type="tel" id="cardNoInput" name="cardNoInput" tabindex="1" value="" maxlength="20" style="-wap-input-format:'*N';" pattern="[0-9]*" autocomplete="off" />
+				<input type=hidden name=cardNoJS value="" />
+				<input type=hidden name=cardNoHidden value="<wpdisplay msg=payServ.param.hidden>" />
+			</div>
+		<!--WP end card number row -->
+		<!--WP start cardIssueNo -->
+			<div>
+				<wpdisplay payment=cardIssueNo-check contents=true>
+					<label class="mPoint_Label" for="cardIssueNo">
+						<wpdisplay msg=card.issueNo pre="">:
+					</label>
+					<br />
+					<input type="tel" id="cardIssueNo" name="cardIssueNo" tabindex="2" maxlength="3" size="3" value="<wpdisplay request=param_cardIssueNo>" style="-wap-input-format:'*N';" pattern="[0-9]*" autocomplete="off" />
+				</wpdisplay>
+			</div>
+		<!--WP end cardIssueNo -->
+		<!--WP start cardStart -->
+			<div>
+				<wpdisplay payment=cardStart-check contents=true>
+					<label class="mPoint_Label" for="monthnums">
+						<wpdisplay msg=card.validFrom pre="">:
+					</label>
+					<br />
+					<input type="hidden" name="cardStart.day" value="1" />
+					<input type="hidden" name="cardStart.time" value="00:00:00" />
+					<wpdisplay system=monthnums-options paramname=cardStart.month selected=|request=param_cardStart.month emptyallowed="--" tabindex="3">
+					<wpdisplay system=years-options paramname=cardStart.year selected=|request=param_cardStart.year startoffset=-4 emptyallowed="----" tabindex="4">
+				</wpdisplay>
+			</div>
+		<!--WP end cardStart -->
+		<!--WP start card exp date row -->
+			<div>
+				<wpdisplay payment=cardExpiry-check contents=true>
+					<label class="mPoint_Label" for="cardExp.day">
+						<wpdisplay msg=card.expiry pre="*">:
+					</label>
+					<br />
+					<input type="hidden" name="cardExp.day" value="32" />
+					<input type="hidden" name="cardExp.time" value="23:59:59" />
+					<wpdisplay system=monthnums-options paramname=cardExp.month selected=|request=param_cardExp.month emptyallowed="--" tabindex="5">
+					<wpdisplay system=years-options paramname=cardExp.year selected=|request=param_cardExp.year endoffset=20 emptyallowed="----" tabindex="6">
+				</wpdisplay>
+				<!-- just to satisfy the mandatory check for the cards that don't display expiry date like AURORE card -->
+				<wpdisplay payment=cardExpiry-check contents=false>
+					<input type="hidden" name="cardExp.day" value="9"/>
+					<input type="hidden" name="cardExp.month" value="9"/>
+					<input type="hidden" name="cardExp.year" value="9999"/>
+				</wpdisplay>
+			</div>
+		<!--WP end card exp date row -->
+		<!--WP start security code row -->
+			<div>
+				<wpdisplay payment=cardCVV-check contents=true>
+					<label class="mPoint_Label" for="cardCVV">
+						<wpdisplay payment=cvvCPRMandatory-check-reparse true="*" false="">
+						<wpdisplay msg=card.cvv>:
+					</label>
+					<br />
+					<input type="tel" id="cardCVV" name="cardCVV" tabindex="7" size="4" maxlength="4" value="<wpdisplay request=param_cardCVV>" style="-wap-input-format:'*N';" pattern="[0-9]*" autocomplete="off" />
+				</wpdisplay>
+			</div>
+		<!--WP end security code row -->
+		<!--WP start Birthdate -->
+			<div>
+				<wpdisplay payment=cardBirthdate-check contents=true false="">
+					<label class="mPoint_Label" for="cardBirth.month">
+						<wpdisplay msg=card.birthdate pre="">:
+					</label>
+					<br />
+					<wpdisplay system=monthnums-options paramname=cardBirth.month selected=|request=param_cardBirth.month emptyallowed="--">
+					<wpdisplay msg="/"><wpdisplay system=days-options paramname=cardBirth.day selected=|request=param_cardBirth.day emptyallowed="--">
+					<wpdisplay msg="/"><wpdisplay system=years-options paramname=cardBirth.year selected=|request=param_cardBirth.year emptyallowed="----" startoffset="-100" endoffset="0">
+				</wpdisplay>
+			</div>
+		<!--WP end Birthdate -->
+		<!--WP start card holder name row -->
+			<div>
+				<label class="mPoint_Label" for="name">
+					<wpdisplay msg=card.name pre="*">:
+				</label>
+				<br />
+				<input type="text" id="name" name="name" tabindex="8" maxlength="40" value="<wpdisplay request=param_name paramdefault=|payment=name>" />
+			</div>
+		<!--WP end card holder name row -->
+		<!--WP start card holder postal code row -->
+			<div>
+				<label class="mPoint_Label" for="postcode">
+					<wpdisplay msg=card.postcode pre="*">:
+				</label>
+				<br />
+				<input type="text" id="postcode" name="postcode" tabindex="9" maxlength="30" value="<wpdisplay request=param_postcode paramdefault=|payment=postcode>" >
+			</div>
+		<!--WP end card holder postal code row -->
+		</div>
+		<div class="mPoint_Info"><wpdisplay msg=card.instructions></div>
+	</div>
+	<!--WP end cardDetailsRows -->
+	
+	<!--WP merchant middle upload -->
+		<wpdisplay file=paymentMiddleFields.html>
+	<!--WP merchant middle upload END -->
+	
+	<!--WP merchant bottom upload -->
+		<wpdisplay file=paymentBottomFields.html>
+	<!--WP merchant bottom upload END -->
+	
+	<!--WP makepayment button -->
+	<!--Show WP start again -->
+	<div id="submit">
+		<input name="op-PMMakePayment" id="op-PMMakePayment" type="submit" class="mPoint_Button" value="<wpdisplay msg=card.makePayment.butt>" tabindex="10" />
+	</div>
+	<!--WP required fields -->
+	<div>
+		
+	</div>
+	<wpdisplay file=tableFoot.html>
+</form>
+<wpdisplay file=footer.html>
+</body>
+</html>

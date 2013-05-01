@@ -65,7 +65,7 @@ class Admin extends General
 	{
 		$sql = "SELECT Txn.id, Txn.created AS timestamp
 				FROM Admin.Access_Tbl Acc
-				INNER JOIN Log.Transaction_Tbl Txn ON Acc.clientid = Txn.clientid AND Txn.enabled = true
+				INNER JOIN Log.Transaction_Tbl Txn ON Acc.clientid = Txn.clientid AND Txn.enabled = '1'
 				WHERE Acc.userid = ". intval($uid);
 		if ($clid > 0) { $sql .= " AND Txn.clientid = ". intval($clid); }
 		$sql .= "

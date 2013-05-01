@@ -18,25 +18,7 @@
  *
  */
 class MyAccount extends Home
-{
-	/**
-	 * Saves the specified Information for the End-User Account. 
-	 *
-	 * @param	integer $id 	Unqiue ID of the End-User's Account
-	 * @param	string $fn 		End-User's first name
-	 * @param	string $ln 		End-User's last name
-	 * @return	boolean
-	 */
-	public function saveInfo($id, $fn, $ln)
-	{
-		$sql = "UPDATE EndUser.Account_Tbl
-				SET firstname = '". $this->getDBConn()->escStr($fn) ."', lastname = '". $this->getDBConn()->escStr($ln) ."'  
-				WHERE id = ". intval($id);
-//		echo $sql ."\n";
-		
-		return is_resource($this->getDBConn()->query($sql) );
-	}
-	
+{	
 	/**
 	 * Generates and sends an Activation Code to the End-User using the provided Mobile Number (MSISDN).
 	 * 
@@ -95,10 +77,11 @@ class MyAccount extends Home
 	 * @param	string $mob 	The End-User's new Mobile Number (MSISDN) which should be saved to the account. Set to NULL to clear.
 	 * @return	boolean
 	 */
-	public function saveMobile($id, $mob)
+	public function saveMobile($id, $mob, $miv=true)
 	{
 		$sql = "UPDATE EndUser.Account_Tbl
-				SET mobile = ". (is_null($mob) === true ? "NULL" : "'". floatval($mob) ."'") ."
+				SET mobile = ". (is_null($mob) === true ? "NULL" : "'". floatval($mob) ."'") .",
+					mobile_verified = ". General::bool2xml($miv) ."
 				WHERE id = ". intval($id);
 //		echo $sql ."\n";
 		
@@ -282,10 +265,10 @@ class MyAccount extends Home
 	public function setPreferredCard($id, $cardid)
 	{
 		// Start database transaction
-		$this->getDBConn()->query("BEGIN");
+		$this->getDBConn()->query("START TRANSACTION");
 		
 		$sql = "UPDATE EndUser.Card_Tbl
-				SET preferred = false
+				SET preferred = '0'
 				WHERE clientid = (SELECT clientid
 								  FROM EndUser.Card_Tbl
 								  WHERE id = ". intval($cardid) .")
@@ -296,7 +279,7 @@ class MyAccount extends Home
 		if (is_resource($this->getDBConn()->query($sql) ) === true)
 		{
 			$sql = "UPDATE EndUser.Card_Tbl
-					SET preferred = true
+					SET preferred = '1'
 					WHERE accountid = ". intval($id) ." AND id = ". intval($cardid);
 //			echo $sql ."\n";
 			// Set specified as preferred

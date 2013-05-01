@@ -27,7 +27,7 @@ class SMS_Purchase extends MobileWeb
 	{
 		$sql = "SELECT id, name, quantity, price, logourl
 				FROM Client.Product_Tbl
-				WHERE keywordid = ". $this->getClientConfig()->getKeywordConfig()->getID() ." AND enabled = true";
+				WHERE keywordid = ". $this->getClientConfig()->getKeywordConfig()->getID() ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$aRS = $this->getDBConn()->getAllNames($sql);
 
@@ -126,7 +126,7 @@ class SMS_Purchase extends MobileWeb
 				FROM Client.CardAccess_Tbl CA
 				INNER JOIN Client.MerchantAccount_Tbl MA ON CA.clientid = MA.clientid
 				INNER JOIN System.CardPricing_Tbl CP ON CA.cardid = CP.cardid
-				INNER JOIN System.PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PP.enabled = true
+				INNER JOIN System.PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PP.enabled = '1'
 				WHERE CA.clientid = ". $this->getClientConfig()->getID() ."
 					AND PP.countryid = ". $this->getClientConfig()->getCountryConfig()->getID() ."
 					AND PP.amount IN (-1, ". intval($amount) .")
@@ -155,10 +155,10 @@ class SMS_Purchase extends MobileWeb
 	{
 		$sql = "SELECT KW.id AS keywordid, Cl.id AS clientid
 				FROM Client.Keyword_Tbl KW
-				INNER JOIN Client.Client_Tbl Cl ON KW.clientid = Cl.id AND Cl.enabled = true
-				INNER JOIN System.Country_Tbl C ON Cl.countryid = C.id AND C.enabled = true
+				INNER JOIN Client.Client_Tbl Cl ON KW.clientid = Cl.id AND Cl.enabled = '1'
+				INNER JOIN System.Country_Tbl C ON Cl.countryid = C.id AND C.enabled = '1'
 				WHERE C.id = ". $oMI->getCountry() ." AND C.channel = '". $oMI->getChannel() ."'
-					AND Upper(KW.name) = Upper('". $oMI->getKeyword() ."') AND KW.enabled = true";
+					AND Upper(KW.name) = Upper('". $oMI->getKeyword() ."') AND KW.enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 

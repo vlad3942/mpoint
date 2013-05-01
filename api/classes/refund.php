@@ -93,7 +93,7 @@ class Refund extends General
 	{
 		$sql = "SELECT pspid, extid
 				FROM Log.Transaction_Tbl
-				WHERE id = ". $oTI->getID() ." AND enabled = true";
+				WHERE id = ". $oTI->getID() ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 		

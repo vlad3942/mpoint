@@ -1044,6 +1044,10 @@ msgstr @@@ Steg 1 av 2 @@@
 msgid @@@ Please select your Payment Method @@@
 msgstr @@@ Välj ditt kredit kort @@@
 
+#: /webroot/pay/card.php:49
+msgid @@@ Cancel Payment @@@
+msgstr @@@ Cancel Payment @@@
+
 #: /webroot/pay/email.php:31
 msgid @@@ E-Mail Receipt @@@
 msgstr @@@ Epost kvitto @@@
@@ -1300,11 +1304,11 @@ Pris: {PRICE} @@@
 msgid @@@ Billing SMS @@@
 msgstr @@@ Tack för att du använder mPoint, du har betalat {PRICE} via din telefonräkning @@@
 
-#: /api/classes/credit_card.php:134
+#: /api/classes/credit_card.php:135
 msgid @@@ Stored Cards @@@
 msgstr @@@ Stored Cards @@@
 
-#: /api/classes/credit_card.php:136
+#: /api/classes/credit_card.php:137
 msgid @@@ My Account @@@
 msgstr @@@ My Account @@@
 
@@ -1348,11 +1352,11 @@ msgstr @@@ Välkommen till {CLIENT}, klicka på länken nedan @@@
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Välkommen till {CLIENT} @@@
 
-#: /api/classes/home.php:60
+#: /api/classes/home.php:61
 msgid @@@ mPoint - Send One Time Password @@@
 msgstr @@@ mPoint - Send One Time Password @@@
 
-#: /api/classes/home.php:90
+#: /api/classes/home.php:91
 msgid @@@ mPoint - Account Disabled @@@
 msgstr @@@ Your account with {CLIENT} has been deleted due to too many invalid login attempts @@@
 

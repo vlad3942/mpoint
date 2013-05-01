@@ -22,12 +22,12 @@ $xml = $obj_mPoint->getAccountInfo($_SESSION['obj_Info']->getInfo("accountid") )
 $obj_XML = simplexml_load_string($xml);
 $aObj_XML = $obj_XML->xpath("/clients/client[@store-card = 2]");
 // End-User account is only linked to a single Client, which uses an e-money or loyalty account
-if (count($aObj_XML) == 1)
+if ($aObj_XML !== false && count($aObj_XML) == 1)
 {
 	$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $aObj_XML[0]["id"]);
 }
 else { $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $_SESSION['obj_CountryConfig']->getID(), -1); }
-
+file_put_contents(sLOG_PATH ."/jona.log", $xml ."\n". var_export($aObj_XML, true) );
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 // Error: Unauthorized access
 if (General::val() != 1000)

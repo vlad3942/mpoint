@@ -119,11 +119,11 @@ class PSPConfig extends BasicConfig
 		$sql = "SELECT DISTINCT PSP.id, PSP.name,
 					MA.name AS ma, MA.username, MA.passwd AS password, MSA.name AS msa
 				FROM System.PSP_Tbl PSP
-				INNER JOIN Client.MerchantAccount_Tbl MA ON PSP.id = MA.pspid AND MA.enabled = true
-				INNER JOIN Client.Client_Tbl CL ON MA.clientid = CL.id AND CL.enabled = true
-				INNER JOIN Client.Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = true
-				INNER JOIN Client.MerchantSubAccount_Tbl MSA ON Acc.id = MSA.accountid AND PSP.id = MSA.pspid AND MSA.enabled = true
-				WHERE CL.id = ". intval($clid) ." AND PSP.id = ". intval($pspid) ." AND PSP.enabled = true";
+				INNER JOIN Client.MerchantAccount_Tbl MA ON PSP.id = MA.pspid AND MA.enabled = '1'
+				INNER JOIN Client.Client_Tbl CL ON MA.clientid = CL.id AND CL.enabled = '1'
+				INNER JOIN Client.Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
+				INNER JOIN Client.MerchantSubAccount_Tbl MSA ON Acc.id = MSA.accountid AND PSP.id = MSA.pspid AND MSA.enabled = '1'
+				WHERE CL.id = ". intval($clid) ." AND PSP.id = ". intval($pspid) ." AND PSP.enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 		

@@ -183,7 +183,7 @@ class SurePay extends General
 		// Fetch all Customers who have not yet activated their construced Payment Link
 		$sql = "SELECT Txn.id, Msg.data AS url, SP.email, Extract(epoch from Txn.created) AS created
 				FROM Log.Transaction_Tbl Txn
-				INNER JOIN Client.SurePay_Tbl SP ON Txn.clientid = SP.clientid AND SP.enabled = true
+				INNER JOIN Client.SurePay_Tbl SP ON Txn.clientid = SP.clientid AND SP.enabled = '1'
 				INNER JOIN Log.Message_Tbl Msg ON Txn.id = Msg.txnid
 				WHERE Msg.stateid = ". Constants::iCONST_LINK_STATE;
 		// Determine elapsed time from the scenario type

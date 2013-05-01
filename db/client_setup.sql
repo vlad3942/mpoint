@@ -150,3 +150,37 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT Max(id
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) SELECT Max(id), 2, '11001047', '11001047', 'wS=5D8k*' FROM Client.Client_Tbl;
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT Max(id), 2, '-1'  FROM Client.Account_Tbl;
 INSERT INTO Admin.Access_Tbl (userid, clientid) SELECT Acc.userid, Max(CL.id) FROM Admin.Access_Tbl Acc, Client.Client_Tbl CL  WHERE Acc.clientid = 10014 GROUP BY Acc.userid;
+
+UPDATE Client.Client_Tbl SET name = name || ' (Mobile)' WHERE id IN (10010, 10011, 10018);
+-- Pizza Hut Corporate
+INSERT INTO Client.Client_Tbl (countryid, flowid, name, username, passwd, lang, callbackurl, cssurl, accepturl, language, mode, store_card, auto_capture, smsrcpt, emailrcpt, maxamount) VALUES (103, 1, 'Pizza Hut Corp (Web)', 'CPMDemo', 'DEMOisNO_2', 'gb', 'http://stage.bemoko.com/pizzahut/cellpoint', 'http://stage.bemoko.com/pizzahut/css/cellpoint.css', 'http://stage.bemoko.com/pizzahut/orders/confirmation', 'gb', 1, 0, false, false, false, 1000000);
+INSERT INTO Client.Account_Tbl (clientid, name, markup) SELECT Max(id), 'Web', 'xhtml' FROM Client.Client_Tbl;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) SELECT Max(Cl.id), CA.cardid, 4 FROM Client.CardAccess_Tbl CA, Client.Client_Tbl CL WHERE clientid = 10018 GROUP BY CA.cardid, CA.pspid;
+INSERT INTO Client.Keyword_Tbl (clientid, name, standard) SELECT Max(id), 'CPM', true FROM Client.Client_Tbl;
+--INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name) SELECT Max(id), 1, 'CPMDemo' FROM Client.Client_Tbl;
+--INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT Max(id), 1, '-1'  FROM Client.Account_Tbl;
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) SELECT Max(id), 4, 'PIZZAHUTECOMM', 'PIZZAHUTECOMM', '3Pjge5RTT1' FROM Client.Client_Tbl;
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT Max(id), 4, '-1'  FROM Client.Account_Tbl;
+--INSERT INTO Admin.Access_Tbl (userid, clientid) SELECT Acc.userid, Max(CL.id) FROM Admin.Access_Tbl Acc, Client.Client_Tbl CL  WHERE Acc.clientid = 10014 GROUP BY Acc.userid;
+
+-- Pizza Hut Francise
+INSERT INTO Client.Client_Tbl (countryid, flowid, name, username, passwd, lang, callbackurl, cssurl, accepturl, language, mode, store_card, auto_capture, smsrcpt, emailrcpt, maxamount) VALUES (103, 1, 'Pizza Hut Francise (Web)', 'CPMDemo', 'DEMOisNO_2', 'gb', 'http://stage.bemoko.com/pizzahut/cellpoint', 'http://stage.bemoko.com/pizzahut/css/cellpoint.css', 'http://stage.bemoko.com/pizzahut/orders/confirmation', 'gb', 1, 0, false, false, false, 1000000);
+INSERT INTO Client.Account_Tbl (clientid, name, markup) SELECT Max(id), 'Web', 'xhtml' FROM Client.Client_Tbl;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) SELECT Max(Cl.id), CA.cardid, 4 FROM Client.CardAccess_Tbl CA, Client.Client_Tbl CL WHERE clientid = 10018 GROUP BY CA.cardid, CA.pspid;
+INSERT INTO Client.Keyword_Tbl (clientid, name, standard) SELECT Max(id), 'CPM', true FROM Client.Client_Tbl;
+--INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name) SELECT Max(id), 1, 'CPMDemo' FROM Client.Client_Tbl;
+--INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT Max(id), 1, '-1'  FROM Client.Account_Tbl;
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) SELECT Max(id), 4, 'PIZZAHUTFRAN', 'PIZZAHUTFRAN', '3Pjge5RTT1' FROM Client.Client_Tbl;
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT Max(id), 4, '-1'  FROM Client.Account_Tbl;
+--INSERT INTO Admin.Access_Tbl (userid, clientid) SELECT Acc.userid, Max(CL.id) FROM Admin.Access_Tbl Acc, Client.Client_Tbl CL  WHERE Acc.clientid = 10014 GROUP BY Acc.userid;
+
+-- Pizza Hut Equity
+INSERT INTO Client.Client_Tbl (countryid, flowid, name, username, passwd, lang, callbackurl, cssurl, accepturl, language, mode, store_card, auto_capture, smsrcpt, emailrcpt, maxamount) VALUES (103, 1, 'Pizza Hut Equity (Web)', 'CPMDemo', 'DEMOisNO_2', 'gb', 'http://stage.bemoko.com/pizzahut/cellpoint', 'http://stage.bemoko.com/pizzahut/css/cellpoint.css', 'http://stage.bemoko.com/pizzahut/orders/confirmation', 'gb', 1, 0, false, false, false, 1000000);
+INSERT INTO Client.Account_Tbl (clientid, name, markup) SELECT Max(id), 'Web', 'xhtml' FROM Client.Client_Tbl;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) SELECT Max(Cl.id), CA.cardid, 4 FROM Client.CardAccess_Tbl CA, Client.Client_Tbl CL WHERE clientid = 10018 GROUP BY CA.cardid, CA.pspid;
+INSERT INTO Client.Keyword_Tbl (clientid, name, standard) SELECT Max(id), 'CPM', true FROM Client.Client_Tbl;
+--INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name) SELECT Max(id), 1, 'CPMDemo' FROM Client.Client_Tbl;
+--INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT Max(id), 1, '-1'  FROM Client.Account_Tbl;
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) SELECT Max(id), 4, 'YUMWEBDEL', 'YUMWEBDEL', '3Pjge5RTT1' FROM Client.Client_Tbl;
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT Max(id), 4, '-1'  FROM Client.Account_Tbl;
+--INSERT INTO Admin.Access_Tbl (userid, clientid) SELECT Acc.userid, Max(CL.id) FROM Admin.Access_Tbl Acc, Client.Client_Tbl CL  WHERE Acc.clientid = 10014 GROUP BY Acc.userid;

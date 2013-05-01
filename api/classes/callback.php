@@ -124,7 +124,7 @@ class Callback extends EndUserAccount
 		// Transaction completed successfully
 		if (is_resource($res) === true)
 		{
-			if ($this->getDBConn()->countAffectedRows($res) == 1) { $this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true) ); }
+			if ($this->getDBConn()->countAffectedRows($res) == 1 || $sid != Constants::iPAYMENT_ACCEPTED_STATE) { $this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true) ); }
 			else
 			{
 				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_DUPLICATED_STATE, var_export($debug, true) );
@@ -365,7 +365,7 @@ class Callback extends EndUserAccount
 	{
 		$sql = "SELECT name
 				FROM Client.MerchantAccount_Tbl
-				WHERE clientid = ". intval($clid) ." AND pspid = ". intval($pspid) ." AND enabled = true";
+				WHERE clientid = ". intval($clid) ." AND pspid = ". intval($pspid) ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn($sql)->getName($sql);
 
@@ -382,7 +382,7 @@ class Callback extends EndUserAccount
 	{
 		$sql = "SELECT username, passwd AS password
 				FROM Client.MerchantAccount_Tbl
-				WHERE clientid = ". intval($clid) ." AND pspid = ". intval($pspid) ." AND enabled = true";
+				WHERE clientid = ". intval($clid) ." AND pspid = ". intval($pspid) ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn($sql)->getName($sql);
 
@@ -400,7 +400,7 @@ class Callback extends EndUserAccount
 	{
 		$sql = "SELECT name
 				FROM Client.MerchantSubAccount_Tbl
-				WHERE accountid = ". intval($accid) ." AND pspid = ". intval($pspid) ." AND enabled = true";
+				WHERE accountid = ". intval($accid) ." AND pspid = ". intval($pspid) ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn($sql)->getName($sql);
 
@@ -418,7 +418,7 @@ class Callback extends EndUserAccount
 	{
 		$sql = "SELECT name
 				FROM System.PSPCurrency_Tbl
-				WHERE countryid = ". intval($cid) ." AND pspid = ". intval($pspid) ." AND enabled = true";
+				WHERE countryid = ". intval($cid) ." AND pspid = ". intval($pspid) ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn($sql)->getName($sql);
 

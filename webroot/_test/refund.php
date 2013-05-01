@@ -1,5 +1,5 @@
 <h1>Refund Test</h1>
-<form action="http://mpoint.demo.cellpointmobile.com/buy/refund.php" method="post">
+<form action="http://mpoint.cellpointmobile.com/buy/refund.php" method="post">
 <table>
 <tr>
 	<td style="font-weight:bold;">Username</td>

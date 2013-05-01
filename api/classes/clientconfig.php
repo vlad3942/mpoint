@@ -24,6 +24,13 @@
 class ClientConfig extends BasicConfig
 {
 	/**
+	 * Constants for each URL Type
+	 * 
+	 * @var integer
+	 */
+	const iCUSTOMER_IMPORT_URL = 1;
+	
+	/**
 	 * ID of the Flow the Client's customers have to go through in order to complete the Payment Transaction
 	 *
 	 * @var integer
@@ -96,6 +103,13 @@ class ClientConfig extends BasicConfig
 	 * @var string
 	 */
 	private $_sIconURL;
+	/**
+	 * Absolute URL to the external system where customer data may be imported from.
+	 * This is generally an existing e-Commerce site or a CRM system.
+	 *
+	 * @var string
+	 */
+	private $_sCustomerImportURL;
 	/**
 	 * Max Amount an mPoint Transaction can cost the customer for the Client
 	 *
@@ -196,8 +210,9 @@ class ClientConfig extends BasicConfig
 	 * @param 	integer $m 			Client mode: 0 = Production, 1 = Test Mode with prefilled card Info, 2 = Certification Mode
 	 * @param 	boolean $ac			Boolean Flag indicating whether Auto Capture should be used for the transactions
 	 * @param 	boolean $sp			Boolean Flag indicating whether the PSP's ID for the Payment should be included in the Callback
+	 * @param 	string $ciurl 		Absolute URL to the external system where customer data may be imported from. This is generally an existing e-Commerce site or a CRM system
 	 */
-	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $aurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc)
+	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $aurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $ciurl)
 	{
 		parent::__construct($id, $name);
 
@@ -228,6 +243,8 @@ class ClientConfig extends BasicConfig
 		$this->_bAutoCapture = (bool) $ac;
 		$this->_bSendPSPID = (bool) $sp;
 		$this->_iStoreCard = (integer) $sc;
+		
+		$this->_sCustomerImportURL = trim($ciurl);
 	}
 
 	/**
@@ -304,6 +321,13 @@ class ClientConfig extends BasicConfig
 	 */
 	public function getIconURL() { return $this->_sIconURL; }
 	/**
+	 * Absolute URL to the external system where customer data may be imported from.
+	 * This is generally an existing e-Commerce site or a CRM system.
+	 *
+	 * @return 	string
+	 */
+	public function getCustomerImportURL() { return $this->_sCustomerImportURL; }
+	/**
 	 * Returns the Max Amount an mPoint Transaction can cost the customer for the Client
 	 *
 	 * @return 	integer
@@ -378,6 +402,7 @@ class ClientConfig extends BasicConfig
 	 * @return 	integer
 	 */
 	public function getStoreCard() { return $this->_iStoreCard; }
+	public function getSecret() { return sha1($this->getID() . $this->_sPassword); }
 
 	public function toXML()
 	{
@@ -390,6 +415,7 @@ class ClientConfig extends BasicConfig
 		$xml .= '<cancel-url>'. htmlspecialchars($this->getCancelURL(), ENT_NOQUOTES) .'</cancel-url>';
 		$xml .= '<callback-url>'. htmlspecialchars($this->getCallbackURL(), ENT_NOQUOTES) .'</callback-url>';
 		$xml .= '<icon-url>'. htmlspecialchars($this->getIconURL(), ENT_NOQUOTES) .'</icon-url>';
+		$xml .= '<customer-import-url>'. htmlspecialchars($this->_sCustomerImportURL, ENT_NOQUOTES) .'</customer-import-url>';
 		$xml .= '<sms-receipt>'. General::bool2xml($this->_bSMSReceipt) .'</sms-receipt>';
 		$xml .= '<email-receipt>'. General::bool2xml($this->_bEmailReceipt) .'</email-receipt>';
 		$xml .= '<auto-capture>'. General::bool2xml($this->_bAutoCapture) .'</auto-capture>';
@@ -408,27 +434,29 @@ class ClientConfig extends BasicConfig
 	 * @param 	integer $kw 	Unique ID for the Keyword that all messages sent to the customer should belong to, defaults to -1 for client's default keyword.
 	 * @return 	ClientConfig
 	 */
-	public static function produceConfig(RDB &$oDB, $id, $acc, $kw=-1)
+	public static function produceConfig(RDB &$oDB, $id, $acc=-1, $kw=-1)
 	{
 		$acc = (integer) $acc;
 		$sql = "SELECT Cl.id AS clientid, Cl.name AS client, Cl.flowid, Cl.username, Cl.passwd,
 					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl, Cl.iconurl,
 					Cl.smsrcpt, Cl.emailrcpt, Cl.method,
 					Cl.maxamount, Cl.lang, Cl.terms,
-					Cl.mode, Cl.auto_capture, Cl.send_pspid, Cl.store_card,
+					Cl.\"mode\", Cl.auto_capture, Cl.send_pspid, Cl.store_card,
 					C.id AS countryid,
 					Acc.id AS accountid, Acc.name AS account, Acc.mobile, Acc.markup,
-					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price
+					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price,
+					U1.url AS customerimporturl
 				FROM Client.Client_Tbl Cl
-				INNER JOIN System.Country_Tbl C ON Cl.countryid = C.id AND C.enabled = true
-				INNER JOIN Client.Account_Tbl Acc ON Cl.id = Acc.clientid AND Acc.enabled = true
-				INNER JOIN Client.Keyword_Tbl KW ON Cl.id = KW.clientid AND KW.enabled = true
-				LEFT OUTER JOIN Client.Product_Tbl P ON KW.id = P.keywordid AND P.enabled = true
-				WHERE Cl.id = ". intval($id) ." AND Cl.enabled = true";
+				INNER JOIN System.Country_Tbl C ON Cl.countryid = C.id AND C.enabled = '1'
+				INNER JOIN Client.Account_Tbl Acc ON Cl.id = Acc.clientid AND Acc.enabled = '1'
+				INNER JOIN Client.Keyword_Tbl KW ON Cl.id = KW.clientid AND KW.enabled = '1'
+				LEFT OUTER JOIN Client.Product_Tbl P ON KW.id = P.keywordid AND P.enabled = '1'
+				LEFT OUTER JOIN Client.URL_Tbl U1 ON CL.id = U1.clientid AND U1.urltypeid = ". self::iCUSTOMER_IMPORT_URL ." AND U1.enabled = '1'
+				WHERE Cl.id = ". intval($id) ." AND Cl.enabled = '1'";
 		// Use Default Keyword
 		if ($kw == -1)
 		{
-			$sql .= " AND KW.standard = true";
+			$sql .= " AND KW.standard = '1'";
 		}
 		// Use specific Keyword
 		else { $sql .= " AND KW.id = ". intval($kw); }
@@ -437,18 +465,18 @@ class ClientConfig extends BasicConfig
 					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl, Cl.iconurl,
 					Cl.smsrcpt, Cl.emailrcpt, Cl.method,
 					Cl.maxamount, Cl.lang, Cl.terms,
-					Cl.mode, Cl.auto_capture, Cl.send_pspid, Cl.store_card,
+					Cl.\"mode\", Cl.auto_capture, Cl.send_pspid, Cl.store_card,
 					C.id,
 					Acc.id, Acc.name, Acc.mobile, Acc.markup,
-					KW.id, KW.name";
+					KW.id, KW.name,
+					U1.url";
 		// Use Default Account
 		if ($acc == -1)
 		{
 			$sql .= "
-					ORDER BY Acc.id ASC, KW.id ASC
-					LIMIT 1";
+					ORDER BY Acc.id ASC, KW.id ASC";
 		}
-		// Use Account Number
+		// Use Account Number (Not supported if running on Oracle)
 		elseif ($acc < 1000)
 		{
 			$sql .= "
@@ -460,12 +488,10 @@ class ClientConfig extends BasicConfig
 		{
 			$sql = str_replace("{ACCOUNT CLAUSE}", " AND Acc.id = ". $acc, $sql);
 			$sql .= "
-					ORDER BY KW.id ASC
-					LIMIT 1";
+					ORDER BY KW.id ASC";
 		}
 		// Remove Account clause if it hasn't been already
 		$sql = str_replace("{ACCOUNT CLAUSE}", "", $sql);
-
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 
@@ -473,7 +499,7 @@ class ClientConfig extends BasicConfig
 		$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["MOBILE"], $RS["MARKUP"]);
 		$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
 		
-		return new ClientConfig($RS["CLIENTID"], utf8_decode($RS["CLIENT"]), $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"]);
+		return new ClientConfig($RS["CLIENTID"], utf8_decode($RS["CLIENT"]), $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $RS["CUSTOMERIMPORTURL"]);
 	}
 }
 ?>

@@ -102,19 +102,19 @@ class CreditCard extends EndUserAccount
 				FROM System.Card_Tbl C
 				INNER JOIN Client.CardAccess_Tbl CA ON C.id = CA.cardid
 				INNER JOIN Client.MerchantAccount_Tbl MA ON CA.clientid = MA.clientid
-				INNER JOIN Client.Account_Tbl A ON CA.clientid = A.clientid AND A.enabled = true
+				INNER JOIN Client.Account_Tbl A ON CA.clientid = A.clientid AND A.enabled = '1'
 				INNER JOIN Client.MerchantSubAccount_Tbl MSA ON A.id = MSA.accountid
-				INNER JOIN System.PSP_Tbl PSP ON MA.pspid = PSP.id AND MSA.pspid = PSP.id AND CA.pspid = PSP.id AND PSP.enabled = true
+				INNER JOIN System.PSP_Tbl PSP ON MA.pspid = PSP.id AND MSA.pspid = PSP.id AND CA.pspid = PSP.id AND PSP.enabled = '1'
 				INNER JOIN System.PSPCurrency_Tbl PC ON PSP.id = PC.pspid
 				INNER JOIN System.PSPCard_Tbl PCD ON PSP.id = PCD.pspid AND C.id = PCD.cardid
 				INNER JOIN System.CardPricing_Tbl CP ON C.id = CP.cardid
-				INNER JOIN System.PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PC.countryid = PP.countryid AND PP.enabled = true
+				INNER JOIN System.PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PC.countryid = PP.countryid AND PP.enabled = '1'
 				WHERE CA.clientid = ". $this->_obj_TxnInfo->getClientConfig()->getID() ."
 					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
 					AND PC.countryid = ". $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID() ."
 					AND PP.countryid = ". $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID() ."
 					AND PP.amount IN (-1, ". intval($amount) .")
-					AND C.enabled = true
+					AND C.enabled = '1'
 				ORDER BY C.position ASC, C.name ASC";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
@@ -140,7 +140,7 @@ class CreditCard extends EndUserAccount
 				{
 					$sName = $RS["NAME"];
 					
-					$sql = "SELECT min, max
+					$sql = "SELECT min, \"max\"
 							FROM System.CardPrefix_Tbl
 							WHERE cardid = ". $RS["ID"];
 //					echo $sql ."\n";
@@ -166,7 +166,7 @@ class CreditCard extends EndUserAccount
 					}
 					$xml .= '</prefixes>';
 				}
-				else { $xml .= '<prefixes>A</prefixes>'; } 
+				else { $xml .= '<prefixes />'; } 
 				$xml .= '</item>';
 			}
 		}
