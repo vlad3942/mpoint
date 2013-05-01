@@ -1064,6 +1064,10 @@ msgstr @@@ Trin 1 af 2 @@@
 msgid @@@ Please select your Payment Method @@@
 msgstr @@@ Vælg betalingsmetode @@@
 
+#: /webroot/pay/card.php:49
+msgid @@@ Cancel Payment @@@
+msgstr @@@ Afbryd @@@
+
 #: /webroot/pay/email.php:31
 msgid @@@ E-Mail Receipt @@@
 msgstr @@@ E-mail kvittering @@@
@@ -1108,45 +1112,45 @@ msgstr @@@ F.eks. "privat" eller "firma" (ikke påkrævet) @@@
 msgid @@@ Save @@@
 msgstr @@@ Gem @@@
 
-#: /webroot/pay/pwd.php:37
+#: /webroot/pay/pwd.php:35
 msgid @@@ Create Account @@@
 msgstr @@@ Opret konto @@@
 
-#: /webroot/pay/pwd.php:46
+#: /webroot/pay/pwd.php:45
 msgid @@@ Please complete the form below to finnish creating your account @@@
 msgstr @@@ Udfyld nedenstående felter for at oprette din konto @@@
 
-#: /webroot/pay/pwd.php:47
+#: /webroot/pay/pwd.php:46
 msgid @@@ Selected Card @@@
 msgstr @@@ Valgte kort @@@
 
-#: /webroot/pay/pwd.php:48
+#: /webroot/pay/pwd.php:47
 msgid @@@ Password @@@
 msgstr @@@ Kodeord @@@
 
-#: /webroot/pay/pwd.php:49
+#: /webroot/pay/pwd.php:48
 msgid @@@ Repeat Password @@@
 msgstr @@@ Gentag kodeord @@@
 
-#: /webroot/pay/pwd.php:50
+#: /webroot/pay/pwd.php:49
 msgid @@@ Card Name @@@
 msgstr @@@ Kortnavn @@@
 
-#: /webroot/pay/pwd.php:51
+#: /webroot/pay/pwd.php:50
 msgid @@@ Card Name - Help @@@
 msgstr @@@ F.eks. "privat" eller "firma" (ikke påkrævet) @@@
 
-#: /webroot/pay/pwd.php:52
+#: /webroot/pay/pwd.php:51
 msgid @@@ Save @@@
 msgstr @@@ Gem @@@
 
-#: /webroot/pay/pwd.php:53
+#: /webroot/pay/pwd.php:52
 msgid @@@ fullname @@@
-msgstr @@@ Fulde Navn @@@
+msgstr @@@ fullname @@@
 
-#: /webroot/pay/pwd.php:54
+#: /webroot/pay/pwd.php:53
 msgid @@@ cpr @@@
-msgstr @@@ CPR-Nummber  @@@
+msgstr @@@ cpr @@@
 
 #: /webroot/pay/sys/sms.php:206
 msgid @@@ SMS Purchase - Unknown Reponse @@@
@@ -1376,24 +1380,24 @@ msgstr @@@ Velkommen til {CLIENT}, aktiver venligst nedenstående link @@@
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Velkommen til {CLIENT} @@@
 
-#: /api/classes/home.php:60
+#: /api/classes/home.php:61
 msgid @@@ mPoint - Send One Time Password @@@
-msgstr @@@ Indtast venligst følgende én-gangs kodeord: {OTP} på websitet for at logge ind.
+msgstr @@@ Indtast venligst følgende én-gangs kodeord: {OTP}.
 Kodeordet vil automatisk udløbe om en time. @@@
 
-#: /api/classes/home.php:90
+#: /api/classes/home.php:91
 msgid @@@ mPoint - Account Disabled @@@
-msgstr @@@ Dine kortinformationer er slettet pga. for mange forkerte login forsøg. @@@
+msgstr @@@ Oplysningerne om dine gemte betalingskort i applikationen er blevet slettet. Det skyldes for mange forsøg med forkert kodeord. @@@
 
-#: /api/classes/my_account.php:57
+#: /api/classes/my_account.php:39
 msgid @@@ mPoint - Send Activation Code @@@
 msgstr @@@ Indtast venligst aktiveringskoden: {CODE} på websitet for at verificere dit mobilnummer. @@@
 
-#: /api/classes/my_account.php:117
+#: /api/classes/my_account.php:100
 msgid @@@ mPoint - Activation Link Subject @@@
 msgstr @@@ Verificer venligst din e-mail adresse @@@
 
-#: /api/classes/my_account.php:118
+#: /api/classes/my_account.php:101
 msgid @@@ mPoint - Activation Link Body @@@
 msgstr @@@ Klik venligst på nedenstående link for at verificere din nye e-mail adresse:
 {URL}

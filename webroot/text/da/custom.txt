@@ -259,6 +259,8 @@ msgid @@@ Select Card - 43 @@@
 msgstr @@@ Betalingen kunne ikke autoriseres med det angivne kodeord, din konto er blevet slettet. @@@
 msgid @@@ Select Card - 49 @@@
 msgstr @@@ Den angivne konto er ikke aktiv. @@@
+msgid @@@ Select Card - 99 @@@
+msgstr @@@ Vi kunne desværre ikke gennemføre betalingen vha. det valgte kort. Vælg venligst et andet. @@@
 msgid @@@ Select Payment Method - 99 @@@
 msgstr @@@ Vi kunne desværre ikke gennemføre betalingen vha. det valgte kort. Vælg venligst et andet. @@@
 msgid @@@ CPM Payment - 1 @@@
@@ -381,10 +383,6 @@ msgid @@@ Create Account - 101 @@@
 msgstr @@@ Dit kodeord er blevet gemt og din konto oprettet @@@
 msgid @@@ Create Account - 102 @@@
 msgstr @@@ En aktiveringskode er blevet sendt til dit mobilnummer via SMS. @@@
-msgid @@@ Create Account - 103 @@@
-msgstr @@@ Det indtastet CPR-Nummber er ikke godkendt @@@
-msgid @@@ Create Account - 104 @@@
-msgstr @@@ Skriv dit fulde navn @@@
 msgid @@@ Activate E-Mail - 11 @@@
 msgstr @@@ Undefined Account ID @@@
 msgid @@@ Activate E-Mail - 12 @@@

@@ -1092,7 +1092,7 @@ msgstr @@@ F.ex. "private" or "company" (optional) @@@
 msgid @@@ Save @@@
 msgstr @@@ Gem @@@
 
-#: /webroot/pay/pwd.php:36
+#: /webroot/pay/pwd.php:35
 msgid @@@ Create Account @@@
 msgstr @@@ Create Account @@@
 
@@ -1123,6 +1123,14 @@ msgstr @@@ F.ex. "private" or "company" (optional) @@@
 #: /webroot/pay/pwd.php:51
 msgid @@@ Save @@@
 msgstr @@@ Gem @@@
+
+#: /webroot/pay/pwd.php:52
+msgid @@@ fullname @@@
+msgstr @@@ fullname @@@
+
+#: /webroot/pay/pwd.php:53
+msgid @@@ cpr @@@
+msgstr @@@ cpr @@@
 
 #: /webroot/pay/sys/sms.php:206
 msgid @@@ SMS Purchase - Unknown Reponse @@@
@@ -1360,15 +1368,15 @@ msgstr @@@ mPoint - Send One Time Password @@@
 msgid @@@ mPoint - Account Disabled @@@
 msgstr @@@ Your account with {CLIENT} has been deleted due to too many invalid login attempts @@@
 
-#: /api/classes/my_account.php:57
+#: /api/classes/my_account.php:39
 msgid @@@ mPoint - Send Activation Code @@@
 msgstr @@@ mPoint - Send Activation Code @@@
 
-#: /api/classes/my_account.php:117
+#: /api/classes/my_account.php:100
 msgid @@@ mPoint - Activation Link Subject @@@
 msgstr @@@ mPoint - Activation Link Subject @@@
 
-#: /api/classes/my_account.php:118
+#: /api/classes/my_account.php:101
 msgid @@@ mPoint - Activation Link Body @@@
 msgstr @@@ mPoint - Activation Link Body @@@
 

@@ -259,8 +259,10 @@ msgid @@@ Select Card - 43 @@@
 msgstr @@@ The payment could not be authorised with the provided password, your account has been deleted. @@@
 msgid @@@ Select Card - 49 @@@
 msgstr @@@ The specified account is not active. @@@
+msgid @@@ Select Card - 99 @@@
+msgstr @@@ We're sorry but we could not complete the payment through your selected payment method. Please select another one to try again. @@@
 msgid @@@ Select Payment Method - 99 @@@
-msgstr @@@ We're sorry but we could not complete the payment through your selected payment method. Please select another one to try again? @@@
+msgstr @@@ We're sorry but we could not complete the payment through your selected payment method. Please select another one to try again. @@@
 msgid @@@ CPM Payment - 1 @@@
 msgstr @@@ Your account has been topped up and the original payment has been resumed @@@
 msgid @@@ CPM Payment - 11 @@@
