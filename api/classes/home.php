@@ -115,15 +115,17 @@ class Home extends General
 	 * @param	string $addr 		End-User's mobile number or E-Mail address
 	 * @return	integer				Unqiue ID of the End-User's Account or -1 if no account was found
 	 */
-	public function getAccountID(CountryConfig &$oCC, $addr)
+	public function getAccountID(CountryConfig &$oCC, $addr, $clid=-1)
 	{
-		if (floatval($addr) > $oCC->getMinMobile() ) { $sql = "mobile = '". floatval($addr) ."'"; }
-		else { $sql = "Upper(email) = Upper('". $this->getDBConn()->escStr($addr) ."')"; }
+		if (floatval($addr) > $oCC->getMinMobile() ) { $sql = "A.mobile = '". floatval($addr) ."'"; }
+		else { $sql = "Upper(A.email) = Upper('". $this->getDBConn()->escStr($addr) ."')"; }
 
-		$sql = "SELECT id
-				FROM EndUser.Account_Tbl
-				WHERE countryid = ". $oCC->getID() ."
-					AND ". $sql ." AND enabled = '1'";
+		$sql = "SELECT DISTINCT A.id
+				FROM EndUser.Account_Tbl A
+				INNER JOIN EndUser.CLAccess_Tbl Acc ON A.id = Acc.accountid
+				WHERE A.countryid = ". $oCC->getID() ."
+					AND ". $sql ." AND A.enabled = '1'";
+		if ($clid > 0) { $sql ." AND Acc.clientid = ". intval($clid); }
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 

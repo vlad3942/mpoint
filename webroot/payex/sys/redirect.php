@@ -34,7 +34,7 @@ header("Content-Type: text/plain");
 
 $obj_mPoint = new PayEx($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
 
-if ($_SESSION['obj_TxnInfo']->getMode() > 0) { $aHTTP_CONN_INFO["payex"]["host"] = str_replace("confined.", "test-external.", $aHTTP_CONN_INFO["payex"]["host"]); }
+if ($_SESSION['obj_TxnInfo']->getMode() > 0) { $aHTTP_CONN_INFO["payex"]["host"] = str_replace("external.", "test-external.", $aHTTP_CONN_INFO["payex"]["host"]); }
 
 $obj_ConnInfo = new SOAPConnInfo($aHTTP_CONN_INFO["payex"]["protocol"] ."://". $aHTTP_CONN_INFO["payex"]["host"] . $aHTTP_CONN_INFO["payex"]["path"], $_POST['accountNumber'], $aHTTP_CONN_INFO["payex"]["password"]);
 $obj_XML = $obj_mPoint->initialize($obj_ConnInfo, $_POST['accountNumber'], $_POST['currency'], $obj_mPoint->getCardName($_POST['cardid']) );

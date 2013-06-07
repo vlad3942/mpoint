@@ -321,22 +321,29 @@ class General
 	 */
 	public static function getMarkupLanguage(UAProfile &$oUA, TxnInfo &$oTI=null)
 	{
-		switch (true)
+		if (is_null($oTI) === false && ($oTI->getMarkupLanguage() == "html5" || $oTI->getMarkupLanguage() == "app") )
 		{
-		case (eregi('iPhone', $_SERVER['HTTP_USER_AGENT']) ):	// Mobile Device supports HTML5
-		case (eregi('iPod', $_SERVER['HTTP_USER_AGENT']) ):
-		case (eregi('Android', $_SERVER['HTTP_USER_AGENT']) ):
-			return (is_null($oTI) === false ? $oTI->getMarkupLanguage() : "xhtml");
-			break;
-		case ($oUA->hasXHTML() ):	// Mobile Device supports XHTML
-			return "xhtml";
-			break;
-		case ($oUA->hasWML() ):		// Mobile Device supports WML
-			return "wml";
-			break;
-		default:					// Unable to get supported Markup languages for Mobile Device
-			throw new mPointException("Unable to get supported Markup languages for Mobile Device {TRACE ". var_export($oUA, true) ."}", 1021);
-			break;
+			return $oTI->getMarkupLanguage();
+		}
+		else
+		{
+			switch (true)
+			{
+			case (eregi('iPhone', $_SERVER['HTTP_USER_AGENT']) ):	// Mobile Device supports HTML5
+			case (eregi('iPod', $_SERVER['HTTP_USER_AGENT']) ):
+			case (eregi('Android', $_SERVER['HTTP_USER_AGENT']) ):
+				return (is_null($oTI) === false ? $oTI->getMarkupLanguage() : "xhtml");
+				break;
+			case ($oUA->hasXHTML() ):	// Mobile Device supports XHTML
+				return "xhtml";
+				break;
+			case ($oUA->hasWML() ):		// Mobile Device supports WML
+				return "wml";
+				break;
+			default:					// Unable to get supported Markup languages for Mobile Device
+				throw new mPointException("Unable to get supported Markup languages for Mobile Device {TRACE ". var_export($oUA, true) ."}", 1021);
+				break;
+			}
 		}
 	}
 

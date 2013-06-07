@@ -41,13 +41,13 @@ $HTTP_RAW_POST_DATA .= '<root>';
 $HTTP_RAW_POST_DATA .= '<save-account client-id="10007" account="100006">';
 $HTTP_RAW_POST_DATA .= '<password>oisJona</password>';
 $HTTP_RAW_POST_DATA .= '<confirm-password>oisJona</confirm-password>';
-$HTTP_RAW_POST_DATA .= '<full-name>Jonatan Evald Buus</full-name>';
 $HTTP_RAW_POST_DATA .= '<social-security-number>3008990017</social-security-number>';
+$HTTP_RAW_POST_DATA .= '<full-name>Jonatan Evald Buus</full-name>';
 $HTTP_RAW_POST_DATA .= '<card type-id="2">My Card</card>';
 $HTTP_RAW_POST_DATA .= '<client-info platform="iOS" version="1.00" language="da">';
-$HTTP_RAW_POST_DATA .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
-$HTTP_RAW_POST_DATA .= '<email>jona@oismail.com</email>';
-$HTTP_RAW_POST_DATA .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
+$HTTP_RAW_POST_DATA .= '<mobile country-id="610" operator-id="61000">3138544000</mobile>';
+$HTTP_RAW_POST_DATA .= '<email>asd@as.com</email>';
+$HTTP_RAW_POST_DATA .= '<device-id>85ce3843c0a068fb5cb1e76156fdd719</device-id>';
 $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</save-account>';
 $HTTP_RAW_POST_DATA .= '</root>';
@@ -112,8 +112,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile["country-id"]);
 						// Construct Client Info
 						$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'save-account'}[$i]->{'client-info'}, $obj_CountryConfig, @$_SERVER['HTTP_X_FORWARDED_FOR']);
-						$iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_CountryConfig);
-						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
 						
 						$code = $obj_mPoint->savePassword( (float) $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, (string) $obj_DOM->{'save-account'}[$i]->password, $obj_CountryConfig);
 						// New Account automatically created when Password was saved
@@ -122,11 +120,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 //							$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $_SESSION['obj_TxnInfo']);
 						}
 						$obj_mPoint->saveCardName( (float) $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->card["type-id"], (string) $obj_DOM->{'save-account'}[$i]->card, true);
-						$obj_mPoint->saveInfo($iAccountID, (string) $obj_DOM->{'save-account'}[$i]->{'first-name'}, (string)  $obj_DOM->{'save-account'}[$i]->{'last-name'});
 							
 						// Success: Account Information Saved
 						if ($code >= 0)
-						{							// Customer Data should be imported from Client System
+						{
+							$iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_CountryConfig);
+							if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
+							$obj_mPoint->saveInfo($iAccountID, (string) $obj_DOM->{'save-account'}[$i]->{'first-name'}, (string)  $obj_DOM->{'save-account'}[$i]->{'last-name'});
+							
+							// Customer Data should be imported from Client System
 							if ($obj_ClientConfig->getCustomerImportURL() != "")
 							{
 								$aURL_Info = parse_url($obj_ClientConfig->getCustomerImportURL() );

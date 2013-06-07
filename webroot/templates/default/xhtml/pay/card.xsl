@@ -6,7 +6,19 @@
 <xsl:template match="/root">
 	<div id="progress" class="mPoint_Info">
 		<xsl:if test="string-length(transaction/cancel-url) &gt; 0">
-			<form action="{transaction/cancel-url}" method="get">
+			<form action="{transaction/cancel-url}" method="post">
+				<!-- Standard mPoint Variables -->
+				<input type="hidden" name="mpoint-id" value="{transaction/@id}" />
+				<input type="hidden" name="orderid" value="{transaction/orderid}" />
+				<input type="hidden" name="amount" value="{transaction/amount}" />
+				<input type="hidden" name="currency" value="{transaction/amount/@currency}" />
+				<input type="hidden" name="mobile" value="{transaction/mobile}" />
+				<input type="hidden" name="operator" value="{transaction/operator}" />
+				<!-- Custom Client Variables -->
+				<xsl:for-each select="accept/client-vars/item">
+					<input type="hidden" name="{name}" value="{value}" />
+				</xsl:for-each>
+					
 				<input name="cancel-payment" id="cancel-payment" type="submit" class="mPoint_Button" value="{labels/cancel}" />
 			</form>
 		</xsl:if>
@@ -404,30 +416,30 @@
 
 <xsl:template match="item" mode="payex">
 	<div>
-			<form action="{func:constLink('/payex/sys/redirect.php') }" method="post">
-				<div>
-					<!-- WorldPay data -->
-					<input type="hidden" name="cardid" value="{@id}" />
-					<input type="hidden" name="accountNumber" value="{account}" />
-					<input type="hidden" name="currency" value="{currency}" />
-					<!-- Payment Page Data -->
-					<input type="hidden" name="card_width" value="{logo-width}" />
-					<input type="hidden" name="card_height" value="{logo-height}" />
-					
-					<!--
-					  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
-					  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
-					  - the phone will assign 25% of the screen width to the card logo and 75% of the screen width to the card name.
-					  -->
-					<table>
-					<tr>
-						<td><img src="/img/{logo-width}x{logo-height}_card_{@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
-						<td colspan="3"><input type="submit" value="{name}" class="mPoint_Card_Button" /></td>
-					</tr>
-					</table>
-				</div>
-			</form>
-		</div>
+		<form action="{func:constLink('/payex/sys/redirect.php') }" method="post">
+			<div>
+				<!-- WorldPay data -->
+				<input type="hidden" name="cardid" value="{@id}" />
+				<input type="hidden" name="accountNumber" value="{account}" />
+				<input type="hidden" name="currency" value="{currency}" />
+				<!-- Payment Page Data -->
+				<input type="hidden" name="card_width" value="{logo-width}" />
+				<input type="hidden" name="card_height" value="{logo-height}" />
+				
+				<!--
+				  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
+				  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
+				  - the phone will assign 25% of the screen width to the card logo and 75% of the screen width to the card name.
+				  -->
+				<table>
+				<tr>
+					<td><img src="/img/{logo-width}x{logo-height}_card_{@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
+					<td colspan="3"><input type="submit" value="{name}" class="mPoint_Card_Button" /></td>
+				</tr>
+				</table>
+			</div>
+		</form>
+	</div>
 </xsl:template>
 
 <xsl:template match="item" mode="authorize.net">

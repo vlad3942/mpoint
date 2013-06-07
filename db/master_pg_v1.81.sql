@@ -23,6 +23,7 @@ GRANT SELECT ON TABLE Public.DUAL TO mpoint;
 /* ==================== ENDUSER SCHEMA START ==================== */
 ALTER TABLE EndUser.Account_Tbl ADD mobile_verified BOOL DEFAULT false;
 ALTER TABLE EndUser.Account_Tbl ADD externalid VARCHAR(50);
+ALTER TABLE EndUser.Transaction_Tbl ADD message TEXT;
 /* ==================== ENDUSER SCHEMA END ==================== */
 
 /* ==================== SYSTEM SCHEMA START ==================== */
@@ -75,5 +76,5 @@ ON Client.URL_Tbl FOR EACH ROW
 EXECUTE PROCEDURE Public.Update_Table_Proc();
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.URL_Tbl TO mpoint;
-/* ==================== CLIENT SCHEMA END ==================== */
 GRANT SELECT, UPDATE, USAGE ON TABLE Client.URL_Tbl_id_seq TO mpoint;
+/* ==================== CLIENT SCHEMA END ==================== */

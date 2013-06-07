@@ -32,17 +32,17 @@ $aMsgCds = array();
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 /*
-$_SERVER['PHP_AUTH_USER'] = "CPMDemo";
-$_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
+$_SERVER['PHP_AUTH_USER'] = "1415";
+$_SERVER['PHP_AUTH_PW'] = "Ghdy4_ah1G";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<login client-id="10007" account="100007">';
-$HTTP_RAW_POST_DATA .= '<password>oisJona</password>';
-$HTTP_RAW_POST_DATA .= '<client-info platform="iOS" version="1.00" language="da">';
-$HTTP_RAW_POST_DATA .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
-$HTTP_RAW_POST_DATA .= '<email>jona@oismail.com</email>';
-$HTTP_RAW_POST_DATA .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
+$HTTP_RAW_POST_DATA .= '<login client-id="10019" account="100026">';
+$HTTP_RAW_POST_DATA .= '<password>oisJona1</password>';
+$HTTP_RAW_POST_DATA .= '<client-info language="us" version="1.00" platform="iOS" app-id="5">';
+$HTTP_RAW_POST_DATA .= '<mobile country-id="100">28882861</mobile>';
+$HTTP_RAW_POST_DATA .= '<email>jona@oismailc.om</email>';
+$HTTP_RAW_POST_DATA .= '<device-id>85ce3843c0a068fb5cb1e76156fdd719</device-id>';
 $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</login>';
 $HTTP_RAW_POST_DATA .= '</root>';
@@ -74,19 +74,36 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->login[$i]->{'client-info'}->mobile["country-id"]);
 					if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
 					
-					$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT, $obj_CountryConfig);
+					$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig->getCountryConfig() );
 					if ($obj_Validator->valPassword( (string) $obj_DOM->login[$i]->password) < 10) { $aMsgCds["password"] = $obj_Validator->valPassword( (string) $obj_DOM->login[$i]->password) + 20; }
 					
 					// Input valid
 					if (count($aMsgCds) == 0)
 					{
-						$iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->login[$i]->{'client-info'}->mobile);
-						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->login[$i]->{'client-info'}->email); }
+						$iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->login[$i]->{'client-info'}->mobile, $obj_ClientConfig->getID() );
+						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->login[$i]->{'client-info'}->email, $obj_ClientConfig->getID() ); }
 						$code = $obj_mPoint->auth($iAccountID, (string) $obj_DOM->login[$i]->password);
 						// Authentication succeeded
 						if ($code == 10)
 						{							
 							if ($obj_ClientConfig->getStoreCard() == 2) { $xml .= $obj_mPoint->getAccountInfo($iAccountID); }
+							$aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID) );
+							$aObj_XML = $aObj_XML->xpath("/stored-cards/card[client/@id = ". $obj_ClientConfig->getID() ."]");
+							// End-User has Stored Cards available
+							if (is_array($aObj_XML) === true && count($aObj_XML) > 0)
+							{
+								$xml .= '<stored-cards>';
+								for ($j=0; $j<count($aObj_XML); $j++)
+								{
+									$xml .= '<card id="'. $aObj_XML[$j]["id"] .'" type-id="'. $aObj_XML[$j]->type["id"] .'" psp-id="'. $aObj_XML[$j]["pspid"] .'" preferred="'. $aObj_XML[$j]["preferred"] .'">';
+									if (strlen($aObj_XML[$j]->name) > 0) { $xml .= $aObj_XML[$j]->name->asXML(); }
+									$xml .= '<card-number-mask>'. $aObj_XML[$j]->mask .'</card-number-mask>';
+									$xml .= $aObj_XML[$j]->expiry->asXML();
+									$xml .= '</card>';
+								}
+								$xml .= '</stored-cards>';
+							}
+							else { $xml .= '<stored-cards />'; }
 							$xml .= $obj_mPoint->getTxnHistory($iAccountID, 5);
 							setcookie("token", General::genToken($iAccountID, $obj_ClientConfig->getSecret() ) );
 						}

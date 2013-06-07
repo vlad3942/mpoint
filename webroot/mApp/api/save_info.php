@@ -57,7 +57,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 		$obj_Validator = new Validate();
 		$xml = '';
-
+		$aMsgCds = array();
 		for ($i=0; $i<count($obj_DOM->{'personal-info'}); $i++)
 		{
 			// Set Global Defaults

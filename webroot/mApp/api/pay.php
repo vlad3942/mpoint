@@ -37,6 +37,8 @@ require_once(sCLASS_PATH ."/callback.php");
 require_once(sCLASS_PATH ."/dibs.php");
 // Require specific Business logic for the WorldPay component
 require_once(sCLASS_PATH ."/worldpay.php");
+// Require specific Business logic for the PayEx component
+require_once(sCLASS_PATH ."/payex.php");
 // Require specific Business logic for the NetAxept component
 require_once(sCLASS_PATH ."/netaxept.php");
 
@@ -159,6 +161,29 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$url .= "&preferredPaymentMethod=". $card ."&language=". $obj_TxnInfo->getLanguage();
 									$xml .= '<url method="get" content-type="none">'. htmlspecialchars($url, ENT_NOQUOTES) .'</url>';
 									break;
+								case (Constants::iPAYEX_PSP):
+									$obj_PSP = new PayEx($_OBJ_DB, $_OBJ_TXT, $oTI);
+									
+									if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["payex"]["host"] = str_replace("external.", "test-external.", $aHTTP_CONN_INFO["payex"]["host"]); }
+									$aHTTP_CONN_INFO["payex"]["username"] = $obj_PSPConfig->getUsername();
+									$aHTTP_CONN_INFO["payex"]["password"] = $obj_PSPConfig->getPassword();
+									$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["payex"]);
+									$obj_XML = $obj_PSP->initialize($obj_ConnInfo, $obj_PSPConfig->getMerchantAccount(), (string) $obj_Elem->currency);
+									foreach ($obj_XML->children() as $obj_Elem)
+									{
+										// Hidden Fields
+										if (count($obj_Elem->children() ) > 0)
+										{
+											$xml .= '<'. $obj_Elem->getName() .'>';
+											foreach ($obj_Elem->children() as $obj_Child)
+											{
+												$xml .= $obj_Child->asXML();
+											}
+											$xml .= '</'. $obj_Elem->getName() .'>';
+										}
+										else { $xml .= $obj_Elem->asXML(); }
+									}
+									break;
 								case (Constants::iWANNAFIND_PSP):
 									break;
 								case (Constants::iNETAXEPT_PSP):
@@ -185,7 +210,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							catch (HTTPException $e)
 							{
 								header("HTTP/1.1 504 Gateway Timeout");
-							
+								
 								$xml = '<status code="91">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES) .'</status>';
 							}
 						}

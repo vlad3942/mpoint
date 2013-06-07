@@ -40,10 +40,11 @@ $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
 $HTTP_RAW_POST_DATA .= '<transfer client-id="10007" account="100007">';
-$HTTP_RAW_POST_DATA .= '<amount country-id="100">10</amount>';
+$HTTP_RAW_POST_DATA .= '<amount country-id="100">1000</amount>';
 //$HTTP_RAW_POST_DATA .= '<mobile country-id="100">28880019</mobile>';
 $HTTP_RAW_POST_DATA .= '<email>oksana.zubko@gmail.com</email>';
 $HTTP_RAW_POST_DATA .= '<password>oisJona</password>';
+$HTTP_RAW_POST_DATA .= '<message>test message</message>';
 $HTTP_RAW_POST_DATA .= '<client-info platform="iOS" version="1.00" language="da">';
 $HTTP_RAW_POST_DATA .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
 $HTTP_RAW_POST_DATA .= '<email>jona@oismail.com</email>';
@@ -93,11 +94,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$obj_XML = $obj_XML->xpath("/fees/item[@toid = ". $obj_CountryConfig->getID() ."]");
 						$obj_XML = $obj_XML[0];
 						if (intval($obj_XML->basefee) + intval($obj_DOM->transfer[$i]->amount) * floatval($obj_XML->share) > intval($obj_XML->minfee) ) { $iFee = intval($obj_XML->basefee) + intval($obj_DOM->transfer[$i]->amount) * floatval($obj_XML->share); }
-						else { $iFee = (integer) $obj_XML->minfee / 100; }
+						else { $iFee = (integer) $obj_XML->minfee; }
 						
 						$obj_AccountXML = simplexml_load_string($obj_mPoint->getAccountInfo($iSenderAccountID) );
 						
-						if ($obj_Validator->valAmount( (integer) $obj_AccountXML->balance, intval($obj_DOM->transfer[$i]->amount) + $iFee) < 10) { $aMsgCds[] =  $obj_Validator->valAmount( (integer) $obj_AccountXML->balance, intval($obj_DOM->transfer[$i]->amount) + $iFee) + 44; }
+						if ($obj_Validator->valAmount( (integer) $obj_AccountXML->balance, (intval($obj_DOM->transfer[$i]->amount) + $iFee) / 100) < 10) { $aMsgCds[] =  $obj_Validator->valAmount( (integer) $obj_AccountXML->balance, (intval($obj_DOM->transfer[$i]->amount) + $iFee) / 100) + 44; }
 					}
 					else { $aMsgCds[] = $obj_Validator->valCountry($_OBJ_DB, (integer) $obj_DOM->transfer[$i]->amount["country-id"]) + 40; }
 					if (count($obj_DOM->transfer[$i]->mobile) == 1)
@@ -132,16 +133,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							{
 								// National Transfer
 								$obj_CC = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->transfer[$i]->amount["country-id"]);
-								if ($obj_CountryConfig->getID() == $obj_CC->getID() )
+								if ($obj_ClientConfig->getCountryConfig()->getID() == $obj_CC->getID() )
 								{
-									$iAmountSent = intval($obj_DOM->transfer[$i]->amount) * 100;
-									$iAmountReceived = intval($obj_DOM->transfer[$i]->amount) * 100;
+									$iAmountSent = intval($obj_DOM->transfer[$i]->amount);
+									$iAmountReceived = intval($obj_DOM->transfer[$i]->amount);
 								}
 								// International Remittance
 								else
 								{
-									$iAmountSent = intval($obj_DOM->transfer[$i]->amount) * 100;
-									$iAmountReceived = $obj_mPoint->convert($obj_CC, intval($obj_DOM->transfer[$i]->amount) * 100);
+									$iAmountSent = intval($obj_DOM->transfer[$i]->amount);
+									$iAmountReceived = $obj_mPoint->convert($obj_CC, intval($obj_DOM->transfer[$i]->amount) );
 								}
 								
 								$iRecipientAccountID = -1;
@@ -169,8 +170,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$obj_XML = $obj_XML->xpath("/fees/item[@toid = ". $obj_CC->getID() ."]");
 									$obj_XML = $obj_XML[0];
 									if (intval($obj_XML->basefee) + intval($obj_DOM->transfer[$i]->amount) * floatval($obj_XML->share) > intval($obj_XML->minfee) ) { $iFee = intval($obj_XML->basefee) + intval($obj_DOM->transfer[$i]->amount) * floatval($obj_XML->share); }
-									else { $iFee = (integer) $obj_XML->minfee / 100; }
-									$code = $obj_mPoint->makeTransfer($iRecipientAccountID, $iSenderAccountID, $iAmountReceived, $iAmountSent, $iFee * 100);
+									else { $iFee = (integer) $obj_XML->minfee; }
+									$code = $obj_mPoint->makeTransfer($iRecipientAccountID, $iSenderAccountID, $iAmountReceived, $iAmountSent, $iFee, (string) $obj_DOM->transfer[$i]->message);
 									if ($code == 10) { $xml = '<status code="100">Success</status>'; }
 									else
 									{
@@ -181,10 +182,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								}
 								else
 								{
-										header("HTTP/1.1 500 Internal Server Error");
+									header("HTTP/1.1 500 Internal Server Error");
 										
-										$xml = '<status code="'. (abs($iAmountReceived)+90) .'" />';
-									
+									$xml = '<status code="'. (abs($iAmountReceived)+90) .'" />';
 								}
 							}
 							// Authentication failed

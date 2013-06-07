@@ -38,9 +38,10 @@ class Transfer extends Home
 	 * @param 	integer $ar 	Amount that should be credited the recipient's account in the smallest currency of sender's country 
 	 * @param 	integer $as 	Amount that should be debited the sender's account in the smallest currency of recipient's country
 	 * @param 	integer $fee 	Fee that the sender is paying for the transfer in the smallest currency of sender's country
+	 * @param 	string $msg 	Personal message that should be logged with the transfer 
 	 * @return 	integer
 	 */
-	public function makeTransfer($toid, $fromid, $ar, $as, $fee)
+	public function makeTransfer($toid, $fromid, $ar, $as, $fee, $msg="")
 	{
 		// Start Transaction
 		$this->getDBConn()->query("START TRANSACTION");
@@ -51,12 +52,12 @@ class Transfer extends Home
 		
 		// Construct SQL Query for debiting Sender
 		$sql = "INSERT INTO EndUser.Transaction_Tbl
-					(accountid, typeid, toid, fromid, amount, fee, ip, address)
+					(accountid, typeid, toid, fromid, amount, fee, ip, address, message)
 				SELECT ". intval($fromid) .", ". Constants::iTRANSFER_OF_EMONEY .", ". intval($toid) .", ". intval($fromid) .", ". ($as * -1) .", ". ($fee * -1) .", '". $_SERVER['REMOTE_ADDR'] ."',
 					(CASE
 					 WHEN mobile::int8 > 0 THEN mobile
 					 ELSE email
-					 END) AS address
+					 END) AS address, '". $this->getDBConn()->escStr($msg) ."'
 				FROM EndUser.Account_Tbl
 				WHERE id = ". intval($fromid);
 //		echo $sql ."\n";
@@ -66,12 +67,12 @@ class Transfer extends Home
 		{
 			// Construct SQL Query for crediting recipient
 			$sql = "INSERT INTO EndUser.Transaction_Tbl
-						(accountid, typeid, toid, fromid, amount, ip, address)
+						(accountid, typeid, toid, fromid, amount, ip, address, message)
 					SELECT ". intval($toid) .", ". Constants::iTRANSFER_OF_EMONEY .", ". intval($toid) .", ". intval($fromid) .", ". $ar .", '". $_SERVER['REMOTE_ADDR'] ."',
 						(CASE
 						 WHEN mobile::int8 > 0 THEN mobile
 						 ELSE email
-						 END) AS address
+						 END) AS address, '". $this->getDBConn()->escStr($msg) ."'
 					FROM EndUser.Account_Tbl
 					WHERE id = ". intval($fromid);
 //			echo $sql ."\n";

@@ -279,10 +279,10 @@ class EndUserAccount extends Home
 		{
 			$mob = "";
 			$email = "";
-			if (floatval($addr) > $this->_obj_ClientConfig->getCountryConfig()->getMinMobile() ) { $mob = $addr; }
+			if (floatval($addr) > $oCC->getMinMobile() ) { $mob = $addr; }
 			else { $email = $addr; }
 
-			$iAccountID = $this->newAccount($this->_obj_ClientConfig->getCountryConfig()->getID(), $mob, $pwd, $email);
+			$iAccountID = $this->newAccount($oCC->getID(), $mob, $pwd, $email);
 			$iStatus = 1;
 		}
 

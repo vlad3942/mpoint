@@ -33,15 +33,15 @@ The paymentService can have the following child elements:
 <!-- This describes the different services that are provided within
      the Paymentservice
 -->
-<!ELEMENT submit  (order | orderBatch | shopper | futurePayAgreement | makeFuturePayPayment)>
+<!ELEMENT submit  (order | orderBatch | shopper | futurePayAgreement | makeFuturePayPayment | identifyMeRequest)>
 
 <!ELEMENT modify  (orderModification | batchModification | accountBatchModification | futurePayAgreementModification)>
 
-<!ELEMENT inquiry (orderInquiry | batchInquiry | accountBatchInquiry | refundableAmountInquiry | shopperAuthentication)>
+<!ELEMENT inquiry (orderInquiry | batchInquiry | accountBatchInquiry | refundableAmountInquiry | shopperAuthentication | priceInquiry | bankAccountInquiry | identifyMeInquiry)>
 
 <!ELEMENT reply   (orderStatus* | batchStatus | error | addressCheckResponse |
                    refundableAmount | accountBatch | shopper | ok |
-                   futurePayAgreementStatus | shopperAuthenticationResult | futurePayPaymentResult)>
+                   futurePayAgreementStatus | shopperAuthenticationResult | futurePayPaymentResult | pricePoint)>
 <!ATTLIST reply   complete (true|false) #IMPLIED >
 
 <!ELEMENT verify  (addressCheck)>
@@ -58,6 +58,30 @@ messages.  Child elements of notify element:
 <!ELEMENT notify  (orderStatusEvent | report )>
 <!ATTLIST notify  messageType  (TransferReport | OrderReport | CaptureReport | EventReport | BatchReport)  #IMPLIED >
 
+<!ELEMENT identifyMeRequest (address, birthDate?, gender?, shopperDocuments?, session?, hcgAdditionalData?)>
+<!ATTLIST identifyMeRequest orderCode NMTOKEN #REQUIRED>
+<!ELEMENT gender EMPTY>     
+<!ATTLIST gender value (F|M) #REQUIRED>
+<!ELEMENT shopperDocuments (document1?, document2?, document3?, document4?, document5?, passportData?)> 
+<!ELEMENT document1 (idType?, idNumber?, idCode?, idIssuingCountry?, idCountryOfOrigin?, idNationality?, idExpiryDate?, idIssueDate?)> 
+<!ELEMENT document2 (idType?, idNumber?, idCode?, idIssuingCountry?, idCountryOfOrigin?, idNationality?, idExpiryDate?, idIssueDate?)> 
+<!ELEMENT document3 (idType?, idNumber?, idCode?, idIssuingCountry?, idCountryOfOrigin?, idNationality?, idExpiryDate?, idIssueDate?)> 
+<!ELEMENT document4 (idType?, idNumber?, idCode?, idIssuingCountry?, idCountryOfOrigin?, idNationality?, idExpiryDate?, idIssueDate?)> 
+<!ELEMENT document5 (idType?, idNumber?, idCode?, idIssuingCountry?, idCountryOfOrigin?, idNationality?, idExpiryDate?, idIssueDate?)> 
+<!ELEMENT passportData (MRZLine1?, MRZLine2?, MRZShort?)> 
+
+<!ELEMENT idType (#PCDATA )>
+<!ELEMENT idNumber (#PCDATA )>
+<!ELEMENT idCode (#PCDATA )>
+<!ELEMENT idIssuingCountry (#PCDATA )>
+<!ELEMENT idCountryOfOrigin (#PCDATA )>
+<!ELEMENT idNationality (#PCDATA )>
+<!ELEMENT idExpiryDate (date)>
+<!ELEMENT idIssueDate (date)>
+<!ELEMENT MRZLine1 (#PCDATA )>
+<!ELEMENT MRZLine2 (#PCDATA )>
+<!ELEMENT MRZShort (#PCDATA )>
+
 <!-- CHILD ELEMENTS OF SUBMIT ELEMENT -->
 <!-- ================================ -->
 <!ELEMENT order  (	description,
@@ -67,10 +91,14 @@ messages.  Child elements of notify element:
 					(paymentMethodMask | paymentDetails | payAsOrder ),
 					shopper?,
 					shippingAddress?,
+					billingAddress?,
 					branchSpecificExtension?,
 					redirectPageAttribute?,
 					paymentMethodAttribute*,
-					echoData?) >
+					echoData?,
+					statementNarrative?,
+					hcgAdditionalData?,
+					thirdPartyData?) >
 
 <!--
 Enter risk parameters. All individual risk-score settings
@@ -82,6 +110,28 @@ eg. <risk multiply="1.5" avsLevel="C" cvcLevel="B"/>
                cvcLevel NMTOKEN  #IMPLIED>
 
 
+<!ELEMENT pricePoint (	locale,
+						pricing,
+						comments) >
+						
+<!ATTLIST pricePoint billedMessages NMTOKEN  #IMPLIED
+              		 status NMTOKEN  #IMPLIED>
+              		 
+<!ELEMENT locale EMPTY>
+<!ATTLIST locale countryCode NMTOKEN  #IMPLIED
+          		 currencyCode NMTOKEN  #IMPLIED
+          		 exponent NMTOKEN  #IMPLIED
+          		 exchangeFactor NMTOKEN  #IMPLIED>
+              		 
+<!ELEMENT pricing EMPTY>
+<!ATTLIST pricing 	amount NMTOKEN  #IMPLIED
+	          		amountExSalesTax NMTOKEN  #IMPLIED
+	          		amountIncSalesTax NMTOKEN  #IMPLIED
+	          		amountReceivableGross NMTOKEN  #IMPLIED
+	          		amountReceivableNet NMTOKEN  #IMPLIED>
+              		 
+<!ELEMENT comments (#PCDATA )>
+          
 <!--
 The ordercode is a unique reference for an order. The maximum length is 64
 characters. For purchase details the first 15 characters are used.
@@ -91,6 +141,8 @@ characters. For purchase details the first 15 characters are used.
 				shoppingBasketCode CDATA #IMPLIED
 				installationId NMTOKEN #IMPLIED
 				shopperLanguageCode NMTOKEN #IMPLIED
+				fixContact  (true|false) #IMPLIED
+				hideContact (true|false) #IMPLIED
 				>
 
 <!--
@@ -249,7 +301,7 @@ FuturePay admin
 
 <!-- CHILD ELEMENTS OF MODIFY ELEMENT -->
 <!-- ================================ -->
-<!ELEMENT orderModification  (cancel | capture | refund | addBackOfficeCode | addTransactionCertificate | authorise | increaseAuthorisation | cancelOrRefund)>
+<!ELEMENT orderModification  (cancel | capture | refund | addBackOfficeCode | addTransactionCertificate | authorise | increaseAuthorisation | cancelOrRefund | defend)>
 <!ATTLIST orderModification  orderCode CDATA  #REQUIRED >
 <!ELEMENT batchModification  (cancel )>
 <!ATTLIST batchModification  merchantBatchCode CDATA  #REQUIRED >
@@ -293,6 +345,18 @@ from June 1st 2001 until now.
 
 <!ELEMENT refundableAmountInquiry  EMPTY>
 <!ATTLIST refundableAmountInquiry  orderCode CDATA  #REQUIRED >
+<!ELEMENT priceInquiry  EMPTY>
+<!ATTLIST priceInquiry  currencyCode NMTOKEN  #IMPLIED
+						countryCode NMTOKEN  #IMPLIED 
+						maximumBilledMessages NMTOKEN  #IMPLIED >
+
+<!ELEMENT bankAccountInquiry EMPTY>
+<!ATTLIST bankAccountInquiry source NMTOKEN #REQUIRED>
+<!ATTLIST bankAccountInquiry shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT identifyMeInquiry EMPTY>
+<!ATTLIST identifyMeInquiry orderCode CDATA  #REQUIRED >
+
+
 <!-- CHILD ELEMENTS OF REPLY ELEMENT -->
 <!-- =============================== -->
 <!-- The ok element represents the new style answer to an order modification -->
@@ -329,7 +393,8 @@ from June 1st 2001 until now.
 				refundReceived|
 				backofficeCodeReceived|
 				authorisationCodeReceived|
-				transactionCertificateReceived)) >
+				transactionCertificateReceived|
+				defenceReceived )) >
 
 <!ELEMENT voidReceived EMPTY >
 <!ATTLIST voidReceived orderCode CDATA #REQUIRED>
@@ -357,6 +422,8 @@ from June 1st 2001 until now.
 <!ELEMENT transactionCertificateReceived EMPTY >
 <!ATTLIST transactionCertificateReceived orderCode CDATA #REQUIRED>
 
+<!ELEMENT defenceReceived EMPTY >
+<!ATTLIST defenceReceived orderCode CDATA #REQUIRED>
 
 <!ELEMENT orderStatus ( ((reference,bankAccount?) |
 						 error |
@@ -462,9 +529,29 @@ Example of an amount element :
 							 SINGLE_UNSIGNED_DD_ES-SSL|
 							 SINGLE_UNSIGNED_DD_FR-SSL|
 							 PERMANENT_SIGNED_DD_GB-SSL|
-							 PAYOUT-BANK | PAYPAL-EXPRESS | GIROPAY-SSL | MAESTRO-SSL | SWITCH-SSL |
-							 NCPB2B-SSL | NCPSEASON-SSL | IDEAL-SSL |ACH-SSL|
-
+							 PAYOUT-BANK | VME-SSL | PAYPAL-EXPRESS | GIROPAY-SSL | MAESTRO-SSL | SWITCH-SSL |
+							 NCPB2B-SSL | NCPSEASON-SSL | NCPGMM-SSL | IDEAL-SSL |ACH-SSL|CARD-SSL | ABAQOOS-SSL |
+							 AGMO-SSL | ALIPAY-SSL | ALIPAYMOBILE-SSL| BALOTO-SSL | BANKAXESS-SSL |BANKLINKNORDEA-SSL |
+							 BILLINGPARTNER-SSL | CASHU-SSL | DINEROMAIL_7ELEVEN-SSL | DINEROMAIL_OXXO-SSL |
+							 DINEROMAIL_ONLINE_BT-SSL | DINEROMAIL_SERVIPAG-SSL | EKONTO-SSL |
+							 EPAY-SSL | EUTELLER-SSL | EWIREDK-SSL | EWIRENO-SSL | EWIRESE-SSL | HALCASH-SSL | 
+							 IBANQ-SSL | INSTADEBIT-SSL | KONBINI-SSL | LOBANET_AR-SSL | LOBANET_BR-SSL | 
+							 LOBANET_CL-SSL | LOBANET_MX-SSL | LOBANET_PE-SSL | LOBANET_UY-SSL | MISTERCASH-SSL |
+							 MULTIBANCO-SSL | NEOSURF-SSL | NINETYNINEBILL-SSL | PAGA-SSL | PAGA_VERVE-SSL | PAYSAFECARD-SSL | PAYU-SSL | 
+							 PLUSPAY-SSL | POLI-SSL | POLINZ-SSL | POSTEPAY-SSL | PRZELEWY-SSL | QIWI-SSL | SAFETYPAY-SSL | 
+							 SID-SSL | SKRILL-SSL | SOFORT-SSL | SPEEDCARD-SSL | SPOROPAY-SSL | SWIFF-SSL | TELEINGRESO-SSL | 
+							 TICKETSURF-SSL | TRUSTPAY_CZ-SSL | TRUSTPAY_EE-SSL | TRUSTPAY_SK-SSL | WEBMONEY-SSL | YANDEXMONEY-SSL |
+							 ASTROPAYCARD-SSL | BANCOSANTANDER-SSL | BOLETO-SSL | MONETA-SSL | TODITOCARD-SSL |
+							 ENVOY_TRANSFER_AUD-BANK | ENVOY_TRANSFER_CAD-BANK | ENVOY_TRANSFER_CHF-BANK | ENVOY_TRANSFER_CZK-BANK |
+							 ENVOY_TRANSFER_DKK-BANK | ENVOY_TRANSFER_EUR-BANK | ENVOY_TRANSFER_GBP-BANK | ENVOY_TRANSFER_HKD-BANK |
+							 ENVOY_TRANSFER_HUF-BANK | ENVOY_TRANSFER_JPY-BANK | ENVOY_TRANSFER_NOK-BANK | ENVOY_TRANSFER_NZD-BANK |
+							 ENVOY_TRANSFER_PLN-BANK | ENVOY_TRANSFER_RUB-BANK | ENVOY_TRANSFER_SEK-BANK | ENVOY_TRANSFER_SGD-BANK | 
+							 ENVOY_TRANSFER_THB-BANK | ENVOY_TRANSFER_TRY-BANK | ENVOY_TRANSFER_USD-BANK | ENVOY_TRANSFER_ZAR-BANK |
+							 TRANSFER_AT-BANK | TRANSFER_BE-BANK | TRANSFER_CH-BANK | TRANSFER_DE-BANK | TRANSFER_DK-BANK | 
+							 TRANSFER_ES-BANK | TRANSFER_FI-BANK | TRANSFER_FR-BANK | TRANSFER_GB-BANK | TRANSFER_GR-BANK | 
+							 TRANSFER_IT-BANK | TRANSFER_JP-BANK | TRANSFER_LU-BANK | TRANSFER_NL-BANK | TRANSFER_NO-BANK | 
+							 TRANSFER_PL-BANK | TRANSFER_SE-BANK | TRANSFER_US-BANK |
+			 
                              (cardNumber, expiryDate, cardHolderName,
                                  (cvc | issueNumber | startDate)?,
                                  EMV_Request?) |
@@ -482,11 +569,21 @@ Example of an amount element :
 					browser?,
 					session?)>
 
+
+<!ELEMENT param (#PCDATA)>					
+<!ATTLIST param name CDATA #REQUIRED>	
+<!ELEMENT hcgAdditionalData (param+)>	
+
+
 <!ELEMENT shippingAddress  (address )>
+<!ELEMENT billingAddress  (address )>
 <!ELEMENT branchSpecificExtension (airline|purchase|hotel)>
-<!ELEMENT browser (acceptHeader?, userAgentHeader?)>
+<!ELEMENT browser (acceptHeader?, userAgentHeader?, httpAcceptLanguage?,httpReferer?)>
+<!ATTLIST browser deviceType (0|1)  #IMPLIED>
 <!ELEMENT acceptHeader (#PCDATA)>
 <!ELEMENT userAgentHeader (#PCDATA)>
+<!ELEMENT httpAcceptLanguage (#PCDATA)>
+<!ELEMENT httpReferer (#PCDATA)>
 <!ELEMENT redirectPageAttribute (fontAttr?, bodyAttr?)>
 <!ELEMENT fontAttr (#PCDATA)>
 <!ELEMENT bodyAttr (#PCDATA)>
@@ -516,8 +613,14 @@ response data necessary to complete a 3D Secure transaction.
 			lastEvent? ,
 			AuthorisationId? ,
 			ISO8583ReturnCode? ,
+			IssuerResponseCode? ,
 			CVCResultCode? ,
 			AVSResultCode? ,
+			AAVAddressResultCode? ,
+			AAVPostcodeResultCode? ,
+			AAVCardholderNameResultCode? ,
+			AAVTelephoneResultCode? ,
+			AAVEmailResultCode? ,
 			ThreeDSecureResult? ,
 			cardHolderName? ,
 			issuerCountryCode? ,
@@ -637,13 +740,213 @@ Example of a request3DSecure message:
 <!ELEMENT PERMANENT_SIGNED_DD_GB-SSL (bankAccount-GB)>
 <!ELEMENT SINGLE_SIGNED_DD_ES-SSL (bankAccount-ES)>
 <!ELEMENT PAYOUT-BANK EMPTY>
+<!ELEMENT VME-SSL (successURL, failureURL, cancelURL, cardAddress?)>
 <!ELEMENT PAYPAL-EXPRESS (successURL, failureURL, cancelURL)>
 <!ATTLIST PAYPAL-EXPRESS firstInBillingRun (true|false) #IMPLIED>
 <!ELEMENT IDEAL-SSL (successURL, failureURL, cancelURL)>
-<!ATTLIST IDEAL-SSL shopperBankCode (ABN_AMRO|ASN|ING|FORTIS|FRIESLAND|RABOBANK|SNS|SNS_REGIO) #REQUIRED>
+<!ATTLIST IDEAL-SSL shopperBankCode (ABN_AMRO|ASN|ING|FRIESLAND|RABOBANK|SNS|SNS_REGIO|TRIODOS|VAN_LANSCHOT|KNAB) #REQUIRED>
 <!ELEMENT GIROPAY-SSL 	(successURL, failureURL, cancelURL, bankCode)>
 <!ELEMENT NCPB2B-SSL		 (cardNumber, expiryDate, cardHolderName, cvc?, cardAddress?,cardSwipe? )>
 <!ELEMENT NCPSEASON-SSL		 (cardNumber, expiryDate, cardHolderName, cvc?, cardAddress?,cardSwipe? )>
+<!ELEMENT NCPGMM-SSL		 (cardNumber, expiryDate, cardHolderName, cvc?, cardAddress?,cardSwipe? )>
+<!ELEMENT CARD-SSL		 (cardNumber, expiryDate, cardHolderName, cvc?, cardAddress?,cardSwipe? )>
+<!ELEMENT ABAQOOS-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST ABAQOOS-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT AGMO-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST AGMO-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT ALIPAY-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST ALIPAY-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT ALIPAYMOBILE-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST ALIPAYMOBILE-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT BALOTO-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST BALOTO-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT BANKAXESS-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST BANKAXESS-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT BANKLINKNORDEA-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST BANKLINKNORDEA-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT BILLINGPARTNER-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST BILLINGPARTNER-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT CASHU-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST CASHU-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT DINEROMAIL_7ELEVEN-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST DINEROMAIL_7ELEVEN-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT DINEROMAIL_OXXO-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST DINEROMAIL_OXXO-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT DINEROMAIL_ONLINE_BT-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST DINEROMAIL_ONLINE_BT-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT DINEROMAIL_SERVIPAG-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST DINEROMAIL_SERVIPAG-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT EKONTO-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST EKONTO-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT EPAY-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST EPAY-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT EUTELLER-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST EUTELLER-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT EWIREDK-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST EWIREDK-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT EWIRENO-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST EWIRENO-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT EWIRESE-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST EWIRESE-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT HALCASH-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST HALCASH-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT INSTADEBIT-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST INSTADEBIT-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT KONBINI-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST KONBINI-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT LOBANET_AR-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST LOBANET_AR-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT LOBANET_BR-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST LOBANET_BR-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT LOBANET_CL-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST LOBANET_CL-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT LOBANET_MX-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST LOBANET_MX-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT LOBANET_PE-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST LOBANET_PE-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT LOBANET_UY-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST LOBANET_UY-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT MISTERCASH-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST MISTERCASH-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT MULTIBANCO-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST MULTIBANCO-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT NEOSURF-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST NEOSURF-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT NINETYNINEBILL-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST NINETYNINEBILL-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT PAYSAFECARD-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST PAYSAFECARD-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT PAGA-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST PAGA-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT PAGA_VERVE-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST PAGA_VERVE-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT PAYU-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST PAYU-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT PLUSPAY-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST PLUSPAY-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT POLI-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST POLI-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT POLINZ-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST POLINZ-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT POSTEPAY-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST POSTEPAY-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT PRZELEWY-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST PRZELEWY-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT QIWI-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST QIWI-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT SAFETYPAY-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST SAFETYPAY-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT SID-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST SID-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT SKRILL-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST SKRILL-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT SOFORT-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST SOFORT-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT SPOROPAY-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST SPOROPAY-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT TELEINGRESO-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST TELEINGRESO-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT TICKETSURF-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST TICKETSURF-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT TRUSTPAY_CZ-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST TRUSTPAY_CZ-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT TRUSTPAY_EE-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST TRUSTPAY_EE-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT TRUSTPAY_SK-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST TRUSTPAY_SK-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT WEBMONEY-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST WEBMONEY-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT YANDEXMONEY-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST YANDEXMONEY-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT ENVOY_TRANSFER_AUD-BANK EMPTY>
+<!ATTLIST ENVOY_TRANSFER_AUD-BANK shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT ENVOY_TRANSFER_CAD-BANK EMPTY>
+<!ATTLIST ENVOY_TRANSFER_CAD-BANK shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT ENVOY_TRANSFER_CHF-BANK EMPTY>
+<!ATTLIST ENVOY_TRANSFER_CHF-BANK shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT ENVOY_TRANSFER_CZK-BANK EMPTY>
+<!ATTLIST ENVOY_TRANSFER_CZK-BANK shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT ENVOY_TRANSFER_DKK-BANK EMPTY>
+<!ATTLIST ENVOY_TRANSFER_DKK-BANK shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT ENVOY_TRANSFER_EUR-BANK EMPTY>
+<!ATTLIST ENVOY_TRANSFER_EUR-BANK shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT ENVOY_TRANSFER_GBP-BANK EMPTY>
+<!ATTLIST ENVOY_TRANSFER_GBP-BANK shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT ENVOY_TRANSFER_HKD-BANK EMPTY>
+<!ATTLIST ENVOY_TRANSFER_HKD-BANK shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT ENVOY_TRANSFER_HUF-BANK EMPTY>
+<!ATTLIST ENVOY_TRANSFER_HUF-BANK shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT ENVOY_TRANSFER_JPY-BANK EMPTY>
+<!ATTLIST ENVOY_TRANSFER_JPY-BANK shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT ENVOY_TRANSFER_NOK-BANK EMPTY>
+<!ATTLIST ENVOY_TRANSFER_NOK-BANK shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT ENVOY_TRANSFER_NZD-BANK EMPTY>
+<!ATTLIST ENVOY_TRANSFER_NZD-BANK shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT ENVOY_TRANSFER_PLN-BANK EMPTY>
+<!ATTLIST ENVOY_TRANSFER_PLN-BANK shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT ENVOY_TRANSFER_RUB-BANK EMPTY>
+<!ATTLIST ENVOY_TRANSFER_RUB-BANK shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT ENVOY_TRANSFER_SEK-BANK EMPTY>
+<!ATTLIST ENVOY_TRANSFER_SEK-BANK shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT ENVOY_TRANSFER_SGD-BANK EMPTY>
+<!ATTLIST ENVOY_TRANSFER_SGD-BANK shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT ENVOY_TRANSFER_THB-BANK EMPTY>
+<!ATTLIST ENVOY_TRANSFER_THB-BANK shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT ENVOY_TRANSFER_TRY-BANK EMPTY>
+<!ATTLIST ENVOY_TRANSFER_TRY-BANK shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT ENVOY_TRANSFER_USD-BANK EMPTY>
+<!ATTLIST ENVOY_TRANSFER_USD-BANK shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT ENVOY_TRANSFER_ZAR-BANK EMPTY>
+<!ATTLIST ENVOY_TRANSFER_ZAR-BANK shopperCountryCode NMTOKEN #REQUIRED>
+
+<!ELEMENT ASTROPAYCARD-SSL (pan,cvv,expiryDate,successURL, cancelURL, pendingURL)>
+<!ATTLIST ASTROPAYCARD-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT SWIFF-SSL (pan, cvv, expiryDate, successURL, cancelURL, pendingURL)>
+<!ATTLIST SWIFF-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT pan (#PCDATA )>
+<!ELEMENT cvv (#PCDATA )>
+
+<!ELEMENT BANCOSANTANDER-SSL (rut,successURL, cancelURL, pendingURL)>
+<!ATTLIST BANCOSANTANDER-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT rut (#PCDATA )>
+
+<!ELEMENT BOLETO-SSL (cpf,successURL, cancelURL, pendingURL)>
+<!ATTLIST BOLETO-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT cpf (#PCDATA )>
+
+<!ELEMENT IBANQ-SSL (accountNumber, accountPassword, successURL, cancelURL, pendingURL)>
+<!ATTLIST IBANQ-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT MONETA-SSL (accountNumber, accountPassword, successURL, cancelURL, pendingURL)>
+<!ATTLIST MONETA-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT accountPassword (#PCDATA )>
+
+<!-- SPEEDCARD-SSL also requires the customerId, 
+     which is defined below the thirdPartyData element -->
+<!ELEMENT SPEEDCARD-SSL (successURL, cancelURL, pendingURL)>
+<!ATTLIST SPEEDCARD-SSL shopperCountryCode NMTOKEN #REQUIRED>
+
+<!ELEMENT TODITOCARD-SSL (pan, pin, successURL, cancelURL, pendingURL)>
+<!ATTLIST TODITOCARD-SSL shopperCountryCode NMTOKEN #REQUIRED>
+<!ELEMENT pin (#PCDATA )>
+
+<!ELEMENT TRANSFER_AT-BANK EMPTY>
+<!ELEMENT TRANSFER_BE-BANK EMPTY>
+<!ELEMENT TRANSFER_CH-BANK EMPTY>
+<!ELEMENT TRANSFER_DE-BANK EMPTY>
+<!ELEMENT TRANSFER_DK-BANK EMPTY>
+<!ELEMENT TRANSFER_ES-BANK EMPTY>
+<!ELEMENT TRANSFER_FI-BANK EMPTY>
+<!ELEMENT TRANSFER_FR-BANK EMPTY>
+<!ELEMENT TRANSFER_GB-BANK EMPTY>
+<!ELEMENT TRANSFER_GR-BANK EMPTY>
+<!ELEMENT TRANSFER_IT-BANK EMPTY>
+<!ELEMENT TRANSFER_JP-BANK EMPTY>
+<!ELEMENT TRANSFER_LU-BANK EMPTY>
+<!ELEMENT TRANSFER_NL-BANK EMPTY>
+<!ELEMENT TRANSFER_NO-BANK EMPTY>
+<!ELEMENT TRANSFER_PL-BANK EMPTY>
+<!ELEMENT TRANSFER_SE-BANK EMPTY>
+<!ELEMENT TRANSFER_US-BANK EMPTY>  
 
 <!ELEMENT cardSwipe (track*)>
 <!ELEMENT track (#PCDATA)>
@@ -659,10 +962,13 @@ Example of a request3DSecure message:
 <!ELEMENT failureURL (#PCDATA )>
 <!ELEMENT cancelURL (#PCDATA )>
 
+<!-- EXTRA CHILD ELEMENTS FOR ALTERNATIVE PAYMENT METHODS -->
+<!ELEMENT pendingURL (#PCDATA )>
+
 <!-- CHILD ELEMENTS OF CB-SSL, CARTEBLEUE-SSL, VISA-SSL, -->
 <!-- DISCOVER-SSL, JCB-SSL, LASER-SSL, DANKORT-SSL, JCB-SSL, -->
 <!-- ECMC-SSL, AMEX-SSL, DINERS-SSL, AURORE-SSL, GECAPITAL, -->
-<!-- NCPB2B-SSL, NCPSEASON-SSL, BHS-SSL, IKEA-SSL ELEMENT -->
+<!-- NCPB2B-SSL, NCPSEASON-SSL, NCPGMM-SSL, BHS-SSL, IKEA-SSL ELEMENT -->
 <!-- =================================================== -->
 <!ELEMENT cardNumber  (#PCDATA )>
 <!ELEMENT expiryDate  (date )>
@@ -708,6 +1014,13 @@ Example of a request3DSecure message:
 <!ELEMENT attrName (#PCDATA)>
 <!ELEMENT attrValue (#PCDATA)>
 
+<!-- Used to specify the text displayed on the shoppers' statement.  Only supported by certain acquirers -->
+<!ELEMENT statementNarrative (#PCDATA)>
+
+<!-- Used to collect merchant-held data 
+     required by some 3rd party processors -->
+<!ELEMENT thirdPartyData (customerId?)>
+<!ELEMENT customerId (#PCDATA )>
 
 <!-- CHILD ELEMENTS of SINGLE_UNSIGNED_DD_NL-SSL -->
 <!-- BankAccount_NL is deprecated for use in new elements, instead
@@ -1075,10 +1388,11 @@ Example of a request3DSecure message:
 
 
 <!ELEMENT EMV_Response (authenticationData,script)>
-<!ELEMENT authenticationData (ARPC,authorisationResponseCode)>
+<!ELEMENT authenticationData (ARPC,authorisationResponseCode,responseAdditionalData)>
 <!ELEMENT script (#PCDATA)>
 <!ELEMENT ARPC (#PCDATA)>
 <!ELEMENT authorisationResponseCode (#PCDATA)>
+<!ELEMENT responseAdditionalData (#PCDATA)>
 
 <!-- CHILD ELEMENTS OF JOURNAL ELEMENT -->
 <!-- the accountType's AUTHORISED, CAPTURED, IN_PROCESS, FOREX, SETTLED_ACQUIRER_TOTAL are obsolete from version 1.4 and on -->
@@ -1115,6 +1429,9 @@ Example of a request3DSecure message:
 <!ELEMENT ISO8583ReturnCode	EMPTY>
 <!ATTLIST ISO8583ReturnCode	code        NMTOKEN  #REQUIRED
                         	description CDATA    #REQUIRED >
+<!ELEMENT IssuerResponseCode	EMPTY>
+<!ATTLIST IssuerResponseCode	code        NMTOKEN  #REQUIRED
+                        	    description CDATA    #REQUIRED >
 <!ELEMENT lastEvent		(#PCDATA )>
 <!ELEMENT AuthorisationId EMPTY>
 <!ATTLIST AuthorisationId  id NMTOKEN  #REQUIRED >
@@ -1124,6 +1441,16 @@ Example of a request3DSecure message:
 <!ATTLIST CVCResultCode description NMTOKENS #REQUIRED >
 <!ELEMENT AVSResultCode	EMPTY>
 <!ATTLIST AVSResultCode description NMTOKENS #REQUIRED >
+<!ELEMENT AAVAddressResultCode	EMPTY>
+<!ATTLIST AAVAddressResultCode description NMTOKENS #REQUIRED >
+<!ELEMENT AAVPostcodeResultCode	EMPTY>
+<!ATTLIST AAVPostcodeResultCode description NMTOKENS #REQUIRED >
+<!ELEMENT AAVCardholderNameResultCode	EMPTY>
+<!ATTLIST AAVCardholderNameResultCode description NMTOKENS #REQUIRED >
+<!ELEMENT AAVTelephoneResultCode	EMPTY>
+<!ATTLIST AAVTelephoneResultCode description NMTOKENS #REQUIRED >
+<!ELEMENT AAVEmailResultCode	EMPTY>
+<!ATTLIST AAVEmailResultCode description NMTOKENS #REQUIRED >
 <!ELEMENT ThreeDSecureResult	EMPTY>
 <!ATTLIST ThreeDSecureResult description NMTOKENS #REQUIRED >
 <!ELEMENT issuerCountryCode		(#PCDATA )>
@@ -1147,19 +1474,32 @@ Example of a request3DSecure message:
 <!ELEMENT cancelOrRefund EMPTY>
 <!ELEMENT capture  (localDateTimeAtPOS?, date?, amount, (cryptogram, ICCTrxStatus, verificationResults)?, branchSpecificExtension? )>
 <!ATTLIST capture reference CDATA #IMPLIED >
-<!ELEMENT refund  (amount, branchSpecificExtension? )>
+<!ELEMENT defend  (disputeDefence )>
+<!ELEMENT refund  (amount, branchSpecificExtension?, reason? )>
 <!ATTLIST refund reference CDATA #IMPLIED >
+<!ATTLIST refund paymentId CDATA #IMPLIED >
+<!ATTLIST refund shopperWebformRefund (true|false) #IMPLIED >
 <!ELEMENT addBackOfficeCode EMPTY>
 <!ATTLIST addBackOfficeCode backOfficeCode CDATA #REQUIRED >
 <!ELEMENT authorise EMPTY>
 <!ATTLIST authorise authorisationCode CDATA #REQUIRED >
 <!ELEMENT increaseAuthorisation (amount)>
 
+
+<!-- CHILD ELEMENTS OF DEFEND ELEMENT -->
+<!-- ====================================== -->
+<!ELEMENT disputeDefence  (#PCDATA )>
+
+<!-- OPTIONAL CHILD ELEMENTS OF REFUND ELEMENT -->
+<!-- ====================================== -->
+<!ELEMENT reason  (#PCDATA )>
+
 <!-- CHILD ELEMENTS OF ORDERINQUIRY ELEMENT -->
 <!-- ====================================== -->
 <!ELEMENT cardSearch	(startDate )>
 <!ATTLIST cardSearch	cardNumber NMTOKEN  #REQUIRED >
 <!ELEMENT dateSearch	(fromDate, untilDate )>
+<!ATTLIST dateSearch journalTypeFilter CDATA #IMPLIED>
 <!ELEMENT creationDate	(date )>
 <!ELEMENT fromDate	(date )>
 <!ELEMENT untilDate	(date )>
@@ -1180,16 +1520,12 @@ Example of a request3DSecure message:
 <!ELEMENT authenticatedShopperID	(#PCDATA )>
 
 
-
-
 <!-- CHILD ELEMENTS OF ALL ADDRESS ELEMENTS -->
 <!-- ================================= -->
 <!ELEMENT address  (	firstName?,
 			lastName?,
-			street,
-			houseName?,
-			houseNumber?,
-			houseNumberExtension?,
+			((street, houseName?, houseNumber?, houseNumberExtension?) 
+			| (address1, address2?, address3?)),
 			postalCode,
 			city?,
 			state?,
@@ -1204,11 +1540,39 @@ Example of a request3DSecure message:
 <!ELEMENT houseName		(#PCDATA )>
 <!ELEMENT houseNumber		(#PCDATA )>
 <!ELEMENT houseNumberExtension	(#PCDATA )>
+<!ELEMENT address1			(#PCDATA )>
+<!ELEMENT address2			(#PCDATA )>
+<!ELEMENT address3			(#PCDATA )>
 <!ELEMENT postalCode		(#PCDATA )>
 <!ELEMENT city			(#PCDATA )>
 <!ELEMENT state			(#PCDATA )>
 <!ELEMENT countryCode		(#PCDATA )>
 <!ELEMENT telephoneNumber	(#PCDATA )>
+
+
+<!-- CHILD ELEMENTS OF ALL TICKET-DETAILS ELEMENTS -->  
+<!-- ================================= -->
+<!ELEMENT ticketDetails  (bookingSystemTrvl?,
+		                  isSeatSale?, 
+		                  isWithChild?, 
+		                  purchaseType?,
+			              isPackageTrvl?,
+			              isFlexTicket?, 
+			              isInsPurchased?, 
+			              secProgTrvl? )>
+			
+	
+			
+<!-- CHILD ELEMENTS OF ALL TICKET-DETAILS ELEMENTS -->  
+<!-- ================================= -->
+<!ELEMENT bookingSystemTrvl		(#PCDATA ) >   
+<!ELEMENT isSeatSale  (#PCDATA)>   
+<!ELEMENT isWithChild (#PCDATA)>
+<!ELEMENT purchaseType (#PCDATA)> 
+<!ELEMENT isPackageTrvl	(#PCDATA)>
+<!ELEMENT isFlexTicket	(#PCDATA)>    
+<!ELEMENT isInsPurchased  (#PCDATA)>
+<!ELEMENT secProgTrvl (#PCDATA)>
 
 <!-- CHILD ELEMENTS OF ALL HOTEL ELEMENTS -->
 <!-- ================================= -->
@@ -1240,8 +1604,10 @@ Example of a request3DSecure message:
 <!-- CHILD ELEMENTS OF ALL PASSENGER ELEMENTS -->
 <!-- ================================= -->
 <!-- Contains the name of a passenger  -->
-<!ELEMENT	passenger  (	#PCDATA	)>
-<!ATTLIST	passenger	code NMTOKEN #REQUIRED>
+<!ELEMENT	passenger  (#PCDATA	)>
+<!ELEMENT	isFreqFlyer   (	#PCDATA	)>
+<!ATTLIST	passenger	code NMTOKEN #REQUIRED 
+                        isFreqFlyer (0|1) #IMPLIED >
 
 <!-- CHILD ELEMENTS OF ALL TICKET ELEMENTS -->
 <!-- ================================= -->
@@ -1264,7 +1630,7 @@ Example of a request3DSecure message:
 
 <!-- CHILD ELEMENTS OF ALL ISSUER ELEMENTS -->
 <!-- ================================= -->
-<!ELEMENT issuer  (	address )>
+<!ELEMENT issuer  (	address, ticketDetails?)>
 
 <!-- CHILD ELEMENTS OF ALL FLIGHT ELEMENTS -->
 <!-- ================================= -->
@@ -1276,6 +1642,8 @@ Example of a request3DSecure message:
 					tax	)>
 <!ATTLIST flight	carrierCode NMTOKEN #REQUIRED
 					stopOverCode (0|1) #IMPLIED
+					flightCode CDATA   #IMPLIED
+					isChartered  (0|1) #IMPLIED
 					domestic     (0|1) #IMPLIED >
 
 <!-- CHILD ELEMENTS OF ALL DEPARTUREAIRPORT ELEMENTS -->
@@ -1384,6 +1752,5 @@ with the departure countryCode in case of the merchant VAT number -->
 <!ELEMENT 	destination EMPTY>
 <!ATTLIST destination 	countryCode NMTOKEN #REQUIRED
 						zipCode NMTOKEN #REQUIRED>
-
 
 

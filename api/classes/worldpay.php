@@ -236,6 +236,12 @@ class WorldPay extends Callback
 				$b .= '<include code="'. $this->getCardName($id) .'"/>';
 			}
 			$b .= '</paymentMethodMask>';
+			if (strlen($this->getTxnInfo()->getEMail() ) > 0)
+			{
+				$b .= '<shopper>';
+				$b .= '<shopperEmailAddress>'. htmlspecialchars($this->getTxnInfo()->getEMail(), ENT_NOQUOTES) .'</shopperEmailAddress>';
+				$b .= '</shopper>';
+			}
 			$b .= '</order>';
 			$b .= '</submit>';
 			$b .= '</paymentService>';

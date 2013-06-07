@@ -189,15 +189,19 @@ class PayEx extends Callback
 	 * @param 	integer $cardid		Unique ID of the Card Type that was used in the payment transaction
 	 * @param 	integer $txnid		Transaction ID from WorldPay returned in the "transact" parameter
 	 */
-	public function initialize(SOAPConnInfo &$oCI, $an, $currency)
+	public function initialize(HTTPConnInfo &$oCI, $an, $currency)
 	{
-		$obj_SOAP = new MSSoapClient($oCI->getURL(), $oCI->getOptions() );
+		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true,
+																						"exceptions" => true) );
 		switch (sLANG)
 		{
 		case "da":	// Danish
 			$lang = "da-DK";
 			break;
 		case "gb":	// British English
+			$lang = "en-US";
+			break;
+		case "us":	// American English
 			$lang = "en-US";
 			break;
 		case "no":	// Norwegian
@@ -218,24 +222,149 @@ class PayEx extends Callback
 			$lang = sLANG ."-". strtoupper(sLANG);
 			break;
 		}
-		
 		$aParams = array("accountNumber" => $an,
 						 "purchaseOperation" => "AUTHORIZATION",
 						 "price" => $this->getTxnInfo()->getAmount(),
+						 "priceArgList" => "",
 						 "currency" => $currency,
 						 "vat" => 0,
-						 "orderID" => $this->getTxnInfo()->getID(),
-						 "productNumber" => $this->getTxnInfo()->getOrderID(),
-						 "description" => "",
+						 "orderID" => $this->getTxnInfo()->getOrderID(),
+						 "productNumber" => $this->getTxnInfo()->getID(),
+						 "description" => "mPoint ID: ". $this->getTxnInfo()->getID() ." for Order No.:". $this->getTxnInfo()->getOrderID(),
 						 "clientIPAddress" => $_SERVER['REMOTE_ADDR'],
-						 "returnURL" => "http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?". session_name() ."=". session_id(),
-						 "clientLanguage" => $lang,
-						 "hash" => md5($an . "AUTHORIZATION" . $this->getTxnInfo()->getAmount() . $currency . 0 . $this->getTxnInfo()->getID() . $this->getTxnInfo()->getOrderID() . $_SERVER['REMOTE_ADDR'] ."http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?". session_name() ."=". session_id() . $lang . $oCI->getPassword() ) );
-		$obj_SOAP->Initialize7($aParams);
-		echo $obj_SOAP->__getLastRequest();
-		$obj_XML = simplexml_load_string($obj_SOAP->__getLastResponse() );
-		$obj_XML = $obj_XML->children("http://schemas.xmlsoap.org/soap/envelope/")->Body->children("http://external.payex.com/PxOrder/")->Initialize7Response;
-		$obj_XML = simplexml_load_string(htmlspecialchars_decode( (string) $obj_XML->Initialize7Result, ENT_NOQUOTES) );
+						 "clientIdentifier" => "USERAGENT=". $_SERVER['HTTP_USER_AGENT'],
+						 "additionalValues" => "",
+						 "externalID" => "",
+						 "returnUrl" => "http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?mpoint-id=". $this->getTxnInfo()->getID(),
+						 "view" => "CREDITCARD",
+						 "agreementRef" => "",
+						 "cancelUrl" => $this->getTxnInfo()->getCancelURL(),
+						 "clientLanguage" => $lang);
+		$aParams["hash"] = md5($aParams["accountNumber"] . $aParams["purchaseOperation"] . $aParams["price"] . $aParams["priceArgList"] . $aParams["currency"] . $aParams["vat"]. $aParams["orderID"] . $aParams["productNumber"] . $aParams["description"] . $aParams["clientIPAddress"] . $aParams["clientIdentifier"] . $aParams["additionalValues"] . $aParams["externalID"] . $aParams["returnUrl"] . $aParams["view"] . $aParams["agreementRef"] . $aParams["cancelUrl"] . $aParams["clientLanguage"] . $oCI->getPassword() );
+		$obj_Std = $obj_SOAP->Initialize8($aParams);
+		$obj_XML = simplexml_load_string($obj_Std->Initialize8Result);
+file_put_contents(sLOG_PATH ."/jona.log", $obj_XML->redirectUrl ."\r\n");
+		/* ----- Construct HTTP Header Start ----- */
+		$h = "GET {PATH} HTTP/1.0" .HTTPClient::CRLF;
+		$h .= "host: {HOST}" .HTTPClient::CRLF;
+		$h .= "referer: {REFERER}" .HTTPClient::CRLF;
+		$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
+		$h .= "user-agent: ". $_SERVER['HTTP_USER_AGENT'] .HTTPClient::CRLF;
+		/* ----- Construct HTTP Header End ----- */
+		$obj_ConnInfo = HTTPConnInfo::produceConnInfo( (string) $obj_XML->redirectUrl);
+		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+		$obj_HTTP->connect();
+		$code = $obj_HTTP->send($h);
+		$obj_HTTP->disConnect();
+		
+		$sCookies = "";
+		$aHiddenFields = array();
+		$sURL = "";
+		$sCardNo = "";
+		$sCVC = "";
+		$sExpiryYear = "";
+		$sExpiryMonth = "";
+		// Parse HTTP Response Headers
+		$a = explode(HTTPClient::CRLF, $obj_HTTP->getReplyHeader() );
+		foreach ($a as $str)
+		{
+			$pos = strpos($str, ":");
+			// HTTP Header
+			if ($pos > 0)
+			{
+				$name = substr($str, 0, $pos);
+				if (strtolower($name) == "set-cookie")
+				{
+					$value = trim(substr($str, $pos+1) ); 
+					$pos = strpos($value, ";");
+					if ($pos < 0) { $pos = strlen($value); }
+					$sCookies = trim(substr($value, 0, $pos) );
+				}
+			}
+		}
+		// Parse HTTP Response Body
+		$obj_DOM = DOMDocument::loadXML($obj_HTTP->getReplyBody() );
+		$aObj_Elems = array();
+		$obj_NodeList = $obj_DOM->getElementsByTagName("input");
+		foreach ($obj_NodeList as $obj_Elem)
+		{
+			$aObj_Elems[] = $obj_Elem;
+		}
+		$obj_NodeList = $obj_DOM->getElementsByTagName("select");
+		foreach ($obj_NodeList as $obj_Elem)
+		{
+			$obj_Elem->setAttribute("type", "select");
+			$aObj_Elems[] = $obj_Elem;
+		}
+		$obj_NodeList = $obj_DOM->getElementsByTagName("form");
+		foreach ($obj_NodeList as $obj_Elem)
+		{
+			$obj_Elem->setAttribute("type", "form");
+			$aObj_Elems[] = $obj_Elem;
+		}
+		foreach ($aObj_Elems as $obj_Elem)
+		{
+			$type = "";
+			$name = "";
+			$value = "";
+			for ($i=0; $i<$obj_Elem->attributes->length; $i++)
+			{
+				switch (strtolower($obj_Elem->attributes->item($i)->nodeName) )
+				{
+				case "type":
+					$type = strtolower($obj_Elem->attributes->item($i)->nodeValue);
+					break;
+				case "name":
+					$name = $obj_Elem->attributes->item($i)->nodeValue;
+					break;
+				case "value":
+				case "action":
+					$value = $obj_Elem->attributes->item($i)->nodeValue;
+					break;
+				}
+			}
+			if (empty($type) === false && (empty($name) === false || empty($value) === false) )
+			{
+				switch ($type)
+				{
+				case "hidden":
+				case "submit":
+				case "button":
+					$aHiddenFields[$name] = $value;
+					break;
+				case "text":
+				case "number":
+				case "tel":
+				case "select":
+					if (stristr($name, "CardNumber") == true) { $sCardNo = $name; }
+					elseif (stristr($name, "CVCCode") == true) { $sCVC = $name; }
+					elseif (stristr($name, "ExpireMonth") == true) { $sExpiryMonth = $name; }
+					elseif (stristr($name, "ExpireYear") == true) { $sExpiryYear = $name; }
+					break;
+				case "form":
+					if (empty($sURL) === true) { $sURL = $value; }
+					break;
+				default:	// Unsupported input type
+					break;
+				}
+			}
+		}
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
+		$xml .= '<root>';
+		$xml .= '<url method="post" content-type="application/x-www-form-urlencoded">https://'. $obj_ConnInfo->getHost() . $sURL .'</url>';
+		$xml .= '<card-number>'. htmlspecialchars($sCardNo, ENT_NOQUOTES) .'</card-number>';
+		$xml .= '<expiry-month>'. htmlspecialchars($sExpiryMonth, ENT_NOQUOTES) .'</expiry-month>';
+		$xml .= '<expiry-year>'. htmlspecialchars($sExpiryYear, ENT_NOQUOTES) .'</expiry-year>';
+		$xml .= '<cvc>'. htmlspecialchars($sCVC, ENT_NOQUOTES) .'</cvc>';
+		$xml .= '<cookies>'. htmlspecialchars($sCookies, ENT_NOQUOTES) .'</cookies>';
+		$xml .= '<hidden-fields>';
+		foreach ($aHiddenFields as $name => $value)
+		{
+			$xml .= '<'. str_replace("$", "-DOLLARSIGN-", $name) .'>'. $value .'</'. str_replace("$", "-DOLLARSIGN-", $name) .'>';
+		}
+		$xml .= '</hidden-fields>';
+		$xml .= '</root>';
+		$obj_XML = simplexml_load_string($xml);
 		
 		return $obj_XML;
 	}

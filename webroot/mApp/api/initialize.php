@@ -109,7 +109,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$data['callback-url'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->{'callback-url'};
 						$data['icon-url'] = "";
 						$data['language'] = $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}["language"];
-						$data['markup'] = "app";
+						$data['markup'] = $obj_ClientConfig->getAccountConfig()->getMarkupLanguage();
 						$obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $data);
 						// Associate End-User Account (if exists) with Transaction
 						$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, intval($obj_TxnInfo->getOperator() / 100) );
