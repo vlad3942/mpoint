@@ -117,10 +117,10 @@ class Callback extends EndUserAccount
 		$sql = "UPDATE Log.Transaction_Tbl
 				SET pspid = ". intval($pspid) .", cardid = ". intval($cid) . $sql ."
 				WHERE id = ". $this->_obj_TxnInfo->getID() ." AND (cardid IS NULL OR cardid = 0)";
-		if (intval($txnid) != -1) { $sql .= "AND (extid IS NULL OR extid = '')"; }
+		if (intval($txnid) != -1) { $sql .= " AND (extid IS NULL OR extid = '' OR extid = '". $this->getDBConn()->escStr($txnid) ."')"; }
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
-
+		
 		// Transaction completed successfully
 		if (is_resource($res) === true)
 		{
