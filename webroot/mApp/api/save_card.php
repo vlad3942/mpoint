@@ -77,7 +77,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
 						{
-							$code = $obj_mPoint->saveCardName( (float) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]);
+							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile["country-id"]);
+							$code = $obj_mPoint->saveCardName( (float) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j], false, $obj_CountryConfig);
 							
 							// Success: Card name saved
 							if ($code > 0) { $xml = '<status code="'. ($code+99) .'">Card name successfully saved</status>'; }

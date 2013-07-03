@@ -129,7 +129,7 @@ class Home extends General
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 
-		return is_array($RS)===true?$RS["ID"]:-1;
+		return is_array($RS) === true ? $RS["ID"] : -1;
 	}
 
 	/**
@@ -147,18 +147,18 @@ class Home extends General
 	 * @param	string $pwd 	Password provided by the End-User
 	 * @return	integer
 	 */
-	public function auth($id, $pwd)
+	public function auth($id, $pwd, $disable=true)
 	{
-		$sql = "SELECT id, attempts, passwd AS password, mobile
+		$sql = "SELECT id, attempts, passwd AS password, mobile, enabled
 				FROM EndUser.Account_Tbl
-				WHERE id = ". intval($id) ." AND enabled = '1'";
+				WHERE id = ". intval($id);
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 
 		if (is_array($RS) === true)
 		{
-			// Invalid logins exceeded
- 			if ($RS["ATTEMPTS"] + 1 > Constants::iMAX_LOGIN_ATTEMPTS)
+			// Invalid logins exceeded or Account disabled
+ 			if ($RS["ATTEMPTS"] + 1 > Constants::iMAX_LOGIN_ATTEMPTS || $RS["ENABLED"] === false)
 			{
 				$code = 9;
 				$iAttempts = $RS["ATTEMPTS"] + 1;
@@ -192,15 +192,18 @@ class Home extends General
 				$iAttempts = $RS["ATTEMPTS"] + 1;
 				$bEnabled = true;
 			}
-			// Update number of login attempts for End-User
-			$sql = "UPDATE EndUser.Account_Tbl
-					SET attempts = ". $iAttempts .", enabled = '". ($bEnabled === true ? "1" : "0") ."'
-					WHERE id = ". intval($id);
-//			echo $sql ."\n";
-			$this->getDBConn()->query($sql);
+			if ($disable === true)
+			{
+				// Update number of login attempts for End-User
+				$sql = "UPDATE EndUser.Account_Tbl
+						SET attempts = ". $iAttempts .", enabled = '". ($bEnabled === true ? "1" : "0") ."'
+						WHERE id = ". intval($id);
+//				echo $sql ."\n";
+				$this->getDBConn()->query($sql);
+			}
 		}
-		// Account disabled
-		else { $code = 9; }
+		// Account not found
+		else { $code = 4; }
 
 		return $code;
 	}
@@ -423,7 +426,7 @@ class Home extends General
 					 WHEN EUT.amount IS NULL THEN Txn.amount
 					 ELSE abs(EUT.amount)
 					 END) AS amount,
-					Abs(EUT.fee) AS fee, EUT.address,
+					Abs(EUT.fee) AS fee, EUT.address, EUT.message, EUT.stateid,
 					(CASE
 					 WHEN EUT.typeid = ". Constants::iPURCHASE_USING_EMONEY ." THEN Txn.ip
 					 WHEN EUT.typeid = ". Constants::iPURCHASE_USING_POINTS ." THEN Txn.ip
@@ -469,7 +472,7 @@ class Home extends General
 			// E-Money / Points Top-Up or Points Reward
 			if ($RS["TYPEID"] == Constants::iTOPUP_OF_EMONEY || $RS["TYPEID"] == Constants::iTOPUP_OF_POINTS || $RS["TYPEID"] == Constants::iREWARD_OF_POINTS)
 			{
-				$xml .= '<transaction id="'. $RS["ID"] .'"  type-id="'. $RS["TYPEID"] .'" mpoint-id="'. $RS["MPOINTID"] .'">';
+				$xml .= '<transaction id="'. $RS["ID"] .'" type-id="'. $RS["TYPEID"] .'" mpoint-id="'. $RS["MPOINTID"] .'">';
 				if ($RS["TYPEID"] == Constants::iTOPUP_OF_POINTS || $RS["TYPEID"] == Constants::iREWARD_OF_POINTS)
 				{
 					if ($RS["COUNTRYID"] == 103 || $RS["COUNTRYID"] == 200) { $seperator = ","; }
@@ -492,7 +495,7 @@ class Home extends General
 			// E-Money Transfer
 			elseif ($RS["TYPEID"] == Constants::iTRANSFER_OF_EMONEY)
 			{
-				$xml .= '<transaction id="'. $RS["ID"] .'"  type-id="'. $RS["TYPEID"] .'">';
+				$xml .= '<transaction id="'. $RS["ID"] .'" type-id="'. $RS["TYPEID"] .'" state-id="'. $RS["STATEID"] .'">';
 				$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $RS["AMOUNT"] .'</amount>';
 				$xml .= '<price>'. General::formatAmount($this->_obj_CountryConfig, $RS["AMOUNT"]) .'</price>';
 				$xml .= '<fee country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $RS["FEE"] .'</fee>';
@@ -509,6 +512,7 @@ class Home extends General
 				$xml .= '<email>'. htmlspecialchars($RS["TO_EMAIL"], ENT_NOQUOTES) .'</email>';
 				$xml .= '</to>';
 				$xml .= '<timestamp>'. gmdate("Y-m-d H:i:sP", $RS["TIMESTAMP"]) .'</timestamp>';
+				$xml .= '<message>'. htmlspecialchars($RS["MESSAGE"], ENT_NOQUOTES) .'</message>';
 				$xml .= '</transaction>';
 			}
 			// E-Money Purchase or Card / Premium SMS based purchase associated with the End-User account
@@ -742,8 +746,22 @@ class Home extends General
 				SET mobile_verified = true
 				WHERE id = ". intval($id);
 //		echo $sql ."\n";
+
+		if (is_resource($this->getDBConn()->query($sql) ) === true)
+		{
+			$sql = "UPDATE EndUser.Transaction_Tbl
+					SET stateid = ". Constants::iTRANSACTION_COMPLETED_STATE ."
+					WHERE toid = ". intval($id) ." AND stateid = ". Constants::iTRANSFER_PENDING_STATE;
+//			echo $sql ."\n";
+			if (is_resource($this->getDBConn()->query($sql) ) === true)
+			{
+				$code = 10;
+			}
+			else { $code = 2; }
+		}
+		else { $code = 1; }
 		
-		return is_resource($this->getDBConn()->query($sql) ) === true ? 10 : 1;
+		return $code;
 	}
 }
 ?>

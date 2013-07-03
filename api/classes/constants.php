@@ -410,5 +410,9 @@ abstract class Constants
 	 *
 	 */
 	const iWITHDRAWAL_FEE = 3;
+
+	const iTRANSACTION_COMPLETED_STATE = 1800;
+	const iTRANSFER_PENDING_STATE = 1808;
+	const iTRANSFER_CANCELLED_STATE = 1809;
 }
 ?>

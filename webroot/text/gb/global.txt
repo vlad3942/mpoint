@@ -1376,15 +1376,15 @@ Please use password: {PASSWORD} for future purchases with your stored card.
 Kind Regards
 {CLIENT} @@@
 
-#: /api/classes/general.php:395
+#: /api/classes/general.php:402
 msgid @@@ Loading... @@@
 msgstr @@@ Loading... @@@
 
-#: /api/classes/general.php:677
+#: /api/classes/general.php:684
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ Welcome to {CLIENT}, please activate the link below @@@
 
-#: /api/classes/general.php:683
+#: /api/classes/general.php:690
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Welcome to {CLIENT} @@@
 
@@ -1437,19 +1437,19 @@ We recommend that you contact this customer directly and complete the payment pr
 
 Thank you for using SurePay @@@
 
-#: /api/classes/transfer.php:222
+#: /api/classes/transfer.php:45
 msgid @@@ mPoint - New Account SMS @@@
 msgstr @@@ You've received a transfer of {AMOUNT} from {SENDER}.
-Please create an account at {DOMAIN} entering transfer code: {CODE} or click the link below to complete your registration directly from your mobile phone.
+Please download the App by clicking the link below and enter transfer code: {CODE} when you complete your registration.
 {URL}
 Kind Regards
-mPoint @@@
+{CLIENT} @@@
 
-#: /api/classes/transfer.php:259
+#: /api/classes/transfer.php:81
 msgid @@@ mPoint - New Account E-Mail Subject @@@
 msgstr @@@ You've received a transfer of {AMOUNT} from {SENDER} @@@
 
-#: /api/classes/transfer.php:262
+#: /api/classes/transfer.php:84
 msgid @@@ mPoint - New Account E-Mail Body @@@
 msgstr @@@ You've received a transfer of {AMOUNT} from {SENDER}.
 Please activate the link below to complete your registration
@@ -1457,7 +1457,7 @@ Please activate the link below to complete your registration
 Kind Regards
 mPoint @@@
 
-#: /api/classes/transfer.php:292
+#: /api/classes/transfer.php:113
 msgid @@@ mPoint - Confirmation Code @@@
 msgstr @@@ Please enter the confirmation code: {CODE} on the website to authenticate your transfer.
 The code will automatically expire in an hour. @@@

@@ -307,13 +307,13 @@ class EndUserAccount extends Home
 	 * @param 	boolean $pref	Boolean flag indicating whether a new card should be set as preferred (defaults to false)
 	 * @return	integer
 	 */
-	public function saveCardName($addr, $cardid, $name, $pref=false)
+	public function saveCardName($addr, $cardid, $name, $pref=false,  CountryConfig &$oCC=null)
 	{
-		$iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr);
+		$iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, $oCC);
 		$iStatus = 0;
 		if ($iAccountID == -1 && $this->getClientConfig()->getStoreCard() > 3)
 		{
-			$iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, false);
+			$iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, $oCC, false);
 		}
 		
 		// Set name for card

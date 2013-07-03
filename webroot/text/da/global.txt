@@ -1368,15 +1368,15 @@ For at betale med dit gemte kort i fremtiden skal du bruge kodeordet: {PASSWORD}
 MVH.
 {CLIENT} @@@
 
-#: /api/classes/general.php:395
+#: /api/classes/general.php:402
 msgid @@@ Loading... @@@
 msgstr @@@ Henter... @@@
 
-#: /api/classes/general.php:677
+#: /api/classes/general.php:684
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ Velkommen til {CLIENT}, aktiver venligst nedenstående link @@@
 
-#: /api/classes/general.php:683
+#: /api/classes/general.php:690
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Velkommen til {CLIENT} @@@
 
@@ -1429,19 +1429,19 @@ Vi anbefaler at kunden kontaktes og betalingen færddigøres manuelt.
 
 Tak fordi i benytter SurePay @@@
 
-#: /api/classes/transfer.php:222
+#: /api/classes/transfer.php:45
 msgid @@@ mPoint - New Account SMS @@@
 msgstr @@@ Du har modtaget en overførsel på {AMOUNT} fra {SENDER}.
-Opret venligst en konto på {DOMAIN} og angiv overførselskoden: {CODE} eller klik på nedenstående link for at færdiggøre registrering direkte på din mobiltelefon.
+Klik på nedenstående link for at downloade vore App og angiv overførselskode: {CODE} når du færdiggører din registrering.
 {URL}
 Med Venlig Hilsen
-mPoint @@@
+{CLIENT} @@@
 
-#: /api/classes/transfer.php:259
+#: /api/classes/transfer.php:81
 msgid @@@ mPoint - New Account E-Mail Subject @@@
 msgstr @@@ Du har modtaget en overførsel på {AMOUNT} fra {SENDER} @@@
 
-#: /api/classes/transfer.php:262
+#: /api/classes/transfer.php:84
 msgid @@@ mPoint - New Account E-Mail Body @@@
 msgstr @@@ Du har modtaget en overførsel på {AMOUNT} fra {SENDER}.
 Klik venligst på nedenstående link for at færdiggøre din registrering
@@ -1449,7 +1449,7 @@ Klik venligst på nedenstående link for at færdiggøre din registrering
 Med Venlig Hilsen
 mPoint @@@
 
-#: /api/classes/transfer.php:292
+#: /api/classes/transfer.php:113
 msgid @@@ mPoint - Confirmation Code @@@
 msgstr @@@ Indtast venligst følgende overførsels kode: {CODE} på websitet for at bekræfte din overførsel.
 Koden vil automatisk udløbe om en time. @@@

@@ -76,7 +76,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					if (count($aMsgCds) == 0)
 					{
 						$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->verify[$i]->{'client-info'}->mobile["country-id"]);
-						$iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, (float) $obj_DOM->verify[$i]->{'client-info'}->mobile, $obj_CountryConfig);
+						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->verify[$i]->{'client-info'}->mobile, $obj_CountryConfig);
+						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, (float) $obj_DOM->verify[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
 						$code = $obj_mPoint->activateCode($iAccountID, (integer) $obj_DOM->verify[$i]->{'one-time-password'});
 						
 						if ($code == 10)

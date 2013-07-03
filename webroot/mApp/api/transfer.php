@@ -23,9 +23,10 @@ require_once(sAPI_CLASS_PATH ."simpledom.php");
 // Require the PHP API for handling the connection to GoMobile
 require_once(sAPI_CLASS_PATH ."/gomobile.php");
 
+// Require Business logic for the End-User Account Component
+require_once(sCLASS_PATH ."/enduser_account.php");
 // Require Business logic for the E-Money Transfer component
 require_once(sCLASS_PATH ."/transfer.php");
-
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 
@@ -41,12 +42,12 @@ $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
 $HTTP_RAW_POST_DATA .= '<transfer client-id="10007" account="100007">';
 $HTTP_RAW_POST_DATA .= '<amount country-id="100">1000</amount>';
-//$HTTP_RAW_POST_DATA .= '<mobile country-id="100">28880019</mobile>';
-$HTTP_RAW_POST_DATA .= '<email>oksana.zubko@gmail.com</email>';
-$HTTP_RAW_POST_DATA .= '<password>oisJona</password>';
+$HTTP_RAW_POST_DATA .= '<mobile country-id="100">28882861</mobile>';
+//$HTTP_RAW_POST_DATA .= '<email>oksana.zubko123@gmail.com</email>';
+$HTTP_RAW_POST_DATA .= '<password>oisJona1</password>';
 $HTTP_RAW_POST_DATA .= '<message>test message</message>';
 $HTTP_RAW_POST_DATA .= '<client-info platform="iOS" version="1.00" language="da">';
-$HTTP_RAW_POST_DATA .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
+$HTTP_RAW_POST_DATA .= '<mobile country-id="100" operator-id="10000">28880019</mobile>';
 $HTTP_RAW_POST_DATA .= '<email>jona@oismail.com</email>';
 $HTTP_RAW_POST_DATA .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
 $HTTP_RAW_POST_DATA .= '</client-info>';
@@ -81,7 +82,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
 					
 					$obj_mPoint = new Transfer($_OBJ_DB, $_OBJ_TXT, $obj_CountryConfig);
-					$iSenderAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->transfer[$i]->{'client-info'}->mobile);
+					$iSenderAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->transfer[$i]->{'client-info'}->mobile, $obj_CountryConfig);
+					if ($iSenderAccountID < 0 && count($obj_DOM->transfer[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->transfer[$i]->{'client-info'}->email, $obj_CountryConfig); }
+					if ($iSenderAccountID < 0) { $iSenderAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->transfer[$i]->{'client-info'}->mobile); }
 					if ($iSenderAccountID < 0) { $iSenderAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->transfer[$i]->{'client-info'}->email); }
 					
 					if ($obj_Validator->valPassword( (string) $obj_DOM->transfer[$i]->password) < 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->transfer[$i]->password) + 20; }
@@ -148,13 +151,56 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$iRecipientAccountID = -1;
 								if (count($obj_DOM->transfer[$i]->mobile) == 1)
 								{
-									$iRecipientAccountID = $obj_mPoint->getAccountID(CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->transfer[$i]->mobile["country-id"]), (string) $obj_DOM->transfer[$i]->mobile);
+									$obj_Cfg = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->transfer[$i]->mobile["country-id"]);
+									$iRecipientAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, (float) $obj_DOM->transfer[$i]->mobile, $obj_Cfg);
+									if ($iRecipientAccountID < 0) { $iRecipientAccountID = $obj_mPoint->getAccountID($obj_Cfg, (float) $obj_DOM->transfer[$i]->mobile); }
 								}
 								elseif (count($obj_DOM->transfer[$i]->email) == 1)
 								{
 									$iRecipientAccountID = $obj_mPoint->getAccountID($obj_CC, (string) $obj_DOM->transfer[$i]->email);
 								}
-								
+								$code = 0;
+								// Recipient doesn't yet have an account
+								if ($iRecipientAccountID <= 0)
+								{
+									// Recipient's Mobile Number provided by sender
+									if (count($obj_DOM->transfer[$i]->mobile) == 1)
+									{
+										$mob = (string) $obj_DOM->transfer[$i]->mobile;
+										$email = "";
+									}
+									// Recipient's E-Mail Address provided by sender
+									elseif (count($obj_DOM->transfer[$i]->email) == 1)
+									{
+										$mob = "";
+										$email = (string) $obj_DOM->transfer[$i]->email;
+									}
+									$iRecipientAccountID = $obj_mPoint->newAccount($obj_CountryConfig->getID(), $mob, "", $email);
+									// Account successfully created - send notification SMS to recipient
+									if ($iRecipientAccountID > 0 && empty($mob) === false)
+									{
+										// Send Account Creation notification via SMS
+										if ($obj_mPoint->sendNewAccountSMS(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_ClientConfig, $iRecipientAccountID, $obj_AccountXML, $iAmountReceived) == 10)
+										{
+											$code = 1;
+										}
+										// Error: Unable to send Account Creation notification via SMS
+										else { $code = -3; }
+									}
+									// Account successfully created - send notification E-Mail to recipient
+									elseif ($iRecipientAccountID > 0)
+									{
+										// Send Account Creation notification via E-Mail
+										if ($obj_mPoint->sendNewAccountEMail($iRecipientAccountID, $obj_AccountXML, $iAmountReceived) == 10)
+										{
+											$code = 2;
+										}
+										// Error: Unable to send Account Creation notification via E-Mail
+									else { $code = -3; }
+									}
+									// Error: Unable to create new account
+									else { $iAmountReceived = -6; }
+								}
 								// Currency conversion successful for Amount - Verify that recipient's balance doesn't exceed allowed amount
 								if ($iRecipientAccountID > 0 && $iAmountReceived > 0)
 								{
@@ -163,28 +209,28 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									{
 										$iAmountReceived = -5;
 									}
-								}
-								if ($iAmountReceived > 0)
-								{
-									$obj_XML = simplexml_load_string($obj_mPoint->getFees(Constants::iTRANSFER_FEE, $obj_CC->getID() ) );
-									$obj_XML = $obj_XML->xpath("/fees/item[@toid = ". $obj_CC->getID() ."]");
-									$obj_XML = $obj_XML[0];
-									if (intval($obj_XML->basefee) + intval($obj_DOM->transfer[$i]->amount) * floatval($obj_XML->share) > intval($obj_XML->minfee) ) { $iFee = intval($obj_XML->basefee) + intval($obj_DOM->transfer[$i]->amount) * floatval($obj_XML->share); }
-									else { $iFee = (integer) $obj_XML->minfee; }
-									$code = $obj_mPoint->makeTransfer($iRecipientAccountID, $iSenderAccountID, $iAmountReceived, $iAmountSent, $iFee, (string) $obj_DOM->transfer[$i]->message);
-									if ($code == 10) { $xml = '<status code="100">Success</status>'; }
+									if ($iAmountReceived > 0)
+									{
+										$obj_XML = simplexml_load_string($obj_mPoint->getFees(Constants::iTRANSFER_FEE, $obj_CC->getID() ) );
+										$obj_XML = $obj_XML->xpath("/fees/item[@toid = ". $obj_CC->getID() ."]");
+										$obj_XML = $obj_XML[0];
+										if (intval($obj_XML->basefee) + intval($obj_DOM->transfer[$i]->amount) * floatval($obj_XML->share) > intval($obj_XML->minfee) ) { $iFee = intval($obj_XML->basefee) + intval($obj_DOM->transfer[$i]->amount) * floatval($obj_XML->share); }
+										else { $iFee = (integer) $obj_XML->minfee; }
+										$c = $obj_mPoint->makeTransfer($iRecipientAccountID, $iSenderAccountID, $iAmountReceived, $iAmountSent, $iFee, (string) $obj_DOM->transfer[$i]->message, $code > 0 ? Constants::iTRANSFER_PENDING_STATE : Constants::iTRANSACTION_COMPLETED_STATE);
+										if ($c == 10) { $xml = '<status code="'. ($code + 100) .'">Success</status>'; }
+										else
+										{
+											header("HTTP/1.1 500 Internal Server Error");
+									
+											$xml = '<status code="'. ($c+97) .'" />';
+										}
+									}
 									else
 									{
 										header("HTTP/1.1 500 Internal Server Error");
-										
-										$xml = '<status code="'. ($code+97) .'" />';
+									
+										$xml = '<status code="'. (abs($iAmountReceived)+90) .'" />';
 									}
-								}
-								else
-								{
-									header("HTTP/1.1 500 Internal Server Error");
-										
-									$xml = '<status code="'. (abs($iAmountReceived)+90) .'" />';
 								}
 							}
 							// Authentication failed

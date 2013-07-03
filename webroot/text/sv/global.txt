@@ -1348,15 +1348,15 @@ Please use password: {PASSWORD} for future purchases with your stored card.
 Kind Regards
 {CLIENT} @@@
 
-#: /api/classes/general.php:395
+#: /api/classes/general.php:402
 msgid @@@ Loading... @@@
 msgstr @@@ Loading... @@@
 
-#: /api/classes/general.php:677
+#: /api/classes/general.php:684
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ Välkommen till {CLIENT}, klicka på länken nedan @@@
 
-#: /api/classes/general.php:683
+#: /api/classes/general.php:690
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Välkommen till {CLIENT} @@@
 
@@ -1404,19 +1404,19 @@ Orderdatum: {TIMESTAMP}
 
 We rekommenderar att ni kontaktar den här kunden manuellt för att slutföra köpet. @@@
 
-#: /api/classes/transfer.php:222
+#: /api/classes/transfer.php:45
 msgid @@@ mPoint - New Account SMS @@@
 msgstr @@@ mPoint - New Account SMS @@@
 
-#: /api/classes/transfer.php:259
+#: /api/classes/transfer.php:81
 msgid @@@ mPoint - New Account E-Mail Subject @@@
 msgstr @@@ mPoint - New Account E-Mail Subject @@@
 
-#: /api/classes/transfer.php:262
+#: /api/classes/transfer.php:84
 msgid @@@ mPoint - New Account E-Mail Body @@@
 msgstr @@@ mPoint - New Account E-Mail Body @@@
 
-#: /api/classes/transfer.php:292
+#: /api/classes/transfer.php:113
 msgid @@@ mPoint - Confirmation Code @@@
 msgstr @@@ mPoint - Confirmation Code @@@
 

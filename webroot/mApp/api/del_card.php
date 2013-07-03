@@ -18,12 +18,15 @@
 // Require Global Include File
 require_once("../../inc/include.php");
 
+// Require the PHP API for handling the connection to GoMobile
+require_once(sAPI_CLASS_PATH ."/gomobile.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 
+// Require Business logic for the End-User Account Component
+require_once(sCLASS_PATH ."/enduser_account.php");
 // Require Business logic for the My Account component
 require_once(sCLASS_PATH ."/my_account.php");
-
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 
@@ -77,7 +80,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$obj_Validator = new Validate($obj_CountryConfig);
 						$aMsgCds = array();
 				
-						$iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->mobile);
+						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig);
+						if ($iAccountID < 0 && count($obj_DOM->{'delete-card'}[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
+						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->mobile); }
 						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->email); }
 						if ($obj_Validator->valPassword( (string) $obj_DOM->{'delete-card'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'delete-card'}[$i]->password) + 20; }
 						if ($obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'delete-card'}[$i]->card) != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'delete-card'}[$i]->card) + 40; }
@@ -91,7 +96,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							{
 								// Generate new security token
 								if ($code == 11) { setcookie("token", General::genToken($iAccountID, $obj_ClientConfig->getSecret() ) ); }
-								$code = $obj_mPoint->auth($iAccountID, (string) $obj_DOM->{'delete-card'}[$i]->password);
+								$code = $obj_mPoint->auth($iAccountID, (string) $obj_DOM->{'delete-card'}[$i]->password, false);
 								// Authentication succeeded
 								if ($code == 10)
 								{

@@ -20,10 +20,11 @@ require_once("../../inc/include.php");
 
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
-
 // Require the PHP API for handling the connection to GoMobile
 require_once(sAPI_CLASS_PATH ."/gomobile.php");
 
+// Require Business logic for the End-User Account Component
+require_once(sCLASS_PATH ."/enduser_account.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 
@@ -31,22 +32,22 @@ $aMsgCds = array();
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
-/*
-$_SERVER['PHP_AUTH_USER'] = "1415";
-$_SERVER['PHP_AUTH_PW'] = "Ghdy4_ah1G";
+
+$_SERVER['PHP_AUTH_USER'] = "CPMDemo";
+$_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<login client-id="10019" account="100026">';
+$HTTP_RAW_POST_DATA .= '<login client-id="10007" account="100007">';
 $HTTP_RAW_POST_DATA .= '<password>oisJona1</password>';
 $HTTP_RAW_POST_DATA .= '<client-info language="us" version="1.00" platform="iOS" app-id="5">';
-$HTTP_RAW_POST_DATA .= '<mobile country-id="100">28882861</mobile>';
+$HTTP_RAW_POST_DATA .= '<mobile country-id="100">28880019</mobile>';
 $HTTP_RAW_POST_DATA .= '<email>jona@oismailc.om</email>';
 $HTTP_RAW_POST_DATA .= '<device-id>85ce3843c0a068fb5cb1e76156fdd719</device-id>';
 $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</login>';
 $HTTP_RAW_POST_DATA .= '</root>';
-*/
+
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
@@ -80,8 +81,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					// Input valid
 					if (count($aMsgCds) == 0)
 					{
-						$iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->login[$i]->{'client-info'}->mobile, $obj_ClientConfig->getID() );
-						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->login[$i]->{'client-info'}->email, $obj_ClientConfig->getID() ); }
+						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->login[$i]->{'client-info'}->mobile, $obj_CountryConfig);
+						if ($iAccountID < 0 && count($obj_DOM->login[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->login[$i]->{'client-info'}->email, $obj_CountryConfig); }
+						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->login[$i]->{'client-info'}->mobile, $obj_ClientConfig->getID() ); }
+						if ($iAccountID < 0 && count($obj_DOM->login[$i]->{'client-info'}->email) == 1) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->login[$i]->{'client-info'}->email, $obj_ClientConfig->getID() ); }
 						$code = $obj_mPoint->auth($iAccountID, (string) $obj_DOM->login[$i]->password);
 						// Authentication succeeded
 						if ($code == 10)

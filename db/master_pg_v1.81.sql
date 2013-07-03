@@ -24,6 +24,11 @@ GRANT SELECT ON TABLE Public.DUAL TO mpoint;
 ALTER TABLE EndUser.Account_Tbl ADD mobile_verified BOOL DEFAULT false;
 ALTER TABLE EndUser.Account_Tbl ADD externalid VARCHAR(50);
 ALTER TABLE EndUser.Transaction_Tbl ADD message TEXT;
+ALTER TABLE EndUser.Transaction_Tbl ADD stateid INTEGER DEFAULT 1800;
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1800, 'Transaction Completed', 'Wallet', '');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1808, 'Transfer Pending', 'Transfer', 'makeTransfer');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1809, 'Transfer Cancelled', 'Transfer', 'cancelTransfer');
+ALTER TABLE EndUser.Transaction_Tbl ADD CONSTRAINT Transaction2State_FK FOREIGN KEY (stateid) REFERENCES Log.State_Tbl ON UPDATE CASCADE ON DELETE RESTRICT;
 /* ==================== ENDUSER SCHEMA END ==================== */
 
 /* ==================== SYSTEM SCHEMA START ==================== */
