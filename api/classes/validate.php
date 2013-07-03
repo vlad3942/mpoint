@@ -811,61 +811,194 @@ class Validate
 		return $code;
 	}
 	
-		/**
-		 * Validates the entered CPR number from the user the validations are calulatet using 
-		 * the formular provided by http://cpr.dk/ thereby using a fomular without modulus as this was discarded in 2007.
-		 *
-		 * 	 1. invaled cpr number
-		 * 	10. Success
-		 *
-		 * @param 	cpr1 		the first 8 numbers of the CPR number that the user has entered for validation
-		 */
-		public function valCpr($cpr1, $cpr2)
-		{
+	/**
+	 * Validates the entered CPR number from the user the validations are calulatet using 
+	 * the formular provided by http://cpr.dk/ thereby using a fomular without modulus as this was discarded in 2007.
+	 *
+	 * 	 1. invaled cpr number
+	 * 	10. Success
+	 *
+	 * @param 	cpr1 		the first 8 numbers of the CPR number that the user has entered for validation
+	 */
+	public function valCpr($cpr1, $cpr2)
+	{
 		$valid = true;
-			if (!preg_match('/^[0-9]{6}$/', $cpr1) || !preg_match('/^[0-9]{4}$/', $cpr2)) {
+		if (!preg_match('/^[0-9]{6}$/', $cpr1) || !preg_match('/^[0-9]{4}$/', $cpr2) == false)
+		{
+			$valid = false;
+		}
+		if ($valid === true)
+		{
+			$dd = substr($cpr1, 0, 2);
+			$mm = substr($cpr1, 2, 2);
+			$yy = substr($cpr1, 4, 2);
+			if (checkdate($mm, $dd, 1800 + $yy) == false && checkdate($mm, $dd, 1900 + $yy) == false
+				&& checkdate($mm, $dd, 2000 + $yy) == false)
+			{
 				$valid = false;
 			}
-			if ($valid) {
-				$dd = substr($cpr1, 0, 2);
-				$mm = substr($cpr1, 2, 2);
-				$yy = substr($cpr1, 4, 2);
-				if (!checkdate($mm, $dd, 1800 + $yy) && !checkdate($mm, $dd, 1900 + $yy)
-					&& !checkdate($mm, $dd, 2000 + $yy)) {
-					$valid = false;
-				}
+		}
+		if ($valid === true)
+		{
+			$a = str_split($cpr1 . $cpr2, 1);
+			$sum = $a[0] * 4 + $a[1] * 3 + $a[2] * 2 + $a[3] * 7 + $a[4] * 6 + $a[5] * 5 + $a[6] * 4 + $a[7] * 3 + $a[8] * 2 + $a[9];
+			if ($sum % 11 == 0)
+			{
+				$valid = true;
 			}
-			if ($valid) {
-				$a = str_split($cpr1 . $cpr2, 1);
-				$sum = $a[0] * 4 + $a[1] * 3 + $a[2] * 2 + $a[3] * 7 + $a[4] * 6 + $a[5] * 5 + $a[6] * 4 + $a[7] * 3 + $a[8] * 2 + $a[9];
-				if ($sum % 11 == 0) {
-					$valid = true;
-				} else {
-					$valid = false;
-				}
-			}
-		
-			if (!$valid) {
-		$code =1;
-		
-			}
-			 else {
-		$code = 10;
-			}
-				return $code;
+			else { $valid = false; }
 		}
 	
+		if ($valid === false) { $code = 1; }
+		else { $code = 10; }
 		
-		
-	public function valFullname($fullname)
-	{
-	if(!preg_match("/^[a-zæøåA-ZÆØÅ][a-zA-Z -\']+$/",$fullname))
-	{
-	$code = 1 ;
-	}
-	else{$code =10;}
-	return $code;
+		return $code;
 	}
 	
+	public function valFullname($fullname)
+	{
+		if(preg_match("/^[a-zæøåA-ZÆØÅ][a-zA-Z -\']+$/",$fullname) == false)
+		{
+			$code = 1;
+		}
+		else{ $code = 10; }
+		
+		return $code;
+	}
+	
+	/**
+	 * Performs basic validation ensuring that the State exists.
+	 * The method will return the following status codes:
+	 * 	 1. Undefined State
+	 * 	 2. Invalid State
+	 * 	 3. Unknown State
+	 * 	 4. State Disabled
+	 * 	 5. State not found in Country
+	 * 	10. Success
+	 *
+	 * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param 	integer $s 	Unique ID for the State that should be validated
+	 * @return 	integer
+	 */
+	public function valState(RDB &$oDB, $s)
+	{
+		switch ($this->_obj_CountryConfig->getID() )
+		{
+			case (100):	// Denmark
+			case (101):	// Sweden
+			case (102):	// Norway
+			case (103):	// UK
+			case (104):	// Finland
+				$code = 10;
+				break;
+			case (200):	// USA
+				if (empty($s) === true) { $code = 1; }	// Undefined State
+				elseif (strlen($s) != 2) { $code = 2; }	// Invalid State
+				else
+				{
+					$sql = "SELECT enabled, countryid
+						FROM System.State_Tbl
+						WHERE Upper(code) = Upper('". $oDB->escStr($s) ."')";
+					//				echo $sql ."\n";
+					$RS = $oDB->getName($sql);
+	
+					if (is_array($RS) === false) { $code = 3; }		// Unknown State
+					elseif ($RS["ENABLED"] === false) { $code = 4; }// State Disabled
+					elseif ($RS["COUNTRYID"] != 200) { $code = 5; }	// State not found in country
+					else { $code = 10; }							// Success
+				}
+				break;
+			default:	// Unknown Country
+				$code = 10;
+				break;
+		}
+	
+		return $code;
+	}
+	/**
+	 * Validates the entered Postal Code for country.
+	 * The method will return the following status code:
+	 * 	1. Postal Code is Undefined
+	 * 	2. Postal Code is too small
+	 * 	3. Postal Code is too great
+	 * 	4. Postal Code has an invalid length
+	 *  5. Postal Code is invalid
+	 *  6. Postal Code not found in database (only returned if a state is provided)
+	 *  7. Postal Code not found in state (only returned if a state is provided)
+	 * 10. Success
+	 * The method currently supports the following countries:
+	 * 	- Denmark
+	 * 	- Sweden
+	 * 	- Norway
+	 * 	- UK
+	 * 	- Finland
+	 * 	- USA
+	 *
+	 * @param 	RDB $oDB 	Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param 	string $pc 	Entered Postal Code to validate
+	 * @param	string $s	State that the Postal Code should be placed in (optional)
+	 * @return 	integer
+	 */
+	public function valPostalCode(RDB &$oDB, $pc, $s="")
+	{
+		if (empty($pc) === true) { $code = 1; }				// Undefined Postal Code
+		else
+		{
+			switch ($this->_obj_CountryConfig->getID() )
+			{
+			case (100):	// Denmark
+				if (intval($pc) < 800) { $code = 2; }		// Postal Code is too small
+				elseif (intval($pc) > 9999) { $code = 3; }	// Postal Code is too great
+				else { $code = 10; }
+				break;
+			case (101):	// Sweden
+				if (intval($pc) < 10000) { $code = 2; }		// Postal Code is too small
+				elseif (intval($pc) > 99999) { $code = 3; }	// Postal Code is too great
+				else { $code = 10; }
+				break;
+			case (102):	// Norway
+				if (intval($pc) < 100) { $code = 2; }		// Postal Code is too small
+				elseif (intval($pc) > 9999) { $code = 3; }	// Postal Code is too great
+				else { $code = 10; }
+				break;
+			case (103):	// UK
+				// Postal Code is invalid
+				if (preg_match('/(GIR 0AA|[A-PR-UWYZ]([0-9]{1,2}|([A-HK-Y][0-9]|[A-HK-Y][0-9]([0-9]|[ABEHMNPRV-Y]))|[0-9][A-HJKS-UW]) [0-9][ABD-HJLNP-UW-Z]{2})/i') == false) { $code = 5; }
+				else { $code = 10; }
+				break;
+			case (104):	// Finland
+				if (intval($pc) < 0) { $code = 2; }			// Postal Code is too small
+				elseif (intval($pc) > 99999) { $code = 3; }	// Postal Code is too great
+				elseif (strlen($pc) != 5) { $code = 4; }	// Postal Code has an invalid length
+				else { $code = 10; }
+				break;
+			case (200):	// USA
+				if (intval($pc) < 1000) { $code = 2; }		// Postal Code is too small
+				elseif (intval($pc) > 99999) { $code = 3; }	// Postal Code is too great
+				else { $code = 10; }
+				break;
+			default:	// Unknown Country
+				$code = 10;
+				break;
+			}
+			// Postal Code valid
+			if ($code == 10 && empty($s) === false && ($this->_obj_CountryConfig->getID() == 100 || $this->_obj_CountryConfig->getID() == 200) )
+			{
+/*
+				$sql = "SELECT Upper(S.code) AS code
+						FROM System.PostalCode_Tbl PC
+						INNER JOIN System.State_Tbl S ON PC.stateid = S.id AND S.enabled = true
+						WHERE S.countryid = ". $this->_obj_CountryConfig->getID() ." AND Upper(PC.code) = '". $oDB->escStr($pc) ."'";
+//				echo $sql ."\n";
+				$RS = $oDB->getName($sql);
+	
+				if (is_array($RS) === false) { $code = 6; }				// Unknown Postal Code
+				elseif ($RS["CODE"] != strtoupper($s) ) { $code = 7; }	// Postal Code not found in State
+*/
+			}
+		}
+	
+		return $code;
+	}
 }
 ?>

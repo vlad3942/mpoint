@@ -41,7 +41,7 @@ class PayEx extends Callback
 		// Client is configured to use mPoint's protocol
 		if ($this->getTxnInfo()->getClientConfig()->getMethod() == "mPoint")
 		{
-			parent::notifyClient($sid, $_post["transact"]);
+			parent::notifyClient($sid, $_post["transact"], $this->getTxnInfo()->getAmount() );
 		}
 		// Client is configured to use DIBS' protocol
 		else
@@ -401,7 +401,7 @@ class PayEx extends Callback
 		return $obj_XML;
 	}
 	
-	public static function getIDFromOrderRef(RDB &$oDB, $orderref)
+	public static function getIDFromExternalID(RDB &$oDB, $orderref)
 	{
 		$sql = "SELECT id
 				FROM Log.Transaction_Tbl
@@ -423,7 +423,7 @@ class PayEx extends Callback
 		
 		$obj_Std = $obj_SOAP->Complete($aParams);
 		$obj_XML = simplexml_load_string($obj_Std->CompleteResult);
-file_put_contents(sLOG_PATH ."/jona.log", $obj_Std->CompleteResult);
+		
 		if ($obj_XML->status->errorCode == "OK")
 		{
 			// Payment Captured
@@ -433,7 +433,12 @@ file_put_contents(sLOG_PATH ."/jona.log", $obj_Std->CompleteResult);
 			}
 			else
 			{
-				$obj_XML->status["code"] = $this->completeTransaction(Constants::iPAYEX_PSP, $or, $this->getCardID($obj_XML->paymentMethod), Constants::iPAYMENT_ACCEPTED_STATE, array("result" => $obj_Std->CompleteResult) );
+				$sql = "UPDATE Log.Transaction_Tbl
+						SET extid = NULL
+						WHERE id = ". $this->getTxnInfo()->getID();
+//				echo $sql ."\n";
+				$this->getDBConn()->query($sql);
+				$obj_XML->status["code"] = $this->completeTransaction(Constants::iPAYEX_PSP, $obj_XML->transactionNumber, $this->getCardID($obj_XML->paymentMethod), Constants::iPAYMENT_ACCEPTED_STATE, array("result" => $obj_Std->CompleteResult) );
 			}
 		}
 		else

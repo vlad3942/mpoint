@@ -31,7 +31,9 @@ require_once(sCLASS_PATH ."/callback.php");
 require_once(sCLASS_PATH ."/payex.php");
 
 header("Content-Type: text/plain");
-$obj_TxnInfo = TxnInfo::produceInfo(PayEx::getIDFromOrderRef($_OBJ_DB, $_POST['orderRef']), $_OBJ_DB);
+$id = PayEx::getIDFromExternalID($_OBJ_DB, $_POST['transactionNumber']);
+if ($id < 0) { $id = PayEx::getIDFromExternalID($_OBJ_DB, $_POST['orderRef']); } 
+$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
 $obj_mPoint = new PayEx($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 
 $obj_mPointConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), Constants::iPAYEX_PSP);
