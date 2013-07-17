@@ -307,7 +307,7 @@ class EndUserAccount extends Home
 	 * @param 	boolean $pref	Boolean flag indicating whether a new card should be set as preferred (defaults to false)
 	 * @return	integer
 	 */
-	public function saveCardName($addr, $cardid, $name, $pref=false,  CountryConfig &$oCC=null)
+	public function saveCardName($addr, $cardid, $name, $pref=false, CountryConfig &$oCC=null)
 	{
 		$iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, $oCC);
 		$iStatus = 0;
@@ -351,11 +351,12 @@ class EndUserAccount extends Home
 	 * @param 	string $email	End-User's e-mail address
 	 * @return	boolean
 	 */
-	public function saveEmail($mob, $email)
+	public function saveEmail($mob, $email, CountryConfig &$oCC=null)
 	{
+		if ( ($oCC instanceof CountryConfig) === false) { $oCC = $this->_obj_ClientConfig->getCountryConfig(); }
 		$sql = "UPDATE EndUser.Account_Tbl
 				SET email = '". $this->getDBConn()->escStr($email) ."'
-				WHERE countryid = ". $this->_obj_ClientConfig->getCountryConfig()->getID() ." AND mobile = '". floatval($mob) ."'
+				WHERE countryid = ". $oCC->getID() ." AND mobile = '". floatval($mob) ."'
 					AND (email IS NULL OR email = '') AND enabled = '1'";
 //		echo $sql ."\n";
 

@@ -37,7 +37,7 @@ class Transfer extends Home
 	 * @param	integer $amount			Total amount received
 	 * @return	integer
 	 */
-	public function sendNewAccountSMS(GoMobileConfig &$oCI, ClientConfig &$oCC, $id, SimpleXMLElement &$oSndr, $amount)
+	public function sendNewAccountSMS(GoMobileConnInfo &$oCI, ClientConfig &$oCC, $id, SimpleXMLElement &$oSndr, $amount)
 	{	
 		$oRcpt = simplexml_load_string($this->getAccountInfo($id) );
 		$obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), (integer) $oRcpt["country-id"]);

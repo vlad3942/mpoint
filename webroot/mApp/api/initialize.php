@@ -104,7 +104,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$data['device-id'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->{'device-id'};
 						$data['logo-url'] = "";
 						$data['css-url'] = "";
-						$data['accept-url'] = "";
+						$data['accept-url'] = $obj_ClientConfig->getAcceptURL();
 						$data['cancel-url'] = "";
 						$data['callback-url'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->{'callback-url'};
 						$data['icon-url'] = "";
@@ -144,6 +144,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$xml = '<client-config id="'. $obj_ClientConfig->getID() .'" account="'. $obj_ClientConfig->getAccountConfig()->getID() .'" store-card="'. $obj_ClientConfig->getStoreCard() .'" auto-capture="'. General::bool2xml($obj_ClientConfig->useAutoCapture() ) .'" mode="'. $obj_ClientConfig->getMode() .'">';
 						$xml .= '<name>'. htmlspecialchars($obj_ClientConfig->getName(), ENT_NOQUOTES) .'</name>';
 						$xml .= '<callback-url>'. htmlspecialchars($obj_ClientConfig->getCallbackURL(), ENT_NOQUOTES) .'</callback-url>';
+						$xml .= '<accept-url>'. htmlspecialchars($obj_ClientConfig->getAcceptURL(), ENT_NOQUOTES) .'</accept-url>';
 						$xml .= '</client-config>';
 						$xml .= '<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. htmlspecialchars($obj_TxnInfo->getOrderID(), ENT_NOQUOTES) .'" type-id="'. $obj_TxnInfo->getTypeID() .'" eua-id="'. $obj_TxnInfo->getAccountID() .'" language="'. $obj_TxnInfo->getLanguage() .'" auto-capture="'. General::bool2xml($obj_TxnInfo->useAutoCapture() ) .'" mode="'. $obj_TxnInfo->getMode() .'">';
 						$xml .= $obj_XML->amount->asXML();
@@ -152,6 +153,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$xml .= '<mobile country-id="'. intval($obj_TxnInfo->getOperator()/100) .'" operator-id="'. $obj_TxnInfo->getOperator() .'">'. floatval($obj_TxnInfo->getMobile() ) .'</mobile>';
 						if (trim($obj_TxnInfo->getEMail() ) != "") { $xml .= $obj_XML->email->asXML(); }
 						$xml .= $obj_XML->{'callback-url'}->asXML();
+						$xml .= $obj_XML->{'accept-url'}->asXML();
 						$xml .= '</transaction>';
 						$obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount() ) );
 						

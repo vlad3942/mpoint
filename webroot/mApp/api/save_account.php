@@ -128,7 +128,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if ($iAccountID < 0 && count($obj_DOM->{'save-account'}[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
 							if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
 							if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
-							$obj_mPoint->saveInfo($iAccountID, (string) $obj_DOM->{'save-account'}[$i]->{'first-name'}, (string)  $obj_DOM->{'save-account'}[$i]->{'last-name'});
+							if (count($obj_DOM->{'save-account'}[$i]->{'first-name'}) == 1 || count($obj_DOM->{'save-account'}[$i]->{'last-name'}) == 1)
+							{
+								$obj_mPoint->saveInfo($iAccountID, (string) $obj_DOM->{'save-account'}[$i]->{'first-name'}, (string) $obj_DOM->{'save-account'}[$i]->{'last-name'});
+							}
+							if (count($obj_DOM->{'save-account'}[$i]->{'client-info'}->email) == 1)
+							{
+								$obj_mPoint->saveEmail($obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_CountryConfig);
+							}
 							
 							// Customer Data should be imported from Client System
 							if ($obj_ClientConfig->getCustomerImportURL() != "")

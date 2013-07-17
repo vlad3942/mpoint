@@ -26,14 +26,14 @@ BEGIN
 		UPDATE EndUser.Account_Tbl
 		SET balance = (SELECT (Sum(amount) + Sum(Abs(fee) * -1) )
 					   FROM EndUser.Transaction_Tbl
-					   WHERE accountid = iAccountID AND 1000 <= typeid AND typeid <= 1003 AND enabled = true)
+					   WHERE accountid = iAccountID AND 1000 <= typeid AND typeid <= 1003 AND enabled = true AND stateid != 1809)
 		WHERE id = iAccountID;
 	-- Update available balance on EndUser's loyalty account
 	ELSIF 1004 <= iTypeID AND iTypeID <= 1007 THEN
 		UPDATE EndUser.Account_Tbl
 		SET points = (SELECT (Sum(amount) + Sum(Abs(fee) * -1) )
 					   FROM EndUser.Transaction_Tbl
-					   WHERE accountid = iAccountID AND 1004 <= typeid AND typeid <= 1007 AND enabled = true)
+					   WHERE accountid = iAccountID AND 1004 <= typeid AND typeid <= 1007 AND enabled = true AND stateid != 1809)
 		WHERE id = iAccountID;
 	END IF;
 	

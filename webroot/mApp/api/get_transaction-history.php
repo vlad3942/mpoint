@@ -78,7 +78,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'get-transaction-history'}[$i]->{'client-info'}->mobile["country-id"]);
 					if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
 					
-					$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT, $obj_CountryConfig);
+					$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig->getCountryConfig() );
 					
 					// Input valid
 					if (count($aMsgCds) == 0)
