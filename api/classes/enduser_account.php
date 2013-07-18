@@ -290,6 +290,48 @@ class EndUserAccount extends Home
 	}
 	
 	/**
+	 * This method have to functions, to either name a card or to rename a card.
+	 * With 3 params you rename the card, with 5 params the card is saved.
+	 *
+	 * For this to work it's assumed that the card info will be filled out and the card enabled by a callback from the PSP,
+	 * which is used to clear the transaction.
+	 * The method will return the following status codes:
+	 * 	0. Error - Unable to store card name
+	 * 	1. Card name successfully set for card
+	 * 	2. New card created with name
+	 *	3. Card renamed
+	 *
+	 * @see		EndUserAccount::getAccountID()
+	 * RENAME CARD:
+	 * @param 	integer $cardid ID of the Card
+	 * @param 	string $name	Card name entered by the end-user
+	 * @param 	boolean $pref	Boolean flag indicating whether a new card should be set as preferred (defaults to false)
+	 * SAVE CARD:
+	 * @param	string $addr 	End-User's mobile number or E-Mail address
+	 * @param 	integer $cardid ID of the Card Type
+	 * @param 	string $name	Card name entered by the end-user
+	 * @param 	boolean $pref	Boolean flag indicating whether a new card should be set as preferred (defaults to false)
+	 
+	 * @return	integer
+	 */
+	public function saveCardName()
+	{
+		$aArgs = func_get_args();
+		switch (count($aArgs) )
+		{
+		case 3:
+			return $this->_renameCard($aArgs[0], $aArgs[1], $aArgs[2]);
+			break;
+		case 5:
+			return $this->_saveCardName($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3], $aArgs[4]);
+			break;
+		default: 
+			return 0;
+			break;
+		}
+	}
+	
+	/**
 	 * Saves the specified Card Name for the newest card without a name which has been created recently (within the last 5 minutes).
 	 * The method will automatically create a new card and set it as inactive if no card has been created recently.
 	 * For this to work it's assumed that the card info will be filled out and the card enabled by a callback from the PSP,
@@ -307,7 +349,7 @@ class EndUserAccount extends Home
 	 * @param 	boolean $pref	Boolean flag indicating whether a new card should be set as preferred (defaults to false)
 	 * @return	integer
 	 */
-	public function saveCardName($addr, $cardid, $name, $pref=false, CountryConfig &$oCC=null)
+	private function _saveCardName($addr, $cardid, $name, $pref=false,  CountryConfig &$oCC=null)
 	{
 		$iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, $oCC);
 		$iStatus = 0;
@@ -339,6 +381,43 @@ class EndUserAccount extends Home
 			
 			if (is_resource($res) === true) { $iStatus++; }
 			else { $iStatus = 0; }
+		}
+
+		return $iStatus;
+	}
+	
+	/**
+	 * Renames the specified card.
+	 * For this to work it's assumed that the card info will be filled out and the card enabled by a callback from the PSP,
+	 * which is used to clear the transaction.
+	 * The method will return the following status codes:
+	 * 	0. Error - Unable to store card name
+	 * 	3. Card name successfully set for card
+	 *
+	 * @param 	integer $cardid ID of the Card
+	 * @param 	string $name	Card name entered by the end-user
+	 * @param 	boolean $pref	Boolean flag indicating whether a new card should be set as preferred (defaults to false)
+	 *
+	 * @return	integer
+	 */
+	private function _renameCard($cardid, $name, $pref=false)
+	{
+		$iStatus = 0;
+		
+		if ($pref == false) { $prefVal = 0;}
+		else { $prefVal = 1; }
+		
+		// Set name for card
+		$sql = "UPDATE EndUser.Card_Tbl 
+				SET name = '". $this->getDBConn()->escStr(utf8_encode($name) ) ."', preferred = '" . $prefVal . "' 
+				WHERE id = ". intval($cardid) ." AND enabled = '1'";
+//		echo $sql ."\n";
+		$res = $this->getDBConn()->query($sql);
+		if (is_resource($res) === true) { $iStatus = 3; }
+		// Card doesn't exist, so no changes were made
+		if ($this->getDBConn()->countAffectedRows($res) == 0)
+		{
+			$iStatus = 0;
 		}
 
 		return $iStatus;

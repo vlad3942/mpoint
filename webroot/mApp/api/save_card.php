@@ -72,13 +72,44 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 						$aMsgCds = array();
 						
+						if (empty($obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) === true && empty($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) === true)
+						{
+							$aMsgCds[] = 11;
+						}
+						
+						if (empty($obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) === false)
+						{
+							if ($obj_Validator->valCardTypeID($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"])  != 10) { $aMsgCds[] = $obj_Validator->valCardTypeId($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) + 20; }
+						}
+						
+						$iAccountID = -2;
+						if (empty($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) === false )
+						{
+							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile["country-id"]);
+
+							$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig);
+							if ($iAccountID < 0 && count($obj_DOM->{'save-card'}[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
+							if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
+							if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
+							
+							if ($obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["id"])  != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["id"]) + 50; }
+						}
+						
 						if ($obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]) != 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]) + 40; }
 						
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
 						{
 							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile["country-id"]);
-							$code = $obj_mPoint->saveCardName( (float) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j], false, $obj_CountryConfig);
+							
+							if (empty($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) === false)
+							{
+								$code = $obj_mPoint->saveCardName( $obj_DOM->{'save-card'}[$i]->card[$j]["id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j], (boolean) $obj_DOM->{'save-card'}[$i]->card[$j]["prefered"] );
+							}
+							else
+							{
+								$code = $obj_mPoint->saveCardName( (float) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j], false, $obj_CountryConfig);
+							}
 							
 							// Success: Card name saved
 							if ($code > 0) { $xml = '<status code="'. ($code+99) .'">Card name successfully saved</status>'; }

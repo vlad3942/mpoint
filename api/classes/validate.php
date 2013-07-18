@@ -574,6 +574,38 @@ class Validate
 
 		return $code;
 	}
+	
+	/**
+	 * Validates the type ID of a card.
+	 * The method will return the following status codes:
+	 * 	 1. Undefined Type ID
+	 * 	 2. Card type not found
+	 * 	 3. Card type disabled
+	 * 	10. Success
+	 *
+	 * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param 	integer $id 	Unique ID of the End-User's account
+	 * @param 	integer $cid 	Unique ID of the Saved Card which should be validated
+	 * @return 	integer
+	 */
+	public function valCardTypeID(RDB &$oDB, $id)
+	{
+		if (empty($id) === true) { $code = 1;}
+		else
+		{
+			$sql = "SELECT enabled 
+					FROM System.Card_Tbl 
+					WHERE id = " . intval($id);
+//			echo $sql ."\n";
+			$RS = $oDB->getName($sql);
+			
+			if (is_array($RS) === false) { $code = 2;}
+			elseif ($RS["ENABLED"] === false) { $code = 3;}
+			else { $code = 10; }
+		}
+		
+		return $code;
+	}
 
 	/**
 	 * Validates the End-User's prepaid Account
