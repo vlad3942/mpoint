@@ -104,7 +104,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							
 							if (empty($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) === false)
 							{
-								$code = $obj_mPoint->saveCardName( $obj_DOM->{'save-card'}[$i]->card[$j]["id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j], (boolean) $obj_DOM->{'save-card'}[$i]->card[$j]["prefered"] );
+								$code = $obj_mPoint->saveCardName( $obj_DOM->{'save-card'}[$i]->card[$j]["id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j], (boolean) $obj_DOM->{'save-card'}[$i]->card[$j]["preferred"] );
 							}
 							else
 							{
