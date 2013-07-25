@@ -1160,6 +1160,30 @@ msgstr @@@ fullname @@@
 msgid @@@ cpr @@@
 msgstr @@@ cpr @@@
 
+#: /webroot/pay/store.php:32
+msgid @@@ Store Card @@@
+msgstr @@@ Store Card @@@
+
+#: /webroot/pay/store.php:45
+msgid @@@ Step 2 of 3 @@@
+msgstr @@@ Step 2 of 3 @@@
+
+#: /webroot/pay/store.php:46
+msgid @@@ Would you like to store your card for future use? @@@
+msgstr @@@ Would you like to store your card for future use? @@@
+
+#: /webroot/pay/store.php:47
+msgid @@@ Yes @@@
+msgstr @@@ Yes @@@
+
+#: /webroot/pay/store.php:48
+msgid @@@ No @@@
+msgstr @@@ No @@@
+
+#: /webroot/pay/store.php:49
+msgid @@@ Cancel Payment @@@
+msgstr @@@ Cancel Payment @@@
+
 #: /webroot/pay/sys/sms.php:206
 msgid @@@ SMS Purchase - Unknown Reponse @@@
 msgstr @@@ SMS Purchase - Unknown Reponse @@@

@@ -58,6 +58,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if (array_key_exists("icon-url", $_REQUEST) === false) { $_REQUEST['icon-url'] = $obj_ClientConfig->getIconURL(); }
 	if (array_key_exists("language", $_REQUEST) === false) { $_REQUEST['language'] = $obj_ClientConfig->getLanguage(); }
 	if (array_key_exists("markup", $_REQUEST) === false) { $_REQUEST['markup'] = $obj_ClientConfig->getAccountConfig()->getMarkupLanguage(); }
+	if (array_key_exists("auth-url", $_REQUEST) === false) { $_REQUEST['auth-url'] = $obj_ClientConfig->getAuthURL(); }
 	
 	$obj_mPoint = new MobileWeb($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 	$iTxnID = $obj_mPoint->newTransaction(Constants::iPURCHASE_VIA_WEB);
@@ -78,6 +79,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if ($obj_Validator->valEMail($_REQUEST['email']) != 1 && $obj_Validator->valEMail($_REQUEST['email']) != 10) { $aMsgCds[$obj_Validator->valEMail($_REQUEST['email']) + 140] = $_REQUEST['email']; }
 	if ($obj_Validator->valURL($_REQUEST['icon-url']) > 1 && $obj_Validator->valURL($_REQUEST['icon-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['icon-url']) + 160] = $_REQUEST['icon-url']; }
 	if ($obj_Validator->valMarkupLanguage($_REQUEST['markup']) != 10) { $aMsgCds[$obj_Validator->valMarkupLanguage($_REQUEST['markup']) + 190] = $_REQUEST['markup']; }
+	if ($obj_Validator->valURL($_REQUEST['auth-url']) > 1 && $obj_Validator->valURL($_REQUEST['auth-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['auth-url']) + 200] = $_REQUEST['auth-url']; }
 	/* ========== Input Validation End ========== */
 
 	// Success: Input Valid
@@ -90,15 +92,19 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			$_REQUEST['gomobileid'] = -1;
 			$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, var_export($_REQUEST, true) );
 
+			if (array_key_exists("auth-token", $_REQUEST) === true) { $_SESSION['obj_Info']->setInfo("auth-token", $_REQUEST['auth-token']); }
 			$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $_REQUEST);
 			// Associate End-User Account (if exists) with Transaction
-			$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getMobile() );
+			$iAccountID = -1;
+			if (array_key_exists("external-id", $_REQUEST) === true) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $_REQUEST['external-id']); }
+			if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getMobile() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getMobile() ); }
 			if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getEMail() ); }
 			// Client supports global storage of payment cards
 			if ($iAccountID == -1 && $obj_ClientConfig->getStoreCard() > 3)
 			{
-				$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getMobile(), false);
-				if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getEMail(), false); }
+				if (array_key_exists("external-id", $_REQUEST) === true) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $_REQUEST['external-id'], false); }
+				if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getMobile() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getMobile(), false); }
+				if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getEMail(), false); }
 			}
 			$_SESSION['obj_TxnInfo']->setAccountID($iAccountID);
 			
@@ -154,11 +160,8 @@ if (array_key_exists(1000, $aMsgCds) === true)
 	// Start Payment Flow
 	else
 	{
-		$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getMobile() );
-		if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getEMail() ); }
-		
 		// End-User already has an account that is linked to the Client
-		if ($iAccountID > 0)
+		if ($_SESSION['obj_TxnInfo']->getAccountID() > 0)
 		{
 			$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SESSION['obj_UA']);
 			$obj_XML = simplexml_load_string($obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount() ) );

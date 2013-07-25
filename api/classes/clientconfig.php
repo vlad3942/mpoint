@@ -29,6 +29,7 @@ class ClientConfig extends BasicConfig
 	 * @var integer
 	 */
 	const iCUSTOMER_IMPORT_URL = 1;
+	const iAUTHENTICATION_URL = 2;
 	
 	/**
 	 * ID of the Flow the Client's customers have to go through in order to complete the Payment Transaction
@@ -110,6 +111,13 @@ class ClientConfig extends BasicConfig
 	 * @var string
 	 */
 	private $_sCustomerImportURL;
+	/**
+	 * Absolute URL to the external system where customer authenticated.
+	 * This is generally an existing e-Commerce site or a CRM system.
+	 *
+	 * @var string
+	 */
+	private $_sAuthenticationURL;
 	/**
 	 * Max Amount an mPoint Transaction can cost the customer for the Client
 	 *
@@ -197,7 +205,7 @@ class ClientConfig extends BasicConfig
 	 * @param 	KeywordConfig $oKC 	Configuration for the Keyword the Client uses to send messages through
 	 * @param 	string $lurl 		Absolute URL to the Client's Logo which will be displayed on all payment pages
 	 * @param 	string $cssurl 		Absolute URL to the CSS file that should be used to customising the payment pages
-	 * @param 	string $aurl 		Absolute URL where the Customer should be returned to upon successfully completing the Transaction
+	 * @param 	string $accurl 		Absolute URL where the Customer should be returned to upon successfully completing the Transaction
 	 * @param 	string $curl 		Absolute URL where the Customer should be returned to in case he / she cancels the Transaction midway
 	 * @param 	string $cburl 		Absolute URL to the Client's Back Office where mPoint should send the Payment Status to
 	 * @param 	string $iurl 		Absolute URL to the Client's My Account Icon
@@ -211,8 +219,9 @@ class ClientConfig extends BasicConfig
 	 * @param 	boolean $ac			Boolean Flag indicating whether Auto Capture should be used for the transactions
 	 * @param 	boolean $sp			Boolean Flag indicating whether the PSP's ID for the Payment should be included in the Callback
 	 * @param 	string $ciurl 		Absolute URL to the external system where customer data may be imported from. This is generally an existing e-Commerce site or a CRM system
+	 * @param 	string $aurl		Absolute URL to the external system where a customer may be authenticated. This is generally an existing e-Commerce site or a CRM system
 	 */
-	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $aurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $ciurl)
+	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $ciurl, $aurl)
 	{
 		parent::__construct($id, $name);
 
@@ -226,7 +235,7 @@ class ClientConfig extends BasicConfig
 
 		$this->_sLogoURL = trim($lurl);
 		$this->_sCSSURL = trim($cssurl);
-		$this->_sAcceptURL = trim($aurl);
+		$this->_sAcceptURL = trim($accurl);
 		$this->_sCancelURL = trim($curl);
 		$this->_sCallbackURL = trim($cburl);
 		$this->_sIconURL = trim($iurl);
@@ -245,6 +254,7 @@ class ClientConfig extends BasicConfig
 		$this->_iStoreCard = (integer) $sc;
 		
 		$this->_sCustomerImportURL = trim($ciurl);
+		$this->_sAuthenticationURL = trim($aurl);
 	}
 
 	/**
@@ -327,6 +337,13 @@ class ClientConfig extends BasicConfig
 	 * @return 	string
 	 */
 	public function getCustomerImportURL() { return $this->_sCustomerImportURL; }
+	/**
+	 * Absolute URL to the external system where customer may be authenticated.
+	 * This is generally an existing e-Commerce site or a CRM system.
+	 *
+	 * @return 	string
+	 */
+	public function getAuthenticationURL() { return $this->_sAuthenticationURL; }
 	/**
 	 * Returns the Max Amount an mPoint Transaction can cost the customer for the Client
 	 *
@@ -416,6 +433,7 @@ class ClientConfig extends BasicConfig
 		$xml .= '<callback-url>'. htmlspecialchars($this->getCallbackURL(), ENT_NOQUOTES) .'</callback-url>';
 		$xml .= '<icon-url>'. htmlspecialchars($this->getIconURL(), ENT_NOQUOTES) .'</icon-url>';
 		$xml .= '<customer-import-url>'. htmlspecialchars($this->_sCustomerImportURL, ENT_NOQUOTES) .'</customer-import-url>';
+		$xml .= '<authentication-url>'. htmlspecialchars($this->_sAuthenticationURL, ENT_NOQUOTES) .'</authentication-url>';
 		$xml .= '<sms-receipt>'. General::bool2xml($this->_bSMSReceipt) .'</sms-receipt>';
 		$xml .= '<email-receipt>'. General::bool2xml($this->_bEmailReceipt) .'</email-receipt>';
 		$xml .= '<auto-capture>'. General::bool2xml($this->_bAutoCapture) .'</auto-capture>';
@@ -445,13 +463,14 @@ class ClientConfig extends BasicConfig
 					C.id AS countryid,
 					Acc.id AS accountid, Acc.name AS account, Acc.mobile, Acc.markup,
 					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price,
-					U1.url AS customerimporturl
+					U1.url AS customerimporturl, U2.url AS authurl
 				FROM Client.Client_Tbl Cl
 				INNER JOIN System.Country_Tbl C ON Cl.countryid = C.id AND C.enabled = '1'
 				INNER JOIN Client.Account_Tbl Acc ON Cl.id = Acc.clientid AND Acc.enabled = '1'
 				INNER JOIN Client.Keyword_Tbl KW ON Cl.id = KW.clientid AND KW.enabled = '1'
 				LEFT OUTER JOIN Client.Product_Tbl P ON KW.id = P.keywordid AND P.enabled = '1'
 				LEFT OUTER JOIN Client.URL_Tbl U1 ON CL.id = U1.clientid AND U1.urltypeid = ". self::iCUSTOMER_IMPORT_URL ." AND U1.enabled = '1'
+				LEFT OUTER JOIN Client.URL_Tbl U2 ON CL.id = U2.clientid AND U2.urltypeid = ". self::iAUTHENTICATION_URL ." AND U2.enabled = '1'
 				WHERE Cl.id = ". intval($id) ." AND Cl.enabled = '1'";
 		// Use Default Keyword
 		if ($kw == -1)
@@ -469,7 +488,7 @@ class ClientConfig extends BasicConfig
 					C.id,
 					Acc.id, Acc.name, Acc.mobile, Acc.markup,
 					KW.id, KW.name,
-					U1.url";
+					U1.url, U2.url";
 		// Use Default Account
 		if ($acc == -1)
 		{
@@ -499,7 +518,7 @@ class ClientConfig extends BasicConfig
 		$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["MOBILE"], $RS["MARKUP"]);
 		$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
 		
-		return new ClientConfig($RS["CLIENTID"], utf8_decode($RS["CLIENT"]), $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $RS["CUSTOMERIMPORTURL"]);
+		return new ClientConfig($RS["CLIENTID"], utf8_decode($RS["CLIENT"]), $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $RS["CUSTOMERIMPORTURL"], $RS["AUTHURL"]);
 	}
 }
 ?>

@@ -20,15 +20,25 @@ CREATE OR REPLACE VIEW Public.DUAL AS SELECT E'Provides compatibility with Oracl
 
 GRANT SELECT ON TABLE Public.DUAL TO mpoint;
 
+/* ==================== LOG SCHEMA START ==================== */
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1800, 'Transaction Completed', 'Wallet', '');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1808, 'Transfer Pending', 'Transfer', 'makeTransfer');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1809, 'Transfer Cancelled', 'Transfer', 'cancelTransfer');
+
+ALTER TABLE Log.Transaction_Tbl ADD authurl VARCHAR(255);	-- URL where the customer may be authenticated.
+/* ==================== LOG SCHEMA END ==================== */
+
 /* ==================== ENDUSER SCHEMA START ==================== */
 ALTER TABLE EndUser.Account_Tbl ADD mobile_verified BOOL DEFAULT false;
 ALTER TABLE EndUser.Account_Tbl ADD externalid VARCHAR(50);
 ALTER TABLE EndUser.Transaction_Tbl ADD message TEXT;
 ALTER TABLE EndUser.Transaction_Tbl ADD stateid INTEGER DEFAULT 1800;
-INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1800, 'Transaction Completed', 'Wallet', '');
-INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1808, 'Transfer Pending', 'Transfer', 'makeTransfer');
-INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1809, 'Transfer Cancelled', 'Transfer', 'cancelTransfer');
 ALTER TABLE EndUser.Transaction_Tbl ADD CONSTRAINT Transaction2State_FK FOREIGN KEY (stateid) REFERENCES Log.State_Tbl ON UPDATE CASCADE ON DELETE RESTRICT;
+
+ALTER TABLE EndUser.Card_Tbl RENAME ticket TO ticket_old;
+ALTER TABLE EndUser.Card_Tbl ADD ticket VARCHAR(255);
+UPDATE EndUser.Card_Tbl SET ticket = ticket_old;
+ALTER TABLE EndUser.Card_Tbl DROP ticket_old;
 
 DROP TRIGGER Modify_Transaction ON EndUser.Transaction_Tbl;
 DROP FUNCTION Modify_EndUserTxn_Proc();
@@ -132,4 +142,10 @@ EXECUTE PROCEDURE Public.Update_Table_Proc();
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.URL_Tbl TO mpoint;
 GRANT SELECT, UPDATE, USAGE ON TABLE Client.URL_Tbl_id_seq TO mpoint;
+
+
+ALTER TABLE Client.MerchantAccount_Tbl ADD stored_card BOOL DEFAULT NULL;
+ALTER TABLE Client.MerchantAccount_Tbl DROP CONSTRAINT MerchantAccount_UQ;
+CREATE UNIQUE INDEX MerchantAccount_UQ ON Client.MerchantAccount_Tbl (clientid, pspid) WHERE stored_card IS NULL;
+CREATE UNIQUE INDEX MerchantAccount_StoredCard_UQ ON Client.MerchantAccount_Tbl (clientid, pspid, stored_card);
 /* ==================== CLIENT SCHEMA END ==================== */

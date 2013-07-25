@@ -114,7 +114,7 @@ class CreditCard extends EndUserAccount
 					AND PC.countryid = ". $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID() ."
 					AND PP.countryid = ". $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID() ."
 					AND PP.amount IN (-1, ". intval($amount) .")
-					AND C.enabled = '1'
+					AND C.enabled = '1' AND (MA.stored_card = false OR MA.stored_card IS NULL) 
 				ORDER BY C.position ASC, C.name ASC";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);

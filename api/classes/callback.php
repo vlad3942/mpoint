@@ -378,12 +378,15 @@ class Callback extends EndUserAccount
 	 * @param 	integer $pspid	Unique ID for the PSP the Merchant Account should be found for
 	 * @return 	array
 	 */
-	public function getMerchantLogin($clid, $pspid)
+	public function getMerchantLogin($clid, $pspid, $sc=false)
 	{
 		$sql = "SELECT username, passwd AS password
 				FROM Client.MerchantAccount_Tbl
 				WHERE clientid = ". intval($clid) ." AND pspid = ". intval($pspid) ." AND enabled = '1'";
+		if ($sc === true) { $sql .= " AND stored_card = '1'"; }
+		else { $sql .= " AND (stored_card = '0' OR stored_card IS NULL)"; }
 //		echo $sql ."\n";
+		
 		$RS = $this->getDBConn($sql)->getName($sql);
 
 		return is_array($RS) === true ? array_change_key_case($RS, CASE_LOWER) : array();
@@ -443,7 +446,7 @@ class Callback extends EndUserAccount
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 		
-		return is_array($RS) === true ? $RS["ID"] : -1;
+		return is_array($RS) === true && intval($RS["ID"]) > 0? $RS["ID"] : -1;
 	}	
 }
 ?>

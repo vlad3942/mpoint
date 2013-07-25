@@ -216,7 +216,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$obj_XML = $obj_XML[0];
 										if (intval($obj_XML->basefee) + intval($obj_DOM->transfer[$i]->amount) * floatval($obj_XML->share) > intval($obj_XML->minfee) ) { $iFee = intval($obj_XML->basefee) + intval($obj_DOM->transfer[$i]->amount) * floatval($obj_XML->share); }
 										else { $iFee = (integer) $obj_XML->minfee; }
-										$c = $obj_mPoint->makeTransfer($iRecipientAccountID, $iSenderAccountID, $iAmountReceived, $iAmountSent, $iFee, (string) $obj_DOM->transfer[$i]->message, $code > 0 ? Constants::iTRANSFER_PENDING_STATE : Constants::iTRANSACTION_COMPLETED_STATE);
+										$c = $obj_mPoint->makeTransfer($iRecipientAccountID, $iSenderAccountID, $iAmountReceived, $iAmountSent, $iFee, (string) $obj_DOM->transfer[$i]->message, $code == 0 ? Constants::iTRANSACTION_COMPLETED_STATE : Constants::iTRANSFER_PENDING_STATE);
 										if ($c == 10) { $xml = '<status code="'. ($code + 100) .'">Success</status>'; }
 										else
 										{

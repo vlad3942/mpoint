@@ -42,20 +42,20 @@
 				<xsl:value-of select="labels/card-name-help" /></div>
 			</div>
 			<!-- Full Name -->
-				<xsl:if test="client-config/store-card[text()='2'] or client-config/store-card[text()='4']">
-			
+			<xsl:if test="client-config/store-card[text()='2'] or client-config/store-card[text()='4']">
+		
 				<div class="mPoint_Label">
 					<xsl:value-of select="labels/full-name" />:<br />
 					<input type="text" name="fullname" value="" maxlength="50" />
 				</div>
-			
-			<!-- Cpr Number-->
+				
+				<!-- Social Security Number-->
 				<div class="mPoint_Label">
-				<xsl:value-of select="labels/cpr" />:<br />
-				<input type="text" name="cpr1" value="" size="6" maxlength="6" /> -
-				<input type="text" name="cpr2" value="" size="4" maxlength="4" />
+					<xsl:value-of select="labels/cpr" />:<br />
+					<input type="text" name="cpr1" value="" size="6" maxlength="6" /> -
+					<input type="text" name="cpr2" value="" size="4" maxlength="4" />
 				</div>
-					</xsl:if>
+			</xsl:if>
 			<div id="submit">
 				<input type="submit" value="{labels/submit}" class="mPoint_Button" />
 			</div>

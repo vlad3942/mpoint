@@ -198,7 +198,7 @@ class EndUserAccount extends Home
 			$sql = "INSERT INTO EndUser.Card_Tbl
 						(accountid, clientid, cardid, pspid, ticket, mask, expiry, preferred)
 					VALUES
-						(". $iAccountID .", ". $this->_obj_ClientConfig->getID() .", ". intval($cardid) .", ". intval($pspid) .", ". intval($ticket) .", '". $this->getDBConn()->escStr($mask) ."', '". $this->getDBConn()->escStr($exp) ."', ". $bPreferred .")";
+						(". $iAccountID .", ". $this->_obj_ClientConfig->getID() .", ". intval($cardid) .", ". intval($pspid) .", '". $this->getDBConn()->escStr($ticket) ."', '". $this->getDBConn()->escStr($mask) ."', '". $this->getDBConn()->escStr($exp) ."', ". $bPreferred .")";
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
 			
@@ -214,7 +214,7 @@ class EndUserAccount extends Home
 		else
 		{
 			$sql = "UPDATE EndUser.Card_Tbl
-					SET pspid = ". intval($pspid) .", ticket = ". intval($ticket) .",
+					SET pspid = ". intval($pspid) .", ticket = '". $this->getDBConn()->escStr($ticket) ."',
 						mask = '". $this->getDBConn()->escStr($mask) ."', expiry = '". $this->getDBConn()->escStr($exp) ."',
 						enabled = '1'
 					WHERE id = ". $RS["ID"];
@@ -442,6 +442,41 @@ class EndUserAccount extends Home
 		return is_resource($this->getDBConn()->query($sql) );
 	}
 
+	/**
+	 * Fetches the unique ID of the End-User's account from the database using the provided external id.
+	 * The account must either be available to the specific clients or globally available to all clients
+	 * as defined by the entries in database table: EndUser.CLAccess_Tbl.
+	 * This method may be called as a static method but is not defined as such because PHP doesn't support
+	 * a static function overriding a non-static method.
+	 *
+	 * @static
+	 *
+	 * @param	RDB $oDB			Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param 	ClientConfig $oClC 	Data object with the Client Configuration
+	 * @param	string $id 			The external ID
+	 * @param	boolean $strict 	Only check for an account associated with the specific client
+	 * @return	integer				Unqiue ID of the End-User's Account or -1 if no account was found
+	 */
+	public function getAccountIDFromExternalID(RDB &$oDB, ClientConfig &$oClC, $id, $strict=true)
+	{
+		$sql = "SELECT DISTINCT EUA.id
+				FROM EndUser.Account_Tbl EUA
+				LEFT OUTER JOIN EndUser.CLAccess_Tbl CLA ON EUA.id = CLA.accountid
+				WHERE EUA.externalid = '". $oDB->escStr($id) ."' AND EUA.enabled = '1'";
+		// Not a System Client
+		if ($oClC->getCountryConfig()->getID() != $oClC->getID() && $strict === true)
+		{
+			$sql .= "
+					AND (CLA.clientid = ". $oClC->getID() ." /* OR EUA.countryid = CLA.clientid */
+						 OR NOT EXISTS (SELECT id
+									    FROM EndUser.CLAccess_Tbl
+									    WHERE accountid = EUA.id) )";
+		}
+//		echo $sql ."\n";
+		$RS = $oDB->getName($sql);
+		
+		return is_array($RS) === true ? $RS["ID"] : -1;
+	}
 	/**
 	 * Fetches the unique ID of the End-User's account from the database.
 	 * The account must either be available to the specific clients or globally available to all clients
