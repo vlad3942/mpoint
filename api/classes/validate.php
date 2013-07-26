@@ -1019,7 +1019,7 @@ class Validate
 /*
 				$sql = "SELECT Upper(S.code) AS code
 						FROM System.PostalCode_Tbl PC
-						INNER JOIN System.State_Tbl S ON PC.stateid = S.id AND S.enabled = true
+						INNER JOIN System.State_Tbl S ON PC.stateid = S.id AND S.enabled = '1'
 						WHERE S.countryid = ". $this->_obj_CountryConfig->getID() ." AND Upper(PC.code) = '". $oDB->escStr($pc) ."'";
 //				echo $sql ."\n";
 				$RS = $oDB->getName($sql);

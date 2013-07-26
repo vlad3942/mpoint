@@ -87,7 +87,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if ($iAccountID < 0 && count($obj_DOM->login[$i]->{'client-info'}->email) == 1) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->login[$i]->{'client-info'}->email, $obj_ClientConfig->getID() ); }
 						$code = $obj_mPoint->auth($iAccountID, (string) $obj_DOM->login[$i]->password);
 						// Authentication succeeded
-						if ($code == 10)
+						if ($code == 10 || ($code == 11 && $obj_ClientConfig->smsReceiptEnabled() === false) )
 						{
 							if ($obj_ClientConfig->getStoreCard() == 2) { $xml .= $obj_mPoint->getAccountInfo($iAccountID); }
 							$aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID) );

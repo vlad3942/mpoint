@@ -34,7 +34,7 @@ $aMsgCds = array();
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
-
+/*
 $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
@@ -53,7 +53,7 @@ $HTTP_RAW_POST_DATA .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
 $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</transfer>';
 $HTTP_RAW_POST_DATA .= '</root>';
-
+*/
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
@@ -132,7 +132,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if ($code == 11) { setcookie("token", General::genToken($iSenderAccountID, $obj_ClientConfig->getSecret() ) ); }
 							$code = $obj_mPoint->auth($iSenderAccountID, (string) $obj_DOM->transfer[$i]->password);
 							// Authentication succeeded
-							if ($code == 10)
+							if ($code == 10 || ($code == 11 && $obj_ClientConfig->smsReceiptEnabled() === false) )
 							{
 								// National Transfer
 								$obj_CC = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->transfer[$i]->amount["country-id"]);
@@ -233,6 +233,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$xml = '<status code="'. (abs($iAmountReceived)+90) .'" />';
 									}
 								}
+							}
+							// Authentication succeeded - But Mobile number not verified
+							elseif ($code == 11)
+							{
+								header("HTTP/1.1 403 Forbidden");
+									
+								$xml = '<status code="37">Mobile number not verified</status>';
 							}
 							// Authentication failed
 							else

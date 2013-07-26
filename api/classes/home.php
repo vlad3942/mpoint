@@ -609,16 +609,17 @@ class Home extends General
 	 * @param	string $mob 	End-User's mobile number (optional)
 	 * @param 	string $pwd 	Password for the created End-User Account (optional)
 	 * @param 	string $email	End-User's e-mail address (optional)
+	 * @param 	string $cr		the Client's Reference for the Customer (optional)
 	 * @return	integer 		The unique ID of the created End-User Account
 	 */
-	public function newAccount($cid, $mob="", $pwd="", $email="")
+	public function newAccount($cid, $mob="", $pwd="", $email="", $cr="")
 	{
 		$sql = "SELECT Nextvalue('EndUser.Account_Tbl_id_seq') AS id FROM DUAL";
 		$RS = $this->getDBConn()->getName($sql);
 		$sql = "INSERT INTO EndUser.Account_Tbl
-					(id, countryid, mobile, passwd, email)
+					(id, countryid, mobile, passwd, email, externalid)
 				VALUES
-					(". $RS["ID"] .", ". intval($cid) .", ". (floatval($mob) > 0 ? "'". floatval($mob) ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". (strlen($email) > 0 ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .")";
+					(". $RS["ID"] .", ". intval($cid) .", ". (floatval($mob) > 0 ? "'". floatval($mob) ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". (strlen($email) > 0 ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .", '". $this->getDBConn()->escStr($cr) ."')";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 

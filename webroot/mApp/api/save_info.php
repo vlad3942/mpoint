@@ -139,7 +139,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if ($code == 11) { setcookie("token", General::genToken($iAccountID, $obj_ClientConfig->getSecret() ) ); }
 							if (count($obj_DOM->{'personal-info'}[$i]->password) == 1) { $code = $obj_mPoint->auth($iAccountID, (string) $obj_DOM->{'personal-info'}[$i]->password); }
 							// Authentication not required or Authentication succeeded
-							if (count($obj_DOM->{'personal-info'}[$i]->password) == 0 || $code == 10)
+							if (count($obj_DOM->{'personal-info'}[$i]->password) == 0 || $code == 10 || ($code == 11 && $obj_ClientConfig->smsReceiptEnabled() === false) )
 							{
 								if (count($obj_DOM->{'personal-info'}[$i]->{'first-name'}) == 1 || count($obj_DOM->{'personal-info'}[$i]->{'last-name'}) == 1)
 								{
@@ -176,6 +176,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$obj_mPoint->savePassword($iAccountID, (string) $obj_DOM->{'personal-info'}[$i]->{'new-password'});
 								}
 								if (empty($xml) === true) { $xml = '<status code="100">Profile Information Saved</status>'; }
+							}
+							// Authentication succeeded - But Mobile number not verified
+							elseif ($code == 11)
+							{
+								header("HTTP/1.1 403 Forbidden");
+									
+								$xml = '<status code="37">Mobile number not verified</status>';
 							}
 							// Authentication failed
 							else

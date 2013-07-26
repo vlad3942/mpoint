@@ -116,11 +116,12 @@ class EndUserAccount extends Home
 	 * @param	string $mob 	End-User's mobile number
 	 * @param 	string $pwd 	Password for the created End-User Account (optional)
 	 * @param 	string $email	End-User's e-mail address (optional)
+	 * @param 	string $cr		the Client's Reference for the Customer (optional)
 	 * @return	integer 		The unique ID of the created End-User Account
 	 */
-	public function newAccount($cid, $mob, $pwd="", $email="")
+	public function newAccount($cid, $mob, $pwd="", $email="", $cr="")
 	{
-		$iAccountID = parent::newAccount($cid, $mob, $pwd, $email);
+		$iAccountID = parent::newAccount($cid, $mob, $pwd, $email, $cr);
 
 		// Created account should only be available to Client
 		if ($iAccountID > 0 && ($this->_obj_ClientConfig->getStoreCard()&2) == 2)
@@ -174,7 +175,7 @@ class EndUserAccount extends Home
 				if (floatval($addr) > $obj_CountryConfig->getMinMobile() ) { $mob = $addr; }
 				else { $email = $addr; }
 	
-				$iAccountID = $this->newAccount(intval($oTI->getOperator()/100), $mob, "", $email);
+				$iAccountID = $this->newAccount(intval($oTI->getOperator()/100), $mob, "", $email, $oTI->getCustomerRef() );
 				$iStatus = 2;
 			}
 		} 

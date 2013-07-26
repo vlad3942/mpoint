@@ -95,11 +95,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if ($code == 11) { setcookie("token", General::genToken($iAccountID, $obj_ClientConfig->getSecret() ) ); }
 							$code = $obj_mPoint->auth($iAccountID, (string) $obj_DOM->{'save-settings'}[$i]->password, false);
 							// Authentication not required or Authentication succeeded
-							if ($code == 10)
+							if ($code == 10 || ($code == 11 && $obj_ClientConfig->smsReceiptEnabled() === false) )
 							{
 // TODO
 //								$obj_mPoint->saveSettings($iAccountID, (integer) $obj_DOM->{'save-settings'}[$i]->settings->{'auto-top-up'}->threshold, (integer) $obj_DOM->{'save-settings'}[$i]->settings->{'auto-top-up'}->amount);
 								$xml = '<status code="100">Settings saved</status>';
+							}
+							// Authentication succeeded - But Mobile number not verified
+							elseif ($code == 11)
+							{
+								header("HTTP/1.1 403 Forbidden");
+									
+								$xml = '<status code="37">Mobile number not verified</status>';
 							}
 							// Authentication failed
 							else

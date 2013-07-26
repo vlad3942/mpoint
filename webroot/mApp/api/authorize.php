@@ -118,7 +118,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							{
 								$code = $obj_mPoint->auth($obj_TxnInfo->getAccountID(), (string) $obj_DOM->{'authorize-payment'}[$i]->password);
 								// Authentication succeeded
-								if ($code == 10)
+								if ($code == 10 || ($code == 11 && $obj_ClientConfig->smsReceiptEnabled() === false) )
 								{
 									$iTypeID = intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]);
 									switch ($iTypeID)
@@ -259,6 +259,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										}
 										break;
 									}
+								}
+								// Authentication succeeded - But Mobile number not verified
+								elseif ($code == 11)
+								{
+									header("HTTP/1.1 403 Forbidden");
+										
+									$xml = '<status code="37">Mobile number not verified</status>';
 								}
 								// Authentication failed
 								else

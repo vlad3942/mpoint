@@ -97,7 +97,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if ($code == 11) { setcookie("token", General::genToken($iAccountID, $obj_ClientConfig->getSecret() ) ); }
 							$code = $obj_mPoint->auth($iAccountID, (string) $obj_DOM->cancel[$i]->password);
 							// Authentication succeeded
-							if ($code == 10)
+							if ($code == 10 || ($code == 11 && $obj_ClientConfig->smsReceiptEnabled() === false) )
 							{
 								$code = $obj_mPoint->cancelTransfer($obj_DOM->cancel[$i]->transaction);
 								if ($code == 10)
@@ -110,6 +110,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										
 									$xml = '<status code="99">Unable to cancel transfer</status>';
 								}
+							}
+							// Authentication succeeded - But Mobile number not verified
+							elseif ($code == 11)
+							{
+								header("HTTP/1.1 403 Forbidden");
+									
+								$xml = '<status code="37">Mobile number not verified</status>';
 							}
 							// Authentication failed
 							else
