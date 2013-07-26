@@ -122,7 +122,7 @@ class Home extends General
 
 		$sql = "SELECT DISTINCT A.id
 				FROM EndUser.Account_Tbl A
-				INNER JOIN EndUser.CLAccess_Tbl Acc ON A.id = Acc.accountid
+				LEFT OUTER JOIN EndUser.CLAccess_Tbl Acc ON A.id = Acc.accountid
 				WHERE A.countryid = ". $oCC->getID() ."
 					AND ". $sql ." AND A.enabled = '1'";
 		if ($clid > 0) { $sql ." AND Acc.clientid = ". intval($clid); }
@@ -149,7 +149,7 @@ class Home extends General
 	 */
 	public function auth($id, $pwd, $disable=true)
 	{
-		$sql = "SELECT id, attempts, passwd AS password, mobile, enabled
+		$sql = "SELECT id, attempts, passwd AS password, mobile, enabled, mobile_verified
 				FROM EndUser.Account_Tbl
 				WHERE id = ". intval($id);
 //		echo $sql ."\n";
@@ -167,7 +167,8 @@ class Home extends General
 			// Login successful
 			elseif ($RS["PASSWORD"] == $pwd)
 			{
-				$code = 10;
+				if ($RS["MOBILE_VERIFIED"] === true) { $code = 10; }
+				else { $code = 11; }
 				$iAttempts = 0;
 				$bEnabled = true;
 			}
@@ -417,7 +418,7 @@ class Home extends General
 	 * @param	integer $id 	Unqiue ID of the End-User's Account
 	 * @return 	string
 	 */
-	public function getTxnHistory($id, $num=-1, $offset=-1)
+	public function getTxnHistory($id, $num=0, $offset=-1)
 	{
 		// Fetch Transaction history for End-User
 		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, Extract('epoch' from EUT.created AT TIME ZONE 'Europe/Copenhagen') AS timestamp,
@@ -446,7 +447,7 @@ class Home extends General
 				LEFT OUTER JOIN System.Country_Tbl C ON Txn.countryid = C.id
 				LEFT OUTER JOIN System.Card_Tbl Card ON Txn.cardid = Card.id
 				WHERE EUT.accountid = ". intval($id);
-		if ($num > 0 && $offset <= 0)
+		if ( ($num > 0 && $offset <= 0) || $num < 0)
 		{
 			$sql .= "
 					ORDER BY EUT.id DESC";

@@ -34,7 +34,7 @@ $aMsgCds = array();
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
-/*
+
 $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
@@ -53,7 +53,7 @@ $HTTP_RAW_POST_DATA .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
 $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</transfer>';
 $HTTP_RAW_POST_DATA .= '</root>';
-*/
+
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
@@ -176,6 +176,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$email = (string) $obj_DOM->transfer[$i]->email;
 									}
 									$iRecipientAccountID = $obj_mPoint->newAccount($obj_CountryConfig->getID(), $mob, "", $email);
+									
 									// Account successfully created - send notification SMS to recipient
 									if ($iRecipientAccountID > 0 && empty($mob) === false)
 									{

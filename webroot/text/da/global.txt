@@ -1346,9 +1346,8 @@ msgstr @@@ Gennemfør Betaling @@@
 
 #: /api/classes/callback.php:67
 msgid @@@ mPoint - SMS Receipt @@@
-msgstr @@@ Tak fordi du brugte mPoint, dine ordreinformationer er:
+msgstr @@@ Tak for dit køb hos {CLIENT}, dine ordreinformationer er:
 mPoint ID: {MPOINTID}
-Sælger: {CLIENT}
 Order Nr: {ORDERID}
 Pris: {PRICE} @@@
 
@@ -1370,11 +1369,8 @@ msgstr @@@ mPoint Kvittering for Order Nr: {ORDERID} med mPoint ID: {MPOINTID} @
 
 #: /api/classes/email_receipt.php:72
 msgid @@@ E-Mail Receipt - Body @@@
-msgstr @@@ Tak fordi du brugte mPoint.
-Nedenstående er dine ordreinformationer.
-Mobilnr: {MOBILE}
+msgstr @@@ Tak for dit køb hos {CLIENT}, dine ordreinformationer er:
 mPoint ID: {MPOINTID}
-Sælger: {CLIENT}
 Ordrenr.: {ORDERID}
 Pris: {PRICE} @@@
 
@@ -1456,7 +1452,7 @@ Tak fordi i benytter SurePay @@@
 #: /api/classes/transfer.php:45
 msgid @@@ mPoint - New Account SMS @@@
 msgstr @@@ Du har modtaget en overførsel på {AMOUNT} fra {SENDER}.
-Klik på nedenstående link for at downloade vore App og angiv overførselskode: {CODE} når du færdiggører din registrering.
+Gennemfør overførslen ved at downloade applikationen som du finder på dette link:
 {URL}
 Med Venlig Hilsen
 {CLIENT} @@@

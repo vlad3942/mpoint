@@ -88,7 +88,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$code = $obj_mPoint->auth($iAccountID, (string) $obj_DOM->login[$i]->password);
 						// Authentication succeeded
 						if ($code == 10)
-						{							
+						{
 							if ($obj_ClientConfig->getStoreCard() == 2) { $xml .= $obj_mPoint->getAccountInfo($iAccountID); }
 							$aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID) );
 							$aObj_XML = $aObj_XML->xpath("/stored-cards/card[client/@id = ". $obj_ClientConfig->getID() ."]");
@@ -107,15 +107,46 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$xml .= '</stored-cards>';
 							}
 							else { $xml .= '<stored-cards />'; }
-							$xml .= $obj_mPoint->getTxnHistory($iAccountID, 5);
+							// Return last 5 transactions of each type
+							$aTypes = array(Constants::iTOPUP_OF_EMONEY ." or @type-id = ". Constants::iTOPUP_OF_POINTS, Constants::iREWARD_OF_POINTS, Constants::iTRANSFER_OF_EMONEY);
+							$obj_XML = simplexml_load_string($obj_mPoint->getTxnHistory($iAccountID, -1) );
+							$xml .= '<history account-id="'. $obj_XML["account-id"] .'">';
+							foreach ($aTypes as $id)
+							{
+								$aObj_XML = $obj_XML->xpath("/history/transaction[@type-id = ". $id ."]");
+								if (is_array($aObj_XML) === true && count($aObj_XML) > 0)
+								{
+									for ($j=0; $j<count($aObj_XML) && $j<5; $j++)
+									{
+										$xml .= $aObj_XML[$j]->asXML();
+									}
+								}
+							}
+							// Return last 5 purchase transactions
+							$aObj_XML = $obj_XML->xpath("/history/transaction[@type-id != ". Constants::iTOPUP_OF_EMONEY ." and @type-id != ". Constants::iTOPUP_OF_POINTS ." and @type-id != ". Constants::iREWARD_OF_POINTS ." and @type-id != ". Constants::iTRANSFER_OF_EMONEY ."]");
+							if (is_array($aObj_XML) === true && count($aObj_XML) > 0)
+							{
+								for ($j=0; $j<count($aObj_XML) && $j<5; $j++)
+								{
+									$xml .= $aObj_XML[$j]->asXML();
+								}
+							}
+							$xml .= '</history>';
 							setcookie("token", General::genToken($iAccountID, $obj_ClientConfig->getSecret() ) );
+						}
+						// Authentication succeeded - But Mobile number not verified
+						elseif ($code == 11)
+						{
+							header("HTTP/1.1 403 Forbidden");
+							
+							$xml = '<status code="37">Mobile number not verified</status>';
 						}
 						// Authentication failed
 						else
 						{
 							// Account disabled due to too many failed login attempts
 							if ($code == 3) { $obj_mPoint->sendAccountDisabledNotification(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_DOM->login[$i]->{'client-info'}->mobile); }
-								
+							
 							header("HTTP/1.1 403 Forbidden");
 								
 							$xml = '<status code="'. ($code+30) .'" />';
