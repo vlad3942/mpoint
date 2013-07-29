@@ -131,7 +131,26 @@ class Home extends General
 
 		return is_array($RS) === true ? $RS["ID"] : -1;
 	}
-
+	
+	public function auth()
+	{
+		$aArgs = func_get_args();
+		switch (count($aArgs) )
+		{
+		case (2):
+			return $this->_authExternal($aArgs[0], $aArgs[1]);
+			break;
+		case (3):
+			if ( ($aArgs[0] instanceof HTTPConnInfo) === true)
+			{
+				return $this->_authExternal($aArgs[0], $aArgs[1], $aArgs[2]);
+			}
+			else { return $this->_authExternal($aArgs[0], $aArgs[1], $aArgs[2]); }
+			break;
+		default:
+			break;
+		}
+	}
 	/**
 	 * Authenticates the End-User using the provided Account ID and Password.
 	 * The method will return the following status codes:
@@ -147,7 +166,7 @@ class Home extends General
 	 * @param	string $pwd 	Password provided by the End-User
 	 * @return	integer
 	 */
-	public function auth($id, $pwd, $disable=true)
+	private function _authInternal($id, $pwd, $disable=true)
 	{
 		$sql = "SELECT id, attempts, passwd AS password, mobile, enabled, mobile_verified
 				FROM EndUser.Account_Tbl
@@ -207,6 +226,27 @@ class Home extends General
 		else { $code = 4; }
 
 		return $code;
+	}
+	private function _authExternal(HTTPConnInfo &$oCI, $un, $pwd)
+	{
+		$obj_ConnInfo = new HTTPConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), "POST", "text/xml", $oCI->getUsername(), $oCI->getPassword() );
+		$b = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<root>';
+		$b .= '<login>';
+		$b .= '<username>'. htmlspecialchars($un, ENT_NOQUOTES) .'</username>';
+		$b .= '<password>'. htmlspecialchars($pwd, ENT_NOQUOTES) .'</password>';
+		$b .= '</login>';
+		$b .= '</root>';
+		
+		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+		$obj_HTTP->connect();
+		$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+		$obj_HTTP->disConnect();
+		if ($code == 200)
+		{
+			return 10;
+		}
+		else { return 1; }
 	}
 
 	/**

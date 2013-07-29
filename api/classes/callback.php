@@ -359,13 +359,16 @@ class Callback extends EndUserAccount
 	 * 
 	 * @param 	integer $clid	Unique ID of the Client whose Merchant Account should be found
 	 * @param 	integer $pspid	Unique ID for the PSP the Merchant Account should be found for
+	 * @param	boolean	$sc		Return the Merchant Login used for authorizing a stored card, defaults to false
 	 * @return 	string
 	 */
-	public function getMerchantAccount($clid, $pspid)
+	public function getMerchantAccount($clid, $pspid, $sc=false)
 	{
 		$sql = "SELECT name
 				FROM Client.MerchantAccount_Tbl
 				WHERE clientid = ". intval($clid) ." AND pspid = ". intval($pspid) ." AND enabled = '1'";
+		if ($sc === true) { $sql .= " AND stored_card = '1'"; }
+		else { $sql .= " AND (stored_card = '0' OR stored_card IS NULL)"; }
 //		echo $sql ."\n";
 		$RS = $this->getDBConn($sql)->getName($sql);
 
@@ -376,6 +379,7 @@ class Callback extends EndUserAccount
 	 * 
 	 * @param 	integer $clid	Unique ID of the Client whose Merchant Account should be found
 	 * @param 	integer $pspid	Unique ID for the PSP the Merchant Account should be found for
+	 * @param	boolean	$sc		Return the Merchant Login used for authorizing a stored card, defaults to false
 	 * @return 	array
 	 */
 	public function getMerchantLogin($clid, $pspid, $sc=false)

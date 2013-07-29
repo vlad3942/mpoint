@@ -39,7 +39,8 @@ foreach ($obj_XML->children() as $obj_Elem)
 $obj_mPoint = new WorldPay($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
 
 // Stored Card enabled and end-user hasn't made a decision as to whether to store the card or not
-if ($obj_mPoint->getTxnInfo()->getClientConfig()->getStoreCard() == 3 && array_key_exists("store-card", $_POST) === false)
+if ($obj_mPoint->getTxnInfo()->getClientConfig()->getStoreCard() == 3 && strlen($obj_mPoint->getTxnInfo()->getCustomerRef() ) > 0
+	&& array_key_exists("store-card", $_POST) === false)
 {
 	$_SESSION['obj_Info']->setInfo("psp-id", Constants::iWORLDPAY_PSP);
 	$_SESSION['obj_Info']->setInfo("account", $_POST['merchant-code']);
@@ -59,11 +60,17 @@ else
 	
 	$url = $obj_mPoint->initialize($obj_ConnInfo, $_POST['merchant-code'], $_POST['installation-id'], $_POST['currency'], $aCards);
 	$url .= "&preferredPaymentMethod=". $obj_mPoint->getCardName($_POST['cardid']) ."&language=". sLANG;
-	$url .= "&successURL=". urlencode("https://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() );
+	
 	if (array_key_exists("store-card", $_POST) === true && General::xml2bool($_POST['store-card']) === true)
 	{
 		$obj_mPoint->newMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iTICKET_CREATED_STATE);
+		if (strlen($obj_mPoint->getTxnInfo()->getAuthenticationURL() ) > 0 || $obj_mPoint->getTxnInfo()->getAccountID() > 0)
+		{
+			$url .= "&successURL=". urlencode("https://". $_SERVER['HTTP_HOST'] ."/pay/name.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&cardid=". $_POST['cardid']);
+		}
+		else { $url .= "&successURL=". urlencode("https://". $_SERVER['HTTP_HOST'] ."/pay/pwd.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&cardid=". $_POST['cardid']); }
 	}
+	else { $url .= "&successURL=". urlencode("https://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ); }
 	$url .= "&failureURL=". urlencode("https://". $_SERVER['HTTP_HOST'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=99");
 	
 	/* ----- Construct Client HTTP Header Start ----- */

@@ -51,7 +51,22 @@ if ($obj_Validator->valName($_POST['name']) > 1 && $obj_Validator->valName($_POS
 if (count($aMsgCds) == 0)
 {
 	$iStatus = $obj_mPoint->savePassword($_SESSION['obj_TxnInfo']->getMobile(), $_POST['pwd']);
-	if (strlen(@$_POST['name']) > 0) { $obj_mPoint->saveCardName($_SESSION['obj_TxnInfo']->getMobile(), $_POST['cardid'], $_POST['name'], true); }
+	if (strlen(@$_POST['name']) > 0)
+	{
+		$iAccountID = -1;
+		if ($_SESSION['obj_TxnInfo']->getAccountID() > 0) { $iAccountID = $_SESSION['obj_TxnInfo']->getAccountID(); }
+		elseif (strlen($_SESSION['obj_TxnInfo']->getCustomerRef() ) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($this->getDBConn(), $_SESSION['obj_TxnInfo']->getClientConfig(), $_SESSION['obj_TxnInfo']->getCustomerRef() ); }
+		if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getMobile() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig(), $_SESSION['obj_TxnInfo']->getMobile() ); }
+		if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig(), $_SESSION['obj_TxnInfo']->getEMail() ); }
+		// Client supports global storage of payment cards
+		if ($iAccountID == -1 && $_SESSION['obj_TxnInfo']->getClientConfig()->getStoreCard() > 3)
+		{
+			if (strlen($_SESSION['obj_TxnInfo']->getCustomerRef() ) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig(), $_SESSION['obj_TxnInfo']->getCustomerRef(), false); }
+			if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getMobile() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig(), $_SESSION['obj_TxnInfo']->getMobile(), false); }
+			if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig(), $_SESSION['obj_TxnInfo']->getEMail(), false); }
+		}
+		$iStatus = $obj_mPoint->saveCardName($iAccountID, $_POST['cardid'], $_POST['name'], true);
+	}
 	// New Account automatically created when Password was saved
 	if ($iStatus == 1 && $obj_mPoint->getClientConfig()->smsReceiptEnabled() === true)
 	{

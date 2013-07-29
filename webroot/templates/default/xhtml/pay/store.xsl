@@ -25,19 +25,22 @@
 		<br /><br />
 	</div>
 	
-	<div id="outer-border">
-		<div class="mPoint_Help"><xsl:value-of select="labels/info" /></div>
-		<div id="inner-border">		
-			<xsl:choose>
-				<!-- WorldPay -->
-				<xsl:when test="psp/@id = 4">
-					<xsl:apply-templates select="psp" mode="worldpay" />
-				</xsl:when>
-				<!-- Error -->
-				<xsl:otherwise>
-					
-				</xsl:otherwise>
-			</xsl:choose>
+	<div id="store-card">
+		<div id="outer-border">
+			<div class="mPoint_Label"><xsl:value-of select="labels/info" /></div>
+			<div id="inner-border">		
+				<xsl:choose>
+					<!-- WorldPay -->
+					<xsl:when test="psp/@id = 4">
+						<xsl:apply-templates select="psp" mode="worldpay" />
+					</xsl:when>
+					<!-- Error -->
+					<xsl:otherwise>
+						
+					</xsl:otherwise>
+				</xsl:choose>
+			</div>
+			<div class="mPoint_Help"><xsl:copy-of select="labels/disclaimer" /></div>
 		</div>
 	</div>
 </xsl:template>

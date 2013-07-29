@@ -25,7 +25,8 @@ INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1800, 'Transaction Co
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1808, 'Transfer Pending', 'Transfer', 'makeTransfer');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1809, 'Transfer Cancelled', 'Transfer', 'cancelTransfer');
 
-ALTER TABLE Log.Transaction_Tbl ADD authurl VARCHAR(255);	-- URL where the customer may be authenticated.
+ALTER TABLE Log.Transaction_Tbl ADD authurl VARCHAR(255);		-- URL where the customer may be authenticated.
+ALTER TABLE Log.Transaction_Tbl ADD customer_ref VARCHAR(50);	-- The Client's Reference for the Customer
 /* ==================== LOG SCHEMA END ==================== */
 
 /* ==================== ENDUSER SCHEMA START ==================== */

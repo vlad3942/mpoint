@@ -24,12 +24,14 @@ require_once(sCLASS_PATH ."/enduser_account.php");
 
 // Require general Business logic for the Callback module
 require_once(sCLASS_PATH ."/callback.php");
-// Require specific Business logic for the DIBS component
-require_once(sCLASS_PATH ."/dibs.php");
 // Require general Business logic for the Cellpoint Mobile module
 require_once(sCLASS_PATH ."/cpm.php");
+// Require specific Business logic for the DIBS component
+require_once(sCLASS_PATH ."/dibs.php");
 // Require specific Business logic for the WannaFind component
 require_once(sCLASS_PATH ."/wannafind.php");
+// Require specific Business logic for the WorldPay component
+require_once(sCLASS_PATH ."/worldpay.php");
 
 ignore_user_abort(true);
 set_time_limit(0);
@@ -60,12 +62,23 @@ if (array_key_exists("prepaid", $_POST) === true && $_POST['prepaid'] == "true")
 	}
 }
 elseif ($obj_Validator->valStoredCard($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAccountID(), $_POST['cardid']) != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAccountID(), $_POST['cardid']) + 20; }
-if ($obj_Validator->valPassword($_POST['pwd']) != 10 && $_SESSION['obj_TxnInfo']->getAmount() > $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->getMaxPSMSAmount() ) { $aMsgCds[] = $obj_Validator->valPassword($_POST['pwd']) + 30; }
+
+if ($_SESSION['obj_TxnInfo']->getAmount() > $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->getMaxPSMSAmount() && $_SESSION['obj_Info']->getInfo("auth-token") === false)
+{	
+	if ($obj_Validator->valPassword($_POST['pwd']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_POST['pwd']) + 30; }
+}
 
 // Success: Input Valid
 if (count($aMsgCds) == 0)
 {
-	if ($_SESSION['obj_TxnInfo']->getAmount() > $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->getMaxPSMSAmount() ) { $msg = $obj_mPoint->auth($_POST['euaid'], $_POST['pwd']); }
+	if ($_SESSION['obj_TxnInfo']->getAmount() > $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->getMaxPSMSAmount() )
+	{
+		if ($_SESSION['obj_Info']->getInfo("auth-token") === false)
+		{
+			$msg = $obj_mPoint->auth($_POST['euaid'], $_POST['pwd']);
+		}
+		else { $msg = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($_SESSION['obj_TxnInfo']->getAuthenticationURL() ), $_SESSION['obj_TxnInfo']->getCustomerRef(), $_SESSION['obj_Info']->getInfo("auth-token") ); }
+	}
 	else { $msg = 10; }
 	if ($msg == 10)
 	{
@@ -135,6 +148,31 @@ if (count($aMsgCds) == 0)
 						// Initialise Callback to Client
 						$aCPM_CONN_INFO["path"] = "/callback/wannafind.php";
 						$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_XML->type["id"]), $iTxnID);
+						$aMsgCds[] = 100;
+					}
+					else
+					{
+						$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+						$aMsgCds[] = 51;
+					}
+					break;
+				case (Constants::iWORLDPAY_PSP):	// WorldPay
+					// Authorise payment with PSP based on Ticket
+					$obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
+					if ($_SESSION['obj_TxnInfo']->getMode() > 0) { $aHTTP_CONN_INFO["worldpay"]["host"] = str_replace("secure.", "secure-test.", $aHTTP_CONN_INFO["worldpay"]["host"]); }
+					$aLogin = $obj_PSP->getMerchantLogin($_SESSION['obj_TxnInfo']->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, true);
+					$aHTTP_CONN_INFO["worldpay"]["username"] = $aLogin["username"];
+					$aHTTP_CONN_INFO["worldpay"]["password"] = $aLogin["password"];
+					
+					$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["worldpay"]);
+					$obj_XML = $obj_PSP->authTicket($obj_ConnInfo, (string) $obj_XML->ticket);
+					// Authorization succeeded
+					if (is_null($obj_XML) === false && ($obj_XML instanceof SimpleXMLElement) === true && intval($obj_XML["code"]) == Constants::iPAYMENT_ACCEPTED_STATE)
+					{
+						// Initialise Callback to Client
+						$aCPM_CONN_INFO["path"] = "/callback/worldpay.php";
+						$aCPM_CONN_INFO["contenttype"] = "text/xml";
+						$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), $obj_XML);
 						$aMsgCds[] = 100;
 					}
 					else

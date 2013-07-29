@@ -47,6 +47,7 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 		<yes><?= $_OBJ_TXT->_("Yes"); ?></yes>
 		<no><?= $_OBJ_TXT->_("No"); ?></no>
 		<cancel><?= $_OBJ_TXT->_("Cancel Payment"); ?></cancel>
+		<disclaimer><?= nl2br($_OBJ_TXT->_("Store Card - Disclaimer") ); ?></disclaimer>
 	</labels>
 	<psp id="<?= $_SESSION['obj_Info']->getInfo("psp-id"); ?>" card-id="<?= $_SESSION['obj_Info']->getInfo("card-id"); ?>">
 		<account><?= $_SESSION['obj_Info']->getInfo("account"); ?></account>

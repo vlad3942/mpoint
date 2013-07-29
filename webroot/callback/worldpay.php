@@ -25,11 +25,48 @@ require_once(sCLASS_PATH ."/callback.php");
 require_once(sCLASS_PATH ."/worldpay.php");
 
 header("Content-Type: text/plain");
+/*
+$HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE paymentService PUBLIC "-//WorldPay//DTD WorldPay PaymentService v1//EN" "http://dtd.worldpay.com/paymentService_v1.dtd">
+<paymentService version="1.4" merchantCode="CELLPOINT">
+<notify>
+	<orderStatusEvent orderCode="1768448">
+		<payment>
+			<paymentMethod>DANKORT-SSL</paymentMethod>
+			<paymentMethodDetail>
+				<card number="5019********3742" type="creditcard">
+					<expiryDate>
+						<date month="03" year="2014"/>
+					</expiryDate>
+				</card>
+			</paymentMethodDetail>
+			<amount value="100" currencyCode="DKK" exponent="2" debitCreditIndicator="credit"/>
+			<lastEvent>AUTHORISED</lastEvent>
+			<AuthorisationId id="666"/>
+			<CVCResultCode description="C"/>
+			<balance accountType="IN_PROCESS_AUTHORISED">
+				<amount value="100" currencyCode="DKK" exponent="2" debitCreditIndicator="credit"/>
+			</balance>
+			<riskScore value="0"/>
+		</payment>
+		<journal journalType="AUTHORISED">
+			<bookingDate>
+				<date dayOfMonth="22" month="07" year="2013"/>
+			</bookingDate>
+			<accountTx accountType="IN_PROCESS_AUTHORISED" batchId="23">
+				<amount value="100" currencyCode="DKK" exponent="2" debitCreditIndicator="credit"/>
+			</accountTx>
+		</journal>
+	</orderStatusEvent>
+</notify>
+</paymentService>';
+*/
 
 $obj_XML = simplexml_load_string($HTTP_RAW_POST_DATA);
 
 $id = Callback::getTxnIDFromOrderNo($_OBJ_DB, $obj_XML->notify->orderStatusEvent["orderCode"], Constants::iWORLDPAY_PSP);
 if ($id == -1) { $id = (integer) $obj_XML->notify->orderStatusEvent["orderCode"]; }
+
 try
 {
 	$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
@@ -51,7 +88,40 @@ try
 		$iStateID = Constants::iPAYMENT_REJECTED_STATE;
 		break;
 	}
-	
+	// Save Ticket ID representing the End-User's stored Card Info
+	if (Constants::iPAYMENT_ACCEPTED_STATE && count($obj_mPoint->getMessageData($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, false) ) == 1)
+	{
+		$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE);
+		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $obj_XML->notify->orderStatusEvent["orderCode"]);
+		
+		$sToken = $obj_XML->notify->orderStatusEvent["orderCode"] ." ### ". $obj_XML["merchantCode"] ." ### ". $obj_XML->notify->orderStatusEvent->payment->balance->amount["value"] ." ### ". $obj_XML->notify->orderStatusEvent->payment->balance->amount["currencyCode"];
+		// Card Number
+		if (count($obj_XML->notify->orderStatusEvent->payment->cardNumber) == 1) { $sMask = $obj_XML->notify->orderStatusEvent->payment->cardNumber; }
+		else { $sMask = $obj_XML->notify->orderStatusEvent->payment->paymentMethodDetail->card["number"]; }
+		$sExpiry = $obj_XML->notify->orderStatusEvent->payment->paymentMethodDetail->card->expiryDate->date["month"] ."/". substr($obj_XML->notify->orderStatusEvent->payment->paymentMethodDetail->card->expiryDate->date["year"], -2);
+		 
+		$iStatus = $obj_mPoint->saveCard($obj_TxnInfo, $obj_TxnInfo->getMobile(), $obj_mPoint->getCardID( (string) $obj_XML->notify->orderStatusEvent->payment->paymentMethod), Constants::iWORLDPAY_PSP, $sToken, $sMask, $sExpiry);
+		// The End-User's existing account was linked to the Client when the card was stored
+		if ($iStatus == 1)
+		{
+			$obj_mPoint->sendLinkedInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo);
+		}
+		// New Account automatically created when Card was saved
+		else if ($iStatus == 2)
+		{
+			$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile() );
+			if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail() ); }
+			$obj_TxnInfo->setAccountID($iAccountID);
+			$obj_mPoint->getTxnInfo()->setAccountID($iAccountID);
+			// SMS communication enabled
+			if ($obj_TxnInfo->getClientConfig()->smsReceiptEnabled() === true)
+			{
+				$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo);
+			}
+		}
+		// E-Mail has been provided for the transaction
+		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
+	}
 	$obj_mPoint->completeTransaction(Constants::iWORLDPAY_PSP, -1, $obj_mPoint->getCardID( (string) $obj_XML->notify->orderStatusEvent->payment->paymentMethod), $iStateID, array($HTTP_RAW_POST_DATA) );
 	// Account Top-Up
 	if ($obj_TxnInfo->getTypeID() >= 100 && $obj_TxnInfo->getTypeID() <= 109)

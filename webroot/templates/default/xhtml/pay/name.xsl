@@ -12,10 +12,10 @@
 	<div id="my-account">
 		<div id="selected-card">
 			<div class="mPoint_Label"><xsl:value-of select="labels/selected-card" />:</div>
-			<img src="{/root/system/protocol}://{/root/system/host}/img/{cards/item[@id = $cardid]/logo-width}x{cards/item[@id = $cardid]/logo-height}_card_{$cardid}_{/root/system/session/@id}.png" width="{cards/item[@id = $cardid]/logo-width}" height="{cards/item[@id = $cardid]/logo-height}" alt="" />
+			<img src="/img/{cards/item[@id = $cardid]/logo-width}x{cards/item[@id = $cardid]/logo-height}_card_{$cardid}_{/root/system/session/@id}.png" width="{cards/item[@id = $cardid]/logo-width}" height="{cards/item[@id = $cardid]/logo-height}" alt="" />
 			<xsl:value-of select="concat(' ', cards/item[@id = $cardid]/name)" />
 		</div>
-		<form action="{func:constLink('/pay/sys/save_name.php') }" method="post">
+		<form action="{func:appendQueryString('/pay/sys/save_name.php') }" method="post">
 			<div>
 				<input type="hidden" name="cardid" value="{session/cardid}" />
 				<input type="hidden" name="card_width" value="{session/card_width}" />

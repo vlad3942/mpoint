@@ -50,6 +50,18 @@
 	<td><input type="text" name="callback-url" value="http://demo.ois-inc.com/mpoint/_test/callback.php" /></td>
 </tr>
 <tr>
+	<td style="font-weight:bold;">Authentication URL</td>
+	<td><input type="text" name="auth-url" value="http://demo.cellpointmobile.com/mpoint/_test/auth.php" /></td>
+</tr>
+<tr>
+	<td style="font-weight:bold;">Authentication Token</td>
+	<td><input type="text" name="auth-token" value="123abc" /></td>
+</tr>
+<tr>
+	<td style="font-weight:bold;">Customer Ref.</td>
+	<td><input type="text" name="customer-ref" value="1234" /></td>
+</tr>
+<tr>
 	<td style="font-weight:bold;">Order ID</td>
 	<td><input type="text" name="orderid" value="123abc" /></td>
 </tr>

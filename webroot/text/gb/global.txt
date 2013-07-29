@@ -1096,67 +1096,67 @@ msgstr @@@ Send Receipt @@@
 msgid @@@ << Back @@@
 msgstr @@@ << Back @@@
 
-#: /webroot/pay/name.php:36
+#: /webroot/pay/name.php:42
 msgid @@@ Save Card @@@
 msgstr @@@ Save Card @@@
 
-#: /webroot/pay/name.php:45
+#: /webroot/pay/name.php:51
 msgid @@@ Selected Card @@@
 msgstr @@@ Selected card @@@
 
-#: /webroot/pay/name.php:46
+#: /webroot/pay/name.php:52
 msgid @@@ Please enter a name for the stored card below? @@@
 msgstr @@@ Please enter a name for the stored card below? @@@
 
-#: /webroot/pay/name.php:47
+#: /webroot/pay/name.php:53
 msgid @@@ Card Name @@@
 msgstr @@@ Card name @@@
 
-#: /webroot/pay/name.php:48
+#: /webroot/pay/name.php:54
 msgid @@@ Card Name - Help @@@
 msgstr @@@ F.ex. "private" or "company" (optional) @@@
 
-#: /webroot/pay/name.php:49
+#: /webroot/pay/name.php:55
 msgid @@@ Save @@@
 msgstr @@@ Save @@@
 
-#: /webroot/pay/pwd.php:35
+#: /webroot/pay/pwd.php:41
 msgid @@@ Create Account @@@
 msgstr @@@ Create Account @@@
 
-#: /webroot/pay/pwd.php:45
+#: /webroot/pay/pwd.php:51
 msgid @@@ Please complete the form below to finnish creating your account @@@
 msgstr @@@ Please complete the form below to finnish creating your account @@@
 
-#: /webroot/pay/pwd.php:46
+#: /webroot/pay/pwd.php:52
 msgid @@@ Selected Card @@@
 msgstr @@@ Selected card @@@
 
-#: /webroot/pay/pwd.php:47
+#: /webroot/pay/pwd.php:53
 msgid @@@ Password @@@
 msgstr @@@ Password @@@
 
-#: /webroot/pay/pwd.php:48
+#: /webroot/pay/pwd.php:54
 msgid @@@ Repeat Password @@@
 msgstr @@@ Repeat Password @@@
 
-#: /webroot/pay/pwd.php:49
+#: /webroot/pay/pwd.php:55
 msgid @@@ Card Name @@@
 msgstr @@@ Card Name @@@
 
-#: /webroot/pay/pwd.php:50
+#: /webroot/pay/pwd.php:56
 msgid @@@ Card Name - Help @@@
 msgstr @@@ F.ex. "private" or "company" (optional) @@@
 
-#: /webroot/pay/pwd.php:51
+#: /webroot/pay/pwd.php:57
 msgid @@@ Save @@@
 msgstr @@@ Save @@@
 
-#: /webroot/pay/pwd.php:52
+#: /webroot/pay/pwd.php:58
 msgid @@@ fullname @@@
 msgstr @@@ fullname @@@
 
-#: /webroot/pay/pwd.php:53
+#: /webroot/pay/pwd.php:59
 msgid @@@ cpr @@@
 msgstr @@@ cpr @@@
 
@@ -1183,6 +1183,11 @@ msgstr @@@ No @@@
 #: /webroot/pay/store.php:49
 msgid @@@ Cancel Payment @@@
 msgstr @@@ Cancel Payment @@@
+
+#: /webroot/pay/store.php:50
+msgid @@@ Store Card - Disclaimer @@@
+msgstr @@@ Storing your card details for future use makes your next purchase swift and simple.
+Card details are stored encrypted and protected using a password of your choice. @@@
 
 #: /webroot/pay/sys/sms.php:206
 msgid @@@ SMS Purchase - Unknown Reponse @@@
@@ -1404,11 +1409,11 @@ Kind Regards
 msgid @@@ Loading... @@@
 msgstr @@@ Loading... @@@
 
-#: /api/classes/general.php:684
+#: /api/classes/general.php:685
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ Welcome to {CLIENT}, please activate the link below @@@
 
-#: /api/classes/general.php:690
+#: /api/classes/general.php:691
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Welcome to {CLIENT} @@@
 

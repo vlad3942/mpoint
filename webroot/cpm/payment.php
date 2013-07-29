@@ -114,7 +114,7 @@ try
 			echo '<?xml version="1.0" encoding="UTF-8"?>';
 			echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA'], $_SESSION['obj_TxnInfo']) .'/cpm/payment.xsl"?>';
 	?>
-			<root>
+			<root single-sign-on="<?= ($_SESSION['obj_Info']->getInfo("auth-token") === false ? "false" : "true"); ?>">
 				<title><?= $_OBJ_TXT->_("Pay using Account"); ?></title>
 				<?= $obj_mPoint->getSystemInfo(); ?>
 				<?= $_SESSION['obj_UA']->toXML(); ?>

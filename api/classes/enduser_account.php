@@ -155,11 +155,15 @@ class EndUserAccount extends Home
 	public function saveCard(TxnInfo &$oTI, $addr, $cardid, $pspid, $ticket, $mask, $exp)
 	{
 		$obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), intval($oTI->getOperator()/100) );
-		$iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, $obj_CountryConfig);
+		$iAccountID = -1;
+		if ($oTI->getAccountID() > 0) { $iAccountID = $oTI->getAccountID(); }
+		elseif (strlen($oTI->getCustomerRef() ) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($this->getDBConn(), $oTI->getClientConfig(), $oTI->getCustomerRef() ); }
+		if ($iAccountID == -1) { $iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, $obj_CountryConfig); }
 		// End-User Account not found
 		if ($iAccountID == -1)
 		{
-			$iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, $obj_CountryConfig, false);
+			if (strlen($oTI->getCustomerRef() ) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($this->getDBConn(), $oTI->getClientConfig(), $oTI->getCustomerRef(), false); }
+			else { $iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, $obj_CountryConfig, false); }
 			$bPreferred = "true";
 			// Client supports global storage of payment cards: Link End-User Account
 			if ($iAccountID > 0 && $this->getClientConfig()->getStoreCard() > 3)
@@ -302,13 +306,12 @@ class EndUserAccount extends Home
 	 * 	2. New card created with name
 	 *	3. Card renamed
 	 *
-	 * @see		EndUserAccount::getAccountID()
 	 * RENAME CARD:
 	 * @param 	integer $cardid ID of the Card
 	 * @param 	string $name	Card name entered by the end-user
 	 * @param 	boolean $pref	Boolean flag indicating whether a new card should be set as preferred (defaults to false)
 	 * SAVE CARD:
-	 * @param	string $addr 	End-User's mobile number or E-Mail address
+	 * @param	integer $id 	Unique ID for the end-user's account
 	 * @param 	integer $cardid ID of the Card Type
 	 * @param 	string $name	Card name entered by the end-user
 	 * @param 	boolean $pref	Boolean flag indicating whether a new card should be set as preferred (defaults to false)
@@ -320,10 +323,20 @@ class EndUserAccount extends Home
 		$aArgs = func_get_args();
 		switch (count($aArgs) )
 		{
-		case 3:
-			return $this->_renameCard($aArgs[0], $aArgs[1], $aArgs[2]);
+		case (2):
+			return $this->_renameCard($aArgs[0], $aArgs[1]);
 			break;
-		case 5:
+		case (3):
+			if ($aArgs[2] === false || $aArgs[2] === true)
+			{
+				return $this->_renameCard($aArgs[0], $aArgs[1], $aArgs[2]);
+			}
+			else { return $this->_saveCardName($aArgs[0], $aArgs[1], $aArgs[2]); }
+			break;
+		case (4):
+			return $this->_saveCardName($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3]);
+			break;
+		case (5):
 			return $this->_saveCardName($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3], $aArgs[4]);
 			break;
 		default: 
@@ -342,29 +355,20 @@ class EndUserAccount extends Home
 	 * 	1. Card name successfully set for card
 	 * 	2. New card created with name
 	 *
-	 * @see		EndUserAccount::getAccountID()
-	 *
-	 * @param	string $addr 	End-User's mobile number or E-Mail address
+	 * @param	integer $id 	Unique ID for the end-user's account
 	 * @param 	integer $cardid ID of the Card Type
 	 * @param 	string $name	Card name entered by the end-user
 	 * @param 	boolean $pref	Boolean flag indicating whether a new card should be set as preferred (defaults to false)
 	 * @return	integer
 	 */
-	private function _saveCardName($addr, $cardid, $name, $pref=false,  CountryConfig &$oCC=null)
+	private function _saveCardName($id, $cardid, $name, $pref=false)
 	{
-		$iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, $oCC);
-		$iStatus = 0;
-		if ($iAccountID == -1 && $this->getClientConfig()->getStoreCard() > 3)
-		{
-			$iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, $oCC, false);
-		}
-		
 		// Set name for card
 		$sql = "UPDATE EndUser.Card_Tbl
 				SET name = '". $this->getDBConn()->escStr(utf8_encode($name) ) ."'
 				WHERE id = (SELECT Max(id)
 							FROM EndUser.Card_Tbl
-							WHERE accountid = ". $iAccountID ." AND clientid = ". $this->_obj_ClientConfig->getID() ." AND cardid = ". intval($cardid) ."
+							WHERE accountid = ". intval($id) ." AND clientid = ". $this->_obj_ClientConfig->getID() ." AND cardid = ". intval($cardid) ."
 								AND (name IS NULL OR name = '') AND enabled = '1')
 					AND modified > NOW() - interval '5 minutes'";
 //		echo $sql ."\n";
@@ -376,14 +380,14 @@ class EndUserAccount extends Home
 			$sql = "INSERT INTO EndUser.Card_Tbl
 						(accountid, clientid, pspid, cardid, name, preferred, enabled)
 					VALUES
-						(". $iAccountID .", ". $this->_obj_ClientConfig->getID() .", 0, ". intval($cardid) .", '". $this->getDBConn()->escStr(utf8_encode($name) ) ."', '". General::bool2xml($pref) ."', false)";
+						(". intval($id) .", ". $this->_obj_ClientConfig->getID() .", 0, ". intval($cardid) .", '". $this->getDBConn()->escStr(utf8_encode($name) ) ."', '". General::bool2xml($pref) ."', false)";
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
 			
 			if (is_resource($res) === true) { $iStatus++; }
 			else { $iStatus = 0; }
 		}
-
+		
 		return $iStatus;
 	}
 	
