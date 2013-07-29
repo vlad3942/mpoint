@@ -217,6 +217,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$obj_XML = $obj_XML[0];
 										if (intval($obj_XML->basefee) + intval($obj_DOM->transfer[$i]->amount) * floatval($obj_XML->share) > intval($obj_XML->minfee) ) { $iFee = intval($obj_XML->basefee) + intval($obj_DOM->transfer[$i]->amount) * floatval($obj_XML->share); }
 										else { $iFee = (integer) $obj_XML->minfee; }
+										// User hasn't completed registration yet
+										if (General::xml2bool($obj_AccountXML->mobile["verified"]) === false)
+										{
+											if ($obj_mPoint->sendNewAccountSMS(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_ClientConfig, $iRecipientAccountID, $obj_AccountXML, $iAmountReceived) == 10)
+											{
+												$code = 1;
+											}
+											// Error: Unable to send Account Creation notification via SMS
+											else { $code = -3; }
+										}
 										$c = $obj_mPoint->makeTransfer($iRecipientAccountID, $iSenderAccountID, $iAmountReceived, $iAmountSent, $iFee, (string) $obj_DOM->transfer[$i]->message, $code == 0 ? Constants::iTRANSACTION_COMPLETED_STATE : Constants::iTRANSFER_PENDING_STATE);
 										if ($c == 10) { $xml = '<status code="'. ($code + 100) .'">Success</status>'; }
 										else

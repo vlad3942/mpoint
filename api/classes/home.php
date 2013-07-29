@@ -282,7 +282,8 @@ class Home extends General
 		/* ========== Calculate Logo Dimensions End ========== */
 
 		// Select information for the End-User's account
-		$sql = "SELECT id, countryid, firstname, lastname, mobile, email, passwd AS password, balance, points, Extract('epoch' from created AT TIME ZONE 'Europe/Copenhagen') AS timestamp
+		$sql = "SELECT id, countryid, firstname, lastname, mobile, email, passwd AS password, balance, points, Extract('epoch' from created AT TIME ZONE 'Europe/Copenhagen') AS timestamp,
+					mobile_verified
 				FROM EndUser.Account_Tbl
 				WHERE id = ". intval($id) ." AND enabled = '1'";
 //		echo $sql ."\n";
@@ -299,7 +300,7 @@ class Home extends General
 		$xml = '<account id="'. $RS["ID"] .'" country-id="'. $RS["COUNTRYID"] .'">';
 		$xml .= '<first-name>'. htmlspecialchars($RS["FIRSTNAME"], ENT_NOQUOTES) .'</first-name>';
 		$xml .= '<last-name>'. htmlspecialchars($RS["LASTNAME"], ENT_NOQUOTES) .'</last-name>';
-		$xml .= '<mobile country-id="'. $RS["COUNTRYID"] .'">'. $RS["MOBILE"] .'</mobile>';
+		$xml .= '<mobile country-id="'. $RS["COUNTRYID"] .'" verified="'. General::bool2xml($RS["MOBILE_VERIFIED"]) .'">'. $RS["MOBILE"] .'</mobile>';
 		$xml .= '<email>'. htmlspecialchars($RS["EMAIL"], ENT_NOQUOTES) .'</email>';
 		$xml .= '<password mask="'. str_repeat("*", strlen($RS["PASSWORD"]) ) .'">'. htmlspecialchars($RS["PASSWORD"], ENT_NOQUOTES) .'</password>';
 		$xml .= '<balance country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat().'">'. intval($RS["BALANCE"]) .'</balance>';
