@@ -41,7 +41,9 @@ class WorldPay extends Callback
 		// Client is configured to use mPoint's protocol
 		if ($this->getTxnInfo()->getClientConfig()->getMethod() == "mPoint")
 		{
-			parent::notifyClient($sid, -1, $this->getTxnInfo()->getAmount(), $this->getCardID($obj_XML->notify->orderStatusEvent->payment->paymentMethod), str_replace("X", "*", (string) $obj_XML->notify->orderStatusEvent->payment->cardNumber) );
+			if (count($obj_XML->notify->orderStatusEvent->payment->cardNumber) == 1) { $sMask = $obj_XML->notify->orderStatusEvent->payment->cardNumber; }
+			else { $sMask = $obj_XML->notify->orderStatusEvent->payment->paymentMethodDetail->card["number"]; }
+			parent::notifyClient($sid, -1, $this->getTxnInfo()->getAmount(), $this->getCardID($obj_XML->notify->orderStatusEvent->payment->paymentMethod), $sMask);
 		}
 		// Client is configured to use WorldPay's protocol
 		else

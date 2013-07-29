@@ -157,8 +157,10 @@ class Home extends General
 	 * 	 1. Account ID / Password doesn't match
 	 * 	 2. Account ID / Password doesn't match - Next invalid login will disable the account
 	 * 	 3. Account ID / Password doesn't match - Account has been disabled
+	 * 	 4. Account not found
 	 * 	 9. Account disabled
-	 * 	10. Success
+	 * 	10. Login successful
+	 * 	11. Login successful - Mobile Number not verified 
 	 * 
 	 * @see		Constants::iMAX_LOGIN_ATTEMPTS
 	 *
@@ -238,15 +240,22 @@ class Home extends General
 		$b .= '</login>';
 		$b .= '</root>';
 		
-		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
-		$obj_HTTP->connect();
-		$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
-		$obj_HTTP->disConnect();
-		if ($code == 200)
+		try
 		{
-			return 10;
+			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+			$obj_HTTP->connect();
+			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+			$obj_HTTP->disConnect();
+			if ($code == 200)
+			{
+				return 10;
+			}
+			else { return 1; }
 		}
-		else { return 1; }
+		catch (HTTPException $e)
+		{
+			return 4;
+		}
 	}
 
 	/**
