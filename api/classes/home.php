@@ -138,14 +138,14 @@ class Home extends General
 		switch (count($aArgs) )
 		{
 		case (2):
-			return $this->_authExternal($aArgs[0], $aArgs[1]);
+			return $this->_authInternal($aArgs[0], $aArgs[1]);
 			break;
 		case (3):
 			if ( ($aArgs[0] instanceof HTTPConnInfo) === true)
 			{
 				return $this->_authExternal($aArgs[0], $aArgs[1], $aArgs[2]);
 			}
-			else { return $this->_authExternal($aArgs[0], $aArgs[1], $aArgs[2]); }
+			else { return $this->_authInternal($aArgs[0], $aArgs[1]); }
 			break;
 		default:
 			break;
