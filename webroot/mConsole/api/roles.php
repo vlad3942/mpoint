@@ -14,35 +14,37 @@ require_once("../../inc/include.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 
-// Require Business logic for the validating client Input
-require_once(sCLASS_PATH ."/validate.php");
-
-// Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
-$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 
 $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<login>';
-$HTTP_RAW_POST_DATA .= '<username>mconsole</username>';
-$HTTP_RAW_POST_DATA .= '<password>mconsole</password>';
-$HTTP_RAW_POST_DATA .= '</login>';
+$HTTP_RAW_POST_DATA .= '<roles>';
+$HTTP_RAW_POST_DATA .= '<id>1</id>';
+$HTTP_RAW_POST_DATA .= '</roles>';
 $HTTP_RAW_POST_DATA .= '</root>';
 
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
-	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate("http://". str_replace("mpoint", "mconsole", $_SERVER['HTTP_HOST']) ."/protocols/mconsole.xsd") === true && count($obj_DOM->login) > 0)
+	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate("http://". str_replace("mpoint", "mconsole", $_SERVER['HTTP_HOST']) ."/protocols/mconsole.xsd") === true && count($obj_DOM->roles) > 0)
 	{
 		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 		
-		for ($i=0; $i<count($obj_DOM->login); $i++)
+		for ($i=0; $i<count($obj_DOM->roles); $i++)
 		{
-			$xml = '<status code="100">Login successful</status>
-					<id>1</id>';
+			$xml = '<status code="100">Roles fetched </status>
+				<roles>	
+					<role>1</role>
+					<role>2</role>
+					<role>3</role>
+					<role>4</role>
+					<role>5</role>
+					<role>6</role>
+				</roles>
+				<clientid>3</clientid>';
 		}
 	}
 	// Error: Invalid XML Document
@@ -53,7 +55,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$xml = '<status code="415">Invalid XML Document</status>';
 	}
 	// Error: Wrong operation
-	elseif (count($obj_DOM->login) == 0)
+	elseif (count($obj_DOM->roles) == 0)
 	{
 		header("HTTP/1.1 400 Bad Request");
 	

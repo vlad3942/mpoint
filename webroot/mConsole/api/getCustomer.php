@@ -25,25 +25,58 @@ $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<login>';
-$HTTP_RAW_POST_DATA .= '<username>mconsole</username>';
-$HTTP_RAW_POST_DATA .= '<password>mconsole</password>';
-$HTTP_RAW_POST_DATA .= '</login>';
+$HTTP_RAW_POST_DATA .= '<getcustomer>';
+$HTTP_RAW_POST_DATA .= '<userid>12312321</userid>';
+$HTTP_RAW_POST_DATA .= '<clientid>3</clientid>';
+$HTTP_RAW_POST_DATA .= '</getcustomer>';
 $HTTP_RAW_POST_DATA .= '</root>';
 
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
-	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate("http://". str_replace("mpoint", "mconsole", $_SERVER['HTTP_HOST']) ."/protocols/mconsole.xsd") === true && count($obj_DOM->login) > 0)
+	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate("http://". str_replace("mpoint", "mconsole", $_SERVER['HTTP_HOST']) ."/protocols/mconsole.xsd") === true && count($obj_DOM->getcustomer) > 0)
 	{
-		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 		
-		for ($i=0; $i<count($obj_DOM->login); $i++)
-		{
-			$xml = '<status code="100">Login successful</status>
-					<id>1</id>';
-		}
+			$xml = '<status code="100">Found user info </status>
+					<customer id="17363" external-id="">
+						<first-name>Simon</first-name>
+						<last-name>Boriis</last-name>
+						<mobile country-id="100" verified="true">30206162</mobile>
+						<email>babe@gois.dk</email>
+						<device-id>07677455385448515b0ef3e82a303440</device-id>
+						<total-spent country-id="100" currency="kr." symbol="kr" format="{PRICE} {CURRENCY}">916200</total-spent>
+						<last-order>12/04-13 01:11</last-order>
+						<date-of-birth>22/09-86</date-of-birth>
+				</customer>
+				<addresses>
+					<address id="640">
+						<first-name>Simon</first-name>
+						<last-name>Boriis</last-name>
+						<company></company>
+						<street>Valbyholm 17, 1.</street>
+						<postal-code>2500</postal-code>
+						<city>Valby</city>
+						<state id="-100">N/A</state>
+						<country id="100" currency="kr." symbol="kr" format="{PRICE} {CURRENCY}">Danmark</country>
+					</address>
+					<address id="641">
+						<first-name>Simon</first-name>
+						<last-name>Boriis</last-name>
+						<company></company>
+						<street>Valbyholm 17, 1. 4</street>
+						<postal-code>2500</postal-code>
+						<city>Valby</city>
+						<state id="-100">N/A</state>
+						<country id="100" currency="kr." symbol="kr" format="{PRICE} {CURRENCY}">Danmark</country>
+					</address>
+			</addresses>
+			<acceptances customer-id="17363">
+				<acceptance id="1349" type-id="1" client-id="10013">false</acceptance>
+				<acceptance id="1350" type-id="2" client-id="10013">false</acceptance>
+				<acceptance id="1351" type-id="3" client-id="10013">false</acceptance>
+			</acceptances>';
+	
 	}
 	// Error: Invalid XML Document
 	elseif ( ($obj_DOM instanceof SimpleDOMElement) === false)
@@ -84,8 +117,6 @@ else
 }
 header("Content-Type: text/xml; charset=\"UTF-8\"");
 
-echo '<?xml version="1.0" encoding="UTF-8"?>';
-echo '<root>';
+
 echo $xml;
-echo '</root>';
 ?>
