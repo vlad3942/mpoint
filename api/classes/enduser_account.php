@@ -407,25 +407,26 @@ class EndUserAccount extends Home
 	 */
 	private function _renameCard($cardid, $name, $pref=false)
 	{
-		$iStatus = 0;
-		
-		if ($pref == false) { $prefVal = 0;}
-		else { $prefVal = 1; }
+		// Reset preferred flag on all cards
+		if ($pref === true)
+		{
+			$sql = "UPDATE EndUser.Card_Tbl
+					SET preferred = '0'
+					WHERE preferred = '1' AND accountid = (SELECT accountid
+								 						   FROM EndUser.Card_Tbl
+								 						   WHERE id = ". intval($cardid) .")";
+//			echo $sql ."\n";
+			$this->getDBConn()->query($sql);
+		}
 		
 		// Set name for card
 		$sql = "UPDATE EndUser.Card_Tbl 
-				SET name = '". $this->getDBConn()->escStr(utf8_encode($name) ) ."', preferred = '" . $prefVal . "' 
+				SET name = '". $this->getDBConn()->escStr(utf8_encode($name) ) ."', preferred = '" . ($pref === true ? 1 : 0) . "' 
 				WHERE id = ". intval($cardid) ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
-		if (is_resource($res) === true) { $iStatus = 3; }
-		// Card doesn't exist, so no changes were made
-		if ($this->getDBConn()->countAffectedRows($res) == 0)
-		{
-			$iStatus = 0;
-		}
 
-		return $iStatus;
+		return $this->getDBConn()->countAffectedRows($res) > 0 ? 3 : 0;
 	}
 
 	/**
