@@ -365,7 +365,7 @@ class EndUserAccount extends Home
 	{
 		// Set name for card
 		$sql = "UPDATE EndUser.Card_Tbl
-				SET name = '". $this->getDBConn()->escStr(utf8_encode($name) ) ."'
+				SET name = '". $this->getDBConn()->escStr($name) ."'
 				WHERE id = (SELECT Max(id)
 							FROM EndUser.Card_Tbl
 							WHERE accountid = ". intval($id) ." AND clientid = ". $this->_obj_ClientConfig->getID() ." AND cardid = ". intval($cardid) ."
@@ -380,7 +380,7 @@ class EndUserAccount extends Home
 			$sql = "INSERT INTO EndUser.Card_Tbl
 						(accountid, clientid, pspid, cardid, name, preferred, enabled)
 					VALUES
-						(". intval($id) .", ". $this->_obj_ClientConfig->getID() .", 0, ". intval($cardid) .", '". $this->getDBConn()->escStr(utf8_encode($name) ) ."', '". General::bool2xml($pref) ."', false)";
+						(". intval($id) .", ". $this->_obj_ClientConfig->getID() .", 0, ". intval($cardid) .", '". $this->getDBConn()->escStr($name) ."', '". General::bool2xml($pref) ."', false)";
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
 			
@@ -421,7 +421,7 @@ class EndUserAccount extends Home
 		
 		// Set name for card
 		$sql = "UPDATE EndUser.Card_Tbl 
-				SET name = '". $this->getDBConn()->escStr(utf8_encode($name) ) ."', preferred = '" . ($pref === true ? 1 : 0) . "' 
+				SET name = '". $this->getDBConn()->escStr($name) ."', preferred = '" . ($pref === true ? 1 : 0) . "' 
 				WHERE id = ". intval($cardid) ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);

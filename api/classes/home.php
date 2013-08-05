@@ -145,7 +145,7 @@ class Home extends General
 			{
 				return $this->_authExternal($aArgs[0], $aArgs[1], $aArgs[2]);
 			}
-			else { return $this->_authInternal($aArgs[0], $aArgs[1]); }
+			else { return $this->_authInternal($aArgs[0], $aArgs[1], $aArgs[2]); }
 			break;
 		default:
 			break;
