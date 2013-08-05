@@ -34,8 +34,8 @@ $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<save-card client-id="10007" account="100007">';
-$HTTP_RAW_POST_DATA .= '<card type-id="2">My Card</card>';
+$HTTP_RAW_POST_DATA .= '<save-card client-id="10012">';
+$HTTP_RAW_POST_DATA .= '<card id="62021">'. utf8_encode("My Card æ ø å") .'</card>';
 $HTTP_RAW_POST_DATA .= '<client-info platform="iOS" version="1.00" language="da">';
 $HTTP_RAW_POST_DATA .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
 $HTTP_RAW_POST_DATA .= '<email>jona@oismail.com</email>';

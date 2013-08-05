@@ -58,7 +58,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if (array_key_exists("icon-url", $_REQUEST) === false) { $_REQUEST['icon-url'] = $obj_ClientConfig->getIconURL(); }
 	if (array_key_exists("language", $_REQUEST) === false) { $_REQUEST['language'] = $obj_ClientConfig->getLanguage(); }
 	if (array_key_exists("markup", $_REQUEST) === false) { $_REQUEST['markup'] = $obj_ClientConfig->getAccountConfig()->getMarkupLanguage(); }
-	if (array_key_exists("auth-url", $_REQUEST) === false) { $_REQUEST['auth-url'] = $obj_ClientConfig->getAuthURL(); }
+	if (array_key_exists("auth-url", $_REQUEST) === false) { $_REQUEST['auth-url'] = $obj_ClientConfig->getAuthenticationURL(); }
 	
 	$obj_mPoint = new MobileWeb($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 	$iTxnID = $obj_mPoint->newTransaction(Constants::iPURCHASE_VIA_WEB);
@@ -79,9 +79,14 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if ($obj_Validator->valEMail($_REQUEST['email']) != 1 && $obj_Validator->valEMail($_REQUEST['email']) != 10) { $aMsgCds[$obj_Validator->valEMail($_REQUEST['email']) + 140] = $_REQUEST['email']; }
 	if ($obj_Validator->valURL($_REQUEST['icon-url']) > 1 && $obj_Validator->valURL($_REQUEST['icon-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['icon-url']) + 160] = $_REQUEST['icon-url']; }
 	if ($obj_Validator->valMarkupLanguage($_REQUEST['markup']) != 10) { $aMsgCds[$obj_Validator->valMarkupLanguage($_REQUEST['markup']) + 190] = $_REQUEST['markup']; }
-	if ($obj_Validator->valURL($_REQUEST['auth-url']) > 1 && $obj_Validator->valURL($_REQUEST['auth-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['auth-url']) + 200] = $_REQUEST['auth-url']; }
+	// Security Violation: Authentication URL must be configured for Client
+	if (strlen($_REQUEST['auth-url']) > 0 && strlen($obj_ClientConfig->getAuthenticationURL() ) == 0)
+	{
+		$aMsgCds[209] = $_REQUEST['auth-url'];
+	}
+	elseif ($obj_Validator->valURL($_REQUEST['auth-url'], $obj_ClientConfig->getAuthenticationURL() ) > 1 && $obj_Validator->valURL($_REQUEST['auth-url'], $obj_ClientConfig->getAuthenticationURL() ) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['auth-url'], $obj_ClientConfig->getAuthenticationURL() ) + 200] = $_REQUEST['auth-url']; } 
 	/* ========== Input Validation End ========== */
-
+	
 	// Success: Input Valid
 	if (count($aMsgCds) == 0)
 	{
@@ -143,12 +148,11 @@ else
 	$aMsgCds[Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account'])+10] = "Client: ". $_REQUEST['clientid'] .", Account: ". $_REQUEST['account'];
 }
 
-// Instantiate data object with the User Agent Profile for the customer's mobile device.
-$_SESSION['obj_UA'] = UAProfile::produceUAProfile(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["iemendo"]) );
-
 // Success: Construct "Select Credit Card" page
 if (array_key_exists(1000, $aMsgCds) === true)
 {
+	// Instantiate data object with the User Agent Profile for the customer's mobile device.
+	$_SESSION['obj_UA'] = UAProfile::produceUAProfile(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["iemendo"]) );
 	unset($_SESSION['temp']);
 	// Start Shop Flow
 	if ($_SESSION['obj_TxnInfo']->getClientConfig()->getFlowID() == Constants::iPHYSICAL_FLOW)

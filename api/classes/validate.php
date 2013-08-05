@@ -339,12 +339,14 @@ class Validate
 	 * 	 5. URL is Invalid, no Protocol specified
 	 * 	 6. URL is Invalid, no Host specified
 	 * 	 7. URL is Invalid, no Path specified
+	 * 	 8. URL domain doesn't match configured URL
 	 * 	10. Success
 	 *
-	 * @param 	integer $url 	The URL that should be validated
+	 * @param 	string $url 	The URL that should be validated
+	 * @param 	string $curl 	Configured URL that should be used as part of the validation (optional)
 	 * @return 	integer
 	 */
-	public function valURL($url)
+	public function valURL($url, $curl="")
 	{
 		// Validate the total Amount the customer will be paying
 		if (empty($url) === true) { $code = 1; }					// URL is undefined
@@ -358,7 +360,16 @@ class Validate
 			{
 				if (array_key_exists("scheme", $aURLInfo) === false) { $code = 5; }		// Invalid URL, no Protocol specified
 				elseif (array_key_exists("host", $aURLInfo) === false) { $code = 6; }	// Invalid URL, no Host specified
-				if (array_key_exists("path", $aURLInfo) === false) { $code = 7; }		// Invalid URL, no Path specified
+				elseif (array_key_exists("path", $aURLInfo) === false) { $code = 7; }	// Invalid URL, no Path specified
+				elseif (strlen($curl) > 0)
+				{
+					$aConfURLInfo = parse_url($curl);
+					var_dump($aURLInfo);
+					var_dump($aConfURLInfo);
+					die();
+					if ($aURLInfo["host"] == $aConfURLInfo["host"]) { $code = 10; }
+					else { $code = 8; }													// Security Violation: URL domain doesn't match configured URL
+				}
 				else { $code = 10; }
 			}
 			else { $code = 4; } 									// URL is malformed
