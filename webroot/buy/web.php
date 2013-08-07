@@ -191,8 +191,8 @@ if (array_key_exists(1000, $aMsgCds) === true)
 else
 {
 	$s = date("Y-m-d H:i:s") ."\n";
-	$s .= "REQUEST: " ."\n". var_export($_REQUEST) ."\n";
-	$s .= "ERRORS: " ."\n". var_export($aMsgCds) ."\n";
+	$s .= "REQUEST: " ."\n". var_export($_REQUEST, true) ."\n";
+	$s .= "ERRORS: " ."\n". var_export($aMsgCds, true) ."\n";
 	file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") .".log", $s);
 	
 	$_GET['msg'] = array_keys($aMsgCds);

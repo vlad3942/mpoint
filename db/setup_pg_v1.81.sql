@@ -8,6 +8,8 @@ INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10007, 1, 'http://
 -- UPDATE Client.CardAccess_Tbl SET pspid = 4 WHERE pspid = 7 AND clientid = 10012;
 -- UPDATE Client.MerchantAccount_Tbl SET passwd = 'oisJona1' WHERE id IN (8, 33)
 
+INSERT INTO System.URLType_Tbl (id, name) VALUES (2, 'Single Sign-On Authentication');
+
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd, stored_card) VALUES (10010, 4, 'PIZZAHUTECOMMTREC', 'PIZZAHUTECOMMTREC', '3Pjge5RTT1', true);
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd, stored_card) VALUES (10011, 4, 'PIZZAHUTECOMMBKREC', 'PIZZAHUTECOMMBKREC', '3Pjge5RTT1', true);
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd, stored_card) VALUES (10018, 4, 'YUMMOBDELREC', 'YUMMOBDELREC', '3Pjge5RTT1', true);
@@ -45,3 +47,8 @@ INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (206, 'Auth URL is Inv
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (207, 'Auth URL is Invalid, no Path specified', 'Validate', 'valURL');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (208, 'URL domain doesn''t match configured URL', 'Validate', 'valURL');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (209, 'Auth URL must be configured for Client', 'Validate', 'valURL');
+
+INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10012, 2, 'http://mpoint.test.cellpointmobile.com');
+INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10021, 2, 'http://www.uat.pizzahut.co.uk');
+INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10022, 2, 'http://www.uat.pizzahut.co.uk');
+INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10023, 2, 'http://www.uat.pizzahut.co.uk');

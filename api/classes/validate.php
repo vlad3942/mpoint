@@ -364,9 +364,6 @@ class Validate
 				elseif (strlen($curl) > 0)
 				{
 					$aConfURLInfo = parse_url($curl);
-					var_dump($aURLInfo);
-					var_dump($aConfURLInfo);
-					die();
 					if ($aURLInfo["host"] == $aConfURLInfo["host"]) { $code = 10; }
 					else { $code = 8; }													// Security Violation: URL domain doesn't match configured URL
 				}
