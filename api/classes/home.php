@@ -461,7 +461,56 @@ class Home extends General
 
 		return $xml;
 	}
-
+	/**
+	 *
+	 *
+	 * @param	integer $cid 	Unqiue Client ID
+	 * @param	integer $thxid	Unqiue ID of a Transaction 
+	 * @param	integer $ono	Unqiue Order Number for a Transaction
+	 * @param	integer $mobile	The End-User´s Mobile Number 
+	 * @param	string	$email	The End-User´s E-Mail 
+	 * @return 	string
+	 */
+	public  function searchThxHistory($cid,$thxid,$ono,$mobile,$email)
+	{
+		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, Extract('epoch' from EUT.created AT TIME ZONE 'Europe/Copenhagen') AS timestamp,
+							 CL.id AS clientid, CL.name AS client,
+							 Txn.id AS mpointid,EUT.stateid AS stateid, Txn.orderid AS orderno,EUAT.id AS customerid, (EUAT.firstname || ' ' || EUAT.lastname) AS customer
+							 FROM EndUser.Transaction_Tbl EUT
+    						 LEFT OUTER JOIN EndUser.Account_Tbl EUAT ON EUT.accountid = EUAT.id 
+							 LEFT OUTER JOIN Log.Transaction_Tbl Txn ON EUT.txnid = Txn.id
+							 LEFT OUTER JOIN Client.Client_Tbl CL ON Txn.clientid = CL.id
+					 		WHERE CL.id = ". intval($cid);
+		if (empty($thxid) === false)
+		 {
+			$sql .= " AND EUT.id = '". $this->getDBConn()->escStr( (integer) $thxid) ."'"; 
+			$sql .= " AND Txn.id = '". $this->getDBConn()->escStr( (integer) $thxid) ."'";
+		 }
+		if (empty($ono) === false)
+		 {$sql .= " AND Txn.orderid = '". $this->getDBConn()->escStr( (integer) $ono) ."'"; }
+		if (empty($mobile) === false) { $sql .= " AND Txn.mobile = '". $this->getDBConn()->escStr( (string) $mobile) ."'"; }
+			if (empty($email) === false) { $sql .= " AND Txn.email = '". $this->getDBConn()->escStr( (string) $email) ."'"; }
+				$res = $this->getDBConn()->query($sql);
+		
+		$xml = '<transactions sorted-by ="id" sort-order="descending">';
+		// Construct XML Document with data for Transaction
+		while ($RS = $this->getDBConn()->fetchName($res) )
+		{
+				
+				$xml .= '<transaction id="'. $RS["ID"] .'" type-id="'. $RS["TYPEID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" state-id="'. $RS["STATEID"] .'"  order-no="'. $RS["ORDERNO"] .'">';
+				$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
+				$xml .= '<customer id="'. $RS["CUSTOMERID"] .'">'. htmlspecialchars($RS["CUSTOMER"], ENT_NOQUOTES) .'</customer>';
+				$xml .= '<timestamp>'. gmdate("Y-m-d H:i:sP", $RS["TIMESTAMP"]) .'</timestamp>';
+				$xml .= '</transaction>';
+			
+			
+		}
+		$xml .= '</transactions>';
+		file_put_contents(sLOG_PATH ."/error444.log", var_export($xml , true) );
+		
+		return $xml;
+	}
+	
 	/**
 	 *
 	 *

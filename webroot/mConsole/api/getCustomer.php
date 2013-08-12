@@ -19,7 +19,7 @@ require_once(sCLASS_PATH ."/validate.php");
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
-
+/*
 $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
@@ -30,52 +30,20 @@ $HTTP_RAW_POST_DATA .= '<userid>12312321</userid>';
 $HTTP_RAW_POST_DATA .= '<clientid>3</clientid>';
 $HTTP_RAW_POST_DATA .= '</getcustomer>';
 $HTTP_RAW_POST_DATA .= '</root>';
-
+*/
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
 	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate("http://". str_replace("mpoint", "mconsole", $_SERVER['HTTP_HOST']) ."/protocols/mconsole.xsd") === true && count($obj_DOM->getcustomer) > 0)
 	{
+		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 		
-			$xml = '<status code="100">Found user info </status>
-					<customer id="17363" external-id="">
-						<first-name>Simon</first-name>
-						<last-name>Boriis</last-name>
-						<mobile country-id="100" verified="true">30206162</mobile>
-						<email>babe@gois.dk</email>
-						<device-id>07677455385448515b0ef3e82a303440</device-id>
-						<total-spent country-id="100" currency="kr." symbol="kr" format="{PRICE} {CURRENCY}">916200</total-spent>
-						<last-order>12/04-13 01:11</last-order>
-						<date-of-birth>22/09-86</date-of-birth>
-				</customer>
-				<addresses>
-					<address id="640">
-						<first-name>Simon</first-name>
-						<last-name>Boriis</last-name>
-						<company></company>
-						<street>Valbyholm 17, 1.</street>
-						<postal-code>2500</postal-code>
-						<city>Valby</city>
-						<state id="-100">N/A</state>
-						<country id="100" currency="kr." symbol="kr" format="{PRICE} {CURRENCY}">Danmark</country>
-					</address>
-					<address id="641">
-						<first-name>Simon</first-name>
-						<last-name>Boriis</last-name>
-						<company></company>
-						<street>Valbyholm 17, 1. 4</street>
-						<postal-code>2500</postal-code>
-						<city>Valby</city>
-						<state id="-100">N/A</state>
-						<country id="100" currency="kr." symbol="kr" format="{PRICE} {CURRENCY}">Danmark</country>
-					</address>
-			</addresses>
-			<acceptances customer-id="17363">
-				<acceptance id="1349" type-id="1" client-id="10013">false</acceptance>
-				<acceptance id="1350" type-id="2" client-id="10013">false</acceptance>
-				<acceptance id="1351" type-id="3" client-id="10013">false</acceptance>
-			</acceptances>';
+		$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->getcustomer->countryid);
+		
+		$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT,$obj_CountryConfig);
+			$xml = $obj_mPoint->getAccountInfo($obj_DOM->getcustomer->userid);
+			$xml .= $obj_mPoint->getStoredCards($obj_DOM->getcustomer->userid);
 	
 	}
 	// Error: Invalid XML Document

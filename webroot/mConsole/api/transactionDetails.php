@@ -49,7 +49,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		<name>Wallet.dk</name>
 	
 	</client>
-		<customer id="17363">
+		<customer id="49941">
 		<name>Simon Boriis</name>
 		<mobile country-id="100">30206162</mobile>
 		<email>simon@cellpointmobile.com</email>

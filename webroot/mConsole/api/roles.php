@@ -44,7 +44,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					<role>5</role>
 					<role>6</role>
 				</roles>
-				<clientid>3</clientid>';
+				<clientid>10007</clientid>';
 		}
 	}
 	// Error: Invalid XML Document
