@@ -39,6 +39,9 @@ require_once(sCLASS_PATH ."/dibs.php");
 require_once(sCLASS_PATH ."/cpm.php");
 // Require specific Business logic for the WannaFind component
 require_once(sCLASS_PATH ."/wannafind.php");
+// Require specific Business logic for the NetAxept component
+require_once(sCLASS_PATH ."/netaxept.php");
+
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -240,6 +243,31 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													$xml .= '<status code="92">Authorization failed, WannaFind returned error code'. $iTxnID .'</status>';
 												}
 												break;
+											case (Constants::iNETAXEPT_PSP): // NetAxept
+												$obj_PSP = new NetAxept($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+												$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), Constants::iNETAXEPT_PSP); 
+							
+												$aHTTP_CONN_INFO["netaxept"]["username"] = $obj_PSPConfig->getUsername();
+												$aHTTP_CONN_INFO["netaxept"]["password"] = $obj_PSPConfig->getPassword();		
+												$oCI = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["netaxept"]);
+																								
+												
+												$iTxnID = $obj_PSP->authTicket( $obj_Elem->ticket, $oCI, $obj_PSPConfig->getMerchantAccount());
+												// Authorization succeeded
+												if ($iTxnID > 0)
+												{
+													$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
+												}
+												// Error: Authorization declined
+												else
+												{
+													$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+												
+													header("HTTP/1.1 502 Bad Gateway");
+												
+													$xml .= '<status code="92">Authorization failed, NetAxcept returned error: '. $iTxnID .'</status>';
+												}
+												break;
 											default:	// Unkown Error
 												$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 												
@@ -255,7 +283,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											
 											header("HTTP/1.1 504 Gateway Timeout");
 										
-											$xml = '<status code="90">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES) .'</status>';
+											$xml = '<status code="90">'. htmlspecialchars($e->getTraceAsString(), ENT_NOQUOTES) .'</status>';
+											file_put_contents(sLOG_PATH ."/jona.log", $e->getMessage(), FILE_APPEND );
+											
 										}
 										break;
 									}

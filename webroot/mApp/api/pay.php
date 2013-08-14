@@ -192,7 +192,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$aHTTP_CONN_INFO["netaxept"]["username"] = $obj_PSPConfig->getUsername();
 									$aHTTP_CONN_INFO["netaxept"]["password"] = $obj_PSPConfig->getPassword();
 									$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["netaxept"]);
-									$obj_XML = $obj_PSP->initialize($obj_ConnInfo, $obj_PSPConfig->getMerchantAccount(), $obj_PSPConfig->getMerchantSubAccount(), (string) $obj_Elem->currency, (integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"]);
+									// $obj_DOM->pay[$i]->transaction["id"]
+									// get boolean value of store card.
+									$storecard = (strcasecmp($obj_DOM->pay[$i]->transaction["store-card"], "true") == 0 );
+									$obj_XML = $obj_PSP->initialize($obj_ConnInfo, $obj_PSPConfig->getMerchantAccount(), $obj_PSPConfig->getMerchantSubAccount(), (string) $obj_Elem->currency, (integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $storecard);
 									foreach ($obj_XML->children() as $obj_Elem)
 									{
 										$xml .= trim($obj_Elem->asXML() );

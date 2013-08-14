@@ -10,6 +10,8 @@
  * @version 1.11
  */
 
+require_once "enduser_account";
+
 /* ==================== Callback Exception Classes Start ==================== */
 /**
  * Exception class for all Callback exceptions
@@ -452,5 +454,27 @@ class Callback extends EndUserAccount
 		
 		return is_array($RS) === true && intval($RS["ID"]) > 0? $RS["ID"] : -1;
 	}	
+	
+	/**
+	 * Static method for retrieving mPoint's unique Transaction ID based on the Client's Order Number and
+	 * the Payment Service Provider who processed the payment transction.
+	 * The method returns -1 if mPoint's unique Transaction ID could not be found. 
+	 * 
+	 * @param 	RDB $oDB			Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param 	string $extid		The PSP's transaction ID
+	 * @param 	integer $pspid		mPoint's unique ID for the Payment Service Provider who processed the payment transction
+	 * @return 	integer
+	 */
+	public static function getTxnIDFromExtId(RDB &$oDB, $extid, $pspid)
+	{
+		$sql = "SELECT Max(id) AS id
+				FROM Log.Transaction_Tbl
+				WHERE extid = '". $extid ."' AND pspid = ". intval($pspid);
+		//echo $sql ."\n";
+		$RS = $oDB->getName($sql);
+		
+		return is_array($RS) === true && intval($RS["ID"]) > 0? $RS["ID"] : -1;
+	}	
+	
 }
 ?>
