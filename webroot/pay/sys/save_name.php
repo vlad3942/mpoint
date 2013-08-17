@@ -44,7 +44,7 @@ if (count($aMsgCds) == 0)
 	{
 		$iAccountID = -1;
 		if ($_SESSION['obj_TxnInfo']->getAccountID() > 0) { $iAccountID = $_SESSION['obj_TxnInfo']->getAccountID(); }
-		elseif (strlen($_SESSION['obj_TxnInfo']->getCustomerRef() ) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($this->getDBConn(), $_SESSION['obj_TxnInfo']->getClientConfig(), $_SESSION['obj_TxnInfo']->getCustomerRef() ); }
+		elseif (strlen($_SESSION['obj_TxnInfo']->getCustomerRef() ) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig(), $_SESSION['obj_TxnInfo']->getCustomerRef() ); }
 		if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getMobile() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig(), $_SESSION['obj_TxnInfo']->getMobile() ); }
 		if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig(), $_SESSION['obj_TxnInfo']->getEMail() ); }
 		// Client supports global storage of payment cards

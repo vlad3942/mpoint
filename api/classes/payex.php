@@ -291,6 +291,8 @@ class PayEx extends Callback
 			$sCVC = "";
 			$sExpiryYear = "";
 			$sExpiryMonth = "";
+			$sCardHolder = "";
+			
 			// Parse HTTP Response Headers
 			$a = explode(HTTPClient::CRLF, $obj_HTTP->getReplyHeader() );
 			foreach ($a as $str)
@@ -367,6 +369,7 @@ class PayEx extends Callback
 						elseif (stristr($name, "CVCCode") == true) { $sCVC = $name; }
 						elseif (stristr($name, "ExpireMonth") == true) { $sExpiryMonth = $name; }
 						elseif (stristr($name, "ExpireYear") == true) { $sExpiryYear = $name; }
+						elseif (stristr($name, "CardHolderName") == true) { $sCardHolder = $name; }
 						break;
 					case "form":
 						if (empty($sURL) === true) { $sURL = $value; }
@@ -383,6 +386,7 @@ class PayEx extends Callback
 			$xml .= '<expiry-month>'. htmlspecialchars($sExpiryMonth, ENT_NOQUOTES) .'</expiry-month>';
 			$xml .= '<expiry-year>'. htmlspecialchars($sExpiryYear, ENT_NOQUOTES) .'</expiry-year>';
 			$xml .= '<cvc>'. htmlspecialchars($sCVC, ENT_NOQUOTES) .'</cvc>';
+			if (empty($sCardHolder) === false) { $xml .= '<name>'. htmlspecialchars($sCardHolder, ENT_NOQUOTES) .'</name>'; }
 			$xml .= '<cookies>'. htmlspecialchars($sCookies, ENT_NOQUOTES) .'</cookies>';
 			$xml .= '<hidden-fields>';
 			foreach ($aHiddenFields as $name => $value)
@@ -433,12 +437,16 @@ class PayEx extends Callback
 			}
 			else
 			{
+				// Payment Authorized
+				if ($obj_XML->transactionStatus == 3) { $sid = Constants::iPAYMENT_ACCEPTED_STATE; }
+				else { $sid = Constants::iPAYMENT_REJECTED_STATE; }
+				
 				$sql = "UPDATE Log.Transaction_Tbl
 						SET extid = NULL
 						WHERE id = ". $this->getTxnInfo()->getID();
 //				echo $sql ."\n";
 				$this->getDBConn()->query($sql);
-				$obj_XML->status["code"] = $this->completeTransaction(Constants::iPAYEX_PSP, $obj_XML->transactionNumber, $this->getCardID($obj_XML->paymentMethod), Constants::iPAYMENT_ACCEPTED_STATE, array("result" => $obj_Std->CompleteResult) );
+				$obj_XML->status["code"] = $this->completeTransaction(Constants::iPAYEX_PSP, $obj_XML->transactionNumber, $this->getCardID($obj_XML->paymentMethod), $sid, array("result" => $obj_Std->CompleteResult) );
 			}
 		}
 		else

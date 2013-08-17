@@ -601,6 +601,7 @@ class TxnInfo
 			if (array_key_exists("customer-ref", $misc) === false) { $misc["customer-ref"] = ""; }
 			if (array_key_exists("auto-store-card", $misc) === false) { $misc["auto-store-card"] = false; }
 			if (array_key_exists("refund", $misc) === false) { $misc["refund"] = 0; }
+			if (array_key_exists("auth-url", $misc) === false) { $misc["auth-url"] = $obj->getAuthenticationURL(); }
 			
 			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $obj->getCountryConfig(), $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], $misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"]);
 			break;

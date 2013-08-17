@@ -48,7 +48,7 @@ INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (207, 'Auth URL is Inv
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (208, 'URL domain doesn''t match configured URL', 'Validate', 'valURL');
 INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (209, 'Auth URL must be configured for Client', 'Validate', 'valURL');
 
-INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10012, 2, 'http://mpoint.test.cellpointmobile.com');
-INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10021, 2, 'http://www.uat.pizzahut.co.uk');
-INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10022, 2, 'http://www.uat.pizzahut.co.uk');
-INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10023, 2, 'http://www.uat.pizzahut.co.uk');
+INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10012, 2, 'http://mpoint.test.cellpointmobile.com/');
+INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10021, 2, 'http://www.uat.pizzahut.co.uk/');
+INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10022, 2, 'http://www.uat.pizzahut.co.uk/');
+INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10023, 2, 'http://www.uat.pizzahut.co.uk/');
