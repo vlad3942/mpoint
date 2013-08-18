@@ -14,7 +14,9 @@ require_once("../../inc/include.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 
+require_once(sCLASS_PATH ."/admin.php");
 
+/*
 $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
@@ -24,28 +26,17 @@ $HTTP_RAW_POST_DATA .= '<roles>';
 $HTTP_RAW_POST_DATA .= '<id>1</id>';
 $HTTP_RAW_POST_DATA .= '</roles>';
 $HTTP_RAW_POST_DATA .= '</root>';
-
+*/
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
 	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate("http://". str_replace("mpoint", "mconsole", $_SERVER['HTTP_HOST']) ."/protocols/mconsole.xsd") === true && count($obj_DOM->roles) > 0)
 	{
-		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
+		$obj_mPoint = new Admin($_OBJ_DB, $_OBJ_TXT);
 		
-		for ($i=0; $i<count($obj_DOM->roles); $i++)
-		{
-			$xml = '<status code="100">Roles fetched </status>
-				<roles>	
-					<role>1</role>
-					<role>2</role>
-					<role>3</role>
-					<role>4</role>
-					<role>5</role>
-					<role>6</role>
-				</roles>
-				<clientid>10007</clientid>';
-		}
+		$xml = $obj_mPoint->GetUserRolesAndAccess($obj_DOM->roles->id);
+		
 	}
 	// Error: Invalid XML Document
 	elseif ( ($obj_DOM instanceof SimpleDOMElement) === false)

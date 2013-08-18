@@ -81,14 +81,14 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 		{
 			$iUserID = -1;
 			if ($obj_mPoint->auth($_REQUEST['username'], $_REQUEST['password'], $iUserID) === 10)
-			{
+			{	
 				try
 				{
 					$obj_mPoint = Refund::produce($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 					$aClientIDs = $obj_mPoint->getClientsForUser($iUserID);
 					// User has access to Client
 					if (in_array($obj_ClientConfig->getID(), $aClientIDs) === true)
-					{
+					{						
 						// Refund operation succeeded
 						if ($obj_mPoint->refund($_REQUEST['amount']) == 0)
 						{
@@ -141,7 +141,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	else
 	{
 		header("HTTP/1.0 400 Bad Request");
-		// Log Errors
+		// Log Errors		
 		foreach ($aMsgCds as $state => $debug)
 		{
 			$obj_mPoint->newMessage($_REQUEST['mpointid'], $state, $debug);
@@ -151,8 +151,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 // Error: Basic information is invalid
 else
 {
-	header("HTTP/1.0 400 Bad Request");
-	
+	header("HTTP/1.0 400 Bad Request");	
 	$aMsgCds[Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account'])+10] = "Client: ". $_REQUEST['clientid'] .", Account: ". $_REQUEST['account'];
 }
 $str = "";

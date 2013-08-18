@@ -76,5 +76,41 @@ class Admin extends General
 
 		return array_change_key_case($RS, CASE_LOWER);
 	}
+	
+	public function GetUserRolesAndAccess($id)
+	{
+		$sql = "SELECT R.id
+					FROM Admin.RoleAccess_Tbl Acc
+					INNER JOIN Admin.Role_Tbl R ON Acc.roleid = R.id AND R.enabled = true
+					WHERE Acc.userid = ". intval($id) ."
+					ORDER BY R.name ASC";
+	//			echo $sql ."\n";
+
+		$res = $this->getDBConn()->query($sql);
+		file_put_contents(sLOG_PATH ."/refundsend.log", var_export($sql, true) );
+		
+		$xml = '<status code="100">Roles fetched </status>';
+		$xml .= '<roles>';
+		while ($RS = $this->getDBConn()->fetchName($res) )
+		{
+			$xml .= "<role>". $RS["ID"] ."</role>";
+		}
+		$xml .= '</roles>';
+	
+		$sql = "SELECT clientid
+					FROM Admin.Access_Tbl
+					WHERE userid = ". intval($id);
+						//			echo $sql ."\n";
+		$res = $this->getDBConn()->query($sql);
+		$xml .= "<clients>";
+		while ($RS = $this->getDBConn()->fetchName($res) )
+		{
+			$xml .= "<client>". $RS["CLIENTID"] ."</client>";
+		}
+		$xml .= "</clients>";
+		
+		return  $xml;
+	}	
+	
 }
 ?>

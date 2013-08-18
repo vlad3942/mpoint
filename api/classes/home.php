@@ -474,43 +474,141 @@ class Home extends General
 	public  function searchThxHistory($cid,$thxid,$ono,$mobile,$email)
 	{
 		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, Extract('epoch' from EUT.created AT TIME ZONE 'Europe/Copenhagen') AS timestamp,
-							 CL.id AS clientid, CL.name AS client,
-							 Txn.id AS mpointid,EUT.stateid AS stateid, Txn.orderid AS orderno,EUAT.id AS customerid, (EUAT.firstname || ' ' || EUAT.lastname) AS customer
-							 FROM EndUser.Transaction_Tbl EUT
-    						 LEFT OUTER JOIN EndUser.Account_Tbl EUAT ON EUT.accountid = EUAT.id 
-							 LEFT OUTER JOIN Log.Transaction_Tbl Txn ON EUT.txnid = Txn.id
-							 LEFT OUTER JOIN Client.Client_Tbl CL ON Txn.clientid = CL.id
-					 		WHERE CL.id = ". intval($cid);
-		if (empty($thxid) === false)
-		 {
-			$sql .= " AND EUT.id = '". $this->getDBConn()->escStr( (integer) $thxid) ."'"; 
-			$sql .= " AND Txn.id = '". $this->getDBConn()->escStr( (integer) $thxid) ."'";
-		 }
-		if (empty($ono) === false)
-		 {$sql .= " AND Txn.orderid = '". $this->getDBConn()->escStr( (integer) $ono) ."'"; }
-		if (empty($mobile) === false) { $sql .= " AND Txn.mobile = '". $this->getDBConn()->escStr( (string) $mobile) ."'"; }
-			if (empty($email) === false) { $sql .= " AND Txn.email = '". $this->getDBConn()->escStr( (string) $email) ."'"; }
-				$res = $this->getDBConn()->query($sql);
+					CL.id AS clientid, CL.name AS client,
+					Txn.id AS mpointid,EUT.stateid AS stateid, Txn.orderid AS orderno,EUAT.id AS customerid, (EUAT.firstname || ' ' || EUAT.lastname) AS customer
+				FROM EndUser.Transaction_Tbl EUT
+    			LEFT OUTER JOIN EndUser.Account_Tbl EUAT ON EUT.accountid = EUAT.id 
+				LEFT OUTER JOIN Log.Transaction_Tbl Txn ON EUT.txnid = Txn.id
+				INNER JOIN Admin.Access_Tbl Acc ON Txn.clientid = Acc.clientid						
+				INNER JOIN Client.Client_Tbl CL ON  CL.id = Acc.clientid 
+				WHERE Acc.userid = ". intval($cid);
+		file_put_contents(sLOG_PATH ."/roles.log", var_export($sql, true) );
+		
+		if (empty($thxid) === false){$sql .= "AND Txn.id = '". $this->getDBConn()->escStr( (string) $thxid) ."'";}
+		if (empty($ono) === false){ $sql .= " AND Txn.orderid = '". $this->getDBConn()->escStr( (integer) $ono) ."'"; }
+		if (empty($mobile) === false){$sql .= " AND EUAT.mobile = '". $this->getDBConn()->escStr( (string) $mobile) ."'"; }
+		if (empty($email) === false) { $sql .= " AND EUAT.email = '". $this->getDBConn()->escStr( (string) $email) ."'";}
+		
+		$res = $this->getDBConn()->query($sql);
 		
 		$xml = '<transactions sorted-by ="id" sort-order="descending">';
 		// Construct XML Document with data for Transaction
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
-				
 				$xml .= '<transaction id="'. $RS["ID"] .'" type-id="'. $RS["TYPEID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" state-id="'. $RS["STATEID"] .'"  order-no="'. $RS["ORDERNO"] .'">';
 				$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
 				$xml .= '<customer id="'. $RS["CUSTOMERID"] .'">'. htmlspecialchars($RS["CUSTOMER"], ENT_NOQUOTES) .'</customer>';
 				$xml .= '<timestamp>'. gmdate("Y-m-d H:i:sP", $RS["TIMESTAMP"]) .'</timestamp>';
 				$xml .= '</transaction>';
-			
-			
 		}
+		
 		$xml .= '</transactions>';
-		file_put_contents(sLOG_PATH ."/error444.log", var_export($xml , true) );
 		
 		return $xml;
 	}
+	public function getThx($txnid)
+	{
+		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, Extract('epoch' from EUT.created AT TIME ZONE 'Europe/Copenhagen') AS timestamp,
+					(CASE WHEN EUT.amount = 0 THEN Txn.amount
+					 WHEN EUT.amount IS NULL THEN Txn.amount
+					 ELSE abs(EUT.amount)
+					 END) AS amount,
+					C.id AS countryid, C.currency, C.symbol, C.priceformat,
+					CL.id AS clientid, CL.name AS client,
+					(EUAT.firstname || ' ' || EUAT.lastname) AS to_name, EUAT.id AS to_id, EUAT.countryid AS to_countryid,
+					EUAT.mobile AS to_mobile, EUAT.countryid AS to_m, EUAT.email AS to_email,
+					(EUAF.firstname || ' ' || EUAF.lastname) AS from_name,EUAF.id AS from_id, EUAF.countryid AS from_countryid,
+					EUAF.mobile AS from_mobile, EUAF.email AS from_email,
+					Txn.id AS mpointid, Txn.orderid, Txn.cardid, Card.name AS card,
+					Extract('epoch' from M1.created) AS authorized,
+					Extract('epoch' from M2.created) AS captured,
+					Extract('epoch' from M3.created) AS refunded,
+					Txn.refund AS Refund_amount,Txn.pspid AS pspid,
+					Txn.orderid AS orderno,EUT.accountid AS end_user_id,
+					C.id AS countryid, C.currency, C.symbol, C.priceformat
+				
+				FROM EndUser.Transaction_Tbl EUT
+				LEFT OUTER JOIN EndUser.Account_Tbl EUAT ON EUT.toid = EUAT.id
+				LEFT OUTER JOIN EndUser.Account_Tbl EUAF ON EUT.fromid = EUAF.id				
+				LEFT OUTER JOIN Log.Transaction_Tbl Txn ON EUT.txnid = Txn.id
+				LEFT OUTER JOIN Client.Client_Tbl CL ON Txn.clientid = CL.id
+				LEFT OUTER JOIN System.Country_Tbl C ON Txn.countryid = C.id
+				LEFT OUTER JOIN System.Card_Tbl Card ON Txn.cardid = Card.id
+				LEFT OUTER JOIN Log.message_tbl M1 ON Txn.id = M1.txnid AND M1.stateid = ". Constants::iPAYMENT_ACCEPTED_STATE ."
+				LEFT OUTER JOIN Log.message_tbl M2 ON Txn.id = M2.txnid AND M2.stateid = ". Constants::iPAYMENT_CAPTURED_STATE ."
+				LEFT OUTER JOIN Log.message_tbl M3 ON Txn.id = M3.txnid AND M2.stateid = ". Constants::iPAYMENT_REFUNDED_STATE ."
+				WHERE EUT.id = '". $this->getDBConn()->escStr( (string) $txnid) ."'";
+		
+	$RS = $this->getDBConn()->getName($sql);
 	
+	$sql = "SELECT id, countryid,(firstname || ' ' || lastname) AS name,
+			mobile, email
+			FROM EndUser.Account_Tbl WHERE id =
+			". $RS["END_USER_ID"];
+				
+	//		echo $sql ."\n";
+				
+	$RSs = $this->getDBConn()->getName($sql);
+	
+		$obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $RS["CLIENTID"]);
+		
+		$xml .= '<transaction id="'. $RS["ID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" psp-id="'. $RS["PSPID"] .'" order-no="'. $RS["ORDERNO"] .'">';
+		$xml .= '<amount country-id="'. $RS["COUNTRYID"] .'" currency="'. $this->_obj_CountryConfig->getCurrency()  .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. htmlspecialchars($RS["AMOUNT"], ENT_NOQUOTES) .'</amount>';
+		$xml .= '<refund country-id="'. $RS["COUNTRYID"] .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. htmlspecialchars($RS["REFUND_AMOUNT"], ENT_NOQUOTES) .'</refund>';
+		$xml .= '<client id="'. $obj_ClientConfig->getID() .'">';
+		$xml .= '<name>'. htmlspecialchars($obj_ClientConfig->getName(), ENT_NOQUOTES) .'</name>';
+		$xml .= '</client>';
+		
+		$xml .= '<customer id="'. $RSs["ID"] .'">';
+		$xml .= '<name>'. htmlspecialchars($RSs["NAME"], ENT_NOQUOTES) .'</name>';
+		$xml .= '<mobile country-id="'. $RS["COUNTRYID"] .'">'. floatval($RSs["MOBILE"]) .'</mobile>';
+		$xml .= '<email>'. htmlspecialchars($RSs["EMAIL"], ENT_NOQUOTES) .'</email>';
+		$xml .= '</customer>';
+		$xml .= '<timestamp>'. date("d/m-y H:i:s", $RS["TIMESTAMP"]) .'</timestamp>';
+		if ($RS["AUTHORIZED"] > 0) { $xml .= '<authorized epoch="'. $RS["AUTHORIZED"] .'">'. date("d/m-y H:i:s", $RS["AUTHORIZED"]) .'</authorized>'; }
+		else { $xml .= '<authorized />'; }
+		if ($RS["CAPTURED"] > 0) { $xml .= '<captured epoch="'. $RS["CAPTURED"] .'">'. date("d/m-y H:i:s", $RS["CAPTURED"]) .'</captured>'; }
+		else { $xml .= '<captured />'; }
+		if ($RS["REFUNDED"] > 0) { $xml .= '<refunded epoch="'. $RS["REFUNDED"] .'">'. date("d/m-y H:i:s", $RS["REFUNDED"]) .'</refunded>'; }
+		else { $xml .= '<refunded />'; }
+		$xml .= '<wallet-to-wallet>';
+		$xml .= '<from account-id="'. $RS["FROMID"] .'">';
+		$xml .= '<name>'. htmlspecialchars($RS["FROM_NAME"], ENT_NOQUOTES) .'</name>';
+		$xml .= '<mobile country-id="'. $RS["FROM_COUNTRYID"] .'">'. $RS["FROM_MOBILE"] .'</mobile>';
+		$xml .= '<email>'. htmlspecialchars($RS["FROM_EMAIL"], ENT_NOQUOTES) .'</email>';
+		$xml .= '</from>';
+		$xml .= '<to account-id="'. $RS["TOID"] .'">';
+		$xml .= '<name>'. htmlspecialchars($RS["TO_NAME"], ENT_NOQUOTES) .'</name>';
+		$xml .= '<mobile country-id="'. $RS["TO_COUNTRYID"] .'">'. $RS["TO_MOBILE"] .'</mobile>';
+		$xml .= '<email>'. htmlspecialchars($RS["TO_EMAIL"], ENT_NOQUOTES) .'</email>';
+		$xml .= '</to>';
+		$xml .= '</wallet-to-wallet>';
+		
+		$sql = "SELECT N.id, N.message, Extract('epoch' from N.created) AS created, U.id AS userid, U.email
+				FROM enduser.Transaction_Tbl Txn
+				INNER JOIN Log.Note_Tbl N ON Txn.id = N.txnid AND N.enabled = true
+				INNER JOIN Admin.user_tbl U ON N.userid = U.id
+				WHERE Txn.id = ". intval($txnid);
+//		echo $sql ."\n";
+		$aRS = $this->getDBConn()->getAllNames($sql);
+		$xml .= '<notes>';
+		if (is_array($aRS) === true && count($aRS) > 0)
+		{
+			for ($i=0; $i<count($aRS); $i++)
+			{
+				$xml .= '<note id="'. $aRS[$i]["ID"] .'">';
+				$xml .= '<user id="'. $aRS[$i]["USERID"] .'">'. htmlspecialchars($aRS[$i]["EMAIL"], ENT_NOQUOTES) .'</user>';
+				$xml .= '<message>'. htmlspecialchars($aRS[$i]["MESSAGE"], ENT_NOQUOTES) .'</message>';
+				$xml .= '<created>'. date("d/m-y H:i", $aRS[$i]["CREATED"]) .'</created>';
+				$xml .= '</note>';
+			}
+		}
+		$xml .= '</notes>';
+		
+		$xml .= '</transaction>';
+		
+		return $xml;
+	}
 	/**
 	 *
 	 *
@@ -864,5 +962,18 @@ class Home extends General
 		
 		return $code;
 	}
+	
+	public function newNote($uid, $oid, $msg)
+	{
+		$sql = "INSERT INTO Log.Note_Tbl
+					(userid, txnid, message)
+				VALUES
+					(". intval($uid) .", ". intval($oid)  .", '". $this->getDBConn()->escStr($msg) ."')";
+		//		echo $sql ."\n";
+		file_put_contents(sLOG_PATH ."/sql.log", var_export($sql, true) );
+		
+		return is_resource($this->getDBConn()->query($sql) );
+	}
 }
+
 ?>
