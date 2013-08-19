@@ -251,7 +251,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												$aHTTP_CONN_INFO["netaxept"]["password"] = $obj_PSPConfig->getPassword();		
 												$oCI = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["netaxept"]);
 																								
-												
 												$iTxnID = $obj_PSP->authTicket( $obj_Elem->ticket, $oCI, $obj_PSPConfig->getMerchantAccount());
 												// Authorization succeeded
 												if ($iTxnID > 0)

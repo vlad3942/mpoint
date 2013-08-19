@@ -475,6 +475,5 @@ class Callback extends EndUserAccount
 		
 		return is_array($RS) === true && intval($RS["ID"]) > 0? $RS["ID"] : -1;
 	}	
-	
 }
 ?>

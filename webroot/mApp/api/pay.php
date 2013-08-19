@@ -195,7 +195,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									// $obj_DOM->pay[$i]->transaction["id"]
 									// get boolean value of store card.
 									$storecard = (strcasecmp($obj_DOM->pay[$i]->transaction["store-card"], "true") == 0 );
-									$obj_XML = $obj_PSP->initialize($obj_ConnInfo, $obj_PSPConfig->getMerchantAccount(), $obj_PSPConfig->getMerchantSubAccount(), (string) $obj_Elem->currency, (integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $storecard);
+									$obj_XML = $obj_PSP->initialize($obj_ConnInfo,
+																	$obj_PSPConfig->getMerchantAccount(),
+																	$obj_PSPConfig->getMerchantSubAccount(),
+																	(string) $obj_Elem->currency, 
+																	(integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"],
+																	$storecard);
+									
 									foreach ($obj_XML->children() as $obj_Elem)
 									{
 										$xml .= trim($obj_Elem->asXML() );

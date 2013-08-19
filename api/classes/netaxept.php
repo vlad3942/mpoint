@@ -33,22 +33,20 @@ class NetAxept extends Callback
 	 */
 	public function initialize(HTTPConnInfo &$oCI, $merchant, $account, $currency, $cardid, $storecard)
 	{
-		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true,
-																						"exceptions" => true) );
+		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );
 		$sOrderNo = $this->getTxnInfo()->getOrderID();
-		if (empty($sOrderNo) === true) { $sOrderNo = $this->getTxnInfo()->getID(); }
-		
+		if ( empty($sOrderNo) === true) { $sOrderNo = $this->getTxnInfo()->getID(); }
 		
 		$request = array("Description" => "mPoint Transaction: ". $this->getTxnInfo()->getID() ." for Order: ". $this->getTxnInfo()->getOrderID(),
 										  "Environment" => array("WebServicePlatform" => "PHP5"),
 										  "Order" => array("Amount" => $this->getTxnInfo()->getAmount(),
-														   "CurrencyCode" => $currency,
-														    "OrderNumber" => $sOrderNo ),
-											"ServiceType" => "M",
-											"Terminal" => array("Language" => "en_GB",
-																"RedirectUrl" => "http://". $_SERVER['HTTP_HOST'] ."/netaxept/accept.php?mpoint-id=". $this->getTxnInfo()->getID(),
-																"SinglePage" => "true"),
-											"TransactionId" => $this->getTxnInfo()->getID() ."-". time() );
+										  "CurrencyCode" => $currency,
+										  "OrderNumber" => $sOrderNo ),
+										  "ServiceType" => "M",
+										  "Terminal" => array("Language" => "en_GB",
+															  "RedirectUrl" => "http://". $_SERVER['HTTP_HOST'] ."/netaxept/accept.php?mpoint-id=". $this->getTxnInfo()->getID(),
+															  "SinglePage" => "true"),
+															  "TransactionId" => $this->getTxnInfo()->getID() ."-". time() );
 		
 		// check if we need to store the card		
 		if ($storecard == true)
@@ -64,7 +62,6 @@ class NetAxept extends Callback
 		
 		if (intval($obj_Std->RegisterResult->TransactionId) == $this->getTxnInfo()->getID() )
 		{
-
 			$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 			$xml .= '<root>';
 			$xml .= '<url method="post" content-type="application/x-www-form-urlencoded">https://'. $oCI->getHost() .'/Terminal/default.aspx</url>';
@@ -78,8 +75,7 @@ class NetAxept extends Callback
 			$xml .= '</hidden-fields>';
 			$xml .= '</root>';
 			
-			$data = array("psp-id" => Constants::iNETAXEPT_PSP,
-						  "url" => var_export($obj_Std, true) );
+			$data = array("psp-id" => Constants::iNETAXEPT_PSP, "url" => var_export($obj_Std, true) );
 			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, serialize($data) );
 			
 			$obj_XML = simplexml_load_string($xml);
@@ -121,10 +117,9 @@ class NetAxept extends Callback
 		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true,
 		"exceptions" => true) );
 		$aParams = array("merchantId" => $merchant,
-		"token" => $oCI->getPassword(),
-		"request" => array("Operation" => "AUTH", "TransactionId" => $transactionID)
-	 	);		
-
+						 "token" => $oCI->getPassword(),
+						 "request" => array("Operation" => "AUTH", "TransactionId" => $transactionID) );		
+		
 		try
 		{
 			$obj_Std = $obj_SOAP->Process($aParams);
@@ -134,7 +129,8 @@ class NetAxept extends Callback
 			{
 				// make a query response to NetAxept to make sure everything is ok
 				$queryResponse = $this->query($oCI, $merchant, $transactionID );
-					
+				$iStateID;
+				
 				// finalize transaction in mPoint
 				if ($queryResponse->Summary->Authorized == "true")
 				{
@@ -142,7 +138,7 @@ class NetAxept extends Callback
 				}
 				else
 				{
-						$iStateID = $this->completeTransaction(Constants::iNETAXEPT_PSP, $transactionID, $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iPAYMENT_REJECTED_STATE, array('0' => var_export($obj_Std->ProcessResult, true) ) );
+					$iStateID = $this->completeTransaction(Constants::iNETAXEPT_PSP, $transactionID, $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iPAYMENT_REJECTED_STATE, array('0' => var_export($obj_Std->ProcessResult, true) ) );
 			
 				}
 				
@@ -168,8 +164,7 @@ class NetAxept extends Callback
 	 * Performs a capture operation with NetAxept for the provided transaction.
 	 * The method will return 'OK' if the operation suceeded.
 	 *
-	 * Exceptions will be raised on errors, unfortunently no errors codes are set by NetAxept, but only a String.
-	 * As such this methods will return a string different from 'OK' on errors.
+	 * Exceptions will be raised on errors.
 	 * 
 	 * @param	HTTPConnInfo $oCI		Information on how to connect to NetAxept
 	 * @param	integer $merchant		The merchant ID to identify us to NetAxept
@@ -180,13 +175,12 @@ class NetAxept extends Callback
 	 */
 	public function capture(HTTPConnInfo &$oCI, $merchant,$transactionID, $txn)
 	{
-		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true,
-		"exceptions" => true) );
+		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );
 		$aParams = array("merchantId" => $merchant,
-		"token" => $oCI->getPassword(),
-		"request" => array("Operation" => "CAPTURE", "TransactionId" => $transactionID, "TransactionAmount" => $txn->getAmount() )
-	 	);		
-
+						 "token" => $oCI->getPassword(),
+						 "request" => array("Operation" => "CAPTURE",
+						 				  	"TransactionId" => $transactionID,
+						 					"TransactionAmount" => $txn->getAmount() ) );		
 		try
 		{
 			$obj_Std = $obj_SOAP->Process($aParams);
@@ -221,12 +215,9 @@ class NetAxept extends Callback
 	public function query(HTTPConnInfo &$oCI, $merchant,$transactionID)
 	{
 
-		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true,
-		"exceptions" => true) );
-		$aParams = array("merchantId" => $merchant,
-		"token" => $oCI->getPassword(),
-		"request" => array("TransactionId" => $transactionID )
-	 	);		
+		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );
+		$aParams = array("merchantId" => $merchant, "token" => $oCI->getPassword(), "request" => array("TransactionId" => $transactionID ) );		
+
 		try
 		{			
 			$obj_Std = $obj_SOAP->Query($aParams);
@@ -334,26 +325,22 @@ class NetAxept extends Callback
 	 */
 	public function authTicket($ticket, &$oCI, $merchant)
 	{
-		
-		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true,
-		"exceptions" => true) );
+		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );
 
 		$sOrderNo = $this->getTxnInfo()->getOrderID();
 		if (empty($sOrderNo) === true) { $sOrderNo = $this->getTxnInfo()->getID(); }
 		
-		
-		$request = array("Description" => "mPoint Transaction: ". $this->getTxnInfo()->getID() ." for Order: ". $this->getTxnInfo()->getOrderID(),
+		$request = array("Description" => "mPoint Transaction: ". $this->getTxnInfo()->getID() .
+										  "for Order: ". $this->getTxnInfo()->getOrderID(),
 										  "Environment" => array("WebServicePlatform" => "PHP5"),
 										  "Order" => array("Amount" => $this->getTxnInfo()->getAmount(),
 														   "CurrencyCode" => $this->getTxnInfo()->getCountryConfig()->getCurrency(),
-														    "OrderNumber" => $sOrderNo ),
-											"ServiceType" => "C",
-											"Recurring" => array("Type" => "S", "PanHash" => $ticket),
-											"TransactionId" => $this->getTxnInfo()->getID() ."-". time() );
+														   "OrderNumber" => $sOrderNo ),
+										  "ServiceType" => "C",
+										  "Recurring" => array("Type" => "S", "PanHash" => $ticket),
+										  "TransactionId" => $this->getTxnInfo()->getID() ."-". time() );
 			
-		$aParams = array("merchantId" => $merchant,
-						 "token" => $oCI->getPassword(),
-						 "request" => $request );
+		$aParams = array("merchantId" => $merchant, "token" => $oCI->getPassword(), "request" => $request );
 				
 		try
 		{
@@ -361,8 +348,8 @@ class NetAxept extends Callback
 
 	 		if (intval($obj_Std->RegisterResult->TransactionId) == $this->getTxnInfo()->getID() )
 	 		{		
-	 			$data = array("psp-id" => Constants::iNETAXEPT_PSP,
-	 						  "url" => var_export($obj_Std, true) );
+	 			$data = array("psp-id" => Constants::iNETAXEPT_PSP, "url" => var_export($obj_Std, true) );
+	 			
 	 			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, serialize($data) );
 
 	 			$obj_XML = simplexml_load_string($xml);
@@ -403,8 +390,6 @@ class NetAxept extends Callback
 			else if ($e->getMessage() != null) { return $e->getMessage(); }
 			else { return -1; }
 		}	
-		
-
 	}
 }
 ?>

@@ -168,13 +168,12 @@ class EndUserAccount extends Home
 			// Client supports global storage of payment cards: Link End-User Account
 			if ($iAccountID > 0 && $this->getClientConfig()->getStoreCard() > 3)
 			{
-				file_put_contents(sLOG_PATH ."/jona.log", 'Link End-User account '  , FILE_APPEND );
 				$this->link($iAccountID);
 				$iStatus = 1;
 			}
 			// Create new End-User Account
 			else
-			{				
+			{
 				$mob = "";
 				$email = "";
 				if (floatval($addr) > $obj_CountryConfig->getMinMobile() ) { $mob = $addr; }
@@ -188,7 +187,6 @@ class EndUserAccount extends Home
 		{
 			$bPreferred = "false";
 			$iStatus = 0;
-			
 		}
 
 		// Check if card has already been saved
@@ -363,7 +361,7 @@ class EndUserAccount extends Home
 	 * @return	integer
 	 */
 	private function _saveCardName($id, $cardid, $name, $pref=false)
-	{		
+	{
 		// Set name for card
 		$sql = "UPDATE EndUser.Card_Tbl
 				SET name = '". $this->getDBConn()->escStr($name) ."'

@@ -32,6 +32,8 @@ require_once(sCLASS_PATH ."/pspconfig.php");
 header("Content-Type: text/plain");
 
 //$HTTP_RAW_POST_DATA;
+// $HTTP_RAW_POST_DATA is set to "php://input"
+// as netaxept is setting the wrong  post type this can be removed when when they fix it on their side. 
 $HTTP_RAW_POST_DATA = file_get_contents("php://input");
 $obj_json = json_decode($HTTP_RAW_POST_DATA);
 $extid = $obj_json->TransactionId;
@@ -64,7 +66,10 @@ try
 		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $ticket);
 		$sMask = $queryResponse->CardInformation->MaskedPAN;
 		$sExpiry = substr($queryResponse->CardInformation->ExpiryDate, -2) . "/" . substr($queryResponse->CardInformation->ExpiryDate, 0, 2);
-		$iStatus = $obj_mPoint->saveCard($obj_TxnInfo, $obj_TxnInfo->getMobile(), $obj_mPoint->getCardId($queryResponse->CardInformation->PaymentMethod), Constants::iNETAXEPT_PSP, $ticket, $sMask, $sExpiry);
+		$iStatus = $obj_mPoint->saveCard( $obj_TxnInfo, 
+										  $obj_TxnInfo->getMobile(), 
+										  $obj_mPoint->getCardId($queryResponse->CardInformation->PaymentMethod),
+										  Constants::iNETAXEPT_PSP, $ticket, $sMask, $sExpiry);
 		
 		if ($iStatus == 1)
 		{
@@ -74,7 +79,10 @@ try
 		else if ($iStatus == 2)
 		{
 			$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile() );
-			if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail() ); }
+			if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") 
+			{
+				$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail() ); 
+			}
 			$obj_TxnInfo->setAccountID($iAccountID);
 			$obj_mPoint->getTxnInfo()->setAccountID($iAccountID);
 			// SMS communication enabled
@@ -95,7 +103,11 @@ try
 		{
 			$obj_Home = new Home($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo->getClientConfig()->getCountryConfig() );
 			$iAccountID = $obj_Home->getAccountID($obj_TxnInfo->getClientConfig()->getCountryConfig(), $obj_TxnInfo->getMobile() );
-			if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = $obj_Home->getAccountID($obj_TxnInfo->getClientConfig()->getCountryConfig(), $obj_TxnInfo->getEMail() ); }
+			
+			if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") 
+			{
+				$iAccountID = $obj_Home->getAccountID($obj_TxnInfo->getClientConfig()->getCountryConfig(), $obj_TxnInfo->getEMail() ); 
+			}
 		
 			$obj_mPoint->link($iAccountID);
 			$obj_TxnInfo->setAccountID($iAccountID);
@@ -110,7 +122,10 @@ try
 			break;
 		}
 	}
-	if ($obj_TxnInfo->getReward() > 0 && $obj_TxnInfo->getAccountID() > 0) { $obj_mPoint->topup($obj_TxnInfo->getAccountID(), Constants::iREWARD_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getReward() ); }
+	if ($obj_TxnInfo->getReward() > 0 && $obj_TxnInfo->getAccountID() > 0)
+	 { 
+	 	$obj_mPoint->topup($obj_TxnInfo->getAccountID(), Constants::iREWARD_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getReward() ); 
+	 }
 		
 	// Callback URL has been defined for Client and transaction hasn't been duplicated
 	if ($obj_TxnInfo->getCallbackURL() != "" && $iStateID != Constants::iPAYMENT_DUPLICATED_STATE)
