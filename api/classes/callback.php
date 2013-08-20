@@ -10,8 +10,6 @@
  * @version 1.11
  */
 
-require_once "enduser_account";
-
 /* ==================== Callback Exception Classes Start ==================== */
 /**
  * Exception class for all Callback exceptions

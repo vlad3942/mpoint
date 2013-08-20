@@ -41,7 +41,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT, $oTxt);
 		
 		
-			$obj_mPoint->newNote($obj_DOM->savenote->userid, $obj_DOM->savenote->txnid, $obj_DOM->savenote->message);
+		$obj_mPoint->newNote($obj_DOM->savenote->userid, $obj_DOM->savenote->txnid, $obj_DOM->savenote->message);
 	
 	}
 	// Error: Invalid XML Document
