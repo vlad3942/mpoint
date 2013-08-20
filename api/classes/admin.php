@@ -83,11 +83,10 @@ class Admin extends General
 					FROM Admin.RoleAccess_Tbl Acc
 					INNER JOIN Admin.Role_Tbl R ON Acc.roleid = R.id AND R.enabled = true
 					WHERE Acc.userid = ". intval($id) ."
-					ORDER BY R.name ASC";
+					 ORDER BY R.name ASC";
 	//			echo $sql ."\n";
 
 		$res = $this->getDBConn()->query($sql);
-		file_put_contents(sLOG_PATH ."/refundsend.log", var_export($sql, true) );
 		
 		$xml = '<status code="100">Roles fetched </status>';
 		$xml .= '<roles>';

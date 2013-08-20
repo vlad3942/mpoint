@@ -471,7 +471,7 @@ class Home extends General
 	 * @param	string	$email	The End-User´s E-Mail 
 	 * @return 	string
 	 */
-	public  function searchThxHistory($cid,$thxid,$ono,$mobile,$email)
+	public  function searchTxnHistory($cid,$thxid,$ono,$mobile,$email)
 	{
 		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, Extract('epoch' from EUT.created AT TIME ZONE 'Europe/Copenhagen') AS timestamp,
 					CL.id AS clientid, CL.name AS client,
@@ -482,10 +482,9 @@ class Home extends General
 				INNER JOIN Admin.Access_Tbl Acc ON Txn.clientid = Acc.clientid						
 				INNER JOIN Client.Client_Tbl CL ON  CL.id = Acc.clientid 
 				WHERE Acc.userid = ". intval($cid);
-		file_put_contents(sLOG_PATH ."/roles.log", var_export($sql, true) );
 		
 		if (empty($thxid) === false){$sql .= "AND Txn.id = '". $this->getDBConn()->escStr( (string) $thxid) ."'";}
-		if (empty($ono) === false){ $sql .= " AND Txn.orderid = '". $this->getDBConn()->escStr( (integer) $ono) ."'"; }
+		if (empty($ono) === false){ $sql .= " AND Txn.orderid = '". $this->getDBConn()->escStr( $ono) ."'"; }
 		if (empty($mobile) === false){$sql .= " AND EUAT.mobile = '". $this->getDBConn()->escStr( (string) $mobile) ."'"; }
 		if (empty($email) === false) { $sql .= " AND EUAT.email = '". $this->getDBConn()->escStr( (string) $email) ."'";}
 		
@@ -506,7 +505,7 @@ class Home extends General
 		
 		return $xml;
 	}
-	public function getThx($txnid)
+	public function getTxn($txnid)
 	{
 		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, Extract('epoch' from EUT.created AT TIME ZONE 'Europe/Copenhagen') AS timestamp,
 					(CASE WHEN EUT.amount = 0 THEN Txn.amount
@@ -536,7 +535,7 @@ class Home extends General
 				LEFT OUTER JOIN System.Card_Tbl Card ON Txn.cardid = Card.id
 				LEFT OUTER JOIN Log.message_tbl M1 ON Txn.id = M1.txnid AND M1.stateid = ". Constants::iPAYMENT_ACCEPTED_STATE ."
 				LEFT OUTER JOIN Log.message_tbl M2 ON Txn.id = M2.txnid AND M2.stateid = ". Constants::iPAYMENT_CAPTURED_STATE ."
-				LEFT OUTER JOIN Log.message_tbl M3 ON Txn.id = M3.txnid AND M2.stateid = ". Constants::iPAYMENT_REFUNDED_STATE ."
+				LEFT OUTER JOIN Log.message_tbl M3 ON Txn.id = M3.txnid AND M3.stateid = ". Constants::iPAYMENT_REFUNDED_STATE ."
 				WHERE EUT.id = '". $this->getDBConn()->escStr( (string) $txnid) ."'";
 		
 	$RS = $this->getDBConn()->getName($sql);
@@ -546,8 +545,7 @@ class Home extends General
 			FROM EndUser.Account_Tbl WHERE id =
 			". $RS["END_USER_ID"];
 				
-	//		echo $sql ."\n";
-				
+	//		echo $sql ."\n";	
 	$RSs = $this->getDBConn()->getName($sql);
 	
 		$obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $RS["CLIENTID"]);
@@ -970,7 +968,6 @@ class Home extends General
 				VALUES
 					(". intval($uid) .", ". intval($oid)  .", '". $this->getDBConn()->escStr($msg) ."')";
 		//		echo $sql ."\n";
-		file_put_contents(sLOG_PATH ."/sql.log", var_export($sql, true) );
 		
 		return is_resource($this->getDBConn()->query($sql) );
 	}

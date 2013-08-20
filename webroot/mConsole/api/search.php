@@ -48,8 +48,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->search->countryid);
 		
 		$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT,$obj_CountryConfig);
-		$xml = $obj_mPoint->searchThxHistory( (string) $obj_DOM->search->clientid,(string) $obj_DOM->search->transactionno,(string) $obj_DOM->search->orderno,(string) $obj_DOM->search->mobile,(string) $obj_DOM->search->email);
-		
+		$xml = $obj_mPoint->searchTxnHistory( (string) $obj_DOM->search->clientid,(string) $obj_DOM->search->transactionno,(string) $obj_DOM->search->orderno,(string) $obj_DOM->search->mobile,(string) $obj_DOM->search->email);
+		header("Content-Type: text/xml; charset=\"UTF-8\"");
 		$xml =  utf8_encode ( $xml );
 	
 	}
@@ -68,7 +68,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$xml = '';
 		foreach ($obj_DOM->children() as $obj_Elem)
 		{
-			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>'; 
+			$xml = '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>'; 
 		}
 	}
 	// Error: Invalid Input
@@ -80,7 +80,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$xml = '';
 		for ($i=0; $i<count($aObj_Errs); $i++)
 		{
-			$xml .= '<status code="400">'. htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES) .'</status>';
+			$xml = '<status code="400">'. htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES) .'</status>';
 		}
 	}
 }

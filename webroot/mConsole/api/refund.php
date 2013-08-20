@@ -39,6 +39,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 {	
 	if ( ($obj_DOM instanceof SimpleDOMElement) === true &&  $obj_DOM->validate("http://". str_replace("mpoint", "mconsole", $_SERVER['HTTP_HOST']) ."/protocols/mconsole.xsd") === true && count($obj_DOM->refund) > 0)
 	{
+		header("Content-Type: text/xml; charset=\"UTF-8\"");
+		
+		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 		
 		$h = "POST {PATH} HTTP/1.0" .HTTPClient::CRLF;
 		$h .= "host: {HOST}" .HTTPClient::CRLF;
@@ -46,26 +49,30 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
 		$h .= "Content-Type: application/x-www-form-urlencoded" .HTTPClient::CRLF;
 		
-		$obj_Client = new HTTPClient(new Template, HTTPConnInfo::produceConnInfo($_SERVER['HTTP_HOST']."/buy/refund.php") );
+		$obj_Client = new HTTPClient(new Template, HTTPConnInfo::produceConnInfo("http://". $_SERVER["HTTP_HOST"] ."/buy/refund.php") );
+		
 		$obj_Client->connect();
+		
 		$b = "clientid=". intval($obj_DOM->refund->clientid) ."&username=". urlencode( $obj_DOM->refund->username ) ."&password=". urlencode( $obj_DOM->refund->password ) ."&mpointid=". intval($obj_DOM->refund->mpointid) ."&orderid=". urlencode($obj_DOM->refund->orderid) ."&amount=". intval($obj_DOM->refund->amount) ;
-		$code = $obj_Client->send($h, $b);
+		
+		$code = $obj_Client->send($h, $b);		
 		if ($code != 200)
 		{
 			// Order already refunded
-			if (strstr($obj_HTTP->getReplyBody(), "msg=177") == true) 
+			if (strstr($obj_Client->getReplyBody(), "msg=177") == true) 
 			{  
-				$xml .= '<status code="177"> Order already refunded </status>
+				$xml = '<status code="177"> Order already refunded </status>
 						<code>177</code>'; 
 			}
 			else { trigger_error("Unable to perform refund for Order No.: ". $obj_DOM->refund->orderid ." using mPointID: ". intval($obj_DOM->refund->mpointid) .". mPoint returned: ". t ."\n". "Request Body: ". $b ."\n". "Response Body: ". $obj_Client->getReplyBody() ); }
 		}
 		else 
 		{
-			$xml .= '<status code="200">Successfully Refunded  </status>
+			$xml = '<status code="200">Successfully Refunded  </status>
 					<code>200</code>';
 		}
-	}
+		$obj_Client->disconnect();
+			}
 	// Error: Invalid XML Document
 	elseif ( ($obj_DOM instanceof SimpleDOMElement) === false)
 	{
@@ -81,7 +88,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$xml = '';
 		foreach ($obj_DOM->children() as $obj_Elem)
 		{
-			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>'; 
+			$xml = '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>'; 
 		}
 	}
 	// Error: Invalid Input
@@ -93,7 +100,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$xml = '';
 		for ($i=0; $i<count($aObj_Errs); $i++)
 		{
-			$xml .= '<status code="400">'. htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES) .'</status>';
+			$xml = '<status code="400">'. htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES) .'</status>';
 		}
 	}
 }
@@ -103,7 +110,6 @@ else
 	
 	$xml = '<status code="401">Authorization required</status>';
 }
-header("Content-Type: text/xml; charset=\"UTF-8\"");
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';
 echo $xml;

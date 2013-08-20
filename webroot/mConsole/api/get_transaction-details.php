@@ -37,14 +37,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 {
 	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate("http://". str_replace("mpoint", "mconsole", $_SERVER['HTTP_HOST']) ."/protocols/mconsole.xsd") === true && count($obj_DOM->transactiondetails) > 0)
 	{
-		
+		header("Content-Type: text/xml; charset=\"UTF-8\"");
 		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 		
 		$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->transactiondetails->countryid);
 		//file_put_contents(sLOG_PATH ."/gg.log", var_export( (string) $obj_DOM->transactiondetails->txnid , true) );
 		
 		$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT,$obj_CountryConfig);
-		$xml = $obj_mPoint->getThx( (string) $obj_DOM->transactiondetails->txnid);
+		$xml = $obj_mPoint->getTxn( (string) $obj_DOM->transactiondetails->txnid);
 		
 	}
 	// Error: Invalid XML Document
@@ -62,7 +62,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$xml = '';
 		foreach ($obj_DOM->children() as $obj_Elem)
 		{
-			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>'; 
+			$xml = '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>'; 
 		}
 	}
 	// Error: Invalid Input
@@ -74,7 +74,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$xml = '';
 		for ($i=0; $i<count($aObj_Errs); $i++)
 		{
-			$xml .= '<status code="400">'. htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES) .'</status>';
+			$xml = '<status code="400">'. htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES) .'</status>';
 		}
 	}
 }
@@ -84,7 +84,6 @@ else
 	
 	$xml = '<status code="401">Authorization required</status>';
 }
-header("Content-Type: text/xml; charset=\"UTF-8\"");
 
 echo $xml;
 ?>

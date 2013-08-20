@@ -52,9 +52,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				{
  					header("HTTP/1.0 403 Forbidden");
  					$xml = "<status code=403>User not found or wrong Username/Password </status>";						
-				}
-				file_put_contents(sLOG_PATH ."/testttttt.log", var_export($xml, true) );
-				
+				}				
 	}
 	// Error: Invalid XML Document
 	elseif ( ($obj_DOM instanceof SimpleDOMElement) === false)
@@ -71,7 +69,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$xml = '';
 		foreach ($obj_DOM->children() as $obj_Elem)
 		{
-			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>'; 
+			$xml = '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>'; 
 		}
 	}
 	// Error: Invalid Input
@@ -83,7 +81,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$xml = '';
 		for ($i=0; $i<count($aObj_Errs); $i++)
 		{
-			$xml .= '<status code="400">'. htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES) .'</status>';
+			$xml = '<status code="400">'. htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES) .'</status>';
 		}
 	}
 }
