@@ -181,7 +181,7 @@
 		<xsl:choose>
 		<!-- Card named -->
 		<xsl:when test="string-length(name) &gt; 0">
-			<td colspan="4"><xsl:value-of select="name" /></td>
+			<td colspan="4"><xsl:value-of select="concat(name, ' - ', substring(mask, string-length(mask) - 4, 4), ' (', expiry, ')')" /></td>
 		</xsl:when>
 		<xsl:otherwise>
 			<td colspan="3"><xsl:value-of select="mask" /></td>
