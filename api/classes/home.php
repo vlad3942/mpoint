@@ -473,15 +473,15 @@ class Home extends General
 	 */
 	public  function searchTxnHistory($cid,$thxid,$ono,$mobile,$email)
 	{
-		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, Extract('epoch' from EUT.created AT TIME ZONE 'Europe/Copenhagen') AS timestamp,
+		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, Extract('epoch' from EUT.created  AT TIME ZONE 'UTC') AS timestamp,
 					CL.id AS clientid, CL.name AS client,
 					Txn.id AS mpointid,EUT.stateid AS stateid, Txn.orderid AS orderno,EUAT.id AS customerid, (EUAT.firstname || ' ' || EUAT.lastname) AS customer
 				FROM EndUser.Transaction_Tbl EUT
     			LEFT OUTER JOIN EndUser.Account_Tbl EUAT ON EUT.accountid = EUAT.id 
 				LEFT OUTER JOIN Log.Transaction_Tbl Txn ON EUT.txnid = Txn.id
-				INNER JOIN Admin.Access_Tbl Acc ON Txn.clientid = Acc.clientid						
-				INNER JOIN Client.Client_Tbl CL ON  CL.id = Acc.clientid 
-				WHERE Acc.userid = ". intval($cid);
+				LEFT OUTER JOIN Admin.Access_Tbl Acc ON Txn.clientid = Acc.clientid						
+				LEFT OUTER JOIN Client.Client_Tbl CL ON  CL.id = Acc.clientid 
+				WHERE (Acc.userid = ". intval($cid)." OR Txn.id IS NULL)";
 		
 		if (empty($thxid) === false){$sql .= "AND Txn.id = '". $this->getDBConn()->escStr( (string) $thxid) ."'";}
 		if (empty($ono) === false){ $sql .= " AND Txn.orderid = '". $this->getDBConn()->escStr( $ono) ."'"; }
@@ -507,7 +507,7 @@ class Home extends General
 	}
 	public function getTxn($txnid)
 	{
-		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, Extract('epoch' from EUT.created AT TIME ZONE 'Europe/Copenhagen') AS timestamp,
+		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid,EUT.message, Extract('epoch' from EUT.created AT TIME ZONE 'Europe/Copenhagen') AS timestamp,
 					(CASE WHEN EUT.amount = 0 THEN Txn.amount
 					 WHEN EUT.amount IS NULL THEN Txn.amount
 					 ELSE abs(EUT.amount)
@@ -550,7 +550,7 @@ class Home extends General
 	
 		$obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $RS["CLIENTID"]);
 		
-		$xml .= '<transaction id="'. $RS["ID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" psp-id="'. $RS["PSPID"] .'" order-no="'. $RS["ORDERNO"] .'">';
+		$xml .= '<transaction id="'. $RS["ID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" psp-id="'. $RS["PSPID"] .'" order-no="'. $RS["ORDERNO"] .'" type-id="'. $RS["TYPEID"] .'">';
 		$xml .= '<amount country-id="'. $RS["COUNTRYID"] .'" currency="'. $this->_obj_CountryConfig->getCurrency()  .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. htmlspecialchars($RS["AMOUNT"], ENT_NOQUOTES) .'</amount>';
 		$xml .= '<refund country-id="'. $RS["COUNTRYID"] .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. htmlspecialchars($RS["REFUND_AMOUNT"], ENT_NOQUOTES) .'</refund>';
 		$xml .= '<client id="'. $obj_ClientConfig->getID() .'">';
@@ -580,6 +580,7 @@ class Home extends General
 		$xml .= '<mobile country-id="'. $RS["TO_COUNTRYID"] .'">'. $RS["TO_MOBILE"] .'</mobile>';
 		$xml .= '<email>'. htmlspecialchars($RS["TO_EMAIL"], ENT_NOQUOTES) .'</email>';
 		$xml .= '</to>';
+		$xml .= '<message>'. htmlspecialchars($RS["MESSAGE"], ENT_NOQUOTES) .'</message>';
 		$xml .= '</wallet-to-wallet>';
 		
 		$sql = "SELECT N.id, N.message, Extract('epoch' from N.created) AS created, U.id AS userid, U.email
