@@ -120,7 +120,7 @@
 							<xsl:apply-templates select="stored-cards/card[client/@id = //client-config/@id]" />
 						</xsl:when>
 						</xsl:choose>
-						<xsl:if test="@single-sign-on != 'true'">
+						<xsl:if test="@single-sign-on != 'true' or string-length(transaction/auth-url) = 0">
 							<div id="password">
 								<div class="mPoint_Label"><xsl:value-of select="labels/password" />:</div>
 								<input type="password" name="pwd" value="" /> 

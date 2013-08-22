@@ -467,7 +467,7 @@ class EndUserAccount extends Home
 		$sql = "SELECT DISTINCT EUA.id
 				FROM EndUser.Account_Tbl EUA
 				LEFT OUTER JOIN EndUser.CLAccess_Tbl CLA ON EUA.id = CLA.accountid
-				WHERE EUA.externalid = '". $oDB->escStr($id) ."' AND EUA.enabled = '1'";
+				WHERE EUA.externalid = '". $oDB->escStr($id) ."' AND length(EUA.externalid) > 1 AND EUA.enabled = '1'";
 		// Not a System Client
 		if ($oClC->getCountryConfig()->getID() != $oClC->getID() && $strict === true)
 		{

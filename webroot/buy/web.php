@@ -86,7 +86,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	}
 	elseif ($obj_Validator->valURL($_REQUEST['auth-url'], $obj_ClientConfig->getAuthenticationURL() ) > 1 && $obj_Validator->valURL($_REQUEST['auth-url'], $obj_ClientConfig->getAuthenticationURL() ) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['auth-url'], $obj_ClientConfig->getAuthenticationURL() ) + 200] = $_REQUEST['auth-url']; } 
 	/* ========== Input Validation End ========== */
-	
+
 	// Success: Input Valid
 	if (count($aMsgCds) == 0)
 	{
@@ -96,7 +96,6 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			$_REQUEST['typeid'] = Constants::iPURCHASE_VIA_WEB;
 			$_REQUEST['gomobileid'] = -1;
 			$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, var_export($_REQUEST, true) );
-
 			if (array_key_exists("auth-token", $_REQUEST) === true) { $_SESSION['obj_Info']->setInfo("auth-token", $_REQUEST['auth-token']); }
 			$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $_REQUEST);
 			// Associate End-User Account (if exists) with Transaction
@@ -107,12 +106,11 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			// Client supports global storage of payment cards
 			if ($iAccountID == -1 && $obj_ClientConfig->getStoreCard() > 3)
 			{
-				if (array_key_exists("customer-ref", $_REQUEST) === true) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $_REQUEST['customer-ref'], false); }
+				if (array_key_exists("customer-ref", $_REQUEST) === true && strlen($_REQUEST['customer-ref']) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $_REQUEST['customer-ref'], false); }
 				if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getMobile() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getMobile(), false); }
 				if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getEMail(), false); }
 			}
 			$_SESSION['obj_TxnInfo']->setAccountID($iAccountID);
-			
 			// Update Transaction Log
 			$obj_mPoint->logTransaction($_SESSION['obj_TxnInfo']);
 			// Log additional data
