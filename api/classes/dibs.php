@@ -42,7 +42,7 @@ class DIBS extends Callback
 		if ($this->getTxnInfo()->getClientConfig()->getMethod() == "mPoint")
 		{
 			if ($sid == Constants::iPAYMENT_ACCEPTED_STATE) { parent::notifyClient($sid, $_post["transact"], $_post["amount"], $_post['cardid'], $_post['cardprefix'] . str_replace("X", "*", substr($_post['cardnomask'], strlen($_post['cardprefix']) ) ) ); }
-			else { parent::notifyClient($sid, $_post["transact"], $_post["amount"]); }
+			else { parent::notifyClient($sid, $_post["transact"], @$_post["amount"]); }
 		}
 		// Client is configured to use DIBS' protocol
 		else

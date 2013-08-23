@@ -73,14 +73,14 @@ if (count($aMsgCds) == 0)
 {
 	if ($_SESSION['obj_TxnInfo']->getAmount() > $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->getMaxPSMSAmount() )
 	{
-		if ($_SESSION['obj_Info']->getInfo("auth-token") === false)
+		if ($_SESSION['obj_Info']->getInfo("auth-token") === false || strlen($_SESSION['obj_TxnInfo']->getAuthenticationURL() ) == 0)
 		{
 			$msg = $obj_mPoint->auth($_POST['euaid'], $_POST['pwd']);
 		}
 		else { $msg = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($_SESSION['obj_TxnInfo']->getAuthenticationURL() ), $_SESSION['obj_TxnInfo']->getCustomerRef(), $_SESSION['obj_Info']->getInfo("auth-token") ); }
 	}
 	else { $msg = 10; }
-	if ($msg == 10)
+	if ($msg >= 10)
 	{
 		// Payment has not previously been attempted for transaction
 		$_OBJ_DB->query("BEGIN");
