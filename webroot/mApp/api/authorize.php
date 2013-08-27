@@ -147,7 +147,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											$xml .= '<status code="'. $code .'">Authorization using: '. $iTypeID .' is not supported for transaction type: '. $obj_TxnInfo->getTypeID() .'</status>';
 										}
 										// Sufficient balance / points on Stored Value Account
-										if ($code == 10)
+										if ($code >= 10)
 										{
 											$iAmount = $obj_TxnInfo->getAmount();
 											if ($iTypeID == Constants::iPURCHASE_USING_POINTS) { $iAmount = $obj_TxnInfo->getPoints(); }
