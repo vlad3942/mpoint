@@ -303,6 +303,8 @@ msgid @@@ CPM Payment - 51 @@@
 msgstr @@@ Det valgte kort blev afvist, prøv venligst med et andet kort. @@@
 msgid @@@ CPM Payment - 59 @@@
 msgstr @@@ Intern Fejl - Indløser ikke tilgængelig, prøv venligst med et andet kort. @@@
+msgid @@@ CPM Payment - 100 @@@
+msgstr @@@ Dit betalingskort er blevet slettet @@@
 msgid @@@ Shop Top-Up - 1 @@@
 msgstr @@@ Din nuværende betaling er blevet sat på hold og vil automatisk blive genoptaget når du har indsat penge på din konto. @@@
 msgid @@@ Create Account - 1 @@@

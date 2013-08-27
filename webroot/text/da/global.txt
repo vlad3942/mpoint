@@ -113,6 +113,30 @@ msgstr @@@ Indsæt @@@
 msgid @@@ Add Card @@@
 msgstr @@@ Nyt @@@
 
+#: /webroot/cpm/payment.php:139
+msgid @@@ Delete Card @@@
+msgstr @@@ Slet @@@
+
+#: /webroot/cpm/payment.php:140
+msgid @@@ - Authorize Delete Text - @@@
+msgstr @@@ Angiv dit kodeord for at slette betalingskortet @@@
+
+#: /webroot/cpm/payment.php:141
+msgid @@@ - Confirm Delete Text - @@@
+msgstr @@@ Er du sikker på at du vil slette dit betalingskort? @@@
+
+#: /webroot/cpm/payment.php:142
+msgid @@@ Yes @@@
+msgstr @@@ Ja @@@
+
+#: /webroot/cpm/payment.php:143
+msgid @@@ No @@@
+msgstr @@@ Nej @@@
+
+#: /webroot/cpm/payment.php:144
+msgid @@@ Account - Single Sign-On @@@
+msgstr @@@ Vælg betalingsmetode @@@
+
 #: /webroot/default.php:22
 msgid @@@ mPoint @@@
 msgstr @@@ mPoint @@@

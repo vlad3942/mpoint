@@ -18,17 +18,68 @@
 	</xsl:variable>
 
 	<div id="progress" class="mPoint_Info">
+		<script type="text/javascript">
+			function showConfirmPopup(id)
+			{
+				document.getElementById('card-id').value = id;
+				document.getElementById('confirm-delete-card').style.visibility = 'visible';
+				document.getElementById('window-background').style.visibility = 'visible';
+			}
+			function hideConfirmPopup()
+			{
+				document.getElementById('confirm-delete-card').style.visibility = 'hidden';
+				document.getElementById('window-background').style.visibility = 'hidden';
+			}
+		</script>
 		<table>
 		<tr>
-			<td></td>
+			<td>
+				<div id="window-background" style="visibility:hidden;">
+					<div><!-- Used to make the background transparently black --></div>
+				</div>
+			</td>
 			<td><xsl:value-of select="labels/progress" /></td>
 			<td id="link">
-				<a href="{func:constLink('/pay/card.php') }" style="background-image:url('{system/protocol}://{system/host}/img/new.png'); background-repeat:no-repeat;">
+				<a href="{func:constLink('/pay/card.php') }" style="background-image:url('/img/new.png'); background-repeat:no-repeat;">
 					<xsl:value-of select="labels/add-card" />
 				</a>
 			</td>
 		</tr>
 		</table>
+		<div id="confirm-delete-card" style="visibility:hidden;">
+			<xsl:if test="@single-sign-on != 'true' or string-length(transaction/auth-url) = 0">
+				<a href="#" onclick="javascript:hideConfirmPopup();">
+					<img id="close" src="/img/close.png" width="22" height="22" alt="" />
+				</a>
+			</xsl:if>
+			<form id="delete-card" action="{func:constLink('/cpm/sys/del_card.php') }" method="post">
+				<input type="hidden" id="card-id" name="cardid" value="-1" />
+				<input type="hidden" name="cardtype" value="11" />
+				
+				<xsl:choose>
+				<!-- Single Sign-On -->
+				<xsl:when test="@single-sign-on = 'true' and string-length(transaction/auth-url) &gt; 0">
+					<div>
+						<xsl:value-of select="labels/confirm-delete" />
+					</div>
+					<input id="confirm-delete-card-yes" type="submit" value="{labels/yes}" class="mPoint_Button" /><input id="confirm-delete-card-no" type="button" value="{labels/no}" class="mPoint_Button" onclick="javascript:hideConfirmPopup();" />
+				</xsl:when>
+				<xsl:otherwise>
+					<div>
+						<xsl:value-of select="labels/authorize-deletion" />
+					</div>
+					<div id="password">
+						<div class="mPoint_Label"><xsl:value-of select="labels/password" />:</div>
+						<input type="password" name="pwd" value="" /> 
+					</div>
+					<!-- Delete Card -->
+					<div>
+						<input id="authorize-delete-card" type="submit" value="{labels/delete-card}" class="mPoint_Button" />
+					</div>
+				</xsl:otherwise>
+				</xsl:choose>
+			</form>
+		</div>
 	</div>
 	
 	<!-- Display Status Messages -->
@@ -55,7 +106,17 @@
 					<span class="mPoint_Label"><xsl:value-of select="labels/price" />:</span>
 					<xsl:value-of select="transaction/price" />
 				</div>
-				<div class="mPoint_Help"><xsl:value-of select="labels/info" /></div>
+				<div class="mPoint_Help">
+					<xsl:choose>
+					<!-- Single Sign-On -->
+					<xsl:when test="@single-sign-on = 'true' and string-length(transaction/auth-url) &gt; 0">
+						<xsl:value-of select="labels/single-sign-on" />
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="labels/info" />
+					</xsl:otherwise>
+					</xsl:choose>
+				</div>
 				<div id="inner-border">
 					<!-- E-Money based Prepaid Account is available and Transaction is not an Account Top-Up -->
 					<xsl:if test="floor(client-config/store-card div 1) mod 2 != 1 and (transaction/@type &lt; 100 or transaction/@type &gt; 109)">
@@ -113,11 +174,15 @@
 						<xsl:choose>
 						<xsl:when test="count(stored-cards/card[client/@id = //client-config/@id]) = 1">
 							<div class="mPoint_Label"><xsl:value-of select="labels/stored-card" />:</div>
-							<xsl:apply-templates select="stored-cards/card[client/@id = //client-config/@id]" />
+							<table>
+								<xsl:apply-templates select="stored-cards/card[client/@id = //client-config/@id]" />
+							</table>
 						</xsl:when>
 						<xsl:when test="count(stored-cards/card[client/@id = //client-config/@id]) &gt; 1">
 							<div class="mPoint_Label"><xsl:value-of select="labels/multiple-stored-cards" />:</div>
-							<xsl:apply-templates select="stored-cards/card[client/@id = //client-config/@id]" />
+							<table>
+								<xsl:apply-templates select="stored-cards/card[client/@id = //client-config/@id]" />
+							</table>
 						</xsl:when>
 						</xsl:choose>
 						<xsl:if test="@single-sign-on != 'true' or string-length(transaction/auth-url) = 0">
@@ -144,7 +209,6 @@
 	  - the phone will assign 20% of the screen width to the card logo and 60% of the screen width to the masked card number
 	  - and 20% of the screen width to the card expiry date.
 	  -->
-	<table>
 	<tr>
 		<td>
 			<xsl:choose>
@@ -192,8 +256,10 @@
 			</td>
 		</xsl:otherwise>
 		</xsl:choose>
+		<td>
+			<input type="button" value="{//labels/delete-card}" class="mPoint_Delete_Button" onclick="javascript:showConfirmPopup({@id});" />
+		</td>
 	</tr>
-	</table>
 </xsl:template>
 
 </xsl:stylesheet>

@@ -303,6 +303,8 @@ msgid @@@ CPM Payment - 51 @@@
 msgstr @@@ The selected card was rejected, please select another card? @@@
 msgid @@@ CPM Payment - 59 @@@
 msgstr @@@ Internal Error - Acquirer not available, please select another card? @@@
+msgid @@@ CPM Payment - 100 @@@
+msgstr @@@ Your card has been deleted @@@
 msgid @@@ Shop Top-Up - 1 @@@
 msgstr @@@ Your current payment has been paused and will automatically be resumed once you've topped up your account @@@
 msgid @@@ Create Account - 1 @@@

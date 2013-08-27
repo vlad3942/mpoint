@@ -136,6 +136,12 @@ try
 					<create-account><?= $_OBJ_TXT->_("Create Account"); ?></create-account>
 					<top-up><?= $_OBJ_TXT->_("Top-Up"); ?></top-up>
 					<add-card><?= $_OBJ_TXT->_("Add Card"); ?></add-card>
+					<delete-card><?= $_OBJ_TXT->_("Delete Card"); ?></delete-card>
+					<authorize-deletion><?= $_OBJ_TXT->_("- Authorize Delete Text -"); ?></authorize-deletion>
+					<confirm-delete><?= $_OBJ_TXT->_("- Confirm Delete Text -"); ?></confirm-delete>
+					<yes><?= $_OBJ_TXT->_("Yes"); ?></yes>
+					<no><?= $_OBJ_TXT->_("No"); ?></no>
+					<single-sign-on><?= $_OBJ_TXT->_("Account - Single Sign-On"); ?></single-sign-on>
 				</labels>
 	
 				<?= str_replace('<?xml version="1.0"?>', '', $obj_AccountXML->asXML() ) ?>
