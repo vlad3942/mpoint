@@ -67,7 +67,7 @@ class WorldPay extends Callback
 
 //		parent::send("https://payment.architrade.com/cgi-adm/delticket.cgi", $h, $b);
 	}
-
+	
 	/**
 	 * Authorises a payment with WorldPay for the transaction using the provided ticket.
 	 * The ticket represents a previously stored card.
@@ -79,10 +79,61 @@ class WorldPay extends Callback
 	 * @return 	integer
 	 * @throws	E_USER_WARNING
 	 */
-	public function authTicket($ticket)
+	public function authTicket(HTTPConnInfo &$oCI, $ticket)
 	{
+		list($orderno, $merchantcode, $amount, $currency) = explode(" ### ", $ticket);
+		$oc = htmlspecialchars($this->getTxnInfo()->getOrderID(), ENT_NOQUOTES);
+		if (empty($oc) === true) { $oc = $this->getTxnInfo()->getID(); }
+		
+		$b = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<!DOCTYPE paymentService PUBLIC "-//WorldPay/DTD WorldPay PaymentService v1//EN" "http://dtd.worldpay.com/paymentService_v1.dtd">';
+		$b .= '<paymentService version="1.4" merchantCode="'. htmlspecialchars($this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, true), ENT_NOQUOTES) .'">';
+		$b .= '<submit>';
+		$b .= '<order orderCode="'. $oc .'">';
+		$b .= '<description>Order: '. $oc .' from: '. htmlspecialchars($this->getTxnInfo()->getClientConfig()->getName(), ENT_NOQUOTES) .'</description>';
+		$b .= '<amount value="'. $this->getTxnInfo()->getAmount() .'" currencyCode="'. htmlspecialchars(trim($currency), ENT_NOQUOTES) .'" exponent="2" />';
+		$b .= '<payAsOrder orderCode="'. htmlspecialchars(trim($orderno), ENT_NOQUOTES) .'" merchantCode="'. htmlspecialchars(trim($merchantcode), ENT_NOQUOTES) .'">';
+		$b .= '<amount value="'. intval(trim($amount) ) .'" currencyCode="'. htmlspecialchars(trim($currency), ENT_NOQUOTES) .'" exponent="2" />';
+		$b .= '</payAsOrder>';
+		$b .= '</order>';
+		$b .= '</submit>';
+		$b .= '</paymentService>';
+		
+		$obj_HTTP = new HTTPClient(new Template(), $oCI);
+		$obj_HTTP->connect();
+		$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+		$obj_HTTP->disConnect();
+		$obj_XML = null;
+		if ($code == 200)
+		{
+			$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+			if (strval($obj_XML->reply->orderStatus->payment->lastEvent) == "AUTHORISED" || strval($obj_XML->reply->orderStatus->payment->lastEvent) == "CAPTURED")
+			{
+				$obj_XML["code"] = Constants::iPAYMENT_ACCEPTED_STATE;
+				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, $obj_XML->asXML() );
+				
+				$sql = "UPDATE Log.Transaction_Tbl
+						SET pspid = ". Constants::iWORLDPAY_PSP ."
+						WHERE id = ". $this->getTxnInfo()->getID();
+//				echo $sql ."\n";
+				$this->getDBConn()->query($sql);
+			}
+			// Error: Unable to initialize payment transaction
+			else
+			{
+				$obj_XML["code"] = Constants::iPAYMENT_DECLINED_STATE;
+				trigger_error("Unable to initialize payment transaction with WorldPay, error code: ". $obj_XML->reply->error["code"] ."\n". $obj_XML->reply->error->asXML(), E_USER_WARNING);
+			}
+		}
+		// Error: Unable to initialize payment transaction
+		else
+		{
+			trigger_error("Unable to initialize payment transaction with WorldPay. HTTP Response Code: ". $code ."\n". var_export($obj_HTTP, true), E_USER_WARNING);
+		}
+		
+		return $obj_XML;
 	}
-
+	
 	/**
 	 * Performs a capture operation with WorldPay for the provided transaction.
 	 * The method will log one the following status codes from WorldPay:
@@ -287,6 +338,23 @@ class WorldPay extends Callback
 		}
 		
 		return $url;
+	}
+	
+	/**
+	 * Initialises Callback to the Client.
+	 *
+	 * @param 	HTTPConnInfo $oCI 		Connection Info required to communicate with the Callback component for Cellpoint Mobile
+	 * @param	SimpleXMLElement $oXML	The XML response received from WorldPay
+	 */
+	public function initCallback(HTTPConnInfo &$oCI, SimpleXMLElement &$oXML)
+	{
+		$b = str_replace("reply>", "notify>", $oXML->asXML() );
+		$b = str_replace("<orderStatus", "<orderStatusEvent", $b);
+		$b = str_replace("</orderStatus>", "</orderStatusEvent>", $b);
+		$obj_HTTP = new HTTPClient(new Template(), $oCI);
+		$obj_HTTP->connect();
+		$obj_HTTP->send($this->constHTTPHeaders(), $b);
+		$obj_HTTP->disConnect();
 	}
 }
 ?>
