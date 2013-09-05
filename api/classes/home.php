@@ -73,35 +73,6 @@ class Home extends General
 	}
 	
 	/**
-	 * Sends an SMS message which notifies the end-user that the account has been disabled.
-	 * 
-	 * @see		GoMobileMessage::produceMessage()
-	 * @see		General::getText()
-	 * @see		Home::sendMessage()
-	 * @see		ClientConfig::produceConfig()
-	 *
-	 * @param 	GoMobileConnInfo $oCI 	Reference to the data object with the Connection Info required to communicate with GoMobile
-	 * @param	string $mob 			End-User's mobile number
-	 * @return	integer
-	 * @throws 	mPointException
-	 */
-	public function sendAccountDisabledNotification(GoMobileConnInfo &$oCI, $mob)
-	{
-		$obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $this->getCountryConfig()->getID(), -1);
-		$sBody = $this->getText()->_("mPoint - Account Disabled");
-		$sBody = str_replace("{CLIENT}", $obj_ClientConfig->getName(), $sBody);
-		
-		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->getCountryConfig()->getID(), $this->getCountryConfig()->getID()*100, $this->getCountryConfig()->getChannel(), $obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $mob, utf8_decode($sBody) );
-		$obj_MsgInfo->setDescription("mPoint - Account Del");
-		if ($this->getCountryConfig()->getID() != 200) { $obj_MsgInfo->setSender(substr($obj_ClientConfig->getName(), 0, 11) ); }
-		
-		$iCode = $this->sendMessage($oCI, $obj_ClientConfig, $obj_MsgInfo);
-		if ($iCode != 200) { $iCode = 91; }
-		
-		return $iCode;
-	}
-	
-	/**
 	 * Returns a reference to the data object with the Country Configuration
 	 * 
 	 * @return CountryConfig
@@ -175,7 +146,7 @@ class Home extends General
 				WHERE id = ". intval($id);
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
-
+if ($_SERVER['REMOTE_ADDR'] == "87.48.162.186") { file_put_contents(sLOG_PATH ."/jona.log", $sql ."\n". var_export($RS, true) ); }
 		if (is_array($RS) === true)
 		{
 			// Invalid logins exceeded or Account disabled

@@ -119,11 +119,11 @@ msgstr @@@ Delete Card @@@
 
 #: /webroot/cpm/payment.php:140
 msgid @@@ - Authorize Delete Text - @@@
-msgstr @@@ - Authorize Delete Text - @@@
+msgstr @@@ Enter your password to delete the card: {CARD NAME} @@@
 
 #: /webroot/cpm/payment.php:141
 msgid @@@ - Confirm Delete Text - @@@
-msgstr @@@ - Confirm Delete Text - @@@
+msgstr @@@ Are you sure you want to delete the card: {CARD NAME}? @@@
 
 #: /webroot/cpm/payment.php:142
 msgid @@@ Yes @@@
@@ -135,7 +135,7 @@ msgstr @@@ No @@@
 
 #: /webroot/cpm/payment.php:144
 msgid @@@ Account - Single Sign-On @@@
-msgstr @@@ Account - Single Sign-On @@@
+msgstr @@@ Please select a payment method @@@
 
 #: /webroot/default.php:22
 msgid @@@ mPoint @@@
@@ -1210,7 +1210,8 @@ msgstr @@@ Cancel Payment @@@
 
 #: /webroot/pay/store.php:50
 msgid @@@ Store Card - Disclaimer @@@
-msgstr @@@ Store Card - Disclaimer @@@
+msgstr @@@ Storing your card details for future use makes your next purchase swift and simple. 
+Be assured that all card details are stored in a highly secure encrypted form. @@@
 
 #: /webroot/pay/sys/sms.php:206
 msgid @@@ SMS Purchase - Unknown Reponse @@@
@@ -1334,7 +1335,7 @@ msgstr @@@ Step 2 of 2 @@@
 
 #: /webroot/wannafind/postform.php:52
 msgid @@@ Please enter your card information below @@@
-msgstr @@@ Please enter your card information below @@@
+msgstr @@@ Enter your card info below @@@
 
 #: /webroot/wannafind/postform.php:53
 msgid @@@ Selected Card @@@
@@ -1428,6 +1429,10 @@ Please use password: {PASSWORD} for future purchases with your stored card.
 Kind Regards
 {CLIENT} @@@
 
+#: /api/classes/enduser_account.php:125
+msgid @@@ mPoint - Account Disabled @@@
+msgstr @@@ Your account with {CLIENT} has been deleted due to too many invalid login attempts @@@
+
 #: /api/classes/general.php:402
 msgid @@@ Loading... @@@
 msgstr @@@ Loading... @@@
@@ -1444,10 +1449,6 @@ msgstr @@@ Welcome to {CLIENT} @@@
 msgid @@@ mPoint - Send One Time Password @@@
 msgstr @@@ Please enter the one time password: {OTP}.
 The password will automatically expire in an hour. @@@
-
-#: /api/classes/home.php:91
-msgid @@@ mPoint - Account Disabled @@@
-msgstr @@@ Your account with {CLIENT} has been deleted due to too many invalid login attempts @@@
 
 #: /api/classes/my_account.php:39
 msgid @@@ mPoint - Send Activation Code @@@

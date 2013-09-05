@@ -119,11 +119,11 @@ msgstr @@@ Slet @@@
 
 #: /webroot/cpm/payment.php:140
 msgid @@@ - Authorize Delete Text - @@@
-msgstr @@@ Angiv dit kodeord for at slette betalingskortet @@@
+msgstr @@@ Angiv dit kodeord for at slette betalingskortet: {CARD NAME} @@@
 
 #: /webroot/cpm/payment.php:141
 msgid @@@ - Confirm Delete Text - @@@
-msgstr @@@ Er du sikker på at du vil slette dit betalingskort? @@@
+msgstr @@@ Er du sikker på at du vil slette betalingskort: {CARD NAME}? @@@
 
 #: /webroot/cpm/payment.php:142
 msgid @@@ Yes @@@
@@ -1416,6 +1416,10 @@ For at betale med dit gemte kort i fremtiden skal du bruge kodeordet: {PASSWORD}
 MVH.
 {CLIENT} @@@
 
+#: /api/classes/enduser_account.php:125
+msgid @@@ mPoint - Account Disabled @@@
+msgstr @@@ Oplysningerne om dine gemte betalingskort i applikationen er blevet slettet. Det skyldes for mange forsøg med forkert kodeord. @@@
+
 #: /api/classes/general.php:402
 msgid @@@ Loading... @@@
 msgstr @@@ Henter... @@@
@@ -1432,10 +1436,6 @@ msgstr @@@ Velkommen til {CLIENT} @@@
 msgid @@@ mPoint - Send One Time Password @@@
 msgstr @@@ Indtast venligst følgende én-gangs kodeord: {OTP}.
 Kodeordet vil automatisk udløbe om en time. @@@
-
-#: /api/classes/home.php:91
-msgid @@@ mPoint - Account Disabled @@@
-msgstr @@@ Oplysningerne om dine gemte betalingskort i applikationen er blevet slettet. Det skyldes for mange forsøg med forkert kodeord. @@@
 
 #: /api/classes/my_account.php:39
 msgid @@@ mPoint - Send Activation Code @@@

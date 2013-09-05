@@ -107,6 +107,33 @@ class EndUserAccount extends Home
 		// Send MT with Account Info
 		$this->sendMT($oCI, $obj_MsgInfo, $oTI);
 	}
+	/**
+	 * Sends an SMS message which notifies the end-user that the account has been disabled.
+	 * 
+	 * @see		GoMobileMessage::produceMessage()
+	 * @see		General::getText()
+	 * @see		Home::sendMessage()
+	 * @see		ClientConfig::produceConfig()
+	 *
+	 * @param 	GoMobileConnInfo $oCI 	Reference to the data object with the Connection Info required to communicate with GoMobile
+	 * @param	string $mob 			End-User's mobile number
+	 * @return	integer
+	 * @throws 	mPointException
+	 */
+	public function sendAccountDisabledNotification(GoMobileConnInfo &$oCI, $mob)
+	{
+		$sBody = $this->getText()->_("mPoint - Account Disabled");
+		$sBody = str_replace("{CLIENT}", $this->_obj_ClientConfig->getName(), $sBody);
+		
+		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->_obj_ClientConfig->getCountryConfig()->getID(), $this->_obj_ClientConfig->getCountryConfig()->getID()*100, $this->_obj_ClientConfig->getCountryConfig()->getChannel(), $this->_obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $mob, utf8_decode($sBody) );
+		$obj_MsgInfo->setDescription("mPoint - Account Del");
+		if ($this->getCountryConfig()->getID() != 200) { $obj_MsgInfo->setSender(substr($this->_obj_ClientConfig->getName(), 0, 11) ); }
+		
+		$iCode = $this->sendMessage($oCI, $this->_obj_ClientConfig, $obj_MsgInfo);
+		if ($iCode != 200) { $iCode = 91; }
+		
+		return $iCode;
+	}
 
 	/**
 	 * Creates a new End-User Account.

@@ -1400,6 +1400,10 @@ Please use password: {PASSWORD} for future purchases with your stored card.
 Kind Regards
 {CLIENT} @@@
 
+#: /api/classes/enduser_account.php:125
+msgid @@@ mPoint - Account Disabled @@@
+msgstr @@@ mPoint - Account Disabled @@@
+
 #: /api/classes/general.php:402
 msgid @@@ Loading... @@@
 msgstr @@@ Loading... @@@
@@ -1415,10 +1419,6 @@ msgstr @@@ Välkommen till {CLIENT} @@@
 #: /api/classes/home.php:61
 msgid @@@ mPoint - Send One Time Password @@@
 msgstr @@@ mPoint - Send One Time Password @@@
-
-#: /api/classes/home.php:91
-msgid @@@ mPoint - Account Disabled @@@
-msgstr @@@ Your account with {CLIENT} has been deleted due to too many invalid login attempts @@@
 
 #: /api/classes/my_account.php:39
 msgid @@@ mPoint - Send Activation Code @@@

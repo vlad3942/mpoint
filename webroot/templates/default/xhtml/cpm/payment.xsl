@@ -19,11 +19,23 @@
 
 	<div id="progress" class="mPoint_Info">
 		<script type="text/javascript">
-			function showConfirmPopup(id)
+			function showConfirmPopup(id, name)
 			{
+				<xsl:choose>
+				<!-- Single Sign-On -->
+				<xsl:when test="@single-sign-on = 'true' and string-length(transaction/auth-url) &gt; 0">
+					var message = '<xsl:value-of select="labels/confirm-delete" />';
+				</xsl:when>
+				<xsl:otherwise>
+					var message = '<xsl:value-of select="labels/authorize-deletion" />';
+				</xsl:otherwise>
+				</xsl:choose>
+				
 				document.getElementById('card-id').value = id;
 				document.getElementById('confirm-delete-card').style.visibility = 'visible';
 				document.getElementById('window-background').style.visibility = 'visible';
+				document.getElementById('confirmation-message').innerHTML = message;
+				document.getElementById('confirmation-message').innerHTML = document.getElementById('confirmation-message').innerHTML.replace('{CARD NAME}', name);
 			}
 			function hideConfirmPopup()
 			{
@@ -59,13 +71,13 @@
 				<xsl:choose>
 				<!-- Single Sign-On -->
 				<xsl:when test="@single-sign-on = 'true' and string-length(transaction/auth-url) &gt; 0">
-					<div>
+					<div id="confirmation-message">
 						<xsl:value-of select="labels/confirm-delete" />
 					</div>
 					<input id="confirm-delete-card-yes" type="submit" value="{labels/yes}" class="mPoint_Button" /><input id="confirm-delete-card-no" type="button" value="{labels/no}" class="mPoint_Button" onclick="javascript:hideConfirmPopup();" />
 				</xsl:when>
 				<xsl:otherwise>
-					<div>
+					<div id="confirmation-message">
 						<xsl:value-of select="labels/authorize-deletion" />
 					</div>
 					<div id="password">
@@ -203,6 +215,17 @@
 </xsl:template>
 
 <xsl:template match="card">
+	<xsl:variable name="card-name">
+		<xsl:choose>
+		<!-- Card named -->
+		<xsl:when test="string-length(name) &gt; 0">
+			<xsl:value-of select="concat(name, ' - ', substring(mask, string-length(mask) - 4, 4) )" />
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:value-of select="mask" />
+		</xsl:otherwise>
+		</xsl:choose>
+	</xsl:variable>
 	<!--
 	  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
 	  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
@@ -242,22 +265,14 @@
 			</xsl:choose>
 		</td>
 		<td><img src="{/root/system/protocol}://{/root/system/host}/img/{logo-width}x{logo-height}_card_{type/@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="{type}" /></td>
-		<xsl:choose>
-		<!-- Card named -->
-		<xsl:when test="string-length(name) &gt; 0">
-			<td colspan="4"><xsl:value-of select="concat(name, ' - ', substring(mask, string-length(mask) - 4, 4), ' (', expiry, ')')" /></td>
-		</xsl:when>
-		<xsl:otherwise>
-			<td colspan="3"><xsl:value-of select="mask" /></td>
-			<td class="mPoint_Info">
+		<td colspan="3"><xsl:value-of select="$card-name" /></td>
+		<td class="mPoint_Info">
 			<xsl:if test="string-length(expiry) &gt; 0">
 				(<xsl:value-of select="expiry" />)
 			</xsl:if>
-			</td>
-		</xsl:otherwise>
-		</xsl:choose>
+		</td>
 		<td>
-			<input type="button" value="{//labels/delete-card}" class="mPoint_Delete_Button" onclick="javascript:showConfirmPopup({@id});" />
+			<input type="button" value="{//labels/delete-card}" class="mPoint_Delete_Button" onclick="javascript:showConfirmPopup({@id}, '{$card-name}');" />
 		</td>
 	</tr>
 </xsl:template>

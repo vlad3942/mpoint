@@ -137,8 +137,8 @@ try
 					<top-up><?= $_OBJ_TXT->_("Top-Up"); ?></top-up>
 					<add-card><?= $_OBJ_TXT->_("Add Card"); ?></add-card>
 					<delete-card><?= $_OBJ_TXT->_("Delete Card"); ?></delete-card>
-					<authorize-deletion><?= $_OBJ_TXT->_("- Authorize Delete Text -"); ?></authorize-deletion>
-					<confirm-delete><?= $_OBJ_TXT->_("- Confirm Delete Text -"); ?></confirm-delete>
+					<authorize-deletion><?= htmlspecialchars($_OBJ_TXT->_("- Authorize Delete Text -"), ENT_NOQUOTES); ?></authorize-deletion>
+					<confirm-delete><?= htmlspecialchars($_OBJ_TXT->_("- Confirm Delete Text -"), ENT_NOQUOTES); ?></confirm-delete>
 					<yes><?= $_OBJ_TXT->_("Yes"); ?></yes>
 					<no><?= $_OBJ_TXT->_("No"); ?></no>
 					<single-sign-on><?= $_OBJ_TXT->_("Account - Single Sign-On"); ?></single-sign-on>
