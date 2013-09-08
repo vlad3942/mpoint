@@ -49,7 +49,7 @@ class MobileWeb extends EndUserAccount
 		return $this->_iTransactionID;
 	}
 	
-/**
+	/**
 	 * Logs the custom variables provided by the Client for easy future retrieval.
 	 * Custom variables are defined as an entry in the input arrays which key starts with var_
 	 * 
@@ -60,6 +60,21 @@ class MobileWeb extends EndUserAccount
 	public function logClientVars(array &$aInput)
 	{
 		parent::logClientVars($this->_iTransactionID, $aInput);
+	}
+	
+	public function orderAlreadyAuthorized($oid)
+	{
+		$sql = "SELECT Txn.id
+				FROM Log.Transaction_Tbl Txn
+				INNER JOIN Log.Message_Tbl M ON Txn.id = M.txnid
+				WHERE Txn.clientid = ". $this->getClientConfig()->getID() ." AND orderid = '". $this->getDBConn()->escStr($oid) ."'
+					AND M.stateid IN (". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .")
+				ORDER BY Txn.id DESC
+				LIMIT 1";
+//		echo $sql ."\n";
+		$RS = $this->getDBConn()->getName($sql);
+		
+		return is_array($RS) === true && $RS["ID"] > 0 ? true : false;
 	}
 }
 ?>

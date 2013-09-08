@@ -162,8 +162,14 @@ if (array_key_exists(1000, $aMsgCds) === true)
 	// Start Payment Flow
 	else
 	{
+		if (strlen($_SESSION['obj_TxnInfo']->getOrderID() ) > 0 && $obj_mPoint->orderAlreadyAuthorized($_SESSION['obj_TxnInfo']->getOrderID() ) === true)
+		{
+			$obj_mPoint->newMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_DUPLICATED_STATE, "Order: ". $_SESSION['obj_TxnInfo']->getOrderID() ." already authorized");
+			
+			header("Location: /pay/accept.php?". session_name() ."=". session_id() ."&mpoint-id=". $_SESSION['obj_TxnInfo']->getID() );
+		}
 		// End-User already has an account that is linked to the Client
-		if ($_SESSION['obj_TxnInfo']->getAccountID() > 0)
+		elseif ($_SESSION['obj_TxnInfo']->getAccountID() > 0)
 		{
 			$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SESSION['obj_UA']);
 			$obj_XML = simplexml_load_string($obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount() ) );

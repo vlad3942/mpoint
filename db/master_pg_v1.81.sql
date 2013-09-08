@@ -150,3 +150,5 @@ ALTER TABLE Client.MerchantAccount_Tbl DROP CONSTRAINT MerchantAccount_UQ;
 CREATE UNIQUE INDEX MerchantAccount_UQ ON Client.MerchantAccount_Tbl (clientid, pspid) WHERE stored_card IS NULL;
 CREATE UNIQUE INDEX MerchantAccount_StoredCard_UQ ON Client.MerchantAccount_Tbl (clientid, pspid, stored_card);
 /* ==================== CLIENT SCHEMA END ==================== */
+
+CREATE INDEX CONCURRENTLY Transaction_Order_Idx ON Log.Transaction_Tbl (clientid, orderid);

@@ -218,10 +218,12 @@ class WorldPay extends Callback
 			break;
 		case "ECMC-SSL":	// MasterCard
 		case "ECMC_DEBIT-SSL":
+		case "ECMC_CREDIT-SSL":
 			$id = 7;
 			break;
 		case "VISA-SSL":	// VISA
 		case "VISA_DEBIT-SSL":
+		case "VISA_CREDIT-SSL":
 			$id = 8;
 			break;
 		case "VISA_ELECTRON-SSL":	// VISA Electron
