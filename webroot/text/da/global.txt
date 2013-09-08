@@ -1036,43 +1036,43 @@ msgstr @@@ Næste >> @@@
 msgid @@@ Go to Payment >> @@@
 msgstr @@@ Gå til betaling >> @@@
 
-#: /webroot/pay/accept.php:35
+#: /webroot/pay/accept.php:48
 msgid @@@ Payment Completed @@@
 msgstr @@@ Betaling gennemført @@@
 
-#: /webroot/pay/accept.php:48
+#: /webroot/pay/accept.php:61
 msgid @@@ Thank you for using @@@
 msgstr @@@ Tak fordi du brugte @@@
 
-#: /webroot/pay/accept.php:49
+#: /webroot/pay/accept.php:62
 msgid @@@ Status - Success @@@
 msgstr @@@ Din betaling er gennemført @@@
 
-#: /webroot/pay/accept.php:50
+#: /webroot/pay/accept.php:63
 msgid @@@ mPoint ID @@@
 msgstr @@@ mPoint ID @@@
 
-#: /webroot/pay/accept.php:51
+#: /webroot/pay/accept.php:64
 msgid @@@ Order No @@@
 msgstr @@@ Ordrenr. @@@
 
-#: /webroot/pay/accept.php:52
+#: /webroot/pay/accept.php:65
 msgid @@@ Price @@@
 msgstr @@@ Pris @@@
 
-#: /webroot/pay/accept.php:53
+#: /webroot/pay/accept.php:66
 msgid @@@ SMS Receipt - Info @@@
 msgstr @@@ Ovenstående kvittering er også blevet sendt via SMS til: {MOBILE} @@@
 
-#: /webroot/pay/accept.php:54
+#: /webroot/pay/accept.php:67
 msgid @@@ Send receipt via E-Mail @@@
 msgstr @@@ Send kvittering via e-mail @@@
 
-#: /webroot/pay/accept.php:55
+#: /webroot/pay/accept.php:68
 msgid @@@ Continue >> @@@
 msgstr @@@ Fortsæt tilbage til Sælgers site >> @@@
 
-#: /webroot/pay/accept.php:56
+#: /webroot/pay/accept.php:69
 msgid @@@ Resume Payment >> @@@
 msgstr @@@ Resume Payment >> @@@
 
@@ -1175,6 +1175,34 @@ msgstr @@@ fullname @@@
 #: /webroot/pay/pwd.php:59
 msgid @@@ cpr @@@
 msgstr @@@ cpr @@@
+
+#: /webroot/pay/re-enter.php:35
+msgid @@@ Payment Already Completed @@@
+msgstr @@@ Betaling allerede gennemført @@@
+
+#: /webroot/pay/re-enter.php:46
+msgid @@@ Status - Payment Already Completed @@@
+msgstr @@@ Din betaling er allerede gennemført @@@
+
+#: /webroot/pay/re-enter.php:47
+msgid @@@ mPoint ID @@@
+msgstr @@@ mPoint ID @@@
+
+#: /webroot/pay/re-enter.php:48
+msgid @@@ Order No @@@
+msgstr @@@ Ordrenr. @@@
+
+#: /webroot/pay/re-enter.php:49
+msgid @@@ Price @@@
+msgstr @@@ Pris @@@
+
+#: /webroot/pay/re-enter.php:50
+msgid @@@ Note - Payment Already Completed @@@
+msgstr @@@ Din betaling er allerede gennemført, fortsæt til sælgerens side og undlad at bruge "Tilbage" knappen @@@
+
+#: /webroot/pay/re-enter.php:51
+msgid @@@ Continue >> @@@
+msgstr @@@ Fortsæt tilbage til Sælgers site >> @@@
 
 #: /webroot/pay/store.php:32
 msgid @@@ Store Card @@@
