@@ -261,6 +261,8 @@ msgid @@@ Select Card - 49 @@@
 msgstr @@@ Den angivne konto er ikke aktiv. @@@
 msgid @@@ Select Card - 99 @@@
 msgstr @@@ Vi kunne desværre ikke gennemføre betalingen vha. det valgte kort. Vælg venligst et andet. @@@
+msgid @@@ Select Card - 101 @@@
+msgstr @@@ Alle dine gemte kort er blevet slettet. @@@
 msgid @@@ Select Payment Method - 99 @@@
 msgstr @@@ Vi kunne desværre ikke gennemføre betalingen vha. det valgte kort. Vælg venligst et andet. @@@
 msgid @@@ CPM Payment - 1 @@@

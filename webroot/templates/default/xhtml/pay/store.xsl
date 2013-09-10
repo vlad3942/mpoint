@@ -40,7 +40,7 @@
 					</xsl:otherwise>
 				</xsl:choose>
 			</div>
-			<div class="mPoint_Help"><xsl:copy-of select="labels/disclaimer" /></div>
+			<div class="mPoint_Help"><xsl:copy-of select="labels/disclaimer/node()" /></div>
 		</div>
 	</div>
 </xsl:template>

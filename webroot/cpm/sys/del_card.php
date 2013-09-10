@@ -35,6 +35,7 @@ if ($_SESSION['obj_Info']->getInfo("auth-token") === false || strlen($_SESSION['
 	if ($obj_Validator->valPassword($_POST['pwd']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_POST['pwd']) + 30; }
 }
 
+$sPath = "/cpm/payment.php";
 // Success: Input Valid
 if (count($aMsgCds) == 0)
 {
@@ -47,7 +48,16 @@ if (count($aMsgCds) == 0)
 	{
 		if ($obj_mPoint->delStoredCard($_SESSION['obj_TxnInfo']->getAccountID(), $_POST['cardid']) === true)
 		{
-			$aMsgCds[] = 100;
+			
+			$obj_CardsXML = simplexml_load_string($obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_UA']) );
+			if (count($obj_CardsXML) > 0) { $obj_CardsXML = $obj_CardsXML->xpath("/stored-cards/card[client/@id = ". $_SESSION['obj_TxnInfo']->getClientConfig()->getID() ."]"); }
+			// All Stored Cards deleted for the client
+			if (count($obj_CardsXML) == 0)
+			{
+				$sPath = "/pay/card.php";
+				$aMsgCds[] = 101;
+			}
+			else { $aMsgCds[] = 100; }
 		}
 		else { $aMsgCds[] = 99; }
 	}
@@ -60,6 +70,5 @@ for ($i=0; $i<count($aMsgCds); $i++)
 	$msg .= "&msg=". $aMsgCds[$i];
 }
 
-
-header("location: http://". $_SERVER['HTTP_HOST'] ."/cpm/payment.php?" . session_name() ."=". session_id() . $msg);
+header("location: ". $sPath ."?" . session_name() ."=". session_id() . $msg);
 ?>
