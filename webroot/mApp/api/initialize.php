@@ -106,7 +106,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$data['css-url'] = "";
 						$data['accept-url'] = $obj_ClientConfig->getAcceptURL();
 						$data['cancel-url'] = "";
-						$data['callback-url'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->{'callback-url'};
+						if (count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'callback-url'}) == 1)
+						{
+							$data['callback-url'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->{'callback-url'};
+						}
+						else { $data['callback-url'] = $obj_ClientConfig->getCallbackURL(); }
 						$data['icon-url'] = "";
 						$data['language'] = $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}["language"];
 						$data['markup'] = $obj_ClientConfig->getAccountConfig()->getMarkupLanguage();
