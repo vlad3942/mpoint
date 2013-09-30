@@ -103,6 +103,10 @@ class Capture extends General
 			// Authorise payment with PSP based on Ticket
 			$obj_PSP = new DIBS($oDB, $oTxt, $oTI);
 			break;
+			case (Constants::iNETAXEPT_PSP):	// Netaxept
+				// Authorise payment with PSP based on Ticket
+				$obj_PSP = new NetAxept($oDB, $oTxt, $oTI);
+				break;
 		case (Constants::iWANNAFIND_PSP):// WannaFind
 			// Authorise payment with PSP based on Ticket
 			$obj_PSP = new WannaFind($oDB, $oTxt, $oTI);
