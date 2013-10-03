@@ -73,6 +73,8 @@ $HTTP_RAW_POST_DATA .= '</root>';
 */
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
+$_SESSION['temp'] = $_POST;
+
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
 	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_DOM->{'authorize-payment'}) > 0)
@@ -119,7 +121,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							// Success: Input Valid
 							if (count($aMsgCds) == 0)
 							{
-								$code = $obj_mPoint->auth($obj_TxnInfo->getAccountID(), (string) $obj_DOM->{'authorize-payment'}[$i]->password);
+								if ($_SESSION['obj_Info']->getInfo("auth-token") === false || strlen($_SESSION['obj_TxnInfo']->getAuthenticationURL() ) == 0)
+								{									
+									$code = $obj_mPoint->auth($_POST['euaid'], $_POST['pwd']);
+								}
+								else 
+								{ 	$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($_SESSION['obj_TxnInfo']->getAuthenticationURL() ), $_SESSION['obj_TxnInfo']->getCustomerRef(), $_SESSION['obj_Info']->getInfo("auth-token") );} 				
+								//Old Code
+								//$code = $obj_mPoint->auth($obj_TxnInfo->getAccountID(), (string) $obj_DOM->{'authorize-payment'}[$i]->password);
 								// Authentication succeeded
 								if ($code == 10 || ($code == 11 && $obj_ClientConfig->smsReceiptEnabled() === false) )
 								{
