@@ -418,12 +418,12 @@ class General
 	 */
 	public function newTransaction(ClientConfig &$oCC, $tid)
 	{
-		$sql = "SELECT Nextvalue('Log.Transaction_Tbl_id_seq') AS id FROM DUAL";
+		$sql = "SELECT Nextvalue('Log".sSCHEMA_POSTFIX.".Transaction_Tbl_id_seq') AS id FROM DUAL";
 		$RS = $this->getDBConn()->getName($sql);
 		// Error: Unable to generate a new Transaction ID
 		if (is_array($RS) === false) { throw new mPointException("Unable to generate new Transaction ID", 1001); }
 
-		$sql = "INSERT INTO Log.Transaction_Tbl
+		$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 					(id, typeid, clientid, accountid, countryid, keywordid, \"mode\", ip)
 				VALUES
 					(". $RS["ID"] .", ". intval($tid) .", ". $oCC->getID() .", ". $oCC->getAccountConfig()->getID() .", ". $oCC->getCountryConfig()->getID() .", ". $oCC->getKeywordConfig()->getID() .", ". $oCC->getMode() .", '". $_SERVER['REMOTE_ADDR'] ."')";
@@ -446,7 +446,7 @@ class General
 	 */
 	public function logTransaction(TxnInfo &$oTI)
 	{
-		$sql = "UPDATE Log.Transaction_Tbl
+		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET typeid = ". $oTI->getTypeID() .", clientid = ". $oTI->getClientConfig()->getID() .", accountid = ". $oTI->getClientConfig()->getAccountConfig()->getID() .",
 					countryid = ". $oTI->getClientConfig()->getCountryConfig()->getID() .", keywordid = ". $oTI->getClientConfig()->getKeywordConfig()->getID() .",
 					amount = ". $oTI->getAmount() .", points = ". ($oTI->getPoints() > 0 ? $oTI->getPoints() : "NULL") .", reward = ". ($oTI->getReward() > 0 ? $oTI->getReward() : "NULL") .",
@@ -479,7 +479,7 @@ class General
 	 */
 	public function newMessage($txnid, $sid, $data)
 	{
-		$sql = "INSERT INTO Log.Message_Tbl
+		$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Message_Tbl
 					(txnid, stateid, data)
 				VALUES
 					(". intval($txnid) ." , ". intval($sid) .", '". $this->getDBConn()->escStr(utf8_encode($data) ) ."')";
@@ -508,7 +508,7 @@ class General
 	public function getMessageData($txnid, $stateid, $serialize=false)
 	{
 		$sql = "SELECT data
-				FROM Log.Message_Tbl
+				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
 				WHERE txnid = ". intval($txnid) ." AND stateid = ". intval($stateid) ."
 				ORDER BY id DESC
 				LIMIT 1";
@@ -544,7 +544,7 @@ class General
 	 */
 	public function delMessage($txnid, $sid)
 	{
-		$sql = "DELETE FROM Log.Message_Tbl
+		$sql = "DELETE FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
 				WHERE txnid = ". intval($txnid) ." AND stateid = ". intval($sid);
 //		echo $sql ."\n";
 
@@ -770,7 +770,7 @@ class General
 	{
 		$sql = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmob, maxmob, channel, priceformat, decimals,
 					addr_lookup, doi, add_card_amount, max_psms_amount, min_pwd_amount, min_2fa_amount
-				FROM System.Country_Tbl
+				FROM System".sSCHEMA_POSTFIX.".Country_Tbl
 				WHERE enabled = '1'
 				ORDER BY name ASC";
 //		echo $sql ."\n";
@@ -826,7 +826,7 @@ class General
 		if ($ip !== false)
 		{
 			$sql = "SELECT countryid
-					FROM System.IPRange_Tbl
+					FROM System".sSCHEMA_POSTFIX.".IPRange_Tbl
 					WHERE min <= ". $ip ." AND max >= ". $ip;
 //			echo nl2br($sql);
 			$RS = $this->getDBConn()->getName($sql);

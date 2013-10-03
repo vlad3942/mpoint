@@ -464,13 +464,13 @@ class ClientConfig extends BasicConfig
 					Acc.id AS accountid, Acc.name AS account, Acc.mobile, Acc.markup,
 					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price,
 					U1.url AS customerimporturl, U2.url AS authurl
-				FROM Client.Client_Tbl Cl
-				INNER JOIN System.Country_Tbl C ON Cl.countryid = C.id AND C.enabled = '1'
-				INNER JOIN Client.Account_Tbl Acc ON Cl.id = Acc.clientid AND Acc.enabled = '1'
-				INNER JOIN Client.Keyword_Tbl KW ON Cl.id = KW.clientid AND KW.enabled = '1'
-				LEFT OUTER JOIN Client.Product_Tbl P ON KW.id = P.keywordid AND P.enabled = '1'
-				LEFT OUTER JOIN Client.URL_Tbl U1 ON CL.id = U1.clientid AND U1.urltypeid = ". self::iCUSTOMER_IMPORT_URL ." AND U1.enabled = '1'
-				LEFT OUTER JOIN Client.URL_Tbl U2 ON CL.id = U2.clientid AND U2.urltypeid = ". self::iAUTHENTICATION_URL ." AND U2.enabled = '1'
+				FROM Client".sSCHEMA_POSTFIX.".Client_Tbl Cl
+				INNER JOIN System".sSCHEMA_POSTFIX.".Country_Tbl C ON Cl.countryid = C.id AND C.enabled = '1'
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON Cl.id = Acc.clientid AND Acc.enabled = '1'
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Keyword_Tbl KW ON Cl.id = KW.clientid AND KW.enabled = '1'
+				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".Product_Tbl P ON KW.id = P.keywordid AND P.enabled = '1'
+				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".URL_Tbl U1 ON CL.id = U1.clientid AND U1.urltypeid = ". self::iCUSTOMER_IMPORT_URL ." AND U1.enabled = '1'
+				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".URL_Tbl U2 ON CL.id = U2.clientid AND U2.urltypeid = ". self::iAUTHENTICATION_URL ." AND U2.enabled = '1'
 				WHERE Cl.id = ". intval($id) ." AND Cl.enabled = '1'";
 		// Use Default Keyword
 		if ($kw == -1)

@@ -353,4 +353,11 @@ $aREJECT_WORDS = array("NEJ", "NO", "NOPE", "N", "CANCEL", "QUIT", "END");
  *
  */
 define("sPROTOCOL_XSD_PATH", $_SERVER['DOCUMENT_ROOT'] ."/protocols/");
+/**
+ * Constant For Databse Schemas PostFix Used for Emirates
+ *
+ */
+//define("sSCHEMA_POSTFIX","_ownr");
+define("sSCHEMA_POSTFIX","");
+
 ?>

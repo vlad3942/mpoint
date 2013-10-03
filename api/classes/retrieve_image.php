@@ -62,7 +62,7 @@ class RetrieveImage extends General
 	public function getCardLogo($id)
 	{
 		$sql = "SELECT logo
-				FROM System.Card_Tbl
+				FROM System".sSCHEMA_POSTFIX.".Card_Tbl
 				WHERE id = ". intval($id);
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);

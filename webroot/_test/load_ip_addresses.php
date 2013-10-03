@@ -60,7 +60,7 @@ $aDB_CONN_INFO["method"] = 3;
 $obj_DB = RDB::produceDatabase($aDB_CONN_INFO);
 
 $sql = "SELECT cntid, min, max, country
-		FROM IPRange_Tbl
+		FROM  System".sSCHEMA_POSTFIX."IPRange_Tbl
 		WHERE id > 0
 		ORDER BY country ASC";
 $res = $obj_DB->query($sql);
@@ -81,7 +81,7 @@ while ($RS = $obj_DB->fetchName($res) )
 		$iCountryID = 0;
 		break;
 	}
-	echo "INSERT INTO System.IPRange_Tbl (countryid, min, max, country) VALUES (". $iCountryID .", ". $RS["MIN"] .", ". $RS["MAX"] .", '". $obj_DB->escStr($RS["COUNTRY"]) ."');";
+	echo "INSERT INTO System".sSCHEMA_POSTFIX.".IPRange_Tbl (countryid, min, max, country) VALUES (". $iCountryID .", ". $RS["MIN"] .", ". $RS["MAX"] .", '". $obj_DB->escStr($RS["COUNTRY"]) ."');";
 	echo "\n";
 }
 ?>

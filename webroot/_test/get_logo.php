@@ -59,6 +59,6 @@ $aDB_CONN_INFO["method"] = 3;
 $obj_DB = RDB::produceDatabase($aDB_CONN_INFO);
 
 //echo "INSERT INTO System.Card_Tbl (name, position, logo) VALUES ('My Account', -1, '". $obj_DB->escBin(file_get_contents("../img/my_account.png") ) ."');" ."\n";
-$sql = "UPDATE System.Card_Tbl SET logo = '". $obj_DB->escBin(file_get_contents("../img/dankort.gif") ) ."' WHERE id = 2;" ."\n";
+$sql = "UPDATE System".sSCHEMA_POSTFIX.".Card_Tbl SET logo = '". $obj_DB->escBin(file_get_contents("../img/dankort.gif") ) ."' WHERE id = 2;" ."\n";
 $obj_DB->query($sql);
 ?>

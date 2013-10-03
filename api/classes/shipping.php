@@ -56,7 +56,7 @@ class Shipping extends General
 	public function logShippingInfo($id, $cost)
 	{
 		$sql = "SELECT name, logourl
-				FROM System.Shipping_Tbl
+				FROM System".sSCHEMA_POSTFIX.".Shipping_Tbl
 				WHERE id = ". intval($id) ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
@@ -91,8 +91,8 @@ class Shipping extends General
 	public function getShippingCompanies($cost)
 	{
 		$sql = "SELECT SS.id, SS.name, SS.logourl, CS.cost, CS.free_ship
-				FROM Client.Shipping_Tbl CS
-				INNER JOIN System.Shipping_Tbl SS ON CS.shippingid = SS.id AND SS.enabled = '1'
+				FROM Client".sSCHEMA_POSTFIX.".Shipping_Tbl CS
+				INNER JOIN System".sSCHEMA_POSTFIX.".Shipping_Tbl SS ON CS.shippingid = SS.id AND SS.enabled = '1'
 				WHERE CS.shopid = ". $this->_obj_ShopConfig->getID();
 //		echo $sql ."\n";
 		$aRS = $this->getDBConn()->getAllNames($sql);

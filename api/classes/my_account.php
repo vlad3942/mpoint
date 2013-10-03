@@ -60,7 +60,7 @@ class MyAccount extends Home
 	public function getActivationAddress($id, $code)
 	{
 		$sql = "SELECT address
-				FROM EndUser.Activation_Tbl
+				FROM EndUser".sSCHEMA_POSTFIX.".Activation_Tbl
 				WHERE accountid = ". intval($id) ." AND code = ". intval($code) ."
 				ORDER BY id DESC
 				LIMIT 1";
@@ -79,7 +79,7 @@ class MyAccount extends Home
 	 */
 	public function saveMobile($id, $mob, $miv=true)
 	{
-		$sql = "UPDATE EndUser.Account_Tbl
+		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Account_Tbl
 				SET mobile = ". (is_null($mob) === true ? "NULL" : "'". floatval($mob) ."'") .",
 					mobile_verified = ". General::bool2xml($miv) ."
 				WHERE id = ". intval($id);
@@ -117,7 +117,7 @@ class MyAccount extends Home
 	 */
 	public function saveEMail($id, $email)
 	{
-		$sql = "UPDATE EndUser.Account_Tbl
+		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Account_Tbl
 				SET email = ". (is_null($email) === true ? "NULL" : "'". $this->getDBConn()->escStr($email) ."'") ."
 				WHERE id = ". intval($id);
 //		echo $sql ."\n";
@@ -140,7 +140,7 @@ class MyAccount extends Home
 	public function valMobile($id, $mob)
 	{
 		$sql = "SELECT id, passwd AS password
-				FROM EndUser.Account_Tbl
+				FROM EndUser".sSCHEMA_POSTFIX.".Account_Tbl
 				WHERE countryid = ". $this->getCountryConfig()->getID() ." AND mobile = '". floatval($mob) ."'";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
@@ -171,7 +171,7 @@ class MyAccount extends Home
 	public function valEMail($id, $email)
 	{
 		$sql = "SELECT id, passwd AS password
-				FROM EndUser.Account_Tbl
+				FROM EndUser".sSCHEMA_POSTFIX.".Account_Tbl
 				WHERE countryid = ". $this->getCountryConfig()->getID() ." AND Upper(email) = Upper('". $this->getDBConn()->escStr($email) ."')";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
@@ -242,7 +242,7 @@ class MyAccount extends Home
 	 */
 	public function delStoredCard($id, $cardid)
 	{
-		$sql = "DELETE FROM EndUser.Card_Tbl
+		$sql = "DELETE FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 				WHERE accountid = ". intval($id) ." AND id = ". intval($cardid);
 //		echo $sql ."\n";
 		
@@ -267,10 +267,10 @@ class MyAccount extends Home
 		// Start database transaction
 		$this->getDBConn()->query("START TRANSACTION");
 		
-		$sql = "UPDATE EndUser.Card_Tbl
+		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 				SET preferred = '0'
 				WHERE clientid = (SELECT clientid
-								  FROM EndUser.Card_Tbl
+								  FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 								  WHERE id = ". intval($cardid) .")
 					AND accountid = ". intval($id);
 //		echo $sql ."\n";
@@ -278,7 +278,7 @@ class MyAccount extends Home
 		// Reset "preferred" flag for all the cards the End-User has stored for the Client
 		if (is_resource($this->getDBConn()->query($sql) ) === true)
 		{
-			$sql = "UPDATE EndUser.Card_Tbl
+			$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 					SET preferred = '1'
 					WHERE accountid = ". intval($id) ." AND id = ". intval($cardid);
 //			echo $sql ."\n";

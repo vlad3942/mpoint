@@ -99,16 +99,16 @@ class CreditCard extends EndUserAccount
 
 		$sql = "SELECT C.id, C.name, C.minlength, C.maxlength, C.cvclength,
 					PSP.id AS pspid, MA.name AS account, MSA.name AS subaccount, PC.name AS currency
-				FROM System.Card_Tbl C
-				INNER JOIN Client.CardAccess_Tbl CA ON C.id = CA.cardid
-				INNER JOIN Client.MerchantAccount_Tbl MA ON CA.clientid = MA.clientid
-				INNER JOIN Client.Account_Tbl A ON CA.clientid = A.clientid AND A.enabled = '1'
-				INNER JOIN Client.MerchantSubAccount_Tbl MSA ON A.id = MSA.accountid
-				INNER JOIN System.PSP_Tbl PSP ON MA.pspid = PSP.id AND MSA.pspid = PSP.id AND CA.pspid = PSP.id AND PSP.enabled = '1'
-				INNER JOIN System.PSPCurrency_Tbl PC ON PSP.id = PC.pspid
-				INNER JOIN System.PSPCard_Tbl PCD ON PSP.id = PCD.pspid AND C.id = PCD.cardid
-				INNER JOIN System.CardPricing_Tbl CP ON C.id = CP.cardid
-				INNER JOIN System.PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PC.countryid = PP.countryid AND PP.enabled = '1'
+				FROM System".sSCHEMA_POSTFIX.".Card_Tbl C
+				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON C.id = CA.cardid
+				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl MA ON CA.clientid = MA.clientid
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl A ON CA.clientid = A.clientid AND A.enabled = '1'
+				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON A.id = MSA.accountid
+				INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON MA.pspid = PSP.id AND MSA.pspid = PSP.id AND CA.pspid = PSP.id AND PSP.enabled = '1'
+				INNER JOIN System".sSCHEMA_POSTFIX.".PSPCurrency_Tbl PC ON PSP.id = PC.pspid
+				INNER JOIN System".sSCHEMA_POSTFIX.".PSPCard_Tbl PCD ON PSP.id = PCD.pspid AND C.id = PCD.cardid
+				INNER JOIN System".sSCHEMA_POSTFIX.".CardPricing_Tbl CP ON C.id = CP.cardid
+				INNER JOIN System".sSCHEMA_POSTFIX.".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PC.countryid = PP.countryid AND PP.enabled = '1'
 				WHERE CA.clientid = ". $this->_obj_TxnInfo->getClientConfig()->getID() ."
 					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
 					AND PC.countryid = ". $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID() ."
@@ -141,7 +141,7 @@ class CreditCard extends EndUserAccount
 					$sName = $RS["NAME"];
 					
 					$sql = "SELECT min, \"max\"
-							FROM System.CardPrefix_Tbl
+							FROM System".sSCHEMA_POSTFIX.".CardPrefix_Tbl
 							WHERE cardid = ". $RS["ID"];
 //					echo $sql ."\n";
 					$aRS = $this->getDBConn()->getAllNames($sql);

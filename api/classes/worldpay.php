@@ -112,7 +112,7 @@ class WorldPay extends Callback
 				$obj_XML["code"] = Constants::iPAYMENT_ACCEPTED_STATE;
 				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, $obj_XML->asXML() );
 				
-				$sql = "UPDATE Log.Transaction_Tbl
+				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 						SET pspid = ". Constants::iWORLDPAY_PSP ."
 						WHERE id = ". $this->getTxnInfo()->getID();
 //				echo $sql ."\n";
@@ -255,7 +255,7 @@ class WorldPay extends Callback
 	public function initialize(HTTPConnInfo &$oCI, $merchantcode, $installationid, $currency, array &$cards)
 	{
 		$sql = "SELECT data
-				FROM Log.Message_Tbl
+				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
 				WHERE txnid = ". $this->getTxnInfo()->getID() ." AND stateid = ". Constants::iPAYMENT_INIT_WITH_PSP_STATE ."
 				ORDER BY id DESC";
 //		echo $sql ."\n";
@@ -315,7 +315,7 @@ class WorldPay extends Callback
 								  "url" => strval($obj_XML->reply->orderStatus->reference) );
 					$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, serialize($data) );
 					
-					$sql = "UPDATE Log.Transaction_Tbl
+					$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 							SET pspid = ". Constants::iWORLDPAY_PSP .", extid = '". $this->getDBConn()->escStr($obj_XML->reply->orderStatus->reference["id"]) ."'
 							WHERE id = ". $this->getTxnInfo()->getID();
 //					echo $sql ."\n";

@@ -92,7 +92,7 @@ class Refund extends General
 	public static function produce(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI)
 	{
 		$sql = "SELECT pspid, extid
-				FROM Log.Transaction_Tbl
+				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				WHERE id = ". $oTI->getID() ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
@@ -142,7 +142,7 @@ class Refund extends General
 		$code = $this->_obj_PSP->refund($this->_sPSPID, $amt);
 		if ($code == 0)
 		{
-			$sql = "UPDATE Log.Transaction_Tbl
+			$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 					SET refund = refund + ". intval($amt) ."
 					WHERE id = ". $this->_obj_TxnInfo->getID();
 //			echo $sql ."\n";
@@ -156,7 +156,7 @@ class Refund extends General
 	public function getClientsForUser($id)
 	{
 		$sql = "SELECT clientid
-				FROM Admin.Access_Tbl
+				FROM Admin".sSCHEMA_POSTFIX.".Access_Tbl
 				WHERE userid = ". intval($id);
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);

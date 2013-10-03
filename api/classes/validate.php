@@ -69,8 +69,8 @@ class Validate
 			$acc = (integer) $acc;
 			$sql = "SELECT CL.id AS clientid, Cl.enabled AS clientactive,
 						Acc.id AS accountid, Acc.enabled AS accountactive
-					FROM Client.Client_Tbl Cl
-					LEFT OUTER JOIN Client.Account_Tbl Acc ON Cl.id = Acc.clientid
+					FROM Client".sSCHEMA_POSTFIX.".Client_Tbl Cl
+					LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON Cl.id = Acc.clientid
 					WHERE Cl.id = ". intval($id);
 			// Use Default Account
 			if ($acc == -1)
@@ -126,7 +126,7 @@ class Validate
 		else
 		{
 			$sql = "SELECT enabled
-					FROM System.Country_Tbl
+					FROM System".sSCHEMA_POSTFIX.".Country_Tbl
 					WHERE id = ". intval($id);
 //			echo $sql ."\n";
 			$RS = $oDB->getName($sql);
@@ -570,7 +570,7 @@ class Validate
 		else
 		{
 			$sql = "SELECT enabled
-					FROM EndUser.Card_Tbl
+					FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 					WHERE accountid = ". intval($id) ." AND id = ". intval($cid);
 //			echo $sql ."\n";
 			$RS = $oDB->getName($sql);
@@ -602,7 +602,7 @@ class Validate
 		else
 		{
 			$sql = "SELECT enabled 
-					FROM System.Card_Tbl 
+					FROM System".sSCHEMA_POSTFIX.".Card_Tbl 
 					WHERE id = " . intval($id);
 //			echo $sql ."\n";
 			$RS = $oDB->getName($sql);
@@ -637,7 +637,7 @@ class Validate
 		else
 		{
 			$sql = "SELECT enabled, balance
-					FROM EndUser.Account_Tbl
+					FROM EndUser".sSCHEMA_POSTFIX.".Account_Tbl
 					WHERE id = ". intval($id);
 //			echo $sql ."\n";
 			$RS = $oDB->getName($sql);
@@ -720,8 +720,8 @@ class Validate
 			$iFromID = base_convert($iFromID, 32, 10);
 			
 			$sql = "SELECT Txn.enabled
-					FROM EndUser.Transaction_Tbl Txn
-					INNER JOIN EndUser.Account_Tbl Acc ON Txn.accountid = Acc.id AND Acc.enabled = '1'
+					FROM EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
+					INNER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl Acc ON Txn.accountid = Acc.id AND Acc.enabled = '1'
 					WHERE Acc.id = ". intval($iToID) ." AND date_trunc('second', Acc.created) = '". $oDB->escStr($sTimestamp) ."' 
 						AND Txn.toid = ". intval($iToID) ." AND Txn.fromid = ". intval($iFromID);
 //			echo $sql ."\n";
@@ -780,8 +780,8 @@ class Validate
 		else
 		{
 			$sql = "SELECT Txn.enabled, Msg.stateid
-					FROM Log.Transaction_Tbl Txn
-					INNER JOIN Log.Message_Tbl Msg ON Txn.id = Msg.txnid AND Msg.enabled = '1'
+					FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
+					INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid AND Msg.enabled = '1'
 					WHERE Txn.id = ". intval($mpointid) ." AND Txn.clientid = ". intval($clientid) ."
 						AND Msg.stateid >= ". Constants::iPAYMENT_ACCEPTED_STATE ."
 					ORDER BY Msg.stateid ASC";
@@ -818,7 +818,7 @@ class Validate
 		else
 		{
 			$sql = "SELECT orderid, enabled
-					FROM Log.Transaction_Tbl
+					FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 					WHERE id = ". intval($mpointid);
 //			echo $sql ."\n";
 			$RS = $oDB->getName($sql);
@@ -937,7 +937,7 @@ class Validate
 				else
 				{
 					$sql = "SELECT enabled, countryid
-						FROM System.State_Tbl
+						FROM System".sSCHEMA_POSTFIX.".State_Tbl
 						WHERE Upper(code) = Upper('". $oDB->escStr($s) ."')";
 					//				echo $sql ."\n";
 					$RS = $oDB->getName($sql);
@@ -1026,8 +1026,8 @@ class Validate
 			{
 /*
 				$sql = "SELECT Upper(S.code) AS code
-						FROM System.PostalCode_Tbl PC
-						INNER JOIN System.State_Tbl S ON PC.stateid = S.id AND S.enabled = '1'
+						FROM System".sSCHEMA_POSTFIX.".PostalCode_Tbl PC
+						INNER JOIN System".sSCHEMA_POSTFIX.".State_Tbl S ON PC.stateid = S.id AND S.enabled = '1'
 						WHERE S.countryid = ". $this->_obj_CountryConfig->getID() ." AND Upper(PC.code) = '". $oDB->escStr($pc) ."'";
 //				echo $sql ."\n";
 				$RS = $oDB->getName($sql);

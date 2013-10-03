@@ -35,7 +35,7 @@ class TopUp extends Home
 	public function getDepositOptions()
 	{
 		$sql = "SELECT id, amount
-				FROM System.DepositOption_Tbl
+				FROM System".sSCHEMA_POSTFIX.".DepositOption_Tbl
 				WHERE countryid = ". $this->getCountryConfig()->getID() ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);

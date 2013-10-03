@@ -265,7 +265,7 @@ class PayEx extends Callback
 		
 		if ($obj_XML->status->errorCode == "OK")
 		{
-			$sql = "UPDATE Log.Transaction_Tbl
+			$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 					SET pspid = ". Constants::iPAYEX_PSP .", extid = '". $this->getDBConn()->escStr($obj_XML->orderRef) ."'
 					WHERE id = ". $this->getTxnInfo()->getID();
 //			echo $sql ."\n";
@@ -408,7 +408,7 @@ class PayEx extends Callback
 	public static function getIDFromExternalID(RDB &$oDB, $orderref)
 	{
 		$sql = "SELECT id
-				FROM Log.Transaction_Tbl
+				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				WHERE pspid = ". Constants::iPAYEX_PSP ." AND extid = '". $oDB->escStr($orderref) ."'";
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
@@ -441,7 +441,7 @@ class PayEx extends Callback
 				if ($obj_XML->transactionStatus == 3) { $sid = Constants::iPAYMENT_ACCEPTED_STATE; }
 				else { $sid = Constants::iPAYMENT_REJECTED_STATE; }
 				
-				$sql = "UPDATE Log.Transaction_Tbl
+				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 						SET extid = NULL
 						WHERE id = ". $this->getTxnInfo()->getID();
 //				echo $sql ."\n";

@@ -182,9 +182,9 @@ class SurePay extends General
 	{
 		// Fetch all Customers who have not yet activated their construced Payment Link
 		$sql = "SELECT Txn.id, Msg.data AS url, SP.email, Extract(epoch from Txn.created) AS created
-				FROM Log.Transaction_Tbl Txn
-				INNER JOIN Client.SurePay_Tbl SP ON Txn.clientid = SP.clientid AND SP.enabled = '1'
-				INNER JOIN Log.Message_Tbl Msg ON Txn.id = Msg.txnid
+				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
+				INNER JOIN Client".sSCHEMA_POSTFIX.".SurePay_Tbl SP ON Txn.clientid = SP.clientid AND SP.enabled = '1'
+				INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid
 				WHERE Msg.stateid = ". Constants::iCONST_LINK_STATE;
 		// Determine elapsed time from the scenario type
 		switch ($type)
@@ -206,7 +206,7 @@ class SurePay extends General
 			break;
 		}
 		$sql .= " AND NOT EXISTS (SELECT id
-								  FROM Log.Message_Tbl M
+								  FROM Log".sSCHEMA_POSTFIX.".Message_Tbl M
 								  WHERE M.txnid = Txn.id AND M.stateid IN (". Constants::iACTIVATE_LINK_STATE .", ". $iState .") )
 				 FOR UPDATE";
 //		echo $sql ."\n";

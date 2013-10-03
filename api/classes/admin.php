@@ -30,7 +30,7 @@ class Admin extends General
 	public function auth($un, $pwd, &$uid=-1)
 	{
 		$sql = "SELECT id, enabled
-				FROM Admin.User_Tbl
+				FROM Admin".sSCHEMA_POSTFIX.".User_Tbl
 				WHERE Upper(username) = Upper('". $this->getDBConn()->escStr($un) ."') AND passwd = '". $this->getDBConn()->escStr($pwd) ."'";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
@@ -64,8 +64,8 @@ class Admin extends General
 	public function getLastTransaction($uid, $clid=-1)
 	{
 		$sql = "SELECT Txn.id, Txn.created AS timestamp
-				FROM Admin.Access_Tbl Acc
-				INNER JOIN Log.Transaction_Tbl Txn ON Acc.clientid = Txn.clientid AND Txn.enabled = '1'
+				FROM Admin".sSCHEMA_POSTFIX.".Access_Tbl Acc
+				INNER JOIN Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn ON Acc.clientid = Txn.clientid AND Txn.enabled = '1'
 				WHERE Acc.userid = ". intval($uid);
 		if ($clid > 0) { $sql .= " AND Txn.clientid = ". intval($clid); }
 		$sql .= "
@@ -80,8 +80,8 @@ class Admin extends General
 	public function GetUserRolesAndAccess($id)
 	{
 		$sql = "SELECT R.id
-					FROM Admin.RoleAccess_Tbl Acc
-					INNER JOIN Admin.Role_Tbl R ON Acc.roleid = R.id AND R.enabled = true
+					FROM Admin".sSCHEMA_POSTFIX.".RoleAccess_Tbl Acc
+					INNER JOIN Admin".sSCHEMA_POSTFIX.".Role_Tbl R ON Acc.roleid = R.id AND R.enabled = true
 					WHERE Acc.userid = ". intval($id) ."
 					 ORDER BY R.name ASC";
 	//			echo $sql ."\n";
@@ -97,7 +97,7 @@ class Admin extends General
 		$xml .= '</roles>';
 	
 		$sql = "SELECT clientid
-					FROM Admin.Access_Tbl
+					FROM Admin".sSCHEMA_POSTFIX.".Access_Tbl
 					WHERE userid = ". intval($id);
 						//			echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);

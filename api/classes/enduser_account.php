@@ -218,7 +218,7 @@ class EndUserAccount extends Home
 
 		// Check if card has already been saved
 		$sql = "SELECT id, ticket, pspid
-				FROM EndUser.Card_Tbl
+				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 				WHERE accountid = ". $iAccountID ." AND clientid = ". $this->_obj_ClientConfig->getID() ." AND cardid = ". intval($cardid) ."
 					AND ( (mask = '". $this->getDBConn()->escStr($mask) ."' AND expiry = '". $this->getDBConn()->escStr($exp) ."') OR (mask IS NULL AND expiry IS NULL) )";
 //		echo $sql ."\n";
@@ -227,7 +227,7 @@ class EndUserAccount extends Home
 		// Card not previously saved, add card info to database
 		if (is_array($RS) === false)
 		{
-			$sql = "INSERT INTO EndUser.Card_Tbl
+			$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 						(accountid, clientid, cardid, pspid, ticket, mask, expiry, preferred)
 					VALUES
 						(". $iAccountID .", ". $this->_obj_ClientConfig->getID() .", ". intval($cardid) .", ". intval($pspid) .", '". $this->getDBConn()->escStr($ticket) ."', '". $this->getDBConn()->escStr($mask) ."', '". $this->getDBConn()->escStr($exp) ."', ". $bPreferred .")";
@@ -235,7 +235,7 @@ class EndUserAccount extends Home
 			$res = $this->getDBConn()->query($sql);
 			
 			$sql = "SELECT id
-					FROM EndUser.CLAccess_Tbl
+					FROM EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl
 					WHERE clientid = ". $this->_obj_ClientConfig->getID() ." AND accountid = ". $iAccountID;
 //			echo $sql ."\n";
 			$RS = $this->getDBConn()->getName($sql);
@@ -245,7 +245,7 @@ class EndUserAccount extends Home
 		// Card previously saved by End-User
 		else
 		{
-			$sql = "UPDATE EndUser.Card_Tbl
+			$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 					SET pspid = ". intval($pspid) .", ticket = '". $this->getDBConn()->escStr($ticket) ."',
 						mask = '". $this->getDBConn()->escStr($mask) ."', expiry = '". $this->getDBConn()->escStr($exp) ."',
 						enabled = '1'
@@ -268,7 +268,7 @@ class EndUserAccount extends Home
 	 */
 	public function link($id)
 	{
-		$sql = "INSERT INTO EndUser.CLAccess_Tbl
+		$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl
 					(clientid, accountid)
 				VALUES
 					(". $this->_obj_ClientConfig->getID() .", ". intval($id) .")";
@@ -390,10 +390,10 @@ class EndUserAccount extends Home
 	private function _saveCardName($id, $cardid, $name, $pref=false)
 	{
 		// Set name for card
-		$sql = "UPDATE EndUser.Card_Tbl
+		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 				SET name = '". $this->getDBConn()->escStr($name) ."'
 				WHERE id = (SELECT Max(id)
-							FROM EndUser.Card_Tbl
+							FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 							WHERE accountid = ". intval($id) ." AND clientid = ". $this->_obj_ClientConfig->getID() ." AND cardid = ". intval($cardid) ."
 								AND (name IS NULL OR name = '') AND enabled = '1')
 					AND modified > NOW() - interval '5 minutes'";
@@ -403,7 +403,7 @@ class EndUserAccount extends Home
 		// Card doesn't exist, create card setting it as inactive
 		if ($this->getDBConn()->countAffectedRows($res) == 0)
 		{
-			$sql = "INSERT INTO EndUser.Card_Tbl
+			$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 						(accountid, clientid, pspid, cardid, name, preferred, enabled)
 					VALUES
 						(". intval($id) .", ". $this->_obj_ClientConfig->getID() .", 0, ". intval($cardid) .", '". $this->getDBConn()->escStr($name) ."', '". General::bool2xml($pref) ."', false)";
@@ -436,7 +436,7 @@ class EndUserAccount extends Home
 		// Reset preferred flag on all cards
 		if ($pref === true)
 		{
-			$sql = "UPDATE EndUser.Card_Tbl
+			$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 					SET preferred = '0'
 					WHERE preferred = '1' AND accountid = (SELECT accountid
 								 						   FROM EndUser.Card_Tbl
@@ -446,7 +446,7 @@ class EndUserAccount extends Home
 		}
 		
 		// Set name for card
-		$sql = "UPDATE EndUser.Card_Tbl 
+		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl 
 				SET name = '". $this->getDBConn()->escStr($name) ."', preferred = '" . ($pref === true ? 1 : 0) . "' 
 				WHERE id = ". intval($cardid) ." AND enabled = '1'";
 //		echo $sql ."\n";
@@ -465,7 +465,7 @@ class EndUserAccount extends Home
 	public function saveEmail($mob, $email, CountryConfig &$oCC=null)
 	{
 		if ( ($oCC instanceof CountryConfig) === false) { $oCC = $this->_obj_ClientConfig->getCountryConfig(); }
-		$sql = "UPDATE EndUser.Account_Tbl
+		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Account_Tbl
 				SET email = '". $this->getDBConn()->escStr($email) ."'
 				WHERE countryid = ". $oCC->getID() ." AND mobile = '". floatval($mob) ."'
 					AND (email IS NULL OR email = '') AND enabled = '1'";
@@ -492,8 +492,8 @@ class EndUserAccount extends Home
 	public function getAccountIDFromExternalID(RDB &$oDB, ClientConfig &$oClC, $id, $strict=true)
 	{
 		$sql = "SELECT DISTINCT EUA.id
-				FROM EndUser.Account_Tbl EUA
-				LEFT OUTER JOIN EndUser.CLAccess_Tbl CLA ON EUA.id = CLA.accountid
+				FROM EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA
+				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON EUA.id = CLA.accountid
 				WHERE EUA.externalid = '". $oDB->escStr($id) ."' AND length(EUA.externalid) > 1 AND EUA.enabled = '1'";
 		// Not a System Client
 		if ($oClC->getCountryConfig()->getID() != $oClC->getID() && $strict === true)
@@ -501,7 +501,7 @@ class EndUserAccount extends Home
 			$sql .= "
 					AND (CLA.clientid = ". $oClC->getID() ." /* OR EUA.countryid = CLA.clientid */
 						 OR NOT EXISTS (SELECT id
-									    FROM EndUser.CLAccess_Tbl
+									    FROM EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl
 									    WHERE accountid = EUA.id) )";
 		}
 //		echo $sql ."\n";
@@ -556,8 +556,8 @@ class EndUserAccount extends Home
 		else { $sql = "Upper(EUA.email) = Upper('". $oDB->escStr($addr) ."')"; }
 
 		$sql = "SELECT DISTINCT EUA.id
-				FROM EndUser.Account_Tbl EUA
-				LEFT OUTER JOIN EndUser.CLAccess_Tbl CLA ON EUA.id = CLA.accountid
+				FROM EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA
+				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON EUA.id = CLA.accountid
 				WHERE EUA.countryid = ". $oCC->getID() ."
 					AND ". $sql ." AND EUA.enabled = '1'";
 		if ( ($mode & 1) == 1) { $sql .= " AND EUA.passwd IS NOT NULL AND length(EUA.passwd) > 0"; }
@@ -567,7 +567,7 @@ class EndUserAccount extends Home
 			$sql .= "
 					AND (CLA.clientid = ". $oClC->getID() ." /* OR EUA.countryid = CLA.clientid */ 
 					OR NOT EXISTS (SELECT id
-								   FROM EndUser.CLAccess_Tbl
+								   FROM EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl
 								   WHERE accountid = EUA.id) )";
 		}
 //		echo $sql ."\n";
@@ -591,10 +591,10 @@ class EndUserAccount extends Home
 	 */
 	public function topup($id, $typeid, $txnid, $amount)
 	{
-		$sql = "INSERT INTO EndUser.Transaction_Tbl
+		$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl
 					(accountid, typeid, txnid, amount, ip, address)
 				SELECT ". intval($id) .", ". intval($typeid) .", ". intval($txnid) .", ". abs(intval($amount) ) .", ip, mobile
-				FROM Log.Transaction_Tbl
+				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				WHERE id = ". intval($txnid);
 //		echo $sql ."\n";
 
@@ -617,10 +617,10 @@ class EndUserAccount extends Home
 	{
 		$amount = abs($amount) * -1;
 
-		$sql = "INSERT INTO EndUser.Transaction_Tbl
+		$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl
 					(accountid, typeid, txnid, amount, ip, address)
 				SELECT ". intval($id) .", ". intval($typeid) .", ". intval($txnid) .", ". intval($amount) .", ip, mobile
-				FROM Log.Transaction_Tbl
+				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				WHERE id = ". intval($txnid);
 //		echo $sql ."\n";
 
@@ -638,10 +638,10 @@ class EndUserAccount extends Home
 	 */
 	public function associate($id, $txnid)
 	{
-		$sql = "INSERT INTO EndUser.Transaction_Tbl
+		$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl
 					(accountid, typeid, txnid, ip, address)
 				SELECT ". intval($id) .", ". Constants::iCARD_PURCHASE_TYPE .", ". intval($txnid) .", ip, mobile
-				FROM Log.Transaction_Tbl
+				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				WHERE id = ". intval($txnid);
 //		echo $sql ."\n";
 
@@ -705,7 +705,7 @@ class EndUserAccount extends Home
 					$ln = (string) $obj_DOM->customer->profile->{'last-name'};
 					if (empty($extid) === false)
 					{
-						$sql = "UPDATE EndUser.Account_Tbl
+						$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Account_Tbl
 								SET externalid = '". $this->getDBConn()->escStr($extid) ."'
 								WHERE id = ". intval($id);
 //						echo $sql ."\n";

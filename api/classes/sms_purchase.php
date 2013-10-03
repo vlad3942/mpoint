@@ -26,7 +26,7 @@ class SMS_Purchase extends MobileWeb
 	public function logProducts()
 	{
 		$sql = "SELECT id, name, quantity, price, logourl
-				FROM Client.Product_Tbl
+				FROM Client".sSCHEMA_POSTFIX.".Product_Tbl
 				WHERE keywordid = ". $this->getClientConfig()->getKeywordConfig()->getID() ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$aRS = $this->getDBConn()->getAllNames($sql);
@@ -70,7 +70,7 @@ class SMS_Purchase extends MobileWeb
 	public function constLink($txnid, $oid, $dir)
 	{
 		$sql = "SELECT Extract('epoch' from created) AS timestamp
-				FROM Log.Transaction_Tbl
+				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				WHERE id = ". intval($txnid);
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
@@ -98,11 +98,11 @@ class SMS_Purchase extends MobileWeb
 	public function findTxnIDFromSMS(GoMobileMessage &$oMI)
 	{
 		$sql = "SELECT Txn.id
-				FROM Log.Transaction_Tbl Txn
+				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
 				WHERE Txn.typeid = ". Constants::iPURCHASE_VIA_SMS ." AND Txn.clientid = ". $this->getClientConfig()->getID() ."
 					AND Txn.countryid = ". $oMI->getCountry() ." AND Txn.mobile = '". $oMI->getSender() ."'
 					AND NOT EXISTS (SELECT id
-									FROM Log.Message_Tbl
+									FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
 									WHERE Txn.id = txnid AND stateid IN (". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_REJECTED_STATE .")
 									LIMIT 1)
 				ORDER BY Txn.id DESC
@@ -123,10 +123,10 @@ class SMS_Purchase extends MobileWeb
 	public function psmsAvailable($amount)
 	{
 		$sql = "SELECT CA.id
-				FROM Client.CardAccess_Tbl CA
-				INNER JOIN Client.MerchantAccount_Tbl MA ON CA.clientid = MA.clientid
-				INNER JOIN System.CardPricing_Tbl CP ON CA.cardid = CP.cardid
-				INNER JOIN System.PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PP.enabled = '1'
+				FROM Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA
+				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl MA ON CA.clientid = MA.clientid
+				INNER JOIN System".sSCHEMA_POSTFIX.".CardPricing_Tbl CP ON CA.cardid = CP.cardid
+				INNER JOIN System".sSCHEMA_POSTFIX.".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PP.enabled = '1'
 				WHERE CA.clientid = ". $this->getClientConfig()->getID() ."
 					AND PP.countryid = ". $this->getClientConfig()->getCountryConfig()->getID() ."
 					AND PP.amount IN (-1, ". intval($amount) .")
@@ -154,9 +154,9 @@ class SMS_Purchase extends MobileWeb
 	public static function produceSMS_Purchase(RDB &$oDB, SMS &$oMI)
 	{
 		$sql = "SELECT KW.id AS keywordid, Cl.id AS clientid
-				FROM Client.Keyword_Tbl KW
-				INNER JOIN Client.Client_Tbl Cl ON KW.clientid = Cl.id AND Cl.enabled = '1'
-				INNER JOIN System.Country_Tbl C ON Cl.countryid = C.id AND C.enabled = '1'
+				FROM Client".sSCHEMA_POSTFIX.".Keyword_Tbl KW
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl Cl ON KW.clientid = Cl.id AND Cl.enabled = '1'
+				INNER JOIN System".sSCHEMA_POSTFIX.".Country_Tbl C ON Cl.countryid = C.id AND C.enabled = '1'
 				WHERE C.id = ". $oMI->getCountry() ." AND C.channel = '". $oMI->getChannel() ."'
 					AND Upper(KW.name) = Upper('". $oMI->getKeyword() ."') AND KW.enabled = '1'";
 //		echo $sql ."\n";

@@ -192,14 +192,14 @@ class Transfer extends Home
 		$fee = abs(intval($fee) );
 		
 		// Construct SQL Query for debiting Sender
-		$sql = "INSERT INTO EndUser.Transaction_Tbl
+		$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl
 					(accountid, typeid, toid, fromid, amount, fee, ip, address, message, stateid)
 				SELECT ". intval($fromid) .", ". Constants::iTRANSFER_OF_EMONEY .", ". intval($toid) .", ". intval($fromid) .", ". ($as * -1) .", ". ($fee * -1) .", '". $_SERVER['REMOTE_ADDR'] ."',
 					(CASE
 					 WHEN mobile::int8 > 0 THEN mobile
 					 ELSE email
 					 END) AS address, '". $this->getDBConn()->escStr($msg) ."', ". intval($sid) ."
-				FROM EndUser.Account_Tbl
+				FROM EndUser".sSCHEMA_POSTFIX.".Account_Tbl
 				WHERE id = ". intval($fromid);
 //		echo $sql ."\n";
 
@@ -207,14 +207,14 @@ class Transfer extends Home
 		if (is_resource($this->getDBConn()->query($sql) ) === true)
 		{
 			// Construct SQL Query for crediting recipient
-			$sql = "INSERT INTO EndUser.Transaction_Tbl
+			$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl
 						(accountid, typeid, toid, fromid, amount, ip, address, message, stateid)
 					SELECT ". intval($toid) .", ". Constants::iTRANSFER_OF_EMONEY .", ". intval($toid) .", ". intval($fromid) .", ". $ar .", '". $_SERVER['REMOTE_ADDR'] ."',
 						(CASE
 						 WHEN mobile::int8 > 0 THEN mobile
 						 ELSE email
 						 END) AS address, '". $this->getDBConn()->escStr($msg) ."', ". intval($sid) ."
-					FROM EndUser.Account_Tbl
+					FROM EndUser".sSCHEMA_POSTFIX.".Account_Tbl
 					WHERE id = ". intval($fromid);
 //			echo $sql ."\n";
 
@@ -248,7 +248,7 @@ class Transfer extends Home
 		// Start Transaction
 		$this->getDBConn()->query("START TRANSACTION");
 		
-		$sql = "UPDATE EndUser.Transaction_Tbl
+		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET stateid = ". Constants::iTRANSFER_CANCELLED_STATE ."
 				WHERE id = ". intval($id) ." AND stateid = ". Constants::iTRANSFER_PENDING_STATE;
 //		echo $sql ."\n";
@@ -256,11 +256,11 @@ class Transfer extends Home
 		// Transfer successfully cancelled on sender's account
 		if (is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) == 1)
 		{
-			$sql = "UPDATE EndUser.Transaction_Tbl
+			$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl
 					SET stateid = ". Constants::iTRANSFER_CANCELLED_STATE ."
 					WHERE id = (SELECT Min(EUT2.id)
-								FROM EndUser.Transaction_Tbl EUT1
-								INNER JOIN EndUser.Transaction_Tbl EUT2 ON EUT1.fromid = EUT2.fromid AND EUT1.toid = EUT2.toid AND EUT1.toid = EUT2.accountid AND Abs(EUT1.amount) = Abs(EUT2.amount)
+								FROM EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl EUT1
+								INNER JOIN EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl EUT2 ON EUT1.fromid = EUT2.fromid AND EUT1.toid = EUT2.toid AND EUT1.toid = EUT2.accountid AND Abs(EUT1.amount) = Abs(EUT2.amount)
 								WHERE EUT1.id = ". intval($id) ." AND EUT2.stateid = ". Constants::iTRANSFER_PENDING_STATE .")";
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
@@ -374,9 +374,9 @@ class Transfer extends Home
 	{
 		$sql = "SELECT F.id, F.fromid, F.toid, F.minfee, F.basefee, F.share,
 					FT.id AS typeid, FT.name AS type, C.currency
-				FROM System.Fee_Tbl F
-				INNER JOIN System.FeeType_Tbl FT ON F.typeid = FT.id AND FT.enabled = '1'
-				INNER JOIN System.Country_Tbl C ON F.fromid = C.id AND C.enabled = '1'
+				FROM System".sSCHEMA_POSTFIX.".Fee_Tbl F
+				INNER JOIN System".sSCHEMA_POSTFIX.".FeeType_Tbl FT ON F.typeid = FT.id AND FT.enabled = '1'
+				INNER JOIN System".sSCHEMA_POSTFIX.".Country_Tbl C ON F.fromid = C.id AND C.enabled = '1'
 				WHERE F.enabled = '1'";
 		if ($typeid > 0) { $sql .= " AND FT.id = ". intval($typeid); }
 		if ($cid > 0) { $sql .= " AND C.id = ". intval($cid); }

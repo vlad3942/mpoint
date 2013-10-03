@@ -189,9 +189,9 @@ class ClientInfo
 	{
 		$sql = "SELECT T.countryid, T.platform, T.version, T.deviceid, P.mobile, P.email,
 					L.code AS language
-				FROM Log.Transaction_Tbl T
-				INNER JOIN Customer.Profile_Tbl P ON T.customerid = P.id AND P.enabled = '1'
-				INNER JOIN System.Language_Tbl L ON T.languageid = L.id AND L.enabled = '1'
+				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl T
+				INNER JOIN Customer".sSCHEMA_POSTFIX.".Profile_Tbl P ON T.customerid = P.id AND P.enabled = '1'
+				INNER JOIN System".sSCHEMA_POSTFIX.".Language_Tbl L ON T.languageid = L.id AND L.enabled = '1'
 				WHERE T.id = ". intval($id);
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);

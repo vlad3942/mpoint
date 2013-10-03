@@ -115,7 +115,7 @@ class Callback extends EndUserAccount
 		if (intval($txnid) == -1) { $sql = ""; }
 		else { $sql = ", extid = '". $this->getDBConn()->escStr($txnid) ."'"; }
 		if ($this->_obj_TxnInfo->getAccountID() > 0) { $sql .= ", euaid = ". $this->_obj_TxnInfo->getAccountID(); }
-		$sql = "UPDATE Log.Transaction_Tbl
+		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET pspid = ". intval($pspid) .", cardid = ". intval($cid) . $sql ."
 				WHERE id = ". $this->_obj_TxnInfo->getID() ." AND (cardid IS NULL OR cardid = 0)";
 		if (intval($txnid) != -1) { $sql .= " AND (extid IS NULL OR extid = '' OR extid = '". $this->getDBConn()->escStr($txnid) ."')"; }
@@ -366,7 +366,7 @@ class Callback extends EndUserAccount
 	public function getMerchantAccount($clid, $pspid, $sc=false)
 	{
 		$sql = "SELECT name
-				FROM Client.MerchantAccount_Tbl
+				FROM Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl
 				WHERE clientid = ". intval($clid) ." AND pspid = ". intval($pspid) ." AND enabled = '1'";
 		if ($sc === true) { $sql .= " AND stored_card = '1'"; }
 		else { $sql .= " AND (stored_card = '0' OR stored_card IS NULL)"; }
@@ -386,7 +386,7 @@ class Callback extends EndUserAccount
 	public function getMerchantLogin($clid, $pspid, $sc=false)
 	{
 		$sql = "SELECT username, passwd AS password
-				FROM Client.MerchantAccount_Tbl
+				FROM Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl
 				WHERE clientid = ". intval($clid) ." AND pspid = ". intval($pspid) ." AND enabled = '1'";
 		if ($sc === true) { $sql .= " AND stored_card = '1'"; }
 		else { $sql .= " AND (stored_card = '0' OR stored_card IS NULL)"; }
@@ -407,7 +407,7 @@ class Callback extends EndUserAccount
 	public function getMerchantSubAccount($accid, $pspid)
 	{
 		$sql = "SELECT name
-				FROM Client.MerchantSubAccount_Tbl
+				FROM Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl
 				WHERE accountid = ". intval($accid) ." AND pspid = ". intval($pspid) ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn($sql)->getName($sql);
@@ -425,7 +425,7 @@ class Callback extends EndUserAccount
 	public function getCurrency($cid, $pspid)
 	{
 		$sql = "SELECT name
-				FROM System.PSPCurrency_Tbl
+				FROM System".sSCHEMA_POSTFIX.".PSPCurrency_Tbl
 				WHERE countryid = ". intval($cid) ." AND pspid = ". intval($pspid) ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn($sql)->getName($sql);
@@ -446,7 +446,7 @@ class Callback extends EndUserAccount
 	public static function getTxnIDFromOrderNo(RDB &$oDB, $orderno, $pspid)
 	{
 		$sql = "SELECT Max(id) AS id
-				FROM Log.Transaction_Tbl
+				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				WHERE orderid = '". $oDB->escStr($orderno) ."' AND pspid = ". intval($pspid);
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
@@ -467,7 +467,7 @@ class Callback extends EndUserAccount
 	public static function getTxnIDFromExtId(RDB &$oDB, $extid, $pspid)
 	{
 		$sql = "SELECT Max(id) AS id
-				FROM Log.Transaction_Tbl
+				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				WHERE extid = '". $extid ."' AND pspid = ". intval($pspid);
 		//echo $sql ."\n";
 		$RS = $oDB->getName($sql);

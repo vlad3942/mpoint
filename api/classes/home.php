@@ -92,8 +92,8 @@ class Home extends General
 		else { $sql = "Upper(A.email) = Upper('". $this->getDBConn()->escStr($addr) ."')"; }
 
 		$sql = "SELECT DISTINCT A.id
-				FROM EndUser.Account_Tbl A
-				LEFT OUTER JOIN EndUser.CLAccess_Tbl Acc ON A.id = Acc.accountid
+				FROM EndUser".sSCHEMA_POSTFIX.".Account_Tbl A
+				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl Acc ON A.id = Acc.accountid
 				WHERE A.countryid = ". $oCC->getID() ."
 					AND ". $sql ." AND A.enabled = '1'";
 		if ($clid > 0) { $sql ." AND Acc.clientid = ". intval($clid); }
@@ -142,7 +142,7 @@ class Home extends General
 	private function _authInternal($id, $pwd, $disable=true)
 	{
 		$sql = "SELECT id, attempts, passwd AS password, mobile, enabled, mobile_verified
-				FROM EndUser.Account_Tbl
+				FROM EndUser".sSCHEMA_POSTFIX.".Account_Tbl
 				WHERE id = ". intval($id);
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
@@ -188,7 +188,7 @@ if ($_SERVER['REMOTE_ADDR'] == "87.48.162.186") { file_put_contents(sLOG_PATH ."
 			if ($disable === true)
 			{
 				// Update number of login attempts for End-User
-				$sql = "UPDATE EndUser.Account_Tbl
+				$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Account_Tbl
 						SET attempts = ". $iAttempts .", enabled = '". ($bEnabled === true ? "1" : "0") ."'
 						WHERE id = ". intval($id);
 //				echo $sql ."\n";
@@ -304,14 +304,14 @@ if ($_SERVER['REMOTE_ADDR'] == "87.48.162.186") { file_put_contents(sLOG_PATH ."
 		// Select information for the End-User's account
 		$sql = "SELECT id, countryid, firstname, lastname, mobile, email, passwd AS password, balance, points, Extract('epoch' from created AT TIME ZONE 'Europe/Copenhagen') AS timestamp,
 					mobile_verified
-				FROM EndUser.Account_Tbl
+				FROM EndUser".sSCHEMA_POSTFIX.".Account_Tbl
 				WHERE id = ". intval($id) ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 		
 		$sql = "SELECT CL.id, CL.store_card, CL.name
-				FROM EndUser.CLAccess_Tbl Acc
-				INNER JOIN Client.Client_Tbl CL ON Acc.clientid = CL.id AND CL.enabled = '1'
+				FROM EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl Acc
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Acc.clientid = CL.id AND CL.enabled = '1'
 				WHERE Acc.accountid = ". intval($id);
 //		echo $sql ."\n";
 		$aRS = $this->getDBConn()->getAllNames($sql);
@@ -397,17 +397,17 @@ if ($_SERVER['REMOTE_ADDR'] == "87.48.162.186") { file_put_contents(sLOG_PATH ."
 		$sql = "SELECT DISTINCT EUC.id, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name,
 					SC.id AS typeid, SC.name AS type,
 					CL.id AS clientid, CL.name AS client
-				FROM EndUser.Card_Tbl EUC
-				INNER JOIN System.PSP_Tbl PSP ON EUC.pspid = PSP.id AND PSP.enabled = '1'
-				INNER JOIN System.Card_Tbl SC ON EUC.cardid = SC.id AND SC.enabled = '1'
-				INNER JOIN Client.Client_Tbl CL ON EUC.clientid = CL.id AND CL.enabled = '1'
-				INNER JOIN EndUser.Account_Tbl EUA ON EUC.accountid = EUA.id AND EUA.enabled = '1'
-				LEFT OUTER JOIN EndUser.CLAccess_Tbl CLA ON EUA.id = CLA.accountid
+				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl EUC
+				INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON EUC.pspid = PSP.id AND PSP.enabled = '1'
+				INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl SC ON EUC.cardid = SC.id AND SC.enabled = '1'
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON EUC.clientid = CL.id AND CL.enabled = '1'
+				INNER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON EUC.accountid = EUA.id AND EUA.enabled = '1'
+				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON EUA.id = CLA.accountid
 				WHERE EUC.accountid = ". intval($id) ." AND EUC.enabled = '1'
 					AND ( (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."' OR length(EUC.expiry) = 0 )
 					AND (CLA.clientid = CL.id OR EUA.countryid = CLA.clientid 
 						 OR NOT EXISTS (SELECT id
-									    FROM EndUser.CLAccess_Tbl
+									    FROM EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl
 										WHERE accountid = EUA.id) )
 				ORDER BY CL.name ASC";
 //		echo $sql ."\n";
@@ -447,11 +447,11 @@ if ($_SERVER['REMOTE_ADDR'] == "87.48.162.186") { file_put_contents(sLOG_PATH ."
 		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, Extract('epoch' from EUT.created  AT TIME ZONE 'UTC') AS timestamp,
 					CL.id AS clientid, CL.name AS client,
 					Txn.id AS mpointid,EUT.stateid AS stateid, Txn.orderid AS orderno,EUAT.id AS customerid, (EUAT.firstname || ' ' || EUAT.lastname) AS customer
-				FROM EndUser.Transaction_Tbl EUT
-    			LEFT OUTER JOIN EndUser.Account_Tbl EUAT ON EUT.accountid = EUAT.id 
-				LEFT OUTER JOIN Log.Transaction_Tbl Txn ON EUT.txnid = Txn.id
-				LEFT OUTER JOIN Admin.Access_Tbl Acc ON Txn.clientid = Acc.clientid						
-				LEFT OUTER JOIN Client.Client_Tbl CL ON  CL.id = Acc.clientid 
+				FROM EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl EUT
+    			LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUAT ON EUT.accountid = EUAT.id 
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn ON EUT.txnid = Txn.id
+				LEFT OUTER JOIN Admin".sSCHEMA_POSTFIX.".Access_Tbl Acc ON Txn.clientid = Acc.clientid						
+				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON  CL.id = Acc.clientid 
 				WHERE (Acc.userid = ". intval($cid)." OR Txn.id IS NULL)";
 		
 		if (empty($thxid) === false){$sql .= "AND Txn.id = '". $this->getDBConn()->escStr( (string) $thxid) ."'";}
@@ -497,23 +497,23 @@ if ($_SERVER['REMOTE_ADDR'] == "87.48.162.186") { file_put_contents(sLOG_PATH ."
 					Txn.orderid AS orderno,EUT.accountid AS end_user_id,
 					C.id AS countryid, C.currency, C.symbol, C.priceformat
 				
-				FROM EndUser.Transaction_Tbl EUT
-				LEFT OUTER JOIN EndUser.Account_Tbl EUAT ON EUT.toid = EUAT.id
-				LEFT OUTER JOIN EndUser.Account_Tbl EUAF ON EUT.fromid = EUAF.id				
-				LEFT OUTER JOIN Log.Transaction_Tbl Txn ON EUT.txnid = Txn.id
-				LEFT OUTER JOIN Client.Client_Tbl CL ON Txn.clientid = CL.id
-				LEFT OUTER JOIN System.Country_Tbl C ON Txn.countryid = C.id
-				LEFT OUTER JOIN System.Card_Tbl Card ON Txn.cardid = Card.id
-				LEFT OUTER JOIN Log.message_tbl M1 ON Txn.id = M1.txnid AND M1.stateid = ". Constants::iPAYMENT_ACCEPTED_STATE ."
-				LEFT OUTER JOIN Log.message_tbl M2 ON Txn.id = M2.txnid AND M2.stateid = ". Constants::iPAYMENT_CAPTURED_STATE ."
-				LEFT OUTER JOIN Log.message_tbl M3 ON Txn.id = M3.txnid AND M3.stateid = ". Constants::iPAYMENT_REFUNDED_STATE ."
+				FROM EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl EUT
+				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUAT ON EUT.toid = EUAT.id
+				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUAF ON EUT.fromid = EUAF.id				
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn ON EUT.txnid = Txn.id
+				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Country_Tbl C ON Txn.countryid = C.id
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl Card ON Txn.cardid = Card.id
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M1 ON Txn.id = M1.txnid AND M1.stateid = ". Constants::iPAYMENT_ACCEPTED_STATE ."
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M2 ON Txn.id = M2.txnid AND M2.stateid = ". Constants::iPAYMENT_CAPTURED_STATE ."
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M3 ON Txn.id = M3.txnid AND M3.stateid = ". Constants::iPAYMENT_REFUNDED_STATE ."
 				WHERE EUT.id = '". $this->getDBConn()->escStr( (string) $txnid) ."'";
 		
 	$RS = $this->getDBConn()->getName($sql);
 	
 	$sql = "SELECT id, countryid,(firstname || ' ' || lastname) AS name,
 			mobile, email
-			FROM EndUser.Account_Tbl WHERE id =
+			FROM EndUser".sSCHEMA_POSTFIX.".Account_Tbl WHERE id =
 			". $RS["END_USER_ID"];
 				
 	//		echo $sql ."\n";	
@@ -555,9 +555,9 @@ if ($_SERVER['REMOTE_ADDR'] == "87.48.162.186") { file_put_contents(sLOG_PATH ."
 		$xml .= '</wallet-to-wallet>';
 		
 		$sql = "SELECT N.id, N.message, Extract('epoch' from N.created) AS created, U.id AS userid, U.email
-				FROM enduser.Transaction_Tbl Txn
-				INNER JOIN Log.Note_Tbl N ON Txn.id = N.txnid AND N.enabled = true
-				INNER JOIN Admin.user_tbl U ON N.userid = U.id
+				FROM enduser".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
+				INNER JOIN Log".sSCHEMA_POSTFIX.".Note_Tbl N ON Txn.id = N.txnid AND N.enabled = true
+				INNER JOIN Admin".sSCHEMA_POSTFIX.".user_tbl U ON N.userid = U.id
 				WHERE Txn.id = ". intval($txnid);
 //		echo $sql ."\n";
 		$aRS = $this->getDBConn()->getAllNames($sql);
@@ -606,13 +606,13 @@ if ($_SERVER['REMOTE_ADDR'] == "87.48.162.186") { file_put_contents(sLOG_PATH ."
 					(EUAT.firstname || ' ' || EUAT.lastname) AS to_name, EUAT.countryid AS to_countryid, EUAT.mobile AS to_mobile, EUAT.countryid AS to_m, EUAT.email AS to_email,
 					(EUAF.firstname || ' ' || EUAF.lastname) AS from_name, EUAF.countryid AS from_countryid, EUAF.mobile AS from_mobile, EUAF.email AS from_email,
 					Txn.id AS mpointid, Txn.orderid, Txn.cardid, Card.name AS card
-				FROM EndUser.Transaction_Tbl EUT
-				LEFT OUTER JOIN EndUser.Account_Tbl EUAT ON EUT.toid = EUAT.id
-				LEFT OUTER JOIN EndUser.Account_Tbl EUAF ON EUT.fromid = EUAF.id
-				LEFT OUTER JOIN Log.Transaction_Tbl Txn ON EUT.txnid = Txn.id
-				LEFT OUTER JOIN Client.Client_Tbl CL ON Txn.clientid = CL.id
-				LEFT OUTER JOIN System.Country_Tbl C ON Txn.countryid = C.id
-				LEFT OUTER JOIN System.Card_Tbl Card ON Txn.cardid = Card.id
+				FROM EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl EUT
+				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUAT ON EUT.toid = EUAT.id
+				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUAF ON EUT.fromid = EUAF.id
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn ON EUT.txnid = Txn.id
+				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Country_Tbl C ON Txn.countryid = C.id
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl Card ON Txn.cardid = Card.id
 				WHERE EUT.accountid = ". intval($id);
 		if ( ($num > 0 && $offset <= 0) || $num < 0)
 		{
@@ -723,7 +723,7 @@ if ($_SERVER['REMOTE_ADDR'] == "87.48.162.186") { file_put_contents(sLOG_PATH ."
 	 */
 	public function savePassword($id, $pwd)
 	{
-		$sql = "UPDATE EndUser.Account_Tbl
+		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Account_Tbl
 				SET passwd = '". $this->getDBConn()->escStr($pwd) ."'
 				WHERE id = ". intval($id);
 //		echo $sql ."\n";
@@ -740,7 +740,7 @@ if ($_SERVER['REMOTE_ADDR'] == "87.48.162.186") { file_put_contents(sLOG_PATH ."
 	 */
 	public function saveInfo($id, $fn, $ln)
 	{
-		$sql = "UPDATE EndUser.Account_Tbl
+		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Account_Tbl
 				SET firstname = '". $this->getDBConn()->escStr($fn) ."', lastname = '". $this->getDBConn()->escStr($ln) ."'  
 				WHERE id = ". intval($id);
 //		echo $sql ."\n";
@@ -781,10 +781,10 @@ if ($_SERVER['REMOTE_ADDR'] == "87.48.162.186") { file_put_contents(sLOG_PATH ."
 	 */
 	public function newAccount($cid, $mob="", $pwd="", $email="", $cr="")
 	{
-		$sql = "SELECT Nextvalue('EndUser.Account_Tbl_id_seq') AS id FROM DUAL";
+		$sql = "SELECT Nextvalue('EndUser".sSCHEMA_POSTFIX.".Account_Tbl_id_seq') AS id FROM DUAL";
 		$RS = $this->getDBConn()->getName($sql);
 		$sql = "INSERT INTO EndUser.Account_Tbl
-					(id, countryid, mobile, passwd, email, externalid)
+					(id, countryid,".sSCHEMA_POSTFIX." mobile, passwd, email, externalid)
 				VALUES
 					(". $RS["ID"] .", ". intval($cid) .", ". (floatval($mob) > 0 ? "'". floatval($mob) ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". (strlen($email) > 0 ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .", '". $this->getDBConn()->escStr($cr) ."')";
 //		echo $sql ."\n";
@@ -854,7 +854,7 @@ if ($_SERVER['REMOTE_ADDR'] == "87.48.162.186") { file_put_contents(sLOG_PATH ."
 	{
 		$iCode = mt_rand(100000, 999999);
 		// Insert generated activation code in the database
-		$sql = "INSERT INTO EndUser.Activation_Tbl
+		$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Activation_Tbl
 					(accountid, address, code". (is_null($exp) == false ? ", expiry" : "") .")
 				VALUES
 					(". intval($id) .", '". $this->getDBConn()->escStr($addr) ."', ". $iCode . (is_null($exp) == false ? ", '". $this->getDBConn()->escStr($exp) ."'" : "") .")";
@@ -885,7 +885,7 @@ if ($_SERVER['REMOTE_ADDR'] == "87.48.162.186") { file_put_contents(sLOG_PATH ."
 	public function activateCode($id, $code)
 	{
 		$sql = "SELECT id, enabled, active, extract('epoch' from expiry) AS expiry
-				FROM EndUser.Activation_Tbl
+				FROM EndUser".sSCHEMA_POSTFIX.".Activation_Tbl
 				WHERE accountid = ". intval($id) ." AND code = ". intval($code);
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
@@ -896,7 +896,7 @@ if ($_SERVER['REMOTE_ADDR'] == "87.48.162.186") { file_put_contents(sLOG_PATH ."
 		elseif ($RS["ENABLED"] === false) { $iStatus = 4; }	// Activation Code disabled
 		else
 		{
-			$sql = "UPDATE EndUser.Activation_Tbl
+			$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Activation_Tbl
 					SET active = '1'
 					WHERE id = ". $RS["ID"];
 //			echo $sql ."\n";
@@ -911,14 +911,14 @@ if ($_SERVER['REMOTE_ADDR'] == "87.48.162.186") { file_put_contents(sLOG_PATH ."
 	}
 	public function verifyMobile($id)
 	{
-		$sql = "UPDATE EndUser.Account_Tbl
+		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Account_Tbl
 				SET mobile_verified = true
 				WHERE id = ". intval($id);
 //		echo $sql ."\n";
 
 		if (is_resource($this->getDBConn()->query($sql) ) === true)
 		{
-			$sql = "UPDATE EndUser.Transaction_Tbl
+			$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl
 					SET stateid = ". Constants::iTRANSACTION_COMPLETED_STATE ."
 					WHERE toid = ". intval($id) ." AND stateid = ". Constants::iTRANSFER_PENDING_STATE;
 //			echo $sql ."\n";
@@ -935,7 +935,7 @@ if ($_SERVER['REMOTE_ADDR'] == "87.48.162.186") { file_put_contents(sLOG_PATH ."
 	
 	public function newNote($uid, $oid, $msg)
 	{
-		$sql = "INSERT INTO Log.Note_Tbl
+		$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Note_Tbl
 					(userid, txnid, message)
 				VALUES
 					(". intval($uid) .", ". intval($oid)  .", '". $this->getDBConn()->escStr($msg) ."')";

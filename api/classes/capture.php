@@ -92,7 +92,7 @@ class Capture extends General
 	public static function produce(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI)
 	{
 		$sql = "SELECT pspid, extid
-				FROM Log.Transaction_Tbl
+				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				WHERE id = ". $oTI->getID() ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);

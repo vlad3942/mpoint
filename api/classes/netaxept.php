@@ -81,7 +81,7 @@ class NetAxept extends Callback
 			$obj_XML = simplexml_load_string($xml);
 			
 			// save ext id in database
-					$sql = "UPDATE Log.Transaction_Tbl
+					$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 							SET pspid = ". Constants::iNETAXEPT_PSP .", extid = '".$obj_Std->RegisterResult->TransactionId."'
 							WHERE id = ". $this->getTxnInfo()->getID();
 //					echo $sql ."\n";
@@ -310,7 +310,7 @@ class NetAxept extends Callback
 	 * @param 	array $_post 	Array of data received from WannaFind via HTTP POST
 	 */
 	public function notifyClient($sid, array $_post)
-	{
+	{		
 		parent::notifyClient($sid, $_post["transact"], $_post["amount"], $_post["cardid"], str_replace("X", "*", $_post["cardnomask"]) );
 	}
 	
@@ -355,7 +355,7 @@ class NetAxept extends Callback
 	 			$obj_XML = simplexml_load_string($xml);
 
 	 			// save ext id in database
-				$sql = "UPDATE Log.Transaction_Tbl
+				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 						SET pspid = ". Constants::iNETAXEPT_PSP .", extid = '".$obj_Std->RegisterResult->TransactionId."'
 						WHERE id = ". $this->getTxnInfo()->getID();
 	//					echo $sql ."\n";

@@ -53,7 +53,7 @@ class Products extends Overview
 	{
 		// Get Product Data
 		$sql = "SELECT id, name, price, logourl
-				FROM Client.Product_Tbl
+				FROM Client".sSCHEMA_POSTFIX.".Product_Tbl
 				WHERE keywordid = ". $this->getTxnInfo()->getClientConfig()->getKeywordConfig()->getID() ." AND enabled = '1'
 				ORDER BY name ASC";
 //		echo $sql ."\n";
@@ -94,7 +94,7 @@ class Products extends Overview
 		{
 			// Get Product Data
 			$sql = "SELECT id, name, price, logourl
-					FROM Client.Product_Tbl
+					FROM Client".sSCHEMA_POSTFIX.".Product_Tbl
 					WHERE id IN (". implode(",", $aProdIDs) .")
 					ORDER BY id ASC";
 //			echo $sql ."\n";

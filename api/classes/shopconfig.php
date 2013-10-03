@@ -80,7 +80,7 @@ class ShopConfig extends BasicConfig
 	public static function produceConfig(RDB &$oDB, ClientConfig &$oCC)
 	{
 		$sql = "SELECT id, del_date
-				FROM Client.Shop_Tbl
+				FROM Client".sSCHEMA_POSTFIX.".Shop_Tbl
 				WHERE clientid = ". $oCC->getID() ." AND keywordid = ". $oCC->getKeywordConfig()->getID();
 
 //		echo $sql ."\n";
