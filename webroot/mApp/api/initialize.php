@@ -36,12 +36,12 @@ $aMsgCds = array();
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 /*
-$_SERVER['PHP_AUTH_USER'] = "CPMDemo";
-$_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
+$_SERVER['PHP_AUTH_USER'] = "1415";
+$_SERVER['PHP_AUTH_PW'] = "Ghdy4_ah1G";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<initialize-payment client-id="10007" account="100006">';
+$HTTP_RAW_POST_DATA .= '<initialize-payment client-id="10019" account="100026">';
 $HTTP_RAW_POST_DATA .= '<transaction order-no="1234abc">';
 $HTTP_RAW_POST_DATA .= '<amount country-id="100">200</amount>';
 $HTTP_RAW_POST_DATA .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
@@ -72,8 +72,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			if ($code == 100)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'initialize-payment'}[$i]["account"]);
-				
-				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']) )
+				//if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])  && ClientConfig::hasAccess($_OBJ_DB, trim($_SERVER['REMOTE_ADDR'])) === true)
+				// TODO: Uncomment the if statement above to replace this one below if the Client.IPAddress_Tbl is already in place
+				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']))
 				{
 					$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"]);
 					if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
