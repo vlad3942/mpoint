@@ -520,5 +520,26 @@ class ClientConfig extends BasicConfig
 		
 		return new ClientConfig($RS["CLIENTID"], utf8_decode($RS["CLIENT"]), $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $RS["CUSTOMERIMPORTURL"], $RS["AUTHURL"]);
 	}
+	
+	/**
+	 * Function to check for the IP whitelisting
+	 * 
+	 * @param RDB $oDB 				instance of the database
+	 * @param string $remoteAddr	the IP address as a string
+	 * @return boolean
+	 */
+	public static function hasAccess(RDB &$oDB, $remoteAddr)
+	{
+		$sql = "SELECT COUNT(*) FROM Client.IPAddress_Tbl CI WHERE CI.ipaddress = '".$remoteAddr."'";
+		$RS = $oDB->getName($sql);
+		if (intval($RS) > 0)
+		{
+			return true;
+		} 
+		else 
+		{
+			return false;
+		}
+	}
 }
 ?>
