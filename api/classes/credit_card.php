@@ -97,7 +97,7 @@ class CreditCard extends EndUserAccount
 		}
 		/* ========== Calculate Logo Dimensions End ========== */
 
-		$sql = "SELECT C.id, C.name, C.minlength, C.maxlength, C.cvclength,
+		$sql = "SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength,
 					PSP.id AS pspid, MA.name AS account, MSA.name AS subaccount, PC.name AS currency
 				FROM System".sSCHEMA_POSTFIX.".Card_Tbl C
 				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON C.id = CA.cardid
@@ -108,6 +108,7 @@ class CreditCard extends EndUserAccount
 				INNER JOIN System".sSCHEMA_POSTFIX.".PSPCurrency_Tbl PC ON PSP.id = PC.pspid
 				INNER JOIN System".sSCHEMA_POSTFIX.".PSPCard_Tbl PCD ON PSP.id = PCD.pspid AND C.id = PCD.cardid
 				INNER JOIN System".sSCHEMA_POSTFIX.".CardPricing_Tbl CP ON C.id = CP.cardid
+				INNER JOIN Log".sSCHEMA_POSTFIX.".Transaction_Tbl TR ON C.id = TR.cardid
 				INNER JOIN System".sSCHEMA_POSTFIX.".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PC.countryid = PP.countryid AND PP.enabled = '1'
 				WHERE CA.clientid = ". $this->_obj_TxnInfo->getClientConfig()->getID() ."
 					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
@@ -115,6 +116,7 @@ class CreditCard extends EndUserAccount
 					AND PP.countryid = ". $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID() ."
 					AND PP.amount IN (-1, ". intval($amount) .")
 					AND C.enabled = '1' AND (MA.stored_card = false OR MA.stored_card IS NULL) 
+					AND (TR.countryid = CA.countryid OR CA.countryid IS NULL)
 				ORDER BY C.position ASC, C.name ASC";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
