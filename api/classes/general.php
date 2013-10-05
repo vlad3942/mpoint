@@ -944,5 +944,19 @@ class General
 		elseif (self::genToken($id, $secret, 15) == $token) { return 11; }	// Token is valid but about to expire and a new token should be generated
 		else { return 1; }													// Invalid Token
 	}
+	public function orderAlreadyAuthorized($oid)
+	{
+		$sql = "SELECT Txn.id
+				FROM Log.Transaction_Tbl Txn
+				INNER JOIN Log.Message_Tbl M ON Txn.id = M.txnid
+				WHERE Txn.clientid = ". $this->getClientConfig()->getID() ." AND orderid = '". $this->getDBConn()->escStr($oid) ."'
+					AND M.stateid IN (". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .")
+				ORDER BY Txn.id DESC
+				LIMIT 1";
+		//		echo $sql ."\n";
+		$RS = $this->getDBConn()->getName($sql);
+	
+		return is_array($RS) === true && $RS["ID"] > 0 ? true : false;
+	}
 }
 ?>

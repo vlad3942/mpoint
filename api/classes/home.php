@@ -146,7 +146,7 @@ class Home extends General
 				WHERE id = ". intval($id);
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
-if ($_SERVER['REMOTE_ADDR'] == "87.48.162.186") { file_put_contents(sLOG_PATH ."/jona.log", $sql ."\n". var_export($RS, true) ); }
+		
 		if (is_array($RS) === true)
 		{
 			// Invalid logins exceeded or Account disabled

@@ -52,7 +52,7 @@
 			</td>
 			<td><xsl:value-of select="labels/progress" /></td>
 			<td id="link">
-				<a href="{func:constLink('/pay/card.php') }" style="background-image:url('/img/new.png'); background-repeat:no-repeat;">
+				<a href="{func:appendQueryString('/pay/card.php') }" style="background-image:url('/img/new.png'); background-repeat:no-repeat;">
 					<xsl:value-of select="labels/add-card" />
 				</a>
 			</td>
@@ -64,7 +64,7 @@
 					<img id="close" src="/img/close.png" width="22" height="22" alt="" />
 				</a>
 			</xsl:if>
-			<form id="delete-card" action="{func:constLink('/cpm/sys/del_card.php') }" method="post">
+			<form id="delete-card" action="{func:appendQueryString('/cpm/sys/del_card.php') }" method="post">
 				<input type="hidden" id="card-id" name="cardid" value="-1" />
 				<input type="hidden" name="cardtype" value="11" />
 				
@@ -98,7 +98,7 @@
 	<xsl:apply-templates select="messages" />
 	
 	<div id="my-account">
-		<form action="{func:constLink('/cpm/sys/pay_account.php') }" method="post">
+		<form action="{func:appendQueryString('/cpm/sys/pay_account.php') }" method="post">
 			<div>
 				<input type="hidden" name="euaid" value="{account/@id}" />
 				<input type="hidden" name="cardtype" value="11" />
@@ -142,13 +142,13 @@
 									<!-- End-User does not have an account -->
 									<xsl:when test="string-length(account/@id) = 0">
 										<td id="top-up">
-											<a href="{func:constLink('/new/?msg=2') }"><xsl:value-of select="labels/create-account" /></a>
+											<a href="{func:appendQueryString('/new/?msg=2') }"><xsl:value-of select="labels/create-account" /></a>
 										</td>
 									</xsl:when>
 									<!-- Insufficient Funds -->
 									<xsl:when test="account/balance &lt; transaction/amount">
 										<td id="top-up">
-											<a href="{func:constLink('/shop/topup.php?msg=1') }"><xsl:value-of select="labels/top-up" /></a>
+											<a href="{func:appendQueryString('/shop/topup.php?msg=1') }"><xsl:value-of select="labels/top-up" /></a>
 										</td>
 									</xsl:when>
 									</xsl:choose>

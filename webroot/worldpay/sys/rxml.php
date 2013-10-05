@@ -38,8 +38,13 @@ foreach ($obj_XML->children() as $obj_Elem)
 
 $obj_mPoint = new WorldPay($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
 
+// Order already completed (likely because the customer paid with a Stored Card)
+if (strlen($_SESSION['obj_TxnInfo']->getOrderID() ) > 0 && $obj_mPoint->orderAlreadyAuthorized($_SESSION['obj_TxnInfo']->getOrderID() ) === true)
+{
+	$url = "/pay/accept.php?". session_name() ."=". session_id() ."&mpoint-id=". $_SESSION['obj_TxnInfo']->getID();
+}
 // Stored Card enabled and end-user hasn't made a decision as to whether to store the card or not
-if ($obj_mPoint->getTxnInfo()->getClientConfig()->getStoreCard() == 3 && strlen($obj_mPoint->getTxnInfo()->getCustomerRef() ) > 0
+elseif ($obj_mPoint->getTxnInfo()->getClientConfig()->getStoreCard() == 3 && strlen($obj_mPoint->getTxnInfo()->getCustomerRef() ) > 0
 	&& array_key_exists("store-card", $_POST) === false)
 {
 	$_SESSION['obj_Info']->setInfo("psp-id", Constants::iWORLDPAY_PSP);
