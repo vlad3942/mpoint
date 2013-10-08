@@ -3,12 +3,11 @@
 
 <xs:complexType name="client-info">
 	<xs:all>
-		<xs:element name="mobile" type="mobile" minOccurs="1" maxOccurs="1" />
+		<xs:element name="customer-ref" type="xs:string" minOccurs="0" maxOccurs="1" />
+		<xs:element name="mobile" type="mobile" minOccurs="0" maxOccurs="1" />
 		<xs:element name="email" type="email" minOccurs="0" maxOccurs="1" />
 		<xs:element name="device-id" type="device-id" minOccurs="1" maxOccurs="1" />
-		<xs:element name="ip" type="ip" minOccurs="0" maxOccurs="1"/>
-		<xs:element name="customer-ref" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>
-
+		<xs:element name="ip" type="ip" minOccurs="0" maxOccurs="1" />
 	</xs:all>
 	<xs:attribute name="app-id" type="xs:positiveInteger" use="optional" />
 	<xs:attribute name="platform" type="platform" use="required" />
@@ -19,6 +18,7 @@
 <xs:complexType name="get-updated-core-data">
 	<xs:group ref="get-updated-core-data" />
 </xs:complexType>
+
 <xs:group name="get-updated-core-data">
 	<xs:sequence>
 		<xs:element name="last-updated" type="xs:dateTime" minOccurs="0" maxOccurs="1" />
@@ -28,6 +28,7 @@
 					<xs:element name="mobile" type="mobile" minOccurs="0" maxOccurs="1" />
 					<xs:element name="email" type="email" minOccurs="0" maxOccurs="1" />
 					<xs:element name="device-id" type="device-id" minOccurs="1" maxOccurs="1" />
+					<xs:element name="ip" type="ip" minOccurs="0" maxOccurs="1" />
 				</xs:all>
 				<xs:attribute name="platform" type="platform" use="optional" />
 				<xs:attribute name="version" type="version" use="optional" />
@@ -35,7 +36,6 @@
 		</xs:element>
 	</xs:sequence>
 </xs:group>
-
 
 <xs:simpleType name="email"> 
 	<xs:restriction base="xs:string"> 

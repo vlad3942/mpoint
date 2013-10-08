@@ -24,8 +24,9 @@
 										</xs:complexType>
 									</xs:element>
 									<xs:element name="callback-url" type="url" minOccurs="0" maxOccurs="1" />
+									<xs:element name="auth-url" type="url" minOccurs="0" maxOccurs="1" />
+									<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
 									<xs:element name="custom-variables" minOccurs="0" maxOccurs="1">
-									<xs:element name="description" type="string" minOccurs="0" maxOccurs="1" />
 										<xs:complexType>
 											<xs:sequence>
 												<xs:any minOccurs="0" maxOccurs="unbounded" />
@@ -88,7 +89,10 @@
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="1009" />
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
+						<xs:choice>
+							<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
+							<xs:element name="auth-token" type="xs:string" minOccurs="1" maxOccurs="1" />
+						</xs:choice>
 						<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1" />
 					</xs:all>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
@@ -100,13 +104,18 @@
 					<xs:all>
 						<xs:element name="card" minOccurs="1" maxOccurs="1">
 							<xs:complexType>
-								<xs:simpleContent>
-									<xs:extension base="xs:string">
-										<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" />
-										<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
-										<xs:attribute name="preferred" type="xs:boolean" use="optional" />
-									</xs:extension>
-								</xs:simpleContent>
+								<xs:sequence>
+									<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1" />
+									<xs:choice minOccurs="0" maxOccurs="1">
+										<xs:group ref="masked-card-details" />
+										<xs:group ref="complete-card-details" />
+									</xs:choice>
+									<xs:element name="card-holder-name" type="xs:string" minOccurs="0" maxOccurs="1" />
+									<xs:element name="address" type="address" minOccurs="0" maxOccurs="1" />
+								</xs:sequence>
+								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" />
+								<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
+								<xs:attribute name="preferred" type="xs:boolean" use="optional" />
 							</xs:complexType>
 						</xs:element>
 						<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1" />
@@ -166,7 +175,10 @@
 			<xs:element name="login">
 				<xs:complexType>
 					<xs:all>
-						<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
+						<xs:choice>
+							<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
+							<xs:group ref="single-sign-on" minOccurs="1" maxOccurs="1" />
+						</xs:choice>
 						<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1" />
 					</xs:all>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
@@ -222,7 +234,10 @@
 				<xs:complexType>
 					<xs:all>
 						<xs:element name="card" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
-						<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
+						<xs:choice>
+							<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
+							<xs:group ref="single-sign-on" minOccurs="1" maxOccurs="1" />
+						</xs:choice>
 						<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1" />
 					</xs:all>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
@@ -247,91 +262,14 @@
 				</xs:complexType>
 			</xs:element>
 			<!-- Save Address -->
-			<xs:element name="address">
+			<xs:element name="save-address">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:choice minOccurs="1" maxOccurs="1">
-							<xs:group ref="names" />
-							<xs:element name="full-name" />
-						</xs:choice>
-						<xs:element name="company" type="xs:string" minOccurs="0" maxOccurs="1" />
-						<xs:element name="street" type="xs:string" minOccurs="1" maxOccurs="1" />
-						<xs:element name="postal-code" type="xs:string" minOccurs="1" maxOccurs="1" />
-						<xs:element name="city" type="xs:string" minOccurs="1" maxOccurs="1" />
-						<xs:element name="state" minOccurs="0" maxOccurs="1">					
-							<xs:simpleType>
-								<xs:restriction base="xs:string">
-									<xs:enumeration value="AA" />
-									<xs:enumeration value="AE" />
-									<xs:enumeration value="AK" />
-									<xs:enumeration value="AL" />
-									<xs:enumeration value="AP" />
-									<xs:enumeration value="AR" />
-									<xs:enumeration value="AS" />
-									<xs:enumeration value="AZ" />
-									<xs:enumeration value="CA" />
-									<xs:enumeration value="CO" />
-									<xs:enumeration value="CT" />
-									<xs:enumeration value="DC" />
-									<xs:enumeration value="DE" />
-									<xs:enumeration value="FL" />
-									<xs:enumeration value="FM" />
-									<xs:enumeration value="GA" />
-									<xs:enumeration value="GU" />
-									<xs:enumeration value="HI" />
-									<xs:enumeration value="IA" />
-									<xs:enumeration value="ID" />
-									<xs:enumeration value="IL" />
-									<xs:enumeration value="IN" />
-									<xs:enumeration value="KS" />
-									<xs:enumeration value="KY" />
-									<xs:enumeration value="LA" />
-									<xs:enumeration value="MA" />
-									<xs:enumeration value="MD" />
-									<xs:enumeration value="ME" />
-									<xs:enumeration value="MH" />
-									<xs:enumeration value="MI" />
-									<xs:enumeration value="MN" />
-									<xs:enumeration value="MO" />
-									<xs:enumeration value="MP" />
-									<xs:enumeration value="MS" />
-									<xs:enumeration value="MT" />
-									<xs:enumeration value="NC" />
-									<xs:enumeration value="ND" />
-									<xs:enumeration value="NE" />
-									<xs:enumeration value="NH" />
-									<xs:enumeration value="NJ" />
-									<xs:enumeration value="NM" />
-									<xs:enumeration value="NV" />
-									<xs:enumeration value="NY" />
-									<xs:enumeration value="OH" />
-									<xs:enumeration value="OK" />
-									<xs:enumeration value="OR" />
-									<xs:enumeration value="PA" />
-									<xs:enumeration value="PR" />
-									<xs:enumeration value="PW" />
-									<xs:enumeration value="RI" />
-									<xs:enumeration value="SC" />
-									<xs:enumeration value="SD" />
-									<xs:enumeration value="TN" />
-									<xs:enumeration value="TX" />
-									<xs:enumeration value="UT" />
-									<xs:enumeration value="VA" />
-									<xs:enumeration value="VI" />
-									<xs:enumeration value="VT" />
-									<xs:enumeration value="WA" />
-									<xs:enumeration value="WI" />
-									<xs:enumeration value="WV" />
-									<xs:enumeration value="WY" />
-									<xs:enumeration value="N/A" />
-								</xs:restriction>
-							</xs:simpleType>
-						</xs:element>
+						<xs:element name="address" type="address" minOccurs="1" maxOccurs="1" />
 						<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1" />
 					</xs:sequence>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
 					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
-					<xs:attribute name="country-id" type="countryid" use="required" />
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="find-address">
@@ -385,12 +323,127 @@
 	</xs:sequence>
 </xs:group>
 
+<xs:complexType name="address">
+	<xs:sequence>
+		<xs:choice minOccurs="1" maxOccurs="1">
+			<xs:group ref="names" />
+			<xs:element name="full-name" />
+		</xs:choice>
+		<xs:element name="company" type="xs:string" minOccurs="0" maxOccurs="1" />
+		<xs:element name="street" type="xs:string" minOccurs="1" maxOccurs="1" />
+		<xs:element name="postal-code" type="xs:string" minOccurs="0" maxOccurs="1" />
+		<xs:element name="city" type="xs:string" minOccurs="1" maxOccurs="1" />
+		<xs:element name="state" minOccurs="0" maxOccurs="1">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="AA" />
+					<xs:enumeration value="AE" />
+					<xs:enumeration value="AK" />
+					<xs:enumeration value="AL" />
+					<xs:enumeration value="AP" />
+					<xs:enumeration value="AR" />
+					<xs:enumeration value="AS" />
+					<xs:enumeration value="AZ" />
+					<xs:enumeration value="CA" />
+					<xs:enumeration value="CO" />
+					<xs:enumeration value="CT" />
+					<xs:enumeration value="DC" />
+					<xs:enumeration value="DE" />
+					<xs:enumeration value="FL" />
+					<xs:enumeration value="FM" />
+					<xs:enumeration value="GA" />
+					<xs:enumeration value="GU" />
+					<xs:enumeration value="HI" />
+					<xs:enumeration value="IA" />
+					<xs:enumeration value="ID" />
+					<xs:enumeration value="IL" />
+					<xs:enumeration value="IN" />
+					<xs:enumeration value="KS" />
+					<xs:enumeration value="KY" />
+					<xs:enumeration value="LA" />
+					<xs:enumeration value="MA" />
+					<xs:enumeration value="MD" />
+					<xs:enumeration value="ME" />
+					<xs:enumeration value="MH" />
+					<xs:enumeration value="MI" />
+					<xs:enumeration value="MN" />
+					<xs:enumeration value="MO" />
+					<xs:enumeration value="MP" />
+					<xs:enumeration value="MS" />
+					<xs:enumeration value="MT" />
+					<xs:enumeration value="NC" />
+					<xs:enumeration value="ND" />
+					<xs:enumeration value="NE" />
+					<xs:enumeration value="NH" />
+					<xs:enumeration value="NJ" />
+					<xs:enumeration value="NM" />
+					<xs:enumeration value="NV" />
+					<xs:enumeration value="NY" />
+					<xs:enumeration value="OH" />
+					<xs:enumeration value="OK" />
+					<xs:enumeration value="OR" />
+					<xs:enumeration value="PA" />
+					<xs:enumeration value="PR" />
+					<xs:enumeration value="PW" />
+					<xs:enumeration value="RI" />
+					<xs:enumeration value="SC" />
+					<xs:enumeration value="SD" />
+					<xs:enumeration value="TN" />
+					<xs:enumeration value="TX" />
+					<xs:enumeration value="UT" />
+					<xs:enumeration value="VA" />
+					<xs:enumeration value="VI" />
+					<xs:enumeration value="VT" />
+					<xs:enumeration value="WA" />
+					<xs:enumeration value="WI" />
+					<xs:enumeration value="WV" />
+					<xs:enumeration value="WY" />
+					<xs:enumeration value="N/A" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:element>
+	</xs:sequence>
+	<xs:attribute name="country-id" type="countryid" use="required" />
+</xs:complexType>
+
 <xs:group name="passwords">
 	<xs:sequence>
 		<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
 		<xs:element name="new-password" type="xs:string" minOccurs="1" maxOccurs="1" />
 		<xs:element name="repeat-password" type="xs:string" minOccurs="1" maxOccurs="1" />
 	</xs:sequence>
+</xs:group>
+
+<xs:group name="masked-card-details">
+	<xs:sequence>
+		<xs:element name="card-number-mask" minOccurs="1" maxOccurs="1">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:minLength value="13" />
+					<xs:maxLength value="19" />
+					<xs:pattern value="[0-9*X]*" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:element>
+		<xs:element name="expiry-month" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+		<xs:element name="expiry-year" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+		<xs:element name="token" type="xs:string" minOccurs="1" maxOccurs="1" />
+	</xs:sequence>
+</xs:group>
+
+<xs:group name="complete-card-details">
+	<xs:sequence>
+		<xs:element name="card-number" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+		<xs:element name="expiry-month" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+		<xs:element name="expiry-year" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+	</xs:sequence>
+</xs:group>
+
+<xs:group name="single-sign-on">
+	<xs:all>
+		<xs:element name="auth-token" type="xs:string" minOccurs="1" maxOccurs="1" />
+		<xs:element name="auth-url" type="url" minOccurs="1" maxOccurs="1" />
+	</xs:all>
 </xs:group>
 
 </xs:schema>
