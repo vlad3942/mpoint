@@ -244,6 +244,7 @@ class Callback extends EndUserAccount
 		if (empty($cardno) === false) { $sBody .= "&card-number=". urlencode($cardno); }
 		if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true) { $sBody .= "&pspid=". urlencode($pspid); }
 		$sBody .= $this->getVariables();
+		$sBody .= "&cheksum=". sha1($this->_obj_TxnInfo->getID() . $this->_obj_TxnInfo->getOrderID() . $amt . $this->_obj_TxnInfo->getClientConfig()->getPassword() );
 		/* ----- Construct Body End ----- */
 
 		$this->performCallback($sBody);
