@@ -650,7 +650,7 @@ class TxnInfo
 			break;
 		case ($obj instanceof RDB):				// Instantiate from Transaction Log
 			$sql = "SELECT id, typeid, countryid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, iconurl, \"mode\", auto_capture, gomobileid,
-						clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, consumerip, description
+						clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description
 					FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 					WHERE id = ". intval($id);
 			if (is_array($misc) === true)

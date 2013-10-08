@@ -7,6 +7,8 @@
 		<xs:element name="email" type="email" minOccurs="0" maxOccurs="1" />
 		<xs:element name="device-id" type="device-id" minOccurs="1" maxOccurs="1" />
 		<xs:element name="ip" type="ip" minOccurs="0" maxOccurs="1"/>
+		<xs:element name="customer-ref" type="xs:positiveInteger" minOccurs="0" maxOccurs="1"/>
+
 	</xs:all>
 	<xs:attribute name="app-id" type="xs:positiveInteger" use="optional" />
 	<xs:attribute name="platform" type="platform" use="required" />
@@ -26,7 +28,6 @@
 					<xs:element name="mobile" type="mobile" minOccurs="0" maxOccurs="1" />
 					<xs:element name="email" type="email" minOccurs="0" maxOccurs="1" />
 					<xs:element name="device-id" type="device-id" minOccurs="1" maxOccurs="1" />
-					<xs:element name="ip" type="ip" minOccurs="0" maxOccurs="1"/>
 				</xs:all>
 				<xs:attribute name="platform" type="platform" use="optional" />
 				<xs:attribute name="version" type="version" use="optional" />

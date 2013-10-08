@@ -97,14 +97,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$data['reward'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->reward;
 							$data['reward-type'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->reward["type-id"];
 						}
-						if (count($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip) == 1)
-						{
-							$data['ip'] = $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip;
-						}
-						if (count($obj_DOM->{'initialize-payment'}[$i]->transaction["customer-ref"]) == 1)
-						{
-							$data['customer-ref'] = $obj_DOM->{'initialize-payment'}[$i]->transaction["customer-ref"];	
-						}
+						if (count($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip) == 1) { $data['ip'] = $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip; }
+						else if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) ){ $data['ip'] = $_SERVER['HTTP_X_FORWARDED_FOR'];}
+						else {$data['ip'] = $_SERVER['REMOTE_ADDR']; }
+						
+							if (count( $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->customer-ref) == 1) { $data['customer-ref'] = $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->customer-ref;}
 						
 						if (count($obj_DOM->{'initialize-payment'}[$i]->description) == 1)
 						{
