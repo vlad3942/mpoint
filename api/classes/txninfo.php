@@ -201,7 +201,19 @@ class TxnInfo
 	 * @var string
 	 */
 	private $_sMarkupLanguage;
-
+	/**
+	 * The Description of a Order for a Customer
+	 *
+	 * @var string
+	 */
+	private  $_sDescription;
+	/**
+	 * The IP address of a  Customer
+	 *
+	 * @var string
+	 */
+	private  $_sIP;
+	
 	/**
 	 * Default Constructor
 	 *
@@ -231,8 +243,10 @@ class TxnInfo
 	 * @param 	integer $gmid 		GoMobile's Unique ID for the MO-SMS that was used to start the payment transaction. Defaults to -1.
 	 * @param 	boolean $asc		Boolean Flag indicating whether the "Save Card Info" box should automatically be checked on the payment page
 	 * @param 	string $mrk 		String indicating the markup language used to render the payment pages
+	 * @param 	string $description String that holds the description of an order
+	 * @param 	string $ip			String that holds the customers IP address
 	 */
-	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, $amt, $pnt, $rwd, $rfnd, $orid, $addr, $oid, $email, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml")
+	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, $amt, $pnt, $rwd, $rfnd, $orid, $addr, $oid, $email, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $description, $ip)
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -266,6 +280,8 @@ class TxnInfo
 		$this->_bAutoStoreCard = (bool) $asc;
 		
 		$this->_sMarkupLanguage = trim($mrk);
+		$this->_sDescription = trim($description);
+		$this->_sIP = trim($ip);
 	}
 
 	/**
@@ -445,7 +461,19 @@ class TxnInfo
 	 * @return 	string
 	 */
 	public function getMarkupLanguage() { return $this->_sMarkupLanguage; }
-
+	/**
+	 * Returns the Description for the Order
+	 *
+	 * @return 	string		 The Description for the Order or an emptry string if no Description has been provided
+	 */
+	public function getDescription() { return $this->_sDescription; }
+	/**
+	 * Returns the Customer IP Address
+	 *
+	 * @return 	string		Customer IP Address
+	 */
+	public function getIP() { return $this->_sIP; }
+	
 	/**
 	 * Updates the information for the Transaction with the Customer's E-Mail Address where a receipt is sent to upon successful completion of the payment transaction
 	 *
@@ -458,7 +486,19 @@ class TxnInfo
 	 * @param 	integer $id 	Unique ID for the End-User's prepaid account
 	 */
 	public function setAccountID($id) { $this->_iAccountID = $id; }
-
+	/**
+	 * Associates an End-User's Order Description with the Transaction.
+	 *
+	 * @param 	string $description  The Description of the order
+	 */
+	public function setDescription($description) { $this->_sDescription = $description; }
+	/**
+	 * Associates an End-User's IP Address with the Transaction.
+	 *
+	 * @param 	string $IP  The IP of the customer
+	 */
+	public function setIP($IP) { $this->_sIP = $IP; }
+	
 	/**
 	 * Converts the data object into XML.
 	 * If a User Agent Profile is provided, the method will automatically calculate the width and height of the client logo
@@ -535,6 +575,9 @@ class TxnInfo
 		$xml .= '<auto-capture>'. General::bool2xml($this->_bAutoCapture) .'</auto-capture>';
 		$xml .= '<auto-store-card>'. General::bool2xml($this->_bAutoStoreCard) .'</auto-store-card>';
 		$xml .= '<markup-language>'. $this->_sMarkupLanguage .'</markup-language>';
+		$xml .= '<customer-ref>'. $this->_sCustomerRef .'</customer-ref>';
+		$xml .= '<description>'. $this->_sDescription .'</description>';
+		$xml .= '<ip>' .$this->_sIP .'</ip>';
 		$xml .= '</transaction>';
 
 		return $xml;
@@ -590,8 +633,9 @@ class TxnInfo
 			if (array_key_exists("auto-store-card", $misc) === false) { $misc["auto-store-card"] = false; }
 			if (array_key_exists("refund", $misc) === false) { $misc["refund"] = 0; }
 			if (array_key_exists("auth-url", $misc) === false) { $misc["auth-url"] = $obj->getAuthenticationURL(); }
-			
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["country-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"]);
+			if (array_key_exists("description", $misc) === false) { $misc["description"] = $obj->$_sDescription; }
+			if (array_key_exists("ip", $misc) === false) { $misc["ip"] = $obj->$_sIP; }
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["country-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"],$misc["ip"] );
 			break;
 		case ($obj instanceof ClientConfig):	// Instantiate from array of Client Input
 			if (array_key_exists("points", $misc) === false) { $misc["points"] = -1; }
@@ -606,7 +650,7 @@ class TxnInfo
 			break;
 		case ($obj instanceof RDB):				// Instantiate from Transaction Log
 			$sql = "SELECT id, typeid, countryid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, iconurl, \"mode\", auto_capture, gomobileid,
-						clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl
+						clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, consumerip, description
 					FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 					WHERE id = ". intval($id);
 			if (is_array($misc) === true)

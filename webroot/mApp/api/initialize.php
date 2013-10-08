@@ -97,6 +97,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$data['reward'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->reward;
 							$data['reward-type'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->reward["type-id"];
 						}
+						if (count($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip) == 1)
+						{
+							$data['ip'] = $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip;
+						}
+						if (count($obj_DOM->{'initialize-payment'}[$i]->transaction["customer-ref"]) == 1)
+						{
+							$data['customer-ref'] = $obj_DOM->{'initialize-payment'}[$i]->transaction["customer-ref"];	
+						}
+						
+						if (count($obj_DOM->{'initialize-payment'}[$i]->description) == 1)
+						{
+							$data['description'] = $obj_DOM->{'initialize-payment'}[$i]->description;
+						}
 						$data['gomobileid'] = -1;
 						$data['orderid'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction["order-no"];
 						$data['mobile'] = (float) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile;
@@ -107,6 +120,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$data['css-url'] = "";
 						$data['accept-url'] = $obj_ClientConfig->getAcceptURL();
 						$data['cancel-url'] = "";
+						
 						if (count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'callback-url'}) == 1)
 						{
 							$data['callback-url'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->{'callback-url'};
@@ -156,6 +170,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if ($obj_TxnInfo->getPoints() > 0) { $xml .= $obj_XML->points->asXML(); }
 						if ($obj_TxnInfo->getReward() > 0) { $xml .= $obj_XML->reward->asXML(); }
 						$xml .= '<mobile country-id="'. intval($obj_TxnInfo->getOperator()/100) .'" operator-id="'. $obj_TxnInfo->getOperator() .'">'. floatval($obj_TxnInfo->getMobile() ) .'</mobile>';
+						if (trim($obj_TxnInfo->getEMail() ) != "") { $xml .= $obj_XML->email->asXML(); }
 						if (trim($obj_TxnInfo->getEMail() ) != "") { $xml .= $obj_XML->email->asXML(); }
 						$xml .= $obj_XML->{'callback-url'}->asXML();
 						$xml .= $obj_XML->{'accept-url'}->asXML();
