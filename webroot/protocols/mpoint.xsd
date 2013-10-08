@@ -336,6 +336,7 @@
 		<xs:element name="state" minOccurs="0" maxOccurs="1">
 			<xs:simpleType>
 				<xs:restriction base="xs:string">
+					<!-- USA -->
 					<xs:enumeration value="AA" />
 					<xs:enumeration value="AE" />
 					<xs:enumeration value="AK" />
@@ -398,6 +399,51 @@
 					<xs:enumeration value="WI" />
 					<xs:enumeration value="WV" />
 					<xs:enumeration value="WY" />
+					<!-- India -->
+					<xs:enumeration value="AP" />
+					<xs:enumeration value="AR" />
+					<xs:enumeration value="AS" />
+					<xs:enumeration value="BR" />
+					<xs:enumeration value="CT" />
+					<xs:enumeration value="DE" />
+					<xs:enumeration value="GA" />
+					<xs:enumeration value="GJ" />
+					<xs:enumeration value="HR" />
+					<xs:enumeration value="HP" />
+					<xs:enumeration value="JK" />
+					<xs:enumeration value="JH" />
+					<xs:enumeration value="KA" />
+					<xs:enumeration value="KL" />
+					<xs:enumeration value="MP" />
+					<xs:enumeration value="MH" />
+					<xs:enumeration value="MN" />
+					<xs:enumeration value="ML" />
+					<xs:enumeration value="MZ" />
+					<xs:enumeration value="NL" />
+					<xs:enumeration value="OR" />
+					<xs:enumeration value="PJ" />
+					<xs:enumeration value="RJ" />
+					<xs:enumeration value="SK" />
+					<xs:enumeration value="TN" />
+					<xs:enumeration value="TR" />
+					<xs:enumeration value="UP" />
+					<xs:enumeration value="UL" />
+					<xs:enumeration value="WB" />
+					<!-- Canada -->
+					<xs:enumeration value="AB" />
+					<xs:enumeration value="BC" />
+					<xs:enumeration value="MB" />
+					<xs:enumeration value="NB" />
+					<xs:enumeration value="NL" />
+					<xs:enumeration value="NT" />
+					<xs:enumeration value="NS" />
+					<xs:enumeration value="NU" />
+					<xs:enumeration value="ON" />
+					<xs:enumeration value="PE" />
+					<xs:enumeration value="QC" />
+					<xs:enumeration value="SK" />
+					<xs:enumeration value="YT" />
+					<!-- Unknown -->
 					<xs:enumeration value="N/A" />
 				</xs:restriction>
 			</xs:simpleType>
