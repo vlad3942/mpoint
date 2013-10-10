@@ -134,6 +134,10 @@ msgstr @@@ No @@@
 msgid @@@ Account - Single Sign-On @@@
 msgstr @@@ Account - Single Sign-On @@@
 
+#: /webroot/cpm/payment.php:145
+msgid @@@ - Authorizing Payment Text - @@@
+msgstr @@@ - Authorizing Payment Text - @@@
+
 #: /webroot/default.php:22
 msgid @@@ mPoint @@@
 msgstr @@@ mPoint @@@
@@ -1392,11 +1396,11 @@ Pris: {PRICE} @@@
 msgid @@@ Billing SMS @@@
 msgstr @@@ Tack för att du använder mPoint, du har betalat {PRICE} via din telefonräkning @@@
 
-#: /api/classes/credit_card.php:135
+#: /api/classes/credit_card.php:137
 msgid @@@ Stored Cards @@@
 msgstr @@@ Stored Cards @@@
 
-#: /api/classes/credit_card.php:137
+#: /api/classes/credit_card.php:139
 msgid @@@ My Account @@@
 msgstr @@@ My Account @@@
 

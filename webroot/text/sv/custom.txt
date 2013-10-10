@@ -261,6 +261,8 @@ msgid @@@ Select Card - 49 @@@
 msgstr @@@ The specified account is not active. @@@
 msgid @@@ Select Card - 99 @@@
 msgstr @@@ We're sorry but we could not complete the payment through your selected payment method. Please select another one to try again. @@@
+msgid @@@ Select Card - 101 @@@
+msgstr @@@ All your stored cards have been deleted. @@@
 msgid @@@ Select Payment Method - 99 @@@
 msgstr @@@ Vi kunde inte genomföra betalningen med din valda betalningsmetod. Välj en annan betalningsmetod och försök igen. @@@
 msgid @@@ CPM Payment - 1 @@@

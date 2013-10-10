@@ -142,6 +142,7 @@ try
 					<yes><?= $_OBJ_TXT->_("Yes"); ?></yes>
 					<no><?= $_OBJ_TXT->_("No"); ?></no>
 					<single-sign-on><?= $_OBJ_TXT->_("Account - Single Sign-On"); ?></single-sign-on>
+					<authorizing-payment><?= nl2br(htmlspecialchars($_OBJ_TXT->_("- Authorizing Payment Text -"), ENT_NOQUOTES) ); ?></authorizing-payment>
 				</labels>
 	
 				<?= str_replace('<?xml version="1.0"?>', '', $obj_AccountXML->asXML() ) ?>

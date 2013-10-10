@@ -137,6 +137,10 @@ msgstr @@@ Nej @@@
 msgid @@@ Account - Single Sign-On @@@
 msgstr @@@ Vælg betalingsmetode @@@
 
+#: /webroot/cpm/payment.php:145
+msgid @@@ - Authorizing Payment Text - @@@
+msgstr @@@ Gennemfører betalingen, vent venligst... @@@
+
 #: /webroot/default.php:22
 msgid @@@ mPoint @@@
 msgstr @@@ mPoint @@@
@@ -1411,11 +1415,11 @@ Pris: {PRICE} @@@
 msgid @@@ Billing SMS @@@
 msgstr @@@ Tak fordi du brugte mPoint, vi har trukket {PRICE} fra din mobilregning. @@@
 
-#: /api/classes/credit_card.php:135
+#: /api/classes/credit_card.php:137
 msgid @@@ Stored Cards @@@
 msgstr @@@ Gemte kort @@@
 
-#: /api/classes/credit_card.php:137
+#: /api/classes/credit_card.php:139
 msgid @@@ My Account @@@
 msgstr @@@ Min konto @@@
 

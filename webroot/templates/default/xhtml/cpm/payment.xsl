@@ -42,6 +42,11 @@
 				document.getElementById('confirm-delete-card').style.visibility = 'hidden';
 				document.getElementById('window-background').style.visibility = 'hidden';
 			}
+			function showLoader()
+			{
+				document.getElementById('loader').style.visibility = 'visible';
+				document.getElementById('window-background').style.visibility = 'visible';
+			}
 		</script>
 		<table>
 		<tr>
@@ -92,13 +97,19 @@
 				</xsl:choose>
 			</form>
 		</div>
+		<div id="loader" style="visibility:hidden;">
+			<img src="/img/loader.gif" width="32" height="32" alt="" />
+			<div>
+				<xsl:copy-of select="labels/authorizing-payment/node()" />
+			</div>
+		</div>
 	</div>
 	
 	<!-- Display Status Messages -->
 	<xsl:apply-templates select="messages" />
 	
 	<div id="my-account">
-		<form action="{func:appendQueryString('/cpm/sys/pay_account.php') }" method="post">
+		<form action="{func:appendQueryString('/cpm/sys/pay_account.php') }" method="post" onsubmit="javascript:showLoader();">
 			<div>
 				<input type="hidden" name="euaid" value="{account/@id}" />
 				<input type="hidden" name="cardtype" value="11" />

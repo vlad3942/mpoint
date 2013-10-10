@@ -137,6 +137,11 @@ msgstr @@@ No @@@
 msgid @@@ Account - Single Sign-On @@@
 msgstr @@@ Please select a payment method @@@
 
+#: /webroot/cpm/payment.php:145
+msgid @@@ - Authorizing Payment Text - @@@
+msgstr @@@ Your stored-card payment request is now being processed.
+Please do not navigate away early by clicking "Back" or another button, but wait until this page is automatically updated to reflect your payment status. @@@
+
 #: /webroot/default.php:22
 msgid @@@ mPoint @@@
 msgstr @@@ mPoint @@@
@@ -1421,11 +1426,11 @@ Price: {PRICE} @@@
 msgid @@@ Billing SMS @@@
 msgstr @@@ Thank you for using mPoint, you've been charged {PRICE} through your Mobile Operator @@@
 
-#: /api/classes/credit_card.php:135
+#: /api/classes/credit_card.php:137
 msgid @@@ Stored Cards @@@
 msgstr @@@ Use Stored Card @@@
 
-#: /api/classes/credit_card.php:137
+#: /api/classes/credit_card.php:139
 msgid @@@ My Account @@@
 msgstr @@@ My Account @@@
 
