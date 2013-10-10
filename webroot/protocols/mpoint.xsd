@@ -79,6 +79,15 @@
 										<xs:complexType>
 											<xs:all>
 												<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
+												<xs:element name="cvc" minOccurs="0" maxOccurs="1">
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:minLength value="3" />
+															<xs:maxLength value="4" />
+															<xs:pattern value="[0-9]*" />
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
 											</xs:all>
 											<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 											<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
