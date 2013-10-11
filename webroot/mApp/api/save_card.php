@@ -117,6 +117,32 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							
 							// Success: Card name saved
 							if ($code > 0) { $xml = '<status code="'. ($code+99) .'">Card name successfully saved</status>'; }
+							else if ($code > 0 && $obj_mPoint->getClientConfig()->getStoredCardNofiURL() != "")
+							{
+								$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'save-card'}[$i]->{'client-info'}, $obj_CountryConfig, @$_SERVER['HTTP_X_FORWARDED_FOR']);
+								$aURL_Info = parse_url($obj_mPoint->getClientConfig()->getStoredCardNofiURL() );
+								$aHTTP_CONN_INFO["mesb"]["protocol"] = $aURL_Info["scheme"];
+								$aHTTP_CONN_INFO["mesb"]["host"] = $aURL_Info["host"];
+								$aHTTP_CONN_INFO["mesb"]["port"] = $aURL_Info["port"];
+								$aHTTP_CONN_INFO["mesb"]["path"] = $aURL_Info["path"];
+								if (array_key_exists("query", $aURL_Info) === true) { $aHTTP_CONN_INFO["mesb"]["path"] .= "?". $aURL_Info["query"]; }
+								$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
+								
+								try
+								 {
+								 	$obj_XML = $obj_mPoint->saveCardName($obj_ConnInfo);
+								 	
+								} 
+								catch (Exception $e) 
+								{
+									header("HTTP/1.1 504 Gateway Timeout");
+									
+									$xml = '<?xml version="1.0" encoding="UTF-8"?>';
+									$xml .= '<root>';
+									$xml .= '<status code="91">Unable to connect to External Server</status>';
+									$xml .= '</root>';
+								}
+							}
 							else 
 							{
 								header("HTTP/1.1 500 Internal Server Error");
