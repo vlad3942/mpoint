@@ -185,6 +185,18 @@ $aHTTP_CONN_INFO["payex"]["contenttype"] = "text/xml";
 //$aHTTP_CONN_INFO["payex"]["username"] = "";	// Set from the Client Configuration 
 $aHTTP_CONN_INFO["payex"]["password"] = "b9ppZDPbRcJNEgHM57BV";
 
+/**
+ * Connection info for connecting to CPG
+ */
+$aHTTP_CONN_INFO["cpg"]["protocol"] = "https";
+$aHTTP_CONN_INFO["cpg"]["host"] = "pgstaging.emirates.com";
+$aHTTP_CONN_INFO["cpg"]["port"] = 443;
+$aHTTP_CONN_INFO["cpg"]["timeout"] = 120;
+$aHTTP_CONN_INFO["cpg"]["path"] = "/cpg/Order.jsp";
+$aHTTP_CONN_INFO["cpg"]["method"] = "POST";
+$aHTTP_CONN_INFO["cpg"]["contenttype"] = "text/xml";
+//$aHTTP_CONN_INFO["emirates"]["username"] = "";	// Set from the Client Configuration
+//$aHTTP_CONN_INFO["emirates"]["password"] = "";
 
 /**
  * Connection info for connecting to Authorize.Net
