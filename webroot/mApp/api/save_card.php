@@ -130,8 +130,34 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								
 								try
 								 {
-								 	$obj_XML = $obj_mPoint->saveCardName($obj_ConnInfo);
+								 	$xml = '<?xml version="1.0" encoding="UTF-8"?>';
+								 	$xml .= '<root>';
+								 	$xml .= '<export>';
+								 	$xml .= '<consumer>"'. $iAccountID .'"</consumer>';
+								 	$xml .= '<status code ="100"></status>';
+								 	$xml .= '</export>';
+								 	$xml .= '</root>';
 								 	
+								 	$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+								 	$obj_HTTP->connect();
+								 	$code = $obj_HTTP->send($this->constHeader(), $xml);
+								 	$obj_HTTP->disconnect();
+								 	if (stristr($obj_HTTP->getReplyHeader(), "UTF-8") == true)
+								 	{
+								 		$obj_XML = simpledom_load_string(trim($obj_HTTP->getReplyBody() ) );
+								 	}
+								 	else { $obj_XML = simpledom_load_string(utf8_encode(trim($obj_HTTP->getReplyBody() ) ) ); }
+								 	
+								 	if ( ($obj_XML instanceof SimpleDOMElement) === true)
+								 	{
+								 		// Export succeeded
+								 		if ($code == 200)
+								 		{
+								 			$code = 10;
+								 		}
+								 		else { $code = 2; }
+								 	}
+								 	else { $code = 1; }								 	
 								} 
 								catch (Exception $e) 
 								{
