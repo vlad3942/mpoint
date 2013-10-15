@@ -556,9 +556,9 @@ class ClientConfig extends BasicConfig
 		$sql  = "SELECT ipaddress
 				FROM Client".sSCHEMA_POSTFIX.".IPAddress_Tbl IP
 				WHERE IP.clientid = ". intval($id) ."";
-		$res = $this->getDBConn()->query($sql);
+		$res = $oDB->query($sql);
 		$IPList = array();
-		while ($RS = $this->getDBConn()->fetchName($res) )
+		while ($RS = $oDB->fetchName($res) )
 		{
 			$IPList[] = $RS["IPADDRESS"];	
 		}
