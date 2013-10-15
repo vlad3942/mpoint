@@ -50,15 +50,13 @@ CREATE UNIQUE INDEX PostalCode_UQ ON System.PostalCode_Tbl (latitude, longitude,
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE System.PostalCode_Tbl TO mpoint;
 GRANT SELECT, UPDATE, USAGE ON TABLE System.PostalCode_Tbl_id_seq TO mpoint;
 
-
-
-
 -- Table: EndUser.Address_Tbl
--- Data table for all shipping addresses registered by customers
+-- Data table for all billing addresses registered by end-users
 CREATE TABLE EndUser.Address_Tbl
 (
 	id			SERIAL,
-	customerid	INT4 NOT NULL,
+	accountid	INT4,
+	cardid		INT4,
 	countryid	INT4 NOT NULL,
 	stateid		INT4 NOT NULL,
 	
@@ -70,9 +68,11 @@ CREATE TABLE EndUser.Address_Tbl
 	city		VARCHAR(50),
 	
 	CONSTRAINT Address_PK PRIMARY KEY (id),
-	CONSTRAINT Address2Customer_FK FOREIGN KEY (customerid) REFERENCES EndUser.Account_Tbl (id) ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT Address2Account_FK FOREIGN KEY (accountid) REFERENCES EndUser.Account_Tbl (id) ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT Address2Card_FK FOREIGN KEY (cardid) REFERENCES EndUser.Card_Tbl (id) ON UPDATE CASCADE ON DELETE CASCADE,
 	CONSTRAINT Address2Country_FK FOREIGN KEY (countryid) REFERENCES System.Country_Tbl (id) ON UPDATE CASCADE ON DELETE CASCADE,
 	CONSTRAINT Address2State_FK FOREIGN KEY (stateid) REFERENCES System.State_Tbl (id) ON UPDATE CASCADE ON DELETE CASCADE,
+	CHECK ( (accountid IS NULL AND cardid IS NOT NULL) OR (accountid IS NOT NULL AND cardid IS NULL) ),
 	LIKE Template.General_Tbl INCLUDING DEFAULTS
 ) WITHOUT OIDS;
 
