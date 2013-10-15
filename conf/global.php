@@ -54,10 +54,10 @@ $aDB_CONN_INFO["mpoint"]["password"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["class"] = "Oracle";
 */
 $aDB_CONN_INFO["mpoint"]["host"] = "localhost";
-$aDB_CONN_INFO["mpoint"]["port"] = 5000;
-$aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
-$aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
-$aDB_CONN_INFO["mpoint"]["password"] = "hspzr735abl";
+$aDB_CONN_INFO["mpoint"]["port"] = 5432;
+$aDB_CONN_INFO["mpoint"]["path"] = "mPoint";
+$aDB_CONN_INFO["mpoint"]["username"] = "postgres";
+$aDB_CONN_INFO["mpoint"]["password"] = "hej22";
 $aDB_CONN_INFO["mpoint"]["class"] = "PostGreSQL";
 $aDB_CONN_INFO["mpoint"]["timeout"] = 10;
 $aDB_CONN_INFO["mpoint"]["charset"] = "UTF8";

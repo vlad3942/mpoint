@@ -198,7 +198,11 @@ class ClientConfig extends BasicConfig
 	 * @var integer
 	 */
 	private $_iStoreCard;
-
+	/**
+	 * 	List of IP white-listed by The System
+	 * @var array
+	 */
+	private $_aIPList;
 	/**
 	 * Default Constructor
 	 *
@@ -227,10 +231,10 @@ class ClientConfig extends BasicConfig
 	 * @param 	boolean $sp			Boolean Flag indicating whether the PSP's ID for the Payment should be included in the Callback
 	 * @param 	string $ciurl 		Absolute URL to the external system where customer data may be imported from. This is generally an existing e-Commerce site or a CRM system
 	 * @param 	string $aurl		Absolute URL to the external system where a customer may be authenticated. This is generally an existing e-Commerce site or a CRM system
-	 * @param 	string ,$nofiurl	Absolute URL to the external system that needs To by Notify When Stored Cards changes.
-
+	 * @param 	string $nofiurl		Absolute URL to the external system that needs To by Notify When Stored Cards changes.
+	 * @param	array  $iplist		List of IP white-listed by The System 
 	 */
-	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $ciurl, $aurl,$nofiurl)
+	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $ciurl, $aurl,$nofiurl,$iplist)
 	{
 		parent::__construct($id, $name);
 
@@ -265,6 +269,7 @@ class ClientConfig extends BasicConfig
 		$this->_sCustomerImportURL = trim($ciurl);
 		$this->_sAuthenticationURL = trim($aurl);
 		$this->_sStoredCardNofiURL = trim($nofiurl);
+		$this->_aIPList = $iplist;
 	}
 
 	/**
@@ -455,6 +460,12 @@ class ClientConfig extends BasicConfig
 		$xml .= '<email-receipt>'. General::bool2xml($this->_bEmailReceipt) .'</email-receipt>';
 		$xml .= '<auto-capture>'. General::bool2xml($this->_bAutoCapture) .'</auto-capture>';
 		$xml .= '<store-card>'. $this->_iStoreCard .'</store-card>';
+		$xml .= '<ip-list>';
+		foreach($this->_aIPList as $value)
+		{
+			$xml .= '<ip>'.$value.'</ip>';	
+		}
+		$xml .= '</ip-list>';
 		$xml .= '</client-config>';
 
 		return $xml;
@@ -536,7 +547,16 @@ class ClientConfig extends BasicConfig
 		$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["MOBILE"], $RS["MARKUP"]);
 		$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
 		
-		return new ClientConfig($RS["CLIENTID"], utf8_decode($RS["CLIENT"]), $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $RS["CUSTOMERIMPORTURL"], $RS["AUTHURL"],$RS["CUSTOMEREXPORTURL"]);
+		$sql  = "SELECT ipaddress
+				FROM Client".sSCHEMA_POSTFIX.".IPAddress_Tbl IP
+				WHERE IP.clientid = ". intval($id) ."";
+		$res = $this->getDBConn()->query($sql);
+		$IPList = array();
+		while ($RS = $this->getDBConn()->fetchName($res) )
+		{
+			$IPList[] = $RS["IPADDRESS"];	
+		}
+		return new ClientConfig($RS["CLIENTID"], utf8_decode($RS["CLIENT"]), $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $RS["CUSTOMERIMPORTURL"], $RS["AUTHURL"],$RS["CUSTOMEREXPORTURL"],$IPList);
 	}
 	
 	/**
@@ -548,7 +568,7 @@ class ClientConfig extends BasicConfig
 	 */
 	public static function hasAccess(RDB &$oDB, $remoteAddr)
 	{
-		$sql = "SELECT COUNT(*) FROM Client.IPAddress_Tbl CI WHERE CI.ipaddress = '".$remoteAddr."'";
+		$sql = "SELECT COUNT(*) FROM Client".sSCHEMA_POSTFIX.".IPAddress_Tbl CI WHERE CI.ipaddress = '".$remoteAddr."'";
 		$RS = $oDB->getName($sql);
 		if (intval($RS) > 0)
 		{

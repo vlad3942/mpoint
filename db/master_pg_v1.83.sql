@@ -84,3 +84,17 @@ EXECUTE PROCEDURE Public.Update_Table_Proc();
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE EndUser.Address_Tbl TO mpoint;
 GRANT SELECT, UPDATE, USAGE ON TABLE EndUser.Address_Tbl_id_seq TO mpoint;
 
+-- Table: Client.IpAddress_Tbl 
+-- Used for IP WhiteListing 
+CREATE TABLE Client.IPAddress_Tbl
+(
+	id				SERIAL,
+	clientid		INT4 NOT NULL,
+	ipaddress		VARCHAR(20),
+	CONSTRAINT IPAddress_PK PRIMARY KEY (id),
+	LIKE Template.General_Tbl INCLUDING DEFAULTS
+	CONSTRAINT IPAccess2Client_FK FOREIGN KEY (clientid) REFERENCES Client.Client_Tbl ON UPDATE CASCADE ON DELETE CASCADE
+) WITHOUT OIDS;
+
+
+ALTER TABLE Client.CardAccess_tbl ADD countryid INT4;
