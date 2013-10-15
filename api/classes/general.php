@@ -427,7 +427,7 @@ class General
 		$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 					(id, typeid, clientid, accountid, countryid, keywordid, \"mode\", ip)
 				VALUES
-					(". $RS["ID"] .", ". intval($tid) .", ". $oCC->getID() .", ". $oCC->getAccountConfig()->getID() .", ". $oCC->getCountryConfig()->getID() .", ". $oCC->getKeywordConfig()->getID() .", ". $oCC->getMode() .",.";
+					(". $RS["ID"] .", ". intval($tid) .", ". $oCC->getID() .", ". $oCC->getAccountConfig()->getID() .", ". $oCC->getCountryConfig()->getID() .", ". $oCC->getKeywordConfig()->getID() .", ". $oCC->getMode() .",";
 					if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) ) { $sql .= " '". $_SERVER['HTTP_X_FORWARDED_FOR'] ."')" ; }
 					else { $sql .= " '". $_SERVER['REMOTE_ADDR'] ."')" ; }
 //		echo $sql ."\n";
