@@ -79,13 +79,13 @@ class CPG extends Callback
         $creditCardInfoAvailable = FALSE;       
         $billingAddressAvailable = FALSE;
         // NEEDS expansion of getStoredCards()
-        $firstName = $or_XML->xpath('//firstName');
-        $lastName = $or_XML->xpath('//lastName');
-        $street = $or_XML->xpath('//street');
-        $city = $or_XML->xpath('//city');
-        $postalCode = $or_XML->xpath('//postalCode');
-        $countryCode = $or_XML->xpath('//countryCode');
-        $mobilNumber = $or_XML->xpath('//mobilNumber');
+        $firstName = $or_XML->firstName;
+        $lastName = $or_XML->lastName;
+        $street = $or_XML->street;
+        $city = $or_XML->city;
+        $postalCode = $or_XML->postalCode;
+        $countryCode = $or_XML->countryCode;
+        $mobilNumber = $or_XML->mobilNumber;
         $nominalAuth = NO;
         
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -119,17 +119,15 @@ class CPG extends Callback
                 $b .= '    <cardHolderName>'. Jona.Cpm .'</cardHolderName>'; // mandatory
             }
             $b .= '    <cardAddress>';
-            $b .= '     <address>';
-            // TODO: split the name
-            $b .= '      <firstName>'. Cpm .'</firstName>'; // mandatory, 0-40 chars
-            $b .= '      <lastName>'. Cpm .'</lastName>'; // mandatory, 0-40 chars
-            // TODO: fill out the address
-            $b .= '      <street>'. CPM .'</street>'; // mandatory, 0-100 chars
-            $b .= '      <postalCode>'. 2100 .'</postalCode>'; // optional, 0-20 chars
-            $b .= '      <city>'. CPH .'</city>'; // mandatory, 0-50 chars
-            $b .= '      <countryCode>'. DK .'</countryCode>'; // mandatory, 2-2 chars
-            $b .= '      <telephoneNumber>'. 123132123 .'</telephoneNumber>'; // optional
-            $b .= '     </address>';
+           	$b .= '   <address>';
+        	$b .= '    <firstName>'. $firstName .'</firstName>'; // mandatory, 0-40 chars
+        	$b .= '    <lastName>'. $lastName .'</lastName>'; // mandatory, 0-40 chars
+        	$b .= '    <street>'. $street .'</street>'; // mandatory, 0-100 chars
+        	$b .= '    <postalCode>'. $postalCode .'</postalCode>'; // optional, 0-20 chars
+        	$b .= '    <city>'. $city .'</city>'; // mandatory, 0-50 chars
+        	$b .= '    <countryCode>'. $countryCode .'</countryCode>'; // mandatory, 2-2 chars
+	        $b .= '    <telephoneNumber>'. $mobilNumber .'</telephoneNumber>'; // optional
+	        $b .= '   </address>';
             $b .= '    </cardAddress>';
             if ($creditCardInfoAvailable)
             {
@@ -146,13 +144,13 @@ class CPG extends Callback
         // NEEDS expansion of getStoredCards()
         $b .= '  <shippingAddress>';
         $b .= '   <address>';
-        $b .= '    <firstName>'. $firstName[0] .'</firstName>'; // mandatory, 0-40 chars
-        $b .= '    <lastName>'. $lastName[0] .'</lastName>'; // mandatory, 0-40 chars
-        $b .= '    <street>'. $street[0] .'</street>'; // mandatory, 0-100 chars
-        $b .= '    <postalCode>'. $postalCode[0] .'</postalCode>'; // optional, 0-20 chars
-        $b .= '    <city>'. $city[0] .'</city>'; // mandatory, 0-50 chars
-        $b .= '    <countryCode>'. $countryCode[0] .'</countryCode>'; // mandatory, 2-2 chars
-        $b .= '    <telephoneNumber>'. $mobilNumber[0] .'</telephoneNumber>'; // optional
+        $b .= '    <firstName>'. $firstName .'</firstName>'; // mandatory, 0-40 chars
+        $b .= '    <lastName>'. $lastName .'</lastName>'; // mandatory, 0-40 chars
+        $b .= '    <street>'. $street .'</street>'; // mandatory, 0-100 chars
+        $b .= '    <postalCode>'. $postalCode .'</postalCode>'; // optional, 0-20 chars
+        $b .= '    <city>'. $city .'</city>'; // mandatory, 0-50 chars
+        $b .= '    <countryCode>'. $countryCode .'</countryCode>'; // mandatory, 2-2 chars
+        $b .= '    <telephoneNumber>'. $mobilNumber .'</telephoneNumber>'; // optional
         $b .= '   </address>';
         $b .= '  </shippingAddress>';
         $b .= ' </order>';
