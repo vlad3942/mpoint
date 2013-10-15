@@ -179,12 +179,13 @@ class General
 	 */
 	public function xml2bool($b)
 	{
-		if ($b == "true")  { $b = true; }
-		elseif ($b == "yes")  { $b = true; }
-		elseif (strval($b) == "1")  { $b = true; }
-		elseif ($b == "false")  { $b = false; }
-		elseif ($b == "no")  { $b = true; }
-		elseif (strval($b) == "0")  { $b = false; }
+		if ($b == "true") { $b = true; }
+		elseif ($b == "yes") { $b = true; }
+		elseif (strval($b) == "1") { $b = true; }
+		elseif ($b == "false") { $b = false; }
+		elseif ($b == "no") { $b = true; }
+		elseif (strval($b) == "0") { $b = false; }
+		elseif (empty($b) === true) { $b = false; }
 
 		return $b;
 	}

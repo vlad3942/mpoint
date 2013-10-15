@@ -35,8 +35,24 @@ $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
 $HTTP_RAW_POST_DATA .= '<save-card client-id="10012">';
-$HTTP_RAW_POST_DATA .= '<card id="62021">'. utf8_encode("My Card æ ø å") .'</card>';
+$HTTP_RAW_POST_DATA .= '<card type-id="6" preferred="true">';
+$HTTP_RAW_POST_DATA .= '<name>My VISA</name>';
+$HTTP_RAW_POST_DATA .= '<card-number-mask>540287******1244</card-number-mask>';
+$HTTP_RAW_POST_DATA .= '<expiry-month>10</expiry-month>';
+$HTTP_RAW_POST_DATA .= '<expiry-year>14</expiry-year>';
+$HTTP_RAW_POST_DATA .= '<token>123456-ABCD</token>';
+$HTTP_RAW_POST_DATA .= '<card-holder-name>Jonatan Evad Buus</card-holder-name>';
+$HTTP_RAW_POST_DATA .= '<address country-id="100">';
+$HTTP_RAW_POST_DATA .= '<first-name>Jonatan Evald</first-name>';
+$HTTP_RAW_POST_DATA .= '<last-name>Buus</last-name>';
+$HTTP_RAW_POST_DATA .= '<street>Dexter Gordons Vej 3, 6.tv</street>';
+$HTTP_RAW_POST_DATA .= '<postal-code>2450</postal-code>';
+$HTTP_RAW_POST_DATA .= '<city>'. utf8_encode("København SV") .'</city>';
+$HTTP_RAW_POST_DATA .= '<state>N/A</state>';
+$HTTP_RAW_POST_DATA .= '</address>';
+$HTTP_RAW_POST_DATA .= '</card>';
 $HTTP_RAW_POST_DATA .= '<client-info platform="iOS" version="1.00" language="da">';
+$HTTP_RAW_POST_DATA .= '<customer-ref>ABC-123</customer-ref>';
 $HTTP_RAW_POST_DATA .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
 $HTTP_RAW_POST_DATA .= '<email>jona@oismail.com</email>';
 $HTTP_RAW_POST_DATA .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
@@ -95,7 +111,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if ($obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["id"])  != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["id"]) + 50; }
 						}
 						
-						if ($obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]) != 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]) + 40; }
+						if ($obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name) != 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name) + 40; }
 						
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
@@ -112,54 +128,58 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								if ($iAccountID < 0 && count($obj_DOM->{'save-card'}[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
 								if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
 								if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
-								$code = $obj_mPoint->saveCardName($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j], false);
+								if (count($obj_DOM->{'save-card'}[$i]->card[$j]->token) == 1)
+								{
+									$code = $obj_mPoint->saveCard($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->token, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-number-mask'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} ."/". (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-year'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-holder-name'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) ) + 1;
+								}
+								else { $code = $obj_mPoint->saveCardName($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) ); }
 							}
-							
-							// Success: Card name saved
-							if ($code > 0) { $xml = '<status code="'. ($code+99) .'">Card name successfully saved</status>'; }
-							else if ($code > 0 && $obj_mPoint->getClientConfig()->getStoredCardNofiURL() != "")
+							  
+							// Success: Card saved
+							if ($code > 0 && $obj_mPoint->getClientConfig()->getNotificationURL() != "")
 							{
-								$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'save-card'}[$i]->{'client-info'}, $obj_CountryConfig, @$_SERVER['HTTP_X_FORWARDED_FOR']);
-								$aURL_Info = parse_url($obj_mPoint->getClientConfig()->getStoredCardNofiURL() );
-								$aHTTP_CONN_INFO["mesb"]["protocol"] = $aURL_Info["scheme"];
-								$aHTTP_CONN_INFO["mesb"]["host"] = $aURL_Info["host"];
-								$aHTTP_CONN_INFO["mesb"]["port"] = $aURL_Info["port"];
-								$aHTTP_CONN_INFO["mesb"]["path"] = $aURL_Info["path"];
-								if (array_key_exists("query", $aURL_Info) === true) { $aHTTP_CONN_INFO["mesb"]["path"] .= "?". $aURL_Info["query"]; }
-								$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
-								
 								try
-								 {
-								 	$xml = '<?xml version="1.0" encoding="UTF-8"?>';
-								 	$xml .= '<root>';
-								 	$xml .= '<export>';
-								 	$xml .= '<consumer>"'. $iAccountID .'"</consumer>';
-								 	$xml .= '<status code ="100"></status>';
-								 	$xml .= '</export>';
-								 	$xml .= '</root>';
-								 	
-								 	$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
-								 	$obj_HTTP->connect();
-								 	$code = $obj_HTTP->send($this->constHeader(), $xml);
-								 	$obj_HTTP->disconnect();
-								 	if (stristr($obj_HTTP->getReplyHeader(), "UTF-8") == true)
-								 	{
-								 		$obj_XML = simpledom_load_string(trim($obj_HTTP->getReplyBody() ) );
-								 	}
-								 	else { $obj_XML = simpledom_load_string(utf8_encode(trim($obj_HTTP->getReplyBody() ) ) ); }
-								 	
-								 	if ( ($obj_XML instanceof SimpleDOMElement) === true)
-								 	{
-								 		// Export succeeded
-								 		if ($code == 200)
-								 		{
-								 			$code = 10;
-								 		}
-								 		else { $code = 2; }
-								 	}
-								 	else { $code = 1; }								 	
-								} 
-								catch (Exception $e) 
+								{
+									$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'save-card'}[$i]->{'client-info'}, $obj_CountryConfig, @$_SERVER['HTTP_X_FORWARDED_FOR']);
+										
+									$aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID) );
+									$aObj_XML = $aObj_XML->xpath("/stored-cards/card[client/@id = ". $obj_ClientConfig->getID() ."]");
+									
+									$aURL_Info = parse_url($obj_mPoint->getClientConfig()->getNotificationURL() );
+									$aHTTP_CONN_INFO["mesb"]["protocol"] = $aURL_Info["scheme"];
+									$aHTTP_CONN_INFO["mesb"]["host"] = $aURL_Info["host"];
+									$aHTTP_CONN_INFO["mesb"]["port"] = $aURL_Info["port"];
+									$aHTTP_CONN_INFO["mesb"]["path"] = $aURL_Info["path"];
+									if (array_key_exists("query", $aURL_Info) === true) { $aHTTP_CONN_INFO["mesb"]["path"] .= "?". $aURL_Info["query"]; }
+									$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
+									
+									$xml = '<?xml version="1.0" encoding="UTF-8"?>';
+									$xml .= '<root>';
+									switch ($obj_mPoint->notify($obj_ConnInfo, $obj_ClientInfo, $iAccountID, count($aObj_XML) ) )
+									{
+									case (1):	// Error: Unknown response from External Server
+										header("HTTP/1.1 502 Bad Gateway");
+										
+										$xml .= '<status code="98">Invalid response from External Server</status>';
+										break;
+									case (2):	// Error: Notification Rejected by External Server
+										header("HTTP/1.1 502 Bad Gateway");
+										
+										$xml .= '<status code="97">Notification rejected by External Server</status>';
+										break;
+									case (10):	// Success: Card successfully saved
+										$xml = '<status code="'. ($code+99) .'">Card successfully saved</status>';
+										break;
+									default:	// Error: Unknown response from External Server
+										header("HTTP/1.1 502 Bad Gateway");
+										
+										$xml .= '<status code="99">Unknown response from External Server</status>';
+										break;
+									}
+									$xml .= '</root>';
+								}
+								// Error: Unable to connect to External Server
+								catch (HTTPConnectionException $e) 
 								{
 									header("HTTP/1.1 504 Gateway Timeout");
 									
@@ -168,14 +188,28 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$xml .= '<status code="91">Unable to connect to External Server</status>';
 									$xml .= '</root>';
 								}
+								// Error: No response received from External Server
+								catch (HTTPSendException $e)
+								{
+									header("HTTP/1.1 504 Gateway Timeout");
+										
+									$xml = '<?xml version="1.0" encoding="UTF-8"?>';
+									$xml .= '<root>';
+									$xml .= '<status code="92">No response received from External Server</status>';
+									$xml .= '</root>';
+								}
 							}
+							// Success: Card successfully saved
+							elseif ($code > 0) { $xml = '<status code="'. ($code+99) .'">Card successfully saved</status>'; }
+							// Internal Error: Unable to save Card
 							else 
 							{
 								header("HTTP/1.1 500 Internal Server Error");
 								
-								$xml = '<status code="90">Unable to save Card Name</status>';
+								$xml = '<status code="90">Unable to save Card ('. $code .')</status>';
 							}
 						}
+						// Invalid Input
 						else
 						{
 							header("HTTP/1.1 400 Bad Request");

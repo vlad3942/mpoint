@@ -170,50 +170,84 @@ class EndUserAccount extends Home
 	 * @see		EndUserAccount::getAccountID()
 	 * @see		EndUserAccount::newAccount()
 	 *
+	 * CARD SAVED DURING AUTHORIZATION:
 	 * @param	TxnInfo $oTI	The transaction for which the card is being stored
 	 * @param	string $addr 	End-User's mobile number or E-Mail address
 	 * @param 	integer $cardid ID of the Card Type
 	 * @param 	integer $pspid 	ID of the Payment Service Provider (PSP) that the ticket is valid through
-	 * @param 	integer $ticket Ticket ID representing the End-User's stored Credit Card which should be associated with the account
+	 * @param 	integer $token Ticket ID representing the End-User's stored Credit Card which should be associated with the account
 	 * @param	string $mask 	Masked card number in the fomat {CARD PREFIX}******{LAST 4 DIGITS}
 	 * @param	string $exp 	Expiry date for the Card in the format MM/YY
+	 * CARD SAVED BY INVOKING THE "SAVE CARD" API
+	 * @param	integer $accid	The End-User's unique ID
+	 * @param 	integer $cardid ID of the Card Type
+	 * @param 	integer $pspid 	ID of the Payment Service Provider (PSP) that the ticket is valid through
+	 * @param 	integer $token Ticket ID representing the End-User's stored Credit Card which should be associated with the account
+	 * @param	string $mask 	Masked card number in the fomat {CARD PREFIX}******{LAST 4 DIGITS}
+	 * @param	string $exp 	Expiry date for the Card in the format MM/YY
+	 * @param	string $chn 	Card Holder Name
+	 * @param	string $name 	The name assigned to the stored card by the end-user (optional)
+	 * @param	boolean $pref 	Boolean flag indicating whether the card is the end-user's preferred (optional), defaults to false
 	 * @return	integer
 	 */
-	public function saveCard(TxnInfo &$oTI, $addr, $cardid, $pspid, $ticket, $mask, $exp)
+	public function saveCard()
 	{
-		$obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), intval($oTI->getOperator()/100) );
-		$iAccountID = -1;
-		if ($oTI->getAccountID() > 0) { $iAccountID = $oTI->getAccountID(); }
-		elseif (strlen($oTI->getCustomerRef() ) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($this->getDBConn(), $oTI->getClientConfig(), $oTI->getCustomerRef() ); }
-		if ($iAccountID == -1) { $iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, $obj_CountryConfig); }
-		// End-User Account not found
-		if ($iAccountID == -1)
+		$aArgs = func_get_args();
+		switch (count($aArgs) )
 		{
-			if (strlen($oTI->getCustomerRef() ) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($this->getDBConn(), $oTI->getClientConfig(), $oTI->getCustomerRef(), false); }
-			else { $iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, $obj_CountryConfig, false); }
-			$bPreferred = "true";
-			// Client supports global storage of payment cards: Link End-User Account
-			if ($iAccountID > 0 && $this->getClientConfig()->getStoreCard() > 3)
+		case (7):
+			// Card Saved during Authorization
+			if ( ($aArgs[0] instanceof TxnInfo) === true)
 			{
-				$this->link($iAccountID);
-				$iStatus = 1;
+				list($oTI, $addr, $cardid, $pspid, $token, $mask, $exp) = $aArgs;
+				$obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), intval($oTI->getOperator()/100) );
+				$iAccountID = -1;
+				if ($oTI->getAccountID() > 0) { $iAccountID = $oTI->getAccountID(); }
+				elseif (strlen($oTI->getCustomerRef() ) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($this->getDBConn(), $oTI->getClientConfig(), $oTI->getCustomerRef() ); }
+				if ($iAccountID == -1) { $iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, $obj_CountryConfig); }
+				// End-User Account not found
+				if ($iAccountID == -1)
+				{
+					if (strlen($oTI->getCustomerRef() ) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($this->getDBConn(), $oTI->getClientConfig(), $oTI->getCustomerRef(), false); }
+					else { $iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, $obj_CountryConfig, false); }
+					$bPreferred = "true";
+					// Client supports global storage of payment cards: Link End-User Account
+					if ($iAccountID > 0 && $this->getClientConfig()->getStoreCard() > 3)
+					{
+						$this->link($iAccountID);
+						$iStatus = 1;
+					}
+					// Create new End-User Account
+					else
+					{
+						$mob = "";
+						$email = "";
+						if (floatval($addr) > $obj_CountryConfig->getMinMobile() ) { $mob = $addr; }
+						else { $email = $addr; }
+				
+						$iAccountID = $this->newAccount(intval($oTI->getOperator()/100), $mob, "", $email, $oTI->getCustomerRef() );
+						$iStatus = 2;
+					}
+				}
+				else
+				{
+					$bPreferred = "false";
+					$iStatus = 0;
+				}
+				$name = "";
 			}
-			// Create new End-User Account
+			// Card Saved by invoking "Save Card" API
 			else
 			{
-				$mob = "";
-				$email = "";
-				if (floatval($addr) > $obj_CountryConfig->getMinMobile() ) { $mob = $addr; }
-				else { $email = $addr; }
-	
-				$iAccountID = $this->newAccount(intval($oTI->getOperator()/100), $mob, "", $email, $oTI->getCustomerRef() );
-				$iStatus = 2;
+				list($iAccountID, $cardid, $pspid, $token, $mask, $exp, $chn) = $aArgs;
+				$name = "";
+				$bPreferred = "false";
 			}
-		} 
-		else
-		{
-			$bPreferred = "false";
-			$iStatus = 0;
+			break;
+		case (9):	// Card Saved by invoking "Save Card" API
+			list($iAccountID, $cardid, $pspid, $token, $mask, $exp, $chn, $name, $bPreferred) = $aArgs;
+			$bPreferred = parent::bool2xml($bPreferred);
+			break;
 		}
 
 		// Check if card has already been saved
@@ -228,32 +262,41 @@ class EndUserAccount extends Home
 		if (is_array($RS) === false)
 		{
 			$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Card_Tbl
-						(accountid, clientid, cardid, pspid, ticket, mask, expiry, preferred)
+						(accountid, clientid, cardid, pspid, ticket, mask, expiry, name, preferred)
 					VALUES
-						(". $iAccountID .", ". $this->_obj_ClientConfig->getID() .", ". intval($cardid) .", ". intval($pspid) .", '". $this->getDBConn()->escStr($ticket) ."', '". $this->getDBConn()->escStr($mask) ."', '". $this->getDBConn()->escStr($exp) ."', ". $bPreferred .")";
+						(". $iAccountID .", ". $this->_obj_ClientConfig->getID() .", ". intval($cardid) .", ". intval($pspid) .", '". $this->getDBConn()->escStr($token) ."', '". $this->getDBConn()->escStr($mask) ."', '". $this->getDBConn()->escStr($exp) ."', '". $this->getDBConn()->escStr($name) ."', ". $bPreferred .")";
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
 			
-			$sql = "SELECT id
-					FROM EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl
-					WHERE clientid = ". $this->_obj_ClientConfig->getID() ." AND accountid = ". $iAccountID;
-//			echo $sql ."\n";
-			$RS = $this->getDBConn()->getName($sql);
-			// Link between End-User Account and Client doesn't exist
-			if (is_array($RS) === false) { $this->link($iAccountID); }
+			if (is_resource($res) === true)
+			{
+				$sql = "SELECT id
+						FROM EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl
+						WHERE clientid = ". $this->_obj_ClientConfig->getID() ." AND accountid = ". $iAccountID;
+//				echo $sql ."\n";
+				$RS = $this->getDBConn()->getName($sql);
+				// Link between End-User Account and Client doesn't exist
+				if (is_array($RS) === false) { $this->link($iAccountID); }
+			}
+			else { $iStatus = -1; }
 		}
 		// Card previously saved by End-User
 		else
 		{
 			$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
-					SET pspid = ". intval($pspid) .", ticket = '". $this->getDBConn()->escStr($ticket) ."',
+					SET pspid = ". intval($pspid) .", ticket = '". $this->getDBConn()->escStr($token) ."',
 						mask = '". $this->getDBConn()->escStr($mask) ."', expiry = '". $this->getDBConn()->escStr($exp) ."',
-						enabled = '1'
+						enabled = '1'";
+			if (empty($name) === false) { $sql .= ", name = '". $this->getDBConn()->escStr($name) ."'"; }
+			$sql .= "
 					WHERE id = ". $RS["ID"];
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
-
-			$this->delTicket($RS["PSPID"], $RS["TICKET"]);
+			if (is_resource($res) === true)
+			{
+				$this->delTicket($RS["PSPID"], $RS["TICKET"]);
+			}
+			else { $iStatus = -1; }
 		}
 
 		return $iStatus;
@@ -349,7 +392,7 @@ class EndUserAccount extends Home
 		$aArgs = func_get_args();
 		switch (count($aArgs) )
 		{
-		case (2):
+		case (2):	// Rename Card
 			return $this->_renameCard($aArgs[0], $aArgs[1]);
 			break;
 		case (3):
@@ -359,14 +402,14 @@ class EndUserAccount extends Home
 			}
 			else { return $this->_saveCardName($aArgs[0], $aArgs[1], $aArgs[2]); }
 			break;
-		case (4):
+		case (4):	// Save Card Name and status (preferred)
 			return $this->_saveCardName($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3]);
 			break;
 		case (5):
 			return $this->_saveCardName($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3], $aArgs[4]);
 			break;
 		default: 
-			return 0;
+			return -1;
 			break;
 		}
 	}
@@ -389,6 +432,7 @@ class EndUserAccount extends Home
 	 */
 	private function _saveCardName($id, $cardid, $name, $pref=false)
 	{
+		$iStatus = 0;
 		// Set name for card
 		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 				SET name = '". $this->getDBConn()->escStr($name) ."'
@@ -744,6 +788,42 @@ class EndUserAccount extends Home
 				}
 			}
 		}
+		return $code;
+	}
+	
+	public function notify(HTTPConnInfo &$obj_ConnInfo, ClientInfo &$obj_ClientInfo, $id, $num)
+	{
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
+		$xml .= '<root>';
+		$xml .= '<notify>';
+		$xml .= '<customer id="'. intval($id) .'">';
+		$xml .= '<stored-cards>'. intval($num) .'</stored-cards>';
+		$xml .= '</customer>';
+		$xml .= $obj_ClientInfo->toXML();
+		$xml .= '</notify>';
+		$xml .= '</root>';
+		
+		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+		$obj_HTTP->connect();
+		$code = $obj_HTTP->send($this->constHeader(), $xml);
+		$obj_HTTP->disconnect();
+		if (stristr($obj_HTTP->getReplyHeader(), "UTF-8") == true)
+		{
+			$obj_XML = simpledom_load_string(trim($obj_HTTP->getReplyBody() ) );
+		}
+		else { $obj_XML = simpledom_load_string(utf8_encode(trim($obj_HTTP->getReplyBody() ) ) ); }
+		
+		if ( ($obj_XML instanceof SimpleDOMElement) === true)
+		{
+			// Notification succeeded
+			if ($code == 200)
+			{
+				$code = 10;
+			}
+			else { $code = 2; }
+		}
+		else { $code = 1; }
+		
 		return $code;
 	}
 }

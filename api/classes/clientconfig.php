@@ -120,7 +120,6 @@ class ClientConfig extends BasicConfig
 	private $_sAuthenticationURL;
 	/**
 	 * Absolute URL to the external system that needs To by Notify When Stored Cards changes.
-	 * 
 	 *
 	 * @var string
 	 */
@@ -232,10 +231,10 @@ class ClientConfig extends BasicConfig
 	 * @param 	boolean $sp			Boolean Flag indicating whether the PSP's ID for the Payment should be included in the Callback
 	 * @param 	string $ciurl 		Absolute URL to the external system where customer data may be imported from. This is generally an existing e-Commerce site or a CRM system
 	 * @param 	string $aurl		Absolute URL to the external system where a customer may be authenticated. This is generally an existing e-Commerce site or a CRM system
-	 * @param 	string $nofiurl		Absolute URL to the external system that needs To by Notify When Stored Cards changes.
-	 * @param	array  $aIPs		List of IP white-listed by The System 
+	 * @param 	string $nurl		Absolute URL to the external system that needs to by Notify when Stored Cards changes.
+	 * @param	array $aIPs			List of Whitelisted IP addresses in mPoint, pass an empty array to disable IP Whitelisting 
 	 */
-	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $ciurl, $aurl,$nofiurl,$aIPs)
+	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $ciurl, $aurl, $nurl, $aIPs)
 	{
 		parent::__construct($id, $name);
 
@@ -269,7 +268,7 @@ class ClientConfig extends BasicConfig
 		
 		$this->_sCustomerImportURL = trim($ciurl);
 		$this->_sAuthenticationURL = trim($aurl);
-		$this->_sNotificationURL = trim($nofiurl);
+		$this->_sNotificationURL = trim($nurl);
 		$this->_aIPList = $aIPs;
 	}
 
@@ -365,7 +364,7 @@ class ClientConfig extends BasicConfig
 	 * 
 	 * @return 	string
 	 */
-	public function getStoredCardNotificationURL() { return $this->_sNotificationURL; }
+	public function getNotificationURL() { return $this->_sNotificationURL; }
 	/**
 	 * Returns the Max Amount an mPoint Transaction can cost the customer for the Client
 	 *
@@ -499,14 +498,14 @@ class ClientConfig extends BasicConfig
 					Acc.id AS accountid, Acc.name AS account, Acc.mobile, Acc.markup,
 					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price,
 					U1.url AS customerimporturl, U2.url AS authurl, U3.url AS notifyurl
-				FROM Client".sSCHEMA_POSTFIX.".Client_Tbl Cl
-				INNER JOIN System".sSCHEMA_POSTFIX.".Country_Tbl C ON Cl.countryid = C.id AND C.enabled = '1'
-				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON Cl.id = Acc.clientid AND Acc.enabled = '1'
-				INNER JOIN Client".sSCHEMA_POSTFIX.".Keyword_Tbl KW ON Cl.id = KW.clientid AND KW.enabled = '1'
-				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".Product_Tbl P ON KW.id = P.keywordid AND P.enabled = '1'
-				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".URL_Tbl U1 ON CL.id = U1.clientid AND U1.urltypeid = ". self::iCUSTOMER_IMPORT_URL ." AND U1.enabled = '1'
-				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".URL_Tbl U2 ON CL.id = U2.clientid AND U2.urltypeid = ". self::iAUTHENTICATION_URL ." AND U2.enabled = '1'
-				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".URL_Tbl U3 ON CL.id = U3.clientid AND U3.urltypeid = ". self::iNOTIFICATION_URL ." AND U3.enabled = '1'
+				FROM Client". sSCHEMA_POSTFIX .".Client_Tbl Cl
+				INNER JOIN System". sSCHEMA_POSTFIX .".Country_Tbl C ON Cl.countryid = C.id AND C.enabled = '1'
+				INNER JOIN Client". sSCHEMA_POSTFIX .".Account_Tbl Acc ON Cl.id = Acc.clientid AND Acc.enabled = '1'
+				INNER JOIN Client". sSCHEMA_POSTFIX .".Keyword_Tbl KW ON Cl.id = KW.clientid AND KW.enabled = '1'
+				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".Product_Tbl P ON KW.id = P.keywordid AND P.enabled = '1'
+				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U1 ON CL.id = U1.clientid AND U1.urltypeid = ". self::iCUSTOMER_IMPORT_URL ." AND U1.enabled = '1'
+				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U2 ON CL.id = U2.clientid AND U2.urltypeid = ". self::iAUTHENTICATION_URL ." AND U2.enabled = '1'
+				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U3 ON CL.id = U3.clientid AND U3.urltypeid = ". self::iNOTIFICATION_URL ." AND U3.enabled = '1'
 				WHERE Cl.id = ". intval($id) ." AND Cl.enabled = '1'";
 		// Use Default Keyword
 		if ($kw == -1)
@@ -524,7 +523,7 @@ class ClientConfig extends BasicConfig
 					C.id,
 					Acc.id, Acc.name, Acc.mobile, Acc.markup,
 					KW.id, KW.name,
-					U1.url, U2.url";
+					U1.url, U2.url, U3.url";
 		// Use Default Account
 		if ($acc == -1)
 		{
@@ -555,14 +554,19 @@ class ClientConfig extends BasicConfig
 		$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
 		
 		$sql  = "SELECT ipaddress
-				 FROM Client".sSCHEMA_POSTFIX.".IPAddress_Tbl
+				 FROM Client". sSCHEMA_POSTFIX .".IPAddress_Tbl
 				 WHERE clientid = ". intval($id) ."";
-		$res = $oDB->query($sql);
+//		echo $sql ."\n";
+		$aRS = $oDB->getAllNames($sql);
 		$aIPs = array();
-		while ($RS = $oDB->fetchName($res) )
+		if (is_array($aRS) === true && count($aRS) > 0)
 		{
-			$aIPs[] = $RS["IPADDRESS"];	
+			for ($i=0; $i<count($aRS); $i++)
+			{
+				$aIPs[] = $aRS[$i]["IPADDRESS"];
+			}
 		}
+		
 		return new ClientConfig($RS["CLIENTID"], utf8_decode($RS["CLIENT"]), $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $RS["CUSTOMERIMPORTURL"], $RS["AUTHURL"], $RS["NOTIFYURL"], $aIPs);
 	}
 	
