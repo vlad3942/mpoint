@@ -56,99 +56,128 @@ class CPG extends Callback
 		
 		return $name;
 	}
-
-	public function initialize(HTTPConnInfo &$oCI, $currency, $shortCode, $description, $shippingInfo)
+	
+	public function authTicket(SimpleXMLElement $or_XML, HTTPConnInfo &$oCI)
 	{
-        
-        $orderContent = NULL;
-        $shopperIPAddress = NULL;
-        $authenticatedShopperID = NULL;
-        $orderCode = NULL;
+		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );
+		
+		$shortCode = $this->getTxnInfo()->getClientConfig()->getAccountConfig()->getName();
+		$currency = EUR;
+		$exponent = 2;
+        $orderContent = $this->getTxnInfo()->getDescription();
+        $shopperIPAddress = $this->getTxnInfo()->getIP();
+        $shopperEmailAddress = htmlspecialchars($this->getTxnInfo()->getEMail(), ENT_NOQUOTES);
+        $authenticatedShopperID = $this->getTxnInfo()->getCustomerRef();
+        $sOrderCode = $this->getTxnInfo()->getOrderID();
+        if (empty($sOrderCode) === true) {
+        	$sOrderCode = $this->getTxnInfo()->getID();
+        }       
         $exponent = 2;
-        $debitCardIndication = 'credit';
-        $cardId = 8;
-        $oldOrder = NULL;
-        $description = "mPoint ID: ". $this->getTxnInfo()->getID() ." for Order No.:". $this->getTxnInfo()->getOrderID();
-        $creditCardInfoAvailable = FALSE;
+        $debitCardIndication = 'credit';     
+        $oldOrder = $or_XML->ticket;
+        $description = "mPoint ID: ". $this->getTxnInfo()->getID() ." for Order No.:". $this->getTxnInfo()->getOrderID();          
+        $creditCardInfoAvailable = FALSE;       
         $billingAddressAvailable = FALSE;
+        // NEEDS expansion of getStoredCards()
+        $firstName = $or_XML->xpath('//firstName');
+        $lastName = $or_XML->xpath('//lastName');
+        $street = $or_XML->xpath('//street');
+        $city = $or_XML->xpath('//city');
+        $postalCode = $or_XML->xpath('//postalCode');
+        $countryCode = $or_XML->xpath('//countryCode');
+        $mobilNumber = $or_XML->xpath('//mobilNumber');
         $nominalAuth = NO;
         
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
-        $b.= '<submit>';
-        $b.= ' <shortCode>'. $shortCode .'</shortCode>'; // Short code of the Storefront application 
-        $b.= ' <order orderCode="'. $orderCode .'">'; // mandatory, needs to be unique
-        if (strlen($oldOrder) > 0)
-        {
-            $b.= '  <oldOrder></oldOrder>'; // Optional
-        }
+        $b .= '<submit>';
+        $b .= ' <shortCode>'. $shortCode .'</shortCode>'; // Short code of the Storefront application 
+        $b .= ' <order orderCode="'. $orderCode .'">'; // mandatory, needs to be unique
+        $b .= ' <oldOrder> '. $oldOrder .' </oldOrder>'; // Optional this is our storedcard
         if ($nominalAuth === YES)
         {
-            $b.= '  <nominalAuth>Y</nominalAuth>'; // Optional, only storefronts that can accept nominalAuth need to send this element    
+            $b .= '  <nominalAuth>Y</nominalAuth>'; // Optional, only storefronts that can accept nominalAuth need to send this element    
         }
-        $b.= '  <description>'. htmlspecialchars($description, ENT_NOQUOTES) .'</description>'; // Mandatory, maxlenght=50, simple one line description of the order
-        $b.= '  <amount value="'. $this->getTxnInfo()->getAmount() .'" curencyCode="'. $currency .'" exponent="'. $exponent .'" debitCardIndication="'. $debitCardIndication .'"/>'; // Mandatory, decimal based on exponent, code uppercase ISO4217, indicator should be always 'credit'
-        $b.= '  <orderContent>';
-        $b.= '   <![CDATA]['. htmlspecialchars($orderContent, ENT_NOQUOTES) .']]>'; // don't use <html><body> tags
-        $b.= '  </orderContent>';
+        $b .= '  <description>'. htmlspecialchars($description, ENT_NOQUOTES) .'</description>'; // Mandatory, maxlenght=50, simple one line description of the order
+        //TODO currency / exponent ??
+        $b .= '  <amount value="'. $this->getTxnInfo()->getAmount() .'" curencyCode="'. $currency .'" exponent="'. $exponent .'" debitCardIndication="'. $debitCardIndication .'"/>'; // Mandatory, decimal based on exponent, code uppercase ISO4217, indicator should be always 'credit'
+        $b .= '  <orderContent>';
+        $b .= '   <![CDATA]['. htmlspecialchars($orderContent, ENT_NOQUOTES) .']]>'; // don't use <html><body> tags
+        $b .= '  </orderContent>';
+        //  START ************** MAYBE TO BE USED IN FUTURE
         if ($billingAddressAvailable === TRUE)
         {
-            $b.= '  <paymentDetails>';
-            if ($creditCardInfoAvailable)
+            $b .= '  <paymentDetails>';
+            if ( $creditCardInfoAvailable === TRUE)
             {
                 // TODO: get the card info somehow...
-                $b.= '   <'. $this->getCardName($cardId) .'>';
-                $b.= '    <cardNumber>4444333322221111</cardNumber>'; // mandatory, 0-20
-                $b.= '    <expiryDate>';
-                $b.= '     <date month="09" year="2003" />'; // mandatory
-                $b.= '    </expiryDate>';
-                $b.= '    <cardHolderName>J. Doe</cardHolderName>'; // mandatory
+                $b .= '   <'. $this->getCardName($cardId) .'>';
+                $b .= '    <cardNumber> '. 123123123123123 .' </cardNumber>'; // mandatory, 0-20           
+                $b .= '    <cvc> '. 123 .' </cvc>';       // optional
+                $b .= '    <expiryDate>';
+                $b .= '     <date month="'. 01 .'" year="'. 02 .'" />'; // mandatory
+                $b .= '    </expiryDate>';
+                $b .= '    <cardHolderName>'. Jona.Cpm .'</cardHolderName>'; // mandatory
             }
-            $b.= '    <cardAddress>';
-            $b.= '     <address>';
+            $b .= '    <cardAddress>';
+            $b .= '     <address>';
             // TODO: split the name
-            $b.= '      <firstName>'. htmlspecialchars($this->getTxnInfo()->getClientConfig()->getName(), ENT_NOQUOTES) .'</firstName>'; // mandatory, 0-40 chars
-            $b.= '      <lastName>'. htmlspecialchars($this->getTxnInfo()->getClientConfig()->getName(), ENT_NOQUOTES) .'</lastName>'; // mandatory, 0-40 chars
+            $b .= '      <firstName>'. Cpm .'</firstName>'; // mandatory, 0-40 chars
+            $b .= '      <lastName>'. Cpm .'</lastName>'; // mandatory, 0-40 chars
             // TODO: fill out the address
-            $b.= '      <street>11 Hereortherestreet</street>'; // mandatory, 0-100 chars
-            $b.= '      <postalCode>1234KL</postalCode>'; // optional, 0-20 chars
-            $b.= '      <city>Somewhereorother</city>'; // mandatory, 0-50 chars
-            $b.= '      <countryCode>TP</countryCode>'; // mandatory, 2-2 chars
-            $b.= '      <telephoneNumber>0123456789</telephoneNumber>'; // optional
-            $b.= '     </address>';
-            $b.= '    </cardAddress>';
+            $b .= '      <street>'. CPM .'</street>'; // mandatory, 0-100 chars
+            $b .= '      <postalCode>'. 2100 .'</postalCode>'; // optional, 0-20 chars
+            $b .= '      <city>'. CPH .'</city>'; // mandatory, 0-50 chars
+            $b .= '      <countryCode>'. DK .'</countryCode>'; // mandatory, 2-2 chars
+            $b .= '      <telephoneNumber>'. 123132123 .'</telephoneNumber>'; // optional
+            $b .= '     </address>';
+            $b .= '    </cardAddress>';
             if ($creditCardInfoAvailable)
             {
-                $b.= '   </.'. $this->getCardName($cardId) .'>';
+                $b .= '   </.'. $this->getCardName($cardId) .'>';
             }
-            $b.= '  </paymentDetails>';
+            $b .= '  </paymentDetails>';
         }
-        $b.= '  <shopper>';
-        $b.= '   <shopperIPAddress>'.  .'</shopperIPAddress>'; // mandatory
-        $b.= '   <shopperEmailAddress>'. htmlspecialchars($this->getTxnInfo()->getEMail(), ENT_NOQUOTES) .'</shopperEmailAddress>'; // optional, 0-50 chars
-        // TODO: shopper id
-        $b.= '   <authenticatedShopperID>1234567890</authenticatedShopperID>'; // optional, applicable to BIBIT, 0-20 chars
-        $b.= '  </shopper>';
-        // TODO: fill out the address
-        $b.= '  <shippingAddress>';
-        $b.= '   <address>';
-        $b.= '    <firstName>Joh</firstName>'; // mandatory, 0-40 chars
-        $b.= '    <lastName>Doe</lastName>'; // mandatory, 0-40 chars
-        $b.= '    <street>11 Hereortherestreet</street>'; // mandatory, 0-100 chars
-        $b.= '    <postalCode>1234KL</postalCode>'; // optional, 0-20 chars
-        $b.= '    <city>Somewhereorother</city>'; // mandatory, 0-50 chars
-        $b.= '    <countryCode>TP</countryCode>'; // mandatory, 2-2 chars
-        $b.= '    <telephoneNumber>0123456789</telephoneNumber>'; // optional
-        $b.= '   </address>';
-        $b.= '  </shippingAddress>';
-        $b.= ' </order>';
+        //  END ************** MAYBE TO BE USED IN FUTURE
+        $b .= '  <shopper>';
+        $b .= '   <shopperIPAddress>'. $shopperIPAddress .'</shopperIPAddress>'; // mandatory
+        $b .= '   <shopperEmailAddress>'. $shopperEmailAddress .'</shopperEmailAddress>'; // optional, 0-50 chars
+        $b .= '   <authenticatedShopperID>'. $authenticatedShopperID .'</authenticatedShopperID>'; // optional, applicable to BIBIT, 0-20 chars
+        $b .= '  </shopper>';
+        // NEEDS expansion of getStoredCards()
+        $b .= '  <shippingAddress>';
+        $b .= '   <address>';
+        $b .= '    <firstName>'. $firstName[0] .'</firstName>'; // mandatory, 0-40 chars
+        $b .= '    <lastName>'. $lastName[0] .'</lastName>'; // mandatory, 0-40 chars
+        $b .= '    <street>'. $street[0] .'</street>'; // mandatory, 0-100 chars
+        $b .= '    <postalCode>'. $postalCode[0] .'</postalCode>'; // optional, 0-20 chars
+        $b .= '    <city>'. $city[0] .'</city>'; // mandatory, 0-50 chars
+        $b .= '    <countryCode>'. $countryCode[0] .'</countryCode>'; // mandatory, 2-2 chars
+        $b .= '    <telephoneNumber>'. $mobilNumber[0] .'</telephoneNumber>'; // optional
+        $b .= '   </address>';
+        $b .= '  </shippingAddress>';
+        $b .= ' </order>';
         // TODO: check the url
-        $b.= ' <returnURL>'. "http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?mpoint-id=". $this->getTxnInfo()->getID() .'</returnURL>';
+        $b .= ' <returnURL>'. "http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?mpoint-id=". $this->getTxnInfo()->getID() .'</returnURL>';
 //        $b.= ' <teaLeafGuid>452ef50f-68ef-4677-9b19-d7140c444d19</teaLeafGuid>'; // ???
-        $b.= '</submit>';
+        $b .= '</submit>';
         
         //TODO: send the request and follow the description in JIRA
         
-		return $obj_XML;
+        $obj_XML = simplexml_load_string($b);
+        $obj_Std = $obj_SOAP->InitializePayment($obj_XML);
+  
+        $cpg_XML = simplexml_load_string($obj_Std->InitializePaymentResult);
+        
+        $redirect = $cpg_XML->xpath('//redirect');
+        
+        if(empty($redirect[0]) === false)
+        {
+        	$return_xml = '<status code="100">';
+        	$return_xml = '<url> '. htmlspecialchars($redirect[0], ENT_NOQUOTES) .' </url>';
+        	$return_xml = '<status>';
+        }
+        
+		return $return_XML;
 	}
 	
 }

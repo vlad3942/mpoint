@@ -50,7 +50,7 @@ $aMsgCds = array();
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
-/*
+
 $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
@@ -70,7 +70,7 @@ $HTTP_RAW_POST_DATA .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
 $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</authorize-payment>';
 $HTTP_RAW_POST_DATA .= '</root>';
-*/
+
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 $_SESSION['temp'] = $_POST;
@@ -276,6 +276,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												
 													$xml .= '<status code="92">Authorization failed, NetAxcept returned error: '. $iTxnID .'</status>';
 												}
+												break;
+											case (Constants::iCPG_PSP):
+												$obj_PSP = new CPG($_OBJ_DB, $_OBJ_TXT, $oTI);
+																							
+												$aHTTP_CONN_INFO["cpg"]["username"] = $obj_PSPConfig->getUsername();
+												$aHTTP_CONN_INFO["cpg"]["password"] = $obj_PSPConfig->getPassword();
+												$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["cpg"]);												
+												
+												//TODO: add lacking info
+												$xml .= $obj_PSP->authTicket($obj_Elem, $oCI);
+																								
+												// TODO handle response
+												
 												break;
 											default:	// Unkown Error
 												$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);

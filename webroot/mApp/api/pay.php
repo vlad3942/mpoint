@@ -208,7 +208,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									{
 										$xml .= trim($obj_Elem->asXML() );
 									}
-									break;
+									break;							
 								}
 								$xml .= '</psp-info>';
 							}

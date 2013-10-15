@@ -20,3 +20,6 @@ INSERT INTO Admin.RoleInfo_Tbl (roleid, languageid, name, note) VALUES (4, 3, 'S
 INSERT INTO Admin.RoleInfo_Tbl (roleid, languageid, name, note) VALUES (5, 1, 'Controller', 'A member of this role may access the mController module.');
 INSERT INTO Admin.RoleInfo_Tbl (roleid, languageid, name, note) VALUES (5, 2, 'Controller', 'A member of this role may access the mController module.');
 INSERT INTO Admin.RoleInfo_Tbl (roleid, languageid, name, note) VALUES (5, 3, 'Kontrollør', 'Et medlem af denne rolle har adgang til mController modulet');
+
+INSERT INTO System.PSP_Tbl (name) VALUES ('CPG');
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) SELECT Max(PSP.id), C.id FROM System.PSP_Tbl PSP, System.Card_Tbl C WHERE C.id < 10 GROUP BY C.id;

@@ -365,6 +365,12 @@ abstract class Constants
 	 *
 	 */
 	const iNETAXEPT_PSP = 8;
+	/**
+	 * Unique ID for the Payment Service Provider: Emirates
+	 *
+	 */
+	const iCPG_PSP = 9;
+	
 
 	/**
 	 * Unique ID for the Electronic Payment Flow
