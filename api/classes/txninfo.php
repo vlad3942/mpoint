@@ -646,12 +646,12 @@ class TxnInfo
 			if (array_key_exists("refund", $misc) === false) { $misc["refund"] = 0; }
 			if (array_key_exists("auth-url", $misc) === false) { $misc["auth-url"] = $obj->getAuthenticationURL(); }
 			
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $obj->getCountryConfig(), $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $obj->getCountryConfig(), $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"],$misc["description"],$misc["ip"]);
 			break;
 		case ($obj instanceof RDB):				// Instantiate from Transaction Log
 			$sql = "SELECT id, typeid, countryid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, iconurl, \"mode\", auto_capture, gomobileid,
 						clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description
-					FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+					FROM Log".sSCHEMA_POSTFIX.".
 					WHERE id = ". intval($id);
 			if (is_array($misc) === true)
 			{
