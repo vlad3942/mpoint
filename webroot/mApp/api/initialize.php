@@ -72,7 +72,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			if ($code == 100)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'initialize-payment'}[$i]["account"]);
-				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])  && ( ClientConfig::hasAccess($_OBJ_DB, trim($_SERVER['REMOTE_ADDR'])) === true || empty($obj_ClientConfig->getIPList() ) === true ) )
+				$ipList = $obj_ClientConfig->getIPList();
+				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])  && ( ClientConfig::hasAccess($_OBJ_DB, trim($_SERVER['REMOTE_ADDR']) ) === true || empty($ipList ) === true ) )
 			//	if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']))
 				{
 					$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"]);

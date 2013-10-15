@@ -89,7 +89,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]);
 				
 				// Client successfully authenticated
- 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']) && (ClientConfig::hasAccess($_OBJ_DB, trim($_SERVER['REMOTE_ADDR'])) === true || empty($obj_ClientConfig->getIPList() ) === true ) )
+				$ipList = $obj_ClientConfig->getIPList();
+ 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']) && (ClientConfig::hasAccess($_OBJ_DB, trim($_SERVER['REMOTE_ADDR'])) === true || empty($ipList ) === true ) )
 //				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']))
 				{
 					$obj_TxnInfo = TxnInfo::produceInfo($obj_DOM->pay[$i]->transaction["id"], $_OBJ_DB);

@@ -71,7 +71,7 @@
 			</xs:element>
 			<xs:element name="authorize-payment" minOccurs="1" maxOccurs="unbounded">
 				<xs:complexType>
-					<xs:all>
+					<xs:sequence>
 						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
 							<xs:complexType>
 								<xs:all>
@@ -103,7 +103,7 @@
 							<xs:element name="auth-token" type="xs:string" minOccurs="1" maxOccurs="1" />
 						</xs:choice>
 						<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1" />
-					</xs:all>
+					</xs:sequence>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
 					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
 				</xs:complexType>
@@ -183,13 +183,13 @@
 			</xs:element>
 			<xs:element name="login">
 				<xs:complexType>
-					<xs:all>
+					<xs:sequence>
 						<xs:choice>
 							<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
 							<xs:group ref="single-sign-on" minOccurs="1" maxOccurs="1" />
 						</xs:choice>
 						<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1" />
-					</xs:all>
+					</xs:sequence>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
 					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
 				</xs:complexType>
@@ -241,14 +241,14 @@
 			</xs:element>
 			<xs:element name="delete-card" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
-					<xs:all>
+					<xs:sequence>
 						<xs:element name="card" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
 						<xs:choice>
 							<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
 							<xs:group ref="single-sign-on" minOccurs="1" maxOccurs="1" />
 						</xs:choice>
 						<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1" />
-					</xs:all>
+					</xs:sequence>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
 					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
 				</xs:complexType>
@@ -495,10 +495,10 @@
 </xs:group>
 
 <xs:group name="single-sign-on">
-	<xs:all>
+	<xs:sequence>
 		<xs:element name="auth-token" type="xs:string" minOccurs="1" maxOccurs="1" />
 		<xs:element name="auth-url" type="url" minOccurs="1" maxOccurs="1" />
-	</xs:all>
+	</xs:sequence>
 </xs:group>
 
 </xs:schema>
