@@ -385,6 +385,12 @@ class ClientConfig extends BasicConfig
 	 */
 	public function smsReceiptEnabled() { return $this->_bSMSReceipt; }
 	/**
+	 * Returns an Array of the ip-list for the client
+	 *
+	 * @return 	array
+	 */
+	public function getIPList() { return $this->_aIPList; }
+	/**
 	 * Boolean Flag indicating whether access to the E-Mail Receipt component should be enabled for customers
 	 *
 	 * @return 	boolean
