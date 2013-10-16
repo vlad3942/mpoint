@@ -1,16 +1,14 @@
 <?php
-define("sAPI_CLASS_PATH", "D:/Development/php5api/classes");
 /**
  * Path to Log Files directory
  */
-define("sLOG_PATH", "D:/Development/mPoint/log/");
-
-// Require the PHP API for handling the connection to the Mobile Enterprise Service Bus
+/**
+ * Define path to the directory which holds the different API class files
+ *
+ */
+require_once("../inc/include.php");
 require_once(sAPI_CLASS_PATH ."/template.php");
-// Require the PHP API for handling the connection to Mobile Enterprise Service Bus
 require_once(sAPI_CLASS_PATH ."/http_client.php");
-
-
 /**
  * Connection info for sending error reports to a remote host
  */
