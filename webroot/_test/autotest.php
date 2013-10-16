@@ -93,41 +93,35 @@ class AutoTest
 	{
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
-		$b .= '<initialize-payment client-id="'. $this->_iClientID .'" account="'. $$this->_iAccount .'">';
+		$b .= '<initialize-payment client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
 		$b .= '<transaction order-no="1234abc">';
 		$b .= '<amount country-id="100">1000</amount>';
-		$b .= '<auth-url>http://mesb.localhost:10080/mpoint/emirates/cris/authenticate</auth-url>';
+		$b .= '<auth-url>http://mpoint.localhost/_test/auth.php</auth-url>';
+		$b .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
 		$b .= '<description>
 				<![CDATA[
 				<center><table>
-				<tr><td bgcolor="#ffff00">Your Internet Order:</td><td colspan="2"
-				bgcolor="#ffff00" align="right">IBE/845</td></tr>
-				<tr><td bgcolor="#ffff00">Description:</td><td>14 Tulip bulbs</td><td
-				align="right">1,00</td></tr>
+				<tr><td bgcolor="#ffff00">Your Internet Order:</td><td colspan="2" bgcolor="#ffff00" align="right">IBE/845</td></tr>
+				<tr><td bgcolor="#ffff00">Description:</td><td>14 Tulip bulbs</td><td align="right">1,00</td></tr>
 				<tr><td colspan="2">Subtotal:</td><td align="right">14,00</td></tr>
 				<tr><td colspan="2">VAT: 13%</td><td align="right">1,82</td></tr>
 				<tr><td colspan="2">Shipping and Handling:</td><td align="right">4,00</td></tr>
 				<tr><td colspan="2" bgcolor="#c0c0c0">Total cost:</td><td bgcolor="#c0c0c0" align="right">Euro 19,82</td></tr>
 				<tr><td colspan="3">&nbsp;</td></tr>
 				<tr><td bgcolor="#ffff00" colspan="3">Your billing address:</td></tr>
-				<tr><td colspan="3">Mr. Doe,<br>11 Hereortherestreet,<br>1234 KL
-				Somewhereorother,<br>Thisplace.</td></tr>
+				<tr><td colspan="3">Mr. Doe,<br>11 Hereortherestreet,<br>1234 KL Somewhereorother,<br>Thisplace.</td></tr>
 				<tr><td colspan="3">&nbsp;</td></tr>
 				<tr><td bgcolor="#ffff00" colspan="3">Your shipping address:</td></tr>
-				<tr><td colspan="3">Mr. Doe,<br>11 Hereortherestreet,<br>1234 KL
-				Somewhereorother,<br>Thisplace.</td></tr>
+				<tr><td colspan="3">Mr. Doe,<br>11 Hereortherestreet,<br>1234 KL Somewhereorother,<br>Thisplace.</td></tr>
 				<tr><td colspan="3">&nbsp;</td></tr>
 				<tr><td bgcolor="#ffff00" colspan="3">Our contact information:</td></tr>
 				<tr><td colspan="3">Emirates Airlines<br>P.O. Box 686<br>Dubai,<br>UAE<br><br>payment@emirates.com<br>971 4-3167530 </td></tr>
 				<tr><td colspan="3">&nbsp;</td></tr>
 				<tr><td bgcolor="#c0c0c0" colspan="3">Billing notice:</td></tr>
-				<tr><td colspan="3">Your payment will be handled by Bibit Global Payments
-				Services<br>This name may appear on your bank
-				statement<br>http://www.bibit.com</td></tr>
+				<tr><td colspan="3">Your payment will be handled by Bibit Global Payments Services<br>This name may appear on your bank statement<br>http://www.bibit.com</td></tr>
 				</table></center>
 				]]>
 			   </description>';
-		$b .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
 		$b .= '</transaction>';
 		$b .= $this->_constClientInfo();
 		$b .= '</initialize-payment>';
@@ -162,7 +156,7 @@ class AutoTest
 		else
 		{
 			$this->_sDebug = $this->_obj_Client->getReplyBody();
-			return self::sSTATUS_WARNING;
+			return self::sSTATUS_FAILED;
 		}
 	}
 	public function payTest()
@@ -206,7 +200,7 @@ class AutoTest
 			return self::sSTATUS_FAILED;
 		}
 	}
-	public function authorizePaymentWithStoredCardTest()
+	public function authorizeStoredCardUsingSSOTest()
 	{
 		$this->_sDebug = "";
 		$obj_XML = $this->_initialize();
@@ -218,9 +212,10 @@ class AutoTest
 			$b .= '<transaction id="'. $obj_XML->transaction["id"] .'">';
 			$b .= '<card id="'. $obj_XML->{'stored-cards'}->card["id"] .'" type-id="'. $obj_XML->{'stored-cards'}->card["type-id"] .'">';
 			$b .= '<amount country-id="'. $obj_XML->transaction->amount["country-id"] .'">'. $obj_XML->transaction->amount .'</amount>';
+			$b .= '<cvc>123</cvc>';
 			$b .= '</card>';
 			$b .= '</transaction>';
-			$b .= '<password>oisJona</password>';
+			$b .= '<auth-token>oisJona</auth-token>';
 			$b .= $this->_constClientInfo();
 			$b .= '</authorize-payment>';
 			$b .= '</root>';
@@ -234,6 +229,7 @@ class AutoTest
 			$this->_obj_Client->disconnect();
 			if ($code == 200)
 			{
+				$this->_sDebug = $this->_obj_Client->getReplyBody();
 				return self::sSTATUS_SUCCESS;
 			}
 			else
@@ -445,7 +441,7 @@ $obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $s
 		.warning
 		{
 			font-weight: bold;
-			color: yellow;
+			color: orange;
 		}
 		.debug
 		{
@@ -470,18 +466,18 @@ $obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $s
 	</tr>
 	<tr>
 		<td class="name">Initialize Payment</td>
-		<td><?//= $obj_AutoTest->initializePaymentTest(); ?></td>
-		<td><?//= $obj_AutoTest->getDebug(); ?></td>
+		<td><?= $obj_AutoTest->initializePaymentTest(); ?></td>
+		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Pay</td>
 		<td><?//= $obj_AutoTest->payTest(); ?></td>
-		<td><?//= $obj_AutoTest->getDebug(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
-		<td class="name">Authorize with Stored Card</td>
-		<td><?//= $obj_AutoTest->authorizePaymentWithStoredCardTest(); ?></td>
-		<td><?//= $obj_AutoTest->getDebug(); ?></td>
+		<td class="name">Authorize Stored Card using Single Sign-On</td>
+		<td><?= $obj_AutoTest->authorizeStoredCardUsingSSOTest(); ?></td>
+		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Save Card Name</td>
