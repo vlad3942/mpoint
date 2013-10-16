@@ -96,5 +96,7 @@ CREATE TABLE Client.IPAddress_Tbl
 	CONSTRAINT IPAccess2Client_FK FOREIGN KEY (clientid) REFERENCES Client.Client_Tbl ON UPDATE CASCADE ON DELETE CASCADE
 ) WITHOUT OIDS;
 
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.IPAddress_Tbl TO mpoint;
+GRANT SELECT, UPDATE, USAGE ON TABLE Client.IPAddress_Tbl_id_seq TO mpoint;
 
 ALTER TABLE Client.CardAccess_tbl ADD countryid INT4;
