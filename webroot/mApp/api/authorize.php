@@ -41,6 +41,10 @@ require_once(sCLASS_PATH ."/cpm.php");
 require_once(sCLASS_PATH ."/wannafind.php");
 // Require specific Business logic for the NetAxept component
 require_once(sCLASS_PATH ."/netaxept.php");
+// Require specific Business logic for the WorldPay component
+require_once(sCLASS_PATH ."/worldpay.php");
+// Require specific Business logic for the Emirates' Corporate Payment Gateway (CPG) component
+require_once(sCLASS_PATH ."/cpg.php");
 
 
 ignore_user_abort(true);
@@ -72,8 +76,6 @@ $HTTP_RAW_POST_DATA .= '</authorize-payment>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
-
-$_SESSION['temp'] = $_POST;
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
@@ -194,6 +196,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									case (Constants::iCARD_PURCHASE_TYPE):		// Authorize Purchase using Stored Card
 									default:
 										$obj_Elem = $obj_XML->xpath("/stored-cards/card[@id = ". $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"] ."]");
+										if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1) { $obj_Elem->cvc = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc; }
+										
 										try
 										{
 											switch (intval($obj_Elem["pspid"]) )
@@ -277,17 +281,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												}
 												break;
 											case (Constants::iCPG_PSP):
-												$obj_PSP = new CPG($_OBJ_DB, $_OBJ_TXT, $oTI);
+												$obj_PSP = new CPG($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+												$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), Constants::iCPG_PSP);
 																							
 												$aHTTP_CONN_INFO["cpg"]["username"] = $obj_PSPConfig->getUsername();
 												$aHTTP_CONN_INFO["cpg"]["password"] = $obj_PSPConfig->getPassword();
 												$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["cpg"]);												
-												
-												//TODO: add lacking info
+
 												$xml .= $obj_PSP->authTicket($obj_Elem, $oCI);
-																								
-												// TODO handle response
-												
 												break;
 											default:	// Unkown Error
 												$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
