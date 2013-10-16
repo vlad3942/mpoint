@@ -186,7 +186,7 @@
 										</xsl:otherwise>
 									</xsl:choose>
 								</td>
-								<td><img src="{/root/system/protocol}://{/root/system/host}/img/{account/logo-width}x{account/logo-height}_card_11_{/root/system/session/@id}.png" width="{account/logo-width}" height="{account/logo-height}" alt="" /></td>
+								<td><img src="/img/{account/logo-width}x{account/logo-height}_card_11_{/root/system/session/@id}.png" width="{account/logo-width}" height="{account/logo-height}" alt="" /></td>
 								<td colspan="3"><xsl:value-of select="labels/balance" />: <xsl:value-of select="account/funds" /></td>
 							</tr>
 							</table>
@@ -275,7 +275,7 @@
 			</xsl:otherwise>
 			</xsl:choose>
 		</td>
-		<td><img src="{/root/system/protocol}://{/root/system/host}/img/{logo-width}x{logo-height}_card_{type/@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="{type}" /></td>
+		<td><img src="/img/{logo-width}x{logo-height}_card_{type/@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="{type}" /></td>
 		<td colspan="3"><xsl:value-of select="$card-name" /></td>
 		<td class="mPoint_Info">
 			<xsl:if test="string-length(expiry) &gt; 0">
