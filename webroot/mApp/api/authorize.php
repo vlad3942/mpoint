@@ -116,19 +116,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 //							if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
 							$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 							if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) == Constants::iCARD_PURCHASE_TYPE && $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) + 20; }
-							if ($obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) + 25; }
+							if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 0)
+							{
+								if ($obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) + 25; }
+							}
 							
 							// Success: Input Valid
 							if (count($aMsgCds) == 0)
 							{
-								if ($_SESSION['obj_Info']->getInfo("auth-token") === false || strlen($_SESSION['obj_TxnInfo']->getAuthenticationURL() ) == 0)
+								if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 0 || strlen($obj_TxnInfo->getAuthenticationURL() ) == 0)
 								{									
-									$code = $obj_mPoint->auth($_POST['euaid'], $_POST['pwd']);
+									$code = $obj_mPoint->auth($obj_TxnInfo->getAccountID(), (string) $obj_DOM->{'authorize-payment'}[$i]->password);
 								}
-								else 
-								{ 	$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($_SESSION['obj_TxnInfo']->getAuthenticationURL() ), $_SESSION['obj_TxnInfo']->getCustomerRef(), $_SESSION['obj_Info']->getInfo("auth-token") );} 				
-								//Old Code
-								//$code = $obj_mPoint->auth($obj_TxnInfo->getAccountID(), (string) $obj_DOM->{'authorize-payment'}[$i]->password);
+								else  { $code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($obj_TxnInfo->getAuthenticationURL() ), $obj_TxnInfo->getCustomerRef(), $obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}); }
 								// Authentication succeeded
 								if ($code == 10 || ($code == 11 && $obj_ClientConfig->smsReceiptEnabled() === false) )
 								{
