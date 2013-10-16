@@ -96,35 +96,37 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$data['reward'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->reward;
 							$data['reward-type'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->reward["type-id"];
 						}
-						if (count($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip) == 1) { $data['ip'] = $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip; }
-						else if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) ){ $data['ip'] = $_SERVER['HTTP_X_FORWARDED_FOR'];}
-						else {$data['ip'] = $_SERVER['REMOTE_ADDR']; }
 						
-							if (count( $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->customer-ref) == 1) { $data['customer-ref'] = $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->customer-ref;}
-						
-						if (count($obj_DOM->{'initialize-payment'}[$i]->description) == 1)
-						{
-							$data['description'] = $obj_DOM->{'initialize-payment'}[$i]->description;
-						}
+						$data['description'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->description;
 						$data['gomobileid'] = -1;
 						$data['orderid'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction["order-no"];
+						$data['customer-ref'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->{'customer-ref'};
 						$data['mobile'] = (float) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile;
 						$data['operator'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["operator-id"];
 						$data['email'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->email;
 						$data['device-id'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->{'device-id'};
+						if (count($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip) == 1) { $data['ip'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip; }
+						elseif (array_key_exists("HTTP_X_FORWARDED_FOR", $_SERVER) === true) { $data['ip'] = $_SERVER['HTTP_X_FORWARDED_FOR']; }
+						else { $data['ip'] = $_SERVER['REMOTE_ADDR']; }
 						$data['logo-url'] = "";
 						$data['css-url'] = "";
 						$data['accept-url'] = $obj_ClientConfig->getAcceptURL();
 						$data['cancel-url'] = "";
-						
 						if (count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'callback-url'}) == 1)
 						{
 							$data['callback-url'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->{'callback-url'};
 						}
 						else { $data['callback-url'] = $obj_ClientConfig->getCallbackURL(); }
+						if (count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'auth-url'}) == 1)
+						{
+							$data['auth-url'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->{'auth-url'};
+						}
+						else { $data['auth-url'] = $obj_ClientConfig->getAuthenticationURL(); }
 						$data['icon-url'] = "";
-						$data['language'] = $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}["language"];
+						$data['language'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}["language"];
 						$data['markup'] = $obj_ClientConfig->getAccountConfig()->getMarkupLanguage();
+						
+						
 						$obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $data);
 						// Associate End-User Account (if exists) with Transaction
 						$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, intval($obj_TxnInfo->getOperator() / 100) );
@@ -137,7 +139,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getEMail(), false); }
 						}
 						$obj_TxnInfo->setAccountID($iAccountID);
-						
 						// Update Transaction Log
 						$obj_mPoint->logTransaction($obj_TxnInfo);
 						if (count($obj_DOM->{'client-variables'}) == 1 && count($obj_DOM->{'client-variables'}->children() ) > 0)

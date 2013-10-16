@@ -424,12 +424,12 @@ class General
 		// Error: Unable to generate a new Transaction ID
 		if (is_array($RS) === false) { throw new mPointException("Unable to generate new Transaction ID", 1001); }
 
+		$ip = $_SERVER['REMOTE_ADDR'];
+		if (array_key_exists("HTTP_X_FORWARDED_FOR", $_SERVER) === true) { $ip = $_SERVER['HTTP_X_FORWARDED_FOR']; }
 		$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 					(id, typeid, clientid, accountid, countryid, keywordid, \"mode\", ip)
 				VALUES
-					(". $RS["ID"] .", ". intval($tid) .", ". $oCC->getID() .", ". $oCC->getAccountConfig()->getID() .", ". $oCC->getCountryConfig()->getID() .", ". $oCC->getKeywordConfig()->getID() .", ". $oCC->getMode() .",";
-					if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) ) { $sql .= " '". $_SERVER['HTTP_X_FORWARDED_FOR'] ."')" ; }
-					else { $sql .= " '". $_SERVER['REMOTE_ADDR'] ."')" ; }
+					(". $RS["ID"] .", ". intval($tid) .", ". $oCC->getID() .", ". $oCC->getAccountConfig()->getID() .", ". $oCC->getCountryConfig()->getID() .", ". $oCC->getKeywordConfig()->getID() .", ". $oCC->getMode() .", '". $this->getDBConn()->escStr($ip) ."')";
 //		echo $sql ."\n";
 		// Error: Unable to insert a new record in the Transaction Log
 		if (is_resource($this->getDBConn()->query($sql) ) === false)
@@ -460,7 +460,7 @@ class General
 					callbackurl = '". $this->getDBConn()->escStr($oTI->getCallbackURL() ) ."', iconurl = '". $this->getDBConn()->escStr($oTI->getIconURL() ) ."',
 					authurl = '". $this->getDBConn()->escStr($oTI->getAuthenticationURL() ) ."', customer_ref = '". $this->getDBConn()->escStr($oTI->getCustomerRef() ) ."',
 					gomobileid = ". $oTI->getGoMobileID() .", auto_capture = '". ($oTI->useAutoCapture() === true ? "1" : "0") ."', markup = '". $this->getDBConn()->escStr($oTI->getMarkupLanguage() ) ."',
-					description = ". $this->getDBConn()->escStr($oTI->getDescription() ) ."', ip = ". escStr( $oTI->getIP() ) ."'";
+					description = '". $this->getDBConn()->escStr($oTI->getDescription() ) ."', ip = '". $this->getDBConn()->escStr( $oTI->getIP() ) ."'";
 		if ($oTI->getAccountID() > 0) { $sql .= ", euaid = ". $oTI->getAccountID(); } 
 		$sql .= "
 				WHERE id = ". $oTI->getID();
