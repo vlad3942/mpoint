@@ -5,7 +5,7 @@
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
  * @package mConsole
- * @version 1.10
+ * @version 1.0
  */
 
 // Require Global Include File
@@ -20,11 +20,10 @@ require_once(sCLASS_PATH ."/validate.php");
 require_once(sCLASS_PATH ."/admin.php");
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
-$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
-/*
+
 $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
-
+/*
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
 $HTTP_RAW_POST_DATA .= '<login>';
@@ -37,11 +36,11 @@ $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
-	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate("http://". str_replace("mpoint", "mconsole", $_SERVER['HTTP_HOST']) ."/protocols/mconsole.xsd") === true && count($obj_DOM->login) > 0)
+	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate("http://". str_replace("goMobile", "mconsole", $_SERVER['HTTP_HOST']) ."/protocols/mconsole.xsd") === true && count($obj_DOM->login) > 0)
 	{		
-				$obj_mPoint = new Admin($_OBJ_DB, $_OBJ_TXT);
+				$obj_goMobile = new Admin($_OBJ_DB);
 				$iUserID = -1;
-				if ($obj_mPoint->auth($obj_DOM->login->username, $obj_DOM->login->password, $iUserID) === 10)
+				if ($obj_goMobile->auth($obj_DOM->login->username, $obj_DOM->login->password, $iUserID) === 10)
 				{
 					$xml = '<status code="100">Login successful</status>';
 					$xml .= "<id>". $iUserID ."</id>";
