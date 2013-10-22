@@ -35,19 +35,22 @@ $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH,
 
 $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
-
+/*
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
 $HTTP_RAW_POST_DATA .= '<login client-id="10017" >';
 $HTTP_RAW_POST_DATA .= '<password>oisJona1</password>';
+//$HTTP_RAW_POST_DATA .= '<auth-token>test1234</auth-token>';
+//$HTTP_RAW_POST_DATA .= '<auth-url>http://mpoint.test.cellpointmobile.com/_test/auth.php</auth-url>';
 $HTTP_RAW_POST_DATA .= '<client-info language="us" version="1.00" platform="iOS" app-id="5">';
+$HTTP_RAW_POST_DATA .= '<customer-ref>ABC-123</customer-ref>';
 $HTTP_RAW_POST_DATA .= '<mobile country-id="100">28880019</mobile>';
 $HTTP_RAW_POST_DATA .= '<email>jona@oismailc.om</email>';
 $HTTP_RAW_POST_DATA .= '<device-id>85ce3843c0a068fb5cb1e76156fdd719</device-id>';
 $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</login>';
 $HTTP_RAW_POST_DATA .= '</root>';
-
+*/
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
@@ -76,8 +79,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
 					
 					$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig->getCountryConfig() );
-					if ($obj_Validator->valPassword( (string) $obj_DOM->login[$i]->password) < 10) { $aMsgCds["password"] = $obj_Validator->valPassword( (string) $obj_DOM->login[$i]->password) + 20; }
-					
+					if ( strlen((string) $obj_DOM->login[$i]->password) > 1 && $obj_Validator->valPassword( (string) $obj_DOM->login[$i]->password) < 10)
+					{
+						$aMsgCds["password"] = $obj_Validator->valPassword( (string) $obj_DOM->login[$i]->password) + 20;
+					}
+						
 					// Input valid
 					if (count($aMsgCds) == 0)
 					{
@@ -85,8 +91,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if ($iAccountID < 0 && count($obj_DOM->login[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->login[$i]->{'client-info'}->email, $obj_CountryConfig); }
 						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->login[$i]->{'client-info'}->mobile, $obj_ClientConfig->getID() ); }
 						if ($iAccountID < 0 && count($obj_DOM->login[$i]->{'client-info'}->email) == 1) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->login[$i]->{'client-info'}->email, $obj_ClientConfig->getID() ); }
-						$code = $obj_mPoint->auth($iAccountID, (string) $obj_DOM->login[$i]->password);
-						// Authentication succeeded
+						
+						if ( strlen((string) $obj_DOM->login[$i]->{'auth-token'}) > 0 && strlen((string) $obj_DOM->login[$i]->{'auth-url'} ) > 0)
+						{		
+							$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo((string) $obj_DOM->login[$i]->{'auth-url'} ), $obj_DOM->login[$i]->{'client-info'}->{'customer-ref'}, (string) $obj_DOM->login[$i]->{'auth-token'} );
+						} 
+						else { 
+							$code = $obj_mPoint->auth($iAccountID, (string) $obj_DOM->login[$i]->password);
+						}
+												// Authentication succeeded
 						if ($code == 10 || ($code == 11 && $obj_ClientConfig->smsReceiptEnabled() === false) )
 						{
 							if ($obj_ClientConfig->getStoreCard() == 2) { $xml .= $obj_mPoint->getAccountInfo($iAccountID); }
