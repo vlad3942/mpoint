@@ -34,7 +34,7 @@ $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<save-card client-id="10012">';
+$HTTP_RAW_POST_DATA .= '<save-card client-id="100" >';
 $HTTP_RAW_POST_DATA .= '<card type-id="6" preferred="true">';
 $HTTP_RAW_POST_DATA .= '<name>My VISA</name>';
 $HTTP_RAW_POST_DATA .= '<card-number-mask>540287******1244</card-number-mask>';
@@ -117,7 +117,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if (count($aMsgCds) == 0)
 						{
 							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile["country-id"]);
-							
+							// Start Transaction
+							$_OBJ_DB->query("START TRANSACTION");
 							if (empty($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) === false)
 							{
 								$code = $obj_mPoint->saveCardName( $obj_DOM->{'save-card'}[$i]->card[$j]["id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j],  General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) );
@@ -129,15 +130,42 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
 								if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
 								if (count($obj_DOM->{'save-card'}[$i]->card[$j]->token) == 1)
-								{
-									$code = $obj_mPoint->saveCard($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->token, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-number-mask'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} ."/". (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-year'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-holder-name'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) ) + 1;
+								{									
+									$code = $obj_mPoint->saveCard($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->token, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-number-mask'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} ."/". (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-year'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-holder-name'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) ) + 1;		
 								}
-								else { $code = $obj_mPoint->saveCardName($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) ); }
+								else { $code = $obj_mPoint->saveCardName($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) ); }							
 							}
-							  
+							//Save Address if passed and cars successfuly saved
+								
+							if (count($obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}) == 1 && $code == 1)
+							{
+								$cardId = $obj_mPoint->getCardIdfromCardTbl($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-number-mask'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} ."/". (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-year'});
+								$codeA = $obj_mPoint->saveAddress($cardId, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]->address["country-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->state, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{'first-name'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"last-name"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->company, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->street, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"postal-code"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->city);							
+								if ($codeA == 10)
+								{
+									// Commit Transfer
+									$_OBJ_DB->query("COMMIT");			
+								}
+								else
+								{
+									// Abort transaction and rollback to previous state
+									$_OBJ_DB->query("ROLLBACK");
+									$code = -2;
+								}
+							}
+							elseif ($code == 1)
+							{
+								// Commit Transfer
+								$_OBJ_DB->query("COMMIT");	
+							}
+							else
+							{
+								// Abort transaction and rollback to previous state
+								$_OBJ_DB->query("ROLLBACK");
+							}								
 							// Success: Card saved
 							if ($code > 0 && $obj_mPoint->getClientConfig()->getNotificationURL() != "")
-							{
+							{								
 								try
 								{
 									$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'save-card'}[$i]->{'client-info'}, $obj_CountryConfig, @$_SERVER['HTTP_X_FORWARDED_FOR']);
@@ -205,7 +233,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							else 
 							{
 								header("HTTP/1.1 500 Internal Server Error");
-								
+						
 								$xml = '<status code="90">Unable to save Card ('. $code .')</status>';
 							}
 						}

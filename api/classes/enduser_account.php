@@ -187,7 +187,7 @@ class EndUserAccount extends Home
 	 * @param	string $exp 	Expiry date for the Card in the format MM/YY
 	 * @param	string $chn 	Card Holder Name
 	 * @param	string $name 	The name assigned to the stored card by the end-user (optional)
-	 * @param	boolean $pref 	Boolean flag indicating whether the card is the end-user's preferred (optional), defaults to false
+	 * @param	boolean $pref 	Boolean flag indicating whether the card is the end-user's preferred (optional), defaults to false	 
 	 * @return	integer
 	 */
 	public function saveCard()
@@ -247,19 +247,21 @@ class EndUserAccount extends Home
 		case (9):	// Card Saved by invoking "Save Card" API
 			list($iAccountID, $cardid, $pspid, $token, $mask, $exp, $chn, $name, $bPreferred) = $aArgs;
 			$bPreferred = parent::bool2xml($bPreferred);
-			break;
+			break;		
 		}
 
 		// Check if card has already been saved
-		$sql = "SELECT id, ticket, pspid
-				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
-				WHERE accountid = ". $iAccountID ." AND clientid = ". $this->_obj_ClientConfig->getID() ." AND cardid = ". intval($cardid) ."
-					AND ( (mask = '". $this->getDBConn()->escStr($mask) ."' AND expiry = '". $this->getDBConn()->escStr($exp) ."') OR (mask IS NULL AND expiry IS NULL) )";
+//pc		$sql = "SELECT id, ticket, pspid
+//pc				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
+//pc				WHERE accountid = ". $iAccountID ." AND clientid = ". $this->_obj_ClientConfig->getID() ." AND cardid = ". intval($cardid) ."
+//pc					AND ( (mask = '". $this->getDBConn()->escStr($mask) ."' AND expiry = '". $this->getDBConn()->escStr($exp) ."') OR (mask IS NULL AND expiry IS NULL) )";
 //		echo $sql ."\n";
-		$RS = $this->getDBConn()->getName($sql);
+//pc		$RS = $this->getDBConn()->getName($sql);
+		$saveCardiId = $this->getCardIdfromCardTbl($iAccountID, $cardid, $mask, $exp);
 
 		// Card not previously saved, add card info to database
-		if (is_array($RS) === false)
+//pc		if (is_array($RS) === false)
+		if ($saveCardId == 0)
 		{
 			$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 						(accountid, clientid, cardid, pspid, ticket, mask, expiry, name, preferred)
@@ -292,11 +294,10 @@ class EndUserAccount extends Home
 					WHERE id = ". $RS["ID"];
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
-			if (is_resource($res) === true)
+			if (is_resource($res) === false)
 			{
-				$this->delTicket($RS["PSPID"], $RS["TICKET"]);
-			}
-			else { $iStatus = -1; }
+				$iStatus = -1;
+			}			
 		}
 
 		return $iStatus;
@@ -461,6 +462,40 @@ class EndUserAccount extends Home
 		return $iStatus;
 	}
 	
+	
+	/**
+	 * Saves Billing Address for the newest card which has been created recently (within the last 5 minutes).	
+	 * The method will return the following status codes:
+	 * 	1. Fail
+	 * 	2. Success
+	 *
+	 * @param 	integer $countryid 	ID of the Country
+	 * @param 	string $state		Address field - state
+	 * @param 	string $fn 			Address field - First Name
+	 * @param   string $ln			Address field - Last Name
+	 * @param 	string $cmp			Address field - Company
+	 * @param	string $st			Address field - Street
+	 * @param	string $pc			Address field - Postal Code
+	 * @param 	string $ct			Address field - City
+	 * @return	integer
+	 */
+	public function saveAddress($cardid, $countryid, $state, $fn, $ln, $cmp, $st, $pc, $ct)
+	{
+		if (empty($state) === true) {
+			$state = "N/A";
+		}
+		$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Address_Tbl
+					(accountid, cardid, countryid, stateid, firstname, lastname, company, street, postalcode, city)
+				SELECT null , ".$cardid .", ". intval($countryid) .", id , '". $this->getDBConn()->escStr($fn) ."', '". $this->getDBConn()->escStr($ln) ."', '". $this->getDBConn()->escStr($cmp) ."', '". $this->getDBConn()->escStr($st) ."', '". $this->getDBConn()->escStr($pc) ."', '". $this->getDBConn()->escStr($ct) ."'
+				FROM System.State_Tbl
+				WHERE countryid = ". intval($countryid) ." AND Upper(code) = Upper('". $this->getDBConn()->escStr($state) ."')";
+		//echo $sql ."\n";
+		$add = $this->getDBConn()->query($sql);		
+		if (is_resource($add) === true ) {$ret = 10;}
+		else { $ret = 1; }
+		return $ret;
+	}
+	
 	/**
 	 * Renames the specified card.
 	 * For this to work it's assumed that the card info will be filled out and the card enabled by a callback from the PSP,
@@ -518,6 +553,18 @@ class EndUserAccount extends Home
 		return is_resource($this->getDBConn()->query($sql) );
 	}
 
+	public function getCardIdfromCardTbl($iAccountID, $cardid, $mask, $exp)
+	{ 
+		$sql = "SELECT id
+		FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
+		WHERE accountid = ". $iAccountID ." AND clientid = ". $this->_obj_ClientConfig->getID() ." AND cardid = ". intval($cardid) ."
+		AND ( (mask = '". $this->getDBConn()->escStr($mask) ."' AND expiry = '". $this->getDBConn()->escStr($exp) ."') OR (mask IS NULL AND expiry IS NULL) )";
+		//		echo $sql ."\n";
+		$RS = $this->getDBConn()->getName($sql);
+		
+		return $RS["ID"];
+	}
+	
 	/**
 	 * Fetches the unique ID of the End-User's account from the database using the provided external id.
 	 * The account must either be available to the specific clients or globally available to all clients
