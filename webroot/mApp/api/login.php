@@ -32,13 +32,13 @@ $aMsgCds = array();
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
-/*
+
 $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<login client-id="10007" account="100007">';
+$HTTP_RAW_POST_DATA .= '<login client-id="10017" >';
 $HTTP_RAW_POST_DATA .= '<password>oisJona1</password>';
 $HTTP_RAW_POST_DATA .= '<client-info language="us" version="1.00" platform="iOS" app-id="5">';
 $HTTP_RAW_POST_DATA .= '<mobile country-id="100">28880019</mobile>';
@@ -47,7 +47,7 @@ $HTTP_RAW_POST_DATA .= '<device-id>85ce3843c0a068fb5cb1e76156fdd719</device-id>'
 $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</login>';
 $HTTP_RAW_POST_DATA .= '</root>';
-*/
+
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
@@ -102,6 +102,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									if (strlen($aObj_XML[$j]->name) > 0) { $xml .= $aObj_XML[$j]->name->asXML(); }
 									$xml .= '<card-number-mask>'. $aObj_XML[$j]->mask .'</card-number-mask>';
 									$xml .= $aObj_XML[$j]->expiry->asXML();
+									if (count($aObj_XML[$j]->address) == 1)
+									{
+										$xml .= '<address country-id="'.$aObj_XML[$j]->address["country-id"].'" >';
+										$xml .= '<first-name>'. $aObj_XML[$j]->address->{'first-name'} .'</first-name>';
+										$xml .= '<last-name>'. $aObj_XML[$j]->address->{'last-name'} .'</last-name>';
+										$xml .= '<street>'. $aObj_XML[$j]->address->street .'</street>';
+										$xml .= '<postal-code>'. $aObj_XML[$j]->address->{'postal-code'} .'</postal-code>';
+										$xml .= '<city>'. $aObj_XML[$j]->address->city .'</city>';
+										$xml .= '<state>'. $aObj_XML[$j]->address->state .'</state>';
+										$xml .= '</address>';
+									}
 									$xml .= '</card>';
 								}
 								$xml .= '</stored-cards>';

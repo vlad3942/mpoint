@@ -193,6 +193,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$xml .= '<name>'. htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) .'</name>';
 								$xml .= $obj_XML->item[$j]->prefixes->asXML();
 								$xml .= htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES);	// Backward compatibility
+								if (count($aObj_XML[$j]->address) == 1)
+								{
+									$xml .= '<address country-id="'.$aObj_XML[$j]->address["country-id"].'" >';
+									$xml .= '<first-name>'. $aObj_XML[$j]->address->{'first-name'} .'</first-name>';
+									$xml .= '<last-name>'. $aObj_XML[$j]->address->{'last-name'} .'</last-name>';
+									$xml .= '<street>'. $aObj_XML[$j]->address->street .'</street>';
+									$xml .= '<postal-code>'. $aObj_XML[$j]->address->{'postal-code'} .'</postal-code>';
+									$xml .= '<city>'. $aObj_XML[$j]->address->city .'</city>';
+									$xml .= '<state>'. $aObj_XML[$j]->address->state .'</state>';
+									$xml .= '</address>';
+								}
 								$xml .= '</card>';
 							}
 						}
