@@ -962,5 +962,30 @@ class General
 	
 		return is_array($RS) === true && $RS["ID"] > 0 ? true : false;
 	}
+	
+	/**
+	 * Creates a log for an operation made, e.g. saving a card, deleting a card, etc.
+	 * 
+	 * @param integer 	$oid
+	 * @param integer 	$mobile
+	 * @param string 	$email
+	 * @param string 	$cusref
+	 * @param integer	$code
+	 * @param string	$msg
+	 * @throws mPointException
+	 */
+	public function newAuditMessage($oid, $mobile, $email, $cusref, $code, $msg) 
+	{
+		$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".AuditLog_Tbl
+			(operationid, mobile, email, customer_ref, code, message)
+		VALUES
+			(". $oid. ", ". floatval($mobile) .", ". $this->getDBConn()->escStr($email) .", ". $cusref .", '". intval($code) ."', '". $msg .")";
+		
+		if (is_resource($this->getDBConn()->query($sql) ) === false)
+		{
+			throw new mPointException("Unable to insert new audit message for operation: ". $txnid, 1003);
+		}
+		
+	}
 }
 ?>
