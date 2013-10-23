@@ -976,11 +976,11 @@ class General
 	 */
 	public function newAuditMessage($oid, $mobile, $email, $cusref, $code, $msg) 
 	{
+		$msg = str_replace("'", "", $msg); // Replace the single quotes with empty space
 		$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".AuditLog_Tbl
 			(operationid, mobile, email, customer_ref, code, message, enabled)
 		VALUES
 			(". $oid. ", ". floatval($mobile) .", '". $this->getDBConn()->escStr($email) ."', '". $cusref ."', '". intval($code) ."', '". $msg ."', true)";
-		
 		if (is_resource($this->getDBConn()->query($sql) ) === false)
 		{
 			throw new mPointException("Unable to insert new audit message for operation: ". $txnid, 1003);
