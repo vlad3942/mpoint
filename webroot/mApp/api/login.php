@@ -157,6 +157,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 							$xml .= '</history>';
 							setcookie("token", General::genToken($iAccountID, $obj_ClientConfig->getSecret() ) );
+							
 						}
 						// Authentication succeeded - But Mobile number not verified
 						elseif ($code == 11)
@@ -246,6 +247,29 @@ else
 	$xml = '<status code="401">Authorization required</status>';
 }
 header("Content-Type: text/xml; charset=\"UTF-8\"");
+
+$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
+$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
+$obj_xml = simpledom_load_string('<?xml version="1.0" encoding="UTF-8"?>'.'<root>'.$xml.'</root>');
+if(count($obj_xml->status))
+{
+	$obj_mPoint->newAuditMessage( Constants::iOPERATION_LOGGED_IN, 
+			$obj_DOM->login[0]->{'client-info'}->mobile, 
+			$obj_DOM->login[0]->{'client-info'}->email, 
+			$obj_DOM->login[0]->{'client-info'}->{'customer-ref'}, 
+			intval($obj_xml->status["code"]), 
+			(string)$obj_xml->status);
+}
+else 
+{
+	$obj_mPoint->newAuditMessage( Constants::iOPERATION_LOGGED_IN, 
+			$obj_DOM->login[0]->{'client-info'}->mobile, 
+			$obj_DOM->login[0]->{'client-info'}->email, 
+			$obj_DOM->login[0]->{'client-info'}->{'customer-ref'}, 
+			200, 
+			'Successful login');
+}
+
 
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';
