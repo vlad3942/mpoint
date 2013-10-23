@@ -979,7 +979,7 @@ class General
 		$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".AuditLog_Tbl
 			(operationid, mobile, email, customer_ref, code, message)
 		VALUES
-			(". $oid. ", ". floatval($mobile) .", ". $this->getDBConn()->escStr($email) .", ". $cusref .", '". intval($code) ."', '". $msg .")";
+			(". $oid. ", ". floatval($mobile) .", '". $this->getDBConn()->escStr($email) ."', '". $cusref ."', '". intval($code) ."', '". $msg ."')";
 		
 		if (is_resource($this->getDBConn()->query($sql) ) === false)
 		{
