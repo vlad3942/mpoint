@@ -32,6 +32,8 @@ $HTTP_RAW_POST_DATA .= '<transactionno></transactionno>';
 $HTTP_RAW_POST_DATA .= '<orderno></orderno>';
 $HTTP_RAW_POST_DATA .= '<mobile>30206162</mobile>';
 $HTTP_RAW_POST_DATA .= '<email></email>';
+$HTTP_RAW_POST_DATA .= '<start-date>01/01/2012 19:00:02</start-date>';
+$HTTP_RAW_POST_DATA .= '<end-date>06/01/2014 19:00:02</end-date>';
 $HTTP_RAW_POST_DATA .= '</search>';
 $HTTP_RAW_POST_DATA .= '</root>';
 
@@ -48,9 +50,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->search->countryid);
 		
 		$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT,$obj_CountryConfig);
-		$xml = $obj_mPoint->searchTxnHistory( (string) $obj_DOM->search->clientid,(string) $obj_DOM->search->transactionno,(string) $obj_DOM->search->orderno,(string) $obj_DOM->search->mobile,(string) $obj_DOM->search->email);
+		$xml = $obj_mPoint->searchTxnHistory( 
+												(string) $obj_DOM->search->clientid,
+												(string) $obj_DOM->search->transactionno,
+												(string) $obj_DOM->search->orderno,
+												(string) $obj_DOM->search->mobile,
+												(string) $obj_DOM->search->email,
+												(string) $obj_DOM->search->{'customer-reference'},
+												(string) $obj_DOM->search->{'start-date'},
+												(string) $obj_DOM->search->{'end-date'} );
+		
 		header("Content-Type: text/xml; charset=\"UTF-8\"");
 		$xml =  utf8_encode ( $xml );
+		echo $xml;
 	
 	}
 	// Error: Invalid XML Document
