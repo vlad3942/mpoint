@@ -461,7 +461,7 @@ class Home extends General
 	 * @param	string	$email	The End-User´s E-Mail 
 	 * @return 	string
 	 */
-	public  function searchTxnHistory($cid,$thxid,$ono,$mobile,$email)
+	public  function searchTxnHistory($cid,$thxid,$ono,$mobile,$email, $cf="", $startdate ="", $enddate = "")
 	{
 		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, Extract('epoch' from EUT.created  AT TIME ZONE 'UTC') AS timestamp,
 					CL.id AS clientid, CL.name AS client,
@@ -477,7 +477,8 @@ class Home extends General
 		if (empty($ono) === false){ $sql .= " AND Txn.orderid = '". $this->getDBConn()->escStr( $ono) ."'"; }
 		if (empty($mobile) === false){$sql .= " AND EUAT.mobile = '". $this->getDBConn()->escStr( (string) $mobile) ."'"; }
 		if (empty($email) === false) { $sql .= " AND EUAT.email = '". $this->getDBConn()->escStr( (string) $email) ."'";}
-		
+		if (empty($cf) === false) { $sql .= " AND Txn.customer_ref = '". $this->getDBConn()->escStr( (string) $cf) ."'";}
+		if (empty($startdate) === false) { $sql .= " AND EUT.created >= '". date("m/d/Y H:i:s", strtotime($startdate) ) ."' AND EUT.created <= '". date("m/d/Y H:i:s", strtotime($enddate) ) ."'";}
 		$res = $this->getDBConn()->query($sql);
 		
 		$xml = '<transactions sorted-by ="id" sort-order="descending">';
