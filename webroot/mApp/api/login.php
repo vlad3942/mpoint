@@ -266,7 +266,7 @@ else
 			$obj_DOM->login[0]->{'client-info'}->mobile, 
 			$obj_DOM->login[0]->{'client-info'}->email, 
 			$obj_DOM->login[0]->{'client-info'}->{'customer-ref'}, 
-			200, 
+			100, 
 			'Successful login');
 }
 
