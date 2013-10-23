@@ -73,7 +73,6 @@ class CPG extends Callback
         $b .= '  </orderContent>';
         // This needs to be added later as we dont have the billing address for now 
         $b .= '  <paymentDetails>';
-        // TODO: get the card info somehow...
         $b .= '    <cvc> '. intval($obj_XML->cvc) .' </cvc>';    
         $b .= '  </paymentDetails>';
         
@@ -99,12 +98,9 @@ class CPG extends Callback
         $b .= ' <returnURL>'. "http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?mpoint-id=". $this->getTxnInfo()->getID() .'</returnURL>';
         $b .= '</submit>';
         
-        //TODO: send the request and follow the description in JIRA
-        file_put_contents(sLOG_PATH ."/cpg.log",  $b,FILE_APPEND );
-        
+        //TODO: send the request and follow the description in JIRA        
         $obj_XML = simplexml_load_string($b);
         $obj_Std = $obj_SOAP->InitializePayment($obj_XML);
-  
         $cpg_XML = simplexml_load_string($obj_Std->InitializePaymentResult);
         
 		return $cpg_XML;

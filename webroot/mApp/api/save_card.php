@@ -37,7 +37,7 @@ $HTTP_RAW_POST_DATA .= '<root>';
 $HTTP_RAW_POST_DATA .= '<save-card client-id="100" >';
 $HTTP_RAW_POST_DATA .= '<card type-id="6" preferred="true">';
 $HTTP_RAW_POST_DATA .= '<name>My VISA</name>';
-$HTTP_RAW_POST_DATA .= '<card-number-mask>540287******1244</card-number-mask>';
+$HTTP_RAW_POST_DATA .= '<card-number-mask>540287******5344</card-number-mask>';
 $HTTP_RAW_POST_DATA .= '<expiry-month>10</expiry-month>';
 $HTTP_RAW_POST_DATA .= '<expiry-year>14</expiry-year>';
 $HTTP_RAW_POST_DATA .= '<token>123456-ABCD</token>';
@@ -299,6 +299,16 @@ else
 	$xml = '<status code="401">Authorization required</status>';
 }
 header("Content-Type: text/xml; charset=\"UTF-8\"");
+
+$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
+$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
+$obj_xml = simplexml_load_string($xml);
+$obj_mPoint->newAuditMessage( Constants::iOPERATION_CARD_SAVED,
+							 $obj_DOM->{'save-card'}[0]->{'client-info'}->mobile,
+							 $obj_DOM->{'save-card'}[0]->{'client-info'}->email,
+							 $obj_DOM->{'save-card'}[0]->{'client-info'}->{'customer-ref'},
+							 $obj_xml->attributes(),
+							 $obj_xml);
 
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';

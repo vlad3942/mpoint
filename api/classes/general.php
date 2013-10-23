@@ -977,9 +977,9 @@ class General
 	public function newAuditMessage($oid, $mobile, $email, $cusref, $code, $msg) 
 	{
 		$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".AuditLog_Tbl
-			(operationid, mobile, email, customer_ref, code, message)
+			(operationid, mobile, email, customer_ref, code, message, enabled)
 		VALUES
-			(". $oid. ", ". floatval($mobile) .", '". $this->getDBConn()->escStr($email) ."', '". $cusref ."', '". intval($code) ."', '". $msg ."')";
+			(". $oid. ", ". floatval($mobile) .", '". $this->getDBConn()->escStr($email) ."', '". $cusref ."', '". intval($code) ."', '". $msg ."', true)";
 		
 		if (is_resource($this->getDBConn()->query($sql) ) === false)
 		{
