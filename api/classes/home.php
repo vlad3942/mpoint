@@ -493,6 +493,7 @@ class Home extends General
 		}
 		
 		$xml .= '</transactions>';
+		$xml .= $this->getAuditLog($mobile, $email, $cf, $startdate, $enddate);
 		
 		return $xml;
 	}

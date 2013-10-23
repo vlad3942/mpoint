@@ -242,7 +242,45 @@ class AutoTest
 			return self::sSTATUS_WARNING;
 		}
 	}
-	/* ========== Automatic Payment Tests End ========== */
+	/* ========== Automatic mConsole Tests Start ========== */
+	
+	public function mConsoleSearchTest()
+	{
+		$this->_sDebug = "";
+	
+		$b = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<root>';
+		$b .= '<search>';
+		$b .= '<clientid>10007</clientid>';
+		$b .= '<countryid>100</countryid>';
+		$b .= '<transactionno></transactionno>';
+		$b .= '<orderno></orderno>';
+		$b .= '<mobile>30206162</mobile>';
+		$b .= '<email></email>';
+		$b .= '<start-date>01/01/2012 19:00:02</start-date>';
+		$b .= '<end-date>06/01/2014 19:00:02</end-date>';
+		$b .= '</search>';
+		$b .= '</root>';
+		
+			$this->_aConnInfo["path"]= "/mConsole/api/search.php";
+	
+			$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
+			$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
+			$this->_obj_Client->connect();
+			$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
+			$this->_obj_Client->disconnect();
+			if ($code == 200)
+			{
+				$this->_sDebug = $this->_obj_Client->getReplyBody();
+				return self::sSTATUS_SUCCESS;
+			}
+			else
+			{
+				$this->_sDebug = $this->_obj_Client->getReplyBody();
+				return self::sSTATUS_FAILED;
+			}
+	}
+	/* ========== Automatic mConsole Tests End ========== */
 	
 	/* ========== Automatic Account Management Tests Start ========== */
 	public function saveCardNameTest()
@@ -485,6 +523,11 @@ $obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $s
 	<tr>
 		<td class="name">Save Masked Card</td>
 		<td><?= $obj_AutoTest->saveMaskedCardTest(); ?></td>
+		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">mConsole Search</td>
+		<td><?= $obj_AutoTest->mConsoleSearchTest(); ?></td>
 		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	</table>
