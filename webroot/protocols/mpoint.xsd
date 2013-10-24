@@ -323,12 +323,12 @@
                                     <xs:element name="country" minOccurs="1" maxOccurs="unbounded">
                                         <xs:complexType>
                                             <xs:all>
-                                                <xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />
+                                                <xs:element name="name" type="name" minOccurs="1" maxOccurs="1" />
                                                 <xs:element name="min-mobile" minOccurs="1" maxOccurs="1">
                                                     <xs:simpleType>
                                                         <xs:restriction base="xs:string">
 															<xs:minLength value="6" />
-															<xs:maxLength value="12" />
+															<xs:maxLength value="15" />
 															<xs:pattern value="[0-9]*" />
 														</xs:restriction>
                                                     </xs:simpleType>
@@ -337,7 +337,7 @@
                                                     <xs:simpleType>
                                                         <xs:restriction base="xs:string">
 															<xs:minLength value="6" />
-															<xs:maxLength value="12" />
+															<xs:maxLength value="15" />
 															<xs:pattern value="[0-9]*" />
 														</xs:restriction>
                                                     </xs:simpleType>
@@ -358,17 +358,17 @@
 														</xs:restriction>
                                                     </xs:simpleType>
                                                 </xs:element>
-                                                <xs:element name="price-format" type="xs:string" minOccurs="1" maxOccurs="1" />
+                                                <xs:element name="price-format" minOccurs="1" maxOccurs="1">
+                                                    <xs:simpleType>
+                                                        <xs:restriction base="xs:string">
+															<xs:minLength value="1" />
+															<xs:maxLength value="18" />
+														</xs:restriction>
+                                                    </xs:simpleType>
+                                                </xs:element>
                                             </xs:all>
                                             <xs:attribute name="id" type="xs:positiveInteger" use="required" />
-                                            <xs:attribute name="address-lookup" use="required">
-                                                <xs:simpleType>
-                                                    <xs:restriction base="xs:string">
-                                                        <xs:enumeration value="false" />
-                                                        <xs:enumeration value="true" />
-                                                    </xs:restriction>
-                                                </xs:simpleType>
-                                            </xs:attribute>
+                                            <xs:attribute name="address-lookup" type="boolean" use="required" />
                                         </xs:complexType>
                                     </xs:element>
                                 </xs:sequence>
