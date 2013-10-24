@@ -361,6 +361,85 @@ class AutoTest
 			return self::sSTATUS_FAILED;
 		}
 	}
+	
+/*	public function loginTest()
+	{
+		$b = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<root>';
+		$b .= '<login client-id="10017" >';
+		$b .= '<password>oisJona1</password>';
+		$b .= $this->_constClientInfo();
+		$b .= '</login>';
+		$b .= '</root>';
+	
+		$this->_sDebug = "";
+		$this->_aConnInfo["path"]= "/mApp/api/login.php";
+	
+		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
+		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
+		$this->_obj_Client->connect();
+		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
+		$this->_obj_Client->disconnect();
+		if ($code == 200)
+		{
+			return self::sSTATUS_SUCCESS;
+		}
+		elseif ($code == 401 || $code == 403)
+		{
+			$this->_sDebug = $this->_obj_Client->getReplyBody();
+			return self::sSTATUS_WARNING;
+		}
+		else
+		{
+			$this->_sDebug = $this->_obj_Client->getReplyBody();
+			return self::sSTATUS_FAILED;
+		}
+	}
+*/	
+	public function loginAddressReturnTest()
+	{
+		$b = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<root>';
+		$b .= '<login client-id="10017" >';
+		$b .= '<password>oisJona1</password>';
+		$b .= '<client-info language="us" version="1.00" platform="iOS" app-id="5">';
+		$b .= '<customer-ref>ABC-123</customer-ref>';
+		$b .= '<mobile country-id="100">28880019</mobile>';
+		$b .= '<email>jona@oismailc.om</email>';
+		$b .= '<device-id>85ce3843c0a068fb5cb1e76156fdd719</device-id>';
+		$b .= '</client-info>'	;
+		$b .= '</login>';
+		$b .= '</root>';
+	
+		$this->_sDebug = "";
+		$this->_aConnInfo["path"]= "/mApp/api/login.php";
+	
+		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
+		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
+		$this->_obj_Client->connect();
+		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
+		$this->_obj_Client->disconnect();
+		if ($code == 200)
+		{
+			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
+			if (empty($obj_XML->{'stored-cards'}->card->address)===false)
+				return self::sSTATUS_SUCCESS;	
+			else 
+				$this->_sDebug = "No address returned";
+				return self::sSTATUS_FAILED;
+		}
+		elseif ($code == 401 || $code == 403)
+		{
+			$this->_sDebug = $this->_obj_Client->getReplyBody();
+			return self::sSTATUS_WARNING;
+		}
+		else
+		{
+			$this->_sDebug = $this->_obj_Client->getReplyBody();
+			return self::sSTATUS_FAILED;
+		}
+	}
+	
 	/* ========== Automatic Account Management Tests End ========== */
 }
 
@@ -528,6 +607,11 @@ $obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $s
 	<tr>
 		<td class="name">mConsole Search</td>
 		<td><?= $obj_AutoTest->mConsoleSearchTest(); ?></td>
+		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">LoginAddressReturned</td>
+		<td><?= $obj_AutoTest->loginAddressReturnTest(); ?></td>
 		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	</table>
