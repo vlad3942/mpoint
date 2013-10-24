@@ -37,3 +37,5 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE log.auditlog_tbl TO mpoint;
 
 -- Flag to show all cards, including disabled and expired cards
 ALTER TABLE Client.Client_Tbl ADD show_all_cards BOOL DEFAULT false;
+
+ALTER TABLE enduser.card_tbl ADD COLUMN cardholdername VARCHAR(255); -- Add´s a cardHolderName column to a card table
