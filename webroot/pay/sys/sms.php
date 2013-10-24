@@ -77,7 +77,7 @@ if ($obj_TxnInfo instanceof TxnInfo === true)
 			else
 			{
 				$iAccountBalance = (integer) $obj_XML->balance;
-				$obj_XML = simplexml_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID() ) );
+				$obj_XML = simplexml_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_TxnInfo->getClientConfig()->showAllCards() ) );
 				
 				$mExternalID = -1;
 				// Pay using Stored Card
