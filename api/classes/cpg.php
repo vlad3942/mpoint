@@ -65,7 +65,6 @@ class CPG extends Callback
         $b .= '<submit>';
         $b .= ' <shortCode>'. htmlspecialchars( $this->getTxnInfo()->getClientConfig()->getAccountConfig()->getName(),ENT_NOQUOTES ) .'</shortCode>'; // Short code of the Storefront application 
         $b .= ' <order orderCode="'. htmlspecialchars( $this->getTxnInfo()->getOrderID(),ENT_NOQUOTES  ) .'">'; // mandatory, needs to be unique
-        $b .= ' <oldOrder> '. htmlspecialchars( $obj_XML->ticket,ENT_NOQUOTES ) .' </oldOrder>'; // Optional this is our storedcard
         $b .= '  <description>'. htmlspecialchars("mPoint ID: ". $this->getTxnInfo()->getID() ." for Order No.:". $this->getTxnInfo()->getOrderID() , ENT_NOQUOTES) .'</description>';        
         $b .= '  <amount value="'. htmlspecialchars($this->getTxnInfo()->getAmount(),ENT_NOQUOTES ) .'" curencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getClientConfig()->getCountryConfig()->getID(), Constants::iCPM_PSP),ENT_NOQUOTES ) .'" exponent="2" debitCardIndication="credit"/>'; 
         $b .= '  <orderContent>';
@@ -73,7 +72,29 @@ class CPG extends Callback
         $b .= '  </orderContent>';
         // This needs to be added later as we dont have the billing address for now 
         $b .= '  <paymentDetails>';
+        $b .= '   <'. $this->getCardName($cardId) .'>';
+       	$b .= '    <CCRKey>'.  htmlspecialchars( $obj_XML->ticket,ENT_NOQUOTES )  .'</CCRKey>'; // mandatory, 0-20
+        //TODO should be card number not masked card number
+        //$b .= '    <cardNumber> '. $obj_XML->{'card-number-mask'} .' </cardNumber>'; // mandatory, 0-20
         $b .= '    <cvc> '. intval($obj_XML->cvc) .' </cvc>';    
+        $b .= '    <expiryDate>';
+        $b .= '     <date month="'. substr($obj_XML->expiry,0,2) .'" year="'. substr($obj_XML->expiry, -2) .'" />'; // mandatory
+        $b .= '    </expiryDate>';
+        //TODO do we have cardHolderName ?
+        $b .= '    <cardHolderName>'. htmlspecialchars($obj_XML->address->{'first-name'}, ENT_NOQUOTES) + " " + htmlspecialchars($obj_XML->address->{'last-name'}, ENT_NOQUOTES) .'</cardHolderName>'; // mandatory
+        //$b .= '    <cardHolderName>'. htmlspecialchars($obj_XML->cardHolderName, ENT_NOQUOTES) .'</cardHolderName>'; // mandatory
+        $b .= '    <cardAddress>';
+        $b .= '     <address>';
+        $b .= '      <firstName>'. htmlspecialchars($obj_XML->address->{'first-name'}, ENT_NOQUOTES) .'</firstName>'; // mandatory, 0-40 chars
+        $b .= '      <lastName>'. htmlspecialchars($obj_XML->address->{'last-name'}, ENT_NOQUOTES) .'</lastName>'; // mandatory, 0-40 chars
+        $b .= '      <street>'. htmlspecialchars($obj_XML->address->street, ENT_NOQUOTES) .'</street>'; // mandatory, 0-100 chars
+        $b .= '      <postalCode>'. intval($obj_XML->address->{'postal-code'}) .'</postalCode>'; // optional, 0-20 chars
+        $b .= '      <city>'. htmlspecialchars($obj_XML->address->city, ENT_NOQUOTES) .'</city>'; // mandatory, 0-50 chars
+        $b .= '      <countryCode>'. getCountryName($obj_XML->address['country-id'], ENT_NOQUOTES) .'</countryCode>'; // mandatory, 2-2 chars
+        $b .= '      <telephoneNumber>'. floatval($this->getTxnInfo()->getMobile() ) .'</telephoneNumber>'; // optional
+        $b .= '     </address>';
+        $b .= '    </cardAddress>';
+        $b .= '   </.'. $this->getCardName($cardId) .'>';
         $b .= '  </paymentDetails>';
         
         //  END ************** MAYBE TO BE USED IN FUTURE
@@ -85,13 +106,13 @@ class CPG extends Callback
         // NEEDS expansion of getStoredCards()
         $b .= '  <shippingAddress>';
         $b .= '   <address>';
-        $b .= '    <firstName>'. htmlspecialchars($obj_XML->firstName, ENT_NOQUOTES) .'</firstName>'; // mandatory, 0-40 chars
-        $b .= '    <lastName>'. htmlspecialchars($obj_XML->lastName, ENT_NOQUOTES) .'</lastName>'; // mandatory, 0-40 chars
-        $b .= '    <street>'. htmlspecialchars($obj_XML->street, ENT_NOQUOTES) .'</street>'; // mandatory, 0-100 chars
-        $b .= '    <postalCode>'. intval($obj_XML->postalCode) .'</postalCode>'; // optional, 0-20 chars
-        $b .= '    <city>'. htmlspecialchars($obj_XML->city, ENT_NOQUOTES) .'</city>'; // mandatory, 0-50 chars
-        $b .= '    <countryCode>'. htmlspecialchars($obj_XML->countryCode, ENT_NOQUOTES) .'</countryCode>'; // mandatory, 2-2 chars
-        $b .= '    <telephoneNumber>'. intval($obj_XML->mobilNumber) .'</telephoneNumber>'; // optional
+        $b .= '      <firstName>'. htmlspecialchars($obj_XML->address->{'first-name'}, ENT_NOQUOTES) .'</firstName>'; // mandatory, 0-40 chars
+        $b .= '      <lastName>'. htmlspecialchars($obj_XML->address->{'last-name'}, ENT_NOQUOTES) .'</lastName>'; // mandatory, 0-40 chars
+        $b .= '      <street>'. htmlspecialchars($obj_XML->address->street, ENT_NOQUOTES) .'</street>'; // mandatory, 0-100 chars
+        $b .= '      <postalCode>'. intval($obj_XML->address->{'postal-code'}) .'</postalCode>'; // optional, 0-20 chars
+        $b .= '      <city>'. htmlspecialchars($obj_XML->address->city, ENT_NOQUOTES) .'</city>'; // mandatory, 0-50 chars
+        $b .= '      <countryCode>'. getCountryName($obj_XML->address['country-id'], ENT_NOQUOTES) .'</countryCode>'; // mandatory, 2-2 chars
+        $b .= '      <telephoneNumber>'. floatval($this->getTxnInfo()->getMobile() ) .'</telephoneNumber>'; // optional
         $b .= '   </address>';
         $b .= '  </shippingAddress>';
         $b .= ' </order>';
@@ -104,6 +125,16 @@ class CPG extends Callback
         $cpg_XML = simplexml_load_string($obj_Std->InitializePaymentResult);
         
 		return $cpg_XML;
+	}
+	
+	public function getCounrtyName($id)
+	{		
+		$sql = "SELECT name
+		FROM System".sSCHEMA_POSTFIX.".Country_Tbl
+		WHERE id = ". intval($id) ." AND enabled = '1'";
+		//		echo $sql ."\n";
+		$RS = $this->getDBConn()->getName($sql);
+		return $RS["NAME"]';
 	}
 	
 }
