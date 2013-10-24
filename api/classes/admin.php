@@ -111,5 +111,28 @@ class Admin extends General
 		return  $xml;
 	}	
 	
+	public function saveMerchantSubAccount($accountid, $pspid, $name)
+	{		
+		$sql = "SELECT id
+				FROM Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl 
+				WHERE accountid = ". intval($accountid);
+		$res = $this->getDBConn()->query($sql);
+		
+		if (is_resource($res) === true)
+		{
+			$del_sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl 
+					WHERE accountid = ". intval($accountid);
+			$del_res = $this->getDBConn()->query($del_sql);
+		}
+		
+		if (is_resource($res) === false || is_resource($del_res) === true)
+		{
+			$in_sql =  "INSERT INTO Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl (Accountid, pspid, name)
+							VALUES( $accountid, $pspid, $name)";
+			$in_res = $this->getDBConn()->query($in_sql);
+		}
+		return is_resource($in_res);
+	}
+	
 }
 ?>
