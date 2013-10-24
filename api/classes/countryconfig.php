@@ -328,9 +328,10 @@ class CountryConfig extends BasicConfig
 	 */
 	public static function updateConfig(RDB &$oDB, $name, $currency, $sym, $maxbal, $mt, $minmob, $maxmob, $ch, $pf)
 	{		
-		$sql = "UPDATE System".sSCHEMA_POSTFIX.".Country_Tbl SET name = '". $name ."', currency = '"
-				. $currency ."', symbol = '". $sym ."', minmob = '"
-				. $minmob ."', minmob = '". $minmob ."', maxmob = '". $minmob ."', channel = '". $ch ."', priceformat = '". $ch ."' WHERE id = ".intval($id);
+		$sql = "UPDATE System".sSCHEMA_POSTFIX.".Country_Tbl SET name = '". $oDB->escStr($name) ."', currency = '"
+				. $oDB->escStr($currency) ."', symbol = '". $oDB->escStr($sym) ."', minmob = '"
+				. $oDB->escStr($minmob) ."', minmob = '". $oDB->escStr($minmob) ."', maxmob = '". $oDB->escStr($minmob) ."', channel = '"
+				. $oDB->escStr($ch) ."', priceformat = '". $oDB->escStr($ch) ."' WHERE id = ".intval($id);
 		
 		return $oDB->query($sql);
 		
