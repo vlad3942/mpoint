@@ -1029,5 +1029,86 @@ class General
 		return $xml;
 	}
 	
+	protected function constHeader()
+	{
+		/* ----- Construct HTTP Header Start ----- */
+		$h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
+		$h .= "host: {HOST}" .HTTPClient::CRLF;
+		$h .= "referer: {REFERER}" .HTTPClient::CRLF;
+		$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
+		$h .= "content-type: {CONTENTTYPE}; charset=\"UTF-8\"" .HTTPClient::CRLF;
+		$h .= "user-agent: mRetail" .HTTPClient::CRLF;
+		/* ----- Construct HTTP Header End ----- */
+	
+		return $h;
+	}
+	
+	public function getTransactionStatus(HTTPConnInfo &$oCI, $sec)
+	{
+		$sql = "SELECT Txn.id, Txn.orderid , URL.url
+		FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
+		INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M ON Txn.id = M.txnid AND M.Stateid != ". Constants::iPAYMENT_ACCEPTED_STATE ."
+		INNER JOIN Client".sSCHEMA_POSTFIX.".Url_Tbl URL ON Txn.clientid = URL.clientid AND URL.urltypeid = ". Constants::iURL_TYPE_GET_TRANSACTION_STATUS ."
+		WHERE Txn.created >= (now() - '".$sec." seconds'::INTERVAL) FOR UPDATE";
+	
+		$res = $this->getDBConn()->query($sql);
+		$Obj_SendData = array();
+	
+		while ($RS = $this->getDBConn()->fetchName($res) )
+		{
+			$Obj_SendData[$RS["URL"] ][$RS["ID"] ] = $RS["ORDERID"];
+		}	
+		foreach ($Obj_SendData AS $url => $tnx)
+		{
+			$xml = '<?xml version="1.0" encoding="UTF-8"?>';
+			$xml .=	"<root>";
+			foreach ($tnx AS $key => $value)
+			{
+				$xml .= '<transaction id="'.$key.'">'. $value .'</transaction>';
+			}
+			$xml .="</root>";
+			
+			$aURL_Info = parse_url($url);
+			$aHTTP_CONN_INFO["mesb"]["protocol"] = $oCI->getProtocol();
+			$aHTTP_CONN_INFO["mesb"]["host"] = $aURL_Info["host"];
+			$aHTTP_CONN_INFO["mesb"]["port"] = $aURL_Info["port"];
+			$aHTTP_CONN_INFO["mesb"]["timeout"] = $oCI->getTimeout();
+			$aHTTP_CONN_INFO["mesb"]["path"] = $aURL_Info["path"];
+			$aHTTP_CONN_INFO["mesb"]["method"] = $oCI->getMethod();
+			$aHTTP_CONN_INFO["mesb"]["contenttype"] = $oCI->getContentType();
+			$aHTTP_CONN_INFO["mesb"]["username"] = $oCI->getUsername();
+			$aHTTP_CONN_INFO["mesb"]["password"] = $oCI->getPassword();
+			
+			$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
+				
+			$obj_HTTP = new HTTPClient(new Template(), $oCI);
+			$obj_HTTP->connect();
+				
+			$code = $obj_HTTP->send($this->constHeader(), $xml);
+			$obj_HTTP->disconnect();
+			
+			
+				//$obj_DOM = simpledom_load_string(trim($obj_HTTP->getReplyBody() ) );
+				$obj_DOM = simpledom_load_string($b);
+				for ($i=0; $i<count($obj_DOM->transaction); $i++)
+				{
+					$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Message_Tbl
+							(txnid, Stateid, data)
+							VALUES	(". $obj_DOM->transaction['id']. ", ". $obj_DOM->transaction->status['code'] .",  '". $this->getDBConn()->escStr( $obj_DOM->transaction->status) ."')";
+					
+					if (is_resource($this->getDBConn()->query($sql) ) === false)
+					{
+						throw new mPointException("Unable to insert new audit message for operation: ". $txnid, 1003);
+					}
+					
+					
+					$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Message_Tbl
+							SET Stateid = ".$obj_DOM->transaction." 
+							WHERE txnid = ".$obj_DOM->transaction['id']."";
+				}
+			
+		}
+		return $xml;
+	}	
 }
 ?>
