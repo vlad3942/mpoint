@@ -312,5 +312,28 @@ class CountryConfig extends BasicConfig
 		
 		return new CountryConfig($RS["ID"], $RS["NAME"], $RS["CURRENCY"], $RS["SYMBOL"], $RS["MAXBALANCE"], $RS["MINTRANSFER"], $RS["MINMOB"], $RS["MAXMOB"], $RS["CHANNEL"], $RS["PRICEFORMAT"], $RS["DECIMALS"], $RS["ADDR_LOOKUP"], $RS["DOI"], $RS["ADD_CARD_AMOUNT"], $RS["MAX_PSMS_AMOUNT"], $RS["MIN_PWD_AMOUNT"], $RS["MIN_2FA_AMOUNT"]);
 	}
+	
+	/**
+	 * Updates the country configuration to the Country_Tbl
+	 * 
+	 * @param 	string $name 		mPoint's Name for the Country
+	 * @param 	string $currency 	3 digit ISO-4217 code for the currency used in the Country.
+	 * @param 	string $sym 		Symbol used to represent the country's currency
+	 * @param 	integer $maxbal 	Max balance, in country's smallest currency, that a prepaid end-user account may contain 
+	 * @param 	integer $mt 		Min amount which may be transferred between End-User Accounts in country's smallest currency
+	 * @param 	string $minmob 		Min value a valid Mobile Number can have in the Country
+	 * @param 	string $maxmob 		Max value a valid Mobile Number can have in the Country
+	 * @param 	string $ch 			GoMobile channel used for communicating with the customers in the Country
+	 * @param 	string $pf 			Price Format used in the Country
+	 */
+	public static function updateConfig(RDB &$oDB, $name, $currency, $sym, $maxbal, $mt, $minmob, $maxmob, $ch, $pf)
+	{		
+		$sql = "UPDATE System".sSCHEMA_POSTFIX.".Country_Tbl SET name = '". $name ."', currency = '"
+				. $currency ."', symbol = '". $sym ."', minmob = '"
+				. $minmob ."', minmob = '". $minmob ."', maxmob = '". $minmob ."', channel = '". $ch ."', priceformat = '". $ch ."' WHERE id = ".intval($id);
+		
+		return $oDB->query($sql);
+		
+	}
 }
 ?>
