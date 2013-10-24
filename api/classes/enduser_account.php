@@ -264,10 +264,10 @@ class EndUserAccount extends Home
 		if ($saveCardId == 0)
 		{
 			$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Card_Tbl
-						(accountid, clientid, cardid, pspid, ticket, mask, expiry, name, preferred)
+						(accountid, clientid, cardid, pspid, ticket, mask, expiry, name, preferred, cardholdername)
 					VALUES
-						(". $iAccountID .", ". $this->_obj_ClientConfig->getID() .", ". intval($cardid) .", ". intval($pspid) .", '". $this->getDBConn()->escStr($token) ."', '". $this->getDBConn()->escStr($mask) ."', '". $this->getDBConn()->escStr($exp) ."', '". $this->getDBConn()->escStr($name) ."', ". $bPreferred .")";
-//			echo $sql ."\n";
+						(". $iAccountID .", ". $this->_obj_ClientConfig->getID() .", ". intval($cardid) .", ". intval($pspid) .", '". $this->getDBConn()->escStr($token) ."', '". $this->getDBConn()->escStr($mask) ."', '". $this->getDBConn()->escStr($exp) ."', '". $this->getDBConn()->escStr($name) ."', '". $bPreferred ."','". $this->getDBConn()->escStr($chn)."')";
+			//echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
 			
 			if (is_resource($res) === true)
@@ -661,7 +661,7 @@ class EndUserAccount extends Home
 								   FROM EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl
 								   WHERE accountid = EUA.id) )";
 		}
-//		echo $sql ."\n";
+		//echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 	
 		return is_array($RS) === true ? $RS["ID"] : -1;

@@ -288,7 +288,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												$aHTTP_CONN_INFO["cpg"]["password"] = $obj_PSPConfig->getPassword();
 												$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["cpg"]);												
 
-												$xml .= $obj_PSP->authTicket($obj_Elem, $oCI);
+												$xml .= $obj_PSP->authTicket($obj_Elem, $oCI);												
 												break;
 											default:	// Unkown Error
 												$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);

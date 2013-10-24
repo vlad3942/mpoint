@@ -124,7 +124,22 @@ class CPG extends Callback
         $obj_Std = $obj_SOAP->InitializePayment($obj_XML);
         $cpg_XML = simplexml_load_string($obj_Std->InitializePaymentResult);
         
-		return $cpg_XML;
+        if (empty($cpg_XML->redirect)=== false)
+        {
+        	$xml .= '<status code="100">';
+        	$xml .= '<url>'. $cpg_XML->redirect .'</url>';
+        	$xml .= '</status>';
+        }
+        elseif (empty($cpg_XML->error)===false)
+        {
+        	$xml .= $cpg_XML->error;
+        }
+        else 
+        {
+        	$xml .= '<error>Unknown Error</error>';
+        }
+        
+		return $xml;
 	}
 	
 	public function getCounrtyName($id)

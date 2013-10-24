@@ -396,12 +396,12 @@ class Home extends General
 		/* ========== Calculate Logo Dimensions End ========== */
 
 		// Select all active cards that are not yet expired
-		$sql = "SELECT DISTINCT EUC.id, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name, EUC.enabled AS enabled,
+		$sql = "SELECT DISTINCT EUC.id, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name, EUC.enabled, EUC.cardholdername,		
 					SC.id AS typeid, SC.name AS type,
 					CL.id AS clientid, CL.name AS client,
-					EUAD.countryid AS countryid, EUAD.firstname AS firstname, EUAD.lastname AS lastname,
-					EUAD.company AS company, EUAD.street as street,
-					EUAD.postalcode AS postalcode, EUAD.city AS city,
+					EUAD.countryid, EUAD.firstname, EUAD.lastname,
+					EUAD.company, EUAD.street,
+					EUAD.postalcode, EUAD.city,
 					STS.code AS state				
 				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl EUC
 				INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON EUC.pspid = PSP.id AND PSP.enabled = '1'
@@ -422,14 +422,13 @@ class Home extends General
 									    FROM EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl
 										WHERE accountid = EUA.id) )
 				ORDER BY CL.name ASC";
-		//	echo $sql ."\n";
+			//echo $sql ."\n";
 		file_put_contents(sLOG_PATH ."/error.log", "\n". "SQL getStoredCards: ".var_export($sql, true), FILE_APPEND  | LOCK_EX );
 		$res = $this->getDBConn()->query($sql);
 		
 		$xml = '<stored-cards accountid="'. $id .'">';
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
-			
 			// Construct XML Document with data for saved cards
 			$xml .= '<card id="'. $RS["ID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'">';
 			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
@@ -439,6 +438,7 @@ class Home extends General
 			$xml .= '<expiry>'. $RS["EXPIRY"] .'</expiry>';
 			$xml .= '<enabled>'. General::bool2xml($RS["PREFERRED"]) .'</enabled>';
 			$xml .= '<ticket>'. $RS["TICKET"] .'</ticket>';
+			$xml .= '<card-holder-name>'. $RS["CARDHOLDERNAME"] .'</card-holder-name>';
 			$xml .= '<logo-width>'. $iWidth .'</logo-width>';
 			$xml .= '<logo-height>'. $iHeight .'</logo-height>';
 						
