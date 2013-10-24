@@ -316,22 +316,28 @@ class CountryConfig extends BasicConfig
 	/**
 	 * Updates the country configuration to the Country_Tbl
 	 * 
+     * @param 	int    $id          unique identifier of the Country
 	 * @param 	string $name 		mPoint's Name for the Country
 	 * @param 	string $currency 	3 digit ISO-4217 code for the currency used in the Country.
 	 * @param 	string $sym 		Symbol used to represent the country's currency
-	 * @param 	integer $maxbal 	Max balance, in country's smallest currency, that a prepaid end-user account may contain 
-	 * @param 	integer $mt 		Min amount which may be transferred between End-User Accounts in country's smallest currency
-	 * @param 	string $minmob 		Min value a valid Mobile Number can have in the Country
-	 * @param 	string $maxmob 		Max value a valid Mobile Number can have in the Country
-	 * @param 	string $ch 			GoMobile channel used for communicating with the customers in the Country
 	 * @param 	string $pf 			Price Format used in the Country
+     * @param   bool   $al          address lookup
+     * @param 	string $minmob 		Min value a valid Mobile Number can have in the Country
+	 * @param 	string $maxmob 		Max value a valid Mobile Number can have in the Country
 	 */
-	public static function updateConfig(RDB &$oDB, $name, $currency, $sym, $maxbal, $mt, $minmob, $maxmob, $ch, $pf)
-	{		
-		$sql = "UPDATE System".sSCHEMA_POSTFIX.".Country_Tbl SET name = '". $oDB->escStr($name) ."', currency = '"
-				. $oDB->escStr($currency) ."', symbol = '". $oDB->escStr($sym) ."', minmob = '"
-				. $oDB->escStr($minmob) ."', minmob = '". $oDB->escStr($minmob) ."', maxmob = '". $oDB->escStr($minmob) ."', channel = '"
-				. $oDB->escStr($ch) ."', priceformat = '". $oDB->escStr($ch) ."' WHERE id = ".intval($id);
+	public static function updateConfig(RDB &$oDB, $id, $name, $currency, $sym, $pf, $al, $minmob, $maxmob)
+	{
+        if ($al === TRUE) { $addr_lookup = 'TRUE'; }
+        else { $addr_lookup = 'FALSE'; }
+        
+		$sql = "UPDATE System".sSCHEMA_POSTFIX.".Country_Tbl "
+                . "SET name = '". $oDB->escStr($name) ."'"
+                . ", currency = '" . $oDB->escStr($currency) ."'"
+                . ", symbol = '". $oDB->escStr($sym) ."'"
+                . ", priceformat = '". $oDB->escStr($pf) ."'"
+                . ", addr_lookup = ". $addr_lookup
+                . ", minmob = '" . $oDB->escStr($minmob) ."', maxmob = '". $oDB->escStr($maxmob) ."'"
+				. " WHERE id = ".intval($id);
 		
 		return $oDB->query($sql);
 		
