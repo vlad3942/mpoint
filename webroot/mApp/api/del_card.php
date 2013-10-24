@@ -39,9 +39,12 @@ $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
 $HTTP_RAW_POST_DATA .= '<delete-card client-id="10007" account="100007">';
-$HTTP_RAW_POST_DATA .= '<card>59729</card>';
+$HTTP_RAW_POST_DATA .= '<card>62371</card>';
 $HTTP_RAW_POST_DATA .= '<password>oisJona</password>';
+//$HTTP_RAW_POST_DATA .= '<auth-token>test1234</auth-token>';
+//$HTTP_RAW_POST_DATA .= '<auth-url>http://mpoint.test.cellpointmobile.com/_test/auth.php</auth-url>';
 $HTTP_RAW_POST_DATA .= '<client-info platform="iOS" version="1.00" language="da">';
+$HTTP_RAW_POST_DATA .= '<customer-ref>ABC-123</customer-ref>';
 $HTTP_RAW_POST_DATA .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
 $HTTP_RAW_POST_DATA .= '<email>jona@oismail.com</email>';
 $HTTP_RAW_POST_DATA .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
@@ -84,19 +87,33 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if ($iAccountID < 0 && count($obj_DOM->{'delete-card'}[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
 						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->mobile); }
 						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->email); }
-						if ($obj_Validator->valPassword( (string) $obj_DOM->{'delete-card'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'delete-card'}[$i]->password) + 20; }
-						if ($obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'delete-card'}[$i]->card) != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'delete-card'}[$i]->card) + 40; }
+                        if (strlen((string) $obj_DOM->{'delete-card'}[$i]->password) > 1 && $obj_Validator->valPassword( (string) $obj_DOM->{'delete-card'}[$i]->password) != 10)
+                        {
+                            $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'delete-card'}[$i]->password) + 20;
+                        }
+                        if ($obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'delete-card'}[$i]->card) != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'delete-card'}[$i]->card) + 40; }
 					
 						// Input valid
 						if (count($aMsgCds) == 0)
 						{
-							$code = General::authToken($iAccountID, $obj_ClientConfig->getSecret(), $_COOKIE['token']);
+                            if ( strlen((string) $obj_DOM->{'delete-card'}[$i]->{'auth-token'}) > 0 && strlen((string) $obj_DOM->{'delete-card'}[$i]->{'auth-url'} ) > 0)
+                            {		
+                                $code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo((string) $obj_DOM->{'delete-card'}[$i]->{'auth-url'} ), $obj_DOM->{'delete-card'}[$i]->{'client-info'}->{'customer-ref'}, (string) $obj_DOM->{'delete-card'}[$i]->{'auth-token'} );
+                            } 
+                            else
+                            { 
+                                $code = General::authToken($iAccountID, $obj_ClientConfig->getSecret(), $_COOKIE['token']);
+                            }
+                            
 							// Authentication succeeded
 							if ($code >= 10)
 							{
-								// Generate new security token
-								if ($code == 11) { setcookie("token", General::genToken($iAccountID, $obj_ClientConfig->getSecret() ) ); }
-								$code = $obj_mPoint->auth($iAccountID, (string) $obj_DOM->{'delete-card'}[$i]->password, false);
+                                if (strlen( (string) $obj_DOM->{'delete-card'}[$i]->password) > 1)
+                                { 
+                                    // Generate new security token
+                                    if ($code == 11) { setcookie("token", General::genToken($iAccountID, $obj_ClientConfig->getSecret() ) ); }
+                                    $code = General::authToken($iAccountID, $obj_ClientConfig->getSecret(), $_COOKIE['token']);
+                                }
 								// Authentication succeeded
 								if ($code == 10 || ($code == 11 && $obj_ClientConfig->smsReceiptEnabled() === false) )
 								{
@@ -141,7 +158,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							{
 								header("HTTP/1.1 403 Forbidden");
 					
-								$xml = '<status code="38">Invalid Security Token: '. $_COOKIE['token'] .'</status>';
+                                if ( strlen((string) $obj_DOM->{'delete-card'}[$i]->{'auth-token'}) > 0 && strlen((string) $obj_DOM->{'delete-card'}[$i]->{'auth-url'} ) > 0)
+                                {
+                                    $xml = '<status code="38">Invalid Auth Token: '. (string) $obj_DOM->{'delete-card'}[$i]->{'auth-token'} .'</status>';
+                                }
+                                else
+                                {
+                                    $xml = '<status code="38">Invalid Security Token: '. $_COOKIE['token'] .'</status>';
+                                }
 							}
 						}
 						else
