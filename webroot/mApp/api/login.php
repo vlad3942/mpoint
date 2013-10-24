@@ -103,7 +103,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if ($code == 10 || ($code == 11 && $obj_ClientConfig->smsReceiptEnabled() === false) )
 						{
 							if ($obj_ClientConfig->getStoreCard() == 2) { $xml .= $obj_mPoint->getAccountInfo($iAccountID); }
-							$aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID) );
+							$aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID, $obj_ClientConfig->showAllCards() ) );
 							$aObj_XML = $aObj_XML->xpath("/stored-cards/card[client/@id = ". $obj_ClientConfig->getID() ."]");
 							// End-User has Stored Cards available
 							if (is_array($aObj_XML) === true && count($aObj_XML) > 0)
