@@ -62,8 +62,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		
 		header("Content-Type: text/xml; charset=\"UTF-8\"");
 		$xml =  utf8_encode ( $xml );
-		echo $xml;
-	
+
 	}
 	// Error: Invalid XML Document
 	elseif ( ($obj_DOM instanceof SimpleDOMElement) === false)

@@ -31,9 +31,9 @@ $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
-	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate("http://". str_replace("goMobile", "mconsole", $_SERVER['HTTP_HOST']) ."/protocols/mconsole.xsd") === true && count($obj_DOM->roles) > 0)
+	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate("http://". str_replace("mpoint", "mconsole", $_SERVER['HTTP_HOST']) ."/protocols/mconsole.xsd") === true && count($obj_DOM->roles) > 0)
 	{
-		$obj_mPoint = new Admin($_OBJ_DB);
+		$obj_mPoint = new Admin($_OBJ_DB, $_OBJ_TXT);
 		
 		$xml = $obj_mPoint->GetUserRolesAndAccess($obj_DOM->roles->id);
 		
