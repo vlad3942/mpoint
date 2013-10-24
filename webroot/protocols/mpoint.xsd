@@ -377,6 +377,29 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="save-client-configuration" minOccurs="1" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="client-config" minOccurs="1" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:all>
+                                    <xs:element name="name" type="name" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element name="username" type="name" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element name="password" type="name" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element name="keyword" type="name" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element ref="urls" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element ref="cards" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element ref="payment-service-providers" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element ref="accounts" minOccurs="1" maxOccurs="1"/>
+                                </xs:all>
+                                <xs:attribute name="id" type="xs:positiveInteger" use="optional"/>
+                                <xs:attribute name="auto-capture" type="boolean" use="required"/>
+                                <xs:attribute name="store-card" type="xs:integer" use="required"/>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
 		</xs:choice>
 	</xs:complexType>
 </xs:element>
@@ -564,5 +587,89 @@
 		<xs:element name="auth-url" type="url" minOccurs="1" maxOccurs="1" />
 	</xs:sequence>
 </xs:group>
+
+<xs:element name="urls">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element name="url" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="xs:anyURI">
+                            <xs:attribute name="type-id" use="required" type="xs:positiveInteger"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:element>
+<xs:element name="cards">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element name="card" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                            <xs:attribute name="country-id" use="optional" type="countryid"/>
+                            <xs:attribute name="id" use="required" type="xs:positiveInteger"/>
+                            <xs:attribute name="psp-id" use="required" type="xs:positiveInteger"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:element>
+<xs:element name="accounts">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element name="account" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:all>
+                        <xs:element name="name" type="name"/>
+                        <xs:element name="markup">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:minLength value="0"/>
+                                    <xs:maxLength value="5"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element ref="payment-service-providers"/>
+                    </xs:all>
+                    <xs:attribute name="id" use="optional" type="xs:positiveInteger"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:element>
+<xs:element name="payment-service-providers">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element name="payment-service-provider" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:all>
+                        <xs:element name="name" type="name" minOccurs="1" maxOccurs="1"/>
+                        <xs:element name="username" type="name" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="password" type="name" minOccurs="0" maxOccurs="1"/>
+                    </xs:all>
+                    <xs:attribute name="id" use="optional" type="xs:positiveInteger"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:element>
+<xs:simpleType name="name">
+    <xs:restriction base="xs:string">
+        <xs:minLength value="1"/>
+        <xs:maxLength value="50"/>
+    </xs:restriction>
+</xs:simpleType>
+<xs:simpleType name="boolean">
+    <xs:restriction base="xs:string">
+        <xs:enumeration value="false"/>
+        <xs:enumeration value="true"/>
+    </xs:restriction>
+</xs:simpleType>
 
 </xs:schema>
