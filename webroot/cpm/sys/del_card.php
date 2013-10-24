@@ -49,7 +49,7 @@ if (count($aMsgCds) == 0)
 		if ($obj_mPoint->delStoredCard($_SESSION['obj_TxnInfo']->getAccountID(), $_POST['cardid']) === true)
 		{
 			
-			$obj_CardsXML = simplexml_load_string($obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_UA']) );
+			$obj_CardsXML = simplexml_load_string($obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_TxnInfo']->getClientConfig()->showAllCards(), $_SESSION['obj_UA']) );
 			if (count($obj_CardsXML) > 0) { $obj_CardsXML = $obj_CardsXML->xpath("/stored-cards/card[client/@id = ". $_SESSION['obj_TxnInfo']->getClientConfig()->getID() ."]"); }
 			// All Stored Cards deleted for the client
 			if (count($obj_CardsXML) == 0)

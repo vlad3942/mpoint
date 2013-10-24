@@ -174,7 +174,7 @@ if (array_key_exists(1000, $aMsgCds) === true)
 		{
 			$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SESSION['obj_UA']);
 			$obj_XML = simplexml_load_string($obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount() ) );
-			$obj_CardsXML = simplexml_load_string($obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID() ) );
+			$obj_CardsXML = simplexml_load_string($obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID(), $obj_ClientConfig->showAllCards() ) );
 			
 			/*
 			 * Only prepaid account available or End-User already has an e-money based prepaid account or a stored card
