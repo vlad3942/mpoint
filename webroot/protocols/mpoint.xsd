@@ -607,7 +607,7 @@
 <xs:element name="cards">
     <xs:complexType>
         <xs:sequence>
-            <xs:element name="card" minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="card" minOccurs="1" maxOccurs="unbounded">
                 <xs:complexType>
                     <xs:simpleContent>
                         <xs:extension base="xs:string">
@@ -624,7 +624,7 @@
 <xs:element name="accounts">
     <xs:complexType>
         <xs:sequence>
-            <xs:element name="account" minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="account" minOccurs="1" maxOccurs="unbounded">
                 <xs:complexType>
                     <xs:all>
                         <xs:element name="name" type="name"/>
@@ -647,7 +647,7 @@
 <xs:element name="payment-service-providers">
     <xs:complexType>
         <xs:sequence>
-            <xs:element name="payment-service-provider" minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="payment-service-provider" minOccurs="1" maxOccurs="unbounded">
                 <xs:complexType>
                     <xs:all>
                         <xs:element name="name" type="name" minOccurs="1" maxOccurs="1"/>
