@@ -369,11 +369,13 @@ class Home extends General
 	 * 	</stored-cards>
 	 *
 	 * @param	integer $id 	Unqiue ID of the End-User's Account
+	 * @param 	boolean $bAllCards 	Flag to indicate whether to include disabled and expired cards or not 
 	 * @param 	UAProfile $oUA 	Reference to the User Agent Profile for the Customer's Mobile Device (optional)
 	 * @return 	string
 	 */
-	public function getStoredCards($id, &$oUA=null)
+	public function getStoredCards($id, $bAllCards=false, &$oUA=null)
 	{
+		file_put_contents(sLOG_PATH ."/error.log", "\n". "bAllCards: ".var_export($bAllCards, true), FILE_APPEND  | LOCK_EX );
 		/* ========== Calculate Logo Dimensions Start ========== */
 		if (is_null($oUA) === false)
 		{
@@ -394,7 +396,7 @@ class Home extends General
 		/* ========== Calculate Logo Dimensions End ========== */
 
 		// Select all active cards that are not yet expired
-		$sql = "SELECT DISTINCT EUC.id, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name,
+		$sql = "SELECT DISTINCT EUC.id, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name, EUC.enabled AS enabled,
 					SC.id AS typeid, SC.name AS type,
 					CL.id AS clientid, CL.name AS client,
 					EUAD.countryid AS countryid, EUAD.firstname AS firstname, EUAD.lastname AS lastname,
@@ -409,14 +411,19 @@ class Home extends General
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Address_Tbl EUAD ON EUC.id = EUAD.cardid and EUA.enabled ='1'
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".State_Tbl STS ON EUAD.stateid = STS.id and EUA.enabled ='1'				
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON EUA.id = CLA.accountid
-				WHERE EUC.accountid = ". intval($id) ." AND EUC.enabled = '1'
-					AND ( (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."' OR length(EUC.expiry) = 0 )
-					AND (CLA.clientid = CL.id OR EUA.countryid = CLA.clientid 
+				WHERE EUC.accountid = ". intval($id);
+
+		if ($bAllCards === false) {
+			$sql .= " AND EUC.enabled = '1' AND ( (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."' OR length(EUC.expiry) = 0 )";
+		}
+			
+		$sql .= " AND (CLA.clientid = CL.id OR EUA.countryid = CLA.clientid 
 						 OR NOT EXISTS (SELECT id
 									    FROM EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl
 										WHERE accountid = EUA.id) )
 				ORDER BY CL.name ASC";
 		//	echo $sql ."\n";
+		file_put_contents(sLOG_PATH ."/error.log", "\n". "SQL getStoredCards: ".var_export($sql, true), FILE_APPEND  | LOCK_EX );
 		$res = $this->getDBConn()->query($sql);
 		
 		$xml = '<stored-cards accountid="'. $id .'">';
@@ -430,6 +437,7 @@ class Home extends General
 			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';
 			$xml .= '<mask>'. chunk_split($RS["MASK"], 4, " ") .'</mask>';
 			$xml .= '<expiry>'. $RS["EXPIRY"] .'</expiry>';
+			$xml .= '<enabled>'. General::bool2xml($RS["PREFERRED"]) .'</enabled>';
 			$xml .= '<ticket>'. $RS["TICKET"] .'</ticket>';
 			$xml .= '<logo-width>'. $iWidth .'</logo-width>';
 			$xml .= '<logo-height>'. $iHeight .'</logo-height>';
@@ -461,7 +469,7 @@ class Home extends General
 	 * @param	string	$email	The End-User´s E-Mail 
 	 * @return 	string
 	 */
-	public  function searchTxnHistory($cid,$thxid,$ono,$mobile,$email, $cf="", $startdate ="", $enddate = "")
+	public  function searchTxnHistory($cid,$thxid,$ono,$mobile,$email)
 	{
 		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, Extract('epoch' from EUT.created  AT TIME ZONE 'UTC') AS timestamp,
 					CL.id AS clientid, CL.name AS client,
@@ -477,8 +485,7 @@ class Home extends General
 		if (empty($ono) === false){ $sql .= " AND Txn.orderid = '". $this->getDBConn()->escStr( $ono) ."'"; }
 		if (empty($mobile) === false){$sql .= " AND EUAT.mobile = '". $this->getDBConn()->escStr( (string) $mobile) ."'"; }
 		if (empty($email) === false) { $sql .= " AND EUAT.email = '". $this->getDBConn()->escStr( (string) $email) ."'";}
-		if (empty($cf) === false) { $sql .= " AND Txn.customer_ref = '". $this->getDBConn()->escStr( (string) $cf) ."'";}
-		if (empty($startdate) === false) { $sql .= " AND EUT.created >= '". date("m/d/Y H:i:s", strtotime($startdate) ) ."' AND EUT.created <= '". date("m/d/Y H:i:s", strtotime($enddate) ) ."'";}
+		
 		$res = $this->getDBConn()->query($sql);
 		
 		$xml = '<transactions sorted-by ="id" sort-order="descending">';
@@ -493,7 +500,6 @@ class Home extends General
 		}
 		
 		$xml .= '</transactions>';
-		$xml .= $this->getAuditLog($mobile, $email, $cf, $startdate, $enddate);
 		
 		return $xml;
 	}

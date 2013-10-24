@@ -203,6 +203,14 @@ class ClientConfig extends BasicConfig
 	 * @var array
 	 */
 	private $_aIPList;
+	
+	/**
+	 * Boolean Flag indicating whether to include disabled/expired cards; default is false
+	 *
+	 * @var boolean
+	 */
+	private $_bShowAllCards;
+	
 	/**
 	 * Default Constructor
 	 *
@@ -233,8 +241,9 @@ class ClientConfig extends BasicConfig
 	 * @param 	string $aurl		Absolute URL to the external system where a customer may be authenticated. This is generally an existing e-Commerce site or a CRM system
 	 * @param 	string $nurl		Absolute URL to the external system that needs to by Notify when Stored Cards changes.
 	 * @param	array $aIPs			List of Whitelisted IP addresses in mPoint, pass an empty array to disable IP Whitelisting 
+	 * @param 	boolean $dc			Boolean Flag indicating whether to include disabled/expired cards; default is false
 	 */
-	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $ciurl, $aurl, $nurl, $aIPs)
+	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $ciurl, $aurl, $nurl, $aIPs, $dc)
 	{
 		parent::__construct($id, $name);
 
@@ -270,6 +279,7 @@ class ClientConfig extends BasicConfig
 		$this->_sAuthenticationURL = trim($aurl);
 		$this->_sNotificationURL = trim($nurl);
 		$this->_aIPList = $aIPs;
+		$this->_bShowAllCards = (bool) $dc;
 	}
 
 	/**
@@ -447,6 +457,8 @@ class ClientConfig extends BasicConfig
 	 */
 	public function getStoreCard() { return $this->_iStoreCard; }
 	public function getSecret() { return sha1($this->getID() . $this->_sPassword); }
+	
+	public function showAllCards() { return $this->_bShowAllCards; }
 
 	public function toXML()
 	{
@@ -472,6 +484,7 @@ class ClientConfig extends BasicConfig
 			$xml .= '<ip>'.$value.'</ip>';	
 		}
 		$xml .= '</ip-list>';
+		$xml .= '<show-all-cards>'. $this->_bShowAllCards .'</show-all-cards>';
 		$xml .= '</client-config>';
 
 		return $xml;
@@ -493,7 +506,7 @@ class ClientConfig extends BasicConfig
 					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl, Cl.iconurl,
 					Cl.smsrcpt, Cl.emailrcpt, Cl.method,
 					Cl.maxamount, Cl.lang, Cl.terms,
-					Cl.\"mode\", Cl.auto_capture, Cl.send_pspid, Cl.store_card,
+					Cl.\"mode\", Cl.auto_capture, Cl.send_pspid, Cl.store_card, Cl.show_all_cards,
 					C.id AS countryid,
 					Acc.id AS accountid, Acc.name AS account, Acc.mobile, Acc.markup,
 					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price,
@@ -519,7 +532,7 @@ class ClientConfig extends BasicConfig
 					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl, Cl.iconurl,
 					Cl.smsrcpt, Cl.emailrcpt, Cl.method,
 					Cl.maxamount, Cl.lang, Cl.terms,
-					Cl.\"mode\", Cl.auto_capture, Cl.send_pspid, Cl.store_card,
+					Cl.\"mode\", Cl.auto_capture, Cl.send_pspid, Cl.store_card, Cl.show_all_cards,
 					C.id,
 					Acc.id, Acc.name, Acc.mobile, Acc.markup,
 					KW.id, KW.name,
@@ -567,7 +580,7 @@ class ClientConfig extends BasicConfig
 			}
 		}
 		
-		return new ClientConfig($RS["CLIENTID"], utf8_decode($RS["CLIENT"]), $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $RS["CUSTOMERIMPORTURL"], $RS["AUTHURL"], $RS["NOTIFYURL"], $aIPs);
+		return new ClientConfig($RS["CLIENTID"], utf8_decode($RS["CLIENT"]), $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $RS["CUSTOMERIMPORTURL"], $RS["AUTHURL"], $RS["NOTIFYURL"], $aIPs, $RS["SHOW_ALL_CARDS"]);
 	}
 	
 	/**
