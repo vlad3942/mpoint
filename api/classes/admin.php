@@ -111,7 +111,7 @@ class Admin extends General
 		return  $xml;
 	}	
 	
-	public function saveMerchantSubAccount($accountid, $pspid, $name)
+	public function saveMerchantSubAccount($accountid, $pspid, $name, $found)
 	{		
 		$sql = "SELECT id
 				FROM Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl 
@@ -134,7 +134,7 @@ class Admin extends General
 		return is_resource($in_res);
 	}
 	
-	public function saveAccount($accountid, $clientid, $name, $markup)
+	public function saveAccount($accountid, $clientid, $name, $markup, $found)
 	{
 		$sql = "SELECT id
 				FROM Client".sSCHEMA_POSTFIX.".Account_Tbl
@@ -156,6 +156,97 @@ class Admin extends General
 		}
 		return is_resource($in_res);
 	}
+	
+	public function saveURL($clientid, $typeid, $url, $found)
+	{
+		//TODO check if client id is not null
+		$sql = "SELECT id
+				FROM Client".sSCHEMA_POSTFIX.".URL_Tbl
+				WHERE clientid = ". intval($clientid)."";
+		$res = $this->getDBConn()->query($sql);
+		
+		if (is_resource($res) === true)
+		{
+			$del_sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".URL_Tbl
+						WHERE clientid = ". intval($clientid)."";
+			$del_res = $this->getDBConn()->query($del_sql);
+		}
+		if (is_resource($res) === false || is_resource($del_res) === true)
+		{
+			$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".URL_Tbl (clientid , urltypeid, url )
+						VALUES( $clientid, $typeid,$url)";
+			$in_res = $this->getDBConn()->query($in_sql);
+		}
+		
+	}
+	
+	public function saveMerchantAccount($clientid, $pspid, $name, $username, $password ,$storecard, $found)
+	{
+		//TODO check if client id is not null
+		$sql = "SELECT id
+				FROM Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl
+				WHERE clientid = ". intval($clientid)."";
+		$res = $this->getDBConn()->query($sql);
+		
+		if (is_resource($res) === true)
+		{
+			$del_sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl
+						WHERE clientid = ". intval($clientid)."";
+			$del_res = $this->getDBConn()->query($del_sql);
+		}
+		if (is_resource($res) === false || is_resource($del_res) === true)
+		{
+			$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl (clientid, pspid, name, username, passwd ,stored_card)
+						VALUES( $clientid, $pspid, $name, $username, $password, $storecard)";
+			$in_res = $this->getDBConn()->query($in_sql);
+		}
+		return is_resource($in_res);
+	}
+	
+	public function saveKeyWord ($clientid, $name)
+	{
+		//TODO check if client id is not null
+		$sql = "SELECT id
+				FROM Client".sSCHEMA_POSTFIX.".KeyWord_Tbl
+				WHERE clientid = ". intval($clientid)."";
+		$res = $this->getDBConn()->query($sql);
+		
+		if (is_resource($res) === true)
+		{
+			$del_sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".KeyWord_Tbl
+						WHERE clientid = ". intval($clientid)."";
+			$del_res = $this->getDBConn()->query($del_sql);
+		}
+		if (is_resource($res) === false || is_resource($del_res) === true)
+		{
+			$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".KeyWord_Tbl (clientid , name)
+						VALUES( $clientid, $name)";
+			$in_res = $this->getDBConn()->query($in_sql);
+		}
+		return is_resource($in_res);
+	}
+	
+	
+	public function saveClient ($clientid, $storecard, $autocapture, $name, $username, $password, $found)
+	{
+		//TODO check if client id is not null
+		if ($found === true)
+		{
+			$up_sql = "UPDATE Client".sSCHEMA_POSTFIX.".Client_Tbl
+						SET storecard = $storecard, autocapture = $autocapture, name = $name, username=$username, password=$password
+						WHERE clientid = ". intval($clientid)."";
+			$up_res = $this->getDBConn()->query($del_sql);
+		}
+		if ($found === false)
+		{
+			$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".Client_Tbl (clientid, storecard, autocapture, name, username, password)
+					   VALUES( $clientid, $storecard, $autocapture, $username, $password, $name)";
+			$in_res = $this->getDBConn()->query($in_sql);
+		}
+		return ($found===true) ? is_resource($up_res) : is_resource($in_res);
+	}
+	
+	
 	
 }
 ?>
