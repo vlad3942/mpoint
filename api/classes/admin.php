@@ -114,7 +114,7 @@ class Admin extends General
 	public function saveMerchantSubAccount($accountid, $pspid, $name)
 	{			
 		$in_sql =  "INSERT INTO Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl 
-						(Accountid, pspid, name)
+						(accountid, pspid, name)
 					VALUES
 						( ". intval($accountid).", ". intval($pspid).", ". $this->getDBConn()->escStr($name).")";
 		$in_res = $this->getDBConn()->query($in_sql);
@@ -143,7 +143,8 @@ class Admin extends General
 			$in_sql =  "INSERT INTO Client".sSCHEMA_POSTFIX.".Account_Tbl 
 							(clientid, name, markup)
 						VALUES
-							(". intval($clientid).", ". $this->getDBConn()->escStr($name).", ". $this->getDBConn()->escStr($markup) .")";
+							(". intval($clientid).", '". $this->getDBConn()->escStr($name)."', '". $this->getDBConn()->escStr($markup) ."')";
+			echo $in_sql;
 			$in_res = $this->getDBConn()->query($in_sql);
 			if (is_resource($in_res))
 			{
@@ -238,27 +239,28 @@ class Admin extends General
 		if ($clientid > 0)
 		{
 			$up_sql = "UPDATE Client".sSCHEMA_POSTFIX.".Client_Tbl
-						SET store_card = ".intval($storecard) .", auto_capture = '". intval($autocapture)."', name = '". $this->getDBConn()->escStr($name)."', username='". $this->getDBConn()->escStr($username)."', password='". $this->getDBConn()->escStr($password)."', countryid = ".$cc ."
+						SET store_card = ".intval($storecard) .", auto_capture = '". intval($autocapture)."', name = '". $this->getDBConn()->escStr($name)."', username='". $this->getDBConn()->escStr($username)."', passwd='". $this->getDBConn()->escStr($password)."', countryid = ".$cc ."
 						WHERE clientid = ". intval($clientid)."";
 			$up_res = $this->getDBConn()->query($del_sql);
 		}
 		else
 		{
 			$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".Client_Tbl
-							(store_card, auto_capture, name, username, password, countryid)
+							(store_card, auto_capture, name, username, passwd, countryid, flowid)
 					   VALUES
-							(". intval($storecard).",'". intval($autocapture)."', '". $this->getDBConn()->escStr($name)."' , '". $this->getDBConn()->escStr($username)."', '". $this->getDBConn()->escStr($password)."',". $cc.")";
+							(". intval($storecard).",'". General::bool2xml($autocapture)."', '". $this->getDBConn()->escStr($name)."' , '". $this->getDBConn()->escStr($username)."', '". $this->getDBConn()->escStr($password)."',". intval($cc).", ".intval(1).")";
+			//echo $in_sql;			
 			$in_res = $this->getDBConn()->query($in_sql);
 			if (is_resource($in_res))
 			{
-				$sql = "SELECT MAX(id)
+				$sql = "SELECT MAX(id) AS ID
 						FROM Client".sSCHEMA_POSTFIX.".Client_Tbl";
-				//		echo $sql ."\n";
+//		echo $sql ."\n";
 				$RS = $this->getDBConn()->getName($sql);
-				
+								
 				if (is_array($RS) === true)
 				{
-					$clientid = $RS["ID"];	
+					$clientid = $RS["ID"];						
 					$newclient = 1;				
 				}
 			}
