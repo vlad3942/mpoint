@@ -129,20 +129,43 @@ class Admin extends General
 		return is_resource($del_res);
 	}
 	
-	public function saveAccount($accountid, $clientid, $name, $markup)
-	{
-		$in_sql =  "INSERT INTO Client".sSCHEMA_POSTFIX.".Account_Tbl 
-						(id,clientid, name, markup)
-					VALUES
-						( ". intval($accountid).", ". intval($clientid).", ". $this->getDBConn()->escStr($name).", ". $this->getDBConn()->escStr($markup) .")";
-		$in_res = $this->getDBConn()->query($in_sql);
-		return is_resource($in_res);
+	public function saveAccount(&$accountid, $clientid, $name, $markup)
+	{	
+		if ($accountid > 0)
+		{
+			$up_sql = "UPDATE Client".sSCHEMA_POSTFIX.".Account_Tbl
+						SET name = '". $this->getDBConn()->escStr($name)."', markup='". $this->getDBConn()->escStr($markup)."'
+						WHERE id = ". intval($accountid)." AND clientid = ".intval($clientid)."";
+			$up_res = $this->getDBConn()->query($del_sql);
+		}
+		else
+		{
+			$in_sql =  "INSERT INTO Client".sSCHEMA_POSTFIX.".Account_Tbl 
+							(clientid, name, markup)
+						VALUES
+							(". intval($clientid).", ". $this->getDBConn()->escStr($name).", ". $this->getDBConn()->escStr($markup) .")";
+			$in_res = $this->getDBConn()->query($in_sql);
+			if (is_resource($in_res))
+			{
+				$sql = "SELECT MAX(id)
+						FROM Client".sSCHEMA_POSTFIX.".Account_Tbl";
+				//		echo $sql ."\n";
+				$RS = $this->getDBConn()->getName($sql);
+		
+				if (is_array($RS) === true)
+				{
+					$accountid = $RS["ID"];
+					$newaccount = 1;
+				}
+			}
+		}
+		return $newclient == 1 ? true : is_resource($up_res);
 	}
 	
-	public function deleteAccount($accountid)
+	public function deleteAccount($clientid)
 	{
 		$del_sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".Account_Tbl
-					WHERE id = ". intval($accountid)."";
+					WHERE clientid = ". intval($clientid)."";
 		$del_res = $this->getDBConn()->query($del_sql);
 		return is_resource($del_res);
 	}
@@ -235,7 +258,7 @@ class Admin extends General
 				
 				if (is_array($RS) === true)
 				{
-					$uid = $RS["ID"];	
+					$clientid = $RS["ID"];	
 					$newclient = 1;				
 				}
 			}
