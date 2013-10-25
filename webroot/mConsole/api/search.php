@@ -36,8 +36,8 @@ $HTTP_RAW_POST_DATA .= '<start-date>01/01/2012 19:00:02</start-date>';
 $HTTP_RAW_POST_DATA .= '<end-date>06/01/2014 19:00:02</end-date>';
 $HTTP_RAW_POST_DATA .= '</search>';
 $HTTP_RAW_POST_DATA .= '</root>';
-
 */
+
 
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA );
 
@@ -60,6 +60,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												(string) $obj_DOM->search->{'start-date'},
 												(string) $obj_DOM->search->{'end-date'} );
 		
+		$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT);
+		$xml .= $obj_mPoint->getAuditLog($obj_DOM->search->mobile, $obj_DOM->search->email, $obj_DOM->search->{'customer-reference'}, $obj_DOM->search->{'start-date'}, $obj_DOM->search->{'end-date'});
 		header("Content-Type: text/xml; charset=\"UTF-8\"");
 		$xml =  utf8_encode ( $xml );
 
