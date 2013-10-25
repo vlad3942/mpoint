@@ -150,7 +150,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										
 									header("HTTP/1.1 403 Forbidden");
 		
-									$xml = '<status code="'. ($code+30) .'" />';
+									$xml = '<status code="'. ($code+30) .'">Authentication failed</status>';
 								}
 							}
 							// Authentication failed
@@ -171,8 +171,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						else
 						{
 							header("HTTP/1.1 400 Bad Request");
+							
+							$message = 'Invalid card number';
+							if ($aMsgCds[0] === 43) { $message = 'Card not found.';  }
+							if ($aMsgCds[0] === 44) { $message = 'Card is disabled.';  }
 														
-							$xml = '<status code="'. $aMsgCds[0] .'" />';
+							$xml = '<status code="'. $aMsgCds[0] .'" >'. $message.'</status>';
 						}
 					}
 				}
