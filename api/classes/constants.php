@@ -426,6 +426,7 @@ abstract class Constants
 	const iOPERATION_LOGGED_IN = 3;
 	
 	const iURL_TYPE_GET_TRANSACTION_STATUS = 3;
+	const iURL_TYPE_CALLBACK = 4;
 	
 	
 }

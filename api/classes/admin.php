@@ -227,20 +227,24 @@ class Admin extends General
 	}
 	
 	
-	public function saveClient ($clientid, $storecard, $autocapture, $name, $username, $password, $found)
+	public function saveClient ($clientid, $cc , $callback = "", $storecard, $autocapture, $name, $username, $password, $found)
 	{
 		//TODO check if client id is not null
 		if ($found === true)
 		{
 			$up_sql = "UPDATE Client".sSCHEMA_POSTFIX.".Client_Tbl
-						SET storecard = $storecard, autocapture = $autocapture, name = $name, username=$username, password=$password
+						SET storecard = ".$storecard .", autocapture = '". $this->getDBConn()->escStr($autocapture)."', 
+							name = '". $this->getDBConn()->escStr($name)."', username='". $this->getDBConn()->escStr($username)."',
+							password='". $this->getDBConn()->escStr($password)."', countryid = ".$cc .", callbackurl ='". $this->getDBConn()->escStr($callback)."'
 						WHERE clientid = ". intval($clientid)."";
 			$up_res = $this->getDBConn()->query($del_sql);
 		}
 		if ($found === false)
 		{
-			$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".Client_Tbl (clientid, storecard, autocapture, name, username, password)
-					   VALUES( $clientid, $storecard, $autocapture, $name, $username, $password)";
+			$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".Client_Tbl (clientid, storecard, autocapture, name, username, password,countryid, callbackurl )
+					   VALUES(". $clientid .", ".$storecard.",'". $this->getDBConn()->escStr($autocapture)."',
+					   			'". $this->getDBConn()->escStr($name)."' , '". $this->getDBConn()->escStr($username)."', 
+					   					'". $this->getDBConn()->escStr($password)."',". $cc.", '". $this->getDBConn()->escStr($callback)."')";
 			$in_res = $this->getDBConn()->query($in_sql);
 		}
 		return ($found===true) ? is_resource($up_res) : is_resource($in_res);
