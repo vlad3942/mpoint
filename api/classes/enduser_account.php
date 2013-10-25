@@ -466,8 +466,8 @@ class EndUserAccount extends Home
 	/**
 	 * Saves Billing Address for the newest card which has been created recently (within the last 5 minutes).	
 	 * The method will return the following status codes:
-	 * 	1. Fail
-	 * 	2. Success
+	 * 	1  - Fail
+	 * 	10 - Success
 	 *
 	 * @param 	integer $countryid 	ID of the Country
 	 * @param 	string $state		Address field - state
@@ -486,7 +486,10 @@ class EndUserAccount extends Home
 		}
 		$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Address_Tbl
 					(accountid, cardid, countryid, stateid, firstname, lastname, company, street, postalcode, city)
-				SELECT null , ".$cardid .", ". intval($countryid) .", id , '". $this->getDBConn()->escStr($fn) ."', '". $this->getDBConn()->escStr($ln) ."', '". $this->getDBConn()->escStr($cmp) ."', '". $this->getDBConn()->escStr($st) ."', '". $this->getDBConn()->escStr($pc) ."', '". $this->getDBConn()->escStr($ct) ."'
+				SELECT null , ".$cardid .", ". intval($countryid) .", id , '". $this->getDBConn()->escStr($fn) ."', '". 
+				$this->getDBConn()->escStr($ln) ."', '". $this->getDBConn()->escStr($cmp) ."', '". 
+				$this->getDBConn()->escStr($st) ."', '". $this->getDBConn()->escStr($pc) ."', '". 
+				$this->getDBConn()->escStr($ct) ."'
 				FROM System.State_Tbl
 				WHERE countryid = ". intval($countryid) ." AND Upper(code) = Upper('". $this->getDBConn()->escStr($state) ."')";
 		//echo $sql ."\n";
@@ -552,7 +555,16 @@ class EndUserAccount extends Home
 
 		return is_resource($this->getDBConn()->query($sql) );
 	}
-
+	
+	/**
+	 * Retrieves the ID of the card from EndUser.Card_Tbl
+	 * 
+	 * @param integer 	$iAccountID		Account ID
+	 * @param integer 	$cardid 		ID from System.Card_Tbl
+	 * @param string 	$mask			Masked credit card number
+	 * @param string 	$exp			Expiry date
+	 * @return integer
+	 */
 	public function getCardIdfromCardTbl($iAccountID, $cardid, $mask, $exp)
 	{ 
 		$sql = "SELECT id
