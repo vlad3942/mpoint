@@ -240,7 +240,7 @@ class Admin extends General
 		if ($found === false)
 		{
 			$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".Client_Tbl (clientid, storecard, autocapture, name, username, password)
-					   VALUES( $clientid, $storecard, $autocapture, $username, $password, $name)";
+					   VALUES( $clientid, $storecard, $autocapture, $name, $username, $password)";
 			$in_res = $this->getDBConn()->query($in_sql);
 		}
 		return ($found===true) ? is_resource($up_res) : is_resource($in_res);
