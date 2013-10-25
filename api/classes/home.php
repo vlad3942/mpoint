@@ -423,7 +423,7 @@ class Home extends General
 										WHERE accountid = EUA.id) )
 				ORDER BY CL.name ASC";
 			//echo $sql ."\n";
-		file_put_contents(sLOG_PATH ."/error.log", "\n". "SQL getStoredCards: ".var_export($sql, true), FILE_APPEND  | LOCK_EX );
+
 		$res = $this->getDBConn()->query($sql);
 		
 		$xml = '<stored-cards accountid="'. $id .'">';
