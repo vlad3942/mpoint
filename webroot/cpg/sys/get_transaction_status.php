@@ -15,10 +15,10 @@ require_once(sAPI_CLASS_PATH ."simpledom.php");
 
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
+
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 
 $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
-
 
 $obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
 
