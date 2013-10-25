@@ -324,6 +324,8 @@ class CountryConfig extends BasicConfig
      * @param   bool   $al          address lookup
      * @param 	string $minmob 		Min value a valid Mobile Number can have in the Country
 	 * @param 	string $maxmob 		Max value a valid Mobile Number can have in the Country
+     * 
+     * @return bool Boolean A boolean value indicates if the operation was successful or not
 	 */
 	public static function updateConfig(RDB &$oDB, $id, $name, $currency, $sym, $pf, $al, $minmob, $maxmob)
 	{
@@ -338,9 +340,8 @@ class CountryConfig extends BasicConfig
                 . ", addr_lookup = ". $addr_lookup
                 . ", minmob = '" . $oDB->escStr($minmob) ."', maxmob = '". $oDB->escStr($maxmob) ."'"
 				. " WHERE id = ".intval($id);
-		
-		return $oDB->query($sql);
-		
+        
+        return is_resource($oDB->query($sql) );
 	}
 }
 ?>
