@@ -460,7 +460,7 @@ class Home extends General
 		return $xml;
 	}
 	/**
-	 *
+	 * Searches for transaction history given a client ID plus any of the other parameters
 	 *
 	 * @param	integer $cid 	Unqiue Client ID
 	 * @param	integer $thxid	Unqiue ID of a Transaction 
