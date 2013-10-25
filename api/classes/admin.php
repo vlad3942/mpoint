@@ -173,11 +173,21 @@ class Admin extends General
 		}
 		if (is_resource($res) === false || is_resource($del_res) === true)
 		{
-			$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".URL_Tbl (clientid , urltypeid, url )
-						VALUES( $clientid, $typeid,$url)";
-			$in_res = $this->getDBConn()->query($in_sql);
+			if (intval($typeid) == 4)
+			{
+				$up_sql = "UPDATE Client".sSCHEMA_POSTFIX.".Client_Tbl
+						   SET callback = ".$url."
+							WHERE clientid = ".intval($clientid)."";
+				$up_res = $this->getDBConn()->query($in_sql);
+			}
+			if (intval($typeid) != 4 || (intval($typeid) == 4 && is_resource($up_res)))
+			{
+				$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".URL_Tbl (clientid , urltypeid, url )
+							VALUES( $clientid, $typeid,$url)";
+				$in_res = $this->getDBConn()->query($in_sql);
+			}
 		}
-		
+		return is_resource($in_res);
 	}
 	
 	public function saveMerchantAccount($clientid, $pspid, $name, $username, $password ,$storecard, $found)
@@ -246,6 +256,24 @@ class Admin extends General
 		return ($found===true) ? is_resource($up_res) : is_resource($in_res);
 	}
 	
+	
+	public function saveCardAccess ($clientid, $cardid, $pspid, $countyid)
+	{
+			//TODO check if client id is not null
+			$sql = "SELECT id
+					FROM Client".sSCHEMA_POSTFIX.".CardAccess_Tbl
+					WHERE clientid = ". intval($clientid)." , cardid = ". intval($cardid)." , pspid = ".intval($pspid) ." ";
+			$res = $this->getDBConn()->query($sql);
+					
+			if (is_resource($res) === false)
+			{
+				$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".CardAccess_Tbl (clientid, cardid, pspid, countryid)
+				  			VALUES( $clientid, $cardid, $pspid, $countryid)";
+				$in_res = $this->getDBConn()->query($in_sql);
+			}
+			
+			return (is_resource($res)===true) ? true : is_resource($in_res);	
+	}
 	
 	
 }
