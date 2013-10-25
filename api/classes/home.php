@@ -375,7 +375,6 @@ class Home extends General
 	 */
 	public function getStoredCards($id, $bAllCards=false, &$oUA=null)
 	{
-		file_put_contents(sLOG_PATH ."/error.log", "\n". "bAllCards: ".var_export($bAllCards, true), FILE_APPEND  | LOCK_EX );
 		/* ========== Calculate Logo Dimensions Start ========== */
 		if (is_null($oUA) === false)
 		{
