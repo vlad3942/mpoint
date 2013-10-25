@@ -988,7 +988,7 @@ class General
 		
 	}
 	/**
-	 * ´Returens the log´s for a given search
+	 * Returns the logs for a given search
 	 *
 	 * @param integer 	$oid
 	 * @param integer 	$mobile
@@ -1043,6 +1043,14 @@ class General
 		return $h;
 	}
 	
+	/**
+	 * Gets transacation status based on given seconds
+	 * 
+	 * @param HTTPConnInfo 	$oCI	connection
+	 * @param integer 		$sec 	number of seconds
+	 * @throws mPointException
+	 * @return string
+	 */
 	public function getTransactionStatus(HTTPConnInfo &$oCI, $sec)
 	{
 		$sql = "SELECT Txn.id, Txn.orderid , URL.url
@@ -1087,8 +1095,6 @@ class General
 			$code = $obj_HTTP->send($this->constHeader(), $xml);
 			$obj_HTTP->disconnect();
 			
-			
-				//$obj_DOM = simpledom_load_string(trim($obj_HTTP->getReplyBody() ) );
 				$obj_DOM = simpledom_load_string($b);
 				for ($i=0; $i<count($obj_DOM->transaction); $i++)
 				{
