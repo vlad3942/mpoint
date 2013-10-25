@@ -1011,7 +1011,7 @@ class General
 		if (empty($startdate) === false) { $sql .= " AND AU.created >= '". date("m/d/Y H:i:s", strtotime($startdate) ) ."' AND AU.created <= '". date("m/d/Y H:i:s", strtotime($enddate) ) ."'";}
 				
 		$res = $this->getDBConn()->query($sql);
-		$xml = '<auditLogs">';
+		$xml = '<auditLogs>';
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
 			$xml .= '<auditLog id="'. $RS["ID"] .'" operation-id="'. $RS["OPERATIONID"] .'">';
