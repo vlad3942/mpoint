@@ -21,6 +21,9 @@ require_once(sAPI_CLASS_PATH ."simpledom.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 
+// Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
+$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
+
 /*
 $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
@@ -60,10 +63,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
     if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_DOM->{'save-country-configuration'}->countries) > 0)
 	{	
 		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
-        $aMsgCds = array();
         $obj_Validator = new Validate();
-		
-		for ($i=0; $i<count($obj_DOM->{'save-country-configuration'}->countries); $i++)
+        $aMsgCds = array();
+		$xml = '';
+        
+		for ($i=0; $i<count($obj_DOM->{'save-country-configuration'}->countries->country); $i++)
         {
             // Set Global Defaults
 //			if (empty($obj_DOM->{'save-settings'}[$i]["account"]) === true || intval($obj_DOM->{'save-settings'}[$i]["account"]) < 1) { $obj_DOM->{'save-settings'}[$i]["account"] = -1; }
@@ -77,38 +81,45 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 //				// Client successfully authenticated
 //				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']) )
 //				{
-					$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-country-configuration'}->countries[$i]['country-id']);
+					$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-country-configuration'}->countries->country[$i]['id']);
 					if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $aMsgCds[] = -1; }
                     
-                    // TODO: Do more input check
+                    // TODO: Do more input check?
 //                    $obj_mPoint = new MyAccount($_OBJ_DB, $_OBJ_TXT, $obj_CountryConfig);
 //					if ($obj_Validator->valPassword( (string) $obj_DOM->{'save-settings'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'save-settings'}[$i]->password) + 20; }
                 
                     // Success: Input valid
 					if (count($aMsgCds) == 0)
 					{
-                        $id = (integer) $obj_DOM->{'save-country-configuration'}->countries[$i]['country-id'];
-                        $name = (string) $obj_DOM->{'save-country-configuration'}->countries[$i]->name;
-                        $currency = (string) $obj_DOM->{'save-country-configuration'}->countries[$i]->currency;
-                        $sym = (string) $obj_DOM->{'save-country-configuration'}->countries[$i]->symbol;
-                        $pf = (string) $obj_DOM->{'save-country-configuration'}->countries[$i]->{'price-format'};
-                        $minmob = (string) $obj_DOM->{'save-country-configuration'}->countries[$i]->{'min-mobile'};
-                        $maxmob = (string) $obj_DOM->{'save-country-configuration'}->countries[$i]->{'max-mobile'};
-                        if ( (string) $obj_DOM->{'save-country-configuration'}->countries[$i]['country-id'] == 'true') { $al = true; }
+                        $country = $obj_DOM->{'save-country-configuration'}->countries->country[$i];
+                        $id = (integer) $obj_DOM->{'save-country-configuration'}->countries->country[$i]['id'];
+                        $name = (string) $obj_DOM->{'save-country-configuration'}->countries->country[$i]->name;
+                        $currency = (string) $obj_DOM->{'save-country-configuration'}->countries->country[$i]->currency;
+                        $sym = (string) $obj_DOM->{'save-country-configuration'}->countries->countryies[$i]->symbol;
+                        $pf = (string) $obj_DOM->{'save-country-configuration'}->countries->country[$i]->{'price-format'};
+                        $minmob = (string) $obj_DOM->{'save-country-configuration'}->countries->country[$i]->{'min-mobile'};
+                        $maxmob = (string) $obj_DOM->{'save-country-configuration'}->countries->country[$i]->{'max-mobile'};
+                        if ( (string) $obj_DOM->{'save-country-configuration'}->countries->country[$i]['country-id'] == 'true') { $al = true; }
                         else { $al = false; }
                         
-                        // TODO: handle result
-                        $result = CountryConfig::updateConfig($_OBJ_DB, $id, $name, $currency, $sym, $pf, $al, $minmob, $maxmob);
+                        if (CountryConfig::updateConfig($_OBJ_DB, $id, $name, $currency, $sym, $pf, $al, $minmob, $maxmob) == true)
+                        {
+                            $xml .= '<status code="100" country-id="'. $obj_DOM->{'save-country-configuration'}->countries->country[$i]['id'] .'">Country successfully updated</status>';
+                        }
+                        else
+                        {
+                            header("HTTP/1.1 500 Internal Server Error");
+                            $xml .= '<status code="90" country-id="'. $obj_DOM->{'save-country-configuration'}->countries->country[$i]['id'] .'">Unable to update country</status>';
+                        }
                     }
                     // Error: Invalid Input
 					else
 					{
 						header("HTTP/1.1 400 Bad Request");
 					
-						$xml = '';
 						foreach ($aMsgCds as $code)
 						{
-							$xml .= '<status code="'. $code .'" />';
+							$xml .= '<status code="'. $code .'" country-id="'. $obj_DOM->{'save-country-configuration'}->countries->country[$i]['id'] .'" />';
 						}
 					}
 //                }
