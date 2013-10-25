@@ -210,25 +210,37 @@ class Admin extends General
 	}
 	
 	
-	public function saveClient ($clientid, $cc , $storecard, $autocapture, $name, $username, $password, $found)
+	public function saveClient (&$clientid, $cc , $storecard, $autocapture, $name, $username, $password)
 	{
-		//TODO check if client id is not null
-		if ($found === true)
+		if ($clientid > 0)
 		{
 			$up_sql = "UPDATE Client".sSCHEMA_POSTFIX.".Client_Tbl
 						SET store_card = ".intval($storecard) .", auto_capture = '". intval($autocapture)."', name = '". $this->getDBConn()->escStr($name)."', username='". $this->getDBConn()->escStr($username)."', password='". $this->getDBConn()->escStr($password)."', countryid = ".$cc ."
 						WHERE clientid = ". intval($clientid)."";
 			$up_res = $this->getDBConn()->query($del_sql);
 		}
-		if ($found === false)
+		else
 		{
 			$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".Client_Tbl
-							(clientid, store_card, auto_capture, name, username, password, countryid)
+							(store_card, auto_capture, name, username, password, countryid)
 					   VALUES
-							(". intval($clientid) .", ". intval($storecard).",'". intval($autocapture)."', '". $this->getDBConn()->escStr($name)."' , '". $this->getDBConn()->escStr($username)."', '". $this->getDBConn()->escStr($password)."',". $cc.")";
+							(". intval($storecard).",'". intval($autocapture)."', '". $this->getDBConn()->escStr($name)."' , '". $this->getDBConn()->escStr($username)."', '". $this->getDBConn()->escStr($password)."',". $cc.")";
 			$in_res = $this->getDBConn()->query($in_sql);
+			if (is_resource($in_res))
+			{
+				$sql = "SELECT MAX(id)
+						FROM Client".sSCHEMA_POSTFIX.".Client_Tbl";
+				//		echo $sql ."\n";
+				$RS = $this->getDBConn()->getName($sql);
+				
+				if (is_array($RS) === true)
+				{
+					$uid = $RS["ID"];	
+					$newclient = 1;				
+				}
+			}
 		}
-		return ($found===true) ? is_resource($up_res) : is_resource($in_res);
+		return $newclient == 1 ? true : is_resource($up_res);
 	}
 	
 	
