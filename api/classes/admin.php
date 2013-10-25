@@ -151,7 +151,7 @@ class Admin extends General
 		if (is_resource($res) === false || is_resource($del_res) === true)
 		{
 			$in_sql =  "INSERT INTO Client".sSCHEMA_POSTFIX.".Account_Tbl (id,clientid, name, markup)
-			VALUES( $accountid, $clientid, $name, $markup)";
+			VALUES( ". intval($accountid).", ". intval($clientid).", $name, $markup)";
 			$in_res = $this->getDBConn()->query($in_sql);
 		}
 		return is_resource($in_res);
@@ -183,14 +183,14 @@ class Admin extends General
 			if (intval($typeid) != 4 || (intval($typeid) == 4 && is_resource($up_res)))
 			{
 				$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".URL_Tbl (clientid , urltypeid, url )
-							VALUES( $clientid, $typeid,$url)";
+							VALUES( ". intval($clientid).", ". intval($typeid).",". $this->getDBConn()->escStr($url).")";
 				$in_res = $this->getDBConn()->query($in_sql);
 			}
 		}
 		return is_resource($in_res);
 	}
 	
-	public function saveMerchantAccount($clientid, $pspid, $name, $username, $password ,$storecard, $found)
+	public function saveMerchantAccount($clientid, $pspid, $name, $username, $password , $found)
 	{
 		//TODO check if client id is not null
 		$sql = "SELECT id
@@ -206,8 +206,9 @@ class Admin extends General
 		}
 		if (is_resource($res) === false || is_resource($del_res) === true)
 		{
-			$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl (clientid, pspid, name, username, passwd ,stored_card)
-						VALUES( $clientid, $pspid, $name, $username, $password, $storecard)";
+			$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl (clientid, pspid, name, username, passwd )
+						VALUES( ". intval($clientid).", ". intval($pspid).", ". $this->getDBConn()->escStr($name)."
+									, ". $this->getDBConn()->escStr($username).", ". $this->getDBConn()->escStr($password).")";
 			$in_res = $this->getDBConn()->query($in_sql);
 		}
 		return is_resource($in_res);
@@ -230,7 +231,7 @@ class Admin extends General
 		if (is_resource($res) === false || is_resource($del_res) === true)
 		{
 			$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".KeyWord_Tbl (clientid , name)
-						VALUES( $clientid, $name)";
+						VALUES( ". intval($clientid) .", ". $this->getDBConn()->escStr($name).")";
 			$in_res = $this->getDBConn()->query($in_sql);
 		}
 		return is_resource($in_res);
@@ -250,7 +251,7 @@ class Admin extends General
 		if ($found === false)
 		{
 			$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".Client_Tbl (clientid, storecard, autocapture, name, username, password,countryid )
-					   VALUES(". $clientid .", ".$storecard.",'". $this->getDBConn()->escStr($autocapture)."', '". $this->getDBConn()->escStr($name)."' , '". $this->getDBConn()->escStr($username)."', '". $this->getDBConn()->escStr($password)."',". $cc.")";
+					   VALUES(". intval($clientid) .", ".$storecard.",'". $this->getDBConn()->escStr($autocapture)."', '". $this->getDBConn()->escStr($name)."' , '". $this->getDBConn()->escStr($username)."', '". $this->getDBConn()->escStr($password)."',". $cc.")";
 			$in_res = $this->getDBConn()->query($in_sql);
 		}
 		return ($found===true) ? is_resource($up_res) : is_resource($in_res);
@@ -268,7 +269,7 @@ class Admin extends General
 			if (is_resource($res) === false)
 			{
 				$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".CardAccess_Tbl (clientid, cardid, pspid, countryid)
-				  			VALUES( $clientid, $cardid, $pspid, $countryid)";
+				  			VALUES( ". intval($clientid).", ". intval($cardid).", ". intval($pspid).", ". intval($countryid).")";
 				$in_res = $this->getDBConn()->query($in_sql);
 			}
 			
