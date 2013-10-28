@@ -132,13 +132,13 @@ class Admin extends General
 	
 	public function saveAccount(&$accountid, $clientid, $name, $markup)
 	{	
+        $newaccount = FALSE;
 		if ($accountid > 0)
 		{
 			$up_sql = "UPDATE Client".sSCHEMA_POSTFIX.".Account_Tbl
 						SET name = '". $this->getDBConn()->escStr($name)."', markup='". $this->getDBConn()->escStr($markup)."'
 						WHERE id = ". intval($accountid)." AND clientid = ".intval($clientid)."";
-			$up_res = $this->getDBConn()->query($del_sql);
-			echo $up_sql;
+			$up_res = $this->getDBConn()->query($up_sql);
 		}
 		else
 		{
@@ -158,11 +158,11 @@ class Admin extends General
 				if (is_array($RS) === true)
 				{
 					$accountid = $RS["ID"];
-					$newaccount = 1;
+					$newaccount = TRUE;
 				}
 			}
 		}
-		return $newaccount == 1 ? true : is_resource($up_res);
+		return $newaccount == TRUE ? TRUE : is_resource($up_res);
 	}
 	
 	public function deleteAccount($clientid)
@@ -173,7 +173,7 @@ class Admin extends General
 		return is_resource($del_res);
 	}
 	
-	public function saveURL($clientid, $typeid, $url, $found)
+	public function saveURL($clientid, $typeid, $url)
 	{	
 		$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".URL_Tbl 
 						(clientid , urltypeid, url )
@@ -241,12 +241,13 @@ class Admin extends General
 	
 	public function saveClient (&$clientid, $cc , $storecard, $autocapture, $name, $username, $password)
 	{
+        $newclient = FALSE;
 		if ($clientid > 0)
 		{
 			$up_sql = "UPDATE Client".sSCHEMA_POSTFIX.".Client_Tbl
 						SET store_card = ".intval($storecard) .", auto_capture = '". intval($autocapture)."', name = '". $this->getDBConn()->escStr($name)."', username='". $this->getDBConn()->escStr($username)."', passwd='". $this->getDBConn()->escStr($password)."', countryid = ".$cc ."
-						WHERE clientid = ". intval($clientid)."";
-			$up_res = $this->getDBConn()->query($del_sql);
+						WHERE id = ". intval($clientid)."";
+			$up_res = $this->getDBConn()->query($up_sql);
 		}
 		else
 		{
@@ -263,14 +264,14 @@ class Admin extends General
 //echo $sql ."\n";
 				$RS = $this->getDBConn()->getName($sql);
 								
-				if (is_array($RS) === true)
+				if (is_array($RS) === TRUE)
 				{
 					$clientid = $RS["ID"];						
-					$newclient = 1;				
+					$newclient = TRUE;				
 				}
 			}
 		}
-		return $newclient == 1 ? true : is_resource($up_res);
+		return $newclient == TRUE ? TRUE : is_resource($up_res);
 	}
 	
 	
