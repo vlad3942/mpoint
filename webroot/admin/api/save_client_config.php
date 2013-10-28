@@ -97,16 +97,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			}
 		}
 		if($valErros == 0)
-		{	
-			//echo"2";
+		{			
 			for ($i=0; $i<count($obj_DOM->{'save-client-configuration'}); $i++)
 			{
 				for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}); $j++)
 				{
+					$_OBJ_DB->query("START TRANSACTION");
 					$clientid = $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["id"];	
 					try
 					{
-						//echo"3";
 						$iErrors = $obj_mPoint->saveClient($clientid,
 															$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["country-id"],
 															$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["store-card"],
@@ -120,24 +119,21 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						{
 							$_OBJ_DB->query("ROLLBACK");
 							header("HTTP/1.1 500 internal server error");
+							$xml = "Error during Save Client";
 							break;
 						}
 						else
-						{						
-							$_OBJ_DB->query("COMMIT");
+						{
 							$iErrors =	$obj_mPoint->deleteAccount($clientid);
 							if ($iErrors == false )
-							{								
+							{							
 								$_OBJ_DB->query("ROLLBACK");
 								header("HTTP/1.1 500 internal server error");
 							}
 							else
 							{
-								$_OBJ_DB->query("COMMIT");
-															
 								for($a=0; $a<count($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->accounts->account); $a++)
 								{
-									//$accountid = $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->accounts->account[$a]["id"];
 									$iErrors = $obj_mPoint->saveAccount($accountid,
 																	 $clientid,
 																	 $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->accounts->account[$a]->name,
@@ -146,11 +142,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									{
 										$_OBJ_DB->query("ROLLBACK");
 										header("HTTP/1.1 500 internal server error");
+										$xml = "Error during Save Account";
 									}
 									else
 									{
-										$_OBJ_DB->query("COMMIT");
-									
 										$iErrors = $obj_mPoint->deleteMerchantSubAccount($accountid);
 									
 										if ($iErrors == false )
@@ -160,7 +155,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										}
 										else
 										{
-											$_OBJ_DB->query("COMMIT");
 											for($k=0; $k<count($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->accounts->account[$a]->{'payment-service-providers'}->{'payment-service-provider'}); $k++)
 											{ 
 												$iErrors = $obj_mPoint->saveMerchantSubAccount($accountid,
@@ -168,40 +162,40 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 														$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->accounts->account[$a]->{'payment-service-providers'}->{'payment-service-provider'}[$k]->name);
 										
 												if ($iErrors == false )
-												{
+												{								
 													$_OBJ_DB->query("ROLLBACK");
 													header("HTTP/1.1 500 internal server error");
+													$xml = "Error during save payment service providers for account";
 												}
-												else
-												{
-													$_OBJ_DB->query("COMMIT");
-												}
+												else{}
 											}
 										}
 									}
 								}
 								$iErrors = $obj_mPoint->deleteMerchantAccount($clientid);
 								if ($iErrors == false )
-								{
+								{	
 									$_OBJ_DB->query("ROLLBACK");
 									header("HTTP/1.1 500 internal server error");
 								}
 								else
 								{
-									$_OBJ_DB->query("COMMIT");
-									$iErrors = $obj_mPoint->saveMerchantAccount($clientid,
-																			 $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-service-providers'}["id"],
-																			 $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-service-providers'}->name,
-																			 $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-service-providers'}->username,
-																			 $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-service-providers'}->password);
+									for($p=0; $p<count($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}); $p++)
+									{
+										$iErrors = $obj_mPoint->saveMerchantAccount($clientid,
+																			 $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$p]["id"],
+																			 $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$p]->name,
+																			 $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$p]->username,
+																			 $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$p]->password);
+									}
 									if ($iErrors == false )
 									{
 										$_OBJ_DB->query("ROLLBACK");
 										header("HTTP/1.1 500 internal server error");
+										$xml = "Error during save payment service providers";
 									}
 									else
-									{
-										$_OBJ_DB->query("COMMIT");
+									{	
 										$iErrors = $obj_mPoint->deleteCardAccess($clientid);
 									
 										if ($iErrors == false )
@@ -211,10 +205,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										}
 										else
 										{
-											$_OBJ_DB->query("COMMIT");
 											for($c=0; $c<count($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->cards->card); $c++)
 											{
-												$iErrors = $obj_mPoint->saveCardAccess ($clientid,
+												$iErrors = $obj_mPoint->saveCardAccess($clientid,
 																					$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->cards->card[$c]["id"],
 																					$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->cards->card[$c]["psp-id"],
 																					$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->cards->card[$c]["country-id"]);
@@ -223,11 +216,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											{
 												$_OBJ_DB->query("ROLLBACK");
 												header("HTTP/1.1 500 internal server error");
+												$xml = "Error during save card access";
 											}
 											else
 											{
-												$_OBJ_DB->query("COMMIT");
-											
 												$iErrors = $obj_mPoint->deleteKeyWord($clientid);
 											
 												if ($iErrors == false )
@@ -237,18 +229,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												}
 												else
 												{
-													$_OBJ_DB->query("COMMIT");
 													$iErrors = $obj_mPoint->saveKeyWord($clientid, $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->keyword);
 												
 													if ($iErrors == false )
 													{
 														$_OBJ_DB->query("ROLLBACK");
 														header("HTTP/1.1 500 internal server error");
+														$xml = "Error during save keywords";
 													}
 													else
 													{
-														$_OBJ_DB->query("COMMIT");
-													
 														$iErrors = $obj_mPoint->deleteURL($clientid);
 													
 														if ($iErrors == false )
@@ -258,23 +248,23 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 														}
 														else
 														{
-															$_OBJ_DB->query("COMMIT");
 															for($u = 0; $u<count($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->urls->url); $u++)
 															{
 														
 																$iErrors = $obj_mPoint->saveURL($clientid,
 																							$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->urls->url[$u]["type-id"],
 																							$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->urls->url[$u]);
-																if ($iErrors == false )
-																{
-																	$_OBJ_DB->query("ROLLBACK");
-																	header("HTTP/1.1 500 internal server error");
-																}
-																else
-																{
-																	$_OBJ_DB->query("COMMIT");
-																}
 															}
+															if ($iErrors == false )
+															{
+																$_OBJ_DB->query("ROLLBACK");
+																header("HTTP/1.1 500 internal server error");
+																$xml = "Error during save url";
+															}
+															else
+															{
+																$_OBJ_DB->query("COMMIT");
+															}									
 														}	
 													}
 												}

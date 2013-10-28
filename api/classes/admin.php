@@ -116,7 +116,8 @@ class Admin extends General
 		$in_sql =  "INSERT INTO Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl 
 						(accountid, pspid, name)
 					VALUES
-						( ". intval($accountid).", ". intval($pspid).", ". $this->getDBConn()->escStr($name).")";
+						( ". intval($accountid).", ". intval($pspid).", '". $this->getDBConn()->escStr($name)."')";
+//echo $in_sql ."\n";	
 		$in_res = $this->getDBConn()->query($in_sql);
 		return is_resource($in_res);
 	}
@@ -137,6 +138,7 @@ class Admin extends General
 						SET name = '". $this->getDBConn()->escStr($name)."', markup='". $this->getDBConn()->escStr($markup)."'
 						WHERE id = ". intval($accountid)." AND clientid = ".intval($clientid)."";
 			$up_res = $this->getDBConn()->query($del_sql);
+			echo $up_sql;
 		}
 		else
 		{
@@ -144,13 +146,13 @@ class Admin extends General
 							(clientid, name, markup)
 						VALUES
 							(". intval($clientid).", '". $this->getDBConn()->escStr($name)."', '". $this->getDBConn()->escStr($markup) ."')";
-			echo $in_sql;
+//echo $in_sql ."\n";	
 			$in_res = $this->getDBConn()->query($in_sql);
 			if (is_resource($in_res))
 			{
-				$sql = "SELECT MAX(id)
+				$sql = "SELECT MAX(id) AS ID
 						FROM Client".sSCHEMA_POSTFIX.".Account_Tbl";
-				//		echo $sql ."\n";
+//echo $sql ."\n";	
 				$RS = $this->getDBConn()->getName($sql);
 		
 				if (is_array($RS) === true)
@@ -160,7 +162,7 @@ class Admin extends General
 				}
 			}
 		}
-		return $newclient == 1 ? true : is_resource($up_res);
+		return $newaccount == 1 ? true : is_resource($up_res);
 	}
 	
 	public function deleteAccount($clientid)
@@ -176,13 +178,14 @@ class Admin extends General
 		$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".URL_Tbl 
 						(clientid , urltypeid, url )
 					VALUES
-						( ". intval($clientid).", ". intval($typeid).",". $this->getDBConn()->escStr($url).")";
+						( ". intval($clientid).", ". intval($typeid).",'". $this->getDBConn()->escStr($url)."')";
 		$in_res = $this->getDBConn()->query($in_sql);
+//echo $in_sql ."\n";
 		if (intval($typeid) == 4 && is_resource($in_res) === true)
 		{
 			$up_sql = "UPDATE Client".sSCHEMA_POSTFIX.".Client_Tbl
-			SET callback = ".$url."
-			WHERE clientid = ".intval($clientid)."";
+						SET callback = ".$url."
+						WHERE clientid = ".intval($clientid)."";
 			$up_res = $this->getDBConn()->query($in_sql);
 		}	
 		return intval($typeid) == 4 ? is_resource($up_res) : is_resource($in_res);
@@ -201,8 +204,9 @@ class Admin extends General
 		$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl 
 						(clientid, pspid, name, username, passwd )
 					VALUES
-						( ". intval($clientid).", ". intval($pspid).", ". $this->getDBConn()->escStr($name)."
-						, ". $this->getDBConn()->escStr($username).", ". $this->getDBConn()->escStr($password).")";
+						( ". intval($clientid).", ". intval($pspid).", '". $this->getDBConn()->escStr($name)."'
+						, '". $this->getDBConn()->escStr($username)."', '". $this->getDBConn()->escStr($password)."')";
+//echo $in_sql ."\n";	
 		$in_res = $this->getDBConn()->query($in_sql);
 		return is_resource($in_res);
 	}
@@ -220,7 +224,8 @@ class Admin extends General
 		$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".KeyWord_Tbl 
 						(clientid , name)
 					VALUES
-						( ". intval($clientid) .", ". $this->getDBConn()->escStr($name).")";
+						( ". intval($clientid) .", '". $this->getDBConn()->escStr($name)."')";
+//echo $in_sql ."\n";
 		$in_res = $this->getDBConn()->query($in_sql);
 		return is_resource($in_res);
 	}
@@ -249,13 +254,13 @@ class Admin extends General
 							(store_card, auto_capture, name, username, passwd, countryid, flowid)
 					   VALUES
 							(". intval($storecard).",'". General::bool2xml($autocapture)."', '". $this->getDBConn()->escStr($name)."' , '". $this->getDBConn()->escStr($username)."', '". $this->getDBConn()->escStr($password)."',". intval($cc).", ".intval(1).")";
-			//echo $in_sql;			
+//echo $in_sql ."\n";		
 			$in_res = $this->getDBConn()->query($in_sql);
 			if (is_resource($in_res))
 			{
 				$sql = "SELECT MAX(id) AS ID
 						FROM Client".sSCHEMA_POSTFIX.".Client_Tbl";
-//		echo $sql ."\n";
+//echo $sql ."\n";
 				$RS = $this->getDBConn()->getName($sql);
 								
 				if (is_array($RS) === true)
@@ -269,12 +274,13 @@ class Admin extends General
 	}
 	
 	
-	public function saveCardAccess ($clientid, $cardid, $pspid, $countyid)
+	public function saveCardAccess ($clientid, $cardid, $pspid, $countryid)
 	{
 			$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".CardAccess_Tbl 
 							(clientid, cardid, pspid, countryid)
 			 		   VALUES
-							( ". intval($clientid).", ". intval($cardid).", ". intval($pspid).", ". intval($countryid).")";
+							(". intval($clientid).", ". intval($cardid).", ". intval($pspid).", ". intval($countryid).")";
+//echo $in_sql ."\n";	
 			$in_res = $this->getDBConn()->query($in_sql);
 			return is_resource($in_res);	
 	}
