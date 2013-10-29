@@ -257,7 +257,7 @@ class EndUserAccount extends Home
 //pc					AND ( (mask = '". $this->getDBConn()->escStr($mask) ."' AND expiry = '". $this->getDBConn()->escStr($exp) ."') OR (mask IS NULL AND expiry IS NULL) )";
 //		echo $sql ."\n";
 //pc		$RS = $this->getDBConn()->getName($sql);
-		$saveCardiId = $this->getCardIdfromCardTbl($iAccountID, $cardid, $mask, $exp);
+		$saveCardiId = $this->getCardFromCardDetails($iAccountID, $cardid, $mask, $exp);
 
 		// Card not previously saved, add card info to database
 //pc		if (is_array($RS) === false)
@@ -565,16 +565,16 @@ class EndUserAccount extends Home
 	 * @param string 	$exp			Expiry date
 	 * @return integer
 	 */
-	public function getCardIdfromCardTbl($iAccountID, $cardid, $mask, $exp)
+	public function getCardFromCardDetails($id, $cardid, $mask, $exp)
 	{ 
 		$sql = "SELECT id
-		FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
-		WHERE accountid = ". $iAccountID ." AND clientid = ". $this->_obj_ClientConfig->getID() ." AND cardid = ". intval($cardid) ."
-		AND ( (mask = '". $this->getDBConn()->escStr($mask) ."' AND expiry = '". $this->getDBConn()->escStr($exp) ."') OR (mask IS NULL AND expiry IS NULL) )";
-		//		echo $sql ."\n";
+				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
+				WHERE accountid = ". $id ." AND clientid = ". $this->_obj_ClientConfig->getID() ." AND cardid = ". intval($cardid) ."
+					AND ( (mask = '". $this->getDBConn()->escStr($mask) ."' AND expiry = '". $this->getDBConn()->escStr($exp) ."') OR (mask IS NULL AND expiry IS NULL) )";
+//		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 		
-		return $RS["ID"];
+		return is_array($RS) === true ? $RS["ID"] : -1;
 	}
 	
 	/**
