@@ -29,7 +29,7 @@ require_once(sCLASS_PATH ."/validate.php");
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 
-/*
+
 $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
  
@@ -58,7 +58,7 @@ $HTTP_RAW_POST_DATA .=      '<password>IBE</password>';
 $HTTP_RAW_POST_DATA .=     '</payment-service-provider>';
 $HTTP_RAW_POST_DATA .=    '</payment-service-providers>';
 $HTTP_RAW_POST_DATA .=    '<accounts>';
-$HTTP_RAW_POST_DATA .=     '<account>';
+$HTTP_RAW_POST_DATA .=     '<account id = "1">';
 $HTTP_RAW_POST_DATA .=      '<name>Web</name>';
 $HTTP_RAW_POST_DATA .=      '<markup>App</markup>';
 $HTTP_RAW_POST_DATA .=      '<payment-service-providers>';
@@ -69,7 +69,7 @@ $HTTP_RAW_POST_DATA .=      '</payment-service-providers>';
 $HTTP_RAW_POST_DATA .=     '</account>';
 $HTTP_RAW_POST_DATA .=    '</accounts>';
 $HTTP_RAW_POST_DATA .=   '</client-config>';
-
+/*
 $HTTP_RAW_POST_DATA .=   '<client-config id="10026" store-card="3" auto-capture="true" country-id="100">';
 $HTTP_RAW_POST_DATA .=    '<name>Emirates - IBE</name>';
 $HTTP_RAW_POST_DATA .=    '<username>user</username>';
@@ -96,7 +96,7 @@ $HTTP_RAW_POST_DATA .=      '<password>IBE2</password>';
 $HTTP_RAW_POST_DATA .=     '</payment-service-provider>';
 $HTTP_RAW_POST_DATA .=    '</payment-service-providers>';
 $HTTP_RAW_POST_DATA .=    '<accounts>';
-$HTTP_RAW_POST_DATA .=     '<account>';
+$HTTP_RAW_POST_DATA .=     '<account id="12">';
 $HTTP_RAW_POST_DATA .=      '<name>Web</name>';
 $HTTP_RAW_POST_DATA .=      '<markup>App</markup>';
 $HTTP_RAW_POST_DATA .=      '<payment-service-providers>';
@@ -105,7 +105,7 @@ $HTTP_RAW_POST_DATA .=        '<name>IBE</name>';
 $HTTP_RAW_POST_DATA .=       '</payment-service-provider>';
 $HTTP_RAW_POST_DATA .=      '</payment-service-providers>';
 $HTTP_RAW_POST_DATA .=     '</account>';
-$HTTP_RAW_POST_DATA .=     '<account>';
+$HTTP_RAW_POST_DATA .=     '<account id="1">';
 $HTTP_RAW_POST_DATA .=      '<name>Web2</name>';
 $HTTP_RAW_POST_DATA .=      '<markup>App</markup>';
 $HTTP_RAW_POST_DATA .=      '<payment-service-providers>';
@@ -117,13 +117,12 @@ $HTTP_RAW_POST_DATA .=        '<name>IBE3</name>';
 $HTTP_RAW_POST_DATA .=       '</payment-service-provider>';
 $HTTP_RAW_POST_DATA .=      '</payment-service-providers>';
 $HTTP_RAW_POST_DATA .=     '</account>';
-
 $HTTP_RAW_POST_DATA .=    '</accounts>';
 $HTTP_RAW_POST_DATA .=   '</client-config>';
-
+*/
 $HTTP_RAW_POST_DATA .=  '</save-client-configuration>';
 $HTTP_RAW_POST_DATA .= '</root>';
-*/
+
 
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
@@ -140,11 +139,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		{
 			for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}); $j++)
 			{										
-				if($obj_val->valBasic($_OBJ_DB, $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["id"], -1) == 2 ){ $valErros += 2;  }
-//				for($a=0; $a<count($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}->accounts->account); $a++)
-//				{
-//					if($obj_val->valBasic($_OBJ_DB, $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["id"], $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}->accounts->account[$a]) == 12 ){$valErros += 12; }
-//				}
+				if ($obj_val->valBasic($_OBJ_DB, $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["id"], -1) == 2 ){ $valErros += 2;  }
+				for($a=0; $a<count($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}->accounts->account); $a++)
+				{
+					if ($obj_val->valBasic($_OBJ_DB, $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["id"], $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}->accounts->account[$a]["id"]) == 12 ){$valErros += 12; }
+				}
 			}
 		}
 		if($valErros == 0)
@@ -154,7 +153,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}); $j++)
 				{
 					$_OBJ_DB->query("START TRANSACTION");
-					$clientid = $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["id"];	
+					if ($obj_val->valBasic($_OBJ_DB, $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["id"], -1) == 100 )
+					{
+						$clientid = $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["id"];	
+					}			
 					try
 					{
 						$iErrors = $obj_mPoint->saveClient($clientid,
@@ -185,6 +187,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							{
 								for($a=0; $a<count($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->accounts->account); $a++)
 								{
+									if ($obj_val->valBasic($_OBJ_DB, $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["id"], $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}->accounts->account[$a]["id"]) == 100 ){
+										$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}->accounts->account[$a]["id"];
+									}	
 									$iErrors = $obj_mPoint->saveAccount($accountid,
 																	 $clientid,
 																	 $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->accounts->account[$a]->name,

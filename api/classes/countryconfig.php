@@ -338,7 +338,7 @@ class CountryConfig extends BasicConfig
                 . ", symbol = '". $oDB->escStr($sym) ."'"
                 . ", priceformat = '". $oDB->escStr($pf) ."'"
                 . ", addr_lookup = ". $addr_lookup
-                . ", minmob = '" . $oDB->escStr($minmob) ."', maxmob = '". $oDB->escStr($maxmob) ."'"
+                . ", minmob = '" . $oDB->escStr($minmob)."', maxmob = '". $oDB->escStr($maxmob) ."'"
 				. " WHERE id = ".intval($id);
         
         return is_resource($oDB->query($sql) );
