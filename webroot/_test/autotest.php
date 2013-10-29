@@ -13,15 +13,15 @@ require_once(sAPI_CLASS_PATH ."/http_client.php");
  * Connection info for sending error reports to a remote host
  */
 $aHTTP_CONN_INFO["mesb"]["protocol"] = "http";
-//$aHTTP_CONN_INFO["mesb"]["host"] = "mpoint.test.cellpointmobile.com";
-$aHTTP_CONN_INFO["mesb"]["host"] = $_SERVER['HTTP_HOST'];
-$aHTTP_CONN_INFO["mesb"]["port"] = 80;
+$aHTTP_CONN_INFO["mesb"]["host"] = "10.150.242.42";
+//$aHTTP_CONN_INFO["mesb"]["host"] = $_SERVER['HTTP_HOST'];
+//$aHTTP_CONN_INFO["mesb"]["port"] = 80;
+$aHTTP_CONN_INFO["mesb"]["port"] = 9000;
 $aHTTP_CONN_INFO["mesb"]["timeout"] = 120;
-//$aHTTP_CONN_INFO["mesb"]["path"] = "/mticket/startup";
 $aHTTP_CONN_INFO["mesb"]["method"] = "POST";
 $aHTTP_CONN_INFO["mesb"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["mesb"]["username"] = "CPMDemo";
-$aHTTP_CONN_INFO["mesb"]["password"] = "DEMOisNO_2";
+$aHTTP_CONN_INFO["mesb"]["username"] = "IBE";
+$aHTTP_CONN_INFO["mesb"]["password"] = "kjsg5Ahf_1";
 
 //$h .= "user-agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:20.0) Gecko/20100101 Firefox/20.0" .HTTPClient::CRLF;
 //$h .= "accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" .HTTPClient::CRLF;
@@ -125,7 +125,13 @@ class AutoTest
 		$b .= '</initialize-payment>';
 		$b .= '</root>';
 		
-		$this->_aConnInfo["path"]= "/mApp/api/initialize.php";
+		// mPoint
+		if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
+		{ 
+			$this->_aConnInfo["path"] = "/mApp/api/initialize.php";
+		}
+		// Mobile Enterprise Service Bus
+		else { $this->_aConnInfo["path"] = "/mpoint/initialize-payment"; }
 		
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
 		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
@@ -175,7 +181,13 @@ class AutoTest
 			$b .= '</pay>';
 			$b .= '</root>';
 			
-			$this->_aConnInfo["path"]= "/mApp/api/pay.php";
+			// mPoint
+			if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
+			{
+				$this->_aConnInfo["path"] = "/mApp/api/pay.php";
+			}
+			// Mobile Enterprise Service Bus
+			else { $this->_aConnInfo["path"] = "/mpoint/pay"; }
 			
 			$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
 			$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
@@ -218,7 +230,13 @@ class AutoTest
 			$b .= '</authorize-payment>';
 			$b .= '</root>';
 				
-			$this->_aConnInfo["path"]= "/mApp/api/authorize.php";
+			// mPoint
+			if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
+			{
+				$this->_aConnInfo["path"] = "/mApp/api/authorize.php";
+			}
+			// Mobile Enterprise Service Bus
+			else { $this->_aConnInfo["path"] = "/mpoint/authorize-payment"; }
 				
 			$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
 			$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
@@ -296,7 +314,13 @@ class AutoTest
 		$b .= '</root>';
 		
 		$this->_sDebug = "";
-		$this->_aConnInfo["path"]= "/mApp/api/save_card.php";
+		// mPoint
+		if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
+		{
+			$this->_aConnInfo["path"] = "/mApp/api/save_card.php";
+		}
+		// Mobile Enterprise Service Bus
+		else { $this->_aConnInfo["path"] = "/mpoint/save-card"; }
 		
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
 		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
@@ -339,12 +363,19 @@ class AutoTest
 		$b .= '</root>';
 		
 		$this->_sDebug = "";
-		$this->_aConnInfo["path"]= "/mApp/api/save_card.php";
+		// mPoint
+		if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
+		{
+			$this->_aConnInfo["path"] = "/mApp/api/save_card.php";
+		}
+		// Mobile Enterprise Service Bus
+		else { $this->_aConnInfo["path"] = "/mpoint/save-card"; }
 		
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
 		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
 		$this->_obj_Client->connect();
 		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
+		
 		$this->_obj_Client->disconnect();
 		if ($code == 200)
 		{
@@ -400,19 +431,20 @@ class AutoTest
 	{
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
-		$b .= '<login client-id="10017" >';
+		$b .= '<login client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
 		$b .= '<password>oisJona1</password>';
-		$b .= '<client-info language="us" version="1.00" platform="iOS" app-id="5">';
-		$b .= '<customer-ref>ABC-123</customer-ref>';
-		$b .= '<mobile country-id="100">28880019</mobile>';
-		$b .= '<email>jona@oismailc.om</email>';
-		$b .= '<device-id>85ce3843c0a068fb5cb1e76156fdd719</device-id>';
-		$b .= '</client-info>'	;
+		$b .= $this->_constClientInfo();
 		$b .= '</login>';
 		$b .= '</root>';
 	
 		$this->_sDebug = "";
-		$this->_aConnInfo["path"]= "/mApp/api/login.php";
+		// mPoint
+		if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
+		{
+			$this->_aConnInfo["path"] = "/mApp/api/login.php";
+		}
+		// Mobile Enterprise Service Bus
+		else { $this->_aConnInfo["path"] = "/mpoint/login"; }
 	
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
 		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
@@ -422,11 +454,15 @@ class AutoTest
 		if ($code == 200)
 		{
 			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
-			if (empty($obj_XML->{'stored-cards'}->card->address)===false)
-				return self::sSTATUS_SUCCESS;	
-			else 
+			if (empty($obj_XML->{'stored-cards'}->card->address) === false)
+			{
+				return self::sSTATUS_SUCCESS;
+			}	
+			else
+			{ 
 				$this->_sDebug = "No address returned";
 				return self::sSTATUS_FAILED;
+			}
 		}
 		elseif ($code == 401 || $code == 403)
 		{
@@ -452,20 +488,22 @@ class AutoTest
 	
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
-		$b .= '<login client-id="10017" >';
+		$b .= '<login client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
 		$b .= '<password>oisJona1</password>';
-		$b  .= '<client-info language="us" version="1.00" platform="iOS" app-id="5">';
-		$b  .= '<customer-ref>ABC-123</customer-ref>';
-		$b  .= '<mobile country-id="100">28880019</mobile>';
-		$b  .= '<email>jona@oismailc.om</email>';
-		$b  .= '<device-id>85ce3843c0a068fb5cb1e76156fdd719</device-id>';
-		$b  .= '</client-info>';
+		$b .= $this->_constClientInfo();
 		$b .= '</login>';
 		$b .= '</root>';
 	
 	
 		$this->_sDebug = "";
-		$this->_aConnInfo["path"]= "/mApp/api/login.php";  // Using login.php because it has a call to getStoredCards()
+		// Using login.php because it has a call to getStoredCards()
+		// mPoint
+		if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
+		{
+			$this->_aConnInfo["path"] = "/mApp/api/login.php";
+		}
+		// Mobile Enterprise Service Bus
+		else { $this->_aConnInfo["path"] = "/mpoint/login"; }
 	
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
 		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
@@ -476,16 +514,17 @@ class AutoTest
 		{
 			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
 			$c = $obj_XML->{'stored-cards'};
-			file_put_contents(sLOG_PATH ."/error.log", "\n". "XML: ".var_export($c, true), FILE_APPEND  | LOCK_EX );
 			if (count($obj_XML->{'stored-cards'}->card) == 1)
 			{
 				return self::sSTATUS_SUCCESS;
 			}
-			else if (count($obj_XML->{'stored-cards'}->card) == 0) {
+			else if (count($obj_XML->{'stored-cards'}->card) == 0)
+			{
 				$this->_sDebug = "No cards found";
 				return self::sSTATUS_FAILED;
 			}
-			else {
+			else
+			{
 				$this->_sDebug = "Expired and disabled cards must not be retrieved";
 				return self::sSTATUS_FAILED;
 			}
@@ -501,7 +540,6 @@ class AutoTest
 			return self::sSTATUS_FAILED;
 		}
 	}
-	
 	/* ========== Automatic Account Management Tests End ========== */
 }
 
@@ -576,8 +614,8 @@ elseif ($code == 302)
 else { var_dump($obj_Client); die(); }
 */
 
-$iClientID = 10012;
-$iAccount = 100012;
+$iClientID = 10001;
+$iAccount = 100010;
 $sCustomerRef = "ABC-123";
 $iMobile = "28882861";
 $sEMail = "jona@oismail.com";
@@ -658,8 +696,8 @@ $obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $s
 	</tr>
 	<tr>
 		<td class="name">Save Card Name</td>
-		<td><?//= $obj_AutoTest->saveCardNameTest(); ?></td>
-		<td><?//= $obj_AutoTest->getDebug(); ?></td>
+		<td><?= $obj_AutoTest->saveCardNameTest(); ?></td>
+		<td><?= $obj_AutoTest->getDebug(); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Save Masked Card</td>
@@ -672,7 +710,7 @@ $obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $s
 		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
-		<td class="name">LoginAddressReturned</td>
+		<td class="name">Login Address Returned</td>
 		<td><?= $obj_AutoTest->loginAddressReturnTest(); ?></td>
 		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
