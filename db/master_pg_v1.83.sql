@@ -131,7 +131,7 @@ CREATE TABLE Log.AuditLog_Tbl
 	message			VARCHAR(255),
 	
   	CONSTRAINT auditlog_pk PRIMARY KEY (id),
-  	CONSTRAINT auditlog2operation_fk FOREIGN KEY (operationid) REFERENCES log.operation_tbl (id)  ON UPDATE CASCADE ON DELETE CASCADE,
+  	CONSTRAINT auditlog2operation_fk FOREIGN KEY (operationid) REFERENCES log.operation_tbl (id) ON UPDATE CASCADE ON DELETE CASCADE,
   	LIKE Template.General_Tbl INCLUDING DEFAULTS
 ) WITHOUT OIDS;
   
