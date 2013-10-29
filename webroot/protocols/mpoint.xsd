@@ -120,7 +120,9 @@
 										<xs:group ref="complete-card-details" />
 									</xs:choice>
 									<xs:element name="card-holder-name" type="xs:string" minOccurs="0" maxOccurs="1" />
+									<xs:element name="password" type="xs:string" minOccurs="0" maxOccurs="1" />
 									<xs:element name="address" type="address" minOccurs="0" maxOccurs="1" />
+									<xs:group ref="single-sign-on" minOccurs="0" maxOccurs="1" />
 								</xs:sequence>
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" />
 								<xs:attribute name="psp-id" type="xs:positiveInteger" use="optional" />

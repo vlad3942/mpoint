@@ -269,34 +269,34 @@ class AutoTest
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<search>';
-		$b .= '<clientid>10007</clientid>';
+		$b .= '<clientid>'. $this->_iClientID .'</clientid>';
 		$b .= '<countryid>100</countryid>';
 		$b .= '<transactionno></transactionno>';
 		$b .= '<orderno></orderno>';
-		$b .= '<mobile>30206162</mobile>';
+		$b .= '<mobile>'. $this->_lMobile .'</mobile>';
 		$b .= '<email></email>';
 		$b .= '<start-date>01/01/2012 19:00:02</start-date>';
 		$b .= '<end-date>06/01/2014 19:00:02</end-date>';
 		$b .= '</search>';
 		$b .= '</root>';
 		
-			$this->_aConnInfo["path"]= "/mConsole/api/search.php";
-	
-			$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
-			$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
-			$this->_obj_Client->connect();
-			$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
-			$this->_obj_Client->disconnect();
-			if ($code == 200)
-			{
-				$this->_sDebug = $this->_obj_Client->getReplyBody();
-				return self::sSTATUS_SUCCESS;
-			}
-			else
-			{
-				$this->_sDebug = $this->_obj_Client->getReplyBody();
-				return self::sSTATUS_FAILED;
-			}
+		$this->_aConnInfo["path"]= "/mConsole/api/search.php";
+
+		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
+		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
+		$this->_obj_Client->connect();
+		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
+		$this->_obj_Client->disconnect();
+		if ($code == 200)
+		{
+			$this->_sDebug = $this->_obj_Client->getReplyBody();
+			return self::sSTATUS_SUCCESS;
+		}
+		else
+		{
+			$this->_sDebug = $this->_obj_Client->getReplyBody();
+			return self::sSTATUS_FAILED;
+		}
 	}
 	/* ========== Automatic mConsole Tests End ========== */
 	
@@ -349,6 +349,7 @@ class AutoTest
 		$b .= '<expiry-year>14</expiry-year>';
 		$b .= '<token>123456-ABCD</token>';
 		$b .= '<card-holder-name>Jonatan Evad Buus</card-holder-name>';
+		$b .= '<password>oisJona1</password>';
 		$b .= '<address country-id="100">';
 		$b .= '<first-name>Jonatan Evald</first-name>';
 		$b .= '<last-name>Buus</last-name>';

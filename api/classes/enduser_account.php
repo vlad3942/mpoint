@@ -850,14 +850,17 @@ class EndUserAccount extends Home
 		return $code;
 	}
 	
-	public function notify(HTTPConnInfo &$obj_ConnInfo, ClientInfo &$obj_ClientInfo, $id, $num)
+	public function notify(HTTPConnInfo &$obj_ConnInfo, ClientInfo &$obj_ClientInfo, $id, $at, $num)
 	{
+		$obj_XML = simplexml_load_string($this->getAccountInfo($id) );
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
 		$xml .= '<notify>';
 		$xml .= '<customer id="'. intval($id) .'">';
 		$xml .= '<stored-cards>'. intval($num) .'</stored-cards>';
 		$xml .= '</customer>';
+		$xml .= $obj_XML->password->asXML();
+		$xml .= '<auth-token>'. htmlspecialchars($at, ENT_NOQUOTES) .'</auth-token>';
 		$xml .= $obj_ClientInfo->toXML();
 		$xml .= '</notify>';
 		$xml .= '</root>';
