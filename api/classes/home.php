@@ -395,7 +395,7 @@ class Home extends General
 		/* ========== Calculate Logo Dimensions End ========== */
 
 		// Select all active cards that are not yet expired
-		$sql = "SELECT DISTINCT EUC.id, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name, EUC.enabled, EUC.cardholdername,		
+		$sql = "SELECT DISTINCT EUC.id, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name, EUC.enabled, EUC.card_holder_name,		
 					SC.id AS typeid, SC.name AS type,
 					CL.id AS clientid, CL.name AS client,
 					EUAD.countryid, EUAD.firstname, EUAD.lastname,
@@ -437,7 +437,7 @@ class Home extends General
 			$xml .= '<expiry>'. $RS["EXPIRY"] .'</expiry>';
 			$xml .= '<enabled>'. General::bool2xml($RS["PREFERRED"]) .'</enabled>';
 			$xml .= '<ticket>'. $RS["TICKET"] .'</ticket>';
-			$xml .= '<card-holder-name>'. $RS["CARDHOLDERNAME"] .'</card-holder-name>';
+			$xml .= '<card-holder-name>'. $RS["CARD_HOLDER_NAME"] .'</card-holder-name>';
 			$xml .= '<logo-width>'. $iWidth .'</logo-width>';
 			$xml .= '<logo-height>'. $iHeight .'</logo-height>';
 						

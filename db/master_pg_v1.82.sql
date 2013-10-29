@@ -96,5 +96,3 @@ EXECUTE PROCEDURE Public.Update_Table_Proc();
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Admin.RoleAccess_Tbl TO mpoint;
 GRANT SELECT, UPDATE, USAGE ON TABLE Admin.RoleAccess_Tbl_id_seq TO mpoint;
-
-

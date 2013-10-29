@@ -100,3 +100,45 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.IPAddress_Tbl TO mpoint;
 GRANT SELECT, UPDATE, USAGE ON TABLE Client.IPAddress_Tbl_id_seq TO mpoint;
 
 ALTER TABLE Client.CardAccess_tbl ADD countryid INT4;
+
+
+-- Table: log.operation_tbl
+-- Data table for operations such as saving a card, deleting a card, etc.
+CREATE TABLE Log.Operation_Tbl
+(
+	id		SERIAL NOT NULL,
+	name	VARCHAR(255),
+	
+	CONSTRAINT operation_pk PRIMARY KEY (id),
+	LIKE Template.General_Tbl INCLUDING DEFAULTS
+) WITHOUT OIDS;
+
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Log.Operation_Tbl TO mpoint;
+GRANT SELECT, UPDATE, USAGE ON TABLE Log.Operation_Tbl_id_seq TO mpoint;
+
+
+-- Table: log.auditlog_tbl
+-- Logs the activities such as saving a card, deleting a card, etc.
+CREATE TABLE Log.AuditLog_Tbl
+(
+	id				SERIAL NOT NULL,
+	operationid		INT4 NOT NULL,
+	
+	mobile			INT8,
+	email			VARCHAR(255),
+	customer_ref	VARCHAR(50),
+	code			INT4 NOT NULL,
+	message			VARCHAR(255),
+	
+  	CONSTRAINT auditlog_pk PRIMARY KEY (id),
+  	CONSTRAINT auditlog2operation_fk FOREIGN KEY (operationid) REFERENCES log.operation_tbl (id)  ON UPDATE CASCADE ON DELETE CASCADE,
+  	LIKE Template.General_Tbl INCLUDING DEFAULTS
+) WITHOUT OIDS;
+  
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Log.AuditLog_Tbl TO mpoint;
+GRANT SELECT, UPDATE, USAGE ON TABLE Log.AuditLog_Tbl_id_seq TO mpoint;
+
+-- Flag to show all cards, including disabled and expired cards
+ALTER TABLE Client.Client_Tbl ADD show_all_cards BOOL DEFAULT false;
+
+ALTER TABLE EndUser.Card_tbl ADD COLUMN card_holder_name VARCHAR(255); -- Add´s a Card Holder Name column to a card table
