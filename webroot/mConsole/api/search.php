@@ -32,8 +32,8 @@ $HTTP_RAW_POST_DATA .= '<transactionno></transactionno>';
 $HTTP_RAW_POST_DATA .= '<orderno></orderno>';
 $HTTP_RAW_POST_DATA .= '<mobile>30206162</mobile>';
 $HTTP_RAW_POST_DATA .= '<email></email>';
-$HTTP_RAW_POST_DATA .= '<start-date>01/01/2012 19:00:02</start-date>';
-$HTTP_RAW_POST_DATA .= '<end-date>06/01/2014 19:00:02</end-date>';
+$HTTP_RAW_POST_DATA .= '<start-date>2012-01-01T09:00:00</start-date>';
+$HTTP_RAW_POST_DATA .= '<end-date>2014-06-01T09:00:00</end-date>';
 $HTTP_RAW_POST_DATA .= '</search>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */

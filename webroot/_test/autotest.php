@@ -275,8 +275,8 @@ class AutoTest
 		$b .= '<orderno></orderno>';
 		$b .= '<mobile>'. $this->_lMobile .'</mobile>';
 		$b .= '<email></email>';
-		$b .= '<start-date>01/01/2012 19:00:02</start-date>';
-		$b .= '<end-date>06/01/2014 19:00:02</end-date>';
+		$b .= '<start-date>2012-01-01T09:00:00</start-date>';
+		$b .= '<end-date>2014-06-01T09:00:00</end-date>';
 		$b .= '</search>';
 		$b .= '</root>';
 		
