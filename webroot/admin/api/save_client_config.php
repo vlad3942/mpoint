@@ -188,7 +188,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								for($a=0; $a<count($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->accounts->account); $a++)
 								{
 									if ($obj_val->valBasic($_OBJ_DB, $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["id"], $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}->accounts->account[$a]["id"]) == 100 ){
-										$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}->accounts->account[$a]["id"];
+										$accountid = $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}->accounts->account[$a]["id"];
 									}	
 									$iErrors = $obj_mPoint->saveAccount($accountid,
 																	 $clientid,
