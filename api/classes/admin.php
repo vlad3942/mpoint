@@ -222,9 +222,9 @@ class Admin extends General
 	public function saveKeyWord ($clientid, $name)
 	{
 		$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".KeyWord_Tbl 
-						(clientid , name)
+						(clientid , name, standard)
 					VALUES
-						( ". intval($clientid) .", '". $this->getDBConn()->escStr($name)."')";
+						( ". intval($clientid) .", '". $this->getDBConn()->escStr($name)."', true)";
 //echo $in_sql ."\n";
 		$in_res = $this->getDBConn()->query($in_sql);
 		return is_resource($in_res);
@@ -254,7 +254,7 @@ class Admin extends General
 			$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".Client_Tbl
 							(store_card, auto_capture, name, username, passwd, countryid, flowid)
 					   VALUES
-							(". intval($storecard).",'". General::bool2xml($autocapture)."', '". $this->getDBConn()->escStr($name)."' , '". $this->getDBConn()->escStr($username)."', '". $this->getDBConn()->escStr($password)."',". intval($cc).", ".intval(1).")";
+							(". intval($storecard).",'". intval($autocapture)."', '". $this->getDBConn()->escStr($name)."' , '". $this->getDBConn()->escStr($username)."', '". $this->getDBConn()->escStr($password)."',". intval($cc).", ".intval(1).")";
 //echo $in_sql ."\n";		
 			$in_res = $this->getDBConn()->query($in_sql);
 			if (is_resource($in_res))

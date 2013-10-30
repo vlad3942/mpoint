@@ -29,7 +29,7 @@ require_once(sCLASS_PATH ."/validate.php");
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 
-
+/*
 $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
  
@@ -69,8 +69,8 @@ $HTTP_RAW_POST_DATA .=      '</payment-service-providers>';
 $HTTP_RAW_POST_DATA .=     '</account>';
 $HTTP_RAW_POST_DATA .=    '</accounts>';
 $HTTP_RAW_POST_DATA .=   '</client-config>';
-/*
-$HTTP_RAW_POST_DATA .=   '<client-config id="10026" store-card="3" auto-capture="true" country-id="100">';
+
+$HTTP_RAW_POST_DATA .=   '<client-config store-card="3" auto-capture="true" country-id="100">';
 $HTTP_RAW_POST_DATA .=    '<name>Emirates - IBE</name>';
 $HTTP_RAW_POST_DATA .=    '<username>user</username>';
 $HTTP_RAW_POST_DATA .=    '<password>pass</password>';
@@ -119,10 +119,10 @@ $HTTP_RAW_POST_DATA .=      '</payment-service-providers>';
 $HTTP_RAW_POST_DATA .=     '</account>';
 $HTTP_RAW_POST_DATA .=    '</accounts>';
 $HTTP_RAW_POST_DATA .=   '</client-config>';
-*/
+
 $HTTP_RAW_POST_DATA .=  '</save-client-configuration>';
 $HTTP_RAW_POST_DATA .= '</root>';
-
+*/
 
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
@@ -162,7 +162,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$iErrors = $obj_mPoint->saveClient($clientid,
 															$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["country-id"],
 															$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["store-card"],
-													 		$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["auto-capture"],
+													 		$obj_mPoint->xml2bool($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["auto-capture"]),
 													 		$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->name,
 									 				 		$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->username,
 													 		$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->password);
@@ -172,7 +172,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						{
 							$_OBJ_DB->query("ROLLBACK");
 							header("HTTP/1.1 500 internal server error");
-							$xml = "Error during Save Client";
+                            $xml = '<status code="500">Error during Save Client</status>';
 							break;
 						}
 						else
@@ -182,14 +182,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							{							
 								$_OBJ_DB->query("ROLLBACK");
 								header("HTTP/1.1 500 internal server error");
+                                $xml = '<status code="500"></status>';
 							}
 							else
 							{
 								for($a=0; $a<count($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->accounts->account); $a++)
 								{
-									if ($obj_val->valBasic($_OBJ_DB, $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["id"], $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}->accounts->account[$a]["id"]) == 100 ){
+                                    $accountid = -1;
+									if ($obj_val->valBasic($_OBJ_DB, $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["id"], $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}->accounts->account[$a]["id"]) == 100 )
+                                    {
 										$accountid = $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}->accounts->account[$a]["id"];
-									}	
+									}
 									$iErrors = $obj_mPoint->saveAccount($accountid,
 																	 $clientid,
 																	 $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->accounts->account[$a]->name,
@@ -198,7 +201,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									{
 										$_OBJ_DB->query("ROLLBACK");
 										header("HTTP/1.1 500 internal server error");
-										$xml = "Error during Save Account";
+                                        $xml = '<status code="500">Error during Save Account</status>';
 									}
 									else
 									{
@@ -208,6 +211,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										{
 											$_OBJ_DB->query("ROLLBACK");
 											header("HTTP/1.1 500 internal server error");
+                                            $xml = '<status code="500"></status>';
 										}
 										else
 										{
@@ -221,7 +225,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												{								
 													$_OBJ_DB->query("ROLLBACK");
 													header("HTTP/1.1 500 internal server error");
-													$xml = "Error during save payment service providers for account";
+                                                    $xml = '<status code="500">Error during save payment service providers for account</status>';
 												}
 												else{}
 											}
@@ -233,6 +237,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								{	
 									$_OBJ_DB->query("ROLLBACK");
 									header("HTTP/1.1 500 internal server error");
+                                    $xml = '<status code="500"></status>';
 								}
 								else
 								{
@@ -248,7 +253,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									{
 										$_OBJ_DB->query("ROLLBACK");
 										header("HTTP/1.1 500 internal server error");
-										$xml = "Error during save payment service providers";
+                                        $xml = '<status code="500">Error during save payment service providers</status>';
 									}
 									else
 									{	
@@ -258,6 +263,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										{
 											$_OBJ_DB->query("ROLLBACK");
 											header("HTTP/1.1 500 internal server error");
+                                            $xml = '<status code="500">Delete card error</status>';
 										}
 										else
 										{
@@ -272,7 +278,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											{
 												$_OBJ_DB->query("ROLLBACK");
 												header("HTTP/1.1 500 internal server error");
-												$xml = "Error during save card access";
+                                                $xml = '<status code="500">Error during save card access</status>';
 											}
 											else
 											{
@@ -282,6 +288,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												{
 													$_OBJ_DB->query("ROLLBACK");
 													header("HTTP/1.1 500 internal server error");
+                                                    $xml = '<status code="500">Error during delete keyword</status>';
 												}
 												else
 												{
@@ -291,7 +298,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													{
 														$_OBJ_DB->query("ROLLBACK");
 														header("HTTP/1.1 500 internal server error");
-														$xml = "Error during save keywords";
+                                                        $xml = '<status code="500">Error during save keywords</status>';
 													}
 													else
 													{
@@ -301,6 +308,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 														{
 															$_OBJ_DB->query("ROLLBACK");
 															header("HTTP/1.1 500 internal server error");
+                                                            $xml = '<status code="500">Error during delete url</status>';
 														}
 														else
 														{
@@ -315,11 +323,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 															{
 																$_OBJ_DB->query("ROLLBACK");
 																header("HTTP/1.1 500 internal server error");
-																$xml = "Error during save url";
+																$xml = '<status code="500">Error during save url</status>';
 															}
 															else
 															{
 																$_OBJ_DB->query("COMMIT");
+                                                                $xml = '<status code="100" client-id="'. $clientid .'">OK</status>';
 															}									
 														}	
 													}
@@ -331,10 +340,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 						}
 					}
-					catch (HTTPSendException $e)
+					catch (Exception $e)
 					{
 						$_OBJ_DB->query("ROLLBACK");
 						header("HTTP/1.1 500 internal server error");	
+                        $xml = '<status code="500">'. $e->getMessage() .'</status>';
 					}	
 				}
 			}
