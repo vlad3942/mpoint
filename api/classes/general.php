@@ -966,65 +966,64 @@ class General
 	/**
 	 * Creates a log for an operation made, e.g. saving a card, deleting a card, etc.
 	 * 
-	 * @param integer 	$oid
-	 * @param integer 	$mobile
-	 * @param string 	$email
-	 * @param string 	$cusref
-	 * @param integer	$code
-	 * @param string	$msg
+	 * @param integer $oid
+	 * @param integer $mobile
+	 * @param string $email
+	 * @param string $cr
+	 * @param integer $code
+	 * @param string $msg
 	 * @throws mPointException
 	 */
-	public function newAuditMessage($oid, $mobile, $email, $cusref, $code, $msg) 
+	public function newAuditMessage($oid, $mobile, $email, $cr, $code, $msg) 
 	{
-		$msg = str_replace("'", "", $msg); // Replace the single quotes with empty space
 		$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".AuditLog_Tbl
-			(operationid, mobile, email, customer_ref, code, message, enabled)
-		VALUES
-			(". $oid. ", ". floatval($mobile) .", '". $this->getDBConn()->escStr($email) ."', '". $cusref ."', '". intval($code) ."', '". $msg ."', true)";
+					(operationid, mobile, email, customer_ref, code, message)
+				VALUES
+					(". intval($oid). ", ". floatval($mobile) .", '". $this->getDBConn()->escStr($email) ."', '". $this->getDBConn()->escStr($cr) ."', '". intval($code) ."', '". $this->getDBConn()->escStr($msg) ."')";
+//		echo $sql ."\n";
 		if (is_resource($this->getDBConn()->query($sql) ) === false)
 		{
-			throw new mPointException("Unable to insert new audit message for operation: ". $txnid, 1003);
+			throw new mPointException("Unable to insert new audit message for operation: ". $oid, 1005);
 		}
-		
 	}
 	/**
 	 * Returns the logs for a given search
 	 *
-	 * @param integer 	$oid
-	 * @param integer 	$mobile
-	 * @param string 	$email
-	 * @param string 	$cusref
-	 * @param integer	$code
-	 * @param string	$msg
+	 * @param integer $mobile
+	 * @param string $email
+	 * @param string $cr
+	 * @param integer $start
+	 * @param string $end
 	 * @retun string 	The logs that match the search 
 	 */
-	public function getAuditLog($mobile, $email, $cusref,$startdate, $enddate)
+	public function getAuditLog($mobile=-1, $email="", $cr="", $start="", $end="")
 	{
-		$sql = "SELECT  AU.id, AU.operationid,  AU.mobile,  AU.email, AU.customer_ref AS customerREF,  AU.code, 
-				 AU.message, Extract('epoch' from AU.created  AT TIME ZONE 'UTC') AS timestamp
-				FROM log".sSCHEMA_POSTFIX.".auditlog_tbl AU
-				WHERE AU.enabled = true";
-		
-		if (empty($mobile) === false){$sql .= " AND AU.mobile = '". $this->getDBConn()->escStr( (string) $mobile) ."'"; }
-		if (empty($email) === false) { $sql .= " AND AU.email = '". $this->getDBConn()->escStr( (string) $email) ."'";}
-		if (empty($cusref) === false) { $sql .= " AND AU.customer_ref = '". $this->getDBConn()->escStr( (string) $cf) ."'";}
-		if (empty($startdate) === false) { $sql .= " AND AU.created >= '". date("m/d/Y H:i:s", strtotime($startdate) ) ."' AND AU.created <= '". date("m/d/Y H:i:s", strtotime($enddate) ) ."'";}
-				
+		$sql = "SELECT id, operationid,  mobile,  email, customer_ref,  code, 
+					message, Extract('epoch' from created  AT TIME ZONE 'UTC') AS timestamp
+				FROM Log".sSCHEMA_POSTFIX.".AuditLog_Tbl
+				WHERE enabled = '1'";
+		if (floatval($mobile) > 0) { $sql .= " AND mobile = '". floatval($mobile) ."'"; }
+		if (empty($email) === false) { $sql .= " AND email = '". $this->getDBConn()->escStr($email) ."'";}
+		if (empty($cr) === false) { $sql .= " AND customer_ref = '". $this->getDBConn()->escStr($cr) ."'";}
+		if (empty($start) === false) { $sql .= " AND created >= '". $this->getDBConn()->escStr($start) ."'"; }
+		if (empty($end) === false) { $sql .= " AND created <= '". $this->getDBConn()->escStr($end) ."'"; }
+		$sql .= "
+				ORDER BY id ASC";
+//		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
-		$xml = '<auditLogs>';
+		$xml = '<audit-logs>';
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
-			$xml .= '<auditLog id="'. $RS["ID"] .'" operation-id="'. $RS["OPERATIONID"] .'">';
-			$xml .= '<customer customer-ref="'. $RS["CUSTOMERREF"] .'">';
+			$xml .= '<audit-log id="'. $RS["ID"] .'" operation-id="'. $RS["OPERATIONID"] .'">';
+			$xml .= '<customer customer-ref="'. htmlspecialchars($RS["CUSTOMERREF"], ENT_NOQUOTES) .'">';
 			$xml .= '<mobile>"'. $RS["MOBILE"] .'"</mobile>';
 			$xml .= '<email>"'. $RS["EMAIL"] .'"</email>';
 			$xml .= '</customer>';
-			$xml .= '<message "code="'. $RS["CODE"] .'">'. htmlspecialchars($RS["MESSAGE"], ENT_NOQUOTES) .' </message>';
+			$xml .= '<message "code="'. $RS["CODE"] .'">'. htmlspecialchars($RS["MESSAGE"], ENT_NOQUOTES) .'</message>';
 			$xml .= '<timestamp>'. gmdate("Y-m-d H:i:sP", $RS["TIMESTAMP"]) .'</timestamp>';
-			$xml .= '</auditLog>';
+			$xml .= '</audit-log>';
 		}
-		
-		$xml .= '</auditLogs>';
+		$xml .= '</audit-logs>';
 	
 		return $xml;
 	}

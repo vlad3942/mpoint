@@ -251,25 +251,36 @@ class EndUserAccount extends Home
 		}
 
 		// Check if card has already been saved
-//pc		$sql = "SELECT id, ticket, pspid
-//pc				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
-//pc				WHERE accountid = ". $iAccountID ." AND clientid = ". $this->_obj_ClientConfig->getID() ." AND cardid = ". intval($cardid) ."
-//pc					AND ( (mask = '". $this->getDBConn()->escStr($mask) ."' AND expiry = '". $this->getDBConn()->escStr($exp) ."') OR (mask IS NULL AND expiry IS NULL) )";
-//		echo $sql ."\n";
-//pc		$RS = $this->getDBConn()->getName($sql);
-		$saveCardiId = $this->getCardFromCardDetails($iAccountID, $cardid, $mask, $exp);
+		$id = $this->getCardFromCardDetails($iAccountID, $cardid, $mask, $exp);
 
+		// Card previously saved by End-User
+		if ($id > 0)
+		{
+			$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
+					SET pspid = ". intval($pspid) .", ticket = '". $this->getDBConn()->escStr($token) ."',
+						mask = '". $this->getDBConn()->escStr($mask) ."', expiry = '". $this->getDBConn()->escStr($exp) ."',
+						enabled = '1'";
+			if (empty($name) === false) { $sql .= ", name = '". $this->getDBConn()->escStr($name) ."'"; }
+			if (empty($chn) === false) { $sql .= ", card_holder_name = '". $this->getDBConn()->escStr($chn) ."'"; }
+			$sql .= "
+					WHERE id = ". $id;
+//			echo $sql ."\n";
+			$res = $this->getDBConn()->query($sql);
+			if (is_resource($res) === false)
+			{
+				$iStatus = -1;
+			}
+		}
 		// Card not previously saved, add card info to database
-//pc		if (is_array($RS) === false)
-		if ($saveCardId == 0)
+		else
 		{
 			$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Card_Tbl
-						(accountid, clientid, cardid, pspid, ticket, mask, expiry, name, preferred, cardholdername)
+						(accountid, clientid, cardid, pspid, ticket, mask, expiry, name, preferred, card_holder_name)
 					VALUES
-						(". $iAccountID .", ". $this->_obj_ClientConfig->getID() .", ". intval($cardid) .", ". intval($pspid) .", '". $this->getDBConn()->escStr($token) ."', '". $this->getDBConn()->escStr($mask) ."', '". $this->getDBConn()->escStr($exp) ."', '". $this->getDBConn()->escStr($name) ."', '". $bPreferred ."','". $this->getDBConn()->escStr($chn)."')";
-			//echo $sql ."\n";
+						(". $iAccountID .", ". $this->_obj_ClientConfig->getID() .", ". intval($cardid) .", ". intval($pspid) .", '". $this->getDBConn()->escStr($token) ."', '". $this->getDBConn()->escStr($mask) ."', '". $this->getDBConn()->escStr($exp) ."', '". $this->getDBConn()->escStr($name) ."', '". intval(General::xml2bool($bPreferred) ) ."','". $this->getDBConn()->escStr($chn)."')";
+//			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
-			
+				
 			if (is_resource($res) === true)
 			{
 				$sql = "SELECT id
@@ -280,24 +291,7 @@ class EndUserAccount extends Home
 				// Link between End-User Account and Client doesn't exist
 				if (is_array($RS) === false) { $this->link($iAccountID); }
 			}
-			else { $iStatus = -1; }
-		}
-		// Card previously saved by End-User
-		else
-		{
-			$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
-					SET pspid = ". intval($pspid) .", ticket = '". $this->getDBConn()->escStr($token) ."',
-						mask = '". $this->getDBConn()->escStr($mask) ."', expiry = '". $this->getDBConn()->escStr($exp) ."',
-						enabled = '1'";
-			if (empty($name) === false) { $sql .= ", name = '". $this->getDBConn()->escStr($name) ."'"; }
-			$sql .= "
-					WHERE id = ". $RS["ID"];
-//			echo $sql ."\n";
-			$res = $this->getDBConn()->query($sql);
-			if (is_resource($res) === false)
-			{
-				$iStatus = -1;
-			}			
+			else { $iStatus = -1; }		
 		}
 
 		return $iStatus;
@@ -466,10 +460,12 @@ class EndUserAccount extends Home
 	/**
 	 * Saves Billing Address for the newest card which has been created recently (within the last 5 minutes).	
 	 * The method will return the following status codes:
-	 * 	1  - Fail
-	 * 	10 - Success
+	 * 	 1. State not found
+	 * 	 2. Address Update failed
+	 * 	 3. Address Insert failed
+	 * 	10. Success
 	 *
-	 * @param 	integer $countryid 	ID of the Country
+	 * @param 	integer $cid 		ID of the Country
 	 * @param 	string $state		Address field - state
 	 * @param 	string $fn 			Address field - First Name
 	 * @param   string $ln			Address field - Last Name
@@ -479,24 +475,44 @@ class EndUserAccount extends Home
 	 * @param 	string $ct			Address field - City
 	 * @return	integer
 	 */
-	public function saveAddress($cardid, $countryid, $state, $fn, $ln, $cmp, $st, $pc, $ct)
+	public function saveAddress($cardid, $cid, $state, $fn, $ln, $cmp, $st, $pc, $ct)
 	{
-		if (empty($state) === true) {
-			$state = "N/A";
+		if (empty($state) === true) { $state = "N/A"; }
+		
+		$sql = "SELECT id
+				FROM System".sSCHEMA_POSTFIX.".State_Tbl
+				WHERE countryid = ". intval($cid) ." AND Upper(code) = Upper('". $this->getDBConn()->escStr($state) ."')";
+//		echo $sql ."\n";
+		$RS = $this->getDBConn()->getName($sql);
+		
+		if (is_array($RS) === true && array_key_exists("ID", $RS) === true)
+		{
+			$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Address_Tbl
+					SET countryid = ". intval($cid) .", stateid = ". $RS["ID"] .",
+						firstname = '". $this->getDBConn()->escStr($fn) ."', lastname = '". $this->getDBConn()->escStr($ln) ."', company = '". $this->getDBConn()->escStr($cmp) ."',
+						street = '". $this->getDBConn()->escStr($st) ."', postalcode = '". $this->getDBConn()->escStr($pc) ."', city = '". $this->getDBConn()->escStr($ct) ."'
+					WHERE cardid = ". intval($cardid);
+//			echo $sql ."\n";
+			$res = $this->getDBConn()->query($sql);
+			if (is_resource($this->getDBConn()->query($sql) ) === true)
+			{
+				if ($this->getDBConn()->countAffectedRows($res) == 0)
+				{
+					$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Address_Tbl
+								(cardid, countryid, stateid, firstname, lastname, company, street, postalcode, city)
+							VALUES
+								(". intval($cardid) .", ". intval($cid) .", ". $RS["ID"] ." , '". $this->getDBConn()->escStr($fn) ."', '". $this->getDBConn()->escStr($ln) ."', '". $this->getDBConn()->escStr($cmp) ."', '". $this->getDBConn()->escStr($st) ."', '". $this->getDBConn()->escStr($pc) ."', '". $this->getDBConn()->escStr($ct) ."')";
+//					echo $sql ."\n";
+					if (is_resource($this->getDBConn()->query($sql) ) === true) { $code = 10; }
+					else { $code = 3; }
+				}
+				else { $code = 10; }
+			}
+			else { $code = 2; }
 		}
-		$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Address_Tbl
-					(accountid, cardid, countryid, stateid, firstname, lastname, company, street, postalcode, city)
-				SELECT null , ".$cardid .", ". intval($countryid) .", id , '". $this->getDBConn()->escStr($fn) ."', '". 
-				$this->getDBConn()->escStr($ln) ."', '". $this->getDBConn()->escStr($cmp) ."', '". 
-				$this->getDBConn()->escStr($st) ."', '". $this->getDBConn()->escStr($pc) ."', '". 
-				$this->getDBConn()->escStr($ct) ."'
-				FROM System.State_Tbl
-				WHERE countryid = ". intval($countryid) ." AND Upper(code) = Upper('". $this->getDBConn()->escStr($state) ."')";
-		//echo $sql ."\n";
-		$add = $this->getDBConn()->query($sql);		
-		if (is_resource($add) === true ) {$ret = 10;}
-		else { $ret = 1; }
-		return $ret;
+		else { $code = 1; }
+		
+		return $code;
 	}
 	
 	/**

@@ -127,10 +127,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if (count($aMsgCds) == 0)
 							{
 								if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 0 || strlen($obj_TxnInfo->getAuthenticationURL() ) == 0)
-								{									
+								{
 									$code = $obj_mPoint->auth($obj_TxnInfo->getAccountID(), (string) $obj_DOM->{'authorize-payment'}[$i]->password);
 								}
-								else  { $code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($obj_TxnInfo->getAuthenticationURL() ), $obj_TxnInfo->getCustomerRef(), $obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}); }
+								else { $code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($obj_TxnInfo->getAuthenticationURL() ), $obj_TxnInfo->getCustomerRef(), $obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}); }
 								// Authentication succeeded
 								if ($code == 10 || ($code == 11 && $obj_ClientConfig->smsReceiptEnabled() === false) )
 								{
@@ -306,8 +306,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											header("HTTP/1.1 504 Gateway Timeout");
 										
 											$xml = '<status code="90">'. htmlspecialchars($e->getTraceAsString(), ENT_NOQUOTES) .'</status>';
-											file_put_contents(sLOG_PATH ."/jona.log", $e->getMessage(), FILE_APPEND );
-											
 										}
 										break;
 									}

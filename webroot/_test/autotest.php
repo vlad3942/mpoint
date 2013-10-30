@@ -94,7 +94,7 @@ class AutoTest
 		$b .= '<initialize-payment client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
 		$b .= '<transaction order-no="1234abc">';
 		$b .= '<amount country-id="100">1000</amount>';
-		$b .= '<auth-url>http://mpoint.localhost/_test/auth.php</auth-url>';
+		$b .= '<auth-url>http://localhost/_test/auth.php</auth-url>';
 		$b .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
 		$b .= '<description>
 				<![CDATA[
@@ -214,7 +214,7 @@ class AutoTest
 	{
 		$this->_sDebug = "";
 		$obj_XML = $this->_initialize();
-		if ( ($obj_XML instanceof SimpleXMLElement) === true)
+		if ( ($obj_XML instanceof SimpleXMLElement) === true && count($obj_XML->{'stored-cards'}) == 1)
 		{
 			$b = '<?xml version="1.0" encoding="UTF-8"?>';
 			$b .= '<root>';
@@ -281,6 +281,7 @@ class AutoTest
 		$b .= '</root>';
 		
 		$this->_aConnInfo["path"]= "/mConsole/api/search.php";
+		$this->_aConnInfo["port"] = 80;
 
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
 		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
@@ -342,14 +343,13 @@ class AutoTest
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<save-card client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
-		$b .= '<card psp-id="4" type-id="6" preferred="true">';
+		$b .= '<card psp-id="9" type-id="6" preferred="true">';
 		$b .= '<name>My VISA</name>';
 		$b .= '<card-number-mask>540287******1244</card-number-mask>';
 		$b .= '<expiry-month>10</expiry-month>';
 		$b .= '<expiry-year>14</expiry-year>';
 		$b .= '<token>123456-ABCD</token>';
 		$b .= '<card-holder-name>Jonatan Evad Buus</card-holder-name>';
-		$b .= '<password>oisJona1</password>';
 		$b .= '<address country-id="100">';
 		$b .= '<first-name>Jonatan Evald</first-name>';
 		$b .= '<last-name>Buus</last-name>';
@@ -359,6 +359,7 @@ class AutoTest
 		$b .= '<state>N/A</state>';
 		$b .= '</address>';
 		$b .= '</card>';
+		$b .= '<password>oisJona1</password>';
 		$b .= $this->_constClientInfo();
 		$b .= '</save-card>';
 		$b .= '</root>';
@@ -376,8 +377,8 @@ class AutoTest
 		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
 		$this->_obj_Client->connect();
 		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
-		
 		$this->_obj_Client->disconnect();
+		
 		if ($code == 200)
 		{
 			return self::sSTATUS_SUCCESS;
@@ -479,14 +480,6 @@ class AutoTest
 
 	public function getStoredCardsTest()
 	{
-		// NOTE:  Execute these SQL statements to create a disabled and expired card
-		//INSERT INTO EndUser.Card_Tbl (accountid, cardid, pspid, mask, expiry, preferred, enabled, clientid, name, ticket) VALUES (1, 2, 2, '501910******0001', '07/13', false, true, 10017, 'expired', '633800422');
-		//INSERT INTO EndUser.Card_Tbl (accountid, cardid, pspid, mask, expiry, preferred, enabled, clientid, name, ticket) VALUES (1, 2, 2, '501910******0022', '08/24', true, true, 10017, 'disabled', '633800423');
-		
-		// And then if all of the cards must be shown, execute this SQL statement:
-		// UPDATE Client.Client_tbl set show_all_cards = true where id = 10017
-		// The test will then fail because it checks for only one card
-	
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<login client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
@@ -681,9 +674,14 @@ $obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $s
 		<td class="caption">Debug</td>
 	</tr>
 	<tr>
+		<td class="name">Save Masked Card</td>
+		<td><?//= $obj_AutoTest->saveMaskedCardTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
 		<td class="name">Initialize Payment</td>
-		<td><?= $obj_AutoTest->initializePaymentTest(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->initializePaymentTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Pay</td>
@@ -692,18 +690,13 @@ $obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $s
 	</tr>
 	<tr>
 		<td class="name">Authorize Stored Card using Single Sign-On</td>
-		<td><?= $obj_AutoTest->authorizeStoredCardUsingSSOTest(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->authorizeStoredCardUsingSSOTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Save Card Name</td>
-		<td><?= $obj_AutoTest->saveCardNameTest(); ?></td>
-		<td><?= $obj_AutoTest->getDebug(); ?></td>
-	</tr>
-	<tr>
-		<td class="name">Save Masked Card</td>
-		<td><?= $obj_AutoTest->saveMaskedCardTest(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->saveCardNameTest(); ?></td>
+		<td><?//= $obj_AutoTest->getDebug(); ?></td>
 	</tr>
 	<tr>
 		<td class="name">mConsole Search</td>
@@ -712,13 +705,13 @@ $obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $s
 	</tr>
 	<tr>
 		<td class="name">Login Address Returned</td>
-		<td><?= $obj_AutoTest->loginAddressReturnTest(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->loginAddressReturnTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Get Stored Cards Test</td>
-		<td><?= $obj_AutoTest->getStoredCardsTest(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->getStoredCardsTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	</table>
 </body>

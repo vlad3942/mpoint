@@ -74,7 +74,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$xml = '<status code="415">Invalid XML Document</status>';
 	}
 	// Error: Wrong operation
-	elseif (count($obj_DOM->login) == 0)
+	elseif (count($obj_DOM->search) == 0)
 	{
 		header("HTTP/1.1 400 Bad Request");
 	

@@ -809,8 +809,8 @@ class Home extends General
 	{
 		$sql = "SELECT Nextvalue('EndUser".sSCHEMA_POSTFIX.".Account_Tbl_id_seq') AS id FROM DUAL";
 		$RS = $this->getDBConn()->getName($sql);
-		$sql = "INSERT INTO EndUser.Account_Tbl
-					(id, countryid,".sSCHEMA_POSTFIX." mobile, passwd, email, externalid)
+		$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Account_Tbl
+					(id, countryid, mobile, passwd, email, externalid)
 				VALUES
 					(". $RS["ID"] .", ". intval($cid) .", ". (floatval($mob) > 0 ? "'". floatval($mob) ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". (strlen($email) > 0 ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .", '". $this->getDBConn()->escStr($cr) ."')";
 //		echo $sql ."\n";

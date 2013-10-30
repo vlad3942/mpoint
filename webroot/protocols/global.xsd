@@ -84,7 +84,7 @@
 
 <xs:simpleType name="platform"> 
 	<xs:restriction base="xs:string"> 
-		<xs:pattern value="(iOS|Android|WP7|WinMo|HTML5|Other)/?.*" /> 
+		<xs:pattern value="(iOS|Android|WP7|WinMo|HTML5|Web|Other)/?.*" /> 
 	</xs:restriction> 
 </xs:simpleType>
 
