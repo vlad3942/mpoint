@@ -487,7 +487,7 @@ class Home extends General
 		
 		$res = $this->getDBConn()->query($sql);
 		
-		$xml = '<transactions sorted-by ="id" sort-order="descending">';
+		$xml = '<transactions sorted-by="id" sort-order="descending">';
 		// Construct XML Document with data for Transaction
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{

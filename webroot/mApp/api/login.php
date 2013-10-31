@@ -92,9 +92,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->login[$i]->{'client-info'}->mobile, $obj_ClientConfig->getID() ); }
 						if ($iAccountID < 0 && count($obj_DOM->login[$i]->{'client-info'}->email) == 1) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->login[$i]->{'client-info'}->email, $obj_ClientConfig->getID() ); }
 						
-						if ( strlen((string) $obj_DOM->login[$i]->{'auth-token'}) > 0 && strlen((string) $obj_DOM->login[$i]->{'auth-url'} ) > 0)
-						{		
-							$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo((string) $obj_DOM->login[$i]->{'auth-url'} ), $obj_DOM->login[$i]->{'client-info'}->{'customer-ref'}, (string) $obj_DOM->login[$i]->{'auth-token'} );
+						if (count($obj_DOM->login[$i]->{'auth-token'}) == 1
+							&& (count($obj_DOM->login[$i]->{'auth-url'}) == 1 || strlen($obj_ClientConfig->getAuthenticationURL() ) > 0) ) 
+						{
+							$url = $obj_ClientConfig->getAuthenticationURL();
+							if (count($obj_DOM->login[$i]->{'auth-url'}) == 1) { $url = (string) $obj_DOM->login[$i]->{'auth-url'}; }
+							if ($obj_Validator->valURL($url, $obj_ClientConfig->getAuthenticationURL() ) == 10)
+							{
+								$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($url), $obj_DOM->login[$i]->{'client-info'}->{'customer-ref'}, (string) $obj_DOM->login[$i]->{'auth-token'} );
+							}
+							else { $code = 9; } 
 						} 
 						else { $code = $obj_mPoint->auth($iAccountID, (string) $obj_DOM->login[$i]->password); }
 						// Authentication succeeded
@@ -129,13 +136,25 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$xml .= '</stored-cards>';
 							}
 							else { $xml .= '<stored-cards />'; }
-							// Return last 5 transactions of each type
-							$aTypes = array(Constants::iTOPUP_OF_EMONEY ." or @type-id = ". Constants::iTOPUP_OF_POINTS, Constants::iREWARD_OF_POINTS, Constants::iTRANSFER_OF_EMONEY);
-							$obj_XML = simplexml_load_string($obj_mPoint->getTxnHistory($iAccountID, -1) );
-							$xml .= '<history account-id="'. $obj_XML["account-id"] .'">';
-							foreach ($aTypes as $id)
+							if ($obj_ClientConfig->getStoreCard() == 2)
 							{
-								$aObj_XML = $obj_XML->xpath("/history/transaction[@type-id = ". $id ."]");
+								// Return last 5 transactions of each type
+								$aTypes = array(Constants::iTOPUP_OF_EMONEY ." or @type-id = ". Constants::iTOPUP_OF_POINTS, Constants::iREWARD_OF_POINTS, Constants::iTRANSFER_OF_EMONEY);
+								$obj_XML = simplexml_load_string($obj_mPoint->getTxnHistory($iAccountID, -1) );
+								$xml .= '<history account-id="'. $obj_XML["account-id"] .'">';
+								foreach ($aTypes as $id)
+								{
+									$aObj_XML = $obj_XML->xpath("/history/transaction[@type-id = ". $id ."]");
+									if (is_array($aObj_XML) === true && count($aObj_XML) > 0)
+									{
+										for ($j=0; $j<count($aObj_XML) && $j<5; $j++)
+										{
+											$xml .= $aObj_XML[$j]->asXML();
+										}
+									}
+								}
+								// Return last 5 purchase transactions
+								$aObj_XML = $obj_XML->xpath("/history/transaction[@type-id != ". Constants::iTOPUP_OF_EMONEY ." and @type-id != ". Constants::iTOPUP_OF_POINTS ." and @type-id != ". Constants::iREWARD_OF_POINTS ." and @type-id != ". Constants::iTRANSFER_OF_EMONEY ."]");
 								if (is_array($aObj_XML) === true && count($aObj_XML) > 0)
 								{
 									for ($j=0; $j<count($aObj_XML) && $j<5; $j++)
@@ -143,17 +162,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$xml .= $aObj_XML[$j]->asXML();
 									}
 								}
+								$xml .= '</history>';
 							}
-							// Return last 5 purchase transactions
-							$aObj_XML = $obj_XML->xpath("/history/transaction[@type-id != ". Constants::iTOPUP_OF_EMONEY ." and @type-id != ". Constants::iTOPUP_OF_POINTS ." and @type-id != ". Constants::iREWARD_OF_POINTS ." and @type-id != ". Constants::iTRANSFER_OF_EMONEY ."]");
-							if (is_array($aObj_XML) === true && count($aObj_XML) > 0)
-							{
-								for ($j=0; $j<count($aObj_XML) && $j<5; $j++)
-								{
-									$xml .= $aObj_XML[$j]->asXML();
-								}
-							}
-							$xml .= '</history>';
 							setcookie("token", General::genToken($iAccountID, $obj_ClientConfig->getSecret() ) );
 							
 						}
@@ -249,23 +259,13 @@ header("Content-Type: text/xml; charset=\"UTF-8\"");
 $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 $obj_xml = simpledom_load_string('<?xml version="1.0" encoding="UTF-8"?>'.'<root>'.$xml.'</root>');
-if(count($obj_xml->status))
+if (count($obj_xml->status) > 0)
 {
-	$obj_mPoint->newAuditMessage( Constants::iOPERATION_LOGGED_IN, 
-			$obj_DOM->login[0]->{'client-info'}->mobile, 
-			$obj_DOM->login[0]->{'client-info'}->email, 
-			$obj_DOM->login[0]->{'client-info'}->{'customer-ref'}, 
-			intval($obj_xml->status["code"]), 
-			(string)$obj_xml->status);
+	$obj_mPoint->newAuditMessage(Constants::iOPERATION_LOGGED_IN, $obj_DOM->login[0]->{'client-info'}->mobile, $obj_DOM->login[0]->{'client-info'}->email, $obj_DOM->login[0]->{'client-info'}->{'customer-ref'}, intval($obj_xml->status["code"]), (string) $obj_xml->status);
 }
 else 
 {
-	$obj_mPoint->newAuditMessage( Constants::iOPERATION_LOGGED_IN, 
-			$obj_DOM->login[0]->{'client-info'}->mobile, 
-			$obj_DOM->login[0]->{'client-info'}->email, 
-			$obj_DOM->login[0]->{'client-info'}->{'customer-ref'}, 
-			100, 
-			'Successful login');
+	$obj_mPoint->newAuditMessage(Constants::iOPERATION_LOGGED_IN, $obj_DOM->login[0]->{'client-info'}->mobile, $obj_DOM->login[0]->{'client-info'}->email, $obj_DOM->login[0]->{'client-info'}->{'customer-ref'}, 100, 'Successful login');
 }
 
 

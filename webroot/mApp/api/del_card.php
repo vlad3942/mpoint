@@ -96,15 +96,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						// Input valid
 						if (count($aMsgCds) == 0)
 						{
-                            if ( strlen((string) $obj_DOM->{'delete-card'}[$i]->{'auth-token'}) > 0 && strlen((string) $obj_DOM->{'delete-card'}[$i]->{'auth-url'} ) > 0)
-                            {		
-                                $code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo((string) $obj_DOM->{'delete-card'}[$i]->{'auth-url'} ), $obj_DOM->{'delete-card'}[$i]->{'client-info'}->{'customer-ref'}, (string) $obj_DOM->{'delete-card'}[$i]->{'auth-token'} );
-                            } 
-                            else
-                            { 
-                                $code = General::authToken($iAccountID, $obj_ClientConfig->getSecret(), $_COOKIE['token']);
-                            }
-                            
+							if (count($obj_DOM->{'delete-card'}[$i]->{'auth-token'}) == 1
+							&& (count($obj_DOM->{'delete-card'}[$i]->{'auth-url'}) == 1 || strlen($obj_ClientConfig->getAuthenticationURL() ) > 0) )
+							{
+								$url = $obj_ClientConfig->getAuthenticationURL();
+								if (count($obj_DOM->{'delete-card'}[$i]->{'auth-url'}) == 1) { $url = (string) $obj_DOM->{'delete-card'}[$i]->{'auth-url'}; }
+								if ($obj_Validator->valURL($url, $obj_ClientConfig->getAuthenticationURL() ) == 10)
+								{
+									$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($url), $obj_DOM->{'delete-card'}[$i]->{'client-info'}->{'customer-ref'}, (string) $obj_DOM->{'delete-card'}[$i]->{'auth-token'} );
+								}
+								else { $code = 9; }
+							}
+							else { $code = $obj_mPoint->auth($iAccountID, (string) $obj_DOM->{'delete-card'}[$i]->password); }
+
 							// Authentication succeeded
 							if ($code >= 10)
 							{

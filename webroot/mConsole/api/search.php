@@ -50,20 +50,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->search->countryid);
 		
 		$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT,$obj_CountryConfig);
-		$xml = $obj_mPoint->searchTxnHistory( 
-												(string) $obj_DOM->search->clientid,
-												(string) $obj_DOM->search->transactionno,
-												(string) $obj_DOM->search->orderno,
-												(string) $obj_DOM->search->mobile,
-												(string) $obj_DOM->search->email,
-												(string) $obj_DOM->search->{'customer-reference'},
-												(string) $obj_DOM->search->{'start-date'},
-												(string) $obj_DOM->search->{'end-date'} );
+		$xml = $obj_mPoint->searchTxnHistory( (string) $obj_DOM->search->clientid, (string) $obj_DOM->search->transactionno, (string) $obj_DOM->search->orderno, (string) $obj_DOM->search->mobile, (string) $obj_DOM->search->email, (string) $obj_DOM->search->{'customer-reference'}, (string) $obj_DOM->search->{'start-date'}, (string) $obj_DOM->search->{'end-date'});
 		
 		$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT);
 		$xml .= $obj_mPoint->getAuditLog($obj_DOM->search->mobile, $obj_DOM->search->email, $obj_DOM->search->{'customer-reference'}, $obj_DOM->search->{'start-date'}, $obj_DOM->search->{'end-date'});
-		header("Content-Type: text/xml; charset=\"UTF-8\"");
-		$xml =  utf8_encode ( $xml );
+		
+		$xml = utf8_encode($xml);
 
 	}
 	// Error: Invalid XML Document
@@ -105,5 +97,8 @@ else
 }
 header("Content-Type: text/xml; charset=\"UTF-8\"");
 
+echo '<?xml version="1.0" encoding="UTF-8"?>';
+echo '<root>';
 echo $xml;
+echo '</root>';
 ?>

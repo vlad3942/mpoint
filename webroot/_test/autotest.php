@@ -149,6 +149,34 @@ class AutoTest
 	
 	public function getClient() { return $this->_obj_Client; }
 	public function getDebug() { return $this->_sDebug; }
+	
+	public function getCRISAuthToken()
+	{
+		$b = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<root>';
+		$b .= '<login>';
+		$b .= '<username>00777415236</username>';
+		$b .= '<password>a1111111</password>';
+		$b .= '</login>';
+		$b .= '</root>';
+		
+		$this->_aConnInfo["path"] = "/mpoint/emirates/cris/get-member";
+		
+		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
+		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
+		$this->_obj_Client->connect();
+		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
+		$this->_obj_Client->disconnect();
+		
+		if ($code == 200)
+		{
+			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
+			
+			return $obj_XML->{'auth-token'};
+		}
+		else { return ""; }
+	}
+	
 	/* ========== Automatic Payment Tests Start ========== */
 	public function initializePaymentTest()
 	{
@@ -274,13 +302,14 @@ class AutoTest
 		$b .= '<transactionno></transactionno>';
 		$b .= '<orderno></orderno>';
 		$b .= '<mobile>'. $this->_lMobile .'</mobile>';
-		$b .= '<email></email>';
-		$b .= '<start-date>2012-01-01T09:00:00</start-date>';
-		$b .= '<end-date>2014-06-01T09:00:00</end-date>';
+//		$b .= '<email></email>';
+//		$b .= '<start-date>2012-01-01T09:00:00</start-date>';
+//		$b .= '<end-date>2014-06-01T09:00:00</end-date>';
 		$b .= '</search>';
 		$b .= '</root>';
 		
 		$this->_aConnInfo["path"]= "/mConsole/api/search.php";
+		$port = $this->_aConnInfo["port"];
 		$this->_aConnInfo["port"] = 80;
 
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
@@ -288,10 +317,19 @@ class AutoTest
 		$this->_obj_Client->connect();
 		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
 		$this->_obj_Client->disconnect();
+		$this->_aConnInfo["port"] = $port;
 		if ($code == 200)
 		{
-			$this->_sDebug = $this->_obj_Client->getReplyBody();
-			return self::sSTATUS_SUCCESS;
+			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
+			if (count($obj_XML->{'audit-logs'}->{'audit-log'}) > 0)
+			{
+				return self::sSTATUS_SUCCESS;
+			}
+			else
+			{
+				$this->_sDebug = "No Audit Log Entries Found";
+				return self::sSTATUS_FAILED;
+			}
 		}
 		else
 		{
@@ -429,7 +467,7 @@ class AutoTest
 		}
 	}
 */	
-	public function loginAddressReturnTest()
+	public function loginUsingPasswordAddressReturnTest()
 	{
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
@@ -456,7 +494,7 @@ class AutoTest
 		if ($code == 200)
 		{
 			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
-			if (empty($obj_XML->{'stored-cards'}->card->address) === false)
+			if (count($obj_XML->{'stored-cards'}->card->address) == 1)
 			{
 				return self::sSTATUS_SUCCESS;
 			}	
@@ -477,8 +515,117 @@ class AutoTest
 			return self::sSTATUS_FAILED;
 		}
 	}
+	
+	private function _loginUsingSSOTest($at)
+	{
+		$b = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<root>';
+		$b .= '<login client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
+		$b .= '<auth-token>'. htmlspecialchars($at, ENT_NOQUOTES) .'</auth-token>';
+		$b .= $this->_constClientInfo();
+		$b .= '</login>';
+		$b .= '</root>';
+		
+		$this->_sDebug = "";
+		// mPoint
+		if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
+		{
+			$this->_aConnInfo["path"] = "/mApp/api/login.php";
+		}
+		// Mobile Enterprise Service Bus
+		else { $this->_aConnInfo["path"] = "/mpoint/login"; }
+		
+		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
+		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
+		$this->_obj_Client->connect();
+		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
+		$this->_obj_Client->disconnect();
+		
+		if ($code == 200)
+		{
+			return simplexml_load_string($this->_obj_Client->getReplyBody() );
+		}
+		elseif ($code == 401 || $code == 403)
+		{
+			$this->_sDebug = $this->_obj_Client->getReplyBody();
+			return self::sSTATUS_WARNING;
+		}
+		else
+		{
+			$this->_sDebug = $this->_obj_Client->getReplyBody();
+			return self::sSTATUS_FAILED;
+		}
+	}
+	
+	public function loginUsingSSOTest($at)
+	{
+		$obj_XML = $this->_loginUsingSSOTest($at);
+		if ( ($obj_XML instanceof SimpleXMLElement) === true)
+		{
+			if (count($obj_XML->{'stored-cards'}->card->address) == 1)
+			{
+				return self::sSTATUS_SUCCESS;
+			}
+			else
+			{
+				$this->_sDebug = "No address returned";
+				return self::sSTATUS_FAILED;
+			}
+		}
+		else { return self::sSTATUS_FAILED; }
+	}
+	
+	public function deleteCardUsingSSOTest($at)
+	{
+		$obj_XML = $this->_loginUsingSSOTest($at);
+		if ( ($obj_XML instanceof SimpleXMLElement) === true)
+		{
+			if (count($obj_XML->{'stored-cards'}->card) > 0)
+			{
+				$b = '<?xml version="1.0" encoding="UTF-8"?>';
+				$b .= '<root>';
+				$b .= '<delete-card client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
+				$b .= '<card>'. $obj_XML->{'stored-cards'}->card[0]["id"] .'</card>';
+				$b .= '<auth-token>'. htmlspecialchars($at, ENT_NOQUOTES) .'</auth-token>';
+				$b .= $this->_constClientInfo();
+				$b .= '</delete-card>';
+				$b .= '</root>';
+			
+				$this->_sDebug = "";
+				// mPoint
+				if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
+				{
+					$this->_aConnInfo["path"] = "/mApp/api/del_card.php";
+				}
+				// Mobile Enterprise Service Bus
+				else { $this->_aConnInfo["path"] = "/mpoint/delete-card"; }
+			
+				$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
+				$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
+				$this->_obj_Client->connect();
+				$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
+				$this->_obj_Client->disconnect();
+				
+				if ($code == 200)
+				{
+					return self::sSTATUS_SUCCESS;
+				}
+				else
+				{
+					$this->_sDebug = $this->_obj_Client->getReplyBody();
+					return self::sSTATUS_WARNING;
+				}
+			}
+			else
+			{
+				$this->_sDebug = "No Stored Cards returned";
+				return self::sSTATUS_WARNING;
+			}
+		}
+		else { return self::sSTATUS_WARNING; }
+	}
 
-	public function getStoredCardsTest()
+	public function loginUsingPassword()
 	{
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
@@ -675,13 +822,13 @@ $obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $s
 	</tr>
 	<tr>
 		<td class="name">Save Masked Card</td>
-		<td><?//= $obj_AutoTest->saveMaskedCardTest(); ?></td>
-		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?= $obj_AutoTest->saveMaskedCardTest(); ?></td>
+		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Initialize Payment</td>
-		<td><?//= $obj_AutoTest->initializePaymentTest(); ?></td>
-		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?= $obj_AutoTest->initializePaymentTest(); ?></td>
+		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Pay</td>
@@ -690,13 +837,13 @@ $obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $s
 	</tr>
 	<tr>
 		<td class="name">Authorize Stored Card using Single Sign-On</td>
-		<td><?//= $obj_AutoTest->authorizeStoredCardUsingSSOTest(); ?></td>
-		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?= $obj_AutoTest->authorizeStoredCardUsingSSOTest(); ?></td>
+		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Save Card Name</td>
-		<td><?//= $obj_AutoTest->saveCardNameTest(); ?></td>
-		<td><?//= $obj_AutoTest->getDebug(); ?></td>
+		<td><?= $obj_AutoTest->saveCardNameTest(); ?></td>
+		<td><?= $obj_AutoTest->getDebug(); ?></td>
 	</tr>
 	<tr>
 		<td class="name">mConsole Search</td>
@@ -704,14 +851,24 @@ $obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $s
 		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
-		<td class="name">Login Address Returned</td>
-		<td><?//= $obj_AutoTest->loginAddressReturnTest(); ?></td>
-		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td class="name">Login using Password with Billing Address Returned</td>
+		<td><?= $obj_AutoTest->loginUsingPasswordAddressReturnTest(); ?></td>
+		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
-		<td class="name">Get Stored Cards Test</td>
-		<td><?//= $obj_AutoTest->getStoredCardsTest(); ?></td>
-		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td class="name">Login using Single Sign-On</td>
+		<td><?= $obj_AutoTest->loginUsingSSOTest($obj_AutoTest->getCRISAuthToken() ); ?></td>
+		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Login using Password</td>
+		<td><?= $obj_AutoTest->loginUsingPassword(); ?></td>
+		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Delete Card using Single Sign-On</td>
+		<td><?= $obj_AutoTest->deleteCardUsingSSOTest($obj_AutoTest->getCRISAuthToken() ); ?></td>
+		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	</table>
 </body>

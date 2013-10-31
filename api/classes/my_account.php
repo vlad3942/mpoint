@@ -245,8 +245,13 @@ class MyAccount extends Home
 		$sql = "DELETE FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 				WHERE accountid = ". intval($id) ." AND id = ". intval($cardid);
 //		echo $sql ."\n";
+		$res = $this->getDBConn()->query($sql);
 		
-		return is_resource($this->getDBConn()->query($sql) );
+		if (is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) > 0)
+		{
+			return true;
+		}
+		else { return false; }
 	}
 	
 	/**

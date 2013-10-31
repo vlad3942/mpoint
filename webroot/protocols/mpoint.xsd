@@ -587,7 +587,7 @@
 <xs:group name="single-sign-on">
 	<xs:sequence>
 		<xs:element name="auth-token" type="xs:string" minOccurs="1" maxOccurs="1" />
-		<xs:element name="auth-url" type="url" minOccurs="1" maxOccurs="1" />
+		<xs:element name="auth-url" type="url" minOccurs="0" maxOccurs="1" />
 	</xs:sequence>
 </xs:group>
 
