@@ -97,7 +97,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										, (integer) $obj_DOM->{'save-country-configuration'}->countries->country[$i]['id']
 										, (string) $obj_DOM->{'save-country-configuration'}->countries->country[$i]->name
 										, (string) $obj_DOM->{'save-country-configuration'}->countries->country[$i]->currency
-										, (string) $obj_DOM->{'save-country-configuration'}->countries->countryies[$i]->symbol
+										, (string) $obj_DOM->{'save-country-configuration'}->countries->country[$i]->symbol
 										, (string) $obj_DOM->{'save-country-configuration'}->countries->country[$i]->{'price-format'}
 										, General::xml2bool($obj_DOM->{'save-country-configuration'}->countries->country[$i]['address-lookup'])
 										, (string) $obj_DOM->{'save-country-configuration'}->countries->country[$i]->{'min-mobile'}
@@ -131,7 +131,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$xml = '<status code="415">Invalid XML Document</status>';
 	}
 	// Error: Wrong operation
-	elseif (count($obj_DOM->pay) == 0)
+	elseif (count($obj_DOM->{'save-country-configuration'}) == 0)
 	{
 		header("HTTP/1.1 400 Bad Request");
 

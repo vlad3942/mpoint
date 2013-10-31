@@ -17,8 +17,8 @@ require_once(sAPI_CLASS_PATH ."simpledom.php");
 $aHTTP_CONN_INFO["mesb"]["protocol"] = "http";
 //$aHTTP_CONN_INFO["mesb"]["host"] = "10.150.242.42";
 $aHTTP_CONN_INFO["mesb"]["host"] = $_SERVER['HTTP_HOST'];
-$aHTTP_CONN_INFO["mesb"]["port"] = 80;
-//$aHTTP_CONN_INFO["mesb"]["port"] = 9000;
+$aHTTP_CONN_INFO["mesb"]["port"] = 80; // mPoint
+//$aHTTP_CONN_INFO["mesb"]["port"] = 9000; // MESB
 $aHTTP_CONN_INFO["mesb"]["timeout"] = 120;
 $aHTTP_CONN_INFO["mesb"]["method"] = "POST";
 $aHTTP_CONN_INFO["mesb"]["contenttype"] = "text/xml";
@@ -239,54 +239,97 @@ class AutoTest
         return $aMsgs;
     }
     
-    public function saveClientConfigUpdateTest(RDB &$oDB)
+    public function validateCountryConfigSaved(RDB &$oDB, SimpleDOMElement $obj_XML)
     {
-        $b = '<?xml version="1.0" encoding="UTF-8"?>';
-		$b .= '<root>';
-		$b .=  '<save-client-configuration>';
-        $b .=   '<client-config id="10025" store-card="3" auto-capture="true" country-id="100">';
-        $b .=    '<name>Emirates - IBE</name>';
-        $b .=    '<username>10000000</username>';
-        $b .=    '<password>99999999</password>';
-        $b .=    '<urls>';
-        $b .=     '<url type-id="1">http://mpoint.test.cellpointmobile.com/home/accept.php</url>';
-        $b .=     '<url type-id="2">http://mpoint.test.cellpointmobile.com/_test/auth.php</url>';
-        $b .=    '</urls>';
-        $b .=    '<keyword>EK</keyword>';
-        $b .=    '<cards>';
-        $b .=     '<card id="6" psp-id="7" country-id="100">VISA</card>';
-        $b .=     '<card id="7" psp-id="7" country-id="100">MasterCard</card>';
-        $b .=    '</cards>';
-        $b .=    '<payment-service-providers>';
-        $b .=     '<payment-service-provider id="7">';
-        $b .=      '<name>IBE</name>';
-        $b .=      '<username>IBE</username>';
-        $b .=      '<password>IBE</password>';
-        $b .=     '</payment-service-provider>';
-        $b .=    '</payment-service-providers>';
-        $b .=    '<accounts>';
-        $b .=     '<account>';
-        $b .=      '<name>Web</name>';
-        $b .=      '<markup>App</markup>';
-        $b .=      '<payment-service-providers>';
-        $b .=       '<payment-service-provider id="7">';
-        $b .=        '<name>IBE</name>';
-        $b .=       '</payment-service-provider>';
-        $b .=      '</payment-service-providers>';
-        $b .=     '</account>';
-        $b .=    '</accounts>';
-        $b .=   '</client-config>';
-        $b .=  '</save-client-configuration>';
-		$b .= '</root>';
+        $aValidatedIDs = array();
+        $aMsgs = array();
+        
+        // iterate backwards
+        for ($i = count($obj_XML->{'save-country-configuration'}->{'coutries'}->{'country'}) - 1; $i >= 0; $i--)
+        {
+            if (in_array(intval($obj_XML->{'save-country-configuration'}->{'coutries'}->{'country'}[$i]['id']), $aValidatedIDs) == FALSE)
+            {
+                $aRS = $oDB->getName("SELECT id FROM System".sSCHEMA_POSTFIX.".Country_Tbl"
+                        ." WHERE id = ". intval($obj_XML->{'save-country-configuration'}->{'coutries'}->{'country'}[$i]['id'])
+                        ." AND addr_lookup = ". General::xml2bool($obj_XML->{'save-country-configuration'}->{'coutries'}->{'country'}[$i]['address-lookup'])
+                        ." AND name = '". $oDB->escStr($obj_XML->{'save-country-configuration'}->{'coutries'}->{'country'}[$i]->name) ."'"
+                        ." AND minmob = '". $oDB->escStr($obj_XML->{'save-country-configuration'}->{'coutries'}->{'country'}[$i]->{'min-mobile'}) ."'"
+                        ." AND maxmob = '". $oDB->escStr($obj_XML->{'save-country-configuration'}->{'coutries'}->{'country'}[$i]->{'max-mobile'}) ."'"
+                        ." AND currency = '". $oDB->escStr($obj_XML->{'save-country-configuration'}->{'coutries'}->{'country'}[$i]->currency) ."'"
+                        ." AND symbol = '". $oDB->escStr($obj_XML->{'save-country-configuration'}->{'coutries'}->{'country'}[$i]->symbol) ."'"
+                        ." AND priceformat = '". $oDB->escStr($obj_XML->{'save-country-configuration'}->{'coutries'}->{'country'}[$i]->{'price-format'}) ."'");
+
+                if (empty($aRS) )
+                {
+                    $aMsgs[] = 'Country with id='. intval($obj_XML->{'save-country-configuration'}->{'coutries'}->{'country'}[$i]['id']). "wasn't updated properly";
+                }
+                else
+                {
+                    $aValidatedIDs[] = intval($obj_XML->{'save-country-configuration'}->{'coutries'}->{'country'}[$i]['id']);
+                }
+            }
+        }
+        
+        return $aMsgs;
+    }
+    
+    public function saveCountryConfigTest(RDB &$oDB)
+    {
+        $iCountryID = 100; // keep 0 to let the test to insert test data into database or set value to use specific id
         
         $this->_sDebug = "";
+        if ($iCountryID == 0)
+        {
+            $sInsertSql = "INSERT INTO System".sSCHEMA_POSTFIX.".Country_Tbl (name, minmob, maxmob, currency, symbol, priceformat, addr_lookup)"
+                    . " VALUES ('Autotest Country', '10000000', '99999999', 'CCC', '$$$', '{PRICE} {CURRENCY}', TRUE)";
+            if (is_resource($oDB->query($sInsertSql) ) === TRUE )
+            {
+                $aRS = $oDB->getIndex("SELECT MAX(id) AS id FROM System".sSCHEMA_POSTFIX.".Country_Tbl");
+                $iCountryID = intval($aRS["ID"]);
+                $bDeleteInsertedData = TRUE;
+            }
+            else
+            {
+                $this->_sDebug .= "Can't insert test data, the test will fail. ";
+            }
+        }
+        
+		$b = '<?xml version="1.0" encoding="UTF-8"?>';
+        $b .= '<root>';
+        $b .= '<save-country-configuration>';
+        $b .= '<countries>';
+
+        $b .= '<country id="'.$iCountryID.'" address-lookup="true">';
+        $b .= '<name>Denmark</name>';
+        $b .= '<min-mobile>10000000</min-mobile>';
+        $b .= '<max-mobile>99999999</max-mobile>';
+        $b .= '<currency>DKK</currency>';
+        $b .= '<symbol>kr</symbol>';
+        $b .= '<price-format>{PRICE} {CURRENCY}</price-format>';
+        $b .= '</country>';
+
+        $b .= '<country id="'.$iCountryID.'" address-lookup="true">';
+        $b .= '<name>Denmark</name>';
+        $b .= '<min-mobile>10000000</min-mobile>';
+        $b .= '<max-mobile>99999999</max-mobile>';
+        $b .= '<currency>DKK</currency>';
+        $b .= '<symbol>kr</symbol>';
+        $b .= '<price-format>{PRICE} {CURRENCY}</price-format>';
+        $b .= '</country>';
+
+        $b .= '</countries>';
+        $b .= '</save-country-configuration>';
+        $b .= '</root>';
+        
 		// mPoint
 		if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
 		{
-			$this->_aConnInfo["path"] = "/admin/api/save_client_config.php";
+			$this->_aConnInfo["path"] = "/admin/api/save_country_config.php";
 		}
 		// Mobile Enterprise Service Bus
-		else { $this->_aConnInfo["path"] = "/mpoint/save-client-config"; }
+		else {
+            $this->_aConnInfo["path"] = "/mpoint/save-country-config";
+        }
 		
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
 		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
@@ -296,11 +339,11 @@ class AutoTest
         
 		if ($code == 200)
 		{
-            $this->_sDebug = $this->_obj_Client->getReplyBody();
+            $this->_sDebug .= $this->_obj_Client->getReplyBody();
             
             // White box testing
             $obj_XML = simpledom_load_string($b);
-            $aMsgs = $this->validateClientConfigSaved($oDB, $obj_XML);
+            $aMsgs = $this->validateCountryConfigSaved($oDB, $obj_XML);
             
             if (empty($aMsgs) == TRUE)
             {
@@ -314,14 +357,22 @@ class AutoTest
 		}
 		elseif ($code == 401 || $code == 403)
 		{
-			$this->_sDebug = $this->_obj_Client->getReplyBody();
+			$this->_sDebug .= $this->_obj_Client->getReplyBody();
 			return self::sSTATUS_WARNING;
 		}
 		else
 		{
-			$this->_sDebug = $this->_obj_Client->getReplyBody();
+			$this->_sDebug .= $this->_obj_Client->getReplyBody();
 			return self::sSTATUS_FAILED;
 		}
+        
+        if ($bDeleteInsertedData)
+        {
+            if (is_resource($oDB->query("DELETE System".sSCHEMA_POSTFIX.".Country_Tbl WHERE id = ". $iCountryID)) == FALSE)
+            {
+                $this->_sDebug .= "Can't delete inserted test data ";
+            }
+        }
     }
     
     public function saveClientConfigInsertTest(RDB &$oDB)
@@ -431,6 +482,91 @@ class AutoTest
 		}
     }
     
+    public function saveClientConfigUpdateTest(RDB &$oDB)
+    {
+        $b = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<root>';
+		$b .=  '<save-client-configuration>';
+        $b .=   '<client-config id="10025" store-card="3" auto-capture="true" country-id="100">';
+        $b .=    '<name>Emirates - IBE</name>';
+        $b .=    '<username>10000000</username>';
+        $b .=    '<password>99999999</password>';
+        $b .=    '<urls>';
+        $b .=     '<url type-id="1">http://mpoint.test.cellpointmobile.com/home/accept.php</url>';
+        $b .=     '<url type-id="2">http://mpoint.test.cellpointmobile.com/_test/auth.php</url>';
+        $b .=    '</urls>';
+        $b .=    '<keyword>EK</keyword>';
+        $b .=    '<cards>';
+        $b .=     '<card id="6" psp-id="7" country-id="100">VISA</card>';
+        $b .=     '<card id="7" psp-id="7" country-id="100">MasterCard</card>';
+        $b .=    '</cards>';
+        $b .=    '<payment-service-providers>';
+        $b .=     '<payment-service-provider id="7">';
+        $b .=      '<name>IBE</name>';
+        $b .=      '<username>IBE</username>';
+        $b .=      '<password>IBE</password>';
+        $b .=     '</payment-service-provider>';
+        $b .=    '</payment-service-providers>';
+        $b .=    '<accounts>';
+        $b .=     '<account>';
+        $b .=      '<name>Web</name>';
+        $b .=      '<markup>App</markup>';
+        $b .=      '<payment-service-providers>';
+        $b .=       '<payment-service-provider id="7">';
+        $b .=        '<name>IBE</name>';
+        $b .=       '</payment-service-provider>';
+        $b .=      '</payment-service-providers>';
+        $b .=     '</account>';
+        $b .=    '</accounts>';
+        $b .=   '</client-config>';
+        $b .=  '</save-client-configuration>';
+		$b .= '</root>';
+        
+        $this->_sDebug = "";
+		// mPoint
+		if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
+		{
+			$this->_aConnInfo["path"] = "/admin/api/save_client_config.php";
+		}
+		// Mobile Enterprise Service Bus
+		else { $this->_aConnInfo["path"] = "/mpoint/save-client-config"; }
+		
+		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
+		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
+		$this->_obj_Client->connect();
+		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);		
+		$this->_obj_Client->disconnect();
+        
+		if ($code == 200)
+		{
+            $this->_sDebug = $this->_obj_Client->getReplyBody();
+            
+            // White box testing
+            $obj_XML = simpledom_load_string($b);
+            $aMsgs = $this->validateClientConfigSaved($oDB, $obj_XML);
+            
+            if (empty($aMsgs) == TRUE)
+            {
+                return self::sSTATUS_SUCCESS;
+            }
+            else 
+            {
+                $this->_sDebug .= join(", ", $aMsgs);
+                return self::sSTATUS_WARNING;
+            }
+		}
+		elseif ($code == 401 || $code == 403)
+		{
+			$this->_sDebug = $this->_obj_Client->getReplyBody();
+			return self::sSTATUS_WARNING;
+		}
+		else
+		{
+			$this->_sDebug = $this->_obj_Client->getReplyBody();
+			return self::sSTATUS_FAILED;
+		}
+    }
+    
     /* ========== Administration Tests End ========== */
 }
 
@@ -509,6 +645,12 @@ $obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $s
         <td><?= $obj_AutoTest->saveClientConfigUpdateTest($_OBJ_DB); ?></td>
 		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
+    <tr>
+		<td class="name">Save Country Config Test</td>
+        <td><?= $obj_AutoTest->saveCountryConfigTest($_OBJ_DB); ?></td>
+		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
 	</table>
+    <p>Running against <?php if ($aHTTP_CONN_INFO["mesb"]["port"] == 80 || $aHTTP_CONN_INFO["mesb"]["port"] == 443) { echo 'mPoint'; } else { echo 'MESB'; } ?> (<?= $aHTTP_CONN_INFO["mesb"]["host"] ?>:<?= $aHTTP_CONN_INFO["mesb"]["port"] ?>) </p>
 </body>
 </html>
