@@ -685,6 +685,115 @@ class AutoTest
 			return self::sSTATUS_FAILED;
 		}
 	}
+	
+
+	public function savePreferenceInCRISSuccessTest($at)
+	{
+		$b = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<root>';
+		$b .= '<notify>';
+		$b .= '<auth-token>'. $at .'</auth-token>';
+		$b .= $this->_constClientInfo();
+		$b .= '<preference>';
+		$b .= '<category-id>9</category-id>';
+		$b .= '<category-description>Lifestyle</category-description>';
+		$b .= '<preference-type-code>SOCCER</preference-type-code>';
+		$b .= '<preference-type-description>Soccer</preference-type-description>';
+		$b .= '<parent-card-no></parent-card-no>';
+		$b .= '</preference>';
+		$b .= '<customer>';
+		$b .= '<stored-cards>2</stored-cards>';
+		$b .= '</customer>';
+		$b .= '</notify>';
+		$b .= '</root>';
+	
+		$this->_aConnInfo["path"] = "/mpoint/emirates/cris/save-preferences";
+	
+		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
+		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
+		$this->_obj_Client->connect();
+		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
+		$this->_obj_Client->disconnect();
+		if ($code == 200)
+		{
+			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
+			$c = $obj_XML->{'stored-cards'};
+			if ($obj_XML->{'status'}->code === "200")
+			{
+				return self::sSTATUS_SUCCESS;
+			}
+			else
+			{
+				$this->_sDebug = $obj_XML->{'status'};
+				return self::sSTATUS_FAILED;
+			}
+		}
+		elseif ($code == 401 || $code == 403)
+		{
+			$this->_sDebug = $this->_obj_Client->getReplyBody();
+			return self::sSTATUS_WARNING;
+		}
+		else
+		{
+			$this->_sDebug = $this->_obj_Client->getReplyBody();
+			return self::sSTATUS_FAILED;
+		}
+	}
+	
+	public function savePreferenceInCRISFailureTest($at)
+	{
+	
+		$b = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<root>';
+		$b .= '<notify>';
+		$b .= '<auth-token>'. $at .'</auth-token>';
+		$b .= $this->_constClientInfo();
+		$b .= '<preference>';
+		$b .= '<category-id>9</category-id>';
+		$b .= '<category-description>Lifestyle</category-description>';
+		$b .= '<preference-type-code>SOCCER</preference-type-code>';
+		$b .= '<preference-type-description>Soccer</preference-type-description>';
+		$b .= '<parent-card-no></parent-card-no>';
+		$b .= '</preference>';
+		$b .= '<customer>';
+		$b .= '<stored-cards>2</stored-cards>';
+		$b .= '</customer>';
+		$b .= '</notify>';
+		$b .= '</root>';
+	
+		$this->_aConnInfo["path"] = "/mpoint/emirates/cris/save-preferences";
+	
+		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
+		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
+		$this->_obj_Client->connect();
+		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
+		$this->_obj_Client->disconnect();
+		if ($code == 200)
+		{
+			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
+			$c = $obj_XML->{'stored-cards'};
+			if ($obj_XML->{'status'}->code === "200")
+			{
+				return self::sSTATUS_SUCCESS;
+			}
+			else
+			{
+				$this->_sDebug = $obj_XML->{'status'};
+				return self::sSTATUS_FAILED;
+			}
+		}
+		elseif ($code == 401 || $code == 403)
+		{
+			$this->_sDebug = $this->_obj_Client->getReplyBody();
+			return self::sSTATUS_WARNING;
+		}
+		else
+		{
+			$this->_sDebug = $this->_obj_Client->getReplyBody();
+			return self::sSTATUS_FAILED;
+		}
+	}
+	
 	/* ========== Automatic Account Management Tests End ========== */
 }
 
@@ -872,6 +981,16 @@ $obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $s
 	<tr>
 		<td class="name">Delete Card using Single Sign-On</td>
 		<td><?= $obj_AutoTest->deleteCardUsingSSOTest($obj_AutoTest->getCRISAuthToken() ); ?></td>
+		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Save Preferences in CRIS Success</td>
+		<td><?= $obj_AutoTest->savePreferenceInCRISSuccessTest($obj_AutoTest->getCRISAuthToken() ); ?></td>
+		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+		<tr>
+		<td class="name">Save Preferences in CRIS Fail</td>
+		<td><?= $obj_AutoTest->savePreferenceInCRISFailureTest($obj_AutoTest->getCRISAuthToken() ); ?></td>
 		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	</table>
