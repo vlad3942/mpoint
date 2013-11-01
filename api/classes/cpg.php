@@ -57,16 +57,19 @@ class CPG extends Callback
 		return $name;
 	}
 	
-	public function authTicket(SimpleXMLElement $obj_XML, HTTPConnInfo &$oCI)
+	public function initialize(SimpleXMLElement $obj_XML, HTTPConnInfo &$oCI)
 	{
-		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );
-		 
+		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );	
+		$clientVars = $this->getMessageData($this->getTxnInfo()->getID(), Constants::iCLIENT_VARS_STATE);
+		
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
         $b .= '<submit>';
         $b .= ' <shortCode>'. htmlspecialchars( $this->getTxnInfo()->getClientConfig()->getAccountConfig()->getName(),ENT_NOQUOTES ) .'</shortCode>'; // Short code of the Storefront application 
         $b .= ' <order orderCode="'. htmlspecialchars( $this->getTxnInfo()->getOrderID(),ENT_NOQUOTES  ) .'">'; // mandatory, needs to be unique
         $b .= '  <description>'. htmlspecialchars("mPoint ID: ". $this->getTxnInfo()->getID() ." for Order No.:". $this->getTxnInfo()->getOrderID() , ENT_NOQUOTES) .'</description>';        
         $b .= '  <amount value="'. htmlspecialchars($this->getTxnInfo()->getAmount(),ENT_NOQUOTES ) .'" curencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getClientConfig()->getCountryConfig()->getID(), Constants::iCPM_PSP),ENT_NOQUOTES ) .'" exponent="2" debitCardIndication="credit"/>'; 
+      	//TODO what to do with that??
+        //$b .= '  <tax currencyCode="'.AED.'" exponent="'. 2 .'" value="'. 11705 .'"/>';
         $b .= '  <orderContent>';
         $b .= '   <![CDATA]['. htmlspecialchars( $this->getTxnInfo()->getDescription(), ENT_NOQUOTES) .']]>'; // don't use <html><body> tags
         $b .= '  </orderContent>';
@@ -80,9 +83,22 @@ class CPG extends Callback
         $b .= '    <expiryDate>';
         $b .= '     <date month="'. substr($obj_XML->expiry,0,2) .'" year="'. substr($obj_XML->expiry, -2) .'" />'; // mandatory
         $b .= '    </expiryDate>';
-        //TODO do we have cardHolderName ?
         $b .= '    <cardHolderName>'. htmlspecialchars($obj_XML->address->{'card-holder-name'}, ENT_NOQUOTES) .'</cardHolderName>'; // mandatory
-        //$b .= '    <cardHolderName>'. htmlspecialchars($obj_XML->cardHolderName, ENT_NOQUOTES) .'</cardHolderName>'; // mandatory
+		foreach ($clientVars as $name => $value)
+		{
+			if ( $name === "var_fiscalNumber")
+			{
+				$b .= '	   <fiscalNumber>"'. htmlspecialchars(utf8_encode($value), ENT_NOQUOTES) .'"</fiscalNumber>';
+			}
+			else if ( $name === "var_paymentCountryCode")
+			{
+				$b .= '	   <paymentCountryCode>"'. htmlspecialchars(utf8_encode($value), ENT_NOQUOTES) .'"</paymentCountryCode>';
+			}
+			else if ( $name === "var_numberofinstalments")
+			{
+				$b .= '	   <pnumberofinstalments>"'. htmlspecialchars(utf8_encode($value), ENT_NOQUOTES) .'"</numberofinstalments>';
+			}			
+		}      
         $b .= '    <cardAddress>';
         $b .= '     <address>';
         $b .= '      <firstName>'. htmlspecialchars($obj_XML->address->{'first-name'}, ENT_NOQUOTES) .'</firstName>'; // mandatory, 0-40 chars
@@ -90,7 +106,7 @@ class CPG extends Callback
         $b .= '      <street>'. htmlspecialchars($obj_XML->address->street, ENT_NOQUOTES) .'</street>'; // mandatory, 0-100 chars
         $b .= '      <postalCode>'. intval($obj_XML->address->{'postal-code'}) .'</postalCode>'; // optional, 0-20 chars
         $b .= '      <city>'. htmlspecialchars($obj_XML->address->city, ENT_NOQUOTES) .'</city>'; // mandatory, 0-50 chars
-        $b .= '      <countryCode>'. getCountryName($obj_XML->address['country-id'], ENT_NOQUOTES) .'</countryCode>'; // mandatory, 2-2 chars
+        $b .= '      <countryCode>'. intval($obj_XML->address['country-id'], ENT_NOQUOTES) .'</countryCode>'; // mandatory, 2-2 chars
         $b .= '      <telephoneNumber>'. floatval($this->getTxnInfo()->getMobile() ) .'</telephoneNumber>'; // optional
         $b .= '     </address>';
         $b .= '    </cardAddress>';
@@ -111,10 +127,17 @@ class CPG extends Callback
         $b .= '      <street>'. htmlspecialchars($obj_XML->address->street, ENT_NOQUOTES) .'</street>'; // mandatory, 0-100 chars
         $b .= '      <postalCode>'. intval($obj_XML->address->{'postal-code'}) .'</postalCode>'; // optional, 0-20 chars
         $b .= '      <city>'. htmlspecialchars($obj_XML->address->city, ENT_NOQUOTES) .'</city>'; // mandatory, 0-50 chars
-        $b .= '      <countryCode>'. getCountryName($obj_XML->address['country-id'], ENT_NOQUOTES) .'</countryCode>'; // mandatory, 2-2 chars
+        $b .= '      <countryCode>'. intval($obj_XML->address['country-id'], ENT_NOQUOTES) .'</countryCode>'; // mandatory, 2-2 chars
         $b .= '      <telephoneNumber>'. floatval($this->getTxnInfo()->getMobile() ) .'</telephoneNumber>'; // optional
         $b .= '   </address>';
         $b .= '  </shippingAddress>';
+        foreach ($clientVars as $name => $value)
+        {
+        	if ( $name === "var_enchancedData")
+        	{
+        		$b .= '	   <enchancedData>"'. htmlspecialchars(utf8_encode($value), ENT_NOQUOTES) .'"</enchancedData>';
+        	}      	
+        }
         $b .= ' </order>';
         $b .= ' <returnURL>'. "http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?mpoint-id=". $this->getTxnInfo()->getID() .'</returnURL>';
         $b .= '</submit>';
@@ -140,25 +163,6 @@ class CPG extends Callback
         }
         
 		return $xml;
-	}
-	
-	public function getCounrtyName($id)
-	{		
-	switch ($id)
-		{
-		case (1):	// American Express
-			$name = "AZ"; 
-			break;
-		case (2):	// Dankort
-			$name = "DK";
-			break;
-		//giant switch here
-		default:	// Unknown
-			break;
-		}
-		return $name;
-		
-	}
-	
+	}		
 }
 ?>

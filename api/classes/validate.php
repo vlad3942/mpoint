@@ -102,7 +102,7 @@ class Validate
 			}
 			else { $code = 3; }	// Unknown Client ID
 		}
-
+		
 		return $code;
 	}
 
