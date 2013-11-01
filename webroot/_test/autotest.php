@@ -13,15 +13,19 @@ require_once(sAPI_CLASS_PATH ."/http_client.php");
  * Connection info for sending error reports to a remote host
  */
 $aHTTP_CONN_INFO["mesb"]["protocol"] = "http";
+//$aHTTP_CONN_INFO["mesb"]["host"] = "192.168.1.12"; // Simon
 $aHTTP_CONN_INFO["mesb"]["host"] = "10.150.242.42";
 //$aHTTP_CONN_INFO["mesb"]["host"] = $_SERVER['HTTP_HOST'];
-//$aHTTP_CONN_INFO["mesb"]["port"] = 80;
-$aHTTP_CONN_INFO["mesb"]["port"] = 9000;
+//$aHTTP_CONN_INFO["mesb"]["port"] = 10080; // Local MESB
+//$aHTTP_CONN_INFO["mesb"]["port"] = 80; // mPoint
+$aHTTP_CONN_INFO["mesb"]["port"] = 9000; // MESB
 $aHTTP_CONN_INFO["mesb"]["timeout"] = 120;
 $aHTTP_CONN_INFO["mesb"]["method"] = "POST";
 $aHTTP_CONN_INFO["mesb"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["mesb"]["username"] = "IBE";
 $aHTTP_CONN_INFO["mesb"]["password"] = "kjsg5Ahf_1";
+//$aHTTP_CONN_INFO["mesb"]["username"] = "CPMDemo"; // Local username
+//$aHTTP_CONN_INFO["mesb"]["password"] = "DEMOisNO_2"; // Local password
 
 //$h .= "user-agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:20.0) Gecko/20100101 Firefox/20.0" .HTTPClient::CRLF;
 //$h .= "accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" .HTTPClient::CRLF;
@@ -79,7 +83,7 @@ class AutoTest
 	{
 		$xml = '<client-info platform="iOS" version="5.1.1" language="da">';
 		$xml .= '<customer-ref>'. htmlspecialchars($this->_sCustomerRef, ENT_NOQUOTES) .'</customer-ref>';
-		$xml .= '<mobile country-id="100" operator-id="10000">'. $this->_lMobile .'</mobile>';
+		$xml .= '<mobile country-id="DK" operator-id="10000">'. $this->_lMobile .'</mobile>';
 		$xml .= '<email>'. $this->_sEMail .'</email>';
 		$xml .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
 		$xml .= '</client-info>';
@@ -93,7 +97,7 @@ class AutoTest
 		$b .= '<root>';
 		$b .= '<initialize-payment client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
 		$b .= '<transaction order-no="1234abc">';
-		$b .= '<amount country-id="100">1000</amount>';
+		$b .= '<amount country-id="DK">1000</amount>';
 		$b .= '<auth-url>http://localhost/_test/auth.php</auth-url>';
 		$b .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
 		$b .= '<description>
@@ -201,7 +205,7 @@ class AutoTest
 			$b .= '<root>';
 			$b .= '<pay client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
 			$b .= '<transaction id="'. $obj_XML->transaction["id"] .'" store-card="false">';
-			$b .= '<card type-id="2">';
+			$b .= '<card type-id="VISADANKORT">';
 			$b .= '<amount country-id="'. $obj_XML->transaction->amount["country-id"] .'">'. $obj_XML->transaction->amount .'</amount>';
 			$b .= '</card>';
 			$b .= '</transaction>';
@@ -345,7 +349,7 @@ class AutoTest
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<save-card client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
-		$b .= '<card type-id="6" preferred="true">';
+		$b .= '<card type-id="MAESTRO" preferred="true">';
 		$b .= '<name>My VISA</name>';
 		$b .= '</card>';
 		$b .= $this->_constClientInfo();
@@ -381,19 +385,19 @@ class AutoTest
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<save-card client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
-		$b .= '<card psp-id="9" type-id="6" preferred="true">';
+		$b .= '<card psp-id="9" type-id="MAESTRO" preferred="true">';
 		$b .= '<name>My VISA</name>';
 		$b .= '<card-number-mask>540287******1244</card-number-mask>';
 		$b .= '<expiry-month>10</expiry-month>';
 		$b .= '<expiry-year>14</expiry-year>';
 		$b .= '<token>123456-ABCD</token>';
 		$b .= '<card-holder-name>Jonatan Evad Buus</card-holder-name>';
-		$b .= '<address country-id="100">';
+		$b .= '<address country-id="DK">';
 		$b .= '<first-name>Jonatan Evald</first-name>';
 		$b .= '<last-name>Buus</last-name>';
 		$b .= '<street>Dexter Gordons Vej 3, 6.tv</street>';
 		$b .= '<postal-code>2450</postal-code>';
-		$b .= '<city>'. utf8_encode("København SV") .'</city>';
+		$b .= '<city>'. utf8_encode("Kï¿½benhavn SV") .'</city>';
 		$b .= '<state>N/A</state>';
 		$b .= '</address>';
 		$b .= '</card>';
