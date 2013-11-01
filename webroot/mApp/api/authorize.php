@@ -43,6 +43,8 @@ require_once(sCLASS_PATH ."/wannafind.php");
 require_once(sCLASS_PATH ."/netaxept.php");
 // Require specific Business logic for the WorldPay component
 require_once(sCLASS_PATH ."/worldpay.php");
+// Require specific Business logic for the Emirates' Corporate Payment Gateway (CPG) component
+require_once(sCLASS_PATH ."/cpg.php");
 
 
 ignore_user_abort(true);
@@ -277,7 +279,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												
 													$xml .= '<status code="92">Authorization failed, NetAxcept returned error: '. $iTxnID .'</status>';
 												}
-												break;											
+												break;
+											case (Constants::iCPG_PSP):
+												$obj_PSP = new CPG($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+												$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), Constants::iCPG_PSP);
+											
+												$aHTTP_CONN_INFO["cpg"]["username"] = $obj_PSPConfig->getUsername();
+												$aHTTP_CONN_INFO["cpg"]["password"] = $obj_PSPConfig->getPassword();
+												$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["cpg"]);
+											
+												$xml .= $obj_PSP->authTicket($obj_Elem, $oCI);
+												break;
 											default:	// Unkown Error
 												$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 												

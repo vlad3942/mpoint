@@ -57,7 +57,7 @@ class CPG extends Callback
 		return $name;
 	}
 	
-	public function initialize(SimpleXMLElement $obj_XML, HTTPConnInfo &$oCI)
+	public function authTicket(SimpleXMLElement $obj_XML, HTTPConnInfo &$oCI)
 	{
 		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );	
 		$clientVars = $this->getMessageData($this->getTxnInfo()->getID(), Constants::iCLIENT_VARS_STATE);
@@ -68,8 +68,10 @@ class CPG extends Callback
         $b .= ' <order orderCode="'. htmlspecialchars( $this->getTxnInfo()->getOrderID(),ENT_NOQUOTES  ) .'">'; // mandatory, needs to be unique
         $b .= '  <description>'. htmlspecialchars("mPoint ID: ". $this->getTxnInfo()->getID() ." for Order No.:". $this->getTxnInfo()->getOrderID() , ENT_NOQUOTES) .'</description>';        
         $b .= '  <amount value="'. htmlspecialchars($this->getTxnInfo()->getAmount(),ENT_NOQUOTES ) .'" curencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getClientConfig()->getCountryConfig()->getID(), Constants::iCPM_PSP),ENT_NOQUOTES ) .'" exponent="2" debitCardIndication="credit"/>'; 
-      	//TODO what to do with that??
-        //$b .= '  <tax currencyCode="'.AED.'" exponent="'. 2 .'" value="'. 11705 .'"/>';
+		if  (array_key_exists("var_tax", $aClientVars) === true)
+		{
+			$b .= '	   <tax "'. $clientVars["var_tax"] .'"/>';
+		}					
         $b .= '  <orderContent>';
         $b .= '   <![CDATA]['. htmlspecialchars( $this->getTxnInfo()->getDescription(), ENT_NOQUOTES) .']]>'; // don't use <html><body> tags
         $b .= '  </orderContent>';
@@ -84,21 +86,18 @@ class CPG extends Callback
         $b .= '     <date month="'. substr($obj_XML->expiry,0,2) .'" year="'. substr($obj_XML->expiry, -2) .'" />'; // mandatory
         $b .= '    </expiryDate>';
         $b .= '    <cardHolderName>'. htmlspecialchars($obj_XML->address->{'card-holder-name'}, ENT_NOQUOTES) .'</cardHolderName>'; // mandatory
-		foreach ($clientVars as $name => $value)
+		if (array_key_exists("var_fiscal-number", $aClientVars) === true)
 		{
-			if ( $name === "var_fiscalNumber")
-			{
-				$b .= '	   <fiscalNumber>"'. htmlspecialchars(utf8_encode($value), ENT_NOQUOTES) .'"</fiscalNumber>';
-			}
-			else if ( $name === "var_paymentCountryCode")
-			{
-				$b .= '	   <paymentCountryCode>"'. htmlspecialchars(utf8_encode($value), ENT_NOQUOTES) .'"</paymentCountryCode>';
-			}
-			else if ( $name === "var_numberofinstalments")
-			{
-				$b .= '	   <pnumberofinstalments>"'. htmlspecialchars(utf8_encode($value), ENT_NOQUOTES) .'"</numberofinstalments>';
-			}			
-		}      
+			$b .= '	   <fiscalNumber>"'. $clientVars["var_fiscal-number"] .'"</fiscalNumber>';
+		}
+		if (array_key_exists("var_payment-country-code", $aClientVars) === true)
+		{
+			$b .= '	   <paymentCountryCode>"'. $clientVars["var_payment-country-code"] .'"</paymentCountryCode>';
+		}
+		if (array_key_exists("var_number-of-instalments", $aClientVars) === true)
+		{
+			$b .= '	   <pnumberofinstalments>"'. $clientVars["var_number-of-instalments"] .'"</numberofinstalments>';
+		}			    
         $b .= '    <cardAddress>';
         $b .= '     <address>';
         $b .= '      <firstName>'. htmlspecialchars($obj_XML->address->{'first-name'}, ENT_NOQUOTES) .'</firstName>'; // mandatory, 0-40 chars
@@ -131,12 +130,9 @@ class CPG extends Callback
         $b .= '      <telephoneNumber>'. floatval($this->getTxnInfo()->getMobile() ) .'</telephoneNumber>'; // optional
         $b .= '   </address>';
         $b .= '  </shippingAddress>';
-        foreach ($clientVars as $name => $value)
+        if (array_key_exists("var_enhanced-data", $aClientVars) === true)
         {
-        	if ( $name === "var_enchancedData")
-        	{
-        		$b .= '	   <enchancedData>"'. htmlspecialchars(utf8_encode($value), ENT_NOQUOTES) .'"</enchancedData>';
-        	}      	
+        	$b .= '	   <enchancedData>"'. $clientVars["var_enhanced-data"] .'"</enchancedData>';
         }
         $b .= ' </order>';
         $b .= ' <returnURL>'. "http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?mpoint-id=". $this->getTxnInfo()->getID() .'</returnURL>';
