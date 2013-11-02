@@ -29,6 +29,8 @@ require_once(sCLASS_PATH ."/enduser_account.php");
 require_once(sCLASS_PATH ."/my_account.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
+// Require Data Class for Client Information
+require_once(sCLASS_PATH ."/clientinfo.php");
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
@@ -82,8 +84,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$obj_mPoint = new MyAccount($_OBJ_DB, $_OBJ_TXT, $obj_CountryConfig);
 						$obj_Validator = new Validate($obj_CountryConfig);
 						$aMsgCds = array();
-				
-						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig);
+						
+						$iAccountID = -1;
+						if (count($obj_DOM->{'delete-card'}[$i]->{'client-info'}->{'customer-ref'}) == 1) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->{'customer-ref'}); }
+						if ($iAccountID < 0 && count($obj_DOM->{'delete-card'}[$i]->{'client-info'}->mobile) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
 						if ($iAccountID < 0 && count($obj_DOM->{'delete-card'}[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
 						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->mobile); }
 						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->email); }
@@ -105,7 +109,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								{
 									$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($url), $obj_DOM->{'delete-card'}[$i]->{'client-info'}->{'customer-ref'}, (string) $obj_DOM->{'delete-card'}[$i]->{'auth-token'} );
 								}
-								else { $code = 9; }
+								else { $code = 6; }
 							}
 							else { $code = $obj_mPoint->auth($iAccountID, (string) $obj_DOM->{'delete-card'}[$i]->password); }
 
@@ -124,7 +128,69 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									// Success: Stored Card Deleted
 									if ($obj_mPoint->delStoredCard($iAccountID, (integer) $obj_DOM->{'delete-card'}[$i]->card) === true)
 									{
-										$xml = '<status code="100">Card successfully deleted</status>';
+										// Success: Card saved
+										if ($code > 0 && $obj_ClientConfig->getNotificationURL() != "")
+										{
+											try
+											{
+												$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'delete-card'}[$i]->{'client-info'}, $obj_CountryConfig, @$_SERVER['HTTP_X_FORWARDED_FOR']);
+										
+												$aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID, $obj_ClientConfig->showAllCards() ) );
+												$aObj_XML = $aObj_XML->xpath("/stored-cards/card[client/@id = ". $obj_ClientConfig->getID() ."]");
+													
+												$aURL_Info = parse_url($obj_mPoint->getClientConfig()->getNotificationURL() );
+												$aHTTP_CONN_INFO["mesb"]["protocol"] = $aURL_Info["scheme"];
+												$aHTTP_CONN_INFO["mesb"]["host"] = $aURL_Info["host"];
+												$aHTTP_CONN_INFO["mesb"]["port"] = $aURL_Info["port"];
+												$aHTTP_CONN_INFO["mesb"]["path"] = $aURL_Info["path"];
+												if (array_key_exists("query", $aURL_Info) === true) { $aHTTP_CONN_INFO["mesb"]["path"] .= "?". $aURL_Info["query"]; }
+												$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
+													
+												switch ($obj_mPoint->notify($obj_ConnInfo, $obj_ClientInfo, $iAccountID, $obj_DOM->{'delete-card'}[$i]->{'auth-token'}, count($aObj_XML) ) )
+												{
+												case (1):	// Error: Unknown response from External Server
+													header("HTTP/1.1 502 Bad Gateway");
+									
+													$xml .= '<status code="98">Invalid response from External Server</status>';
+													break;
+												case (2):	// Error: Notification Rejected by External Server
+													header("HTTP/1.1 502 Bad Gateway");
+									
+													$xml .= '<status code="97">Notification rejected by External Server</status>';
+													break;
+												case (10):	// Success: Card successfully saved
+													$xml = '<status code="'. ($code+99) .'">Card successfully saved</status>';
+													break;
+												default:	// Error: Unknown response from External Server
+													header("HTTP/1.1 502 Bad Gateway");
+									
+													$xml .= '<status code="99">Unknown response from External Server</status>';
+													break;
+												}
+											}
+											// Error: Unable to connect to External Server
+											catch (HTTPConnectionException $e)
+											{
+												header("HTTP/1.1 504 Gateway Timeout");
+													
+												$xml = '<?xml version="1.0" encoding="UTF-8"?>';
+												$xml .= '<root>';
+												$xml .= '<status code="91">Unable to connect to External Server</status>';
+												$xml .= '</root>';
+											}
+											// Error: No response received from External Server
+											catch (HTTPSendException $e)
+											{
+												header("HTTP/1.1 504 Gateway Timeout");
+										
+												$xml = '<?xml version="1.0" encoding="UTF-8"?>';
+												$xml .= '<root>';
+												$xml .= '<status code="92">No response received from External Server</status>';
+												$xml .= '</root>';
+											}
+										}
+										// Success: Card successfully saved
+										else { $xml = '<status code="100">Card successfully deleted</status>'; }
 									}
 									else
 									{

@@ -87,7 +87,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					// Input valid
 					if (count($aMsgCds) == 0)
 					{
-						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->login[$i]->{'client-info'}->mobile, $obj_CountryConfig);
+						$iAccountID = -1;
+						if (count($obj_DOM->login[$i]->{'client-info'}->{'customer-ref'}) == 1) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->login[$i]->{'client-info'}->{'customer-ref'}); }
+						if ($iAccountID < 0 && count($obj_DOM->login[$i]->{'client-info'}->mobile) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->login[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
 						if ($iAccountID < 0 && count($obj_DOM->login[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->login[$i]->{'client-info'}->email, $obj_CountryConfig); }
 						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->login[$i]->{'client-info'}->mobile, $obj_ClientConfig->getID() ); }
 						if ($iAccountID < 0 && count($obj_DOM->login[$i]->{'client-info'}->email) == 1) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->login[$i]->{'client-info'}->email, $obj_ClientConfig->getID() ); }
@@ -101,9 +103,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							{
 								$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($url), $obj_DOM->login[$i]->{'client-info'}->{'customer-ref'}, (string) $obj_DOM->login[$i]->{'auth-token'} );
 							}
-							else { $code = 9; } 
+							else { $code = 6; } 
 						} 
 						else { $code = $obj_mPoint->auth($iAccountID, (string) $obj_DOM->login[$i]->password); }
+						
 						// Authentication succeeded
 						if ($code == 10 || ($code == 11 && $obj_ClientConfig->smsReceiptEnabled() === false) )
 						{

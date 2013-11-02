@@ -130,7 +130,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $data);
 						// Associate End-User Account (if exists) with Transaction
 						$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, intval($obj_TxnInfo->getOperator() / 100) );
-						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getMobile(), $obj_CountryConfig);
+						
+						$iAccountID = -1;
+						if (strlen($obj_TxnInfo->getCustomerRef() ) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getCustomerRef() ); }
+						if ($iAccountID == -1 && floatval($obj_TxnInfo->getMobile() ) > 0) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getMobile(), $obj_CountryConfig); }
 						if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getEMail(), $obj_CountryConfig); }
 						// Client supports global storage of payment cards
 						if ($iAccountID == -1 && $obj_ClientConfig->getStoreCard() > 3)
@@ -167,7 +170,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if ($obj_TxnInfo->getPoints() > 0) { $xml .= $obj_XML->points->asXML(); }
 						if ($obj_TxnInfo->getReward() > 0) { $xml .= $obj_XML->reward->asXML(); }
 						$xml .= '<mobile country-id="'. intval($obj_TxnInfo->getOperator()/100) .'" operator-id="'. $obj_TxnInfo->getOperator() .'">'. floatval($obj_TxnInfo->getMobile() ) .'</mobile>';
-						if (trim($obj_TxnInfo->getEMail() ) != "") { $xml .= $obj_XML->email->asXML(); }
 						if (trim($obj_TxnInfo->getEMail() ) != "") { $xml .= $obj_XML->email->asXML(); }
 						$xml .= $obj_XML->{'callback-url'}->asXML();
 						$xml .= $obj_XML->{'accept-url'}->asXML();

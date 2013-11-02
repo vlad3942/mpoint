@@ -25,6 +25,8 @@ require_once(sAPI_CLASS_PATH ."simpledom.php");
 require_once(sCLASS_PATH ."/validate.php");
 // Require Business logic for the End-User Account Component
 require_once(sCLASS_PATH ."/enduser_account.php");
+// Require Data Class for Client Information
+require_once(sCLASS_PATH ."/clientinfo.php");
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
@@ -125,8 +127,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 							else
 							{
-								$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig);
-								if ($iAccountID < 0 && count($obj_DOM->{'save-card'}[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
+								$iAccountID = -1;
+								if (count($obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}) == 1) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}); }
+								if ($iAccountID < 0 && count($obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
 								if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
 								if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
 								if (count($obj_DOM->{'save-card'}[$i]->card[$j]->token) == 1)
@@ -168,7 +171,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$_OBJ_DB->query("ROLLBACK");
 							}								
 							// Success: Card saved
-							if ($code > 0 && $obj_mPoint->getClientConfig()->getNotificationURL() != "")
+							if ($code > 0 && $obj_ClientConfig->getNotificationURL() != "")
 							{								
 								try
 								{
@@ -185,8 +188,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									if (array_key_exists("query", $aURL_Info) === true) { $aHTTP_CONN_INFO["mesb"]["path"] .= "?". $aURL_Info["query"]; }
 									$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
 									
-									$xml = '<?xml version="1.0" encoding="UTF-8"?>';
-									$xml .= '<root>';
 									switch ($obj_mPoint->notify($obj_ConnInfo, $obj_ClientInfo, $iAccountID, $obj_DOM->{'save-card'}[$i]->{'auth-token'}, count($aObj_XML) ) )
 									{
 									case (1):	// Error: Unknown response from External Server
@@ -208,7 +209,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$xml .= '<status code="99">Unknown response from External Server</status>';
 										break;
 									}
-									$xml .= '</root>';
 								}
 								// Error: Unable to connect to External Server
 								catch (HTTPConnectionException $e) 
@@ -307,12 +307,7 @@ header("Content-Type: text/xml; charset=\"UTF-8\"");
 $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 $obj_xml = simplexml_load_string($xml);
-$obj_mPoint->newAuditMessage( Constants::iOPERATION_CARD_SAVED,
-							 $obj_DOM->{'save-card'}[0]->{'client-info'}->mobile,
-							 $obj_DOM->{'save-card'}[0]->{'client-info'}->email,
-							 $obj_DOM->{'save-card'}[0]->{'client-info'}->{'customer-ref'},
-							 $obj_xml->attributes(),
-							 $obj_xml);
+$obj_mPoint->newAuditMessage(Constants::iOPERATION_CARD_SAVED, $obj_DOM->{'save-card'}[0]->{'client-info'}->mobile, $obj_DOM->{'save-card'}[0]->{'client-info'}->email, $obj_DOM->{'save-card'}[0]->{'client-info'}->{'customer-ref'}, $obj_xml->attributes(), $obj_xml);
 
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';
