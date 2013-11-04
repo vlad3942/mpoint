@@ -147,7 +147,7 @@ class Capture extends General
 	public function capture()
 	{
 		// Serialize capture operations by using the Database as a mutex
-		$this->getDBConn()->query("START TRANSACTION");
+		$this->getDBConn()->query("BEGIN");// START TRANSACTION does not work with Oracle db
 		$this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_ACCEPTED_STATE, true);
 		
 		// Payment not Captured

@@ -206,7 +206,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												// Authorise payment with PSP based on Ticket
 												$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 												$iTxnID = $obj_PSP->authTicket( (integer) $obj_Elem->ticket);
-												// Authorization succeeded
+												// Authorization succeeded																							
 												if ($iTxnID > 0)
 												{
 													try

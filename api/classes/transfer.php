@@ -185,7 +185,7 @@ class Transfer extends Home
 	public function makeTransfer($toid, $fromid, $ar, $as, $fee, $msg="", $sid=Constants::iTRANSACTION_COMPLETED_STATE)
 	{
 		// Start Transaction
-		$this->getDBConn()->query("START TRANSACTION");
+		$this->getDBConn()->query("BEGIN"); // START TRANSACTION does not work with Oracle db
 
 		$as = abs(intval($as) );
 		$ar = abs(intval($ar) );
@@ -246,7 +246,7 @@ class Transfer extends Home
 	public function cancelTransfer($id)
 	{
 		// Start Transaction
-		$this->getDBConn()->query("START TRANSACTION");
+		$this->getDBConn()->query("BEGIN"); // START TRANSACTION does not work with Oracle db
 		
 		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET stateid = ". Constants::iTRANSFER_CANCELLED_STATE ."
