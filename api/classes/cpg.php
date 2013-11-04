@@ -164,517 +164,708 @@ class CPG extends Callback
 		case (100):	// Denmark
 			return "DK";
 			break;
-		case (101): // Sweden
+		case (101):	// Sweden
 			return "SE";
 			break;
-	    case (102):	// Norway
-	    	return "NO";
-	    	break;
-		case (103): // UK
-			return "GB";
+		case (102):	// Norway
+			return "NO";
 			break;
-	    case (105):	// Afghanistan
-	    	return "AF";
-	    	break;
-	    case (106):	// Albania
-	    	return "AL";
-	    	break;
-	    case (107):	// Andorra
-	    	return "AD";
-	    	break;
-	    case (108):	// Austria
-	    	return "AT";
-	    	break;
-	    case (109):	// Belarus
-	    	return "BY";
-	    	break;
-	    case (110):	// Belgium
-	    	return "BE";
-	    	break;
-	    case (111):	// Bosnia  Herzegovina
-	    	return "BA";
-	    	break;
-	    case (112):	// Bulgaria
-	    	return "BG";
-	    	break;
-	    case (113): // Croatia
-	    	return "HR";
-	    	break;
-	    case (114): // Cyprus
-	    	return "CY";
-	    	break;
-	    case (115): // Czech Republic
-	    	return "CZ";
-	    	break;
-	    case (116):	// Estonia
-	    	return "EE";
-	    	break;
-	     // Faroe Islands
-	    case (117): return "FO"; break;
-	     // France
-	    case (118): return "FR"; break;
-	     // Georgia
-	    case (119): return "GE"; break;
-	     // Germany
-	    case (120): return "DE"; break;
-	     // Gibraltar
-	    case (121): return "GI"; break;
-	     // Greece
-	    case (122): return "GR"; break;
-	     // Greenland
-	    case (123): return "GL"; break;
-	     // Hungary
-	    case (124): return "HU"; break;
-	     // Iceland
-	    case (125): return "IS"; break;
-	     // Ireland
-	    case (126): return "IE"; break;
-	     // Italy
-	    case (127): return "IT"; break;
-	     // Latvia
-	    case (128): return "LV"; break;
-	     // Liechtenstein
-	    case (129): return "LI"; break;
-	     // Lithuania
-	    case (130): return "LT"; break;
-	     // Luxembourg
-	    case (131): return "LU"; break;
-	     // Malta
-	     case (132): return "MT"; break;
-	     // Moldova
-	    case (133): return "MD"; break;
-	     // Mexico
-	    case (201): return "MX"; break;
-	     // Canada
-	    case (202): return "CA"; break;
-	     // Anguilla
-	    case (203): return "AI"; break;
-	     // Antigua and Barbuda
-	    case (204): return "AG"; break;
-	     // Barbados
-	    case (205): return "BB"; break;
-	     // British Virgin Islands
-	    case (206): return "VG"; break;
-	     // Cayman Islands
-	    case (207): return "KY"; break;
-	     // Cuba
-	     case (208): return "CU"; break;
-	     // Dominican Republic
-	    case (209): return "DO"; break;
-	     // Guadeloupe
-	    case (210): return "GP"; break;
-	     // Haiti
-	     case (211): return "HT"; break;
-	     // Jamaica
-	    case (212): return "JM"; break;
-	     // Algeria
-	    case (300): return "DZ"; break;
-	     // Angola
-	    case (301): return "AO"; break;
-	     // Bahrain
-	    case (302): return "BH"; break;
-	     // Bangladesh
-	    case (303): return "BD"; break;
-	     // Benin
-	     case (304): return "BJ"; break;
-	     // Bolivia
-	    case (305): return "BO"; break;
-	     // Botswana
-	    case (306): return "BW"; break;
-	     // Burkina Faso
-	    case (307): return "BF"; break;
-	     // Burundi
-	    case (308): return "BI"; break;
-	     // Cameroon
-	    case (309): return "CM"; break;
-	     // Cape Verde
-	    case (310): return "CV"; break;
-	     // Central African Republic
-	    case (311): return "CF"; break;
-	     // Chad
-	     case (312): return "TD"; break;
-	     // Comoros
-	    case (313): return "KM"; break;
-	     // Congo
-	     case (314): return "CG"; break;
-	     // Côte d'Ivoire
-	     case (315): return "CI"; break;
-	    // Democratic Republic of the Congo
-	     case (316): return "CD"; break;
-	    // Djibouti
-		case (317): return "DJ"; break;
-	    // Egypt
-		case (318): return "EG"; break;
-	    // Equatorial Guinea
-	     case (319): return "GQ"; break;
-	    // Ethiopia
-		case (320): return "ET"; break;
-	    // Gabon
-		case (321): return "GA"; break;
-	    // Gambia
-	     case (322): return "GM"; break;
-	    // Ghana
-		case (323): return "GH"; break;
-	    // Guinea
-	     case (324): return "GN"; break;
-	    // Guinea-Bissau
-	     case (325): return "GW"; break;
-	    // Kenya
-		case (326): return "KE"; break;
-	    // Lesotho
-	     case (327): return "LS"; break;
-	    // Liberia
-	     case (328): return "LR"; break;
-	    // Madagascar
-	     case (329): return "MG"; break;
-	    // Malawi
-	     case (330): return "MW"; break;
-	    // Mali
-		case (331): return "ML"; break;
-	    // Mauritania
-	     case (332): return "MR"; break;
-	    // Mauritius
-	     case (333): return "MU"; break;
-	    // Morocco
-	     case (334): return "MA"; break;
-	    // Mozambique
-	     case (335): return "MZ"; break;
-	    // Argentina
-	     case (400): return "AR"; break;
-	    // Aruba
-		case (401): return "AW"; break;
-	    // Belize
-	     case (402): return "BZ"; break;
-	    // Brazil
-	     case (403): return "BR"; break;
-	    // Chile
-		case (404): return "CL"; break;
-	    // Colombia
-		case (405): return "CO"; break;
-	    // Costa Rica
-	     case (406): return "CR"; break;
-	    // Ecuador
-	     case (407): return "EC"; break;
-	    // El Salvador
-	     case (408): return "SV"; break;
-	    // Guatemala
-	     case (410): return "GT"; break;
-	    // Guyana
-	     case (411): return "GY"; break;
-	    // Honduras
-		case (412): return "HN"; break;
-	    // Australia
-	     case (500): return "AU"; break;
-	    // Brunei Darussalam
-	     case (501): return "BN"; break;
-	    // Cook Islands
-	     case (502): return "CK"; break;
-	    // Fiji
-		case (503): return "FJ"; break;
-	    // French Polynesia
-	     case (504): return "PF"; break;
-	    // Indonesia
-	     case (505): return "ID"; break;
-	    // Micronesia
-	     case (506): return "FM"; break;
-	    // Azerbaijan
-	     case (600): return "AZ"; break;
-	    // Bhutan
-	     case (601): return "BT"; break;
-	    // Cambodia
-		case (602): return "KH"; break;
-	    // China
-		case (603): return "CN"; break;
-	    // Hong Kong
-	     case (604): return "HK"; break;
-	    // Iran
-		case (605): return "IR"; break;
-	    // India
-		case (606): return "IN"; break;
-	    // Israel
-	     case (607): return "IL"; break;
-	    // Japan
-		case (608): return "JP"; break;
-	    // Jordan
-	     case (609): return "JO"; break;
-	    // Kazakhstan
-	     case (610): return "KZ"; break;
-	    // Kuwait
-	     case (611): return "KW"; break;
-	    // Kyrgyzstan
-	     case (612): return "KG"; break;
-	    // Maldives
-		case (613): return "MV"; break;
-	    // Mongolia
-		case (614): return "MN"; break;
-	    // United Arab Emirates
-	     case (701): return "AE"; break;
-	    // Armenia
-	     case (702): return "AM"; break;
-	    // Netherlands Antilles
-	     case (703): return "AN"; break;
-	    // Antarctica
-	     case (704): return "AQ"; break;
-	    // American Samoa
-	     case (705): return "AS"; break;
-	    // Bermuda
-	     case (706): return "BM"; break;
-	    // Bahamas
-	     case (707): return "BS"; break;
-	    // Bouvet Island
-	     case (708): return "BV"; break;
-	    // Scott Base
-	     case (709): return "CB"; break;
-	    // Cocos (Keeling) Islands
-	     case (710): return "CC"; break;
-	    // Tristan Da Cunha
-	     case (711): return "CT"; break;
-	    // Christmas Island
-	     case (712): return "CX"; break;
-	    // Diego Garcia
-	     case (713): return "DG"; break;
-	    // Dominica
-		case (714): return "DM"; break;
-	    // Western Sahara
-	     case (715): return "EH"; break;
-	    // Eritrea
-	     case (716): return "ER"; break;
-	    // Falkland Islands
-	     case (717): return "FK"; break;
-	    // Grenada
-	     case (718): return "GD"; break;
-	    // French Guiana
-	     case (719): return "GF"; break;
-	    // South Georgia And IS
-	     case (720): return "GS"; break;
-	    // Guam
-		case (721): return "GU"; break;
-	    // Isle of Man
-	     case (722): return "IM"; break;
-	    // British Int Ocean Tertry
-	     case (723): return "IO"; break;
-	    // Iraq
-		case (724): return "IQ"; break;
-	    // Johnston Island
-	     case (725): return "JL"; break;
-	    // Kerguelen Archipelago
-	     case (726): return "KA"; break;
-	    // Kiribati
-		case (727): return "KI"; break;
-	    // Kaliningrad
-	     case (728): return "KL"; break;
-	    // St. Christopher (St. Kitts) Nevis
-	     case (729): return "KN"; break;
-	    // Korea, Democratic Peoples Republic of
-	     case (730): return "KP"; break;
-	    // Republic of Korea
-	     case (731): return "KR"; break;
-	    // Lao Peoples Democratic Republic
-	     case (732): return "LA"; break;
-	    // St. Lucia
-	     case (733): return "LC"; break;
-	    // Sri Lanka
-	     case (734): return "LK"; break;
-	    // Libyan Arab Jamahiriya
-	     case (735): return "LY"; break;
-	    // Monaco
-	     case (736): return "MC"; break;
-	    // Montenegro
-	     case (737): return "ME"; break;
-	    // Marshall Islands
-	     case (738): return "MH"; break;
-	    // Midway Island
-	     case (739): return "MI"; break;
-	    // Republic of Macedonia
-	     case (740): return "MK"; break;
-	    // Myanmar, Union of
-	     case (741): return "MM"; break;
-	    // Macau
-		case (742): return "MO"; break;
-	    // Northern Mariana Islands
-	     case (743): return "MP"; break;
-	    // Martinique
-	     case (744): return "MQ"; break;
-	    // Monserrat
-	     case (745): return "MS"; break;
-	    // Malaysia
-		case (746): return "MY"; break;
-	    // Namibia
-	     case (747): return "NA"; break;
-	    // New Caledonia
-	     case (748): return "NC"; break;
-	    // Not Defined
-	     case (749): return "ND"; break;
-	    // Niger
-		case (750): return "NE"; break;
-	    // Norfolk Island
-	     case (751): return "NF"; break;
-	    // Nigeria
-	     case (752): return "NG"; break;
-	    // Nicaragua
-	     case (753): return "NI"; break;
-	    // Nepal
-		case (754): return "NP"; break;
-	    // Nauru
-		case (755): return "NR"; break;
-	    // Niue
-		case (756): return "NU"; break;
-	    // New Zealand
-	     case (757): return "NZ"; break;
-	    // Carriacou
-	     case (758): return "OU"; break;
-	    // Panama
-	     case (759): return "PA"; break;
-	    // Peru
-		case (760): return "PE"; break;
-	    // Philippines
-	     case (761): return "PH"; break;
-	    // St. Pierre and Miquelon
-	     case (762): return "PM"; break;
-	    // Pitcairn Island
-	     case (763): return "PN"; break;
-	    // Puerto Rico
-	     case (764): return "PR"; break;
-	    // Palestinian Territory
-	     case (765): return "PS"; break;
-	    // Portugal
-		case (766): return "PT"; break;
-	    // Palau
-		case (767): return "PW"; break;
-	    // Paraguay
-		case (768): return "PY"; break;
-	    // Qatar
-		case (769): return "QA"; break;
-	    // Reunion
-	     case (770): return "RE"; break;
-	    // Kosovo
-	     case (771): return "RK"; break;
-	    // Romania
-	     case (772): return "RO"; break;
-	    // Republic of Serbia
-	     case (773): return "RS"; break;
-	    // Rwanda
-	     case (774): return "RW"; break;
-	    // Solomon Islands
-	     case (775): return "SB"; break;
-	    // Seychelles
-	     case (776): return "SC"; break;
-	    // Sudan
-		case (777): return "SD"; break;
-	    // Singapore
-	     case (778): return "SG"; break;
-	    // St. Helena
-	     case (779): return "SH"; break;
-	    // Slovenia
-		case (780): return "SI"; break;
-	    // Slovakia
-		case (781): return "SK"; break;
-	    // Sierra Leone
-	     case (782): return "SL"; break;
-	    // San Marino
-	     case (783): return "SM"; break;
-	    // Senegal
-	     case (784): return "SN"; break;
-	    // Somalia
-	     case (785): return "SO"; break;
-	    // Suriname
-		case (786): return "SR"; break;
-	    // Sao Tome and Principe
-	     case (787): return "ST"; break;
-	    // St. Maarten
-	     case (788): return "SX"; break;
-	    // Syrian Arab Republic
-	     case (789): return "SY"; break;
-	    // Swaziland
-	     case (790): return "SZ"; break;
-	    // Turks and Caicos Islands
-	     case (791): return "TC"; break;
-	    // Togo
-		case (792): return "TG"; break;
-	    // Thailand
-		case (793): return "TH"; break;
-	    // Turkmenistan
-	     case (794): return "TM"; break;
-	    // Tunisia
-	     case (795): return "TN"; break;
-	    // Tonga
-		case (796): return "TO"; break;
-	    // Turkey
-	     case (797): return "TR"; break;
-	    // Trinidad and Tobago
-	     case (798): return "TT"; break;
-	    // Tuvalu
-	     case (799): return "TV"; break;
-	    // Taiwan
-	     case (800): return "TW"; break;
-	    // Tanzania
-		case (801): return "TZ"; break;
-	    // Ukraine
-	     case (802): return "UA"; break;
-	    // Uganda
-	     case (803): return "UG"; break;
-	    // United States Minor Outlying Islands
-	     case (804): return "UM"; break;
-	    // United States
-	     case (805): return "US"; break;
-	    // Unserviced Destn
-	     case (806): return "UX"; break;
-	    // Uruguay
-	     case (807): return "UY"; break;
-	    // Uzbekistan
-	     case (808): return "UZ"; break;
-	    // Vatican City State
-	     case (809): return "VA"; break;
-	    // St. Vincent and The Grenadines
-	     case (810): return "VC"; break;
-	    // Venezuela
-	     case (811): return "VE"; break;
-	    // Virgin Islands, United States
-	     case (812): return "VI"; break;
-	    // Viet Nam
-		case (813): return "VN"; break;
-	    // Vanuatu
-	     case (814): return "VU"; break;
-	    // Wallis and Futuna Islands
-	     case (815): return "WF"; break;
-	    // Samoa
-		case (816): return "WS"; break;
-	    // Yemen
-		case (817): return "YE"; break;
-	    // Mayotte
-	     case (818): return "YT"; break;
-	    // Yugoslavia
-	     case (819): return "YU"; break;
-	    // South Africa
-	     case (820): return "ZA"; break;
-	    // Zambia
-	     case (821): return "ZM"; break;
-	    // Zaire
-		case (822): return "ZR"; break;
-	    // Zimbabwe
-		case (823): return "ZW"; break;
-	    // Switzerland
-	     case (824): return "CH"; break;
-	    // Spain
-		case (825): return "ES"; break;
-	    // Finland
-	     case (826): return "FI"; break;
-	    // Netherlands
-	     case (827): return "NL"; break;
-	    // Oman
-		case (828): return "OM"; break;
-	    // Papua New Guinea
-	     case (829): return "PG"; break;
-	    // Pakistan
-		case (830): return "PK"; break;
-	    // Poland
-	     case (831): return "PL"; break;
-	    // Russia
-	     case (832): return "RU"; break;
-	    // Saudi Arabia
-	     case (833): return "SA"; break;
-	    // Lebanon
-	     case (834): return "LB"; break;
+		case (104):	// Finland
+			return "FI";
+			break;
+		case (105):	// Greece
+			return "GR";
+			break;
+		case (106):	// Israel
+			return "IL";
+			break;
+		case (107):	// Italy
+			return "IT";
+			break;
+		case (108):	// France
+			return "FR";
+			break;
+		case (109):	// Switzerland
+			return "CH";
+			break;
+		case (110):	// Netherlands
+			return "NL";
+			break;
+		case (111):	// Belgium
+			return "BE";
+			break;
+		case (112):	// Poland
+			return "PL";
+			break;
+		case (113):	// Spain
+			return "ES";
+			break;
+		case (114):	// Austria
+			return "AT";
+			break;
+		case (115):	// Germany
+			return "DE";
+			break;
+		case (116):	// Afghanistan
+			return "AF";
+			break;
+		case (117):	// Albania
+			return "AL";
+			break;
+		case (118):	// Andorra
+			return "AD";
+			break;
+		case (119):	// Armenia
+			return "AM";
+			break;
+		case (120):	// Belarus
+			return "BY";
+			break;
+		case (122):	// Bulgaria
+			return "BG";
+			break;
+		case (123):	// Croatia
+			return "HR";
+			break;
+		case (124):	// Cyprus
+			return "CY";
+			break;
+		case (125):	// Czech Republic
+			return "CZ";
+			break;
+		case (126):	// Estonia
+			return "EE";
+			break;
+		case (127):	// Faroe Islands
+			return "FO";
+			break;
+		case (128):	// Georgia
+			return "GE";
+			break;
+		case (129):	// Gibraltar
+			return "GI";
+			break;
+		case (130):	// Greenland
+			return "GL";
+			break;
+		case (131):	// Hungary
+			return "HU";
+			break;
+		case (132):	// Iceland
+			return "IS";
+			break;
+		case (133):	// Ireland
+			return "IE";
+			break;
+		case (134):	// Isle of Man
+			return "IM";
+			break;
+		case (135):	// Latvia
+			return "LV";
+			break;
+		case (136):	// Liechtenstein
+			return "LI";
+			break;
+		case (137):	// Lithuania
+			return "LT";
+			break;
+		case (138):	// Luxembourg
+			return "LU";
+			break;
+		case (139):	// Malta
+			return "MT";
+			break;
+		case (140):	// Moldova
+			return "MD";
+			break;
+		case (141):	// Monaco
+			return "MC";
+			break;
+		case (142):	// Montenegro
+			return "ME";
+			break;
+		case (143):	// Republic of Macedonia
+			return "MK";
+			break;
+		case (144):	// Monserrat
+			return "MS";
+			break;
+		case (145):	// St. Pierre and Miquelon
+			return "PM";
+			break;
+		case (146):	// Palestinian Territory
+			return "PS";
+			break;
+		case (147):	// Portugal
+			return "PT";
+			break;
+		case (148):	// Kosovo
+			return "RK";
+			break;
+		case (149):	// Romania
+			return "RO";
+			break;
+		case (150):	// Republic of Serbia
+			return "RS";
+			break;
+		case (151):	// San Marino
+			return "SM";
+			break;
+		case (152):	// Slovakia
+			return "SK";
+			break;
+		case (153):	// Slovenia
+			return "SI";
+			break;
+		case (154):	// Turkey
+			return "TR";
+			break;
+		case (155):	// Ukraine
+			return "UA";
+			break;
+		case (156):	// Vatican City State
+			return "VA";
+			break;
+		case (157):	// Yugoslavia
+			return "YU";
+			break;
+		case (201):	// Mexico
+			return "MX";
+			break;
+		case (202):	// Canada
+			return "CA";
+			break;
+		case (203):	// Anguilla
+			return "AI";
+			break;
+		case (204):	// Antigua and Barbuda
+			return "AG";
+			break;
+		case (205):	// Barbados
+			return "BB";
+			break;
+		case (206):	// British Virgin Islands
+			return "VG";
+			break;
+		case (207):	// Cayman Islands
+			return "KY";
+			break;
+		case (208):	// Cuba
+			return "CU";
+			break;
+		case (209):	// Dominican Republic
+			return "DO";
+			break;
+		case (210):	// Guadeloupe
+			return "GP";
+			break;
+		case (211):	// Haiti
+			return "HT";
+			break;
+		case (212):	// Jamaica
+			return "JM";
+			break;
+		case (213):	// American Samoa
+			return "AS";
+			break;
+		case (214):	// Bermuda
+			return "BM";
+			break;
+		case (215):	// Bahamas
+			return "BS";
+			break;
+		case (216):	// Johnston Island
+			return "JL";
+			break;
+		case (217):	// Midway Island
+			return "MI";
+			break;
+		case (218):	// United States Minor Outlying Islands
+			return "UM";
+			break;
+		case (300):	// Algeria
+			return "DZ";
+			break;
+		case (301):	// Angola
+			return "AO";
+			break;
+		case (302):	// Bangladesh
+			return "BD";
+			break;
+		case (303):	// Benin
+			return "BJ";
+			break;
+		case (304):	// Bolivia
+			return "BO";
+			break;
+		case (305):	// Botswana
+			return "BW";
+			break;
+		case (306):	// Burkina Faso
+			return "BF";
+			break;
+		case (307):	// Burundi
+			return "BI";
+			break;
+		case (308):	// Cameroon
+			return "CM";
+			break;
+		case (309):	// Cape Verde
+			return "CV";
+			break;
+		case (310):	// Central African Republic
+			return "CF";
+			break;
+		case (311):	// Chad
+			return "TD";
+			break;
+		case (312):	// Comoros
+			return "KM";
+			break;
+		case (313):	// Congo
+			return "CG";
+			break;
+		case (315):	// Democratic Republic of the Congo
+			return "CD";
+			break;
+		case (316):	// Djibouti
+			return "DJ";
+			break;
+		case (317):	// Egypt
+			return "EG";
+			break;
+		case (318):	// Equatorial Guinea
+			return "GQ";
+			break;
+		case (319):	// Ethiopia
+			return "ET";
+			break;
+		case (320):	// Gabon
+			return "GA";
+			break;
+		case (321):	// Gambia
+			return "GM";
+			break;
+		case (322):	// Ghana
+			return "GH";
+			break;
+		case (323):	// Guinea
+			return "GN";
+			break;
+		case (324):	// Guinea-Bissau
+			return "GW";
+			break;
+		case (325):	// Kenya
+			return "KE";
+			break;
+		case (326):	// Lesotho
+			return "LS";
+			break;
+		case (327):	// Liberia
+			return "LR";
+			break;
+		case (328):	// Madagascar
+			return "MG";
+			break;
+		case (329):	// Malawi
+			return "MW";
+			break;
+		case (330):	// Mali
+			return "ML";
+			break;
+		case (331):	// Mauritania
+			return "MR";
+			break;
+		case (332):	// Mauritius
+			return "MU";
+			break;
+		case (333):	// Morocco
+			return "MA";
+			break;
+		case (334):	// Mozambique
+			return "MZ";
+			break;
+		case (335):	// Tristan Da Cunha
+			return "CT";
+			break;
+		case (336):	// Western Sahara
+			return "EH";
+			break;
+		case (337):	// Eritrea
+			return "ER";
+			break;
+		case (338):	// Libyan Arab Jamahiriya
+			return "LY";
+			break;
+		case (339):	// Mayotte
+			return "YT";
+			break;
+		case (340):	// Namibia
+			return "NA";
+			break;
+		case (341):	// Niger
+			return "NE";
+			break;
+		case (342):	// Nigeria
+			return "NG";
+			break;
+		case (343):	// Reunion
+			return "RE";
+			break;
+		case (344):	// Rwanda
+			return "RW";
+			break;
+		case (345):	// Seychelles
+			return "SC";
+			break;
+		case (346):	// Sudan
+			return "SD";
+			break;
+		case (347):	// St. Helena
+			return "SH";
+			break;
+		case (348):	// Sierra Leone
+			return "SL";
+			break;
+		case (349):	// Sao Tome and Principe
+			return "ST";
+			break;
+		case (350):	// Swaziland
+			return "SZ";
+			break;
+		case (351):	// Togo
+			return "TG";
+			break;
+		case (352):	// Tunisia
+			return "TN";
+			break;
+		case (353):	// Tanzania
+			return "TZ";
+			break;
+		case (354):	// Uganda
+			return "UG";
+			break;
+		case (355):	// South Africa
+			return "ZA";
+			break;
+		case (356):	// Zambia
+			return "ZM";
+			break;
+		case (357):	// Zaire
+			return "ZR";
+			break;
+		case (358):	// Zimbabwe
+			return "ZW";
+			break;
+		case (400):	// Argentina
+			return "AR";
+			break;
+		case (401):	// Aruba
+			return "AW";
+			break;
+		case (402):	// Belize
+			return "BZ";
+			break;
+		case (403):	// Brazil
+			return "BR";
+			break;
+		case (404):	// Chile
+			return "CL";
+			break;
+		case (405):	// Colombia
+			return "CO";
+			break;
+		case (406):	// Costa Rica
+			return "CR";
+			break;
+		case (407):	// Ecuador
+			return "EC";
+			break;
+		case (408):	// El Salvador
+			return "SV";
+			break;
+		case (410):	// Guatemala
+			return "GT";
+			break;
+		case (411):	// Guyana
+			return "GY";
+			break;
+		case (412):	// Honduras
+			return "HN";
+			break;
+		case (413):	// Antarctica
+			return "AQ";
+			break;
+		case (414):	// Carriacou
+			return "OU";
+			break;
+		case (415):	// Netherlands Antilles
+			return "AN";
+			break;
+		case (416):	// Bouvet Island
+			return "BV";
+			break;
+		case (417):	// Scott Base
+			return "CB";
+			break;
+		case (418):	// Dominica
+			return "DM";
+			break;
+		case (419):	// Falkland Islands
+			return "FK";
+			break;
+		case (420):	// Grenada
+			return "GD";
+			break;
+		case (421):	// French Guiana
+			return "GF";
+			break;
+		case (422):	// South Georgia And IS
+			return "GS";
+			break;
+		case (424):	// St. Christopher (St. Kitts) Nevis
+			return "KN";
+			break;
+		case (425):	// St. Lucia
+			return "LC";
+			break;
+		case (426):	// Martinique
+			return "MQ";
+			break;
+		case (427):	// Nicaragua
+			return "NI";
+			break;
+		case (428):	// Panama
+			return "PA";
+			break;
+		case (429):	// Peru
+			return "PE";
+			break;
+		case (430):	// Pitcairn Island
+			return "PN";
+			break;
+		case (431):	// Puerto Rico
+			return "PR";
+			break;
+		case (432):	// Paraguay
+			return "PY";
+			break;
+		case (433):	// Senegal
+			return "SN";
+			break;
+		case (434):	// Somalia
+			return "SO";
+			break;
+		case (435):	// Suriname
+			return "SR";
+			break;
+		case (436):	// St. Maarten
+			return "SX";
+			break;
+		case (437):	// Turks and Caicos Islands
+			return "TC";
+			break;
+		case (438):	// Trinidad and Tobago
+			return "TT";
+			break;
+		case (439):	// Uruguay
+			return "UY";
+			break;
+		case (440):	// St. Vincent and The Grenadines
+			return "VC";
+			break;
+		case (441):	// Venezuela
+			return "VE";
+			break;
+		case (442):	// Virgin Islands, United States
+			return "VI";
+			break;
+		case (500):	// Australia
+			return "AU";
+			break;
+		case (501):	// Brunei Darussalam
+			return "BN";
+			break;
+		case (502):	// Cook Islands
+			return "CK";
+			break;
+		case (503):	// Fiji
+			return "FJ";
+			break;
+		case (504):	// French Polynesia
+			return "PF";
+			break;
+		case (505):	// Indonesia
+			return "ID";
+			break;
+		case (506):	// Micronesia
+			return "FM";
+			break;
+		case (507):	// Cocos (Keeling) Islands
+			return "CC";
+			break;
+		case (508):	// Christmas Island
+			return "CX";
+			break;
+		case (509):	// New Caledonia
+			return "NC";
+			break;
+		case (510):	// Norfolk Island
+			return "NF";
+			break;
+		case (511):	// Nauru
+			return "NR";
+			break;
+		case (512):	// Niue
+			return "NU";
+			break;
+		case (513):	// New Zealand
+			return "NZ";
+			break;
+		case (514):	// Solomon Islands
+			return "SB";
+			break;
+		case (515):	// Tonga
+			return "TO";
+			break;
+		case (516):	// Tuvalu
+			return "TV";
+			break;
+		case (517):	// Vanuatu
+			return "VU";
+			break;
+		case (518):	// Wallis and Futuna Islands
+			return "WF";
+			break;
+		case (519):	// Samoa
+			return "WS";
+			break;
+		case (601):	// Bahrain
+			return "BH";
+			break;
+		case (603):	// India
+			return "IN";
+			break;
+		case (604):	// Kuwait
+			return "KW";
+			break;
+		case (605):	// Oman
+			return "OM";
+			break;
+		case (607):	// Russia
+			return "RU";
+			break;
+		case (609):	// China
+			return "CN";
+			break;
+		case (610):	// Pakistan
+			return "PK";
+			break;
+		case (611):	// Azerbaijan
+			return "AZ";
+			break;
+		case (612):	// Bhutan
+			return "BT";
+			break;
+		case (613):	// Cambodia
+			return "KH";
+			break;
+		case (614):	// Hong Kong
+			return "HK";
+			break;
+		case (615):	// Iran
+			return "IR";
+			break;
+		case (616):	// Japan
+			return "JP";
+			break;
+		case (617):	// Jordan
+			return "JO";
+			break;
+		case (619):	// Kyrgyzstan
+			return "KG";
+			break;
+		case (621):	// Lebanon
+			return "LB";
+			break;
+		case (623):	// Maldives
+			return "MV";
+			break;
+		case (624):	// Mongolia
+			return "MN";
+			break;
+		case (626):	// Diego Garcia
+			return "DG";
+			break;
+		case (627):	// Guam
+			return "GU";
+			break;
+		case (628):	// Iraq
+			return "IQ";
+			break;
+		case (629):	// Kerguelen Archipelago
+			return "KA";
+			break;
+		case (630):	// Kiribati
+			return "KI";
+			break;
+		case (633):	// Kazakstan
+			return "KZ";
+			break;
+		case (634):	// Sri Lanka
+			return "LK";
+			break;
+		case (635):	// Marshall Islands
+			return "MH";
+			break;
+		case (636):	// Macau
+			return "MO";
+			break;
+		case (637):	// Northern Mariana Islands
+			return "MP";
+			break;
+		case (638):	// Malaysia
+			return "MY";
+			break;
+		case (639):	// Nepal
+			return "NP";
+			break;
+		case (640):	// Philippines
+			return "PH";
+			break;
+		case (641):	// Palau
+			return "PW";
+			break;
+		case (642):	// Singapore
+			return "SG";
+			break;
+		case (643):	// Syrian Arab Republic
+			return "SY";
+			break;
+		case (644):	// Thailand
+			return "TH";
+			break;
+		case (645):	// Turkmenistan
+			return "TM";
+			break;
+		case (646):	// Taiwan
+			return "TW";
+			break;
+		case (647):	// United Arab Emirates
+			return "AE";
+			break;
+		case (648):	// Uzbekistan
+			return "UZ";
+			break;
+		case (649):	// Vietnam
+			return "VN";
+			break;
+		case (650):	// Yemen
+			return "YE";
+			break;
+		default:	// Error: Unknown Country
+			trigger_error("Unknown Country: ". $id, E_USER_WARNING);
+			break;
 		}
 	}
 }
