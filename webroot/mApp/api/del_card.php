@@ -304,19 +304,12 @@ else
 }
 header("Content-Type: text/xml; charset=\"UTF-8\"");
 
-$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
-$obj_xml = simplexml_load_string($xml);
-$obj_mPoint->newAuditMessage( Constants::iOPERATION_CARD_SAVED,
-		$obj_DOM->{'delete-card'}[0]->{'client-info'}->mobile,
-		$obj_DOM->{'delete-card'}[0]->{'client-info'}->email,
-		$obj_DOM->{'delete-card'}[0]->{'client-info'}->{'customer-ref'},
-		$obj_xml->attributes(),
-		$obj_xml);
-
-
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';
 echo $xml;
 echo '</root>';
+
+$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
+$obj_XML = simplexml_load_string('<root>'. $xml .'</root>');
+$obj_mPoint->newAuditMessage(Constants::iOPERATION_CARD_SAVED, $obj_DOM->{'delete-card'}[0]->{'client-info'}->mobile, $obj_DOM->{'delete-card'}[0]->{'client-info'}->email, $obj_DOM->{'delete-card'}[0]->{'client-info'}->{'customer-ref'}, $obj_XML->status["code"], (string) $obj_XML->status);
 ?>

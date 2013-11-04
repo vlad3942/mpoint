@@ -85,6 +85,12 @@ class WorldPay extends Callback
 		$oc = htmlspecialchars($this->getTxnInfo()->getOrderID(), ENT_NOQUOTES);
 		if (empty($oc) === true) { $oc = $this->getTxnInfo()->getID(); }
 		
+		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+				SET pspid = ". Constants::iWORLDPAY_PSP ."
+				WHERE id = ". $this->getTxnInfo()->getID();
+//		echo $sql ."\n";
+		$this->getDBConn()->query($sql);
+		
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<!DOCTYPE paymentService PUBLIC "-//WorldPay/DTD WorldPay PaymentService v1//EN" "http://dtd.worldpay.com/paymentService_v1.dtd">';
 		$b .= '<paymentService version="1.4" merchantCode="'. htmlspecialchars($this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, true), ENT_NOQUOTES) .'">';
@@ -111,12 +117,6 @@ class WorldPay extends Callback
 			{
 				$obj_XML["code"] = Constants::iPAYMENT_ACCEPTED_STATE;
 				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, $obj_XML->asXML() );
-				
-				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-						SET pspid = ". Constants::iWORLDPAY_PSP ."
-						WHERE id = ". $this->getTxnInfo()->getID();
-//				echo $sql ."\n";
-				$this->getDBConn()->query($sql);
 			}
 			// Error: Unable to initialize payment transaction
 			else

@@ -90,18 +90,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 						$aMsgCds = array();
 						
-						if (empty($obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) === true && empty($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) === true)
+						if ($obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name) != 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name) + 20; }
+						if (intval($obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) == 0 && intval($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) == 0)
 						{
-							$aMsgCds[] = 11;
+							$aMsgCds[] = 31;
 						}
-						
-						if (empty($obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) === false)
+						if (intval($obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) > 0)
 						{
-							if ($obj_Validator->valCardTypeID($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"])  != 10) { $aMsgCds[] = $obj_Validator->valCardTypeId($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) + 20; }
+							if ($obj_Validator->valCardTypeID($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"])  != 10) { $aMsgCds[] = $obj_Validator->valCardTypeId($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) + 40; }
 						}
 						
 						$iAccountID = -2;
-						if (empty($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) === false )
+						if (intval($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) > 0)
 						{
 							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile["country-id"]);
 
@@ -113,15 +113,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if ($obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["id"])  != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["id"]) + 50; }
 						}
 						
-						if ($obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name) != 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name) + 40; }
-						
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
 						{
 							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile["country-id"]);
 							// Start Transaction
 							$_OBJ_DB->query("START TRANSACTION");
-							if (empty($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) === false)
+							if (intval($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) > 0)
 							{
 								$code = $obj_mPoint->saveCardName( $obj_DOM->{'save-card'}[$i]->card[$j]["id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j],  General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) );
 							}
@@ -304,13 +302,12 @@ else
 }
 header("Content-Type: text/xml; charset=\"UTF-8\"");
 
-$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
-$obj_xml = simplexml_load_string($xml);
-$obj_mPoint->newAuditMessage(Constants::iOPERATION_CARD_SAVED, $obj_DOM->{'save-card'}[0]->{'client-info'}->mobile, $obj_DOM->{'save-card'}[0]->{'client-info'}->email, $obj_DOM->{'save-card'}[0]->{'client-info'}->{'customer-ref'}, $obj_xml->attributes(), $obj_xml);
-
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';
 echo $xml;
 echo '</root>';
+
+$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
+$obj_XML = simplexml_load_string('<root>'. $xml .'</root>');
+$obj_mPoint->newAuditMessage(Constants::iOPERATION_CARD_SAVED, $obj_DOM->{'save-card'}[0]->{'client-info'}->mobile, $obj_DOM->{'save-card'}[0]->{'client-info'}->email, $obj_DOM->{'save-card'}[0]->{'client-info'}->{'customer-ref'}, $obj_XML->status["code"], (string) $obj_XML->status);
 ?>

@@ -173,7 +173,7 @@ if (count($aMsgCds) == 0)
 						// Initialise Callback to Client
 						$aCPM_CONN_INFO["path"] = "/callback/worldpay.php";
 						$aCPM_CONN_INFO["contenttype"] = "text/xml";
-						$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), $obj_XML);
+//						$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), $obj_XML);
 						$aMsgCds[] = 100;
 					}
 					else

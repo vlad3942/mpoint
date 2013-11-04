@@ -259,21 +259,19 @@ else
 }
 header("Content-Type: text/xml; charset=\"UTF-8\"");
 
-$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
-$obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
-$obj_xml = simpledom_load_string('<?xml version="1.0" encoding="UTF-8"?>'.'<root>'.$xml.'</root>');
-if (count($obj_xml->status) > 0)
-{
-	$obj_mPoint->newAuditMessage(Constants::iOPERATION_LOGGED_IN, $obj_DOM->login[0]->{'client-info'}->mobile, $obj_DOM->login[0]->{'client-info'}->email, $obj_DOM->login[0]->{'client-info'}->{'customer-ref'}, intval($obj_xml->status["code"]), (string) $obj_xml->status);
-}
-else 
-{
-	$obj_mPoint->newAuditMessage(Constants::iOPERATION_LOGGED_IN, $obj_DOM->login[0]->{'client-info'}->mobile, $obj_DOM->login[0]->{'client-info'}->email, $obj_DOM->login[0]->{'client-info'}->{'customer-ref'}, 100, 'Successful login');
-}
-
-
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';
 echo $xml;
 echo '</root>';
+
+$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
+$obj_XML = simpledom_load_string('<root>'. $xml .'</root>');
+if (count($obj_XML->status) > 0)
+{
+	$obj_mPoint->newAuditMessage(Constants::iOPERATION_LOGGED_IN, $obj_DOM->login[0]->{'client-info'}->mobile, $obj_DOM->login[0]->{'client-info'}->email, $obj_DOM->login[0]->{'client-info'}->{'customer-ref'}, intval($obj_XML->status["code"]), (string) $obj_XML->status);
+}
+else
+{
+	$obj_mPoint->newAuditMessage(Constants::iOPERATION_LOGGED_IN, $obj_DOM->login[0]->{'client-info'}->mobile, $obj_DOM->login[0]->{'client-info'}->email, $obj_DOM->login[0]->{'client-info'}->{'customer-ref'}, 100, 'Successful login');
+}
 ?>

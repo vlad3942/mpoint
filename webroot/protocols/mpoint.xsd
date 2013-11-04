@@ -28,8 +28,8 @@
 									<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
 									<xs:element name="custom-variables" minOccurs="0" maxOccurs="1">
 										<xs:complexType>
-											<xs:sequence>
-												<xs:any minOccurs="0" maxOccurs="unbounded" />
+											<xs:sequence minOccurs="1" maxOccurs="unbounded">
+												<xs:any processContents="lax" />
 											</xs:sequence>
 										</xs:complexType>
 									</xs:element>

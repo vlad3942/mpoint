@@ -465,11 +465,11 @@ class Callback extends EndUserAccount
 	 * @param 	integer $pspid		mPoint's unique ID for the Payment Service Provider who processed the payment transction
 	 * @return 	integer
 	 */
-	public static function getTxnIDFromExtId(RDB &$oDB, $extid, $pspid)
+	public static function getTxnIDFromExtID(RDB &$oDB, $extid, $pspid)
 	{
 		$sql = "SELECT Max(id) AS id
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-				WHERE extid = '". $extid ."' AND pspid = ". intval($pspid);
+				WHERE extid = '". $oDB->escStr($extid) ."' AND pspid = ". intval($pspid);
 		//echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 		

@@ -38,7 +38,7 @@ $HTTP_RAW_POST_DATA = file_get_contents("php://input");
 $obj_json = json_decode($HTTP_RAW_POST_DATA);
 $extid = $obj_json->TransactionId;
 
-$mpointid = Callback::getTxnIDFromExtId($_OBJ_DB, $extid, Constants::iNETAXEPT_PSP);
+$mpointid = Callback::getTxnIDFromExtID($_OBJ_DB, $extid, Constants::iNETAXEPT_PSP);
 try
 {
 	$obj_TxnInfo = TxnInfo::produceInfo($mpointid, $_OBJ_DB);

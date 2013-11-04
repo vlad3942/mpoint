@@ -302,7 +302,7 @@ class Home extends General
 		/* ========== Calculate Logo Dimensions End ========== */
 
 		// Select information for the End-User's account
-		$sql = "SELECT id, countryid, firstname, lastname, mobile, email, passwd AS password, balance, points, Extract('epoch' from created AT TIME ZONE 'Europe/Copenhagen') AS timestamp,
+		$sql = "SELECT id, countryid, firstname, lastname, mobile, email, passwd AS password, balance, points, created,
 					mobile_verified
 				FROM EndUser".sSCHEMA_POSTFIX.".Account_Tbl
 				WHERE id = ". intval($id) ." AND enabled = '1'";
@@ -315,6 +315,8 @@ class Home extends General
 				WHERE Acc.accountid = ". intval($id);
 //		echo $sql ."\n";
 		$aRS = $this->getDBConn()->getAllNames($sql);
+		
+		$ts = strtotime(substr($RS["CREATED"], 0, strpos($RS["CREATED"], ".") ) );
 		
 		// Construct XML Document with account information
 		$xml = '<account id="'. $RS["ID"] .'" country-id="'. $RS["COUNTRYID"] .'">';
@@ -332,7 +334,7 @@ class Home extends General
 			$xml .= '<client id="'. $aRS[$i]["ID"] .'" store-card="'. $aRS[$i]["STORE_CARD"] .'">'. htmlspecialchars($aRS[$i]["NAME"], ENT_NOQUOTES) .'</client>';
 		}
 		$xml .= '</clients>';
-		$xml .= '<created timestamp="'. intval($RS["TIMESTAMP"]) .'">'. gmdate("Y-m-d H:i:sP", $RS["TIMESTAMP"]) .'</created>';
+		$xml .= '<created timestamp="'. $ts .'">'. gmdate("Y-m-d H:i:sP", $ts) .'</created>';
 		$xml .= '<logo-width>'. $iWidth .'</logo-width>';
 		$xml .= '<logo-height>'. $iHeight .'</logo-height>';
 		$xml .= '</account>';
@@ -395,7 +397,7 @@ class Home extends General
 		/* ========== Calculate Logo Dimensions End ========== */
 
 		// Select all active cards that are not yet expired
-		$sql = "SELECT DISTINCT EUC.id, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name, EUC.enabled, EUC.card_holder_name,		
+		$sql = "SELECT DISTINCT EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name, EUC.enabled, EUC.card_holder_name,		
 					SC.id AS typeid, SC.name AS type,
 					CL.id AS clientid, CL.name AS client,
 					EUAD.countryid, EUAD.firstname, EUAD.lastname,
@@ -411,25 +413,20 @@ class Home extends General
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".State_Tbl STS ON EUAD.stateid = STS.id and EUA.enabled ='1'				
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON EUA.id = CLA.accountid
 				WHERE EUC.accountid = ". intval($id);
-
-		if ($bAllCards === false) {
-			$sql .= " AND EUC.enabled = '1' AND ( (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."' OR length(EUC.expiry) = 0 )";
-		}
-			
+		if ($bAllCards === false) { $sql .= " AND EUC.enabled = '1' AND ( (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."' OR length(EUC.expiry) = 0 )"; }	
 		$sql .= " AND (CLA.clientid = CL.id OR EUA.countryid = CLA.clientid 
 						 OR NOT EXISTS (SELECT id
 									    FROM EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl
 										WHERE accountid = EUA.id) )
 				ORDER BY CL.name ASC";
-			//echo $sql ."\n";
-
+//		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 		
 		$xml = '<stored-cards accountid="'. $id .'">';
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
 			// Construct XML Document with data for saved cards
-			$xml .= '<card id="'. $RS["ID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'">';
+			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'">';
 			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
 			$xml .= '<type id="'. $RS["TYPEID"] .'">'. $RS["TYPE"] .'</type>';
 			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';

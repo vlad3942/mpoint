@@ -79,7 +79,7 @@
 		<!-- Client has specified a return URL for successful payments -->
 		<xsl:when test="string-length(transaction/accept-url) &gt; 0">
 			<div>
-				<form action="{func:constLink(transaction/accept-url)}" method="post">
+				<form id="continue" action="{func:constLink(transaction/accept-url)}" method="post">
 					<div>
 						<!-- Standard mPoint Variables -->
 						<input type="hidden" name="mpoint-id" value="{transaction/@id}" />
@@ -100,6 +100,10 @@
 					</div>
 				</form>
 			</div>
+			<!-- Automatically send customer back to merchant's site -->
+			<script type="text/javascript">
+				setTimeout(function() { document.getElementById('continue').submit(); }, 5000);
+			</script>
 		</xsl:when>
 		</xsl:choose>
 	</div>

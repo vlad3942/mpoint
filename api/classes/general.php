@@ -48,7 +48,12 @@ class General
 	public function __construct(RDB &$oDB, TranslateText &$oTxt)
 	{
 		$this->_obj_DB = $oDB;
-		$this->_obj_Txt = $oTxt;
+		// Enable Timestamp compatibility for Oracle
+		if ( ($this->_obj_DB instanceof Oracle) === true)
+		{
+			$this->_obj_DB->query("ALTER SESSION SET nls_timestamp_format = 'YYYY-MM-DD HH24:MI:SS.FF9'");
+		}
+ 		$this->_obj_Txt = $oTxt;
 	}
 
 	/**
@@ -514,8 +519,7 @@ class General
 		$sql = "SELECT data
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
 				WHERE txnid = ". intval($txnid) ." AND stateid = ". intval($stateid) ."
-				ORDER BY id DESC
-				LIMIT 1";
+				ORDER BY id DESC";
 		// Serialize the transaction using a FOR UPDATE
 		if ($serialize === true)
 		{
@@ -527,8 +531,15 @@ class General
 		$data = array();
 		if (is_array($RS) === true)
 		{
-			$RS["DATA"] = utf8_decode($RS["DATA"]);
-			$data = @unserialize($RS["DATA"]);
+			if ($stateid == Constants::iCLIENT_VARS_STATE)
+			{
+				$data = unserialize(base64_decode($RS["DATA"]) );
+			}
+			else
+			{
+				$RS["DATA"] = utf8_decode($RS["DATA"]);
+				$data = unserialize($RS["DATA"]);
+			}
 			if ($data === false) { $data = array($RS["DATA"]); }
 		}
 
@@ -859,7 +870,7 @@ class General
 		{
 			if (substr($key, 0, 4) == "var_") { $aClientVars[$key] = $val; }
 		}
-		if (count($aClientVars) > 0) { $this->newMessage($txnid, Constants::iCLIENT_VARS_STATE, serialize($aClientVars) ); }
+		if (count($aClientVars) > 0) { $this->newMessage($txnid, Constants::iCLIENT_VARS_STATE, base64_encode(serialize($aClientVars) ) ); }
 	}
 	
 	/**
@@ -998,15 +1009,14 @@ class General
 	 */
 	public function getAuditLog($mobile=-1, $email="", $cr="", $start="", $end="")
 	{
-		$sql = "SELECT id, operationid,  mobile,  email, customer_ref,  code, 
-					message, Extract('epoch' from created  AT TIME ZONE 'UTC') AS timestamp
+		$sql = "SELECT id, operationid,  mobile,  email, customer_ref, code, message, created
 				FROM Log".sSCHEMA_POSTFIX.".AuditLog_Tbl
 				WHERE enabled = '1'";
 		if (floatval($mobile) > 0) { $sql .= " AND mobile = '". floatval($mobile) ."'"; }
-		if (empty($email) === false) { $sql .= " AND email = '". $this->getDBConn()->escStr($email) ."'";}
-		if (empty($cr) === false) { $sql .= " AND customer_ref = '". $this->getDBConn()->escStr($cr) ."'";}
-		if (empty($start) === false) { $sql .= " AND created >= '". $this->getDBConn()->escStr($start) ."'"; }
-		if (empty($end) === false) { $sql .= " AND created <= '". $this->getDBConn()->escStr($end) ."'"; }
+		if (empty($email) === false && strlen($email) > 0) { $sql .= " AND email = '". $this->getDBConn()->escStr($email) ."'";}
+		if (empty($cr) === false && strlen($cr) > 0) { $sql .= " AND customer_ref = '". $this->getDBConn()->escStr($cr) ."'";}
+		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND created >= '". $this->getDBConn()->escStr($start) ."'"; }
+		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND created <= '". $this->getDBConn()->escStr($end) ."'"; }
 		$sql .= "
 				ORDER BY id ASC";
 //		echo $sql ."\n";
@@ -1016,11 +1026,11 @@ class General
 		{
 			$xml .= '<audit-log id="'. $RS["ID"] .'" operation-id="'. $RS["OPERATIONID"] .'">';
 			$xml .= '<customer customer-ref="'. htmlspecialchars($RS["CUSTOMERREF"], ENT_NOQUOTES) .'">';
-			$xml .= '<mobile>"'. $RS["MOBILE"] .'"</mobile>';
-			$xml .= '<email>"'. $RS["EMAIL"] .'"</email>';
+			$xml .= '<mobile>'. $RS["MOBILE"] .'</mobile>';
+			$xml .= '<email>'. $RS["EMAIL"] .'</email>';
 			$xml .= '</customer>';
-			$xml .= '<message "code="'. $RS["CODE"] .'">'. htmlspecialchars($RS["MESSAGE"], ENT_NOQUOTES) .'</message>';
-			$xml .= '<timestamp>'. gmdate("Y-m-d H:i:sP", $RS["TIMESTAMP"]) .'</timestamp>';
+			$xml .= '<message code="'. $RS["CODE"] .'">'. htmlspecialchars($RS["MESSAGE"], ENT_NOQUOTES) .'</message>';
+			$xml .= '<timestamp>'. gmdate("Y-m-d H:i:sP", strtotime(substr($RS["CREATED"], 0, strpos($RS["CREATED"], ".") ) ) ) .'</timestamp>';
 			$xml .= '</audit-log>';
 		}
 		$xml .= '</audit-logs>';
@@ -1053,10 +1063,10 @@ class General
 	public function getTransactionStatus(HTTPConnInfo &$oCI, $sec)
 	{
 		$sql = "SELECT Txn.id, Txn.orderid , URL.url
-		FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
-		INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M ON Txn.id = M.txnid AND M.Stateid != ". Constants::iPAYMENT_ACCEPTED_STATE ."
-		INNER JOIN Client".sSCHEMA_POSTFIX.".Url_Tbl URL ON Txn.clientid = URL.clientid AND URL.urltypeid = ". Constants::iURL_TYPE_GET_TRANSACTION_STATUS ."
-		WHERE Txn.created >= (now() - '".$sec." seconds'::INTERVAL) FOR UPDATE";
+				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
+				INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M ON Txn.id = M.txnid AND M.Stateid != ". Constants::iPAYMENT_ACCEPTED_STATE ."
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Url_Tbl URL ON Txn.clientid = URL.clientid AND URL.urltypeid = ". Constants::iURL_TYPE_GET_TRANSACTION_STATUS ."
+				WHERE Txn.created >= (now() - '".$sec." seconds'::INTERVAL) FOR UPDATE";
 	
 		$res = $this->getDBConn()->query($sql);
 		$Obj_SendData = array();

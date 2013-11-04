@@ -77,15 +77,14 @@ class Admin extends General
 		return array_change_key_case($RS, CASE_LOWER);
 	}
 	
-	public function GetUserRolesAndAccess($id)
+	public function getUserRolesAndAccess($id)
 	{
 		$sql = "SELECT R.id
-					FROM Admin".sSCHEMA_POSTFIX.".RoleAccess_Tbl Acc
-					INNER JOIN Admin".sSCHEMA_POSTFIX.".Role_Tbl R ON Acc.roleid = R.id AND R.enabled = true
-					WHERE Acc.userid = ". intval($id) ."
-					 ORDER BY R.name ASC";
-	//			echo $sql ."\n";
-
+				FROM Admin".sSCHEMA_POSTFIX.".RoleAccess_Tbl Acc
+				INNER JOIN Admin".sSCHEMA_POSTFIX.".Role_Tbl R ON Acc.roleid = R.id AND R.enabled = true
+				WHERE Acc.userid = ". intval($id) ."
+				ORDER BY R.name ASC";
+//		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 		
 		$xml = '<status code="100">Roles fetched </status>';
@@ -97,9 +96,9 @@ class Admin extends General
 		$xml .= '</roles>';
 	
 		$sql = "SELECT clientid
-					FROM Admin".sSCHEMA_POSTFIX.".Access_Tbl
-					WHERE userid = ". intval($id);
-						//			echo $sql ."\n";
+				FROM Admin".sSCHEMA_POSTFIX.".Access_Tbl
+				WHERE userid = ". intval($id);
+//		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 		$xml .= "<clients>";
 		while ($RS = $this->getDBConn()->fetchName($res) )
@@ -113,185 +112,172 @@ class Admin extends General
 	
 	public function saveMerchantSubAccount($accountid, $pspid, $name)
 	{			
-		$in_sql =  "INSERT INTO Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl 
-						(accountid, pspid, name)
-					VALUES
-						( ". intval($accountid).", ". intval($pspid).", '". $this->getDBConn()->escStr($name)."')";
-//echo $in_sql ."\n";	
-		$in_res = $this->getDBConn()->query($in_sql);
-		return is_resource($in_res);
+		$sql =  "INSERT INTO Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl 
+					(accountid, pspid, name)
+				 VALUES
+					( ". intval($accountid).", ". intval($pspid).", '". $this->getDBConn()->escStr($name)."')";
+//		echo $sql ."\n";	
+		return is_resource($this->getDBConn()->query($sql) );
 	}
 	
 	public function deleteMerchantSubAccount($accountid)
 	{
-		$del_sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl
-					WHERE accountid = ". intval($accountid)."";
-		$del_res = $this->getDBConn()->query($del_sql);
-		return is_resource($del_res);
+		$sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl
+				WHERE accountid = ". intval($accountid);
+		return is_resource($this->getDBConn()->query($sql) );
 	}
 	
 	public function saveAccount(&$accountid, $clientid, $name, $markup)
 	{	
-        $newaccount = FALSE;
+        $newaccount = false;
 		if ($accountid > 0)
 		{
-			$up_sql = "UPDATE Client".sSCHEMA_POSTFIX.".Account_Tbl
-						SET name = '". $this->getDBConn()->escStr($name)."', markup='". $this->getDBConn()->escStr($markup)."'
-						WHERE id = ". intval($accountid)." AND clientid = ".intval($clientid)."";
-			$up_res = $this->getDBConn()->query($up_sql);
+			$sql = "UPDATE Client".sSCHEMA_POSTFIX.".Account_Tbl
+					SET name = '". $this->getDBConn()->escStr($name)."', markup='". $this->getDBConn()->escStr($markup)."'
+					WHERE id = ". intval($accountid)." AND clientid = ".intval($clientid)."";
+			$res = $this->getDBConn()->query($sql);
 		}
 		else
 		{
-			$in_sql =  "INSERT INTO Client".sSCHEMA_POSTFIX.".Account_Tbl 
-							(clientid, name, markup)
-						VALUES
-							(". intval($clientid).", '". $this->getDBConn()->escStr($name)."', '". $this->getDBConn()->escStr($markup) ."')";
-//echo $in_sql ."\n";	
-			$in_res = $this->getDBConn()->query($in_sql);
-			if (is_resource($in_res))
+			$sql =  "INSERT INTO Client".sSCHEMA_POSTFIX.".Account_Tbl 
+						(clientid, name, markup)
+					 VALUES
+						(". intval($clientid).", '". $this->getDBConn()->escStr($name)."', '". $this->getDBConn()->escStr($markup) ."')";
+//			echo $sql ."\n";	
+			if (is_resource($this->getDBConn()->query($sql) ) === true)
 			{
-				$sql = "SELECT MAX(id) AS ID
+				$sql = "SELECT Max(id) AS ID
 						FROM Client".sSCHEMA_POSTFIX.".Account_Tbl";
-//echo $sql ."\n";	
+//				echo $sql ."\n";	
 				$RS = $this->getDBConn()->getName($sql);
 		
 				if (is_array($RS) === true)
 				{
 					$accountid = $RS["ID"];
-					$newaccount = TRUE;
+					$newaccount = true;
 				}
 			}
 		}
-		return $newaccount == TRUE ? TRUE : is_resource($up_res);
+		return $newaccount == true ? true : is_resource($res);
 	}
 	
 	public function deleteAccount($clientid)
 	{
-		$del_sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".Account_Tbl
-					WHERE clientid = ". intval($clientid)."";
-		$del_res = $this->getDBConn()->query($del_sql);
-		return is_resource($del_res);
+		$sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".Account_Tbl
+				WHERE clientid = ". intval($clientid)."";
+		return is_resource($this->getDBConn()->query($sql) );
 	}
 	
 	public function saveURL($clientid, $typeid, $url)
 	{	
-		$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".URL_Tbl 
+		if (intval($typeid) == 4)
+		{
+			$sql = "UPDATE Client".sSCHEMA_POSTFIX.".Client_Tbl
+					SET callbackurl = ". $this->getDBConn()->escStr($url) ."
+					WHERE clientid = ".intval($clientid);
+		}
+		else
+		{
+			$sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".URL_Tbl
 						(clientid , urltypeid, url )
 					VALUES
-						( ". intval($clientid).", ". intval($typeid).",'". $this->getDBConn()->escStr($url)."')";
-		$in_res = $this->getDBConn()->query($in_sql);
-//echo $in_sql ."\n";
-		if (intval($typeid) == 4 && is_resource($in_res) === true)
-		{
-			$up_sql = "UPDATE Client".sSCHEMA_POSTFIX.".Client_Tbl
-						SET callback = ".$url."
-						WHERE clientid = ".intval($clientid)."";
-			$up_res = $this->getDBConn()->query($in_sql);
-		}	
-		return intval($typeid) == 4 ? is_resource($up_res) : is_resource($in_res);
+						(". intval($clientid).", ". intval($typeid).",'". $this->getDBConn()->escStr($url)."')";
+		}
+//		echo $sql ."\n";
+		return $this->getDBConn()->query($sql);
 	}
 	
 	public function deleteURL($clientid)
 	{
-		$del_sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".URL_Tbl
-					WHERE clientid = ". intval($clientid)."";
-		$del_res = $this->getDBConn()->query($del_sql);
-		return is_resource($del_res);
+		$sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".URL_Tbl
+				WHERE clientid = ". intval($clientid)."";
+		return is_resource($this->getDBConn()->query($sql) );
 	}
 	
 	public function saveMerchantAccount($clientid, $pspid, $name, $username, $password)
 	{		
-		$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl 
-						(clientid, pspid, name, username, passwd )
-					VALUES
-						( ". intval($clientid).", ". intval($pspid).", '". $this->getDBConn()->escStr($name)."'
-						, '". $this->getDBConn()->escStr($username)."', '". $this->getDBConn()->escStr($password)."')";
-//echo $in_sql ."\n";	
-		$in_res = $this->getDBConn()->query($in_sql);
-		return is_resource($in_res);
+		$sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl 
+					(clientid, pspid, name, username, passwd )
+				VALUES
+					( ". intval($clientid).", ". intval($pspid).", '". $this->getDBConn()->escStr($name)."', '". $this->getDBConn()->escStr($username)."', '". $this->getDBConn()->escStr($password)."')";
+//		echo $sql ."\n";	
+		return is_resource($this->getDBConn()->query($sql) );
 	}
 	
 	public function deleteMerchantAccount($clientid)
 	{
-		$del_sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl
-					WHERE clientid = ". intval($clientid)."";
-		$del_res = $this->getDBConn()->query($del_sql);
-		return is_resource($del_res);
+		$sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl
+				WHERE clientid = ". intval($clientid)."";
+		return is_resource($this->getDBConn()->query($sql) );
 	}
 	
-	public function saveKeyWord ($clientid, $name)
+	public function saveKeyword ($clientid, $name)
 	{
-		$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".KeyWord_Tbl 
-						(clientid , name, standard)
-					VALUES
-						( ". intval($clientid) .", '". $this->getDBConn()->escStr($name)."', true)";
-//echo $in_sql ."\n";
-		$in_res = $this->getDBConn()->query($in_sql);
-		return is_resource($in_res);
+		$sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".KeyWord_Tbl 
+					(clientid , name, standard)
+				VALUES
+					( ". intval($clientid) .", '". $this->getDBConn()->escStr($name)."', true)";
+//		echo $sql ."\n";
+		return is_resource($this->getDBConn()->query($sql) );
 	}
 	
-	public function deleteKeyWord($clientid)
+	public function deleteKeyword($clientid)
 	{
-		$del_sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".KeyWord_Tbl
-					WHERE clientid = ". intval($clientid)."";
-		$del_res = $this->getDBConn()->query($del_sql);
-		return is_resource($del_res);
+		$sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".KeyWord_Tbl
+				WHERE clientid = ". intval($clientid)."";
+		return is_resource($this->getDBConn()->query($sql) );
 	}
 	
-	
-	public function saveClient (&$clientid, $cc , $storecard, $autocapture, $name, $username, $password)
+	public function saveClient(&$clientid, $cc , $storecard, $autocapture, $name, $username, $password)
 	{
-        $newclient = FALSE;
+        $newclient = false;
 		if ($clientid > 0)
 		{
-			$up_sql = "UPDATE Client".sSCHEMA_POSTFIX.".Client_Tbl
-						SET store_card = ".intval($storecard) .", auto_capture = '". intval($autocapture)."', name = '". $this->getDBConn()->escStr($name)."', username='". $this->getDBConn()->escStr($username)."', passwd='". $this->getDBConn()->escStr($password)."', countryid = ".$cc ."
-						WHERE id = ". intval($clientid)."";
-			$up_res = $this->getDBConn()->query($up_sql);
+			$sql = "UPDATE Client".sSCHEMA_POSTFIX.".Client_Tbl
+					SET store_card = ".intval($storecard) .", auto_capture = '". intval($autocapture)."', name = '". $this->getDBConn()->escStr($name)."', username='". $this->getDBConn()->escStr($username)."', passwd='". $this->getDBConn()->escStr($password)."', countryid = ".$cc ."
+					WHERE id = ". intval($clientid)."";
+			$res = $this->getDBConn()->query($sql);
 		}
 		else
 		{
-			$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".Client_Tbl
-							(store_card, auto_capture, name, username, passwd, countryid, flowid)
-					   VALUES
-							(". intval($storecard).",'". intval($autocapture)."', '". $this->getDBConn()->escStr($name)."' , '". $this->getDBConn()->escStr($username)."', '". $this->getDBConn()->escStr($password)."',". intval($cc).", ".intval(1).")";
-//echo $in_sql ."\n";		
-			$in_res = $this->getDBConn()->query($in_sql);
-			if (is_resource($in_res))
+			$sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".Client_Tbl
+						(store_card, auto_capture, name, username, passwd, countryid, flowid)
+					VALUES
+						(". intval($storecard).",'". intval($autocapture)."', '". $this->getDBConn()->escStr($name)."' , '". $this->getDBConn()->escStr($username)."', '". $this->getDBConn()->escStr($password)."',". intval($cc).", ".intval(1).")";
+//			echo $sql ."\n";		
+			$res = $this->getDBConn()->query($sql);
+			if (is_resource($res))
 			{
 				$sql = "SELECT MAX(id) AS ID
 						FROM Client".sSCHEMA_POSTFIX.".Client_Tbl";
-//echo $sql ."\n";
+//				echo $sql ."\n";
 				$RS = $this->getDBConn()->getName($sql);
 								
-				if (is_array($RS) === TRUE)
+				if (is_array($RS) === true)
 				{
 					$clientid = $RS["ID"];						
-					$newclient = TRUE;				
+					$newclient = true;				
 				}
 			}
 		}
-		return $newclient == TRUE ? TRUE : is_resource($up_res);
+		return $newclient == true ? true : is_resource($res);
 	}
 	
-	
-	public function saveCardAccess ($clientid, $cardid, $pspid, $countryid)
+	public function saveCardAccess($clientid, $cardid, $pspid, $countryid)
 	{
-			$in_sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".CardAccess_Tbl 
-							(clientid, cardid, pspid, countryid)
-			 		   VALUES
-							(". intval($clientid).", ". intval($cardid).", ". intval($pspid).", ". intval($countryid).")";
-//echo $in_sql ."\n";	
-			$in_res = $this->getDBConn()->query($in_sql);
-			return is_resource($in_res);	
+		$sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".CardAccess_Tbl 
+					(clientid, cardid, pspid, countryid)
+			    VALUES
+					(". intval($clientid).", ". intval($cardid).", ". intval($pspid).", ". intval($countryid).")";
+//		echo $sql ."\n";	
+		return is_resource($this->getDBConn()->query($sql) );	
 	}
 	
 	public function deleteCardAccess($clientid)
 	{
-		$del_sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".CardAccess_Tbl 
+		$sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".CardAccess_Tbl 
 					WHERE clientid = ". intval($clientid)."";
-		$del_res = $this->getDBConn()->query($del_sql);
-		return is_resource($del_res);
+		return is_resource($this->getDBConn()->query($sql) );
 	}
 	
 	
