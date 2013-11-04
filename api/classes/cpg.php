@@ -68,10 +68,10 @@ class CPG extends Callback
 		$b .= '<order orderCode="'. htmlspecialchars($this->getTxnInfo()->getOrderID(), ENT_NOQUOTES) .'">'; // mandatory, needs to be unique
 		list(, $pnr, , ) = explode("/", $this->getTxnInfo()->getOrderID() );
 		$b .= '<description>Emirates Airline Ticket Purchase '. $pnr .'</description>';		
-		$b .= '<amount value="'. $this->getTxnInfo()->getAmount() .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getClientConfig()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="2" debitCreditIndicator="credit" />'; 
+		$b .= '<amount value="'. $this->getTxnInfo()->getAmount() .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="2" debitCreditIndicator="credit" />'; 
 		if  (array_key_exists("var_tax", $aClientVars) === true)
 		{
-			$b .= '<tax value="'. $aClientVars["var_tax"] .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getClientConfig()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="2" />';
+			$b .= '<tax value="'. $aClientVars["var_tax"] .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="2" />';
 		}					
 		$b .= '<orderContent>'. htmlspecialchars($this->getTxnInfo()->getDescription(), ENT_NOQUOTES) .'</orderContent>'; 
 		$b .= '<paymentDetails>';
@@ -85,15 +85,15 @@ class CPG extends Callback
 //		$b .= '<paymentCountryCode>'. $this->_getCountryCode(intval($obj_XML->address['country-id']) ) .'</paymentCountryCode>';
 		if (array_key_exists("var_fiscal-number", $aClientVars) === true)
 		{
-			$b .= '<fiscalNumber>"'. $aClientVars["var_fiscal-number"] .'"</fiscalNumber>';
+			$b .= '<fiscalNumber>'. $aClientVars["var_fiscal-number"] .'</fiscalNumber>';
 		}
 		if (array_key_exists("var_payment-country-code", $aClientVars) === true)
 		{
-			$b .= '<paymentCountryCode>"'. $aClientVars["var_payment-country-code"] .'"</paymentCountryCode>';
+			$b .= '<paymentCountryCode>'. $aClientVars["var_payment-country-code"] .'</paymentCountryCode>';
 		}
 		if (array_key_exists("var_number-of-instalments", $aClientVars) === true)
 		{
-			$b .= '<numberofinstalments>"'. $aClientVars["var_number-of-instalments"] .'"</numberofinstalments>';
+			$b .= '<numberofinstalments>'. $aClientVars["var_number-of-instalments"] .'</numberofinstalments>';
 		}			    
 		$b .= '<cardAddress>';
 		$b .= '<address>';

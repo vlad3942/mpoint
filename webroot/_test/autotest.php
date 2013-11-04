@@ -83,7 +83,7 @@ class AutoTest
 	{
 		$xml = '<client-info platform="iOS" version="5.1.1" language="da">';
 		$xml .= '<customer-ref>'. htmlspecialchars($this->_sCustomerRef, ENT_NOQUOTES) .'</customer-ref>';
-		$xml .= '<mobile country-id="DK" operator-id="10000">'. $this->_lMobile .'</mobile>';
+		$xml .= '<mobile country-id="AE">'. $this->_lMobile .'</mobile>';
 		$xml .= '<email>'. $this->_sEMail .'</email>';
 		$xml .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
 		$xml .= '</client-info>';
@@ -91,39 +91,45 @@ class AutoTest
 		return $xml;
 	}
 	
-	private function _initialize()
+	private function _initialize($cv="")
 	{
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<initialize-payment client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
-		$b .= '<transaction order-no="1234abc">';
-		$b .= '<amount country-id="DK">1000</amount>';
-		$b .= '<auth-url>http://localhost/_test/auth.php</auth-url>';
-		$b .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
+		$b .= '<transaction order-no="EST/NGPN4N/07NOV2013/1507-'. time() .'">';
+		$b .= '<amount country-id="AE">147500</amount>';
+//		$b .= '<auth-url>http://localhost/_test/auth.php</auth-url>';
+//		$b .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
 		$b .= '<description>
 				<![CDATA[
-				<center><table>
-				<tr><td bgcolor="#ffff00">Your Internet Order:</td><td colspan="2" bgcolor="#ffff00" align="right">IBE/845</td></tr>
-				<tr><td bgcolor="#ffff00">Description:</td><td>14 Tulip bulbs</td><td align="right">1,00</td></tr>
-				<tr><td colspan="2">Subtotal:</td><td align="right">14,00</td></tr>
-				<tr><td colspan="2">VAT: 13%</td><td align="right">1,82</td></tr>
-				<tr><td colspan="2">Shipping and Handling:</td><td align="right">4,00</td></tr>
-				<tr><td colspan="2" bgcolor="#c0c0c0">Total cost:</td><td bgcolor="#c0c0c0" align="right">Euro 19,82</td></tr>
-				<tr><td colspan="3">&nbsp;</td></tr>
-				<tr><td bgcolor="#ffff00" colspan="3">Your billing address:</td></tr>
-				<tr><td colspan="3">Mr. Doe,<br>11 Hereortherestreet,<br>1234 KL Somewhereorother,<br>Thisplace.</td></tr>
-				<tr><td colspan="3">&nbsp;</td></tr>
-				<tr><td bgcolor="#ffff00" colspan="3">Your shipping address:</td></tr>
-				<tr><td colspan="3">Mr. Doe,<br>11 Hereortherestreet,<br>1234 KL Somewhereorother,<br>Thisplace.</td></tr>
-				<tr><td colspan="3">&nbsp;</td></tr>
-				<tr><td bgcolor="#ffff00" colspan="3">Our contact information:</td></tr>
-				<tr><td colspan="3">Emirates Airlines<br>P.O. Box 686<br>Dubai,<br>UAE<br><br>payment@emirates.com<br>971 4-3167530 </td></tr>
-				<tr><td colspan="3">&nbsp;</td></tr>
-				<tr><td bgcolor="#c0c0c0" colspan="3">Billing notice:</td></tr>
-				<tr><td colspan="3">Your payment will be handled by Bibit Global Payments Services<br>This name may appear on your bank statement<br>http://www.bibit.com</td></tr>
-				</table></center>
+				<center><table><tr><td bgcolor="#ffff00">Your Internet Order:</td><td colspan="2" bgcolor="#ffff00" align="right">EST/NGPN4N/29OCT2013/1507</td></tr><tr><td bgcolor="#ffff00">Description:</td><td>EK Internet Booking Engine</td><td align="right">1.00</td></tr><tr><td colspan="2">Subtotal:</td><td align="right">1475.0</td></tr><tr><td colspan="2" bgcolor="#c0c0c0">Total cost:</td><td bgcolor="#c0c0c0" align="right">1475.0</td></tr><tr><td colspan="3">&nbsp;</td></tr><tr><td bgcolor="#ffff00" colspan="3">Your billing address:</td></tr><tr><td colspan="3"><br>Address Object contains :
+				address1:dsfdsf
+				address2: 
+				address2: 
+				city: sdfsdf
+				region: 
+				country: AZ
+				postalcode: 
+				contactType: </td></tr><tr><td colspan="3">&nbsp;</td></tr><tr><td bgcolor="#ffff00" colspan="3">Your shipping address:</td></tr><tr><td colspan="3"><br>Address Object contains :
+				address1:
+				address2: 
+				address2: 
+				city: 
+				region: 
+				country: 
+				postalcode: 
+				contactType: </td></tr><tr><td colspan="3">&nbsp;</td></tr><tr><td bgcolor="#ffff00" colspan="3">Our contact information:</td></tr><tr><td colspan="3">Emirates Airlines,<br>P.O.Box No 686,<br>1255 KZ Dubai,<br>UAE.<br><br>payment@emirates.com<br>971 4-7035726</td></tr></table></center>
 				]]>
 			   </description>';
+		$b .= '<custom-variables>';
+		$b .= '<tax>33500</tax>';
+		$b .= '<enhanced-data>
+				<![CDATA[
+				<enchancedData code="EK"><airline code="EK" /><passenger type = "ADT" passengerID="300003524" paxClass="" productName="FLIGHT" productCode="SME Revenue">Alalawi/Iman</passenger><pnr code="NGPN4N"><flight carrierCode="EK0600"><departureAirport>DXB</departureAirport><arrivalAirport>KHI</arrivalAirport><departureDate><depdate day = "15" month="12" year="2013" /></departureDate><arrivalDate><arrdate day = "15" month="12" year="2013" /></arrivalDate><jrnyType>Return</jrnyType><fare class="Y" /></flight><flight carrierCode="EK0605"><departureAirport>KHI</departureAirport><arrivalAirport>DXB</arrivalAirport><departureDate><depdate day = "21" month="12" year="2013" /></departureDate><arrivalDate><arrdate day = "21" month="12" year="2013" /></arrivalDate><jrnyType>Return</jrnyType><fare class="Y" /></flight></pnr><devSessionID>15547305</devSessionID><merchData2>Y</merchData2><bookingType>SME Revenue</bookingType><merchData1></merchData1><merchData3>SME BOOKING</merchData3><merchData4>IMAN ALALAWI</merchData4><merchData5>IMAN ALALAWI</merchData5><merchData6>EK 0600</merchData6><merchData7>15 Dec 13</merchData7><merchData8>NGPN4N</merchData8><thirdParty>false</thirdParty><deptTime>08:00</deptTime><agent code="" /><redemptionTicket></redemptionTicket><ticketOption>ETKT</ticketOption><promotionalCode></promotionalCode><skywardsNumber>300003524</skywardsNumber><productCode>SME Revenue</productCode><bkgChannel>WEB</bkgChannel><tax currencyCode="AED" exponent="2" value="147500"></tax></enchancedData>
+				]]>
+			   </enhanced-data>';
+		$b .= $cv;
+		$b .= '</custom-variables>';
 		$b .= '</transaction>';
 		$b .= $this->_constClientInfo();
 		$b .= '</initialize-payment>';
@@ -182,10 +188,26 @@ class AutoTest
 	}
 	
 	/* ========== Automatic Payment Tests Start ========== */
-	public function initializePaymentTest()
+	public function initializePaymentWithEnhancedDataTest()
 	{
 		$this->_sDebug = "";
 		if ( ($this->_initialize() instanceof SimpleXMLElement) === true)
+		{
+			return self::sSTATUS_SUCCESS;
+		}
+		else
+		{
+			$this->_sDebug = $this->_obj_Client->getReplyBody();
+			return self::sSTATUS_FAILED;
+		}
+	}
+	public function initializePaymentWithInstalmentsTest()
+	{
+		$b = '<fiscal-number>1234567890</fiscal-number>';
+		$b .= '<payment-country-code>AE</payment-country-code>';
+		$b .= '<number-of-instalments>2</number-of-instalments>';
+		$this->_sDebug = "";
+		if ( ($this->_initialize($b) instanceof SimpleXMLElement) === true)
 		{
 			return self::sSTATUS_SUCCESS;
 		}
@@ -242,10 +264,10 @@ class AutoTest
 			return self::sSTATUS_FAILED;
 		}
 	}
-	public function authorizeStoredCardUsingSSOTest()
+	private function _authorize($at, $cv="")
 	{
 		$this->_sDebug = "";
-		$obj_XML = $this->_initialize();
+		$obj_XML = $this->_initialize($cv);
 		if ( ($obj_XML instanceof SimpleXMLElement) === true && count($obj_XML->{'stored-cards'}) == 1)
 		{
 			$b = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -257,11 +279,11 @@ class AutoTest
 			$b .= '<cvc>123</cvc>';
 			$b .= '</card>';
 			$b .= '</transaction>';
-			$b .= '<auth-token>oisJona</auth-token>';
+			$b .= '<auth-token>'. htmlspecialchars($at, ENT_NOQUOTES) .'</auth-token>';
 			$b .= $this->_constClientInfo();
 			$b .= '</authorize-payment>';
 			$b .= '</root>';
-				
+		
 			// mPoint
 			if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
 			{
@@ -269,7 +291,7 @@ class AutoTest
 			}
 			// Mobile Enterprise Service Bus
 			else { $this->_aConnInfo["path"] = "/mpoint/authorize-payment"; }
-				
+		
 			$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
 			$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
 			$this->_obj_Client->connect();
@@ -277,8 +299,13 @@ class AutoTest
 			$this->_obj_Client->disconnect();
 			if ($code == 200)
 			{
-				$this->_sDebug = $this->_obj_Client->getReplyBody();
-				return self::sSTATUS_SUCCESS;
+				$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
+				if ($obj_XML->status["code"] >= 100) { return self::sSTATUS_SUCCESS; }
+				else
+				{
+					$this->_sDebug = $this->_obj_Client->getReplyBody();
+					return self::sSTATUS_FAILED;
+				}
 			}
 			else
 			{
@@ -286,42 +313,61 @@ class AutoTest
 				return self::sSTATUS_FAILED;
 			}
 		}
+		elseif ( ($obj_XML instanceof SimpleXMLElement) === true)
+		{
+			$this->_sDebug = "No Stored Cards Found for End-User: ". $obj_XML->transaction["eua-id"];
+			return self::sSTATUS_WARNING;
+		}
 		else
 		{
 			$this->_sDebug = $this->_obj_Client->getReplyBody();
 			return self::sSTATUS_WARNING;
 		}
 	}
+	public function authorizeStoredCardUsingSSOTest($at)
+	{
+		return $this->_authorize($at);
+	}
+	public function authorizeStoredCardWithInstalmentsUsingSSOTest($at)
+	{
+		$b = '<fiscal-number>1234567890</fiscal-number>';
+		$b .= '<payment-country-code>AE</payment-country-code>';
+		$b .= '<number-of-instalments>2</number-of-instalments>';
+		return $this->_authorize($at, $b);
+	}
 	/* ========== Automatic mConsole Tests Start ========== */
 	
-	public function mConsoleSearchTest()
+	private function _mConsoleSearchTest($mobile=0, $email="", $cr="", $start="", $end="")
 	{
 		$this->_sDebug = "";
-	
+		
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
-		$b .= '<search>';
-		$b .= '<clientid>'. $this->_iClientID .'</clientid>';
-		$b .= '<countryid>100</countryid>';
-		$b .= '<transactionno></transactionno>';
-		$b .= '<orderno></orderno>';
-		$b .= '<mobile>'. $this->_lMobile .'</mobile>';
-//		$b .= '<email></email>';
-//		$b .= '<start-date>2012-01-01T09:00:00</start-date>';
-//		$b .= '<end-date>2014-06-01T09:00:00</end-date>';
+		$b .= '<search client-id="'. $this->_iClientID .'">';
+		if (floatval($mobile) > 0) { $b .= '<mobile country-id="DK">'. floatval($mobile) .'</mobile>'; }
+		if (empty($email) === false) { $b .= '<email>'. htmlspecialchars($email, ENT_NOQUOTES) .'</email>'; }
+		if (empty($cr) === false) { $b .= '<customer-ref>'. htmlspecialchars($cr, ENT_NOQUOTES) .'</customer-ref>'; }
+		if (empty($start) === false && empty($end) === false)
+		{
+			$b .= '<start-date>'. htmlspecialchars($start, ENT_NOQUOTES) .'</start-date>';
+			$b .= '<end-date>'. htmlspecialchars($end, ENT_NOQUOTES) .'</end-date>';
+		}
 		$b .= '</search>';
 		$b .= '</root>';
-		
-		$this->_aConnInfo["path"]= "/mConsole/api/search.php";
-		$port = $this->_aConnInfo["port"];
-		$this->_aConnInfo["port"] = 80;
 
+		// mPoint
+		if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
+		{
+			$this->_aConnInfo["path"] = "/mApp/api/search.php";
+		}
+		// Mobile Enterprise Service Bus
+		else { $this->_aConnInfo["path"] = "/mpoint/mconsole/search"; }
+		
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
 		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
 		$this->_obj_Client->connect();
 		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
 		$this->_obj_Client->disconnect();
-		$this->_aConnInfo["port"] = $port;
 		if ($code == 200)
 		{
 			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
@@ -340,6 +386,22 @@ class AutoTest
 			$this->_sDebug = $this->_obj_Client->getReplyBody();
 			return self::sSTATUS_FAILED;
 		}
+	}
+	public function mConsoleSearchUsingMobileTest()
+	{
+		return $this->_mConsoleSearchTest($this->_lMobile);
+	}
+	public function mConsoleSearchUsingEMailTest()
+	{
+		return $this->_mConsoleSearchTest(0, $this->_sEMail);
+	}
+	public function mConsoleSearchUsingCustomerRefTest()
+	{
+		return $this->_mConsoleSearchTest(0, "", $this->_sCustomerRef);
+	}
+	public function mConsoleSearchUsingPeriodTest()
+	{
+		return $this->_mConsoleSearchTest(0, "", "", "2013-10-01T00:00:00+00:00", "2013-12-01T00:00:00+00:00");
 	}
 	/* ========== Automatic mConsole Tests End ========== */
 	
@@ -372,7 +434,13 @@ class AutoTest
 		$this->_obj_Client->disconnect();
 		if ($code == 200)
 		{
-			return self::sSTATUS_SUCCESS;
+			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
+			if ($obj_XML->status["code"] >= 100) { return self::sSTATUS_SUCCESS; }
+			else
+			{
+				$this->_sDebug = $this->_obj_Client->getReplyBody();
+				return self::sSTATUS_FAILED;
+			}
 		}
 		else
 		{
@@ -380,24 +448,25 @@ class AutoTest
 			return self::sSTATUS_FAILED;
 		}
 	}
+	
 	public function saveMaskedCardTest()
 	{
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<save-card client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
-		$b .= '<card psp-id="9" type-id="MAESTRO" preferred="true">';
+		$b .= '<card psp-id="9" type-id="VISA" preferred="true">';
 		$b .= '<name>My VISA</name>';
-		$b .= '<card-number-mask>540287******1244</card-number-mask>';
-		$b .= '<expiry-month>10</expiry-month>';
-		$b .= '<expiry-year>14</expiry-year>';
-		$b .= '<token>123456-ABCD</token>';
-		$b .= '<card-holder-name>Jonatan Evad Buus</card-holder-name>';
-		$b .= '<address country-id="DK">';
-		$b .= '<first-name>Jonatan Evald</first-name>';
-		$b .= '<last-name>Buus</last-name>';
-		$b .= '<street>Dexter Gordons Vej 3, 6.tv</street>';
-		$b .= '<postal-code>2450</postal-code>';
-		$b .= '<city>'. utf8_encode("K�benhavn SV") .'</city>';
+		$b .= '<card-number-mask>4444********3333</card-number-mask>';
+		$b .= '<expiry-month>07</expiry-month>';
+		$b .= '<expiry-year>17</expiry-year>';
+		$b .= '<token>123470-ABCD</token>';
+		$b .= '<card-holder-name>mohamedgiya ulhak</card-holder-name>';
+		$b .= '<address country-id="AE">';
+		$b .= '<first-name>Mohamedgiya</first-name>';
+		$b .= '<last-name>Ulhak</last-name>';
+		$b .= '<street>Anna nagar</street>';
+		$b .= '<postal-code>600408</postal-code>';
+		$b .= '<city>Chennai</city>';
 		$b .= '<state>N/A</state>';
 		$b .= '</address>';
 		$b .= '</card>';
@@ -423,7 +492,13 @@ class AutoTest
 		
 		if ($code == 200)
 		{
-			return self::sSTATUS_SUCCESS;
+			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
+			if ($obj_XML->status["code"] >= 100) { return self::sSTATUS_SUCCESS; }
+			else
+			{
+				$this->_sDebug = $this->_obj_Client->getReplyBody();
+				return self::sSTATUS_FAILED;
+			}
 		}
 		elseif ($code == 401 || $code == 403)
 		{
@@ -437,40 +512,6 @@ class AutoTest
 		}
 	}
 	
-/*	public function loginTest()
-	{
-		$b = '<?xml version="1.0" encoding="UTF-8"?>';
-		$b .= '<root>';
-		$b .= '<login client-id="10017" >';
-		$b .= '<password>oisJona1</password>';
-		$b .= $this->_constClientInfo();
-		$b .= '</login>';
-		$b .= '</root>';
-	
-		$this->_sDebug = "";
-		$this->_aConnInfo["path"]= "/mApp/api/login.php";
-	
-		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
-		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
-		$this->_obj_Client->connect();
-		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
-		$this->_obj_Client->disconnect();
-		if ($code == 200)
-		{
-			return self::sSTATUS_SUCCESS;
-		}
-		elseif ($code == 401 || $code == 403)
-		{
-			$this->_sDebug = $this->_obj_Client->getReplyBody();
-			return self::sSTATUS_WARNING;
-		}
-		else
-		{
-			$this->_sDebug = $this->_obj_Client->getReplyBody();
-			return self::sSTATUS_FAILED;
-		}
-	}
-*/	
 	public function loginUsingPasswordAddressReturnTest()
 	{
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -501,9 +542,9 @@ class AutoTest
 			if (count($obj_XML->{'stored-cards'}->card->address) == 1)
 			{
 				return self::sSTATUS_SUCCESS;
-			}	
+			}
 			else
-			{ 
+			{
 				$this->_sDebug = "No address returned";
 				return self::sSTATUS_FAILED;
 			}
@@ -612,7 +653,13 @@ class AutoTest
 				
 				if ($code == 200)
 				{
-					return self::sSTATUS_SUCCESS;
+					$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
+					if ($obj_XML->status["code"] >= 100) { return self::sSTATUS_SUCCESS; }
+					else
+					{
+						$this->_sDebug = $this->_obj_Client->getReplyBody();
+						return self::sSTATUS_FAILED;
+					}
 				}
 				else
 				{
@@ -870,7 +917,7 @@ else { var_dump($obj_Client); die(); }
 
 $iClientID = 10001;
 $iAccount = 100010;
-$sCustomerRef = "ABC-123";
+$sCustomerRef = "00777415236";
 $iMobile = "28882861";
 $sEMail = "jona@oismail.com";
 
@@ -935,13 +982,23 @@ $obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $s
 	</tr>
 	<tr>
 		<td class="name">Save Masked Card</td>
-		<td><?= $obj_AutoTest->saveMaskedCardTest(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->saveMaskedCardTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
-		<td class="name">Initialize Payment</td>
-		<td><?= $obj_AutoTest->initializePaymentTest(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td class="name">Save Masked Card 2</td>
+		<td><?//= $obj_AutoTest->saveMaskedCardTest2(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Initialize Payment with Enhanced Data</td>
+		<td><?//= $obj_AutoTest->initializePaymentWithEnhancedDataTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Initialize Payment with Instalments</td>
+		<td><?//= $obj_AutoTest->initializePaymentWithInstalmentsTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Pay</td>
@@ -950,48 +1007,73 @@ $obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $s
 	</tr>
 	<tr>
 		<td class="name">Authorize Stored Card using Single Sign-On</td>
-		<td><?= $obj_AutoTest->authorizeStoredCardUsingSSOTest(); ?></td>
+		<td><?//= $obj_AutoTest->authorizeStoredCardUsingSSOTest($obj_AutoTest->getCRISAuthToken() ); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Authorize Stored Card with Instalments using Single Sign-On</td>
+		<td><?= $obj_AutoTest->authorizeStoredCardWithInstalmentsUsingSSOTest($obj_AutoTest->getCRISAuthToken() ); ?></td>
 		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Save Card Name</td>
-		<td><?= $obj_AutoTest->saveCardNameTest(); ?></td>
-		<td><?= $obj_AutoTest->getDebug(); ?></td>
+		<td><?//= $obj_AutoTest->saveCardNameTest(); ?></td>
+		<td><?//= $obj_AutoTest->getDebug(); ?></td>
 	</tr>
 	<tr>
-		<td class="name">mConsole Search</td>
-		<td><?= $obj_AutoTest->mConsoleSearchTest(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td class="name">mConsole Search using Mobile</td>
+		<td><?//= $obj_AutoTest->mConsoleSearchUsingMobileTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
-		<td class="name">Login using Password with Billing Address Returned</td>
-		<td><?= $obj_AutoTest->loginUsingPasswordAddressReturnTest(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td class="name">mConsole Search using E-Mail</td>
+		<td><?//= $obj_AutoTest->mConsoleSearchUsingEMailTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
-		<td class="name">Login using Single Sign-On</td>
-		<td><?= $obj_AutoTest->loginUsingSSOTest($obj_AutoTest->getCRISAuthToken() ); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td class="name">mConsole Search using Customer Reference</td>
+		<td><?//= $obj_AutoTest->mConsoleSearchUsingCustomerRefTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">mConsole Search using Period</td>
+		<td><?//= $obj_AutoTest->mConsoleSearchUsingPeriodTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Login using Password</td>
-		<td><?= $obj_AutoTest->loginUsingPassword(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->loginUsingPassword(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Login using Password with Billing Address Returned</td>
+		<td><?//= $obj_AutoTest->loginUsingPasswordAddressReturnTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Login using Single Sign-On</td>
+		<td><?//= $obj_AutoTest->loginUsingSSOTest($obj_AutoTest->getCRISAuthToken() ); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Login using Single Sign-On 2</td>
+		<td><?//= $obj_AutoTest->loginUsingSSOTest2($obj_AutoTest->getCRISAuthToken() ); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Delete Card using Single Sign-On</td>
-		<td><?= $obj_AutoTest->deleteCardUsingSSOTest($obj_AutoTest->getCRISAuthToken() ); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->deleteCardUsingSSOTest($obj_AutoTest->getCRISAuthToken() ); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Save Preferences in CRIS Success</td>
-		<td><?= $obj_AutoTest->savePreferenceInCRISSuccessTest($obj_AutoTest->getCRISAuthToken() ); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->savePreferenceInCRISSuccessTest($obj_AutoTest->getCRISAuthToken() ); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 		<tr>
 		<td class="name">Save Preferences in CRIS Fail</td>
-		<td><?= $obj_AutoTest->savePreferenceInCRISFailureTest($obj_AutoTest->getCRISAuthToken() ); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->savePreferenceInCRISFailureTest($obj_AutoTest->getCRISAuthToken() ); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	</table>
 </body>

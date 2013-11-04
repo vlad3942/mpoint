@@ -251,17 +251,17 @@ class EndUserAccount extends Home
 		}
 
 		// Check if card has already been saved
-		$id = $this->getCardFromCardDetails($iAccountID, $cardid, $mask, $exp);
+		$id = $this->getCardIDFromCardDetails($iAccountID, $cardid, $mask, $exp);
 
 		// Card previously saved by End-User
 		if ($id > 0)
 		{
 			$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 					SET pspid = ". intval($pspid) .", ticket = '". $this->getDBConn()->escStr($token) ."',
-						mask = '". $this->getDBConn()->escStr($mask) ."', expiry = '". $this->getDBConn()->escStr($exp) ."',
+						mask = '". $this->getDBConn()->escStr(trim($mask) ) ."', expiry = '". $this->getDBConn()->escStr($exp) ."',
 						enabled = '1'";
-			if (empty($name) === false) { $sql .= ", name = '". $this->getDBConn()->escStr($name) ."'"; }
-			if (empty($chn) === false) { $sql .= ", card_holder_name = '". $this->getDBConn()->escStr($chn) ."'"; }
+			if (empty($name) === false) { $sql .= ", name = '". $this->getDBConn()->escStr(trim($name) ) ."'"; }
+			if (empty($chn) === false) { $sql .= ", card_holder_name = '". $this->getDBConn()->escStr(trim($chn) ) ."'"; }
 			$sql .= "
 					WHERE id = ". $id;
 //			echo $sql ."\n";
@@ -277,7 +277,7 @@ class EndUserAccount extends Home
 			$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 						(accountid, clientid, cardid, pspid, ticket, mask, expiry, name, preferred, card_holder_name)
 					VALUES
-						(". $iAccountID .", ". $this->_obj_ClientConfig->getID() .", ". intval($cardid) .", ". intval($pspid) .", '". $this->getDBConn()->escStr($token) ."', '". $this->getDBConn()->escStr($mask) ."', '". $this->getDBConn()->escStr($exp) ."', '". $this->getDBConn()->escStr($name) ."', '". intval(General::xml2bool($bPreferred) ) ."','". $this->getDBConn()->escStr($chn)."')";
+						(". $iAccountID .", ". $this->_obj_ClientConfig->getID() .", ". intval($cardid) .", ". intval($pspid) .", '". $this->getDBConn()->escStr($token) ."', '". $this->getDBConn()->escStr(trim($mask) ) ."', '". $this->getDBConn()->escStr($exp) ."', '". $this->getDBConn()->escStr(trim($name) ) ."', '". intval(General::xml2bool($bPreferred) ) ."','". $this->getDBConn()->escStr(trim($chn) )."')";
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
 				
@@ -581,12 +581,12 @@ class EndUserAccount extends Home
 	 * @param string 	$exp			Expiry date
 	 * @return integer
 	 */
-	public function getCardFromCardDetails($id, $cardid, $mask, $exp)
+	public function getCardIDFromCardDetails($id, $cardid, $mask, $exp)
 	{ 
 		$sql = "SELECT id
 				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 				WHERE accountid = ". $id ." AND clientid = ". $this->_obj_ClientConfig->getID() ." AND cardid = ". intval($cardid) ."
-					AND ( (mask = '". $this->getDBConn()->escStr($mask) ."' AND expiry = '". $this->getDBConn()->escStr($exp) ."') OR (mask IS NULL AND expiry IS NULL) )";
+					AND ( (mask = '". $this->getDBConn()->escStr(trim($mask) ) ."' AND expiry = '". $this->getDBConn()->escStr($exp) ."') OR (mask IS NULL AND expiry IS NULL) )";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 		

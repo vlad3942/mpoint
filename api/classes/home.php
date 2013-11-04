@@ -430,7 +430,7 @@ class Home extends General
 			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
 			$xml .= '<type id="'. $RS["TYPEID"] .'">'. $RS["TYPE"] .'</type>';
 			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';
-			$xml .= '<mask>'. chunk_split($RS["MASK"], 4, " ") .'</mask>';
+			$xml .= '<mask>'. trim(chunk_split($RS["MASK"], 4, " ") ) .'</mask>';
 			$xml .= '<expiry>'. $RS["EXPIRY"] .'</expiry>';
 			$xml .= '<enabled>'. General::bool2xml($RS["PREFERRED"]) .'</enabled>';
 			$xml .= '<ticket>'. $RS["TICKET"] .'</ticket>';
@@ -459,40 +459,40 @@ class Home extends General
 	 * Searches for transaction history given a client ID plus any of the other parameters
 	 *
 	 * @param	integer $cid 	Unqiue Client ID
-	 * @param	integer $thxid	Unqiue ID of a Transaction 
+	 * @param	integer $txnno	Unqiue ID of a Transaction 
 	 * @param	integer $ono	Unqiue Order Number for a Transaction
-	 * @param	integer $mobile	The End-User´s Mobile Number 
-	 * @param	string	$email	The End-User´s E-Mail 
+	 * @param	integer $mobile	The End-User's Mobile Number 
+	 * @param	string	$email	The End-User's E-Mail 
 	 * @return 	string
 	 */
-	public  function searchTxnHistory($cid,$thxid,$ono,$mobile,$email)
+	public  function searchTxnHistory($cid, $txnno, $ono, $mobile, $email)
 	{
-		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, Extract('epoch' from EUT.created  AT TIME ZONE 'UTC') AS timestamp,
+		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, EUT.created,
 					CL.id AS clientid, CL.name AS client,
-					Txn.id AS mpointid,EUT.stateid AS stateid, Txn.orderid AS orderno,EUAT.id AS customerid, (EUAT.firstname || ' ' || EUAT.lastname) AS customer
+					Txn.id AS mpointid, EUT.stateid AS stateid, Txn.orderid AS orderno, EUA.id AS customerid, EUA.firstname, EUA.lastname
 				FROM EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl EUT
-    			LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUAT ON EUT.accountid = EUAT.id 
+    			LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON EUT.accountid = EUA.id 
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn ON EUT.txnid = Txn.id
 				LEFT OUTER JOIN Admin".sSCHEMA_POSTFIX.".Access_Tbl Acc ON Txn.clientid = Acc.clientid						
 				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON  CL.id = Acc.clientid 
 				WHERE (Acc.userid = ". intval($cid)." OR Txn.id IS NULL)";
-		
-		if (empty($thxid) === false){$sql .= "AND Txn.id = '". $this->getDBConn()->escStr( (string) $thxid) ."'";}
-		if (empty($ono) === false){ $sql .= " AND Txn.orderid = '". $this->getDBConn()->escStr( $ono) ."'"; }
-		if (empty($mobile) === false){$sql .= " AND EUAT.mobile = '". $this->getDBConn()->escStr( (string) $mobile) ."'"; }
-		if (empty($email) === false) { $sql .= " AND EUAT.email = '". $this->getDBConn()->escStr( (string) $email) ."'";}
-		
+		if (empty($txnno) === false) {$sql .= "AND Txn.extid = '". $this->getDBConn()->escStr($txnno) ."'"; }
+		if (empty($ono) === false) { $sql .= " AND Txn.orderid = '". $this->getDBConn()->escStr($ono) ."'"; }
+		if (floatval($mobile) > 0) {$sql .= " AND (Txn.mobile = '". floatval($mobile) ."' OR EUA.mobile = '". floatval($mobile) ."')"; }
+		if (empty($email) === false) { $sql .= " AND (Txn.email = '". $this->getDBConn()->escStr($email) ."' OR EUA.email = '". $this->getDBConn()->escStr($email) ."')"; }
+//		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 		
 		$xml = '<transactions sorted-by="id" sort-order="descending">';
 		// Construct XML Document with data for Transaction
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
-				$xml .= '<transaction id="'. $RS["ID"] .'" type-id="'. $RS["TYPEID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" state-id="'. $RS["STATEID"] .'"  order-no="'. $RS["ORDERNO"] .'">';
-				$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
-				$xml .= '<customer id="'. $RS["CUSTOMERID"] .'">'. htmlspecialchars($RS["CUSTOMER"], ENT_NOQUOTES) .'</customer>';
-				$xml .= '<timestamp>'. gmdate("Y-m-d H:i:sP", $RS["TIMESTAMP"]) .'</timestamp>';
-				$xml .= '</transaction>';
+			$ts = strtotime($RS["CREATED"]);
+			$xml .= '<transaction id="'. $RS["ID"] .'" type-id="'. $RS["TYPEID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" state-id="'. $RS["STATEID"] .'" order-no="'. htmlspecialchars($RS["ORDERNO"], ENT_NOQUOTES) .'">';
+			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
+			$xml .= '<customer id="'. $RS["CUSTOMERID"] .'">'. htmlspecialchars($RS["FIRSTNAME"] ." ". $RS["LASTNAME"], ENT_NOQUOTES) .'</customer>';
+			$xml .= '<timestamp>'. gmdate("Y-m-d H:i:sP", $ts) .'</timestamp>';
+			$xml .= '</transaction>';
 		}
 		
 		$xml .= '</transactions>';

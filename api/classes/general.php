@@ -456,7 +456,7 @@ class General
 	{
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET typeid = ". $oTI->getTypeID() .", clientid = ". $oTI->getClientConfig()->getID() .", accountid = ". $oTI->getClientConfig()->getAccountConfig()->getID() .",
-					countryid = ". $oTI->getClientConfig()->getCountryConfig()->getID() .", keywordid = ". $oTI->getClientConfig()->getKeywordConfig()->getID() .",
+					countryid = ". $oTI->getCountryConfig()->getID() .", keywordid = ". $oTI->getClientConfig()->getKeywordConfig()->getID() .",
 					amount = ". $oTI->getAmount() .", points = ". ($oTI->getPoints() > 0 ? $oTI->getPoints() : "NULL") .", reward = ". ($oTI->getReward() > 0 ? $oTI->getReward() : "NULL") .",
 					orderid = '". $this->getDBConn()->escStr($oTI->getOrderID() ) ."', lang = '". $this->getDBConn()->escStr($oTI->getLanguage() ) ."',
 					mobile = ". floatval($oTI->getMobile() ) .", operatorid = ". $oTI->getOperator() .", email = '". $this->getDBConn()->escStr($oTI->getEMail() ) ."',
@@ -1015,8 +1015,8 @@ class General
 		if (floatval($mobile) > 0) { $sql .= " AND mobile = '". floatval($mobile) ."'"; }
 		if (empty($email) === false && strlen($email) > 0) { $sql .= " AND email = '". $this->getDBConn()->escStr($email) ."'";}
 		if (empty($cr) === false && strlen($cr) > 0) { $sql .= " AND customer_ref = '". $this->getDBConn()->escStr($cr) ."'";}
-		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND created >= '". $this->getDBConn()->escStr($start) ."'"; }
-		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND created <= '". $this->getDBConn()->escStr($end) ."'"; }
+		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <= created"; }
+		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
 		$sql .= "
 				ORDER BY id ASC";
 //		echo $sql ."\n";
@@ -1025,7 +1025,7 @@ class General
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
 			$xml .= '<audit-log id="'. $RS["ID"] .'" operation-id="'. $RS["OPERATIONID"] .'">';
-			$xml .= '<customer customer-ref="'. htmlspecialchars($RS["CUSTOMERREF"], ENT_NOQUOTES) .'">';
+			$xml .= '<customer customer-ref="'. htmlspecialchars($RS["CUSTOMER_REF"], ENT_NOQUOTES) .'">';
 			$xml .= '<mobile>'. $RS["MOBILE"] .'</mobile>';
 			$xml .= '<email>'. $RS["EMAIL"] .'</email>';
 			$xml .= '</customer>';
