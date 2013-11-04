@@ -152,7 +152,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			{
 				for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}); $j++)
 				{
-					$_OBJ_DB->query("BEGIN");  // START TRANSACTION does not work with Oracle db
+					$_OBJ_DB->query("START TRANSACTION");  // START TRANSACTION does not work with Oracle db
 					if ($obj_val->valBasic($_OBJ_DB, $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["id"], -1) == 100 )
 					{
 						$clientid = $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["id"];	

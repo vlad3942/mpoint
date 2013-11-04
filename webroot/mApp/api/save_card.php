@@ -118,7 +118,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						{
 							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile["country-id"]);
 							// Start Transaction
-							$_OBJ_DB->query("BEGIN");  // START TRANSACTION does not work with Oracle db
+							$_OBJ_DB->query("START TRANSACTION");  // START TRANSACTION does not work with Oracle db
 							if (intval($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) > 0)
 							{
 								$code = $obj_mPoint->saveCardName( $obj_DOM->{'save-card'}[$i]->card[$j]["id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j],  General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) );

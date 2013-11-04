@@ -270,7 +270,7 @@ class MyAccount extends Home
 	public function setPreferredCard($id, $cardid)
 	{
 		// Start database transaction
-		$this->getDBConn()->query("BEGIN");  // START TRANSACTION does not work with Oracle db
+		$this->getDBConn()->query("START TRANSACTION");  // START TRANSACTION does not work with Oracle db
 		
 		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 				SET preferred = '0'
