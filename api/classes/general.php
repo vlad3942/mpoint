@@ -488,16 +488,22 @@ class General
 	 */
 	public function newMessage($txnid, $sid, $data)
 	{
+		// Use prepared statement to support log entries with more than 4000 characters of debug data on Oracle
 		$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Message_Tbl
 					(txnid, stateid, data)
 				VALUES
-					(". intval($txnid) ." , ". intval($sid) .", '". $this->getDBConn()->escStr(utf8_encode($data) ) ."')";
+					($1, $2, $3)";
 //		echo $sql ."\n";
-		// Error: Unable to insert a new message for Transaction
-		if (is_resource($this->getDBConn()->query($sql) ) === false)
+		$res = $this->getDBConn()->prepare($sql);
+		if (is_resource($res) === true)
 		{
-			throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003);
+			$aParams = array($txnid, $sid, $data);
+			if ($this->getDBConn()->execute($res, $aParams) === false)
+			{
+				throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003);
+			}
 		}
+		else { throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003); }
 	}
 
 	/**

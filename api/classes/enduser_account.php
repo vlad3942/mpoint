@@ -247,6 +247,7 @@ class EndUserAccount extends Home
 		case (9):	// Card Saved by invoking "Save Card" API
 			list($iAccountID, $cardid, $pspid, $token, $mask, $exp, $chn, $name, $bPreferred) = $aArgs;
 			$bPreferred = parent::bool2xml($bPreferred);
+			$iStatus = 0;
 			break;		
 		}
 
