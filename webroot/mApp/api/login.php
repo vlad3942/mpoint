@@ -123,6 +123,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									if (strlen($aObj_XML[$j]->name) > 0) { $xml .= $aObj_XML[$j]->name->asXML(); }
 									$xml .= '<card-number-mask>'. $aObj_XML[$j]->mask .'</card-number-mask>';
 									$xml .= $aObj_XML[$j]->expiry->asXML();
+									if (strlen($aObj_XML[$j]->{'card-holder-name'}) > 0) { $xml .= $aObj_XML[$j]->{'card-holder-name'}->asXML(); }
 									if (count($aObj_XML[$j]->address) == 1)
 									{
 										$xml .= '<address country-id="'.$aObj_XML[$j]->address["country-id"].'" >';
