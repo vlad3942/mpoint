@@ -124,17 +124,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$xml .= '<card-number-mask>'. $aObj_XML[$j]->mask .'</card-number-mask>';
 									$xml .= $aObj_XML[$j]->expiry->asXML();
 									if (strlen($aObj_XML[$j]->{'card-holder-name'}) > 0) { $xml .= $aObj_XML[$j]->{'card-holder-name'}->asXML(); }
-									if (count($aObj_XML[$j]->address) == 1)
-									{
-										$xml .= '<address country-id="'.$aObj_XML[$j]->address["country-id"].'" >';
-										$xml .= '<first-name>'. $aObj_XML[$j]->address->{'first-name'} .'</first-name>';
-										$xml .= '<last-name>'. $aObj_XML[$j]->address->{'last-name'} .'</last-name>';
-										$xml .= '<street>'. $aObj_XML[$j]->address->street .'</street>';
-										$xml .= '<postal-code>'. $aObj_XML[$j]->address->{'postal-code'} .'</postal-code>';
-										$xml .= '<city>'. $aObj_XML[$j]->address->city .'</city>';
-										$xml .= '<state>'. $aObj_XML[$j]->address->state .'</state>';
-										$xml .= '</address>';
-									}
+									if (count($aObj_XML[$j]->address) == 1) { $aObj_XML[$j]->address->asXML(); }
 									$xml .= '</card>';
 								}
 								$xml .= '</stored-cards>';
