@@ -1126,8 +1126,8 @@ $obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $s
 	</tr>
 	<tr>
 		<td class="name">Delete Preferences in CRIS</td>
-		<td><?//= $obj_AutoTest->deletePreferenceInCRIS($obj_AutoTest->getCRISAuthToken() ); ?></td>
-		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?= $obj_AutoTest->deletePreferenceInCRIS($obj_AutoTest->getCRISAuthToken() ); ?></td>
+		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	</table>
 </body>
