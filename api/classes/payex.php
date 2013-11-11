@@ -254,7 +254,7 @@ class PayEx extends Callback
 						 "clientIdentifier" => "USERAGENT=". $_SERVER['HTTP_USER_AGENT'],
 						 "additionalValues" => "",
 						 "externalID" => "",
-						 "returnUrl" => "http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?mpoint-id=". $this->getTxnInfo()->getID(),
+						 "returnUrl" => "http://". $_SERVER['HTTP_HOST'] ."/payex/accept.php?mpoint-id=". $this->getTxnInfo()->getID(),
 						 "view" => "CREDITCARD",
 						 "agreementRef" => "",
 						 "cancelUrl" => $this->getTxnInfo()->getCancelURL(),
@@ -278,6 +278,7 @@ class PayEx extends Callback
 			$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
 			$h .= "user-agent: ". $_SERVER['HTTP_USER_AGENT'] .HTTPClient::CRLF;
 			/* ----- Construct HTTP Header End ----- */
+
 			$obj_ConnInfo = HTTPConnInfo::produceConnInfo( (string) $obj_XML->redirectUrl);
 			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
 			$obj_HTTP->connect();
@@ -313,6 +314,7 @@ class PayEx extends Callback
 			}
 			// Parse HTTP Response Body
 			$obj_DOM = DOMDocument::loadXML($obj_HTTP->getReplyBody() );
+				
 			$aObj_Elems = array();
 			$obj_NodeList = $obj_DOM->getElementsByTagName("input");
 			foreach ($obj_NodeList as $obj_Elem)
@@ -354,6 +356,7 @@ class PayEx extends Callback
 				}
 				if (empty($type) === false && (empty($name) === false || empty($value) === false) )
 				{
+						
 					switch ($type)
 					{
 					case "hidden":
@@ -396,6 +399,7 @@ class PayEx extends Callback
 			$xml .= '</hidden-fields>';
 			$xml .= '</root>';
 			$obj_XML = simplexml_load_string($xml);	
+				
 		}
 		else
 		{
