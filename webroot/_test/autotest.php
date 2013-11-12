@@ -39,15 +39,15 @@ class AutoTest
 	const sSTATUS_WARNING = '<span class="warning">Failed</span>';
 	const sSTATUS_FAILED = '<span class="error">Failed</span>';
 	
-	private $_aConnInfo = array();
-	private $_obj_Client = null;
-	private $_sDebug;
+	protected $_aConnInfo = array();
+	protected $_obj_Client = null;
+	protected $_sDebug;
 	
-	private $_iClientID;
-	private $_iAccount;
-	private $_sCustomerRef;
-	private $_lMobile;
-	private $_sEMail;
+	protected $_iClientID;
+	protected $_iAccount;
+	protected $_sCustomerRef;
+	protected $_lMobile;
+	protected $_sEMail;
 	
 	public function __construct(array &$aCI, $clid, $acc, $cr, $mob, $email)
 	{
@@ -59,7 +59,7 @@ class AutoTest
 		$this->_sEMail = trim($email);
 	}
 	
-	private function _constHeaders()
+	protected function _constHeaders()
 	{
 		$h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
 		$h .= "host: {HOST}" .HTTPClient::CRLF;
@@ -70,7 +70,7 @@ class AutoTest
 		
 		return $h;
 	}
-	private function _constmPointHeaders()
+	protected function _constmPointHeaders()
 	{
 		$h = trim($this->_constHeaders() );
 		$h .= HTTPClient::CRLF;
@@ -79,11 +79,11 @@ class AutoTest
 		return $h;
 	}
 	
-	private function _constClientInfo()
+	protected function _constClientInfo()
 	{
 		$xml = '<client-info platform="iOS" version="5.1.1" language="da">';
 		$xml .= '<customer-ref>'. htmlspecialchars($this->_sCustomerRef, ENT_NOQUOTES) .'</customer-ref>';
-		$xml .= '<mobile country-id="AE">'. $this->_lMobile .'</mobile>';
+		$xml .= '<mobile country-id="100">'. $this->_lMobile .'</mobile>';
 		$xml .= '<email>'. $this->_sEMail .'</email>';
 		$xml .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
 		$xml .= '</client-info>';
@@ -91,7 +91,7 @@ class AutoTest
 		return $xml;
 	}
 	
-	private function _initialize($cv="")
+	protected function _initialize($cv="")
 	{
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
@@ -893,6 +893,210 @@ class AutoTest
 	/* ========== Automatic Account Management Tests End ========== */
 }
 
+class AutotestPayEx extends AutoTest
+{
+	
+	private function constClientInfo()
+	{
+		$xml = '<client-info platform="iOS" version="5.1.1" language="da">';
+		$xml .= '<customer-ref>'. htmlspecialchars($this->_sCustomerRef, ENT_NOQUOTES) .'</customer-ref>';
+		$xml .= '<mobile country-id="100">'. $this->_lMobile .'</mobile>';
+		$xml .= '<email>'. $this->_sEMail .'</email>';
+		$xml .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
+		$xml .= '</client-info>';
+	
+		return $xml;
+	}
+	
+
+	private function initialize($cv="")
+	{
+		$b = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<root>';
+		$b .= '<initialize-payment client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
+		$b .= '<transaction order-no="EST/NGPN4N/07NOV2013/1507-'. time() .'">';
+		$b .= '<amount country-id="100">147500</amount>';
+		//		$b .= '<auth-url>http://localhost/_test/auth.php</auth-url>';
+		//		$b .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
+		$b .= '<description>
+				<![CDATA[
+				<center><table><tr><td bgcolor="#ffff00">Your Internet Order:</td><td colspan="2" bgcolor="#ffff00" align="right">EST/NGPN4N/29OCT2013/1507</td></tr><tr><td bgcolor="#ffff00">Description:</td><td>EK Internet Booking Engine</td><td align="right">1.00</td></tr><tr><td colspan="2">Subtotal:</td><td align="right">1475.0</td></tr><tr><td colspan="2" bgcolor="#c0c0c0">Total cost:</td><td bgcolor="#c0c0c0" align="right">1475.0</td></tr><tr><td colspan="3">&nbsp;</td></tr><tr><td bgcolor="#ffff00" colspan="3">Your billing address:</td></tr><tr><td colspan="3"><br>Address Object contains :
+				address1:dsfdsf
+				address2:
+				address2:
+				city: sdfsdf
+				region:
+				country: AZ
+				postalcode:
+				contactType: </td></tr><tr><td colspan="3">&nbsp;</td></tr><tr><td bgcolor="#ffff00" colspan="3">Your shipping address:</td></tr><tr><td colspan="3"><br>Address Object contains :
+				address1:
+				address2:
+				address2:
+				city:
+				region:
+				country:
+				postalcode:
+				contactType: </td></tr><tr><td colspan="3">&nbsp;</td></tr><tr><td bgcolor="#ffff00" colspan="3">Our contact information:</td></tr><tr><td colspan="3">Emirates Airlines,<br>P.O.Box No 686,<br>1255 KZ Dubai,<br>UAE.<br><br>payment@emirates.com<br>971 4-7035726</td></tr></table></center>
+				]]>
+			   </description>';
+		$b .= '<custom-variables>';
+		$b .= '<tax>33500</tax>';
+		$b .= '<enhanced-data>
+				<![CDATA[
+				<enchancedData code="EK"><airline code="EK" /><passenger type = "ADT" passengerID="300003524" paxClass="" productName="FLIGHT" productCode="SME Revenue">Alalawi/Iman</passenger><pnr code="NGPN4N"><flight carrierCode="EK0600"><departureAirport>DXB</departureAirport><arrivalAirport>KHI</arrivalAirport><departureDate><depdate day = "15" month="12" year="2013" /></departureDate><arrivalDate><arrdate day = "15" month="12" year="2013" /></arrivalDate><jrnyType>Return</jrnyType><fare class="Y" /></flight><flight carrierCode="EK0605"><departureAirport>KHI</departureAirport><arrivalAirport>DXB</arrivalAirport><departureDate><depdate day = "21" month="12" year="2013" /></departureDate><arrivalDate><arrdate day = "21" month="12" year="2013" /></arrivalDate><jrnyType>Return</jrnyType><fare class="Y" /></flight></pnr><devSessionID>15547305</devSessionID><merchData2>Y</merchData2><bookingType>SME Revenue</bookingType><merchData1></merchData1><merchData3>SME BOOKING</merchData3><merchData4>IMAN ALALAWI</merchData4><merchData5>IMAN ALALAWI</merchData5><merchData6>EK 0600</merchData6><merchData7>15 Dec 13</merchData7><merchData8>NGPN4N</merchData8><thirdParty>false</thirdParty><deptTime>08:00</deptTime><agent code="" /><redemptionTicket></redemptionTicket><ticketOption>ETKT</ticketOption><promotionalCode></promotionalCode><skywardsNumber>300003524</skywardsNumber><productCode>SME Revenue</productCode><bkgChannel>WEB</bkgChannel><tax currencyCode="AED" exponent="2" value="147500"></tax></enchancedData>
+				]]>
+			   </enhanced-data>';
+		$b .= $cv;
+		$b .= '</custom-variables>';
+		$b .= '</transaction>';
+		$b .= $this->constClientInfo();
+			$b .= '</initialize-payment>';
+		$b .= '</root>';
+
+		// mPoint
+		if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
+		{
+				$this->_aConnInfo["path"] = "/mApp/api/initialize.php";
+		}
+		// Mobile Enterprise Service Bus
+		else { $this->_aConnInfo["path"] = "/mpoint/initialize-payment"; }
+	
+		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
+		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
+		$this->_obj_Client->connect();
+		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
+
+		if ($code == 200)
+		{
+		$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
+		}
+		else { $obj_XML = null; }
+		$this->_obj_Client->disconnect();
+
+		return $obj_XML;
+	}
+	
+	public function payViaPayExTest()
+	{
+		$this->_sDebug = "";
+		// Call Initialize
+		$obj_XML = $this->initialize();
+		
+		if ( ($obj_XML instanceof SimpleXMLElement) === true)
+		{
+			file_put_contents(sLOG_PATH ."/error.log", "\n". "obj_XML: ".var_export($obj_XML, true), FILE_APPEND  | LOCK_EX );
+			
+			$b = '<?xml version="1.0" encoding="UTF-8"?>';
+			$b .= '<root>';
+			$b .= '<pay client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
+			$b .= '<transaction id="'. $obj_XML->transaction["id"] .'" store-card="false">';
+			$b .= '<card type-id="5">';
+			$b .= '<amount country-id="'. $obj_XML->transaction->amount["country-id"] .'">'. $obj_XML->transaction->amount .'</amount>';
+			$b .= '</card>';
+			$b .= '</transaction>';
+			$b .= $this->_constClientInfo();
+			$b .= '</pay>';
+			$b .= '</root>';
+				
+			if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
+			{
+				$this->_aConnInfo["path"] = "/mApp/api/pay.php";
+			}
+			
+			// Call Pay
+			$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
+			$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
+			$this->_obj_Client->connect();
+			$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
+			$this->_obj_Client->disconnect();
+			
+			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
+			$obj_ConnInfo = HTTPConnInfo::produceConnInfo($obj_XML->{'psp-info'}->url);
+			$obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
+			$b = $obj_XML->{'psp-info'}->{'card-number'} ."=". urlencode("4581090329655682") ."&";
+			$b .= $obj_XML->{'psp-info'}->{'expiry-month'} ."=". urlencode("2") ."&";
+			$b .= $obj_XML->{'psp-info'}->{'expiry-year'} ."=". urlencode("2014") ."&";
+			$b .= $obj_XML->{'psp-info'}->cvc ."=". urlencode("210") ."&";
+			
+			file_put_contents(sLOG_PATH ."/error.log", "\n". "B1: ".var_export($b, true), FILE_APPEND  | LOCK_EX );
+							
+			foreach ($obj_XML->{'psp-info'}->{'hidden-fields'}->children() as $obj_Field)
+			{
+				$b .= str_replace("-DOLLARSIGN-", "$", $obj_Field->getName() ) ."=". urlencode($obj_Field) ."&";
+			}
+
+			$b = substr($b, 0, strlen($b) - 1);
+			$obj_Client->connect();
+			$code = -1;
+			$h = str_replace("{REFERER}", (string) $obj_XML->{'psp-info'}->url, $this->_constmPointHeaders() );;
+			if (empty($obj_XML->{'psp-info'}->cookies) === false)
+			{
+				$s = $h ."cookie: ". $obj_XML->{'psp-info'}->cookies .HTTPClient::CRLF;
+				file_put_contents(sLOG_PATH ."/error.log", "\n". "S: ".var_export($s, true), FILE_APPEND  | LOCK_EX );
+				file_put_contents(sLOG_PATH ."/error.log", "\n". "B: ".var_export($b, true), FILE_APPEND  | LOCK_EX );
+				file_put_contents(sLOG_PATH ."/error.log", "\n". "H: ".var_export($h, true), FILE_APPEND  | LOCK_EX );
+				file_put_contents(sLOG_PATH ."/error.log", "\n". "obj Client: ".var_export($obj_Client, true), FILE_APPEND  | LOCK_EX );
+				$code = $obj_Client->send($h ."cookie: ". $obj_XML->{'psp-info'}->cookies .HTTPClient::CRLF, $b);
+			}
+			else { $code = $obj_Client->send($h, $b); }
+			$obj_Client->disconnect();
+			file_put_contents(sLOG_PATH ."/error.log", "\n". "Code: ".var_export($code, true), FILE_APPEND  | LOCK_EX );
+			if ($code == 200)
+			{
+				$this->_sDebug = $obj_Client->getReplyBody();
+			}
+			elseif ($code == 302)
+			{
+				while ($code == 302)
+				{
+					// Parse HTTP Response Headers
+					$a = explode(HTTPClient::CRLF, $obj_Client->getReplyHeader() );
+					foreach ($a as $str)
+					{
+						$pos = strpos($str, ":");
+						if ($pos > 0)
+						{
+							$name = substr($str, 0, $pos);
+							if (strtolower($name) == "location")
+							{
+								$value = trim(substr($str, $pos+1) );
+								$this->_sDebug =  $value ."\r\n";
+								$obj_ConnInfo = HTTPConnInfo::produceConnInfo(trim($value) );
+								$obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
+								$obj_Client->connect();
+								$code = $obj_Client->send($h);
+								$obj_Client->disconnect();
+							}
+						}
+					}
+				}
+				if ($code == 200)
+				{
+					$this->_sDebug = $obj_Client->getReplyBody();
+				}
+				else { var_dump($obj_Client); die(); }
+			}
+			else { var_dump($obj_Client); die(); }
+			
+			if ($code == 200)
+			{
+				$this->_sDebug = $this->_obj_Client->getReplyBody();
+				return self::sSTATUS_SUCCESS;
+			}
+			else
+			{
+				$this->_sDebug = $this->_obj_Client->getReplyBody();
+				return self::sSTATUS_FAILED;
+			}
+		}
+		else
+		{
+			$this->_sDebug = $this->_obj_Client->getReplyBody();
+			return self::sSTATUS_FAILED;
+		}
+	}
+	
+}
 /*
 $obj_ConnInfo = HTTPConnInfo::produceConnInfo($obj_XML->{'psp-info'}->url);
 $obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
@@ -971,6 +1175,8 @@ $iMobile = "28882861";
 $sEMail = "jona@oismail.com";
 
 $obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $sCustomerRef, $iMobile, $sEMail);
+
+$obj_AutoTestPayEx = new AutotestPayEx($aHTTP_CONN_INFO["mesb"], 10013, 100032, $sCustomerRef, $iMobile, $sEMail);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -1061,8 +1267,8 @@ $obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $s
 	</tr>
 	<tr>
 		<td class="name">Authorize Stored Card with Instalments using Single Sign-On</td>
-		<td><?= $obj_AutoTest->authorizeStoredCardWithInstalmentsUsingSSOTest($obj_AutoTest->getCRISAuthToken() ); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->authorizeStoredCardWithInstalmentsUsingSSOTest($obj_AutoTest->getCRISAuthToken() ); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Save Card Name</td>
@@ -1116,18 +1322,23 @@ $obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $s
 	</tr>
 	<tr>
 		<td class="name">Save Preferences in CRIS</td>
-		<td><?= $obj_AutoTest->savePreferenceInCRIS($obj_AutoTest->getCRISAuthToken() ); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->savePreferenceInCRIS($obj_AutoTest->getCRISAuthToken() ); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Save Preferences in CRIS Fail</td>
-		<td><?= $obj_AutoTest->savePreferenceInCRISFail(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->savePreferenceInCRISFail(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Delete Preferences in CRIS</td>
-		<td><?= $obj_AutoTest->deletePreferenceInCRIS($obj_AutoTest->getCRISAuthToken() ); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->deletePreferenceInCRIS($obj_AutoTest->getCRISAuthToken() ); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">PayEx Test</td>
+		<td><?= $obj_AutoTestPayEx->payViaPayExTest(); ?></td>
+		<td><?= htmlspecialchars($obj_AutoTestPayEx->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	</table>
 </body>
