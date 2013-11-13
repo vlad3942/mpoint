@@ -1,4 +1,4 @@
-#: /api/classes/general.php:95
+#: /api/classes/general.php:100
 msgid @@@ Status - 11 @@@
 msgstr @@@ Client ID er ikke defineret @@@
 msgid @@@ Status - 12 @@@
