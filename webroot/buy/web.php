@@ -95,6 +95,8 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			// Update Transaction State
 			$_REQUEST['typeid'] = Constants::iPURCHASE_VIA_WEB;
 			$_REQUEST['gomobileid'] = -1;
+			$_REQUEST['description'] = "";
+			$_REQUEST['ip'] = $_SERVER['REMOTE_ADDR'];
 			$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, var_export($_REQUEST, true) );
 			if (array_key_exists("auth-token", $_REQUEST) === true) { $_SESSION['obj_Info']->setInfo("auth-token", $_REQUEST['auth-token']); }
 			$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $_REQUEST);

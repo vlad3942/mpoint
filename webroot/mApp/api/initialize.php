@@ -104,6 +104,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$data['customer-ref'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->{'customer-ref'};
 						$data['mobile'] = (float) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile;
 						$data['operator'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["operator-id"];
+						if (intval($data['operator']) == 0) { $data['operator'] = $obj_CountryConfig->getID() * 100; }
 						$data['email'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->email;
 						$data['device-id'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->{'device-id'};
 						if (count($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip) == 1) { $data['ip'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip; }
@@ -126,7 +127,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$data['icon-url'] = "";
 						$data['language'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}["language"];
 						$data['markup'] = $obj_ClientConfig->getAccountConfig()->getMarkupLanguage();
-						
 						
 						$obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $data);
 						// Associate End-User Account (if exists) with Transaction
@@ -196,17 +196,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$xml .= '<name>'. htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) .'</name>';
 								$xml .= $obj_XML->item[$j]->prefixes->asXML();
 								$xml .= htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES);	// Backward compatibility
-								if (count($aObj_XML[$j]->address) == 1)
-								{
-									$xml .= '<address country-id="'.$aObj_XML[$j]->address["country-id"].'" >';
-									$xml .= '<first-name>'. $aObj_XML[$j]->address->{'first-name'} .'</first-name>';
-									$xml .= '<last-name>'. $aObj_XML[$j]->address->{'last-name'} .'</last-name>';
-									$xml .= '<street>'. $aObj_XML[$j]->address->street .'</street>';
-									$xml .= '<postal-code>'. $aObj_XML[$j]->address->{'postal-code'} .'</postal-code>';
-									$xml .= '<city>'. $aObj_XML[$j]->address->city .'</city>';
-									$xml .= '<state>'. $aObj_XML[$j]->address->state .'</state>';
-									$xml .= '</address>';
-								}
 								$xml .= '</card>';
 							}
 						}
@@ -223,7 +212,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$xml .= '<card-number-mask>'. $aObj_XML[$j]->mask .'</card-number-mask>';
 								$xml .= $aObj_XML[$j]->expiry->asXML();
 								if (strlen($aObj_XML[$j]->{'card-holder-name'}) > 0) { $xml .= $aObj_XML[$j]->{'card-holder-name'}->asXML(); }
-								if (count($aObj_XML[$j]->address) == 1) { $aObj_XML[$j]->address->asXML(); }
+								if (count($aObj_XML[$j]->address) == 1) { $xml .= $aObj_XML[$j]->address->asXML(); }
 								$xml .= '</card>';
 							}
 							$xml .= '</stored-cards>';

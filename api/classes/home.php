@@ -128,7 +128,7 @@ class Home extends General
 	 * 	 1. Account ID / Password doesn't match
 	 * 	 2. Account ID / Password doesn't match - Next invalid login will disable the account
 	 * 	 3. Account ID / Password doesn't match - Account has been disabled
-	 * 	 4. Account not found
+	 * 	 5. Account not found
 	 * 	 9. Account disabled
 	 * 	10. Login successful
 	 * 	11. Login successful - Mobile Number not verified 
@@ -196,7 +196,7 @@ class Home extends General
 			}
 		}
 		// Account not found
-		else { $code = 4; }
+		else { $code = 5; }
 
 		return $code;
 	}
@@ -217,15 +217,17 @@ class Home extends General
 			$obj_HTTP->connect();
 			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
 			$obj_HTTP->disConnect();
-			if ($code == 200)
+			if ($code == 200) { return 10; }
+			else
 			{
-				return 10;
+				trigger_error("Authentication Service at: ". $oCI->toURL() ." returned HTTP Code: ". $code, E_USER_WARNING);
+				return 4;
 			}
-			else { return 1; }
 		}
 		catch (HTTPException $e)
 		{
-			return 4;
+			trigger_error("Authentication Service at: ". $oCI->toURL() ." is unavailable due to ". get_class($e), E_USER_WARNING);
+			return 6;
 		}
 	}
 
@@ -325,7 +327,7 @@ class Home extends General
 		$xml .= '<mobile country-id="'. $RS["COUNTRYID"] .'" verified="'. General::bool2xml($RS["MOBILE_VERIFIED"]) .'">'. $RS["MOBILE"] .'</mobile>';
 		$xml .= '<email>'. htmlspecialchars($RS["EMAIL"], ENT_NOQUOTES) .'</email>';
 		$xml .= '<password mask="'. str_repeat("*", strlen($RS["PASSWORD"]) ) .'">'. htmlspecialchars($RS["PASSWORD"], ENT_NOQUOTES) .'</password>';
-		$xml .= '<balance country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat().'">'. intval($RS["BALANCE"]) .'</balance>';
+		$xml .= '<balance country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. utf8_encode($this->_obj_CountryConfig->getSymbol() ) .'" format="'. $this->_obj_CountryConfig->getPriceFormat().'">'. intval($RS["BALANCE"]) .'</balance>';
 		$xml .= '<funds>'. General::formatAmount($this->_obj_CountryConfig, $RS["BALANCE"]) .'</funds>';
 		$xml .= '<points country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">'. $RS["POINTS"] .'</points>';
 		$xml .= '<clients>';
@@ -545,8 +547,8 @@ class Home extends General
 		$obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $RS["CLIENTID"]);
 		
 		$xml .= '<transaction id="'. $RS["ID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" psp-id="'. $RS["PSPID"] .'" order-no="'. $RS["ORDERNO"] .'" type-id="'. $RS["TYPEID"] .'">';
-		$xml .= '<amount country-id="'. $RS["COUNTRYID"] .'" currency="'. $this->_obj_CountryConfig->getCurrency()  .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. htmlspecialchars($RS["AMOUNT"], ENT_NOQUOTES) .'</amount>';
-		$xml .= '<refund country-id="'. $RS["COUNTRYID"] .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. htmlspecialchars($RS["REFUND_AMOUNT"], ENT_NOQUOTES) .'</refund>';
+		$xml .= '<amount country-id="'. $RS["COUNTRYID"] .'" currency="'. $this->_obj_CountryConfig->getCurrency()  .'" symbol="'. utf8_encode($this->_obj_CountryConfig->getSymbol() ) .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. htmlspecialchars($RS["AMOUNT"], ENT_NOQUOTES) .'</amount>';
+		$xml .= '<refund country-id="'. $RS["COUNTRYID"] .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. utf8_encode($this->_obj_CountryConfig->getSymbol() ) .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. htmlspecialchars($RS["REFUND_AMOUNT"], ENT_NOQUOTES) .'</refund>';
 		$xml .= '<client id="'. $obj_ClientConfig->getID() .'">';
 		$xml .= '<name>'. htmlspecialchars($obj_ClientConfig->getName(), ENT_NOQUOTES) .'</name>';
 		$xml .= '</client>';
@@ -674,9 +676,9 @@ class Home extends General
 				}
 				else
 				{
-					$xml .= '<amount country-id="'. $RS["COUNTRYID"] .'" currency="'. $RS["CURRENCY"] .'" symbol="'. $RS["SYMBOL"] .'" format="'. $RS["PRICEFORMAT"] .'">'. $RS["AMOUNT"] .'</amount>';
+					$xml .= '<amount country-id="'. $RS["COUNTRYID"] .'" currency="'. $RS["CURRENCY"] .'" symbol="'. utf8_encode($RS["SYMBOL"]) .'" format="'. $RS["PRICEFORMAT"] .'">'. $RS["AMOUNT"] .'</amount>';
 					$xml .= '<price>'. General::formatAmount($this->_obj_CountryConfig, abs($RS["AMOUNT"]) ) .'</price>';
-					$xml .= '<fee country-id="'. $RS["COUNTRYID"] .'" currency="'. $RS["CURRENCY"] .'" symbol="'. $RS["SYMBOL"] .'" format="'. $RS["PRICEFORMAT"] .'">'. $RS["FEE"] .'</fee>';
+					$xml .= '<fee country-id="'. $RS["COUNTRYID"] .'" currency="'. $RS["CURRENCY"] .'" symbol="'. utf8_encode($RS["SYMBOL"]) .'" format="'. $RS["PRICEFORMAT"] .'">'. $RS["FEE"] .'</fee>';
 				}
 				$xml .= '<ip>'. $RS["IP"] .'</ip>';
 				$xml .= '<address>'. htmlspecialchars($RS["ADDRESS"], ENT_NOQUOTES) .'</address>';
@@ -687,9 +689,9 @@ class Home extends General
 			elseif ($RS["TYPEID"] == Constants::iTRANSFER_OF_EMONEY)
 			{
 				$xml .= '<transaction id="'. $RS["ID"] .'" type-id="'. $RS["TYPEID"] .'" state-id="'. $RS["STATEID"] .'">';
-				$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $RS["AMOUNT"] .'</amount>';
+				$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. utf8_encode($this->_obj_CountryConfig->getSymbol() ) .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $RS["AMOUNT"] .'</amount>';
 				$xml .= '<price>'. General::formatAmount($this->_obj_CountryConfig, $RS["AMOUNT"]) .'</price>';
-				$xml .= '<fee country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $RS["FEE"] .'</fee>';
+				$xml .= '<fee country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. utf8_encode($this->_obj_CountryConfig->getSymbol() ) .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $RS["FEE"] .'</fee>';
 				$xml .= '<ip>'. $RS["IP"] .'</ip>';
 				$xml .= '<address>'. htmlspecialchars($RS["ADDRESS"], ENT_NOQUOTES) .'</address>';
 				$xml .= '<from account-id="'. $RS["FROMID"] .'">';
@@ -721,9 +723,9 @@ class Home extends General
 				}
 				else
 				{
-					$xml .= '<amount country-id="'. $RS["COUNTRYID"] .'" currency="'. $RS["CURRENCY"] .'" symbol="'. $RS["SYMBOL"] .'" format="'. $RS["PRICEFORMAT"] .'">'. $RS["AMOUNT"] .'</amount>';
+					$xml .= '<amount country-id="'. $RS["COUNTRYID"] .'" currency="'. $RS["CURRENCY"] .'" symbol="'. utf8_encode($RS["SYMBOL"]) .'" format="'. $RS["PRICEFORMAT"] .'">'. $RS["AMOUNT"] .'</amount>';
 					$xml .= '<price>'. General::formatAmount($this->_obj_CountryConfig, abs($RS["AMOUNT"]) ) .'</price>';
-					$xml .= '<fee country-id="'. $RS["COUNTRYID"] .'" currency="'. $RS["CURRENCY"] .'" symbol="'. $RS["SYMBOL"] .'" format="'. $RS["PRICEFORMAT"] .'">'. $RS["FEE"] .'</fee>';
+					$xml .= '<fee country-id="'. $RS["COUNTRYID"] .'" currency="'. $RS["CURRENCY"] .'" symbol="'. utf8_encode($RS["SYMBOL"]) .'" format="'. $RS["PRICEFORMAT"] .'">'. $RS["FEE"] .'</fee>';
 				}
 				$xml .= '<ip>'. $RS["IP"] .'</ip>';
 				$xml .= '<address>'. htmlspecialchars($RS["ADDRESS"], ENT_NOQUOTES) .'</address>';

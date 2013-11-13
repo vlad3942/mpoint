@@ -210,7 +210,7 @@ class EndUserAccount extends Home
 				{
 					if (strlen($oTI->getCustomerRef() ) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($this->getDBConn(), $oTI->getClientConfig(), $oTI->getCustomerRef(), false); }
 					else { $iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, $obj_CountryConfig, false); }
-					$bPreferred = "true";
+					$pref = true;
 					// Client supports global storage of payment cards: Link End-User Account
 					if ($iAccountID > 0 && $this->getClientConfig()->getStoreCard() > 3)
 					{
@@ -231,7 +231,7 @@ class EndUserAccount extends Home
 				}
 				else
 				{
-					$bPreferred = "false";
+					$pref = false;
 					$iStatus = 0;
 				}
 				$name = "";
@@ -241,26 +241,34 @@ class EndUserAccount extends Home
 			{
 				list($iAccountID, $cardid, $pspid, $token, $mask, $exp, $chn) = $aArgs;
 				$name = "";
-				$bPreferred = "false";
+				$pref = false;
 			}
 			break;
 		case (9):	// Card Saved by invoking "Save Card" API
-			list($iAccountID, $cardid, $pspid, $token, $mask, $exp, $chn, $name, $bPreferred) = $aArgs;
-			$bPreferred = parent::bool2xml($bPreferred);
+			list($iAccountID, $cardid, $pspid, $token, $mask, $exp, $chn, $name, $pref) = $aArgs;
 			$iStatus = 0;
 			break;		
 		}
 
 		// Check if card has already been saved
 		$id = $this->getCardIDFromCardDetails($iAccountID, $cardid, $mask, $exp);
-
+		
+		// Stored Card should be preferred
+		if ($pref === true)
+		{
+			$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
+					SET preferred = '0'
+					WHERE accountid = ". $iAccountID ." AND clientid = ". $this->_obj_ClientConfig->getID();
+//			echo $sql ."\n";
+			$this->getDBConn()->query($sql);
+		}
 		// Card previously saved by End-User
 		if ($id > 0)
 		{
 			$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 					SET pspid = ". intval($pspid) .", ticket = '". $this->getDBConn()->escStr($token) ."',
 						mask = '". $this->getDBConn()->escStr(trim($mask) ) ."', expiry = '". $this->getDBConn()->escStr($exp) ."',
-						enabled = '1'";
+						preferred = '". intval($pref) ."', enabled = '1'";
 			if (empty($name) === false) { $sql .= ", name = '". $this->getDBConn()->escStr(trim($name) ) ."'"; }
 			if (empty($chn) === false) { $sql .= ", card_holder_name = '". $this->getDBConn()->escStr(trim($chn) ) ."'"; }
 			$sql .= "
@@ -278,7 +286,7 @@ class EndUserAccount extends Home
 			$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 						(accountid, clientid, cardid, pspid, ticket, mask, expiry, name, preferred, card_holder_name)
 					VALUES
-						(". $iAccountID .", ". $this->_obj_ClientConfig->getID() .", ". intval($cardid) .", ". intval($pspid) .", '". $this->getDBConn()->escStr($token) ."', '". $this->getDBConn()->escStr(trim($mask) ) ."', '". $this->getDBConn()->escStr($exp) ."', '". $this->getDBConn()->escStr(trim($name) ) ."', '". intval(General::xml2bool($bPreferred) ) ."','". $this->getDBConn()->escStr(trim($chn) )."')";
+						(". $iAccountID .", ". $this->_obj_ClientConfig->getID() .", ". intval($cardid) .", ". intval($pspid) .", '". $this->getDBConn()->escStr($token) ."', '". $this->getDBConn()->escStr(trim($mask) ) ."', '". $this->getDBConn()->escStr($exp) ."', '". $this->getDBConn()->escStr(trim($name) ) ."', '". intval($pref) ."','". $this->getDBConn()->escStr(trim($chn) )."')";
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
 				

@@ -294,11 +294,15 @@ msgstr @@@ The entered password is too short @@@
 msgid @@@ CPM Payment - 33 @@@
 msgstr @@@ The entered password is too long @@@
 msgid @@@ CPM Payment - 41 @@@
-msgstr @@@ The payment could not be authorised with the provided password, please re-enter your password? @@@
+msgstr @@@ Authorization failed using the entered password, please re-enter your password? @@@
 msgid @@@ CPM Payment - 42 @@@
-msgstr @@@ The payment could not be authorised with the provided password, another invalid attempt will result in the account being deleted! @@@
+msgstr @@@ Authorization failed using the entered password, another invalid attempt will result in the account being deleted! @@@
 msgid @@@ CPM Payment - 43 @@@
-msgstr @@@ The payment could not be authorised with the provided password, your account has been deleted. @@@
+msgstr @@@ Authorization failed using the entered password, your account has been deleted. @@@
+msgid @@@ CPM Payment - 44 @@@
+msgstr @@@ Authentication rejected by External Authentication Server. @@@
+msgid @@@ CPM Payment - 46 @@@
+msgstr @@@ External Authentication Server is currently unavailable, please try again later?. @@@
 msgid @@@ CPM Payment - 49 @@@
 msgstr @@@ The specified account is not active. @@@
 msgid @@@ CPM Payment - 51 @@@

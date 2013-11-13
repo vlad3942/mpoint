@@ -109,7 +109,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								{
 									$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($url), $obj_DOM->{'delete-card'}[$i]->{'client-info'}->{'customer-ref'}, (string) $obj_DOM->{'delete-card'}[$i]->{'auth-token'} );
 								}
-								else { $code = 6; }
+								else { $code = 8; }
 							}
 							else { $code = $obj_mPoint->auth($iAccountID, (string) $obj_DOM->{'delete-card'}[$i]->password); }
 
@@ -131,6 +131,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										// Success: Card saved
 										if ($code > 0 && $obj_ClientConfig->getNotificationURL() != "")
 										{
+											$obj_mPoint = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 											try
 											{
 												$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'delete-card'}[$i]->{'client-info'}, $obj_CountryConfig, @$_SERVER['HTTP_X_FORWARDED_FOR']);
@@ -138,7 +139,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												$aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID, $obj_ClientConfig->showAllCards() ) );
 												$aObj_XML = $aObj_XML->xpath("/stored-cards/card[client/@id = ". $obj_ClientConfig->getID() ."]");
 													
-												$aURL_Info = parse_url($obj_mPoint->getClientConfig()->getNotificationURL() );
+												$aURL_Info = parse_url($obj_ClientConfig->getNotificationURL() );
 												$aHTTP_CONN_INFO["mesb"]["protocol"] = $aURL_Info["scheme"];
 												$aHTTP_CONN_INFO["mesb"]["host"] = $aURL_Info["host"];
 												$aHTTP_CONN_INFO["mesb"]["port"] = $aURL_Info["port"];
@@ -159,7 +160,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													$xml .= '<status code="97">Notification rejected by External Server</status>';
 													break;
 												case (10):	// Success: Card successfully saved
-													$xml = '<status code="'. ($code+99) .'">Card successfully saved</status>';
+													$xml = '<status code="100">Card successfully deleted and CRM system notified</status>';
 													break;
 												default:	// Error: Unknown response from External Server
 													header("HTTP/1.1 502 Bad Gateway");

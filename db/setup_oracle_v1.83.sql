@@ -1895,7 +1895,7 @@ INSERT INTO Client_Ownr.CardAccess_Tbl (clientid, cardid, pspid) SELECT CL.id, C
 UPDATE Client_Ownr.CardAccess_Tbl SET pspid = 1 WHERE cardid = 11;
 
 INSERT INTO Client_Ownr.URL_Tbl (clientid, urltypeid, url) VALUES (10001, 2, 'http://localhost:9000/mpoint/emirates/cris/authenticate');
-INSERT INTO Client_Ownr.URL_Tbl (clientid, urltypeid, url) VALUES (10001, 3, 'http://localhost:9000/mpoint/emirates/cris/save-preferences');
+INSERT INTO Client_Ownr.URL_Tbl (clientid, urltypeid, url) VALUES (10001, 3, 'http://localhost:9000/mpoint/emirates/cris/save-preference');
 /* ========== CLIENT SCHEMA END ========== */
 
 /* ========== ADMIN SCHEMA START ========== */

@@ -1415,11 +1415,11 @@ Pris: {PRICE} @@@
 msgid @@@ Billing SMS @@@
 msgstr @@@ Tak fordi du brugte mPoint, vi har trukket {PRICE} fra din mobilregning. @@@
 
-#: /api/classes/credit_card.php:137
+#: /api/classes/credit_card.php:136
 msgid @@@ Stored Cards @@@
 msgstr @@@ Gemte kort @@@
 
-#: /api/classes/credit_card.php:139
+#: /api/classes/credit_card.php:138
 msgid @@@ My Account @@@
 msgstr @@@ Min konto @@@
 
@@ -1452,15 +1452,15 @@ MVH.
 msgid @@@ mPoint - Account Disabled @@@
 msgstr @@@ Oplysningerne om dine gemte betalingskort i applikationen er blevet slettet. Det skyldes for mange forsøg med forkert kodeord. @@@
 
-#: /api/classes/general.php:402
+#: /api/classes/general.php:408
 msgid @@@ Loading... @@@
 msgstr @@@ Henter... @@@
 
-#: /api/classes/general.php:685
+#: /api/classes/general.php:707
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ Velkommen til {CLIENT}, aktiver venligst nedenstående link @@@
 
-#: /api/classes/general.php:691
+#: /api/classes/general.php:713
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Velkommen til {CLIENT} @@@
 

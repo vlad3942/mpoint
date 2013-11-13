@@ -103,14 +103,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							{
 								$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($url), $obj_DOM->login[$i]->{'client-info'}->{'customer-ref'}, (string) $obj_DOM->login[$i]->{'auth-token'} );
 							}
-							else { $code = 6; } 
+							else { $code = 8; } 
 						} 
 						else { $code = $obj_mPoint->auth($iAccountID, (string) $obj_DOM->login[$i]->password); }
 						
 						// Authentication succeeded
 						if ($code == 10 || ($code == 11 && $obj_ClientConfig->smsReceiptEnabled() === false) )
 						{
-							if ($obj_ClientConfig->getStoreCard() == 2) { $xml .= $obj_mPoint->getAccountInfo($iAccountID); }
+							$xml .= $obj_mPoint->getAccountInfo($iAccountID);
 							$aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID, $obj_ClientConfig->showAllCards() ) );
 							$aObj_XML = $aObj_XML->xpath("/stored-cards/card[client/@id = ". $obj_ClientConfig->getID() ."]");
 							// End-User has Stored Cards available
@@ -124,7 +124,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$xml .= '<card-number-mask>'. $aObj_XML[$j]->mask .'</card-number-mask>';
 									$xml .= $aObj_XML[$j]->expiry->asXML();
 									if (strlen($aObj_XML[$j]->{'card-holder-name'}) > 0) { $xml .= $aObj_XML[$j]->{'card-holder-name'}->asXML(); }
-									if (count($aObj_XML[$j]->address) == 1) { $aObj_XML[$j]->address->asXML(); }
+									if (count($aObj_XML[$j]->address) == 1) { $xml .= $aObj_XML[$j]->address->asXML(); }
 									$xml .= '</card>';
 								}
 								$xml .= '</stored-cards>';

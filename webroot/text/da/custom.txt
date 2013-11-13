@@ -294,11 +294,15 @@ msgstr @@@ Det indtastede kodeord er for kort. @@@
 msgid @@@ CPM Payment - 33 @@@
 msgstr @@@ Det indtastede kodeord er for langt. @@@
 msgid @@@ CPM Payment - 41 @@@
-msgstr @@@ Betalingen kunne ikke autoriseres med det angivne kodeord, indtast venligst dit kodeord igen. @@@
+msgstr @@@ Ugyldigt kodeord, indtast venligst dit kodeord igen. @@@
 msgid @@@ CPM Payment - 42 @@@
-msgstr @@@ Betalingen kunne ikke autoriseres med det angivne kodeord, angivelse af forkert kodeord igen, vil resultere i at din konto bliver slettet. @@@
+msgstr @@@ Ugyldigt kodeord, angivelse af forkert kodeord igen, vil resultere i at din konto bliver slettet. @@@
 msgid @@@ CPM Payment - 43 @@@
-msgstr @@@ Betalingen kunne ikke autoriseres med det angivne kodeord, din konto er blevet slettet. @@@
+msgstr @@@ Ugyldigt kodeord, din konto er blevet slettet. @@@
+msgid @@@ CPM Payment - 44 @@@
+msgstr @@@ Authentication rejected by External Authentication Server. @@@
+msgid @@@ CPM Payment - 46 @@@
+msgstr @@@ External Authentication Server is currently unavailable, please try again later?. @@@
 msgid @@@ CPM Payment - 49 @@@
 msgstr @@@ Den angivne konto er ikke aktiv. @@@
 msgid @@@ CPM Payment - 51 @@@

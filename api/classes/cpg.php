@@ -141,7 +141,7 @@ class CPG extends Callback
 			$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
 			if (count($obj_XML->orderStatus->redirect) == 1)
 			{
-				$xml = '<status code="100">';
+				$xml = '<status code="100" order-no="'. htmlspecialchars($obj_XML->orderStatus["orderCode"], ENT_NOQUOTES) .'">';
 				$xml .= $obj_XML->orderStatus->pgsp->asXML();
 				$xml .= '<url>'. htmlspecialchars($obj_XML->orderStatus->redirect, ENT_NOQUOTES) .'</url>';
 				$xml .= '</status>';

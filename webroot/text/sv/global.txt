@@ -1396,11 +1396,11 @@ Pris: {PRICE} @@@
 msgid @@@ Billing SMS @@@
 msgstr @@@ Tack för att du använder mPoint, du har betalat {PRICE} via din telefonräkning @@@
 
-#: /api/classes/credit_card.php:137
+#: /api/classes/credit_card.php:136
 msgid @@@ Stored Cards @@@
 msgstr @@@ Stored Cards @@@
 
-#: /api/classes/credit_card.php:139
+#: /api/classes/credit_card.php:138
 msgid @@@ My Account @@@
 msgstr @@@ My Account @@@
 
@@ -1436,15 +1436,15 @@ Kind Regards
 msgid @@@ mPoint - Account Disabled @@@
 msgstr @@@ mPoint - Account Disabled @@@
 
-#: /api/classes/general.php:402
+#: /api/classes/general.php:408
 msgid @@@ Loading... @@@
 msgstr @@@ Loading... @@@
 
-#: /api/classes/general.php:685
+#: /api/classes/general.php:707
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ Välkommen till {CLIENT}, klicka på länken nedan @@@
 
-#: /api/classes/general.php:691
+#: /api/classes/general.php:713
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Välkommen till {CLIENT} @@@
 
