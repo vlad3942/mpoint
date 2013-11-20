@@ -64,6 +64,7 @@ $HTTP_RAW_POST_DATA .= '</root>';
 */
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
+
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
 	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_DOM->{'save-card'}) > 0)
@@ -118,10 +119,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						{
 							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile["country-id"]);
 							// Start Transaction
-							$_OBJ_DB->query("START TRANSACTION");  // START TRANSACTION does not work with Oracle db
 							if (intval($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) > 0)
 							{
-								$code = $obj_mPoint->saveCardName( $obj_DOM->{'save-card'}[$i]->card[$j]["id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j],  General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) );
+								$code = $obj_mPoint->saveCardName( $obj_DOM->{'save-card'}[$i]->card[$j]["id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name,  General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) );
+								
 							}
 							else
 							{
@@ -145,6 +146,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							// Save Address if passed and cards successfuly saved
 							if (count($obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}) == 1 && $code == 1)
 							{
+								$_OBJ_DB->query("START TRANSACTION");  // START TRANSACTION does not work with Oracle db
 								$id = $obj_mPoint->getCardIDFromCardDetails($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-number-mask'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} ."/". substr($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-year'}, -2) );
 								if ($obj_mPoint->saveAddress($id, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]->address["country-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->state, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{'first-name'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"last-name"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->company, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->street, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"postal-code"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->city) == 10)
 								{
@@ -289,6 +291,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		header("HTTP/1.1 400 Bad Request");
 		
 		$xml = '';
+		
 		foreach ($obj_DOM->children() as $obj_Elem)
 		{
 			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>'; 
