@@ -50,6 +50,12 @@ class CPG extends Callback
 		case (9):	// VISA Electron
 			$name = "VISA_ELECTRON-SSL";
 			break;
+		case (13):	// SOLO
+			$name = "SOLO-SSL";
+			break;
+		case (15):	// Carte Bleue
+			$name = "CARTEBLEUE-SSL";
+			break;
 		default:	// Unknown
 			$name = $id;
 			break;
@@ -62,11 +68,11 @@ class CPG extends Callback
 	{
 		$aClientVars = $this->getMessageData($this->getTxnInfo()->getID(), Constants::iCLIENT_VARS_STATE);
 		
+		list($sc, $pnr, , ) = explode("/", $this->getTxnInfo()->getOrderID() );
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<submit>';
-		$b .= '<shortCode>'. htmlspecialchars($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getName(), ENT_NOQUOTES) .'</shortCode>'; // Short code of the Storefront application 
+		$b .= '<shortCode>'. htmlspecialchars($sc, ENT_NOQUOTES) .'</shortCode>'; // Short code of the Storefront application 
 		$b .= '<order orderCode="'. htmlspecialchars($this->getTxnInfo()->getOrderID(), ENT_NOQUOTES) .'">'; // mandatory, needs to be unique
-		list(, $pnr, , ) = explode("/", $this->getTxnInfo()->getOrderID() );
 		$b .= '<description>Emirates Airline Ticket Purchase '. $pnr .'</description>';		
 		$b .= '<amount value="'. $this->getTxnInfo()->getAmount() .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="2" debitCreditIndicator="credit" />'; 
 		if  (array_key_exists("var_tax", $aClientVars) === true)
@@ -138,21 +144,35 @@ class CPG extends Callback
 		$obj_HTTP->disConnect();
 		if ($code == 200)
 		{
-			$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
-			if (count($obj_XML->orderStatus->redirect) == 1)
+			$obj_DOM = simplexml_load_string($obj_HTTP->getReplyBody() );
+			if (count($obj_DOM->orderStatus->redirect) == 1)
 			{
-				$xml = '<status code="100" order-no="'. htmlspecialchars($obj_XML->orderStatus["orderCode"], ENT_NOQUOTES) .'">';
-				$xml .= $obj_XML->orderStatus->pgsp->asXML();
-				$xml .= '<url>'. htmlspecialchars($obj_XML->orderStatus->redirect, ENT_NOQUOTES) .'</url>';
+				$xml = '<status code="100" order-no="'. htmlspecialchars($obj_DOM->orderStatus["orderCode"], ENT_NOQUOTES) .'">';
+				$xml .= $obj_DOM->orderStatus->pgsp->asXML();
+				$xml .= '<url>'. htmlspecialchars($obj_DOM->orderStatus->redirect, ENT_NOQUOTES) .'</url>';
 				$xml .= '</status>';
+				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, $obj_DOM->asXML() );
+				if ($this->getTxnInfo()->getAccountID() > 0) { $this->associate($this->getTxnInfo()->getAccountID(), $this->getTxnInfo()->getID() ); }
 			}
-			elseif (count($obj_XML->orderStatus->error) == 1)
+			elseif (count($obj_DOM->orderStatus->error) == 1)
 			{
-				$xml = '<status code="92">'. htmlspecialchars($obj_XML->orderStatus->error, ENT_NOQUOTES) .' ('. $obj_XML->orderStatus->error["code"] .')</status>'; ;
+				$xml = '<status code="92">'. htmlspecialchars($obj_DOM->orderStatus->error, ENT_NOQUOTES) .' ('. $obj_DOM->orderStatus->error["code"] .')</status>';
+				$b = str_replace("<cvc>". intval($obj_XML->cvc) ."</cvc>", "<cvc>". str_repeat("*", strlen(intval($obj_XML->cvc) ) ) ."</cvc>", $b);
+				trigger_error("Unable to initialize payment transaction with CPG, error code: ". $obj_DOM->orderStatus->error["code"] ."\n". $obj_DOM->orderStatus->error->asXML() ."\n". "REQUEST: ". $b, E_USER_WARNING);
 			}
-			else { $xml = $obj_XML->asXML(); }
+			else
+			{
+				$xml = '<status code="92">Unknown Error: '. htmlspecialchars($obj_DOM->asXML(), ENT_NOQUOTES) .'</status>';
+				$b = str_replace("<cvc>". intval($obj_XML->cvc) ."</cvc>", "<cvc>". str_repeat("*", strlen(intval($obj_XML->cvc) ) ) ."</cvc>", $b);
+				trigger_error("Unable to initialize payment transaction with CPG, Unknown Error: ". $obj_DOM->asXML() ."\n". "REQUEST: ". $b, E_USER_WARNING);
+			}
 		}
-		else { $xml = '<status code="92">Rejected with HTTP Code: '. $code .'</status>'; }
+		else
+		{
+			$xml = '<status code="92">Rejected with HTTP Code: '. $code .'</status>';
+			$b = str_replace("<cvc>". intval($obj_XML->cvc) ."</cvc>", "<cvc>". str_repeat("*", strlen(intval($obj_XML->cvc) ) ) ."</cvc>", $b);
+			trigger_error("Unable to initialize payment transaction with CPG, HTTP code: ". $code ."\n". "REQUEST: ". $b, E_USER_WARNING);
+		}
 		
 		return $xml;
 	}

@@ -13,25 +13,26 @@ require_once(sAPI_CLASS_PATH ."/http_client.php");
  * Connection info for sending error reports to a remote host
  */
 $aHTTP_CONN_INFO["mesb"]["protocol"] = "http";
-//$aHTTP_CONN_INFO["mesb"]["host"] = "192.168.1.12"; // Simon
 $aHTTP_CONN_INFO["mesb"]["host"] = "10.150.242.42";
-//$aHTTP_CONN_INFO["mesb"]["host"] = $_SERVER['HTTP_HOST'];
-//$aHTTP_CONN_INFO["mesb"]["port"] = 10080; // Local MESB
-//$aHTTP_CONN_INFO["mesb"]["port"] = 80; // mPoint
 $aHTTP_CONN_INFO["mesb"]["port"] = 9000; // MESB
+//$aHTTP_CONN_INFO["mesb"]["host"] = "dsb.mesb.test.cellpointmobile.com";
+//$aHTTP_CONN_INFO["mesb"]["port"] = 10080; // Local MESB
+//$aHTTP_CONN_INFO["mesb"]["host"] = $_SERVER['HTTP_HOST'];
+//$aHTTP_CONN_INFO["mesb"]["port"] = 80; // mPoint
 $aHTTP_CONN_INFO["mesb"]["timeout"] = 120;
 $aHTTP_CONN_INFO["mesb"]["method"] = "POST";
 $aHTTP_CONN_INFO["mesb"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["mesb"]["username"] = "IBE";
 $aHTTP_CONN_INFO["mesb"]["password"] = "kjsg5Ahf_1";
-//$aHTTP_CONN_INFO["mesb"]["username"] = "CPMDemo"; // Local username
-//$aHTTP_CONN_INFO["mesb"]["password"] = "DEMOisNO_2"; // Local password
+//$aHTTP_CONN_INFO["mesb"]["username"] = "DSB"; // Local username
+//$aHTTP_CONN_INFO["mesb"]["password"] = "hdfy28abdl"; // Local password
 
 //$h .= "user-agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:20.0) Gecko/20100101 Firefox/20.0" .HTTPClient::CRLF;
 //$h .= "accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" .HTTPClient::CRLF;
 //$h .= "accept-language: en-US,en;q=0.5" .HTTPClient::CRLF;
 
 header("Content-Type: text/html; charset=\"utf-8\"");
+set_time_limit(0);
 
 class AutoTest
 {
@@ -39,27 +40,31 @@ class AutoTest
 	const sSTATUS_WARNING = '<span class="warning">Failed</span>';
 	const sSTATUS_FAILED = '<span class="error">Failed</span>';
 	
-	protected $_aConnInfo = array();
-	protected $_obj_Client = null;
-	protected $_sDebug;
+	private $_aConnInfo = array();
+	private $_obj_Client = null;
+	private $_sDebug;
 	
-	protected $_iClientID;
-	protected $_iAccount;
-	protected $_sCustomerRef;
-	protected $_lMobile;
-	protected $_sEMail;
+	private $_iClientID;
+	private $_iAccount;
+	private $_sCustomerRef;
+	private $_country;
+	private $_lMobile;
+	private $_sEMail;
+	private $_card;
 	
-	public function __construct(array &$aCI, $clid, $acc, $cr, $mob, $email)
+	public function __construct(array &$aCI, $clid, $acc, $cr, $cnt, $mob, $email, $crd)
 	{
 		$this->_aConnInfo = $aCI; 
-		$this->_iClientID = (integer) $clid;;
+		$this->_iClientID = (integer) $clid;
 		$this->_iAccount = $acc;
 		$this->_sCustomerRef = trim($cr);
+		$this->_country = trim($cnt);
 		$this->_lMobile = floatval($mob);
 		$this->_sEMail = trim($email);
+		$this->_card = trim($crd);
 	}
 	
-	protected function _constHeaders()
+	private function _constHeaders()
 	{
 		$h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
 		$h .= "host: {HOST}" .HTTPClient::CRLF;
@@ -70,7 +75,7 @@ class AutoTest
 		
 		return $h;
 	}
-	protected function _constmPointHeaders()
+	private function _constmPointHeaders()
 	{
 		$h = trim($this->_constHeaders() );
 		$h .= HTTPClient::CRLF;
@@ -79,11 +84,11 @@ class AutoTest
 		return $h;
 	}
 	
-	protected function _constClientInfo()
+	private function _constClientInfo()
 	{
 		$xml = '<client-info platform="iOS" version="5.1.1" language="da">';
 		$xml .= '<customer-ref>'. htmlspecialchars($this->_sCustomerRef, ENT_NOQUOTES) .'</customer-ref>';
-		$xml .= '<mobile country-id="100">'. $this->_lMobile .'</mobile>';
+		$xml .= '<mobile country-id="'. $this->_country .'">'. $this->_lMobile .'</mobile>';
 		$xml .= '<email>'. $this->_sEMail .'</email>';
 		$xml .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
 		$xml .= '</client-info>';
@@ -91,13 +96,13 @@ class AutoTest
 		return $xml;
 	}
 	
-	protected function _initialize($cv="")
+	private function _initialize($cv="")
 	{
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<initialize-payment client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
 		$b .= '<transaction order-no="EST/NGPN4N/07NOV2013/1507-'. time() .'">';
-		$b .= '<amount country-id="AE">147500</amount>';
+		$b .= '<amount country-id="'. $this->_country .'">147500</amount>';
 //		$b .= '<auth-url>http://localhost/_test/auth.php</auth-url>';
 //		$b .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
 		$b .= '<description>
@@ -227,7 +232,7 @@ class AutoTest
 			$b .= '<root>';
 			$b .= '<pay client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
 			$b .= '<transaction id="'. $obj_XML->transaction["id"] .'" store-card="false">';
-			$b .= '<card type-id="VISADANKORT">';
+			$b .= '<card type-id="'. $this->_card .'">';
 			$b .= '<amount country-id="'. $obj_XML->transaction->amount["country-id"] .'">'. $obj_XML->transaction->amount .'</amount>';
 			$b .= '</card>';
 			$b .= '</transaction>';
@@ -283,7 +288,7 @@ class AutoTest
 			$b .= $this->_constClientInfo();
 			$b .= '</authorize-payment>';
 			$b .= '</root>';
-		
+
 			// mPoint
 			if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
 			{
@@ -300,7 +305,19 @@ class AutoTest
 			if ($code == 200)
 			{
 				$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
-				if ($obj_XML->status["code"] >= 100) { return self::sSTATUS_SUCCESS; }
+				if ($obj_XML->status["code"] >= 100)
+				{
+					if (count($obj_XML->status->url) == 0)
+					{
+						$this->_sDebug = "Redirect URL not returned";
+						return self::sSTATUS_WARNING;
+					}
+					else
+					{
+						$this->_sDebug = $this->_obj_Client->getReplyBody();
+						return self::sSTATUS_SUCCESS;
+					}
+				}
 				else
 				{
 					$this->_sDebug = $this->_obj_Client->getReplyBody();
@@ -335,6 +352,50 @@ class AutoTest
 		$b .= '<number-of-instalments>2</number-of-instalments>';
 		return $this->_authorize($at, $b);
 	}
+	public function auth2($at)
+	{
+		$b = '<?xml version="1.0" encoding="ISO-8859-1"?><root><authorize-payment account="100010" client-id="10001"><transaction id="354"><card type-id="MAST" id="205"><amount country-id="BH">52</amount><cvc>123</cvc></card></transaction><auth-token>'. $at .'</auth-token><client-info language="gb" version="1.2" platform="Web"><customer-ref>00100119331</customer-ref><email>ravi.gupta@emirates.com</email><device-id>145031385</device-id><ip>127.0.0.1</ip></client-info></authorize-payment></root>';
+		// mPoint
+		if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
+		{
+			$this->_aConnInfo["path"] = "/mApp/api/authorize.php";
+		}
+		// Mobile Enterprise Service Bus
+		else { $this->_aConnInfo["path"] = "/mpoint/authorize-payment"; }
+		
+		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
+		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
+		$this->_obj_Client->connect();
+		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
+		$this->_obj_Client->disconnect();
+		if ($code == 200)
+		{
+			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
+			if ($obj_XML->status["code"] >= 100)
+			{
+				if (count($obj_XML->status->url) == 0)
+				{
+					$this->_sDebug = $this->_obj_Client->getReplyBody();
+					return self::sSTATUS_WARNING;
+				}
+				else
+				{
+					$this->_sDebug = $this->_obj_Client->getReplyBody();
+					return self::sSTATUS_SUCCESS;
+				}
+			}
+			else
+			{
+				$this->_sDebug = $this->_obj_Client->getReplyBody();
+				return self::sSTATUS_FAILED;
+			}
+		}
+		else
+		{
+			$this->_sDebug = $this->_obj_Client->getReplyBody();
+			return self::sSTATUS_FAILED;
+		}
+	}
 	/* ========== Automatic mConsole Tests Start ========== */
 	
 	private function _mConsoleSearchTest($mobile=0, $email="", $cr="", $start="", $end="")
@@ -354,11 +415,11 @@ class AutoTest
 		}
 		$b .= '</search>';
 		$b .= '</root>';
-
+		
 		// mPoint
 		if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
 		{
-			$this->_aConnInfo["path"] = "/mApp/api/search.php";
+			$this->_aConnInfo["path"] = "/mConsole/api/search.php";
 		}
 		// Mobile Enterprise Service Bus
 		else { $this->_aConnInfo["path"] = "/mpoint/mconsole/search"; }
@@ -371,13 +432,24 @@ class AutoTest
 		if ($code == 200)
 		{
 			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
-			if (count($obj_XML->{'audit-logs'}->{'audit-log'}) > 0)
+			if (count($obj_XML->{'audit-logs'}->{'audit-log'}) > 0 && count($obj_XML->transactions->transaction) > 0)
 			{
+				$this->_sDebug = $obj_XML->transactions->transaction->asXML();
 				return self::sSTATUS_SUCCESS;
+			}
+			elseif (count($obj_XML->{'audit-logs'}->{'audit-log'}) > 0)
+			{
+				$this->_sDebug = "No Transaction Log Entries Found";
+				return self::sSTATUS_WARNING;
+			}
+			elseif (count($obj_XML->transactions->transaction) > 0)
+			{
+				$this->_sDebug = "No Audit Log Entries Found";
+				return self::sSTATUS_WARNING;
 			}
 			else
 			{
-				$this->_sDebug = "No Audit Log Entries Found";
+				$this->_sDebug = "No Logs Found";
 				return self::sSTATUS_FAILED;
 			}
 		}
@@ -406,71 +478,111 @@ class AutoTest
 	/* ========== Automatic mConsole Tests End ========== */
 	
 	/* ========== Automatic Account Management Tests Start ========== */
-	public function saveCardNameTest()
+	public function saveCardNameUsingSSOTest($at)
 	{
-		$b = '<?xml version="1.0" encoding="UTF-8"?>';
-		$b .= '<root>';
-		$b .= '<save-card client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
-		$b .= '<card type-id="MAESTRO" preferred="true">';
-		$b .= '<name>My VISA</name>';
-		$b .= '</card>';
-		$b .= $this->_constClientInfo();
-		$b .= '</save-card>';
-		$b .= '</root>';
-		
-		$this->_sDebug = "";
-		// mPoint
-		if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
+		$obj_XML = $this->_loginUsingSSOTest($at);
+		if ( ($obj_XML instanceof SimpleXMLElement) === true)
 		{
-			$this->_aConnInfo["path"] = "/mApp/api/save_card.php";
-		}
-		// Mobile Enterprise Service Bus
-		else { $this->_aConnInfo["path"] = "/mpoint/save-card"; }
-		
-		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
-		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
-		$this->_obj_Client->connect();
-		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
-		$this->_obj_Client->disconnect();
-		if ($code == 200)
-		{
-			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
-			if ($obj_XML->status["code"] >= 100) { return self::sSTATUS_SUCCESS; }
+			if (count($obj_XML->{'stored-cards'}->card) > 0)
+			{
+				$id = $obj_XML->{'stored-cards'}->card[0]["id"];
+				$name = "My VISA";
+				$b = '<?xml version="1.0" encoding="UTF-8"?>';
+				$b .= '<root>';
+				$b .= '<save-card client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
+				$b .= '<card id="'. $id .'" preferred="false">';
+				$b .= '<name>'. $name .'</name>';
+				$b .= '</card>';
+				$b .= $this->_constClientInfo();
+				$b .= '</save-card>';
+				$b .= '</root>';
+				
+				$this->_sDebug = "";
+				// mPoint
+				if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
+				{
+					$this->_aConnInfo["path"] = "/mApp/api/save_card.php";
+				}
+				// Mobile Enterprise Service Bus
+				else { $this->_aConnInfo["path"] = "/mpoint/save-card"; }
+				
+				$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
+				$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
+				$this->_obj_Client->connect();
+				$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
+				$this->_obj_Client->disconnect();
+				if ($code == 200)
+				{
+					$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
+					if ($obj_XML->status["code"] >= 100)
+					{
+						$obj_XML = $this->_loginUsingSSOTest($at);
+						$aObj_XML = $obj_XML->xpath("/root/stored-cards/card[@id = ". $id ."]");
+						if (count($aObj_XML) == 1 && $aObj_XML[0]->name == $name && $aObj_XML[0]["preferred"] == "false")
+						{
+							$this->_sDebug = "Card ID: ". $id;
+							return self::sSTATUS_SUCCESS;
+						}
+						elseif (is_array($aObj_XML) === true && count($aObj_XML) == 1)
+						{
+							$this->_sDebug = "Wrong Card name: ". $aObj_XML[0]->name ." expected: ". $name ." or preferred: ". $aObj_XML[0]["preferred"] ." not false";
+							return self::sSTATUS_FAILED;
+						}
+						else
+						{
+							$this->_sDebug = "Card not found";
+							return self::sSTATUS_FAILED;
+						}
+					}
+					else
+					{
+						$this->_sDebug = $this->_obj_Client->getReplyBody();
+						return self::sSTATUS_FAILED;
+					}
+				}
+				else
+				{
+					$this->_sDebug = $this->_obj_Client->getReplyBody();
+					return self::sSTATUS_FAILED;
+				}
+			}
 			else
 			{
-				$this->_sDebug = $this->_obj_Client->getReplyBody();
-				return self::sSTATUS_FAILED;
+				$this->_sDebug = "No Stored Cards returned";
+				return self::sSTATUS_WARNING;
 			}
 		}
 		else
 		{
 			$this->_sDebug = $this->_obj_Client->getReplyBody();
-			return self::sSTATUS_FAILED;
+			return self::sSTATUS_WARNING;
 		}
 	}
 	
-	public function saveMaskedCardTest()
+	public function saveMaskedCardTest($at, $type="", $name="")
 	{
+		if (empty($type) === true) { $type = $this->_card; }
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<save-card client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
-		$b .= '<card psp-id="9" type-id="VISA" preferred="true">';
-		$b .= '<name>My VISA</name>';
+		$b .= '<card psp-id="9" type-id="'. htmlspecialchars($type, ENT_NOQUOTES) .'" preferred="true">';
+		if (empty($name) === false) { $b .= '<name>'. htmlspecialchars($name, ENT_NOQUOTES) .'</name>'; }
 		$b .= '<card-number-mask>4444********3333</card-number-mask>';
 		$b .= '<expiry-month>07</expiry-month>';
 		$b .= '<expiry-year>17</expiry-year>';
 		$b .= '<token>123470-ABCD</token>';
 		$b .= '<card-holder-name>mohamedgiya ulhak</card-holder-name>';
-		$b .= '<address country-id="AE">';
+		$b .= '<address country-id="'. $this->_country .'">';
 		$b .= '<first-name>Mohamedgiya</first-name>';
 		$b .= '<last-name>Ulhak</last-name>';
 		$b .= '<street>Anna nagar</street>';
 		$b .= '<postal-code>600408</postal-code>';
 		$b .= '<city>Chennai</city>';
-		$b .= '<state>N/A</state>';
+		if ($this->_country == "IN") { $b .= '<state>TR</state>'; }
 		$b .= '</address>';
 		$b .= '</card>';
 		$b .= '<password>oisJona1</password>';
+		$b .= '<auth-token>'. htmlspecialchars($at, ENT_NOQUOTES) .'</auth-token>';
 		$b .= $this->_constClientInfo();
 		$b .= '</save-card>';
 		$b .= '</root>';
@@ -493,7 +605,50 @@ class AutoTest
 		if ($code == 200)
 		{
 			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
-			if ($obj_XML->status["code"] >= 100) { return self::sSTATUS_SUCCESS; }
+			if ($obj_XML->status["code"] >= 100 && $obj_XML->status["card-id"] > 0)
+			{
+				$id = $obj_XML->status["card-id"];
+				$obj_XML = $this->_loginUsingSSOTest($at);
+				if ( ($obj_XML instanceof SimpleXMLElement) === true)
+				{
+					if (count($obj_XML->{'stored-cards'}->card) > 0)
+					{
+						$aObj_XML = $obj_XML->xpath("/root/stored-cards/card[@id = ". $id ."]");
+						$type = str_replace("CARTEBLEUEVISA", "CARTEBLEUE", $type);
+						$type = str_replace("POSTEPAY", "", $type);
+						if (count($aObj_XML) == 1 && $aObj_XML[0]["type-id"] == $type)
+						{
+							$this->_sDebug = "Card ID: ". $id;
+							return self::sSTATUS_SUCCESS;
+						}
+						elseif (is_array($aObj_XML) === true && count($aObj_XML) == 1)
+						{
+							$this->_sDebug = "Wrong Card Type: ". $aObj_XML[0]["type-id"] ." expected: ". $type;
+							return self::sSTATUS_FAILED;
+						}
+						else
+						{
+							$this->_sDebug = "Card not found";
+							return self::sSTATUS_FAILED;
+						}
+					}
+					else
+					{
+						$this->_sDebug = "No Stored Cards returned";
+						return self::sSTATUS_WARNING;
+					}
+				}
+				else
+				{
+					$this->_sDebug = "Login failed";
+					return self::sSTATUS_WARNING;
+				}
+			}
+			elseif ($obj_XML->status["code"] >= 100)
+			{
+				$this->_sDebug = "Card ID not returned for Saved Card";
+				return self::sSTATUS_WARNING;
+			}
 			else
 			{
 				$this->_sDebug = $this->_obj_Client->getReplyBody();
@@ -732,8 +887,9 @@ class AutoTest
 			return self::sSTATUS_FAILED;
 		}
 	}
+	
 
-	public function savePreferenceInCRIS($at)
+	public function savePreferenceInCRISSuccessTest($at)
 	{
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
@@ -763,9 +919,9 @@ class AutoTest
 		if ($code == 200)
 		{
 			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
-			if ($obj_XML->status["code"] == '200')
+			$c = $obj_XML->{'stored-cards'};
+			if ($obj_XML->{'status'}->code === "200")
 			{
-				$this->_sDebug = $obj_XML->{'status'};
 				return self::sSTATUS_SUCCESS;
 			}
 			else
@@ -786,12 +942,13 @@ class AutoTest
 		}
 	}
 	
-	public function savePreferenceInCRISFail()
+	public function savePreferenceInCRISFailureTest($at)
 	{
+	
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<notify>';
-		$b .= '<auth-token>D7E4B0E705A967076482D4D1BB0716714FF195144BB27A1E425E6F2420457CEA6C1F5E5B1CCD22D3</auth-token>';
+		$b .= '<auth-token>'. $at .'</auth-token>';
 		$b .= $this->_constClientInfo();
 		$b .= '<preference>';
 		$b .= '<category-id>9</category-id>';
@@ -813,62 +970,12 @@ class AutoTest
 		$this->_obj_Client->connect();
 		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
 		$this->_obj_Client->disconnect();
-		if ($code == 403)
-		{
-			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
-			if ($obj_XML->status["code"] == '403')
-			{
-				$this->_sDebug = $obj_XML->{'status'};
-				return self::sSTATUS_SUCCESS;
-			}
-			else
-			{
-				$this->_sDebug = $obj_XML->{'status'};
-				return self::sSTATUS_WARNING;
-			}
-		}
-		else
-		{
-			$this->_sDebug = $this->_obj_Client->getReplyBody();
-			return self::sSTATUS_FAILED;
-		}
-	}
-	
-	public function deletePreferenceInCRIS($at)
-	{
-	
-		$b = '<?xml version="1.0" encoding="UTF-8"?>';
-		$b .= '<root>';
-		$b .= '<notify>';
-		$b .= '<auth-token>'. $at .'</auth-token>';
-		$b .= $this->_constClientInfo();
-		$b .= '<preference>';
-		$b .= '<category-id>9</category-id>';
-		$b .= '<category-description>Lifestyle</category-description>';
-		$b .= '<preference-type-code>SOCCER</preference-type-code>';
-		$b .= '<preference-type-description>Soccer</preference-type-description>';
-		$b .= '<parent-card-no></parent-card-no>';
-		$b .= '</preference>';
-		$b .= '<customer>';
-		$b .= '<stored-cards>0</stored-cards>';
-		$b .= '</customer>';
-		$b .= '</notify>';
-		$b .= '</root>';
-	
-		$this->_aConnInfo["path"] = "/mpoint/emirates/cris/save-preferences";
-	
-		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
-		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
-		$this->_obj_Client->connect();
-		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
-		$this->_obj_Client->disconnect();
-		
 		if ($code == 200)
 		{
 			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
-			if ($obj_XML->status["code"] == '200')
+			$c = $obj_XML->{'stored-cards'};
+			if ($obj_XML->{'status'}->code === "200")
 			{
-				$this->_sDebug = $obj_XML->{'status'};
 				return self::sSTATUS_SUCCESS;
 			}
 			else
@@ -888,215 +995,10 @@ class AutoTest
 			return self::sSTATUS_FAILED;
 		}
 	}
-	
 	
 	/* ========== Automatic Account Management Tests End ========== */
 }
 
-class AutotestPayEx extends AutoTest
-{
-	
-	private function constClientInfo()
-	{
-		$xml = '<client-info platform="iOS" version="5.1.1" language="da">';
-		$xml .= '<customer-ref>'. htmlspecialchars($this->_sCustomerRef, ENT_NOQUOTES) .'</customer-ref>';
-		$xml .= '<mobile country-id="100">'. $this->_lMobile .'</mobile>';
-		$xml .= '<email>'. $this->_sEMail .'</email>';
-		$xml .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
-		$xml .= '</client-info>';
-	
-		return $xml;
-	}
-	
-
-	private function initialize($cv="")
-	{
-		$b = '<?xml version="1.0" encoding="UTF-8"?>';
-		$b .= '<root>';
-		$b .= '<initialize-payment client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
-		$b .= '<transaction order-no="EST/NGPN4N/07NOV2013/1507-'. time() .'">';
-		$b .= '<amount country-id="100">147500</amount>';
-		//		$b .= '<auth-url>http://localhost/_test/auth.php</auth-url>';
-		//		$b .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
-		$b .= '<description>
-				<![CDATA[
-				<center><table><tr><td bgcolor="#ffff00">Your Internet Order:</td><td colspan="2" bgcolor="#ffff00" align="right">EST/NGPN4N/29OCT2013/1507</td></tr><tr><td bgcolor="#ffff00">Description:</td><td>EK Internet Booking Engine</td><td align="right">1.00</td></tr><tr><td colspan="2">Subtotal:</td><td align="right">1475.0</td></tr><tr><td colspan="2" bgcolor="#c0c0c0">Total cost:</td><td bgcolor="#c0c0c0" align="right">1475.0</td></tr><tr><td colspan="3">&nbsp;</td></tr><tr><td bgcolor="#ffff00" colspan="3">Your billing address:</td></tr><tr><td colspan="3"><br>Address Object contains :
-				address1:dsfdsf
-				address2:
-				address2:
-				city: sdfsdf
-				region:
-				country: AZ
-				postalcode:
-				contactType: </td></tr><tr><td colspan="3">&nbsp;</td></tr><tr><td bgcolor="#ffff00" colspan="3">Your shipping address:</td></tr><tr><td colspan="3"><br>Address Object contains :
-				address1:
-				address2:
-				address2:
-				city:
-				region:
-				country:
-				postalcode:
-				contactType: </td></tr><tr><td colspan="3">&nbsp;</td></tr><tr><td bgcolor="#ffff00" colspan="3">Our contact information:</td></tr><tr><td colspan="3">Emirates Airlines,<br>P.O.Box No 686,<br>1255 KZ Dubai,<br>UAE.<br><br>payment@emirates.com<br>971 4-7035726</td></tr></table></center>
-				]]>
-			   </description>';
-		$b .= '<custom-variables>';
-		$b .= '<tax>33500</tax>';
-		$b .= '<enhanced-data>
-				<![CDATA[
-				<enchancedData code="EK"><airline code="EK" /><passenger type = "ADT" passengerID="300003524" paxClass="" productName="FLIGHT" productCode="SME Revenue">Alalawi/Iman</passenger><pnr code="NGPN4N"><flight carrierCode="EK0600"><departureAirport>DXB</departureAirport><arrivalAirport>KHI</arrivalAirport><departureDate><depdate day = "15" month="12" year="2013" /></departureDate><arrivalDate><arrdate day = "15" month="12" year="2013" /></arrivalDate><jrnyType>Return</jrnyType><fare class="Y" /></flight><flight carrierCode="EK0605"><departureAirport>KHI</departureAirport><arrivalAirport>DXB</arrivalAirport><departureDate><depdate day = "21" month="12" year="2013" /></departureDate><arrivalDate><arrdate day = "21" month="12" year="2013" /></arrivalDate><jrnyType>Return</jrnyType><fare class="Y" /></flight></pnr><devSessionID>15547305</devSessionID><merchData2>Y</merchData2><bookingType>SME Revenue</bookingType><merchData1></merchData1><merchData3>SME BOOKING</merchData3><merchData4>IMAN ALALAWI</merchData4><merchData5>IMAN ALALAWI</merchData5><merchData6>EK 0600</merchData6><merchData7>15 Dec 13</merchData7><merchData8>NGPN4N</merchData8><thirdParty>false</thirdParty><deptTime>08:00</deptTime><agent code="" /><redemptionTicket></redemptionTicket><ticketOption>ETKT</ticketOption><promotionalCode></promotionalCode><skywardsNumber>300003524</skywardsNumber><productCode>SME Revenue</productCode><bkgChannel>WEB</bkgChannel><tax currencyCode="AED" exponent="2" value="147500"></tax></enchancedData>
-				]]>
-			   </enhanced-data>';
-		$b .= $cv;
-		$b .= '</custom-variables>';
-		$b .= '</transaction>';
-		$b .= $this->constClientInfo();
-			$b .= '</initialize-payment>';
-		$b .= '</root>';
-
-		// mPoint
-		if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
-		{
-				$this->_aConnInfo["path"] = "/mApp/api/initialize.php";
-		}
-		// Mobile Enterprise Service Bus
-		else { $this->_aConnInfo["path"] = "/mpoint/initialize-payment"; }
-	
-		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
-		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
-		$this->_obj_Client->connect();
-		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
-
-		if ($code == 200)
-		{
-		$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
-		}
-		else { $obj_XML = null; }
-		$this->_obj_Client->disconnect();
-
-		return $obj_XML;
-	}
-	
-	public function payViaPayExTest()
-	{
-		$this->_sDebug = "";
-		// Call Initialize
-		$obj_XML = $this->initialize();
-		
-		if ( ($obj_XML instanceof SimpleXMLElement) === true)
-		{
-			file_put_contents(sLOG_PATH ."/error.log", "\n". "obj_XML: ".var_export($obj_XML, true), FILE_APPEND  | LOCK_EX );
-			
-			$b = '<?xml version="1.0" encoding="UTF-8"?>';
-			$b .= '<root>';
-			$b .= '<pay client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
-			$b .= '<transaction id="'. $obj_XML->transaction["id"] .'" store-card="false">';
-			$b .= '<card type-id="5">';
-			$b .= '<amount country-id="'. $obj_XML->transaction->amount["country-id"] .'">'. $obj_XML->transaction->amount .'</amount>';
-			$b .= '</card>';
-			$b .= '</transaction>';
-			$b .= $this->_constClientInfo();
-			$b .= '</pay>';
-			$b .= '</root>';
-				
-			if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
-			{
-				$this->_aConnInfo["path"] = "/mApp/api/pay.php";
-			}
-			
-			// Call Pay
-			$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
-			$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
-			$this->_obj_Client->connect();
-			$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
-			$this->_obj_Client->disconnect();
-			
-			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
-			$obj_ConnInfo = HTTPConnInfo::produceConnInfo($obj_XML->{'psp-info'}->url);
-			$obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
-			$b = $obj_XML->{'psp-info'}->{'card-number'} ."=". urlencode("4581090329655682") ."&";
-			$b .= $obj_XML->{'psp-info'}->{'expiry-month'} ."=". urlencode("2") ."&";
-			$b .= $obj_XML->{'psp-info'}->{'expiry-year'} ."=". urlencode("2014") ."&";
-			$b .= $obj_XML->{'psp-info'}->cvc ."=". urlencode("210") ."&";
-			
-			file_put_contents(sLOG_PATH ."/error.log", "\n". "B1: ".var_export($b, true), FILE_APPEND  | LOCK_EX );
-							
-			foreach ($obj_XML->{'psp-info'}->{'hidden-fields'}->children() as $obj_Field)
-			{
-				$b .= str_replace("-DOLLARSIGN-", "$", $obj_Field->getName() ) ."=". urlencode($obj_Field) ."&";
-			}
-
-			$b = substr($b, 0, strlen($b) - 1);
-			$obj_Client->connect();
-			$code = -1;
-			$h = str_replace("{REFERER}", (string) $obj_XML->{'psp-info'}->url, $this->_constmPointHeaders() );;
-			if (empty($obj_XML->{'psp-info'}->cookies) === false)
-			{
-				$s = $h ."cookie: ". $obj_XML->{'psp-info'}->cookies .HTTPClient::CRLF;
-				file_put_contents(sLOG_PATH ."/error.log", "\n". "S: ".var_export($s, true), FILE_APPEND  | LOCK_EX );
-				file_put_contents(sLOG_PATH ."/error.log", "\n". "B: ".var_export($b, true), FILE_APPEND  | LOCK_EX );
-				file_put_contents(sLOG_PATH ."/error.log", "\n". "H: ".var_export($h, true), FILE_APPEND  | LOCK_EX );
-				file_put_contents(sLOG_PATH ."/error.log", "\n". "obj Client: ".var_export($obj_Client, true), FILE_APPEND  | LOCK_EX );
-				$code = $obj_Client->send($h ."cookie: ". $obj_XML->{'psp-info'}->cookies .HTTPClient::CRLF, $b);
-			}
-			else { $code = $obj_Client->send($h, $b); }
-			$obj_Client->disconnect();
-			file_put_contents(sLOG_PATH ."/error.log", "\n". "Code: ".var_export($code, true), FILE_APPEND  | LOCK_EX );
-			if ($code == 200)
-			{
-				$this->_sDebug = $obj_Client->getReplyBody();
-			}
-			elseif ($code == 302)
-			{
-				while ($code == 302)
-				{
-					// Parse HTTP Response Headers
-					$a = explode(HTTPClient::CRLF, $obj_Client->getReplyHeader() );
-					foreach ($a as $str)
-					{
-						$pos = strpos($str, ":");
-						if ($pos > 0)
-						{
-							$name = substr($str, 0, $pos);
-							if (strtolower($name) == "location")
-							{
-								$value = trim(substr($str, $pos+1) );
-								$this->_sDebug =  $value ."\r\n";
-								$obj_ConnInfo = HTTPConnInfo::produceConnInfo(trim($value) );
-								$obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
-								$obj_Client->connect();
-								$code = $obj_Client->send($h);
-								$obj_Client->disconnect();
-							}
-						}
-					}
-				}
-				if ($code == 200)
-				{
-					$this->_sDebug = $obj_Client->getReplyBody();
-				}
-				else { var_dump($obj_Client); die(); }
-			}
-			else { var_dump($obj_Client); die(); }
-			
-			if ($code == 200)
-			{
-				$this->_sDebug = $this->_obj_Client->getReplyBody();
-				return self::sSTATUS_SUCCESS;
-			}
-			else
-			{
-				$this->_sDebug = $this->_obj_Client->getReplyBody();
-				return self::sSTATUS_FAILED;
-			}
-		}
-		else
-		{
-			$this->_sDebug = $this->_obj_Client->getReplyBody();
-			return self::sSTATUS_FAILED;
-		}
-	}
-	
-}
 /*
 $obj_ConnInfo = HTTPConnInfo::produceConnInfo($obj_XML->{'psp-info'}->url);
 $obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
@@ -1170,13 +1072,17 @@ else { var_dump($obj_Client); die(); }
 
 $iClientID = 10001;
 $iAccount = 100010;
-$sCustomerRef = "00777415236";
+$sCustomerRef = "00100119331";
+$country = "100";
 $iMobile = "28882861";
 $sEMail = "jona@oismail.com";
+$card = "6";
+//00777415236
 
-$obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $sCustomerRef, $iMobile, $sEMail);
+//00123
+$obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $sCustomerRef, $country, $iMobile, $sEMail, $card);
 
-$obj_AutoTestPayEx = new AutotestPayEx($aHTTP_CONN_INFO["mesb"], 10013, 100032, $sCustomerRef, $iMobile, $sEMail);
+$sAuthToken = $obj_AutoTest->getCRISAuthToken();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -1236,13 +1142,73 @@ $obj_AutoTestPayEx = new AutotestPayEx($aHTTP_CONN_INFO["mesb"], 10013, 100032, 
 		<td class="caption">Debug</td>
 	</tr>
 	<tr>
-		<td class="name">Save Masked Card</td>
-		<td><?//= $obj_AutoTest->saveMaskedCardTest(); ?></td>
+		<td class="name">Save Masked American Express with Name</td>
+		<td><?//= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "AMEX", "My AMEX"); ?></td>
 		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
-		<td class="name">Save Masked Card 2</td>
-		<td><?//= $obj_AutoTest->saveMaskedCardTest2(); ?></td>
+		<td class="name">Save Masked CarteBleue with Name</td>
+		<td><?//= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "CARTEBLEUE", "My CarteBleue"); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Save Masked CarteBleue VISA with Name</td>
+		<td><?//= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "CARTEBLEUEVISA", "My CarteBleue VISA"); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Save Masked Dankort with Name</td>
+		<td><?//= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "VISADANKORT", "My Dankort"); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Save Masked Diners Club with Name</td>
+		<td><?//= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "DINERS", "My Diners Club"); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Save Masked JCB with Name</td>
+		<td><?//= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "JCB", "My JCB"); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Save Masked Maestro with Name</td>
+		<td><?//= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "MAESTRO", "My Maestro"); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Save Masked MasterCard with Name</td>
+		<td><?//= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "MAST", "My MasterCard"); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Save Masked Postpay MasterCard with Name</td>
+		<td><?//= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "POSTEPAYMAST", "My PostPay MasterCard"); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Save Masked Postpay VISA Card with Name</td>
+		<td><?= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "POSTEPAYVISA", "My PostPay VISA"); ?></td>
+		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Save Masked SOLO Card with Name</td>
+		<td><?//= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "SOLO", "My SOLO"); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Save Masked VISA Card with Name</td>
+		<td><?//= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "VISA", "My VISA"); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Save Masked VISA Card without Name</td>
+		<td><?//= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "VISA", ""); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Save Masked VISA Electron Card with Name</td>
+		<td><?//= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "VISAELEC", "My VISA Electron"); ?></td>
 		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
@@ -1262,17 +1228,22 @@ $obj_AutoTestPayEx = new AutotestPayEx($aHTTP_CONN_INFO["mesb"], 10013, 100032, 
 	</tr>
 	<tr>
 		<td class="name">Authorize Stored Card using Single Sign-On</td>
-		<td><?//= $obj_AutoTest->authorizeStoredCardUsingSSOTest($obj_AutoTest->getCRISAuthToken() ); ?></td>
+		<td><?//= $obj_AutoTest->authorizeStoredCardUsingSSOTest($sAuthToken); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Auth 2</td>
+		<td><?//= $obj_AutoTest->auth2($sAuthToken); ?></td>
 		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Authorize Stored Card with Instalments using Single Sign-On</td>
-		<td><?//= $obj_AutoTest->authorizeStoredCardWithInstalmentsUsingSSOTest($obj_AutoTest->getCRISAuthToken() ); ?></td>
+		<td><?//= $obj_AutoTest->authorizeStoredCardWithInstalmentsUsingSSOTest($sAuthToken); ?></td>
 		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
-		<td class="name">Save Card Name</td>
-		<td><?//= $obj_AutoTest->saveCardNameTest(); ?></td>
+		<td class="name">Save Card Name using Single Sign-On</td>
+		<td><?//= $obj_AutoTest->saveCardNameUsingSSOTest($sAuthToken); ?></td>
 		<td><?//= $obj_AutoTest->getDebug(); ?></td>
 	</tr>
 	<tr>
@@ -1307,38 +1278,23 @@ $obj_AutoTestPayEx = new AutotestPayEx($aHTTP_CONN_INFO["mesb"], 10013, 100032, 
 	</tr>
 	<tr>
 		<td class="name">Login using Single Sign-On</td>
-		<td><?//= $obj_AutoTest->loginUsingSSOTest($obj_AutoTest->getCRISAuthToken() ); ?></td>
-		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
-	</tr>
-	<tr>
-		<td class="name">Login using Single Sign-On 2</td>
-		<td><?//= $obj_AutoTest->loginUsingSSOTest2($obj_AutoTest->getCRISAuthToken() ); ?></td>
+		<td><?//= $obj_AutoTest->loginUsingSSOTest($sAuthToken); ?></td>
 		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Delete Card using Single Sign-On</td>
-		<td><?//= $obj_AutoTest->deleteCardUsingSSOTest($obj_AutoTest->getCRISAuthToken() ); ?></td>
-		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?= $obj_AutoTest->deleteCardUsingSSOTest($sAuthToken); ?></td>
+		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
-		<td class="name">Save Preferences in CRIS</td>
-		<td><?//= $obj_AutoTest->savePreferenceInCRIS($obj_AutoTest->getCRISAuthToken() ); ?></td>
+		<td class="name">Save Preferences in CRIS Success</td>
+		<td><?//= $obj_AutoTest->savePreferenceInCRISSuccessTest($sAuthToken); ?></td>
 		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
-	<tr>
+		<tr>
 		<td class="name">Save Preferences in CRIS Fail</td>
-		<td><?//= $obj_AutoTest->savePreferenceInCRISFail(); ?></td>
+		<td><?//= $obj_AutoTest->savePreferenceInCRISFailureTest($sAuthToken); ?></td>
 		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
-	</tr>
-	<tr>
-		<td class="name">Delete Preferences in CRIS</td>
-		<td><?//= $obj_AutoTest->deletePreferenceInCRIS($obj_AutoTest->getCRISAuthToken() ); ?></td>
-		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
-	</tr>
-	<tr>
-		<td class="name">PayEx Test</td>
-		<td><?= $obj_AutoTestPayEx->payViaPayExTest(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTestPayEx->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	</table>
 </body>

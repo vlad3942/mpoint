@@ -117,7 +117,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 //							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"]);
 //							if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
 							$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
-							if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) == Constants::iCARD_PURCHASE_TYPE && $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) + 20; }
 							if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 0)
 							{
 								if ($obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) + 25; }

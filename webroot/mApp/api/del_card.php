@@ -149,44 +149,44 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													
 												switch ($obj_mPoint->notify($obj_ConnInfo, $obj_ClientInfo, $iAccountID, $obj_DOM->{'delete-card'}[$i]->{'auth-token'}, count($aObj_XML) ) )
 												{
-												case (1):	// Error: Unknown response from External Server
+												case (1):	// Error: Unknown response from CRM System
 													header("HTTP/1.1 502 Bad Gateway");
 									
-													$xml .= '<status code="98">Invalid response from External Server</status>';
+													$xml .= '<status code="98">Invalid response from CRM System</status>';
 													break;
-												case (2):	// Error: Notification Rejected by External Server
+												case (2):	// Error: Notification Rejected by CRM System
 													header("HTTP/1.1 502 Bad Gateway");
 									
-													$xml .= '<status code="97">Notification rejected by External Server</status>';
+													$xml .= '<status code="97">Notification rejected by CRM System</status>';
 													break;
 												case (10):	// Success: Card successfully saved
 													$xml = '<status code="100">Card successfully deleted and CRM system notified</status>';
 													break;
-												default:	// Error: Unknown response from External Server
+												default:	// Error: Unknown response from CRM System
 													header("HTTP/1.1 502 Bad Gateway");
 									
-													$xml .= '<status code="99">Unknown response from External Server</status>';
+													$xml .= '<status code="99">Unknown response from CRM System</status>';
 													break;
 												}
 											}
-											// Error: Unable to connect to External Server
+											// Error: Unable to connect to CRM System
 											catch (HTTPConnectionException $e)
 											{
 												header("HTTP/1.1 504 Gateway Timeout");
 													
 												$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 												$xml .= '<root>';
-												$xml .= '<status code="91">Unable to connect to External Server</status>';
+												$xml .= '<status code="91">Unable to connect to CRM System</status>';
 												$xml .= '</root>';
 											}
-											// Error: No response received from External Server
+											// Error: No response received from CRM System
 											catch (HTTPSendException $e)
 											{
 												header("HTTP/1.1 504 Gateway Timeout");
 										
 												$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 												$xml .= '<root>';
-												$xml .= '<status code="92">No response received from External Server</status>';
+												$xml .= '<status code="92">No response received from CRM System</status>';
 												$xml .= '</root>';
 											}
 										}

@@ -215,7 +215,7 @@ class EndUserAccount extends Home
 					if ($iAccountID > 0 && $this->getClientConfig()->getStoreCard() > 3)
 					{
 						$this->link($iAccountID);
-						$iStatus = 1;
+						$code = 1;
 					}
 					// Create new End-User Account
 					else
@@ -226,13 +226,13 @@ class EndUserAccount extends Home
 						else { $email = $addr; }
 				
 						$iAccountID = $this->newAccount(intval($oTI->getOperator()/100), $mob, "", $email, $oTI->getCustomerRef() );
-						$iStatus = 2;
+						$code = 2;
 					}
 				}
 				else
 				{
 					$pref = false;
-					$iStatus = 0;
+					$code = 0;
 				}
 				$name = "";
 			}
@@ -246,7 +246,7 @@ class EndUserAccount extends Home
 			break;
 		case (9):	// Card Saved by invoking "Save Card" API
 			list($iAccountID, $cardid, $pspid, $token, $mask, $exp, $chn, $name, $pref) = $aArgs;
-			$iStatus = 0;
+			$code = 0;
 			break;		
 		}
 
@@ -275,10 +275,7 @@ class EndUserAccount extends Home
 					WHERE id = ". $id;
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
-			if (is_resource($res) === false)
-			{
-				$iStatus = -1;
-			}
+			if (is_resource($res) === false) { $code = -1; }
 		}
 		// Card not previously saved, add card info to database
 		else
@@ -300,10 +297,10 @@ class EndUserAccount extends Home
 				// Link between End-User Account and Client doesn't exist
 				if (is_array($RS) === false) { $this->link($iAccountID); }
 			}
-			else { $iStatus = -1; }		
+			else { $code = -1; }		
 		}
 
-		return $iStatus;
+		return $code;
 	}
 	
 	/**
@@ -409,9 +406,6 @@ class EndUserAccount extends Home
 		case (4):	// Save Card Name and status (preferred)
 			return $this->_saveCardName($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3]);
 			break;
-		case (5):
-			return $this->_saveCardName($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3], $aArgs[4]);
-			break;
 		default: 
 			return -1;
 			break;
@@ -436,7 +430,7 @@ class EndUserAccount extends Home
 	 */
 	private function _saveCardName($id, $cardid, $name, $pref=false)
 	{
-		$iStatus = 0;
+		$code = 0;
 		// Set name for card
 		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 				SET name = '". $this->getDBConn()->escStr($name) ."'
@@ -447,22 +441,22 @@ class EndUserAccount extends Home
 					AND modified > NOW() - interval '5 minutes'";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
-		if (is_resource($res) === true) { $iStatus++; }
+		if (is_resource($res) === true) { $code++; }
 		// Card doesn't exist, create card setting it as inactive
 		if ($this->getDBConn()->countAffectedRows($res) == 0)
 		{
 			$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 						(accountid, clientid, pspid, cardid, name, preferred, enabled)
 					VALUES
-						(". intval($id) .", ". $this->_obj_ClientConfig->getID() .", 0, ". intval($cardid) .", '". $this->getDBConn()->escStr($name) ."', '". General::bool2xml($pref) ."', false)";
+						(". intval($id) .", ". $this->_obj_ClientConfig->getID() .", 0, ". intval($cardid) .", '". $this->getDBConn()->escStr($name) ."', '". intval($pref) ."', '0')";
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
 			
-			if (is_resource($res) === true) { $iStatus++; }
-			else { $iStatus = 0; }
+			if (is_resource($res) === true) { $code++; }
+			else { $code = 0; }
 		}
 		
-		return $iStatus;
+		return $code;
 	}
 	
 	
@@ -530,7 +524,7 @@ class EndUserAccount extends Home
 	 * which is used to clear the transaction.
 	 * The method will return the following status codes:
 	 * 	0. Error - Unable to store card name
-	 * 	3. Card name successfully set for card
+	 * 	3. Card successfully renamed
 	 *
 	 * @param 	integer $cardid ID of the Card
 	 * @param 	string $name	Card name entered by the end-user
@@ -538,7 +532,7 @@ class EndUserAccount extends Home
 	 *
 	 * @return	integer
 	 */
-	private function _renameCard($cardid, $name, $pref)
+	private function _renameCard($cardid, $name, $pref=false)
 	{
 		// Reset preferred flag on all cards
 		if ($pref === true)
@@ -554,7 +548,7 @@ class EndUserAccount extends Home
 		
 		// Set name for card
 		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl 
-				SET name = '". $this->getDBConn()->escStr($name) ."', preferred = '" . ($pref === true ? 1 : 0) . "' 
+				SET name = '". $this->getDBConn()->escStr($name) ."', preferred = '" . intval($pref) . "' 
 				WHERE id = ". intval($cardid) ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);

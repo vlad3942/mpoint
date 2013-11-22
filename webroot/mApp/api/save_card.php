@@ -91,7 +91,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 						$aMsgCds = array();
 						
-						if ($obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name) != 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name) + 20; }
+						if (count($obj_DOM->{'save-card'}[$i]->card[$j]->name) == 1 && $obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name) != 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name) + 20; }
 						if (intval($obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) == 0 && intval($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) == 0)
 						{
 							$aMsgCds[] = 31;
@@ -101,12 +101,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if ($obj_Validator->valCardTypeID($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"])  != 10) { $aMsgCds[] = $obj_Validator->valCardTypeId($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) + 40; }
 						}
 						
-						$iAccountID = -2;
+						$iAccountID = -1;
 						if (intval($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) > 0)
 						{
 							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile["country-id"]);
 
-							$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig);
+							if (count($obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}) == 1) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}); }
+							if ($iAccountID < 0 && count($obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
 							if ($iAccountID < 0 && count($obj_DOM->{'save-card'}[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
 							if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
 							if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
@@ -119,14 +120,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						{
 							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile["country-id"]);
 							// Start Transaction
+							$_OBJ_DB->query("START TRANSACTION");
 							if (intval($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) > 0)
 							{
-								$code = $obj_mPoint->saveCardName( $obj_DOM->{'save-card'}[$i]->card[$j]["id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name,  General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) );
-								
+								$code = $obj_mPoint->saveCardName($obj_DOM->{'save-card'}[$i]->card[$j]["id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name,  General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) );
 							}
 							else
 							{
-								$iAccountID = -1;
 								if (count($obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}) == 1) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}); }
 								if ($iAccountID < 0 && count($obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
 								if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
@@ -141,12 +141,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									if (intval($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'}) < 10) { $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} = "0". intval($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'}); }
 									$code = $obj_mPoint->saveCard($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->token, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-number-mask'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} ."/". substr($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-year'}, -2), (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-holder-name'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) ) + 1;		
 								}
-								else { $code = $obj_mPoint->saveCardName($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) ); }							
+								else { $code = $obj_mPoint->saveCardName($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) ); }							
 							}
 							// Save Address if passed and cards successfuly saved
-							if (count($obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}) == 1 && $code == 1)
+							if (count($obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}) == 1 && $code > 0)
 							{
-								$_OBJ_DB->query("START TRANSACTION");  // START TRANSACTION does not work with Oracle db
 								$id = $obj_mPoint->getCardIDFromCardDetails($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-number-mask'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} ."/". substr($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-year'}, -2) );
 								if ($obj_mPoint->saveAddress($id, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]->address["country-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->state, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{'first-name'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"last-name"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->company, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->street, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"postal-code"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->city) == 10)
 								{
@@ -160,9 +159,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$code = -2;
 								}
 							}
-							elseif ($code == 1)
+							// Success: Card Saved
+							elseif ($code > 0)
 							{
-								// Commit Transfer
+								// Commit Saved Card
 								$_OBJ_DB->query("COMMIT");	
 							}
 							else
@@ -171,7 +171,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$_OBJ_DB->query("ROLLBACK");
 							}								
 							// Success: Card saved
-							if ($code > 0 && $obj_ClientConfig->getNotificationURL() != "")
+							if ($code > 0 && $obj_ClientConfig->getNotificationURL() != "" && count($obj_DOM->{'save-card'}[$i]->{'auth-token'}) == 1)
 							{								
 								try
 								{
@@ -190,15 +190,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									
 									switch ($obj_mPoint->notify($obj_ConnInfo, $obj_ClientInfo, $iAccountID, $obj_DOM->{'save-card'}[$i]->{'auth-token'}, count($aObj_XML) ) )
 									{
-									case (1):	// Error: Unknown response from External Server
+									case (1):	// Error: Unknown response from CRM System
 										header("HTTP/1.1 502 Bad Gateway");
 										
-										$xml .= '<status code="98">Invalid response from External Server</status>';
+										$xml = '<status code="98">Invalid response from CRM System</status>';
 										break;
-									case (2):	// Error: Notification Rejected by External Server
+									case (2):	// Error: Notification Rejected by CRM System
 										header("HTTP/1.1 502 Bad Gateway");
 										
-										$xml .= '<status code="97">Notification rejected by External Server</status>';
+										$xml = '<status code="97">Notification rejected by CRM System</status>';
 										break;
 									case (10):	// Success: Card successfully saved
 										if (count($obj_DOM->{'save-card'}[$i]->card[$j]->token) == 1)
@@ -208,31 +208,31 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										}
 										else { $xml = '<status code="'. ($code+99) .'">Card successfully saved and CRM system notified</status>'; }
 										break;
-									default:	// Error: Unknown response from External Server
+									default:	// Error: Unknown response from CRM System
 										header("HTTP/1.1 502 Bad Gateway");
 										
-										$xml .= '<status code="99">Unknown response from External Server</status>';
+										$xml = '<status code="99">Unknown response from CRM System</status>';
 										break;
 									}
 								}
-								// Error: Unable to connect to External Server
+								// Error: Unable to connect to CRM System
 								catch (HTTPConnectionException $e) 
 								{
 									header("HTTP/1.1 504 Gateway Timeout");
 									
 									$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 									$xml .= '<root>';
-									$xml .= '<status code="91">Unable to connect to External Server</status>';
+									$xml .= '<status code="91">Unable to connect to CRM System</status>';
 									$xml .= '</root>';
 								}
-								// Error: No response received from External Server
+								// Error: No response received from CRM System
 								catch (HTTPSendException $e)
 								{
 									header("HTTP/1.1 504 Gateway Timeout");
 										
 									$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 									$xml .= '<root>';
-									$xml .= '<status code="92">No response received from External Server</status>';
+									$xml .= '<status code="92">No response received from CRM System</status>';
 									$xml .= '</root>';
 								}
 							}

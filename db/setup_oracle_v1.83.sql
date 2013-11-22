@@ -8,6 +8,7 @@ INSERT INTO System_Ownr.card_tbl (id, name, position) VALUES (11, 'My Account', 
 INSERT INTO System_Ownr.card_tbl (id, name, position) VALUES (12, 'Switch', 10);
 INSERT INTO System_Ownr.card_tbl (id, name, position) VALUES (13, 'Solo', 11);
 INSERT INTO System_Ownr.card_tbl (id, name, position) VALUES (14, 'Delta', 12);
+INSERT INTO System_Ownr.card_tbl (id, name, position) VALUES (15, 'Cartebleue', 13);
 INSERT INTO System_Ownr.card_tbl (id, name, position, minlength, maxlength, cvclength) VALUES (1, 'American Express', 6, 15, 19, 4);
 INSERT INTO System_Ownr.card_tbl (id, name, position, minlength, maxlength, cvclength) VALUES (2, 'Dankort', 1, 16, 16, 3);
 INSERT INTO System_Ownr.card_tbl (id, name, position, minlength, maxlength, cvclength) VALUES (3, 'Diners Club', 5, 14, 19, 3);
@@ -519,6 +520,7 @@ INSERT INTO System_Ownr.pspcard_tbl (cardid, pspid) VALUES (8, 9);
 INSERT INTO System_Ownr.pspcard_tbl (cardid, pspid) VALUES (9, 9);
 INSERT INTO System_Ownr.pspcard_tbl (cardid, pspid) VALUES (10, 9);
 INSERT INTO System_Ownr.pspcard_tbl (cardid, pspid) VALUES (11, 9);
+INSERT INTO System_Ownr.pspcard_tbl (cardid, pspid) VALUES (15, 9);
 
 
 INSERT INTO System_Ownr.pspcurrency_tbl (countryid, pspid, name, created, modified, enabled) VALUES (100, 1, '208', '2008-02-22 18:41:59.280496', '2008-10-07 13:00:59.577181', '1');
@@ -1856,6 +1858,9 @@ INSERT INTO Log_Ownr.state_tbl (id, name, module, func, created, modified, enabl
 INSERT INTO Log_Ownr.state_tbl (id, name, module, func, created, modified, enabled) VALUES (144, 'E-Mail address contains invalid characters', 'Validate', 'valEMail', '2011-12-12 06:59:03.789411', '2011-12-12 06:59:03.789411', '1');
 INSERT INTO Log_Ownr.state_tbl (id, name, module, func, created, modified, enabled) VALUES (145, 'E-Mail has an invalid form', 'Validate', 'valEMail', '2011-12-12 06:59:03.789411', '2011-12-12 06:59:03.789411', '1');
 INSERT INTO Log_Ownr.state_tbl (id, name, module, func, created, modified, enabled) VALUES (1009, 'Payment Initialized with Payment Service Provider', 'mApp', 'initialize', '2012-07-30 17:25:50.611074', '2012-07-30 17:25:50.611074', '1');
+INSERT INTO Log_Ownr.State_Tbl (id, name, module, func) VALUES (1800, 'Transaction Completed', 'Wallet', '');
+INSERT INTO Log_Ownr.State_Tbl (id, name, module, func) VALUES (1808, 'Transfer Pending', 'Transfer', 'makeTransfer');
+INSERT INTO Log_Ownr.State_Tbl (id, name, module, func) VALUES (1809, 'Transfer Cancelled', 'Transfer', 'cancelTransfer');
 
 INSERT INTO Log_Ownr.operation_tbl (id, name) VALUES (1, 'Card saved');
 INSERT INTO Log_Ownr.operation_tbl (id, name) VALUES (2, 'Card deleted');

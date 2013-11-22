@@ -575,7 +575,7 @@ class Validate
 //			echo $sql ."\n";
 			$RS = $oDB->getName($sql);
 
-			if (is_array($RS) === false) { $code = 3;}
+			if (is_array($RS) === false) { $code = 3; }
 			elseif ($RS["ENABLED"] === false) { $code = 4;}
 			else { $code = 10; }
 		}

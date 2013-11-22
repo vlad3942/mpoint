@@ -1917,7 +1917,10 @@ FOR EACH ROW
 		:NEW.modified := CURRENT_TIMESTAMP;
 	END;
 /
-CREATE INDEX Transaction_Order_Idx ON Log_Ownr.Transaction_Tbl (clientid, orderid);
+CREATE INDEX Transaction_Order_Idx ON Log_Ownr.Transaction_Tbl (orderid);
+CREATE INDEX transaction_email_idx ON Log_Ownr.Transaction_Tbl (email);
+CREATE INDEX transaction_mobile_idx ON Log_Ownr.Transaction_Tbl (mobile);
+CREATE INDEX transaction_customer_ref_idx ON Log_Ownr.Transaction_Tbl (customer_ref);
 
 CREATE TABLE log_ownr.state_tbl 
 (
@@ -2140,6 +2143,7 @@ FOR EACH ROW
 		:NEW.modified := CURRENT_TIMESTAMP;
 	END;
 /
+CREATE INDEX transaction_account_idx ON EndUser_Ownr.Transaction_Tbl (accountid, txnid);
 /* ========== END-USER SCHEMA END ========== */
 
 /* ========== LOG SCHEMA START ========== */
