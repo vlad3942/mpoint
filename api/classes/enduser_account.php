@@ -540,8 +540,8 @@ class EndUserAccount extends Home
 			$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 					SET preferred = '0'
 					WHERE preferred = '1' AND accountid = (SELECT accountid
-								 						   FROM EndUser.Card_Tbl
-								 						   WHERE id = ". intval($cardid) .")";
+															FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl				 		
+															WHERE id = ". intval($cardid) .")";
 //			echo $sql ."\n";
 			$this->getDBConn()->query($sql);
 		}
