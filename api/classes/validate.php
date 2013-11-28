@@ -584,6 +584,39 @@ class Validate
 	}
 	
 	/**
+	 * Validates the psp-id
+	 * The method will return the following status codes:
+	 * 	 1. psp-id is undefined
+	 * 	 2. psp-id is too small,  must be greater than 0
+	 * 	 4. psp-id disabled
+	 * 	10. Success
+	 *
+	 * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param 	integer $pspid 	The psp-id to check for on the client.
+	 * @return 	integer
+	 */
+	public function valPspId(RDB &$oDB, $pspid)
+	{
+		if (empty($pspid) === true) { $code = 1; }		// psp-id is undefined
+		elseif (intval($pspid) < 1) { $code = 2; }		// psp-id is too small
+		else
+		{
+			$sql = "SELECT enabled
+					FROM System".sSCHEMA_POSTFIX.".psp_Tbl
+					WHERE id = ". intval($pspid);
+			//			echo $sql ."\n";
+			$RS = $oDB->getName($sql);
+	
+			if($RS["ENABLED"] === false) { $code = 4;}
+			else { $code = 10; }
+		}
+	
+		return $code;
+	}
+	
+	
+	
+	/**
 	 * Validates the type ID of a card.
 	 * The method will return the following status codes:
 	 * 	 1. Undefined Type ID
