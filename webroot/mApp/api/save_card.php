@@ -30,14 +30,14 @@ require_once(sCLASS_PATH ."/clientinfo.php");
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
-/*
+
 $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
 $HTTP_RAW_POST_DATA .= '<save-card client-id="100" >';
-$HTTP_RAW_POST_DATA .= '<card type-id="6" preferred="true">';
+$HTTP_RAW_POST_DATA .= '<card type-id="6" psp-id = "9" preferred="true">';
 $HTTP_RAW_POST_DATA .= '<name>My VISA</name>';
 $HTTP_RAW_POST_DATA .= '<card-number-mask>540287******5344</card-number-mask>';
 $HTTP_RAW_POST_DATA .= '<expiry-month>10</expiry-month>';
@@ -61,7 +61,7 @@ $HTTP_RAW_POST_DATA .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
 $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</save-card>';
 $HTTP_RAW_POST_DATA .= '</root>';
-*/
+
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 
