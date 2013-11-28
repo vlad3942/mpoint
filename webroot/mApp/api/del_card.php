@@ -125,6 +125,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								// Authentication succeeded
 								if ($code == 10 || ($code == 11 && $obj_ClientConfig->smsReceiptEnabled() === false) )
 								{
+									$_OBJ_DB->query("START TRANSACTION");
+										
 									// Success: Stored Card Deleted
 									if ($obj_mPoint->delStoredCard($iAccountID, (integer) $obj_DOM->{'delete-card'}[$i]->card) === true)
 									{
@@ -151,20 +153,23 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												{
 												case (1):	// Error: Unknown response from CRM System
 													header("HTTP/1.1 502 Bad Gateway");
-									
+													$_OBJ_DB->query("ROLLBACK");	
 													$xml .= '<status code="98">Invalid response from CRM System</status>';
 													break;
 												case (2):	// Error: Notification Rejected by CRM System
+													$_OBJ_DB->query("ROLLBACK");
 													header("HTTP/1.1 502 Bad Gateway");
 									
 													$xml .= '<status code="97">Notification rejected by CRM System</status>';
 													break;
 												case (10):	// Success: Card successfully saved
+													$_OBJ_DB->query("COMMIT");
+														
 													$xml = '<status code="100">Card successfully deleted and CRM system notified</status>';
 													break;
 												default:	// Error: Unknown response from CRM System
 													header("HTTP/1.1 502 Bad Gateway");
-									
+													$_OBJ_DB->query("ROLLBACK");
 													$xml .= '<status code="99">Unknown response from CRM System</status>';
 													break;
 												}
@@ -172,8 +177,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											// Error: Unable to connect to CRM System
 											catch (HTTPConnectionException $e)
 											{
+												$_OBJ_DB->query("ROLLBACK");
 												header("HTTP/1.1 504 Gateway Timeout");
-													
 												$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 												$xml .= '<root>';
 												$xml .= '<status code="91">Unable to connect to CRM System</status>';
@@ -182,6 +187,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											// Error: No response received from CRM System
 											catch (HTTPSendException $e)
 											{
+												$_OBJ_DB->query("ROLLBACK");
 												header("HTTP/1.1 504 Gateway Timeout");
 										
 												$xml = '<?xml version="1.0" encoding="UTF-8"?>';
