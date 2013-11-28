@@ -586,35 +586,35 @@ class Validate
 	/**
 	 * Validates the psp-id
 	 * The method will return the following status codes:
-	 * 	 1. psp-id is undefined
-	 * 	 2. psp-id is too small,  must be greater than 0
-	 * 	 4. psp-id disabled
+	 * 	 1. Undefined PSP ID
+	 * 	 2. PSP ID is too small, amount must be greater than 0
+	 * 	 3. PSP not found
+	 * 	 4. PSP disabled
 	 * 	10. Success
 	 *
 	 * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
-	 * @param 	integer $pspid 	The psp-id to check for on the client.
+	 * @param 	integer $id 	Unique ID of the PSP which should be validated
 	 * @return 	integer
 	 */
-	public function valPspId(RDB &$oDB, $pspid)
+	public function valPSPID(RDB &$oDB, $id)
 	{
-		if (empty($pspid) === true) { $code = 1; }		// psp-id is undefined
-		elseif (intval($pspid) < 1) { $code = 2; }		// psp-id is too small
+		if (empty($id) === true) { $code = 1; }		// psp-id is undefined
+		elseif (intval($id) < 1) { $code = 2; }		// psp-id is too small
 		else
 		{
 			$sql = "SELECT enabled
-					FROM System".sSCHEMA_POSTFIX.".psp_Tbl
-					WHERE id = ". intval($pspid);
-			//			echo $sql ."\n";
+					FROM System".sSCHEMA_POSTFIX.".PSP_Tbl
+					WHERE id = ". intval($id);
+//			echo $sql ."\n";
 			$RS = $oDB->getName($sql);
 	
-			if($RS["ENABLED"] === false) { $code = 4;}
+			if (is_array($RS) === false) { $code = 3; }
+			elseif ($RS["ENABLED"] === false) { $code = 4; }
 			else { $code = 10; }
 		}
 	
 		return $code;
 	}
-	
-	
 	
 	/**
 	 * Validates the type ID of a card.

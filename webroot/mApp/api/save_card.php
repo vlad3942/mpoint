@@ -112,7 +112,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
 							if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
 							
-							if ($obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["id"])  != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["id"]) + 50; }
+							if ($obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["id"]) != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["id"]) + 50; }
 						}
 						
 						// Success: Input Valid
@@ -132,8 +132,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
 								if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
 								
-								
-								
 								if (count($obj_DOM->{'save-card'}[$i]->card[$j]->token) == 1)
 								{
 									// New End-User
@@ -142,13 +140,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$iAccountID = $obj_mPoint->newAccount($obj_CountryConfig->getID(), (float) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, (string) $obj_DOM->{'save-card'}[$i]->password, (string) $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, (string) $obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}); 
 									}
 									if (intval($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'}) < 10) { $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} = "0". intval($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'}); }
-									if(count($obj_DOM->{'save-card'}[$i]->card[$j]{'psp-id'}) == 1)
-									{
-										if($obj_Validator->valPspId($_OBJ_DB, $obj_DOM->{'save-card'}[$i]->card[$j]{'psp-id'}) == 10){$code == 0;}
-										else{$code == 61;}
-									}
-									else{$code == 60;}		
-									if($code > 0)	
+									if ($obj_Validator->valPSPID($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"]) != 10) { $aMsgCds[] = $obj_Validator->valPSPID($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"]) + 60; }
+									if ($code > 0)	
 									{
 										$code = $obj_mPoint->saveCard($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->token, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-number-mask'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} ."/". substr($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-year'}, -2), (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-holder-name'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) ) + 1;		
 									}
@@ -159,13 +152,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if (count($obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}) == 1 && $code > 0)
 							{
 								$id = $obj_mPoint->getCardIDFromCardDetails($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-number-mask'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} ."/". substr($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-year'}, -2) );
-								if ($obj_mPoint->saveAddress($id, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]->address["country-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->state, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{'first-name'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"last-name"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->company, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->street, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"postal-code"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->city) == 10
-									&& $obj_ClientConfig->getNotificationURL() == "" && count($obj_DOM->{'save-card'}[$i]->{'auth-token'}) == 0)
+								if ($obj_mPoint->saveAddress($id, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]->address["country-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->state, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{'first-name'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"last-name"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->company, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->street, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"postal-code"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->city) == 10)
 								{
-									// Commit Transfer
-									$_OBJ_DB->query("COMMIT");			
+									// Commit Saved Card
+									if ($obj_ClientConfig->getNotificationURL() == "" || count($obj_DOM->{'save-card'}[$i]->{'auth-token'}) == 0)
+									{
+										$_OBJ_DB->query("COMMIT");
+									}
 								}
-								elseif ($obj_ClientConfig->getNotificationURL() == "" && count($obj_DOM->{'save-card'}[$i]->{'auth-token'}) == 0)
+								else
 								{
 									// Abort transaction and rollback to previous state
 									$_OBJ_DB->query("ROLLBACK");
@@ -173,19 +168,22 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								}
 							}
 							// Success: Card Saved
-							elseif ($code > 0 && $obj_ClientConfig->getNotificationURL() == "" && count($obj_DOM->{'save-card'}[$i]->{'auth-token'}) == 0)
+							elseif ($code > 0)
 							{
 								// Commit Saved Card
-								$_OBJ_DB->query("COMMIT");	
+								if ($obj_ClientConfig->getNotificationURL() == "" || count($obj_DOM->{'save-card'}[$i]->{'auth-token'}) == 0)
+								{
+									$_OBJ_DB->query("COMMIT");
+								}
 							}
-							elseif($obj_ClientConfig->getNotificationURL() == "" && count($obj_DOM->{'save-card'}[$i]->{'auth-token'}) == 0)
+							else
 							{
 								// Abort transaction and rollback to previous state
 								$_OBJ_DB->query("ROLLBACK");
 							}								
 							// Success: Card saved
 							if ($code > 0 && $obj_ClientConfig->getNotificationURL() != "" && count($obj_DOM->{'save-card'}[$i]->{'auth-token'}) == 1)
-							{								
+							{
 								try
 								{
 									$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'save-card'}[$i]->{'client-info'}, $obj_CountryConfig, @$_SERVER['HTTP_X_FORWARDED_FOR']);
@@ -204,19 +202,21 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									switch ($obj_mPoint->notify($obj_ConnInfo, $obj_ClientInfo, $iAccountID, $obj_DOM->{'save-card'}[$i]->{'auth-token'}, count($aObj_XML) ) )
 									{
 									case (1):	// Error: Unknown response from CRM System
+										// Abort transaction and rollback to previous state
 										$_OBJ_DB->query("ROLLBACK");
 										header("HTTP/1.1 502 Bad Gateway");
 										
 										$xml = '<status code="98">Invalid response from CRM System</status>';
 										break;
 									case (2):	// Error: Notification Rejected by CRM System
+										// Abort transaction and rollback to previous state
 										$_OBJ_DB->query("ROLLBACK");
 										header("HTTP/1.1 502 Bad Gateway");
 										
 										$xml = '<status code="97">Notification rejected by CRM System</status>';
 										break;
 									case (10):	// Success: Card successfully saved
-										
+										// Commit Saved Card
 										$_OBJ_DB->query("COMMIT");
 										
 										if (count($obj_DOM->{'save-card'}[$i]->card[$j]->token) == 1)
@@ -227,8 +227,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										else { $xml = '<status code="'. ($code+99) .'">Card successfully saved and CRM system notified</status>'; }
 										break;
 									default:	// Error: Unknown response from CRM System
-										header("HTTP/1.1 502 Bad Gateway");
+										// Abort transaction and rollback to previous state
 										$_OBJ_DB->query("ROLLBACK");
+										header("HTTP/1.1 502 Bad Gateway");
+										
 										$xml = '<status code="99">Unknown response from CRM System</status>';
 										break;
 									}
@@ -236,6 +238,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								// Error: Unable to connect to CRM System
 								catch (HTTPConnectionException $e) 
 								{
+									// Abort transaction and rollback to previous state
 									$_OBJ_DB->query("ROLLBACK");
 									header("HTTP/1.1 504 Gateway Timeout");
 									
@@ -247,6 +250,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								// Error: No response received from CRM System
 								catch (HTTPSendException $e)
 								{
+									// Abort transaction and rollback to previous state
 									$_OBJ_DB->query("ROLLBACK");
 									header("HTTP/1.1 504 Gateway Timeout");
 										

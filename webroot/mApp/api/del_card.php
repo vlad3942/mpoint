@@ -152,24 +152,30 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												switch ($obj_mPoint->notify($obj_ConnInfo, $obj_ClientInfo, $iAccountID, $obj_DOM->{'delete-card'}[$i]->{'auth-token'}, count($aObj_XML) ) )
 												{
 												case (1):	// Error: Unknown response from CRM System
+													// Abort transaction and rollback to previous state
+													$_OBJ_DB->query("ROLLBACK");
 													header("HTTP/1.1 502 Bad Gateway");
-													$_OBJ_DB->query("ROLLBACK");	
+													
 													$xml .= '<status code="98">Invalid response from CRM System</status>';
 													break;
 												case (2):	// Error: Notification Rejected by CRM System
+													// Abort transaction and rollback to previous state
 													$_OBJ_DB->query("ROLLBACK");
 													header("HTTP/1.1 502 Bad Gateway");
 									
 													$xml .= '<status code="97">Notification rejected by CRM System</status>';
 													break;
 												case (10):	// Success: Card successfully saved
+													// Commit Deleted Card
 													$_OBJ_DB->query("COMMIT");
 														
 													$xml = '<status code="100">Card successfully deleted and CRM system notified</status>';
 													break;
 												default:	// Error: Unknown response from CRM System
-													header("HTTP/1.1 502 Bad Gateway");
+													// Abort transaction and rollback to previous state
 													$_OBJ_DB->query("ROLLBACK");
+													header("HTTP/1.1 502 Bad Gateway");
+													
 													$xml .= '<status code="99">Unknown response from CRM System</status>';
 													break;
 												}
@@ -177,8 +183,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											// Error: Unable to connect to CRM System
 											catch (HTTPConnectionException $e)
 											{
+												// Abort transaction and rollback to previous state
 												$_OBJ_DB->query("ROLLBACK");
 												header("HTTP/1.1 504 Gateway Timeout");
+												
 												$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 												$xml .= '<root>';
 												$xml .= '<status code="91">Unable to connect to CRM System</status>';
@@ -187,6 +195,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											// Error: No response received from CRM System
 											catch (HTTPSendException $e)
 											{
+												// Abort transaction and rollback to previous state
 												$_OBJ_DB->query("ROLLBACK");
 												header("HTTP/1.1 504 Gateway Timeout");
 										
@@ -197,7 +206,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											}
 										}
 										// Success: Card successfully saved
-										else { $xml = '<status code="100">Card successfully deleted</status>'; }
+										else
+										{
+											// Commit Deleted Card
+											$_OBJ_DB->query("COMMIT");
+											
+											$xml = '<status code="100">Card successfully deleted</status>';
+										}
 									}
 									else
 									{
