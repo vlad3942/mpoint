@@ -105,7 +105,7 @@ class CPG extends Callback
 		$b .= '<address>';
 		$b .= '<firstName>'. htmlspecialchars($obj_XML->address->{'first-name'}, ENT_NOQUOTES) .'</firstName>'; // mandatory, 0-40 chars
 		$b .= '<lastName>'. htmlspecialchars($obj_XML->address->{'last-name'}, ENT_NOQUOTES) .'</lastName>'; // mandatory, 0-40 chars
-		$b .= '<street>'. htmlspecialchars($obj_XML->address->street, ENT_NOQUOTES) .'</street>'; // mandatory, 0-100 chars
+		$b .= '<street>'. htmlspecialchars(str_replace("IBE-MPOINT", " ",  $obj_XML->address->street), ENT_NOQUOTES ) .'</street>'; // mandatory, 0-100 chars
 		$b .= '<postalCode>'. intval($obj_XML->address->{'postal-code'}) .'</postalCode>'; // optional, 0-20 chars
 		$b .= '<city>'. htmlspecialchars($obj_XML->address->city, ENT_NOQUOTES) .'</city>'; // mandatory, 0-50 chars
 		$b .= '<countryCode>'. $this->_getCountryCode(intval($obj_XML->address['country-id']) ) .'</countryCode>'; // mandatory, 2-2 chars
@@ -124,7 +124,7 @@ class CPG extends Callback
 		$b .= '<address>';
 		$b .= '<firstName>'. htmlspecialchars($obj_XML->address->{'first-name'}, ENT_NOQUOTES) .'</firstName>'; // mandatory, 0-40 chars
 		$b .= '<lastName>'. htmlspecialchars($obj_XML->address->{'last-name'}, ENT_NOQUOTES) .'</lastName>'; // mandatory, 0-40 chars
-		$b .= '<street>'. htmlspecialchars($obj_XML->address->street, ENT_NOQUOTES) .'</street>'; // mandatory, 0-100 chars
+		$b .= '<street>'. htmlspecialchars(str_replace("IBE-MPOINT", " ",  $obj_XML->address->street), ENT_NOQUOTES ) .'</street>'; // mandatory, 0-100 chars
 		$b .= '<postalCode>'. intval($obj_XML->address->{'postal-code'}) .'</postalCode>'; // optional, 0-20 chars
 		$b .= '<city>'. htmlspecialchars($obj_XML->address->city, ENT_NOQUOTES) .'</city>'; // mandatory, 0-50 chars
 		$b .= '<countryCode>'. $this->_getCountryCode(intval($obj_XML->address['country-id']) ) .'</countryCode>'; // mandatory, 2-2 chars
@@ -138,6 +138,10 @@ class CPG extends Callback
 		$b .= '</order>';
 		$b .= '<returnURL>'. htmlspecialchars($this->getTxnInfo()->getAcceptURL(), ENT_NOQUOTES) .'</returnURL>';
 		$b .= '</submit>';
+		
+		file_put_contents(sLOG_PATH ."/jona.log", "\n \n \n". $b, FILE_APPEND);
+		
+		
 		$obj_HTTP = new HTTPClient(new Template(), $oCI);
 		$obj_HTTP->connect();
 		$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
@@ -190,6 +194,9 @@ class CPG extends Callback
 		case (102):	// Norway
 			return "NO";
 			break;
+		case (103):	// United Kingdom
+			return "GB";
+			break;
 		case (104):	// Finland
 			return "FI";
 			break;
@@ -240,6 +247,9 @@ class CPG extends Callback
 			break;
 		case (120):	// Belarus
 			return "BY";
+			break;
+		case (121):	//Bosnia and Herzegovina
+			return "BA";
 			break;
 		case (122):	// Bulgaria
 			return "BG";
@@ -349,6 +359,9 @@ class CPG extends Callback
 		case (157):	// Yugoslavia
 			return "YU";
 			break;
+		case (200):	// United States of America
+			return "US";
+			break;
 		case (201):	// Mexico
 			return "MX";
 			break;
@@ -444,6 +457,9 @@ class CPG extends Callback
 			break;
 		case (313):	// Congo
 			return "CG";
+			break;
+		case (314):	// Côte d'Ivoire 
+			return "CI";
 			break;
 		case (315):	// Democratic Republic of the Congo
 			return "CD";
@@ -643,6 +659,9 @@ class CPG extends Callback
 		case (422):	// South Georgia And IS
 			return "GS";
 			break;
+		case (423):	// British International Ocean Territory
+			return "IO";
+			break;		
 		case (424):	// St. Christopher (St. Kitts) Nevis
 			return "KN";
 			break;
@@ -772,8 +791,14 @@ class CPG extends Callback
 		case (605):	// Oman
 			return "OM";
 			break;
+		case (606):	// Quatar
+			return "QA";
+			break;
 		case (607):	// Russia
 			return "RU";
+			break;
+		case (608):	//Saudi Arabia
+			return "SA";
 			break;
 		case (609):	// China
 			return "CN";
@@ -805,6 +830,9 @@ class CPG extends Callback
 		case (619):	// Kyrgyzstan
 			return "KG";
 			break;
+		case (620):	// Lao P.D.R.
+			return "LA";
+			break;
 		case (621):	// Lebanon
 			return "LB";
 			break;
@@ -813,6 +841,9 @@ class CPG extends Callback
 			break;
 		case (624):	// Mongolia
 			return "MN";
+			break;
+		case (625):	// Burma
+			return "MM";
 			break;
 		case (626):	// Diego Garcia
 			return "DG";
@@ -829,8 +860,14 @@ class CPG extends Callback
 		case (630):	// Kiribati
 			return "KI";
 			break;
-		case (633):	// Kazakstan
-			return "KZ";
+		case (630):	// Kiribati
+			return "KI";
+			break;
+		case (631):	// North Korea
+			return "KP";
+			break;
+		case (632):	// South Korea
+			return "KR";
 			break;
 		case (634):	// Sri Lanka
 			return "LK";
@@ -882,6 +919,9 @@ class CPG extends Callback
 			break;
 		case (650):	// Yemen
 			return "YE";
+			break;
+		case (651):	// Papua New Guinea
+			return "PG";
 			break;
 		default:	// Error: Unknown Country
 			trigger_error("Unknown Country: ". $id, E_USER_WARNING);

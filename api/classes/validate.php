@@ -1073,5 +1073,46 @@ class Validate
 	
 		return $code;
 	}
+	/**
+	 * Performs  validation of the the max amount of cards a user can have.
+	 * The method will return the following status codes:
+	 * 	 1. Undefined userid ID
+	 *	 2.	Undefined $max amount of cards 
+	 *	 3.	Undefined $max amount of cards 
+	 * 	 4. User has the max amount of cards 
+	 * 	10. Success
+	 *
+	 * @param 	RDB $oDB 			Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param 	integer $userid 	End-User id for the cardholder.
+	 * @param 	integer $max 		Max number of Cards for a cardholder on the Client.
+	 * @param	integer $clid		The ID of the Client
+	 * @return 	integer
+	 */
+	public function valMaxCards(RDB &$oDB, $userid, $max, $clid)
+	{
+		if($max == -1){$code = 10};
+	
+		else
+		{
+			if ( empty( $userid) === true ) { $code = 1; }			// Undefined user-ID
+			elseif( empty( $max ) === true ) { $code = 2; }			// $max undefined 
+			elseif( empty( $clid ) === true ) { $code = 3; }			// $max undefined		
+			else
+			{
+				$sql = "SELECT count(id) AS numberofcards
+						FROM Enduser".sSCHEMA_POSTFIX.".Cards_Tbl
+						WHERE accountid = ". intval($userid)." AND enabled = true";
+				$RS = $oDB->getName($sql);
+	
+				if ($RS["NUMBEROFCARDS"] >= $max) { $code = 4; }	//  User has the max amount of cards
+				else { $code = 10; }								// Success
+			}
+		}
+		return $code;
+	}
+	
+	
+	
+	
 }
 ?>

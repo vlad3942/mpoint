@@ -30,7 +30,7 @@ require_once(sCLASS_PATH ."/clientinfo.php");
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
-
+/*
 $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
@@ -61,7 +61,7 @@ $HTTP_RAW_POST_DATA .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
 $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</save-card>';
 $HTTP_RAW_POST_DATA .= '</root>';
-
+*/
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 
@@ -119,7 +119,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if (count($aMsgCds) == 0)
 						{
 							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile["country-id"]);
-							// Start Transaction
+						// Start Transaction
 							$_OBJ_DB->query("START TRANSACTION");
 							if (intval($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) > 0)
 							{
@@ -140,7 +140,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$iAccountID = $obj_mPoint->newAccount($obj_CountryConfig->getID(), (float) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, (string) $obj_DOM->{'save-card'}[$i]->password, (string) $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, (string) $obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}); 
 									}
 									if (intval($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'}) < 10) { $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} = "0". intval($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'}); }
-									if ($obj_Validator->valPSPID($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"]) != 10) { $aMsgCds[] = $obj_Validator->valPSPID($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"]) + 60; }
+									if ($obj_Validator->valPSPID($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"]) != 10)
+									 {
+									 	$code = $obj_Validator->valPSPID($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"]) + 60; 
+									 	$aMsgCds[] = $code;
+									 }
+									if( $obj_Validator->valMaxCards($_OBJ_DB, $iAccountID, $obj_ClientConfig->getMaxAmountOfCards(), (integer) $obj_DOM->{'save-card'}[$i]["client-id"] ) != 10)
+									{ 
+										$code = $obj_Validator->valMaxCards($_OBJ_DB, $iAccountID, $obj_ClientConfig->getMaxAmountOfCards(), (integer) $obj_DOM->{'save-card'}[$i]["client-id"]) +70; 
+										$aMsgCds[] = $code;
+									}
 									if ($code > 0)	
 									{
 										$code = $obj_mPoint->saveCard($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->token, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-number-mask'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} ."/". substr($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-year'}, -2), (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-holder-name'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) ) + 1;		
