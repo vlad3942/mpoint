@@ -83,7 +83,9 @@ class CPG extends Callback
 		$b .= '<paymentDetails>';
 		$b .= '<'. $this->getCardName($obj_XML["type-id"]) .'>';
 		$b .= '<CCRKey>'.  htmlspecialchars($obj_XML->ticket, ENT_NOQUOTES)  .'</CCRKey>'; // mandatory, 0-20
-		$b .= '<cvc>'. intval($obj_XML->cvc) .'</cvc>';    
+		$b .= '<cvc>'. intval($obj_XML->cvc) .'</cvc>'; 
+		$b .= '<cardNumber></cardNumber>';
+		$b .= '<storeCardFlag>N</storeCardFlag>';   
 		$b .= '<expiryDate>';
 		$b .= '<date month="'. substr($obj_XML->expiry, 0, 2) .'" year="20'. substr($obj_XML->expiry, -2) .'" />'; // mandatory
 		$b .= '</expiryDate>';
