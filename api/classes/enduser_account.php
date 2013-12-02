@@ -166,7 +166,7 @@ class EndUserAccount extends Home
 	 * 	0. Card stored
 	 * 	1. Card stored and Existing account linked
 	 * 	2. Card stored and New account created
-	 *
+	 *	4. Card Card previously saved by End-User 
 	 * @see		EndUserAccount::getAccountID()
 	 * @see		EndUserAccount::newAccount()
 	 *
@@ -276,6 +276,7 @@ class EndUserAccount extends Home
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
 			if (is_resource($res) === false) { $code = -1; }
+			else{ $code = 4; }
 		}
 		// Card not previously saved, add card info to database
 		else
