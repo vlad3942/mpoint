@@ -1090,7 +1090,7 @@ class Validate
 	 */
 	public function valMaxCards(RDB &$oDB, $userid, $max, $clid)
 	{
-		if($max == -1){$code = 10};
+		if($max == -1) { $code = 10; }
 	
 		else
 		{
