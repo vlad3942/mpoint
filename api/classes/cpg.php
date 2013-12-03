@@ -27,7 +27,7 @@ class CPG extends Callback
 			$name = "AMEX-SSL"; 
 			break;
 		case (2):	// Dankort
-			$name = "DANKORT-SSL";
+			$name = "VISA-SSL";
 			break;
 		case (3):	// Diners Club
 			$name = "DINERS-SSL";
@@ -48,13 +48,13 @@ class CPG extends Callback
 			$name = "VISA-SSL";
 			break;
 		case (9):	// VISA Electron
-			$name = "VISA_ELECTRON-SSL";
+			$name = "VISA-SSL";
 			break;
 		case (13):	// SOLO
-			$name = "SOLO-SSL";
+			$name = "SOLO_GB-SSL";
 			break;
 		case (15):	// Carte Bleue
-			$name = "CARTEBLEUE-SSL";
+			$name = "CARTE_BLUE-SSL";
 			break;
 		default:	// Unknown
 			$name = $id;
