@@ -355,6 +355,16 @@ class AutoTest
 		$b .= '<number-of-instalments>2</number-of-instalments>';
 		return $this->_authorize($at, $b);
 	}
+	public function authorizeStoredCardWithMultiCurrencyUsingSSOTest($at)
+	{
+		$b = '<mcp>
+				<![CDATA[
+				<MCP><amount currencyCode="JPY" value="8551200" exponent="2" /><effectiveRate>5908173168</effectiveRate><mcpOption>Y</mcpOption></MCP>
+				]]>
+			  </mcp>';
+		
+		return $this->_authorize($at, $b);
+	}
 	public function auth2($at)
 	{
 		$b = '<?xml version="1.0" encoding="ISO-8859-1"?><root><authorize-payment account="100010" client-id="10001"><transaction id="354"><card type-id="MAST" id="205"><amount country-id="BH">52</amount><cvc>123</cvc></card></transaction><auth-token>'. $at .'</auth-token><client-info language="gb" version="1.2" platform="Web"><customer-ref>00100119331</customer-ref><email>ravi.gupta@emirates.com</email><device-id>145031385</device-id><ip>127.0.0.1</ip></client-info></authorize-payment></root>';
@@ -999,13 +1009,13 @@ class AutoTest
 		}
 	}
 	/* ========== Automatic Account Management Tests End ========== */
-	public function saveCardPspIdFail($at, $type="", $name="" )
+	public function saveMaskedCardWithoutPSPIDTest($at, $type="", $name="" )
 	{
 		if (empty($type) === true) { $type = $this->_card; }
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<save-card client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
-		$b .= '<card psp-id="9" type-id="'. htmlspecialchars($type, ENT_NOQUOTES) .'" preferred="true">';
+		$b .= '<card type-id="'. htmlspecialchars($type, ENT_NOQUOTES) .'" preferred="true">';
 		if (empty($name) === false) { $b .= '<name>'. htmlspecialchars($name, ENT_NOQUOTES) .'</name>'; }
 		$b .= '<card-number-mask>4444********3333</card-number-mask>';
 		$b .= '<expiry-month>07</expiry-month>';
@@ -1041,21 +1051,18 @@ class AutoTest
 		$this->_obj_Client->connect();
 		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
 		$this->_obj_Client->disconnect();
-		file_put_contents(sLOG_PATH ."/jona.log", "\n". $code, FILE_APPEND);
-		
 		
 		if ($code == 400)
 		{
 			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
 							
-			if ($obj_XML->status["code"] == "63" || $obj_XML->status["code"] == "61")
+			if ($obj_XML->status["code"] == 61 || $obj_XML->status["code"] == 63)
 			{
-				$this->_sDebug = $this->_obj_Client->getReplyBody();
 				return self::sSTATUS_SUCCESS;
 			}
 			else
 			{
-				$this->_sDebug = $obj_XML->{'status'};
+				$this->_sDebug = $obj_XML->status->asXML();
 				return self::sSTATUS_FAILED;
 			}
 		}
@@ -1289,23 +1296,23 @@ $sAuthToken = $obj_AutoTest->getCRISAuthToken();
 	</tr>
 	<tr>
 		<td class="name">Initialize Payment with Enhanced Data</td>
-		<td><?= $obj_AutoTest->initializePaymentWithEnhancedDataTest(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->initializePaymentWithEnhancedDataTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Initialize Payment with Instalments</td>
-		<td><?= $obj_AutoTest->initializePaymentWithInstalmentsTest(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->initializePaymentWithInstalmentsTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Pay</td>
-		<td><?= $obj_AutoTest->payTest(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->payTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Authorize Stored Card using Single Sign-On</td>
-		<td><?= $obj_AutoTest->authorizeStoredCardUsingSSOTest($sAuthToken); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->authorizeStoredCardUsingSSOTest($sAuthToken); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Authorize Stored Card with Instalments using Single Sign-On</td>
@@ -1313,9 +1320,14 @@ $sAuthToken = $obj_AutoTest->getCRISAuthToken();
 		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
+		<td class="name">Authorize Stored Card with Multi-Currency Payment using Single Sign-On</td>
+		<td><?= $obj_AutoTest->authorizeStoredCardWithMultiCurrencyUsingSSOTest($sAuthToken); ?></td>
+		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
 		<td class="name">Save Card Name using Single Sign-On</td>
-		<td><?= $obj_AutoTest->saveCardNameUsingSSOTest($sAuthToken); ?></td>
-		<td><?= $obj_AutoTest->getDebug(); ?></td>
+		<td><?//= $obj_AutoTest->saveCardNameUsingSSOTest($sAuthToken); ?></td>
+		<td><?//= $obj_AutoTest->getDebug(); ?></td>
 	</tr>
 	<tr>
 		<td class="name">mConsole Search using Mobile</td>
@@ -1329,13 +1341,13 @@ $sAuthToken = $obj_AutoTest->getCRISAuthToken();
 	</tr>
 	<tr>
 		<td class="name">mConsole Search using Customer Reference</td>
-		<td><?= $obj_AutoTest->mConsoleSearchUsingCustomerRefTest(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->mConsoleSearchUsingCustomerRefTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">mConsole Search using Period</td>
-		<td><?= $obj_AutoTest->mConsoleSearchUsingPeriodTest(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->mConsoleSearchUsingPeriodTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Login using Password</td>
@@ -1354,8 +1366,8 @@ $sAuthToken = $obj_AutoTest->getCRISAuthToken();
 	</tr>
 	<tr>
 		<td class="name">Delete Card using Single Sign-On</td>
-		<td><?//= $obj_AutoTest->deleteCardUsingSSOTest($sAuthToken); ?></td>
-		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?= $obj_AutoTest->deleteCardUsingSSOTest($sAuthToken); ?></td>
+		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Save Preferences in CRIS Success</td>
@@ -1368,8 +1380,8 @@ $sAuthToken = $obj_AutoTest->getCRISAuthToken();
 		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 		<tr>
-		<td class="name">Save psp-id fail</td>
-		<td><?= $obj_AutoTest->saveCardPspIdFail($sAuthToken); ?></td>
+		<td class="name">Save Masked Card without PSP ID</td>
+		<td><?= $obj_AutoTest->saveMaskedCardWithoutPSPIDTest($sAuthToken); ?></td>
 		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	</table>

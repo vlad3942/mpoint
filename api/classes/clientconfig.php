@@ -519,24 +519,24 @@ class ClientConfig extends BasicConfig
 	public static function produceConfig(RDB &$oDB, $id, $acc=-1, $kw=-1)
 	{
 		$acc = (integer) $acc;
-		$sql = "SELECT Cl.id AS clientid, Cl.name AS client, Cl.flowid, Cl.username, Cl.passwd,
-					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl, Cl.iconurl,
-					Cl.smsrcpt, Cl.emailrcpt, Cl.method,
-					Cl.maxamount, Cl.lang, Cl.terms,
-					Cl.\"mode\", Cl.auto_capture, Cl.send_pspid, Cl.store_card, Cl.show_all_cards,
-					C.id AS countryid, C.max_cards
+		$sql = "SELECT CL.id AS clientid, CL.name AS client, CL.flowid, CL.username, CL.passwd,
+					CL.logourl, CL.cssurl, CL.accepturl, CL.cancelurl, CL.callbackurl, CL.iconurl,
+					CL.smsrcpt, CL.emailrcpt, CL.method,
+					CL.maxamount, CL.lang, CL.terms,
+					CL.\"mode\", CL.auto_capture, CL.send_pspid, CL.store_card, CL.show_all_cards, CL.max_cards,
+					C.id AS countryid,
 					Acc.id AS accountid, Acc.name AS account, Acc.mobile, Acc.markup,
 					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price,
 					U1.url AS customerimporturl, U2.url AS authurl, U3.url AS notifyurl
-				FROM Client". sSCHEMA_POSTFIX .".Client_Tbl Cl
-				INNER JOIN System". sSCHEMA_POSTFIX .".Country_Tbl C ON Cl.countryid = C.id AND C.enabled = '1'
-				INNER JOIN Client". sSCHEMA_POSTFIX .".Account_Tbl Acc ON Cl.id = Acc.clientid AND Acc.enabled = '1'
-				INNER JOIN Client". sSCHEMA_POSTFIX .".Keyword_Tbl KW ON Cl.id = KW.clientid AND KW.enabled = '1'
+				FROM Client". sSCHEMA_POSTFIX .".Client_Tbl CL
+				INNER JOIN System". sSCHEMA_POSTFIX .".Country_Tbl C ON CL.countryid = C.id AND C.enabled = '1'
+				INNER JOIN Client". sSCHEMA_POSTFIX .".Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
+				INNER JOIN Client". sSCHEMA_POSTFIX .".Keyword_Tbl KW ON CL.id = KW.clientid AND KW.enabled = '1'
 				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".Product_Tbl P ON KW.id = P.keywordid AND P.enabled = '1'
 				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U1 ON CL.id = U1.clientid AND U1.urltypeid = ". self::iCUSTOMER_IMPORT_URL ." AND U1.enabled = '1'
 				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U2 ON CL.id = U2.clientid AND U2.urltypeid = ". self::iAUTHENTICATION_URL ." AND U2.enabled = '1'
 				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U3 ON CL.id = U3.clientid AND U3.urltypeid = ". self::iNOTIFICATION_URL ." AND U3.enabled = '1'
-				WHERE Cl.id = ". intval($id) ." AND Cl.enabled = '1'";
+				WHERE CL.id = ". intval($id) ." AND CL.enabled = '1'";
 		// Use Default Keyword
 		if ($kw == -1)
 		{
@@ -544,12 +544,12 @@ class ClientConfig extends BasicConfig
 		}
 		// Use specific Keyword
 		else { $sql .= " AND KW.id = ". intval($kw); }
-		$sql .= " {ACCOUNT CLAUSE}
-				GROUP BY Cl.id, Cl.name, Cl.flowid, Cl.username, Cl.passwd,
-					Cl.logourl, Cl.cssurl, Cl.accepturl, Cl.cancelurl, Cl.callbackurl, Cl.iconurl,
-					Cl.smsrcpt, Cl.emailrcpt, Cl.method,
-					Cl.maxamount, Cl.lang, Cl.terms,
-					Cl.\"mode\", Cl.auto_capture, Cl.send_pspid, Cl.store_card, Cl.show_all_cards,
+		$sql .= "{ACCOUNT CLAUSE}
+				GROUP BY CL.id, CL.name, CL.flowid, CL.username, CL.passwd,
+					CL.logourl, CL.cssurl, CL.accepturl, CL.cancelurl, CL.callbackurl, CL.iconurl,
+					CL.smsrcpt, CL.emailrcpt, CL.method,
+					CL.maxamount, CL.lang, CL.terms,
+					CL.\"mode\", CL.auto_capture, CL.send_pspid, CL.store_card, CL.show_all_cards, CL.max_cards,
 					C.id,
 					Acc.id, Acc.name, Acc.mobile, Acc.markup,
 					KW.id, KW.name,

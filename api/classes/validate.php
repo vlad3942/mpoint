@@ -1090,13 +1090,12 @@ class Validate
 	 */
 	public function valMaxCards(RDB &$oDB, $userid, $max, $clid)
 	{
-		if($max == -1) { $code = 10; }
-	
+		if ($max == -1) { $code = 10; }
 		else
 		{
-			if ( empty( $userid) === true ) { $code = 1; }			// Undefined user-ID
-			elseif( empty( $max ) === true ) { $code = 2; }			// $max undefined 
-			elseif( empty( $clid ) === true ) { $code = 3; }			// $max undefined		
+			if (empty($userid) === true ) { $code = 1; }	// Undefined user-ID
+			elseif (empty($max) === true ) { $code = 2; }	// $max undefined 
+			elseif (empty($clid) === true ) { $code = 3; }	// $max undefined		
 			else
 			{
 				$sql = "SELECT count(id) AS numberofcards
@@ -1110,9 +1109,5 @@ class Validate
 		}
 		return $code;
 	}
-	
-	
-	
-	
 }
 ?>

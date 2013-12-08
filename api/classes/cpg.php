@@ -78,7 +78,8 @@ class CPG extends Callback
 		if  (array_key_exists("var_tax", $aClientVars) === true)
 		{
 			$b .= '<tax value="'. $aClientVars["var_tax"] .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="2" />';
-		}					
+		}
+		if (array_key_exists("var_mcp", $aClientVars) === true) { $b .= trim($aClientVars["var_mcp"]); }	// Multi-Currency Payment
 		$b .= '<orderContent>'. htmlspecialchars($this->getTxnInfo()->getDescription(), ENT_NOQUOTES) .'</orderContent>'; 
 		$b .= '<paymentDetails>';
 		$b .= '<'. $this->getCardName($obj_XML["type-id"]) .'>';
@@ -133,10 +134,7 @@ class CPG extends Callback
 //		$b .= '<telephoneNumber>'. floatval($this->getTxnInfo()->getMobile() ) .'</telephoneNumber>'; // optional
 		$b .= '</address>';
 		$b .= '</shippingAddress>';
-		if (array_key_exists("var_enhanced-data", $aClientVars) === true)
-		{
-			$b .= trim($aClientVars["var_enhanced-data"]);
-		}
+		if (array_key_exists("var_enhanced-data", $aClientVars) === true) { $b .= trim($aClientVars["var_enhanced-data"]); }
 		$b .= '</order>';
 		$b .= '<returnURL>'. htmlspecialchars($this->getTxnInfo()->getAcceptURL(), ENT_NOQUOTES) .'</returnURL>';
 		$b .= '</submit>';

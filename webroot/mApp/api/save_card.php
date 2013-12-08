@@ -102,6 +102,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						}
 						
 						$iAccountID = -1;
+						// Modifying an existing Stored Card
 						if (intval($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) > 0)
 						{
 							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile["country-id"]);
@@ -114,16 +115,23 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							
 							if ($obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["id"]) != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["id"]) + 50; }
 						}
+						// Saving Masked Card Details
+						if (count($obj_DOM->{'save-card'}[$i]->card[$j]->token) == 1)
+						{
+							if ($obj_Validator->valPSPID($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"]) != 10) { $aMsgCds[] = $obj_Validator->valPSPID($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"]) + 60; }
+							if ($obj_Validator->valMaxCards($_OBJ_DB, $iAccountID, $obj_ClientConfig->getMaxAmountOfCards(), (integer) $obj_DOM->{'save-card'}[$i]["client-id"] ) != 10) { $aMsgCds[] = $obj_Validator->valMaxCards($_OBJ_DB, $iAccountID, $obj_ClientConfig->getMaxAmountOfCards(), (integer) $obj_DOM->{'save-card'}[$i]["client-id"]) + 70; }
+						}
 						
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
 						{
 							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile["country-id"]);
-						// Start Transaction
+							// Start Transaction
 							$_OBJ_DB->query("START TRANSACTION");
+							// Modifying an existing Stored Card
 							if (intval($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) > 0)
 							{
-								$code = $obj_mPoint->saveCardName($obj_DOM->{'save-card'}[$i]->card[$j]["id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name,  General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) );
+								$code = $obj_mPoint->saveCardName($obj_DOM->{'save-card'}[$i]->card[$j]["id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) );
 							}
 							else
 							{
@@ -131,7 +139,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								if ($iAccountID < 0 && count($obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
 								if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
 								if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
-								
+								// Saving Masked Card Details
 								if (count($obj_DOM->{'save-card'}[$i]->card[$j]->token) == 1)
 								{
 									// New End-User
@@ -140,21 +148,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$iAccountID = $obj_mPoint->newAccount($obj_CountryConfig->getID(), (float) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, (string) $obj_DOM->{'save-card'}[$i]->password, (string) $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, (string) $obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}); 
 									}
 									if (intval($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'}) < 10) { $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} = "0". intval($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'}); }
-									if ($obj_Validator->valPSPID($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"]) != 10)
-									 {
-									 	$code = $obj_Validator->valPSPID($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"]) + 60; 
-									 	$aMsgCds[] = $code;
-									 }
-									if( $obj_Validator->valMaxCards($_OBJ_DB, $iAccountID, $obj_ClientConfig->getMaxAmountOfCards(), (integer) $obj_DOM->{'save-card'}[$i]["client-id"] ) != 10)
-									{ 
-										$code = $obj_Validator->valMaxCards($_OBJ_DB, $iAccountID, $obj_ClientConfig->getMaxAmountOfCards(), (integer) $obj_DOM->{'save-card'}[$i]["client-id"]) +70; 
-										$aMsgCds[] = $code;
-									}
-									if ($code > 0)	
-									{
-										$code = $obj_mPoint->saveCard($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->token, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-number-mask'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} ."/". substr($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-year'}, -2), (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-holder-name'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) ) + 1;		
-									}
+									$code = $obj_mPoint->saveCard($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->token, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-number-mask'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} ."/". substr($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-year'}, -2), (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-holder-name'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) ) + 1;
 								}
+								// Naming a Stored Card
 								else { $code = $obj_mPoint->saveCardName($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) ); }							
 							}
 							// Save Address if passed and cards successfuly saved
