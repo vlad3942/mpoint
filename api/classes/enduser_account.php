@@ -275,8 +275,8 @@ class EndUserAccount extends Home
 					WHERE id = ". $id;
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
-			if (is_resource($res) === false) { $code = -1; }
-			else{ $code = 4; }
+			if (is_resource($res) === true) { $code = 4; }
+			else { $code = -1; }
 		}
 		// Card not previously saved, add card info to database
 		else
