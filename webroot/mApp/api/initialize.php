@@ -133,9 +133,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]);
 						
 						$iAccountID = -1;
-						if (strlen($obj_TxnInfo->getCustomerRef() ) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getCustomerRef() ); }
-						if ($iAccountID == -1 && floatval($obj_TxnInfo->getMobile() ) > 0) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getMobile(), $obj_CountryConfig); }
-						if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getEMail(), $obj_CountryConfig); }
+						if (strlen($obj_TxnInfo->getCustomerRef() ) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getCustomerRef(), ($obj_ClientConfig->getStoreCard() <= 3) ); }
+						if ($iAccountID == -1 && floatval($obj_TxnInfo->getMobile() ) > 0) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getMobile(), $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
+						if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getEMail(), $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
 						// Client supports global storage of payment cards
 						if ($iAccountID == -1 && $obj_ClientConfig->getStoreCard() > 3)
 						{
@@ -176,13 +176,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$xml .= $obj_XML->{'accept-url'}->asXML();
 						$xml .= '</transaction>';
 						$obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount() ) );
-						
+
 						// End-User already has an account and payment with Account enabled
 						if ($iAccountID > 0 && count($obj_XML->xpath("/cards/item[@type-id = 11]") ) == 1)
 						{
 							$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-							$aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID, $obj_ClientConfig->showAllCards() ) );
-							$aObj_XML = $aObj_XML->xpath("/stored-cards/card[client/@id = ". $obj_ClientConfig->getID() ."]");
+							$aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID, $obj_ClientConfig) );
+							if ($obj_ClientConfig->getStoreCard() <= 3) { $aObj_XML = $aObj_XML->xpath("/stored-cards/card[client/@id = ". $obj_ClientConfig->getID() ."]"); }
+							else { $aObj_XML = $aObj_XML->xpath("/stored-cards/card"); }
 						}
 						else { $aObj_XML = array(); }
 						$xml .= '<cards>';
@@ -202,7 +203,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$xml .= '</cards>';
 						
 						// End-User has Stored Cards available
-						if (count($aObj_XML) > 0)
+						if (is_array($aObj_XML) === true && count($aObj_XML) > 0)
 						{
 							$xml .= '<stored-cards>';
 							for ($j=0; $j<count($aObj_XML); $j++)

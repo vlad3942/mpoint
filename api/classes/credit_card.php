@@ -119,7 +119,7 @@ class CreditCard extends EndUserAccount
 				ORDER BY C.position ASC, C.name ASC";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
-		
+			
 		$xml = '<cards accountid="'. $this->_obj_TxnInfo->getAccountID() .'">';
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{

@@ -377,7 +377,7 @@ class Home extends General
 	 * @param 	UAProfile $oUA 	Reference to the User Agent Profile for the Customer's Mobile Device (optional)
 	 * @return 	string
 	 */
-	public function getStoredCards($id, $bAllCards=false, &$oUA=null)
+	public function getStoredCards($id, ClientConfig &$oCC=null, &$oUA=null)
 	{
 		/* ========== Calculate Logo Dimensions Start ========== */
 		if (is_null($oUA) === false)
@@ -415,11 +415,14 @@ class Home extends General
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".State_Tbl STS ON EUAD.stateid = STS.id and EUA.enabled ='1'				
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON EUA.id = CLA.accountid
 				WHERE EUC.accountid = ". intval($id);
-		if ($bAllCards === false) { $sql .= " AND EUC.enabled = '1' AND ( (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."' OR length(EUC.expiry) = 0 )"; }	
-		$sql .= " AND (CLA.clientid = CL.id OR EUA.countryid = CLA.clientid 
-						 OR NOT EXISTS (SELECT id
-									    FROM EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl
-										WHERE accountid = EUA.id) )
+		if ($oCC->showAllCards() === false) { $sql .= " AND EUC.enabled = '1' AND ( (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."' OR length(EUC.expiry) = 0 )"; }
+		if (is_null($oCC) === true || $oCC->getStoreCard() <= 3)
+		{
+			$sql .= " AND (CLA.clientid = CL.id OR NOT EXISTS (SELECT id
+														       FROM EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl
+														       WHERE accountid = EUA.id) )";
+		}
+		$sql .= "
 				ORDER BY CL.name ASC";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
@@ -460,40 +463,84 @@ class Home extends General
 	/**
 	 * Searches for transaction history given a client ID plus any of the other parameters
 	 *
-	 * @param	integer $cid 	Unqiue Client ID
-	 * @param	integer $txnno	Unqiue ID of a Transaction 
-	 * @param	integer $ono	Unqiue Order Number for a Transaction
-	 * @param	integer $mobile	The End-User's Mobile Number 
-	 * @param	string	$email	The End-User's E-Mail 
+	 * @param	integer $uid 	Unqiue Client ID
+	 * @param	integer $clid 	Unqiue Client ID
+	 * @param	string $txnno	Unqiue ID of a Transaction 
+	 * @param	string $ono		Unqiue Order Number for a Transaction
+	 * @param	long $mob	The End-User's Mobile Number 
+	 * @param	string $email	The End-User's E-Mail 
+	 * @param	string $cr		The Customer Reference for the End-User
 	 * @return 	string
 	 */
-	public  function searchTxnHistory($cid, $txnno, $ono, $mobile, $email)
+	public  function searchTxnHistory($uid, $clid=-1, $txnno="", $ono="", $mob=-1, $email="", $cr="", $start="", $end="")
 	{
-		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, EUT.created,
+		// Fetch all Transfers
+		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, EUT.created, EUT.stateid AS stateid,
+					EUA.id AS customerid, EUA.firstname, EUA.lastname,
 					CL.id AS clientid, CL.name AS client,
-					Txn.id AS mpointid, EUT.stateid AS stateid, Txn.orderid AS orderno, EUA.id AS customerid, EUA.firstname, EUA.lastname
+					'' AS orderno
 				FROM EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl EUT
-    			LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON EUT.accountid = EUA.id 
-				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn ON EUT.txnid = Txn.id
-				LEFT OUTER JOIN Admin".sSCHEMA_POSTFIX.".Access_Tbl Acc ON Txn.clientid = Acc.clientid						
-				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON  CL.id = Acc.clientid 
-				WHERE (Acc.userid = ". intval($cid)." OR Txn.id IS NULL)";
-		if (empty($txnno) === false) {$sql .= "AND Txn.extid = '". $this->getDBConn()->escStr($txnno) ."'"; }
-		if (empty($ono) === false) { $sql .= " AND Txn.orderid = '". $this->getDBConn()->escStr($ono) ."'"; }
-		if (floatval($mobile) > 0) {$sql .= " AND (Txn.mobile = '". floatval($mobile) ."' OR EUA.mobile = '". floatval($mobile) ."')"; }
-		if (empty($email) === false) { $sql .= " AND (Txn.email = '". $this->getDBConn()->escStr($email) ."' OR EUA.email = '". $this->getDBConn()->escStr($email) ."')"; }
+    			INNER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON EUT.accountid = EUA.id
+    			INNER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON CLA.accountid = EUA.id
+				INNER JOIN Admin".sSCHEMA_POSTFIX.".Access_Tbl Acc ON CLA.clientid = Acc.clientid						
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON  CL.id = Acc.clientid 
+				WHERE EUT.txnid IS NULL AND Acc.userid = ". intval($uid);
+		if (intval($clid) > 0) { $sql .= " AND CL.id = ". intval($clid); }
+		if (floatval($mob) > 0) { $sql .= " AND EUA.mobile = '". floatval($mob) ."'"; }
+		if (empty($email) === false) { $sql .= " AND EUA.email = '". $this->getDBConn()->escStr($email) ."'"; }
+		if (empty($cr) === false) { $sql .= " AND EUA.externalid = '". $this->getDBConn()->escStr($cr) ."'"; }
+		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <= EUT.created"; }
+		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND EUT.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
+		// Fetch all Purchases
+		$sql .= "
+				UNION
+				SELECT Txn.id, ". Constants::iCARD_PURCHASE_TYPE ." AS typeid, -1 AS toid, -1 AS fromid, Txn.created,
+					-1 AS stateid,
+					EUA.id AS customerid, EUA.firstname, EUA.lastname,
+					CL.id AS clientid, CL.name AS client,
+					Txn.orderid AS orderno
+				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
+				INNER JOIN Admin".sSCHEMA_POSTFIX.".Access_Tbl Acc ON Txn.clientid = Acc.clientid
+				INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M ON Txn.id = M.txnid
+				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON Txn.euaid = EUA.id
+				WHERE Acc.userid = ". intval($uid);
+		if (intval($clid) > 0) { $sql .= " AND CL.id = ". intval($clid); }
+		if (floatval($mob) > 0) { $sql .= " AND Txn.mobile = '". floatval($mob) ."'"; }
+		if (empty($email) === false) { $sql .= " AND Txn.email = '". $this->getDBConn()->escStr($email) ."'"; }
+		if (empty($cr) === false) { $sql .= " AND Txn.customer_ref = '". $this->getDBConn()->escStr($cr) ."'"; }
+		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <= Txn.created"; }
+		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND Txn.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
+		$sql .= "
+				ORDER BY created DESC";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 		
-		$xml = '<transactions sorted-by="id" sort-order="descending">';
+		$sql = "SELECT stateid
+				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
+				WHERE txnid = $1 AND stateid IN (". Constants::iPAYMENT_INIT_WITH_PSP_STATE .", ". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_DECLINED_STATE .")
+				ORDER BY id DESC";
+//		echo $sql ."\n";
+		$stmt = $this->getDBConn()->prepare($sql);
+		
+		$xml = '<transactions sorted-by="timestamp" sort-order="descending">';
 		// Construct XML Document with data for Transaction
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
-			$ts = strtotime($RS["CREATED"]);
-			$xml .= '<transaction id="'. $RS["ID"] .'" type-id="'. $RS["TYPEID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" state-id="'. $RS["STATEID"] .'" order-no="'. htmlspecialchars($RS["ORDERNO"], ENT_NOQUOTES) .'">';
+			// Purchase
+			if ($RS["STATEID"] < 0 && $RS["TYPEID"] == Constants::iCARD_PURCHASE_TYPE)
+			{
+				$aParams = array($RS["ID"]);
+				if ($this->getDBConn()->execute($stmt, $aParams) === true)
+				{
+					$RS1 = $this->getDBConn()->fetchName($stmt);
+					if (is_array($RS1) === true) { $RS = array_merge($RS, $RS1); }
+				}
+			}
+			$xml .= '<transaction id="'. $RS["ID"] .'" type-id="'. $RS["TYPEID"] .'" state-id="'. intval($RS["STATEID"]) .'" order-no="'. htmlspecialchars($RS["ORDERNO"], ENT_NOQUOTES) .'">';
 			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
 			$xml .= '<customer id="'. $RS["CUSTOMERID"] .'">'. htmlspecialchars($RS["FIRSTNAME"] ." ". $RS["LASTNAME"], ENT_NOQUOTES) .'</customer>';
-			$xml .= '<timestamp>'. gmdate("Y-m-d H:i:sP", $ts) .'</timestamp>';
+			$xml .= '<timestamp>'. gmdate("Y-m-d H:i:sP", strtotime(substr($RS["CREATED"], 0, strpos($RS["CREATED"], ".") ) ) ) .'</timestamp>';
 			$xml .= '</transaction>';
 		}
 		
@@ -504,9 +551,10 @@ class Home extends General
 	public function getTxn($txnid)
 	{
 		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid,EUT.message, Extract('epoch' from EUT.created AT TIME ZONE 'Europe/Copenhagen') AS timestamp,
-					(CASE WHEN EUT.amount = 0 THEN Txn.amount
-					 WHEN EUT.amount IS NULL THEN Txn.amount
-					 ELSE abs(EUT.amount)
+					(CASE
+						WHEN EUT.amount = 0 THEN Txn.amount
+					 	WHEN EUT.amount IS NULL THEN Txn.amount
+					 	ELSE abs(EUT.amount)
 					 END) AS amount,
 					C.id AS countryid, C.currency, C.symbol, C.priceformat,
 					CL.id AS clientid, CL.name AS client,
@@ -514,14 +562,9 @@ class Home extends General
 					EUAT.mobile AS to_mobile, EUAT.countryid AS to_m, EUAT.email AS to_email,
 					(EUAF.firstname || ' ' || EUAF.lastname) AS from_name,EUAF.id AS from_id, EUAF.countryid AS from_countryid,
 					EUAF.mobile AS from_mobile, EUAF.email AS from_email,
-					Txn.id AS mpointid, Txn.orderid, Txn.cardid, Card.name AS card,
-					Extract('epoch' from M1.created) AS authorized,
-					Extract('epoch' from M2.created) AS captured,
-					Extract('epoch' from M3.created) AS refunded,
-					Txn.refund AS Refund_amount,Txn.pspid AS pspid,
-					Txn.orderid AS orderno,EUT.accountid AS end_user_id,
-					C.id AS countryid, C.currency, C.symbol, C.priceformat
-				
+					Txn.id AS mpointid, Txn.orderid, Txn.cardid, Card.name AS card, Txn.refund AS refund_amount, Txn.pspid, Txn.orderid AS orderno,
+					Extract('epoch' from M1.created) AS authorized, Extract('epoch' from M2.created) AS captured, Extract('epoch' from M3.created) AS refunded,
+					EUT.accountid AS end_user_id
 				FROM EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl EUT
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUAT ON EUT.toid = EUAT.id
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUAF ON EUT.fromid = EUAF.id				

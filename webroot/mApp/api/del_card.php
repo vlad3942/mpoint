@@ -86,9 +86,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$aMsgCds = array();
 						
 						$iAccountID = -1;
-						if (count($obj_DOM->{'delete-card'}[$i]->{'client-info'}->{'customer-ref'}) == 1) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->{'customer-ref'}); }
-						if ($iAccountID < 0 && count($obj_DOM->{'delete-card'}[$i]->{'client-info'}->mobile) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
-						if ($iAccountID < 0 && count($obj_DOM->{'delete-card'}[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
+						if (count($obj_DOM->{'delete-card'}[$i]->{'client-info'}->{'customer-ref'}) == 1) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->{'customer-ref'}, ($obj_ClientConfig->getStoreCard() <= 3) ); }
+						if ($iAccountID < 0 && count($obj_DOM->{'delete-card'}[$i]->{'client-info'}->mobile) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
+						if ($iAccountID < 0 && count($obj_DOM->{'delete-card'}[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->email, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
 						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->mobile); }
 						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->email); }
                         if (strlen((string) $obj_DOM->{'delete-card'}[$i]->password) > 1 && $obj_Validator->valPassword( (string) $obj_DOM->{'delete-card'}[$i]->password) != 10)
@@ -138,7 +138,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											{
 												$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'delete-card'}[$i]->{'client-info'}, $obj_CountryConfig, @$_SERVER['HTTP_X_FORWARDED_FOR']);
 										
-												$aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID, $obj_ClientConfig->showAllCards() ) );
+												$aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID, $obj_ClientConfig) );
 												$aObj_XML = $aObj_XML->xpath("/stored-cards/card[client/@id = ". $obj_ClientConfig->getID() ."]");
 													
 												$aURL_Info = parse_url($obj_ClientConfig->getNotificationURL() );
@@ -156,14 +156,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													$_OBJ_DB->query("ROLLBACK");
 													header("HTTP/1.1 502 Bad Gateway");
 													
-													$xml .= '<status code="98">Invalid response from CRM System</status>';
+													$xml = '<status code="98">Invalid response from CRM System</status>';
 													break;
 												case (2):	// Error: Notification Rejected by CRM System
 													// Abort transaction and rollback to previous state
 													$_OBJ_DB->query("ROLLBACK");
 													header("HTTP/1.1 502 Bad Gateway");
 									
-													$xml .= '<status code="97">Notification rejected by CRM System</status>';
+													$xml = '<status code="97">Notification rejected by CRM System</status>';
 													break;
 												case (10):	// Success: Card successfully saved
 													// Commit Deleted Card
@@ -176,7 +176,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													$_OBJ_DB->query("ROLLBACK");
 													header("HTTP/1.1 502 Bad Gateway");
 													
-													$xml .= '<status code="99">Unknown response from CRM System</status>';
+													$xml = '<status code="99">Unknown response from CRM System</status>';
 													break;
 												}
 											}

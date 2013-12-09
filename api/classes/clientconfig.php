@@ -457,7 +457,7 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	integer
 	 */
-	public function getMaxAmountOfCards() { return $this->_iMaxCards; }
+	public function getMaxCards() { return $this->_iMaxCards; }
 	
 	
 	public function sendPSPID() { return $this->_bSendPSPID; }

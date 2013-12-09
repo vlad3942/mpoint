@@ -307,7 +307,7 @@ file_put_contents(sLOG_PATH ."/response.log", $url ."\n". $obj_HTTP->getReplyHea
 			}
 		}
 		// End-User already has an account that is linked to the Client
-		if ($iAccountID > 0) { $xml .= $obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig->showAllCards() ); }
+		if ($iAccountID > 0) { $xml .= $obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig); }
 		$xml = str_replace("<item", "<card", $xml);
 		$xml = str_replace("</item>", "</card>", $xml);
 		$xml .= $obj_TxnInfo->toXML();

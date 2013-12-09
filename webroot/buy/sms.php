@@ -91,7 +91,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 		// End-User's Account balance is too low to pay for Transaction
 		if (intval($obj_AccountXML->balance) < $_REQUEST['amount'])
 		{
-			$obj_CardsXML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID, $obj_ClientConfig->showAllCards() ) );
+			$obj_CardsXML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID, $obj_ClientConfig) );
 			// End-User doesn't have any Stored Cards available for Client or System User
 			if (count($obj_CardsXML->xpath("/stored-cards/card[client/@id = ". $obj_ClientConfig->getID() ." or client/@id = ". $obj_ClientConfig->getCountryConfig()->getID() ."]") ) == 0)
 			{
