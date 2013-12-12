@@ -56,6 +56,12 @@ class CPG extends Callback
 		case (15):	// Carte Bleue
 			$name = "CARTE_BLUE-SSL";
 			break;
+		case (16):	// Poste VISA
+			$name = "VISA-SSL";
+			break;
+		case (17):	// Poste Master
+			$name = "ECMC-SSL";
+			break;
 		default:	// Unknown
 			$name = $id;
 			break;
@@ -138,14 +144,17 @@ class CPG extends Callback
 		$b .= '</order>';
 		$b .= '<returnURL>'. htmlspecialchars($this->getTxnInfo()->getAcceptURL(), ENT_NOQUOTES) .'</returnURL>';
 		$b .= '</submit>';
-		
-		file_put_contents(sLOG_PATH ."/jona.log", "\n \n \n". $b, FILE_APPEND);
-		
+
+		$aLogin = $this->getMerchantLogin($this->getTxnInfo()->getClientConfig()->getID(), Constants::iCPG_PSP);
+		$oCI = new HTTPConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), $oCI->getMethod(), $oCI->getContentType(), $aLogin["username"], $aLogin["password"]);
+		$h = trim($this->constHTTPHeaders() ) .HTTPClient::CRLF;
+		$h .= "authorization: Basic ".  base64_encode($aLogin["username"] .":". $aLogin["password"]) .HTTPClient::CRLF;
 		
 		$obj_HTTP = new HTTPClient(new Template(), $oCI);
 		$obj_HTTP->connect();
-		$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+		$code = $obj_HTTP->send($h, $b);
 		$obj_HTTP->disConnect();
+		
 		if ($code == 200)
 		{
 			$obj_DOM = simplexml_load_string($obj_HTTP->getReplyBody() );
@@ -160,12 +169,16 @@ class CPG extends Callback
 			}
 			elseif (count($obj_DOM->orderStatus->error) == 1)
 			{
+				header("HTTP/1.1 502 Bad Gateway");
+				
 				$xml = '<status code="92">'. htmlspecialchars($obj_DOM->orderStatus->error, ENT_NOQUOTES) .' ('. $obj_DOM->orderStatus->error["code"] .')</status>';
 				$b = str_replace("<cvc>". intval($obj_XML->cvc) ."</cvc>", "<cvc>". str_repeat("*", strlen(intval($obj_XML->cvc) ) ) ."</cvc>", $b);
 				trigger_error("Unable to initialize payment transaction with CPG, error code: ". $obj_DOM->orderStatus->error["code"] ."\n". $obj_DOM->orderStatus->error->asXML() ."\n". "REQUEST: ". $b, E_USER_WARNING);
 			}
 			else
 			{
+				header("HTTP/1.1 502 Bad Gateway");
+				
 				$xml = '<status code="92">Unknown Error: '. htmlspecialchars($obj_DOM->asXML(), ENT_NOQUOTES) .'</status>';
 				$b = str_replace("<cvc>". intval($obj_XML->cvc) ."</cvc>", "<cvc>". str_repeat("*", strlen(intval($obj_XML->cvc) ) ) ."</cvc>", $b);
 				trigger_error("Unable to initialize payment transaction with CPG, Unknown Error: ". $obj_DOM->asXML() ."\n". "REQUEST: ". $b, E_USER_WARNING);
@@ -173,6 +186,8 @@ class CPG extends Callback
 		}
 		else
 		{
+			header("HTTP/1.1 502 Bad Gateway");
+			
 			$xml = '<status code="92">Rejected with HTTP Code: '. $code .'</status>';
 			$b = str_replace("<cvc>". intval($obj_XML->cvc) ."</cvc>", "<cvc>". str_repeat("*", strlen(intval($obj_XML->cvc) ) ) ."</cvc>", $b);
 			trigger_error("Unable to initialize payment transaction with CPG, HTTP code: ". $code ."\n". "REQUEST: ". $b, E_USER_WARNING);
