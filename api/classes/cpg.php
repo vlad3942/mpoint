@@ -146,9 +146,28 @@ class CPG extends Callback
 		$b .= '</submit>';
 
 		$aLogin = $this->getMerchantLogin($this->getTxnInfo()->getClientConfig()->getID(), Constants::iCPG_PSP);
-		$oCI = new HTTPConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), $oCI->getMethod(), $oCI->getContentType(), $aLogin["username"], $aLogin["password"]);
+		
+		$sUsername = "";
+		$sPassword = "";
+		$aUsernames = explode(" ### ", $aLogin["username"]);
+		$aPasswords = explode(" ### ", $aLogin["password"]);
+		if ($sc == "NPG") 
+		{
+			$sUsername = $aUsernames[0];
+			$sPassword = $aPasswords[0];
+		}
+		elseif ($sc == "GST")
+		{
+			$sUsername = $aUsernames[1];
+			$sPassword = $aPasswords[1];
+		}
+		
+		$oCI = new HTTPConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), $oCI->getMethod(), $oCI->getContentType(), $sUsername,$sPassword);
 		$h = trim($this->constHTTPHeaders() ) .HTTPClient::CRLF;
-		$h .= "authorization: Basic ".  base64_encode($aLogin["username"] .":". $aLogin["password"]) .HTTPClient::CRLF;
+		$h .= "authorization: Basic ".  base64_encode($sUsername .":". $sPassword) .HTTPClient::CRLF;
+		
+		file_put_contents(sLOG_PATH ."/test.log", "\n username= ".  $sUsername ."\n password = ". $sPassword ."\n shotcode = ". $sc, FILE_APPEND);
+		
 		
 		$obj_HTTP = new HTTPClient(new Template(), $oCI);
 		$obj_HTTP->connect();
