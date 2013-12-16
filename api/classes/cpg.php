@@ -165,10 +165,7 @@ class CPG extends Callback
 		$oCI = new HTTPConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), $oCI->getMethod(), $oCI->getContentType(), $sUsername,$sPassword);
 		$h = trim($this->constHTTPHeaders() ) .HTTPClient::CRLF;
 		$h .= "authorization: Basic ".  base64_encode($sUsername .":". $sPassword) .HTTPClient::CRLF;
-		
-		file_put_contents(sLOG_PATH ."/test.log", "\n username= ".  $sUsername ."\n password = ". $sPassword ."\n shotcode = ". $sc, FILE_APPEND);
-		
-		
+				
 		$obj_HTTP = new HTTPClient(new Template(), $oCI);
 		$obj_HTTP->connect();
 		$code = $obj_HTTP->send($h, $b);
