@@ -115,7 +115,7 @@ if (count($aMsgCds) == 0)
 			// Pay using a Stored Payment Card
 			else
 			{
-				$obj_XML = simplexml_load_string($obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_TxnInfo']->getClientConfig()) );
+				$obj_XML = simplexml_load_string($obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_TxnInfo']->getClientConfig() ) );
 				$obj_XML = $obj_XML->xpath("/stored-cards/card[@id = ". $_POST['cardid'] ."]");
 				$obj_XML = $obj_XML[0];
 	

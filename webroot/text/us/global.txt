@@ -61,83 +61,83 @@ Merchant: {CLIENT}
 Price: {AMOUNT}
 Please confirm the purchase by replying YES to this message? @@@
 
-#: /webroot/cpm/payment.php:118
+#: /webroot/cpm/payment.php:122
 msgid @@@ Pay using Account @@@
 msgstr @@@ Pay using Account @@@
 
-#: /webroot/cpm/payment.php:127
+#: /webroot/cpm/payment.php:131
 msgid @@@ Step 2 of 2 @@@
 msgstr @@@ Step 2 of 2 @@@
 
-#: /webroot/cpm/payment.php:128
+#: /webroot/cpm/payment.php:132
 msgid @@@ Price @@@
 msgstr @@@ Price @@@
 
-#: /webroot/cpm/payment.php:129
+#: /webroot/cpm/payment.php:133
 msgid @@@ Account - Info @@@
 msgstr @@@ Please select a payment method and confirm the payment by entering your password @@@
 
-#: /webroot/cpm/payment.php:130
+#: /webroot/cpm/payment.php:134
 msgid @@@ My Account @@@
 msgstr @@@ My Account @@@
 
-#: /webroot/cpm/payment.php:131
+#: /webroot/cpm/payment.php:135
 msgid @@@ Balance @@@
 msgstr @@@ Balance @@@
 
-#: /webroot/cpm/payment.php:132
+#: /webroot/cpm/payment.php:136
 msgid @@@ Stored Card @@@
 msgstr @@@ Stored Card @@@
 
-#: /webroot/cpm/payment.php:133
+#: /webroot/cpm/payment.php:137
 msgid @@@ Stored Cards @@@
 msgstr @@@ Stored Cards @@@
 
-#: /webroot/cpm/payment.php:134
+#: /webroot/cpm/payment.php:138
 msgid @@@ Password @@@
 msgstr @@@ Password @@@
 
-#: /webroot/cpm/payment.php:135
+#: /webroot/cpm/payment.php:139
 msgid @@@ Complete Payment @@@
 msgstr @@@ Complete Payment @@@
 
-#: /webroot/cpm/payment.php:136
+#: /webroot/cpm/payment.php:140
 msgid @@@ Create Account @@@
 msgstr @@@ Create Account @@@
 
-#: /webroot/cpm/payment.php:137
+#: /webroot/cpm/payment.php:141
 msgid @@@ Top-Up @@@
 msgstr @@@ Top-Up @@@
 
-#: /webroot/cpm/payment.php:138
+#: /webroot/cpm/payment.php:142
 msgid @@@ Add Card @@@
 msgstr @@@ New @@@
 
-#: /webroot/cpm/payment.php:139
+#: /webroot/cpm/payment.php:143
 msgid @@@ Delete Card @@@
 msgstr @@@ Delete Card @@@
 
-#: /webroot/cpm/payment.php:140
+#: /webroot/cpm/payment.php:144
 msgid @@@ - Authorize Delete Text - @@@
 msgstr @@@ Enter your password to delete the card: {CARD NAME} @@@
 
-#: /webroot/cpm/payment.php:141
+#: /webroot/cpm/payment.php:145
 msgid @@@ - Confirm Delete Text - @@@
 msgstr @@@ Are you sure you want to delete the card: {CARD NAME}? @@@
 
-#: /webroot/cpm/payment.php:142
+#: /webroot/cpm/payment.php:146
 msgid @@@ Yes @@@
 msgstr @@@ Yes @@@
 
-#: /webroot/cpm/payment.php:143
+#: /webroot/cpm/payment.php:147
 msgid @@@ No @@@
 msgstr @@@ No @@@
 
-#: /webroot/cpm/payment.php:144
+#: /webroot/cpm/payment.php:148
 msgid @@@ Account - Single Sign-On @@@
 msgstr @@@ Please select a payment method @@@
 
-#: /webroot/cpm/payment.php:145
+#: /webroot/cpm/payment.php:149
 msgid @@@ - Authorizing Payment Text - @@@
 msgstr @@@ Your payment is being authorized, please wait... @@@
 

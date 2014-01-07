@@ -68,8 +68,12 @@ try
 			if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = $obj_Home->getAccountID($_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig(), $_SESSION['obj_TxnInfo']->getEMail() ); }
 		}
 		$obj_AccountXML = simplexml_load_string($obj_mPoint->getAccountInfo($iAccountID, $_SESSION['obj_UA']) );
-		$obj_CardsXML = simplexml_load_string($obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_TxnInfo']->getClientConfig()->showAllCards(), $_SESSION['obj_UA']) );
-		if (count($obj_CardsXML) > 0) { $obj_ClientCardsXML = $obj_CardsXML->xpath("/stored-cards/card[client/@id = ". $_SESSION['obj_TxnInfo']->getClientConfig()->getID() ."]"); }
+		$obj_CardsXML = simplexml_load_string($obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_TxnInfo']->getClientConfig(), $_SESSION['obj_UA']) );
+		if (count($obj_CardsXML) > 0)
+		{
+			if ($_SESSION['obj_TxnInfo']->getClientConfig()->getStoreCard() <= 3) { $obj_ClientCardsXML = $obj_CardsXML->xpath("/stored-cards/card[client/@id = ". $_SESSION['obj_TxnInfo']->getClientConfig()->getID() ."]"); }
+			else { $obj_ClientCardsXML = $obj_CardsXML->xpath("/stored-cards/card"); }			
+		}
 		
 		/*
 		 * End-User does not have an account yet AND account hasn't just been disabled

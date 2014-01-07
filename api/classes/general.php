@@ -465,7 +465,8 @@ class General
 					callbackurl = '". $this->getDBConn()->escStr($oTI->getCallbackURL() ) ."', iconurl = '". $this->getDBConn()->escStr($oTI->getIconURL() ) ."',
 					authurl = '". $this->getDBConn()->escStr($oTI->getAuthenticationURL() ) ."', customer_ref = '". $this->getDBConn()->escStr($oTI->getCustomerRef() ) ."',
 					gomobileid = ". $oTI->getGoMobileID() .", auto_capture = '". ($oTI->useAutoCapture() === true ? "1" : "0") ."', markup = '". $this->getDBConn()->escStr($oTI->getMarkupLanguage() ) ."',
-					description = '". $this->getDBConn()->escStr($oTI->getDescription() ) ."', ip = '". $this->getDBConn()->escStr( $oTI->getIP() ) ."'";
+					description = '". $this->getDBConn()->escStr($oTI->getDescription() ) ."'";
+		if (strlen($oTI->getIP() ) > 0) { $sql .= " , ip = '". $this->getDBConn()->escStr( $oTI->getIP() ) ."'"; }
 		if ($oTI->getAccountID() > 0) { $sql .= ", euaid = ". $oTI->getAccountID(); } 
 		$sql .= "
 				WHERE id = ". $oTI->getID();
@@ -533,7 +534,7 @@ class General
 					FOR UPDATE";
 		}
 //		echo $sql ."\n";
-		$RS = $this->getDBConn()->getName($sql);
+		$RS = @$this->getDBConn()->getName($sql);
 		$data = array();
 		if (is_array($RS) === true)
 		{
@@ -641,7 +642,7 @@ class General
 	{
 		// Format amount to be human readable
 		$sPrice = $oCC->getPriceFormat();
-		$sPrice = str_replace("{CURRENCY}", $oCC->getSymbol(), $sPrice);
+		$sPrice = str_replace("{CURRENCY}", utf8_encode($oCC->getSymbol() ), $sPrice);
 		if ($oCC->getID() == 103 || $oCC->getID() == 200) { $seperator = "."; }
 		else { $seperator = ","; }
 		$sPrice = str_replace("{PRICE}", number_format($amount / 100, $oCC->getDecimals(), $seperator, ""), $sPrice);
@@ -802,7 +803,7 @@ class General
 		{
 			$xml .= '<config id="'. $RS["ID"] .'">';
 			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';
-			$xml .= '<currency symbol="'. $RS["SYMBOL"] .'">'. $RS["CURRENCY"] .'</currency>';
+			$xml .= '<currency symbol="'. utf8_encode($RS["SYMBOL"]) .'">'. $RS["CURRENCY"] .'</currency>';
 			$xml .= '<max-balance>'. $RS["MAXBALANCE"] .'</max-balance>';
 			$xml .= '<min-transfer>'. $RS["MINTRANSFER"] .'</min-transfer>';
 			$xml .= '<min-mobile>'. $RS["MINMOB"] .'</min-mobile>';

@@ -113,7 +113,7 @@ class WorldPay extends Callback
 		if ($code == 200)
 		{
 			$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
-			if (strval($obj_XML->reply->orderStatus->payment->lastEvent) == "AUTHORISED" || strval($obj_XML->reply->orderStatus->payment->lastEvent) == "CAPTURED")
+			if (strval(@$obj_XML->reply->orderStatus->payment->lastEvent) == "AUTHORISED" || strval(@$obj_XML->reply->orderStatus->payment->lastEvent) == "CAPTURED")
 			{
 				$obj_XML["code"] = Constants::iPAYMENT_ACCEPTED_STATE;
 				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, $obj_XML->asXML() );
@@ -122,13 +122,13 @@ class WorldPay extends Callback
 			else
 			{
 				$obj_XML["code"] = Constants::iPAYMENT_DECLINED_STATE;
-				trigger_error("Unable to initialize payment transaction with WorldPay, error code: ". $obj_XML->reply->error["code"] ."\n". $obj_XML->reply->error->asXML(), E_USER_WARNING);
+				trigger_error("Unable to initialize payment with WorldPay for transaction: ". $this->getTxnInfo()->getID() .", error code: ". $obj_XML->reply->error["code"] ."\n". $obj_XML->reply->error->asXML(), E_USER_WARNING);
 			}
 		}
 		// Error: Unable to initialize payment transaction
 		else
 		{
-			trigger_error("Unable to initialize payment transaction with WorldPay. HTTP Response Code: ". $code ."\n". var_export($obj_HTTP, true), E_USER_WARNING);
+			trigger_error("Unable to initialize payment with WorldPay for transaction: ". $this->getTxnInfo()->getID() .". HTTP Response Code: ". $code ."\n". var_export($obj_HTTP, true), E_USER_WARNING);
 		}
 		
 		return $obj_XML;

@@ -44,7 +44,8 @@ if ($obj_Validator->valPassword($_REQUEST['password']) != 10) { $aMsgCds[] = $ob
 // Success: Input valid
 if (count($aMsgCds) == 0)
 {
-	if ($obj_mPoint->auth($_REQUEST['username'], $_REQUEST['password'], $iUserID) === 10)
+	$code = $obj_mPoint->auth($_REQUEST['username'], $_REQUEST['password'], $iUserID);
+	if ($code === 10)
 	{
 		$aTxnInfo = $obj_mPoint->getLastTransaction($iUserID, $_REQUEST['clientid']);
 		if (is_array($aTxnInfo) === true && count($aTxnInfo) == 2)
@@ -55,7 +56,12 @@ if (count($aMsgCds) == 0)
 		else { header("HTTP/1.0 206 Partial Content"); }
 	}
 	// Error: Unauthorized access
-	else { header("HTTP/1.0 403 Forbidden"); }
+	else
+	{
+		header("HTTP/1.0 403 Forbidden");
+		
+		echo "code=". $code;
+	}
 }
 // Error: Invalid input
 else { header("HTTP/1.0 400 Bad Request"); }

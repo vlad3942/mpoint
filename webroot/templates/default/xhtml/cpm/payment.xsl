@@ -115,7 +115,7 @@
 				<input type="hidden" name="cardtype" value="11" />
 				<xsl:choose>
 					<!-- Prepaid Account available -->
-					<xsl:when test="(account/balance &gt;= transaction/amount or count(stored-cards/card[client/@id = //client-config/@id]) = 0) and (transaction/@type &lt; 100 or transaction/@type &gt; 109)">
+					<xsl:when test="(account/balance &gt;= transaction/amount or (count(stored-cards/card[client/@id = //client-config/@id]) = 0 and //client-config/store-card &lt;= 3) ) and (transaction/@type &lt; 100 or transaction/@type &gt; 109)">
 						<input type="hidden" name="prepaid" value="true" />
 					</xsl:when>
 					<xsl:otherwise>
@@ -195,16 +195,28 @@
 					<!-- Stored Credit Cards -->
 					<div id="cardinfo">
 						<xsl:choose>
-						<xsl:when test="count(stored-cards/card[client/@id = //client-config/@id]) = 1">
+						<xsl:when test="//client-config/store-card &lt;= 3 and count(stored-cards/card[client/@id = //client-config/@id]) = 1">
 							<div class="mPoint_Label"><xsl:value-of select="labels/stored-card" />:</div>
 							<table>
 								<xsl:apply-templates select="stored-cards/card[client/@id = //client-config/@id]" />
 							</table>
 						</xsl:when>
-						<xsl:when test="count(stored-cards/card[client/@id = //client-config/@id]) &gt; 1">
+						<xsl:when test="//client-config/store-card &lt;= 3 and count(stored-cards/card[client/@id = //client-config/@id]) &gt; 1">
 							<div class="mPoint_Label"><xsl:value-of select="labels/multiple-stored-cards" />:</div>
 							<table>
 								<xsl:apply-templates select="stored-cards/card[client/@id = //client-config/@id]" />
+							</table>
+						</xsl:when>
+						<xsl:when test="//client-config/store-card &gt; 3 and count(stored-cards/card) = 1">
+							<div class="mPoint_Label"><xsl:value-of select="labels/stored-card" />:</div>
+							<table>
+								<xsl:apply-templates select="stored-cards/card" />
+							</table>
+						</xsl:when>
+						<xsl:when test="//client-config/store-card &gt; 3 and count(stored-cards/card) &gt; 1">
+							<div class="mPoint_Label"><xsl:value-of select="labels/multiple-stored-cards" />:</div>
+							<table>
+								<xsl:apply-templates select="stored-cards/card" />
 							</table>
 						</xsl:when>
 						</xsl:choose>

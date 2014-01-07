@@ -61,83 +61,83 @@ Sælger: {CLIENT}
 Pris: {AMOUNT}
 Bekræft købet ved at svare JA til denne SMS @@@
 
-#: /webroot/cpm/payment.php:118
+#: /webroot/cpm/payment.php:122
 msgid @@@ Pay using Account @@@
 msgstr @@@ Betal med konto @@@
 
-#: /webroot/cpm/payment.php:127
+#: /webroot/cpm/payment.php:131
 msgid @@@ Step 2 of 2 @@@
 msgstr @@@ Trin 2 af 2 @@@
 
-#: /webroot/cpm/payment.php:128
+#: /webroot/cpm/payment.php:132
 msgid @@@ Price @@@
 msgstr @@@ Pris @@@
 
-#: /webroot/cpm/payment.php:129
+#: /webroot/cpm/payment.php:133
 msgid @@@ Account - Info @@@
 msgstr @@@ Vælg betalingsmetode og indtast dit kodeord @@@
 
-#: /webroot/cpm/payment.php:130
+#: /webroot/cpm/payment.php:134
 msgid @@@ My Account @@@
 msgstr @@@ Min konto @@@
 
-#: /webroot/cpm/payment.php:131
+#: /webroot/cpm/payment.php:135
 msgid @@@ Balance @@@
 msgstr @@@ Saldo @@@
 
-#: /webroot/cpm/payment.php:132
+#: /webroot/cpm/payment.php:136
 msgid @@@ Stored Card @@@
 msgstr @@@ Gemt kort @@@
 
-#: /webroot/cpm/payment.php:133
+#: /webroot/cpm/payment.php:137
 msgid @@@ Stored Cards @@@
 msgstr @@@ Gemte kort @@@
 
-#: /webroot/cpm/payment.php:134
+#: /webroot/cpm/payment.php:138
 msgid @@@ Password @@@
 msgstr @@@ Kodeord @@@
 
-#: /webroot/cpm/payment.php:135
+#: /webroot/cpm/payment.php:139
 msgid @@@ Complete Payment @@@
 msgstr @@@ Gennemfør betaling @@@
 
-#: /webroot/cpm/payment.php:136
+#: /webroot/cpm/payment.php:140
 msgid @@@ Create Account @@@
 msgstr @@@ Opret konto @@@
 
-#: /webroot/cpm/payment.php:137
+#: /webroot/cpm/payment.php:141
 msgid @@@ Top-Up @@@
 msgstr @@@ Indsæt @@@
 
-#: /webroot/cpm/payment.php:138
+#: /webroot/cpm/payment.php:142
 msgid @@@ Add Card @@@
 msgstr @@@ Nyt @@@
 
-#: /webroot/cpm/payment.php:139
+#: /webroot/cpm/payment.php:143
 msgid @@@ Delete Card @@@
 msgstr @@@ Slet @@@
 
-#: /webroot/cpm/payment.php:140
+#: /webroot/cpm/payment.php:144
 msgid @@@ - Authorize Delete Text - @@@
 msgstr @@@ Angiv dit kodeord for at slette betalingskortet: {CARD NAME} @@@
 
-#: /webroot/cpm/payment.php:141
+#: /webroot/cpm/payment.php:145
 msgid @@@ - Confirm Delete Text - @@@
 msgstr @@@ Er du sikker på at du vil slette betalingskort: {CARD NAME}? @@@
 
-#: /webroot/cpm/payment.php:142
+#: /webroot/cpm/payment.php:146
 msgid @@@ Yes @@@
 msgstr @@@ Ja @@@
 
-#: /webroot/cpm/payment.php:143
+#: /webroot/cpm/payment.php:147
 msgid @@@ No @@@
 msgstr @@@ Nej @@@
 
-#: /webroot/cpm/payment.php:144
+#: /webroot/cpm/payment.php:148
 msgid @@@ Account - Single Sign-On @@@
 msgstr @@@ Vælg betalingsmetode @@@
 
-#: /webroot/cpm/payment.php:145
+#: /webroot/cpm/payment.php:149
 msgid @@@ - Authorizing Payment Text - @@@
 msgstr @@@ Gennemfører betalingen, vent venligst... @@@
 
