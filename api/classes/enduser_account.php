@@ -407,7 +407,8 @@ class EndUserAccount extends Home
 		case (4):	// Save Card Name and status (preferred)
 			return $this->_saveCardName($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3]);
 			break;
-		default: 
+		default: 	// Error: Invalid number of arguments
+			trigger_error("Invalid number of arguments: ". count($aArgs), E_USER_WARNING);
 			return -1;
 			break;
 		}
@@ -541,8 +542,8 @@ class EndUserAccount extends Home
 			$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 					SET preferred = '0'
 					WHERE preferred = '1' AND accountid = (SELECT accountid
-															FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl				 		
-															WHERE id = ". intval($cardid) .")";
+														   FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl				 		
+														   WHERE id = ". intval($cardid) .")";
 //			echo $sql ."\n";
 			$this->getDBConn()->query($sql);
 		}

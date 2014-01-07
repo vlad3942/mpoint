@@ -123,7 +123,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if ($iAccountID < 0 && count($obj_DOM->{'save-account'}[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
 						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
 						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
-						$obj_mPoint->saveCardName($iAccountID, $obj_DOM->{'save-account'}[$i]->card["type-id"], (string) $obj_DOM->{'save-account'}[$i]->card, true, $obj_CountryConfig);
+						$obj_mPoint->saveCardName($iAccountID, $obj_DOM->{'save-account'}[$i]->card["type-id"], (string) $obj_DOM->{'save-account'}[$i]->card, true);
 							
 						// Success: Account Information Saved
 						if ($code >= 0)

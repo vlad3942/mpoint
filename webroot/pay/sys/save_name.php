@@ -51,8 +51,8 @@ if (count($aMsgCds) == 0)
 		if ($iAccountID == -1 && $_SESSION['obj_TxnInfo']->getClientConfig()->getStoreCard() > 3)
 		{
 			if (strlen($_SESSION['obj_TxnInfo']->getCustomerRef() ) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig(), $_SESSION['obj_TxnInfo']->getCustomerRef(), false); }
-			if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getMobile() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig(), $_SESSION['obj_TxnInfo']->getMobile(), false); }
-			if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig(), $_SESSION['obj_TxnInfo']->getEMail(), false); }
+			if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getMobile() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig(), $_SESSION['obj_TxnInfo']->getCountryConfig(), $_SESSION['obj_TxnInfo']->getMobile(), false); }
+			if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig(), $_SESSION['obj_TxnInfo']->getCountryConfig(), $_SESSION['obj_TxnInfo']->getEMail(), false); }
 		}
 		$iStatus = $obj_mPoint->saveCardName($iAccountID, $_POST['cardid'], $_POST['name']);
 	}
