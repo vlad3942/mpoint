@@ -124,6 +124,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									if (strlen($aObj_XML[$j]->name) > 0) { $xml .= $aObj_XML[$j]->name->asXML(); }
 									$xml .= '<card-number-mask>'. $aObj_XML[$j]->mask .'</card-number-mask>';
 									$xml .= $aObj_XML[$j]->expiry->asXML();
+									$xml .= '<token>'. htmlspecialchars( (string) $aObj_XML[$j]->ticket, ENT_NOQUOTES) .'</token>';
 									if (strlen($aObj_XML[$j]->{'card-holder-name'}) > 0) { $xml .= $aObj_XML[$j]->{'card-holder-name'}->asXML(); }
 									if (count($aObj_XML[$j]->address) == 1) { $xml .= $aObj_XML[$j]->address->asXML(); }
 									$xml .= '</card>';
@@ -131,7 +132,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$xml .= '</stored-cards>';
 							}
 							else { $xml .= '<stored-cards />'; }
-							if ($obj_ClientConfig->getStoreCard() == 2 || $obj_ClientConfig->getStoreCard() == 5)
+							if ($obj_ClientConfig->getStoreCard() == 2 || $obj_ClientConfig->getStoreCard() == 4)
 							{
 								// Return last 5 transactions of each type
 								$aTypes = array(Constants::iTOPUP_OF_EMONEY ." or @type-id = ". Constants::iTOPUP_OF_POINTS, Constants::iREWARD_OF_POINTS, Constants::iTRANSFER_OF_EMONEY);
