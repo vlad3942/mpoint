@@ -545,7 +545,7 @@ class General
 			else
 			{
 				$RS["DATA"] = utf8_decode($RS["DATA"]);
-				$data = unserialize($RS["DATA"]);
+				$data = @unserialize($RS["DATA"]);
 			}
 			if ($data === false) { $data = array($RS["DATA"]); }
 		}
@@ -642,7 +642,7 @@ class General
 	{
 		// Format amount to be human readable
 		$sPrice = $oCC->getPriceFormat();
-		$sPrice = str_replace("{CURRENCY}", utf8_encode($oCC->getSymbol() ), $sPrice);
+		$sPrice = str_replace("{CURRENCY}", $oCC->getSymbol(), $sPrice);
 		if ($oCC->getID() == 103 || $oCC->getID() == 200) { $seperator = "."; }
 		else { $seperator = ","; }
 		$sPrice = str_replace("{PRICE}", number_format($amount / 100, $oCC->getDecimals(), $seperator, ""), $sPrice);

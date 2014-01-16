@@ -399,7 +399,7 @@ class Home extends General
 		/* ========== Calculate Logo Dimensions End ========== */
 
 		// Select all active cards that are not yet expired
-		$sql = "SELECT DISTINCT EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name, EUC.enabled, EUC.card_holder_name,		
+		$sql = "SELECT DISTINCT EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name, EUC.enabled, EUC.card_holder_name,
 					SC.id AS typeid, SC.name AS type,
 					CL.id AS clientid, CL.name AS client,
 					EUAD.countryid, EUAD.firstname, EUAD.lastname,
@@ -415,7 +415,7 @@ class Home extends General
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".State_Tbl STS ON EUAD.stateid = STS.id and EUA.enabled ='1'				
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON EUA.id = CLA.accountid
 				WHERE EUC.accountid = ". intval($id);
-		if ($oCC->showAllCards() === false) { $sql .= " AND EUC.enabled = '1' AND ( (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."' OR length(EUC.expiry) = 0 )"; }
+		if ($oCC->showAllCards() === false) { $sql .= " AND EUC.enabled = '1' AND ( (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."' OR length(EUC.expiry) = 0)"; }
 		if (is_null($oCC) === true || $oCC->getStoreCard() <= 3)
 		{
 			$sql .= " AND (CLA.clientid = CL.id OR NOT EXISTS (SELECT id
@@ -439,7 +439,7 @@ class Home extends General
 			$xml .= '<expiry>'. $RS["EXPIRY"] .'</expiry>';
 			$xml .= '<enabled>'. General::bool2xml($RS["PREFERRED"]) .'</enabled>';
 			$xml .= '<ticket>'. $RS["TICKET"] .'</ticket>';
-			$xml .= '<card-holder-name>'. $RS["CARD_HOLDER_NAME"] .'</card-holder-name>';
+			$xml .= '<card-holder-name>'. htmlspecialchars($RS["CARD_HOLDER_NAME"], ENT_NOQUOTES) .'</card-holder-name>';
 			$xml .= '<logo-width>'. $iWidth .'</logo-width>';
 			$xml .= '<logo-height>'. $iHeight .'</logo-height>';
 						

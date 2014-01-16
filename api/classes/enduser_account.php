@@ -235,6 +235,7 @@ class EndUserAccount extends Home
 					$code = 0;
 				}
 				$name = "";
+				$chn = "";
 			}
 			// Card Saved by invoking "Save Card" API
 			else
