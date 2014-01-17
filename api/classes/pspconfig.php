@@ -111,10 +111,11 @@ class PSPConfig extends BasicConfig
 	 *
 	 * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
 	 * @param 	integer $clid 	Unique ID for the Client performing the request
+	 * @param 	integer $accid 	Unique ID for the Account-id performing the request
 	 * @param 	integer $pspid 	Unique ID for the Payment Service Provider
 	 * @return 	PSPConfig
 	 */
-	public static function produceConfig(RDB &$oDB, $clid, $pspid)
+	public static function produceConfig(RDB &$oDB, $clid ,$accid , $pspid)
 	{
 		$sql = "SELECT DISTINCT PSP.id, PSP.name,
 					MA.name AS ma, MA.username, MA.passwd AS password, MSA.name AS msa
@@ -123,7 +124,7 @@ class PSPConfig extends BasicConfig
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON MA.clientid = CL.id AND CL.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON Acc.id = MSA.accountid AND PSP.id = MSA.pspid AND MSA.enabled = '1'
-				WHERE CL.id = ". intval($clid) ." AND PSP.id = ". intval($pspid) ." AND PSP.enabled = '1'";
+				WHERE CL.id = ". intval($clid) ." AND PSP.id = ". intval($pspid) ." AND PSP.enabled = '1' AND Acc.id = ". intval($accid)." ";
 //		echo $sql ."\n";
 		
 		$RS = $oDB->getName($sql);

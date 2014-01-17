@@ -36,7 +36,7 @@ if ($id < 0) { $id = PayEx::getIDFromExternalID($_OBJ_DB, $_POST['orderRef']); }
 $obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
 $obj_mPoint = new PayEx($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 
-$obj_mPointConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), Constants::iPAYEX_PSP);
+$obj_mPointConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getAccountID(), Constants::iPAYEX_PSP);
 
 if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["payex"]["host"] = str_replace("external.", "test-external.", $aHTTP_CONN_INFO["payex"]["host"]); }
 $aHTTP_CONN_INFO["payex"]["username"] = $obj_mPointConfig->getUsername();

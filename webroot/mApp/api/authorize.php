@@ -258,7 +258,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												break;
 											case (Constants::iNETAXEPT_PSP): // NetAxept
 												$obj_PSP = new NetAxept($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-												$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), Constants::iNETAXEPT_PSP); 
+												$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getAccountID(), Constants::iNETAXEPT_PSP); 
 							
 												$aHTTP_CONN_INFO["netaxept"]["username"] = $obj_PSPConfig->getUsername();
 												$aHTTP_CONN_INFO["netaxept"]["password"] = $obj_PSPConfig->getPassword();		
@@ -282,7 +282,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												break;
 											case (Constants::iCPG_PSP):
 												$obj_PSP = new CPG($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-												$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), Constants::iCPG_PSP);
+												$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getAccountID(), Constants::iCPG_PSP);
 											
 												$aHTTP_CONN_INFO["cpg"]["username"] = $obj_PSPConfig->getUsername();
 												$aHTTP_CONN_INFO["cpg"]["password"] = $obj_PSPConfig->getPassword();
