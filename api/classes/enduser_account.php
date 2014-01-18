@@ -462,7 +462,49 @@ class EndUserAccount extends Home
 		return $code;
 	}
 	
+	public function saveState($cid, $name, $code="")
+	{
+		$sql = "SELECT Nextvalue('System".sSCHEMA_POSTFIX.".State_Tbl_id_seq') AS id FROM DUAL";
+		$RS = $this->getDBConn()->getName($sql);
+		
+		$sql = "INSERT INTO System".sSCHEMA_POSTFIX.".State_Tbl
+					(id, countryid, name, code)
+				VALUES
+				(". $RS["ID"] .", ". intval($cid) .", '". $this->getDBConn()->escStr(trim($name) ) ."', Upper('". $this->getDBConn()->escStr(trim($code) ) ."') )";
+//		echo $sql ."\n";
+
+		return is_resource($this->getDBConn()->query($sql) ) === true ? $RS["ID"] : -1;
+	}
 	
+	/**
+	 * Returns the ID of the state in the specified country using either the state 2-digit code or the state name to find the state.
+	 * The method will return the default state in the country (identified by code: N/A) if no state is passed to the method. 
+	 * 
+	 * @param integer $cid		ID of the Country the state must be located in
+	 * @param string $state		The 2-digit code or name of the state
+	 * @return integer
+	 */
+	public function getStateID($cid, $state="")
+	{
+		if (empty($state) === true) { $state = "N/A"; }
+		
+		$sql = "SELECT id
+				FROM System".sSCHEMA_POSTFIX.".State_Tbl
+				WHERE countryid = ". intval($cid) ." AND Upper(code) = Upper('". $this->getDBConn()->escStr(trim($state) ) ."')";
+//		echo $sql ."\n";
+		$RS = $this->getDBConn()->getName($sql);
+		
+		if (is_array($RS) === false || intval($RS["ID"]) <= 0)
+		{
+			$sql = "SELECT id
+					FROM System".sSCHEMA_POSTFIX.".State_Tbl
+					WHERE countryid = ". intval($cid) ." AND Upper(name) = Upper('". $this->getDBConn()->escStr(trim($state) ) ."')";
+//			echo $sql ."\n";
+			$RS = $this->getDBConn()->getName($sql);
+		}
+		
+		return is_array($RS) === true ? intval($RS["ID"]) : -1;
+	}
 	/**
 	 * Saves Billing Address for the newest card which has been created recently (within the last 5 minutes).	
 	 * The method will return the following status codes:
@@ -471,50 +513,38 @@ class EndUserAccount extends Home
 	 * 	 3. Address Insert failed
 	 * 	10. Success
 	 *
-	 * @param 	integer $cid 		ID of the Country
-	 * @param 	string $state		Address field - state
-	 * @param 	string $fn 			Address field - First Name
-	 * @param   string $ln			Address field - Last Name
-	 * @param 	string $cmp			Address field - Company
-	 * @param	string $st			Address field - Street
-	 * @param	string $pc			Address field - Postal Code
-	 * @param 	string $ct			Address field - City
+	 * @param 	integer $cid 	ID of the Country
+	 * @param 	integer $sid	ID of the State
+	 * @param 	string $fn 		Address field - First Name
+	 * @param   string $ln		Address field - Last Name
+	 * @param 	string $cmp		Address field - Company
+	 * @param	string $st		Address field - Street
+	 * @param	string $pc		Address field - Postal Code
+	 * @param 	string $ct		Address field - City
 	 * @return	integer
 	 */
-	public function saveAddress($cardid, $cid, $state, $fn, $ln, $cmp, $st, $pc, $ct)
+	public function saveAddress($cardid, $cid, $sid, $fn, $ln, $cmp, $st, $pc, $ct)
 	{
-		if (empty($state) === true) { $state = "N/A"; }
-		
-		$sql = "SELECT id
-				FROM System".sSCHEMA_POSTFIX.".State_Tbl
-				WHERE countryid = ". intval($cid) ." AND Upper(code) = Upper('". $this->getDBConn()->escStr($state) ."')";
+		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Address_Tbl
+				SET countryid = ". intval($cid) .", stateid = ". intval($sid) .",
+					firstname = '". $this->getDBConn()->escStr($fn) ."', lastname = '". $this->getDBConn()->escStr($ln) ."', company = '". $this->getDBConn()->escStr($cmp) ."',
+					street = '". $this->getDBConn()->escStr($st) ."', postalcode = '". $this->getDBConn()->escStr($pc) ."', city = '". $this->getDBConn()->escStr($ct) ."'
+				WHERE cardid = ". intval($cardid);
 //		echo $sql ."\n";
-		$RS = $this->getDBConn()->getName($sql);
-		
-		if (is_array($RS) === true && array_key_exists("ID", $RS) === true)
+		$res = $this->getDBConn()->query($sql);
+		if (is_resource($this->getDBConn()->query($sql) ) === true)
 		{
-			$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Address_Tbl
-					SET countryid = ". intval($cid) .", stateid = ". $RS["ID"] .",
-						firstname = '". $this->getDBConn()->escStr($fn) ."', lastname = '". $this->getDBConn()->escStr($ln) ."', company = '". $this->getDBConn()->escStr($cmp) ."',
-						street = '". $this->getDBConn()->escStr($st) ."', postalcode = '". $this->getDBConn()->escStr($pc) ."', city = '". $this->getDBConn()->escStr($ct) ."'
-					WHERE cardid = ". intval($cardid);
-//			echo $sql ."\n";
-			$res = $this->getDBConn()->query($sql);
-			if (is_resource($this->getDBConn()->query($sql) ) === true)
+			if ($this->getDBConn()->countAffectedRows($res) == 0)
 			{
-				if ($this->getDBConn()->countAffectedRows($res) == 0)
-				{
-					$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Address_Tbl
-								(cardid, countryid, stateid, firstname, lastname, company, street, postalcode, city)
-							VALUES
-								(". intval($cardid) .", ". intval($cid) .", ". $RS["ID"] ." , '". $this->getDBConn()->escStr($fn) ."', '". $this->getDBConn()->escStr($ln) ."', '". $this->getDBConn()->escStr($cmp) ."', '". $this->getDBConn()->escStr($st) ."', '". $this->getDBConn()->escStr($pc) ."', '". $this->getDBConn()->escStr($ct) ."')";
-//					echo $sql ."\n";
-					if (is_resource($this->getDBConn()->query($sql) ) === true) { $code = 10; }
-					else { $code = 3; }
-				}
-				else { $code = 10; }
+				$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Address_Tbl
+							(cardid, countryid, stateid, firstname, lastname, company, street, postalcode, city)
+						VALUES
+							(". intval($cardid) .", ". intval($cid) .", ". intval($sid) ." , '". $this->getDBConn()->escStr($fn) ."', '". $this->getDBConn()->escStr($ln) ."', '". $this->getDBConn()->escStr($cmp) ."', '". $this->getDBConn()->escStr($st) ."', '". $this->getDBConn()->escStr($pc) ."', '". $this->getDBConn()->escStr($ct) ."')";
+//				echo $sql ."\n";
+				if (is_resource($this->getDBConn()->query($sql) ) === true) { $code = 10; }
+				else { $code = 2; }
 			}
-			else { $code = 2; }
+			else { $code = 10; }
 		}
 		else { $code = 1; }
 		

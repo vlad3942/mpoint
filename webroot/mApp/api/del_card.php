@@ -79,7 +79,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					for ($j=0; $j<count($obj_DOM->{'delete-card'}[$i]->card); $j++)
 					{
 						$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'delete-card'}[$i]->{'client-info'}->mobile["country-id"]);
-						if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
+						if ( ($obj_CountryConfig instanceof CountryConfig) === false || $obj_CountryConfig->getID() <= 0) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
 					
 						$obj_mPoint = new MyAccount($_OBJ_DB, $_OBJ_TXT, $obj_CountryConfig);
 						$obj_Validator = new Validate($obj_CountryConfig);
@@ -96,32 +96,38 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'delete-card'}[$i]->password) + 20;
                         }
                         if ($obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'delete-card'}[$i]->card) != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'delete-card'}[$i]->card) + 40; }
-					
 						// Input valid
 						if (count($aMsgCds) == 0)
 						{
+							// Single Sign-On
 							if (count($obj_DOM->{'delete-card'}[$i]->{'auth-token'}) == 1
-							&& (count($obj_DOM->{'delete-card'}[$i]->{'auth-url'}) == 1 || strlen($obj_ClientConfig->getAuthenticationURL() ) > 0) )
+								&& (count($obj_DOM->{'delete-card'}[$i]->{'auth-url'}) == 1 || strlen($obj_ClientConfig->getAuthenticationURL() ) > 0) )
 							{
-								$url = $obj_ClientConfig->getAuthenticationURL();
-								if (count($obj_DOM->{'delete-card'}[$i]->{'auth-url'}) == 1) { $url = (string) $obj_DOM->{'delete-card'}[$i]->{'auth-url'}; }
-								if ($obj_Validator->valURL($url, $obj_ClientConfig->getAuthenticationURL() ) == 10)
-								{
-									$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($url), $obj_DOM->{'delete-card'}[$i]->{'client-info'}->{'customer-ref'}, (string) $obj_DOM->{'delete-card'}[$i]->{'auth-token'} );
-								}
-								else { $code = 8; }
+								$code = 10;
 							}
-							else { $code = $obj_mPoint->auth($iAccountID, (string) $obj_DOM->{'delete-card'}[$i]->password); }
+							else
+							{
+								$code = General::authToken($iAccountID, $obj_ClientConfig->getSecret(), $_COOKIE['token']);
+								// Generate new security token
+								if ($code == 11) { setcookie("token", General::genToken($iAccountID, $obj_ClientConfig->getSecret() ) ); }
+							}
 
 							// Authentication succeeded
 							if ($code >= 10)
 							{
-                                if (strlen( (string) $obj_DOM->{'delete-card'}[$i]->password) > 1)
-                                { 
-                                    // Generate new security token
-                                    if ($code == 11) { setcookie("token", General::genToken($iAccountID, $obj_ClientConfig->getSecret() ) ); }
-                                    $code = General::authToken($iAccountID, $obj_ClientConfig->getSecret(), $_COOKIE['token']);
-                                }
+								// Single Sign-On
+								if (count($obj_DOM->{'delete-card'}[$i]->{'auth-token'}) == 1
+									&& (count($obj_DOM->{'delete-card'}[$i]->{'auth-url'}) == 1 || strlen($obj_ClientConfig->getAuthenticationURL() ) > 0) )
+								{
+									$url = $obj_ClientConfig->getAuthenticationURL();
+									if (count($obj_DOM->{'delete-card'}[$i]->{'auth-url'}) == 1) { $url = (string) $obj_DOM->{'delete-card'}[$i]->{'auth-url'}; }
+									if ($obj_Validator->valURL($url, $obj_ClientConfig->getAuthenticationURL() ) == 10)
+									{
+										$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($url), $obj_DOM->{'delete-card'}[$i]->{'client-info'}->{'customer-ref'}, (string) $obj_DOM->{'delete-card'}[$i]->{'auth-token'} );
+									}
+									else { $code = 8; }
+								}
+								else { $code = $obj_mPoint->auth($iAccountID, (string) $obj_DOM->{'delete-card'}[$i]->password); }
 								// Authentication succeeded
 								if ($code == 10 || ($code == 11 && $obj_ClientConfig->smsReceiptEnabled() === false) )
 								{

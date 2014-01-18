@@ -85,10 +85,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				// Client successfully authenticated
 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']) )
 				{
+					$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile["country-id"]);
+					if ( ($obj_CountryConfig instanceof CountryConfig) === false || $obj_CountryConfig->getID() < 1) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
+					
 					for ($j=0; $j<count($obj_DOM->{'save-card'}[$i]->card); $j++)
 					{
 						$obj_mPoint = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
-						$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
+						$obj_Validator = new Validate($obj_CountryConfig);
 						$aMsgCds = array();
 						
 						if (count($obj_DOM->{'save-card'}[$i]->card[$j]->name) == 1 && $obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name) != 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name) + 20; }
@@ -105,8 +108,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						// Modifying an existing Stored Card
 						if (intval($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) > 0)
 						{
-							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile["country-id"]);
-
 							if (count($obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}) == 1) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}, ($obj_ClientConfig->getStoreCard() <= 3) ); }
 							if ($iAccountID < 0 && count($obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
 							if ($iAccountID < 0 && count($obj_DOM->{'save-card'}[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
@@ -121,11 +122,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if ($obj_Validator->valPSPID($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"]) != 10) { $aMsgCds[] = $obj_Validator->valPSPID($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"]) + 60; }
 							if ($obj_Validator->valMaxCards($_OBJ_DB, $iAccountID, $obj_ClientConfig->getMaxCards(), (integer) $obj_DOM->{'save-card'}[$i]["client-id"] ) != 10) { $aMsgCds[] = $obj_Validator->valMaxCards($_OBJ_DB, $iAccountID, $obj_ClientConfig->getMaxCards(), (integer) $obj_DOM->{'save-card'}[$i]["client-id"]) + 70; }
 						}
+						if (count($obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}) == 1)
+						{
+							if ($obj_Validator->valState($_OBJ_DB, utf8_decode( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}->state) ) != 10) { $aMsgCds[] = $obj_Validator->valState($_OBJ_DB, utf8_decode( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}->state) ) + 80; }
+						}
 						
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
 						{
-							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile["country-id"]);
 							// Start Transaction
 							$_OBJ_DB->query("START TRANSACTION");
 							// Modifying an existing Stored Card
@@ -158,7 +162,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if (count($obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}) == 1 && $code > 0)
 							{
 								$id = $obj_mPoint->getCardIDFromCardDetails($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-number-mask'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} ."/". substr($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-year'}, -2) );
-								$code = $obj_mPoint->saveAddress($id, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]->address["country-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->state, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{'first-name'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"last-name"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->company, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->street, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"postal-code"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->city);
+								$sid = $obj_mPoint->getStateID( (integer) $obj_DOM->{'save-card'}[$i]->card[$j]->address["country-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->state);
+								if ($sid <= 0) { $sid = $obj_mPoint->saveState( (integer) $obj_DOM->{'save-card'}[$i]->card[$j]->address["country-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->state); }
+								$code = $obj_mPoint->saveAddress($id, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]->address["country-id"], $sid, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{'first-name'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"last-name"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->company, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->street, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"postal-code"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->city);
 								if ($code == 10)
 								{
 									// Commit Saved Card

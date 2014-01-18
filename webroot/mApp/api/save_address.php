@@ -107,14 +107,14 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 				}
 				// Validate required input
 				if ($obj_Validator->valName( (string) $obj_DOM->address[$i]->street) < 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->address[$i]->street) + 50; }
-				if ($obj_Validator->valState($_OBJ_DB,  (string) $obj_DOM->address[$i]->state) == 10)
+				if ($obj_Validator->valState($_OBJ_DB, (string) $obj_DOM->address[$i]->state) == 10)
 				{
 					if ($obj_Validator->valPostalCode($_OBJ_DB, (string) $obj_DOM->address[$i]->{'postal-code'}, (string) $obj_DOM->address[$i]->state) < 10) { $aMsgCds[] = $obj_Validator->valPostalCode($_OBJ_DB, (string) $obj_DOM->address[$i]->{'postal-code'}, (string) $obj_DOM->address[$i]->state) + 60; }
 				}
 				else
 				{
 					if ($obj_Validator->valPostalCode($_OBJ_DB, (string) $obj_DOM->address[$i]->{'postal-code'}) < 10) { $aMsgCds[] = $obj_Validator->valPostalCode($_OBJ_DB, (string) $obj_DOM->address[$i]->{'postal-code'}) + 60; }
-					$aMsgCds[] = $obj_Validator->valState($_OBJ_DB,  (string) $obj_DOM->address[$i]->state) + 70;
+					$aMsgCds[] = $obj_Validator->valState($_OBJ_DB, (string) $obj_DOM->address[$i]->state) + 70;
 				}
 				if ($obj_Validator->valName( (string) $obj_DOM->address[$i]->city) < 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->address[$i]->city) + 80; }
 				
@@ -161,7 +161,8 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 						// Address doesn't exist, add to profile
 						if ($bExists === false)
 						{
-							$code = $obj_mPoint->saveAddress($iAccountID, (integer) $obj_DOM->address[$i]["country-id"], (string) $obj_DOM->address[$i]->{'first-name'}, (string) $obj_DOM->address[$i]->{'last-name'}, (string) $obj_DOM->address[$i]->company, (string) $obj_DOM->address[$i]->street, (string) $obj_DOM->address[$i]->{'postal-code'}, (string) $obj_DOM->address[$i]->city, (string) $obj_DOM->address[$i]->state);
+							$sid = $obj_mPoint->getStateID( (integer) $obj_DOM->address[$i]["country-id"], (string) $obj_DOM->address[$i]->state);
+							$code = $obj_mPoint->saveAddress($iAccountID, (integer) $obj_DOM->address[$i]["country-id"], $sid, (string) $obj_DOM->address[$i]->{'first-name'}, (string) $obj_DOM->address[$i]->{"last-name"}, (string) $obj_DOM->address[$i]->company, (string) $obj_DOM->address[$i]->street, (string) $obj_DOM->address[$i]->{"postal-code"}, (string) $obj_DOM->address[$i]->city);
 							if ($code >= 10) { $code++; }
 						}
 						else { $code = 10; }

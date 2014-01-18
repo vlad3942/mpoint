@@ -13,12 +13,15 @@ require_once(sAPI_CLASS_PATH ."/http_client.php");
  * Connection info for sending error reports to a remote host
  */
 $aHTTP_CONN_INFO["mesb"]["protocol"] = "http";
-//$aHTTP_CONN_INFO["mesb"]["host"] = "10.150.242.42";	// EK: Dev
+$aHTTP_CONN_INFO["mesb"]["host"] = "10.150.242.42";	// EK: Dev
 //$aHTTP_CONN_INFO["mesb"]["host"] = "10.50.245.137";	// EK: Pre-Prod 1
 //$aHTTP_CONN_INFO["mesb"]["host"] = "10.150.242.41";	// EK: Pre-Prod 2
-$aHTTP_CONN_INFO["mesb"]["host"] = "localhost";			// 
+$aHTTP_CONN_INFO["mesb"]["host"] = "localhost";			//
+$aHTTP_CONN_INFO["mesb"]["host"] = "1415.mesb.test.cellpointmobile.com";
+$aHTTP_CONN_INFO["mesb"]["host"] = "mpoint.localhost";			// 
 $aHTTP_CONN_INFO["mesb"]["port"] = 9000; 				// EK MESB
-//$aHTTP_CONN_INFO["mesb"]["port"] = 80; 				// mPoint
+$aHTTP_CONN_INFO["mesb"]["port"] = 10080; 				// MESB
+$aHTTP_CONN_INFO["mesb"]["port"] = 80; 				// mPoint
 $aHTTP_CONN_INFO["mesb"]["timeout"] = 120;
 $aHTTP_CONN_INFO["mesb"]["method"] = "POST";
 $aHTTP_CONN_INFO["mesb"]["contenttype"] = "text/xml";
@@ -26,6 +29,8 @@ $aHTTP_CONN_INFO["mesb"]["username"] = "IBE";
 $aHTTP_CONN_INFO["mesb"]["password"] = "kjsg5Ahf_1";
 //$aHTTP_CONN_INFO["mesb"]["username"] = "EasyMARS";
 //$aHTTP_CONN_INFO["mesb"]["password"] = 'EZM$PC_UAT';
+$aHTTP_CONN_INFO["mesb"]["username"] = "1415";
+$aHTTP_CONN_INFO["mesb"]["password"] = "Ghdy4_ah1G";
 
 //$h .= "user-agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:20.0) Gecko/20100101 Firefox/20.0" .HTTPClient::CRLF;
 //$h .= "accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" .HTTPClient::CRLF;
@@ -191,8 +196,45 @@ class AutoTest
 		}
 		else { return ""; }
 	}
-	
+
 	/* ========== Automatic Payment Tests Start ========== */
+	public function pay2()
+	{
+		$b = '<?xml version="1.0" encoding="UTF-8"?>
+<root><initialize-payment account="100026" client-id="10019"><transaction order-no="800-48127208" type-id="40"><amount country-id="115">35000</amount><callback-url>http://1415.mretail.cellpointmobile.com/mOrder/sys/mpoint.php</callback-url></transaction><client-info language="da" version="1.20" platform="iOS/7.0.4"><mobile operator-id="11500" country-id="115">1733060076</mobile><email>mmille44@csc.com</email><device-id>B58BB3D2-D52D-4D15-B06A-CC9C1BC99629</device-id></client-info></initialize-payment></root>';
+		// mPoint
+		if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
+		{
+			$this->_aConnInfo["path"] = "/mApp/api/initialize.php";
+		}
+		// Mobile Enterprise Service Bus
+		else { $this->_aConnInfo["path"] = "/mpoint/initialize-payment"; }
+		
+		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
+		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
+		$this->_obj_Client->connect();
+		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
+		if ($code == 200)
+		{
+			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
+			$b = '<?xml version="1.0" encoding="UTF-8"?><root><pay account="100026" client-id="10019"><transaction store-card="true" id="'. $obj_XML->transaction["id"] .'"><card type-id="7"><amount country-id="'. $obj_XML->transaction->amount["country-id"] .'">35000</amount></card></transaction><client-info language="da" version="1.20" platform="iOS/7.0.4"><mobile operator-id="11500" country-id="115">1733060076</mobile><email>mmille44@csc.com</email><device-id>B58BB3D2-D52D-4D15-B06A-CC9C1BC99629</device-id></client-info></pay></root>';
+			// mPoint
+			if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
+			{
+				$this->_aConnInfo["path"] = "/mApp/api/pay.php";
+			}
+			// Mobile Enterprise Service Bus
+			else { $this->_aConnInfo["path"] = "/mpoint/pay"; }
+			$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
+			$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
+			$this->_obj_Client->connect();
+			$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
+			
+			echo $this->_obj_Client->getReplyBody();
+		}
+		else { $obj_XML = null; }
+		$this->_obj_Client->disconnect();
+	}
 	public function initializePaymentWithEnhancedDataTest()
 	{
 		$this->_sDebug = "";
@@ -569,7 +611,7 @@ class AutoTest
 		}
 	}
 	
-	public function saveMaskedCardTest($at, $type="", $name="")
+	public function saveMaskedCardTest($at, $type="", $name="", $state="")
 	{
 		if (empty($type) === true) { $type = $this->_card; }
 		switch ($type)
@@ -611,7 +653,8 @@ class AutoTest
 		$b .= '<street>Anna nagar</street>';
 		$b .= '<postal-code>600408</postal-code>';
 		$b .= '<city>Chennai</city>';
-		if ($this->_country == "IN") { $b .= '<state>TR</state>'; }
+		if (empty($state) === false) { $b .= '<state>'. htmlspecialchars(utf8_encode($state), ENT_NOQUOTES) .'</state>'; }
+		elseif ($this->_country == "IN") { $b .= '<state>TR</state>'; }
 		$b .= '</address>';
 		$b .= '</card>';
 		$b .= '<password>oisJona1</password>';
@@ -789,6 +832,46 @@ class AutoTest
 			return self::sSTATUS_FAILED;
 		}
 	}
+	private function _loginUsingPasswordTest($pwd)
+	{
+		$b = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<root>';
+		$b .= '<login client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
+		$b .= '<password>'. htmlspecialchars($pwd, ENT_NOQUOTES) .'</password>';
+		$b .= $this->_constClientInfo();
+		$b .= '</login>';
+		$b .= '</root>';
+	
+		$this->_sDebug = "";
+		// mPoint
+		if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
+		{
+			$this->_aConnInfo["path"] = "/mApp/api/login.php";
+		}
+		// Mobile Enterprise Service Bus
+		else { $this->_aConnInfo["path"] = "/mpoint/login"; }
+	
+		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
+		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
+		$this->_obj_Client->connect();
+		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
+		$this->_obj_Client->disconnect();
+	
+		if ($code == 200)
+		{
+			return simplexml_load_string($this->_obj_Client->getReplyBody() );
+		}
+		elseif ($code == 401 || $code == 403)
+		{
+			$this->_sDebug = $this->_obj_Client->getReplyBody();
+			return self::sSTATUS_WARNING;
+		}
+		else
+		{
+			$this->_sDebug = $this->_obj_Client->getReplyBody();
+			return self::sSTATUS_FAILED;
+		}
+	}
 	
 	public function loginUsingSSOTest($at)
 	{
@@ -797,7 +880,26 @@ class AutoTest
 		{
 			if (count($obj_XML->{'stored-cards'}->card->address) == 1)
 			{
-				return self::sSTATUS_SUCCESS;
+				// EZM requires card token to be returned
+				if ($this->_aConnInfo["username"] == "EasyMARS")
+				{
+					if (count($obj_XML->{'stored-cards'}->card->token) == 1)
+					{
+						return self::sSTATUS_SUCCESS;
+					}
+					else
+					{
+						$this->_sDebug = "Card Token not returned";
+						return self::sSTATUS_FAILED;
+					}
+				}
+				// Card Token may not be returned for other Clients
+				elseif (count($obj_XML->{'stored-cards'}->card->token) == 0) { return self::sSTATUS_SUCCESS; }
+				else
+				{
+					$this->_sDebug = "Card Token may only be returned for EZM";
+					return self::sSTATUS_FAILED;
+				}
 			}
 			else
 			{
@@ -863,62 +965,97 @@ class AutoTest
 		}
 		else { return self::sSTATUS_WARNING; }
 	}
-
-	public function loginUsingPassword()
+	public function deleteCardUsingPasswordTest()
 	{
-		$b = '<?xml version="1.0" encoding="UTF-8"?>';
-		$b .= '<root>';
-		$b .= '<login client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
-		$b .= '<password>oisJona1</password>';
-		$b .= $this->_constClientInfo();
-		$b .= '</login>';
-		$b .= '</root>';
-	
-	
-		$this->_sDebug = "";
-		// Using login.php because it has a call to getStoredCards()
-		// mPoint
-		if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
+		$obj_XML = $this->_loginUsingPasswordTest("oisJona");
+		if ( ($obj_XML instanceof SimpleXMLElement) === true)
 		{
-			$this->_aConnInfo["path"] = "/mApp/api/login.php";
-		}
-		// Mobile Enterprise Service Bus
-		else { $this->_aConnInfo["path"] = "/mpoint/login"; }
+			if (count($obj_XML->{'stored-cards'}->card) > 0)
+			{
+				$b = '<?xml version="1.0" encoding="UTF-8"?>';
+				$b .= '<root>';
+				$b .= '<delete-card client-id="'. $this->_iClientID .'" account="'. $this->_iAccount .'">';
+				$b .= '<card>'. $obj_XML->{'stored-cards'}->card[0]["id"] .'</card>';
+				$b .= '<password>oisJona</password>';
+				$b .= $this->_constClientInfo();
+				$b .= '</delete-card>';
+				$b .= '</root>';
+					
+				$this->_sDebug = "";
+				// mPoint
+				if ($this->_aConnInfo["port"] == 80 || $this->_aConnInfo["port"] == 443)
+				{
+					$this->_aConnInfo["path"] = "/mApp/api/del_card.php";
+				}
+				// Mobile Enterprise Service Bus
+				else { $this->_aConnInfo["path"] = "/mpoint/delete-card"; }
+					
+				$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
+				$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
+				$this->_obj_Client->connect();
+				$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
+				$this->_obj_Client->disconnect();
 	
-		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($this->_aConnInfo);
-		$this->_obj_Client = new HTTPClient(new Template, $obj_ConnInfo);
-		$this->_obj_Client->connect();
-		$code = $this->_obj_Client->send($this->_constmPointHeaders(), $b);
-		$this->_obj_Client->disconnect();
-		if ($code == 200)
-		{
-			$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
-			$c = $obj_XML->{'stored-cards'};
-			if (count($obj_XML->{'stored-cards'}->card) == 1)
-			{
-				return self::sSTATUS_SUCCESS;
-			}
-			else if (count($obj_XML->{'stored-cards'}->card) == 0)
-			{
-				$this->_sDebug = "No cards found";
-				return self::sSTATUS_FAILED;
+				if ($code == 200)
+				{
+					$obj_XML = simplexml_load_string($this->_obj_Client->getReplyBody() );
+					if ($obj_XML->status["code"] >= 100) { return self::sSTATUS_SUCCESS; }
+					else
+					{
+						$this->_sDebug = $this->_obj_Client->getReplyBody();
+						return self::sSTATUS_FAILED;
+					}
+				}
+				else
+				{
+					$this->_sDebug = $this->_obj_Client->getReplyBody();
+					return self::sSTATUS_WARNING;
+				}
 			}
 			else
 			{
-				$this->_sDebug = "Expired and disabled cards must not be retrieved";
+				$this->_sDebug = "No Stored Cards returned";
+				return self::sSTATUS_WARNING;
+			}
+		}
+		else { return self::sSTATUS_WARNING; }
+	}
+
+	public function loginUsingPassword()
+	{
+		$obj_XML = $this->_loginUsingPasswordTest("oisJona");
+		if ( ($obj_XML instanceof SimpleXMLElement) === true)
+		{
+			if (count($obj_XML->{'stored-cards'}->card->address) == 1)
+			{
+				// EZM requires card token to be returned
+				if ($this->_aConnInfo["username"] == "EasyMARS")
+				{
+					if (count($obj_XML->{'stored-cards'}->card->token) == 1)
+					{
+						return self::sSTATUS_SUCCESS;
+					}
+					else
+					{
+						$this->_sDebug = "Card Token not returned";
+						return self::sSTATUS_FAILED;
+					}
+				}
+				// Card Token may not be returned for other Clients
+				elseif (count($obj_XML->{'stored-cards'}->card->token) == 0) { return self::sSTATUS_SUCCESS; }
+				else
+				{
+					$this->_sDebug = "Card Token may only be returned for EZM";
+					return self::sSTATUS_FAILED;
+				}
+			}
+			else
+			{
+				$this->_sDebug = "No address returned";
 				return self::sSTATUS_FAILED;
 			}
 		}
-		elseif ($code == 401 || $code == 403)
-		{
-			$this->_sDebug = $this->_obj_Client->getReplyBody();
-			return self::sSTATUS_WARNING;
-		}
-		else
-		{
-			$this->_sDebug = $this->_obj_Client->getReplyBody();
-			return self::sSTATUS_FAILED;
-		}
+		else { return self::sSTATUS_FAILED; }
 	}
 	
 
@@ -1099,18 +1236,18 @@ class AutoTest
 	}
 }
 
-$iClientID = 10001;
-$iAccount = 100010;
+$iClientID = 10019;
+$iAccount = 100026;
 //$sCustomerRef = "100119331";
 $sCustomerRef = "263771465";
-$country = "AE";
-$iMobile = "505059381";
+$country = "100";
+$iMobile = "28882861";
 $sEMail = "vivek.bhatnagar@emirates.com";
 $card = "6";
 $obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $sCustomerRef, $country, $iMobile, $sEMail, $card);
 
 $sAuthToken = $obj_AutoTest->getCRISAuthToken();
-$sAuthToken = "801FA7C68510F21F3609CD34C5630393AC213A88B55A6A78AE774E0DA79B0949B72C2F87E594D0EF";
+//$sAuthToken = "801FA7C68510F21F3609CD34C5630393AC213A88B55A6A78AE774E0DA79B0949B72C2F87E594D0EF";
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -1210,6 +1347,11 @@ $sAuthToken = "801FA7C68510F21F3609CD34C5630393AC213A88B55A6A78AE774E0DA79B0949B
 		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
+		<td class="name">Save Masked MasterCard with Name and Unknown State</td>
+		<td><?= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "6", "My MasterCard", "ÆØ"); ?></td>
+		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
 		<td class="name">Save Masked Postpay MasterCard with Name</td>
 		<td><?//= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "POSTEPAYMAST", "My PostPay MasterCard"); ?></td>
 		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
@@ -1231,8 +1373,8 @@ $sAuthToken = "801FA7C68510F21F3609CD34C5630393AC213A88B55A6A78AE774E0DA79B0949B
 	</tr>
 	<tr>
 		<td class="name">Save Masked VISA Card without Name</td>
-		<td><?= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "VISA", ""); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "VISA", ""); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Save Masked VISA Electron Card with Name</td>
@@ -1241,13 +1383,13 @@ $sAuthToken = "801FA7C68510F21F3609CD34C5630393AC213A88B55A6A78AE774E0DA79B0949B
 	</tr>
 	<tr>
 		<td class="name">Initialize Payment with Enhanced Data</td>
-		<td><?= $obj_AutoTest->initializePaymentWithEnhancedDataTest(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->initializePaymentWithEnhancedDataTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Initialize Payment with Instalments</td>
-		<td><?= $obj_AutoTest->initializePaymentWithInstalmentsTest(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->initializePaymentWithInstalmentsTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Pay</td>
@@ -1256,13 +1398,13 @@ $sAuthToken = "801FA7C68510F21F3609CD34C5630393AC213A88B55A6A78AE774E0DA79B0949B
 	</tr>
 	<tr>
 		<td class="name">Authorize Stored Card using Single Sign-On</td>
-		<td><?= $obj_AutoTest->authorizeStoredCardUsingSSOTest($sAuthToken); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->authorizeStoredCardUsingSSOTest($sAuthToken); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Authorize Stored Card with Instalments using Single Sign-On</td>
-		<td><?= $obj_AutoTest->authorizeStoredCardWithInstalmentsUsingSSOTest($sAuthToken); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->authorizeStoredCardWithInstalmentsUsingSSOTest($sAuthToken); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Authorize Stored Card with Multi-Currency Payment using Single Sign-On</td>
@@ -1271,47 +1413,52 @@ $sAuthToken = "801FA7C68510F21F3609CD34C5630393AC213A88B55A6A78AE774E0DA79B0949B
 	</tr>
 	<tr>
 		<td class="name">Save Card Name using Single Sign-On</td>
-		<td><?= $obj_AutoTest->saveCardNameUsingSSOTest($sAuthToken); ?></td>
-		<td><?= $obj_AutoTest->getDebug(); ?></td>
+		<td><?//= $obj_AutoTest->saveCardNameUsingSSOTest($sAuthToken); ?></td>
+		<td><?//= $obj_AutoTest->getDebug(); ?></td>
 	</tr>
 	<tr>
 		<td class="name">mConsole Search using Mobile</td>
-		<td><?= $obj_AutoTest->mConsoleSearchUsingMobileTest(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->mConsoleSearchUsingMobileTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">mConsole Search using E-Mail</td>
-		<td><?= $obj_AutoTest->mConsoleSearchUsingEMailTest(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->mConsoleSearchUsingEMailTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">mConsole Search using Customer Reference</td>
-		<td><?= $obj_AutoTest->mConsoleSearchUsingCustomerRefTest(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->mConsoleSearchUsingCustomerRefTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">mConsole Search using Period</td>
-		<td><?= $obj_AutoTest->mConsoleSearchUsingPeriodTest(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->mConsoleSearchUsingPeriodTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Login using Password</td>
-		<td><?= $obj_AutoTest->loginUsingPassword(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->loginUsingPassword(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Login using Password with Billing Address Returned</td>
-		<td><?= $obj_AutoTest->loginUsingPasswordAddressReturnTest(); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->loginUsingPasswordAddressReturnTest(); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Login using Single Sign-On</td>
-		<td><?= $obj_AutoTest->loginUsingSSOTest($sAuthToken); ?></td>
-		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+		<td><?//= $obj_AutoTest->loginUsingSSOTest($sAuthToken); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
 		<td class="name">Delete Card using Single Sign-On</td>
-		<td><?= $obj_AutoTest->deleteCardUsingSSOTest($sAuthToken); ?></td>
+		<td><?//= $obj_AutoTest->deleteCardUsingSSOTest($sAuthToken); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	<tr>
+		<td class="name">Delete Card using Password</td>
+		<td><?= $obj_AutoTest->deleteCardUsingPasswordTest(); ?></td>
 		<td><?= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
@@ -1327,6 +1474,12 @@ $sAuthToken = "801FA7C68510F21F3609CD34C5630393AC213A88B55A6A78AE774E0DA79B0949B
 		<tr>
 		<td class="name">Save Masked Card without PSP ID</td>
 		<td><?//= $obj_AutoTest->saveMaskedCardWithoutPSPIDTest($sAuthToken); ?></td>
+		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
+	</tr>
+	</tr>
+	<tr>
+		<td class="name">Pay 2</td>
+		<td><?//= $obj_AutoTest->pay2(); ?></td>
 		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	</table>

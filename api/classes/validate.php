@@ -948,6 +948,7 @@ class Validate
 	 * 	 4. State Disabled
 	 * 	 5. State not found in Country
 	 * 	10. Success
+	 * Please note that the method uses strlen(), which doesn't return the expected result for multi-byte character sets such as UTF-8.
 	 *
 	 * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
 	 * @param 	integer $s 	Unique ID for the State that should be validated
@@ -957,33 +958,35 @@ class Validate
 	{
 		switch ($this->_obj_CountryConfig->getID() )
 		{
-			case (100):	// Denmark
-			case (101):	// Sweden
-			case (102):	// Norway
-			case (103):	// UK
-			case (104):	// Finland
-				$code = 10;
-				break;
-			case (200):	// USA
-				if (empty($s) === true) { $code = 1; }	// Undefined State
-				elseif (strlen($s) != 2) { $code = 2; }	// Invalid State
-				else
-				{
-					$sql = "SELECT enabled, countryid
+		case (100):	// Denmark
+		case (101):	// Sweden
+		case (102):	// Norway
+		case (103):	// UK
+		case (104):	// Finland
+			$code = 10;
+			break;
+		case (200):	// USA
+		case (202):	// Canada
+		case (603):	// India
+			if (empty($s) === true) { $code = 1; }	// Undefined State
+			elseif (strlen($s) != 2) { $code = 2; }	// Invalid State
+			else
+			{
+				$sql = "SELECT enabled, countryid
 						FROM System".sSCHEMA_POSTFIX.".State_Tbl
 						WHERE Upper(code) = Upper('". $oDB->escStr($s) ."')";
-					//				echo $sql ."\n";
-					$RS = $oDB->getName($sql);
-	
-					if (is_array($RS) === false) { $code = 3; }		// Unknown State
-					elseif ($RS["ENABLED"] === false) { $code = 4; }// State Disabled
-					elseif ($RS["COUNTRYID"] != 200) { $code = 5; }	// State not found in country
-					else { $code = 10; }							// Success
-				}
-				break;
-			default:	// Unknown Country
-				$code = 10;
-				break;
+//				echo $sql ."\n";
+				$RS = $oDB->getName($sql);
+				
+				if (is_array($RS) === false) { $code = 3; }										// Unknown State
+				elseif ($RS["ENABLED"] === false) { $code = 4; }								// State Disabled
+				elseif ($RS["COUNTRYID"] != $this->_obj_CountryConfig->getID() ) { $code = 5; }	// State not found in country
+				else { $code = 10; }															// Success
+			}
+			break;
+		default:	// Unknown Country
+			$code = 10;
+			break;
 		}
 	
 		return $code;

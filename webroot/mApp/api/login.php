@@ -38,7 +38,7 @@ $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<login client-id="10017" >';
+$HTTP_RAW_POST_DATA .= '<login client-id="10017">';
 $HTTP_RAW_POST_DATA .= '<password>oisJona1</password>';
 //$HTTP_RAW_POST_DATA .= '<auth-token>test1234</auth-token>';
 //$HTTP_RAW_POST_DATA .= '<auth-url>http://mpoint.test.cellpointmobile.com/_test/auth.php</auth-url>';
