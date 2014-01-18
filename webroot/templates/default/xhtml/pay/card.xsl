@@ -143,9 +143,10 @@
 	  - Card shouldn't be "auto stored" AND
 	  - "Card" is NOT "My Account" OR
 	  - "Cards" stored for Merchant OR
+	  - "Cards" stored Globally OR
 	  - E-Money based Prepaid Account is available AND Transaction is not an Account Top-Up
 	  -->
-	<xsl:if test="/root/transaction/auto-store-card = 'false' and (@id != 11 or count(/root/stored-cards/card[client/@id = /root/client-config/@id]) &gt; 0 or (floor(/root/client-config/store-card div 1) mod 2 != 1 and (/root/transaction/@type &lt; 100 or /root/transaction/@type &gt; 109) ) )">
+	<xsl:if test="/root/transaction/auto-store-card = 'false' and (@id != 11 or count(/root/stored-cards/card[client/@id = /root/client-config/@id]) &gt; 0 or (count(/root/stored-cards/card) &gt; 0 and /root/client-config/store-card &gt; 3) or (floor(/root/client-config/store-card div 1) mod 2 != 1 and (/root/transaction/@type &lt; 100 or /root/transaction/@type &gt; 109) ) )">
 		<div>
 			<form action="{func:constLink('/cpm/payment.php') }" method="post">
 				<div class="{$css}">

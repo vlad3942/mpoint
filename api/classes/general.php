@@ -547,6 +547,8 @@ class General
 				$RS["DATA"] = utf8_decode($RS["DATA"]);
 				$data = @unserialize($RS["DATA"]);
 			}
+			// Old data format which hasn't been base64 encoded
+			if ($data === false && $stateid == Constants::iCLIENT_VARS_STATE) { $data = @unserialize(utf8_decode($RS["DATA"]) ); }
 			if ($data === false) { $data = array($RS["DATA"]); }
 		}
 

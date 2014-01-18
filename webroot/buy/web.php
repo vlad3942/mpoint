@@ -184,7 +184,7 @@ if (array_key_exists(1000, $aMsgCds) === true)
 			 */
 			if (count($obj_XML->xpath("/cards[item/@id = 11]") ) > 0 && (count($obj_XML->item) == 1
 				|| count($obj_CardsXML->xpath("/stored-cards/card[client/@id = ". $_SESSION['obj_TxnInfo']->getClientConfig()->getID() ."]") ) > 0
-				|| $_SESSION['obj_TxnInfo']->getClientConfig()->getStoreCard() > 3) )
+				|| ($_SESSION['obj_TxnInfo']->getClientConfig()->getStoreCard() > 3 && count($obj_CardsXML->card) > 0) ) )
 			{
 				header("Location: /cpm/payment.php?". session_name() ."=". session_id() ."&cardtype=11");
 			}
