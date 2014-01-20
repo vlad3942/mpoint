@@ -405,7 +405,7 @@ class Home extends General
 					EUAD.countryid, EUAD.firstname, EUAD.lastname,
 					EUAD.company, EUAD.street,
 					EUAD.postalcode, EUAD.city,
-					STS.code AS state				
+					STS.code, STS.name AS state				
 				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl EUC
 				INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON EUC.pspid = PSP.id AND PSP.enabled = '1'
 				INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl SC ON EUC.cardid = SC.id AND SC.enabled = '1'
@@ -449,9 +449,9 @@ class Home extends General
 				$xml .= '<first-name>'. htmlspecialchars($RS["FIRSTNAME"], ENT_NOQUOTES) .'</first-name>';
 				$xml .= '<last-name>'. htmlspecialchars($RS["LASTNAME"], ENT_NOQUOTES) .'</last-name>';
 				$xml .= '<street>'. htmlspecialchars($RS["STREET"], ENT_NOQUOTES) .'</street>';
-				$xml .= '<postal-code> '.$RS["POSTALCODE"].'</postal-code>';
+				$xml .= '<postal-code>'. $RS["POSTALCODE"] .'</postal-code>';
 				$xml .= '<city>'. htmlspecialchars($RS["CITY"], ENT_NOQUOTES) .'</city>';
-				$xml .= '<state>'.$RS["STATE"].'</state>';
+				if (empty($RS["CODE"]) === false || empty($RS["STATE"]) === false) { $xml .= '<state code="'. htmlspecialchars($RS["CODE"], ENT_NOQUOTES) .'">'. htmlspecialchars($RS["STATE"], ENT_NOQUOTES) .'</state>'; }
 				$xml .= '</address>';
 			}
 			$xml .= '</card>';

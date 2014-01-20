@@ -116,7 +116,14 @@ class CPG extends Callback
 		$b .= '<lastName>'. htmlspecialchars($obj_XML->address->{'last-name'}, ENT_NOQUOTES) .'</lastName>'; // mandatory, 0-40 chars
 		$b .= '<street>'. htmlspecialchars(str_replace("IBE-MPOINT", " ",  $obj_XML->address->street), ENT_NOQUOTES ) .'</street>'; // mandatory, 0-100 chars
 		$b .= '<postalCode>'. intval($obj_XML->address->{'postal-code'}) .'</postalCode>'; // optional, 0-20 chars
-		$b .= '<city>'. htmlspecialchars($obj_XML->address->city, ENT_NOQUOTES) .'</city>'; // mandatory, 0-50 chars
+		$b .= $obj_XML->address->city->asXML();
+		if (count($obj_XML->address->state) == 1)
+		{
+			$b .= '<state>';
+			if (strlen($obj_XML->address->state["code"]) > 0) { $b .= htmlspecialchars($obj_XML->address->state["code"], ENT_NOQUOTES); }
+			else { $b .= htmlspecialchars($obj_XML->address->state, ENT_NOQUOTES); }
+			$b .= '</state>';
+		}
 		$b .= '<countryCode>'. $this->_getCountryCode(intval($obj_XML->address['country-id']) ) .'</countryCode>'; // mandatory, 2-2 chars
 //		$b .= '<telephoneNumber>'. floatval($this->getTxnInfo()->getMobile() ) .'</telephoneNumber>'; // optional
 		$b .= '</address>';
@@ -135,7 +142,14 @@ class CPG extends Callback
 		$b .= '<lastName>'. htmlspecialchars($obj_XML->address->{'last-name'}, ENT_NOQUOTES) .'</lastName>'; // mandatory, 0-40 chars
 		$b .= '<street>'. htmlspecialchars(str_replace("IBE-MPOINT", " ",  $obj_XML->address->street), ENT_NOQUOTES ) .'</street>'; // mandatory, 0-100 chars
 		$b .= '<postalCode>'. intval($obj_XML->address->{'postal-code'}) .'</postalCode>'; // optional, 0-20 chars
-		$b .= '<city>'. htmlspecialchars($obj_XML->address->city, ENT_NOQUOTES) .'</city>'; // mandatory, 0-50 chars
+		$b .= $obj_XML->address->city->asXML();
+		if (count($obj_XML->address->state) == 1)
+		{
+			$b .= '<state>';
+			if (strlen($obj_XML->address->state["code"]) > 0) { $b .= htmlspecialchars($obj_XML->address->state["code"], ENT_NOQUOTES); }
+			else { $b .= htmlspecialchars($obj_XML->address->state, ENT_NOQUOTES); }
+			$b .= '</state>';
+		}
 		$b .= '<countryCode>'. $this->_getCountryCode(intval($obj_XML->address['country-id']) ) .'</countryCode>'; // mandatory, 2-2 chars
 //		$b .= '<telephoneNumber>'. floatval($this->getTxnInfo()->getMobile() ) .'</telephoneNumber>'; // optional
 		$b .= '</address>';
