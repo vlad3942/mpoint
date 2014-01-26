@@ -494,7 +494,7 @@ class EndUserAccount extends Home
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 		
-		if (is_array($RS) === false || intval($RS["ID"]) <= 0)
+		if (is_array($RS) === false || intval($RS["ID"]) == 0)
 		{
 			$sql = "SELECT id
 					FROM System".sSCHEMA_POSTFIX.".State_Tbl
@@ -503,7 +503,7 @@ class EndUserAccount extends Home
 			$RS = $this->getDBConn()->getName($sql);
 		}
 		
-		return is_array($RS) === true ? intval($RS["ID"]) : -1;
+		return is_array($RS) === true ? intval($RS["ID"]) : 0;
 	}
 	/**
 	 * Saves Billing Address for the newest card which has been created recently (within the last 5 minutes).	

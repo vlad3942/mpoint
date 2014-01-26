@@ -160,25 +160,26 @@ class CPG extends Callback
 		$b .= '</submit>';
 
 		$aLogin = $this->getMerchantLogin($this->getTxnInfo()->getClientConfig()->getID(), Constants::iCPG_PSP);
-		
 		$sUsername = "";
 		$sPassword = "";
-		$aUsernames = explode(" ### ", $aLogin["username"]);
-		$aPasswords = explode(" ### ", $aLogin["password"]);
-		if ($sc == "NPG") 
+		$a = explode(" ", $aLogin["username"]);
+		foreach ($a as $str)
 		{
-			$sUsername = $aUsernames[0];
-			$sPassword = $aPasswords[0];
+			$pos = strpos($str, "=");
+			$aUsernames[substr($str, 0, $pos)] = substr($str, $pos+1); 
 		}
-		elseif ($sc == "GST")
+		$a = explode(" ", $aLogin["password"]);
+		foreach ($a as $str)
 		{
-			$sUsername = $aUsernames[1];
-			$sPassword = $aPasswords[1];
+			$pos = strpos($str, "=");
+			$aPasswords[substr($str, 0, $pos)] = substr($str, $pos+1);
 		}
+		$sUsername = $aUsernames[$sc];
+		$sPassword = $aPasswords[$sc];
 		
 		$oCI = new HTTPConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), $oCI->getMethod(), $oCI->getContentType(), $sUsername,$sPassword);
 		$h = trim($this->constHTTPHeaders() ) .HTTPClient::CRLF;
-		$h .= "authorization: Basic ".  base64_encode($sUsername .":". $sPassword) .HTTPClient::CRLF;
+		if (empty($sUsername) === false || empty($sPassword) === false) { $h .= "authorization: Basic ".  base64_encode($sUsername .":". $sPassword) .HTTPClient::CRLF; }
 				
 		$obj_HTTP = new HTTPClient(new Template(), $oCI);
 		$obj_HTTP->connect();

@@ -451,7 +451,7 @@ class Home extends General
 				$xml .= '<street>'. htmlspecialchars($RS["STREET"], ENT_NOQUOTES) .'</street>';
 				$xml .= '<postal-code>'. $RS["POSTALCODE"] .'</postal-code>';
 				$xml .= '<city>'. htmlspecialchars($RS["CITY"], ENT_NOQUOTES) .'</city>';
-				if (empty($RS["CODE"]) === false || empty($RS["STATE"]) === false) { $xml .= '<state code="'. htmlspecialchars($RS["CODE"], ENT_NOQUOTES) .'">'. htmlspecialchars($RS["STATE"], ENT_NOQUOTES) .'</state>'; }
+				if ( (empty($RS["CODE"]) === false && $RS["CODE"] != "N/A") || empty($RS["STATE"]) === false) { $xml .= '<state code="'. htmlspecialchars($RS["CODE"], ENT_NOQUOTES) .'">'. htmlspecialchars($RS["STATE"], ENT_NOQUOTES) .'</state>'; }
 				$xml .= '</address>';
 			}
 			$xml .= '</card>';
