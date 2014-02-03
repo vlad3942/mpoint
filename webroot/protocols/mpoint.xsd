@@ -632,9 +632,13 @@
 		<xs:enumeration value="WY" />
 		<!-- India -->
 		<xs:enumeration value="AP" />
+		<xs:enumeration value="PB" />
+		<xs:enumeration value="UT" />
 		<xs:enumeration value="AR" />
 		<xs:enumeration value="AS" />
 		<xs:enumeration value="BR" />
+		<xs:enumeration value="CG" />
+		<xs:enumeration value="DL" />	
 		<xs:enumeration value="CT" />
 		<xs:enumeration value="DE" />
 		<xs:enumeration value="GA" />
@@ -660,6 +664,13 @@
 		<xs:enumeration value="UP" />
 		<xs:enumeration value="UL" />
 		<xs:enumeration value="WB" />
+	<!-- Other(Union Territories) -->
+		<xs:enumeration value="AN" />
+		<xs:enumeration value="CH" />
+		<xs:enumeration value="DN" />
+		<xs:enumeration value="DD" />
+		<xs:enumeration value="LD" />
+		<xs:enumeration value="PY" />		
 		<!-- Canada -->
 		<xs:enumeration value="AB" />
 		<xs:enumeration value="BC" />
