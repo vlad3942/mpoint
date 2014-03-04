@@ -85,7 +85,7 @@ if (count($aMsgCds) == 0)
 	{
 		// Payment has not previously been attempted for transaction
 		$_OBJ_DB->query("BEGIN");
-		if (count($obj_mPoint->getMessageData($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, true) ) == 0)
+		if (count($obj_mPoint->getMessageData($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, true) ) == 0 && count($obj_mPoint->getMessageData($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_ACCEPTED_STATE, true) ) == 0)
 		{
 			// Add control state and immediately commit database transaction
 			$obj_mPoint->newMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, serialize(array("cardid" => $_POST['cardid']) ) );
