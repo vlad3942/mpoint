@@ -11,7 +11,7 @@
  * @link http://www.cellpointmobile.com
  * @package Callback
  * @subpackage DIBS
- * @version 1.03
+ * @version 1.04
  */
 
 // Require Global Include File
@@ -56,6 +56,18 @@ try
 	// Save Ticket ID representing the End-User's stored Card Info
 	if (array_key_exists("preauth", $_POST) === true && @$_POST['preauth'] == "true")
 	{
+		$iMobileAccountID = -1;
+		$iEMailAccountID = -1;
+		if (strlen($obj_TxnInfo->getCustomerRef() ) == 0)
+		{
+			if (floatval($obj_TxnInfo->getMobile() ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile(), $obj_TxnInfo->getCountryConfig(), ($obj_TxnInfo->getClientConfig()->getStoreCard() <= 3) ); }
+			if (trim($obj_TxnInfo->getEMail() ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail(), $obj_TxnInfo->getCountryConfig(), ($obj_TxnInfo->getClientConfig()->getStoreCard() <= 3) ); }
+			if ($iMobileAccountID != $iEMailAccountID && $iEMailAccountID > 0)
+			{
+				$obj_TxnInfo->setAccountID(-1);
+				$obj_mPoint->getTxnInfo()->setAccountID(-1);
+			}
+		}
 		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $_POST['transact']);
 		$sMask = $_POST['cardprefix'] . substr($_POST['cardnomask'], strlen($_POST['cardprefix']) );
 		$sExpiry = substr($_POST['cardexpdate'], 2) ."/". substr($_POST['cardexpdate'], 0, 2);
@@ -68,10 +80,13 @@ try
 		// New Account automatically created when Card was saved
 		else if ($iStatus == 2)
 		{
-			$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile() );
-			if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail() ); }
-			$obj_TxnInfo->setAccountID($iAccountID);
-			$obj_mPoint->getTxnInfo()->setAccountID($iAccountID);
+			if ($iMobileAccountID == $iEMailAccountID || $iEMailAccountID < 0)
+			{
+				$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile(), $obj_TxnInfo->getCountryConfig(), ($obj_TxnInfo->getClientConfig()->getStoreCard() <= 3) );
+				if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail(), $obj_TxnInfo->getCountryConfig(), ($obj_TxnInfo->getClientConfig()->getStoreCard() <= 3) ); }
+				$obj_TxnInfo->setAccountID($iAccountID);
+				$obj_mPoint->getTxnInfo()->setAccountID($iAccountID);
+			}
 			// SMS communication enabled
 			if ($obj_TxnInfo->getClientConfig()->smsReceiptEnabled() === true)
 			{
@@ -94,7 +109,7 @@ try
 			$obj_Home = new Home($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo->getClientConfig()->getCountryConfig() );
 			$iAccountID = $obj_Home->getAccountID($obj_TxnInfo->getClientConfig()->getCountryConfig(), $obj_TxnInfo->getMobile() );
 			if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = $obj_Home->getAccountID($obj_TxnInfo->getClientConfig()->getCountryConfig(), $obj_TxnInfo->getEMail() ); }
-			
+
 			$obj_mPoint->link($iAccountID);
 			$obj_TxnInfo->setAccountID($iAccountID);
 		}

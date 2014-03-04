@@ -47,7 +47,7 @@ class EndUserAccount extends Home
 
 		$this->_obj_ClientConfig = $oCI;
 	}
-	
+
 	/**
 	 * Returns a reference to the data object with the Client's configuration
 	 *
@@ -70,16 +70,16 @@ class EndUserAccount extends Home
 		$sBody = $this->getText()->_("mPoint - Account Info");
 		$sBody = str_replace("{URL}", "http://". sDEFAULT_MPOINT_DOMAIN, $sBody);
 		$sBody = str_replace("{CLIENT}", $this->_obj_ClientConfig->getName(), $sBody);
-		
+
 		// Instantiate Message Object for holding the message data which will be sent to GoMobile
 		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->_obj_ClientConfig->getCountryConfig()->getID(), $oTI->getOperator(), $this->_obj_ClientConfig->getCountryConfig()->getChannel(), $this->_obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getMobile(), utf8_decode($sBody) );
 		$obj_MsgInfo->setDescription("mPoint - Account Inf");
 		if ($this->getCountryConfig()->getID() != 200) { $obj_MsgInfo->setSender(substr($this->_obj_ClientConfig->getName(), 0, 11) ); }
-		
+
 		// Send MT with Account Info
 		$this->sendMT($oCI, $obj_MsgInfo, $oTI);
 	}
-	
+
 	/**
 	 * Sends an SMS with information about the account that has been linked
 	 *
@@ -94,22 +94,22 @@ class EndUserAccount extends Home
 	{
 		$iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $oTI->getMobile() );
 		$obj_XML = simplexml_load_string($this->getAccountInfo($iAccountID) );
-		
+
 		$sBody = $this->getText()->_("mPoint - Linked Info");
 		$sBody = str_replace("{PASSWORD}", (string) $obj_XML->password, $sBody);
 		$sBody = str_replace("{CLIENT}", $this->_obj_ClientConfig->getName(), $sBody);
-		
+
 		// Instantiate Message Object for holding the message data which will be sent to GoMobile
 		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->_obj_ClientConfig->getCountryConfig()->getID(), $oTI->getOperator(), $this->_obj_ClientConfig->getCountryConfig()->getChannel(), $this->_obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $oTI->getMobile(), utf8_decode($sBody) );
 		$obj_MsgInfo->setDescription("mPoint - Linked Info");
 		if ($this->getCountryConfig()->getID() != 200) { $obj_MsgInfo->setSender(substr($this->_obj_ClientConfig->getName(), 0, 11) ); }
-		
+
 		// Send MT with Account Info
 		$this->sendMT($oCI, $obj_MsgInfo, $oTI);
 	}
 	/**
 	 * Sends an SMS message which notifies the end-user that the account has been disabled.
-	 * 
+	 *
 	 * @see		GoMobileMessage::produceMessage()
 	 * @see		General::getText()
 	 * @see		Home::sendMessage()
@@ -124,14 +124,14 @@ class EndUserAccount extends Home
 	{
 		$sBody = $this->getText()->_("mPoint - Account Disabled");
 		$sBody = str_replace("{CLIENT}", $this->_obj_ClientConfig->getName(), $sBody);
-		
+
 		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->_obj_ClientConfig->getCountryConfig()->getID(), $this->_obj_ClientConfig->getCountryConfig()->getID()*100, $this->_obj_ClientConfig->getCountryConfig()->getChannel(), $this->_obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $mob, utf8_decode($sBody) );
 		$obj_MsgInfo->setDescription("mPoint - Account Del");
 		if ($this->getCountryConfig()->getID() != 200) { $obj_MsgInfo->setSender(substr($this->_obj_ClientConfig->getName(), 0, 11) ); }
-		
+
 		$iCode = $this->sendMessage($oCI, $this->_obj_ClientConfig, $obj_MsgInfo);
 		if ($iCode != 200) { $iCode = 91; }
-		
+
 		return $iCode;
 	}
 
@@ -166,7 +166,7 @@ class EndUserAccount extends Home
 	 * 	0. Card stored
 	 * 	1. Card stored and Existing account linked
 	 * 	2. Card stored and New account created
-	 *	4. Card Card previously saved by End-User 
+	 *	4. Card Card previously saved by End-User
 	 * @see		EndUserAccount::getAccountID()
 	 * @see		EndUserAccount::newAccount()
 	 *
@@ -187,7 +187,7 @@ class EndUserAccount extends Home
 	 * @param	string $exp 	Expiry date for the Card in the format MM/YY
 	 * @param	string $chn 	Card Holder Name
 	 * @param	string $name 	The name assigned to the stored card by the end-user (optional)
-	 * @param	boolean $pref 	Boolean flag indicating whether the card is the end-user's preferred (optional), defaults to false	 
+	 * @param	boolean $pref 	Boolean flag indicating whether the card is the end-user's preferred (optional), defaults to false
 	 * @return	integer
 	 */
 	public function saveCard()
@@ -200,16 +200,16 @@ class EndUserAccount extends Home
 			if ( ($aArgs[0] instanceof TxnInfo) === true)
 			{
 				list($oTI, $addr, $cardid, $pspid, $token, $mask, $exp) = $aArgs;
-				$obj_CountryConfig = CountryConfig::produceConfig($this->getDBConn(), intval($oTI->getOperator()/100) );
+				$obj_CountryConfig = $oTI->getCountryConfig();
 				$iAccountID = -1;
 				if ($oTI->getAccountID() > 0) { $iAccountID = $oTI->getAccountID(); }
 				elseif (strlen($oTI->getCustomerRef() ) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($this->getDBConn(), $oTI->getClientConfig(), $oTI->getCustomerRef() ); }
-				if ($iAccountID == -1) { $iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, $obj_CountryConfig); }
+				if ($iAccountID == -1 && floatval($addr) > $obj_CountryConfig->getMinMobile() ) { $iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, $obj_CountryConfig); }
 				// End-User Account not found
 				if ($iAccountID == -1)
 				{
 					if (strlen($oTI->getCustomerRef() ) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($this->getDBConn(), $oTI->getClientConfig(), $oTI->getCustomerRef(), false); }
-					else { $iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, $obj_CountryConfig, false); }
+					elseif (floatval($addr) > $obj_CountryConfig->getMinMobile() ) { $iAccountID = self::getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, $obj_CountryConfig, false); }
 					$pref = true;
 					// Client supports global storage of payment cards: Link End-User Account
 					if ($iAccountID > 0 && $this->getClientConfig()->getStoreCard() > 3)
@@ -224,8 +224,8 @@ class EndUserAccount extends Home
 						$email = "";
 						if (floatval($addr) > $obj_CountryConfig->getMinMobile() ) { $mob = $addr; }
 						else { $email = $addr; }
-				
-						$iAccountID = $this->newAccount(intval($oTI->getOperator()/100), $mob, "", $email, $oTI->getCustomerRef() );
+
+						$iAccountID = $this->newAccount($obj_CountryConfig->getID(), $mob, "", $email, $oTI->getCustomerRef() );
 						$code = 2;
 					}
 				}
@@ -248,12 +248,12 @@ class EndUserAccount extends Home
 		case (9):	// Card Saved by invoking "Save Card" API
 			list($iAccountID, $cardid, $pspid, $token, $mask, $exp, $chn, $name, $pref) = $aArgs;
 			$code = 0;
-			break;		
+			break;
 		}
 
 		// Check if card has already been saved
 		$id = $this->getCardIDFromCardDetails($iAccountID, $cardid, $mask, $exp);
-		
+
 		// Stored Card should be preferred
 		if ($pref === true)
 		{
@@ -288,7 +288,7 @@ class EndUserAccount extends Home
 						(". $iAccountID .", ". $this->_obj_ClientConfig->getID() .", ". intval($cardid) .", ". intval($pspid) .", '". $this->getDBConn()->escStr($token) ."', '". $this->getDBConn()->escStr(trim($mask) ) ."', '". $this->getDBConn()->escStr($exp) ."', '". $this->getDBConn()->escStr(trim($name) ) ."', '". intval($pref) ."','". $this->getDBConn()->escStr(trim($chn) )."')";
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
-				
+
 			if (is_resource($res) === true)
 			{
 				$sql = "SELECT id
@@ -299,14 +299,14 @@ class EndUserAccount extends Home
 				// Link between End-User Account and Client doesn't exist
 				if (is_array($RS) === false) { $this->link($iAccountID); }
 			}
-			else { $code = -1; }		
+			else { $code = -1; }
 		}
 
 		return $code;
 	}
-	
+
 	/**
-	 * Links the End-User's account to the Client thereby making the account available for use 
+	 * Links the End-User's account to the Client thereby making the account available for use
 	 * when making purchases from the Client
 	 *
 	 * @param	integer $id 	Unqiue ID of the End-User's Account
@@ -319,7 +319,7 @@ class EndUserAccount extends Home
 				VALUES
 					(". $this->_obj_ClientConfig->getID() .", ". intval($id) .")";
 //		echo $sql ."\n";
-		
+
 		return $this->getDBConn()->query($sql);
 	}
 
@@ -346,7 +346,7 @@ class EndUserAccount extends Home
 		if ($iAccountID == -1 && $this->getClientConfig()->getStoreCard() > 3)
 		{
 			$iAccountID = self::_getAccountID($this->getDBConn(), $this->_obj_ClientConfig, $addr, $oCC, 0);
-		}		
+		}
 		// End-User Account already exists, update password
 		if ($iAccountID > 0)
 		{
@@ -366,7 +366,7 @@ class EndUserAccount extends Home
 
 		return $iStatus;
 	}
-	
+
 	/**
 	 * This method have to functions, to either name a card or to rename a card.
 	 * With 3 params you rename the card, with 5 params the card is saved.
@@ -414,7 +414,7 @@ class EndUserAccount extends Home
 			break;
 		}
 	}
-	
+
 	/**
 	 * Saves the specified Card Name for the newest card without a name which has been created recently (within the last 5 minutes).
 	 * The method will automatically create a new card and set it as inactive if no card has been created recently.
@@ -454,19 +454,19 @@ class EndUserAccount extends Home
 						(". intval($id) .", ". $this->_obj_ClientConfig->getID() .", 0, ". intval($cardid) .", '". $this->getDBConn()->escStr($name) ."', '". intval($pref) ."', '0')";
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
-			
+
 			if (is_resource($res) === true) { $code++; }
 			else { $code = 0; }
 		}
-		
+
 		return $code;
 	}
-	
+
 	public function saveState($cid, $name, $code="")
 	{
 		$sql = "SELECT Nextvalue('System".sSCHEMA_POSTFIX.".State_Tbl_id_seq') AS id FROM DUAL";
 		$RS = $this->getDBConn()->getName($sql);
-		
+
 		$sql = "INSERT INTO System".sSCHEMA_POSTFIX.".State_Tbl
 					(id, countryid, name, code)
 				VALUES
@@ -475,11 +475,11 @@ class EndUserAccount extends Home
 
 		return is_resource($this->getDBConn()->query($sql) ) === true ? $RS["ID"] : -1;
 	}
-	
+
 	/**
 	 * Returns the ID of the state in the specified country using either the state 2-digit code or the state name to find the state.
-	 * The method will return the default state in the country (identified by code: N/A) if no state is passed to the method. 
-	 * 
+	 * The method will return the default state in the country (identified by code: N/A) if no state is passed to the method.
+	 *
 	 * @param integer $cid		ID of the Country the state must be located in
 	 * @param string $state		The 2-digit code or name of the state
 	 * @return integer
@@ -487,13 +487,13 @@ class EndUserAccount extends Home
 	public function getStateID($cid, $state="")
 	{
 		if (empty($state) === true) { $state = "N/A"; }
-		
+
 		$sql = "SELECT id
 				FROM System".sSCHEMA_POSTFIX.".State_Tbl
 				WHERE countryid = ". intval($cid) ." AND Upper(code) = Upper('". $this->getDBConn()->escStr(trim($state) ) ."')";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
-		
+
 		if (is_array($RS) === false || intval($RS["ID"]) == 0)
 		{
 			$sql = "SELECT id
@@ -502,11 +502,11 @@ class EndUserAccount extends Home
 //			echo $sql ."\n";
 			$RS = $this->getDBConn()->getName($sql);
 		}
-		
+
 		return is_array($RS) === true ? intval($RS["ID"]) : 0;
 	}
 	/**
-	 * Saves Billing Address for the newest card which has been created recently (within the last 5 minutes).	
+	 * Saves Billing Address for the newest card which has been created recently (within the last 5 minutes).
 	 * The method will return the following status codes:
 	 * 	 1. State not found
 	 * 	 2. Address Update failed
@@ -547,10 +547,10 @@ class EndUserAccount extends Home
 			else { $code = 10; }
 		}
 		else { $code = 1; }
-		
+
 		return $code;
 	}
-	
+
 	/**
 	 * Renames the specified card.
 	 * For this to work it's assumed that the card info will be filled out and the card enabled by a callback from the PSP,
@@ -573,15 +573,15 @@ class EndUserAccount extends Home
 			$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 					SET preferred = '0'
 					WHERE preferred = '1' AND accountid = (SELECT accountid
-														   FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl				 		
+														   FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 														   WHERE id = ". intval($cardid) .")";
 //			echo $sql ."\n";
 			$this->getDBConn()->query($sql);
 		}
-		
+
 		// Set name for card
-		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl 
-				SET name = '". $this->getDBConn()->escStr($name) ."', preferred = '" . intval($pref) . "' 
+		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
+				SET name = '". $this->getDBConn()->escStr($name) ."', preferred = '" . intval($pref) . "'
 				WHERE id = ". intval($cardid) ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
@@ -607,10 +607,10 @@ class EndUserAccount extends Home
 
 		return is_resource($this->getDBConn()->query($sql) );
 	}
-	
+
 	/**
 	 * Retrieves the ID of the card from EndUser.Card_Tbl
-	 * 
+	 *
 	 * @param integer 	$iAccountID		Account ID
 	 * @param integer 	$cardid 		ID from System.Card_Tbl
 	 * @param string 	$mask			Masked credit card number
@@ -618,17 +618,17 @@ class EndUserAccount extends Home
 	 * @return integer
 	 */
 	public function getCardIDFromCardDetails($id, $cardid, $mask, $exp)
-	{ 
+	{
 		$sql = "SELECT id
 				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 				WHERE accountid = ". $id ." AND clientid = ". $this->_obj_ClientConfig->getID() ." AND cardid = ". intval($cardid) ."
 					AND ( (mask = '". $this->getDBConn()->escStr(trim($mask) ) ."' AND expiry = '". $this->getDBConn()->escStr($exp) ."') OR (mask IS NULL AND expiry IS NULL) )";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
-		
+
 		return is_array($RS) === true ? $RS["ID"] : -1;
 	}
-	
+
 	/**
 	 * Fetches the unique ID of the End-User's account from the database using the provided external id.
 	 * The account must either be available to the specific clients or globally available to all clients
@@ -661,7 +661,7 @@ class EndUserAccount extends Home
 		}
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
-		
+
 		return is_array($RS) === true ? $RS["ID"] : -1;
 	}
 	/**
@@ -670,7 +670,7 @@ class EndUserAccount extends Home
 	 * as defined by the entries in database table: EndUser.CLAccess_Tbl.
 	 * This method may be called as a static method but is not defined as such because PHP doesn't support
 	 * a static function overriding a non-static method.
-	 * 
+	 *
 	 * @static
 	 *
 	 * @param	RDB $oDB			Reference to the Database Object that holds the active connection to the mPoint Database
@@ -690,7 +690,7 @@ class EndUserAccount extends Home
 	 * as defined by the entries in database table: EndUser.CLAccess_Tbl.
 	 * This method may be called as a static method but is not defined as such because PHP doesn't support
 	 * a static function overriding a non-static method.
-	 * 
+	 *
 	 * @static
 	 *
 	 * @param	RDB $oDB			Reference to the Database Object that holds the active connection to the mPoint Database
@@ -698,7 +698,7 @@ class EndUserAccount extends Home
 	 * @param	string $addr 		End-User's mobile number or E-Mail address
 	 * @param	CountryConfig $oCC	Country Configuration, pass null to default to the Country Configuration from the Client Configuration
 	 * @param	integer $mode	 	Integer flag specifying mode that is used to find the end-user account. May be one of the following:
-	 * 									0. Find all accounts 
+	 * 									0. Find all accounts
 	 * 									1. Find only accounds with a password defined
 	 * 									2. Find only accounds that has been linked to the client
 	 * 									3. Find only accounds with a password defined that has been linked to the client
@@ -720,14 +720,14 @@ class EndUserAccount extends Home
 		if ($oClC->getCountryConfig()->getID() != $oClC->getID() && ($mode & 2) == 2)
 		{
 			$sql .= "
-					AND (CLA.clientid = ". $oClC->getID() ." /* OR EUA.countryid = CLA.clientid */ 
+					AND (CLA.clientid = ". $oClC->getID() ." /* OR EUA.countryid = CLA.clientid */
 					OR NOT EXISTS (SELECT id
 								   FROM EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl
 								   WHERE accountid = EUA.id) )";
 		}
 		//echo $sql ."\n";
 		$RS = $oDB->getName($sql);
-	
+
 		return is_array($RS) === true ? $RS["ID"] : -1;
 	}
 
@@ -810,7 +810,7 @@ class EndUserAccount extends Home
 	 * @param 	integer $ticket Ticket ID representing the End-User's stored Credit Card which should be associated with the account
 	 */
 	public function delTicket($pspid, $ticket) { }
-	
+
 	/**
 	 *
 	 * Return codes:
@@ -836,7 +836,7 @@ class EndUserAccount extends Home
 		$xml .= $obj_ClientInfo->toXML();
 		$xml .= '</import>';
 		$xml .= '</root>';
-	
+
 		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
 		$obj_HTTP->connect();
 		$code = $obj_HTTP->send($this->constHTTPHeaders(), $xml);
@@ -848,7 +848,7 @@ class EndUserAccount extends Home
 				$obj_DOM = simpledom_load_string(trim($obj_HTTP->getReplyBody() ) );
 			}
 			else { $obj_DOM = simpledom_load_string(utf8_encode(trim($obj_HTTP->getReplyBody() ) ) ); }
-				
+
 			// Success: Customer data retrieved
 			if (count($obj_DOM->children() ) > 0)
 			{
@@ -901,7 +901,7 @@ class EndUserAccount extends Home
 		}
 		return $code;
 	}
-	
+
 	public function notify(HTTPConnInfo &$obj_ConnInfo, ClientInfo &$obj_ClientInfo, $id, $at, $num)
 	{
 		$obj_XML = simplexml_load_string($this->getAccountInfo($id) );
@@ -916,7 +916,7 @@ class EndUserAccount extends Home
 		$xml .= $obj_ClientInfo->toXML();
 		$xml .= '</notify>';
 		$xml .= '</root>';
-		
+
 		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
 		$obj_HTTP->connect();
 		$code = $obj_HTTP->send($this->constHeader(), $xml);
@@ -926,7 +926,7 @@ class EndUserAccount extends Home
 			$obj_XML = simpledom_load_string(trim($obj_HTTP->getReplyBody() ) );
 		}
 		else { $obj_XML = simpledom_load_string(utf8_encode(trim($obj_HTTP->getReplyBody() ) ) ); }
-		
+
 		if ( ($obj_XML instanceof SimpleDOMElement) === true)
 		{
 			// Notification succeeded
@@ -937,8 +937,26 @@ class EndUserAccount extends Home
 			else { $code = 2; }
 		}
 		else { $code = 1; }
-		
+
 		return $code;
+	}
+
+	/**
+	 * Saves the specified Mobile Number for the End-User Account.
+	 *
+	 * @param	integer $id 	Unqiue ID of the End-User's Account
+	 * @param	string $mob 	The End-User's new Mobile Number (MSISDN) which should be saved to the account. Set to NULL to clear.
+	 * @return	boolean
+	 */
+	public function saveMobile($id, $mob, $miv=true)
+	{
+		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Account_Tbl
+				SET mobile = ". (is_null($mob) === true ? "NULL" : "'". floatval($mob) ."'") .",
+					mobile_verified = ". General::bool2xml($miv) ."
+				WHERE id = ". intval($id);
+		//		echo $sql ."\n";
+
+		return is_resource($this->getDBConn()->query($sql) );
 	}
 }
 ?>

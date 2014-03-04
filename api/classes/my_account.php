@@ -14,14 +14,14 @@
  */
 
 /**
- * 
+ *
  *
  */
 class MyAccount extends Home
-{	
+{
 	/**
 	 * Generates and sends an Activation Code to the End-User using the provided Mobile Number (MSISDN).
-	 * 
+	 *
 	 * @see		GoMobileMessage::produceMessage()
 	 * @see		General::getText()
 	 * @see		Home::genActivationCode()
@@ -38,20 +38,20 @@ class MyAccount extends Home
 	{
 		$sBody = $this->getText()->_("mPoint - Send Activation Code");
 		$sBody = str_replace("{CODE}", $this->genActivationCode($id, $mob), $sBody);
-		
+
 		$obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $this->getCountryConfig()->getID(), -1);
-		
+
 		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->getCountryConfig()->getID(), $this->getCountryConfig()->getID()*100, $this->getCountryConfig()->getChannel(), $obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $mob, utf8_decode($sBody) );
-		
+
 		$iCode = $this->sendMessage($oCI, $obj_ClientConfig, $obj_MsgInfo);
 		if ($iCode != 200) { $iCode = 91; }
-		
+
 		return $iCode;
 	}
-	
+
 	/**
 	 * Fetches the newest activated address for the specified Account ID and Activation Code.
-	 * The method will return an empty string if the address couldn't be found 
+	 * The method will return an empty string if the address couldn't be found
 	 *
 	 * @param	integer $id 	Unqiue ID of the End-User's Account
 	 * @param	integer $code 	Activated code for which the address should be found
@@ -66,30 +66,12 @@ class MyAccount extends Home
 				LIMIT 1";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
-		
+
 		return is_array($RS) === true ? $RS["ADDRESS"] : "";
 	}
-	
+
 	/**
-	 * Saves the specified Mobile Number for the End-User Account. 
-	 *
-	 * @param	integer $id 	Unqiue ID of the End-User's Account
-	 * @param	string $mob 	The End-User's new Mobile Number (MSISDN) which should be saved to the account. Set to NULL to clear.
-	 * @return	boolean
-	 */
-	public function saveMobile($id, $mob, $miv=true)
-	{
-		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Account_Tbl
-				SET mobile = ". (is_null($mob) === true ? "NULL" : "'". floatval($mob) ."'") .",
-					mobile_verified = ". General::bool2xml($miv) ."
-				WHERE id = ". intval($id);
-//		echo $sql ."\n";
-		
-		return is_resource($this->getDBConn()->query($sql) );
-	}
-	
-	/**
-	 * Generates and sends an Activation Code to the End-User using the provided E-Mail Address 
+	 * Generates and sends an Activation Code to the End-User using the provided E-Mail Address
 	 *
 	 * @param	integer $id 	Unqiue ID of the End-User's Account
 	 * @param	string $email 	End-User's new E-Mail address
@@ -99,15 +81,15 @@ class MyAccount extends Home
 	{
 		$sSubject = $this->getText()->_("mPoint - Activation Link Subject");
 		$sBody = $this->getText()->_("mPoint - Activation Link Body");
-		
+
 		$iCode = $this->genActivationCode($id, $email);
 		$sURL = "http://". sDEFAULT_MPOINT_DOMAIN ."/home/sys/save_email.php?id=". $id ."&c=". $iCode ."&chk=". md5($id . $iCode . $email);
-		
+
 		$sBody = str_replace("{URL}", $sURL, $sBody);
-		
-		return mail($email, $sSubject, $sBody, $this->constSMTPHeaders() ); 
+
+		return mail($email, $sSubject, $sBody, $this->constSMTPHeaders() );
 	}
-	
+
 	/**
 	 * Saves the specified E-Mail address for the End-User Account
 	 *
@@ -124,7 +106,7 @@ class MyAccount extends Home
 
 		return is_resource($this->getDBConn()->query($sql) );
 	}
-	
+
 	/**
 	 * Validates the specified mobile number (MSISDN) against the content of database table: EndUser.Account_Tbl.
 	 * The method will return the following status codes:
@@ -132,7 +114,7 @@ class MyAccount extends Home
 	 * 	 2. Mobile Number already belongs to another end-user's account
 	 * 	 3. Mobile Number already belongs to an end-user account which has not yet been activated
 	 * 	10. Success
-	 * 
+	 *
 	 * @param	integer $id		Unqiue ID of the End-User's Account
 	 * @param 	string $mob		The End-User's new Mobile Number (MSISDN) which should be validated
 	 * @return 	integer
@@ -144,7 +126,7 @@ class MyAccount extends Home
 				WHERE countryid = ". $this->getCountryConfig()->getID() ." AND mobile = '". floatval($mob) ."'";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
-		
+
 		if (is_array($RS) === true)
 		{
 			if ($RS["ID"] == $id) { $code = 1; }
@@ -152,10 +134,10 @@ class MyAccount extends Home
 			else { $code = 3; }
 		}
 		else { $code = 10; }
-		
+
 		return $code;
 	}
-	
+
 	/**
 	 * Validates the specified e-mail address against the content of database table: EndUser.Account_Tbl.
 	 * The method will return the following status codes:
@@ -163,7 +145,7 @@ class MyAccount extends Home
 	 * 	 2. E-Mail Address already belongs to another end-user's account
 	 * 	 3. E-Mail Address already belongs to an end-user account which has not yet been activated
 	 * 	10. Success
-	 * 
+	 *
 	 * @param	integer $id		Unqiue ID of the End-User's Account
 	 * @param 	string $email	The End-User's new e-mail address which should be validated
 	 * @return 	integer
@@ -175,7 +157,7 @@ class MyAccount extends Home
 				WHERE countryid = ". $this->getCountryConfig()->getID() ." AND Upper(email) = Upper('". $this->getDBConn()->escStr($email) ."')";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
-		
+
 		if (is_array($RS) === true)
 		{
 			if ($RS["ID"] == $id) { $code = 1; }
@@ -183,10 +165,10 @@ class MyAccount extends Home
 			else { $code = 3; }
 		}
 		else { $code = 10; }
-		
+
 		return $code;
 	}
-	
+
 	/**
 	 * Validates the Account Information for the specified Transfer Checksum against the provided address .
 	 * The method will return the following status codes:
@@ -195,7 +177,7 @@ class MyAccount extends Home
 	 * 	 2. Account Information doesn't match provided E-Mail Address
 	 * 	 9. Invalid Address provided
 	 * 	10. Success
-	 * 
+	 *
 	 * @param 	string $chk 	Transfer Checksum that should be validated
 	 * @param 	string $addr	End-User's mobile number or E-Mail address
 	 * @return 	integer
@@ -205,7 +187,7 @@ class MyAccount extends Home
 		list(, $id) = spliti("Z", $chk);
 		$id = base_convert($id, 32, 10);
 		$obj_XML = simplexml_load_string($this->getAccountInfo($id) );
-		
+
 		// Mobile Number (MSISDN) provided for validation
 		if (floatval($addr) > $this->getCountryConfig()->getMinMobile() )
 		{
@@ -229,13 +211,13 @@ class MyAccount extends Home
 			else { $code = 0; }
 		}
 		else { $code = 9; }
-		
+
 		return $code;
 	}
-	
+
 	/**
 	 * Deletes a stored card from an End-User Account.
-	 * 
+	 *
 	 * @param 	integer $id			Unqiue ID of the End-User's Account
 	 * @param 	integer $cardid		Unique ID of the Stored Card that should be deleted
 	 * @return 	boolean
@@ -246,14 +228,14 @@ class MyAccount extends Home
 				WHERE accountid = ". intval($id) ." AND id = ". intval($cardid);
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
-		
+
 		if (is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) > 0)
 		{
 			return true;
 		}
 		else { return false; }
 	}
-	
+
 	/**
 	 * Sets a new preferred card for a specific client.
 	 * The method will reset the "preferred" flag for all other cards the End-User has stored for the Client
@@ -262,7 +244,7 @@ class MyAccount extends Home
 	 * 	 1. Unable to reset "preferred" flags for all the cards the End-User has stored for the Client
 	 * 	 2. Unable to set specified card as preferred
 	 * 	10. Success, preferred card has been changed
-	 * 
+	 *
 	 * @param 	integer $id			Unqiue ID of the End-User's Account
 	 * @param 	integer $cardid		Unique ID of the Stored Card that should be set as preferred
 	 * @return 	integer
@@ -271,7 +253,7 @@ class MyAccount extends Home
 	{
 		// Start database transaction
 		$this->getDBConn()->query("START TRANSACTION");  // START TRANSACTION does not work with Oracle db
-		
+
 		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 				SET preferred = '0'
 				WHERE clientid = (SELECT clientid
@@ -279,7 +261,7 @@ class MyAccount extends Home
 								  WHERE id = ". intval($cardid) .")
 					AND accountid = ". intval($id);
 //		echo $sql ."\n";
-		
+
 		// Reset "preferred" flag for all the cards the End-User has stored for the Client
 		if (is_resource($this->getDBConn()->query($sql) ) === true)
 		{
@@ -292,14 +274,14 @@ class MyAccount extends Home
 			{
 				// Commit database transaction
 				$this->getDBConn()->query("COMMIT");
-				
+
 				$code = 10;
 			}
 			else
 			{
 				// Abort database transaction and rollback to previous state
 				$this->getDBConn()->query("ROLLBACK");
-				
+
 				$code = 2;
 			}
 		}
@@ -307,11 +289,11 @@ class MyAccount extends Home
 		{
 			// Abort database transaction and rollback to previous state
 			$this->getDBConn()->query("ROLLBACK");
-				
+
 			$code = 1;
 		}
-		
-		return $code; 
+
+		return $code;
 	}
 }
 ?>

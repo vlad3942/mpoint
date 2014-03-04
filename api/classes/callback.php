@@ -88,7 +88,7 @@ class Callback extends EndUserAccount
 		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID(), $this->_obj_TxnInfo->getOperator(), $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getChannel(), $this->_obj_TxnInfo->getClientConfig()->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $this->_obj_TxnInfo->getMobile(), utf8_decode($sBody) );
 		$obj_MsgInfo->setDescription("mPoint - Receipt");
 		if ($this->getCountryConfig()->getID() != 200) { $obj_MsgInfo->setSender(substr($this->_obj_TxnInfo->getClientConfig()->getName(), 0, 11) ); }
-		
+
 		$this->sendMT($oCI, $obj_MsgInfo, $this->_obj_TxnInfo);
 		*/
 	}
@@ -115,13 +115,14 @@ class Callback extends EndUserAccount
 		if (intval($txnid) == -1) { $sql = ""; }
 		else { $sql = ", extid = '". $this->getDBConn()->escStr($txnid) ."'"; }
 		if ($this->_obj_TxnInfo->getAccountID() > 0) { $sql .= ", euaid = ". $this->_obj_TxnInfo->getAccountID(); }
+		else { $sql .= ", euaid = NULL"; }
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET pspid = ". intval($pspid) .", cardid = ". intval($cid) . $sql ."
 				WHERE id = ". $this->_obj_TxnInfo->getID() ." AND (cardid IS NULL OR cardid = 0)";
 		if (intval($txnid) != -1) { $sql .= " AND (extid IS NULL OR extid = '' OR extid = '". $this->getDBConn()->escStr($txnid) ."')"; }
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
-		
+
 		// Transaction completed successfully
 		if (is_resource($res) === true)
 		{
@@ -138,7 +139,7 @@ class Callback extends EndUserAccount
 			$this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true) );
 			throw new CallbackException("Unable to complete log for Transaction: ". $this->_obj_TxnInfo->getID(), 1001);
 		}
-		
+
 		return $sid;
 	}
 
@@ -162,7 +163,7 @@ class Callback extends EndUserAccount
 			if (array_key_exists("scheme", $aURLInfo) === true)
 			{
 				if ( $aURLInfo["scheme"] == "https") { $aURLInfo["port"] = 443; }
-				else { $aURLInfo["port"] = 80; } 
+				else { $aURLInfo["port"] = 80; }
 			}
 			else { $aURLInfo["port"] = 80; }
 		}
@@ -355,10 +356,10 @@ class Callback extends EndUserAccount
 
 		return $obj_HTTP;
 	}
-	
+
 	/**
 	 * Returns the Client's Merchant Account ID for the PSP
-	 * 
+	 *
 	 * @param 	integer $clid	Unique ID of the Client whose Merchant Account should be found
 	 * @param 	integer $pspid	Unique ID for the PSP the Merchant Account should be found for
 	 * @param	boolean	$sc		Return the Merchant Login used for authorizing a stored card, defaults to false
@@ -378,7 +379,7 @@ class Callback extends EndUserAccount
 	}
 	/**
 	 * Returns the Client's Merchant Login (Username / Password) for the PSP
-	 * 
+	 *
 	 * @param 	integer $clid	Unique ID of the Client whose Merchant Account should be found
 	 * @param 	integer $pspid	Unique ID for the PSP the Merchant Account should be found for
 	 * @param	boolean	$sc		Return the Merchant Login used for authorizing a stored card, defaults to false
@@ -392,15 +393,15 @@ class Callback extends EndUserAccount
 		if ($sc === true) { $sql .= " AND stored_card = '1'"; }
 		else { $sql .= " AND (stored_card = '0' OR stored_card IS NULL)"; }
 //		echo $sql ."\n";
-		
+
 		$RS = $this->getDBConn($sql)->getName($sql);
 
 		return is_array($RS) === true ? array_change_key_case($RS, CASE_LOWER) : array();
 	}
-	
+
 	/**
 	 * Returns the Client's Merchant Sub-Account ID for the PSP
-	 * 
+	 *
 	 * @param 	integer $accid	Unique ID for the Account
 	 * @param 	integer $pspid	Unique ID for the PSP the Merchant Account should be found for
 	 * @return 	string
@@ -417,8 +418,8 @@ class Callback extends EndUserAccount
 	}
 
 	/**
-	 * Returns the specified PSP's currency code for the provided country 
-	 * 
+	 * Returns the specified PSP's currency code for the provided country
+	 *
 	 * @param 	integer $cid	Unique ID for the Country that the Currency should be found in
 	 * @param 	integer $pspid	Unique ID for the PSP that the currency code should be found for
 	 * @return 	string
@@ -437,8 +438,8 @@ class Callback extends EndUserAccount
 	/**
 	 * Static method for retrieving mPoint's unique Transaction ID based on the Client's Order Number and
 	 * the Payment Service Provider who processed the payment transction.
-	 * The method returns -1 if mPoint's unique Transaction ID could not be found. 
-	 * 
+	 * The method returns -1 if mPoint's unique Transaction ID could not be found.
+	 *
 	 * @param 	RDB $oDB			Reference to the Database Object that holds the active connection to the mPoint Database
 	 * @param 	string $orderno		Client's Order Number
 	 * @param 	integer $pspid		mPoint's unique ID for the Payment Service Provider who processed the payment transction
@@ -451,15 +452,15 @@ class Callback extends EndUserAccount
 				WHERE orderid = '". $oDB->escStr($orderno) ."' AND pspid = ". intval($pspid);
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
-		
+
 		return is_array($RS) === true && intval($RS["ID"]) > 0? $RS["ID"] : -1;
-	}	
-	
+	}
+
 	/**
 	 * Static method for retrieving mPoint's unique Transaction ID based on the Client's Order Number and
 	 * the Payment Service Provider who processed the payment transction.
-	 * The method returns -1 if mPoint's unique Transaction ID could not be found. 
-	 * 
+	 * The method returns -1 if mPoint's unique Transaction ID could not be found.
+	 *
 	 * @param 	RDB $oDB			Reference to the Database Object that holds the active connection to the mPoint Database
 	 * @param 	string $extid		The PSP's transaction ID
 	 * @param 	integer $pspid		mPoint's unique ID for the Payment Service Provider who processed the payment transction
@@ -472,8 +473,8 @@ class Callback extends EndUserAccount
 				WHERE extid = '". $oDB->escStr($extid) ."' AND pspid = ". intval($pspid);
 		//echo $sql ."\n";
 		$RS = $oDB->getName($sql);
-		
+
 		return is_array($RS) === true && intval($RS["ID"]) > 0? $RS["ID"] : -1;
-	}	
+	}
 }
 ?>
