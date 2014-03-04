@@ -116,14 +116,7 @@ class CPG extends Callback
 		$b .= '<lastName>'. htmlspecialchars($obj_XML->address->{'last-name'}, ENT_NOQUOTES) .'</lastName>'; // mandatory, 0-40 chars
 		$b .= '<street>'. htmlspecialchars(str_replace("IBE-MPOINT", " ",  $obj_XML->address->street), ENT_NOQUOTES ) .'</street>'; // mandatory, 0-100 chars
 		$b .= '<postalCode>'. intval($obj_XML->address->{'postal-code'}) .'</postalCode>'; // optional, 0-20 chars
-		$b .= $obj_XML->address->city->asXML();
-		if (count($obj_XML->address->state) == 1)
-		{
-			$b .= '<state>';
-			if (strlen($obj_XML->address->state["code"]) > 0) { $b .= htmlspecialchars($obj_XML->address->state["code"], ENT_NOQUOTES); }
-			else { $b .= htmlspecialchars($obj_XML->address->state, ENT_NOQUOTES); }
-			$b .= '</state>';
-		}
+		$b .= '<city>'. htmlspecialchars($obj_XML->address->city, ENT_NOQUOTES) .'</city>'; // mandatory, 0-50 chars
 		$b .= '<countryCode>'. $this->_getCountryCode(intval($obj_XML->address['country-id']) ) .'</countryCode>'; // mandatory, 2-2 chars
 //		$b .= '<telephoneNumber>'. floatval($this->getTxnInfo()->getMobile() ) .'</telephoneNumber>'; // optional
 		$b .= '</address>';
@@ -142,14 +135,7 @@ class CPG extends Callback
 		$b .= '<lastName>'. htmlspecialchars($obj_XML->address->{'last-name'}, ENT_NOQUOTES) .'</lastName>'; // mandatory, 0-40 chars
 		$b .= '<street>'. htmlspecialchars(str_replace("IBE-MPOINT", " ",  $obj_XML->address->street), ENT_NOQUOTES ) .'</street>'; // mandatory, 0-100 chars
 		$b .= '<postalCode>'. intval($obj_XML->address->{'postal-code'}) .'</postalCode>'; // optional, 0-20 chars
-		$b .= $obj_XML->address->city->asXML();
-		if (count($obj_XML->address->state) == 1)
-		{
-			$b .= '<state>';
-			if (strlen($obj_XML->address->state["code"]) > 0) { $b .= htmlspecialchars($obj_XML->address->state["code"], ENT_NOQUOTES); }
-			else { $b .= htmlspecialchars($obj_XML->address->state, ENT_NOQUOTES); }
-			$b .= '</state>';
-		}
+		$b .= '<city>'. htmlspecialchars($obj_XML->address->city, ENT_NOQUOTES) .'</city>'; // mandatory, 0-50 chars
 		$b .= '<countryCode>'. $this->_getCountryCode(intval($obj_XML->address['country-id']) ) .'</countryCode>'; // mandatory, 2-2 chars
 //		$b .= '<telephoneNumber>'. floatval($this->getTxnInfo()->getMobile() ) .'</telephoneNumber>'; // optional
 		$b .= '</address>';
@@ -160,26 +146,42 @@ class CPG extends Callback
 		$b .= '</submit>';
 
 		$aLogin = $this->getMerchantLogin($this->getTxnInfo()->getClientConfig()->getID(), Constants::iCPG_PSP);
+		
 		$sUsername = "";
 		$sPassword = "";
-		$a = explode(" ", $aLogin["username"]);
-		foreach ($a as $str)
+		$aUsernames = explode(" ### ", $aLogin["username"]);
+		$aPasswords = explode(" ### ", $aLogin["password"]);
+		// IBE Short Codes
+		if ($sc == "NPG") 
 		{
-			$pos = strpos($str, "=");
-			$aUsernames[substr($str, 0, $pos)] = substr($str, $pos+1); 
+			$sUsername = $aUsernames[0];
+			$sPassword = $aPasswords[0];
 		}
-		$a = explode(" ", $aLogin["password"]);
-		foreach ($a as $str)
+		elseif ($sc == "GST")
 		{
-			$pos = strpos($str, "=");
-			$aPasswords[substr($str, 0, $pos)] = substr($str, $pos+1);
+			$sUsername = $aUsernames[1];
+			$sPassword = $aPasswords[1];
 		}
-		$sUsername = $aUsernames[$sc];
-		$sPassword = $aPasswords[$sc];
+		// MYB Short Codes
+		elseif ($sc == "MPG")
+		{
+			$sUsername = $aUsernames[2];
+			$sPassword = $aPasswords[2];
+		}
+		elseif ($sc == "GSU")
+		{
+			$sUsername = $aUsernames[3];
+			$sPassword = $aPasswords[3];
+		}
+		elseif ($sc == "SMU")
+		{
+			$sUsername = $aUsernames[4];
+			$sPassword = $aPasswords[4];
+		}
 		
 		$oCI = new HTTPConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), $oCI->getMethod(), $oCI->getContentType(), $sUsername,$sPassword);
 		$h = trim($this->constHTTPHeaders() ) .HTTPClient::CRLF;
-		if (empty($sUsername) === false || empty($sPassword) === false) { $h .= "authorization: Basic ".  base64_encode($sUsername .":". $sPassword) .HTTPClient::CRLF; }
+		$h .= "authorization: Basic ".  base64_encode($sUsername .":". $sPassword) .HTTPClient::CRLF;
 				
 		$obj_HTTP = new HTTPClient(new Template(), $oCI);
 		$obj_HTTP->connect();

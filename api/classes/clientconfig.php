@@ -578,7 +578,7 @@ class ClientConfig extends BasicConfig
 		$sql = str_replace("{ACCOUNT CLAUSE}", "", $sql);
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
-
+		
 		$obj_CountryConfig = CountryConfig::produceConfig($oDB, $RS["COUNTRYID"]);
 		$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["MOBILE"], $RS["MARKUP"]);
 		$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);

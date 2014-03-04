@@ -217,10 +217,14 @@ class Home extends General
 			$obj_HTTP->connect();
 			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
 			$obj_HTTP->disConnect();
-			if ($code == 200) { return 10; }
+			if ($code == 200)
+			{
+				trigger_error("Authorization accepted by Authentication Service at: ". $oCI->toURL() ." with HTTP Code: ". $code, E_USER_NOTICE);
+				return 10;
+			}
 			else
 			{
-				trigger_error("Authentication Service at: ". $oCI->toURL() ." returned HTTP Code: ". $code, E_USER_WARNING);
+				trigger_error("Authentication Service at: ". $oCI->toURL() ." rejected authorization with HTTP Code: ". $code, E_USER_WARNING);
 				return 4;
 			}
 		}
