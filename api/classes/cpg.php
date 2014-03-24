@@ -18,13 +18,13 @@
  */
 class CPG extends Callback
 {
-	
+
 	public function getCardName($id)
 	{
 		switch ($id)
 		{
 		case (1):	// American Express
-			$name = "AMEX-SSL"; 
+			$name = "AMEX-SSL";
 			break;
 		case (2):	// Dankort
 			$name = "VISA-SSL";
@@ -66,33 +66,33 @@ class CPG extends Callback
 			$name = $id;
 			break;
 		}
-		
+
 		return $name;
 	}
-	
+
 	public function authTicket(SimpleXMLElement $obj_XML, HTTPConnInfo &$oCI)
 	{
 		$aClientVars = $this->getMessageData($this->getTxnInfo()->getID(), Constants::iCLIENT_VARS_STATE);
-		
+
 		list($sc, $pnr, , ) = explode("/", $this->getTxnInfo()->getOrderID() );
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<submit>';
-		$b .= '<shortCode>'. htmlspecialchars($sc, ENT_NOQUOTES) .'</shortCode>'; // Short code of the Storefront application 
+		$b .= '<shortCode>'. htmlspecialchars($sc, ENT_NOQUOTES) .'</shortCode>'; // Short code of the Storefront application
 		$b .= '<order orderCode="'. htmlspecialchars($this->getTxnInfo()->getOrderID(), ENT_NOQUOTES) .'">'; // mandatory, needs to be unique
-		$b .= '<description>Emirates Airline Ticket Purchase '. $pnr .'</description>';		
-		$b .= '<amount value="'. $this->getTxnInfo()->getAmount() .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="2" debitCreditIndicator="credit" />'; 
+		$b .= '<description>Emirates Airline Ticket Purchase '. $pnr .'</description>';
+		$b .= '<amount value="'. $this->getTxnInfo()->getAmount() .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="2" debitCreditIndicator="credit" />';
 		if  (array_key_exists("var_tax", $aClientVars) === true)
 		{
 			$b .= '<tax value="'. $aClientVars["var_tax"] .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="2" />';
 		}
 		if (array_key_exists("var_mcp", $aClientVars) === true) { $b .= trim($aClientVars["var_mcp"]); }	// Multi-Currency Payment
-		$b .= '<orderContent>'. htmlspecialchars($this->getTxnInfo()->getDescription(), ENT_NOQUOTES) .'</orderContent>'; 
+		$b .= '<orderContent>'. htmlspecialchars($this->getTxnInfo()->getDescription(), ENT_NOQUOTES) .'</orderContent>';
 		$b .= '<paymentDetails>';
 		$b .= '<'. $this->getCardName($obj_XML["type-id"]) .'>';
 		$b .= '<CCRKey>'.  htmlspecialchars($obj_XML->ticket, ENT_NOQUOTES)  .'</CCRKey>'; // mandatory, 0-20
-		$b .= '<cvc>'. intval($obj_XML->cvc) .'</cvc>'; 
+		$b .= '<cvc>'. intval($obj_XML->cvc) .'</cvc>';
 		$b .= '<cardNumber></cardNumber>';
-		$b .= '<storeCardFlag>N</storeCardFlag>';   
+		$b .= '<storeCardFlag>N</storeCardFlag>';
 		$b .= '<expiryDate>';
 		$b .= '<date month="'. substr($obj_XML->expiry, 0, 2) .'" year="20'. substr($obj_XML->expiry, -2) .'" />'; // mandatory
 		$b .= '</expiryDate>';
@@ -109,13 +109,13 @@ class CPG extends Callback
 		if (array_key_exists("var_number-of-instalments", $aClientVars) === true)
 		{
 			$b .= '<numberofinstalments>'. $aClientVars["var_number-of-instalments"] .'</numberofinstalments>';
-		}			    
+		}
 		$b .= '<cardAddress>';
 		$b .= '<address>';
 		$b .= '<firstName>'. htmlspecialchars($obj_XML->address->{'first-name'}, ENT_NOQUOTES) .'</firstName>'; // mandatory, 0-40 chars
 		$b .= '<lastName>'. htmlspecialchars($obj_XML->address->{'last-name'}, ENT_NOQUOTES) .'</lastName>'; // mandatory, 0-40 chars
 		$b .= '<street>'. htmlspecialchars(str_replace("IBE-MPOINT", " ",  $obj_XML->address->street), ENT_NOQUOTES ) .'</street>'; // mandatory, 0-100 chars
-		$b .= '<postalCode>'. intval($obj_XML->address->{'postal-code'}) .'</postalCode>'; // optional, 0-20 chars
+		$b .= '<postalCode>'. htmlspecialchars($obj_XML->address->{'postal-code'}, ENT_NOQUOTES) .'</postalCode>'; // optional, 0-20 chars
 		$b .= '<city>'. htmlspecialchars($obj_XML->address->city, ENT_NOQUOTES) .'</city>'; // mandatory, 0-50 chars
 		$b .= '<countryCode>'. $this->_getCountryCode(intval($obj_XML->address['country-id']) ) .'</countryCode>'; // mandatory, 2-2 chars
 //		$b .= '<telephoneNumber>'. floatval($this->getTxnInfo()->getMobile() ) .'</telephoneNumber>'; // optional
@@ -134,7 +134,7 @@ class CPG extends Callback
 		$b .= '<firstName>'. htmlspecialchars($obj_XML->address->{'first-name'}, ENT_NOQUOTES) .'</firstName>'; // mandatory, 0-40 chars
 		$b .= '<lastName>'. htmlspecialchars($obj_XML->address->{'last-name'}, ENT_NOQUOTES) .'</lastName>'; // mandatory, 0-40 chars
 		$b .= '<street>'. htmlspecialchars(str_replace("IBE-MPOINT", " ",  $obj_XML->address->street), ENT_NOQUOTES ) .'</street>'; // mandatory, 0-100 chars
-		$b .= '<postalCode>'. intval($obj_XML->address->{'postal-code'}) .'</postalCode>'; // optional, 0-20 chars
+		$b .= '<postalCode>'. htmlspecialchars($obj_XML->address->{'postal-code'}, ENT_NOQUOTES) .'</postalCode>'; // optional, 0-20 chars
 		$b .= '<city>'. htmlspecialchars($obj_XML->address->city, ENT_NOQUOTES) .'</city>'; // mandatory, 0-50 chars
 		$b .= '<countryCode>'. $this->_getCountryCode(intval($obj_XML->address['country-id']) ) .'</countryCode>'; // mandatory, 2-2 chars
 //		$b .= '<telephoneNumber>'. floatval($this->getTxnInfo()->getMobile() ) .'</telephoneNumber>'; // optional
@@ -146,13 +146,13 @@ class CPG extends Callback
 		$b .= '</submit>';
 
 		$aLogin = $this->getMerchantLogin($this->getTxnInfo()->getClientConfig()->getID(), Constants::iCPG_PSP);
-		
+
 		$sUsername = "";
 		$sPassword = "";
 		$aUsernames = explode(" ### ", $aLogin["username"]);
 		$aPasswords = explode(" ### ", $aLogin["password"]);
 		// IBE Short Codes
-		if ($sc == "NPG") 
+		if ($sc == "NPG")
 		{
 			$sUsername = $aUsernames[0];
 			$sPassword = $aPasswords[0];
@@ -178,16 +178,16 @@ class CPG extends Callback
 			$sUsername = $aUsernames[4];
 			$sPassword = $aPasswords[4];
 		}
-		
+
 		$oCI = new HTTPConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), $oCI->getMethod(), $oCI->getContentType(), $sUsername,$sPassword);
 		$h = trim($this->constHTTPHeaders() ) .HTTPClient::CRLF;
 		$h .= "authorization: Basic ".  base64_encode($sUsername .":". $sPassword) .HTTPClient::CRLF;
-				
+
 		$obj_HTTP = new HTTPClient(new Template(), $oCI);
 		$obj_HTTP->connect();
 		$code = $obj_HTTP->send($h, $b);
 		$obj_HTTP->disConnect();
-		
+
 		if ($code == 200)
 		{
 			$obj_DOM = simplexml_load_string($obj_HTTP->getReplyBody() );
@@ -203,7 +203,7 @@ class CPG extends Callback
 			elseif (count($obj_DOM->orderStatus->error) == 1)
 			{
 				header("HTTP/1.1 502 Bad Gateway");
-				
+
 				$xml = '<status code="92">'. htmlspecialchars($obj_DOM->orderStatus->error, ENT_NOQUOTES) .' ('. $obj_DOM->orderStatus->error["code"] .')</status>';
 				$b = str_replace("<cvc>". intval($obj_XML->cvc) ."</cvc>", "<cvc>". str_repeat("*", strlen(intval($obj_XML->cvc) ) ) ."</cvc>", $b);
 				trigger_error("Unable to initialize payment transaction with CPG, error code: ". $obj_DOM->orderStatus->error["code"] ."\n". $obj_DOM->orderStatus->error->asXML() ."\n". "REQUEST: ". $b, E_USER_WARNING);
@@ -211,7 +211,7 @@ class CPG extends Callback
 			else
 			{
 				header("HTTP/1.1 502 Bad Gateway");
-				
+
 				$xml = '<status code="92">Unknown Error: '. htmlspecialchars($obj_DOM->asXML(), ENT_NOQUOTES) .'</status>';
 				$b = str_replace("<cvc>". intval($obj_XML->cvc) ."</cvc>", "<cvc>". str_repeat("*", strlen(intval($obj_XML->cvc) ) ) ."</cvc>", $b);
 				trigger_error("Unable to initialize payment transaction with CPG, Unknown Error: ". $obj_DOM->asXML() ."\n". "REQUEST: ". $b, E_USER_WARNING);
@@ -220,12 +220,12 @@ class CPG extends Callback
 		else
 		{
 			header("HTTP/1.1 502 Bad Gateway");
-			
+
 			$xml = '<status code="92">Rejected with HTTP Code: '. $code .'</status>';
 			$b = str_replace("<cvc>". intval($obj_XML->cvc) ."</cvc>", "<cvc>". str_repeat("*", strlen(intval($obj_XML->cvc) ) ) ."</cvc>", $b);
 			trigger_error("Unable to initialize payment transaction with CPG, HTTP code: ". $code ."\n". "REQUEST: ". $b, E_USER_WARNING);
 		}
-		
+
 		return $xml;
 	}
 
@@ -506,7 +506,7 @@ class CPG extends Callback
 		case (313):	// Congo
 			return "CG";
 			break;
-		case (314):	// Côte d'Ivoire 
+		case (314):	// Côte d'Ivoire
 			return "CI";
 			break;
 		case (315):	// Democratic Republic of the Congo
@@ -709,7 +709,7 @@ class CPG extends Callback
 			break;
 		case (423):	// British International Ocean Territory
 			return "IO";
-			break;		
+			break;
 		case (424):	// St. Christopher (St. Kitts) Nevis
 			return "KN";
 			break;
