@@ -670,6 +670,8 @@ class EndUserAccount extends Home
 	 * as defined by the entries in database table: EndUser.CLAccess_Tbl.
 	 * This method may be called as a static method but is not defined as such because PHP doesn't support
 	 * a static function overriding a non-static method.
+	 * The method uses virtual overloading to provide different behaviour depending on the number of arguments passed as
+	 * described below.
 	 *
 	 * @static
 	 *
@@ -678,11 +680,64 @@ class EndUserAccount extends Home
 	 * @param	string $addr 		End-User's mobile number or E-Mail address
 	 * @param	CountryConfig $oCC	Country Configuration, pass null to default to the Country Configuration from the Client Configuration
 	 * @param	boolean $strict 	Only check for an account associated with the specific client
+	 * 		OR
+	 * @param	RDB $oDB			Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param 	ClientConfig $oClC 	Data object with the Client Configuration
+	 * @param	CountryConfig $oCC	Country Configuration identifying the end-user's country
+	 * @param	string $cref 		The client's customer reference for the end-user, pass empty string: "" to bypass
+	 * @param	long $mob 			End-User's mobile number, pass -1 to bypass
+	 * @param	string $email 		End-User's E-Mail address, pass empty string: "" to bypass
 	 * @return	integer				Unqiue ID of the End-User's Account or -1 if no account was found
 	 */
-	public function getAccountID(RDB &$oDB, ClientConfig &$oClC, $addr, CountryConfig &$oCC=null, $strict=true)
+//	public function getAccountID(RDB &$oDB, ClientConfig &$oClC, $addr, CountryConfig &$oCC=null, $strict=true)
+//	public function getAccountID(RDB &$oDB, ClientConfig &$oClC, $cref, $mob, $email, CountryConfig &$oCC)
+	public function getAccountID()
 	{
-		return self::_getAccountID($oDB, $oClC, $addr, $oCC, $strict == true ? 3 : 1);
+		$aArgs = func_get_args();
+		switch (count($aArgs) )
+		{
+		case (3):
+			return self::_getAccountID($aArgs[0], $aArgs[1], $aArgs[2]);
+			break;
+		case (4):
+			return self::_getAccountID($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3]);
+			break;
+		case (5):
+			return self::_getAccountID($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3], $aArgs[4] == true ? 3 : 1);
+			break;
+		case (6):	//
+			list($obj_DB, $obj_ClientConfig, $obj_CountryConfig, $sCustomerRef, $lMobile, $sEMail) = $aArgs;
+			$iAccountID = -1;
+			if (strlen($sCustomerRef ) > 0 && ($obj_ClientConfig->getIdentification() & 1) == 1) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($obj_DB, $obj_ClientConfig, $sCustomerRef, ($obj_ClientConfig->getStoreCard() <= 3) ); }
+			if ($iAccountID == -1 && floatval($lMobile ) > 0 && ($obj_ClientConfig->getIdentification() & 2) == 2) { $iAccountID = EndUserAccount::getAccountID($obj_DB, $obj_ClientConfig, $lMobile, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
+			if ($iAccountID == -1 && trim($sEMail ) != "" && ($obj_ClientConfig->getIdentification() & 4) == 4) { $iAccountID = EndUserAccount::getAccountID($obj_DB, $obj_ClientConfig, $sEMail, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
+			// Both Mobile No. and E-Mail address must match
+			if ( ($obj_ClientConfig->getIdentification() & 8) == 8)
+			{
+				if (floatval($lMobile ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID($obj_DB, $obj_ClientConfig, $lMobile, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
+				if (trim($sEMail ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($obj_DB, $obj_ClientConfig, $sEMail, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
+				if ($iMobileAccountID == $iEMailAccountID) { $iAccountID = $iMobileAccountID; }
+			}
+			// Client supports global storage of payment cards
+			if ($iAccountID == -1 && $obj_ClientConfig->getStoreCard() > 3)
+			{
+				if (floatval($lMobile ) > 0 && ($obj_ClientConfig->getIdentification() & 2) == 2) { $iAccountID = EndUserAccount::getAccountID($obj_DB, $obj_ClientConfig, $lMobile, $obj_CountryConfig, false); }
+				if ($iAccountID == -1 && trim($sEMail ) != "" && ($obj_ClientConfig->getIdentification() & 4) == 4) { $iAccountID = EndUserAccount::getAccountID($obj_DB, $obj_ClientConfig, $sEMail, $obj_CountryConfig, false); }
+				// Both Mobile No. and E-Mail address must match
+				if ( ($obj_ClientConfig->getIdentification() & 8) == 8)
+				{
+					if (floatval($lMobile ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID($obj_DB, $obj_ClientConfig, $lMobile, $obj_CountryConfig, false); }
+					if (trim($sEMail ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($obj_DB, $obj_ClientConfig, $sEMail, $obj_CountryConfig, false); }
+					if ($iMobileAccountID == $iEMailAccountID) { $iAccountID = $iMobileAccountID; }
+				}
+			}
+			return $iAccountID;
+			break;
+		default:
+			trigger_error("Invalid number of arguments: ". count($aArgs), E_USER_ERROR);
+			return -1;
+			break;
+		}
 	}
 	/**
 	 * Fetches the unique ID of the End-User's account from the database.
@@ -725,7 +780,10 @@ class EndUserAccount extends Home
 								   FROM EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl
 								   WHERE accountid = EUA.id) )";
 		}
-		//echo $sql ."\n";
+		$sql .= "
+				ORDER BY EUA.id DESC
+				LIMIT 1";
+//		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 
 		return is_array($RS) === true ? $RS["ID"] : -1;

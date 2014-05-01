@@ -68,32 +68,32 @@ $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
 	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_DOM->{'save-card'}) > 0)
-	{	
+	{
 		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
-		
+
 		for ($i=0; $i<count($obj_DOM->{'save-card'}); $i++)
 		{
 			// Set Global Defaults
 			if (empty($obj_DOM->{'save-card'}[$i]["account"]) === true || intval($obj_DOM->{'save-card'}[$i]["account"]) < 1) { $obj_DOM->{'save-card'}[$i]["account"] = -1; }
-		
+
 			// Validate basic information
 			$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]["client-id"], (integer) $obj_DOM->{'save-card'}[$i]["account"]);
 			if ($code == 100)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]["client-id"], (integer) $obj_DOM->{'save-card'}[$i]["account"]);
-				
+
 				// Client successfully authenticated
 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']) )
 				{
 					$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile["country-id"]);
 					if ( ($obj_CountryConfig instanceof CountryConfig) === false || $obj_CountryConfig->getID() < 1) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
-					
+
 					for ($j=0; $j<count($obj_DOM->{'save-card'}[$i]->card); $j++)
 					{
 						$obj_mPoint = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 						$obj_Validator = new Validate($obj_CountryConfig);
 						$aMsgCds = array();
-						
+
 						if (count($obj_DOM->{'save-card'}[$i]->card[$j]->name) == 1 && $obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name) != 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name) + 20; }
 						if (intval($obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) == 0 && intval($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) == 0)
 						{
@@ -103,17 +103,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						{
 							if ($obj_Validator->valCardTypeID($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"])  != 10) { $aMsgCds[] = $obj_Validator->valCardTypeId($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"]) + 40; }
 						}
-						
+
 						$iAccountID = -1;
 						// Modifying an existing Stored Card
 						if (intval($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) > 0)
 						{
-							if (count($obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}) == 1) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}, ($obj_ClientConfig->getStoreCard() <= 3) ); }
-							if ($iAccountID < 0 && count($obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
-							if ($iAccountID < 0 && count($obj_DOM->{'save-card'}[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
-							if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
-							if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
-							
+							$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-card'}[$i]->{'client-info'}->email);
+//							if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
+//							if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
+
 							if ($obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["id"]) != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $iAccountID, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["id"]) + 50; }
 						}
 						// Saving Masked Card Details
@@ -126,7 +124,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						{
 							if ($obj_Validator->valState($_OBJ_DB, utf8_decode( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}->state) ) != 10) { $aMsgCds[] = $obj_Validator->valState($_OBJ_DB, utf8_decode( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}->state) ) + 80; }
 						}
-						
+
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
 						{
@@ -150,13 +148,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									// New End-User
 									if ($iAccountID < 0)
 									{
-										$iAccountID = $obj_mPoint->newAccount($obj_CountryConfig->getID(), (float) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, (string) $obj_DOM->{'save-card'}[$i]->password, (string) $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, (string) $obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'}); 
+										$iAccountID = $obj_mPoint->newAccount($obj_CountryConfig->getID(), (float) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, (string) $obj_DOM->{'save-card'}[$i]->password, (string) $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, (string) $obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'});
 									}
 									if (intval($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'}) < 10) { $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} = "0". intval($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'}); }
 									$code = $obj_mPoint->saveCard($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->token, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-number-mask'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} ."/". substr($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-year'}, -2), (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-holder-name'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) ) + 1;
 								}
 								// Naming a Stored Card
-								else { $code = $obj_mPoint->saveCardName($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) ); }							
+								else { $code = $obj_mPoint->saveCardName($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) ); }
 							}
 							// Save Address if passed and cards successfuly saved
 							if (count($obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}) == 1 && $code > 0)
@@ -193,17 +191,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							{
 								// Abort transaction and rollback to previous state
 								$_OBJ_DB->query("ROLLBACK");
-							}								
+							}
 							// Success: Card saved
 							if ($code > 0 && $obj_ClientConfig->getNotificationURL() != "" && count($obj_DOM->{'save-card'}[$i]->{'auth-token'}) == 1)
 							{
 								try
 								{
 									$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'save-card'}[$i]->{'client-info'}, $obj_CountryConfig, @$_SERVER['HTTP_X_FORWARDED_FOR']);
-										
+
 									$aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID, $obj_ClientConfig) );
 									$aObj_XML = $aObj_XML->xpath("/stored-cards/card[client/@id = ". $obj_ClientConfig->getID() ."]");
-									
+
 									$aURL_Info = parse_url($obj_mPoint->getClientConfig()->getNotificationURL() );
 									$aHTTP_CONN_INFO["mesb"]["protocol"] = $aURL_Info["scheme"];
 									$aHTTP_CONN_INFO["mesb"]["host"] = $aURL_Info["host"];
@@ -211,27 +209,27 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$aHTTP_CONN_INFO["mesb"]["path"] = $aURL_Info["path"];
 									if (array_key_exists("query", $aURL_Info) === true) { $aHTTP_CONN_INFO["mesb"]["path"] .= "?". $aURL_Info["query"]; }
 									$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
-									
+
 									switch ($obj_mPoint->notify($obj_ConnInfo, $obj_ClientInfo, $iAccountID, $obj_DOM->{'save-card'}[$i]->{'auth-token'}, count($aObj_XML) ) )
 									{
 									case (1):	// Error: Unknown response from CRM System
 										// Abort transaction and rollback to previous state
 										$_OBJ_DB->query("ROLLBACK");
 										header("HTTP/1.1 502 Bad Gateway");
-										
+
 										$xml = '<status code="98">Invalid response from CRM System</status>';
 										break;
 									case (2):	// Error: Notification Rejected by CRM System
 										// Abort transaction and rollback to previous state
 										$_OBJ_DB->query("ROLLBACK");
 										header("HTTP/1.1 502 Bad Gateway");
-										
+
 										$xml = '<status code="97">Notification rejected by CRM System</status>';
 										break;
 									case (10):	// Success: Card successfully saved
 										// Commit Saved Card
 										$_OBJ_DB->query("COMMIT");
-										
+
 										if (count($obj_DOM->{'save-card'}[$i]->card[$j]->token) == 1)
 										{
 											if (isset($id) === false) { $id = $obj_mPoint->getCardIDFromCardDetails($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-number-mask'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} ."/". substr($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-year'}, -2) ); }
@@ -243,18 +241,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										// Abort transaction and rollback to previous state
 										$_OBJ_DB->query("ROLLBACK");
 										header("HTTP/1.1 502 Bad Gateway");
-										
+
 										$xml = '<status code="99">Unknown response from CRM System</status>';
 										break;
 									}
 								}
 								// Error: Unable to connect to CRM System
-								catch (HTTPConnectionException $e) 
+								catch (HTTPConnectionException $e)
 								{
 									// Abort transaction and rollback to previous state
 									$_OBJ_DB->query("ROLLBACK");
 									header("HTTP/1.1 504 Gateway Timeout");
-									
+
 									$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 									$xml .= '<root>';
 									$xml .= '<status code="91">Unable to connect to CRM System</status>';
@@ -266,7 +264,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									// Abort transaction and rollback to previous state
 									$_OBJ_DB->query("ROLLBACK");
 									header("HTTP/1.1 504 Gateway Timeout");
-										
+
 									$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 									$xml .= '<root>';
 									$xml .= '<status code="92">No response received from CRM System</status>';
@@ -284,7 +282,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								else { $xml = '<status code="'. ($code+99) .'">Card successfully saved</status>'; }
 							}
 							// Internal Error: Unable to save Card
-							else 
+							else
 							{
 								if ($code == 60)
 								{
@@ -296,7 +294,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									header("HTTP/1.1 400 Bad Request");
 									$xml = '<status code="60">Missing psp-id </status>';
 								}
-								else 
+								else
 								{
 									header("HTTP/1.1 500 Internal Server Error");
 									$xml = '<status code="90">Unable to save Card ('. $code .')</status>';
@@ -307,7 +305,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						else
 						{
 							header("HTTP/1.1 400 Bad Request");
-							
+
 							$xml = '<status code="'. $aMsgCds[0] .'" />';
 						}
 					}
@@ -315,14 +313,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				else
 				{
 					header("HTTP/1.1 401 Unauthorized");
-					
+
 					$xml = '<status code="401">Username / Password doesn\'t match</status>';
 				}
 			}
 			else
 			{
 				header("HTTP/1.1 400 Bad Request");
-				
+
 				$xml = '<status code="'. $code .'">Client ID / Account doesn\'t match</status>';
 			}
 		}
@@ -331,19 +329,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	elseif ( ($obj_DOM instanceof SimpleDOMElement) === false)
 	{
 		header("HTTP/1.1 415 Unsupported Media Type");
-		
+
 		$xml = '<status code="415">Invalid XML Document</status>';
 	}
 	// Error: Wrong operation
 	elseif (count($obj_DOM->{'save-card'}) == 0)
 	{
 		header("HTTP/1.1 400 Bad Request");
-		
+
 		$xml = '';
-		
+
 		foreach ($obj_DOM->children() as $obj_Elem)
 		{
-			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>'; 
+			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>';
 		}
 	}
 	// Error: Invalid Input
@@ -351,7 +349,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	{
 		header("HTTP/1.1 400 Bad Request");
 		$aObj_Errs = libxml_get_errors();
-		
+
 		$xml = '';
 		for ($i=0; $i<count($aObj_Errs); $i++)
 		{
@@ -362,7 +360,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 else
 {
 	header("HTTP/1.1 401 Unauthorized");
-	
+
 	$xml = '<status code="401">Authorization required</status>';
 }
 header("Content-Type: text/xml; charset=\"UTF-8\"");

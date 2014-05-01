@@ -1258,3 +1258,5 @@ INSERT INTO System.State_Tbl (countryid, code, name) VALUES (603, 'TR', 'Tripura
 INSERT INTO System.State_Tbl (countryid, code, name) VALUES (603, 'UP', 'Uttar Pradesh');
 INSERT INTO System.State_Tbl (countryid, code, name) VALUES (603, 'UL', 'Uttarakhand');
 INSERT INTO System.State_Tbl (countryid, code, name) VALUES (603, 'WB', 'West Bengal');
+
+UPDATE Client.Client_Tbl SET show_all_cards = false, max_cards = -1;

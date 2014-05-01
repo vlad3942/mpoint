@@ -62,31 +62,28 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		{
 			// Set Global Defaults
 			if (empty($obj_DOM->{'save-settings'}[$i]["account"]) === true || intval($obj_DOM->{'save-settings'}[$i]["account"]) < 1) { $obj_DOM->{'save-settings'}[$i]["account"] = -1; }
-			
+
 			// Validate basic information
 			$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'save-settings'}[$i]["client-id"], (integer) $obj_DOM->{'save-settings'}[$i]["account"]);
 			if ($code == 100)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-settings'}[$i]["client-id"], (integer) $obj_DOM->{'save-settings'}[$i]["account"]);
-	
+
 				// Client successfully authenticated
 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']) )
 				{
 					$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-settings'}[$i]->{'client-info'}->mobile["country-id"]);
 					if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
-					
+
 					$obj_mPoint = new MyAccount($_OBJ_DB, $_OBJ_TXT, $obj_CountryConfig);
 					if ($obj_Validator->valPassword( (string) $obj_DOM->{'save-settings'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'save-settings'}[$i]->password) + 20; }
 					if (intval($obj_DOM->{'save-settings'}[$i]->settings->{'auto-top-up'}->threshold) < 0) { $aMsgCds[] = 41; }
 					if (intval($obj_DOM->{'save-settings'}[$i]->settings->{'auto-top-up'}->amount) > 0 && intval($obj_DOM->{'save-settings'}[$i]->settings->{'auto-top-up'}->amount) <= 1000) { $aMsgCds[] = 42; }
-					
+
 					// Success: Input valid
 					if (count($aMsgCds) == 0)
 					{
-						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-settings'}[$i]->{'client-info'}->mobile, $obj_CountryConfig);
-						if ($iAccountID < 0 && count($obj_DOM->{'save-settings'}[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-settings'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
-						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->{'save-settings'}[$i]->{'client-info'}->mobile); }
-						if ($iAccountID < 0 && count($obj_DOM->{'save-settings'}[$i]->{'client-info'}->email) == 1) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->{'save-settings'}[$i]->{'client-info'}->email); }
+						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-settings'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-settings'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-settings'}[$i]->{'client-info'}->email);
 						$code = General::authToken($iAccountID, $obj_ClientConfig->getSecret(), $_COOKIE['token']);
 						// Authentication succeeded
 						if ($code >= 10)
@@ -105,14 +102,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							elseif ($code == 11)
 							{
 								header("HTTP/1.1 403 Forbidden");
-									
+
 								$xml = '<status code="37">Mobile number not verified</status>';
 							}
 							// Authentication failed
 							else
 							{
 								header("HTTP/1.1 403 Forbidden");
-									
+
 								$xml = '<status code="'. ($code+30) .'" />';
 							}
 						}
@@ -120,7 +117,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						else
 						{
 							header("HTTP/1.1 403 Forbidden");
-								
+
 							$xml = '<status code="38">Invalid Security Token: '. $_COOKIE['token'] .'</status>';
 						}
 					}
@@ -128,7 +125,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					else
 					{
 						header("HTTP/1.1 400 Bad Request");
-					
+
 						$xml = '';
 						foreach ($aMsgCds as $code)
 						{
@@ -139,14 +136,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				else
 				{
 					header("HTTP/1.1 401 Unauthorized");
-						
+
 					$xml = '<status code="401">Username / Password doesn\'t match</status>';
 				}
 			}
 			else
 			{
 				header("HTTP/1.1 400 Bad Request");
-			
+
 				$xml = '<status code="'. $code .'">Client ID / Account doesn\'t match</status>';
 			}
 		}

@@ -57,30 +57,30 @@ $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
 	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_DOM->{'save-account'}) > 0)
-	{	
+	{
 		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
-		
+
 		for ($i=0; $i<count($obj_DOM->{'save-account'}); $i++)
 		{
 			// Set Global Defaults
 			if (empty($obj_DOM->{'save-account'}[$i]["account"]) === true || intval($obj_DOM->{'save-account'}[$i]["account"]) < 1) { $obj_DOM->{'save-account'}[$i]["account"] = -1; }
-		
+
 			// Validate basic information
 			$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'save-account'}[$i]["client-id"], (integer) $obj_DOM->{'save-account'}[$i]["account"]);
 			if ($code == 100)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-account'}[$i]["client-id"], (integer) $obj_DOM->{'save-account'}[$i]["account"]);
-				
+
 				// Client successfully authenticated
 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']) )
 				{
 					// Re-Intialise Text Translation Object based on transaction
 					$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_DOM->{'save-account'}[$i]->{'client-info'}["language"] ."/global.txt", sLANGUAGE_PATH . $obj_DOM->{'save-account'}[$i]->{'client-info'}["language"] ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
-					
+
 					$obj_mPoint = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 					$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 					$aMsgCds = array();
-					
+
 					if ($obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->password) + 20; }
 					if ($obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->{'confirm-password'}) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->{'confirm-password'} ) + 30; }
 					if (count($aMsgCds) == 0 && strval($obj_DOM->{'save-account'}[$i]->password) != strval($obj_DOM->{'save-account'}[$i]->{'confirm-password'}) ) { $aMsgCds[] = 41; }
@@ -105,26 +105,25 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					{
 						if ($obj_Validator->valName( (string) $obj_DOM->{'save-account'}[$i]->{'last-name'}) < 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-account'}[$i]->{'last-name'}) + 64; }
 					}
-					
+
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
 					{
 						$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile["country-id"]);
 						// Construct Client Info
 						$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'save-account'}[$i]->{'client-info'}, $obj_CountryConfig, @$_SERVER['HTTP_X_FORWARDED_FOR']);
-						
+
 						$code = $obj_mPoint->savePassword( (float) $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, (string) $obj_DOM->{'save-account'}[$i]->password, $obj_CountryConfig);
 						// New Account automatically created when Password was saved
 						if ($code == 1 && $obj_ClientConfig->smsReceiptEnabled() === true)
 						{
 //							$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $_SESSION['obj_TxnInfo']);
 						}
-						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_CountryConfig);
-						if ($iAccountID < 0 && count($obj_DOM->{'save-account'}[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
-						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
-						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
+						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
+//						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
+//						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
 						$obj_mPoint->saveCardName($iAccountID, $obj_DOM->{'save-account'}[$i]->card["type-id"], (string) $obj_DOM->{'save-account'}[$i]->card, true);
-							
+
 						// Success: Account Information Saved
 						if ($code >= 0)
 						{
@@ -136,7 +135,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							{
 								$obj_mPoint->saveEmail($obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_CountryConfig);
 							}
-							
+
 							// Customer Data should be imported from Client System
 							if ($obj_ClientConfig->getCustomerImportURL() != "")
 							{
@@ -172,37 +171,37 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								else
 								{
 									header("HTTP/1.1 500 Internal Server Error");
-									
+
 									$xml = '<status code="91">Unable to send One Time Password</status>';
 								}
 							}
 							else { $xml = '<status code="'. ($code+100) .'">Account information successfully saved</status>'; }
 						}
-						else 
+						else
 						{
 							header("HTTP/1.1 500 Internal Server Error");
-							
+
 							$xml = '<status code="90">Unable to save Account information</status>';
 						}
 					}
 					else
 					{
 						header("HTTP/1.1 400 Bad Request");
-						
+
 						$xml = '<status code="'. $aMsgCds[0] .'" />';
 					}
 				}
 				else
 				{
 					header("HTTP/1.1 401 Unauthorized");
-					
+
 					$xml = '<status code="401">Username / Password doesn\'t match</status>';
 				}
 			}
 			else
 			{
 				header("HTTP/1.1 400 Bad Request");
-				
+
 				$xml = '<status code="'. $code .'">Client ID / Account doesn\'t match</status>';
 			}
 		}
@@ -211,18 +210,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	elseif ( ($obj_DOM instanceof SimpleDOMElement) === false)
 	{
 		header("HTTP/1.1 415 Unsupported Media Type");
-		
+
 		$xml = '<status code="415">Invalid XML Document</status>';
 	}
 	// Error: Wrong operation
 	elseif (count($obj_DOM->{'save-account'}) == 0)
 	{
 		header("HTTP/1.1 400 Bad Request");
-	
+
 		$xml = '';
 		foreach ($obj_DOM->children() as $obj_Elem)
 		{
-			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>'; 
+			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>';
 		}
 	}
 	// Error: Invalid Input
@@ -230,7 +229,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	{
 		header("HTTP/1.1 400 Bad Request");
 		$aObj_Errs = libxml_get_errors();
-		
+
 		$xml = '';
 		for ($i=0; $i<count($aObj_Errs); $i++)
 		{
@@ -241,7 +240,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 else
 {
 	header("HTTP/1.1 401 Unauthorized");
-	
+
 	$xml = '<status code="401">Authorization required</status>';
 }
 header("Content-Type: text/xml; charset=\"UTF-8\"");

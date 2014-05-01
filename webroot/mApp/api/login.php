@@ -60,42 +60,39 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 		$obj_Validator = new Validate();
 		$xml = '';
-		
+
 		for ($i=0; $i<count($obj_DOM->login); $i++)
 		{
 			// Set Global Defaults
 			if (empty($obj_DOM->login[$i]["account"]) === true || intval($obj_DOM->login[$i]["account"]) < 1) { $obj_DOM->login[$i]["account"] = -1; }
-		
+
 			// Validate basic information
 			$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->login[$i]["client-id"], (integer) $obj_DOM->login[$i]["account"]);
 			if ($code == 100)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->login[$i]["client-id"], (integer) $obj_DOM->login[$i]["account"]);
-				
+
 				// Client successfully authenticated
 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']) )
 				{
 					$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->login[$i]->{'client-info'}->mobile["country-id"]);
 					if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
-					
+
 					$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig->getCountryConfig() );
 					if ( strlen((string) $obj_DOM->login[$i]->password) > 1 && $obj_Validator->valPassword( (string) $obj_DOM->login[$i]->password) < 10)
 					{
 						$aMsgCds["password"] = $obj_Validator->valPassword( (string) $obj_DOM->login[$i]->password) + 20;
 					}
-						
+
 					// Input valid
 					if (count($aMsgCds) == 0)
 					{
-						$iAccountID = -1;
-						if (count($obj_DOM->login[$i]->{'client-info'}->{'customer-ref'}) == 1) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->login[$i]->{'client-info'}->{'customer-ref'}, ($obj_ClientConfig->getStoreCard() <= 3) ); }
-						if ($iAccountID < 0 && count($obj_DOM->login[$i]->{'client-info'}->mobile) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->login[$i]->{'client-info'}->mobile, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
-						if ($iAccountID < 0 && count($obj_DOM->login[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->login[$i]->{'client-info'}->email, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
-						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->login[$i]->{'client-info'}->mobile, $obj_ClientConfig->getID() ); }
-						if ($iAccountID < 0 && count($obj_DOM->login[$i]->{'client-info'}->email) == 1) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->login[$i]->{'client-info'}->email, $obj_ClientConfig->getID() ); }
-						
+						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->login[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->login[$i]->{'client-info'}->mobile, $obj_DOM->login[$i]->{'client-info'}->email);
+//						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->login[$i]->{'client-info'}->mobile, $obj_ClientConfig->getID() ); }
+//						if ($iAccountID < 0 && count($obj_DOM->login[$i]->{'client-info'}->email) == 1) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->login[$i]->{'client-info'}->email, $obj_ClientConfig->getID() ); }
+
 						if (count($obj_DOM->login[$i]->{'auth-token'}) == 1
-							&& (count($obj_DOM->login[$i]->{'auth-url'}) == 1 || strlen($obj_ClientConfig->getAuthenticationURL() ) > 0) ) 
+							&& (count($obj_DOM->login[$i]->{'auth-url'}) == 1 || strlen($obj_ClientConfig->getAuthenticationURL() ) > 0) )
 						{
 							$url = $obj_ClientConfig->getAuthenticationURL();
 							if (count($obj_DOM->login[$i]->{'auth-url'}) == 1) { $url = (string) $obj_DOM->login[$i]->{'auth-url'}; }
@@ -103,10 +100,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							{
 								$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($url), $obj_DOM->login[$i]->{'client-info'}->{'customer-ref'}, (string) $obj_DOM->login[$i]->{'auth-token'} );
 							}
-							else { $code = 8; } 
-						} 
+							else { $code = 8; }
+						}
 						else { $code = $obj_mPoint->auth($iAccountID, (string) $obj_DOM->login[$i]->password); }
-						
+
 						// Authentication succeeded
 						if ($code == 10 || ($code == 11 && $obj_ClientConfig->smsReceiptEnabled() === false) )
 						{
@@ -166,7 +163,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						elseif ($code == 11)
 						{
 							header("HTTP/1.1 403 Forbidden");
-							
+
 							$xml = '<status code="37">Mobile number not verified</status>';
 						}
 						// Authentication failed
@@ -180,9 +177,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$obj_mPoint = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 								$obj_mPoint->sendAccountDisabledNotification(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_DOM->login[$i]->{'client-info'}->mobile);
 							}
-							
+
 							header("HTTP/1.1 403 Forbidden");
-								
+
 							$xml = '<status code="'. ($code+30) .'" />';
 						}
 					}
@@ -190,7 +187,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					else
 					{
 						header("HTTP/1.1 400 Bad Request");
-					
+
 						foreach ($aMsgCds as $code)
 						{
 							$xml .= '<status code="'. $code .'" />';
@@ -200,14 +197,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				else
 				{
 					header("HTTP/1.1 401 Unauthorized");
-					
+
 					$xml = '<status code="401">Username / Password doesn\'t match</status>';
 				}
 			}
 			else
 			{
 				header("HTTP/1.1 400 Bad Request");
-				
+
 				$xml = '<status code="'. $code .'">Client ID / Account doesn\'t match</status>';
 			}
 		}
@@ -216,18 +213,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	elseif ( ($obj_DOM instanceof SimpleDOMElement) === false)
 	{
 		header("HTTP/1.1 415 Unsupported Media Type");
-		
+
 		$xml = '<status code="415">Invalid XML Document</status>';
 	}
 	// Error: Wrong operation
 	elseif (count($obj_DOM->login) == 0)
 	{
 		header("HTTP/1.1 400 Bad Request");
-	
+
 		$xml = '';
 		foreach ($obj_DOM->children() as $obj_Elem)
 		{
-			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>'; 
+			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>';
 		}
 	}
 	// Error: Invalid Input
@@ -235,7 +232,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	{
 		header("HTTP/1.1 400 Bad Request");
 		$aObj_Errs = libxml_get_errors();
-		
+
 		$xml = '';
 		for ($i=0; $i<count($aObj_Errs); $i++)
 		{
@@ -246,7 +243,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 else
 {
 	header("HTTP/1.1 401 Unauthorized");
-	
+
 	$xml = '<status code="401">Authorization required</status>';
 }
 header("Content-Type: text/xml; charset=\"UTF-8\"");

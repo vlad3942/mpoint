@@ -1,4 +1,4 @@
-ALTER TABLE Log.Transaction_Tbl ADD COLUMN description TEXT; -- Added´s a description to a transaction 
+ALTER TABLE Log.Transaction_Tbl ADD COLUMN description TEXT; -- Added´s a description to a transaction
 
 
 -- Table: System.State_Tbl
@@ -7,12 +7,12 @@ CREATE TABLE System.State_Tbl
 (
 	id 			SERIAL NOT NULL,
 	countryid 	INT4 NOT NULL,
-  	
+
 	name 		VARCHAR(50),
 	code 		VARCHAR(5),
-	
+
 	vat			FLOAT4 DEFAULT 0.0,	-- VAT charged in the State
-	
+
 	CONSTRAINT State_PK PRIMARY KEY (id),
 	CONSTRAINT State2Country_FK FOREIGN KEY (countryid) REFERENCES System.Country_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
   	LIKE Template.General_Tbl INCLUDING DEFAULTS
@@ -30,23 +30,23 @@ CREATE TABLE System.PostalCode_Tbl
 (
 	id 			SERIAL NOT NULL,
 	stateid 	INT4 NOT NULL,
-	
+
   	code 		VARCHAR(10),
 	city 		VARCHAR(50),
-	
+
 	latitude 	FLOAT4,
 	longitude 	FLOAT4,
 	utc_offset 	INT4,
-	
+
 	vat			FLOAT4 DEFAULT 0.0,	-- VAT charged in the Postal Code
-	
+
 	CONSTRAINT PostalCode_PK PRIMARY KEY (id),
 	CONSTRAINT PostalCode2State_FK FOREIGN KEY (stateid) REFERENCES System.State_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
   	LIKE Template.General_Tbl INCLUDING DEFAULTS
 ) WITHOUT OIDS;
 
 CREATE UNIQUE INDEX PostalCode_UQ ON System.PostalCode_Tbl (latitude, longitude, code, lower(city) );
-  
+
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE System.PostalCode_Tbl TO mpoint;
 GRANT SELECT, UPDATE, USAGE ON TABLE System.PostalCode_Tbl_id_seq TO mpoint;
 
@@ -59,14 +59,14 @@ CREATE TABLE EndUser.Address_Tbl
 	cardid		INT4,
 	countryid	INT4 NOT NULL,
 	stateid		INT4 NOT NULL,
-	
+
 	firstname	VARCHAR(50),
 	lastname	VARCHAR(50),
 	company		VARCHAR(50),
 	street		VARCHAR(50),
 	postalcode	VARCHAR(10),
 	city		VARCHAR(50),
-	
+
 	CONSTRAINT Address_PK PRIMARY KEY (id),
 	CONSTRAINT Address2Account_FK FOREIGN KEY (accountid) REFERENCES EndUser.Account_Tbl (id) ON UPDATE CASCADE ON DELETE CASCADE,
 	CONSTRAINT Address2Card_FK FOREIGN KEY (cardid) REFERENCES EndUser.Card_Tbl (id) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -84,8 +84,8 @@ EXECUTE PROCEDURE Public.Update_Table_Proc();
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE EndUser.Address_Tbl TO mpoint;
 GRANT SELECT, UPDATE, USAGE ON TABLE EndUser.Address_Tbl_id_seq TO mpoint;
 
--- Table: Client.IpAddress_Tbl 
--- Used for IP WhiteListing 
+-- Table: Client.IpAddress_Tbl
+-- Used for IP WhiteListing
 CREATE TABLE Client.IPAddress_Tbl
 (
 	id				SERIAL,
@@ -108,7 +108,7 @@ CREATE TABLE Log.Operation_Tbl
 (
 	id		SERIAL NOT NULL,
 	name	VARCHAR(255),
-	
+
 	CONSTRAINT operation_pk PRIMARY KEY (id),
 	LIKE Template.General_Tbl INCLUDING DEFAULTS
 ) WITHOUT OIDS;
@@ -123,22 +123,31 @@ CREATE TABLE Log.AuditLog_Tbl
 (
 	id				SERIAL NOT NULL,
 	operationid		INT4 NOT NULL,
-	
+
 	mobile			INT8,
 	email			VARCHAR(255),
 	customer_ref	VARCHAR(50),
 	code			INT4 NOT NULL,
 	message			VARCHAR(255),
-	
+
   	CONSTRAINT auditlog_pk PRIMARY KEY (id),
   	CONSTRAINT auditlog2operation_fk FOREIGN KEY (operationid) REFERENCES log.operation_tbl (id) ON UPDATE CASCADE ON DELETE CASCADE,
   	LIKE Template.General_Tbl INCLUDING DEFAULTS
 ) WITHOUT OIDS;
-  
+
 GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Log.AuditLog_Tbl TO mpoint;
 GRANT SELECT, UPDATE, USAGE ON TABLE Log.AuditLog_Tbl_id_seq TO mpoint;
 
 -- Flag to show all cards, including disabled and expired cards
 ALTER TABLE Client.Client_Tbl ADD show_all_cards BOOL DEFAULT false;
+-- Value controlling the max number of stored cards for the client
+ALTER TABLE Client.Client_Tbl ADD max_cards INT4 DEFAULT -1;
 
 ALTER TABLE EndUser.Card_tbl ADD COLUMN card_holder_name VARCHAR(255); -- Add´s a Card Holder Name column to a card table
+
+--
+CREATE INDEX transaction_email_idx ON Log.Transaction_Tbl (email);
+CREATE INDEX transaction_mobile_idx ON Log.Transaction_Tbl (mobile);
+CREATE INDEX transaction_customer_ref_idx ON Log.Transaction_Tbl (customer_ref);
+--
+CREATE INDEX transaction_account_idx ON EndUser.Transaction_Tbl (accountid, txnid);

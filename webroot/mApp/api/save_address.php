@@ -57,7 +57,7 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 	{
 		// Set Global Defaults
 		if (empty($obj_DOM->address[$i]["account"]) === true || intval($obj_DOM->address[$i]["account"]) < 1) { $obj_DOM->address[$i]["account"] = -1; }
-		
+
 		// Validate basic information
 		$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->address[$i]["client-id"], (integer) $obj_DOM->address[$i]["account"]);
 		if ($code == 100)
@@ -117,15 +117,14 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 					$aMsgCds[] = $obj_Validator->valState($_OBJ_DB, (string) $obj_DOM->address[$i]->state) + 70;
 				}
 				if ($obj_Validator->valName( (string) $obj_DOM->address[$i]->city) < 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->address[$i]->city) + 80; }
-				
-				
+
+
 				// Success: Input valid
 				if (count($aMsgCds) == 0)
 				{
-					$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->address[$i]->{'client-info'}->mobile, $obj_CountryConfig);
-					if ($iAccountID < 0 && count($obj_DOM->address[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->address[$i]->{'client-info'}->email, $obj_CountryConfig); }
-					if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->address[$i]->{'client-info'}->mobile); }
-					if ($iAccountID < 0 && count($obj_DOM->address[$i]->{'client-info'}->email) == 1) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->address[$i]->{'client-info'}->email); }
+					$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->address[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->address[$i]->{'client-info'}->mobile, $obj_DOM->address[$i]->{'client-info'}->email);
+//					if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->address[$i]->{'client-info'}->mobile); }
+//					if ($iAccountID < 0 && count($obj_DOM->address[$i]->{'client-info'}->email) == 1) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->address[$i]->{'client-info'}->email); }
 					$code = General::authToken($iAccountID, $obj_ClientConfig->getSecret(), $_COOKIE['token']);
 					// Authentication succeeded
 					if ($code >= 10)
@@ -135,10 +134,10 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 						/*
 						 * TODO
 						 $iCustomerID = $obj_mPoint->getCustomerIDFromMobile($obj_ClientInfo->getCountryConfig()->getID(), $obj_ClientInfo->getMobile() );
-							
+
 						$bNewAddress = true;
 						$obj_XML = simplexml_load_string($obj_mPoint->getAddresses($iCustomerID) );
-							
+
 						// Assume address doesn't exist
 						$bExists = false;
 						for ($j=0; $j<count($obj_XML->address); $j++)
@@ -166,7 +165,7 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 							if ($code >= 10) { $code++; }
 						}
 						else { $code = 10; }
-							
+
 						switch ($code)
 						{
 						case (10):
@@ -177,7 +176,7 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 							break;
 						default:	// Error: Unable to save address
 							header("HTTP/1.1 500 Internal Server Error");
-								
+
 							$xml = '<status code="'.  ($code+90) .'">Unable to save address</status>';
 							break;
 						}
@@ -186,7 +185,7 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 					else
 					{
 						header("HTTP/1.1 403 Forbidden");
-							
+
 						$xml = '<status code="38">Invalid Security Token: '. $_COOKIE['token'] .'</status>';
 					}
 				}
@@ -194,7 +193,7 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 				else
 				{
 					header("HTTP/1.1 400 Bad Request");
-				
+
 					$xml = '';
 					foreach ($aMsgCds as $code)
 					{
@@ -205,7 +204,7 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 			else
 			{
 				header("HTTP/1.1 401 Unauthorized");
-					
+
 				$xml = '<status code="401">Username / Password doesn\'t match</status>';
 			}
 		}
@@ -213,7 +212,7 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 		else
 		{
 			header("HTTP/1.1 400 Bad Request");
-		
+
 			$xml = '';
 			foreach ($aMsgCds as $code)
 			{
@@ -227,7 +226,7 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 elseif ( ($obj_DOM instanceof SimpleDOMElement) === false)
 {
 	header("HTTP/1.1 415 Unsupported Media Type");
-	
+
 	$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 	$xml .= '<root>';
 	$xml .= '<status code="415">Invalid XML Document</status>';
@@ -238,7 +237,7 @@ else
 {
 	header("HTTP/1.1 400 Bad Request");
 	$aObj_Errs = libxml_get_errors();
-	
+
 	$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 	$xml .= '<root>';
 	for ($i=0; $i<count($aObj_Errs); $i++)

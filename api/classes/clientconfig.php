@@ -25,7 +25,7 @@ class ClientConfig extends BasicConfig
 {
 	/**
 	 * Constants for each URL Type
-	 * 
+	 *
 	 * @var integer
 	 */
 	const iCUSTOMER_IMPORT_URL = 1;
@@ -199,11 +199,11 @@ class ClientConfig extends BasicConfig
 	private $_iStoreCard;
 	/**
 	 * List of IP white-listed by The System
-	 * 
+	 *
 	 * @var array
 	 */
 	private $_aIPList;
-	
+
 	/**
 	 * Boolean Flag indicating whether to include disabled/expired cards; default is false
 	 *
@@ -216,6 +216,20 @@ class ClientConfig extends BasicConfig
 	 * @var integer
 	 */
 	private $_iMaxCards;
+	/**
+	 * Set of binary flags which specifies how customers may be identified
+	 * 1. Only Customer Reference
+	 * 2. Only Mobile Number
+	 * 3. Identify using either Customer Reference or Mobile Number
+	 * 4. Only E-Mail Address
+	 * 5. Identify using either Customer Reference or E-Mail Address
+	 * 6. Identify using either Mobile or E-Mail Address
+	 * 7. Identify using either Customer Reference, Mobile Number or E-Mail Address
+	 * 8. Both Mobile Number & E-Mail Address must match
+	 *
+	 * @var integer
+	 */
+	private $_iIdentification;
 	/**
 	 * Default Constructor
 	 *
@@ -245,11 +259,12 @@ class ClientConfig extends BasicConfig
 	 * @param 	string $ciurl 		Absolute URL to the external system where customer data may be imported from. This is generally an existing e-Commerce site or a CRM system
 	 * @param 	string $aurl		Absolute URL to the external system where a customer may be authenticated. This is generally an existing e-Commerce site or a CRM system
 	 * @param 	string $nurl		Absolute URL to the external system that needs to by Notify when Stored Cards changes.
-	 * @param	array $aIPs			List of Whitelisted IP addresses in mPoint, pass an empty array to disable IP Whitelisting 
+	 * @param	array $aIPs			List of Whitelisted IP addresses in mPoint, pass an empty array to disable IP Whitelisting
 	 * @param 	boolean $dc			Boolean Flag indicating whether to include disabled/expired cards; default is false
-	 * @param 	integer $maxCards	The max amount of cards a user can have on the Client
+	 * @param 	integer $mc			The max number of cards a user can have on the Client, set to -1 for inifite
+	 * @param 	integer $ident		Set of binary flags which specifies how customers may be identified
 	 */
-	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $ciurl, $aurl, $nurl, $aIPs, $dc, $maxCards)
+	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $ciurl, $aurl, $nurl, $aIPs, $dc, $mc=-1, $ident=7)
 	{
 		parent::__construct($id, $name);
 
@@ -280,13 +295,14 @@ class ClientConfig extends BasicConfig
 		$this->_bAutoCapture = (bool) $ac;
 		$this->_bSendPSPID = (bool) $sp;
 		$this->_iStoreCard = (integer) $sc;
-		
+
 		$this->_sCustomerImportURL = trim($ciurl);
 		$this->_sAuthenticationURL = trim($aurl);
 		$this->_sNotificationURL = trim($nurl);
 		$this->_aIPList = $aIPs;
 		$this->_bShowAllCards = (bool) $dc;
-		$this->_iMaxCards = (integer) $maxCards;
+		$this->_iMaxCards = (integer) $mc;
+		$this->_iIdentification = (integer) $ident;
 	}
 
 	/**
@@ -378,7 +394,7 @@ class ClientConfig extends BasicConfig
 	public function getAuthenticationURL() { return $this->_sAuthenticationURL; }
 	/**
 	 * Absolute URL to the external system that needs To by Notify When Stored Cards changes.
-	 * 
+	 *
 	 * @return 	string
 	 */
 	public function getNotificationURL() { return $this->_sNotificationURL; }
@@ -450,20 +466,32 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	boolean
 	 */
+	public function sendPSPID() { return $this->_bSendPSPID; }
 	/**
-	 * Returns the max amount of cards a enduser can have on a Client of this value is not set for the client -1 will be returned 
-	 * 	-1. No max amount set 
-	 * 	* the amount of cards the User can have 
+	 * Returns the max amount of cards a enduser can have on a Client of this value is not set for the client -1 will be returned
+	 * 	-1. Allow an infinite number of cards to be stored
+	 * 	1+. The max number of cards a user may have stored
 	 *
 	 * @return 	integer
 	 */
 	public function getMaxCards() { return $this->_iMaxCards; }
-	
-	
-	public function sendPSPID() { return $this->_bSendPSPID; }
+	/**
+	 * Set of binary flags which specifies how customers may be identified
+	 * 1. Only Customer Reference
+	 * 2. Only Mobile Number
+	 * 3. Identify using either Customer Reference or Mobile Number
+	 * 4. Only E-Mail Address
+	 * 5. Identify using either Customer Reference or E-Mail Address
+	 * 6. Identify using either Mobile or E-Mail Address
+	 * 7. Identify using either Customer Reference, Mobile Number or E-Mail Address
+	 * 8. Both Mobile Number & E-Mail Address must match
+	 *
+	 * @return 	integer
+	 */
+	public function getIdentification() { return $this->_iIdentification; }
 	/**
 	 * Returns the setting determining if / how the end-user's Card Info is stored:
-	 * 	0. OFF - Cards are not stored 
+	 * 	0. OFF - Cards are not stored
 	 * 	1. INVALID!!!
 	 * 	2. Stored cards are available only for the specific client
 	 * 	3. Only use Stored Cards and only make the cards available for the specific client (e-money based prepaid account will be unavailable)
@@ -474,12 +502,12 @@ class ClientConfig extends BasicConfig
 	 */
 	public function getStoreCard() { return $this->_iStoreCard; }
 	public function getSecret() { return sha1($this->getID() . $this->_sPassword); }
-	
+
 	public function showAllCards() { return $this->_bShowAllCards; }
 
 	public function toXML()
 	{
-		$xml = '<client-config id="'. $this->getID() .'" flow-id="'. $this->_iFlowID .'" mode="'. $this->_iMode .'"  max-cards="'. $this->_iMaxCards .'">';
+		$xml = '<client-config id="'. $this->getID() .'" flow-id="'. $this->_iFlowID .'" mode="'. $this->_iMode .'" max-cards="'. $this->_iMaxCards .'" identification="'. $this->_iIdentification .'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
 		$xml .= '<username>'. htmlspecialchars($this->getUsername(), ENT_NOQUOTES) .'</username>';
 		$xml .= '<logo-url>'. htmlspecialchars($this->getLogoURL(), ENT_NOQUOTES) .'</logo-url>';
@@ -498,7 +526,7 @@ class ClientConfig extends BasicConfig
 		$xml .= '<ip-list>';
 		foreach($this->_aIPList as $value)
 		{
-			$xml .= '<ip>'.$value.'</ip>';	
+			$xml .= '<ip>'.$value.'</ip>';
 		}
 		$xml .= '</ip-list>';
 		$xml .= '<show-all-cards>'. $this->_bShowAllCards .'</show-all-cards>';
@@ -524,6 +552,7 @@ class ClientConfig extends BasicConfig
 					CL.smsrcpt, CL.emailrcpt, CL.method,
 					CL.maxamount, CL.lang, CL.terms,
 					CL.\"mode\", CL.auto_capture, CL.send_pspid, CL.store_card, CL.show_all_cards, CL.max_cards,
+					CL.identification,
 					C.id AS countryid,
 					Acc.id AS accountid, Acc.name AS account, Acc.mobile, Acc.markup,
 					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price,
@@ -550,6 +579,7 @@ class ClientConfig extends BasicConfig
 					CL.smsrcpt, CL.emailrcpt, CL.method,
 					CL.maxamount, CL.lang, CL.terms,
 					CL.\"mode\", CL.auto_capture, CL.send_pspid, CL.store_card, CL.show_all_cards, CL.max_cards,
+					CL.identification,
 					C.id,
 					Acc.id, Acc.name, Acc.mobile, Acc.markup,
 					KW.id, KW.name,
@@ -578,11 +608,11 @@ class ClientConfig extends BasicConfig
 		$sql = str_replace("{ACCOUNT CLAUSE}", "", $sql);
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
-		
+
 		$obj_CountryConfig = CountryConfig::produceConfig($oDB, $RS["COUNTRYID"]);
 		$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["MOBILE"], $RS["MARKUP"]);
 		$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
-		
+
 		$sql  = "SELECT ipaddress
 				 FROM Client". sSCHEMA_POSTFIX .".IPAddress_Tbl
 				 WHERE clientid = ". intval($id) ."";
@@ -596,20 +626,20 @@ class ClientConfig extends BasicConfig
 				$aIPs[] = $aRS[$i]["IPADDRESS"];
 			}
 		}
-		
-		return new ClientConfig($RS["CLIENTID"], utf8_decode($RS["CLIENT"]), $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $RS["CUSTOMERIMPORTURL"], $RS["AUTHURL"], $RS["NOTIFYURL"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"]);
+
+		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $RS["CUSTOMERIMPORTURL"], $RS["AUTHURL"], $RS["NOTIFYURL"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"]);
 	}
-	
+
 	/**
 	 * Function to check for the IP whitelisting
-	 * 
+	 *
 	 * @param string $ip	the IP address as a string
 	 * @return boolean
 	 */
 	public function hasAccess($ip)
 	{
 		if (count($this->_aIPList) == 0) { return true; }
-		else { return in_array($ip, $this->_aIPList); } 
+		else { return in_array($ip, $this->_aIPList); }
 	}
 }
 ?>

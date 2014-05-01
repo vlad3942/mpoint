@@ -59,14 +59,14 @@ $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
 	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_DOM->{'initialize-payment'}) > 0)
-	{	
+	{
 		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
-		
+
 		for ($i=0; $i<count($obj_DOM->{'initialize-payment'}); $i++)
 		{
 			// Set Global Defaults
 			if (empty($obj_DOM->{'initialize-payment'}[$i]["account"]) === true || intval($obj_DOM->{'initialize-payment'}[$i]["account"]) < 1) { $obj_DOM->{'initialize-payment'}[$i]["account"] = -1; }
-		
+
 			// Validate basic information
 			$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'initialize-payment'}[$i]["account"]);
 			if ($code == 100)
@@ -77,14 +77,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				{
 					$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"]);
 					if ( ($obj_CountryConfig instanceof CountryConfig) === false || $obj_CountryConfig->getID() < 1) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
-					
+
 					$obj_mPoint = new MobileWeb($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 					$iTxnID = $obj_mPoint->newTransaction(Constants::iPURCHASE_VIA_APP);
 					try
 					{
 						// Update Transaction State
 						$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, $obj_DOM->asXML() );
-			
+
 						$data['typeid'] = $obj_DOM->{'initialize-payment'}[$i]->transaction["type-id"];
 						$data['amount'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
 						$data['country-config'] = $obj_CountryConfig;
@@ -97,7 +97,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$data['reward'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->reward;
 							$data['reward-type'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->reward["type-id"];
 						}
-						
+
 						$data['description'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->description;
 						$data['gomobileid'] = -1;
 						$data['orderid'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction["order-no"];
@@ -127,22 +127,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$data['icon-url'] = "";
 						$data['language'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}["language"];
 						$data['markup'] = $obj_ClientConfig->getAccountConfig()->getMarkupLanguage();
-						
+
 						$obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $data);
 						// Associate End-User Account (if exists) with Transaction
 						$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]);
-						
-						$iAccountID = -1;
-						if (strlen($obj_TxnInfo->getCustomerRef() ) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getCustomerRef(), ($obj_ClientConfig->getStoreCard() <= 3) ); }
-						if ($iAccountID == -1 && floatval($obj_TxnInfo->getMobile() ) > 0) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getMobile(), $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
-						if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getEMail(), $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
-						// Client supports global storage of payment cards
-						if ($iAccountID == -1 && $obj_ClientConfig->getStoreCard() > 3)
-						{
-							$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getMobile(), $obj_CountryConfig, false);
-							if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getEMail(), $obj_CountryConfig, false); }
-						}
-						$obj_TxnInfo->setAccountID($iAccountID);
+
+						$obj_TxnInfo->setAccountID(EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_TxnInfo->getCustomerRef(), $obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ) );
 						// Update Transaction Log
 						$obj_mPoint->logTransaction($obj_TxnInfo);
 						if (count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'custom-variables'}) == 1 && count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'custom-variables'}->children() ) > 0)
@@ -154,13 +144,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								{
 									$aVars[$obj_Var->getName()] = (string) $obj_Var;
 								}
-								else { $aVars["var_". $obj_Var->getName()] = (string) $obj_Var; } 
+								else { $aVars["var_". $obj_Var->getName()] = (string) $obj_Var; }
 							}
 							// Log additional data
 							$obj_mPoint->logClientVars($aVars);
 						}
 						$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-						$obj_XML = simplexml_load_string($obj_TxnInfo->toXML() );
+						$obj_XML = simplexml_load_string($obj_TxnInfo->toXML(), "SimpleXMLElement", LIBXML_COMPACT);
 						$xml = '<client-config id="'. $obj_ClientConfig->getID() .'" account="'. $obj_ClientConfig->getAccountConfig()->getID() .'" store-card="'. $obj_ClientConfig->getStoreCard() .'" auto-capture="'. General::bool2xml($obj_ClientConfig->useAutoCapture() ) .'" mode="'. $obj_ClientConfig->getMode() .'">';
 						$xml .= '<name>'. htmlspecialchars($obj_ClientConfig->getName(), ENT_NOQUOTES) .'</name>';
 						$xml .= '<callback-url>'. htmlspecialchars($obj_ClientConfig->getCallbackURL(), ENT_NOQUOTES) .'</callback-url>';
@@ -175,13 +165,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$xml .= $obj_XML->{'callback-url'}->asXML();
 						$xml .= $obj_XML->{'accept-url'}->asXML();
 						$xml .= '</transaction>';
-						$obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount() ) );
+						$obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount() ), "SimpleXMLElement", LIBXML_COMPACT);
 
 						// End-User already has an account and payment with Account enabled
-						if ($iAccountID > 0 && count($obj_XML->xpath("/cards/item[@type-id = 11]") ) == 1)
+						if ($obj_TxnInfo->getAccountID() > 0 && count($obj_XML->xpath("/cards/item[@type-id = 11]") ) == 1)
 						{
 							$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-							$aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID, $obj_ClientConfig) );
+							$aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig), "SimpleXMLElement", LIBXML_COMPACT);
 							if ($obj_ClientConfig->getStoreCard() <= 3) { $aObj_XML = $aObj_XML->xpath("/stored-cards/card[client/@id = ". $obj_ClientConfig->getID() ."]"); }
 							else { $aObj_XML = $aObj_XML->xpath("/stored-cards/card"); }
 						}
@@ -191,7 +181,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						{
 							// Card does not represent "My Account" or the End-User has an acccount with Stored Cards or Stored Value Account is available
 							if ($obj_XML->item[$j]["type-id"] != 11
-								|| ($iAccountID > 0 && (count($aObj_XML) > 0 || $obj_ClientConfig->getStoreCard() == 2) ) )
+								|| ($obj_TxnInfo->getAccountID() > 0 && (count($aObj_XML) > 0 || $obj_ClientConfig->getStoreCard() == 2) ) )
 							{
 								$xml .= '<card id="'. $obj_XML->item[$j]["id"] .'" type-id="'. $obj_XML->item[$j]["type-id"] .'" psp-id="'. $obj_XML->item[$j]["pspid"] .'" min-length="'. $obj_XML->item[$j]["min-length"] .'" max-length="'. $obj_XML->item[$j]["max-length"] .'" cvc-length="'. $obj_XML->item[$j]["cvc-length"] .'">';
 								$xml .= '<name>'. htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) .'</name>';
@@ -201,7 +191,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 						}
 						$xml .= '</cards>';
-						
+
 						// End-User has Stored Cards available
 						if (is_array($aObj_XML) === true && count($aObj_XML) > 0)
 						{
@@ -218,10 +208,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 							$xml .= '</stored-cards>';
 						}
-						if ($iAccountID > 0 && $obj_ClientConfig->getStoreCard() == 2)
+						if ($obj_TxnInfo->getAccountID() > 0 && $obj_ClientConfig->getStoreCard() == 2)
 						{
-							$obj_XML = simplexml_load_string($obj_mPoint->getAccountInfo($iAccountID) );
-							$xml .= '<account id="'. $iAccountID .'">';
+							$obj_XML = simplexml_load_string($obj_mPoint->getAccountInfo($obj_TxnInfo->getAccountID() ) );
+							$xml .= '<account id="'. $obj_TxnInfo->getAccountID() .'">';
 							$xml .= $obj_XML->balance->asXML();
 							$xml .= $obj_XML->points->asXML();
 							$xml .= '</account>';
@@ -231,23 +221,23 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					catch (mPointException $e)
 					{
 						trigger_error("Unknown error: ". $e->getMessage() ."(". $e->getCode() .")" ."\n". $e->getTrace(), E_USER_WARNING);
-						
+
 						header("HTTP/1.1 500 Internal Server Error");
-						
+
 						$xml = '<status code="'. $e->getCode() .'">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES) .'</status>';
 					}
 				}
 				else
 				{
 					header("HTTP/1.1 401 Unauthorized");
-					
+
 					$xml = '<status code="401">Username / Password doesn\'t match</status>';
 				}
 			}
 			else
 			{
 				header("HTTP/1.1 400 Bad Request");
-				
+
 				$xml = '<status code="'. $code .'">Client ID / Account doesn\'t match</status>';
 			}
 		}
@@ -256,18 +246,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	elseif ( ($obj_DOM instanceof SimpleDOMElement) === false)
 	{
 		header("HTTP/1.1 415 Unsupported Media Type");
-		
+
 		$xml = '<status code="415">Invalid XML Document</status>';
 	}
 	// Error: Wrong operation
 	elseif (count($obj_DOM->{'initialize-payment'}) == 0)
 	{
 		header("HTTP/1.1 400 Bad Request");
-	
+
 		$xml = '';
 		foreach ($obj_DOM->children() as $obj_Elem)
 		{
-			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>'; 
+			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>';
 		}
 	}
 	// Error: Invalid Input
@@ -275,7 +265,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	{
 		header("HTTP/1.1 400 Bad Request");
 		$aObj_Errs = libxml_get_errors();
-		
+
 		$xml = '';
 		for ($i=0; $i<count($aObj_Errs); $i++)
 		{
@@ -286,7 +276,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 else
 {
 	header("HTTP/1.1 401 Unauthorized");
-	
+
 	$xml = '<status code="401">Authorization required</status>';
 }
 
@@ -294,6 +284,6 @@ header("Content-Type: text/xml; charset=\"UTF-8\"");
 
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';
-echo $xml;
+echo preg_replace('~\s*(<([^>]*)>[^<]*</\2>|<[^>]*>)\s*~', '$1', $xml);
 echo '</root>';
 ?>
