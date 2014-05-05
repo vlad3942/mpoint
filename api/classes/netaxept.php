@@ -22,12 +22,12 @@ class NetAxept extends Callback
 	/**
 	 * Initialize an transaction with NetAxept.
 	 * The method will return XML with information to the client on how to submit card details to the server.
-	 * 
+	 *
 	 * @param	HTTPConnInfo $oCI		Information on how to connect to NetAxept
 	 * @param	integer $merchant		The merchant ID to identify us to NetAxept
-	 * @param 	integer $account		
+	 * @param 	integer $account
 	 * @param	String $currency		The currency to use in ISO 4217 format
-	 * @param	inteter $cardid			mPoints card ID			
+	 * @param	inteter $cardid			mPoints card ID
 	 * @return	String					XML information of how the client should submit card details to NetAxepts server
 	 * @throws	E_USER_WARNING
 	 */
@@ -36,7 +36,7 @@ class NetAxept extends Callback
 		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );
 		$sOrderNo = $this->getTxnInfo()->getOrderID();
 		if ( empty($sOrderNo) === true) { $sOrderNo = $this->getTxnInfo()->getID(); }
-		
+
 		$request = array("Description" => "mPoint Transaction: ". $this->getTxnInfo()->getID() ." for Order: ". $this->getTxnInfo()->getOrderID(),
 										  "Environment" => array("WebServicePlatform" => "PHP5"),
 										  "Order" => array("Amount" => $this->getTxnInfo()->getAmount(),
@@ -47,19 +47,19 @@ class NetAxept extends Callback
 															  "RedirectUrl" => "http://". $_SERVER['HTTP_HOST'] ."/netaxept/accept.php?mpoint-id=". $this->getTxnInfo()->getID(),
 															  "SinglePage" => "true"),
 															  "TransactionId" => $this->getTxnInfo()->getID() ."-". time() );
-		
-		// check if we need to store the card		
+
+		// check if we need to store the card
 		if ($storecard == true)
 		{
 			$request['Recurring'] = array("Type" => "S");
 		}
-		
+
 		$aParams = array("merchantId" => $merchant,
 						 "token" => $oCI->getPassword(),
 						 "request" => $request );
-						 
-		$obj_Std = $obj_SOAP->Register($aParams);	
-		
+
+		$obj_Std = $obj_SOAP->Register($aParams);
+
 		if (intval($obj_Std->RegisterResult->TransactionId) == $this->getTxnInfo()->getID() )
 		{
 			$xml = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -74,12 +74,12 @@ class NetAxept extends Callback
 			$xml .= '<transactionId>'. $obj_Std->RegisterResult->TransactionId .'</transactionId>';
 			$xml .= '</hidden-fields>';
 			$xml .= '</root>';
-			
+
 			$data = array("psp-id" => Constants::iNETAXEPT_PSP, "url" => var_export($obj_Std, true) );
 			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, serialize($data) );
-			
+
 			$obj_XML = simplexml_load_string($xml);
-			
+
 			// save ext id in database
 					$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 							SET pspid = ". Constants::iNETAXEPT_PSP .", extid = '".$obj_Std->RegisterResult->TransactionId."'
@@ -91,13 +91,13 @@ class NetAxept extends Callback
 		else
 		{
 			trigger_error("Unable to initialize payment transaction with NetAxept. HTTP Response Code: ". $code ."\n". var_export($obj_HTTP, true), E_USER_WARNING);
-			
+
 			throw new mPointException("NetAxept returned HTTP Code: ". $code, 1100);
 		}
-		
+
 		return $obj_XML;
 	}
-	
+
 	/**
 	 * Performs a AUTH operation with NetAxept for the provided transaction.
 	 * The method will return 'OK' if the operation suceeded.
@@ -105,7 +105,7 @@ class NetAxept extends Callback
 	 * On errors a NetAxept error code will be provided.
 	 *
 	 * The operation wil also notify the client and log in the database if the operation suceeded.
-	 * 
+	 *
 	 * @param	HTTPConnInfo $oCI		Information on how to connect to NetAxept
 	 * @param	integer $merchant		The merchant ID to identify us to NetAxept
 	 * @param 	integer $transactionID	Transaction ID previously returned by NetAxept during authorisation
@@ -115,49 +115,48 @@ class NetAxept extends Callback
 	public function auth(HTTPConnInfo &$oCI, $merchant, $transactionID)
 	{
 		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true,
-		"exceptions" => true) );
+																						"exceptions" => true) );
 		$aParams = array("merchantId" => $merchant,
 						 "token" => $oCI->getPassword(),
-						 "request" => array("Operation" => "AUTH", "TransactionId" => $transactionID) );		
-		
+						 "request" => array("Operation" => "AUTH",
+						 					"TransactionId" => $transactionID) );
+
 		try
 		{
 			$obj_Std = $obj_SOAP->Process($aParams);
-						
+
 			// log and notify the client of the new status of the transaction if it suceeded
 			if ($obj_Std->ProcessResult->ResponseCode == 'OK')
 			{
 				// make a query response to NetAxept to make sure everything is ok
-				$queryResponse = $this->query($oCI, $merchant, $transactionID );
-				$iStateID;
-				
+				$queryResponse = $this->query($oCI, $merchant, $transactionID);
+
 				// finalize transaction in mPoint
 				if ($queryResponse->Summary->Authorized == "true")
 				{
-					$iStateID = $this->completeTransaction(Constants::iNETAXEPT_PSP, $transactionID , $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iPAYMENT_ACCEPTED_STATE, array('0' => var_export($obj_Std->ProcessResult, true) ) );	
+					$iStateID = $this->completeTransaction(Constants::iNETAXEPT_PSP, $transactionID , $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iPAYMENT_ACCEPTED_STATE, array('0' => var_export($obj_Std->ProcessResult, true) ) );
 				}
 				else
 				{
 					$iStateID = $this->completeTransaction(Constants::iNETAXEPT_PSP, $transactionID, $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iPAYMENT_REJECTED_STATE, array('0' => var_export($obj_Std->ProcessResult, true) ) );
-			
-				}
-				
-				if ($iStateID != Constants::iPAYMENT_DUPLICATED_STATE)
-				{
-					$this->notifyClient($iStateID, array('0' => var_export($obj_Std->ProcessResult, true) ) );
 				}
 			}
-			
+
 			return $obj_Std->ProcessResult->ResponseCode;
 		}
-		catch (Exception $e)	
-		{			
+		catch (Exception $e)
+		{
 			if ($e->detail->BBSException->Result->ResponseCode != NULL)
 			{
-				return $e->detail->BBSException->Result->ResponseCode;
+				// Transaction already processed
+				if (intval($e->detail->BBSException->Result->ResponseCode) == 98)
+				{
+					return "OK";
+				}
+				else { return $e->detail->BBSException->Result->ResponseCode; }
 			}
 			else { return $e->getMessage();	}
-		}																												
+		}
 	}
 
 	/**
@@ -165,7 +164,7 @@ class NetAxept extends Callback
 	 * The method will return 'OK' if the operation suceeded.
 	 *
 	 * Exceptions will be raised on errors.
-	 * 
+	 *
 	 * @param	HTTPConnInfo $oCI		Information on how to connect to NetAxept
 	 * @param	integer $merchant		The merchant ID to identify us to NetAxept
 	 * @param 	integer $transactionID	Transaction ID previously returned by NetAxept during authorisation
@@ -180,31 +179,31 @@ class NetAxept extends Callback
 						 "token" => $oCI->getPassword(),
 						 "request" => array("Operation" => "CAPTURE",
 						 				  	"TransactionId" => $transactionID,
-						 					"TransactionAmount" => $txn->getAmount() ) );		
+						 					"TransactionAmount" => $txn->getAmount() ) );
 		try
 		{
 			$obj_Std = $obj_SOAP->Process($aParams);
-						
+
 			return $obj_Std->ProcessResult->ResponseCode;
 		}
-		catch (Exception $e)	
+		catch (Exception $e)
 		{
 			if ($e->detail->BBSException->Result->ResponseCode != NULL)
 			{
 				return $e->detail->BBSException->Result->ResponseCode;
 			}
 			else { return $e->getMessage();	}
-		}		
+		}
 	}
-	
+
 	/**
 	 * Performs a query operation with NetAxept for the provided transaction.
-	 * The method will return an object containing information about the given transaction. 
+	 * The method will return an object containing information about the given transaction.
 	 * Please see below link for information on what the object contains.
 	 *
 	 * Exceptions will be raised on errors, unfortunently no errors codes are set by NetAxept, but only a String.
 	 * As such this methods will return a string different from 'OK' on errors. P
-	 * 
+	 *
 	 * @link 	http://www.betalingsterminal.no/Netthandel-forside/Teknisk-veiledning/API/Query/
 	 * @param	HTTPConnInfo $oCI		Information on how to connect to NetAxept
 	 * @param	integer $merchant		The merchant ID to identify us to NetAxept
@@ -216,27 +215,27 @@ class NetAxept extends Callback
 	{
 
 		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );
-		$aParams = array("merchantId" => $merchant, "token" => $oCI->getPassword(), "request" => array("TransactionId" => $transactionID ) );		
+		$aParams = array("merchantId" => $merchant, "token" => $oCI->getPassword(), "request" => array("TransactionId" => $transactionID ) );
 
 		try
-		{			
+		{
 			$obj_Std = $obj_SOAP->Query($aParams);
-			
+
 			return $obj_Std->QueryResult;
 		}
-		catch (Exception $e)	
+		catch (Exception $e)
 		{
 			if ($e->detail->BBSException->Result->ResponseCode != NULL)
 			{
 				return $e->detail->BBSException->Result->ResponseCode;
 			}
 			else { return $e->getMessage();	}
-		}	
+		}
 	}
-	
+
 	/**
 	 * Translates NetAxept card names into mPoint specific card IDs.
-	 * 
+	 *
 	 * @link 	http://www.betalingsterminal.no/Netthandel-forside/Teknisk-veiledning/API/Query/
 	 * @param 	String $name	Transaction ID previously returned by WannaFind during authorisation
 	 * @return	integer			mPoint Card ID.
@@ -247,7 +246,7 @@ class NetAxept extends Callback
 		switch ($name)
 		{
 		case "AmericanExpress":	// American Express
-			$id = 1; 
+			$id = 1;
 			break;
 		case "Dankort":	// Dankort
 			$id = 2;
@@ -287,10 +286,10 @@ class NetAxept extends Callback
 		default:	// Unknown
 			break;
 		}
-		
+
 		return $id;
 	}
-		
+
 	/**
 	 * Notifies the Client of the Payment Status by performing a callback via HTTP.
 	 * The method will re-construct the data received from WannaFind after having removed the following mPoint specific fields:
@@ -310,26 +309,26 @@ class NetAxept extends Callback
 	 * @param 	array $_post 	Array of data received from WannaFind via HTTP POST
 	 */
 	public function notifyClient($sid, array $_post)
-	{		
+	{
 		parent::notifyClient($sid, $_post["transact"], $_post["amount"], $_post["cardid"], str_replace("X", "*", $_post["cardnomask"]) );
 	}
-	
+
 	/**
 	 * Authorises a payment with NetAxept for the transaction using the provided ticket.
 	 * The ticket represents a previously stored card.
 	 * This method will return either a NetAxept transaction id or on failures a negated NetAxept error code.
-	 *  
-	 * @param 	integer $ticket		Valid ticket which references a previously stored card 
+	 *
+	 * @param 	integer $ticket		Valid ticket which references a previously stored card
 	 * @return 	integer
 	 * @throws	E_USER_WARNING
 	 */
-	public function authTicket($ticket, &$oCI, $merchant)
+	public function authTicket($ticket, HTTPConnInfo &$oCI, $merchant)
 	{
 		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );
 
 		$sOrderNo = $this->getTxnInfo()->getOrderID();
 		if (empty($sOrderNo) === true) { $sOrderNo = $this->getTxnInfo()->getID(); }
-		
+
 		$request = array("Description" => "mPoint Transaction: ". $this->getTxnInfo()->getID() .
 										  "for Order: ". $this->getTxnInfo()->getOrderID(),
 										  "Environment" => array("WebServicePlatform" => "PHP5"),
@@ -337,59 +336,63 @@ class NetAxept extends Callback
 														   "CurrencyCode" => $this->getTxnInfo()->getCountryConfig()->getCurrency(),
 														   "OrderNumber" => $sOrderNo ),
 										  "ServiceType" => "C",
-										  "Recurring" => array("Type" => "S", "PanHash" => $ticket),
+										  "Recurring" => array("Type" => "S",
+										  					   "PanHash" => $ticket),
 										  "TransactionId" => $this->getTxnInfo()->getID() ."-". time() );
-			
-		$aParams = array("merchantId" => $merchant, "token" => $oCI->getPassword(), "request" => $request );
-				
+
+		$aParams = array("merchantId" => $merchant,
+						 "token" => $oCI->getPassword(),
+						 "request" => $request);
+
 		try
 		{
 	 		$obj_Std = $obj_SOAP->Register($aParams);
 
 	 		if (intval($obj_Std->RegisterResult->TransactionId) == $this->getTxnInfo()->getID() )
-	 		{		
-	 			$data = array("psp-id" => Constants::iNETAXEPT_PSP, "url" => var_export($obj_Std, true) );
-	 			
-	 			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, serialize($data) );
+	 		{
+	 			$data = array("psp-id" => Constants::iNETAXEPT_PSP,
+	 						  "url" => var_export($obj_Std, true) );
 
-	 			$obj_XML = simplexml_load_string($xml);
+	 			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, serialize($data) );
 
 	 			// save ext id in database
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-						SET pspid = ". Constants::iNETAXEPT_PSP .", extid = '".$obj_Std->RegisterResult->TransactionId."'
+						SET pspid = ". Constants::iNETAXEPT_PSP .", extid = '".$obj_Std->RegisterResult->TransactionId ."'
 						WHERE id = ". $this->getTxnInfo()->getID();
-	//					echo $sql ."\n";
+//				echo $sql ."\n";
 				$this->getDBConn()->query($sql);
-											
-				$authResponse = $this->auth($oCI,$merchant, $obj_Std->RegisterResult->TransactionId);
-				if ($authResponse == "OK")
+
+				$code = $this->auth($oCI, $merchant, $obj_Std->RegisterResult->TransactionId);
+				if ($code == "OK")
 				{
-					return $obj_Std->RegisterResult->TransactionId;
+					$code = $this->auth($oCI, $merchant, $obj_Std->RegisterResult->TransactionId);
+
+					return $code;
 				}
 				else
 				{
-					return -abs($authResponse);
+					return -abs($code);
 				}
 			}
 	 		// Error: Unable to initialize payment transaction
 	 		else
-	 		{							
+	 		{
 	 			trigger_error("Unable to initialize payment transaction with NetAxept. \n". var_export($obj_Std, true), E_USER_WARNING);
-			
+
 	 			throw new mPointException("NetAxept returned an error", 1100);
-				
+
 				return -1;
 	 		}
 		}
-		catch (Exception $e)	
-		{			
+		catch (Exception $e)
+		{
 			if ($e->detail->BBSException->Result->ResponseCode != NULL)
 			{
 				return -abs($e->detail->BBSException->Result->ResponseCode);
 			}
 			else if ($e->getMessage() != null) { return $e->getMessage(); }
 			else { return -1; }
-		}	
+		}
 	}
 }
 ?>
