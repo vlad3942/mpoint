@@ -42,7 +42,7 @@ class Home extends General
 
 	/**
 	 * Generates and sends a One Time Password to the End-User using the provided Mobile Number (MSISDN).
-	 * 
+	 *
 	 * @see		GoMobileMessage::produceMessage()
 	 * @see		General::getText()
 	 * @see		Home::genActivationCode()
@@ -60,25 +60,25 @@ class Home extends General
 	{
 		$sBody = $this->getText()->_("mPoint - Send One Time Password");
 		$sBody = str_replace("{OTP}", $this->genActivationCode($id, $mob, date("Y-m-d H:i:s", time() + 60 * 60) ), $sBody);
-		
+
 		$obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $this->getCountryConfig()->getID(), -1);
-		
+
 		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $oCC->getID(), $oCC->getID()*100, $oCC->getChannel(), $obj_ClientConfig->getKeywordConfig()->getKeyword(), Constants::iMT_PRICE, $mob, utf8_decode($sBody) );
 		$obj_MsgInfo->setDescription("mPoint - OTP");
-		
+
 		$iCode = $this->sendMessage($oCI, $obj_ClientConfig, $obj_MsgInfo);
 		if ($iCode != 200) { $iCode = 91; }
-		
+
 		return $iCode;
 	}
-	
+
 	/**
 	 * Returns a reference to the data object with the Country Configuration
-	 * 
+	 *
 	 * @return CountryConfig
 	 */
 	public function &getCountryConfig() { return $this->_obj_CountryConfig; }
-	
+
 	/**
 	 * Fetches the unique ID of the End-User's account from the database.
 	 *
@@ -97,12 +97,15 @@ class Home extends General
 				WHERE A.countryid = ". $oCC->getID() ."
 					AND ". $sql ." AND A.enabled = '1'";
 		if ($clid > 0) { $sql ." AND Acc.clientid = ". intval($clid); }
+		$sql .= "
+				ORDER BY id DESC
+				LIMIT 1";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 
 		return is_array($RS) === true ? $RS["ID"] : -1;
 	}
-	
+
 	public function auth()
 	{
 		$aArgs = func_get_args();
@@ -131,8 +134,8 @@ class Home extends General
 	 * 	 5. Account not found
 	 * 	 9. Account disabled
 	 * 	10. Login successful
-	 * 	11. Login successful - Mobile Number not verified 
-	 * 
+	 * 	11. Login successful - Mobile Number not verified
+	 *
 	 * @see		Constants::iMAX_LOGIN_ATTEMPTS
 	 *
 	 * @param	integer $id 	Unqiue ID of the End-User's Account
@@ -146,7 +149,7 @@ class Home extends General
 				WHERE id = ". intval($id);
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
-		
+
 		if (is_array($RS) === true)
 		{
 			// Invalid logins exceeded or Account disabled
@@ -210,7 +213,7 @@ class Home extends General
 		$b .= '<password>'. htmlspecialchars($pwd, ENT_NOQUOTES) .'</password>';
 		$b .= '</login>';
 		$b .= '</root>';
-		
+
 		try
 		{
 			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
@@ -314,16 +317,16 @@ class Home extends General
 				WHERE id = ". intval($id) ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
-		
+
 		$sql = "SELECT CL.id, CL.store_card, CL.name
 				FROM EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl Acc
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Acc.clientid = CL.id AND CL.enabled = '1'
 				WHERE Acc.accountid = ". intval($id);
 //		echo $sql ."\n";
 		$aRS = $this->getDBConn()->getAllNames($sql);
-		
+
 		$ts = strtotime(substr($RS["CREATED"], 0, strpos($RS["CREATED"], ".") ) );
-		
+
 		// Construct XML Document with account information
 		$xml = '<account id="'. $RS["ID"] .'" country-id="'. $RS["COUNTRYID"] .'">';
 		$xml .= '<first-name>'. htmlspecialchars($RS["FIRSTNAME"], ENT_NOQUOTES) .'</first-name>';
@@ -344,7 +347,7 @@ class Home extends General
 		$xml .= '<logo-width>'. $iWidth .'</logo-width>';
 		$xml .= '<logo-height>'. $iHeight .'</logo-height>';
 		$xml .= '</account>';
-		
+
 		return $xml;
 	}
 
@@ -377,7 +380,7 @@ class Home extends General
 	 * 	</stored-cards>
 	 *
 	 * @param	integer $id 	Unqiue ID of the End-User's Account
-	 * @param 	boolean $bAllCards 	Flag to indicate whether to include disabled and expired cards or not 
+	 * @param 	boolean $bAllCards 	Flag to indicate whether to include disabled and expired cards or not
 	 * @param 	UAProfile $oUA 	Reference to the User Agent Profile for the Customer's Mobile Device (optional)
 	 * @return 	string
 	 */
@@ -409,14 +412,14 @@ class Home extends General
 					EUAD.countryid, EUAD.firstname, EUAD.lastname,
 					EUAD.company, EUAD.street,
 					EUAD.postalcode, EUAD.city,
-					STS.code, STS.name AS state				
+					STS.code, STS.name AS state
 				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl EUC
 				INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON EUC.pspid = PSP.id AND PSP.enabled = '1'
 				INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl SC ON EUC.cardid = SC.id AND SC.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON EUC.clientid = CL.id AND CL.enabled = '1'
 				INNER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON EUC.accountid = EUA.id AND EUA.enabled = '1'
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Address_Tbl EUAD ON EUC.id = EUAD.cardid and EUA.enabled ='1'
-				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".State_Tbl STS ON EUAD.stateid = STS.id and EUA.enabled ='1'				
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".State_Tbl STS ON EUAD.stateid = STS.id and EUA.enabled ='1'
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON EUA.id = CLA.accountid
 				WHERE EUC.accountid = ". intval($id);
 		if ($oCC->showAllCards() === false) { $sql .= " AND EUC.enabled = '1' AND ( (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."' OR length(EUC.expiry) = 0)"; }
@@ -430,7 +433,7 @@ class Home extends General
 				ORDER BY CL.name ASC";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
-		
+
 		$xml = '<stored-cards accountid="'. $id .'">';
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
@@ -446,7 +449,7 @@ class Home extends General
 			$xml .= '<card-holder-name>'. htmlspecialchars($RS["CARD_HOLDER_NAME"], ENT_NOQUOTES) .'</card-holder-name>';
 			$xml .= '<logo-width>'. $iWidth .'</logo-width>';
 			$xml .= '<logo-height>'. $iHeight .'</logo-height>';
-						
+
 			if (intval($RS["COUNTRYID"]) > 0)
 			{
 				$xml .= '<address country-id="'. $RS["COUNTRYID"].'">';
@@ -469,10 +472,10 @@ class Home extends General
 	 *
 	 * @param	integer $uid 	Unqiue Client ID
 	 * @param	integer $clid 	Unqiue Client ID
-	 * @param	string $txnno	Unqiue ID of a Transaction 
+	 * @param	string $txnno	Unqiue ID of a Transaction
 	 * @param	string $ono		Unqiue Order Number for a Transaction
-	 * @param	long $mob	The End-User's Mobile Number 
-	 * @param	string $email	The End-User's E-Mail 
+	 * @param	long $mob	The End-User's Mobile Number
+	 * @param	string $email	The End-User's E-Mail
 	 * @param	string $cr		The Customer Reference for the End-User
 	 * @return 	string
 	 */
@@ -486,8 +489,8 @@ class Home extends General
 				FROM EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl EUT
     			INNER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON EUT.accountid = EUA.id
     			INNER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON CLA.accountid = EUA.id
-				INNER JOIN Admin".sSCHEMA_POSTFIX.".Access_Tbl Acc ON CLA.clientid = Acc.clientid						
-				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON  CL.id = Acc.clientid 
+				INNER JOIN Admin".sSCHEMA_POSTFIX.".Access_Tbl Acc ON CLA.clientid = Acc.clientid
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON  CL.id = Acc.clientid
 				WHERE EUT.txnid IS NULL AND Acc.userid = ". intval($uid);
 		if (intval($clid) > 0) { $sql .= " AND CL.id = ". intval($clid); }
 		if (floatval($mob) > 0) { $sql .= " AND EUA.mobile = '". floatval($mob) ."'"; }
@@ -519,14 +522,14 @@ class Home extends General
 				ORDER BY created DESC";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
-		
+
 		$sql = "SELECT stateid
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
 				WHERE txnid = $1 AND stateid IN (". Constants::iPAYMENT_INIT_WITH_PSP_STATE .", ". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_DECLINED_STATE .")
 				ORDER BY id DESC";
 //		echo $sql ."\n";
 		$stmt = $this->getDBConn()->prepare($sql);
-		
+
 		$xml = '<transactions sorted-by="timestamp" sort-order="descending">';
 		// Construct XML Document with data for Transaction
 		while ($RS = $this->getDBConn()->fetchName($res) )
@@ -547,9 +550,9 @@ class Home extends General
 			$xml .= '<timestamp>'. gmdate("Y-m-d H:i:sP", strtotime(substr($RS["CREATED"], 0, strpos($RS["CREATED"], ".") ) ) ) .'</timestamp>';
 			$xml .= '</transaction>';
 		}
-		
+
 		$xml .= '</transactions>';
-		
+
 		return $xml;
 	}
 	public function getTxn($txnid)
@@ -571,7 +574,7 @@ class Home extends General
 					EUT.accountid AS end_user_id
 				FROM EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl EUT
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUAT ON EUT.toid = EUAT.id
-				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUAF ON EUT.fromid = EUAF.id				
+				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUAF ON EUT.fromid = EUAF.id
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn ON EUT.txnid = Txn.id
 				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Country_Tbl C ON Txn.countryid = C.id
@@ -580,26 +583,26 @@ class Home extends General
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M2 ON Txn.id = M2.txnid AND M2.stateid = ". Constants::iPAYMENT_CAPTURED_STATE ."
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M3 ON Txn.id = M3.txnid AND M3.stateid = ". Constants::iPAYMENT_REFUNDED_STATE ."
 				WHERE EUT.id = '". $this->getDBConn()->escStr( (string) $txnid) ."'";
-		
+
 	$RS = $this->getDBConn()->getName($sql);
-	
+
 	$sql = "SELECT id, countryid,(firstname || ' ' || lastname) AS name,
 			mobile, email
 			FROM EndUser".sSCHEMA_POSTFIX.".Account_Tbl WHERE id =
 			". $RS["END_USER_ID"];
-				
-	//		echo $sql ."\n";	
+
+	//		echo $sql ."\n";
 	$RSs = $this->getDBConn()->getName($sql);
-	
+
 		$obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $RS["CLIENTID"]);
-		
+
 		$xml .= '<transaction id="'. $RS["ID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" psp-id="'. $RS["PSPID"] .'" order-no="'. $RS["ORDERNO"] .'" type-id="'. $RS["TYPEID"] .'">';
 		$xml .= '<amount country-id="'. $RS["COUNTRYID"] .'" currency="'. $this->_obj_CountryConfig->getCurrency()  .'" symbol="'. utf8_encode($this->_obj_CountryConfig->getSymbol() ) .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. htmlspecialchars($RS["AMOUNT"], ENT_NOQUOTES) .'</amount>';
 		$xml .= '<refund country-id="'. $RS["COUNTRYID"] .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. utf8_encode($this->_obj_CountryConfig->getSymbol() ) .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. htmlspecialchars($RS["REFUND_AMOUNT"], ENT_NOQUOTES) .'</refund>';
 		$xml .= '<client id="'. $obj_ClientConfig->getID() .'">';
 		$xml .= '<name>'. htmlspecialchars($obj_ClientConfig->getName(), ENT_NOQUOTES) .'</name>';
 		$xml .= '</client>';
-		
+
 		$xml .= '<customer id="'. $RSs["ID"] .'">';
 		$xml .= '<name>'. htmlspecialchars($RSs["NAME"], ENT_NOQUOTES) .'</name>';
 		$xml .= '<mobile country-id="'. $RS["COUNTRYID"] .'">'. floatval($RSs["MOBILE"]) .'</mobile>';
@@ -625,7 +628,7 @@ class Home extends General
 		$xml .= '</to>';
 		$xml .= '<message>'. htmlspecialchars($RS["MESSAGE"], ENT_NOQUOTES) .'</message>';
 		$xml .= '</wallet-to-wallet>';
-		
+
 		$sql = "SELECT N.id, N.message, Extract('epoch' from N.created) AS created, U.id AS userid, U.email
 				FROM enduser".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
 				INNER JOIN Log".sSCHEMA_POSTFIX.".Note_Tbl N ON Txn.id = N.txnid AND N.enabled = true
@@ -646,9 +649,9 @@ class Home extends General
 			}
 		}
 		$xml .= '</notes>';
-		
+
 		$xml .= '</transaction>';
-		
+
 		return $xml;
 	}
 	/**
@@ -785,7 +788,7 @@ class Home extends General
 
 		return $xml;
 	}
-	
+
 	/**
 	 * Saves the specified Password for the End-User Account.
 	 *
@@ -799,11 +802,11 @@ class Home extends General
 				SET passwd = '". $this->getDBConn()->escStr($pwd) ."'
 				WHERE id = ". intval($id);
 //		echo $sql ."\n";
-		
+
 		return is_resource($this->getDBConn()->query($sql) );
 	}
 	/**
-	 * Saves the specified Information for the End-User Account. 
+	 * Saves the specified Information for the End-User Account.
 	 *
 	 * @param	integer $id 	Unqiue ID of the End-User's Account
 	 * @param	string $fn 		End-User's first name
@@ -813,13 +816,13 @@ class Home extends General
 	public function saveInfo($id, $fn, $ln)
 	{
 		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Account_Tbl
-				SET firstname = '". $this->getDBConn()->escStr($fn) ."', lastname = '". $this->getDBConn()->escStr($ln) ."'  
+				SET firstname = '". $this->getDBConn()->escStr($fn) ."', lastname = '". $this->getDBConn()->escStr($ln) ."'
 				WHERE id = ". intval($id);
 //		echo $sql ."\n";
-		
+
 		return is_resource($this->getDBConn()->query($sql) );
 	}
-	
+
 	/**
 	 * Constructs the SMTP Headers for the E-Mail Receipt.
 	 * The method will return a string in the following format:
@@ -840,7 +843,7 @@ class Home extends General
 
 		return $sHeaders;
 	}
-	
+
 	/**
 	 * Creates a new End-User Account.
 	 *
@@ -864,10 +867,10 @@ class Home extends General
 
 		return $RS["ID"];
 	}
-	
+
 	/**
 	 * Sends the provided SMS Message to GoMobile on behalf of the provided Client.
-	 * 
+	 *
 	 * @param 	GoMobileConnInfo $oCI	Reference to the data object with the Connection Info required to communicate with GoMobile
 	 * @param 	ClientConfig $oCC		Reference to the data object with the Client Configuration
 	 * @param 	SMS $oMI				Reference to the Message Object for holding the message data which will be sent to GoMobile
@@ -907,10 +910,10 @@ class Home extends General
 			}
 		}
 		/* ========== Send MT End ========== */
-		
+
 		return $iCode;
 	}
-	
+
 	/**
 	 * Generates a new activation code for the End-User's Account and inserts it into the database.
 	 * The generated activation code is a number between 100000 and 999999
@@ -919,7 +922,7 @@ class Home extends General
 	 * @param	string $addr 	End-User's mobile number or E-Mail address
 	 * @param	timestamp $exp 	Timestamp indicating when the generated activation code should expire in the format: YYYY-MM-DD hh:mm:ss, set to null for default (24 hours from "now")
 	 * @return 	integer
-	 * 
+	 *
 	 * @throws	mPointException
 	 */
 	protected function genActivationCode($id, $addr, $exp=null)
@@ -931,15 +934,15 @@ class Home extends General
 				VALUES
 					(". intval($id) .", '". $this->getDBConn()->escStr($addr) ."', ". $iCode . (is_null($exp) == false ? ", '". $this->getDBConn()->escStr($exp) ."'" : "") .")";
 //		echo $sql ."\n";
-		
+
 		if (is_resource($this->getDBConn()->query($sql) ) === false)
 		{
 			throw new mPointException("Failed to Insert activation code: ". $iCode ." into Database", 1101);
 		}
-		
+
 		return $iCode;
 	}
-	
+
 	/**
 	 * Activates the provided code.
 	 * The method will return the following status codes:
@@ -974,11 +977,11 @@ class Home extends General
 //			echo $sql ."\n";
 			if (is_resource($this->getDBConn()->query($sql) ) === true)
 			{
-				$iStatus = 10; 
+				$iStatus = 10;
 			}
 			else { $iStatus = 5; }
 		}
-			
+
 		return $iStatus;
 	}
 	public function verifyMobile($id)
@@ -1001,10 +1004,10 @@ class Home extends General
 			else { $code = 2; }
 		}
 		else { $code = 1; }
-		
+
 		return $code;
 	}
-	
+
 	public function newNote($uid, $oid, $msg)
 	{
 		$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Note_Tbl
@@ -1012,7 +1015,7 @@ class Home extends General
 				VALUES
 					(". intval($uid) .", ". intval($oid)  .", '". $this->getDBConn()->escStr($msg) ."')";
 		//		echo $sql ."\n";
-		
+
 		return is_resource($this->getDBConn()->query($sql) );
 	}
 }

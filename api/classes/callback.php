@@ -471,7 +471,7 @@ class Callback extends EndUserAccount
 		$sql = "SELECT Max(id) AS id
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				WHERE extid = '". $oDB->escStr($extid) ."' AND pspid = ". intval($pspid);
-		//echo $sql ."\n";
+//		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 
 		return is_array($RS) === true && intval($RS["ID"]) > 0? $RS["ID"] : -1;

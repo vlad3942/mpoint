@@ -53,7 +53,7 @@ class PSPConfig extends BasicConfig
 	 *
 	 * @param 	integer $id 	Unique ID for the Payment Service Provider in mPoint
 	 * @param 	string $name	Payment Service Provider's name in mPoint
-	 * @param 	string $ma 		The name of the Client's Merchant Account with the Payment Service Provider 
+	 * @param 	string $ma 		The name of the Client's Merchant Account with the Payment Service Provider
 	 * @param 	string $msa		The name of the Client's Merchant Sub Account with the Payment Service Provider
 	 * @param 	string $un 		Client's Username for the Payment Service Provider
 	 * @param 	string $pw 		Client's Password for the Payment Service Provider
@@ -115,7 +115,7 @@ class PSPConfig extends BasicConfig
 	 * @param 	integer $pspid 	Unique ID for the Payment Service Provider
 	 * @return 	PSPConfig
 	 */
-	public static function produceConfig(RDB &$oDB, $clid ,$accid , $pspid)
+	public static function produceConfig(RDB &$oDB, $clid, $accid, $pspid)
 	{
 		$sql = "SELECT DISTINCT PSP.id, PSP.name,
 					MA.name AS ma, MA.username, MA.passwd AS password, MSA.name AS msa
@@ -126,9 +126,8 @@ class PSPConfig extends BasicConfig
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON Acc.id = MSA.accountid AND PSP.id = MSA.pspid AND MSA.enabled = '1'
 				WHERE CL.id = ". intval($clid) ." AND PSP.id = ". intval($pspid) ." AND PSP.enabled = '1' AND Acc.id = ". intval($accid)." ";
 //		echo $sql ."\n";
-		
 		$RS = $oDB->getName($sql);
-		
+
 		if (is_array($RS) === true && count($RS) > 1) {	return new PSPConfig($RS["ID"], $RS["NAME"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"]); }
 		else { return null; }
 	}

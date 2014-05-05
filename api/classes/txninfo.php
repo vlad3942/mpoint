@@ -193,7 +193,7 @@ class TxnInfo
 	 * @var boolean
 	 */
 	private $_bAutoStoreCard;
-	
+
 	/**
 	 * String indicating the markup language used to render the payment pages.
 	 * The value must match a folder in /templates/[TEMPLATE NAME]/
@@ -213,7 +213,7 @@ class TxnInfo
 	 * @var string
 	 */
 	private  $_sIP;
-	
+
 	/**
 	 * Default Constructor
 	 *
@@ -273,12 +273,12 @@ class TxnInfo
 		$this->_sLanguage = trim($l);
 		$this->_iMode = (integer) $m;
 		$this->_bAutoCapture = (bool) $ac;
-		
+
 		$this->_iAccountID = (integer) $accid;
 		$this->_sCustomerRef = trim($cr);
 		$this->_iGoMobileID = (integer) $gmid;
 		$this->_bAutoStoreCard = (bool) $asc;
-		
+
 		$this->_sMarkupLanguage = trim($mrk);
 		$this->_sDescription = trim($desc);
 		$this->_sIP = trim($ip);
@@ -473,7 +473,7 @@ class TxnInfo
 	 * @return 	string		Customer IP Address
 	 */
 	public function getIP() { return $this->_sIP; }
-	
+
 	/**
 	 * Updates the information for the Transaction with the Customer's E-Mail Address where a receipt is sent to upon successful completion of the payment transaction
 	 *
@@ -486,7 +486,7 @@ class TxnInfo
 	 * @param 	integer $id 	Unique ID for the End-User's prepaid account
 	 */
 	public function setAccountID($id) { $this->_iAccountID = $id; }
-	
+
 	/**
 	 * Converts the data object into XML.
 	 * If a User Agent Profile is provided, the method will automatically calculate the width and height of the client logo
@@ -634,7 +634,7 @@ class TxnInfo
 			if (array_key_exists("auto-store-card", $misc) === false) { $misc["auto-store-card"] = false; }
 			if (array_key_exists("refund", $misc) === false) { $misc["refund"] = 0; }
 			if (array_key_exists("auth-url", $misc) === false) { $misc["auth-url"] = $obj->getAuthenticationURL(); }
-			
+
 			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"]);
 			break;
 		case ($obj instanceof RDB):				// Instantiate from Transaction Log
@@ -651,7 +651,7 @@ class TxnInfo
 					$sql .= " AND date_trunc('second', created) = '". $obj->escStr($misc[0]) ."'";
 				}
 				// Order ID for Transaction provided
-				else { $sql .= " AND orderid = '". $obj->escStr($misc[0]) ."'"; } 
+				else { $sql .= " AND orderid = '". $obj->escStr($misc[0]) ."'"; }
 			}
 //			echo $sql ."\n";
 			$RS = $obj->getName($sql);
