@@ -33,20 +33,21 @@ class NetAxept extends Callback
 	 */
 	public function initialize(HTTPConnInfo &$oCI, $merchant, $account, $currency, $cardid, $storecard)
 	{
-		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );
+		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true,
+																						"exceptions" => true) );
 		$sOrderNo = $this->getTxnInfo()->getOrderID();
-		if ( empty($sOrderNo) === true) { $sOrderNo = $this->getTxnInfo()->getID(); }
+		if (empty($sOrderNo) === true) { $sOrderNo = $this->getTxnInfo()->getID(); }
 
 		$request = array("Description" => "mPoint Transaction: ". $this->getTxnInfo()->getID() ." for Order: ". $this->getTxnInfo()->getOrderID(),
-										  "Environment" => array("WebServicePlatform" => "PHP5"),
-										  "Order" => array("Amount" => $this->getTxnInfo()->getAmount(),
-										  "CurrencyCode" => $currency,
-										  "OrderNumber" => $sOrderNo ),
-										  "ServiceType" => "M",
-										  "Terminal" => array("Language" => "en_GB",
-															  "RedirectUrl" => "http://". $_SERVER['HTTP_HOST'] ."/netaxept/accept.php?mpoint-id=". $this->getTxnInfo()->getID(),
-															  "SinglePage" => "true"),
-															  "TransactionId" => $this->getTxnInfo()->getID() ."-". time() );
+						 "Environment" => array("WebServicePlatform" => "PHP5"),
+						 "Order" => array("Amount" => $this->getTxnInfo()->getAmount(),
+						 				  "CurrencyCode" => $currency,
+						 				  "OrderNumber" => $sOrderNo),
+						 "ServiceType" => "M",
+						 "Terminal" => array("Language" => "en_GB",
+										  	 "RedirectUrl" => "http://". $_SERVER['HTTP_HOST'] ."/netaxept/accept.php?mpoint-id=". $this->getTxnInfo()->getID(),
+										  	 "SinglePage" => "true"),
+										  	 "TransactionId" => $this->getTxnInfo()->getID() ."-". time() );
 
 		// check if we need to store the card
 		if ($storecard == true)
@@ -56,43 +57,59 @@ class NetAxept extends Callback
 
 		$aParams = array("merchantId" => $merchant,
 						 "token" => $oCI->getPassword(),
-						 "request" => $request );
+						 "request" => $request);
 
-		$obj_Std = $obj_SOAP->Register($aParams);
-
-		if (intval($obj_Std->RegisterResult->TransactionId) == $this->getTxnInfo()->getID() )
+		try
 		{
-			$xml = '<?xml version="1.0" encoding="UTF-8"?>';
-			$xml .= '<root>';
-			$xml .= '<url method="post" content-type="application/x-www-form-urlencoded">https://'. $oCI->getHost() .'/Terminal/default.aspx</url>';
-			$xml .= '<card-number>pan</card-number>';
-			$xml .= '<expiry-month>expiryDate</expiry-month>';
-			$xml .= '<expiry-year>expiryDate</expiry-year>';
-			$xml .= '<cvc>securityCode</cvc>';
-			$xml .= '<hidden-fields>';
-			$xml .= '<merchantId>'. $merchant .'</merchantId>';
-			$xml .= '<transactionId>'. $obj_Std->RegisterResult->TransactionId .'</transactionId>';
-			$xml .= '</hidden-fields>';
-			$xml .= '</root>';
+			$obj_Std = $obj_SOAP->Register($aParams);
 
-			$data = array("psp-id" => Constants::iNETAXEPT_PSP, "url" => var_export($obj_Std, true) );
-			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, serialize($data) );
+			if (intval($obj_Std->RegisterResult->TransactionId) == $this->getTxnInfo()->getID() )
+			{
+				$xml = '<?xml version="1.0" encoding="UTF-8"?>';
+				$xml .= '<root>';
+				$xml .= '<url method="post" content-type="application/x-www-form-urlencoded">https://'. $oCI->getHost() .'/Terminal/default.aspx</url>';
+				$xml .= '<card-number>pan</card-number>';
+				$xml .= '<expiry-month>expiryDate</expiry-month>';
+				$xml .= '<expiry-year>expiryDate</expiry-year>';
+				$xml .= '<cvc>securityCode</cvc>';
+				$xml .= '<hidden-fields>';
+				$xml .= '<merchantId>'. $merchant .'</merchantId>';
+				$xml .= '<transactionId>'. $obj_Std->RegisterResult->TransactionId .'</transactionId>';
+				$xml .= '</hidden-fields>';
+				$xml .= '</root>';
 
-			$obj_XML = simplexml_load_string($xml);
+				$data = array("psp-id" => Constants::iNETAXEPT_PSP, "url" => var_export($obj_Std, true) );
+				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, serialize($data) );
 
-			// save ext id in database
-					$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-							SET pspid = ". Constants::iNETAXEPT_PSP .", extid = '".$obj_Std->RegisterResult->TransactionId."'
-							WHERE id = ". $this->getTxnInfo()->getID();
-//					echo $sql ."\n";
-					$this->getDBConn()->query($sql);
+				$obj_XML = simplexml_load_string($xml);
+
+				// save ext id in database
+						$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+								SET pspid = ". Constants::iNETAXEPT_PSP .", extid = '".$obj_Std->RegisterResult->TransactionId."'
+								WHERE id = ". $this->getTxnInfo()->getID();
+	//					echo $sql ."\n";
+						$this->getDBConn()->query($sql);
+			}
+			// Error: Unable to initialize payment transaction
+			else
+			{
+				trigger_error("Unable to initialize payment transaction with NetAxept. HTTP Response Code: ". $code ."\n". var_export($obj_HTTP, true), E_USER_WARNING);
+
+				throw new mPointException("NetAxept returned HTTP Code: ". $code, 1100);
+			}
 		}
-		// Error: Unable to initialize payment transaction
-		else
+		catch (Exception $e)
 		{
-			trigger_error("Unable to initialize payment transaction with NetAxept. HTTP Response Code: ". $code ."\n". var_export($obj_HTTP, true), E_USER_WARNING);
-
-			throw new mPointException("NetAxept returned HTTP Code: ". $code, 1100);
+			if ($e->detail->BBSException->Result->ResponseCode != NULL)
+			{
+				// Transaction already processed
+				if (intval($e->detail->BBSException->Result->ResponseCode) == 98)
+				{
+					return "OK";
+				}
+				else { return $e->detail->BBSException->Result->ResponseCode; }
+			}
+			else { return $e->getMessage();	}
 		}
 
 		return $obj_XML;
@@ -357,7 +374,7 @@ class NetAxept extends Callback
 
 	 			// save ext id in database
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-						SET pspid = ". Constants::iNETAXEPT_PSP .", extid = '".$obj_Std->RegisterResult->TransactionId ."'
+						SET pspid = ". Constants::iNETAXEPT_PSP .", extid = '". $obj_Std->RegisterResult->TransactionId ."'
 						WHERE id = ". $this->getTxnInfo()->getID();
 //				echo $sql ."\n";
 				$this->getDBConn()->query($sql);
@@ -369,10 +386,7 @@ class NetAxept extends Callback
 
 					return $code;
 				}
-				else
-				{
-					return -abs($code);
-				}
+				else { return -abs($code); }
 			}
 	 		// Error: Unable to initialize payment transaction
 	 		else
@@ -390,7 +404,7 @@ class NetAxept extends Callback
 			{
 				return -abs($e->detail->BBSException->Result->ResponseCode);
 			}
-			else if ($e->getMessage() != null) { return $e->getMessage(); }
+			elseif ($e->getMessage() != null) { return $e->getMessage(); }
 			else { return -1; }
 		}
 	}

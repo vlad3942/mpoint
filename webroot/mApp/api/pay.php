@@ -74,20 +74,20 @@ $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
 	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_DOM->pay) > 0)
-	{	
+	{
 		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
-		
+
 		for ($i=0; $i<count($obj_DOM->pay); $i++)
 		{
 			// Set Global Defaults
 			if (empty($obj_DOM->pay[$i]["account"]) === true || intval($obj_DOM->pay[$i]["account"]) < 1) { $obj_DOM->pay[$i]["account"] = -1; }
-		
+
 			// Validate basic information
 			$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]);
 			if ($code == 100)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]);
-				
+
 				// Client successfully authenticated
  				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])
 					&& $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true)
@@ -99,17 +99,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 //						$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"]);
 //						if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
-						
+
 						// Find Configuration for Payment Service Provider
 						$obj_XML = simpledom_load_string($obj_mPoint->getCards( (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount) );
 						// Determine Payment Service Provider based on selected card
 						$obj_Elem = $obj_XML->xpath("/cards/item[@id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ."]");
 						if (array_key_exists(intval($obj_Elem["pspid"]), $aObj_PSPConfigs) === false)
 						{
-							$aObj_PSPConfigs[intval($obj_Elem["pspid"])] = PSPConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"],  (integer) $obj_DOM->pay[$i]["account"], (integer) $obj_Elem["pspid"]); 
+							$aObj_PSPConfigs[intval($obj_Elem["pspid"])] = PSPConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"],  (integer) $obj_DOM->pay[$i]["account"], (integer) $obj_Elem["pspid"]);
 						}
 						$obj_PSPConfig = $aObj_PSPConfigs[intval($obj_Elem["pspid"])];
-						
+
 						// Success: Payment Service Provider Configuration found
 						if ( ($obj_PSPConfig instanceof PSPConfig) === true)
 						{
@@ -130,7 +130,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								{
 								case (Constants::iDIBS_PSP):
 									$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $oTI);
-									
+
 									$aHTTP_CONN_INFO["dibs"]["path"] = str_replace("{account}", $obj_PSPConfig->getMerchantAccount(), $aHTTP_CONN_INFO["dibs"]["path"]);
 									$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["dibs"]);
 									$obj_XML = $obj_PSP->initialize($obj_ConnInfo, $obj_PSPConfig->getMerchantAccount(), $obj_PSPConfig->getMerchantSubAccount(), (string) $obj_Elem->currency, (integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"]);
@@ -145,26 +145,26 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												$xml .= $obj_Child->asXML();
 											}
 											$xml .= '</'. $obj_Elem->getName() .'>';
-										} 
+										}
 										else { $xml .= $obj_Elem->asXML(); }
 									}
 									break;
 								case (Constants::iWORLDPAY_PSP):
 									$obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $oTI);
 									$card = $obj_PSP->getCardName( (integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"]);
-									
+
 									if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["worldpay"]["host"] = str_replace("secure.", "secure-test.", $aHTTP_CONN_INFO["worldpay"]["host"]); }
 									$aHTTP_CONN_INFO["worldpay"]["username"] = $obj_PSPConfig->getUsername();
 									$aHTTP_CONN_INFO["worldpay"]["password"] = $obj_PSPConfig->getPassword();
 									$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["worldpay"]);
 									$url = $obj_PSP->initialize($obj_ConnInfo, $obj_PSPConfig->getMerchantAccount(), $obj_PSPConfig->getMerchantSubAccount(), (string) $obj_Elem->currency, $aCards);
-									
+
 									$url .= "&preferredPaymentMethod=". $card ."&language=". $obj_TxnInfo->getLanguage();
 									$xml .= '<url method="get" content-type="none">'. htmlspecialchars($url, ENT_NOQUOTES) .'</url>';
 									break;
 								case (Constants::iPAYEX_PSP):
 									$obj_PSP = new PayEx($_OBJ_DB, $_OBJ_TXT, $oTI);
-									
+
 									if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["payex"]["host"] = str_replace("external.", "test-external.", $aHTTP_CONN_INFO["payex"]["host"]); }
 									$aHTTP_CONN_INFO["payex"]["username"] = $obj_PSPConfig->getUsername();
 									$aHTTP_CONN_INFO["payex"]["password"] = $obj_PSPConfig->getPassword();
@@ -184,14 +184,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										}
 										else { $xml .= $obj_Elem->asXML(); }
 									}
-									break;					
+									break;
 								case (Constants::iWANNAFIND_PSP):
 									break;
 								case (Constants::iNETAXEPT_PSP):
 									$obj_PSP = new NetAxept($_OBJ_DB, $_OBJ_TXT, $oTI);
-									
+
+									if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["netaxept"]["host"] = str_replace("epayment.", "epayment-test.", $aHTTP_CONN_INFO["netaxept"]["host"]); }
 									$aHTTP_CONN_INFO["netaxept"]["username"] = $obj_PSPConfig->getUsername();
 									$aHTTP_CONN_INFO["netaxept"]["password"] = $obj_PSPConfig->getPassword();
+
 									$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["netaxept"]);
 									// $obj_DOM->pay[$i]->transaction["id"]
 									// get boolean value of store card.
@@ -199,28 +201,28 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$obj_XML = $obj_PSP->initialize($obj_ConnInfo,
 																	$obj_PSPConfig->getMerchantAccount(),
 																	$obj_PSPConfig->getMerchantSubAccount(),
-																	(string) $obj_Elem->currency, 
+																	(string) $obj_Elem->currency,
 																	(integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"],
 																	$storecard);
-									
+
 									foreach ($obj_XML->children() as $obj_Elem)
 									{
 										$xml .= trim($obj_Elem->asXML() );
 									}
-									break;							
+									break;
 								}
 								$xml .= '</psp-info>';
 							}
 							catch (mPointException $e)
 							{
 								header("HTTP/1.1 502 Bad Gateway");
-							
+
 								$xml = '<status code="92">Unable to initialize payment transaction with Payment Service Provider.' ."\n". 'Error: '. htmlspecialchars($e->getMessage(), ENT_NOQUOTES) .'</status>';
 							}
 							catch (HTTPException $e)
 							{
 								header("HTTP/1.1 504 Gateway Timeout");
-								
+
 								$xml = '<status code="91">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES) .'</status>';
 							}
 						}
@@ -228,7 +230,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						else
 						{
 							header("HTTP/1.1 500 Internal Server Error");
-							
+
 							$xml = '<status code="90">Unable to find configuration for Payment Service Provider using Card: '. $obj_DOM->pay[$i]->transaction->card[$j]["type-id"] .' and Amount: '. $obj_DOM->pay[$i]->transaction->card[$j]->amount .'</status>';
 						}
 					}
@@ -236,14 +238,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				else
 				{
 					header("HTTP/1.1 401 Unauthorized");
-					
+
 					$xml = '<status code="401">Username / Password doesn\'t match</status>';
 				}
 			}
 			else
 			{
 				header("HTTP/1.1 400 Bad Request");
-				
+
 				$xml = '<status code="'. $code .'">Client ID / Account doesn\'t match</status>';
 			}
 		}
@@ -252,18 +254,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	elseif ( ($obj_DOM instanceof SimpleDOMElement) === false)
 	{
 		header("HTTP/1.1 415 Unsupported Media Type");
-		
+
 		$xml = '<status code="415">Invalid XML Document</status>';
 	}
 	// Error: Wrong operation
 	elseif (count($obj_DOM->pay) == 0)
 	{
 		header("HTTP/1.1 400 Bad Request");
-	
+
 		$xml = '';
 		foreach ($obj_DOM->children() as $obj_Elem)
 		{
-			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>'; 
+			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>';
 		}
 	}
 	// Error: Invalid Input
@@ -271,7 +273,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	{
 		header("HTTP/1.1 400 Bad Request");
 		$aObj_Errs = libxml_get_errors();
-		
+
 		$xml = '';
 		for ($i=0; $i<count($aObj_Errs); $i++)
 		{
@@ -282,7 +284,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 else
 {
 	header("HTTP/1.1 401 Unauthorized");
-	
+
 	$xml = '<status code="401">Authorization required</status>';
 }
 header("Content-Type: text/xml; charset=\"UTF-8\"");
