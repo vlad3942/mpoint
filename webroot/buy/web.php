@@ -48,6 +48,9 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 {
 	$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']);
 
+	$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
+	if (array_key_exists("mac", $_REQUEST) === true && $obj_Validator->valMAC($_REQUEST['mac'], $_REQUEST, $obj_ClientConfig->getPassword() ) != 10) { $aMsgCds[210] = $_REQUEST['mac']; }
+
 	// Set Client Defaults
 	if (array_key_exists("operator", $_REQUEST) === false) { $_REQUEST['operator'] = $obj_ClientConfig->getCountryConfig()->getID() * 100; }
 	if (array_key_exists("logo-url", $_REQUEST) === false) { $_REQUEST['logo-url'] = $obj_ClientConfig->getLogoURL(); }
@@ -59,13 +62,11 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if (array_key_exists("language", $_REQUEST) === false) { $_REQUEST['language'] = $obj_ClientConfig->getLanguage(); }
 	if (array_key_exists("markup", $_REQUEST) === false) { $_REQUEST['markup'] = $obj_ClientConfig->getAccountConfig()->getMarkupLanguage(); }
 	if (array_key_exists("auth-url", $_REQUEST) === false) { $_REQUEST['auth-url'] = $obj_ClientConfig->getAuthenticationURL(); }
-	
+
 	$obj_mPoint = new MobileWeb($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 	$iTxnID = $obj_mPoint->newTransaction(Constants::iPURCHASE_VIA_WEB);
 
 	/* ========== Input Validation Start ========== */
-	$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
-
 	if ($obj_Validator->valMobile($_REQUEST['mobile']) != 10 && $obj_ClientConfig->smsReceiptEnabled() === true) { $aMsgCds[$obj_Validator->valMobile($_REQUEST['mobile']) + 30] = $_REQUEST['mobile']; }
 	if ($obj_Validator->valOperator($_REQUEST['operator']) != 10) { $aMsgCds[$obj_Validator->valOperator($_REQUEST['operator']) + 40] = $_REQUEST['operator']; }
 	if ($obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), $_REQUEST['amount']) != 10) { $aMsgCds[$obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), $_REQUEST['amount']) + 50] = $_REQUEST['amount']; }
@@ -84,7 +85,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	{
 		$aMsgCds[209] = $_REQUEST['auth-url'];
 	}
-	elseif ($obj_Validator->valURL($_REQUEST['auth-url'], $obj_ClientConfig->getAuthenticationURL() ) > 1 && $obj_Validator->valURL($_REQUEST['auth-url'], $obj_ClientConfig->getAuthenticationURL() ) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['auth-url'], $obj_ClientConfig->getAuthenticationURL() ) + 200] = $_REQUEST['auth-url']; } 
+	elseif ($obj_Validator->valURL($_REQUEST['auth-url'], $obj_ClientConfig->getAuthenticationURL() ) > 1 && $obj_Validator->valURL($_REQUEST['auth-url'], $obj_ClientConfig->getAuthenticationURL() ) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['auth-url'], $obj_ClientConfig->getAuthenticationURL() ) + 200] = $_REQUEST['auth-url']; }
 	/* ========== Input Validation End ========== */
 
 	// Success: Input Valid
@@ -168,7 +169,7 @@ if (array_key_exists(1000, $aMsgCds) === true)
 		if (strlen($_SESSION['obj_TxnInfo']->getOrderID() ) > 0 && $obj_mPoint->orderAlreadyAuthorized($_SESSION['obj_TxnInfo']->getOrderID() ) === true)
 		{
 			$obj_mPoint->newMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_DUPLICATED_STATE, "Order: ". $_SESSION['obj_TxnInfo']->getOrderID() ." already authorized");
-			
+
 			header("Location: /pay/accept.php?". session_name() ."=". session_id() ."&mpoint-id=". $_SESSION['obj_TxnInfo']->getID() );
 		}
 		// End-User already has an account that is linked to the Client
@@ -177,7 +178,7 @@ if (array_key_exists(1000, $aMsgCds) === true)
 			$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SESSION['obj_UA']);
 			$obj_XML = simplexml_load_string($obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount() ) );
 			$obj_CardsXML = simplexml_load_string($obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID(), $obj_ClientConfig) );
-			
+
 			/*
 			 * Only prepaid account available or End-User already has an e-money based prepaid account or a stored card
 			 * Go to step 2: My Account
@@ -188,7 +189,7 @@ if (array_key_exists(1000, $aMsgCds) === true)
 			{
 				header("Location: /cpm/payment.php?". session_name() ."=". session_id() ."&cardtype=11");
 			}
-			// Go to step 1: Select payment method 
+			// Go to step 1: Select payment method
 			else { header("Location: /pay/card.php?". session_name() ."=". session_id() ); }
 		}
 		// Go to step 1: Select payment method
@@ -202,9 +203,9 @@ else
 	$s .= "REQUEST: " ."\n". var_export($_REQUEST, true) ."\n";
 	$s .= "ERRORS: " ."\n". var_export($aMsgCds, true) ."\n";
 	file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") .".log", $s);
-	
+
 	$_GET['msg'] = array_keys($aMsgCds);
-	
+
 	$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/xhtml/status.xsl"?>';
 	$xml .= '<root>';

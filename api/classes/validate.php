@@ -92,7 +92,7 @@ class Validate
 			}
 //			echo $sql ."\n";
 			$RS = $oDB->getName($sql);
-			
+
 			if (is_array($RS) === true)
 			{
 				if ($RS["CLIENTACTIVE"] === false) { $code = 4; }		// Client Disabled
@@ -102,7 +102,7 @@ class Validate
 			}
 			else { $code = 3; }	// Unknown Client ID
 		}
-		
+
 		return $code;
 	}
 
@@ -163,7 +163,7 @@ class Validate
 		elseif (strlen($un) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }				// Username is too long
 		elseif (eregi("[^a-z0-9 æøåÆØÅäöÄÖ._-]", utf8_encode($un) ) == true) { $code = 4; }	// Username contains Invalid Characters
 		else { $code = 10; }															// Username is valid
-		
+
 		return $code;
 	}
 
@@ -582,7 +582,7 @@ class Validate
 
 		return $code;
 	}
-	
+
 	/**
 	 * Validates the psp-id
 	 * The method will return the following status codes:
@@ -607,15 +607,15 @@ class Validate
 					WHERE id = ". intval($id);
 //			echo $sql ."\n";
 			$RS = $oDB->getName($sql);
-	
+
 			if (is_array($RS) === false) { $code = 3; }
 			elseif ($RS["ENABLED"] === false) { $code = 4; }
 			else { $code = 10; }
 		}
-	
+
 		return $code;
 	}
-	
+
 	/**
 	 * Validates the type ID of a card.
 	 * The method will return the following status codes:
@@ -634,17 +634,17 @@ class Validate
 		if (empty($id) === true) { $code = 1;}
 		else
 		{
-			$sql = "SELECT enabled 
-					FROM System".sSCHEMA_POSTFIX.".Card_Tbl 
+			$sql = "SELECT enabled
+					FROM System".sSCHEMA_POSTFIX.".Card_Tbl
 					WHERE id = " . intval($id);
 //			echo $sql ."\n";
 			$RS = $oDB->getName($sql);
-			
+
 			if (is_array($RS) === false) { $code = 2;}
 			elseif ($RS["ENABLED"] === false) { $code = 3;}
 			else { $code = 10; }
 		}
-		
+
 		return $code;
 	}
 
@@ -683,7 +683,7 @@ class Validate
 
 		return $code;
 	}
-	
+
 	/**
 	 * Validates the Activation Code.
 	 * The method will return the following status codes:
@@ -704,7 +704,7 @@ class Validate
 
 		return $code;
 	}
-	
+
 	/**
 	 * Validates that the Amount to transfer is valid within the End-User's country.
 	 * The method will return the following status codes:
@@ -751,11 +751,11 @@ class Validate
 			$sTimestamp = date("Y-m-d H:i:s", base_convert($sTimestamp, 32, 10) );
 			$iToID = base_convert($iToID, 32, 10);
 			$iFromID = base_convert($iFromID, 32, 10);
-			
+
 			$sql = "SELECT Txn.enabled
 					FROM EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
 					INNER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl Acc ON Txn.accountid = Acc.id AND Acc.enabled = '1'
-					WHERE Acc.id = ". intval($iToID) ." AND date_trunc('second', Acc.created) = '". $oDB->escStr($sTimestamp) ."' 
+					WHERE Acc.id = ". intval($iToID) ." AND date_trunc('second', Acc.created) = '". $oDB->escStr($sTimestamp) ."'
 						AND Txn.toid = ". intval($iToID) ." AND Txn.fromid = ". intval($iFromID);
 //			echo $sql ."\n";
 			$RS = $oDB->getName($sql);
@@ -802,7 +802,7 @@ class Validate
 	 * 	10. Success
 	 *
 	 * @param 	RDB $oDB 			Reference to the Database Object that holds the active connection to the mPoint Database
-	 * @param 	integer $mpointid 	Unique ID for the mPoint transaction 
+	 * @param 	integer $mpointid 	Unique ID for the mPoint transaction
 	 * @param 	integer $clientid 	Unique ID for the Client performing the request
 	 * @return 	integer
 	 */
@@ -868,7 +868,7 @@ class Validate
 	 * Performs complete validation of markup language used to render the payment pages for the template.
 	 * The method will return the following status codes:
 	 * 	 1. Undefined Markup Language
-	 * 	 2. Markup Language doesn't exist in Template 
+	 * 	 2. Markup Language doesn't exist in Template
 	 * 	10. Success
 	 *
 	 * @param 	string $mrk		String indicating the markup language used to render the payment pages
@@ -883,9 +883,9 @@ class Validate
 
 		return $code;
 	}
-	
+
 	/**
-	 * Validates the entered CPR number from the user the validations are calulatet using 
+	 * Validates the entered CPR number from the user the validations are calulatet using
 	 * the formular provided by http://cpr.dk/ thereby using a fomular without modulus as this was discarded in 2007.
 	 *
 	 * 	 1. invaled cpr number
@@ -921,13 +921,13 @@ class Validate
 			}
 			else { $valid = false; }
 		}
-	
+
 		if ($valid === false) { $code = 1; }
 		else { $code = 10; }
-		
+
 		return $code;
 	}
-	
+
 	public function valFullname($fullname)
 	{
 		if(preg_match("/^[a-zæøåA-ZÆØÅ][a-zA-Z -\']+$/",$fullname) == false)
@@ -935,10 +935,10 @@ class Validate
 			$code = 1;
 		}
 		else{ $code = 10; }
-		
+
 		return $code;
 	}
-	
+
 	/**
 	 * Performs basic validation ensuring that the State exists.
 	 * The method will return the following status codes:
@@ -977,7 +977,7 @@ class Validate
 						WHERE Upper(code) = Upper('". $oDB->escStr($s) ."')";
 //				echo $sql ."\n";
 				$RS = $oDB->getName($sql);
-				
+
 				if (is_array($RS) === false) { $code = 3; }										// Unknown State
 				elseif ($RS["ENABLED"] === false) { $code = 4; }								// State Disabled
 				elseif ($RS["COUNTRYID"] != $this->_obj_CountryConfig->getID() ) { $code = 5; }	// State not found in country
@@ -988,7 +988,7 @@ class Validate
 			$code = 10;
 			break;
 		}
-	
+
 		return $code;
 	}
 	/**
@@ -1067,22 +1067,22 @@ class Validate
 						WHERE S.countryid = ". $this->_obj_CountryConfig->getID() ." AND Upper(PC.code) = '". $oDB->escStr($pc) ."'";
 //				echo $sql ."\n";
 				$RS = $oDB->getName($sql);
-	
+
 				if (is_array($RS) === false) { $code = 6; }				// Unknown Postal Code
 				elseif ($RS["CODE"] != strtoupper($s) ) { $code = 7; }	// Postal Code not found in State
 */
 			}
 		}
-	
+
 		return $code;
 	}
 	/**
-	 * Performs  validation of the the max amount of cards a user can have.
+	 * Performs validation of the the max amount of cards a user can have.
 	 * The method will return the following status codes:
 	 * 	 1. Undefined userid ID
-	 *	 2.	Undefined $max amount of cards 
-	 *	 3.	Undefined $max amount of cards 
-	 * 	 4. User has the max amount of cards 
+	 *	 2.	Undefined $max amount of cards
+	 *	 3.	Undefined $max amount of cards
+	 * 	 4. User has the max amount of cards
 	 * 	10. Success
 	 *
 	 * @param 	RDB $oDB 			Reference to the Database Object that holds the active connection to the mPoint Database
@@ -1097,19 +1097,56 @@ class Validate
 		else
 		{
 			if (empty($userid) === true ) { $code = 1; }	// Undefined user-ID
-			elseif (empty($max) === true ) { $code = 2; }	// $max undefined 
-			elseif (empty($clid) === true ) { $code = 3; }	// $max undefined		
+			elseif (empty($max) === true ) { $code = 2; }	// $max undefined
+			elseif (empty($clid) === true ) { $code = 3; }	// $max undefined
 			else
 			{
 				$sql = "SELECT count(id) AS numberofcards
 						FROM Enduser".sSCHEMA_POSTFIX.".Cards_Tbl
 						WHERE accountid = ". intval($userid)." AND enabled = true";
 				$RS = $oDB->getName($sql);
-	
+
 				if ($RS["NUMBEROFCARDS"] >= $max) { $code = 4; }	//  User has the max amount of cards
 				else { $code = 10; }								// Success
 			}
 		}
+		return $code;
+	}
+	/**
+	 * Performs validation of the Message Authentication Code (MAC).
+	 * The is calculated based on the following data fields in the request (in that order):
+	 * 	- clientid
+	 * 	- account
+	 * 	- orderid
+	 * 	- callback-url
+	 * 	- amount
+	 * 	- auth-url
+	 * 	- customer-ref
+	 * 	- auth-token
+	 * 	- email
+	 * 	- mobile
+	 * Additionally the provided salt is appended at the end.
+	 *
+	 * The method will return the following status codes:
+	 * 	 1. Invald Message Authentication Code (MAC)
+	 * 	10. Success
+	 *
+	 * @param 	string $mac		Message Authentication Code provided by the client in the request
+	 * @param 	array $data		Array of request data on which the Message Authentication Code should be calculated
+	 * @param 	string $salt	The shared secret configured for the Client
+	 * @return 	integer
+	 */
+	public function valMAC($mac, array &$data, $salt)
+	{
+		if (@$data["account"] == -1) { $account = ""; }
+		else { $account = @$data["account"]; }
+		if (@$data["orderid"] == null) { $orderid = ""; }
+		else { $orderid = @$data["orderid"]; }
+		$chk = sha1(@$data["clientid"] . $account . $orderid . @$data["callback-url"] . @$data["amount"] . @$data["auth-url"] . @$data["customer-ref"] . @$data["email"] . @$data["mobile"] . $salt);
+
+		if ($mac == $chk) { $code = 10; }
+		else { $code = 1; }
+
 		return $code;
 	}
 }
