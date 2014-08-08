@@ -143,7 +143,7 @@ msgstr @@@ Your payment is being authorized, please wait... @@@
 
 #: /webroot/cpm/payment.php:150
 msgid @@@ Cancel Payment @@@
-msgstr @@@ Cancel Payment @@@
+msgstr @@@ Cancel @@@
 
 #: /webroot/default.php:22
 msgid @@@ mPoint @@@
@@ -452,7 +452,7 @@ Please go to "My Account" to register your e-mail address? @@@
 #: /webroot/home/missing_data.php:47
 msgid @@@ Missing Profile Info Guide @@@
 msgstr @@@ Your profile information is not yet complete.
-Completing your profile information allows us to personalise the user experience. 
+Completing your profile information allows us to personalise the user experience.
 Please go to "My Account" to complete your profile information? @@@
 
 #: /webroot/home/my_account.php:37
@@ -1246,7 +1246,7 @@ msgstr @@@ Cancel @@@
 
 #: /webroot/pay/store.php:50
 msgid @@@ Store Card - Disclaimer @@@
-msgstr @@@ Storing your card details for future use makes your next purchase swift and simple. 
+msgstr @@@ Storing your card details for future use makes your next purchase swift and simple.
 Be assured that all card details are stored in a highly secure encrypted form. @@@
 
 #: /webroot/pay/sys/sms.php:206
@@ -1519,7 +1519,7 @@ msgstr @@@ The following customer hasn't activated the mPoint payment link
 Mobile No: {MOBILE}
 mPoint ID: {MPOINTID}
 Order No: {ORDERID}
-Price: {PRICE} 
+Price: {PRICE}
 Order created: {TIMESTAMP}
 
 We recommend that you contact this customer directly and complete the payment process manually.
