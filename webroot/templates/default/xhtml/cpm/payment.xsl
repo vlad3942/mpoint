@@ -30,7 +30,7 @@
 					var message = '<xsl:value-of select="labels/authorize-deletion" />';
 				</xsl:otherwise>
 				</xsl:choose>
-				
+
 				document.getElementById('card-id').value = id;
 				document.getElementById('confirm-delete-card').style.visibility = 'visible';
 				document.getElementById('window-background').style.visibility = 'visible';
@@ -46,6 +46,7 @@
 			{
 				document.getElementById('loader').style.visibility = 'visible';
 				document.getElementById('window-background').style.visibility = 'visible';
+				document.getElementById('authorize-payment').disabled = true;
 			}
 		</script>
 		<table>
@@ -72,7 +73,7 @@
 			<form id="delete-card" action="{func:appendQueryString('/cpm/sys/del_card.php') }" method="post">
 				<input type="hidden" id="card-id" name="cardid" value="-1" />
 				<input type="hidden" name="cardtype" value="11" />
-				
+
 				<xsl:choose>
 				<!-- Single Sign-On -->
 				<xsl:when test="@single-sign-on = 'true' and string-length(transaction/auth-url) &gt; 0">
@@ -87,7 +88,7 @@
 					</div>
 					<div id="password">
 						<div class="mPoint_Label"><xsl:value-of select="labels/password" />:</div>
-						<input type="password" name="pwd" value="" /> 
+						<input type="password" name="pwd" value="" />
 					</div>
 					<!-- Delete Card -->
 					<div>
@@ -104,10 +105,10 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<!-- Display Status Messages -->
 	<xsl:apply-templates select="messages" />
-	
+
 	<div id="my-account">
 		<form action="{func:appendQueryString('/cpm/sys/pay_account.php') }" method="post" onsubmit="javascript:showLoader();">
 			<div>
@@ -173,7 +174,7 @@
 							  -->
 							<table>
 							<tr>
-								<td>										
+								<td>
 									<xsl:choose>
 										<xsl:when test="count(stored-cards/card[client/@id = //client-config/@id]) = 0">
 											<input type="hidden" name="cardid" value="-1" />
@@ -223,7 +224,7 @@
 						<xsl:if test="@single-sign-on != 'true' or string-length(transaction/auth-url) = 0">
 							<div id="password">
 								<div class="mPoint_Label"><xsl:value-of select="labels/password" />:</div>
-								<input type="password" name="pwd" value="" /> 
+								<input type="password" name="pwd" value="" />
 							</div>
 						</xsl:if>
 					</div>
@@ -231,7 +232,7 @@
 			</div>
 			<!-- Complete Payment -->
 			<div id="submit">
-				<input type="submit" value="{labels/submit}" class="mPoint_Button" />
+				<input id="authorize-payment" type="submit" value="{labels/submit}" class="mPoint_Button" />
 			</div>
 		</form>
 	</div>
