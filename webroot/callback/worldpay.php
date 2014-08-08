@@ -70,21 +70,28 @@ if ($id == -1) { $id = (integer) $obj_XML->notify->orderStatusEvent["orderCode"]
 try
 {
 	$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
-	
+
 	// Intialise Text Translation Object
 	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
-	
+
 	$obj_mPoint = new WorldPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-	
+
 	switch(strval($obj_XML->notify->orderStatusEvent->payment->lastEvent) )
 	{
-	case "AUTHORISED":	// Payment Authorised
+	case "AUTHORISED":		// Payment Authorised
 		$iStateID = Constants::iPAYMENT_ACCEPTED_STATE;
 		break;
-	case "CAPTURED":	// Payment Captured
+	case "CAPTURED":		// Payment Captured
 		$iStateID = Constants::iPAYMENT_CAPTURED_STATE;
 		break;
-	default:			// Payment Rejected
+	case "CANCELLED":		// Payment Cancelled
+		$iStateID = Constants::iPAYMENT_CANCELLED_STATE;
+		break;
+	case "SENT_FOR_REFUND":	// Payment Refunded
+	case "REFUNDED":
+		$iStateID = Constants::iPAYMENT_REFUNDED_STATE;
+		break;
+	default:				// Payment Rejected
 		$iStateID = Constants::iPAYMENT_REJECTED_STATE;
 		break;
 	}
@@ -93,13 +100,13 @@ try
 	{
 		$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE);
 		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $obj_XML->notify->orderStatusEvent["orderCode"]);
-		
+
 		$sToken = $obj_XML->notify->orderStatusEvent["orderCode"] ." ### ". $obj_XML["merchantCode"] ." ### ". $obj_XML->notify->orderStatusEvent->payment->balance->amount["value"] ." ### ". $obj_XML->notify->orderStatusEvent->payment->balance->amount["currencyCode"];
 		// Card Number
 		if (count($obj_XML->notify->orderStatusEvent->payment->cardNumber) == 1) { $sMask = $obj_XML->notify->orderStatusEvent->payment->cardNumber; }
 		else { $sMask = $obj_XML->notify->orderStatusEvent->payment->paymentMethodDetail->card["number"]; }
 		$sExpiry = $obj_XML->notify->orderStatusEvent->payment->paymentMethodDetail->card->expiryDate->date["month"] ."/". substr($obj_XML->notify->orderStatusEvent->payment->paymentMethodDetail->card->expiryDate->date["year"], -2);
-		 
+
 		$iStatus = $obj_mPoint->saveCard($obj_TxnInfo, $obj_TxnInfo->getMobile(), $obj_mPoint->getCardID( (string) $obj_XML->notify->orderStatusEvent->payment->paymentMethod), Constants::iWORLDPAY_PSP, $sToken, $sMask, $sExpiry);
 		// The End-User's existing account was linked to the Client when the card was stored
 		if ($iStatus == 1)
@@ -132,7 +139,7 @@ try
 			$obj_Home = new Home($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo->getClientConfig()->getCountryConfig() );
 			$iAccountID = $obj_Home->getAccountID($obj_TxnInfo->getClientConfig()->getCountryConfig(), $obj_TxnInfo->getMobile() );
 			if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = $obj_Home->getAccountID($obj_TxnInfo->getClientConfig()->getCountryConfig(), $obj_TxnInfo->getEMail() ); }
-			
+
 			$obj_mPoint->link($iAccountID);
 			$obj_TxnInfo->setAccountID($iAccountID);
 		}
@@ -147,19 +154,19 @@ try
 		}
 	}
 	if ($obj_TxnInfo->getReward() > 0 && $obj_TxnInfo->getAccountID() > 0) { $obj_mPoint->topup($obj_TxnInfo->getAccountID(), Constants::iREWARD_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getReward() ); }
-	
+
 	// Customer has an account
 	if ($obj_TxnInfo->getAccountID() > 0)
 	{
 		$obj_mPoint->associate($obj_TxnInfo->getAccountID(), $obj_TxnInfo->getID() );
 	}
-	
+
 	// Client has SMS Receipt enabled
 	if ($obj_TxnInfo->getClientConfig()->smsReceiptEnabled() === true)
 	{
 		$obj_mPoint->sendSMSReceipt(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
 	}
-	
+
 	// Callback URL has been defined for Client
 	if ($obj_TxnInfo->getCallbackURL() != "")
 	{
