@@ -489,7 +489,7 @@ class TxnInfo
 	 *
 	 * @return 	string		Message Authentication Code
 	 */
-	public function getMAC() { return sha1($this->_obj_ClientConfig->getID(), $this->_obj_ClientConfig->getAccountConfig()->getID(), $this->_iID, $this->_sOrderID, $this->_obj_CountryConfig->getID(), $this->_iAmount, $this->_sCustomerRef, $this->_sEMail, $this->_sMobile, $this->_obj_ClientConfig->getPassword() ); }
+	public function getMAC() { return sha1($this->_obj_ClientConfig->getID() . $this->_obj_ClientConfig->getAccountConfig()->getID() . $this->_iID . $this->_sOrderID . $this->_obj_CountryConfig->getID() . $this->_iAmount . $this->_sCustomerRef . $this->_sEMail . $this->_sMobile . $this->_obj_ClientConfig->getPassword() ); }
 
 	/**
 	 * Updates the information for the Transaction with the Customer's E-Mail Address where a receipt is sent to upon successful completion of the payment transaction
