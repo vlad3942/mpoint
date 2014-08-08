@@ -473,6 +473,23 @@ class TxnInfo
 	 * @return 	string		Customer IP Address
 	 */
 	public function getIP() { return $this->_sIP; }
+	/**
+	 * Returns the Message Authentication Code (MAC) for the Transaction using the sha1 algorithm.
+	 * The Message Authentication Code is calculated from the following fields (in that order):
+	 * 	- Client ID
+	 * 	- Account ID
+	 * 	- Transaction ID
+	 * 	- Order ID
+	 * 	- Country ID
+	 * 	- Amount
+	 * 	- Customer Reference
+	 * 	- E-Mail Address
+	 * 	- Mobile Number
+	 * 	- Client Password
+	 *
+	 * @return 	string		Message Authentication Code
+	 */
+	public function getMAC() { return sha1($this->_obj_ClientConfig->getID(), $this->_obj_ClientConfig->getAccountConfig()->getID(), $this->_iID, $this->_sOrderID, $this->_obj_CountryConfig->getID(), $this->_iAmount, $this->_sCustomerRef, $this->_sEMail, $this->_sMobile, $this->_obj_ClientConfig->getPassword() ); }
 
 	/**
 	 * Updates the information for the Transaction with the Customer's E-Mail Address where a receipt is sent to upon successful completion of the payment transaction
@@ -566,6 +583,7 @@ class TxnInfo
 		$xml .= '<customer-ref>'. htmlspecialchars($this->_sCustomerRef, ENT_NOQUOTES) .'</customer-ref>';
 		$xml .= '<description>'. htmlspecialchars($this->_sDescription, ENT_NOQUOTES) .'</description>';
 		$xml .= '<ip>'. htmlspecialchars($this->_sIP, ENT_NOQUOTES) .'</ip>';
+		$xml .= '<mac>'. htmlspecialchars($this->getMAC(), ENT_NOQUOTES) .'</mac>';
 		$xml .= '</transaction>';
 
 		return $xml;
