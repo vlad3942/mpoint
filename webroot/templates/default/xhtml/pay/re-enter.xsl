@@ -28,7 +28,7 @@
 	<div class="mPoint_Status">
 		<xsl:value-of select="labels/note" />
 	</div>
-	
+
 	<div id="info">
 		<!-- Client has specified a return URL for successful payments -->
 		<xsl:if test="string-length(transaction/accept-url) &gt; 0">
@@ -43,12 +43,13 @@
 						<input type="hidden" name="currency" value="{transaction/amount/@currency}" />
 						<input type="hidden" name="mobile" value="{transaction/mobile}" />
 						<input type="hidden" name="operator" value="{transaction/operator}" />
+						<input type="hidden" name="mac" value="{transaction/mac}" />
 						<!-- Custom Client Variables -->
 						<xsl:for-each select="client-vars/item">
 							<input type="hidden" name="{name}" value="{value}" />
 						</xsl:for-each>
 					</div>
-					
+
 					<div id="submit">
 						<input type="submit" value="{labels/continue}" class="mPoint_Button" />
 					</div>

@@ -23,7 +23,7 @@
 		</tr>
 		</table>
 	</div>
-	
+
 	<table id="receipt" style="width:100%">
 	<tr>
 		<td class="mPoint_Label"><xsl:value-of select="labels/txnid" />:</td>
@@ -42,7 +42,7 @@
 		<td class="mPoint_Number"><xsl:value-of select="transaction/price" /></td>
 	</tr>
 	</table>
-	
+
 	<div id="info">
 		<!-- SMS Receipt Enabled -->
 		<xsl:if test="client-config/sms-receipt = 'true'">
@@ -50,17 +50,17 @@
 				<xsl:value-of select="labels/sms-receipt" />
 			</div>
 		</xsl:if>
-	
+
 		<!-- Display Status Messages -->
 		<xsl:apply-templates select="messages" />
-		
+
 		<!-- E-Mail Receipt Enabled -->
 		<xsl:if test="client-config/email-receipt = 'true'">
 			<div>
 				<a href="{func:constLink('email.php')}"><xsl:value-of select="labels/email-receipt" /></a>
 			</div>
 		</xsl:if>
-		
+
 		<xsl:choose>
 		<!-- Current transaction is an Account Top-Up and a previous transaction is in progress -->
 		<xsl:when test="original-transaction-id &gt; 0">
@@ -69,7 +69,7 @@
 					<p>
 						<input type="hidden" name="resume" value="true" />
 					</p>
-					
+
 					<p>
 						<input type="submit" value="{labels/resume}" class="mPoint_Button" />
 					</p>
@@ -89,12 +89,13 @@
 						<input type="hidden" name="currency" value="{transaction/amount/@currency}" />
 						<input type="hidden" name="mobile" value="{transaction/mobile}" />
 						<input type="hidden" name="operator" value="{transaction/operator}" />
+						<input type="hidden" name="mac" value="{transaction/mac}" />
 						<!-- Custom Client Variables -->
 						<xsl:for-each select="client-vars/item">
 							<input type="hidden" name="{name}" value="{value}" />
 						</xsl:for-each>
 					</div>
-					
+
 					<div id="submit">
 						<input type="submit" value="{labels/continue}" class="mPoint_Button" />
 					</div>
