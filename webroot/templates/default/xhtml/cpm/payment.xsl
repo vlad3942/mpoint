@@ -56,7 +56,27 @@
 					<div><!-- Used to make the background transparently black --></div>
 				</div>
 			</td>
-			<td><xsl:value-of select="labels/progress" /></td>
+			<td>
+				<xsl:if test="string-length(transaction/cancel-url) &gt; 0">
+					<form action="{transaction/cancel-url}" method="post">
+						<!-- Standard mPoint Variables -->
+						<input type="hidden" name="mpoint-id" value="{transaction/@id}" />
+						<input type="hidden" name="orderid" value="{transaction/orderid}" />
+						<input type="hidden" name="amount" value="{transaction/amount}" />
+						<input type="hidden" name="currency" value="{transaction/amount/@currency}" />
+						<input type="hidden" name="mobile" value="{transaction/mobile}" />
+						<input type="hidden" name="operator" value="{transaction/operator}" />
+						<input type="hidden" name="mac" value="{transaction/mac}" />
+						<!-- Custom Client Variables -->
+						<xsl:for-each select="accept/client-vars/item">
+							<input type="hidden" name="{name}" value="{value}" />
+						</xsl:for-each>
+
+						<input name="cancel-payment" id="cancel-payment" type="submit" class="mPoint_Button" value="{labels/cancel}" />
+					</form>
+				</xsl:if>
+				<xsl:value-of select="labels/progress" />
+			</td>
 			<td id="link">
 				<a href="{func:appendQueryString('/pay/card.php') }" style="background-image:url('/img/new.png'); background-repeat:no-repeat;">
 					<xsl:value-of select="labels/add-card" />
