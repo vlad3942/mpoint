@@ -138,6 +138,10 @@ msgstr @@@ Account - Single Sign-On @@@
 msgid @@@ - Authorizing Payment Text - @@@
 msgstr @@@ - Authorizing Payment Text - @@@
 
+#: /webroot/cpm/payment.php:150
+msgid @@@ Cancel Payment @@@
+msgstr @@@ Cancel Payment @@@
+
 #: /webroot/default.php:22
 msgid @@@ mPoint @@@
 msgstr @@@ mPoint @@@
@@ -1440,11 +1444,11 @@ msgstr @@@ mPoint - Account Disabled @@@
 msgid @@@ Loading... @@@
 msgstr @@@ Loading... @@@
 
-#: /api/classes/general.php:707
+#: /api/classes/general.php:709
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ Välkommen till {CLIENT}, klicka på länken nedan @@@
 
-#: /api/classes/general.php:713
+#: /api/classes/general.php:715
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Välkommen till {CLIENT} @@@
 
@@ -1456,11 +1460,11 @@ msgstr @@@ mPoint - Send One Time Password @@@
 msgid @@@ mPoint - Send Activation Code @@@
 msgstr @@@ mPoint - Send Activation Code @@@
 
-#: /api/classes/my_account.php:100
+#: /api/classes/my_account.php:82
 msgid @@@ mPoint - Activation Link Subject @@@
 msgstr @@@ mPoint - Activation Link Subject @@@
 
-#: /api/classes/my_account.php:101
+#: /api/classes/my_account.php:83
 msgid @@@ mPoint - Activation Link Body @@@
 msgstr @@@ mPoint - Activation Link Body @@@
 

@@ -72,9 +72,9 @@ try
 		if (count($obj_CardsXML) > 0)
 		{
 			if ($_SESSION['obj_TxnInfo']->getClientConfig()->getStoreCard() <= 3) { $obj_ClientCardsXML = $obj_CardsXML->xpath("/stored-cards/card[client/@id = ". $_SESSION['obj_TxnInfo']->getClientConfig()->getID() ."]"); }
-			else { $obj_ClientCardsXML = $obj_CardsXML->xpath("/stored-cards/card"); }			
+			else { $obj_ClientCardsXML = $obj_CardsXML->xpath("/stored-cards/card"); }
 		}
-		
+
 		/*
 		 * End-User does not have an account yet AND account hasn't just been disabled
 		 * Automatically redirect to "Create New Account"
@@ -94,14 +94,14 @@ try
 			&& count($obj_ClientCardsXML) == 0 && array_key_exists("msg", $_GET) === false)
 		{
 			$obj_mPoint->purchase($_SESSION['obj_TxnInfo']->getAccountID(), Constants::iPURCHASE_USING_EMONEY, $_SESSION['obj_TxnInfo']->getID(), $_SESSION['obj_TxnInfo']->getAmount() );
-			
+
 			ignore_user_abort(true);
 			// Redirect customer
 			header("Content-Length: 0");
 			header("location: http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?". session_name() ."=". session_id() );
 			header("Connection: close");
 			flush();
-			
+
 			// Initialise Callback to Client
 			$obj_mPoint->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iEMONEY_CARD, Constants::iPAYMENT_ACCEPTED_STATE);
 		}
@@ -114,7 +114,7 @@ try
 			 * The XML in turn must refer to an XSL Stylesheet by using the xml-stylesheet tag
 			 */
 			ob_start(array(new Output("all", false), "transform") );
-	
+
 			echo '<?xml version="1.0" encoding="UTF-8"?>';
 			echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA'], $_SESSION['obj_TxnInfo']) .'/cpm/payment.xsl"?>';
 	?>
@@ -124,9 +124,9 @@ try
 				<?= $_SESSION['obj_UA']->toXML(); ?>
 				<?= $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->toXML(); ?>
 				<?= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML(); ?>
-	
+
 				<?= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']); ?>
-				
+
 				<labels>
 					<progress><?= $_OBJ_TXT->_("Step 2 of 2"); ?></progress>
 					<price><?= $_OBJ_TXT->_("Price"); ?></price>
@@ -147,14 +147,15 @@ try
 					<no><?= $_OBJ_TXT->_("No"); ?></no>
 					<single-sign-on><?= $_OBJ_TXT->_("Account - Single Sign-On"); ?></single-sign-on>
 					<authorizing-payment><?= nl2br(htmlspecialchars($_OBJ_TXT->_("- Authorizing Payment Text -"), ENT_NOQUOTES) ); ?></authorizing-payment>
+					<cancel><?= $_OBJ_TXT->_("Cancel Payment"); ?></cancel>
 				</labels>
-	
+
 				<?= str_replace('<?xml version="1.0"?>', '', $obj_AccountXML->asXML() ) ?>
-	
+
 				<?= count($obj_CardsXML) > 0 ? str_replace('<?xml version="1.0"?>', '', $obj_CardsXML->asXML() ) : ""; ?>
-	
+
 				<?= $obj_mPoint->getMessages("CPM Payment"); ?>
-	
+
 				<?= $obj_mPoint->getSession(); ?>
 			</root>
 <?php

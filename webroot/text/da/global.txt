@@ -141,6 +141,10 @@ msgstr @@@ Vælg betalingsmetode @@@
 msgid @@@ - Authorizing Payment Text - @@@
 msgstr @@@ Gennemfører betalingen, vent venligst... @@@
 
+#: /webroot/cpm/payment.php:150
+msgid @@@ Cancel Payment @@@
+msgstr @@@ Afbryd @@@
+
 #: /webroot/default.php:22
 msgid @@@ mPoint @@@
 msgstr @@@ mPoint @@@
@@ -1456,11 +1460,11 @@ msgstr @@@ Oplysningerne om dine gemte betalingskort i applikationen er blevet s
 msgid @@@ Loading... @@@
 msgstr @@@ Henter... @@@
 
-#: /api/classes/general.php:707
+#: /api/classes/general.php:709
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ Velkommen til {CLIENT}, aktiver venligst nedenstående link @@@
 
-#: /api/classes/general.php:713
+#: /api/classes/general.php:715
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Velkommen til {CLIENT} @@@
 
@@ -1473,11 +1477,11 @@ Kodeordet vil automatisk udløbe om en time. @@@
 msgid @@@ mPoint - Send Activation Code @@@
 msgstr @@@ Indtast venligst aktiveringskoden: {CODE} på websitet for at verificere dit mobilnummer. @@@
 
-#: /api/classes/my_account.php:100
+#: /api/classes/my_account.php:82
 msgid @@@ mPoint - Activation Link Subject @@@
 msgstr @@@ Verificer venligst din e-mail adresse @@@
 
-#: /api/classes/my_account.php:101
+#: /api/classes/my_account.php:83
 msgid @@@ mPoint - Activation Link Body @@@
 msgstr @@@ Klik venligst på nedenstående link for at verificere din nye e-mail adresse:
 {URL}

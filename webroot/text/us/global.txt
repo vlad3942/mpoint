@@ -141,6 +141,10 @@ msgstr @@@ Please select a payment method @@@
 msgid @@@ - Authorizing Payment Text - @@@
 msgstr @@@ Your payment is being authorized, please wait... @@@
 
+#: /webroot/cpm/payment.php:150
+msgid @@@ Cancel Payment @@@
+msgstr @@@ Cancel Payment @@@
+
 #: /webroot/default.php:22
 msgid @@@ mPoint @@@
 msgstr @@@ mPoint @@@
@@ -1469,11 +1473,11 @@ msgstr @@@ Your account with {CLIENT} has been deleted due to too many invalid l
 msgid @@@ Loading... @@@
 msgstr @@@ Loading... @@@
 
-#: /api/classes/general.php:707
+#: /api/classes/general.php:709
 msgid @@@ mPoint - Embedded link Indication @@@
 msgstr @@@ Welcome to {CLIENT}, please activate the link below @@@
 
-#: /api/classes/general.php:713
+#: /api/classes/general.php:715
 msgid @@@ mPoint - WAP Push Indication @@@
 msgstr @@@ Welcome to {CLIENT} @@@
 
@@ -1486,11 +1490,11 @@ The password will automatically expire in an hour. @@@
 msgid @@@ mPoint - Send Activation Code @@@
 msgstr @@@ Please enter the activation code: {CODE} on the website to verify your mobile number. @@@
 
-#: /api/classes/my_account.php:100
+#: /api/classes/my_account.php:82
 msgid @@@ mPoint - Activation Link Subject @@@
 msgstr @@@ Please verify your E-Mail address? @@@
 
-#: /api/classes/my_account.php:101
+#: /api/classes/my_account.php:83
 msgid @@@ mPoint - Activation Link Body @@@
 msgstr @@@ Please click the link below to verify your new e-mail address.
 {URL}
