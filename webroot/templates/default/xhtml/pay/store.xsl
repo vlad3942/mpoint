@@ -14,21 +14,22 @@
 				<input type="hidden" name="currency" value="{transaction/amount/@currency}" />
 				<input type="hidden" name="mobile" value="{transaction/mobile}" />
 				<input type="hidden" name="operator" value="{transaction/operator}" />
+				<input type="hidden" name="mac" value="{transaction/mac}" />
 				<!-- Custom Client Variables -->
 				<xsl:for-each select="accept/client-vars/item">
 					<input type="hidden" name="{name}" value="{value}" />
 				</xsl:for-each>
-					
+
 				<input name="cancel-payment" id="cancel-payment" type="submit" class="mPoint_Button" value="{labels/cancel}" />
 			</form>
 		</xsl:if>
 		<br /><br />
 	</div>
-	
+
 	<div id="store-card">
 		<div id="outer-border">
 			<div class="mPoint_Label"><xsl:value-of select="labels/info" /></div>
-			<div id="inner-border">		
+			<div id="inner-border">
 				<xsl:choose>
 					<!-- WorldPay -->
 					<xsl:when test="psp/@id = 4">
@@ -36,7 +37,7 @@
 					</xsl:when>
 					<!-- Error -->
 					<xsl:otherwise>
-						
+
 					</xsl:otherwise>
 				</xsl:choose>
 			</div>
@@ -57,7 +58,7 @@
 				<input type="hidden" name="installation-id" value="{sub-account}" />
 				<input type="hidden" name="currency" value="{currency}" />
 				<input type="hidden" name="store-card" value="true" />
-				
+
 				<input type="submit" value="{//labels/yes}" class="mPoint_Button" />
 			</div>
 		</form>
@@ -71,7 +72,7 @@
 				<input type="hidden" name="installation-id" value="{sub-account}" />
 				<input type="hidden" name="currency" value="{currency}" />
 				<input type="hidden" name="store-card" value="false" />
-				
+
 				<input type="submit" value="{//labels/no}" class="mPoint_Button" />
 			</div>
 		</form>

@@ -14,23 +14,24 @@
 				<input type="hidden" name="currency" value="{transaction/amount/@currency}" />
 				<input type="hidden" name="mobile" value="{transaction/mobile}" />
 				<input type="hidden" name="operator" value="{transaction/operator}" />
+				<input type="hidden" name="mac" value="{transaction/mac}" />
 				<!-- Custom Client Variables -->
 				<xsl:for-each select="accept/client-vars/item">
 					<input type="hidden" name="{name}" value="{value}" />
 				</xsl:for-each>
-					
+
 				<input name="cancel-payment" id="cancel-payment" type="submit" class="mPoint_Button" value="{labels/cancel}" />
 			</form>
 		</xsl:if>
 		<xsl:value-of select="labels/progress" />
 		<br /><br />
 	</div>
-	
+
 	<!-- Display Status Messages -->
 	<xsl:apply-templates select="messages" />
 	<div id="outer-border">
 		<div class="mPoint_Help"><xsl:value-of select="labels/info" /></div>
-		<div id="cards">		
+		<div id="cards">
 			<xsl:for-each select="cards/item">
 				<xsl:choose>
 					<!-- Cellpoint Mobile -->
@@ -63,7 +64,7 @@
 					</xsl:when>
 					<!-- Error -->
 					<xsl:otherwise>
-						
+
 					</xsl:otherwise>
 				</xsl:choose>
 			</xsl:for-each>
@@ -73,7 +74,7 @@
 
 <func:function name="func:transCard">
 	<xsl:param name="cardid" />
-	
+
 	<xsl:choose>
 		<!-- American Express -->
 		<xsl:when test="$cardid = 1">
@@ -115,7 +116,7 @@
 		</xsl:when>
 		<!-- Error -->
 		<xsl:otherwise>
-			
+
 		</xsl:otherwise>
 	</xsl:choose>
 </func:function>
@@ -155,7 +156,7 @@
 					<!-- Payment Page Data -->
 					<input type="hidden" name="card_width" value="{logo-width}" />
 					<input type="hidden" name="card_height" value="{logo-height}" />
-					
+
 					<!--
 					  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
 					  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
@@ -178,7 +179,7 @@
 		<form action="https://payment.architrade.com/paymentweb/mobiwin.action" method="post">
 			<div class="mPoint_Card">
 				<input type="hidden" name="test" value="yes" />
-				
+
 				<!-- DIBS Required Data -->
 				<input type="hidden" name="merchant" value="{account}" />
 				<input type="hidden" name="callbackurl" value="{/root/system/protocol}://{/root/system/host}/callback/dibs.php" />
@@ -196,7 +197,7 @@
 					<input type="hidden" name="account" value="{subaccount}" />
 				</xsl:if>
 				<input type="hidden" name="lang" value="{func:transLanguage(/root/system/language)}" />
-				
+
 				<!-- mPoint Required Data -->
 				<input type="hidden" name="logo-url" value="{/root/transaction/logo/url}" />
 				<input type="hidden" name="width" value="{/root/transaction/logo/width}" />
@@ -206,10 +207,10 @@
 				<input type="hidden" name="language" value="{/root/system/language}" />
 				<input type="hidden" name="cardid" value="{@id}" />
 				<input type="hidden" name="mpointid" value="{/root/transaction/@id}" />
-				
+				<input type="hidden" name="mac" value="{/root/transaction/mac}" />
 				<!-- Card Data -->
 				<input type="hidden" name="paytype" value="{func:transCard(@id)}" />
-				
+
 				<!--
 				  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
 				  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
@@ -248,7 +249,7 @@
 					<input type="hidden" name="account" value="{subaccount}" />
 				</xsl:if>
 				<input type="hidden" name="lang" value="{func:transLanguage(/root/system/language)}" />
-				
+
 				<!-- mPoint Required Data -->
 				<input type="hidden" name="device_name" value="{/root/uaprofile/device}" />
 				<input type="hidden" name="device_width" value="{/root/uaprofile/width}" />
@@ -267,22 +268,22 @@
 					<input type="hidden" name="org_mpointid" value="{/root/original-transaction-id}" />
 				</xsl:if>
 				<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
-				
+
 				<!-- Card Data -->
 				<input type="hidden" name="paytype" value="{func:transCard(@id)}" />
-				
+
 				<!-- Shared Data -->
 				<input type="hidden" name="clientid" value="{/root/client-config/@id}" />
 				<input type="hidden" name="client" value="{/root/client-config/name}" />
 				<input type="hidden" name="accountid" value="{/root/account-config/@id}" />
-				
+
 				<!-- Payment Page Data -->
 				<input type="hidden" name="card_width" value="{logo-width}" />
 				<input type="hidden" name="card_height" value="{logo-height}" />
 				<!-- Allow user to Store Credit Card -->
 				<input type="hidden" name="store_card" value="{/root/client-config/store-card}" />
 				<input type="hidden" name="auto_store_card" value="{/root/transaction/auto-store-card}" />
-				
+
 				<!-- Accept Page Data -->
 				<input type="hidden" name="mpoint_width" value="{/root/accept/mpoint-logo/width}" />
 				<input type="hidden" name="mpoint_height" value="{/root/accept/mpoint-logo/height}" />
@@ -293,12 +294,13 @@
 				<input type="hidden" name="mobile" value="{/root/transaction/mobile}" />
 				<input type="hidden" name="operator" value="{/root/transaction/operator}" />
 				<input type="hidden" name="price" value="{/root/transaction/price}" />
+				<input type="hidden" name="mac" value="{/root/transaction/mac}" />
 				<!-- Transfer Custom Variables -->
 				<xsl:for-each select="/root/accept/client-vars/item">
 					<input type="hidden" name="client_vars_names_{position()}" value="{name}" />
 					<input type="hidden" name="{name}" value="{value}" />
 				</xsl:for-each>
-				
+
 				<!--
 				  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
 				  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
@@ -334,7 +336,7 @@
 					<input type="hidden" name="account" value="{subaccount}" />
 				</xsl:if>
 				<input type="hidden" name="lang" value="{func:transLanguage(/root/system/language)}" />
-				
+
 				<!-- mPoint Required Data -->
 				<input type="hidden" name="width" value="{/root/transaction/logo/width}" />
 				<input type="hidden" name="height" value="{/root/transaction/logo/height}" />
@@ -343,18 +345,18 @@
 				<input type="hidden" name="language" value="{/root/system/language}" />
 				<input type="hidden" name="cardid" value="{@id}" />
 				<input type="hidden" name="mpointid" value="{/root/transaction/@id}" />
-				
+
 				<!-- Card Data -->
 				<input type="hidden" name="paytype" value="{func:transCard(@id)}" />
-				
+
 				<!-- Shared Data -->
 				<input type="hidden" name="clientid" value="{/root/client-config/@id}" />
 				<input type="hidden" name="client" value="{/root/client-config/name}" />
-				
+
 				<!-- Payment Page Data -->
 				<input type="hidden" name="card_width" value="{logo-width}" />
 				<input type="hidden" name="card_height" value="{logo-height}" />
-				
+
 				<!-- Accept Page Data -->
 				<input type="hidden" name="mpoint_width" value="{/root/accept/mpoint-logo/width}" />
 				<input type="hidden" name="mpoint_height" value="{/root/accept/mpoint-logo/height}" />
@@ -365,11 +367,12 @@
 				<input type="hidden" name="mobile" value="{/root/transaction/mobile}" />
 				<input type="hidden" name="operator" value="{/root/transaction/operator}" />
 				<input type="hidden" name="price" value="{/root/transaction/price}" />
+				<input type="hidden" name="mac" value="{/root/transaction/mac}" />
 				<!-- Transfer Custom Variables -->
 				<xsl:for-each select="/root/accept/client-vars/item">
 					<input type="hidden" name="{name}" value="{value}" />
 				</xsl:for-each>
-				
+
 				<!--
 				  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
 				  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
@@ -398,7 +401,7 @@
 				<!-- Payment Page Data -->
 				<input type="hidden" name="card_width" value="{logo-width}" />
 				<input type="hidden" name="card_height" value="{logo-height}" />
-				
+
 				<!--
 				  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
 				  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
@@ -426,7 +429,7 @@
 				<!-- Payment Page Data -->
 				<input type="hidden" name="card_width" value="{logo-width}" />
 				<input type="hidden" name="card_height" value="{logo-height}" />
-				
+
 				<!--
 				  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
 				  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
@@ -456,7 +459,7 @@
 				<input type="hidden" name="card_width" value="{logo-width}" />
 				<input type="hidden" name="card_height" value="{logo-height}" />
 				<input type="hidden" name="card_url" value="{$url}" />
-				
+
 				<!--
 				  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
 				  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
@@ -486,7 +489,7 @@
 				<input type="hidden" name="card_width" value="{logo-width}" />
 				<input type="hidden" name="card_height" value="{logo-height}" />
 				<input type="hidden" name="card_url" value="{$url}" />
-				
+
 				<!--
 				  - The colspan attribute in the table below ensures that the page is rendered correctly on the Nokia 6230.
 				  - Nokia 6230 assigns the same width to all table columns but by using the colspan attribute (eventhough it really isn't needed)
