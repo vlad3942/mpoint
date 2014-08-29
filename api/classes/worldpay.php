@@ -36,22 +36,22 @@ class WorldPay extends Callback
 	 * @param 	integer $sid 				Unique ID of the State that the Transaction terminated in
 	 * @param 	SimpleXMLElement $obj_XML 	XML Document received from WorldPay via HTTP POST
 	 */
-	public function notifyClient($sid, SimpleXMLElement &$obj_XML)
+	public function notifyClient($sid, SimpleXMLElement &$obj_XML, SurePayConfig &$obj_SurePay=null)
 	{
 		// Client is configured to use mPoint's protocol
 		if ($this->getTxnInfo()->getClientConfig()->getMethod() == "mPoint")
 		{
 			if (count($obj_XML->notify->orderStatusEvent->payment->cardNumber) == 1) { $sMask = $obj_XML->notify->orderStatusEvent->payment->cardNumber; }
 			else { $sMask = $obj_XML->notify->orderStatusEvent->payment->paymentMethodDetail->card["number"]; }
-			parent::notifyClient($sid, -1, $this->getTxnInfo()->getAmount(), $this->getCardID($obj_XML->notify->orderStatusEvent->payment->paymentMethod), $sMask);
+			parent::notifyClient($sid, -1, $this->getTxnInfo()->getAmount(), $this->getCardID($obj_XML->notify->orderStatusEvent->payment->paymentMethod), $sMask, $obj_SurePay);
 		}
 		// Client is configured to use WorldPay's protocol
 		else
 		{
 			$obj_XML->notify->orderStatusEvent["orderCode"] = $this->getTxnInfo()->getOrderID();
 			$obj_XML->notify->orderStatusEvent["mpoint-id"] = $this->getTxnInfo()->getID();
-			
-			$this->performCallback($obj_XML->asXML() );
+
+			$this->performCallback($obj_XML->asXML(), $obj_SurePay);
 		}
 	}
 
@@ -67,15 +67,15 @@ class WorldPay extends Callback
 
 //		parent::send("https://payment.architrade.com/cgi-adm/delticket.cgi", $h, $b);
 	}
-	
+
 	/**
 	 * Authorises a payment with WorldPay for the transaction using the provided ticket.
 	 * The ticket represents a previously stored card.
 	 * The method will return WorldPay' transaction ID if the authorisation is accepted or one of the following status codes if the authorisation is declined:
-	 *  
-	 * @link	
-	 *  
-	 * @param 	integer $ticket		Valid ticket which references a previously stored card 
+	 *
+	 * @link
+	 *
+	 * @param 	integer $ticket		Valid ticket which references a previously stored card
 	 * @return 	integer
 	 * @throws	E_USER_WARNING
 	 */
@@ -84,13 +84,13 @@ class WorldPay extends Callback
 		list($orderno, $merchantcode, $amount, $currency) = explode(" ### ", $ticket);
 		$oc = htmlspecialchars($this->getTxnInfo()->getOrderID(), ENT_NOQUOTES);
 		if (empty($oc) === true) { $oc = $this->getTxnInfo()->getID(); }
-		
+
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET pspid = ". Constants::iWORLDPAY_PSP ."
 				WHERE id = ". $this->getTxnInfo()->getID();
 //		echo $sql ."\n";
 		$this->getDBConn()->query($sql);
-		
+
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<!DOCTYPE paymentService PUBLIC "-//WorldPay/DTD WorldPay PaymentService v1//EN" "http://dtd.worldpay.com/paymentService_v1.dtd">';
 		$b .= '<paymentService version="1.4" merchantCode="'. htmlspecialchars($this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, true), ENT_NOQUOTES) .'">';
@@ -104,7 +104,7 @@ class WorldPay extends Callback
 		$b .= '</order>';
 		$b .= '</submit>';
 		$b .= '</paymentService>';
-		
+
 		$obj_HTTP = new HTTPClient(new Template(), $oCI);
 		$obj_HTTP->connect();
 		$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
@@ -130,16 +130,16 @@ class WorldPay extends Callback
 		{
 			trigger_error("Unable to initialize payment with WorldPay for transaction: ". $this->getTxnInfo()->getID() .". HTTP Response Code: ". $code ."\n". var_export($obj_HTTP, true), E_USER_WARNING);
 		}
-		
+
 		return $obj_XML;
 	}
-	
+
 	/**
 	 * Performs a capture operation with WorldPay for the provided transaction.
 	 * The method will log one the following status codes from WorldPay:
-	 * 
-	 * @link	
-	 * 
+	 *
+	 * @link
+	 *
 	 * @param 	integer $txn	Transaction ID previously returned by WorldPay during authorisation
 	 * @return	integer
 	 * @throws	E_USER_WARNING
@@ -147,13 +147,13 @@ class WorldPay extends Callback
 	public function capture($txn)
 	{
 	}
-	
+
 	public function getCardName($id)
 	{
 		switch ($id)
 		{
 		case (1):	// American Express
-			$name = "AMEX-SSL"; 
+			$name = "AMEX-SSL";
 			break;
 		case (2):	// Dankort
 			$name = "DANKORT-SSL";
@@ -191,7 +191,7 @@ class WorldPay extends Callback
 		default:	// Unknown
 			break;
 		}
-		
+
 		return $name;
 	}
 	public function getCardID($name)
@@ -199,7 +199,7 @@ class WorldPay extends Callback
 		switch ($name)
 		{
 		case "AMEX-SSL":	// American Express
-			$id = 1; 
+			$id = 1;
 			break;
 		case "DANKORT-SSL":	// Dankort
 			$id = 2;
@@ -241,7 +241,7 @@ class WorldPay extends Callback
 		default:	// Unknown
 			break;
 		}
-		
+
 		return $id;
 	}
 
@@ -300,7 +300,7 @@ class WorldPay extends Callback
 			$b .= '</order>';
 			$b .= '</submit>';
 			$b .= '</paymentService>';
-			
+
 			$obj_HTTP = new HTTPClient(new Template(), $oCI);
 			$obj_HTTP->connect();
 			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
@@ -308,13 +308,13 @@ class WorldPay extends Callback
 			if ($code == 200)
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
-				
+
 				if (floatval($obj_XML->reply->orderStatus->reference["id"]) > 0)
 				{
 					$data = array("psp-id" => Constants::iWORLDPAY_PSP,
 								  "url" => strval($obj_XML->reply->orderStatus->reference) );
 					$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, serialize($data) );
-					
+
 					$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 							SET pspid = ". Constants::iWORLDPAY_PSP .", extid = '". $this->getDBConn()->escStr($obj_XML->reply->orderStatus->reference["id"]) ."'
 							WHERE id = ". $this->getTxnInfo()->getID();
@@ -326,7 +326,7 @@ class WorldPay extends Callback
 				else
 				{
 					trigger_error("Unable to initialize payment transaction with WorldPay, error code: ". $obj_XML->reply->error["code"] ."\n". $obj_XML->reply->error->asXML(), E_USER_WARNING);
-				
+
 					throw new mPointException("WorldPay returned Error: ". $obj_XML->reply->error ." (". $obj_XML->reply->error["code"] .")", 1101);
 				}
 			}
@@ -334,14 +334,14 @@ class WorldPay extends Callback
 			else
 			{
 				trigger_error("Unable to initialize payment transaction with WorldPay. HTTP Response Code: ". $code ."\n". var_export($obj_HTTP, true), E_USER_WARNING);
-				
+
 				throw new mPointException("WorldPay returned HTTP Code: ". $code, 1100);
 			}
 		}
-		
+
 		return $url;
 	}
-	
+
 	/**
 	 * Initialises Callback to the Client.
 	 *

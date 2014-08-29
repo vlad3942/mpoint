@@ -1,0 +1,1 @@
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (1999, 'Callback retried', 'Callback', 'SurePay');

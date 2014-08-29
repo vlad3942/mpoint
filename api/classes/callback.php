@@ -152,7 +152,7 @@ class Callback extends EndUserAccount
 	 * @param 	string $body 	HTTP Body to send as the Callback to the Client
 	 * @throws 	E_USER_WARNING, E_USER_NOTICE
 	 */
-	protected function performCallback($body)
+	protected function performCallback($body, SurePayConfig &$obj_SurePay=null, $attempt=0)
 	{
 		$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_CONSTRUCTED_STATE, $body);
 		/* ========== Instantiate Connection Info Start ========== */
@@ -181,27 +181,44 @@ class Callback extends EndUserAccount
 			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_CONNECTED_STATE, "Host: ". $obj_ConnInfo->getHost() .", Port: ". $obj_ConnInfo->getPort() .", Path: ". $obj_ConnInfo->getPath() );
 			// Send Callback data
 			$iCode = $obj_HTTP->send($this->constHTTPHeaders(), $body);
-			if ($iCode >= 200 && $iCode < 300)
+			$obj_HTTP->disConnect();
+			if (200 <= $iCode && $iCode < 300)
 			{
+				trigger_error("mPoint Callback request succeeded for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_NOTICE);
 				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_ACCEPTED_STATE, $obj_HTTP->getReplyHeader() );
 			}
-			else { $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_REJECTED_STATE, $obj_HTTP->getReplyHeader() ); }
-			$obj_HTTP->disConnect();
+			else
+			{
+				trigger_error("mPoint Callback request failed for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_WARNING);
+				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_REJECTED_STATE, $obj_HTTP->getReplyHeader() );
+			}
 		}
 		// Error: Unable to establish Connection to Client
 		catch (HTTPConnectionException $e)
 		{
+			trigger_error("mPoint Callback request failed for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_WARNING);
 			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_CONN_FAILED_STATE, $e->getMessage() ."(". $e->getCode() .")");
 		}
 		// Error: Unable to send Callback to Client
 		catch (HTTPSendException $e)
 		{
+			trigger_error("mPoint Callback request failed for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_WARNING);
 			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_SEND_FAILED_STATE, $e->getMessage() ."(". $e->getCode() .")");
 		}
 		/* ========== Perform Callback End ========== */
 
-		if ($iCode >= 200 && $iCode < 300) { trigger_error("mPoint Callback request succeeded for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_NOTICE); }
-		else { trigger_error("mPoint Callback request failed for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_WARNING); }
+		// Callback failed
+		if ($iCode < 200 || 300 < $iCode)
+		{
+			if ( ($obj_SurePay instanceof SurePayConfig) === true && $attempt < $obj_SurePay->getMax() )
+			{
+				$attempt++;
+				sleep($obj_SurePay->getDelay() * $attempt);
+				trigger_error("mPoint Callback request retried for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_NOTICE);
+				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_RETRIED_STATE, "Attempt ". $attempt ." of ". $obj_SurePay->getMax() );
+				$this->performCallback($body, $obj_SurePay, $attempt);
+			}
+		}
 	}
 
 	/**
@@ -229,7 +246,7 @@ class Callback extends EndUserAccount
 	 * @param 	integer $cardid mPoint's unique ID for the card type
 	 * @param 	string $cardno 	The masked card number for the card that was used for the payment
 	 */
-	public function notifyClient($sid, $pspid, $amt, $cardid=0, $cardno="")
+	public function notifyClient($sid, $pspid, $amt, $cardid=0, $cardno="", SurePayConfig &$obj_SurePay=null)
 	{
 		/* ----- Construct Body Start ----- */
 		$sBody = "";
@@ -248,7 +265,7 @@ class Callback extends EndUserAccount
 		$sBody .= "&mac=". urlencode($this->_obj_TxnInfo->getMAC() );
 		/* ----- Construct Body End ----- */
 
-		$this->performCallback($sBody);
+		$this->performCallback($sBody, $obj_SurePay);
 	}
 
 	/**

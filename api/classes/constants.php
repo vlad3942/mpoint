@@ -136,6 +136,11 @@ abstract class Constants
 	 */
 	const iCB_REJECTED_STATE = 1995;
 	/**
+	 * Defines the ID of the State that indicates that mPoint's Callback request is being retried
+	 *
+	 */
+	const iCB_RETRIED_STATE = 1999;
+	/**
 	 * Defines the ID of the State that indicates that the payment has been successfully cleared by the Payment Service Provider (PSP)
 	 * during the Authorisation
 	 *
@@ -156,7 +161,7 @@ abstract class Constants
 	 *
 	 */
 	const iPAYMENT_REFUNDED_STATE = 2003;
-	
+
 	/**
 	 * Defines the ID of the State that indicates that payment is being using the End-User's account
 	 *
@@ -322,7 +327,7 @@ abstract class Constants
 	const iAUTH_MAX_LENGTH = 50;
 	/**
 	 * Number of invalid login attempts before the End-User account is disabled
-	 * 
+	 *
 	 */
 	const iMAX_LOGIN_ATTEMPTS = 3;
 	/**
@@ -370,7 +375,7 @@ abstract class Constants
 	 *
 	 */
 	const iCPG_PSP = 9;
-	
+
 
 	/**
 	 * Unique ID for the Electronic Payment Flow
@@ -400,7 +405,7 @@ abstract class Constants
 	 *
 	 */
 	const iEMONEY_CARD = 11;
-	
+
 	/**
 	 * Unique Fee Type ID for Top-Ups
 	 *
@@ -420,14 +425,14 @@ abstract class Constants
 	const iTRANSACTION_COMPLETED_STATE = 1800;
 	const iTRANSFER_PENDING_STATE = 1808;
 	const iTRANSFER_CANCELLED_STATE = 1809;
-	
+
 	const iOPERATION_CARD_SAVED = 1;
 	const iOPERATION_CARD_DELETED = 2;
 	const iOPERATION_LOGGED_IN = 3;
-	
+
 	const iURL_TYPE_GET_TRANSACTION_STATUS = 3;
 	const iURL_TYPE_CALLBACK = 4;
-	
-	
+
+
 }
 ?>
