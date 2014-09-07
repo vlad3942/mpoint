@@ -11,7 +11,7 @@
  * @link http://www.cellpointmobile.com
  * @package Callback
  * @subpackage DIBS
- * @version 1.04
+ * @version 1.05
  */
 
 // Require Global Include File
@@ -28,7 +28,15 @@ require_once(sCLASS_PATH ."/callback.php");
 require_once(sCLASS_PATH ."/dibs.php");
 
 header("Content-Type: text/plain");
-
+set_time_limit(600);
+// Standard retry strategy connecting to the database has proven inadequate
+$i = 0;
+while ( ($_OBJ_DB instanceof RDB) === false && $i < 5)
+{
+	// Instantiate connection to the Database
+	$_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
+	$i++;
+}
 try
 {
 	if (array_key_exists("language", $_POST) === false) { $sLang = $_POST['lang']; }

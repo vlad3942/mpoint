@@ -8,7 +8,7 @@
  * @link http://www.cellpointmobile.com
  * @package Callback
  * @subpackage WorldPay
- * @version 1.00
+ * @version 1.02
  */
 
 // Require Global Include File
@@ -24,7 +24,6 @@ require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for the WorldPay component
 require_once(sCLASS_PATH ."/worldpay.php");
 
-header("Content-Type: text/plain");
 /*
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE paymentService PUBLIC "-//WorldPay//DTD WorldPay PaymentService v1//EN" "http://dtd.worldpay.com/paymentService_v1.dtd">
@@ -62,6 +61,17 @@ $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>
 </paymentService>';
 */
 
+header("Content-Type: text/plain");
+
+set_time_limit(600);
+// Standard retry strategy connecting to the database has proven inadequate
+$i = 0;
+while ( ($_OBJ_DB instanceof RDB) === false && $i < 5)
+{
+	// Instantiate connection to the Database
+	$_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
+	$i++;
+}
 $obj_XML = simplexml_load_string($HTTP_RAW_POST_DATA);
 
 $id = Callback::getTxnIDFromOrderNo($_OBJ_DB, $obj_XML->notify->orderStatusEvent["orderCode"], Constants::iWORLDPAY_PSP);
@@ -96,7 +106,7 @@ try
 		break;
 	}
 	// Save Ticket ID representing the End-User's stored Card Info
-	if (Constants::iPAYMENT_ACCEPTED_STATE && count($obj_mPoint->getMessageData($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, false) ) == 1)
+	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_mPoint->getMessageData($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, false) ) == 1)
 	{
 		$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE);
 		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $obj_XML->notify->orderStatusEvent["orderCode"]);
@@ -131,7 +141,7 @@ try
 	}
 	$obj_mPoint->completeTransaction(Constants::iWORLDPAY_PSP, -1, $obj_mPoint->getCardID( (string) $obj_XML->notify->orderStatusEvent->payment->paymentMethod), $iStateID, array($HTTP_RAW_POST_DATA) );
 	// Account Top-Up
-	if ($obj_TxnInfo->getTypeID() >= 100 && $obj_TxnInfo->getTypeID() <= 109)
+	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getTypeID() >= 100 && $obj_TxnInfo->getTypeID() <= 109)
 	{
 		if ($obj_TxnInfo->getAccountID() > 0) { $iAccountID = $obj_TxnInfo->getAccountID(); }
 		else
@@ -153,16 +163,19 @@ try
 			break;
 		}
 	}
-	if ($obj_TxnInfo->getReward() > 0 && $obj_TxnInfo->getAccountID() > 0) { $obj_mPoint->topup($obj_TxnInfo->getAccountID(), Constants::iREWARD_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getReward() ); }
+	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getReward() > 0 && $obj_TxnInfo->getAccountID() > 0)
+	{
+		$obj_mPoint->topup($obj_TxnInfo->getAccountID(), Constants::iREWARD_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getReward() );
+	}
 
 	// Customer has an account
-	if ($obj_TxnInfo->getAccountID() > 0)
+	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getAccountID() > 0)
 	{
 		$obj_mPoint->associate($obj_TxnInfo->getAccountID(), $obj_TxnInfo->getID() );
 	}
 
 	// Client has SMS Receipt enabled
-	if ($obj_TxnInfo->getClientConfig()->smsReceiptEnabled() === true)
+	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getClientConfig()->smsReceiptEnabled() === true)
 	{
 		$obj_mPoint->sendSMSReceipt(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
 	}
@@ -170,12 +183,16 @@ try
 	// Callback URL has been defined for Client
 	if ($obj_TxnInfo->getCallbackURL() != "")
 	{
-		$obj_mPoint->notifyClient($iStateID, $obj_XML);
+		$obj_mPoint->notifyClient($iStateID, $obj_XML, new SurePayConfig(6, 5) );
 	}
+	echo "[OK]";
 }
 catch (TxnInfoException $e)
 {
+	header("HTTP/1.1 500 Internal Server Error");
+
+	echo "[ERROR]";
+
 	trigger_error($e->getMessage() ."\n". $HTTP_RAW_POST_DATA, E_USER_WARNING);
 }
 ?>
-[OK]
