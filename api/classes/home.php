@@ -823,6 +823,24 @@ class Home extends General
 		return is_resource($this->getDBConn()->query($sql) );
 	}
 
+   	/**
+	 * Saves the specified Mobile Number for the End-User Account.
+	 *
+	 * @param	integer $id 	Unqiue ID of the End-User's Account
+	 * @param	string $mob 	The End-User's new Mobile Number (MSISDN) which should be saved to the account. Set to NULL to clear.
+	 * @return	boolean
+	 */
+	public function saveMobile($id, $mob, $miv=true)
+	{
+		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Account_Tbl
+				SET mobile = ". (is_null($mob) === true ? "NULL" : "'". floatval($mob) ."'") .",
+					mobile_verified = ". General::bool2xml($miv) ."
+				WHERE id = ". intval($id);
+		//		echo $sql ."\n";
+
+		return is_resource($this->getDBConn()->query($sql) );
+	}
+    
 	/**
 	 * Constructs the SMTP Headers for the E-Mail Receipt.
 	 * The method will return a string in the following format:
