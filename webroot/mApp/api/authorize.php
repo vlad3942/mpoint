@@ -121,7 +121,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							{
 								if ($obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) + 25; }
 							}
-							if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) > 0 && $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) < 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) + 40; }
+							$iTypeID = intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]);
+							// Authorize Purchase using Stored Value Account
+							if ($iTypeID == Constants::iCARD_PURCHASE_TYPE && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) > 0 && $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) < 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) + 40; }
 
 							// Success: Input Valid
 							if (count($aMsgCds) == 0)
@@ -134,29 +136,27 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								// Authentication succeeded
 								if ($code == 10 || ($code == 11 && $obj_ClientConfig->smsReceiptEnabled() === false) )
 								{
-									$iTypeID = intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]);
 									$obj_mPoint->saveMobile($obj_TxnInfo->getAccountID(), $obj_TxnInfo->getMobile(), true);
 									switch ($iTypeID)
 									{
 									case (Constants::iPURCHASE_USING_EMONEY):	// Authorize Purchase using Stored Value Account
 									case (Constants::iPURCHASE_USING_POINTS):
-
 										$obj_XML = simplexml_load_string($obj_mPoint->getAccountInfo($obj_TxnInfo->getAccountID() ) );
 										if ($iTypeID == Constants::iPURCHASE_USING_EMONEY && intval($obj_XML->balance) < $obj_TxnInfo->getAmount() )
 										{
-											$code = 51;
-											$xml .= '<status code="'. $code .'">Insufficient balance on e-money account</status>';
+											$code = 1;
+											$xml .= '<status code="'. ($code+50) .'">Insufficient balance on e-money account</status>';
 										}
 										elseif ($iTypeID == Constants::iPURCHASE_USING_POINTS && intval($obj_XML->points) < $obj_TxnInfo->getPoints() )
 										{
-											$code = 52;
-											$xml .= '<status code="'. $code .'">Insufficient points on loyalty account</status>';
+											$code = 2;
+											$xml .= '<status code="'. ($code+50) .'">Insufficient points on loyalty account</status>';
 										}
 										elseif ( ($iTypeID == Constants::iPURCHASE_USING_EMONEY && $obj_TxnInfo->getTypeID() == Constants::iTOPUP_OF_EMONEY)
 												|| ($iTypeID == Constants::iPURCHASE_USING_POINTS && $obj_TxnInfo->getTypeID() == Constants::iTOPUP_OF_POINTS) )
 										{
-											$code = 59;
-											$xml .= '<status code="'. $code .'">Authorization using: '. $iTypeID .' is not supported for transaction type: '. $obj_TxnInfo->getTypeID() .'</status>';
+											$code = 9;
+											$xml .= '<status code="'. ($code+50) .'">Authorization using: '. $iTypeID .' is not supported for transaction type: '. $obj_TxnInfo->getTypeID() .'</status>';
 										}
 										// Sufficient balance / points on Stored Value Account
 										if ($code >= 10)
