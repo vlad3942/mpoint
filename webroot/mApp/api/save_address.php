@@ -53,78 +53,78 @@ $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true)
 {
-	for ($i=0; $i<count($obj_DOM->address); $i++)
+	for ($i=0; $i<count($obj_DOM->{'save-address'}->address); $i++)
 	{
 		// Set Global Defaults
-		if (empty($obj_DOM->address[$i]["account"]) === true || intval($obj_DOM->address[$i]["account"]) < 1) { $obj_DOM->address[$i]["account"] = -1; }
+		if (empty($obj_DOM->{'save-address'}->address[$i]["account"]) === true || intval($obj_DOM->{'save-address'}->address[$i]["account"]) < 1) { $obj_DOM->{'save-address'}->address[$i]["account"] = -1; }
 
 		// Validate basic information
-		$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->address[$i]["client-id"], (integer) $obj_DOM->address[$i]["account"]);
+		$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'save-address'}["client-id"], (integer) $obj_DOM->{'save-address'}["account"]);
 		if ($code == 100)
 		{
-			$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->address[$i]["client-id"], (integer) $obj_DOM->address[$i]["account"]);
+			$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-address'}["client-id"], (integer) $obj_DOM->{'save-address'}["account"]);
 
 			// Client successfully authenticated
 			if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']) )
 			{
-				$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->address[$i]->{'client-info'}->mobile["country-id"]);
+				$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-address'}->{'client-info'}->mobile["country-id"]);
 				if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
-				if (count($obj_DOM->address[$i]->{'client-info'}->mobile) == 1)
+				if (count($obj_DOM->{'save-address'}->{'client-info'}->mobile) == 1)
 				{
-					$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->address[$i]->{'client-info'}->mobile["country-id"]);
+					$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-address'}->{'client-info'}->mobile["country-id"]);
 					if (is_null($obj_CountryConfig) === true) { $aMsgCds[] = 81; }
 				}
 				else { $obj_CountryConfig = $obj_mPoint->getClientConfig()->getCountryConfig(); }
 				$obj_Validator = new Validate($obj_CountryConfig);
 				// Validate Mobile Number
-				if (is_null($obj_CountryConfig) === false && count($obj_DOM->address[$i]->{'client-info'}->mobile) == 1)
+				if (is_null($obj_CountryConfig) === false && count($obj_DOM->{'save-address'}->{'client-info'}->mobile) == 1)
 				{
-					if ($obj_Validator->valMobile( (float) $obj_DOM->address[$i]->{'client-info'}->mobile) < 10) { $aMsgCds[] = $obj_Validator->valMobile( (float) $obj_DOM->address[$i]->{'client-info'}->mobile) + 81; }
+					if ($obj_Validator->valMobile( (float) $obj_DOM->{'save-address'}->{'client-info'}->mobile) < 10) { $aMsgCds[] = $obj_Validator->valMobile( (float) $obj_DOM->{'save-address'}->{'client-info'}->mobile) + 81; }
 				}
-				if ($obj_DOM->address[$i]["country-id"] != $obj_CountryConfig->getID() )
+				if ($obj_DOM->{'save-address'}->address[$i]["country-id"] != $obj_CountryConfig->getID() )
 				{
-					$obj_Validator = new Validate(CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->address[$i]["country-id"]) );
+					$obj_Validator = new Validate(CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-address'}->address[$i]["country-id"]) );
 				}
 				$obj_mPoint = new MyAccount($_OBJ_DB, $_OBJ_TXT, $obj_CountryConfig);
 				// Seperate Full Name into First- and Last Name
-				if (count($obj_DOM->address[$i]->{'full-name'}) == 1)
+				if (count($obj_DOM->{'save-address'}->address[$i]->{'full-name'}) == 1)
 				{
-					$obj_DOM->address[$i]->{'full-name'} = trim($obj_DOM->address[$i]->{'full-name'});
-					$pos = strrpos($obj_DOM->address[$i]->{'full-name'}, " ");
-					if ($pos === false) { $pos = strlen($obj_DOM->address[$i]->{'full-name'}); }
-					else { $obj_DOM->address[$i]->{'last-name'} = substr($obj_DOM->address[$i]->{'full-name'}, $pos + 1); }
-					$obj_DOM->address[$i]->{'first-name'} = substr($obj_DOM->address[$i]->{'full-name'}, 0 , $pos);
+					$obj_DOM->{'save-address'}->address[$i]->{'full-name'} = trim($obj_DOM->{'save-address'}->address[$i]->{'full-name'});
+					$pos = strrpos($obj_DOM->{'save-address'}->address[$i]->{'full-name'}, " ");
+					if ($pos === false) { $pos = strlen($obj_DOM->{'save-address'}->address[$i]->{'full-name'}); }
+					else { $obj_DOM->{'save-address'}->address[$i]->{'last-name'} = substr($obj_DOM->{'save-address'}->address[$i]->{'full-name'}, $pos + 1); }
+					$obj_DOM->{'save-address'}->address[$i]->{'first-name'} = substr($obj_DOM->{'save-address'}->address[$i]->{'full-name'}, 0 , $pos);
 				}
 				// Validate First Name
-				if (count($obj_DOM->address[$i]->{'first-name'}) == 1)
+				if (count($obj_DOM->{'save-address'}->address[$i]->{'first-name'}) == 1)
 				{
-					if ($obj_Validator->valName( (string) $obj_DOM->address[$i]->{'first-name'}) < 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->address[$i]->{'first-name'}) + 20; }
+					if ($obj_Validator->valName( (string) $obj_DOM->{'save-address'}->address[$i]->{'first-name'}) < 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-address'}->address[$i]->{'first-name'}) + 20; }
 				}
 				// Validate Last Name
-				if (count($obj_DOM->address[$i]->{'last-name'}) == 1)
+				if (count($obj_DOM->{'save-address'}->address[$i]->{'last-name'}) == 1)
 				{
-					if ($obj_Validator->valName( (string) $obj_DOM->address[$i]->{'last-name'}) < 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->address[$i]->{'last-name'}) + 40; }
+					if ($obj_Validator->valName( (string) $obj_DOM->{'save-address'}->address[$i]->{'last-name'}) < 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-address'}->address[$i]->{'last-name'}) + 40; }
 				}
 				// Validate required input
-				if ($obj_Validator->valName( (string) $obj_DOM->address[$i]->street) < 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->address[$i]->street) + 50; }
-				if ($obj_Validator->valState($_OBJ_DB, (string) $obj_DOM->address[$i]->state) == 10)
+				if ($obj_Validator->valName( (string) $obj_DOM->{'save-address'}->address[$i]->street) < 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-address'}->address[$i]->street) + 50; }
+				if ($obj_Validator->valState($_OBJ_DB, (string) $obj_DOM->{'save-address'}->address[$i]->state) == 10)
 				{
-					if ($obj_Validator->valPostalCode($_OBJ_DB, (string) $obj_DOM->address[$i]->{'postal-code'}, (string) $obj_DOM->address[$i]->state) < 10) { $aMsgCds[] = $obj_Validator->valPostalCode($_OBJ_DB, (string) $obj_DOM->address[$i]->{'postal-code'}, (string) $obj_DOM->address[$i]->state) + 60; }
+					if ($obj_Validator->valPostalCode($_OBJ_DB, (string) $obj_DOM->{'save-address'}->address[$i]->{'postal-code'}, (string) $obj_DOM->{'save-address'}->address[$i]->state) < 10) { $aMsgCds[] = $obj_Validator->valPostalCode($_OBJ_DB, (string) $obj_DOM->{'save-address'}->address[$i]->{'postal-code'}, (string) $obj_DOM->{'save-address'}->address[$i]->state) + 60; }
 				}
 				else
 				{
-					if ($obj_Validator->valPostalCode($_OBJ_DB, (string) $obj_DOM->address[$i]->{'postal-code'}) < 10) { $aMsgCds[] = $obj_Validator->valPostalCode($_OBJ_DB, (string) $obj_DOM->address[$i]->{'postal-code'}) + 60; }
-					$aMsgCds[] = $obj_Validator->valState($_OBJ_DB, (string) $obj_DOM->address[$i]->state) + 70;
+					if ($obj_Validator->valPostalCode($_OBJ_DB, (string) $obj_DOM->{'save-address'}->address[$i]->{'postal-code'}) < 10) { $aMsgCds[] = $obj_Validator->valPostalCode($_OBJ_DB, (string) $obj_DOM->{'save-address'}->address[$i]->{'postal-code'}) + 60; }
+					$aMsgCds[] = $obj_Validator->valState($_OBJ_DB, (string) $obj_DOM->{'save-address'}->address[$i]->state) + 70;
 				}
-				if ($obj_Validator->valName( (string) $obj_DOM->address[$i]->city) < 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->address[$i]->city) + 80; }
+				if ($obj_Validator->valName( (string) $obj_DOM->{'save-address'}->address[$i]->city) < 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-address'}->address[$i]->city) + 80; }
 
 
 				// Success: Input valid
 				if (count($aMsgCds) == 0)
 				{
-					$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->address[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->address[$i]->{'client-info'}->mobile, $obj_DOM->address[$i]->{'client-info'}->email);
-//					if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->address[$i]->{'client-info'}->mobile); }
-//					if ($iAccountID < 0 && count($obj_DOM->address[$i]->{'client-info'}->email) == 1) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->address[$i]->{'client-info'}->email); }
+					$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-address'}->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-address'}->{'client-info'}->mobile, $obj_DOM->{'save-address'}->{'client-info'}->email);
+//					if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->{'save-address'}->{'client-info'}->mobile); }
+//					if ($iAccountID < 0 && count($obj_DOM->{'save-address'}->{'client-info'}->email) == 1) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->{'save-address'}->{'client-info'}->email); }
 					$code = General::authToken($iAccountID, $obj_ClientConfig->getSecret(), $_COOKIE['token']);
 					// Authentication succeeded
 					if ($code >= 10)
@@ -143,13 +143,13 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 						for ($j=0; $j<count($obj_XML->address); $j++)
 						{
 						// Check whether address already exists
-						if (intval($obj_DOM->address[$i]["country-id"]) == intval($obj_XML->address[$j]->country["id"])
-								&& strtolower($obj_DOM->address[$i]->{'first-name'}) == strtolower($obj_XML->address[$j]->{'first-name'})
-								&& strtolower($obj_DOM->address[$i]->{'last-name'}) == strtolower($obj_XML->address[$j]->{'last-name'})
-								&& strtolower($obj_DOM->address[$i]->street) == strtolower($obj_XML->address[$j]->street)
-								&& strtolower($obj_DOM->address[$i]->{'postal-code'}) == strtolower($obj_XML->address[$j]->{'postal-code'})
-								&& strtolower($obj_DOM->address[$i]->city) == strtolower($obj_XML->address[$j]->city)
-								&& strtolower($obj_DOM->address[$i]->state) == strtolower($obj_XML->address[$j]->state) )
+						if (intval($obj_DOM->{'save-address'}->address[$i]["country-id"]) == intval($obj_XML->address[$j]->country["id"])
+								&& strtolower($obj_DOM->{'save-address'}->address[$i]->{'first-name'}) == strtolower($obj_XML->address[$j]->{'first-name'})
+								&& strtolower($obj_DOM->{'save-address'}->address[$i]->{'last-name'}) == strtolower($obj_XML->address[$j]->{'last-name'})
+								&& strtolower($obj_DOM->{'save-address'}->address[$i]->street) == strtolower($obj_XML->address[$j]->street)
+								&& strtolower($obj_DOM->{'save-address'}->address[$i]->{'postal-code'}) == strtolower($obj_XML->address[$j]->{'postal-code'})
+								&& strtolower($obj_DOM->{'save-address'}->address[$i]->city) == strtolower($obj_XML->address[$j]->city)
+								&& strtolower($obj_DOM->{'save-address'}->address[$i]->state) == strtolower($obj_XML->address[$j]->state) )
 						{
 						$bExists = true;
 						// Break out of loop as match has been found
@@ -160,8 +160,8 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 						// Address doesn't exist, add to profile
 						if ($bExists === false)
 						{
-							$sid = $obj_mPoint->getStateID( (integer) $obj_DOM->address[$i]["country-id"], (string) $obj_DOM->address[$i]->state);
-							$code = $obj_mPoint->saveAddress($iAccountID, (integer) $obj_DOM->address[$i]["country-id"], $sid, (string) $obj_DOM->address[$i]->{'first-name'}, (string) $obj_DOM->address[$i]->{"last-name"}, (string) $obj_DOM->address[$i]->company, (string) $obj_DOM->address[$i]->street, (string) $obj_DOM->address[$i]->{"postal-code"}, (string) $obj_DOM->address[$i]->city);
+							$sid = $obj_mPoint->getStateID( (integer) $obj_DOM->{'save-address'}->address[$i]["country-id"], (string) $obj_DOM->{'save-address'}->address[$i]->state);
+							$code = $obj_mPoint->saveAddress($iAccountID, (integer) $obj_DOM->{'save-address'}->address[$i]["country-id"], $sid, (string) $obj_DOM->{'save-address'}->address[$i]->{'first-name'}, (string) $obj_DOM->{'save-address'}->address[$i]->{"last-name"}, (string) $obj_DOM->{'save-address'}->address[$i]->company, (string) $obj_DOM->{'save-address'}->address[$i]->street, (string) $obj_DOM->{'save-address'}->address[$i]->{"postal-code"}, (string) $obj_DOM->{'save-address'}->address[$i]->city);
 							if ($code >= 10) { $code++; }
 						}
 						else { $code = 10; }
@@ -213,11 +213,7 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 		{
 			header("HTTP/1.1 400 Bad Request");
 
-			$xml = '';
-			foreach ($aMsgCds as $code)
-			{
-				$xml .= '<status code="'. $code .'" />';
-			}
+			$xml = '<status code="'. $code .'">Account not found</status>';
 		}
 	}
 	$xml = '<?xml version="1.0" encoding="UTF-8"?><root>'. $xml .'</root>';
