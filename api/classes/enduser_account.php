@@ -754,9 +754,9 @@ class EndUserAccount extends Home
 	 * @param	CountryConfig $oCC	Country Configuration, pass null to default to the Country Configuration from the Client Configuration
 	 * @param	integer $mode	 	Integer flag specifying mode that is used to find the end-user account. May be one of the following:
 	 * 									0. Find all accounts
-	 * 									1. Find only accounds with a password defined
+	 * 									1. Find only accounds with a password defined or that has a balance > 0
 	 * 									2. Find only accounds that has been linked to the client
-	 * 									3. Find only accounds with a password defined that has been linked to the client
+	 * 									3. Find only accounds with a password defined or that has a balance > 0 and that has been linked to the client
 	 * @return	integer				Unqiue ID of the End-User's Account or -1 if no account was found
 	 */
 	private static function _getAccountID(RDB &$oDB, ClientConfig &$oClC, $addr, CountryConfig &$oCC=null, $mode=3)
@@ -770,7 +770,7 @@ class EndUserAccount extends Home
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON EUA.id = CLA.accountid
 				WHERE EUA.countryid = ". $oCC->getID() ."
 					AND ". $sql ." AND EUA.enabled = '1'";
-		if ( ($mode & 1) == 1) { $sql .= " AND EUA.passwd IS NOT NULL AND length(EUA.passwd) > 0"; }
+		if ( ($mode & 1) == 1) { $sql .= " AND ( (EUA.passwd IS NOT NULL AND length(EUA.passwd) > 0) OR EUA.balance > 0)"; }
 		// Not a System Client
 		if ($oClC->getCountryConfig()->getID() != $oClC->getID() && ($mode & 2) == 2)
 		{
