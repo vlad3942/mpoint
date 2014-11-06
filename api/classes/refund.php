@@ -38,11 +38,17 @@ class Refund extends General
 	 */
 	private $_obj_PSP;
 	/**
-	 * The PSP's unique ID for the transaction which should be captured
+	 * The PSP's unique ID for the transaction which should be Refunded
 	 *
 	 * @var string
 	 */
 	private $_sPSPID;
+	/**
+	 * Information on how to connect to PSP dufault
+	 *
+	 * @var HTTPConnInfo
+	 */
+	private $_obj_oCI;
 
 	/**
 	 * Default Constructor.
@@ -52,14 +58,16 @@ class Refund extends General
 	 * @param 	TxnInfo $oTI 			Data object with the Transaction Information
 	 * @param 	Object $oPSP 			Model for the PSP to which the capture operation should be executed
 	 * @param 	String $pspid 			Unique ID for the Payment Service Provider (PSP) mPoint should use to capture the transaction amount
+	 * @param	HTTPConnInfo $oCI		Information on how to connect to PSP dufault to null
 	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, &$oPSP, $pspid)
+	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, &$oPSP, $pspid, HTTPConnInfo &$oCI)
 	{
 		parent::__construct($oDB, $oTxt, $oTI->getClientConfig() );
 
 		$this->_obj_TxnInfo = $oTI;
 		$this->_obj_PSP = $oPSP;
 		$this->_sPSPID = $pspid;
+		$this->_obj_oCI = $oCI;		
 	}
 
 	/**
@@ -80,6 +88,12 @@ class Refund extends General
 	 * @return string
 	 */
 	public function &getPSPID() { return $this->_sPSPID; }
+	/**
+	 * Information on how to connect to PSP dufault to null
+	 *
+	 * @return string
+	 */
+	public function &getObjoCI() { return $this->_obj_oCI; }
 	
 	/**
 	 * Produces a new instance of a Capture operation object
@@ -87,9 +101,10 @@ class Refund extends General
 	 * @param 	RDB $oDB 				Reference to the Database Object that holds the active connection to the mPoint Database
 	 * @param 	TranslateText $oTxt 	Text Translation Object for translating any text into a specific language
 	 * @param 	TxnInfo $oTI 			Data object with the Transaction Information
+	 * @param	HTTPConnInfo $oCI		Information on how to connect to PSP dufault to null
 	 * @return 	Capture
 	 */
-	public static function produce(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI)
+	public static function produce(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, HTTPConnInfo &$oCI)
 	{
 		$sql = "SELECT pspid, extid
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl
@@ -103,17 +118,22 @@ class Refund extends General
 			// Authorise payment with PSP based on Ticket
 			$obj_PSP = new DIBS($oDB, $oTxt, $oTI);
 			break;
+		case (Constants::iNETAXEPT_PSP):	// NetAxept
+			// Authorise payment with PSP based on Ticket
+			$obj_PSP = new NetAxept($oDB, $oTxt, $oTI);
+			break;
 		default:	// Unkown Payment Service Provider
 			throw new CaptureException("Unkown Payment Service Provider", 1001);
 			break;
-		}
-		
-		return new Refund($oDB, $oTxt, $oTI, $obj_PSP, $RS["EXTID"]);
+		}		
+		return new Refund($oDB, $oTxt, $oTI, $obj_PSP, $RS["EXTID"], &$oCI);
 	}
 	
 	/**
 	 * Performs a capture operation with the PSP that authorized the transaction.
-	 * The method will log one the following status codes for DIBS:
+	 * The method will log one the following status codes:
+	 * 
+	 * DIBS:
 	 * 	0. Refund succeeded
 	 * 	1. No response from acquirer.
 	 * 	2. Timeout
@@ -133,14 +153,45 @@ class Refund extends General
 	 * @see		DIBS::refund();
 	 * @link	http://tech.dibs.dk/toolbox/dibs-error-codes/
 	 * 
+	 * NETAXEPT:
+	 * 0. Refund succeeded
+	 * -1.Will also return the error message provided by NetAxept
+	 * 
+	 * @link	http://www.betalingsterminal.no/Netthandel-forside/Teknisk-veiledning/Response-codes/
+	 * 
 	 * @return	integer
 	 * @throws	E_USER_WARNING
 	 */
 	public function refund($amt=0)
 	{
-		if ($amt == 0) { $amt = $this->_obj_TxnInfo->getAmount(); }
-		$code = $this->_obj_PSP->refund($this->_sPSPID, $amt);
-		if ($code == 0)
+		if ($amt == 0) { $amt = $this->_obj_TxnInfo->getAmount(); }		
+		
+		switch (strtoupper(get_class($this->_obj_PSP) ) )
+		{
+		case ("DIBS"):	// DIBS
+			$code = $this->_obj_PSP->refund($this->_sPSPID, $amt);
+			break;
+		case ("NETAXEPT"):	// NetAxept		
+			$obj_PSPConfig = PSPConfig::produceConfig($this->getDBConn(), $this->_obj_TxnInfo->getClientConfig()->getID(), $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETAXEPT_PSP);
+ 
+			$sql = "SELECT Txn.enabled
+					FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
+					INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid AND Msg.enabled = '1'
+					WHERE Txn.id = ". intval($this->_obj_TxnInfo->getID() ) ." AND Txn.clientid = ". intval($this->_obj_TxnInfo->getClientConfig()->getID() ) ."
+						AND Msg.stateid = ". Constants::iPAYMENT_CAPTURED_STATE ."";
+//			echo $sql ."\n";
+			$RS = $this->getDBConn()->getName($sql);
+			
+			$sType = "ANNUL";
+			if ($RS["ENABLED"] === true) { $sType = "CREDIT"; }
+			
+			$code = $this->_obj_PSP->refund($this->_sPSPID, $amt, &$this->_obj_oCI,  $obj_PSPConfig->getMerchantAccount(), $sType);
+			break;
+		default:	// Unkown Payment Service Provider
+			throw new CaptureException("Unkown Payment Service Provider", 1001);
+			break;
+		}
+		if ($code === 0)
 		{
 			$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 					SET refund = refund + ". intval($amt) ."
