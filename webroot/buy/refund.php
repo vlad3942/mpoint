@@ -56,12 +56,10 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	
 	// Validate input
 	if ($obj_Validator->valUsername($_REQUEST['username']) != 10) { $aMsgCds[$obj_Validator->valUsername($_REQUEST['username']) + 20] = $_REQUEST['username']; }
-	
 	if ($obj_Validator->valPassword($_REQUEST['password']) != 10) { $aMsgCds[$obj_Validator->valPassword($_REQUEST['password']) + 30] = $_REQUEST['password']; }
 	$code = $obj_Validator->valmPointID($_OBJ_DB, $_REQUEST['mpointid'], $obj_ClientConfig->getID() );
 	if ($code != 6 && $code != 10)
 	{
-		if ($code == 10) { $code = 9; }
 		$aMsgCds[$code + 170] = $_REQUEST['mpointid'];
 	}
 	if ($obj_Validator->valOrderID($_OBJ_DB, $_REQUEST['orderid'], $_REQUEST['mpointid']) > 1 && $obj_Validator->valOrderID($_OBJ_DB, $_REQUEST['orderid'], $_REQUEST['mpointid']) < 10) { $aMsgCds[$obj_Validator->valOrderID($_OBJ_DB, $_REQUEST['orderid'], $_REQUEST['mpointid']) + 180] = $_REQUEST['orderid']; }
@@ -85,19 +83,19 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 				{
 					switch ($obj_TxnInfo->getPSPID() )
 					{
-						case (Constants::iDIBS_PSP):	// DIBS
-							$obj_mPoint = Refund::produce($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-							break;
-						case (Constants::iNETAXEPT_PSP):	// NetAxept
-							$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETAXEPT_PSP);
-							if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["netaxept"]["host"] = str_replace("epayment.", "epayment-test.", $aHTTP_CONN_INFO["netaxept"]["host"]); }
-							$aHTTP_CONN_INFO["netaxept"]["username"] = $obj_PSPConfig->getUsername();
-							$aHTTP_CONN_INFO["netaxept"]["password"] = $obj_PSPConfig->getPassword();
-							$oCI = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["netaxept"]);
-							
-							$obj_mPoint = Refund::produce($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $oCI);
-							break;
-						default:	// Unkown Payment Service Provider
+					case (Constants::iDIBS_PSP):	// DIBS
+						$obj_mPoint = Refund::produce($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+						break;
+					case (Constants::iNETAXEPT_PSP):	// NetAxept
+						$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETAXEPT_PSP);
+						if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["netaxept"]["host"] = str_replace("epayment.", "epayment-test.", $aHTTP_CONN_INFO["netaxept"]["host"]); }
+						$aHTTP_CONN_INFO["netaxept"]["username"] = $obj_PSPConfig->getUsername();
+						$aHTTP_CONN_INFO["netaxept"]["password"] = $obj_PSPConfig->getPassword();
+						$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["netaxept"]);
+						
+						$obj_mPoint = Refund::produce($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_ConnInfo);
+						break;
+					default:	// Unkown Payment Service Provider
 							break;
 					}
 					$aClientIDs = $obj_mPoint->getClientsForUser($iUserID);
@@ -106,21 +104,20 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					{									
 						// Refund operation succeeded
 						$refund = $obj_mPoint->refund($_REQUEST['amount']);
-						if (is_array($refund) === false && $refund == 0)
+						if ($refund == 0)
 						{
 							header("HTTP/1.0 200 OK");
 							
 							$aMsgCds[1000] = "Success";
 							$args = array("transact" => $obj_mPoint->getPSPID(),
 										  "amount" => $_REQUEST['amount']);
-							$obj_mPoint->getPSP()->notifyClient( Constants::iPAYMENT_REFUNDED_STATE, $args);
+							$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
 						}
 						else
 						{
 							header("HTTP/1.0 502 Bad Gateway");
 							
 							$aMsgCds[999] = "Declined";
-							if (is_array($refund) === true) $aMsgCds[999].= '- '. $refund["msg"];
 						}						
 					}
 					// Error: Unauthorized access
@@ -129,12 +126,14 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 				catch (HTTPException $e)
 				{
 					header("HTTP/1.0 502 Bad Gateway");
+					
 					$aMsgCds[998] = "Error while communicating with PSP";
 				}
 				// Internal Error
 				catch (mPointException $e)
 				{
 					header("HTTP/1.0 500 Internal Error");
+					
 					$aMsgCds[$e->getCode()] = $e->getMessage();
 				}
 			}

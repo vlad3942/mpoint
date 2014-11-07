@@ -250,10 +250,10 @@ class TxnInfo
 	 * @param 	string $mrk 		String indicating the markup language used to render the payment pages
 	 * @param 	string $desc 		String that holds the description of an order
 	 * @param 	string $ip			String that holds the customers IP address
-	 * @param 	integer $PSPID		Unique ID for the The PSP used for the transaction Defaults to -1.
+	 * @param 	integer $pspid		Unique ID for the The PSP used for the transaction Defaults to -1.
 	 *
 	 */
-	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, $amt, $pnt, $rwd, $rfnd, $orid, $addr, $oid, $email, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="", $PSPID =-1)
+	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, $amt, $pnt, $rwd, $rfnd, $orid, $addr, $oid, $email, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="", $pspid=-1)
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -289,7 +289,7 @@ class TxnInfo
 		$this->_sMarkupLanguage = trim($mrk);
 		$this->_sDescription = trim($desc);
 		$this->_sIP = trim($ip);
-		$this->_iPSPID = (integer) $PSPID;
+		$this->_iPSPID = (integer) $pspid;
 	}
 
 	/**
