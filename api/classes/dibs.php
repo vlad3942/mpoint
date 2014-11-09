@@ -237,10 +237,13 @@ class DIBS extends Callback
 	 * @link	http://tech.dibs.dk/toolbox/dibs-error-codes/
 	 * 
 	 * @param 	integer $txn	Transaction ID previously returned by DIBS during authorisation
+	 * @param 	integer $amount	full amount that needed to be refunded
+	 * @param String  	$sType	If the amount should be refunded or released 
+
 	 * @return	integer
 	 * @throws	E_USER_WARNING
 	 */
-	public function refund($txn, $amount)
+	public function refund($txn, $amount, $sType)
 	{
 		$code = $this->status($txn);
 		// Transaction ready for Refund
@@ -255,7 +258,8 @@ class DIBS extends Callback
 			$b .= "&textreply=true";
 			$aLogin = $this->getMerchantLogin($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
 			
-			$obj_HTTP = parent::send("https://payment.architrade.com/cgi-adm/refund.cgi", $this->constHTTPHeaders(), $b, $aLogin["username"], $aLogin["password"]);
+			$url = "https://payment.architrade.com/cgi-adm/". $sType;
+			$obj_HTTP = parent::send($url, $this->constHTTPHeaders(), $b, $aLogin["username"], $aLogin["password"]);
 			if ($obj_HTTP->getReturnCode() == 200)
 			{
 				$aStatus = array();

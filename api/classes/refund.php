@@ -165,23 +165,25 @@ class Refund extends General
 	public function refund($amt=0)
 	{
 		if ($amt == 0) { $amt = $this->_obj_TxnInfo->getAmount(); }		
+		$sql = "SELECT Txn.enabled
+					FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
+					INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid AND Msg.enabled = '1'
+					WHERE Txn.id = ". intval($this->_obj_TxnInfo->getID() ) ." AND Txn.clientid = ". intval($this->_obj_TxnInfo->getClientConfig()->getID() ) ."
+						AND Msg.stateid = ". Constants::iPAYMENT_CAPTURED_STATE ."";
+		//			echo $sql ."\n";
+		$RS = $this->getDBConn()->getName($sql);
 		
 		switch (strtoupper(get_class($this->_obj_PSP) ) )
 		{
 		case ("DIBS"):	// DIBS
-			$code = $this->_obj_PSP->refund($this->_sPSPID, $amt);
+			$sType = "cancel.cgi";
+			if ($RS["ENABLED"] === true) { $sType = "refund.cgi"; }
+			
+			$code = $this->_obj_PSP->refund($this->_sPSPID, $amt, $sType);
 			break;
 		case ("NETAXEPT"):	// NetAxept		
 			$obj_PSPConfig = PSPConfig::produceConfig($this->getDBConn(), $this->_obj_TxnInfo->getClientConfig()->getID(), $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETAXEPT_PSP);
- 
-			$sql = "SELECT Txn.enabled
-					FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
-					INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid AND Msg.enabled = '1'
-					WHERE Txn.id = ". intval($this->_obj_TxnInfo->getID() ) ." AND Txn.clientid = ". intval($this->_obj_TxnInfo->getClientConfig()->getID() ) ."
-						AND Msg.stateid = ". Constants::iPAYMENT_CAPTURED_STATE;
-//			echo $sql ."\n";
-			$RS = $this->getDBConn()->getName($sql);
-			
+ 			
 			$sType = "ANNUL";
 			if ($RS["ENABLED"] === true) { $sType = "CREDIT"; }
 			
