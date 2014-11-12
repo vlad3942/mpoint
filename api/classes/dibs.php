@@ -247,7 +247,7 @@ class DIBS extends Callback
 	{
 		$code = $this->status($txn);
 		// Transaction ready for Refund
-		if ($code == 5)
+		if ($code == 5 || $code == 2)
 		{
 			$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
 			$b .= "&mpointid=". $this->getTxnInfo()->getID();
@@ -260,6 +260,7 @@ class DIBS extends Callback
 			
 			$url = "https://payment.architrade.com/cgi-adm/". $sType;
 			$obj_HTTP = parent::send($url, $this->constHTTPHeaders(), $b, $aLogin["username"], $aLogin["password"]);
+				
 			if ($obj_HTTP->getReturnCode() == 200)
 			{
 				$aStatus = array();
