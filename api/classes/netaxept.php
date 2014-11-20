@@ -4,7 +4,7 @@
  * Callbacks can be performed either using mPoint's own Callback protocol or the PSP's native protocol.
  * The NetAxept subpackage is a specific implementation capable of imitating NetAxept's own protocol.
  *
- * @author Jacob Emil Baungård Hansen & Jonatan Evald Buus
+ * @author Jacob Emil Baungï¿½rd Hansen & Jonatan Evald Buus
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
  * @package Callback
@@ -146,8 +146,16 @@ class NetAxept extends Callback
 			if ($obj_Std->ProcessResult->ResponseCode == 'OK')
 			{
 				// make a query response to NetAxept to make sure everything is ok
-				$queryResponse = $this->query($oCI, $merchant, $transactionID);
-
+				$queryResponse = $this->query($oCI, $merchant, $transactionID);				
+				if ($queryResponse->OrderInformation->Fee > 0)
+				{
+					// save fee amount in database
+					$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+						SET fee = ". intval($queryResponse->OrderInformation->Fee) ."
+						WHERE id = ". $this->getTxnInfo()->getID();
+					//				echo $sql ."\n";
+					$this->getDBConn()->query($sql);
+				}
 				// finalize transaction in mPoint
 				if ($queryResponse->Summary->Authorized == "true")
 				{
@@ -232,7 +240,9 @@ class NetAxept extends Callback
 	{
 
 		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );
-		$aParams = array("merchantId" => $merchant, "token" => $oCI->getPassword(), "request" => array("TransactionId" => $transactionID ) );
+		$aParams = array("merchantId" => $merchant, 
+						 "token" => $oCI->getPassword(), 
+						 "request" => array("TransactionId" => $transactionID ) );
 
 		try
 		{
@@ -325,11 +335,10 @@ class NetAxept extends Callback
 	 * @param 	integer $sid 	Unique ID of the State that the Transaction terminated in
 	 * @param 	array $_post 	Array of data received from WannaFind via HTTP POST
 	 */
-	public function notifyClient($sid, array $_post)
+	public function notifyClient($sid, $queryResponse, SurePayConfig &$obj_SurePay=null)
 	{
-		parent::notifyClient($sid, $_post["transact"], $_post["amount"], $_post["cardid"], str_replace("X", "*", $_post["cardnomask"]) );
+		parent::notifyClient($sid, $this->_obj_TxnInfo->getPSPID(), $queryResponse->OrderInformation->Amount, $this->getCardID($queryResponse->CardInformation->Issuer), str_replace("X", "*",$queryResponse->CardInformation->Amount), $obj_SurePay, $queryResponse->OrderInformation->Fee );
 	}
-
 	/**
 	 * Authorises a payment with NetAxept for the transaction using the provided ticket.
 	 * The ticket represents a previously stored card.

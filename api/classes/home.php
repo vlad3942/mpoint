@@ -669,7 +669,11 @@ class Home extends General
 					 WHEN EUT.amount IS NULL THEN Txn.amount
 					 ELSE abs(EUT.amount)
 					 END) AS amount,
-					Abs(EUT.fee) AS fee, EUT.address, EUT.message, EUT.stateid,
+					(CASE
+					WHEN Txn.fee > 0 THEN Txn.fee
+					ELSE Abs(EUT.fee)
+					END) AS fee,
+					 EUT.address, EUT.message, EUT.stateid,
 					(CASE
 					 WHEN EUT.typeid = ". Constants::iPURCHASE_USING_EMONEY ." THEN Txn.ip
 					 WHEN EUT.typeid = ". Constants::iPURCHASE_USING_POINTS ." THEN Txn.ip

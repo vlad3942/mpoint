@@ -227,11 +227,12 @@ class Callback extends EndUserAccount
 	 *	mpoint-id={UNIQUE ID FOR THE TRANSACTION}
 	 *	&orderid={CLIENT'S ORDER ID FOR THE TRANSACTION}
 	 *	&status={STATUS CODE FOR THE TRANSACTION}
-	 *	&amount={TOTAL AMOUNT THE CUSTOMER WAS CHARGED FOR THE TRANSACTION}
+	 *	&amount={TOTAL AMOUNT THE CUSTOMER WAS CHARGED FOR THE TRANSACTION without fee}
 	 *	&currency={CURRENCY AMOUNT IS CHARGED IN}
 	 *	&mobile={CUSTOMER'S MSISDN WHERE SMS MESSAGE CAN BE SENT TO}
 	 *	&email={CUSTOMER'S EMAIL ADDRESS WHERE ORDER STATUS CAN BE SENT TO}
 	 *	&operator={GOMOBILE ID FOR THE CUSTOMER'S MOBILE NETWORK OPERATOR}
+	 *	&fee={AMOUNT THE USER HAS TO PAY IN FEE´S}
 	 * Additionally the method will append all custom Client Variables that were sent to mPoint as part of the original request
 	 * as well as the following Customer Input:
 	 * 	- Purchased Products
@@ -246,7 +247,7 @@ class Callback extends EndUserAccount
 	 * @param 	integer $cardid mPoint's unique ID for the card type
 	 * @param 	string $cardno 	The masked card number for the card that was used for the payment
 	 */
-	public function notifyClient($sid, $pspid, $amt, $cardid=0, $cardno="", SurePayConfig &$obj_SurePay=null)
+	public function notifyClient($sid, $pspid, $amt, $cardid=0, $cardno="", SurePayConfig &$obj_SurePay=null, $fee=0)
 	{
 		/* ----- Construct Body Start ----- */
 		$sBody = "";
@@ -254,6 +255,7 @@ class Callback extends EndUserAccount
 		$sBody .= "&orderid=". urlencode($this->_obj_TxnInfo->getOrderID() );
 		$sBody .= "&status=". $sid;
 		$sBody .= "&amount=". $amt;
+		$sBody .= "&fee=". $fee;
 		$sBody .= "&currency=". urlencode($this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getCurrency() );
 		$sBody .= "&mobile=". urlencode($this->_obj_TxnInfo->getMobile() );
 		$sBody .= "&operator=". urlencode($this->_obj_TxnInfo->getOperator() );
@@ -264,7 +266,7 @@ class Callback extends EndUserAccount
 		$sBody .= $this->getVariables();
 		$sBody .= "&mac=". urlencode($this->_obj_TxnInfo->getMAC() );
 		/* ----- Construct Body End ----- */
-
+		
 		$this->performCallback($sBody, $obj_SurePay);
 	}
 

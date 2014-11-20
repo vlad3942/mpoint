@@ -148,7 +148,7 @@ try
 			if ($responseCode == "OK")
 			{
 				//$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, json_decode($HTTP_RAW_POST_DATA, true) );
-				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, json_decode($HTTP_RAW_POST_DATA, true));
+				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $queryResponse);
 				$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
 			}
 			else
@@ -157,7 +157,7 @@ try
 				$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, "Payment Declined (2010) - Netaxept Error {$responseCode}");
 			}
 		}
-		else { $obj_mPoint->notifyClient($iStateID, json_decode($HTTP_RAW_POST_DATA, true) ); }
+		else { $obj_mPoint->notifyClient($iStateID, $queryResponse); }
 	}
 
 	// Client has SMS Receipt enabled and payment has been authorized
