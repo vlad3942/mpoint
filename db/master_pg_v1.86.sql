@@ -1,0 +1,1 @@
+ALTER TABLE Log.Transaction_Tbl ADD fee integer DEFAULT 0;
