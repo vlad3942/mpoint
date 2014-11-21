@@ -34,7 +34,8 @@ $obj_mPoint = new AuthorizeNet($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 switch($_POST['x_response_code'])
 {
 case (1):	// Payment Approved
-	$obj_mPoint->completeTransaction(Constants::iANET_PSP, $_POST['x_trans_id'], $_POST['cardid'], Constants::iPAYMENT_ACCEPTED_STATE, $_POST);
+	$fee = 0;
+	$obj_mPoint->completeTransaction(Constants::iANET_PSP, $_POST['x_trans_id'], $_POST['cardid'], Constants::iPAYMENT_ACCEPTED_STATE, $fee, $_POST);
 	// Account Top-Up
 	if ($obj_TxnInfo->getTypeID() >= 100 && $obj_TxnInfo->getTypeID() <= 109)
 	{

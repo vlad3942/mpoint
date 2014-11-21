@@ -106,18 +106,19 @@ class Callback extends EndUserAccount
 	 * @param 	integer $txnid 	Transaction ID returned by the PSP
 	 * @param 	integer $cid 	Unique ID for the Credit Card the customer used to pay for the Purchase
 	 * @param 	integer $sid 	Unique ID indicating that final state of the Transaction
+	 * @param 	integer $fee				The amount the customer will pay in fee´s for the Transaction. Default value 0
 	 * @param 	array $debug 	Array of Debug data which should be logged for the state (optional)
 	 * @return	integer
 	 * @throws 	CallbackException
 	 */
-	public function completeTransaction($pspid, $txnid, $cid, $sid, array $debug=null)
+	public function completeTransaction($pspid, $txnid, $cid, $sid, $fee=0, array $debug=null)
 	{
 		if (intval($txnid) == -1) { $sql = ""; }
 		else { $sql = ", extid = '". $this->getDBConn()->escStr($txnid) ."'"; }
 		if ($this->_obj_TxnInfo->getAccountID() > 0) { $sql .= ", euaid = ". $this->_obj_TxnInfo->getAccountID(); }
 		else { $sql .= ", euaid = NULL"; }
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-				SET pspid = ". intval($pspid) .", cardid = ". intval($cid) . $sql ."
+				SET pspid = ". intval($pspid) .", cardid = ". intval($cid).", fee =".$fee . $sql ."
 				WHERE id = ". $this->_obj_TxnInfo->getID() ." AND (cardid IS NULL OR cardid = 0)";
 		if (intval($txnid) != -1) { $sql .= " AND (extid IS NULL OR extid = '' OR extid = '". $this->getDBConn()->escStr($txnid) ."')"; }
 //		echo $sql ."\n";
@@ -242,10 +243,13 @@ class Callback extends EndUserAccount
 	 * @see 	Callback::send()
 	 * @see 	Callback::getVariables()
 	 *
-	 * @param 	integer $sid 	Unique ID of the State that the Transaction terminated in
-	 * @param 	string $pspid 	The Payment Service Provider's (PSP) unique ID for the transaction
-	 * @param 	integer $cardid mPoint's unique ID for the card type
-	 * @param 	string $cardno 	The masked card number for the card that was used for the payment
+	 * @param 	integer $sid 				Unique ID of the State that the Transaction terminated in
+	 * @param 	string $pspid 				The Payment Service Provider's (PSP) unique ID for the transaction
+	 * @param 	integer $amt				Total amount the customer will pay for the Transaction without fee
+	 * @param 	integer $cardid				mPoint's unique ID for the card type
+	 * @param 	string $cardno 				The masked card number for the card that was used for the payment
+	 * @param 	SurePayConfig $$obj_SurePay SurePay Configuration Object. Default value null
+	 * @param 	integer $fee				The amount the customer will pay in fee´s for the Transaction. Default value 0
 	 */
 	public function notifyClient($sid, $pspid, $amt, $cardid=0, $cardno="", SurePayConfig &$obj_SurePay=null, $fee=0)
 	{

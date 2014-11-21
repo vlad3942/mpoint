@@ -220,7 +220,7 @@ class TxnInfo
 	 */
 	private $_iPSPID = -1;
 	/**
-	 * The amount the customer will pay in feeÂ´s for the Transaction
+	 * The amount the customer will pay in fee´s for the Transaction
 	 *
 	 * @var integer
 	 */

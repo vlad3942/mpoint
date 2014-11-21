@@ -147,23 +147,16 @@ class NetAxept extends Callback
 			{
 				// make a query response to NetAxept to make sure everything is ok
 				$queryResponse = $this->query($oCI, $merchant, $transactionID);				
-				if ($queryResponse->OrderInformation->Fee > 0)
-				{
-					// save fee amount in database
-					$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-						SET fee = ". intval($queryResponse->OrderInformation->Fee) ."
-						WHERE id = ". $this->getTxnInfo()->getID();
-					//				echo $sql ."\n";
-					$this->getDBConn()->query($sql);
-				}
+				$fee = 0;
+				if ($queryResponse->OrderInformation->Fee > 0) {$fee = intval($queryResponse->OrderInformation->Fee); }
 				// finalize transaction in mPoint
 				if ($queryResponse->Summary->Authorized == "true")
 				{
-					$iStateID = $this->completeTransaction(Constants::iNETAXEPT_PSP, $transactionID , $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iPAYMENT_ACCEPTED_STATE, array('0' => var_export($obj_Std->ProcessResult, true) ) );
+					$iStateID = $this->completeTransaction(Constants::iNETAXEPT_PSP, $transactionID , $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iPAYMENT_ACCEPTED_STATE, $fee, array('0' => var_export($obj_Std->ProcessResult, true) ) );
 				}
 				else
 				{
-					$iStateID = $this->completeTransaction(Constants::iNETAXEPT_PSP, $transactionID, $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iPAYMENT_REJECTED_STATE, array('0' => var_export($obj_Std->ProcessResult, true) ) );
+					$iStateID = $this->completeTransaction(Constants::iNETAXEPT_PSP, $transactionID, $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iPAYMENT_REJECTED_STATE, $fee, array('0' => var_export($obj_Std->ProcessResult, true) ) );
 				}
 			}
 
@@ -319,7 +312,7 @@ class NetAxept extends Callback
 
 	/**
 	 * Notifies the Client of the Payment Status by performing a callback via HTTP.
-	 * The method will re-construct the data received from WannaFind after having removed the following mPoint specific fields:
+	 * The method will re-construct the data received from NetAxept after having removed the following mPoint specific fields:
 	 * 	- width
 	 * 	- height
 	 * 	- format
@@ -332,13 +325,16 @@ class NetAxept extends Callback
 	 * @see 	Callback::send()
 	 * @see 	Callback::getVariables()
 	 *
-	 * @param 	integer $sid 	Unique ID of the State that the Transaction terminated in
-	 * @param 	array $_post 	Array of data received from WannaFind via HTTP POST
+	 * @param 	integer			$sid 			Unique ID of the State that the Transaction terminated in
+	 * @param 	Standard		$obj_Std 	Response retrived from NetAxept.
+	 * @param 	SurePayConfig	$obj_SurePay 	SurePay Configuration Object. Default value null
+
 	 */
-	public function notifyClient($sid, $queryResponse, SurePayConfig &$obj_SurePay=null)
+	public function notifyClient($sid, stdClass $obj_Std, SurePayConfig &$obj_SurePay=null)
 	{
-		parent::notifyClient($sid, $this->_obj_TxnInfo->getPSPID(), $queryResponse->OrderInformation->Amount, $this->getCardID($queryResponse->CardInformation->Issuer), str_replace("X", "*",$queryResponse->CardInformation->Amount), $obj_SurePay, $queryResponse->OrderInformation->Fee );
+		parent::notifyClient($sid, $this->_obj_TxnInfo->getPSPID(), $obj_Std->OrderInformation->Amount, $this->getCardID($obj_Std->CardInformation->Issuer), str_replace("X", "*",$obj_Std->CardInformation->MaskedPAN), $obj_SurePay, $obj_Std->OrderInformation->Fee);
 	}
+	
 	/**
 	 * Authorises a payment with NetAxept for the transaction using the provided ticket.
 	 * The ticket represents a previously stored card.

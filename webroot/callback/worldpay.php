@@ -139,7 +139,8 @@ try
 		// E-Mail has been provided for the transaction
 		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
 	}
-	$obj_mPoint->completeTransaction(Constants::iWORLDPAY_PSP, -1, $obj_mPoint->getCardID( (string) $obj_XML->notify->orderStatusEvent->payment->paymentMethod), $iStateID, array($HTTP_RAW_POST_DATA) );
+	$fee = 0;
+	$obj_mPoint->completeTransaction(Constants::iWORLDPAY_PSP, -1, $obj_mPoint->getCardID( (string) $obj_XML->notify->orderStatusEvent->payment->paymentMethod), $iStateID, $fee, array($HTTP_RAW_POST_DATA) );
 	// Account Top-Up
 	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getTypeID() >= 100 && $obj_TxnInfo->getTypeID() <= 109)
 	{
