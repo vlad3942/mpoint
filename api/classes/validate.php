@@ -1143,7 +1143,6 @@ class Validate
 		if (@$data["orderid"] == null) { $orderid = ""; }
 		else { $orderid = @$data["orderid"]; }
 		$chk = sha1(@$data["clientid"] . $account . $orderid . @$data["callback-url"] . @$data["amount"] . @$data["auth-url"] . @$data["customer-ref"] . @$data["auth-token"] . @$data["email"] . @$data["mobile"] . $salt);
-echo $chk;
 		if ($mac == $chk) { $code = 10; }
 		else { $code = 1; }
 
