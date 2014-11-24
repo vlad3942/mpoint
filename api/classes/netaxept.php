@@ -159,7 +159,44 @@ class NetAxept extends Callback
 						$this->newMessage($this->getTxnInfo()->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $ticket);
 						$sMask = $queryResponse->CardInformation->MaskedPAN;
 						$sExpiry = substr($queryResponse->CardInformation->ExpiryDate, -2) . "/" . substr($queryResponse->CardInformation->ExpiryDate, 0, 2);
-						$this->saveCard($this->getTxnInfo(), $this->getTxnInfo()->getMobile(), $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iNETAXEPT_PSP, $ticket, $sMask, $sExpiry);
+						$iStatus = $this->saveCard($this->getTxnInfo(), $this->getTxnInfo()->getMobile(), $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iNETAXEPT_PSP, $ticket, $sMask, $sExpiry);
+						if ($iStatus == 1)
+						{
+							$iMobileAccountID = -1;
+							$iEMailAccountID = -1;
+							if (strlen($this->getTxnInfo()->getCustomerRef() ) == 0)
+							{
+								if (floatval($this->getTxnInfo()->getMobile() ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID($this->getDBConn(), $this->getTxnInfo()->getClientConfig(), $this->getTxnInfo()->getMobile(), $this->getTxnInfo()->getCountryConfig(), ($this->getTxnInfo()->getClientConfig()->getStoreCard() <= 3) ); }
+								if (trim($this->getTxnInfo()->getEMail() ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($this->getDBConn(), $obj_TxnInfo->getClientConfig(), $this->getTxnInfo()->getEMail(), $this->getTxnInfo()->getCountryConfig(), ($this->getTxnInfo()->getClientConfig()->getStoreCard() <= 3) ); }
+								if ($iMobileAccountID != $iEMailAccountID && $iEMailAccountID > 0)
+								{
+									$this->getTxnInfo()->setAccountID(-1);
+								}
+							}
+							$obj_mPoint->sendLinkedInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $this->getTxnInfo());
+						}
+						// New Account automatically created when Card was saved
+						else if ($iStatus == 2)
+						{
+							$iMobileAccountID = -1;
+							$iEMailAccountID = -1;
+							if (strlen($this->getTxnInfo()->getCustomerRef() ) == 0)
+							{
+								if (floatval($this->getTxnInfo()->getMobile() ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID($this->getDBConn(), $this->getTxnInfo()->getClientConfig(), $this->getTxnInfo()->getMobile(), $this->getTxnInfo()->getCountryConfig(), false); }
+								if (trim($this->getTxnInfo()->getEMail() ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($this->getDBConn(), $this->getTxnInfo()->getClientConfig(), $this->getTxnInfo()->getEMail(), $this->getTxnInfo()->getCountryConfig(), false); }
+								if ($iMobileAccountID != $iEMailAccountID && $iEMailAccountID > 0)
+								{
+									$this->getTxnInfo()->setAccountID(-1);
+								}
+							}
+							// SMS communication enabled
+							if ($this->getTxnInfo()->getClientConfig()->smsReceiptEnabled() === true)
+							{
+								$this->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $this->getTxnInfo() );
+							}
+						}
+						
+						if ($this->getTxnInfo()->getEMail() != "") { $this->saveEMail($obj_TxnInfo->getMobile(), $this->getTxnInfo()->getEMail() ); }
 					}
 					$iStateID = $this->completeTransaction(Constants::iNETAXEPT_PSP, $transactionID , $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iPAYMENT_ACCEPTED_STATE, $fee, array('0' => var_export($obj_Std->ProcessResult, true) ) );
 				}
@@ -378,7 +415,7 @@ class NetAxept extends Callback
 		try
 		{
 	 		$obj_Std = $obj_SOAP->Register($aParams);
-
+	 		file_put_contents(sLOG_PATH ."/netA.log", "\n". var_export($obj_Std,true), FILE_APPEND);
 	 		if (intval($obj_Std->RegisterResult->TransactionId) == $this->getTxnInfo()->getID() )
 	 		{
 	 			$data = array("psp-id" => Constants::iNETAXEPT_PSP,
