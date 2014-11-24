@@ -146,12 +146,21 @@ class NetAxept extends Callback
 			if ($obj_Std->ProcessResult->ResponseCode == 'OK')
 			{
 				// make a query response to NetAxept to make sure everything is ok
-				$queryResponse = $this->query($oCI, $merchant, $transactionID);				
+				$queryResponse = $this->query($oCI, $merchant, $transactionID);
+								
 				$fee = 0;
-				if ($queryResponse->OrderInformation->Fee > 0) {$fee = intval($queryResponse->OrderInformation->Fee); }
+				if (intval($queryResponse->OrderInformation->Fee) > 0) {$fee = intval($queryResponse->OrderInformation->Fee); }
 				// finalize transaction in mPoint
 				if ($queryResponse->Summary->Authorized == "true")
 				{
+					if ($queryResponse->Recurring->PanHash != null)
+					{
+						$ticket = $queryResponse->Recurring->PanHash;
+						$this->newMessage($this->getTxnInfo()->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $ticket);
+						$sMask = $queryResponse->CardInformation->MaskedPAN;
+						$sExpiry = substr($queryResponse->CardInformation->ExpiryDate, -2) . "/" . substr($queryResponse->CardInformation->ExpiryDate, 0, 2);
+						$this->saveCard($this->getTxnInfo(), $this->getTxnInfo()->getMobile(), $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iNETAXEPT_PSP, $ticket, $sMask, $sExpiry);
+					}
 					$iStateID = $this->completeTransaction(Constants::iNETAXEPT_PSP, $transactionID , $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iPAYMENT_ACCEPTED_STATE, $fee, array('0' => var_export($obj_Std->ProcessResult, true) ) );
 				}
 				else
@@ -332,7 +341,7 @@ class NetAxept extends Callback
 	 */
 	public function notifyClient($sid, stdClass $obj_Std, SurePayConfig &$obj_SurePay=null)
 	{
-		parent::notifyClient($sid, $this->_obj_TxnInfo->getPSPID(), $obj_Std->OrderInformation->Amount, $this->getCardID($obj_Std->CardInformation->Issuer), str_replace("X", "*",$obj_Std->CardInformation->MaskedPAN), $obj_SurePay, $obj_Std->OrderInformation->Fee);
+		parent::notifyClient($sid, $this->getTxnInfo()->getPSPID(), $obj_Std->OrderInformation->Amount, $this->getCardID($obj_Std->CardInformation->Issuer), str_replace("X", "*",$obj_Std->CardInformation->MaskedPAN), $obj_SurePay, $obj_Std->OrderInformation->Fee);
 	}
 	
 	/**
