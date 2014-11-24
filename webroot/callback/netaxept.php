@@ -136,8 +136,13 @@ try
 	if ($obj_TxnInfo->getReward() > 0 && $obj_TxnInfo->getAccountID() > 0)
 	 {
 	 	$obj_mPoint->topup($obj_TxnInfo->getAccountID(), Constants::iREWARD_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getReward() );
-	 }
-
+	 }	 
+	 $args = array("transact" => $obj_mPoint->getPSPID(),
+	 		"amount" => $queryResponse->OrderInformation->Amount,
+	 		"cardid" =>  $obj_mPoint->getCardID($obj_Std->CardInformation->Issuer),
+	 		"cardnomask" =>  str_replace("X", "*",$queryResponse->CardInformation->MaskedPAN),
+	 		"fee" => $queryResponse->OrderInformation->Fee );
+	 
 	// Callback URL has been defined for Client and transaction hasn't been duplicated
 	if ($obj_TxnInfo->getCallbackURL() != "" && $iStateID != Constants::iPAYMENT_DUPLICATED_STATE)
 	{
@@ -148,7 +153,7 @@ try
 			if ($responseCode == "OK")
 			{
 				//$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, json_decode($HTTP_RAW_POST_DATA, true) );
-				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $queryResponse);
+				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
 				$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
 			}
 			else
@@ -157,7 +162,7 @@ try
 				$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, "Payment Declined (2010) - Netaxept Error {$responseCode}");
 			}
 		}
-		else { $obj_mPoint->notifyClient($iStateID, $queryResponse); }
+		else { $obj_mPoint->notifyClient($iStateID, $args); }
 	}
 
 	// Client has SMS Receipt enabled and payment has been authorized

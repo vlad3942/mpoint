@@ -372,13 +372,13 @@ class NetAxept extends Callback
 	 * @see 	Callback::getVariables()
 	 *
 	 * @param 	integer			$sid 			Unique ID of the State that the Transaction terminated in
-	 * @param 	Standard		$obj_Std 	Response retrived from NetAxept.
+	 * @param 	array			$_post 			Response retrived from NetAxept.
 	 * @param 	SurePayConfig	$obj_SurePay 	SurePay Configuration Object. Default value null
 
 	 */
-	public function notifyClient($sid, stdClass $obj_Std, SurePayConfig &$obj_SurePay=null)
+	public function notifyClient($sid, array $_post, SurePayConfig &$obj_SurePay=null)
 	{
-		parent::notifyClient($sid, $this->getTxnInfo()->getPSPID(), $obj_Std->OrderInformation->Amount, $this->getCardID($obj_Std->CardInformation->Issuer), str_replace("X", "*",$obj_Std->CardInformation->MaskedPAN), $obj_SurePay, $obj_Std->OrderInformation->Fee);
+		parent::notifyClient($sid, $_post["transact"],$_post["amount"], $_post['cardid'], $_post['cardnomask'], $obj_SurePay, $_post['fee'] );
 	}
 	
 	/**
@@ -415,7 +415,6 @@ class NetAxept extends Callback
 		try
 		{
 	 		$obj_Std = $obj_SOAP->Register($aParams);
-	 		file_put_contents(sLOG_PATH ."/netA.log", "\n". var_export($obj_Std,true), FILE_APPEND);
 	 		if (intval($obj_Std->RegisterResult->TransactionId) == $this->getTxnInfo()->getID() )
 	 		{
 	 			$data = array("psp-id" => Constants::iNETAXEPT_PSP,
