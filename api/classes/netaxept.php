@@ -232,11 +232,11 @@ class NetAxept extends Callback
 	 * @param	HTTPConnInfo $oCI		Information on how to connect to NetAxept
 	 * @param	integer $merchant		The merchant ID to identify us to NetAxept
 	 * @param 	integer $transactionID	Transaction ID previously returned by NetAxept during authorisation
-	 * @param 	integer $txn	Transaction ID previously returned by WannaFind during authorisation
+	 * @param 	TxnInfo $txn			Transaction info
 	 * @return	String
 	 * @throws	E_USER_WARNING
 	 */
-	public function capture(HTTPConnInfo &$oCI, $merchant,$transactionID, $txn)
+	public function capture(HTTPConnInfo &$oCI, $merchant,$transactionID, TxnInfo &$txn)
 	{
 		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );
 		$aParams = array("merchantId" => $merchant,

@@ -121,6 +121,11 @@ class Capture extends General
 	
 	/**
 	 * Performs a capture operation with the PSP that authorized the transaction.
+	 * 
+	 * @param	HTTPConnInfo $oCI		Information on how to connect to PSP. Defaults to NULL
+	 * @param	integer $merchant		The merchant ID to identify us to PSP. Defaults to -1
+	 * 
+	 *	DIBS
 	 * The method will log one the following status codes for DIBS:
 	 * 	0. Capture succeeded
 	 * 	1. No response from acquirer.
@@ -141,10 +146,16 @@ class Capture extends General
 	 * @see		DIBS::capture();
 	 * @link	http://tech.dibs.dk/toolbox/dibs-error-codes/
 	 * 
+	 * NETAXEPT:
+	 * 	 OK. Capture succeeded
+	 * 	 String. Refund failed
+	 * 
+	 * @link	http://www.betalingsterminal.no/Netthandel-forside/Teknisk-veiledning/Response-codes/
+	 * 
 	 * @return	integer
 	 * @throws	E_USER_WARNING
 	 */
-	public function capture()
+	public function capture(HTTPConnInfo &$oCI=NULL, $merchant=-1)
 	{
 		// Serialize capture operations by using the Database as a mutex
 		$this->getDBConn()->query("START TRANSACTION");// START TRANSACTION does not work with Oracle db
@@ -152,9 +163,21 @@ class Capture extends General
 		
 		// Payment not Captured
 		if (count($this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE) ) == 0)
-		{
-			$code = $this->_obj_PSP->capture($this->_sPSPID);
-			if ($code === 0) { $code = 1000; }
+		{				
+			switch ($this->getTxnInfo()->getPSPID() )
+			{
+			case (Constants::iDIBS_PSP):	// DIBS
+			case (Constants::iWANNAFIND_PSP):// WannaFind
+				$code = $this->_obj_PSP->capture($this->_sPSPID);
+				break;
+			case (Constants::iNETAXEPT_PSP):	// Netaxept						
+				$code = $this->_obj_PSP->capture($oCI, $merchant, $this->_sPSPID, $this->getTxnInfo());
+				break;
+			default:	// Unkown Payment Service Provider
+				throw new CaptureException("Unkown Payment Service Provider", 1001);
+				break;
+			}
+			if ($code === 0 || $code === "OK") { $code = 1000; }
 		}
 		else { $code = 1001; }
 		// Release mutex

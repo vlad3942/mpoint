@@ -14,7 +14,8 @@
 
 // Require Global Include File
 require_once("../inc/include.php");
-
+// Require data class for Payment Service Provider Configurations
+require_once(sCLASS_PATH ."/pspconfig.php");
 // Require specific Business logic for the Capture component
 require_once(sCLASS_PATH ."/capture.php");
 
@@ -75,7 +76,24 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			try
 			{
 				$obj_mPoint = Capture::produce($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-				$code = $obj_mPoint->capture();
+				switch ($obj_TxnInfo->getPSPID() )
+				{
+					case ( Constants::iDIBS_PSP):	// DIBS
+					case (Constants::iWANNAFIND_PSP):// WannaFind
+						$code = $obj_mPoint->capture();
+						break;
+					case (Constants::iNETAXEPT_PSP):	// NetAxept
+						$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETAXEPT_PSP);
+						if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["netaxept"]["host"] = str_replace("epayment.", "epayment-test.", $aHTTP_CONN_INFO["netaxept"]["host"]); }
+						$aHTTP_CONN_INFO["netaxept"]["username"] = $obj_PSPConfig->getUsername();
+						$aHTTP_CONN_INFO["netaxept"]["password"] = $obj_PSPConfig->getPassword();
+						$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["netaxept"]);
+						
+						$code = $obj_mPoint->capture($obj_ConnInfo, $obj_PSPConfig->getMerchantAccount(), $obj_TxnInfo);
+						break;
+					default:	// Unkown Payment Service Provider
+						break;
+				}
 				// Capture operation succeeded
 				if ($code >= 1000)
 				{

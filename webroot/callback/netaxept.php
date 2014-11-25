@@ -137,9 +137,9 @@ try
 	 {
 	 	$obj_mPoint->topup($obj_TxnInfo->getAccountID(), Constants::iREWARD_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getReward() );
 	 }	 
-	 $args = array("transact" => $obj_mPoint->getPSPID(),
+	 $args = array("transact" => Constants::iNETAXEPT_PSP,
 	 		"amount" => $queryResponse->OrderInformation->Amount,
-	 		"cardid" =>  $obj_mPoint->getCardID($obj_Std->CardInformation->Issuer),
+	 		"cardid" =>  $obj_mPoint->getCardID($queryResponse->CardInformation->Issuer),
 	 		"cardnomask" =>  str_replace("X", "*",$queryResponse->CardInformation->MaskedPAN),
 	 		"fee" => $queryResponse->OrderInformation->Fee );
 	 
