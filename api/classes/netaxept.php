@@ -155,6 +155,10 @@ class NetAxept extends Callback
 				{
 					if ($queryResponse->Recurring->PanHash != null)
 					{
+						if ($this->getTxnInfo()->getAccountID() > 0)
+						{
+							$this->associate($this->getTxnInfo()->getAccountID(), $this->getTxnInfo()->getID() );
+						}
 						$ticket = $queryResponse->Recurring->PanHash;
 						$this->newMessage($this->getTxnInfo()->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $ticket);
 						$sMask = $queryResponse->CardInformation->MaskedPAN;

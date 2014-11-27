@@ -133,6 +133,14 @@ try
 			break;
 		}
 	}
+	/*
+	// Not an e-money based purchase
+	if ($queryResponse->Recurring->PanHash != null && $obj_TxnInfo->getAccountID() > 0)
+	{
+		$obj_mPoint->associate($obj_TxnInfo->getAccountID(), $obj_TxnInfo->getID() );
+	}
+	*/
+	
 	if ($obj_TxnInfo->getReward() > 0 && $obj_TxnInfo->getAccountID() > 0)
 	 {
 	 	$obj_mPoint->topup($obj_TxnInfo->getAccountID(), Constants::iREWARD_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getReward() );
