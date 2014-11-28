@@ -251,6 +251,13 @@ class NetAxept extends Callback
 		try
 		{
 			$obj_Std = $obj_SOAP->Process($aParams);
+			if ($obj_Std->ProcessResult->ResponseCode == 'OK') 
+			{
+				$data = array("psp-id" => Constants::iNETAXEPT_PSP,
+						"url" => var_export($obj_Std, true) );
+				
+				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURED_STATE, $data);
+			}
 
 			return $obj_Std->ProcessResult->ResponseCode;
 		}
