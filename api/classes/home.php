@@ -673,7 +673,13 @@ class Home extends General
 					WHEN Txn.fee > 0 THEN Txn.fee
 					ELSE Abs(EUT.fee)
 					END) AS fee,
-					 EUT.address, EUT.message, EUT.stateid,
+					 EUT.address, EUT.message, EUT.stateid, 
+					(CASE
+					 WHEN M4.stateid IS NOT NULL THEN M4.stateid
+					 WHEN M3.stateid IS NOT NULL THEN M3.stateid
+					 WHEN M2.stateid IS NOT NULL THEN M2.stateid
+					 WHEN M1.stateid IS NOT NULL THEN M1.stateid
+					 END) AS messagestateid,
 					(CASE
 					 WHEN EUT.typeid = ". Constants::iPURCHASE_USING_EMONEY ." THEN Txn.ip
 					 WHEN EUT.typeid = ". Constants::iPURCHASE_USING_POINTS ." THEN Txn.ip
@@ -689,6 +695,10 @@ class Home extends General
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUAT ON EUT.toid = EUAT.id
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUAF ON EUT.fromid = EUAF.id
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn ON EUT.txnid = Txn.id
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M1 ON Txn.id = M1.txnid AND M1.stateid = ". Constants::iPAYMENT_ACCEPTED_STATE ."
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M2 ON Txn.id = M2.txnid AND M2.stateid = ". Constants::iPAYMENT_CAPTURED_STATE ."
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M3 ON Txn.id = M3.txnid AND M3.stateid = ". Constants::iPAYMENT_REFUNDED_STATE ."
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M4 ON Txn.id = M4.txnid AND M4.stateid = ". Constants::iPAYMENT_CANCELLED_STATE ."
 				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Country_Tbl C ON Txn.countryid = C.id
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl Card ON Txn.cardid = Card.id
@@ -711,7 +721,6 @@ class Home extends General
 		if ($offset > 0) { $sql .= " OFFSET ". intval($offset); }
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
-
 		$xml = '<history account-id="'. $id .'">';
 		// Construct XML Document with data for Transaction
 		while ($RS = $this->getDBConn()->fetchName($res) )
@@ -765,7 +774,7 @@ class Home extends General
 			// E-Money Purchase or Card / Premium SMS based purchase associated with the End-User account
 			else
 			{
-				$xml .= '<transaction id="'. $RS["ID"] .'" type-id="'. $RS["TYPEID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" order-no="'. htmlspecialchars($RS["ORDERID"], ENT_NOQUOTES) .'">';
+				$xml .= '<transaction id="'. $RS["ID"] .'" type-id="'. $RS["TYPEID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" order-no="'. htmlspecialchars($RS["ORDERID"], ENT_NOQUOTES) .'" state-id="'. $RS["MESSAGESTATEID"] .'">';
 				$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
 				if ($RS["TYPEID"] == Constants::iPURCHASE_USING_POINTS)
 				{
