@@ -193,14 +193,15 @@ class NetAxept extends Callback
 									$this->getTxnInfo()->setAccountID(-1);
 								}
 							}
-							// SMS communication enabled
+							/* SMS communication enabled
 							if ($this->getTxnInfo()->getClientConfig()->smsReceiptEnabled() === true)
 							{
 								$this->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $this->getTxnInfo() );
 							}
+							*/
 						}
 						
-						if ($this->getTxnInfo()->getEMail() != "") { $this->saveEMail($obj_TxnInfo->getMobile(), $this->getTxnInfo()->getEMail() ); }
+						//if ($this->getTxnInfo()->getEMail() != "") { $this->saveEMail($this->getTxnInfo()->$obj_TxnInfo->getMobile(), $this->getTxnInfo()->getEMail() ); }
 					}
 					$iStateID = $this->completeTransaction(Constants::iNETAXEPT_PSP, $transactionID , $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iPAYMENT_ACCEPTED_STATE, $fee, array('0' => var_export($obj_Std->ProcessResult, true) ) );
 				}
