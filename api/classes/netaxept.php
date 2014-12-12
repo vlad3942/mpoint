@@ -389,8 +389,8 @@ class NetAxept extends Callback
 
 	 */
 	public function notifyClient($sid, array $_post, SurePayConfig &$obj_SurePay=null)
-	{
-		parent::notifyClient($sid, $_post["transact"],$_post["amount"], $_post['cardid'], $_post['cardnomask'], $obj_SurePay, $_post['fee'] );
+	{		
+		parent::notifyClient($sid, $_post["transact"],$_post["amount"], $_post['cardid'], $_post['cardnomask'], $obj_SurePay, intval($_post['fee'] ) );
 	}
 	
 	/**

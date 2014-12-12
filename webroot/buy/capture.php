@@ -101,7 +101,9 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					
 					$aMsgCds[1000] = "Success";
 					$args = array("transact" => $obj_mPoint->getPSPID(),
-								  "amount" => $_REQUEST['amount']);
+								  "amount" => $_REQUEST['amount'],
+								  "fee" => $obj_mPoint->getTxnInfo()->getFee()
+					);
 					if ($code == 1000) { $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args); }
 				}
 				else
