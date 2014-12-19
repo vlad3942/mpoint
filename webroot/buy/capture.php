@@ -89,7 +89,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 						$aHTTP_CONN_INFO["netaxept"]["password"] = $obj_PSPConfig->getPassword();
 						$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["netaxept"]);
 						
-						$code = $obj_mPoint->capture($obj_ConnInfo, $obj_PSPConfig->getMerchantAccount(), $obj_TxnInfo);
+						$code = $obj_mPoint->capture($obj_ConnInfo, $obj_PSPConfig->getMerchantAccount(), $obj_TxnInfo, (integer)$_REQUEST['amount']);
 						break;
 					default:	// Unkown Payment Service Provider
 						break;

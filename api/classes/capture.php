@@ -118,44 +118,45 @@ class Capture extends General
 		
 		return new Capture($oDB, $oTxt, $oTI, $obj_PSP, $RS["EXTID"]);
 	}
-	
+
 	/**
 	 * Performs a capture operation with the PSP that authorized the transaction.
-	 * 
-	 * @param	HTTPConnInfo $oCI		Information on how to connect to PSP. Defaults to NULL
-	 * @param	integer $merchant		The merchant ID to identify us to PSP. Defaults to -1
-	 * 
-	 *	DIBS
+	 *
+	 * @param    HTTPConnInfo $oCI Information on how to connect to PSP. Defaults to NULL
+	 * @param    integer $merchant The merchant ID to identify us to PSP. Defaults to -1
+	 *
+	 *    DIBS
 	 * The method will log one the following status codes for DIBS:
-	 * 	0. Capture succeeded
-	 * 	1. No response from acquirer.
-	 * 	2. Error in the parameters sent to the DIBS server. An additional parameter called "message" is returned, with a value that may help identifying the error.
-	 * 	3. Credit card expired.
-	 * 	4. Rejected by acquirer.
-	 * 	5. Authorisation older than 7 days.
-	 * 	6. Transaction status on the DIBS server does not allow capture.
-	 * 	7. Amount too high.
-	 * 	8. Amount is zero.
-	 * 	9. Order number (orderid) does not correspond to the authorisation order number.
+	 *    0. Capture succeeded
+	 *    1. No response from acquirer.
+	 *    2. Error in the parameters sent to the DIBS server. An additional parameter called "message" is returned, with a value that may help identifying the error.
+	 *    3. Credit card expired.
+	 *    4. Rejected by acquirer.
+	 *    5. Authorisation older than 7 days.
+	 *    6. Transaction status on the DIBS server does not allow capture.
+	 *    7. Amount too high.
+	 *    8. Amount is zero.
+	 *    9. Order number (orderid) does not correspond to the authorisation order number.
 	 * 10. Re-authorisation of the transaction was rejected.
 	 * 11. Not able to communicate with the acquier.
 	 * 12. Confirm request error
 	 * 14. Capture is called for a transaction which is pending for batch - i.e. capture was already called
 	 * 15. Capture was blocked by DIBS.
-	 * 
-	 * @see		DIBS::capture();
-	 * @link	http://tech.dibs.dk/toolbox/dibs-error-codes/
-	 * 
+	 *
+	 * @param int $amount (optional) amount to be captured
+	 * @return int
+	 * @throws CaptureException
+	 * @see        DIBS::capture();
+	 * @link    http://tech.dibs.dk/toolbox/dibs-error-codes/
+	 *
 	 * NETAXEPT:
-	 * 	 OK. Capture succeeded
-	 * 	 String. Refund failed
-	 * 
-	 * @link	http://www.betalingsterminal.no/Netthandel-forside/Teknisk-veiledning/Response-codes/
-	 * 
-	 * @return	integer
-	 * @throws	E_USER_WARNING
+	 *     OK. Capture succeeded
+	 *     String. Refund failed
+	 *
+	 * @link    http://www.betalingsterminal.no/Netthandel-forside/Teknisk-veiledning/Response-codes/
+	 *
 	 */
-	public function capture(HTTPConnInfo &$oCI=NULL, $merchant=-1)
+	public function capture(HTTPConnInfo &$oCI=NULL, $merchant=-1, $amount = null)
 	{
 		// Serialize capture operations by using the Database as a mutex
 		$this->getDBConn()->query("START TRANSACTION");// START TRANSACTION does not work with Oracle db
@@ -171,7 +172,7 @@ class Capture extends General
 				$code = $this->_obj_PSP->capture($this->_sPSPID);
 				break;
 			case (Constants::iNETAXEPT_PSP):	// Netaxept						
-				$code = $this->_obj_PSP->capture($oCI, $merchant, $this->_sPSPID, $this->getTxnInfo());
+				$code = $this->_obj_PSP->capture($oCI, $merchant, $this->_sPSPID, $this->getTxnInfo(), $amount);
 				break;
 			default:	// Unkown Payment Service Provider
 				throw new CaptureException("Unkown Payment Service Provider", 1001);
