@@ -238,27 +238,26 @@ class NetAxept extends Callback
 	 * @param    integer $merchant The merchant ID to identify us to NetAxept
 	 * @param    integer $transactionID Transaction ID previously returned by NetAxept during authorisation
 	 * @param    TxnInfo $txn Transaction info
-	 * @param 	 integer $amount Transaction Amount to be capture (if different from txn max amount)
+	 * @param 	 integer $iAmount Transaction Amount to be captured
 	 * @return String
 	 */
-	public function capture(HTTPConnInfo &$oCI, $merchant,$transactionID, TxnInfo &$txn, $amount = null)
+	public function capture(HTTPConnInfo &$oCI, $merchant,$transactionID, TxnInfo &$txn, $iAmount)
 	{
 		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );
-
-		if (is_int($amount) === false || $amount < 0) {	$amount = $txn->getAmount(); }
 
 		$aParams = array("merchantId" => $merchant,
 						 "token" => $oCI->getPassword(),
 						 "request" => array("Operation" => "CAPTURE",
 						 				  	"TransactionId" => $transactionID,
-						 					"TransactionAmount" => $amount ) );
+						 					"TransactionAmount" => $iAmount ) );
 		try
 		{
 			$obj_Std = $obj_SOAP->Process($aParams);
 			if ($obj_Std->ProcessResult->ResponseCode == 'OK') 
 			{
 				$data = array("psp-id" => Constants::iNETAXEPT_PSP,
-						"url" => var_export($obj_Std, true) );
+							  "request" => var_export($aParams, true),
+							  "response" => var_export($obj_Std, true) );
 				
 				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($data, true) );
 			}

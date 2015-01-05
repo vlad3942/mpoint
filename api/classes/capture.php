@@ -143,7 +143,7 @@ class Capture extends General
 	 * 14. Capture is called for a transaction which is pending for batch - i.e. capture was already called
 	 * 15. Capture was blocked by DIBS.
 	 *
-	 * @param int $amount (optional) amount to be captured
+	 * @param int $iAmount (optional) amount to be captured
 	 * @return int
 	 * @throws CaptureException
 	 * @see        DIBS::capture();
@@ -156,12 +156,12 @@ class Capture extends General
 	 * @link    http://www.betalingsterminal.no/Netthandel-forside/Teknisk-veiledning/Response-codes/
 	 *
 	 */
-	public function capture(HTTPConnInfo &$oCI=NULL, $merchant=-1, $amount = null)
+	public function capture(HTTPConnInfo &$oCI=NULL, $merchant=-1, $iAmount = null)
 	{
 		// Serialize capture operations by using the Database as a mutex
 		$this->getDBConn()->query("START TRANSACTION");// START TRANSACTION does not work with Oracle db
 		$this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_ACCEPTED_STATE, true);
-		
+
 		// Payment not Captured
 		if (count($this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE) ) == 0)
 		{				
@@ -171,8 +171,18 @@ class Capture extends General
 			case (Constants::iWANNAFIND_PSP):// WannaFind
 				$code = $this->_obj_PSP->capture($this->_sPSPID);
 				break;
-			case (Constants::iNETAXEPT_PSP):	// Netaxept						
-				$code = $this->_obj_PSP->capture($oCI, $merchant, $this->_sPSPID, $this->getTxnInfo(), $amount);
+			case (Constants::iNETAXEPT_PSP):	// Netaxept
+				if (is_int($iAmount) === false || $iAmount <= 0)
+				{
+					$iAmount = $this->getTxnInfo()->getAmount();
+				}
+				$code = $this->_obj_PSP->capture($oCI, $merchant, $this->_sPSPID, $this->getTxnInfo(), $iAmount);
+				if ($code == 1000 && $iAmount < $this->getTxnInfo()->getAmount())
+				{
+					//TODO: Find a better way to log difference in Authorized and Captured amount in mPoint
+					// We update amount in the Transaction_Tbl to reflect the actual captured amount in case it is less than the authorized amount
+					$this->getDBConn()->query("UPDATE Log.Transaction_Tbl SET amount = ". $iAmount. " WHERE id = ". $this->getTxnInfo()->getID() );
+				}
 				break;
 			default:	// Unkown Payment Service Provider
 				throw new CaptureException("Unkown Payment Service Provider", 1001);

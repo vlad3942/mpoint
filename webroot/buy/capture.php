@@ -89,7 +89,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 						$aHTTP_CONN_INFO["netaxept"]["password"] = $obj_PSPConfig->getPassword();
 						$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["netaxept"]);
 						
-						$code = $obj_mPoint->capture($obj_ConnInfo, $obj_PSPConfig->getMerchantAccount(), $obj_TxnInfo, (integer)$_REQUEST['amount']);
+						$code = $obj_mPoint->capture($obj_ConnInfo, $obj_PSPConfig->getMerchantAccount(), (integer)$_REQUEST['amount']);
 						break;
 					default:	// Unkown Payment Service Provider
 						break;
@@ -127,7 +127,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			catch (mPointException $e)
 			{
 				header("HTTP/1.0 500 Internal Error");
-				
+
 				$aMsgCds[$e->getCode()] = $e->getMessage();
 				trigger_error("Internal Error" ."\n". var_export($e, true), E_USER_WARNING);
 			}
