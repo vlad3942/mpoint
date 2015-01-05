@@ -1,0 +1,52 @@
+
+buildscript
+        {
+            repositories {
+                mavenCentral()
+                maven {
+                    url = 'http://nexus.cellpointmobile.com/content/repositories/snapshots/'
+                    credentials {
+                        username 'default-read'
+                        password 'CPMRead4321'
+                    }
+                }
+            }
+            dependencies
+                    {
+                        classpath group: 'com.cellpointmobile.gradle', name: 'cpmgradle', version: '0.1-SNAPSHOT'
+                    }
+        }
+
+apply plugin: 'maven'
+apply plugin: 'com.cellpointmobile.gradle.php'
+
+projectinfo
+        {
+            group = 'com.cellpointmobile.mpoint'
+            artifact = 'mPoint'
+            version = '1.86.DEV-SNAPSHOT'
+            description = 'mPoint'
+            packaging = 'zip'
+        }
+
+sourceSets {
+    main {
+        php
+                {
+                    srcDir 'api'
+                    srcDir 'webroot'
+                }
+        resources
+                {
+                    srcDir 'conf'
+                    srcDir 'db'
+                    srcDir 'doc'
+                }
+    }
+    test {
+        php
+                {
+                    srcDir 'test'
+                }
+    }
+}
