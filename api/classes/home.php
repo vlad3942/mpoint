@@ -663,7 +663,7 @@ class Home extends General
 	public function getTxnHistory($id, $num=0, $offset=-1)
 	{
 		// Fetch Transaction history for End-User
-		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, Extract('epoch' from EUT.created AT TIME ZONE 'Europe/Copenhagen') AS timestamp,
+		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, Extract('epoch' from EUT.created AT TIME ZONE 'Europe/Copenhagen') AS timestamp, Txn.captured AS capturedamount,
 					(CASE
 					 WHEN EUT.amount = 0 THEN Txn.amount
 					 WHEN EUT.amount IS NULL THEN Txn.amount
@@ -725,6 +725,7 @@ class Home extends General
 		// Construct XML Document with data for Transaction
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
+			if ($RS["CAPTUREDAMOUNT"] > 0) { $RS["AMOUNT"] = $RS["CAPTUREDAMOUNT"]; }
 			// E-Money / Points Top-Up or Points Reward
 			if ($RS["TYPEID"] == Constants::iTOPUP_OF_EMONEY || $RS["TYPEID"] == Constants::iTOPUP_OF_POINTS || $RS["TYPEID"] == Constants::iREWARD_OF_POINTS)
 			{

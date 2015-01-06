@@ -159,7 +159,11 @@ class Callback extends EndUserAccount
 	public function completeCapture($fee=0, $captured=0, array $debug=null)
 	{
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-				SET fee =".intval($fee) .", captured = ". intval($captured) ."
+				SET fee = (CASE
+						   WHEN captured = 0 THEN ".intval($fee) ." 
+						   ELSE ".intval($fee) ." + fee
+						   END), 
+					captured = ". intval($captured) ." + captured
 				WHERE id = ". $this->getDBConn()->escStr($this->_obj_TxnInfo->getID() ) ."";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);

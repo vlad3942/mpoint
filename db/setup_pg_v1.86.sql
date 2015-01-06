@@ -1,0 +1,1 @@
+UPDATE Log.Transaction_Tbl SET capture = amount WHERE id in(SELECT txnid FROM Log.Message_Tbl WHERE stateid = 2001)

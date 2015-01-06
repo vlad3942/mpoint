@@ -261,7 +261,7 @@ class NetAxept extends Callback
 				
 				$queryResponse = $this->query($oCI, $merchant, $transactionID);
 				
-				$this->completeCapture(intval($queryResponse->Summary->AmountCaptured) - intval($iAmount) , intval($queryResponse->Summary->AmountCaptured), $data);
+				$this->completeCapture(intval($queryResponse->Summary->AmountCaptured) - intval($iAmount) , $iAmount, $data);
 			}
 
 			return $obj_Std->ProcessResult->ResponseCode;
