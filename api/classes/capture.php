@@ -177,12 +177,6 @@ class Capture extends General
 					$iAmount = $this->getTxnInfo()->getAmount();
 				}
 				$code = $this->_obj_PSP->capture($oCI, $merchant, $this->_sPSPID, $this->getTxnInfo(), $iAmount);
-				if ($code == 1000 && $iAmount < $this->getTxnInfo()->getAmount())
-				{
-					//TODO: Find a better way to log difference in Authorized and Captured amount in mPoint
-					// We update amount in the Transaction_Tbl to reflect the actual captured amount in case it is less than the authorized amount
-					$this->getDBConn()->query("UPDATE Log.Transaction_Tbl SET amount = ". $iAmount. " WHERE id = ". $this->getTxnInfo()->getID() );
-				}
 				break;
 			default:	// Unkown Payment Service Provider
 				throw new CaptureException("Unkown Payment Service Provider", 1001);

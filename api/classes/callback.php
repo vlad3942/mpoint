@@ -143,6 +143,34 @@ class Callback extends EndUserAccount
 
 		return $sid;
 	}
+	
+	/**
+	 * Completes the Capture for the Transaction by updating the Transaction Log with the final details for the Payment.
+	 * Additionally the method will insert a final entry in the Message Log with the provided debug data.
+	 *
+	 * @see 	General::newMessage()
+	 *
+	 * @param 	integer $fee		The amount the customer will pay in fee´s for the Transaction. Default value 0
+	 * @param 	integer $captured	The amount that has been captured for the customer Transaction. Default value 0
+
+	 * @param 	array $debug 	Array of Debug data which should be logged for the state (optional)
+	 * @return	integer
+	 */
+	public function completeCapture($fee=0, $captured=0, array $debug=null)
+	{
+		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+				SET fee =".intval($fee) .", captured = ". intval($captured) ."
+				WHERE id = ". $this->getDBConn()->escStr($this->_obj_TxnInfo->getID() ) ."";
+//		echo $sql ."\n";
+		$res = $this->getDBConn()->query($sql);
+	
+		// Capture completed successfully
+		if (is_resource($res) === true)
+		{
+			if ($this->getDBConn()->countAffectedRows($res) == 1) { $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($debug, true) ); }
+		}
+		return $sid;
+	}
 
 	/**
 	 * Performs the Callback request via HTTP POST and sends the Payment Status to the Client.

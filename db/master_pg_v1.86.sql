@@ -1,0 +1,1 @@
+ALTER TABLE Log.Transaction_Tbl ADD captured integer DEFAULT 0;

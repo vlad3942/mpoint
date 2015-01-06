@@ -259,7 +259,9 @@ class NetAxept extends Callback
 							  "request" => var_export($aParams, true),
 							  "response" => var_export($obj_Std, true) );
 				
-				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($data, true) );
+				$queryResponse = $this->query($oCI, $merchant, $transactionID);
+				
+				$this->completeCapture(intval($queryResponse->Summary->AmountCaptured) - intval($iAmount) , intval($queryResponse->Summary->AmountCaptured), $data);
 			}
 
 			return $obj_Std->ProcessResult->ResponseCode;

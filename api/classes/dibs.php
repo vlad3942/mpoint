@@ -188,7 +188,8 @@ class DIBS extends Callback
 				// Payment successfully captured
 				else
 				{
-					$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
+					// Needs to be updated to support DIBS splitpay
+					$this->completeCapture( $this->getTxnInfo()->getFee() , $this->getTxnInfo()->getAmount(), utf8_encode($obj_HTTP->getReplyBody() ) );
 					
 					return 0;
 				}
