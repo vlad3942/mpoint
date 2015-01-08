@@ -80,7 +80,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 				{
 					case ( Constants::iDIBS_PSP):	// DIBS
 					case (Constants::iWANNAFIND_PSP):// WannaFind
-						$code = $obj_mPoint->capture();
+						$code = $obj_mPoint->capture(NULL, -1, (integer)$_REQUEST['amount']);
 						break;
 					case (Constants::iNETAXEPT_PSP):	// NetAxept
 						$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETAXEPT_PSP);
