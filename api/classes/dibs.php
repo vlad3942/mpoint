@@ -157,7 +157,7 @@ class DIBS extends Callback
 	 * @return	integer
 	 * @throws	E_USER_WARNING
 	 */
-	public function capture($txn)
+	public function capture($txn, $iAmount)
 	{
 		$code = $this->status($txn);
 		// Transaction ready for Capture
@@ -166,7 +166,7 @@ class DIBS extends Callback
 			$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
 			$b .= "&mpointid=". $this->getTxnInfo()->getID();
 			$b .= "&transact=". $txn;
-			$b .= "&amount=". $this->getTxnInfo()->getAmount();
+			$b .= "&amount=". $iAmount;
 			$b .= "&orderid=". urlencode($this->getTxnInfo()->getOrderID() );
 			if ($this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP) > -1) { $b .= "&account=". $this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP); }
 			$b .= "&textreply=true";
@@ -189,7 +189,7 @@ class DIBS extends Callback
 				else
 				{
 					// Needs to be updated to support DIBS splitpay
-					$this->completeCapture( $this->getTxnInfo()->getFee() , $this->getTxnInfo()->getAmount(), utf8_encode($obj_HTTP->getReplyBody() ) );
+					$this->completeCapture($iAmount, $this->getTxnInfo()->getFee(), utf8_encode($obj_HTTP->getReplyBody() ) );
 					
 					return 0;
 				}

@@ -150,20 +150,19 @@ class Callback extends EndUserAccount
 	 *
 	 * @see 	General::newMessage()
 	 *
+	 * @param 	integer $amount		The amount that has been captured for the customer Transaction. Default value 0
 	 * @param 	integer $fee		The amount the customer will pay in fee´s for the Transaction. Default value 0
-	 * @param 	integer $captured	The amount that has been captured for the customer Transaction. Default value 0
-
-	 * @param 	array $debug 	Array of Debug data which should be logged for the state (optional)
+	 * @param 	array $debug 		Array of Debug data which should be logged for the state (optional)
 	 * @return	integer
 	 */
-	public function completeCapture($fee=0, $captured=0, array $debug=null)
+	public function completeCapture($amount=0, $fee=0, array $debug=null)
 	{
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET fee = (CASE
 						   WHEN captured = 0 THEN ".intval($fee) ." 
 						   ELSE ".intval($fee) ." + fee
 						   END), 
-					captured = ". intval($captured) ." + captured
+					captured = ". intval($amount) ." + captured
 				WHERE id = ". $this->getDBConn()->escStr($this->_obj_TxnInfo->getID() ) ."";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);

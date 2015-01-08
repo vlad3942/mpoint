@@ -119,8 +119,7 @@ class WannaFind extends Callback
 			// Payment successfully captured
 			if (substr($obj_HTTP->getReplyBody(), 0, 8) == "APPROVED" || $aStatus[0] == "APPROVED")
 			{
-				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
-				
+				$this->completeCapture( $this->getTxnInfo()->getAmount(), $this->getTxnInfo()->getFee(), utf8_encode($obj_HTTP->getReplyBody() ) );
 				return 0;
 			}
 			// Capture Declined

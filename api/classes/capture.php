@@ -156,7 +156,7 @@ class Capture extends General
 	 * @link    http://www.betalingsterminal.no/Netthandel-forside/Teknisk-veiledning/Response-codes/
 	 *
 	 */
-	public function capture(HTTPConnInfo &$oCI=NULL, $merchant=-1, $iAmount = null)
+	public function capture(HTTPConnInfo &$oCI=NULL, $merchant=-1, $iAmount = -1)
 	{
 		// Serialize capture operations by using the Database as a mutex
 		$this->getDBConn()->query("START TRANSACTION");// START TRANSACTION does not work with Oracle db
@@ -164,18 +164,21 @@ class Capture extends General
 
 		// Payment not Captured
 		if (count($this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE) ) == 0)
-		{				
+		{		
+			if ($iAmount <= 0)
+			{
+				$iAmount = $this->getTxnInfo()->getAmount();
+			}	
+					
 			switch ($this->getTxnInfo()->getPSPID() )
 			{
 			case (Constants::iDIBS_PSP):	// DIBS
+				$code = $this->_obj_PSP->capture($this->_sPSPID, $iAmount);
+				
 			case (Constants::iWANNAFIND_PSP):// WannaFind
 				$code = $this->_obj_PSP->capture($this->_sPSPID);
 				break;
 			case (Constants::iNETAXEPT_PSP):	// Netaxept
-				if (is_int($iAmount) === false || $iAmount <= 0)
-				{
-					$iAmount = $this->getTxnInfo()->getAmount();
-				}
 				$code = $this->_obj_PSP->capture($oCI, $merchant, $this->_sPSPID, $this->getTxnInfo(), $iAmount);
 				break;
 			default:	// Unkown Payment Service Provider

@@ -120,7 +120,7 @@ class PayEx extends Callback
 		
 		if ($obj_XML->status->errorCode == "OK")
 		{
-			$this->completeCapture( $this->getTxnInfo()->getFee() , $this->getTxnInfo()->getAmount(), utf8_encode($obj_Std->Capture5Result ) );
+			$this->completeCapture($this->getTxnInfo()->getAmount(), $this->getTxnInfo()->getFee(), utf8_encode($obj_Std->Capture5Result ) );
 			return 0;
 		}
 		else

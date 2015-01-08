@@ -52,9 +52,14 @@ class NetAxept extends Callback
 		// check if we need to store the card
 		if ($storecard == true)
 		{
-			$request['Recurring'] = array("Type" => "S");
+	
+			$request['Recurring'] = array("Type" => "R",
+										  "Frequency" =>"0",
+										  "ExpiryDate" => date('Ymd', strtotime('+20 years') ) );
+											/* WE have to set the ExpiryDate of the Recurring as we dont have the ExpiryDate of the card,
+											 * so we set the ExpiryDate to 20 years in the future
+										     */
 		}
-
 		$aParams = array("merchantId" => $merchant,
 						 "token" => $oCI->getPassword(),
 						 "request" => $request);
@@ -141,13 +146,13 @@ class NetAxept extends Callback
 		try
 		{
 			$obj_Std = $obj_SOAP->Process($aParams);
-
+				
 			// log and notify the client of the new status of the transaction if it suceeded
 			if ($obj_Std->ProcessResult->ResponseCode == 'OK')
 			{
 				// make a query response to NetAxept to make sure everything is ok
 				$queryResponse = $this->query($oCI, $merchant, $transactionID);
-								
+				
 				$fee = 0;
 				if (intval($queryResponse->OrderInformation->Fee) > 0) {$fee = intval($queryResponse->OrderInformation->Fee); }
 				// finalize transaction in mPoint
@@ -241,7 +246,7 @@ class NetAxept extends Callback
 	 * @param 	 integer $iAmount Transaction Amount to be captured
 	 * @return String
 	 */
-	public function capture(HTTPConnInfo &$oCI, $merchant,$transactionID, TxnInfo &$txn, $iAmount)
+	public function capture(HTTPConnInfo &$oCI, $merchant,$transactionID, TxnInfo &$txn, $iAmount=-1)
 	{
 		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );
 
@@ -261,7 +266,7 @@ class NetAxept extends Callback
 				
 				$queryResponse = $this->query($oCI, $merchant, $transactionID);
 				
-				$this->completeCapture(intval($queryResponse->Summary->AmountCaptured) - intval($iAmount) , $iAmount, $data);
+				$this->completeCapture($iAmount ,intval($queryResponse->Summary->AmountCaptured) - intval($iAmount), $data);
 			}
 
 			return $obj_Std->ProcessResult->ResponseCode;
@@ -420,7 +425,7 @@ class NetAxept extends Callback
 														   "CurrencyCode" => $this->getTxnInfo()->getCountryConfig()->getCurrency(),
 														   "OrderNumber" => $sOrderNo ),
 										  "ServiceType" => "C",
-										  "Recurring" => array("Type" => "S",
+										  "Recurring" => array("Type" => "R",
 										  					   "PanHash" => $ticket),
 										  "TransactionId" => $this->getTxnInfo()->getID() ."-". time() );
 
