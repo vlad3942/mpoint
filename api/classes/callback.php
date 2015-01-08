@@ -441,7 +441,7 @@ class Callback extends EndUserAccount
 	 */
 	public function getMerchantLogin($clid, $pspid, $sc=false)
 	{
-		$sql = "SELECT username, passwd AS password
+		$sql = "SELECT username, passwd AS password , name
 				FROM Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl
 				WHERE clientid = ". intval($clid) ." AND pspid = ". intval($pspid) ." AND enabled = '1'";
 		if ($sc === true) { $sql .= " AND stored_card = '1'"; }

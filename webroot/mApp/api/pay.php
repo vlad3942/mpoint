@@ -154,10 +154,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$card = $obj_PSP->getCardName( (integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"]);
 
 									if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["worldpay"]["host"] = str_replace("secure.", "secure-test.", $aHTTP_CONN_INFO["worldpay"]["host"]); }
-									$aHTTP_CONN_INFO["worldpay"]["username"] = $obj_PSPConfig->getUsername();
-									$aHTTP_CONN_INFO["worldpay"]["password"] = $obj_PSPConfig->getPassword();
+									$aMerchantAccount =  $obj_PSP->getMerchantLogin($obj_DOM->pay[$i]["client-id"], Constants::iWORLDPAY_PSP);
+									$aHTTP_CONN_INFO["worldpay"]["username"] = $aMerchantAccount["username"];
+									$aHTTP_CONN_INFO["worldpay"]["password"] = $aMerchantAccount["password"];
+
 									$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["worldpay"]);
-									$url = $obj_PSP->initialize($obj_ConnInfo, $obj_PSPConfig->getMerchantAccount(), $obj_PSPConfig->getMerchantSubAccount(), (string) $obj_Elem->currency, $aCards);
+									
+									$url = $obj_PSP->initialize($obj_ConnInfo, $aMerchantAccount["name"], $obj_PSPConfig->getMerchantSubAccount(), (string) $obj_Elem->currency, $aCards);
 
 									$url .= "&preferredPaymentMethod=". $card ."&language=". $obj_TxnInfo->getLanguage();
 									$xml .= '<url method="get" content-type="none">'. htmlspecialchars($url, ENT_NOQUOTES) .'</url>';
