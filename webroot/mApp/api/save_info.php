@@ -144,7 +144,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								}
 								if (count($obj_DOM->{'personal-info'}[$i]->mobile) == 1)
 								{
-									if (floatval($obj_DOM->{'personal-info'}[$i]->mobile) == floatval($obj_DOM->{'personal-info'}[$i]->{'client-info'}->mobile) )
+									if (floatval($obj_DOM->{'personal-info'}[$i]->mobile) == floatval($obj_DOM->{'personal-info'}[$i]->{'client-info'}->mobile) || $obj_ClientConfig->smsReceiptEnabled() === false)
 									{
 										$obj_mPoint->saveMobile($iAccountID, (float) $obj_DOM->{'personal-info'}[$i]->mobile, true);
 									}
