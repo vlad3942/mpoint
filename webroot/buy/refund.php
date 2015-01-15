@@ -96,7 +96,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 						$obj_mPoint = Refund::produce($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_ConnInfo);
 						break;
 					default:	// Unkown Payment Service Provider
-							break;
+						break;
 					}
 					$aClientIDs = $obj_mPoint->getClientsForUser($iUserID);
 					// User has access to Client

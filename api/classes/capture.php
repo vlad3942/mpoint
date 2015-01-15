@@ -150,8 +150,8 @@ class Capture extends General
 	 * @link    http://tech.dibs.dk/toolbox/dibs-error-codes/
 	 *
 	 * NETAXEPT:
-	 *     OK. Capture succeeded
-	 *     String. Refund failed
+	 *		0. Capture succeeded
+	 *		-1. Capture failed
 	 *
 	 * @link    http://www.betalingsterminal.no/Netthandel-forside/Teknisk-veiledning/Response-codes/
 	 *
@@ -185,7 +185,7 @@ class Capture extends General
 				throw new CaptureException("Unkown Payment Service Provider", 1001);
 				break;
 			}
-			if ($code === 0 || $code === "OK") { $code = 1000; }
+			if ($code === 0) { $code = 1000; }
 		}
 		else { $code = 1001; }
 		// Release mutex

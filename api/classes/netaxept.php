@@ -244,7 +244,7 @@ class NetAxept extends Callback
 	 * @param	integer $transactionID Transaction ID previously returned by NetAxept during authorisation
 	 * @param	TxnInfo	obj_TxnInfo $txn Transaction info
 	 * @param 	integer $iAmount Transaction Amount to be captured
-	 * @return String
+	 * @return integer
 	 */
 	public function capture(HTTPConnInfo &$oCI, $merchant,$transactionID, TxnInfo &$obj_TxnInfo, $iAmount=-1)
 	{
@@ -267,17 +267,21 @@ class NetAxept extends Callback
 				$queryResponse = $this->query($oCI, $merchant, $transactionID);
 				
 				$this->completeCapture($iAmount ,intval($queryResponse->Summary->AmountCaptured) - intval($iAmount), $data);
+				return 0;
 			}
-
+			
 			return $obj_Std->ProcessResult->ResponseCode;
 		}
 		catch (Exception $e)
 		{
+			/*
 			if ($e->detail->BBSException->Result->ResponseCode != NULL)
 			{
 				return $e->detail->BBSException->Result->ResponseCode;
 			}
 			else { return $e->getMessage();	}
+			*/
+			return -1;
 		}
 	}
 

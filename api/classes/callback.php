@@ -155,7 +155,7 @@ class Callback extends EndUserAccount
 	 * @param 	array $debug 		Array of Debug data which should be logged for the state (optional)
 	 * @return	integer
 	 */
-	public function completeCapture($amount=0, $fee=0, array $debug=null)
+	public function completeCapture($amount, $fee=0, array $debug=null)
 	{
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET fee = (CASE
