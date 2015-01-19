@@ -106,7 +106,7 @@ class Callback extends EndUserAccount
 	 * @param 	integer $txnid 	Transaction ID returned by the PSP
 	 * @param 	integer $cid 	Unique ID for the Credit Card the customer used to pay for the Purchase
 	 * @param 	integer $sid 	Unique ID indicating that final state of the Transaction
-	 * @param 	integer $fee				The amount the customer will pay in fee´s for the Transaction. Default value 0
+	 * @param 	integer $fee				The amount the customer will pay in feeï¿½s for the Transaction. Default value 0
 	 * @param 	array $debug 	Array of Debug data which should be logged for the state (optional)
 	 * @return	integer
 	 * @throws 	CallbackException
@@ -151,9 +151,9 @@ class Callback extends EndUserAccount
 	 * @see 	General::newMessage()
 	 *
 	 * @param 	integer $amount		The amount that has been captured for the customer Transaction. Default value 0
-	 * @param 	integer $fee		The amount the customer will pay in fee´s for the Transaction. Default value 0
+	 * @param 	integer $fee		The amount the customer will pay in feeï¿½s for the Transaction. Default value 0
 	 * @param 	array $debug 		Array of Debug data which should be logged for the state (optional)
-	 * @return	integer
+	 * @return	boolean
 	 */
 	public function completeCapture($amount, $fee=0, array $debug=null)
 	{
@@ -168,11 +168,12 @@ class Callback extends EndUserAccount
 		$res = $this->getDBConn()->query($sql);
 	
 		// Capture completed successfully
-		if (is_resource($res) === true)
+		if (is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) == 1)
 		{
-			if ($this->getDBConn()->countAffectedRows($res) == 1) { $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($debug, true) ); }
+			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($debug, true) );
+			return true;
 		}
-		return $sid;
+		else { return false; }
 	}
 
 	/**
@@ -264,7 +265,7 @@ class Callback extends EndUserAccount
 	 *	&mobile={CUSTOMER'S MSISDN WHERE SMS MESSAGE CAN BE SENT TO}
 	 *	&email={CUSTOMER'S EMAIL ADDRESS WHERE ORDER STATUS CAN BE SENT TO}
 	 *	&operator={GOMOBILE ID FOR THE CUSTOMER'S MOBILE NETWORK OPERATOR}
-	 *	&fee={AMOUNT THE USER HAS TO PAY IN FEE´S}
+	 *	&fee={AMOUNT THE USER HAS TO PAY IN FEEï¿½S}
 	 * Additionally the method will append all custom Client Variables that were sent to mPoint as part of the original request
 	 * as well as the following Customer Input:
 	 * 	- Purchased Products
@@ -280,7 +281,7 @@ class Callback extends EndUserAccount
 	 * @param 	integer $cardid				mPoint's unique ID for the card type
 	 * @param 	string $cardno 				The masked card number for the card that was used for the payment
 	 * @param 	SurePayConfig $$obj_SurePay SurePay Configuration Object. Default value null
-	 * @param 	integer $fee				The amount the customer will pay in fee´s for the Transaction. Default value 0
+	 * @param 	integer $fee				The amount the customer will pay in feeï¿½s for the Transaction. Default value 0
 	 */
 	public function notifyClient($sid, $pspid, $amt, $cardid=0, $cardno="", SurePayConfig &$obj_SurePay=null, $fee=0)
 	{		
