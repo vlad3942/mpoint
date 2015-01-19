@@ -247,7 +247,19 @@ class DIBS extends Callback
 	public function refund($txn, $amount, $sType)
 	{
 		$code = $this->status($txn);
-		// Transaction ready for Refund
+		
+		//Set the api type depending on the return value that is returned from DIBS
+		switch ($code)
+		{
+			case (2):
+				$sType = "cancel.cgi";
+				break;
+			case (5):
+				$sType = "refund.cgi";
+				break;
+		}
+		
+		// Transaction ready for Refund or cancel
 		if ($code == 5 || $code == 2)
 		{
 			$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
