@@ -457,8 +457,6 @@ class NetAxept extends Callback
 				$code = $this->auth($oCI, $merchant, $obj_Std->RegisterResult->TransactionId);
 				if ($code == "OK")
 				{
-					$code = $this->auth($oCI, $merchant, $obj_Std->RegisterResult->TransactionId);
-
 					return $code;
 				}
 				else { return -abs($code); }
