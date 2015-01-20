@@ -142,14 +142,14 @@ try
 	*/
 	
 	if ($obj_TxnInfo->getReward() > 0 && $obj_TxnInfo->getAccountID() > 0)
-	 {
-	 	$obj_mPoint->topup($obj_TxnInfo->getAccountID(), Constants::iREWARD_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getReward() );
-	 }	 
-	 $args = array("transact" => Constants::iNETAXEPT_PSP,
-	 		"amount" => $queryResponse->OrderInformation->Amount,
-	 		"cardid" =>  $obj_mPoint->getCardID($queryResponse->CardInformation->Issuer),
-	 		"cardnomask" =>  str_replace("X", "*",$queryResponse->CardInformation->MaskedPAN),
-	 		"fee" => $queryResponse->OrderInformation->Fee );
+	{
+		$obj_mPoint->topup($obj_TxnInfo->getAccountID(), Constants::iREWARD_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getReward() );
+	}	 
+	$args = array("transact" => $obj_JSON->TransactionId,
+			 	  "amount" => $queryResponse->OrderInformation->Amount,
+			 	  "cardid" =>  $obj_mPoint->getCardID($queryResponse->CardInformation->Issuer),
+			 	  "cardnomask" =>  str_replace("X", "*",$queryResponse->CardInformation->MaskedPAN),
+			 	  "fee" => $queryResponse->OrderInformation->Fee);
 	 
 	// Callback URL has been defined for Client and transaction hasn't been duplicated
 	if ($obj_TxnInfo->getCallbackURL() != "" && $iStateID != Constants::iPAYMENT_DUPLICATED_STATE)
