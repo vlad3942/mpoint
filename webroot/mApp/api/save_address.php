@@ -32,6 +32,7 @@ $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
+$HTTP_RAW_POST_DATA .= '<save-address>';
 $HTTP_RAW_POST_DATA .= '<address client-id="10007" account="100007" country-id="100">';
 $HTTP_RAW_POST_DATA .= '<full-name>Jonatan Buus</full-name>';
 //$HTTP_RAW_POST_DATA .= '<first-name>Jonatan Evald</first-name>';
@@ -47,6 +48,7 @@ $HTTP_RAW_POST_DATA .= '<email>jona@oismail.com</email>';
 $HTTP_RAW_POST_DATA .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
 $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</address>';
+$HTTP_RAW_POST_DATA .= '</save-address>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
