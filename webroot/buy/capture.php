@@ -139,7 +139,25 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			// Log Errors
 			foreach ($aMsgCds as $state => $debug)
 			{
-				$obj_mPoint->newMessage($_REQUEST['mpointid'], $state, $debug);
+				/*
+				 * Method: valmPointID has not returned one of the following states:
+				 * 	 1. Undefined mPoint ID
+				 * 	 2. Invalid mPoint ID
+				 * 	 3. Transaction not found for mPoint ID
+				 */
+				if ($state != 171 && $state != 172 && $state != 173)
+				{
+					$obj_mPoint->newMessage($_REQUEST['mpointid'], $state, $debug);
+				}
+				else
+				{
+					// Transaction not found for mPoint ID
+					if ($state == 173 && count($aMsgCds) == 1)
+					{
+						header("HTTP/1.0 404 Not Found");
+					}
+					trigger_error("Unable to log invalid input due to state: ". $state, E_USER_NOTICE);
+				}
 			}
 		}
 	}
@@ -150,7 +168,25 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 		// Log Errors
 		foreach ($aMsgCds as $state => $debug)
 		{
-			$obj_mPoint->newMessage($_REQUEST['mpointid'], $state, $debug);
+			/*
+			 * Method: valmPointID has not returned one of the following states:
+			 * 	 1. Undefined mPoint ID
+			 * 	 2. Invalid mPoint ID
+			 * 	 3. Transaction not found for mPoint ID
+			 */
+			if ($state != 171 && $state != 172 && $state != 173)
+			{
+				$obj_mPoint->newMessage($_REQUEST['mpointid'], $state, $debug);
+			}
+			else
+			{
+				// Transaction not found for mPoint ID
+				if ($state == 173 && count($aMsgCds) == 1)
+				{
+					header("HTTP/1.0 404 Not Found");
+				}
+				trigger_error("Unable to log invalid input due to state: ". $state, E_USER_NOTICE);
+			}
 		}
 	}
 }
