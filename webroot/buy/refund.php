@@ -153,7 +153,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 				 * 	 2. Invalid mPoint ID
 				 * 	 3. Transaction not found for mPoint ID
 				 */
-				if ($state != 171 && $state != 172 && $state != 173)
+				if (array_key_exists(171, $aMsgCds) === false && array_key_exists(172, $aMsgCds) === false && array_key_exists(173, $aMsgCds) === false)
 				{
 					$obj_mPoint->newMessage($_REQUEST['mpointid'], $state, $debug);
 				}
@@ -164,7 +164,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					{
 						header("HTTP/1.0 404 Not Found");
 					}
-					trigger_error("Unable to log invalid input due to state: ". $state, E_USER_NOTICE);
+					trigger_error("Unable to log invalid input: ". $debug ." due to state: ". $state, E_USER_NOTICE);
 				}
 			}
 		}
@@ -182,7 +182,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			 * 	 2. Invalid mPoint ID
 			 * 	 3. Transaction not found for mPoint ID
 			 */
-			if ($state != 171 && $state != 172 && $state != 173)
+			if (array_key_exists(171, $aMsgCds) === false && array_key_exists(172, $aMsgCds) === false && array_key_exists(173, $aMsgCds) === false)
 			{
 				$obj_mPoint->newMessage($_REQUEST['mpointid'], $state, $debug);
 			}
@@ -193,7 +193,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 				{
 					header("HTTP/1.0 404 Not Found");
 				}
-				trigger_error("Unable to log invalid input due to state: ". $state, E_USER_NOTICE);
+				trigger_error("Unable to log invalid input: ". $debug ." due to state: ". $state, E_USER_NOTICE);
 			}
 		}
 	}
