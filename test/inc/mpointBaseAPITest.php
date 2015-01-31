@@ -2,6 +2,17 @@
 
 abstract class mPointBaseAPITest extends mPointBaseDatabaseTest
 {
+
+    public function setUp()
+    {
+        if (!file_exists(sPROJECT_BASE_DIR. '/log') )
+        {
+            mkdir(sPROJECT_BASE_DIR. '/log');
+            @chmod(sPROJECT_BASE_DIR. '/log', octdec(777) );
+        }
+        parent::setup();
+    }
+
     /**
      * Construct standard mPoint HTTP Headers for notifying the Client via HTTP.
      *
