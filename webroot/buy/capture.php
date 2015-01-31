@@ -156,7 +156,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					{
 						header("HTTP/1.0 404 Not Found");
 					}
-					trigger_error("Unable to log invalid input: ". $debug ." due to state: ". $state, E_USER_NOTICE);
+					trigger_error("Unable to log invalid input: ". $debug ." for state: ". $state .". No associated transaction found for mPoint ID: ". @$_REQUEST['mpointid'], E_USER_NOTICE);
 				}
 			}
 		}
@@ -185,7 +185,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 				{
 					header("HTTP/1.0 404 Not Found");
 				}
-				trigger_error("Unable to log invalid input: ". $debug ." due to state: ". $state, E_USER_NOTICE);
+				trigger_error("Unable to log invalid input: ". $debug ." for state: ". $state .". No associated transaction found for mPoint ID: ". @$_REQUEST['mpointid'], E_USER_NOTICE);
 			}
 		}
 	}
