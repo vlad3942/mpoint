@@ -220,7 +220,7 @@ class TxnInfo
 	 */
 	private $_iPSPID = -1;
 	/**
-	 * The amount the customer will pay in fee´s for the Transaction
+	 * The amount the customer will pay in feeï¿½s for the Transaction
 	 *
 	 * @var integer
 	 */
@@ -741,5 +741,26 @@ class TxnInfo
 
 		return $obj_TxnInfo;
 	}
+
+	public function getMessageHistory(RDB $obj_DB)
+	{
+		$sql = "SELECT id, stateid, created
+				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
+				WHERE txnid = ". $this->getID() ." AND enabled = TRUE
+				ORDER BY created DESC";
+//		echo $sql;
+
+		$RS = $obj_DB->getAllNames($sql);
+
+		if (is_array($RS) === true)
+		{
+			return $RS;
+		}
+		else
+		{
+			return array();
+		}
+	}
+
 }
 ?>
