@@ -381,25 +381,33 @@ class Callback extends EndUserAccount
 	 * @see		HTTPConnInfo
 	 * @see		HTTPClient
 	 *
-	 * @param 	string $url Absolute URL the request should be made to
-	 * @param 	string $h 	HTTP Headers to send as part of the request
-	 * @param 	string $b 	HTTP Body to send as part of the request
-	 * @return	HTTPClient	Reference to the created HTTP Client object
+	 * @param 	string|HTTPConnInfo $url Absolute URL the request should be made to
+	 * @param 	string $h				 HTTP Headers to send as part of the request
+	 * @param 	string $b				 HTTP Body to send as part of the request
+	 * @return	HTTPClient				 Reference to the created HTTP Client object
 	 * @throws 	HTTPException
 	 */
 	public function &send($url, $h, $b, $un="", $pw="")
 	{
-		/* ========== Instantiate Connection Info Start ========== */
-		$aURLInfo = parse_url($url);
-
-		if (array_key_exists("port", $aURLInfo) === false)
+		if ( ($url instanceof HTTPConnInfo) === true)
 		{
-			if ($aURLInfo["scheme"] == "https") { $aURLInfo["port"] = 443; }
-			else { $aURLInfo["port"] = 80; }
+			$obj_ConnInfo = $url;
 		}
-		if (array_key_exists("query", $aURLInfo) === true) { $aURLInfo["path"] .= "?". $aURLInfo["query"]; }
+		else
+		{
+			/* ========== Instantiate Connection Info Start ========== */
+			$aURLInfo = parse_url($url);
 
-		$obj_ConnInfo = new HTTPConnInfo($aURLInfo["scheme"], $aURLInfo["host"], $aURLInfo["port"], 60, $aURLInfo["path"], (empty($b) === true ? "GET" : "POST"), "application/x-www-form-urlencoded", $un, $pw);
+			if (array_key_exists("port", $aURLInfo) === false)
+			{
+				if ($aURLInfo["scheme"] == "https") { $aURLInfo["port"] = 443; }
+				else { $aURLInfo["port"] = 80; }
+			}
+			if (array_key_exists("query", $aURLInfo) === true) { $aURLInfo["path"] .= "?". $aURLInfo["query"]; }
+
+			$obj_ConnInfo = new HTTPConnInfo($aURLInfo["scheme"], $aURLInfo["host"], $aURLInfo["port"], 60, $aURLInfo["path"], (empty($b) === true ? "GET" : "POST"), "application/x-www-form-urlencoded", $un, $pw);
+		}
+
 		/* ========== Instantiate Connection Info End ========== */
 		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
 

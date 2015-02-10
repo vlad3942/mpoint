@@ -153,11 +153,15 @@ $aHTTP_CONN_INFO["dibs"]["protocol"] = "https";
 $aHTTP_CONN_INFO["dibs"]["host"] = "payment.architrade.com";
 $aHTTP_CONN_INFO["dibs"]["port"] = 443;
 $aHTTP_CONN_INFO["dibs"]["timeout"] = 120;
-$aHTTP_CONN_INFO["dibs"]["path"] = "/shoppages/{account}/payment.pml";
+$aHTTP_CONN_INFO["dibs"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["dibs"]["method"] = "POST";
 $aHTTP_CONN_INFO["dibs"]["contenttype"] = "application/x-www-form-urlencoded";
-//$aHTTP_CONN_INFO["worldpay"]["username"] = ""; 
-//$aHTTP_CONN_INFO["dibs"]["password"] = "";
+$aHTTP_CONN_INFO["dibs"]["paths"]["auth"] = "/cgi-ssl/ticket_auth.cgi";
+$aHTTP_CONN_INFO["dibs"]["paths"]["capture"] = "/cgi-bin/capture.cgi";
+$aHTTP_CONN_INFO["dibs"]["paths"]["cancel"] = "/cgi-adm/cancel.cgi";
+$aHTTP_CONN_INFO["dibs"]["paths"]["refund"] = "/cgi-adm/refund.cgi";
+$aHTTP_CONN_INFO["dibs"]["paths"]["status"] = "/transstatus.pml";
+
 
 /**
  * Connection info for connecting to WorldPay

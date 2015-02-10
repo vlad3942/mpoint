@@ -176,10 +176,7 @@ class Refund extends General
 		switch (strtoupper(get_class($this->_obj_PSP) ) )
 		{
 		case ("DIBS"):	// DIBS
-			$sType = "cancel.cgi";
-			if ($RS["ENABLED"] === true) { $sType = "refund.cgi"; }
-			
-			$code = $this->_obj_PSP->refund($this->_sPSPID, $amt, $sType);
+			$code = $this->_obj_PSP->refund($this->_sPSPID, $amt);
 			break;
 		case ("NETAXEPT"):	// NetAxept		
 			$obj_PSPConfig = PSPConfig::produceConfig($this->getDBConn(), $this->_obj_TxnInfo->getClientConfig()->getID(), $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETAXEPT_PSP);

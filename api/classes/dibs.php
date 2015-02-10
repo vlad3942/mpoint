@@ -18,6 +18,15 @@
  */
 class DIBS extends Callback
 {
+	private $_aDIBS_CONN_INFO;
+
+	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI)
+	{
+		parent::__construct($oDB, $oTxt, $oTI);
+		global $aHTTP_CONN_INFO;
+		$this->_aDIBS_CONN_INFO = $aHTTP_CONN_INFO["dibs"];
+	}
+
 	/**
 	 * Notifies the Client of the Payment Status by performing a callback via HTTP.
 	 * The method will re-construct the data received from DIBS after having removed the following mPoint specific fields:
@@ -118,8 +127,12 @@ class DIBS extends Callback
 		$b .= "&orderid=". urlencode($oid);
 		if ($this->getTxnInfo()->getClientConfig()->getMode() > 0) { $b .= "&test=". $this->getTxnInfo()->getClientConfig()->getMode(); }
 		$b .= "&textreply=true";
-		
-		$obj_HTTP = parent::send("https://payment.architrade.com/cgi-ssl/ticket_auth.cgi", $this->constHTTPHeaders(), $b);
+
+		$aConnInfo = $this->_aDIBS_CONN_INFO;
+		$aConnInfo["path"] = $aConnInfo["paths"]["auth"];
+		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aConnInfo);
+		$obj_HTTP = parent::send($obj_ConnInfo, $this->constHTTPHeaders(), $b);
+
 		$aStatus = array();
 		parse_str($obj_HTTP->getReplyBody(), $aStatus);
 		// Auhtorisation Declined
@@ -170,8 +183,12 @@ class DIBS extends Callback
 			$b .= "&orderid=". urlencode($this->getTxnInfo()->getOrderID() );
 			if ($this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP) > -1) { $b .= "&account=". $this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP); }
 			$b .= "&textreply=true";
-			
-			$obj_HTTP = parent::send("https://payment.architrade.com/cgi-bin/capture.cgi", $this->constHTTPHeaders(), $b);
+
+			$aConnInfo = $this->_aDIBS_CONN_INFO;
+			$aConnInfo["path"] = $aConnInfo["paths"]["capture"];
+			$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aConnInfo);
+
+			$obj_HTTP = parent::send($obj_ConnInfo, $this->constHTTPHeaders(), $b);
 			if ($obj_HTTP->getReturnCode() == 200)
 			{
 				$aStatus = array();
@@ -239,23 +256,23 @@ class DIBS extends Callback
 	 * 
 	 * @param 	integer $txn	Transaction ID previously returned by DIBS during authorisation
 	 * @param 	integer $amount	full amount that needed to be refunded
-	 * @param String  	$sType	If the amount should be refunded or released 
-
 	 * @return	integer
 	 * @throws	E_USER_WARNING
 	 */
-	public function refund($txn, $amount, $sType)
+	public function refund($txn, $amount)
 	{
 		$code = $this->status($txn);
-		
+
+		$aConnInfo = $this->_aDIBS_CONN_INFO;
+
 		//Set the api type depending on the return value that is returned from DIBS
 		switch ($code)
 		{
 			case (2):
-				$sType = "cancel.cgi";
+				$aConnInfo["path"] = $aConnInfo["paths"]["cancel"];
 				break;
 			case (5):
-				$sType = "refund.cgi";
+				$aConnInfo["path"] = $aConnInfo["paths"]["refund"];
 				break;
 		}
 		
@@ -270,10 +287,10 @@ class DIBS extends Callback
 			if ($this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP) > -1) { $b .= "&account=". $this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP); }
 			$b .= "&textreply=true";
 			$aLogin = $this->getMerchantLogin($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
-			
-			$url = "https://payment.architrade.com/cgi-adm/". $sType;
-			$obj_HTTP = parent::send($url, $this->constHTTPHeaders(), $b, $aLogin["username"], $aLogin["password"]);
-				
+
+			$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aConnInfo);
+
+			$obj_HTTP = parent::send($obj_ConnInfo, $this->constHTTPHeaders(), $b, $aLogin["username"], $aLogin["password"]);
 			if ($obj_HTTP->getReturnCode() == 200)
 			{
 				$aStatus = array();
@@ -351,8 +368,12 @@ class DIBS extends Callback
 	{
 		$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
 		$b .= "&transact=". $txn;
-		
-		$obj_HTTP = parent::send("http://payment.architrade.com/transstatus.pml", $this->constHTTPHeaders(), $b);
+
+		$aConnInfo = $this->_aDIBS_CONN_INFO;
+		$aConnInfo["path"] = $aConnInfo["paths"]["status"];
+		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aConnInfo);
+
+		$obj_HTTP = parent::send($obj_ConnInfo, $this->constHTTPHeaders(), $b);
 		if ($obj_HTTP->getReturnCode() == 200)
 		{
 			return trim($obj_HTTP->getReplyBody() );

@@ -156,7 +156,7 @@ class Capture extends General
 	 * @link    http://www.betalingsterminal.no/Netthandel-forside/Teknisk-veiledning/Response-codes/
 	 *
 	 */
-	public function capture(HTTPConnInfo &$oCI=NULL, $merchant=-1, $iAmount = -1)
+	public function capture(HTTPConnInfo $oCI=NULL, $merchant=-1, $iAmount = -1)
 	{
 		// Serialize capture operations by using the Database as a mutex
 		$this->getDBConn()->query("START TRANSACTION");// START TRANSACTION does not work with Oracle db
@@ -174,7 +174,7 @@ class Capture extends General
 			{
 			case (Constants::iDIBS_PSP):	// DIBS
 				$code = $this->_obj_PSP->capture($this->_sPSPID, $iAmount);
-				
+			break;
 			case (Constants::iWANNAFIND_PSP):// WannaFind
 				$code = $this->_obj_PSP->capture($this->_sPSPID);
 				break;
