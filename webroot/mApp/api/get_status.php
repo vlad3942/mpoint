@@ -34,7 +34,7 @@ $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
 $HTTP_RAW_POST_DATA .= '<get-status client-id="10007">';
 $HTTP_RAW_POST_DATA .= '<transactions>';
-$HTTP_RAW_POST_DATA .= '<transaction>123456</transaction>';
+$HTTP_RAW_POST_DATA .= '<transaction id="123456" order-no="432432-acc" />';
 $HTTP_RAW_POST_DATA .= '</transactions>';
 $HTTP_RAW_POST_DATA .= '<client-info platform="iOS" version="1.00" language="da">';
 $HTTP_RAW_POST_DATA .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
@@ -74,11 +74,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				// Basic input valid
 				if (count($aMsgCds) == 0)
 				{
-					foreach ($obj_DOM->{'get-status'}->transactions as $t)
+					foreach ($obj_DOM->{'get-status'}->transactions->transaction as $t)
 					{
 						try
 						{
-							$obj_txnInfo = TxnInfo::produceInfo( (integer)$t->transaction, $_OBJ_DB);
+							//If order-no is supplied to API, use it in query for txninfo
+							$misc = empty($t["order-no"]) === false ? array($t["order-no"]) : null;
+
+							$obj_txnInfo = TxnInfo::produceInfo( (integer)$t["id"], $_OBJ_DB, $misc);
 							$aMessages = $obj_txnInfo->getMessageHistory($_OBJ_DB);
 							$obj_CountryConfig = $obj_txnInfo->getCountryConfig();
 
@@ -96,7 +99,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$historyXml .= '</message>';
 							}
 
-							$xml .= '<transactionHistory mpoint-id="'. $obj_txnInfo->getID(). '" type="'. $obj_txnInfo->getTypeID() .'" currentState="'. @$aCurrentState["ID"] .'">';
+							$xml .= '<transactionHistory mpoint-id="'. $obj_txnInfo->getID(). '" order-no="'. $obj_txnInfo->getOrderID() .'"  type="'. $obj_txnInfo->getTypeID() .'" currentState="'. @$aCurrentState["ID"] .'">';
 							$xml .= '<amount currency="'. $obj_CountryConfig->getCurrency() .'" symbol="'. $obj_CountryConfig->getSymbol() .'">'. $obj_txnInfo->getAmount(). '</amount>';
 							if ($obj_txnInfo->getFee() > 0) { $xml .= '<fee currency="'. $obj_CountryConfig->getCurrency() .'" symbol="'. $obj_CountryConfig->getSymbol() .'">'. $obj_txnInfo->getFee() .'</fee>'; }
 							if ($obj_txnInfo->getCapturedAmount() > 0) { $xml .= '<captured currency="'. $obj_CountryConfig->getCurrency() .'" symbol="'. $obj_CountryConfig->getSymbol() .'">'. $obj_txnInfo->getCapturedAmount() .'</captured>'; }

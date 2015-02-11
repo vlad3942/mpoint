@@ -709,16 +709,23 @@ class TxnInfo
 						clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, pspid, fee, captured
 					FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 					WHERE id = ". intval($id);
+
+			$sDebug = "";
 			if (is_array($misc) === true)
 			{
 //				preg_match('/2[0-9]{3}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}')
 				// Creation Timestamp for Transaction provided
 				if (substr_count($misc[0], "-") == 2 && substr_count($misc[0], ":") == 2 && strtotime($misc[0]) > 0)
 				{
+					$sDebug = " using creation timestamp: ". $misc[0];
 					$sql .= " AND date_trunc('second', created) = '". $obj->escStr($misc[0]) ."'";
 				}
 				// Order ID for Transaction provided
-				else { $sql .= " AND orderid = '". $obj->escStr($misc[0]) ."'"; }
+				else
+				{
+					$sDebug = " using orderID: ". $misc[0];
+					$sql .= " AND orderid = '". $obj->escStr($misc[0]) ."'";
+				}
 			}
 //			echo $sql ."\n";
 			$RS = $obj->getName($sql);
@@ -732,7 +739,7 @@ class TxnInfo
 				$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["PSPID"], $RS["FEE"], $RS["CAPTURED"]);
 			}
 			// Error: Transaction not found
-			else { throw new TxnInfoException("Transaction with ID: ". $id ." not found using creation timestamp: ". $misc[0], 1001); }
+			else { throw new TxnInfoException("Transaction with ID: ". $id ." not found". $sDebug, 1001); }
 			break;
 		default:								// Error: Argument 2 is an instance of an invalid class
 			trigger_error("Argument 2 passed to TxnInfo::produceInfo() must be an instance of ClientConfig or of RDB", E_USER_ERROR);

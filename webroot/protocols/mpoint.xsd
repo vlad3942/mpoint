@@ -220,7 +220,12 @@
 						<xs:element name="transactions" minOccurs="1" maxOccurs="1">
 							<xs:complexType>
 								<xs:sequence>
-									<xs:element name="transaction" type="xs:positiveInteger" minOccurs="1" maxOccurs="unbounded" />
+									<xs:element name="transaction" minOccurs="1" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:attribute name="id" type="xs:positiveInteger" use="required" />
+											<xs:attribute name="order-no" type="xs:string" use="optional" />
+										</xs:complexType>
+									</xs:element>
 								</xs:sequence>
 							</xs:complexType>
 						</xs:element>
