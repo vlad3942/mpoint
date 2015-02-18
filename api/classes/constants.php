@@ -375,6 +375,11 @@ abstract class Constants
 	 *
 	 */
 	const iCPG_PSP = 9;
+	/**
+	 * Unique ID for the Payment Service Provider: Stripe
+	 *
+	 */
+	const iSTRIPE_PSP = 10;
 
 
 	/**
@@ -405,6 +410,11 @@ abstract class Constants
 	 *
 	 */
 	const iEMONEY_CARD = 11;
+	/**
+	 * Unique Card ID for transaction's made using Apple Pay
+	 *
+	 */
+	const iAPPLE_PAY = 15;
 
 	/**
 	 * Unique Fee Type ID for Top-Ups

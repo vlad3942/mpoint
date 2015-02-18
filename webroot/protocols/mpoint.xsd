@@ -53,6 +53,7 @@
 									<xs:element name="card" minOccurs="1" maxOccurs="1">
 										<xs:complexType>
 											<xs:all>
+												<xs:element name="apple-pay-token" type="xs:string" minOccurs="0" maxOccurs="1" />
 												<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
 											</xs:all>
 											<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
