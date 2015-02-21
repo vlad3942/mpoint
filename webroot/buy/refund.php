@@ -28,6 +28,8 @@ require_once(sCLASS_PATH ."/callback.php");
 require_once(sCLASS_PATH ."/dibs.php");
 // Require specific Business logic for the NetAxept component
 require_once(sCLASS_PATH ."/netaxept.php");
+// Require specific Business logic for the NetAxept component
+require_once(sCLASS_PATH ."/stripe.php");
 
 header("Content-Type: application/x-www-form-urlencoded");
 
@@ -83,6 +85,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 				{
 					switch ($obj_TxnInfo->getPSPID() )
 					{
+					case (Constants::iSTRIPE_PSP):
 					case (Constants::iDIBS_PSP):	// DIBS
 						$obj_mPoint = Refund::produce($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 						break;

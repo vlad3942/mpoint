@@ -33,7 +33,10 @@ class Stripe_PSP extends Callback
 		$oid = $this->getTxnInfo()->getOrderID();
 		if (empty($oid) === true) { $oid = $this->getTxnInfo()->getID(); }		
 		Stripe::setApiKey($apiKey);
-		
+		if(empty($ticket) === true )
+		{
+			$ticket = array('number' => '4242424242424242', 'exp_month' => 5, 'exp_year' => 2018);	
+		}
 		$customerID;
 		
 		try 
@@ -51,7 +54,7 @@ class Stripe_PSP extends Callback
 				
 			}
 			else 
-			{
+			{	
 				$charge = Stripe_Charge::create(array("amount" =>  $this->getTxnInfo()->getAmount(),
 						"currency" => $this->getTxnInfo()->getCountryConfig()->getCurrency(),
 						"card" => $ticket,
@@ -63,12 +66,12 @@ class Stripe_PSP extends Callback
 			if ($charge->paid === true)
 			{
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-								SET pspid = ". Constants::iSTRIPE_PSP .", extid = '". $this->getDBConn()->escStr($charge->id)."'
+								SET pspid = ". Constants::iSTRIPE_PSP .", extid = '". $this->getDBConn()->escStr($charge->id)."' cardid = ". intval($cardID) ."
 								WHERE id = ". $this->getTxnInfo()->getID();
 //					echo $sql ."\n";
 				$this->getDBConn()->query($sql);
-				$iStateID = $this->completeTransaction(Constants::iNETAXEPT_PSP, 
-													   $this->getTxnInfo()->getID(),
+				$iStateID = $this->completeTransaction(Constants::iSTRIPE_PSP, 
+													   $charge->id,
 													   $cardID, Constants::iPAYMENT_ACCEPTED_STATE,
 													   $this->getTxnInfo()->getFee(),
 													   array('0' => var_export($charge, true) ) );
@@ -110,9 +113,22 @@ class Stripe_PSP extends Callback
 	}
 	
 	
-	public function refund($txn, $amount)
+	public function refund($txn, $amount, $apiKey)
 	{
+		Stripe::setApiKey($apiKey);
+		try
+		{
+			$deposit = Stripe_Charge::retrieve($txn);
+			$refund = $deposit->refunds->create();
 
+			$this->newMessage( $this->getTxnInfo ()->getID (), Constants::iPAYMENT_REFUNDED_STATE, var_export($refund,true) );
+			return 0;	
+		}
+		catch (Stripe_CardError $e)
+		{
+			trigger_error("Transaction: ". $this->getTxnInfo()->getID() ."(". $transactionID .") Could not be  Refunded, Stripe returned : ". $e->getMessage(), E_USER_WARNING);
+			return -1;
+		}
 	}
 	
 

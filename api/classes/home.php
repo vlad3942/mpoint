@@ -502,12 +502,21 @@ class Home extends General
 		$sql .= "
 				UNION
 				SELECT Txn.id, ". Constants::iCARD_PURCHASE_TYPE ." AS typeid, -1 AS toid, -1 AS fromid, Txn.created,
-					-1 AS stateid,
+					(CASE
+					 WHEN M4.stateid IS NOT NULL THEN M4.stateid
+					 WHEN M3.stateid IS NOT NULL THEN M3.stateid
+					 WHEN M2.stateid IS NOT NULL THEN M2.stateid
+					 WHEN M1.stateid IS NOT NULL THEN M1.stateid
+					 END) AS stateid,
 					EUA.id AS customerid, EUA.firstname, EUA.lastname,
 					CL.id AS clientid, CL.name AS client,
 					Txn.orderid AS orderno
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
-				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M1 ON Txn.id = M1.txnid AND M1.stateid = ". Constants::iPAYMENT_ACCEPTED_STATE ."
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M2 ON Txn.id = M2.txnid AND M2.stateid = ". Constants::iPAYMENT_CAPTURED_STATE ."
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M3 ON Txn.id = M3.txnid AND M3.stateid = ". Constants::iPAYMENT_REFUNDED_STATE ."
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M4 ON Txn.id = M4.txnid AND M4.stateid = ". Constants::iPAYMENT_CANCELLED_STATE ."
+						INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
 				INNER JOIN Admin".sSCHEMA_POSTFIX.".Access_Tbl Acc ON Txn.clientid = Acc.clientid
 				INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M ON Txn.id = M.txnid
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON Txn.euaid = EUA.id
@@ -544,6 +553,8 @@ class Home extends General
 					if (is_array($RS1) === true) { $RS = array_merge($RS, $RS1); }
 				}
 			}
+			
+			if(empty($RS["STATEID"]) ===true){ $RS["STATEID"] = $RS["MESSAGESTATEID"]; }
 			$xml .= '<transaction id="'. $RS["ID"] .'" type-id="'. $RS["TYPEID"] .'" state-id="'. intval($RS["STATEID"]) .'" order-no="'. htmlspecialchars($RS["ORDERNO"], ENT_NOQUOTES) .'">';
 			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
 			$xml .= '<customer id="'. $RS["CUSTOMERID"] .'">'. htmlspecialchars($RS["FIRSTNAME"] ." ". $RS["LASTNAME"], ENT_NOQUOTES) .'</customer>';
@@ -557,6 +568,7 @@ class Home extends General
 	}
 	public function getTxn($txnid)
 	{
+/*
 		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid,EUT.message, Extract('epoch' from EUT.created AT TIME ZONE 'Europe/Copenhagen') AS timestamp,
 					(CASE
 						WHEN EUT.amount = 0 THEN Txn.amount
@@ -583,8 +595,26 @@ class Home extends General
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M2 ON Txn.id = M2.txnid AND M2.stateid = ". Constants::iPAYMENT_CAPTURED_STATE ."
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M3 ON Txn.id = M3.txnid AND M3.stateid = ". Constants::iPAYMENT_REFUNDED_STATE ."
 				WHERE EUT.id = '". $this->getDBConn()->escStr( (string) $txnid) ."'";
+*/
+		$sql = "SELECT Txn.id, Txn.typeid, Extract('epoch' from Txn.created AT TIME ZONE 'Europe/Copenhagen') AS timestamp,
+					   Txn.amount AS amount, Txn.cardid,
+					   C.id AS countryid, C.currency, C.symbol, C.priceformat, PSP.name AS pspname,
+					   CL.id AS clientid, CL.name AS client,
+					   Txn.id AS mpointid, Txn.orderid, Txn.cardid, Card.name AS card, Txn.refund AS refund_amount, Txn.pspid, Txn.orderid AS orderno,
+					   Extract('epoch' from M1.created) AS authorized, Extract('epoch' from M2.created) AS captured, Extract('epoch' from M3.created) AS refunded,
+					   Txn.accountid AS end_user_id, Txn.email , Txn.mobile
+				FROM Log.Transaction_Tbl Txn
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON Txn.pspid = PSP.id
+				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Country_Tbl C ON Txn.countryid = C.id
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl Card ON Txn.cardid = Card.id
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M1 ON Txn.id = M1.txnid AND M1.stateid = ". Constants::iPAYMENT_ACCEPTED_STATE ."
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M2 ON Txn.id = M2.txnid AND M2.stateid = ". Constants::iPAYMENT_CAPTURED_STATE ."
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M3 ON Txn.id = M3.txnid AND M3.stateid = ". Constants::iPAYMENT_REFUNDED_STATE ."
+				WHERE Txn.id = '". $this->getDBConn()->escStr( (string) $txnid) ."'
+				ORDER BY Txn.created DESC";
 
-	$RS = $this->getDBConn()->getName($sql);
+		$RS = $this->getDBConn()->getName($sql);
 
 	$sql = "SELECT id, countryid,(firstname || ' ' || lastname) AS name,
 			mobile, email
@@ -596,17 +626,16 @@ class Home extends General
 
 		$obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $RS["CLIENTID"]);
 
-		$xml .= '<transaction id="'. $RS["ID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" psp-id="'. $RS["PSPID"] .'" order-no="'. $RS["ORDERNO"] .'" type-id="'. $RS["TYPEID"] .'">';
+		$xml .= '<transaction id="'. $RS["ID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" psp-id="'. $RS["PSPID"] .'" psp-name="'. $RS["PSPNAME"] .'" order-no="'. $RS["ORDERNO"] .'" type-id="'. $RS["TYPEID"] .'" card-id="'. $RS["CARDID"] .'">';
 		$xml .= '<amount country-id="'. $RS["COUNTRYID"] .'" currency="'. $this->_obj_CountryConfig->getCurrency()  .'" symbol="'. utf8_encode($this->_obj_CountryConfig->getSymbol() ) .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. htmlspecialchars($RS["AMOUNT"], ENT_NOQUOTES) .'</amount>';
 		$xml .= '<refund country-id="'. $RS["COUNTRYID"] .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. utf8_encode($this->_obj_CountryConfig->getSymbol() ) .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. htmlspecialchars($RS["REFUND_AMOUNT"], ENT_NOQUOTES) .'</refund>';
 		$xml .= '<client id="'. $obj_ClientConfig->getID() .'">';
 		$xml .= '<name>'. htmlspecialchars($obj_ClientConfig->getName(), ENT_NOQUOTES) .'</name>';
 		$xml .= '</client>';
-
 		$xml .= '<customer id="'. $RSs["ID"] .'">';
 		$xml .= '<name>'. htmlspecialchars($RSs["NAME"], ENT_NOQUOTES) .'</name>';
-		$xml .= '<mobile country-id="'. $RS["COUNTRYID"] .'">'. floatval($RSs["MOBILE"]) .'</mobile>';
-		$xml .= '<email>'. htmlspecialchars($RSs["EMAIL"], ENT_NOQUOTES) .'</email>';
+		$xml .= '<mobile country-id="'. $RS["COUNTRYID"] .'">'. floatval($RS["MOBILE"]) .'</mobile>';
+		$xml .= '<email>'. htmlspecialchars($RS["EMAIL"], ENT_NOQUOTES) .'</email>';
 		$xml .= '</customer>';
 		$xml .= '<timestamp>'. date("d/m-y H:i:s", $RS["TIMESTAMP"]) .'</timestamp>';
 		if ($RS["AUTHORIZED"] > 0) { $xml .= '<authorized epoch="'. $RS["AUTHORIZED"] .'">'. date("d/m-y H:i:s", $RS["AUTHORIZED"]) .'</authorized>'; }
@@ -615,20 +644,22 @@ class Home extends General
 		else { $xml .= '<captured />'; }
 		if ($RS["REFUNDED"] > 0) { $xml .= '<refunded epoch="'. $RS["REFUNDED"] .'">'. date("d/m-y H:i:s", $RS["REFUNDED"]) .'</refunded>'; }
 		else { $xml .= '<refunded />'; }
-		$xml .= '<wallet-to-wallet>';
-		$xml .= '<from account-id="'. $RS["FROMID"] .'">';
-		$xml .= '<name>'. htmlspecialchars($RS["FROM_NAME"], ENT_NOQUOTES) .'</name>';
-		$xml .= '<mobile country-id="'. $RS["FROM_COUNTRYID"] .'">'. $RS["FROM_MOBILE"] .'</mobile>';
-		$xml .= '<email>'. htmlspecialchars($RS["FROM_EMAIL"], ENT_NOQUOTES) .'</email>';
-		$xml .= '</from>';
-		$xml .= '<to account-id="'. $RS["TOID"] .'">';
-		$xml .= '<name>'. htmlspecialchars($RS["TO_NAME"], ENT_NOQUOTES) .'</name>';
-		$xml .= '<mobile country-id="'. $RS["TO_COUNTRYID"] .'">'. $RS["TO_MOBILE"] .'</mobile>';
-		$xml .= '<email>'. htmlspecialchars($RS["TO_EMAIL"], ENT_NOQUOTES) .'</email>';
-		$xml .= '</to>';
-		$xml .= '<message>'. htmlspecialchars($RS["MESSAGE"], ENT_NOQUOTES) .'</message>';
-		$xml .= '</wallet-to-wallet>';
-
+		if (empty($RS["TO_NAME"]) === false)
+		{
+			$xml .= '<wallet-to-wallet>';
+			$xml .= '<from account-id="'. $RS["FROMID"] .'">';
+			$xml .= '<name>'. htmlspecialchars($RS["FROM_NAME"], ENT_NOQUOTES) .'</name>';
+			$xml .= '<mobile country-id="'. $RS["FROM_COUNTRYID"] .'">'. $RS["FROM_MOBILE"] .'</mobile>';
+			$xml .= '<email>'. htmlspecialchars($RS["FROM_EMAIL"], ENT_NOQUOTES) .'</email>';
+			$xml .= '</from>';
+			$xml .= '<to account-id="'. $RS["TOID"] .'">';
+			$xml .= '<name>'. htmlspecialchars($RS["TO_NAME"], ENT_NOQUOTES) .'</name>';
+			$xml .= '<mobile country-id="'. $RS["TO_COUNTRYID"] .'">'. $RS["TO_MOBILE"] .'</mobile>';
+			$xml .= '<email>'. htmlspecialchars($RS["TO_EMAIL"], ENT_NOQUOTES) .'</email>';
+			$xml .= '</to>';
+			$xml .= '<message>'. htmlspecialchars($RS["MESSAGE"], ENT_NOQUOTES) .'</message>';
+			$xml .= '</wallet-to-wallet>';
+		}
 		$sql = "SELECT N.id, N.message, Extract('epoch' from N.created) AS created, U.id AS userid, U.email
 				FROM enduser".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
 				INNER JOIN Log".sSCHEMA_POSTFIX.".Note_Tbl N ON Txn.id = N.txnid AND N.enabled = true

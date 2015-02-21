@@ -110,10 +110,15 @@ class Refund extends General
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				WHERE id = ". $oTI->getID() ." AND enabled = '1'";
 //		echo $sql ."\n";
+		
 		$RS = $oDB->getName($sql);
 		
 		switch ($RS["PSPID"])
 		{
+		case (Constants::iSTRIPE_PSP):	// Stripe
+		// Authorise payment with PSP based on Ticket
+		$obj_PSP = new Stripe_PSP($oDB, $oTxt, $oTI);
+		break;
 		case (Constants::iDIBS_PSP):	// DIBS
 			// Authorise payment with PSP based on Ticket
 			$obj_PSP = new DIBS($oDB, $oTxt, $oTI);
@@ -175,8 +180,15 @@ class Refund extends General
 		
 		switch (strtoupper(get_class($this->_obj_PSP) ) )
 		{
+		case ("STRIPE_PSP"):	// STRIPE
+			$aLogin = $this->_obj_PSP->getMerchantLogin($this->_obj_TxnInfo->getClientConfig()->getID(), Constants::iSTRIPE_PSP, false);
+			$code = $this->_obj_PSP->refund($this->_sPSPID, $amt, $aLogin["password"]);
+			break;
 		case ("DIBS"):	// DIBS
-			$code = $this->_obj_PSP->refund($this->_sPSPID, $amt);
+			$sType = "cancel.cgi";
+			if ($RS["ENABLED"] === true) { $sType = "refund.cgi"; }
+			
+			$code = $this->_obj_PSP->refund($this->_sPSPID, $amt, $sType);
 			break;
 		case ("NETAXEPT"):	// NetAxept		
 			$obj_PSPConfig = PSPConfig::produceConfig($this->getDBConn(), $this->_obj_TxnInfo->getClientConfig()->getID(), $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETAXEPT_PSP);

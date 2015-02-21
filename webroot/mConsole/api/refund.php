@@ -55,7 +55,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		
 		$b = "clientid=". intval($obj_DOM->refund->clientid) ."&username=". urlencode( $obj_DOM->refund->username ) ."&password=". urlencode( $obj_DOM->refund->password ) ."&mpointid=". intval($obj_DOM->refund->mpointid) ."&orderid=". urlencode($obj_DOM->refund->orderid) ."&amount=". intval($obj_DOM->refund->amount) ;
 		
-		$code = $obj_Client->send($h, $b);		
+		$code = $obj_Client->send($h, $b);			
 		if ($code != 200)
 		{
 			// Order already refunded
