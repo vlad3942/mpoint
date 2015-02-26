@@ -479,7 +479,7 @@ class Home extends General
 	 * @param	string $cr		The Customer Reference for the End-User
 	 * @return 	string
 	 */
-	public  function searchTxnHistory($uid, $clid=-1, $txnno="", $ono="", $mob=-1, $email="", $cr="", $start="", $end="")
+	public function searchTxnHistory($uid, $clid=-1, $txnno="", $ono="", $mob=-1, $email="", $cr="", $start="", $end="")
 	{
 		// Fetch all Transfers
 		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, EUT.created, EUT.stateid AS stateid,
@@ -522,6 +522,7 @@ class Home extends General
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON Txn.euaid = EUA.id
 				WHERE Acc.userid = ". intval($uid);
 		if (intval($clid) > 0) { $sql .= " AND CL.id = ". intval($clid); }
+		if (empty($ono) === false) { $sql .= " AND Txn.orderid = '". $this->getDBConn()->escStr($ono) ."'"; }
 		if (floatval($mob) > 0) { $sql .= " AND Txn.mobile = '". floatval($mob) ."'"; }
 		if (empty($email) === false) { $sql .= " AND Txn.email = '". $this->getDBConn()->escStr($email) ."'"; }
 		if (empty($cr) === false) { $sql .= " AND Txn.customer_ref = '". $this->getDBConn()->escStr($cr) ."'"; }
