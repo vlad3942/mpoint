@@ -312,16 +312,16 @@ class Validate
 	 * 	 3. Amount is too great, amount must be smaller than the max amount specified by the client
 	 * 	10. Success
 	 *
-	 * @param 	integer $max 	Maximum amount allowed for the Client
-	 * @param 	integer $prc 	The price of the merchandise the customer is buying in the country's smallest currency (cents for USA, �re for Denmark etc.)
+	 * @param 	long $max 	Maximum amount allowed for the Client
+	 * @param 	long $prc 	The price of the merchandise the customer is buying in the country's smallest currency (cents for USA, �re for Denmark etc.)
 	 * @return 	integer
 	 */
 	public function valPrice($max, $prc)
 	{
 		// Validate the total Amount the customer will be paying
 		if (empty($prc) === true) { $code = 1; }	// Amount is undefined
-		elseif (intval($prc) < 1) { $code = 2; }	// Amount is too small
-		elseif (intval($prc) > intval($max) ) { $code = 3; }	// Amount is too great
+		elseif (floatval($prc) < 1) { $code = 2; }	// Amount is too small
+		elseif (floatval($prc) > floatval($max) ) { $code = 3; }	// Amount is too great
 		else { $code = 10; }
 
 		return $code;
@@ -716,16 +716,16 @@ class Validate
 	 * @see 	CountryInfo::getMinTransfer()
 	 * @see 	CountryInfo::getMaxBalance()
 	 *
-	 * @param 	integer $max 		Max amount that the End-User may use for a transaction
-	 * @param 	integer $amount 	The Amount which should be validated
+	 * @param 	long $max 		Max amount that the End-User may use for a transaction
+	 * @param 	long $amount 	The Amount which should be validated
 	 * @return 	integer
 	 */
 	public function valAmount($max, $amount)
 	{
 		// Validate Amount to be transferred
-		if (empty($amount) === true) { $code = 1; }													// Amount is undefined
-		elseif (intval($amount) * 100 < $this->_obj_CountryConfig->getMinTransfer() ) { $code = 2; }// Amount is too small
-		elseif (intval($amount) * 100 > $max) { $code = 3; }										// Amount is too great
+		if (empty($amount) === true) { $code = 1; }																	// Amount is undefined
+		elseif (floatval($amount) * floatval(100) < $this->_obj_CountryConfig->getMinTransfer() ) { $code = 2; }	// Amount is too small
+		elseif (floatval($amount) * floatval(100) > $max) { $code = 3; }											// Amount is too great
 		else { $code = 10; }
 
 		return $code;

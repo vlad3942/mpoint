@@ -58,9 +58,9 @@ class TxnInfo
 	/**
 	 * Total amount the customer will pay for the Transaction without fee
 	 *
-	 * @var integer
+	 * @var long
 	 */
-	private $_iAmount;
+	private $_lAmount;
 	/**
 	 * Total number of points the customer will pay for the Transaction
 	 *
@@ -229,16 +229,16 @@ class TxnInfo
 	/**
 	 * The Full amount that has been captured for the Transaction
 	 *
-	 * @var integer
+	 * @var long
 	 */
-	private $_iCapturedAmount;
+	private $_lCapturedAmount;
 	/**
 	 * Default Constructor
 	 *
 	 * @param 	integer $id 		Unique ID for the Transaction
 	 * @param 	integer $tid 		Unique ID for the Transaction Type
 	 * @param 	ClientConfig $oClC 	Configuration for the Client who owns the Transaction
-	 * @param 	integer $amt 		Total amount the customer will pay for the Transaction without fee
+	 * @param 	long $amt 			Total amount the customer will pay for the Transaction without fee
 	 * @param 	integer $pnt 		Total number of points the customer will pay for the Transaction
 	 * @param 	integer $rwd 		Total number of points the customer will be rewarded for completing the transaction
 	 * @param 	integer $rfnd 		Total amount the customer has been refunded for the Transaction
@@ -265,21 +265,21 @@ class TxnInfo
 	 * @param 	string $ip			String that holds the customers IP address
 	 * @param 	integer $pspid		Unique ID for the The PSP used for the transaction Defaults to -1.
 	 * @param 	integer $fee		The amount the customer will pay in fee´s for the Transaction.
-	 * @param	integer $capturedAmount	The Full amount that has been captured for the Transaction
+	 * @param	long $cptamt		The Full amount that has been captured for the Transaction
 	 *
 	 */
-	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, $amt, $pnt, $rwd, $rfnd, $orid, $addr, $oid, $email, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="", $pspid=-1, $fee=0, $capturedAmount=0)
+	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, $amt, $pnt, $rwd, $rfnd, $orid, $addr, $oid, $email, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="", $pspid=-1, $fee=0, $cptamt=0)
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
 		$this->_iTypeID =  (integer) $tid;
 		$this->_obj_ClientConfig = $oClC;
 		$this->_obj_CountryConfig = $oCC;
-		$this->_iAmount =  (integer) $amt;
-		$this->_iPoints =  (integer) $pnt;
-		$this->_iReward =  (integer) $rwd;
-		$this->_iRefund =  (integer) $rfnd;
-		$this->_sOrderID =  trim($orid);
+		$this->_lAmount = (float) $amt;
+		$this->_iPoints = (integer) $pnt;
+		$this->_iReward = (integer) $rwd;
+		$this->_iRefund = (integer) $rfnd;
+		$this->_sOrderID = trim($orid);
 		$this->_sMobile = trim($addr);
 		$this->_iOperatorID =  (integer) $oid;
 		$this->_sEMail = trim($email);
@@ -306,7 +306,7 @@ class TxnInfo
 		$this->_sIP = trim($ip);
 		$this->_iPSPID = (integer) $pspid;
 		$this->_iFee = (integer) $fee;
-		$this->_iCapturedAmount = (integer) $captured;
+		$this->_lCapturedAmount = (float) $cptamt;
 	}
 
 	/**
@@ -343,9 +343,9 @@ class TxnInfo
 	/**
 	 * Returns the Total amount the customer will pay for the Transaction without fee
 	 *
-	 * @return 	integer
+	 * @return 	long
 	 */
-	public function getAmount() { return $this->_iAmount; }
+	public function getAmount() { return $this->_lAmount; }
 	/**
 	 * Returns the amount the customer will pay in fee´s for the Transaction
 	 *
@@ -355,9 +355,9 @@ class TxnInfo
 	/**
 	 * Returns the full amount that has been captured for the Transaction
 	 *
-	 * @return 	integer
+	 * @return 	long
 	 */
-	public function getCapturedAmount() { return $this->_iCapturedAmount; }
+	public function getCapturedAmount() { return $this->_lCapturedAmount; }
 	/**
 	 * Returns the number of points the customer will pay for the Transaction
 	 *
@@ -526,7 +526,7 @@ class TxnInfo
 	 *
 	 * @return 	string		Message Authentication Code
 	 */
-	public function getMAC() { return sha1($this->_obj_ClientConfig->getID() . $this->_obj_ClientConfig->getAccountConfig()->getID() . $this->_iID . $this->_sOrderID . $this->_obj_CountryConfig->getID() . $this->_iAmount . $this->_sCustomerRef . $this->_sEMail . $this->_sMobile . $this->_obj_ClientConfig->getPassword() ); }
+	public function getMAC() { return sha1($this->_obj_ClientConfig->getID() . $this->_obj_ClientConfig->getAccountConfig()->getID() . $this->_iID . $this->_sOrderID . $this->_obj_CountryConfig->getID() . $this->_lAmount . $this->_sCustomerRef . $this->_sEMail . $this->_sMobile . $this->_obj_ClientConfig->getPassword() ); }
 	/**
 	 * Returns Unique ID for the The PSP used for the transaction Defaults to -1.
 	 *
@@ -598,10 +598,10 @@ class TxnInfo
 		}
 
 		$xml = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'" gmid="'. $this->_iGoMobileID .'" mode="'. $this->_iMode .'" eua-id="'. $this->_iAccountID .'" psp-id="'. $this->_iPSPID .'">';
-		$xml .= '<captured-amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $this->_iCapturedAmount .'</captured-amount>';
-		$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $this->_iAmount .'</amount>';
+		$xml .= '<captured-amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $this->_lCapturedAmount .'</captured-amount>';
+		$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $this->_lAmount .'</amount>';
 		$xml .= '<fee country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $this->_iFee .'</fee>';
-		$xml .= '<price>'. General::formatAmount($this->_obj_CountryConfig, $this->_iAmount) .'</price>';
+		$xml .= '<price>'. General::formatAmount($this->_obj_CountryConfig, $this->_lAmount) .'</price>';
 		$xml .= '<points country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">'. $this->_iPoints .'</points>';
 		$xml .= '<reward country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">'. $this->_iReward .'</reward>';
 		$xml .= '<refund country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $this->_iRefund .'</refund>';

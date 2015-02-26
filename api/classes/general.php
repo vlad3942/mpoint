@@ -647,7 +647,7 @@ class General
 		$sPrice = str_replace("{CURRENCY}", $oCC->getSymbol(), $sPrice);
 		if ($oCC->getID() == 103 || $oCC->getID() == 200) { $seperator = "."; }
 		else { $seperator = ","; }
-		$sPrice = str_replace("{PRICE}", number_format($amount / 100, $oCC->getDecimals(), $seperator, ""), $sPrice);
+		$sPrice = str_replace("{PRICE}", number_format(floatval($amount) / floatval(100), $oCC->getDecimals(), $seperator, ""), $sPrice);
 
 		return $sPrice;
 	}

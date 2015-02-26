@@ -31,7 +31,7 @@ require_once(sCLASS_PATH ."/anet.php");
 $obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SESSION['obj_UA']);
 
 $obj_XML = simplexml_load_string($obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount() ) );
-$obj_XML = $obj_XML->xpath("item[@id = ". $_REQUEST['cardid'] ." and @pspid = 6]");
+$obj_XML = $obj_XML->xpath("item[@id = ". $_REQUEST['cardid'] ." and @pspid = ". Constants::iANET_PSP ."]");
 $obj_XML = $obj_XML[0];
 
 
@@ -73,7 +73,7 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 	<authorize-net>
 		<url><?= htmlspecialchars($aHTTP_CONN_INFO["authorize.net"]["protocol"] ."://". $aHTTP_CONN_INFO["authorize.net"]["host"] . $aHTTP_CONN_INFO["authorize.net"]["path"], ENT_NOQUOTES); ?></url>
 		<api-login><?= htmlspecialchars($id, ENT_NOQUOTES); ?></api-login>
-		<checksum><?= $obj_mPoint->genChecksum($id, $key, $_SESSION['obj_TxnInfo']->getAmount() / 100, $_SESSION['obj_TxnInfo']->getID(), $time); ?></checksum>
+		<checksum><?= $obj_mPoint->genChecksum($id, $key, floatval($_SESSION['obj_TxnInfo']->getAmount() ) / floatval(100), $_SESSION['obj_TxnInfo']->getID(), $time); ?></checksum>
 		<time><?= $time; ?></time>
 	</authorize-net>
 	

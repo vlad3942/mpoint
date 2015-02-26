@@ -86,7 +86,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, $obj_DOM->asXML() );
 
 						$data['typeid'] = $obj_DOM->{'initialize-payment'}[$i]->transaction["type-id"];
-						$data['amount'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
+						$data['amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
 						$data['country-config'] = $obj_CountryConfig;
 						if (count($obj_DOM->{'initialize-payment'}[$i]->transaction->points) == 1)
 						{
