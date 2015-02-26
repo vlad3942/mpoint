@@ -162,7 +162,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$iErrors = $obj_mPoint->saveClient($clientid,
 															$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["country-id"],
 															$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["store-card"],
-													 		$obj_mPoint->xml2bool($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["auto-capture"]),
+													 		General::xml2bool($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["auto-capture"]),
 													 		$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->name,
 									 				 		$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->username,
 													 		$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->password);

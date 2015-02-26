@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+<xs:include schemaLocation="global.xsd" />
+
+<xs:element name="root">
+	<xs:complexType>
+		<xs:choice minOccurs="1" maxOccurs="unbounded">
+			<!-- Login -->
+			<xs:element name="login">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="username" type="xs:string" minOccurs="1" maxOccurs="1" />
+						<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
+					</xs:all>
+				</xs:complexType>
+			</xs:element>		
+			<!-- roles -->
+			<xs:element name="roles">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="id" type="xs:integer" minOccurs="1" maxOccurs="1" />
+					</xs:all>
+				</xs:complexType>
+			</xs:element>
+			<!-- Search -->
+			<xs:element name="search">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="transaction-number" type="xs:string" minOccurs="0" maxOccurs="1" />
+						<xs:element name="order-number" type="xs:string" minOccurs="0" maxOccurs="1" />
+						<xs:element name="mobile" type="mobile" minOccurs="0" maxOccurs="1" />
+						<xs:element name="email" type="xs:string" minOccurs="0" maxOccurs="1" />
+						<xs:element name="customer-ref" type="xs:string" minOccurs="0" maxOccurs="1" />
+						<xs:element name="start-date" type="xs:dateTime" minOccurs="0" maxOccurs="1" />
+						<xs:element name="end-date" type="xs:dateTime" minOccurs="0" maxOccurs="1" />
+					</xs:all>
+					<xs:attribute name="user-id" type="xs:positiveInteger" use="required" />
+					<xs:attribute name="debug" type="xs:boolean" use="required" />
+					<xs:attribute name="client-id" type="xs:positiveInteger" use="optional" />
+				</xs:complexType>
+			</xs:element>
+			<!-- Get Customer -->
+			<xs:element name="getcustomer">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="userid" type="xs:integer" minOccurs="1" maxOccurs="1" />
+						<xs:element name="countryid" type="xs:integer" minOccurs="1" maxOccurs="1" />
+					</xs:all>
+				</xs:complexType>
+			</xs:element>		
+			<!-- Get Transaction Details -->
+			<xs:element name="transactiondetails">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="txnid" type="xs:string" minOccurs="1" maxOccurs="1" />
+						<xs:element name="countryid" type="xs:integer" minOccurs="0" maxOccurs="1" />
+					</xs:all>
+				</xs:complexType>
+			</xs:element>	
+			<!-- Save Note  -->
+			<xs:element name="savenote">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="userid" type="xs:integer" minOccurs="1" maxOccurs="1" />
+						<xs:element name="txnid" type="xs:string" minOccurs="1" maxOccurs="1" />
+						<xs:element name="message" type="xs:string" minOccurs="1" maxOccurs="1" />
+					</xs:all>
+				</xs:complexType>
+			</xs:element>	
+				<!-- Refund  -->
+			<xs:element name="refund">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="username" type="xs:string" minOccurs="1" maxOccurs="1" />
+						<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
+						<xs:element name="clientid" type="xs:integer" minOccurs="1" maxOccurs="1" />
+						<xs:element name="mpointid" type="xs:integer" minOccurs="1" maxOccurs="1" />
+						<xs:element name="orderid" type="xs:string" minOccurs="1" maxOccurs="1" />
+						<xs:element name="amount" type="xs:integer" minOccurs="1" maxOccurs="1" />
+					</xs:all>
+				</xs:complexType>
+				</xs:element>
+			<!-- Get Clients   -->
+			<xs:element name="getclients">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="userid" type="xs:integer" minOccurs="1" maxOccurs="1" />
+					</xs:all>
+				</xs:complexType>
+				</xs:element>
+				<xs:element name="getcountries">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="userid" type="xs:integer" minOccurs="1" maxOccurs="1" />
+					</xs:all>
+				</xs:complexType>
+				</xs:element>
+				<xs:element name="getkeywords">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="userid" type="xs:integer" minOccurs="1" maxOccurs="1" />
+					</xs:all>
+				</xs:complexType>
+				</xs:element>
+				<xs:element name="getmonths">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="userid" type="xs:integer" minOccurs="1" maxOccurs="1" />
+					</xs:all>
+				</xs:complexType>
+				</xs:element>
+				<xs:element name="get-keyword-stats">
+				<xs:complexType>
+					<xs:all>
+							<xs:element name="userid" type="xs:integer" minOccurs="1" maxOccurs="1" />
+							<xs:element name="clientid" type="xs:integer" minOccurs="1" maxOccurs="1" />
+							<xs:element name="countryid" type="xs:integer" minOccurs="1" maxOccurs="1" />
+							<xs:element name="firstmonth" type="xs:date" minOccurs="1" maxOccurs="1" />
+							<xs:element name="secondmonth" type="xs:date" minOccurs="1" maxOccurs="1" />
+							<xs:element name="keywordid" type="xs:integer" minOccurs="1" maxOccurs="1" />
+					</xs:all>
+				</xs:complexType>
+				</xs:element>
+				<xs:element name="get-keyword-export">
+				<xs:complexType>
+					<xs:all>
+							<xs:element name="userid" type="xs:integer" minOccurs="1" maxOccurs="1" />
+							<xs:element name="clientid" type="xs:integer" minOccurs="1" maxOccurs="1" />
+							<xs:element name="countryid" type="xs:integer" minOccurs="1" maxOccurs="1" />
+							<xs:element name="firstmonth" type="xs:date" minOccurs="1" maxOccurs="1" />
+							<xs:element name="secondmonth" type="xs:date" minOccurs="1" maxOccurs="1" />
+							<xs:element name="keywordid" type="xs:integer" minOccurs="1" maxOccurs="1" />
+					</xs:all>
+				</xs:complexType>
+				</xs:element>
+				<!-- Search Log -->
+				<xs:element name="search-logs">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="recipient">
+								<xs:complexType>
+									<xs:simpleContent>
+										<xs:extension base="xs:string">
+											<xs:attribute name="country-id" type="xs:integer">
+											</xs:attribute>
+										</xs:extension>
+									</xs:simpleContent>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="keyword" type="xs:integer" minOccurs="1" maxOccurs="1"/>
+							<xs:element name="date" type="xs:string" minOccurs="1" maxOccurs="1"/>
+						</xs:all>
+						<xs:attribute name="id" type="xs:integer" use="required"/>
+						<xs:attribute name="external-id" type="xs:string" use="required"/>
+						<xs:attribute name="client-id" type="xs:positiveInteger" use="required"/>
+						<xs:attribute name="type-id" type="xs:positiveInteger" use="required"/>
+					</xs:complexType>
+				</xs:element>
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+</xs:schema>

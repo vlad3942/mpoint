@@ -25,31 +25,32 @@ $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<search user-id="1" client-id="10007">';
-$HTTP_RAW_POST_DATA .= '<countryid>100</countryid>';
-$HTTP_RAW_POST_DATA .= '<transaction-number></transaction>';
-$HTTP_RAW_POST_DATA .= '<order-number></order-number>';
+$HTTP_RAW_POST_DATA .= '<search user-id="1" client-id="10005" debug="true">';
+//$HTTP_RAW_POST_DATA .= '<transaction-number></transaction>';
+$HTTP_RAW_POST_DATA .= '<order-number>25702916</order-number>';
 $HTTP_RAW_POST_DATA .= '<mobile country-id="100">28882861</mobile>';
-$HTTP_RAW_POST_DATA .= '<email></email>';
-$HTTP_RAW_POST_DATA .= '<start-date>2012-01-01T09:00:00</start-date>';
-$HTTP_RAW_POST_DATA .= '<end-date>2014-06-01T09:00:00</end-date>';
+//$HTTP_RAW_POST_DATA .= '<email></email>';
+//$HTTP_RAW_POST_DATA .= '<start-date>2012-01-01T09:00:00</start-date>';
+//$HTTP_RAW_POST_DATA .= '<end-date>2014-06-01T09:00:00</end-date>';
 $HTTP_RAW_POST_DATA .= '</search>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
-
+set_time_limit(0);
 
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA );
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
-	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate("http://". str_replace("mpoint", "mconsole", $_SERVER['HTTP_HOST']) ."/protocols/mconsole.xsd") === true && count($obj_DOM->search) > 0)
+	$url = $_SERVER['DOCUMENT_ROOT'] ."/protocols/mconsole.xsd";
+	if (file_exists($url) === false) { $url = "http://". str_replace("mpoint", "mconsole", $_SERVER['HTTP_HOST']) ."/protocols/mconsole.xsd"; } 
+	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate($url) === true && count($obj_DOM->search) > 0)
 	{
 		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 		
 		$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->search->mobile["country-id"]);
 		
 		$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT,$obj_CountryConfig);
-		$xml = $obj_mPoint->searchTxnHistory( (integer) $obj_DOM->search["user-id"],  (integer) $obj_DOM->search["client-id"], (string) $obj_DOM->search->{'transaction-number'}, (string) $obj_DOM->search->{'order-number'}, (float) $obj_DOM->search->mobile, (string) $obj_DOM->search->email, (string) $obj_DOM->search->{'customer-ref'}, (string) $obj_DOM->search->{'start-date'}, (string) $obj_DOM->search->{'end-date'}, str_replace("T", " ", $obj_DOM->search->{'start-date'}), str_replace("T", " ", $obj_DOM->search->{'end-date'}) );
+		$xml = $obj_mPoint->searchTxnHistory( (integer) $obj_DOM->search["user-id"], (integer) $obj_DOM->search["client-id"], (string) $obj_DOM->search->{'transaction-number'}, (string) $obj_DOM->search->{'order-number'}, (float) $obj_DOM->search->mobile, (string) $obj_DOM->search->email, (string) $obj_DOM->search->{'customer-ref'}, str_replace("T", " ", $obj_DOM->search->{'start-date'}), str_replace("T", " ", $obj_DOM->search->{'end-date'}), General::xml2bool($obj_DOM->search["debug"]) );
 		
 		$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT);
 		$xml .= $obj_mPoint->getAuditLog($obj_DOM->search->mobile, $obj_DOM->search->email, $obj_DOM->search->{'customer-ref'}, str_replace("T", " ", $obj_DOM->search->{'start-date'}), str_replace("T", " ", $obj_DOM->search->{'end-date'}) );

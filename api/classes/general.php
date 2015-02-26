@@ -182,7 +182,7 @@ class General
 	 * @param string $b 	String with XML boolean string
 	 * @return boolean 		true if string is "true", "yes" or "1", false if string is "false", "no" or "0"
 	 */
-	public function xml2bool($b)
+	public static function xml2bool($b)
 	{
 		if ($b == "true") { $b = true; }
 		elseif ($b == "yes") { $b = true; }

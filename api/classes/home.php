@@ -474,16 +474,19 @@ class Home extends General
 	 * @param	integer $clid 	Unqiue Client ID
 	 * @param	string $txnno	Unqiue ID of a Transaction
 	 * @param	string $ono		Unqiue Order Number for a Transaction
-	 * @param	long $mob	The End-User's Mobile Number
+	 * @param	long $mob		The End-User's Mobile Number
 	 * @param	string $email	The End-User's E-Mail
 	 * @param	string $cr		The Customer Reference for the End-User
+	 * @param	string $start	The start date / time for when transactions must have been created in order to be included in the search result
+	 * @param	string $end		The end date / time for when transactions must have been created in order to be included in the search result
+	 * @param	boolean $debug	The Customer Reference for the End-User
 	 * @return 	string
 	 */
-	public function searchTxnHistory($uid, $clid=-1, $txnno="", $ono="", $mob=-1, $email="", $cr="", $start="", $end="")
+	public function searchTxnHistory($uid, $clid=-1, $txnno="", $ono="", $mob=-1, $email="", $cr="", $start="", $end="", $debug=false)
 	{
 		// Fetch all Transfers
 		$sql = "SELECT EUT.id, EUT.typeid, EUT.toid, EUT.fromid, EUT.created, EUT.stateid AS stateid,
-					EUA.id AS customerid, EUA.firstname, EUA.lastname,
+					EUA.id AS customerid, EUA.firstname, EUA.lastname, EUA.externalid AS customer_ref, EUA.mobile, EUA.email,
 					CL.id AS clientid, CL.name AS client,
 					'' AS orderno
 				FROM EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl EUT
@@ -507,8 +510,9 @@ class Home extends General
 					 WHEN M3.stateid IS NOT NULL THEN M3.stateid
 					 WHEN M2.stateid IS NOT NULL THEN M2.stateid
 					 WHEN M1.stateid IS NOT NULL THEN M1.stateid
+					 ELSE -1
 					 END) AS stateid,
-					EUA.id AS customerid, EUA.firstname, EUA.lastname,
+					EUA.id AS customerid, EUA.firstname, EUA.lastname, Coalesce(Txn.customer_ref, EUA.externalid) AS customer_ref, Txn.mobile, Txn.email,
 					CL.id AS clientid, CL.name AS client,
 					Txn.orderid AS orderno
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
@@ -516,7 +520,7 @@ class Home extends General
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M2 ON Txn.id = M2.txnid AND M2.stateid = ". Constants::iPAYMENT_CAPTURED_STATE ."
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M3 ON Txn.id = M3.txnid AND M3.stateid = ". Constants::iPAYMENT_REFUNDED_STATE ."
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M4 ON Txn.id = M4.txnid AND M4.stateid = ". Constants::iPAYMENT_CANCELLED_STATE ."
-						INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
 				INNER JOIN Admin".sSCHEMA_POSTFIX.".Access_Tbl Acc ON Txn.clientid = Acc.clientid
 				INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M ON Txn.id = M.txnid
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON Txn.euaid = EUA.id
@@ -535,10 +539,16 @@ class Home extends General
 
 		$sql = "SELECT stateid
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
-				WHERE txnid = $1 AND stateid IN (". Constants::iPAYMENT_INIT_WITH_PSP_STATE .", ". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_DECLINED_STATE .")
+				WHERE txnid = $1 AND stateid IN (". Constants::iINPUT_VALID_STATE .", ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .", ". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_DECLINED_STATE .")
 				ORDER BY id DESC";
 //		echo $sql ."\n";
-		$stmt = $this->getDBConn()->prepare($sql);
+		$stmt1 = $this->getDBConn()->prepare($sql);
+		$sql = "SELECT id, stateid, data, created
+				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
+				WHERE txnid = $1 AND stateid IN (". Constants::iINPUT_VALID_STATE .", ". Constants::iPSP_PAYMENT_REQUEST_STATE .", ". Constants::iPSP_PAYMENT_RESPONSE_STATE .", ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .", ". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_DECLINED_STATE .")
+				ORDER BY id ASC";
+//		echo $sql ."\n";
+		$stmt2 = $this->getDBConn()->prepare($sql);
 
 		$xml = '<transactions sorted-by="timestamp" sort-order="descending">';
 		// Construct XML Document with data for Transaction
@@ -548,18 +558,40 @@ class Home extends General
 			if ($RS["STATEID"] < 0 && $RS["TYPEID"] == Constants::iCARD_PURCHASE_TYPE)
 			{
 				$aParams = array($RS["ID"]);
-				if ($this->getDBConn()->execute($stmt, $aParams) === true)
+				$res1 = $this->getDBConn()->execute($stmt1, $aParams);
+				if (is_resource($res1) === true)
 				{
-					$RS1 = $this->getDBConn()->fetchName($stmt);
-					if (is_array($RS1) === true) { $RS = array_merge($RS, $RS1); }
+					$RS1 = $this->getDBConn()->fetchName($res1);
+					if (is_array($RS1) === true) { $RS["STATEID"] = $RS1["STATEID"]; }
 				}
 			}
 			
-			if(empty($RS["STATEID"]) ===true){ $RS["STATEID"] = $RS["MESSAGESTATEID"]; }
 			$xml .= '<transaction id="'. $RS["ID"] .'" type-id="'. $RS["TYPEID"] .'" state-id="'. intval($RS["STATEID"]) .'" order-no="'. htmlspecialchars($RS["ORDERNO"], ENT_NOQUOTES) .'">';
 			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
-			$xml .= '<customer id="'. $RS["CUSTOMERID"] .'">'. htmlspecialchars($RS["FIRSTNAME"] ." ". $RS["LASTNAME"], ENT_NOQUOTES) .'</customer>';
+			$xml .= '<customer id="'. $RS["CUSTOMERID"] .'" customer-ref="'. $RS["CUSTOMER_REF"] .'">';
+			$xml .= '<full-name>'. htmlspecialchars($RS["FIRSTNAME"] ." ". $RS["LASTNAME"], ENT_NOQUOTES) .'</full-name>';
+			$xml .= '<mobile>'. floatval($RS["MOBILE"]) .'</mobile>';
+			$xml .= '<email>'. htmlspecialchars($RS["EMAIL"], ENT_NOQUOTES) .'</email>';
+			$xml .= '</customer>';
 			$xml .= '<timestamp>'. gmdate("Y-m-d H:i:sP", strtotime(substr($RS["CREATED"], 0, strpos($RS["CREATED"], ".") ) ) ) .'</timestamp>';
+			if ($debug === true && $RS["TYPEID"] == Constants::iCARD_PURCHASE_TYPE)
+			{
+				$aParams = array($RS["ID"]);
+				$res2 = $this->getDBConn()->execute($stmt2, $aParams);
+				if (is_resource($res2) === true)
+				{
+					$xml .= '<messages>';
+					// Additional record sets
+					while ($RS2 = $this->getDBConn()->fetchName($res2) )
+					{
+						$xml .= '<message id="'. $RS2["ID"] .'" state-id="'. $RS2["STATEID"] .'">';
+						$xml .= '<data>'. htmlspecialchars(trim($RS2["DATA"]), ENT_NOQUOTES) .'</data>';
+						$xml .= '<timestamp>'. gmdate("Y-m-d H:i:sP", strtotime(substr($RS2["CREATED"], 0, strpos($RS2["CREATED"], ".") ) ) ) .'</timestamp>';
+						$xml .= '</message>';
+					}
+					$xml .= '</messages>';
+				}
+			}
 			$xml .= '</transaction>';
 		}
 
@@ -614,16 +646,15 @@ class Home extends General
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M3 ON Txn.id = M3.txnid AND M3.stateid = ". Constants::iPAYMENT_REFUNDED_STATE ."
 				WHERE Txn.id = '". $this->getDBConn()->escStr( (string) $txnid) ."'
 				ORDER BY Txn.created DESC";
-
+//		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 
-	$sql = "SELECT id, countryid,(firstname || ' ' || lastname) AS name,
-			mobile, email
-			FROM EndUser".sSCHEMA_POSTFIX.".Account_Tbl WHERE id =
-			". $RS["END_USER_ID"];
-
-	//		echo $sql ."\n";
-	$RSs = $this->getDBConn()->getName($sql);
+		$sql = "SELECT id, countryid,(firstname || ' ' || lastname) AS name,
+				mobile, email
+				FROM EndUser".sSCHEMA_POSTFIX.".Account_Tbl
+				WHERE id = ". $RS["END_USER_ID"];
+//		echo $sql ."\n";
+		$RSs = $this->getDBConn()->getName($sql);
 
 		$obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $RS["CLIENTID"]);
 
@@ -647,7 +678,7 @@ class Home extends General
 		else { $xml .= '<refunded />'; }
 		if (empty($RS["TO_NAME"]) === false)
 		{
-			$xml .= '<wallet-to-wallet>';
+			$xml .= '<transfer>';
 			$xml .= '<from account-id="'. $RS["FROMID"] .'">';
 			$xml .= '<name>'. htmlspecialchars($RS["FROM_NAME"], ENT_NOQUOTES) .'</name>';
 			$xml .= '<mobile country-id="'. $RS["FROM_COUNTRYID"] .'">'. $RS["FROM_MOBILE"] .'</mobile>';
@@ -659,7 +690,7 @@ class Home extends General
 			$xml .= '<email>'. htmlspecialchars($RS["TO_EMAIL"], ENT_NOQUOTES) .'</email>';
 			$xml .= '</to>';
 			$xml .= '<message>'. htmlspecialchars($RS["MESSAGE"], ENT_NOQUOTES) .'</message>';
-			$xml .= '</wallet-to-wallet>';
+			$xml .= '</transfer>';
 		}
 		$sql = "SELECT N.id, N.message, Extract('epoch' from N.created) AS created, U.id AS userid, U.email
 				FROM enduser".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
