@@ -49,6 +49,22 @@ abstract class Constants
 	 */
 	const iSHIPPING_INFO_STATE = 1005;
 	/**
+	 * Defines the ID of the State that should be logged for the payment request sent to the Payment Service Provider (PSP) to
+	 * authorize the payment transaction.
+	 * Any sensitive data according to PCI DSS that is included in the request must be removed before the log entry is made.
+	 * Typical data includes:
+	 * 	- Card Number (PAN)
+	 * 	- CVC / CVS
+	 *
+	 */
+	const iPSP_PAYMENT_REQUEST_STATE = 1007;
+	/**
+	 * Defines the ID of the State that should be logged for the payment response from the Payment Service Provider (PSP) when
+	 * a payment transaction is authorized.
+	 *
+	 */
+	const iPSP_PAYMENT_RESPONSE_STATE = 1008;
+	/**
 	 * Defines the ID of the State that should be logged when the payment transaction has been successfully initialized with the
 	 * Payment Service Provider (PSP)
 	 *

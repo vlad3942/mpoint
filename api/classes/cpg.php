@@ -182,9 +182,8 @@ class CPG extends Callback
 		$h = trim($this->constHTTPHeaders() ) .HTTPClient::CRLF;
 		if (empty($sUsername) === false || empty($sPassword) === false) { $h .= "authorization: Basic ".  base64_encode($sUsername .":". $sPassword) .HTTPClient::CRLF; }
 
-	//	file_put_contents(sLOG_PATH ."/cpgRq.log", "\n \n \n". $b, FILE_APPEND);
-
-
+		$this->newMessage($this->getTxnInfo()->getID(), Constants::iPSP_PAYMENT_REQUEST_STATE, str_replace("<cvc>". intval($obj_XML->cvc) ."</cvc>", "<cvc>". str_repeat("*", strlen(intval($obj_XML->cvc) ) ) ."</cvc>", $b) );
+		
 		$obj_HTTP = new HTTPClient(new Template(), $oCI);
 		$obj_HTTP->connect();
 		$code = $obj_HTTP->send($h, $b);
@@ -193,6 +192,7 @@ class CPG extends Callback
 		if ($code == 200)
 		{
 			$obj_DOM = simplexml_load_string($obj_HTTP->getReplyBody() );
+			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPSP_PAYMENT_RESPONSE_STATE, $obj_DOM->asXML() );
 			if (count($obj_DOM->orderStatus->redirect) == 1)
 			{
 				$xml = '<status code="100" order-no="'. htmlspecialchars($obj_DOM->orderStatus["orderCode"], ENT_NOQUOTES) .'">';
