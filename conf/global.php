@@ -54,7 +54,7 @@ $aDB_CONN_INFO["mpoint"]["password"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["class"] = "Oracle";
 */
 $aDB_CONN_INFO["mpoint"]["host"] = "localhost";
-$aDB_CONN_INFO["mpoint"]["port"] = 5000;
+$aDB_CONN_INFO["mpoint"]["port"] = 5432;
 $aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["password"] = "hspzr735abl";
@@ -375,5 +375,9 @@ define("sPROTOCOL_XSD_PATH", $_SERVER['DOCUMENT_ROOT'] ."/protocols/");
  */
 //define("sSCHEMA_POSTFIX","_ownr");
 define("sSCHEMA_POSTFIX","");
-
+/**
+ *	Number of days before a log entry in Log.Message_tbl and Log.Auditlog_Tbl 
+ *	will be expire. When set to "0" No logs will be purged. 
+ */
+define("iPURGED_DAYS", 30);
 ?>

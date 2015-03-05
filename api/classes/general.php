@@ -547,8 +547,6 @@ class General
 				$RS["DATA"] = utf8_decode($RS["DATA"]);
 				$data = @unserialize($RS["DATA"]);
 			}
-			// Old data format which hasn't been base64 encoded
-			if ($data === false && $stateid == Constants::iCLIENT_VARS_STATE) { $data = @unserialize(utf8_decode($RS["DATA"]) ); }
 			if ($data === false) { $data = array($RS["DATA"]); }
 		}
 
@@ -575,6 +573,66 @@ class General
 		return is_resource($this->getDBConn()->query($sql) );
 	}
 
+	/**
+	 *	Will purge the Log.Message_Tbl for all expired logs.
+	 *	That are older then NOW() minus the given number of days. 
+	 *
+	 * @param 	$days	The Number of days before the log expires 
+	 * 
+	 * @return integer	Number of affected rows.
+	 */
+	
+	public function purgeMessageLogs($days)
+	{
+		$iAffectedRows = 0;
+		
+		$timeStamp = date("Y-m-d", strtotime('-'.$days .' days', time() ) );
+		
+		$sql = "DELETE FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
+				WHERE stateid IN (".Constants::iPSP_PAYMENT_REQUEST_STATE.", ". Constants::iPSP_PAYMENT_RESPONSE_STATE.") 
+					AND created <  DATE '". $this->getDBConn()->escStr($timeStamp) ."' AND data IS NOT NULL";
+
+//		echo $sql ."\n";
+		$res  = $this->getDBConn()->query($sql);
+		if (is_resource($res) === true)
+		{
+			$iAffectedRows = $this->getDBConn()->countAffectedRows($res);
+		
+			$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Message_Tbl
+					SET data = NULL
+					WHERE created < DATE '". $this->getDBConn()->escStr($timeStamp) ."' AND data IS NOT NULL";
+
+//			echo $sql ."\n";	
+			$res  = $this->getDBConn()->query($sql);
+			if (is_resource($res) === true) { $iAffectedRows += $this->getDBConn()->countAffectedRows($res); }
+		}
+		
+		return $iAffectedRows;
+	}
+	
+	/**
+	 *	Will purge the Log.AuditLog_Tbl for all expired logs.
+	 *  That are older then NOW() minus the given number of days.
+	 *
+	 * @param 	$days	The Number of days before a log expires
+	 *
+	 * @return integer	Number of affected rows.
+	 */
+	
+	public function purgeAuditLogs($days)
+	{
+		$iAffectedRows = 0;
+	
+		$timeStamp = date("Y-m-d", strtotime('-'.$days .' days', time() ) );
+	
+		$sql = "DELETE FROM Log".sSCHEMA_POSTFIX.".AuditLog_Tbl
+				WHERE created <  DATE '". $this->getDBConn()->escStr($timeStamp) ."'";
+		//		echo $sql ."\n";
+		$res  = $this->getDBConn()->query($sql);
+		if (is_resource($res) === true) { $iAffectedRows = $this->getDBConn()->countAffectedRows($res); }
+	
+		return $iAffectedRows;
+	}
 	/**
 	 * Sends an MT to GoMobile
 	 * Prior to sending the message the method will updated the provided Connection Info object with the Client's username / password for GoMobile.
