@@ -34,6 +34,8 @@ define("sCLASS_PATH", sSYSTEM_PATH ."/api/classes/");
 define("sINTERFACE_PATH", sSYSTEM_PATH ."/api/interfaces/");
 // Define path to the System functions
 define("sFUNCTION_PATH", sSYSTEM_PATH ."/api/functions/");
+// Define path to PHP libraries used for the system
+define("sLIB_PATH", sSYSTEM_PATH ."/api/lib/");
 // Define path to the System Configuration
 define("sCONF_PATH", sSYSTEM_PATH ."/conf/");
 // Define Language Path Constant
