@@ -45,6 +45,11 @@ require_once(sCLASS_PATH ."/netaxept.php");
 require_once(sCLASS_PATH ."/worldpay.php");
 // Require specific Business logic for the Emirates' Corporate Payment Gateway (CPG) component
 require_once(sCLASS_PATH ."/cpg.php");
+if (function_exists("json_encode") === true)
+{
+// Require specific Business logic for the Stripe component
+	require_once(sCLASS_PATH ."/stripe.php");
+}
 
 
 ignore_user_abort(true);
@@ -203,6 +208,26 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										{
 											switch (intval($obj_Elem["pspid"]) )
 											{
+											case (Constants::iSTRIPE_PSP):
+												$obj_PSP = new Stripe_PSP($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
+												$aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iSTRIPE_PSP, true);
+												
+												$code =	$obj_PSP->authTicket( (integer) $obj_Elem->ticket, $aaLogin["password"]);
+												if ($code == "OK")
+												{
+													if ($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] === Constants::iAPPLE_PAY) { $xml .= '<status code="100">Payment Authorized using Apple Pay</status>'; }
+													else { $xml .= '<status code="100">Payment Authorized using Stored Card</status>'; }
+												}
+												// Error: Authorization declined
+												else
+												{
+													$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+												
+													header("HTTP/1.1 502 Bad Gateway");
+												
+													$xml .= '<status code="92">Authorization failed, Stripe returned error: '. $code .'</status>';
+												}
+												break;
 											case (Constants::iWORLDPAY_PSP):
 												// Authorise payment with PSP based on Ticket
 												$obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
@@ -319,7 +344,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												break;
 											case (Constants::iCPG_PSP):
 												$obj_PSP = new CPG($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-												$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getAccountID(), Constants::iCPG_PSP);
+												$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCPG_PSP);
 
 												$aHTTP_CONN_INFO["cpg"]["username"] = $obj_PSPConfig->getUsername();
 												$aHTTP_CONN_INFO["cpg"]["password"] = $obj_PSPConfig->getPassword();
