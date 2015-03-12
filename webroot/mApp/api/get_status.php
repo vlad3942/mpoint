@@ -96,7 +96,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$aCurrentState = $m;
 								}
 
-								$historyXml .= '<message id="'. $m["id"]. '" state="'. $m["stateid"]. '">';
+								$historyXml .= '<message id="'. $m["id"]. '" state-id="'. $m["stateid"]. '">';
 								$historyXml .= '<timestamp>'. str_replace("T", " ", date("c", strtotime($m["created"]) ) ) .'</timestamp>';
 								$historyXml .= '</message>';
 							}
