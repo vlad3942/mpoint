@@ -101,11 +101,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$historyXml .= '</message>';
 							}
 
-							$xml .= '<transaction id="'. $obj_TxnInfo->getID(). '" order-no="'. htmlspecialchars($obj_TxnInfo->getOrderID(), ENT_NOQUOTES) .'"  type="'. $obj_TxnInfo->getTypeID() .'" current-state="'. @$aCurrentState["id"] .'">';
-							$xml .= '<amount currency="'. $obj_CountryConfig->getCurrency() .'" symbol="'. $obj_CountryConfig->getSymbol() .'">'. $obj_TxnInfo->getAmount(). '</amount>';
-							if ($obj_TxnInfo->getFee() > 0) { $xml .= '<fee currency="'. $obj_CountryConfig->getCurrency() .'" symbol="'. $obj_CountryConfig->getSymbol() .'">'. $obj_TxnInfo->getFee() .'</fee>'; }
-							if ($obj_TxnInfo->getCapturedAmount() > 0) { $xml .= '<captured currency="'. $obj_CountryConfig->getCurrency() .'" symbol="'. $obj_CountryConfig->getSymbol() .'">'. $obj_TxnInfo->getCapturedAmount() .'</captured>'; }
-							if ($obj_TxnInfo->getRefund() > 0) { $xml .= '<refunded currency="'. $obj_CountryConfig->getCurrency() .'" symbol="'. $obj_CountryConfig->getSymbol() .'">' . $obj_TxnInfo->getRefund() .'</refunded>'; }
+							$xml .= '<transaction id="'. $obj_TxnInfo->getID(). '" order-no="'. htmlspecialchars($obj_TxnInfo->getOrderID(), ENT_NOQUOTES) .'"  type-id="'. $obj_TxnInfo->getTypeID() .'" current-state="'. @$aCurrentState["id"] .'">';
+							$xml .= '<amount country-id="'. $obj_CountryConfig->getID() .'" currency="'. $obj_CountryConfig->getCurrency() .'" symbol="'. $obj_CountryConfig->getSymbol() .'">'. $obj_TxnInfo->getAmount(). '</amount>';
+							if ($obj_TxnInfo->getFee() > 0) { $xml .= '<fee country-id="'. $obj_CountryConfig->getID() .'" currency="'. $obj_CountryConfig->getCurrency() .'" symbol="'. $obj_CountryConfig->getSymbol() .'">'. $obj_TxnInfo->getFee() .'</fee>'; }
+							if ($obj_TxnInfo->getCapturedAmount() > 0) { $xml .= '<captured country-id="'. $obj_CountryConfig->getID() .'" currency="'. $obj_CountryConfig->getCurrency() .'" symbol="'. $obj_CountryConfig->getSymbol() .'">'. $obj_TxnInfo->getCapturedAmount() .'</captured>'; }
+							if ($obj_TxnInfo->getRefund() > 0) { $xml .= '<refunded country-id="'. $obj_CountryConfig->getID() .'" currency="'. $obj_CountryConfig->getCurrency() .'" symbol="'. $obj_CountryConfig->getSymbol() .'">' . $obj_TxnInfo->getRefund() .'</refunded>'; }
 
 							if (count($aMessages) > 0)
 							{
