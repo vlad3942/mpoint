@@ -12,7 +12,7 @@
  * @link http://www.cellpointmobile.com
  * @package API
  * @subpackage MobileApp
- * @version 1.10
+ * @version 1.20
  */
 
 // Require Global Include File
@@ -43,6 +43,8 @@ require_once(sCLASS_PATH ."/payex.php");
 require_once(sCLASS_PATH ."/netaxept.php");
 // Require specific Business logic for the Stripe component
 require_once(sCLASS_PATH ."/stripe.php");
+// Require specific Business logic for the MobilePay component
+require_once(sCLASS_PATH ."/mobilepay.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 
@@ -126,7 +128,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$data['amount'] = (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount;
 								$oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(), $obj_TxnInfo, $data);
 								// Initialize payment with Payment Service Provider
-								$xml = '<psp-info id="'. $obj_PSPConfig->getID() .'">';
+								$xml = '<psp-info id="'. $obj_PSPConfig->getID() .'" merchant-account="'. htmlspecialchars($obj_PSPConfig->getMerchantAccount(), ENT_NOQUOTES) .'">';
 								switch ($obj_PSPConfig->getID() )
 								{
 								case (Constants::iDIBS_PSP):
@@ -199,7 +201,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$aHTTP_CONN_INFO["netaxept"]["password"] = $obj_PSPConfig->getPassword();
 
 									$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["netaxept"]);
-									// $obj_DOM->pay[$i]->transaction["id"]
 									// get boolean value of store card.
 									$storecard = (strcasecmp($obj_DOM->pay[$i]->transaction["store-card"], "true") == 0 );
 									$obj_XML = $obj_PSP->initialize($obj_ConnInfo,
@@ -214,25 +215,33 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$xml .= trim($obj_Elem->asXML() );
 									}
 									break;
-									case (Constants::iSTRIPE_PSP):
-										$obj_PSP = new Stripe_PSP($_OBJ_DB, $_OBJ_TXT, $oTI);
-										$aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iSTRIPE_PSP, false);
-										$storecard = (strcasecmp($obj_DOM->pay[$i]->transaction["store-card"], "true") == 0 );
-										$code =	$obj_PSP->auth( $obj_DOM->pay[$i]->transaction->card[$j]->{'apple-pay-token'}, $aLogin["password"], (integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $storecard);
-										if ($code >= 2000)
-										{
-											if ($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] === Constants::iAPPLE_PAY) { $xml .= '<status code="'. $code .'">Payment Authorized using Apple Pay</status>'; }
-											else { $xml .= '<status code="'. $code .'">Payment Authorized</status>'; }
-										}
-										// Error: Authorization declined
-										else
-										{
-											$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-												
-											header("HTTP/1.1 502 Bad Gateway");
-											$xml .= '<status code="92">Authorization failed, Stripe returned error: '. $code .'</status>';
-										}
-										break;
+								case (Constants::iSTRIPE_PSP):
+									$obj_PSP = new Stripe_PSP($_OBJ_DB, $_OBJ_TXT, $oTI);
+									$aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iSTRIPE_PSP, false);
+									$storecard = (strcasecmp($obj_DOM->pay[$i]->transaction["store-card"], "true") == 0 );
+									$code =	$obj_PSP->auth( $obj_DOM->pay[$i]->transaction->card[$j]->{'apple-pay-token'}, $aLogin["password"], (integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $storecard);
+									if ($code >= 2000)
+									{
+										if ($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] === Constants::iAPPLE_PAY) { $xml .= '<status code="'. $code .'">Payment Authorized using Apple Pay</status>'; }
+										else { $xml .= '<status code="'. $code .'">Payment Authorized</status>'; }
+									}
+									// Error: Authorization declined
+									else
+									{
+										$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+											
+										header("HTTP/1.1 502 Bad Gateway");
+										$xml .= '<status code="92">Authorization failed, Stripe returned error: '. $code .'</status>';
+									}
+									break;
+								case (Constants::iMOBILEPAY_PSP):
+									$obj_PSP = new MobilePay($_OBJ_DB, $_OBJ_TXT, $oTI);
+									$obj_XML = $obj_PSP->initialize($obj_PSPConfig);
+									foreach ($obj_XML->children() as $obj_Elem)
+									{
+										$xml .= trim($obj_Elem->asXML() );
+									}
+									break;
 								}
 								$xml .= '</psp-info>';
 							}

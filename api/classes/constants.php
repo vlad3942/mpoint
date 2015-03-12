@@ -396,6 +396,11 @@ abstract class Constants
 	 *
 	 */
 	const iSTRIPE_PSP = 10;
+	/**
+	 * Unique ID for the Alternative Payment Method: MobilePay
+	 *
+	 */
+	const iMOBILEPAY_PSP = 11;
 
 
 	/**
