@@ -753,20 +753,17 @@ class TxnInfo
 	{
 		$sql = "SELECT id, stateid, created
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
-				WHERE txnid = ". $this->getID() ." AND enabled = TRUE
-				ORDER BY created DESC";
+				WHERE txnid = ". $this->getID() ." AND enabled = '1'
+				ORDER BY id DESC";
 //		echo $sql;
-
-		$RS = $obj_DB->getAllNames($sql);
-
-		if (is_array($RS) === true)
+		$res = $obj_DB->query($sql);
+		$aMessages = array();
+		while ($RS = $obj_DB->fetchName($res) )
 		{
-			return $RS;
+			$aMessages[] = array_change_key_case($RS, CASE_LOWER);
 		}
-		else
-		{
-			return array();
-		}
+		
+		return $aMessages;  
 	}
 
 }

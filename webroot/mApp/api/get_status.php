@@ -27,14 +27,14 @@ $aMsgCds = array();
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 /*
-$_SERVER['PHP_AUTH_USER'] = "CPMDemo";
+$_SERVER['PHP_AUTH_USER'] = "CPMTEST";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<get-status client-id="10007">';
+$HTTP_RAW_POST_DATA .= '<get-status client-id="10024">';
 $HTTP_RAW_POST_DATA .= '<transactions>';
-$HTTP_RAW_POST_DATA .= '<transaction id="123456" order-no="432432-acc" />';
+$HTTP_RAW_POST_DATA .= '<transaction id="1813241" order-no="abc-123" />';
 $HTTP_RAW_POST_DATA .= '</transactions>';
 $HTTP_RAW_POST_DATA .= '<client-info platform="iOS" version="1.00" language="da">';
 $HTTP_RAW_POST_DATA .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
@@ -81,37 +81,39 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							//If order-no is supplied to API, use it in query for txninfo
 							$misc = empty($t["order-no"]) === false ? array($t["order-no"]) : null;
 
-							$obj_txnInfo = TxnInfo::produceInfo( (integer)$t["id"], $_OBJ_DB, $misc);
-							$aMessages = $obj_txnInfo->getMessageHistory($_OBJ_DB);
-							$obj_CountryConfig = $obj_txnInfo->getCountryConfig();
+							$obj_TxnInfo = TxnInfo::produceInfo( (integer) $t["id"], $_OBJ_DB, $misc);
+							$aMessages = $obj_TxnInfo->getMessageHistory($_OBJ_DB);
+							$obj_CountryConfig = $obj_TxnInfo->getCountryConfig();
 
 							$aCurrentState = @$aMessages[0];
 							foreach ($aMessages as $m)
 							{
-								$iMessageID = (integer)$m["ID"];
-								$iStateID = (integer)$m["STATEID"];
+								$iMessageID = (integer) $m["id"];
+								$iStateID = (integer) $m["stateid"];
 								// Marks the newest state >= iPAYMENT_ACCEPTED_STATE (2000) as the current state
-								if ( (integer)$aCurrentState["STATEID"] < Constants::iPAYMENT_ACCEPTED_STATE &&
-											  $iStateID >= Constants::iPAYMENT_ACCEPTED_STATE) { $aCurrentState = $m; }
+								if (intval($aCurrentState["stateid"]) < Constants::iPAYMENT_ACCEPTED_STATE && $iStateID >= Constants::iPAYMENT_ACCEPTED_STATE)
+								{
+									$aCurrentState = $m;
+								}
 
-								$historyXml .= '<message id="'. (integer)$m["ID"]. '" state="'. (integer)$m["STATEID"]. '">';
-								$historyXml .= '<timestamp>'. date('c', strtotime($m["CREATED"]) ). '</timestamp>';
+								$historyXml .= '<message id="'. $m["id"]. '" state="'. $m["stateid"]. '">';
+								$historyXml .= '<timestamp>'. str_replace("T", " ", date("c", strtotime($m["created"]) ) ) .'</timestamp>';
 								$historyXml .= '</message>';
 							}
 
-							$xml .= '<transactionHistory mpoint-id="'. $obj_txnInfo->getID(). '" order-no="'. $obj_txnInfo->getOrderID() .'"  type="'. $obj_txnInfo->getTypeID() .'" currentState="'. @$aCurrentState["ID"] .'">';
-							$xml .= '<amount currency="'. $obj_CountryConfig->getCurrency() .'" symbol="'. $obj_CountryConfig->getSymbol() .'">'. $obj_txnInfo->getAmount(). '</amount>';
-							if ($obj_txnInfo->getFee() > 0) { $xml .= '<fee currency="'. $obj_CountryConfig->getCurrency() .'" symbol="'. $obj_CountryConfig->getSymbol() .'">'. $obj_txnInfo->getFee() .'</fee>'; }
-							if ($obj_txnInfo->getCapturedAmount() > 0) { $xml .= '<captured currency="'. $obj_CountryConfig->getCurrency() .'" symbol="'. $obj_CountryConfig->getSymbol() .'">'. $obj_txnInfo->getCapturedAmount() .'</captured>'; }
-							if ($obj_txnInfo->getRefund() > 0) { $xml .= '<refunded currency="'. $obj_CountryConfig->getCurrency() .'" symbol="'. $obj_CountryConfig->getSymbol() .'">' . $obj_txnInfo->getRefund() .'</refunded>'; }
+							$xml .= '<transaction id="'. $obj_TxnInfo->getID(). '" order-no="'. htmlspecialchars($obj_TxnInfo->getOrderID(), ENT_NOQUOTES) .'"  type="'. $obj_TxnInfo->getTypeID() .'" current-state="'. @$aCurrentState["id"] .'">';
+							$xml .= '<amount currency="'. $obj_CountryConfig->getCurrency() .'" symbol="'. $obj_CountryConfig->getSymbol() .'">'. $obj_TxnInfo->getAmount(). '</amount>';
+							if ($obj_TxnInfo->getFee() > 0) { $xml .= '<fee currency="'. $obj_CountryConfig->getCurrency() .'" symbol="'. $obj_CountryConfig->getSymbol() .'">'. $obj_TxnInfo->getFee() .'</fee>'; }
+							if ($obj_TxnInfo->getCapturedAmount() > 0) { $xml .= '<captured currency="'. $obj_CountryConfig->getCurrency() .'" symbol="'. $obj_CountryConfig->getSymbol() .'">'. $obj_TxnInfo->getCapturedAmount() .'</captured>'; }
+							if ($obj_TxnInfo->getRefund() > 0) { $xml .= '<refunded currency="'. $obj_CountryConfig->getCurrency() .'" symbol="'. $obj_CountryConfig->getSymbol() .'">' . $obj_TxnInfo->getRefund() .'</refunded>'; }
 
 							if (count($aMessages) > 0)
 							{
-								$xml .= '<history>';
+								$xml .= '<messages>';
 								$xml .= $historyXml;
-								$xml .= '</history>';
-							} else { $xml .= '<history />'; }
-							$xml .= '</transactionHistory>';
+								$xml .= '</messages>';
+							} else { $xml .= '<messages />'; }
+							$xml .= '</transaction>';
 						}
 						catch (TxnInfoException $e)
 						{
