@@ -32,8 +32,8 @@ $aHTTP_CONN_INFO["dibs"]["protocol"] = "http";
 $aHTTP_CONN_INFO["dibs"]["host"] = "mpoint.local.cellpointmobile.com";
 $aHTTP_CONN_INFO["dibs"]["port"] = 80;
 $aHTTP_CONN_INFO["dibs"]["paths"]["auth"] = "/_test/simulator/dibs/ticket_auth.php";
-$aHTTP_CONN_INFO["dibs"]["paths"]["capture"] = "/_test/simulator/dibs/capture.php";
-$aHTTP_CONN_INFO["dibs"]["paths"]["cancel"] = "/_test/simulator/dibs/cancel.php";
-$aHTTP_CONN_INFO["dibs"]["paths"]["refund"] = "/_test/simulator/dibs/refund.php";
-$aHTTP_CONN_INFO["dibs"]["paths"]["status"] = "/_test/simulator/dibs/transstatus.php";
+$aHTTP_CONN_INFO["dibs"]["paths"]["capture"] = "/_test/simulators/dibs/capture.php";
+$aHTTP_CONN_INFO["dibs"]["paths"]["cancel"] = "/_test/simulators/dibs/cancel.php";
+$aHTTP_CONN_INFO["dibs"]["paths"]["refund"] = "/_test/simulators/dibs/refund.php";
+$aHTTP_CONN_INFO["dibs"]["paths"]["status"] = "/_test/simulators/dibs/transstatus.php";
 ?>
