@@ -206,7 +206,7 @@ class DIBS extends Callback
 				else
 				{
 					// Needs to be updated to support DIBS splitpay
-					$this->completeCapture($iAmount, $this->getTxnInfo()->getFee(), utf8_encode($obj_HTTP->getReplyBody() ) );
+					$this->completeCapture($iAmount, $this->getTxnInfo()->getFee(), array(utf8_encode($obj_HTTP->getReplyBody() ) ) );
 					
 					return 0;
 				}
