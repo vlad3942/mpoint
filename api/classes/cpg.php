@@ -80,7 +80,7 @@ class CPG extends Callback
 		$b .= '<shortCode>'. htmlspecialchars($sc, ENT_NOQUOTES) .'</shortCode>'; // Short code of the Storefront application
 		$b .= '<order orderCode="'. htmlspecialchars($this->getTxnInfo()->getOrderID(), ENT_NOQUOTES) .'">'; // mandatory, needs to be unique
 		$b .= '<description>Emirates Airline Ticket Purchase '. $pnr .'</description>';
-		if (strtoupper($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP) ) == "VND") { $b .= '<amount value="'. $this->getTxnInfo()->getAmount() .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="0" debitCreditIndicator="credit" />'; }
+		if (strtoupper($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP) ) == "VND") { $b .= '<amount value="'. $this->getTxnInfo()->getAmount()/100 .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="0" debitCreditIndicator="credit" />'; }
 		else { $b .= '<amount value="'. $this->getTxnInfo()->getAmount() .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="2" debitCreditIndicator="credit" />'; }
 		if  (array_key_exists("var_tax", $aClientVars) === true)
 		{
@@ -98,7 +98,7 @@ class CPG extends Callback
 		$b .= '<date month="'. substr($obj_XML->expiry, 0, 2) .'" year="20'. substr($obj_XML->expiry, -2) .'" />'; // mandatory
 		$b .= '</expiryDate>';
 		$b .= '<cardHolderName>'. htmlspecialchars($obj_XML->{'card-holder-name'}, ENT_NOQUOTES) .'</cardHolderName>'; // mandatory
-		$b .= '<paymentCountryCode>'. $this->_getCountryCode(intval($obj_XML->address['country-id']) ) .'</paymentCountryCode>';
+		$b .= '<paymentCountryCode>'. $this->_getCountryCode(intval($this->getTxnInfo()->getCountryConfig()->getID() ) ) .'</paymentCountryCode>';
 		if (array_key_exists("var_fiscal-number", $aClientVars) === true)
 		{
 			$b .= '<fiscalNumber>'. $aClientVars["var_fiscal-number"] .'</fiscalNumber>';
