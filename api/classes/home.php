@@ -536,7 +536,7 @@ class Home extends General
 				ORDER BY created DESC";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
-/*
+
 		$sql = "SELECT stateid
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
 				WHERE txnid = $1 AND stateid IN (". Constants::iINPUT_VALID_STATE .", ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .", ". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_DECLINED_STATE .")
@@ -549,7 +549,7 @@ class Home extends General
 				ORDER BY id ASC";
 //		echo $sql ."\n";
 		$stmt2 = $this->getDBConn()->prepare($sql);
-*/
+
 		$xml = '<transactions sorted-by="timestamp" sort-order="descending">';
 		// Construct XML Document with data for Transaction
 		while ($RS = $this->getDBConn()->fetchName($res) )
@@ -558,13 +558,7 @@ class Home extends General
 			if ($RS["STATEID"] < 0 && $RS["TYPEID"] == Constants::iCARD_PURCHASE_TYPE)
 			{
 				$aParams = array($RS["ID"]);
-				$sql = "SELECT stateid
-				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
-				WHERE txnid = ". intval($RS["ID"]) ." AND stateid IN (". Constants::iINPUT_VALID_STATE .", ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .", ". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_DECLINED_STATE .")
-				ORDER BY id DESC";
-				//		echo $sql ."\n";
-				$res1 = $this->getDBConn()->query($sql);
-				//$res1 = $this->getDBConn()->execute($stmt1, $aParams);
+				$res1 = $this->getDBConn()->execute($stmt1, $aParams);
 				if (is_resource($res1) === true)
 				{
 					$RS1 = $this->getDBConn()->fetchName($res1);
@@ -583,13 +577,8 @@ class Home extends General
 			if ($debug === true && $RS["TYPEID"] == Constants::iCARD_PURCHASE_TYPE)
 			{
 				$aParams = array($RS["ID"]);
-				//$res2 = $this->getDBConn()->execute($stmt2, $aParams);
-				$sql = "SELECT id, stateid, data, created
-				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
-				WHERE txnid = ". intval($RS["ID"]) ." AND stateid IN (". Constants::iINPUT_VALID_STATE .", ". Constants::iPSP_PAYMENT_REQUEST_STATE .", ". Constants::iPSP_PAYMENT_RESPONSE_STATE .", ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .", ". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_DECLINED_STATE .")
-				ORDER BY id ASC";
-				//		echo $sql ."\n";
-				$res2 = $this->getDBConn()->query($sql);
+				$res2 = $this->getDBConn()->execute($stmt2, $aParams);
+				
 				if (is_resource($res2) === true)
 				{
 					$xml .= '<messages>';
