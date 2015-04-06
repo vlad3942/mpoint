@@ -15,4 +15,6 @@ INSERT INTO Log_Ownr.State_Tbl (id, name, module, func) VALUES (1999, 'Callback 
 /* ========== MPOINT V1.87 START ========== */
 INSERT INTO Log_Ownr.State_Tbl (id, name, module, func) VALUES (1007, 'PSP Payment Request', 'Authorize', 'authTicket');
 INSERT INTO Log_Ownr.State_Tbl (id, name, module, func) VALUES (1008, 'PSP Payment Response', 'Authorize', 'authTicket');
+
+UPDATE System_Ownr.PSPCurrency_Tbl SET name = 'BDT' WHERE id = 302;
 /* ========== MPOINT V1.87 END ========== */
