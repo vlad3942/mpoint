@@ -912,7 +912,7 @@ class Home extends General
 	{
 		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Account_Tbl
 				SET mobile = ". (is_null($mob) === true ? "NULL" : "'". floatval($mob) ."'") .",
-					mobile_verified = ". General::bool2xml($miv) ."
+					mobile_verified = '". intval($miv) ."'
 				WHERE id = ". intval($id);
 //		echo $sql ."\n";
 
