@@ -101,7 +101,7 @@ class PSPConfig extends BasicConfig
 		$xml .= '<merchant-sub-account>'. htmlspecialchars($this->_sMerchantSubAccount, ENT_NOQUOTES) .'</merchant-sub-account>';
 		$xml .= '<username>'. htmlspecialchars($this->_sUsername, ENT_NOQUOTES) .'</username>';
 		$xml .= '<password>'. htmlspecialchars($this->_sPassword, ENT_NOQUOTES) .'</password>';
-		$xml .= '</client-config>';
+		$xml .= '</psp-info>';
 
 		return $xml;
 	}
