@@ -16,14 +16,16 @@ $sOrderId = @$_REQUEST['orderid'];
 //if ($iMerchant > 0 && $iTransact > 0 && $iAmount > 0 && strlen($sOrderId) > 0)
 if (true)
 {
-    $aParams = array_merge($_REQUEST,
-        array('result' => 0,
-              'status' => "ACCEPTED",
-              'cardtype' => "DK",
-              'language' => "da"
-             ) );
+    $response = '<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
+	<soap:Header>
+	</soap:Header>
+	<soap:Body>
+		<ProcessResult>
+			<ResponseCode>OK</ResponseCode>
+		</ProcessResult>
+	</soap:Body>
+</soap:Envelope>';
 
-    $response = http_build_query($aParams);
     echo $response;
 }
 else
