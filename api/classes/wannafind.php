@@ -16,7 +16,7 @@
  * Model Class containing all the Business Logic for handling interaction with WannaFind
  *
  */
-class WannaFind extends Callback
+class WannaFind extends Callback implements Captureable
 {
 /**
 	 * Notifies the Client of the Payment Status by performing a callback via HTTP.
@@ -85,7 +85,7 @@ class WannaFind extends Callback
 	 * 	2. Error in the parameters sent to the WannaFind server. An additional parameter called "message" is returned, with a value that may help identifying the error.
 	 * 	3. Credit card expired.
 	 * 	4. Rejected by acquirer.
-	 * 	5. Authorisation older than7 days.
+	 * 	5. Authorisation older than 7 days.
 	 * 	6. Transaction status on the WannaFind server does not allow capture.
 	 * 	7. Amount too high.
 	 * 	8. Amount is zero.
@@ -97,13 +97,16 @@ class WannaFind extends Callback
 	 * 15. Capture was blocked by WannaFind.
 	 * 
 	 * @link	http://tech.dibs.dk/toolbox/dibs-error-codes/
-	 * 
-	 * @param 	integer $txn	Transaction ID previously returned by WannaFind during authorisation
+	 *
+	 * @param 	integer $iAmount	Partial capture is currently unsupported by this implementation
 	 * @return	integer
 	 * @throws	E_USER_WARNING
 	 */
-	public function capture($txn)
+	public function capture($iAmount = -1)
 	{
+		$txn = $this->getTxnInfo()->getExternalID();
+		if ($iAmount != -1 || $iAmount != $this->getTxnInfo()->getAmount() ) { trigger_error("Partial capture not supported by wannafind PSP implementation. Input amount: ". $iAmount. " for transaction: ". $this->getTxnInfo()->getID(), E_USER_WARNING); }
+
 //		$code = $this->status($txn);
 		$code = 2;
 		// Transaction ready for Capture

@@ -31,18 +31,13 @@ class Capture extends General
 	 * @var TxnInfo
 	 */
 	private $_obj_TxnInfo;
+
 	/**
-	 * Model object for the PSP to which the capture operation should be executed
+	 * Model class used to communicate with PSP
 	 *
-	 * @var PSP
+	 * @var Callback
 	 */
 	private $_obj_PSP;
-	/**
-	 * The PSP's unique ID for the transaction which should be captured
-	 *
-	 * @var string
-	 */
-	private $_sPSPID;
 
 	/**
 	 * Default Constructor.
@@ -50,16 +45,31 @@ class Capture extends General
 	 * @param	RDB $oDB				Reference to the Database Object that holds the active connection to the mPoint Database
 	 * @param	TranslateText $oTxt 	Text Translation Object for translating any text into a specific language
 	 * @param 	TxnInfo $oTI 			Data object with the Transaction Information
-	 * @param 	Object $oPSP 			Model for the PSP to which the capture operation should be executed
-	 * @param 	String $pspid 			Unique ID for the Payment Service Provider (PSP) mPoint should use to capture the transaction amount
 	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI, &$oPSP, $pspid)
+	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI)
 	{
 		parent::__construct($oDB, $oTxt, $oTI->getClientConfig() );
 
 		$this->_obj_TxnInfo = $oTI;
-		$this->_obj_PSP = $oPSP;
-		$this->_sPSPID = $pspid;
+
+		switch ($oTI->getPSPID() )
+		{
+		case (Constants::iDIBS_PSP):	// DIBS
+			$this->_obj_PSP = new DIBS($this->getDBConn(), $this->getText(), $this->getTxnInfo() );
+			break;
+		case (Constants::iWANNAFIND_PSP):// WannaFind
+			$this->_obj_PSP = new WannaFind($this->getDBConn(), $this->getText(), $this->getTxnInfo() );
+			break;
+		case (Constants::iNETAXEPT_PSP):	// Netaxept
+			$this->_obj_PSP = new NetAxept($this->getDBConn(), $this->getText(), $this->getTxnInfo() );
+			break;
+		case (Constants::iMOBILEPAY_PSP):
+			$this->_obj_PSP = new MobilePay($this->getDBConn(), $this->getText(), $this->getTxnInfo() );
+			break;
+		default:	// Unkown Payment Service Provider
+			throw new CaptureException("Unkown Payment Service Provider", 1001);
+			break;
+		}
 	}
 
 	/**
@@ -67,57 +77,14 @@ class Capture extends General
 	 *
 	 * @return TxnInfo
 	 */
-	public function &getTxnInfo() { return $this->_obj_TxnInfo; }
+	public function getTxnInfo() { return $this->_obj_TxnInfo; }
+
 	/**
 	 * Returns the Model for the PSP to which the capture operation should be executed
 	 *
-	 * @return object
+	 * @return Callback
 	 */
-	public function &getPSP() { return $this->_obj_PSP; }
-	/**
-	 * Returns the PSP's unique ID for the transaction which should be captured
-	 *
-	 * @return string
-	 */
-	public function &getPSPID() { return $this->_sPSPID; }
-	
-	/**
-	 * Produces a new instance of a Capture operation object
-	 *
-	 * @param 	RDB $oDB 				Reference to the Database Object that holds the active connection to the mPoint Database
-	 * @param 	TranslateText $oTxt 	Text Translation Object for translating any text into a specific language
-	 * @param 	TxnInfo $oTI 			Data object with the Transaction Information
-	 * @return 	Capture
-	 */
-	public static function produce(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI)
-	{
-		$sql = "SELECT pspid, extid
-				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-				WHERE id = ". $oTI->getID() ." AND enabled = '1'";
-//		echo $sql ."\n";
-		$RS = $oDB->getName($sql);
-		
-		switch ($RS["PSPID"])
-		{
-		case (Constants::iDIBS_PSP):	// DIBS
-			// Authorise payment with PSP based on Ticket
-			$obj_PSP = new DIBS($oDB, $oTxt, $oTI);
-			break;
-			case (Constants::iNETAXEPT_PSP):	// Netaxept
-				// Authorise payment with PSP based on Ticket
-				$obj_PSP = new NetAxept($oDB, $oTxt, $oTI);
-				break;
-		case (Constants::iWANNAFIND_PSP):// WannaFind
-			// Authorise payment with PSP based on Ticket
-			$obj_PSP = new WannaFind($oDB, $oTxt, $oTI);
-			break;
-		default:	// Unkown Payment Service Provider
-			throw new CaptureException("Unkown Payment Service Provider", 1001);
-			break;
-		}
-		
-		return new Capture($oDB, $oTxt, $oTI, $obj_PSP, $RS["EXTID"]);
-	}
+	public function getPSP() { return $this->_obj_PSP; }
 
 	/**
 	 * Performs a capture operation with the PSP that authorized the transaction.
@@ -156,35 +123,22 @@ class Capture extends General
 	 * @link    http://www.betalingsterminal.no/Netthandel-forside/Teknisk-veiledning/Response-codes/
 	 *
 	 */
-	public function capture(HTTPConnInfo $oCI=NULL, $merchant=-1, $iAmount = -1)
+	public function capture($iAmount = -1)
 	{
 		// Serialize capture operations by using the Database as a mutex
-		$this->getDBConn()->query("START TRANSACTION");// START TRANSACTION does not work with Oracle db
+		$this->getDBConn()->query("START TRANSACTION");
 		$this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_ACCEPTED_STATE, true);
 
 		// Payment not Captured
-		if (count($this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE) ) == 0)
-		{		
-			if ($iAmount <= 0)
-			{
-				$iAmount = $this->getTxnInfo()->getAmount();
-			}	
-					
-			switch ($this->getTxnInfo()->getPSPID() )
-			{
-			case (Constants::iDIBS_PSP):	// DIBS
-				$code = $this->_obj_PSP->capture($this->_sPSPID, $iAmount);
-			break;
-			case (Constants::iWANNAFIND_PSP):// WannaFind
-				$code = $this->_obj_PSP->capture($this->_sPSPID);
-				break;
-			case (Constants::iNETAXEPT_PSP):	// Netaxept
-				$code = $this->_obj_PSP->capture($oCI, $merchant, $this->_sPSPID, $this->getTxnInfo(), $iAmount);
-				break;
-			default:	// Unkown Payment Service Provider
-				throw new CaptureException("Unkown Payment Service Provider", 1001);
-				break;
-			}
+		if ($this->_isPaymentCaptured() === false)
+		{
+			// If amount if not set by caller, assume capture of full transaction amount
+			if ($iAmount <= 0) { $iAmount = $this->getTxnInfo()->getAmount(); }
+
+			// If PSP supports the Capture operation, perform the capture
+			if ( ($this->_obj_PSP instanceof Captureable) === true) { $code = $this->_obj_PSP->capture($iAmount); }
+			else { throw new CaptureException("Capture not supported by PSP: ". get_class($this->_obj_PSP) ); }
+
 			if ($code === 0) { $code = 1000; }
 		}
 		else { $code = 1001; }
@@ -192,6 +146,11 @@ class Capture extends General
 		$this->getDBConn()->query("COMMIT");
 		
 		return $code; 
+	}
+
+	private function _isPaymentCaptured()
+	{
+		return count($this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE) ) > 0;
 	}
 }
 ?>

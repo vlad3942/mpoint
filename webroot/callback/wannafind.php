@@ -124,7 +124,7 @@ try
 		if ($obj_TxnInfo->useAutoCapture() === true && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 		{
 			// Capture automatically performed by WannaFind or invocation of capture operation with WannaFind succeeded
-			if ($obj_mPoint->capture($_REQUEST['transact']) == 0)
+			if ($obj_mPoint->capture() == 0)
 			{
 				$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, $_REQUEST);
 				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_REQUEST);

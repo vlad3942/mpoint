@@ -91,7 +91,8 @@ require_once(sCLASS_PATH ."/shopconfig.php");
 require_once(sCLASS_PATH ."/txninfo.php");
 // Require Business logic for the End-User Administration Component
 require_once(sCLASS_PATH ."/home.php");
-
+// Require Capture PSP Interface
+require_once(sINTERFACE_PATH ."/captureable.php");
 
 // Require global settings file
 require_once(sCONF_PATH ."global.php");

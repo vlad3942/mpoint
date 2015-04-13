@@ -16,7 +16,7 @@
  * Model Class containing all the Business Logic for handling interaction with NetAxept
  *
  */
-class NetAxept extends Callback
+class NetAxept extends Callback implements Captureable
 {
 
 	/**
@@ -239,15 +239,25 @@ class NetAxept extends Callback
 	 *
 	 * Exceptions will be raised on errors.
 	 *
-	 * @param	HTTPConnInfo $oCI Information on how to connect to NetAxept
-	 * @param	integer $merchant The merchant ID to identify us to NetAxept
-	 * @param	integer $transactionID Transaction ID previously returned by NetAxept during authorisation
-	 * @param	TxnInfo	obj_TxnInfo $txn Transaction info
-	 * @param 	integer $iAmount Transaction Amount to be captured
-	 * @return integer
+	 * @param	integer $iAmount	Transaction amount to capture
+	 * @return	integer
 	 */
-	public function capture(HTTPConnInfo &$oCI, $merchant,$transactionID, TxnInfo &$obj_TxnInfo, $iAmount=-1)
+	public function capture($iAmount = -1)
 	{
+		global $aHTTP_CONN_INFO;
+
+		$obj_PSPConfig = $this->getPSPConfig();
+		$obj_TxnInfo = $this->getTxnInfo();
+		$transactionID = $obj_TxnInfo->getExternalID();
+		$merchant = $obj_PSPConfig->getMerchantAccount();
+		if ($iAmount == -1) { $this->getTxnInfo()->getAmount(); }
+
+		// TODO: Move Conninfo produce to PSP class constructor and remove duplicated code from callers
+		if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["netaxept"]["host"] = str_replace("epayment.", "epayment-test.", $aHTTP_CONN_INFO["netaxept"]["host"]); }
+		$aHTTP_CONN_INFO["netaxept"]["username"] = $obj_PSPConfig->getUsername();
+		$aHTTP_CONN_INFO["netaxept"]["password"] = $obj_PSPConfig->getPassword();
+		$oCI = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["netaxept"]);
+
 		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );
 
 		$aParams = array("merchantId" => $merchant,
@@ -258,18 +268,18 @@ class NetAxept extends Callback
 		try
 		{
 			$obj_Std = $obj_SOAP->Process($aParams);
-			if ($obj_Std->ProcessResult->ResponseCode == 'OK') 
+			if ($obj_Std->ProcessResult->ResponseCode == 'OK')
 			{
 				$data = array("psp-id" => Constants::iNETAXEPT_PSP,
 							  "request" => var_export($aParams, true),
 							  "response" => var_export($obj_Std, true) );
-				
+
 				$queryResponse = $this->query($oCI, $merchant, $transactionID);
-				
+
 				$this->completeCapture($iAmount ,intval($queryResponse->Summary->AmountCaptured) - intval($iAmount), $data);
 				return 0;
 			}
-			
+
 			return $obj_Std->ProcessResult->ResponseCode;
 		}
 		catch (Exception $e)

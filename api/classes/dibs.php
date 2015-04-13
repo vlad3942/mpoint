@@ -16,7 +16,7 @@
  * Model Class containing all the Business Logic for handling Callback requests from DIBS.
  *
  */
-class DIBS extends Callback
+class DIBS extends Callback implements Captureable
 {
 	private $_aDIBS_CONN_INFO;
 
@@ -166,12 +166,15 @@ class DIBS extends Callback
 	 * 
 	 * @link	http://tech.dibs.dk/toolbox/dibs-error-codes/
 	 * 
-	 * @param 	integer $txn	Transaction ID previously returned by DIBS during authorisation
+	 * @param 	integer $iAmount	Transaction amount to capture
 	 * @return	integer
 	 * @throws	E_USER_WARNING
 	 */
-	public function capture($txn, $iAmount)
+	public function capture($iAmount = -1)
 	{
+		$txn = $this->getTxnInfo()->getExternalID();
+		if ($iAmount == -1) { $this->getTxnInfo()->getAmount(); }
+
 		$code = $this->status($txn);
 		// Transaction ready for Capture
 		if ($code == 2)

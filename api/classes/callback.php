@@ -33,17 +33,28 @@ class Callback extends EndUserAccount
 	private $_obj_TxnInfo;
 
 	/**
+	 * Data object with PSP configuration Information
+	 *
+	 * @var PSPConfig
+	 */
+	private $_obj_PSPConfig;
+
+	/**
 	 * Default Constructor.
 	 *
 	 * @param	RDB $oDB				Reference to the Database Object that holds the active connection to the mPoint Database
 	 * @param	TranslateText $oTxt 	Text Translation Object for translating any text into a specific language
 	 * @param 	TxnInfo $oTI 			Data object with the Transaction Information
+	 * @param 	PSPConfig $oPSPConfig 	Configuration object with the PSP Information
 	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI)
+	public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, PSPConfig $oPSPConfig = null)
 	{
 		parent::__construct($oDB, $oTxt, $oTI->getClientConfig() );
 
 		$this->_obj_TxnInfo = $oTI;
+
+		if ($oPSPConfig == null) { $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $oTI->getPSPID() ); }
+		$this->_obj_PSPConfig = $oPSPConfig;
 	}
 
 	/**
@@ -51,7 +62,15 @@ class Callback extends EndUserAccount
 	 *
 	 * @return TxnInfo
 	 */
-	public function &getTxnInfo() { return $this->_obj_TxnInfo; }
+	public function getTxnInfo() { return $this->_obj_TxnInfo; }
+
+
+	/**
+	 * Returns the Configuration object with the PSP Information.
+	 *
+	 * @return PSPConfig
+	 */
+	public function getPSPConfig() { return $this->_obj_PSPConfig; }
 
 	/**
 	 * Sends an SMS Receipt with Payment Information to the Customer through GoMobile.
@@ -302,7 +321,7 @@ class Callback extends EndUserAccount
 		$sBody .= $this->getVariables();
 		$sBody .= "&mac=". urlencode($this->_obj_TxnInfo->getMAC() );
 		/* ----- Construct Body End ----- */
-		
+
 		$this->performCallback($sBody, $obj_SurePay);
 	}
 

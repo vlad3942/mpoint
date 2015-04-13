@@ -95,13 +95,13 @@ class PSPConfig extends BasicConfig
 
 	public function toXML()
 	{
-		$xml = '<psp-info id="'. $this->getID() .'">';
+		$xml  = '<psp-config id="'. $this->getID() .'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
 		$xml .= '<merchant-account>'. htmlspecialchars($this->_sMerchantAccount, ENT_NOQUOTES) .'</merchant-account>';
 		$xml .= '<merchant-sub-account>'. htmlspecialchars($this->_sMerchantSubAccount, ENT_NOQUOTES) .'</merchant-sub-account>';
 		$xml .= '<username>'. htmlspecialchars($this->_sUsername, ENT_NOQUOTES) .'</username>';
 		$xml .= '<password>'. htmlspecialchars($this->_sPassword, ENT_NOQUOTES) .'</password>';
-		$xml .= '</psp-info>';
+		$xml .= '</psp-config>';
 
 		return $xml;
 	}

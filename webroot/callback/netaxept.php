@@ -157,7 +157,7 @@ try
 		// Transaction uses Auto Capture and Authorization was accepted
 		if ($obj_TxnInfo->useAutoCapture() === true && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 		{
-			$responseCode = $obj_mPoint->capture($obj_ConnInfo, $obj_PSPConfig->getMerchantAccount(), $obj_JSON->TransactionId, $obj_TxnInfo);
+			$responseCode = $obj_mPoint->capture();
 			if ($responseCode == "OK")
 			{
 				//$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, json_decode($HTTP_RAW_POST_DATA, true) );

@@ -147,7 +147,7 @@ try
 		if ($obj_TxnInfo->useAutoCapture() === true && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 		{
 			// Capture automatically performed by DIBS or invocation of capture operation with DIBS succeeded
-			if (array_key_exists("capturenow", $_POST) === true || $obj_mPoint->capture($_POST['transact']) == 0)
+			if (array_key_exists("capturenow", $_POST) === true || $obj_mPoint->capture() == 0)
 			{
 				$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, $_POST);
 				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $_POST);
