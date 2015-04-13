@@ -279,6 +279,14 @@ class Admin extends General
 					WHERE clientid = ". intval($clientid)."";
 		return is_resource($this->getDBConn()->query($sql) );
 	}
+	/**
+	 * Gets a list of all payment options that are available for the giving list of clients
+	 *
+	 * @param	array   $aClientids 	Array of all clients that should be looked up
+	 * @param	integer $uid 			Used to return the unique ID of the mPoint Administrator
+	 *
+	 *  @return	XML
+	 */
 	public function GetCards(array $aClientids, $uid)
 	{
 		$sql = "SELECT CA.id, CA.cardid, C.name AS cardname , CA.enabled, CA.pspid, PSP.name AS pspname, CA.countryid , CA.clientid, CL.name AS clientname
