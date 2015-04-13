@@ -2,5 +2,5 @@
 
 interface Captureable
 {
-    public function capture($iAmount);
+    public function capture($iAmount = -1);
 }
