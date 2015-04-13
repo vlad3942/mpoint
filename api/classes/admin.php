@@ -321,7 +321,7 @@ class Admin extends General
 					$xml .= '<cards>';
 				}
 				
-				$xml .= '<card id="'. $aRS[$i]["ID"] .'" type="'. $aRS[$i]["CARDID"] .'" enabled="true" country-id="'. $aRS[$i]["COUNTRYID"] .'">';
+				$xml .= '<card id="'. $aRS[$i]["ID"] .'" type="'. $aRS[$i]["CARDID"] .'" enabled="'. General::bool2xml($aRS[$i]["ENABLED"]) .'" country-id="'. $aRS[$i]["COUNTRYID"] .'">';
 				$xml .= '<name>'. $aRS[$i]["CARDNAME"] .'</name>';
 				$xml .= '<psp id="'. $aRS[$i]["PSPID"] .'">'. $aRS[$i]["PSPNAME"] .'</psp>';
 				$xml .= '</card>';
