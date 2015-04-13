@@ -36,4 +36,12 @@ $aHTTP_CONN_INFO["dibs"]["paths"]["capture"] = "/_test/simulators/dibs/capture.p
 $aHTTP_CONN_INFO["dibs"]["paths"]["cancel"] = "/_test/simulators/dibs/cancel.php";
 $aHTTP_CONN_INFO["dibs"]["paths"]["refund"] = "/_test/simulators/dibs/refund.php";
 $aHTTP_CONN_INFO["dibs"]["paths"]["status"] = "/_test/simulators/dibs/transstatus.php";
+
+$aHTTP_CONN_INFO["netaxept"]["protocol"] = "http";
+$aHTTP_CONN_INFO["netaxept"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["netaxept"]["port"] = 80;
+$aHTTP_CONN_INFO["netaxept"]["timeout"] = 120;
+$aHTTP_CONN_INFO["netaxept"]["path"] = "/capture.php";
+$aHTTP_CONN_INFO["netaxept"]["method"] = "POST";
+$aHTTP_CONN_INFO["netaxept"]["contenttype"] = "application/x-www-form-urlencoded";
 ?>
