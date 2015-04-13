@@ -23,7 +23,7 @@ $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH,
 
 $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
-/*
+
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
 $HTTP_RAW_POST_DATA .= '<get-cards user-id="3">';
@@ -35,7 +35,7 @@ $HTTP_RAW_POST_DATA .= '<client id="10016" />';
 $HTTP_RAW_POST_DATA .= '</clients>';
 $HTTP_RAW_POST_DATA .= '</get-cards>';
 $HTTP_RAW_POST_DATA .= '</root>';
-*/
+
 set_time_limit(0);
 
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
@@ -52,8 +52,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		{
 			$aClients[] = (integer) $obj_DOM->{'get-cards'}->clients->client[$i]["id"];
 		}
-		$xml = $obj_mPoint->GetCards($aClients, $obj_DOM->{'get-cards'}["user-id"]);
-		
+		$xml = '<get-cards>';
+		$xml .= $obj_mPoint->GetCards($aClients, $obj_DOM->{'get-cards'}["user-id"]);
+		$xml .= '</get-cards>';
 		$xml = utf8_encode($xml);
 	}
 	// Error: Invalid XML Document
