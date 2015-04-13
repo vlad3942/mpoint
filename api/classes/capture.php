@@ -138,8 +138,6 @@ class Capture extends General
 			// If PSP supports the Capture operation, perform the capture
 			if ( ($this->_obj_PSP instanceof Captureable) === true) { $code = $this->_obj_PSP->capture($iAmount); }
 			else { throw new CaptureException("Capture not supported by PSP: ". get_class($this->_obj_PSP) ); }
-
-			if ($code === 0) { $code = 1000; }
 		}
 		else { $code = 1001; }
 		// Release mutex

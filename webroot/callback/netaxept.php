@@ -158,7 +158,7 @@ try
 		if ($obj_TxnInfo->useAutoCapture() === true && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 		{
 			$responseCode = $obj_mPoint->capture();
-			if ($responseCode == "OK")
+			if ($responseCode == 1000)
 			{
 				//$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, json_decode($HTTP_RAW_POST_DATA, true) );
 				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);

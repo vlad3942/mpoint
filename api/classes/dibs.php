@@ -210,8 +210,8 @@ class DIBS extends Callback implements Captureable
 				{
 					// Needs to be updated to support DIBS splitpay
 					$this->completeCapture($iAmount, $this->getTxnInfo()->getFee(), array(utf8_encode($obj_HTTP->getReplyBody() ) ) );
-					
-					return 0;
+
+					return 1000;
 				}
 			}
 			else
