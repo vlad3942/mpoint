@@ -279,7 +279,53 @@ class Admin extends General
 					WHERE clientid = ". intval($clientid)."";
 		return is_resource($this->getDBConn()->query($sql) );
 	}
-	
+	public function GetCards(array $aClientids, $uid)
+	{
+		$sql = "SELECT CA.id, CA.cardid, C.name AS cardname , CA.enabled, CA.pspid, PSP.name AS pspname, CA.countryid , CA.clientid, CL.name AS clientname
+				FROM Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA
+				INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl C ON CA.cardid = C.id
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON CA.clientid = CL.id
+				INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON CA.pspid = PSP.id
+				INNER JOIN Admin".sSCHEMA_POSTFIX.".Access_Tbl Acc ON CA.clientid = Acc.clientid
+				WHERE CA.clientid in(". $this->getDBConn()->escStr(implode(',',$aClientids) ) .") AND Acc.userid = ". intval($uid) ."
+				order by CA.clientid desc";
+
+//		echo $sql;
+		$aRS = $this->getDBConn()->getAllNames($sql);
+		$xml = "<clients>";
+		if (is_array($aRS) === true && count($aRS) > 0)
+		{
+			$currentClientid = 0;
+			
+			for ($i=0; $i<count($aRS); $i++)
+			{
+				
+				if($currentClientid === 0 || $currentClientid !== $aRS[$i]["CLIENTID"])
+				{
+					if($currentClientid != 0)
+					{
+						$xml .= '</cards>';
+						$xml .='</client>';
+					}
+					
+					$xml .= '<client id="'.  $aRS[$i]["CLIENTID"] .'">';
+					$xml .= '<name>'. $aRS[$i]["CLIENTNAME"] .'</name>';	
+					$xml .= '<cards>';
+				}
+				
+				$xml .= '<card id="'. $aRS[$i]["ID"] .'" type="'. $aRS[$i]["CARDID"] .'" enabled="true" country-id="'. $aRS[$i]["COUNTRYID"] .'">';
+				$xml .= '<name>'. $aRS[$i]["CARDNAME"] .'</name>';
+				$xml .= '<psp id="'. $aRS[$i]["PSPID"] .'">'. $aRS[$i]["PSPNAME"] .'</psp>';
+				$xml .= '</card>';
+				if($currentClientid != $aRS[$i]["CLIENTID"] ) { $currentClientid = $aRS[$i]["CLIENTID"]; }
+			}
+			$xml .= '</cards>';
+			$xml .='</client>';
+			$xml .= "</clients>";
+		}
+
+		return  $xml;
+	}
 	
 }
 ?>

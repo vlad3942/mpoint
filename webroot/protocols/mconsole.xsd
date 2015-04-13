@@ -40,6 +40,25 @@
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="optional" />
 				</xs:complexType>
 			</xs:element>
+<!-- get-cards -->
+			<xs:element name="get-cards">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="clients" minOccurs="1" maxOccurs="1">
+							<xs:complexType>
+								<xs:sequence minOccurs="0" maxOccurs="unbounded">
+									<xs:element name="client">
+										<xs:complexType>
+											<xs:attribute name="id" type="xs:positiveInteger" use="required" />
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:all>
+					<xs:attribute name="user-id" type="xs:positiveInteger" use="required" />
+				</xs:complexType>
+			</xs:element>
 			<!-- Get Customer -->
 			<xs:element name="getcustomer">
 				<xs:complexType>
