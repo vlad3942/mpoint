@@ -11,9 +11,7 @@ class DIBSCaptureAPITest extends CaptureAPITest
 {
     public function testSuccessfulCapture()
     {
-        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
-
-        parent::testSuccessfulCapture($sCallbackURL, Constants::iDIBS_PSP);
+        parent::testSuccessfulCapture(Constants::iDIBS_PSP);
     }
 
 }

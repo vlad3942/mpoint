@@ -95,13 +95,14 @@ abstract class mPointBaseDatabaseTest extends PHPUnit_Framework_TestCase
             $this->_db = pg_connect($this->_constDBConnString(). " dbname=". $this->_mPointDBInfo['path']);
         }
 
-        pg_query($this->_db, $query);
+        $res = pg_query($this->_db, $query);
 
         $error = pg_last_error($this->_db);
         if (!empty($error) )
         {
             throw new ErrorException("Querying test MPoint DB failed: ". $error);
         }
+        return $res;
     }
 
 }

@@ -16,7 +16,7 @@
  * Model Class containing all the Business Logic for handling Callback requests from MobilePay.
  *
  */
-class MobilePay extends Callback
+class MobilePay extends CPMPSP
 {
 	public function initialize(PSPConfig &$obj_PSP)
 	{
@@ -28,31 +28,22 @@ class MobilePay extends Callback
 		
 		return $obj_XML;
 	}
-	public function notifyClient($sid, array $_post)
-	{
-		
-	}
-	
-	public function auth($ticket, $apiKey, $cardID, $storecard)
-	{
-	}
-	
-	public function capture($transactionID, $apiKey)
-	{
-		
-	}
-	
-	
-	public function refund($txn, $amount, $apiKey)
-	{
-		
-	}
-	
 
+	public function notifyClient($sid, array $_post) { /* no operation */ }
+	
+	public function auth($ticket, $apiKey, $cardID, $storecard)  { /* no operation */ }
+
+	public function refund($txn, $amount, $apiKey)  { /* no operation */ }
 
 	public function initCallback(HTTPConnInfo &$oCI, $cardid, $txnid, $cardno, $expiry)
 	{
+        //TODO
+	}
 
-	}	
+	protected function getConnectionInfo()
+	{
+		global $aHTTP_CONN_INFO;
+		return $aHTTP_CONN_INFO["mobilepay"];
+	}
 }
 ?>

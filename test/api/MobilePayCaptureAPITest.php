@@ -7,11 +7,11 @@
 
 require_once __DIR__. '/captureAPITest.php';
 
-class NetAxeptCaptureAPITest extends CaptureAPITest
+class MobilePayCaptureAPITest extends CaptureAPITest
 {
     public function testSuccessfulCapture()
     {
-        //parent::testSuccessfulCapture(Constants::iNETAXEPT_PSP);
+        parent::testSuccessfulCapture(Constants::iMOBILEPAY_PSP);
     }
 
 }

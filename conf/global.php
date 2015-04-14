@@ -243,6 +243,22 @@ $aHTTP_CONN_INFO["netaxept"]["contenttype"] = "application/x-www-form-urlencoded
 //$aHTTP_CONN_INFO["netaxept"]["password"] = "";	// Set from the Client Configuration 
 
 /**
+ * Connection info for connecting to MobilePay
+ */
+$aHTTP_CONN_INFO["mobilepay"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["mobilepay"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["mobilepay"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["mobilepay"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["mobilepay"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["mobilepay"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["mobilepay"]["contenttype"] = "text/xml";
+//$aHTTP_CONN_INFO["mobilepay"]["paths"]["auth"] = "/cgi-ssl/ticket_auth.cgi";
+$aHTTP_CONN_INFO["mobilepay"]["paths"]["capture"] = "/mpoint/danskebank/capture";
+//$aHTTP_CONN_INFO["mobilepay"]["paths"]["cancel"] = "/cgi-adm/cancel.cgi";
+//$aHTTP_CONN_INFO["mobilepay"]["paths"]["refund"] = "/cgi-adm/refund.cgi";
+//$aHTTP_CONN_INFO["mobilepay"]["paths"]["status"] = "/transstatus.pml";
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>

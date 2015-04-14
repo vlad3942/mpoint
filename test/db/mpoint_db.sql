@@ -6126,3 +6126,12 @@ INSERT INTO state_tbl (id, name, module, func, created, modified, enabled) VALUE
 
 
 SELECT pg_catalog.setval('state_tbl_id_seq', 1, true);
+
+-- from setup_pg_v1.88 --
+
+INSERT INTO System.PSP_Tbl (id, name) VALUES (11, 'MobilePay');
+--INSERT INTO System.PSPCurrency_Tbl (pspid, countryid, name) SELECT 11, 100, 'DKK' FROM System.PSP_Tbl;
+
+INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (17, 'MobilePay', 15, -1, -1, -1);
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (11, 17);
+INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) SELECT C.id * -1 AS pricepointid, 17 FROM System.Country_Tbl C, System.Card_Tbl Card WHERE C.id = 100 GROUP BY pricepointid;
