@@ -47,7 +47,7 @@ abstract class CPMPSP extends Callback implements Captureable
                 if ( (integer)$obj_Txn["id"] == $this->getTxnInfo()->getID() )
                 {
                     $iStatusCode = (integer)$obj_Txn->status["code"];
-                    if ($iStatusCode == 1000) { $this->completeCapture($iAmount, 0, $obj_HTTP->getReplyBody() ); }
+                    if ($iStatusCode == 1000) { $this->completeCapture($iAmount, 0, array($obj_HTTP->getReplyBody() ) ); }
                     return $iStatusCode;
                 }
                 else { throw new CaptureException("The PSP gateway did not respond with a status document related to the transaction we want: ". $obj_HTTP->getReplyBody(). " for txn: ". $this->getTxnInfo()->getID(), 999); }
