@@ -26,14 +26,13 @@ $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<get-cards user-id="3">';
-$HTTP_RAW_POST_DATA .= '<clients>';
-$HTTP_RAW_POST_DATA .= '<client id="10001" />';
-$HTTP_RAW_POST_DATA .= '<client id="10002" />';
-$HTTP_RAW_POST_DATA .= '<client id="10032" />';
-$HTTP_RAW_POST_DATA .= '<client id="10033" />';
-$HTTP_RAW_POST_DATA .= '</clients>';
-$HTTP_RAW_POST_DATA .= '</get-cards>';
+$HTTP_RAW_POST_DATA .= '<save-cards user-id="3">';
+$HTTP_RAW_POST_DATA .= '<cards>';
+$HTTP_RAW_POST_DATA .= '<card id="149">false</card>';
+$HTTP_RAW_POST_DATA .= '<card id="149">false</card>';
+$HTTP_RAW_POST_DATA .= '<card id="149">false</card>';
+$HTTP_RAW_POST_DATA .= '</cards>';
+$HTTP_RAW_POST_DATA .= '</save-cards>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
 set_time_limit(0);
@@ -44,17 +43,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 {
 	$url = $_SERVER['DOCUMENT_ROOT'] ."/protocols/mconsole.xsd";
 	if (file_exists($url) === false) { $url = "http://". str_replace("mpoint", "mconsole", $_SERVER['HTTP_HOST']) ."/protocols/mconsole.xsd"; } 
-	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate($url) === true && count($obj_DOM->{'get-cards'}) > 0)
+	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate($url) === true && count($obj_DOM->{'save-cards'}) > 0)
 	{
 		$obj_mPoint = new Admin($_OBJ_DB, $_OBJ_TXT);
-		$aClients =  array();
-		for ($i=0; $i<count($obj_DOM->{'get-cards'}->clients->client); $i++)
+		$xml ="<cards>";
+		for ($i=0; $i<count($obj_DOM->{'save-cards'}->cards->card); $i++)
 		{
-			$aClients[] = (integer) $obj_DOM->{'get-cards'}->clients->client[$i]["id"];
+			$xml .= $obj_mPoint->updateCardAccess( (integer) $obj_DOM->{'save-cards'}->cards->card[$i]["id"], $obj_DOM->{'save-cards'}->cards->card[$i], $obj_DOM->{'save-cards'}["user-id"]);
 		}
-		$xml = '<get-cards>';
-		$xml .= $obj_mPoint->GetCards($aClients, $obj_DOM->{'get-cards'}["user-id"]);
-		$xml .= '</get-cards>';
+		$xml .="</cards>";
 		$xml = utf8_encode($xml);
 	}
 	// Error: Invalid XML Document

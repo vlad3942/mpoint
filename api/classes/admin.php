@@ -334,6 +334,28 @@ class Admin extends General
 
 		return  $xml;
 	}
-	
+	/*	Used for updationg the enabled state of a card
+	 * 	
+	 * 
+	 * 
+	 */
+	public function updateCardAccess($id, $state, $uid)
+	{
+		$sql = "UPDATE Client".sSCHEMA_POSTFIX.".CardAccess_Tbl
+				SET enabled = ". $state ."
+				WHERE id = ". intval($id) ." AND clientid IN(SELECT clientid
+															 FROM Admin.Access_Tbl 
+															 WHERE userid = ". intval($uid) .")" ;
+		//echo $sql ."\n";
+		file_put_contents(sLOG_PATH ."/jona.log", "\n". $sql, FILE_APPEND);
+		
+		$res = $this->getDBConn()->query($sql);
+		$xml = '<card id="'.$id .'">';
+		if ($this->getDBConn()->countAffectedRows($res) > 0)  { $xml .= '<status code="100">Card state was changed</status>'; }
+		else  {	$xml .= '<status code="90">Card state could not be changed</status>'; }
+		$xml .= '</card>';
+		
+		return $xml;
+	}
 }
 ?>

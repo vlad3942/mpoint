@@ -40,7 +40,30 @@
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="optional" />
 				</xs:complexType>
 			</xs:element>
-<!-- get-cards -->
+			<!-- save-cards -->
+			<xs:element name="save-cards">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="cards" minOccurs="1" maxOccurs="1">
+							<xs:complexType>
+								<xs:sequence minOccurs="0" maxOccurs="unbounded">
+									<xs:element name="card">
+										<xs:complexType>
+											<xs:simpleContent>
+												<xs:extension base="xs:boolean">
+													<xs:attribute name="id" type="xs:positiveInteger" use="required" />
+												</xs:extension>
+											</xs:simpleContent>
+									</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:all>
+					<xs:attribute name="user-id" type="xs:positiveInteger" use="required" />
+				</xs:complexType>
+			</xs:element>
+			<!-- get-cards -->
 			<xs:element name="get-cards">
 				<xs:complexType>
 					<xs:all>
