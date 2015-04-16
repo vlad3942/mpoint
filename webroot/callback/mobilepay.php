@@ -67,7 +67,7 @@ try
 	if ( ($obj_TxnData instanceof SimpleDOMElement) === false) { throw new InvalidArgumentException("Invalid input XML format", 400); }
 
 	$obj_TxnInfo = TxnInfo::produceInfoFromOrderNo($_OBJ_DB, $obj_TxnData['order-no']);
-	$obj_mPoint = new MobilePay($_OBJ_DB, null, $obj_TxnInfo);
+	$obj_mPoint = new MobilePay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 
 	$iFee = 0;
 	$iAmount = $obj_TxnData->amount;
