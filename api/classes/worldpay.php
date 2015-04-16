@@ -54,7 +54,74 @@ class WorldPay extends Callback
 			$this->performCallback($obj_XML->asXML(), $obj_SurePay);
 		}
 	}
+	/* Initialises Callback to the Client.
+	*
+	* @param 	HTTPConnInfo $oCI 	Connection Info required to communicate with the Callback component for Cellpoint Mobile
+	* @param 	integer $cardid		Unique ID of the Card Type that was used in the payment transaction
+	* @param 	integer $txnid		Transaction ID from WorldPay returned in the "transact" parameter
+	*/
+	public function auth(HTTPConnInfo &$oCI, $merchantcode, $currency, $cardid, $storecard)
+	{
+		$card = $this->getCardName($cardid);
+		
+		if (empty($oc) === true) { $oc = $this->getTxnInfo()->getID(); }
+		
+		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+				SET pspid = ". Constants::iWORLDPAY_PSP ."
+				WHERE id = ". $this->getTxnInfo()->getID();
 
+//		echo $sql ."\n";
+		$this->getDBConn()->query($sql);
+		
+		$url = "https://" . $oCI->getHost() . $oCI->getPath();
+		if ($storecard === true ) { $url .= "&preferredPaymentMethod=". $card ."&language=". $this->getTxnInfo()->getLanguage(); }
+		$xml = '<url method="post" content-type="text/xml">'. htmlspecialchars( $url, ENT_NOQUOTES) .'</url>';
+	
+		$oc = htmlspecialchars($this->getTxnInfo()->getOrderID(), ENT_NOQUOTES);
+		if (empty($oc) === true) { $oc = $this->getTxnInfo()->getID(); }
+		$xml .= '<body>';
+		$b .= '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<!DOCTYPE paymentService PUBLIC "-//WorldPay//DTD WorldPay PaymentService v1//EN" "http://dtd.worldpay.com/paymentService_v1.dtd">';
+		$b .= '<paymentService version="1.4" merchantCode="'. $merchantcode .'">';
+		$b .= '<submit>';
+		$b .= '<order orderCode="'. $oc .'">';
+		$b .= '<description>Order: '. $oc .' from: '. htmlspecialchars($this->getTxnInfo()->getClientConfig()->getName(), ENT_NOQUOTES) .'</description>';
+		$b .= '<amount currencyCode="'. $currency .'" exponent="2"  value="'. $this->getTxnInfo()->getAmount() .'"/>';
+		$b .= '<paymentDetails>';
+		$b .= '<'. $card .'>';
+		$b .='<cardNumber>_CARD_NUMBER_</cardNumber>';
+		$b .='<expiryDate>';
+		$b .='<date month="_MONTH_" year="_YEAR_"/>';
+		$b .='</expiryDate>';
+		$b .='<cardHolderName>_CARD_HOLDER_NAME_</cardHolderName>';
+		$b .='<cvc>_CVC_</cvc>';
+		$b .= '</'. $card .'>';
+		$headers = apache_request_headers();
+		$b .='<session shopperIPAddress="'. $headers["X-Forwarded-For"] .'" id="'. $this->getTxnInfo()->getID() .'" />';
+		$b .= '</paymentDetails>';
+	
+		$b .= '<shopper>';
+		if (strlen($this->getTxnInfo()->getEMail() ) > 0)
+		{
+			$b .= '<shopperEmailAddress>'. htmlspecialchars($this->getTxnInfo()->getEMail(), ENT_NOQUOTES) .'</shopperEmailAddress>';
+		}
+		$b .= '<browser>';
+		$b .= '<acceptHeader>_ACCEPT_HEADER_</acceptHeader>';
+		$b .= '<userAgentHeader>_USER_AGENT_HEADER_</userAgentHeader>';
+		$b .= '</browser>';
+		$b .= '</shopper>';
+
+		$b .= '<statementNarrative>Order: '. $oc .' from: '. htmlspecialchars($this->getTxnInfo()->getClientConfig()->getName(), ENT_NOQUOTES) .'</statementNarrative>';
+		$b .= '</order>';
+		$b .= '</submit>';
+		$b .= '</paymentService>';
+		$xml .= htmlspecialchars($b, ENT_NOQUOTES);
+		$xml .= '</body>';
+		
+		$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, $xml);
+		
+		return $xml;
+	}
 	/**
 	 * (non-PHPdoc)
 	 * @see api/classes/EndUserAccount#delTicket($pspid, $ticket)
