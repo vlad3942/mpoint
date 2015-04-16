@@ -29,16 +29,13 @@ class MobilePay extends CPMPSP
 		return $obj_XML;
 	}
 
-	public function notifyClient($sid, array $_post) { /* no operation */ }
-	
+	public function notifyClient($iStateId, $iAmount) { parent::notifyClient($iStateId, Constants::iMOBILEPAY_PSP, $iAmount); }
+
 	public function auth($ticket, $apiKey, $cardID, $storecard)  { /* no operation */ }
 
-	public function refund($txn, $amount, $apiKey)  { /* no operation */ }
+	public function refund($txn, $amount, $apiKey)  { /* TODO */ }
 
-	public function initCallback(HTTPConnInfo &$oCI, $cardid, $txnid, $cardno, $expiry)
-	{
-        //TODO
-	}
+	public function initCallback(HTTPConnInfo &$oCI, $cardid, $txnid, $cardno, $expiry) { /* no operation */ }
 
 	protected function getConnectionInfo()
 	{
@@ -46,4 +43,3 @@ class MobilePay extends CPMPSP
 		return $aHTTP_CONN_INFO["mobilepay"];
 	}
 }
-?>

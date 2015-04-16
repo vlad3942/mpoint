@@ -436,6 +436,11 @@ abstract class Constants
 	 *
 	 */
 	const iAPPLE_PAY = 15;
+	/**
+	 * Unique Card ID for transaction's made using Danske Bank MobilePay
+	 *
+	 */
+	const iMOBILE_PAY = 17;
 
 	/**
 	 * Unique Fee Type ID for Top-Ups

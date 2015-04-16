@@ -641,6 +641,49 @@ class TxnInfo
 		return $xml;
 	}
 
+	public static function produceInfoFromOrderNo(RDB $obj, $orderNo)
+	{
+		$sql  = self::_constProduceQuery();
+		$sql .= " WHERE orderid = '". $obj->escStr($orderNo) ."'";
+
+//		echo $sql ."\n";
+		$RS = $obj->getName($sql);
+		$obj_TxnInfo = self::_produceFromResultSet($obj, $RS);
+
+
+		if ( ($obj_TxnInfo instanceof TxnInfo) === false) { throw new mPointException("Transaction with orderno: ". $orderNo. " not found", 1001); }
+		return $obj_TxnInfo;
+	}
+
+	private static function _constProduceQuery()
+	{
+		$sql = "SELECT id, typeid, countryid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, extid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, iconurl, \"mode\", auto_capture, gomobileid,
+						clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, pspid, fee, captured
+				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl";
+
+		return $sql;
+	}
+
+	/**
+	 * @param RDB $obj
+	 * @param $RS
+	 * @return null|TxnInfo
+	 */
+	private static function _produceFromResultSet(RDB $obj, $RS)
+	{
+		// Transaction found
+		$obj_TxnInfo = null;
+		if (is_array($RS) === true)
+		{
+			$obj_ClientConfig = ClientConfig::produceConfig($obj, $RS["CLIENTID"], $RS["ACCOUNTID"], $RS["KEYWORDID"]);
+			$obj_CountryConfig = CountryConfig::produceConfig($obj, $RS["COUNTRYID"]);
+
+			$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["PSPID"], $RS["FEE"], $RS["CAPTURED"]);
+		}
+		return $obj_TxnInfo;
+	}
+
+
 	/**
 	 * Overloaded factory method for producing a new instance of a Transaction Info object.
 	 * The data object can either be instantiated from an array of Client Input or from the Transaction Log.
@@ -713,11 +756,9 @@ class TxnInfo
 
 			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"]);
 			break;
-		case ($obj instanceof RDB):				// Instantiate from Transaction Log
-			$sql = "SELECT id, typeid, countryid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, extid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, iconurl, \"mode\", auto_capture, gomobileid,
-						clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, pspid, fee, captured
-					FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-					WHERE id = ". intval($id);
+		case ($obj instanceof RDB):		// Instantiate from Transaction Log
+			$sql  = self::_constProduceQuery();
+			$sql .= " WHERE id = ". intval($id);
 
 			$sDebug = "";
 			if (is_array($misc) === true)
@@ -738,17 +779,10 @@ class TxnInfo
 			}
 //			echo $sql ."\n";
 			$RS = $obj->getName($sql);
+			$obj_TxnInfo = self::_produceFromResultSet($obj, $RS);
 
 			// Transaction found
-			if (is_array($RS) === true)
-			{
-				$obj_ClientConfig = ClientConfig::produceConfig($obj, $RS["CLIENTID"], $RS["ACCOUNTID"], $RS["KEYWORDID"]);
-				$obj_CountryConfig = CountryConfig::produceConfig($obj, $RS["COUNTRYID"]);
-
-				$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["PSPID"], $RS["FEE"], $RS["CAPTURED"]);
-			}
-			// Error: Transaction not found
-			else { throw new TxnInfoException("Transaction with ID: ". $id ." not found". $sDebug, 1001); }
+			if ( ($obj_TxnInfo instanceof TxnInfo) === false) { throw new TxnInfoException("Transaction with ID: ". $id ." not found". $sDebug, 1001); }
 			break;
 		default:								// Error: Argument 2 is an instance of an invalid class
 			trigger_error("Argument 2 passed to TxnInfo::produceInfo() must be an instance of ClientConfig or of RDB", E_USER_ERROR);

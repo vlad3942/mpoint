@@ -125,7 +125,7 @@ class Callback extends EndUserAccount
 	 * @param 	integer $txnid 	Transaction ID returned by the PSP
 	 * @param 	integer $cid 	Unique ID for the Credit Card the customer used to pay for the Purchase
 	 * @param 	integer $sid 	Unique ID indicating that final state of the Transaction
-	 * @param 	integer $fee				The amount the customer will pay in fee�s for the Transaction. Default value 0
+	 * @param 	integer $fee	The amount the customer will pay in fees for the Transaction. Default value 0
 	 * @param 	array $debug 	Array of Debug data which should be logged for the state (optional)
 	 * @return	integer
 	 * @throws 	CallbackException
