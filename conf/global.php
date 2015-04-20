@@ -254,6 +254,7 @@ $aHTTP_CONN_INFO["mobilepay"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["mobilepay"]["contenttype"] = "text/xml";
 //$aHTTP_CONN_INFO["mobilepay"]["paths"]["auth"] = "/cgi-ssl/ticket_auth.cgi";
 $aHTTP_CONN_INFO["mobilepay"]["paths"]["capture"] = "/mpoint/danskebank/capture";
+$aHTTP_CONN_INFO["mobilepay"]["paths"]["status"] = "/mpoint/danskebank/status";
 //$aHTTP_CONN_INFO["mobilepay"]["paths"]["cancel"] = "/cgi-adm/cancel.cgi";
 //$aHTTP_CONN_INFO["mobilepay"]["paths"]["refund"] = "/cgi-adm/refund.cgi";
 //$aHTTP_CONN_INFO["mobilepay"]["paths"]["status"] = "/transstatus.pml";
