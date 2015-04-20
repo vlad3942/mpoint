@@ -87,6 +87,8 @@ require_once(sCLASS_PATH ."/accountconfig.php");
 require_once(sCLASS_PATH ."/keywordconfig.php");
 // Require data class for Shop Configuration
 require_once(sCLASS_PATH ."/shopconfig.php");
+// Require data class for Payment Service Provider Configurations
+require_once(sCLASS_PATH ."/pspconfig.php");
 // Require data data class for Transaction Information
 require_once(sCLASS_PATH ."/txninfo.php");
 // Require Business logic for the End-User Administration Component

@@ -14,8 +14,6 @@
 
 // Require Global Include File
 require_once("../inc/include.php");
-// Require data class for Payment Service Provider Configurations
-require_once(sCLASS_PATH ."/pspconfig.php");
 // Require specific Business logic for the Capture component
 require_once(sCLASS_PATH ."/capture.php");
 

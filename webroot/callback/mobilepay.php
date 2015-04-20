@@ -13,8 +13,6 @@ require_once("../inc/include.php");
 // Require the PHP API for handling the connection to GoMobile
 require_once(sAPI_CLASS_PATH ."/gomobile.php");
 
-// Require data class for Payment Service Provider Configurations
-require_once(sCLASS_PATH ."/pspconfig.php");
 // Require Business logic for the End-User Account Component
 require_once(sCLASS_PATH ."/enduser_account.php");
 // Require general Business logic for the Callback module
