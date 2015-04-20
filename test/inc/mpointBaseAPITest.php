@@ -3,6 +3,7 @@
 abstract class mPointBaseAPITest extends mPointBaseDatabaseTest
 {
 	protected $bIgnoreErrors = false;
+	private static $aVisited = array();
 
     public function setUp()
     {
@@ -12,7 +13,7 @@ abstract class mPointBaseAPITest extends mPointBaseDatabaseTest
             @chmod(sLOG_PATH, octdec(777) );
         }
 		//empty error log file prior to test-run
-		copy(sERROR_LOG, sERROR_LOG .'.'. get_class($this). '.backup');
+		if (count(self::$aVisited) == 0) { copy(sERROR_LOG, sERROR_LOG .'.before-test.backup'); }
 		file_put_contents(sERROR_LOG, '');
         parent::setup();
     }
@@ -40,15 +41,30 @@ abstract class mPointBaseAPITest extends mPointBaseDatabaseTest
 	{
 		parent::tearDown();
 
+		$aLogLines = file(sERROR_LOG, FILE_IGNORE_NEW_LINES);
+
 		if ($this->bIgnoreErrors === false)
 		{
 			// Check for errors and warnings in app_error log file
-			$aLogLines = file(sERROR_LOG, FILE_IGNORE_NEW_LINES);
 			$this->assertNotContains("USER WARNING", $aLogLines);
 			$this->assertNotContains("USER ERROR", $aLogLines);
 			$this->assertNotContains("ERROR", $aLogLines);
 			$this->assertNotContains("WARNING", $aLogLines);
 		}
+
+		$me = get_class($this);
+		$mode = array_search($me, self::$aVisited) === false ? 'w' : 'a';
+		self::$aVisited[] = $me;
+		$handle = fopen(sERROR_LOG .'.'. $me. '.backup', $mode);
+		fwrite($handle, "\n");
+		fwrite($handle, "---------------------------------------------------\n");
+		fwrite($handle, $this->getName() ."\n");
+		fwrite($handle, "---------------------------------------------------\n");
+		foreach ($aLogLines as $line)
+		{
+			fwrite($handle, $line. "\n");
+		}
+		fclose($handle);
 	}
 
 }
