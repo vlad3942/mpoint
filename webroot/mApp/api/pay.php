@@ -43,6 +43,8 @@ require_once(sCLASS_PATH ."/payex.php");
 require_once(sCLASS_PATH ."/netaxept.php");
 // Require specific Business logic for the Stripe component
 require_once(sCLASS_PATH ."/stripe.php");
+// Require specific Business logic for the CPM PSP component
+require_once(sINTERFACE_PATH ."/cpm_psp.php");
 // Require specific Business logic for the MobilePay component
 require_once(sCLASS_PATH ."/mobilepay.php");
 // Require Business logic for the validating client Input
