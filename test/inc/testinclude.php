@@ -11,7 +11,8 @@ include_once 'api/classes/callback.php';
 include_once 'api/classes/basicconfig.php';
 include_once 'api/classes/constants.php';
 
-define("TESTDB_TOKEN", "test_". time());
+define("TESTDB_TOKEN", "test_". time() );
+define("sSYSTEM_PATH", sPROJECT_BASE_DIR);
 
 require_once 'conf/global.php';
 require_once 'conf/global_unittest.php';

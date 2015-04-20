@@ -67,44 +67,61 @@ try
 	if ( ($obj_TxnData instanceof SimpleDOMElement) === false) { throw new InvalidArgumentException("Invalid input XML format", 400); }
 
 	$obj_TxnInfo = TxnInfo::produceInfoFromOrderNo($_OBJ_DB, $obj_TxnData['order-no']);
-	$obj_mPoint = new MobilePay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+	$obj_PSP = new MobilePay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 
-	$iFee = 0;
-	$iAmount = $obj_TxnData->amount;
-
-	$iStateID = $obj_mPoint->completeTransaction(Constants::iMOBILEPAY_PSP, $obj_TxnData["external-id"], Constants::iMOBILE_PAY , ($obj_TxnData->status["code"] >= 1000 ? Constants::iPAYMENT_ACCEPTED_STATE : Constants::iPAYMENT_REJECTED_STATE), $iFee, array(var_export($obj_TxnData, true) ) );
-
-	// Callback URL has been defined for Client and transaction hasn't been duplicated
-	if ($obj_TxnInfo->getCallbackURL() != "" && $iStateID != Constants::iPAYMENT_DUPLICATED_STATE)
+	// According to MobilePay spec, a status call should be made here to ensure that the callback request is authentic
+	$iPSPStatus = $obj_PSP->status();
+	if ($iPSPStatus === Constants::iPAYMENT_ACCEPTED_STATE || $iPSPStatus === Constants::iPAYMENT_CAPTURED_STATE)
 	{
-		// Transaction uses Auto Capture and Authorization was accepted
-		if ($obj_TxnInfo->useAutoCapture() === true && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
+		$iFee = 0; // MobilePay fee is hardcoded to zero for now
+		$iAmount = $obj_TxnData->amount;
+
+		$iStateID = $obj_PSP->completeTransaction(Constants::iMOBILEPAY_PSP, $obj_TxnData["external-id"], Constants::iMOBILE_PAY , ($obj_TxnData->status["code"] >= 1000 ? Constants::iPAYMENT_ACCEPTED_STATE : Constants::iPAYMENT_REJECTED_STATE), $iFee, array(var_export($obj_TxnData, true) ) );
+
+		// Callback URL has been defined for Client and transaction hasn't been duplicated
+		if ($obj_TxnInfo->getCallbackURL() != "" && $iStateID != Constants::iPAYMENT_DUPLICATED_STATE)
 		{
-			// Capture automatically performed by MobilePay or invocation of capture operation with MobilePay succeeded
-			$isAlreadyCaptured = isset($obj_TxnData["is-captured"]) === true && strtolower($obj_TxnData["is-captured"]) == "true";
-			if ($isAlreadyCaptured || $obj_mPoint->capture() == 1000)
+			// Transaction uses Auto Capture and Authorization was accepted
+			if ($obj_TxnInfo->useAutoCapture() === true && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 			{
-				$obj_mPoint->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, $iAmount);
-				$obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $iAmount);
-				if ($isAlreadyCaptured) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($obj_TxnData, true) ); }
+				// Capture automatically performed by MobilePay or invocation of capture operation with MobilePay succeeded
+				$isAlreadyCaptured = isset($obj_TxnData["is-captured"]) === true && strtolower($obj_TxnData["is-captured"]) == "true";
+				if ($isAlreadyCaptured || $obj_PSP->capture() == 1000)
+				{
+					$obj_PSP->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, $iAmount);
+					$obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $iAmount);
+					if ($isAlreadyCaptured) { $obj_PSP->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($obj_TxnData, true) ); }
+				}
+				else { $obj_PSP->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $iAmount); }
 			}
-			else { $obj_mPoint->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $iAmount); }
+			else { $obj_PSP->notifyClient($iStateID, $iAmount); }
 		}
-		else { $obj_mPoint->notifyClient($iStateID, $iAmount); }
+
+		$xml .= '<status code="'. $iStateID .'">Callback handled</status>';
+
+		// Client has SMS Receipt enabled and payment has been authorized
+		if ($obj_TxnInfo->getClientConfig()->smsReceiptEnabled() === true && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
+		{
+			$obj_PSP->sendSMSReceipt(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
+		}
 	}
-
-	$xml .= '<status code="'. $iStateID .'">Callback handled</status>';
-
-	// Client has SMS Receipt enabled and payment has been authorized
-	if ($obj_TxnInfo->getClientConfig()->smsReceiptEnabled() === true && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
+	else
 	{
-		$obj_mPoint->sendSMSReceipt(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
+		header("HTTP/1.0 403 Forbidden");
+		$xml .= '<status code="403">Transaction not in a valid state, PSP state: '. $iPSPStatus .'</status>';
+		trigger_error("Transaction not in valid state. Txn ID: ". $obj_TxnInfo->getID() .", State: ". $iPSPStatus ."\n". "Input Data: " ."\n". $sRawInput, E_USER_ERROR);
 	}
 }
 catch (TxnInfoException $e)
 {
 	header("HTTP/1.0 404 Not Found");
 	$xml .= '<status code="404">Transaction not found</status>';
+	trigger_error($e->getMessage() ." (". $e->getCode() .")" ."\n". "Input Data: " ."\n". $sRawInput, E_USER_ERROR);
+}
+catch (UnexpectedValueException $e)
+{
+	header("HTTP/1.0 502 Bad Gateway");
+	$xml .= '<status code="999">The PSP gateway gave an unexpected response</status>';
 	trigger_error($e->getMessage() ." (". $e->getCode() .")" ."\n". "Input Data: " ."\n". $sRawInput, E_USER_ERROR);
 }
 catch (CallbackException $e) { /* ignore */ }
@@ -123,7 +140,7 @@ catch (InvalidArgumentException $e)
 }
 catch (Exception $e)
 {
-	header("HTTP/1.0 500 Bad Request");
+	header("HTTP/1.0 500 Internal Error");
 	$xml .= '<status code="'. $e->getCode() .'">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES) .'</status>';
 	trigger_error($e->getMessage() ." (". $e->getCode() .")" ."\n". "Input Data: " ."\n". $sRawInput, E_USER_ERROR);
 }

@@ -651,7 +651,7 @@ class TxnInfo
 		$obj_TxnInfo = self::_produceFromResultSet($obj, $RS);
 
 
-		if ( ($obj_TxnInfo instanceof TxnInfo) === false) { throw new mPointException("Transaction with orderno: ". $orderNo. " not found", 1001); }
+		if ( ($obj_TxnInfo instanceof TxnInfo) === false) { throw new TxnInfoException("Transaction with orderno: ". $orderNo. " not found", 1001); }
 		return $obj_TxnInfo;
 	}
 

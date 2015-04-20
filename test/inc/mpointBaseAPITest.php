@@ -2,14 +2,17 @@
 
 abstract class mPointBaseAPITest extends mPointBaseDatabaseTest
 {
+	protected $bIgnoreErrors = false;
 
     public function setUp()
     {
-        if (!file_exists(sPROJECT_BASE_DIR. '/log') )
+        if (!file_exists(sLOG_PATH) )
         {
-            mkdir(sPROJECT_BASE_DIR. '/log');
-            @chmod(sPROJECT_BASE_DIR. '/log', octdec(777) );
+            mkdir(sLOG_PATH);
+            @chmod(sLOG_PATH, octdec(777) );
         }
+		//empty error log file prior to test-run
+		file_put_contents(sERROR_LOG, '');
         parent::setup();
     }
 
@@ -31,5 +34,20 @@ abstract class mPointBaseAPITest extends mPointBaseDatabaseTest
 
         return $h;
     }
+
+	public function tearDown()
+	{
+		parent::tearDown();
+
+		if ($this->bIgnoreErrors === false)
+		{
+			// Check for errors and warnings in app_error log file
+			$aLogLines = file(sERROR_LOG, FILE_IGNORE_NEW_LINES);
+			$this->assertNotContains("USER WARNING", $aLogLines);
+			$this->assertNotContains("USER ERROR", $aLogLines);
+			$this->assertNotContains("ERROR", $aLogLines);
+			$this->assertNotContains("WARNING", $aLogLines);
+		}
+	}
 
 }
