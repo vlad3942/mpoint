@@ -43,15 +43,6 @@ abstract class mPointBaseAPITest extends mPointBaseDatabaseTest
 
 		$aLogLines = file(sERROR_LOG, FILE_IGNORE_NEW_LINES);
 
-		if ($this->bIgnoreErrors === false)
-		{
-			// Check for errors and warnings in app_error log file
-			$this->assertNotContains("USER WARNING", $aLogLines);
-			$this->assertNotContains("USER ERROR", $aLogLines);
-			$this->assertNotContains("ERROR", $aLogLines);
-			$this->assertNotContains("WARNING", $aLogLines);
-		}
-
 		$me = get_class($this);
 		$mode = array_search($me, self::$aVisited) === false ? 'w' : 'a';
 		self::$aVisited[] = $me;
@@ -65,6 +56,15 @@ abstract class mPointBaseAPITest extends mPointBaseDatabaseTest
 			fwrite($handle, $line. "\n");
 		}
 		fclose($handle);
+
+		if ($this->bIgnoreErrors === false)
+		{
+			// Check for errors and warnings in app_error log file
+			$this->assertNotContains("USER WARNING", $aLogLines);
+			$this->assertNotContains("USER ERROR", $aLogLines);
+			$this->assertNotContains("ERROR", $aLogLines);
+			$this->assertNotContains("WARNING", $aLogLines);
+		}
 	}
 
 }
