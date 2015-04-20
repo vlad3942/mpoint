@@ -1,569 +1,3 @@
-#: /webroot/home/my_account.php:37
-msgid @@@ My Account @@@
-msgstr @@@ My Account @@@
-
-#: /webroot/home/my_account.php:42
-msgid @@@ Account Details @@@
-msgstr @@@ Account Details @@@
-
-#: /webroot/home/my_account.php:43
-msgid @@@ Stored Card @@@
-msgstr @@@ Stored Card @@@
-
-#: /webroot/home/my_account.php:44
-msgid @@@ Stored Cards @@@
-msgstr @@@ Stored Cards @@@
-
-#: /webroot/home/my_account.php:46
-msgid @@@ Account ID @@@
-msgstr @@@ Account ID @@@
-
-#: /webroot/home/my_account.php:47
-msgid @@@ Country @@@
-msgstr @@@ Country @@@
-
-#: /webroot/home/my_account.php:48
-msgid @@@ Firstname @@@
-msgstr @@@ Firstname @@@
-
-#: /webroot/home/my_account.php:49
-msgid @@@ Lastname @@@
-msgstr @@@ Lastname @@@
-
-#: /webroot/home/my_account.php:50
-msgid @@@ Mobile @@@
-msgstr @@@ Mobile @@@
-
-#: /webroot/home/my_account.php:51
-msgid @@@ E-Mail @@@
-msgstr @@@ E-Mail @@@
-
-#: /webroot/home/my_account.php:52
-msgid @@@ Password @@@
-msgstr @@@ Password @@@
-
-#: /webroot/home/my_account.php:53
-msgid @@@ Repeat Password @@@
-msgstr @@@ Repeat Password @@@
-
-#: /webroot/home/my_account.php:54
-msgid @@@ Preferred @@@
-msgstr @@@ Preferred @@@
-
-#: /webroot/home/my_account.php:55
-msgid @@@ Other @@@
-msgstr @@@ Other @@@
-
-#: /webroot/home/my_account.php:58
-msgid @@@ Edit @@@
-msgstr @@@ Edit @@@
-
-#: /webroot/home/my_account.php:59
-msgid @@@ Save @@@
-msgstr @@@ Save @@@
-
-#: /webroot/home/my_account.php:60
-msgid @@@ Delete @@@
-msgstr @@@ Delete @@@
-
-#: /webroot/home/my_account.php:61
-msgid @@@ Make Preferred @@@
-msgstr @@@ Make Preferred @@@
-
-#: /webroot/home/my_account.php:62
-msgid @@@ Add Card @@@
-msgstr @@@ Add Card @@@
-
-#: /webroot/home/my_account.php:65
-msgid @@@ Stored Cards - Help @@@
-msgstr @@@ Stored Cards - Help @@@
-
-#: /webroot/home/code.php:37
-msgid @@@ Edit Mobile @@@
-msgstr @@@ Edit Mobile @@@
-
-#: /webroot/home/code.php:42
-msgid @@@ Step 2 of 2 @@@
-msgstr @@@ Step 2 of 2 @@@
-
-#: /webroot/home/code.php:43
-msgid @@@ Activation Code @@@
-msgstr @@@ Activation Code @@@
-
-#: /webroot/home/code.php:44
-msgid @@@ Save Mobile @@@
-msgstr @@@ Save Mobile @@@
-
-#: /webroot/home/code.php:47
-msgid @@@ Edit Mobile Guide - Step 2 @@@
-msgstr @@@ Edit Mobile Guide - Step 2 @@@
-
-#: /webroot/home/missing_data.php:37
-msgid @@@ Missing Data @@@
-msgstr @@@ Missing Data @@@
-
-#: /webroot/home/missing_data.php:40
-msgid @@@ OK @@@
-msgstr @@@ OK @@@
-
-#: /webroot/home/missing_data.php:41
-msgid @@@ My Account @@@
-msgstr @@@ My Account @@@
-
-#: /webroot/home/missing_data.php:45
-msgid @@@ Missing Mobile Number Guide @@@
-msgstr @@@ Missing Mobile Number Guide @@@
-
-#: /webroot/home/missing_data.php:46
-msgid @@@ Missing E-Mail Address Guide @@@
-msgstr @@@ Missing E-Mail Address Guide @@@
-
-#: /webroot/home/missing_data.php:47
-msgid @@@ Missing Profile Info Guide @@@
-msgstr @@@ Missing Profile Info Guide @@@
-
-#: /webroot/home/topmenu.php:38
-msgid @@@ My Account @@@
-msgstr @@@ My Account @@@
-
-#: /webroot/home/topmenu.php:42
-msgid @@@ Top-Up @@@
-msgstr @@@ Top-Up @@@
-
-#: /webroot/home/topmenu.php:46
-msgid @@@ History @@@
-msgstr @@@ History @@@
-
-#: /webroot/home/topmenu.php:50
-msgid @@@ Transfer @@@
-msgstr @@@ Transfer @@@
-
-#: /webroot/home/topmenu.php:54
-msgid @@@ Logout @@@
-msgstr @@@ Logout @@@
-
-#: /webroot/home/topmenu.php:59
-msgid @@@ Balance @@@
-msgstr @@@ Balance @@@
-
-#: /webroot/home/activate.php:26
-msgid @@@ Activate E-Mail @@@
-msgstr @@@ Activate E-Mail @@@
-
-#: /webroot/home/activate.php:29
-msgid @@@ Step 3 of 3 @@@
-msgstr @@@ Step 3 of 3 @@@
-
-#: /webroot/home/activate.php:32
-msgid @@@ Edit E-Mail Guide - Step 3 @@@
-msgstr @@@ Edit E-Mail Guide - Step 3 @@@
-
-#: /webroot/home/edit_password.php:37
-msgid @@@ Edit Password @@@
-msgstr @@@ Edit Password @@@
-
-#: /webroot/home/edit_password.php:42
-msgid @@@ Old Password @@@
-msgstr @@@ Old Password @@@
-
-#: /webroot/home/edit_password.php:43
-msgid @@@ New Password @@@
-msgstr @@@ New Password @@@
-
-#: /webroot/home/edit_password.php:44
-msgid @@@ Repeat Password @@@
-msgstr @@@ Repeat Password @@@
-
-#: /webroot/home/edit_password.php:45
-msgid @@@ Save @@@
-msgstr @@@ Save @@@
-
-#: /webroot/home/confirm.php:40
-msgid @@@ Confirm Transfer @@@
-msgstr @@@ Confirm Transfer @@@
-
-#: /webroot/home/confirm.php:43
-msgid @@@ Recipient @@@
-msgstr @@@ Recipient @@@
-
-#: /webroot/home/confirm.php:44
-msgid @@@ Total @@@
-msgstr @@@ Total @@@
-
-#: /webroot/home/confirm.php:45
-msgid @@@ Password @@@
-msgstr @@@ Password @@@
-
-#: /webroot/home/confirm.php:46
-msgid @@@ Confirmation Code @@@
-msgstr @@@ Confirmation Code @@@
-
-#: /webroot/home/confirm.php:47
-msgid @@@ Transfer @@@
-msgstr @@@ Transfer @@@
-
-#: /webroot/home/confirm.php:51
-msgid @@@ Confirm Transfer Guide - Confirmation Code @@@
-msgstr @@@ Confirm Transfer Guide - Confirmation Code @@@
-
-#: /webroot/home/confirm.php:52
-msgid @@@ Confirm Transfer Guide - Password Only @@@
-msgstr @@@ Confirm Transfer Guide - Password Only @@@
-
-#: /webroot/home/edit_mobile.php:37
-msgid @@@ Edit Mobile @@@
-msgstr @@@ Edit Mobile @@@
-
-#: /webroot/home/edit_mobile.php:42
-msgid @@@ Step 1 of 2 @@@
-msgstr @@@ Step 1 of 2 @@@
-
-#: /webroot/home/edit_mobile.php:43
-msgid @@@ Old Mobile @@@
-msgstr @@@ Old Mobile @@@
-
-#: /webroot/home/edit_mobile.php:44
-msgid @@@ New Mobile @@@
-msgstr @@@ New Mobile @@@
-
-#: /webroot/home/edit_mobile.php:45
-msgid @@@ Send @@@
-msgstr @@@ Send @@@
-
-#: /webroot/home/edit_mobile.php:48
-msgid @@@ Edit Mobile Guide - Step 1 @@@
-msgstr @@@ Edit Mobile Guide - Step 1 @@@
-
-#: /webroot/home/history.php:37
-msgid @@@ Transaction History @@@
-msgstr @@@ Transaction History @@@
-
-#: /webroot/home/history.php:40
-msgid @@@ Purchase History @@@
-msgstr @@@ Purchase History @@@
-
-#: /webroot/home/history.php:41
-msgid @@@ Transfer History @@@
-msgstr @@@ Transfer History @@@
-
-#: /webroot/home/history.php:42
-msgid @@@ Top-Up History @@@
-msgstr @@@ Top-Up History @@@
-
-#: /webroot/home/history.php:43
-msgid @@@ Reward History @@@
-msgstr @@@ Reward History @@@
-
-#: /webroot/home/history.php:44
-msgid @@@ ID @@@
-msgstr @@@ ID @@@
-
-#: /webroot/home/history.php:45
-msgid @@@ mPoint ID @@@
-msgstr @@@ mPoint ID @@@
-
-#: /webroot/home/history.php:46
-msgid @@@ Amount @@@
-msgstr @@@ Amount @@@
-
-#: /webroot/home/history.php:47
-msgid @@@ Method @@@
-msgstr @@@ Method @@@
-
-#: /webroot/home/history.php:48
-msgid @@@ Price @@@
-msgstr @@@ Price @@@
-
-#: /webroot/home/history.php:49
-msgid @@@ Fee @@@
-msgstr @@@ Fee @@@
-
-#: /webroot/home/history.php:50
-msgid @@@ Merchant @@@
-msgstr @@@ Merchant @@@
-
-#: /webroot/home/history.php:51
-msgid @@@ Order No. @@@
-msgstr @@@ Order No. @@@
-
-#: /webroot/home/history.php:52
-msgid @@@ Sender @@@
-msgstr @@@ Sender @@@
-
-#: /webroot/home/history.php:53
-msgid @@@ Recipient @@@
-msgstr @@@ Recipient @@@
-
-#: /webroot/home/history.php:54
-msgid @@@ IP @@@
-msgstr @@@ IP @@@
-
-#: /webroot/home/history.php:55
-msgid @@@ Timestamp @@@
-msgstr @@@ Timestamp @@@
-
-#: /webroot/home/link.php:37
-msgid @@@ Edit E-Mail @@@
-msgstr @@@ Edit E-Mail @@@
-
-#: /webroot/home/link.php:42
-msgid @@@ Step 2 of 3 @@@
-msgstr @@@ Step 2 of 3 @@@
-
-#: /webroot/home/link.php:45
-msgid @@@ Edit E-Mail Guide - Step 2 @@@
-msgstr @@@ Edit E-Mail Guide - Step 2 @@@
-
-#: /webroot/home/accept.php:22
-msgid @@@ Top-Up Account @@@
-msgstr @@@ Top-Up Account @@@
-
-#: /webroot/home/accept.php:30
-msgid @@@ Account Top-Up - Completed @@@
-msgstr @@@ Account Top-Up - Completed @@@
-msgid @@@ Account Top-Up - Authentication Error @@@
-msgstr @@@ Account Top-Up - Authentication Error @@@
-
-#: /webroot/home/accept.php:31
-msgid @@@ Amount @@@
-msgstr @@@ Amount @@@
-
-#: /webroot/home/accept.php:32
-msgid @@@ Price @@@
-msgstr @@@ Price @@@
-
-#: /webroot/home/accept.php:33
-msgid @@@ Close @@@
-msgstr @@@ Close @@@
-
-#: /webroot/home/sys/save_mobile.php:101
-msgid @@@ save - code: 100 @@@
-msgstr @@@ save - code: 100 @@@
-
-#: /webroot/home/sys/save_mobile.php:118
-msgid @@@ save - code: 91 @@@
-msgstr @@@ save - code: 91 @@@
-
-#: /webroot/home/sys/save_mobile.php:123
-msgid @@@ internal - code: 2 @@@
-msgstr @@@ internal - code: 2 @@@
-
-#: /webroot/home/sys/send_code.php:109
-msgid @@@ send - code: 100 @@@
-msgstr @@@ send - code: 100 @@@
-
-#: /webroot/home/sys/send_code.php:115
-msgid @@@ send - code: 91 @@@
-msgstr @@@ send - code: 91 @@@
-
-#: /webroot/home/sys/send_code.php:120
-msgid @@@ internal - code: 2 @@@
-msgstr @@@ internal - code: 2 @@@
-
-#: /webroot/home/sys/manage_card.php:109
-msgid @@@ internal - code: 2 @@@
-msgstr @@@ internal - code: 2 @@@
-
-#: /webroot/home/sys/send_link.php:106
-msgid @@@ send - code: 100 @@@
-msgstr @@@ send - code: 100 @@@
-
-#: /webroot/home/sys/send_link.php:112
-msgid @@@ send - code: 91 @@@
-msgstr @@@ send - code: 91 @@@
-
-#: /webroot/home/sys/send_link.php:117
-msgid @@@ internal - code: 2 @@@
-msgstr @@@ internal - code: 2 @@@
-
-#: /webroot/home/sys/save_password.php:115
-msgid @@@ save - code: 100 @@@
-msgstr @@@ save - code: 100 @@@
-
-#: /webroot/home/sys/save_password.php:131
-msgid @@@ save - code: 91 @@@
-msgstr @@@ save - code: 91 @@@
-
-#: /webroot/home/sys/save_password.php:136
-msgid @@@ internal - code: 2 @@@
-msgstr @@@ internal - code: 2 @@@
-
-#: /webroot/home/sys/save_info.php:103
-msgid @@@ save - code: 100 @@@
-msgstr @@@ save - code: 100 @@@
-
-#: /webroot/home/sys/save_info.php:115
-msgid @@@ save - code: 91 @@@
-msgstr @@@ save - code: 91 @@@
-
-#: /webroot/home/sys/save_info.php:120
-msgid @@@ internal - code: 2 @@@
-msgstr @@@ internal - code: 2 @@@
-
-#: /webroot/home/sys/make_transfer.php:325
-msgid @@@ transfer - code: 91 @@@
-msgstr @@@ transfer - code: 91 @@@
-
-#: /webroot/home/sys/make_transfer.php:378
-msgid @@@ transfer - code: 92 @@@
-msgstr @@@ transfer - code: 92 @@@
-
-#: /webroot/home/sys/make_transfer.php:387
-msgid @@@ internal - code: 2 @@@
-msgstr @@@ internal - code: 2 @@@
-
-#: /webroot/home/content.php:34
-msgid @@@ mPoint - User Admin @@@
-msgstr @@@ mPoint - User Admin @@@
-
-#: /webroot/home/content.php:37
-msgid @@@ My Account @@@
-msgstr @@@ My Account @@@
-
-#: /webroot/home/content.php:38
-msgid @@@ Top-Up Account @@@
-msgstr @@@ Top-Up Account @@@
-
-#: /webroot/home/content.php:39
-msgid @@@ Stored Cards @@@
-msgstr @@@ Stored Cards @@@
-
-#: /webroot/home/content.php:42
-msgid @@@ mPoint - User Admin - Overview @@@
-msgstr @@@ mPoint - User Admin - Overview @@@
-
-#: /webroot/home/content.php:45
-msgid @@@ My Account - Help @@@
-msgstr @@@ My Account - Help @@@
-
-#: /webroot/home/content.php:46
-msgid @@@ Top-Up Account - Help @@@
-msgstr @@@ Top-Up Account - Help @@@
-
-#: /webroot/home/content.php:47
-msgid @@@ Stored Cards - Help @@@
-msgstr @@@ Stored Cards - Help @@@
-
-#: /webroot/home/topup.php:50
-msgid @@@ Top-Up Account @@@
-msgstr @@@ Top-Up Account @@@
-
-#: /webroot/home/topup.php:53
-msgid @@@ Balance @@@
-msgstr @@@ Balance @@@
-
-#: /webroot/home/topup.php:54
-msgid @@@ Amount @@@
-msgstr @@@ Amount @@@
-
-#: /webroot/home/topup.php:55
-msgid @@@ Price @@@
-msgstr @@@ Price @@@
-
-#: /webroot/home/topup.php:56
-msgid @@@ Top-Up Points @@@
-msgstr @@@ Top-Up Points @@@
-
-#: /webroot/home/topup.php:57
-msgid @@@ Top-Up e-Money @@@
-msgstr @@@ Top-Up e-Money @@@
-
-#: /webroot/home/new_card.php:39
-msgid @@@ Add New Card @@@
-msgstr @@@ Add New Card @@@
-
-#: /webroot/home/new_card.php:42
-msgid @@@ OK @@@
-msgstr @@@ OK @@@
-
-#: /webroot/home/new_card.php:45
-msgid @@@ Add New Card Guide @@@
-msgstr @@@ Add New Card Guide @@@
-
-#: /webroot/home/edit_email.php:37
-msgid @@@ Edit E-Mail @@@
-msgstr @@@ Edit E-Mail @@@
-
-#: /webroot/home/edit_email.php:42
-msgid @@@ Step 1 of 3 @@@
-msgstr @@@ Step 1 of 3 @@@
-
-#: /webroot/home/edit_email.php:43
-msgid @@@ Old E-Mail @@@
-msgstr @@@ Old E-Mail @@@
-
-#: /webroot/home/edit_email.php:44
-msgid @@@ New E-Mail @@@
-msgstr @@@ New E-Mail @@@
-
-#: /webroot/home/edit_email.php:45
-msgid @@@ Send @@@
-msgstr @@@ Send @@@
-
-#: /webroot/home/edit_email.php:48
-msgid @@@ Edit E-Mail Guide - Step 1 @@@
-msgstr @@@ Edit E-Mail Guide - Step 1 @@@
-
-#: /webroot/home/transfer.php:44
-msgid @@@ Transfer @@@
-msgstr @@@ Transfer @@@
-
-#: /webroot/home/transfer.php:49
-msgid @@@ Balance @@@
-msgstr @@@ Balance @@@
-
-#: /webroot/home/transfer.php:50
-msgid @@@ Country @@@
-msgstr @@@ Country @@@
-
-#: /webroot/home/transfer.php:51
-msgid @@@ ( Select ) @@@
-msgstr @@@ ( Select ) @@@
-
-#: /webroot/home/transfer.php:53
-msgid @@@ Recipient @@@
-msgstr @@@ Recipient @@@
-
-#: /webroot/home/transfer.php:54
-msgid @@@ Mobile or E-Mail @@@
-msgstr @@@ Mobile or E-Mail @@@
-
-#: /webroot/home/transfer.php:57
-msgid @@@ Amount @@@
-msgstr @@@ Amount @@@
-
-#: /webroot/home/transfer.php:58
-msgid @@@ Min @@@
-msgstr @@@ Min @@@
-
-#: /webroot/home/transfer.php:60
-msgid @@@ Transfer Fee @@@
-msgstr @@@ Transfer Fee @@@
-
-#: /webroot/home/transfer.php:61
-msgid @@@ Exchange Rate @@@
-msgstr @@@ Exchange Rate @@@
-
-#: /webroot/home/transfer.php:62
-msgid @@@ Local Amount @@@
-msgstr @@@ Local Amount @@@
-
-#: /webroot/home/transfer.php:63
-msgid @@@ Total @@@
-msgstr @@@ Total @@@
-
-#: /webroot/home/transfer.php:64
-msgid @@@ Transfer @@@
-msgstr @@@ Transfer @@@
-
-#: /webroot/home/transfer.php:67
-msgid @@@ Transfer - Overview @@@
-msgstr @@@ Transfer - Overview @@@
-
-#: /webroot/buy/sms.php:137
-msgid @@@ SMS Purchase MT @@@
-msgstr @@@ SMS Purchase MT @@@
-
 #: /webroot/anet/dpm.php:51
 msgid @@@ Card Info @@@
 msgstr @@@ Card Info @@@
@@ -620,109 +54,9 @@ msgstr @@@ Save Card Info @@@
 msgid @@@ Complete Payment @@@
 msgstr @@@ Complete Payment @@@
 
-#: /webroot/shop/shipping.php:26
-msgid @@@ Shipping Info @@@
-msgstr @@@ Leveransinformation @@@
-
-#: /webroot/shop/shipping.php:39
-msgid @@@ Shipping - Info @@@
-msgstr @@@ Välj leveransmetod @@@
-
-#: /webroot/shop/products.php:43
-msgid @@@ Mobile Shop @@@
-msgstr @@@ Mobil Shop @@@
-
-#: /webroot/shop/products.php:52
-msgid @@@ Product - Info @@@
-msgstr @@@ Klicka på "Lägg till i korg" bredvid produkten för att köpa den. @@@
-
-#: /webroot/shop/products.php:53
-msgid @@@ Add to Basket @@@
-msgstr @@@ Lägg till i korg @@@
-
-#: /webroot/shop/products.php:54
-msgid @@@ Next >> @@@
-msgstr @@@ Nästa >> @@@
-
-#: /webroot/shop/topup.php:29
-msgid @@@ Top-Up Account @@@
-msgstr @@@ Top-Up Account @@@
-
-#: /webroot/shop/topup.php:39
-msgid @@@ Account Top-Up - Info @@@
-msgstr @@@ Account Top-Up - Info @@@
-
-#: /webroot/shop/topup.php:40
-msgid @@@ Amount @@@
-msgstr @@@ Amount @@@
-
-#: /webroot/shop/topup.php:41
-msgid @@@ Price @@@
-msgstr @@@ Price @@@
-
-#: /webroot/shop/delivery.php:55
-msgid @@@ Recipient @@@
-msgstr @@@ Mottagare @@@
-
-#: /webroot/shop/delivery.php:68
-msgid @@@ Delivery - Info @@@
-msgstr @@@ Fyll i mottagarens namn och adress nedan @@@
-
-#: /webroot/shop/delivery.php:69
-msgid @@@ Phone No @@@
-msgstr @@@ Telefonnummer @@@
-
-#: /webroot/shop/delivery.php:70
-msgid @@@ Find @@@
-msgstr @@@ Sök @@@
-
-#: /webroot/shop/delivery.php:71
-msgid @@@ Name @@@
-msgstr @@@ Namn @@@
-
-#: /webroot/shop/delivery.php:72
-msgid @@@ Company / CO @@@
-msgstr @@@ Företag / CO @@@
-
-#: /webroot/shop/delivery.php:73
-msgid @@@ Street @@@
-msgstr @@@ Gatuadress @@@
-
-#: /webroot/shop/delivery.php:74
-msgid @@@ Zip Code @@@
-msgstr @@@ Postnummer @@@
-
-#: /webroot/shop/delivery.php:75
-msgid @@@ City @@@
-msgstr @@@ Stad @@@
-
-#: /webroot/shop/delivery.php:77
-msgid @@@ Delivery Date @@@
-msgstr @@@ Leveransdatum @@@
-
-#: /webroot/shop/delivery.php:78
-msgid @@@ YYYY @@@
-msgstr @@@ ÅÅÅÅ @@@
-
-#: /webroot/shop/delivery.php:79
-msgid @@@ MM @@@
-msgstr @@@ MM @@@
-
-#: /webroot/shop/delivery.php:80
-msgid @@@ DD @@@
-msgstr @@@ DD @@@
-
-#: /webroot/shop/delivery.php:82
-msgid @@@ Next >> @@@
-msgstr @@@ Nästa >> @@@
-
-#: /webroot/default.php:22
-msgid @@@ mPoint @@@
-msgstr @@@ mPoint @@@
-
-#: /webroot/default.php:23
-msgid @@@ Unsupported Browser @@@
-msgstr @@@ Unsupported Browser @@@
+#: /webroot/buy/sms.php:137
+msgid @@@ SMS Purchase MT @@@
+msgstr @@@ SMS Purchase MT @@@
 
 #: /webroot/cpm/payment.php:122
 msgid @@@ Pay using Account @@@
@@ -808,405 +142,579 @@ msgstr @@@ - Authorizing Payment Text - @@@
 msgid @@@ Cancel Payment @@@
 msgstr @@@ Cancel Payment @@@
 
-#: /webroot/terms.php:29
-msgid @@@ Terms & Conditions @@@
-msgstr @@@ Försäljningsvilkor @@@
+#: /webroot/default.php:22
+msgid @@@ mPoint @@@
+msgstr @@@ mPoint @@@
 
-#: /webroot/terms.php:37
-msgid @@@ << Back @@@
-msgstr @@@ << Tillbaka @@@
+#: /webroot/default.php:23
+msgid @@@ Unsupported Browser @@@
+msgstr @@@ Unsupported Browser @@@
+
+#: /webroot/home/accept.php:22
+msgid @@@ Top-Up Account @@@
+msgstr @@@ Top-Up Account @@@
+
+#: /webroot/home/accept.php:30
+msgid @@@ Account Top-Up - Completed @@@
+msgstr @@@ Account Top-Up - Completed @@@
+msgid @@@ Account Top-Up - Authentication Error @@@
+msgstr @@@ Account Top-Up - Authentication Error @@@
+
+#: /webroot/home/accept.php:31
+msgid @@@ Amount @@@
+msgstr @@@ Amount @@@
+
+#: /webroot/home/accept.php:32
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
+#: /webroot/home/accept.php:33
+msgid @@@ Close @@@
+msgstr @@@ Close @@@
+
+#: /webroot/home/activate.php:26
+msgid @@@ Activate E-Mail @@@
+msgstr @@@ Activate E-Mail @@@
+
+#: /webroot/home/activate.php:29
+msgid @@@ Step 3 of 3 @@@
+msgstr @@@ Step 3 of 3 @@@
+
+#: /webroot/home/activate.php:32
+msgid @@@ Edit E-Mail Guide - Step 3 @@@
+msgstr @@@ Edit E-Mail Guide - Step 3 @@@
+
+#: /webroot/home/code.php:37
+msgid @@@ Edit Mobile @@@
+msgstr @@@ Edit Mobile @@@
+
+#: /webroot/home/code.php:42
+msgid @@@ Step 2 of 2 @@@
+msgstr @@@ Step 2 of 2 @@@
+
+#: /webroot/home/code.php:43
+msgid @@@ Activation Code @@@
+msgstr @@@ Activation Code @@@
+
+#: /webroot/home/code.php:44
+msgid @@@ Save Mobile @@@
+msgstr @@@ Save Mobile @@@
+
+#: /webroot/home/code.php:47
+msgid @@@ Edit Mobile Guide - Step 2 @@@
+msgstr @@@ Edit Mobile Guide - Step 2 @@@
+
+#: /webroot/home/confirm.php:40
+msgid @@@ Confirm Transfer @@@
+msgstr @@@ Confirm Transfer @@@
+
+#: /webroot/home/confirm.php:43
+msgid @@@ Recipient @@@
+msgstr @@@ Recipient @@@
+
+#: /webroot/home/confirm.php:44
+msgid @@@ Total @@@
+msgstr @@@ Total @@@
+
+#: /webroot/home/confirm.php:45
+msgid @@@ Password @@@
+msgstr @@@ Password @@@
+
+#: /webroot/home/confirm.php:46
+msgid @@@ Confirmation Code @@@
+msgstr @@@ Confirmation Code @@@
+
+#: /webroot/home/confirm.php:47
+msgid @@@ Transfer @@@
+msgstr @@@ Transfer @@@
+
+#: /webroot/home/confirm.php:51
+msgid @@@ Confirm Transfer Guide - Confirmation Code @@@
+msgstr @@@ Confirm Transfer Guide - Confirmation Code @@@
+
+#: /webroot/home/confirm.php:52
+msgid @@@ Confirm Transfer Guide - Password Only @@@
+msgstr @@@ Confirm Transfer Guide - Password Only @@@
+
+#: /webroot/home/content.php:34
+msgid @@@ mPoint - User Admin @@@
+msgstr @@@ mPoint - User Admin @@@
+
+#: /webroot/home/content.php:37
+msgid @@@ My Account @@@
+msgstr @@@ My Account @@@
+
+#: /webroot/home/content.php:38
+msgid @@@ Top-Up Account @@@
+msgstr @@@ Top-Up Account @@@
+
+#: /webroot/home/content.php:39
+msgid @@@ Stored Cards @@@
+msgstr @@@ Stored Cards @@@
+
+#: /webroot/home/content.php:42
+msgid @@@ mPoint - User Admin - Overview @@@
+msgstr @@@ mPoint - User Admin - Overview @@@
+
+#: /webroot/home/content.php:45
+msgid @@@ My Account - Help @@@
+msgstr @@@ My Account - Help @@@
+
+#: /webroot/home/content.php:46
+msgid @@@ Top-Up Account - Help @@@
+msgstr @@@ Top-Up Account - Help @@@
+
+#: /webroot/home/content.php:47
+msgid @@@ Stored Cards - Help @@@
+msgstr @@@ Stored Cards - Help @@@
+
+#: /webroot/home/edit_email.php:37
+msgid @@@ Edit E-Mail @@@
+msgstr @@@ Edit E-Mail @@@
+
+#: /webroot/home/edit_email.php:42
+msgid @@@ Step 1 of 3 @@@
+msgstr @@@ Step 1 of 3 @@@
+
+#: /webroot/home/edit_email.php:43
+msgid @@@ Old E-Mail @@@
+msgstr @@@ Old E-Mail @@@
+
+#: /webroot/home/edit_email.php:44
+msgid @@@ New E-Mail @@@
+msgstr @@@ New E-Mail @@@
+
+#: /webroot/home/edit_email.php:45
+msgid @@@ Send @@@
+msgstr @@@ Send @@@
+
+#: /webroot/home/edit_email.php:48
+msgid @@@ Edit E-Mail Guide - Step 1 @@@
+msgstr @@@ Edit E-Mail Guide - Step 1 @@@
+
+#: /webroot/home/edit_mobile.php:37
+msgid @@@ Edit Mobile @@@
+msgstr @@@ Edit Mobile @@@
+
+#: /webroot/home/edit_mobile.php:42
+msgid @@@ Step 1 of 2 @@@
+msgstr @@@ Step 1 of 2 @@@
+
+#: /webroot/home/edit_mobile.php:43
+msgid @@@ Old Mobile @@@
+msgstr @@@ Old Mobile @@@
+
+#: /webroot/home/edit_mobile.php:44
+msgid @@@ New Mobile @@@
+msgstr @@@ New Mobile @@@
+
+#: /webroot/home/edit_mobile.php:45
+msgid @@@ Send @@@
+msgstr @@@ Send @@@
+
+#: /webroot/home/edit_mobile.php:48
+msgid @@@ Edit Mobile Guide - Step 1 @@@
+msgstr @@@ Edit Mobile Guide - Step 1 @@@
+
+#: /webroot/home/edit_password.php:37
+msgid @@@ Edit Password @@@
+msgstr @@@ Edit Password @@@
+
+#: /webroot/home/edit_password.php:42
+msgid @@@ Old Password @@@
+msgstr @@@ Old Password @@@
+
+#: /webroot/home/edit_password.php:43
+msgid @@@ New Password @@@
+msgstr @@@ New Password @@@
+
+#: /webroot/home/edit_password.php:44
+msgid @@@ Repeat Password @@@
+msgstr @@@ Repeat Password @@@
+
+#: /webroot/home/edit_password.php:45
+msgid @@@ Save @@@
+msgstr @@@ Save @@@
+
+#: /webroot/home/history.php:37
+msgid @@@ Transaction History @@@
+msgstr @@@ Transaction History @@@
+
+#: /webroot/home/history.php:40
+msgid @@@ Purchase History @@@
+msgstr @@@ Purchase History @@@
+
+#: /webroot/home/history.php:41
+msgid @@@ Transfer History @@@
+msgstr @@@ Transfer History @@@
+
+#: /webroot/home/history.php:42
+msgid @@@ Top-Up History @@@
+msgstr @@@ Top-Up History @@@
+
+#: /webroot/home/history.php:43
+msgid @@@ Reward History @@@
+msgstr @@@ Reward History @@@
+
+#: /webroot/home/history.php:44
+msgid @@@ ID @@@
+msgstr @@@ ID @@@
+
+#: /webroot/home/history.php:45
+msgid @@@ mPoint ID @@@
+msgstr @@@ mPoint ID @@@
+
+#: /webroot/home/history.php:46
+msgid @@@ Amount @@@
+msgstr @@@ Amount @@@
+
+#: /webroot/home/history.php:47
+msgid @@@ Method @@@
+msgstr @@@ Method @@@
+
+#: /webroot/home/history.php:48
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
+#: /webroot/home/history.php:49
+msgid @@@ Fee @@@
+msgstr @@@ Fee @@@
+
+#: /webroot/home/history.php:50
+msgid @@@ Merchant @@@
+msgstr @@@ Merchant @@@
+
+#: /webroot/home/history.php:51
+msgid @@@ Order No. @@@
+msgstr @@@ Order No. @@@
+
+#: /webroot/home/history.php:52
+msgid @@@ Sender @@@
+msgstr @@@ Sender @@@
+
+#: /webroot/home/history.php:53
+msgid @@@ Recipient @@@
+msgstr @@@ Recipient @@@
+
+#: /webroot/home/history.php:54
+msgid @@@ IP @@@
+msgstr @@@ IP @@@
+
+#: /webroot/home/history.php:55
+msgid @@@ Timestamp @@@
+msgstr @@@ Timestamp @@@
+
+#: /webroot/home/link.php:37
+msgid @@@ Edit E-Mail @@@
+msgstr @@@ Edit E-Mail @@@
+
+#: /webroot/home/link.php:42
+msgid @@@ Step 2 of 3 @@@
+msgstr @@@ Step 2 of 3 @@@
+
+#: /webroot/home/link.php:45
+msgid @@@ Edit E-Mail Guide - Step 2 @@@
+msgstr @@@ Edit E-Mail Guide - Step 2 @@@
+
+#: /webroot/home/missing_data.php:37
+msgid @@@ Missing Data @@@
+msgstr @@@ Missing Data @@@
+
+#: /webroot/home/missing_data.php:40
+msgid @@@ OK @@@
+msgstr @@@ OK @@@
+
+#: /webroot/home/missing_data.php:41
+msgid @@@ My Account @@@
+msgstr @@@ My Account @@@
+
+#: /webroot/home/missing_data.php:45
+msgid @@@ Missing Mobile Number Guide @@@
+msgstr @@@ Missing Mobile Number Guide @@@
+
+#: /webroot/home/missing_data.php:46
+msgid @@@ Missing E-Mail Address Guide @@@
+msgstr @@@ Missing E-Mail Address Guide @@@
+
+#: /webroot/home/missing_data.php:47
+msgid @@@ Missing Profile Info Guide @@@
+msgstr @@@ Missing Profile Info Guide @@@
+
+#: /webroot/home/my_account.php:37
+msgid @@@ My Account @@@
+msgstr @@@ My Account @@@
+
+#: /webroot/home/my_account.php:42
+msgid @@@ Account Details @@@
+msgstr @@@ Account Details @@@
+
+#: /webroot/home/my_account.php:43
+msgid @@@ Stored Card @@@
+msgstr @@@ Stored Card @@@
+
+#: /webroot/home/my_account.php:44
+msgid @@@ Stored Cards @@@
+msgstr @@@ Stored Cards @@@
+
+#: /webroot/home/my_account.php:46
+msgid @@@ Account ID @@@
+msgstr @@@ Account ID @@@
+
+#: /webroot/home/my_account.php:47
+msgid @@@ Country @@@
+msgstr @@@ Country @@@
+
+#: /webroot/home/my_account.php:48
+msgid @@@ Firstname @@@
+msgstr @@@ Firstname @@@
+
+#: /webroot/home/my_account.php:49
+msgid @@@ Lastname @@@
+msgstr @@@ Lastname @@@
+
+#: /webroot/home/my_account.php:50
+msgid @@@ Mobile @@@
+msgstr @@@ Mobile @@@
+
+#: /webroot/home/my_account.php:51
+msgid @@@ E-Mail @@@
+msgstr @@@ E-Mail @@@
+
+#: /webroot/home/my_account.php:52
+msgid @@@ Password @@@
+msgstr @@@ Password @@@
+
+#: /webroot/home/my_account.php:53
+msgid @@@ Repeat Password @@@
+msgstr @@@ Repeat Password @@@
+
+#: /webroot/home/my_account.php:54
+msgid @@@ Preferred @@@
+msgstr @@@ Preferred @@@
+
+#: /webroot/home/my_account.php:55
+msgid @@@ Other @@@
+msgstr @@@ Other @@@
+
+#: /webroot/home/my_account.php:58
+msgid @@@ Edit @@@
+msgstr @@@ Edit @@@
+
+#: /webroot/home/my_account.php:59
+msgid @@@ Save @@@
+msgstr @@@ Save @@@
+
+#: /webroot/home/my_account.php:60
+msgid @@@ Delete @@@
+msgstr @@@ Delete @@@
+
+#: /webroot/home/my_account.php:61
+msgid @@@ Make Preferred @@@
+msgstr @@@ Make Preferred @@@
+
+#: /webroot/home/my_account.php:62
+msgid @@@ Add Card @@@
+msgstr @@@ Add Card @@@
+
+#: /webroot/home/my_account.php:65
+msgid @@@ Stored Cards - Help @@@
+msgstr @@@ Stored Cards - Help @@@
+
+#: /webroot/home/new_card.php:39
+msgid @@@ Add New Card @@@
+msgstr @@@ Add New Card @@@
+
+#: /webroot/home/new_card.php:42
+msgid @@@ OK @@@
+msgstr @@@ OK @@@
+
+#: /webroot/home/new_card.php:45
+msgid @@@ Add New Card Guide @@@
+msgstr @@@ Add New Card Guide @@@
+
+#: /webroot/home/sys/make_transfer.php:325
+msgid @@@ transfer - code: 91 @@@
+msgstr @@@ transfer - code: 91 @@@
+
+#: /webroot/home/sys/make_transfer.php:378
+msgid @@@ transfer - code: 92 @@@
+msgstr @@@ transfer - code: 92 @@@
+
+#: /webroot/home/sys/make_transfer.php:387
+msgid @@@ internal - code: 2 @@@
+msgstr @@@ internal - code: 2 @@@
+
+#: /webroot/home/sys/manage_card.php:109
+msgid @@@ internal - code: 2 @@@
+msgstr @@@ internal - code: 2 @@@
+
+#: /webroot/home/sys/save_info.php:103
+msgid @@@ save - code: 100 @@@
+msgstr @@@ save - code: 100 @@@
+
+#: /webroot/home/sys/save_info.php:115
+msgid @@@ save - code: 91 @@@
+msgstr @@@ save - code: 91 @@@
+
+#: /webroot/home/sys/save_info.php:120
+msgid @@@ internal - code: 2 @@@
+msgstr @@@ internal - code: 2 @@@
+
+#: /webroot/home/sys/save_mobile.php:101
+msgid @@@ save - code: 100 @@@
+msgstr @@@ save - code: 100 @@@
+
+#: /webroot/home/sys/save_mobile.php:118
+msgid @@@ save - code: 91 @@@
+msgstr @@@ save - code: 91 @@@
+
+#: /webroot/home/sys/save_mobile.php:123
+msgid @@@ internal - code: 2 @@@
+msgstr @@@ internal - code: 2 @@@
+
+#: /webroot/home/sys/save_password.php:115
+msgid @@@ save - code: 100 @@@
+msgstr @@@ save - code: 100 @@@
+
+#: /webroot/home/sys/save_password.php:131
+msgid @@@ save - code: 91 @@@
+msgstr @@@ save - code: 91 @@@
+
+#: /webroot/home/sys/save_password.php:136
+msgid @@@ internal - code: 2 @@@
+msgstr @@@ internal - code: 2 @@@
+
+#: /webroot/home/sys/send_code.php:109
+msgid @@@ send - code: 100 @@@
+msgstr @@@ send - code: 100 @@@
+
+#: /webroot/home/sys/send_code.php:115
+msgid @@@ send - code: 91 @@@
+msgstr @@@ send - code: 91 @@@
+
+#: /webroot/home/sys/send_code.php:120
+msgid @@@ internal - code: 2 @@@
+msgstr @@@ internal - code: 2 @@@
+
+#: /webroot/home/sys/send_link.php:106
+msgid @@@ send - code: 100 @@@
+msgstr @@@ send - code: 100 @@@
+
+#: /webroot/home/sys/send_link.php:112
+msgid @@@ send - code: 91 @@@
+msgstr @@@ send - code: 91 @@@
+
+#: /webroot/home/sys/send_link.php:117
+msgid @@@ internal - code: 2 @@@
+msgstr @@@ internal - code: 2 @@@
+
+#: /webroot/home/topmenu.php:38
+msgid @@@ My Account @@@
+msgstr @@@ My Account @@@
+
+#: /webroot/home/topmenu.php:42
+msgid @@@ Top-Up @@@
+msgstr @@@ Top-Up @@@
+
+#: /webroot/home/topmenu.php:46
+msgid @@@ History @@@
+msgstr @@@ History @@@
+
+#: /webroot/home/topmenu.php:50
+msgid @@@ Transfer @@@
+msgstr @@@ Transfer @@@
+
+#: /webroot/home/topmenu.php:54
+msgid @@@ Logout @@@
+msgstr @@@ Logout @@@
+
+#: /webroot/home/topmenu.php:59
+msgid @@@ Balance @@@
+msgstr @@@ Balance @@@
+
+#: /webroot/home/topup.php:50
+msgid @@@ Top-Up Account @@@
+msgstr @@@ Top-Up Account @@@
+
+#: /webroot/home/topup.php:53
+msgid @@@ Balance @@@
+msgstr @@@ Balance @@@
+
+#: /webroot/home/topup.php:54
+msgid @@@ Amount @@@
+msgstr @@@ Amount @@@
+
+#: /webroot/home/topup.php:55
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
+#: /webroot/home/topup.php:56
+msgid @@@ Top-Up Points @@@
+msgstr @@@ Top-Up Points @@@
+
+#: /webroot/home/topup.php:57
+msgid @@@ Top-Up e-Money @@@
+msgstr @@@ Top-Up e-Money @@@
+
+#: /webroot/home/transfer.php:44
+msgid @@@ Transfer @@@
+msgstr @@@ Transfer @@@
+
+#: /webroot/home/transfer.php:49
+msgid @@@ Balance @@@
+msgstr @@@ Balance @@@
+
+#: /webroot/home/transfer.php:50
+msgid @@@ Country @@@
+msgstr @@@ Country @@@
+
+#: /webroot/home/transfer.php:51
+msgid @@@ ( Select ) @@@
+msgstr @@@ ( Select ) @@@
+
+#: /webroot/home/transfer.php:53
+msgid @@@ Recipient @@@
+msgstr @@@ Recipient @@@
+
+#: /webroot/home/transfer.php:54
+msgid @@@ Mobile or E-Mail @@@
+msgstr @@@ Mobile or E-Mail @@@
+
+#: /webroot/home/transfer.php:57
+msgid @@@ Amount @@@
+msgstr @@@ Amount @@@
+
+#: /webroot/home/transfer.php:58
+msgid @@@ Min @@@
+msgstr @@@ Min @@@
+
+#: /webroot/home/transfer.php:60
+msgid @@@ Transfer Fee @@@
+msgstr @@@ Transfer Fee @@@
+
+#: /webroot/home/transfer.php:61
+msgid @@@ Exchange Rate @@@
+msgstr @@@ Exchange Rate @@@
+
+#: /webroot/home/transfer.php:62
+msgid @@@ Local Amount @@@
+msgstr @@@ Local Amount @@@
+
+#: /webroot/home/transfer.php:63
+msgid @@@ Total @@@
+msgstr @@@ Total @@@
+
+#: /webroot/home/transfer.php:64
+msgid @@@ Transfer @@@
+msgstr @@@ Transfer @@@
+
+#: /webroot/home/transfer.php:67
+msgid @@@ Transfer - Overview @@@
+msgstr @@@ Transfer - Overview @@@
 
 #: /webroot/internal/unauthorized.php:36
 msgid @@@ Unauthorized system access @@@
 msgstr @@@ Unauthorized system access @@@
-
-#: /webroot/pay/store.php:32
-msgid @@@ Store Card @@@
-msgstr @@@ Store Card @@@
-
-#: /webroot/pay/store.php:45
-msgid @@@ Step 2 of 3 @@@
-msgstr @@@ Step 2 of 3 @@@
-
-#: /webroot/pay/store.php:46
-msgid @@@ Would you like to store your card for future use? @@@
-msgstr @@@ Would you like to store your card for future use? @@@
-
-#: /webroot/pay/store.php:47
-msgid @@@ Yes @@@
-msgstr @@@ Yes @@@
-
-#: /webroot/pay/store.php:48
-msgid @@@ No @@@
-msgstr @@@ No @@@
-
-#: /webroot/pay/store.php:49
-msgid @@@ Cancel Payment @@@
-msgstr @@@ Cancel Payment @@@
-
-#: /webroot/pay/store.php:50
-msgid @@@ Store Card - Disclaimer @@@
-msgstr @@@ Store Card - Disclaimer @@@
-
-#: /webroot/pay/re-enter.php:35
-msgid @@@ Payment Already Completed @@@
-msgstr @@@ Payment Already Completed @@@
-
-#: /webroot/pay/re-enter.php:46
-msgid @@@ Status - Payment Already Completed @@@
-msgstr @@@ Status - Payment Already Completed @@@
-
-#: /webroot/pay/re-enter.php:47
-msgid @@@ mPoint ID @@@
-msgstr @@@ mPoint ID @@@
-
-#: /webroot/pay/re-enter.php:48
-msgid @@@ Order No @@@
-msgstr @@@ Order No @@@
-
-#: /webroot/pay/re-enter.php:49
-msgid @@@ Price @@@
-msgstr @@@ Price @@@
-
-#: /webroot/pay/re-enter.php:50
-msgid @@@ Note - Payment Already Completed @@@
-msgstr @@@ Note - Payment Already Completed @@@
-
-#: /webroot/pay/re-enter.php:51
-msgid @@@ Continue >> @@@
-msgstr @@@ Continue >> @@@
-
-#: /webroot/pay/pwd.php:41
-msgid @@@ Create Account @@@
-msgstr @@@ Create Account @@@
-
-#: /webroot/pay/pwd.php:51
-msgid @@@ Please complete the form below to finnish creating your account @@@
-msgstr @@@ Please complete the form below to finnish creating your account @@@
-
-#: /webroot/pay/pwd.php:52
-msgid @@@ Selected Card @@@
-msgstr @@@ Valt kort @@@
-
-#: /webroot/pay/pwd.php:53
-msgid @@@ Password @@@
-msgstr @@@ Password @@@
-
-#: /webroot/pay/pwd.php:54
-msgid @@@ Repeat Password @@@
-msgstr @@@ Repeat Password @@@
-
-#: /webroot/pay/pwd.php:55
-msgid @@@ Card Name @@@
-msgstr @@@ Kort navn @@@
-
-#: /webroot/pay/pwd.php:56
-msgid @@@ Card Name - Help @@@
-msgstr @@@ F.ex. "private" or "company" (optional) @@@
-
-#: /webroot/pay/pwd.php:57
-msgid @@@ Save @@@
-msgstr @@@ Gem @@@
-
-#: /webroot/pay/pwd.php:58
-msgid @@@ fullname @@@
-msgstr @@@ fullname @@@
-
-#: /webroot/pay/pwd.php:59
-msgid @@@ cpr @@@
-msgstr @@@ cpr @@@
-
-#: /webroot/pay/name.php:42
-msgid @@@ Save Card @@@
-msgstr @@@ Save Card @@@
-
-#: /webroot/pay/name.php:51
-msgid @@@ Selected Card @@@
-msgstr @@@ Valt kort @@@
-
-#: /webroot/pay/name.php:52
-msgid @@@ Please enter a name for the stored card below? @@@
-msgstr @@@ Please enter a name for the stored card below? @@@
-
-#: /webroot/pay/name.php:53
-msgid @@@ Card Name @@@
-msgstr @@@ Kort navn @@@
-
-#: /webroot/pay/name.php:54
-msgid @@@ Card Name - Help @@@
-msgstr @@@ F.ex. "private" or "company" (optional) @@@
-
-#: /webroot/pay/name.php:55
-msgid @@@ Save @@@
-msgstr @@@ Gem @@@
-
-#: /webroot/pay/email.php:31
-msgid @@@ E-Mail Receipt @@@
-msgstr @@@ Epost kvitto @@@
-
-#: /webroot/pay/email.php:42
-msgid @@@ Please enter your e-mail address below @@@
-msgstr @@@ Ange din epost adress nedan @@@
-
-#: /webroot/pay/email.php:43
-msgid @@@ E-Mail @@@
-msgstr @@@ Epost @@@
-
-#: /webroot/pay/email.php:44
-msgid @@@ Send Receipt @@@
-msgstr @@@ Send kvitto @@@
-
-#: /webroot/pay/email.php:45
-msgid @@@ << Back @@@
-msgstr @@@ << Föregående @@@
-
-#: /webroot/pay/accept.php:48
-msgid @@@ Payment Completed @@@
-msgstr @@@ Betalningen genomförd @@@
-
-#: /webroot/pay/accept.php:61
-msgid @@@ Thank you for using @@@
-msgstr @@@ Tack för att du använder @@@
-
-#: /webroot/pay/accept.php:62
-msgid @@@ Status - Success @@@
-msgstr @@@ Din betalning har genomförts @@@
-
-#: /webroot/pay/accept.php:63
-msgid @@@ mPoint ID @@@
-msgstr @@@ mPoint ID @@@
-
-#: /webroot/pay/accept.php:64
-msgid @@@ Order No @@@
-msgstr @@@ Ordernummer @@@
-
-#: /webroot/pay/accept.php:65
-msgid @@@ Price @@@
-msgstr @@@ Price @@@
-
-#: /webroot/pay/accept.php:66
-msgid @@@ SMS Receipt - Info @@@
-msgstr @@@ Kvittot har även skickats via SMS till nummer: {MOBILE} @@@
-
-#: /webroot/pay/accept.php:67
-msgid @@@ Send receipt via E-Mail @@@
-msgstr @@@ Skicka kvitto med Epost @@@
-
-#: /webroot/pay/accept.php:68
-msgid @@@ Continue >> @@@
-msgstr @@@ Återvänd till försäljarens webplats >> @@@
-
-#: /webroot/pay/accept.php:69
-msgid @@@ Resume Payment >> @@@
-msgstr @@@ Resume Payment >> @@@
-
-#: /webroot/pay/sys/sms.php:206
-msgid @@@ SMS Purchase - Unknown Reponse @@@
-msgstr @@@ SMS Purchase - Unknown Reponse @@@
-
-#: /webroot/pay/sys/sms.php:225
-msgid @@@ SMS Purchase - Transaction not found @@@
-msgstr @@@ SMS Purchase - Transaction not found @@@
-
-#: /webroot/pay/card.php:34
-msgid @@@ Select Payment Method @@@
-msgstr @@@ Välj kort @@@
-
-#: /webroot/pay/card.php:47
-msgid @@@ Step 1 of 2 @@@
-msgstr @@@ Steg 1 av 2 @@@
-
-#: /webroot/pay/card.php:48
-msgid @@@ Please select your Payment Method @@@
-msgstr @@@ Välj ditt kredit kort @@@
-
-#: /webroot/pay/card.php:49
-msgid @@@ Cancel Payment @@@
-msgstr @@@ Cancel Payment @@@
-
-#: /webroot/overview.php:38
-msgid @@@ Order Overview @@@
-msgstr @@@ Orderöversikt @@@
-
-#: /webroot/overview.php:47
-msgid @@@ Product - Info @@@
-msgstr @@@ Beställda saker @@@
-
-#: /webroot/overview.php:48
-msgid @@@ Product @@@
-msgstr @@@ Produkt @@@
-
-#: /webroot/overview.php:49
-msgid @@@ Quantity @@@
-msgstr @@@ # @@@
-
-#: /webroot/overview.php:50
-msgid @@@ Price @@@
-msgstr @@@ Pris @@@
-
-#: /webroot/overview.php:51
-msgid @@@ Total @@@
-msgstr @@@ Summa @@@
-
-#: /webroot/overview.php:52
-msgid @@@ Terms - Info @@@
-msgstr @@@ Godkänn {LINK}försäljningsvilkor{/LINK} för {CLIENT} @@@
-
-#: /webroot/overview.php:54
-msgid @@@ Delivery - Info @@@
-msgstr @@@ Mottagarens namn och adress @@@
-
-#: /webroot/overview.php:55
-msgid @@@ Name @@@
-msgstr @@@ Namn @@@
-
-#: /webroot/overview.php:56
-msgid @@@ Company / CO @@@
-msgstr @@@ Företag / CO @@@
-
-#: /webroot/overview.php:57
-msgid @@@ Street @@@
-msgstr @@@ Gatuadress @@@
-
-#: /webroot/overview.php:58
-msgid @@@ Zip Code @@@
-msgstr @@@ Postnummer @@@
-
-#: /webroot/overview.php:59
-msgid @@@ City @@@
-msgstr @@@ Stad @@@
-
-#: /webroot/overview.php:60
-msgid @@@ Delivery Date @@@
-msgstr @@@ Leveransdatum @@@
-
-#: /webroot/overview.php:62
-msgid @@@ Next >> @@@
-msgstr @@@ Nästa >> @@@
-
-#: /webroot/overview.php:63
-msgid @@@ Go to Payment >> @@@
-msgstr @@@ Fortsätt till betalning >> @@@
-
-#: /webroot/wannafind/postform.php:44
-msgid @@@ Card Info @@@
-msgstr @@@ Card Info @@@
-
-#: /webroot/wannafind/postform.php:51
-msgid @@@ Step 2 of 2 @@@
-msgstr @@@ Step 2 of 2 @@@
-
-#: /webroot/wannafind/postform.php:52
-msgid @@@ Please enter your card information below @@@
-msgstr @@@ Please enter your card information below @@@
-
-#: /webroot/wannafind/postform.php:53
-msgid @@@ Selected Card @@@
-msgstr @@@ Selected Card @@@
-
-#: /webroot/wannafind/postform.php:54
-msgid @@@ Price @@@
-msgstr @@@ Price @@@
-
-#: /webroot/wannafind/postform.php:55
-msgid @@@ Card Number @@@
-msgstr @@@ Card Number @@@
-
-#: /webroot/wannafind/postform.php:56
-msgid @@@ Expiry Date @@@
-msgstr @@@ Expiry Date @@@
-
-#: /webroot/wannafind/postform.php:57
-msgid @@@ mm @@@
-msgstr @@@ mm @@@
-
-#: /webroot/wannafind/postform.php:58
-msgid @@@ yy @@@
-msgstr @@@ yy @@@
-
-#: /webroot/wannafind/postform.php:59
-msgid @@@ CVC / CVS @@@
-msgstr @@@ CVC / CVS @@@
-
-#: /webroot/wannafind/postform.php:60
-msgid @@@ 3 digits (printed on the back of the card) @@@
-msgstr @@@ 3 digits (printed on the back of the card) @@@
-
-#: /webroot/wannafind/postform.php:61
-msgid @@@ 4 digits (printed on the back of the card) @@@
-msgstr @@@ 4 digits (printed on the back of the card) @@@
-
-#: /webroot/wannafind/postform.php:62
-msgid @@@ Save Card Info @@@
-msgstr @@@ Save Card Info @@@
-
-#: /webroot/wannafind/postform.php:63
-msgid @@@ Complete Payment @@@
-msgstr @@@ Complete Payment @@@
-
-#: /webroot/login/forgot_password.php:27
-msgid @@@ Forgot Password @@@
-msgstr @@@ Forgot Password @@@
-
-#: /webroot/login/forgot_password.php:30
-msgid @@@ Country @@@
-msgstr @@@ Country @@@
-
-#: /webroot/login/forgot_password.php:31
-msgid @@@ Mobile / E-Mail @@@
-msgstr @@@ Mobile / E-Mail @@@
-
-#: /webroot/login/forgot_password.php:32
-msgid @@@ Send Password @@@
-msgstr @@@ Send Password @@@
-
-#: /webroot/login/topmenu.php:21
-msgid @@@ Login @@@
-msgstr @@@ Login @@@
-
-#: /webroot/login/topmenu.php:25
-msgid @@@ Create Account @@@
-msgstr @@@ Create Account @@@
-
-#: /webroot/login/otp.php:23
-msgid @@@ One Time Password @@@
-msgstr @@@ One Time Password @@@
-
-#: /webroot/login/otp.php:26
-msgid @@@ Password @@@
-msgstr @@@ Password @@@
-
-#: /webroot/login/otp.php:27
-msgid @@@ Login @@@
-msgstr @@@ Login @@@
-
-#: /webroot/login/otp.php:30
-msgid @@@ One Time Password Guide @@@
-msgstr @@@ One Time Password Guide @@@
-
-#: /webroot/login/sys/logout.php:43
-msgid @@@ You've successfully been logged out @@@
-msgstr @@@ You've successfully been logged out @@@
-
-#: /webroot/login/sys/auth.php:152
-msgid @@@ auth - code: 101 @@@
-msgstr @@@ auth - code: 101 @@@
-
-#: /webroot/login/sys/auth.php:186
-msgid @@@ auth - code: 100 @@@
-msgstr @@@ auth - code: 100 @@@
-
-#: /webroot/login/sys/auth.php:200
-msgid @@@ auth - code: 92 @@@
-msgstr @@@ auth - code: 92 @@@
-
-#: /webroot/login/sys/auth.php:214
-msgid @@@ auth - code: 102 @@@
-msgstr @@@ auth - code: 102 @@@
-
-#: /webroot/login/sys/auth.php:231
-msgid @@@ internal - code: 2 @@@
-msgstr @@@ internal - code: 2 @@@
 
 #: /webroot/login/content.php:27
 msgid @@@ Welcome to mPoint - User Admin. Please login? @@@
@@ -1240,33 +748,69 @@ msgstr @@@ Forgot Password @@@
 msgid @@@ Don't have an account yet? Sign up now! @@@
 msgstr @@@ Don't have an account yet? Sign up now! @@@
 
-#: /webroot/new/step2.php:34
+#: /webroot/login/forgot_password.php:27
+msgid @@@ Forgot Password @@@
+msgstr @@@ Forgot Password @@@
+
+#: /webroot/login/forgot_password.php:30
+msgid @@@ Country @@@
+msgstr @@@ Country @@@
+
+#: /webroot/login/forgot_password.php:31
+msgid @@@ Mobile / E-Mail @@@
+msgstr @@@ Mobile / E-Mail @@@
+
+#: /webroot/login/forgot_password.php:32
+msgid @@@ Send Password @@@
+msgstr @@@ Send Password @@@
+
+#: /webroot/login/otp.php:23
+msgid @@@ One Time Password @@@
+msgstr @@@ One Time Password @@@
+
+#: /webroot/login/otp.php:26
+msgid @@@ Password @@@
+msgstr @@@ Password @@@
+
+#: /webroot/login/otp.php:27
+msgid @@@ Login @@@
+msgstr @@@ Login @@@
+
+#: /webroot/login/otp.php:30
+msgid @@@ One Time Password Guide @@@
+msgstr @@@ One Time Password Guide @@@
+
+#: /webroot/login/sys/auth.php:152
+msgid @@@ auth - code: 101 @@@
+msgstr @@@ auth - code: 101 @@@
+
+#: /webroot/login/sys/auth.php:186
+msgid @@@ auth - code: 100 @@@
+msgstr @@@ auth - code: 100 @@@
+
+#: /webroot/login/sys/auth.php:200
+msgid @@@ auth - code: 92 @@@
+msgstr @@@ auth - code: 92 @@@
+
+#: /webroot/login/sys/auth.php:214
+msgid @@@ auth - code: 102 @@@
+msgstr @@@ auth - code: 102 @@@
+
+#: /webroot/login/sys/auth.php:231
+msgid @@@ internal - code: 2 @@@
+msgstr @@@ internal - code: 2 @@@
+
+#: /webroot/login/sys/logout.php:43
+msgid @@@ You've successfully been logged out @@@
+msgstr @@@ You've successfully been logged out @@@
+
+#: /webroot/login/topmenu.php:21
+msgid @@@ Login @@@
+msgstr @@@ Login @@@
+
+#: /webroot/login/topmenu.php:25
 msgid @@@ Create Account @@@
 msgstr @@@ Create Account @@@
-
-#: /webroot/new/step2.php:41
-msgid @@@ Create Account @@@
-msgstr @@@ Create Account @@@
-
-#: /webroot/new/step2.php:44
-msgid @@@ Step 2 of 2 @@@
-msgstr @@@ Step 2 of 2 @@@
-
-#: /webroot/new/step2.php:45
-msgid @@@ Account ID @@@
-msgstr @@@ Account ID @@@
-
-#: /webroot/new/step2.php:46
-msgid @@@ Activation Code @@@
-msgstr @@@ Activation Code @@@
-
-#: /webroot/new/step2.php:47
-msgid @@@ Verify Mobile @@@
-msgstr @@@ Verify Mobile @@@
-
-#: /webroot/new/step2.php:50
-msgid @@@ Create Account Guide - Step 2 @@@
-msgstr @@@ Create Account Guide - Step 2 @@@
 
 #: /webroot/new/default.php:71
 msgid @@@ mPoint @@@
@@ -1336,33 +880,33 @@ msgstr @@@ Please complete the form below to set the password for your account @
 msgid @@@ Create Account Guide - Step 1 @@@
 msgstr @@@ Create Account Guide - Step 1 @@@
 
-#: /webroot/new/sys/save_mobile.php:90
-msgid @@@ save - code: 100 @@@
-msgstr @@@ save - code: 100 @@@
+#: /webroot/new/step2.php:34
+msgid @@@ Create Account @@@
+msgstr @@@ Create Account @@@
 
-#: /webroot/new/sys/save_mobile.php:107
-msgid @@@ save - code: 91 @@@
-msgstr @@@ save - code: 91 @@@
+#: /webroot/new/step2.php:41
+msgid @@@ Create Account @@@
+msgstr @@@ Create Account @@@
 
-#: /webroot/new/sys/save_mobile.php:112
-msgid @@@ internal - code: 2 @@@
-msgstr @@@ internal - code: 2 @@@
+#: /webroot/new/step2.php:44
+msgid @@@ Step 2 of 2 @@@
+msgstr @@@ Step 2 of 2 @@@
 
-#: /webroot/new/sys/create_account.php:249
-msgid @@@ save - code: 100 @@@
-msgstr @@@ save - code: 100 @@@
+#: /webroot/new/step2.php:45
+msgid @@@ Account ID @@@
+msgstr @@@ Account ID @@@
 
-#: /webroot/new/sys/create_account.php:271
-msgid @@@ save - code: 92 @@@
-msgstr @@@ save - code: 92 @@@
+#: /webroot/new/step2.php:46
+msgid @@@ Activation Code @@@
+msgstr @@@ Activation Code @@@
 
-#: /webroot/new/sys/create_account.php:278
-msgid @@@ save - code: 91 @@@
-msgstr @@@ save - code: 91 @@@
+#: /webroot/new/step2.php:47
+msgid @@@ Verify Mobile @@@
+msgstr @@@ Verify Mobile @@@
 
-#: /webroot/new/sys/create_account.php:283
-msgid @@@ internal - code: 2 @@@
-msgstr @@@ internal - code: 2 @@@
+#: /webroot/new/step2.php:50
+msgid @@@ Create Account Guide - Step 2 @@@
+msgstr @@@ Create Account Guide - Step 2 @@@
 
 #: /webroot/new/step3.php:34
 msgid @@@ Create Account @@@
@@ -1388,17 +932,495 @@ msgstr @@@ Create Account Guide - Web Step 3 @@@
 msgid @@@ Create Account Guide - Mobile Step 3 @@@
 msgstr @@@ Create Account Guide - Mobile Step 3 @@@
 
-#: /api/classes/my_account.php:39
-msgid @@@ mPoint - Send Activation Code @@@
-msgstr @@@ mPoint - Send Activation Code @@@
+#: /webroot/new/sys/create_account.php:249
+msgid @@@ save - code: 100 @@@
+msgstr @@@ save - code: 100 @@@
 
-#: /api/classes/my_account.php:82
-msgid @@@ mPoint - Activation Link Subject @@@
-msgstr @@@ mPoint - Activation Link Subject @@@
+#: /webroot/new/sys/create_account.php:271
+msgid @@@ save - code: 92 @@@
+msgstr @@@ save - code: 92 @@@
 
-#: /api/classes/my_account.php:83
-msgid @@@ mPoint - Activation Link Body @@@
-msgstr @@@ mPoint - Activation Link Body @@@
+#: /webroot/new/sys/create_account.php:278
+msgid @@@ save - code: 91 @@@
+msgstr @@@ save - code: 91 @@@
+
+#: /webroot/new/sys/create_account.php:283
+msgid @@@ internal - code: 2 @@@
+msgstr @@@ internal - code: 2 @@@
+
+#: /webroot/new/sys/save_mobile.php:90
+msgid @@@ save - code: 100 @@@
+msgstr @@@ save - code: 100 @@@
+
+#: /webroot/new/sys/save_mobile.php:107
+msgid @@@ save - code: 91 @@@
+msgstr @@@ save - code: 91 @@@
+
+#: /webroot/new/sys/save_mobile.php:112
+msgid @@@ internal - code: 2 @@@
+msgstr @@@ internal - code: 2 @@@
+
+#: /webroot/overview.php:38
+msgid @@@ Order Overview @@@
+msgstr @@@ Orderï¿½versikt @@@
+
+#: /webroot/overview.php:47
+msgid @@@ Product - Info @@@
+msgstr @@@ Bestï¿½llda saker @@@
+
+#: /webroot/overview.php:48
+msgid @@@ Product @@@
+msgstr @@@ Produkt @@@
+
+#: /webroot/overview.php:49
+msgid @@@ Quantity @@@
+msgstr @@@ # @@@
+
+#: /webroot/overview.php:50
+msgid @@@ Price @@@
+msgstr @@@ Pris @@@
+
+#: /webroot/overview.php:51
+msgid @@@ Total @@@
+msgstr @@@ Summa @@@
+
+#: /webroot/overview.php:52
+msgid @@@ Terms - Info @@@
+msgstr @@@ Godkï¿½nn {LINK}fï¿½rsï¿½ljningsvilkor{/LINK} fï¿½r {CLIENT} @@@
+
+#: /webroot/overview.php:54
+msgid @@@ Delivery - Info @@@
+msgstr @@@ Mottagarens namn och adress @@@
+
+#: /webroot/overview.php:55
+msgid @@@ Name @@@
+msgstr @@@ Namn @@@
+
+#: /webroot/overview.php:56
+msgid @@@ Company / CO @@@
+msgstr @@@ Fï¿½retag / CO @@@
+
+#: /webroot/overview.php:57
+msgid @@@ Street @@@
+msgstr @@@ Gatuadress @@@
+
+#: /webroot/overview.php:58
+msgid @@@ Zip Code @@@
+msgstr @@@ Postnummer @@@
+
+#: /webroot/overview.php:59
+msgid @@@ City @@@
+msgstr @@@ Stad @@@
+
+#: /webroot/overview.php:60
+msgid @@@ Delivery Date @@@
+msgstr @@@ Leveransdatum @@@
+
+#: /webroot/overview.php:62
+msgid @@@ Next >> @@@
+msgstr @@@ Nï¿½sta >> @@@
+
+#: /webroot/overview.php:63
+msgid @@@ Go to Payment >> @@@
+msgstr @@@ Fortsï¿½tt till betalning >> @@@
+
+#: /webroot/pay/accept.php:48
+msgid @@@ Payment Completed @@@
+msgstr @@@ Betalningen genomfï¿½rd @@@
+
+#: /webroot/pay/accept.php:61
+msgid @@@ Thank you for using @@@
+msgstr @@@ Tack fï¿½r att du anvï¿½nder @@@
+
+#: /webroot/pay/accept.php:62
+msgid @@@ Status - Success @@@
+msgstr @@@ Din betalning har genomfï¿½rts @@@
+
+#: /webroot/pay/accept.php:63
+msgid @@@ mPoint ID @@@
+msgstr @@@ mPoint ID @@@
+
+#: /webroot/pay/accept.php:64
+msgid @@@ Order No @@@
+msgstr @@@ Ordernummer @@@
+
+#: /webroot/pay/accept.php:65
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
+#: /webroot/pay/accept.php:66
+msgid @@@ SMS Receipt - Info @@@
+msgstr @@@ Kvittot har ï¿½ven skickats via SMS till nummer: {MOBILE} @@@
+
+#: /webroot/pay/accept.php:67
+msgid @@@ Send receipt via E-Mail @@@
+msgstr @@@ Skicka kvitto med Epost @@@
+
+#: /webroot/pay/accept.php:68
+msgid @@@ Continue >> @@@
+msgstr @@@ ï¿½tervï¿½nd till fï¿½rsï¿½ljarens webplats >> @@@
+
+#: /webroot/pay/accept.php:69
+msgid @@@ Resume Payment >> @@@
+msgstr @@@ Resume Payment >> @@@
+
+#: /webroot/pay/card.php:34
+msgid @@@ Select Payment Method @@@
+msgstr @@@ Vï¿½lj kort @@@
+
+#: /webroot/pay/card.php:47
+msgid @@@ Step 1 of 2 @@@
+msgstr @@@ Steg 1 av 2 @@@
+
+#: /webroot/pay/card.php:48
+msgid @@@ Please select your Payment Method @@@
+msgstr @@@ Vï¿½lj ditt kredit kort @@@
+
+#: /webroot/pay/card.php:49
+msgid @@@ Cancel Payment @@@
+msgstr @@@ Cancel Payment @@@
+
+#: /webroot/pay/email.php:31
+msgid @@@ E-Mail Receipt @@@
+msgstr @@@ Epost kvitto @@@
+
+#: /webroot/pay/email.php:42
+msgid @@@ Please enter your e-mail address below @@@
+msgstr @@@ Ange din epost adress nedan @@@
+
+#: /webroot/pay/email.php:43
+msgid @@@ E-Mail @@@
+msgstr @@@ Epost @@@
+
+#: /webroot/pay/email.php:44
+msgid @@@ Send Receipt @@@
+msgstr @@@ Send kvitto @@@
+
+#: /webroot/pay/email.php:45
+msgid @@@ << Back @@@
+msgstr @@@ << Fï¿½regï¿½ende @@@
+
+#: /webroot/pay/name.php:42
+msgid @@@ Save Card @@@
+msgstr @@@ Save Card @@@
+
+#: /webroot/pay/name.php:51
+msgid @@@ Selected Card @@@
+msgstr @@@ Valt kort @@@
+
+#: /webroot/pay/name.php:52
+msgid @@@ Please enter a name for the stored card below? @@@
+msgstr @@@ Please enter a name for the stored card below? @@@
+
+#: /webroot/pay/name.php:53
+msgid @@@ Card Name @@@
+msgstr @@@ Kort navn @@@
+
+#: /webroot/pay/name.php:54
+msgid @@@ Card Name - Help @@@
+msgstr @@@ F.ex. "private" or "company" (optional) @@@
+
+#: /webroot/pay/name.php:55
+msgid @@@ Save @@@
+msgstr @@@ Gem @@@
+
+#: /webroot/pay/pwd.php:41
+msgid @@@ Create Account @@@
+msgstr @@@ Create Account @@@
+
+#: /webroot/pay/pwd.php:51
+msgid @@@ Please complete the form below to finnish creating your account @@@
+msgstr @@@ Please complete the form below to finnish creating your account @@@
+
+#: /webroot/pay/pwd.php:52
+msgid @@@ Selected Card @@@
+msgstr @@@ Valt kort @@@
+
+#: /webroot/pay/pwd.php:53
+msgid @@@ Password @@@
+msgstr @@@ Password @@@
+
+#: /webroot/pay/pwd.php:54
+msgid @@@ Repeat Password @@@
+msgstr @@@ Repeat Password @@@
+
+#: /webroot/pay/pwd.php:55
+msgid @@@ Card Name @@@
+msgstr @@@ Kort navn @@@
+
+#: /webroot/pay/pwd.php:56
+msgid @@@ Card Name - Help @@@
+msgstr @@@ F.ex. "private" or "company" (optional) @@@
+
+#: /webroot/pay/pwd.php:57
+msgid @@@ Save @@@
+msgstr @@@ Gem @@@
+
+#: /webroot/pay/pwd.php:58
+msgid @@@ fullname @@@
+msgstr @@@ fullname @@@
+
+#: /webroot/pay/pwd.php:59
+msgid @@@ cpr @@@
+msgstr @@@ cpr @@@
+
+#: /webroot/pay/re-enter.php:35
+msgid @@@ Payment Already Completed @@@
+msgstr @@@ Payment Already Completed @@@
+
+#: /webroot/pay/re-enter.php:46
+msgid @@@ Status - Payment Already Completed @@@
+msgstr @@@ Status - Payment Already Completed @@@
+
+#: /webroot/pay/re-enter.php:47
+msgid @@@ mPoint ID @@@
+msgstr @@@ mPoint ID @@@
+
+#: /webroot/pay/re-enter.php:48
+msgid @@@ Order No @@@
+msgstr @@@ Order No @@@
+
+#: /webroot/pay/re-enter.php:49
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
+#: /webroot/pay/re-enter.php:50
+msgid @@@ Note - Payment Already Completed @@@
+msgstr @@@ Note - Payment Already Completed @@@
+
+#: /webroot/pay/re-enter.php:51
+msgid @@@ Continue >> @@@
+msgstr @@@ Continue >> @@@
+
+#: /webroot/pay/store.php:32
+msgid @@@ Store Card @@@
+msgstr @@@ Store Card @@@
+
+#: /webroot/pay/store.php:45
+msgid @@@ Step 2 of 3 @@@
+msgstr @@@ Step 2 of 3 @@@
+
+#: /webroot/pay/store.php:46
+msgid @@@ Would you like to store your card for future use? @@@
+msgstr @@@ Would you like to store your card for future use? @@@
+
+#: /webroot/pay/store.php:47
+msgid @@@ Yes @@@
+msgstr @@@ Yes @@@
+
+#: /webroot/pay/store.php:48
+msgid @@@ No @@@
+msgstr @@@ No @@@
+
+#: /webroot/pay/store.php:49
+msgid @@@ Cancel Payment @@@
+msgstr @@@ Cancel Payment @@@
+
+#: /webroot/pay/store.php:50
+msgid @@@ Store Card - Disclaimer @@@
+msgstr @@@ Store Card - Disclaimer @@@
+
+#: /webroot/pay/sys/sms.php:206
+msgid @@@ SMS Purchase - Unknown Reponse @@@
+msgstr @@@ SMS Purchase - Unknown Reponse @@@
+
+#: /webroot/pay/sys/sms.php:225
+msgid @@@ SMS Purchase - Transaction not found @@@
+msgstr @@@ SMS Purchase - Transaction not found @@@
+
+#: /webroot/shop/delivery.php:55
+msgid @@@ Recipient @@@
+msgstr @@@ Mottagare @@@
+
+#: /webroot/shop/delivery.php:68
+msgid @@@ Delivery - Info @@@
+msgstr @@@ Fyll i mottagarens namn och adress nedan @@@
+
+#: /webroot/shop/delivery.php:69
+msgid @@@ Phone No @@@
+msgstr @@@ Telefonnummer @@@
+
+#: /webroot/shop/delivery.php:70
+msgid @@@ Find @@@
+msgstr @@@ Sï¿½k @@@
+
+#: /webroot/shop/delivery.php:71
+msgid @@@ Name @@@
+msgstr @@@ Namn @@@
+
+#: /webroot/shop/delivery.php:72
+msgid @@@ Company / CO @@@
+msgstr @@@ Fï¿½retag / CO @@@
+
+#: /webroot/shop/delivery.php:73
+msgid @@@ Street @@@
+msgstr @@@ Gatuadress @@@
+
+#: /webroot/shop/delivery.php:74
+msgid @@@ Zip Code @@@
+msgstr @@@ Postnummer @@@
+
+#: /webroot/shop/delivery.php:75
+msgid @@@ City @@@
+msgstr @@@ Stad @@@
+
+#: /webroot/shop/delivery.php:77
+msgid @@@ Delivery Date @@@
+msgstr @@@ Leveransdatum @@@
+
+#: /webroot/shop/delivery.php:78
+msgid @@@ YYYY @@@
+msgstr @@@ ï¿½ï¿½ï¿½ï¿½ @@@
+
+#: /webroot/shop/delivery.php:79
+msgid @@@ MM @@@
+msgstr @@@ MM @@@
+
+#: /webroot/shop/delivery.php:80
+msgid @@@ DD @@@
+msgstr @@@ DD @@@
+
+#: /webroot/shop/delivery.php:82
+msgid @@@ Next >> @@@
+msgstr @@@ Nï¿½sta >> @@@
+
+#: /webroot/shop/products.php:43
+msgid @@@ Mobile Shop @@@
+msgstr @@@ Mobil Shop @@@
+
+#: /webroot/shop/products.php:52
+msgid @@@ Product - Info @@@
+msgstr @@@ Klicka pï¿½ "Lï¿½gg till i korg" bredvid produkten fï¿½r att kï¿½pa den. @@@
+
+#: /webroot/shop/products.php:53
+msgid @@@ Add to Basket @@@
+msgstr @@@ Lï¿½gg till i korg @@@
+
+#: /webroot/shop/products.php:54
+msgid @@@ Next >> @@@
+msgstr @@@ Nï¿½sta >> @@@
+
+#: /webroot/shop/shipping.php:26
+msgid @@@ Shipping Info @@@
+msgstr @@@ Leveransinformation @@@
+
+#: /webroot/shop/shipping.php:39
+msgid @@@ Shipping - Info @@@
+msgstr @@@ Vï¿½lj leveransmetod @@@
+
+#: /webroot/shop/topup.php:29
+msgid @@@ Top-Up Account @@@
+msgstr @@@ Top-Up Account @@@
+
+#: /webroot/shop/topup.php:39
+msgid @@@ Account Top-Up - Info @@@
+msgstr @@@ Account Top-Up - Info @@@
+
+#: /webroot/shop/topup.php:40
+msgid @@@ Amount @@@
+msgstr @@@ Amount @@@
+
+#: /webroot/shop/topup.php:41
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
+#: /webroot/terms.php:29
+msgid @@@ Terms & Conditions @@@
+msgstr @@@ Fï¿½rsï¿½ljningsvilkor @@@
+
+#: /webroot/terms.php:37
+msgid @@@ << Back @@@
+msgstr @@@ << Tillbaka @@@
+
+#: /webroot/wannafind/postform.php:44
+msgid @@@ Card Info @@@
+msgstr @@@ Card Info @@@
+
+#: /webroot/wannafind/postform.php:51
+msgid @@@ Step 2 of 2 @@@
+msgstr @@@ Step 2 of 2 @@@
+
+#: /webroot/wannafind/postform.php:52
+msgid @@@ Please enter your card information below @@@
+msgstr @@@ Please enter your card information below @@@
+
+#: /webroot/wannafind/postform.php:53
+msgid @@@ Selected Card @@@
+msgstr @@@ Selected Card @@@
+
+#: /webroot/wannafind/postform.php:54
+msgid @@@ Price @@@
+msgstr @@@ Price @@@
+
+#: /webroot/wannafind/postform.php:55
+msgid @@@ Card Number @@@
+msgstr @@@ Card Number @@@
+
+#: /webroot/wannafind/postform.php:56
+msgid @@@ Expiry Date @@@
+msgstr @@@ Expiry Date @@@
+
+#: /webroot/wannafind/postform.php:57
+msgid @@@ mm @@@
+msgstr @@@ mm @@@
+
+#: /webroot/wannafind/postform.php:58
+msgid @@@ yy @@@
+msgstr @@@ yy @@@
+
+#: /webroot/wannafind/postform.php:59
+msgid @@@ CVC / CVS @@@
+msgstr @@@ CVC / CVS @@@
+
+#: /webroot/wannafind/postform.php:60
+msgid @@@ 3 digits (printed on the back of the card) @@@
+msgstr @@@ 3 digits (printed on the back of the card) @@@
+
+#: /webroot/wannafind/postform.php:61
+msgid @@@ 4 digits (printed on the back of the card) @@@
+msgstr @@@ 4 digits (printed on the back of the card) @@@
+
+#: /webroot/wannafind/postform.php:62
+msgid @@@ Save Card Info @@@
+msgstr @@@ Save Card Info @@@
+
+#: /webroot/wannafind/postform.php:63
+msgid @@@ Complete Payment @@@
+msgstr @@@ Complete Payment @@@
+
+#: /api/classes/callback.php:86
+msgid @@@ mPoint - SMS Receipt @@@
+msgstr @@@ Tack fï¿½r att du anvï¿½nder mPoint, information om din order:
+mPoint ID: {MPOINTID}
+Sï¿½ljare: {CLIENT}
+Ordernummer: {ORDERID}
+Pris: {PRICE} @@@
+
+#: /api/classes/cpm.php:32
+msgid @@@ Billing SMS @@@
+msgstr @@@ Tack fï¿½r att du anvï¿½nder mPoint, du har betalat {PRICE} via din telefonrï¿½kning @@@
+
+#: /api/classes/credit_card.php:136
+msgid @@@ Stored Cards @@@
+msgstr @@@ Stored Cards @@@
+
+#: /api/classes/credit_card.php:138
+msgid @@@ My Account @@@
+msgstr @@@ My Account @@@
+
+#: /api/classes/email_receipt.php:53
+msgid @@@ E-Mail Receipt - Subject @@@
+msgstr @@@ mPoint kvitto fï¿½r ordernummer: {ORDERID} med mPoint ID: {MPOINTID} @@@
+
+#: /api/classes/email_receipt.php:72
+msgid @@@ E-Mail Receipt - Body @@@
+msgstr @@@ Tack fï¿½r att du anvï¿½nder mPoint.
+Vi har lagrat fï¿½ljande information om din order.
+Mobiltelefonnummer: {MOBILE}
+mPoint ID: {MPOINTID}
+Sï¿½ljare: {CLIENT}
+Ordernummer: {ORDERID}
+Pris: {PRICE} @@@
 
 #: /api/classes/enduser_account.php:70
 msgid @@@ mPoint - Account Info @@@
@@ -1418,79 +1440,57 @@ Kind Regards
 msgid @@@ mPoint - Account Disabled @@@
 msgstr @@@ mPoint - Account Disabled @@@
 
-#: /api/classes/callback.php:86
-msgid @@@ mPoint - SMS Receipt @@@
-msgstr @@@ Tack för att du använder mPoint, information om din order:
-mPoint ID: {MPOINTID}
-Säljare: {CLIENT}
-Ordernummer: {ORDERID}
-Pris: {PRICE} @@@
+#: /api/classes/general.php:408
+msgid @@@ Loading... @@@
+msgstr @@@ Loading... @@@
+
+#: /api/classes/general.php:709
+msgid @@@ mPoint - Embedded link Indication @@@
+msgstr @@@ Vï¿½lkommen till {CLIENT}, klicka pï¿½ lï¿½nken nedan @@@
+
+#: /api/classes/general.php:715
+msgid @@@ mPoint - WAP Push Indication @@@
+msgstr @@@ Vï¿½lkommen till {CLIENT} @@@
+
+#: /api/classes/home.php:61
+msgid @@@ mPoint - Send One Time Password @@@
+msgstr @@@ mPoint - Send One Time Password @@@
+
+#: /api/classes/my_account.php:39
+msgid @@@ mPoint - Send Activation Code @@@
+msgstr @@@ mPoint - Send Activation Code @@@
+
+#: /api/classes/my_account.php:82
+msgid @@@ mPoint - Activation Link Subject @@@
+msgstr @@@ mPoint - Activation Link Subject @@@
+
+#: /api/classes/my_account.php:83
+msgid @@@ mPoint - Activation Link Body @@@
+msgstr @@@ mPoint - Activation Link Body @@@
+
+#: /api/classes/shipping.php:114
+msgid @@@ FREE @@@
+msgstr @@@ GRATIS @@@
 
 #: /api/classes/surepay.php:130
 msgid @@@ mPoint - Embedded link Resend Indication @@@
-msgstr @@@ Du har inte klickat på länken för {CLIENT}.
+msgstr @@@ Du har inte klickat pï¿½ lï¿½nken fï¿½r {CLIENT}.
 Please activate the link below @@@
 
 #: /api/classes/surepay.php:151
 msgid @@@ SurePay Notification - Subject @@@
-msgstr @@@ betalningslänken för mPoint: {ORDERID} har inte klickats @@@
+msgstr @@@ betalningslï¿½nken fï¿½r mPoint: {ORDERID} har inte klickats @@@
 
 #: /api/classes/surepay.php:155
 msgid @@@ SurePay Notification - Body @@@
-msgstr @@@ Följande kund har inte klickat på betalningslänken
+msgstr @@@ Fï¿½ljande kund har inte klickat pï¿½ betalningslï¿½nken
 Mobiltelefonnummer: {MOBILE}
 mPoint ID: {MPOINTID}
 Ordernummer: {ORDERID}
 Pris: {PRICE}
 Orderdatum: {TIMESTAMP}
 
-We rekommenderar att ni kontaktar den här kunden manuellt för att slutföra köpet. @@@
-
-#: /api/classes/home.php:61
-msgid @@@ mPoint - Send One Time Password @@@
-msgstr @@@ mPoint - Send One Time Password @@@
-
-#: /api/classes/shipping.php:114
-msgid @@@ FREE @@@
-msgstr @@@ GRATIS @@@
-
-#: /api/classes/email_receipt.php:53
-msgid @@@ E-Mail Receipt - Subject @@@
-msgstr @@@ mPoint kvitto för ordernummer: {ORDERID} med mPoint ID: {MPOINTID} @@@
-
-#: /api/classes/email_receipt.php:72
-msgid @@@ E-Mail Receipt - Body @@@
-msgstr @@@ Tack för att du använder mPoint.
-Vi har lagrat följande information om din order.
-Mobiltelefonnummer: {MOBILE}
-mPoint ID: {MPOINTID}
-Säljare: {CLIENT}
-Ordernummer: {ORDERID}
-Pris: {PRICE} @@@
-
-#: /api/classes/general.php:408
-msgid @@@ Loading... @@@
-msgstr @@@ Loading... @@@
-
-#: /api/classes/general.php:767
-msgid @@@ mPoint - Embedded link Indication @@@
-msgstr @@@ Välkommen till {CLIENT}, klicka på länken nedan @@@
-
-#: /api/classes/general.php:773
-msgid @@@ mPoint - WAP Push Indication @@@
-msgstr @@@ Välkommen till {CLIENT} @@@
-
-#: /api/classes/cpm.php:32
-msgid @@@ Billing SMS @@@
-msgstr @@@ Tack för att du använder mPoint, du har betalat {PRICE} via din telefonräkning @@@
-
-#: /api/classes/credit_card.php:136
-msgid @@@ Stored Cards @@@
-msgstr @@@ Stored Cards @@@
-
-#: /api/classes/credit_card.php:138
-msgid @@@ My Account @@@
-msgstr @@@ My Account @@@
+We rekommenderar att ni kontaktar den hï¿½r kunden manuellt fï¿½r att slutfï¿½ra kï¿½pet. @@@
 
 #: /api/classes/transfer.php:45
 msgid @@@ mPoint - New Account SMS @@@
