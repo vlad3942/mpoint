@@ -99,7 +99,7 @@ abstract class CPMPSP extends Callback implements Captureable
 					return $iState;
 
 				case 404:
-					throw new TxnInfoException("Transaction not found received from PSP");
+					throw new TxnInfoException("Transaction not found received from PSP", 404);
 
 				default:
 					throw new UnexpectedValueException("The PSP gateway responded with an unexpected payment status: ". $iState. ", http body: ". $obj_HTTP->getReplyBody() );
