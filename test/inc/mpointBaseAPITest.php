@@ -13,7 +13,7 @@ abstract class mPointBaseAPITest extends mPointBaseDatabaseTest
             @chmod(sLOG_PATH, octdec(777) );
         }
 		//empty error log file prior to test-run
-		if (count(self::$aVisited) == 0) { copy(sERROR_LOG, sERROR_LOG .'.before-test.backup'); }
+		if (count(self::$aVisited) == 0) { @copy(sERROR_LOG, sERROR_LOG .'.before-test.backup'); }
 		file_put_contents(sERROR_LOG, '');
         parent::setup();
     }

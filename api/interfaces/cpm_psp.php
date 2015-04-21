@@ -25,7 +25,7 @@ abstract class CPMPSP extends Callback implements Captureable
         $b .= '<capture client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
         $b .= $this->getPSPConfig()->toXML();
         $b .= '<transactions>';
-        $b .= $this->getTxnInfo()->toXML();
+        $b .= $this->_constTxnXML($iAmount);
         $b .= '</transactions>';
         $b .= '</capture>';
         $b .= '</root>';
@@ -69,7 +69,7 @@ abstract class CPMPSP extends Callback implements Captureable
 		$b .= '<status client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
 		$b .= $this->getPSPConfig()->toXML();
 		$b .= '<transactions>';
-		$b .= $this->getTxnInfo()->toXML();
+		$b .= $this->_constTxnXML();
 		$b .= '</transactions>';
 		$b .= '</status>';
 		$b .= '</root>';
@@ -110,6 +110,31 @@ abstract class CPMPSP extends Callback implements Captureable
 		else { throw new UnexpectedValueException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 	}
 
+	private function _constTxnXML($actionAmount=null)
+	{
+		$obj_TxnInfo = $this->getTxnInfo();
+
+		$xml  = '<transaction id="'. $obj_TxnInfo->getID() .'" type="'. $obj_TxnInfo->getTypeID() .'" gmid="'. $obj_TxnInfo->getGoMobileID() .'" mode="'. $obj_TxnInfo->getMode() .'" eua-id="'. $obj_TxnInfo->getAccountID() .'" psp-id="'. $obj_TxnInfo->getPSPID() .'" external-id="'. htmlspecialchars($obj_TxnInfo->getExternalID(), ENT_NOQUOTES) .'">';
+		$xml .= '<authorized-amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID() .'" currency="'. $obj_TxnInfo->getCountryConfig()->getCurrency() .'" symbol="'. $obj_TxnInfo->getCountryConfig()->getSymbol() .'" format="'. $obj_TxnInfo->getCountryConfig()->getPriceFormat() .'">'. $obj_TxnInfo->getAmount() .'</authorized-amount>';
+		$xml .= '<captured-amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID() .'" currency="'. $obj_TxnInfo->getCountryConfig()->getCurrency() .'" symbol="'. $obj_TxnInfo->getCountryConfig()->getSymbol() .'" format="'. $obj_TxnInfo->getCountryConfig()->getPriceFormat() .'">'. $obj_TxnInfo->getCapturedAmount() .'</captured-amount>';
+		$xml .= '<refunded-amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID() .'" currency="'. $obj_TxnInfo->getCountryConfig()->getCurrency() .'" symbol="'. $obj_TxnInfo->getCountryConfig()->getSymbol() .'" format="'. $obj_TxnInfo->getCountryConfig()->getPriceFormat() .'">'. $obj_TxnInfo->getRefund() .'</refunded-amount>';
+		$xml .= '<fee-amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID() .'" currency="'. $obj_TxnInfo->getCountryConfig()->getCurrency() .'" symbol="'. $obj_TxnInfo->getCountryConfig()->getSymbol() .'" format="'. $obj_TxnInfo->getCountryConfig()->getPriceFormat() .'">'. $obj_TxnInfo->getFee() .'</fee-amount>';
+		$xml .= '<orderid>'. $obj_TxnInfo->getOrderID() .'</orderid>';
+		$xml .= '<mobile country-id="'. intval($obj_TxnInfo->getOperator()/100) .'">'. $obj_TxnInfo->getMobile() .'</mobile>';
+		$xml .= '<email>'. $obj_TxnInfo->getEMail() .'</email>';
+		$xml .= '<language>'. $obj_TxnInfo->getLanguage() .'</language>';
+
+		if (isset($actionAmount) === true)
+		{
+			$xml .= '<amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID() .'" currency="'. $obj_TxnInfo->getCountryConfig()->getCurrency() .'" symbol="'. $obj_TxnInfo->getCountryConfig()->getSymbol() .'" format="'. $obj_TxnInfo->getCountryConfig()->getPriceFormat() .'">'. $actionAmount .'</amount>';
+		}
+
+		$xml .= '</transaction>';
+
+		return $xml;
+	}
+	
+	
 	protected abstract function getConnectionInfo();
 
 }
