@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xs:element name="root">
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="refund">
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="psp-config">
+								<xs:complexType>
+									<xs:all>
+										<xs:element name="name" type="xs:string"/>
+										<xs:element name="merchant-account" type="xs:string"/>
+										<xs:element name="merchant-sub-account" type="xs:string"/>
+										<xs:element name="username" type="xs:string"/>
+										<xs:element name="password" type="xs:string"/>
+									</xs:all>
+									<xs:attribute type="xs:positiveInteger" name="id" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="transactions">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="transaction" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:all>
+													<xs:element name="amount" type="amount"/>
+													<xs:element name="captured-amount" type="amount"/>
+													<xs:element name="authorized-amount" type="amount"/>
+													<xs:element name="fee-amount" type="amount"/>
+													<xs:element name="refunded-amount" type="amount"/>
+													<xs:element name="orderid" type="xs:string"/>
+													<xs:element name="mobile">
+														<xs:complexType>
+															<xs:simpleContent>
+																<xs:extension base="xs:string">
+																	<xs:attribute name="country-id" type="xs:integer"/>
+																</xs:extension>
+															</xs:simpleContent>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="email" type="xs:string"/>
+													<xs:element name="language" type="xs:string"/>
+												</xs:all>
+												<xs:attribute type="xs:positiveInteger" name="id"/>
+												<xs:attribute type="xs:positiveInteger" name="type"/>
+												<xs:attribute type="xs:integer" name="gmid"/>
+												<xs:attribute type="xs:integer" name="mode"/>
+												<xs:attribute type="xs:integer" name="eua-id"/>
+												<xs:attribute type="xs:positiveInteger" name="psp-id"/>
+												<xs:attribute type="xs:positiveInteger" name="external-id"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:all>
+						<xs:attribute type="xs:positiveInteger" name="client-id" />
+						<xs:attribute type="xs:positiveInteger" name="account" />
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="amount">
+		<xs:simpleContent>
+			<xs:extension base="xs:integer">
+				<xs:attribute name="country-id" type="xs:integer"/>
+				<xs:attribute name="currency" type="xs:string"/>
+				<xs:attribute name="symbol" type="xs:string"/>
+				<xs:attribute name="format" type="xs:string"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+</xs:schema>

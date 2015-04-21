@@ -64,6 +64,7 @@ abstract class mPointBaseAPITest extends mPointBaseDatabaseTest
 			$this->assertNotContains("USER ERROR", $aLogLines);
 			$this->assertNotContains("ERROR", $aLogLines);
 			$this->assertNotContains("WARNING", $aLogLines);
+			$this->assertNotContains("UNCAUGHT EXCEPTION", $aLogLines);
 		}
 	}
 

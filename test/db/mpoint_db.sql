@@ -6127,6 +6127,552 @@ INSERT INTO state_tbl (id, name, module, func, created, modified, enabled) VALUE
 
 SELECT pg_catalog.setval('state_tbl_id_seq', 1, true);
 
+
+CREATE SCHEMA admin;
+
+
+ALTER SCHEMA admin OWNER TO mpoint;
+
+SET search_path = admin, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- TOC entry 176 (class 1259 OID 553686)
+-- Name: access_tbl; Type: TABLE; Schema: admin; Owner: mpoint; Tablespace:
+--
+
+CREATE TABLE access_tbl (
+  id integer NOT NULL,
+  userid integer NOT NULL,
+  clientid integer NOT NULL,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true
+);
+
+
+ALTER TABLE admin.access_tbl OWNER TO mpoint;
+
+--
+-- TOC entry 177 (class 1259 OID 553692)
+-- Name: access_tbl_id_seq; Type: SEQUENCE; Schema: admin; Owner: mpoint
+--
+
+CREATE SEQUENCE access_tbl_id_seq
+START WITH 1
+INCREMENT BY 1
+NO MINVALUE
+NO MAXVALUE
+CACHE 1;
+
+
+ALTER TABLE admin.access_tbl_id_seq OWNER TO mpoint;
+
+--
+-- TOC entry 2272 (class 0 OID 0)
+-- Dependencies: 177
+-- Name: access_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: admin; Owner: mpoint
+--
+
+ALTER SEQUENCE access_tbl_id_seq OWNED BY access_tbl.id;
+
+
+--
+-- TOC entry 178 (class 1259 OID 553694)
+-- Name: role_tbl; Type: TABLE; Schema: admin; Owner: mpoint; Tablespace:
+--
+
+CREATE TABLE role_tbl (
+  id integer NOT NULL,
+  name character varying(100),
+  assignable boolean DEFAULT true,
+  note text,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true
+);
+
+
+ALTER TABLE admin.role_tbl OWNER TO mpoint;
+
+--
+-- TOC entry 179 (class 1259 OID 553704)
+-- Name: role_tbl_id_seq; Type: SEQUENCE; Schema: admin; Owner: mpoint
+--
+
+CREATE SEQUENCE role_tbl_id_seq
+START WITH 1
+INCREMENT BY 1
+NO MINVALUE
+NO MAXVALUE
+CACHE 1;
+
+
+ALTER TABLE admin.role_tbl_id_seq OWNER TO mpoint;
+
+--
+-- TOC entry 2275 (class 0 OID 0)
+-- Dependencies: 179
+-- Name: role_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: admin; Owner: mpoint
+--
+
+ALTER SEQUENCE role_tbl_id_seq OWNED BY role_tbl.id;
+
+
+--
+-- TOC entry 180 (class 1259 OID 553706)
+-- Name: roleaccess_tbl; Type: TABLE; Schema: admin; Owner: mpoint; Tablespace:
+--
+
+CREATE TABLE roleaccess_tbl (
+  id integer NOT NULL,
+  roleid integer NOT NULL,
+  userid integer NOT NULL,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true
+);
+
+
+ALTER TABLE admin.roleaccess_tbl OWNER TO mpoint;
+
+--
+-- TOC entry 181 (class 1259 OID 553712)
+-- Name: roleaccess_tbl_id_seq; Type: SEQUENCE; Schema: admin; Owner: mpoint
+--
+
+CREATE SEQUENCE roleaccess_tbl_id_seq
+START WITH 1
+INCREMENT BY 1
+NO MINVALUE
+NO MAXVALUE
+CACHE 1;
+
+
+ALTER TABLE admin.roleaccess_tbl_id_seq OWNER TO mpoint;
+
+--
+-- TOC entry 2278 (class 0 OID 0)
+-- Dependencies: 181
+-- Name: roleaccess_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: admin; Owner: mpoint
+--
+
+ALTER SEQUENCE roleaccess_tbl_id_seq OWNED BY roleaccess_tbl.id;
+
+
+--
+-- TOC entry 182 (class 1259 OID 553714)
+-- Name: roleinfo_tbl; Type: TABLE; Schema: admin; Owner: mpoint; Tablespace:
+--
+
+CREATE TABLE roleinfo_tbl (
+  id integer NOT NULL,
+  roleid integer NOT NULL,
+  languageid integer NOT NULL,
+  name character varying(100),
+  note text,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true
+);
+
+
+ALTER TABLE admin.roleinfo_tbl OWNER TO mpoint;
+
+--
+-- TOC entry 183 (class 1259 OID 553723)
+-- Name: roleinfo_tbl_id_seq; Type: SEQUENCE; Schema: admin; Owner: mpoint
+--
+
+CREATE SEQUENCE roleinfo_tbl_id_seq
+START WITH 1
+INCREMENT BY 1
+NO MINVALUE
+NO MAXVALUE
+CACHE 1;
+
+
+ALTER TABLE admin.roleinfo_tbl_id_seq OWNER TO mpoint;
+
+--
+-- TOC entry 2281 (class 0 OID 0)
+-- Dependencies: 183
+-- Name: roleinfo_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: admin; Owner: mpoint
+--
+
+ALTER SEQUENCE roleinfo_tbl_id_seq OWNED BY roleinfo_tbl.id;
+
+
+--
+-- TOC entry 184 (class 1259 OID 553725)
+-- Name: user_tbl; Type: TABLE; Schema: admin; Owner: mpoint; Tablespace:
+--
+
+CREATE TABLE user_tbl (
+  id integer NOT NULL,
+  countryid integer NOT NULL,
+  firstname character varying(50),
+  lastname character varying(50),
+  mobile character varying(15),
+  email character varying(50),
+  username character varying(50),
+  passwd character varying(50),
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true
+);
+
+
+ALTER TABLE admin.user_tbl OWNER TO mpoint;
+
+--
+-- TOC entry 185 (class 1259 OID 553731)
+-- Name: user_tbl_id_seq; Type: SEQUENCE; Schema: admin; Owner: mpoint
+--
+
+CREATE SEQUENCE user_tbl_id_seq
+START WITH 1
+INCREMENT BY 1
+NO MINVALUE
+NO MAXVALUE
+CACHE 1;
+
+
+ALTER TABLE admin.user_tbl_id_seq OWNER TO mpoint;
+
+--
+-- TOC entry 2284 (class 0 OID 0)
+-- Dependencies: 185
+-- Name: user_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: admin; Owner: mpoint
+--
+
+ALTER SEQUENCE user_tbl_id_seq OWNED BY user_tbl.id;
+
+
+--
+-- TOC entry 2116 (class 2604 OID 554138)
+-- Name: id; Type: DEFAULT; Schema: admin; Owner: mpoint
+--
+
+ALTER TABLE ONLY access_tbl ALTER COLUMN id SET DEFAULT nextval('access_tbl_id_seq'::regclass);
+
+
+--
+-- TOC entry 2121 (class 2604 OID 554139)
+-- Name: id; Type: DEFAULT; Schema: admin; Owner: mpoint
+--
+
+ALTER TABLE ONLY role_tbl ALTER COLUMN id SET DEFAULT nextval('role_tbl_id_seq'::regclass);
+
+
+--
+-- TOC entry 2125 (class 2604 OID 554140)
+-- Name: id; Type: DEFAULT; Schema: admin; Owner: mpoint
+--
+
+ALTER TABLE ONLY roleaccess_tbl ALTER COLUMN id SET DEFAULT nextval('roleaccess_tbl_id_seq'::regclass);
+
+
+--
+-- TOC entry 2129 (class 2604 OID 554141)
+-- Name: id; Type: DEFAULT; Schema: admin; Owner: mpoint
+--
+
+ALTER TABLE ONLY roleinfo_tbl ALTER COLUMN id SET DEFAULT nextval('roleinfo_tbl_id_seq'::regclass);
+
+
+--
+-- TOC entry 2133 (class 2604 OID 554142)
+-- Name: id; Type: DEFAULT; Schema: admin; Owner: mpoint
+--
+
+ALTER TABLE ONLY user_tbl ALTER COLUMN id SET DEFAULT nextval('user_tbl_id_seq'::regclass);
+
+
+--
+-- TOC entry 2135 (class 2606 OID 554203)
+-- Name: access_pk; Type: CONSTRAINT; Schema: admin; Owner: mpoint; Tablespace:
+--
+
+ALTER TABLE ONLY access_tbl
+ADD CONSTRAINT access_pk PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2137 (class 2606 OID 554205)
+-- Name: access_uq; Type: CONSTRAINT; Schema: admin; Owner: mpoint; Tablespace:
+--
+
+ALTER TABLE ONLY access_tbl
+ADD CONSTRAINT access_uq UNIQUE (userid, clientid);
+
+
+--
+-- TOC entry 2139 (class 2606 OID 554207)
+-- Name: role_pk; Type: CONSTRAINT; Schema: admin; Owner: mpoint; Tablespace:
+--
+
+ALTER TABLE ONLY role_tbl
+ADD CONSTRAINT role_pk PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2142 (class 2606 OID 554209)
+-- Name: roleaccess_pk; Type: CONSTRAINT; Schema: admin; Owner: mpoint; Tablespace:
+--
+
+ALTER TABLE ONLY roleaccess_tbl
+ADD CONSTRAINT roleaccess_pk PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2144 (class 2606 OID 554211)
+-- Name: roleaccess_uq; Type: CONSTRAINT; Schema: admin; Owner: mpoint; Tablespace:
+--
+
+ALTER TABLE ONLY roleaccess_tbl
+ADD CONSTRAINT roleaccess_uq UNIQUE (roleid, userid);
+
+
+--
+-- TOC entry 2146 (class 2606 OID 554213)
+-- Name: roleinfo_pk; Type: CONSTRAINT; Schema: admin; Owner: mpoint; Tablespace:
+--
+
+ALTER TABLE ONLY roleinfo_tbl
+ADD CONSTRAINT roleinfo_pk PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2148 (class 2606 OID 554215)
+-- Name: roleinfo_uq; Type: CONSTRAINT; Schema: admin; Owner: mpoint; Tablespace:
+--
+
+ALTER TABLE ONLY roleinfo_tbl
+ADD CONSTRAINT roleinfo_uq UNIQUE (roleid, languageid);
+
+
+--
+-- TOC entry 2152 (class 2606 OID 554217)
+-- Name: user_pk; Type: CONSTRAINT; Schema: admin; Owner: mpoint; Tablespace:
+--
+
+ALTER TABLE ONLY user_tbl
+ADD CONSTRAINT user_pk PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2140 (class 1259 OID 554332)
+-- Name: role_uq; Type: INDEX; Schema: admin; Owner: mpoint; Tablespace:
+--
+
+CREATE UNIQUE INDEX role_uq ON role_tbl USING btree (lower((name)::text));
+
+
+--
+-- TOC entry 2149 (class 1259 OID 554333)
+-- Name: user_email_uq; Type: INDEX; Schema: admin; Owner: mpoint; Tablespace:
+--
+
+CREATE UNIQUE INDEX user_email_uq ON user_tbl USING btree (countryid, upper((email)::text));
+
+
+--
+-- TOC entry 2150 (class 1259 OID 554334)
+-- Name: user_mobile_uq; Type: INDEX; Schema: admin; Owner: mpoint; Tablespace:
+--
+
+CREATE UNIQUE INDEX user_mobile_uq ON user_tbl USING btree (countryid, mobile);
+
+
+--
+-- TOC entry 2153 (class 1259 OID 554335)
+-- Name: user_username_uq; Type: INDEX; Schema: admin; Owner: mpoint; Tablespace:
+--
+
+CREATE UNIQUE INDEX user_username_uq ON user_tbl USING btree (username);
+
+
+--
+-- TOC entry 2154 (class 2606 OID 554361)
+-- Name: access2client_fk; Type: FK CONSTRAINT; Schema: admin; Owner: mpoint
+--
+
+ALTER TABLE ONLY access_tbl
+ADD CONSTRAINT access2client_fk FOREIGN KEY (clientid) REFERENCES client.client_tbl(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2155 (class 2606 OID 554366)
+-- Name: access2user_fk; Type: FK CONSTRAINT; Schema: admin; Owner: mpoint
+--
+
+ALTER TABLE ONLY access_tbl
+ADD CONSTRAINT access2user_fk FOREIGN KEY (userid) REFERENCES user_tbl(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2156 (class 2606 OID 554371)
+-- Name: roleaccess2role_fk; Type: FK CONSTRAINT; Schema: admin; Owner: mpoint
+--
+
+ALTER TABLE ONLY roleaccess_tbl
+ADD CONSTRAINT roleaccess2role_fk FOREIGN KEY (roleid) REFERENCES role_tbl(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2157 (class 2606 OID 554376)
+-- Name: roleaccess2user_fk; Type: FK CONSTRAINT; Schema: admin; Owner: mpoint
+--
+
+ALTER TABLE ONLY roleaccess_tbl
+ADD CONSTRAINT roleaccess2user_fk FOREIGN KEY (userid) REFERENCES user_tbl(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2158 (class 2606 OID 554381)
+-- Name: user2country_fk; Type: FK CONSTRAINT; Schema: admin; Owner: mpoint
+--
+
+ALTER TABLE ONLY user_tbl
+ADD CONSTRAINT user2country_fk FOREIGN KEY (countryid) REFERENCES system.country_tbl(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2270 (class 0 OID 0)
+-- Dependencies: 12
+-- Name: admin; Type: ACL; Schema: -; Owner: mpoint
+--
+
+REVOKE ALL ON SCHEMA admin FROM PUBLIC;
+REVOKE ALL ON SCHEMA admin FROM mpoint;
+GRANT ALL ON SCHEMA admin TO mpoint;
+GRANT ALL ON SCHEMA admin TO mpoint;
+
+
+--
+-- TOC entry 2271 (class 0 OID 0)
+-- Dependencies: 176
+-- Name: access_tbl; Type: ACL; Schema: admin; Owner: mpoint
+--
+
+REVOKE ALL ON TABLE access_tbl FROM PUBLIC;
+REVOKE ALL ON TABLE access_tbl FROM mpoint;
+GRANT ALL ON TABLE access_tbl TO mpoint;
+GRANT ALL ON TABLE access_tbl TO mpoint;
+
+
+--
+-- TOC entry 2273 (class 0 OID 0)
+-- Dependencies: 177
+-- Name: access_tbl_id_seq; Type: ACL; Schema: admin; Owner: mpoint
+--
+
+REVOKE ALL ON SEQUENCE access_tbl_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE access_tbl_id_seq FROM mpoint;
+GRANT ALL ON SEQUENCE access_tbl_id_seq TO mpoint;
+GRANT ALL ON SEQUENCE access_tbl_id_seq TO mpoint;
+
+
+--
+-- TOC entry 2274 (class 0 OID 0)
+-- Dependencies: 178
+-- Name: role_tbl; Type: ACL; Schema: admin; Owner: mpoint
+--
+
+REVOKE ALL ON TABLE role_tbl FROM PUBLIC;
+REVOKE ALL ON TABLE role_tbl FROM mpoint;
+GRANT ALL ON TABLE role_tbl TO mpoint;
+GRANT ALL ON TABLE role_tbl TO mpoint;
+
+
+--
+-- TOC entry 2276 (class 0 OID 0)
+-- Dependencies: 179
+-- Name: role_tbl_id_seq; Type: ACL; Schema: admin; Owner: mpoint
+--
+
+REVOKE ALL ON SEQUENCE role_tbl_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE role_tbl_id_seq FROM mpoint;
+GRANT ALL ON SEQUENCE role_tbl_id_seq TO mpoint;
+GRANT ALL ON SEQUENCE role_tbl_id_seq TO mpoint;
+
+
+--
+-- TOC entry 2277 (class 0 OID 0)
+-- Dependencies: 180
+-- Name: roleaccess_tbl; Type: ACL; Schema: admin; Owner: mpoint
+--
+
+REVOKE ALL ON TABLE roleaccess_tbl FROM PUBLIC;
+REVOKE ALL ON TABLE roleaccess_tbl FROM mpoint;
+GRANT ALL ON TABLE roleaccess_tbl TO mpoint;
+GRANT ALL ON TABLE roleaccess_tbl TO mpoint;
+
+
+--
+-- TOC entry 2279 (class 0 OID 0)
+-- Dependencies: 181
+-- Name: roleaccess_tbl_id_seq; Type: ACL; Schema: admin; Owner: mpoint
+--
+
+REVOKE ALL ON SEQUENCE roleaccess_tbl_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE roleaccess_tbl_id_seq FROM mpoint;
+GRANT ALL ON SEQUENCE roleaccess_tbl_id_seq TO mpoint;
+GRANT ALL ON SEQUENCE roleaccess_tbl_id_seq TO mpoint;
+
+
+--
+-- TOC entry 2280 (class 0 OID 0)
+-- Dependencies: 182
+-- Name: roleinfo_tbl; Type: ACL; Schema: admin; Owner: mpoint
+--
+
+REVOKE ALL ON TABLE roleinfo_tbl FROM PUBLIC;
+REVOKE ALL ON TABLE roleinfo_tbl FROM mpoint;
+GRANT ALL ON TABLE roleinfo_tbl TO mpoint;
+GRANT ALL ON TABLE roleinfo_tbl TO mpoint;
+
+
+--
+-- TOC entry 2282 (class 0 OID 0)
+-- Dependencies: 183
+-- Name: roleinfo_tbl_id_seq; Type: ACL; Schema: admin; Owner: mpoint
+--
+
+REVOKE ALL ON SEQUENCE roleinfo_tbl_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE roleinfo_tbl_id_seq FROM mpoint;
+GRANT ALL ON SEQUENCE roleinfo_tbl_id_seq TO mpoint;
+GRANT ALL ON SEQUENCE roleinfo_tbl_id_seq TO mpoint;
+
+
+--
+-- TOC entry 2283 (class 0 OID 0)
+-- Dependencies: 184
+-- Name: user_tbl; Type: ACL; Schema: admin; Owner: mpoint
+--
+
+REVOKE ALL ON TABLE user_tbl FROM PUBLIC;
+REVOKE ALL ON TABLE user_tbl FROM mpoint;
+GRANT ALL ON TABLE user_tbl TO mpoint;
+GRANT ALL ON TABLE user_tbl TO mpoint;
+
+
+--
+-- TOC entry 2285 (class 0 OID 0)
+-- Dependencies: 185
+-- Name: user_tbl_id_seq; Type: ACL; Schema: admin; Owner: mpoint
+--
+
+REVOKE ALL ON SEQUENCE user_tbl_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE user_tbl_id_seq FROM mpoint;
+GRANT ALL ON SEQUENCE user_tbl_id_seq TO mpoint;
+GRANT ALL ON SEQUENCE user_tbl_id_seq TO mpoint;
+
+
 -- from setup_pg_v1.88 --
 
 INSERT INTO System.PSP_Tbl (id, name) VALUES (11, 'MobilePay');

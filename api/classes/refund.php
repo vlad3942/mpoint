@@ -130,8 +130,8 @@ class Refund extends General
 		default:	// Unkown Payment Service Provider
 			throw new RefundException("Unkown Payment Service Provider", 1001);
 			break;
-		}		
-		return new Refund($oDB, $oTxt, $oTI, $obj_PSP, $RS["EXTID"], &$oCI);
+		}
+		return new Refund($oDB, $oTxt, $oTI, $obj_PSP, $RS["EXTID"], $oCI);
 	}
 	
 	/**
@@ -174,7 +174,7 @@ class Refund extends General
 					FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
 					INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid AND Msg.enabled = '1'
 					WHERE Txn.id = ". intval($this->_obj_TxnInfo->getID() ) ." AND Txn.clientid = ". intval($this->_obj_TxnInfo->getClientConfig()->getID() ) ."
-						AND Msg.stateid = ". Constants::iPAYMENT_CAPTURED_STATE ."";
+						AND Msg.stateid = ". Constants::iPAYMENT_CAPTURED_STATE;
 		//			echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 		
@@ -196,7 +196,7 @@ class Refund extends General
 			$sType = "ANNUL";
 			if ($RS["ENABLED"] === true) { $sType = "CREDIT"; }
 			
-			$code = $this->_obj_PSP->refund($this->_sPSPID, $amt, &$this->_obj_ConnInfo,  $obj_PSPConfig->getMerchantAccount(), $sType);
+			$code = $this->_obj_PSP->refund($this->_sPSPID, $amt, $this->_obj_ConnInfo,  $obj_PSPConfig->getMerchantAccount(), $sType);
 			break;
 		default:	// Unkown Payment Service Provider
 			throw new RefundException("Unkown Payment Service Provider", 1001);
@@ -210,7 +210,7 @@ class Refund extends General
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
 			$aArgs = array("amount" => $amt);
-			$this->_obj_TxnInfo = TxnInfo::produceInfo($this->_obj_TxnInfo, $aArgs);
+			$this->_obj_TxnInfo = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->_obj_TxnInfo, $aArgs);
 		}
 		return $code;
 	}

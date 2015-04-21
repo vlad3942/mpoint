@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../inc/testinclude.php';
 
-abstract class CaptureAPITest extends mPointBaseAPITest
+abstract class RefundAPITest extends mPointBaseAPITest
 {
     protected $_aMPOINT_CONN_INFO;
 
@@ -14,28 +14,31 @@ abstract class CaptureAPITest extends mPointBaseAPITest
     public function constHTTPClient()
     {
         global $aMPOINT_CONN_INFO;
-        $aMPOINT_CONN_INFO['path'] = "/buy/capture.php";
+        $aMPOINT_CONN_INFO['path'] = "/buy/refund.php";
         $aMPOINT_CONN_INFO["contenttype"] = "application/x-www-form-urlencoded";
         $this->_aMPOINT_CONN_INFO = $aMPOINT_CONN_INFO;
         $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
     }
 
-    protected function testSuccessfulCapture($pspID)
+    protected function testSuccessfulRefund($pspID)
     {
         $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
-        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name) VALUES (113, 1, 100, 'Test Client')");
-        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'test', 'testtest')");
+		$this->queryDB("INSERT INTO Admin.User_Tbl (id, countryid, firstname, lastname, email, username, passwd) VALUES (1, 100, 'Test', 'TestTest', 'test@cellpointmobile.com', 'test', 'testtest')");
+		$this->queryDB("INSERT INTO Admin.Access_Tbl (id, clientid, userid) VALUES (1, 113, 1)");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
         $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 113, $pspID, '1')");
         $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (113, 17, $pspID)"); //Mobilepay
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid) VALUES (1001001, 100, 113, 1100, 100, $pspID, '1512', '1513-005', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid) VALUES (1001001, 100, 113, 1100, 100, $pspID, '1515', '1513-005', '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
+        $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_CAPTURED_STATE. ")");
 
         $this->_httpClient->connect();
 
-        $iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'clientid=113&account=1100&mpointid=1001001&orderid=1513-005&amount=5000');
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'username=test&password=testtest&clientid=113&account=1100&mpointid=1001001&orderid=1513-005&amount=5000');
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(200, $iStatus);
@@ -50,7 +53,7 @@ abstract class CaptureAPITest extends mPointBaseAPITest
             $aStates[] = $row["stateid"];
         }
 
-        $this->assertTrue(is_int(array_search(Constants::iPAYMENT_CAPTURED_STATE, $aStates) ) );
+        $this->assertTrue(is_int(array_search(Constants::iPAYMENT_REFUNDED_STATE, $aStates) ) );
     }
 
 }
