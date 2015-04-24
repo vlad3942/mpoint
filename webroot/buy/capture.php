@@ -77,7 +77,8 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 		{
 			try
 			{
-				$obj_mPoint = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+				$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
+				$obj_mPoint = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 				$code = $obj_mPoint->capture( (integer)$_REQUEST['amount']);
 
 				// Capture operation succeeded
@@ -101,6 +102,13 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 								  "amount" => $_REQUEST['amount']);
 					$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args);
 				}
+			}
+			catch (BadMethodCallException $e)
+			{
+				header("HTTP/1.0 405 Method Not Allowed");
+
+				$aMsgCds[997] = "Capture not supported by PSP";
+				trigger_error("Capture not supported by PSP" ."\n". var_export($e, true), E_USER_WARNING);
 			}
 			catch (HTTPException $e)
 			{

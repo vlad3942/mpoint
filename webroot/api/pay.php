@@ -187,7 +187,7 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 				case (Constants::iDIBS_PSP):
 					break;
 				case (Constants::iWORLDPAY_PSP):
-					$obj_mPoint = new WorldPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+					$obj_mPoint = new WorldPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["worldpay"]);
 					
 					if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["worldpay"]["host"] = str_replace("secure.", "secure-test.", $aHTTP_CONN_INFO["worldpay"]["host"]); }
 					$aLogin = $obj_mPoint->getMerchantLogin($obj_ClientConfig->getID(), Constants::iWORLDPAY_PSP);

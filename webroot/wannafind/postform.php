@@ -35,7 +35,7 @@ $obj_XML = $obj_XML->xpath("item[@id = ". $_REQUEST['cardid'] ." and @pspid = 7]
 $obj_XML = $obj_XML[0];
 
 // Instantiate main mPoint object for handling the component's functionality
-$obj_mPoint = new WannaFind($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
+$obj_mPoint = new WannaFind($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["wannafind"]);
 
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA'], $_SESSION['obj_TxnInfo']) .'/wannafind/postform.xsl"?>';

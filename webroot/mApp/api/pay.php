@@ -134,7 +134,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								switch ($obj_PSPConfig->getID() )
 								{
 								case (Constants::iDIBS_PSP):
-									$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $oTI);
+									$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO['dibs']);
 
 									$aHTTP_CONN_INFO["dibs"]["path"] = str_replace("{account}", $obj_PSPConfig->getMerchantAccount(), $aHTTP_CONN_INFO["dibs"]["path"]);
 									$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["dibs"]);
@@ -155,7 +155,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									}
 									break;
 								case (Constants::iWORLDPAY_PSP):
-									$obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $oTI);
+									$obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["worldpay"]);
 									$storecard = (strcasecmp($obj_DOM->pay[$i]->transaction["store-card"], "true") == 0 );
 										
 									if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["worldpay"]["host"] = str_replace("secure.", "secure-test.", $aHTTP_CONN_INFO["worldpay"]["host"]); }
@@ -169,7 +169,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 									break;
 								case (Constants::iPAYEX_PSP):
-									$obj_PSP = new PayEx($_OBJ_DB, $_OBJ_TXT, $oTI);
+									$obj_PSP = new PayEx($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["payex"]);
 
 									if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["payex"]["host"] = str_replace("external.", "test-external.", $aHTTP_CONN_INFO["payex"]["host"]); }
 									$aHTTP_CONN_INFO["payex"]["username"] = $obj_PSPConfig->getUsername();
@@ -194,7 +194,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								case (Constants::iWANNAFIND_PSP):
 									break;
 								case (Constants::iNETAXEPT_PSP):
-									$obj_PSP = new NetAxept($_OBJ_DB, $_OBJ_TXT, $oTI);
+									$obj_PSP = new NetAxept($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["netaxept"]);
 
 									if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["netaxept"]["host"] = str_replace("epayment.", "epayment-test.", $aHTTP_CONN_INFO["netaxept"]["host"]); }
 									$aHTTP_CONN_INFO["netaxept"]["username"] = $obj_PSPConfig->getUsername();
@@ -216,7 +216,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									}
 									break;
 								case (Constants::iSTRIPE_PSP):
-									$obj_PSP = new Stripe_PSP($_OBJ_DB, $_OBJ_TXT, $oTI);
+									$obj_PSP = new Stripe_PSP($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["stripe"]);
 									$aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iSTRIPE_PSP, false);
 									$storecard = (strcasecmp($obj_DOM->pay[$i]->transaction["store-card"], "true") == 0 );
 									$code =	$obj_PSP->auth( $obj_DOM->pay[$i]->transaction->card[$j]->{'apple-pay-token'}, $aLogin["password"], (integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $storecard);
@@ -235,7 +235,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									}
 									break;
 								case (Constants::iMOBILEPAY_PSP):
-									$obj_PSP = new MobilePay($_OBJ_DB, $_OBJ_TXT, $oTI);
+									$obj_PSP = new MobilePay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["mobilepay"]);
 									$obj_XML = $obj_PSP->initialize($obj_PSPConfig);
 									foreach ($obj_XML->children() as $obj_Elem)
 									{

@@ -16,8 +16,17 @@
  * Model Class containing all the Business Logic for handling interaction with NetAxept
  *
  */
-class NetAxept extends Callback implements Captureable
+class NetAxept extends Callback implements Captureable, Refundable
 {
+
+	public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $oPSPConfig = null)
+	{
+		parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $oPSPConfig);
+
+		if ($oTI->getMode() > 0) { $this->aCONN_INFO["host"] = str_replace("epayment.", "epayment-test.", $this->aCONN_INFO["host"]); }
+		$this->aCONN_INFO["username"] = $this->getPSPConfig()->getUsername();
+		$this->aCONN_INFO["password"] = $this->getPSPConfig()->getPassword();
+	}
 
 	/**
 	 * Initialize an transaction with NetAxept.
@@ -244,21 +253,14 @@ class NetAxept extends Callback implements Captureable
 	 */
 	public function capture($iAmount = -1)
 	{
-		global $aHTTP_CONN_INFO;
-
 		$obj_PSPConfig = $this->getPSPConfig();
 		$obj_TxnInfo = $this->getTxnInfo();
 		$transactionID = $obj_TxnInfo->getExternalID();
 		$merchant = $obj_PSPConfig->getMerchantAccount();
 		if ($iAmount == -1) { $this->getTxnInfo()->getAmount(); }
 
-		// TODO: Move Conninfo produce to PSP class constructor and remove duplicated code from callers
-		if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["netaxept"]["host"] = str_replace("epayment.", "epayment-test.", $aHTTP_CONN_INFO["netaxept"]["host"]); }
-		$aHTTP_CONN_INFO["netaxept"]["username"] = $obj_PSPConfig->getUsername();
-		$aHTTP_CONN_INFO["netaxept"]["password"] = $obj_PSPConfig->getPassword();
-		$oCI = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["netaxept"]);
-
-		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );
+		$oCI = HTTPConnInfo::produceConnInfo($this->aCONN_INFO);
+		$obj_SOAP = new SOAPClient($this->aCONN_INFO["protocol"] ."://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true, 'encoding' => 'UTF-8', 'cache_wsdl' => WSDL_CACHE_NONE) );
 
 		$aParams = array("merchantId" => $merchant,
 						 "token" => $oCI->getPassword(),
@@ -268,6 +270,7 @@ class NetAxept extends Callback implements Captureable
 		try
 		{
 			$obj_Std = $obj_SOAP->Process($aParams);
+
 			if ($obj_Std->ProcessResult->ResponseCode == 'OK')
 			{
 				$data = array("psp-id" => Constants::iNETAXEPT_PSP,
@@ -275,15 +278,18 @@ class NetAxept extends Callback implements Captureable
 							  "response" => var_export($obj_Std, true) );
 
 				$queryResponse = $this->query($oCI, $merchant, $transactionID);
+				trigger_error(print_r($queryResponse, true));
 
 				$this->completeCapture($iAmount ,intval($queryResponse->Summary->AmountCaptured) - intval($iAmount), $data);
-				return 0;
+				return 1000;
 			}
 
 			return $obj_Std->ProcessResult->ResponseCode;
 		}
 		catch (Exception $e)
 		{
+			$this->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, var_export($e, true) );
+			trigger_error("Netaxept capture failed with exception: ". $e->getMessage() ." (". $e->getCode() .")\n". $e->getTraceAsString(), E_USER_ERROR);
 			/*
 			if ($e->detail->BBSException->Result->ResponseCode != NULL)
 			{
@@ -313,7 +319,7 @@ class NetAxept extends Callback implements Captureable
 	public function query(HTTPConnInfo &$oCI, $merchant,$transactionID)
 	{
 
-		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );
+		$obj_SOAP = new SOAPClient($this->aCONN_INFO["protocol"]. '://'. $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );
 		$aParams = array("merchantId" => $merchant, 
 						 "token" => $oCI->getPassword(), 
 						 "request" => array("TransactionId" => $transactionID ) );
@@ -501,28 +507,28 @@ class NetAxept extends Callback implements Captureable
 	 * -1.Will also return the error message provided by NetAxept
 	 * @link	http://www.betalingsterminal.no/Netthandel-forside/Teknisk-veiledning/Response-codes/
 	 *
-	 * @param integer		$transactionID	ID previously returned by NetAxept during authorisation
-	 * @param integer		$amount			full amount that needed to be refunded
-	 * @param HTTPConnInfo	$oCI			on how to connect to NetAxept
-	 * @param integer 		$merchant		merchant ID to identify us to NetAxept
-	 * @param String  		$sType			If the amount should be refunded or released 
-	 * 
+	 * @param integer		$iAmount			full amount that needed to be refunded
+	 *
 	 * @throws E_USER_WARNING
 	 * 
 	 * @return	integer 
 	 */
-	public function refund($transactionID, $amount, HTTPConnInfo &$oCI, $merchant, $sType) 
+	public function refund($iAmount = -1)
 	{
-		$obj_SOAP = new SOAPClient("https://" . $oCI->getHost () . $oCI->getPath (), 
+		$extID = $this->getTxnInfo()->getExternalID();
+		if ($iAmount == -1) { $this->getTxnInfo()->getAmount(); }
+		$oCI = HTTPConnInfo::produceConnInfo($this->aCONN_INFO);
+
+		$obj_SOAP = new SOAPClient($this->aCONN_INFO["protocol"] ."://". $oCI->getHost () . $oCI->getPath (),
 									array("trace" => true,
 										  "exceptions" => true ) );
 
-		$aParams = array("merchantId" => $merchant,
+		$aParams = array("merchantId" => $this->getPSPConfig()->getMerchantAccount(),
 						 "token" => $oCI->getPassword (),
 						 "request" => array (
-						 "Operation" => $sType,
-						 "TransactionId" => $transactionID,
-						 "transactionAmount" => $amount) );
+						 "Operation" => "CREDIT",
+						 "TransactionId" => $extID,
+						 "transactionAmount" => $iAmount) );
 		try 
 		{
 			$obj_Std = $obj_SOAP->Process ($aParams);
@@ -541,7 +547,7 @@ class NetAxept extends Callback implements Captureable
 		}
 		catch (SoapFault $e) 
 		{	
-			trigger_error("Transaction: ". $this->getTxnInfo()->getID() ."(". $transactionID .") Could not be  Refunded, NetAxept returned : ". $e->getMessage(), E_USER_WARNING);
+			trigger_error("Transaction: ". $this->getTxnInfo()->getID() ."(". $extID .") Could not be  Refunded, NetAxept returned : ". $e->getMessage(), E_USER_WARNING);
 			return -1;
 		}
 	}

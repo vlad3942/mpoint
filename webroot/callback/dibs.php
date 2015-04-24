@@ -59,7 +59,7 @@ try
 		$aTxnInfo = array("client-config" => ClientConfig::produceConfig($_OBJ_DB, $_POST['clientid'], -1) );
 		$obj_TxnInfo = TxnInfo::produceInfo($_POST['mpointid'], $obj_TxnInfo, $aTxnInfo);
 	}
-	$obj_mPoint = new DIBS($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+	$obj_mPoint = new DIBS($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['dibs']);
 
 	// Save Ticket ID representing the End-User's stored Card Info
 	if (array_key_exists("preauth", $_POST) === true && @$_POST['preauth'] == "true")

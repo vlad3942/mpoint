@@ -33,8 +33,6 @@ class MobilePay extends CPMPSP
 
 	public function auth($ticket, $apiKey, $cardID, $storecard)  { /* no operation */ }
 
-	public function refund($txn, $amount, $apiKey)  { /* TODO */ }
-
 	public function initCallback(HTTPConnInfo &$oCI, $cardid, $txnid, $cardno, $expiry) { /* no operation */ }
 
 	protected function getConnectionInfo()

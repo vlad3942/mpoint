@@ -83,24 +83,9 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			{	
 				try
 				{
-					switch ($obj_TxnInfo->getPSPID() )
-					{
-					case (Constants::iSTRIPE_PSP):
-					case (Constants::iDIBS_PSP):	// DIBS
-						$obj_mPoint = Refund::produce($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-						break;
-					case (Constants::iNETAXEPT_PSP):	// NetAxept
-						$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETAXEPT_PSP);
-						if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["netaxept"]["host"] = str_replace("epayment.", "epayment-test.", $aHTTP_CONN_INFO["netaxept"]["host"]); }
-						$aHTTP_CONN_INFO["netaxept"]["username"] = $obj_PSPConfig->getUsername();
-						$aHTTP_CONN_INFO["netaxept"]["password"] = $obj_PSPConfig->getPassword();
-						$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["netaxept"]);
-						
-						$obj_mPoint = Refund::produce($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_ConnInfo);
-						break;
-					default:	// Unkown Payment Service Provider
-						break;
-					}
+					$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
+					$obj_mPoint = new Refund($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
+
 					$aClientIDs = $obj_mPoint->getClientsForUser($iUserID);
 					// User has access to Client
 					if (in_array($obj_ClientConfig->getID(), $aClientIDs) === true)
@@ -112,7 +97,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 							header("HTTP/1.0 200 OK");
 							
 							$aMsgCds[1000] = "Success";
-							$args = array("transact" => $obj_mPoint->getPSPID(),
+							$args = array("transact" => $obj_TxnInfo->getExternalID(),
 										  "amount" => $_REQUEST['amount']);
 							$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
 						}

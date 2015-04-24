@@ -42,7 +42,7 @@ try
 
 	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 
-	$obj_mPoint = new NetAxept($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+	$obj_mPoint = new NetAxept($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["netaxept"]);
 
 	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETAXEPT_PSP);
 	$aHTTP_CONN_INFO["netaxept"]["username"] = $obj_PSPConfig->getUsername();

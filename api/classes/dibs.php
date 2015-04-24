@@ -16,16 +16,8 @@
  * Model Class containing all the Business Logic for handling Callback requests from DIBS.
  *
  */
-class DIBS extends Callback implements Captureable
+class DIBS extends Callback implements Captureable, Refundable
 {
-	private $_aDIBS_CONN_INFO;
-
-	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI)
-	{
-		parent::__construct($oDB, $oTxt, $oTI);
-		global $aHTTP_CONN_INFO;
-		$this->_aDIBS_CONN_INFO = $aHTTP_CONN_INFO["dibs"];
-	}
 
 	/**
 	 * Notifies the Client of the Payment Status by performing a callback via HTTP.
@@ -128,7 +120,7 @@ class DIBS extends Callback implements Captureable
 		if ($this->getTxnInfo()->getClientConfig()->getMode() > 0) { $b .= "&test=". $this->getTxnInfo()->getClientConfig()->getMode(); }
 		$b .= "&textreply=true";
 
-		$aConnInfo = $this->_aDIBS_CONN_INFO;
+		$aConnInfo = $this->aCONN_INFO;
 		$aConnInfo["path"] = $aConnInfo["paths"]["auth"];
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aConnInfo);
 		$obj_HTTP = parent::send($obj_ConnInfo, $this->constHTTPHeaders(), $b);
@@ -172,22 +164,22 @@ class DIBS extends Callback implements Captureable
 	 */
 	public function capture($iAmount = -1)
 	{
-		$txn = $this->getTxnInfo()->getExternalID();
+		$extID = $this->getTxnInfo()->getExternalID();
 		if ($iAmount == -1) { $this->getTxnInfo()->getAmount(); }
 
-		$code = $this->status($txn);
+		$code = $this->status($extID);
 		// Transaction ready for Capture
 		if ($code == 2)
 		{
 			$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
 			$b .= "&mpointid=". $this->getTxnInfo()->getID();
-			$b .= "&transact=". $txn;
+			$b .= "&transact=". $extID;
 			$b .= "&amount=". $iAmount;
 			$b .= "&orderid=". urlencode($this->getTxnInfo()->getOrderID() );
 			if ($this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP) > -1) { $b .= "&account=". $this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP); }
 			$b .= "&textreply=true";
 
-			$aConnInfo = $this->_aDIBS_CONN_INFO;
+			$aConnInfo = $this->aCONN_INFO;
 			$aConnInfo["path"] = $aConnInfo["paths"]["capture"];
 			$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aConnInfo);
 
@@ -201,7 +193,7 @@ class DIBS extends Callback implements Captureable
 				if (array_key_exists("result", $aStatus) === false || $aStatus["result"] > 0)
 				{
 					$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_DECLINED_STATE, var_export($aStatus, true) );
-					trigger_error("Capture declined by DIBS for Transaction: ". $this->getTxnInfo()->getID() ."(". $txn ."), Result Code: ". @$aStatus["result"], E_USER_WARNING);
+					trigger_error("Capture declined by DIBS for Transaction: ". $this->getTxnInfo()->getID() ."(". $extID ."), Result Code: ". @$aStatus["result"], E_USER_WARNING);
 					
 					return $aStatus["result"];
 				}
@@ -216,7 +208,7 @@ class DIBS extends Callback implements Captureable
 			}
 			else
 			{
-				trigger_error("Capture declined by DIBS for Transaction: ". $this->getTxnInfo()->getID() ."(". $txn ."), HTTP Response Code: ". $obj_HTTP->getReturnCode(), E_USER_WARNING);
+				trigger_error("Capture declined by DIBS for Transaction: ". $this->getTxnInfo()->getID() ."(". $extID ."), HTTP Response Code: ". $obj_HTTP->getReturnCode(), E_USER_WARNING);
 				
 				return 20;
 			}
@@ -230,7 +222,7 @@ class DIBS extends Callback implements Captureable
 		}
 		else
 		{
-			trigger_error("Transaction: ". $this->getTxnInfo()->getID() ."(". $txn .") not ready for Capture, DIBS returned code: ". $code, E_USER_WARNING);
+			trigger_error("Transaction: ". $this->getTxnInfo()->getID() ."(". $extID .") not ready for Capture, DIBS returned code: ". $code, E_USER_WARNING);
 			
 			return $code;
 		}
@@ -257,16 +249,18 @@ class DIBS extends Callback implements Captureable
 	 * 
 	 * @link	http://tech.dibs.dk/toolbox/dibs-error-codes/
 	 * 
-	 * @param 	integer $txn	Transaction ID previously returned by DIBS during authorisation
 	 * @param 	integer $amount	full amount that needed to be refunded
 	 * @return	integer
 	 * @throws	E_USER_WARNING
 	 */
-	public function refund($txn, $amount)
+	public function refund($amount = -1)
 	{
-		$code = $this->status($txn);
+		$extID = $this->getTxnInfo()->getExternalID();
+		if ($amount == -1) { $this->getTxnInfo()->getAmount(); }
 
-		$aConnInfo = $this->_aDIBS_CONN_INFO;
+		$aConnInfo = $this->aCONN_INFO;
+
+		$code = $this->status($extID);
 
 		//Set the api type depending on the return value that is returned from DIBS
 		switch ($code)
@@ -284,7 +278,7 @@ class DIBS extends Callback implements Captureable
 		{
 			$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
 			$b .= "&mpointid=". $this->getTxnInfo()->getID();
-			$b .= "&transact=". $txn;
+			$b .= "&transact=". $extID;
 			$b .= "&amount=". $amount;
 			$b .= "&orderid=". urlencode($this->getTxnInfo()->getOrderID() );
 			if ($this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP) > -1) { $b .= "&account=". $this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP); }
@@ -303,7 +297,7 @@ class DIBS extends Callback implements Captureable
 				{
 					if (array_key_exists("result", $aStatus) === false) { $str = var_export($aStatus, true); }
 					else { $str = "Result Code: ". $aStatus["result"]; }
-					trigger_error("Refund declined by DIBS for Transaction: ". $this->getTxnInfo()->getID() ."(". $txn ."), ". $str, E_USER_WARNING);
+					trigger_error("Refund declined by DIBS for Transaction: ". $this->getTxnInfo()->getID() ."(". $extID ."), ". $str, E_USER_WARNING);
 					
 					return $aStatus["result"];
 				}
@@ -317,7 +311,7 @@ class DIBS extends Callback implements Captureable
 			}
 			else
 			{
-				trigger_error("Refund declined by DIBS for Transaction: ". $this->getTxnInfo()->getID() ."(". $txn ."), HTTP Response Code: ". $obj_HTTP->getReturnCode(), E_USER_WARNING);
+				trigger_error("Refund declined by DIBS for Transaction: ". $this->getTxnInfo()->getID() ."(". $extID ."), HTTP Response Code: ". $obj_HTTP->getReturnCode(), E_USER_WARNING);
 				
 				return 20;
 			}
@@ -331,7 +325,7 @@ class DIBS extends Callback implements Captureable
 		}
 		else
 		{
-			trigger_error("Transaction: ". $this->getTxnInfo()->getID() ."(". $txn .") not ready for Refund, DIBS returned code: ". $code, E_USER_WARNING);
+			trigger_error("Transaction: ". $this->getTxnInfo()->getID() ."(". $extID .") not ready for Refund, DIBS returned code: ". $code, E_USER_WARNING);
 			
 			return $code;
 		}
@@ -372,7 +366,7 @@ class DIBS extends Callback implements Captureable
 		$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
 		$b .= "&transact=". $txn;
 
-		$aConnInfo = $this->_aDIBS_CONN_INFO;
+		$aConnInfo = $this->aCONN_INFO;
 		$aConnInfo["path"] = $aConnInfo["paths"]["status"];
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aConnInfo);
 

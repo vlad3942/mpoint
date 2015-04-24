@@ -1418,7 +1418,7 @@ msgstr @@@ Save Card Info @@@
 msgid @@@ Complete Payment @@@
 msgstr @@@ Complete Payment @@@
 
-#: /api/classes/callback.php:86
+#: /api/classes/callback.php:94
 msgid @@@ mPoint - SMS Receipt @@@
 msgstr @@@ Thank you for using mPoint, your order details are:
 mPoint ID: {MPOINTID}

@@ -123,7 +123,7 @@ if (count($aMsgCds) == 0)
 				{
 				case (Constants::iDIBS_PSP):	// DIBS
 					// Authorise payment with PSP based on Ticket
-					$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
+					$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO['dibs']);
 					$iTxnID = $obj_PSP->authTicket( (integer) $obj_XML->ticket);
 					// Authorization succeeded
 					if ($iTxnID > 0)
@@ -141,7 +141,7 @@ if (count($aMsgCds) == 0)
 					break;
 				case (Constants::iWANNAFIND_PSP):	// WannaFind
 					// Authorise payment with PSP based on Ticket
-					$obj_PSP = new WannaFind($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
+					$obj_PSP = new WannaFind($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["wannafind"]);
 					$iTxnID = $obj_PSP->authTicket( (integer) $obj_XML->ticket);
 					// Authorization succeeded
 					if ($iTxnID > 0)
@@ -159,7 +159,7 @@ if (count($aMsgCds) == 0)
 					break;
 				case (Constants::iWORLDPAY_PSP):	// WorldPay
 					// Authorise payment with PSP based on Ticket
-					$obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
+					$obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["worldpay"]);
 					if ($_SESSION['obj_TxnInfo']->getMode() > 0) { $aHTTP_CONN_INFO["worldpay"]["host"] = str_replace("secure.", "secure-test.", $aHTTP_CONN_INFO["worldpay"]["host"]); }
 					$aLogin = $obj_PSP->getMerchantLogin($_SESSION['obj_TxnInfo']->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, true);
 					$aHTTP_CONN_INFO["worldpay"]["username"] = $aLogin["username"];

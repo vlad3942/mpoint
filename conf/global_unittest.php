@@ -51,7 +51,7 @@ $aHTTP_CONN_INFO["netaxept"]["protocol"] = "http";
 $aHTTP_CONN_INFO["netaxept"]["host"] = "mpoint.local.cellpointmobile.com";
 $aHTTP_CONN_INFO["netaxept"]["port"] = 80;
 $aHTTP_CONN_INFO["netaxept"]["timeout"] = 120;
-$aHTTP_CONN_INFO["netaxept"]["path"] = "/capture.php";
+$aHTTP_CONN_INFO["netaxept"]["path"] = "/_test/simulators/netaxept/netaxept.php?wsdl";
 $aHTTP_CONN_INFO["netaxept"]["method"] = "POST";
 $aHTTP_CONN_INFO["netaxept"]["contenttype"] = "application/x-www-form-urlencoded";
 ?>

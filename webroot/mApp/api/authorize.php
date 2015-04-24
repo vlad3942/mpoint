@@ -209,7 +209,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											switch (intval($obj_Elem["pspid"]) )
 											{
 											case (Constants::iSTRIPE_PSP):
-												$obj_PSP = new Stripe_PSP($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
+												$obj_PSP = new Stripe_PSP($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["stripe"]);
 												$aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iSTRIPE_PSP, true);
 												
 												$code =	$obj_PSP->authTicket( (integer) $obj_Elem->ticket, $aaLogin["password"]);
@@ -230,7 +230,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												break;
 											case (Constants::iWORLDPAY_PSP):
 												// Authorise payment with PSP based on Ticket
-												$obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
+												$obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["worldpay"]);
 												if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["worldpay"]["host"] = str_replace("secure.", "secure-test.", $aHTTP_CONN_INFO["worldpay"]["host"]); }
 												$aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, true);
 												$aHTTP_CONN_INFO["worldpay"]["username"] = $aLogin["username"];
@@ -265,7 +265,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												break;
 											case (Constants::iDIBS_PSP):	// DIBS
 												// Authorise payment with PSP based on Ticket
-												$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+												$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['dibs']);
 												$iTxnID = $obj_PSP->authTicket( (integer) $obj_Elem->ticket);
 												// Authorization succeeded
 												if ($iTxnID > 0)
@@ -292,7 +292,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												break;
 											case (Constants::iWANNAFIND_PSP):	// WannaFind
 												// Authorise payment with PSP based on Ticket
-												$obj_PSP = new WannaFind($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+												$obj_PSP = new WannaFind($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["wannafind"]);
 												$iTxnID = $obj_PSP->authTicket( (integer) $obj_Elem->ticket);
 												// Authorization succeeded
 												if ($iTxnID > 0)
@@ -318,7 +318,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												}
 												break;
 											case (Constants::iNETAXEPT_PSP): // NetAxept
-												$obj_PSP = new NetAxept($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+												$obj_PSP = new NetAxept($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["netaxept"]);
 												$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETAXEPT_PSP);
 
 												if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["netaxept"]["host"] = str_replace("epayment.", "epayment-test.", $aHTTP_CONN_INFO["netaxept"]["host"]); }
@@ -343,7 +343,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												}
 												break;
 											case (Constants::iCPG_PSP):
-												$obj_PSP = new CPG($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+												$obj_PSP = new CPG($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["cpg"]);
 												$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCPG_PSP);
 
 												$aHTTP_CONN_INFO["cpg"]["username"] = $obj_PSPConfig->getUsername();

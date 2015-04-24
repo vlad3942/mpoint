@@ -42,34 +42,17 @@ class Capture extends General
 	/**
 	 * Default Constructor.
 	 *
-	 * @param	RDB $oDB				Reference to the Database Object that holds the active connection to the mPoint Database
-	 * @param	TranslateText $oTxt 	Text Translation Object for translating any text into a specific language
-	 * @param 	TxnInfo $oTI 			Data object with the Transaction Information
+	 * @param    RDB $oDB Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param    TranslateText $oTxt Text Translation Object for translating any text into a specific language
+	 * @param    TxnInfo $oTI Data object with the Transaction Information
+	 * @param	 Callback $oPSP
 	 */
-	public function __construct(RDB &$oDB, TranslateText &$oTxt, TxnInfo &$oTI)
+	public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, Callback $oPSP)
 	{
 		parent::__construct($oDB, $oTxt, $oTI->getClientConfig() );
 
 		$this->_obj_TxnInfo = $oTI;
-
-		switch ($oTI->getPSPID() )
-		{
-		case (Constants::iDIBS_PSP):	// DIBS
-			$this->_obj_PSP = new DIBS($this->getDBConn(), $this->getText(), $this->getTxnInfo() );
-			break;
-		case (Constants::iWANNAFIND_PSP):// WannaFind
-			$this->_obj_PSP = new WannaFind($this->getDBConn(), $this->getText(), $this->getTxnInfo() );
-			break;
-		case (Constants::iNETAXEPT_PSP):	// Netaxept
-			$this->_obj_PSP = new NetAxept($this->getDBConn(), $this->getText(), $this->getTxnInfo() );
-			break;
-		case (Constants::iMOBILEPAY_PSP):
-			$this->_obj_PSP = new MobilePay($this->getDBConn(), $this->getText(), $this->getTxnInfo() );
-			break;
-		default:	// Unkown Payment Service Provider
-			throw new CaptureException("Unkown Payment Service Provider", 1001);
-			break;
-		}
+		$this->_obj_PSP = $oPSP;
 	}
 
 	/**
@@ -137,7 +120,7 @@ class Capture extends General
 
 			// If PSP supports the Capture operation, perform the capture
 			if ( ($this->_obj_PSP instanceof Captureable) === true) { $code = $this->_obj_PSP->capture($iAmount); }
-			else { throw new CaptureException("Capture not supported by PSP: ". get_class($this->_obj_PSP) ); }
+			else { throw new BadMethodCallException("Capture not supported by PSP: ". get_class($this->_obj_PSP) ); }
 		}
 		else { $code = 1001; }
 		// Release mutex

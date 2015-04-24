@@ -36,7 +36,7 @@ foreach ($obj_XML->children() as $obj_Elem)
 	if ($obj_Elem["pspid"] == Constants::iWORLDPAY_PSP) { $aCards[] = (integer) $obj_Elem["type-id"]; }
 }
 
-$obj_mPoint = new WorldPay($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
+$obj_mPoint = new WorldPay($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["worldpay"]);
 
 // Order already completed (likely because the customer paid with a Stored Card)
 if (strlen($_SESSION['obj_TxnInfo']->getOrderID() ) > 0 && $obj_mPoint->orderAlreadyAuthorized($_SESSION['obj_TxnInfo']->getOrderID() ) === true)

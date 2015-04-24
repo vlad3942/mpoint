@@ -33,6 +33,13 @@ class Callback extends EndUserAccount
 	private $_obj_TxnInfo;
 
 	/**
+	 * Data array with Connection Information for the specific PSP
+	 *
+	 * @var array
+	 */
+	protected $aCONN_INFO;
+
+	/**
 	 * Data object with PSP configuration Information
 	 *
 	 * @var PSPConfig
@@ -47,11 +54,12 @@ class Callback extends EndUserAccount
 	 * @param 	TxnInfo $oTI 			Data object with the Transaction Information
 	 * @param 	PSPConfig $oPSPConfig 	Configuration object with the PSP Information
 	 */
-	public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, PSPConfig $oPSPConfig = null)
+	public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $oPSPConfig = null)
 	{
 		parent::__construct($oDB, $oTxt, $oTI->getClientConfig() );
 
 		$this->_obj_TxnInfo = $oTI;
+		$this->aCONN_INFO = $aConnInfo;
 
 		if ($oPSPConfig == null) { $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $oTI->getPSPID() ); }
 		$this->_obj_PSPConfig = $oPSPConfig;
@@ -557,6 +565,24 @@ class Callback extends EndUserAccount
 		$RS = $oDB->getName($sql);
 
 		return is_array($RS) === true && intval($RS["ID"]) > 0? $RS["ID"] : -1;
+	}
+
+
+	public static function producePSP(RDB $obj_DB, TranslateText $obj_TXT, TxnInfo $obj_TxnInfo, array $aConnInfo)
+	{
+		switch ($obj_TxnInfo->getPSPID() )
+		{
+		case (Constants::iDIBS_PSP):
+			return new DIBS($obj_DB, $obj_TXT, $obj_TxnInfo, $aConnInfo["dibs"]);
+		case (Constants::iWANNAFIND_PSP):
+			return new WannaFind($obj_DB, $obj_TXT, $obj_TxnInfo, $aConnInfo["wannafind"]);
+		case (Constants::iNETAXEPT_PSP):
+			return new NetAxept($obj_DB, $obj_TXT, $obj_TxnInfo, $aConnInfo["netaxept"]);
+		case (Constants::iMOBILEPAY_PSP):
+			return new MobilePay($obj_DB, $obj_TXT, $obj_TxnInfo, $aConnInfo["mobilepay"]);
+		default:
+			throw new CallbackException("Unkown Payment Service Provider", 1001);
+		}
 	}
 }
 ?>

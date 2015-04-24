@@ -41,7 +41,7 @@ case "OK":
 	$aHTTP_CONN_INFO["netaxept"]["password"] = $obj_PSPConfig->getPassword();
 	$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["netaxept"]);
 
-	$obj_mPoint = new NetAxept($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+	$obj_mPoint = new NetAxept($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["netaxept"]);
 
 	$responseCode = $obj_mPoint->auth($obj_ConnInfo, $obj_PSPConfig->getMerchantAccount(), $_GET['transactionId']);
 

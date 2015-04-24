@@ -46,7 +46,7 @@ try
 		$aTxnInfo = array("client_config" => ClientConfig::produceConfig($_OBJ_DB, $_REQUEST['clientid'], -1) );
 		$obj_TxnInfo = TxnInfo::produceInfo($_REQUEST['mpoint-id'], $obj_TxnInfo, $aTxnInfo);
 	}
-	$obj_mPoint = new WannaFind($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+	$obj_mPoint = new WannaFind($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["wannafind"]);
 
 	// Save Ticket ID representing the End-User's stored Card Info
 	if ($_REQUEST['actioncode'] == 0 && $_REQUEST['authtype'] == "subscribe")

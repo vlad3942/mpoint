@@ -62,7 +62,7 @@ if ($obj_TxnInfo instanceof TxnInfo === true)
 	switch (true)
 	{
 	case (in_array(strtoupper($obj_MsgInfo->getBody() ), $aACCEPT_WORDS) ):	// Payment Accepted by End-User
-		$obj_PSP = new CellpointMobile($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+		$obj_PSP = new CellpointMobile($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, array() );
 		// End-User has an account
 		if ($obj_TxnInfo->getAccountID() > 0)
 		{
@@ -95,7 +95,7 @@ if ($obj_TxnInfo instanceof TxnInfo === true)
 						{
 						case (Constants::iDIBS_PSP):	// DIBS
 							// Authorise payment with PSP based on Ticket
-							$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+							$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['dibs']);
 							$mExternalID = $obj_PSP->authTicket( (integer) $aObj_XML[$i]->ticket);
 							// Payment successfully authorised
 							if ($mExternalID > 0)
@@ -141,7 +141,7 @@ if ($obj_TxnInfo instanceof TxnInfo === true)
 						{
 						case (Constants::iDIBS_PSP):	// DIBS
 							// Authorise payment with PSP based on Ticket
-							$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $oTI);
+							$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO['dibs']);
 							$mExternalID = $obj_PSP->authTicket( (integer) $aObj_XML[$i]->ticket);
 							// Payment successfully authorised
 							if ($mExternalID > 0)
