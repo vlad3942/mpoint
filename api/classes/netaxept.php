@@ -260,7 +260,9 @@ class NetAxept extends Callback implements Captureable, Refundable
 		if ($iAmount == -1) { $this->getTxnInfo()->getAmount(); }
 
 		$oCI = HTTPConnInfo::produceConnInfo($this->aCONN_INFO);
-		$obj_SOAP = new SOAPClient($this->aCONN_INFO["protocol"] ."://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true, 'encoding' => 'UTF-8', 'cache_wsdl' => WSDL_CACHE_NONE) );
+		// Error suppression here to avoid warnings triggered by buggy ssl implementation affecting some older PHP versions
+		// fatal errors, like connection or parsing errors while reading WSDL files will yield exceptions and thus error suppression has no effect on this
+		$obj_SOAP = @new SOAPClient($this->aCONN_INFO["protocol"] ."://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true, 'encoding' => 'UTF-8', 'cache_wsdl' => WSDL_CACHE_NONE) );
 
 		$aParams = array("merchantId" => $merchant,
 						 "token" => $oCI->getPassword(),
@@ -278,7 +280,6 @@ class NetAxept extends Callback implements Captureable, Refundable
 							  "response" => var_export($obj_Std, true) );
 
 				$queryResponse = $this->query($oCI, $merchant, $transactionID);
-				trigger_error(print_r($queryResponse, true));
 
 				$this->completeCapture($iAmount ,intval($queryResponse->Summary->AmountCaptured) - intval($iAmount), $data);
 				return 1000;
@@ -318,8 +319,9 @@ class NetAxept extends Callback implements Captureable, Refundable
 	 */
 	public function query(HTTPConnInfo &$oCI, $merchant,$transactionID)
 	{
-
-		$obj_SOAP = new SOAPClient($this->aCONN_INFO["protocol"]. '://'. $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );
+		// Error suppression here to avoid warnings triggered by buggy ssl implementation affecting some older PHP versions
+		// fatal errors, like connection or parsing errors while reading WSDL files will yield exceptions and thus error suppression has no effect on this
+		$obj_SOAP = @new SOAPClient($this->aCONN_INFO["protocol"]. '://'. $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );
 		$aParams = array("merchantId" => $merchant, 
 						 "token" => $oCI->getPassword(), 
 						 "request" => array("TransactionId" => $transactionID ) );
