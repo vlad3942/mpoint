@@ -3,9 +3,9 @@
 abstract class CPMPSP extends Callback implements Captureable
 {
 
-    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI)
+    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo)
     {
-        parent::__construct($oDB, $oTxt, $oTI);
+        parent::__construct($oDB, $oTxt, $oTI, $aConnInfo);
     }
 
     /**
@@ -32,7 +32,7 @@ abstract class CPMPSP extends Callback implements Captureable
 
         try
         {
-            $aConnInfo = $this->getConnectionInfo();
+            $aConnInfo = $this->aCONN_INFO;
             $obj_ConnInfo = new HTTPConnInfo($aConnInfo["protocol"], $aConnInfo["host"], $aConnInfo["port"], $aConnInfo["timeout"], $aConnInfo["paths"]["capture"], $aConnInfo["method"], $aConnInfo["contenttype"]);
 
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
@@ -75,7 +75,7 @@ abstract class CPMPSP extends Callback implements Captureable
 		$b .= '</root>';
 
 
-		$aConnInfo = $this->getConnectionInfo();
+		$aConnInfo = $this->aCONN_INFO;
 		$obj_ConnInfo = new HTTPConnInfo($aConnInfo["protocol"], $aConnInfo["host"], $aConnInfo["port"], $aConnInfo["timeout"], $aConnInfo["paths"]["status"], $aConnInfo["method"], $aConnInfo["contenttype"]);
 
 		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
@@ -134,7 +134,4 @@ abstract class CPMPSP extends Callback implements Captureable
 		return $xml;
 	}
 	
-	
-	protected abstract function getConnectionInfo();
-
 }

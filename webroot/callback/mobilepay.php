@@ -65,7 +65,7 @@ try
 	if ( ($obj_TxnData instanceof SimpleDOMElement) === false) { throw new InvalidArgumentException("Invalid input XML format", 400); }
 
 	$obj_TxnInfo = TxnInfo::produceInfoFromOrderNo($_OBJ_DB, $obj_TxnData['order-no']);
-	$obj_PSP = new MobilePay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+	$obj_PSP = new MobilePay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["mobilepay"]);
 
 	// According to MobilePay spec, a status call should be made here to ensure that the callback request is authentic
 	$iPSPStatus = $obj_PSP->status();

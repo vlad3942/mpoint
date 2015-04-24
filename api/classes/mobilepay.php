@@ -35,9 +35,4 @@ class MobilePay extends CPMPSP
 
 	public function initCallback(HTTPConnInfo &$oCI, $cardid, $txnid, $cardno, $expiry) { /* no operation */ }
 
-	protected function getConnectionInfo()
-	{
-		global $aHTTP_CONN_INFO;
-		return $aHTTP_CONN_INFO["mobilepay"];
-	}
 }
