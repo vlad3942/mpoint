@@ -28,8 +28,12 @@ require_once(sCLASS_PATH ."/callback.php");
 require_once(sCLASS_PATH ."/dibs.php");
 // Require specific Business logic for the NetAxept component
 require_once(sCLASS_PATH ."/netaxept.php");
-// Require specific Business logic for the NetAxept component
+// Require specific Business logic for the Stripe component
 require_once(sCLASS_PATH ."/stripe.php");
+// Require specific Business logic for the CPM PSP component
+require_once(sINTERFACE_PATH ."/cpm_psp.php");
+// Require specific Business logic for the Stripe component
+require_once(sCLASS_PATH ."/mobilepay.php");
 
 header("Content-Type: application/x-www-form-urlencoded");
 
@@ -92,7 +96,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					{									
 						// Refund operation succeeded
 						$refund = $obj_mPoint->refund($_REQUEST['amount']);
-						if ($refund == 0)
+						if ($refund == 1000)
 						{
 							header("HTTP/1.0 200 OK");
 							

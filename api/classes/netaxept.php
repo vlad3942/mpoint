@@ -544,7 +544,7 @@ class NetAxept extends Callback implements Captureable, Refundable
 				
 				$this->newMessage ( $this->getTxnInfo ()->getID (), Constants::iPAYMENT_REFUNDED_STATE, serialize( $data ) );
 				
-				return 0;
+				return 1000;
 			}
 		}
 		catch (SoapFault $e) 
