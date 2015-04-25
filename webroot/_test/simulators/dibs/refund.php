@@ -13,17 +13,25 @@ $iTransact = (integer)@$_REQUEST['transact'];
 $iAmount = (integer)@$_REQUEST['amount'];
 $sOrderId = @$_REQUEST['orderid'];
 
-//if ($iMerchant > 0 && $iTransact > 0 && $iAmount > 0 && strlen($sOrderId) > 0)
-if (true)
+if (@$_SERVER['PHP_AUTH_USER'] == 'Tuser' && @$_SERVER['PHP_AUTH_PW'] == 'Tpass')
 {
-    $aParams = array_merge($_REQUEST,
-        array('result' => 0,
-             ) );
+	//if ($iMerchant > 0 && $iTransact > 0 && $iAmount > 0 && strlen($sOrderId) > 0)
+	if (true)
+	{
+		$aParams = array_merge($_REQUEST,
+			array('result' => 0,
+				 ) );
 
-    $response = http_build_query($aParams);
-    echo $response;
+		$response = http_build_query($aParams);
+		echo $response;
+	}
+	else
+	{
+		echo "result=8&status=DECLINED&reason=Wrong Parameters&message=Wrong Parameters";
+	}
 }
 else
 {
-    echo "result=8&status=DECLINED&reason=Wrong Parameters&message=Wrong Parameters";
+	header('WWW-Authenticate: Basic realm="DIBS Simulator"');
+	header('HTTP/1.0 401 Unauthorized');
 }

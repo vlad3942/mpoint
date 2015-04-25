@@ -283,11 +283,12 @@ class DIBS extends Callback implements Captureable, Refundable
 			$b .= "&orderid=". urlencode($this->getTxnInfo()->getOrderID() );
 			if ($this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP) > -1) { $b .= "&account=". $this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP); }
 			$b .= "&textreply=true";
-			$aLogin = $this->getMerchantLogin($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
 
+			$aConnInfo["username"] = $this->getPSPConfig()->getUsername();
+			$aConnInfo["password"] = $this->getPSPConfig()->getPassword();
 			$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aConnInfo);
 
-			$obj_HTTP = parent::send($obj_ConnInfo, $this->constHTTPHeaders(), $b, $aLogin["username"], $aLogin["password"]);
+			$obj_HTTP = parent::send($obj_ConnInfo, $this->constHTTPHeaders(), $b);
 			if ($obj_HTTP->getReturnCode() == 200)
 			{
 				$aStatus = array();
