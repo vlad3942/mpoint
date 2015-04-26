@@ -65,7 +65,7 @@ try
 	//TODO: Improvement: validate incomming XML towards an XSD schema
 	if ( ($obj_TxnData instanceof SimpleDOMElement) === false) { throw new InvalidArgumentException("Invalid input XML format", 400); }
 
-	$obj_TxnInfo = TxnInfo::produceInfoFromOrderNoAndMerchant($_OBJ_DB, $obj_TxnData->orderid, $obj_DOM->callback->{'psp-config'}->name);
+	$obj_TxnInfo = TxnInfo::produceInfoFromOrderNoAndMerchant($_OBJ_DB, $obj_TxnData->orderid, $obj_DOM->callback->{'psp-config'}->name, array("psp-id" => Constants::iMOBILEPAY_PSP ) );
 	$obj_PSP = new MobilePay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["mobilepay"]);
 
 	// According to MobilePay spec, a status call should be made here to ensure that the callback request is authentic

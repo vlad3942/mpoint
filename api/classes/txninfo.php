@@ -641,7 +641,7 @@ class TxnInfo
 		return $xml;
 	}
 
-	public static function produceInfoFromOrderNoAndMerchant(RDB $obj, $orderNo, $merchant = '')
+	public static function produceInfoFromOrderNoAndMerchant(RDB $obj, $orderNo, $merchant = '', array $data = array() )
 	{
 		$sql  = self::_constProduceQuery();
 		if (strlen($merchant) > 0)
@@ -654,9 +654,8 @@ class TxnInfo
 		$RS = $obj->getName($sql);
 		$obj_TxnInfo = self::_produceFromResultSet($obj, $RS);
 
-
 		if ( ($obj_TxnInfo instanceof TxnInfo) === false) { throw new TxnInfoException("Transaction with orderno: ". $orderNo. " not found", 1001); }
-		return $obj_TxnInfo;
+		return self::produceInfo($obj_TxnInfo->getID(), $obj_TxnInfo, $data);
 	}
 
 	private static function _constProduceQuery()
