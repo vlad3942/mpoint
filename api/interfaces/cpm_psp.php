@@ -32,8 +32,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable
 
         try
         {
-            $aConnInfo = $this->aCONN_INFO;
-            $obj_ConnInfo = new HTTPConnInfo($aConnInfo["protocol"], $aConnInfo["host"], $aConnInfo["port"], $aConnInfo["timeout"], $aConnInfo["paths"]["capture"], $aConnInfo["method"], $aConnInfo["contenttype"]);
+            $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["capture"]);
 
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
             $obj_HTTP->connect();
@@ -86,8 +85,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable
 
 		try
 		{
-			$aConnInfo = $this->aCONN_INFO;
-			$obj_ConnInfo = new HTTPConnInfo($aConnInfo["protocol"], $aConnInfo["host"], $aConnInfo["port"], $aConnInfo["timeout"], $aConnInfo["paths"]["refund"], $aConnInfo["method"], $aConnInfo["contenttype"]);
+			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["refund"]);
 
 			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
 			$obj_HTTP->connect();
@@ -128,9 +126,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable
 		$b .= '</status>';
 		$b .= '</root>';
 
-
-		$aConnInfo = $this->aCONN_INFO;
-		$obj_ConnInfo = new HTTPConnInfo($aConnInfo["protocol"], $aConnInfo["host"], $aConnInfo["port"], $aConnInfo["timeout"], $aConnInfo["paths"]["status"], $aConnInfo["method"], $aConnInfo["contenttype"]);
+		$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["status"]);
 
 		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
 		$obj_HTTP->connect();
@@ -187,5 +183,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable
 
 		return $xml;
 	}
-	
+
+	private function _constConnInfo($path)
+	{
+		$aCI = $this->aCONN_INFO;
+		return new HTTPConnInfo($aCI["protocol"], $aCI["host"], $aCI["port"], $aCI["timeout"], $path, $aCI["method"], $aCI["contenttype"], $this->getClientConfig()->getUsername(), $this->getClientConfig()->getPassword() );
+	}
+
 }
