@@ -641,12 +641,16 @@ class TxnInfo
 		return $xml;
 	}
 
-	public static function produceInfoFromOrderNo(RDB $obj, $orderNo)
+	public static function produceInfoFromOrderNoAndMerchant(RDB $obj, $orderNo, $merchant = '')
 	{
 		$sql  = self::_constProduceQuery();
+		if (strlen($merchant) > 0)
+		{
+			$sql .= " INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl ma ON t.clientid = ma.clientid AND ma.name = '". $obj->escStr($merchant) ."' AND ma.enabled = true";
+		}
 		$sql .= " WHERE orderid = '". $obj->escStr($orderNo) ."'";
-
 //		echo $sql ."\n";
+
 		$RS = $obj->getName($sql);
 		$obj_TxnInfo = self::_produceFromResultSet($obj, $RS);
 
@@ -657,9 +661,9 @@ class TxnInfo
 
 	private static function _constProduceQuery()
 	{
-		$sql = "SELECT id, typeid, countryid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, extid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, iconurl, \"mode\", auto_capture, gomobileid,
-						clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, pspid, fee, captured
-				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl";
+		$sql = "SELECT t.id, typeid, countryid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, extid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, iconurl, \"mode\", auto_capture, gomobileid,
+						t.clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, t.pspid, fee, captured
+				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl t";
 
 		return $sql;
 	}

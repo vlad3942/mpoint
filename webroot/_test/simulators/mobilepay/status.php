@@ -13,7 +13,7 @@ if ($obj_XML->validate(dirname(__FILE__). '/status.xsd') )
     echo '<?xml version="1.0" encoding="UTF-8"?>';
     echo '<root>';
     echo '<transactions>';
-    echo '<transaction id="1001001">';
+    echo '<transaction id="'. $obj_XML->status->transactions->transaction['id'] .'">';
 
 	if (strrpos($obj_XML->status->transactions->transaction->orderid, '404') !== false) { echo '<status code="404">Transaction Not Found</status>'; }
 	else if (strrpos($obj_XML->status->transactions->transaction->orderid, '2003') !== false) { echo '<status code="2003">Refunded</status>'; }
@@ -31,7 +31,7 @@ else
     echo '<?xml version="1.0" encoding="UTF-8"?>';
     echo '<root>';
     echo '<transactions>';
-    echo '<transaction id="1001001">';
+	echo '<transaction id="'. $obj_XML->status->transactions->transaction['id'] .'">';
 
     $aObj_Errs = libxml_get_errors();
 
