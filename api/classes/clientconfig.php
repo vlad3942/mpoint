@@ -31,6 +31,7 @@ class ClientConfig extends BasicConfig
 	const iCUSTOMER_IMPORT_URL = 1;
 	const iAUTHENTICATION_URL = 2;
 	const iNOTIFICATION_URL = 3;
+	const iMESB_URL = 4;
 	/**
 	 * ID of the Flow the Client's customers have to go through in order to complete the Payment Transaction
 	 *
@@ -124,6 +125,12 @@ class ClientConfig extends BasicConfig
 	 * @var string
 	 */
 	private $_sNotificationURL;
+	/**
+	 * Absolute URL to the Mobile Enterprise Servicebus (MESB)
+	 *
+	 * @var string
+	 */
+	private $_sMESBURL;
 	/**
 	 * Max Amount an mPoint Transaction can cost the customer for the Client
 	 *
@@ -264,7 +271,7 @@ class ClientConfig extends BasicConfig
 	 * @param 	integer $mc			The max number of cards a user can have on the Client, set to -1 for inifite
 	 * @param 	integer $ident		Set of binary flags which specifies how customers may be identified
 	 */
-	public function __construct($id, $name, $fid, AccountConfig &$oAC, $un, $pw, CountryConfig &$oCC, KeywordConfig &$oKC, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $ciurl, $aurl, $nurl, $aIPs, $dc, $mc=-1, $ident=7)
+	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $ciurl, $aurl, $nurl, $murl, $aIPs, $dc, $mc=-1, $ident=7)
 	{
 		parent::__construct($id, $name);
 
@@ -299,6 +306,7 @@ class ClientConfig extends BasicConfig
 		$this->_sCustomerImportURL = trim($ciurl);
 		$this->_sAuthenticationURL = trim($aurl);
 		$this->_sNotificationURL = trim($nurl);
+		$this->_sMESBURL = trim($murl);
 		$this->_aIPList = $aIPs;
 		$this->_bShowAllCards = (bool) $dc;
 		$this->_iMaxCards = (integer) $mc;
@@ -398,6 +406,12 @@ class ClientConfig extends BasicConfig
 	 * @return 	string
 	 */
 	public function getNotificationURL() { return $this->_sNotificationURL; }
+	/**
+	 * Absolute URL to the Mobile Enterprise Servicebus (MESB)
+	 *
+	 * @return 	string
+	 */
+	public function getMESBURL() { return $this->_sMESBURL; }
 	/**
 	 * Returns the Max Amount an mPoint Transaction can cost the customer for the Client
 	 *
@@ -544,7 +558,7 @@ class ClientConfig extends BasicConfig
 	 * @param 	integer $kw 	Unique ID for the Keyword that all messages sent to the customer should belong to, defaults to -1 for client's default keyword.
 	 * @return 	ClientConfig
 	 */
-	public static function produceConfig(RDB &$oDB, $id, $acc=-1, $kw=-1)
+	public static function produceConfig(RDB $oDB, $id, $acc=-1, $kw=-1)
 	{
 		$acc = (integer) $acc;
 		$sql = "SELECT CL.id AS clientid, CL.name AS client, CL.flowid, CL.username, CL.passwd,
@@ -556,7 +570,7 @@ class ClientConfig extends BasicConfig
 					C.id AS countryid,
 					Acc.id AS accountid, Acc.name AS account, Acc.mobile, Acc.markup,
 					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price,
-					U1.url AS customerimporturl, U2.url AS authurl, U3.url AS notifyurl
+					U1.url AS customerimporturl, U2.url AS authurl, U3.url AS notifyurl, U4.url AS mesburl
 				FROM Client". sSCHEMA_POSTFIX .".Client_Tbl CL
 				INNER JOIN System". sSCHEMA_POSTFIX .".Country_Tbl C ON CL.countryid = C.id AND C.enabled = '1'
 				INNER JOIN Client". sSCHEMA_POSTFIX .".Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
@@ -565,6 +579,7 @@ class ClientConfig extends BasicConfig
 				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U1 ON CL.id = U1.clientid AND U1.urltypeid = ". self::iCUSTOMER_IMPORT_URL ." AND U1.enabled = '1'
 				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U2 ON CL.id = U2.clientid AND U2.urltypeid = ". self::iAUTHENTICATION_URL ." AND U2.enabled = '1'
 				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U3 ON CL.id = U3.clientid AND U3.urltypeid = ". self::iNOTIFICATION_URL ." AND U3.enabled = '1'
+				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U4 ON CL.id = U4.clientid AND U4.urltypeid = ". self::iMESB_URL ." AND U4.enabled = '1'
 				WHERE CL.id = ". intval($id) ." AND CL.enabled = '1'";
 		// Use Default Keyword
 		if ($kw == -1)
@@ -583,7 +598,7 @@ class ClientConfig extends BasicConfig
 					C.id,
 					Acc.id, Acc.name, Acc.mobile, Acc.markup,
 					KW.id, KW.name,
-					U1.url, U2.url, U3.url";
+					U1.url, U2.url, U3.url, U4.url";
 		// Use Default Account
 		if ($acc == -1)
 		{
@@ -627,7 +642,7 @@ class ClientConfig extends BasicConfig
 			}
 		}
 
-		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $RS["CUSTOMERIMPORTURL"], $RS["AUTHURL"], $RS["NOTIFYURL"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"]);
+		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $RS["CUSTOMERIMPORTURL"], $RS["AUTHURL"], $RS["NOTIFYURL"], $RS["MESBURL"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"]);
 	}
 
 	/**

@@ -187,7 +187,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable
 	private function _constConnInfo($path)
 	{
 		$aCI = $this->aCONN_INFO;
-		return new HTTPConnInfo($aCI["protocol"], $aCI["host"], $aCI["port"], $aCI["timeout"], $path, $aCI["method"], $aCI["contenttype"], $this->getClientConfig()->getUsername(), $this->getClientConfig()->getPassword() );
+		$aURLInfo = parse_url($this->getClientConfig()->getMESBURL() );
+		return new HTTPConnInfo($aCI["protocol"], $aURLInfo["host"], $aCI["port"], $aCI["timeout"], $path, $aCI["method"], $aCI["contenttype"], $this->getClientConfig()->getUsername(), $this->getClientConfig()->getPassword() );
 	}
 
 }

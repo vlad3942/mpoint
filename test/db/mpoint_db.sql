@@ -6681,3 +6681,6 @@ INSERT INTO System.PSP_Tbl (id, name) VALUES (11, 'MobilePay');
 INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (17, 'MobilePay', 15, -1, -1, -1);
 INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (11, 17);
 INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) SELECT C.id * -1 AS pricepointid, 17 FROM System.Country_Tbl C, System.Card_Tbl Card WHERE C.id = 100 GROUP BY pricepointid;
+
+
+INSERT INTO System.URLType_Tbl (id, name) VALUES (4, 'Mobile Enterprise Servicebus');
