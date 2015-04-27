@@ -17,6 +17,8 @@ require_once(sAPI_CLASS_PATH ."/gomobile.php");
 require_once(sCLASS_PATH ."/enduser_account.php");
 // Require general Business logic for the Callback module
 require_once(sCLASS_PATH ."/callback.php");
+// Require specific Business logic for Capture component (for use with auto-capture functionality)
+require_once(sCLASS_PATH ."/capture.php");
 // Require specific Business logic for the CPM PSP component
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
 // Require specific Business logic for the MobilePay component
@@ -65,7 +67,7 @@ try
 	//TODO: Improvement: validate incomming XML towards an XSD schema
 	if ( ($obj_TxnData instanceof SimpleDOMElement) === false) { throw new InvalidArgumentException("Invalid input XML format", 400); }
 
-	$obj_TxnInfo = TxnInfo::produceInfoFromOrderNoAndMerchant($_OBJ_DB, $obj_TxnData->orderid, $obj_DOM->callback->{'psp-config'}->name, array("psp-id" => Constants::iMOBILEPAY_PSP ) );
+	$obj_TxnInfo = TxnInfo::produceInfoFromOrderNoAndMerchant($_OBJ_DB, $obj_TxnData->orderid, $obj_DOM->callback->{'psp-config'}->name, array("psp-id" => Constants::iMOBILEPAY_PSP, "extid" => $obj_TxnData["external-id"]) );
 	$obj_PSP = new MobilePay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["mobilepay"]);
 
 	// According to MobilePay spec, a status call should be made here to ensure that the callback request is authentic
@@ -76,24 +78,42 @@ try
 		$iAmount = $obj_TxnData->amount;
 
 		$iStateID = $obj_PSP->completeTransaction(Constants::iMOBILEPAY_PSP, $obj_TxnData["external-id"], Constants::iMOBILE_PAY , ($obj_TxnData->status["code"] >= 1000 ? Constants::iPAYMENT_ACCEPTED_STATE : Constants::iPAYMENT_REJECTED_STATE), $iFee, array(var_export($obj_TxnData, true) ) );
+		$bPaymentIsCaptured = false;
 
 		// Callback URL has been defined for Client and transaction hasn't been duplicated
 		if ($obj_TxnInfo->getCallbackURL() != "" && $iStateID != Constants::iPAYMENT_DUPLICATED_STATE)
 		{
-			// Transaction uses Auto Capture and Authorization was accepted
-			if ($obj_TxnInfo->useAutoCapture() === true && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
+			// Payment is already captured ?
+			if (isset($obj_TxnData["is-captured"]) === true && strtolower($obj_TxnData["is-captured"]) == "true" || $iPSPStatus == Constants::iPAYMENT_CAPTURED_STATE) { $bPaymentIsCaptured = true; }
+			// Payment is not captured yet
+			else
 			{
-				// Capture automatically performed by MobilePay or invocation of capture operation with MobilePay succeeded
-				$isAlreadyCaptured = isset($obj_TxnData["is-captured"]) === true && strtolower($obj_TxnData["is-captured"]) == "true";
-				if ($isAlreadyCaptured || $obj_PSP->capture() == 1000)
+				// Transaction uses Auto Capture and Authorization was accepted
+				if ($obj_TxnInfo->useAutoCapture() === true && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 				{
-					$obj_PSP->notifyClient(Constants::iPAYMENT_ACCEPTED_STATE, $iAmount);
-					$obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $iAmount);
-					if ($isAlreadyCaptured) { $obj_PSP->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($obj_TxnData, true) ); }
+					// Perform capture
+					$code = $obj_PSP->capture();
+					if ($code == 1000) { $bPaymentIsCaptured = true; }
+					// Auto-capture failed
+					else
+					{
+						$bPaymentIsCaptured = false;
+						$obj_PSP->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, var_export($obj_TxnData, true) );
+						trigger_error("Auto-capture failed for transaction: ". $obj_TxnInfo->getID() . " - Capture API returned: ". $code, E_USER_WARNING);
+					}
 				}
-				else { $obj_PSP->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $iAmount); }
 			}
-			else { $obj_PSP->notifyClient($iStateID, $iAmount); }
+		}
+
+		// Notify client about Authorized/Declined state
+		$obj_PSP->notifyClient($iStateID, $iAmount);
+
+		// Notify client about, and log, possible Captured state
+		if ($bPaymentIsCaptured)
+		{
+			$obj_PSP->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($obj_TxnData, true) );
+			$obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $iAmount);
+			$iStateID = Constants::iPAYMENT_CAPTURED_STATE;
 		}
 
 		$xml .= '<status code="'. $iStateID .'">Callback handled</status>';

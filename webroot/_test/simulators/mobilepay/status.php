@@ -19,6 +19,7 @@ if ($_SERVER['PHP_AUTH_USER'] == 'Tuser' && $_SERVER["PHP_AUTH_PW"] == 'Tpass')
 		echo '<transaction id="'. $obj_XML->status->transactions->transaction['id'] .'">';
 
 		if (strrpos($obj_XML->status->transactions->transaction->orderid, '404') !== false) { echo '<status code="404">Transaction Not Found</status>'; }
+		else if (strrpos($obj_XML->status->transactions->transaction->orderid, '2001') !== false) { echo '<status code="2001">Captured</status>'; }
 		else if (strrpos($obj_XML->status->transactions->transaction->orderid, '2003') !== false) { echo '<status code="2003">Refunded</status>'; }
 		else { echo '<status code="2000">Success</status>'; }
 
