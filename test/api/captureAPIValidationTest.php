@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . '/../../webroot/inc/include.php';
 require_once __DIR__ . '/../inc/testinclude.php';
 
 class CaptureAPIValidationTest extends mPointBaseAPITest

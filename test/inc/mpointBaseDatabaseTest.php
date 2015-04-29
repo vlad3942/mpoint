@@ -2,7 +2,7 @@
 
 abstract class mPointBaseDatabaseTest extends PHPUnit_Framework_TestCase
 {
-    private $_mPointDBInfo;
+    protected $mPointDBInfo;
 
     /**
      * @var resource
@@ -16,25 +16,23 @@ abstract class mPointBaseDatabaseTest extends PHPUnit_Framework_TestCase
     {
         parent::setup();
 
-        error_reporting(E_ALL - E_STRICT);
-
         $this->applyTestConfiguration();
 
         global $aDB_CONN_INFO;
-        $this->_mPointDBInfo = $aDB_CONN_INFO["mpoint"];
+        $this->mPointDBInfo = $aDB_CONN_INFO["mpoint"];
         $this->setupMpointDB();
     }
 
     private function _constDBConnString()
     {
-        return "host=". $this->_mPointDBInfo['host']. " port=". $this->_mPointDBInfo['port']. " user=". $this->_mPointDBInfo['username']. " password=" . $this->_mPointDBInfo['password'];
+        return "host=". $this->mPointDBInfo['host']. " port=". $this->mPointDBInfo['port']. " user=". $this->mPointDBInfo['username']. " password=" . $this->mPointDBInfo['password'];
     }
 
     private function setupMpointDB()
     {
         $conn = pg_connect($this->_constDBConnString() );
-        $dbName = $this->_mPointDBInfo['path'];
-        $schemaOwner = $this->_mPointDBInfo['username'];
+        $dbName = $this->mPointDBInfo['path'];
+        $schemaOwner = $this->mPointDBInfo['username'];
         pg_query($conn, "CREATE DATABASE $dbName OWNER = $schemaOwner");
 
         $error = pg_last_error($conn);
@@ -52,7 +50,7 @@ abstract class mPointBaseDatabaseTest extends PHPUnit_Framework_TestCase
     {
         if (is_resource($this->_db) ) { @pg_close($this->_db); }
         $conn = pg_connect($this->_constDBConnString() );
-        pg_query($conn, "DROP DATABASE ". $this->_mPointDBInfo['path']);
+        pg_query($conn, "DROP DATABASE ". $this->mPointDBInfo['path']);
         pg_close($conn);
     }
 
@@ -92,7 +90,7 @@ abstract class mPointBaseDatabaseTest extends PHPUnit_Framework_TestCase
     {
         if (!is_resource($this->_db) )
         {
-            $this->_db = pg_connect($this->_constDBConnString(). " dbname=". $this->_mPointDBInfo['path']);
+            $this->_db = pg_connect($this->_constDBConnString(). " dbname=". $this->mPointDBInfo['path']);
         }
 
         $res = pg_query($this->_db, $query);

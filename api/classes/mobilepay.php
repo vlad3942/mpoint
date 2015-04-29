@@ -18,7 +18,7 @@
  */
 class MobilePay extends CPMPSP
 {
-	public function initialize(PSPConfig &$obj_PSP)
+	public function initialize(PSPConfig $obj_PSP)
 	{
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
