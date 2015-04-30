@@ -216,7 +216,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									}
 									break;
 								case (Constants::iSTRIPE_PSP):
-									$obj_PSP = new Stripe_PSP($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["stripe"]);
+									$obj_PSP = new Stripe_PSP($_OBJ_DB, $_OBJ_TXT, $oTI, array() );
 									$aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iSTRIPE_PSP, false);
 									$storecard = (strcasecmp($obj_DOM->pay[$i]->transaction["store-card"], "true") == 0 );
 									$code =	$obj_PSP->auth( $obj_DOM->pay[$i]->transaction->card[$j]->{'apple-pay-token'}, $aLogin["password"], (integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $storecard);

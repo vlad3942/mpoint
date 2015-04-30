@@ -209,7 +209,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											switch (intval($obj_Elem["pspid"]) )
 											{
 											case (Constants::iSTRIPE_PSP):
-												$obj_PSP = new Stripe_PSP($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["stripe"]);
+												$obj_PSP = new Stripe_PSP($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], array() );
 												$aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iSTRIPE_PSP, true);
 												
 												$code =	$obj_PSP->authTicket( (integer) $obj_Elem->ticket, $aaLogin["password"]);
