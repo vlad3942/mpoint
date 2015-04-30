@@ -19,6 +19,8 @@ require_once(sAPI_CLASS_PATH ."/gomobile.php");
 
 // Require Business logic for the End-User Account Component
 require_once(sCLASS_PATH ."/enduser_account.php");
+// Require Business logic for SurepayConfig
+require_once(sCLASS_PATH ."/surepayconfig.php");
 // Require general Business logic for the Callback module
 require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for the WorldPay component
