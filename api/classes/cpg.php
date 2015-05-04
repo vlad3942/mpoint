@@ -919,6 +919,9 @@ class CPG extends Callback
 		case (632):	// South Korea
 			return "KR";
 			break;
+		case (633): // Kazakstan
+			return "KZ";
+			break;
 		case (634):	// Sri Lanka
 			return "LK";
 			break;
