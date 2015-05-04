@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . '/../../webroot/inc/include.php';
 require_once __DIR__ . '/../inc/testinclude.php';
 
 class MobilePayCallbackAPITest extends mPointBaseAPITest
@@ -39,7 +40,7 @@ class MobilePayCallbackAPITest extends mPointBaseAPITest
 		$xml  = '<root>';
 		$xml .= '<callback>';
 		$xml .= '<psp-config psp-id="'. Constants::iMOBILEPAY_PSP .'"></psp-config>';
-		$xml .= '<transaction external-id="15469928">';
+		$xml .= '<transaction external-id="15469928" card-id="17">';
 		$xml .= '<orderid>900-55150298</orderid>';
 		$xml .= '<amount country-id="100" currency="DKK" symbol="kr." format="">10050</amount>';
 		$xml .= '<status code="1000">Success</status>';
@@ -85,7 +86,7 @@ class MobilePayCallbackAPITest extends mPointBaseAPITest
 		$xml  = '<root>';
 		$xml .= '<callback>';
 		$xml .= '<psp-config psp-id="'. Constants::iMOBILEPAY_PSP .'"></psp-config>';
-		$xml .= '<transaction external-id="15469928">';
+		$xml .= '<transaction external-id="15469928" card-id="17">';
 		$xml .= '<orderid>900-55152001</orderid>';
 		$xml .= '<amount country-id="100" currency="DKK" symbol="kr." format="">10050</amount>';
 		$xml .= '<status code="1000">Success</status>';
@@ -132,7 +133,7 @@ class MobilePayCallbackAPITest extends mPointBaseAPITest
 		$xml  = '<root>';
 		$xml .= '<callback>';
 		$xml .= '<psp-config psp-id="'. Constants::iMOBILEPAY_PSP .'"></psp-config>';
-		$xml .= '<transaction external-id="15469928">';
+		$xml .= '<transaction external-id="15469928" card-id="17">';
 		$xml .= '<orderid>900-55150298</orderid>';
 		$xml .= '<amount country-id="100" currency="DKK" symbol="kr." format="">10050</amount>';
 		$xml .= '<status code="1000">Success</status>';
@@ -189,7 +190,7 @@ class MobilePayCallbackAPITest extends mPointBaseAPITest
 		$xml .= '<psp-config psp-id="'. Constants::iMOBILEPAY_PSP .'">';
 		$xml .= '<name>Merchant-2</name>';
 		$xml .= '</psp-config>';
-		$xml .= '<transaction external-id="15469928">';
+		$xml .= '<transaction external-id="15469928" card-id="17">';
 		$xml .= '<orderid>900-55150298</orderid>';
 		$xml .= '<amount country-id="100" currency="DKK" symbol="kr." format="">5000</amount>';
 		$xml .= '<status code="1000">Success</status>';

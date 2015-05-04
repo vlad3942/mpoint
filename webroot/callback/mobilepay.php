@@ -106,13 +106,15 @@ try
 		}
 
 		// Notify client about Authorized/Declined state
-		$obj_PSP->notifyClient($iStateID, $iAmount);
+		$aCallbackArgs = array('amount' => $iAmount,
+							   'card-id' => (integer)$obj_TxnData["card-id"] );
+		$obj_PSP->notifyClient($iStateID, $aCallbackArgs);
 
 		// Notify client about, and log, possible Captured state
 		if ($bPaymentIsCaptured)
 		{
 			$obj_PSP->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($obj_TxnData, true) );
-			$obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $iAmount);
+			$obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $aCallbackArgs);
 			$iStateID = Constants::iPAYMENT_CAPTURED_STATE;
 		}
 
