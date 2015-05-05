@@ -38,7 +38,7 @@ if (array_key_exists("resume", $_POST) === true && $_POST['resume'] == "true" &&
 // Set Defaults
 if (array_key_exists("cardtype", $_REQUEST) === true) { $_SESSION['temp']['cardtype'] = $_REQUEST['cardtype']; }
 
-$obj_mPoint = new CellpointMobile($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']);
+$obj_mPoint = new CellpointMobile($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aCPM_CONN_INFO);
 
 try
 {

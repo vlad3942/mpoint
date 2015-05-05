@@ -36,7 +36,7 @@ catch (TranslateTextException $e)
 	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH ."gb/global.txt", sLANGUAGE_PATH ."gb/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 	trigger_error("Unknown Language received from IHI. language: ". $_POST['language'] .", lang: ". $_POST['lang'], E_USER_WARNING);
 }
-$obj_mPoint = new Callback($_OBJ_DB, $_OBJ_TXT, TxnInfo::produceInfo($_POST['mpoint-id'], $_OBJ_DB) );
+$obj_mPoint = new Callback($_OBJ_DB, $_OBJ_TXT, TxnInfo::produceInfo($_POST['mpoint-id'], $_OBJ_DB), $aCPM_CONN_INFO);
 
 //
 $obj_mPoint->completeTransaction(Constants::iIHI_PSP, $_POST['payment-id'], $_POST['card-id'], $_POST['status']);
