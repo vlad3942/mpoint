@@ -30,6 +30,8 @@ require_once(sCLASS_PATH ."/pspconfig.php");
 require_once(sCLASS_PATH ."/validate.php");
 // Require Business logic for the End-User Account Component
 require_once(sCLASS_PATH ."/enduser_account.php");
+// Require Business logic for the Select Credit Card component
+require_once(sCLASS_PATH ."/credit_card.php");
 
 // Require general Business logic for the Callback module
 require_once(sCLASS_PATH ."/callback.php");
@@ -47,10 +49,9 @@ require_once(sCLASS_PATH ."/worldpay.php");
 require_once(sCLASS_PATH ."/cpg.php");
 if (function_exists("json_encode") === true)
 {
-// Require specific Business logic for the Stripe component
+	// Require specific Business logic for the Stripe component
 	require_once(sCLASS_PATH ."/stripe.php");
 }
-
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -60,15 +61,18 @@ $aMsgCds = array();
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 /*
-$_SERVER['PHP_AUTH_USER'] = "CPMDemo";
-$_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
+$_SERVER['PHP_AUTH_USER'] = "1415";
+$_SERVER['PHP_AUTH_PW'] = "Ghdy4_ah1G";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<authorize-payment client-id="10007" account="100007">';
-$HTTP_RAW_POST_DATA .= '<transaction id="1">';
-$HTTP_RAW_POST_DATA .= '<card id="1" type-id="7">';
-$HTTP_RAW_POST_DATA .= '<amount country-id="100">200</amount>';
+$HTTP_RAW_POST_DATA .= '<authorize-payment client-id="10019" account="100026">';
+$HTTP_RAW_POST_DATA .= '<transaction id="1814929">';
+$HTTP_RAW_POST_DATA .= '<card id="8" type-id="15">';
+$HTTP_RAW_POST_DATA .= '<amount country-id="100">100</amount>';
+$HTTP_RAW_POST_DATA .= '<card-number>5272342200069702</card-number>';
+$HTTP_RAW_POST_DATA .= '<expiry>03/31</expiry>';
+$HTTP_RAW_POST_DATA .= '<cryptogram type="3ds">AKh96OOsGf2HAIDEhKulAoABFA==</cryptogram>';
 $HTTP_RAW_POST_DATA .= '</card>';
 $HTTP_RAW_POST_DATA .= '</transaction>';
 $HTTP_RAW_POST_DATA .= '<password>oisJona</password>';
@@ -201,18 +205,30 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										break;
 									case (Constants::iCARD_PURCHASE_TYPE):		// Authorize Purchase using Stored Card
 									default:
-										$obj_Elem = $obj_XML->xpath("/stored-cards/card[@id = ". $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"] ."]");
-										if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1) { $obj_Elem->cvc = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc; }
+										if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) == Constants::iAPPLE_PAY)
+										{
+											$obj_Elem = $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j];
+											
+											$obj_CC = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+											$obj_XML = simpledom_load_string($obj_CC->getCards($obj_TxnInfo->getAmount() ) );
+											$obj_XML = $obj_XML->xpath("/cards/item[@type-id = ". Constants::iAPPLE_PAY ."]");
+											$obj_Elem["pspid"] = (integer) $obj_XML["pspid"];
+										}
+										else
+										{
+											$obj_Elem = $obj_XML->xpath("/stored-cards/card[@id = ". $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"] ."]");
+											if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1) { $obj_Elem->cvc = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc; }	
+										}
 
 										try
 										{
 											switch (intval($obj_Elem["pspid"]) )
 											{
 											case (Constants::iSTRIPE_PSP):
-												$obj_PSP = new Stripe_PSP($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], array() );
+												$obj_PSP = new Stripe_PSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, array() );
 												$aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iSTRIPE_PSP, true);
 												
-												$code =	$obj_PSP->authTicket( (integer) $obj_Elem->ticket, $aaLogin["password"]);
+												$code =	$obj_PSP->authTicket( (integer) $obj_Elem->ticket, $aLogin["password"]);
 												if ($code == "OK")
 												{
 													if ($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] === Constants::iAPPLE_PAY) { $xml .= '<status code="100">Payment Authorized using Apple Pay</status>'; }
@@ -230,14 +246,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												break;
 											case (Constants::iWORLDPAY_PSP):
 												// Authorise payment with PSP based on Ticket
-												$obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["worldpay"]);
+												$obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["worldpay"]);
 												if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["worldpay"]["host"] = str_replace("secure.", "secure-test.", $aHTTP_CONN_INFO["worldpay"]["host"]); }
 												$aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, true);
 												$aHTTP_CONN_INFO["worldpay"]["username"] = $aLogin["username"];
 												$aHTTP_CONN_INFO["worldpay"]["password"] = $aLogin["password"];
 					
 												$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["worldpay"]);
-												$obj_XML = $obj_PSP->authTicket($obj_ConnInfo, (string) $obj_Elem->ticket);
+												$obj_XML = $obj_PSP->authTicket($obj_ConnInfo, $obj_Elem);
 												// Authorization succeeded
 												if (is_null($obj_XML) === false && ($obj_XML instanceof SimpleXMLElement) === true && intval($obj_XML["code"]) == Constants::iPAYMENT_ACCEPTED_STATE)
 												{
@@ -258,9 +274,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													
 													header("HTTP/1.1 502 Bad Gateway");
 													
-													$xml .= '<status code="92">Authorization failed, WorldPay returned error code'. $obj_XML->reply->error["code"] .'</status>';
+													$xml .= '<status code="92">Authorization failed, WorldPay returned error code: '. $obj_XML->reply->error["code"] .'</status>';
 													
-													$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+													$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 												}
 												break;
 											case (Constants::iDIBS_PSP):	// DIBS

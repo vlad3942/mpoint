@@ -91,6 +91,39 @@
 														</xs:restriction>
 													</xs:simpleType>
 												</xs:element>
+												<xs:element name="card-number" minOccurs="0" maxOccurs="1">
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:minLength value="13" />
+															<xs:maxLength value="19" />
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="expiry" minOccurs="0" maxOccurs="1">
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:length value="5" />
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element> 
+												<xs:element name="card-holder-name" type="xs:string" minOccurs="0" maxOccurs="1" />
+												<xs:element name="cryptogram" minOccurs="0" maxOccurs="1">
+													<xs:complexType>
+														<xs:simpleContent>
+															<xs:extension base="xs:string">
+																<xs:attribute name="type" use="required">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">
+																			 <xs:enumeration value="emv" />
+																			 <xs:enumeration value="3ds" />
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:attribute>
+																<xs:attribute name="eci" type="xs:nonNegativeInteger" use="optional" />
+															</xs:extension>
+														</xs:simpleContent>
+													</xs:complexType>
+												</xs:element>
 											</xs:all>
 											<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 											<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />

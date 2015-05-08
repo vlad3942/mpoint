@@ -140,44 +140,35 @@ class WorldPay extends Callback
 
 //		parent::send("https://payment.architrade.com/cgi-adm/delticket.cgi", $h, $b);
 	}
-
 	/**
-	 * Authorises a payment with WorldPay for the transaction using the provided ticket.
-	 * The ticket represents a previously stored card.
-	 * The method will return WorldPay' transaction ID if the authorisation is accepted or one of the following status codes if the authorisation is declined:
+	 * Authorises a payment with WorldPay for the transaction using the provided ticket using either WorldPay's "Pay as Order" or "Direct XML" API.
+	 * The XML element represents a previously stored card or the details for a 3D Secure cryptogram.
+	 * The method will return WorldPay' transaction ID if the authorisation is accepted or one of the following status codes if the authorisation is declined.
 	 *
 	 * @link
 	 *
-	 * @param 	integer $ticket		Valid ticket which references a previously stored card
-	 * @return 	integer
+	 * @param 	SimpleXMLElement $obj_Card	Details for the previously stored card or 3D Secure cryptogram that is used for the authorization
+	 * @return 	SimpleXMLElement
 	 * @throws	E_USER_WARNING
 	 */
-	public function authTicket(HTTPConnInfo &$oCI, $ticket)
+	public function authTicket(HTTPConnInfo &$oCI, SimpleXMLElement $obj_Card)
 	{
-		list($orderno, $merchantcode, $amount, $currency) = explode(" ### ", $ticket);
-		$oc = htmlspecialchars($this->getTxnInfo()->getOrderID(), ENT_NOQUOTES);
-		if (empty($oc) === true) { $oc = $this->getTxnInfo()->getID(); }
-
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET pspid = ". Constants::iWORLDPAY_PSP ."
 				WHERE id = ". $this->getTxnInfo()->getID();
 //		echo $sql ."\n";
 		$this->getDBConn()->query($sql);
-
-		$b = '<?xml version="1.0" encoding="UTF-8"?>';
-		$b .= '<!DOCTYPE paymentService PUBLIC "-//WorldPay/DTD WorldPay PaymentService v1//EN" "http://dtd.worldpay.com/paymentService_v1.dtd">';
-		$b .= '<paymentService version="1.4" merchantCode="'. htmlspecialchars($this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, true), ENT_NOQUOTES) .'">';
-		$b .= '<submit>';
-		$b .= '<order orderCode="'. $oc .'">';
-		$b .= '<description>Order: '. $oc .' from: '. htmlspecialchars($this->getTxnInfo()->getClientConfig()->getName(), ENT_NOQUOTES) .'</description>';
-		$b .= '<amount value="'. $this->getTxnInfo()->getAmount() .'" currencyCode="'. htmlspecialchars(trim($currency), ENT_NOQUOTES) .'" exponent="2" />';
-		$b .= '<payAsOrder orderCode="'. htmlspecialchars(trim($orderno), ENT_NOQUOTES) .'" merchantCode="'. htmlspecialchars(trim($merchantcode), ENT_NOQUOTES) .'">';
-		$b .= '<amount value="'. intval(trim($amount) ) .'" currencyCode="'. htmlspecialchars(trim($currency), ENT_NOQUOTES) .'" exponent="2" />';
-		$b .= '</payAsOrder>';
-		$b .= '</order>';
-		$b .= '</submit>';
-		$b .= '</paymentService>';
-
+		
+		$oc = htmlspecialchars($this->getTxnInfo()->getOrderID(), ENT_NOQUOTES);
+		if (empty($oc) === true) { $oc = $this->getTxnInfo()->getID(); }
+		// Tokenized Card Details which may be authorized using WorldPay's "Pay As Order" API
+		if (count($obj_Card->ticket) == 1)
+		{
+			$b = $this->_constPayAsOrderRequest($oCI, $obj_Card->ticket, $oc);
+		}
+		// Other Type of token which may be authorized using WorldPay's "Direct XML" API
+		else { $b = $this->_constDirectXMLRequest($oCI, $obj_Card, $oc); }
+		
 		$obj_HTTP = new HTTPClient(new Template(), $oCI);
 		$obj_HTTP->connect();
 		$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
@@ -203,8 +194,83 @@ class WorldPay extends Callback
 		{
 			trigger_error("Unable to initialize payment with WorldPay for transaction: ". $this->getTxnInfo()->getID() .". HTTP Response Code: ". $code ."\n". var_export($obj_HTTP, true), E_USER_WARNING);
 		}
-
 		return $obj_XML;
+	}
+	/**
+	 * Constructs the request for authorizing a payment using previously stored card details through WorldPay's "Pay As Order" API.
+	 *
+	 * @param 	string $ticket		Valid ticket which references a previously stored card
+	 * @return 	string
+	 */
+	private function _constPayAsOrderRequest(HTTPConnInfo &$oCI, $ticket, $oc)
+	{
+		list($orderno, $merchantcode, $amount, $currency) = explode(" ### ", $ticket);
+
+		$b = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<!DOCTYPE paymentService PUBLIC "-//WorldPay/DTD WorldPay PaymentService v1//EN" "http://dtd.worldpay.com/paymentService_v1.dtd">';
+		$b .= '<paymentService version="1.4" merchantCode="'. htmlspecialchars($this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, true), ENT_NOQUOTES) .'">';
+		$b .= '<submit>';
+		$b .= '<order orderCode="'. $oc .'">';
+		$b .= '<description>Order: '. $oc .' from: '. htmlspecialchars($this->getTxnInfo()->getClientConfig()->getName(), ENT_NOQUOTES) .'</description>';
+		$b .= '<amount value="'. $this->getTxnInfo()->getAmount() .'" currencyCode="'. htmlspecialchars(trim($currency), ENT_NOQUOTES) .'" exponent="2" />';
+		$b .= '<payAsOrder orderCode="'. htmlspecialchars(trim($orderno), ENT_NOQUOTES) .'" merchantCode="'. htmlspecialchars(trim($merchantcode), ENT_NOQUOTES) .'">';
+		$b .= '<amount value="'. intval(trim($amount) ) .'" currencyCode="'. htmlspecialchars(trim($currency), ENT_NOQUOTES) .'" exponent="2" />';
+		$b .= '</payAsOrder>';
+		$b .= '</order>';
+		$b .= '</submit>';
+		$b .= '</paymentService>';
+
+		return $b;
+	}
+	/**
+	 * Constructs the request for authorizing a payment using 3D Secure cryptogram through WorldPay's "Direct XML" API.
+	 *
+	 * @param 	SimpleXMLElement $obj_Card	Details for the 3D Secure cryptogram that is used for the authorization
+	 * @return 	string
+	 */
+	private function _constDirectXMLRequest(HTTPConnInfo &$oCI, SimpleXMLElement $obj_Card, $oc)
+	{
+		$b = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<!DOCTYPE paymentService PUBLIC "-//WorldPay/DTD WorldPay PaymentService v1//EN" "http://dtd.worldpay.com/paymentService_v1.dtd">';
+		$b .= '<paymentService version="1.4" merchantCode="'. htmlspecialchars($this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, true), ENT_NOQUOTES) .'">';
+		$b .= '<submit>';
+		$b .= '<order orderCode="'. $oc .'">';
+		$b .= '<description>Order: '. $oc .' from: '. htmlspecialchars($this->getTxnInfo()->getClientConfig()->getName(), ENT_NOQUOTES) .'</description>';
+		$b .= '<amount value="'. $this->getTxnInfo()->getAmount() .'" currencyCode="'. htmlspecialchars(trim($this->getTxnInfo()->getCountryConfig()->getCurrency() ), ENT_NOQUOTES) .'" exponent="2" />';
+		$b .= '<paymentDetails>';
+		$b .= '<'. $this->getCardName(intval($obj_Card["id"]) ) .'>';
+		$b .= '<cardNumber>'. htmlspecialchars($obj_Card->{'card-number'}, ENT_NOQUOTES) .'</cardNumber>';
+		$b .= '<expiryDate>';
+		$b .= '<date month="'. substr($obj_Card->expiry, 0, 2) .'" year="20'. substr($obj_Card->expiry, -2) .'"/>';
+		$b .= '</expiryDate>';
+		if (count($obj_Card->{'card-holder-name'}) == 1) { $b .= '<cardHolderName>'. htmlspecialchars($obj_Card->{'card-holder-name'}, ENT_NOQUOTES) .'</cardHolderName>'; }
+		else { $b .= '<cardHolderName>John Doe</cardHolderName>'; }
+		$b .= '</'. $this->getCardName(intval($obj_Card["id"]) ) .'>';
+		$ip = $_SERVER['REMOTE_ADDR'];
+		if (array_key_exists("X_FORWARDED_FOR", $_SERVER) === true) { $ip = $_SERVER['X_FORWARDED_FOR']; }
+		$b .= '<session shopperIPAddress="'. $ip .'" id="'. $this->getTxnInfo()->getID() .'"/>';
+		$b .= '<info3DSecure>';
+		$b .= '<xid />';
+		$b .= '<cavv>'. htmlspecialchars($obj_Card->cryptogram, ENT_NOQUOTES) .'</cavv>';
+		if (strlen($obj_Card->cryptogram["eci"]) > 0)
+		{
+			$eci = (integer) $obj_Card->cryptogram["eci"];
+			$b .= '<eci>'. ($eci < 10 ? "0". $eci : $eci) .'</eci>';
+		}
+		else { $b .= '<eci />'; }
+		$b .= '</info3DSecure>';
+		$b .= '</paymentDetails>';
+		$b .= '<shopper>';
+		$b .= '<browser>';
+		$b .= '<acceptHeader>text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</acceptHeader>';
+		$b .= '<userAgentHeader>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.1.5) Gecko/20091102 Firefox/3.5.5 (.NET CLR 3.5.30729)</userAgentHeader>';
+		$b .= '</browser>';
+		$b .= '</shopper>';
+		$b .= '</order>';
+		$b .= '</submit>';
+		$b .= '</paymentService>';
+		
+		return $b;
 	}
 
 	/**
