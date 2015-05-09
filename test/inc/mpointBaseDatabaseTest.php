@@ -9,6 +9,9 @@ abstract class mPointBaseDatabaseTest extends PHPUnit_Framework_TestCase
      */
     private $_db;
 
+	/**
+	 * @var HTTPClient
+	 */
     protected $_httpClient;
 
 

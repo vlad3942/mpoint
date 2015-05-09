@@ -23,7 +23,7 @@ abstract class mPointBaseAPITest extends mPointBaseDatabaseTest
      *
      * @return string
      */
-    protected function constHTTPHeaders()
+    protected function constHTTPHeaders($authUser=null,$authPass=null)
     {
         /* ----- Construct HTTP Header Start ----- */
         $h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
@@ -32,6 +32,10 @@ abstract class mPointBaseAPITest extends mPointBaseDatabaseTest
         $h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
         $h .= "content-type: {CONTENTTYPE}; charset=UTF-8" .HTTPClient::CRLF;
         $h .= "user-agent: mPoint" .HTTPClient::CRLF;
+		if (isset($authUser) === true && isset($authPass) === true)
+		{
+			$h .= "Authorization: Basic ". base64_encode($authUser. ":". $authPass);
+		}
         /* ----- Construct HTTP Header End ----- */
 
         return $h;

@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="ISO-8859-15"?>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.openmobilealliance.org/DTD/xhtml-mobile10.dtd">
+<html  xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Card Info</title>
+    <meta content="text/html; charset=ISO-8859-15" http-equiv="Content-Type"/>
+    <meta content="max-age=86400" http-equiv="Cache-Control"/>
+    <meta content="text/css" http-equiv="Content-Style-Type"/>
+    <style type="text/css">
+        /* ========== Tag Classes Start ========== */
+        body
+        {
+            margin: 5px 5px 5px 5px;
+        }
+        body, table
+        {
+            background-color: transparent;
+            text-align: left;
+        }
+        body, table, div
+        {
+            font-size: 1em;
+            font-family: "Trebuchet MS",arial,sans-serif;
+            color: #000;
+        }
+
+        h1
+        {
+            font-size: 130%;
+            white-space: nowrap;
+            text-align: center;
+            color: #000;
+        }
+
+        form, table
+        {
+            margin: 0px 0px 0px 0px;
+            padding: 0px 0px 0px 0px;
+        }
+
+        a
+        {
+            color: blue;
+            text-decoration: none;
+        }
+
+        a:hover
+        {
+            text-decoration: underline;
+        }
+
+        input.number
+        {
+            -wap-input-format: '*N';
+        }
+        ul, ul li
+        {
+            padding: 0;
+            margin: 0;
+        }
+        ul li
+        {
+            margin-left: 1em;
+        }
+        /* ========== Tag Classes End ========== */
+
+        /* ========== mPoint Classes Start ========== */
+        .mPoint_Label
+        {
+            font-weight: bold;
+            padding-right: 0.5em;
+            padding-top: 0.3em;
+            white-space: nowrap;
+        }
+
+        .mPoint_Info
+        {
+            font-weight: normal;
+            color: #000;
+            text-align: left;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        .mPoint_Help
+        {
+            margin-left: 15px;
+        }
+
+        .mPoint_Status
+        {
+            margin-left: 10px;
+            font-size: 90%;
+            color: red;
+            font-style: italic;
+            padding-top: 0.5em;
+            padding-bottom: 0.5em;
+        }
+
+        td.mPoint_Number
+        {
+            padding-right: 0.5em;
+            text-align: right;
+            vertical-align: bottom;
+            white-space: nowrap;
+        }
+
+        tr.mPoint_Even, div.mPoint_Even
+        {
+            color: #000;
+        }
+        input.mPoint_Even_Card_Button
+        {
+            border-width: 0px;
+            border-style: none;
+            border-color: #fff;
+            color: #000;
+            text-decoration: underline;
+            margin: 0px 0px 0px 0px;
+            padding: 0px 0px 2px 0px;
+        }
+        tr.mPoint_Uneven, div.mPoint_Uneven
+        {
+            background-color: transparent;
+        }
+        input.mPoint_Uneven_Card_Button
+        {
+            border-width: 0px;
+            border-style: none;
+            border-color: #00233c;
+            color: #fff;
+            text-decoration: underline;
+            margin: 0px 0px 0px 0px;
+            padding: 0px 0px 2px 0px;
+        }
+
+        input.mPoint_Button
+        {
+            font-size: 1em;
+            font-weight: bold;
+            color: #000;
+        }
+        input.mPoint_Card_Button
+        {
+            font-size: 1em;
+            border-width: 0px;
+            border-style: none;
+            border-color: #fff;
+            color: blue;
+            text-decoration: underline;
+            margin: 0px 0px 0px 0px;
+            padding: 0px 0px 2px 0px;
+        }
+        input.mPoint_Card_Button:hover
+        {
+            cursor: pointer; cursor: hand;
+        }
+
+        div.mPoint_Card
+        {
+        }
+
+        div.mPoint_Account
+        {
+            width: 100%;
+        }
+        div.mPoint_Account
+        {
+            width: 100%;
+            border-bottom-style: dashed;
+            border-color: #00233c;
+            border-width: 2px;
+        }
+        div.mPoint_Account input.mPoint_Card_Button
+        {
+            color: #000;
+            font-weight: bold;
+        }
+        /* ========== mPoint Classes Start ========== */
+
+        /* ========== ID Classes Start ========== */
+        table#products tr td
+        {
+            padding-left: 3px;
+            padding-top: 3px;
+        }
+
+        table#receipt, div#top-up div.mPoint_Info
+        {
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+        }
+        table#receipt, table#products tr.mPoint_Uneven
+        {
+            color: #000;
+        }
+
+        div#logo, div#progress, div#mPoint, div#status, div#top-up div#close
+        {
+            text-align: center;
+        }
+        div#logo
+        {
+            margin-right: 5px;
+        }
+
+        div#status table tr td
+        {
+            vertical-align: middle;
+            padding-left: 0.5em;
+        }
+
+        div#terms
+        {
+            white-space: pre;
+        }
+
+        div#delivery, div#email, div#cardinfo, div#prepaid, div#accountinfo, div#my-account table
+        {
+
+        }
+        div#delivery, div#email, div#cardinfo, div#prepaid, div#accountinfo
+        {
+            padding-left: 3px;
+            padding-bottom: 3px;
+        }
+
+        div#shipping div table tr td
+        {
+            padding-top: 3px;
+            padding-left: 3px;
+        }
+
+        div#cards, div#cardinfo, table#receipt
+        {
+            padding: 0px 10px 0px 10px;
+            border: solid #00233c 2px;
+            -moz-border-radius: 10px;
+            -webkit-border-radius: 10px;
+            border-radius: 10px;
+        }
+
+        div#my-account
+        {
+        }
+        div#my-account div#prepaid div, div#my-account div#prepaid table, div#my-account div#cardinfo div, div#my-account div#cardinfo table, div#my-account div#cardinfo table * .mPoint_Info
+        {
+            color: #000;
+        }
+        div#my-account .passive
+        {
+            color: #708090;
+        }
+        div#my-account a#top-up
+        {
+            color: red;
+        }
+        div#my-account div#cardinfo, div#my-account div#accountinfo, div#email
+        {
+            margin-bottom: 5px;
+        }
+        div#my-account div#password
+        {
+            padding-bottom: 5px;
+            border-top-style: dashed;
+            border-color: #00233c;
+            border-width: 2px;
+        }
+
+        div#price
+        {
+            margin-left: 15px;
+            padding-bottom: 0.5em;
+        }
+        div#outer-border
+        {
+
+        }
+        div#info div#submit
+        {
+            margin-left: 0px;
+        }
+        div#info, div#submit, div#link, div#selected-card, div#store-card
+        {
+            margin-left: 10px;
+        }
+        /* ========== ID Classes End ========== */
+    </style>
+</head>
+<body>
+<div class="mPoint_Info" id="progress">Step 2 of 2</div>
+
+<form action="auth.pml" method="post">
+    <div>
+        <!-- DIBS Required Data -->
+        <input name="merchant"  type="hidden"/>
+        <input name="callbackurl"  type="hidden"/>
+        <input name="accepturl"  type="hidden"/>
+        <input name="amount"  type="hidden"/>
+        <input name="currency"  type="hidden"/>
+        <input name="orderid"  type="hidden"/>
+        <input name="fullreply" type="hidden" value="true"/>
+        <input name="lang"  type="hidden"/>
+        <input name="paytype"  type="hidden"/>
+        <!-- mPoint Required Data -->
+        <input name="width"  type="hidden"/>
+        <input name="height"  type="hidden"/>
+        <input name="format"  type="hidden"/>
+        <input name="PHPSESSID"  type="hidden"/>
+        <input name="language"  type="hidden"/>
+        <input name="cardid"  type="hidden"/>
+        <input name="mpointid"  type="hidden"/>
+        <!-- Current transaction is an Account Top-Up and a previous transaction is in progress -->
+        <input name="euaid"  type="hidden"/>
+        <!-- Store Credit Card -->
+        <!-- Dynamic Page Data -->
+        <input name="clientid"  type="hidden"/>
+        <input name="client"  type="hidden"/>
+        <input name="accountid"  type="hidden"/>
+        <input name="mpoint_width"  type="hidden"/>
+        <input name="mpoint_height"  type="hidden"/>
+        <input name="sms_receipt"  type="hidden"/>
+        <input name="email_receipt"  type="hidden"/>
+        <input name="email_url"  type="hidden"/>
+        <input name="accept_url"  type="hidden"/>
+        <input name="mobile"  type="hidden"/>
+        <input name="price"  type="hidden"/>
+        <input name="card_width"  type="hidden"/>
+        <input name="card_height"  type="hidden"/>
+
+    </div>
+    <div id="selected-card">
+        <span class="mPoint_Label">Selected card:</span>
+        <table>
+            <tr>
+
+            </tr>
+        </table>
+    </div>
+    <!-- Price -->
+    <div id="price">
+        <span class="mPoint_Label">Price:</span>
+
+    </div>
+    <!-- Credit Card Information -->
+    <div class="mPoint_Help">Please enter your card details</div>
+    <div id="cardinfo">
+        <div class="mPoint_Label">
+            Card number:<br/>
+
+            <input maxlength="19" name="cardno" pattern="[0-9]*" type="number" size="19" style="-wap-input-format:'*N';" value=""/>
+
+        </div>
+        <div class="mPoint_Label">
+            Expiry date <span class="mPoint_Info">(mm/yy)</span>:<br/>
+
+            <input maxlength="2" name="expmon" pattern="[0-9]*" type="number" size="4" style="-wap-input-format:'*N';" value=""/>
+
+            &nbsp;/&nbsp;
+
+            <input maxlength="2" name="expyear" pattern="[0-9]*" type="number" size="4" style="-wap-input-format:'*N';" value=""/>
+
+        </div>
+        <div class="mPoint_Label">
+            CVC / CVS:<br/>
+
+            <input maxlength="4" name="cvc" pattern="[0-9]*" type="number" size="6" style="-wap-input-format:'*N';" value=""/>
+
+        </div>
+        <div class="mPoint_Info">3 digits (printed on the back)</div>
+    </div>
+    <!-- Store Credit Card -->
+    <!-- Complete Payment -->
+    <div id="submit" style="text-align:center">
+        <input class="mPoint_Button" value="Complete payment" type="submit"/>
+    </div>
+</form>
+</body>
+</html>
