@@ -11,7 +11,7 @@ class DIBSPayAPITest extends PayAPITest
 {
     public function testSuccessfulPay()
     {
-        parent::testSuccessfulPay(Constants::iDIBS_PSP);
-    }
+        parent::testSuccessfulPay(Constants::iDIBS_PSP, 2); //DK-VISA
+	}
 
 }
