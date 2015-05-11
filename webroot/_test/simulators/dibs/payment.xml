@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<url content-type="application/x-www-form-urlencoded" method="post">https://payment.architrade.com/shoppages//auth.pml</url>
+	<card_number>cardno</card_number>
+	<expiry_month>expmon</expiry_month>
+	<expiry_year>expyear</expiry_year>
+	<cvc>cvc</cvc>
+	<store_card>preauth</store_card>
+	<hidden_fields>
+		<!-- DIBS Required Data -->
+		<merchant></merchant>
+		<callbackurl></callbackurl>
+		<amount></amount>
+		<currency></currency>
+		<orderid></orderid>
+		<fullreply>true</fullreply>
+		<paytype></paytype>
+		<lang></lang>
+		<!-- mPoint Required Data -->
+		<language></language>
+		<cardid></cardid>
+		<mpointid></mpointid>
+		<!-- Current transaction is an Account Top-Up and a previous transaction is in progress -->
+		<euaid></euaid>
+		<!-- Store Credit Card -->
+		<!-- Dynamic Page Data -->
+		<clientid></clientid>
+		<accountid></accountid>
+		<markup>app</markup>
+	</hidden_fields>
+</root>
