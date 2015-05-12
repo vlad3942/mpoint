@@ -19,6 +19,17 @@ class NetAxeptCaptureAPITest extends CaptureAPITest
 		$row = pg_fetch_assoc($res);
 
 		$this->assertEquals(147, intval($row["fee"]) );
-    }
+
+		$bContainsCorrectFee = false;
+		foreach ($this->getErrorLogContent() as $line)
+		{
+			if (strpos($line, 'Fee received from notify client: 147') !== false)
+			{
+				$bContainsCorrectFee = true;
+				break;
+			}
+		}
+		$this->assertTrue($bContainsCorrectFee);
+	}
 
 }

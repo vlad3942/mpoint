@@ -41,11 +41,16 @@ abstract class mPointBaseAPITest extends mPointBaseDatabaseTest
         return $h;
     }
 
+	public function getErrorLogContent()
+	{
+		return file(sERROR_LOG, FILE_IGNORE_NEW_LINES);
+	}
+
 	public function tearDown()
 	{
 		parent::tearDown();
 
-		$aLogLines = file(sERROR_LOG, FILE_IGNORE_NEW_LINES);
+		$aLogLines = $this->getErrorLogContent();
 
 		$me = get_class($this);
 		$mode = array_search($me, self::$aVisited) === false ? 'w' : 'a';

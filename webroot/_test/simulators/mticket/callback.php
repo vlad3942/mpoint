@@ -8,6 +8,8 @@ case Constants::iPAYMENT_ACCEPTED_STATE:
 	$aRequiredArguments = array('status', 'amount', 'mpoint-id', 'pspid', 'card-id', 'language');
 	break;
 case Constants::iPAYMENT_CAPTURED_STATE:
+	$aRequiredArguments = array('status', 'amount', 'mpoint-id', 'pspid', 'language', 'fee');
+	break;
 case Constants::iPAYMENT_REFUNDED_STATE:
 	$aRequiredArguments = array('status', 'amount', 'mpoint-id', 'pspid', 'language');
 	break;
@@ -35,6 +37,7 @@ foreach ($aRequiredArguments as $arg)
 
 if (count($aMissing) < 1)
 {
+	trigger_error("Fee received from notify client: ". $_REQUEST['fee']);
 	echo "OK";
 }
 else
