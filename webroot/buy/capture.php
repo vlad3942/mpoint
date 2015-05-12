@@ -81,15 +81,18 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 				$obj_mPoint = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 				$code = $obj_mPoint->capture( (integer)$_REQUEST['amount']);
 
+				// Refresh transactioninfo object once the capture is performed
+				$obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(), $_OBJ_DB);
+
 				// Capture operation succeeded
 				if ($code >= 1000)
 				{
 					header("HTTP/1.0 200 OK");
 					
 					$aMsgCds[1000] = "Success";
-					$args = array("transact" => $obj_mPoint->getTxnInfo()->getExternalID(),
+					$args = array("transact" => $obj_TxnInfo->getExternalID(),
 								  "amount" => $_REQUEST['amount'],
-								  "fee" => $obj_mPoint->getTxnInfo()->getFee()
+								  "fee" => $obj_TxnInfo->getFee()
 					);
 					if ($code == 1000) { $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args); }
 				}
@@ -98,7 +101,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					header("HTTP/1.0 502 Bad Gateway");
 					
 					$aMsgCds[999] = "Declined";
-					$args = array("transact" => $obj_mPoint->getTxnInfo()->getExternalID(),
+					$args = array("transact" => $obj_TxnInfo->getExternalID(),
 								  "amount" => $_REQUEST['amount']);
 					$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args);
 				}
