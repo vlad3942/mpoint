@@ -194,7 +194,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								case (Constants::iWANNAFIND_PSP):
 									break;
 								case (Constants::iNETAXEPT_PSP):
-									$obj_PSP = new NetAxept($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["netaxept"]);
+									$obj_PSP = new NetAxept($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["netaxept"], $obj_PSPConfig);
 
 									if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["netaxept"]["host"] = str_replace("epayment.", "epayment-test.", $aHTTP_CONN_INFO["netaxept"]["host"]); }
 									$aHTTP_CONN_INFO["netaxept"]["username"] = $obj_PSPConfig->getUsername();

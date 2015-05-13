@@ -42,7 +42,7 @@ class NetAxept extends Callback implements Captureable, Refundable
 	 */
 	public function initialize(HTTPConnInfo &$oCI, $merchant, $account, $currency, $cardid, $storecard)
 	{
-		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true,
+		$obj_SOAP = new SOAPClient($this->aCONN_INFO["protocol"] ."://". $oCI->getHost() . $oCI->getPath(), array("trace" => true,
 																						"exceptions" => true) );
 		$sOrderNo = $this->getTxnInfo()->getOrderID();
 		if (empty($sOrderNo) === true) { $sOrderNo = $this->getTxnInfo()->getID(); }
