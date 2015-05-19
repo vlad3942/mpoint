@@ -17,6 +17,24 @@ SET client_min_messages = warning;
 -- Name: system; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
+CREATE OR REPLACE FUNCTION Nextvalue(varchar) RETURNS integer LANGUAGE plpgsql
+AS $BODY$
+DECLARE
+	-- Declare aliases for input
+	sequence ALIAS FOR $1;
+	num INT4;
+BEGIN
+	EXECUTE 'SELECT Nextval('''|| sequence || ''')' INTO num;
+
+	RETURN num;
+END;
+$BODY$;
+
+CREATE OR REPLACE VIEW Public.DUAL AS SELECT E'Provides compatibility with Oracle when selecting from functions.\nUse "SELECT [FUNCTION] FROM DUAL" rather than "SELECT [FUNCTION]"';
+
+GRANT SELECT ON TABLE Public.DUAL TO mpoint;
+
+
 CREATE SCHEMA system;
 
 
