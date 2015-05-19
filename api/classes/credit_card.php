@@ -83,10 +83,10 @@ class CreditCard extends EndUserAccount
 		{
 			$iWidth = $this->_obj_UA->getWidth() * iCARD_LOGO_SCALE / 100;
 			$iHeight = $this->_obj_UA->getHeight() * iCARD_LOGO_SCALE / 100;
-	
+
 			if ($iWidth / 180 > $iHeight / 115) { $fScale = $iHeight / 115; }
 			else { $fScale = $iWidth / 180; }
-	
+
 			$iWidth = intval($fScale * 180);
 			$iHeight = intval($fScale * 115);
 		}
@@ -111,15 +111,15 @@ class CreditCard extends EndUserAccount
 				INNER JOIN System".sSCHEMA_POSTFIX.".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PC.countryid = PP.countryid AND PP.enabled = '1'
 				WHERE CA.clientid = ". $this->_obj_TxnInfo->getClientConfig()->getID() ."
 					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
-					AND PC.countryid = ". $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID() ."
-					AND PP.countryid = ". $this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getID() ."
+					AND PC.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ."
+					AND PP.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ."
 					AND PP.amount IN (-1, ". intval($amount) .")
-					AND C.enabled = '1' AND (MA.stored_card = '0' OR MA.stored_card IS NULL) 
+					AND C.enabled = '1' AND (MA.stored_card = '0' OR MA.stored_card IS NULL)
 					AND (CA.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ." OR CA.countryid IS NULL) AND CA.enabled = '1'
 				ORDER BY C.position ASC, C.name ASC";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
-			
+
 		$xml = '<cards accountid="'. $this->_obj_TxnInfo->getAccountID() .'">';
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
@@ -133,14 +133,14 @@ class CreditCard extends EndUserAccount
 					// Only use Stored Cards (e-money based prepaid account will be unavailable)
 					if ( ($this->_obj_TxnInfo->getClientConfig()->getStoreCard()&1) == 1)
 					{
-						$sName = $this->getText()->_("Stored Cards");	
+						$sName = $this->getText()->_("Stored Cards");
 					}
 					else { $sName = str_replace("{CLIENT}", $this->_obj_TxnInfo->getClientConfig()->getName(), $this->getText()->_("My Account") ); }
 				}
 				else
 				{
 					$sName = $RS["NAME"];
-					
+
 					$sql = "SELECT min, \"max\"
 							FROM System".sSCHEMA_POSTFIX.".CardPrefix_Tbl
 							WHERE cardid = ". $RS["ID"];
@@ -167,12 +167,12 @@ class CreditCard extends EndUserAccount
 					}
 					$xml .= '</prefixes>';
 				}
-				else { $xml .= '<prefixes />'; } 
+				else { $xml .= '<prefixes />'; }
 				$xml .= '</item>';
 			}
 		}
 		$xml .= '</cards>';
-		
+
 		return $xml;
 	}
 }
