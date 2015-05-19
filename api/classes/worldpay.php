@@ -427,7 +427,9 @@ class WorldPay extends Callback
 			$b .= '<paymentMethodMask>';
 			foreach ($cards as $id)
 			{
-				$b .= '<include code="'. $this->getCardName($id) .'"/>';
+				$n = $this->getCardName($id);
+				// Filter out payment methods that are not supported by WorldPay's Redirect XML API such as Apple Pay
+				if (empty($n) === false) { $b .= '<include code="'. $n .'"/>'; }
 			}
 			$b .= '</paymentMethodMask>';
 			if (strlen($this->getTxnInfo()->getEMail() ) > 0)
@@ -439,7 +441,7 @@ class WorldPay extends Callback
 			$b .= '</order>';
 			$b .= '</submit>';
 			$b .= '</paymentService>';
-
+			
 			$obj_HTTP = new HTTPClient(new Template(), $oCI);
 			$obj_HTTP->connect();
 			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
