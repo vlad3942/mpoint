@@ -5994,6 +5994,9 @@ ALTER TABLE ONLY transaction_tbl
 
 SET search_path = log, pg_catalog;
 
+INSERT INTO operation_tbl (id, name, created, modified, enabled) VALUES (1, 'Card saved', '2013-11-08 09:23:31.708568', '2013-11-08 09:23:31.708568', true);
+INSERT INTO operation_tbl (id, name, created, modified, enabled) VALUES (2, 'Card deleted', '2013-11-08 09:23:31.708568', '2013-11-08 09:23:31.708568', true);
+INSERT INTO operation_tbl (id, name, created, modified, enabled) VALUES (3, 'Logged in', '2013-11-08 09:23:31.708568', '2013-11-08 09:23:31.708568', true);
 
 INSERT INTO state_tbl (id, name, module, func, created, modified, enabled) VALUES (0, 'System Record', NULL, NULL, '2008-02-22 18:41:52.024002', '2008-02-22 18:41:52.024002', false);
 INSERT INTO state_tbl (id, name, module, func, created, modified, enabled) VALUES (10, 'Undefined Client ID', 'Validate', 'valBasic', '2008-02-22 18:41:59.280496', '2008-02-22 18:41:59.280496', true);
@@ -6702,3 +6705,8 @@ INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (11, 17);
 
 
 INSERT INTO System.URLType_Tbl (id, name) VALUES (4, 'Mobile Enterprise Servicebus');
+
+ALTER TABLE client.client_tbl
+ADD COLUMN transaction_ttl integer DEFAULT 0;
+COMMENT ON COLUMN client.client_tbl.transaction_ttl
+IS 'Transaction Time To Live in seconds';

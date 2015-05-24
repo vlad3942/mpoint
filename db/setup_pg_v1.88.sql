@@ -12,3 +12,8 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT A.id, 
 
 INSERT INTO System.URLType_Tbl (id, name) VALUES (4, 'Mobile Enterprise Servicebus');
 INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (10005, 4, 'http://dsb.mesb.cellpointmobile.com/');
+
+ALTER TABLE client.client_tbl
+  ADD COLUMN transaction_ttl integer DEFAULT 0;
+  COMMENT ON COLUMN client.client_tbl.transaction_ttl
+  IS 'Transaction Time To Live in seconds';
