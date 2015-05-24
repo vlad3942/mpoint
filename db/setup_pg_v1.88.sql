@@ -17,3 +17,5 @@ ALTER TABLE client.client_tbl
   ADD COLUMN transaction_ttl integer DEFAULT 0;
   COMMENT ON COLUMN client.client_tbl.transaction_ttl
   IS 'Transaction Time To Live in seconds';
+
+UPDATE client.client_tbl SET transaction_ttl = 86400 WHERE id = 10028; -- TAXA
