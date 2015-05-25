@@ -19,3 +19,13 @@ ALTER TABLE client.client_tbl
   IS 'Transaction Time To Live in seconds';
 
 UPDATE client.client_tbl SET transaction_ttl = 86400 WHERE id = 10028; -- TAXA
+
+INSERT INTO Client.InfoType_Tbl (id, name, note) VALUES (1, 'PSP Message', 'A message which is shown during payment through a specific Payment Service Provider');
+-- DSB Production
+INSERT INTO Client.Info_Tbl (infotypeid, clientid, pspid, language, text) VALUES (1, 10005, 11, 'da', 'Afvent at returnere til DSB app');
+INSERT INTO Client.Info_Tbl (infotypeid, clientid, pspid, language, text) VALUES (1, 10005, 11, 'gb', 'Afvent at returnere til DSB app');
+INSERT INTO Client.Info_Tbl (infotypeid, clientid, pspid, language, text) VALUES (1, 10005, 11, 'us', 'Afvent at returnere til DSB app');
+-- DSB Test / Pre-Prod
+INSERT INTO Client.Info_Tbl (infotypeid, clientid, pspid, language, text) VALUES (1, 10014, 11, 'da', 'Afvent at returnere til DSB app');
+INSERT INTO Client.Info_Tbl (infotypeid, clientid, pspid, language, text) VALUES (1, 10014, 11, 'gb', 'Afvent at returnere til DSB app');
+INSERT INTO Client.Info_Tbl (infotypeid, clientid, pspid, language, text) VALUES (1, 10014, 11, 'us', 'Afvent at returnere til DSB app');
