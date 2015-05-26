@@ -132,7 +132,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 							$iTypeID = intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]);
 							// Authorize Purchase using Stored Value Account
-							if ($iTypeID == Constants::iCARD_PURCHASE_TYPE && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) > 0 && $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) < 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) + 40; }
+							if ($iTypeID == Constants::iCARD_PURCHASE_TYPE && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cryptogram) == 0 && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) > 0 && $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) < 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) + 40; }
 
 							// Success: Input Valid
 							if (count($aMsgCds) == 0)
