@@ -32,7 +32,7 @@ $aHTTP_CONN_INFO["dibs"]["protocol"] = "http";
 $aHTTP_CONN_INFO["dibs"]["host"] = "mpoint.local.cellpointmobile.com";
 $aHTTP_CONN_INFO["dibs"]["port"] = 80;
 $aHTTP_CONN_INFO["dibs"]["paths"]["pay"] = "/_test/simulators/dibs/pay.php";
-$aHTTP_CONN_INFO["dibs"]["paths"]["auth"] = "/_test/simulators/dibs/ticket_auth.php";
+$aHTTP_CONN_INFO["dibs"]["paths"]["auth"] = "/_test/simulators/dibs/auth.php";
 $aHTTP_CONN_INFO["dibs"]["paths"]["capture"] = "/_test/simulators/dibs/capture.php";
 $aHTTP_CONN_INFO["dibs"]["paths"]["cancel"] = "/_test/simulators/dibs/cancel.php";
 $aHTTP_CONN_INFO["dibs"]["paths"]["refund"] = "/_test/simulators/dibs/refund.php";
@@ -56,4 +56,7 @@ $aHTTP_CONN_INFO["netaxept"]["timeout"] = 120;
 $aHTTP_CONN_INFO["netaxept"]["path"] = "/_test/simulators/netaxept/netaxept.php?wsdl";
 $aHTTP_CONN_INFO["netaxept"]["method"] = "POST";
 $aHTTP_CONN_INFO["netaxept"]["contenttype"] = "application/x-www-form-urlencoded";
+
+$aCPM_CONN_INFO = $aMPOINT_CONN_INFO;
+$aCPM_CONN_INFO["contenttype"] = "application/x-www-form-urlencoded";
 ?>
