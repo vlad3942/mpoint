@@ -145,7 +145,7 @@ class NetAxept extends Callback implements Captureable, Refundable
 	 */
 	public function auth(HTTPConnInfo &$oCI, $merchant, $transactionID)
 	{
-		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true,
+		$obj_SOAP = new SOAPClient($this->aCONN_INFO["protocol"] ."://". $oCI->getHost(). $oCI->getPath(), array("trace" => true,
 																						"exceptions" => true) );
 		$aParams = array("merchantId" => $merchant,
 						 "token" => $oCI->getPassword(),
@@ -435,7 +435,7 @@ class NetAxept extends Callback implements Captureable, Refundable
 	 */
 	public function authTicket($ticket, HTTPConnInfo &$oCI, $merchant)
 	{
-		$obj_SOAP = new SOAPClient("https://". $oCI->getHost() . $oCI->getPath(), array("trace" => true, "exceptions" => true) );
+		$obj_SOAP = new SOAPClient($this->aCONN_INFO["protocol"] ."://". $oCI->getHost(). $oCI->getPath(), array("trace" => true, "exceptions" => true) );
 
 		$sOrderNo = $this->getTxnInfo()->getOrderID();
 		if (empty($sOrderNo) === true) { $sOrderNo = $this->getTxnInfo()->getID(); }
