@@ -130,10 +130,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								{
 									$_OBJ_DB->query("START TRANSACTION");
 
-									$iDelStatus = $obj_mPoint->delStoredCard($iAccountID, (integer) $obj_DOM->{'delete-card'}[$i]->card);
-
 									// Success: Stored Card Deleted
-									if ($iDelStatus == 10)
+									if ($obj_mPoint->delStoredCard($iAccountID, (integer) $obj_DOM->{'delete-card'}[$i]->card) === true)
 									{
 										// Success: Card saved
 										if ($code > 0 && $obj_ClientConfig->getNotificationURL() != "")
@@ -218,12 +216,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 											$xml = '<status code="100">Card successfully deleted</status>';
 										}
-									}
-									else if ($iDelStatus == 1)
-									{
-										header("HTTP/1.1 403 Forbidden");
-
-										$xml = '<status code="51">Cannot delete card with ongoing transactions</status>';
 									}
 									else
 									{
