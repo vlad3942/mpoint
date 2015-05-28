@@ -15,6 +15,21 @@
 										<xs:element name="merchant-sub-account" type="xs:string"/>
 										<xs:element name="username" type="xs:string"/>
 										<xs:element name="password" type="xs:string"/>
+										<xs:element name="messages">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="message" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:simpleContent>
+																<xs:extension base="xs:string">
+																	<xs:attribute name="language" type="xs:string" use="required"/>
+																</xs:extension>
+															</xs:simpleContent>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
 									</xs:all>
 									<xs:attribute type="xs:positiveInteger" name="id" />
 								</xs:complexType>
