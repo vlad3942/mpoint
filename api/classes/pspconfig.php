@@ -65,7 +65,7 @@ class PSPConfig extends BasicConfig
 	 * @param 	string $pw 		Client's Password for the Payment Service Provider
 	 * @param 	array $aMsgs 	List of messages that are sent to the Payment Service Provider
 	 */
-	public function __construct($id, $name, $ma, $msa, $un, $pw, array &$aMsgs=null)
+	public function __construct($id, $name, $ma, $msa, $un, $pw, array $aMsgs=array() )
 	{
 		parent::__construct($id, $name);
 
@@ -73,8 +73,7 @@ class PSPConfig extends BasicConfig
 		$this->_sMerchantSubAccount = trim($msa);
 		$this->_sUsername = trim($un);
 		$this->_sPassword = trim($pw);
-		if (is_array($aMsgs) === true) { $this->_aMessages = $aMsgs; }
-		else { $this->_aMessages = array(); }
+		$this->_aMessages = $aMsgs;
 	}
 
 	/**
