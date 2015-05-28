@@ -131,6 +131,7 @@ class Home extends General
 	 * 	 1. Account ID / Password doesn't match
 	 * 	 2. Account ID / Password doesn't match - Next invalid login will disable the account
 	 * 	 3. Account ID / Password doesn't match - Account has been disabled
+	 * 	 4. Account ID / Password doesn't match - Next invalid login will disable the account + And there is an active payment transaction
 	 * 	 5. Account not found
 	 * 	 9. Account disabled
 	 * 	10. Login successful
@@ -178,6 +179,28 @@ class Home extends General
 			elseif ($RS["ATTEMPTS"] + 2 == Constants::iMAX_LOGIN_ATTEMPTS)
 			{
 				$code = 2;
+				$aFinalTxnStates = array(Constants::iPAYMENT_CANCELLED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_REFUNDED_STATE, Constants::iPAYMENT_DECLINED_STATE);
+
+				$sql2 = "SELECT MAX(Coalesce(Msg2.stateid, Msg1.stateid, -1) ) AS state
+						 FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
+						 INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl Cli ON Cli.id = Txn.clientid AND Cli.enabled = true
+						 INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg1 ON Msg1.txnid = Txn.id AND Msg1.stateid = ". Constants::iPAYMENT_ACCEPTED_STATE . " AND Msg1.enabled = true AND Msg1.created > NOW() - CONCAT(Cli.transaction_ttl, ' seconds')::INTERVAL
+						 LEFT JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg2 ON Msg2.txnid = Msg1.txnid AND Msg2.stateid IN (". implode(',', $aFinalTxnStates) .") AND Msg2.enabled = true
+						 WHERE Txn.euaid = ". $id;
+//				echo $sql2."\n";
+
+				$res2 = $this->getDBConn()->query($sql2);
+
+				if (is_resource($res2) === true )
+				{
+					$RS2 = $this->getDBConn()->fetchName($res2);
+					if (is_array($RS2) === true && count($RS2) > 0)
+					{
+						// There is one or more active transactions
+						if ($RS2["STATE"] == Constants::iPAYMENT_ACCEPTED_STATE) { $code = 4; }
+					}
+				} else { trigger_error("An error occurred while trying to check the DB for active payment transactions", E_USER_WARNING); }
+
 				$iAttempts = $RS["ATTEMPTS"] + 1;
 				$bEnabled = true;
 			}
