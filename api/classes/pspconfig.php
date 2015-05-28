@@ -47,6 +47,12 @@ class PSPConfig extends BasicConfig
 	 * @var string
 	 */
 	private $_sPassword;
+	/**
+	 * List of messages that are sent to the Payment Service Provider
+	 *
+	 * @var array
+	 */
+	private $_aMessages;
 
 	/**
 	 * Default Constructor
@@ -57,8 +63,9 @@ class PSPConfig extends BasicConfig
 	 * @param 	string $msa		The name of the Client's Merchant Sub Account with the Payment Service Provider
 	 * @param 	string $un 		Client's Username for the Payment Service Provider
 	 * @param 	string $pw 		Client's Password for the Payment Service Provider
+	 * @param 	array $aMsgs 	List of messages that are sent to the Payment Service Provider
 	 */
-	public function __construct($id, $name, $ma, $msa, $un, $pw)
+	public function __construct($id, $name, $ma, $msa, $un, $pw, array &$aMsgs=null)
 	{
 		parent::__construct($id, $name);
 
@@ -66,6 +73,8 @@ class PSPConfig extends BasicConfig
 		$this->_sMerchantSubAccount = trim($msa);
 		$this->_sUsername = trim($un);
 		$this->_sPassword = trim($pw);
+		if (is_array($aMsgs) === true) { $this->_aMessages = $aMsgs; }
+		else { $this->_aMessages = array(); }
 	}
 
 	/**
@@ -92,6 +101,18 @@ class PSPConfig extends BasicConfig
 	 * @return 	string
 	 */
 	public function getPassword() { return $this->_sPassword; }
+	/**
+	 * Returns the List of messages that are sent to the Payment Service Provider
+	 *
+	 * @return 	array
+	 */
+	public function getMessages() { return $this->_aMessages; }
+	/**
+	 * Returns the that is sent to the Payment Service Provider in the specified language
+	 *
+	 * @return 	string
+	 */
+	public function getMessage($lang) { return $this->_aMessages[strtolower($lang)]; }
 
 	public function toXML()
 	{
@@ -101,6 +122,12 @@ class PSPConfig extends BasicConfig
 		$xml .= '<merchant-sub-account>'. htmlspecialchars($this->_sMerchantSubAccount, ENT_NOQUOTES) .'</merchant-sub-account>';
 		$xml .= '<username>'. htmlspecialchars($this->_sUsername, ENT_NOQUOTES) .'</username>';
 		$xml .= '<password>'. htmlspecialchars($this->_sPassword, ENT_NOQUOTES) .'</password>';
+		$xml .= '<messages>';
+		foreach ($this->_aMessages as $lang => $msg)
+		{
+			$xml .= '<message language="'. htmlspecialchars($lang, ENT_NOQUOTES) .'">'. htmlspecialchars($msg, ENT_NOQUOTES) .'</message>';
+		}
+		$xml .= '</messages>';
 		$xml .= '</psp-config>';
 
 		return $xml;
@@ -112,7 +139,7 @@ class PSPConfig extends BasicConfig
 	 * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
 	 * @param 	integer $clid 	Unique ID for the Client performing the request
 	 * @param 	integer $accid 	Unique ID for the Account-id performing the request
-	 * @param 	integer $pspid 	Unique ID for the Payment Service Provider
+	 * @param 	integer $pspid 	Unique ID for the Payment Service Provider 
 	 * @return 	PSPConfig
 	 */
 	public static function produceConfig(RDB &$oDB, $clid, $accid, $pspid)
@@ -124,11 +151,26 @@ class PSPConfig extends BasicConfig
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON MA.clientid = CL.id AND CL.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON Acc.id = MSA.accountid AND PSP.id = MSA.pspid AND MSA.enabled = '1'
-				WHERE CL.id = ". intval($clid) ." AND PSP.id = ". intval($pspid) ." AND PSP.enabled = '1' AND Acc.id = ". intval($accid)." ";
+				WHERE CL.id = ". intval($clid) ." AND PSP.id = ". intval($pspid) ." AND PSP.enabled = '1' AND Acc.id = ". intval($accid);
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
+		
+		$sql = "SELECT I.language, I.text
+				FROM Client".sSCHEMA_POSTFIX.".Info_Tbl I
+				INNER JOIN Client".sSCHEMA_POSTFIX.".InfoType_Tbl IT ON I.infotypeid = IT.id AND IT.enabled = '1'
+				WHERE I.clientid = ". intval($clid) ." AND IT.id = ". Constants::iPSP_MESSAGE_INFO ." AND (I.pspid = ". intval($pspid) ." OR I.pspid IS NULL)";
+//		echo $sql ."\n";
+		$aRS = $oDB->getAllNames($sql);
+		$aMessages = array();
+		if (is_array($aRS) === true)
+		{
+			for ($i=0; $i<count($aRS); $i++)
+			{
+				$aMessages[strtolower($aRS[$i]["LANGUAGE"])] = $aRS[$i]["TEXT"]; 
+			}
+		}
 
-		if (is_array($RS) === true && count($RS) > 1) {	return new PSPConfig($RS["ID"], $RS["NAME"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"]); }
+		if (is_array($RS) === true && count($RS) > 1) {	return new PSPConfig($RS["ID"], $RS["NAME"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], $aMessages); }
 		else { return null; }
 	}
 }

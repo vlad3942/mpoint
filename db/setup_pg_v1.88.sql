@@ -29,3 +29,7 @@ INSERT INTO Client.Info_Tbl (infotypeid, clientid, pspid, language, text) VALUES
 INSERT INTO Client.Info_Tbl (infotypeid, clientid, pspid, language, text) VALUES (1, 10014, 11, 'da', 'Afvent at returnere til DSB app');
 INSERT INTO Client.Info_Tbl (infotypeid, clientid, pspid, language, text) VALUES (1, 10014, 11, 'gb', 'Afvent at returnere til DSB app');
 INSERT INTO Client.Info_Tbl (infotypeid, clientid, pspid, language, text) VALUES (1, 10014, 11, 'us', 'Afvent at returnere til DSB app');
+-- Mobile Travel Card
+INSERT INTO Client.Info_Tbl (infotypeid, clientid, pspid, language, text) VALUES (1, 10019, 11, 'da', 'Afvent at returnere til Mobilperiodekort');
+INSERT INTO Client.Info_Tbl (infotypeid, clientid, pspid, language, text) VALUES (1, 10019, 11, 'gb', 'Afvent at returnere til Mobilperiodekort');
+INSERT INTO Client.Info_Tbl (infotypeid, clientid, pspid, language, text) VALUES (1, 10019, 11, 'us', 'Afvent at returnere til Mobilperiodekort');

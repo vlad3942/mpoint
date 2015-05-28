@@ -469,6 +469,10 @@ abstract class Constants
 	const iURL_TYPE_GET_TRANSACTION_STATUS = 3;
 	const iURL_TYPE_CALLBACK = 4;
 
-
+	/**
+	 * Unique ID for the Information Type: PSP Message
+	 * 
+	 */
+	const iPSP_MESSAGE_INFO = 1;
 }
 ?>
