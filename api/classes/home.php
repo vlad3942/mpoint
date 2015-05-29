@@ -251,7 +251,7 @@ class Home extends General
 			else
 			{
 				trigger_error("Authentication Service at: ". $oCI->toURL() ." rejected authorization with HTTP Code: ". $code, E_USER_WARNING);
-				return 4;
+				return 1;
 			}
 		}
 		catch (HTTPException $e)
