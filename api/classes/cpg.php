@@ -70,7 +70,7 @@ class CPG extends Callback
 		return $name;
 	}
 
-	public function authTicket(SimpleXMLElement $obj_XML, HTTPConnInfo &$oCI)
+	public function authTicket(HTTPConnInfo &$oCI, SimpleXMLElement $obj_XML)
 	{
 		$aClientVars = $this->getMessageData($this->getTxnInfo()->getID(), Constants::iCLIENT_VARS_STATE);
 
@@ -80,7 +80,7 @@ class CPG extends Callback
 		$b .= '<shortCode>'. htmlspecialchars($sc, ENT_NOQUOTES) .'</shortCode>'; // Short code of the Storefront application
 		$b .= '<order orderCode="'. htmlspecialchars($this->getTxnInfo()->getOrderID(), ENT_NOQUOTES) .'">'; // mandatory, needs to be unique
 		$b .= '<description>Emirates Airline Ticket Purchase '. $pnr .'</description>';
-		if (strtoupper($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP) ) == "VND") { $b .= '<amount value="'. ($this->getTxnInfo()->getAmount()/100) .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="0" debitCreditIndicator="credit" />'; }
+		if (strtoupper($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP) ) == "VND") { $b .= '<amount value="'. $this->getTxnInfo()->getAmount()/100 .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="0" debitCreditIndicator="credit" />'; }
 		else { $b .= '<amount value="'. $this->getTxnInfo()->getAmount() .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="2" debitCreditIndicator="credit" />'; }
 		if  (array_key_exists("var_tax", $aClientVars) === true)
 		{
@@ -89,33 +89,73 @@ class CPG extends Callback
 		if (array_key_exists("var_mcp", $aClientVars) === true) { $b .= trim($aClientVars["var_mcp"]); }	// Multi-Currency Payment
 		$b .= '<orderContent>'. htmlspecialchars($this->getTxnInfo()->getDescription(), ENT_NOQUOTES) .'</orderContent>';
 		$b .= '<paymentDetails>';
-		$b .= '<'. $this->getCardName($obj_XML["type-id"]) .'>';
-		$b .= '<CCRKey>'.  htmlspecialchars($obj_XML->ticket, ENT_NOQUOTES)  .'</CCRKey>'; // mandatory, 0-20
-		$b .= '<cvc>'. intval($obj_XML->cvc) .'</cvc>';
-		$b .= '<cardNumber></cardNumber>';
-		$b .= '<storeCardFlag>N</storeCardFlag>';
-		$b .= '<expiryDate>';
-		$b .= '<date month="'. substr($obj_XML->expiry, 0, 2) .'" year="20'. substr($obj_XML->expiry, -2) .'" />'; // mandatory
-		$b .= '</expiryDate>';
-		$b .= '<cardHolderName>'. htmlspecialchars($obj_XML->{'card-holder-name'}, ENT_NOQUOTES) .'</cardHolderName>'; // mandatory
-		$b .= '<paymentCountryCode>'. $this->_getCountryCode(intval($this->getTxnInfo()->getCountryConfig()->getID() ) ) .'</paymentCountryCode>';
-		if (array_key_exists("var_fiscal-number", $aClientVars) === true)
+		// Tokenized Card Details which may be authorized using CPG's Credit Card Repository
+		if (count($obj_XML->ticket) == 1)
 		{
-			$b .= '<fiscalNumber>'. $aClientVars["var_fiscal-number"] .'</fiscalNumber>';
+			$b .= '<'. $this->getCardName($obj_XML["type-id"]) .'>';
+			$b .= '<CCRKey>'.  htmlspecialchars($obj_XML->ticket, ENT_NOQUOTES)  .'</CCRKey>'; // mandatory, 0-20
+			$b .= '<cvc>'. intval($obj_XML->cvc) .'</cvc>';
+			$b .= '<cardNumber></cardNumber>';
+			$b .= '<storeCardFlag>N</storeCardFlag>';
+			$b .= '<expiryDate>';
+			$b .= '<date month="'. substr($obj_XML->expiry, 0, 2) .'" year="20'. substr($obj_XML->expiry, -2) .'" />'; // mandatory
+			$b .= '</expiryDate>';
+			$b .= '<cardHolderName>'. htmlspecialchars($obj_XML->{'card-holder-name'}, ENT_NOQUOTES) .'</cardHolderName>'; // mandatory
+			$b .= '<paymentCountryCode>'. $this->_getCountryCode(intval($this->getTxnInfo()->getCountryConfig()->getID() ) ) .'</paymentCountryCode>';
+			if (array_key_exists("var_fiscal-number", $aClientVars) === true)
+			{
+				$b .= '<fiscalNumber>'. $aClientVars["var_fiscal-number"] .'</fiscalNumber>';
+			}
+			if (array_key_exists("var_payment-country-code", $aClientVars) === true)
+			{
+				$b .= '<paymentCountryCode>'. $aClientVars["var_payment-country-code"] .'</paymentCountryCode>';
+			}
+			if (array_key_exists("var_number-of-instalments", $aClientVars) === true)
+			{
+				$b .= '<numberofinstalments>'. $aClientVars["var_number-of-instalments"] .'</numberofinstalments>';
+			}
 		}
-		if (array_key_exists("var_payment-country-code", $aClientVars) === true)
+		// Other Type of token which may be authorized directly through CPG
+		else
 		{
-			$b .= '<paymentCountryCode>'. $aClientVars["var_payment-country-code"] .'</paymentCountryCode>';
-		}
-		if (array_key_exists("var_number-of-instalments", $aClientVars) === true)
-		{
-			$b .= '<numberofinstalments>'. $aClientVars["var_number-of-instalments"] .'</numberofinstalments>';
+			$b .= '<'. $this->getCardName($obj_XML["id"]) .'>';
+			$b .= '<cardNumber>'. htmlspecialchars($obj_Card->{'card-number'}, ENT_NOQUOTES) .'</cardNumber>';
+			$b .= '<expiryDate>';
+			$b .= '<date month="'. substr($obj_XML->expiry, 0, 2) .'" year="20'. substr($obj_XML->expiry, -2) .'" />'; // mandatory
+			$b .= '</expiryDate>';
+			// mandatory
+			if (count($obj_XML->{'card-holder-name'}) == 1) { $b .= '<cardHolderName>'. htmlspecialchars($obj_XML->{'card-holder-name'}, ENT_NOQUOTES) .'</cardHolderName>'; }
+			elseif (count($obj_XML->address->{'first-name'}) == 1 || count($obj_XML->address->{'last-name'}) == 1)
+			{
+				$b .= '<cardHolderName>'. trim(htmlspecialchars($obj_XML->address->{'first-name'} .' '. $obj_XML->address->{'last-name'}, ENT_NOQUOTES) ) .'</cardHolderName>';
+			}
+			else { $b .= '<cardHolderName>John Doe</cardHolderName>'; }
+			$b .= '<info3DSecure>';
+			$b .= '<xid/>';
+			$b .= '<cavv>'. htmlspecialchars($obj_Card->cryptogram, ENT_NOQUOTES) .'</cavv>';
+			if (strlen($obj_Card->cryptogram["eci"]) > 0)
+			{
+				$eci = (integer) $obj_Card->cryptogram["eci"];
+				$b .= '<eci>'. ($eci < 10 ? "0". $eci : $eci) .'</eci>';
+			}
+			else { $b .= '<eci />'; }
+			$b .= '</info3DSecure>';
+			switch (strtolower($obj_Card->cryptogram["type"]) )
+			{
+			case "3ds":	// 3DSecure
+				$b .= '<paymentDataType>3DSecure</paymentDataType>';
+				break;
+			case "emv":	// EMV
+				$b .= '<paymentDataType>EMV</paymentDataType>';
+				break;
+			}
+			$b .= '<paymentCountryCode>'. $this->_getCountryCode(intval($this->getTxnInfo()->getCountryConfig()->getID() ) ) .'</paymentCountryCode>';
 		}
 		$b .= '<cardAddress>';
 		$b .= '<address>';
 		$b .= '<firstName>'. htmlspecialchars($obj_XML->address->{'first-name'}, ENT_NOQUOTES) .'</firstName>'; // mandatory, 0-40 chars
 		$b .= '<lastName>'. htmlspecialchars($obj_XML->address->{'last-name'}, ENT_NOQUOTES) .'</lastName>'; // mandatory, 0-40 chars
-		$b .= '<street>'. htmlspecialchars(str_replace("IBE-MPOINT", " ",  $obj_XML->address->street), ENT_NOQUOTES ) .'</street>'; // mandatory, 0-100 chars
+		$b .= '<street>'. htmlspecialchars(str_replace("IBE-MPOINT", " ",  $obj_XML->address->street), ENT_NOQUOTES) .'</street>'; // mandatory, 0-100 chars
 		$b .= '<postalCode>'. htmlspecialchars($obj_XML->address->{'postal-code'}, ENT_NOQUOTES) .'</postalCode>'; // optional, 0-20 chars
 		$b .= $obj_XML->address->city->asXML();
 		if (count($obj_XML->address->state) == 1)
@@ -129,13 +169,18 @@ class CPG extends Callback
 //		$b .= '<telephoneNumber>'. floatval($this->getTxnInfo()->getMobile() ) .'</telephoneNumber>'; // optional
 		$b .= '</address>';
 		$b .= '</cardAddress>';
-		$b .= '</'. $this->getCardName($obj_XML["type-id"]) .'>';
+		// Tokenized Card Details which may be authorized using CPG's Credit Card Repository
+		if (count($obj_XML->ticket) == 1)
+		{
+			$b .= '</'. $this->getCardName($obj_XML["type-id"]) .'>';
+		}
+		// Other Type of token which may be authorized directly through CPG
+		else { $b .= '<'. $this->getCardName($obj_XML["id"]) .'>'; }
 		$b .= '</paymentDetails>';
 		$b .= '<shopper>';
 		$b .= '<shopperIPAddress>'. htmlspecialchars($this->getTxnInfo()->getIP(), ENT_NOQUOTES) .'</shopperIPAddress>'; // mandatory
 		$b .= '<shopperEmailAddress>'. htmlspecialchars($this->getTxnInfo()->getEMail(), ENT_NOQUOTES) .'</shopperEmailAddress>'; // optional, 0-50 chars
 		$b .= '<authenticatedShopperID>'. htmlspecialchars($this->getTxnInfo()->getCustomerRef(), ENT_NOQUOTES) .'</authenticatedShopperID>'; // optional, applicable to BIBIT, 0-20 chars
-//		$b .= '<authenticatedShopperID />';
 		$b .= '</shopper>';
 		$b .= '<shippingAddress>';
 		$b .= '<address>';
@@ -156,6 +201,13 @@ class CPG extends Callback
 		$b .= '</address>';
 		$b .= '</shippingAddress>';
 		if (array_key_exists("var_enhanced-data", $aClientVars) === true) { $b .= trim($aClientVars["var_enhanced-data"]); }
+		// ApplePay token which may be authorized directly through CPG
+		if (count($obj_XML->ticket) == 0)
+		{
+			$b = substr($b, 0, strlen($b) - strlen("</enchancedData>") - 1);
+			$b .= '<bkgChannel>MPH-ApplePay</bkgChannel>';
+			$b .= '</enchancedData>';
+		}
 		$b .= '</order>';
 		$b .= '<returnURL>'. htmlspecialchars($this->getTxnInfo()->getAcceptURL(), ENT_NOQUOTES) .'</returnURL>';
 		$b .= '</submit>';
