@@ -50,7 +50,7 @@
 									<xs:element name="card">
 										<xs:complexType>
 											<xs:simpleContent>
-												<xs:extension base="xs:boolean">
+												<xs:extension base="xs:string">
 													<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 												</xs:extension>
 											</xs:simpleContent>

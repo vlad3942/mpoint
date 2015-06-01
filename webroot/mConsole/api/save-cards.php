@@ -29,7 +29,7 @@ $HTTP_RAW_POST_DATA .= '<root>';
 $HTTP_RAW_POST_DATA .= '<save-cards user-id="3">';
 $HTTP_RAW_POST_DATA .= '<cards>';
 $HTTP_RAW_POST_DATA .= '<card id="149">false</card>';
-$HTTP_RAW_POST_DATA .= '<card id="149">false</card>';
+$HTTP_RAW_POST_DATA .= '<card id="149">4</card>';
 $HTTP_RAW_POST_DATA .= '<card id="149">false</card>';
 $HTTP_RAW_POST_DATA .= '</cards>';
 $HTTP_RAW_POST_DATA .= '</save-cards>';
