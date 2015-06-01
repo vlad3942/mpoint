@@ -49,7 +49,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$xml ="<cards>";
 		for ($i=0; $i<count($obj_DOM->{'save-cards'}->cards->card); $i++)
 		{
-			$xml .= $obj_mPoint->updateCardAccess( (integer) $obj_DOM->{'save-cards'}->cards->card[$i]["id"], $obj_DOM->{'save-cards'}->cards->card[$i], $obj_DOM->{'save-cards'}["user-id"]);
+			$xml .= $obj_mPoint->updateCardAccess( (integer) $obj_DOM->{'save-cards'}->cards->card[$i]["id"], (string) $obj_DOM->{'save-cards'}->cards->card[$i], $obj_DOM->{'save-cards'}["user-id"]);
 		}
 		$xml .="</cards>";
 		$xml = utf8_encode($xml);

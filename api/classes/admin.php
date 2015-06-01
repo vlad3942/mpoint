@@ -289,7 +289,7 @@ class Admin extends General
 	 */
 	public function GetCards(array $aClientids, $uid)
 	{
-		$sql = "SELECT CA.id, CA.cardid, C.name AS cardname , CA.stateid, CA.pspid, PSP.name AS pspname, CA.countryid , CA.clientid, CL.name AS clientname
+		$sql = "SELECT CA.id, CA.cardid, C.name AS cardname , CA.stateid, CA.enabled, CA.pspid, PSP.name AS pspname, CA.countryid , CA.clientid, CL.name AS clientname
 				FROM Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA
 				INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl C ON CA.cardid = C.id
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON CA.clientid = CL.id
@@ -299,6 +299,7 @@ class Admin extends General
 				order by CA.clientid desc";
 
 //		echo $sql;
+		
 		$aRS = $this->getDBConn()->getAllNames($sql);
 		$xml = "<clients>";
 		if (is_array($aRS) === true && count($aRS) > 0)
@@ -342,14 +343,13 @@ class Admin extends General
 	public function updateCardAccess($id, $state, $uid)
 	{
 		$sql = "UPDATE Client".sSCHEMA_POSTFIX.".CardAccess_Tbl ";
-		if (is_bool($state) === true )	{ $sql .= "SET enabled = ". $this->getDBConn()->escStr($state) ." "; }
-		else { $sql .= "SET stateid = ". intval($state) ." "; }
+		if (is_numeric($state) === true)	{ $sql .= "SET stateid = ". intval($state) ." "; }
+		else { $sql .= "SET enabled = ". $this->getDBConn()->escStr($state) ." "; }
 				
 		$sql.=	"WHERE id = ". intval($id) ." AND clientid IN(SELECT clientid
 															 FROM Admin.Access_Tbl 
 															 WHERE userid = ". intval($uid) .")" ;
 	//echo $sql ."\n";	
-		file_put_contents(sLOG_PATH ."/jona.log", "\n". $sql, FILE_APPEND);
 		
 		$res = $this->getDBConn()->query($sql);
 		$xml = '<card id="'.$id .'">';
