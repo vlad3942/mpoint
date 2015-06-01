@@ -6747,3 +6747,26 @@ CREATE TABLE Client.Info_Tbl
 
 CREATE UNIQUE INDEX Info_PSP_UQ ON Client.Info_Tbl (infotypeid, clientid, language, pspid) WHERE pspid IS NOT NULL;
 CREATE UNIQUE INDEX Info_UQ ON Client.Info_Tbl (infotypeid, clientid, language) WHERE pspid IS NULL;
+
+-- Table: System.CardState_Tbl
+CREATE TABLE System.CardState_Tbl
+(
+  id			SERIAL,
+  name		VARCHAR(100),
+
+  CONSTRAINT CardState_PK PRIMARY KEY (id),
+  LIKE Template.General_Tbl INCLUDING DEFAULTS
+) WITHOUT OIDS;
+
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE System.CardState_Tbl TO mpoint;
+GRANT SELECT, UPDATE, USAGE ON TABLE System.CardState_Tbl_id_seq TO mpoint;
+/* ==================== SYSTEM SCHEMA END ==================== */
+
+INSERT INTO System.CardState_Tbl (id, name) VALUES (1, 'Enabled');
+INSERT INTO System.CardState_Tbl (id, name) VALUES (2, 'Disabled By Merchant');
+INSERT INTO System.CardState_Tbl (id, name) VALUES (3, 'Disabled By PSP');
+INSERT INTO System.CardState_Tbl (id, name) VALUES (4, 'Prerequisite not Met');
+INSERT INTO System.CardState_Tbl (id, name) VALUES (5, 'Temporarily Unavailable');
+
+ALTER TABLE Client.CardAccess_tbl ADD COLUMN stateid integer DEFAULT 1;
+ALTER TABLE Client.CardAccess_tbl ADD CONSTRAINT CardAccess2CardState_FK FOREIGN KEY (stateid) REFERENCES System.CardState_Tbl ON UPDATE CASCADE ON DELETE RESTRICT;
