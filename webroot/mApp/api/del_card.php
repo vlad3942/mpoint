@@ -141,7 +141,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											{
 												$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'delete-card'}[$i]->{'client-info'}, $obj_CountryConfig, @$_SERVER['HTTP_X_FORWARDED_FOR']);
 
-												$aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID, $obj_ClientConfig) );
+												$aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID, $obj_ClientConfig, true) );
 												$aObj_XML = $aObj_XML->xpath("/stored-cards/card[client/@id = ". $obj_ClientConfig->getID() ."]");
 
 												$aURL_Info = parse_url($obj_ClientConfig->getNotificationURL() );

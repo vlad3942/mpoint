@@ -403,11 +403,11 @@ class Home extends General
 	 * 	</stored-cards>
 	 *
 	 * @param	integer $id 	Unqiue ID of the End-User's Account
-	 * @param 	boolean $bAllCards 	Flag to indicate whether to include disabled and expired cards or not
+	 * @param 	boolean $adc 	Include Stored Cards where the card type has been disabled, defaults to false
 	 * @param 	UAProfile $oUA 	Reference to the User Agent Profile for the Customer's Mobile Device (optional)
 	 * @return 	string
 	 */
-	public function getStoredCards($id, ClientConfig &$oCC=null, &$oUA=null)
+	public function getStoredCards($id, ClientConfig &$oCC=null, $adc=false, &$oUA=null)
 	{
 		/* ========== Calculate Logo Dimensions Start ========== */
 		if (is_null($oUA) === false)
@@ -440,13 +440,14 @@ class Home extends General
 				INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON EUC.pspid = PSP.id AND PSP.enabled = '1'
 				INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl SC ON EUC.cardid = SC.id AND SC.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON EUC.clientid = CL.id AND CL.enabled = '1'
-				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON CL.id = CA.clientid AND SC.id = CA.cardid AND CA.enabled = '1'
+				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON CL.id = CA.clientid AND SC.id = CA.cardid
 				INNER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON EUC.accountid = EUA.id AND EUA.enabled = '1'
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Address_Tbl EUAD ON EUC.id = EUAD.cardid and EUA.enabled ='1'
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".State_Tbl STS ON EUAD.stateid = STS.id and EUA.enabled ='1'
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON EUA.id = CLA.accountid
 				WHERE EUC.accountid = ". intval($id);
 		if ($oCC->showAllCards() === false) { $sql .= " AND EUC.enabled = '1' AND ( (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."' OR length(EUC.expiry) = 0)"; }
+		if ($adc === false) { $sql .= "  AND CA.enabled = '1'"; }
 		if (is_null($oCC) === true || $oCC->getStoreCard() <= 3)
 		{
 			$sql .= " AND (CLA.clientid = CL.id OR NOT EXISTS (SELECT id

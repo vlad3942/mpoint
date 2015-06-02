@@ -66,7 +66,7 @@ else
 
 			<?= $obj_mPoint->getAccountInfo($_SESSION['obj_Info']->getInfo("accountid") ); ?>
 
-			<?= $obj_mPoint->getStoredCards($_SESSION['obj_Info']->getInfo("accountid") ); ?>
+			<?= $obj_mPoint->getStoredCards($_SESSION['obj_Info']->getInfo("accountid"), null, true); ?>
 		</content>
 	</root>
 <?php
