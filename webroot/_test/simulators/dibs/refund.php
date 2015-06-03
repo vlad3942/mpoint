@@ -13,7 +13,7 @@ $iTransact = (integer)@$_REQUEST['transact'];
 $iAmount = (integer)@$_REQUEST['amount'];
 $sOrderId = @$_REQUEST['orderid'];
 
-if (@$_SERVER['PHP_AUTH_USER'] == 'Tuser' && @$_SERVER['PHP_AUTH_PW'] == 'Tpass')
+if (@$_SERVER['PHP_AUTH_USER'] == 'Tusername' && @$_SERVER['PHP_AUTH_PW'] == 'Tpassword')
 {
 	//if ($iMerchant > 0 && $iTransact > 0 && $iAmount > 0 && strlen($sOrderId) > 0)
 	if (true)

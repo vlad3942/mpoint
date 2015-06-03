@@ -6,7 +6,7 @@ require_once(sAPI_CLASS_PATH ."/simpledom.php");
 
 $obj_XML = simpledom_load_string(file_get_contents('php://input') );
 
-if ($_SERVER['PHP_AUTH_USER'] == 'Tuser' && $_SERVER["PHP_AUTH_PW"] == 'Tpass')
+if ($_SERVER['PHP_AUTH_USER'] == 'Tusername' && $_SERVER["PHP_AUTH_PW"] == 'Tpassword')
 {
 
 	if ($obj_XML->validate(dirname(__FILE__). '/status.xsd') )
@@ -21,7 +21,7 @@ if ($_SERVER['PHP_AUTH_USER'] == 'Tuser' && $_SERVER["PHP_AUTH_PW"] == 'Tpass')
 		if (strrpos($obj_XML->status->transactions->transaction->orderid, '404') !== false) { echo '<status code="404">Transaction Not Found</status>'; }
 		else if (strrpos($obj_XML->status->transactions->transaction->orderid, '2001') !== false) { echo '<status code="2001">Captured</status>'; }
 		else if (strrpos($obj_XML->status->transactions->transaction->orderid, '2003') !== false) { echo '<status code="2003">Refunded</status>'; }
-		else { echo '<status code="2000">Success</status>'; }
+		else { echo '<status code="2000">Authorized</status>'; }
 
 		echo '</transaction>';
 		echo '</transactions>';

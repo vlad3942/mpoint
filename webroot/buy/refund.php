@@ -96,11 +96,11 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					{									
 						// Refund operation succeeded
 						$refund = $obj_mPoint->refund($_REQUEST['amount']);
-						if ($refund == 1000)
+						if ($refund == 1000 || $refund == 1001)
 						{
 							header("HTTP/1.0 200 OK");
 							
-							$aMsgCds[1000] = "Success";
+							$aMsgCds[$refund] = "Success";
 							$args = array("transact" => $obj_TxnInfo->getExternalID(),
 										  "amount" => $_REQUEST['amount']);
 							$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);

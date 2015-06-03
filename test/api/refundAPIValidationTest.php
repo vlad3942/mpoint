@@ -24,14 +24,14 @@ class RefundAPIValidationTest extends mPointBaseAPITest
 
     public function testTransactionNotFoundInCorrectState()
     {
-        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'test', 'testtest')");
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tusername', 'Tpassword')");
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', TRUE)");
 
 		$this->_httpClient->connect();
 
-        $iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'username=test&password=testtest&clientid=113&account=1100&mpointid=1001001&amount=5000');
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'username=Tusername&password=Tpassword&clientid=113&account=1100&mpointid=1001001&amount=5000');
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(404, $iStatus);
@@ -45,7 +45,7 @@ class RefundAPIValidationTest extends mPointBaseAPITest
 	 */
     public function testPaymentAlreadyRefunded()
     {
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'test', 'testtest')");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tusername', 'Tpassword')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', TRUE)");
@@ -55,7 +55,7 @@ class RefundAPIValidationTest extends mPointBaseAPITest
 
         $this->_httpClient->connect();
 
-        $iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'username=test&password=testtest&clientid=113&account=1100&mpointid=1001001&amount=5000');
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'username=Tusername&password=Tpassword&clientid=113&account=1100&mpointid=1001001&amount=5000');
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
@@ -65,7 +65,7 @@ class RefundAPIValidationTest extends mPointBaseAPITest
 
     public function testTransactionDisabled()
     {
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'test', 'testtest')");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tusername', 'Tpassword')");
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', FALSE)");
@@ -73,7 +73,7 @@ class RefundAPIValidationTest extends mPointBaseAPITest
 
         $this->_httpClient->connect();
 
-		$iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'username=test&password=testtest&clientid=113&account=1100&mpointid=1001001&amount=5000');
+		$iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'username=Tusername&password=Tpassword&clientid=113&account=1100&mpointid=1001001&amount=5000');
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
@@ -82,7 +82,7 @@ class RefundAPIValidationTest extends mPointBaseAPITest
 
     public function testPaymentRejectedState()
     {
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'test', 'testtest')");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tusername', 'Tpassword')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1')");
@@ -91,7 +91,7 @@ class RefundAPIValidationTest extends mPointBaseAPITest
 
         $this->_httpClient->connect();
 
-		$iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'username=test&password=testtest&clientid=113&account=1100&mpointid=1001001&amount=5000');
+		$iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'username=Tusername&password=Tpassword&clientid=113&account=1100&mpointid=1001001&amount=5000');
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
@@ -100,7 +100,7 @@ class RefundAPIValidationTest extends mPointBaseAPITest
 
     public function testInvalidAmount()
     {
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'test', 'testtest')");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tusername', 'Tpassword')");
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, orderid, amount, ip) VALUES (1001001, 100, 113, 1100, 100, '1513-005', 5000, '127.0.0.1')");
@@ -109,7 +109,7 @@ class RefundAPIValidationTest extends mPointBaseAPITest
         //Undefined amount
         $this->_httpClient->connect();
 
-		$iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'username=test&password=testtest&clientid=113&account=1100&mpointid=1001001');
+		$iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'username=Tusername&password=Tpassword&clientid=113&account=1100&mpointid=1001001');
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
@@ -123,7 +123,7 @@ class RefundAPIValidationTest extends mPointBaseAPITest
         //Too small amount
         $this->_httpClient->connect();
 
-		$iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'username=test&password=testtest&clientid=113&account=1100&mpointid=1001001&amount=-1');
+		$iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'username=Tusername&password=Tpassword&clientid=113&account=1100&mpointid=1001001&amount=-1');
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
@@ -137,7 +137,7 @@ class RefundAPIValidationTest extends mPointBaseAPITest
         //Too large amount
         $this->_httpClient->connect();
 
-		$iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'username=test&password=testtest&clientid=113&account=1100&mpointid=1001001&amount=10000');
+		$iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'username=Tusername&password=Tpassword&clientid=113&account=1100&mpointid=1001001&amount=10000');
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
@@ -233,13 +233,13 @@ class RefundAPIValidationTest extends mPointBaseAPITest
 
     public function testUndefinedTransaction()
     {
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'test', 'testtest')");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tusername', 'Tpassword')");
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
 
         $this->_httpClient->connect();
 
-        $iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'username=test&password=testtest&clientid=113&account=1100');
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'username=Tusername&password=Tpassword&clientid=113&account=1100');
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);
@@ -248,13 +248,13 @@ class RefundAPIValidationTest extends mPointBaseAPITest
 
     public function testInvalidTransaction()
     {
-		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'test', 'testtest')");
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tusername', 'Tpassword')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
 
         $this->_httpClient->connect();
 
-        $iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'username=test&password=testtest&clientid=113&account=1100&mpointid=1');
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders(), 'username=Tusername&password=Tpassword&clientid=113&account=1100&mpointid=1');
         $sReplyBody = $this->_httpClient->getReplyBody();
 
         $this->assertEquals(400, $iStatus);

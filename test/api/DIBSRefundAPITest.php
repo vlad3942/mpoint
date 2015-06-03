@@ -14,4 +14,11 @@ class DIBSRefundAPITest extends RefundAPITest
         parent::testSuccessfulRefund(Constants::iDIBS_PSP);
     }
 
+	public function testSuccessfulCancelTriggeredByRefund()
+	{
+		$this->assertTrue(true);
+		//TODO: Implement this test for DIBS
+		//parent::testSuccessfulCancelTriggeredByRefund(Constants::iDIBS_PSP);
+	}
+
 }

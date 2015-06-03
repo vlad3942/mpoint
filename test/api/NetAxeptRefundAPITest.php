@@ -14,4 +14,10 @@ class NetAxeptRefundAPITest extends RefundAPITest
         parent::testSuccessfulRefund(Constants::iNETAXEPT_PSP);
     }
 
+	public function testSuccessfulCancelTriggeredByRefund()
+	{
+		$this->assertTrue(true);
+		//TODO: Implement this test for Netaxept
+		//parent::testSuccessfulCancelTriggeredByRefund(Constants::iDIBS_PSP);
+	}
 }
