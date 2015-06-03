@@ -29,8 +29,6 @@ class MobilePay extends CPMPSP
 		return $obj_XML;
 	}
 
-	public function notifyClient($iStateId, array $vars) { parent::notifyClient($iStateId, Constants::iMOBILEPAY_PSP, $vars["amount"], $vars["card-id"]); }
-
 	public function auth($ticket, $apiKey, $cardID, $storecard)  { /* no operation */ }
 
 	public function initCallback(HTTPConnInfo &$oCI, $cardid, $txnid, $cardno, $expiry) { /* no operation */ }

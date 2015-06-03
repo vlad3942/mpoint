@@ -8,7 +8,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable
         parent::__construct($oDB, $oTxt, $oTI, $aConnInfo);
     }
 
-    /**
+	public function notifyClient($iStateId, array $vars) { parent::notifyClient($iStateId, Constants::iMOBILEPAY_PSP, $vars["amount"], $vars["card-id"]); }
+
+	/**
      * Performs a capture operation with CPM PSP for the provided transaction.
      * The method will return one the following status codes:
      *    >=1000 Capture succeeded
@@ -161,7 +163,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable
 					{
 						//TODO: Move DB update and Client notification to Model layer, once this is created
 						$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CANCELLED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
-						$this->notifyClient(Constants::iPAYMENT_CANCELLED_STATE, Constants::iMOBILEPAY_PSP, $this->getTxnInfo()->getAmount() );
+
+						$args = array('amount'=>$this->getTxnInfo()->getAmount(),
+							          'card-id'=>0);
+						$this->notifyClient(Constants::iPAYMENT_CANCELLED_STATE, $args);
 						return 1001;
 					}
 					return $iStatusCode;
