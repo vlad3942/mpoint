@@ -11,6 +11,11 @@ class NetAxeptCaptureAPITest extends CaptureAPITest
 {
     public function testSuccessfulCapture()
     {
+		/* Setup netaxept simulator, through error file mark */
+		$config = new stdClass();
+		$config->AmountCaptured = 5147;
+		trigger_error("NETAXEPT SIMULATOR CONFIG :: ". base64_encode(json_encode($config) ) );
+
         parent::testSuccessfulCapture(Constants::iNETAXEPT_PSP);
 
 		/* Test that Netaxept card fee is included in capture amount, and handled correctly */

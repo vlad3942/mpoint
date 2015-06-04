@@ -91,6 +91,13 @@ abstract class AuthorizeAPITest extends mPointBaseAPITest
 
 		$this->assertTrue(is_int(array_search(Constants::iPAYMENT_ACCEPTED_STATE, $aStates) ) );
 		$this->assertTrue(is_int(array_search(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates) ) );
+
+		/* Test that euaid has been set on txn */
+		$res =  $this->queryDB("SELECT euaid FROM Log.Transaction_Tbl WHERE id = 1001001");
+		$this->assertTrue(is_resource($res) );
+		$row = pg_fetch_assoc($res);
+
+		$this->assertEquals(5001, $row["euaid"]);
 	}
 
 }

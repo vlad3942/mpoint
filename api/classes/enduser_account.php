@@ -690,6 +690,7 @@ class EndUserAccount extends Home
 	 * @return	integer				Unqiue ID of the End-User's Account or -1 if no account was found
 	 */
 //	public function getAccountID(RDB &$oDB, ClientConfig &$oClC, $addr, CountryConfig &$oCC=null, $strict=true)
+//	public function getAccountID(RDB &$oDB, ClientConfig &$oClC, $addr, CountryConfig &$oCC=null, $mode)
 //	public function getAccountID(RDB &$oDB, ClientConfig &$oClC, $cref, $mob, $email, CountryConfig &$oCC)
 	public function getAccountID()
 	{
@@ -703,7 +704,11 @@ class EndUserAccount extends Home
 			return self::_getAccountID($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3]);
 			break;
 		case (5):
-			return self::_getAccountID($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3], $aArgs[4] == true ? 3 : 1);
+			if ($aArgs[4] === true) { $mode = 3; }
+			else if ($aArgs[4] === false) { $mode = 1; }
+			else { $mode = $aArgs[4]; }
+
+			return self::_getAccountID($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3], $mode);
 			break;
 		case (6):	//
 			list($obj_DB, $obj_ClientConfig, $obj_CountryConfig, $sCustomerRef, $lMobile, $sEMail) = $aArgs;

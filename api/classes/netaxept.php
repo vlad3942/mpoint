@@ -200,12 +200,15 @@ class NetAxept extends Callback implements Captureable, Refundable
 							$iEMailAccountID = -1;
 							if (strlen($this->getTxnInfo()->getCustomerRef() ) == 0)
 							{
-								if (floatval($this->getTxnInfo()->getMobile() ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID($this->getDBConn(), $this->getTxnInfo()->getClientConfig(), $this->getTxnInfo()->getMobile(), $this->getTxnInfo()->getCountryConfig(), false); }
-								if (trim($this->getTxnInfo()->getEMail() ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($this->getDBConn(), $this->getTxnInfo()->getClientConfig(), $this->getTxnInfo()->getEMail(), $this->getTxnInfo()->getCountryConfig(), false); }
-								if ($iMobileAccountID != $iEMailAccountID && $iEMailAccountID > 0)
+								if (floatval($this->getTxnInfo()->getMobile() ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID($this->getDBConn(), $this->getTxnInfo()->getClientConfig(), $this->getTxnInfo()->getMobile(), $this->getTxnInfo()->getCountryConfig(), 2); }
+								if (trim($this->getTxnInfo()->getEMail() ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($this->getDBConn(), $this->getTxnInfo()->getClientConfig(), $this->getTxnInfo()->getEMail(), $this->getTxnInfo()->getCountryConfig(), 2); }
+
+								if ($iMobileAccountID != $iEMailAccountID && $iEMailAccountID > 0 && $iMobileAccountID > 0)
 								{
 									$this->getTxnInfo()->setAccountID(-1);
 								}
+								else if ($iMobileAccountID > 0) { $this->getTxnInfo()->setAccountID($iMobileAccountID); }
+								else if ($iEMailAccountID > 0) { $this->getTxnInfo()->setAccountID($iEMailAccountID); }
 							}
 							/* SMS communication enabled
 							if ($this->getTxnInfo()->getClientConfig()->smsReceiptEnabled() === true)

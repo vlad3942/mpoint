@@ -59,6 +59,9 @@ class NetaxeptSimulator
 
 	public function query()
 	{
+		$config = $this->loadSimulatorConfig();
+		$config->ExpiryDate = date("m/y", strtotime('+2 years') );
+
 		header("Content-Type: text/xml; charset=UTF-8");
 
 		$response = '<?xml version="1.0" encoding="utf-8"?>';
@@ -70,13 +73,27 @@ class NetaxeptSimulator
             					<a:QueryFinished>2015-04-24T11:28:07.6948093+02:00</a:QueryFinished>
             					<a:TransactionId>9430db88c00b476b969316c90faf00fb</a:TransactionId>
 								<a:Summary>
-								   <a:AmountCaptured>5147</a:AmountCaptured>
+								   <a:AmountCaptured>'. $config->AmountCaptured. '</a:AmountCaptured>
 								   <a:AmountCredited>0</a:AmountCredited>
 								   <a:Annulled>false</a:Annulled>
 								   <a:AuthorizationId>232376</a:AuthorizationId>
 								   <a:Authorized>true</a:Authorized>
 					            </a:Summary>
-							</QueryResult>
+					            <a:OrderInformation>
+					            	<Amount>'. $config->AmountAuthorized. '</Amount>
+					            </a:OrderInformation>
+					            <a:CardInformation>
+					            	<a:Issuer>'. $config->CardIssuer. '</a:Issuer>
+					            	<a:MaskedPAN>4571XXXXXXXX1512</a:MaskedPAN>
+					            	<a:ExpiryDate>'. $config->ExpiryDate .'</a:ExpiryDate>
+					            </a:CardInformation>';
+	if (isset($config->Recurring) === true)
+	{
+		$response .= 			'<a:Recurring>
+									<a:PanHash>'. $config->Recurring->PanHash .'</a:PanHash>
+								</a:Recurring>';
+	}
+		$response .= 		'</QueryResult>
 						</QueryResponse>
 					</soap:Body>
 				</soap:Envelope>';
@@ -94,6 +111,23 @@ class NetaxeptSimulator
 	{
 		header("HTTP/1.0 500 Internal Server Error");
 		trigger_error("Netaxept Simulator failed with exception: ". $exception->getMessage() ."\n".  $exception->getTraceAsString() );
+	}
+
+	private function loadSimulatorConfig()
+	{
+		$aLogLines = file(sERROR_LOG, FILE_IGNORE_NEW_LINES);
+
+		foreach ($aLogLines as $line)
+		{
+			$pos = strpos($line, "NETAXEPT SIMULATOR CONFIG :: ");
+			if ($pos !== false)
+			{
+				$sConf = substr($line, $pos+strlen("NETAXEPT SIMULATOR CONFIG :: ") );
+				return json_decode(base64_decode($sConf) );
+			}
+		}
+
+		throw new RuntimeException("Could not load netaxept simulator config - file config mark not found");
 	}
 }
 

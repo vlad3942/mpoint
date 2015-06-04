@@ -21,12 +21,14 @@ class PayAPITest extends mPointBaseAPITest
 		$this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
 	}
 
-	protected function getPayDoc($client, $account, $txn=1, $card=7)
+	protected function getPayDoc($client, $account, $txn=1, $card=7, $store=false)
 	{
+		$sStore = $store ? 'true' : 'false';
+
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
 		$xml .= '<pay client-id="'. $client .'" account="'. $account .'">';
-		$xml .= '<transaction id="'. $txn .'" store-card="false">';
+		$xml .= '<transaction id="'. $txn .'" store-card="'. $sStore .'">';
 		$xml .= '<card type-id="'. $card .'">';
 		$xml .= '<amount country-id="100">200</amount>';
 		$xml .= '</card>';
@@ -65,6 +67,11 @@ class PayAPITest extends mPointBaseAPITest
 
 		$this->assertEquals(200, $iStatus);
 		$this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><psp-info id="'. $pspID. '" merchant-account="4216310">', $sReplyBody);
+
+		$res =  $this->queryDB("SELECT id FROM Enduser.Account_Tbl");
+		$this->assertTrue(is_resource($res) );
+
+		$this->assertEquals(0, pg_num_rows($res) );
 
 		return $sReplyBody;
 	}
