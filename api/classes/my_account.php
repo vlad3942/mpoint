@@ -220,22 +220,48 @@ class MyAccount extends Home
 	 *
 	 * @param 	integer $id			Unqiue ID of the End-User's Account
 	 * @param 	integer $cardid		Unique ID of the Stored Card that should be deleted
-	 * @return 	boolean
+	 * @return 	1 Active transactions
+	 * 			2 No matching cards
+	 * 			3 Internal Error
+	 * 		   10 Success
 	 */
 	public function delStoredCard($id, $cardid)
 	{
-		$sql = "DELETE FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
-				WHERE accountid = ". intval($id) ." AND id = ". intval($cardid);
+		$aFinalTxnStates = array(Constants::iPAYMENT_CANCELLED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_REFUNDED_STATE, Constants::iPAYMENT_DECLINED_STATE);
+
+		$sql1 = "SELECT Card.id AS cardid, MAX(Coalesce(Msg2.stateid, Msg1.stateid, -1) ) AS state
+				 FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl Card
+				 LEFT JOIN EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl Txn ON Txn.accountid = ". intval($id) ." AND Txn.enabled = true
+				 LEFT JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl Cli ON Cli.id = Card.clientid AND Cli.enabled = true
+				 LEFT JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg1 ON Msg1.txnid = Txn.txnid AND Msg1.stateid = ". Constants::iPAYMENT_ACCEPTED_STATE . " AND Msg1.enabled = true AND Msg1.created > NOW() - CONCAT(Cli.transaction_ttl, ' seconds')::INTERVAL
+				 LEFT JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg2 ON Msg2.txnid = Msg1.txnid AND Msg2.stateid IN (". implode(',', $aFinalTxnStates) .") AND Msg2.enabled = true
+				 WHERE Card.accountid = ". intval($id) ." AND Card.id = ". intval($cardid) ."
+				 GROUP BY Card.id";
 //		echo $sql ."\n";
-		$res = $this->getDBConn()->query($sql);
 
-		if (is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) > 0)
+		$res1 = $this->getDBConn()->query($sql1);
+
+		if (is_resource($res1) === true )
 		{
-			return true;
-		}
-		else { return false; }
-	}
+			$RS = $this->getDBConn()->fetchName($res1);
+			if (is_array($RS) === true)
+			{
+				// There is one or more active transactions
+				if ($RS["STATE"] == Constants::iPAYMENT_ACCEPTED_STATE) { return 1; }
+			}
+			else { return 2; }
 
+			$sql2 = "DELETE FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
+					 WHERE id = ". intval($RS["CARDID"]);
+//			echo $sql ."\n";
+
+			$res2 = $this->getDBConn()->query($sql2);
+			if (is_resource($res2) === true && $this->getDBConn()->countAffectedRows($res2) > 0) { return 10; }
+		}
+
+		return 3;
+	}
+	
 	/**
 	 * Sets a new preferred card for a specific client.
 	 * The method will reset the "preferred" flag for all other cards the End-User has stored for the Client
