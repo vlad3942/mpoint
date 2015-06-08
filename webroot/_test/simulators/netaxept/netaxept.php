@@ -117,13 +117,14 @@ class NetaxeptSimulator
 	{
 		$aLogLines = file(sERROR_LOG, FILE_IGNORE_NEW_LINES);
 
-		foreach ($aLogLines as $line)
+		for ($i = count($aLogLines)-1; $i >= 0; $i--)
 		{
+			$line = $aLogLines[$i];
 			$pos = strpos($line, "NETAXEPT SIMULATOR CONFIG :: ");
 			if ($pos !== false)
 			{
 				$sConf = substr($line, $pos+strlen("NETAXEPT SIMULATOR CONFIG :: ") );
-				return json_decode(base64_decode($sConf) );
+				return unserialize(base64_decode($sConf) );
 			}
 		}
 

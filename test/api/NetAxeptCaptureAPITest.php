@@ -14,7 +14,7 @@ class NetAxeptCaptureAPITest extends CaptureAPITest
 		/* Setup netaxept simulator, through error file mark */
 		$config = new stdClass();
 		$config->AmountCaptured = 5147;
-		trigger_error("NETAXEPT SIMULATOR CONFIG :: ". base64_encode(json_encode($config) ) );
+		trigger_error("NETAXEPT SIMULATOR CONFIG :: ". base64_encode(serialize($config) ) );
 
         parent::testSuccessfulCapture(Constants::iNETAXEPT_PSP);
 
