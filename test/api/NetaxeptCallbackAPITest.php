@@ -9,6 +9,7 @@ require_once(sAPI_CLASS_PATH ."simpledom.php");
 class NetaxeptCallbackAPITest extends mPointBaseAPITest
 {
 	protected $_aMPOINT_CONN_INFO;
+	protected $_httpClient;
 
 	public function __construct()
 	{
@@ -18,11 +19,12 @@ class NetaxeptCallbackAPITest extends mPointBaseAPITest
 	public function constHTTPClient()
 	{
 		global $aMPOINT_CONN_INFO;
-		$aMPOINT_CONN_INFO['path'] = "/netaxept/accept.php?responseCode=OK&mpoint-id=1001001&transactionId=15469928";
-		$aMPOINT_CONN_INFO['method'] = "GET";
-		$aMPOINT_CONN_INFO["contenttype"] = "application/x-www-form-urlencoded";
-		$this->_aMPOINT_CONN_INFO = $aMPOINT_CONN_INFO;
-		$this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
+		$ci = $aMPOINT_CONN_INFO;
+		$ci['path'] = "/netaxept/accept.php?responseCode=OK&mpoint-id=1001001&transactionId=15469928";
+		$ci['method'] = "GET";
+		$ci["contenttype"] = "application/x-www-form-urlencoded";
+		$this->_aMPOINT_CONN_INFO = $ci;
+		$this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($ci) );
 	}
 
 	public function testSuccessfulCallback()
@@ -35,7 +37,7 @@ class NetaxeptCallbackAPITest extends mPointBaseAPITest
 		$config->CardIssuer = 'Dankort';
 		$config->AmountAuthorized = 5000;
 		$config->AmountCaptured = 0;
-		trigger_error("NETAXEPT SIMULATOR CONFIG :: ". base64_encode(json_encode($config) ) );
+		trigger_error("NETAXEPT SIMULATOR CONFIG :: ". base64_encode(serialize($config) ) );
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
 		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (113, 4, 'http://mpoint.local.cellpointmobile.com/')");
@@ -47,9 +49,6 @@ class NetaxeptCallbackAPITest extends mPointBaseAPITest
 		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, pspid, extid, callbackurl, amount, ip, enabled, keywordid) VALUES (1001001, '900-55150298',". Constants::iPURCHASE_VIA_APP .", 113, 1100, 100, $pspID, 15469928, '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1)");
 
 		$this->_httpClient->connect();
-
-		$oJSON = new stdClass();
-		$oJSON->TransactionId = 15469928;
 
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders() );
 		$sReplyBody = $this->_httpClient->getReplyBody();
@@ -87,7 +86,7 @@ class NetaxeptCallbackAPITest extends mPointBaseAPITest
 		$config->AmountCaptured = 0;
 		$config->Recurring = new stdClass();
 		$config->Recurring->PanHash = md5("somehash");
-		trigger_error("NETAXEPT SIMULATOR CONFIG :: ". base64_encode(json_encode($config) ) );
+		trigger_error("NETAXEPT SIMULATOR CONFIG :: ". base64_encode(serialize($config) ) );
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
 		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (113, 4, 'http://mpoint.local.cellpointmobile.com/')");
@@ -99,9 +98,6 @@ class NetaxeptCallbackAPITest extends mPointBaseAPITest
 		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, pspid, extid, callbackurl, amount, ip, enabled, keywordid, mobile, email) VALUES (1001001, '900-55150298',". Constants::iPURCHASE_VIA_APP .", 113, 1100, 100, $pspID, 15469928, '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, '29612109', 'johan@cellpointmobile.com')");
 
 		$this->_httpClient->connect();
-
-		$oJSON = new stdClass();
-		$oJSON->TransactionId = 15469928;
 
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders() );
 		$sReplyBody = $this->_httpClient->getReplyBody();
