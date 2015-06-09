@@ -188,18 +188,25 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT Max(id
 -- e-Takeaway - FeedMe
 INSERT INTO Client.Client_Tbl (id, countryid, flowid, name, username, passwd, lang, callbackurl, cssurl, accepturl, mode, store_card, auto_capture, smsrcpt, emailrcpt, maxamount) VALUES (10034, 133, 1, 'e-Takeaway -(FeedMe)', 'CPMDemo', 'DEMOisNO_2', 'gb', '', '', '', 1, 0, false, false, false, 1000000);
 INSERT INTO Client.Account_Tbl (id, clientid, name, markup) VALUES(100047, 10034, 'Web  - FeedMe', 'xhtml' );
+INSERT INTO Client.Account_Tbl (id, clientid, name, markup) VALUES(100049, 10034, 'iOS  - FeedMe', 'app' );
+INSERT INTO Client.Account_Tbl (id, clientid, name, markup) VALUES(100050, 10034, 'Android  - FeedMe', 'app' );
 
-INSERT INTO Client.CardAccess_Tbl (cardid, clientid, pspid) VALUES (7, 10034, 1);
+INSERT INTO Client.CardAccess_Tbl (cardid, clientid, pspid) VALUES (7, 10034, 4);
 INSERT INTO Client.CardAccess_Tbl (cardid, clientid, pspid) VALUES (8, 10034, 4);
-INSERT INTO Client.CardAccess_Tbl (cardid, clientid, pspid) VALUES (6, 10034, 4);
-INSERT INTO Client.CardAccess_Tbl (cardid, clientid, pspid) VALUES (11, 10034, 4);
+INSERT INTO Client.CardAccess_Tbl (cardid, clientid, pspid) VALUES (1, 10034, 4);
+INSERT INTO Client.CardAccess_Tbl (cardid, clientid, pspid) VALUES (11, 10034, 1);
 
 
 INSERT INTO Client.Keyword_Tbl (clientid, name, standard) SELECT Max(id), 'CPM', true FROM Client.Client_Tbl;
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name) SELECT Max(id), 1, 'CPMDemo' FROM Client.Client_Tbl;
-INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT Max(id), 1, '-1'  FROM Client.Account_Tbl;
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES(100047, 1, '-1');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES(100047, 4, '1047782');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES(100049, 1, '-1');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES(100049, 4, '1047782');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES(100050, 1, '-1');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES(100050, 4, '1047782');
+
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) SELECT Max(id), 4, 'FEEDMEIRE', 'FEEDMEIRE', 'Live2015!!' FROM Client.Client_Tbl;
-INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT Max(id), 4, '-1'  FROM Client.Account_Tbl;
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd, stored_card) SELECT Max(id), 4, 'FEEDMEIREREC', 'FEEDMEIREREC', 'Live2015_!', true FROM Client.Client_Tbl;
 INSERT INTO Admin.Access_Tbl (userid, clientid) VALUES(3, 10034);
 INSERT INTO System.PspCurrency_Tbl (countryid, pspid, name) VALUES(133, 4, 'EUR');
