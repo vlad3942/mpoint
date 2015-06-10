@@ -44,12 +44,12 @@ if (count($aMissing) < 1)
 		$pos = strpos($line, 'mRetail expect external transaction id: ');
 		if ($pos !== false)
 		{
-			$expectedTransact = substr($line, $pos+strlen("mRetail expect external transaction id: ") );
+			$expectedTransact = intval(substr($line, $pos+strlen("mRetail expect external transaction id: ") ) );
 			break;
 		}
 	}
 
-	if ($expectedTransact < 1 || $expectedTransact == @$_REQUEST["pspid"])
+	if ($expectedTransact < 1 || $expectedTransact == intval(@$_REQUEST["pspid"]) )
 	{
 		trigger_error("Fee received from notify client: ". $_REQUEST['fee']);
 		echo "OK";
