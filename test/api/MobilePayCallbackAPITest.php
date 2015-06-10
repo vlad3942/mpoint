@@ -35,6 +35,8 @@ class MobilePayCallbackAPITest extends mPointBaseAPITest
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (113, 17, $pspID)"); //Mobilepay
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, pspid, callbackurl, amount, ip, enabled, keywordid) VALUES (1001001, '900-55150298', 100, 113, 1100, 100, null, '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1)");
 
+		trigger_error("mRetail expect external transaction id: 15469928");
+
         $this->_httpClient->connect();
 
 		$xml  = '<root>';

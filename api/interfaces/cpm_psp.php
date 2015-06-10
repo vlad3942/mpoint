@@ -8,7 +8,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable
         parent::__construct($oDB, $oTxt, $oTI, $aConnInfo);
     }
 
-	public function notifyClient($iStateId, array $vars) { parent::notifyClient($iStateId, Constants::iMOBILEPAY_PSP, $vars["amount"], $vars["card-id"]); }
+	public function notifyClient($iStateId, array $vars) { parent::notifyClient($iStateId, $vars["transact"], $vars["amount"], $vars["card-id"]); }
 
 	/**
      * Performs a capture operation with CPM PSP for the provided transaction.
@@ -165,6 +165,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable
 						$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CANCELLED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
 
 						$args = array('amount'=>$this->getTxnInfo()->getAmount(),
+							          'transact'=>$this->getTxnInfo()->getExternalID(),
 							          'card-id'=>0);
 						$this->notifyClient(Constants::iPAYMENT_CANCELLED_STATE, $args);
 						return 1001;

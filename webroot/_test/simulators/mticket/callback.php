@@ -37,8 +37,28 @@ foreach ($aRequiredArguments as $arg)
 
 if (count($aMissing) < 1)
 {
-	trigger_error("Fee received from notify client: ". $_REQUEST['fee']);
-	echo "OK";
+	$expectedTransact = 0;
+	$aLogLines = file(sERROR_LOG, FILE_IGNORE_NEW_LINES);
+	foreach ($aLogLines as $line)
+	{
+		$pos = strpos($line, 'mRetail expect external transaction id: ');
+		if ($pos !== false)
+		{
+			$expectedTransact = substr($line, $pos+strlen("mRetail expect external transaction id: ") );
+			break;
+		}
+	}
+
+	if ($expectedTransact < 1 || $expectedTransact == @$_REQUEST["pspid"])
+	{
+		trigger_error("Fee received from notify client: ". $_REQUEST['fee']);
+		echo "OK";
+	}
+	else
+	{
+		trigger_error("Wrong transaction ID received from mPoint, transact: ". @$_REQUEST["pspid"], E_USER_ERROR);
+	}
+
 }
 else
 {
