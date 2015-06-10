@@ -202,9 +202,9 @@ INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name) SELECT Max(id), 1
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES(100047, 1, '-1');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES(100047, 4, '1047782');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES(100049, 1, '-1');
-INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES(100049, 4, '1047782');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES(100049, 4, '1005626');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES(100050, 1, '-1');
-INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES(100050, 4, '1047782');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES(100050, 4, '1005626');
 
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) SELECT Max(id), 4, 'FEEDMEIRE', 'FEEDMEIRE', 'Live2015!!' FROM Client.Client_Tbl;
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd, stored_card) SELECT Max(id), 4, 'FEEDMEIREREC', 'FEEDMEIREREC', 'Live2015_!', true FROM Client.Client_Tbl;
