@@ -1,0 +1,1 @@
+UPDATE SYSTEM_OWNR.PSPCURRENCY_TBL set name = 'USD' where id = 642;
