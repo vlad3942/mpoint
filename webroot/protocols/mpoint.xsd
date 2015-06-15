@@ -53,10 +53,18 @@
 									<xs:element name="card" minOccurs="1" maxOccurs="1">
 										<xs:complexType>
 											<xs:all>
+												<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
+												<xs:element name="issuer-identification-number" minOccurs="0" maxOccurs="1">
+													<xs:simpleType>
+														<xs:restriction base="xs:positiveInteger">
+															<xs:minInclusive value="100000" />
+															<xs:maxInclusive value="999999" />
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
 												<xs:element name="apple-pay-token" type="xs:string" minOccurs="0" maxOccurs="1" />
 												<xs:element name="visa-key" type="xs:string" minOccurs="0" maxOccurs="1" />
 												<xs:element name="visa-data" type="xs:string" minOccurs="0" maxOccurs="1" />
-												<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
 											</xs:all>
 											<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
 										</xs:complexType>

@@ -37,5 +37,5 @@ INSERT INTO System.CardState_Tbl (id, name) VALUES (3, 'Disabled By PSP');
 INSERT INTO System.CardState_Tbl (id, name) VALUES (4, 'Prerequisite not Met');
 INSERT INTO System.CardState_Tbl (id, name) VALUES (5, 'Temporarily Unavailable');
 
-ALTER TABLE Client.CardAccess_tbl ADD COLUMN stateid integer DEFAULT 1;
-ALTER TABLE Client.CardAccess_tbl ADD CONSTRAINT CardAccess2CardState_FK FOREIGN KEY (stateid) REFERENCES System.CardState_Tbl ON UPDATE CASCADE ON DELETE RESTRICT;
+INSERT INTO System.IINAction_Tbl (id, name, note) VALUES (1, 'Blocked', 'Used for blocking cards based on their Issuer Identification Number');
+INSERT INTO System.IINAction_Tbl (id, name, note) VALUES (2, 'Whitelisted', 'Used for whitelisting cards based on their Issuer Identification Number');

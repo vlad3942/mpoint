@@ -1077,12 +1077,12 @@ class Validate
 		return $code;
 	}
 	/**
-	 * Performs validation of the the max amount of cards a user can have.
+	 * Performs validation of the max number of cards a user can have.
 	 * The method will return the following status codes:
 	 * 	 1. Undefined userid ID
-	 *	 2.	Undefined $max amount of cards
-	 *	 3.	Undefined $max amount of cards
-	 * 	 4. User has the max amount of cards
+	 *	 2.	Undefined $max number of cards
+	 *	 3.	Undefined $max number of cards
+	 * 	 4. User has the max number of cards
 	 * 	10. Success
 	 *
 	 * @param 	RDB $oDB 			Reference to the Database Object that holds the active connection to the mPoint Database
@@ -1146,6 +1146,44 @@ class Validate
 		if ($mac == $chk) { $code = 10; }
 		else { $code = 1; }
 
+		return $code;
+	}
+	
+	/**
+	 * Performs validation of the Issuer Identification Number (IIN) to determine whether it has been blocked by the client.
+	 * The method will return the following status codes:
+	 * 	 1. Undefined Issuer Identification Number
+	 *	 2.	Issuer Identification Number is too small
+	 *	 3.	Issuer Identification Number is too great
+	 * 	 4. Issuer Identification Number is blocked
+	 * 	10. No action defined for the Issuer Identification Number
+	 * 	11. Card has been whitelisted
+	 *
+	 * @param 	RDB $oDB 			Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param	integer $clid		The ID of the Client
+	 * @param 	integer $iin 		The Issuer Identification Number (IIN) that should be validated
+	 * @return 	integer
+	 */
+	public function valIssuerIdentificationNumber(RDB &$oDB, $clid, $iin)
+	{
+		$iin = (integer) $iin;
+		if ($iin == 0) { $code = 1; }
+		elseif ($iin < 100000) { $code = 2; }
+		elseif ($iin > 999999) { $code = 3; }
+		else
+		{
+			$sql = "SELECT iinactionid, enabled
+					FROM Client".sSCHEMA_POSTFIX.".IINList_Tbl
+					WHERE clientid = ". intval($clid) ." AND min <= ". $iin ." AND ". $iin ." <= max";
+			$RS = $oDB->getName($sql);
+			if (is_array($RS) === true && $RS["ENABLED"] === true)
+			{
+				if ($RS["IINACTIONID"] == 1) { $code = 4; }		// Issuer Identification Number is blocked
+				elseif ($RS["IINACTIONID"] == 2) { $code = 11; }// Issuer Identification Number has been whitelisted
+			}
+			// No action defined for the Issuer Identification Number
+			else { $code = 10; }
+		}
 		return $code;
 	}
 }

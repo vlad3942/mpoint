@@ -66,16 +66,16 @@ $_SERVER['PHP_AUTH_PW'] = "Ghdy4_ah1G";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<authorize-payment client-id="10019" account="100026">';
+$HTTP_RAW_POST_DATA .= '<authorize-payment client-id="10019">';
 $HTTP_RAW_POST_DATA .= '<transaction id="1814929">';
-$HTTP_RAW_POST_DATA .= '<card id="8" type-id="15">';
+$HTTP_RAW_POST_DATA .= '<card id="66597" type-id="7">';
 $HTTP_RAW_POST_DATA .= '<amount country-id="100">100</amount>';
-$HTTP_RAW_POST_DATA .= '<card-number>5272342200069702</card-number>';
-$HTTP_RAW_POST_DATA .= '<expiry>03/31</expiry>';
-$HTTP_RAW_POST_DATA .= '<cryptogram type="3ds">AKh96OOsGf2HAIDEhKulAoABFA==</cryptogram>';
+//$HTTP_RAW_POST_DATA .= '<card-number>5272342200069702</card-number>';
+//$HTTP_RAW_POST_DATA .= '<expiry>03/31</expiry>';
+//$HTTP_RAW_POST_DATA .= '<cryptogram type="3ds">AKh96OOsGf2HAIDEhKulAoABFA==</cryptogram>';
 $HTTP_RAW_POST_DATA .= '</card>';
 $HTTP_RAW_POST_DATA .= '</transaction>';
-//$HTTP_RAW_POST_DATA .= '<password>oisJona</password>';
+$HTTP_RAW_POST_DATA .= '<password>oisJona</password>';
 $HTTP_RAW_POST_DATA .= '<client-info platform="iOS" version="1.00" language="da">';
 $HTTP_RAW_POST_DATA .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
 $HTTP_RAW_POST_DATA .= '<email>jona@oismail.com</email>';
@@ -225,178 +225,190 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											$obj_Elem = $obj_XML->xpath("/stored-cards/card[@id = ". $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"] ."]");
 											if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1) { $obj_Elem->cvc = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc; }	
 										}
-
-										try
+										$code = $obj_Validator->valIssuerIdentificationNumber($_OBJ_DB, $obj_ClientConfig->getID(), substr(str_replace(" ", "", $obj_Elem->mask), 0, 6) );
+										
+										if ($code >= 10)
 										{
-											switch (intval($obj_Elem["pspid"]) )
+											try
 											{
-											case (Constants::iSTRIPE_PSP):
-												$obj_PSP = new Stripe_PSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, array() );
-												$aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iSTRIPE_PSP, true);
-												
-												$code =	$obj_PSP->authTicket( (integer) $obj_Elem->ticket, $aLogin["password"]);
-												if ($code == "OK")
+												switch (intval($obj_Elem["pspid"]) )
 												{
-													if ($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] === Constants::iAPPLE_PAY) { $xml .= '<status code="100">Payment Authorized using Apple Pay</status>'; }
-													else { $xml .= '<status code="100">Payment Authorized using Stored Card</status>'; }
-												}
-												// Error: Authorization declined
-												else
-												{
-													$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-												
-													header("HTTP/1.1 502 Bad Gateway");
-												
-													$xml .= '<status code="92">Authorization failed, Stripe returned error: '. $code .'</status>';
-												}
-												break;
-											case (Constants::iWORLDPAY_PSP):
-												// Authorise payment with PSP based on Ticket
-												$obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["worldpay"]);
-												if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["worldpay"]["host"] = str_replace("secure.", "secure-test.", $aHTTP_CONN_INFO["worldpay"]["host"]); }
-												$aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, true);
-												$aHTTP_CONN_INFO["worldpay"]["username"] = $aLogin["username"];
-												$aHTTP_CONN_INFO["worldpay"]["password"] = $aLogin["password"];
-					
-												$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["worldpay"]);
-												$obj_XML = $obj_PSP->authTicket($obj_ConnInfo, $obj_Elem);
-												// Authorization succeeded
-												if (is_null($obj_XML) === false && ($obj_XML instanceof SimpleXMLElement) === true && intval($obj_XML["code"]) == Constants::iPAYMENT_ACCEPTED_STATE)
-												{
-													try
-													{
-														// Initialise Callback to Client
-														$aCPM_CONN_INFO["path"] = "/callback/worldpay.php";
-														$aCPM_CONN_INFO["contenttype"] = "text/xml";
-														$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), $obj_XML);
-													}
-													catch (HTTPException $ignore) { /* Ignore */ }
-													$xml = '<status code="100">Payment Authorized using Stored Card</status>';	
-												}	
-												
-												else
-												{
-													$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+												case (Constants::iSTRIPE_PSP):
+													$obj_PSP = new Stripe_PSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, array() );
+													$aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iSTRIPE_PSP, true);
 													
-													header("HTTP/1.1 502 Bad Gateway");
-													
-													$xml .= '<status code="92">Authorization failed, WorldPay returned error code: '. $obj_XML->reply->error["code"] .'</status>';
-													
-													$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-												}
-												break;
-											case (Constants::iDIBS_PSP):	// DIBS
-												// Authorise payment with PSP based on Ticket
-												$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['dibs']);
-												$iTxnID = $obj_PSP->authTicket( (integer) $obj_Elem->ticket);
-												// Authorization succeeded
-												if ($iTxnID > 0)
-												{
-													try
+													$code =	$obj_PSP->authTicket( (integer) $obj_Elem->ticket, $aLogin["password"]);
+													if ($code == "OK")
 													{
-														// Initialise Callback to Client
-														$aCPM_CONN_INFO["path"] = "/callback/dibs.php";
-														$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_Elem->type["id"]), $iTxnID, (string) $obj_Elem->mask, (string) $obj_Elem->expiry);
+														if ($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] === Constants::iAPPLE_PAY) { $xml .= '<status code="100">Payment Authorized using Apple Pay</status>'; }
+														else { $xml .= '<status code="100">Payment Authorized using Stored Card</status>'; }
 													}
-													catch (HTTPException $ignore) { /* Ignore */ }
-
-													$xml = '<status code="100">Payment Authorized using Stored Card</status>';
-												}
-												// Error: Authorization declined
-												else
-												{
-													$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-
-													header("HTTP/1.1 502 Bad Gateway");
-
-													$xml .= '<status code="92">Authorization failed, DIBS returned error code'. $iTxnID .'</status>';
-												}
-												break;
-											case (Constants::iWANNAFIND_PSP):	// WannaFind
-												// Authorise payment with PSP based on Ticket
-												$obj_PSP = new WannaFind($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["wannafind"]);
-												$iTxnID = $obj_PSP->authTicket( (integer) $obj_Elem->ticket);
-												// Authorization succeeded
-												if ($iTxnID > 0)
-												{
-													try
+													// Error: Authorization declined
+													else
 													{
-														// Initialise Callback to Client
-														$aCPM_CONN_INFO["path"] = "/callback/wannafind.php";
-														$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_Elem->type["id"]), $iTxnID);
+														$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+													
+														header("HTTP/1.1 502 Bad Gateway");
+													
+														$xml .= '<status code="92">Authorization failed, Stripe returned error: '. $code .'</status>';
 													}
-													catch (HTTPException $ignore) { /* Ignore */ }
-
-													$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
-												}
-												// Error: Authorization declined
-												else
-												{
+													break;
+												case (Constants::iWORLDPAY_PSP):
+													// Authorise payment with PSP based on Ticket
+													$obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["worldpay"]);
+													if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["worldpay"]["host"] = str_replace("secure.", "secure-test.", $aHTTP_CONN_INFO["worldpay"]["host"]); }
+													$aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, true);
+													$aHTTP_CONN_INFO["worldpay"]["username"] = $aLogin["username"];
+													$aHTTP_CONN_INFO["worldpay"]["password"] = $aLogin["password"];
+						
+													$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["worldpay"]);
+													$obj_XML = $obj_PSP->authTicket($obj_ConnInfo, $obj_Elem);
+													// Authorization succeeded
+													if (is_null($obj_XML) === false && ($obj_XML instanceof SimpleXMLElement) === true && intval($obj_XML["code"]) == Constants::iPAYMENT_ACCEPTED_STATE)
+													{
+														try
+														{
+															// Initialise Callback to Client
+															$aCPM_CONN_INFO["path"] = "/callback/worldpay.php";
+															$aCPM_CONN_INFO["contenttype"] = "text/xml";
+															$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), $obj_XML);
+														}
+														catch (HTTPException $ignore) { /* Ignore */ }
+														$xml = '<status code="100">Payment Authorized using Stored Card</status>';	
+													}	
+													
+													else
+													{
+														$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+														
+														header("HTTP/1.1 502 Bad Gateway");
+														
+														$xml .= '<status code="92">Authorization failed, WorldPay returned error code: '. $obj_XML->reply->error["code"] .'</status>';
+														
+														$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+													}
+													break;
+												case (Constants::iDIBS_PSP):	// DIBS
+													// Authorise payment with PSP based on Ticket
+													$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['dibs']);
+													$iTxnID = $obj_PSP->authTicket( (integer) $obj_Elem->ticket);
+													// Authorization succeeded
+													if ($iTxnID > 0)
+													{
+														try
+														{
+															// Initialise Callback to Client
+															$aCPM_CONN_INFO["path"] = "/callback/dibs.php";
+															$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_Elem->type["id"]), $iTxnID, (string) $obj_Elem->mask, (string) $obj_Elem->expiry);
+														}
+														catch (HTTPException $ignore) { /* Ignore */ }
+	
+														$xml = '<status code="100">Payment Authorized using Stored Card</status>';
+													}
+													// Error: Authorization declined
+													else
+													{
+														$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+	
+														header("HTTP/1.1 502 Bad Gateway");
+	
+														$xml .= '<status code="92">Authorization failed, DIBS returned error code'. $iTxnID .'</status>';
+													}
+													break;
+												case (Constants::iWANNAFIND_PSP):	// WannaFind
+													// Authorise payment with PSP based on Ticket
+													$obj_PSP = new WannaFind($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["wannafind"]);
+													$iTxnID = $obj_PSP->authTicket( (integer) $obj_Elem->ticket);
+													// Authorization succeeded
+													if ($iTxnID > 0)
+													{
+														try
+														{
+															// Initialise Callback to Client
+															$aCPM_CONN_INFO["path"] = "/callback/wannafind.php";
+															$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_Elem->type["id"]), $iTxnID);
+														}
+														catch (HTTPException $ignore) { /* Ignore */ }
+	
+														$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
+													}
+													// Error: Authorization declined
+													else
+													{
+														$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+	
+														header("HTTP/1.1 502 Bad Gateway");
+	
+														$xml .= '<status code="92">Authorization failed, WannaFind returned error code'. $iTxnID .'</status>';
+													}
+													break;
+												case (Constants::iNETAXEPT_PSP): // NetAxept
+													$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETAXEPT_PSP);
+													$obj_PSP = new NetAxept($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["netaxept"], $obj_PSPConfig);
+	
+													if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["netaxept"]["host"] = str_replace("epayment.", "epayment-test.", $aHTTP_CONN_INFO["netaxept"]["host"]); }
+													$aHTTP_CONN_INFO["netaxept"]["username"] = $obj_PSPConfig->getUsername();
+													$aHTTP_CONN_INFO["netaxept"]["password"] = $obj_PSPConfig->getPassword();
+													$oCI = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["netaxept"]);
+	
+													$code = $obj_PSP->authTicket($obj_Elem->ticket, $oCI, $obj_PSPConfig->getMerchantAccount() );
+													// Authorization succeeded
+													if ($code == "OK")
+													{
+														$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
+													}
+													// Error: Authorization declined
+													else
+													{
+														$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+	
+														header("HTTP/1.1 502 Bad Gateway");
+	
+														$xml .= '<status code="92">Authorization failed, NetAxcept returned error: '. $code .'</status>';
+													}
+													break;
+												case (Constants::iCPG_PSP):
+													$obj_PSP = new CPG($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["cpg"]);
+													$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCPG_PSP);
+	
+													$aHTTP_CONN_INFO["cpg"]["username"] = $obj_PSPConfig->getUsername();
+													$aHTTP_CONN_INFO["cpg"]["password"] = $obj_PSPConfig->getPassword();
+													$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["cpg"]);
+	
+													$xml .= $obj_PSP->authTicket($obj_ConnInfo, $obj_Elem);
+													break;
+												default:	// Unkown Error
 													$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-
-													header("HTTP/1.1 502 Bad Gateway");
-
-													$xml .= '<status code="92">Authorization failed, WannaFind returned error code'. $iTxnID .'</status>';
+	
+													header("HTTP/1.1 500 Internal Server Error");
+	
+													$xml .= '<status code="99">Unknown Payment Service Provider: '. $obj_Elem["pspid"] .'</status>';
+													break;
 												}
-												break;
-											case (Constants::iNETAXEPT_PSP): // NetAxept
-												$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETAXEPT_PSP);
-												$obj_PSP = new NetAxept($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["netaxept"], $obj_PSPConfig);
-
-												if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["netaxept"]["host"] = str_replace("epayment.", "epayment-test.", $aHTTP_CONN_INFO["netaxept"]["host"]); }
-												$aHTTP_CONN_INFO["netaxept"]["username"] = $obj_PSPConfig->getUsername();
-												$aHTTP_CONN_INFO["netaxept"]["password"] = $obj_PSPConfig->getPassword();
-												$oCI = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["netaxept"]);
-
-												$code = $obj_PSP->authTicket($obj_Elem->ticket, $oCI, $obj_PSPConfig->getMerchantAccount() );
-												// Authorization succeeded
-												if ($code == "OK")
-												{
-													$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
-												}
-												// Error: Authorization declined
-												else
-												{
-													$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-
-													header("HTTP/1.1 502 Bad Gateway");
-
-													$xml .= '<status code="92">Authorization failed, NetAxcept returned error: '. $code .'</status>';
-												}
-												break;
-											case (Constants::iCPG_PSP):
-												$obj_PSP = new CPG($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["cpg"]);
-												$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCPG_PSP);
-
-												$aHTTP_CONN_INFO["cpg"]["username"] = $obj_PSPConfig->getUsername();
-												$aHTTP_CONN_INFO["cpg"]["password"] = $obj_PSPConfig->getPassword();
-												$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["cpg"]);
-
-												$xml .= $obj_PSP->authTicket($obj_ConnInfo, $obj_Elem);
-												break;
-											default:	// Unkown Error
+											}
+											catch (HTTPException $e)
+											{
 												$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-
-												header("HTTP/1.1 500 Internal Server Error");
-
-												$xml .= '<status code="99">Unknown Payment Service Provider: '. $obj_Elem["pspid"] .'</status>';
-												break;
+	
+												header("HTTP/1.1 504 Gateway Timeout");
+	
+												$xml = '<status code="90">'. htmlspecialchars($e->getTraceAsString(), ENT_NOQUOTES) .'</status>';
 											}
 										}
-										catch (HTTPException $e)
+										// Error: Card has been blocked
+										else
 										{
 											$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-
-											header("HTTP/1.1 504 Gateway Timeout");
-
-											$xml = '<status code="90">'. htmlspecialchars($e->getTraceAsString(), ENT_NOQUOTES) .'</status>';
+											header("HTTP/1.1 403 Forbidden");
+		
+											$xml = '<status code="'. ($code+80) .'">Card has been blocked</status>';
 										}
-										break;
 									}
 								}
 								// Authentication succeeded - But Mobile number not verified
 								elseif ($code == 11)
 								{
+									$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 									header("HTTP/1.1 403 Forbidden");
 
 									$xml = '<status code="37">Mobile number not verified</status>';
