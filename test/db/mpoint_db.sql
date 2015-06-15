@@ -6770,3 +6770,46 @@ INSERT INTO System.CardState_Tbl (id, name) VALUES (5, 'Temporarily Unavailable'
 
 ALTER TABLE Client.CardAccess_tbl ADD COLUMN stateid integer DEFAULT 1;
 ALTER TABLE Client.CardAccess_tbl ADD CONSTRAINT CardAccess2CardState_FK FOREIGN KEY (stateid) REFERENCES System.CardState_Tbl ON UPDATE CASCADE ON DELETE RESTRICT;
+
+CREATE TABLE System.IINAction_Tbl
+(
+  id			INT4,
+
+  name		VARCHAR(100),
+  note		TEXT,
+
+  CONSTRAINT IINAction_PK PRIMARY KEY (id),
+  LIKE Template.General_Tbl INCLUDING DEFAULTS
+) WITHOUT OIDS;
+
+CREATE UNIQUE INDEX IINAction_UQ ON System.IINAction_Tbl (Lower(name) );
+
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE System.IINAction_Tbl TO mpoint;
+
+
+-- Table: Client.IINList_Tbl
+-- Data table for each client's lists of actions taken for a range of Issuer Identification Numbers
+CREATE TABLE Client.IINList_Tbl
+(
+  id			SERIAL,
+  iinactionid	INT4 NOT NULL,	-- ID of the action to take for the defined range of Issuer Identification Numbers
+  clientid	INT4 NOT NULL,	-- ID of the client for which the specified action is defined
+
+  min			INT8,
+  max			INT8,
+
+  CONSTRAINT IINList_PK PRIMARY KEY (id),
+  CONSTRAINT IINList2Client_FK FOREIGN KEY (clientid) REFERENCES Client.Client_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT IINList2IINAction_FK FOREIGN KEY (iinactionid) REFERENCES System.IINAction_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
+  LIKE Template.General_Tbl INCLUDING DEFAULTS
+) WITHOUT OIDS;
+
+
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.IINList_Tbl TO mpoint;
+GRANT SELECT, UPDATE, INSERT ON TABLE Client.IINList_Tbl_id_seq TO mpoint;
+
+CREATE INDEX IINRanges_Idx ON Client.IINList_Tbl (clientid, min, max);
+
+
+INSERT INTO System.IINAction_Tbl (id, name, note) VALUES (1, 'Blocked', 'Used for blocking cards based on their Issuer Identification Number');
+INSERT INTO System.IINAction_Tbl (id, name, note) VALUES (2, 'Whitelisted', 'Used for whitelisting cards based on their Issuer Identification Number');
