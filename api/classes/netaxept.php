@@ -107,9 +107,8 @@ class NetAxept extends Callback implements Captureable, Refundable
 			// Error: Unable to initialize payment transaction
 			else
 			{
-				trigger_error("Unable to initialize payment transaction with NetAxept. HTTP Response Code: ". $code ."\n". var_export($obj_HTTP, true), E_USER_WARNING);
-
-				throw new mPointException("NetAxept returned HTTP Code: ". $code, 1100);
+				trigger_error("Unable to initialize payment transaction with NetAxept - unexpected TxnId. Got result from Netaxept: ". var_export($obj_Std, true), E_USER_WARNING);
+				throw new mPointException("unexpected TxnId. Got result from Netaxept: ". var_export($obj_Std, true), 1100);
 			}
 		}
 		catch (Exception $e)
@@ -151,7 +150,6 @@ class NetAxept extends Callback implements Captureable, Refundable
 						 "token" => $oCI->getPassword(),
 						 "request" => array("Operation" => "AUTH",
 						 					"TransactionId" => $transactionID) );
-
 		try
 		{
 			$obj_Std = $obj_SOAP->Process($aParams);
@@ -185,13 +183,15 @@ class NetAxept extends Callback implements Captureable, Refundable
 							if (strlen($this->getTxnInfo()->getCustomerRef() ) == 0)
 							{
 								if (floatval($this->getTxnInfo()->getMobile() ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID($this->getDBConn(), $this->getTxnInfo()->getClientConfig(), $this->getTxnInfo()->getMobile(), $this->getTxnInfo()->getCountryConfig(), ($this->getTxnInfo()->getClientConfig()->getStoreCard() <= 3) ); }
-								if (trim($this->getTxnInfo()->getEMail() ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($this->getDBConn(), $obj_TxnInfo->getClientConfig(), $this->getTxnInfo()->getEMail(), $this->getTxnInfo()->getCountryConfig(), ($this->getTxnInfo()->getClientConfig()->getStoreCard() <= 3) ); }
+								if (trim($this->getTxnInfo()->getEMail() ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($this->getDBConn(), $this->getTxnInfo()->getClientConfig(), $this->getTxnInfo()->getEMail(), $this->getTxnInfo()->getCountryConfig(), ($this->getTxnInfo()->getClientConfig()->getStoreCard() <= 3) ); }
 								if ($iMobileAccountID != $iEMailAccountID && $iEMailAccountID > 0)
 								{
 									$this->getTxnInfo()->setAccountID(-1);
 								}
 							}
-							$obj_mPoint->sendLinkedInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $this->getTxnInfo());
+							//TODO: GM_CONN_INFO should not be injected as a global here. But then again, the GM comm. logic should never reside here in the first place
+							$oGMCI = GoMobileConnInfo::produceConnInfo($GLOBALS["aGM_CONN_INFO"]);
+							$this->sendLinkedInfo($oGMCI, $this->getTxnInfo() );
 						}
 						// New Account automatically created when Card was saved
 						else if ($iStatus == 2)

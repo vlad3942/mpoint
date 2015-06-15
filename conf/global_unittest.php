@@ -59,4 +59,9 @@ $aHTTP_CONN_INFO["netaxept"]["contenttype"] = "application/x-www-form-urlencoded
 
 $aCPM_CONN_INFO = $aMPOINT_CONN_INFO;
 $aCPM_CONN_INFO["contenttype"] = "application/x-www-form-urlencoded";
+
+$aGM_CONN_INFO = $aMPOINT_CONN_INFO;
+$aGM_CONN_INFO["path"] = "/_test/simulators/gomobile/send.php";
+$aGM_CONN_INFO["contenttype"] = "text/xml; charset=ISO-8859-1";
+$aGM_CONN_INFO["mode"] = 1;
 ?>
