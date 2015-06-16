@@ -126,3 +126,26 @@ GRANT SELECT, UPDATE, INSERT ON TABLE Client.IINList_Tbl_id_seq TO mpoint;
 
 CREATE INDEX IINRanges_Idx ON Client.IINList_Tbl (clientid, min, max);
 /* ==================== CLIENT SCHEMA END ==================== */
+
+/* ==================== SYSTEM SCHEMA START ==================== */
+-- Table: System.CardChargeType_Tbl 
+CREATE TABLE System.CardChargeType_Tbl 
+(
+	id			SERIAL,
+	name		VARCHAR(100),
+
+	CONSTRAINT CardCharge_PK PRIMARY KEY (id),
+	LIKE Template.General_Tbl INCLUDING DEFAULTS
+) WITHOUT OIDS;
+
+CREATE TRIGGER Update_Info
+BEFORE UPDATE
+ON System.CardChargeType_Tbl  FOR EACH ROW
+EXECUTE PROCEDURE Public.Update_Table_Proc();
+
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE System.CardChargeType_Tbl  TO mpoint;
+GRANT SELECT, UPDATE, USAGE ON TABLE System.CardChargeType_Tbl_id_seq TO mpoint;
+/* ==================== SYSTEM SCHEMA END ==================== */
+
+-- Create link to EndUser.Card_Tbl
+ALTER TABLE EndUser.Card_Tbl ADD COLUMN charge_typeid INT4 DEFAULT 0;

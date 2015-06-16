@@ -39,3 +39,9 @@ INSERT INTO System.CardState_Tbl (id, name) VALUES (5, 'Temporarily Unavailable'
 
 INSERT INTO System.IINAction_Tbl (id, name, note) VALUES (1, 'Blocked', 'Used for blocking cards based on their Issuer Identification Number');
 INSERT INTO System.IINAction_Tbl (id, name, note) VALUES (2, 'Whitelisted', 'Used for whitelisting cards based on their Issuer Identification Number');
+
+INSERT INTO System.CardChargeType_Tbl (id, name) VALUES (0, 'No type Available');
+INSERT INTO System.CardChargeType_Tbl (id, name) VALUES (1, 'Pre-Paid');
+INSERT INTO System.CardChargeType_Tbl (id, name) VALUES (2, 'Debit');
+INSERT INTO System.CardChargeType_Tbl (id, name) VALUES (3, 'Credit');
+ALTER TABLE EndUser.Card_Tbl ADD CONSTRAINT Card2CardCharge_FK FOREIGN KEY (charge_typeid) REFERENCES System.CardChargeType_Tbl ON UPDATE CASCADE ON DELETE RESTRICT;
