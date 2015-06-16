@@ -252,7 +252,7 @@ class EndUserAccount extends Home
 		}
 
 		// Check if card has already been saved
-		$id = $this->getCardIDFromCardDetails($iAccountID, $cardid, $mask, $exp);
+		$id = $this->getCardIDFromCardDetails($iAccountID, $cardid, $mask, $exp, $token);
 
 		// Stored Card should be preferred
 		if ($pref === true)
@@ -615,14 +615,16 @@ class EndUserAccount extends Home
 	 * @param integer 	$cardid 		ID from System.Card_Tbl
 	 * @param string 	$mask			Masked credit card number
 	 * @param string 	$exp			Expiry date
+	 * @param string	$ticket			Token of the card at the PSP 
 	 * @return integer
 	 */
-	public function getCardIDFromCardDetails($id, $cardid, $mask, $exp)
+	public function getCardIDFromCardDetails($id, $cardid, $mask, $exp, $ticket="")
 	{
 		$sql = "SELECT id
 				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 				WHERE accountid = ". $id ." AND clientid = ". $this->_obj_ClientConfig->getID() ." AND cardid = ". intval($cardid) ."
-					AND ( (mask = '". $this->getDBConn()->escStr(trim($mask) ) ."' AND expiry = '". $this->getDBConn()->escStr($exp) ."') OR (mask IS NULL AND expiry IS NULL) )";
+					AND ( ( (mask = '". $this->getDBConn()->escStr(trim($mask) ) ."' AND expiry = '". $this->getDBConn()->escStr($exp) ."') OR (mask IS NULL AND expiry IS NULL) )
+						 OR (mask = '". $this->getDBConn()->escStr(trim($mask) ) ."' AND ticket = '". $this->getDBConn()->escStr($ticket) ."') )";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 
