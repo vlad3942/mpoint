@@ -356,7 +356,7 @@ class DIBS extends Callback implements Captureable, Refundable
 	 * 	18. multicap transaction open
 	 * 	19. multicap transaction closed
 	 * 
-	 * @link	http://http://tech.dibs.dk/dibs_api/status_functions/transstatuspml/
+	 * @link	http://tech.dibs.dk/dibs_api/status_functions/transstatuspml/
 	 * 
 	 * @param 	integer $txn	Transaction ID previously returned by DIBS during authorisation
 	 * @return	integer
@@ -376,7 +376,11 @@ class DIBS extends Callback implements Captureable, Refundable
 		{
 			return trim($obj_HTTP->getReplyBody() );
 		}
-		else { return -1; }
+		else 
+		{
+			trigger_error("DIBS returned HTTP error on transstatus call for txn: ". $txn ." - code: ". $obj_HTTP->getReturnCode() ." body: ".  trim($obj_HTTP->getReplyBody() ), E_USER_WARNING);
+			return -1;
+		}
 	}
 
 	/**
