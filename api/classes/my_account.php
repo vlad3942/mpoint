@@ -231,9 +231,9 @@ class MyAccount extends Home
 
 		$sql1 = "SELECT Card.id AS cardid, MAX(Coalesce(Msg2.stateid, Msg1.stateid, -1) ) AS state
 				 FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl Card
-				 LEFT JOIN EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl Txn ON Txn.accountid = ". intval($id) ." AND Txn.enabled = true
+				 LEFT JOIN Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn ON Txn.euaid = ". intval($id) ." AND Txn.enabled = true
 				 LEFT JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl Cli ON Cli.id = Card.clientid AND Cli.enabled = true
-				 LEFT JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg1 ON Msg1.txnid = Txn.txnid AND Msg1.stateid = ". Constants::iPAYMENT_ACCEPTED_STATE . " AND Msg1.enabled = true AND Msg1.created > NOW() - CONCAT(Cli.transaction_ttl, ' seconds')::INTERVAL
+				 LEFT JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg1 ON Msg1.txnid = Txn.id AND Msg1.stateid = ". Constants::iPAYMENT_ACCEPTED_STATE . " AND Msg1.enabled = true AND Msg1.created > NOW() - CONCAT(Cli.transaction_ttl, ' seconds')::INTERVAL
 				 LEFT JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg2 ON Msg2.txnid = Msg1.txnid AND Msg2.stateid IN (". implode(',', $aFinalTxnStates) .") AND Msg2.enabled = true
 				 WHERE Card.accountid = ". intval($id) ." AND Card.id = ". intval($cardid) ."
 				 GROUP BY Card.id";

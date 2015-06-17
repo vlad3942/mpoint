@@ -90,15 +90,17 @@ abstract class AuthorizeAPITest extends mPointBaseAPITest
 		}
 
 		//TODO: Rewrite test so it supports both Netaxept and DIBS. Netaxept completes the txn within the callback, DIBS does it during the authorize API flow
-		//$this->assertTrue(is_int(array_search(Constants::iPAYMENT_ACCEPTED_STATE, $aStates) ) );
+		if ($pspID == Constants::iDIBS_PSP) { $this->assertTrue(is_int(array_search(Constants::iPAYMENT_ACCEPTED_STATE, $aStates) ) ); }
 		$this->assertTrue(is_int(array_search(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates) ) );
 
 		/* Test that euaid has been set on txn */
-		$res =  $this->queryDB("SELECT euaid FROM Log.Transaction_Tbl WHERE id = 1001001");
+		$res =  $this->queryDB("SELECT t.euaid, et.accountid FROM Log.Transaction_Tbl t LEFT JOIN Enduser.Transaction_Tbl et ON et.txnid = t.id WHERE t.id = 1001001");
 		$this->assertTrue(is_resource($res) );
 		$row = pg_fetch_assoc($res);
 
 		$this->assertEquals(5001, $row["euaid"]);
+		//TODO: Rewrite test so it supports both Netaxept and DIBS. Netaxept completes the txn within the callback, DIBS does it during the authorize API flow
+		if ($pspID == Constants::iDIBS_PSP) { $this->assertEquals(5001, $row["accountid"]); }
 	}
 
 }

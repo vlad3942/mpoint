@@ -65,44 +65,17 @@ try
 		$sExpiry = substr($queryResponse->CardInformation->ExpiryDate, -2) . "/" . substr($queryResponse->CardInformation->ExpiryDate, 0, 2);
 		$iStatus = $obj_mPoint->saveCard($obj_TxnInfo, $obj_TxnInfo->getMobile(), $obj_mPoint->getCardID($queryResponse->CardInformation->PaymentMethod), Constants::iNETAXEPT_PSP, $ticket, $sMask, $sExpiry);
 
-		if ($iStatus == 1)
+		if (strlen($obj_TxnInfo->getCustomerRef() ) == 0)
 		{
-			$iMobileAccountID = -1;
-			$iEMailAccountID = -1;
-			if (strlen($obj_TxnInfo->getCustomerRef() ) == 0)
-			{
-				if (floatval($obj_TxnInfo->getMobile() ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile(), $obj_TxnInfo->getCountryConfig(), ($obj_TxnInfo->getClientConfig()->getStoreCard() <= 3) ); }
-				if (trim($obj_TxnInfo->getEMail() ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail(), $obj_TxnInfo->getCountryConfig(), ($obj_TxnInfo->getClientConfig()->getStoreCard() <= 3) ); }
-				if ($iMobileAccountID != $iEMailAccountID && $iEMailAccountID > 0)
-				{
-					$obj_TxnInfo->setAccountID(-1);
-					$obj_mPoint->getTxnInfo()->setAccountID(-1);
-				}
-			}
-			$obj_mPoint->sendLinkedInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo);
-		}
-		// New Account automatically created when Card was saved
-		else if ($iStatus == 2)
-		{
-			$iMobileAccountID = -1;
-			$iEMailAccountID = -1;
-			if (strlen($obj_TxnInfo->getCustomerRef() ) == 0)
-			{
-				if (floatval($this->getTxnInfo()->getMobile() ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID($this->getDBConn(), $this->getTxnInfo()->getClientConfig(), $this->getTxnInfo()->getMobile(), $this->getTxnInfo()->getCountryConfig(), 2); }
-				if (trim($this->getTxnInfo()->getEMail() ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($this->getDBConn(), $this->getTxnInfo()->getClientConfig(), $this->getTxnInfo()->getEMail(), $this->getTxnInfo()->getCountryConfig(), 2); }
+			if (floatval($obj_TxnInfo->getMobile() ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile(), $obj_TxnInfo->getCountryConfig(), 2); }
+			if (trim($obj_TxnInfo->getEMail() ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail(), $obj_TxnInfo->getCountryConfig(), 2); }
 
-				if ($iMobileAccountID != $iEMailAccountID && $iEMailAccountID > 0 && $iMobileAccountID > 0)
-				{
-					$this->getTxnInfo()->setAccountID(-1);
-				}
-				else if ($iMobileAccountID > 0) { $this->getTxnInfo()->setAccountID($iMobileAccountID); }
-				else if ($iEMailAccountID > 0) { $this->getTxnInfo()->setAccountID($iEMailAccountID); }
-			}
-			// SMS communication enabled
-			if ($obj_TxnInfo->getClientConfig()->smsReceiptEnabled() === true)
+			if ($iMobileAccountID != $iEMailAccountID && $iEMailAccountID > 0 && $iMobileAccountID > 0)
 			{
-				$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo);
+				$obj_TxnInfo->setAccountID(-1);
 			}
+			else if ($iMobileAccountID > 0) { $this->getTxnInfo()->setAccountID($iMobileAccountID); }
+			else if ($iEMailAccountID > 0) { $this->getTxnInfo()->setAccountID($iEMailAccountID); }
 		}
 
 		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
@@ -135,14 +108,12 @@ try
 			break;
 		}
 	}
-	/*
 	// Not an e-money based purchase
 	if ($queryResponse->Recurring->PanHash != null && $obj_TxnInfo->getAccountID() > 0)
 	{
 		$obj_mPoint->associate($obj_TxnInfo->getAccountID(), $obj_TxnInfo->getID() );
 	}
-	*/
-	
+
 	if ($obj_TxnInfo->getReward() > 0 && $obj_TxnInfo->getAccountID() > 0)
 	{
 		$obj_mPoint->topup($obj_TxnInfo->getAccountID(), Constants::iREWARD_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getReward() );

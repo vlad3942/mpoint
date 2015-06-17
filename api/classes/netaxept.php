@@ -167,57 +167,26 @@ class NetAxept extends Callback implements Captureable, Refundable
 				{
 					if ($queryResponse->Recurring->PanHash != null)
 					{
-						if ($this->getTxnInfo()->getAccountID() > 0)
-						{
-							$this->associate($this->getTxnInfo()->getAccountID(), $this->getTxnInfo()->getID() );
-						}
 						$ticket = $queryResponse->Recurring->PanHash;
 						$this->newMessage($this->getTxnInfo()->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $ticket);
 						$sMask = $queryResponse->CardInformation->MaskedPAN;
 						$sExpiry = substr($queryResponse->CardInformation->ExpiryDate, -2) . "/" . substr($queryResponse->CardInformation->ExpiryDate, 0, 2);
-						$iStatus = $this->saveCard($this->getTxnInfo(), $this->getTxnInfo()->getMobile(), $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iNETAXEPT_PSP, $ticket, $sMask, $sExpiry);
-						if ($iStatus == 1)
-						{
-							$iMobileAccountID = -1;
-							$iEMailAccountID = -1;
-							if (strlen($this->getTxnInfo()->getCustomerRef() ) == 0)
-							{
-								if (floatval($this->getTxnInfo()->getMobile() ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID($this->getDBConn(), $this->getTxnInfo()->getClientConfig(), $this->getTxnInfo()->getMobile(), $this->getTxnInfo()->getCountryConfig(), ($this->getTxnInfo()->getClientConfig()->getStoreCard() <= 3) ); }
-								if (trim($this->getTxnInfo()->getEMail() ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($this->getDBConn(), $this->getTxnInfo()->getClientConfig(), $this->getTxnInfo()->getEMail(), $this->getTxnInfo()->getCountryConfig(), ($this->getTxnInfo()->getClientConfig()->getStoreCard() <= 3) ); }
-								if ($iMobileAccountID != $iEMailAccountID && $iEMailAccountID > 0)
-								{
-									$this->getTxnInfo()->setAccountID(-1);
-								}
-							}
-							//TODO: GM_CONN_INFO should not be injected as a global here. But then again, the GM comm. logic should never reside here in the first place
-							$oGMCI = GoMobileConnInfo::produceConnInfo($GLOBALS["aGM_CONN_INFO"]);
-							$this->sendLinkedInfo($oGMCI, $this->getTxnInfo() );
-						}
-						// New Account automatically created when Card was saved
-						else if ($iStatus == 2)
-						{
-							$iMobileAccountID = -1;
-							$iEMailAccountID = -1;
-							if (strlen($this->getTxnInfo()->getCustomerRef() ) == 0)
-							{
-								if (floatval($this->getTxnInfo()->getMobile() ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID($this->getDBConn(), $this->getTxnInfo()->getClientConfig(), $this->getTxnInfo()->getMobile(), $this->getTxnInfo()->getCountryConfig(), 2); }
-								if (trim($this->getTxnInfo()->getEMail() ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($this->getDBConn(), $this->getTxnInfo()->getClientConfig(), $this->getTxnInfo()->getEMail(), $this->getTxnInfo()->getCountryConfig(), 2); }
+						$this->saveCard($this->getTxnInfo(), $this->getTxnInfo()->getMobile(), $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iNETAXEPT_PSP, $ticket, $sMask, $sExpiry);
 
-								if ($iMobileAccountID != $iEMailAccountID && $iEMailAccountID > 0 && $iMobileAccountID > 0)
-								{
-									$this->getTxnInfo()->setAccountID(-1);
-								}
-								else if ($iMobileAccountID > 0) { $this->getTxnInfo()->setAccountID($iMobileAccountID); }
-								else if ($iEMailAccountID > 0) { $this->getTxnInfo()->setAccountID($iEMailAccountID); }
-							}
-							/* SMS communication enabled
-							if ($this->getTxnInfo()->getClientConfig()->smsReceiptEnabled() === true)
+						if (strlen($this->getTxnInfo()->getCustomerRef() ) == 0)
+						{
+							if (floatval($this->getTxnInfo()->getMobile() ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID($this->getDBConn(), $this->getTxnInfo()->getClientConfig(), $this->getTxnInfo()->getMobile(), $this->getTxnInfo()->getCountryConfig(), 2); }
+							if (trim($this->getTxnInfo()->getEMail() ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($this->getDBConn(), $this->getTxnInfo()->getClientConfig(), $this->getTxnInfo()->getEMail(), $this->getTxnInfo()->getCountryConfig(), 2); }
+
+							if ($iMobileAccountID != $iEMailAccountID && $iEMailAccountID > 0 && $iMobileAccountID > 0)
 							{
-								$this->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $this->getTxnInfo() );
+								$this->getTxnInfo()->setAccountID(-1);
 							}
-							*/
+							else if ($iMobileAccountID > 0) { $this->getTxnInfo()->setAccountID($iMobileAccountID); }
+							else if ($iEMailAccountID > 0) { $this->getTxnInfo()->setAccountID($iEMailAccountID); }
 						}
-						
+
+						if ($this->getTxnInfo()->getAccountID() > 0) { $this->associate($this->getTxnInfo()->getAccountID(), $this->getTxnInfo()->getID() ); }
 						//if ($this->getTxnInfo()->getEMail() != "") { $this->saveEMail($this->getTxnInfo()->$obj_TxnInfo->getMobile(), $this->getTxnInfo()->getEMail() ); }
 					}
 					$iStateID = $this->completeTransaction(Constants::iNETAXEPT_PSP, $transactionID , $this->getCardID($queryResponse->CardInformation->Issuer), Constants::iPAYMENT_ACCEPTED_STATE, $fee, array('0' => var_export($obj_Std->ProcessResult, true) ) );
