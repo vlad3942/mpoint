@@ -88,13 +88,15 @@ try
 			$iEMailAccountID = -1;
 			if (strlen($obj_TxnInfo->getCustomerRef() ) == 0)
 			{
-				if (floatval($obj_TxnInfo->getMobile() ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile(), $obj_TxnInfo->getCountryConfig(), false); }
-				if (trim($obj_TxnInfo->getEMail() ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail(), $obj_TxnInfo->getCountryConfig(), false); }
-				if ($iMobileAccountID != $iEMailAccountID && $iEMailAccountID > 0)
+				if (floatval($this->getTxnInfo()->getMobile() ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID($this->getDBConn(), $this->getTxnInfo()->getClientConfig(), $this->getTxnInfo()->getMobile(), $this->getTxnInfo()->getCountryConfig(), 2); }
+				if (trim($this->getTxnInfo()->getEMail() ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($this->getDBConn(), $this->getTxnInfo()->getClientConfig(), $this->getTxnInfo()->getEMail(), $this->getTxnInfo()->getCountryConfig(), 2); }
+
+				if ($iMobileAccountID != $iEMailAccountID && $iEMailAccountID > 0 && $iMobileAccountID > 0)
 				{
-					$obj_TxnInfo->setAccountID(-1);
-					$obj_mPoint->getTxnInfo()->setAccountID(-1);
+					$this->getTxnInfo()->setAccountID(-1);
 				}
+				else if ($iMobileAccountID > 0) { $this->getTxnInfo()->setAccountID($iMobileAccountID); }
+				else if ($iEMailAccountID > 0) { $this->getTxnInfo()->setAccountID($iEMailAccountID); }
 			}
 			// SMS communication enabled
 			if ($obj_TxnInfo->getClientConfig()->smsReceiptEnabled() === true)
