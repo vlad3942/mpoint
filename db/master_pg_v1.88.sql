@@ -149,3 +149,9 @@ GRANT SELECT, UPDATE, USAGE ON TABLE System.CardChargeType_Tbl_id_seq TO mpoint;
 
 -- Create link to EndUser.Card_Tbl
 ALTER TABLE EndUser.Card_Tbl ADD COLUMN chargetypeid INT4 DEFAULT 0;
+
+/* ==================== LOG SCHEMA START ==================== */
+
+CREATE INDEX Transaction_Created_Idx ON Log.Transaction_Tbl (created);
+
+/* ==================== LOG SCHEMA END ====================*/

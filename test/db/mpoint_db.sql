@@ -6813,3 +6813,5 @@ CREATE INDEX IINRanges_Idx ON Client.IINList_Tbl (clientid, min, max);
 
 INSERT INTO System.IINAction_Tbl (id, name, note) VALUES (1, 'Blocked', 'Used for blocking cards based on their Issuer Identification Number');
 INSERT INTO System.IINAction_Tbl (id, name, note) VALUES (2, 'Whitelisted', 'Used for whitelisting cards based on their Issuer Identification Number');
+
+CREATE INDEX Transaction_Created_Idx ON Log.Transaction_Tbl (created);
