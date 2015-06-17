@@ -282,6 +282,6 @@ CREATE INDEX IINRanges_Idx ON Client_Ownr.IINList_Tbl (clientid, min, max);
 /* ==================== ENDUSER SCHEMA START ==================== */
 CONNECT enduser_ownr/enduser_ownr;
 -- Create link to EndUser.Card_Tbl
-ALTER TABLE EndUser_Ownr.Card_Tbl ADD(charge_typeid NUMBER(10) DEFAULT 0);
+ALTER TABLE EndUser_Ownr.Card_Tbl ADD(chargetypeid NUMBER(10) DEFAULT 0);
 /* ==================== ENDUSER SCHEMA START ==================== */
 

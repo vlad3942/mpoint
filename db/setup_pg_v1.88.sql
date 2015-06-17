@@ -44,4 +44,4 @@ INSERT INTO System.CardChargeType_Tbl (id, name) VALUES (0, 'No type Available')
 INSERT INTO System.CardChargeType_Tbl (id, name) VALUES (1, 'Pre-Paid');
 INSERT INTO System.CardChargeType_Tbl (id, name) VALUES (2, 'Debit');
 INSERT INTO System.CardChargeType_Tbl (id, name) VALUES (3, 'Credit');
-ALTER TABLE EndUser.Card_Tbl ADD CONSTRAINT Card2CardCharge_FK FOREIGN KEY (charge_typeid) REFERENCES System.CardChargeType_Tbl ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE EndUser.Card_Tbl ADD CONSTRAINT Card2CardCharge_FK FOREIGN KEY (chargetypeid) REFERENCES System.CardChargeType_Tbl ON UPDATE CASCADE ON DELETE RESTRICT;

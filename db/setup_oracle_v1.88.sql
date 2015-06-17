@@ -18,7 +18,7 @@ INSERT INTO System_OWNR.CardChargeType_Tbl (id, name) VALUES (0, 'No type Availa
 INSERT INTO System_OWNR.CardChargeType_Tbl (id, name) VALUES (1, 'Pre-Paid');
 INSERT INTO System_OWNR.CardChargeType_Tbl (id, name) VALUES (2, 'Debit');
 INSERT INTO System_OWNR.CardChargeType_Tbl (id, name) VALUES (3, 'Credit');
-ALTER TABLE EndUser_OWNR.Card_Tbl ADD CONSTRAINT Card2CardCharge_FK FOREIGN KEY (charge_typeid) REFERENCES System.CardChargeType_Tbl ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE EndUser_OWNR.Card_Tbl ADD CONSTRAINT Card2CardCharge_FK FOREIGN KEY (chargetypeid) REFERENCES System.CardChargeType_Tbl ON UPDATE CASCADE ON DELETE RESTRICT;
 
 UPDATE SYSTEM_OWNR.PSPCURRENCY_TBL set name = 'USD' where id = 642;
 

@@ -148,4 +148,4 @@ GRANT SELECT, UPDATE, USAGE ON TABLE System.CardChargeType_Tbl_id_seq TO mpoint;
 /* ==================== SYSTEM SCHEMA END ==================== */
 
 -- Create link to EndUser.Card_Tbl
-ALTER TABLE EndUser.Card_Tbl ADD COLUMN charge_typeid INT4 DEFAULT 0;
+ALTER TABLE EndUser.Card_Tbl ADD COLUMN chargetypeid INT4 DEFAULT 0;
