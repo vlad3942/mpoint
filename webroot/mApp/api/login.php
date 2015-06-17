@@ -38,15 +38,15 @@ $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<login client-id="10017">';
-$HTTP_RAW_POST_DATA .= '<password>oisJona1</password>';
+$HTTP_RAW_POST_DATA .= '<login client-id="100">';
+$HTTP_RAW_POST_DATA .= '<password>oisJona</password>';
 //$HTTP_RAW_POST_DATA .= '<auth-token>test1234</auth-token>';
 //$HTTP_RAW_POST_DATA .= '<auth-url>http://mpoint.test.cellpointmobile.com/_test/auth.php</auth-url>';
-$HTTP_RAW_POST_DATA .= '<client-info language="us" version="1.00" platform="iOS" app-id="5">';
+$HTTP_RAW_POST_DATA .= '<client-info platform="iOS" version="1.00" language="da">';
 $HTTP_RAW_POST_DATA .= '<customer-ref>ABC-123</customer-ref>';
-$HTTP_RAW_POST_DATA .= '<mobile country-id="100">28880019</mobile>';
-$HTTP_RAW_POST_DATA .= '<email>jona@oismailc.om</email>';
-$HTTP_RAW_POST_DATA .= '<device-id>85ce3843c0a068fb5cb1e76156fdd719</device-id>';
+$HTTP_RAW_POST_DATA .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
+$HTTP_RAW_POST_DATA .= '<email>jona@oismail.com</email>';
+$HTTP_RAW_POST_DATA .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
 $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</login>';
 $HTTP_RAW_POST_DATA .= '</root>';
@@ -117,7 +117,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$xml .= '<stored-cards>';
 								for ($j=0; $j<count($aObj_XML); $j++)
 								{
-									$xml .= '<card id="'. $aObj_XML[$j]["id"] .'" type-id="'. $aObj_XML[$j]->type["id"] .'" psp-id="'. $aObj_XML[$j]["pspid"] .'" preferred="'. $aObj_XML[$j]["preferred"] .'">';
+									$xml .= '<card id="'. $aObj_XML[$j]["id"] .'" type-id="'. $aObj_XML[$j]->type["id"] .'" psp-id="'. $aObj_XML[$j]["pspid"] .'" preferred="'. $aObj_XML[$j]["preferred"] .'" charge-type-id="'. $aObj_XML[$j]["charge-type-id"] .'">';
 									if (strlen($aObj_XML[$j]->name) > 0) { $xml .= $aObj_XML[$j]->name->asXML(); }
 									$xml .= '<card-number-mask>'. $aObj_XML[$j]->mask .'</card-number-mask>';
 									$xml .= $aObj_XML[$j]->expiry->asXML();
