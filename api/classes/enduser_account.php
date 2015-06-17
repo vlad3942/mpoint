@@ -245,8 +245,8 @@ class EndUserAccount extends Home
 				$pref = false;
 			}
 			break;
-		case (9):	// Card Saved by invoking "Save Card" API
-			list($iAccountID, $cardid, $pspid, $token, $mask, $exp, $chn, $name, $pref) = $aArgs;
+		case (10):	// Card Saved by invoking "Save Card" API
+			list($iAccountID, $cardid, $pspid, $token, $mask, $exp, $chn, $name, $pref, $chargeid) = $aArgs;
 			$code = 0;
 			break;
 		}
@@ -272,6 +272,8 @@ class EndUserAccount extends Home
 						preferred = '". intval($pref) ."', enabled = '1'";
 			if (empty($name) === false) { $sql .= ", name = '". $this->getDBConn()->escStr(trim($name) ) ."'"; }
 			if (empty($chn) === false) { $sql .= ", card_holder_name = '". $this->getDBConn()->escStr(trim($chn) ) ."'"; }
+			if ($chargeid > 0) { $sql .= ", chargetypeid = ". intval($chargeid) .""; }
+				
 			$sql .= "
 					WHERE id = ". $id;
 //			echo $sql ."\n";
@@ -283,9 +285,11 @@ class EndUserAccount extends Home
 		else
 		{
 			$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Card_Tbl
-						(accountid, clientid, cardid, pspid, ticket, mask, expiry, name, preferred, card_holder_name)
+						(accountid, clientid, cardid, pspid, ticket, mask, expiry, name, preferred, card_holder_name, chargetypeid)
 					VALUES
-						(". $iAccountID .", ". $this->_obj_ClientConfig->getID() .", ". intval($cardid) .", ". intval($pspid) .", '". $this->getDBConn()->escStr($token) ."', '". $this->getDBConn()->escStr(trim($mask) ) ."', '". $this->getDBConn()->escStr($exp) ."', '". $this->getDBConn()->escStr(trim($name) ) ."', '". intval($pref) ."','". $this->getDBConn()->escStr(trim($chn) )."')";
+						(". $iAccountID .", ". $this->_obj_ClientConfig->getID() .", ". intval($cardid) .", ". intval($pspid) .", 
+						 '". $this->getDBConn()->escStr($token) ."', '". $this->getDBConn()->escStr(trim($mask) ) ."', '". $this->getDBConn()->escStr($exp) ."',
+						 '". $this->getDBConn()->escStr(trim($name) ) ."', '". intval($pref) ."','". $this->getDBConn()->escStr(trim($chn) )."', ". intval($chargeid) .")";
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
 
