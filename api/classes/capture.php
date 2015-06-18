@@ -125,13 +125,25 @@ class Capture extends General
 		else { $code = 1001; }
 		// Release mutex
 		$this->getDBConn()->query("COMMIT");
-		
+
 		return $code; 
 	}
 
 	private function _isPaymentCaptured()
 	{
 		return count($this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE) ) > 0;
+	}
+
+	public function updateCapturedAmount($iAmount)
+	{
+		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+				SET	captured = ". intval($iAmount) ."
+				WHERE id = ". intval($this->_obj_TxnInfo->getID() );
+//		echo $sql ."\n";
+		$res = $this->getDBConn()->query($sql);
+
+		// Capture amount updated successfully
+		return is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) == 1;
 	}
 }
 ?>

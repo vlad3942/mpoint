@@ -141,7 +141,19 @@ class Refund extends General
 			$aClientIDs[] = $RS["CLIENTID"];
 		}
 		
-		return $aClientIDs; 
+		return $aClientIDs;
+	}
+
+	public function updateRefundedAmount($iAmount)
+	{
+		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+				SET	refund = ". intval($iAmount) ."
+				WHERE id = ". intval($this->_obj_TxnInfo->getID() );
+//		echo $sql ."\n";
+		$res = $this->getDBConn()->query($sql);
+
+		// Refund amount updated successfully
+		return is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) == 1;
 	}
 }
 ?>

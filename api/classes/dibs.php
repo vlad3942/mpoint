@@ -383,6 +383,41 @@ class DIBS extends Callback implements Captureable, Refundable
 		}
 	}
 
+	public function normalizeStatusCode($iStatus)
+	{
+		switch ($iStatus)
+		{
+		case 0:
+			return Constants::iPAYMENT_INIT_WITH_PSP_STATE;
+		case 1:
+			return Constants::iPAYMENT_REJECTED_STATE;
+		case 2:
+			return Constants::iPAYMENT_ACCEPTED_STATE;
+		case 4:
+		case 17:
+			return Constants::iPAYMENT_DECLINED_STATE;
+		case 3:
+		case 5:
+		case 7:
+		case 10: //refund declined is mapped to state CAPTURED in order to signal to mPoint to try refund again if possible
+		case 12:
+			return Constants::iPAYMENT_CAPTURED_STATE;
+		case 6:
+		case 14:
+			return Constants::iPAYMENT_CANCELLED_STATE;
+		case 8:
+		case 9:
+		case 11:
+		case 15:
+			return Constants::iPAYMENT_REFUNDED_STATE;
+		case 13:
+			return Constants::iTICKET_CREATED_STATE;
+
+		}
+
+		return -1;
+	}
+
 	/**
 	 * Initialises Callback to the Client.
 	 *
