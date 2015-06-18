@@ -250,17 +250,19 @@ class DIBS extends Callback implements Captureable, Refundable
 	 * @link	http://tech.dibs.dk/toolbox/dibs-error-codes/
 	 * 
 	 * @param 	integer $amount	full amount that needed to be refunded
+	 * @param 	integer $code	allows to control from the outside whether to cancel or refund the transaction
+	 * 							if this value is unset (-1), the txn status will be first queried at DIBS and the needed action (cancel/refund) will be performed
 	 * @return	integer
 	 * @throws	E_USER_WARNING
 	 */
-	public function refund($amount = -1)
+	public function refund($amount = -1, $code = -1)
 	{
 		$extID = $this->getTxnInfo()->getExternalID();
 		if ($amount == -1) { $this->getTxnInfo()->getAmount(); }
 
 		$aConnInfo = $this->aCONN_INFO;
 
-		$code = $this->status($extID);
+		if ($code = -1) { $code = $this->status($extID); }
 
 		//Set the api type depending on the return value that is returned from DIBS
 		switch ($code)
@@ -272,7 +274,7 @@ class DIBS extends Callback implements Captureable, Refundable
 				$aConnInfo["path"] = $aConnInfo["paths"]["refund"];
 				break;
 		}
-		
+
 		// Transaction ready for Refund or cancel
 		if ($code == 5 || $code == 2)
 		{
@@ -302,12 +304,19 @@ class DIBS extends Callback implements Captureable, Refundable
 					
 					return $aStatus["result"];
 				}
-				// Payment successfully refunded
+				// Payment successfully refunded/cancelled
 				else
 				{
-					$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUNDED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
-					
-					return 1000;
+					if ($code == 2)
+					{
+						$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CANCELLED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
+						return 1001;
+					}
+					else
+					{
+						$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUNDED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
+						return 1000;
+					}
 				}
 			}
 			else

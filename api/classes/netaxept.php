@@ -482,13 +482,23 @@ class NetAxept extends Callback implements Captureable, Refundable
 	 * @link	http://www.betalingsterminal.no/Netthandel-forside/Teknisk-veiledning/Response-codes/
 	 *
 	 * @param integer		$iAmount			full amount that needed to be refunded
+	 * @param integer 		$code	allows to control from the outside whether to cancel or refund the transaction
 	 *
 	 * @throws E_USER_WARNING
 	 * 
 	 * @return	integer 
 	 */
-	public function refund($iAmount = -1)
+	public function refund($iAmount = -1, $code = -1)
 	{
+		switch ($code)
+		{
+		case 2:
+			$operation = "ANNUL";
+			break;
+		default:
+			$operation = "CREDIT";
+		}
+
 		$extID = $this->getTxnInfo()->getExternalID();
 		if ($iAmount == -1) { $this->getTxnInfo()->getAmount(); }
 		$oCI = HTTPConnInfo::produceConnInfo($this->aCONN_INFO);
@@ -500,7 +510,7 @@ class NetAxept extends Callback implements Captureable, Refundable
 		$aParams = array("merchantId" => $this->getPSPConfig()->getMerchantAccount(),
 						 "token" => $oCI->getPassword (),
 						 "request" => array (
-						 "Operation" => "CREDIT",
+						 "Operation" => $operation,
 						 "TransactionId" => $extID,
 						 "transactionAmount" => $iAmount) );
 		try 
@@ -513,10 +523,17 @@ class NetAxept extends Callback implements Captureable, Refundable
 				// Payment successfully refunded
 				$data = array("psp-id" => Constants::iNETAXEPT_PSP,
 							  "url" => var_export ( $obj_Std, true ) );
-				
-				$this->newMessage ( $this->getTxnInfo ()->getID (), Constants::iPAYMENT_REFUNDED_STATE, serialize( $data ) );
-				
-				return 1000;
+
+				if ($code == 2)
+				{
+					$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CANCELLED_STATE, serialize($data) );
+					return 1001;
+				}
+				else
+				{
+					$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUNDED_STATE, serialize($data) );
+					return 1000;
+				}
 			}
 		}
 		catch (SoapFault $e) 
