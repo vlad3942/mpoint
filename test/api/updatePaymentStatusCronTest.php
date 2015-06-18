@@ -15,11 +15,12 @@ class UpdatePaymentStatusCronTest extends mPointBaseAPITest
 	public function constHTTPClient()
 	{
 		global $aMPOINT_CONN_INFO;
-		$aMPOINT_CONN_INFO['method'] = "GET";
-		$aMPOINT_CONN_INFO['path'] = "/internal/update_payment_status.php";
-		$aMPOINT_CONN_INFO["contenttype"] = "application/x-www-form-urlencoded";
-		$this->_aMPOINT_CONN_INFO = $aMPOINT_CONN_INFO;
-		$this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
+		$aConnInfo = $aMPOINT_CONN_INFO;
+		$aConnInfo['method'] = "GET";
+		$aConnInfo['path'] = "/internal/update_payment_status.php";
+		$aConnInfo["contenttype"] = "application/x-www-form-urlencoded";
+		$this->_aMPOINT_CONN_INFO = $aConnInfo;
+		$this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aConnInfo) );
 	}
 
 	public function testPaymentHasBeenCapturedMobilepay()
