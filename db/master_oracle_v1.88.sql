@@ -1,17 +1,16 @@
 CONNECT system_ownr/system_ownr;
 DROP TABLE System_Ownr.CardState_Tbl;
 DROP TABLE system_ownr.IINAction_Tbl;
-DROP TABLE system_CardChargeType_Tbl;
+DROP TABLE System_Ownr.CardChargeType_Tbl;
 
 DROP SEQUENCE System_Ownr.CardState_Tbl_id_seq;
 DROP SEQUENCE System_Ownr.IINAction_Tbl_id_seq;
 DROP SEQUENCE System_Ownr.CardChargeType_Tbl_id_seq;
 
-CONNECT client_ownr/client_ownr;
-
-DROP TABLE Client_Ownr.InfoType_Tbl;
+CONNECT client_ownr/Emirates$123;
 DROP TABLE Client_Ownr.Info_Tbl;
 DROP TABLE Client_Ownr.IINList_Tbl;
+DROP TABLE Client_Ownr.InfoType_Tbl;
 
 DROP SEQUENCE Client_Ownr.InfoType_Tbl_id_seq;
 DROP SEQUENCE Client_Ownr.Info_Tbl_id_seq;
@@ -40,7 +39,7 @@ CREATE SEQUENCE System_Ownr.CardState_Tbl_id_seq
 	NOMAXVALUE
 	NOCACHE;
 ALTER SESSION SET CURRENT_SCHEMA = System_Ownr;
-CREATE OR REPLACE TRIGGER insert_CardState_trg BEFORE INSERT ON System_Ownr.IINAction_Tbl
+CREATE OR REPLACE TRIGGER insert_CardState_trg BEFORE INSERT ON System_Ownr.CardState_Tbl
 	FOR EACH ROW
 		BEGIN
 			IF :NEW.id IS NULL THEN
@@ -97,6 +96,7 @@ FOR EACH ROW
 
 CREATE UNIQUE INDEX IINAction_UQ ON System_Ownr.IINAction_Tbl (Lower(name) ); 
 
+CONNECT system_ownr/system_ownr;
 -- Table: System_Ownr.CardChargeType_Tbl 
 CREATE TABLE System_Ownr.CardChargeType_Tbl 
 (
@@ -127,7 +127,7 @@ CREATE OR REPLACE TRIGGER insert_CardChargeType_trg BEFORE INSERT ON System_Ownr
  			END IF;
  		END;
  	/
-CREATE OR REPLACE TRIGGER update_IINAction_trg BEFORE UPDATE ON System_Ownr.CardChargeType_Tbl
+CREATE OR REPLACE TRIGGER update_CardChargeType_trg BEFORE UPDATE ON System_Ownr.CardChargeType_Tbl
 FOR EACH ROW
 	BEGIN
 		:NEW.modified := CURRENT_TIMESTAMP;
@@ -135,7 +135,7 @@ FOR EACH ROW
 /
 /* ==================== SYSTEM SCHEMA END ==================== */
 
-CONNECT client_ownr/client_ownr;
+CONNECT client_ownr/Emirates$123;
 
 /* ==================== CLIENT SCHEMA START ==================== */
 
@@ -166,7 +166,7 @@ CREATE SEQUENCE Client_Ownr.InfoType_Tbl_id_seq
 	NOMINVALUE
 	NOMAXVALUE
 	NOCACHE;
-ALTER SESSION SET CURRENT_SCHEMA = System_Ownr;
+ALTER SESSION SET CURRENT_SCHEMA = Client_Ownr;
 CREATE OR REPLACE TRIGGER insert_InfoType_trg BEFORE INSERT ON Client_Ownr.InfoType_Tbl
 	FOR EACH ROW
 		BEGIN
@@ -175,7 +175,7 @@ CREATE OR REPLACE TRIGGER insert_InfoType_trg BEFORE INSERT ON Client_Ownr.InfoT
  			END IF;
  		END;
  	/
-CREATE OR REPLACE TRIGGER update_IINAction_trg BEFORE UPDATE ON Client_Ownr.InfoType_Tbl
+CREATE OR REPLACE TRIGGER update_InfoType_trg BEFORE UPDATE ON Client_Ownr.InfoType_Tbl
 FOR EACH ROW
 	BEGIN
 		:NEW.modified := CURRENT_TIMESTAMP;
@@ -200,9 +200,9 @@ CREATE TABLE Client_Ownr.Info_Tbl
 	enabled CHAR(1) DEFAULT '1' CHECK (enabled IN ('0','1') ),
 
 	CONSTRAINT Info_PK PRIMARY KEY (id),
-	CONSTRAINT Info2InfoType_FK FOREIGN KEY (infotypeid) REFERENCES Client_Ownr.InfoType_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT Info2Client_FK FOREIGN KEY (clientid) REFERENCES Client_Ownr.Client_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT Info2PSP_FK FOREIGN KEY (pspid) REFERENCES System_Ownr.PSP_Tbl ON UPDATE CASCADE ON DELETE CASCADE
+	CONSTRAINT Info2InfoType_FK FOREIGN KEY (infotypeid) REFERENCES Client_Ownr.InfoType_Tbl ON DELETE CASCADE,
+	CONSTRAINT Info2Client_FK FOREIGN KEY (clientid) REFERENCES Client_Ownr.Client_Tbl ON DELETE CASCADE,
+	CONSTRAINT Info2PSP_FK FOREIGN KEY (pspid) REFERENCES System_Ownr.PSP_Tbl ON DELETE CASCADE
 );
 
 GRANT ALL ON Client_Ownr.Info_Tbl TO mpnt_ownr;
@@ -213,7 +213,7 @@ CREATE SEQUENCE Client_Ownr.Info_Tbl_id_seq
 	NOMINVALUE
 	NOMAXVALUE
 	NOCACHE;
-ALTER SESSION SET CURRENT_SCHEMA = System_Ownr;
+ALTER SESSION SET CURRENT_SCHEMA = Client_Ownr;
 CREATE OR REPLACE TRIGGER insert_ClientInfo_trg BEFORE INSERT ON Client_Ownr.Info_Tbl
 	FOR EACH ROW
 		BEGIN
@@ -229,11 +229,30 @@ FOR EACH ROW
 	END;
 /
 
-CREATE UNIQUE INDEX Info_PSP_UQ ON Client_Ownr.Info_Tbl (infotypeid, clientid, language, pspid) WHERE pspid IS NOT NULL;
-CREATE UNIQUE INDEX Info_UQ ON Client_Ownr.Info_Tbl (infotypeid, clientid, language) WHERE pspid IS NULL;
-
+	CREATE UNIQUE  INDEX Info_UQ
+		ON Client_Ownr.Info_Tbl (CASE WHEN pspid IS NOT NULL
+									 	THEN infotypeid
+									 	ELSE infotypeid 
+									 	END,
+									CASE WHEN pspid IS NOT NULL
+										THEN clientid
+									 	ELSE clientid 
+									 	END,
+									CASE WHEN pspid IS NOT NULL
+									 	THEN language
+									 	ELSE language 
+									 	END,
+									CASE WHEN pspid IS NOT NULL
+									 	THEN pspid
+									 	ELSE NULL 
+									 	END);
+			
 -- Table: Client.IINList_Tbl
 -- Data table for each client's lists of actions taken for a range of Issuer Identification Numbers
+CONNECT system_ownr/system_ownr;
+GRANT REFERENCES, UPDATE ON System_Ownr.IINAction_Tbl TO client_ownr;
+CONNECT client_ownr/Emirates$123;
+
 CREATE TABLE Client_Ownr.IINList_Tbl
 (
 	id			NUMBER(10,0) NOT NULL,
@@ -248,8 +267,8 @@ CREATE TABLE Client_Ownr.IINList_Tbl
 	enabled CHAR(1) DEFAULT '1' CHECK (enabled IN ('0','1') ),
 
 	CONSTRAINT IINList_PK PRIMARY KEY (id),
-	CONSTRAINT IINList2Client_FK FOREIGN KEY (clientid) REFERENCES Client_Ownr.Client_Tbl ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT IINList2IINAction_FK FOREIGN KEY (iinactionid) REFERENCES System_Ownr.IINAction_Tbl ON UPDATE CASCADE ON DELETE CASCADE
+	CONSTRAINT IINList2Client_FK FOREIGN KEY (clientid) REFERENCES Client_Ownr.Client_Tbl(id) ON DELETE CASCADE,
+	CONSTRAINT IINList2IINAction_FK FOREIGN KEY (iinactionid) REFERENCES System_Ownr.IINAction_Tbl(id) ON DELETE CASCADE
 );
 
 GRANT ALL ON Client_Ownr.IINList_Tbl TO mpnt_ownr;
@@ -260,7 +279,7 @@ CREATE SEQUENCE Client_Ownr.IINList_Tbl_id_seq
 	NOMINVALUE
 	NOMAXVALUE
 	NOCACHE;
-ALTER SESSION SET CURRENT_SCHEMA = System_Ownr;
+ALTER SESSION SET CURRENT_SCHEMA = Client_Ownr;
 CREATE OR REPLACE TRIGGER insert_IINList_trg BEFORE INSERT ON Client_Ownr.IINList_Tbl
 	FOR EACH ROW
 		BEGIN
