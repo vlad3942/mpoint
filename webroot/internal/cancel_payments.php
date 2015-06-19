@@ -30,12 +30,15 @@ set_time_limit(0);
 
 $obj_Status = new Status($_OBJ_DB, $_OBJ_TXT);
 
-$to = time() - 3600*24*5; // NOW minus 6 days
-$from = time() - 3600*24*30; // NOW minus 30 days
+$tOffset = isset($_GET['to']) === true ? intval($_GET['to']) : 3600*24*5;
+$fOffset = isset($_GET['from']) === true ? intval($_GET['from']) : 3600*24*30;
+
+$to = time() - $tOffset;
+$from = time() - $fOffset;
 $aTxns = $obj_Status->getActiveTransactions($from, $to, true, 50);
 $aSuccess = array();
 
-echo date("r");
+echo date("r"). "\n";
 
 foreach ($aTxns as $txn)
 {
