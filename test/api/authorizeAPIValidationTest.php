@@ -171,7 +171,7 @@ class AuthorizeAPIValidationTest extends mPointBaseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(403, $iStatus);
-		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="84">Card has been blocked</status></root>', $sReplyBody);
+		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="89">Card has been blocked</status></root>', $sReplyBody);
 
 		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001");
 		$this->assertTrue(is_resource($res) );
