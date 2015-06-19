@@ -35,6 +35,8 @@ $from = time() - 3600*24*30; // NOW minus 30 days
 $aTxns = $obj_Status->getActiveTransactions($from, $to, true, 50);
 $aSuccess = array();
 
+echo date("r");
+
 foreach ($aTxns as $txn)
 {
 	try
@@ -71,4 +73,4 @@ foreach ($aTxns as $txn)
 
 }
 
-echo "Cancelled transactions for mPoint id's (". implode(',', $aSuccess) .")";
+echo "Cancelled transactions for mPoint id's (". implode(',', $aSuccess) .")\n\n\n";
