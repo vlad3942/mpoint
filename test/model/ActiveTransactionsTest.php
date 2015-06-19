@@ -54,7 +54,7 @@ class ActiveTransactionsTest extends mPointBaseAPITest
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001004, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 
 		$obj_Status = new Status($this->_obj_DB, $this->_obj_TXT);
-		$aTxns = $obj_Status->getActiveTransactions($now-3600*24*5, $now, true); // Get active transactions created in the period from NOW-5days to NOW
+		$aTxns = $obj_Status->getActiveTransactions($now-3600*24*5, $now, 0, true); // Get active transactions created in the period from NOW-5days to NOW
 
 		$this->assertEquals(2, count($aTxns) );
 		$aIDs = array();

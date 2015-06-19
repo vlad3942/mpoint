@@ -96,6 +96,7 @@ class DelCardAPIValidationTest extends mPointBaseAPITest
 		$this->assertTrue(is_resource($res) );
 		$this->assertTrue(pg_num_rows($res) == 0);
 	}
+
 	public function testNotAllowedOngoingTransaction()
 	{
 		$authTime = date('c', time() - 1800); //-30 minutes
@@ -106,8 +107,8 @@ class DelCardAPIValidationTest extends mPointBaseAPITest
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', 'profilePass', TRUE)");
 		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
 		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, euaid, countryid, amount, ip, enabled) VALUES (1001001, 100, 113, 1100, 5001, 100, 5000, '127.0.0.1', TRUE)");
-		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid, created) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ", '". $authTime ."')");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, euaid, countryid, amount, ip, created, enabled) VALUES (1001001, 100, 113, 1100, 5001, 100, 5000, '127.0.0.1', '". $authTime. "', TRUE)");
+		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 	
 		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass', 5001, 'Tpass');
 	
@@ -123,6 +124,42 @@ class DelCardAPIValidationTest extends mPointBaseAPITest
 		$this->assertTrue(is_resource($res) );
 		$this->assertTrue(pg_num_rows($res) == 1);
 	}
+
+	public function testDifferentEUAOngoingTransaction()
+	{
+		$authTime = date('c', time() - 1800); //-30 minutes
+
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass', 3600)");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', 'profilePass', TRUE)");
+		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, passwd, enabled) VALUES (5002, 100, 'abcExternal2', '30206162', 'profilePass', TRUE)");
+		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
+		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5002)");
+		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61776, 5002, 2, 2, '5020********3742', '/', true, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+		//$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, euaid, countryid, amount, ip, created, enabled) VALUES (1001001, 100, 113, 1100, 5001, 100, 5000, '127.0.0.1', '". $authTime. "', TRUE)");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, euaid, countryid, amount, ip, created, enabled) VALUES (1001002, 100, 113, 1100, 5002, 100, 5000, '127.0.0.1', '". $authTime. "', TRUE)");
+		//$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
+		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
+
+		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass', 5001, 'Tpass');
+
+		$this->_httpClient->connect();
+
+		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+		$sReplyBody = $this->_httpClient->getReplyBody();
+
+		$this->assertEquals(200, $iStatus);
+		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card successfully deleted</status></root>', $sReplyBody);
+
+		$res =  $this->queryDB("SELECT * FROM EndUser.Card_Tbl");
+		$this->assertTrue(is_resource($res) );
+		$this->assertTrue(pg_num_rows($res) == 1);
+
+		$row = pg_fetch_assoc($res);
+		$this->assertEquals(61776, $row["id"]);
+	}
 	
 	public function testExpiredOngoingTransaction()
 	{
@@ -134,9 +171,9 @@ class DelCardAPIValidationTest extends mPointBaseAPITest
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', 'profilePass', TRUE)");
 		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
 		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', TRUE)");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, created, enabled) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', '". $authTime. "', TRUE)");
 		$this->queryDB("INSERT INTO EndUser.Transaction_Tbl (accountid, txnid, typeid) VALUES (5001, 1001001, 40)");
-		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid, created) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ", '". $authTime ."')");
+		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 
 		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass', 5001, 'Tpass');
 
@@ -163,9 +200,9 @@ class DelCardAPIValidationTest extends mPointBaseAPITest
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', 'profilePass', TRUE)");
 		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
 		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', TRUE)");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, created, enabled) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', '". $authTime. "', TRUE)");
 		$this->queryDB("INSERT INTO EndUser.Transaction_Tbl (accountid, txnid, typeid) VALUES (5001, 1001001, 40)");
-		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid, created) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ", '". $authTime ."')");
+		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_CAPTURED_STATE .")");
 
 		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass', 5001, 'Tpass');
@@ -193,9 +230,9 @@ class DelCardAPIValidationTest extends mPointBaseAPITest
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', 'profilePass', TRUE)");
 		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
 		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', TRUE)");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, created, enabled) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', '". $authTime. "', TRUE)");
 		$this->queryDB("INSERT INTO EndUser.Transaction_Tbl (accountid, txnid, typeid) VALUES (5001, 1001001, 40)");
-		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid, created) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ", '". $authTime ."')");
+		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_CAPTURED_STATE .")");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_REFUNDED_STATE .")");
 
@@ -243,7 +280,6 @@ class DelCardAPIValidationTest extends mPointBaseAPITest
 
 	public function testRejectedBeforeAuthorize()
 	{
-		$rejectTime = date('c', time() - 2400); //-40 minutes
 		$authTime = date('c', time() - 1800); //-30 minutes
 	
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass', 3600)");
@@ -252,10 +288,10 @@ class DelCardAPIValidationTest extends mPointBaseAPITest
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', 'profilePass', TRUE)");
 		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
 		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, euaid, countryid, amount, ip, enabled) VALUES (1001001, 100, 113, 1100, 5001, 100, 5000, '127.0.0.1', TRUE)");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, euaid, countryid, amount, ip, created, enabled) VALUES (1001001, 100, 113, 1100, 5001, 100, 5000, '127.0.0.1', '". $authTime. "', TRUE)");
 		$this->queryDB("INSERT INTO EndUser.Transaction_Tbl (accountid, txnid, typeid) VALUES (5001, 1001001, 40)");
-		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid, created) VALUES (1001001, ". Constants::iPAYMENT_REJECTED_STATE. ", '". $rejectTime ."')");
-		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid, created) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ", '". $authTime ."')");
+		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_REJECTED_STATE. ")");
+		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 	
 		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass', 5001, 'Tpass');
 	

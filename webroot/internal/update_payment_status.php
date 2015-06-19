@@ -32,7 +32,7 @@ $obj_Status = new Status($_OBJ_DB, $_OBJ_TXT);
 
 $to = time() - 3600*8; // NOW minus 8 hours
 $from = $to - 3600*24*5; // NOW minus 5 days
-$aTxns = $obj_Status->getActiveTransactions($from, $to, true, 25);
+$aTxns = $obj_Status->getActiveTransactions($from, $to, 0, true, 25);
 $aSuccess = array();
 
 foreach ($aTxns as $txn)

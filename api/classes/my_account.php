@@ -218,26 +218,20 @@ class MyAccount extends Home
 	/**
 	 * Deletes a stored card from an End-User Account.
 	 *
-	 * @param 	integer $id			Unqiue ID of the End-User's Account
+	 * @param 	integer $enduserid	Unqiue ID of the End-User's Account
 	 * @param 	integer $cardid		Unique ID of the Stored Card that should be deleted
 	 * @return 	1 Active transactions
 	 * 			2 No matching cards
 	 * 			3 Internal Error
 	 * 		   10 Success
 	 */
-	public function delStoredCard($id, $cardid)
+	public function delStoredCard($enduserid, $cardid)
 	{
-		$aFinalTxnStates = array(Constants::iPAYMENT_CANCELLED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_REFUNDED_STATE, Constants::iPAYMENT_DECLINED_STATE);
-
-		$sql1 = "SELECT Card.id AS cardid, MAX(Coalesce(Msg2.stateid, Msg1.stateid, -1) ) AS state
+		$sql1 = "SELECT Card.id cardid, Cli.transaction_ttl ttl
 				 FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl Card
-				 LEFT JOIN Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn ON Txn.euaid = ". intval($id) ." AND Txn.enabled = true
 				 LEFT JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl Cli ON Cli.id = Card.clientid AND Cli.enabled = true
-				 LEFT JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg1 ON Msg1.txnid = Txn.id AND Msg1.stateid = ". Constants::iPAYMENT_ACCEPTED_STATE . " AND Msg1.enabled = true AND Msg1.created > NOW() - CONCAT(Cli.transaction_ttl, ' seconds')::INTERVAL
-				 LEFT JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg2 ON Msg2.txnid = Msg1.txnid AND Msg2.stateid IN (". implode(',', $aFinalTxnStates) .") AND Msg2.enabled = true
-				 WHERE Card.accountid = ". intval($id) ." AND Card.id = ". intval($cardid) ."
-				 GROUP BY Card.id";
-//		echo $sql ."\n";
+				 WHERE Card.id = ". intval($cardid);
+//		echo $sql1 ."\n";
 
 		$res1 = $this->getDBConn()->query($sql1);
 
@@ -246,8 +240,21 @@ class MyAccount extends Home
 			$RS = $this->getDBConn()->fetchName($res1);
 			if (is_array($RS) === true)
 			{
-				// There is one or more active transactions
-				if ($RS["STATE"] == Constants::iPAYMENT_ACCEPTED_STATE) { return 1; }
+				$iTTL = intval($RS["TTL"]);
+				if ($iTTL > 0)
+				{
+					$obj_Status = new Status($this->getDBConn(), $this->getText() );
+					$iTo = time();
+					$iFrom = $iTo-$iTTL;
+					$aTxns = array();
+					try
+					{
+						$aTxns = $obj_Status->getActiveTransactions($iFrom, $iTo, $enduserid);
+					} catch (mPointException $e) { trigger_error("An error occurred while trying to check the DB for active payment transactions", E_USER_WARNING); }
+
+					// There is one or more active transactions
+					if (count($aTxns) > 0) { return 1; }
+				}
 			}
 			else { return 2; }
 

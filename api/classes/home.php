@@ -179,27 +179,38 @@ class Home extends General
 			elseif ($RS["ATTEMPTS"] + 2 == Constants::iMAX_LOGIN_ATTEMPTS)
 			{
 				$code = 2;
-				$aFinalTxnStates = array(Constants::iPAYMENT_CANCELLED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_REFUNDED_STATE, Constants::iPAYMENT_DECLINED_STATE);
+				$sql1 = "SELECT EUA.id, MAX(Cli.transaction_ttl) ttl
+				 		 FROM EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA
+				  		 LEFT JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl Cla ON Cla.accountid = EUA.id AND Cla.enabled = true
+				  		 LEFT JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl Cli ON Cli.id = Cla.clientid AND Cli.enabled = true
+						 WHERE EUA.id = ". intval($id) ."
+						 GROUP BY EUA.id";
+//		echo $sql1 ."\n";
 
-				$sql2 = "SELECT MAX(Coalesce(Msg2.stateid, Msg1.stateid, -1) ) AS state
-						 FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
-						 INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl Cli ON Cli.id = Txn.clientid AND Cli.enabled = true
-						 INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg1 ON Msg1.txnid = Txn.id AND Msg1.stateid = ". Constants::iPAYMENT_ACCEPTED_STATE . " AND Msg1.enabled = true AND Msg1.created > NOW() - CONCAT(Cli.transaction_ttl, ' seconds')::INTERVAL
-						 LEFT JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg2 ON Msg2.txnid = Msg1.txnid AND Msg2.stateid IN (". implode(',', $aFinalTxnStates) .") AND Msg2.enabled = true
-						 WHERE Txn.euaid = ". $id;
-//				echo $sql2."\n";
+				$res1 = $this->getDBConn()->query($sql1);
 
-				$res2 = $this->getDBConn()->query($sql2);
-
-				if (is_resource($res2) === true )
+				if (is_resource($res1) === true )
 				{
-					$RS2 = $this->getDBConn()->fetchName($res2);
-					if (is_array($RS2) === true && count($RS2) > 0)
+					$RS1 = $this->getDBConn()->fetchName($res1);
+					if (is_array($RS) === true)
 					{
-						// There is one or more active transactions
-						if ($RS2["STATE"] == Constants::iPAYMENT_ACCEPTED_STATE) { $code = 4; }
+						$iTTL = intval($RS1["TTL"]);
+						if ($iTTL > 0)
+						{
+							$obj_Status = new Status($this->getDBConn(), $this->getText() );
+							$iTo = time();
+							$iFrom = $iTo-$iTTL;
+							$aTxns = array();
+							try
+							{
+								$aTxns = $obj_Status->getActiveTransactions($iFrom, $iTo, $id);
+							} catch (mPointException $e) { trigger_error("An error occurred while trying to check the DB for active payment transactions", E_USER_WARNING); }
+
+							// There is one or more active transactions
+							if (count($aTxns) > 0) { $code = 4; }
+						}
 					}
-				} else { trigger_error("An error occurred while trying to check the DB for active payment transactions", E_USER_WARNING); }
+				}
 
 				$iAttempts = $RS["ATTEMPTS"] + 1;
 				$bEnabled = true;

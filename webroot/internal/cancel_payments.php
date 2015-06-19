@@ -35,7 +35,7 @@ $fOffset = isset($_GET['from']) === true ? intval($_GET['from']) : 3600*24*30;
 
 $to = time() - $tOffset;
 $from = time() - $fOffset;
-$aTxns = $obj_Status->getActiveTransactions($from, $to, true, 50);
+$aTxns = $obj_Status->getActiveTransactions($from, $to, 0, true, 50);
 $aSuccess = array();
 
 echo date("r"). "\n";

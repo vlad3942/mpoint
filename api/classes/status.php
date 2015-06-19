@@ -15,7 +15,7 @@ class Status extends General
 											Constants::iPAYMENT_CAPTURED_STATE,
 											Constants::iPAYMENT_REFUNDED_STATE);
 
-	public function getActiveTransactions($from, $to, $serialize=false, $limit=null)
+	public function getActiveTransactions($from, $to, $enduser=0, $serialize=false, $limit=0)
 	{
 		$sFrom = $this->getDBConn()->escStr(date("Y-m-d H:i:s", $from) );
 		$sTo = $this->getDBConn()->escStr(date("Y-m-d H:i:s", $to) );
@@ -30,7 +30,10 @@ class Status extends General
 					 	 FROM Log".sSCHEMA_POSTFIX.".Message_Tbl Msg2
 					 	 WHERE Msg2.txnid = Txn.id AND Msg2.stateid IN (". implode(',', self::$aFinalTxnStates) .") AND Msg2.enabled = true)";
 
-		if (is_int($limit) ) { $sql .= " LIMIT ". $limit; }
+		$enduser = intval($enduser);
+		$limit = intval($limit);
+		if ($enduser > 0) { $sql .= " AND Txn.euaid = ". $enduser; }
+		if ($limit > 0) { $sql .= " LIMIT ". $limit; }
 		if ($serialize === true) { $sql .= " FOR UPDATE NOWAIT"; }
 //		echo $sql ."\n";
 
