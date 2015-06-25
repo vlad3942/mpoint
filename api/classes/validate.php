@@ -1103,7 +1103,7 @@ class Validate
 			{
 				$sql = "SELECT count(id) AS numberofcards
 						FROM Enduser".sSCHEMA_POSTFIX.".Cards_Tbl
-						WHERE accountid = ". intval($userid)." AND enabled = 1";
+						WHERE accountid = ". intval($userid)." AND enabled = '1'";
 				$RS = $oDB->getName($sql);
 
 				if ($RS["NUMBEROFCARDS"] >= $max) { $code = 4; }	//  User has the max amount of cards
