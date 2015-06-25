@@ -1,13 +1,11 @@
-CONNECT system_ownr/system_ownr;
+CONNECT system_ownr;
 DROP TABLE System_Ownr.CardState_Tbl;
-DROP TABLE system_ownr.IINAction_Tbl;
 DROP TABLE System_Ownr.CardChargeType_Tbl;
 
 DROP SEQUENCE System_Ownr.CardState_Tbl_id_seq;
-DROP SEQUENCE System_Ownr.IINAction_Tbl_id_seq;
 DROP SEQUENCE System_Ownr.CardChargeType_Tbl_id_seq;
 
-CONNECT client_ownr/Emirates$123;
+CONNECT client_ownr;
 DROP TABLE Client_Ownr.Info_Tbl;
 DROP TABLE Client_Ownr.IINList_Tbl;
 DROP TABLE Client_Ownr.InfoType_Tbl;
@@ -16,7 +14,11 @@ DROP SEQUENCE Client_Ownr.InfoType_Tbl_id_seq;
 DROP SEQUENCE Client_Ownr.Info_Tbl_id_seq;
 DROP SEQUENCE Client_Ownr.IINList_Tbl_id_seq;
 
-CONNECT system_ownr/system_ownr;
+CONNECT system_ownr;
+DROP TABLE system_ownr.IINAction_Tbl;
+DROP SEQUENCE System_Ownr.IINAction_Tbl_id_seq;
+
+
 /* ==================== SYSTEM SCHEMA START ==================== */
 -- Table: System.CardState_Tbl 
 CREATE TABLE System_Ownr.CardState_Tbl
@@ -96,7 +98,7 @@ FOR EACH ROW
 
 CREATE UNIQUE INDEX IINAction_UQ ON System_Ownr.IINAction_Tbl (Lower(name) ); 
 
-CONNECT system_ownr/system_ownr;
+CONNECT system_ownr;
 -- Table: System_Ownr.CardChargeType_Tbl 
 CREATE TABLE System_Ownr.CardChargeType_Tbl 
 (
@@ -135,7 +137,7 @@ FOR EACH ROW
 /
 /* ==================== SYSTEM SCHEMA END ==================== */
 
-CONNECT client_ownr/Emirates$123;
+CONNECT client_ownr;
 
 /* ==================== CLIENT SCHEMA START ==================== */
 
@@ -249,9 +251,9 @@ FOR EACH ROW
 			
 -- Table: Client.IINList_Tbl
 -- Data table for each client's lists of actions taken for a range of Issuer Identification Numbers
-CONNECT system_ownr/system_ownr;
+CONNECT system_ownr;
 GRANT REFERENCES, UPDATE ON System_Ownr.IINAction_Tbl TO client_ownr;
-CONNECT client_ownr/Emirates$123;
+CONNECT client_ownr;
 
 CREATE TABLE Client_Ownr.IINList_Tbl
 (
@@ -299,7 +301,7 @@ CREATE INDEX IINRanges_Idx ON Client_Ownr.IINList_Tbl (clientid, min, max);
 /* ==================== CLIENT SCHEMA END ==================== */
 
 /* ==================== ENDUSER SCHEMA START ==================== */
-CONNECT enduser_ownr/enduser_ownr;
+CONNECT enduser_ownr;
 -- Create link to EndUser.Card_Tbl
 ALTER TABLE EndUser_Ownr.Card_Tbl ADD(chargetypeid NUMBER(10) DEFAULT 0);
 /* ==================== ENDUSER SCHEMA START ==================== */
