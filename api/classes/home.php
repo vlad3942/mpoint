@@ -181,8 +181,8 @@ class Home extends General
 				$code = 2;
 				$sql1 = "SELECT EUA.id, MAX(Cli.transaction_ttl) ttl
 				 		 FROM EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA
-				  		 LEFT JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl Cla ON Cla.accountid = EUA.id AND Cla.enabled = 1
-				  		 LEFT JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl Cli ON Cli.id = Cla.clientid AND Cli.enabled = 1
+				  		 LEFT JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl Cla ON Cla.accountid = EUA.id AND Cla.enabled = '1'
+				  		 LEFT JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl Cli ON Cli.id = Cla.clientid AND Cli.enabled = '1'
 						 WHERE EUA.id = ". intval($id) ."
 						 GROUP BY EUA.id";
 //		echo $sql1 ."\n";
