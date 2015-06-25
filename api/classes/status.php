@@ -23,12 +23,12 @@ class Status extends General
 		//Using AND NOT EXISTS with subselect instead of outer join on Log.Message_Tbl due to "FOR UPDATE" clause
 		$sql = "SELECT Txn.id
 			    	 FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
-					 INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg1 ON Msg1.txnid = Txn.id AND Msg1.stateid = ". Constants::iPAYMENT_ACCEPTED_STATE . " AND Msg1.enabled = true
+					 INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg1 ON Msg1.txnid = Txn.id AND Msg1.stateid = ". Constants::iPAYMENT_ACCEPTED_STATE . " AND Msg1.enabled = 1
 					 WHERE Txn.created >= '". $sFrom ."' AND Txn.created <= '". $sTo ."'
 					 AND NOT EXISTS
 					 	(SELECT Msg2.stateid
 					 	 FROM Log".sSCHEMA_POSTFIX.".Message_Tbl Msg2
-					 	 WHERE Msg2.txnid = Txn.id AND Msg2.stateid IN (". implode(',', self::$aFinalTxnStates) .") AND Msg2.enabled = true)";
+					 	 WHERE Msg2.txnid = Txn.id AND Msg2.stateid IN (". implode(',', self::$aFinalTxnStates) .") AND Msg2.enabled = 1)";
 
 		$enduser = intval($enduser);
 		$limit = intval($limit);

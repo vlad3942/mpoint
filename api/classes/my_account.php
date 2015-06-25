@@ -229,7 +229,7 @@ class MyAccount extends Home
 	{
 		$sql1 = "SELECT Card.id cardid, Cli.transaction_ttl ttl
 				 FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl Card
-				 LEFT JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl Cli ON Cli.id = Card.clientid AND Cli.enabled = true
+				 LEFT JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl Cli ON Cli.id = Card.clientid AND Cli.enabled = 1
 				 WHERE Card.id = ". intval($cardid);
 //		echo $sql1 ."\n";
 

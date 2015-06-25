@@ -145,7 +145,7 @@ class Validate
 	 * 	 1. Undefined Username
 	 * 	 2. Username is too short, min length is 3 characters
 	 * 	 3. Username is too long, as defined by iAUTH_MAX_LENGTH
-	 *   4. Username contains invalid characters: [^a-z0-9 æøåÆØÅäöÄÖ.-]
+	 *   4. Username contains invalid characters: [^a-z0-9 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.-]
 	 * 	10. Success
 	 *
 	 * @see		Constants::iAUTH_MIN_LENGTH
@@ -161,7 +161,7 @@ class Validate
 		if (empty($un) === true){ $code = 1; }											// Username is undefined
 		elseif (strlen($un) < 3) { $code = 2; }											// Username is too short
 		elseif (strlen($un) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }				// Username is too long
-		elseif (eregi("[^a-z0-9 æøåÆØÅäöÄÖ._-]", utf8_encode($un) ) == true) { $code = 4; }	// Username contains Invalid Characters
+		elseif (eregi("[^a-z0-9 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½._-]", utf8_encode($un) ) == true) { $code = 4; }	// Username contains Invalid Characters
 		else { $code = 10; }															// Username is valid
 
 		return $code;
@@ -201,7 +201,7 @@ class Validate
 	 * 	 1. Undefined E-Mail address
 	 * 	 2. E-Mail address is too short, as defined by iAUTH_MIN_LENGTH
 	 * 	 3. E-Mail address is too long, as defined by iAUTH_MAX_LENGTH
-	 *   4. E-Mail address contains invalid characters: [^0-9a-zæøåÆØÅäöÄÖ_.@-]
+	 *   4. E-Mail address contains invalid characters: [^0-9a-zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_.@-]
 	 *   5. E-Mail has an invalid form: ^[^@ ]+@[^@ ]+\.[^@ \.]+$
 	 *	10. Success
 	 *
@@ -218,7 +218,7 @@ class Validate
 		if (empty($email) === true) { $code = 1; }								// E-Mail is undefined
 		elseif (strlen($email) < Constants::iAUTH_MIN_LENGTH) { $code = 2; }	// E-Mail is too short
 		elseif (strlen($email) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }	// E-Mail is too long
-		elseif (eregi("[^0-9a-zæøåÆØÅäöÄÖ_.@-]", $email) == true) { $code = 4; }// E-Mail contains Invalid Characters
+		elseif (eregi("[^0-9a-zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_.@-]", $email) == true) { $code = 4; }// E-Mail contains Invalid Characters
 		elseif (ereg("^[^@]+@[^@]+\.[^@\.]+$", $email) == false) { $code = 5; }	// E-Mail has an invalid form
 		else { $code = 10; }													// E-Mail is valid
 
@@ -231,7 +231,7 @@ class Validate
 	 * 	 1. Undefined Name
 	 * 	 2. Name is too short, must be 2 characters or longer
 	 * 	 3. Name is too long, must be shorter than 100 characters
-	 *   4. Name contains invalid characters: [^0-9a-zæøåÆØÅäöÄÖ_.@-]
+	 *   4. Name contains invalid characters: [^0-9a-zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_.@-]
 	 * 	10. Success
 	 *
 	 * @see		General::valUsername()
@@ -930,7 +930,7 @@ class Validate
 
 	public function valFullname($fullname)
 	{
-		if(preg_match("/^[a-zæøåA-ZÆØÅ][a-zA-Z -\']+$/",$fullname) == false)
+		if(preg_match("/^[a-zï¿½ï¿½ï¿½A-Zï¿½ï¿½ï¿½][a-zA-Z -\']+$/",$fullname) == false)
 		{
 			$code = 1;
 		}
@@ -1103,7 +1103,7 @@ class Validate
 			{
 				$sql = "SELECT count(id) AS numberofcards
 						FROM Enduser".sSCHEMA_POSTFIX.".Cards_Tbl
-						WHERE accountid = ". intval($userid)." AND enabled = true";
+						WHERE accountid = ". intval($userid)." AND enabled = 1";
 				$RS = $oDB->getName($sql);
 
 				if ($RS["NUMBEROFCARDS"] >= $max) { $code = 4; }	//  User has the max amount of cards
