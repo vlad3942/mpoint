@@ -112,11 +112,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$xml .= '<messages>';
 								$xml .= $historyXml;
 								$xml .= '</messages>';
-							} else { $xml .= '<messages />'; }
+							}
+							else { $xml .= '<messages />'; }
 							$xml .= '</transaction>';
 						}
 						catch (TxnInfoException $e)
 						{
+							header("HTTP/1.1 404 Not Found");
+							
 							$xml .= '<status code="404">'. htmlspecialchars($e->getMessage() ). '</status>';
 						}
 					}
