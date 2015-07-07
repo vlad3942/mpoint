@@ -175,6 +175,8 @@ class NetAxept extends Callback implements Captureable, Refundable
 
 						if (strlen($this->getTxnInfo()->getCustomerRef() ) == 0)
 						{
+							$iMobileAccountID = -1;
+							$iEMailAccountID = -1;
 							if (floatval($this->getTxnInfo()->getMobile() ) > 0) { $iMobileAccountID = EndUserAccount::getAccountID($this->getDBConn(), $this->getTxnInfo()->getClientConfig(), $this->getTxnInfo()->getMobile(), $this->getTxnInfo()->getCountryConfig(), 2); }
 							if (trim($this->getTxnInfo()->getEMail() ) != "") { $iEMailAccountID = EndUserAccount::getAccountID($this->getDBConn(), $this->getTxnInfo()->getClientConfig(), $this->getTxnInfo()->getEMail(), $this->getTxnInfo()->getCountryConfig(), 2); }
 
