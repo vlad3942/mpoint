@@ -111,7 +111,7 @@ class PSPConfig extends BasicConfig
 	 *
 	 * @return 	string
 	 */
-	public function getMessage($lang) { return $this->_aMessages[strtolower($lang)]; }
+	public function getMessage($lang) { return @$this->_aMessages[strtolower($lang)]; }
 
 	public function toXML()
 	{
