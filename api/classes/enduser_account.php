@@ -196,6 +196,7 @@ class EndUserAccount extends Home
 		switch (count($aArgs) )
 		{
 		case (7):
+			$chargeid = 0;
 			// Card Saved during Authorization
 			if ( ($aArgs[0] instanceof TxnInfo) === true)
 			{

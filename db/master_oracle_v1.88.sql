@@ -304,5 +304,6 @@ CREATE INDEX IINRanges_Idx ON Client_Ownr.IINList_Tbl (clientid, min, max);
 CONNECT enduser_ownr;
 -- Create link to EndUser.Card_Tbl
 ALTER TABLE EndUser_Ownr.Card_Tbl ADD(chargetypeid NUMBER(10) DEFAULT 0);
-/* ==================== ENDUSER SCHEMA START ==================== */
 
+ALTER TABLE EndUser_Ownr.Card_Tbl DROP CONSTRAINT ticket_uq;
+/* ==================== ENDUSER SCHEMA START ==================== */

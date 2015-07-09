@@ -344,5 +344,5 @@ echo '</root>';
 
 $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 $obj_XML = simplexml_load_string('<root>'. $xml .'</root>');
-$obj_mPoint->newAuditMessage(Constants::iOPERATION_CARD_SAVED, $obj_DOM->{'delete-card'}[0]->{'client-info'}->mobile, $obj_DOM->{'delete-card'}[0]->{'client-info'}->email, $obj_DOM->{'delete-card'}[0]->{'client-info'}->{'customer-ref'}, $obj_XML->status["code"], (string) $obj_XML->status);
+$obj_mPoint->newAuditMessage(Constants::iOPERATION_CARD_DELETED, $obj_DOM->{'delete-card'}[0]->{'client-info'}->mobile, $obj_DOM->{'delete-card'}[0]->{'client-info'}->email, $obj_DOM->{'delete-card'}[0]->{'client-info'}->{'customer-ref'}, $obj_XML->status["code"], (string) $obj_XML->status);
 ?>
