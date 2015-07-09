@@ -460,6 +460,66 @@
                                     <xs:element ref="cards" minOccurs="1" maxOccurs="1"/>
                                     <xs:element ref="payment-service-providers" minOccurs="1" maxOccurs="1"/>
                                     <xs:element ref="accounts" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element name="issuer-identification-number-ranges" minOccurs="0" maxOccurs="1">
+                                    	<xs:complexType>
+									        <xs:sequence>
+									            <xs:element name="issuer-identification-number-range" minOccurs="1" maxOccurs="unbounded">
+									                <xs:complexType>
+									                	<xs:annotation>
+						                                	<xs:documentation>An Issuer Identification Number (IIN) range specifies the minimum and maximum value for the range as well as the action (Block / Whitelist) that should be taken for this particular range</xs:documentation>
+						                                </xs:annotation>
+									                    <xs:all>
+									                        <xs:element name="min" minOccurs="1" maxOccurs="1">
+									                        	<xs:simpleType>
+									                        		<xs:annotation>
+									                                	<xs:documentation>The minimum value for the Issuer Identification Number range</xs:documentation>
+									                                </xs:annotation>
+									                                <xs:restriction base="xs:positiveInteger">
+									                                	<xs:minInclusive value="100000" />
+									                                	<xs:maxInclusive value="999999" />
+									                                </xs:restriction>
+									                            </xs:simpleType>
+									                        </xs:element>
+									                        <xs:element name="max" minOccurs="1" maxOccurs="1">
+									                        	<xs:simpleType>
+									                        		<xs:annotation>
+									                                	<xs:documentation>The maximum value for the Issuer Identification Number range</xs:documentation>
+									                                </xs:annotation>
+									                                <xs:restriction base="xs:positiveInteger">
+									                                	<xs:minInclusive value="100000" />
+									                                	<xs:maxInclusive value="999999" />
+									                                </xs:restriction>
+									                            </xs:simpleType>
+									                        </xs:element>
+														</xs:all>
+														<xs:attribute name="action-id" use="required">
+															<xs:simpleType>
+																<xs:restriction base="xs:positiveInteger">
+																	<!-- Blocked -->
+									                               	<xs:enumeration value="1">
+									                               		<xs:annotation>
+									                               			<xs:documentation>Used for blocking cards based on their Issuer Identification Number</xs:documentation>
+									                               		</xs:annotation>
+									                               	</xs:enumeration>
+									                               	<!-- Whitelisted -->
+									                               	<xs:enumeration value="2">
+									                               		<xs:annotation>
+									                               			<xs:documentation>Used for whitelisting cards based on their Issuer Identification Number</xs:documentation>
+									                               		</xs:annotation>
+									                               	</xs:enumeration>
+																</xs:restriction>
+															</xs:simpleType>
+														</xs:attribute>
+														<xs:attribute name="id" use="optional" type="xs:positiveInteger">
+															<xs:annotation>
+						                               			<xs:documentation>The unique ID for an existing Issuer Identification Number range. Specifying this id will cause the existing range to be updated where as omitting it will create a new range.</xs:documentation>
+						                               		</xs:annotation>
+														</xs:attribute>
+									                </xs:complexType>
+									            </xs:element>
+									        </xs:sequence>
+									    </xs:complexType>
+                                    </xs:element>
                                 </xs:all>
                                 <xs:attribute name="id" type="xs:positiveInteger" use="optional"/>
                                 <xs:attribute name="country-id" type="xs:positiveInteger" use="required" />
@@ -619,6 +679,7 @@
         </xs:sequence>
     </xs:complexType>
 </xs:element>
+
 <xs:simpleType name="name">
     <xs:restriction base="xs:string">
         <xs:minLength value="1"/>
