@@ -492,18 +492,27 @@ class NetAxept extends Callback implements Captureable, Refundable
 	 */
 	public function refund($iAmount = -1, $code = -1)
 	{
+		$oCI = HTTPConnInfo::produceConnInfo($this->aCONN_INFO);
+		$extID = $this->getTxnInfo()->getExternalID();
+
+		if ($code == -1)
+		{
+			$res = $this->query($oCI, $this->getPSPConfig()->getMerchantAccount(), $extID);
+			if ($res->Summary->AmountCaptured > 0) { $code = 5; }
+			else { $code = 2; }
+		}
+
 		switch ($code)
 		{
 		case 2:
 			$operation = "ANNUL";
 			break;
-		default:
+		case 5:
 			$operation = "CREDIT";
+			break;
 		}
 
-		$extID = $this->getTxnInfo()->getExternalID();
-		if ($iAmount == -1) { $this->getTxnInfo()->getAmount(); }
-		$oCI = HTTPConnInfo::produceConnInfo($this->aCONN_INFO);
+		if ($iAmount <= 0) { $this->getTxnInfo()->getAmount(); }
 
 		$obj_SOAP = new SOAPClient($this->aCONN_INFO["protocol"] ."://". $oCI->getHost () . $oCI->getPath (),
 									array("trace" => true,
@@ -514,7 +523,7 @@ class NetAxept extends Callback implements Captureable, Refundable
 						 "request" => array (
 						 "Operation" => $operation,
 						 "TransactionId" => $extID,
-						 "transactionAmount" => $iAmount) );
+						 "TransactionAmount" => $iAmount) );
 		try 
 		{
 			$obj_Std = $obj_SOAP->Process ($aParams);

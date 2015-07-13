@@ -8,20 +8,33 @@ class NetaxeptSimulator
 {
 	public function process()
 	{
-		header("Content-Type: text/xml; charset=UTF-8");
+		$input = file_get_contents('php://input');
 
-		$response = '<?xml version="1.0" encoding="utf-8"?>';
-		$response .= '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-					<soap:Body>
-						<ProcessResponse xmlns="http://BBS.EPayment">
-							<ProcessResult xmlns:a="http://schemas.datacontract.org/2004/07/BBS.EPayment.ServiceLibrary">
-								<a:ResponseCode>OK</a:ResponseCode>
-							</ProcessResult>
-						</ProcessResponse>
-					</soap:Body>
-				</soap:Envelope>';
+		$aMatches = array();
+		$bMatchesTxnID = preg_match('/<ns2:TransactionId>([0-9-]{1,32})<\/ns2:TransactionId>/', $input, $aMatches);
+		$bMatchesTxnAmount = preg_match('/<ns2:TransactionAmount>([0-9-]{1,10})<\/ns2:TransactionAmount>/', $input, $aMatches);
 
-		echo $response;
+		if ($bMatchesTxnID && $bMatchesTxnAmount)
+		{
+			header("Content-Type: text/xml; charset=UTF-8");
+
+			$response = '<?xml version="1.0" encoding="utf-8"?>';
+			$response .= '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+						<soap:Body>
+							<ProcessResponse xmlns="http://BBS.EPayment">
+								<ProcessResult xmlns:a="http://schemas.datacontract.org/2004/07/BBS.EPayment.ServiceLibrary">
+									<a:ResponseCode>OK</a:ResponseCode>
+								</ProcessResult>
+							</ProcessResponse>
+						</soap:Body>
+					</soap:Envelope>';
+
+			echo $response;
+		}
+		else
+		{
+			throw new InvalidArgumentException("Unable to locate required element in input, input: ". $input);
+		}
 	}
 
 	public function register()
