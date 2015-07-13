@@ -199,7 +199,164 @@
 						<xs:attribute name="type-id" type="xs:positiveInteger" use="required"/>
 					</xs:complexType>
 				</xs:element>
+				<!-- Save Client config XML schema -->				
+				<xs:element name="save-client-configuration" minOccurs="1" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="client-config" minOccurs="1" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:all>
+                                    <xs:element name="name" type="name" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element name="username" type="name" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element name="password" type="name" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element name="keyword" type="name" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element name="max-amount" type="amount" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element ref="urls" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element ref="cards" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element ref="payment-service-providers" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element ref="accounts" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element ref="issuer-identification-number-ranges" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element ref="callback-protocol" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element name="identification" type="xs:byte" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element name="transaction-time-to-live" type="xs:byte" minOccurs="1" maxOccurs="1"/>
+                                </xs:all>
+                                <xs:attribute name="id" type="xs:positiveInteger" use="optional"/>
+                                <xs:attribute name="country-id" type="xs:positiveInteger" use="required" />
+                                <xs:attribute name="language" type="language" use="optional" />
+                                <xs:attribute name="sms-receipt" type="xs:boolean" use="optional" />
+                                <xs:attribute name="email-receipt" type="xs:boolean" use="optional" />
+                                <xs:attribute name="mode" type="xs:byte" use="optional" />
+                                <xs:attribute name="auto-capture" type="boolean" use="required"/>                                
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
 		</xs:choice>
 	</xs:complexType>
 </xs:element>
+
+<xs:element name="urls">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element name="url" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="xs:anyURI">
+                            <xs:attribute name="type-id" use="required" type="xs:positiveInteger"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:element>
+<xs:element name="cards">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element name="card" minOccurs="1" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="xs:string">
+                            <xs:attribute name="country-id" use="optional" type="countryid"/>
+                            <xs:attribute name="id" use="required" type="xs:positiveInteger"/>
+                            <xs:attribute name="psp-id" use="required" type="xs:positiveInteger"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute type="xs:nonNegativeInteger" name="store-card"/>
+      	<xs:attribute type="xs:boolean" name="show-all-cards"/>
+      	<xs:attribute type="xs:nonNegativeInteger" name="max-stored-cards"/>
+    </xs:complexType>
+</xs:element>
+<xs:element name="payment-service-providers">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element name="payment-service-provider" minOccurs="1" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:all>
+                        <xs:element name="name" type="name" minOccurs="1" maxOccurs="1"/>
+                        <xs:element name="username" type="name" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="password" type="name" minOccurs="0" maxOccurs="1"/>
+                    </xs:all>
+                    <xs:attribute name="id" use="optional" type="xs:positiveInteger"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:element>
+<xs:element name="accounts">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element name="account" minOccurs="1" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:all>
+                        <xs:element name="name" type="name"/>
+                        <xs:element name="markup">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                    <xs:minLength value="0"/>
+                                    <xs:maxLength value="5"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element ref="payment-service-providers"/>
+                    </xs:all>
+                    <xs:attribute name="id" use="optional" type="xs:positiveInteger"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:element>
+<xs:element name="issuer-identification-number-ranges">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="issuer-identification-number-range">
+          <xs:annotation>
+            <xs:documentation>Blocks Dankort but VISA / Dankort are still accepted</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:positiveInteger" name="min"/>
+              <xs:element type="xs:positiveInteger" name="max"/>
+            </xs:sequence>
+            <xs:attribute type="xs:int" name="action-id"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+</xs:element>
+<xs:element name="callback-protocol">
+  <xs:complexType>
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:boolean" name="send-psp-id"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+</xs:element>
+
+
+<xs:simpleType name="name">
+    <xs:restriction base="xs:string">
+        <xs:minLength value="1"/>
+        <xs:maxLength value="50"/>
+    </xs:restriction>
+</xs:simpleType>
+<xs:simpleType name="boolean">
+    <xs:restriction base="xs:string">
+        <xs:enumeration value="false"/>
+        <xs:enumeration value="true"/>
+    </xs:restriction>
+</xs:simpleType>
+<xs:complexType name="amount">
+	<xs:simpleContent>
+		<xs:extension base="xs:nonNegativeInteger">
+			<xs:attribute name="country-id" type="xs:positiveInteger" use="optional" />
+		</xs:extension>
+	</xs:simpleContent>
+</xs:complexType>
+
 </xs:schema>
