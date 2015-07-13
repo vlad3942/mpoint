@@ -12,7 +12,8 @@ class NetaxeptSimulator
 
 		$aMatches = array();
 		$bMatchesTxnID = preg_match('/<ns2:TransactionId>([0-9-]{1,32})<\/ns2:TransactionId>/', $input, $aMatches);
-		$bMatchesTxnAmount = preg_match('/<ns2:TransactionAmount>([0-9-]{1,10})<\/ns2:TransactionAmount>/', $input, $aMatches);
+		if (preg_match('/<ns2:Operation>CREDIT<\/ns2:Operation>/', $input, $aMatches) ) { $bMatchesTxnAmount = preg_match('/<ns2:TransactionAmount>([0-9-]{1,10})<\/ns2:TransactionAmount>/', $input, $aMatches); }
+		else { $bMatchesTxnAmount = true; }
 
 		if ($bMatchesTxnID && $bMatchesTxnAmount)
 		{
