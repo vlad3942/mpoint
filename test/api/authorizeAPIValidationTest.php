@@ -145,7 +145,7 @@ class AuthorizeAPIValidationTest extends mPointBaseAPITest
 		$this->assertContains('<status code="401">Username / Password doesn\'t match</status>', $sReplyBody);
 	}
 
-	public function testIINBlocked()
+	public function testIINBlocked4DigitsInput4DigitRule()
 	{
 		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
 
@@ -158,7 +158,231 @@ class AuthorizeAPIValidationTest extends mPointBaseAPITest
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled) VALUES (113, 2, 2, false)"); //Authorize must be possible even with disabled cardac
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
 		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
-		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '501910******3742', '06/24', TRUE, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019**********3742', '06/24', TRUE, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+		$this->queryDB("INSERT INTO Client.IINList_Tbl (clientid, iinactionid, min, max) VALUES (113, 1, 5019, 5020);");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled) VALUES (1001001, 100, 113, 1100, 1, 2, 5001, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE)");
+		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .")");
+
+		$xml = $this->getAuthDoc(113, 1100, 1001001, 100, 'profilePass');
+
+		$this->_httpClient->connect();
+
+		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+		$sReplyBody = $this->_httpClient->getReplyBody();
+
+		$this->assertEquals(403, $iStatus);
+		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="89">Card has been blocked</status></root>', $sReplyBody);
+
+		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001");
+		$this->assertTrue(is_resource($res) );
+
+		$aStates = array();
+		while ($row = pg_fetch_assoc($res) )
+		{
+			$aStates[] = $row["stateid"];
+		}
+
+		// Assert that there is no futher txn states than
+		$this->assertEquals(1, count($aStates) );
+		$this->assertEquals(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates[0]);
+	}
+
+	public function testIINOpen4DigitsInput6DigitRange()
+	{
+		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
+
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (113, 4, 'http://mpoint.local.cellpointmobile.com/')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', TRUE)");
+		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 113, 2, '4216310')");
+		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 2, '-1')");
+		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled) VALUES (113, 2, 2, false)"); //Authorize must be possible even with disabled cardac
+		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
+		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
+		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5020**********3742', '06/24', TRUE, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+		$this->queryDB("INSERT INTO Client.IINList_Tbl (clientid, iinactionid, min, max) VALUES (113, 1, 501900, 502100);");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled) VALUES (1001001, 100, 113, 1100, 1, 2, 5001, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE)");
+		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .")");
+
+		$xml = $this->getAuthDoc(113, 1100, 1001001, 100, 'profilePass');
+
+		$this->_httpClient->connect();
+
+		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+		$sReplyBody = $this->_httpClient->getReplyBody();
+
+		$this->assertEquals(200, $iStatus);
+		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Payment Authorized using Stored Card</status></root>', $sReplyBody);
+
+		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001");
+		$this->assertTrue(is_resource($res) );
+
+		$aStates = array();
+		while ($row = pg_fetch_assoc($res) )
+		{
+			$aStates[] = $row["stateid"];
+		}
+
+		$this->assertEquals(6, count($aStates) );
+		$this->assertEquals(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates[0]);
+		$this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[1]);
+		$this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[2]);
+		$this->assertEquals(Constants::iCB_CONSTRUCTED_STATE, $aStates[3]);
+		$this->assertEquals(Constants::iCB_CONNECTED_STATE, $aStates[4]);
+		$this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[5]);
+	}
+
+	public function testIINOpen4DigitsInputNoRules()
+	{
+		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
+
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (113, 4, 'http://mpoint.local.cellpointmobile.com/')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', TRUE)");
+		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 113, 2, '4216310')");
+		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 2, '-1')");
+		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled) VALUES (113, 2, 2, false)"); //Authorize must be possible even with disabled cardac
+		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
+		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
+		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5020XXXXXXXX3742', '06/24', TRUE, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled) VALUES (1001001, 100, 113, 1100, 1, 2, 5001, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE)");
+		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .")");
+
+		$xml = $this->getAuthDoc(113, 1100, 1001001, 100, 'profilePass');
+
+		$this->_httpClient->connect();
+
+		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+		$sReplyBody = $this->_httpClient->getReplyBody();
+
+		$this->assertEquals(200, $iStatus);
+		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Payment Authorized using Stored Card</status></root>', $sReplyBody);
+
+		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001");
+		$this->assertTrue(is_resource($res) );
+
+		$aStates = array();
+		while ($row = pg_fetch_assoc($res) )
+		{
+			$aStates[] = $row["stateid"];
+		}
+
+		$this->assertEquals(6, count($aStates) );
+		$this->assertEquals(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates[0]);
+		$this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[1]);
+		$this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[2]);
+		$this->assertEquals(Constants::iCB_CONSTRUCTED_STATE, $aStates[3]);
+		$this->assertEquals(Constants::iCB_CONNECTED_STATE, $aStates[4]);
+		$this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[5]);
+	}
+
+	public function testIINOpen6DigitsInputNoRules()
+	{
+		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
+
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (113, 4, 'http://mpoint.local.cellpointmobile.com/')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', TRUE)");
+		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 113, 2, '4216310')");
+		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 2, '-1')");
+		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled) VALUES (113, 2, 2, false)"); //Authorize must be possible even with disabled cardac
+		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
+		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
+		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '502015XXXXXX3742', '06/24', TRUE, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled) VALUES (1001001, 100, 113, 1100, 1, 2, 5001, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE)");
+		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .")");
+
+		$xml = $this->getAuthDoc(113, 1100, 1001001, 100, 'profilePass');
+
+		$this->_httpClient->connect();
+
+		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+		$sReplyBody = $this->_httpClient->getReplyBody();
+
+		$this->assertEquals(200, $iStatus);
+		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Payment Authorized using Stored Card</status></root>', $sReplyBody);
+
+		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001");
+		$this->assertTrue(is_resource($res) );
+
+		$aStates = array();
+		while ($row = pg_fetch_assoc($res) )
+		{
+			$aStates[] = $row["stateid"];
+		}
+
+		$this->assertEquals(6, count($aStates) );
+		$this->assertEquals(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates[0]);
+		$this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[1]);
+		$this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[2]);
+		$this->assertEquals(Constants::iCB_CONSTRUCTED_STATE, $aStates[3]);
+		$this->assertEquals(Constants::iCB_CONNECTED_STATE, $aStates[4]);
+		$this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[5]);
+	}
+
+	public function testIINOpen6DigitsInput4DigitRule()
+	{
+		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
+
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (113, 4, 'http://mpoint.local.cellpointmobile.com/')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', TRUE)");
+		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 113, 2, '4216310')");
+		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 2, '-1')");
+		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled) VALUES (113, 2, 2, false)"); //Authorize must be possible even with disabled cardac
+		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
+		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
+		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '502014XXXXXX3742', '06/24', TRUE, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+		$this->queryDB("INSERT INTO Client.IINList_Tbl (clientid, iinactionid, min, max) VALUES (113, 1, 5019, 5021);");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled) VALUES (1001001, 100, 113, 1100, 1, 2, 5001, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE)");
+		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .")");
+
+		$xml = $this->getAuthDoc(113, 1100, 1001001, 100, 'profilePass');
+
+		$this->_httpClient->connect();
+
+		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+		$sReplyBody = $this->_httpClient->getReplyBody();
+
+		$this->assertEquals(200, $iStatus);
+		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Payment Authorized using Stored Card</status></root>', $sReplyBody);
+
+		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001");
+		$this->assertTrue(is_resource($res) );
+
+		$aStates = array();
+		while ($row = pg_fetch_assoc($res) )
+		{
+			$aStates[] = $row["stateid"];
+		}
+
+		$this->assertEquals(6, count($aStates) );
+		$this->assertEquals(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates[0]);
+		$this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[1]);
+		$this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[2]);
+		$this->assertEquals(Constants::iCB_CONSTRUCTED_STATE, $aStates[3]);
+		$this->assertEquals(Constants::iCB_CONNECTED_STATE, $aStates[4]);
+		$this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[5]);
+	}
+
+	public function testIINBlocked6DigitsInput6DigitRule()
+	{
+		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
+
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (113, 4, 'http://mpoint.local.cellpointmobile.com/')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', TRUE)");
+		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 113, 2, '4216310')");
+		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 2, '-1')");
+		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled) VALUES (113, 2, 2, false)"); //Authorize must be possible even with disabled cardac
+		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
+		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
+		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '501912********3742', '06/24', TRUE, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
 		$this->queryDB("INSERT INTO Client.IINList_Tbl (clientid, iinactionid, min, max) VALUES (113, 1, 501910, 501919);");
 		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled) VALUES (1001001, 100, 113, 1100, 1, 2, 5001, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .")");
@@ -186,4 +410,97 @@ class AuthorizeAPIValidationTest extends mPointBaseAPITest
 		$this->assertEquals(1, count($aStates) );
 		$this->assertEquals(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates[0]);
 	}
+
+	public function testIINOpen4DigitsInput6DigitRule()
+	{
+		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
+
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (113, 4, 'http://mpoint.local.cellpointmobile.com/')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', TRUE)");
+		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 113, 2, '4216310')");
+		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 2, '-1')");
+		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled) VALUES (113, 2, 2, false)"); //Authorize must be possible even with disabled cardac
+		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
+		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
+		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019XXXXXXXX3742', '06/24', TRUE, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+		$this->queryDB("INSERT INTO Client.IINList_Tbl (clientid, iinactionid, min, max) VALUES (113, 1, 501912, 501914);");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled) VALUES (1001001, 100, 113, 1100, 1, 2, 5001, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE)");
+		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .")");
+
+		$xml = $this->getAuthDoc(113, 1100, 1001001, 100, 'profilePass');
+
+		$this->_httpClient->connect();
+
+		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+		$sReplyBody = $this->_httpClient->getReplyBody();
+
+		$this->assertEquals(200, $iStatus);
+		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Payment Authorized using Stored Card</status></root>', $sReplyBody);
+
+		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY created");
+		$this->assertTrue(is_resource($res) );
+
+		$aStates = array();
+		while ($row = pg_fetch_assoc($res) )
+		{
+			$aStates[] = $row["stateid"];
+		}
+
+		$this->assertEquals(6, count($aStates) );
+		$this->assertEquals(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates[0]);
+		$this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[1]);
+		$this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[2]);
+		$this->assertEquals(Constants::iCB_CONSTRUCTED_STATE, $aStates[3]);
+		$this->assertEquals(Constants::iCB_CONNECTED_STATE, $aStates[4]);
+		$this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[5]);
+	}
+
+	public function testIINOpen6DigitsInput6DigitRule()
+	{
+		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
+
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (113, 4, 'http://mpoint.local.cellpointmobile.com/')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', TRUE)");
+		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 113, 2, '4216310')");
+		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 2, '-1')");
+		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled) VALUES (113, 2, 2, false)"); //Authorize must be possible even with disabled cardac
+		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
+		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
+		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '501916********3742', '06/24', TRUE, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+		$this->queryDB("INSERT INTO Client.IINList_Tbl (clientid, iinactionid, min, max) VALUES (113, 1, 501912, 501914);");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, euaid, countryid, orderid, callbackurl, amount, ip, enabled) VALUES (1001001, 100, 113, 1100, 1, 2, 5001, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE)");
+		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .")");
+
+		$xml = $this->getAuthDoc(113, 1100, 1001001, 100, 'profilePass');
+
+		$this->_httpClient->connect();
+
+		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+		$sReplyBody = $this->_httpClient->getReplyBody();
+
+		$this->assertEquals(200, $iStatus);
+		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Payment Authorized using Stored Card</status></root>', $sReplyBody);
+
+		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY created");
+		$this->assertTrue(is_resource($res) );
+
+		$aStates = array();
+		while ($row = pg_fetch_assoc($res) )
+		{
+			$aStates[] = $row["stateid"];
+		}
+
+		$this->assertEquals(6, count($aStates) );
+		$this->assertEquals(Constants::iPAYMENT_INIT_WITH_PSP_STATE, $aStates[0]);
+		$this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[1]);
+		$this->assertEquals(Constants::iPAYMENT_ACCEPTED_STATE, $aStates[2]);
+		$this->assertEquals(Constants::iCB_CONSTRUCTED_STATE, $aStates[3]);
+		$this->assertEquals(Constants::iCB_CONNECTED_STATE, $aStates[4]);
+		$this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[5]);
+	}
+
 }
