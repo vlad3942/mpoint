@@ -552,7 +552,7 @@ class ClientConfig extends BasicConfig
 	public function toFullXML($clientCardAccess, $clientPSPConfig , $clientPaymentMethods)
 	{
 		
-		$xml = '<client-config id="'. $this->getID() .'" auto-capture = "'. General::bool2xml($this->_bAutoCapture).'" country-id = "'.$this->getCountryConfig()->getID().'" language = "'.$this->_sLanguage.'" sms-receipt = "'.General::bool2xml($this->_bSMSReceipt).'" email-receipt = "'.General::bool2xml($this->_bEmailReceipt).'" mode="'. $this->_iMode .'" max-cards="'. $this->_iMaxCards .'" identification="'. $this->_iIdentification .'">';
+		$xml = '<client-config id="'. $this->getID() .'" auto-capture = "'. General::bool2xml($this->_bAutoCapture).'" country-id = "'.$this->getCountryConfig()->getID().'" language = "'.$this->_sLanguage.'" sms-receipt = "'.General::bool2xml($this->_bSMSReceipt).'" email-receipt = "'.General::bool2xml($this->_bEmailReceipt).'" mode="'. $this->_iMode .'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
 		$xml .= '<username>'. htmlspecialchars($this->getUsername(), ENT_NOQUOTES) .'</username>';
 		$xml .= '<password>'. htmlspecialchars($this->getPassword(), ENT_NOQUOTES) .'</password>';
@@ -567,7 +567,7 @@ class ClientConfig extends BasicConfig
 			$xml .= '<url type-id = "'.self::iNOTIFICATION_URL.'">'.htmlspecialchars($this->_sNotificationURL, ENT_NOQUOTES).'</url>';
 			$xml .= '<url type-id = "'.self::iMESB_URL.'">'.htmlspecialchars($this->_sMESBURL, ENT_NOQUOTES).'</url>';
 		$xml .= '</urls>';
-		$xml .= '<keyword>'.$this->getKeywordConfig()->getName().'<keyword>';		
+		$xml .= '<keyword>'.$this->getKeywordConfig()->getName().'</keyword>';		
 		$xml .= $clientPaymentMethods;		
 		$xml .= '<callback-protocol send-psp-id = "'.General::bool2xml($this->sendPSPID()).'">'. htmlspecialchars($this->getCallbackURL(), ENT_NOQUOTES) .'</callback-protocol>';
 		$xml .= '<identification>'. $this->_iIdentification .'</identification>';				
@@ -706,7 +706,7 @@ class ClientConfig extends BasicConfig
 			$xml .= $this->getClientMerchantSubAccountsToXML($oDB, $clientid, $RS['ACCOUNTID']);
 			$xml .= '</account>';
 		}
-		$xml .= '</accunts>';		
+		$xml .= '</accounts>';		
 		return $xml;
 	}
 	
