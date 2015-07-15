@@ -131,6 +131,14 @@
 					</xs:all>
 				</xs:complexType>
 				</xs:element>
+				<xs:element name="get-client-configurations">
+		          <xs:complexType>
+		            <xs:sequence>
+		              <xs:element type="xs:integer" name="client-id" maxOccurs="unbounded" minOccurs="1"/>
+		            </xs:sequence>
+		            <xs:attribute type="xs:integer" name="user-id"/>
+		          </xs:complexType>
+        		</xs:element>
 				<xs:element name="getcountries">
 				<xs:complexType>
 					<xs:all>

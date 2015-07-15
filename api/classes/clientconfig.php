@@ -548,6 +548,32 @@ class ClientConfig extends BasicConfig
 
 		return $xml;
 	}
+	
+	public function toFullXML($clientCardAccess, $clientPSPConfig , $clientPaymentMethods)
+	{
+		
+		$xml = '<client-config id="'. $this->getID() .'" auto-capture = "'. General::bool2xml($this->_bAutoCapture).'" country-id = "'.$this->getCountryConfig()->getID().'" language = "'.$this->_sLanguage.'" sms-receipt = "'.General::bool2xml($this->_bSMSReceipt).'" email-receipt = "'.General::bool2xml($this->_bEmailReceipt).'" mode="'. $this->_iMode .'" max-cards="'. $this->_iMaxCards .'" identification="'. $this->_iIdentification .'">';
+		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
+		$xml .= '<username>'. htmlspecialchars($this->getUsername(), ENT_NOQUOTES) .'</username>';
+		$xml .= '<password>'. htmlspecialchars($this->getPassword(), ENT_NOQUOTES) .'</password>';
+		$xml .= '<max-amount country-id = "'.$this->getCountryConfig()->getID().'">'. htmlspecialchars($this->getMaxAmount(), ENT_NOQUOTES) .'</max-amount>';
+		$xml .= '<cards store-card="'.$this->_iStoreCard.'" show-all-cards="'.General::bool2xml($this->_bShowAllCards).'" max-stored-cards="'.$this->_iMaxCards.'">';
+		$xml .= $clientCardAccess;
+		$xml .= '</cards>';
+		$xml .= $clientPSPConfig;
+		$xml .= '<urls>';
+			$xml .= '<url type-id = "'.self::iCUSTOMER_IMPORT_URL.'">'.htmlspecialchars($this->_sCustomerImportURL, ENT_NOQUOTES).'</url>';
+			$xml .= '<url type-id = "'.self::iAUTHENTICATION_URL.'">'.htmlspecialchars($this->_sAuthenticationURL, ENT_NOQUOTES).'</url>';
+			$xml .= '<url type-id = "'.self::iNOTIFICATION_URL.'">'.htmlspecialchars($this->_sNotificationURL, ENT_NOQUOTES).'</url>';
+			$xml .= '<url type-id = "'.self::iMESB_URL.'">'.htmlspecialchars($this->_sMESBURL, ENT_NOQUOTES).'</url>';
+		$xml .= '</urls>';
+		$xml .= '<keyword>'.$this->getKeywordConfig()->getName().'<keyword>';		
+		$xml .= $clientPaymentMethods;		
+		$xml .= '<callback-protocol send-psp-id = "'.General::bool2xml($this->sendPSPID()).'">'. htmlspecialchars($this->getCallbackURL(), ENT_NOQUOTES) .'</callback-protocol>';
+		$xml .= '<identification>'. $this->_iIdentification .'</identification>';				
+		$xml .= '</client-config>';
+		return $xml;
+	}
 
 	/**
 	 * Produces a new instance of a Client Configuration Object.
@@ -655,6 +681,108 @@ class ClientConfig extends BasicConfig
 	{
 		if (count($this->_aIPList) == 0) { return true; }
 		else { return in_array($ip, $this->_aIPList); }
+	}
+	
+	public function getClientAccountsToXML(RDB $oDB, $clientid)
+	{		
+		$xml = '';
+		$sql = "SELECT A.id AS accountid, A.name AS accountname, A.markup AS markup			
+				FROM Client". sSCHEMA_POSTFIX .".Client_Tbl CL 
+				INNER JOIN Client". sSCHEMA_POSTFIX .".Account_Tbl A ON CL.id = A.clientid 				
+				WHERE CL.id = ". intval($clientid) ." AND CL.enabled = '1';
+		";
+		//echo $sql ."\n";
+		$res = $oDB->query($sql);
+//		var_dump($oDB->fetchName($res));die;		
+		$xml = '<accounts>';
+		while ($RS = $oDB->fetchName($res))
+		{			
+			$xml .= '<account>';
+			if (!empty($RS) && $RS['ACCOUNTID'] > 0)
+			{
+				$xml .= '<name>'. htmlspecialchars($RS['ACCOUNTNAME'], ENT_NOQUOTES) .'</name>';
+				$xml .= '<markup>'. htmlspecialchars($RS['MARKUP'], ENT_NOQUOTES).'</markup>';	
+			}
+			$xml .= $this->getClientMerchantSubAccountsToXML($oDB, $clientid, $RS['ACCOUNTID']);
+			$xml .= '</account>';
+		}
+		$xml .= '</accunts>';		
+		return $xml;
+	}
+	
+	public function getClientMerchantSubAccountsToXML(RDB $oDB, $clientid, $accountid)
+	{		
+		$xml = '';
+		$sql = "SELECT MSA.pspid AS pspid		
+				FROM Client". sSCHEMA_POSTFIX .".Client_Tbl CL 
+				INNER JOIN Client". sSCHEMA_POSTFIX .".Account_Tbl A ON CL.id = A.clientid 
+				RIGHT JOIN Client.MerchantSubAccount_Tbl MSA ON A.id = MSA.accountid				
+				WHERE CL.id = ". intval($clientid) ." AND A.id = ".intval($accountid)." AND CL.enabled = '1';
+		";
+		//echo $sql ."\n";
+		$res = $oDB->query($sql);	
+		
+		$xml = '<payment-service-providers>';
+		while ($RS = $oDB->fetchName($res))
+		{			
+			$obj_PSPConfig = PSPConfig::produceConfig($oDB, $clientid, $accountid, $RS['PSPID']);
+			if(!empty($obj_PSPConfig)){
+				$xml .= '<payment-service-provider id = "'.$obj_PSPConfig->getID().'">';			
+				$xml .= '<name>'. htmlspecialchars($obj_PSPConfig->getName(), ENT_NOQUOTES) .'</name>';							
+				$xml .= '</payment-service-provider>';
+			}
+		}
+		$xml .= '</payment-service-providers>';		
+		
+		return $xml;
+	}
+	
+	public function getClientCardAccessToXML(RDB $oDB, $clientid)
+	{		
+		$xml = '';
+		$sql = "SELECT CA.id, CA.name, CL.countryid, CCA.pspid		
+				FROM Client". sSCHEMA_POSTFIX .".Client_Tbl CL 
+				INNER JOIN Client". sSCHEMA_POSTFIX .".CardAccess_Tbl CCA ON CL.id = CCA.clientid 
+				INNER JOIN System.". sSCHEMA_POSTFIX ."Card_Tbl CA ON CCA.cardid = CA.id
+				WHERE CL.id = ". intval($clientid) ." AND CL.enabled = '1';
+		";		
+		//echo $sql ."\n";
+		$res = $oDB->query($sql);		
+		
+		while ($RS = $oDB->fetchName($res))
+		{			
+			if(!empty($RS) && $RS['ID'] > 0){										
+				$xml .= '<card id="'.$RS['ID'].'" country-id="'.$RS['COUNTRYID'].'" psp-id="'.$RS['PSPID'].'">'.htmlspecialchars($RS['NAME'], ENT_NOQUOTES).'</card>';
+			}
+		}		
+		return $xml;
+	}
+	
+	public function getClientPSPConfigToXML(RDB $oDB, $clientid)
+	{		
+		$xml = '';
+		$sql = "SELECT MA.name, MA.username, MA.passwd, MA.pspid		
+				FROM Client". sSCHEMA_POSTFIX .".Client_Tbl CL 
+				INNER JOIN Client". sSCHEMA_POSTFIX .".MerchantAccount_Tbl MA ON CL.id = MA.clientid 				
+				WHERE CL.id = ". intval($clientid) ." AND CL.enabled = '1';
+		";
+		//echo $sql ."\n";
+		$res = $oDB->query($sql);	
+		
+		$xml = '<payment-service-providers>';
+		while ($RS = $oDB->fetchName($res))
+		{			
+			if(!empty($RS)){
+				$xml .= '<payment-service-provider id = "'.$RS['PSPID'].'">';			
+				$xml .= '<name>'. htmlspecialchars($RS['NAME'], ENT_NOQUOTES) .'</name>';
+				$xml .= '<username>'. htmlspecialchars($RS['NAME'], ENT_NOQUOTES) .'</username>';
+				$xml .= '<password>'. htmlspecialchars($RS['PASSWD'], ENT_NOQUOTES) .'</password>';							
+				$xml .= '</payment-service-provider>';
+			}
+		}
+		$xml .= '</payment-service-providers>';		
+		
+		return $xml;
 	}
 }
 ?>
