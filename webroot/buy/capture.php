@@ -16,17 +16,23 @@
 require_once("../inc/include.php");
 // Require specific Business logic for the Capture component
 require_once(sCLASS_PATH ."/capture.php");
-
 // Require Business logic for the End-User Account Component
 require_once(sCLASS_PATH ."/enduser_account.php");
 // Require general Business logic for the Callback module
 require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
+// Require specific Business logic for the WorldPay component
+require_once(sCLASS_PATH ."/worldpay.php");
 // Require specific Business logic for the Netaxept component
 require_once(sCLASS_PATH ."/netaxept.php");
 // Require specific Business logic for the WannaFind component
 require_once(sCLASS_PATH ."/wannafind.php");
+if (function_exists("json_encode") === true)
+{
+	// Require specific Business logic for the Stripe component
+	require_once(sCLASS_PATH ."/stripe.php");
+}
 // Require specific Business logic for the CPM PSP component
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
 // Require specific Business logic for the MobilePay component
@@ -79,7 +85,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			{
 				$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 				$obj_mPoint = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
-				$code = $obj_mPoint->capture( (integer)$_REQUEST['amount']);
+				$code = $obj_mPoint->capture( (integer) $_REQUEST['amount']);
 
 				// Refresh transactioninfo object once the capture is performed
 				$obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(), $_OBJ_DB);

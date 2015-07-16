@@ -16,7 +16,7 @@
  * Model Class containing all the Business Logic for handling interaction with WorldPay
  *
  */
-class WorldPay extends Callback implements Refundable
+class WorldPay extends Callback implements Captureable, Refundable
 {
 	/**
 	 * Notifies the Client of the Payment Status by performing a callback via HTTP.
@@ -273,20 +273,91 @@ class WorldPay extends Callback implements Refundable
 		return $b;
 	}
 
-	/**
-	 * Performs a capture operation with WorldPay for the provided transaction.
-	 * The method will log one the following status codes from WorldPay:
-	 *
-	 * @link
-	 *
-	 * @param 	integer $txn	Transaction ID previously returned by WorldPay during authorisation
-	 * @return	integer
-	 * @throws	E_USER_WARNING
+	/*
+	 * (non-PHPdoc)
+	 * @see Captureable::capture()
 	 */
-	public function capture($txn)
+	public function capture($iAmount = -1)
 	{
-	}
+		if ($iAmount == -1) { $this->getTxnInfo()->getAmount(); }
+		// Unmarshall the XML Document from WorldPay's "Payment Authorized" Notification
+		$a = $this->getMessageData($this->getTxnInfo()->getID(), Constants::iPAYMENT_ACCEPTED_STATE);
+		ob_start();
+		eval('$a = '. $a[0] .';');
+		$str = ob_get_clean();
+		$obj_XML = simplexml_load_string($a[0]);
+		
+		// Success: XML Document unmarshalled
+		if ( ($obj_XML instanceof SimpleXMLElement) === true)
+		{
+			$bStoredCard = false;
+			// Payment made with a Stored Card - Use the WorldPay Merchant Code required for processing Stored Cards
+			if (count($this->getMessageData($this->getTxnInfo()->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE) ) > 0)
+			{
+				$bStoredCard = true;
+			}
+			// Construct "Capture" request to WorldPay
+			$b = '<?xml version="1.0" encoding="UTF-8"?>';
+			$b .= '<!DOCTYPE paymentService PUBLIC "-//WorldPay/DTD WorldPay PaymentService v1//EN" "http://dtd.worldpay.com/paymentService_v1.dtd">';
+			$b .= '<paymentService version="1.4" merchantCode="'. htmlspecialchars($this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, $bStoredCard), ENT_NOQUOTES) .'">';
+			$b .= '<modify>';
+			$b .= '<orderModification orderCode="'. htmlspecialchars($this->getTxnInfo()->getOrderID(), ENT_NOQUOTES) .'">';
+			$b .= '<capture>';
+			// Use date from WorldPay's "Payment Authorized" Notification
+			if (count($obj_XML->notify->orderStatusEvent->journal->bookingDate->date) == 1)
+			{
+				$b .= $obj_XML->notify->orderStatusEvent->journal->bookingDate->date->asXML();
+			}
+			else { $b .= '<date dayOfMonth="'. date("d") .'" month="'. date("m") .'" year="'. date("Y") .'" />'; }
+			$b .= '<amount value="'. $iAmount .'" currencyCode="'. $obj_XML->notify->orderStatusEvent->payment->amount["currencyCode"] .'" exponent="'. $obj_XML->notify->orderStatusEvent->payment->amount["exponent"] .'" debitCreditIndicator="'. $obj_XML->notify->orderStatusEvent->payment->amount["debitCreditIndicator"] .'" />';
+			$b .= '</capture>';
+			$b .= '</orderModification>';
+			$b .= '</modify>';
+			$b .= '</paymentService>';	
 	
+			$aConnInfo = $this->aCONN_INFO;
+			// Only send to WorldPay's Production environment if it's a production transaction
+			if ($this->getTxnInfo()->getMode() > 0) { $aConnInfo["host"] = str_replace("secure.", "secure-test.", $aConnInfo["host"]); }
+			// Construct HTTP Connection Info
+			$aLogin = $this->getMerchantLogin($this->getTxnInfo()->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, $bStoredCard);
+			$aConnInfo["username"] = $aLogin["username"];
+			$aConnInfo["password"] = $aLogin["password"];
+			$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aConnInfo);
+			
+			$obj_HTTP = parent::send($obj_ConnInfo, $this->constHTTPHeaders(), $b);
+			// Success: Capture request accepted by WorldPay
+			if ($obj_HTTP->getReturnCode() == 200)
+			{
+				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+				if (count($obj_XML->reply->ok) == 1)
+				{
+					$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
+					$code = 1000;
+				}
+				// Error: Capture declined by WorldPay
+				else
+				{
+					trigger_error("Capture declined by WorldPay for Transaction: ". $this->getTxnInfo()->getID() ."(". $this->getTxnInfo()->getOrderID() ."), Response: ". $obj_HTTP->getReplyBody(), E_USER_WARNING);
+					$code = 999;
+				}
+			}
+			// Error: Capture request rejected by WorldPay
+			else
+			{
+				trigger_error("Capture request rejected by WorldPay for Transaction: ". $this->getTxnInfo()->getID() ."(". $this->getTxnInfo()->getOrderID() ."), HTTP Response Code: ". $obj_HTTP->getReturnCode(), E_USER_WARNING);
+				$code = 999;
+			}
+		}
+		// Internal Error: Unable to unmarshall XML Document using "eval"
+		else
+		{
+			trigger_error("Internal Error: Unable to unmarshall XML Document using \"eval\": ". $str ." for Transaction: ". $this->getTxnInfo()->getID() ."(". $this->getTxnInfo()->getOrderID() .")", E_USER_WARNING);
+				
+			throw new mPointException("Internal Error: Unable to unmarshall XML Document for Transaction: ". $this->getTxnInfo()->getID(), 1101);
+		}
+		
+		return $code;
+	}
 	
 	/* (non-PHPdoc)
 	 * @see Refundable::refund()
