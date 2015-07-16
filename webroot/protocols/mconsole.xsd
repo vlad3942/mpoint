@@ -240,6 +240,39 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <!-- Get Client config XML schema -->				
+				<xs:element name="get-client-configuration" minOccurs="1" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="client-config" minOccurs="1" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:all>
+                                    <xs:element name="name" type="name" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element name="username" type="name" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element name="password" type="name" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element name="keyword" type="name" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element name="max-amount" type="amount" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element ref="urls" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element ref="cards" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element ref="payment-service-providers" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element ref="accounts" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element ref="issuer-identification-number-ranges" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element ref="callback-protocol" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element name="identification" type="xs:byte" minOccurs="1" maxOccurs="1"/>
+                                    <xs:element name="transaction-time-to-live" type="xs:byte" minOccurs="1" maxOccurs="1"/>
+                                </xs:all>
+                                <xs:attribute name="id" type="xs:positiveInteger" use="optional"/>
+                                <xs:attribute name="country-id" type="xs:positiveInteger" use="required" />
+                                <xs:attribute name="language" type="language" use="optional" />
+                                <xs:attribute name="sms-receipt" type="xs:boolean" use="optional" />
+                                <xs:attribute name="email-receipt" type="xs:boolean" use="optional" />
+                                <xs:attribute name="mode" type="xs:byte" use="optional" />
+                                <xs:attribute name="auto-capture" type="boolean" use="required"/>                                
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
 		</xs:choice>
 	</xs:complexType>
 </xs:element>
