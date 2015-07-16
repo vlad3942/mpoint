@@ -294,7 +294,6 @@ class WorldPay extends Callback implements Refundable
 	public function refund($iAmount = -1)
 	{
 		if ($iAmount == -1) { $this->getTxnInfo()->getAmount(); }
-		$obj_XML = simplexml_load_string($this->getMessageData($this->getTxnInfo()->getID(), Constants::iPAYMENT_ACCEPTED_STATE) );
 		$bStoredCard = false;
 		// Payment made with a Stored Card - Use the WorldPay Merchant Code required for processing Stored Cards
 		if (count($this->getMessageData($this->getTxnInfo()->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE) ) > 0)
