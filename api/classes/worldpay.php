@@ -290,12 +290,8 @@ class WorldPay extends Callback implements Captureable, Refundable
 		// Success: XML Document unmarshalled
 		if ( ($obj_XML instanceof SimpleXMLElement) === true)
 		{
-			$bStoredCard = false;
-			// Payment made with a Stored Card - Use the WorldPay Merchant Code required for processing Stored Cards
-			if (count($this->getMessageData($this->getTxnInfo()->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE) ) > 0)
-			{
-				$bStoredCard = true;
-			}
+			// Determine whether the payment was made with a Stored Card as WorldPay requires a different Merchant Code for these transactions
+			$bStoredCard = $this->_paidWithStoredCard();
 			// Construct "Capture" request to WorldPay
 			$b = '<?xml version="1.0" encoding="UTF-8"?>';
 			$b .= '<!DOCTYPE paymentService PUBLIC "-//WorldPay/DTD WorldPay PaymentService v1//EN" "http://dtd.worldpay.com/paymentService_v1.dtd">';
@@ -365,12 +361,8 @@ class WorldPay extends Callback implements Captureable, Refundable
 	public function refund($iAmount = -1)
 	{
 		if ($iAmount == -1) { $this->getTxnInfo()->getAmount(); }
-		$bStoredCard = false;
-		// Payment made with a Stored Card - Use the WorldPay Merchant Code required for processing Stored Cards
-		if (count($this->getMessageData($this->getTxnInfo()->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE) ) > 0)
-		{
-			$bStoredCard = true;
-		}
+		// Determine whether the payment was made with a Stored Card as WorldPay requires a different Merchant Code for these transactions
+		$bStoredCard = $this->_paidWithStoredCard();
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<!DOCTYPE paymentService PUBLIC "-//WorldPay/DTD WorldPay PaymentService v1//EN" "http://dtd.worldpay.com/paymentService_v1.dtd">';
 		$b .= '<paymentService version="1.4" merchantCode="'. htmlspecialchars($this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, $bStoredCard), ENT_NOQUOTES) .'">';
@@ -639,6 +631,21 @@ class WorldPay extends Callback implements Captureable, Refundable
 		$obj_HTTP->connect();
 		$obj_HTTP->send($this->constHTTPHeaders(), $b);
 		$obj_HTTP->disConnect();
+	}
+	
+	/**
+	 * Determine whether the payment was made with a Stored Card as WorldPay requires a different Merchant Code for these transactions.
+	 * 
+	 * @return	boolean		True if the payment was authorized with a stored card, otherwise False
+	 */
+	private function _paidWithStoredCard()
+	{
+		// Payment made with a Stored Card - Use the WorldPay Merchant Code required for processing Stored Cards
+		if (count($this->getMessageData($this->getTxnInfo()->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE) ) > 0)
+		{
+			return true;
+		}
+		else { return false; }
 	}
 }
 ?>
