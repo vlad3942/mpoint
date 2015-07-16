@@ -59,7 +59,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		
 		if($valErrors)
 		{			
-			$xml .= '<save-client-configuration>';
 			foreach ($clientIDs as $clientID)
 			{
 				$obj_mPointClient = ClientConfig::produceConfig($_OBJ_DB, $clientID);				
@@ -67,8 +66,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				$clientCardAccess = $obj_mPointClient->getClientCardAccessToXML($_OBJ_DB, $clientID);
 				$clientPaymentMethods = $obj_mPointClient->getClientAccountsToXML($_OBJ_DB, $clientID);
 				$xml .= $obj_mPointClient->toFullXML($clientCardAccess, $clientPSPConfig, $clientPaymentMethods);
-			}
-			$xml .= '</save-client-configuration>';			
+			}				
 		}
 		else
 		{

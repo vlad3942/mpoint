@@ -236,7 +236,14 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @var integer
 	 */
-	private $_iIdentification;
+	private $_iIdentification;	
+	
+	/**
+	 * Transaction time to leave in seconds 
+	 *
+	 * @var integer
+	 */
+	private $_iTransactionTTL;
 	/**
 	 * Default Constructor
 	 *
@@ -270,8 +277,9 @@ class ClientConfig extends BasicConfig
 	 * @param 	boolean $dc			Boolean Flag indicating whether to include disabled/expired cards; default is false
 	 * @param 	integer $mc			The max number of cards a user can have on the Client, set to -1 for inifite
 	 * @param 	integer $ident		Set of binary flags which specifies how customers may be identified
+	 * @param 	integer $transttl	Transaction time to live value
 	 */
-	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $ciurl, $aurl, $nurl, $murl, $aIPs, $dc, $mc=-1, $ident=7)
+	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $ciurl, $aurl, $nurl, $murl, $aIPs, $dc, $mc=-1, $ident=7,$transttl)
 	{
 		parent::__construct($id, $name);
 
@@ -311,6 +319,7 @@ class ClientConfig extends BasicConfig
 		$this->_bShowAllCards = (bool) $dc;
 		$this->_iMaxCards = (integer) $mc;
 		$this->_iIdentification = (integer) $ident;
+		$this->_iTransactionTTL = (integer)$transttl;
 	}
 
 	/**
@@ -518,6 +527,13 @@ class ClientConfig extends BasicConfig
 	public function getSecret() { return sha1($this->getID() . $this->_sPassword); }
 
 	public function showAllCards() { return $this->_bShowAllCards; }
+	
+	/**
+	 * Returns the trnasaction time to live in seconds.	 
+	 *
+	 * @return 	integer
+	 */
+	public function getTransactionTTL() { return $this->_iTransactionTTL; }
 
 	public function toXML()
 	{
@@ -570,7 +586,8 @@ class ClientConfig extends BasicConfig
 		$xml .= '<keyword>'.$this->getKeywordConfig()->getName().'</keyword>';		
 		$xml .= $clientPaymentMethods;		
 		$xml .= '<callback-protocol send-psp-id = "'.General::bool2xml($this->sendPSPID()).'">'. htmlspecialchars($this->getCallbackURL(), ENT_NOQUOTES) .'</callback-protocol>';
-		$xml .= '<identification>'. $this->_iIdentification .'</identification>';				
+		$xml .= '<identification>'. $this->_iIdentification .'</identification>';
+		$xml .= '<transaction-time-to-live>'. $this->getTransactionTTL() .'</transaction-time-to-live>';						
 		$xml .= '</client-config>';
 		return $xml;
 	}
@@ -592,7 +609,7 @@ class ClientConfig extends BasicConfig
 					CL.smsrcpt, CL.emailrcpt, CL.method,
 					CL.maxamount, CL.lang, CL.terms,
 					CL.\"mode\", CL.auto_capture, CL.send_pspid, CL.store_card, CL.show_all_cards, CL.max_cards,
-					CL.identification,
+					CL.identification, CL.transaction_ttl,
 					C.id AS countryid,
 					Acc.id AS accountid, Acc.name AS account, Acc.mobile, Acc.markup,
 					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price,
@@ -620,7 +637,7 @@ class ClientConfig extends BasicConfig
 					CL.smsrcpt, CL.emailrcpt, CL.method,
 					CL.maxamount, CL.lang, CL.terms,
 					CL.\"mode\", CL.auto_capture, CL.send_pspid, CL.store_card, CL.show_all_cards, CL.max_cards,
-					CL.identification,
+					CL.identification, CL.transaction_ttl,
 					C.id,
 					Acc.id, Acc.name, Acc.mobile, Acc.markup,
 					KW.id, KW.name,
@@ -668,7 +685,7 @@ class ClientConfig extends BasicConfig
 			}
 		}
 
-		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $RS["CUSTOMERIMPORTURL"], $RS["AUTHURL"], $RS["NOTIFYURL"], $RS["MESBURL"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"]);
+		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $RS["CUSTOMERIMPORTURL"], $RS["AUTHURL"], $RS["NOTIFYURL"], $RS["MESBURL"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"]);
 	}
 
 	/**
@@ -716,7 +733,7 @@ class ClientConfig extends BasicConfig
 		$sql = "SELECT MSA.pspid AS pspid		
 				FROM Client". sSCHEMA_POSTFIX .".Client_Tbl CL 
 				INNER JOIN Client". sSCHEMA_POSTFIX .".Account_Tbl A ON CL.id = A.clientid 
-				RIGHT JOIN Client.MerchantSubAccount_Tbl MSA ON A.id = MSA.accountid				
+				INNER JOIN Client.MerchantSubAccount_Tbl MSA ON A.id = MSA.accountid				
 				WHERE CL.id = ". intval($clientid) ." AND A.id = ".intval($accountid)." AND CL.enabled = '1';
 		";
 		//echo $sql ."\n";
