@@ -568,18 +568,20 @@ class Callback extends EndUserAccount
 	}
 
 
-	public static function producePSP(RDB $obj_DB, TranslateText $obj_TXT, TxnInfo $obj_TxnInfo, array $aConnInfo)
+	public static function producePSP(RDB $obj_DB, TranslateText $obj_Txt, TxnInfo $obj_TxnInfo, array $aConnInfo)
 	{
 		switch ($obj_TxnInfo->getPSPID() )
 		{
 		case (Constants::iDIBS_PSP):
-			return new DIBS($obj_DB, $obj_TXT, $obj_TxnInfo, $aConnInfo["dibs"]);
+			return new DIBS($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dibs"]);
+		case (Constants::iWORLDPAY_PSP):
+			return new WorldPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["worldpay"]);
 		case (Constants::iWANNAFIND_PSP):
-			return new WannaFind($obj_DB, $obj_TXT, $obj_TxnInfo, $aConnInfo["wannafind"]);
+			return new WannaFind($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["wannafind"]);
 		case (Constants::iNETAXEPT_PSP):
-			return new NetAxept($obj_DB, $obj_TXT, $obj_TxnInfo, $aConnInfo["netaxept"]);
+			return new NetAxept($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["netaxept"]);
 		case (Constants::iMOBILEPAY_PSP):
-			return new MobilePay($obj_DB, $obj_TXT, $obj_TxnInfo, $aConnInfo["mobilepay"]);
+			return new MobilePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mobilepay"]);
 		default:
 			throw new CallbackException("Unkown Payment Service Provider", 1001);
 		}

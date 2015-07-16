@@ -13,7 +13,6 @@
  */
 // Require Global Include File
 require_once("../inc/include.php");
-
 // Require data class for Payment Service Provider Configurations
 require_once(sCLASS_PATH ."/pspconfig.php");
 // Require specific Business logic for the Refund component
@@ -26,10 +25,15 @@ require_once(sCLASS_PATH ."/enduser_account.php");
 require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
+// Require specific Business logic for the WorldPay component
+require_once(sCLASS_PATH ."/worldpay.php");
 // Require specific Business logic for the NetAxept component
 require_once(sCLASS_PATH ."/netaxept.php");
-// Require specific Business logic for the Stripe component
-require_once(sCLASS_PATH ."/stripe.php");
+if (function_exists("json_encode") === true)
+{
+	// Require specific Business logic for the Stripe component
+//	require_once(sCLASS_PATH ."/stripe.php");
+}
 // Require specific Business logic for the CPM PSP component
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
 // Require specific Business logic for the Stripe component

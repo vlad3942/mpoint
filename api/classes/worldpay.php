@@ -16,7 +16,7 @@
  * Model Class containing all the Business Logic for handling interaction with WorldPay
  *
  */
-class WorldPay extends Callback
+class WorldPay extends Callback implements Refundable
 {
 	/**
 	 * Notifies the Client of the Payment Status by performing a callback via HTTP.
@@ -286,6 +286,74 @@ class WorldPay extends Callback
 	public function capture($txn)
 	{
 	}
+	
+	
+	/* (non-PHPdoc)
+	 * @see Refundable::refund()
+	 */
+	public function refund($iAmount = -1)
+	{
+		if ($iAmount == -1) { $this->getTxnInfo()->getAmount(); }
+		$obj_XML = simplexml_load_string($this->getMessageData($this->getTxnInfo()->getID(), Constants::iPAYMENT_ACCEPTED_STATE) );
+		$bStoredCard = false;
+		// Payment made with a Stored Card - Use the WorldPay Merchant Code required for processing Stored Cards
+		if (count($this->getMessageData($this->getTxnInfo()->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE) ) > 0)
+		{
+			$bStoredCard = true;
+		}
+		$b = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<!DOCTYPE paymentService PUBLIC "-//WorldPay/DTD WorldPay PaymentService v1//EN" "http://dtd.worldpay.com/paymentService_v1.dtd">';
+		$b .= '<paymentService version="1.4" merchantCode="'. htmlspecialchars($this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, $bStoredCard), ENT_NOQUOTES) .'">';
+		$b .= '<modify>';
+		$b .= '<orderModification orderCode="'. htmlspecialchars($this->getTxnInfo()->getOrderID(), ENT_NOQUOTES) .'">';
+		$b .= '<cancelOrRefund />';
+		$b .= '</orderModification>';
+		$b .= '</modify>';
+		$b .= '</paymentService>';
+		
+		$aConnInfo = $this->aCONN_INFO;
+		if ($this->getTxnInfo()->getMode() > 0) { $aConnInfo["host"] = str_replace("secure.", "secure-test.", $aConnInfo["host"]); }
+		$aLogin = $this->getMerchantLogin($this->getTxnInfo()->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, $bStoredCard);
+		$aConnInfo["username"] = $aLogin["username"];
+		$aConnInfo["password"] = $aLogin["password"];
+		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aConnInfo);
+		
+		$obj_HTTP = parent::send($obj_ConnInfo, $this->constHTTPHeaders(), $b);
+		if ($obj_HTTP->getReturnCode() == 200)
+		{
+			$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+			if (count($obj_XML->reply->ok) == 1)
+			{
+				// Refunded
+				if (count($this->getMessageData($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURED_STATE) ) > 0)
+				{
+					$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUNDED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
+					$code = 1000;
+				}
+				// Cancelled
+				else
+				{
+					$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CANCELLED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) );
+					$code = 1001;
+				}
+			}
+			// Error: Refund or Cancel declined by WorldPay
+			else
+			{
+				trigger_error("Refund or Cancel declined by WorldPay for Transaction: ". $this->getTxnInfo()->getID() ."(". $this->getTxnInfo()->getOrderID() ."), Response: ". $obj_HTTP->getReplyBody(), E_USER_WARNING);
+				$code = 999;
+			}
+		}
+		// Error: Refund or Cancel request rejected by WorldPay
+		else
+		{
+			trigger_error("Refund or Cancel request rejected by WorldPay for Transaction: ". $this->getTxnInfo()->getID() ."(". $this->getTxnInfo()->getOrderID() ."), HTTP Response Code: ". $obj_HTTP->getReturnCode(), E_USER_WARNING);
+		
+			$code = 999;
+		}
+		return $code;
+	}
+
 	public function getCardName($id)
 	{
 		switch ($id)
