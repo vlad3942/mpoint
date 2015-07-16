@@ -192,10 +192,18 @@ try
 }
 catch (TxnInfoException $e)
 {
-	header("HTTP/1.1 500 Internal Server Error");
-
-	echo "[ERROR]";
-
+	// Database connection is active & healthy
+	if ( ($_OBJ_DB instanceof RDB) === true && is_resource($_OBJ_DB->getDBConn() ) === true)
+	{
+		echo "[OK]";
+	}
+	// Internal Error
+	else
+	{
+		header("HTTP/1.1 500 Internal Server Error");
+		
+		echo "[ERROR]";		
+	}
 	trigger_error($e->getMessage() ."\n". $HTTP_RAW_POST_DATA, E_USER_WARNING);
 }
 ?>
