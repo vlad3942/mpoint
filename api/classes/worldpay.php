@@ -286,7 +286,6 @@ class WorldPay extends Callback
 	public function capture($txn)
 	{
 	}
-
 	public function getCardName($id)
 	{
 		switch ($id)
@@ -358,11 +357,15 @@ class WorldPay extends Callback
 		case "ECMC-SSL":	// MasterCard
 		case "ECMC_DEBIT-SSL":
 		case "ECMC_CREDIT-SSL":
+		case "ECMC_COMMERCIAL_CREDIT-SSL":
+		case "ECMC_COMMERCIAL_DEBIT-SSL":
 			$id = 7;
 			break;
 		case "VISA-SSL":	// VISA
 		case "VISA_DEBIT-SSL":
 		case "VISA_CREDIT-SSL":
+		case "VISA_COMMERCIAL_CREDIT-SSL":
+		case "VISA_COMMERCIAL_DEBIT-SSL":
 			$id = 8;
 			break;
 		case "VISA_ELECTRON-SSL":	// VISA Electron
