@@ -32,7 +32,7 @@ require_once(sCLASS_PATH ."/netaxept.php");
 if (function_exists("json_encode") === true)
 {
 	// Require specific Business logic for the Stripe component
-//	require_once(sCLASS_PATH ."/stripe.php");
+	require_once(sCLASS_PATH ."/stripe.php");
 }
 // Require specific Business logic for the CPM PSP component
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
