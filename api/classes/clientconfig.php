@@ -45,6 +45,18 @@ class ClientConfig extends BasicConfig
 	 */
 	private $_obj_AccountConfig;
 	/**
+	 * Configuration for the Multiple Accounts the Transaction will be associated with
+	 *
+	 * @var Array
+	 */
+	private $_obj_AccountsConfig;
+	/**
+	 * Configuration for the Cards used by the client.
+	 *
+	 * @var Array
+	 */
+	private $_obj_CardsConfig;
+	/**
 	 * Client's Username for GoMobile
 	 *
 	 * @var string
@@ -279,13 +291,16 @@ class ClientConfig extends BasicConfig
 	 * @param 	integer $ident		Set of binary flags which specifies how customers may be identified
 	 * @param 	integer $transttl	Transaction time to live value
 	 */
-	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $ciurl, $aurl, $nurl, $murl, $aIPs, $dc, $mc=-1, $ident=7,$transttl)
+	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $ciurl, $aurl, $nurl, $murl, $aIPs, $dc, $mc=-1, $ident=7,$transttl, $oASC = array(), $oMASC = array(),$oCardsC = array())
 	{
 		parent::__construct($id, $name);
 
 		$this->_iFlowID = (integer) $fid;
 
 		$this->_obj_AccountConfig = $oAC;
+		$this->_obj_AccountsConfig = $oASC;
+		$this->_obj_MerchantAccountsConfig = $oMASC;
+		$this->_obj_CardsConfig = $oCardsC;
 		$this->_sUsername = trim($un);
 		$this->_sPassword = trim($pw);
 		$this->_obj_CountryConfig = $oCC;
@@ -333,7 +348,73 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	AccountConfig
 	 */
-	public function getAccountConfig() { return $this->_obj_AccountConfig; }
+	public function getAccountConfig() { return $this->_obj_AccountConfig; }	
+	/**
+	 * Returns the array of Configurations for the Accounts the Transaction will be associated with
+	 *
+	 * @return 	Array
+	 */
+	public function getAccountsConfig() { return $this->_obj_AccountsConfig; }
+	/**
+	 * Returns the XML payload of array of Configurations for the Accounts the Transaction will be associated with
+	 *
+	 * @return 	String
+	 */
+	public function getAccountsConfigToXML() 
+	{ 
+		$returnXML = '<accounts>';
+		foreach($this->_obj_AccountsConfig as $accountConfig)
+		{
+			$returnXML .= $accountConfig->toFullXML();
+		}
+		$returnXML .= '</accounts>'; 
+		return $returnXML;
+	}
+	/**
+	 * Returns the array of Configurations for the Merchant Accounts that communicate with the PSPs
+	 *
+	 * @return 	Array
+	 */
+	public function getMerchantAccountsConfig() { return $this->_obj_MerchantAccountsConfig; }
+	/**
+	 * Returns the XML payload of array of Configurations for the Accounts the Transaction will be associated with.
+	 *
+	 * @return 	String
+	 */
+	public function getMerchantAccountsConfigToXML() 
+	{ 
+		$returnXML = '<payment-service-providers>';
+		foreach($this->_obj_MerchantAccountsConfig as $merchantAccountConfig)
+		{
+			$returnXML .= $merchantAccountConfig->toFullXML();
+		}
+		$returnXML .= '</payment-service-providers>'; 
+		return $returnXML;
+	}
+
+	
+	/**
+	 * Returns the array of Configurations for the Cards used by the client.
+	 *
+	 * @return 	Array
+	 */
+	public function getClientCardsConfig() { return $this->_obj_MerchantAccountsConfig; }
+	/**
+	 * Returns the XML payload of array of Configurations for the Cards used by the client.
+	 *
+	 * @return 	String
+	 */
+	public function getClientCardsConfigToXML() 
+	{ 
+		$returnXML = '<cards store-card="'.$this->_iStoreCard.'" show-all-cards="'.General::bool2xml($this->_bShowAllCards).'" max-stored-cards="'.$this->_iMaxCards.'">';
+		foreach($this->_obj_CardsConfig as $cardConfig)
+		{
+			$returnXML .= $cardConfig->toFullXML();
+		}
+		$returnXML .= '</cards>'; 
+		return $returnXML;
+	}
+	
 	/**
 	 * Returns the Client's Username for GoMobile
 	 *
@@ -565,30 +646,29 @@ class ClientConfig extends BasicConfig
 		return $xml;
 	}
 	
-	public function toFullXML($clientCardAccess, $clientPSPConfig , $clientPaymentMethods)
+	public function toFullXML()
 	{
-		
-		$xml = '<client-config id="'. $this->getID() .'" auto-capture = "'. General::bool2xml($this->_bAutoCapture).'" country-id = "'.$this->getCountryConfig()->getID().'" language = "'.$this->_sLanguage.'" sms-receipt = "'.General::bool2xml($this->_bSMSReceipt).'" email-receipt = "'.General::bool2xml($this->_bEmailReceipt).'" mode="'. $this->_iMode .'">';
+		$xml = '';
+		$xml .= '<client-config id="'. $this->getID() .'" auto-capture = "'. General::bool2xml($this->_bAutoCapture).'" country-id = "'.$this->getCountryConfig()->getID().'" language = "'.$this->_sLanguage.'" sms-receipt = "'.General::bool2xml($this->_bSMSReceipt).'" email-receipt = "'.General::bool2xml($this->_bEmailReceipt).'" mode="'. $this->_iMode .'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
 		$xml .= '<username>'. htmlspecialchars($this->getUsername(), ENT_NOQUOTES) .'</username>';
 		$xml .= '<password>'. htmlspecialchars($this->getPassword(), ENT_NOQUOTES) .'</password>';
 		$xml .= '<max-amount country-id = "'.$this->getCountryConfig()->getID().'">'. htmlspecialchars($this->getMaxAmount(), ENT_NOQUOTES) .'</max-amount>';
-		$xml .= '<cards store-card="'.$this->_iStoreCard.'" show-all-cards="'.General::bool2xml($this->_bShowAllCards).'" max-stored-cards="'.$this->_iMaxCards.'">';
-		$xml .= $clientCardAccess;
-		$xml .= '</cards>';
-		$xml .= $clientPSPConfig;
+		$xml .= $this->getClientCardsConfigToXML();
+		$xml .= $this->getMerchantAccountsConfigToXML();
 		$xml .= '<urls>';
-			$xml .= '<url type-id = "'.self::iCUSTOMER_IMPORT_URL.'">'.htmlspecialchars($this->_sCustomerImportURL, ENT_NOQUOTES).'</url>';
-			$xml .= '<url type-id = "'.self::iAUTHENTICATION_URL.'">'.htmlspecialchars($this->_sAuthenticationURL, ENT_NOQUOTES).'</url>';
-			$xml .= '<url type-id = "'.self::iNOTIFICATION_URL.'">'.htmlspecialchars($this->_sNotificationURL, ENT_NOQUOTES).'</url>';
-			$xml .= '<url type-id = "'.self::iMESB_URL.'">'.htmlspecialchars($this->_sMESBURL, ENT_NOQUOTES).'</url>';
+		$xml .= '<url type-id = "'.self::iCUSTOMER_IMPORT_URL.'">'.htmlspecialchars($this->_sCustomerImportURL, ENT_NOQUOTES).'</url>';
+		$xml .= '<url type-id = "'.self::iAUTHENTICATION_URL.'">'.htmlspecialchars($this->_sAuthenticationURL, ENT_NOQUOTES).'</url>';
+		$xml .= '<url type-id = "'.self::iNOTIFICATION_URL.'">'.htmlspecialchars($this->_sNotificationURL, ENT_NOQUOTES).'</url>';
+		$xml .= '<url type-id = "'.self::iMESB_URL.'">'.htmlspecialchars($this->_sMESBURL, ENT_NOQUOTES).'</url>';
 		$xml .= '</urls>';
 		$xml .= '<keyword>'.$this->getKeywordConfig()->getName().'</keyword>';		
-		$xml .= $clientPaymentMethods;		
+		$xml .= $this->getAccountsConfigToXML();		
 		$xml .= '<callback-protocol send-psp-id = "'.General::bool2xml($this->sendPSPID()).'">'. htmlspecialchars($this->getCallbackURL(), ENT_NOQUOTES) .'</callback-protocol>';
 		$xml .= '<identification>'. $this->_iIdentification .'</identification>';
 		$xml .= '<transaction-time-to-live>'. $this->getTransactionTTL() .'</transaction-time-to-live>';						
 		$xml .= '</client-config>';
+		
 		return $xml;
 	}
 
@@ -670,6 +750,9 @@ class ClientConfig extends BasicConfig
 		$obj_CountryConfig = CountryConfig::produceConfig($oDB, $RS["COUNTRYID"]);
 		$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["MOBILE"], $RS["MARKUP"]);
 		$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
+		$obj_AccountsConfig = AccountConfig::produceConfigurations($oDB, $id);
+		$obj_ClientMerchantAccount = ClientMerchantAccountConfig::produceConfigurations($oDB, $id);
+		$obj_ClientCardsAccount = ClientCardConfig::produceConfigurations($oDB, $id);
 
 		$sql  = "SELECT ipaddress
 				 FROM Client". sSCHEMA_POSTFIX .".IPAddress_Tbl
@@ -685,7 +768,7 @@ class ClientConfig extends BasicConfig
 			}
 		}
 
-		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $RS["CUSTOMERIMPORTURL"], $RS["AUTHURL"], $RS["NOTIFYURL"], $RS["MESBURL"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"]);
+		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $RS["CUSTOMERIMPORTURL"], $RS["AUTHURL"], $RS["NOTIFYURL"], $RS["MESBURL"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $obj_AccountsConfig, $obj_ClientMerchantAccount,$obj_ClientCardsAccount);
 	}
 
 	/**
