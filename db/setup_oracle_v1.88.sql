@@ -33,3 +33,21 @@ GRANT REFERENCES, UPDATE ON System_Ownr.CardState_Tbl TO Client_OWNR;
 CONNECT Client_OWNR;
 ALTER TABLE Client_OWNR.CardAccess_Tbl ADD CONSTRAINT CardAccess2CardState_FK FOREIGN KEY (stateid) REFERENCES System_OWNR.CardState_Tbl(id) ON DELETE CASCADE;
 
+-- Normalize cards
+INSERT INTO "SYSTEM_OWNR"."CARD_TBL" (ID, NAME, POSITION) VALUES ('19', 'Postepay VISA', '17');
+INSERT INTO "SYSTEM_OWNR"."CARD_TBL" (ID, NAME, POSITION) VALUES ('20', 'Postepay Master Card', '18');
+INSERT INTO "SYSTEM_OWNR"."CARD_TBL" (ID, NAME, POSITION) VALUES ('18', 'Cartebleue2', '16');
+INSERT INTO "SYSTEM_OWNR"."CARD_TBL" (ID, NAME, POSITION) VALUES ('17', 'Mobilepay', '15');
+update System_Ownr.CardPrefix_Tbl set cardid = 18 where cardid = 15;
+update System_Ownr.PSPCard_Tbl set cardid = 18 where cardid = 15;
+update Client_Ownr.CardAccess_Tbl set cardid = 18 where cardid = 15;
+update System_Ownr.Card_Tbl set name = 'Applepay' where id = 15;
+update System_Ownr.Card_Tbl set name = 'Carteblue' where id = 18;
+
+-- Integrate Applepay
+insert into System_Ownr.PSPCard_Tbl (cardid, pspid) values (15, 4); -- Applepay->Worldpay
+insert into System_Ownr.PSPCard_Tbl (cardid, pspid) values (15, 9); -- Applepay->CPG
+insert into Client_Ownr.CardAccess_Tbl (clientid, cardid, pspid) select id, 15, 9 from Client_Ownr.Client_Tbl; -- Applepay->CPG
+INSERT INTO System_Ownr.CardPricing_Tbl (pricepointid, cardid) SELECT id, 15 FROM System_Ownr.PricePoint_tbl WHERE id < 0;
+
+COMMIT;
