@@ -260,6 +260,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											$xml .= trim($obj_Elem->asXML() );
 										}
 										break;
+									case (Constants::iCPG_PSP):
+										if (intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) === Constants::iAPPLE_PAY)
+										{
+											$xml .= '<url method="app" />';
+										}
+										break;
 									}
 									$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. htmlspecialchars($obj_PSPConfig->getMessage($obj_TxnInfo->getLanguage() ), ENT_NOQUOTES) .'</message>';
 									$xml .= '</psp-info>';
