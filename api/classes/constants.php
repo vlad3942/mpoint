@@ -437,10 +437,30 @@ abstract class Constants
 	 */
 	const iAPPLE_PAY = 15;
 	/**
+	 * Unique Card ID for transaction's made using VISA Checkout
+	 *
+	 */
+	const iVISA_CHECKOUT = 16;
+	/**
 	 * Unique Card ID for transaction's made using Danske Bank MobilePay
 	 *
 	 */
 	const iMOBILE_PAY = 17;
+	/**
+	 * Unique Card ID for transaction's made using Cartebleue
+	 *
+	 */
+	const iCARTE_BLEUE = 18;
+	/**
+	 * Unique Card ID for transaction's made using Postepay VISA
+	 *
+	 */
+	const iPOSTEPAY_VISA = 19;
+	/**
+	 * Unique Card ID for transaction's made using Postepay Mastercard
+	 *
+	 */
+	const iPOSTEPAY_MASTERCARD = 20;
 
 	/**
 	 * Unique Fee Type ID for Top-Ups
