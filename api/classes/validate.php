@@ -104,43 +104,7 @@ class Validate
 		}
 
 		return $code;
-	}
-	
-	/**
-	 * Performs a basic validatio if the user has access to the client
-	 * 
-	 *
-	 * @param 	RDB $oDB 			Reference to the Database Object that holds the active connection to the mPoint Database
-	 * @param 	integer $id 		Unique ID for the Client performing the request
-	 * @param 	integer $userId 	Unique ID or Account Number that the transaction should be associated with, set to -1 to use the default account
-	 * @return 	bool
-	 */
-	public function valUserAceesToClient(RDB &$oDB, $id, $userId)
-	{
-		if (empty($id) === true) { return false; }			// Undefined Client ID				
-		elseif (empty($userId) === true) { return false; }	// Undefined Account		
-		else
-		{				
-			$sql = "SELECT Cl.id AS clientid, Cl.enabled AS clientactive,
-						 EUser.id AS userid, EUser.enabled AS useractive
-					FROM Client".sSCHEMA_POSTFIX.".Client_Tbl Cl
-					INNER JOIN Enduser".sSCHEMA_POSTFIX.".Claccess_Tbl Cla ON Cl.id = Cla.clientid
-					INNER JOIN Enduser".sSCHEMA_POSTFIX.".Account_Tbl EUser ON Cla.accountid = EUser.id
-					WHERE Cl.id = ". intval($id)." AND EUser.id =  ". intval($userId);			
-//			echo $sql ."\n";
-			$RS = $oDB->getName($sql);
-
-			if (is_array($RS) === true)
-			{
-				if ($RS["CLIENTACTIVE"] === false) { return false; }		// Client Disabled
-				elseif (intval($RS["USERID"]) == 0) { return false; }	// Unkown Account
-				elseif ($RS["USERACTIVE"] == false) { return false; }	// Account Disabled
-				else { return true; }
-			}
-			else { return false;; }	// Unknown Client ID
-		}
-		
-	}
+	}	
 	
 
 	/**

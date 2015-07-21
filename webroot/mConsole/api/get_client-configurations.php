@@ -15,6 +15,8 @@ require_once("../../inc/include.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 
+require_once(sCLASS_PATH ."/mConsole.php");
+
 require_once(sCLASS_PATH ."/clientconfig.php");
 
 // Require Business logic for the validating client Input
@@ -40,6 +42,8 @@ $xml = '';
 
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
+$obj_MConsole = new MConsole($_OBJ_DB, $_OBJ_TXT);
+
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
@@ -50,22 +54,24 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$userID = intval($obj_DOM->{'get-client-configurations'}['user-id']);
 		$clientIDs = (array)$obj_DOM->{'get-client-configurations'}->{'client-id'};
 				
-		$valErrors = true;
-		//Validating to see if the end user has access to the client.
-		foreach ($clientIDs as $clientID)
-		{
-			$valErrors = ($valErrors && $obj_val->valUserAceesToClient($_OBJ_DB, $clientID, $userID));
-		}
+		$iErrors = true;
+		$aHTTP_CONN_INFO["mesb"]["path"] = Constants::sMCONSOLE_SINGLE_SIGN_ON_PATH;
+		$aHTTP_CONN_INFO["mesb"]["username"] = trim($_SERVER['PHP_AUTH_USER']);
+		$aHTTP_CONN_INFO["mesb"]["password"] = trim($_SERVER['PHP_AUTH_PW']);
 		
-		if($valErrors)
+		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
+		
+		$iErrors = $obj_MConsole->auth($obj_ConnInfo, 'sglhsjfhgsdzfhjsfgj', $userID, Constants::sMCONSOLE_OP_ID_GET_CLIENTS, $clientIDs);		
+		
+		if($iErrors == 10)
 		{			
-			$xml = '<get-client-configuration>';
+			$xml = '<client-configurations>';
 			foreach ($clientIDs as $clientID)
 			{
 				$obj_mPointClient = ClientConfig::produceConfig($_OBJ_DB, $clientID);					
 				$xml .= $obj_mPointClient->toFullXML();
 			}
-			$xml .= '</get-client-configuration>';				
+			$xml .= '</client-configurations>';				
 		}
 		else
 		{
@@ -82,7 +88,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$xml = '<status code="415">Invalid XML Document</status>';
 	}
 	// Error: Wrong operation
-	elseif (count($obj_DOM->{'save-client-configuration'}) == 0)
+	elseif (count($obj_DOM->{'get-client-configuration'}) == 0)
 	{
 		header("HTTP/1.1 400 Bad Request");
 		

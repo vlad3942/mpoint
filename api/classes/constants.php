@@ -494,5 +494,15 @@ abstract class Constants
 	 * 
 	 */
 	const iPSP_MESSAGE_INFO = 1;
+	
+	/*
+	 * mConsole Enterprise URL endpoint.
+	 */
+	const sMCONSOLE_SINGLE_SIGN_ON_PATH = '/mconsole/single-sign-on';
+	
+	/*
+	 * mConsole Enterprise URL endpoint.
+	 */
+	const sMCONSOLE_OP_ID_GET_CLIENTS = 1;
 }
 ?>
