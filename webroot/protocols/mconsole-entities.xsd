@@ -24,8 +24,8 @@
 		<xs:attribute name="debug" type="xs:boolean" use="required" />
 		<xs:attribute name="client-id" type="xs:positiveInteger" use="optional" />
 	</xs:complexType>
-	<!-- Get Client config XML schema -->
-	<xs:complexType name="get-client-configurations">
+	<!-- Get Client Configurations -->
+	<xs:complexType name="client-configuration-search-request">
 		<xs:all>
 			<xs:element name="clients" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
@@ -35,6 +35,29 @@
 				</xs:complexType>
 			</xs:element>
 		</xs:all>
+	</xs:complexType>
+	<xs:complexType name="client-configuration-search-response">
+		<xs:sequence>
+			<xs:element name="client-config" type="client-config" minOccurs="1" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+	<!-- Save Client Configurations -->
+	<xs:complexType name="save-client-configuration-request">
+		<xs:sequence>
+			<xs:element name="client-config" type="client-config" minOccurs="1" maxOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="save-client-configuration-response">
+		<xs:sequence>
+			<xs:element name="status" type="status" minOccurs="1" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="status">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="code" type="xs:positiveInteger" />
+			</xs:extension>
+		</xs:simpleContent>
 	</xs:complexType>
 	<!-- save-cards -->
 	<xs:complexType name="save-cards">
