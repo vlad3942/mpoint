@@ -290,6 +290,13 @@
 		<xs:attribute name="mode" type="xs:byte" use="optional" />
 		<xs:attribute name="auto-capture" type="boolean" use="required" />
 	</xs:complexType>
+	
+	<xs:complexType name="get-client-configurations">		          
+         <xs:sequence>
+           <xs:element type="xs:integer" name="client-id" maxOccurs="unbounded" minOccurs="1"/>
+         </xs:sequence>
+         <xs:attribute type="xs:integer" name="user-id"/>		          
+   </xs:complexType>
 
 	<xs:simpleType name="name">
 		<xs:restriction base="xs:string">
