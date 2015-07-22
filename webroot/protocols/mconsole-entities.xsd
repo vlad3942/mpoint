@@ -176,7 +176,8 @@
 				<xs:complexType>
 					<xs:simpleContent>
 						<xs:extension base="xs:anyURI">
-							<xs:attribute name="type-id" use="required" type="xs:positiveInteger" />
+							<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
+							<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
 						</xs:extension>
 					</xs:simpleContent>
 				</xs:complexType>
@@ -189,9 +190,10 @@
 				<xs:complexType>
 					<xs:simpleContent>
 						<xs:extension base="xs:string">
-							<xs:attribute name="country-id" use="optional" type="countryid" />
-							<xs:attribute name="id" use="required" type="xs:positiveInteger" />
-							<xs:attribute name="psp-id" use="required" type="xs:positiveInteger" />
+							<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
+							<xs:attribute name="country-id" type="countryid" use="optional" />
+							<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
+							<xs:attribute name="psp-id" type="xs:positiveInteger" use="required" />
 						</xs:extension>
 					</xs:simpleContent>
 				</xs:complexType>
@@ -210,7 +212,8 @@
 						<xs:element name="username" type="name" minOccurs="0" maxOccurs="1" />
 						<xs:element name="password" type="name" minOccurs="0" maxOccurs="1" />
 					</xs:all>
-					<xs:attribute name="id" use="optional" type="xs:positiveInteger" />
+					<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
+					<xs:attribute name="psp-id" type="xs:positiveInteger" use="required" />
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>
@@ -231,7 +234,7 @@
 						</xs:element>
 						<xs:element name="payment-service-providers" type="payment-service-providers" minOccurs="1" maxOccurs="1" />
 					</xs:all>
-					<xs:attribute name="id" use="optional" type="xs:positiveInteger" />
+					<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>
@@ -247,7 +250,8 @@
 						<xs:element type="xs:positiveInteger" name="min" />
 						<xs:element type="xs:positiveInteger" name="max" />
 					</xs:sequence>
-					<xs:attribute type="xs:int" name="action-id" />
+					<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
+					<xs:attribute type="xs:positiveInteger" name="action-id" use="required" />
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>
@@ -261,7 +265,7 @@
 	<xs:complexType name="callback-protocol">
 		<xs:simpleContent>
 			<xs:extension base="callback-protocols">
-				<xs:attribute type="xs:boolean" name="send-psp-id" />
+				<xs:attribute type="xs:boolean" name="send-psp-id" use="required" />
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
@@ -271,7 +275,15 @@
 			<xs:element name="name" type="name" minOccurs="1" maxOccurs="1" />
 			<xs:element name="username" type="name" minOccurs="1" maxOccurs="1" />
 			<xs:element name="password" type="name" minOccurs="1" maxOccurs="1" />
-			<xs:element name="keyword" type="name" minOccurs="1" maxOccurs="1" />
+			<xs:element name="keyword" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="name">
+							<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
 			<xs:element name="max-amount" type="amount" minOccurs="1" maxOccurs="1" />
 			<xs:element name="urls" type="urls" minOccurs="1" maxOccurs="1" />
 			<xs:element name="cards" type="cards" minOccurs="1" maxOccurs="1" />
@@ -288,7 +300,7 @@
 		<xs:attribute name="sms-receipt" type="xs:boolean" use="optional" />
 		<xs:attribute name="email-receipt" type="xs:boolean" use="optional" />
 		<xs:attribute name="mode" type="xs:byte" use="optional" />
-		<xs:attribute name="auto-capture" type="boolean" use="required" />
+		<xs:attribute name="auto-capture" type="xs:boolean" use="required" />
 	</xs:complexType>
 	
 	<xs:complexType name="get-client-configurations">		          
@@ -304,16 +316,10 @@
 			<xs:maxLength value="50" />
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="boolean">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="false" />
-			<xs:enumeration value="true" />
-		</xs:restriction>
-	</xs:simpleType>
 	<xs:complexType name="amount">
 		<xs:simpleContent>
 			<xs:extension base="xs:nonNegativeInteger">
-				<xs:attribute name="country-id" type="xs:positiveInteger" use="optional" />
+				<xs:attribute name="country-id" type="xs:positiveInteger" use="required" />
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
