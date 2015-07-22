@@ -92,7 +92,10 @@ class AccountConfig extends BasicConfig
 		$returnXML = '<payment-service-providers>';
 		foreach($this->_aClientMerchantSubAccounts as $merchantSubAccount)
 		{
-			$returnXML .= $merchantSubAccount->toFullXML();
+			if($merchantSubAccount instanceof ClientMerchantSubAccountConfig)
+			{
+				$returnXML .= $merchantSubAccount->toFullXML();
+			}
 		} 
 		$returnXML .= '</payment-service-providers>';
 		return $returnXML;

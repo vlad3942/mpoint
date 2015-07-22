@@ -365,7 +365,10 @@ class ClientConfig extends BasicConfig
 		$returnXML = '<accounts>';
 		foreach($this->_obj_AccountsConfig as $accountConfig)
 		{
-			$returnXML .= $accountConfig->toFullXML();
+			if($accountConfig instanceof AccountConfig)
+			{
+				$returnXML .= $accountConfig->toFullXML();
+			}
 		}
 		$returnXML .= '</accounts>'; 
 		return $returnXML;
@@ -386,7 +389,10 @@ class ClientConfig extends BasicConfig
 		$returnXML = '<payment-service-providers>';
 		foreach($this->_obj_MerchantAccountsConfig as $merchantAccountConfig)
 		{
-			$returnXML .= $merchantAccountConfig->toFullXML();
+			if($merchantAccountConfig instanceof ClientMerchantAccountConfig)
+			{
+				$returnXML .= $merchantAccountConfig->toFullXML();
+			}
 		}
 		$returnXML .= '</payment-service-providers>'; 
 		return $returnXML;
@@ -409,7 +415,9 @@ class ClientConfig extends BasicConfig
 		$returnXML = '<cards store-card="'.$this->_iStoreCard.'" show-all-cards="'.General::bool2xml($this->_bShowAllCards).'" max-stored-cards="'.$this->_iMaxCards.'">';
 		foreach($this->_obj_CardsConfig as $cardConfig)
 		{
-			$returnXML .= $cardConfig->toFullXML();
+			if($cardConfig instanceof ClientCardConfig){
+				$returnXML .= $cardConfig->toFullXML();
+			}
 		}
 		$returnXML .= '</cards>'; 
 		return $returnXML;

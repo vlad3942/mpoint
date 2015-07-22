@@ -62,7 +62,7 @@ class ClientMerchantSubAccountConfig extends BasicConfig
 	 * @return 	string
 	 */
 	public function getPSPName() { return $this->_sPSPName; }
-/**
+	/**
 	 * Returns the PSP object for the sub account.
 	 *
 	 * @return 	PSPConfig
@@ -73,10 +73,12 @@ class ClientMerchantSubAccountConfig extends BasicConfig
 	
 	public function toFullXML()
 	{
-		$xml .= '<payment-service-provider id = "'.$this->getPSPObj()->getID().'">';			
-		$xml .= '<name>'. htmlspecialchars($this->getPSPObj()->getName(), ENT_NOQUOTES) .'</name>';							
-		$xml .= '</payment-service-provider>';
-
+		if($this->getPSPObj() instanceof PSPConfig){
+			$xml .= '<payment-service-provider id = "'.$this->getPSPObj()->getID().'">';			
+			$xml .= '<name>'. htmlspecialchars($this->getPSPObj()->getName(), ENT_NOQUOTES) .'</name>';							
+			$xml .= '</payment-service-provider>';				
+		}
+		
 		return $xml;
 	}
 	
