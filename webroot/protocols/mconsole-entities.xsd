@@ -450,6 +450,58 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="min-length" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						The minimum length of a valid number for the Payment Method (Card)
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:integer">
+						<xs:enumeration value="-1" />
+						<xs:enumeration value="13" />
+						<xs:enumeration value="14" />
+						<xs:enumeration value="15" />
+						<xs:enumeration value="16" />
+						<xs:enumeration value="17" />
+						<xs:enumeration value="18" />
+						<xs:enumeration value="19" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="max-length" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						The maximum length of a valid number for the Payment Method (Card)
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:integer">
+						<xs:enumeration value="-1" />
+						<xs:enumeration value="13" />
+						<xs:enumeration value="14" />
+						<xs:enumeration value="15" />
+						<xs:enumeration value="16" />
+						<xs:enumeration value="17" />
+						<xs:enumeration value="18" />
+						<xs:enumeration value="19" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="cvc-length" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						The length of a CVC number for the Payment Method (Card)
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:integer">
+						<xs:enumeration value="-1" />
+						<xs:enumeration value="3" />
+						<xs:enumeration value="4" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
 			<xs:element name="prefixes" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
@@ -509,6 +561,13 @@
 			<xs:annotation>
 				<xs:documentation>
 					mPoint's unique ID for the Payment Method (Card)
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="position" type="xs:integer" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					The position at which the Payment Method (Card) should be placed
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
