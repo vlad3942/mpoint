@@ -9,7 +9,7 @@
 			<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
 		</xs:all>
 	</xs:complexType>
-	<xs:complexType name="transaction-details">
+	<xs:complexType name="transaction-info">
 		<xs:annotation>
 			<xs:documentation>
 				Contains detailed information about an mPoint transaction.
@@ -310,7 +310,7 @@
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element name="transaction" type="transaction-details" minOccurs="1" maxOccurs="unbounded">
+							<xs:element name="transaction" type="transaction-info" minOccurs="1" maxOccurs="unbounded">
 								<xs:annotation>
 									<xs:documentation>
 										Contains detailed information about all mPoint transactions that was found for the executed transaction search
