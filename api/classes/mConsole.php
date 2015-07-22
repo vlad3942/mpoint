@@ -5,23 +5,12 @@
  * @author Rohit Malhotra
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
- * @package MConsole
+ * @package mConsole
  * @version 1.00
  */
 
-/**
- * 
- *
- */
-//Including the parent class for mPoint Admin
-require_once(sCLASS_PATH ."admin.php");
-
-class MConsole extends Admin
-{	
-	
-	/*Having an system ID set for single sign-on with mConsole*/
-	const iMCONSOLE_SYSTEM_ID = 11;	
-	
+class mConsole extends Admin
+{
 	public function saveClient(&$clientid, $cc , $storecard, $autocapture, $name, $username, $password, 
 									$lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl)
 	{
@@ -244,23 +233,25 @@ class MConsole extends Admin
 	 * 
 	 * @param	HTTPConnInfo $oCI		The connection information for the Mobile Enterprise Service Bus
 	 * @param	string $authtoken		The user's authentication token which must be passed back to mConsole's Enterprise Security Manager
-	 * @param	string $userid			The user's customer id as per the mConsole database.
-	 * @param	integer $operationid	The unique ID of the operation that's being executed
+	 * @param	string $permissioncode	mConsole's Permission Code which should be used authorization as part of Single Sign-On
 	 * @param	array $aClientIDs		A list of client IDs on which the operation is being executed
 	 * @return	integer
 	 */
-	
-	private function _singleSignOn(HTTPConnInfo &$oCI, $authtoken, $userid, $operationid, $aClientIDs = array())
-	{
-			
-		$obj_ConnInfo = new HTTPConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), "POST", "text/xml", $oCI->getUsername(), $oCI->getPassword());		
+	public function singleSignOn(HTTPConnInfo &$oCI, $authtoken, $permissioncode, array $aClientIDs=array() )
+	{		
+		$obj_ConnInfo = new HTTPConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), "POST", "text/xml", $oCI->getUsername(), $oCI->getPassword() );		
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
-		$b .= '<single-sign-on operation-id = "'.intval($operationid).'" system-id = "'.intval(self::iMCONSOLE_SYSTEM_ID).'">';
-		foreach($aClientIDs as $clid){
-			$b .= '<client-id>'.$clid.'</client-id>';
-		}			
-		$b .= '<auth-token user-id="1">'.$authtoken.'</auth-token>';
+		$b .= '<single-sign-on permission-code="'.htmlspecialchars($permissioncode, ENT_NOQUOTES) .'">';
+		if (is_null($aClientIDs) == false && count($aClientIDs) > 0)
+		{
+			$b .= '<clients>';
+			foreach($aClientIDs as $clid)
+			{
+				$b .= '<client-id>'. intval($clid) .'</client-id>';
+			}
+			$b .= '</clients>';
+		}
 		$b .= '</single-sign-on>';
 		$b .= '</root>';
 
