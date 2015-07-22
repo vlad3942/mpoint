@@ -11,6 +11,8 @@
 
 class mConsole extends Admin
 {
+	const sPERMISSION_GET_PAYMENT_METHODS = "mPoint.GetPaymentMethods";
+	
 	public function saveClient(&$clientid, $cc , $storecard, $autocapture, $name, $username, $password, 
 									$lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl)
 	{
@@ -238,7 +240,7 @@ class mConsole extends Admin
 	 * @return	integer
 	 */
 	public function singleSignOn(HTTPConnInfo &$oCI, $authtoken, $permissioncode, array $aClientIDs=array() )
-	{		
+	{
 		$obj_ConnInfo = new HTTPConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), "POST", "text/xml", $oCI->getUsername(), $oCI->getPassword() );		
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
@@ -279,6 +281,5 @@ class mConsole extends Admin
 			return 1;
 		}
 	}
-	
 }
 ?>
