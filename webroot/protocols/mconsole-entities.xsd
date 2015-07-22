@@ -355,6 +355,88 @@
 			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
+	<!-- Payment Method Configurations -->
+	<xs:complexType name="payment-method-configuration-search-request">
+		<xs:annotation>
+			<xs:documentation>
+				Specifies the criteria for executing a configuration search  
+			</xs:documentation>
+		</xs:annotation>
+		<xs:all>
+		</xs:all>
+	</xs:complexType>
+	<xs:complexType name="payment-method-configuration-search-response">
+		<xs:annotation>
+			<xs:documentation>
+				Contains the list of payment method (card) configurations found for the executed configuration search
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="payment-method-configurations" minOccurs="1" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>
+							Contains a list of Payment Method Configurations
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="payment-method-config" type="payment-method-config" minOccurs="1" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>
+										The configuration details for a specific Payment Method (Card)
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="status" type="status" minOccurs="1" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>
+							Describes any errors that ocurred during the payment method search, normally this is due to errors in the input in the search criteria
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="payment-method-config">
+		<xs:all>
+			<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						The name of the Payment Method (Card)
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="payment-service-providers" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Contains a list of Payment Service Providers, which supports the Payment Method (Card)
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="payment-service-provider" type="basic" minOccurs="1" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>
+									Basic Information about a Payment Service Provider which supports the Payment Method (Card)
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:all>
+		<xs:attribute name="id" type="xs:positiveInteger" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					mPoint's unique ID for the Payment Method (Card)
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
 	<!-- Get Client Configurations -->
 	<xs:complexType name="client-configuration-search-request">
 		<xs:all>
