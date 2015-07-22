@@ -146,7 +146,7 @@ class PaymentMethodConfig extends BasicConfig
 	public static function produceConfig(RDB $oDB, $id)
 	{
 		$sql = "SELECT id, name, position, Coalesce(minlength, -1) AS minlength, Coalesce(maxlength, -1) AS maxlength, Coalesce(cvclength, -1) AS cvclength
-				FROM System.Card_Tbl
+				FROM System". sSCHEMA_POSTFIX .".Card_Tbl
 				WHERE id = ". intval($id) ." AND enabled = '1'
 				ORDER BY id ASC";
 //		echo $sql ."\n";
@@ -158,8 +158,8 @@ class PaymentMethodConfig extends BasicConfig
 
 			$aPSPs = array();
 			$sql = "SELECT PSP.id, PSP.name
-					FROM System.PSPCard_Tbl PC
-					INNER JOIN System.PSP_Tbl PSP ON PC.pspid = PSP.id AND PSP.enabled = '1'
+					FROM System". sSCHEMA_POSTFIX .".PSPCard_Tbl PC
+					INNER JOIN System". sSCHEMA_POSTFIX .".PSP_Tbl PSP ON PC.pspid = PSP.id AND PSP.enabled = '1'
 					WHERE PC.cardid = ". intval($id) ." AND PC.enabled = '1'";
 //			echo $sql ."\n";
 			$aRS = $oDB->getAllNames($sql);
@@ -172,9 +172,9 @@ class PaymentMethodConfig extends BasicConfig
 			}
 			$aCountries = array();
 			$sql = "SELECT C.id, C.name
-					FROM System.CardPricing_Tbl CP
-					INNER JOIN System.PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PP.enabled = '1'
-					INNER JOIN System.Country_Tbl C ON PP.countryid = C.id AND C.enabled = '1'
+					FROM System". sSCHEMA_POSTFIX .".CardPricing_Tbl CP
+					INNER JOIN System". sSCHEMA_POSTFIX .".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PP.enabled = '1'
+					INNER JOIN System". sSCHEMA_POSTFIX .".Country_Tbl C ON PP.countryid = C.id AND C.enabled = '1'
 					WHERE CP.cardid = ". intval($id) ." AND CP.enabled = '1'";
 //			echo $sql ."\n";
 			$aRS = $oDB->getAllNames($sql);
@@ -199,7 +199,7 @@ class PaymentMethodConfig extends BasicConfig
 	public static function produceAll(RDB $oDB)
 	{
 		$sql = "SELECT id
-				FROM System.Card_Tbl
+				FROM System". sSCHEMA_POSTFIX .".Card_Tbl
 				WHERE enabled = '1'
 				ORDER BY id ASC";
 //		echo $sql ."\n";

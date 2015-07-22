@@ -85,7 +85,7 @@ class PrefixConfig
 	public static function produceConfig(RDB $oDB, $id)
 	{
 		$sql = "SELECT id, Coalesce(min, -1) AS min, Coalesce(max, -1) AS max
-				FROM System.CardPrefix_Tbl
+				FROM System". sSCHEMA_POSTFIX .".CardPrefix_Tbl
 				WHERE id = ". intval($id) ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $oDB->query($sql);
@@ -106,7 +106,7 @@ class PrefixConfig
 	public static function produceConfigurations(RDB $oDB, $cardid)
 	{
 		$sql = "SELECT id, Coalesce(min, -1) AS min, Coalesce(max, -1) AS max
-				FROM System.CardPrefix_Tbl
+				FROM System". sSCHEMA_POSTFIX .".CardPrefix_Tbl
 				WHERE cardid = ". intval($cardid) ." AND enabled = '1' 
 				ORDER BY id ASC";
 //		echo $sql ."\n";
