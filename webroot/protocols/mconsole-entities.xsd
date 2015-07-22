@@ -9,20 +9,351 @@
 			<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
 		</xs:all>
 	</xs:complexType>
-	<!-- Search -->
-	<xs:complexType name="search">
+	<xs:complexType name="transaction-details">
+		<xs:annotation>
+			<xs:documentation>
+				Contains detailed information about an mPoint transaction.
+			</xs:documentation>
+		</xs:annotation>
 		<xs:all>
-			<xs:element name="transaction-number" type="xs:string" minOccurs="0" maxOccurs="1" />
-			<xs:element name="order-number" type="xs:string" minOccurs="0" maxOccurs="1" />
-			<xs:element name="mobile" type="mobile" minOccurs="0" maxOccurs="1" />
-			<xs:element name="email" type="xs:string" minOccurs="0" maxOccurs="1" />
-			<xs:element name="customer-ref" type="xs:string" minOccurs="0" maxOccurs="1" />
-			<xs:element name="start-date" type="xs:dateTime" minOccurs="0" maxOccurs="1" />
-			<xs:element name="end-date" type="xs:dateTime" minOccurs="0" maxOccurs="1" />
+			<xs:element name="client" type="basic" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						The mPoint Client (Merchant) on whose behalf the payment transaction was processed 
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="sub-account" type="basic" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						The mPoint Sub-Account through which the payment transaction was processed 
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="customer" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Information about the customer who executed the payment transaction 
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="customer">
+							<xs:sequence>
+								<xs:element name="full-name" type="xs:string" minOccurs="0" maxOccurs="1">
+									<xs:annotation>
+										<xs:documentation>
+											The customer's full name as retrieved from the customer's profile 
+										</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+							</xs:sequence>
+							<xs:attribute name="id" type="xs:positiveInteger" use="required">
+								<xs:annotation>
+									<xs:documentation>
+										mPoint's unique ID for the customer's profile  
+									</xs:documentation>
+								</xs:annotation>
+							</xs:attribute>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="timestamp" type="xs:dateTime" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						The date and time when the payment transaction was created 
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="payment-service-provider" type="basic" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						The Payment Service Provider to whom mPoint routed the payment transaction for authorization 
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="card" type="basic" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						The Card (Payment Method) which the customer elected to pay with 
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="messages" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						A list of messages that describes which states the payment transaction has gone through 
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="message" type="message" minOccurs="1" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>
+									The message for a specific state the payment transaction has gone through 
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 		</xs:all>
-		<xs:attribute name="user-id" type="xs:positiveInteger" use="required" />
-		<xs:attribute name="debug" type="xs:boolean" use="required" />
-		<xs:attribute name="client-id" type="xs:positiveInteger" use="optional" />
+		<xs:attribute name="id" type="xs:positiveInteger" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					mPoint's unique ID for the payment transaction
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="order-no" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					The Order Number provided by Client's (Merchant) System when the payment transaction was initialized 
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="external-id" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					The Payment Service Provider's unique ID for the payment transaction
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="type-id" type="xs:positiveInteger" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					mPoint's unique ID for the transaction type 
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="state-id" type="xs:positiveInteger" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					mPoint's unique ID for the payment transaction's current state 
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="basic">
+		<xs:annotation>
+			<xs:documentation>
+				Contains basic information about standard mPoint entities such as:
+				- Client
+				- Sub-Account
+				- Payment Service Provider
+				This information is included as part of the details for an mPoint transaction. 
+			</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="id" type="xs:positiveInteger" use="required">
+					<xs:annotation>
+						<xs:documentation>
+							The unique ID of the returned record 
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="customer">
+		<xs:annotation>
+			<xs:documentation>
+				Contains information about a customer, which may be included in any of the following scenarios:
+				- When doing a Transaction Search
+				- As part of the Transaction Details in a search result set
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="mobile" type="mobile" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						The customer's mobile number, which may be obtained from one of the following record types:
+						- The customer's profile
+						- A transaction record
+						Alternatively the mobile number may be specified as a search criteria when performing one of the following operations:
+						- Transaction Search
+						- Audit Log Search
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="email" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						The customer's email address, which may be obtained from one of the following record types:
+						- The customer's profile
+						- A transaction record
+						Alternatively the email address may be specified as a search criteria when performing one of the following operations:
+						- Transaction Search
+						- Audit Log Search
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="customer-ref" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					The client's (merchant's) reference for the customer. This would normally be the customer's number in the client's CRM system.  
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="message">
+		<xs:annotation>
+			<xs:documentation>
+				Specifies the criteria for executing a transaction search  
+			</xs:documentation>
+		</xs:annotation>
+		<xs:all>
+			<xs:element name="timestamp" type="xs:dateTime" minOccurs="1" maxOccurs="1" />
+			<xs:element name="data" type="xs:string" minOccurs="1" maxOccurs="1" />
+		</xs:all>
+		<xs:attribute name="id" type="xs:positiveInteger" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					mPoint's unique ID for the message 
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="state-id" type="xs:positiveInteger" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					mPoint's unique ID for the transaction state that the message was recorded for  
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<!-- Search -->
+	<xs:complexType name="transaction-search-request">
+		<xs:annotation>
+			<xs:documentation>
+				Specifies the criteria for executing a transaction search  
+			</xs:documentation>
+		</xs:annotation>
+		<xs:all>
+			<xs:element name="transaction" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Specifies the criteria for searching for one or more specific transactions
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="customer" type="customer" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Specifies the criteria for searching for a customer's transactions
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:all>
+					<xs:attribute name="id" type="xs:positiveInteger" use="optional">
+						<xs:annotation>
+							<xs:documentation>
+								mPoint's unique ID for the transaction that should be found
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="order-no" type="xs:string" use="optional">
+						<xs:annotation>
+							<xs:documentation>
+								The Client's (Merchant's) Order Number for the transaction that should be found
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="start-date" type="xs:dateTime" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Specifies the start date / time for the transaction that should be found 
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="end-date" type="xs:dateTime" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Specifies the end date / time for the transaction that should be found 
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:all>
+		<xs:attribute name="debug" type="xs:boolean" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					Flag indicating whether debug data for each transaction should be returned as part of the transaction details
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="client-id" type="xs:positiveInteger" use="optional">
+			<xs:annotation>
+				<xs:documentation>
+					mPoint's unique ID for the client (merchant) who must own the transactions found transactions
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="transaction-search-response">
+		<xs:annotation>
+			<xs:documentation>
+				Contains the result for the executed transaction search
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="transactions" minOccurs="1" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>
+							Contains the list of transactions found for the executed transaction search
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="transaction" type="transaction-details" minOccurs="1" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>
+										Contains detailed information about all mPoint transactions that was found for the executed transaction search
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="sorted-by" default="timestamp">
+							<xs:annotation>
+								<xs:documentation>
+									The property that the results for the executed transaction search has been ordered by 
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="timestamp" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="sort-order" default="descending">
+							<xs:annotation>
+								<xs:documentation>
+									The order in which the results for the executed transaction search has been sorted by
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:enumeration value="ascending" />
+									<xs:enumeration value="descending" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="status" type="status" minOccurs="1" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>
+							Describes any errors that ocurred during the transaction search, normally this is due to errors in the input in the search criteria
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence>
 	</xs:complexType>
 	<!-- Get Client Configurations -->
 	<xs:complexType name="client-configuration-search-request">
@@ -107,13 +438,6 @@
 		<xs:all>
 			<xs:element name="userid" type="xs:integer" minOccurs="1" maxOccurs="1" />
 			<xs:element name="countryid" type="xs:integer" minOccurs="1" maxOccurs="1" />
-		</xs:all>
-	</xs:complexType>
-	<!-- Get Transaction Details -->
-	<xs:complexType name="transaction-details">
-		<xs:all>
-			<xs:element name="txnid" type="xs:string" minOccurs="1" maxOccurs="1" />
-			<xs:element name="countryid" type="xs:integer" minOccurs="0" maxOccurs="1" />
 		</xs:all>
 	</xs:complexType>
 	<!-- Save Note -->
