@@ -411,14 +411,14 @@ class ClientConfig extends BasicConfig
 	 */
 	public function getClientCardsConfigToXML() 
 	{ 
-		$returnXML = '<cards store-card="'.$this->_iStoreCard.'" show-all-cards="'.General::bool2xml($this->_bShowAllCards).'" max-stored-cards="'.$this->_iMaxCards.'">';
+		$returnXML = '<payment-methods store-card="'.$this->_iStoreCard.'" show-all-cards="'.General::bool2xml($this->_bShowAllCards).'" max-stored-cards="'.$this->_iMaxCards.'">';
 		foreach($this->_obj_CardsConfig as $cardConfig)
 		{
 			if(($cardConfig instanceof ClientCardConfig) == true){
 				$returnXML .= $cardConfig->toXML();
 			}
 		}
-		$returnXML .= '</cards>'; 
+		$returnXML .= '</payment-methods>'; 
 		return $returnXML;
 	}
 	

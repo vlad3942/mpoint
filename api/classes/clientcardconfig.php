@@ -35,7 +35,7 @@ class ClientCardConfig extends BasicConfig
 	 * @param 	integer $countryid	 	Card holder country ID.
 	 * @param 	integer $pspid 			ID of the PSP.	 	
 	 */
-	public function __construct($accessid, $cardid, $cardtype, $name, $countryid, $pspid)
+	public function __construct($accessid, $cardid, $name, $countryid, $pspid)
 	{
 		parent::__construct($accessid, $name);	
 		
@@ -67,7 +67,7 @@ class ClientCardConfig extends BasicConfig
 	
 	public function toXML()
 	{
-		$xml .= '<card id="'.$this->getID().'" type-id="'.$this->getCardID().'" country-id="'.$this->getCountryID().'" psp-id="'.$this->getPSPID().'">'.htmlspecialchars($this->getName(), ENT_NOQUOTES).'</card>';
+		$xml .= '<payment-method id="'.$this->getID().'" type-id="'.$this->getCardID().'" country-id="'.$this->getCountryID().'" psp-id="'.$this->getPSPID().'">'.htmlspecialchars($this->getName(), ENT_NOQUOTES).'</payment-method>';
 
 		return $xml;
 	}
