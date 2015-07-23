@@ -831,107 +831,11 @@
 			<xs:element name="keywordid" type="xs:integer" minOccurs="1" maxOccurs="1" />
 		</xs:all>
 	</xs:complexType>
-	<xs:complexType name="urls">
-		<xs:sequence>
-			<xs:element name="url" minOccurs="0" maxOccurs="unbounded">
-				<xs:complexType>
-					<xs:simpleContent>
-						<xs:extension base="xs:anyURI">
-							<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
-							<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
-						</xs:extension>
-					</xs:simpleContent>
-				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="cards">
-		<xs:sequence>
-			<xs:element name="card" minOccurs="1" maxOccurs="unbounded">
-				<xs:complexType>
-					<xs:simpleContent>
-						<xs:extension base="xs:string">
-							<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
-							<xs:attribute name="country-id" type="countryid" use="optional" />
-							<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
-							<xs:attribute name="psp-id" type="xs:positiveInteger" use="required" />
-						</xs:extension>
-					</xs:simpleContent>
-				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
-		<xs:attribute type="xs:nonNegativeInteger" name="store-card" />
-		<xs:attribute type="xs:boolean" name="show-all-cards" />
-		<xs:attribute type="xs:nonNegativeInteger" name="max-stored-cards" />
-	</xs:complexType>
-	<xs:complexType name="payment-service-providers">
-		<xs:sequence>
-			<xs:element name="payment-service-provider" minOccurs="1" maxOccurs="unbounded">
-				<xs:complexType>
-					<xs:all>
-						<xs:element name="name" type="name" minOccurs="1" maxOccurs="1" />
-						<xs:element name="username" type="name" minOccurs="0" maxOccurs="1" />
-						<xs:element name="password" type="name" minOccurs="0" maxOccurs="1" />
-					</xs:all>
-					<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
-					<xs:attribute name="psp-id" type="xs:positiveInteger" use="required" />
-				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="accounts">
-		<xs:sequence>
-			<xs:element name="account" minOccurs="1" maxOccurs="unbounded">
-				<xs:complexType>
-					<xs:all>
-						<xs:element name="name" type="name" />
-						<xs:element name="markup">
-							<xs:simpleType>
-								<xs:restriction base="xs:string">
-									<xs:minLength value="0" />
-									<xs:maxLength value="5" />
-								</xs:restriction>
-							</xs:simpleType>
-						</xs:element>
-						<xs:element name="payment-service-providers" type="payment-service-providers" minOccurs="1" maxOccurs="1" />
-					</xs:all>
-					<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
-				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:complexType name="issuer-identification-number-ranges">
-		<xs:sequence>
-			<xs:element name="issuer-identification-number-range">
-				<xs:annotation>
-					<xs:documentation>Blocks Dankort but VISA / Dankort are still accepted</xs:documentation>
-				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element type="xs:positiveInteger" name="min" />
-						<xs:element type="xs:positiveInteger" name="max" />
-					</xs:sequence>
-					<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
-					<xs:attribute type="xs:positiveInteger" name="action-id" use="required" />
-				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
-	</xs:complexType>
-	<xs:simpleType name="callback-protocols">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="mpoint" />
-			<xs:enumeration value="psp" />
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:complexType name="callback-protocol">
-		<xs:simpleContent>
-			<xs:extension base="callback-protocols">
-				<xs:attribute type="xs:boolean" name="send-psp-id" use="required" />
-			</xs:extension>
-		</xs:simpleContent>
-	</xs:complexType>
-	<!-- Client Configuration Entity -->
+	<!-- Client Configuration Entities Start -->
 	<xs:complexType name="client-config">
+		<xs:annotation>
+			<xs:documentation>Top-Level Configuration for an mPoint Client</xs:documentation>
+		</xs:annotation>
 		<xs:all>
 			<xs:element name="name" type="name" minOccurs="1" maxOccurs="1" />
 			<xs:element name="username" type="name" minOccurs="1" maxOccurs="1" />
@@ -946,29 +850,201 @@
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="max-amount" type="amount" minOccurs="1" maxOccurs="1" />
-			<xs:element name="urls" type="urls" minOccurs="1" maxOccurs="1" />
-			<xs:element name="cards" type="cards" minOccurs="1" maxOccurs="1" />
-			<xs:element name="payment-service-providers" type="payment-service-providers" minOccurs="1" maxOccurs="1" />
-			<xs:element name="accounts" type="accounts" minOccurs="1" maxOccurs="1" />
-			<xs:element name="issuer-identification-number-ranges" type="issuer-identification-number-ranges" minOccurs="1" maxOccurs="1" />
-			<xs:element name="callback-protocol" type="callback-protocol" minOccurs="1" maxOccurs="1" />
-			<xs:element name="identification" type="xs:byte" minOccurs="1" maxOccurs="1" />
-			<xs:element name="transaction-time-to-live" type="xs:byte" minOccurs="1" maxOccurs="1" />
+			<xs:element name="urls" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="url" type="url-config" minOccurs="1" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="payment-methods" type="client-payment-method-configurations" minOccurs="1" maxOccurs="1" />
+			<xs:element name="payment-service-providers" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="payment-service-provider" type="client-psp-config" minOccurs="1" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="accounts" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="account" type="account-config" minOccurs="1" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="issuer-identification-number-ranges" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="issuer-identification-number-range" type="issuer-identification-number-range-config" minOccurs="1" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="callback-protocol" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="callback-protocol">
+							<xs:attribute type="xs:boolean" name="send-psp-id" use="required" />
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="identification" minOccurs="1" maxOccurs="1">
+				<xs:simpleType>
+					<xs:restriction base="xs:nonNegativeInteger">
+						<xs:minInclusive value="0" />
+						<xs:maxInclusive value="15" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="transaction-time-to-live" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1" />
 		</xs:all>
 		<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
 		<xs:attribute name="country-id" type="xs:positiveInteger" use="required" />
-		<xs:attribute name="language" type="language" use="optional" />
-		<xs:attribute name="sms-receipt" type="xs:boolean" use="optional" />
-		<xs:attribute name="email-receipt" type="xs:boolean" use="optional" />
-		<xs:attribute name="mode" type="xs:byte" use="optional" />
+		<xs:attribute name="language" type="language" use="required" />
+		<xs:attribute name="sms-receipt" type="xs:boolean" use="required" />
+		<xs:attribute name="email-receipt" type="xs:boolean" use="required" />
+		<xs:attribute name="mode" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:nonNegativeInteger">
+					<xs:enumeration value="0">
+						<xs:annotation>
+							<xs:documentation>Production: The client account is in Production mode and transactions will be routed to the Payment Service Provider’s Live environment resulting in charges being incurred for all payments made.</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="1">
+						<xs:annotation>
+							<xs:documentation>Test: The client account is in "Test" mode and transactions will be routed to the Payment Service Provider's Test environment resulting in no charges being incurred for payments. Additionally card details may be automatically entered pre-populated for some PSPs.</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="2">
+						<xs:annotation>
+							<xs:documentation>Certification: The client account is in ""Test"" mode and transactions will be routed to the Payment Service Provider's Test environment resulting in no charges being incurred for payments, however card details are not pre-populated</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
 		<xs:attribute name="auto-capture" type="xs:boolean" use="required" />
 	</xs:complexType>
-	
-	<xs:complexType name="get-client-configurations">		          
+	<xs:complexType name="client-psp-config">
+		<xs:annotation>
+			<xs:documentation>Configuration of a Payment Service Provider for an mPoint Client</xs:documentation>
+		</xs:annotation>
+		<xs:all>
+			<xs:element name="name" type="name" minOccurs="1" maxOccurs="1" />
+			<xs:element name="username" type="name" minOccurs="1" maxOccurs="1" />
+			<xs:element name="password" type="name" minOccurs="1" maxOccurs="1" />
+		</xs:all>
+		<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
+		<xs:attribute name="psp-id" type="xs:positiveInteger" use="required" />
+		<xs:attribute name="stored-card" type="xs:boolean" use="required" />
+	</xs:complexType>
+	<xs:complexType name="account-config">
+		<xs:annotation>
+			<xs:documentation>Configuration for an mPoint Client's Sub-Account</xs:documentation>
+		</xs:annotation>
+		<xs:all>
+			<xs:element name="name" type="name" />
+			<xs:element name="markup">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="app" />
+						<xs:enumeration value="xhtml" />
+						<xs:enumeration value="html5" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="payment-service-providers" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="payment-service-provider" type="account-psp-config" minOccurs="1" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:all>
+		<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
+	</xs:complexType>
+	<xs:complexType name="account-psp-config">
+		<xs:annotation>
+			<xs:documentation>Configuration of a Payment Service Provider for a Sub-Account</xs:documentation>
+		</xs:annotation>
+		<xs:all>
+			<xs:element name="name" type="name" minOccurs="1" maxOccurs="1" />
+		</xs:all>
+		<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
+		<xs:attribute name="psp-id" type="xs:positiveInteger" use="required" />
+	</xs:complexType>
+	<xs:complexType name="issuer-identification-number-range-config">
+		<xs:sequence>
+			<xs:element type="xs:positiveInteger" name="min" />
+			<xs:element type="xs:positiveInteger" name="max" />
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
+		<xs:attribute name="action-id" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:positiveInteger">
+					<xs:enumeration value="1">
+						<xs:annotation>
+							<xs:documentation>Blocked</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="2">
+						<xs:annotation>
+							<xs:documentation>Whitelisted</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="url-config">
+		<xs:annotation>
+			<xs:documentation>Configuration for a URL for an mPoint Client</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:anyURI">
+				<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
+				<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="client-payment-method-configurations">
+		<xs:annotation>
+			<xs:documentation>Contains a list of Payment Method (card) Configurations for an mPoint Client as well as general configuration of how Stored Cards are handled for the mPoint Client</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="payment-method" type="client-payment-method-config" minOccurs="1" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute type="xs:nonNegativeInteger" name="store-card" />
+		<xs:attribute type="xs:boolean" name="show-all-cards" />
+		<xs:attribute type="xs:nonNegativeInteger" name="max-stored-cards" />
+	</xs:complexType>
+	<xs:complexType name="client-payment-method-config">
+		<xs:annotation>
+			<xs:documentation>Configuration for a Payment Method (card) for an mPoint Client</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
+				<xs:attribute name="country-id" type="countryid" use="optional" />
+				<xs:attribute name="state-id" type="xs:positiveInteger" use="optional" />
+				<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
+				<xs:attribute name="psp-id" type="xs:positiveInteger" use="required" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:simpleType name="callback-protocol">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="mpoint" />
+			<xs:enumeration value="psp" />
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Client Configuration Entities End -->
+	<xs:complexType name="get-client-configurations">
          <xs:sequence>
            <xs:element type="xs:integer" name="client-id" maxOccurs="unbounded" minOccurs="1"/>
          </xs:sequence>
-         <xs:attribute type="xs:integer" name="user-id"/>		          
+         <xs:attribute type="xs:integer" name="user-id"/>
    </xs:complexType>
 
 	<xs:simpleType name="name">
