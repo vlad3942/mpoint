@@ -89,6 +89,8 @@ require_once(sCLASS_PATH ."/clientmerchantsubaccountconfig.php");
 require_once(sCLASS_PATH ."/clientmerchantaccountconfig.php");
 // Require data class for Client card config
 require_once(sCLASS_PATH ."/clientcardconfig.php");
+// Require data class for Client URL config
+require_once(sCLASS_PATH ."/clienturlconfig.php");
 // Require data class for Keyword Configurations
 require_once(sCLASS_PATH ."/keywordconfig.php");
 // Require data class for Shop Configuration

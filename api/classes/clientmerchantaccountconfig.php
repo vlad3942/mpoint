@@ -1,12 +1,6 @@
 <?php 
 class ClientMerchantAccountConfig extends BasicConfig
-{
-	/**
-	 * Client Merchant Account Name used to communicate with the PSP
-	 *
-	 * @var string
-	 */
-	private $_sName;
+{	
 	/**
 	 * Client Merchant Account username used to communicate with the PSP
 	 *
@@ -38,30 +32,23 @@ class ClientMerchantAccountConfig extends BasicConfig
 	public function __construct($id, $accname, $username, $passwd, $pspid)
 	{
 		parent::__construct($id, $accname);
-
-		$this->_sName = trim($accname);
+		
 		$this->_sUsername = trim($username);
 		$this->_sPassword = trim($passwd);
 		$this->_iPSPID = (integer)$pspid;			
 	}
 	/**
-	 * Returns the Client Merchant Account Name used to communicate with the PSP.
-	 *
-	 * @return 	string
-	 */
-	public function getAccountName() { return $this->_sName; }
-	/**
 	 * Returns the Client Merchant Account Username used to communicate with the PSP.
 	 *
 	 * @return 	string
 	 */
-	public function getAccountUsername() { return $this->_sUsername; }
+	public function getUsername() { return $this->_sUsername; }
 	/**
 	 * Returns the Client Merchant Account Password used to communicate with the PSP.
 	 *
 	 * @return 	string
 	 */
-	public function getAccountPassword() { return $this->_sPassword; }
+	public function getPassword() { return $this->_sPassword; }
 	/**
 	 * Returns the PSP ID used for the transaction.
 	 *
@@ -70,27 +57,27 @@ class ClientMerchantAccountConfig extends BasicConfig
 	public function getPSPID() { return $this->_iPSPID; }	
 	
 	
-	public function toFullXML()
+	public function toXML()
 	{
-		$xml .= '<payment-service-provider id = "'.$this->getPSPID().'">';			
-				$xml .= '<name>'. htmlspecialchars($this->getAccountName(), ENT_NOQUOTES) .'</name>';
-				$xml .= '<username>'. htmlspecialchars($this->getAccountUsername(), ENT_NOQUOTES) .'</username>';
-				$xml .= '<password>'. htmlspecialchars($this->getAccountPassword(), ENT_NOQUOTES) .'</password>';							
-				$xml .= '</payment-service-provider>';
+		$xml .= '<payment-service-provider id = "'.$this->getID().'" psp-id = "'.$this->getPSPID().'">';			
+		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
+		$xml .= '<username>'. htmlspecialchars($this->getUsername(), ENT_NOQUOTES) .'</username>';
+		$xml .= '<password>'. htmlspecialchars($this->getPassword(), ENT_NOQUOTES) .'</password>';							
+		$xml .= '</payment-service-provider>';
 
 		return $xml;
 	}
 	
-	public static function produceConfig(RDB $oDB, $maid)
+	public static function produceConfig(RDB $oDB, $id)
 	{
 		$sql = "SELECT MA.id, MA.name, MA.username, MA.passwd, MA.pspid		
 				FROM Client". sSCHEMA_POSTFIX .".MerchantAccount_Tbl MA  				
-				WHERE MA.id = ". intval($maid) .";
+				WHERE MA.id = ". intval($id) .";
 		";				
 		$RS = $oDB->getName($sql);		
-		if(!empty($RS))
+		if(is_array($RS) === true && count($RS) > 0)
 		{		
-			return new ClientMerchantAccountConfig($RS['ID'],$RS['NAME'],$RS['USERNAME'], $RS['PASSWD'], $RS['PSPID']);
+			return new ClientMerchantAccountConfig($RS["ID"],$RS["NAME"],$RS["USERNAME"], $RS["PASSWD"], $RS["PSPID"]);
 		}
 		
 	}
@@ -103,17 +90,17 @@ class ClientMerchantAccountConfig extends BasicConfig
 				WHERE CL.id = ". intval($clientid) ." AND CL.enabled = '1';
 		";
 		//echo $sql ."\n";
-		$mConfigurations = array();
+		$aObj_Configurations = array();
 		$res = $oDB->query($sql);
 		while ($RS = $oDB->fetchName($res))
 		{
-			if (!empty($RS['ID']))
+			if ((is_array($RS) === true && count($RS) > 0) && (!empty($RS["ID"])))
 			{
-				$mConfigurations[] = self::produceConfig($oDB, $RS['ID'], $clientid);
+				$aObj_Configurations[] = self::produceConfig($oDB, $RS["ID"], $clientid);
 			}
 		}
 		
-		return $mConfigurations;		
+		return $aObj_Configurations;		
 	}	
 }
 ?>

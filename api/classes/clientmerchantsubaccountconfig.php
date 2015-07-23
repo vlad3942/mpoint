@@ -12,19 +12,13 @@ class ClientMerchantSubAccountConfig extends BasicConfig
 	 *
 	 * @var integer
 	 */	
-	private $_iPSPID;
-	/**
-	 * Name of the PSP used by the client to make the payment.
-	 *
-	 * @var string
-	 */
-	private $_sPSPName;
+	private $_iPSPID;	
 	/**
 	 * PSP object that is generated using the PSP id available in the merchant Sub account
 	 *
 	 * @var string
 	 */
-	private $_oPSPObj;
+	private $_obj_PSPObj;
 
 	/**
 	 * Default Constructor
@@ -39,9 +33,8 @@ class ClientMerchantSubAccountConfig extends BasicConfig
 		parent::__construct($id, $pspname);
 
 		$this->_iAccountID = (integer) $acctid;
-		$this->_iPSPID = trim($pspid);
-		$this->_sPSPName = trim($pspname);
-		$this->_oPSPObj = $objPSP;		
+		$this->_iPSPID = trim($pspid);		
+		$this->_obj_PSPObj = $objPSP;		
 	}
 	/**
 	 * Returns the Parent account ID to which the PSP belongs to.
@@ -54,45 +47,39 @@ class ClientMerchantSubAccountConfig extends BasicConfig
 	 *
 	 * @return 	integer
 	 */
-	public function getPSPID() { return $this->_iPSPID; }
-	
-	/**
-	 * Returns the PSP name for the sub account.
-	 *
-	 * @return 	string
-	 */
-	public function getPSPName() { return $this->_sPSPName; }
+	public function getPSPID() { return $this->_iPSPID; }	
 	/**
 	 * Returns the PSP object for the sub account.
 	 *
 	 * @return 	PSPConfig
 	 */
-	public function getPSPObj() { return $this->_oPSPObj; }
+	public function getPSPConfig() { return $this->_obj_PSPObj; }
 	
 	
 	
-	public function toFullXML()
+	public function toXML()
 	{
-		if($this->getPSPObj() instanceof PSPConfig){
-			$xml .= '<payment-service-provider id = "'.$this->getPSPObj()->getID().'">';			
-			$xml .= '<name>'. htmlspecialchars($this->getPSPObj()->getName(), ENT_NOQUOTES) .'</name>';							
+		$xml  = '';
+		if(($this->getPSPConfig() instanceof PSPConfig) == true){
+			$xml .= '<payment-service-provider id = "'.$this->getID().'" psp-id = "'.$this->getPSPConfig()->getID().'">';			
+			$xml .= '<name>'. htmlspecialchars($this->getPSPConfig()->getName(), ENT_NOQUOTES) .'</name>';							
 			$xml .= '</payment-service-provider>';				
 		}
 		
 		return $xml;
 	}
 	
-	public static function produceConfig(RDB $oDB, $msaid, $accountid, $clientid)
+	public static function produceConfig(RDB $oDB, $id, $accountid, $clientid)
 	{
 		$sql = "SELECT MSA.id AS id, MSA.pspid AS pspid, MSA.name AS pspname 
 				FROM Client". sSCHEMA_POSTFIX .".MerchantSubAccount_Tbl MSA				
-				WHERE MSA.id = ". intval($msaid) ." AND MSA.accountid = ". intval($accountid) .";
+				WHERE MSA.id = ". intval($id) ." AND MSA.accountid = ". intval($accountid) .";
 		";					
 		$RS = $oDB->getName($sql);		
-		if(!empty($RS))
+		if(is_array($RS) === true && count($RS) > 0)
 		{
-			$obj_PSPConfig = PSPConfig::produceConfig($oDB, $clientid, $accountid, $RS['PSPID']);
-			return new ClientMerchantSubAccountConfig($RS['id'], $accountid, $RS['PSPID'], $RS['PSPNAME'], $obj_PSPConfig);
+			$obj_PSPConfig = PSPConfig::produceConfig($oDB, $clientid, $accountid, $RS["PSPID"]);
+			return new ClientMerchantSubAccountConfig($RS["ID"], $accountid, $RS["PSPID"], $RS["PSPNAME"], $obj_PSPConfig);
 		}
 		
 	}
@@ -106,17 +93,17 @@ class ClientMerchantSubAccountConfig extends BasicConfig
 				WHERE CL.id = ". intval($clientid) ." AND A.id = ".intval($accountid)." AND CL.enabled = '1';
 		";
 		//echo $sql ."\n";
-		$msConfigurations = array();
+		$aObj_Configurations = array();
 		$res = $oDB->query($sql);
 		while ($RS = $oDB->fetchName($res))
 		{
-			if (!empty($RS) && $RS['ACCOUNTID'] > 0)
+			if ((is_array($RS) === true && count($RS) > 0) && $RS["ACCOUNTID"] > 0)
 			{
-				$msConfigurations[] = self::produceConfig($oDB, $RS['ID'], $RS['ACCOUNTID'], $clientid);
+				$aObj_Configurations[] = self::produceConfig($oDB, $RS["ID"], $RS["ACCOUNTID"], $clientid);
 			}
 		}
 		
-		return $msConfigurations;		
+		return $aObj_Configurations;		
 	}	
 }
 ?>

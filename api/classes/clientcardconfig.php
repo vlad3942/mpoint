@@ -14,6 +14,12 @@ class ClientCardConfig extends BasicConfig
 	 */	
 	private $_iCountryID;
 	/**
+	 * Client's access ID to the client.
+	 *
+	 * @var integer
+	 */
+	private $_iCardID;
+	/**
 	 * Card Holder's PSP ID.
 	 *
 	 * @var integer
@@ -23,25 +29,21 @@ class ClientCardConfig extends BasicConfig
 	/**
 	 * Default Constructor
 	 *
-	 * @param 	integer $id 			Card ID.
+	 * @param 	integer $accessid 		Clients Card access ID.
+	 * @param 	integer $cardid 		Card ID.
 	 * @param 	integer $name	 		Card issuer name.
 	 * @param 	integer $countryid	 	Card holder country ID.
 	 * @param 	integer $pspid 			ID of the PSP.	 	
 	 */
-	public function __construct($id, $name, $countryid, $pspid)
+	public function __construct($accessid, $cardid, $cardtype, $name, $countryid, $pspid)
 	{
-		parent::__construct($id, $name);
-	
-		$this->_sName = trim($name);
-		$this->_iCountryID = $countryid;		
-		$this->_iPSPID = $pspid;			
+		parent::__construct($accessid, $name);	
+		
+		$this->_iCountryID = (integer)$countryid;	
+		$this->_iCardID = (integer)$cardid;	
+		$this->_iPSPID = (integer)$pspid;			
 	}
-	/**
-	 * Returns the Card issuer name.
-	 *
-	 * @return 	string
-	 */
-	public function getCardName() { return $this->_sName; }
+	
 	/**
 	 * Returns the Card Holder's country ID.
 	 *
@@ -54,18 +56,25 @@ class ClientCardConfig extends BasicConfig
 	 * @return 	integer
 	 */
 	public function getPSPID() { return $this->_iPSPID; }	
+	/**
+	 * Returns the Card ID used for the transaction.
+	 *
+	 * @return 	integer
+	 */
+	public function getCardID() { return $this->_iCardID; }	
 	
 	
-	public function toFullXML()
+	
+	public function toXML()
 	{
-		$xml .= '<card id="'.$this->getID().'" country-id="'.$this->getCountryID().'" psp-id="'.$this->getPSPID().'">'.htmlspecialchars($this->getCardName(), ENT_NOQUOTES).'</card>';
+		$xml .= '<card id="'.$this->getID().'" type-id="'.$this->getCardID().'" country-id="'.$this->getCountryID().'" psp-id="'.$this->getPSPID().'">'.htmlspecialchars($this->getName(), ENT_NOQUOTES).'</card>';
 
 		return $xml;
 	}
 	
 	public static function produceConfig(RDB $oDB, $cardid, $clientid)
 	{
-		$sql = "SELECT CA.id AS id, CA.name AS name, CL.countryid AS countryid, CCA.pspid AS pspid		
+		$sql = "SELECT CCA.id AS cardaccessid, CA.id AS id, CA.name AS name, CL.countryid AS countryid, CCA.pspid AS pspid		
 				FROM Client". sSCHEMA_POSTFIX .".Client_Tbl CL 
 				INNER JOIN Client". sSCHEMA_POSTFIX .".CardAccess_Tbl CCA ON CL.id = CCA.clientid 
 				INNER JOIN System.". sSCHEMA_POSTFIX ."Card_Tbl CA ON CCA.cardid = CA.id
@@ -73,9 +82,9 @@ class ClientCardConfig extends BasicConfig
 		";				
 		$RS = $oDB->getName($sql);	
 	
-		if(!empty($RS))
+		if(is_array($RS) === true && count($RS) > 0)
 		{		
-			return new ClientCardConfig($RS['ID'],$RS['NAME'],$RS['COUNTRYID'], $RS['PSPID']);
+			return new ClientCardConfig($RS["CARDACCESSID"], $RS["ID"],$RS["NAME"],$RS["COUNTRYID"], $RS["PSPID"]);
 		}
 		
 	}
@@ -87,17 +96,17 @@ class ClientCardConfig extends BasicConfig
 				INNER JOIN Client". sSCHEMA_POSTFIX .".CardAccess_Tbl CCA ON CL.id = CCA.clientid				
 				WHERE CL.id = ". intval($clientid) ." AND CL.enabled = '1';
 		";		
-		$mConfigurations = array();
+		$aObj_Configurations = array();
 		$res = $oDB->query($sql);
 		while ($RS = $oDB->fetchName($res))
 		{
-			if (!empty($RS['ID']))
+			if ((is_array($RS) === true && count($RS) > 0) && !empty($RS["ID"]))
 			{
-				$mConfigurations[] = self::produceConfig($oDB, $RS['ID'], $clientid);
+				$aObj_Configurations[] = self::produceConfig($oDB, $RS["ID"], $clientid);
 			}
 		}
 		
-		return $mConfigurations;		
+		return $aObj_Configurations;		
 	}	
 }
 ?>

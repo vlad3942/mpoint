@@ -116,33 +116,31 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @var string
 	 */
-	private $_sIconURL;
+	private $_sIconURL;	
 	/**
-	 * Absolute URL to the external system where customer data may be imported from.
-	 * This is generally an existing e-Commerce site or a CRM system.
+	 * Object that holds the customer import URL
 	 *
-	 * @var string
+	 * @var ClientURLConfig
 	 */
-	private $_sCustomerImportURL;
+	private $_obj_CustomerImportURLObj;
 	/**
-	 * Absolute URL to the external system where customer authenticated.
-	 * This is generally an existing e-Commerce site or a CRM system.
+	 * Object that holds the customer customer authetication URL
 	 *
-	 * @var string
+	 * @var ClientURLConfig
 	 */
-	private $_sAuthenticationURL;
+	private $_obj_AuthenticationURLObj;
 	/**
-	 * Absolute URL to the external system that needs To by Notify When Stored Cards changes.
+	 * Object that holds the customer notification URL
 	 *
-	 * @var string
+	 * @var ClientURLConfig
 	 */
-	private $_sNotificationURL;
+	private $_obj_NotificationURLObj;
 	/**
-	 * Absolute URL to the Mobile Enterprise Servicebus (MESB)
+	 * Object that holds the MESB URL
 	 *
-	 * @var string
+	 * @var ClientURLConfig
 	 */
-	private $_sMESBURL;
+	private $_obj_MESBURLObj;
 	/**
 	 * Max Amount an mPoint Transaction can cost the customer for the Client
 	 *
@@ -291,8 +289,8 @@ class ClientConfig extends BasicConfig
 	 * @param 	integer $ident		Set of binary flags which specifies how customers may be identified
 	 * @param 	integer $transttl	Transaction time to live value
 	 */
-	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $ciurl, $aurl, $nurl, $murl, $aIPs, $dc, $mc=-1, $ident=7,$transttl, $oASC = array(), $oMASC = array(),$oCardsC = array())
-	{
+	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7,$transttl, $oCustomerImportURL, $oAuthenticationURL, $oNotificationURL, $oMESBURL, $oASC = array(), $oMASC = array(),$oCardsC = array())
+	{		
 		parent::__construct($id, $name);
 
 		$this->_iFlowID = (integer) $fid;
@@ -326,10 +324,11 @@ class ClientConfig extends BasicConfig
 		$this->_bSendPSPID = (bool) $sp;
 		$this->_iStoreCard = (integer) $sc;
 
-		$this->_sCustomerImportURL = trim($ciurl);
-		$this->_sAuthenticationURL = trim($aurl);
-		$this->_sNotificationURL = trim($nurl);
-		$this->_sMESBURL = trim($murl);
+		$this->_obj_CustomerImportURLObj = $oCustomerImportURL;
+		$this->_obj_AuthenticationURLObj = $oAuthenticationURL;
+		$this->_obj_NotificationURLObj = $oNotificationURL;
+		$this->_obj_MESBURLObj = $oMESBURL;
+				
 		$this->_aIPList = $aIPs;
 		$this->_bShowAllCards = (bool) $dc;
 		$this->_iMaxCards = (integer) $mc;
@@ -365,7 +364,7 @@ class ClientConfig extends BasicConfig
 		$returnXML = '<accounts>';
 		foreach($this->_obj_AccountsConfig as $accountConfig)
 		{
-			if($accountConfig instanceof AccountConfig)
+			if(($accountConfig instanceof AccountConfig) == true)
 			{
 				$returnXML .= $accountConfig->toFullXML();
 			}
@@ -389,9 +388,9 @@ class ClientConfig extends BasicConfig
 		$returnXML = '<payment-service-providers>';
 		foreach($this->_obj_MerchantAccountsConfig as $merchantAccountConfig)
 		{
-			if($merchantAccountConfig instanceof ClientMerchantAccountConfig)
+			if(($merchantAccountConfig instanceof ClientMerchantAccountConfig) == true)
 			{
-				$returnXML .= $merchantAccountConfig->toFullXML();
+				$returnXML .= $merchantAccountConfig->toXML();
 			}
 		}
 		$returnXML .= '</payment-service-providers>'; 
@@ -415,8 +414,8 @@ class ClientConfig extends BasicConfig
 		$returnXML = '<cards store-card="'.$this->_iStoreCard.'" show-all-cards="'.General::bool2xml($this->_bShowAllCards).'" max-stored-cards="'.$this->_iMaxCards.'">';
 		foreach($this->_obj_CardsConfig as $cardConfig)
 		{
-			if($cardConfig instanceof ClientCardConfig){
-				$returnXML .= $cardConfig->toFullXML();
+			if(($cardConfig instanceof ClientCardConfig) == true){
+				$returnXML .= $cardConfig->toXML();
 			}
 		}
 		$returnXML .= '</cards>'; 
@@ -490,26 +489,46 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	string
 	 */
-	public function getCustomerImportURL() { return $this->_sCustomerImportURL; }
+	public function getCustomerImportURL() 
+	{ 
+		if((($this->_obj_CustomerImportURLObj) instanceof ClientURLConfig) == true){
+			return $this->_obj_CustomerImportURLObj->getClientURL(); 
+		}
+	}
 	/**
 	 * Absolute URL to the external system where customer may be authenticated.
 	 * This is generally an existing e-Commerce site or a CRM system.
 	 *
 	 * @return 	string
 	 */
-	public function getAuthenticationURL() { return $this->_sAuthenticationURL; }
+	public function getAuthenticationURL() 
+	{ 
+		if((($this->_obj_AuthenticationURLObj) instanceof ClientURLConfig) == true){
+			return $this->_obj_AuthenticationURLObj->getClientURL();
+		} 
+	}
 	/**
 	 * Absolute URL to the external system that needs To by Notify When Stored Cards changes.
 	 *
 	 * @return 	string
 	 */
-	public function getNotificationURL() { return $this->_sNotificationURL; }
+	public function getNotificationURL() 
+	{
+		if((($this->_obj_NotificationURLObj) instanceof ClientURLConfig) == true){
+			return $this->_obj_NotificationURLObj->getClientURL();
+		}
+	}
 	/**
 	 * Absolute URL to the Mobile Enterprise Servicebus (MESB)
 	 *
 	 * @return 	string
 	 */
-	public function getMESBURL() { return $this->_sMESBURL; }
+	public function getMESBURL()
+	{
+		if((($this->_obj_MESBURLObj) instanceof ClientURLConfig) == true){
+			return $this->_obj_MESBURLObj->getClientURL();
+		}
+	}
 	/**
 	 * Returns the Max Amount an mPoint Transaction can cost the customer for the Client
 	 *
@@ -635,9 +654,9 @@ class ClientConfig extends BasicConfig
 		$xml .= '<cancel-url>'. htmlspecialchars($this->getCancelURL(), ENT_NOQUOTES) .'</cancel-url>';
 		$xml .= '<callback-url>'. htmlspecialchars($this->getCallbackURL(), ENT_NOQUOTES) .'</callback-url>';
 		$xml .= '<icon-url>'. htmlspecialchars($this->getIconURL(), ENT_NOQUOTES) .'</icon-url>';
-		$xml .= '<customer-import-url>'. htmlspecialchars($this->_sCustomerImportURL, ENT_NOQUOTES) .'</customer-import-url>';
-		$xml .= '<authentication-url>'. htmlspecialchars($this->_sAuthenticationURL, ENT_NOQUOTES) .'</authentication-url>';
-		$xml .= '<notification-url>'. htmlspecialchars($this->_sNotificationURL, ENT_NOQUOTES) .'</notification-url>';
+		$xml .= '<customer-import-url>'. htmlspecialchars($this->getCustomerImportURL(), ENT_NOQUOTES) .'</customer-import-url>';
+		$xml .= '<authentication-url>'. htmlspecialchars($this->getAuthenticationURL(), ENT_NOQUOTES) .'</authentication-url>';
+		$xml .= '<notification-url>'. htmlspecialchars($this->getNotificationURL(), ENT_NOQUOTES) .'</notification-url>';
 		$xml .= '<sms-receipt>'. General::bool2xml($this->_bSMSReceipt) .'</sms-receipt>';
 		$xml .= '<email-receipt>'. General::bool2xml($this->_bEmailReceipt) .'</email-receipt>';
 		$xml .= '<auto-capture>'. General::bool2xml($this->_bAutoCapture) .'</auto-capture>';
@@ -662,15 +681,15 @@ class ClientConfig extends BasicConfig
 		$xml .= '<username>'. htmlspecialchars($this->getUsername(), ENT_NOQUOTES) .'</username>';
 		$xml .= '<password>'. htmlspecialchars($this->getPassword(), ENT_NOQUOTES) .'</password>';
 		$xml .= '<max-amount country-id = "'.$this->getCountryConfig()->getID().'">'. htmlspecialchars($this->getMaxAmount(), ENT_NOQUOTES) .'</max-amount>';
-		$xml .= $this->getClientCardsConfigToXML();
-		$xml .= $this->getMerchantAccountsConfigToXML();
 		$xml .= '<urls>';
-		$xml .= '<url type-id = "'.self::iCUSTOMER_IMPORT_URL.'">'.htmlspecialchars($this->_sCustomerImportURL, ENT_NOQUOTES).'</url>';
-		$xml .= '<url type-id = "'.self::iAUTHENTICATION_URL.'">'.htmlspecialchars($this->_sAuthenticationURL, ENT_NOQUOTES).'</url>';
-		$xml .= '<url type-id = "'.self::iNOTIFICATION_URL.'">'.htmlspecialchars($this->_sNotificationURL, ENT_NOQUOTES).'</url>';
-		$xml .= '<url type-id = "'.self::iMESB_URL.'">'.htmlspecialchars($this->_sMESBURL, ENT_NOQUOTES).'</url>';
+		$xml .= (($this->_obj_CustomerImportURLObj->getID() > 0)? '<url id = "'.$this->_obj_CustomerImportURLObj->getID().'" type-id = "'.self::iCUSTOMER_IMPORT_URL.'">'.htmlspecialchars($this->getCustomerImportURL(), ENT_NOQUOTES).'</url>' : '');
+		$xml .= (($this->_obj_AuthenticationURLObj->getID() > 0)? '<url id = "'.$this->_obj_AuthenticationURLObj->getID().'" type-id = "'.self::iAUTHENTICATION_URL.'">'.htmlspecialchars($this->getAuthenticationURL(), ENT_NOQUOTES).'</url>' : '');
+		$xml .= (($this->_obj_NotificationURLObj->getID() > 0)? '<url id = "'.$this->_obj_NotificationURLObj->getID().'" type-id = "'.self::iNOTIFICATION_URL.'">'.htmlspecialchars($this->getNotificationURL(), ENT_NOQUOTES).'</url>' : '');
+		$xml .= (($this->_obj_MESBURLObj->getID() > 0)? '<url id = "'.$this->_obj_MESBURLObj->getID().'" type-id = "'.self::iMESB_URL.'">'.htmlspecialchars($this->getMESBURL(), ENT_NOQUOTES).'</url>' : '');
 		$xml .= '</urls>';
-		$xml .= '<keyword>'.$this->getKeywordConfig()->getName().'</keyword>';		
+		$xml .= '<keyword id = "'.$this->getKeywordConfig()->getID().'">'.$this->getKeywordConfig()->getName().'</keyword>';
+		$xml .= $this->getClientCardsConfigToXML();
+		$xml .= $this->getMerchantAccountsConfigToXML();				
 		$xml .= $this->getAccountsConfigToXML();		
 		$xml .= '<callback-protocol send-psp-id = "'.General::bool2xml($this->sendPSPID()).'">'. htmlspecialchars($this->getCallbackURL(), ENT_NOQUOTES) .'</callback-protocol>';
 		$xml .= '<identification>'. $this->_iIdentification .'</identification>';
@@ -701,6 +720,7 @@ class ClientConfig extends BasicConfig
 					C.id AS countryid,
 					Acc.id AS accountid, Acc.name AS account, Acc.mobile, Acc.markup,
 					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price,
+					U1.id AS customerimporturlid, U2.id AS authurlid, U3.id AS notifyurlid, U4.id AS mesburlid,
 					U1.url AS customerimporturl, U2.url AS authurl, U3.url AS notifyurl, U4.url AS mesburl
 				FROM Client". sSCHEMA_POSTFIX .".Client_Tbl CL
 				INNER JOIN System". sSCHEMA_POSTFIX .".Country_Tbl C ON CL.countryid = C.id AND C.enabled = '1'
@@ -729,6 +749,7 @@ class ClientConfig extends BasicConfig
 					C.id,
 					Acc.id, Acc.name, Acc.mobile, Acc.markup,
 					KW.id, KW.name,
+					U1.id, U2.id, U3.id, U4.id,
 					U1.url, U2.url, U3.url, U4.url";
 		// Use Default Account
 		if ($acc == -1)
@@ -761,7 +782,11 @@ class ClientConfig extends BasicConfig
 		$obj_AccountsConfig = AccountConfig::produceConfigurations($oDB, $id);
 		$obj_ClientMerchantAccount = ClientMerchantAccountConfig::produceConfigurations($oDB, $id);
 		$obj_ClientCardsAccount = ClientCardConfig::produceConfigurations($oDB, $id);
-
+		$obj_CustomerImportURL = ClientURLConfig::produceConfig($RS["CUSTOMERIMPORTURLID"], self::iCUSTOMER_IMPORT_URL, $RS["CUSTOMERIMPORTURL"]);
+		$obj_AuthenticationURL = ClientURLConfig::produceConfig($RS["AUTHURLID"], self::iAUTHENTICATION_URL, $RS["AUTHURL"]);
+		$obj_NotificationURL = ClientURLConfig::produceConfig($RS["NOTIFYURLID"], self::iNOTIFICATION_URL, $RS["NOTIFYURL"]);
+		$obj_MESBURL = ClientURLConfig::produceConfig($RS["MESBURLID"], self::iMESB_URL, $RS["MESBURL"]);
+		
 		$sql  = "SELECT ipaddress
 				 FROM Client". sSCHEMA_POSTFIX .".IPAddress_Tbl
 				 WHERE clientid = ". intval($id) ."";
@@ -776,7 +801,7 @@ class ClientConfig extends BasicConfig
 			}
 		}
 
-		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $RS["CUSTOMERIMPORTURL"], $RS["AUTHURL"], $RS["NOTIFYURL"], $RS["MESBURL"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $obj_AccountsConfig, $obj_ClientMerchantAccount,$obj_ClientCardsAccount);
+		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $obj_AccountsConfig, $obj_ClientMerchantAccount,$obj_ClientCardsAccount);
 	}
 
 	/**
