@@ -6,7 +6,7 @@
  * @link http://www.cellpointmobile.com
  * @package mConsole
  * @subpackage Config
- * @version 1.00
+ * @version 1.01
  */
 
 // Require Global Include File
@@ -18,8 +18,8 @@ require_once(sCLASS_PATH ."admin.php");
 require_once(sCLASS_PATH ."/mConsole.php");
 // Require data class for Payment Method Configurations
 require_once(sCLASS_PATH ."/payment_method_config.php");
-// Require data class for Prefix Configurations
-require_once(sCLASS_PATH ."/prefix_config.php");
+// Require data class for Card Prefix Configurations
+require_once(sCLASS_PATH ."/card_prefix_config.php");
 
 /*
 $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
@@ -42,25 +42,22 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_PAYMENT_METHODS);	
 	switch ($code)
 	{
-	case (1):
+	case (mConsole::iSERVICE_UNAVAILABLE_ERROR):
 		header("HTTP/1.1 502 Bad Gateway");
 		
 		$xml = '<status code="'. $code .'">Single Sign-On Service is unavailable</status>';
 		break;
-		break;
-	case (1):
+	case (mConsole::iUNAUTHORIZED_USER_ACCESS_ERROR):
 		header("HTTP/1.1 401 Unauthorized");
 	
 		$xml = '<status code="'. $code .'">Unauthorized User Access</status>';
 		break;
-		break;
-	case (3):
+	case (mConsole::iINSUFFICIENT_PERMISSIONS_ERROR):
 		header("HTTP/1.1 403 Forbidden");
 		
 		$xml = '<status code="'. $code .'">Insufficient Permissions</status>';
 		break;
-		break;
-	case (10):
+	case (mConsole::iAUTHORIZATION_SUCCESSFUL):
 		header("HTTP/1.1 200 OK");
 		
 		$aObj_Configurations = PaymentMethodConfig::produceAll($_OBJ_DB);

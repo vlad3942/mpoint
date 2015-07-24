@@ -1,6 +1,6 @@
 <?php
 /**
- * The MConsole package provides the required business logic for administering mPoint.
+ * The mConsole package provides the required business logic for administering mPoint.
  *
  * @author Rohit Malhotra
  * @copyright Cellpoint Mobile
@@ -8,9 +8,14 @@
  * @package mConsole
  * @version 1.00
  */
-
 class mConsole extends Admin
 {
+	// Constants for mConsole's Single Sign-On Service
+	const iSERVICE_UNAVAILABLE_ERROR = 1;
+	const iUNAUTHORIZED_USER_ACCESS_ERROR = 2;
+	const iINSUFFICIENT_PERMISSIONS_ERROR = 3;
+	const iAUTHORIZATION_SUCCESSFUL = 10;
+	// mConsole permission codes
 	const sPERMISSION_GET_PAYMENT_METHODS = "mPoint.GetPaymentMethods";
 	const sPERMISSION_GET_CLIENT = "mPoint.GetClients";
 	
@@ -233,6 +238,10 @@ class mConsole extends Admin
 	 * 	10. Success
 	 * 
 	 * @see		$aHTTP_CONN_INFO["mesb"]
+	 * @see		iSERVICE_UNAVAILABLE_ERROR
+	 * @see		iUNAUTHORIZED_USER_ACCESS_ERROR
+	 * @see		iINSUFFICIENT_PERMISSIONS_ERROR
+	 * @see		iAUTHORIZATION_SUCCESSFUL
 	 * 
 	 * @param	HTTPConnInfo $oCI		The connection information for the Mobile Enterprise Service Bus
 	 * @param	string $authtoken		The user's authentication token which must be passed back to mConsole's Enterprise Security Manager
@@ -268,18 +277,18 @@ class mConsole extends Admin
 			if ($code == 200)
 			{
 				trigger_error("Authorization accepted by Authentication Service at: ". $oCI->toURL() ." with HTTP Code: ". $code, E_USER_NOTICE);
-				return 10;
+				return self::iAUTHORIZATION_SUCCESSFUL;
 			}
 			else
 			{
 				trigger_error("Authentication Service at: ". $oCI->toURL() ." rejected authorization with HTTP Code: ". $code, E_USER_WARNING);
-				return 2;
+				return self::iUNAUTHORIZED_USER_ACCESS_ERROR;
 			}
 		}
 		catch (HTTPException $e)
 		{
 			trigger_error("Authentication Service at: ". $oCI->toURL() ." is unavailable due to ". get_class($e), E_USER_WARNING);
-			return 1;
+			return self::iSERVICE_UNAVAILABLE_ERROR;
 		}
 	}
 }

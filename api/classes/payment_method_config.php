@@ -6,7 +6,7 @@
  * @link http://www.cellpointmobile.com
  * @package mConsole
  * @subpackage Config
- * @version 1.0
+ * @version 1.01
  */
 
 /**
@@ -147,20 +147,20 @@ class PaymentMethodConfig extends BasicConfig
 	{
 		$sql = "SELECT id, name, position, Coalesce(minlength, -1) AS minlength, Coalesce(maxlength, -1) AS maxlength, Coalesce(cvclength, -1) AS cvclength
 				FROM System". sSCHEMA_POSTFIX .".Card_Tbl
-				WHERE id = ". intval($id) ." AND enabled = '1'
-				ORDER BY id ASC";
+				WHERE id = ". intval($id) ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 		
 		if (is_array($RS) === true && $RS["ID"] > 0)
 		{
-			$aPrefixes = PrefixConfig::produceConfigurations($oDB, $id);
+			$aPrefixes = CardPrefixConfig::produceConfigurations($oDB, $id);
 
 			$aPSPs = array();
 			$sql = "SELECT PSP.id, PSP.name
 					FROM System". sSCHEMA_POSTFIX .".PSPCard_Tbl PC
 					INNER JOIN System". sSCHEMA_POSTFIX .".PSP_Tbl PSP ON PC.pspid = PSP.id AND PSP.enabled = '1'
-					WHERE PC.cardid = ". intval($id) ." AND PC.enabled = '1'";
+					WHERE PC.cardid = ". intval($id) ." AND PC.enabled = '1'
+					ORDER BY PSP.id ASC";
 //			echo $sql ."\n";
 			$aRS = $oDB->getAllNames($sql);
 			if (is_array($aRS) === true && count($aRS) > 0)
@@ -175,7 +175,8 @@ class PaymentMethodConfig extends BasicConfig
 					FROM System". sSCHEMA_POSTFIX .".CardPricing_Tbl CP
 					INNER JOIN System". sSCHEMA_POSTFIX .".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PP.enabled = '1'
 					INNER JOIN System". sSCHEMA_POSTFIX .".Country_Tbl C ON PP.countryid = C.id AND C.enabled = '1'
-					WHERE CP.cardid = ". intval($id) ." AND CP.enabled = '1'";
+					WHERE CP.cardid = ". intval($id) ." AND CP.enabled = '1'
+					ORDER BY C.id ASC";
 //			echo $sql ."\n";
 			$aRS = $oDB->getAllNames($sql);
 			if (is_array($aRS) === true && count($aRS) > 0)

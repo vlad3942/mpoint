@@ -6,14 +6,14 @@
  * @link http://www.cellpointmobile.com
  * @package mConsole
  * @subpackage Config
- * @version 1.0
+ * @version 1.10
  */
 
 /**
  * Data class for holding card prefix configurations
  *
  */
-class PrefixConfig
+class CardPrefixConfig
 {
 	/**
 	 * The unique ID for the prefix configuration
@@ -80,7 +80,7 @@ class PrefixConfig
 	 * 
 	 * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
 	 * @param 	integer $id 	The unique ID for the Prefix range that should be instantiated
-	 * @return	PrefixConfig|NULL
+	 * @return	CardPrefixConfig|NULL
 	 */
 	public static function produceConfig(RDB $oDB, $id)
 	{
@@ -91,7 +91,7 @@ class PrefixConfig
 		$RS = $oDB->query($sql);
 		if (is_array($RS) === true && $RS["ID"] > 0)
 		{
-			return new PrefixConfig($RS["ID"], $RS["MIN"], $RS["MAX"]);
+			return new CardPrefixConfig($RS["ID"], $RS["MIN"], $RS["MAX"]);
 		}
 		else { return null; }
 	}
@@ -101,7 +101,7 @@ class PrefixConfig
 	 * 
 	 * @param 	RDB $oDB 			Reference to the Database Object that holds the active connection to the mPoint Database
 	 * @param	integer $cardid		The unique ID for the card for what the prefix ranges that should be instantiated
-	 * @return array
+	 * @return	array
 	 */
 	public static function produceConfigurations(RDB $oDB, $cardid)
 	{
@@ -116,7 +116,7 @@ class PrefixConfig
 		{
 			if (is_array($RS) === true && $RS["ID"] > 0)
 			{
-				$aObj_CardPrefixes[] = new PrefixConfig($RS["ID"], $RS["MIN"], $RS["MAX"]);
+				$aObj_CardPrefixes[] = new CardPrefixConfig($RS["ID"], $RS["MIN"], $RS["MAX"]);
 			}
 		}
 		
