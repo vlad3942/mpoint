@@ -18,6 +18,7 @@ class mConsole extends Admin
 	// mConsole permission codes
 	const sPERMISSION_GET_PAYMENT_METHODS = "mPoint.GetPaymentMethods";
 	const sPERMISSION_GET_CLIENT = "mPoint.GetClients";
+	const sPERMISSION_GET_PAYMENT_SERVICE_PROVIDERS = "mPoint.GetPaymentServiceProviders";
 	
 	public function saveClient(&$clientid, $cc , $storecard, $autocapture, $name, $username, $password, 
 									$lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl)
