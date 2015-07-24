@@ -892,7 +892,7 @@
 				<xs:simpleType>
 					<xs:restriction base="xs:nonNegativeInteger">
 						<xs:minInclusive value="0" />
-						<xs:maxInclusive value="15" />
+						<xs:maxInclusive value="8" />
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
@@ -1015,9 +1015,9 @@
 		<xs:sequence>
 			<xs:element name="payment-method" type="client-payment-method-config" minOccurs="1" maxOccurs="unbounded" />
 		</xs:sequence>
-		<xs:attribute type="xs:nonNegativeInteger" name="store-card" />
-		<xs:attribute type="xs:boolean" name="show-all-cards" />
-		<xs:attribute type="xs:nonNegativeInteger" name="max-stored-cards" />
+		<xs:attribute type="xs:nonNegativeInteger" name="store-card" use="required" />
+		<xs:attribute type="xs:boolean" name="show-all-cards" use="required" />
+		<xs:attribute type="xs:nonNegativeInteger" name="max-stored-cards" use="required" />
 	</xs:complexType>
 	<xs:complexType name="client-payment-method-config">
 		<xs:annotation>
@@ -1027,7 +1027,7 @@
 			<xs:extension base="xs:string">
 				<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
 				<xs:attribute name="country-id" type="countryid" use="optional" />
-				<xs:attribute name="state-id" type="xs:positiveInteger" use="optional" />
+				<xs:attribute name="state-id" type="xs:positiveInteger" use="required" />
 				<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
 				<xs:attribute name="psp-id" type="xs:positiveInteger" use="required" />
 			</xs:extension>
