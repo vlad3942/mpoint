@@ -12,6 +12,7 @@
 class mConsole extends Admin
 {
 	const sPERMISSION_GET_PAYMENT_METHODS = "mPoint.GetPaymentMethods";
+	const sPERMISSION_GET_CLIENT = "mPoint.GetClients";
 	
 	public function saveClient(&$clientid, $cc , $storecard, $autocapture, $name, $username, $password, 
 									$lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl)

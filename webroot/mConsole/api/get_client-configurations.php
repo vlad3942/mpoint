@@ -54,31 +54,49 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$userID = intval($obj_DOM->{'get-client-configurations'}['user-id']);
 		$clientIDs = (array)$obj_DOM->{'get-client-configurations'}->{'client-id'};
 				
-		$iErrors = true;
 		$aHTTP_CONN_INFO["mesb"]["path"] = Constants::sMCONSOLE_SINGLE_SIGN_ON_PATH;
 		$aHTTP_CONN_INFO["mesb"]["username"] = trim($_SERVER['PHP_AUTH_USER']);
 		$aHTTP_CONN_INFO["mesb"]["password"] = trim($_SERVER['PHP_AUTH_PW']);
 		
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
 		
-		$iErrors = $obj_MConsole->auth($obj_ConnInfo, 'sglhsjfhgsdzfhjsfgj', $userID, Constants::sMCONSOLE_OP_ID_GET_CLIENTS, $clientIDs);		
+		$code = $obj_MConsole->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_CLIENT, $clientIDs);		
 		
-		if($iErrors == 10)
-		{			
+		switch ($code)
+		{
+		case (1):
+			header("HTTP/1.1 502 Bad Gateway");
+			
+			$xml = '<status code="'. $code .'">Single Sign-On Service is unavailable</status>';
+			break;			
+		case (1):
+			header("HTTP/1.1 401 Unauthorized");
+		
+			$xml = '<status code="'. $code .'">Unauthorized User Access</status>';
+			break;			
+		case (3):
+			header("HTTP/1.1 403 Forbidden");
+			
+			$xml = '<status code="'. $code .'">Insufficient Permissions</status>';
+			break;			
+		case (10):
+			header("HTTP/1.1 200 OK");
+			
 			$xml = '<client-configurations>';
 			foreach ($clientIDs as $clientID)
 			{
 				$obj_mPointClient = ClientConfig::produceConfig($_OBJ_DB, $clientID);					
 				$xml .= $obj_mPointClient->toFullXML();
 			}
-			$xml .= '</client-configurations>';				
-		}
-		else
-		{
-			header("HTTP/1.1 400 Bad Request");
-	
-			$xml = '<status code="415">Invalid Customer or client ID  </status>';
-		}
+			$xml .= '</client-configurations>';	
+			break;
+		default:
+			header("HTTP/1.1 500 Internal Server Error");
+			
+			$xml = '<status code="500">Unknown Error</status>';
+			break;
+		}	
+		
 	}
 	// Error: Invalid XML Document
 	elseif ( ($obj_DOM instanceof SimpleDOMElement) === false)
@@ -88,7 +106,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$xml = '<status code="415">Invalid XML Document</status>';
 	}
 	// Error: Wrong operation
-	elseif (count($obj_DOM->{'get-client-configuration'}) == 0)
+	elseif (count($obj_DOM->{'get-client-configurations'}) == 0)
 	{
 		header("HTTP/1.1 400 Bad Request");
 		
@@ -97,8 +115,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		{
 			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>'; 
 		}
-	}
-	
+	}	
 }
 else
 {

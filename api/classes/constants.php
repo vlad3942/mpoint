@@ -498,11 +498,6 @@ abstract class Constants
 	/*
 	 * mConsole Enterprise URL endpoint.
 	 */
-	const sMCONSOLE_SINGLE_SIGN_ON_PATH = '/mconsole/single-sign-on';
-	
-	/*
-	 * mConsole Enterprise URL endpoint.
-	 */
-	const sMCONSOLE_OP_ID_GET_CLIENTS = 1;
+	const sMCONSOLE_SINGLE_SIGN_ON_PATH = '/mconsole/single-sign-on';	
 }
 ?>
