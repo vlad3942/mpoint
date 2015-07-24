@@ -50,8 +50,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 {
 	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mconsole.xsd") === true && count($obj_DOM->{'get-client-configurations'}) > 0)
 	{		
-		$obj_val = new Validate();
-		$userID = intval($obj_DOM->{'get-client-configurations'}['user-id']);
+		$obj_val = new Validate();		
 		$clientIDs = (array)$obj_DOM->{'get-client-configurations'}->{'client-id'};
 				
 		$aHTTP_CONN_INFO["mesb"]["path"] = Constants::sMCONSOLE_SINGLE_SIGN_ON_PATH;
