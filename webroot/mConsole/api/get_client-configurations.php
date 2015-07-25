@@ -14,11 +14,10 @@ require_once("../../inc/include.php");
 
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
-
+// Require Business logic for General Administration of mPoint
+require_once(sCLASS_PATH ."admin.php");
+// Require Business logic for the mConsole Module
 require_once(sCLASS_PATH ."/mConsole.php");
-
-require_once(sCLASS_PATH ."/clientconfig.php");
-
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 
@@ -42,7 +41,7 @@ $xml = '';
 
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
-$obj_MConsole = new MConsole($_OBJ_DB, $_OBJ_TXT);
+$obj_mPoint = new mConsole($_OBJ_DB, $_OBJ_TXT);
 
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 
@@ -50,52 +49,54 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 {
 	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mconsole.xsd") === true && count($obj_DOM->{'get-client-configurations'}) > 0)
 	{		
-		$obj_val = new Validate();		
-		$clientIDs = (array)$obj_DOM->{'get-client-configurations'}->{'client-id'};
+		$obj_val = new Validate();
+		$aClientIDs = array();
+		for ($i=0; $i<count($obj_DOM->{'get-client-configurations'}->clients->{'client-id'}); $i++)
+		{
+			$aClientIDs[] = (integer) $obj_DOM->{'get-client-configurations'}->clients->{'client-id'}[$i];
+		}
 				
 		$aHTTP_CONN_INFO["mesb"]["path"] = Constants::sMCONSOLE_SINGLE_SIGN_ON_PATH;
 		$aHTTP_CONN_INFO["mesb"]["username"] = trim($_SERVER['PHP_AUTH_USER']);
 		$aHTTP_CONN_INFO["mesb"]["password"] = trim($_SERVER['PHP_AUTH_PW']);
 		
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
-		
-		$code = $obj_MConsole->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_CLIENT, $clientIDs);		
-		
+				
+		$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_CLIENT, $aClientIDs);
 		switch ($code)
 		{
-		case (1):
+		case (mConsole::iSERVICE_UNAVAILABLE_ERROR):
 			header("HTTP/1.1 502 Bad Gateway");
-			
+	
 			$xml = '<status code="'. $code .'">Single Sign-On Service is unavailable</status>';
-			break;			
-		case (1):
+			break;
+		case (mConsole::iUNAUTHORIZED_USER_ACCESS_ERROR):
 			header("HTTP/1.1 401 Unauthorized");
-		
+	
 			$xml = '<status code="'. $code .'">Unauthorized User Access</status>';
-			break;			
-		case (3):
+			break;
+		case (mConsole::iINSUFFICIENT_PERMISSIONS_ERROR):
 			header("HTTP/1.1 403 Forbidden");
-			
+	
 			$xml = '<status code="'. $code .'">Insufficient Permissions</status>';
-			break;			
-		case (10):
+			break;
+		case (mConsole::iAUTHORIZATION_SUCCESSFUL):
 			header("HTTP/1.1 200 OK");
-			
+	
 			$xml = '<client-configurations>';
-			foreach ($clientIDs as $clientID)
+			foreach ($aClientIDs as $id)
 			{
-				$obj_mPointClient = ClientConfig::produceConfig($_OBJ_DB, $clientID);					
+				$obj_mPointClient = ClientConfig::produceConfig($_OBJ_DB, $id);					
 				$xml .= $obj_mPointClient->toFullXML();
 			}
 			$xml .= '</client-configurations>';	
 			break;
 		default:
 			header("HTTP/1.1 500 Internal Server Error");
-			
+	
 			$xml = '<status code="500">Unknown Error</status>';
 			break;
-		}	
-		
+		}
 	}
 	// Error: Invalid XML Document
 	elseif ( ($obj_DOM instanceof SimpleDOMElement) === false)
@@ -114,7 +115,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		{
 			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>'; 
 		}
-	}	
+	}
+	// Error: Invalid Input
+	else
+	{
+		header("HTTP/1.1 400 Bad Request");
+		$aObj_Errs = libxml_get_errors();
+	
+		$xml = '';
+		for ($i=0; $i<count($aObj_Errs); $i++)
+		{
+			$xml = '<status code="400">'. htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES) .'</status>';
+		}
+	}
 }
 else
 {
