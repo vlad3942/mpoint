@@ -252,7 +252,6 @@ class mConsole extends Admin
 	 */
 	public function singleSignOn(HTTPConnInfo &$oCI, $authtoken, $permissioncode, array $aClientIDs=array() )
 	{
-		$obj_ConnInfo = new HTTPConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), "POST", "text/xml", $oCI->getUsername(), $oCI->getPassword() );		
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<single-sign-on permission-code="'.htmlspecialchars($permissioncode, ENT_NOQUOTES) .'">';
@@ -270,20 +269,27 @@ class mConsole extends Admin
 
 		try
 		{
-			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);				
+			$h = trim($this->constHTTPHeaders() ) .HTTPClient::CRLF;
+			$h .= "X-Auth-Token: ". $authtoken .HTTPClient::CRLF;
+			$obj_HTTP = new HTTPClient(new Template(), $oCI);				
 			$obj_HTTP->connect();
-			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+			$code = $obj_HTTP->send($h, $b);
 			$obj_HTTP->disConnect();		
 			
-			if ($code == 200)
+			switch ($code)
 			{
+			case (200):	// HTTP 200 OK
 				trigger_error("Authorization accepted by Authentication Service at: ". $oCI->toURL() ." with HTTP Code: ". $code, E_USER_NOTICE);
 				return self::iAUTHORIZATION_SUCCESSFUL;
-			}
-			else
-			{
+				break;
+			case (401):	// HTTP 401 Unauthorized
 				trigger_error("Authentication Service at: ". $oCI->toURL() ." rejected authorization with HTTP Code: ". $code, E_USER_WARNING);
 				return self::iUNAUTHORIZED_USER_ACCESS_ERROR;
+				break;
+			case (403):	// HTTP 403 Forbidden
+				trigger_error("Authentication Service at: ". $oCI->toURL() ." rejected permission with HTTP Code: ". $code, E_USER_WARNING);
+				return self::iINSUFFICIENT_PERMISSIONS_ERROR;
+				break;
 			}
 		}
 		catch (HTTPException $e)
