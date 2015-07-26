@@ -42,7 +42,8 @@ class ClientMerchantAccountConfig extends BasicConfig
 		
 		$this->_sUsername = trim($username);
 		$this->_sPassword = trim($passwd);
-		$this->_iPSPID = (integer)$pspid;			
+		$this->_iPSPID = (integer)$pspid;
+		$this->_bStoredCard = (boolean)$storedcard;			
 	}
 	/**
 	 * Returns the Client Merchant Account Username used to communicate with the PSP.
@@ -62,12 +63,18 @@ class ClientMerchantAccountConfig extends BasicConfig
 	 * @return 	integer
 	 */
 	public function getPSPID() { return $this->_iPSPID; }	
+	/**
+	 * Returns the stored card flag of the PSP used for the transaction.
+	 *
+	 * @return 	boolean
+	 */
+	public function getStoredCard() { return $this->_bStoredCard; }	
 	
 	
 	public function toXML()
 	{
 		$xml = '';
-		$xml .= '<payment-service-provider id = "' . $this->getID() . '" psp-id = "' . $this->getPSPID() . '">';			
+		$xml .= '<payment-service-provider id = "' . $this->getID() . '" psp-id = "' . $this->getPSPID() . '" stored-card = "' . General::bool2xml($this->getStoredCard()) . '">';			
 		$xml .= '<name>' . htmlspecialchars($this->getName(), ENT_NOQUOTES) . '</name>';
 		$xml .= '<username>' . htmlspecialchars($this->getUsername(), ENT_NOQUOTES) . '</username>';
 		$xml .= '<password>' . htmlspecialchars($this->getPassword(), ENT_NOQUOTES) . '</password>';							
@@ -85,7 +92,7 @@ class ClientMerchantAccountConfig extends BasicConfig
 		$RS = $oDB->getName($sql);		
 		if(is_array($RS) === true && count($RS) > 0)
 		{		
-			return new ClientMerchantAccountConfig($RS["ID"], $RS["NAME"], $RS["USERNAME"], $RS["PASSWD"], $RS["PSPID"]);
+			return new ClientMerchantAccountConfig($RS["ID"], $RS["NAME"], $RS["USERNAME"], $RS["PASSWD"], $RS["PSPID"], $RS['STORED_CARD']);
 		}
 		
 	}
