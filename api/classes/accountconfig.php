@@ -112,38 +112,37 @@ class AccountConfig extends BasicConfig
 		return $xml;
 	}
 	
-	public static function produceConfig(RDB $oDB, $accountid, $clientid)
+	public static function produceConfig(RDB $oDB, $id)
 	{
-		$sql = "SELECT name, mobile, markup 
+		$sql = "SELECT clientid, name, mobile, markup 
 				FROM Client". sSCHEMA_POSTFIX .".Account_Tbl				
-				WHERE id = ". intval($accountid) .";
-		";	
+				WHERE id = ". intval($accountid);
+		//  echo $sql ."\n";	
 		$RS = $oDB->getName($sql);
 		
-		if(!empty($RS))
+		if(is_array($RS) === true && count($RS) > 0)
 		{	
 			$clientMerchantSubAccounts = ClientMerchantSubAccountConfig::produceConfigurations($oDB, $accountid, $clientid);
 			
-			return new AccountConfig($accountid, $clientid, $RS['NAME'], $RS['MOBILE'], $RS['MARKUP'], $clientMerchantSubAccounts);
+			return new AccountConfig($accountid, $RS['CLIENTID'], $RS['NAME'], $RS['MOBILE'], $RS['MARKUP'], $clientMerchantSubAccounts);
 		}
 		
 	}
 	
-	public static function produceConfigurations(RDB $oDB, $clientid)
+	public static function produceConfigurations(RDB $oDB, $id)
 	{			
 		$sql = "SELECT A.id AS accountid			
 				FROM Client". sSCHEMA_POSTFIX .".Client_Tbl CL 
 				INNER JOIN Client". sSCHEMA_POSTFIX .".Account_Tbl A ON CL.id = A.clientid 				
-				WHERE CL.id = ". intval($clientid) ." AND CL.enabled = '1';
-		";
+				WHERE CL.id = ". intval($id) ." AND CL.enabled = '1'";
 		//echo $sql ."\n";
 		$aConfigurations = array();
 		$res = $oDB->query($sql);
 		while ($RS = $oDB->fetchName($res))
 		{
-			if (!empty($RS) && $RS['ACCOUNTID'] > 0)
+			if (is_array($RS) === true && $RS['ACCOUNTID'] > 0)
 			{
-				$aConfigurations[] = self::produceConfig($oDB, $RS['ACCOUNTID'], $clientid);
+				$aConfigurations[] = self::produceConfig($oDB, $RS['ACCOUNTID']);
 			}
 		}
 		
@@ -152,7 +151,7 @@ class AccountConfig extends BasicConfig
 	
 	public function toFullXML()
 	{
-		$xml = '<account>';		
+		$xml = '<account id = "'.intval($this->getID()).'">';		
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
 		$xml .= '<markup>'. htmlspecialchars($this->getMarkupLanguage(), ENT_NOQUOTES).'</markup>';				
 		$xml .= $this->getClientMerchantSubAccountsToXML();

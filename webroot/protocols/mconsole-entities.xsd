@@ -1183,14 +1183,20 @@
 	</xs:complexType>
 	<xs:simpleType name="callback-protocol">
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="mpoint" />
-			<xs:enumeration value="psp" />
+			<xs:enumeration value="mPoint" />
+			<xs:enumeration value="PSP" />
 		</xs:restriction>
 	</xs:simpleType>
 	<!-- Client Configuration Entities End -->
 	<xs:complexType name="get-client-configurations">
-         <xs:sequence>
-           <xs:element type="xs:integer" name="client-id" maxOccurs="unbounded" minOccurs="1"/>
+         <xs:sequence>	
+	         <xs:element name="clients" maxOccurs="1" minOccurs="1">
+		         <xs:complexType>
+			         <xs:sequence>
+			           <xs:element type="xs:integer" name="client-id" maxOccurs="unbounded" minOccurs="1"/>
+			         </xs:sequence>
+		         </xs:complexType>
+		     </xs:element>
          </xs:sequence>
          <xs:attribute type="xs:integer" name="user-id"/>
    </xs:complexType>

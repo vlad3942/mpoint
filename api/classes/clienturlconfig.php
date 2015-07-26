@@ -55,20 +55,24 @@ class ClientURLConfig
 	
 	
 	public function toXML()
-	{
-		$xml  = '';
-		if(($this->getPSPConfig() instanceof PSPConfig) == true){
-			$xml .= '<payment-service-provider id = "'.$this->getID().'" psp-id = "'.$this->getPSPConfig()->getID().'">';			
-			$xml .= '<name>'. htmlspecialchars($this->getPSPConfig()->getName(), ENT_NOQUOTES) .'</name>';							
-			$xml .= '</payment-service-provider>';				
-		}
+	{		
+		$xml = '';
+		$xml .= '<url id = "' . intval($this->getID()) . '" type-id = "' . intval($this->getTypeID()) . '">';
+		$xml .= htmlspecialchars($this->getClientURL(), ENT_NOQUOTES);
+		$xml .= '</url>'; 
 		
 		return $xml;
 	}
 	
 	public static function produceConfig($id, $typeid, $url)
 	{		
-		return new ClientURLConfig($id, $typeid, $url);		
+		if($id > 0){
+			return new ClientURLConfig($id, $typeid, $url);
+		}
+		else 
+		{
+			return null;
+		}		
 	}
 	
 }

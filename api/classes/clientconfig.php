@@ -49,13 +49,19 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @var Array
 	 */
-	private $_obj_AccountsConfig;
+	private $_aAccountsConfig;
+	/**
+	 * Configuration for Multiple Merchant Accounts the Transaction will be associated with
+	 *
+	 * @var Array
+	 */
+	private $_aMerchantAccountsConfig;
 	/**
 	 * Configuration for the Cards used by the client.
 	 *
 	 * @var Array
 	 */
-	private $_obj_CardsConfig;
+	private $_aCardsConfig;
 	/**
 	 * Client's Username for GoMobile
 	 *
@@ -122,25 +128,25 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @var ClientURLConfig
 	 */
-	private $_obj_CustomerImportURLObj;
+	private $_obj_CustomerImportURL;
 	/**
 	 * Object that holds the customer customer authetication URL
 	 *
 	 * @var ClientURLConfig
 	 */
-	private $_obj_AuthenticationURLObj;
+	private $_obj_AuthenticationURL;
 	/**
 	 * Object that holds the customer notification URL
 	 *
 	 * @var ClientURLConfig
 	 */
-	private $_obj_NotificationURLObj;
+	private $_obj_NotificationURL;
 	/**
 	 * Object that holds the MESB URL
 	 *
 	 * @var ClientURLConfig
 	 */
-	private $_obj_MESBURLObj;
+	private $_obj_MESBURL;
 	/**
 	 * Max Amount an mPoint Transaction can cost the customer for the Client
 	 *
@@ -257,48 +263,52 @@ class ClientConfig extends BasicConfig
 	/**
 	 * Default Constructor
 	 *
-	 * @param 	integer $id 		Unique ID for the Client in mPoint
-	 * @param 	integer $fid 		ID of the Flow the Client's customers have to go through in order to complete the Payment Transaction
-	 * @param 	string $name 		Client's name in mPoint
-	 * @param 	AccountConfig $oAC 	Configuration for the Account the Transaction will be associated with
-	 * @param 	string $un 			Client's Username for GoMobile
-	 * @param 	string $pw 			Client's Password for GoMobile
-	 * @param 	CountryConfig $oCC 	Configuration for the Country the Client can process transactions in
-	 * @param 	KeywordConfig $oKC 	Configuration for the Keyword the Client uses to send messages through
-	 * @param 	string $lurl 		Absolute URL to the Client's Logo which will be displayed on all payment pages
-	 * @param 	string $cssurl 		Absolute URL to the CSS file that should be used to customising the payment pages
-	 * @param 	string $accurl 		Absolute URL where the Customer should be returned to upon successfully completing the Transaction
-	 * @param 	string $curl 		Absolute URL where the Customer should be returned to in case he / she cancels the Transaction midway
-	 * @param 	string $cburl 		Absolute URL to the Client's Back Office where mPoint should send the Payment Status to
-	 * @param 	string $iurl 		Absolute URL to the Client's My Account Icon
-	 * @param 	string $ma 			Max Amount an mPoint Transaction can cost the customer for the Client
-	 * @param 	string $l 			The language that all payment pages should be rendered in by default for the Client
-	 * @param 	boolean $sms 		Boolean Flag indicating whether mPoint should send out an SMS Receipt to the Customer upon successful completion of the Payment
-	 * @param 	boolean $email		Boolean Flag indicating whether access to the E-Mail Receipt component should be enabled for customers
-	 * @param 	string $mtd			The method used by mPoint when performing a Callback to the Client
-	 * @param 	string $terms 		Terms & Conditions for the Shop
-	 * @param 	integer $m 			Client mode: 0 = Production, 1 = Test Mode with prefilled card Info, 2 = Certification Mode
-	 * @param 	boolean $ac			Boolean Flag indicating whether Auto Capture should be used for the transactions
-	 * @param 	boolean $sp			Boolean Flag indicating whether the PSP's ID for the Payment should be included in the Callback
-	 * @param 	string $ciurl 		Absolute URL to the external system where customer data may be imported from. This is generally an existing e-Commerce site or a CRM system
-	 * @param 	string $aurl		Absolute URL to the external system where a customer may be authenticated. This is generally an existing e-Commerce site or a CRM system
-	 * @param 	string $nurl		Absolute URL to the external system that needs to by Notify when Stored Cards changes.
-	 * @param	array $aIPs			List of Whitelisted IP addresses in mPoint, pass an empty array to disable IP Whitelisting
-	 * @param 	boolean $dc			Boolean Flag indicating whether to include disabled/expired cards; default is false
-	 * @param 	integer $mc			The max number of cards a user can have on the Client, set to -1 for inifite
-	 * @param 	integer $ident		Set of binary flags which specifies how customers may be identified
-	 * @param 	integer $transttl	Transaction time to live value
+	 * @param 	integer $id 							Unique ID for the Client in mPoint
+	 * @param 	integer $fid 							ID of the Flow the Client's customers have to go through in order to complete the Payment Transaction
+	 * @param 	string $name 							Client's name in mPoint
+	 * @param 	AccountConfig $oAC 						Configuration for the Account the Transaction will be associated with
+	 * @param 	string $un 								Client's Username for GoMobile
+	 * @param 	string $pw 								Client's Password for GoMobile
+	 * @param 	CountryConfig $oCC 						Configuration for the Country the Client can process transactions in
+	 * @param 	KeywordConfig $oKC 							Configuration for the Keyword the Client uses to send messages through
+	 * @param 	string $lurl 							Absolute URL to the Client's Logo which will be displayed on all payment pages
+	 * @param 	string $cssurl 							Absolute URL to the CSS file that should be used to customising the payment pages
+	 * @param 	string $accurl 							Absolute URL where the Customer should be returned to upon successfully completing the Transaction
+	 * @param 	string $curl 							Absolute URL where the Customer should be returned to in case he / she cancels the Transaction midway
+	 * @param 	string $cburl 							Absolute URL to the Client's Back Office where mPoint should send the Payment Status to
+	 * @param 	string $iurl 							Absolute URL to the Client's My Account Icon
+	 * @param 	string $ma 								Max Amount an mPoint Transaction can cost the customer for the Client
+	 * @param 	string $l 								The language that all payment pages should be rendered in by default for the Client
+	 * @param 	boolean $sms 							Boolean Flag indicating whether mPoint should send out an SMS Receipt to the Customer upon successful completion of the Payment
+	 * @param 	boolean $email							Boolean Flag indicating whether access to the E-Mail Receipt component should be enabled for customers
+	 * @param 	string $mtd								The method used by mPoint when performing a Callback to the Client
+	 * @param 	string $terms 							Terms & Conditions for the Shop
+	 * @param 	integer $m 								Client mode: 0 = Production, 1 = Test Mode with prefilled card Info, 2 = Certification Mode
+	 * @param 	boolean $ac								Boolean Flag indicating whether Auto Capture should be used for the transactions
+	 * @param 	boolean $sp								Boolean Flag indicating whether the PSP's ID for the Payment should be included in the Callback
+	 * @param	array $aIPs								List of Whitelisted IP addresses in mPoint, pass an empty array to disable IP Whitelisting
+	 * @param 	boolean $dc								Boolean Flag indicating whether to include disabled/expired cards; default is false
+	 * @param 	integer $mc								The max number of cards a user can have on the Client, set to -1 for inifite
+	 * @param 	integer $ident							Set of binary flags which specifies how customers may be identified
+	 * @param 	integer $transttl						Transaction time to live value
+	 * @param   ClientURLConfig $oCustomerImportURL		Object that holds the customer import URL.
+	 * @param   ClientURLConfig $oAuthenticationURL		Object that holds the customer customer authetication URL
+	 * @param   ClientURLConfig $oNotificationURL		Object that holds the customer notification URL
+	 * @param   ClientURLConfig $oMESBURL				Object that holds the MESB URL
+	 * @param   Array $aASC								Object that holds Multiple Accounts the Transaction will be associated with
+	 * @param   Array $aMASC							Object that holds Multiple Merchant Accounts the Transaction will be associated with
+	 * @param   Array $aCardsC							Object that holds Multiple Card details the Transaction will be associated with	 
 	 */
-	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7,$transttl, $oCustomerImportURL, $oAuthenticationURL, $oNotificationURL, $oMESBURL, $oASC = array(), $oMASC = array(),$oCardsC = array())
+	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7,$transttl, $oCustomerImportURL, $oAuthenticationURL, $oNotificationURL, $oMESBURL, $aASC = array(), $aMASC = array(),$aCardsC = array())
 	{		
 		parent::__construct($id, $name);
 
 		$this->_iFlowID = (integer) $fid;
 
 		$this->_obj_AccountConfig = $oAC;
-		$this->_obj_AccountsConfig = $oASC;
-		$this->_obj_MerchantAccountsConfig = $oMASC;
-		$this->_obj_CardsConfig = $oCardsC;
+		$this->_aAccountsConfig = $aASC;
+		$this->_aMerchantAccountsConfig = $aMASC;
+		$this->_aCardsConfig = $aCardsC;
 		$this->_sUsername = trim($un);
 		$this->_sPassword = trim($pw);
 		$this->_obj_CountryConfig = $oCC;
@@ -324,10 +334,10 @@ class ClientConfig extends BasicConfig
 		$this->_bSendPSPID = (bool) $sp;
 		$this->_iStoreCard = (integer) $sc;
 
-		$this->_obj_CustomerImportURLObj = $oCustomerImportURL;
-		$this->_obj_AuthenticationURLObj = $oAuthenticationURL;
-		$this->_obj_NotificationURLObj = $oNotificationURL;
-		$this->_obj_MESBURLObj = $oMESBURL;
+		$this->_obj_CustomerImportURL = $oCustomerImportURL;
+		$this->_obj_AuthenticationURL = $oAuthenticationURL;
+		$this->_obj_NotificationURL = $oNotificationURL;
+		$this->_obj_MESBURL = $oMESBURL;
 				
 		$this->_aIPList = $aIPs;
 		$this->_bShowAllCards = (bool) $dc;
@@ -353,16 +363,16 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	Array
 	 */
-	public function getAccountsConfig() { return $this->_obj_AccountsConfig; }
+	public function getAccountsConfig() { return $this->_aAccountsConfig; }
 	/**
 	 * Returns the XML payload of array of Configurations for the Accounts the Transaction will be associated with
 	 *
 	 * @return 	String
 	 */
-	public function getAccountsConfigToXML() 
+	private function _getAccountsConfigToXML() 
 	{ 
 		$returnXML = '<accounts>';
-		foreach($this->_obj_AccountsConfig as $accountConfig)
+		foreach($this->_aAccountsConfig as $accountConfig)
 		{
 			if(($accountConfig instanceof AccountConfig) == true)
 			{
@@ -377,16 +387,16 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	Array
 	 */
-	public function getMerchantAccountsConfig() { return $this->_obj_MerchantAccountsConfig; }
+	public function getMerchantAccountsConfig() { return $this->_aMerchantAccountsConfig; }
 	/**
 	 * Returns the XML payload of array of Configurations for the Accounts the Transaction will be associated with.
 	 *
 	 * @return 	String
 	 */
-	public function getMerchantAccountsConfigToXML() 
+	private function _getMerchantAccountsConfigToXML() 
 	{ 
 		$returnXML = '<payment-service-providers>';
-		foreach($this->_obj_MerchantAccountsConfig as $merchantAccountConfig)
+		foreach($this->_aMerchantAccountsConfig as $merchantAccountConfig)
 		{
 			if(($merchantAccountConfig instanceof ClientMerchantAccountConfig) == true)
 			{
@@ -403,18 +413,18 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	Array
 	 */
-	public function getClientCardsConfig() { return $this->_obj_MerchantAccountsConfig; }
+	public function getClientCardsConfig() { return $this->_aMerchantAccountsConfig; }
 	/**
 	 * Returns the XML payload of array of Configurations for the Cards used by the client.
 	 *
 	 * @return 	String
 	 */
-	public function getClientCardsConfigToXML() 
+	private function _getClientCardsConfigToXML() 
 	{ 
 		$returnXML = '<payment-methods store-card="'.$this->_iStoreCard.'" show-all-cards="'.General::bool2xml($this->_bShowAllCards).'" max-stored-cards="'.$this->_iMaxCards.'">';
-		foreach($this->_obj_CardsConfig as $cardConfig)
+		foreach($this->_aCardsConfig as $cardConfig)
 		{
-			if(($cardConfig instanceof ClientCardConfig) == true){
+			if(($cardConfig instanceof ClientPaymentMethodConfig) == true){
 				$returnXML .= $cardConfig->toXML();
 			}
 		}
@@ -491,8 +501,12 @@ class ClientConfig extends BasicConfig
 	 */
 	public function getCustomerImportURL() 
 	{ 
-		if((($this->_obj_CustomerImportURLObj) instanceof ClientURLConfig) == true){
-			return $this->_obj_CustomerImportURLObj->getClientURL(); 
+		if((($this->_obj_CustomerImportURL) instanceof ClientURLConfig) == true){
+			return $this->_obj_CustomerImportURL->getClientURL(); 
+		}
+		else 
+		{
+			return "";
 		}
 	}
 	/**
@@ -503,8 +517,12 @@ class ClientConfig extends BasicConfig
 	 */
 	public function getAuthenticationURL() 
 	{ 
-		if((($this->_obj_AuthenticationURLObj) instanceof ClientURLConfig) == true){
-			return $this->_obj_AuthenticationURLObj->getClientURL();
+		if((($this->_obj_AuthenticationURL) instanceof ClientURLConfig) == true){
+			return $this->_obj_AuthenticationURL->getClientURL();
+		}
+		else 
+		{
+			return "";
 		} 
 	}
 	/**
@@ -514,8 +532,12 @@ class ClientConfig extends BasicConfig
 	 */
 	public function getNotificationURL() 
 	{
-		if((($this->_obj_NotificationURLObj) instanceof ClientURLConfig) == true){
-			return $this->_obj_NotificationURLObj->getClientURL();
+		if((($this->_obj_NotificationURL) instanceof ClientURLConfig) == true){
+			return $this->_obj_NotificationURL->getClientURL();
+		}
+		else 
+		{
+			return "";
 		}
 	}
 	/**
@@ -525,8 +547,12 @@ class ClientConfig extends BasicConfig
 	 */
 	public function getMESBURL()
 	{
-		if((($this->_obj_MESBURLObj) instanceof ClientURLConfig) == true){
-			return $this->_obj_MESBURLObj->getClientURL();
+		if((($this->_obj_MESBURL) instanceof ClientURLConfig) == true){
+			return $this->_obj_MESBURL->getClientURL();
+		}
+		else 
+		{
+			return "";
 		}
 	}
 	/**
@@ -682,15 +708,27 @@ class ClientConfig extends BasicConfig
 		$xml .= '<password>'. htmlspecialchars($this->getPassword(), ENT_NOQUOTES) .'</password>';
 		$xml .= '<max-amount country-id = "'.$this->getCountryConfig()->getID().'">'. htmlspecialchars($this->getMaxAmount(), ENT_NOQUOTES) .'</max-amount>';
 		$xml .= '<urls>';
-		$xml .= (($this->_obj_CustomerImportURLObj->getID() > 0)? '<url id = "'.$this->_obj_CustomerImportURLObj->getID().'" type-id = "'.self::iCUSTOMER_IMPORT_URL.'">'.htmlspecialchars($this->getCustomerImportURL(), ENT_NOQUOTES).'</url>' : '');
-		$xml .= (($this->_obj_AuthenticationURLObj->getID() > 0)? '<url id = "'.$this->_obj_AuthenticationURLObj->getID().'" type-id = "'.self::iAUTHENTICATION_URL.'">'.htmlspecialchars($this->getAuthenticationURL(), ENT_NOQUOTES).'</url>' : '');
-		$xml .= (($this->_obj_NotificationURLObj->getID() > 0)? '<url id = "'.$this->_obj_NotificationURLObj->getID().'" type-id = "'.self::iNOTIFICATION_URL.'">'.htmlspecialchars($this->getNotificationURL(), ENT_NOQUOTES).'</url>' : '');
-		$xml .= (($this->_obj_MESBURLObj->getID() > 0)? '<url id = "'.$this->_obj_MESBURLObj->getID().'" type-id = "'.self::iMESB_URL.'">'.htmlspecialchars($this->getMESBURL(), ENT_NOQUOTES).'</url>' : '');
+		if (($this->_obj_CustomerImportURL instanceof ClientURLConfig) == true)
+		{
+    		$xml .= $this->_obj_CustomerImportURL->toXML();
+		}
+		if (($this->_obj_AuthenticationURL instanceof ClientURLConfig) == true)
+		{
+    		$xml .= $this->_obj_AuthenticationURL->toXML();
+		}
+		if (($this->_obj_NotificationURL instanceof ClientURLConfig) == true)
+		{
+    		$xml .= $this->_obj_NotificationURL->toXML();
+		}
+		if (($this->_obj_MESBURL instanceof ClientURLConfig) == true)
+		{
+    		$xml .= $this->_obj_MESBURL->toXML();
+		}		
 		$xml .= '</urls>';
 		$xml .= '<keyword id = "'.$this->getKeywordConfig()->getID().'">'.$this->getKeywordConfig()->getName().'</keyword>';
-		$xml .= $this->getClientCardsConfigToXML();
-		$xml .= $this->getMerchantAccountsConfigToXML();				
-		$xml .= $this->getAccountsConfigToXML();		
+		$xml .= $this->_getClientCardsConfigToXML();
+		$xml .= $this->_getMerchantAccountsConfigToXML();				
+		$xml .= $this->_getAccountsConfigToXML();		
 		$xml .= '<callback-protocol send-psp-id = "'.General::bool2xml($this->sendPSPID()).'">'. htmlspecialchars($this->getCallbackURL(), ENT_NOQUOTES) .'</callback-protocol>';
 		$xml .= '<identification>'. $this->_iIdentification .'</identification>';
 		$xml .= '<transaction-time-to-live>'. $this->getTransactionTTL() .'</transaction-time-to-live>';						
@@ -779,9 +817,9 @@ class ClientConfig extends BasicConfig
 		$obj_CountryConfig = CountryConfig::produceConfig($oDB, $RS["COUNTRYID"]);
 		$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["MOBILE"], $RS["MARKUP"]);
 		$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
-		$obj_AccountsConfig = AccountConfig::produceConfigurations($oDB, $id);
-		$obj_ClientMerchantAccount = ClientMerchantAccountConfig::produceConfigurations($oDB, $id);
-		$obj_ClientCardsAccount = ClientCardConfig::produceConfigurations($oDB, $id);
+		$aObj_AccountsConfigurations = AccountConfig::produceConfigurations($oDB, $id);
+		$aObj_ClientMerchantAccountConfigurations = ClientMerchantAccountConfig::produceConfigurations($oDB, $id);
+		$aObj_ClientCardsAccountConfigurations = ClientPaymentMethodConfig::produceConfigurations($oDB, $id);
 		$obj_CustomerImportURL = ClientURLConfig::produceConfig($RS["CUSTOMERIMPORTURLID"], self::iCUSTOMER_IMPORT_URL, $RS["CUSTOMERIMPORTURL"]);
 		$obj_AuthenticationURL = ClientURLConfig::produceConfig($RS["AUTHURLID"], self::iAUTHENTICATION_URL, $RS["AUTHURL"]);
 		$obj_NotificationURL = ClientURLConfig::produceConfig($RS["NOTIFYURLID"], self::iNOTIFICATION_URL, $RS["NOTIFYURL"]);
@@ -801,7 +839,7 @@ class ClientConfig extends BasicConfig
 			}
 		}
 
-		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $obj_AccountsConfig, $obj_ClientMerchantAccount,$obj_ClientCardsAccount);
+		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations,$aObj_ClientCardsAccountConfigurations);
 	}
 
 	/**
