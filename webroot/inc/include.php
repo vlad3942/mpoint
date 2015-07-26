@@ -80,15 +80,15 @@ require_once(sCLASS_PATH ."/basicconfig.php");
 // Require data class for Country Configurations
 require_once(sCLASS_PATH ."/countryconfig.php");
 // Require data class for Client Configurations
-require_once(sCLASS_PATH ."/clientconfig.php");
+require_once(sCLASS_PATH ."/client_config.php");
 // Require data class for Account Configurations
-require_once(sCLASS_PATH ."/accountconfig.php");
+require_once(sCLASS_PATH ."/account_config.php");
 // Require data class for Merchant Sub Account config
-require_once(sCLASS_PATH ."/clientmerchantsubaccountconfig.php");
+require_once(sCLASS_PATH ."/client_merchant_subaccount_config.php");
 // Require data class for Merchant Account config
-require_once(sCLASS_PATH ."/clientmerchantaccountconfig.php");
+require_once(sCLASS_PATH ."/client_merchant_account_config.php");
 // Require data class for Client card config
-require_once(sCLASS_PATH ."/clientcardconfig.php");
+require_once(sCLASS_PATH ."/client_payment_method_config.php");
 // Require data class for Client URL config
 require_once(sCLASS_PATH ."/clienturlconfig.php");
 // Require data class for Keyword Configurations
