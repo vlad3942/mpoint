@@ -27,9 +27,8 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="get-client-configurations" type="get-client-configurations" />
+				<xs:element name="get-client-configurations" type="client-configuration-search-request" />
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
-
 </xs:schema>
