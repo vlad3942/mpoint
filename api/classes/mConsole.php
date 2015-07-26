@@ -19,6 +19,7 @@ class mConsole extends Admin
 	const sPERMISSION_GET_PAYMENT_METHODS = "mPoint.GetPaymentMethods";
 	const sPERMISSION_GET_CLIENT = "mPoint.GetClients";
 	const sPERMISSION_GET_PAYMENT_SERVICE_PROVIDERS = "mPoint.GetPaymentServiceProviders";
+	const sPERMISSION_SEARCH_TRANSACTION_LOGS = "mPoint.SearchTransactionLogs";
 	
 	public function saveClient(&$clientid, $cc , $storecard, $autocapture, $name, $username, $password, 
 									$lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl)
@@ -297,6 +298,158 @@ class mConsole extends Admin
 			trigger_error("Authentication Service at: ". $oCI->toURL() ." is unavailable due to ". get_class($e), E_USER_WARNING);
 			return self::iSERVICE_UNAVAILABLE_ERROR;
 		}
+	}
+
+	/**
+	 * Performs a search in mPoint's Transaction Logs based on the specified parameters
+	 * 
+	 * @param array $aClientIDs		A list of client IDs who must own the found transactions
+	 * @param integer $id			mPoint's unique ID of the transaction
+	 * @param string $ono			The client's order number for the transaction
+	 * @param long $mob				The Customer's Mobile Number
+	 * @param string $email			The Customer's E-Mail address
+	 * @param string $cr			The Customer Reference for the End-User
+	 * @param string $start			The start date / time for when transactions must have been created in order to be included in the search result
+	 * @param string $end			The end date / time for when transactions must have been created in order to be included in the search result
+	 * @param boolean $debug		Boolean flag indicating whether debug data shoud be included
+	 * @return multitype:TransactionLogInfo
+	 */
+	public function searchTransactionLogs(array $aClientIDs, $id=-1, $ono="", $mob=-1, $email="", $cr="", $start="", $end="", $debug=false)
+	{
+		// Fetch all Transfers
+		$sql = "SELECT EUT.id, '' AS orderno, '' AS externalid, EUT.typeid, CL.countryid, EUT.toid, EUT.fromid, EUT.created, EUT.stateid AS stateid,
+					EUA.id AS customerid, EUA.firstname, EUA.lastname, EUA.externalid AS customer_ref, EUA.countryid * 100 AS operatorid, EUA.mobile, EUA.email, '' AS language,
+					CL.id AS clientid, CL.name AS client,
+					-1 AS accountid, '' AS account,
+					-1 AS pspid, '' AS psp,
+					-1 AS paymentmethodid, '' AS paymentmethod,
+					EUT.amount, -1 AS captured, -1 AS points, -1 AS reward, -1 AS refund, EUT.fee, 0 AS mode, EUT.ip, EUT.message AS description
+				FROM EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl EUT
+    			INNER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON EUT.accountid = EUA.id
+    			INNER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON CLA.accountid = EUA.id
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON  CL.id = CLA.clientid
+				WHERE EUT.txnid IS NULL AND CL.id IN (". implode(",", $aClientIDs) .")";
+		if (intval($id) > 0) { $sql .= " AND EUA.id = '". floatval($id) ."'"; }
+		if (floatval($mob) > 0) { $sql .= " AND EUA.mobile = '". floatval($mob) ."'"; }
+		if (empty($email) === false) { $sql .= " AND EUA.email = '". $this->getDBConn()->escStr($email) ."'"; }
+		if (empty($cr) === false) { $sql .= " AND EUA.externalid = '". $this->getDBConn()->escStr($cr) ."'"; }
+		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <= EUT.created"; }
+		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND EUT.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
+		// Fetch all Purchases
+		$sql .= "
+				UNION
+				SELECT Txn.id, Txn.orderid AS orderno, Txn.extid AS externalid, ". Constants::iCARD_PURCHASE_TYPE ." AS typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
+					(CASE
+					 WHEN M4.stateid IS NOT NULL THEN M4.stateid
+					 WHEN M3.stateid IS NOT NULL THEN M3.stateid
+					 WHEN M2.stateid IS NOT NULL THEN M2.stateid
+					 WHEN M1.stateid IS NOT NULL THEN M1.stateid
+					 ELSE -1
+					 END) AS stateid,
+					EUA.id AS customerid, EUA.firstname, EUA.lastname, Coalesce(Txn.customer_ref, EUA.externalid) AS customer_ref, Txn.operatorid, Txn.mobile, Txn.email, Txn.lang AS language,
+					CL.id AS clientid, CL.name AS client,
+					Acc.id AS accountid, Acc.name AS account,
+					PSP.id AS pspid, PSP.name AS psp,
+					PM.id AS paymentmethodid, PM.name AS paymentmethod,
+					Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description
+				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON Txn.accountid = Acc.id
+				INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M ON Txn.id = M.txnid
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON Txn.pspid = PSP.id
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl PM ON Txn.cardid = PM.id
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M1 ON Txn.id = M1.txnid AND M1.stateid = ". Constants::iPAYMENT_ACCEPTED_STATE ."
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M2 ON Txn.id = M2.txnid AND M2.stateid = ". Constants::iPAYMENT_CAPTURED_STATE ."
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M3 ON Txn.id = M3.txnid AND M3.stateid = ". Constants::iPAYMENT_REFUNDED_STATE ."
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M4 ON Txn.id = M4.txnid AND M4.stateid = ". Constants::iPAYMENT_CANCELLED_STATE ."
+				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON Txn.euaid = EUA.id
+				WHERE CL.id IN (". implode(",", $aClientIDs) .")";
+		if (intval($id) > 0) { $sql .= " AND Txn.id = '". floatval($id) ."'"; }
+		if (empty($ono) === false) { $sql .= " AND Txn.orderid = '". $this->getDBConn()->escStr($ono) ."'"; }
+		if (floatval($mob) > 0) { $sql .= " AND Txn.mobile = '". floatval($mob) ."'"; }
+		if (empty($email) === false) { $sql .= " AND Txn.email = '". $this->getDBConn()->escStr($email) ."'"; }
+		if (empty($cr) === false) { $sql .= " AND Txn.customer_ref = '". $this->getDBConn()->escStr($cr) ."'"; }
+		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <= Txn.created"; }
+		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND Txn.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
+		$sql .= "
+				ORDER BY created DESC";
+//		echo $sql ."\n";
+		$res = $this->getDBConn()->query($sql);
+	
+		$sql = "SELECT stateid
+				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
+				WHERE txnid = $1 AND stateid IN (". Constants::iINPUT_VALID_STATE .", ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .", ". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_DECLINED_STATE .")
+				ORDER BY id DESC";
+//		echo $sql ."\n";
+		$stmt1 = $this->getDBConn()->prepare($sql);
+		$sql = "SELECT id, stateid, data, created
+				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
+				WHERE txnid = $1
+				ORDER BY id ASC";
+//		echo $sql ."\n";
+		$stmt2 = $this->getDBConn()->prepare($sql);
+		
+		$aObj_TransactionLogs = array();
+		$aObj_CountryConfigurations = array();
+	
+		// Construct XML Document with data for Transaction
+		while ($RS = $this->getDBConn()->fetchName($res) )
+		{
+			// Purchase
+			if ($RS["STATEID"] < 0 && $RS["TYPEID"] == Constants::iCARD_PURCHASE_TYPE)
+			{
+				$aParams = array($RS["ID"]);
+				$res1 = $this->getDBConn()->execute($stmt1, $aParams);
+				if (is_resource($res1) === true)
+				{
+					$RS1 = $this->getDBConn()->fetchName($res1);
+					if (is_array($RS1) === true) { $RS["STATEID"] = $RS1["STATEID"]; }
+				}
+			}
+			
+			if (array_key_exists($RS["COUNTRYID"], $aObj_CountryConfigurations) === false) { $aObj_CountryConfigurations[$RS["COUNTRYID"] ] = CountryConfig::produceConfig($this->getDBConn(), $RS["COUNTRYID"]); }
+			$aObj_Messages = array();
+			if ($debug === true && $RS["TYPEID"] == Constants::iCARD_PURCHASE_TYPE)
+			{
+				$aParams = array($RS["ID"]);
+				$res2 = $this->getDBConn()->execute($stmt2, $aParams);
+			
+				if (is_resource($res2) === true)
+				{
+					// Additional record sets
+					while ($RS2 = $this->getDBConn()->fetchName($res2) )
+					{
+						$aObj_Messages[] = new MessageInfo($RS2["ID"],
+														   $RS2["STATEID"],
+														   gmdate("Y-m-d H:i:sP", strtotime(substr($RS2["CREATED"], 0, strpos($RS2["CREATED"], ".") ) ) ),
+														   $RS2["DATA"]);
+					}
+				}
+			}
+			$aObj_TransactionLogs[] = new TransactionLogInfo($RS["ID"],
+															 $RS["TYPEID"],
+															 $RS["ORDERNO"],
+															 $RS["EXTERNALID"],
+															 new BasicConfig($RS["CLIENTID"], $RS["CLIENT"]),
+															 new BasicConfig($RS["ACCOUNTID"], $RS["ACCOUNT"]),
+															 $RS["PSPID"] > 0 ? new BasicConfig($RS["PSPID"], $RS["PSP"]) : null,
+															 $RS["PAYMENTMETHODID"] > 0 ? new BasicConfig($RS["PAYMENTMETHODID"], $RS["PAYMENTMETHOD"]) : null,
+															 $RS["STATEID"],
+															 $aObj_CountryConfigurations[$RS["COUNTRYID"] ],
+															 $RS["AMOUNT"],
+															 $RS["CAPTURE"],
+															 $RS["POINTS"],
+															 $RS["REWARD"],
+															 $RS["REFUND"],
+															 $RS["FEE"],
+															 $RS["MODE"],
+															 new CustomerInfo($RS["CUSTOMERID"], $RS["OPERATORID"]/100, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"], $RS["FIRSTNAME"] ." ". $RS["LASTNAME"], $RS["LANGUAGE"]),
+															 $RS["IP"],
+															 gmdate("Y-m-d H:i:sP", strtotime(substr($RS["CREATED"], 0, strpos($RS["CREATED"], ".") ) ) ),
+															 $aObj_Messages);
+		}
+	
+		return $aObj_TransactionLogs;
 	}
 }
 ?>

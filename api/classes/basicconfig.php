@@ -16,7 +16,7 @@
  * Data class for hold the basic data for all types of configurations
  *
  */
-abstract class BasicConfig
+class BasicConfig
 {
 	/**
 	 * Unique ID for the Configuration

@@ -48,7 +48,7 @@
 									</xs:annotation>
 								</xs:element>
 							</xs:sequence>
-							<xs:attribute name="id" type="xs:positiveInteger" use="required">
+							<xs:attribute name="id" type="xs:positiveInteger" use="optional">
 								<xs:annotation>
 									<xs:documentation>
 										mPoint's unique ID for the customer's profile  
@@ -73,10 +73,71 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="card" type="basic" minOccurs="0" maxOccurs="1">
+			<xs:element name="payment-method" type="basic" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
-						The Card (Payment Method) which the customer elected to pay with 
+						The Payment Method (Card) which the customer elected to pay with 
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="amount" type="amount-info" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						The total amount the customer paid for the Transaction without fee 
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="captured-amount" type="amount-info" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						The full amount that has been captured for the Transaction 
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="points" type="amount-info" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						The total number of points the customer paid  for the Transaction 
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="reward" type="amount-info" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						The total number of points the customer was rewarded for completing the Transaction 
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="refund" type="amount-info" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						The amount the customer has been refunded for the Transaction 
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="fee" type="amount-info" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						The amount the customer paid in fees for the Transaction 
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ip" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						The IP address where the transaction originated from 
+					</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:pattern value="((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						The Description of a Order for a Customer 
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
@@ -134,6 +195,38 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="mode" use="required">
+			<xs:annotation>
+				<xs:documentation>
+					mPoint's unique ID for the payment transaction's current state 
+				</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:nonNegativeInteger">
+					<xs:enumeration value="0">
+						<xs:annotation>
+							<xs:documentation>
+								The transaction was processed in "PRODUCTION" mode and was routed to the Payment Service Provider's Live environment resulting in charges being incurred by the customer. 
+							</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="1">
+						<xs:annotation>
+							<xs:documentation>
+								The transaction was processed in "Test" mode and was routed to the Payment Service Provider's Test environment resulting in no charges being incurred by the customer. 
+							</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="2">
+						<xs:annotation>
+							<xs:documentation>
+								The transaction was processed in "Certification" mode and was routed to the Payment Service Provider's Test environment resulting in no charges being incurred by the customer.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="basic">
 		<xs:annotation>
@@ -153,6 +246,62 @@
 							The unique ID of the returned record 
 						</xs:documentation>
 					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="amount-info">
+		<xs:annotation>
+			<xs:documentation>
+				Contains information about an amount related to an mPoint Transaction 
+			</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:nonNegativeInteger">
+				<xs:attribute name="country-id" type="xs:positiveInteger" use="required">
+					<xs:annotation>
+						<xs:documentation>
+							The unique ID of the country the amount is associated with 
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="currency" use="required">
+					<xs:annotation>
+						<xs:documentation>
+							The currency (DDK, USD, EUR etc.) that the amount is in based on the country 
+						</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:length value="3" />
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+				<xs:attribute name="symbol" use="optional">
+					<xs:annotation>
+						<xs:documentation>
+							The symbol that is used to represent the currency (kr. $, € etc.) 
+						</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:minLength value="0" />
+							<xs:maxLength value="3" />
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+				<xs:attribute name="format" use="optional">
+					<xs:annotation>
+						<xs:documentation>
+							The price format that is used when displaying prices in the country 
+						</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="{CURRENCY}{PRICE}" />
+							<xs:enumeration value="{PRICE} {CURRENCY}" />
+						</xs:restriction>
+					</xs:simpleType>
 				</xs:attribute>
 			</xs:extension>
 		</xs:simpleContent>
@@ -272,6 +421,13 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:all>
+			<xs:element name="clients" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element type="xs:integer" name="client-id" minOccurs="1" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 			<xs:element name="transaction" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
@@ -323,13 +479,6 @@
 			<xs:annotation>
 				<xs:documentation>
 					Flag indicating whether debug data for each transaction should be returned as part of the transaction details
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="client-id" type="xs:positiveInteger" use="optional">
-			<xs:annotation>
-				<xs:documentation>
-					mPoint's unique ID for the client (merchant) who must own the transactions found transactions
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -697,7 +846,7 @@
 			<xs:element name="clients" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element type="xs:integer" name="client-id" maxOccurs="unbounded" minOccurs="1" />
+						<xs:element type="xs:integer" name="client-id" minOccurs="1" maxOccurs="unbounded" />
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
