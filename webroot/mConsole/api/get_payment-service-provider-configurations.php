@@ -42,7 +42,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_PAYMENT_SERVICE_PROVIDERS);
 	switch ($code)
 	{
-	case (mConsole::iSERVICE_UNAVAILABLE_ERROR):
+	case (mConsole::iSERVICE_CONNECTION_TIMEOUT_ERROR):
+		header("HTTP/1.1 504 Gateway Timeout");
+	
+		$xml = '<status code="'. $code .'">Single Sign-On Service is unreachable</status>';
+		break;
+	case (mConsole::iSERVICE_READ_TIMEOUT_ERROR):
 		header("HTTP/1.1 502 Bad Gateway");
 		
 		$xml = '<status code="'. $code .'">Single Sign-On Service is unavailable</status>';
@@ -52,10 +57,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	
 		$xml = '<status code="'. $code .'">Unauthorized User Access</status>';
 		break;
-	case (mConsole::iINSUFFICIENT_PERMISSIONS_ERROR):
+	case (mConsole::iINSUFFICIENT_USER_PERMISSIONS_ERROR):
 		header("HTTP/1.1 403 Forbidden");
 		
-		$xml = '<status code="'. $code .'">Insufficient Permissions</status>';
+		$xml = '<status code="'. $code .'">Insufficient User Permissions</status>';
+		break;
+	case (mConsole::iINSUFFICIENT_CLIENT_LICENSE_ERROR):
+		header("HTTP/1.1 402 Payment Required");
+	
+		$xml = '<status code="'. $code .'">Insufficient Client License</status>';
 		break;
 	case (mConsole::iAUTHORIZATION_SUCCESSFUL):
 		header("HTTP/1.1 200 OK");
@@ -69,7 +79,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	default:
 		header("HTTP/1.1 500 Internal Server Error");
 		
-		$xml = '<status code="500">Unknown Error</status>';
+		$xml = '<status code="'. $code .'">Internal Error</status>';
 		break;
 	}
 }

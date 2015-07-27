@@ -6,14 +6,17 @@
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
  * @package mConsole
- * @version 1.00
+ * @version 1.10
  */
 class mConsole extends Admin
 {
 	// Constants for mConsole's Single Sign-On Service
-	const iSERVICE_UNAVAILABLE_ERROR = 1;
-	const iUNAUTHORIZED_USER_ACCESS_ERROR = 2;
-	const iINSUFFICIENT_PERMISSIONS_ERROR = 3;
+	const iSERVICE_INTERNAL_ERROR = 1;
+	const iSERVICE_CONNECTION_TIMEOUT_ERROR = 2;
+	const iSERVICE_READ_TIMEOUT_ERROR = 3;
+	const iUNAUTHORIZED_USER_ACCESS_ERROR = 4;
+	const iINSUFFICIENT_USER_PERMISSIONS_ERROR = 5;
+	const iINSUFFICIENT_CLIENT_LICENSE_ERROR = 6;
 	const iAUTHORIZATION_SUCCESSFUL = 10;
 	// mConsole permission codes
 	const sPERMISSION_GET_PAYMENT_METHODS = "mPoint.GetPaymentMethods";
@@ -234,15 +237,21 @@ class mConsole extends Admin
 	/**
 	 * Performs Single Sign-On for the user by invoking mConsole's Enterprise Security Manager through the Mobile Enterprise Service Bus.
 	 * The method will return the following status codes:
-	 * 	 1. Single Sign-On Service unavailable
-	 * 	 2. Unauthorized Access 
-	 * 	 3. Insufficient Permissions
+	 * 	 1. Internal Error while Communicating with Single Sign-On Service
+	 * 	 2. Single Sign-On Service unreachable
+	 * 	 3. Single Sign-On Service unavailable
+	 * 	 4. Unauthorized Access
+	 * 	 5. Insufficient User Permissions
+	 * 	 6. Insufficient Client License
 	 * 	10. Success
 	 * 
 	 * @see		$aHTTP_CONN_INFO["mesb"]
-	 * @see		iSERVICE_UNAVAILABLE_ERROR
+	 * @see		iSERVICE_INTERNAL_ERROR
+	 * @see		iSERVICE_CONNECTION_TIMEOUT_ERROR
+	 * @see		iSERVICE_READ_TIMEOUT_ERROR
 	 * @see		iUNAUTHORIZED_USER_ACCESS_ERROR
-	 * @see		iINSUFFICIENT_PERMISSIONS_ERROR
+	 * @see		iINSUFFICIENT_USER_PERMISSIONS_ERROR
+	 * @see		iINSUFFICIENT_CLIENT_LICENSE_ERROR
 	 * @see		iAUTHORIZATION_SUCCESSFUL
 	 * 
 	 * @param	HTTPConnInfo $oCI		The connection information for the Mobile Enterprise Service Bus
@@ -280,23 +289,37 @@ class mConsole extends Admin
 			switch ($code)
 			{
 			case (200):	// HTTP 200 OK
-				trigger_error("Authorization accepted by Authentication Service at: ". $oCI->toURL() ." with HTTP Code: ". $code, E_USER_NOTICE);
+				trigger_error("Authorization accepted by Single-Sign On Service at: ". $oCI->toURL() ." with HTTP Code: ". $code, E_USER_NOTICE);
 				return self::iAUTHORIZATION_SUCCESSFUL;
 				break;
 			case (401):	// HTTP 401 Unauthorized
-				trigger_error("Authentication Service at: ". $oCI->toURL() ." rejected authorization with HTTP Code: ". $code, E_USER_WARNING);
+				trigger_error("Single-Sign On Service at: ". $oCI->toURL() ." rejected authorization with HTTP Code: ". $code, E_USER_NOTICE);
 				return self::iUNAUTHORIZED_USER_ACCESS_ERROR;
 				break;
+			case (402):	// HTTP 402 Payment Required
+				trigger_error("Single-Sign On Service at: ". $oCI->toURL() ." rejected license with HTTP Code: ". $code, E_USER_NOTICE);
+				return self::iINSUFFICIENT_CLIENT_LICENSE_ERROR;
+				break;
 			case (403):	// HTTP 403 Forbidden
-				trigger_error("Authentication Service at: ". $oCI->toURL() ." rejected permission with HTTP Code: ". $code, E_USER_WARNING);
-				return self::iINSUFFICIENT_PERMISSIONS_ERROR;
+				trigger_error("Single-Sign On Service at: ". $oCI->toURL() ." rejected permission with HTTP Code: ". $code, E_USER_NOTICE);
+				return self::iINSUFFICIENT_USER_PERMISSIONS_ERROR;
 				break;
 			}
 		}
+		catch (HTTPConnectionException $e)
+		{
+			trigger_error("Single-Sign On Service at: ". $oCI->toURL() ." is unreachable due to ". get_class($e), E_USER_WARNING);
+			return self::iSERVICE_CONNECTION_TIMEOUT_ERROR;
+		}
+		catch (HTTPSendException $e)
+		{
+			trigger_error("Single-Sign On Service at: ". $oCI->toURL() ." is unavailable due to ". get_class($e), E_USER_WARNING);
+			return self::iSERVICE_READ_TIMEOUT_ERROR;
+		}
 		catch (HTTPException $e)
 		{
-			trigger_error("Authentication Service at: ". $oCI->toURL() ." is unavailable due to ". get_class($e), E_USER_WARNING);
-			return self::iSERVICE_UNAVAILABLE_ERROR;
+			trigger_error("Internal error while communicating with Single-Sign On Service at: ". $oCI->toURL() ." due to ". get_class($e), E_USER_WARNING);
+			return self::iSERVICE_INTERNAL_ERROR;
 		}
 	}
 
