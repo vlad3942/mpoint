@@ -53,20 +53,29 @@ class CPG extends Callback
 		case (13):	// SOLO
 			$name = "SOLO_GB-SSL";
 			break;
-		case (15):	// Carte Bleue
+		case (15):	// Apple Pay
+			$name = "APPLEPAY";	
+			break;
+		case (16):	// VISA CheckOut
+			$name = "VISA CHECKOUT";
+			break;
+		case (17):	// MobilePay
+			$name = "MOBILEPAY";
+			break;
+		case (18):	// Carte Bleue
 			$name = "CARTE_BLUE-SSL";
 			break;
-		case (16):	// Poste VISA
+		case (19):	// Poste VISA
 			$name = "VISA-SSL";
 			break;
-		case (17):	// Poste Master
+		case (20):	// Poste Master
 			$name = "ECMC-SSL";
 			break;
 		default:	// Unknown
 			$name = $id;
 			break;
 		}
-
+		
 		return $name;
 	}
 
