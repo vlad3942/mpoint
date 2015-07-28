@@ -109,8 +109,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		case (mConsole::iAUTHORIZATION_SUCCESSFUL):
 			header("HTTP/1.1 200 OK");
 
+			if (strlen($obj_DOM->{'search-transaction-logs'}["limit"]) == 0) { $obj_DOM->{'search-transaction-logs'}["limit"] = 100; }
 			$xml = '<transactions sorted-by="timestamp" sort-order="descending">';
-			$aObj_Logs = $obj_mPoint->searchTransactionLogs($aClientIDs, (integer) $obj_DOM->{'search-transaction-logs'}->transaction["id"], trim($obj_DOM->{'search-transaction-logs'}->transaction["order-no"]), (float) $obj_DOM->{'search-transaction-logs'}->transaction->customer->mobile, (string) $obj_DOM->{'search-transaction-logs'}->transaction->customer->email, (string) $obj_DOM->{'search-transaction-logs'}->transaction->customer["customer-ref"], str_replace("T", " ", $obj_DOM->{'search-transaction-logs'}->{'start-date'}), str_replace("T", " ", $obj_DOM->{'search-transaction-logs'}->{'end-date'}), General::xml2bool($obj_DOM->{'search-transaction-logs'}["debug"]) );
+			$aObj_Logs = $obj_mPoint->searchTransactionLogs($aClientIDs, (integer) $obj_DOM->{'search-transaction-logs'}->transaction["id"], trim($obj_DOM->{'search-transaction-logs'}->transaction["order-no"]), (float) $obj_DOM->{'search-transaction-logs'}->transaction->customer->mobile, (string) $obj_DOM->{'search-transaction-logs'}->transaction->customer->email, (string) $obj_DOM->{'search-transaction-logs'}->transaction->customer["customer-ref"], str_replace("T", " ", $obj_DOM->{'search-transaction-logs'}->{'start-date'}), str_replace("T", " ", $obj_DOM->{'search-transaction-logs'}->{'end-date'}), General::xml2bool($obj_DOM->{'search-transaction-logs'}["debug"]), (integer) $obj_DOM->{'search-transaction-logs'}["limit"], (integer) $obj_DOM->{'search-transaction-logs'}["offset"]);
 			foreach ($aObj_Logs as $obj_Log)
 			{
 				$xml .= $obj_Log->toXML();

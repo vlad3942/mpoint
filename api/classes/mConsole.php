@@ -492,9 +492,11 @@ class mConsole extends Admin
 	 * @param string $start			The start date / time for when transactions must have been created in order to be included in the search result
 	 * @param string $end			The end date / time for when transactions must have been created in order to be included in the search result
 	 * @param boolean $debug		Boolean flag indicating whether debug data shoud be included
+	 * @param integer $limit		Number of results that are returned by the transaction search
+	 * @param integer $offset		The offset from which the results returned by the search should start, any results before the offset are skipped by the search
 	 * @return multitype:TransactionLogInfo
 	 */
-	public function searchTransactionLogs(array $aClientIDs, $id=-1, $ono="", $mob=-1, $email="", $cr="", $start="", $end="", $debug=false)
+	public function searchTransactionLogs(array $aClientIDs, $id=-1, $ono="", $mob=-1, $email="", $cr="", $start="", $end="", $debug=false, $limit=100, $offset=0)
 	{
 		// Fetch all Transfers
 		$sql = "SELECT EUT.id, '' AS orderno, '' AS externalid, EUT.typeid, CL.countryid, EUT.toid, EUT.fromid, EUT.created, EUT.stateid AS stateid,
@@ -553,6 +555,13 @@ class mConsole extends Admin
 		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND Txn.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
 		$sql .= "
 				ORDER BY created DESC";
+		if (intval($limit) > 0 || intval($offset) > 0)
+		{
+			$sql .= "\n";
+			if (intval($limit) > 0) { $sql .= "LIMIT ". intval($limit); }
+			if (intval($offset) > 0) { $sql .= " OFFSET ". intval($offset); }
+		}
+file_put_contents(sLOG_PATH ."/jona.log", $sql);
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 	

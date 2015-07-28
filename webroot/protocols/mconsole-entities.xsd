@@ -482,6 +482,21 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="limit" type="xs:positiveInteger" use="optional" default="100">
+			<xs:annotation>
+				<xs:documentation>
+					Number of results that are returned by the transaction search
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="offset" type="xs:nonNegativeInteger" use="optional" default="0">
+			<xs:annotation>
+				<xs:documentation>
+					The offset from which the results returned by the transaction search should start.
+					Any results before the offset are skipped by the transaction search
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="transaction-search-response">
 		<xs:annotation>
