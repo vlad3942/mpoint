@@ -109,7 +109,21 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		case (mConsole::iAUTHORIZATION_SUCCESSFUL):
 			header("HTTP/1.1 200 OK");
 
-			if (strlen($obj_DOM->{'search-transaction-logs'}["limit"]) == 0) { $obj_DOM->{'search-transaction-logs'}["limit"] = 100; }
+			if (strlen($obj_DOM->{'search-transaction-logs'}["limit"]) == 0 || strlen($obj_DOM->{'search-transaction-logs'}["offset"]) == 0)
+			{
+				$obj_XSD = simpledom_load_file(sPROTOCOL_XSD_PATH ."mconsole-entities.xsd");
+				$obj_XSD->registerXPathNamespace("xsd", "http://www.w3.org/2001/XMLSchema");
+				if (strlen($obj_DOM->{'search-transaction-logs'}["limit"]) == 0)
+				{
+					$obj_Attr = $obj_XSD->xpath("//xsd:complexType[@name = 'transaction-search-request']/xsd:attribute[@name = 'limit']");
+					$obj_DOM->{'search-transaction-logs'}["limit"] = (integer) $obj_Attr["default"];
+				}
+				if (strlen($obj_DOM->{'search-transaction-logs'}["offset"]) == 0)
+				{
+					$obj_Attr = $obj_XSD->xpath("//xsd:complexType[@name = 'transaction-search-request']/xsd:attribute[@name = 'offset']");
+					$obj_DOM->{'search-transaction-logs'}["offset"] = (integer) $obj_Attr["default"];
+				}
+			}
 			$xml = '<transactions sorted-by="timestamp" sort-order="descending">';
 			$aObj_Logs = $obj_mPoint->searchTransactionLogs($aClientIDs, (integer) $obj_DOM->{'search-transaction-logs'}->transaction["id"], trim($obj_DOM->{'search-transaction-logs'}->transaction["order-no"]), (float) $obj_DOM->{'search-transaction-logs'}->transaction->customer->mobile, (string) $obj_DOM->{'search-transaction-logs'}->transaction->customer->email, (string) $obj_DOM->{'search-transaction-logs'}->transaction->customer["customer-ref"], str_replace("T", " ", $obj_DOM->{'search-transaction-logs'}->{'start-date'}), str_replace("T", " ", $obj_DOM->{'search-transaction-logs'}->{'end-date'}), General::xml2bool($obj_DOM->{'search-transaction-logs'}["debug"]), (integer) $obj_DOM->{'search-transaction-logs'}["limit"], (integer) $obj_DOM->{'search-transaction-logs'}["offset"]);
 			foreach ($aObj_Logs as $obj_Log)
