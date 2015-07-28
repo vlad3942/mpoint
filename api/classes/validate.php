@@ -139,6 +139,152 @@ class Validate
 
 		return $code;
 	}
+	
+	/**
+	 * 	Validates to see if the account ID has access to the given merchant sub account.
+     *     1. ID is undefied.
+     *     2. ID is too small.
+     *     3. Unknown record.
+     *     4. Record does not belong to Client.
+     *    10. Client has access to the entity.
+	 *
+	 * @param 	RDB $oDB 				Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param 	integer $id 			Unique ID for the Merchant Sub Account
+	 * @param   integer $accountid		Associated account ID.
+	 * @return 	integer
+	 */
+	public function valMerchantSubAccountID(RDB &$oDB, $id, $accountid)
+	{
+		if (empty($id) === true) { $code = 1; }        // ID is undefied
+        elseif (intval($id) < 1) { $code = 2; }        // ID is too small
+        else
+		{
+			$sql = "SELECT accountid
+					FROM Client". sSCHEMA_POSTFIX .".MerchantSubAccount_Tbl
+					WHERE id = ". intval($id);
+			//echo $sql ."\n";
+			$RS = $oDB->getName($sql);
+	
+			if (is_array($RS) === true)
+	        {
+	        	if ($RS["ACCOUNTID"] == $accountid) { $code = 10; }    // Success
+	       		else { $code = 4; } // Record does not belong to Client
+	        }
+	        // Unknown record
+	        else { $code = 3; }
+		}
+
+		return $code;
+	}
+	
+	/**
+	 * 	Validates to see if the client ID has access to the given merchant account.
+     *     1. ID is undefied.
+     *     2. ID is too small.
+     *     3. Unknown record.
+     *     4. Record does not belong to Client.
+     *    10. Client has access to the entity.
+	 *
+	 * @param 	RDB $oDB 				Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param 	integer $id 			Unique ID for the Merchant Account
+	 * @param   integer $clientid		Associated client ID.
+	 * @return 	integer
+	 */
+	public function valMerchantAccountID(RDB &$oDB, $id, $clientid)
+	{
+		if (empty($id) === true) { $code = 1; }        // ID is undefied
+        elseif (intval($id) < 1) { $code = 2; }        // ID is too small
+        else
+		{
+			$sql = "SELECT clientid
+					FROM Client". sSCHEMA_POSTFIX .".MerchantAccount_Tbl
+					WHERE id = ". intval($id);
+			//echo $sql ."\n";
+			$RS = $oDB->getName($sql);
+
+			if (is_array($RS) === true)
+	        {
+	        	if ($RS["CLIENTID"] == $clientid) { $code = 10; }    // Success
+	       		else { $code = 4; } // Record does not belong to Client
+	        }
+	        // Unknown record
+	        else { $code = 3; }
+		}
+
+		return $code;
+	}	
+	
+	/**
+     * Performs validation of the Card Access ID to determine whether it is valid and the referenced record is owned by the client
+     * The method will return the following status codes:
+     *     1. ID is undefied
+     *     2. ID is too small
+     *     3. Unknown record
+     *     4. Record does not belong to Client
+     *    10. Client has access to the entity
+     *
+     * @param    RDB $oDB          Reference to the Database Object that holds the active connection to the mPoint Database
+     * @param    integer $id       The ID of the record in database table: Client.CardAccess_Tbl
+     * @param    integer $clid     The ID of the Client
+     * @return   integer
+     */
+    public function valCardAccessID(RDB &$oDB, $id, $clid)
+    {
+        if (empty($id) === true) { $code = 1; }        // ID is undefied
+        elseif (intval($id) < 1) { $code = 2; }        // ID is too small
+        else
+        {
+            $sql = "SELECT clientid
+                    FROM Client".sSCHEMA_POSTFIX.".CardAccess_Tbl
+                    WHERE id = ". intval($id);
+            //echo $sql ."\n";
+            $RS = $oDB->getName($sql);
+            if (is_array($RS) === true)
+            {
+                if ($RS["CLIENTID"] == $clid) { $code = 10; }    // Success
+                else { $code = 4; }                                // Record does not belong to Client
+            }
+            // Unknown record
+            else { $code = 3; }
+        }
+        return $code;
+    }
+    
+	/**
+     * Performs validation of the IIN Range ID to determine whether it is valid and the referenced record is owned by the client
+     * The method will return the following status codes:
+     *     1. ID is undefied
+     *     2. ID is too small
+     *     3. Unknown record
+     *     4. Record does not belong to Client
+     *    10. Client has access to the entity
+     *
+     * @param    RDB $oDB            Reference to the Database Object that holds the active connection to the mPoint Database
+     * @param    integer $id         The ID of the record in database table: Client.CardAccess_Tbl
+     * @param    integer $clid       The ID of the Client
+     * @return   integer
+     */
+    public function valIINRangeID(RDB &$oDB, $id, $clid)
+    {
+        if (empty($id) === true) { $code = 1; }        // ID is undefied
+        elseif (intval($id) < 1) { $code = 2; }        // ID is too small
+        else
+        {
+            $sql = "SELECT clientid
+                    FROM Client". sSCHEMA_POSTFIX .".IINRange_Tbl
+                    WHERE id = ". intval($id);
+            //echo $sql ."\n";
+            $RS = $oDB->getName($sql);
+            if (is_array($RS) === true)
+            {
+                if ($RS["CLIENTID"] == $clid) { $code = 10; }// Success
+                else { $code = 4; } // Record does not belong to Client
+            }
+            // Unknown record
+            else { $code = 3; }
+        }
+        return $code;
+    }
 
 	/**
 	 * Validates that a Username has a valid format.

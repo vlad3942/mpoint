@@ -32,6 +32,13 @@ class ClientConfig extends BasicConfig
 	const iAUTHENTICATION_URL = 2;
 	const iNOTIFICATION_URL = 3;
 	const iMESB_URL = 4;
+
+	const iLOGO_URL = 5;
+	const iCSS_URL = 6;
+	const iCALLBACK_URL = 7;
+	const iACCEPT_URL = 8;
+	const iCANCEL_URL = 9;
+	const iICON_URL = 10;		
 	/**
 	 * ID of the Flow the Client's customers have to go through in order to complete the Payment Transaction
 	 *
