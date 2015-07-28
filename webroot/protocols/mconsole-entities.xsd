@@ -555,17 +555,12 @@
 		</xs:all>
 	</xs:complexType>
 	<xs:complexType name="payment-method-configuration-search-response">
-		<xs:annotation>
-			<xs:documentation>
-				Contains the list of payment method (card) configurations found for the executed configuration search
-			</xs:documentation>
-		</xs:annotation>
 		<xs:sequence>
 			<xs:choice>
 				<xs:element name="payment-method-configurations" minOccurs="1" maxOccurs="1">
 					<xs:annotation>
 						<xs:documentation>
-							Contains a list of Payment Method Configurations
+							Contains the list of payment method (card) configurations found for the executed configuration search
 						</xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
@@ -732,17 +727,12 @@
 		</xs:all>
 	</xs:complexType>
 	<xs:complexType name="payment-service-provider-configuration-search-response">
-		<xs:annotation>
-			<xs:documentation>
-				Contains the list of Payment Service Provider configurations found for the executed configuration search
-			</xs:documentation>
-		</xs:annotation>
 		<xs:sequence>
 			<xs:choice>
 				<xs:element name="payment-service-provider-configurations" minOccurs="1" maxOccurs="1">
 					<xs:annotation>
 						<xs:documentation>
-							Contains a list of Payment Service Provider Configurations
+							Contains the list of Payment Service Provider configurations found for the executed configuration search
 						</xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
@@ -842,20 +832,60 @@
 	</xs:complexType>
 	<!-- Get Client Configurations -->
 	<xs:complexType name="client-configuration-search-request">
+		<xs:annotation>
+			<xs:documentation>
+				Specifies the criteria for executing a configuration search  
+			</xs:documentation>
+		</xs:annotation>
 		<xs:all>
 			<xs:element name="clients" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Contains the list of unique IDs for the client configurations that should be fetched
+					</xs:documentation>
+				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element type="xs:integer" name="client-id" minOccurs="1" maxOccurs="unbounded" />
+						<xs:element type="xs:integer" name="client-id" minOccurs="1" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>
+									The unique ID for the client whose configuration should be fetched
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
 		</xs:all>
 	</xs:complexType>
 	<xs:complexType name="client-configuration-search-response">
-		<xs:sequence>
-			<xs:element name="client-config" type="client-config" minOccurs="1" maxOccurs="unbounded" />
-		</xs:sequence>
+		<xs:choice>
+			<xs:element name="client-configurations" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Contains the list of Client configurations found for the executed configuration search
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="client-config" type="client-config" minOccurs="1" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>
+									The configuration details for a specific Client
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="status" type="status" minOccurs="1" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>
+						Describes any errors that ocurred during the client configuration search, normally this is due to errors in the input in the search criteria
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:choice>
 	</xs:complexType>
 	<!-- Save Client Configurations -->
 	<xs:complexType name="save-client-configuration-request">
