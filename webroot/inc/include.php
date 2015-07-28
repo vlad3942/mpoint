@@ -90,7 +90,7 @@ require_once(sCLASS_PATH ."/client_merchant_account_config.php");
 // Require data class for Client card config
 require_once(sCLASS_PATH ."/client_payment_method_config.php");
 // Require data class for Client URL config
-require_once(sCLASS_PATH ."/clienturlconfig.php");
+require_once(sCLASS_PATH ."/client_url_config.php");
 // Require data class for Keyword Configurations
 require_once(sCLASS_PATH ."/keywordconfig.php");
 // Require data class for Shop Configuration

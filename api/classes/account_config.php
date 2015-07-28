@@ -38,22 +38,23 @@ class AccountConfig extends BasicConfig
 	 */
 	private $_sMarkupLanguage;
 	/**
-	 * All the associated PSPs with the client account
+	 * List of sub-account configurations for each Payment Service Provider
 	 *
 	 * @var array
 	 */
-	private $_aClientMerchantSubAccounts;
+	private $_aObj_MerchantSubAccounts;
 
 	/**
 	 * Default Constructor
 	 *
-	 * @param 	integer $id 	Unique ID for the Account
-	 * @param 	integer $clid 	Unique ID for the Client to whom the Account belongs
-	 * @param 	string $name 	Name of the Account
-	 * @param 	string $mob 	Mobile Number (MSISDN) for the account holder.
-	 * @param 	string $mrk 	String indicating the markup language used to render the payment pages
+	 * @param 	integer $id 		Unique ID for the Account
+	 * @param 	integer $clid 		Unique ID for the Client to whom the Account belongs
+	 * @param 	string $name 		Name of the Account
+	 * @param 	string $mob 		Mobile Number (MSISDN) for the account holder.
+	 * @param 	string $mrk 		String indicating the markup language used to render the payment pages
+	 * @param	array $aObj_MSAs	List of sub-account configurations for each Payment Service Provider
 	 */
-	public function __construct($id, $clid, $name, $mob, $mrk, $cmsaccts= array())
+	public function __construct($id, $clid, $name, $mob, $mrk, $aObj_MSAs=array() )
 	{
 		parent::__construct($id, $name);
 
@@ -62,7 +63,7 @@ class AccountConfig extends BasicConfig
 
 		$this->_sMarkupLanguage = trim($mrk);
 		
-		$this->_aClientMerchantSubAccounts = $cmsaccts;
+		$this->_aObj_MerchantSubAccounts = $aObj_MSAs;
 	}
 	/**
 	 * Returns the Unique ID for the Client to whom the Account belongs
@@ -85,22 +86,7 @@ class AccountConfig extends BasicConfig
 	 */
 	public function getMarkupLanguage() { return $this->_sMarkupLanguage; }
 	
-	public function getClientMerchantSubAccounts(){ return $this->_aClientMerchantSubAccounts; }
-	
-	public function getClientMerchantSubAccountsToXML()
-	{ 
-		$returnXML = '<payment-service-providers>';
-		foreach($this->_aClientMerchantSubAccounts as $merchantSubAccount)
-		{
-			if(($merchantSubAccount instanceof ClientMerchantSubAccountConfig) == true)
-			{
-				$returnXML .= $merchantSubAccount->toXML();
-			}
-		} 
-		$returnXML .= '</payment-service-providers>';
-		return $returnXML;
-	}
-	
+	public function getMerchantSubAccounts(){ return $this->_aObj_MerchantSubAccounts; }
 	
 	public function toXML()
 	{
@@ -117,33 +103,29 @@ class AccountConfig extends BasicConfig
 		$sql = "SELECT clientid, name, mobile, markup 
 				FROM Client". sSCHEMA_POSTFIX .".Account_Tbl				
 				WHERE id = ". intval($id);
-		//  echo $sql ."\n";	
+//		echo $sql ."\n";	
 		$RS = $oDB->getName($sql);
 		
-		if(is_array($RS) === true && count($RS) > 0)
+		if (is_array($RS) === true && $RS["CLIENTID"] > 0)
 		{	
-			$clientMerchantSubAccounts = ClientMerchantSubAccountConfig::produceConfigurations($oDB, $id, $RS['CLIENTID']);
+			$aObj_MerchantSubAccounts = ClientMerchantSubAccountConfig::produceConfigurations($oDB, $id);
 			
-			return new AccountConfig($id, $RS['CLIENTID'], $RS['NAME'], $RS['MOBILE'], $RS['MARKUP'], $clientMerchantSubAccounts);
+			return new AccountConfig($id, $RS["CLIENTID"], $RS["NAME"], $RS["MOBILE"], $RS["MARKUP"], $aObj_MerchantSubAccounts);
 		}
-		
+		else { return null; }
 	}
 	
 	public static function produceConfigurations(RDB $oDB, $id)
 	{			
-		$sql = "SELECT A.id AS accountid			
-				FROM Client". sSCHEMA_POSTFIX .".Client_Tbl CL 
-				INNER JOIN Client". sSCHEMA_POSTFIX .".Account_Tbl A ON CL.id = A.clientid 				
-				WHERE CL.id = ". intval($id) ." AND CL.enabled = '1'";
-		//echo $sql ."\n";
+		$sql = "SELECT id			
+				FROM Client". sSCHEMA_POSTFIX .".Account_Tbl 				
+				WHERE clientid = ". intval($id) ." AND enabled = '1'";
+//		echo $sql ."\n";
 		$aConfigurations = array();
 		$res = $oDB->query($sql);
-		while ($RS = $oDB->fetchName($res))
+		while ($RS = $oDB->fetchName($res) )
 		{
-			if (is_array($RS) === true && $RS['ACCOUNTID'] > 0)
-			{
-				$aConfigurations[] = self::produceConfig($oDB, $RS['ACCOUNTID']);
-			}
+			$aConfigurations[] = self::produceConfig($oDB, $RS["ID"]);
 		}
 		
 		return $aConfigurations;		
@@ -151,12 +133,20 @@ class AccountConfig extends BasicConfig
 	
 	public function toFullXML()
 	{
-		$xml = '<account id = "'.intval($this->getID()).'">';		
+		$xml = '<account-config id = "'. $this->getID().'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
-		$xml .= '<markup>'. htmlspecialchars($this->getMarkupLanguage(), ENT_NOQUOTES).'</markup>';				
-		$xml .= $this->getClientMerchantSubAccountsToXML();
-		$xml .= '</account>';		
-				
+		$xml .= '<markup>'. htmlspecialchars($this->getMarkupLanguage(), ENT_NOQUOTES).'</markup>';
+		$xml .= '<payment-service-providers>';
+		foreach ($this->_aObj_MerchantSubAccounts as $obj_MerchantSubAccount)
+		{
+			if ( ($obj_MerchantSubAccount instanceof ClientMerchantSubAccountConfig) == true)
+			{
+				$xml .= $obj_MerchantSubAccount->toXML();
+			}
+		}
+		$xml .= '</payment-service-providers>';
+		$xml .= '</account-config>';
+	
 		return $xml;
 	}
 }

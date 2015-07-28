@@ -2,31 +2,25 @@
 class ClientPaymentMethodConfig extends BasicConfig
 {
 	/**
-	 * Card provider name.
-	 *
-	 * @var string
-	 */
-	private $_sName;
-	/**
-	 * Card Holder's country ID.
+	 * The unique ID of the contry the configuration is valid in
 	 *
 	 * @var integer
 	 */	
 	private $_iCountryID;
 	/**
-	 * Card Holder's state ID.
+	 * The unique ID of the current Payment Method (Card) state for the client
 	 *
 	 * @var integer
 	 */	
 	private $_iStateID;
 	/**
-	 * Client's access ID to the client.
+	 * The unique ID for the Payment Method (Card) type
 	 *
 	 * @var integer
 	 */
-	private $_iCardID;
+	private $_iPaymentMethodID;
 	/**
-	 * Card Holder's PSP ID.
+	 * The unique ID of the Payment Service Provider (PSP) that will process payments for this Payment Method (Card)
 	 *
 	 * @var integer
 	 */
@@ -35,90 +29,65 @@ class ClientPaymentMethodConfig extends BasicConfig
 	/**
 	 * Default Constructor
 	 *
-	 * @param 	integer $accessid 		Clients Card access ID.
-	 * @param 	integer $cardid 		Card ID.
-	 * @param 	integer $name	 		Card issuer name.
-	 * @param 	integer $countryid	 	Card holder country ID.
-	 * @param 	integer $stateid	 	Card holder state ID.
-	 * @param 	integer $pspid 			ID of the PSP.	 	
+	 * @param 	integer $id 		The unique ID for the client's Payment Method (Card) configuration
+	 * @param 	integer $pmid 		The unique ID for the Payment Method (Card) type
+	 * @param 	integer $name	 	The name of the Payment Method (Card)
+	 * @param 	integer $countryid	The unique ID of the contry the configuration is valid in
+	 * @param 	integer $stateid	The unique ID of the current Payment Method (Card) state for the client
+	 * @param 	integer $pspid 		The unique ID of the Payment Service Provider (PSP) that will process payments for this Payment Method (Card) 	 	
 	 */
-	public function __construct($accessid, $cardid, $name, $countryid, $stateid, $pspid)
+	public function __construct($id, $pmid, $name, $countryid, $stateid, $pspid)
 	{
-		parent::__construct($accessid, $name);	
-		
-		$this->_iCountryID = (integer)$countryid;	
-		$this->_iStateID = (integer)$stateid;
-		$this->_iCardID = (integer)$cardid;	
-		$this->_iPSPID = (integer)$pspid;			
+		parent::__construct($id, $name);	
+		$this->_iPaymentMethodID = (integer) $pmid;
+		$this->_iCountryID = (integer) $countryid;	
+		$this->_iStateID = (integer) $stateid;
+		$this->_iPSPID = (integer) $pspid;			
 	}
 	
-	/**
-	 * Returns the Card Holder's country ID.
-	 *
-	 * @return 	integer
-	 */
 	public function getCountryID() { return $this->_iCountryID; }	
-	/**
-	 * Returns the Card Holder's state ID.
-	 *
-	 * @return 	integer
-	 */
 	public function getStateID() { return $this->_iStateID; }	
-	/**
-	 * Returns the PSP ID used for the transaction.
-	 *
-	 * @return 	integer
-	 */
 	public function getPSPID() { return $this->_iPSPID; }	
-	/**
-	 * Returns the Card ID used for the transaction.
-	 *
-	 * @return 	integer
-	 */
-	public function getCardID() { return $this->_iCardID; }	
+	public function getPaymentMethodID() { return $this->_iPaymentMethodID; }	
 	
 	public function toXML()
 	{
-		$xml = '<payment-method id="' . $this->getID() . '" type-id="' . $this->getCardID() . '" state-id="' . $this->getStateID() .'"';
+		$xml = '<payment-method id="' . $this->getID() . '" type-id="' . $this->_iPaymentMethodID . '" state-id="' . $this->_iStateID .'"';
 		if ($this->_iCountryID > 0) { $xml .= ' country-id="' . $this->_iCountryID . '"'; }
-		$xml .= ' psp-id="' . $this->getPSPID() . '">';
+		$xml .= ' psp-id="' . $this->_iPSPID . '">';
 		$xml .= htmlspecialchars($this->getName(), ENT_NOQUOTES); 
 		$xml .= '</payment-method>';
 
 		return $xml;
 	}
 	
-	public static function produceConfig(RDB $oDB, $cardid, $clientid)
+	public static function produceConfig(RDB $oDB, $id)
 	{
-		$sql = "SELECT CCA.id AS cardaccessid, CA.id AS id, CA.name AS name, CCA.countryid AS countryid, CCA.stateid AS stateid, CCA.pspid AS pspid		
-				FROM Client". sSCHEMA_POSTFIX .".CardAccess_Tbl CCA
-				INNER JOIN System.". sSCHEMA_POSTFIX ."Card_Tbl CA ON CCA.cardid = CA.id
-				WHERE CCA.clientid = ". intval($clientid) ." AND CCA.cardid = ". intval($cardid) ." AND CA.enabled = '1'";
-		//echo $sql .'\n';				
+		$sql = "SELECT CA.id, CA.countryid, CA.stateid, CA.pspid, C.id AS cardid, C.name		
+				FROM Client". sSCHEMA_POSTFIX .".CardAccess_Tbl CA
+				INNER JOIN System.". sSCHEMA_POSTFIX ."Card_Tbl C ON CA.cardid = C.id AND C.enabled = '1'
+				WHERE CA.id = ". intval($id) ." AND CA.enabled = '1'";
+//		echo $sql .'\n';				
 		$RS = $oDB->getName($sql);	
 	
-		if(is_array($RS) === true && count($RS) > 0)
+		if (is_array($RS) === true && count($RS) > 0)
 		{		
-			return new ClientPaymentMethodConfig($RS["CARDACCESSID"], $RS["ID"], $RS["NAME"], $RS["COUNTRYID"], $RS["STATEID"], $RS["PSPID"]);
+			return new ClientPaymentMethodConfig($RS["ID"], $RS["CARDID"], $RS["NAME"], $RS["COUNTRYID"], $RS["STATEID"], $RS["PSPID"]);
 		}
-		
+		else { return null; }
 	}
 	
-	public static function produceConfigurations(RDB $oDB, $id)
+	public static function produceConfigurations(RDB $oDB, $clientid)
 	{			
-		$sql = "SELECT CCA.cardid AS id
-				FROM Client". sSCHEMA_POSTFIX .".Client_Tbl CL 
-				INNER JOIN Client". sSCHEMA_POSTFIX .".CardAccess_Tbl CCA ON CL.id = CCA.clientid				
-				WHERE CL.id = ". intval($id) ." AND CL.enabled = '1'";
-		//echo $sql .'\n';			
+		$sql = "SELECT id
+				FROM Client". sSCHEMA_POSTFIX .".CardAccess_Tbl				
+				WHERE clientid = ". intval($clientid) ." AND enabled = '1'";
+//		echo $sql .'\n';			
 		$aObj_Configurations = array();
 		$res = $oDB->query($sql);
-		while ($RS = $oDB->fetchName($res))
+		while ($RS = $oDB->fetchName($res) )
 		{
-			if (is_array($RS) === true && count($RS) > 0 && $RS["ID"] > 0)
-			{
-				$aObj_Configurations[] = self::produceConfig($oDB, $RS["ID"], $id);
-			}
+			$aObj_Configurations[] = self::produceConfig($oDB, $RS["ID"]);
 		}
 		
 		return $aObj_Configurations;		

@@ -2,19 +2,19 @@
 class ClientMerchantSubAccountConfig extends BasicConfig
 {
 	/**
-	 * Client Account ID
+	 * The unique ID for the Sub-Account to which the Payment Service Provider configuration belongs
 	 *
 	 * @var integer
 	 */
 	private $_iAccountID;
 	/**
-	 * Client ID for the transaction
+	 * The unique ID of the Payment Service Provider that the configuration is valid for
 	 *
 	 * @var integer
 	 */	
 	private $_iPSPID;	
 	/**
-	 * PSP object that is generated using the PSP id available in the merchant Sub account
+	 * The configuration for the Payment Service Provider
 	 *
 	 * @var string
 	 */
@@ -23,47 +23,28 @@ class ClientMerchantSubAccountConfig extends BasicConfig
 	/**
 	 * Default Constructor
 	 *
-	 * @param 	integer $id 			For Merchant Sub Account.
-	 * @param 	integer $acctid 		Parent account ID.
-	 * @param 	integer $pspid 			ID of the PSP.
-	 * @param 	PSPConfig $objPSP 		PSP Object that holds the PSP data of the merchnt sub account.	
+	 * @param 	integer $id 		The unique ID for the client's Merchant Sub-Account configuration for the Payment Service Provider
+	 * @param 	integer $accountid 	The unique ID for the Sub-Account to which the Payment Service Provider configuration belongs
+	 * @param 	integer $pspid 		The unique ID of the Payment Service Provider that the configuration is valid for
+	 * @param 	PSPConfig $obj_PSP 	The configuration for the Payment Service Provider
 	 */
-	public function __construct($id, $acctid, $pspid, $pspname, $objPSP)
+	public function __construct($id, $accountid, $pspid, $pspname, PSPConfig $obj_PSP)
 	{
 		parent::__construct($id, $pspname);
 
-		$this->_iAccountID = (integer) $acctid;
-		$this->_iPSPID = trim($pspid);		
-		$this->_obj_PSP = $objPSP;		
+		$this->_iAccountID = (integer) $accountid;
+		$this->_iPSPID = (integer) $pspid;		
+		$this->_obj_PSP = $obj_PSP;		
 	}
-	/**
-	 * Returns the Parent account ID to which the PSP belongs to.
-	 *
-	 * @return 	integer
-	 */
 	public function getAccountID() { return $this->_iAccountID; }
-	/**
-	 * Returns the PSP ID for the sub account.
-	 *
-	 * @return 	integer
-	 */
 	public function getPSPID() { return $this->_iPSPID; }	
-	/**
-	 * Returns the PSP object for the sub account.
-	 *
-	 * @return 	PSPConfig
-	 */
 	public function getPSPConfig() { return $this->_obj_PSP; }
 	
 	public function toXML()
 	{
-		$xml  = '';
-		if ( ($this->getPSPConfig() instanceof PSPConfig) == true)
-		{
-			$xml .= '<payment-service-provider id = "' . $this->getID() . '" psp-id = "' . $this->getPSPConfig()->getID() . '">';			
-			$xml .= '<name>' . htmlspecialchars($this->getPSPConfig()->getName(), ENT_NOQUOTES) . '</name>';							
-			$xml .= '</payment-service-provider>';				
-		}
+		$xml = '<payment-service-provider id = "' . $this->getID() . '" psp-id = "' . $this->getPSPConfig()->getID() . '">';			
+		$xml .= '<name>' . htmlspecialchars($this->getPSPConfig()->getName(), ENT_NOQUOTES) . '</name>';							
+		$xml .= '</payment-service-provider>';				
 		
 		return $xml;
 	}
@@ -72,7 +53,7 @@ class ClientMerchantSubAccountConfig extends BasicConfig
 	{
 		$sql = "SELECT MSA.id, MSA.pspid, MSA.name, A.id AS accountid, A.clientid 
 				FROM Client". sSCHEMA_POSTFIX .".MerchantSubAccount_Tbl MSA
-				INNER JOIN Client". sSCHEMA_POSTFIX .".Account_Tbl A ON MSA.accountid = A.id				
+				INNER JOIN Client". sSCHEMA_POSTFIX .".Account_Tbl A ON MSA.accountid = A.id AND A.enabled = '1'			
 				WHERE MSA.id = ". intval($id) ." AND MSA.enabled = '1'";
 //		echo $sql ."\n";					
 		$RS = $oDB->getName($sql);		
@@ -92,12 +73,9 @@ class ClientMerchantSubAccountConfig extends BasicConfig
 //		echo $sql ."\n";
 		$aObj_Configurations = array();
 		$res = $oDB->query($sql);
-		while ($RS = $oDB->fetchName($res))
+		while ($RS = $oDB->fetchName($res) )
 		{
-			if (is_array($RS) === true && count($RS) > 0 && $RS["ID"] > 0)
-			{
-				$aObj_Configurations[] = self::produceConfig($oDB, $RS["ID"]);
-			}
+			$aObj_Configurations[] = self::produceConfig($oDB, $RS["ID"]);
 		}
 		
 		return $aObj_Configurations;		
