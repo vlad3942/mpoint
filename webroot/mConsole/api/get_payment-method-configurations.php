@@ -70,11 +70,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	case (mConsole::iAUTHORIZATION_SUCCESSFUL):
 		header("HTTP/1.1 200 OK");
 		
+		$xml = '<payment-method-configurations>';
 		$aObj_Configurations = PaymentMethodConfig::produceAll($_OBJ_DB);
 		foreach ($aObj_Configurations as $obj_Config)
 		{
 			$xml .= $obj_Config->toXML();
 		}
+		$xml .= '</payment-method-configurations>';
 		break;
 	default:	// Internal Error
 		header("HTTP/1.1 500 Internal Server Error");
