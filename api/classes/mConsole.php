@@ -498,28 +498,34 @@ class mConsole extends Admin
 	 */
 	public function searchTransactionLogs(array $aClientIDs, $id=-1, $ono="", $mob=-1, $email="", $cr="", $start="", $end="", $debug=false, $limit=100, $offset=0)
 	{
-		// Fetch all Transfers
-		$sql = "SELECT EUT.id, '' AS orderno, '' AS externalid, EUT.typeid, CL.countryid, EUT.toid, EUT.fromid, EUT.created, EUT.stateid AS stateid,
-					EUA.id AS customerid, EUA.firstname, EUA.lastname, EUA.externalid AS customer_ref, EUA.countryid * 100 AS operatorid, EUA.mobile, EUA.email, '' AS language,
-					CL.id AS clientid, CL.name AS client,
-					-1 AS accountid, '' AS account,
-					-1 AS pspid, '' AS psp,
-					-1 AS paymentmethodid, '' AS paymentmethod,
-					EUT.amount, -1 AS captured, -1 AS points, -1 AS reward, -1 AS refund, EUT.fee, 0 AS mode, EUT.ip, EUT.message AS description
-				FROM EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl EUT
-    			INNER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON EUT.accountid = EUA.id
-    			INNER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON CLA.accountid = EUA.id
-				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON  CL.id = CLA.clientid
-				WHERE EUT.txnid IS NULL AND CL.id IN (". implode(",", $aClientIDs) .")";
-		if (intval($id) > 0) { $sql .= " AND EUA.id = '". floatval($id) ."'"; }
-		if (floatval($mob) > 0) { $sql .= " AND EUA.mobile = '". floatval($mob) ."'"; }
-		if (empty($email) === false) { $sql .= " AND EUA.email = '". $this->getDBConn()->escStr($email) ."'"; }
-		if (empty($cr) === false) { $sql .= " AND EUA.externalid = '". $this->getDBConn()->escStr($cr) ."'"; }
-		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <= EUT.created"; }
-		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND EUT.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
+		$sql = "";
+		// A search for an Order Number makes searching the end-user's Transaction table obsolete 
+		if (empty($ono) === true)
+		{
+			// Fetch all Transfers
+			$sql = "SELECT EUT.id, '' AS orderno, '' AS externalid, EUT.typeid, CL.countryid, EUT.toid, EUT.fromid, EUT.created, EUT.stateid AS stateid,
+						EUA.id AS customerid, EUA.firstname, EUA.lastname, EUA.externalid AS customer_ref, EUA.countryid * 100 AS operatorid, EUA.mobile, EUA.email, '' AS language,
+						CL.id AS clientid, CL.name AS client,
+						-1 AS accountid, '' AS account,
+						-1 AS pspid, '' AS psp,
+						-1 AS paymentmethodid, '' AS paymentmethod,
+						EUT.amount, -1 AS captured, -1 AS points, -1 AS reward, -1 AS refund, EUT.fee, 0 AS mode, EUT.ip, EUT.message AS description
+					FROM EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl EUT
+	    			INNER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON EUT.accountid = EUA.id
+	    			INNER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON CLA.accountid = EUA.id
+					INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON  CL.id = CLA.clientid
+					WHERE EUT.txnid IS NULL AND CL.id IN (". implode(",", $aClientIDs) .")";
+			if (intval($id) > 0) { $sql .= " AND EUA.id = '". floatval($id) ."'"; }
+			if (floatval($mob) > 0) { $sql .= " AND EUA.mobile = '". floatval($mob) ."'"; }
+			if (empty($email) === false) { $sql .= " AND EUA.email = '". $this->getDBConn()->escStr($email) ."'"; }
+			if (empty($cr) === false) { $sql .= " AND EUA.externalid = '". $this->getDBConn()->escStr($cr) ."'"; }
+			if (empty($start) === false && strlen($start) > 0) { $sql .= " AND '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <= EUT.created"; }
+			if (empty($end) === false && strlen($end) > 0) { $sql .= " AND EUT.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
+			$sql .= "
+					UNION";
+		}
 		// Fetch all Purchases
 		$sql .= "
-				UNION
 				SELECT Txn.id, Txn.orderid AS orderno, Txn.extid AS externalid, ". Constants::iCARD_PURCHASE_TYPE ." AS typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
 					(CASE
 					 WHEN M4.stateid IS NOT NULL THEN M4.stateid
@@ -626,7 +632,7 @@ file_put_contents(sLOG_PATH ."/jona.log", $sql);
 															 $RS["STATEID"],
 															 $aObj_CountryConfigurations[$RS["COUNTRYID"] ],
 															 $RS["AMOUNT"],
-															 $RS["CAPTURE"],
+															 $RS["CAPTURED"],
 															 $RS["POINTS"],
 															 $RS["REWARD"],
 															 $RS["REFUND"],
