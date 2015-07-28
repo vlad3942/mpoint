@@ -30,12 +30,14 @@ $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<get-client-configurations user-id="51302">';
+$HTTP_RAW_POST_DATA .= '<get-client-configurations>';
+$HTTP_RAW_POST_DATA .= '<clients>';
 $HTTP_RAW_POST_DATA .= '<client-id>10000</client-id>';
 $HTTP_RAW_POST_DATA .= '<client-id>10007</client-id>';
+$HTTP_RAW_POST_DATA .= '</clients>';
 $HTTP_RAW_POST_DATA .= '</get-client-configurations>';
 $HTTP_RAW_POST_DATA .= '</root>';  
-*/ 
+*/
 
 $xml = '';
 

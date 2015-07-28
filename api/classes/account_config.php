@@ -116,15 +116,15 @@ class AccountConfig extends BasicConfig
 	{
 		$sql = "SELECT clientid, name, mobile, markup 
 				FROM Client". sSCHEMA_POSTFIX .".Account_Tbl				
-				WHERE id = ". intval($accountid);
+				WHERE id = ". intval($id);
 		//  echo $sql ."\n";	
 		$RS = $oDB->getName($sql);
 		
 		if(is_array($RS) === true && count($RS) > 0)
 		{	
-			$clientMerchantSubAccounts = ClientMerchantSubAccountConfig::produceConfigurations($oDB, $accountid, $clientid);
+			$clientMerchantSubAccounts = ClientMerchantSubAccountConfig::produceConfigurations($oDB, $id, $RS['CLIENTID']);
 			
-			return new AccountConfig($accountid, $RS['CLIENTID'], $RS['NAME'], $RS['MOBILE'], $RS['MARKUP'], $clientMerchantSubAccounts);
+			return new AccountConfig($id, $RS['CLIENTID'], $RS['NAME'], $RS['MOBILE'], $RS['MARKUP'], $clientMerchantSubAccounts);
 		}
 		
 	}

@@ -73,11 +73,10 @@ class ClientMerchantAccountConfig extends BasicConfig
 	
 	public function toXML()
 	{
-		$xml = '';
-		$xml .= '<payment-service-provider id = "' . $this->getID() . '" psp-id = "' . $this->getPSPID() . '" stored-card = "' . General::bool2xml($this->getStoredCard()) . '">';			
+		$xml = '<payment-service-provider id = "' . $this->getID() . '" psp-id = "' . $this->getPSPID() . '" stored-card = "' . General::bool2xml($this->getStoredCard()) . '">';			
 		$xml .= '<name>' . htmlspecialchars($this->getName(), ENT_NOQUOTES) . '</name>';
-		$xml .= '<username>' . htmlspecialchars($this->getUsername(), ENT_NOQUOTES) . '</username>';
-		$xml .= '<password>' . htmlspecialchars($this->getPassword(), ENT_NOQUOTES) . '</password>';							
+		if (strlen($this->_sUsername) > 0) { $xml .= '<username>' . htmlspecialchars($this->_sUsername, ENT_NOQUOTES) . '</username>'; }
+		if (strlen($this->_sPassword) > 0) { $xml .= '<password>' . htmlspecialchars($this->_sPassword, ENT_NOQUOTES) . '</password>'; }							
 		$xml .= '</payment-service-provider>';
 
 		return $xml;

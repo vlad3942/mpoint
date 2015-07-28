@@ -77,12 +77,11 @@ class ClientPaymentMethodConfig extends BasicConfig
 	 */
 	public function getCardID() { return $this->_iCardID; }	
 	
-	
-	
 	public function toXML()
 	{
-		$xml = '';
-		$xml .= '<payment-method id="' . $this->getID() . '" type-id="' . $this->getCardID() . '" state-id="' . $this->getStateID() . '" country-id="' . $this->getCountryID() . '" psp-id="' . $this->getPSPID() . '">';
+		$xml = '<payment-method id="' . $this->getID() . '" type-id="' . $this->getCardID() . '" state-id="' . $this->getStateID() .'"';
+		if ($this->_iCountryID > 0) { $xml .= ' country-id="' . $this->_iCountryID . '"'; }
+		$xml .= ' psp-id="' . $this->getPSPID() . '">';
 		$xml .= htmlspecialchars($this->getName(), ENT_NOQUOTES); 
 		$xml .= '</payment-method>';
 

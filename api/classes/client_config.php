@@ -736,7 +736,7 @@ class ClientConfig extends BasicConfig
 		$xml .= $this->_getClientCardsConfigToXML();
 		$xml .= $this->_getMerchantAccountsConfigToXML();				
 		$xml .= $this->_getAccountsConfigToXML();		
-		$xml .= '<callback-protocol send-psp-id = "'.General::bool2xml($this->sendPSPID()).'">'. htmlspecialchars($this->getCallbackURL(), ENT_NOQUOTES) .'</callback-protocol>';
+		$xml .= '<callback-protocol send-psp-id = "'.General::bool2xml($this->sendPSPID()).'">'. htmlspecialchars($this->_sMethod, ENT_NOQUOTES) .'</callback-protocol>';
 		$xml .= '<identification>'. $this->_iIdentification .'</identification>';
 		$xml .= '<transaction-time-to-live>'. $this->getTransactionTTL() .'</transaction-time-to-live>';						
 		$xml .= '</client-config>';
