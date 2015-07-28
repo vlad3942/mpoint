@@ -1,17 +1,11 @@
 <?php
 /**
- * This files contains the Controller for mPoint's Mobile Web API.
- * The Controller will ensure that all input from a Mobile Internet Site or Mobile Application is validated and a new payment transaction is started.
- * Finally, assuming the Client Input is valid, the Controller will redirect the Customer to one of the following flow start pages:
- * 	- Payment Flow: /pay/card.php
- * 	- Shop Flow: /shop/delivery.php
- * If the input provided was determined to be invalid, an error page will be generated.
  *
- * @author Jonatan Evald Buus
+ * @author Rohit Malhotra
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
- * @package API
- * @subpackage MobileApp
+ * @package mConsole
+ * @subpackage Config
  * @version 1.10
  */
 
@@ -63,20 +57,30 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_SAVE_CLIENT, $aClientIDs);
 		switch ($code)
 		{
-		case (mConsole::iSERVICE_UNAVAILABLE_ERROR):
+		case (mConsole::iSERVICE_CONNECTION_TIMEOUT_ERROR):
+			header("HTTP/1.1 504 Gateway Timeout");
+		
+			$xml = '<status code="'. $code .'">Single Sign-On Service is unreachable</status>';
+			break;
+		case (mConsole::iSERVICE_READ_TIMEOUT_ERROR):
 			header("HTTP/1.1 502 Bad Gateway");
-	
+			
 			$xml = '<status code="'. $code .'">Single Sign-On Service is unavailable</status>';
 			break;
 		case (mConsole::iUNAUTHORIZED_USER_ACCESS_ERROR):
 			header("HTTP/1.1 401 Unauthorized");
-	
+		
 			$xml = '<status code="'. $code .'">Unauthorized User Access</status>';
 			break;
-		case (mConsole::iINSUFFICIENT_PERMISSIONS_ERROR):
+		case (mConsole::iINSUFFICIENT_USER_PERMISSIONS_ERROR):
 			header("HTTP/1.1 403 Forbidden");
-	
-			$xml = '<status code="'. $code .'">Insufficient Permissions</status>';
+			
+			$xml = '<status code="'. $code .'">Insufficient User Permissions</status>';
+			break;
+		case (mConsole::iINSUFFICIENT_CLIENT_LICENSE_ERROR):
+			header("HTTP/1.1 402 Payment Required");
+		
+			$xml = '<status code="'. $code .'">Insufficient Client License</status>';
 			break;
 		case (mConsole::iAUTHORIZATION_SUCCESSFUL):
 			header("HTTP/1.1 200 OK");	
