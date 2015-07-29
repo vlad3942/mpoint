@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xs:include schemaLocation="mconsole-entities.xsd" />
+
+	<xs:element name="client-configuration-search-request" type="client-configuration-search-request" />
+	<xs:element name="client-configuration-search-response" type="client-configuration-search-response" />
+	<xs:element name="payment-method-configuration-search-request" type="payment-method-configuration-search-request" />
+	<xs:element name="payment-method-configuration-search-response" type="payment-method-configuration-search-response" />
+	<xs:element name="payment-service-provider-configuration-search-request" type="payment-service-provider-configuration-search-request" />
+	<xs:element name="payment-service-provider-configuration-search-response" type="payment-service-provider-configuration-search-response" />
+	<xs:element name="save-client-configuration-request" type="save-client-configuration-request" />
+	<xs:element name="save-client-configuration-response" type="save-client-configuration-response" />
+	<xs:element name="transaction-search-request" type="transaction-search-request" />
+	<xs:element name="transaction-search-response" type="transaction-search-response" />
+</xs:schema>
