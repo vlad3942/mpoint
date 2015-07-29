@@ -2,13 +2,7 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 
 	<xs:include schemaLocation="global.xsd" />
-	<!-- Login -->
-	<xs:complexType name="login">
-		<xs:all>
-			<xs:element name="username" type="xs:string" minOccurs="1" maxOccurs="1" />
-			<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
-		</xs:all>
-	</xs:complexType>
+
 	<xs:complexType name="transaction-info">
 		<xs:annotation>
 			<xs:documentation>
@@ -19,21 +13,21 @@
 			<xs:element name="client" type="basic" minOccurs="1" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
-						The mPoint Client (Merchant) on whose behalf the payment transaction was processed
+						The mPoint Client (Merchant) on whose behalf the payment transaction was processed 
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="sub-account" type="basic" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
-						The mPoint Sub-Account through which the payment transaction was processed
+						The mPoint Sub-Account through which the payment transaction was processed 
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="customer" minOccurs="1" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
-						Information about the customer who executed the payment transaction
+						Information about the customer who executed the payment transaction 
 					</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
@@ -43,7 +37,7 @@
 								<xs:element name="full-name" type="xs:string" minOccurs="0" maxOccurs="1">
 									<xs:annotation>
 										<xs:documentation>
-											The customer's full name as retrieved from the customer's profile
+											The customer's full name as retrieved from the customer's profile 
 										</xs:documentation>
 									</xs:annotation>
 								</xs:element>
@@ -51,7 +45,7 @@
 							<xs:attribute name="id" type="xs:positiveInteger" use="optional">
 								<xs:annotation>
 									<xs:documentation>
-										mPoint's unique ID for the customer's profile
+										mPoint's unique ID for the customer's profile  
 									</xs:documentation>
 								</xs:annotation>
 							</xs:attribute>
@@ -62,70 +56,70 @@
 			<xs:element name="timestamp" type="xs:dateTime" minOccurs="1" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
-						The date and time when the payment transaction was created
+						The date and time when the payment transaction was created 
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="payment-service-provider" type="basic" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
-						The Payment Service Provider to whom mPoint routed the payment transaction for authorization
+						The Payment Service Provider to whom mPoint routed the payment transaction for authorization 
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="payment-method" type="basic" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
-						The Payment Method (Card) which the customer elected to pay with
+						The Payment Method (Card) which the customer elected to pay with 
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="amount" type="amount-info" minOccurs="1" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
-						The total amount the customer paid for the Transaction without fee
+						The total amount the customer paid for the Transaction without fee 
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="captured-amount" type="amount-info" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
-						The full amount that has been captured for the Transaction
+						The full amount that has been captured for the Transaction 
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="points" type="amount-info" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
-						The total number of points the customer paid  for the Transaction
+						The total number of points the customer paid  for the Transaction 
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="reward" type="amount-info" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
-						The total number of points the customer was rewarded for completing the Transaction
+						The total number of points the customer was rewarded for completing the Transaction 
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="refund" type="amount-info" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
-						The amount the customer has been refunded for the Transaction
+						The amount the customer has been refunded for the Transaction 
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="fee" type="amount-info" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
-						The amount the customer paid in fees for the Transaction
+						The amount the customer paid in fees for the Transaction 
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="ip" minOccurs="1" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
-						The IP address where the transaction originated from
+						The IP address where the transaction originated from 
 					</xs:documentation>
 				</xs:annotation>
 				<xs:simpleType>
@@ -137,22 +131,22 @@
 			<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
-						The Description of a Order for a Customer
+						The Description of a Order for a Customer 
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="messages" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
-						A list of messages that describes which states the payment transaction has gone through
+						A list of messages that describes which states the payment transaction has gone through 
 					</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="message" type="message" minOccurs="1" maxOccurs="unbounded">
+						<xs:element name="message" type="message-info" minOccurs="1" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:documentation>
-									The message for a specific state the payment transaction has gone through
+									The message for a specific state the payment transaction has gone through 
 								</xs:documentation>
 							</xs:annotation>
 						</xs:element>
@@ -170,7 +164,7 @@
 		<xs:attribute name="order-no" type="xs:string" use="optional">
 			<xs:annotation>
 				<xs:documentation>
-					The Order Number provided by Client's (Merchant) System when the payment transaction was initialized
+					The Order Number provided by Client's (Merchant) System when the payment transaction was initialized 
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -184,21 +178,21 @@
 		<xs:attribute name="type-id" type="xs:positiveInteger" use="required">
 			<xs:annotation>
 				<xs:documentation>
-					mPoint's unique ID for the transaction type
+					mPoint's unique ID for the transaction type 
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="state-id" type="xs:positiveInteger" use="required">
 			<xs:annotation>
 				<xs:documentation>
-					mPoint's unique ID for the payment transaction's current state
+					mPoint's unique ID for the payment transaction's current state 
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="mode" use="required">
 			<xs:annotation>
 				<xs:documentation>
-					mPoint's unique ID for the payment transaction's current state
+					mPoint's unique ID for the payment transaction's current state 
 				</xs:documentation>
 			</xs:annotation>
 			<xs:simpleType>
@@ -206,14 +200,14 @@
 					<xs:enumeration value="0">
 						<xs:annotation>
 							<xs:documentation>
-								The transaction was processed in "PRODUCTION" mode and was routed to the Payment Service Provider's Live environment resulting in charges being incurred by the customer.
+								The transaction was processed in "PRODUCTION" mode and was routed to the Payment Service Provider's Live environment resulting in charges being incurred by the customer. 
 							</xs:documentation>
 						</xs:annotation>
 					</xs:enumeration>
 					<xs:enumeration value="1">
 						<xs:annotation>
 							<xs:documentation>
-								The transaction was processed in "Test" mode and was routed to the Payment Service Provider's Test environment resulting in no charges being incurred by the customer.
+								The transaction was processed in "Test" mode and was routed to the Payment Service Provider's Test environment resulting in no charges being incurred by the customer. 
 							</xs:documentation>
 						</xs:annotation>
 					</xs:enumeration>
@@ -235,7 +229,7 @@
 				- Client
 				- Sub-Account
 				- Payment Service Provider
-				This information is included as part of the details for an mPoint transaction.
+				This information is included as part of the details for an mPoint transaction. 
 			</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -243,7 +237,7 @@
 				<xs:attribute name="id" type="xs:positiveInteger" use="required">
 					<xs:annotation>
 						<xs:documentation>
-							The unique ID of the returned record
+							The unique ID of the returned record 
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
@@ -253,7 +247,7 @@
 	<xs:complexType name="amount-info">
 		<xs:annotation>
 			<xs:documentation>
-				Contains information about an amount related to an mPoint Transaction
+				Contains information about an amount related to an mPoint Transaction 
 			</xs:documentation>
 		</xs:annotation>
 		<xs:simpleContent>
@@ -261,14 +255,14 @@
 				<xs:attribute name="country-id" type="xs:positiveInteger" use="required">
 					<xs:annotation>
 						<xs:documentation>
-							The unique ID of the country the amount is associated with
+							The unique ID of the country the amount is associated with 
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="currency" use="required">
 					<xs:annotation>
 						<xs:documentation>
-							The currency (DDK, USD, EUR etc.) that the amount is in based on the country
+							The currency (DDK, USD, EUR etc.) that the amount is in based on the country 
 						</xs:documentation>
 					</xs:annotation>
 					<xs:simpleType>
@@ -280,7 +274,7 @@
 				<xs:attribute name="symbol" use="optional">
 					<xs:annotation>
 						<xs:documentation>
-							The symbol that is used to represent the currency (kr. $, € etc.)
+							The symbol that is used to represent the currency (kr. $, € etc.) 
 						</xs:documentation>
 					</xs:annotation>
 					<xs:simpleType>
@@ -293,7 +287,7 @@
 				<xs:attribute name="format" use="optional">
 					<xs:annotation>
 						<xs:documentation>
-							The price format that is used when displaying prices in the country
+							The price format that is used when displaying prices in the country 
 						</xs:documentation>
 					</xs:annotation>
 					<xs:simpleType>
@@ -343,15 +337,15 @@
 		<xs:attribute name="customer-ref" type="xs:string" use="optional">
 			<xs:annotation>
 				<xs:documentation>
-					The client's (merchant's) reference for the customer. This would normally be the customer's number in the client's CRM system.
+					The client's (merchant's) reference for the customer. This would normally be the customer's number in the client's CRM system.  
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
-	<xs:complexType name="message">
+	<xs:complexType name="message-info">
 		<xs:annotation>
 			<xs:documentation>
-				Specifies the criteria for executing a transaction search
+				Specifies the criteria for executing a transaction search  
 			</xs:documentation>
 		</xs:annotation>
 		<xs:all>
@@ -361,22 +355,22 @@
 		<xs:attribute name="id" type="xs:positiveInteger" use="required">
 			<xs:annotation>
 				<xs:documentation>
-					mPoint's unique ID for the message
+					mPoint's unique ID for the message 
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="state-id" type="xs:positiveInteger" use="required">
 			<xs:annotation>
 				<xs:documentation>
-					mPoint's unique ID for the transaction state that the message was recorded for
+					mPoint's unique ID for the transaction state that the message was recorded for  
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
-	<xs:complexType name="prefix-config">
+	<xs:complexType name="card-prefix-config">
 		<xs:annotation>
 			<xs:documentation>
-				Configuration for a prefix range which may be used to automatically detect the Payment Method (Card)
+				Configuration for a prefix range which may be used to automatically detect the Payment Method (Card)  
 			</xs:documentation>
 		</xs:annotation>
 		<xs:all>
@@ -417,7 +411,7 @@
 	<xs:complexType name="transaction-search-request">
 		<xs:annotation>
 			<xs:documentation>
-				Specifies the criteria for executing a transaction search
+				Specifies the criteria for executing a transaction search  
 			</xs:documentation>
 		</xs:annotation>
 		<xs:all>
@@ -463,14 +457,14 @@
 			<xs:element name="start-date" type="xs:dateTime" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
-						Specifies the start date / time for the transaction that should be found
+						Specifies the start date / time for the transaction that should be found 
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="end-date" type="xs:dateTime" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
-						Specifies the end date / time for the transaction that should be found
+						Specifies the end date / time for the transaction that should be found 
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
@@ -525,7 +519,7 @@
 						<xs:attribute name="sorted-by" default="timestamp">
 							<xs:annotation>
 								<xs:documentation>
-									The property that the results for the executed transaction search has been ordered by
+									The property that the results for the executed transaction search has been ordered by 
 								</xs:documentation>
 							</xs:annotation>
 							<xs:simpleType>
@@ -563,45 +557,43 @@
 	<xs:complexType name="payment-method-configuration-search-request">
 		<xs:annotation>
 			<xs:documentation>
-				Specifies the criteria for executing a configuration search
+				Specifies the criteria for executing a configuration search  
 			</xs:documentation>
 		</xs:annotation>
 		<xs:all>
 		</xs:all>
 	</xs:complexType>
-	<xs:element name="payment-method-configuration-search-response">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:choice>
-					<xs:element name="payment-method-configurations" minOccurs="1" maxOccurs="1">
-						<xs:annotation>
-							<xs:documentation>
-								Contains the list of payment method (card) configurations found for the executed configuration search
-							</xs:documentation>
-						</xs:annotation>
-						<xs:complexType>
-							<xs:sequence>
-								<xs:element name="payment-method-config" type="payment-method-config" minOccurs="1" maxOccurs="unbounded">
-									<xs:annotation>
-										<xs:documentation>
-											The configuration details for a specific Payment Method (Card)
-										</xs:documentation>
-									</xs:annotation>
-								</xs:element>
-							</xs:sequence>
-						</xs:complexType>
-					</xs:element>
-					<xs:element name="status" type="status" minOccurs="1" maxOccurs="unbounded">
-						<xs:annotation>
-							<xs:documentation>
-								Describes any errors that ocurred during the payment method search, normally this is due to errors in the input in the search criteria
-							</xs:documentation>
-						</xs:annotation>
-					</xs:element>
-				</xs:choice>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+	<xs:complexType name="payment-method-configuration-search-response">
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="payment-method-configurations" minOccurs="1" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>
+							Contains the list of payment method (card) configurations found for the executed configuration search
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="payment-method-config" type="payment-method-config" minOccurs="1" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>
+										The configuration details for a specific Payment Method (Card)
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="status" type="status" minOccurs="1" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>
+							Describes any errors that ocurred during the payment method search, normally this is due to errors in the input in the search criteria
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="payment-method-config">
 		<xs:all>
 			<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1">
@@ -671,10 +663,10 @@
 				</xs:annotation>
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="prefix" type="prefix-config" minOccurs="1" maxOccurs="unbounded">
+						<xs:element name="prefix" type="card-prefix-config" minOccurs="1" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:documentation>
-									Configuration for a prefix range which may be used to automatically detect the Payment Method (Card)
+									Configuration for a prefix range which may be used to automatically detect the Payment Method (Card) 
 								</xs:documentation>
 							</xs:annotation>
 						</xs:element>
@@ -737,45 +729,43 @@
 	<xs:complexType name="payment-service-provider-configuration-search-request">
 		<xs:annotation>
 			<xs:documentation>
-				Specifies the criteria for executing a configuration search
+				Specifies the criteria for executing a configuration search  
 			</xs:documentation>
 		</xs:annotation>
 		<xs:all>
 		</xs:all>
 	</xs:complexType>
-	<xs:element name="payment-service-provider-configuration-search-response">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:choice>
-					<xs:element name="payment-service-provider-configurations" minOccurs="1" maxOccurs="1">
-						<xs:annotation>
-							<xs:documentation>
-								Contains the list of Payment Service Provider configurations found for the executed configuration search
-							</xs:documentation>
-						</xs:annotation>
-						<xs:complexType>
-							<xs:sequence>
-								<xs:element name="payment-service-provider-config" type="payment-service-provider-config" minOccurs="1" maxOccurs="unbounded">
-									<xs:annotation>
-										<xs:documentation>
-											The configuration details for a specific Payment Service Provider
-										</xs:documentation>
-									</xs:annotation>
-								</xs:element>
-							</xs:sequence>
-						</xs:complexType>
-					</xs:element>
-					<xs:element name="status" type="status" minOccurs="1" maxOccurs="unbounded">
-						<xs:annotation>
-							<xs:documentation>
-								Describes any errors that ocurred during the payment service provider search, normally this is due to errors in the input in the search criteria
-							</xs:documentation>
-						</xs:annotation>
-					</xs:element>
-				</xs:choice>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+	<xs:complexType name="payment-service-provider-configuration-search-response">
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="payment-service-provider-configurations" minOccurs="1" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>
+							Contains the list of Payment Service Provider configurations found for the executed configuration search
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="payment-service-provider-config" type="payment-service-provider-config" minOccurs="1" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>
+										The configuration details for a specific Payment Service Provider
+									</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="status" type="status" minOccurs="1" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>
+							Describes any errors that ocurred during the payment service provider search, normally this is due to errors in the input in the search criteria
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="payment-service-provider-config">
 		<xs:all>
 			<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1">
@@ -850,81 +840,73 @@
 		</xs:simpleContent>
 	</xs:complexType>
 	<!-- Get Client Configurations -->
-	<xs:element name="client-configuration-search-request">
+	<xs:complexType name="client-configuration-search-request">
 		<xs:annotation>
 			<xs:documentation>
-				Specifies the criteria for executing a configuration search
+				Specifies the criteria for executing a configuration search  
 			</xs:documentation>
 		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="clients" minOccurs="1" maxOccurs="1">
-					<xs:annotation>
-						<xs:documentation>
-							Contains the list of unique IDs for the client configurations that should be fetched
-						</xs:documentation>
-					</xs:annotation>
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element type="xs:integer" name="client-id" minOccurs="1" maxOccurs="unbounded">
-								<xs:annotation>
-									<xs:documentation>
-										The unique ID for the client whose configuration should be fetched
-									</xs:documentation>
-								</xs:annotation>
-							</xs:element>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="client-configuration-search-response">
-		<xs:complexType>
-			<xs:choice>
-				<xs:element name="client-configurations" minOccurs="1" maxOccurs="1">
-					<xs:annotation>
-						<xs:documentation>
-							Contains the list of Client configurations found for the executed configuration search
-						</xs:documentation>
-					</xs:annotation>
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="client-config" type="client-config" minOccurs="1" maxOccurs="unbounded">
-								<xs:annotation>
-									<xs:documentation>
-										The configuration details for a specific Client
-									</xs:documentation>
-								</xs:annotation>
-							</xs:element>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-				<xs:element name="status" type="status" minOccurs="1" maxOccurs="unbounded">
-					<xs:annotation>
-						<xs:documentation>
-							Describes any errors that ocurred during the client configuration search, normally this is due to errors in the input in the search criteria
-						</xs:documentation>
-					</xs:annotation>
-				</xs:element>
-			</xs:choice>
-		</xs:complexType>
-	</xs:element>
+		<xs:all>
+			<xs:element name="clients" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Contains the list of unique IDs for the client configurations that should be fetched
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element type="xs:integer" name="client-id" minOccurs="1" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>
+									The unique ID for the client whose configuration should be fetched
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:all>
+	</xs:complexType>
+	<xs:complexType name="client-configuration-search-response">
+		<xs:choice>
+			<xs:element name="client-configurations" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Contains the list of Client configurations found for the executed configuration search
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="client-config" type="client-config" minOccurs="1" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>
+									The configuration details for a specific Client
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="status" type="status" minOccurs="1" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>
+						Describes any errors that ocurred during the client configuration search, normally this is due to errors in the input in the search criteria
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
 	<!-- Save Client Configurations -->
-	<xs:element name="save-client-configuration-request">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="client-config" type="client-config" minOccurs="1" maxOccurs="1" />
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="save-client-configuration-response">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="status" type="status" minOccurs="1" maxOccurs="unbounded" />
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+	<xs:complexType name="save-client-configuration-request">
+		<xs:sequence>
+			<xs:element name="client-config" type="client-config" minOccurs="1" maxOccurs="1" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="save-client-configuration-response">
+		<xs:sequence>
+			<xs:element name="status" type="status" minOccurs="1" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="status">
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
@@ -932,110 +914,7 @@
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
-	<!-- save-cards -->
-	<xs:complexType name="save-cards">
-		<xs:all>
-			<xs:element name="cards" minOccurs="1" maxOccurs="1">
-				<xs:complexType>
-					<xs:sequence minOccurs="0" maxOccurs="unbounded">
-						<xs:element name="card">
-							<xs:complexType>
-								<xs:simpleContent>
-									<xs:extension base="xs:string">
-										<xs:attribute name="id" type="xs:positiveInteger" use="required" />
-									</xs:extension>
-								</xs:simpleContent>
-							</xs:complexType>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-		</xs:all>
-		<xs:attribute name="user-id" type="xs:positiveInteger" use="required" />
-	</xs:complexType>
-	<xs:complexType name="get-cards">
-		<xs:all>
-			<xs:element name="clients" minOccurs="1" maxOccurs="1">
-				<xs:complexType>
-					<xs:sequence minOccurs="0" maxOccurs="unbounded">
-						<xs:element name="client">
-							<xs:complexType>
-								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
-							</xs:complexType>
-						</xs:element>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-		</xs:all>
-		<xs:attribute name="user-id" type="xs:positiveInteger" use="required" />
-	</xs:complexType>
-	<!-- roles -->
-	<xs:complexType name="get-roles">
-		<xs:all>
-			<xs:element name="id" type="xs:integer" minOccurs="1" maxOccurs="1" />
-		</xs:all>
-	</xs:complexType>
-	<!-- Get Customer -->
-	<xs:complexType name="get-customer">
-		<xs:all>
-			<xs:element name="userid" type="xs:integer" minOccurs="1" maxOccurs="1" />
-			<xs:element name="countryid" type="xs:integer" minOccurs="1" maxOccurs="1" />
-		</xs:all>
-	</xs:complexType>
-	<!-- Save Note -->
-	<xs:complexType name="save-note">
-		<xs:all>
-			<xs:element name="userid" type="xs:integer" minOccurs="1" maxOccurs="1" />
-			<xs:element name="txnid" type="xs:string" minOccurs="1" maxOccurs="1" />
-			<xs:element name="message" type="xs:string" minOccurs="1" maxOccurs="1" />
-		</xs:all>
-	</xs:complexType>
-	<!-- Refund -->
-	<xs:complexType name="refund">
-		<xs:all>
-			<xs:element name="username" type="xs:string" minOccurs="1" maxOccurs="1" />
-			<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
-			<xs:element name="clientid" type="xs:integer" minOccurs="1" maxOccurs="1" />
-			<xs:element name="mpointid" type="xs:integer" minOccurs="1" maxOccurs="1" />
-			<xs:element name="orderid" type="xs:string" minOccurs="1" maxOccurs="1" />
-			<xs:element name="amount" type="xs:integer" minOccurs="1" maxOccurs="1" />
-		</xs:all>
-	</xs:complexType>
-	<xs:complexType name="get-countries">
-		<xs:all>
-			<xs:element name="userid" type="xs:integer" minOccurs="1" maxOccurs="1" />
-		</xs:all>
-	</xs:complexType>
-	<xs:complexType name="get-keywords">
-		<xs:all>
-			<xs:element name="userid" type="xs:integer" minOccurs="1" maxOccurs="1" />
-		</xs:all>
-	</xs:complexType>
-	<xs:complexType name="get-months">
-		<xs:all>
-			<xs:element name="userid" type="xs:integer" minOccurs="1" maxOccurs="1" />
-		</xs:all>
-	</xs:complexType>
-	<xs:complexType name="get-keyword-stats">
-		<xs:all>
-			<xs:element name="userid" type="xs:integer" minOccurs="1" maxOccurs="1" />
-			<xs:element name="clientid" type="xs:integer" minOccurs="1" maxOccurs="1" />
-			<xs:element name="countryid" type="xs:integer" minOccurs="1" maxOccurs="1" />
-			<xs:element name="firstmonth" type="xs:date" minOccurs="1" maxOccurs="1" />
-			<xs:element name="secondmonth" type="xs:date" minOccurs="1" maxOccurs="1" />
-			<xs:element name="keywordid" type="xs:integer" minOccurs="1" maxOccurs="1" />
-		</xs:all>
-	</xs:complexType>
-	<xs:complexType name="get-keyword-export">
-		<xs:all>
-			<xs:element name="userid" type="xs:integer" minOccurs="1" maxOccurs="1" />
-			<xs:element name="clientid" type="xs:integer" minOccurs="1" maxOccurs="1" />
-			<xs:element name="countryid" type="xs:integer" minOccurs="1" maxOccurs="1" />
-			<xs:element name="firstmonth" type="xs:date" minOccurs="1" maxOccurs="1" />
-			<xs:element name="secondmonth" type="xs:date" minOccurs="1" maxOccurs="1" />
-			<xs:element name="keywordid" type="xs:integer" minOccurs="1" maxOccurs="1" />
-		</xs:all>
-	</xs:complexType>
+
 	<!-- Client Configuration Entities Start -->
 	<xs:complexType name="client-config">
 		<xs:annotation>
@@ -1070,10 +949,10 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="accounts" minOccurs="1" maxOccurs="1">
+			<xs:element name="account-configurations" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="account" type="account-config" minOccurs="1" maxOccurs="unbounded" />
+						<xs:element name="account-config" type="account-config" minOccurs="1" maxOccurs="unbounded" />
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -1105,7 +984,7 @@
 		</xs:all>
 		<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
 		<xs:attribute name="country-id" type="xs:positiveInteger" use="required" />
-		<xs:attribute name="language" type="language" use="required" />
+		<xs:attribute name="language" type="language-code" use="required" />
 		<xs:attribute name="sms-receipt" type="xs:boolean" use="required" />
 		<xs:attribute name="email-receipt" type="xs:boolean" use="required" />
 		<xs:attribute name="mode" use="required">
@@ -1137,8 +1016,8 @@
 		</xs:annotation>
 		<xs:all>
 			<xs:element name="name" type="name" minOccurs="1" maxOccurs="1" />
-			<xs:element name="username" type="name" minOccurs="1" maxOccurs="1" />
-			<xs:element name="password" type="name" minOccurs="1" maxOccurs="1" />
+			<xs:element name="username" type="name" minOccurs="0" maxOccurs="1" />
+			<xs:element name="password" type="name" minOccurs="0" maxOccurs="1" />
 		</xs:all>
 		<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
 		<xs:attribute name="psp-id" type="xs:positiveInteger" use="required" />
@@ -1222,7 +1101,13 @@
 		</xs:sequence>
 		<xs:attribute type="xs:nonNegativeInteger" name="store-card" use="required" />
 		<xs:attribute type="xs:boolean" name="show-all-cards" use="required" />
-		<xs:attribute type="xs:nonNegativeInteger" name="max-stored-cards" use="required" />
+		<xs:attribute name="max-stored-cards" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:integer">
+					<xs:minInclusive value="-1" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="client-payment-method-config">
 		<xs:annotation>
@@ -1244,6 +1129,7 @@
 			<xs:enumeration value="PSP" />
 		</xs:restriction>
 	</xs:simpleType>
+	<!-- Used to auto-generate Enumerations in mConsole -->
 	<xs:simpleType name="mode">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="Production" />
@@ -1251,6 +1137,7 @@
 			<xs:enumeration value="Certification" />
 		</xs:restriction>
 	</xs:simpleType>
+	<!-- mConsole enumerations -->
 	<xs:simpleType name="identification">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="Off" />
@@ -1293,17 +1180,17 @@
 	</xs:simpleType>
 	<!-- Client Configuration Entities End -->
 	<xs:complexType name="get-client-configurations">
-		<xs:sequence>
-			<xs:element name="clients" maxOccurs="1" minOccurs="1">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element type="xs:integer" name="client-id" maxOccurs="unbounded" minOccurs="1"/>
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
-		<xs:attribute type="xs:integer" name="user-id"/>
-	</xs:complexType>
+         <xs:sequence>	
+	         <xs:element name="clients" maxOccurs="1" minOccurs="1">
+		         <xs:complexType>
+			         <xs:sequence>
+			           <xs:element type="xs:integer" name="client-id" maxOccurs="unbounded" minOccurs="1"/>
+			         </xs:sequence>
+		         </xs:complexType>
+		     </xs:element>
+         </xs:sequence>
+         <xs:attribute type="xs:integer" name="user-id"/>
+   </xs:complexType>
 
 	<xs:simpleType name="name">
 		<xs:restriction base="xs:string">
