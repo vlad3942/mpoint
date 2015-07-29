@@ -104,8 +104,7 @@ class Validate
 		}
 
 		return $code;
-	}	
-	
+	}
 
 	/**
 	 * Performs basic validation ensuring that the Country exists.
@@ -139,152 +138,6 @@ class Validate
 
 		return $code;
 	}
-	
-	/**
-	 * 	Validates to see if the account ID has access to the given merchant sub account.
-     *     1. ID is undefied.
-     *     2. ID is too small.
-     *     3. Unknown record.
-     *     4. Record does not belong to Client.
-     *    10. Client has access to the entity.
-	 *
-	 * @param 	RDB $oDB 				Reference to the Database Object that holds the active connection to the mPoint Database
-	 * @param 	integer $id 			Unique ID for the Merchant Sub Account
-	 * @param   integer $accountid		Associated account ID.
-	 * @return 	integer
-	 */
-	public function valMerchantSubAccountID(RDB &$oDB, $id, $accountid)
-	{
-		if (empty($id) === true) { $code = 1; }        // ID is undefied
-        elseif (intval($id) < 1) { $code = 2; }        // ID is too small
-        else
-		{
-			$sql = "SELECT accountid
-					FROM Client". sSCHEMA_POSTFIX .".MerchantSubAccount_Tbl
-					WHERE id = ". intval($id);
-			//echo $sql ."\n";
-			$RS = $oDB->getName($sql);
-	
-			if (is_array($RS) === true)
-	        {
-	        	if ($RS["ACCOUNTID"] == $accountid) { $code = 10; }    // Success
-	       		else { $code = 4; } // Record does not belong to Client
-	        }
-	        // Unknown record
-	        else { $code = 3; }
-		}
-
-		return $code;
-	}
-	
-	/**
-	 * 	Validates to see if the client ID has access to the given merchant account.
-     *     1. ID is undefied.
-     *     2. ID is too small.
-     *     3. Unknown record.
-     *     4. Record does not belong to Client.
-     *    10. Client has access to the entity.
-	 *
-	 * @param 	RDB $oDB 				Reference to the Database Object that holds the active connection to the mPoint Database
-	 * @param 	integer $id 			Unique ID for the Merchant Account
-	 * @param   integer $clientid		Associated client ID.
-	 * @return 	integer
-	 */
-	public function valMerchantAccountID(RDB &$oDB, $id, $clientid)
-	{
-		if (empty($id) === true) { $code = 1; }        // ID is undefied
-        elseif (intval($id) < 1) { $code = 2; }        // ID is too small
-        else
-		{
-			$sql = "SELECT clientid
-					FROM Client". sSCHEMA_POSTFIX .".MerchantAccount_Tbl
-					WHERE id = ". intval($id);
-			//echo $sql ."\n";
-			$RS = $oDB->getName($sql);
-
-			if (is_array($RS) === true)
-	        {
-	        	if ($RS["CLIENTID"] == $clientid) { $code = 10; }    // Success
-	       		else { $code = 4; } // Record does not belong to Client
-	        }
-	        // Unknown record
-	        else { $code = 3; }
-		}
-
-		return $code;
-	}	
-	
-	/**
-     * Performs validation of the Card Access ID to determine whether it is valid and the referenced record is owned by the client
-     * The method will return the following status codes:
-     *     1. ID is undefied
-     *     2. ID is too small
-     *     3. Unknown record
-     *     4. Record does not belong to Client
-     *    10. Client has access to the entity
-     *
-     * @param    RDB $oDB          Reference to the Database Object that holds the active connection to the mPoint Database
-     * @param    integer $id       The ID of the record in database table: Client.CardAccess_Tbl
-     * @param    integer $clid     The ID of the Client
-     * @return   integer
-     */
-    public function valCardAccessID(RDB &$oDB, $id, $clid)
-    {
-        if (empty($id) === true) { $code = 1; }        // ID is undefied
-        elseif (intval($id) < 1) { $code = 2; }        // ID is too small
-        else
-        {
-            $sql = "SELECT clientid
-                    FROM Client".sSCHEMA_POSTFIX.".CardAccess_Tbl
-                    WHERE id = ". intval($id);
-            //echo $sql ."\n";
-            $RS = $oDB->getName($sql);
-            if (is_array($RS) === true)
-            {
-                if ($RS["CLIENTID"] == $clid) { $code = 10; }    // Success
-                else { $code = 4; }                                // Record does not belong to Client
-            }
-            // Unknown record
-            else { $code = 3; }
-        }
-        return $code;
-    }
-    
-	/**
-     * Performs validation of the IIN Range ID to determine whether it is valid and the referenced record is owned by the client
-     * The method will return the following status codes:
-     *     1. ID is undefied
-     *     2. ID is too small
-     *     3. Unknown record
-     *     4. Record does not belong to Client
-     *    10. Client has access to the entity
-     *
-     * @param    RDB $oDB            Reference to the Database Object that holds the active connection to the mPoint Database
-     * @param    integer $id         The ID of the record in database table: Client.CardAccess_Tbl
-     * @param    integer $clid       The ID of the Client
-     * @return   integer
-     */
-    public function valIINRangeID(RDB &$oDB, $id, $clid)
-    {
-        if (empty($id) === true) { $code = 1; }        // ID is undefied
-        elseif (intval($id) < 1) { $code = 2; }        // ID is too small
-        else
-        {
-            $sql = "SELECT clientid
-                    FROM Client". sSCHEMA_POSTFIX .".IINRange_Tbl
-                    WHERE id = ". intval($id);
-            //echo $sql ."\n";
-            $RS = $oDB->getName($sql);
-            if (is_array($RS) === true)
-            {
-                if ($RS["CLIENTID"] == $clid) { $code = 10; }// Success
-                else { $code = 4; } // Record does not belong to Client
-            }
-            // Unknown record
-            else { $code = 3; }
-        }
-        return $code;
-    }
 
 	/**
 	 * Validates that a Username has a valid format.
@@ -292,7 +145,7 @@ class Validate
 	 * 	 1. Undefined Username
 	 * 	 2. Username is too short, min length is 3 characters
 	 * 	 3. Username is too long, as defined by iAUTH_MAX_LENGTH
-	 *   4. Username contains invalid characters: [^a-z0-9 ����������.-]
+	 *   4. Username contains invalid characters: [^a-z0-9 æøåÆØÅäöÄÖ.-]
 	 * 	10. Success
 	 *
 	 * @see		Constants::iAUTH_MIN_LENGTH
@@ -308,7 +161,7 @@ class Validate
 		if (empty($un) === true){ $code = 1; }											// Username is undefined
 		elseif (strlen($un) < 3) { $code = 2; }											// Username is too short
 		elseif (strlen($un) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }				// Username is too long
-		elseif (eregi("[^a-z0-9 ����������._-]", utf8_encode($un) ) == true) { $code = 4; }	// Username contains Invalid Characters
+		elseif (eregi("[^a-z0-9 æøåÆØÅäöÄÖ._-]", utf8_encode($un) ) == true) { $code = 4; }	// Username contains Invalid Characters
 		else { $code = 10; }															// Username is valid
 
 		return $code;
@@ -348,7 +201,7 @@ class Validate
 	 * 	 1. Undefined E-Mail address
 	 * 	 2. E-Mail address is too short, as defined by iAUTH_MIN_LENGTH
 	 * 	 3. E-Mail address is too long, as defined by iAUTH_MAX_LENGTH
-	 *   4. E-Mail address contains invalid characters: [^0-9a-z����������_.@-]
+	 *   4. E-Mail address contains invalid characters: [^0-9a-zæøåÆØÅäöÄÖ_.@-]
 	 *   5. E-Mail has an invalid form: ^[^@ ]+@[^@ ]+\.[^@ \.]+$
 	 *	10. Success
 	 *
@@ -365,7 +218,7 @@ class Validate
 		if (empty($email) === true) { $code = 1; }								// E-Mail is undefined
 		elseif (strlen($email) < Constants::iAUTH_MIN_LENGTH) { $code = 2; }	// E-Mail is too short
 		elseif (strlen($email) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }	// E-Mail is too long
-		elseif (eregi("[^0-9a-z����������_.@-]", $email) == true) { $code = 4; }// E-Mail contains Invalid Characters
+		elseif (eregi("[^0-9a-zæøåÆØÅäöÄÖ_.@-]", $email) == true) { $code = 4; }// E-Mail contains Invalid Characters
 		elseif (ereg("^[^@]+@[^@]+\.[^@\.]+$", $email) == false) { $code = 5; }	// E-Mail has an invalid form
 		else { $code = 10; }													// E-Mail is valid
 
@@ -378,7 +231,7 @@ class Validate
 	 * 	 1. Undefined Name
 	 * 	 2. Name is too short, must be 2 characters or longer
 	 * 	 3. Name is too long, must be shorter than 100 characters
-	 *   4. Name contains invalid characters: [^0-9a-z����������_.@-]
+	 *   4. Name contains invalid characters: [^0-9a-zæøåÆØÅäöÄÖ_.@-]
 	 * 	10. Success
 	 *
 	 * @see		General::valUsername()
@@ -443,7 +296,7 @@ class Validate
 	public function valOperator($id)
 	{
 		// Validate the Recipient's Mobile Network Operator
-		if (empty($id) === true) { $code = 1; }																		// Operator ID is undefined
+		if (empty($id) === true) { $code = 1; }													// Operator ID is undefined
 		elseif (floatval($id) < $this->_obj_CountryConfig->getID() * 100) { $code = 2; }		// Operator ID is too small
 		elseif (floatval($id) > $this->_obj_CountryConfig->getID() * 100 + 99) { $code = 3; }	// Operator ID is too big
 		else { $code = 10; }
@@ -460,7 +313,7 @@ class Validate
 	 * 	10. Success
 	 *
 	 * @param 	long $max 	Maximum amount allowed for the Client
-	 * @param 	long $prc 	The price of the merchandise the customer is buying in the country's smallest currency (cents for USA, �re for Denmark etc.)
+	 * @param 	long $prc 	The price of the merchandise the customer is buying in the country's smallest currency (cents for USA, ï¿½re for Denmark etc.)
 	 * @return 	integer
 	 */
 	public function valPrice($max, $prc)
@@ -1077,7 +930,7 @@ class Validate
 
 	public function valFullname($fullname)
 	{
-		if(preg_match("/^[a-z���A-Z���][a-zA-Z -\']+$/",$fullname) == false)
+		if(preg_match("/^[a-zæøåA-ZÆØÅ][a-zA-Z -\']+$/",$fullname) == false)
 		{
 			$code = 1;
 		}
