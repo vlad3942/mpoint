@@ -19,11 +19,11 @@ class mConsole extends Admin
 	const iINSUFFICIENT_CLIENT_LICENSE_ERROR = 6;
 	const iAUTHORIZATION_SUCCESSFUL = 10;
 	// mConsole permission codes
-	const sPERMISSION_GET_PAYMENT_METHODS = "mPoint.GetPaymentMethods";
-	const sPERMISSION_GET_CLIENT = "mPoint.GetClients";
-	const sPERMISSION_SAVE_CLIENT = "mPoint.SaveClients";
-	const sPERMISSION_GET_PAYMENT_SERVICE_PROVIDERS = "mPoint.GetPaymentServiceProviders";
-	const sPERMISSION_SEARCH_TRANSACTION_LOGS = "mPoint.SearchTransactionLogs";	
+	const sPERMISSION_GET_PAYMENT_METHODS = "mpoint.payment-method-configuration.get.x";
+	const sPERMISSION_GET_CLIENTS = "mpoint.client-configuration.get.x";
+	const sPERMISSION_SAVE_CLIENT = "mpoint.client-configuration.save.x";
+	const sPERMISSION_GET_PAYMENT_SERVICE_PROVIDERS = "mpoint.payment-service-provider-configuration.get.x";
+	const sPERMISSION_SEARCH_TRANSACTION_LOGS = "mpoint.transaction-logs.search.x";	
 	
 	public function saveClient(&$clientid, $cc , $storecard, $autocapture, $name, $username, $password, 
 									$lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl)
@@ -526,7 +526,7 @@ class mConsole extends Admin
 		}
 		// Fetch all Purchases
 		$sql .= "
-				SELECT Txn.id, Txn.orderid AS orderno, Txn.extid AS externalid, ". Constants::iCARD_PURCHASE_TYPE ." AS typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
+				SELECT Txn.id, Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
 					(CASE
 					 WHEN M4.stateid IS NOT NULL THEN M4.stateid
 					 WHEN M3.stateid IS NOT NULL THEN M3.stateid
@@ -567,7 +567,6 @@ class mConsole extends Admin
 			if (intval($limit) > 0) { $sql .= "LIMIT ". intval($limit); }
 			if (intval($offset) > 0) { $sql .= " OFFSET ". intval($offset); }
 		}
-file_put_contents(sLOG_PATH ."/jona.log", $sql);
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 	
@@ -586,12 +585,20 @@ file_put_contents(sLOG_PATH ."/jona.log", $sql);
 		
 		$aObj_TransactionLogs = array();
 		$aObj_CountryConfigurations = array();
+		$aTypes = array(Constants::iCARD_PURCHASE_TYPE,
+						Constants::iPURCHASE_VIA_WEB,
+						Constants::iWEB_SUBSCR_TYPE,
+						Constants::iPURCHASE_VIA_APP,
+						Constants::iAPP_SUBSCR_TYPE,
+						Constants::iPURCHASE_OF_EMONEY,
+						Constants::iTOPUP_SUBSCR_TYPE,
+						Constants::iPURCHASE_OF_POINTS);
 	
 		// Construct XML Document with data for Transaction
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
 			// Purchase
-			if ($RS["STATEID"] < 0 && $RS["TYPEID"] == Constants::iCARD_PURCHASE_TYPE)
+			if ($RS["STATEID"] < 0 && in_array($RS["TYPEID"], $aTypes) === true)
 			{
 				$aParams = array($RS["ID"]);
 				$res1 = $this->getDBConn()->execute($stmt1, $aParams);
@@ -604,7 +611,7 @@ file_put_contents(sLOG_PATH ."/jona.log", $sql);
 			
 			if (array_key_exists($RS["COUNTRYID"], $aObj_CountryConfigurations) === false) { $aObj_CountryConfigurations[$RS["COUNTRYID"] ] = CountryConfig::produceConfig($this->getDBConn(), $RS["COUNTRYID"]); }
 			$aObj_Messages = array();
-			if ($debug === true && $RS["TYPEID"] == Constants::iCARD_PURCHASE_TYPE)
+			if ($debug === true && in_array($RS["TYPEID"], $aTypes) === true)
 			{
 				$aParams = array($RS["ID"]);
 				$res2 = $this->getDBConn()->execute($stmt2, $aParams);

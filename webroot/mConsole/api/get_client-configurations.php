@@ -64,7 +64,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
 				
-		$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_CLIENT, $aClientIDs);
+		$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_CLIENTS, $aClientIDs);
 		switch ($code)
 		{
 		case (mConsole::iSERVICE_CONNECTION_TIMEOUT_ERROR):
@@ -93,14 +93,21 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			$xml = '<status code="'. $code .'">Insufficient Client License</status>';
 			break;
 		case (mConsole::iAUTHORIZATION_SUCCESSFUL):
-			header("HTTP/1.1 200 OK");
-	
 			$xml = '<client-configurations>';
 			foreach ($aClientIDs as $id)
 			{
-				$obj_mPointClient = ClientConfig::produceConfig($_OBJ_DB, $id);					
-				$xml .= $obj_mPointClient->toFullXML();
+				$obj_Config = ClientConfig::produceConfig($_OBJ_DB, $id);
+				if ($obj_Config->getID() > 0)
+				{
+					$xml .= $obj_Config->toFullXML();
+				}
 			}
+			// No Client Configurations found
+			if ($xml == '<client-configurations>')
+			{
+				header("HTTP/1.1 404 Not Found");
+			}
+			else { header("HTTP/1.1 200 OK"); }
 			$xml .= '</client-configurations>';	
 			break;
 		default:
