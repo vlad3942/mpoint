@@ -420,17 +420,77 @@ abstract class Constants
 	 *
 	 */
 	const iEMONEY_GRANT = 100000;
-
+	
+	/**
+	 * Unique Card ID for transaction's made using American Express
+	 *
+	 */
+	const iAMEX_CARD = 1;
+	/**
+	 * Unique Card ID for transaction's made using Dankort
+	 *
+	 */
+	const iDANKORT_CARD = 2;
+	/**
+	 * Unique Card ID for transaction's made using Diners Club
+	 *
+	 */
+	const iDINERS_CLUB_CARD = 3;
+	/**
+	 * Unique Card ID for transaction's made using EuroCard
+	 *
+	 */
+	const iEUROCARD = 4;
+	/**
+	 * Unique Card ID for transaction's made using JCB
+	 *
+	 */
+	const iJCB_CARD = 5;
+	/**
+	 * Unique Card ID for transaction's made using Maestro
+	 *
+	 */
+	const iMAESTRO_CARD = 6;
+	/**
+	 * Unique Card ID for transaction's made using MasterCard
+	 *
+	 */
+	const iMASTERCARD = 7;
+	/**
+	 * Unique Card ID for transaction's made using VISA
+	 *
+	 */
+	const iVISA_CARD = 8;
+	/**
+	 * Unique Card ID for transaction's made using VISA Electron
+	 *
+	 */
+	const iVISA_ELECTRON_CARD = 9;
 	/**
 	 * Unique Card ID for transaction's made using Premium SMS
 	 *
 	 */
-	const iPSMS_CARD = 10;
+	const iPREMIUM_SMS = 10;
 	/**
-	 * Unique Card ID for transaction's made using e-money
+	 * Unique Card ID for transaction's made using mPoint's built-in Wallet
 	 *
 	 */
-	const iEMONEY_CARD = 11;
+	const iWALLET = 11;
+	/**
+	 * Unique Card ID for transaction's made using Switch
+	 *
+	 */
+	const iSWITCH_CARD = 12;
+	/**
+	 * Unique Card ID for transaction's made using Solo
+	 *
+	 */
+	const iSOLO_CARD = 13;
+	/**
+	 * Unique Card ID for transaction's made using Delta
+	 *
+	 */
+	const iDELTA_CARD = 14;
 	/**
 	 * Unique Card ID for transaction's made using Apple Pay
 	 *
@@ -450,12 +510,12 @@ abstract class Constants
 	 * Unique Card ID for transaction's made using Cartebleue
 	 *
 	 */
-	const iCARTE_BLEUE = 18;
+	const iCARTE_BLEUE_CARD = 18;
 	/**
 	 * Unique Card ID for transaction's made using Postepay VISA
 	 *
 	 */
-	const iPOSTEPAY_VISA = 19;
+	const iPOSTEPAY_VISA_CARD = 19;
 	/**
 	 * Unique Card ID for transaction's made using Postepay Mastercard
 	 *
@@ -465,7 +525,7 @@ abstract class Constants
 	 * Unique Card ID for transaction's made using UATP
 	 *
 	 */
-	const iUATP = 21;
+	const iUATP_CARD = 21;
 
 	/**
 	 * Unique Fee Type ID for Top-Ups

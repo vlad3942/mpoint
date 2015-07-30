@@ -135,7 +135,7 @@ try
 	if ($obj_TxnInfo->getReward() > 0 && $obj_TxnInfo->getAccountID() > 0) { $obj_mPoint->topup($obj_TxnInfo->getAccountID(), Constants::iREWARD_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getReward() ); }
 
 	// Not an e-money based purchase
-	if ($_POST['cardid'] != Constants::iEMONEY_CARD && $obj_TxnInfo->getAccountID() > 0)
+	if ($_POST['cardid'] != Constants::iWALLET && $obj_TxnInfo->getAccountID() > 0)
 	{
 		$obj_mPoint->associate($obj_TxnInfo->getAccountID(), $obj_TxnInfo->getID() );
 	}

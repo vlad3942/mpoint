@@ -130,7 +130,7 @@ class SMS_Purchase extends MobileWeb
 				WHERE CA.clientid = ". $this->getClientConfig()->getID() ."
 					AND PP.countryid = ". $this->getClientConfig()->getCountryConfig()->getID() ."
 					AND PP.amount IN (-1, ". intval($amount) .")
-					AND CA.cardid = ". Constants::iPSMS_CARD ."
+					AND CA.cardid = ". Constants::iPREMIUM_SMS ."
 				LIMIT 1";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);

@@ -44,7 +44,7 @@ try
 {
 	switch ($_SESSION['temp']['cardtype'])
 	{
-	case (Constants::iPSMS_CARD):	// Premium SMS
+	case (Constants::iPREMIUM_SMS):	// Premium SMS
 		header("content-type: text/plain");
 		// Send Billing SMS through GoMobile
 		$obj_MsgInfo = $obj_mPoint->sendBillingSMS(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
@@ -59,7 +59,7 @@ try
 		// Initialise Callback to Client
 		$obj_mPoint->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), $_SESSION['temp']['cardtype'], $obj_MsgInfo->getReturnCodes(), $obj_MsgInfo->getGoMobileID() );
 		break;
-	case (Constants::iEMONEY_CARD):	// My Account
+	case (Constants::iWALLET):	// My Account
 		if ($_SESSION['obj_TxnInfo']->getAccountID() > 0) { $iAccountID = $_SESSION['obj_TxnInfo']->getAccountID(); }
 		else
 		{
@@ -103,7 +103,7 @@ try
 			flush();
 
 			// Initialise Callback to Client
-			$obj_mPoint->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iEMONEY_CARD, Constants::iPAYMENT_ACCEPTED_STATE);
+			$obj_mPoint->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iWALLET, Constants::iPAYMENT_ACCEPTED_STATE);
 		}
 		// Display "My Account" page
 		else

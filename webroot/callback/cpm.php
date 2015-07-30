@@ -39,13 +39,13 @@ else { $iStateID = Constants::iPAYMENT_REJECTED_STATE; }
 $obj_mPoint->completeTransaction(Constants::iCPM_PSP, $_POST['gomobileid'], $_POST['cardid'], $iStateID);
 
 // Premium SMS Purchase, associate transaction with End-User Account
-if ($_POST['cardid'] == Constants::iPSMS_CARD && $obj_mPoint->getTxnInfo()->getAccountID() > 0)
+if ($_POST['cardid'] == Constants::iPREMIUM_SMS && $obj_mPoint->getTxnInfo()->getAccountID() > 0)
 {
 	$obj_mPoint->associate($obj_mPoint->getTxnInfo()->getAccountID(), $obj_mPoint->getTxnInfo()->getID() );
 }
 
 // Payment completed via Prepaid Account and Client has SMS Receipt enabled
-if ($_POST['cardid'] == Constants::iEMONEY_CARD && $obj_mPoint->getTxnInfo()->getClientConfig()->smsReceiptEnabled() === true)
+if ($_POST['cardid'] == Constants::iWALLET && $obj_mPoint->getTxnInfo()->getClientConfig()->smsReceiptEnabled() === true)
 {
 	$obj_mPoint->sendSMSReceipt(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
 }

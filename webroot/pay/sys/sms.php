@@ -72,7 +72,7 @@ if ($obj_TxnInfo instanceof TxnInfo === true)
 			{
 				$obj_mPoint->purchase($obj_TxnInfo->getAccountID(), Constants::iPURCHASE_USING_EMONEY, $obj_TxnInfo->getID(), $obj_TxnInfo->getAmount() );
 				// Initialise Callback to Client
-				$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iEMONEY_CARD, Constants::iPAYMENT_ACCEPTED_STATE);			
+				$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iWALLET, Constants::iPAYMENT_ACCEPTED_STATE);			
 			}
 			else
 			{
@@ -162,7 +162,7 @@ if ($obj_TxnInfo instanceof TxnInfo === true)
 						$obj_mPoint->purchase($obj_TxnInfo->getAccountID(), Constants::iPURCHASE_USING_EMONEY, $obj_TxnInfo->getID(), $obj_TxnInfo->getAmount() );
 						// Initialise Callback to Client
 						$obj_PSP = new CellpointMobile($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-						$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iEMONEY_CARD, Constants::iPAYMENT_ACCEPTED_STATE);
+						$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iWALLET, Constants::iPAYMENT_ACCEPTED_STATE);
 					}
 				}
 				// Pay using Premium SMS
@@ -172,13 +172,13 @@ if ($obj_TxnInfo instanceof TxnInfo === true)
 					$obj_MsgInfo = $obj_PSP->sendBillingSMS(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
 					$mExternalID = $obj_MsgInfo->getGoMobileID();
 					// Initialise Callback to Client
-					$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iPSMS_CARD, $obj_MsgInfo->getReturnCodes(), $obj_MsgInfo->getGoMobileID() );
+					$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iPREMIUM_SMS, $obj_MsgInfo->getReturnCodes(), $obj_MsgInfo->getGoMobileID() );
 				}
 				// All Payment Attempts have failed
 				if ($mExternalID == -1)
 				{
 					// Initialise Callback to Client
-					$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iEMONEY_CARD, Constants::iPAYMENT_REJECTED_STATE);
+					$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iWALLET, Constants::iPAYMENT_REJECTED_STATE);
 				}
 			}
 		}
@@ -188,19 +188,19 @@ if ($obj_TxnInfo instanceof TxnInfo === true)
 			// Send Billing SMS through GoMobile
 			$obj_MsgInfo = $obj_PSP->sendBillingSMS(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
 			// Initialise Callback to Client
-			$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iPSMS_CARD, $obj_MsgInfo->getReturnCodes(), $obj_MsgInfo->getGoMobileID() );
+			$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iPREMIUM_SMS, $obj_MsgInfo->getReturnCodes(), $obj_MsgInfo->getGoMobileID() );
 		}
 		// No payment method available
 		else
 		{
 		// Initialise Callback to Client
-			$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iEMONEY_CARD, Constants::iPAYMENT_REJECTED_STATE);
+			$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iWALLET, Constants::iPAYMENT_REJECTED_STATE);
 		}
 		break;
 	case (in_array(strtoupper($obj_MsgInfo->getBody() ), $aREJECT_WORDS) ):	// Payment Rejected by End-User
 		$obj_PSP = new CellpointMobile($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 		// Initialise Callback to Client
-		$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iEMONEY_CARD, Constants::iPAYMENT_REJECTED_STATE);
+		$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iWALLET, Constants::iPAYMENT_REJECTED_STATE);
 		break;
 	default:	// Unknown Response
 		$obj_MsgInfo = GoMobileMessage::produceMessage(Constants::iMT_SMS_TYPE, $obj_MsgInfo->getCountry(), $obj_MsgInfo->getOperator(), $obj_MsgInfo->getChannel(), $obj_MsgInfo->getKeyword(), Constants::iMT_PRICE, $obj_MsgInfo->getSender(), $_OBJ_TXT->_("SMS Purchase - Unknown Reponse"), $obj_MsgInfo->getGoMobileID() );
