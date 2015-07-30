@@ -8,6 +8,39 @@
  * @package mConsole
  * @version 1.10
  */
+
+/* ==================== mConsole Exception Classes Start ==================== */
+/**
+ * Super class for all exceptions thrown by mConsole operations
+ */
+class mConsoleException extends Exception { }
+
+
+//For the save client related exceptions.
+class mConsoleSaveFailedException extends mConsoleException { }
+class mConsoleSaveClientFailedException extends mConsoleSaveFailedException { }
+class mConsoleSaveAccountFailedException extends mConsoleSaveClientFailedException { }
+class mConsoleSaveMerchantSubAccountFailedException extends mConsoleSaveAccountFailedException { }
+class mConsoleSaveMerchantAccountFailedException extends mConsoleSaveClientFailedException { }
+class mConsoleSaveCardAccessFailedException extends mConsoleSaveClientFailedException { }
+class mConsoleSaveKeywordFailedException extends mConsoleSaveClientFailedException { }
+class mConsoleSaveURLFailedException extends mConsoleSaveClientFailedException { }
+class mConsoleSaveIINRangeFailedException extends mConsoleSaveClientFailedException { }
+
+
+//For the disable client related exceptions.
+class mConsoleDisableFailedException extends mConsoleException { }
+class mConsoleDisableClientFailedException extends mConsoleDisableFailedException { }
+class mConsoleDisableAccountFailedException extends mConsoleDisableClientFailedException { }
+class mConsoleDisableMerchantSubAccountFailedException extends mConsoleDisableAccountFailedException { }
+class mConsoleDisableMerchantAccountFailedException extends mConsoleDisableClientFailedException { }
+class mConsoleDisableCardAccessFailedException extends mConsoleDisableClientFailedException { }
+class mConsoleDisableKeywordFailedException extends mConsoleDisableClientFailedException { }
+class mConsoleDisableURLFailedException extends mConsoleDisableClientFailedException { }
+class mConsoleDisableIINRangeFailedException extends mConsoleDisableClientFailedException { }
+
+/* ==================== mConsole Exception Classes End ==================== */
+
 class mConsole extends Admin
 {
 	// Constants for mConsole's Single Sign-On Service
@@ -25,120 +58,98 @@ class mConsole extends Admin
 	const sPERMISSION_GET_PAYMENT_SERVICE_PROVIDERS = "mpoint.payment-service-provider-configuration.get.x";
 	const sPERMISSION_SEARCH_TRANSACTION_LOGS = "mpoint.transaction-logs.search.x";	
 	
-	public function saveClient(&$clientid, $cc , $storecard, $autocapture, $name, $username, $password, 
-									$lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl)
+	public function saveClient($cc, $storecard, $autocapture, $name, $username, $password, $maxamt, $lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl, $id = -1)
 	{
-        $newclient = false;
-		if ($clientid > 0)
+		if ($id > 0)
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".Client_Tbl
 					SET store_card = ". intval($storecard) .", auto_capture = '". intval($autocapture) ."', name = '". $this->getDBConn()->escStr($name) ."', username='". $this->getDBConn()->escStr($username) ."', passwd='". $this->getDBConn()->escStr($password) ."', countryid = ". $cc .",
-					lang = '". $this->getDBConn()->escStr($lang) ."', smsrcpt = '". intval($smsrcpt) ."', emailrcpt = '". intval($emailrcpt) ."' , mode = ". intval($mode) .", method = '". $this->getDBConn()->escStr($method) ."', send_pspid = '". intval($send_pspid) ."',
-					identification = ". intval($identification) .", transaction_ttl = ". intval($transaction_ttl) ."
-					WHERE id = ". intval($clientid);
-			$res = $this->getDBConn()->query($sql);
+						maxamount = ". intval($maxamt) .", lang = '". $this->getDBConn()->escStr($lang) ."', smsrcpt = '". intval($smsrcpt) ."', emailrcpt = '". intval($emailrcpt) ."' , mode = ". intval($mode) .", method = '". $this->getDBConn()->escStr($method) ."', send_pspid = '". intval($send_pspid) ."',
+						identification = ". intval($identification) .", transaction_ttl = ". intval($transaction_ttl) ."
+					WHERE id = ". intval($id);
 		}
 		else
 		{
+			$sql = "SELECT Nextval('Client". sSCHEMA_POSTFIX .".Client_Tbl_id_seq') AS id";
+			$RS = $this->getDBConn()->getName($sql);
+			$id = $RS["ID"];
+			
 			$sql = "INSERT INTO Client". sSCHEMA_POSTFIX .".Client_Tbl
-						(store_card, auto_capture, name, username, passwd, countryid, flowid, lang, smsrcpt, emailrcpt, mode, method, send_pspid, identification, transaction_ttl)
+						(id, store_card, auto_capture, name, username, passwd, countryid, flowid, maxamount, lang, smsrcpt, emailrcpt, mode, method, send_pspid, identification, transaction_ttl)
 					VALUES
-						(". intval($storecard) .",'". intval($autocapture) ."', '". $this->getDBConn()->escStr($name) ."' , '". $this->getDBConn()->escStr($username) ."', '". $this->getDBConn()->escStr($password) ."',". intval($cc) .", ".intval(1) .",
-						 '". $this->getDBConn()->escStr($lang) ."', '". intval($smsrcpt) ."', '". intval($emailrcpt) ."' ,". intval($mode) .",'". $this->getDBConn()->escStr($method) ."','". intval($send_pspid) ."',". intval($identification) .",". intval($transaction_ttl) .")";
-//			echo $sql ."\n";		
-			$res = $this->getDBConn()->query($sql);
-			if (is_resource($res))
-			{
-				$sql = "SELECT MAX(id) AS ID
-						FROM Client". sSCHEMA_POSTFIX .".Client_Tbl";
-//				echo $sql ."\n";
-				$RS = $this->getDBConn()->getName($sql);
-								
-				if (is_array($RS) === true)
-				{
-					$clientid = $RS["ID"];						
-					$newclient = true;				
-				}
-			}
+						(". $id .", ". intval($storecard) .",'". intval($autocapture) ."', '". $this->getDBConn()->escStr($name) ."' , '". $this->getDBConn()->escStr($username) ."', '". $this->getDBConn()->escStr($password) ."',". intval($cc) .", ".intval(1) .",
+						 ". intval($maxamt) .", '". $this->getDBConn()->escStr($lang) ."', '". intval($smsrcpt) ."', '". intval($emailrcpt) ."' ,". intval($mode) .",'". $this->getDBConn()->escStr($method) ."','". intval($send_pspid) ."',". intval($identification) .",". intval($transaction_ttl) .")";
 		}
-		return $newclient == true ? true : is_resource($res);
+//		echo $sql ."\n";
+		$res = $this->getDBConn()->query($sql);
+		// Unable execute SQL query
+		if (is_resource($res) === false) { $id = -1; }
+		
+		return $id;
 	}
 	
-	public function saveAccount(&$accountid, $clientid, $name, $markup)
+	public function saveAccount($clientid, $name, $markup, $id = -1)
 	{	
-        $newaccount = false;
-		if ($accountid > 0)
+		if ($id > 0)
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".Account_Tbl
-					SET name = '". $this->getDBConn()->escStr($name) ."', markup='". $this->getDBConn()->escStr($markup) ."',
-					enabled = '". intval(true) ."'
-					WHERE id = ". intval($accountid) ." AND clientid = ". intval($clientid);
-			//echo $sql ."\n";
-			$res = $this->getDBConn()->query($sql);	
-				
+					SET name = '". $this->getDBConn()->escStr($name) ."', markup='". $this->getDBConn()->escStr($markup) ."', enabled = '1'
+					WHERE id = ". intval($id);
 		}
 		else
 		{
+			$sql = "SELECT Nextval('Client". sSCHEMA_POSTFIX .".Account_Tbl_id_seq') AS id";
+			$RS = $this->getDBConn()->getName($sql);
+			$id = $RS["ID"];
+			
 			$sql =  "INSERT INTO Client". sSCHEMA_POSTFIX .".Account_Tbl 
-						(clientid, name, markup)
+						(id, clientid, name, markup)
 					 VALUES
-						(". intval($clientid) .", '". $this->getDBConn()->escStr($name) ."', '". $this->getDBConn()->escStr($markup) ."')";
-//			echo $sql ."\n";	
-			if (is_resource($this->getDBConn()->query($sql) ) === true)
-			{
-				$sql = "SELECT Max(id) AS ID
-						FROM Client". sSCHEMA_POSTFIX .".Account_Tbl";
-//				echo $sql ."\n";	
-				$RS = $this->getDBConn()->getName($sql);
-		
-				if (is_array($RS) === true)
-				{
-					$accountid = $RS["ID"];
-					$newaccount = true;
-				}
-			}
+						(". $id .", ". intval($clientid) .", '". $this->getDBConn()->escStr($name) ."', '". $this->getDBConn()->escStr($markup) ."')";
 		}
-		return $newaccount == true ? true : is_resource($res);
+		//echo $sql ."\n";
+		$res = $this->getDBConn()->query($sql);
+		// Unable execute SQL query
+		if (is_resource($res) === false) { $id = -1; }
+		
+		return $id;
 	}
 	
-	public function disableAccounts($clientid, $accountIDs = array())
+	public function disableAccounts($clientid)
 	{
 		$sql = "UPDATE Client". sSCHEMA_POSTFIX .".Account_Tbl
-				SET enabled = '". intval(false)."'
+				SET enabled = '0'
 				WHERE clientid = ". intval($clientid);
-		//echo $sql ."\n";
+//		echo $sql ."\n";
 				
-		if(is_array($accountIDs) && count($accountIDs) > 0)
-		{
-			$accountIDlist = implode(",", $accountIDs);
-			$sql .= " AND id NOT IN (". trim($accountIDlist) .")";
-		}
-		//echo $sql ."\n";	
 		return is_resource($this->getDBConn()->query($sql) );
 	}
 	
-	public function saveMerchantSubAccount($id, $accountid, $pspid, $name)
+	public function saveMerchantSubAccount($accountid, $pspid, $name, $id = -1)
 	{			
-		$newsubaccount = false;
 		if ($id > 0)
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".MerchantSubAccount_Tbl
-					SET name = '". $this->getDBConn()->escStr($name) ."', pspid = ". intval($pspid) ." , enabled = '". intval(true) ."'
-					WHERE id = ". intval($id) ." AND accountid = ". intval($accountid);
-			//echo $sql ."\n";
-			$res = $this->getDBConn()->query($sql);		
+					SET name = '". $this->getDBConn()->escStr($name) ."', pspid = ". intval($pspid) ." , enabled = '1'
+					WHERE id = ". intval($id);
 		}
 		else
 		{
+			$sql = "SELECT Nextval('Client". sSCHEMA_POSTFIX .".MerchantSubAccount_Tbl_id_seq') AS id";
+			$RS = $this->getDBConn()->getName($sql);
+			$id = $RS["ID"];
+			
 			$sql =  "INSERT INTO Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl 
-					(accountid, pspid, name)
-				 VALUES
-					( ". intval($accountid) .", ". intval($pspid) .", '". $this->getDBConn()->escStr($name) ."')";
-			//echo $sql ."\n";
-			$res = $this->getDBConn()->query($sql);	
-			$newsubaccount = true;
+						(id, accountid, pspid, name)
+				 	VALUES
+						(". $id .", ". intval($accountid) .", ". intval($pspid) .", '". $this->getDBConn()->escStr($name) ."')";
 		}			
-		return $newsubaccount == true ? true : is_resource($res);	
+		//echo $sql ."\n";
+		$res = $this->getDBConn()->query($sql);
+		// Unable execute SQL query
+		if (is_resource($res) === false) { $id = -1; }
+		
+		return $id;
 	}
 	
 	public function disableMerchantSubAccounts($accountid)
@@ -150,28 +161,32 @@ class mConsole extends Admin
 		return is_resource($this->getDBConn()->query($sql) );
 	}
 	
-	public function saveMerchantAccount($id, $clientid, $pspid, $name, $username, $password, $storedcard)
+	public function saveMerchantAccount($clientid, $pspid, $name, $username, $password, $storedcard, $id = -1)
 	{	
 		if ($id > 0)
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".MerchantAccount_Tbl
 					SET name = '". $this->getDBConn()->escStr($name) ."', username ='". $this->getDBConn()->escStr($username) ."', passwd ='". $this->getDBConn()->escStr($password) ."',
-					pspid = ". intval($pspid) .", stored_card = '". intval($storedcard) ."', enabled = '". intval(true) ."'
-					WHERE id = ". intval($id) ." AND clientid = ". intval($clientid);
-			//echo $sql ."\n";
-			$res = $this->getDBConn()->query($sql);		
+						pspid = ". intval($pspid) .", stored_card = '". intval($storedcard) ."', enabled = '". intval(true) ."'
+					WHERE id = ". intval($id) ." AND clientid = ". intval($clientid);				
 		}
-		if(is_resource($res) == false)
+		else
 		{
+			$sql = "SELECT Nextval('Client". sSCHEMA_POSTFIX .".MerchantAccount_Tbl_id_seq') AS id";
+			$RS = $this->getDBConn()->getName($sql);
+			$id = $RS["ID"];
+			
 			$sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl 
-						(clientid, pspid, name, username, passwd, stored_card )
+						(id, clientid, pspid, name, username, passwd, stored_card )
 					VALUES
-						( ". intval($clientid) .", ". intval($pspid) .", '". $this->getDBConn()->escStr($name) ."', '". $this->getDBConn()->escStr($username) ."', '". $this->getDBConn()->escStr($password) ."', '". intval($storedcard) ."')";
-			//echo $sql ."\n";
-			$res = $this->getDBConn()->query($sql);	
-				
+						(". $id .", ". intval($clientid) .", ". intval($pspid) .", '". $this->getDBConn()->escStr($name) ."', '". $this->getDBConn()->escStr($username) ."', '". $this->getDBConn()->escStr($password) ."', '". intval($storedcard) ."')";
 		}		
-		return is_resource($res);
+		//echo $sql ."\n";
+		$res = $this->getDBConn()->query($sql);
+		//Unable execute SQL query
+		if (is_resource($res) === false) { $id = -1; }
+		
+		return $id;
 	}
 	
 	public function disableMerchantAccounts($clientid)
@@ -183,28 +198,32 @@ class mConsole extends Admin
 		return is_resource($this->getDBConn()->query($sql) );
 	}
 	
-	public function saveCardAccess($id, $clientid, $cardid, $pspid, $countryid, $stateid)
+	public function saveCardAccess($clientid, $cardid, $pspid, $countryid, $stateid, $id = -1)
 	{
 		if ($id > 0)
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".CardAccess_Tbl
 					SET countryid = ". intval($countryid) .", pspid = ". intval($pspid) .", cardid = ". intval($cardid).", 
 					stateid = ". intval($stateid) .", enabled = '".intval(true) ."'
-					WHERE id = ". intval($id) ." AND clientid = ". intval($clientid);
-			//echo $sql ."\n";
-			$res = $this->getDBConn()->query($sql);			
+					WHERE id = ". intval($id) ." AND clientid = ". intval($clientid);				
 		}
-		if(is_resource($res) == false)
+		else
 		{
-			$sql = "INSERT INTO Client". sSCHEMA_POSTFIX .".CardAccess_Tbl 
-						(clientid, cardid, pspid, countryid, stateid)
-				    VALUES
-						(". intval($clientid) .", ". intval($cardid) .", ". intval($pspid) .", ". intval($countryid) .", ". intval($stateid) .")";
-			//echo $sql ."\n";	
-			$res = $this->getDBConn()->query($sql);
-		}
+			$sql = "SELECT Nextval('Client". sSCHEMA_POSTFIX .".CardAccess_Tbl_id_seq') AS id";
+			$RS = $this->getDBConn()->getName($sql);
+			$id = $RS["ID"];
 			
-		return is_resource($res);	
+			$sql = "INSERT INTO Client". sSCHEMA_POSTFIX .".CardAccess_Tbl 
+						(id, clientid, cardid, pspid, countryid, stateid)
+				    VALUES
+						(". $id .", ". intval($clientid) .", ". intval($cardid) .", ". intval($pspid) .", ". intval($countryid) .", ". intval($stateid) .")";
+		}		
+		//echo $sql ."\n";
+		$res = $this->getDBConn()->query($sql);
+		//Unable execute SQL query
+		if (is_resource($res) === false) { $id = -1; }
+		
+		return $id;		
 	}
 	
 	public function disableAllCardAccess($clientid)
@@ -216,27 +235,31 @@ class mConsole extends Admin
 		return is_resource($this->getDBConn()->query($sql) );
 	}
 	
-	public function saveKeyword ($id, $clientid, $name)
+	public function saveKeyword ($clientid, $name, $id = -1)
 	{
 		if ($id > 0)
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".KeyWord_Tbl
 					SET name = '". $this->getDBConn()->escStr($name) ."', enabled = '". intval(true) ."', standard = '".intval(true)."'
-					WHERE id = ". intval($id) ." AND clientid = ". intval($clientid);
-			//echo $sql ."\n";
-			$res = $this->getDBConn()->query($sql);			
+					WHERE id = ". intval($id) ." AND clientid = ". intval($clientid);						
 		}
-		if(is_resource($res) == false)
+		else
 		{
-			$sql = "INSERT INTO Client". sSCHEMA_POSTFIX .".KeyWord_Tbl 
-					(clientid , name, standard)
-				VALUES
-					( ". intval($clientid) .", '". $this->getDBConn()->escStr($name) ."', true)";
-			//echo $sql ."\n";	
-			$res = $this->getDBConn()->query($sql);
-		}
+			$sql = "SELECT Nextval('Client". sSCHEMA_POSTFIX .".KeyWord_Tbl_id_seq') AS id";
+			$RS = $this->getDBConn()->getName($sql);
+			$id = $RS["ID"];
 			
-		return is_resource($res);
+			$sql = "INSERT INTO Client". sSCHEMA_POSTFIX .".KeyWord_Tbl 
+					(id, clientid , name, standard)
+				VALUES
+					(". $id .", ". intval($clientid) .", '". $this->getDBConn()->escStr($name) ."', true)";
+		}		
+		//echo $sql ."\n";
+		$res = $this->getDBConn()->query($sql);
+		//Unable execute SQL query
+		if (is_resource($res) === false) { $id = -1; }
+		
+		return $id;		
 	}
 	
 	public function disableKeyword($clientid)
@@ -248,55 +271,43 @@ class mConsole extends Admin
 		return is_resource($this->getDBConn()->query($sql) );
 	}
 	
-	public function saveURL($id, $clientid, $typeid, $url)
+	public function saveURL($clientid, $typeid, $url, $id = -1)
 	{			
 		if ($id > 0 && intval($id) == intval($clientid) && intval($typeid) == ClientConfig::iCALLBACK_URL)
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".Client_Tbl
 					SET callbackurl = '". $this->getDBConn()->escStr($url) ."'
 					WHERE id = ". intval($clientid);
-			//echo $sql ."\n";
-			$res = $this->getDBConn()->query($sql);
 		}
-		if ($id > 0 && intval($id) == intval($clientid) && intval($typeid) == ClientConfig::iLOGO_URL)
+		else if ($id > 0 && intval($id) == intval($clientid) && intval($typeid) == ClientConfig::iLOGO_URL)
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".Client_Tbl
 					SET logourl = '". $this->getDBConn()->escStr($url) ."'
 					WHERE id = ". intval($clientid);
-			//echo $sql ."\n";
-			$res = $this->getDBConn()->query($sql);
 		}
-		if ($id > 0 && intval($id) == intval($clientid) && intval($typeid) == ClientConfig::iCSS_URL)
+		else if ($id > 0 && intval($id) == intval($clientid) && intval($typeid) == ClientConfig::iCSS_URL)
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".Client_Tbl
 					SET cssurl = '". $this->getDBConn()->escStr($url) ."'
 					WHERE id = ". intval($clientid);
-			//echo $sql ."\n";
-			$res = $this->getDBConn()->query($sql);
 		}
-		if ($id > 0 && intval($id) == intval($clientid) && intval($typeid) == ClientConfig::iCANCEL_URL)
+		else if ($id > 0 && intval($id) == intval($clientid) && intval($typeid) == ClientConfig::iCANCEL_URL)
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".Client_Tbl
 					SET cancelurl = '". $this->getDBConn()->escStr($url) ."'
 					WHERE id = ". intval($clientid);
-			//echo $sql ."\n";
-			$res = $this->getDBConn()->query($sql);
 		}
-		if ($id > 0 && intval($id) == intval($clientid) && intval($typeid) == ClientConfig::iACCEPT_URL)
+		else if ($id > 0 && intval($id) == intval($clientid) && intval($typeid) == ClientConfig::iACCEPT_URL)
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".Client_Tbl
 					SET accepturl = '". $this->getDBConn()->escStr($url) ."'
 					WHERE id = ". intval($clientid);
-			//echo $sql ."\n";
-			$res = $this->getDBConn()->query($sql);
 		}
-		if ($id > 0 && intval($id) == intval($clientid) && intval($typeid) == ClientConfig::iICON_URL)
+		else if ($id > 0 && intval($id) == intval($clientid) && intval($typeid) == ClientConfig::iICON_URL)
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".Client_Tbl
 					SET iconurl = '". $this->getDBConn()->escStr($url) ."'
-					WHERE id = ". intval($clientid);
-			//echo $sql ."\n";
-			$res = $this->getDBConn()->query($sql);
+					WHERE id = ". intval($clientid);			
 		}
 		else
 		{
@@ -304,22 +315,26 @@ class mConsole extends Admin
 			{
 				$sql = "UPDATE Client". sSCHEMA_POSTFIX .".URL_Tbl
 						SET url = '". $this->getDBConn()->escStr($url) ."', urltypeid = ". intval($typeid) .", enabled = '". intval(true) ."'
-						WHERE id = ". intval($id) ." AND clientid = ". intval($clientid);
-				//echo $sql ."\n";
-				$res = $this->getDBConn()->query($sql);
+						WHERE id = ". intval($id) ." AND clientid = ". intval($clientid);				
 			}
-			if(is_resource($res) == false)
+			else
 			{
+				$sql = "SELECT Nextval('Client". sSCHEMA_POSTFIX .".URL_Tbl_id_seq') AS id";
+				$RS = $this->getDBConn()->getName($sql);
+				$id = $RS["ID"];
+				
 				$sql = "INSERT INTO Client". sSCHEMA_POSTFIX .".URL_Tbl
-							(clientid , urltypeid, url )
+							(id, clientid , urltypeid, url )
 						VALUES
-							(". intval($clientid) .", ". intval($typeid) .",'". $this->getDBConn()->escStr($url). "')";
-				//echo $sql ."\n";
-				$res = $this->getDBConn()->query($sql);
-			}
-		}		
-		
-		return is_resource($res);
+							(". $id .", ". intval($clientid) .", ". intval($typeid) .", '". $this->getDBConn()->escStr($url). "')";
+			}			
+		}	
+		//echo $sql ."\n";
+		$res = $this->getDBConn()->query($sql);
+		//Unable execute SQL query
+		if (is_resource($res) === false) { $id = -1; }
+				
+		return $id;
 	}
 	
 	public function disableURLs($clientid)
@@ -333,30 +348,35 @@ class mConsole extends Admin
 				WHERE id = ". intval($clientid);
 		//echo $sqlTwo ."\n"; die;
 		
-		return (is_resource($this->getDBConn()->query($sqlOne)) && is_resource($this->getDBConn()->query($sqlTwo)));
+		return ( is_resource($this->getDBConn()->query($sqlOne) ) && is_resource($this->getDBConn()->query($sqlTwo) ) );
 	}
 
-	public function saveIINRange($id, $clientid, $actionid, $min, $max)
+	public function saveIINRange($clientid, $actionid, $min, $max, $id = -1)
 	{
 		if($id > 0)
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".IINRange_Tbl
 					SET actionid = ". intval($actionid) .", minrange = ". intval($min) .", maxrange = ". intval($max) .",
 					enabled = '" . intval(true) . "'
-					WHERE id = ". intval($id) ." AND clientid = ". intval($clientid);
-			//echo $sql ."\n";
-			$res = $this->getDBConn()->query($sql);
-			
+					WHERE id = ". intval($id) ." AND clientid = ". intval($clientid);			
 		}
 		else
 		{
+			$sql = "SELECT Nextval('Client". sSCHEMA_POSTFIX .".IINRange_Tbl_id_seq') AS id";
+			$RS = $this->getDBConn()->getName($sql);
+			$id = $RS["ID"];
+				
 			$sql = "INSERT INTO Client". sSCHEMA_POSTFIX .".IINRange_Tbl 
-						(clientid , actionid, minrange, maxrange)
+						(id, clientid , actionid, minrange, maxrange)
 					VALUES
-						( ". intval($clientid) .", ". intval($actionid) .", ". intval($min) .", ". intval($max) .")";
-			//echo $sql ."\n";
+						(". $id .", ". intval($clientid) .", ". intval($actionid) .", ". intval($min) .", ". intval($max) .")";			
 		}
-		return is_resource($this->getDBConn()->query($sql) );
+		//echo $sql ."\n";
+		$res = $this->getDBConn()->query($sql);
+		//Unable execute SQL query
+		if (is_resource($res) === false) { $id = -1; }
+				
+		return $id;
 	}
 	
 	public function disableIINRanges($clientid)

@@ -27,6 +27,54 @@ $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH,
 /*
 $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
+
+$HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
+$HTTP_RAW_POST_DATA .= '<root>';
+$HTTP_RAW_POST_DATA .= '<save-client-configuration>  ';
+$HTTP_RAW_POST_DATA .= '<client-config id="10001" auto-capture="true" country-id="100" language="gb" sms-receipt="true" email-receipt="true" mode="0">';
+$HTTP_RAW_POST_DATA .= '<name>Emirates - IBE</name>';
+$HTTP_RAW_POST_DATA .= '<username>10000000</username>';
+$HTTP_RAW_POST_DATA .= '<password>99999999</password>';
+$HTTP_RAW_POST_DATA .= '<max-amount country-id="100">123400</max-amount>';
+$HTTP_RAW_POST_DATA .= '<urls>';  
+$HTTP_RAW_POST_DATA .= '<url id="36" type-id="1">http://mpoint.test.cellpointmobile.com/home/accept.php</url>';  
+$HTTP_RAW_POST_DATA .= '<url id="37" type-id="2">http://mpoint.test.cellpointmobile.com/_test/auth.php</url>                      ';  
+$HTTP_RAW_POST_DATA .= '</urls>';  
+$HTTP_RAW_POST_DATA .= '<keyword id="46">EK</keyword>';  
+$HTTP_RAW_POST_DATA .= '<payment-methods store-card="5" show-all-cards="true" max-stored-cards="3">';  
+$HTTP_RAW_POST_DATA .= '<payment-method id="338" type-id="6" state-id = "3" country-id="100" psp-id="7">VISA</payment-method>';  
+$HTTP_RAW_POST_DATA .= '<payment-method id="339" type-id="7" state-id = "1" country-id="100" psp-id="7">MasterCard</payment-method>';  
+$HTTP_RAW_POST_DATA .= '</payment-methods>';  
+$HTTP_RAW_POST_DATA .= '<payment-service-providers>';  
+$HTTP_RAW_POST_DATA .= '<payment-service-provider id="106" psp-id="7" stored-card = "true">';  
+$HTTP_RAW_POST_DATA .= '<name>IBE</name>';  
+$HTTP_RAW_POST_DATA .= '<username>IBE</username>';  
+$HTTP_RAW_POST_DATA .= '<password>IBE</password>';  
+$HTTP_RAW_POST_DATA .= '</payment-service-provider>';  
+$HTTP_RAW_POST_DATA .= '</payment-service-providers>';  
+$HTTP_RAW_POST_DATA .= '<account-configurations>';  
+$HTTP_RAW_POST_DATA .= '<account-config id="100071">';  
+$HTTP_RAW_POST_DATA .= '<name>Web</name>';  
+$HTTP_RAW_POST_DATA .= '<markup>app</markup>';  
+$HTTP_RAW_POST_DATA .= '<payment-service-providers>';  
+$HTTP_RAW_POST_DATA .= '<payment-service-provider id="118" psp-id="7">';  
+$HTTP_RAW_POST_DATA .= '<name>IBE</name>';  
+$HTTP_RAW_POST_DATA .= '</payment-service-provider>';  
+$HTTP_RAW_POST_DATA .= '</payment-service-providers>';  
+$HTTP_RAW_POST_DATA .= '</account-config>';  
+$HTTP_RAW_POST_DATA .= '</account-configurations>';  
+$HTTP_RAW_POST_DATA .= '<callback-protocol send-psp-id="true">mPoint</callback-protocol>';  
+$HTTP_RAW_POST_DATA .= '<identification>7</identification>';  
+$HTTP_RAW_POST_DATA .= '<transaction-time-to-live>0</transaction-time-to-live>';  
+$HTTP_RAW_POST_DATA .= '<issuer-identification-number-ranges>';  
+$HTTP_RAW_POST_DATA .= '<issuer-identification-number-range id="2" action-id="1">';  
+$HTTP_RAW_POST_DATA .= '<min>501999</min>';  
+$HTTP_RAW_POST_DATA .= '<max>501999</max>';  
+$HTTP_RAW_POST_DATA .= '</issuer-identification-number-range>';  
+$HTTP_RAW_POST_DATA .= '</issuer-identification-number-ranges>';  
+$HTTP_RAW_POST_DATA .= '</client-config>';  
+$HTTP_RAW_POST_DATA .= '</save-client-configuration>';  
+$HTTP_RAW_POST_DATA .= '</root>';  
 */
 
 $xml = '';
@@ -55,6 +103,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
 				
 		$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_SAVE_CLIENT, $aClientIDs);
+		
 		switch ($code)
 		{
 		case (mConsole::iSERVICE_CONNECTION_TIMEOUT_ERROR):
@@ -83,8 +132,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			$xml = '<status code="'. $code .'">Insufficient Client License</status>';
 			break;
 		case (mConsole::iAUTHORIZATION_SUCCESSFUL):
-			header("HTTP/1.1 200 OK");	
-			$bSingleSignOnSuccess = true;
+			header("HTTP/1.1 200 OK");			
 			break;
 		default:
 			header("HTTP/1.1 500 Internal Server Error");
@@ -93,300 +141,250 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			break;
 		}
 		
-		if($bSingleSignOnSuccess === true)
+		if ($code == mConsole::iAUTHORIZATION_SUCCESSFUL)
 		{				
-			//Validating of account and client
-			$obj_val = new Validate();
+			/* ========== INPUT VALIDATION START ========== */
+			$obj_Validate = new Validate();
 			$aMsgCodes = array();		
-			for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}); $j++)
+			for ($i=0; $i<count($obj_DOM->{'save-client-configuration'}->{'client-config'}); $i++)
 			{										
-				$iClientID = intval($obj_DOM->{'save-client-configuration'}->{'client-config'}[$j]["id"]);			
-				$iClientCode = $obj_val->valBasic($_OBJ_DB, $iClientID, -1);
-				if($iClientCode == 100 || $iClientCode == 14 || $iClientCode == 4)
+				$iClientID = intval($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]["id"]);			
+				$code = $obj_Validate->valBasic($_OBJ_DB, $iClientID, -1);				
+				if (in_array($code, array(4, 14, 100) ) === false) { $aMsgCodes[$iClientID][] = new BasicConfig($code + 10, "Validation of Client : ". $iClientID ." failed"); }
+								
+				// Validate Account Configurations
+				for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}); $j++)
 				{
-					for($a=0; $a<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$j]->accounts->account); $a++)
+					$iAccountID = intval($obj_DOM->{'save-client-configuration'}->{'client-config'}->{'account-configurations'}->{'account-config'}[$j]["id"]);
+					$code = $obj_Validate->valBasic($_OBJ_DB, $iClientID, $iAccountID);
+					if (in_array($code, array(14, 100, 11, 12) ) === true)
 					{
-						$iAccountID = intval($obj_DOM->{'save-client-configuration'}->{'client-config'}->accounts->account[$a]["id"]);
-						$iAccountCode = $obj_val->valBasic($_OBJ_DB, $iClientID, $iAccountID);
-						if($iAccountCode == 100 || $iAccountCode == 14)
-						{
-							for($k=0; $k<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$j]->accounts->account[$a]->{'payment-service-providers'}->{'payment-service-provider'}); $k++)
-							{ 										
-								$iMerchantSubAccountID = intval($obj_DOM->{'save-client-configuration'}->{'client-config'}[$j]->accounts->account[$a]->{'payment-service-providers'}->{'payment-service-provider'}[$k]["id"]);
-								$iMerchantSubAccountCode = $obj_val->valMerchantSubAccountID($_OBJ_DB, $iMerchantSubAccountID, $iAccountID);
-								if($iMerchantSubAccountCode == 1 || $iMerchantSubAccountCode == 2 || $iMerchantSubAccountCode == 3 || $iMerchantSubAccountCode == 4)
-								{
-									$aMsgCodes[$iClientID]['merchantsubaccount '.$iMerchantSubAccountID] = $iMerchantSubAccountCode;
-								}																									
-							}
-						}
-						else 
-						{
-							$aMsgCodes[$iClientID]['account '.$iAccountID] = $iAccountCode;
+						// Validate Merchant Sub-Accounts
+						for ($k=0; $k<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}); $k++)
+						{ 										
+							$id = intval($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$k]["id"]);
+							$code = $obj_Validate->valMerchantSubAccountID($_OBJ_DB, $id, $iAccountID);
+							if (1 < $code && $code < 10) { $aMsgCodes[$iClientID][] = new BasicConfig($code + 30, "Validation of Merchant Sub Account : ". $id ." failed"); }
 						}
 					}
-					//for client merchant accounts.
-					for($p=0; $p<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$j]->{'payment-service-providers'}->{'payment-service-providers'}); $p++)
-					{
-						$iMerchantAccountID = $obj_DOM->{'save-client-configuration'}->{'client-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$p]["id"];
-						$iMerchantAccountCode = $obj_val->valMerchantAccountID($_OBJ_DB, $iMerchantAccountID, $iClientID);
-						if($iMerchantAccountCode == 1 || $iMerchantAccountCode == 2 || $iMerchantAccountCode == 3 || $iMerchantAccountCode == 4)
-						{
-							$aMsgCodes[$iClientID]['merchantaccount '.$iMerchantAccountID] = $iMerchantAccountCode;
-						}
-					}
-					//for client payment methods.
-					for($c=0; $c<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$j]->{'payment-methods'}->{'payment-method'}); $c++)											
-					{
-						$iCardID = $obj_DOM->{'save-client-configuration'}->{'client-config'}[$j]->{'payment-methods'}->{'payment-method'}[$c]["id"];
-						$iCardCode = $obj_val->valCardAccessID($_OBJ_DB, $iCardID, $iClientID);
-						if($iCardCode == 1 || $iCardCode == 2 || $iCardCode == 3 || $iCardCode == 4)
-						{
-							$aMsgCodes[$iClientID]['paymentmethod '.$iCardID] = $iCardCode;
-						}						
-					}					
-					//for IIN ranges
-					for($in = 0; $in<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$j]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}); $in++)
-					{
-						$iIINRangeID = $obj_DOM->{'save-client-configuration'}->{'client-config'}[$j]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}[$in]["id"];
-						$iIINRangeCode = $obj_val->valIINRangeID($_OBJ_DB, $iIINRangeID, $iClientID);
-						if($iIINRangeCode == 1 || $iIINRangeCode == 2 || $iIINRangeCode == 3 || $iIINRangeCode == 4)
-						{
-							$aMsgCodes[$iClientID]['iinrange '.$iIINRangeID] = $iIINRangeCode;
-						}					
-						
-					}					
-					
+					else { $aMsgCodes[$iClientID][] = new BasicConfig($code + 20, "Validation of Account : ". $iAccountID ." failed"); }
 				}
-				else
+				// Validate Merchant Accounts				
+				for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-service-providers'}->{'payment-service-provider'} ); $j++)
 				{
-					$aMsgCodes[$iClientID]['clientid'] = $iClientCode;	
-				}				
+					$id = $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-service-providers'}->{'payment-service-provider'}[$j]["id"];
+					$code = $obj_Validate->valMerchantAccountID($_OBJ_DB, $id, $iClientID);
+					if (1 < $code && $code < 10) { $aMsgCodes[$iClientID][] = new BasicConfig($code + 40, "Validation of Merchant Account : ". $id ." failed"); }
+				}
+				// Validate Payment Methods
+				for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'} ); $j++)											
+				{
+					$id = $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["id"];
+					$code = $obj_Validate->valCardAccessID($_OBJ_DB, $id, $iClientID);
+					if (1 < $code && $code < 10) { $aMsgCodes[$iClientID][] = new BasicConfig($code + 50, "Validation of Payment Method : ". $id ." failed"); }
+				}					
+				// Validate Issuer Identification Number Ranges
+				for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}); $j++)
+				{
+					$id = $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}[$j]["id"];
+					$code = $obj_Validate->valIINRangeID($_OBJ_DB, $id, $iClientID);
+					if (1 < $code && $code < 10) { $aMsgCodes[$iClientID][] = new BasicConfig($code + 60, "Validation of Client IIN Range : ". $id ." failed"); }
+				}
+				
 			}
+			/* ========== INPUT VALIDATION END ========== */
 			
-			if(count($aMsgCodes) == 0)
+			// Success: Input Valid
+			if (count($aMsgCodes) == 0)
 			{			
-				for ($i=0; $i<count($obj_DOM->{'save-client-configuration'}); $i++)
+				for ($i=0; $i<count($obj_DOM->{'save-client-configuration'}->{'client-config'}); $i++)
 				{
-					for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}); $j++)
+					$_OBJ_DB->query("START TRANSACTION");  // START TRANSACTION does not work with Oracle db
+											
+					try
 					{
-						$_OBJ_DB->query("START TRANSACTION");  // START TRANSACTION does not work with Oracle db
-												
-						$clientid = $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["id"];	
-									
-						try
+						$iClientID = $obj_mPoint->saveClient( (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]["country-id"],
+															 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]["store-card"],
+															 General::xml2bool($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]["auto-capture"]),
+															 trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->name),
+															 trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->username),
+															 trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->password),
+															 trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'max-amount'}),
+															 trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]["language"]),
+															 General::xml2bool($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]["sms-receipt"]),
+															 General::xml2bool($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]["email-receipt"]),
+															 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]["mode"],
+															 trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'callback-protocol'}),
+															 General::xml2bool($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'callback-protocol'}["send-psp-id"]),
+															 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->identification,
+															 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'transaction-time-to-live'},
+															 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]["id"] );
+						// Success
+						if ($iClientID > 0)
 						{
-							$iErrors = $obj_mPoint->saveClient($clientid,
-																$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["country-id"],
-																$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["store-card"],
-														 		General::xml2bool($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["auto-capture"]),
-														 		$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->name,
-										 				 		$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->username,
-														 		$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->password,
-														 		$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["language"],
-														 		General::xml2bool($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["sms-receipt"]),
-														 		General::xml2bool($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["email-receipt"]),
-														 		$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]["mode"],
-														 		$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'callback-protocol'},
-														 		General::xml2bool($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'callback-protocol'}["send-psp-id"]),
-														 		$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->identification,
-														 		$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'transaction-time-to-live'}				 		
-														 		);						
+							//Disbale all accounts linked to the client.
+							$bDisableAccounts = $obj_mPoint->disableAccounts($iClientID);
 							
-							if ($iErrors == false )
+							if($bDisableAccounts === false) {throw new mConsoleDisableAccountFailedException("Error during disable Accounts for client: ". $iClientID); }
+							
+							for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}); $j++)
 							{
-								$_OBJ_DB->query("ROLLBACK");
-								header("HTTP/1.1 500 internal server error");
-	                            $xml .= '<status code="500">Error during Save Client</status>';
-								break;
+								$iAccountID = $obj_mPoint->saveAccount( $iClientID,
+																	   trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->name),
+																	   trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->markup),
+																	   (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}->{'account-configurations'}->{'account-config'}[$j]["id"]);
+								// Success
+								if ($iAccountID > 0)
+								{
+									//Disable all Merchant Sub Account.
+									$bDisableMSA = $obj_mPoint->disableMerchantSubAccounts($iAccountID);
+
+									if($bDisableMSA === false) { throw new mConsoleDisableMerchantSubAccountFailedException("Error during disable payment service providers for account: ". $iAccountID); }
+									
+									for ($k=0; $k<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}); $k++)
+									{
+										$iMSAID = $obj_mPoint->saveMerchantSubAccount( $iAccountID,
+																					  (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$k]["psp-id"],
+																					  trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$k]->name),
+																					  (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$k]["id"]);
+										// Error: Break out of loop
+										if ($iMSAID < 0) { throw new mConsoleSaveMerchantSubAccountFailedException("Error during save payment service provider: ". $iMSAID ." for account: ". $iAccountID); }
+									}
+								}
+								// Error: Break out of loop
+								else { throw new mConsoleSaveAccountFailedException("Error during Save Account: ". $iAccountID ." for client: ". $iClientID); }							
+							
 							}
-							else
-							{	
+							
+							//Disable Merchant Accounts
+							$bDisableMA = $obj_mPoint->disableMerchantAccounts($iClientID);
+							
+							if($bDisableMA === false) { throw new mConsoleDisableMerchantAccountFailedException("Error during disable payment service providers for client: ". $iClientID); }
+							
+							//Save Merchant Account Details.
+							for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-service-providers'}->{'payment-service-provider'}); $j++)
+							{
 								
-								$aAccountIDs = array();
-								for($a=0; $a<count($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->accounts->account); $a++)
-								{	                                
-									$accountid = $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}->accounts->account[$a]["id"];									
-									
-									$iErrors = $obj_mPoint->saveAccount($accountid,
-																	 $clientid,
-																	 $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->accounts->account[$a]->name,
-																	 $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->accounts->account[$a]->markup);
-									
-									$aAccountIDs[] = $accountid;
-																	 
-									if ($iErrors == false )
-									{
-										$_OBJ_DB->query("ROLLBACK");
-										header("HTTP/1.1 500 internal server error");
-	                                    $xml .= '<status code="500">Error during Save Account</status>';
-									}														
-									else
-									{				
-										$obj_mPoint->disableMerchantSubAccounts($accountid);
-										
-										for($k=0; $k<count($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->accounts->account[$a]->{'payment-service-providers'}->{'payment-service-provider'}); $k++)
-										{ 										
-											$iErrors = $obj_mPoint->saveMerchantSubAccount(
-													$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->accounts->account[$a]->{'payment-service-providers'}->{'payment-service-provider'}[$k]["id"],
-													$accountid,												
-													$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->accounts->account[$a]->{'payment-service-providers'}->{'payment-service-provider'}[$k]["psp-id"],
-													$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->accounts->account[$a]->{'payment-service-providers'}->{'payment-service-provider'}[$k]->name);
-									
-											if ($iErrors == false )
-											{								
-												$_OBJ_DB->query("ROLLBACK");
-												header("HTTP/1.1 500 internal server error");
-	                                            $xml .= '<status code="500">Error during save payment service providers for account</status>';
-											}										
-										}
-									}
-									
-								}
-								
-								/*Disable all accounts associated with the client that are  not passed in the request.*/
-								
-								$obj_mPoint->disableAccounts($clientid, $aAccountIDs);
-								
-								$obj_mPoint->disableMerchantAccounts($clientid);
-								
-								for($p=0; $p<count($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}); $p++)
-								{
-									
-									$iErrors = ($iErrors && $obj_mPoint->saveMerchantAccount(
-																		 $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$p]["id"],
-																		 $clientid,																	 
-																		 $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$p]["psp-id"],
-																		 $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$p]->name,
-																		 $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$p]->username,
-																		 $obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$p]->password,
-																		 General::xml2bool($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$p]['stored-card'])																	 
-																		 ));
-								}
-								if ($iErrors == false )
-								{
-									$_OBJ_DB->query("ROLLBACK");
-									header("HTTP/1.1 500 internal server error");
-	                                        $xml .= '<status code="500">Error during save payment service providers</status>';
-								}
-										
-								else
-								{
-									$obj_mPoint->disableAllCardAccess($clientid);
-									
-									$isClientCardError = $obj_mPoint->saveClientCardData($clientid, 
-																						$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-methods'}["store-card"], 
-																						General::xml2bool($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-methods'}["show-all-cards"]),
-																						$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-methods'}["max-stored-cards"]);
-																																
-									if($isClientCardError == true)
-									{
-										for($c=0; $c<count($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-methods'}->{'payment-method'}); $c++)											
-										{
-											$iErrors = ($iErrors && $obj_mPoint->saveCardAccess(
-																				$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-methods'}->{'payment-method'}[$c]["id"],
-																				$clientid,
-																				$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-methods'}->{'payment-method'}[$c]["type-id"],
-																				$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-methods'}->{'payment-method'}[$c]["psp-id"],
-																				$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-methods'}->{'payment-method'}[$c]["country-id"],
-																				$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'payment-methods'}->{'payment-method'}[$c]["state-id"]
-																				));
-										}
-									}
-									if (($isClientCardError && $iErrors) == false )
-									{
-										$_OBJ_DB->query("ROLLBACK");
-										header("HTTP/1.1 500 internal server error");
-		                                $xml .= '<status code="500">Error during save card access</status>';
-									}								
-									else
-									{
-										$obj_mPoint->disableKeyword($clientid);
-										
-										$iErrors = $obj_mPoint->saveKeyword(
-																			$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->keyword["id"],
-																			$clientid, 
-																			$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->keyword
-																			);
-									
-										if ($iErrors == false )
-										{
-											$_OBJ_DB->query("ROLLBACK");
-											header("HTTP/1.1 500 internal server error");
-	                                        $xml .= '<status code="500">Error during save keywords</status>';
-										}									
-										else
-										{
-											$obj_mPoint->disableURLs($clientid);
-											
-											for($u = 0; $u<count($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->urls->url); $u++)
-											{
-										
-												$iErrors = ($iErrors && $obj_mPoint->saveURL(
-																			$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->urls->url[$u]["id"],
-																			$clientid,
-																			$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->urls->url[$u]["type-id"],
-																			$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->urls->url[$u]));
-											}
-											if ($iErrors == false )
-											{
-												$_OBJ_DB->query("ROLLBACK");
-												header("HTTP/1.1 500 internal server error");
-												$xml .= '<status code="500">Error during save url</status>';
-											}
-											else
-											{
-												$obj_mPoint->disableIINRanges($clientid);
-												
-												for($in = 0; $in<count($obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}); $in++)
-												{
-											
-													$iErrors = ($iErrors && $obj_mPoint->saveIINRange(
-																								$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}[$in]["id"],
-																								$clientid,
-																								$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}[$in]["action-id"],
-																								$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}[$in]->min,
-																								$obj_DOM->{'save-client-configuration'}[$i]->{'client-config'}[$j]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}[$in]->max
-																								));
-												}
-												if ($iErrors == false )
-												{
-													$_OBJ_DB->query("ROLLBACK");
-													header("HTTP/1.1 500 internal server error");
-													$xml .= '<status code="500">Error during save IIN Range</status>';
-												}
-												else
-												{
-													$_OBJ_DB->query("COMMIT");
-		                                            $xml .= '<status code="100" client-id="'. $clientid .'">OK</status>';
-												}
-											}
+								 $iMAID = $obj_mPoint->saveMerchantAccount( $iClientID,																	 
+																		 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-service-providers'}->{'payment-service-provider'}[$j]["psp-id"],
+																		 trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-service-providers'}->{'payment-service-provider'}[$j]->name),
+																		 trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-service-providers'}->{'payment-service-provider'}[$j]->username),
+																		 trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-service-providers'}->{'payment-service-provider'}[$j]->password),
+																		 General::xml2bool($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-service-providers'}->{'payment-service-provider'}[$j]['stored-card']),
+																		 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-service-providers'}->{'payment-service-provider'}[$j]["id"]);
+								// Error: Break out of loop
+								if ($iMAID < 0) { throw new mConsoleSaveMerchantAccountFailedException("Error during save payment service provider: ". $iMAID ." for client: ". $iClientID); }
+							}
+
+							//Disable all card access to the client
+							$bDisableCardAccess = $obj_mPoint->disableAllCardAccess($iClientID);
+							
+							if($bDisableCardAccess === false) { throw new mConsoleDisableCardAccessFailedException("Error during disable all card access for client: ". $iClientID); }
+							
+							//Save the data in Client table for all the card related data.
+							$isClientCardError = $obj_mPoint->saveClientCardData( $iClientID, 
+																				(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}["store-card"], 
+																				(integer) General::xml2bool($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}["show-all-cards"]),
+																				(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}["max-stored-cards"]);
 																				
-										}	
-										
-									}
-									
-								}						
+							if ($isClientCardError == true)
+							{
+								for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}); $j++)											
+								{
+									//Save card access data.
+									$iPMID = $obj_mPoint->saveCardAccess(																		
+																		$iClientID,
+																		(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["type-id"],
+																		(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["psp-id"],
+																		(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["country-id"],
+																		(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["state-id"],
+																		(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["id"]
+																		);
+									// Error: Break out of loop
+									if ($iPMID < 0) { throw new mConsoleSaveCardAccessFailedException("Error during save card access: ". $iPMID ." for client: ". $iClientID); }
+								}
 							}
+							
+							//Disable all keywords.
+							$bDisableKeyword = $obj_mPoint->disableKeyword($iClientID);
+							
+							if($bDisableKeyword === false) { throw new mConsoleDisableKeywordFailedException("Error during save payment service provider: ". $iMSAID ." for account: ". $iAccountID); }
+							
+							$iKeyID = $obj_mPoint->saveKeyword(																
+																$iClientID, 
+																trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->keyword),
+																(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->keyword["id"]
+																);
+																
+							// Error: Break out of loop
+							if ($iKeyID < 0) { throw new mConsoleSaveKeywordFailedException("Error during save keywords: ". $iKeyID ." for client: ". $iClientID); }
+									
+							//Disable Client URLs
+							$bDisabeURLs = $obj_mPoint->disableURLs($iClientID);
+							
+							if($bDisableKeyword === false) { throw new mConsoleDisableKeywordFailedException("Error during disable keyword for client: ". $iClientID ); }
+														
+							//Save Client URL data.
+							for ($j = 0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->urls->url); $j++)
+							{
+						
+								$iURLID = $obj_mPoint->saveURL(														
+																$iClientID,
+																(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->urls->url[$j]["type-id"],
+																trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->urls->url[$j]),
+																(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->urls->url[$j]["id"]
+																);
+								// Error: Break out of loop
+								if ($iURLID < 0) { throw new mConsoleSaveURLFailedException("Error during save URL: ". $iURLID ." for client: ". $iClientID); }
+							}
+							
+							//Disable IIN Ranges for the Client.							
+							$bDisableIIN = $obj_mPoint->disableIINRanges($iClientID);
+							
+							if($bDisableIIN === false) { throw new mConsoleDisableIINRangeFailedException("Error during disable IIN range for client: ". $iClientID ); }
+							
+							//Save Client IIN range data.
+							for ($j = 0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}); $j++)
+							{
+						
+								$iIINRangeID = $obj_mPoint->saveIINRange(																			
+																		$iClientID,
+																		(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}[$j]["action-id"],
+																		(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}[$j]->min,
+																		(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}[$j]->max,
+																		(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}[$j]["id"]
+																		);
+								// Error: Break out of loop
+								if ($iURLID < 0) { throw new mConsoleSaveIINRangeFailedException("Error during save IIN Range: ". $iIINRangeID ." for client: ". $iClientID); }
+							}
+
+							//If all Success then commit the DB transaction.
+							$_OBJ_DB->query("COMMIT");
+                            $xml .= '<status code="100" client-id="'. $iClientID .'">OK</status>';
+													
 						}
-						catch (Exception $e)
-						{
-							$_OBJ_DB->query("ROLLBACK");
-							header("HTTP/1.1 500 internal server error");	
-	                        $xml .= '<status code="500">'. $e->getMessage() .'</status>';
-						}	
+						else { throw new mConsoleSaveClientFailedException("Error during save client: ". $iClientID);  }
+						
+						
 					}
+					catch (Exception $e)
+					{
+						$_OBJ_DB->query("ROLLBACK");
+						header("HTTP/1.1 500 Internal Server Error");
+						
+                        $xml .= '<status code="500">'. $e->getMessage() .'</status>';
+					}	
 				}
 			}
 			else
 			{
 				header("HTTP/1.1 400 Bad Request");
 		
-				foreach ($aMsgCodes as $clientid => $codeset)
-				{
-					foreach($codeset as $type => $code)
+				foreach ($aMsgCodes as $iClientID => $obj_MessageContainer)
+				{					
+					foreach($obj_MessageContainer as $obj_Message)
 					{
-						$xml .= '<status code="'. $code .'" > For Client '. $clientid .' and '. $type .'</status>' ;
+						$xml .= '<status code="'. $obj_Message->getID() .'">'. $obj_Message->getName() .' for Client '. $iClientID .'</status>' ;
 					}				
 				}			
 			}
