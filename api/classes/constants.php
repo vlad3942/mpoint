@@ -505,7 +505,7 @@ abstract class Constants
 	 * Unique Card ID for transaction's made using Danske Bank MobilePay
 	 *
 	 */
-	const iMOBILE_PAY = 17;
+	const iMOBILEPAY = 17;
 	/**
 	 * Unique Card ID for transaction's made using Cartebleue
 	 *

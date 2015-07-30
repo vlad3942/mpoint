@@ -77,7 +77,7 @@ try
 		$iFee = 0; // MobilePay fee is hardcoded to zero for now
 		$iAmount = $obj_TxnData->amount;
 
-		$iStateID = $obj_PSP->completeTransaction(Constants::iMOBILEPAY_PSP, $obj_TxnData["external-id"], Constants::iMOBILE_PAY , ($obj_TxnData->status["code"] >= 1000 ? Constants::iPAYMENT_ACCEPTED_STATE : Constants::iPAYMENT_REJECTED_STATE), $iFee, array(var_export($obj_TxnData, true) ) );
+		$iStateID = $obj_PSP->completeTransaction(Constants::iMOBILEPAY_PSP, $obj_TxnData["external-id"], Constants::iMOBILEPAY , ($obj_TxnData->status["code"] >= 1000 ? Constants::iPAYMENT_ACCEPTED_STATE : Constants::iPAYMENT_REJECTED_STATE), $iFee, array(var_export($obj_TxnData, true) ) );
 		$bPaymentIsCaptured = false;
 
 		// Callback URL has been defined for Client and transaction hasn't been duplicated
