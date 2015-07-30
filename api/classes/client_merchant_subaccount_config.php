@@ -28,22 +28,21 @@ class ClientMerchantSubAccountConfig extends BasicConfig
 	 * @param 	integer $pspid 		The unique ID of the Payment Service Provider that the configuration is valid for
 	 * @param 	PSPConfig $obj_PSP 	The configuration for the Payment Service Provider
 	 */
-	public function __construct($id, $accountid, $pspid, $pspname, PSPConfig $obj_PSP)
+	public function __construct($id, $accountid, $pspid, $pspname)
 	{
 		parent::__construct($id, $pspname);
 
 		$this->_iAccountID = (integer) $accountid;
-		$this->_iPSPID = (integer) $pspid;		
-		$this->_obj_PSP = $obj_PSP;		
+		$this->_iPSPID = (integer) $pspid;	
+				
 	}
 	public function getAccountID() { return $this->_iAccountID; }
 	public function getPSPID() { return $this->_iPSPID; }	
-	public function getPSPConfig() { return $this->_obj_PSP; }
 	
 	public function toXML()
 	{
-		$xml = '<payment-service-provider id = "' . $this->getID() . '" psp-id = "' . $this->getPSPConfig()->getID() . '">';			
-		$xml .= '<name>' . htmlspecialchars($this->getPSPConfig()->getName(), ENT_NOQUOTES) . '</name>';							
+		$xml = '<payment-service-provider id = "' . $this->getID() . '" psp-id = "' . intval($this->_iPSPID) . '">';			
+		$xml .= '<name>' . htmlspecialchars($this->getName(), ENT_NOQUOTES) . '</name>';							
 		$xml .= '</payment-service-provider>';				
 		
 		return $xml;
@@ -58,9 +57,8 @@ class ClientMerchantSubAccountConfig extends BasicConfig
 //		echo $sql ."\n";					
 		$RS = $oDB->getName($sql);		
 		if (is_array($RS) === true && count($RS) > 0)
-		{
-			$obj_PSPConfig = PSPConfig::produceConfig($oDB, $RS["CLIENTID"], $RS["ACCOUNTID"], $RS["PSPID"]);
-			return new ClientMerchantSubAccountConfig($RS["ID"], $RS["ACCOUNTID"], $RS["PSPID"], $RS["NAME"], $obj_PSPConfig);
+		{			
+			return new ClientMerchantSubAccountConfig($RS["ID"], $RS["ACCOUNTID"], $RS["PSPID"], $RS["NAME"]);
 		}
 		else { return null; }
 	}
