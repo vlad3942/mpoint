@@ -572,7 +572,6 @@ class mConsole extends Admin
 			if (intval($offset) > 0) { $sql .= " OFFSET ". intval($offset); }
 		}
 //		echo $sql ."\n";
-file_put_contents(sLOG_PATH ."/jona.log", $sql);
 		$res = $this->getDBConn()->query($sql);
 	
 		$sql = "SELECT stateid

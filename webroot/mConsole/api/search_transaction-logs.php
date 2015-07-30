@@ -115,12 +115,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				$obj_XSD->registerXPathNamespace("xsd", "http://www.w3.org/2001/XMLSchema");
 				if (strlen($obj_DOM->{'search-transaction-logs'}["limit"]) == 0)
 				{
-					$obj_Attr = $obj_XSD->xpath("//xsd:complexType[@name = 'transaction-search-request']/xsd:attribute[@name = 'limit']");
+					$obj_Attr = $obj_XSD->xpath("/xsd:schema/xsd:complexType[@name = 'transaction-search-request']/xsd:attribute[@name = 'limit']");
 					$obj_DOM->{'search-transaction-logs'}["limit"] = (integer) $obj_Attr["default"];
 				}
 				if (strlen($obj_DOM->{'search-transaction-logs'}["offset"]) == 0)
 				{
-					$obj_Attr = $obj_XSD->xpath("//xsd:complexType[@name = 'transaction-search-request']/xsd:attribute[@name = 'offset']");
+					$obj_Attr = $obj_XSD->xpath("/xsd:schema/xsd:complexType[@name = 'transaction-search-request']/xsd:attribute[@name = 'offset']");
 					$obj_DOM->{'search-transaction-logs'}["offset"] = (integer) $obj_Attr["default"];
 				}
 			}
