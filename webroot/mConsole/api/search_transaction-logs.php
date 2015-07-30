@@ -125,7 +125,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				}
 			}
 			$xml = '<transactions sorted-by="timestamp" sort-order="descending">';
-			$aObj_Logs = $obj_mPoint->searchTransactionLogs($aClientIDs, (integer) $obj_DOM->{'search-transaction-logs'}->transaction["id"], trim($obj_DOM->{'search-transaction-logs'}->transaction["order-no"]), (float) $obj_DOM->{'search-transaction-logs'}->transaction->customer->mobile, (string) $obj_DOM->{'search-transaction-logs'}->transaction->customer->email, (string) $obj_DOM->{'search-transaction-logs'}->transaction->customer["customer-ref"], str_replace("T", " ", $obj_DOM->{'search-transaction-logs'}->{'start-date'}), str_replace("T", " ", $obj_DOM->{'search-transaction-logs'}->{'end-date'}), General::xml2bool($obj_DOM->{'search-transaction-logs'}["debug"]), (integer) $obj_DOM->{'search-transaction-logs'}["limit"], (integer) $obj_DOM->{'search-transaction-logs'}["offset"]);
+			$obj_CustomerInfo = null;
+			if (count($obj_DOM->{'search-transaction-logs'}->transaction->customer) == 1)
+			{
+				$obj_CustomerInfo = CustomerInfo::produceInfo($obj_DOM->{'search-transaction-logs'}->transaction->customer);
+			}
+			$aObj_Logs = $obj_mPoint->searchTransactionLogs($aClientIDs, (integer) $obj_DOM->{'search-transaction-logs'}->transaction["id"], trim($obj_DOM->{'search-transaction-logs'}->transaction["order-no"]), $obj_CustomerInfo, str_replace("T", " ", $obj_DOM->{'search-transaction-logs'}->{'start-date'}), str_replace("T", " ", $obj_DOM->{'search-transaction-logs'}->{'end-date'}), General::xml2bool($obj_DOM->{'search-transaction-logs'}["verbose"]), (integer) $obj_DOM->{'search-transaction-logs'}["limit"], (integer) $obj_DOM->{'search-transaction-logs'}["offset"]);
 			foreach ($aObj_Logs as $obj_Log)
 			{
 				$xml .= $obj_Log->toXML();

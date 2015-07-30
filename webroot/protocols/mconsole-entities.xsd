@@ -469,10 +469,10 @@
 				</xs:annotation>
 			</xs:element>
 		</xs:all>
-		<xs:attribute name="debug" type="xs:boolean" use="required">
+		<xs:attribute name="verbose" type="xs:boolean" use="required">
 			<xs:annotation>
 				<xs:documentation>
-					Flag indicating whether debug data for each transaction should be returned as part of the transaction details
+					Flag indicating whether all data for each transaction should be returned as part of the transaction details
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>

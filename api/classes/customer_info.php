@@ -102,5 +102,15 @@ class CustomerInfo
 
 		return $xml;
 	}
+	
+	public static function produceInfo(SimpleXMLElement $obj_XML)
+	{
+		return new CustomerInfo( (integer) @$obj_XML["id"],
+								 (integer) @$obj_XML->mobile["country-id"],
+								 (float) @$obj_XML->mobile,
+								 @trim($obj_XML->email), trim($obj_XML["customer-ref"]),
+								 @trim($obj_XML->{'full-name'}),
+								 @trim($obj_XML["language"]) );
+	}
 }
 ?>

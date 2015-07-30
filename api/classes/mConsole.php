@@ -486,17 +486,15 @@ class mConsole extends Admin
 	 * @param array $aClientIDs		A list of client IDs who must own the found transactions
 	 * @param integer $id			mPoint's unique ID of the transaction
 	 * @param string $ono			The client's order number for the transaction
-	 * @param long $mob				The Customer's Mobile Number
-	 * @param string $email			The Customer's E-Mail address
-	 * @param string $cr			The Customer Reference for the End-User
+	 * @param CustomerInfo $oCI		Information about the customer's profile
 	 * @param string $start			The start date / time for when transactions must have been created in order to be included in the search result
 	 * @param string $end			The end date / time for when transactions must have been created in order to be included in the search result
-	 * @param boolean $debug		Boolean flag indicating whether debug data shoud be included
+	 * @param boolean $verbose		Boolean flag indicating whether debug data shoud be included
 	 * @param integer $limit		Number of results that are returned by the transaction search
 	 * @param integer $offset		The offset from which the results returned by the search should start, any results before the offset are skipped by the search
 	 * @return multitype:TransactionLogInfo
 	 */
-	public function searchTransactionLogs(array $aClientIDs, $id=-1, $ono="", $mob=-1, $email="", $cr="", $start="", $end="", $debug=false, $limit=100, $offset=0)
+	public function searchTransactionLogs(array $aClientIDs, $id=-1, $ono="", CustomerInfo $oCI=null, $start="", $end="", $verbose=false, $limit=100, $offset=0)
 	{
 		$sql = "";
 		// A search for an Order Number makes searching the end-user's Transaction table obsolete 
@@ -516,9 +514,12 @@ class mConsole extends Admin
 					INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON  CL.id = CLA.clientid
 					WHERE EUT.txnid IS NULL AND CL.id IN (". implode(",", $aClientIDs) .")";
 			if (intval($id) > 0) { $sql .= " AND EUA.id = '". floatval($id) ."'"; }
-			if (floatval($mob) > 0) { $sql .= " AND EUA.mobile = '". floatval($mob) ."'"; }
-			if (empty($email) === false) { $sql .= " AND EUA.email = '". $this->getDBConn()->escStr($email) ."'"; }
-			if (empty($cr) === false) { $sql .= " AND EUA.externalid = '". $this->getDBConn()->escStr($cr) ."'"; }
+			if ( ($oCI instanceof CustomerInfo) === true)
+			{
+				if ($oCI->getMobile() > 0) { $sql .= " AND EUA.countryid = ". $oCI->getCountryID() ." AND EUA.mobile = '". $oCI->getMobile() ."'"; }
+				if (strlen($oCI->getEMail() ) > 0) { $sql .= " AND EUA.email = '". $this->getDBConn()->escStr($oCI->getEMail() ) ."'"; }
+				if (strlen($oCI->getCustomerRef() ) > 0) { $sql .= " AND EUA.externalid = '". $this->getDBConn()->escStr($oCI->getCustomerRef() ) ."'"; }
+			}
 			if (empty($start) === false && strlen($start) > 0) { $sql .= " AND '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <= EUT.created"; }
 			if (empty($end) === false && strlen($end) > 0) { $sql .= " AND EUT.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
 			$sql .= "
@@ -554,9 +555,12 @@ class mConsole extends Admin
 				WHERE CL.id IN (". implode(",", $aClientIDs) .")";
 		if (intval($id) > 0) { $sql .= " AND Txn.id = '". floatval($id) ."'"; }
 		if (empty($ono) === false) { $sql .= " AND Txn.orderid = '". $this->getDBConn()->escStr($ono) ."'"; }
-		if (floatval($mob) > 0) { $sql .= " AND Txn.mobile = '". floatval($mob) ."'"; }
-		if (empty($email) === false) { $sql .= " AND Txn.email = '". $this->getDBConn()->escStr($email) ."'"; }
-		if (empty($cr) === false) { $sql .= " AND Txn.customer_ref = '". $this->getDBConn()->escStr($cr) ."'"; }
+		if ( ($oCI instanceof CustomerInfo) === true)
+		{
+			if ($oCI->getMobile() > 0) { $sql .= " AND Txn.operatorid / 100 = ". $oCI->getCountryID() ." AND Txn.mobile = '". $oCI->getMobile() ."'"; }
+			if (strlen($oCI->getEMail() ) > 0) { $sql .= " AND Txn.email = '". $this->getDBConn()->escStr($oCI->getEMail() ) ."'"; }
+			if (strlen($oCI->getCustomerRef() ) > 0) { $sql .= " AND Txn.customer_ref = '". $this->getDBConn()->escStr($oCI->getCustomerRef() ) ."'"; }
+		}
 		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <= Txn.created"; }
 		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND Txn.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
 		$sql .= "
@@ -568,6 +572,7 @@ class mConsole extends Admin
 			if (intval($offset) > 0) { $sql .= " OFFSET ". intval($offset); }
 		}
 //		echo $sql ."\n";
+file_put_contents(sLOG_PATH ."/jona.log", $sql);
 		$res = $this->getDBConn()->query($sql);
 	
 		$sql = "SELECT stateid
@@ -611,7 +616,7 @@ class mConsole extends Admin
 			
 			if (array_key_exists($RS["COUNTRYID"], $aObj_CountryConfigurations) === false) { $aObj_CountryConfigurations[$RS["COUNTRYID"] ] = CountryConfig::produceConfig($this->getDBConn(), $RS["COUNTRYID"]); }
 			$aObj_Messages = array();
-			if ($debug === true && in_array($RS["TYPEID"], $aTypes) === true)
+			if ($verbose === true && in_array($RS["TYPEID"], $aTypes) === true)
 			{
 				$aParams = array($RS["ID"]);
 				$res2 = $this->getDBConn()->execute($stmt2, $aParams);
