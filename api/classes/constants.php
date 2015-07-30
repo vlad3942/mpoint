@@ -461,6 +461,11 @@ abstract class Constants
 	 *
 	 */
 	const iPOSTEPAY_MASTERCARD = 20;
+	/**
+	 * Unique Card ID for transaction's made using UATP
+	 *
+	 */
+	const iUATP = 21;
 
 	/**
 	 * Unique Fee Type ID for Top-Ups
