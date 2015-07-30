@@ -48,3 +48,6 @@ ALTER TABLE EndUser.Card_Tbl ADD CONSTRAINT Card2CardCharge_FK FOREIGN KEY (char
 
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10014, 17, 11);
 
+INSERT INTO System.Card_Tbl (id, name, position) VALUES ('18', 'Cartebleue', 16);
+INSERT INTO System.Card_Tbl (id, name, position) VALUES ('19', 'Postepay VISA', 17);
+INSERT INTO System.Card_Tbl (id, name, position) VALUES ('20', 'Postepay MasterCard', 18);
