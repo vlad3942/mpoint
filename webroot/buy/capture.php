@@ -14,12 +14,15 @@
 
 // Require Global Include File
 require_once("../inc/include.php");
+
 // Require specific Business logic for the Capture component
 require_once(sCLASS_PATH ."/capture.php");
 // Require Business logic for the End-User Account Component
 require_once(sCLASS_PATH ."/enduser_account.php");
 // Require general Business logic for the Callback module
 require_once(sCLASS_PATH ."/callback.php");
+// Require specific Business logic for the CPM PSP component
+require_once(sINTERFACE_PATH ."/cpm_psp.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
 // Require specific Business logic for the WorldPay component
@@ -33,10 +36,10 @@ if (function_exists("json_encode") === true)
 	// Require specific Business logic for the Stripe component
 	require_once(sCLASS_PATH ."/stripe.php");
 }
-// Require specific Business logic for the CPM PSP component
-require_once(sINTERFACE_PATH ."/cpm_psp.php");
 // Require specific Business logic for the MobilePay component
 require_once(sCLASS_PATH ."/mobilepay.php");
+// Require specific Business logic for the Adyen component
+require_once(sCLASS_PATH ."/adyen.php");
 
 header("Content-Type: application/x-www-form-urlencoded");
 

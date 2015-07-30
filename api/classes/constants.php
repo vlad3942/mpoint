@@ -401,7 +401,11 @@ abstract class Constants
 	 *
 	 */
 	const iMOBILEPAY_PSP = 11;
-
+	/**
+	 * Unique ID for the Payment Service Provider: Adyen
+	 *
+	 */
+	const iADYEN_PSP = 12;
 
 	/**
 	 * Unique ID for the Electronic Payment Flow

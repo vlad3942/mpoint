@@ -33,6 +33,8 @@ require_once(sCLASS_PATH ."/credit_card.php");
 
 // Require general Business logic for the Callback module
 require_once(sCLASS_PATH ."/callback.php");
+// Require specific Business logic for the CPM PSP component
+require_once(sINTERFACE_PATH ."/cpm_psp.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
 // Require specific Business logic for the WorldPay component
@@ -43,10 +45,10 @@ require_once(sCLASS_PATH ."/payex.php");
 require_once(sCLASS_PATH ."/netaxept.php");
 // Require specific Business logic for the Stripe component
 require_once(sCLASS_PATH ."/stripe.php");
-// Require specific Business logic for the CPM PSP component
-require_once(sINTERFACE_PATH ."/cpm_psp.php");
 // Require specific Business logic for the MobilePay component
 require_once(sCLASS_PATH ."/mobilepay.php");
+// Require specific Business logic for the Adyen component
+require_once(sCLASS_PATH ."/adyen.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 

@@ -35,6 +35,8 @@ require_once(sCLASS_PATH ."/credit_card.php");
 
 // Require general Business logic for the Callback module
 require_once(sCLASS_PATH ."/callback.php");
+// Require specific Business logic for the CPM PSP component
+require_once(sINTERFACE_PATH ."/cpm_psp.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
 // Require general Business logic for the Cellpoint Mobile module
@@ -52,6 +54,8 @@ if (function_exists("json_encode") === true)
 	// Require specific Business logic for the Stripe component
 	require_once(sCLASS_PATH ."/stripe.php");
 }
+// Require specific Business logic for the Adyen component
+require_once(sCLASS_PATH ."/adyen.php");
 
 ignore_user_abort(true);
 set_time_limit(120);

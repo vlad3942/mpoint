@@ -260,6 +260,23 @@ $aHTTP_CONN_INFO["mobilepay"]["paths"]["refund"] = "/mpoint/danskebank/refund";
 //$aHTTP_CONN_INFO["mobilepay"]["paths"]["status"] = "/transstatus.pml";
 
 /**
+ * Connection info for connecting to Adyen
+ */
+$aHTTP_CONN_INFO["adyen"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["adyen"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["adyen"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["adyen"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["adyen"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["adyen"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["adyen"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["adyen"]["paths"]["auth"] = "/mpoint/adyen/initialize-payment";
+$aHTTP_CONN_INFO["adyen"]["paths"]["auth"] = "/mpoint/adyen/authorize-payment";
+$aHTTP_CONN_INFO["adyen"]["paths"]["capture"] = "/mpoint/adyen/capture";
+//$aHTTP_CONN_INFO["adyen"]["paths"]["status"] = "/mpoint/adyen/status";
+$aHTTP_CONN_INFO["adyen"]["paths"]["cancel"] = "/mpoint/adyen/cancel";
+$aHTTP_CONN_INFO["adyen"]["paths"]["refund"] = "/mpoint/adyen/refund";
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>
