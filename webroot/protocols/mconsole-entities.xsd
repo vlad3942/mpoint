@@ -1206,4 +1206,105 @@
 		</xs:simpleContent>
 	</xs:complexType>
 
+	<xs:complexType name="void-payments-request">
+		<xs:annotation>
+			<xs:documentation>Specifies the criteria for executing a refund</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="transactions" minOccurs="1" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>
+						List of payment transactions for the client that should be refunded
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="transaction" minOccurs="1" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>
+									Specifies the details for the payment transaction that should be refunded
+								</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:all>
+									<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1">
+										<xs:annotation>
+											<xs:documentation>
+												The amount that should be refunded
+											</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:all>
+								<xs:attribute name="id" type="xs:positiveInteger" use="required">
+									<xs:annotation>
+										<xs:documentation>
+											mPoint's unique ID for the transaction that should be refunded
+										</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+								<xs:attribute name="order-no" type="xs:string" use="required">
+									<xs:annotation>
+										<xs:documentation>
+											The Client's (Merchant's) Order Number for the transaction that should be refunded
+										</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
+					<xs:attribute name="account" type="xs:positiveInteger" use="required" />
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="void-payments-response">
+		<xs:sequence>
+			<xs:element name="transactions" minOccurs="1" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>
+						List of payment transactions were attempted refunded
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="transaction" minOccurs="1" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>
+									Specifies the details for the payment transaction was attempted refunded
+								</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="status" type="status" minOccurs="1" maxOccurs="unbounded">
+										<xs:annotation>
+											<xs:documentation>
+												Details about the status for the transacton that was attempted refunded
+											</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+								<xs:attribute name="id" type="xs:positiveInteger" use="required">
+									<xs:annotation>
+										<xs:documentation>
+											mPoint's unique ID for the transaction that was attempted refunded
+										</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+								<xs:attribute name="order-no" type="xs:string" use="required">
+									<xs:annotation>
+										<xs:documentation>
+											The Client's (Merchant's) Order Number for the transaction that was attempted refunded
+										</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
+					<xs:attribute name="account" type="xs:positiveInteger" use="required" />
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
 </xs:schema>
