@@ -108,7 +108,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			{
 				header("HTTP/1.1 404 Not Found");
 				
-				$xml = '<status code="404>Configuration not found for clients: '. var_export($aClientIDs) .'</status>';
+				$xml = '<status code="404">Configuration not found for clients: '. var_export($aClientIDs, true) .'</status>';
 			}
 			else
 			{
