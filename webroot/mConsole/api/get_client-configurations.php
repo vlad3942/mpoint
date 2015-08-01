@@ -93,22 +93,34 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			$xml = '<status code="'. $code .'">Insufficient Client License</status>';
 			break;
 		case (mConsole::iAUTHORIZATION_SUCCESSFUL):
-			$xml = '<client-configurations>';
+			$i = 0;
 			foreach ($aClientIDs as $id)
 			{
 				$obj_Config = ClientConfig::produceConfig($_OBJ_DB, $id);
 				if ($obj_Config->getID() > 0)
 				{
+					$i++;
 					$xml .= $obj_Config->toFullXML();
 				}
 			}
 			// No Client Configurations found
-			if ($xml == '<client-configurations>')
+			if (empty($xml) === true)
 			{
 				header("HTTP/1.1 404 Not Found");
+				
+				$xml = '<status code="404>Configuration not found for clients: '. var_export($aClientIDs) .'</status>';
 			}
-			else { header("HTTP/1.1 200 OK"); }
-			$xml .= '</client-configurations>';	
+			else
+			{
+				// Configuration not found for all Clients
+				if ($i < count($aClientIDs) )
+				{
+					header("HTTP/1.1 206 Partial Content");
+				}
+				else { header("HTTP/1.1 200 OK"); }
+				
+				$xml = '<client-configurations>'. $xml .'</client-configurations>';
+			}
 			break;
 		default:
 			header("HTTP/1.1 500 Internal Server Error");
