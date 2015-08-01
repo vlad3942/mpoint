@@ -1206,15 +1206,15 @@
 		</xs:simpleContent>
 	</xs:complexType>
 
-	<xs:complexType name="void-payments-request">
+	<xs:complexType name="transaction-state-changes-request">
 		<xs:annotation>
-			<xs:documentation>Specifies the criteria for executing a refund</xs:documentation>
+			<xs:documentation>Specifies the criteria for executing a voided (cancelled / refunded) or captured</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="transactions" minOccurs="1" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>
-						List of payment transactions for the client that should be refunded
+						List of payment transactions for the client that should be voided (cancelled / refunded) or captured
 					</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
@@ -1222,7 +1222,7 @@
 						<xs:element name="transaction" minOccurs="1" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:documentation>
-									Specifies the details for the payment transaction that should be refunded
+									Specifies the details for the payment transaction that should be voided (cancelled / refunded) or captured
 								</xs:documentation>
 							</xs:annotation>
 							<xs:complexType>
@@ -1230,7 +1230,7 @@
 									<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1">
 										<xs:annotation>
 											<xs:documentation>
-												The amount that should be refunded
+												The amount that should be voided (cancelled / refunded) or captured
 											</xs:documentation>
 										</xs:annotation>
 									</xs:element>
@@ -1238,14 +1238,14 @@
 								<xs:attribute name="id" type="xs:positiveInteger" use="required">
 									<xs:annotation>
 										<xs:documentation>
-											mPoint's unique ID for the transaction that should be refunded
+											mPoint's unique ID for the transaction that should be voided (cancelled / refunded) or captured
 										</xs:documentation>
 									</xs:annotation>
 								</xs:attribute>
 								<xs:attribute name="order-no" type="xs:string" use="required">
 									<xs:annotation>
 										<xs:documentation>
-											The Client's (Merchant's) Order Number for the transaction that should be refunded
+											The Client's (Merchant's) Order Number for the transaction that should be voided (cancelled / refunded) or captured
 										</xs:documentation>
 									</xs:annotation>
 								</xs:attribute>
@@ -1258,12 +1258,12 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="void-payments-response">
+	<xs:complexType name="transaction-state-changes-response">
 		<xs:sequence>
 			<xs:element name="transactions" minOccurs="1" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>
-						List of payment transactions were attempted refunded
+						List of payment transactions were attempted voided (cancelled / refunded) or captured
 					</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
@@ -1271,7 +1271,7 @@
 						<xs:element name="transaction" minOccurs="1" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:documentation>
-									Specifies the details for the payment transaction was attempted refunded
+									Specifies the details for the payment transaction was attempted voided (cancelled / refunded) or captured
 								</xs:documentation>
 							</xs:annotation>
 							<xs:complexType>
@@ -1279,7 +1279,7 @@
 									<xs:element name="status" type="status" minOccurs="1" maxOccurs="unbounded">
 										<xs:annotation>
 											<xs:documentation>
-												Details about the status for the transacton that was attempted refunded
+												Details about the status for the transacton that was attempted voided (cancelled / refunded) or captured
 											</xs:documentation>
 										</xs:annotation>
 									</xs:element>
@@ -1287,14 +1287,14 @@
 								<xs:attribute name="id" type="xs:positiveInteger" use="required">
 									<xs:annotation>
 										<xs:documentation>
-											mPoint's unique ID for the transaction that was attempted refunded
+											mPoint's unique ID for the transaction that was attempted voided (cancelled / refunded) or captured
 										</xs:documentation>
 									</xs:annotation>
 								</xs:attribute>
 								<xs:attribute name="order-no" type="xs:string" use="required">
 									<xs:annotation>
 										<xs:documentation>
-											The Client's (Merchant's) Order Number for the transaction that was attempted refunded
+											The Client's (Merchant's) Order Number for the transaction that was attempted voided (cancelled / refunded) or captured
 										</xs:documentation>
 									</xs:annotation>
 								</xs:attribute>
