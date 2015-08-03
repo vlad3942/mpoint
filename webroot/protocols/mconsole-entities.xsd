@@ -956,10 +956,10 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="issuer-identification-number-ranges" minOccurs="0" maxOccurs="1">
+			<xs:element name="issuer-identification-number-ranges" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="issuer-identification-number-range" type="issuer-identification-number-range-config" minOccurs="1" maxOccurs="unbounded" />
+						<xs:element name="issuer-identification-number-range" type="issuer-identification-number-range-config" minOccurs="0" maxOccurs="unbounded" />
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
