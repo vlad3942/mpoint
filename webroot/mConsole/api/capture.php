@@ -27,17 +27,19 @@ require_once(sCLASS_PATH ."/mConsole.php");
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
  
 
+/*
 $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
-/*
+
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<refund>';
-$HTTP_RAW_POST_DATA .= '<txnid>'. htmlspecialchars($tid, ENT_NOQUOTES) .'</txnid>';
-$HTTP_RAW_POST_DATA .= '<mpointid>'. htmlspecialchars($mid, ENT_NOQUOTES) .'</mpointid>';
-$HTTP_RAW_POST_DATA .= '<orderid>'. htmlspecialchars($oid, ENT_NOQUOTES) .'</orderid>';
-$HTTP_RAW_POST_DATA .= '<amount>'. htmlspecialchars($amount, ENT_NOQUOTES) .'</amount>';
-$HTTP_RAW_POST_DATA .= '</refund>';
+$HTTP_RAW_POST_DATA .= '<capture>';
+$HTTP_RAW_POST_DATA .= '<transactions client-id="10007" account = "100006">';
+$HTTP_RAW_POST_DATA .= '<transaction id="1798769" order-no="1412177706">';
+$HTTP_RAW_POST_DATA .= '<amount country-id="100">20</amount>';
+$HTTP_RAW_POST_DATA .= '</transaction>';
+$HTTP_RAW_POST_DATA .= '</transactions>';
+$HTTP_RAW_POST_DATA .= '</capture>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
 
