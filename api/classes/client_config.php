@@ -70,6 +70,12 @@ class ClientConfig extends BasicConfig
 	 */
 	private $_aObj_PaymentMethodConfigurations;
 	/**
+	 * Configuration for the Issuer Identification ranges for the client.
+	 *
+	 * @var Array
+	 */
+	private $_aObj_IINRangeConfigurations;
+	/**
 	 * Client's Username for GoMobile
 	 *
 	 * @var string
@@ -304,9 +310,10 @@ class ClientConfig extends BasicConfig
 	 * @param   ClientURLConfig $oMESBURL	Object that holds the MESB URL
 	 * @param   array $aObj_ACs				List of Configurations for the Accounts the Transaction can be processed through
 	 * @param   array $aObj_MAs				List of Merchant Accounts for each Payment Service Providers
-	 * @param   array $aObj_PMs				List of Payment Methods (Cards) that the client offers	 
+	 * @param   array $aObj_PMs				List of Payment Methods (Cards) that the client offers
+	 * @param   array $aObj_IINRs			List of IIN Range values for the client.	 
 	 */
-	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array() )
+	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array() )
 	{
 		parent::__construct($id, $name);
 
@@ -351,6 +358,7 @@ class ClientConfig extends BasicConfig
 		$this->_aObj_AccountsConfigurations = $aObj_ACs;
 		$this->_aObj_MerchantAccounts = $aObj_MAs;
 		$this->_aObj_PaymentMethodConfigurations = $aObj_PMs;
+		$this->_aObj_IINRangeConfigurations = $aObj_IINRs;		
 	}
 
 	/**
@@ -663,6 +671,26 @@ class ClientConfig extends BasicConfig
 	}
 	
 	/**
+	 * Returns the XML payload of array of Configurations for the Client's Issuer Identification Number ranges.
+	 *
+	 * @return 	String
+	 */
+	private function _getIINRangesConfigAsXML()
+	{
+		$xml = '<issuer-identification-number-ranges>';
+		foreach($this->_aObj_IINRangeConfigurations as $obj_IINR)
+		{
+			if ( ($obj_IINR instanceof ClientIINRangeConfig) === true)
+			{
+				$xml .= $obj_IINR->toXML();
+			}
+		}
+		$xml .= '</issuer-identification-number-ranges>';
+			
+		return $xml;
+	}
+	
+	/**
 	 * Returns the transaction time to live in seconds.	 
 	 *
 	 * @return 	integer
@@ -718,7 +746,8 @@ class ClientConfig extends BasicConfig
 		$xml .= $this->_getAccountsConfigurationsAsXML();		
 		$xml .= '<callback-protocol send-psp-id = "'.General::bool2xml($this->sendPSPID()).'">'. htmlspecialchars($this->_sMethod, ENT_NOQUOTES) .'</callback-protocol>';
 		$xml .= '<identification>'. $this->_iIdentification .'</identification>';
-		$xml .= '<transaction-time-to-live>'. $this->getTransactionTTL() .'</transaction-time-to-live>';						
+		$xml .= '<transaction-time-to-live>'. $this->getTransactionTTL() .'</transaction-time-to-live>';
+		$xml .= $this->_getIINRangesConfigAsXML();						
 		$xml .= '</client-config>';
 		
 		return $xml;
@@ -807,6 +836,7 @@ class ClientConfig extends BasicConfig
 		$aObj_AccountsConfigurations = AccountConfig::produceConfigurations($oDB, $id);
 		$aObj_ClientMerchantAccountConfigurations = ClientMerchantAccountConfig::produceConfigurations($oDB, $id);
 		$aObj_ClientCardsAccountConfigurations = ClientPaymentMethodConfig::produceConfigurations($oDB, $id);
+		$aObj_ClientIINRangesConfigurations = ClientIINRangeConfig::produceConfigurations($oDB, $id);		
 		
 		$obj_CustomerImportURL = null;
 		$obj_AuthenticationURL = null;
@@ -831,7 +861,7 @@ class ClientConfig extends BasicConfig
 			}
 		}
 
-		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations,$aObj_ClientCardsAccountConfigurations);
+		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations,$aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations);
 	}
 
 	/**
