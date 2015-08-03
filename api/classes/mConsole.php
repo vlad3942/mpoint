@@ -56,7 +56,9 @@ class mConsole extends Admin
 	const sPERMISSION_GET_CLIENTS = "mpoint.client-configuration.get.x";
 	const sPERMISSION_SAVE_CLIENT = "mpoint.client-configuration.save.x";
 	const sPERMISSION_GET_PAYMENT_SERVICE_PROVIDERS = "mpoint.payment-service-provider-configuration.get.x";
-	const sPERMISSION_SEARCH_TRANSACTION_LOGS = "mpoint.transaction-logs.search.x";	
+	const sPERMISSION_SEARCH_TRANSACTION_LOGS = "mpoint.transaction-logs.search.x";
+	const sPERMISSION_VOID_PAYMENTS = "mpoint.void-payments.get.x";
+	const sPERMISSION_CAPTURE_PAYMENTS = "mpoint.capture-payments.get.x";	
 	
 	public function saveClient($cc, $storecard, $autocapture, $name, $username, $password, $maxamt, $lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl, $id = -1)
 	{
