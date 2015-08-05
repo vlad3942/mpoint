@@ -184,7 +184,7 @@ class CPG extends Callback
 			$b .= '</'. $this->getCardName($obj_XML["type-id"]) .'>';
 		}
 		// Other Type of token which may be authorized directly through CPG
-		else { $b .= '<'. $this->getCardName($obj_XML["id"]) .'>'; }
+		else { $b .= '</'. $this->getCardName($obj_XML["id"]) .'>'; }
 		$b .= '</paymentDetails>';
 		$b .= '<shopper>';
 		$b .= '<shopperIPAddress>'. htmlspecialchars($this->getTxnInfo()->getIP(), ENT_NOQUOTES) .'</shopperIPAddress>'; // mandatory
@@ -213,7 +213,7 @@ class CPG extends Callback
 		// ApplePay token which may be authorized directly through CPG
 		if (count($obj_XML->ticket) == 0)
 		{
-			$b = substr($b, 0, strlen($b) - strlen("</enchancedData>") - 1);
+			$b = substr($b, 0, strlen($b) - strlen("</enchancedData>") );
 			$b .= '<bkgChannel>MPH-ApplePay</bkgChannel>';
 			$b .= '</enchancedData>';
 		}
