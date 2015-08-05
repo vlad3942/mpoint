@@ -128,7 +128,7 @@ class CPG extends Callback
 		else
 		{
 			$b .= '<'. $this->getCardName($obj_XML["id"]) .'>';
-			$b .= '<cardNumber>'. htmlspecialchars($obj_Card->{'card-number'}, ENT_NOQUOTES) .'</cardNumber>';
+			$b .= '<cardNumber>'. htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) .'</cardNumber>';
 			$b .= '<expiryDate>';
 			$b .= '<date month="'. substr($obj_XML->expiry, 0, 2) .'" year="20'. substr($obj_XML->expiry, -2) .'" />'; // mandatory
 			$b .= '</expiryDate>';
@@ -141,15 +141,15 @@ class CPG extends Callback
 			else { $b .= '<cardHolderName>John Doe</cardHolderName>'; }
 			$b .= '<info3DSecure>';
 			$b .= '<xid/>';
-			$b .= '<cavv>'. htmlspecialchars($obj_Card->cryptogram, ENT_NOQUOTES) .'</cavv>';
-			if (strlen($obj_Card->cryptogram["eci"]) > 0)
+			$b .= '<cavv>'. htmlspecialchars($obj_XML->cryptogram, ENT_NOQUOTES) .'</cavv>';
+			if (strlen($obj_XML->cryptogram["eci"]) > 0)
 			{
-				$eci = (integer) $obj_Card->cryptogram["eci"];
+				$eci = (integer) $obj_XML->cryptogram["eci"];
 				$b .= '<eci>'. ($eci < 10 ? "0". $eci : $eci) .'</eci>';
 			}
 			else { $b .= '<eci />'; }
 			$b .= '</info3DSecure>';
-			switch (strtolower($obj_Card->cryptogram["type"]) )
+			switch (strtolower($obj_XML->cryptogram["type"]) )
 			{
 			case "3ds":	// 3DSecure
 				$b .= '<paymentDataType>3DSecure</paymentDataType>';
