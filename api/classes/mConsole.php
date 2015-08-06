@@ -357,19 +357,19 @@ class mConsole extends Admin
 	{
 		if($id > 0)
 		{
-			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".IINRange_Tbl
-					SET actionid = ". intval($actionid) .", minrange = ". intval($min) .", maxrange = ". intval($max) .",
+			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".IINList_Tbl
+					SET iinactionid = ". intval($actionid) .", min = ". intval($min) .", max = ". intval($max) .",
 					enabled = '" . intval(true) . "'
 					WHERE id = ". intval($id) ." AND clientid = ". intval($clientid);			
 		}
 		else
 		{
-			$sql = "SELECT Nextval('Client". sSCHEMA_POSTFIX .".IINRange_Tbl_id_seq') AS id";
+			$sql = "SELECT Nextval('Client". sSCHEMA_POSTFIX .".IINList_Tbl_id_seq') AS id";
 			$RS = $this->getDBConn()->getName($sql);
 			$id = $RS["ID"];
 				
-			$sql = "INSERT INTO Client". sSCHEMA_POSTFIX .".IINRange_Tbl 
-						(id, clientid , actionid, minrange, maxrange)
+			$sql = "INSERT INTO Client". sSCHEMA_POSTFIX .".IINList_Tbl 
+						(id, clientid , iinactionid, min, max)
 					VALUES
 						(". $id .", ". intval($clientid) .", ". intval($actionid) .", ". intval($min) .", ". intval($max) .")";			
 		}
@@ -383,7 +383,7 @@ class mConsole extends Admin
 	
 	public function disableIINRanges($clientid)
 	{
-		$sql = "UPDATE Client". sSCHEMA_POSTFIX .".IINRange_Tbl
+		$sql = "UPDATE Client". sSCHEMA_POSTFIX .".IINList_Tbl
 				SET enabled = '". intval(false) ."'
 				WHERE clientid = ". intval($clientid);		
 		//echo $sql ."\n";		
