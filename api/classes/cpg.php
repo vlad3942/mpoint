@@ -253,7 +253,8 @@ class CPG extends Callback
 		if ($code == 200)
 		{
 			$obj_DOM = simplexml_load_string($obj_HTTP->getReplyBody() );
-			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPSP_PAYMENT_RESPONSE_STATE, $obj_DOM->asXML() );
+			if (strlen($obj_DOM) > 0) { $this->newMessage($this->getTxnInfo()->getID(), Constants::iPSP_PAYMENT_RESPONSE_STATE, $obj_DOM->asXML() ); }
+			else { $this->newMessage($this->getTxnInfo()->getID(), Constants::iPSP_PAYMENT_RESPONSE_STATE, "CPG replyed with Empty Responce");  }
 			if (count($obj_DOM->orderStatus->redirect) == 1)
 			{
 				$xml = '<status code="100" order-no="'. htmlspecialchars($obj_DOM->orderStatus["orderCode"], ENT_NOQUOTES) .'">';
@@ -274,10 +275,12 @@ class CPG extends Callback
 			else
 			{
 				header("HTTP/1.1 502 Bad Gateway");
-
-				$xml = '<status code="92">Unknown Error: '. htmlspecialchars($obj_DOM->asXML(), ENT_NOQUOTES) .'</status>';
+				$error ="CPG replyed with Empty Responce";
+				if (strlen($obj_DOM) > 0) { $error = $obj_DOM->asXML(); }
+				
+				$xml = '<status code="92">Unknown Error: '. htmlspecialchars($error, ENT_NOQUOTES) .'</status>';
 				$b = str_replace("<cvc>". intval($obj_XML->cvc) ."</cvc>", "<cvc>". str_repeat("*", strlen(intval($obj_XML->cvc) ) ) ."</cvc>", $b);
-				trigger_error("Unable to initialize payment transaction with CPG, Unknown Error: ". $obj_DOM->asXML() ."\n". "REQUEST: ". $b, E_USER_WARNING);
+				trigger_error("Unable to initialize payment transaction with CPG, Unknown Error: ".$error ."\n". "REQUEST: ". $b, E_USER_WARNING);
 			}
 		}
 		else
