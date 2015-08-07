@@ -139,7 +139,6 @@ class CPG extends Callback
 				$b .= '<cardHolderName>'. trim(htmlspecialchars($obj_XML->address->{'first-name'} .' '. $obj_XML->address->{'last-name'}, ENT_NOQUOTES) ) .'</cardHolderName>';
 			}
 			else { $b .= '<cardHolderName>John Doe</cardHolderName>'; }
-			$b .= '<info3DSecure>';
 			$b .= '<xid/>';
 			$b .= '<cavv>'. htmlspecialchars($obj_XML->cryptogram, ENT_NOQUOTES) .'</cavv>';
 			if (strlen($obj_XML->cryptogram["eci"]) > 0)
@@ -148,7 +147,6 @@ class CPG extends Callback
 				$b .= '<eci>'. ($eci < 10 ? "0". $eci : $eci) .'</eci>';
 			}
 			else { $b .= '<eci />'; }
-			$b .= '</info3DSecure>';
 			switch (strtolower($obj_XML->cryptogram["type"]) )
 			{
 			case "3ds":	// 3DSecure
