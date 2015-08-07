@@ -165,7 +165,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$xml .= '<status code="177"> Order already captured </status>';
 										
 							}
-							else { trigger_error("Unable to perform capture for Order No.: ". urlencode($obj_DOM->{'capture'}->transactions[$i]->transaction[$j]["ornder-no"] ) ." using mPointID: ". intval($obj_DOM->{'capture'}->transactions[$i]->transaction[$j]["id"] ) .". mPoint returned: ". t ."\n". "Request Body: ". $b ."\n". "Response Body: ". $obj_Client->getReplyBody() ); }
+							else { trigger_error("Unable to perform capture for Order No.: ". urlencode($obj_DOM->{'capture'}->transactions[$i]->transaction[$j]["order-no"] ) ." using mPointID: ". intval($obj_DOM->{'capture'}->transactions[$i]->transaction[$j]["id"] ) .". mPoint returned: ". t ."\n". "Request Body: ". $b ."\n". "Response Body: ". $obj_Client->getReplyBody() ); }
 						}
 						else 
 						{
