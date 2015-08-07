@@ -152,7 +152,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						
 						$b = "clientid=". intval($obj_DOM->{'capture'}->transactions[$i]["client-id"] ) .							
 							"&mpointid=". intval($obj_DOM->{'capture'}->transactions[$i]->transaction[$j]["id"] ) .
-							"&orderid=". urlencode($obj_DOM->{'capture'}->transactions[$i]->transaction[$j]["ornder-no"] ) .
+							"&orderid=". urlencode($obj_DOM->{'capture'}->transactions[$i]->transaction[$j]["order-no"] ) .
 							"&amount=". intval($obj_DOM->{'capture'}->transactions[$i]->transaction[$j]->amount) ;						
 						
 						$code = $obj_Client->send($h, $b);							
@@ -160,7 +160,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if ($code != 200)
 						{
 							// Order already captured
-							if (is_int(strpos($obj_Client->getReplyBody(), "msg=177")) === true ) 
+							if (is_int(strpos($obj_Client->getReplyBody(), "msg=177") ) === true )
 							{  
 								$xml .= '<status code="177"> Order already captured </status>';
 										
