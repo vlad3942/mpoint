@@ -142,7 +142,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					{
 						$xml .= '<transaction 
 									id = "'. intval($obj_DOM->{'capture'}->transactions[$i]->transaction[$j]["id"] ) .'"
-									order-no = "'. urlencode($obj_DOM->{'capture'}->transactions[$i]->transaction[$j]["ornder-no"] ) .'" >';
+									order-no = "'. urlencode($obj_DOM->{'capture'}->transactions[$i]->transaction[$j]["order-no"] ) .'" >';
 						
 						$obj_Client = new HTTPClient(new Template, HTTPConnInfo::produceConnInfo("http://". $_SERVER["HTTP_HOST"] ."/buy/capture.php") );
 						
@@ -159,8 +159,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								
 						if ($code != 200)
 						{
-							// Order already refunded
-							if (strstr($obj_Client->getReplyBody(), "msg=177") == true) 
+							// Order already captured
+							if (strpos($obj_Client->getReplyBody(), "msg=177") >= 0 ) 
 							{  
 								$xml .= '<status code="177"> Order already captured </status>';
 										
