@@ -160,7 +160,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if ($code != 200)
 						{
 							// Order already captured
-							if (strpos($obj_Client->getReplyBody(), "msg=177") >= 0 ) 
+							if (is_int(strpos($obj_Client->getReplyBody(), "msg=177")) === true ) 
 							{  
 								$xml .= '<status code="177"> Order already captured </status>';
 										
