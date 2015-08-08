@@ -132,7 +132,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			
 			if(count($aMsgCodes) == 0 )
 			{		 
-				$xml .= '<void-response>';
 				for ($i=0; $i<count($obj_DOM->{'void'}->transactions); $i++)
 				{
 					$xml .= '<transactions client-id = "'. intval($obj_DOM->{'void'}->transactions[$i]["client-id"]) .'" >';
@@ -178,7 +177,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					$xml .= '</transaction>';					
 				}
 				$xml .= '</transactions>';
-				$xml .= '</void-response>';
 			}
 			else 
 			{
