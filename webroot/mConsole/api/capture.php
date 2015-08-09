@@ -154,23 +154,90 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							"&orderid=". urlencode($obj_DOM->{'capture'}->transactions[$i]->transaction[$j]["order-no"] ) .
 							"&amount=". intval($obj_DOM->{'capture'}->transactions[$i]->transaction[$j]->amount) ;						
 						
-						$code = $obj_Client->send($h, $b);							
-								
-						if ($code != 200)
+						$code = $obj_Client->send($h, $b);
+							
+						$aResponse = array();
+						if(is_int(strpos($obj_Client->getReplyBody(), "&") ) === true )
 						{
-							// Order already captured
-							if (is_int(strpos($obj_Client->getReplyBody(), "msg=177") ) === true )
-							{  
-								$xml .= '<status code="177"> Order already captured </status>';
-										
+							$aMessages = explode("&", $obj_Client->getReplyBody() );
+							
+							foreach ($aMessages as $sMsg)
+							{
+								$parts = explode("=", $sMsg );
+								$aResponse[] = $parts[1];
 							}
-							else { trigger_error("Unable to perform capture for Order No.: ". urlencode($obj_DOM->{'capture'}->transactions[$i]->transaction[$j]["order-no"] ) ." using mPointID: ". intval($obj_DOM->{'capture'}->transactions[$i]->transaction[$j]["id"] ) .". mPoint returned: ". t ."\n". "Request Body: ". $b ."\n". "Response Body: ". $obj_Client->getReplyBody() ); }
 						}
-						else 
+						else
 						{
-							$xml .= '<status code="200">Capture Successful</status>';
-									
+							$aResponse = explode("=", $obj_Client->getReplyBody() );
 						}
+									
+						if(is_array($aResponse) === true && count($aResponse) > 0 )
+						{
+							switch ($code)
+							{
+								case 200 : 
+									header("HTTP/1.1 200 OK");
+									
+									$xml .= '<status code="'. $aResponse[1] .'">Capture Successful</status>';
+									break;
+								case 502 : 
+									header("HTTP/1.1 502 Bad Gateway");								
+									
+									if( $aResponse == 999 )
+										$xml .= '<status code="'. $aResponse[1] .'">Capture Declined by PSP</status>';
+									else if( $aResponse == 998 )
+										$xml .= '<status code="'. $aResponse[1] .'">Error while communicating with PSP</status>';
+									break;
+								case 405 : 
+									header("HTTP/1.0 405 Method Not Allowed");								
+									
+									$xml .= '<status code="'. $aResponse[1] .'">Capture not supported by PSP</status>';
+									break;		
+								case 400 : 									
+									header("HTTP/1.0 400 Bad Request");
+									foreach ($aResponse as $sResponseCode)
+									{										
+										switch ($sResponseCode)
+										{
+											case 171:
+												$xml .= '<status code="'. $sResponseCode .'">Undefined mPoint Transaction ID</status>';
+												break;
+											case 172:
+												$xml .= '<status code="'. $sResponseCode .'">Invalid mPoint Transaction ID</status>';
+												break;
+											case 173:
+												$xml .= '<status code="'. $sResponseCode .'">Transaction Not Found</status>';
+												break;
+											case 174:
+												$xml .= '<status code="'. $sResponseCode .'">Transaction Disabled</status>';
+												break;
+											case 175:
+												$xml .= '<status code="'. $sResponseCode .'">Payment Rejected for Transaction</status>';
+												break;
+											case 176:
+												$xml .= '<status code="'. $sResponseCode .'">Payment already Captured for Transaction</status>';
+												break;
+											case 177:
+												$xml .= '<status code="'. $sResponseCode .'">Payment already Refunded for Transaction</status>';
+												break;
+											case 181:
+												$xml .= '<status code="'. $sResponseCode .'">Undefined Order ID</status>';
+												break;											
+											case 183:
+												$xml .= '<status code="'. $sResponseCode .'">Order ID doesn\'t match Transaction</status>';
+												break;											
+										}
+									}
+									break;
+								default:
+									header("HTTP/1.0 500 Internal Error");								
+									
+									$xml .= '<status code="500">Internal Server Error</status>';
+									break;		
+							}
+						}
+						
 						$obj_Client->disconnect();
 					}
 					$xml .= '</transaction>';					
