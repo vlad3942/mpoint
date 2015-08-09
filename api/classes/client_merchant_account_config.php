@@ -65,8 +65,8 @@ class ClientMerchantAccountConfig extends BasicConfig
 	{
 		$sql = "SELECT MA.id, MA.name, MA.username, MA.passwd, MA.pspid, MA.stored_card	
 				FROM Client". sSCHEMA_POSTFIX .".MerchantAccount_Tbl MA  				
-				WHERE MA.id = ". intval($id);
-//		echo $sql ."\n";				
+				WHERE MA.id = ". intval($id) ." AND MA.enabled = '1'";
+		//echo $sql ."\n";				
 		$RS = $oDB->getName($sql);		
 		if(is_array($RS) === true && count($RS) > 0)
 		{		
@@ -81,7 +81,7 @@ class ClientMerchantAccountConfig extends BasicConfig
 				FROM Client". sSCHEMA_POSTFIX .".Client_Tbl CL 
 				INNER JOIN Client". sSCHEMA_POSTFIX .".MerchantAccount_Tbl MA ON CL.id = MA.clientid 				
 				WHERE CL.id = ". intval($id) ." AND CL.enabled = '1'";
-//		echo $sql ."\n";
+		//echo $sql ."\n";
 		$aObj_Configurations = array();
 		$res = $oDB->query($sql);
 		while ($RS = $oDB->fetchName($res) )
