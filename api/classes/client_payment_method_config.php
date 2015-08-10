@@ -2,7 +2,7 @@
 class ClientPaymentMethodConfig extends BasicConfig
 {
 	/**
-	 * The unique ID of the contry the configuration is valid in
+	 * The unique ID of the contry the configuration is valid in or -1 for "ALL"
 	 *
 	 * @var integer
 	 */	
@@ -32,7 +32,7 @@ class ClientPaymentMethodConfig extends BasicConfig
 	 * @param 	integer $id 		The unique ID for the client's Payment Method (Card) configuration
 	 * @param 	integer $pmid 		The unique ID for the Payment Method (Card) type
 	 * @param 	integer $name	 	The name of the Payment Method (Card)
-	 * @param 	integer $countryid	The unique ID of the contry the configuration is valid in
+	 * @param 	integer $countryid	The unique ID of the contry the configuration is valid in. Pass -1 for "ALL"
 	 * @param 	integer $stateid	The unique ID of the current Payment Method (Card) state for the client
 	 * @param 	integer $pspid 		The unique ID of the Payment Service Provider (PSP) that will process payments for this Payment Method (Card) 	 	
 	 */
@@ -42,7 +42,9 @@ class ClientPaymentMethodConfig extends BasicConfig
 		$this->_iPaymentMethodID = (integer) $pmid;
 		$this->_iCountryID = (integer) $countryid;	
 		$this->_iStateID = (integer) $stateid;
-		$this->_iPSPID = (integer) $pspid;			
+		$this->_iPSPID = (integer) $pspid;
+		// Set Defaults
+		if ($this->_iCountryID <= 0) { $this->_iCountryID = -1; }
 	}
 	
 	public function getCountryID() { return $this->_iCountryID; }	
@@ -52,9 +54,7 @@ class ClientPaymentMethodConfig extends BasicConfig
 	
 	public function toXML()
 	{
-		$xml = '<payment-method id="' . $this->getID() . '" type-id="' . $this->_iPaymentMethodID . '" state-id="' . $this->_iStateID .'"';
-		if ($this->_iCountryID > 0) { $xml .= ' country-id="' . $this->_iCountryID . '"'; }
-		$xml .= ' psp-id="' . $this->_iPSPID . '">';
+		$xml = '<payment-method id="'. $this->getID() .'" type-id="'. $this->_iPaymentMethodID .'" state-id="'. $this->_iStateID .'" country-id="'. $this->_iCountryID .'" psp-id="'. $this->_iPSPID .'">';
 		$xml .= htmlspecialchars($this->getName(), ENT_NOQUOTES); 
 		$xml .= '</payment-method>';
 
@@ -63,7 +63,7 @@ class ClientPaymentMethodConfig extends BasicConfig
 	
 	public static function produceConfig(RDB $oDB, $id)
 	{
-		$sql = "SELECT CA.id, CA.countryid, CA.stateid, CA.pspid, C.id AS cardid, C.name		
+		$sql = "SELECT CA.id, Coalesce(CA.countryid, -1) AS countryid, CA.stateid, CA.pspid, C.id AS cardid, C.name		
 				FROM Client". sSCHEMA_POSTFIX .".CardAccess_Tbl CA
 				INNER JOIN System.". sSCHEMA_POSTFIX ."Card_Tbl C ON CA.cardid = C.id AND C.enabled = '1'
 				WHERE CA.id = ". intval($id) ." AND CA.enabled = '1'";

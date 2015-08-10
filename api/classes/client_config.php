@@ -619,7 +619,7 @@ class ClientConfig extends BasicConfig
 	 */
 	private function _getPaymentMethodsAsXML()
 	{
-		$xml = '<payment-methods store-card="'.$this->_iStoreCard.'" show-all-cards="'.General::bool2xml($this->_bShowAllCards).'" max-stored-cards="'.$this->_iMaxCards.'">';
+		$xml = '<payment-methods store-card="'. $this->_iStoreCard .'" show-all-cards="'. General::bool2xml($this->_bShowAllCards) .'" max-stored-cards="'. $this->_iMaxCards .'">';
 		foreach($this->_aObj_PaymentMethodConfigurations as $obj_PM)
 		{
 			if ( ($obj_PM instanceof ClientPaymentMethodConfig) === true)

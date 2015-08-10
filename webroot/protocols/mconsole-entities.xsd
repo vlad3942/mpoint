@@ -1116,7 +1116,21 @@
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
 				<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
-				<xs:attribute name="country-id" type="countryid" use="optional" />
+				<xs:attribute name="country-id" use="required">
+					<xs:simpleType>
+						<xs:union memberTypes="countryid">
+							<xs:simpleType>
+								<xs:restriction base="xs:negativeInteger">
+									<xs:enumeration value="-1">
+										<xs:annotation>
+											<xs:documentation>Specifies that the configuration is applicable for ALL countries for which a specific configuration hasn't been defined.</xs:documentation>
+										</xs:annotation>
+									</xs:enumeration>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:union>
+					</xs:simpleType>
+				</xs:attribute>
 				<xs:attribute name="state-id" type="xs:positiveInteger" use="required" />
 				<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
 				<xs:attribute name="psp-id" type="xs:positiveInteger" use="required" />
