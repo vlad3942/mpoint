@@ -157,17 +157,24 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$code = $obj_Client->send($h, $b);
 							
 						$aResponse = array();
-						if(is_int(strpos($obj_Client->getReplyBody(), "&") ) === true )
+						$aMessages = array();
+						if(is_int(strpos($obj_Client->getReplyBody(), "&") ) === true && (substr_count($obj_Client->getReplyBody(), "msg=") > 1 ))
 						{
 							$aMessages = explode("&", $obj_Client->getReplyBody() );
 							
-							foreach ($aMessages as $sMsg)
+							if(is_array($aMessages) === true && count($aMessages) > 0 )
 							{
-								$parts = explode("=", $sMsg );
-								$aResponse[] = $parts[1];
+								foreach ($aMessages as $sMsg)
+								{
+									$parts = explode("=", $sMsg );
+									if(trim($parts[0]) == 'msg')
+									{
+										$aResponse[] = $parts[1];
+									}
+								}
 							}
 						}
-						else
+						else if(is_int(strpos($obj_Client->getReplyBody(), "=") ) === true && (substr_count($obj_Client->getReplyBody(), "msg=") == 1 ))						
 						{
 							$aResponse = explode("=", $obj_Client->getReplyBody() );
 						}
@@ -184,10 +191,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								case 502 : 
 									header("HTTP/1.1 502 Bad Gateway");								
 									
-									if( $aResponse == 999 )
+									if( is_int($aResponse[1]) && $aResponse[1] == 999 )
 										$xml .= '<status code="'. $aResponse[1] .'">Capture Declined by PSP</status>';
-									else if( $aResponse == 998 )
+									else if( is_int($aResponse[1]) && $aResponse[1] == 998 )
 										$xml .= '<status code="'. $aResponse[1] .'">Error while communicating with PSP</status>';
+									else
+										$xml .= '<status code="502">Unknown Error</status>';
 									break;
 								case 405 : 
 									header("HTTP/1.0 405 Method Not Allowed");								
@@ -236,6 +245,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$xml .= '<status code="500">Internal Server Error</status>';
 									break;		
 							}
+						}
+						else 
+						{
+							header("HTTP/1.0 500 Internal Error");						
+									
+							$xml .= '<status code="500">Internal Server Error</status>';
 						}
 						
 						$obj_Client->disconnect();
