@@ -188,7 +188,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								case 200 : 
 									header("HTTP/1.1 200 OK");
 									
-									$xml .= '<status code="'. $aResponse[0] .'">Capture Successful</status>';
+									$xml .= '<status code="'. $aResponse[0] .'">Refund Successful</status>';
 									break;
 								case 502 : 
 									header("HTTP/1.1 502 Bad Gateway");								
@@ -246,6 +246,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												break;											
 											case 183:
 												$xml .= '<status code="'. $sResponseCode .'">Order ID doesn\'t match Transaction</status>';
+												break;
+											default:
+												$xml .= '<status code="400">Unknown Error</status>';
 												break;											
 										}
 									}

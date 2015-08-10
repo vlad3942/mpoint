@@ -210,6 +210,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									{
 										switch ($sResponseCode)
 										{
+											case 51:
+												$xml .= '<status code="'. $sResponseCode .'">Amount is undefined</status>';
+												break;
+											case 52:
+												$xml .= '<status code="'. $sResponseCode .'">Amount is too small</status>';
+												break;
+											case 53:
+												$xml .= '<status code="'. $sResponseCode .'">Amount is too great</status>';
+												break;
 											case 171:
 												$xml .= '<status code="'. $sResponseCode .'">Undefined mPoint Transaction ID</status>';
 												break;
@@ -236,7 +245,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												break;											
 											case 183:
 												$xml .= '<status code="'. $sResponseCode .'">Order ID doesn\'t match Transaction</status>';
-												break;											
+												break;
+											default:
+												$xml .= '<status code="400">Unknown Error</status>';
+												break;
+																							
 										}
 									}
 									break;
