@@ -210,13 +210,31 @@ class mConsole extends Admin
 		return is_resource($this->getDBConn()->query($sql) );
 	}
 	
-	public function saveCardAccess($clientid, $cardid, $pspid, $countryid, $stateid, $id = -1)
+	/**
+	 * Saves the configuration for a static route.
+	 * 
+	 * @param integer $clientid		The unique ID of the Client whose routing configuration should be saved
+	 * @param integer $pmid			The unique ID of the Payment Method (Card) that the routing configuration is applicable for
+	 * @param integer $pspid		The unique ID of the Payment Service Provider (PSP) that payments made with the specified payment method should be routed to
+	 * @param integer $stateid		The unique ID of the route's current state:
+	 * 									1. Enabled
+	 * 									2. Disabled By Merchant
+	 * 									3. Disabled By PSP
+	 * 									4. Pre-Requisite not Met
+	 * 									5. Temporarily Unavailable
+	 * @param integer $countryid	The unique ID for which the route this applicable or -1 for "All" countries for which a routing rule hasn't been specifically configured
+	 * @param integer $id			The unique ID of the existing routing configuration that should be changed, pass -1 to create a new routing configuration
+	 * @return integer
+	 */
+	public function saveStaticRoute($clientid, $pmid, $pspid, $stateid, $countryid=-1, $id=-1)
 	{
+		$countryid = intval($countryid);
+		if ($countryid <= 0) { $countryid = "NULL"; } 
 		if ($id > 0)
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".CardAccess_Tbl
-					SET countryid = ". intval($countryid) .", pspid = ". intval($pspid) .", cardid = ". intval($cardid).", 
-					stateid = ". intval($stateid) .", enabled = '".intval(true) ."'
+					SET countryid = ". $countryid .", pspid = ". intval($pspid) .", cardid = ". intval($pmid).", 
+						stateid = ". intval($stateid) .", enabled = '1'
 					WHERE id = ". intval($id) ." AND clientid = ". intval($clientid);				
 		}
 		else
@@ -228,9 +246,9 @@ class mConsole extends Admin
 			$sql = "INSERT INTO Client". sSCHEMA_POSTFIX .".CardAccess_Tbl 
 						(id, clientid, cardid, pspid, countryid, stateid)
 				    VALUES
-						(". $id .", ". intval($clientid) .", ". intval($cardid) .", ". intval($pspid) .", ". intval($countryid) .", ". intval($stateid) .")";
+						(". $id .", ". intval($clientid) .", ". intval($pmid) .", ". intval($pspid) .", ". $countryid .", ". intval($stateid) .")";
 		}		
-		//echo $sql ."\n";
+//		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 		//Unable execute SQL query
 		if (is_resource($res) === false) { $id = -1; }

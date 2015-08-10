@@ -262,17 +262,7 @@ class Admin extends General
 		}
 		return $newclient == true ? true : is_resource($res);
 	}
-	
-	public function saveCardAccess($clientid, $cardid, $pspid, $countryid)
-	{
-		$sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".CardAccess_Tbl 
-					(clientid, cardid, pspid, countryid)
-			    VALUES
-					(". intval($clientid).", ". intval($cardid).", ". intval($pspid).", ". intval($countryid).")";
-//		echo $sql ."\n";	
-		return is_resource($this->getDBConn()->query($sql) );	
-	}
-	
+		
 	public function deleteCardAccess($clientid)
 	{
 		$sql = "DELETE FROM Client".sSCHEMA_POSTFIX.".CardAccess_Tbl 
