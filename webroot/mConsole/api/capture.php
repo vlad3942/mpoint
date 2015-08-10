@@ -169,14 +169,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$parts = explode("=", $sMsg );
 									if(trim($parts[0]) == 'msg')
 									{
-										$aResponse[] = $parts[1];
+										$aResponse[] = intval($parts[1]);
 									}
 								}
 							}
 						}
 						else if(is_int(strpos($obj_Client->getReplyBody(), "=") ) === true && (substr_count($obj_Client->getReplyBody(), "msg=") == 1 ))						
 						{
-							$aResponse = explode("=", $obj_Client->getReplyBody() );
+							$segments = explode("=", $obj_Client->getReplyBody() );
+							$aResponse[] = intval($segments[1]);
 						}
 									
 						if(is_array($aResponse) === true && count($aResponse) > 0 )
@@ -186,27 +187,27 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								case 200 : 
 									header("HTTP/1.1 200 OK");
 									
-									$xml .= '<status code="'. $aResponse[1] .'">Capture Successful</status>';
+									$xml .= '<status code="'. $aResponse[0] .'">Capture Successful</status>';
 									break;
 								case 502 : 
 									header("HTTP/1.1 502 Bad Gateway");								
 									
-									if( is_int($aResponse[1]) && $aResponse[1] == 999 )
-										$xml .= '<status code="'. $aResponse[1] .'">Capture Declined by PSP</status>';
-									else if( is_int($aResponse[1]) && $aResponse[1] == 998 )
-										$xml .= '<status code="'. $aResponse[1] .'">Error while communicating with PSP</status>';
+									if( isset($aResponse[0]) && $aResponse[0] == 999 )
+										$xml .= '<status code="'. $aResponse[0] .'">Capture Declined by PSP</status>';
+									else if( isset($aResponse[0]) && $aResponse[0] == 998 )
+										$xml .= '<status code="'. $aResponse[0] .'">Error while communicating with PSP</status>';
 									else
 										$xml .= '<status code="502">Unknown Error</status>';
 									break;
 								case 405 : 
 									header("HTTP/1.0 405 Method Not Allowed");								
 									
-									$xml .= '<status code="'. $aResponse[1] .'">Capture not supported by PSP</status>';
-									break;		
-								case 400 : 									
+									$xml .= '<status code="'. $aResponse[0] .'">Capture not supported by PSP</status>';
+									break;
+								case 400 :
 									header("HTTP/1.0 400 Bad Request");
 									foreach ($aResponse as $sResponseCode)
-									{										
+									{
 										switch ($sResponseCode)
 										{
 											case 171:
