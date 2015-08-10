@@ -706,5 +706,75 @@ class mConsole extends Admin
 	
 		return $aObj_TransactionLogs;
 	}
+	
+	/**
+	 * Performs a capture operation on the specified transaction by invoking mPoint's "Capture" API in the "Buy" API suite.
+	 * The method may return an array containing the following status codes:
+	 * 	 1. Internal Error while Communicating with Capture Service
+	 *	 2. Capture Service unreachable
+	 * 	 3. Capture Service unavailable
+	 * 	 51. Amount is undefined
+	 * 	 52. Amount is too small
+	 * 	 53. Amount is too great
+	 * 	171. Undefined mPoint Transaction ID
+	 * 	172. Invalid mPoint Transaction ID
+	 * 	173. Transaction Not Found
+	 * 	174. Transaction Disabled
+	 * 	175. Payment Rejected for Transaction
+	 * 	176. Payment already Captured for Transaction
+	 * 	177. Payment already Refunded for Transaction
+	 * 	181. Undefined Order ID
+	 * 	183. Order ID doesn't match Transaction
+	 * 	500. Unknown Error
+	 * 	997. Capture not supported by PSP
+	 * 	998. Error while communicating with PSP
+	 * 	999. Capture Declined
+	 * 1000. Success
+	 * 
+	 * @param HTTPConnInfo $oCI		The connection information for the mPoint's "Capture" API in the "Buy" API suite
+	 * @param integer $clientid		The unique ID of the Client on whose behalf the Capture operation is being performed
+	 * @param integer $txnid		The unique ID of the transaction that should be captured
+	 * @param string $ono			The order number for the transaction that should be captured
+	 * @param integer $amt			The amount that should be captured for the transaction
+	 * @return array
+	 */
+	public function capture(HTTPConnInfo $oCI, $clientid, $txnid, $ono, $amt)
+	{
+		try
+		{
+			$h = str_replace("{METHOD}", "POST", $this->constHTTPHeaders() );
+			$b = "clientid=". intval($clientid) ."&mpointid=". intval($txnid) ."&orderid=". urlencode($ono) ."&amount=". intval($amt);
+			
+			$obj_Client = new HTTPClient(new Template, $oCI);
+			$obj_Client->connect();
+			$code = $obj_Client->send($h, $b);
+			$obj_Client->disconnect();
+			
+			$aStatusCodes = array();
+			$aMessages = explode("&", $obj_Client->getReplyBody() );		
+			foreach ($aMessages as $msg)
+			{
+				$aStatusCodes[] = (integer) substr($msg, strpos($msg, "=") + 1); 
+			}
+			if (count($aStatusCodes) == 0) { $aStatusCodes[] = 500; }
+		}
+		catch (HTTPConnectionException $e)
+		{
+			trigger_error("Capture Service at: ". $oCI->toURL() ." is unreachable due to ". get_class($e), E_USER_WARNING);
+			$aStatusCodes[] = self::iSERVICE_CONNECTION_TIMEOUT_ERROR;
+		}
+		catch (HTTPSendException $e)
+		{
+			trigger_error("Capture Service at: ". $oCI->toURL() ." is unavailable due to ". get_class($e), E_USER_WARNING);
+			$aStatusCodes[] = self::iSERVICE_READ_TIMEOUT_ERROR;
+		}
+		catch (HTTPException $e)
+		{
+			trigger_error("Internal error while communicating with Capture Service at: ". $oCI->toURL() ." due to ". get_class($e), E_USER_WARNING);
+			$aStatusCodes[] = self::iSERVICE_INTERNAL_ERROR;
+		}
+		
+		return $aStatusCodes;
+	}
 }
 ?>
