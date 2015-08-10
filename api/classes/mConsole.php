@@ -165,7 +165,17 @@ class mConsole extends Admin
 	
 	public function saveMerchantAccount($clientid, $pspid, $name, $username, $password, $storedcard, $id = -1)
 	{	
-		if ($id > 0)
+		
+		if(empty($id) === true )
+		{
+			//Entry exists but is disabled.
+			$sqlSelect = "Select id from Client". sSCHEMA_POSTFIX .".MerchantAccount_Tbl
+						WHERE clientid = ". intval($clientid) ." AND pspid = ". intval($pspid);
+			$RSONE = $this->getDBConn()->getName($sqlSelect);
+			$id = $RSONE["ID"];			
+		}
+		
+		if (intval($id) > 0)
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".MerchantAccount_Tbl
 					SET name = '". $this->getDBConn()->escStr($name) ."', username ='". $this->getDBConn()->escStr($username) ."', passwd ='". $this->getDBConn()->escStr($password) ."',
