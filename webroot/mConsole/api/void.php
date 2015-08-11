@@ -116,16 +116,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			for ($i=0; $i<count($obj_DOM->{'void'}->transactions); $i++)
 			{										
 				$iClientID = intval($obj_DOM->{'void'}->transactions[$i]["client-id"]);		
-				$iAccountID = (intval($obj_DOM->{'void'}->transactions[$i]["account"]) == 0 ) ? -1 : intval($obj_DOM->{'void'}->transactions[$i]["account"]);	
+				$iAccountID = (integer) $obj_DOM->{'void'}->transactions[$i]["account"];
+				if ($iAccountID <= 0) { $iAccountID = -1; }		
 				$code = $obj_Validate->valBasic($_OBJ_DB, $iClientID, $iAccountID);							
-				if ($iAccountID < 0 && in_array($code, array(14, 100) ) === false) 
-				{ 
-					$aMsgCodes[$iClientID][] = new BasicConfig($code + 10, "Validation of Client : ". $iClientID ." failed"); 
-				}
-				elseif ($iAccountID > 0 && $code < 100 )
-				{
-					$aMsgCodes[$iClientID][] = new BasicConfig($code + 20, "Validation of Account : ". $iAccountID ." failed"); 	
-				}						
+				if ($code < 10) { $aMsgCodes[$iClientID][] = new BasicConfig($code + 10, "Validation of Client : ". $iClientID ." failed"); }
+				elseif ($code < 20) { $aMsgCodes[$iClientID][] = new BasicConfig($code + 10, "Validation of Account : ". $iAccountID ." failed"); }						
 				
 			}		
 			/* ========== INPUT VALIDATION END ========== */
@@ -138,136 +133,44 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					
 					for ($j=0; $j<count($obj_DOM->{'void'}->transactions[$i]->transaction); $j++)
 					{
-						$xml .= '<transaction 
-									id = "'. intval($obj_DOM->{'void'}->transactions[$i]->transaction[$j]["id"]) .'"
-									order-no = "'. urlencode($obj_DOM->{'void'}->transactions[$i]->transaction[$j]["order-no"]) .'" >';
+						$xml .= '<transaction id = "'. intval($obj_DOM->{'void'}->transactions[$i]->transaction[$j]["id"]) .'" order-no = "'. htmlspecialchars($obj_DOM->{'void'}->transactions[$i]->transaction[$j]["order-no"], ENT_NOQUOTES) .'" >';
 						
-						$obj_Client = new HTTPClient(new Template, HTTPConnInfo::produceConnInfo("http://". $_SERVER["HTTP_HOST"] ."/buy/refund.php") );
-						
-						$obj_Client->connect();
-						
-						$h = $obj_mPoint->constHTTPHeaders();
-						
-						$b = "clientid=". intval($obj_DOM->{'void'}->transactions[$i]["client-id"]) .
-							"&username=". urlencode( $_SERVER['PHP_AUTH_USER'] ) .
-							"&password=". urlencode( $_SERVER['PHP_AUTH_PW'] ) .
-							"&mpointid=". intval($obj_DOM->{'void'}->transactions[$i]->transaction[$j]["id"]) .
-							"&orderid=". urlencode($obj_DOM->{'void'}->transactions[$i]->transaction[$j]["order-no"]) .
-							"&amount=". intval($obj_DOM->{'void'}->transactions[$i]->transaction[$j]->amount) ;						
-						
-						$code = $obj_Client->send($h, $b);							
-								
-						$aResponse = array();
-						$aMessages = array();
-						if(is_int(strpos($obj_Client->getReplyBody(), "&") ) === true && (substr_count($obj_Client->getReplyBody(), "msg=") > 1 ))
-						{
-							$aMessages = explode("&", $obj_Client->getReplyBody() );
-							
-							if(is_array($aMessages) === true && count($aMessages) > 0 )
-							{
-								foreach ($aMessages as $sMsg)
-								{
-									$parts = explode("=", $sMsg );
-									if(trim($parts[0]) == 'msg')
-									{
-										$aResponse[] = intval($parts[1]);
-									}
-								}
-							}
-						}
-						else if(is_int(strpos($obj_Client->getReplyBody(), "=") ) === true && (substr_count($obj_Client->getReplyBody(), "msg=") == 1 ))						
-						{
-							$segments = explode("=", $obj_Client->getReplyBody() );
-							$aResponse[] = intval($segments[1]);
-						}
-									
-						if(is_array($aResponse) === true && count($aResponse) > 0 )
+						$aMsgCodes = $obj_mPoint->void(HTTPConnInfo::produceConnInfo("http://". $_SERVER["HTTP_HOST"] ."/buy/refund.php"),
+														  (integer) $obj_DOM->{'void'}->transactions[$i]["client-id"],
+														  urlencode( $_SERVER['PHP_AUTH_USER'] ),
+														  urlencode( $_SERVER['PHP_AUTH_PW'] ),
+														  (integer) $obj_DOM->{'void'}->transactions[$i]->transaction[$j]["id"],
+														  urlencode($obj_DOM->{'void'}->transactions[$i]->transaction[$j]["order-no"]),
+														  (integer) $obj_DOM->{'void'}->transactions[$i]->transaction[$j]->amount );														  
+						foreach ($aMsgCodes as $code)
 						{
 							switch ($code)
 							{
-								case 200 : 
-									header("HTTP/1.1 200 OK");
-									
-									$xml .= '<status code="'. $aResponse[0] .'">Refund Successful</status>';
-									break;
-								case 502 : 
-									header("HTTP/1.1 502 Bad Gateway");								
-									
-									if( isset($aResponse[0]) && $aResponse[0] == 999 )
-										$xml .= '<status code="'. $aResponse[0] .'">Refund Declined by PSP</status>';
-									else if( isset($aResponse[0]) && $aResponse[0] == 998 )
-										$xml .= '<status code="'. $aResponse[0] .'">Error while communicating with PSP</status>';
-									else
-										$xml .= '<status code="502">Unknown Error</status>';
-									break;
-								case 403 : 
-									header("HTTP/1.0 403 Forbidden");								
-									
-									$xml .= '<status code="403">Forbidden Access</status>';
-									break;								
-								case 400 :
-									header("HTTP/1.0 400 Bad Request");
-									foreach ($aResponse as $sResponseCode)
-									{
-										switch ($sResponseCode)
-										{											
-											case 51:
-												$xml .= '<status code="'. $sResponseCode .'">Amount is undefined</status>';
-												break;
-											case 52:
-												$xml .= '<status code="'. $sResponseCode .'">Amount is too small</status>';
-												break;
-											case 53:
-												$xml .= '<status code="'. $sResponseCode .'">Amount is too great</status>';
-												break;
-											case 171:
-												$xml .= '<status code="'. $sResponseCode .'">Undefined mPoint Transaction ID</status>';
-												break;
-											case 172:
-												$xml .= '<status code="'. $sResponseCode .'">Invalid mPoint Transaction ID</status>';
-												break;
-											case 173:
-												$xml .= '<status code="'. $sResponseCode .'">Transaction Not Found</status>';
-												break;
-											case 174:
-												$xml .= '<status code="'. $sResponseCode .'">Transaction Disabled</status>';
-												break;
-											case 175:
-												$xml .= '<status code="'. $sResponseCode .'">Payment Rejected for Transaction</status>';
-												break;
-											case 176:
-												$xml .= '<status code="'. $sResponseCode .'">Payment already Captured for Transaction</status>';
-												break;
-											case 177:
-												$xml .= '<status code="'. $sResponseCode .'">Payment already Refunded for Transaction</status>';
-												break;
-											case 181:
-												$xml .= '<status code="'. $sResponseCode .'">Undefined Order ID</status>';
-												break;											
-											case 183:
-												$xml .= '<status code="'. $sResponseCode .'">Order ID doesn\'t match Transaction</status>';
-												break;
-											default:
-												$xml .= '<status code="400">Unknown Error</status>';
-												break;											
-										}
-									}
-									break;
-								default:
-									header("HTTP/1.0 500 Internal Error");								
-									
-									$xml .= '<status code="500">Internal Server Error</status>';
-									break;		
+							case (mConsole::iSERVICE_INTERNAL_ERROR):
+							case (500):
+								header("HTTP/1.0 500 Internal Server Error");
+								break;
+							case (mConsole::iSERVICE_CONNECTION_TIMEOUT_ERROR):
+								header("HTTP/1.1 504 Gateway Timeout");
+								break;
+							case (mConsole::iSERVICE_READ_TIMEOUT_ERROR):
+							case (998):
+							case (999):
+								header("HTTP/1.1 502 Bad Gateway");
+								break;
+							case (997):
+								header("HTTP/1.0 405 Method Not Allowed");
+								break;
+							case (1000):
+								header("HTTP/1.1 200 OK");
+								break;
+							default:
+								header("HTTP/1.0 400 Bad Request");
+								break;
 							}
+							if ($code < 10) { $code += 980; }	// Ensure codes for Service Errors are unique for the API
+							$xml .= '<status code="'. $code .'" />';
 						}
-						else 
-						{
-							header("HTTP/1.0 500 Internal Error");						
-									
-							$xml .= '<status code="500">Internal Server Error</status>';
-						}
-						
-						$obj_Client->disconnect();
 					}
 					$xml .= '</transaction>';					
 				}
@@ -277,9 +180,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			{
 				header("HTTP/1.1 400 Bad Request");
 		
-				foreach ($aMsgCodes as $iClientID => $obj_MessageContainer)
+				foreach ($aMsgCodes as $iClientID => $aObj_Messages)
 				{					
-					foreach($obj_MessageContainer as $obj_Message)
+					foreach($aObj_Messages as $obj_Message)
 					{
 						$xml .= '<status code="'. $obj_Message->getID() .'">'. $obj_Message->getName() .' for Client '. $iClientID .'</status>' ;
 					}				
