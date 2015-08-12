@@ -230,6 +230,16 @@ class mConsole extends Admin
 	{
 		$countryid = intval($countryid);
 		if ($countryid <= 0) { $countryid = "NULL"; } 
+		
+		if(empty($id) === true )
+		{
+			//Entry exists but is disabled.
+			$sqlSelect = "Select id from Client". sSCHEMA_POSTFIX .".CardAccess_Tbl
+						WHERE clientid = ". intval($clientid) ." AND pspid = ". intval($pspid) ." AND cardid = ". $pmid;
+			$RSONE = $this->getDBConn()->getName($sqlSelect);
+			$id = $RSONE["ID"];			
+		}
+		
 		if ($id > 0)
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".CardAccess_Tbl
