@@ -117,6 +117,23 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						
 						if ($code >= 10)
 						{
+							$iAccountID = -1;
+							
+							if (strcasecmp($obj_DOM->pay[$i]->transaction["store-card"], "true") === 0)
+							{
+								$obj_EUA = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
+								$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getCountryConfig(), $obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile, $obj_DOM->{'pay'}[$i]->{'client-info'}->email);
+							
+								//	Create a new user as some PSP´s needs our enduserid for storeing cards
+								if ($iAccountID < 0)
+								{
+									$iAccountID = $obj_EUA->newAccount($obj_ClientConfig->getCountryConfig()->getID(),
+																	   (float) $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile,
+																	   "",
+																	   (string) $obj_DOM->{'pay'}[$i]->{'client-info'}->email,
+																	   (string) $obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'});
+								}
+							}		
 							// Find Configuration for Payment Service Provider
 							$obj_XML = simpledom_load_string($obj_mPoint->getCards( (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount) );
 							// Determine Payment Service Provider based on selected card
@@ -181,6 +198,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["worldpay"]);
 											// Redirect XML API
 											$url = $obj_PSP->initialize($obj_ConnInfo, $aMerchantAccount["username"], $obj_PSPConfig->getMerchantSubAccount(), (string) $obj_Elem->currency, $aCards);
+											if(strcasecmp($obj_DOM->pay[$i]->transaction["store-card"], "true") === 0) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, ""); }
+												
 											$url .= "&preferredPaymentMethod=". $obj_PSP->getCardName( (integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ."&language=". $obj_TxnInfo->getLanguage();
 											$xml .= '<url method="get" content-type="none">'. htmlspecialchars($url, ENT_NOQUOTES) .'</url>';
 											// Direct XML API
@@ -255,18 +274,29 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										}
 										break;
 									case (Constants::iMOBILEPAY_PSP):
+										$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
+										
 										$obj_PSP = new MobilePay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["mobilepay"]);
-										$obj_XML = $obj_PSP->initialize($obj_PSPConfig);
-										foreach ($obj_XML->children() as $obj_Elem)
-										{
-											$xml .= trim($obj_Elem->asXML() );
-										}
+										
 										break;
 									case (Constants::iCPG_PSP):
 										if (intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) === Constants::iAPPLE_PAY)
 										{
 											$xml .= '<url method="app" />';
 										}
+										break;
+									case (Constants::iADYEN_PSP):
+
+										$obj_PSP = new Adyen($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["adyen"]);
+										
+										$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $iAccountID, General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) );
+										file_put_contents(sLOG_PATH ."/testpay.log", "\n". $obj_XML, FILE_APPEND);
+										
+										foreach ($obj_XML->children() as $obj_Elem)
+										{
+											$xml .= trim($obj_Elem->asXML() );
+										}
+										
 										break;
 									}
 									$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. htmlspecialchars($obj_PSPConfig->getMessage($obj_TxnInfo->getLanguage() ), ENT_NOQUOTES) .'</message>';
