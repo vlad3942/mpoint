@@ -274,9 +274,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										}
 										break;
 									case (Constants::iMOBILEPAY_PSP):
-										$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 										
 										$obj_PSP = new MobilePay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["mobilepay"]);
+										$obj_XML = $obj_PSP->initialize($obj_PSPConfig);
+										foreach ($obj_XML->children() as $obj_Elem)
+										{
+											$xml .= trim($obj_Elem->asXML() );
+										}
 										
 										break;
 									case (Constants::iCPG_PSP):
