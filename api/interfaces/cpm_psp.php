@@ -32,7 +32,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable
         $b .= '</root>';
 
         try
-        {
+        {        	 
             $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["capture"]);
 
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
@@ -229,6 +229,42 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable
 		else { throw new UnexpectedValueException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 	}
 
+	public function initialize($obj_PSPConfig, $eid = -1, $sc = false)
+	{
+		
+		$obj_XML = "";
+		$storeCard = "false";
+		if ($sc === true) { $storeCard = "true"; }
+		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<root>';
+		$b .= '<initialize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '" store-card="'. $storeCard .'">';
+		$b .= $obj_PSPConfig->toXML();
+		$b .= $this->_constTxnXML();
+		if ($eid > 0) { $b .= $this->getAccountInfo($eid); }
+		$b .= '</initialize>';
+		$b .= '</root>';
+		
+		try
+		{
+			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["initialize"]);
+	
+			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+			$obj_HTTP->connect();
+			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+			$obj_HTTP->disConnect();
+			if ($code == 200)
+			{
+				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+			}
+			else { throw new mPointException("Could not construct  XML for initializing payment with PSP: ". $this->getPSPConfig()->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
+		}
+		catch (mPointException $e)
+		{
+			trigger_error("construct  XML of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+		}
+		return $obj_XML;
+	}
+	
 	private function _constTxnXML($actionAmount=null)
 	{
 		$obj_TxnInfo = $this->getTxnInfo();
