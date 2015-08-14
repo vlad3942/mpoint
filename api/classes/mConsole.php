@@ -846,7 +846,8 @@ class mConsole extends Admin
 			switch ($code)
 			{
 			case (403):	// Username / Password doesn't match
-				$aStatusCodes[] = 403;
+				trigger_error("Refund Service at: ". $oCI->toURL() ." did not accept credentials: ". urlencode($username) .":".  urlencode($password) ." for client: ". intval($clientid), E_USER_WARNING);
+				$aStatusCodes[] = self::iSERVICE_INTERNAL_ERROR;
 				break;
 			default:
 				$aMessages = explode("&", $obj_Client->getReplyBody() );
@@ -861,17 +862,17 @@ class mConsole extends Admin
 		}
 		catch (HTTPConnectionException $e)
 		{
-			trigger_error("Capture Service at: ". $oCI->toURL() ." is unreachable due to ". get_class($e), E_USER_WARNING);
+			trigger_error("Refund Service at: ". $oCI->toURL() ." is unreachable due to ". get_class($e), E_USER_WARNING);
 			$aStatusCodes[] = self::iSERVICE_CONNECTION_TIMEOUT_ERROR;
 		}
 		catch (HTTPSendException $e)
 		{
-			trigger_error("Capture Service at: ". $oCI->toURL() ." is unavailable due to ". get_class($e), E_USER_WARNING);
+			trigger_error("Refund Service at: ". $oCI->toURL() ." is unavailable due to ". get_class($e), E_USER_WARNING);
 			$aStatusCodes[] = self::iSERVICE_READ_TIMEOUT_ERROR;
 		}
 		catch (HTTPException $e)
 		{
-			trigger_error("Internal error while communicating with Capture Service at: ". $oCI->toURL() ." due to ". get_class($e), E_USER_WARNING);
+			trigger_error("Internal error while communicating with Refund Service at: ". $oCI->toURL() ." due to ". get_class($e), E_USER_WARNING);
 			$aStatusCodes[] = self::iSERVICE_INTERNAL_ERROR;
 		}
 		
