@@ -50,8 +50,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 {	
 	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mconsole.xsd") === true && count($obj_DOM->{'void'}) > 0)
 	{
-		/*==================================Start Single Sign-On=================================================================*/
-		
+		/* ========== SINGLE SIGN-ON START ========== */
 		$obj_val = new Validate();	
 		$obj_mPoint = new mConsole($_OBJ_DB, $_OBJ_TXT);
 		$aClientIDs = array();
@@ -105,8 +104,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			$xml = '<status code="'. $code .'">Internal Error</status>';
 			break;
 		}
-		
-		/*====================================End Single Sign-On=================================================================*/
+		/* ========== SINGLE SIGN-ON END ========== */
 		
 		if ($code == mConsole::iAUTHORIZATION_SUCCESSFUL)
 		{				
@@ -125,23 +123,24 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			}		
 			/* ========== INPUT VALIDATION END ========== */
 			
-			if(count($aMsgCodes) == 0 )
+			if (count($aMsgCodes) == 0 )
 			{		 
 				for ($i=0; $i<count($obj_DOM->{'void'}->transactions); $i++)
 				{
-					$xml .= '<transactions client-id = "'. intval($obj_DOM->{'void'}->transactions[$i]["client-id"]) .'" >';
+					$xml .= '<transactions client-id="'. intval($obj_DOM->{'void'}->transactions[$i]["client-id"]) .'">';
+					$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'void'}->transactions[$i]["client-id"]);
 					
 					for ($j=0; $j<count($obj_DOM->{'void'}->transactions[$i]->transaction); $j++)
 					{
-						$xml .= '<transaction id = "'. intval($obj_DOM->{'void'}->transactions[$i]->transaction[$j]["id"]) .'" order-no = "'. htmlspecialchars($obj_DOM->{'void'}->transactions[$i]->transaction[$j]["order-no"], ENT_NOQUOTES) .'" >';
+						$xml .= '<transaction id="'. intval($obj_DOM->{'void'}->transactions[$i]->transaction[$j]["id"]) .'" order-no="'. htmlspecialchars($obj_DOM->{'void'}->transactions[$i]->transaction[$j]["order-no"], ENT_NOQUOTES) .'">';
 						
 						$aMsgCodes = $obj_mPoint->void(HTTPConnInfo::produceConnInfo("http://". $_SERVER["HTTP_HOST"] ."/buy/refund.php"),
-														  (integer) $obj_DOM->{'void'}->transactions[$i]["client-id"],
-														  urlencode( $_SERVER['PHP_AUTH_USER'] ),
-														  urlencode( $_SERVER['PHP_AUTH_PW'] ),
-														  (integer) $obj_DOM->{'void'}->transactions[$i]->transaction[$j]["id"],
-														  urlencode($obj_DOM->{'void'}->transactions[$i]->transaction[$j]["order-no"]),
-														  (integer) $obj_DOM->{'void'}->transactions[$i]->transaction[$j]->amount );														  
+													  (integer) $obj_DOM->{'void'}->transactions[$i]["client-id"],
+													  $obj_ClientConfig->getUsername(),
+													  $obj_ClientConfig->getPassword(),
+													  (integer) $obj_DOM->{'void'}->transactions[$i]->transaction[$j]["id"],
+													  trim($obj_DOM->{'void'}->transactions[$i]->transaction[$j]["order-no"]),
+													  (integer) $obj_DOM->{'void'}->transactions[$i]->transaction[$j]->amount);														  
 						foreach ($aMsgCodes as $code)
 						{
 							switch ($code)
@@ -149,6 +148,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							case (mConsole::iSERVICE_INTERNAL_ERROR):
 							case (500):
 								header("HTTP/1.0 500 Internal Server Error");
+								break;
+							case (403):
+								header("HTTP/1.0 403 Forbidden");
 								break;
 							case (mConsole::iSERVICE_CONNECTION_TIMEOUT_ERROR):
 								header("HTTP/1.1 504 Gateway Timeout");

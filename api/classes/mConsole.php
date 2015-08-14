@@ -814,10 +814,11 @@ class mConsole extends Admin
 	 * 	181. Undefined Order ID
 	 * 	182. Transaction not found
 	 * 	183. Order ID doesn't match Transaction
+	 * 	403. Username / Password doesn't match
 	 * 	500. Unknown Error
 	 * 	997. Capture not supported by PSP
 	 * 	998. Error while communicating with PSP
-	 * 	999. Capture Declined
+	 * 	999. Refund Declined
 	 * 1000. Success
 	 * 
 	 * @param HTTPConnInfo $oCI		The connection information for the mPoint's "Capture" API in the "Buy" API suite
@@ -842,12 +843,21 @@ class mConsole extends Admin
 			$obj_Client->disconnect();
 			
 			$aStatusCodes = array();
-			$aMessages = explode("&", $obj_Client->getReplyBody() );		
-			foreach ($aMessages as $msg)
+			switch ($code)
 			{
-				$aStatusCodes[] = (integer) substr($msg, strpos($msg, "=") + 1); 
+			case (403):	// Username / Password doesn't match
+				$aStatusCodes[] = 403;
+				break;
+			default:
+				$aMessages = explode("&", $obj_Client->getReplyBody() );
+				foreach ($aMessages as $msg)
+				{
+					if(!empty($msg) === true )
+						$aStatusCodes[] = (integer) substr($msg, strpos($msg, "=") + 1);
+				}
+				if (count($aStatusCodes) == 0) { $aStatusCodes[] = 500; }
+				break;
 			}
-			if (count($aStatusCodes) == 0) { $aStatusCodes[] = 500; }
 		}
 		catch (HTTPConnectionException $e)
 		{
