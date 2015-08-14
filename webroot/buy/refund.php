@@ -90,37 +90,30 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 		if (count($aMsgCds) == 0)
 		{
 			$iUserID = -1;
-			if ($obj_mPoint->auth($_REQUEST['username'], $_REQUEST['password'], $iUserID) === 10)
+			if (strtolower($obj_ClientConfig->getUsername() ) == strtolower($_REQUEST['username']) && $obj_ClientConfig->getPassword() == $_REQUEST['password'])
 			{	
 				try
 				{
 					$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 					$obj_mPoint = new Refund($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 
-					$aClientIDs = $obj_mPoint->getClientsForUser($iUserID);
-					// User has access to Client
-					if (in_array($obj_ClientConfig->getID(), $aClientIDs) === true)
-					{									
-						// Refund operation succeeded
-						$refund = $obj_mPoint->refund($_REQUEST['amount']);
-						if ($refund == 1000 || $refund == 1001)
-						{
-							header("HTTP/1.0 200 OK");
-							
-							$aMsgCds[$refund] = "Success";
-							$args = array("transact" => $obj_TxnInfo->getExternalID(),
-										  "amount" => $_REQUEST['amount']);
-							$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
-						}
-						else
-						{
-							header("HTTP/1.0 502 Bad Gateway");
-							
-							$aMsgCds[999] = "Declined";
-						}						
+					// Refund operation succeeded
+					$refund = $obj_mPoint->refund($_REQUEST['amount']);
+					if ($refund == 1000 || $refund == 1001)
+					{
+						header("HTTP/1.0 200 OK");
+						
+						$aMsgCds[$refund] = "Success";
+						$args = array("transact" => $obj_TxnInfo->getExternalID(),
+									  "amount" => $_REQUEST['amount']);
+						$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
 					}
-					// Error: Unauthorized access
-					else { header("HTTP/1.0 403 Forbidden"); }
+					else
+					{
+						header("HTTP/1.0 502 Bad Gateway");
+						
+						$aMsgCds[999] = "Declined";
+					}						
 				}
 				catch (HTTPException $e)
 				{
