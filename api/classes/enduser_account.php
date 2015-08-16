@@ -627,9 +627,11 @@ class EndUserAccount extends Home
 	{
 		$sql = "SELECT id
 				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
-				WHERE accountid = ". $id ." AND clientid = ". $this->_obj_ClientConfig->getID() ." AND cardid = ". intval($cardid) ."
-					AND ( ( (mask = '". $this->getDBConn()->escStr(trim($mask) ) ."' AND expiry = '". $this->getDBConn()->escStr($exp) ."') OR (mask IS NULL AND expiry IS NULL) )
-						 OR (mask = '". $this->getDBConn()->escStr(trim($mask) ) ."' AND ticket = '". $this->getDBConn()->escStr($ticket) ."') )";
+				WHERE accountid = ". $id ." AND clientid = ". $this->_obj_ClientConfig->getID() ." AND (cardid = ". intval($cardid);
+		if (strlen($ticket) > 0 ) { $sql .=																" OR ticket = '". $this->getDBConn()->escStr($ticket) ."')"; }
+		else { $sql .=																				  ")"; }
+		$sql .=		"AND ( ( (mask = '". $this->getDBConn()->escStr(trim($mask) ) ."' AND expiry = '". $this->getDBConn()->escStr($exp) ."') OR (mask IS NULL AND expiry IS NULL) )
+						 	 OR (mask = '". $this->getDBConn()->escStr(trim($mask) ) ."' AND ticket = '". $this->getDBConn()->escStr($ticket) ."') )";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);
 

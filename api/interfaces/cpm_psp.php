@@ -255,6 +255,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable
 			if ($code == 200)
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+				// save ext id in database
+				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+								SET pspid = ". $obj_PSPConfig->getID() ."
+								WHERE id = ". $this->getTxnInfo()->getID();
+				//					echo $sql ."\n";
+				$this->getDBConn()->query($sql);
 			}
 			else { throw new mPointException("Could not construct  XML for initializing payment with PSP: ". $this->getPSPConfig()->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 		}
