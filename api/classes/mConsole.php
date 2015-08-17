@@ -439,18 +439,6 @@ class mConsole extends Admin
 		return is_resource($this->getDBConn()->query($sql) );	
 	}	
 	
-	public function auth()
-	{
-		$aArgs = func_get_args();
-		if (count($aArgs) == 5)
-		{		
-			if (($aArgs[0] instanceof HTTPConnInfo) === true)
-			{
-				return $this->_singleSignOn($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3], $aArgs[4]);
-			}		
-		}
-	}
-	
 	/**
 	 * Performs Single Sign-On for the user by invoking mConsole's Enterprise Security Manager through the Mobile Enterprise Service Bus.
 	 * The method will return the following status codes:
@@ -521,6 +509,9 @@ class mConsole extends Admin
 				trigger_error("Single-Sign On Service at: ". $oCI->toURL() ." rejected permission with HTTP Code: ". $code, E_USER_NOTICE);
 				return self::iINSUFFICIENT_USER_PERMISSIONS_ERROR;
 				break;
+			default:
+				trigger_error("Single-Sign On Service at: ". $oCI->toURL() ." returned unexpected HTTP Code: ". $code, E_USER_WARNING);
+				return self::iSERVICE_INTERNAL_ERROR;
 			}
 		}
 		catch (HTTPConnectionException $e)
