@@ -66,6 +66,7 @@ class ClientPaymentMethodConfig extends BasicConfig
 		$sql = "SELECT CA.id, Coalesce(CA.countryid, -1) AS countryid, CA.stateid, CA.pspid, C.id AS cardid, C.name		
 				FROM Client". sSCHEMA_POSTFIX .".CardAccess_Tbl CA
 				INNER JOIN System.". sSCHEMA_POSTFIX ."Card_Tbl C ON CA.cardid = C.id AND C.enabled = '1'
+				INNER JOIN Client.". sSCHEMA_POSTFIX ."MerchantAccount_Tbl MA ON MA.clientid = CA.clientid AND MA.pspid = CA.pspid AND MA.enabled = '1'
 				WHERE CA.id = ". intval($id) ." AND CA.enabled = '1'";
 //		echo $sql .'\n';				
 		$RS = $oDB->getName($sql);	
@@ -79,9 +80,11 @@ class ClientPaymentMethodConfig extends BasicConfig
 	
 	public static function produceConfigurations(RDB $oDB, $clientid)
 	{			
-		$sql = "SELECT id
-				FROM Client". sSCHEMA_POSTFIX .".CardAccess_Tbl				
-				WHERE clientid = ". intval($clientid) ." AND enabled = '1'";
+		$sql = "SELECT CA.id
+				FROM Client". sSCHEMA_POSTFIX .".CardAccess_Tbl CA
+				INNER JOIN System.". sSCHEMA_POSTFIX ."Card_Tbl C ON CA.cardid = C.id AND C.enabled = '1'
+				INNER JOIN Client.". sSCHEMA_POSTFIX ."MerchantAccount_Tbl MA ON MA.clientid = CA.clientid AND MA.pspid = CA.pspid AND MA.enabled = '1'
+				WHERE CA.clientid = ". intval($clientid) ." AND CA.enabled = '1'";
 //		echo $sql .'\n';			
 		$aObj_Configurations = array();
 		$res = $oDB->query($sql);
