@@ -270,6 +270,48 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable
 		}
 		return $obj_XML;
 	}
+	public function authTicket($obj_PSPConfig, $ticket)
+	{
+	
+		$code = 0;
+		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<root>';
+		$b .= '<authorize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
+		$b .= $obj_PSPConfig->toXML();
+		$b .= $this->_constTxnXML();
+		$b .= '<card>';
+		$b .= '<token>'. $ticket .'</token>';
+		$b .= '</card>';
+		$b .= '</authorize>';
+		$b .= '</root>';
+	
+		try
+		{
+			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["auth"]);
+	
+			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+			$obj_HTTP->connect();
+			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+			$obj_HTTP->disConnect();
+			if ($code == 200)
+			{
+				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+				$code = $obj_XML->status["code"];
+				// save ext id in database
+				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+								SET pspid = ". $obj_PSPConfig->getID() ."
+								WHERE id = ". $this->getTxnInfo()->getID();
+				//					echo $sql ."\n";
+				$this->getDBConn()->query($sql);
+			}
+			else { throw new mPointException("Authorization failed with PSP: ". $this->getPSPConfig()->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
+		}
+		catch (mPointException $e)
+		{
+			trigger_error("Authorization failed of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+		}
+		return $code;
+	}
 	
 	private function _constTxnXML($actionAmount=null)
 	{
