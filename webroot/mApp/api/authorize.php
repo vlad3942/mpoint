@@ -382,6 +382,27 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	
 													$xml .= $obj_PSP->authTicket($obj_ConnInfo, $obj_Elem);
 													break;
+												case (Constants::iADYEN_PSP): // NetAxept
+														$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iADYEN_PSP);
+														
+														$obj_PSP = new Adyen($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["adyen"]);
+													
+														$code = $obj_PSP->authTicket($obj_PSPConfig ,$obj_Elem->ticket);
+														// Authorization succeeded
+														if ($code == "100")
+														{
+															$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
+														}
+														// Error: Authorization declined
+														else
+														{
+															$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+													
+															header("HTTP/1.1 502 Bad Gateway");
+													
+															$xml .= '<status code="92">Authorization failed, Adyen returned error: '. $code .'</status>';
+														}
+														break;
 												default:	// Unkown Error
 													$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 	
