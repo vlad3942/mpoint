@@ -228,24 +228,30 @@ class mConsole extends Admin
 	 */
 	public function saveStaticRoute($clientid, $pmid, $pspid, $stateid, $countryid=-1, $id=-1)
 	{
-		$countryid = intval($countryid);
-		if ($countryid <= 0) { $countryid = "NULL"; } 
+		$clientid = (integer) $clientid;
+		$pmid = (integer) $pmid;
+		$pspid = (integer) $pspid;
+		$countryid = (integer) $countryid;
+		if ($countryid <= 0) { $countryid = "NULL"; }
+		$id = (integer) $id;
 		
-		if(empty($id) === true )
+		if ($id <= 0)
 		{
-			//Entry exists but is disabled.
-			$sqlSelect = "Select id from Client". sSCHEMA_POSTFIX .".CardAccess_Tbl
-						WHERE clientid = ". intval($clientid) ." AND pspid = ". intval($pspid) ." AND cardid = ". $pmid;
-			$RSONE = $this->getDBConn()->getName($sqlSelect);
-			$id = $RSONE["ID"];			
+			// Static Route exists but is disabled.
+			$sql = "SELECT id
+					FROM Client". sSCHEMA_POSTFIX .".CardAccess_Tbl
+					WHERE clientid = ". $clientid ." AND cardid = ". $pmid ." AND pspid = ". $pspid ." AND countryid = ". $countryid;
+//			echo $sql ."\n";
+			$RS = $this->getDBConn()->getName($sql);
+			$id = $RS["ID"];			
 		}
 		
 		if ($id > 0)
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".CardAccess_Tbl
-					SET countryid = ". $countryid .", pspid = ". intval($pspid) .", cardid = ". intval($pmid).", 
+					SET countryid = ". $countryid .", cardid = ". $pmid .", pspid = ". $pspid .", 
 						stateid = ". intval($stateid) .", enabled = '1'
-					WHERE id = ". intval($id) ." AND clientid = ". intval($clientid);				
+					WHERE id = ". $id;				
 		}
 		else
 		{
@@ -256,7 +262,7 @@ class mConsole extends Admin
 			$sql = "INSERT INTO Client". sSCHEMA_POSTFIX .".CardAccess_Tbl 
 						(id, clientid, cardid, pspid, countryid, stateid)
 				    VALUES
-						(". $id .", ". intval($clientid) .", ". intval($pmid) .", ". intval($pspid) .", ". $countryid .", ". intval($stateid) .")";
+						(". $id .", ". $clientid .", ". $pmid .", ". $pspid .", ". $countryid .", ". intval($stateid) .")";
 		}		
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
