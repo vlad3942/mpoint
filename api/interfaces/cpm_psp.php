@@ -122,6 +122,60 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable
 
 		}
 	}
+	/**
+	 * Performs a VOID (Refund or cancel) operation with CPM PSP for the provided transaction.
+	 * The method will return one the following status codes:
+	 *    >=1000 Refund succeeded
+	 *    = 1001 Cancel succeded
+	 *    <1000 Refund failed
+	 *
+	 * @param int $iAmount
+	 * @return int
+	 */
+	public function void($iAmount = -1)
+	{
+		
+		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<root>';
+		$b .= '<void client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
+		$b .= $this->getPSPConfig()->toXML();
+		$b .= '<transactions>';
+		$b .= $this->_constTxnXML($iAmount);
+		$b .= '</transactions>';
+		$b .= '</void>';
+		$b .= '</root>';
+	
+		try
+		{
+			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["void"]);
+			
+			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+			$obj_HTTP->connect();
+			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+			$obj_HTTP->disConnect();
+			if ($code == 200)
+			{
+				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+				// Expect there is only one transaction in the reply
+				$obj_Txn = $obj_XML->transactions->transaction;
+				if ( (integer)$obj_Txn["id"] == $this->getTxnInfo()->getID() )
+				{
+					$iStatusCode = (integer)$obj_Txn->status["code"];
+					if ($iStatusCode == 1000) { $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUNDED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) ); }
+					elseif ($iStatusCode == 1001) { $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CANCELLED_STATE, utf8_encode($obj_HTTP->getReplyBody() ) ); }
+					
+					return $iStatusCode;
+				}
+				else { throw new RefundException("The PSP gateway did not respond with a status document related to the transaction we want: ". $obj_HTTP->getReplyBody(). " for txn: ". $this->getTxnInfo()->getID(), 999); }
+			}
+			else { throw new RefundException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
+		}
+		catch (RefundException $e)
+		{
+			trigger_error("Void of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+			return $e->getCode();
+		}
+	}
 
 	/**
 	 * Performs a cancel operation with CPM PSP for the provided transaction.
