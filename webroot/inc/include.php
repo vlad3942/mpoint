@@ -106,6 +106,8 @@ require_once(sCLASS_PATH ."/home.php");
 // Require PSP functionality interfaces
 require_once(sINTERFACE_PATH ."/captureable.php");
 require_once(sINTERFACE_PATH ."/refundable.php");
+require_once(sINTERFACE_PATH ."/Voiadable.php");
+
 // Require specific Business logic for the Status component
 require_once(sCLASS_PATH ."/status.php");
 
