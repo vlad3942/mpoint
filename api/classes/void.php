@@ -74,7 +74,7 @@ class Void extends General
 		if ($iAmount <= 0) { $iAmount = $this->_obj_TxnInfo->getAmount(); }
 
 		// If PSP supports the Refund operation, perform the refund
-		if ( ($this->_obj_PSP instanceof Refundable) === true) { $code = $this->_obj_PSP->void($iAmount); }
+		if ( ($this->_obj_PSP instanceof Voiadable) === true) { $code = $this->_obj_PSP->void($iAmount); }
 		else { throw new BadMethodCallException("Void not supported by PSP: ". get_class($this->_obj_PSP) ); }
 
 		if ($code === 1000)

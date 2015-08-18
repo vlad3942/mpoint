@@ -1,6 +1,6 @@
 <?php
 
-abstract class CPMPSP extends Callback implements Captureable, Refundable
+abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiadable
 {
 
     public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo)
