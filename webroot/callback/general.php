@@ -164,18 +164,27 @@ try
 	{
 		$obj_mPoint->notifyClient($iStateID, $obj_XML);
 	}
+	$xml .= '<status code="1000">Callback Success</status>';
 }
 catch (TxnInfoException $e)
 {
 	// Database connection is active & healthy
 	if ( ($_OBJ_DB instanceof RDB) === true && is_resource($_OBJ_DB->getDBConn() ) === true)
 	{
+		$xml .= '<status code="1000">Callback Success</status>';
 	}
 	// Internal Error
 	else
 	{
 		header("HTTP/1.1 500 Internal Server Error");
+		$xml .= '<status code="'. $e->getCode() .'">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES). '</status>';
 
 	}
 	trigger_error($e->getMessage() ."\n". $HTTP_RAW_POST_DATA, E_USER_WARNING);
 }
+header("Content-Type: text/xml; charset=\"UTF-8\"");
+echo '<?xml version="1.0" encoding="UTF-8"?>';
+echo '<root>';
+echo $xml;
+echo '</root>';
+?>
