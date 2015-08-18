@@ -37,11 +37,12 @@ require_once(sAPI_CLASS_PATH ."simpledom.php");
 		<transaction id="1825317" order-no="970-253176" external-id="8814395474257619">
 			<amount country-id="100" currency="DKK">10000</amount>
 			<card type-id="8">
-				<card-number>411111</card-number>
+				<card-number>411111*******4123</card-number>
 				<expiry>
 					<month>6</month>
 					<year>16</year>
 				</expiry>
+				<token>31232121ddd</token>
 			</card>
 		</transaction>
 		<status code="2000">17103%3A1111%3A6%2F2016</status>
@@ -74,7 +75,15 @@ try
 	$obj_mPoint = new Callback($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, array() );
 	$iStateID = (integer) $obj_XML->callback->status["code"];
 	
-	
+	if ($obj_TxnInfo->getExternalID() <= 0)
+	{
+		// save ext id in database
+		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+									SET pspid = ". Constants::iNETAXEPT_PSP .", extid = '". $obj_XML->callback->transaction["external-id"] ."'
+									WHERE id = ". $obj_TxnInfo->getID();
+		//					echo $sql ."\n";
+		$_OBJ_DB->query($sql);
+	}
 	// Save Ticket ID representing the End-User's stored Card Info
 	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_mPoint->getMessageData($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, false) ) == 1)
 	{
