@@ -488,6 +488,12 @@ class DIBS extends Callback implements Captureable, Refundable
 		
 		if ($code == 200)
 		{
+			$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+								SET pspid = ". Constants::iDIBS_PSP ."
+								WHERE id = ". $this->getTxnInfo()->getID();
+			//					echo $sql ."\n";
+			$this->getDBConn()->query($sql);
+			
 			$data = array("psp-id" => Constants::iDIBS_PSP,
 						  "url" => $obj_HTTP->getReplyBody() );
 			$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, serialize($data) );
