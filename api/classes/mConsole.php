@@ -500,19 +500,18 @@ class mConsole extends Admin
 			switch ($code)
 			{
 			case (200):	// HTTP 200 OK
-				trigger_error("Authorization accepted by Single-Sign On Service at: ". $oCI->toURL() ." with HTTP Code: ". $code, E_USER_NOTICE);
 				return self::iAUTHORIZATION_SUCCESSFUL;
 				break;
 			case (401):	// HTTP 401 Unauthorized
-				trigger_error("Single-Sign On Service at: ". $oCI->toURL() ." rejected authorization with HTTP Code: ". $code, E_USER_NOTICE);
+				trigger_error("Single-Sign On Service at: ". $oCI->toURL() ." rejected authorization with HTTP Code: ". $code, E_USER_WARNING);
 				return self::iUNAUTHORIZED_USER_ACCESS_ERROR;
 				break;
 			case (402):	// HTTP 402 Payment Required
-				trigger_error("Single-Sign On Service at: ". $oCI->toURL() ." rejected license with HTTP Code: ". $code, E_USER_NOTICE);
+				trigger_error("Single-Sign On Service at: ". $oCI->toURL() ." rejected license with HTTP Code: ". $code, E_USER_WARNING);
 				return self::iINSUFFICIENT_CLIENT_LICENSE_ERROR;
 				break;
 			case (403):	// HTTP 403 Forbidden
-				trigger_error("Single-Sign On Service at: ". $oCI->toURL() ." rejected permission with HTTP Code: ". $code, E_USER_NOTICE);
+				trigger_error("Single-Sign On Service at: ". $oCI->toURL() ." rejected permission with HTTP Code: ". $code, E_USER_WARNING);
 				return self::iINSUFFICIENT_USER_PERMISSIONS_ERROR;
 				break;
 			default:
