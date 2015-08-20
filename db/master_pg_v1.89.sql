@@ -9,5 +9,5 @@ CREATE INDEX CONCURRENTLY transaction_search_order_idx ON Log.Transaction_Tbl (c
 ALTER TABLE Client.CardAccess_tbl DROP CONSTRAINT cardaccess_uq;
 
 CREATE UNIQUE INDEX CONCURRENTLY cardaccess_uq ON Client.CardAccess_tbl (clientid, cardid, pspid) WHERE countryid IS NULL;
-CREATE UNIQUE INDEX CONCURRENTLY cardaccess_country_uq ON Client.CardAccess_tbl (clientid, cardid, pspid) WHERE countryid IS NOT NULL;
+CREATE UNIQUE INDEX CONCURRENTLY cardaccess_country_uq ON Client.CardAccess_tbl (clientid, cardid, pspid, countryid) WHERE countryid IS NOT NULL;
 /* ==================== LOG CLIENT END ==================== */
