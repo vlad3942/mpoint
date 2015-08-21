@@ -582,7 +582,7 @@ class Callback extends EndUserAccount
 			return new NetAxept($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["netaxept"]);
 		case (Constants::iMOBILEPAY_PSP):
 			return new MobilePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mobilepay"]);
-		case (Constants::iMOBILEPAY_PSP):
+		case (Constants::iADYEN_PSP):
 				return new Adyen($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["adyen"]);
 		default:
 			throw new CallbackException("Unkown Payment Service Provider", 1001);
