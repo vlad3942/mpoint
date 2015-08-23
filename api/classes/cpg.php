@@ -138,7 +138,7 @@ class CPG extends Callback
 			{
 				$b .= '<cardHolderName>'. trim(htmlspecialchars($obj_XML->address->{'first-name'} .' '. $obj_XML->address->{'last-name'}, ENT_NOQUOTES) ) .'</cardHolderName>';
 			}
-			else { $b .= '<cardHolderName>John Doe</cardHolderName>'; }
+			else { $b .= '<cardHolderName></cardHolderName>'; }
 			$b .= '<xid/>';
 			$b .= '<cavv>'. htmlspecialchars($obj_XML->cryptogram, ENT_NOQUOTES) .'</cavv>';
 			if (strlen($obj_XML->cryptogram["eci"]) > 0)
