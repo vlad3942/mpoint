@@ -166,7 +166,7 @@ if (count($aMsgCds) == 0)
 					$aHTTP_CONN_INFO["worldpay"]["password"] = $aLogin["password"];
 					
 					$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["worldpay"]);
-					$obj_XML = $obj_PSP->authTicket($obj_ConnInfo, (string) $obj_XML->ticket);
+					$obj_XML = $obj_PSP->authTicket($obj_ConnInfo, $obj_XML);
 					// Authorization succeeded
 					if (is_null($obj_XML) === false && ($obj_XML instanceof SimpleXMLElement) === true && intval($obj_XML["code"]) == Constants::iPAYMENT_ACCEPTED_STATE)
 					{
