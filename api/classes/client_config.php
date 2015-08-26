@@ -101,41 +101,41 @@ class ClientConfig extends BasicConfig
 	private $_obj_KeywordConfig;
 
 	/**
-	 * Absolute URL to the Client's Logo which will be displayed on all payment pages
+	 * Object that holds the URL to the Client's Logo which will be displayed on all payment pages
 	 *
-	 * @var string
+	 * @var ClientURLConfig
 	 */
-	private $_sLogoURL;
+	private $_obj_LogoURL;
 	/**
-	 * Absolute URL to the CSS file that should be used to customising the payment pages
+	 * Object that holds the URL to the CSS file that should be used to customising the payment pages
 	 *
 	 * @var string
 	 */
-	private $_sCSSURL;
+	private $_obj_CSSURL;
 	/**
-	 * Absolute URL where the Customer should be returned to upon successfully completing the Transaction
+	 * Object that holds the URL where the Customer should be returned to upon successfully completing the Transaction
 	 *
-	 * @var string
+	 * @var ClientURLConfig
 	 */
-	private $_sAcceptURL;
+	private $_obj_AcceptURL;
 	/**
-	 * Absolute URL where the Customer should be returned to in case he / she cancels the Transaction midway
+	 * Object that holds the URL where the Customer should be returned to in case he / she cancels the Transaction midway
 	 *
-	 * @var string
+	 * @var ClientURLConfig
 	 */
-	private $_sCancelURL;
+	private $_obj_CancelURL;
 	/**
-	 * Absolute URL to the Client's Back Office where mPoint should send the Payment Status to
+	 * Object that holds the URL to the Client's Back Office where mPoint should send the Payment Status to
 	 *
-	 * @var string
+	 * @var ClientURLConfig
 	 */
-	private $_sCallbackURL;
+	private $_obj_CallbackURL;
 	/**
-	 * Absolute URL to the Client's My Account Icon
+	 * Object that holds the URL to the Client's My Account Icon
 	 *
-	 * @var string
+	 * @var ClientURLConfig
 	 */
-	private $_sIconURL;	
+	private $_obj_IconURL;	
 	/**
 	 * Object that holds the customer import URL
 	 *
@@ -284,12 +284,12 @@ class ClientConfig extends BasicConfig
 	 * @param 	string $pw 					Client's Password for GoMobile
 	 * @param 	CountryConfig $oCC 			Configuration for the Country the Client can process transactions in
 	 * @param 	KeywordConfig $oKC 			Configuration for the Keyword the Client uses to send messages through
-	 * @param 	string $lurl 				Absolute URL to the Client's Logo which will be displayed on all payment pages
-	 * @param 	string $cssurl 				Absolute URL to the CSS file that should be used to customising the payment pages
-	 * @param 	string $accurl 				Absolute URL where the Customer should be returned to upon successfully completing the Transaction
-	 * @param 	string $curl 				Absolute URL where the Customer should be returned to in case he / she cancels the Transaction midway
-	 * @param 	string $cburl 				Absolute URL to the Client's Back Office where mPoint should send the Payment Status to
-	 * @param 	string $iurl 				Absolute URL to the Client's My Account Icon
+	 * @param 	ClientURLConfig $oLURL 		Object that holds the URL to the Client's Logo which will be displayed on all payment pages
+	 * @param 	ClientURLConfig $oCSSURL 	Object that holds the URL to the CSS file that should be used to customising the payment pages
+	 * @param 	ClientURLConfig $oAccURL 	Object that holds the URL where the Customer should be returned to upon successfully completing the Transaction
+	 * @param 	ClientURLConfig $oCURL 		Object that holds the URL where the Customer should be returned to in case he / she cancels the Transaction midway
+	 * @param 	ClientURLConfig $oCBURL 	Object that holds the URL to the Client's Back Office where mPoint should send the Payment Status to
+	 * @param 	ClientURLConfig $oIURL 		Object that holds the  URL to the Client's My Account Icon
 	 * @param 	string $ma 					Max Amount an mPoint Transaction can cost the customer for the Client
 	 * @param 	string $l 					The language that all payment pages should be rendered in by default for the Client
 	 * @param 	boolean $sms 				Boolean Flag indicating whether mPoint should send out an SMS Receipt to the Customer upon successful completion of the Payment
@@ -313,7 +313,7 @@ class ClientConfig extends BasicConfig
 	 * @param   array $aObj_PMs				List of Payment Methods (Cards) that the client offers
 	 * @param   array $aObj_IINRs			List of IIN Range values for the client.	 
 	 */
-	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array() )
+	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=null, ClientURLConfig $oCSSURL=null, ClientURLConfig $oAccURL=null, ClientURLConfig $oCURL=null, ClientURLConfig $oCBURL=null, ClientURLConfig $oIURL=null, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array() )
 	{
 		parent::__construct($id, $name);
 
@@ -325,12 +325,12 @@ class ClientConfig extends BasicConfig
 		$this->_obj_CountryConfig = $oCC;
 		$this->_obj_KeywordConfig = $oKC;
 
-		$this->_sLogoURL = trim($lurl);
-		$this->_sCSSURL = trim($cssurl);
-		$this->_sAcceptURL = trim($accurl);
-		$this->_sCancelURL = trim($curl);
-		$this->_sCallbackURL = trim($cburl);
-		$this->_sIconURL = trim($iurl);
+		$this->_obj_LogoURL = $oLURL;
+		$this->_obj_CSSURL = $oCSSURL;
+		$this->_obj_AcceptURL = $oAccURL;
+		$this->_obj_CancelURL = $oCURL;
+		$this->_obj_CallbackURL = $oCBURL;
+		$this->_obj_IconURL = $oIURL;
 
 		$this->_iMaxAmount = (integer) $ma;
 		$this->_sLanguage = trim($l);
@@ -420,38 +420,79 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @return 	string
 	 */
-	public function getLogoURL() { return $this->_sLogoURL; }
+	public function getLogoURL()
+	{
+		if ( ($this->_obj_LogoURL instanceof ClientURLConfig) === true)
+		{
+			return $this->_obj_LogoURL->getURL();
+		}
+		else { return ""; }
+	}
 	/**
 	 * Returns the Absolute URL to the CSS file that should be used to customising the payment pages
 	 *
 	 * @return 	string
 	 */
-	public function getCSSURL() { return $this->_sCSSURL; }
+	public function getCSSURL()
+	{
+		if ( ($this->_obj_CSSURL instanceof ClientURLConfig) === true)
+		{
+			return $this->_obj_CSSURL->getURL();
+		}
+		else { return ""; }
+	}
 	/**
 	 * Returns the Absolute URL where the Customer should be returned to upon successfully completing the Transaction
 	 *
 	 * @return 	string
 	 */
-	public function getAcceptURL() { return $this->_sAcceptURL; }
-
+	public function getAcceptURL()
+	{
+		if ( ($this->_obj_AcceptURL instanceof ClientURLConfig) === true)
+		{
+			return $this->_obj_AcceptURL->getURL();
+		}
+		else { return ""; }
+	}
 	/**
 	 * Returns the Absolute URL where the Customer should be returned to in case he / she cancels the Transaction midway
 	 *
 	 * @return 	string
 	 */
-	public function getCancelURL() { return $this->_sCancelURL; }
+	public function getCancelURL()
+	{
+		if ( ($this->_obj_CancelURL instanceof ClientURLConfig) === true)
+		{
+			return $this->_obj_CancelURL->getURL();
+		}
+		else { return ""; }
+	}
 	/**
 	 * Returns the Absolute URL to the Client's Back Office where mPoint should send the Payment Status to
 	 *
 	 * @return 	string
 	 */
-	public function getCallbackURL() { return $this->_sCallbackURL; }
+	public function getCallbackURL()
+	{
+		if ( ($this->_obj_CallbackURL instanceof ClientURLConfig) === true)
+		{
+			return $this->_obj_CallbackURL->getURL();
+		}
+		else { return ""; }
+	}
 	/**
 	 * Returns the Absolute URL to the Client's Icon for My Account
 	 *
 	 * @return 	string
 	 */
-	public function getIconURL() { return $this->_sIconURL; }
+	public function getIconURL() 
+	{
+		if ( ($this->_obj_IconURL instanceof ClientURLConfig) === true)
+		{
+			return $this->_obj_IconURL->getURL();
+		}
+		else { return ""; }
+	}
 	/**
 	 * Absolute URL to the external system where customer data may be imported from.
 	 * This is generally an existing e-Commerce site or a CRM system.
@@ -735,9 +776,15 @@ class ClientConfig extends BasicConfig
 		$xml .= '<password>'. htmlspecialchars($this->getPassword(), ENT_NOQUOTES) .'</password>';
 		$xml .= '<max-amount country-id = "'.$this->getCountryConfig()->getID().'">'. htmlspecialchars($this->getMaxAmount(), ENT_NOQUOTES) .'</max-amount>';
 		$xml .= '<urls>';
+		if ( ($this->_obj_LogoURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_LogoURL->toXML(); }
+		if ( ($this->_obj_CSSURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_CSSURL->toXML(); }
+		if ( ($this->_obj_AcceptURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_AcceptURL->toXML(); }
+		if ( ($this->_obj_CancelURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_CancelURL->toXML(); }
+		if ( ($this->_obj_CallbackURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_CallbackURL->toXML(); }
+		if ( ($this->_obj_IconURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_IconURL->toXML(); }
 		if ( ($this->_obj_CustomerImportURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_CustomerImportURL->toXML(); }
 		if ( ($this->_obj_AuthenticationURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_AuthenticationURL->toXML(); }
-		if (($this->_obj_NotificationURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_NotificationURL->toXML(); }
+		if ( ($this->_obj_NotificationURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_NotificationURL->toXML(); }
 		if ( ($this->_obj_MESBURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_MESBURL->toXML(); }
 		$xml .= '</urls>';
 		$xml .= '<keyword id = "'.$this->getKeywordConfig()->getID().'">'.$this->getKeywordConfig()->getName().'</keyword>';
@@ -762,7 +809,7 @@ class ClientConfig extends BasicConfig
 	 * @param 	integer $kw 	Unique ID for the Keyword that all messages sent to the customer should belong to, defaults to -1 for client's default keyword.
 	 * @return 	ClientConfig
 	 */
-	public static function produceConfig(RDB $oDB, $id, $acc=-1, $kw=-1)
+public static function produceConfig(RDB $oDB, $id, $acc=-1, $kw=-1)
 	{
 		$acc = (integer) $acc;
 		$sql = "SELECT CL.id AS clientid, CL.name AS client, CL.flowid, CL.username, CL.passwd,
@@ -838,10 +885,23 @@ class ClientConfig extends BasicConfig
 		$aObj_ClientCardsAccountConfigurations = ClientPaymentMethodConfig::produceConfigurations($oDB, $id);
 		$aObj_ClientIINRangesConfigurations = ClientIINRangeConfig::produceConfigurations($oDB, $id);		
 		
+		$obj_LogoURL = null;
+		$obj_CSSURL = null;
+		$obj_AcceptURL = null;
+		$obj_CancelURL = null;
+		$obj_CallbackURL = null;
+		$obj_IconURL = null;
 		$obj_CustomerImportURL = null;
 		$obj_AuthenticationURL = null;
 		$obj_NotificationURL = null;
 		$obj_MESBURL = null;
+		
+		if (strlen($RS["LOGOURL"]) > 0) { $obj_LogoURL = new ClientURLConfig($RS["CLIENTID"], self::iLOGO_URL, $RS["LOGOURL"]); }
+		if (strlen($RS["CSSURL"]) > 0) { $obj_CSSURL = new ClientURLConfig($RS["CLIENTID"], self::iCSS_URL, $RS["CSSURL"]); }
+		if (strlen($RS["ACCEPTURL"]) > 0) { $obj_AcceptURL = new ClientURLConfig($RS["CLIENTID"], self::iACCEPT_URL, $RS["ACCEPTURL"]); }
+		if (strlen($RS["CANCELURL"]) > 0) { $obj_CancelURL = new ClientURLConfig($RS["CLIENTID"], self::iCANCEL_URL, $RS["CANCELURL"]); }
+		if (strlen($RS["CALLBACKURL"]) > 0) { $obj_CallbackURL = new ClientURLConfig($RS["CLIENTID"], self::iCALLBACK_URL, $RS["CALLBACKURL"]); }
+		if (strlen($RS["ICONURL"]) > 0) { $obj_IconURL = new ClientURLConfig($RS["CLIENTID"], self::iICON_URL, $RS["ICONURL"]); }
 		if ($RS["CUSTOMERIMPORTURLID"] > 0) { $obj_CustomerImportURL = new ClientURLConfig($RS["CUSTOMERIMPORTURLID"], self::iCUSTOMER_IMPORT_URL, $RS["CUSTOMERIMPORTURL"]); }
 		if ($RS["AUTHURLID"] > 0) { $obj_AuthenticationURL = new ClientURLConfig($RS["AUTHURLID"], self::iAUTHENTICATION_URL, $RS["AUTHURL"]); }
 		if ($RS["NOTIFYURLID"] > 0) { $obj_NotificationURL = new ClientURLConfig($RS["NOTIFYURLID"], self::iNOTIFICATION_URL, $RS["NOTIFYURL"]); }
@@ -861,7 +921,7 @@ class ClientConfig extends BasicConfig
 			}
 		}
 
-		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations,$aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations);
+		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_CallbackURL, $obj_IconURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations,$aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations);
 	}
 
 	/**
