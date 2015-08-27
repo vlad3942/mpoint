@@ -101,9 +101,9 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					$aMsgCds[1000] = "Success";
 					$args = array("transact" => $obj_TxnInfo->getExternalID(),
 								  "amount" => $_REQUEST['amount'],
-								  "fee" => $obj_TxnInfo->getFee()
-					);
-					if ($code == 1000) { $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args); }
+								  "fee" => $obj_TxnInfo->getFee() );
+					// Perform callback to Client
+					if (strlen($obj_TxnInfo->getCallbackURL() ) > 0) { $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args); }
 				}
 				else
 				{
@@ -112,7 +112,8 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					$aMsgCds[999] = "Declined";
 					$args = array("transact" => $obj_TxnInfo->getExternalID(),
 								  "amount" => $_REQUEST['amount']);
-					$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args);
+					// Perform callback to Client
+					if (strlen($obj_TxnInfo->getCallbackURL() ) > 0) { $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args); }
 				}
 			}
 			catch (BadMethodCallException $e)
