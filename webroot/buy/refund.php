@@ -106,7 +106,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 						$aMsgCds[$refund] = "Success";
 						$args = array("transact" => $obj_TxnInfo->getExternalID(),
 									  "amount" => $_REQUEST['amount']);
-						$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
+						if (strlen($obj_TxnInfo->getCallbackURL() ) > 0) { $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args); }
 					}
 					else
 					{
