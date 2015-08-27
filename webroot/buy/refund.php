@@ -98,15 +98,19 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					$obj_mPoint = new Refund($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 
 					// Refund operation succeeded
-					$refund = $obj_mPoint->refund($_REQUEST['amount']);
-					if ($refund == 1000 || $refund == 1001)
+					$code = $obj_mPoint->refund($_REQUEST['amount']);
+					if ($code == 1000 || $code == 1001)
 					{
 						header("HTTP/1.0 200 OK");
 						
-						$aMsgCds[$refund] = "Success";
-						$args = array("transact" => $obj_TxnInfo->getExternalID(),
-									  "amount" => $_REQUEST['amount']);
-						if (strlen($obj_TxnInfo->getCallbackURL() ) > 0) { $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args); }
+						$aMsgCds[$code] = "Success";
+						// Perform callback to Client
+						if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
+						{
+							$args = array("transact" => $obj_TxnInfo->getExternalID(),
+										  "amount" => $_REQUEST['amount']);
+							$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
+						}
 					}
 					else
 					{

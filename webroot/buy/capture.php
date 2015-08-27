@@ -99,21 +99,27 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					header("HTTP/1.0 200 OK");
 					
 					$aMsgCds[1000] = "Success";
-					$args = array("transact" => $obj_TxnInfo->getExternalID(),
-								  "amount" => $_REQUEST['amount'],
-								  "fee" => $obj_TxnInfo->getFee() );
 					// Perform callback to Client
-					if (strlen($obj_TxnInfo->getCallbackURL() ) > 0) { $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args); }
+					if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
+					{
+						$args = array("transact" => $obj_TxnInfo->getExternalID(),
+									  "amount" => $_REQUEST['amount'],
+									  "fee" => $obj_TxnInfo->getFee() );
+						$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
+					}
 				}
 				else
 				{
 					header("HTTP/1.0 502 Bad Gateway");
 					
 					$aMsgCds[999] = "Declined";
-					$args = array("transact" => $obj_TxnInfo->getExternalID(),
-								  "amount" => $_REQUEST['amount']);
 					// Perform callback to Client
-					if (strlen($obj_TxnInfo->getCallbackURL() ) > 0) { $obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args); }
+					if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
+					{
+						$args = array("transact" => $obj_TxnInfo->getExternalID(),
+									  "amount" => $_REQUEST['amount']);
+						$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $args);
+					}
 				}
 			}
 			catch (BadMethodCallException $e)
