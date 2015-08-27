@@ -39,6 +39,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $obj_HTTP->connect();
             $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
             $obj_HTTP->disConnect();
+            
             if ($code == 200)
             {
                 $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
@@ -73,9 +74,15 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 */
 	public function refund($iAmount = -1)
 	{
-		$status = $this->status();
-
+		// if the user 
+		if (strlen($this->aCONN_INFO["paths"]["status"]) > 0) $status = $this->status();
+		
 		if ($status == Constants::iPAYMENT_ACCEPTED_STATE)
+		{
+			return $this->cancel();
+		}
+		// If the PSP does not support a status call we will do a Cancel call if our status of the transaction does not have a capture message
+		elseif (count($this->getMessageData($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURED_STATE, false) ) == 0)
 		{
 			return $this->cancel();
 		}
@@ -94,10 +101,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			try
 			{
 				$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["refund"]);
-
+				
 				$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
 				$obj_HTTP->connect();
 				$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+				
 				$obj_HTTP->disConnect();
 				if ($code == 200)
 				{
