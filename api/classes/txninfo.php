@@ -549,10 +549,11 @@ class TxnInfo
 	public function setEMail($email) { $this->_sEMail = $email; }
 	/**
 	 * Associates an End-User's prepaid account with the Transaction.
+	 * Set to -1 to clear the End-User Account from the transaction. 
 	 *
 	 * @param 	integer $id 	Unique ID for the End-User's prepaid account
 	 */
-	public function setAccountID($id) { $this->_iAccountID = $id; }
+	public function setAccountID($id) { $this->_iAccountID = (integer) $id; }
 
 	/**
 	 * Converts the data object into XML.

@@ -444,7 +444,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								{
 									$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 									// Account disabled due to too many failed login attempts
-									if ($code == 3) { $obj_mPoint->sendAccountDisabledNotification(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo->getMobile() ); }
+									if ($code == 3)
+									{
+										// Remove End-User's Account ID from transaction log
+										$obj_TxnInfo->setAccountID(-1);
+										$obj_mPoint->logTransaction($obj_TxnInfo);
+										$obj_mPoint->sendAccountDisabledNotification(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo->getMobile() );
+									}
 
 									header("HTTP/1.1 403 Forbidden");
 

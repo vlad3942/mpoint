@@ -201,7 +201,9 @@ if (count($aMsgCds) == 0)
 		if ($msg == 3)
 		{
 			$obj_mPoint->sendAccountDisabledNotification(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $_SESSION['obj_TxnInfo']->getMobile() );
+			// Remove End-User's Account ID from transaction log
 			$_SESSION['obj_TxnInfo']->setAccountID(-1);
+			$obj_mPoint->logTransaction($_SESSION['obj_TxnInfo']);
 			$_SESSION['temp'] = array();
 			$sPath = "pay/card.php?";
 		}

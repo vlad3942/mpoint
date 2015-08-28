@@ -467,7 +467,8 @@ class General
 					gomobileid = ". $oTI->getGoMobileID() .", auto_capture = '". ($oTI->useAutoCapture() === true ? "1" : "0") ."', markup = '". $this->getDBConn()->escStr($oTI->getMarkupLanguage() ) ."',
 					description = '". $this->getDBConn()->escStr($oTI->getDescription() ) ."'";
 		if (strlen($oTI->getIP() ) > 0) { $sql .= " , ip = '". $this->getDBConn()->escStr( $oTI->getIP() ) ."'"; }
-		if ($oTI->getAccountID() > 0) { $sql .= ", euaid = ". $oTI->getAccountID(); } 
+		if ($oTI->getAccountID() > 0) { $sql .= ", euaid = ". $oTI->getAccountID(); }
+		elseif ($oTI->getAccountID() == -1) { $sql .= ", euaid = NULL"; }
 		$sql .= "
 				WHERE id = ". $oTI->getID();
 //		echo $sql ."\n";
