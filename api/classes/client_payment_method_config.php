@@ -71,7 +71,7 @@ class ClientPaymentMethodConfig extends BasicConfig
 	
 	public static function produceConfig(RDB $oDB, $id)
 	{
-		$sql = "SELECT CA.id, Coalesce(CA.countryid, -1) AS countryid, CA.stateid, CA.pspid, CA.enabled, C.id AS cardid, C.name		
+		$sql = "SELECT DISTINCT CA.id, Coalesce(CA.countryid, -1) AS countryid, CA.stateid, CA.pspid, CA.enabled, C.id AS cardid, C.name		
 				FROM Client". sSCHEMA_POSTFIX .".CardAccess_Tbl CA
 				INNER JOIN System.". sSCHEMA_POSTFIX ."Card_Tbl C ON CA.cardid = C.id AND C.enabled = '1'
 				INNER JOIN Client.". sSCHEMA_POSTFIX ."MerchantAccount_Tbl MA ON MA.clientid = CA.clientid AND MA.pspid = CA.pspid AND MA.enabled = '1'
@@ -88,7 +88,7 @@ class ClientPaymentMethodConfig extends BasicConfig
 	
 	public static function produceConfigurations(RDB $oDB, $clientid)
 	{			
-		$sql = "SELECT CA.id
+		$sql = "SELECT DISTINCT CA.id
 				FROM Client". sSCHEMA_POSTFIX .".CardAccess_Tbl CA
 				INNER JOIN System.". sSCHEMA_POSTFIX ."Card_Tbl C ON CA.cardid = C.id AND C.enabled = '1'
 				INNER JOIN Client.". sSCHEMA_POSTFIX ."MerchantAccount_Tbl MA ON MA.clientid = CA.clientid AND MA.pspid = CA.pspid AND MA.enabled = '1'
