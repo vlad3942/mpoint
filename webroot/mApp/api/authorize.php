@@ -32,6 +32,8 @@ require_once(sCLASS_PATH ."/validate.php");
 require_once(sCLASS_PATH ."/enduser_account.php");
 // Require Business logic for the Select Credit Card component
 require_once(sCLASS_PATH ."/credit_card.php");
+// Require data data class for Customer Information
+require_once(sCLASS_PATH ."/customer_info.php");
 
 // Require general Business logic for the Callback module
 require_once(sCLASS_PATH ."/callback.php");
@@ -144,7 +146,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								// Single Sign-On
 								if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 1 && strlen($obj_TxnInfo->getAuthenticationURL() ) > 0)
 								{
-									$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($obj_TxnInfo->getAuthenticationURL() ), $obj_TxnInfo->getCustomerRef(), $obj_DOM->{'authorize-payment'}[$i]->{'auth-token'});
+									$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($obj_TxnInfo->getAuthenticationURL() ), CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() ), trim($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) );
 								}
 								// Authentication is not required for payment methods that are sending a cryptogram
 								elseif (count($obj_DOM->{'authorize-payment'}[$i]->password) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cryptogram) == 1)

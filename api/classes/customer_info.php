@@ -102,13 +102,45 @@ class CustomerInfo
 
 		return $xml;
 	}
-	
-	public static function produceInfo(SimpleXMLElement $obj_XML)
+//	public static function produceInfo(SimpleXMLElement $obj_XML)
+//	public static function produceInfo(RDB $obj_DB, $id)
+	public static function produceInfo()
+	{
+		$aArgs = func_get_args();
+		switch (count($aArgs) )
+		{
+		case (1):	// Instantiate from XML Element
+			return self::_produceInfoFromXML($aArgs[0]);
+			break;
+		case (2):	// Instantiage from Database
+			return self::_produceInfoFromDatabase($aArgs[0], $aArgs[1]);
+			break;
+		default:	// Error: Unknown number of arguments
+			trigger_error("Unknown number of arguments: ". count($aArgs), E_USER_WARNING);
+			break;
+		}
+	}
+	private static function _produceInfoFromDatabase(RDB $obj_DB, $id)
+	{
+		$sql = "SELECT *
+				FROM EndUser.Account_Tbl
+				WHERE id = ". intval($id);
+//		echo $sql ."\n";
+		$RS = $obj_DB->getName($sql);
+		
+		if (is_array($RS) === true)
+		{
+			return new CustomerInfo($RS["ID"], $RS["COUNTRYID"], $RS["MOBILE"], $RS["EMAIL"], $RS["EXTERNALID"], trim($RS["FIRSTNAME"] ." ". $RS["LASTNAME"]), ""); 
+		}
+		else { return null; }
+	}
+	private static function _produceInfoFromXML(SimpleXMLElement $obj_XML)
 	{
 		return new CustomerInfo( (integer) @$obj_XML["id"],
 								 (integer) @$obj_XML->mobile["country-id"],
 								 (float) @$obj_XML->mobile,
-								 @trim($obj_XML->email), trim($obj_XML["customer-ref"]),
+								 @trim($obj_XML->email),
+								 trim($obj_XML["customer-ref"]),
 								 @trim($obj_XML->{'full-name'}),
 								 @trim($obj_XML["language"]) );
 	}

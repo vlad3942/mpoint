@@ -25,6 +25,9 @@ require_once(sAPI_CLASS_PATH ."/gomobile.php");
 
 // Require Business logic for the End-User Account Component
 require_once(sCLASS_PATH ."/enduser_account.php");
+// Require data data class for Customer Information
+require_once(sCLASS_PATH ."/customer_info.php");
+
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 
@@ -98,7 +101,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if (count($obj_DOM->login[$i]->{'auth-url'}) == 1) { $url = (string) $obj_DOM->login[$i]->{'auth-url'}; }
 							if ($obj_Validator->valURL($url, $obj_ClientConfig->getAuthenticationURL() ) == 10)
 							{
-								$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($url), $obj_DOM->login[$i]->{'client-info'}->{'customer-ref'}, (string) $obj_DOM->login[$i]->{'auth-token'} );
+								$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($url), CustomerInfo::produceInfo($_OBJ_DB, $iAccountID), trim($obj_DOM->login[$i]->{'auth-token'}) );
 							}
 							else { $code = 8; }
 						}

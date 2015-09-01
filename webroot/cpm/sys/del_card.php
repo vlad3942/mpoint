@@ -20,6 +20,8 @@ require_once(sCLASS_PATH ."/validate.php");
 require_once(sCLASS_PATH ."/enduser_account.php");
 // Require Business logic for the My Account component
 require_once(sCLASS_PATH ."/my_account.php");
+// Require data data class for Customer Information
+require_once(sCLASS_PATH ."/customer_info.php");
 
 header("content-type: text/plain");
 
@@ -43,7 +45,7 @@ if (count($aMsgCds) == 0)
 	{
 		$msg = $obj_mPoint->auth($_SESSION['obj_TxnInfo']->getAccountID(), $_POST['pwd'], false);
 	}
-	else { $msg = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($_SESSION['obj_TxnInfo']->getAuthenticationURL() ), $_SESSION['obj_TxnInfo']->getCustomerRef(), $_SESSION['obj_Info']->getInfo("auth-token") ); }
+	else { $msg = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($_SESSION['obj_TxnInfo']->getAuthenticationURL() ), CustomerInfo::produceInfo($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAccountID() ), $_SESSION['obj_Info']->getInfo("auth-token") ); }
 	if ($msg >= 10)
 	{
 		if ($obj_mPoint->delStoredCard($_SESSION['obj_TxnInfo']->getAccountID(), $_POST['cardid']) === true)

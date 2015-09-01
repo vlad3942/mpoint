@@ -21,6 +21,8 @@ require_once(sAPI_CLASS_PATH ."/gomobile.php");
 require_once(sCLASS_PATH ."/validate.php");
 // Require Business logic for the End-User Account Component
 require_once(sCLASS_PATH ."/enduser_account.php");
+// Require data data class for Customer Information
+require_once(sCLASS_PATH ."/customer_info.php");
 
 // Require general Business logic for the Callback module
 require_once(sCLASS_PATH ."/callback.php");
@@ -78,7 +80,7 @@ if (count($aMsgCds) == 0)
 		{
 			$msg = $obj_mPoint->auth($_POST['euaid'], $_POST['pwd']);
 		}
-		else { $msg = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($_SESSION['obj_TxnInfo']->getAuthenticationURL() ), $_SESSION['obj_TxnInfo']->getCustomerRef(), $_SESSION['obj_Info']->getInfo("auth-token") ); }
+		else { $msg = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($_SESSION['obj_TxnInfo']->getAuthenticationURL() ), CustomerInfo::produceInfo($_OBJ_DB, $_POST['euaid']), $_SESSION['obj_Info']->getInfo("auth-token") ); }
 	}
 	else { $msg = 10; }
 	if ($msg >= 10)
