@@ -1,7 +1,10 @@
 <?php
 /**
- * This files contains the for the Callback component which handles transactions processed through Adyen.
+ * This files contains the for the Callback component which handles transactions processed through mPoints general PSP.
  * The file will update the Transaction status and add the following data fields:
+ * 	- PSP Transaction ID
+ * 	- ID of the card used for payment.
+ * 
  *
  * Additionally the component sends out SMS Receipts and performs a callback to the client.
  */
@@ -20,10 +23,10 @@ require_once(sCLASS_PATH ."/callback.php");
 require_once(sCLASS_PATH ."/capture.php");
 // Require specific Business logic for the CPM PSP component
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
-// Require specific Business logic for the Adyen component
-require_once(sCLASS_PATH ."/adyen.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
+// Require specific Business logic for the Adyen component
+require_once(sCLASS_PATH ."/adyen.php");
 
 /**
  * Input XML format
@@ -63,7 +66,7 @@ while ( ($_OBJ_DB instanceof RDB) === false && $i < 5)
 $obj_XML = simplexml_load_string($HTTP_RAW_POST_DATA);
 
 	
-$id = Callback::getTxnIDFromOrderNo($_OBJ_DB, $obj_XML->callback->transaction["order-no"], (integer) $obj_XML->callback->{'psp-config'}["psp-id"]);
+$id = (integer)$obj_XML->callback->transaction["id"];
 
 try
 {
@@ -71,26 +74,18 @@ try
 
 	// Intialise Text Translation Object
 	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
-
-	$obj_mPoint = new Callback($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, array() );
+	
+	$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
+	
 	$iStateID = (integer) $obj_XML->callback->status["code"];
 	
-	if ($obj_TxnInfo->getExternalID() <= 0)
-	{
-		// save ext id in database
-		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-									SET pspid = ". Constants::iNETAXEPT_PSP .", extid = '". $obj_XML->callback->transaction["external-id"] ."'
-									WHERE id = ". $obj_TxnInfo->getID();
-		//					echo $sql ."\n";
-		$_OBJ_DB->query($sql);
-	}
 	// Save Ticket ID representing the End-User's stored Card Info
 	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_mPoint->getMessageData($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, false) ) == 1)
 	{
 		$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE);
 		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $obj_XML->callback->transaction->card->token);
 
-		// Card Number preg_replace('/\s+/', '', $string)
+		
 		$sExpiry =  $obj_XML->callback->transaction->card->expiry->month ."/". $obj_XML->callback->transaction->card->expiry->year;
 		
 		$iStatus = $obj_mPoint->saveCard($obj_TxnInfo,
@@ -98,8 +93,8 @@ try
 										 (integer) $obj_XML->callback->transaction->card["type-id"],
 										 (integer) $obj_XML->callback->{'psp-config'}["psp-id"],
 										 $obj_XML->callback->transaction->card->token,
-										 (string) $sMask = $obj_XML->callback->transaction->card->{'card-number'}, 
-										 (string) preg_replace('/\s+/', '', $sExpiry) );
+										 $obj_XML->callback->transaction->card->{'card-number'}, 
+										 preg_replace('/\s+/', '', $sExpiry) ); // Remove all whitespaces from string.
 		// The End-User's existing account was linked to the Client when the card was stored
 		if ($iStatus == 1)
 		{
@@ -123,7 +118,7 @@ try
 	}
 	$fee = 0;
 	$obj_mPoint->completeTransaction( (integer) $obj_XML->callback->{'psp-config'}["psp-id"],
-									  -1,
+									  $obj_XML->callback->transaction["external-id"],
 									  (integer) $obj_XML->callback->transaction->card["type-id"],
 									  $iStateID,
 									  $fee,
@@ -167,7 +162,31 @@ try
 	{
 		$obj_mPoint->sendSMSReceipt(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
 	}
-
+	// Transaction uses Auto Capture and Authorization was accepted
+	if ($obj_TxnInfo->useAutoCapture() === true && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
+	{
+		// Reload so we have the newest version of the TxnInfo
+		$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
+		$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
+		
+		$aCallbackArgs = array("transact" => $obj_XML->callback->transaction["external-id"],
+							   "amount" => $obj_TxnInfo->getAmount(),
+							   "card-id" =>  $obj_XML->callback->transaction->card["type-id"]);
+		
+		$responseCode = $obj_mPoint->capture($obj_TxnInfo->getAmount());
+		
+		
+		if ($responseCode == 1000)
+		{				
+			if ($obj_TxnInfo->getCallbackURL() != "") { $obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $aCallbackArgs); }
+			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
+		}
+		else
+		{
+			if ($obj_TxnInfo->getCallbackURL() != "") { $obj_mPoint->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $aCallbackArgs); }
+			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, "Payment Declined (2010)");
+		}
+	}
 	// Callback URL has been defined for Client
 	if ($obj_TxnInfo->getCallbackURL() != "")
 	{
@@ -177,18 +196,8 @@ try
 }
 catch (TxnInfoException $e)
 {
-	// Database connection is active & healthy
-	if ( ($_OBJ_DB instanceof RDB) === true && is_resource($_OBJ_DB->getDBConn() ) === true)
-	{
-		$xml .= '<status code="1000">Callback Success</status>';
-	}
-	// Internal Error
-	else
-	{
-		header("HTTP/1.1 500 Internal Server Error");
-		$xml .= '<status code="'. $e->getCode() .'">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES). '</status>';
-
-	}
+	header("HTTP/1.1 500 Internal Server Error");
+	$xml .= '<status code="'. $e->getCode() .'">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES). '</status>';
 	trigger_error($e->getMessage() ."\n". $HTTP_RAW_POST_DATA, E_USER_WARNING);
 }
 header("Content-Type: text/xml; charset=\"UTF-8\"");
