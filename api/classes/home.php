@@ -237,13 +237,13 @@ class Home extends General
 
 		return $code;
 	}
-	private function _authExternal(HTTPConnInfo &$oCI, $un, $pwd)
+	private function _authExternal(HTTPConnInfo &$oCI, CustomerInfo $obj_CustomerInfo, $pwd)
 	{
 		$obj_ConnInfo = new HTTPConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), "POST", "text/xml", $oCI->getUsername(), $oCI->getPassword() );
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<login>';
-		$b .= '<username>'. htmlspecialchars($un, ENT_NOQUOTES) .'</username>';
+		$b .= $obj_CustomerInfo->toXML();
 		$b .= '<password>'. htmlspecialchars($pwd, ENT_NOQUOTES) .'</password>';
 		$b .= '</login>';
 		$b .= '</root>';
