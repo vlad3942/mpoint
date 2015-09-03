@@ -327,7 +327,8 @@ class Admin extends General
 	}
 	/*	Used for updationg the enabled state of a card
 	 * 	
-	 * 
+	 * 	 1. Error in updating the Card
+	 * 	10. Card update successfully 
 	 * 
 	 */
 	public function updateCardAccess($id, $state, $uid)
@@ -342,9 +343,9 @@ class Admin extends General
 	//echo $sql ."\n";	
 		
 		$res = $this->getDBConn()->query($sql);
-		$xml = '<card id="'.$id .'">';
-		if ($this->getDBConn()->countAffectedRows($res) > 0)  { $xml .= '<status code="100">Card state was changed</status>'; }
-		else  {	$xml .= '<status code="90">Card state could not be changed</status>'; }
+		$code = 1;
+		if ($this->getDBConn()->countAffectedRows($res) > 0)  { $code = 10; }
+		else  {	$code .= 1; }
 		$xml .= '</card>';
 		
 		return $xml;

@@ -49,7 +49,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$xml ="<cards>";
 		for ($i=0; $i<count($obj_DOM->{'save-cards'}->cards->card); $i++)
 		{
-			$xml .= $obj_mPoint->updateCardAccess( (integer) $obj_DOM->{'save-cards'}->cards->card[$i]["id"], (string) $obj_DOM->{'save-cards'}->cards->card[$i], $obj_DOM->{'save-cards'}["user-id"]);
+			$code = $obj_mPoint->updateCardAccess( (integer) $obj_DOM->{'save-cards'}->cards->card[$i]["id"], (string) $obj_DOM->{'save-cards'}->cards->card[$i], $obj_DOM->{'save-cards'}["user-id"]);
+			
+			$xml .= '<card id="'. intval($obj_DOM->{'save-cards'}->cards->card[$i]["id"] ) .'">';
+			if ($code === 10) { $xml .= '<status code="100">Card state was changed</status>'; }
+			else  {	 $xml .= '<status code="90">Card state could not be changed</status>'; }
+			$xml .= '</card>';
 		}
 		$xml .="</cards>";
 		$xml = utf8_encode($xml);
