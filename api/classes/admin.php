@@ -277,7 +277,7 @@ class Admin extends General
 	 *
 	 *  @return	XML
 	 */
-	public function GetCards(array $aClientids, $uid)
+	public function getCards(array $aClientids, $uid)
 	{
 		$sql = "SELECT CA.id, CA.cardid, C.name AS cardname , CA.stateid, CA.enabled, CA.pspid, PSP.name AS pspname, CA.countryid , CA.clientid, CL.name AS clientname
 				FROM Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA
@@ -285,8 +285,8 @@ class Admin extends General
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON CA.clientid = CL.id
 				INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON CA.pspid = PSP.id
 				INNER JOIN Admin".sSCHEMA_POSTFIX.".Access_Tbl Acc ON CA.clientid = Acc.clientid
-				WHERE CA.clientid in(". $this->getDBConn()->escStr(implode(',',$aClientids) ) .") AND Acc.userid = ". intval($uid) ."
-				order by CA.clientid desc";
+				WHERE CA.clientid in(". $this->getDBConn()->escStr(implode(',', $aClientids) ) .") AND Acc.userid = ". intval($uid) ."
+				ORDER BY CA.clientid DESC";
 
 //		echo $sql;
 		
@@ -294,14 +294,14 @@ class Admin extends General
 		$xml = "<clients>";
 		if (is_array($aRS) === true && count($aRS) > 0)
 		{
-			$currentClientid = 0;
+			$iCurrentClientID = 0;
 			
 			for ($i=0; $i<count($aRS); $i++)
 			{
 				
-				if($currentClientid === 0 || $currentClientid !== $aRS[$i]["CLIENTID"])
+				if ($iCurrentClientID === 0 || $iCurrentClientID !== $aRS[$i]["CLIENTID"])
 				{
-					if($currentClientid != 0)
+					if($iCurrentClientID != 0)
 					{
 						$xml .= '</cards>';
 						$xml .='</client>';
@@ -316,7 +316,7 @@ class Admin extends General
 				$xml .= '<name>'. $aRS[$i]["CARDNAME"] .'</name>';
 				$xml .= '<psp id="'. $aRS[$i]["PSPID"] .'">'. $aRS[$i]["PSPNAME"] .'</psp>';
 				$xml .= '</card>';
-				if($currentClientid != $aRS[$i]["CLIENTID"] ) { $currentClientid = $aRS[$i]["CLIENTID"]; }
+				if($iCurrentClientID != $aRS[$i]["CLIENTID"] ) { $iCurrentClientID = $aRS[$i]["CLIENTID"]; }
 			}
 			$xml .= '</cards>';
 			$xml .='</client>';

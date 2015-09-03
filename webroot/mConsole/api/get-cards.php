@@ -53,7 +53,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			$aClients[] = (integer) $obj_DOM->{'get-cards'}->clients->client[$i]["id"];
 		}
 		$xml = '<get-cards>';
-		$xml .= $obj_mPoint->GetCards($aClients, $obj_DOM->{'get-cards'}["user-id"]);
+		$xml .= $obj_mPoint->getCards($aClients, $obj_DOM->{'get-cards'}["user-id"]);
 		$xml .= '</get-cards>';
 		$xml = utf8_encode($xml);
 	}
