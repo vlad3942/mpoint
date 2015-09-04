@@ -13,4 +13,5 @@
 	<xs:element name="save-client-configuration-response" type="save-client-configuration-response" />
 	<xs:element name="transaction-search-request" type="transaction-search-request" />
 	<xs:element name="transaction-search-response" type="transaction-search-response" />
+	<xs:element name="get-transaction-statistics" type="search-transaction-statistics-request" />
 </xs:schema>

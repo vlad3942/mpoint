@@ -874,5 +874,74 @@ class mConsole extends Admin
 		
 		return $aStatusCodes;
 	}
-}
+	
+	public function getTransactionStates(array $aClientIDs, $start, $end, array $aAccountIDs = array() )
+	{
+		$aStateIDS = array(Constants::iINPUT_VALID_STATE, Constants::iPAYMENT_INIT_WITH_PSP_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CANCELLED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_REFUNDED_STATE, Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_DECLINED_STATE);
+		
+		$sql = "SELECT date(Msg.created) as createddate, Msg.stateid as stateid, COUNT(Msg.stateid) as stateidcount 
+			FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn, 
+			Log".sSCHEMA_POSTFIX.".Message_Tbl Msg 
+			WHERE Msg.stateid IN (". implode(",", $aStateIDS) .") AND 
+			(Msg.created BETWEEN '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' AND 
+			'". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."') AND
+			Msg.created = (SELECT max(created) FROM Log".sSCHEMA_POSTFIX.".Message_Tbl WHERE txnid = Txn.id) AND 
+			Txn.clientid IN (". implode(",", $aClientIDs) .") " ;
+		
+		if(empty($aAccountIDs) === false)
+		{
+			$sql .= " AND Txn.accountid IN (". implode(",", $aAccountIDs) .")";
+		}
+		
+		$sql .= " GROUP BY createddate, Msg.stateid ";
+		$sql .= " ORDER BY createddate ";
+		
+		//echo $sql ."\n";exit;
+		
+		/* ----- Internal Variables Start ----- */
+		// Array of Recordsets to return
+		$aRS = array();
+		// Current Recordset
+		$RS = array();
+		/* ----- Internal Variables End ----- */
+		
+		$res = $this->getDBConn()->query($sql);
+
+		if (is_resource($res) === true)
+		{
+
+			// Loop while records remain in recordset
+			while(is_array($RS) === true)
+			{
+				// Fetch next record from recordset
+				$RS = $this->getDBConn()->fetchName($res);
+				// Success: Next record fetched from recordset
+				if (is_array($RS) === true) 
+				{ 
+					$aRS[$RS['CREATEDDATE']][$RS['STATEID']] = $RS['STATEIDCOUNT']; 
+				}
+			}
+			
+			if(empty($aRS) === false)
+			{
+			    $aTransactionStats = array();
+
+			    foreach($aRS as $createddate => $transactioncountdata)
+			    {
+				    $missingstateids = array_diff($aStateIDS, array_flip($transactioncountdata));
+				    foreach($missingstateids as $stateid)
+				    {
+					    $aTransactionStats[$createddate][$stateid] = 0;
+				    }
+
+				    $aTransactionStats[$createddate] += $transactioncountdata;
+			    }
+
+			    return new TransactionStatisticsInfo($aTransactionStats);
+			} else { return false; }
+		} else { return false; }
+
+		
+	}
+    }
 ?>
