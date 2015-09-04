@@ -661,7 +661,7 @@ class ClientConfig extends BasicConfig
 	private function _getPaymentMethodsAsXML()
 	{
 		$xml = '<payment-methods store-card="'. $this->_iStoreCard .'" show-all-cards="'. General::bool2xml($this->_bShowAllCards) .'" max-stored-cards="'. $this->_iMaxCards .'">';
-		foreach($this->_aObj_PaymentMethodConfigurations as $obj_PM)
+		foreach ($this->_aObj_PaymentMethodConfigurations as $obj_PM)
 		{
 			if ( ($obj_PM instanceof ClientPaymentMethodConfig) === true)
 			{
@@ -680,7 +680,7 @@ class ClientConfig extends BasicConfig
 	private function _getAccountsConfigurationsAsXML()
 	{
 		$xml = '<account-configurations>';
-		foreach($this->_aObj_AccountsConfigurations as $obj_AccountConfig)
+		foreach ($this->_aObj_AccountsConfigurations as $obj_AccountConfig)
 		{
 			if ( ($obj_AccountConfig instanceof AccountConfig) == true)
 			{
@@ -699,7 +699,7 @@ class ClientConfig extends BasicConfig
 	private function _getMerchantAccountsConfigAsXML()
 	{
 		$xml = '<payment-service-providers>';
-		foreach($this->_aObj_MerchantAccounts as $obj_MA)
+		foreach ($this->_aObj_MerchantAccounts as $obj_MA)
 		{
 			if ( ($obj_MA instanceof ClientMerchantAccountConfig) === true)
 			{
@@ -719,7 +719,7 @@ class ClientConfig extends BasicConfig
 	private function _getIINRangesConfigAsXML()
 	{
 		$xml = '<issuer-identification-number-ranges>';
-		foreach($this->_aObj_IINRangeConfigurations as $obj_IINR)
+		foreach ($this->_aObj_IINRangeConfigurations as $obj_IINR)
 		{
 			if ( ($obj_IINR instanceof ClientIINRangeConfig) === true)
 			{
