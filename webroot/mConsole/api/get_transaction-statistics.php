@@ -21,12 +21,11 @@ require_once(sCLASS_PATH ."/mConsole.php");
 
 // Require data data class for Transaction Statistics Information
 require_once(sCLASS_PATH ."/transaction_statistics_info.php");
-// Require data data class for Customer Information
-require_once(sCLASS_PATH ."/customer_info.php");
 
+/*
 $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
-/*
+
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
 $HTTP_RAW_POST_DATA .= '    <get-transaction-statistics psp-id="7" card-id="11">';
@@ -109,7 +108,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		case (mConsole::iAUTHORIZATION_SUCCESSFUL):
 			header("HTTP/1.1 200 OK");
 
-			$obj_TransactionStats = $obj_mPoint->getTransactionStates($aClientIDs, str_replace("T", " ", $obj_DOM->{'get-transaction-statistics'}->{'start-date'}), str_replace("T", " ", $obj_DOM->{'get-transaction-statistics'}->{'end-date'}), $aAccountIDs);
+			$obj_TransactionStats = $obj_mPoint->getTransactionStats($aClientIDs, str_replace("T", " ", $obj_DOM->{'get-transaction-statistics'}->{'start-date'}), str_replace("T", " ", $obj_DOM->{'get-transaction-statistics'}->{'end-date'}), $aAccountIDs);
 			if($obj_TransactionStats instanceof TransactionStatisticsInfo)
 			{
 				$xml = $obj_TransactionStats->toXML();

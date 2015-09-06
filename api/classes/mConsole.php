@@ -875,7 +875,16 @@ class mConsole extends Admin
 		return $aStatusCodes;
 	}
 	
-	public function getTransactionStates(array $aClientIDs, $start, $end, array $aAccountIDs = array() )
+	/**
+	 * Performs a search in mPoint's Transaction Logsand Message tables based on the specified parameters
+	 * 
+	 * @param array $aClientIDs		A list of client IDs who must own the found transactions
+	 * @param string $start			The start date / time for when transactions must have been created in order to be included in the search result
+	 * @param string $end			The end date / time for when transactions must have been created in order to be included in the search result
+	 * @param array $aAccountIDs		A list of acount IDs related with client ids who must own the found transactions 
+	 * @return multitype:TransactionStatisticsInfo
+	 */
+	public function getTransactionStats(array $aClientIDs, $start, $end, array $aAccountIDs = array() )
 	{
 		$aStateIDS = array(Constants::iINPUT_VALID_STATE, Constants::iPAYMENT_INIT_WITH_PSP_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CANCELLED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_REFUNDED_STATE, Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_DECLINED_STATE);
 		
@@ -898,46 +907,39 @@ class mConsole extends Admin
 		
 		//echo $sql ."\n";exit;
 		
-		/* ----- Internal Variables Start ----- */
-		// Array of Recordsets to return
 		$aRS = array();
-		// Current Recordset
+		
 		$RS = array();
-		/* ----- Internal Variables End ----- */
 		
 		$res = $this->getDBConn()->query($sql);
 
 		if (is_resource($res) === true)
 		{
 
-			// Loop while records remain in recordset
-			while(is_array($RS) === true)
+			while($RS = $this->getDBConn()->fetchName($res))
 			{
-				// Fetch next record from recordset
-				$RS = $this->getDBConn()->fetchName($res);
-				// Success: Next record fetched from recordset
 				if (is_array($RS) === true) 
-				{ 
+				{
 					$aRS[$RS['CREATEDDATE']][$RS['STATEID']] = $RS['STATEIDCOUNT']; 
 				}
 			}
 			
 			if(empty($aRS) === false)
 			{
-			    $aTransactionStats = array();
+				$aTransactionStats = array();
 
-			    foreach($aRS as $createddate => $transactioncountdata)
-			    {
-				    $missingstateids = array_diff($aStateIDS, array_flip($transactioncountdata));
-				    foreach($missingstateids as $stateid)
-				    {
-					    $aTransactionStats[$createddate][$stateid] = 0;
-				    }
+				foreach($aRS as $createddate => $transactioncountdata)
+				{
+					$missingstateids = array_diff($aStateIDS, array_flip($transactioncountdata));
+					foreach($missingstateids as $stateid)
+					{
+						$aTransactionStats[$createddate][$stateid] = 0;
+					}
 
-				    $aTransactionStats[$createddate] += $transactioncountdata;
-			    }
+					$aTransactionStats[$createddate] += $transactioncountdata;
+				}
 
-			    return new TransactionStatisticsInfo($aTransactionStats);
+				return new TransactionStatisticsInfo($aTransactionStats);
 			} else { return false; }
 		} else { return false; }
 
