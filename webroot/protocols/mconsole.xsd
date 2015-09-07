@@ -18,7 +18,7 @@
 				<xs:element name="search" type="transaction-search-request" />
 				<xs:element name="void" type="transaction-state-changes-request" />
 				<xs:element name="capture" type="transaction-state-changes-request" />
-				<xs:element name="get-transaction-statistics" type="search-transaction-statistics-request" />
+				<xs:element name="get-transaction-statistics" type="transaction-statistics-search-request" />
 				
 				<xs:element name="save-cards" type="save-cards" />
 				<xs:element name="get-cards" type="get-cards" />
