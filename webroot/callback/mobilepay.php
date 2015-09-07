@@ -84,7 +84,8 @@ try
 		if ($obj_TxnInfo->getCallbackURL() != "" && $iStateID != Constants::iPAYMENT_DUPLICATED_STATE)
 		{
 			// Payment is already captured ?
-			if (isset($obj_TxnData["is-captured"]) === true && strtolower($obj_TxnData["is-captured"]) == "true" || $iPSPStatus == Constants::iPAYMENT_CAPTURED_STATE) { $bPaymentIsCaptured = true; }
+			if ( (isset($obj_TxnData["is-captured"]) === true && strtolower($obj_TxnData["is-captured"]) == "true") ||
+				  $iPSPStatus == Constants::iPAYMENT_CAPTURED_STATE) { $bPaymentIsCaptured = true; }
 			// Payment is not captured yet
 			else
 			{
