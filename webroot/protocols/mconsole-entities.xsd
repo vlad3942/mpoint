@@ -1383,35 +1383,35 @@
 					</xs:documentation>
 				</xs:annotation>
 				 <xs:complexType>
-		            <xs:sequence>
-		              <xs:element name="transaction-stats-by-date" minOccurs="0" maxOccurs="unbounded">
-		              	<xs:annotation>
-							<xs:documentation>
-								Contains the transaction statistics by the individual date(day) within the given time span
-							</xs:documentation>
-						</xs:annotation>
-		                <xs:complexType>
-		                  <xs:sequence>
-		                    <xs:element name="state" minOccurs="0" maxOccurs="unbounded">
-		                      <xs:annotation>
-									<xs:documentation>
-										Contains the individual transaction state based counts
-									</xs:documentation>
-							  </xs:annotation>
-		                      <xs:complexType>
-		                        <xs:simpleContent>
-		                          <xs:extension base="xs:positiveInteger">
-		                            <xs:attribute type="xs:positiveInteger" name="id" use="required"/>
-		                          </xs:extension>
-		                        </xs:simpleContent>
-		                      </xs:complexType>
-		                    </xs:element>
-		                  </xs:sequence>
-		                  <xs:attribute type="xs:date" name="date" use="required"/>
-		                </xs:complexType>
-		              </xs:element>
-		            </xs:sequence>
-		         </xs:complexType>
+					<xs:sequence>
+						<xs:element name="transaction-stats-by-date" minOccurs="0" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>
+									Contains the transaction statistics by the individual date(day) within the given time span
+								</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="state" minOccurs="0" maxOccurs="unbounded">
+										<xs:annotation>
+											<xs:documentation>
+												Contains the individual transaction state based counts
+											</xs:documentation>
+										</xs:annotation>
+										<xs:complexType>
+											<xs:simpleContent>
+												<xs:extension base="xs:positiveInteger">
+													<xs:attribute type="xs:positiveInteger" name="id" use="required"/>
+												</xs:extension>
+											</xs:simpleContent>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+								<xs:attribute type="xs:date" name="date" use="required"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>	
