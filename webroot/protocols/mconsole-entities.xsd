@@ -1188,6 +1188,20 @@
 			<xs:enumeration value="XHTML" />
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="url-type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Customer Import URL" />
+			<xs:enumeration value="Single Sign On URL" />
+			<xs:enumeration value="Notification URL" />
+			<xs:enumeration value="MESB URL" />
+			<xs:enumeration value="Logo URL" />
+			<xs:enumeration value="CSS URL" />
+			<xs:enumeration value="Callback URL" />
+			<xs:enumeration value="Accept URL" />
+			<xs:enumeration value="Cancel URL" />
+			<xs:enumeration value="Icon URL" />
+		</xs:restriction>
+	</xs:simpleType>
 	<!-- Client Configuration Entities End -->
 	<xs:complexType name="get-client-configurations">
          <xs:sequence>	
