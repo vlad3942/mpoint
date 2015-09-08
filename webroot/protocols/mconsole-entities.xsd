@@ -1087,7 +1087,7 @@
 		</xs:annotation>
 		<xs:simpleContent>
 			<xs:extension base="xs:anyURI">
-				<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
+				<xs:attribute name="id" type="xs:nonNegativeInteger" use="optional" />
 				<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
 			</xs:extension>
 		</xs:simpleContent>
