@@ -53,11 +53,17 @@ foreach ($aTxns as $txn)
 		{
 		case Constants::iDIBS_PSP:
 			$iStatus = $obj_PSP->refund($obj_TxnInfo->getAmount(), 2); //Second argument "2" orders a cancel ONLY refund behavior @see DIBS class
-			$obj_PSP->notifyClient(Constants::iPAYMENT_CANCELLED_STATE, array('transact'=>$obj_TxnInfo->getExternalID(), 'amount'=>$obj_TxnInfo->getAmount() ) );
+			if ($iStatus == 1000 || $iStatus == 1001)
+			{
+				$obj_PSP->notifyClient(Constants::iPAYMENT_CANCELLED_STATE, array('transact' => $obj_TxnInfo->getExternalID(), 'amount' => $obj_TxnInfo->getAmount() ) );
+			}
 			break;
 		case Constants::iNETAXEPT_PSP:
 			$iStatus = $obj_PSP->refund($obj_TxnInfo->getAmount(), 2); //Second argument "2" orders a cancel ONLY refund behavior @see Netaxept class
-			$obj_PSP->notifyClient(Constants::iPAYMENT_CANCELLED_STATE, array('transact'=>$obj_TxnInfo->getExternalID(), 'amount'=>$obj_TxnInfo->getAmount(), 'fee'=>$obj_TxnInfo->getFee(), 'cardid'=>0, 'cardnomask'=>"" ) );
+			if ($iStatus == 1000 || $iStatus == 1001)
+			{
+				$obj_PSP->notifyClient(Constants::iPAYMENT_CANCELLED_STATE, array('transact' => $obj_TxnInfo->getExternalID(), 'amount' => $obj_TxnInfo->getAmount(), 'fee' => $obj_TxnInfo->getFee(), 'cardid' => 0, 'cardnomask' => "") );
+			}
 			break;
 		case Constants::iMOBILEPAY_PSP:
 			$iStatus = $obj_PSP->cancel();
