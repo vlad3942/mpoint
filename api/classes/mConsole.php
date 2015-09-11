@@ -357,6 +357,19 @@ class mConsole extends Admin
 		}
 		else
 		{
+		
+			if($id === 0)
+			{
+				//Entry exists but is disabled.
+				$sqlSelect = "Select id from Client". sSCHEMA_POSTFIX .".URL_Tbl
+							WHERE urltypeid = ". intval($typeid) ." AND clientid = ". intval($clientid);
+				$RSONE = $this->getDBConn()->getName($sqlSelect);
+				
+				if($RSONE !== false) {
+					$id = $RSONE["ID"];
+				}
+			}
+			
 			if ($id > 0)
 			{
 				$sql = "UPDATE Client". sSCHEMA_POSTFIX .".URL_Tbl
