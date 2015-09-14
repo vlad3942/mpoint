@@ -599,7 +599,7 @@ class WorldPay extends Callback implements Captureable, Refundable
 				// Error: Unable to initialize payment transaction
 				else
 				{
-					trigger_error("Unable to initialize payment transaction with WorldPay, error code: ". $obj_XML->reply->error["code"] ."\n". $obj_XML->reply->error->asXML(), E_USER_WARNING);
+					trigger_error("Unable to initialize payment transaction with WorldPay, error code: ". $obj_XML->reply->error["code"] ."\n". $obj_XML->asXML(), E_USER_WARNING);
 
 					throw new mPointException("WorldPay returned Error: ". $obj_XML->reply->error ." (". $obj_XML->reply->error["code"] .")", 1101);
 				}
