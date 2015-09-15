@@ -1384,8 +1384,8 @@
 				</xs:annotation>
 			</xs:element>	
 		</xs:sequence>
-		<xs:attribute type="xs:positiveInteger" name="psp-id" use="required" />
-		<xs:attribute type="xs:positiveInteger" name="card-id" use="required" />
+		<xs:attribute type="xs:positiveInteger" name="psp-id" minOccurs="0" maxOccurs="1" />
+		<xs:attribute type="xs:positiveInteger" name="card-id" minOccurs="0" maxOccurs="1" />
 	</xs:complexType>
 	
 	<xs:complexType name="transaction-statistics-search-response">

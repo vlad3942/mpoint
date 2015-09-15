@@ -28,22 +28,21 @@ $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '    <get-transaction-statistics psp-id="7" card-id="11">';
+$HTTP_RAW_POST_DATA .= '    <get-transaction-statistics psp-id="2" card-id="8">';
 $HTTP_RAW_POST_DATA .= '       <clients>';
 $HTTP_RAW_POST_DATA .= '              <client id="10014">';
 $HTTP_RAW_POST_DATA .= '                     <accounts>';
-$HTTP_RAW_POST_DATA .= '                            <account-id>100014</account-id>';
-$HTTP_RAW_POST_DATA .= '                            <account-id>100015</account-id>';
+$HTTP_RAW_POST_DATA .= '                            <account-id>100022</account-id>';
 $HTTP_RAW_POST_DATA .= '                     </accounts>';
 $HTTP_RAW_POST_DATA .= '              </client>';
 $HTTP_RAW_POST_DATA .= '              <client id="10019">';
 $HTTP_RAW_POST_DATA .= '                     <accounts>';
-$HTTP_RAW_POST_DATA .= '                            <account-id>100019</account-id>';
+$HTTP_RAW_POST_DATA .= '                            <account-id>100026</account-id>';
 $HTTP_RAW_POST_DATA .= '                     </accounts>';
 $HTTP_RAW_POST_DATA .= '              </client>';
 $HTTP_RAW_POST_DATA .= '       </clients>';
-$HTTP_RAW_POST_DATA .= '       <start-date>2015-05-01T00:00:00</start-date>';
-$HTTP_RAW_POST_DATA .= '       <end-date>2015-06-01T00:00:00</end-date>';
+$HTTP_RAW_POST_DATA .= '       <start-date>2014-12-21T00:00:00</start-date>';
+$HTTP_RAW_POST_DATA .= '       <end-date>2015-01-07T00:00:00</end-date>';
 $HTTP_RAW_POST_DATA .= '    </get-transaction-statistics>';
 $HTTP_RAW_POST_DATA .= '</root>'; 
 */
@@ -60,7 +59,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	{
 		$aClientIDs = array();
 		$aAccountIDs = array();
-		
+
 		for ($i=0; $i<count($obj_DOM->{'get-transaction-statistics'}->clients->client); $i++)
 		{
 			$aClientIDs[] = (int)$obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->attributes()['id'];
@@ -107,8 +106,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			break;
 		case (mConsole::iAUTHORIZATION_SUCCESSFUL):
 			header("HTTP/1.1 200 OK");
-
-			$obj_TransactionStats = $obj_mPoint->getTransactionStats($aClientIDs, str_replace("T", " ", $obj_DOM->{'get-transaction-statistics'}->{'start-date'}), str_replace("T", " ", $obj_DOM->{'get-transaction-statistics'}->{'end-date'}), $aAccountIDs);
+			
+			$pspid = intval($obj_DOM->{'get-transaction-statistics'}->attributes()['psp-id']);
+			$cardid = intval($obj_DOM->{'get-transaction-statistics'}->attributes()['card-id']);
+			
+			$obj_TransactionStats = $obj_mPoint->getTransactionStats($aClientIDs, str_replace("T", " ", $obj_DOM->{'get-transaction-statistics'}->{'start-date'}), str_replace("T", " ", $obj_DOM->{'get-transaction-statistics'}->{'end-date'}), $aAccountIDs, $pspid, $cardid);
 			if($obj_TransactionStats instanceof TransactionStatisticsInfo)
 			{
 				$xml = $obj_TransactionStats->toXML();

@@ -889,15 +889,17 @@ class mConsole extends Admin
 	}
 	
 	/**
-	 * Performs a search in mPoint's Transaction Logsand Message tables based on the specified parameters
+	 * Performs a search in mPoint's Transaction Logs and Message tables based on the specified parameters
 	 * 
 	 * @param array $aClientIDs		A list of client IDs who must own the found transactions
 	 * @param string $start			The start date / time for when transactions must have been created in order to be included in the search result
 	 * @param string $end			The end date / time for when transactions must have been created in order to be included in the search result
 	 * @param array $aAccountIDs		A list of acount IDs related with client ids who must own the found transactions 
+	 * @param int $pspid			Psp id will be sent for more geting more granular results.
+	 * @param int $cardid			Card id will be sent for more geting more granular results.
 	 * @return multitype:TransactionStatisticsInfo
 	 */
-	public function getTransactionStats(array $aClientIDs, $start, $end, array $aAccountIDs = array() )
+	public function getTransactionStats(array $aClientIDs, $start, $end, array $aAccountIDs = array(), $pspid = 0, $cardid = 0 )
 	{
 		$aStateIDS = array(Constants::iINPUT_VALID_STATE, Constants::iPAYMENT_INIT_WITH_PSP_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CANCELLED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_REFUNDED_STATE, Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_DECLINED_STATE);
 		
@@ -913,6 +915,16 @@ class mConsole extends Admin
 		if(empty($aAccountIDs) === false)
 		{
 			$sql .= " AND Txn.accountid IN (". implode(",", $aAccountIDs) .")";
+		}
+		
+		if($pspid > 0)
+		{
+			$sql .= " AND Txn.pspid = ".$pspid;
+		}
+		
+		if($cardid > 0)
+		{
+			$sql .= " AND Txn.cardid = ".$cardid;
 		}
 		
 		$sql .= " GROUP BY createddate, Msg.stateid ";
