@@ -1038,7 +1038,7 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
-			<xs:element name="payment-service-providers" minOccurs="1" maxOccurs="1">
+			<xs:element name="payment-service-providers" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="payment-service-provider" type="account-psp-config" minOccurs="1" maxOccurs="unbounded" />
