@@ -136,15 +136,18 @@ class AccountConfig extends BasicConfig
 		$xml = '<account-config id = "'. $this->getID().'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
 		$xml .= '<markup>'. htmlspecialchars($this->getMarkupLanguage(), ENT_NOQUOTES).'</markup>';
-		$xml .= '<payment-service-providers>';
-		foreach ($this->_aObj_MerchantSubAccounts as $obj_MerchantSubAccount)
+		if(count($this->_aObj_MerchantSubAccounts) > 0 )
 		{
-			if ( ($obj_MerchantSubAccount instanceof ClientMerchantSubAccountConfig) == true)
+			$xml .= '<payment-service-providers>';		
+			foreach ($this->_aObj_MerchantSubAccounts as $obj_MerchantSubAccount)
 			{
-				$xml .= $obj_MerchantSubAccount->toXML();
+				if ( ($obj_MerchantSubAccount instanceof ClientMerchantSubAccountConfig) == true)
+				{
+					$xml .= $obj_MerchantSubAccount->toXML();
+				}
 			}
+			$xml .= '</payment-service-providers>';
 		}
-		$xml .= '</payment-service-providers>';
 		$xml .= '</account-config>';
 	
 		return $xml;
