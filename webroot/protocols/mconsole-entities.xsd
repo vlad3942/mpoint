@@ -244,6 +244,7 @@
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
+	
 	<xs:complexType name="amount-info">
 		<xs:annotation>
 			<xs:documentation>
@@ -418,7 +419,37 @@
 			<xs:element name="clients" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element type="xs:integer" name="client-id" minOccurs="1" maxOccurs="unbounded" />
+						<xs:element name="client" minOccurs="1" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="accounts" minOccurs="0" maxOccurs="1">
+										<xs:annotation>
+											<xs:documentation>
+												List of Sub-Accounts (Store Fronts) for which transactions should be found
+											</xs:documentation>
+										</xs:annotation>
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element type="xs:positiveInteger" name="account" minOccurs="1" maxOccurs="unbounded">
+													<xs:annotation>
+														<xs:documentation>
+															Unique ID for the Sub-Account (Store Front) for which transactions should be found 
+														</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+								<xs:attribute name="id" type="xs:positiveInteger" use="required">
+									<xs:annotation>
+										<xs:documentation>
+											Unique ID for the Client Account to be found at mPoint
+										</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+							</xs:complexType>
+						</xs:element>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -1122,7 +1153,7 @@
 					</xs:annotation>
 					<xs:simpleType>
 						<xs:restriction base="xs:int"> 
-							<xs:pattern value="-1|[1-9][0-9]{2}"></xs:pattern>
+							<xs:pattern value="-1|[1-9][0-9]{2}" />
 				    	</xs:restriction>
 					</xs:simpleType>
 				</xs:attribute>
