@@ -563,7 +563,7 @@ class mConsole extends Admin
 	 * @param integer $offset		The offset from which the results returned by the search should start, any results before the offset are skipped by the search
 	 * @return multitype:TransactionLogInfo
 	 */
-	public function searchTransactionLogs(array $aClientIDs, $id=-1, $ono="", CustomerInfo $oCI=null, $start="", $end="", $verbose=false, $limit=100, $offset=0)
+	public function searchTransactionLogs(array $aClientIDs, array $aAccountIDs, $id=-1, $ono="", CustomerInfo $oCI=null, $start="", $end="", $verbose=false, $limit=100, $offset=0)
 	{
 		$sql = "";
 		// A search for an Order Number makes searching the end-user's Transaction table obsolete 
@@ -620,7 +620,7 @@ class mConsole extends Admin
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M3 ON Txn.id = M3.txnid AND M3.stateid = ". Constants::iPAYMENT_REFUNDED_STATE ."
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M4 ON Txn.id = M4.txnid AND M4.stateid = ". Constants::iPAYMENT_CANCELLED_STATE ."
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON Txn.euaid = EUA.id
-				WHERE CL.id IN (". implode(",", $aClientIDs) .")";
+				WHERE CL.id IN (". implode(",", $aClientIDs) .") AND  Acc.id IN (". implode(",", $aAccountIDs) .")";
 		if (intval($id) > 0) { $sql .= " AND Txn.id = '". floatval($id) ."'"; }
 		if (empty($ono) === false) { $sql .= " AND Txn.orderid = '". $this->getDBConn()->escStr($ono) ."'"; }
 		if ( ($oCI instanceof CustomerInfo) === true)

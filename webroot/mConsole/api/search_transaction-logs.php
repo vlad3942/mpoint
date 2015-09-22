@@ -66,19 +66,25 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 {
 	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mconsole.xsd") === true && count($obj_DOM->{'search-transaction-logs'}) > 0)
 	{
-		$aClientIDs = array();
-		for ($i=0; $i<count($obj_DOM->{'search-transaction-logs'}->clients->{'client-id'}); $i++)
+		$aAccounts = array();	
+		$aAccountIDs = array();	
+		for ($i=0; $i<count($obj_DOM->{'search-transaction-logs'}->clients->client); $i++)
 		{
-			$aClientIDs[] = (integer) $obj_DOM->{'search-transaction-logs'}->clients->{'client-id'}[$i];
+			$iClientID = (integer) $obj_DOM->{'search-transaction-logs'}->clients->client[$i]['id'];
+			$aAccounts[$iClientID] = array();
+			for ($j=0; $j<count($obj_DOM->{'search-transaction-logs'}->clients->client[$i]->accounts->{'account-id'}); $j++)
+			{				
+				$aAccounts[$iClientID][] = $aAccountIDs[] = (integer) $obj_DOM->{'search-transaction-logs'}->clients->client[$i]->accounts->{'account-id'}[$j];
+			}
 		}
-
+		
 		$aHTTP_CONN_INFO["mesb"]["path"] = Constants::sMCONSOLE_SINGLE_SIGN_ON_PATH;
 		$aHTTP_CONN_INFO["mesb"]["username"] = trim($_SERVER['PHP_AUTH_USER']);
 		$aHTTP_CONN_INFO["mesb"]["password"] = trim($_SERVER['PHP_AUTH_PW']);
 
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
 
-		$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_SEARCH_TRANSACTION_LOGS, $aClientIDs);
+		$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_SEARCH_TRANSACTION_LOGS, array_keys($aAccounts));
 		switch ($code)
 		{
 		case (mConsole::iSERVICE_CONNECTION_TIMEOUT_ERROR):
@@ -130,7 +136,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			{
 				$obj_CustomerInfo = CustomerInfo::produceInfo($obj_DOM->{'search-transaction-logs'}->transaction->customer);
 			}
-			$aObj_Logs = $obj_mPoint->searchTransactionLogs($aClientIDs, (integer) $obj_DOM->{'search-transaction-logs'}->transaction["id"], trim($obj_DOM->{'search-transaction-logs'}->transaction["order-no"]), $obj_CustomerInfo, str_replace("T", " ", $obj_DOM->{'search-transaction-logs'}->{'start-date'}), str_replace("T", " ", $obj_DOM->{'search-transaction-logs'}->{'end-date'}), General::xml2bool($obj_DOM->{'search-transaction-logs'}["verbose"]), (integer) $obj_DOM->{'search-transaction-logs'}["limit"], (integer) $obj_DOM->{'search-transaction-logs'}["offset"]);
+			$aObj_Logs = $obj_mPoint->searchTransactionLogs(array_keys($aAccounts), $aAccountIDs, (integer) $obj_DOM->{'search-transaction-logs'}->transaction["id"], trim($obj_DOM->{'search-transaction-logs'}->transaction["order-no"]), $obj_CustomerInfo, str_replace("T", " ", $obj_DOM->{'search-transaction-logs'}->{'start-date'}), str_replace("T", " ", $obj_DOM->{'search-transaction-logs'}->{'end-date'}), General::xml2bool($obj_DOM->{'search-transaction-logs'}["verbose"]), (integer) $obj_DOM->{'search-transaction-logs'}["limit"], (integer) $obj_DOM->{'search-transaction-logs'}["offset"]);
 			foreach ($aObj_Logs as $obj_Log)
 			{
 				$xml .= $obj_Log->toXML();
