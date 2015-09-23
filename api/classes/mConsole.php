@@ -169,8 +169,8 @@ class mConsole extends Admin
 		if(empty($id) === true )
 		{
 			//Entry exists but is disabled.
-			$sqlSelect = "Select id from Client". sSCHEMA_POSTFIX .".MerchantAccount_Tbl
-						WHERE clientid = ". intval($clientid) ." AND pspid = ". intval($pspid);
+			$sqlSelect = "SELECT id FROM Client". sSCHEMA_POSTFIX .".MerchantAccount_Tbl
+						WHERE clientid = ". intval($clientid) ." AND pspid = ". intval($pspid) ." AND stored_card = ". intval($storedcard);
 			$RSONE = $this->getDBConn()->getName($sqlSelect);
 			$id = $RSONE["ID"];			
 		}
