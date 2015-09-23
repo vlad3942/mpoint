@@ -72,9 +72,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		{
 			$iClientID = (integer) $obj_DOM->{'search-transaction-logs'}->clients->client[$i]['id'];
 			$aAccounts[$iClientID] = array();
-			for ($j=0; $j<count($obj_DOM->{'search-transaction-logs'}->clients->client[$i]->accounts->{'account-id'}); $j++)
+			for ($j=0; $j<count($obj_DOM->{'search-transaction-logs'}->clients->client[$i]->accounts->{'account'}); $j++)
 			{				
-				$aAccounts[$iClientID][] = $aAccountIDs[] = (integer) $obj_DOM->{'search-transaction-logs'}->clients->client[$i]->accounts->{'account-id'}[$j];
+				$aAccounts[$iClientID][] = $aAccountIDs[] = (integer) $obj_DOM->{'search-transaction-logs'}->clients->client[$i]->accounts->{'account'}[$j];
 			}
 		}
 		

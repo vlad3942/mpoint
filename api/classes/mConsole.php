@@ -620,7 +620,8 @@ class mConsole extends Admin
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M3 ON Txn.id = M3.txnid AND M3.stateid = ". Constants::iPAYMENT_REFUNDED_STATE ."
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M4 ON Txn.id = M4.txnid AND M4.stateid = ". Constants::iPAYMENT_CANCELLED_STATE ."
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON Txn.euaid = EUA.id
-				WHERE CL.id IN (". implode(",", $aClientIDs) .") AND  Acc.id IN (". implode(",", $aAccountIDs) .")";
+				WHERE CL.id IN (". implode(",", $aClientIDs) .")";
+		if (count($aAccountIDs) > 0) { $sql .= " AND  Acc.id IN (". implode(",", $aAccountIDs) .")"; }
 		if (intval($id) > 0) { $sql .= " AND Txn.id = '". floatval($id) ."'"; }
 		if (empty($ono) === false) { $sql .= " AND Txn.orderid = '". $this->getDBConn()->escStr($ono) ."'"; }
 		if ( ($oCI instanceof CustomerInfo) === true)
