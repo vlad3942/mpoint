@@ -166,11 +166,23 @@ class mConsole extends Admin
 	public function saveMerchantAccount($clientid, $pspid, $name, $username, $password, $storedcard, $id = -1)
 	{	
 		
+		if (empty($storedcard) === true )
+		{
+			$storedcard = "NULL" ;
+			$storedcardClause = "stored_card IS NULL";
+						
+		}
+		else 
+		{
+			$storedcard = "'". intval($storedcard) ."'";
+			$storedcardClause = "stored_card = ". $storedcard ;
+		}		
+		
 		if(empty($id) === true )
 		{
 			//Entry exists but is disabled.
 			$sqlSelect = "SELECT id FROM Client". sSCHEMA_POSTFIX .".MerchantAccount_Tbl
-						WHERE clientid = ". intval($clientid) ." AND pspid = ". intval($pspid) ." AND stored_card = ". intval($storedcard);
+						WHERE clientid = ". intval($clientid) ." AND pspid = ". intval($pspid) ." AND ". $storedcardClause;
 			$RSONE = $this->getDBConn()->getName($sqlSelect);
 			$id = $RSONE["ID"];			
 		}
@@ -179,7 +191,7 @@ class mConsole extends Admin
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".MerchantAccount_Tbl
 					SET name = '". $this->getDBConn()->escStr($name) ."', username ='". $this->getDBConn()->escStr($username) ."', passwd ='". $this->getDBConn()->escStr($password) ."',
-						pspid = ". intval($pspid) .", stored_card = '". intval($storedcard) ."', enabled = '". intval(true) ."'
+						pspid = ". intval($pspid) .", stored_card = ". $storedcard .", enabled = '". intval(true) ."'
 					WHERE id = ". intval($id) ." AND clientid = ". intval($clientid);				
 		}
 		else
@@ -191,7 +203,7 @@ class mConsole extends Admin
 			$sql = "INSERT INTO Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl 
 						(id, clientid, pspid, name, username, passwd, stored_card )
 					VALUES
-						(". $id .", ". intval($clientid) .", ". intval($pspid) .", '". $this->getDBConn()->escStr($name) ."', '". $this->getDBConn()->escStr($username) ."', '". $this->getDBConn()->escStr($password) ."', '". intval($storedcard) ."')";
+						(". $id .", ". intval($clientid) .", ". intval($pspid) .", '". $this->getDBConn()->escStr($name) ."', '". $this->getDBConn()->escStr($username) ."', '". $this->getDBConn()->escStr($password) ."', ". $storedcard .")";
 		}		
 		//echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
