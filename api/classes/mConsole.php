@@ -960,6 +960,8 @@ class mConsole extends Admin
 		
 		$res = $this->getDBConn()->query($sql);
 
+		$aTransactionStats = array();
+		
 		if (is_resource($res) === true)
 		{
 
@@ -973,8 +975,6 @@ class mConsole extends Admin
 			
 			if(empty($aRS) === false)
 			{
-				$aTransactionStats = array();
-
 				foreach($aRS as $createddate => $transactioncountdata)
 				{
 					$missingstateids = array_diff($aStateIDS, array_flip($transactioncountdata));
@@ -987,9 +987,9 @@ class mConsole extends Admin
 				}
 
 				return new TransactionStatisticsInfo($aTransactionStats);
-			} else { return false; }
-		} else { return false; }
-
+			} else { return new TransactionStatisticsInfo($aTransactionStats); }
+		} 
+		else { return new TransactionStatisticsInfo($aTransactionStats); }
 		
 	}
     }

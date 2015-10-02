@@ -29,15 +29,18 @@ class TransactionStatisticsInfo
 	public function toXML()
 	{
 		$xml = '<transaction-statistics>';
-
-		foreach ($this->_aTransactionStats as $createddate => $transactioncounts)
+		
+		if(empty($this->_aTransactionStats) == false)
 		{
-			$xml .= '<transaction-stats-by-day date="'.htmlspecialchars($createddate, ENT_NOQUOTES).'">';
-			foreach($transactioncounts as $stateid => $statevalue)
+			foreach ($this->_aTransactionStats as $createddate => $transactioncounts)
 			{
-				$xml .= '<state id="'.$stateid.'">'.$statevalue.'</state>';
+				$xml .= '<transaction-stats-by-day date="'.htmlspecialchars($createddate, ENT_NOQUOTES).'">';
+				foreach($transactioncounts as $stateid => $statevalue)
+				{
+					$xml .= '<state id="'.$stateid.'">'.$statevalue.'</state>';
+				}
+				$xml .= '</transaction-stats-by-day>';
 			}
-			$xml .= '</transaction-stats-by-day>';
 		}
 
 		$xml .= '</transaction-statistics>';
