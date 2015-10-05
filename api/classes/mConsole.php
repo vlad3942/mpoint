@@ -925,32 +925,63 @@ class mConsole extends Admin
 	{
 		$aStateIDS = array(Constants::iINPUT_VALID_STATE, Constants::iPAYMENT_INIT_WITH_PSP_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CANCELLED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_REFUNDED_STATE, Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_DECLINED_STATE);
 		
-		$sql = "SELECT date(Msg.created) as createddate, Msg.stateid as stateid, COUNT(Msg.stateid) as stateidcount 
-			FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn, 
-			Log".sSCHEMA_POSTFIX.".Message_Tbl Msg 
-			WHERE Msg.stateid IN (". implode(",", $aStateIDS) .") AND 
-			(Msg.created BETWEEN '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' AND 
-			'". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."') AND
-			Msg.created = (SELECT max(created) FROM Log".sSCHEMA_POSTFIX.".Message_Tbl WHERE txnid = Txn.id) AND 
-			Txn.clientid IN (". implode(",", $aClientIDs) .") " ;
+		$where = "";
+		
+		if(empty($aClientIDs) === false)
+		{
+			$where .= " Txn.clientid IN (". implode(",", $aClientIDs) .")";
+		}
 		
 		if(empty($aAccountIDs) === false)
 		{
-			$sql .= " AND Txn.accountid IN (". implode(",", $aAccountIDs) .")";
+			if($where != "")
+			{
+				$where.=" AND ";
+			}
+			
+			$where .= " Txn.accountid IN (". implode(",", $aAccountIDs) .")";
 		}
 		
 		if($pspid > 0)
 		{
-			$sql .= " AND Txn.pspid = ".$pspid;
+			if($where != "")
+			{
+				$where.=" AND ";
+			}
+			
+			$where .= " Txn.pspid = ".$pspid;
 		}
 		
 		if($cardid > 0)
 		{
-			$sql .= " AND Txn.cardid = ".$cardid;
+			if($where != "")
+			{
+				$where.=" AND ";
+			}
+			
+			$where .= " Txn.cardid = ".$cardid;
 		}
 		
-		$sql .= " GROUP BY createddate, Msg.stateid ";
-		$sql .= " ORDER BY createddate ";
+		if($where != "")
+		{
+			$where = " WHERE ".$where;
+		}
+		
+		
+		$sql = "SELECT date(messages.max_created) as createddate, messages.stateid as stateid, count(messages.txnid) as stateidcount
+			FROM (
+				SELECT max(Msg.created) as max_created, Msg.txnid, Msg.stateid 
+				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl as Msg 
+				WHERE Msg".sSCHEMA_POSTFIX.".stateid IN (". implode(",", $aStateIDS) .") AND 
+				Msg.txnid IN (
+					SELECT Txn.id 
+						FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn 
+						".$where."
+				)
+				AND Msg.created BETWEEN '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' AND 
+				'". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'
+				GROUP BY Msg.txnid, Msg.stateid
+			) as messages GROUP BY createddate, messages.stateid ORDER BY createddate";
 		
 		//echo $sql ."\n";exit;
 		
