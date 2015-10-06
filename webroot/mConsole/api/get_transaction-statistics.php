@@ -62,14 +62,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 		for ($i=0; $i<count($obj_DOM->{'get-transaction-statistics'}->clients->client); $i++)
 		{
-			if((int)$obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->attributes()['id'] != 0)
+			if((int)$obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->attributes()['id'] > 0)
 			{
 				$aClientIDs[] = (int)$obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->attributes()['id'];
 			}
 			
 			if($obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->accounts instanceof SimpleDOMElement)
 			{
-				if($obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->accounts->{'account-id'} != 0)
+				if((int)$obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->accounts->{'account-id'} > 0)
 				{
 					$aAccountIDs = array_merge($aAccountIDs, (array)$obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->accounts->{'account-id'});
 				}

@@ -935,7 +935,7 @@ class mConsole extends Admin
 		
 		if(empty($aAccountIDs) === false)
 		{
-			if($where != "")
+			if(empty($where) === false)
 			{
 				$where.=" AND ";
 			}
@@ -943,27 +943,27 @@ class mConsole extends Admin
 			$where .= " Txn.accountid IN (". implode(",", $aAccountIDs) .")";
 		}
 		
-		if($pspid > 0)
+		if(intval($pspid) > 0)
 		{
-			if($where != "")
+			if(empty($where) === false)
 			{
 				$where.=" AND ";
 			}
 			
-			$where .= " Txn.pspid = ".$pspid;
+			$where .= " Txn.pspid = ".intval($pspid);
 		}
 		
-		if($cardid > 0)
+		if(intval($cardid) > 0)
 		{
-			if($where != "")
+			if(empty($where) === false)
 			{
 				$where.=" AND ";
 			}
 			
-			$where .= " Txn.cardid = ".$cardid;
+			$where .= " Txn.cardid = ".intval($cardid);
 		}
 		
-		if($where != "")
+		if(empty($where) === false)
 		{
 			$where = " AND Msg.txnid IN (
 					SELECT Txn.id 
@@ -981,7 +981,7 @@ class mConsole extends Admin
 				GROUP BY Msg.txnid, Msg.stateid
 			) as messages GROUP BY createddate, messages.stateid ORDER BY createddate";
 		
-		//echo $sql ."\n";
+		//echo $sql ."\n";exit;
 		
 		$aRS = array();
 		
