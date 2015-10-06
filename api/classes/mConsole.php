@@ -59,6 +59,7 @@ class mConsole extends Admin
 	const sPERMISSION_SEARCH_TRANSACTION_LOGS = "mpoint.transaction-logs.search.x";
 	const sPERMISSION_VOID_PAYMENTS = "mpoint.void-payments.get.x";
 	const sPERMISSION_CAPTURE_PAYMENTS = "mpoint.capture-payments.get.x";	
+	const sPERMISSION_GET_TRANSACTION_STATISTICS = "mpoint.dashboard.get.x";	
 	
 	public function saveClient($cc, $storecard, $autocapture, $name, $username, $password, $maxamt, $lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl, $id = -1)
 	{
@@ -964,26 +965,23 @@ class mConsole extends Admin
 		
 		if($where != "")
 		{
-			$where = " WHERE ".$where;
+			$where = " AND Msg.txnid IN (
+					SELECT Txn.id 
+						FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn WHERE ".$where.")";
 		}
-		
 		
 		$sql = "SELECT date(messages.max_created) as createddate, messages.stateid as stateid, count(messages.txnid) as stateidcount
 			FROM (
 				SELECT max(Msg.created) as max_created, Msg.txnid, Msg.stateid 
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl as Msg 
-				WHERE Msg".sSCHEMA_POSTFIX.".stateid IN (". implode(",", $aStateIDS) .") AND 
-				Msg.txnid IN (
-					SELECT Txn.id 
-						FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn 
-						".$where."
-				)
+				WHERE Msg".sSCHEMA_POSTFIX.".stateid IN (". implode(",", $aStateIDS) .")
+				".$where."
 				AND Msg.created BETWEEN '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' AND 
 				'". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'
 				GROUP BY Msg.txnid, Msg.stateid
 			) as messages GROUP BY createddate, messages.stateid ORDER BY createddate";
 		
-		//echo $sql ."\n";exit;
+		//echo $sql ."\n";
 		
 		$aRS = array();
 		

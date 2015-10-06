@@ -62,11 +62,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 		for ($i=0; $i<count($obj_DOM->{'get-transaction-statistics'}->clients->client); $i++)
 		{
-			$aClientIDs[] = (int)$obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->attributes()['id'];
+			if((int)$obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->attributes()['id'] != 0)
+			{
+				$aClientIDs[] = (int)$obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->attributes()['id'];
+			}
 			
 			if($obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->accounts instanceof SimpleDOMElement)
 			{
-				$aAccountIDs = array_merge($aAccountIDs, (array)$obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->accounts->{'account-id'});
+				if($obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->accounts->{'account-id'} != 0)
+				{
+					$aAccountIDs = array_merge($aAccountIDs, (array)$obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->accounts->{'account-id'});
+				}
 			}
 		}
 
@@ -76,7 +82,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
 
-		$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_SEARCH_TRANSACTION_LOGS, $aClientIDs);
+		$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_TRANSACTION_STATISTICS, $aClientIDs);
 		switch ($code)
 		{
 		case (mConsole::iSERVICE_CONNECTION_TIMEOUT_ERROR):
