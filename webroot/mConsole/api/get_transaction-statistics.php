@@ -115,16 +115,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			
 			$pspid = intval($obj_DOM->{'get-transaction-statistics'}['psp-id']);
 			$cardid = intval($obj_DOM->{'get-transaction-statistics'}['card-id']);
+						
+			$start_date = date( 'Y-m-d H:i:s', strtotime($obj_DOM->{'get-transaction-statistics'}->{'start-date'}));
 			
-			$newTZ = new DateTimeZone(date_default_timezone_get());
+			$end_date = date( 'Y-m-d H:i:s', strtotime($obj_DOM->{'get-transaction-statistics'}->{'end-date'}));
 			
-			$start_date = new DateTime( $obj_DOM->{'get-transaction-statistics'}->{'start-date'});
-			$start_date->setTimezone($newTZ);
-			
-			$end_date = new DateTime( $obj_DOM->{'get-transaction-statistics'}->{'end-date'});
-			$end_date->setTimezone($newTZ);
-			
-			$obj_TransactionStats = $obj_mPoint->getTransactionStats($aClientIDs, $start_date->format('Y-m-d H:i:s'), $end_date->format('Y-m-d H:i:s'), $aAccountIDs, $pspid, $cardid);
+			$obj_TransactionStats = $obj_mPoint->getTransactionStats($aClientIDs, $start_date, $end_date, $aAccountIDs, $pspid, $cardid);
 			if($obj_TransactionStats instanceof TransactionStatisticsInfo)
 			{
 				$xml = $obj_TransactionStats->toXML();
