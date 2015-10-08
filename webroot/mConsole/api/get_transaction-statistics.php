@@ -62,9 +62,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 		for ($i=0; $i<count($obj_DOM->{'get-transaction-statistics'}->clients->client); $i++)
 		{
-			if((int)$obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->attributes()['id'] > 0)
+			if(isset($obj_DOM->{'get-transaction-statistics'}->clients->client['id']) === true &&(int)$obj_DOM->{'get-transaction-statistics'}->clients->client['id'] > 0)
 			{
-				$aClientIDs[] = (int)$obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->attributes()['id'];
+				$aClientIDs[] = (int)$obj_DOM->{'get-transaction-statistics'}->clients->client['id'];
 			}
 			
 			if($obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->accounts instanceof SimpleDOMElement)
@@ -113,8 +113,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		case (mConsole::iAUTHORIZATION_SUCCESSFUL):
 			header("HTTP/1.1 200 OK");
 			
-			$pspid = intval($obj_DOM->{'get-transaction-statistics'}->attributes()['psp-id']);
-			$cardid = intval($obj_DOM->{'get-transaction-statistics'}->attributes()['card-id']);
+			$pspid = intval($obj_DOM->{'get-transaction-statistics'}['psp-id']);
+			$cardid = intval($obj_DOM->{'get-transaction-statistics'}['card-id']);
 			
 			$obj_TransactionStats = $obj_mPoint->getTransactionStats($aClientIDs, str_replace("T", " ", $obj_DOM->{'get-transaction-statistics'}->{'start-date'}), str_replace("T", " ", $obj_DOM->{'get-transaction-statistics'}->{'end-date'}), $aAccountIDs, $pspid, $cardid);
 			if($obj_TransactionStats instanceof TransactionStatisticsInfo)
