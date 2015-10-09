@@ -30,7 +30,7 @@ if (count($aMissing) < 1)
 			'status' => "ACCEPTED",
 			'cardtype' => "DK",
 			'language' => "da",
-			'transact' => "". rand(100000, 1000000)
+			'transact' => "". rand(100000, 1000000). "2"
 		) );
 
 	$response = http_build_query($aParams);
