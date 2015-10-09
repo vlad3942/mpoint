@@ -442,7 +442,6 @@ class DIBS extends Callback implements Captureable, Refundable
 		$b .= "&cardid=". $cardid;
 		$b .= "&clientid=". $this->getTxnInfo()->getClientConfig()->getID();
 		$b .= "&language=". $this->getTxnInfo()->getLanguage();
-		$b .= "&capturenow=". General::bool2xml($this->getTxnInfo()->getClientConfig()->useAutoCapture() );
 		$b .= "&preauth=false";
 		$b .= "&cardnomask=". $mask;
 		$b .= "&cardprefix=". substr($mask, 0, strpos($mask, "*") );
