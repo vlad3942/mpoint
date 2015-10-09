@@ -965,21 +965,26 @@ class mConsole extends Admin
 		
 		if(empty($where) === false)
 		{
-			$where = " AND Msg.txnid IN (
-					SELECT Txn.id 
-						FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn WHERE ".$where.")";
+			$where = " WHERE ".$where;
 		}
 		
-		$sql = "SELECT date(messages.max_created) as createddate, messages.stateid as stateid, count(messages.txnid) as stateidcount
+		$sql = "SELECT date(messages.max_created) AS createddate, messages.stateid AS stateid, count(messages.txnid) AS stateidcount
 			FROM (
-				SELECT max(Msg.created) as max_created, Msg.txnid, Msg.stateid 
-				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl as Msg 
-				WHERE Msg".sSCHEMA_POSTFIX.".stateid IN (". implode(",", $aStateIDS) .")
-				".$where."
-				AND Msg.created BETWEEN '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' AND 
+				SELECT Msg.created AS max_created, Msg.txnid, Msg.stateid 
+				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl AS Msg 
+				WHERE 
+				Msg.created BETWEEN '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' AND 
 				'". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'
-				GROUP BY Msg.txnid, Msg.stateid
-			) as messages GROUP BY createddate, messages.stateid ORDER BY createddate";
+				AND Msg.created = (
+					select MAX(created) FROM Log.Message_Tbl
+						WHERE stateid IN (". implode(",", $aStateIDS) .") AND txnid = Msg.txnid
+				)
+				AND Msg.txnid IN (
+					SELECT Txn.id 
+						FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn ".$where."
+				)
+				
+			) AS messages GROUP BY createddate, messages.stateid ORDER BY createddate";
 		
 		//echo $sql ."\n";exit;
 		
