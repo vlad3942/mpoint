@@ -49,6 +49,8 @@ require_once(sCLASS_PATH ."/stripe.php");
 require_once(sCLASS_PATH ."/mobilepay.php");
 // Require specific Business logic for the Adyen component
 require_once(sCLASS_PATH ."/adyen.php");
+// Require specific Business logic for the VISA checkout component
+require_once(sCLASS_PATH ."/visacheckout.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 

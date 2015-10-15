@@ -41,6 +41,8 @@ if (function_exists("json_encode") === true)
 require_once(sCLASS_PATH ."/mobilepay.php");
 // Require specific Business logic for the Adyen component
 require_once(sCLASS_PATH ."/adyen.php");
+// Require specific Business logic for the VISA checkout component
+require_once(sCLASS_PATH ."/visacheckout.php");
 
 header("Content-Type: application/x-www-form-urlencoded");
 
