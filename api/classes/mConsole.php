@@ -1006,12 +1006,13 @@ class mConsole extends Admin
 					$aRS[$RS['CREATEDDATE']][$RS['STATEID']] = $RS['STATEIDCOUNT']; 
 				}
 			}
-			
+
 			if(empty($aRS) === false)
 			{
 				foreach($aRS as $createddate => $transactioncountdata)
 				{
-					$missingstateids = array_diff($aStateIDS, array_flip($transactioncountdata));
+					$missingstateids = array_diff($aStateIDS, array_keys($transactioncountdata));
+
 					foreach($missingstateids as $stateid)
 					{
 						$aTransactionStats[$createddate][$stateid] = 0;
