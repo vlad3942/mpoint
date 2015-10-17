@@ -1,8 +1,6 @@
 <?php
-
 abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiadable
 {
-
     public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo)
     {
         parent::__construct($oDB, $oTxt, $oTI, $aConnInfo);
@@ -19,7 +17,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
      * @param int $iAmount
      * @return int
      */
-    public function capture($iAmount = -1)
+    public function capture($iAmount=-1)
     {
         $b  = '<?xml version="1.0" encoding="UTF-8"?>';
         $b .= '<root>';
@@ -72,7 +70,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 * @param int $iAmount
 	 * @return int
 	 */
-	public function refund($iAmount = -1)
+	public function refund($iAmount=-1)
 	{
 		// if the user 
 		if (strlen($this->aCONN_INFO["paths"]["status"]) > 0) $status = $this->status();
@@ -140,9 +138,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 * @param int $iAmount
 	 * @return int
 	 */
-	public function void($iAmount = -1)
+	public function void($iAmount=-1)
 	{
-		
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<void client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
@@ -268,9 +265,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
 			// Expect there is only one transaction in the reply
 			$obj_Txn = $obj_XML->transactions->transaction;
-			if ( (integer)$obj_Txn["id"] == $this->getTxnInfo()->getID() )
+			if (intval($obj_Txn["id"]) == $this->getTxnInfo()->getID() )
 			{
-				$iState = (integer)$obj_Txn->status["code"];
+				$iState = (integer) $obj_Txn->status["code"];
 				switch ($iState)
 				{
 				case Constants::iPAYMENT_ACCEPTED_STATE:
@@ -291,21 +288,22 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		else { throw new UnexpectedValueException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 	}
 
-	public function initialize($obj_PSPConfig, $eid = -1, $sc = false)
+	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false)
 	{
-		
-		$obj_XML = "";
-		$storeCard = "false";
-		if ($sc === true) { $storeCard = "true"; }
+		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML(), "SimpleXMLElement", LIBXML_COMPACT);
+		unset ($obj_XML->password);
+		unset ($obj_XML->{'payment-service-providers'});
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
-		$b .= '<initialize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '" store-card="'. $storeCard .'">';
+		$b .= '<initialize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '" store-card="'. parent::bool2xml($sc) .'">';
 		$b .= $obj_PSPConfig->toXML();
+		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 		$b .= $this->_constTxnXML();
-		if ($eid > 0) { $b .= $this->getAccountInfo($eid); }
+		if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
 		$b .= '</initialize>';
 		$b .= '</root>';
 		
+		$obj_XML = null;
 		try
 		{
 			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["initialize"]);
@@ -319,9 +317,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
 				// save ext id in database
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-								SET pspid = ". $obj_PSPConfig->getID() ."
-								WHERE id = ". $this->getTxnInfo()->getID();
-				//					echo $sql ."\n";
+						SET pspid = ". $obj_PSPConfig->getID() ."
+						WHERE id = ". $this->getTxnInfo()->getID();
+//				echo $sql ."\n";
 				$this->getDBConn()->query($sql);
 			}
 			else { throw new mPointException("Could not construct  XML for initializing payment with PSP: ". $this->getPSPConfig()->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
@@ -332,9 +330,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		return $obj_XML;
 	}
-	public function authTicket($obj_PSPConfig, $ticket)
+	public function authTicket(PSPConfig $obj_PSPConfig, $ticket)
 	{
-	
 		$code = 0;
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
@@ -361,9 +358,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				$code = $obj_XML->status["code"];
 				// save ext id in database
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-								SET pspid = ". $obj_PSPConfig->getID() ."
-								WHERE id = ". $this->getTxnInfo()->getID();
-				//					echo $sql ."\n";
+						SET pspid = ". $obj_PSPConfig->getID() ."
+						WHERE id = ". $this->getTxnInfo()->getID();
+//				echo $sql ."\n";
 				$this->getDBConn()->query($sql);
 			}
 			else { throw new mPointException("Authorization failed with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
@@ -372,31 +369,28 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		{
 			trigger_error("Authorization failed of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
 		}
+		
 		return $code;
 	}
 	
 	private function _constTxnXML($actionAmount=null)
 	{
 		$obj_TxnInfo = $this->getTxnInfo();
-
-		$xml  = '<transaction id="'. $obj_TxnInfo->getID() .'" type="'. $obj_TxnInfo->getTypeID() .'" gmid="'. $obj_TxnInfo->getGoMobileID() .'" mode="'. $obj_TxnInfo->getMode() .'" eua-id="'. $obj_TxnInfo->getAccountID() .'" psp-id="'. $obj_TxnInfo->getPSPID() .'" external-id="'. htmlspecialchars($obj_TxnInfo->getExternalID(), ENT_NOQUOTES) .'">';
-		$xml .= '<authorized-amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID() .'" currency="'. $obj_TxnInfo->getCountryConfig()->getCurrency() .'" symbol="'. $obj_TxnInfo->getCountryConfig()->getSymbol() .'" format="'. $obj_TxnInfo->getCountryConfig()->getPriceFormat() .'">'. $obj_TxnInfo->getAmount() .'</authorized-amount>';
-		$xml .= '<captured-amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID() .'" currency="'. $obj_TxnInfo->getCountryConfig()->getCurrency() .'" symbol="'. $obj_TxnInfo->getCountryConfig()->getSymbol() .'" format="'. $obj_TxnInfo->getCountryConfig()->getPriceFormat() .'">'. $obj_TxnInfo->getCapturedAmount() .'</captured-amount>';
-		$xml .= '<refunded-amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID() .'" currency="'. $obj_TxnInfo->getCountryConfig()->getCurrency() .'" symbol="'. $obj_TxnInfo->getCountryConfig()->getSymbol() .'" format="'. $obj_TxnInfo->getCountryConfig()->getPriceFormat() .'">'. $obj_TxnInfo->getRefund() .'</refunded-amount>';
-		$xml .= '<fee-amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID() .'" currency="'. $obj_TxnInfo->getCountryConfig()->getCurrency() .'" symbol="'. $obj_TxnInfo->getCountryConfig()->getSymbol() .'" format="'. $obj_TxnInfo->getCountryConfig()->getPriceFormat() .'">'. $obj_TxnInfo->getFee() .'</fee-amount>';
-		$xml .= '<orderid>'. $obj_TxnInfo->getOrderID() .'</orderid>';
-		$xml .= '<mobile country-id="'. intval($obj_TxnInfo->getOperator()/100) .'">'. $obj_TxnInfo->getMobile() .'</mobile>';
-		$xml .= '<email>'. $obj_TxnInfo->getEMail() .'</email>';
-		$xml .= '<language>'. $obj_TxnInfo->getLanguage() .'</language>';
-
-		if (isset($actionAmount) === true)
+		
+		$obj_XML = simplexml_load_string($this->getTxnInfo()->toXML() );
+		$obj_XML->{'authorized-amount'} = (integer) $obj_XML->amount;
+		// Add all attributes from "amount" element
+		foreach($obj_XML->amount->attributes() as $name => $value)
 		{
-			$xml .= '<amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID() .'" currency="'. $obj_TxnInfo->getCountryConfig()->getCurrency() .'" symbol="'. $obj_TxnInfo->getCountryConfig()->getSymbol() .'" format="'. $obj_TxnInfo->getCountryConfig()->getPriceFormat() .'">'. $actionAmount .'</amount>';
+			$obj_XML->{'authorized-amount'}->addAttribute($name, $value);
 		}
-
-		$xml .= '</transaction>';
-
-		return $xml;
+		if (isset($actionAmount) === true && is_null($actionAmount) === false)
+		{
+			$obj_XML->amount = (integer) $actionAmount;
+		}
+		else { unset($obj_XML->amount); } 
+		
+		return $b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 	}
 
 	private function _constConnInfo($path)

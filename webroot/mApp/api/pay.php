@@ -134,26 +134,29 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 																	   trim($obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}) );
 								}
 								$obj_TxnInfo->setAccountID($iAccountID);
-							}		
-							// Find Configuration for Payment Service Provider
-							$obj_XML = simpledom_load_string($obj_mPoint->getCards( (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount) );
-							// Determine Payment Service Provider based on selected card
-							$obj_Elem = $obj_XML->xpath("/cards/item[@id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ."]");
-							if (array_key_exists(intval($obj_Elem["pspid"]), $aObj_PSPConfigs) === false)
-							{
-								$aObj_PSPConfigs[intval($obj_Elem["pspid"])] = PSPConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"],  (integer) $obj_DOM->pay[$i]["account"], (integer) $obj_Elem["pspid"]);
 							}
-							$obj_PSPConfig = $aObj_PSPConfigs[intval($obj_Elem["pspid"])];
-	
+							$obj_PSPConfig = null;
+							switch (intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) )
+							{
+							case (Constants::iVISA_CHECKOUT_WALLET):	// 3rd Party Wallet: VISA Checkout
+								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
+								break;
+							default:	// Standard Payment Service Provider
+								// Find Configuration for Payment Service Provider
+								$obj_XML = simpledom_load_string($obj_mPoint->getCards( (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount) );
+								// Determine Payment Service Provider based on selected card
+								$obj_Elem = $obj_XML->xpath("/cards/item[@id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ."]");
+								if (array_key_exists(intval($obj_Elem["pspid"]), $aObj_PSPConfigs) === false)
+								{
+									$aObj_PSPConfigs[intval($obj_Elem["pspid"])] = PSPConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"],  (integer) $obj_DOM->pay[$i]["account"], (integer) $obj_Elem["pspid"]);
+								}
+								$obj_PSPConfig = $aObj_PSPConfigs[intval($obj_Elem["pspid"])];
+								break;
+							}
+							
 							// Success: Payment Service Provider Configuration found
 							if ( ($obj_PSPConfig instanceof PSPConfig) === true)
 							{
-								// Construct list of cards supported by the Payment Service Provider
-								$aCards = array();
-								foreach ($obj_XML->children() as $obj_Elem)
-								{
-									if ($obj_PSPConfig->getID() == $obj_Elem["pspid"]) { $aCards[] = $obj_Elem["type-id"]; }
-								}
 								try
 								{
 									// TO DO: Extend to add support for Split Tender
@@ -191,6 +194,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										}
 										else
 										{
+											// Construct list of cards supported by the Payment Service Provider
+											$aCards = array();
+											foreach ($obj_XML->children() as $obj_Elem)
+											{
+												if ($obj_PSPConfig->getID() == $obj_Elem["pspid"]) { $aCards[] = $obj_Elem["type-id"]; }
+											}
 											$obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["worldpay"]);
 											if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["worldpay"]["host"] = str_replace("secure.", "secure-test.", $aHTTP_CONN_INFO["worldpay"]["host"]); }
 											$aMerchantAccount =  $obj_PSP->getMerchantLogin($obj_DOM->pay[$i]["client-id"], Constants::iWORLDPAY_PSP);
@@ -283,7 +292,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										{
 											$xml .= trim($obj_Elem->asXML() );
 										}
-										
 										break;
 									case (Constants::iCPG_PSP):
 										if (intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) === Constants::iAPPLE_PAY)
@@ -292,7 +300,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										}
 										break;
 									case (Constants::iADYEN_PSP):
-
 										$obj_PSP = new Adyen($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["adyen"]);
 					
 										$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) );
@@ -302,7 +309,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										{
 											$xml .= trim($obj_Elem->asXML() );
 										}
+										break;
+									case (Constants::iVISA_CHECKOUT_PSP):
+										$obj_PSP = new VISACheckout($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["visa-checkout"]);
 										
+										$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), false);
+										
+										foreach ($obj_XML->children() as $obj_Elem)
+										{
+											$xml .= trim($obj_Elem->asXML() );
+										}
 										break;
 									}
 									$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. htmlspecialchars($obj_PSPConfig->getMessage($obj_TxnInfo->getLanguage() ), ENT_NOQUOTES) .'</message>';
@@ -336,7 +352,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						
 							$xml = '<status code="'. ($code+85) .'">Card has been blocked</status>';
 						}
-					}
+					}	// Card Loop End
 				}
 				else
 				{
