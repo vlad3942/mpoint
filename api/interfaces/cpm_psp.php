@@ -406,58 +406,82 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		return new HTTPConnInfo($aCI["protocol"], $aURLInfo["host"], $aCI["port"], $aCI["timeout"], $path, $aCI["method"], $aCI["contenttype"], $this->getClientConfig()->getUsername(), $this->getClientConfig()->getPassword() );
 	}
 	
-	public function getPaymentData($obj_ClientInfo, $cardTypeID, $amount, $callID)
+	
+	/**
+	 * Performs a used to get the card details from VISA checkout API
+	 * The method may return an array containing the following status codes:
+	 * 	 90. Not Found: Specified token is not available
+	 * 	 91. Unauthorized: Token Validation Failed
+	 * 	 92. Forbidden: Merchant not authorized for specified data level
+	 * 	 98. Communication Error
+	 * 	 99. Unknown error.
+	 *	
+	 * 
+	 * @param PSPConfig $obj_PSPInfo				The PSP config object instantiated using the cardID and countryID
+	 * @param SimpleDOMElement $obj_ClientInfo		The connection information for the mPoint's "Capture" API in the "Buy" API suite
+	 * @param integer $cardTypeID					The unique ID of the Client on whose behalf the Capture operation is being performed
+	 * @param integer $amount						The unique ID of the transaction that should be captured
+	 * @param string $callID						The order number for the transaction that should be captured
+	 * @return string
+	 */
+	public function getPaymentData($obj_PSPInfo, $obj_ClientInfo, $cardTypeID, $amount, $callID)
 	{
-		$obj_TxnInfo = $this->getTxnInfo();
-		$obj_PSPInfo = $this->getPSPConfig();
-		$code = 0;
-		$b = $returnXML = '';
+		$obj_TxnInfo = $this->getTxnInfo();		
+		$code = 0;		
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';		
 		$b .= '<get-payment-data client-id = "'. $this->getClientConfig()->getID() .'">';
-		$b .= '<psp-config id = "'. $obj_PSPInfo->getID() .'">';	
-		$b .= '<username>'. $obj_PSPInfo->getUsername() .'</username>';	
-		$b .= '<password>'. $obj_PSPInfo->getPassword() .'</password>';	
-		$b .= '</psp-config>';	
+		$b .= $obj_PSPInfo->toXML();	
 		$b .= '<transaction id = "'. $obj_TxnInfo->getID() .'">';	
 		$b .= '<card type-id = "'. $cardTypeID .'">';
 		$b .= '<amount country-id = "'. $obj_TxnInfo->getCountryConfig()->getID() .'">'. $amount .'</amount>';
 		$b .= '<token>'. $callID .'</token>';
 		$b .= '</card>';
 		$b .= '</transaction>';		
-        $b .= '<client-info platform = "'. $obj_ClientInfo["platform"] .'" version = "'. $obj_ClientInfo["version"] .'" language = "'. $obj_ClientInfo["language"] .'">';
-        $b .= '<mobile country-id = "'. $obj_ClientInfo->mobile["country-id"] .'" operator-id="'. $obj_ClientInfo->mobile["country-id"] .'">'. $obj_ClientInfo->mobile .'</mobile>';
-        $b .= '<email>'. $obj_ClientInfo->email .'</email>';
-        $b .= '<device-id>'. $obj_ClientInfo->{'device-id'} .'</device-id>';
-		$b .= '</client-info>';
+		$b .= str_replace('<?xml version="1.0"?>', '', $obj_ClientInfo->asXML() );        
 		$b .= '</get-payment-data>';
 		$b .= '</root>';		
 		
-		try
-		{	
-			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["cancel"]);
+		$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["get-payment-data"]);
 
-			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
-			$obj_HTTP->connect();
-			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
-			$obj_HTTP->disConnect();
-			$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
-			if ($code == 200)
-			{
-				$returnXML = $obj_HTTP->getReplyBody();
-				return $returnXML;			
-			}
-			else if (count($obj_XML->status) == 1 )
-			{
-				throw new VisaCheckoutException("Error occured while fetching card details from VISA Checkout: ". $obj_HTTP->getReplyBody(). " for txn: ". $this->getTxnInfo()->getID(), (integer)$obj_XML->status['code']);
-			}			
-		}
-		catch (VisaCheckoutException $e)
+		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+		$obj_HTTP->connect();
+		$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+		$obj_HTTP->disConnect();			
+		if ($code != 200)
 		{
-			trigger_error("Could not fetch Payment Data from VISA Checkout for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
-			return $e->getCode();
-		}
-	}
+			trigger_error("Could not fetch Payment Data from VISA Checkout for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $code ." and body: ". $obj_HTTP->getReplyBody(), E_USER_ERROR);
+					
+		}			 
+		return $obj_HTTP->getReplyBody();
+	}	
 	
+	
+	/**
+	 * Instantiates the PSPConfig object based on the cardID and countryID where the transaction is made from as defined
+	 * in the static routes for the given client ID.
+	 * 	
+	 * @param integer $iCardID					The unique ID of the Client on whose behalf the Capture operation is being performed
+	 * @param integer $iCountryID						The unique ID of the transaction that should be captured
+	 * @return PSPConfig
+	 */
+	public function getPSPConfigObject($iCardID, $iCountryID)
+	{
+		$sql = "SELECT DISTINCT PSP.id, PSP.name,
+					MA.name AS ma, MA.username, MA.passwd AS password, MSA.name AS msa
+				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl PSP
+				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl MA ON PSP.id = MA.pspid AND MA.enabled = '1'
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON MA.clientid = CL.id AND CL.enabled = '1'
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
+				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON Acc.id = MSA.accountid AND PSP.id = MSA.pspid AND MSA.enabled = '1'
+				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON PSP.id = CA.pspid AND CL.id = CA.clientid AND CA.enabled = '1' 
+				WHERE CL.id = ". intval($this->getClientConfig()->getID()) ." AND CA.cardid = ". intval($iCardID) ." AND CA.countryid = ". intval($iCountryID);
+//		echo $sql ."\n";
+		$RS = $oDB->getName($sql);	
 
+		if (is_array($RS) === true && count($RS) > 1) {	return new PSPConfig($RS["ID"], $RS["NAME"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], array()); }
+		else { return null; }
+	}
+		
+	
 }

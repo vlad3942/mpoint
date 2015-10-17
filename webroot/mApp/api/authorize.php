@@ -228,6 +228,22 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											$obj_XML = $obj_XML->xpath("/cards/item[@type-id = ". Constants::iAPPLE_PAY ."]");
 											$obj_Elem["pspid"] = (integer) $obj_XML["pspid"];
 										}
+										else if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) == Constants::iVISA_CHECKOUT)
+										{							
+											$obj_Wallet = new VisaCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, array() );//add VISA MESB URL	
+											$obj_PSPConfiguration = $obj_Wallet->getPSPConfigObject(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]), 
+																									intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"]) );
+											$obj_XML = simpledom_load_string($obj_Wallet->getPaymentData($obj_PSPConfiguration,
+																										 $obj_DOM->{'authorize-payment'}->{'client-info'}, 
+																			 							 intval($obj_DOM->{'authorize-payment'}[$i]->card[$j]["type-id"]), 
+																			 							 $obj_TxnInfo->getAmount(), 
+																			 							 trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) ) );
+											if(count($obj_XML->{'payment-data'}) == 1)
+											{
+												$obj_Elem = $obj_XML->{'payment-data'}->card;
+											}																					
+											$obj_Elem["pspid"] = intval($obj_PSPConfiguration->getID() );
+										}
 										else
 										{
 											$obj_Elem = $obj_XML->xpath("/stored-cards/card[@id = ". $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"] ."]");
