@@ -59,15 +59,15 @@ $aMsgCds = array();
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 /*
-$_SERVER['PHP_AUTH_USER'] = "1415";
-$_SERVER['PHP_AUTH_PW'] = "Ghdy4_ah1G";
+$_SERVER['PHP_AUTH_USER'] = "CPMDemo";
+$_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<pay client-id="10019">';
-$HTTP_RAW_POST_DATA .= '<transaction id="1" store-card="false">';
-$HTTP_RAW_POST_DATA .= '<card type-id="7">';
-$HTTP_RAW_POST_DATA .= '<amount country-id="100">200</amount>';
+$HTTP_RAW_POST_DATA .= '<pay client-id="10001">';
+$HTTP_RAW_POST_DATA .= '<transaction id="1002469" store-card="false">';
+$HTTP_RAW_POST_DATA .= '<card type-id="16">';
+$HTTP_RAW_POST_DATA .= '<amount country-id="200">200</amount>';
 $HTTP_RAW_POST_DATA .= '<issuer-identification-number>500191</issuer-identification-number>';
 $HTTP_RAW_POST_DATA .= '</card>';
 $HTTP_RAW_POST_DATA .= '</transaction>';
@@ -97,7 +97,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			if ($code == 100)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]);
-
+				
 				// Client successfully authenticated
  				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])
 					&& $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true)
@@ -119,22 +119,21 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						
 						if ($code >= 10)
 						{
-							$iAccountID = -1;
-							
-							if (strcasecmp($obj_DOM->pay[$i]->transaction["store-card"], "true") === 0)
+							if ($obj_TxnInfo->getAccountID() == -1 && General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true)
 							{
-								$obj_EUA = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
-								$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getCountryConfig(), $obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile, $obj_DOM->{'pay'}[$i]->{'client-info'}->email);
+								$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getCountryConfig(), trim($obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}), (float) $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile, trim($obj_DOM->{'pay'}[$i]->{'client-info'}->email) );
 							
-								//	Create a new user as some PSP´s needs our enduserid for storeing cards
+								//	Create a new user as some PSP's needs our End-User Account ID for storing cards
 								if ($iAccountID < 0)
 								{
+									$obj_EUA = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 									$iAccountID = $obj_EUA->newAccount($obj_ClientConfig->getCountryConfig()->getID(),
 																	   (float) $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile,
 																	   "",
-																	   (string) $obj_DOM->{'pay'}[$i]->{'client-info'}->email,
-																	   (string) $obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'});
+																	   trim($obj_DOM->{'pay'}[$i]->{'client-info'}->email),
+																	   trim($obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}) );
 								}
+								$obj_TxnInfo->setAccountID($iAccountID);
 							}		
 							// Find Configuration for Payment Service Provider
 							$obj_XML = simpledom_load_string($obj_mPoint->getCards( (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount) );
@@ -296,7 +295,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 										$obj_PSP = new Adyen($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["adyen"]);
 					
-										$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $iAccountID, General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) );
+										$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) );
 										if (General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, ""); }
 										
 										foreach ($obj_XML->children() as $obj_Elem)
