@@ -506,10 +506,10 @@ abstract class Constants
 	 */
 	const iAPPLE_PAY = 15;
 	/**
-	 * Unique Card ID for transaction's made using VISA Checkout
+	 * Unique Card ID for transaction's made using the VISA Checkout Wallet
 	 *
 	 */
-	const iVISA_CHECKOUT = 16;
+	const iVISA_CHECKOUT_WALLET = 16;
 	/**
 	 * Unique Card ID for transaction's made using Danske Bank MobilePay
 	 *

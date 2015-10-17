@@ -64,4 +64,20 @@ INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 13 FROM System.Card_Tb
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 13 FROM System.Card_Tbl WHERE name = 'Master Card';
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 13 FROM System.Card_Tbl WHERE name = 'VISA';
 /*END: Adding PSP to Card mapping to the PSPCard_Tbl table for VISA Checkout*/
+
+-- Enable support for VISA Checkout through WorldPay
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (4, 16);
 /* ========== CONFIGURE VISA CHECKOUT END ========== */
+
+/* ========== CONFIGURE DEMO ACCOUNT FOR VISA CHECKOUT START ========== */
+-- VISA Checkout
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 13, '2X5JJ0751LFJG3EMYRMS13h-QPSi0pUet0c2zoXupm10tRL28', '2X5JJ0751LFJG3EMYRMS13h-QPSi0pUet0c2zoXupm10tRL28', '5PH9i3cNJ8ZmFK0B-xuSsMzq{8uSkO$o#GZPA+M}');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 13, '-1');
+-- WorldPay
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd, stored_card) VALUES (10001, 4, 'merchant.cpm.apple.pay', 'CELLPOINT', 'oisJona1', false);
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd, stored_card) VALUES (10001, 4, 'CELLPOINTREC', 'CELLPOINTREC', 'oisJona1', true);
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 4, '254294');
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 16, 4);
+-- Mobile Enterprise Service Bus
+INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (4, 10001, 'http://localhost:10080/');
+/* ========== CONFIGURE DEMO ACCOUNT FOR VISA CHECKOUT END ======

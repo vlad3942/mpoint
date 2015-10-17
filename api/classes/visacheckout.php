@@ -13,16 +13,23 @@
 
 /* ==================== VISA Checkout Exception Classes Start ==================== */
 /**
- * Super class for all mPoint Exceptions
+ * Super class for all VISA Checkout Exceptions
  */
-class VisaCheckoutException extends CallbackException { }
+class VISACheckoutException extends CallbackException { }
 /* ==================== VISA Checkout Exception Classes End ==================== */
 
 /**
  * Model Class containing all the Business Logic for the Payment Service Provider: VISA Checkout
  *
  */
-class VisaCheckout extends CPMPSP
+class VISACheckout extends CPMPSP
 {
-	public function status() { throw new AdyenException("Transact status call is not supported by VISA Checkout"); }
+	
+	
+	public function capture($iAmount=-1) { throw new VISACheckoutException("Method: capture is not supported by VISA Checkout"); }
+	public function refund($iAmount=-1) { throw new VISACheckoutException("Method: refund is not supported by VISA Checkout"); }
+	public function void($iAmount=-1) { throw new VISACheckoutException("Method: void is not supported by VISA Checkout"); }
+	public function cancel() { throw new VISACheckoutException("Method: cancel is not supported by VISA Checkout"); }
+	public function authTicket(PSPConfig $obj_PSPConfig, $ticket) { throw new VISACheckoutException("Method: authTicket is not supported by VISA Checkout"); }
+	public function status() { throw new VISACheckoutException("Method: status is not supported by VISA Checkout"); }
 }
