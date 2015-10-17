@@ -230,7 +230,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										}
 										else if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) == Constants::iVISA_CHECKOUT)
 										{							
-											$obj_Wallet = new VisaCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, array() );//add VISA MESB URL	
+											$obj_Wallet = new VisaCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["visa-checkout"] );
 											$obj_PSPConfiguration = $obj_Wallet->getPSPConfigObject(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]), 
 																									intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"]) );
 											$obj_XML = simpledom_load_string($obj_Wallet->getPaymentData($obj_PSPConfiguration,
