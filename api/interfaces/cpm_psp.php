@@ -405,5 +405,59 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$aURLInfo = parse_url($this->getClientConfig()->getMESBURL() );
 		return new HTTPConnInfo($aCI["protocol"], $aURLInfo["host"], $aCI["port"], $aCI["timeout"], $path, $aCI["method"], $aCI["contenttype"], $this->getClientConfig()->getUsername(), $this->getClientConfig()->getPassword() );
 	}
+	
+	public function getPaymentData($obj_ClientInfo, $cardTypeID, $amount, $callID)
+	{
+		$obj_TxnInfo = $this->getTxnInfo();
+		$obj_PSPInfo = $this->getPSPConfig();
+		$code = 0;
+		$b = $returnXML = '';
+		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<root>';		
+		$b .= '<get-payment-data client-id = "'. $this->getClientConfig()->getID() .'">';
+		$b .= '<psp-config id = "'. $obj_PSPInfo->getID() .'">';	
+		$b .= '<username>'. $obj_PSPInfo->getUsername() .'</username>';	
+		$b .= '<password>'. $obj_PSPInfo->getPassword() .'</password>';	
+		$b .= '</psp-config>';	
+		$b .= '<transaction id = "'. $obj_TxnInfo->getID() .'">';	
+		$b .= '<card type-id = "'. $cardTypeID .'">';
+		$b .= '<amount country-id = "'. $obj_TxnInfo->getCountryConfig()->getID() .'">'. $amount .'</amount>';
+		$b .= '<token>'. $callID .'</token>';
+		$b .= '</card>';
+		$b .= '</transaction>';		
+        $b .= '<client-info platform = "'. $obj_ClientInfo["platform"] .'" version = "'. $obj_ClientInfo["version"] .'" language = "'. $obj_ClientInfo["language"] .'">';
+        $b .= '<mobile country-id = "'. $obj_ClientInfo->mobile["country-id"] .'" operator-id="'. $obj_ClientInfo->mobile["country-id"] .'">'. $obj_ClientInfo->mobile .'</mobile>';
+        $b .= '<email>'. $obj_ClientInfo->email .'</email>';
+        $b .= '<device-id>'. $obj_ClientInfo->{'device-id'} .'</device-id>';
+		$b .= '</client-info>';
+		$b .= '</get-payment-data>';
+		$b .= '</root>';		
+		
+		try
+		{	
+			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["cancel"]);
+
+			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+			$obj_HTTP->connect();
+			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+			$obj_HTTP->disConnect();
+			$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+			if ($code == 200)
+			{
+				$returnXML = $obj_HTTP->getReplyBody();
+				return $returnXML;			
+			}
+			else if (count($obj_XML->status) == 1 )
+			{
+				throw new VisaCheckoutException("Error occured while fetching card details from VISA Checkout: ". $obj_HTTP->getReplyBody(). " for txn: ". $this->getTxnInfo()->getID(), (integer)$obj_XML->status['code']);
+			}			
+		}
+		catch (VisaCheckoutException $e)
+		{
+			trigger_error("Could not fetch Payment Data from VISA Checkout for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+			return $e->getCode();
+		}
+	}
+	
 
 }
