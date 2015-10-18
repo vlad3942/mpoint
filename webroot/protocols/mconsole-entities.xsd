@@ -955,7 +955,7 @@
 			<xs:element name="name" type="name" minOccurs="1" maxOccurs="1" />
 			<xs:element name="username" type="name" minOccurs="1" maxOccurs="1" />
 			<xs:element name="password" type="name" minOccurs="1" maxOccurs="1" />
-			<xs:element name="keyword" minOccurs="1" maxOccurs="1">
+			<xs:element name="keyword" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:simpleContent>
 						<xs:extension base="name">
@@ -972,7 +972,7 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="payment-methods" type="client-payment-method-configurations" minOccurs="1" maxOccurs="1" />
+			<xs:element name="payment-methods" type="client-payment-method-configurations" minOccurs="0" maxOccurs="1" />
 			<xs:element name="payment-service-providers" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
@@ -980,7 +980,7 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="account-configurations" minOccurs="1" maxOccurs="1">
+			<xs:element name="account-configurations" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="account-config" type="account-config" minOccurs="1" maxOccurs="unbounded" />
