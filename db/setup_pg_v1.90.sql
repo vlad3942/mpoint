@@ -1,3 +1,17 @@
+/* ========== CONFIGURE CARD DISCOVER START ========== */
+INSERT INTO System.Card_Tbl (id, name, position, logo, minlength, maxlength, cvclength) VALUES (22, 'Discover', 20, NULL, 16, 16, 3);
+INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 22, id FROM System.PricePoint_Tbl WHERE amount = -1;
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (22, 6011, 6011);
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (22, 622126, 622925);
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (22, 644, 649);
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (22, 65, 65);
+/* ========== CONFIGURE CARD DISCOVER END ========== */
+
+/* ========== CONFIGURE CARD VISA CHECKOUT START ========== */
+/*Adding the dummy card prefix entry for VISA checkout as a card*/
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (16, 0, 0);
+/* ========== CONFIGURE CARD VISA CHECKOUT END ========== */
+
 /* ========== CONFIGURE VISA CHECKOUT START ========== */
 /*START: Adding PSP entries to the PSP_Tbl table for VISA Checkout*/
 INSERT INTO System.PSP_Tbl (id, name) VALUES (13, 'VISA Checkout');
@@ -63,10 +77,12 @@ SELECT id,13,currency FROM System.Country_Tbl WHERE currency LIKE 'MXN';
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 13 FROM System.Card_Tbl WHERE name = 'American Express';
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 13 FROM System.Card_Tbl WHERE name = 'Master Card';
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 13 FROM System.Card_Tbl WHERE name = 'VISA';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 13 FROM System.Card_Tbl WHERE name = 'Discover';
 /*END: Adding PSP to Card mapping to the PSPCard_Tbl table for VISA Checkout*/
 
 -- Enable support for VISA Checkout through WorldPay
 INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (4, 16);
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (13, 16);
 /* ========== CONFIGURE VISA CHECKOUT END ========== */
 
 /* ========== CONFIGURE DEMO ACCOUNT FOR VISA CHECKOUT START ========== */
