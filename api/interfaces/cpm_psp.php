@@ -452,14 +452,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	
 	
 	/**
-	 * Instantiates the PSPConfig object based on the cardID and countryID where the transaction is made from as defined
-	 * in the static routes for the given client ID.
+	 * Instantiates the Configuration for the Payment Service Provider that the client has configured the a static route for using
+	 * the specified Payment Method (card) in the provided Country.
 	 * 	
-	 * @param integer $iCardID					The unique ID of the Client on whose behalf the Capture operation is being performed
-	 * @param integer $iCountryID						The unique ID of the transaction that should be captured
+	 * @param integer $cardid		The unique ID of the Payment Method (Card) that the customer is paying with
+	 * @param integer $countryid	The unique ID of the Country that the customer is paying in
 	 * @return PSPConfig
 	 */
-	public function getPSPConfigObject($iCardID, $iCountryID)
+	public function getPSPConfigForRoute($cardid, $countryid)
 	{
 		$sql = "SELECT DISTINCT PSP.id, PSP.name,
 					MA.name AS ma, MA.username, MA.passwd AS password, MSA.name AS msa
@@ -469,13 +469,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON Acc.id = MSA.accountid AND PSP.id = MSA.pspid AND MSA.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON PSP.id = CA.pspid AND CL.id = CA.clientid AND CA.enabled = '1' 
-				WHERE CL.id = ". intval($this->getClientConfig()->getID()) ." AND CA.cardid = ". intval($iCardID) ." AND CA.countryid = ". intval($iCountryID);
+				WHERE CL.id = ". intval($this->getClientConfig()->getID()) ." AND CA.cardid = ". intval($cardid) ." AND CA.countryid = ". intval($countryid);
 //		echo $sql ."\n";
-		$RS = $oDB->getName($sql);	
+		$RS = $this->getDBConn()->getName($sql);	
 
 		if (is_array($RS) === true && count($RS) > 1) {	return new PSPConfig($RS["ID"], $RS["NAME"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], array()); }
 		else { return null; }
-	}
-		
-	
+	}	
 }

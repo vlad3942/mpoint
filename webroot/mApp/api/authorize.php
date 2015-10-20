@@ -219,35 +219,35 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										break;
 									case (Constants::iCARD_PURCHASE_TYPE):		// Authorize Purchase using Stored Card
 									default:
-										if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) == Constants::iAPPLE_PAY)
+										switch (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) )
 										{
+										case (Constants::iAPPLE_PAY):
 											$obj_Elem = $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j];
-											
+												
 											$obj_CC = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 											$obj_XML = simpledom_load_string($obj_CC->getCards($obj_TxnInfo->getAmount() ) );
 											$obj_XML = $obj_XML->xpath("/cards/item[@type-id = ". Constants::iAPPLE_PAY ."]");
 											$obj_Elem["pspid"] = (integer) $obj_XML["pspid"];
-										}
-										else if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) == Constants::iVISA_CHECKOUT)
-										{							
-											$obj_Wallet = new VisaCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["visa-checkout"] );
-											$obj_PSPConfiguration = $obj_Wallet->getPSPConfigObject(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]), 
-																									intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"]) );
-											$obj_XML = simpledom_load_string($obj_Wallet->getPaymentData($obj_PSPConfiguration,
-																										 $obj_DOM->{'authorize-payment'}->{'client-info'}, 
-																			 							 intval($obj_DOM->{'authorize-payment'}[$i]->card[$j]["type-id"]), 
-																			 							 $obj_TxnInfo->getAmount(), 
-																			 							 trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) ) );
-											if(count($obj_XML->{'payment-data'}) == 1)
+											break;
+										case (Constants::iVISA_CHECKOUT):
+											$obj_Wallet = new VisaCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["visa-checkout"]);
+											$obj_PSPConfig = $obj_Wallet->getPSPConfigForRoute(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]),
+																							   intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"]) );
+											$obj_XML = simpledom_load_string($obj_Wallet->getPaymentData($obj_PSPConfig,
+																										 $obj_DOM->{'authorize-payment'}->{'client-info'},
+																										 intval($obj_DOM->{'authorize-payment'}[$i]->card[$j]["type-id"]),
+																										 $obj_TxnInfo->getAmount(),
+																										 trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) ) );
+											if (count($obj_XML->{'payment-data'}) == 1)
 											{
 												$obj_Elem = $obj_XML->{'payment-data'}->card;
-											}																					
-											$obj_Elem["pspid"] = intval($obj_PSPConfiguration->getID() );
-										}
-										else
-										{
+											}
+											$obj_Elem["pspid"] = $obj_PSPConfig->getID();
+											break;
+										default:
 											$obj_Elem = $obj_XML->xpath("/stored-cards/card[@id = ". $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"] ."]");
-											if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1) { $obj_Elem->cvc = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc; }	
+											if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1) { $obj_Elem->cvc = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc; }
+											break;
 										}
 										
 										if(count($obj_Elem->mask) == 1) { $code = $obj_Validator->valIssuerIdentificationNumber($_OBJ_DB, $obj_ClientConfig->getID(), substr(str_replace(" ", "", $obj_Elem->mask), 0, 6) ); }
