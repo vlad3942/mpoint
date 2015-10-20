@@ -397,9 +397,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	{
 		$aCI = $this->aCONN_INFO;
 		$aURLInfo = parse_url($this->getClientConfig()->getMESBURL() );
+		
 		return new HTTPConnInfo($aCI["protocol"], $aURLInfo["host"], $aCI["port"], $aCI["timeout"], $path, $aCI["method"], $aCI["contenttype"], $this->getClientConfig()->getUsername(), $this->getClientConfig()->getPassword() );
 	}
-	
 	
 	/**
 	 * Performs a used to get the card details from VISA checkout API
@@ -409,33 +409,27 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 * 	 92. Forbidden: Merchant not authorized for specified data level
 	 * 	 98. Communication Error
 	 * 	 99. Unknown error.
-	 *	
 	 * 
-	 * @param PSPConfig $obj_PSPInfo				The PSP config object instantiated using the cardID and countryID
-	 * @param SimpleDOMElement $obj_ClientInfo		The connection information for the mPoint's "Capture" API in the "Buy" API suite
-	 * @param integer $cardTypeID					The unique ID of the Client on whose behalf the Capture operation is being performed
-	 * @param integer $amount						The unique ID of the transaction that should be captured
-	 * @param string $callID						The order number for the transaction that should be captured
+	 * @param PSPConfig $obj_PSPConfig	The configuration for the Wallet which the payment data should be retrieved from
+	 * @param string $token				The token for the Wallet representing payment card selected by the customer
 	 * @return string
 	 */
-	public function getPaymentData($obj_PSPInfo, $obj_ClientInfo, $cardTypeID, $amount, $callID)
+	public function getPaymentData(PSPConfig $obj_PSPConfig, $typeid, $token)
 	{
-		$obj_TxnInfo = $this->getTxnInfo();		
-		$code = 0;		
+		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML(), "SimpleXMLElement", LIBXML_COMPACT);
+		unset ($obj_XML->password);
+		unset ($obj_XML->{'payment-service-providers'});
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
-		$b .= '<root>';		
-		$b .= '<get-payment-data client-id = "'. $this->getClientConfig()->getID() .'">';
-		$b .= $obj_PSPInfo->toXML();	
-		$b .= '<transaction id = "'. $obj_TxnInfo->getID() .'">';	
-		$b .= '<card type-id = "'. $cardTypeID .'">';
-		$b .= '<amount country-id = "'. $obj_TxnInfo->getCountryConfig()->getID() .'">'. $amount .'</amount>';
-		$b .= '<token>'. $callID .'</token>';
-		$b .= '</card>';
-		$b .= '</transaction>';		
-		$b .= str_replace('<?xml version="1.0"?>', '', $obj_ClientInfo->asXML() );        
+		$b .= '<root>';
+		$b .= '<get-payment-data>';
+		$b .= $obj_PSPConfig->toXML();
+		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
+		$obj_XML = simplexml_load_string($this->_constTxnXML() );
+		$obj_XML->card->token = $token;
+		$obj_XML->card["type-id"] = (integer) $typeid;
+		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 		$b .= '</get-payment-data>';
-		$b .= '</root>';		
-		
+		$b .= '</root>';
 		$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["get-payment-data"]);
 
 		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
@@ -444,9 +438,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$obj_HTTP->disConnect();			
 		if ($code != 200)
 		{
-			trigger_error("Could not fetch Payment Data from VISA Checkout for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $code ." and body: ". $obj_HTTP->getReplyBody(), E_USER_ERROR);
-					
-		}			 
+			trigger_error("Could not fetch Payment Data from ". $obj_PSPConfig->getName() ." for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $code ." and body: ". $obj_HTTP->getReplyBody(), E_USER_WARNING);
+		}
+		
 		return $obj_HTTP->getReplyBody();
 	}	
 	
@@ -462,14 +456,16 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	public function getPSPConfigForRoute($cardid, $countryid)
 	{
 		$sql = "SELECT DISTINCT PSP.id, PSP.name,
-					MA.name AS ma, MA.username, MA.passwd AS password, MSA.name AS msa
+					MA.name AS ma, MA.username, MA.passwd AS password, MSA.name AS msa, CA.countryid
 				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl PSP
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl MA ON PSP.id = MA.pspid AND MA.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON MA.clientid = CL.id AND CL.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON Acc.id = MSA.accountid AND PSP.id = MSA.pspid AND MSA.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON PSP.id = CA.pspid AND CL.id = CA.clientid AND CA.enabled = '1' 
-				WHERE CL.id = ". intval($this->getClientConfig()->getID()) ." AND CA.cardid = ". intval($cardid) ." AND CA.countryid = ". intval($countryid);
+				WHERE CL.id = ". intval($this->getClientConfig()->getID() ) ." AND CA.cardid = ". intval($cardid) ."
+					AND (CA.countryid = ". intval($countryid) ." OR CA.countryid IS NULL)
+				ORDER BY CA.countryid ASC";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn()->getName($sql);	
 
