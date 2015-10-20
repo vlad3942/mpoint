@@ -229,20 +229,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											$obj_XML = $obj_XML->xpath("/cards/item[@type-id = ". Constants::iAPPLE_PAY ."]");
 											$obj_Elem["pspid"] = (integer) $obj_XML["pspid"];
 											break;
-										case (Constants::iVISA_CHECKOUT):
+										case (Constants::iVISA_CHECKOUT_WALLET):
 											$obj_Wallet = new VisaCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["visa-checkout"]);
-											$obj_PSPConfig = $obj_Wallet->getPSPConfigForRoute(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]),
-																							   intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"]) );
-											$obj_XML = simpledom_load_string($obj_Wallet->getPaymentData($obj_PSPConfig,
-																										 $obj_DOM->{'authorize-payment'}->{'client-info'},
-																										 intval($obj_DOM->{'authorize-payment'}[$i]->card[$j]["type-id"]),
-																										 $obj_TxnInfo->getAmount(),
+											$obj_XML = simpledom_load_string($obj_Wallet->getPaymentData(PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP),
 																										 trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) ) );
 											if (count($obj_XML->{'payment-data'}) == 1)
 											{
 												$obj_Elem = $obj_XML->{'payment-data'}->card;
+												$obj_PSPConfig = $obj_Wallet->getPSPConfigForRoute(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]),
+																								   intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"]) );
+												$obj_Elem["pspid"] = $obj_PSPConfig->getID();
 											}
-											$obj_Elem["pspid"] = $obj_PSPConfig->getID();
 											break;
 										default:
 											$obj_Elem = $obj_XML->xpath("/stored-cards/card[@id = ". $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"] ."]");
