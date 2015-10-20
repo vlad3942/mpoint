@@ -96,4 +96,81 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10000
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 16, 4);
 -- Mobile Enterprise Service Bus
 INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (4, 10001, 'http://localhost:10080/');
-/* ========== CONFIGURE DEMO ACCOUNT FOR VISA CHECKOUT END ======
+/* ========== CONFIGURE DEMO ACCOUNT FOR VISA CHECKOUT END ====== */
+
+/* ========== CONFIGURE APPLE PAY START ========== */
+/*START: Adding PSP entries to the PSP_Tbl table for Apple Pay*/
+INSERT INTO System.PSP_Tbl (id, name) VALUES (14, 'Apple Pay');
+/*END: Adding PSP entries to the PSP_Tbl table for Apple Pay*/
+
+/*START: Adding Currency entries to the PSPCurrency_Tbl table for Apple Pay*/
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) 
+SELECT id, 14, currency FROM System.Country_Tbl WHERE currency LIKE 'AED';
+
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) 
+SELECT id, 14, currency FROM System.Country_Tbl WHERE currency LIKE 'ARS';
+
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) 
+SELECT id, 14, currency FROM System.Country_Tbl WHERE currency LIKE 'AUD';
+
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) 
+SELECT id, 14, currency FROM System.Country_Tbl WHERE currency LIKE 'BRL';
+
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) 
+SELECT id, 14, currency FROM System.Country_Tbl WHERE currency LIKE 'CAD';
+
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) 
+SELECT id, 14, currency FROM System.Country_Tbl WHERE currency LIKE 'CNY';
+
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) 
+SELECT id, 14, currency FROM System.Country_Tbl WHERE currency LIKE 'CLP';
+
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) 
+SELECT id, 14, currency FROM System.Country_Tbl WHERE currency LIKE 'HKD';
+
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) 
+SELECT id, 14, currency FROM System.Country_Tbl WHERE currency LIKE 'MYR';
+
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) 
+SELECT id, 14, currency FROM System.Country_Tbl WHERE currency LIKE 'NZD';
+
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) 
+SELECT id, 14, currency FROM System.Country_Tbl WHERE currency LIKE 'PEN';
+
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) 
+SELECT id, 14, currency FROM System.Country_Tbl WHERE currency LIKE 'SGD';
+
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) 
+SELECT id, 14, currency FROM System.Country_Tbl WHERE currency LIKE 'ZAR';
+
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) 
+SELECT id, 14, currency FROM System.Country_Tbl WHERE currency LIKE 'USD';
+
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) 
+SELECT id, 14, currency FROM System.Country_Tbl WHERE currency LIKE 'COP';
+
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) 
+SELECT id, 14, currency FROM System.Country_Tbl WHERE currency LIKE 'MXN';
+
+/*END: Adding Currency entries to the PSPCurrency_Tbl table for Apple Pay*/
+
+/*START: Adding PSP to Card mapping to the PSPCard_Tbl table for Apple Pay*/
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 14 FROM System.Card_Tbl WHERE name = 'American Express';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 14 FROM System.Card_Tbl WHERE name = 'Master Card';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 14 FROM System.Card_Tbl WHERE name = 'VISA';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 14 FROM System.Card_Tbl WHERE name = 'Discover';
+/*END: Adding PSP to Card mapping to the PSPCard_Tbl table for Apple Pay*/
+
+-- Enable support for Apple Pay through WorldPay
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (4, 15);
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (14, 15);
+/* ========== CONFIGURE APPLE PAY END ========== */
+
+/* ========== CONFIGURE DEMO ACCOUNT FOR APPLE PAY START ========== */
+-- Apple Pay
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name) VALUES (10001, 14, 'merchant.cpm.apple.pay');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 14, '-1');
+-- WorldPay
+UPDATE Client.MerchantAccount_Tbl SET name = username WHERE pspid = 4 AND name != username;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 15, 4);
+/* ========== CONFIGURE DEMO ACCOUNT FOR APPLE PAY END ====== */

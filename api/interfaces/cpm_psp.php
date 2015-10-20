@@ -402,7 +402,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	}
 	
 	/**
-	 * Performs a used to get the card details from VISA checkout API
+	 * Retrieves the payment data stored in a 3rd Party Wallet such as Apple Pay or VISA Checkout.
 	 * The method may return an array containing the following status codes:
 	 * 	 90. Not Found: Specified token is not available
 	 * 	 91. Unauthorized: Token Validation Failed
@@ -410,11 +410,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 * 	 98. Communication Error
 	 * 	 99. Unknown error.
 	 * 
-	 * @param PSPConfig $obj_PSPConfig	The configuration for the Wallet which the payment data should be retrieved from
-	 * @param string $token				The token for the Wallet representing payment card selected by the customer
+	 * @param PSPConfig $obj_PSPConfig		The configuration for the Wallet which the payment data should be retrieved from
+	 * @param SimpleXMLElement $obj_Card	Details for the token that should be used to retrieve the payment data from the 3rd Party Wallet.
 	 * @return string
 	 */
-	public function getPaymentData(PSPConfig $obj_PSPConfig, $typeid, $token)
+	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card)
 	{
 		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML(), "SimpleXMLElement", LIBXML_COMPACT);
 		unset ($obj_XML->password);
@@ -424,10 +424,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '<get-payment-data>';
 		$b .= $obj_PSPConfig->toXML();
 		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
-		$obj_XML = simplexml_load_string($this->_constTxnXML() );
-		$obj_XML->card->token = $token;
-		$obj_XML->card["type-id"] = (integer) $typeid;
-		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
+		$b .= str_replace("</transaction>", str_replace('<?xml version="1.0"?>', '', $obj_Card->asXML() ). "</transaction>", $this->_constTxnXML() );
 		$b .= '</get-payment-data>';
 		$b .= '</root>';
 		$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["get-payment-data"]);

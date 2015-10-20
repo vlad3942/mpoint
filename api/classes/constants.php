@@ -411,6 +411,11 @@ abstract class Constants
 	 *
 	 */
 	const iVISA_CHECKOUT_PSP = 13;
+	/**
+	 * Unique ID for the Payment Service Provider: Apple Pay
+	 *
+	 */
+	const iAPPLE_PAY_PSP = 14;
 
 	/**
 	 * Unique ID for the Electronic Payment Flow
