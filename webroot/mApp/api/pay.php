@@ -51,6 +51,9 @@ require_once(sCLASS_PATH ."/mobilepay.php");
 require_once(sCLASS_PATH ."/adyen.php");
 // Require specific Business logic for the VISA checkout component
 require_once(sCLASS_PATH ."/visacheckout.php");
+// Require specific Business logic for the Apple Pay component
+require_once(sCLASS_PATH ."/applepay.php");
+
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 
@@ -138,6 +141,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$obj_PSPConfig = null;
 							switch (intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) )
 							{
+							case (Constants::iAPPLE_PAY):	// 3rd Party Wallet: Apple Pay
+								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAPPLE_PAY_PSP);
+								break;
 							case (Constants::iVISA_CHECKOUT_WALLET):	// 3rd Party Wallet: VISA Checkout
 								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
 								break;
@@ -188,35 +194,25 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										}
 										break;
 									case (Constants::iWORLDPAY_PSP):
-										if (intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) === Constants::iAPPLE_PAY)
+										// Construct list of cards supported by the Payment Service Provider
+										$aCards = array();
+										foreach ($obj_XML->children() as $obj_Elem)
 										{
-											$xml .= '<url method="app" />';
+											if ($obj_PSPConfig->getID() == $obj_Elem["pspid"]) { $aCards[] = $obj_Elem["type-id"]; }
 										}
-										else
-										{
-											// Construct list of cards supported by the Payment Service Provider
-											$aCards = array();
-											foreach ($obj_XML->children() as $obj_Elem)
-											{
-												if ($obj_PSPConfig->getID() == $obj_Elem["pspid"]) { $aCards[] = $obj_Elem["type-id"]; }
-											}
-											$obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["worldpay"]);
-											if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["worldpay"]["host"] = str_replace("secure.", "secure-test.", $aHTTP_CONN_INFO["worldpay"]["host"]); }
-											$aMerchantAccount =  $obj_PSP->getMerchantLogin($obj_DOM->pay[$i]["client-id"], Constants::iWORLDPAY_PSP);
-											$aHTTP_CONN_INFO["worldpay"]["username"] = $aMerchantAccount["username"];
-											$aHTTP_CONN_INFO["worldpay"]["password"] = $aMerchantAccount["password"];
-											$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["worldpay"]);
-											// Redirect XML API
-											$url = $obj_PSP->initialize($obj_ConnInfo, $aMerchantAccount["username"], $obj_PSPConfig->getMerchantSubAccount(), (string) $obj_Elem->currency, $aCards);
+										$obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["worldpay"]);
+										if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["worldpay"]["host"] = str_replace("secure.", "secure-test.", $aHTTP_CONN_INFO["worldpay"]["host"]); }
+										$aMerchantAccount =  $obj_PSP->getMerchantLogin($obj_DOM->pay[$i]["client-id"], Constants::iWORLDPAY_PSP);
+										$aHTTP_CONN_INFO["worldpay"]["username"] = $aMerchantAccount["username"];
+										$aHTTP_CONN_INFO["worldpay"]["password"] = $aMerchantAccount["password"];
+										$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["worldpay"]);
+										// Redirect XML API
+										$url = $obj_PSP->initialize($obj_ConnInfo, $aMerchantAccount["username"], $obj_PSPConfig->getMerchantSubAccount(), (string) $obj_Elem->currency, $aCards);
+										
+										if (General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, ""); }
 											
-											if (General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, ""); }
-												
-											$url .= "&preferredPaymentMethod=". $obj_PSP->getCardName( (integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ."&language=". $obj_TxnInfo->getLanguage();
-											$xml .= '<url method="get" content-type="none">'. htmlspecialchars($url, ENT_NOQUOTES) .'</url>';
-											// Direct XML API
-	//										$storecard = (strcasecmp($obj_DOM->pay[$i]->transaction["store-card"], "true") == 0 );
-	//										$xml .= $obj_PSP->auth($obj_ConnInfo, $aMerchantAccount["name"], (string) $obj_Elem->currency, (integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"], $storecard);
-										}
+										$url .= "&preferredPaymentMethod=". $obj_PSP->getCardName( (integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ."&language=". $obj_TxnInfo->getLanguage();
+										$xml .= '<url method="get" content-type="none">'. htmlspecialchars($url, ENT_NOQUOTES) .'</url>';
 										break;
 									case (Constants::iPAYEX_PSP):
 										$obj_PSP = new PayEx($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["payex"]);
@@ -319,6 +315,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										{
 											$xml .= trim($obj_Elem->asXML() );
 										}
+										break;
+									case (Constants::iAPPLE_PAY_PSP):
+										$xml .= '<url method="app" />';
 										break;
 									}
 									$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. htmlspecialchars($obj_PSPConfig->getMessage($obj_TxnInfo->getLanguage() ), ENT_NOQUOTES) .'</message>';
