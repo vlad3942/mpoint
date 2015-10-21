@@ -1164,6 +1164,75 @@
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
+	<xs:simpleType name="callback-protocol">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="mPoint" />
+			<xs:enumeration value="PSP" />
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- Used to auto-generate Enumerations in mConsole -->
+	<xs:simpleType name="mode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Production" />
+			<xs:enumeration value="Test" />
+			<xs:enumeration value="Certification" />
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- mConsole enumerations -->
+	<xs:simpleType name="identification">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Off" />
+			<xs:enumeration value="Customer Reference" />
+			<xs:enumeration value="Mobile" />
+			<xs:enumeration value="Customer Reference or Mobile" />
+			<xs:enumeration value="Email" />
+			<xs:enumeration value="Customer Reference or Email" />
+			<xs:enumeration value="Mobile or Email" />
+			<xs:enumeration value="Customer Reference, Mobile or E-Mail " />
+			<xs:enumeration value="Mobile Number and E-Mail" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="store-card">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Off" />
+			<xs:enumeration value="Not used" />
+			<xs:enumeration value="Only available for specific client" />
+			<xs:enumeration value="Only use store cards but make them available for specific client" />
+			<xs:enumeration value="Store cards available globally" />
+			<xs:enumeration value="Only use store cards but make them available globally" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="payment-method-state">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Not used" />
+			<xs:enumeration value="Enabled" />
+			<xs:enumeration value="Disabled by merchant" />
+			<xs:enumeration value="Disabled by PSP" />
+			<xs:enumeration value="Pre-requisite not met" />
+			<xs:enumeration value="Temporarily unavailable" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="markup">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="App" />
+			<xs:enumeration value="HTML5" />
+			<xs:enumeration value="XHTML" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="url-type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Customer Import URL" />
+			<xs:enumeration value="Single Sign On URL" />
+			<xs:enumeration value="Notification URL" />
+			<xs:enumeration value="MESB URL" />
+			<xs:enumeration value="Logo URL" />
+			<xs:enumeration value="CSS URL" />
+			<xs:enumeration value="Callback URL" />
+			<xs:enumeration value="Accept URL" />
+			<xs:enumeration value="Cancel URL" />
+			<xs:enumeration value="Icon URL" />
+		</xs:restriction>
+	</xs:simpleType>
 	<!-- Client Configuration Entities End -->
 	<xs:complexType name="get-client-configurations">
          <xs:sequence>	
