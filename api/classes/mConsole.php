@@ -59,6 +59,7 @@ class mConsole extends Admin
 	const sPERMISSION_SEARCH_TRANSACTION_LOGS = "mpoint.transaction-logs.search.x";
 	const sPERMISSION_VOID_PAYMENTS = "mpoint.void-payments.get.x";
 	const sPERMISSION_CAPTURE_PAYMENTS = "mpoint.capture-payments.get.x";	
+	const sPERMISSION_GET_TRANSACTION_STATISTICS = "mpoint.dashboard.get.x";	
 	
 	public function saveClient($cc, $storecard, $autocapture, $name, $username, $password, $maxamt, $lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl, $id = -1)
 	{
@@ -925,32 +926,65 @@ class mConsole extends Admin
 	{
 		$aStateIDS = array(Constants::iINPUT_VALID_STATE, Constants::iPAYMENT_INIT_WITH_PSP_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CANCELLED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_REFUNDED_STATE, Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_DECLINED_STATE);
 		
-		$sql = "SELECT date(Msg.created) as createddate, Msg.stateid as stateid, COUNT(Msg.stateid) as stateidcount 
-			FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn, 
-			Log".sSCHEMA_POSTFIX.".Message_Tbl Msg 
-			WHERE Msg.stateid IN (". implode(",", $aStateIDS) .") AND 
-			(Msg.created BETWEEN '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' AND 
-			'". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."') AND
-			Msg.created = (SELECT max(created) FROM Log".sSCHEMA_POSTFIX.".Message_Tbl WHERE txnid = Txn.id) AND 
-			Txn.clientid IN (". implode(",", $aClientIDs) .") " ;
+		$where = "";
+		
+		if(empty($aClientIDs) === false)
+		{
+			$where .= " Txn.clientid IN (". implode(",", $aClientIDs) .")";
+		}
 		
 		if(empty($aAccountIDs) === false)
 		{
-			$sql .= " AND Txn.accountid IN (". implode(",", $aAccountIDs) .")";
+			if(empty($where) === false)
+			{
+				$where.=" AND ";
+			}
+			
+			$where .= " Txn.accountid IN (". implode(",", $aAccountIDs) .")";
 		}
 		
-		if($pspid > 0)
+		if(intval($pspid) > 0)
 		{
-			$sql .= " AND Txn.pspid = ".$pspid;
+			if(empty($where) === false)
+			{
+				$where.=" AND ";
+			}
+			
+			$where .= " Txn.pspid = ".intval($pspid);
 		}
 		
-		if($cardid > 0)
+		if(intval($cardid) > 0)
 		{
-			$sql .= " AND Txn.cardid = ".$cardid;
+			if(empty($where) === false)
+			{
+				$where.=" AND ";
+			}
+			
+			$where .= " Txn.cardid = ".intval($cardid);
 		}
 		
-		$sql .= " GROUP BY createddate, Msg.stateid ";
-		$sql .= " ORDER BY createddate ";
+		if(empty($where) === false)
+		{
+			$where = " WHERE ".$where;
+		}
+		
+		$sql = "SELECT date(messages.max_created) AS createddate, messages.stateid AS stateid, count(messages.txnid) AS stateidcount
+			FROM (
+				SELECT Msg.created AS max_created, Msg.txnid, Msg.stateid 
+				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl AS Msg 
+				WHERE 
+				Msg.created BETWEEN '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' AND 
+				'". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'
+				AND Msg.created = (
+					select MAX(created) FROM Log.Message_Tbl
+						WHERE stateid IN (". implode(",", $aStateIDS) .") AND txnid = Msg.txnid
+				)
+				AND Msg.txnid IN (
+					SELECT Txn.id 
+						FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn ".$where."
+				)
+				
+			) AS messages GROUP BY createddate, messages.stateid ORDER BY createddate";
 		
 		//echo $sql ."\n";exit;
 		
@@ -960,6 +994,8 @@ class mConsole extends Admin
 		
 		$res = $this->getDBConn()->query($sql);
 
+		$aTransactionStats = array();
+		
 		if (is_resource($res) === true)
 		{
 
@@ -970,14 +1006,13 @@ class mConsole extends Admin
 					$aRS[$RS['CREATEDDATE']][$RS['STATEID']] = $RS['STATEIDCOUNT']; 
 				}
 			}
-			
+
 			if(empty($aRS) === false)
 			{
-				$aTransactionStats = array();
-
 				foreach($aRS as $createddate => $transactioncountdata)
 				{
-					$missingstateids = array_diff($aStateIDS, array_flip($transactioncountdata));
+					$missingstateids = array_diff($aStateIDS, array_keys($transactioncountdata));
+
 					foreach($missingstateids as $stateid)
 					{
 						$aTransactionStats[$createddate][$stateid] = 0;
@@ -987,9 +1022,9 @@ class mConsole extends Admin
 				}
 
 				return new TransactionStatisticsInfo($aTransactionStats);
-			} else { return false; }
-		} else { return false; }
-
+			} else { return new TransactionStatisticsInfo($aTransactionStats); }
+		} 
+		else { return new TransactionStatisticsInfo($aTransactionStats); }
 		
 	}
     }
