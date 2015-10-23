@@ -211,7 +211,7 @@ class CPG extends Callback
 		// ApplePay token which may be authorized directly through CPG
 		if (count($obj_XML->ticket) == 0)
 		{
-			if (isset($obj_XML['wallet-typeid']) === true ) 
+			if (isset($obj_XML['wallet-typeid']) === true && strpos($b, '<bkgChannel>') === false ) 
 			{
 				$b = substr($b, 0, strlen($b) - strlen("</enchancedData>") );
 				switch (intval($obj_XML['wallet-typeid']) )
@@ -225,8 +225,8 @@ class CPG extends Callback
 					default:	
 						break;
 				}
-			}		
-			$b .= '</enchancedData>';
+				$b .= '</enchancedData>';
+			}			
 		}
 		$b .= '</order>';
 		$b .= '<returnURL>'. htmlspecialchars($this->getTxnInfo()->getAcceptURL(), ENT_NOQUOTES) .'</returnURL>';
