@@ -9,6 +9,7 @@ INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (22, 65, 65);
 
 /* ========== CONFIGURE CARD VISA CHECKOUT START ========== */
 /*Adding the dummy card prefix entry for VISA checkout as a card*/
+INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 16, id FROM System.PricePoint_Tbl WHERE amount = -1;
 INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (16, 0, 0);
 /* ========== CONFIGURE CARD VISA CHECKOUT END ========== */
 
@@ -82,6 +83,9 @@ INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 13 FROM System.Card_Tb
 
 -- Enable support for VISA Checkout through WorldPay
 INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (4, 16);
+--CPG
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (9, 16);
+--VISA Checkout
 INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (13, 16);
 /* ========== CONFIGURE VISA CHECKOUT END ========== */
 
@@ -94,6 +98,11 @@ INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd,
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd, stored_card) VALUES (10001, 4, 'CELLPOINTREC', 'CELLPOINTREC', 'oisJona1', true);
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 4, '254294');
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 16, 4);
+--CPG
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd, stored_card) VALUES (10001, 9, 'CPG', 'CPG', 'oisJona1', true);
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 9, '-1');
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 16, 9);
+
 -- Mobile Enterprise Service Bus
 INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (4, 10001, 'http://localhost:10080/');
 /* ========== CONFIGURE DEMO ACCOUNT FOR VISA CHECKOUT END ====== */
