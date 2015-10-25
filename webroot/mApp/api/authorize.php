@@ -238,6 +238,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											if (count($obj_XML->{'payment-data'}) == 1)
 											{
 												$obj_Elem = $obj_XML->{'payment-data'}->card;
+												/*
+												 * Some versions of LibXML will report a wrong element name for "address" unless the XML element is marshalled into a string first
+												 */
+												$obj_Elem->addChild(simplexml_load_string($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->asXML() ) );
 												$obj_PSPConfig = $obj_Wallet->getPSPConfigForRoute(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]),
 																								   intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"]) );
 												$obj_Elem["pspid"] = $obj_PSPConfig->getID();
