@@ -206,7 +206,15 @@ class CPG extends Callback
 			// ApplePay token which may be authorized directly through CPG
 			if (count($obj_XML->ticket) == 0 && stristr($aClientVars["var_enhanced-data"], "bkgChannel") == false)
 			{
-				$b = str_replace('<bkgChannel>MPH-ApplePay</bkgChannel></enchancedData>', '</enchancedData>', $b);
+				switch (intval($obj_XML["wallet-type-id"]) )
+				{
+				case (Constants::iAPPLE_PAY):
+					$b = str_replace('<bkgChannel>MPH-ApplePay</bkgChannel></enchancedData>', '</enchancedData>', $b);
+					break;
+				case (Constants::iVISA_CHECKOUT_WALLET):
+					$b = str_replace('<bkgChannel>MPH-VISA-Checkout</bkgChannel></enchancedData>', '</enchancedData>', $b);
+					break;
+				}
 			}
 		}
 		$b .= '</order>';
