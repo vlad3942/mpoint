@@ -290,7 +290,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false)
 	{
-		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML(), "SimpleXMLElement", LIBXML_COMPACT);
+		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML() );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -390,7 +390,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		else { unset($obj_XML->amount); } 
 		
-		return $b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
+		return str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 	}
 
 	private function _constConnInfo($path)
@@ -416,7 +416,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 */
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card)
 	{
-		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML(), "SimpleXMLElement", LIBXML_COMPACT);
+		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML() );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
