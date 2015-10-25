@@ -123,7 +123,7 @@ class CustomerInfo
 	private static function _produceInfoFromDatabase(RDB $obj_DB, $id)
 	{
 		$sql = "SELECT *
-				FROM EndUser.Account_Tbl
+				FROM EndUser". sSCHEMA_POSTFIX .".Account_Tbl
 				WHERE id = ". intval($id);
 //		echo $sql ."\n";
 		$RS = $obj_DB->getName($sql);
