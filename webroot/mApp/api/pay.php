@@ -44,7 +44,10 @@ require_once(sCLASS_PATH ."/payex.php");
 // Require specific Business logic for the NetAxept component
 require_once(sCLASS_PATH ."/netaxept.php");
 // Require specific Business logic for the Stripe component
-require_once(sCLASS_PATH ."/stripe.php");
+if (function_exists("json_encode") === true && function_exists("curl_init") === true)
+{
+   require_once(sCLASS_PATH ."/stripe.php");
+}
 // Require specific Business logic for the MobilePay component
 require_once(sCLASS_PATH ."/mobilepay.php");
 // Require specific Business logic for the Adyen component

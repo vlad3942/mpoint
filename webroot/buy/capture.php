@@ -31,7 +31,7 @@ require_once(sCLASS_PATH ."/worldpay.php");
 require_once(sCLASS_PATH ."/netaxept.php");
 // Require specific Business logic for the WannaFind component
 require_once(sCLASS_PATH ."/wannafind.php");
-if (function_exists("json_encode") === true)
+if (function_exists("json_encode") === true && function_exists("curl_init") === true)
 {
 	// Require specific Business logic for the Stripe component
 	require_once(sCLASS_PATH ."/stripe.php");

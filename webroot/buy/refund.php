@@ -32,7 +32,7 @@ require_once(sCLASS_PATH ."/dibs.php");
 require_once(sCLASS_PATH ."/worldpay.php");
 // Require specific Business logic for the NetAxept component
 require_once(sCLASS_PATH ."/netaxept.php");
-if (function_exists("json_encode") === true)
+if (function_exists("json_encode") === true && function_exists("curl_init") === true)
 {
 	// Require specific Business logic for the Stripe component
 	require_once(sCLASS_PATH ."/stripe.php");
