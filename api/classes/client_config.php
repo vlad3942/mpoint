@@ -809,7 +809,7 @@ class ClientConfig extends BasicConfig
 	 * @param 	integer $kw 	Unique ID for the Keyword that all messages sent to the customer should belong to, defaults to -1 for client's default keyword.
 	 * @return 	ClientConfig
 	 */
-public static function produceConfig(RDB $oDB, $id, $acc=-1, $kw=-1)
+	public static function produceConfig(RDB $oDB, $id, $acc=-1, $kw=-1)
 	{
 		$acc = (integer) $acc;
 		$sql = "SELECT CL.id AS clientid, CL.name AS client, CL.flowid, CL.username, CL.passwd,
@@ -877,50 +877,57 @@ public static function produceConfig(RDB $oDB, $id, $acc=-1, $kw=-1)
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 
-		$obj_CountryConfig = CountryConfig::produceConfig($oDB, $RS["COUNTRYID"]);
-		$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["MOBILE"], $RS["MARKUP"]);
-		$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
-		$aObj_AccountsConfigurations = AccountConfig::produceConfigurations($oDB, $id);
-		$aObj_ClientMerchantAccountConfigurations = ClientMerchantAccountConfig::produceConfigurations($oDB, $id);
-		$aObj_ClientCardsAccountConfigurations = ClientPaymentMethodConfig::produceConfigurations($oDB, $id);
-		$aObj_ClientIINRangesConfigurations = ClientIINRangeConfig::produceConfigurations($oDB, $id);		
-		
-		$obj_LogoURL = null;
-		$obj_CSSURL = null;
-		$obj_AcceptURL = null;
-		$obj_CancelURL = null;
-		$obj_CallbackURL = null;
-		$obj_IconURL = null;
-		$obj_CustomerImportURL = null;
-		$obj_AuthenticationURL = null;
-		$obj_NotificationURL = null;
-		$obj_MESBURL = null;
-		
-		if (strlen($RS["LOGOURL"]) > 0) { $obj_LogoURL = new ClientURLConfig($RS["CLIENTID"], self::iLOGO_URL, $RS["LOGOURL"]); }
-		if (strlen($RS["CSSURL"]) > 0) { $obj_CSSURL = new ClientURLConfig($RS["CLIENTID"], self::iCSS_URL, $RS["CSSURL"]); }
-		if (strlen($RS["ACCEPTURL"]) > 0) { $obj_AcceptURL = new ClientURLConfig($RS["CLIENTID"], self::iACCEPT_URL, $RS["ACCEPTURL"]); }
-		if (strlen($RS["CANCELURL"]) > 0) { $obj_CancelURL = new ClientURLConfig($RS["CLIENTID"], self::iCANCEL_URL, $RS["CANCELURL"]); }
-		if (strlen($RS["CALLBACKURL"]) > 0) { $obj_CallbackURL = new ClientURLConfig($RS["CLIENTID"], self::iCALLBACK_URL, $RS["CALLBACKURL"]); }
-		if (strlen($RS["ICONURL"]) > 0) { $obj_IconURL = new ClientURLConfig($RS["CLIENTID"], self::iICON_URL, $RS["ICONURL"]); }
-		if ($RS["CUSTOMERIMPORTURLID"] > 0) { $obj_CustomerImportURL = new ClientURLConfig($RS["CUSTOMERIMPORTURLID"], self::iCUSTOMER_IMPORT_URL, $RS["CUSTOMERIMPORTURL"]); }
-		if ($RS["AUTHURLID"] > 0) { $obj_AuthenticationURL = new ClientURLConfig($RS["AUTHURLID"], self::iAUTHENTICATION_URL, $RS["AUTHURL"]); }
-		if ($RS["NOTIFYURLID"] > 0) { $obj_NotificationURL = new ClientURLConfig($RS["NOTIFYURLID"], self::iNOTIFICATION_URL, $RS["NOTIFYURL"]); }
-		if ($RS["MESBURLID"] > 0) { $obj_MESBURL = new ClientURLConfig($RS["MESBURLID"], self::iMESB_URL, $RS["MESBURL"]); }
-		
-		$sql  = "SELECT ipaddress
-				 FROM Client". sSCHEMA_POSTFIX .".IPAddress_Tbl
-				 WHERE clientid = ". intval($id) ."";
-//		echo $sql ."\n";
-		$aRS = $oDB->getAllNames($sql);
-		$aIPs = array();
-		if (is_array($aRS) === true && count($aRS) > 0)
+		if (is_array($RS) === true && $RS["CLIENTID"] > 0)
 		{
-			for ($i=0; $i<count($aRS); $i++)
+			$obj_CountryConfig = CountryConfig::produceConfig($oDB, $RS["COUNTRYID"]);
+			$obj_AccountConfig = new AccountConfig($RS["ACCOUNTID"], $RS["CLIENTID"], $RS["ACCOUNT"], $RS["MOBILE"], $RS["MARKUP"]);
+			$obj_KeywordConfig = new KeywordConfig($RS["KEYWORDID"], $RS["CLIENTID"], $RS["KEYWORD"], $RS["PRICE"]);
+			$aObj_AccountsConfigurations = AccountConfig::produceConfigurations($oDB, $id);
+			$aObj_ClientMerchantAccountConfigurations = ClientMerchantAccountConfig::produceConfigurations($oDB, $id);
+			$aObj_ClientCardsAccountConfigurations = ClientPaymentMethodConfig::produceConfigurations($oDB, $id);
+			$aObj_ClientIINRangesConfigurations = ClientIINRangeConfig::produceConfigurations($oDB, $id);		
+			
+			$obj_LogoURL = null;
+			$obj_CSSURL = null;
+			$obj_AcceptURL = null;
+			$obj_CancelURL = null;
+			$obj_CallbackURL = null;
+			$obj_IconURL = null;
+			$obj_CustomerImportURL = null;
+			$obj_AuthenticationURL = null;
+			$obj_NotificationURL = null;
+			$obj_MESBURL = null;
+			
+			if (strlen($RS["LOGOURL"]) > 0) { $obj_LogoURL = new ClientURLConfig($RS["CLIENTID"], self::iLOGO_URL, $RS["LOGOURL"]); }
+			if (strlen($RS["CSSURL"]) > 0) { $obj_CSSURL = new ClientURLConfig($RS["CLIENTID"], self::iCSS_URL, $RS["CSSURL"]); }
+			if (strlen($RS["ACCEPTURL"]) > 0) { $obj_AcceptURL = new ClientURLConfig($RS["CLIENTID"], self::iACCEPT_URL, $RS["ACCEPTURL"]); }
+			if (strlen($RS["CANCELURL"]) > 0) { $obj_CancelURL = new ClientURLConfig($RS["CLIENTID"], self::iCANCEL_URL, $RS["CANCELURL"]); }
+			if (strlen($RS["CALLBACKURL"]) > 0) { $obj_CallbackURL = new ClientURLConfig($RS["CLIENTID"], self::iCALLBACK_URL, $RS["CALLBACKURL"]); }
+			if (strlen($RS["ICONURL"]) > 0) { $obj_IconURL = new ClientURLConfig($RS["CLIENTID"], self::iICON_URL, $RS["ICONURL"]); }
+			if ($RS["CUSTOMERIMPORTURLID"] > 0) { $obj_CustomerImportURL = new ClientURLConfig($RS["CUSTOMERIMPORTURLID"], self::iCUSTOMER_IMPORT_URL, $RS["CUSTOMERIMPORTURL"]); }
+			if ($RS["AUTHURLID"] > 0) { $obj_AuthenticationURL = new ClientURLConfig($RS["AUTHURLID"], self::iAUTHENTICATION_URL, $RS["AUTHURL"]); }
+			if ($RS["NOTIFYURLID"] > 0) { $obj_NotificationURL = new ClientURLConfig($RS["NOTIFYURLID"], self::iNOTIFICATION_URL, $RS["NOTIFYURL"]); }
+			if ($RS["MESBURLID"] > 0) { $obj_MESBURL = new ClientURLConfig($RS["MESBURLID"], self::iMESB_URL, $RS["MESBURL"]); }
+			
+			$sql  = "SELECT ipaddress
+					 FROM Client". sSCHEMA_POSTFIX .".IPAddress_Tbl
+					 WHERE clientid = ". intval($id) ."";
+	//		echo $sql ."\n";
+			$aRS = $oDB->getAllNames($sql);
+			$aIPs = array();
+			if (is_array($aRS) === true && count($aRS) > 0)
 			{
-				$aIPs[] = $aRS[$i]["IPADDRESS"];
+				for ($i=0; $i<count($aRS); $i++)
+				{
+					$aIPs[] = $aRS[$i]["IPADDRESS"];
+				}
 			}
 		}
-
+		// Error: Client Configuration not found
+		else
+		{
+			trigger_error("Client Configuration not found using ID: ". $id .", Account: ". $acc .", Keyword: ". $kw, E_USER_WARNING);
+		}	
 		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_CallbackURL, $obj_IconURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations,$aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations);
 	}
 
