@@ -583,7 +583,11 @@ class Callback extends EndUserAccount
 		case (Constants::iMOBILEPAY_PSP):
 			return new MobilePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mobilepay"]);
 		case (Constants::iADYEN_PSP):
-				return new Adyen($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["adyen"]);
+			return new Adyen($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["adyen"]);
+		case (Constants::iVISA_CHECKOUT_PSP) :
+			return new VISACheckout($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["visa-checkout"]);
+		case (Constants::iAPPLE_PAY_PSP) :
+			return new ApplePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["apple-pay"]);
 		default:
 			throw new CallbackException("Unkown Payment Service Provider", 1001);
 		}
