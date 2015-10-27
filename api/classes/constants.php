@@ -406,6 +406,11 @@ abstract class Constants
 	 *
 	 */
 	const iADYEN_PSP = 12;
+	/**
+	 * Unique ID for the Payment Service Provider: Voucher
+	 *
+	 */
+	const iVOUCHER_PSP = 15;
 
 	/**
 	 * Unique ID for the Electronic Payment Flow
@@ -530,6 +535,11 @@ abstract class Constants
 	 *
 	 */
 	const iUATP_CARD = 21;
+	/**
+	 * Unique Card ID for transaction's made using Vouchers
+	 *
+	 */
+	const iVOUCHER_CARD = 22;
 
 	/**
 	 * Unique Fee Type ID for Top-Ups
