@@ -16,6 +16,9 @@ INSERT INTO System_Ownr.Card_Tbl (id, name, position, logo) VALUES (16, 'VISA Ch
 
 /*Adding the dummy card prefix entry for VISA checkout as a card*/
 INSERT INTO System_Ownr.CardPrefix_Tbl (cardid, min, "max") VALUES (16, 0, 0);
+
+/* Enable the same pricing for VISA Checkout as for Apple Pay */ 
+INSERT INTO System_Ownr.CardPricing_Tbl (pricepointid, cardid) SELECT pricepointid, 16 FROM System_Ownr.CardPricing_Tbl WHERE cardid = 15;
 /* ========== CONFIGURE CARD VISA CHECKOUT END ========== */
 
 /* ========== CONFIGURE VISA CHECKOUT START ========== */
