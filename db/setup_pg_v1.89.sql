@@ -19,3 +19,15 @@ INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (12, 15);	-- Apple Pay
 INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (12, 21);	-- UATP
 INSERT INTO System.PSPCurrency_Tbl (pspid, countryid, name) SELECT 12, id, currency FROM System.Country_Tbl;
 /* ========== CONFIGURE ADYEN END ========== */
+
+/* ========== CONFIGURE VOUCHER PAYMENT ========= */
+INSERT INTO System.PSP_Tbl (id, name) VALUES (15, 'Voucher');
+INSERT INTO System.PSPCurrency_Tbl (pspid, countryid, name) SELECT 15, 100, 'DKK' FROM System.PSP_Tbl;
+INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (22, 'Voucher', 22, -1, -1, -1);
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) SELECT 15, 22 FROM System.PSP_Tbl PSP, System.Card_Tbl C;
+INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) SELECT C.id * -1 AS pricepointid, 22 FROM System.Country_Tbl C, System.Card_Tbl Card WHERE C.id = 100 GROUP BY pricepointid;
+
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) SELECT 10007, 22, 15 FROM System.PSPCard_Tbl CA;
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username) SELECT 10007, 15, '', '' FROM System.PSP_Tbl;
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT A.id, 15, '-1'  FROM Client.Account_Tbl A, System.PSP_Tbl P WHERE clientid = 10007 GROUP BY A.id;
+/* ========== CONFIGURE VOUCHER PAYMENT ========= */
