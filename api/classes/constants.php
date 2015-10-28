@@ -407,10 +407,10 @@ abstract class Constants
 	 */
 	const iADYEN_PSP = 12;
 	/**
-	 * Unique ID for the Payment Service Provider: Voucher
+	 * Unique ID for the Payment Service Provider: DSB
 	 *
 	 */
-	const iVOUCHER_PSP = 15;
+	const iDSB_PSP = 15;
 
 	/**
 	 * Unique ID for the Electronic Payment Flow
