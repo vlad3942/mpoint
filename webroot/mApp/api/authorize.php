@@ -51,13 +51,17 @@ require_once(sCLASS_PATH ."/netaxept.php");
 require_once(sCLASS_PATH ."/worldpay.php");
 // Require specific Business logic for the Emirates' Corporate Payment Gateway (CPG) component
 require_once(sCLASS_PATH ."/cpg.php");
-if (function_exists("json_encode") === true)
+// Require specific Business logic for the VISA checkout component
+require_once(sCLASS_PATH ."/visacheckout.php");
+if (function_exists("json_encode") === true && function_exists("curl_init") === true)
 {
 	// Require specific Business logic for the Stripe component
 	require_once(sCLASS_PATH ."/stripe.php");
 }
 // Require specific Business logic for the Adyen component
 require_once(sCLASS_PATH ."/adyen.php");
+// Require specific Business logic for the Apple Pay component
+require_once(sCLASS_PATH ."/applepay.php");
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -76,9 +80,6 @@ $HTTP_RAW_POST_DATA .= '<authorize-payment client-id="10019">';
 $HTTP_RAW_POST_DATA .= '<transaction id="1814929">';
 $HTTP_RAW_POST_DATA .= '<card id="66597" type-id="7">';
 $HTTP_RAW_POST_DATA .= '<amount country-id="100">100</amount>';
-//$HTTP_RAW_POST_DATA .= '<card-number>5272342200069702</card-number>';
-//$HTTP_RAW_POST_DATA .= '<expiry>03/31</expiry>';
-//$HTTP_RAW_POST_DATA .= '<cryptogram type="3ds">AKh96OOsGf2HAIDEhKulAoABFA==</cryptogram>';
 $HTTP_RAW_POST_DATA .= '</card>';
 $HTTP_RAW_POST_DATA .= '</transaction>';
 $HTTP_RAW_POST_DATA .= '<password>oisJona</password>';
@@ -132,13 +133,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 //							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"]);
 //							if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
 							$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
-							if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cryptogram) == 0)
+							if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0)
 							{
 								if ($obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) + 25; }
 							}
 							$iTypeID = intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]);
 							// Authorize Purchase using Stored Value Account
-							if ($iTypeID == Constants::iCARD_PURCHASE_TYPE && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cryptogram) == 0 && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) > 0 && $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) < 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) + 40; }
+							if ($iTypeID == Constants::iCARD_PURCHASE_TYPE && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0 && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) > 0 && $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) < 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) + 40; }
 
 							// Success: Input Valid
 							if (count($aMsgCds) == 0)
@@ -148,8 +149,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								{
 									$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($obj_TxnInfo->getAuthenticationURL() ), CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() ), trim($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) );
 								}
-								// Authentication is not required for payment methods that are sending a cryptogram
-								elseif (count($obj_DOM->{'authorize-payment'}[$i]->password) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cryptogram) == 1)
+								// Authentication is not required for payment methods that are sending a token
+								elseif (count($obj_DOM->{'authorize-payment'}[$i]->password) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1)
 								{
 									$code = 10;
 								}
@@ -217,23 +218,49 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										break;
 									case (Constants::iCARD_PURCHASE_TYPE):		// Authorize Purchase using Stored Card
 									default:
-										if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) == Constants::iAPPLE_PAY)
+										// 3rd Party Wallet
+										if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1)
 										{
-											$obj_Elem = $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j];
-											
-											$obj_CC = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-											$obj_XML = simpledom_load_string($obj_CC->getCards($obj_TxnInfo->getAmount() ) );
-											$obj_XML = $obj_XML->xpath("/cards/item[@type-id = ". Constants::iAPPLE_PAY ."]");
-											$obj_Elem["pspid"] = (integer) $obj_XML["pspid"];
+											switch (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) )
+											{
+											case (Constants::iAPPLE_PAY):
+												$obj_Wallet = new ApplePay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["apple-pay"]);
+												$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAPPLE_PAY_PSP);
+												break;
+											case (Constants::iVISA_CHECKOUT_WALLET):
+												$obj_Wallet = new VisaCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["visa-checkout"]);
+												$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
+												break;
+											default:	
+												break;
+											}
+											$obj_XML = simpledom_load_string($obj_Wallet->getPaymentData($obj_PSPConfig, $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]) );
+											if (count($obj_XML->{'payment-data'}) == 1)
+											{
+												$obj_Elem = $obj_XML->{'payment-data'}->card;
+												// Merge billing address from request as no billing address was returned by the 3rd party wallet 
+												if (count($obj_Elem->address) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address) == 1)
+												{
+													/*
+													 * Some versions of LibXML will report a wrong element name for "address" unless the XML element is marshalled into a string first
+													 */
+													$obj_Elem->addChild(simplexml_load_string($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->asXML() ) );
+												}
+												$obj_PSPConfig = $obj_Wallet->getPSPConfigForRoute(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]),
+																								   intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"]) );
+												$obj_Elem["pspid"] = $obj_PSPConfig->getID();
+												$obj_Elem["wallet-type-id"] = intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]);
+											}
+											else { $code = 5; }
 										}
 										else
 										{
 											$obj_Elem = $obj_XML->xpath("/stored-cards/card[@id = ". $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"] ."]");
-											if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1) { $obj_Elem->cvc = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc; }	
+											if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1) { $obj_Elem->cvc = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc; }
+											if (count($obj_Elem->mask) == 1) { $code = $obj_Validator->valIssuerIdentificationNumber($_OBJ_DB, $obj_ClientConfig->getID(), substr(str_replace(" ", "", $obj_Elem->mask), 0, 6) ); }
+											else { $code = 10; }
 										}
 										
-										if(count($obj_Elem->mask) == 1) { $code = $obj_Validator->valIssuerIdentificationNumber($_OBJ_DB, $obj_ClientConfig->getID(), substr(str_replace(" ", "", $obj_Elem->mask), 0, 6) ); }
-										else { $code = 10; }
 										if ($code >= 10)
 										{
 											try
@@ -264,7 +291,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													// Authorise payment with PSP based on Ticket
 													$obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["worldpay"]);
 													if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["worldpay"]["host"] = str_replace("secure.", "secure-test.", $aHTTP_CONN_INFO["worldpay"]["host"]); }
-													$aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, true);
+													// WorldPay doesn't enable support for 3D Secure on Mechant Codes intended for Recurring payments
+													if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1)
+													{
+														$bStoredCard = false;
+													}
+													else { $bStoredCard = true; }
+													$aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, $bStoredCard);
 													$aHTTP_CONN_INFO["worldpay"]["username"] = $aLogin["username"];
 													$aHTTP_CONN_INFO["worldpay"]["password"] = $aLogin["password"];
 						
@@ -422,6 +455,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	
 												$xml = '<status code="90">'. htmlspecialchars($e->getTraceAsString(), ENT_NOQUOTES) .'</status>';
 											}
+										}
+										// 3rd Party Wallet returned error
+										elseif ($code > 4)
+										{
+											
 										}
 										// Error: Card has been blocked
 										else

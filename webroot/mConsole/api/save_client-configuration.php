@@ -222,38 +222,41 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						// Success
 						if ($iClientID > 0)
 						{
-							//Disbale all accounts linked to the client.
-							$bDisableAccounts = $obj_mPoint->disableAccounts($iClientID);
-							
-							if($bDisableAccounts === false) {throw new mConsoleDisableAccountFailedException("Error during disable Accounts for client: ". $iClientID); }
-							
-							for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}); $j++)
-							{
-								$iAccountID = $obj_mPoint->saveAccount( $iClientID,
-																	   trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->name),
-																	   trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->markup),
-																	   (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}->{'account-configurations'}->{'account-config'}[$j]["id"]);
-								// Success
-								if ($iAccountID > 0)
+							if (count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}) == 1 )
+							{							
+								//Disbale all accounts linked to the client.
+								$bDisableAccounts = $obj_mPoint->disableAccounts($iClientID);
+								
+								if($bDisableAccounts === false) {throw new mConsoleDisableAccountFailedException("Error during disable Accounts for client: ". $iClientID); }
+								
+								for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}); $j++)
 								{
-									//Disable all Merchant Sub Account.
-									$bDisableMSA = $obj_mPoint->disableMerchantSubAccounts($iAccountID);
-
-									if($bDisableMSA === false) { throw new mConsoleDisableMerchantSubAccountFailedException("Error during disable payment service providers for account: ". $iAccountID); }
-									
-									for ($k=0; $k<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}); $k++)
+									$iAccountID = $obj_mPoint->saveAccount( $iClientID,
+																		   trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->name),
+																		   trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->markup),
+																		   (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}->{'account-configurations'}->{'account-config'}[$j]["id"]);
+									// Success
+									if ($iAccountID > 0)
 									{
-										$iMSAID = $obj_mPoint->saveMerchantSubAccount( $iAccountID,
-																					  (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$k]["psp-id"],
-																					  trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$k]->name),
-																					  (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$k]["id"]);
-										// Error: Break out of loop
-										if ($iMSAID < 0) { throw new mConsoleSaveMerchantSubAccountFailedException("Error during save payment service provider: ". $iMSAID ." for account: ". $iAccountID); }
+										//Disable all Merchant Sub Account.
+										$bDisableMSA = $obj_mPoint->disableMerchantSubAccounts($iAccountID);
+	
+										if($bDisableMSA === false) { throw new mConsoleDisableMerchantSubAccountFailedException("Error during disable payment service providers for account: ". $iAccountID); }
+										
+										for ($k=0; $k<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}); $k++)
+										{
+											$iMSAID = $obj_mPoint->saveMerchantSubAccount( $iAccountID,
+																						  (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$k]["psp-id"],
+																						  trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$k]->name),
+																						  (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$k]["id"]);
+											// Error: Break out of loop
+											if ($iMSAID < 0) { throw new mConsoleSaveMerchantSubAccountFailedException("Error during save payment service provider: ". $iMSAID ." for account: ". $iAccountID); }
+										}
 									}
+									// Error: Break out of loop
+									else { throw new mConsoleSaveAccountFailedException("Error during Save Account: ". $iAccountID ." for client: ". $iClientID); }							
+								
 								}
-								// Error: Break out of loop
-								else { throw new mConsoleSaveAccountFailedException("Error during Save Account: ". $iAccountID ." for client: ". $iClientID); }							
-							
 							}
 							
 							//Disable Merchant Accounts
@@ -276,84 +279,97 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								if ($iMAID < 0) { throw new mConsoleSaveMerchantAccountFailedException("Error during save payment service provider: ". $iMAID ." for client: ". $iClientID); }
 							}
 
-							//Disable all card access to the client
-							$bDisableCardAccess = $obj_mPoint->disableAllCardAccess($iClientID);
-							
-							if($bDisableCardAccess === false) { throw new mConsoleDisableCardAccessFailedException("Error during disable all card access for client: ". $iClientID); }
-							
-							//Save the data in Client table for all the card related data.
-							$isClientCardError = $obj_mPoint->saveClientCardData( $iClientID, 
-																				(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}["store-card"], 
-																				(integer) General::xml2bool($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}["show-all-cards"]),
-																				(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}["max-stored-cards"]);
-																				
-							if ($isClientCardError == true)
+							if (count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}) == 1 )
 							{
-								for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}); $j++)											
+								//Disable all card access to the client
+								$bDisableCardAccess = $obj_mPoint->disableAllCardAccess($iClientID);
+								
+								if($bDisableCardAccess === false) { throw new mConsoleDisableCardAccessFailedException("Error during disable all card access for client: ". $iClientID); }
+								
+								//Save the data in Client table for all the card related data.
+								$isClientCardError = $obj_mPoint->saveClientCardData( $iClientID, 
+																					(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}["store-card"], 
+																					(integer) General::xml2bool($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}["show-all-cards"]),
+																					(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}["max-stored-cards"]);
+																					
+								if ($isClientCardError == true)
 								{
-									//Save card access data.
-									$iPMID = $obj_mPoint->saveStaticRoute($iClientID,
-																		 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["type-id"],
-																		 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["psp-id"],
-																		 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["state-id"],
-																		 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["country-id"],
-																		 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["id"]);
+									for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}); $j++)											
+									{
+										//Save card access data.
+										$iPMID = $obj_mPoint->saveStaticRoute($iClientID,
+																			 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["type-id"],
+																			 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["psp-id"],
+																			 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["state-id"],
+																			 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["country-id"],
+																			 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["id"]);
+										// Error: Break out of loop
+										if ($iPMID < 0) { throw new mConsoleSaveCardAccessFailedException("Error during save card access: ". $iPMID ." for client: ". $iClientID); }
+									}
+								}
+							}							
+							
+							if (count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->keyword ) == 1 )
+							{
+								//Disable all keywords.
+								$bDisableKeyword = $obj_mPoint->disableKeyword($iClientID);
+								
+								if($bDisableKeyword === false) { throw new mConsoleDisableKeywordFailedException("Error during save payment service provider: ". $iMSAID ." for account: ". $iAccountID); }
+								
+								$iKeyID = $obj_mPoint->saveKeyword(																
+																	$iClientID, 
+																	trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->keyword),
+																	(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->keyword["id"]
+																	);
+																	
+								// Error: Break out of loop
+								if ($iKeyID < 0) { throw new mConsoleSaveKeywordFailedException("Error during save keywords: ". $iKeyID ." for client: ". $iClientID); }
+							}
+							
+							if (count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->urls ) == 1 )
+							{
+										
+								//Disable Client URLs
+								$bDisabeURLs = $obj_mPoint->disableURLs($iClientID);
+								
+								if($bDisableKeyword === false) { throw new mConsoleDisableKeywordFailedException("Error during disable keyword for client: ". $iClientID ); }
+															
+								//Save Client URL data.
+								for ($j = 0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->urls->url); $j++)
+								{
+							
+									$iURLID = $obj_mPoint->saveURL(														
+																	$iClientID,
+																	(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->urls->url[$j]["type-id"],
+																	trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->urls->url[$j]),
+																	(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->urls->url[$j]["id"]
+																	);
 									// Error: Break out of loop
-									if ($iPMID < 0) { throw new mConsoleSaveCardAccessFailedException("Error during save card access: ". $iPMID ." for client: ". $iClientID); }
+									if ($iURLID < 0) { throw new mConsoleSaveURLFailedException("Error during save URL: ". $iURLID ." for client: ". $iClientID); }
 								}
 							}
 							
-							//Disable all keywords.
-							$bDisableKeyword = $obj_mPoint->disableKeyword($iClientID);
+							if (count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'issuer-identification-number-ranges'} ) == 1 )
+							{								
+								//Disable IIN Ranges for the Client.							
+								$bDisableIIN = $obj_mPoint->disableIINRanges($iClientID);
+								
+								if($bDisableIIN === false) { throw new mConsoleDisableIINRangeFailedException("Error during disable IIN range for client: ". $iClientID ); }
+								
+								//Save Client IIN range data.
+								for ($j = 0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}); $j++)
+								{
 							
-							if($bDisableKeyword === false) { throw new mConsoleDisableKeywordFailedException("Error during save payment service provider: ". $iMSAID ." for account: ". $iAccountID); }
-							
-							$iKeyID = $obj_mPoint->saveKeyword(																
-																$iClientID, 
-																trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->keyword),
-																(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->keyword["id"]
-																);
-																
-							// Error: Break out of loop
-							if ($iKeyID < 0) { throw new mConsoleSaveKeywordFailedException("Error during save keywords: ". $iKeyID ." for client: ". $iClientID); }
-									
-							//Disable Client URLs
-							$bDisabeURLs = $obj_mPoint->disableURLs($iClientID);
-							
-							if($bDisableKeyword === false) { throw new mConsoleDisableKeywordFailedException("Error during disable keyword for client: ". $iClientID ); }
-														
-							//Save Client URL data.
-							for ($j = 0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->urls->url); $j++)
-							{
-						
-								$iURLID = $obj_mPoint->saveURL(														
-																$iClientID,
-																(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->urls->url[$j]["type-id"],
-																trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->urls->url[$j]),
-																(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->urls->url[$j]["id"]
-																);
-								// Error: Break out of loop
-								if ($iURLID < 0) { throw new mConsoleSaveURLFailedException("Error during save URL: ". $iURLID ." for client: ". $iClientID); }
-							}
-							
-							//Disable IIN Ranges for the Client.							
-							$bDisableIIN = $obj_mPoint->disableIINRanges($iClientID);
-							
-							if($bDisableIIN === false) { throw new mConsoleDisableIINRangeFailedException("Error during disable IIN range for client: ". $iClientID ); }
-							
-							//Save Client IIN range data.
-							for ($j = 0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}); $j++)
-							{
-						
-								$iIINRangeID = $obj_mPoint->saveIINRange(																			
-																		$iClientID,
-																		(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}[$j]["action-id"],
-																		(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}[$j]->min,
-																		(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}[$j]->max,
-																		(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}[$j]["id"]
-																		);
-								// Error: Break out of loop
-								if ($iURLID < 0) { throw new mConsoleSaveIINRangeFailedException("Error during save IIN Range: ". $iIINRangeID ." for client: ". $iClientID); }
+									$iIINRangeID = $obj_mPoint->saveIINRange(																			
+																			$iClientID,
+																			(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}[$j]["action-id"],
+																			(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}[$j]->min,
+																			(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}[$j]->max,
+																			(integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}[$j]["id"]
+																			);
+									// Error: Break out of loop
+									if ($iURLID < 0) { throw new mConsoleSaveIINRangeFailedException("Error during save IIN Range: ". $iIINRangeID ." for client: ". $iClientID); }
+								}
 							}
 
 							//If all Success then commit the DB transaction.
