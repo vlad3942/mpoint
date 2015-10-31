@@ -62,6 +62,8 @@ if (function_exists("json_encode") === true && function_exists("curl_init") === 
 require_once(sCLASS_PATH ."/adyen.php");
 // Require specific Business logic for the Apple Pay component
 require_once(sCLASS_PATH ."/applepay.php");
+// Require specific Business logic for the Master Pass component
+require_once(sCLASS_PATH ."/masterpass.php");
 
 ignore_user_abort(true);
 set_time_limit(120);
