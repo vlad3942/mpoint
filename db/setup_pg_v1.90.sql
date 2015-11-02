@@ -185,15 +185,17 @@ INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 15, 4
 /* ========== CONFIGURE DEMO ACCOUNT FOR APPLE PAY END ====== */
 
 /* ========== CONFIGURE CARD MASTER PASS START ========== */
-INSERT INTO System.Card_Tbl (id, name, position, logo) VALUES (22, 'Master Pass', 15, NULL);
+INSERT INTO System.Card_Tbl (id, name, position, logo) VALUES (23, 'Master Pass', 15, NULL);
 /*Adding the dummy card prefix entry for VISA checkout as a card*/
-INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 22, id FROM System.PricePoint_Tbl WHERE amount = -1;
-INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (22, 0, 0);
+INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 23, id FROM System.PricePoint_Tbl WHERE amount = -1;
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (23, 0, 0);
 /* ========== CONFIGURE CARD MASTER PASS END ========== */
 
 /* ========== CONFIGURE MASTER PASS START ========== */
 /*START: Adding PSP entries to the PSP_Tbl table for VISA Checkout*/
 INSERT INTO System.PSP_Tbl (id, name) VALUES (15, 'Master Pass');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) 
+SELECT id, 15, currency FROM System.Country_Tbl;
 /*END: Adding PSP entries to the PSP_Tbl table for VISA Checkout*/
 
 /*START: Adding PSP to Card mapping to the PSPCard_Tbl table for VISA Checkout*/
@@ -215,15 +217,16 @@ INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 9 FROM System.Card_Tbl
 
 /* ========== CONFIGURE DEMO ACCOUNT FOR MASTER PASS START ========== */
 -- VISA Checkout
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 15, '2X5JJ0751LFJG3EMYRMS13h-QPSi0pUet0c2zoXupm10tRL28', '2X5JJ0751LFJG3EMYRMS13h-QPSi0pUet0c2zoXupm10tRL28', '5PH9i3cNJ8ZmFK0B-xuSsMzq{8uSkO$o#GZPA+M}');
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 15, 'nastar', 'nastar', 'oisJona1');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 15, '-1');
 -- Adding Static Route entries for the client EK and cards with PSP as follows
 -- CPG
-INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 22, 9);
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 23, 9);
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 1, 9);
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 4, 9);
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 6, 9);
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 7, 9);
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 8, 9);
-INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 22, 15);
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 22, 9);
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 23, 15);
 /* ========== CONFIGURE DEMO ACCOUNT FOR MASTER PASS START ========== */

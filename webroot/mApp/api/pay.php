@@ -152,6 +152,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							case (Constants::iVISA_CHECKOUT_WALLET):	// 3rd Party Wallet: VISA Checkout
 								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
 								break;
+							case (Constants::iMASTER_PASS_WALLET):	// 3rd Party Wallet: Master Pass
+								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iMASTER_PASS_PSP);
+								break;
 							default:	// Standard Payment Service Provider
 								// Find Configuration for Payment Service Provider
 								$obj_XML = simpledom_load_string($obj_mPoint->getCards( (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount) );
@@ -321,6 +324,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											$xml .= trim($obj_Elem->asXML() );
 										}
 										break;
+									case (Constants::iMASTER_PASS_PSP):
+										$obj_PSP = new MasterPass($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["masterpass"]);
+										
+										$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), false);
+										
+										foreach ($obj_XML->children() as $obj_Elem)
+										{
+											$xml .= trim($obj_Elem->asXML() );
+										}
+										break;
+										
 									case (Constants::iAPPLE_PAY_PSP):
 										$xml .= '<url method="app" />';
 										break;

@@ -304,6 +304,20 @@ $aHTTP_CONN_INFO["apple-pay"]["paths"]["initialize"] = "/mpoint/apple-pay/initia
 $aHTTP_CONN_INFO["apple-pay"]["paths"]["get-payment-data"] = "/mpoint/apple-pay/get-payment-data";
 
 /**
+ * Connection info for connecting to MasterPass
+ */
+$aHTTP_CONN_INFO["masterpass"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["masterpass"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["masterpass"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["masterpass"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["masterpass"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["masterpass"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["masterpass"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["masterpass"]["paths"]["initialize"] = "/mpoint/masterpass/initialize";
+$aHTTP_CONN_INFO["masterpass"]["paths"]["get-payment-data"] = "/mpoint/masterpass/get-payment-data";
+
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>
