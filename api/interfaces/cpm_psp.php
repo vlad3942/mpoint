@@ -417,7 +417,46 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		return $code;
 	}
-	
+
+	public function initCallback(PSPConfig $obj_PSPConfig, TxnInfo $obj_TxnInfo, $iStateID, $sStateName)
+	{
+		$code = 0;
+		$xml  = '<?xml version="1.0" encoding="UTF-8"?>';
+		$xml .= '<root>';
+		$xml .= '<callback>';
+		$xml .= $obj_PSPConfig->toXML();
+		$xml .= '	<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. $obj_TxnInfo->getOrderID() .'" external-id="'. $obj_TxnInfo->getExternalID() .'">';
+		$xml .= '		<card id="'. $obj_TxnInfo->getExternalID(). '" type-id="22" psp-id="'. $obj_TxnInfo->getPSPID() .'">';
+		$xml .= '       	<amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID(). '">'. $obj_TxnInfo->getAmount(). '</amount>';
+		$xml .= '		</card>';
+		$xml .= '	</transaction>';
+		$xml .= '	<status code="'. $iStateID .'">'. $sStateName .'</status>';
+		$xml .= '</callback>';
+		$xml .= '</root>';
+
+		try
+		{
+			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["callback"]);
+
+			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+			$obj_HTTP->connect();
+			$code = $obj_HTTP->send($this->constHTTPHeaders(), $xml);
+			$obj_HTTP->disConnect();
+
+			if ($code == 200)
+			{
+				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+				$code = $obj_XML->status["code"];
+			}
+			else { throw new mPointException("Redemption failed with PSP: ". $this->getPSPConfig()->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
+		}
+		catch (mPointException $e)
+		{
+			trigger_error("Redemption failed of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+		}
+		return $code;
+	}
+
 	private function _constTxnXML($actionAmount=null)
 	{
 		$obj_TxnInfo = $this->getTxnInfo();

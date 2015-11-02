@@ -76,11 +76,11 @@ class Authorize extends General
 	public function redeemVoucher($iVoucherID, $iAmount=-1)
 	{
 		// Serialize redeem operation by using the Database as a mutex
-		$this->getDBConn()->query("START TRANSACTION");
-		$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_VOUCHER_STATE, "");
+		//$this->getDBConn()->query("START TRANSACTION");
 
-		// Add pspid to transaction
-		$this->_updatePSPID($this->_obj_PSP->getPSPID(), $this->_obj_TxnInfo->getID() );
+		// Add pspid, extenalid to transaction info
+		$misc = array('psp-id'=>$this->_obj_PSP->getPSPID(), 'extid'=>$iVoucherID);
+		$this->_obj_TxnInfo = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->_obj_TxnInfo, $misc);
 
 		// If amount if not set by caller, assume full transaction amount
 		if ($iAmount <= 0) { $iAmount = $this->_obj_TxnInfo->getAmount(); }
@@ -91,19 +91,17 @@ class Authorize extends General
 			if ( ($this->_obj_PSP instanceof Redeemable) === true) { $code = $this->_obj_PSP->redeem($iAmount); }
 			else { throw new BadMethodCallException("Redeem not supported by PSP: ". get_class($this->_obj_PSP) ); }
 
+			if ($this->_obj_PSP instanceof CPMPSP) { $this->_obj_PSP->initCallback($this->_obj_PSP->getPSPConfig(), $this->_obj_TxnInfo, Constants::iPAYMENT_WITH_VOUCHER_STATE, "Payment authorized using Voucher"); }
+
 			// Release mutex
-			$this->getDBConn()->query("COMMIT");
+			//$this->getDBConn()->query("COMMIT");
 
-			// Perform fake callback to callback controller
-			//TODO
-			//$this->_obj_PSP->initCallback(Constants::iPAYMENT_WITH_VOUCHER_STATE, array("transact"=>))
-
-			return $code = 200 ? 2000 : $code;
+			return $code = 200 ? 2007 : $code;
 		}
 		catch (Exception $e)
 		{
 			// Release mutex
-			$this->getDBConn()->query("ROLLBACK");
+			//$this->getDBConn()->query("ROLLBACK");
 			throw $e;
 		}
 	}

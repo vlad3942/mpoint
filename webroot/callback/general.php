@@ -27,6 +27,8 @@ require_once(sINTERFACE_PATH ."/cpm_psp.php");
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 // Require specific Business logic for the Adyen component
 require_once(sCLASS_PATH ."/adyen.php");
+// Require specific Business logic for the DSB PSP component
+require_once(sCLASS_PATH ."/dsb.php");
 
 /**
  * Input XML format
@@ -78,7 +80,7 @@ try
 	$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 	
 	$iStateID = (integer) $obj_XML->callback->status["code"];
-	
+
 	// Save Ticket ID representing the End-User's stored Card Info
 	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_mPoint->getMessageData($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, false) ) == 1)
 	{
@@ -117,7 +119,7 @@ try
 		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
 	}
 	$fee = 0;
-	$obj_mPoint->completeTransaction( (integer) $obj_XML->callback->{'psp-config'}["psp-id"],
+	$obj_mPoint->completeTransaction( (integer) $obj_XML->callback->{'psp-config'}["id"],
 									  $obj_XML->callback->transaction["external-id"],
 									  (integer) $obj_XML->callback->transaction->card["type-id"],
 									  $iStateID,

@@ -7,7 +7,7 @@
 
 require_once __DIR__. '/authorizeAPITest.php';
 
-class DIBSAuthorizeVoucherAPITest extends mPointBaseAPITest
+class DSBAuthorizeVoucherAPITest extends mPointBaseAPITest
 {
 	protected $_aMPOINT_CONN_INFO;
 
@@ -71,17 +71,26 @@ class DIBSAuthorizeVoucherAPITest extends mPointBaseAPITest
 		$this->assertEquals(200, $iStatus);
 		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Payment authorized using Voucher</status></root>', $sReplyBody);
 
-				$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
+		$res =  $this->queryDB("SELECT t.extid, t.pspid, t.amount, m.stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE m.txnid = t.id AND t.id = 1001001 ORDER BY m.id ASC");
 		$this->assertTrue(is_resource($res) );
 
 		$aStates = array();
+		$trow = null;
 		while ($row = pg_fetch_assoc($res) )
 		{
+			$trow = $row;
 			$aStates[] = $row["stateid"];
 		}
 
-		$this->assertEquals(1, count($aStates) );
+		$this->assertEquals(61775, $trow["extid"]);
+		$this->assertEquals($pspID, $trow["pspid"]);
+		$this->assertEquals(5000, $trow["amount"]);
+
+		$this->assertEquals(4, count($aStates) );
 		$this->assertEquals(2007, $aStates[0]);
+		$this->assertEquals(1991, $aStates[1]);
+		$this->assertEquals(1992, $aStates[2]);
+		$this->assertEquals(1990, $aStates[3]);
 	}
 
 
