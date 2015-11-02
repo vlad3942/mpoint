@@ -23,7 +23,7 @@ class CallbackException extends mPointException { }
  * and sends out an SMS Receipt to the Customer.
  *
  */
-class Callback extends EndUserAccount
+abstract class Callback extends EndUserAccount
 {
 	/**
 	 * Data object with the Transaction Information
@@ -568,9 +568,11 @@ class Callback extends EndUserAccount
 	}
 
 
-	public static function producePSP(RDB $obj_DB, TranslateText $obj_Txt, TxnInfo $obj_TxnInfo, array $aConnInfo)
+	public static function producePSP(RDB $obj_DB, TranslateText $obj_Txt, TxnInfo $obj_TxnInfo, array $aConnInfo, $iPSPID=-1)
 	{
-		switch ($obj_TxnInfo->getPSPID() )
+		if ($iPSPID < 0) { $iPSPID = $obj_TxnInfo->getPSPID(); }
+
+		switch ($iPSPID)
 		{
 		case (Constants::iDIBS_PSP):
 			return new DIBS($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dibs"]);
@@ -584,9 +586,13 @@ class Callback extends EndUserAccount
 			return new MobilePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mobilepay"]);
 		case (Constants::iADYEN_PSP):
 				return new Adyen($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["adyen"]);
+		case (Constants::iDSB_PSP):
+			return new DSB($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dsb"]);
 		default:
-			throw new CallbackException("Unkown Payment Service Provider", 1001);
+			throw new CallbackException("Unkown Payment Service Provider: ". $iPSPID, 1001);
 		}
 	}
+
+	public abstract function getPSPID();
 }
 ?>

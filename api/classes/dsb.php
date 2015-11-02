@@ -21,4 +21,6 @@ class DSB extends CPMPSP
 	public function initialize(PSPConfig $obj_PSP) { /* no operation */ }
 
 	public function auth($ticket, $apiKey, $cardID, $storecard)  { /* no operation */ }
+
+	public function getPSPID() { return Constants::iDSB_PSP; }
 }

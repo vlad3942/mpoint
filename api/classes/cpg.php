@@ -570,7 +570,7 @@ class CPG extends Callback
 		case (313):	// Congo
 			return "CG";
 			break;
-		case (314):	// Côte d'Ivoire
+		case (314):	// Cï¿½te d'Ivoire
 			return "CI";
 			break;
 		case (315):	// Democratic Republic of the Congo
@@ -1043,5 +1043,7 @@ class CPG extends Callback
 			break;
 		}
 	}
+
+	public function getPSPID() { return Constants::iCPG_PSP; }
 }
 ?>

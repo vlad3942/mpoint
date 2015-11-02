@@ -57,6 +57,11 @@ $aHTTP_CONN_INFO["netaxept"]["path"] = "/_test/simulators/netaxept/netaxept.php?
 $aHTTP_CONN_INFO["netaxept"]["method"] = "POST";
 $aHTTP_CONN_INFO["netaxept"]["contenttype"] = "application/x-www-form-urlencoded";
 
+$aHTTP_CONN_INFO["dsb"]["protocol"] = "http";
+$aHTTP_CONN_INFO["dsb"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["dsb"]["port"] = 80;
+$aHTTP_CONN_INFO["dsb"]["paths"]["redeem"] = "/_test/simulators/dsb/redeem.php";
+
 $aCPM_CONN_INFO = $aMPOINT_CONN_INFO;
 $aCPM_CONN_INFO["contenttype"] = "application/x-www-form-urlencoded";
 

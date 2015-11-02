@@ -85,7 +85,8 @@
 					<xs:sequence>
 						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
 							<xs:complexType>
-								<xs:all>
+								<xs:choice>
+									<xs:element name="voucher" type="voucher" minOccurs="0" maxOccurs="1" />
 									<xs:element name="card" minOccurs="1" maxOccurs="1">
 										<xs:complexType>
 											<xs:all>
@@ -113,7 +114,7 @@
 															<xs:length value="5" />
 														</xs:restriction>
 													</xs:simpleType>
-												</xs:element> 
+												</xs:element>
 												<xs:element name="card-holder-name" type="xs:string" minOccurs="0" maxOccurs="1" />
 												<xs:element name="cryptogram" minOccurs="0" maxOccurs="1">
 													<xs:complexType>
@@ -138,7 +139,7 @@
 											<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
 										</xs:complexType>
 									</xs:element>
-								</xs:all>
+								</xs:choice>
 								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="1009" />
 							</xs:complexType>
@@ -566,6 +567,11 @@
 		</xs:element>
 	</xs:sequence>
 	<xs:attribute name="country-id" type="countryid" use="required" />
+</xs:complexType>
+
+<xs:complexType name="voucher">
+	<xs:attribute name="id" type="xs:positiveInteger" use="required" />
+	<xs:attribute name="psp-id" type="xs:positiveInteger" use="required" />
 </xs:complexType>
 
 <xs:group name="passwords">
