@@ -439,7 +439,42 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		
 		return $obj_HTTP->getReplyBody();
-	}	
+	}
+
+	/**
+	 * Function used to make a callback to the wallet instance for updating it with the transaction status.
+	 * 
+	 * @param PSPConfig $obj_PSPConfig		The configuration for the Wallet which the payment data should be retrieved from
+	 * @param SimpleXMLElement $obj_Card	Details for the token that should be used to retrieve the payment data from the 3rd Party Wallet.
+	 * @return string
+	 */
+	public function callback(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card)
+	{
+		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML() );
+		unset ($obj_XML->password);
+		unset ($obj_XML->{'payment-service-providers'});
+		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<root>';
+		$b .= '<callback>';
+		$b .= $obj_PSPConfig->toXML();
+		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
+		$b .= str_replace("</transaction>", str_replace('<?xml version="1.0"?>', '', $obj_Card->asXML() ). "</transaction>", $this->_constTxnXML() );
+		$b .= '</callback>';
+		$b .= '</root>';
+		
+		$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["callback"]);
+
+		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+		$obj_HTTP->connect();
+		$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+		$obj_HTTP->disConnect();			
+		if ($code != 200)
+		{
+			trigger_error("Callback failed to ". $obj_PSPConfig->getName() ." for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $code ." and body: ". $obj_HTTP->getReplyBody(), E_USER_WARNING);
+		}
+		
+		return $code;
+	}
 	
 	
 	/**
