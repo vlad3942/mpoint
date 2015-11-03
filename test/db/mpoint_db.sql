@@ -6820,6 +6820,9 @@ ALTER TABLE EndUser.Card_Tbl ADD COLUMN chargetypeid INT4 DEFAULT 0;
 CREATE INDEX Transaction_Created_Idx ON Log.Transaction_Tbl (created);
 
 
+-- SETUP v1.88 --
+INSERT INTO Client.InfoType_Tbl (id, name, note) VALUES (1, 'PSP Message', 'A message which is shown during payment through a specific Payment Service Provider');
+
 -- SETUP v1.89 --
 
 /* ========== CONFIGURE DSB PSP AND VOUCHER PAYMENT ========= */

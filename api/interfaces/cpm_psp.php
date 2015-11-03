@@ -3,9 +3,9 @@
 abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiadable, Redeemable
 {
 
-    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo)
+    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $obj_PSPConfig=null)
     {
-        parent::__construct($oDB, $oTxt, $oTI, $aConnInfo);
+        parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig);
     }
 
 	public function notifyClient($iStateId, array $vars) { parent::notifyClient($iStateId, $vars["transact"], $vars["amount"], $vars["card-id"]); }
