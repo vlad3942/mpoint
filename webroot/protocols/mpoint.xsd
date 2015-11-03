@@ -571,7 +571,7 @@
 
 <xs:complexType name="voucher">
 	<xs:attribute name="id" type="xs:positiveInteger" use="required" />
-	<xs:attribute name="psp-id" type="xs:positiveInteger" use="required" />
+	<xs:attribute name="order-no" type="xs:string" use="required" />
 </xs:complexType>
 
 <xs:group name="passwords">

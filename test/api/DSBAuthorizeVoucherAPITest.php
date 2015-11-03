@@ -31,7 +31,7 @@ class DSBAuthorizeVoucherAPITest extends mPointBaseAPITest
 		$xml .= '<root>';
 		$xml .= '<authorize-payment client-id="'. $client .'" account="'. $account .'">';
 		$xml .= '<transaction id="'. $txn .'">';
-		$xml .= '<voucher id="61775" psp-id="15" />';
+		$xml .= '<voucher id="61775" order-no="800-123456" />';
 		$xml .= '</transaction>';
 		$xml .= '<client-info platform="iOS" version="1.00" language="da">';
 		$xml .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
