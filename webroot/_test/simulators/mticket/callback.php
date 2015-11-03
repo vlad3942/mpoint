@@ -7,9 +7,6 @@ switch (@$_REQUEST["status"])
 case Constants::iPAYMENT_ACCEPTED_STATE:
 	$aRequiredArguments = array('status', 'amount', 'mpoint-id', 'pspid', 'card-id', 'language');
 	break;
-case Constants::iPAYMENT_WITH_VOUCHER_STATE:
-	$aRequiredArguments = array('status', 'mpoint-id', 'language');
-	break;
 case Constants::iPAYMENT_CAPTURED_STATE:
 	$aRequiredArguments = array('status', 'amount', 'mpoint-id', 'pspid', 'language', 'fee');
 	break;
@@ -19,6 +16,9 @@ case Constants::iPAYMENT_REFUNDED_STATE:
 case Constants::iPAYMENT_CANCELLED_STATE:
 case Constants::iPAYMENT_DECLINED_STATE:
 	$aRequiredArguments = array('status', 'mpoint-id', 'pspid', 'language');
+	break;
+case Constants::iPAYMENT_REJECTED_STATE:
+	$aRequiredArguments = array('status', 'mpoint-id', 'language');
 	break;
 default:
 	$sMsg = "mTicket callback, Unknown payment state: ". @$_REQUEST["status"];

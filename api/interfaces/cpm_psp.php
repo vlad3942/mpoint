@@ -381,7 +381,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$code = 0;
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
-		$b .= '<reedem client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
+		$b .= '<redeem client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
 		$b .= $this->getPSPConfig()->toXML();
 		$b .= $this->_constTxnXML();
 		$b .= '<voucher id="'. $iVoucherID .'">';
@@ -390,31 +390,20 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '</redeem>';
 		$b .= '</root>';
 
-		try
-		{
-			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["redeem"]);
+		$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["redeem"]);
 
-			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
-			$obj_HTTP->connect();
-			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
-			$obj_HTTP->disConnect();
-			if ($code == 200)
-			{
-				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
-				$code = $obj_XML->status["code"];
-				// save ext id in database
-				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-								SET pspid = ". $this->getPSPConfig()->getID() ."
-								WHERE id = ". $this->getTxnInfo()->getID();
-				//					echo $sql ."\n";
-				$this->getDBConn()->query($sql);
-			}
-			else { throw new mPointException("Redemption failed with PSP: ". $this->getPSPConfig()->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
-		}
-		catch (mPointException $e)
+		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+		$obj_HTTP->connect();
+		$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+		$obj_HTTP->disConnect();
+		if ($code == 200)
 		{
-			trigger_error("Redemption failed of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+			$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
+			if (isset($obj_XML->status["code"]) === true && strlen($obj_XML->status["code"]) > 0) { $code = $obj_XML->status["code"]; }
+			else { throw new mPointException("Invalid response from voucher issuer: ". $this->getPSPConfig()->getName() .", Body: ". $obj_HTTP->getReplyBody(), $code); }
 		}
+		else { throw new mPointException("Redemption failed with PSP: ". $this->getPSPConfig()->getName() .", Txn: ". $this->getTxnInfo()->getID() ."\n\n". $obj_HTTP->getReplyBody(), $code); }
+
 		return $code;
 	}
 
@@ -426,8 +415,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$xml .= '<callback>';
 		$xml .= $obj_PSPConfig->toXML();
 		$xml .= '	<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. $obj_TxnInfo->getOrderID() .'" external-id="'. $obj_TxnInfo->getExternalID() .'">';
+		$xml .= '     	<amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID(). '">'. $obj_TxnInfo->getAmount(). '</amount>';
 		$xml .= '		<card id="'. $obj_TxnInfo->getExternalID(). '" type-id="22" psp-id="'. $obj_TxnInfo->getPSPID() .'">';
-		$xml .= '       	<amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID(). '">'. $obj_TxnInfo->getAmount(). '</amount>';
 		$xml .= '		</card>';
 		$xml .= '	</transaction>';
 		$xml .= '	<status code="'. $iStateID .'">'. $sStateName .'</status>';
@@ -446,13 +435,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			if ($code == 200)
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
-				$code = $obj_XML->status["code"];
+				if (isset($obj_XML->status["code"]) === true && strlen($obj_XML->status["code"]) > 0) { $code = $obj_XML->status["code"]; }
+				else { throw new mPointException("Invalid response from callback controller: ". $this->getPSPConfig()->getName() .", Body: ". $obj_HTTP->getReplyBody(), $code); }
 			}
-			else { throw new mPointException("Redemption failed with PSP: ". $this->getPSPConfig()->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
+			else { throw new mPointException("Callback to mPoint callback controller: ". $this->getPSPConfig()->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 		}
 		catch (mPointException $e)
 		{
-			trigger_error("Redemption failed of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+			trigger_error("Callback to mPoint for txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
 		}
 		return $code;
 	}
