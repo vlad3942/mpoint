@@ -1,5 +1,8 @@
 /* ========== CONFIGURE URL TYPE FOR THE MOBILE ENTERPRISE SERVICE BUS START ========== */
 INSERT INTO System_Ownr.URLType_Tbl (id, name) VALUES (4, 'Mobile Enterprise Service Bus');
+
+-- Mobile Enterprise Service Bus
+INSERT INTO Client_Ownr.URL_Tbl (urltypeid, clientid, url) SELECT 4, id, 'http://localhost:9000/' FROM Client_Ownr.Client_Tbl;
 /* ========== CONFIGURE URL TYPE FOR THE MOBILE ENTERPRISE SERVICE BUS START ========== */
 
 /* ========== CONFIGURE CARD DISCOVER START ========== */
@@ -100,8 +103,6 @@ INSERT INTO System_Ownr.PSPCard_Tbl (pspid, cardid) VALUES (13, 16);
 INSERT INTO Client_Ownr.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 13, '2X5JJ0751LFJG3EMYRMS13h-QPSi0pUet0c2zoXupm10tRL28', '2X5JJ0751LFJG3EMYRMS13h-QPSi0pUet0c2zoXupm10tRL28', '5PH9i3cNJ8ZmFK0B-xuSsMzq{8uSkO$o#GZPA+M}');
 INSERT INTO Client_Ownr.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100010, 13, '-1');
 INSERT INTO Client_Ownr.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 16, 9);
--- Mobile Enterprise Service Bus
-INSERT INTO Client_Ownr.URL_Tbl (urltypeid, clientid, url) VALUES (4, 10001, 'http://localhost:9000/');
 /* ========== CONFIGURE IBE ACCOUNT FOR VISA CHECKOUT END ====== */
 
 /* ========== CONFIGURE APPLE PAY START ========== */
