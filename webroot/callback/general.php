@@ -65,10 +65,11 @@ while ( ($_OBJ_DB instanceof RDB) === false && $i < 5)
 	$_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
 	$i++;
 }
-$obj_XML = simplexml_load_string($HTTP_RAW_POST_DATA);
+$obj_XML = simplexml_load_string(file_get_contents("php://input") );
 
 	
 $id = (integer)$obj_XML->callback->transaction["id"];
+$xml = '';
 
 try
 {
@@ -208,4 +209,3 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';
 echo $xml;
 echo '</root>';
-?>
