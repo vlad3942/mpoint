@@ -414,14 +414,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 * @param SimpleXMLElement $obj_Card	Details for the token that should be used to retrieve the payment data from the 3rd Party Wallet.
 	 * @return string
 	 */
-	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card)
+	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode = Constants::iPAYMENT_DATA_FULL)
 	{
 		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML() );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
-		$b .= '<get-payment-data>';
+		$b .= '<get-payment-data mode = "'. $mode .'" >';
 		$b .= $obj_PSPConfig->toXML();
 		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 		$b .= str_replace("</transaction>", str_replace('<?xml version="1.0"?>', '', $obj_Card->asXML() ). "</transaction>", $this->_constTxnXML() );
