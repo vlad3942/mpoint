@@ -540,6 +540,11 @@ abstract class Constants
 	 *
 	 */
 	const iUATP_CARD = 21;
+	/**
+	 * Unique Card ID for transaction's made using Discover
+	 *
+	 */
+	const iDISCOVER_CARD = 22;
 
 	/**
 	 * Unique Fee Type ID for Top-Ups
