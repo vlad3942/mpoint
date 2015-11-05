@@ -27,6 +27,10 @@ require_once(sINTERFACE_PATH ."/cpm_psp.php");
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 // Require specific Business logic for the Adyen component
 require_once(sCLASS_PATH ."/adyen.php");
+// Require specific Business logic for the VISA checkout component
+require_once(sCLASS_PATH ."/visacheckout.php");
+// Require specific Business logic for the Apple Pay component
+require_once(sCLASS_PATH ."/applepay.php");
 
 /**
  * Input XML format
@@ -116,7 +120,30 @@ try
 		// E-Mail has been provided for the transaction
 		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
 	}
-	$fee = 0;
+	
+	//request received from client appliction for notification ot the wallet instance.
+	if($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_mPoint->getMessageData($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, false) ) == 1 )
+	{
+		if(isset($obj_XML->callback->{'psp-config'}["psp-id"]) === false )
+		{
+			$obj_XML->callback->{'psp-config'}->addAttribute('psp-id', $obj_TxnInfo->getPSPID());
+		}
+		
+		switch (intval($obj_XML->callback->{'psp-config'}["psp-id"]) )
+		{
+		case (Constants::iAPPLE_PAY_PSP):			
+			$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iAPPLE_PAY_PSP);
+			break;
+		case (Constants::iVISA_CHECKOUT_PSP):					
+			$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
+			break;
+		default:	
+			break;
+		}
+		$obj_mPoint->callback($obj_PSPConfig, $obj_XML->callback->transaction->card );
+	}
+		
+	$fee = 0;	
 	$obj_mPoint->completeTransaction( (integer) $obj_XML->callback->{'psp-config'}["psp-id"],
 									  $obj_XML->callback->transaction["external-id"],
 									  (integer) $obj_XML->callback->transaction->card["type-id"],

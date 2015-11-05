@@ -405,7 +405,17 @@ abstract class Constants
 	 * Unique ID for the Payment Service Provider: Adyen
 	 *
 	 */
-	const iADYEN_PSP = 12;
+	const iADYEN_PSP = 12;	
+	/**
+	 * Unique ID for the Payment Service Provider: VISA Checkout
+	 *
+	 */
+	const iVISA_CHECKOUT_PSP = 13;
+	/**
+	 * Unique ID for the Payment Service Provider: Apple Pay
+	 *
+	 */
+	const iAPPLE_PAY_PSP = 14;
 
 	/**
 	 * Unique ID for the Electronic Payment Flow
@@ -501,10 +511,10 @@ abstract class Constants
 	 */
 	const iAPPLE_PAY = 15;
 	/**
-	 * Unique Card ID for transaction's made using VISA Checkout
+	 * Unique Card ID for transaction's made using the VISA Checkout Wallet
 	 *
 	 */
-	const iVISA_CHECKOUT = 16;
+	const iVISA_CHECKOUT_WALLET = 16;
 	/**
 	 * Unique Card ID for transaction's made using Danske Bank MobilePay
 	 *
