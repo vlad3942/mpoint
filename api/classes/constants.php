@@ -588,13 +588,12 @@ abstract class Constants
 	 * Value of the Payment Data retrieve call from the third party endpoint
 	 * To fetch the card details with out the PSP details
 	 */
-	const iPAYMENT_DATA_SUMMARY = 'SUMMARY';
+	const sPAYMENT_DATA_SUMMARY = "summary";
 	
 	/*
 	 * Value of the Payment Data retrieve call from the third party endpoint
 	 * To fetch the card details by passing the auth toke to the wallet instance.
 	 */
-	const iPAYMENT_DATA_FULL = 'FULL';
-	
+	const sPAYMENT_DATA_FULL = "full";
 }
 ?>
