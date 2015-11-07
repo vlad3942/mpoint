@@ -76,6 +76,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$xml = '';
 		for ($i=0; $i<count($obj_DOM->{'get-payment-summary'}); $i++)
 		{
+			// Set Global Defaults
+			if (empty($obj_DOM->{'get-payment-summary'}[$i]["account"]) === true || intval($obj_DOM->{'get-payment-summary'}[$i]["account"]) < 1) { $obj_DOM->{'get-payment-summary'}[$i]["account"] = -1; }
+			
 			// Validate basic information
 			$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'get-payment-summary'}[$i]["client-id"], (integer) $obj_DOM->{'get-payment-summary'}[$i]["account"]);
 			if ($code == 100)
@@ -106,7 +109,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							default:
 								break;
 							}
-							$obj_XML = simpledom_load_string($obj_Wallet->getPaymentData($obj_PSPConfig, $obj_DOM->{'get-payment-summary'}[$i]->transaction->card[$j], Constants::iPAYMENT_DATA_SUMMARY) );
+							$obj_XML = simpledom_load_string($obj_Wallet->getPaymentData($obj_PSPConfig, $obj_DOM->{'get-payment-summary'}[$i]->transaction->card[$j], Constants::sPAYMENT_DATA_SUMMARY) );
 							
 							if (count($obj_XML->{'payment-data'}) == 1)
 							{
