@@ -315,6 +315,7 @@ $aHTTP_CONN_INFO["masterpass"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["masterpass"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["masterpass"]["paths"]["initialize"] = "/mpoint/masterpass/initialize";
 $aHTTP_CONN_INFO["masterpass"]["paths"]["get-payment-data"] = "/mpoint/masterpass/get-payment-data";
+$aHTTP_CONN_INFO["masterpass"]["paths"]["callback"] = "/mpoint/masterpass/callback";
 
 
 /**

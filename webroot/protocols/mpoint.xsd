@@ -24,7 +24,11 @@
 										</xs:complexType>
 									</xs:element>
 									<xs:element name="callback-url" type="url" minOccurs="0" maxOccurs="1" />
-									<xs:element name="accept-url" type="url" minOccurs="0" maxOccurs="1" />
+									<xs:element name="accept-url" type="url" minOccurs="0" maxOccurs="1">
+									<xs:annotation>
+						            	<xs:documentation>URL that is sent to the wallet API for redirecting the application after payment authorization.</xs:documentation>
+						            </xs:annotation>
+									</xs:element>
 									<xs:element name="auth-url" type="url" minOccurs="0" maxOccurs="1" />
 									<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
 									<xs:element name="custom-variables" minOccurs="0" maxOccurs="1">
@@ -101,6 +105,16 @@
 													</xs:simpleType>
 												</xs:element>
 												<xs:element name="token" type="xs:string" minOccurs="0" maxOccurs="1" />
+												<xs:element name="verifier" type="xs:string" minOccurs="0" maxOccurs="1">
+												<xs:annotation>
+						            				<xs:documentation>The OAuth verifier sent to the user application along with the access token.</xs:documentation>
+						            			</xs:annotation>
+												</xs:element>
+												<xs:element name="checkout-url" type="url" minOccurs="0" maxOccurs="1">
+												<xs:annotation>
+						            				<xs:documentation>The URL that contains the checkoutId for perofrming cheeckout operation with MasterPass.</xs:documentation>
+						            			</xs:annotation>
+												</xs:element>
 												<xs:element name="address" type="address" minOccurs="0" maxOccurs="1" />
 											</xs:all>
 											<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
