@@ -1,5 +1,5 @@
 <?php
-define("sAPI_CLASS_PATH", "C:/xampp/php5api/classes/");
+define("sAPI_CLASS_PATH", "/apps/php/php5api/classes/");
 
 require_once(sAPI_CLASS_PATH ."template.php");
 require_once(sAPI_CLASS_PATH ."http_client.php");
@@ -17,8 +17,8 @@ $aHTTP_CONN_INFO["mesb"]["timeout"] = 120;
 $aHTTP_CONN_INFO["mesb"]["path"] = "/mApp/api/pay.php";
 $aHTTP_CONN_INFO["mesb"]["method"] = "POST";
 $aHTTP_CONN_INFO["mesb"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["mesb"]["username"] = "CPMDemoWallet";
-$aHTTP_CONN_INFO["mesb"]["password"] = "DEMOisNO_2";
+$aHTTP_CONN_INFO["mesb"]["username"] = "IBE";
+$aHTTP_CONN_INFO["mesb"]["password"] = "kjsg5Ahf_1";
 
 $obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
 
@@ -67,11 +67,11 @@ try
 	?>
 	<html>
 	<head>
-	<!-- Visa Checkout JavaScript function -->
+	<!-- Master Pass JavaScript function -->
 	<?= $sHead; ?>
 	</head>
 	<body>
-	<!-- Visa Checkout button img tag -->
+	<!-- Master Pass button img tag -->
 	<?= $obj_XML->{'psp-info'}->body; ?>	
 	</body>
 	</html>
