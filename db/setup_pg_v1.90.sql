@@ -184,6 +184,10 @@ UPDATE Client.MerchantAccount_Tbl SET name = username WHERE pspid = 4 AND name !
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 15, 4);
 /* ========== CONFIGURE DEMO ACCOUNT FOR APPLE PAY END ====== */
 
+/* ========== ALTER TABLE FOR MERCHANT ACCOUNT TO HAVE PASSWORD OF 4000 CHARS START ====== */
+ALTER TABLE Client.MerchantAccount_Tbl ALTER COLUMN passwd TYPE character varying(4000);
+/* ========== ALTER TABLE FOR MERCHANT ACCOUNT TO HAVE PASSWORD OF 4000 CHARS END ====== */
+
 /* ========== CONFIGURE CARD MASTER PASS START ========== */
 INSERT INTO System.Card_Tbl (id, name, position, logo) VALUES (23, 'Master Pass', 15, NULL);
 /*Adding the dummy card prefix entry for VISA checkout as a card*/
