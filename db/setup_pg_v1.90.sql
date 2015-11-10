@@ -186,23 +186,24 @@ INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 15, 4
 
 /* ========== ALTER TABLE FOR MERCHANT ACCOUNT TO HAVE PASSWORD OF 4000 CHARS START ====== */
 ALTER TABLE Client.MerchantAccount_Tbl ALTER COLUMN passwd TYPE character varying(4000);
+ALTER TABLE Client.MerchantAccount_Tbl ALTER COLUMN name TYPE character varying(100);
 /* ========== ALTER TABLE FOR MERCHANT ACCOUNT TO HAVE PASSWORD OF 4000 CHARS END ====== */
 
 /* ========== CONFIGURE CARD MASTER PASS START ========== */
 INSERT INTO System.Card_Tbl (id, name, position, logo) VALUES (23, 'Master Pass', 15, NULL);
-/*Adding the dummy card prefix entry for VISA checkout as a card*/
+/*Adding the dummy card prefix entry for Master Pass as a card*/
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 23, id FROM System.PricePoint_Tbl WHERE amount = -1;
 INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (23, 0, 0);
 /* ========== CONFIGURE CARD MASTER PASS END ========== */
 
 /* ========== CONFIGURE MASTER PASS START ========== */
-/*START: Adding PSP entries to the PSP_Tbl table for VISA Checkout*/
+/*START: Adding PSP entries to the PSP_Tbl table for Master Pass*/
 INSERT INTO System.PSP_Tbl (id, name) VALUES (15, 'Master Pass');
 INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) 
 SELECT id, 15, currency FROM System.Country_Tbl;
-/*END: Adding PSP entries to the PSP_Tbl table for VISA Checkout*/
+/*END: Adding PSP entries to the PSP_Tbl table for Master Pass*/
 
-/*START: Adding PSP to Card mapping to the PSPCard_Tbl table for VISA Checkout*/
+/*START: Adding PSP to Card mapping to the PSPCard_Tbl table for Master Pass*/
 -- Master Pass as PSP.
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 15 FROM System.Card_Tbl WHERE name = 'American Express';
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 15 FROM System.Card_Tbl WHERE name = 'Master Card';
@@ -216,12 +217,12 @@ INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 15 FROM System.Card_Tb
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 9 FROM System.Card_Tbl WHERE name = 'Diners Club';
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 9 FROM System.Card_Tbl WHERE name = 'Maestro';
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 9 FROM System.Card_Tbl WHERE name = 'Master Pass';
-/*END: Adding PSP to Card mapping to the PSPCard_Tbl table for VISA Checkout*/
+/*END: Adding PSP to Card mapping to the PSPCard_Tbl table for Master Pass*/
 /* ========== CONFIGURE MASTER PASS END ========== */
 
 /* ========== CONFIGURE DEMO ACCOUNT FOR MASTER PASS START ========== */
--- VISA Checkout
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 15, 'nastar', 'nastar', 'oisJona1');
+-- Master Pass
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 15, '5nDAPA3Him5BSzTSiTXB_haqCmuz12pwsHLhfpyq127930aa!4251484361307a2f586b515a537530577858615862413d3d', 'a466w4vhngfxpigdto1c71ighwulcy1e7t', 'MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC3784sCmD/iULkI+H8Fy5E//2xRY7Yhbn6VR2auvfCSjrC/EcfGs00jOkQjQWLIzmbh6MMeVPBhLRbA4xiWzfLNhXetqQmkjN33jSXi6nxGp7xCKiZp97qNmCJHqUqZ8euKdZ/5DK5a4F28s/me8bfBWeaZbuEcFr/t+3QE5F1GgxcpJVJ/ME1aOl0G6CLDH02Two8+W6TxqBp/oxnvK/EKj7CTjgM9K/sOk/JM8hiuhy4ThneGnPnWOEmccAS0EZBoxR0qxZXDYLabEtP2eTD5o+IR/widAAoCaRQ3yVciZcbiXbBk0ErB95c55JAruD67ODv6B0Of6xkXhpHsUC1AgMBAAECggEATFwChGf+orcSDPIUk/nvnHeFkz1kMuE5NwJ02tJ5nrAAOwhOYkxXGlTRQKy6u2txM+8YMkqACduUoCAV/JMP043tgFrkRJr3QPD/dlZlw5EgoMHOdJOrSCIw61vMh5Ez5Uq7ILbUlANcaMweoPmLsvRkcUWAlleqf3SVBofJIApu5kNJDMgT/Lg0AhTcUaEq8RlAbhXOexrloTpKCuI82s9dr9gWhpg9TfM6+P9z6bonMhi+0og6gRn/cTEkY5eWNZaHqAQVdGQ+0xq1fJe82EvHR4kBIh0FrKPOqn6QumuSj91hrKU4G4ssQ7M4jVA/MAzngMRa66dW5O453qbUNQKBgQDkSMvDvmtEe/fSwi3/MZ1WnoY7lWFAs1q3jUhLlSawwDTaliKTYjItSFBWq2Yix03qlf7Eqhbjj+4e0Za2AxANE+2Kaq7XsTj7L/wZA6ZosCJoOEbvhX+LuP6rpWVM46TfnlDGEk4+15hfKA/ZCowr8TSvkEc4wcqqNniPyGowWwKBgQDORKkvfMj3hKm3ddw4HrvvXfF/Z/Ah5j4Ko/lu8hEjgSNtMbIldKiFzM+z9KIoYsmEt6yi+ms56d5lEtzGSdz67LikWg+wfKhhF/U/mYGT/tV/vRMUqDAtjATj2oBuFyClIJ1/Loz+LbrK0jMweEj/nRZ4IojyrVHba26/+yUgLwKBgA3PraxJD/pTubmhj+DZophD/QEL15dvgnSKcq5H9tBIwKnc3XinPzvoHRwxQHuoLTmdG43QcJQR+CkbKxAV/VmdNAjkzXE1QqpHy+vDgcThqyM9DGWfYQkWByphVlChkS8KR/7DysIYjxpqtRK/hZ1++V4Jz5VKfDVyGDcyu+HzAoGAaR2IcpDPAYRz0PCZN2hCMevYBCt9rmjdOSLzHFzz6voGicEHnhrjPrxvJLAIazhcpevMaInhVvQdx7hjFhHSMXWtauQSlsgQLtq8upqJ9FeriZtbO+2yD6QJYeyaAoB6vGvwlz2r0GSRioawW4UQ/mKZbsN6suEsk/sdx2w/MTUCgYEAvzC15f1K/zoOJvJMYRaKl1mUKDkfht4yjGrNOJrnrTmDByZAviiM/2C41R6M+VgN+/H1CpXgzzc88XL3F5uXpiJmqv7PqVRrdfZ5c91bioBetHJ3qbYrE75frLtxPsA5rfF63pjCVebAg1vz30sdg/FOoxL+IdRlbXDswmMMyTM=');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 15, '-1');
 -- Adding Static Route entries for the client EK and cards with PSP as follows
 -- CPG
