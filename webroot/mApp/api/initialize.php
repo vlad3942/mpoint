@@ -112,6 +112,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						else { $data['ip'] = $_SERVER['REMOTE_ADDR']; }
 						$data['logo-url'] = "";
 						$data['css-url'] = "";
+						/*
+						 *  Added capability to accept the transaction specific accept URL.
+						 *  Used by Master Pass wallet for sending a callback along with the checkout URL for getting user's card details
+						 * */
 						if (count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'accept-url'}) == 1)
 						{
 							$data['accept-url'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->{'accept-url'};
