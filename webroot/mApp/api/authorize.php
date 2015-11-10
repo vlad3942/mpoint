@@ -499,8 +499,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 									$code = $obj_Authorize->redeemVoucher(intval($voucher["id"]) );
 									if ($code == 1000) { $xml .= '<status code="100">Payment authorized using Voucher</status>'; }
-									else if ($code == 43) { $xml .= '<status code="43">Insufficient balance on voucher</status>'; }
-									else { $xml .= '<status code="92">Payment rejected by voucher issuer</status>'; }
+									else if ($code == 43)
+									{
+										header("HTTP/1.1 402 Payment Required");
+										$xml .= '<status code="43">Insufficient balance on voucher</status>';
+									}
+									else
+									{
+										header("HTTP/1.1 502 Bad Gateway");
+										$xml .= '<status code="92">Payment rejected by voucher issuer</status>';
+									}
 								}
 								else
 								{
