@@ -138,15 +138,36 @@ class CPG extends Callback
 				$b .= '<cardHolderName>'. trim(htmlspecialchars($obj_XML->address->{'first-name'} .' '. $obj_XML->address->{'last-name'}, ENT_NOQUOTES) ) .'</cardHolderName>';
 			}
 			else { $b .= '<cardHolderName></cardHolderName>'; }
-			$b .= '<xid/>';
-			$b .= '<cavv>'. htmlspecialchars($obj_XML->cryptogram, ENT_NOQUOTES) .'</cavv>';
-			if (strlen($obj_XML->cryptogram["eci"]) > 0)
+			$b .= '<info3DSecure>';
+			$b .= '<cavv>'. htmlspecialchars($obj_XML->{'info-3d-secure'}->cryptogram, ENT_NOQUOTES) .'</cavv>';
+			if (strlen($obj_XML->{'info-3d-secure'}->cryptogram["eci"]) > 0)
 			{
-				$eci = (integer) $obj_XML->cryptogram["eci"];
+				$eci = (integer) $obj_XML->{'info-3d-secure'}->cryptogram["eci"];
 				$b .= '<eci>'. ($eci < 10 ? "0". $eci : $eci) .'</eci>';
 			}
-			else { $b .= '<eci />'; }
-			switch (strtolower($obj_XML->cryptogram["type"]) )
+			else { $b .= '<eci />'; }	
+					
+			if (strlen($obj_XML->{'info-3d-secure'}->cryptogram["xid"]) > 0)
+			{				
+				$b .= '<xid>'. (string) $obj_XML->{'info-3d-secure'}->cryptogram["xid"] .'</xid>';
+			}
+			else { $b .= '<xid />'; }
+			
+			if (strlen($obj_XML->{'info-3d-secure'}->{"ve-res"}) > 0)
+			{				
+				$b .= '<veresEnrolled>'. (string) $obj_XML->{'info-3d-secure'}->{"ve-res"}["enrolled"] .'</veresEnrolled>';
+				$b .= '<veresTimestamp>'. (string) $obj_XML->{'info-3d-secure'}->{"ve-res"} .'</veresTimestamp>';				
+			}
+			else { $b .= '<veresEnrolled /><veresTimestamp />'; }
+
+			if (strlen($obj_XML->{'info-3d-secure'}->{"pa-res"}) > 0)
+			{				
+				$b .= '<paresStatus>'. (string) $obj_XML->{'info-3d-secure'}->{"pa-res"}["status"] .'</paresStatus>';
+				$b .= '<paresTimestamp>'. (string) $obj_XML->{'info-3d-secure'}->{"pa-res"} .'</paresTimestamp>';				
+			}
+			else { $b .= '<paresStatus /><paresTimestamp />'; }
+			
+			switch (strtolower($obj_XML->{'info-3d-secure'}->cryptogram["type"]) )
 			{
 			case "3ds":	// 3DSecure
 				$b .= '<paymentDataType>3DSecure</paymentDataType>';
@@ -155,6 +176,7 @@ class CPG extends Callback
 				$b .= '<paymentDataType>EMV</paymentDataType>';
 				break;
 			}
+			$b .= '</info3DSecure>';
 			$b .= '<paymentCountryCode>'. $this->_getCountryCode(intval($this->getTxnInfo()->getCountryConfig()->getID() ) ) .'</paymentCountryCode>';
 		}
 		$b .= '<cardAddress>';
