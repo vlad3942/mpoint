@@ -178,8 +178,8 @@ INSERT INTO Client_Ownr.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (
 /* ========== CONFIGURE IPAD ACCOUNT FOR APPLE PAY END ====== */
 
 /* ========== ALTER TABLE FOR MERCHANT ACCOUNT TO HAVE PASSWORD OF 4000 CHARS START ====== */
-ALTER TABLE Client_Ownr.MerchantAccount_Tbl ALTER COLUMN passwd TYPE character varying(4000);
-ALTER TABLE Client_Ownr.MerchantAccount_Tbl ALTER COLUMN name TYPE character varying(100);
+ALTER TABLE Client_Ownr.MerchantAccount_Tbl MODIFY passwd VARCHAR2(4000);
+ALTER TABLE Client_Ownr.MerchantAccount_Tbl MODIFY name VARCHAR2(100);
 /* ========== ALTER TABLE FOR MERCHANT ACCOUNT TO HAVE PASSWORD OF 4000 CHARS END ====== */
 
 /* ========== CONFIGURE CARD MASTER PASS START ========== */
