@@ -27,8 +27,8 @@ INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength
 INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (15, 22);
 INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) SELECT C.id * -1 AS pricepointid, 22 FROM System.Country_Tbl C, System.Card_Tbl Card WHERE C.id = 100 GROUP BY pricepointid;
 
-INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) SELECT 10005, 22, 15 FROM System.PSPCard_Tbl CA;
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username) SELECT 10005, 15, '', '' FROM System.PSP_Tbl;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10005, 22, 15);
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username) VALUES (10005, 15, '', '');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT A.id, 15, '-1'  FROM Client.Account_Tbl A, System.PSP_Tbl P WHERE clientid = 10005 GROUP BY A.id;
 
 INSERT INTO Log.State_Tbl (id, name) VALUES (2007, 'Payment with voucher');
