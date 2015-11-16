@@ -23,4 +23,17 @@ class DSB extends CPMPSP
 	public function auth($ticket, $apiKey, $cardID, $storecard)  { /* no operation */ }
 
 	public function getPSPID() { return Constants::iDSB_PSP; }
+
+	public function capture($iAmount = -1)
+	{
+		$this->completeCapture($iAmount, 0, array('Dummy capture') );
+		return 1000;
+	}
+
+	public function refund($iAmount = -1)
+	{
+		$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUNDED_STATE, 'Dummy refund');
+		return 1000;
+	}
+
 }
