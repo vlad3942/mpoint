@@ -183,3 +183,13 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10000
 UPDATE Client.MerchantAccount_Tbl SET name = username WHERE pspid = 4 AND name != username;
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 15, 4);
 /* ========== CONFIGURE DEMO ACCOUNT FOR APPLE PAY END ====== */
+
+/* ========== CONFIGURE DSB INVOICE PAYMENT START ========= */
+INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (24, 'Invoice', 24, -1, -1, -1);
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (15, 24);
+INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) SELECT C.id * -1 AS pricepointid, 24 FROM System.Country_Tbl C, System.Card_Tbl Card WHERE C.id = 100 GROUP BY pricepointid;
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (24, 0, 0);
+
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10005, 24, 15);
+/* ========== CONFIGURE DSB INVOICE PAYMENT END ========= */
+
