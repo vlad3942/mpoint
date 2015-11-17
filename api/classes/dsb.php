@@ -30,10 +30,4 @@ class DSB extends CPMPSP
 		return 1000;
 	}
 
-	public function refund($iAmount = -1)
-	{
-		$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUNDED_STATE, 'Dummy refund');
-		return 1000;
-	}
-
 }
