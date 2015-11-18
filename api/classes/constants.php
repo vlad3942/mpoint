@@ -416,6 +416,11 @@ abstract class Constants
 	 *
 	 */
 	const iAPPLE_PAY_PSP = 14;
+	/**
+	 * Unique ID for the Payment Service Provider: AMEX Express Checkout
+	 *
+	 */
+	const iAMEX_EXPRESS_CHECKOUT_PSP = 16;
 
 	/**
 	 * Unique ID for the Electronic Payment Flow
@@ -541,6 +546,11 @@ abstract class Constants
 	 */
 	const iUATP_CARD = 21;
 
+	/**
+	 * Unique Card ID for transaction's made using AMEX Express Checkout Wallet
+	 *
+	 */
+	const iAMEX_EXPRESS_CHECKOUT_WALLET = 25;
 	/**
 	 * Unique Fee Type ID for Top-Ups
 	 *
