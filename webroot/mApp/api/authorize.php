@@ -149,7 +149,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								// Single Sign-On
 								if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 1 && strlen($obj_TxnInfo->getAuthenticationURL() ) > 0)
 								{
-									$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($obj_TxnInfo->getAuthenticationURL() ), CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() ), trim($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) );
+									$obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
+									$obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML() );
+									if (strlen($obj_TxnInfo->getCustomerRef() ) > 0) { $obj_Customer["customer-ref"] = $obj_TxnInfo->getCustomerRef(); }
+									if (floatval($obj_TxnInfo->getMobile() ) > 0)
+									{
+										$obj_Customer->mobile = $obj_TxnInfo->getMobile();
+										$obj_Customer->mobile["country-id"] = intval($obj_TxnInfo->getOperator() / 100);
+										$obj_Customer->mobile["operator-id"] = $obj_TxnInfo->getOperator();
+									}
+									if (strlen($obj_TxnInfo->getEMail() ) > 0) { $obj_Customer->email = $obj_TxnInfo->getEMail(); }
+									$obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
+									$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($obj_TxnInfo->getAuthenticationURL() ), $obj_CustomerInfo, trim($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) );
 								}
 								// Authentication is not required for payment methods that are sending a token
 								elseif (count($obj_DOM->{'authorize-payment'}[$i]->password) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1)
@@ -251,6 +262,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													 * Some versions of LibXML will report a wrong element name for "address" unless the XML element is marshalled into a string first
 													 */
 													$obj_Elem->addChild(simplexml_load_string($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->asXML() ) );
+												}
+												// Merge CVC / CVV code from request
+												if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1)
+												{
+													$obj_Elem->cvc = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc;
 												}
 												$obj_PSPConfig = $obj_Wallet->getPSPConfigForRoute(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]),
 																								   intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"]) );

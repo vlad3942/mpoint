@@ -593,5 +593,17 @@ abstract class Constants
 	 * mConsole Enterprise URL endpoint.
 	 */
 	const sMCONSOLE_SINGLE_SIGN_ON_PATH = '/mconsole/single-sign-on';	
+	
+	/*
+	 * Value of the Payment Data retrieve call from the third party endpoint
+	 * To fetch the card details with out the PSP details
+	 */
+	const sPAYMENT_DATA_SUMMARY = "summary";
+	
+	/*
+	 * Value of the Payment Data retrieve call from the third party endpoint
+	 * To fetch the card details by passing the auth toke to the wallet instance.
+	 */
+	const sPAYMENT_DATA_FULL = "full";
 }
 ?>
