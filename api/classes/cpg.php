@@ -269,6 +269,7 @@ class CPG extends Callback
 				header("HTTP/1.1 502 Bad Gateway");
 
 				$xml = '<status code="92">'. htmlspecialchars($obj_DOM->orderStatus->error, ENT_NOQUOTES) .' ('. $obj_DOM->orderStatus->error["code"] .')</status>';
+				$b = str_replace("<cardNumber>". htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) ."</cardNumber>", "<cardNumber>". str_repeat("*", strlen(htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) ) ) ."</cardNumber>", $b);
 				$b = str_replace("<cvc>". intval($obj_XML->cvc) ."</cvc>", "<cvc>". str_repeat("*", strlen(intval($obj_XML->cvc) ) ) ."</cvc>", $b);
 				trigger_error("Unable to initialize payment transaction with CPG, error code: ". $obj_DOM->orderStatus->error["code"] ."\n". $obj_DOM->orderStatus->error->asXML() ."\n". "REQUEST: ". $b, E_USER_WARNING);
 			}
@@ -279,6 +280,7 @@ class CPG extends Callback
 				if (strlen($obj_DOM) > 0) { $error = $obj_DOM->asXML(); }
 				
 				$xml = '<status code="92">Unknown Error: '. htmlspecialchars($error, ENT_NOQUOTES) .'</status>';
+				$b = str_replace("<cardNumber>". htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) ."</cardNumber>", "<cardNumber>". str_repeat("*", strlen(htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) ) ) ."</cardNumber>", $b);
 				$b = str_replace("<cvc>". intval($obj_XML->cvc) ."</cvc>", "<cvc>". str_repeat("*", strlen(intval($obj_XML->cvc) ) ) ."</cvc>", $b);
 				trigger_error("Unable to initialize payment transaction with CPG, Unknown Error: ".$error ."\n". "REQUEST: ". $b, E_USER_WARNING);
 			}
@@ -288,6 +290,7 @@ class CPG extends Callback
 			header("HTTP/1.1 502 Bad Gateway");
 
 			$xml = '<status code="92">Rejected with HTTP Code: '. $code .'</status>';
+			$b = str_replace("<cardNumber>". htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) ."</cardNumber>", "<cardNumber>". str_repeat("*", strlen(htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) ) ) ."</cardNumber>", $b);
 			$b = str_replace("<cvc>". intval($obj_XML->cvc) ."</cvc>", "<cvc>". str_repeat("*", strlen(intval($obj_XML->cvc) ) ) ."</cvc>", $b);
 			trigger_error("Unable to initialize payment transaction with CPG, HTTP code: ". $code ."\n". "REQUEST: ". $b, E_USER_WARNING);
 		}
