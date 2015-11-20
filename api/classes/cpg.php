@@ -176,6 +176,7 @@ class CPG extends Callback
 		$b .= '</address>';
 		$b .= '</cardAddress>';
 		$b .= '</'. $this->getCardName($obj_XML["type-id"]) .'>';
+		if (intval($obj_XML["wallet-type-id"]) > 0) { $b .= '<restrictedRedirection>N</restrictedRedirection>'; }
 		$b .= '</paymentDetails>';
 		$b .= '<shopper>';
 		$b .= '<shopperIPAddress>'. htmlspecialchars($this->getTxnInfo()->getIP(), ENT_NOQUOTES) .'</shopperIPAddress>'; // mandatory
