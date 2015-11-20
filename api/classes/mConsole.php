@@ -248,7 +248,7 @@ class mConsole extends Admin
 	 * @param integer $id			The unique ID of the existing routing configuration that should be changed, pass -1 to create a new routing configuration
 	 * @return integer
 	 */
-	public function saveStaticRoute($clientid, $pmid, $pspid, $stateid, $countryid=-1, $id=-1)
+	public function saveStaticRoute($clientid, $pmid, $pspid, $stateid, $countryid=-1, $id=-1, $enabled='true')
 	{
 		$clientid = (integer) $clientid;
 		$pmid = (integer) $pmid;
@@ -270,9 +270,18 @@ class mConsole extends Admin
 		
 		if ($id > 0)
 		{
+			if($enabled == 'true')
+			{
+				$enabled = 1;
+			} 
+			else
+			{
+				$enabled = 0;
+			}
+			
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".CardAccess_Tbl
 					SET countryid = ". $countryid .", cardid = ". $pmid .", pspid = ". $pspid .", 
-						stateid = ". intval($stateid) .", enabled = '1'
+						stateid = ". intval($stateid) .", enabled = '".$enabled."'
 					WHERE id = ". $id;				
 		}
 		else
