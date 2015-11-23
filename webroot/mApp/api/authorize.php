@@ -249,13 +249,24 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											if (count($obj_XML->{'payment-data'}) == 1)
 											{
 												$obj_Elem = $obj_XML->{'payment-data'}->card;
-												// Merge billing address from request as no billing address was returned by the 3rd party wallet 
+												// Add billing address from request as no billing address was returned by the 3rd party wallet 
 												if (count($obj_Elem->address) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address) == 1)
 												{
 													/*
 													 * Some versions of LibXML will report a wrong element name for "address" unless the XML element is marshalled into a string first
 													 */
 													$obj_Elem->addChild(simplexml_load_string($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->asXML() ) );
+												}
+												// Merge billing address from request with the billing address returned by the 3rd party wallet
+												elseif (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address) == 1)
+												{
+													$obj_Elem->address["country-id"] = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address["country-id"];
+													if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'first-name'}) == 1) { $obj_Elem->address->{'first-name'} = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'first-name'}); }
+													if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'last-name'}) == 1) { $obj_Elem->address->{'last-name'} = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'last-name'}); }
+													$obj_Elem->address->street = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->street);
+													if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'postal-code'}) == 1) { $obj_Elem->address->{'postal-code'} = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'postal-code'}); }
+													$obj_Elem->address->city = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->city);
+													if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->state) == 1) { $obj_Elem->address->state = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->state); } 
 												}
 												// Merge CVC / CVV code from request
 												if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1)
