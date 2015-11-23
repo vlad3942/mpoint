@@ -139,6 +139,9 @@ try
 		case (Constants::iVISA_CHECKOUT_PSP):					
 			$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
 			break;
+		case (Constants::iAMEX_EXPRESS_CHECKOUT_PSP):					
+			$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
+			break;
 		default:	
 			break;
 		}
