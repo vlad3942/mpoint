@@ -119,7 +119,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							elseif (count($obj_XML->status) == 1)
 							{
 								$obj_XML->status["code"] = intval($obj_XML->status["code"]) - 20;
-								$xml = str_replace('<?xml version="1.0"?>', '', $obj_XML->status->asXML() );
+								$sXML = str_replace('<?xml version="1.0"?>', '', $obj_XML->status->asXML() );
 								$code = 5;
 							}
 							// 3rd Party Wallet returned unknown error
