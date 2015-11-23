@@ -57,7 +57,7 @@ require_once(sCLASS_PATH ."/visacheckout.php");
 // Require specific Business logic for the Apple Pay component
 require_once(sCLASS_PATH ."/applepay.php");
 // Require specific Business logic for the AMEX Express Checkout component
-require_once(sCLASS_PATH ."/amexexpresschekout.php");
+require_once(sCLASS_PATH ."/amexexpresscheckout.php");
 
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
