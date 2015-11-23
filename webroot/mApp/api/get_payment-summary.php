@@ -117,7 +117,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 							else if(count($obj_XML->status) == 1)
 							{
-								$sXML - str_replace('<?xml version="1.0"?>', '', $obj_XML->status->asXML() );
+								$sXML = str_replace('<?xml version="1.0"?>', '', $obj_XML->status->asXML() );
 							}
 							 $xml .= $sXML;
 						}

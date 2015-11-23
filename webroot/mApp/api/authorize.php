@@ -266,8 +266,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 																								   intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"]) );
 												$obj_Elem["pspid"] = $obj_PSPConfig->getID();
 												$obj_Elem["wallet-type-id"] = intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]);
+											} else if(count($obj_XML->status) == 1)
+											{
+												$sXML = str_replace('<?xml version="1.0"?>', '', $obj_XML->status->asXML() );
+												$code = 5;
 											}
-											else { $code = 5; }
+											
+											$xml .= $sXML;
 										}
 										else
 										{
