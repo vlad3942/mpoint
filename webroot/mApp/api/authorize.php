@@ -278,7 +278,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												$obj_Elem["pspid"] = $obj_PSPConfig->getID();
 												$obj_Elem["wallet-type-id"] = intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]);
 											}
-											else { $code = 5; }
+											// 3rd Party Wallet returned error
+											elseif (count($obj_XML->status) == 1)
+											{
+												$obj_XML->status["code"] = intval($obj_XML->status["code"]) - 20;
+												$xml = str_replace('<?xml version="1.0"?>', '', $obj_XML->status->asXML() );
+												$code = 5;
+											}
+											// 3rd Party Wallet returned unknown error
+											else { $code = 6; }
 										}
 										else
 										{
@@ -486,7 +494,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										// 3rd Party Wallet returned error
 										elseif ($code > 4)
 										{
+											header("HTTP/1.1 502 Bad Gateway");
 											
+											if (empty($xml) === true) { $xml = '<status code="79">An unknown error occurred while retrieving payment data from 3rd party wallet</status>'; }
 										}
 										// Error: Card has been blocked
 										else
