@@ -96,7 +96,7 @@ msgstr @@@ Gem mobilnummer @@@
 
 #: /webroot/home/code.php:47
 msgid @@@ Edit Mobile Guide - Step 2 @@@
-msgstr @@@ Indtast venligst den aktiveringskode du netop har modtaget via SMS i nedenstående felt @@@
+msgstr @@@ Indtast venligst den aktiveringskode du netop har modtaget via SMS i nedenstï¿½ende felt @@@
 
 #: /webroot/home/missing_data.php:37
 msgid @@@ Missing Data @@@
@@ -128,7 +128,7 @@ msgstr @@@ Min konto @@@
 
 #: /webroot/home/topmenu.php:42
 msgid @@@ Top-Up @@@
-msgstr @@@ Indsæt @@@
+msgstr @@@ Indsï¿½t @@@
 
 #: /webroot/home/topmenu.php:46
 msgid @@@ History @@@
@@ -136,7 +136,7 @@ msgstr @@@ Historik @@@
 
 #: /webroot/home/topmenu.php:50
 msgid @@@ Transfer @@@
-msgstr @@@ Overfør @@@
+msgstr @@@ Overfï¿½r @@@
 
 #: /webroot/home/topmenu.php:54
 msgid @@@ Logout @@@
@@ -164,7 +164,7 @@ msgstr @@@ Skift kodeord @@@
 
 #: /webroot/home/edit_password.php:42
 msgid @@@ Old Password @@@
-msgstr @@@ Nuværende Kodeord @@@
+msgstr @@@ Nuvï¿½rende Kodeord @@@
 
 #: /webroot/home/edit_password.php:43
 msgid @@@ New Password @@@
@@ -180,7 +180,7 @@ msgstr @@@ Gem @@@
 
 #: /webroot/home/confirm.php:40
 msgid @@@ Confirm Transfer @@@
-msgstr @@@ Bekræft overførsel @@@
+msgstr @@@ Bekrï¿½ft overfï¿½rsel @@@
 
 #: /webroot/home/confirm.php:43
 msgid @@@ Recipient @@@
@@ -196,20 +196,20 @@ msgstr @@@ Kodeord @@@
 
 #: /webroot/home/confirm.php:46
 msgid @@@ Confirmation Code @@@
-msgstr @@@ Overførselskode @@@
+msgstr @@@ Overfï¿½rselskode @@@
 
 #: /webroot/home/confirm.php:47
 msgid @@@ Transfer @@@
-msgstr @@@ Overfør @@@
+msgstr @@@ Overfï¿½r @@@
 
 #: /webroot/home/confirm.php:51
 msgid @@@ Confirm Transfer Guide - Confirmation Code @@@
-msgstr @@@ En overførselskode som vil udløbe om en time er blevet sendt til dit mobilnummer.
-Bekræft venligst overførslen ved at angive dit kodeord og den modtage kode i felterne nedenfor @@@
+msgstr @@@ En overfï¿½rselskode som vil udlï¿½be om en time er blevet sendt til dit mobilnummer.
+Bekrï¿½ft venligst overfï¿½rslen ved at angive dit kodeord og den modtage kode i felterne nedenfor @@@
 
 #: /webroot/home/confirm.php:52
 msgid @@@ Confirm Transfer Guide - Password Only @@@
-msgstr @@@ Bekræft venligst overførslen ved at angive dit kodeord feltet nedenfor @@@
+msgstr @@@ Bekrï¿½ft venligst overfï¿½rslen ved at angive dit kodeord feltet nedenfor @@@
 
 #: /webroot/home/edit_mobile.php:37
 msgid @@@ Edit Mobile @@@
@@ -221,7 +221,7 @@ msgstr @@@ Trin 1 af 2 @@@
 
 #: /webroot/home/edit_mobile.php:43
 msgid @@@ Old Mobile @@@
-msgstr @@@ Nuværende mobilnummer @@@
+msgstr @@@ Nuvï¿½rende mobilnummer @@@
 
 #: /webroot/home/edit_mobile.php:44
 msgid @@@ New Mobile @@@
@@ -242,11 +242,11 @@ msgstr @@@ Transaktionshistorik @@@
 
 #: /webroot/home/history.php:40
 msgid @@@ Purchase History @@@
-msgstr @@@ Købshistorik @@@
+msgstr @@@ Kï¿½bshistorik @@@
 
 #: /webroot/home/history.php:41
 msgid @@@ Transfer History @@@
-msgstr @@@ Overførselshistorik @@@
+msgstr @@@ Overfï¿½rselshistorik @@@
 
 #: /webroot/home/history.php:42
 msgid @@@ Top-Up History @@@
@@ -266,7 +266,7 @@ msgstr @@@ mPoint ID @@@
 
 #: /webroot/home/history.php:46
 msgid @@@ Amount @@@
-msgstr @@@ Beløb @@@
+msgstr @@@ Belï¿½b @@@
 
 #: /webroot/home/history.php:47
 msgid @@@ Method @@@
@@ -282,7 +282,7 @@ msgstr @@@ Gebyr @@@
 
 #: /webroot/home/history.php:50
 msgid @@@ Merchant @@@
-msgstr @@@ Sælger @@@
+msgstr @@@ Sï¿½lger @@@
 
 #: /webroot/home/history.php:51
 msgid @@@ Order No. @@@
@@ -315,22 +315,22 @@ msgstr @@@ Trin 2 af 3 @@@
 #: /webroot/home/link.php:45
 msgid @@@ Edit E-Mail Guide - Step 2 @@@
 msgstr @@@ En e-mail med et verifikationslink er blevet sendt til din nye e-mail adresse.
-Åben venligst dit e-mail program og klik på linket i mailen for at aktivere din nye e-mail adresse @@@
+ï¿½ben venligst dit e-mail program og klik pï¿½ linket i mailen for at aktivere din nye e-mail adresse @@@
 
 #: /webroot/home/accept.php:22
 msgid @@@ Top-Up Account @@@
-msgstr @@@ Indsæt @@@
+msgstr @@@ Indsï¿½t @@@
 
 #: /webroot/home/accept.php:30
 msgid @@@ Account Top-Up - Completed @@@
-msgstr @@@ Din betaling er gennemført og pengene indsat på din konto. @@@
+msgstr @@@ Din betaling er gennemfï¿½rt og pengene indsat pï¿½ din konto. @@@
 msgid @@@ Account Top-Up - Authentication Error @@@
-msgstr @@@ Din betaling er gennemført og pengene indsat på din konto.
+msgstr @@@ Din betaling er gennemfï¿½rt og pengene indsat pï¿½ din konto.
 Luk venligst vinduet og log ind igen for at se din opdaterede saldo. @@@
 
 #: /webroot/home/accept.php:31
 msgid @@@ Amount @@@
-msgstr @@@ Beløb @@@
+msgstr @@@ Belï¿½b @@@
 
 #: /webroot/home/accept.php:32
 msgid @@@ Price @@@
@@ -426,7 +426,7 @@ msgstr @@@ Min konto @@@
 
 #: /webroot/home/content.php:38
 msgid @@@ Top-Up Account @@@
-msgstr @@@ Indsæt @@@
+msgstr @@@ Indsï¿½t @@@
 
 #: /webroot/home/content.php:39
 msgid @@@ Stored Cards @@@
@@ -450,7 +450,7 @@ msgstr @@@ Stored Cards - Help @@@
 
 #: /webroot/home/topup.php:50
 msgid @@@ Top-Up Account @@@
-msgstr @@@ Indsæt penge på konto @@@
+msgstr @@@ Indsï¿½t penge pï¿½ konto @@@
 
 #: /webroot/home/topup.php:53
 msgid @@@ Balance @@@
@@ -458,7 +458,7 @@ msgstr @@@ Saldo @@@
 
 #: /webroot/home/topup.php:54
 msgid @@@ Amount @@@
-msgstr @@@ Beløb @@@
+msgstr @@@ Belï¿½b @@@
 
 #: /webroot/home/topup.php:55
 msgid @@@ Price @@@
@@ -494,7 +494,7 @@ msgstr @@@ Trin 1 af 3 @@@
 
 #: /webroot/home/edit_email.php:43
 msgid @@@ Old E-Mail @@@
-msgstr @@@ Nuværende e-mail @@@
+msgstr @@@ Nuvï¿½rende e-mail @@@
 
 #: /webroot/home/edit_email.php:44
 msgid @@@ New E-Mail @@@
@@ -511,7 +511,7 @@ Der vil automatisk blive sendt et verifikationslink til den angivne e-mail adres
 
 #: /webroot/home/transfer.php:44
 msgid @@@ Transfer @@@
-msgstr @@@ Overfør Penge @@@
+msgstr @@@ Overfï¿½r Penge @@@
 
 #: /webroot/home/transfer.php:49
 msgid @@@ Balance @@@
@@ -523,7 +523,7 @@ msgstr @@@ Land @@@
 
 #: /webroot/home/transfer.php:51
 msgid @@@ ( Select ) @@@
-msgstr @@@ ( Vælg ) @@@
+msgstr @@@ ( Vï¿½lg ) @@@
 
 #: /webroot/home/transfer.php:53
 msgid @@@ Recipient @@@
@@ -535,7 +535,7 @@ msgstr @@@ Mobilnr. eller e-mail @@@
 
 #: /webroot/home/transfer.php:57
 msgid @@@ Amount @@@
-msgstr @@@ Beløb @@@
+msgstr @@@ Belï¿½b @@@
 
 #: /webroot/home/transfer.php:58
 msgid @@@ Min @@@
@@ -551,7 +551,7 @@ msgstr @@@ Valutakurs @@@
 
 #: /webroot/home/transfer.php:62
 msgid @@@ Local Amount @@@
-msgstr @@@ Lokalt beløb @@@
+msgstr @@@ Lokalt belï¿½b @@@
 
 #: /webroot/home/transfer.php:63
 msgid @@@ Total @@@
@@ -559,18 +559,18 @@ msgstr @@@ Total @@@
 
 #: /webroot/home/transfer.php:64
 msgid @@@ Transfer @@@
-msgstr @@@ Overfør @@@
+msgstr @@@ Overfï¿½r @@@
 
 #: /webroot/home/transfer.php:67
 msgid @@@ Transfer - Overview @@@
-msgstr @@@ Overfør penge fra din e-penge konto til venner eller familie @@@
+msgstr @@@ Overfï¿½r penge fra din e-penge konto til venner eller familie @@@
 
 #: /webroot/buy/sms.php:137
 msgid @@@ SMS Purchase MT @@@
-msgstr @@@ Du er ved at lave et køb hos en sælger der bruger mPoint.
-Sælger: {CLIENT}
+msgstr @@@ Du er ved at lave et kï¿½b hos en sï¿½lger der bruger mPoint.
+Sï¿½lger: {CLIENT}
 Pris: {AMOUNT}
-Bekræft købet ved at svare JA til denne SMS @@@
+Bekrï¿½ft kï¿½bet ved at svare JA til denne SMS @@@
 
 #: /webroot/anet/dpm.php:51
 msgid @@@ Card Info @@@
@@ -634,7 +634,7 @@ msgstr @@@ Levering @@@
 
 #: /webroot/shop/shipping.php:39
 msgid @@@ Shipping - Info @@@
-msgstr @@@ Vælg leveringsmetode @@@
+msgstr @@@ Vï¿½lg leveringsmetode @@@
 
 #: /webroot/shop/products.php:43
 msgid @@@ Mobile Shop @@@
@@ -642,15 +642,15 @@ msgstr @@@ Mobil forreting @@@
 
 #: /webroot/shop/products.php:52
 msgid @@@ Product - Info @@@
-msgstr @@@ Klik på "Læg i Kurv" linket ud for det pågældende produkt @@@
+msgstr @@@ Klik pï¿½ "Lï¿½g i Kurv" linket ud for det pï¿½gï¿½ldende produkt @@@
 
 #: /webroot/shop/products.php:53
 msgid @@@ Add to Basket @@@
-msgstr @@@ Læg i kurv @@@
+msgstr @@@ Lï¿½g i kurv @@@
 
 #: /webroot/shop/products.php:54
 msgid @@@ Next >> @@@
-msgstr @@@ Næste >> @@@
+msgstr @@@ Nï¿½ste >> @@@
 
 #: /webroot/shop/topup.php:29
 msgid @@@ Top-Up Account @@@
@@ -674,7 +674,7 @@ msgstr @@@ Modtager @@@
 
 #: /webroot/shop/delivery.php:68
 msgid @@@ Delivery - Info @@@
-msgstr @@@ Udfyld nedenstående felter med modtagers navn og adresse @@@
+msgstr @@@ Udfyld nedenstï¿½ende felter med modtagers navn og adresse @@@
 
 #: /webroot/shop/delivery.php:69
 msgid @@@ Phone No @@@
@@ -710,7 +710,7 @@ msgstr @@@ Leveringsdato @@@
 
 #: /webroot/shop/delivery.php:78
 msgid @@@ YYYY @@@
-msgstr @@@ ÅÅÅÅ @@@
+msgstr @@@ ï¿½ï¿½ï¿½ï¿½ @@@
 
 #: /webroot/shop/delivery.php:79
 msgid @@@ MM @@@
@@ -722,7 +722,7 @@ msgstr @@@ DD @@@
 
 #: /webroot/shop/delivery.php:82
 msgid @@@ Next >> @@@
-msgstr @@@ Næste >> @@@
+msgstr @@@ Nï¿½ste >> @@@
 
 #: /webroot/default.php:22
 msgid @@@ mPoint @@@
@@ -730,7 +730,7 @@ msgstr @@@ mPoint @@@
 
 #: /webroot/default.php:23
 msgid @@@ Unsupported Browser @@@
-msgstr @@@ Din browser er ikke understøttet @@@
+msgstr @@@ Din browser er ikke understï¿½ttet @@@
 
 #: /webroot/cpm/payment.php:122
 msgid @@@ Pay using Account @@@
@@ -746,7 +746,7 @@ msgstr @@@ Pris @@@
 
 #: /webroot/cpm/payment.php:133
 msgid @@@ Account - Info @@@
-msgstr @@@ Vælg betalingsmetode og indtast dit kodeord @@@
+msgstr @@@ Vï¿½lg betalingsmetode og indtast dit kodeord @@@
 
 #: /webroot/cpm/payment.php:134
 msgid @@@ My Account @@@
@@ -770,7 +770,7 @@ msgstr @@@ Kodeord @@@
 
 #: /webroot/cpm/payment.php:139
 msgid @@@ Complete Payment @@@
-msgstr @@@ Gennemfør betaling @@@
+msgstr @@@ Gennemfï¿½r betaling @@@
 
 #: /webroot/cpm/payment.php:140
 msgid @@@ Create Account @@@
@@ -778,7 +778,7 @@ msgstr @@@ Opret konto @@@
 
 #: /webroot/cpm/payment.php:141
 msgid @@@ Top-Up @@@
-msgstr @@@ Indsæt @@@
+msgstr @@@ Indsï¿½t @@@
 
 #: /webroot/cpm/payment.php:142
 msgid @@@ Add Card @@@
@@ -794,7 +794,7 @@ msgstr @@@ Angiv dit kodeord for at slette betalingskortet: {CARD NAME} @@@
 
 #: /webroot/cpm/payment.php:145
 msgid @@@ - Confirm Delete Text - @@@
-msgstr @@@ Er du sikker på at du vil slette betalingskort: {CARD NAME}? @@@
+msgstr @@@ Er du sikker pï¿½ at du vil slette betalingskort: {CARD NAME}? @@@
 
 #: /webroot/cpm/payment.php:146
 msgid @@@ Yes @@@
@@ -806,11 +806,11 @@ msgstr @@@ Nej @@@
 
 #: /webroot/cpm/payment.php:148
 msgid @@@ Account - Single Sign-On @@@
-msgstr @@@ Vælg betalingsmetode @@@
+msgstr @@@ Vï¿½lg betalingsmetode @@@
 
 #: /webroot/cpm/payment.php:149
 msgid @@@ - Authorizing Payment Text - @@@
-msgstr @@@ Gennemfører betalingen, vent venligst... @@@
+msgstr @@@ Gennemfï¿½rer betalingen, vent venligst... @@@
 
 #: /webroot/cpm/payment.php:150
 msgid @@@ Cancel Payment @@@
@@ -858,11 +858,11 @@ msgstr @@@ Store Card - Disclaimer @@@
 
 #: /webroot/pay/re-enter.php:35
 msgid @@@ Payment Already Completed @@@
-msgstr @@@ Betaling allerede gennemført @@@
+msgstr @@@ Betaling allerede gennemfï¿½rt @@@
 
 #: /webroot/pay/re-enter.php:46
 msgid @@@ Status - Payment Already Completed @@@
-msgstr @@@ Din betaling er allerede gennemført @@@
+msgstr @@@ Din betaling er allerede gennemfï¿½rt @@@
 
 #: /webroot/pay/re-enter.php:47
 msgid @@@ mPoint ID @@@
@@ -878,11 +878,11 @@ msgstr @@@ Pris @@@
 
 #: /webroot/pay/re-enter.php:50
 msgid @@@ Note - Payment Already Completed @@@
-msgstr @@@ Din betaling er allerede gennemført, fortsæt til sælgerens side og undlad at bruge "Tilbage" knappen @@@
+msgstr @@@ Din betaling er allerede gennemfï¿½rt, fortsï¿½t til sï¿½lgerens side og undlad at bruge "Tilbage" knappen @@@
 
 #: /webroot/pay/re-enter.php:51
 msgid @@@ Continue >> @@@
-msgstr @@@ Fortsæt tilbage til Sælgers site  >> @@@
+msgstr @@@ Fortsï¿½t tilbage til Sï¿½lgers site  >> @@@
 
 #: /webroot/pay/pwd.php:41
 msgid @@@ Create Account @@@
@@ -890,7 +890,7 @@ msgstr @@@ Opret konto @@@
 
 #: /webroot/pay/pwd.php:51
 msgid @@@ Please complete the form below to finnish creating your account @@@
-msgstr @@@ Udfyld nedenstående felter for at oprette din konto @@@
+msgstr @@@ Udfyld nedenstï¿½ende felter for at oprette din konto @@@
 
 #: /webroot/pay/pwd.php:52
 msgid @@@ Selected Card @@@
@@ -910,7 +910,7 @@ msgstr @@@ Kortnavn @@@
 
 #: /webroot/pay/pwd.php:56
 msgid @@@ Card Name - Help @@@
-msgstr @@@ F.eks. "privat" eller "firma" (ikke påkrævet) @@@
+msgstr @@@ F.eks. "privat" eller "firma" (ikke pï¿½krï¿½vet) @@@
 
 #: /webroot/pay/pwd.php:57
 msgid @@@ Save @@@
@@ -942,7 +942,7 @@ msgstr @@@ Kortnavn @@@
 
 #: /webroot/pay/name.php:54
 msgid @@@ Card Name - Help @@@
-msgstr @@@ F.eks. "privat" eller "firma" (ikke påkrævet) @@@
+msgstr @@@ F.eks. "privat" eller "firma" (ikke pï¿½krï¿½vet) @@@
 
 #: /webroot/pay/name.php:55
 msgid @@@ Save @@@
@@ -970,7 +970,7 @@ msgstr @@@ << Tilbage @@@
 
 #: /webroot/pay/accept.php:48
 msgid @@@ Payment Completed @@@
-msgstr @@@ Betaling gennemført @@@
+msgstr @@@ Betaling gennemfï¿½rt @@@
 
 #: /webroot/pay/accept.php:61
 msgid @@@ Thank you for using @@@
@@ -978,7 +978,7 @@ msgstr @@@ Tak fordi du brugte @@@
 
 #: /webroot/pay/accept.php:62
 msgid @@@ Status - Success @@@
-msgstr @@@ Din betaling er gennemført @@@
+msgstr @@@ Din betaling er gennemfï¿½rt @@@
 
 #: /webroot/pay/accept.php:63
 msgid @@@ mPoint ID @@@
@@ -994,7 +994,7 @@ msgstr @@@ Pris @@@
 
 #: /webroot/pay/accept.php:66
 msgid @@@ SMS Receipt - Info @@@
-msgstr @@@ Ovenstående kvittering er også blevet sendt via SMS til: {MOBILE} @@@
+msgstr @@@ Ovenstï¿½ende kvittering er ogsï¿½ blevet sendt via SMS til: {MOBILE} @@@
 
 #: /webroot/pay/accept.php:67
 msgid @@@ Send receipt via E-Mail @@@
@@ -1002,7 +1002,7 @@ msgstr @@@ Send kvittering via e-mail @@@
 
 #: /webroot/pay/accept.php:68
 msgid @@@ Continue >> @@@
-msgstr @@@ Fortsæt tilbage til Sælgers site  >> @@@
+msgstr @@@ Fortsï¿½t tilbage til Sï¿½lgers site  >> @@@
 
 #: /webroot/pay/accept.php:69
 msgid @@@ Resume Payment >> @@@
@@ -1018,7 +1018,7 @@ msgstr @@@ SMS Purchase - Transaction not found @@@
 
 #: /webroot/pay/card.php:34
 msgid @@@ Select Payment Method @@@
-msgstr @@@ Vælg betalingsmetode @@@
+msgstr @@@ Vï¿½lg betalingsmetode @@@
 
 #: /webroot/pay/card.php:47
 msgid @@@ Step 1 of 2 @@@
@@ -1026,7 +1026,7 @@ msgstr @@@ Trin 1 af 2 @@@
 
 #: /webroot/pay/card.php:48
 msgid @@@ Please select your Payment Method @@@
-msgstr @@@ Vælg betalingsmetode @@@
+msgstr @@@ Vï¿½lg betalingsmetode @@@
 
 #: /webroot/pay/card.php:49
 msgid @@@ Cancel Payment @@@
@@ -1034,11 +1034,11 @@ msgstr @@@ Afbryd @@@
 
 #: /webroot/overview.php:38
 msgid @@@ Order Overview @@@
-msgstr @@@ Ordrebekræftelse @@@
+msgstr @@@ Ordrebekrï¿½ftelse @@@
 
 #: /webroot/overview.php:47
 msgid @@@ Product - Info @@@
-msgstr @@@ Nedenstående er detaljerne omkring din ordre @@@
+msgstr @@@ Nedenstï¿½ende er detaljerne omkring din ordre @@@
 
 #: /webroot/overview.php:48
 msgid @@@ Product @@@
@@ -1062,7 +1062,7 @@ msgstr @@@ Accepter {LINK}Handelsbetingelserne{/LINK} for {CLIENT} @@@
 
 #: /webroot/overview.php:54
 msgid @@@ Delivery - Info @@@
-msgstr @@@ Nedenstående er modtagers navn og adresse @@@
+msgstr @@@ Nedenstï¿½ende er modtagers navn og adresse @@@
 
 #: /webroot/overview.php:55
 msgid @@@ Name @@@
@@ -1090,11 +1090,11 @@ msgstr @@@ Leveringsdato @@@
 
 #: /webroot/overview.php:62
 msgid @@@ Next >> @@@
-msgstr @@@ Næste >> @@@
+msgstr @@@ Nï¿½ste >> @@@
 
 #: /webroot/overview.php:63
 msgid @@@ Go to Payment >> @@@
-msgstr @@@ Gå til betaling >> @@@
+msgstr @@@ Gï¿½ til betaling >> @@@
 
 #: /webroot/wannafind/postform.php:44
 msgid @@@ Card Info @@@
@@ -1122,7 +1122,7 @@ msgstr @@@ Kortnummer @@@
 
 #: /webroot/wannafind/postform.php:56
 msgid @@@ Expiry Date @@@
-msgstr @@@ Udløbsdato @@@
+msgstr @@@ Udlï¿½bsdato @@@
 
 #: /webroot/wannafind/postform.php:57
 msgid @@@ mm @@@
@@ -1130,7 +1130,7 @@ msgstr @@@ mm @@@
 
 #: /webroot/wannafind/postform.php:58
 msgid @@@ yy @@@
-msgstr @@@ åå @@@
+msgstr @@@ ï¿½ï¿½ @@@
 
 #: /webroot/wannafind/postform.php:59
 msgid @@@ CVC / CVS @@@
@@ -1138,11 +1138,11 @@ msgstr @@@ CVC / CVS @@@
 
 #: /webroot/wannafind/postform.php:60
 msgid @@@ 3 digits (printed on the back of the card) @@@
-msgstr @@@ 3 tal (på bagsiden af kortet) @@@
+msgstr @@@ 3 tal (pï¿½ bagsiden af kortet) @@@
 
 #: /webroot/wannafind/postform.php:61
 msgid @@@ 4 digits (printed on the back of the card) @@@
-msgstr @@@ 4 tal (på bagsiden af kortet) @@@
+msgstr @@@ 4 tal (pï¿½ bagsiden af kortet) @@@
 
 #: /webroot/wannafind/postform.php:62
 msgid @@@ Save Card Info @@@
@@ -1150,7 +1150,7 @@ msgstr @@@ Gem kort informationer @@@
 
 #: /webroot/wannafind/postform.php:63
 msgid @@@ Complete Payment @@@
-msgstr @@@ Gennemfør Betaling @@@
+msgstr @@@ Gennemfï¿½r Betaling @@@
 
 #: /webroot/login/forgot_password.php:27
 msgid @@@ Forgot Password @@@
@@ -1178,7 +1178,7 @@ msgstr @@@ Opret konto @@@
 
 #: /webroot/login/otp.php:23
 msgid @@@ One Time Password @@@
-msgstr @@@ Én-gangs kodeord @@@
+msgstr @@@ ï¿½n-gangs kodeord @@@
 
 #: /webroot/login/otp.php:26
 msgid @@@ Password @@@
@@ -1190,7 +1190,7 @@ msgstr @@@ Log ind @@@
 
 #: /webroot/login/otp.php:30
 msgid @@@ One Time Password Guide @@@
-msgstr @@@ Et én-gangs kodeord som vil udløbe om en time er blevet sendt til dit mobilnummer.
+msgstr @@@ Et ï¿½n-gangs kodeord som vil udlï¿½be om en time er blevet sendt til dit mobilnummer.
 Indtast venligst det modtagne kodeord i feltet nedenfor @@@
 
 #: /webroot/login/sys/logout.php:43
@@ -1219,7 +1219,7 @@ msgstr @@@ internal - code: 2 @@@
 
 #: /webroot/login/content.php:27
 msgid @@@ Welcome to mPoint - User Admin. Please login? @@@
-msgstr @@@ Velkommen til mPoint - Brugeradministration. Log venligst ind for at fortsætte @@@
+msgstr @@@ Velkommen til mPoint - Brugeradministration. Log venligst ind for at fortsï¿½tte @@@
 
 #: /webroot/login/content.php:30
 msgid @@@ Country @@@
@@ -1227,7 +1227,7 @@ msgstr @@@ Land @@@
 
 #: /webroot/login/content.php:31
 msgid @@@ ( Select ) @@@
-msgstr @@@ ( Vælg ) @@@
+msgstr @@@ ( Vï¿½lg ) @@@
 
 #: /webroot/login/content.php:32
 msgid @@@ Username @@@
@@ -1284,7 +1284,7 @@ msgstr @@@ mPoint @@@
 
 #: /webroot/new/default.php:72
 msgid @@@ Unsupported Browser @@@
-msgstr @@@ Din browser er ikke understøttet @@@
+msgstr @@@ Din browser er ikke understï¿½ttet @@@
 
 #: /webroot/new/step1.php:43
 msgid @@@ Create Account @@@
@@ -1304,7 +1304,7 @@ msgstr @@@ Land @@@
 
 #: /webroot/new/step1.php:58
 msgid @@@ Transfer Code @@@
-msgstr @@@ Overførselskode @@@
+msgstr @@@ Overfï¿½rselskode @@@
 
 #: /webroot/new/step1.php:59
 msgid @@@ Firstname @@@
@@ -1336,17 +1336,17 @@ msgstr @@@ Opret Konto @@@
 
 #: /webroot/new/step1.php:66
 msgid @@@ ( Select ) @@@
-msgstr @@@ ( Vælg ) @@@
+msgstr @@@ ( Vï¿½lg ) @@@
 
 #: /webroot/new/step1.php:67
 msgid @@@ Please complete the form below to set the password for your account @@@
-msgstr @@@ Udfyld venligst nedenstående felter for at oprette en konto.
-Har du ikke en overførselskode kan dette felt efterlades blankt. @@@
+msgstr @@@ Udfyld venligst nedenstï¿½ende felter for at oprette en konto.
+Har du ikke en overfï¿½rselskode kan dette felt efterlades blankt. @@@
 
 #: /webroot/new/step1.php:70
 msgid @@@ Create Account Guide - Step 1 @@@
-msgstr @@@ Udfyld venligst nedenstående felter for at oprette en konto.
-Har du ikke en overførselskode kan dette felt efterlades blankt. @@@
+msgstr @@@ Udfyld venligst nedenstï¿½ende felter for at oprette en konto.
+Har du ikke en overfï¿½rselskode kan dette felt efterlades blankt. @@@
 
 #: /webroot/new/sys/save_mobile.php:90
 msgid @@@ save - code: 100 @@@
@@ -1395,22 +1395,22 @@ msgstr @@@ Top-Up Account @@@
 #: /webroot/new/step3.php:48
 msgid @@@ Create Account Guide - Web Step 3 @@@
 msgstr @@@ Tak fordi du oprettede din nye konto og validerede dit mobilnummer.
-Klik venligst på "Log Ind" i menuen ovenfor for at logge ind. @@@
+Klik venligst pï¿½ "Log Ind" i menuen ovenfor for at logge ind. @@@
 
 #: /webroot/new/step3.php:49
 msgid @@@ Create Account Guide - Mobile Step 3 @@@
-msgstr @@@ Gå venligst ind på http://mpoint.cellpointmobile.com via your Webbrowser for at få fuld adgang til alle mPoints funktioner.
+msgstr @@@ Gï¿½ venligst ind pï¿½ http://mpoint.cellpointmobile.com via your Webbrowser for at fï¿½ fuld adgang til alle mPoints funktioner.
 Med mPoint kan du bl.a.:
 <ul>
-	<li>Indsætte penge på din konto</li>
-	<li>Få overblik over din købshistorik</li>
-	<li>Overføre penge</li>
+	<li>Indsï¿½tte penge pï¿½ din konto</li>
+	<li>Fï¿½ overblik over din kï¿½bshistorik</li>
+	<li>Overfï¿½re penge</li>
 </ul>
-Klik venligst på nedenstående link for at overføre penge til din konto allerede nu. @@@
+Klik venligst pï¿½ nedenstï¿½ende link for at overfï¿½re penge til din konto allerede nu. @@@
 
 #: /api/classes/my_account.php:39
 msgid @@@ mPoint - Send Activation Code @@@
-msgstr @@@ Indtast venligst aktiveringskoden: {CODE} på websitet for at verificere dit mobilnummer. @@@
+msgstr @@@ Indtast venligst aktiveringskoden: {CODE} pï¿½ websitet for at verificere dit mobilnummer. @@@
 
 #: /api/classes/my_account.php:82
 msgid @@@ mPoint - Activation Link Subject @@@
@@ -1418,15 +1418,15 @@ msgstr @@@ Verificer venligst din e-mail adresse @@@
 
 #: /api/classes/my_account.php:83
 msgid @@@ mPoint - Activation Link Body @@@
-msgstr @@@ Klik venligst på nedenstående link for at verificere din nye e-mail adresse:
+msgstr @@@ Klik venligst pï¿½ nedenstï¿½ende link for at verificere din nye e-mail adresse:
 {URL}
 
-Bemærk venligst, dette er en auto genereret e-mail som du ikke kan besvare. @@@
+Bemï¿½rk venligst, dette er en auto genereret e-mail som du ikke kan besvare. @@@
 
 #: /api/classes/enduser_account.php:70
 msgid @@@ mPoint - Account Info @@@
 msgstr @@@ Din konto er blevet oprettet og er nu klar til brug.
-Husk at du kan altid administrere kontoen på {URL}.
+Husk at du kan altid administrere kontoen pï¿½ {URL}.
 MVH.
 {CLIENT} @@@
 
@@ -1439,18 +1439,18 @@ MVH.
 
 #: /api/classes/enduser_account.php:125
 msgid @@@ mPoint - Account Disabled @@@
-msgstr @@@ Dine betalingskortoplysninger og betalingskortkoden er blevet nulstillet, da koden blev indtastet forkert 3 gange i træk. Mvh. {CLIENT} @@@
+msgstr @@@ Dine betalingskortoplysninger og betalingskortkoden er blevet nulstillet, da koden blev indtastet forkert 3 gange i trï¿½k. Mvh. {CLIENT} @@@
 
-#: /api/classes/callback.php:94
+#: /api/classes/callback.php:95
 msgid @@@ mPoint - SMS Receipt @@@
-msgstr @@@ Tak for dit køb hos {CLIENT}, dine ordreinformationer er:
+msgstr @@@ Tak for dit kï¿½b hos {CLIENT}, dine ordreinformationer er:
 mPoint ID: {MPOINTID}
 Order Nr: {ORDERID}
 Pris: {PRICE} @@@
 
 #: /api/classes/surepay.php:130
 msgid @@@ mPoint - Embedded link Resend Indication @@@
-msgstr @@@ Velkommen til {CLIENT}, aktiver venligst nedenssående link @@@
+msgstr @@@ Velkommen til {CLIENT}, aktiver venligst nedenssï¿½ende link @@@
 
 #: /api/classes/surepay.php:151
 msgid @@@ SurePay Notification - Subject @@@
@@ -1458,21 +1458,21 @@ msgstr @@@ mPoint betalings link for ordre: {ORDERID} er ikke blevet aktiveret @
 
 #: /api/classes/surepay.php:155
 msgid @@@ SurePay Notification - Body @@@
-msgstr @@@ Nedenstående kunde har endnu ikke aktiveret sit betalingskort til mPoint betalings
+msgstr @@@ Nedenstï¿½ende kunde har endnu ikke aktiveret sit betalingskort til mPoint betalings
 Mobilnr.: {MOBILE}
 mPoint ID: {MPOINTID}
 Ordrenr.: {ORDERID}
 Pris: {PRICE}
 Ordre oprettet: {TIMESTAMP}
 
-Vi anbefaler at kunden kontaktes og betalingen færddigøres manuelt.
+Vi anbefaler at kunden kontaktes og betalingen fï¿½rddigï¿½res manuelt.
 
 Tak fordi i benytter SurePay @@@
 
 #: /api/classes/home.php:61
 msgid @@@ mPoint - Send One Time Password @@@
-msgstr @@@ Indtast venligst følgende én-gangs kodeord: {OTP}.
-Kodeordet vil automatisk udløbe om en time. @@@
+msgstr @@@ Indtast venligst fï¿½lgende ï¿½n-gangs kodeord: {OTP}.
+Kodeordet vil automatisk udlï¿½be om en time. @@@
 
 #: /api/classes/shipping.php:114
 msgid @@@ FREE @@@
@@ -1484,7 +1484,7 @@ msgstr @@@ mPoint Kvittering for Order Nr: {ORDERID} med mPoint ID: {MPOINTID} @
 
 #: /api/classes/email_receipt.php:72
 msgid @@@ E-Mail Receipt - Body @@@
-msgstr @@@ Tak for dit køb hos {CLIENT}, dine ordreinformationer er:
+msgstr @@@ Tak for dit kï¿½b hos {CLIENT}, dine ordreinformationer er:
 mPoint ID: {MPOINTID}
 Ordrenr.: {ORDERID}
 Pris: {PRICE} @@@
@@ -1495,7 +1495,7 @@ msgstr @@@ Henter... @@@
 
 #: /api/classes/general.php:767
 msgid @@@ mPoint - Embedded link Indication @@@
-msgstr @@@ Velkommen til {CLIENT}, aktiver venligst nedenstående link @@@
+msgstr @@@ Velkommen til {CLIENT}, aktiver venligst nedenstï¿½ende link @@@
 
 #: /api/classes/general.php:773
 msgid @@@ mPoint - WAP Push Indication @@@
@@ -1515,26 +1515,26 @@ msgstr @@@ Min konto @@@
 
 #: /api/classes/transfer.php:45
 msgid @@@ mPoint - New Account SMS @@@
-msgstr @@@ Du har modtaget en overførsel på {AMOUNT} fra {SENDER}.
-Gennemfør overførslen ved at downloade applikationen som du finder på dette link:
+msgstr @@@ Du har modtaget en overfï¿½rsel pï¿½ {AMOUNT} fra {SENDER}.
+Gennemfï¿½r overfï¿½rslen ved at downloade applikationen som du finder pï¿½ dette link:
 {URL}
 Med Venlig Hilsen
 {CLIENT} @@@
 
 #: /api/classes/transfer.php:81
 msgid @@@ mPoint - New Account E-Mail Subject @@@
-msgstr @@@ Du har modtaget en overførsel på {AMOUNT} fra {SENDER} @@@
+msgstr @@@ Du har modtaget en overfï¿½rsel pï¿½ {AMOUNT} fra {SENDER} @@@
 
 #: /api/classes/transfer.php:84
 msgid @@@ mPoint - New Account E-Mail Body @@@
-msgstr @@@ Du har modtaget en overførsel på {AMOUNT} fra {SENDER}.
-Klik venligst på nedenstående link for at færdiggøre din registrering
+msgstr @@@ Du har modtaget en overfï¿½rsel pï¿½ {AMOUNT} fra {SENDER}.
+Klik venligst pï¿½ nedenstï¿½ende link for at fï¿½rdiggï¿½re din registrering
 {URL}
 Med Venlig Hilsen
 mPoint @@@
 
 #: /api/classes/transfer.php:113
 msgid @@@ mPoint - Confirmation Code @@@
-msgstr @@@ Indtast venligst følgende overførsels kode: {CODE} på websitet for at bekræfte din overførsel.
-Koden vil automatisk udløbe om en time. @@@
+msgstr @@@ Indtast venligst fï¿½lgende overfï¿½rsels kode: {CODE} pï¿½ websitet for at bekrï¿½fte din overfï¿½rsel.
+Koden vil automatisk udlï¿½be om en time. @@@
 

@@ -1,10 +1,10 @@
 /* ========== CONFIGURE CARD DISCOVER START ========== */
-INSERT INTO System.Card_Tbl (id, name, position, logo, minlength, maxlength, cvclength) VALUES (22, 'Discover', 20, NULL, 16, 16, 3);
-INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 22, id FROM System.PricePoint_Tbl WHERE amount = -1;
-INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (22, 6011, 6011);
-INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (22, 622126, 622925);
-INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (22, 644, 649);
-INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (22, 65, 65);
+INSERT INTO System.Card_Tbl (id, name, position, logo, minlength, maxlength, cvclength) VALUES (23, 'Discover', 20, NULL, 16, 16, 3);
+INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 23, id FROM System.PricePoint_Tbl WHERE amount = -1;
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (23, 6011, 6011);
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (23, 622126, 622925);
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (23, 644, 649);
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (23, 65, 65);
 /* ========== CONFIGURE CARD DISCOVER END ========== */
 
 /* ========== CONFIGURE CARD VISA CHECKOUT START ========== */
@@ -183,3 +183,17 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10000
 UPDATE Client.MerchantAccount_Tbl SET name = username WHERE pspid = 4 AND name != username;
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 15, 4);
 /* ========== CONFIGURE DEMO ACCOUNT FOR APPLE PAY END ====== */
+
+/* ========== CONFIGURE DSB PSP AND VOUCHER PAYMENT ========= */
+INSERT INTO System.PSP_Tbl (id, name) VALUES (15, 'DSB');
+INSERT INTO System.PSPCurrency_Tbl (pspid, countryid, name) VALUES (15, 100, 'DKK');
+INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (22, 'Voucher', 22, -1, -1, -1);
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (15, 22);
+INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) SELECT C.id * -1 AS pricepointid, 22 FROM System.Country_Tbl C, System.Card_Tbl Card WHERE C.id = 100 GROUP BY pricepointid;
+
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10005, 22, 15);
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username) VALUES (10005, 15, '', '');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT A.id, 15, '-1'  FROM Client.Account_Tbl A, System.PSP_Tbl P WHERE clientid = 10005 GROUP BY A.id;
+
+INSERT INTO Log.State_Tbl (id, name) VALUES (2007, 'Payment with voucher');
+/* ========== CONFIGURE DSB PSP AND VOUCHER PAYMENT ========= */

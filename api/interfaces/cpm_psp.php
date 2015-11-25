@@ -1,6 +1,6 @@
 <?php
 
-abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiadable
+abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiadable, Redeemable
 {
 
     public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $obj_PSPConfig=null)
@@ -376,7 +376,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		return $code;
 	}
 
-	public function redeem($iVoucherID, $iAmount = -1)
+	public function redeem($iVoucherID, $iAmount=-1)
 	{
 		$code = 0;
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -447,8 +447,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 	private function _constTxnXML($actionAmount=null)
 	{
-		$obj_TxnInfo = $this->getTxnInfo();
-		
 		$obj_XML = simplexml_load_string($this->getTxnInfo()->toXML() );
 		$obj_XML->{'authorized-amount'} = (integer) $obj_XML->amount;
 		// Add all attributes from "amount" element

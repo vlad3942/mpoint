@@ -6,12 +6,12 @@ INSERT INTO Client_Ownr.URL_Tbl (urltypeid, clientid, url) SELECT 4, id, 'http:/
 /* ========== CONFIGURE URL TYPE FOR THE MOBILE ENTERPRISE SERVICE BUS START ========== */
 
 /* ========== CONFIGURE CARD DISCOVER START ========== */
-INSERT INTO System_Ownr.Card_Tbl (id, name, position, logo, minlength, maxlength, cvclength) VALUES (22, 'Discover', 20, NULL, 16, 16, 3);
-INSERT INTO System_Ownr.CardPricing_Tbl (cardid, pricepointid) SELECT 22, id FROM System_Ownr.PricePoint_Tbl WHERE amount = -1;
-INSERT INTO System_Ownr.CardPrefix_Tbl (cardid, min, "max") VALUES (22, 6011, 6011);
-INSERT INTO System_Ownr.CardPrefix_Tbl (cardid, min, "max") VALUES (22, 622126, 622925);
-INSERT INTO System_Ownr.CardPrefix_Tbl (cardid, min, "max") VALUES (22, 644, 649);
-INSERT INTO System_Ownr.CardPrefix_Tbl (cardid, min, "max") VALUES (22, 65, 65);
+INSERT INTO System_Ownr.Card_Tbl (id, name, position, logo, minlength, maxlength, cvclength) VALUES (23, 'Discover', 20, NULL, 16, 16, 3);
+INSERT INTO System_Ownr.CardPricing_Tbl (cardid, pricepointid) SELECT 23, id FROM System_Ownr.PricePoint_Tbl WHERE amount = -1;
+INSERT INTO System_Ownr.CardPrefix_Tbl (cardid, min, "max") VALUES (23, 6011, 6011);
+INSERT INTO System_Ownr.CardPrefix_Tbl (cardid, min, "max") VALUES (23, 622126, 622925);
+INSERT INTO System_Ownr.CardPrefix_Tbl (cardid, min, "max") VALUES (23, 644, 649);
+INSERT INTO System_Ownr.CardPrefix_Tbl (cardid, min, "max") VALUES (23, 65, 65);
 /* ========== CONFIGURE CARD DISCOVER END ========== */
 
 /* ========== CONFIGURE CARD VISA CHECKOUT START ========== */
