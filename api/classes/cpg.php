@@ -98,10 +98,10 @@ class CPG extends Callback
 		if (array_key_exists("var_mcp", $aClientVars) === true) { $b .= trim($aClientVars["var_mcp"]); }	// Multi-Currency Payment
 		$b .= '<orderContent>'. htmlspecialchars($this->getTxnInfo()->getDescription(), ENT_NOQUOTES) .'</orderContent>';
 		$b .= '<paymentDetails>';
+		$b .= '<'. $this->getCardName($obj_XML["type-id"]) .'>';
 		// Tokenized Card Details which may be authorized using CPG's Credit Card Repository
 		if (count($obj_XML->ticket) == 1)
 		{
-			$b .= '<'. $this->getCardName($obj_XML["type-id"]) .'>';
 			$b .= '<CCRKey>'.  htmlspecialchars($obj_XML->ticket, ENT_NOQUOTES)  .'</CCRKey>'; // mandatory, 0-20
 			$b .= '<cvc>'. intval($obj_XML->cvc) .'</cvc>';
 			$b .= '<cardNumber></cardNumber>';
@@ -127,7 +127,6 @@ class CPG extends Callback
 		// Other Type of token which may be authorized directly through CPG
 		else
 		{
-			$b .= '<'. $this->getCardName($obj_XML["id"]) .'>';
 			$b .= '<cardNumber>'. htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) .'</cardNumber>';
 			$b .= '<expiryDate>';
 			$b .= '<date month="'. substr($obj_XML->expiry, 0, 2) .'" year="20'. substr($obj_XML->expiry, -2) .'" />'; // mandatory
@@ -176,13 +175,7 @@ class CPG extends Callback
 //		$b .= '<telephoneNumber>'. floatval($this->getTxnInfo()->getMobile() ) .'</telephoneNumber>'; // optional
 		$b .= '</address>';
 		$b .= '</cardAddress>';
-		// Tokenized Card Details which may be authorized using CPG's Credit Card Repository
-		if (count($obj_XML->ticket) == 1)
-		{
-			$b .= '</'. $this->getCardName($obj_XML["type-id"]) .'>';
-		}
-		// Other Type of token which may be authorized directly through CPG
-		else { $b .= '</'. $this->getCardName($obj_XML["id"]) .'>'; }
+		$b .= '</'. $this->getCardName($obj_XML["type-id"]) .'>';
 		$b .= '</paymentDetails>';
 		$b .= '<shopper>';
 		$b .= '<shopperIPAddress>'. htmlspecialchars($this->getTxnInfo()->getIP(), ENT_NOQUOTES) .'</shopperIPAddress>'; // mandatory
@@ -207,18 +200,27 @@ class CPG extends Callback
 //		$b .= '<telephoneNumber>'. floatval($this->getTxnInfo()->getMobile() ) .'</telephoneNumber>'; // optional
 		$b .= '</address>';
 		$b .= '</shippingAddress>';
-		if (array_key_exists("var_enhanced-data", $aClientVars) === true) { $b .= trim($aClientVars["var_enhanced-data"]); }
-		// ApplePay token which may be authorized directly through CPG
-		if (count($obj_XML->ticket) == 0)
+		if (array_key_exists("var_enhanced-data", $aClientVars) === true)
 		{
-			$b = substr($b, 0, strlen($b) - strlen("</enchancedData>") );
-			$b .= '<bkgChannel>MPH-ApplePay</bkgChannel>';
-			$b .= '</enchancedData>';
+			$b .= trim($aClientVars["var_enhanced-data"]);
+			// ApplePay token which may be authorized directly through CPG
+			if (count($obj_XML->ticket) == 0 && stristr($aClientVars["var_enhanced-data"], "bkgChannel") == false)
+			{
+				switch (intval($obj_XML["wallet-type-id"]) )
+				{
+				case (Constants::iAPPLE_PAY):
+					$b = str_replace('<bkgChannel>MPH-ApplePay</bkgChannel></enchancedData>', '</enchancedData>', $b);
+					break;
+				case (Constants::iVISA_CHECKOUT_WALLET):
+					$b = str_replace('<bkgChannel>MPH-VISA-Checkout</bkgChannel></enchancedData>', '</enchancedData>', $b);
+					break;
+				}
+			}
 		}
 		$b .= '</order>';
 		$b .= '<returnURL>'. htmlspecialchars($this->getTxnInfo()->getAcceptURL(), ENT_NOQUOTES) .'</returnURL>';
 		$b .= '</submit>';
-
+		
 		$aLogin = $this->getMerchantLogin($this->getTxnInfo()->getClientConfig()->getID(), Constants::iCPG_PSP);
 		$sUsername = "";
 		$sPassword = "";

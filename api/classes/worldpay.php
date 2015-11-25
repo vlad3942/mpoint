@@ -173,6 +173,7 @@ class WorldPay extends Callback implements Captureable, Refundable
 		$obj_HTTP->connect();
 		$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
 		$obj_HTTP->disConnect();
+		
 		$obj_XML = null;
 		if ($code == 200)
 		{
@@ -232,33 +233,36 @@ class WorldPay extends Callback implements Captureable, Refundable
 	{
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<!DOCTYPE paymentService PUBLIC "-//WorldPay/DTD WorldPay PaymentService v1//EN" "http://dtd.worldpay.com/paymentService_v1.dtd">';
-		$b .= '<paymentService version="1.4" merchantCode="'. htmlspecialchars($this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, true), ENT_NOQUOTES) .'">';
+		$b .= '<paymentService version="1.4" merchantCode="'. htmlspecialchars($this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, false), ENT_NOQUOTES) .'">';
 		$b .= '<submit>';
 		$b .= '<order orderCode="'. $oc .'">';
 		$b .= '<description>Order: '. $oc .' from: '. htmlspecialchars($this->getTxnInfo()->getClientConfig()->getName(), ENT_NOQUOTES) .'</description>';
 		$b .= '<amount value="'. $this->getTxnInfo()->getAmount() .'" currencyCode="'. htmlspecialchars(trim($this->getTxnInfo()->getCountryConfig()->getCurrency() ), ENT_NOQUOTES) .'" exponent="2" />';
 		$b .= '<paymentDetails>';
-		$b .= '<'. $this->getCardName(intval($obj_Card["id"]) ) .'>';
+		$b .= '<'. $this->getCardName(intval($obj_Card["type-id"]) ) .'>';
 		$b .= '<cardNumber>'. htmlspecialchars($obj_Card->{'card-number'}, ENT_NOQUOTES) .'</cardNumber>';
 		$b .= '<expiryDate>';
 		$b .= '<date month="'. substr($obj_Card->expiry, 0, 2) .'" year="20'. substr($obj_Card->expiry, -2) .'"/>';
 		$b .= '</expiryDate>';
 		if (count($obj_Card->{'card-holder-name'}) == 1) { $b .= '<cardHolderName>'. htmlspecialchars($obj_Card->{'card-holder-name'}, ENT_NOQUOTES) .'</cardHolderName>'; }
 		else { $b .= '<cardHolderName>John Doe</cardHolderName>'; }
-		$b .= '</'. $this->getCardName(intval($obj_Card["id"]) ) .'>';
+		$b .= '</'. $this->getCardName(intval($obj_Card["type-id"]) ) .'>';
 		$ip = $_SERVER['REMOTE_ADDR'];
 		if (array_key_exists("X_FORWARDED_FOR", $_SERVER) === true) { $ip = $_SERVER['X_FORWARDED_FOR']; }
 		$b .= '<session shopperIPAddress="'. $ip .'" id="'. $this->getTxnInfo()->getID() .'"/>';
-		$b .= '<info3DSecure>';
-		$b .= '<xid />';
-		$b .= '<cavv>'. htmlspecialchars($obj_Card->cryptogram, ENT_NOQUOTES) .'</cavv>';
-		if (strlen($obj_Card->cryptogram["eci"]) > 0)
+		if (count($obj_Card->cryptogram) == 1)
 		{
-			$eci = (integer) $obj_Card->cryptogram["eci"];
-			$b .= '<eci>'. ($eci < 10 ? "0". $eci : $eci) .'</eci>';
+			$b .= '<info3DSecure>';
+			$b .= '<xid />';
+			$b .= '<cavv>'. htmlspecialchars($obj_Card->cryptogram, ENT_NOQUOTES) .'</cavv>';
+			if (strlen($obj_Card->cryptogram["eci"]) > 0)
+			{
+				$eci = (integer) $obj_Card->cryptogram["eci"];
+				$b .= '<eci>'. ($eci < 10 ? "0". $eci : $eci) .'</eci>';
+			}
+			else { $b .= '<eci />'; }
+			$b .= '</info3DSecure>';
 		}
-		else { $b .= '<eci />'; }
-		$b .= '</info3DSecure>';
 		$b .= '</paymentDetails>';
 		$b .= '<shopper>';
 		$b .= '<browser>';

@@ -33,7 +33,7 @@ require_once(sCLASS_PATH ."/netaxept.php");
 require_once(sCLASS_PATH ."/wannafind.php");
 // Require specific Business logic for the DSB PSP component
 require_once(sCLASS_PATH ."/dsb.php");
-if (function_exists("json_encode") === true)
+if (function_exists("json_encode") === true && function_exists("curl_init") === true)
 {
 	// Require specific Business logic for the Stripe component
 	require_once(sCLASS_PATH ."/stripe.php");
@@ -42,6 +42,8 @@ if (function_exists("json_encode") === true)
 require_once(sCLASS_PATH ."/mobilepay.php");
 // Require specific Business logic for the Adyen component
 require_once(sCLASS_PATH ."/adyen.php");
+// Require specific Business logic for the VISA checkout component
+require_once(sCLASS_PATH ."/visacheckout.php");
 
 header("Content-Type: application/x-www-form-urlencoded");
 

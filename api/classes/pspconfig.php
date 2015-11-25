@@ -154,23 +154,29 @@ class PSPConfig extends BasicConfig
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 		
-		$sql = "SELECT I.language, I.text
-				FROM Client".sSCHEMA_POSTFIX.".Info_Tbl I
-				INNER JOIN Client".sSCHEMA_POSTFIX.".InfoType_Tbl IT ON I.infotypeid = IT.id AND IT.enabled = '1'
-				WHERE I.clientid = ". intval($clid) ." AND IT.id = ". Constants::iPSP_MESSAGE_INFO ." AND (I.pspid = ". intval($pspid) ." OR I.pspid IS NULL)";
-//		echo $sql ."\n";
-		$aRS = $oDB->getAllNames($sql);
-		$aMessages = array();
-		if (is_array($aRS) === true)
+		if (is_array($RS) === true && count($RS) > 1)
 		{
-			for ($i=0; $i<count($aRS); $i++)
+			$sql = "SELECT I.language, I.text
+					FROM Client".sSCHEMA_POSTFIX.".Info_Tbl I
+					INNER JOIN Client".sSCHEMA_POSTFIX.".InfoType_Tbl IT ON I.infotypeid = IT.id AND IT.enabled = '1'
+					WHERE I.clientid = ". intval($clid) ." AND IT.id = ". Constants::iPSP_MESSAGE_INFO ." AND (I.pspid = ". intval($pspid) ." OR I.pspid IS NULL)";
+//			echo $sql ."\n";
+			$aRS = $oDB->getAllNames($sql);
+			$aMessages = array();
+			if (is_array($aRS) === true)
 			{
-				$aMessages[strtolower($aRS[$i]["LANGUAGE"])] = $aRS[$i]["TEXT"]; 
+				for ($i=0; $i<count($aRS); $i++)
+				{
+					$aMessages[strtolower($aRS[$i]["LANGUAGE"])] = $aRS[$i]["TEXT"];
+				}
 			}
+			return new PSPConfig($RS["ID"], $RS["NAME"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], $aMessages);
 		}
-
-		if (is_array($RS) === true && count($RS) > 1) {	return new PSPConfig($RS["ID"], $RS["NAME"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], $aMessages); }
-		else { return null; }
+		else
+		{
+			trigger_error("PSP Configuration not found using Client ID: ". $clid .", Account: ". $accid .", PSP ID: ". $pspid, E_USER_WARNING);
+			return null;
+		}
 	}
 }
 ?>
