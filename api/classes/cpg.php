@@ -1045,5 +1045,7 @@ class CPG extends Callback
 			break;
 		}
 	}
+
+	public function getPSPID() { return Constants::iCPG_PSP; }
 }
 ?>

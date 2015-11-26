@@ -23,7 +23,7 @@ class CallbackException extends mPointException { }
  * and sends out an SMS Receipt to the Customer.
  *
  */
-class Callback extends EndUserAccount
+abstract class Callback extends EndUserAccount
 {
 	/**
 	 * Data object with the Transaction Information
@@ -61,7 +61,8 @@ class Callback extends EndUserAccount
 		$this->_obj_TxnInfo = $oTI;
 		$this->aCONN_INFO = $aConnInfo;
 
-		if ($oPSPConfig == null) { $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $oTI->getPSPID() ); }
+		$pspID = (integer)$oTI->getPSPID() > 0 ? $oTI->getPSPID() : $this->getPSPID();
+		if ($oPSPConfig == null) { $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID); }
 		$this->_obj_PSPConfig = $oPSPConfig;
 	}
 
@@ -568,9 +569,12 @@ class Callback extends EndUserAccount
 	}
 
 
-	public static function producePSP(RDB $obj_DB, TranslateText $obj_Txt, TxnInfo $obj_TxnInfo, array $aConnInfo)
+	public static function producePSP(RDB $obj_DB, TranslateText $obj_Txt, TxnInfo $obj_TxnInfo, array $aConnInfo, PSPConfig $obj_PSPConfig=null)
 	{
-		switch ($obj_TxnInfo->getPSPID() )
+		if (isset($obj_PSPConfig) === true && intval($obj_PSPConfig->getID() ) > 0) { $iPSPID = $obj_PSPConfig->getID(); }
+		else { $iPSPID = $obj_TxnInfo->getPSPID(); }
+
+		switch ($iPSPID)
 		{
 		case (Constants::iDIBS_PSP):
 			return new DIBS($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dibs"]);
@@ -584,13 +588,17 @@ class Callback extends EndUserAccount
 			return new MobilePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mobilepay"]);
 		case (Constants::iADYEN_PSP):
 			return new Adyen($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["adyen"]);
+		case (Constants::iDSB_PSP):
+			return new DSB($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dsb"], $obj_PSPConfig);
 		case (Constants::iVISA_CHECKOUT_PSP) :
 			return new VISACheckout($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["visa-checkout"]);
 		case (Constants::iAPPLE_PAY_PSP) :
 			return new ApplePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["apple-pay"]);
 		default:
-			throw new CallbackException("Unkown Payment Service Provider", 1001);
+			throw new CallbackException("Unkown Payment Service Provider: ". $iPSPID, 1001);
 		}
 	}
+
+	public abstract function getPSPID();
 }
 ?>
