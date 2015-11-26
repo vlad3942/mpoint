@@ -814,5 +814,19 @@ class TxnInfo
 		return $aMessages;  
 	}
 
+	public function hasEitherState(RDB $obj_DB, $aStateID)
+	{
+		if (is_array($aStateID) === false) { $aStateID = array($aStateID); }
+		$sStates = implode(',', array_map("intval", $aStateID) );
+
+		$sql = "SELECT COUNT(id) AS C
+				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
+				WHERE txnid = ". $this->getID() ." AND stateid IN (". $sStates .") AND enabled = '1'";
+//		echo $sql;
+		$res = $obj_DB->getName($sql);
+
+		if ($res === false) { trigger_error("Failed to determine whether transaction #". $this->getID() . " has states: ". $sStates, E_USER_WARNING); }
+		return is_array($res) === true && isset($res["C"]) === true && intval($res["C"]) > 0;
+	}
 }
 ?>

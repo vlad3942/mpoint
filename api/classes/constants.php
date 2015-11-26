@@ -179,6 +179,11 @@ abstract class Constants
 	const iPAYMENT_REFUNDED_STATE = 2003;
 
 	/**
+	 * Defines the ID of the State that indicates that payment is being using a voucher
+	 *
+	 */
+	const iPAYMENT_WITH_VOUCHER_STATE = 2007;
+	/**
 	 * Defines the ID of the State that indicates that payment is being using the End-User's account
 	 *
 	 */
@@ -405,7 +410,7 @@ abstract class Constants
 	 * Unique ID for the Payment Service Provider: Adyen
 	 *
 	 */
-	const iADYEN_PSP = 12;	
+	const iADYEN_PSP = 12;
 	/**
 	 * Unique ID for the Payment Service Provider: VISA Checkout
 	 *
@@ -416,7 +421,11 @@ abstract class Constants
 	 *
 	 */
 	const iAPPLE_PAY_PSP = 14;
-
+	/**
+	 * Unique ID for the Payment Service Provider: DSB
+	 *
+	 */
+	const iDSB_PSP = 15;
 	/**
 	 * Unique ID for the Electronic Payment Flow
 	 *
@@ -541,6 +550,16 @@ abstract class Constants
 	 */
 	const iUATP_CARD = 21;
 	/**
+	 * Unique Card ID for transaction's made using Vouchers
+	 *
+	 */
+	const iVOUCHER_CARD = 22;
+	/**
+	 * Unique Card ID for transaction's made using Discover
+	 *
+	 */
+	const iDISCOVER_CARD = 23;
+	/**
 	 * Unique Card ID for transaction's made using Invoice paymnet
 	 *
 	 */
@@ -582,6 +601,28 @@ abstract class Constants
 	/*
 	 * mConsole Enterprise URL endpoint.
 	 */
-	const sMCONSOLE_SINGLE_SIGN_ON_PATH = '/mconsole/single-sign-on';	
+
+	/**
+	 * mPoint card states as also listed in System.CardState_Tbl
+	 */
+	const iCARD_ENABLED_STATE = 1;
+	const iCARD_DISABLED_BY_MERCHANT_STATE = 2;
+	const iCARD_DISABLED_BY_PSP_STATE = 3;
+	const iCARD_PREREQUISITE_NOT_MET_STATE = 4;
+	const iCARD_TEMPORARILY_UNAVAILABLE_STATE = 5;
+
+	const sMCONSOLE_SINGLE_SIGN_ON_PATH = '/mconsole/single-sign-on';
+	
+	/*
+	 * Value of the Payment Data retrieve call from the third party endpoint
+	 * To fetch the card details with out the PSP details
+	 */
+	const sPAYMENT_DATA_SUMMARY = "summary";
+	
+	/*
+	 * Value of the Payment Data retrieve call from the third party endpoint
+	 * To fetch the card details by passing the auth toke to the wallet instance.
+	 */
+	const sPAYMENT_DATA_FULL = "full";
 }
 ?>

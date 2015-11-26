@@ -553,5 +553,7 @@ class NetAxept extends Callback implements Captureable, Refundable
 			return -1;
 		}
 	}
+
+	public function getPSPID() { return Constants::iNETAXEPT_PSP; }
 }
 ?>

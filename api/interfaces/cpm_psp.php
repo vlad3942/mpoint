@@ -1,9 +1,11 @@
 <?php
-abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiadable
+
+abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiadable, Redeemable
 {
-    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo)
+
+    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $obj_PSPConfig=null)
     {
-        parent::__construct($oDB, $oTxt, $oTI, $aConnInfo);
+        parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig);
     }
 
 	public function notifyClient($iStateId, array $vars) { parent::notifyClient($iStateId, $vars["transact"], $vars["amount"], $vars["card-id"]); }
@@ -330,6 +332,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		return $obj_XML;
 	}
+
 	public function authTicket(PSPConfig $obj_PSPConfig, $ticket)
 	{
 		$code = 0;
@@ -372,11 +375,78 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		
 		return $code;
 	}
-	
+
+	public function redeem($iVoucherID, $iAmount=-1)
+	{
+		$code = 0;
+		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<root>';
+		$b .= '<redeem-voucher id="'. $iVoucherID .'">';
+		$b .= '<transaction order-no="'. $this->getTxnInfo()->getOrderID() .'">';
+		$b .= '<amount country-id="1">'. $iAmount .'</amount>';
+		$b .= '</transaction>';
+		$b .= '</redeem-voucher>';
+		$b .= '</root>';
+
+		$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["redeem"]);
+
+		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+		$obj_HTTP->connect();
+		$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+		$obj_HTTP->disConnect();
+		if ($code == 200)
+		{
+			$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
+			if (isset($obj_XML->voucher->status["code"]) === true && strlen($obj_XML->voucher->status["code"]) > 0) { $code = $obj_XML->voucher->status["code"]; }
+			else { throw new mPointException("Invalid response from voucher issuer: ". $this->getPSPConfig()->getName() .", Body: ". $obj_HTTP->getReplyBody(), $code); }
+		}
+		else { throw new mPointException("Redemption failed with PSP: ". $this->getPSPConfig()->getName() .", Txn: ". $this->getTxnInfo()->getID() ."\n\n". $obj_HTTP->getReplyBody(), $code); }
+
+		return $code;
+	}
+
+	public function initCallback(PSPConfig $obj_PSPConfig, TxnInfo $obj_TxnInfo, $iStateID, $sStateName)
+	{
+		$code = 0;
+		$xml  = '<?xml version="1.0" encoding="UTF-8"?>';
+		$xml .= '<root>';
+		$xml .= '<callback>';
+		$xml .= $obj_PSPConfig->toXML();
+		$xml .= '	<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. $obj_TxnInfo->getOrderID() .'" external-id="'. $obj_TxnInfo->getExternalID() .'">';
+		$xml .= '     	<amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID(). '">'. $obj_TxnInfo->getAmount(). '</amount>';
+		$xml .= '		<card id="'. $obj_TxnInfo->getExternalID(). '" type-id="22" psp-id="'. $obj_TxnInfo->getPSPID() .'">';
+		$xml .= '		</card>';
+		$xml .= '	</transaction>';
+		$xml .= '	<status code="'. $iStateID .'">'. $sStateName .'</status>';
+		$xml .= '</callback>';
+		$xml .= '</root>';
+
+		try
+		{
+			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["callback"]);
+
+			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+			$obj_HTTP->connect();
+			$code = $obj_HTTP->send($this->constHTTPHeaders(), $xml);
+			$obj_HTTP->disConnect();
+
+			if ($code == 200)
+			{
+				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+				if (isset($obj_XML->status["code"]) === true && strlen($obj_XML->status["code"]) > 0) { $code = $obj_XML->status["code"]; }
+				else { throw new mPointException("Invalid response from callback controller: ". $this->getPSPConfig()->getName() .", Body: ". $obj_HTTP->getReplyBody(), $code); }
+			}
+			else { throw new mPointException("Callback to mPoint callback controller: ". $this->getPSPConfig()->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
+		}
+		catch (mPointException $e)
+		{
+			trigger_error("Callback to mPoint for txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+		}
+		return $code;
+	}
+
 	private function _constTxnXML($actionAmount=null)
 	{
-		$obj_TxnInfo = $this->getTxnInfo();
-		
 		$obj_XML = simplexml_load_string($this->getTxnInfo()->toXML() );
 		$obj_XML->{'authorized-amount'} = (integer) $obj_XML->amount;
 		// Add all attributes from "amount" element
@@ -414,14 +484,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 * @param SimpleXMLElement $obj_Card	Details for the token that should be used to retrieve the payment data from the 3rd Party Wallet.
 	 * @return string
 	 */
-	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card)
+	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL)
 	{
 		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML() );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
-		$b .= '<get-payment-data>';
+		$b .= '<get-payment-data mode="'. $mode .'">';
 		$b .= $obj_PSPConfig->toXML();
 		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 		$b .= str_replace("</transaction>", str_replace('<?xml version="1.0"?>', '', $obj_Card->asXML() ). "</transaction>", $this->_constTxnXML() );

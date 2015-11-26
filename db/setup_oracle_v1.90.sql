@@ -1,14 +1,17 @@
 /* ========== CONFIGURE URL TYPE FOR THE MOBILE ENTERPRISE SERVICE BUS START ========== */
 INSERT INTO System_Ownr.URLType_Tbl (id, name) VALUES (4, 'Mobile Enterprise Service Bus');
+
+-- Mobile Enterprise Service Bus
+INSERT INTO Client_Ownr.URL_Tbl (urltypeid, clientid, url) SELECT 4, id, 'http://localhost:9000/' FROM Client_Ownr.Client_Tbl;
 /* ========== CONFIGURE URL TYPE FOR THE MOBILE ENTERPRISE SERVICE BUS START ========== */
 
 /* ========== CONFIGURE CARD DISCOVER START ========== */
-INSERT INTO System_Ownr.Card_Tbl (id, name, position, logo, minlength, maxlength, cvclength) VALUES (22, 'Discover', 20, NULL, 16, 16, 3);
-INSERT INTO System_Ownr.CardPricing_Tbl (cardid, pricepointid) SELECT 22, id FROM System_Ownr.PricePoint_Tbl WHERE amount = -1;
-INSERT INTO System_Ownr.CardPrefix_Tbl (cardid, min, "max") VALUES (22, 6011, 6011);
-INSERT INTO System_Ownr.CardPrefix_Tbl (cardid, min, "max") VALUES (22, 622126, 622925);
-INSERT INTO System_Ownr.CardPrefix_Tbl (cardid, min, "max") VALUES (22, 644, 649);
-INSERT INTO System_Ownr.CardPrefix_Tbl (cardid, min, "max") VALUES (22, 65, 65);
+INSERT INTO System_Ownr.Card_Tbl (id, name, position, logo, minlength, maxlength, cvclength) VALUES (23, 'Discover', 20, NULL, 16, 16, 3);
+INSERT INTO System_Ownr.CardPricing_Tbl (cardid, pricepointid) SELECT 23, id FROM System_Ownr.PricePoint_Tbl WHERE amount = -1;
+INSERT INTO System_Ownr.CardPrefix_Tbl (cardid, min, "max") VALUES (23, 6011, 6011);
+INSERT INTO System_Ownr.CardPrefix_Tbl (cardid, min, "max") VALUES (23, 622126, 622925);
+INSERT INTO System_Ownr.CardPrefix_Tbl (cardid, min, "max") VALUES (23, 644, 649);
+INSERT INTO System_Ownr.CardPrefix_Tbl (cardid, min, "max") VALUES (23, 65, 65);
 /* ========== CONFIGURE CARD DISCOVER END ========== */
 
 /* ========== CONFIGURE CARD VISA CHECKOUT START ========== */
@@ -100,8 +103,6 @@ INSERT INTO System_Ownr.PSPCard_Tbl (pspid, cardid) VALUES (13, 16);
 INSERT INTO Client_Ownr.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 13, '2X5JJ0751LFJG3EMYRMS13h-QPSi0pUet0c2zoXupm10tRL28', '2X5JJ0751LFJG3EMYRMS13h-QPSi0pUet0c2zoXupm10tRL28', '5PH9i3cNJ8ZmFK0B-xuSsMzq{8uSkO$o#GZPA+M}');
 INSERT INTO Client_Ownr.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100010, 13, '-1');
 INSERT INTO Client_Ownr.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 16, 9);
--- Mobile Enterprise Service Bus
-INSERT INTO Client_Ownr.URL_Tbl (urltypeid, clientid, url) VALUES (4, 10001, 'http://localhost:9000/');
 /* ========== CONFIGURE IBE ACCOUNT FOR VISA CHECKOUT END ====== */
 
 /* ========== CONFIGURE APPLE PAY START ========== */

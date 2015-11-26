@@ -1450,7 +1450,7 @@ Kind Regards
 msgid @@@ mPoint - Account Disabled @@@
 msgstr @@@ Your account with {CLIENT} has been deleted due to too many invalid login attempts @@@
 
-#: /api/classes/callback.php:94
+#: /api/classes/callback.php:95
 msgid @@@ mPoint - SMS Receipt @@@
 msgstr @@@ Thank you for using mPoint, your order details are:
 mPoint ID: {MPOINTID}

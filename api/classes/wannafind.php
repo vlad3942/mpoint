@@ -166,5 +166,7 @@ class WannaFind extends Callback implements Captureable
 		$obj_HTTP->send($this->constHTTPHeaders(), $b);
 		$obj_HTTP->disConnect();
 	}
+
+	public function getPSPID() { return Constants::iWANNAFIND_PSP; }
 }
 ?>
