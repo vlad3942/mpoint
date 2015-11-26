@@ -504,4 +504,41 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		if (is_array($RS) === true && count($RS) > 1) {	return new PSPConfig($RS["ID"], $RS["NAME"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], array()); }
 		else { return null; }
 	}	
+	
+	/*
+	 *  Fetches a updated list of Payment methods 
+	 */
+	public function getExternalPaymentMethods(SimpleXMLElement $obj_Cards)
+	{
+		$obj_XML = $obj_Cards->asXML();
+		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<root>';
+		$b .= '<get-extenal-payment-methods>';
+		$b .= '<transaction id="'. $this->getTxnInfo()->getOrderID() .'" order-no="'. $this->getTxnInfo()->getID() .'">';
+		$b .= $obj_Cards->asXML();
+		$b .= '</transaction>';
+		$b .= '<get-extenal-payment-methods>';
+		$b .= '</root>';
+
+		try
+		{
+			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["get-extenal-payment-methods"]);
+		
+			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+			$obj_HTTP->connect();
+			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+			$obj_HTTP->disConnect();
+			if ($code == 200)
+			{
+				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+			}
+			else { throw new mPointException("Could not fetch updated payment card list responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
+		}
+		catch (mPointException $e)
+		{
+			trigger_error("construct  XML of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+		}
+		
+		return $obj_XML;
+	}
 }
