@@ -1,10 +1,5 @@
 <?php
-$_SERVER['DOCUMENT_ROOT'] = str_replace("\\", "/", $_SERVER['DOCUMENT_ROOT']);
-// Define system path constant
-define("sSYSTEM_PATH", substr($_SERVER['DOCUMENT_ROOT'], 0, strrpos($_SERVER['DOCUMENT_ROOT'], "/") ) );
-
-define("sAPI_CLASS_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/../php5api/classes/");
-
+define("sAPI_CLASS_PATH", "/apps/php/php5api/classes/");
 
 require_once(sAPI_CLASS_PATH ."template.php");
 require_once(sAPI_CLASS_PATH ."http_client.php");
@@ -22,8 +17,8 @@ $aHTTP_CONN_INFO["mesb"]["timeout"] = 120;
 $aHTTP_CONN_INFO["mesb"]["path"] = "/mApp/api/pay.php";
 $aHTTP_CONN_INFO["mesb"]["method"] = "POST";
 $aHTTP_CONN_INFO["mesb"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["mesb"]["username"] = "CPMDemo";
-$aHTTP_CONN_INFO["mesb"]["password"] = "DEMOisNO_2";
+$aHTTP_CONN_INFO["mesb"]["username"] = "IBE";
+$aHTTP_CONN_INFO["mesb"]["password"] = "kjsg5Ahf_1";
 
 $obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
 
@@ -37,8 +32,8 @@ $h .= "Authorization: Basic ". base64_encode($aHTTP_CONN_INFO["mesb"]["username"
 
 $b = '<?xml version="1.0" encoding="UTF-8"?>
 <root>
-	<pay client-id="10007">
-		<transaction id="1810879" store-card="false">
+	<pay client-id="10001">
+		<transaction id="9370" store-card="false">
 			<card type-id="25">
 				<amount country-id="200">200</amount>
 			</card>
@@ -70,9 +65,6 @@ try
 	}
 	
 	$sHead = trim($obj_XML->{'psp-info'}->head);
-//	$sHead = str_replace("{PAYMENT SUCCESS}", "document.getElementById('log').innerHTML = 'SUCCESS: '+ JSON.stringify(payment);", $sHead);
-//	$sHead = str_replace("{PAYMENT CANCEL}", "document.getElementById('log').innerHTML = 'CANCEL: '+ JSON.stringify(payment);", $sHead);
-//	$sHead = str_replace("{PAYMENT ERROR}", "document.getElementById('log').innerHTML = 'ERROR: '+ JSON.stringify(error);", $sHead);
 	?>
 	<html>
 	<head>
