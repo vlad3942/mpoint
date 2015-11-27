@@ -576,18 +576,22 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	}	
 	
 	/*
-	 *  Fetches a updated list of Payment methods 
+	 *  Fetches an updated list of Payment methods from the client.
+	 *  On any issue the provided Card XML will be returned unchanged
+	 * 
+	 * @param integer $sCards		String og cards XML with all allowed cards on the client 
+	 * @return Updated String XML
 	 */
-	public function getExternalPaymentMethods(SimpleXMLElement $obj_Cards)
+	public function getExternalPaymentMethods($sCards)
 	{
-		$obj_XML = $obj_Cards->asXML();
+		$obj_XML = $sCards;
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<get-extenal-payment-methods>';
-		$b .= '<transaction id="'. $this->getTxnInfo()->getOrderID() .'" order-no="'. $this->getTxnInfo()->getID() .'">';
-		$b .= $obj_Cards->asXML();
+		$b .= '<transaction id="'. $this->getTxnInfo()->getID() .'" order-no="'. $this->getTxnInfo()->getOrderID() .'">';
+		$b .= $sCards;
 		$b .= '</transaction>';
-		$b .= '<get-extenal-payment-methods>';
+		$b .= '</get-extenal-payment-methods>';
 		$b .= '</root>';
 
 		try
@@ -601,6 +605,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			if ($code == 200)
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+				$obj_XML = $obj_XML->transaction->cards->asXML();
 			}
 			else { throw new mPointException("Could not fetch updated payment card list responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 		}
