@@ -416,8 +416,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$xml .= '     	<amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID(). '">'. $obj_TxnInfo->getAmount(). '</amount>';
 		$xml .= '		<card id="'. $obj_TxnInfo->getExternalID(). '" type-id="'. $iCardid .'" psp-id="'. $obj_TxnInfo->getPSPID() .'">';
 		$xml .= '		</card>';
+		$xml .= '		<description>'. $obj_TxnInfo->getDescription() .'</description>';
 		$xml .= '	</transaction>';
-		$xml .= '	<description>'. $obj_TxnInfo->getDescription() .'</description>';
 		
 		$xml .= '	<status code="'. $iStateID .'">'. $sStateName .'</status>';
 		$xml .= '</callback>';

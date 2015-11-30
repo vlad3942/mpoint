@@ -242,6 +242,7 @@ abstract class Callback extends EndUserAccount
 			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_CONNECTED_STATE, "Host: ". $obj_ConnInfo->getHost() .", Port: ". $obj_ConnInfo->getPort() .", Path: ". $obj_ConnInfo->getPath() );
 			// Send Callback data
 			$iCode = $obj_HTTP->send($this->constHTTPHeaders(), $body);
+				
 			$obj_HTTP->disConnect();
 			if (200 <= $iCode && $iCode < 300)
 			{
@@ -327,6 +328,7 @@ abstract class Callback extends EndUserAccount
 		if (intval($cardid) > 0) { $sBody .= "&card-id=". $cardid; }
 		if (empty($cardno) === false) { $sBody .= "&card-number=". urlencode($cardno); }
 		if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true) { $sBody .= "&pspid=". urlencode($pspid); }
+		if ( strlen($this->_obj_TxnInfo->getDescription() ) > 0) { $sBody .= "&description=". urlencode($this->_obj_TxnInfo->getDescription() ); }
 		$sBody .= $this->getVariables();
 		$sBody .= "&mac=". urlencode($this->_obj_TxnInfo->getMAC() );
 		/* ----- Construct Body End ----- */

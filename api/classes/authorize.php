@@ -90,7 +90,7 @@ class Authorize extends General
 	
 		// If amount is not set by caller, assume full transaction amount
 		if ($iAmount <= 0) { $iAmount = $this->_obj_TxnInfo->getAmount(); }
-	
+		
 		// If PSP supports the Redeem operation, perform the redemption
 		try
 		{
@@ -104,6 +104,7 @@ class Authorize extends General
 		}	
 		if ( ($this->_obj_PSP instanceof CPMPSP) === true)
 		{
+			if ($code == 100 && strlen($sMsg) > 0) { $this->logTransaction($this->_obj_TxnInfo); }
 			$this->_obj_PSP->initCallback($this->_obj_PSP->getPSPConfig(), $this->_obj_TxnInfo, $code == 100 ? Constants::iPAYMENT_ACCEPTED_STATE : Constants::iPAYMENT_REJECTED_STATE, "Status: ". $code, Constants::iINVOICE);
 		}
 		else { trigger_error("Callback for voucher payment is only supported for inheritors of CPMPSP so far", E_USER_WARNING); }
