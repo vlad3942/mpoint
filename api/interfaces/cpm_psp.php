@@ -1,6 +1,6 @@
 <?php
 
-abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiadable, Redeemable
+abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiadable, Redeemable, Invoiceable
 {
 
     public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $obj_PSPConfig=null)
@@ -405,7 +405,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		return $code;
 	}
 
-	public function initCallback(PSPConfig $obj_PSPConfig, TxnInfo $obj_TxnInfo, $iStateID, $sStateName)
+	public function initCallback(PSPConfig $obj_PSPConfig, TxnInfo $obj_TxnInfo, $iStateID, $sStateName, $iCardid)
 	{
 		$code = 0;
 		$xml  = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -414,9 +414,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$xml .= $obj_PSPConfig->toXML();
 		$xml .= '	<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. $obj_TxnInfo->getOrderID() .'" external-id="'. $obj_TxnInfo->getExternalID() .'">';
 		$xml .= '     	<amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID(). '">'. $obj_TxnInfo->getAmount(). '</amount>';
-		$xml .= '		<card id="'. $obj_TxnInfo->getExternalID(). '" type-id="22" psp-id="'. $obj_TxnInfo->getPSPID() .'">';
+		$xml .= '		<card id="'. $obj_TxnInfo->getExternalID(). '" type-id="'. $iCardid .'" psp-id="'. $obj_TxnInfo->getPSPID() .'">';
 		$xml .= '		</card>';
 		$xml .= '	</transaction>';
+		$xml .= '	<description>'. $obj_TxnInfo->getDescription() .'</description>';
+		
 		$xml .= '	<status code="'. $iStateID .'">'. $sStateName .'</status>';
 		$xml .= '</callback>';
 		$xml .= '</root>';
@@ -616,4 +618,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		
 		return $obj_XML;
 	}
+	public function invoice($sMsg = "" ,$iAmount = -1) { return -1; }
+	
 }

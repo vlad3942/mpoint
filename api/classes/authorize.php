@@ -76,11 +76,38 @@ class Authorize extends General
 
 		if ( ($this->_obj_PSP instanceof CPMPSP) === true)
 		{
-			$this->_obj_PSP->initCallback($this->_obj_PSP->getPSPConfig(), $this->_obj_TxnInfo, $code == 100 ? Constants::iPAYMENT_ACCEPTED_STATE : Constants::iPAYMENT_REJECTED_STATE, "Status: ". $code);
+			$this->_obj_PSP->initCallback($this->_obj_PSP->getPSPConfig(), $this->_obj_TxnInfo, $code == 100 ? Constants::iPAYMENT_ACCEPTED_STATE : Constants::iPAYMENT_REJECTED_STATE, "Status: ". $code, Constants::iVOUCHER_CARD);
 		}
 		else { trigger_error("Callback for voucher payment is only supported for inheritors of CPMPSP so far", E_USER_WARNING); }
 
 		return $code;
 	}
-
+	public function invoice($sMsg, $iAmount=-1)
+	{
+		// Add pspid, extenalid to transaction info
+		$misc = array('psp-id'=>$this->_obj_PSP->getPSPID(), 'description'=>$sMsg);
+		$this->_obj_TxnInfo = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->_obj_TxnInfo, $misc);
+	
+		// If amount is not set by caller, assume full transaction amount
+		if ($iAmount <= 0) { $iAmount = $this->_obj_TxnInfo->getAmount(); }
+	
+		// If PSP supports the Redeem operation, perform the redemption
+		try
+		{
+			if ( ($this->_obj_PSP instanceof Invoiceable) === true) { $code = $this->_obj_PSP->invoice($sMsg, $iAmount); }
+			else { throw new BadMethodCallException("Invoice is not supported by PSP: ". get_class($this->_obj_PSP) ); }
+		}
+		catch (Exception $e)
+		{
+			$code = $e->getCode();
+			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_REJECTED_STATE, "Status code: ". $e->getCode(). "\n". $e->getMessage() );
+		}	
+		if ( ($this->_obj_PSP instanceof CPMPSP) === true)
+		{
+			$this->_obj_PSP->initCallback($this->_obj_PSP->getPSPConfig(), $this->_obj_TxnInfo, $code == 100 ? Constants::iPAYMENT_ACCEPTED_STATE : Constants::iPAYMENT_REJECTED_STATE, "Status: ". $code, Constants::iINVOICE);
+		}
+		else { trigger_error("Callback for voucher payment is only supported for inheritors of CPMPSP so far", E_USER_WARNING); }
+	
+		return $code;
+	}
 }

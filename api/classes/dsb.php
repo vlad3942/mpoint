@@ -29,5 +29,5 @@ class DSB extends CPMPSP
 		$this->completeCapture($iAmount, 0, array('Dummy capture') );
 		return 1000;
 	}
-
+	public function invoice($sMsg = "" ,$iAmount = -1) { return 100; }
 }
