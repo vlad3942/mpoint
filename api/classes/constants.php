@@ -416,6 +416,11 @@ abstract class Constants
 	 *
 	 */
 	const iAPPLE_PAY_PSP = 14;
+	/**
+	 * Unique ID for the Payment Service Provider: Data Cash
+	 *
+	 */
+	const iDATA_CASH_PSP = 17;
 
 	/**
 	 * Unique ID for the Electronic Payment Flow
