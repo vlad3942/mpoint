@@ -405,7 +405,17 @@ abstract class Constants
 	 * Unique ID for the Payment Service Provider: Adyen
 	 *
 	 */
-	const iADYEN_PSP = 12;
+	const iADYEN_PSP = 12;	
+	/**
+	 * Unique ID for the Payment Service Provider: VISA Checkout
+	 *
+	 */
+	const iVISA_CHECKOUT_PSP = 13;
+	/**
+	 * Unique ID for the Payment Service Provider: Apple Pay
+	 *
+	 */
+	const iAPPLE_PAY_PSP = 14;
 
 	/**
 	 * Unique ID for the Electronic Payment Flow
@@ -501,10 +511,10 @@ abstract class Constants
 	 */
 	const iAPPLE_PAY = 15;
 	/**
-	 * Unique Card ID for transaction's made using VISA Checkout
+	 * Unique Card ID for transaction's made using the VISA Checkout Wallet
 	 *
 	 */
-	const iVISA_CHECKOUT = 16;
+	const iVISA_CHECKOUT_WALLET = 16;
 	/**
 	 * Unique Card ID for transaction's made using Danske Bank MobilePay
 	 *
@@ -530,6 +540,11 @@ abstract class Constants
 	 *
 	 */
 	const iUATP_CARD = 21;
+	/**
+	 * Unique Card ID for transaction's made using Discover
+	 *
+	 */
+	const iDISCOVER_CARD = 22;
 
 	/**
 	 * Unique Fee Type ID for Top-Ups
@@ -568,5 +583,17 @@ abstract class Constants
 	 * mConsole Enterprise URL endpoint.
 	 */
 	const sMCONSOLE_SINGLE_SIGN_ON_PATH = '/mconsole/single-sign-on';	
+	
+	/*
+	 * Value of the Payment Data retrieve call from the third party endpoint
+	 * To fetch the card details with out the PSP details
+	 */
+	const sPAYMENT_DATA_SUMMARY = "summary";
+	
+	/*
+	 * Value of the Payment Data retrieve call from the third party endpoint
+	 * To fetch the card details by passing the auth toke to the wallet instance.
+	 */
+	const sPAYMENT_DATA_FULL = "full";
 }
 ?>

@@ -14,4 +14,9 @@ class DIBSAuthorizeAPITest extends AuthorizeAPITest
         parent::testSuccessfulAuthorize(Constants::iDIBS_PSP);
     }
 
+	public function testSuccessfulAuthorizeIncludingAutoCapture()
+	{
+		parent::testSuccessfulAuthorizeIncludingAutoCapture(Constants::iDIBS_PSP);
+	}
+
 }
