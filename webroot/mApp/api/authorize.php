@@ -256,20 +256,34 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													 * Some versions of LibXML will report a wrong element name for "address" unless the XML element is marshalled into a string first
 													 */
 													$obj_Elem->addChild(simplexml_load_string($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->asXML() ) );
+													// Normalize full name into first name / last name
+													if (count($obj_Elem->address->{'full-name'}) == 1)
+													{
+														$pos = strrpos($obj_Elem->address->{'full-name'}, " ");
+														if ($pos > 0)
+														{
+															$obj_Elem->address->{'first-name'} = trim(substr($obj_Elem->address->{'full-name'}, 0, $pos) );
+															$obj_Elem->address->{'last-name'} = trim(substr($obj_Elem->address->{'full-name'}, $pos) );
+														}
+														else { $obj_Elem->address->{'first-name'} = trim($obj_Elem->address->{'full-name'}); }
+													}
 												}
 												// Merge billing address from request with the billing address returned by the 3rd party wallet
 												elseif (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address) == 1)
 												{
 													$obj_Elem->address["country-id"] = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address["country-id"];
+													// Normalize full name into first name / last name
 													if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'full-name'}) == 1)
 													{
-														$aFullName = explode(" ", $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'full-name'});
-														if(count($aFullName) > 0 ){
-															$obj_Elem->address->{'first-name'} = trim($aFullName[0]);
-															$obj_Elem->address->{'last-name'} = trim($aFullName[1]);
+														$pos = strrpos($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'full-name'}, " ");
+														if ($pos > 0)
+														{
+															$obj_Elem->address->{'first-name'} = trim(substr($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'full-name'}, 0, $pos) );
+															$obj_Elem->address->{'last-name'} = trim(substr($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'full-name'}, $pos) );
 														}
+														else { $obj_Elem->address->{'first-name'} = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'full-name'}); }
 													}
-													else 
+													else
 													{
 														if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'first-name'}) == 1) { $obj_Elem->address->{'first-name'} = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'first-name'}); }
 														if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'last-name'}) == 1) { $obj_Elem->address->{'last-name'} = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'last-name'}); }

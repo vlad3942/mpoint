@@ -132,13 +132,13 @@ class CPG extends Callback
 			$b .= '<date month="'. substr($obj_XML->expiry, 0, 2) .'" year="20'. substr($obj_XML->expiry, -2) .'" />'; // mandatory
 			$b .= '</expiryDate>';
 			// mandatory
-			if (count($obj_XML->{'card-holder-name'}) == 1) { $b .= '<cardHolderName>'. htmlspecialchars($obj_XML->{'card-holder-name'}, ENT_NOQUOTES) .'</cardHolderName>'; }
+			if (count($obj_XML->{'card-holder-name'}) == 1 && strlen($obj_XML->{'card-holder-name'}) > 0) { $b .= '<cardHolderName>'. htmlspecialchars($obj_XML->{'card-holder-name'}, ENT_NOQUOTES) .'</cardHolderName>'; }
 			elseif (count($obj_XML->address->{'first-name'}) == 1 || count($obj_XML->address->{'last-name'}) == 1)
 			{
 				$b .= '<cardHolderName>'. trim(htmlspecialchars($obj_XML->address->{'first-name'} .' '. $obj_XML->address->{'last-name'}, ENT_NOQUOTES) ) .'</cardHolderName>';
 			}
 			else { $b .= '<cardHolderName></cardHolderName>'; }
-
+			
 			$b .= '<cavv>'. htmlspecialchars($obj_XML->{'info-3d-secure'}->cryptogram, ENT_NOQUOTES) .'</cavv>';
 			if (strlen($obj_XML->{'info-3d-secure'}->cryptogram["eci"]) > 0)
 			{
@@ -152,21 +152,7 @@ class CPG extends Callback
 				$b .= '<xid>'. (string) $obj_XML->{'info-3d-secure'}->cryptogram["xid"] .'</xid>';
 			}
 			else { $b .= '<xid />'; }
-			
-			if (strlen($obj_XML->{'info-3d-secure'}->{"ve-res"}) > 0)
-			{
-				$b .= '<veresEnrolled>'. (string) $obj_XML->{'info-3d-secure'}->{"ve-res"}["enrolled"] .'</veresEnrolled>';
-				$b .= '<veresTimestamp>'. (string) $obj_XML->{'info-3d-secure'}->{"ve-res"} .'</veresTimestamp>';				
-			}
-			else { $b .= '<veresEnrolled /><veresTimestamp />'; }
-
-			if (strlen($obj_XML->{'info-3d-secure'}->{"pa-res"}) > 0)
-			{
-				$b .= '<paresStatus>'. (string) $obj_XML->{'info-3d-secure'}->{"pa-res"}["status"] .'</paresStatus>';
-				$b .= '<paresTimestamp>'. (string) $obj_XML->{'info-3d-secure'}->{"pa-res"} .'</paresTimestamp>';				
-			}
-			else { $b .= '<paresStatus /><paresTimestamp />'; }
-			
+						
 			switch (strtolower($obj_XML->{'info-3d-secure'}->cryptogram["type"]) )
 			{
 			case "3ds":	// 3DSecure

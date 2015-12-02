@@ -61,7 +61,7 @@ class Callback extends EndUserAccount
 		$this->_obj_TxnInfo = $oTI;
 		$this->aCONN_INFO = $aConnInfo;
 
-		if ($oPSPConfig == null) { $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $oTI->getPSPID() ); }
+		if ($oPSPConfig == null && $oTI->getPSPID() > 0) { $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $oTI->getPSPID() ); }
 		$this->_obj_PSPConfig = $oPSPConfig;
 	}
 
