@@ -31,6 +31,8 @@ require_once(sCLASS_PATH ."/adyen.php");
 require_once(sCLASS_PATH ."/visacheckout.php");
 // Require specific Business logic for the Apple Pay component
 require_once(sCLASS_PATH ."/applepay.php");
+// Require specific Business logic for the Emirates' Corporate Payment Gateway (CPG) component
+require_once(sCLASS_PATH ."/cpg.php");
 
 /**
  * Input XML format
@@ -79,7 +81,7 @@ try
 	// Intialise Text Translation Object
 	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 	
-	$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
+	$obj_mPoint = new Callback($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 	
 	$iStateID = (integer) $obj_XML->callback->status["code"];
 	
@@ -120,28 +122,6 @@ try
 		// E-Mail has been provided for the transaction
 		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
 	}
-	
-	//request received from client appliction for notification ot the wallet instance.
-	if($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_mPoint->getMessageData($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, false) ) == 1 )
-	{
-		if(isset($obj_XML->callback->{'psp-config'}["psp-id"]) === false )
-		{
-			$obj_XML->callback->{'psp-config'}->addAttribute('psp-id', $obj_TxnInfo->getPSPID());
-		}
-		
-		switch (intval($obj_XML->callback->{'psp-config'}["psp-id"]) )
-		{
-		case (Constants::iAPPLE_PAY_PSP):			
-			$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iAPPLE_PAY_PSP);
-			break;
-		case (Constants::iVISA_CHECKOUT_PSP):					
-			$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
-			break;
-		default:	
-			break;
-		}
-		$obj_mPoint->callback($obj_PSPConfig, $obj_XML->callback->transaction->card );
-	}
 		
 	$fee = 0;	
 	$obj_mPoint->completeTransaction( (integer) $obj_XML->callback->{'psp-config'}["psp-id"],
@@ -150,6 +130,24 @@ try
 									  $iStateID,
 									  $fee,
 									  array($HTTP_RAW_POST_DATA) );
+	
+	// Payment Authorized: Perform a callback to the 3rd party Wallet if required
+	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
+	{
+		$obj_PSPConfig = null;
+		switch (intval($obj_XML->callback->transaction->card["type-id"]) )
+		{
+		case (Constants::iVISA_CHECKOUT_WALLET):
+			$obj_Wallet = new VisaCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["visa-checkout"]);
+			$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
+			break;
+		case (Constants::iAPPLE_PAY):
+		default:
+			break;
+		}
+		// 3rd party Wallet requires Callback
+		if ( ($obj_PSPConfig instanceof PSPConfig) === true) { $obj_Wallet->callback($obj_PSPConfig, $obj_XML->callback->transaction->card); }
+	}
 	// Account Top-Up
 	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getTypeID() >= 100 && $obj_TxnInfo->getTypeID() <= 109)
 	{
@@ -165,12 +163,12 @@ try
 		}
 		switch ($obj_TxnInfo->getTypeID() )
 		{
-			case (Constants::iPURCHASE_OF_EMONEY):
-				$obj_mPoint->topup($iAccountID, Constants::iTOPUP_OF_EMONEY, $obj_TxnInfo->getID(), $obj_TxnInfo->getAmount() );
-				break;
-			case (Constants::iPURCHASE_OF_POINTS):
-				$obj_mPoint->topup($iAccountID, Constants::iTOPUP_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getPoints() );
-				break;
+		case (Constants::iPURCHASE_OF_EMONEY):
+			$obj_mPoint->topup($iAccountID, Constants::iTOPUP_OF_EMONEY, $obj_TxnInfo->getID(), $obj_TxnInfo->getAmount() );
+			break;
+		case (Constants::iPURCHASE_OF_POINTS):
+			$obj_mPoint->topup($iAccountID, Constants::iTOPUP_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getPoints() );
+			break;
 		}
 	}
 	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getReward() > 0 && $obj_TxnInfo->getAccountID() > 0)
@@ -200,7 +198,7 @@ try
 							   "amount" => $obj_TxnInfo->getAmount(),
 							   "card-id" =>  $obj_XML->callback->transaction->card["type-id"]);
 		
-		$responseCode = $obj_mPoint->capture($obj_TxnInfo->getAmount());
+		$responseCode = $obj_mPoint->capture($obj_TxnInfo->getAmount() );
 		
 		
 		if ($responseCode == 1000)
@@ -219,9 +217,15 @@ try
 	{
 		$obj_mPoint->notifyClient($iStateID, $obj_XML);
 	}
-	$xml .= '<status code="1000">Callback Success</status>';
+	$xml = '<status code="1000">Callback Success</status>';
 }
 catch (TxnInfoException $e)
+{
+	header("HTTP/1.1 500 Internal Server Error");
+	$xml .= '<status code="'. $e->getCode() .'">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES). '</status>';
+	trigger_error($e->getMessage() ."\n". $HTTP_RAW_POST_DATA, E_USER_WARNING);
+}
+catch (CallbackException $e)
 {
 	header("HTTP/1.1 500 Internal Server Error");
 	$xml .= '<status code="'. $e->getCode() .'">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES). '</status>';
