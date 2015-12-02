@@ -132,21 +132,28 @@ class CPG extends Callback
 			$b .= '<date month="'. substr($obj_XML->expiry, 0, 2) .'" year="20'. substr($obj_XML->expiry, -2) .'" />'; // mandatory
 			$b .= '</expiryDate>';
 			// mandatory
-			if (count($obj_XML->{'card-holder-name'}) == 1) { $b .= '<cardHolderName>'. htmlspecialchars($obj_XML->{'card-holder-name'}, ENT_NOQUOTES) .'</cardHolderName>'; }
+			if (count($obj_XML->{'card-holder-name'}) == 1 && strlen($obj_XML->{'card-holder-name'}) > 0) { $b .= '<cardHolderName>'. htmlspecialchars($obj_XML->{'card-holder-name'}, ENT_NOQUOTES) .'</cardHolderName>'; }
 			elseif (count($obj_XML->address->{'first-name'}) == 1 || count($obj_XML->address->{'last-name'}) == 1)
 			{
 				$b .= '<cardHolderName>'. trim(htmlspecialchars($obj_XML->address->{'first-name'} .' '. $obj_XML->address->{'last-name'}, ENT_NOQUOTES) ) .'</cardHolderName>';
 			}
 			else { $b .= '<cardHolderName></cardHolderName>'; }
-			$b .= '<xid/>';
-			$b .= '<cavv>'. htmlspecialchars($obj_XML->cryptogram, ENT_NOQUOTES) .'</cavv>';
-			if (strlen($obj_XML->cryptogram["eci"]) > 0)
+			
+			$b .= '<cavv>'. htmlspecialchars($obj_XML->{'info-3d-secure'}->cryptogram, ENT_NOQUOTES) .'</cavv>';
+			if (strlen($obj_XML->{'info-3d-secure'}->cryptogram["eci"]) > 0)
 			{
-				$eci = (integer) $obj_XML->cryptogram["eci"];
+				$eci = (integer) $obj_XML->{'info-3d-secure'}->cryptogram["eci"];
 				$b .= '<eci>'. ($eci < 10 ? "0". $eci : $eci) .'</eci>';
 			}
 			else { $b .= '<eci />'; }
-			switch (strtolower($obj_XML->cryptogram["type"]) )
+
+			if (strlen($obj_XML->{'info-3d-secure'}->cryptogram["xid"]) > 0)
+			{
+				$b .= '<xid>'. (string) $obj_XML->{'info-3d-secure'}->cryptogram["xid"] .'</xid>';
+			}
+			else { $b .= '<xid />'; }
+						
+			switch (strtolower($obj_XML->{'info-3d-secure'}->cryptogram["type"]) )
 			{
 			case "3ds":	// 3DSecure
 				$b .= '<paymentDataType>3DSecure</paymentDataType>';
@@ -155,6 +162,7 @@ class CPG extends Callback
 				$b .= '<paymentDataType>EMV</paymentDataType>';
 				break;
 			}
+
 			$b .= '<paymentCountryCode>'. $this->_getCountryCode(intval($this->getTxnInfo()->getCountryConfig()->getID() ) ) .'</paymentCountryCode>';
 		}
 		$b .= '<cardAddress>';
@@ -176,6 +184,7 @@ class CPG extends Callback
 		$b .= '</address>';
 		$b .= '</cardAddress>';
 		$b .= '</'. $this->getCardName($obj_XML["type-id"]) .'>';
+		if (intval($obj_XML["wallet-type-id"]) > 0) { $b .= '<restrictedRedirection>N</restrictedRedirection>'; }
 		$b .= '</paymentDetails>';
 		$b .= '<shopper>';
 		$b .= '<shopperIPAddress>'. htmlspecialchars($this->getTxnInfo()->getIP(), ENT_NOQUOTES) .'</shopperIPAddress>'; // mandatory
@@ -269,6 +278,7 @@ class CPG extends Callback
 				header("HTTP/1.1 502 Bad Gateway");
 
 				$xml = '<status code="92">'. htmlspecialchars($obj_DOM->orderStatus->error, ENT_NOQUOTES) .' ('. $obj_DOM->orderStatus->error["code"] .')</status>';
+				$b = str_replace("<cardNumber>". htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) ."</cardNumber>", "<cardNumber>". str_repeat("*", strlen(htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) ) ) ."</cardNumber>", $b);
 				$b = str_replace("<cvc>". intval($obj_XML->cvc) ."</cvc>", "<cvc>". str_repeat("*", strlen(intval($obj_XML->cvc) ) ) ."</cvc>", $b);
 				trigger_error("Unable to initialize payment transaction with CPG, error code: ". $obj_DOM->orderStatus->error["code"] ."\n". $obj_DOM->orderStatus->error->asXML() ."\n". "REQUEST: ". $b, E_USER_WARNING);
 			}
@@ -279,6 +289,7 @@ class CPG extends Callback
 				if (strlen($obj_DOM) > 0) { $error = $obj_DOM->asXML(); }
 				
 				$xml = '<status code="92">Unknown Error: '. htmlspecialchars($error, ENT_NOQUOTES) .'</status>';
+				$b = str_replace("<cardNumber>". htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) ."</cardNumber>", "<cardNumber>". str_repeat("*", strlen(htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) ) ) ."</cardNumber>", $b);
 				$b = str_replace("<cvc>". intval($obj_XML->cvc) ."</cvc>", "<cvc>". str_repeat("*", strlen(intval($obj_XML->cvc) ) ) ."</cvc>", $b);
 				trigger_error("Unable to initialize payment transaction with CPG, Unknown Error: ".$error ."\n". "REQUEST: ". $b, E_USER_WARNING);
 			}
@@ -288,6 +299,7 @@ class CPG extends Callback
 			header("HTTP/1.1 502 Bad Gateway");
 
 			$xml = '<status code="92">Rejected with HTTP Code: '. $code .'</status>';
+			$b = str_replace("<cardNumber>". htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) ."</cardNumber>", "<cardNumber>". str_repeat("*", strlen(htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) ) ) ."</cardNumber>", $b);
 			$b = str_replace("<cvc>". intval($obj_XML->cvc) ."</cvc>", "<cvc>". str_repeat("*", strlen(intval($obj_XML->cvc) ) ) ."</cvc>", $b);
 			trigger_error("Unable to initialize payment transaction with CPG, HTTP code: ". $code ."\n". "REQUEST: ". $b, E_USER_WARNING);
 		}
