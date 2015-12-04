@@ -29,6 +29,30 @@ projectinfo
             packaging = 'zip'
         }
 
+configurations
+        {
+            runtime
+        }
+
+dependencies
+        {
+            runtime 'com.cellpointmobile.php5api:php5api:1.0'
+        }
+
+task phpDependencies(type:Copy) {
+    into project.buildDir
+    from configurations.runtime
+}
+
+task dockerTest(type:Exec) {
+
+    workingDir 'docker'
+    commandLine './dockerw'
+}
+
+tasks.dockerTest.dependsOn extractPhpUnit
+tasks.dockerTest.dependsOn phpDependencies
+
 sourceSets {
     main {
         php

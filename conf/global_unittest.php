@@ -17,6 +17,9 @@ $aDB_CONN_INFO["mpoint"]["keycase"] = CASE_UPPER;
 $aDB_CONN_INFO["mpoint"]["debuglevel"] = 2;
 $aDB_CONN_INFO["mpoint"]["method"] = 1;
 
+$aDB_CONN_INFO["session"]["username"] = "postgres";
+$aDB_CONN_INFO["session"]["password"] = "postgres";
+
 $aMPOINT_CONN_INFO["protocol"] = "http";
 $aMPOINT_CONN_INFO["host"] = "mpoint.local.cellpointmobile.com";
 $aMPOINT_CONN_INFO["port"] = 80;
