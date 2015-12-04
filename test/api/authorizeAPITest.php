@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../../webroot/inc/include.php';
 require_once __DIR__ . '/../inc/testinclude.php';
 
-abstract class AuthorizeAPITest extends mPointBaseAPITest
+abstract class AuthorizeAPITest extends baseAPITest
 {
 	protected $_aMPOINT_CONN_INFO;
 

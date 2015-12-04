@@ -16,5 +16,7 @@ define("TESTDB_TOKEN", "test_". time() );
 require_once 'conf/global.php';
 require_once 'conf/global_unittest.php';
 
-include_once __DIR__. '/mpointBaseDatabaseTest.php';
-include_once __DIR__. '/mpointBaseAPITest.php';
+include_once __DIR__ . '/basedatabasetest.php';
+include_once __DIR__ . '/baseapitest.php';
+
+echo "Using testDB-token: ". TESTDB_TOKEN ."\n\n";
