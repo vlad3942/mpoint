@@ -203,9 +203,6 @@ SELECT id,16,currency FROM System.Country_Tbl WHERE currency IS NOT NULL;
 
 /*START: Adding PSP to Card mapping to the PSPCard_Tbl table for AMEX EXPRESS CHECKOUT*/
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 16 FROM System.Card_Tbl WHERE name = 'American Express';
-INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 16 FROM System.Card_Tbl WHERE name = 'Master Card';
-INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 16 FROM System.Card_Tbl WHERE name = 'VISA';
-INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 16 FROM System.Card_Tbl WHERE name = 'Discover';
 /*END: Adding PSP to Card mapping to the PSPCard_Tbl table for AMEX EXPRESS CHECKOUT*/
 
 -- Enable support for AMEX EXPRESS CHECKOUT through WorldPay
