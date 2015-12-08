@@ -1,3 +1,4 @@
+
 <?php
 /**
  * This files contains the Controller for mPoint's Mobile Web API.
@@ -55,6 +56,7 @@ require_once(sCLASS_PATH ."/cpg.php");
 require_once(sCLASS_PATH ."/visacheckout.php");
 // Require specific Business logic for the AMEX Express Checkout component
 require_once(sCLASS_PATH ."/amexexpresscheckout.php");
+
 if (function_exists("json_encode") === true && function_exists("curl_init") === true)
 {
 	// Require specific Business logic for the Stripe component
@@ -255,13 +257,49 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											if (count($obj_XML->{'payment-data'}) == 1)
 											{
 												$obj_Elem = $obj_XML->{'payment-data'}->card;
-												// Merge billing address from request as no billing address was returned by the 3rd party wallet 
+												// Add billing address from request as no billing address was returned by the 3rd party wallet 
 												if (count($obj_Elem->address) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address) == 1)
 												{
 													/*
 													 * Some versions of LibXML will report a wrong element name for "address" unless the XML element is marshalled into a string first
 													 */
 													$obj_Elem->addChild(simplexml_load_string($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->asXML() ) );
+													// Normalize full name into first name / last name
+													if (count($obj_Elem->address->{'full-name'}) == 1)
+													{
+														$pos = strrpos($obj_Elem->address->{'full-name'}, " ");
+														if ($pos > 0)
+														{
+															$obj_Elem->address->{'first-name'} = trim(substr($obj_Elem->address->{'full-name'}, 0, $pos) );
+															$obj_Elem->address->{'last-name'} = trim(substr($obj_Elem->address->{'full-name'}, $pos) );
+														}
+														else { $obj_Elem->address->{'first-name'} = trim($obj_Elem->address->{'full-name'}); }
+													}
+												}
+												// Merge billing address from request with the billing address returned by the 3rd party wallet
+												elseif (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address) == 1)
+												{
+													$obj_Elem->address["country-id"] = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address["country-id"];
+													// Normalize full name into first name / last name
+													if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'full-name'}) == 1)
+													{
+														$pos = strrpos($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'full-name'}, " ");
+														if ($pos > 0)
+														{
+															$obj_Elem->address->{'first-name'} = trim(substr($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'full-name'}, 0, $pos) );
+															$obj_Elem->address->{'last-name'} = trim(substr($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'full-name'}, $pos) );
+														}
+														else { $obj_Elem->address->{'first-name'} = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'full-name'}); }
+													}
+													else
+													{
+														if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'first-name'}) == 1) { $obj_Elem->address->{'first-name'} = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'first-name'}); }
+														if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'last-name'}) == 1) { $obj_Elem->address->{'last-name'} = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'last-name'}); }
+													}
+													$obj_Elem->address->street = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->street);
+													if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'postal-code'}) == 1) { $obj_Elem->address->{'postal-code'} = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'postal-code'}); }
+													$obj_Elem->address->city = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->city);
+													if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->state) == 1) { $obj_Elem->address->state = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->state); } 
 												}
 												// Merge CVC / CVV code from request
 												if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1)
@@ -273,7 +311,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												$obj_Elem["pspid"] = $obj_PSPConfig->getID();
 												$obj_Elem["wallet-type-id"] = intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]);
 											}
-											else { $code = 5; }
+											// 3rd Party Wallet returned error
+											elseif (count($obj_XML->status) == 1)
+											{
+												$obj_XML->status["code"] = intval($obj_XML->status["code"]) - 20;
+												$xml = str_replace('<?xml version="1.0"?>', '', $obj_XML->status->asXML() );
+												$code = 5;
+											}
+											// 3rd Party Wallet returned unknown error
+											else { $code = 6; }
 										}
 										else
 										{
@@ -481,7 +527,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										// 3rd Party Wallet returned error
 										elseif ($code > 4)
 										{
+											header("HTTP/1.1 502 Bad Gateway");
 											
+											if (empty($xml) === true) { $xml = '<status code="79">An unknown error occurred while retrieving payment data from 3rd party wallet</status>'; }
 										}
 										// Error: Card has been blocked
 										else

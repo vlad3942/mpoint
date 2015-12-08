@@ -322,7 +322,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 //				echo $sql ."\n";
 				$this->getDBConn()->query($sql);
 			}
-			else { throw new mPointException("Could not construct  XML for initializing payment with PSP: ". $this->getPSPConfig()->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
+			else { throw new mPointException("Could not construct  XML for initializing payment with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 		}
 		catch (mPointException $e)
 		{
