@@ -33,6 +33,8 @@ require_once(sCLASS_PATH ."/visacheckout.php");
 require_once(sCLASS_PATH ."/applepay.php");
 // Require specific Business logic for the Emirates' Corporate Payment Gateway (CPG) component
 require_once(sCLASS_PATH ."/cpg.php");
+// Require specific Business logic for the AMEX Express Checkout component
+require_once(sCLASS_PATH ."/amexexpresscheckout.php");
 
 /**
  * Input XML format
@@ -140,6 +142,10 @@ try
 		case (Constants::iVISA_CHECKOUT_WALLET):
 			$obj_Wallet = new VisaCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["visa-checkout"]);
 			$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
+			break;
+		case (Constants::iAMEX_EXPRESS_CHECKOUT_PSP):
+			$obj_Wallet = new AMEXExpressCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["amex-express-checkout"]);
+			$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
 			break;
 		case (Constants::iAPPLE_PAY):
 		default:

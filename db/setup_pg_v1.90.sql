@@ -183,3 +183,40 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10000
 UPDATE Client.MerchantAccount_Tbl SET name = username WHERE pspid = 4 AND name != username;
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 15, 4);
 /* ========== CONFIGURE DEMO ACCOUNT FOR APPLE PAY END ====== */
+
+/* ========== CONFIGURE CARD AMEX EXPRESS CHECKOUT START ========== */
+INSERT INTO System.Card_Tbl (id, name, position, logo) VALUES (25, 'AMEX Express Checkout', 16, NULL);
+/*Adding the dummy card prefix entry for AMEX EXPRESS CHECKOUT as a card*/
+INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 25, id FROM System.PricePoint_Tbl WHERE amount = -1;
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (25, 0, 0);
+/* ========== CONFIGURE CARD AMEX EXPRESS CHECKOUT END ========== */
+
+/* ========== CONFIGURE AMEX EXPRESS CHECKOUT START ========== */
+/*START: Adding PSP entries to the PSP_Tbl table for AMEX Express Checkout*/
+INSERT INTO System.PSP_Tbl (id, name) VALUES (16, 'AMEX Express Checkout');
+/*END: Adding PSP entries to the PSP_Tbl table for AMEX Express Checkout*/
+
+/*START: Adding Currency entries to the PSPCurrency_Tbl table for AMEX Express Checkout*/
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) 
+SELECT id,16,currency FROM System.Country_Tbl WHERE currency IS NOT NULL;
+/*END: Adding Currency entries to the PSPCurrency_Tbl table for AMEX EXPRESS CHECKOUT*/
+
+/*START: Adding PSP to Card mapping to the PSPCard_Tbl table for AMEX EXPRESS CHECKOUT*/
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 16 FROM System.Card_Tbl WHERE name = 'American Express';
+/*END: Adding PSP to Card mapping to the PSPCard_Tbl table for AMEX EXPRESS CHECKOUT*/
+
+-- Enable support for AMEX EXPRESS CHECKOUT through WorldPay
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (4, 25);
+--CPG
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (9, 25);
+--AMEX EXPRESS CHECKOUT
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (16, 25);
+/* ========== CONFIGURE AMEX EXPRESS CHECKOUT END ========== */
+
+/* ========== CONFIGURE DEMO ACCOUNT FOR AMEX EXPRESS CHECKOUT START ========== */
+-- AMEX EXPRESS CHECKOUT
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 16, 'amex express', 'fe27008a-fd5f-4796-84ba-a883a7f1a7b4', '730e3f8d-0ec1-4fd2-bf8c-37672f09d415');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 16, '-1');
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 25, 4);
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 25, 9);
+/* ========== CONFIGURE DEMO ACCOUNT FOR AMEX EXPRESS CHECKOUT END ====== */

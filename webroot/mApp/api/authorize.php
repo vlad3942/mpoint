@@ -1,3 +1,4 @@
+
 <?php
 /**
  * This files contains the Controller for mPoint's Mobile Web API.
@@ -53,6 +54,9 @@ require_once(sCLASS_PATH ."/worldpay.php");
 require_once(sCLASS_PATH ."/cpg.php");
 // Require specific Business logic for the VISA checkout component
 require_once(sCLASS_PATH ."/visacheckout.php");
+// Require specific Business logic for the AMEX Express Checkout component
+require_once(sCLASS_PATH ."/amexexpresscheckout.php");
+
 if (function_exists("json_encode") === true && function_exists("curl_init") === true)
 {
 	// Require specific Business logic for the Stripe component
@@ -241,6 +245,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											case (Constants::iVISA_CHECKOUT_WALLET):
 												$obj_Wallet = new VisaCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["visa-checkout"]);
 												$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
+												break;
+											case (Constants::iAMEX_EXPRESS_CHECKOUT_WALLET):
+												$obj_Wallet = new AMEXExpressCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["amex-express-checkout"]);
+												$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
 												break;
 											default:	
 												break;

@@ -56,6 +56,8 @@ require_once(sCLASS_PATH ."/adyen.php");
 require_once(sCLASS_PATH ."/visacheckout.php");
 // Require specific Business logic for the Apple Pay component
 require_once(sCLASS_PATH ."/applepay.php");
+// Require specific Business logic for the AMEX Express Checkout component
+require_once(sCLASS_PATH ."/amexexpresscheckout.php");
 
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
@@ -149,6 +151,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								break;
 							case (Constants::iVISA_CHECKOUT_WALLET):	// 3rd Party Wallet: VISA Checkout
 								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
+								break;
+							case (Constants::iAMEX_EXPRESS_CHECKOUT_WALLET):	// 3rd Party Wallet: AMEX Express Checkout
+								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
 								break;
 							default:	// Standard Payment Service Provider
 								// Find Configuration for Payment Service Provider
@@ -321,6 +326,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										break;
 									case (Constants::iAPPLE_PAY_PSP):
 										$xml .= '<url method="app" />';
+										break;
+									case (Constants::iAMEX_EXPRESS_CHECKOUT_PSP):
+										$xml .= '<url method="overlay" />';
+										$obj_PSP = new AMEXExpressCheckout($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["amex-express-checkout"]);
+										
+										$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), false);
+										
+										foreach ($obj_XML->children() as $obj_Elem)
+										{
+											$xml .= trim($obj_Elem->asXML() );
+										}
 										break;
 									}
 									$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. htmlspecialchars($obj_PSPConfig->getMessage($obj_TxnInfo->getLanguage() ), ENT_NOQUOTES) .'</message>';
