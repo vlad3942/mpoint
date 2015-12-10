@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../../webroot/inc/include.php';
 require_once __DIR__ . '/../inc/testinclude.php';
 
-class LoginAPIValidationTest extends mPointBaseAPITest
+class LoginAPIValidationTest extends baseAPITest
 {
 
     protected $_aMPOINT_CONN_INFO;

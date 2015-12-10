@@ -7,7 +7,7 @@
 
 require_once __DIR__. '/authorizeAPITest.php';
 
-class DSBAuthorizeVoucherAPITest extends mPointBaseAPITest
+class DSBAuthorizeVoucherAPITest extends baseAPITest
 {
 	protected $_aMPOINT_CONN_INFO;
 
