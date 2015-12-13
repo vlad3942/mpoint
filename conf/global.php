@@ -288,6 +288,7 @@ $aHTTP_CONN_INFO["dsb"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["dsb"]["paths"]["redeem"] = "/mpoint/dsb/redeem";
 $aHTTP_CONN_INFO["dsb"]["paths"]["refund"] = "/mpoint/dsb/refund";
 $aHTTP_CONN_INFO["dsb"]["paths"]["callback"] = "/mpoint/dsb/callback";
+$aHTTP_CONN_INFO["dsb"]["paths"]["cancel"] = "/mpoint/dsb/cancel";
 
 /**
  * Connection info for connecting to VISA Checkout

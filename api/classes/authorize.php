@@ -52,31 +52,42 @@ class Authorize extends General
 		$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_VOUCHER_STATE, "");
 		$this->getDBConn()->query("COMMIT");
 
-		// Add pspid, extenalid to transaction info
-		$misc = array('psp-id'=>$this->_obj_PSP->getPSPID(), 'extid'=>$iVoucherID);
-		$this->_obj_TxnInfo = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->_obj_TxnInfo, $misc);
-
 		// If amount if not set by caller, assume full transaction amount
 		if ($iAmount <= 0) { $iAmount = $this->_obj_TxnInfo->getAmount(); }
 
 		// If PSP supports the Redeem operation, perform the redemption
 		try
 		{
-			if ( ($this->_obj_PSP instanceof Redeemable) === true) { $code = $this->_obj_PSP->redeem($iVoucherID, $iAmount); }
+			if ( ($this->_obj_PSP instanceof Redeemable) === true)
+			{
+				$code = $this->_obj_PSP->redeem($iVoucherID, $iAmount);
+
+				if ( (is_int($code) && $code > 0) || strlen($code) > 0)
+				{
+					$iStateID = Constants::iPAYMENT_ACCEPTED_STATE;
+
+					// Add pspid, extenalid to transaction info
+					$misc = array('psp-id'=>$this->_obj_PSP->getPSPID(), 'extid'=>$code);
+					$this->_obj_TxnInfo = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->_obj_TxnInfo, $misc);
+					$code = 100;
+				}
+				else { $iStateID = Constants::iPAYMENT_REJECTED_STATE; }
+			}
 			else { throw new BadMethodCallException("Redeem not supported by PSP: ". get_class($this->_obj_PSP) ); }
 		}
 		catch (Exception $e)
 		{
 			$code = $e->getCode();
+			$iStateID = Constants::iPAYMENT_REJECTED_STATE;
 			$this->delMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_VOUCHER_STATE);
 			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_REJECTED_STATE, "Status code: ". $e->getCode(). "\n". $e->getMessage() );
 		}
 
-		if ($code == 402) { $code = 43; } //Insufficient balance on voucher is signalled by HTTP 402 Payment Required from external voucher issuer
+		if ($code == -402) { $code = 43; } //Insufficient balance on voucher is signalled by HTTP 402 Payment Required from external voucher issuer
 
 		if ( ($this->_obj_PSP instanceof CPMPSP) === true)
 		{
-			$this->_obj_PSP->initCallback($this->_obj_PSP->getPSPConfig(), $this->_obj_TxnInfo, $code == 100 ? Constants::iPAYMENT_ACCEPTED_STATE : Constants::iPAYMENT_REJECTED_STATE, "Status: ". $code);
+			$this->_obj_PSP->initCallback($this->_obj_PSP->getPSPConfig(), $this->_obj_TxnInfo, $iStateID, "Status: ". $code);
 		}
 		else { trigger_error("Callback for voucher payment is only supported for inheritors of CPMPSP so far", E_USER_WARNING); }
 
