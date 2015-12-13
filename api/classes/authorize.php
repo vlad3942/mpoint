@@ -83,8 +83,6 @@ class Authorize extends General
 			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_REJECTED_STATE, "Status code: ". $e->getCode(). "\n". $e->getMessage() );
 		}
 
-		if ($code == -402) { $code = 43; } //Insufficient balance on voucher is signalled by HTTP 402 Payment Required from external voucher issuer
-
 		if ( ($this->_obj_PSP instanceof CPMPSP) === true)
 		{
 			$this->_obj_PSP->initCallback($this->_obj_PSP->getPSPConfig(), $this->_obj_TxnInfo, $iStateID, "Status: ". $code);

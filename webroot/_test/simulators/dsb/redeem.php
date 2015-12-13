@@ -13,6 +13,7 @@ if (intval($obj_XML->{"redeem-voucher"}->transaction->amount) < 10)
 	echo '<root>';
 	echo '<voucher id="'. $obj_XML->{"redeem-voucher"}["id"] .'">';
 	echo '<status code="100">Success</status>';
+	echo '<transaction>61775</transaction>';
 	echo '</voucher>';
 	echo '</root>';
 
