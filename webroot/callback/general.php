@@ -35,6 +35,8 @@ require_once(sCLASS_PATH ."/applepay.php");
 require_once(sCLASS_PATH ."/cpg.php");
 // Require specific Business logic for the AMEX Express Checkout component
 require_once(sCLASS_PATH ."/amexexpresscheckout.php");
+// Require specific Business logic for the Master Pass component
+require_once(sCLASS_PATH ."/masterpass.php");
 
 /**
  * Input XML format
@@ -146,6 +148,10 @@ try
 		case (Constants::iAMEX_EXPRESS_CHECKOUT_PSP):
 			$obj_Wallet = new AMEXExpressCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["amex-express-checkout"]);
 			$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
+			break;
+		case (Constants::iMASTER_PASS_PSP):
+			$obj_Wallet = new MasterPass($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["masterpass"]);
+			$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMASTER_PASS_PSP);
 			break;
 		case (Constants::iAPPLE_PAY):
 		default:
