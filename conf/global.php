@@ -291,6 +291,21 @@ $aHTTP_CONN_INFO["visa-checkout"]["paths"]["get-payment-data"] = "/mpoint/visa-c
 $aHTTP_CONN_INFO["visa-checkout"]["paths"]["callback"] = "/mpoint/visa-checkout/callback";
 
 /**
+ * Connection info for connecting to AMEX Express Checkout
+ */
+$aHTTP_CONN_INFO["amex-express-checkout"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["amex-express-checkout"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["amex-express-checkout"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["amex-express-checkout"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["amex-express-checkout"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["amex-express-checkout"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["amex-express-checkout"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["amex-express-checkout"]["paths"]["initialize"] = "/mpoint/amex-express-checkout/initialize";
+$aHTTP_CONN_INFO["amex-express-checkout"]["paths"]["get-payment-data"] = "/mpoint/amex-express-checkout/get-payment-data";
+$aHTTP_CONN_INFO["amex-express-checkout"]["paths"]["callback"] = "/mpoint/amex-express-checkout/callback";
+
+
+/**
  * Connection info for connecting to Apple Pay
  */
 $aHTTP_CONN_INFO["apple-pay"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
