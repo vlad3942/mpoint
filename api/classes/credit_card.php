@@ -99,7 +99,7 @@ class CreditCard extends EndUserAccount
 
 		$sql = "SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength,
 					PSP.id AS pspid, MA.name AS account, MSA.name AS subaccount, PC.name AS currency,
-					CA.stateid
+					CA.stateid, CA.position AS client_position
 				FROM System".sSCHEMA_POSTFIX.".Card_Tbl C
 				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON C.id = CA.cardid
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl MA ON CA.clientid = MA.clientid
