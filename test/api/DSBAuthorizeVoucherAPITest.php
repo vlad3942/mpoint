@@ -132,7 +132,7 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 			$aStates[] = $row["stateid"];
 		}
 
-		$this->assertEquals(61775, $trow["extid"]);
+		$this->assertEquals(null, $trow["extid"]);
 		$this->assertEquals($pspID, $trow["pspid"]);
 		$this->assertEquals(11, $trow["amount"]);
 
