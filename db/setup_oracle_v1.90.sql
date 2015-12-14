@@ -229,3 +229,46 @@ INSERT INTO Client_Ownr.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 
 INSERT INTO Client_Ownr.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 22, 9);
 INSERT INTO Client_Ownr.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 23, 15);
 /* ========== CONFIGURE DEMO ACCOUNT FOR MASTER PASS START ========== */
+/* ========== CONFIGURE CARD AMEX EXPRESS CHECKOUT START ========== */
+INSERT INTO System_Ownr.Card_Tbl (id, name, position, logo) VALUES (25, 'AMEX Express Checkout', 16, NULL);
+INSERT INTO System_Ownr.Card_Tbl (id, name, position, logo, minlength, maxlength, cvclength) VALUES (25, 'AMEX Express Checkout', 16, NULL, 0, 0, 0);
+
+INSERT INTO System_Ownr.CardPrefix_Tbl (cardid, min, max) VALUES (25, 0, 0);
+
+
+INSERT INTO System_Ownr.CardPricing_Tbl (cardid, pricepointid) SELECT 25, id FROM System_Ownr.PricePoint_Tbl WHERE amount = -1;
+
+/* ========== CONFIGURE CARD AMEX EXPRESS CHECKOUT END ========== */
+
+/* ========== CONFIGURE AMEX EXPRESS CHECKOUT START ========== */
+/*START: Adding PSP entries to the PSP_Tbl table for AMEX Express Checkout*/
+INSERT INTO System_Ownr.PSP_Tbl (id, name) VALUES (16, 'AMEX Express Checkout');
+/*END: Adding PSP entries to the PSP_Tbl table for AMEX Express Checkout*/
+
+/*START: Adding Currency entries to the PSPCurrency_Tbl table for AMEX Express Checkout*/
+INSERT INTO System_Ownr.PSPCurrency_Tbl (countryid, pspid, name) 
+SELECT id,16,currency FROM System_Ownr.Country_Tbl WHERE currency IS NOT NULL;
+/*END: Adding Currency entries to the PSPCurrency_Tbl table for AMEX EXPRESS CHECKOUT*/
+
+/*START: Adding PSP to Card mapping to the PSPCard_Tbl table for AMEX EXPRESS CHECKOUT*/
+INSERT INTO System_Ownr.PSPCard_Tbl (cardid, pspid) SELECT id, 16 FROM System_Ownr.Card_Tbl WHERE name = 'American Express';
+INSERT INTO System_Ownr.PSPCard_Tbl (cardid, pspid) SELECT id, 16 FROM System_Ownr.Card_Tbl WHERE name = 'Master Card';
+INSERT INTO System_Ownr.PSPCard_Tbl (cardid, pspid) SELECT id, 16 FROM System_Ownr.Card_Tbl WHERE name = 'VISA';
+INSERT INTO System_Ownr.PSPCard_Tbl (cardid, pspid) SELECT id, 16 FROM System_Ownr.Card_Tbl WHERE name = 'Discover';
+/*END: Adding PSP to Card mapping to the PSPCard_Tbl table for AMEX EXPRESS CHECKOUT*/
+
+-- Enable support for AMEX EXPRESS CHECKOUT through WorldPay
+INSERT INTO System_Ownr.PSPCard_Tbl (pspid, cardid) VALUES (4, 25);
+--CPG
+INSERT INTO System_Ownr.PSPCard_Tbl (pspid, cardid) VALUES (9, 25);
+--AMEX EXPRESS CHECKOUT
+INSERT INTO System_Ownr.PSPCard_Tbl (pspid, cardid) VALUES (16, 25);
+/* ========== CONFIGURE AMEX EXPRESS CHECKOUT END ========== */
+
+/* ========== CONFIGURE DEMO ACCOUNT FOR AMEX EXPRESS CHECKOUT START ========== */
+-- AMEX EXPRESS CHECKOUT
+INSERT INTO Client_Ownr.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 16, 'amex express', 'fe27008a-fd5f-4796-84ba-a883a7f1a7b4', '730e3f8d-0ec1-4fd2-bf8c-37672f09d415');
+INSERT INTO Client_Ownr.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 16, '-1');
+INSERT INTO Client_Ownr.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 25, 4);
+INSERT INTO Client_Ownr.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 25, 9);
+/* ========== CONFIGURE DEMO ACCOUNT FOR AMEX EXPRESS CHECKOUT END ====== */

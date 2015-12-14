@@ -421,6 +421,7 @@ abstract class Constants
 	 *
 	 */
 	const iMASTER_PASS_PSP = 15;
+	/**
 	 * Unique ID for the Payment Service Provider: AMEX Express Checkout
 	 *
 	 */
