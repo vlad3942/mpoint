@@ -85,7 +85,7 @@ class Authorize extends General
 
 		if ( ($this->_obj_PSP instanceof CPMPSP) === true)
 		{
-			$this->_obj_PSP->initCallback($this->_obj_PSP->getPSPConfig(), $this->_obj_TxnInfo, $iStateID, "Status: ". $code);
+			$this->_obj_PSP->initCallback($this->_obj_PSP->getPSPConfig(), $this->_obj_TxnInfo, $iStateID, "Status: ". $code, Constants::iVOUCHER_CARD);
 		}
 		else { trigger_error("Callback for voucher payment is only supported for inheritors of CPMPSP so far", E_USER_WARNING); }
 

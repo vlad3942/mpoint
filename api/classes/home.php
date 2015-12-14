@@ -466,7 +466,7 @@ class Home extends General
 														       WHERE accountid = EUA.id) )";
 		}
 		$sql .= "
-				ORDER BY CA.position ASC NULLS LAST, C.name ASC";
+				ORDER BY CA.position ASC NULLS LAST, SC.name ASC";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 

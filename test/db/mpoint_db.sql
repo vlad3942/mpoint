@@ -6835,4 +6835,8 @@ INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) SELECT C.id * -1 AS pr
 INSERT INTO Log.State_Tbl (id, name) VALUES (2007, 'Payment with voucher');
 /* ========== CONFIGURE DSB PSP AND VOUCHER PAYMENT ========= */
 
--------
+------- MASTER v1.90 ---
+/* ==================== Client SCHEMA START ==================== */
+ALTER TABLE Client.CardAccess_tbl ADD position integer default NULL;
+/* ==================== Client SCHEMA END ==================== */
+
