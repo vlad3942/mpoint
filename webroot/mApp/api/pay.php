@@ -186,27 +186,27 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$aHTTP_CONN_INFO["dibs"]["path"] = str_replace("{account}", $obj_PSPConfig->getMerchantAccount(), $aHTTP_CONN_INFO["dibs"]["path"]);
 										$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["dibs"]);
 										$obj_XML = $obj_PSP->initialize($obj_ConnInfo, $obj_PSPConfig->getMerchantAccount(), $obj_PSPConfig->getMerchantSubAccount(), (string) $obj_Elem->currency, (integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"]);
-										foreach ($obj_XML->children() as $obj_Elem)
+										foreach ($obj_XML->children() as $obj_XMLElem)
 										{
 											// Hidden Fields
-											if (count($obj_Elem->children() ) > 0)
+											if (count($obj_XMLElem->children() ) > 0)
 											{
-												$xml .= '<'. $obj_Elem->getName() .'>';
-												foreach ($obj_Elem->children() as $obj_Child)
+												$xml .= '<'. $obj_XMLElem->getName() .'>';
+												foreach ($obj_XMLElem->children() as $obj_Child)
 												{
 													$xml .= $obj_Child->asXML();
 												}
-												$xml .= '</'. $obj_Elem->getName() .'>';
+												$xml .= '</'. $obj_XMLElem->getName() .'>';
 											}
-											else { $xml .= $obj_Elem->asXML(); }
+											else { $xml .= $obj_XMLElem->asXML(); }
 										}
 										break;
 									case (Constants::iWORLDPAY_PSP):
 										// Construct list of cards supported by the Payment Service Provider
 										$aCards = array();
-										foreach ($obj_XML->children() as $obj_Elem)
+										foreach ($obj_XML->children() as $obj_XMLElem)
 										{
-											if ($obj_PSPConfig->getID() == $obj_Elem["pspid"]) { $aCards[] = $obj_Elem["type-id"]; }
+											if ($obj_PSPConfig->getID() == $obj_XMLElem["pspid"]) { $aCards[] = $obj_XMLElem["type-id"]; }
 										}
 										$obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["worldpay"]);
 										if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["worldpay"]["host"] = str_replace("secure.", "secure-test.", $aHTTP_CONN_INFO["worldpay"]["host"]); }
@@ -230,19 +230,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$aHTTP_CONN_INFO["payex"]["password"] = $obj_PSPConfig->getPassword();
 										$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["payex"]);
 										$obj_XML = $obj_PSP->initialize($obj_ConnInfo, $obj_PSPConfig->getMerchantAccount(), (string) $obj_Elem->currency);
-										foreach ($obj_XML->children() as $obj_Elem)
+										foreach ($obj_XML->children() as $obj_XMLElem)
 										{
 											// Hidden Fields
-											if (count($obj_Elem->children() ) > 0)
+											if (count($obj_XMLElem->children() ) > 0)
 											{
-												$xml .= '<'. $obj_Elem->getName() .'>';
-												foreach ($obj_Elem->children() as $obj_Child)
+												$xml .= '<'. $obj_XMLElem->getName() .'>';
+												foreach ($obj_XMLElem->children() as $obj_Child)
 												{
 													$xml .= $obj_Child->asXML();
 												}
-												$xml .= '</'. $obj_Elem->getName() .'>';
+												$xml .= '</'. $obj_XMLElem->getName() .'>';
 											}
-											else { $xml .= $obj_Elem->asXML(); }
+											else { $xml .= $obj_XMLElem->asXML(); }
 										}
 										break;
 									case (Constants::iWANNAFIND_PSP):
@@ -264,9 +264,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 																		(integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"],
 																		$storecard);
 	
-										foreach ($obj_XML->children() as $obj_Elem)
+										foreach ($obj_XML->children() as $obj_XMLElem)
 										{
-											$xml .= trim($obj_Elem->asXML() );
+											$xml .= trim($obj_XMLElem->asXML() );
 										}
 										break;
 									case (Constants::iSTRIPE_PSP):
@@ -292,9 +292,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										
 										$obj_PSP = new MobilePay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["mobilepay"]);
 										$obj_XML = $obj_PSP->initialize($obj_PSPConfig);
-										foreach ($obj_XML->children() as $obj_Elem)
+										foreach ($obj_XML->children() as $obj_XMLElem)
 										{
-											$xml .= trim($obj_Elem->asXML() );
+											$xml .= trim($obj_XMLElem->asXML() );
 										}
 										break;
 									case (Constants::iCPG_PSP):
@@ -309,9 +309,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) );
 										if (General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, ""); }
 										
-										foreach ($obj_XML->children() as $obj_Elem)
+										foreach ($obj_XML->children() as $obj_XMLElem)
 										{
-											$xml .= trim($obj_Elem->asXML() );
+											$xml .= trim($obj_XMLElem->asXML() );
 										}
 										break;
 									case (Constants::iVISA_CHECKOUT_PSP):
@@ -319,9 +319,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										
 										$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), false);
 										
-										foreach ($obj_XML->children() as $obj_Elem)
+										foreach ($obj_XML->children() as $obj_XMLElem)
 										{
-											$xml .= trim($obj_Elem->asXML() );
+											$xml .= trim($obj_XMLElem->asXML() );
 										}
 										break;
 									case (Constants::iAPPLE_PAY_PSP):
@@ -400,9 +400,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		header("HTTP/1.1 400 Bad Request");
 
 		$xml = '';
-		foreach ($obj_DOM->children() as $obj_Elem)
+		foreach ($obj_DOM->children() as $obj_XMLElem)
 		{
-			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>';
+			$xml .= '<status code="400">Wrong operation: '. $obj_XMLElem->getName() .'</status>';
 		}
 	}
 	// Error: Invalid Input
