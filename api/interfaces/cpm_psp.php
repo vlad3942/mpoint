@@ -448,8 +448,15 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 * @param SimpleXMLElement $obj_Card	Details for the token that should be used to retrieve the payment data from the 3rd Party Wallet.
 	 * @return string
 	 */
-	public function callback(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card)
+	public function callback(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $purchaseDate = null)
 	{
+		$purchaseDateNode = "";
+		
+		if($purchaseDate != null)
+		{
+			$purchaseDateNode = "<PurchaseDate>".$purchaseDate."</PurchaseDate>";
+		}
+		
 		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML() );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
@@ -458,10 +465,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '<callback>';
 		$b .= $obj_PSPConfig->toXML();
 		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
-		$b .= str_replace("</transaction>", str_replace('<?xml version="1.0"?>', '', $obj_Card->asXML() ). "</transaction>", $this->_constTxnXML() );
+		$b .= str_replace("</transaction>", str_replace('<?xml version="1.0"?>', '', $obj_Card->asXML().$purchaseDateNode ). "</transaction>", $this->_constTxnXML() );
 		$b .= '</callback>';
 		$b .= '</root>';
-		
+		echo $b;exit;
 		$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["callback"]);
 
 		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
