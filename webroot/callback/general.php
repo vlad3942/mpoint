@@ -152,6 +152,19 @@ try
 		case (Constants::iMASTER_PASS_PSP):
 			$obj_Wallet = new MasterPass($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["masterpass"]);
 			$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMASTER_PASS_PSP);
+			
+			if($obj_XML->callback->transaction->card->PurchaseDate instanceof SimpleDOMElement)
+			{
+				if($obj_XML->callback->transaction->card->PurchaseDate == "")
+				{
+					$obj_XML->callback->transaction->card->PurchaseDate = date('c',time());
+				}
+			} 
+			else 
+			{
+				$obj_XML->callback->transaction->card->{'PurchaseDate'} = date('c',time());
+			}
+			
 			break;
 		case (Constants::iAPPLE_PAY):
 		default:
