@@ -558,6 +558,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										header("HTTP/1.1 402 Payment Required");
 										$xml .= '<status code="43">Insufficient balance on voucher</status>';
 									}
+									else if ($code == 48)
+									{
+										header("HTTP/1.1 423 Locked");
+										$xml .= '<status code="48">Voucher payment temporarily locked</status>';
+									}
 									else
 									{
 										header("HTTP/1.1 502 Bad Gateway");
