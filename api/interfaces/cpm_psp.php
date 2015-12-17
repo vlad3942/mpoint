@@ -468,7 +468,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= str_replace("</transaction>", str_replace('<?xml version="1.0"?>', '', $obj_Card->asXML().$purchaseDateNode ). "</transaction>", $this->_constTxnXML() );
 		$b .= '</callback>';
 		$b .= '</root>';
-		echo $b;exit;
+		
 		$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["callback"]);
 
 		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
