@@ -702,8 +702,15 @@ class mConsole extends Admin
 		$stmt1 = $this->getDBConn()->prepare($sql);
 		$sql = "SELECT id, stateid, data, created
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
-				WHERE txnid = $1
-				ORDER BY id ASC";
+				WHERE txnid = $1";
+		
+		if (count($aStateIDs) > 0) 
+		{ 
+			$sql .= " AND stateid IN (". implode(",", $aStateIDs) .")"; 
+		}
+		
+		$sql .= "ORDER BY id ASC";
+		
 //		echo $sql ."\n";
 		$stmt2 = $this->getDBConn()->prepare($sql);
 		
