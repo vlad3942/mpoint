@@ -682,22 +682,28 @@ class mConsole extends Admin
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 		
-		$sql = "SELECT stateid
-				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
-				WHERE txnid = $1 
-			";
-		if (count($aStateIDs) > 0) 
-		{ 
-			$sql .= " AND stateid IN (". implode(",", $aStateIDs) .")"; 
-		}
-		else
+		if (count($aStateIDs) == 0) 
 		{
-			$sql .= " AND stateid IN (". Constants::iINPUT_VALID_STATE .", ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .", ". Constants::iPAYMENT_ACCEPTED_STATE .",
-				". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_DECLINED_STATE .", ".Constants::iPAYMENT_REJECTED_STATE.", ".Constants::iPAYMENT_REFUNDED_STATE.",
-				".Constants::iPAYMENT_CANCELLED_STATE.")";
+		    
+			$aStateIDs = array(
+					Constants::iINPUT_VALID_STATE , 
+					Constants::iPAYMENT_INIT_WITH_PSP_STATE , 
+					Constants::iPAYMENT_ACCEPTED_STATE , 
+					Constants::iPAYMENT_CAPTURED_STATE, 
+					Constants::iPAYMENT_DECLINED_STATE, 
+					Constants::iPAYMENT_REJECTED_STATE, 
+					Constants::iPAYMENT_REFUNDED_STATE,
+					Constants::iPAYMENT_CANCELLED_STATE
+				);
 		}
 		
-		$sql.= "ORDER BY id DESC";
+		
+		$sql = "SELECT stateid
+				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
+				WHERE txnid = $1 AND stateid IN (". implode(",", $aStateIDs) .")
+				ORDER BY id DESC
+			";
+		
 //		echo $sql ."\n";
 		$stmt1 = $this->getDBConn()->prepare($sql);
 		$sql = "SELECT id, stateid, data, created
@@ -709,7 +715,7 @@ class mConsole extends Admin
 			$sql .= " AND stateid IN (". implode(",", $aStateIDs) .")"; 
 		}
 		
-		$sql .= "ORDER BY id ASC";
+		$sql.= "ORDER BY id ASC";
 		
 //		echo $sql ."\n";
 		$stmt2 = $this->getDBConn()->prepare($sql);
@@ -759,27 +765,31 @@ class mConsole extends Admin
 					}
 				}
 			}
-			$aObj_TransactionLogs[] = new TransactionLogInfo($RS["ID"],
-															 $RS["TYPEID"],
-															 $RS["ORDERNO"],
-															 $RS["EXTERNALID"],
-															 new BasicConfig($RS["CLIENTID"], $RS["CLIENT"]),
-															 new BasicConfig($RS["ACCOUNTID"], $RS["ACCOUNT"]),
-															 $RS["PSPID"] > 0 ? new BasicConfig($RS["PSPID"], $RS["PSP"]) : null,
-															 $RS["PAYMENTMETHODID"] > 0 ? new BasicConfig($RS["PAYMENTMETHODID"], $RS["PAYMENTMETHOD"]) : null,
-															 $RS["STATEID"],
-															 $aObj_CountryConfigurations[$RS["COUNTRYID"] ],
-															 $RS["AMOUNT"],
-															 $RS["CAPTURED"],
-															 $RS["POINTS"],
-															 $RS["REWARD"],
-															 $RS["REFUND"],
-															 $RS["FEE"],
-															 $RS["MODE"],
-															 new CustomerInfo($RS["CUSTOMERID"], $RS["OPERATORID"]/100, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"], $RS["FIRSTNAME"] ." ". $RS["LASTNAME"], $RS["LANGUAGE"]),
-															 $RS["IP"],
-															 gmdate("Y-m-d H:i:sP", strtotime(substr($RS["CREATED"], 0, strpos($RS["CREATED"], ".") ) ) ),
-															 $aObj_Messages);
+			
+			if(in_array( $RS["STATEID"], $aStateIDs ) == true)
+			{
+				$aObj_TransactionLogs[] = new TransactionLogInfo($RS["ID"],
+																 $RS["TYPEID"],
+																 $RS["ORDERNO"],
+																 $RS["EXTERNALID"],
+																 new BasicConfig($RS["CLIENTID"], $RS["CLIENT"]),
+																 new BasicConfig($RS["ACCOUNTID"], $RS["ACCOUNT"]),
+																 $RS["PSPID"] > 0 ? new BasicConfig($RS["PSPID"], $RS["PSP"]) : null,
+																 $RS["PAYMENTMETHODID"] > 0 ? new BasicConfig($RS["PAYMENTMETHODID"], $RS["PAYMENTMETHOD"]) : null,
+																 $RS["STATEID"],
+																 $aObj_CountryConfigurations[$RS["COUNTRYID"] ],
+																 $RS["AMOUNT"],
+																 $RS["CAPTURED"],
+																 $RS["POINTS"],
+																 $RS["REWARD"],
+																 $RS["REFUND"],
+																 $RS["FEE"],
+																 $RS["MODE"],
+																 new CustomerInfo($RS["CUSTOMERID"], $RS["OPERATORID"]/100, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"], $RS["FIRSTNAME"] ." ". $RS["LASTNAME"], $RS["LANGUAGE"]),
+																 $RS["IP"],
+																 gmdate("Y-m-d H:i:sP", strtotime(substr($RS["CREATED"], 0, strpos($RS["CREATED"], ".") ) ) ),
+																 $aObj_Messages);
+			}
 		}
 	
 		return $aObj_TransactionLogs;
