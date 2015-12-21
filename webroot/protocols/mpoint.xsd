@@ -159,10 +159,9 @@
 							<xs:complexType>
 								<xs:all>
 									<xs:element name="card" minOccurs="1" maxOccurs="1">
-										<xs:complexType>
-											<xs:sequence>
-												<xs:choice minOccurs="1" maxOccurs="1">
-													<xs:element name="cryptogram">
+										<xs:complexType>											
+												<xs:all>
+													<xs:element name="cryptogram" minOccurs="0" maxOccurs="1">
 														<xs:complexType>
 															<xs:sequence>
 																<xs:element type="xs:string" name="key" minOccurs="1" maxOccurs="1" />
@@ -170,7 +169,7 @@
 															</xs:sequence>
 														</xs:complexType>
 													</xs:element>
-													<xs:element name="token" type="xs:string" />
+													<xs:element name="token" type="xs:string" minOccurs="0" maxOccurs="1" />
 													<xs:element name="verifier" type="xs:string" minOccurs="0" maxOccurs="1">
 														<xs:annotation>
 							            					<xs:documentation>The OAuth verifier sent to the user application along with the access token.</xs:documentation>
@@ -181,8 +180,7 @@
 						            						<xs:documentation>The URL that contains the checkoutId for perofrming cheeckout operation with MasterPass.</xs:documentation>
 						            					</xs:annotation>
 													</xs:element>
-												</xs:choice>
-											</xs:sequence>
+												</xs:all>
 											<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
 										</xs:complexType>
 									</xs:element>
