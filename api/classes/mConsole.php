@@ -534,12 +534,29 @@ class mConsole extends Admin
 
 		try
 		{
+			$code = -1;
 			$h = trim($this->constHTTPHeaders() ) .HTTPClient::CRLF;
 			$h .= "X-Auth-Token: ". $authtoken .HTTPClient::CRLF;
 			$obj_HTTP = new HTTPClient(new Template(), $oCI);				
 			$obj_HTTP->connect();
-			$code = $obj_HTTP->send($h, $b);
-			$obj_HTTP->disConnect();		
+			$HTTPResponseCode = $obj_HTTP->send($h, $b);
+			$response = simpledom_load_string($obj_HTTP->getReplyBody());
+			foreach($response->attributes() as $key => $val) 
+			{
+    			if($key == "code")
+    			{
+    				$responseCode = intval($val);
+    			}
+			}			
+			$obj_HTTP->disConnect();
+			if(intval($HTTPResponseCode) == 200 && $responseCode > 0 )
+			{
+				$code = $responseCode;
+			}
+			else
+			{
+				$code = $HTTPResponseCode;
+			}
 			
 			switch ($code)
 			{
