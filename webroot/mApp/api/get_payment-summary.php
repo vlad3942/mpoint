@@ -41,6 +41,10 @@ require_once(sINTERFACE_PATH ."/cpm_psp.php");
 require_once(sCLASS_PATH ."/visacheckout.php");
 // Require specific Business logic for the Apple Pay component
 require_once(sCLASS_PATH ."/applepay.php");
+// Require specific Business logic for the MasterPass component
+require_once(sCLASS_PATH ."/masterpass.php");
+// Require specific Business logic for the AMEX Express Checkout component
+require_once(sCLASS_PATH ."/amexexpresscheckout.php");
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -106,6 +110,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$obj_Wallet = new VisaCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["visa-checkout"]);
 								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
 								break;
+							case (Constants::iMASTER_PASS_WALLET):
+								$obj_Wallet = new MasterPass($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["masterpass"]);
+								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iMASTER_PASS_PSP);
+								break;
+							case (Constants::iAMEX_EXPRESS_CHECKOUT_WALLET):
+								$obj_Wallet = new AMEXExpressCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["amex-express-checkout"]);
+								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
+								break;
 							default:
 								break;
 							}
@@ -115,10 +127,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							{
 								$sXML = str_replace('<?xml version="1.0"?>', '', $obj_XML->{'payment-data'}->card->asXML() );								
 							}
-							else if(count($obj_XML->status) == 1)
+							// 3rd Party Wallet returned error
+							elseif (count($obj_XML->status) == 1)
 							{
-								$sXML - str_replace('<?xml version="1.0"?>', '', $obj_XML->status->asXML() );
+								$obj_XML->status["code"] = intval($obj_XML->status["code"]) - 20;
+								$sXML = str_replace('<?xml version="1.0"?>', '', $obj_XML->status->asXML() );
+								$code = 5;
 							}
+							// 3rd Party Wallet returned unknown error
+							else { $code = 6; }
 							 $xml .= $sXML;
 						}
 						else
