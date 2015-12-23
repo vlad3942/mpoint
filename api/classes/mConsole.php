@@ -549,7 +549,7 @@ class mConsole extends Admin
     			}
 			}			
 			$obj_HTTP->disConnect();
-			if(intval($HTTPResponseCode) == 200 && $responseCode > 0 )
+			if(intval($HTTPResponseCode) == 200 )
 			{
 				$code = $responseCode;
 			}
