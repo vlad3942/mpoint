@@ -11,3 +11,10 @@ ALTER TABLE Client.CardAccess_tbl DROP CONSTRAINT cardaccess_uq;
 CREATE UNIQUE INDEX CONCURRENTLY cardaccess_uq ON Client.CardAccess_tbl (clientid, cardid, pspid) WHERE countryid IS NULL;
 CREATE UNIQUE INDEX CONCURRENTLY cardaccess_country_uq ON Client.CardAccess_tbl (clientid, cardid, pspid, countryid) WHERE countryid IS NOT NULL;
 /* ==================== LOG CLIENT END ==================== */
+
+/* ==================== LOG CLIENT START CMC-1786 ==================== */
+DROP INDEX CONCURRENTLY Client.cardaccess_uq;
+DROP INDEX CONCURRENTLY Client.Clientcardaccess_country_uq;
+CREATE UNIQUE INDEX CONCURRENTLY cardaccess_uq ON Client.CardAccess_tbl (clientid, cardid) WHERE countryid IS NULL;
+CREATE UNIQUE INDEX CONCURRENTLY cardaccess_card_country_uq ON Client.CardAccess_tbl (clientid, cardid, countryid) WHERE countryid IS NOT NULL;
+/* ==================== LOG CLIENT END ==================== */
