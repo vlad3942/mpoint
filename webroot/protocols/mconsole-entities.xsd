@@ -1429,7 +1429,7 @@
 				</xs:annotation>
 				 <xs:complexType>
 					<xs:sequence>
-						<xs:element name="transaction-stats-by-date" minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="transaction-stats-by-day" minOccurs="0" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:documentation>
 									Contains the transaction statistics by the individual date(day) within the given time span
