@@ -332,7 +332,22 @@ $aHTTP_CONN_INFO["masterpass"]["paths"]["initialize"] = "/mpoint/masterpass/init
 $aHTTP_CONN_INFO["masterpass"]["paths"]["get-payment-data"] = "/mpoint/masterpass/get-payment-data";
 $aHTTP_CONN_INFO["masterpass"]["paths"]["callback"] = "/mpoint/masterpass/callback";
 
-
+/**
+ * Connection info for connecting to Data Cash
+ */
+$aHTTP_CONN_INFO["data-cash"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["data-cash"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["data-cash"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["data-cash"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["data-cash"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["data-cash"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["data-cash"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["data-cash"]["paths"]["initialize"] = "/mpoint/data-cash/initialize";
+$aHTTP_CONN_INFO["data-cash"]["paths"]["auth"] = "/mpoint/data-cash/authorize-payment";
+$aHTTP_CONN_INFO["data-cash"]["paths"]["capture"] = "/mpoint/data-cash/capture";
+$aHTTP_CONN_INFO["data-cash"]["paths"]["status"] = "/mpoint/data-cash/status";
+$aHTTP_CONN_INFO["data-cash"]["paths"]["cancel"] = "/mpoint/data-cash/cancel";
+$aHTTP_CONN_INFO["data-cash"]["paths"]["refund"] = "/mpoint/data-cash/refund";
 /**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
