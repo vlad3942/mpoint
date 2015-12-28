@@ -56,6 +56,8 @@ require_once(sCLASS_PATH ."/adyen.php");
 require_once(sCLASS_PATH ."/visacheckout.php");
 // Require specific Business logic for the Apple Pay component
 require_once(sCLASS_PATH ."/applepay.php");
+// Require specific Business logic for the Data Cash component
+require_once(sCLASS_PATH ."/datacash.php");
 // Require specific Business logic for the Master Pass component
 require_once(sCLASS_PATH ."/masterpass.php");
 // Require specific Business logic for the AMEX Express Checkout component
@@ -349,10 +351,20 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										{
 											$xml .= trim($obj_Elem->asXML() );
 										}
-										break;						
-										
+										break;	
 									case (Constants::iAPPLE_PAY_PSP):
 										$xml .= '<url method="app" />';
+										break;
+									case (Constants::iDATA_CASH_PSP):
+										$obj_PSP = new DataCash($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["data-cash"]);
+											
+										$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) );
+//										if (General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, ""); }
+									
+										foreach ($obj_XML->children() as $obj_Elem)
+										{
+											$xml .= trim($obj_Elem->asXML() );
+										}
 										break;
 									}
 									$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. htmlspecialchars($obj_PSPConfig->getMessage($obj_TxnInfo->getLanguage() ), ENT_NOQUOTES) .'</message>';
