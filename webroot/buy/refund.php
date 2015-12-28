@@ -49,6 +49,8 @@ require_once(sCLASS_PATH ."/datacash.php");
 require_once(sCLASS_PATH ."/masterpass.php");
 // Require specific Business logic for the AMEX Express Checkout component
 require_once(sCLASS_PATH ."/amexexpresscheckout.php");
+// Require specific Business logic for the WireCard component
+require_once(sCLASS_PATH ."/wirecard.php");
 
 header("Content-Type: application/x-www-form-urlencoded");
 
