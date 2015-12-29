@@ -54,7 +54,7 @@ $aDB_CONN_INFO["mpoint"]["password"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["class"] = "Oracle";
 */
 $aDB_CONN_INFO["mpoint"]["host"] = "localhost";
-$aDB_CONN_INFO["mpoint"]["port"] = 5432;
+$aDB_CONN_INFO["mpoint"]["port"] = 5434;
 $aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["password"] = "hspzr735abl";
@@ -74,7 +74,7 @@ $aDB_CONN_INFO["mpoint"]["method"] = 1;
  * Database settings for Session database
  */
 $aDB_CONN_INFO["session"]["host"] = "localhost";
-$aDB_CONN_INFO["session"]["port"] = 5432;
+$aDB_CONN_INFO["session"]["port"] = 5434;
 $aDB_CONN_INFO["session"]["path"] = "session";
 $aDB_CONN_INFO["session"]["username"] = "session";
 $aDB_CONN_INFO["session"]["password"] = "2a2ac8447e";
@@ -96,10 +96,10 @@ $aDB_CONN_INFO["session"]["method"] = 1;
  */
 $aHTTP_CONN_INFO["mesb"]["protocol"] = "http";
 //$aHTTP_CONN_INFO["mesb"]["host"] = "213.173.252.92";
-$aHTTP_CONN_INFO["mesb"]["host"] = "localhost";
+$aHTTP_CONN_INFO["mesb"]["host"] = "tutorial.localhost";
 $aHTTP_CONN_INFO["mesb"]["port"] = 10080;
 $aHTTP_CONN_INFO["mesb"]["timeout"] = 120;
-$aHTTP_CONN_INFO["mesb"]["path"] = "/";
+$aHTTP_CONN_INFO["mesb"]["path"] = "/";	
 $aHTTP_CONN_INFO["mesb"]["method"] = "POST";
 $aHTTP_CONN_INFO["mesb"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["mesb"]["username"] = "";
