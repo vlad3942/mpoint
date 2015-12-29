@@ -42,6 +42,12 @@ require_once(sCLASS_PATH ."/mobilepay.php");
 require_once(sCLASS_PATH ."/adyen.php");
 // Require specific Business logic for the VISA checkout component
 require_once(sCLASS_PATH ."/visacheckout.php");
+// Require specific Business logic for the Data Cash component
+require_once(sCLASS_PATH ."/datacash.php");
+// Require specific Business logic for the Master Pass component
+require_once(sCLASS_PATH ."/masterpass.php");
+// Require specific Business logic for the AMEX Express Checkout component
+require_once(sCLASS_PATH ."/amexexpresscheckout.php");
 
 header("Content-Type: application/x-www-form-urlencoded");
 

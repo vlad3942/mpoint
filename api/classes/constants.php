@@ -416,6 +416,21 @@ abstract class Constants
 	 *
 	 */
 	const iAPPLE_PAY_PSP = 14;
+	/**
+	 * Unique ID for the Payment Service Provider: Master Pass
+	 *
+	 */
+	const iMASTER_PASS_PSP = 15;
+	/**
+	 * Unique ID for the Payment Service Provider: AMEX Express Checkout
+	 *
+	 */
+	const iAMEX_EXPRESS_CHECKOUT_PSP = 16;
+	/**
+	 * Unique ID for the Payment Service Provider: Data Cash
+	 *
+	 */
+	const iDATA_CASH_PSP = 17;
 
 	/**
 	 * Unique ID for the Electronic Payment Flow
@@ -540,7 +555,22 @@ abstract class Constants
 	 *
 	 */
 	const iUATP_CARD = 21;
+	/**
+	 * Unique Card ID for transaction's made using Discover
+	 *
+	 */
+	const iDISCOVER_CARD = 22;
+	/**
+	 * Unique Card ID for transaction's made using Master Pass
+	 *
+	 */
+	const iMASTER_PASS_WALLET = 23;
 
+	/**
+	 * Unique Card ID for transaction's made using AMEX Express Checkout Wallet
+	 *
+	 */
+	const iAMEX_EXPRESS_CHECKOUT_WALLET = 25;
 	/**
 	 * Unique Fee Type ID for Top-Ups
 	 *
@@ -578,5 +608,17 @@ abstract class Constants
 	 * mConsole Enterprise URL endpoint.
 	 */
 	const sMCONSOLE_SINGLE_SIGN_ON_PATH = '/mconsole/single-sign-on';	
+	
+	/*
+	 * Value of the Payment Data retrieve call from the third party endpoint
+	 * To fetch the card details with out the PSP details
+	 */
+	const sPAYMENT_DATA_SUMMARY = "summary";
+	
+	/*
+	 * Value of the Payment Data retrieve call from the third party endpoint
+	 * To fetch the card details by passing the auth toke to the wallet instance.
+	 */
+	const sPAYMENT_DATA_FULL = "full";
 }
 ?>

@@ -322,7 +322,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 //				echo $sql ."\n";
 				$this->getDBConn()->query($sql);
 			}
-			else { throw new mPointException("Could not construct  XML for initializing payment with PSP: ". $this->getPSPConfig()->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
+			else { throw new mPointException("Could not construct  XML for initializing payment with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 		}
 		catch (mPointException $e)
 		{
@@ -414,14 +414,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 * @param SimpleXMLElement $obj_Card	Details for the token that should be used to retrieve the payment data from the 3rd Party Wallet.
 	 * @return string
 	 */
-	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card)
+	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL)
 	{
 		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML() );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
-		$b .= '<get-payment-data>';
+		$b .= '<get-payment-data mode="'. $mode .'">';
 		$b .= $obj_PSPConfig->toXML();
 		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 		$b .= str_replace("</transaction>", str_replace('<?xml version="1.0"?>', '', $obj_Card->asXML() ). "</transaction>", $this->_constTxnXML() );
@@ -448,8 +448,15 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 * @param SimpleXMLElement $obj_Card	Details for the token that should be used to retrieve the payment data from the 3rd Party Wallet.
 	 * @return string
 	 */
-	public function callback(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card)
+	public function callback(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $purchaseDate = null)
 	{
+		$purchaseDateNode = "";
+		
+		if($purchaseDate != null)
+		{
+			$purchaseDateNode = "<PurchaseDate>".$purchaseDate."</PurchaseDate>";
+		}
+		
 		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML() );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
@@ -458,7 +465,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '<callback>';
 		$b .= $obj_PSPConfig->toXML();
 		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
-		$b .= str_replace("</transaction>", str_replace('<?xml version="1.0"?>', '', $obj_Card->asXML() ). "</transaction>", $this->_constTxnXML() );
+		$b .= str_replace("</transaction>", str_replace('<?xml version="1.0"?>', '', $obj_Card->asXML().$purchaseDateNode ). "</transaction>", $this->_constTxnXML() );
 		$b .= '</callback>';
 		$b .= '</root>';
 		

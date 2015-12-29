@@ -1,0 +1,36 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+	
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js""></script>
+	<script type="text/javascript" src="https://sandbox.masterpass.com/lightbox/Switch/integration/MasterPass.client.js"></script> 
+	
+<script type="text/javascript" language="Javascript">
+
+function checkoutMe (){
+
+MasterPass.client.checkout({
+"requestToken":"654c80ac46213a642f7c5742e5ec4342b396a2f5",
+"callbackUrl":"http://sit-london.cellpointmobile.com:6060/login.jsp",
+"merchantCheckoutId":"a466w4vhngfxpigdto1c71ighwulcy1e7t",
+"allowedCardTypes":["master,amex,diners,discover,maestro,visa"],
+"successCallback":"http://sit-london.cellpointmobile.com:6060/login.jsp",
+"failureCallback":"http://sit-london.cellpointmobile.com:6060/login.jsp",
+"version":"v6"
+});
+	var e = window.event;
+	e.preventDefault ? e.preventDefault() : e.returnValue = false;
+	alert("Hi");
+}
+function myFunction() {
+    alert('Hello');
+}
+</script>
+	
+	</head>
+    <body onload="checkoutMe()">
+	
+	<div class="MasterPassBtnExample">  </div>
+			
+	</body>
+</html>
