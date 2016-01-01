@@ -337,13 +337,26 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '<root>';
 		$b .= '<authorize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
 		$b .= $obj_PSPConfig->toXML();
-		$b .= $this->_constTxnXML();
+		
+		$txnXML = $this->_constTxnXML();
+		$b .= $txnXML;
+		
 		$b .= '<card>';
 		$b .= '<token>'. $ticket .'</token>';
 		$b .= '</card>';
+		
+		/**
+		 * This change is done in order to send information
+		 * relate to accounts needed by Wirecard psp
+		 * for further authorization request.
+		 */
+		$obj_txnXML = simpledom_load_string($txnXML);		
+		$euaid = intval($obj_txnXML->xpath("/transaction/@eua-id")->{'eua-id'});
+		if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
+		
 		$b .= '</authorize>';
 		$b .= '</root>';
-	
+
 		try
 		{
 			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["auth"]);

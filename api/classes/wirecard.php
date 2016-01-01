@@ -25,5 +25,4 @@ class WireCardException extends CallbackException { }
 class WireCard extends CPMPSP
 {
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new DataCashException("Method: getPaymentData is not supported by Wire Card"); }
-	public function cancel() { throw new DataCashException("Method: Cancel is not supported by Wire Card"); }
 }
