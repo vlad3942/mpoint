@@ -365,6 +365,8 @@ $aHTTP_CONN_INFO["wire-card"]["paths"]["capture"] = "/mpoint/wire-card/capture";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["status"] = "/mpoint/wire-card/status";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["refund"] = "/mpoint/wire-card/refund";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["callback"] = "/mpoint/wire-card/callback";
+$aHTTP_CONN_INFO["wire-card"]["paths"]["cancel"] = "/mpoint/wire-card/cancel";
+
 /**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
