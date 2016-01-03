@@ -592,6 +592,8 @@ class Callback extends EndUserAccount
 			return new CPG($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cpg"]);
 		case (Constants::iMASTER_PASS_PSP):
 			return new MasterPass($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["masterpass"]);
+		case (Constants::iWIRE_CARD_PSP):
+			return new WireCard($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["wire-card"]);
 		default:
 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}

@@ -21,7 +21,7 @@ INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT cardid, 18 FROM System.PSP
 
 /* ========== CONFIGURE DEMO ACCOUNT FOR Wire Card START ========== */
 -- Wire Card
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 18, '1b3be510-a992-48aa-8af9-6ba4c368a0ac', '70000-APIDEMO-CARD', 'ohysS0-dvfMx');
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 18, '9105bb4f-ae68-4768-9c3b-3eda968f57ea', '70000-APILUHN-CARD', '8mhwavKVb91T');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 18, '-1');
 -- Route VISA Card to Wire Card
 UPDATE Client.CardAccess_Tbl SET pspid = 18 WHERE clientid = 10001 AND cardid = 8;
