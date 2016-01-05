@@ -59,7 +59,7 @@ try
 	
 	$iStateID = (integer) $obj_XML->callback->status["code"];
 	
-	if($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_XML->callback->transaction->card->token != "")
+	if($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_XML->callback->transaction->card) == 1)
 	{
 
 		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $obj_XML->callback->transaction->card->token);
