@@ -27,3 +27,9 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10000
 UPDATE Client.CardAccess_Tbl SET pspid = 18 WHERE clientid = 10001 AND cardid = 8;
 /* ========== CONFIGURE DEMO ACCOUNT FOR Wire Card END ====== */
 
+
+
+/* ========== CONFIGURE URLTYPE data for NOTIFCATION URL START ====== */
+INSERT INTO System.URLType_Tbl (id, name) VALUES (3, 'Notification URL');
+/* ========== CONFIGURE URLTYPE data for NOTIFCATION URL START ====== */
+
