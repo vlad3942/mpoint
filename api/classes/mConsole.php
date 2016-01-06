@@ -618,7 +618,7 @@ class mConsole extends Admin
 		if ($ono == 0 && (count($aPspIDs) == 0 || count($aCardIDs) == 0))
 		{
 			// Fetch all Transfers
-			$sql = "SELECT EUT.id, '' AS orderno, '' AS externalid, EUT.typeid, CL.countryid, EUT.toid, EUT.fromid, EUT.created, EUT.stateid AS stateid,
+			$sql = "SELECT EUT.id, '' AS orderno, '' AS externalid, EUT.typeid, CL.countryid, EUT.toid, EUT.fromid, EUT.created, EUT.stateid AS stateid,EUT.created as createdfinal,
 						EUA.id AS customerid, EUA.firstname, EUA.lastname, EUA.externalid AS customer_ref, EUA.countryid * 100 AS operatorid, EUA.mobile, EUA.email, '' AS language,
 						CL.id AS clientid, CL.name AS client,
 						-1 AS accountid, '' AS account,
@@ -640,10 +640,10 @@ class mConsole extends Admin
 			if (empty($start) === false && strlen($start) > 0) { $sql .= " AND '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <= EUT.created"; }
 			if (empty($end) === false && strlen($end) > 0) { $sql .= " AND EUT.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
 			$sql .= "
-					UNION";
+					UNION ";
 		}
 		// Fetch all Purchases
-		$sql .= "
+		$sql .= "select * from(
 				SELECT Txn.id, Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
 					(CASE
 					 WHEN M7.stateid IS NOT NULL THEN M7.stateid
@@ -655,6 +655,15 @@ class mConsole extends Admin
 					 WHEN M1.stateid IS NOT NULL THEN M1.stateid
 					 ELSE -1
 					 END) AS stateid,
+					 (CASE
+					 WHEN M7.stateid IS NOT NULL THEN M7.created
+					 WHEN M6.stateid IS NOT NULL THEN M6.created
+					 WHEN M5.stateid IS NOT NULL THEN M5.created
+					 WHEN M4.stateid IS NOT NULL THEN M4.created
+					 WHEN M3.stateid IS NOT NULL THEN M3.created
+					 WHEN M2.stateid IS NOT NULL THEN M2.created
+					 WHEN M1.stateid IS NOT NULL THEN M1.created
+					 END) AS createdfinal,
 					EUA.id AS customerid, EUA.firstname, EUA.lastname, Coalesce(Txn.customer_ref, EUA.externalid) AS customer_ref, Txn.operatorid, Txn.mobile, Txn.email, Txn.lang AS language,
 					CL.id AS clientid, CL.name AS client,
 					Acc.id AS accountid, Acc.name AS account,
@@ -686,16 +695,21 @@ class mConsole extends Admin
 			if (strlen($oCI->getEMail() ) > 0) { $sql .= " AND Txn.email = '". $this->getDBConn()->escStr($oCI->getEMail() ) ."'"; }
 			if (strlen($oCI->getCustomerRef() ) > 0) { $sql .= " AND Txn.customer_ref = '". $this->getDBConn()->escStr($oCI->getCustomerRef() ) ."'"; }
 		}
-		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <= Txn.created"; }
-		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND Txn.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
+		
 		$sql .= "
-				ORDER BY created DESC";
+				ORDER BY createdfinal DESC) as a ";
+		
+		if (empty($start) === false && strlen($start) > 0) { $sql .= " where  '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <=  a.createdfinal"; }
+		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND  a.createdfinal  <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
+		
 		if (intval($limit) > 0 || intval($offset) > 0)
 		{
 			$sql .= "\n";
 			if (intval($limit) > 0) { $sql .= "LIMIT ". intval($limit); }
 			if (intval($offset) > 0) { $sql .= " OFFSET ". intval($offset); }
 		}
+		
+	
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 		
@@ -838,7 +852,7 @@ class mConsole extends Admin
 	 * 
 	 * @param HTTPConnInfo $oCI		The connection information for the mPoint's "Capture" API in the "Buy" API suite
 	 * @param integer $clientid		The unique ID of the Client on whose behalf the Capture operation is being performed
-	 * @param integer $txnid		The unique ID of the transaction that should be captured
+	 * @param integTer $txnid		The unique ID of the transaction that should be captured
 	 * @param string $ono			The order number for the transaction that should be captured
 	 * @param integer $amt			The amount that should be captured for the transaction
 	 * @return array
