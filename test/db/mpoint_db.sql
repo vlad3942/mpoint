@@ -6826,11 +6826,11 @@ INSERT INTO Client.InfoType_Tbl (id, name, note) VALUES (1, 'PSP Message', 'A me
 -- SETUP v1.89 --
 
 /* ========== CONFIGURE DSB PSP AND VOUCHER PAYMENT ========= */
-INSERT INTO System.PSP_Tbl (id, name) VALUES (15, 'DSB');
-INSERT INTO System.PSPCurrency_Tbl (pspid, countryid, name) VALUES (15, 100, 'DKK');
-INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (22, 'Voucher', 22, -1, -1, -1);
-INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (15, 22);
-INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) SELECT C.id * -1 AS pricepointid, 22 FROM System.Country_Tbl C, System.Card_Tbl Card WHERE C.id = 100 GROUP BY pricepointid;
+INSERT INTO System.PSP_Tbl (id, name) VALUES (19, 'DSB');
+INSERT INTO System.PSPCurrency_Tbl (pspid, countryid, name) VALUES (19, 100, 'DKK');
+INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (26, 'Voucher', 22, -1, -1, -1);
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (19, 26);
+INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) SELECT C.id * -1 AS pricepointid, 26 FROM System.Country_Tbl C, System.Card_Tbl Card WHERE C.id = 100 GROUP BY pricepointid;
 
 INSERT INTO Log.State_Tbl (id, name) VALUES (2007, 'Payment with voucher');
 /* ========== CONFIGURE DSB PSP AND VOUCHER PAYMENT ========= */
