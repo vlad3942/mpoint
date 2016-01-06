@@ -1063,7 +1063,7 @@ class mConsole extends Admin
 				
 			) AS messages GROUP BY createddate, messages.stateid ORDER BY createddate";
 		
-		//echo $sql ."\n";exit;
+		//echo $sql ."\n";
 		
 		$aRS = array();
 		
