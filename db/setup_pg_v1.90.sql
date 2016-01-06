@@ -1,10 +1,10 @@
 /* ========== CONFIGURE CARD DISCOVER START ========== */
-INSERT INTO System.Card_Tbl (id, name, position, logo, minlength, maxlength, cvclength) VALUES (23, 'Discover', 20, NULL, 16, 16, 3);
-INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 23, id FROM System.PricePoint_Tbl WHERE amount = -1;
-INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (23, 6011, 6011);
-INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (23, 622126, 622925);
-INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (23, 644, 649);
-INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (23, 65, 65);
+INSERT INTO System.Card_Tbl (id, name, position, logo, minlength, maxlength, cvclength) VALUES (22, 'Discover', 20, NULL, 16, 16, 3);
+INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 22, id FROM System.PricePoint_Tbl WHERE amount = -1;
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (22, 6011, 6011);
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (22, 622126, 622925);
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (22, 644, 649);
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (22, 65, 65);
 /* ========== CONFIGURE CARD DISCOVER END ========== */
 
 /* ========== CONFIGURE CARD VISA CHECKOUT START ========== */
@@ -184,26 +184,130 @@ UPDATE Client.MerchantAccount_Tbl SET name = username WHERE pspid = 4 AND name !
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 15, 4);
 /* ========== CONFIGURE DEMO ACCOUNT FOR APPLE PAY END ====== */
 
+/* ========== CONFIGURE DSB AS PSP ================ */
+INSERT INTO System.PSP_Tbl (id, name) VALUES (19, 'DSB');
+/* ========== =================== ================ */
+
 /* ========== CONFIGURE DSB INVOICE PAYMENT START ========= */
 INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (24, 'Invoice', 24, -1, -1, -1);
-INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (15, 24);
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (19, 24);
 INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) SELECT C.id * -1 AS pricepointid, 24 FROM System.Country_Tbl C, System.Card_Tbl Card WHERE C.id = 100 GROUP BY pricepointid;
 INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (24, 0, 0);
-INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, position) VALUES (10005, 24, 15, 1);
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, position) VALUES (10005, 24, 19, 1);
+/* Let Mobilepay be positioned after Invoice */
 UPDATE Client.CardAccess_Tbl  SET position = 2 WHERE cardid = 17 and clientid = 10005;
 /* ========== CONFIGURE DSB INVOICE PAYMENT END ========= */
 
 /* ========== CONFIGURE DSB PSP AND VOUCHER PAYMENT ========= */
-INSERT INTO System.PSP_Tbl (id, name) VALUES (15, 'DSB');
-INSERT INTO System.PSPCurrency_Tbl (pspid, countryid, name) VALUES (15, 100, 'DKK');
-INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (22, 'Voucher', 22, -1, -1, -1);
-INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (15, 22);
-INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) SELECT C.id * -1 AS pricepointid, 22 FROM System.Country_Tbl C, System.Card_Tbl Card WHERE C.id = 100 GROUP BY pricepointid;
+INSERT INTO System.PSPCurrency_Tbl (pspid, countryid, name) VALUES (19, 100, 'DKK');
+INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (26, 'Voucher', 22, -1, -1, -1);
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (19, 26);
+INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) SELECT C.id * -1 AS pricepointid, 26 FROM System.Country_Tbl C, System.Card_Tbl Card WHERE C.id = 100 GROUP BY pricepointid;
 
-INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10005, 22, 15);
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username) VALUES (10005, 15, '', '');
-INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT A.id, 15, '-1'  FROM Client.Account_Tbl A, System.PSP_Tbl P WHERE clientid = 10005 GROUP BY A.id;
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10005, 26, 15);
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username) VALUES (10005, 19, '', '');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT A.id, 19, '-1'  FROM Client.Account_Tbl A, System.PSP_Tbl P WHERE clientid = 10005 GROUP BY A.id;
 
 INSERT INTO Log.State_Tbl (id, name) VALUES (2007, 'Payment with voucher');
 /* ========== CONFIGURE DSB PSP AND VOUCHER PAYMENT ========= */
 
+/* ========== CONFIGURE DATA CASH START ========== */
+INSERT INTO System.PSP_Tbl (id, name) VALUES (17, 'Data Cash');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) SELECT countryid, 17, name FROM System.PSPCurrency_Tbl WHERE pspid = 4;
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT cardid, 17 FROM System.PSPCard_Tbl WHERE pspid = 4;
+/* ========== CONFIGURE DATA CASH END ========== */
+
+/* ========== CONFIGURE DEMO ACCOUNT FOR DATA CASH START ========== */
+-- Data Cash
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, password) VALUES (10001, 17, 'TESTCellpoint_02', 'merchant.TESTCellpoint_02', '684d51b8db5870b514404055d988512a');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 17, '-1');
+-- Route VISA Card to Data Cash
+UPDATE Client.CardAccess_Tbl SET pspid = 17 WHERE clientid = 10001 AND cardid = 8;
+/* ========== CONFIGURE DEMO ACCOUNT FOR DATA CASH END ====== */
+/* ========== ALTER TABLE FOR MERCHANT ACCOUNT TO HAVE PASSWORD OF 4000 CHARS START ====== */
+ALTER TABLE Client.MerchantAccount_Tbl ALTER COLUMN passwd TYPE character varying(4000);
+ALTER TABLE Client.MerchantAccount_Tbl ALTER COLUMN name TYPE character varying(100);
+/* ========== ALTER TABLE FOR MERCHANT ACCOUNT TO HAVE PASSWORD OF 4000 CHARS END ====== */
+
+/* ========== CONFIGURE CARD MASTER PASS START ========== */
+INSERT INTO System.Card_Tbl (id, name, position, logo) VALUES (23, 'Master Pass', 15, NULL);
+/*Adding the dummy card prefix entry for Master Pass as a card*/
+INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 23, id FROM System.PricePoint_Tbl WHERE amount = -1;
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (23, 0, 0);
+/* ========== CONFIGURE CARD MASTER PASS END ========== */
+
+/* ========== CONFIGURE MASTER PASS START ========== */
+/*START: Adding PSP entries to the PSP_Tbl table for Master Pass*/
+INSERT INTO System.PSP_Tbl (id, name) VALUES (15, 'Master Pass');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) 
+SELECT id, 15, currency FROM System.Country_Tbl;
+/*END: Adding PSP entries to the PSP_Tbl table for Master Pass*/
+
+/*START: Adding PSP to Card mapping to the PSPCard_Tbl table for Master Pass*/
+-- Master Pass as PSP.
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 15 FROM System.Card_Tbl WHERE name = 'American Express';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 15 FROM System.Card_Tbl WHERE name = 'Master Card';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 15 FROM System.Card_Tbl WHERE name = 'VISA';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 15 FROM System.Card_Tbl WHERE name = 'Discover';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 15 FROM System.Card_Tbl WHERE name = 'Diners Club';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 15 FROM System.Card_Tbl WHERE name = 'Maestro';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 15 FROM System.Card_Tbl WHERE name = 'Master Pass';
+
+--CPG as PSP.
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 9 FROM System.Card_Tbl WHERE name = 'Diners Club';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 9 FROM System.Card_Tbl WHERE name = 'Maestro';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 9 FROM System.Card_Tbl WHERE name = 'Master Pass';
+/*END: Adding PSP to Card mapping to the PSPCard_Tbl table for Master Pass*/
+/* ========== CONFIGURE MASTER PASS END ========== */
+
+/* ========== CONFIGURE DEMO ACCOUNT FOR MASTER PASS START ========== */
+-- Master Pass
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 15, 'hPbBTn6RXkwR0HvigIqEL4D20FweaOqIYDLxU-jh171c17fd!4251484361307a2f586b515a537530577858615862413d3d', 'a466w4vhngfxpigdto1c71ighwulcy1e7t', 'MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC3784sCmD/iULkI+H8Fy5E//2xRY7Yhbn6VR2auvfCSjrC/EcfGs00jOkQjQWLIzmbh6MMeVPBhLRbA4xiWzfLNhXetqQmkjN33jSXi6nxGp7xCKiZp97qNmCJHqUqZ8euKdZ/5DK5a4F28s/me8bfBWeaZbuEcFr/t+3QE5F1GgxcpJVJ/ME1aOl0G6CLDH02Two8+W6TxqBp/oxnvK/EKj7CTjgM9K/sOk/JM8hiuhy4ThneGnPnWOEmccAS0EZBoxR0qxZXDYLabEtP2eTD5o+IR/widAAoCaRQ3yVciZcbiXbBk0ErB95c55JAruD67ODv6B0Of6xkXhpHsUC1AgMBAAECggEATFwChGf+orcSDPIUk/nvnHeFkz1kMuE5NwJ02tJ5nrAAOwhOYkxXGlTRQKy6u2txM+8YMkqACduUoCAV/JMP043tgFrkRJr3QPD/dlZlw5EgoMHOdJOrSCIw61vMh5Ez5Uq7ILbUlANcaMweoPmLsvRkcUWAlleqf3SVBofJIApu5kNJDMgT/Lg0AhTcUaEq8RlAbhXOexrloTpKCuI82s9dr9gWhpg9TfM6+P9z6bonMhi+0og6gRn/cTEkY5eWNZaHqAQVdGQ+0xq1fJe82EvHR4kBIh0FrKPOqn6QumuSj91hrKU4G4ssQ7M4jVA/MAzngMRa66dW5O453qbUNQKBgQDkSMvDvmtEe/fSwi3/MZ1WnoY7lWFAs1q3jUhLlSawwDTaliKTYjItSFBWq2Yix03qlf7Eqhbjj+4e0Za2AxANE+2Kaq7XsTj7L/wZA6ZosCJoOEbvhX+LuP6rpWVM46TfnlDGEk4+15hfKA/ZCowr8TSvkEc4wcqqNniPyGowWwKBgQDORKkvfMj3hKm3ddw4HrvvXfF/Z/Ah5j4Ko/lu8hEjgSNtMbIldKiFzM+z9KIoYsmEt6yi+ms56d5lEtzGSdz67LikWg+wfKhhF/U/mYGT/tV/vRMUqDAtjATj2oBuFyClIJ1/Loz+LbrK0jMweEj/nRZ4IojyrVHba26/+yUgLwKBgA3PraxJD/pTubmhj+DZophD/QEL15dvgnSKcq5H9tBIwKnc3XinPzvoHRwxQHuoLTmdG43QcJQR+CkbKxAV/VmdNAjkzXE1QqpHy+vDgcThqyM9DGWfYQkWByphVlChkS8KR/7DysIYjxpqtRK/hZ1++V4Jz5VKfDVyGDcyu+HzAoGAaR2IcpDPAYRz0PCZN2hCMevYBCt9rmjdOSLzHFzz6voGicEHnhrjPrxvJLAIazhcpevMaInhVvQdx7hjFhHSMXWtauQSlsgQLtq8upqJ9FeriZtbO+2yD6QJYeyaAoB6vGvwlz2r0GSRioawW4UQ/mKZbsN6suEsk/sdx2w/MTUCgYEAvzC15f1K/zoOJvJMYRaKl1mUKDkfht4yjGrNOJrnrTmDByZAviiM/2C41R6M+VgN+/H1CpXgzzc88XL3F5uXpiJmqv7PqVRrdfZ5c91bioBetHJ3qbYrE75frLtxPsA5rfF63pjCVebAg1vz30sdg/FOoxL+IdRlbXDswmMMyTM=');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 15, '-1');
+-- Adding Static Route entries for the client EK and cards with PSP as follows
+-- CPG
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 23, 9);
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 1, 9);
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 4, 9);
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 6, 9);
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 7, 9);
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 8, 9);
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 22, 9);
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 23, 15);
+/* ========== CONFIGURE DEMO ACCOUNT FOR MASTER PASS START ========== */
+/* ========== CONFIGURE CARD AMEX EXPRESS CHECKOUT START ========== */
+INSERT INTO System.Card_Tbl (id, name, position, logo) VALUES (25, 'AMEX Express Checkout', 16, NULL);
+/*Adding the dummy card prefix entry for AMEX EXPRESS CHECKOUT as a card*/
+INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 25, id FROM System.PricePoint_Tbl WHERE amount = -1;
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (25, 0, 0);
+/* ========== CONFIGURE CARD AMEX EXPRESS CHECKOUT END ========== */
+
+/* ========== CONFIGURE AMEX EXPRESS CHECKOUT START ========== */
+/*START: Adding PSP entries to the PSP_Tbl table for AMEX Express Checkout*/
+INSERT INTO System.PSP_Tbl (id, name) VALUES (16, 'AMEX Express Checkout');
+/*END: Adding PSP entries to the PSP_Tbl table for AMEX Express Checkout*/
+
+/*START: Adding Currency entries to the PSPCurrency_Tbl table for AMEX Express Checkout*/
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) 
+SELECT id,16,currency FROM System.Country_Tbl WHERE currency IS NOT NULL;
+/*END: Adding Currency entries to the PSPCurrency_Tbl table for AMEX EXPRESS CHECKOUT*/
+
+/*START: Adding PSP to Card mapping to the PSPCard_Tbl table for AMEX EXPRESS CHECKOUT*/
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT id, 16 FROM System.Card_Tbl WHERE name = 'American Express';
+/*END: Adding PSP to Card mapping to the PSPCard_Tbl table for AMEX EXPRESS CHECKOUT*/
+
+-- Enable support for AMEX EXPRESS CHECKOUT through WorldPay
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (4, 25);
+--CPG
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (9, 25);
+--AMEX EXPRESS CHECKOUT
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (16, 25);
+/* ========== CONFIGURE AMEX EXPRESS CHECKOUT END ========== */
+
+/* ========== CONFIGURE DEMO ACCOUNT FOR AMEX EXPRESS CHECKOUT START ========== */
+-- AMEX EXPRESS CHECKOUT
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 16, 'amex express', 'fe27008a-fd5f-4796-84ba-a883a7f1a7b4', '730e3f8d-0ec1-4fd2-bf8c-37672f09d415');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 16, '-1');
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 25, 4);
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 25, 9);
+/* ========== CONFIGURE DEMO ACCOUNT FOR AMEX EXPRESS CHECKOUT END ====== */
