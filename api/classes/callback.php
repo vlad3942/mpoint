@@ -144,10 +144,10 @@ class Callback extends EndUserAccount
 		else { $sql = ", extid = '". $this->getDBConn()->escStr($txnid) ."'"; }
 		if ($this->_obj_TxnInfo->getAccountID() > 0) { $sql .= ", euaid = ". $this->_obj_TxnInfo->getAccountID(); }
 		else { $sql .= ", euaid = NULL"; }
+		
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET pspid = ". intval($pspid) .", cardid = ". intval($cid).", fee =".intval($fee) . $sql ."
-				WHERE id = ". $this->_obj_TxnInfo->getID() ." AND (cardid IS NULL OR cardid = 0)";
-		if (intval($txnid) == -1) { $sql .= " AND (extid IS NULL OR extid = ''"; }
+				WHERE id = ". $this->_obj_TxnInfo->getID();
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 
