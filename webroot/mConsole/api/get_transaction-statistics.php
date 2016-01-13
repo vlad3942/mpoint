@@ -62,16 +62,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 		for ($i=0; $i<count($obj_DOM->{'get-transaction-statistics'}->clients->client); $i++)
 		{
-			if(isset($obj_DOM->{'get-transaction-statistics'}->clients->client['id']) === true &&(int)$obj_DOM->{'get-transaction-statistics'}->clients->client['id'] > 0)
+			if (intval($obj_DOM->{'get-transaction-statistics'}->clients->client[$i]['id']) > 0)
 			{
-				$aClientIDs[] = (int)$obj_DOM->{'get-transaction-statistics'}->clients->client['id'];
+				$aClientIDs[] = (integer) $obj_DOM->{'get-transaction-statistics'}->clients->client[$i]['id'];
 			}
-			
-			if($obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->accounts instanceof SimpleDOMElement)
+			if (count($obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->accounts) == 1)
 			{
-				if((int)$obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->accounts->{'account-id'} > 0)
+				for ($j=0; $j<count($obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->accounts->{'account-id'}); $j++)
 				{
-					$aAccountIDs = array_merge($aAccountIDs, (array)$obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->accounts->{'account-id'});
+					if (intval($obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->accounts->{'account-id'}[$j]) > 0)
+					{
+						$aAccountIDs[] = (integer) $obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->accounts->{'account-id'}[$j];
+					}
 				}
 			}
 		}
