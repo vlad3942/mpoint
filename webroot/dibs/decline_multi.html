@@ -71,6 +71,7 @@ switch(cgi.language)
 		error_8 := 'Intern Fejl: For få "amount" felter tilgængelige til at beregne split';
 		error_9 := 'Card Verification Code (CVC / CVS) mangler, indtast venligst din CVC og prøv igen?';
 		error_10 := 'Dit kort nummer er ugyligt for den valgte kort type, ret venligst kort numret og prøv igen?';
+		error_11 := 'Kort blokeret af PSP';
 		error_unknown := 'Ukendt Fejl';
 	}
 	// Swedish
@@ -103,6 +104,7 @@ switch(cgi.language)
 		error_8 := 'För få amount fält i splitten';
 		error_9 := 'CVC/CVS saknas, ange ditt CVC/CVS nummer och försök igen';
 		error_10 := 'Kortnummret är fel för denna korttyp, kontrollera och försök igen';
+		error_11 := 'Kort blokeret af PSP';
 		error_unknown := 'Okänt fel';
 	}
 	// British English
@@ -135,6 +137,7 @@ switch(cgi.language)
 		error_8 := 'Internal Error: Too few amount-fields for split';
 		error_9 := 'Card Verification Code (CVC / CVS) is missing, please enter your CVC and try again?';
 		error_10 := 'The entered card number is invalid for the selected card type, please check the card number and try again?';
+		error_11 := 'Kort blokeret af PSP';
 		error_unknown := 'Unknown Error';
 	}
 }
@@ -198,6 +201,7 @@ switch(cgi.clientid)
 			<PML_CASE VALUE="8"><status code="1099"><PML_VAL>auth.message</PML_VAL> (<PML_VAL>auth.reason</PML_VAL>)</status></PML_CASE>
 			<PML_CASE VALUE="9"><status code="1009"><PML_VAL>auth.message</PML_VAL> (<PML_VAL>auth.reason</PML_VAL>)</status></PML_CASE>
 			<PML_CASE VALUE="10"><status code="1005"><PML_VAL>auth.message</PML_VAL> (<PML_VAL>auth.reason</PML_VAL>)</status></PML_CASE>
+			<PML_CASE VALUE="11"><status code="2012"><PML_VAL>auth.message</PML_VAL> (<PML_VAL>auth.reason</PML_VAL>)</status></PML_CASE>
 			<PML_DEFAULT><status code="1099" /><PML_VAL>auth.message</PML_VAL> (<PML_VAL>auth.reason</PML_VAL>)</status></PML_DEFAULT>
 		</PML_SWITCH>
 	</root>
@@ -260,6 +264,11 @@ switch(cgi.clientid)
 			case (10)
 			{
 				code := 1005;
+			}
+			// Card blocked by PSP
+			case (11)
+			{
+				code := 2012;
 			}
 			// Unknown Error
 			default
@@ -504,6 +513,7 @@ switch(cgi.clientid)
 					<PML_CASE VALUE="8"><PML_VAL>error_8</PML_VAL></PML_CASE>
 					<PML_CASE VALUE="9"><PML_VAL>error_9</PML_VAL></PML_CASE>
 					<PML_CASE VALUE="10"><PML_VAL>error_10</PML_VAL></PML_CASE>
+					<PML_CASE VALUE="11"><PML_VAL>error_11</PML_VAL></PML_CASE>
 					<PML_DEFAULT><PML_VAL>error_unknown</PML_VAL></PML_DEFAULT>
 				</PML_SWITCH>
 			</div>
