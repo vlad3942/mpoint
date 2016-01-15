@@ -105,6 +105,15 @@ INSERT INTO Client_Ownr.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (
 INSERT INTO Client_Ownr.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 16, 9);
 /* ========== CONFIGURE IBE ACCOUNT FOR VISA CHECKOUT END ====== */
 
+/* ========== CONFIGURE MOBILE WEB ACCOUNT FOR VISA CHECKOUT START ====== */
+-- VISA Checkout
+INSERT INTO Client_Ownr.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10003, 13, '2X5JJ0751LFJG3EMYRMS13h-QPSi0pUet0c2zoXupm10tRL28', '2X5JJ0751LFJG3EMYRMS13h-QPSi0pUet0c2zoXupm10tRL28', '5PH9i3cNJ8ZmFK0B-xuSsMzq{8uSkO$o#GZPA+M}');
+INSERT INTO Client_Ownr.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100030, 13, '-1');
+INSERT INTO Client_Ownr.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10003, 16, 9);
+
+UPDATE Client_Ownr.MerchantAccount_Tbl SET username = 'MSC=EKIBE SKU=EKSKU SKM=EKSKU', passwd = 'MSC=*IBE$01$Ccep SKU=*SKU$01$Ccep SKM=*SKU$01$Ccep' WHERE clientid = 10003 AND pspid = 9; 
+/* ========== CONFIGURE MOBILE WEB ACCOUNT FOR VISA CHECKOUT END ====== */
+
 /* ========== CONFIGURE APPLE PAY START ========== */
 /*START: Adding PSP entries to the PSP_Tbl table for Apple Pay*/
 INSERT INTO System_Ownr.PSP_Tbl (id, name) VALUES (14, 'Apple Pay');
