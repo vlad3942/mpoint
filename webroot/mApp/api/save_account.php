@@ -120,8 +120,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 //							$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $_SESSION['obj_TxnInfo']);
 						}
 						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
-//						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
-//						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
+						
 						$obj_mPoint->saveCardName($iAccountID, $obj_DOM->{'save-account'}[$i]->card["type-id"], (string) $obj_DOM->{'save-account'}[$i]->card, true);
 
 						// Success: Account Information Saved

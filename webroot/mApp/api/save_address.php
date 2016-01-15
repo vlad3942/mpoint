@@ -125,8 +125,7 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 				if (count($aMsgCds) == 0)
 				{
 					$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-address'}->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-address'}->{'client-info'}->mobile, $obj_DOM->{'save-address'}->{'client-info'}->email);
-//					if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->{'save-address'}->{'client-info'}->mobile); }
-//					if ($iAccountID < 0 && count($obj_DOM->{'save-address'}->{'client-info'}->email) == 1) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->{'save-address'}->{'client-info'}->email); }
+					
 					$code = General::authToken($iAccountID, $obj_ClientConfig->getSecret(), $_COOKIE['token']);
 					// Authentication succeeded
 					if ($code >= 10)

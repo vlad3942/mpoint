@@ -146,6 +146,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 																	   trim($obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}) );
 								}
 								$obj_TxnInfo->setAccountID($iAccountID);
+								// Update Transaction Log
+								$obj_mPoint->logTransaction($obj_TxnInfo);
 							}
 							$obj_PSPConfig = null;
 							switch (intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) )
