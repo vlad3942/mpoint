@@ -30,4 +30,5 @@ UPDATE Client.CardAccess_Tbl SET pspid = 18 WHERE clientid = 10001 AND cardid = 
 
 /* ========== CONFIGURE URLTYPE data for NOTIFCATION URL START ====== */
 INSERT INTO System.URLType_Tbl (id, name) VALUES (3, 'Notification URL');
+INSERT INTO System.URLType_Tbl (id, name) VALUES (9, 'Cancel URL');
 /* ========== CONFIGURE URLTYPE data for NOTIFCATION URL START ====== */
