@@ -699,7 +699,6 @@ try
 						{
 							header("HTTP/1.1 404 File Not Found");
 							$xml = '<status code="404">Transaction with ID: '. $obj_DOM->{'authorize-payment'}[$i]->transaction["id"] .' not found</status>';
-							trigger_error("Transaction with ID: ". $obj_DOM->{'authorize-payment'}[$i]->transaction["id"] ." not found.", E_USER_ERROR);
 						}
 					}
 					else

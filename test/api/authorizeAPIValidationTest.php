@@ -110,9 +110,8 @@ class AuthorizeAPIValidationTest extends baseAPITest
 		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
-		$this->bIgnoreErrors = true; //TODO: Remove once CMP-235 is implemented
-		$this->assertEquals(200, $iStatus); //TODO: Change once CMP-235 is implemented
-		$this->assertEquals('', $sReplyBody); //TODO: Change once CMP-235 is implemented
+		$this->assertEquals(404, $iStatus);
+		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="404">Transaction with ID: 1 not found</status></root>', $sReplyBody);
 	}
 
 	public function testUnauthorized()
