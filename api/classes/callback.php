@@ -144,10 +144,10 @@ class Callback extends EndUserAccount
 		else { $sql = ", extid = '". $this->getDBConn()->escStr($txnid) ."'"; }
 		if ($this->_obj_TxnInfo->getAccountID() > 0) { $sql .= ", euaid = ". $this->_obj_TxnInfo->getAccountID(); }
 		else { $sql .= ", euaid = NULL"; }
+		
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET pspid = ". intval($pspid) .", cardid = ". intval($cid).", fee =".intval($fee) . $sql ."
-				WHERE id = ". $this->_obj_TxnInfo->getID() ." AND (cardid IS NULL OR cardid = 0)";
-		if (intval($txnid) != -1) { $sql .= " AND (extid IS NULL OR extid = '' OR extid = '". $this->getDBConn()->escStr($txnid) ."')"; }
+				WHERE id = ". $this->_obj_TxnInfo->getID();
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 
@@ -592,6 +592,8 @@ class Callback extends EndUserAccount
 			return new CPG($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cpg"]);
 		case (Constants::iMASTER_PASS_PSP):
 			return new MasterPass($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["masterpass"]);
+		case (Constants::iWIRE_CARD_PSP):
+			return new WireCard($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["wire-card"]);
 		default:
 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}

@@ -459,6 +459,7 @@
 						Specifies the criteria for searching for one or more specific transactions
 					</xs:documentation>
 				</xs:annotation>
+                                
 				<xs:complexType>
 					<xs:all>
 						<xs:element name="customer" type="customer" minOccurs="0" maxOccurs="1">
@@ -468,6 +469,60 @@
 								</xs:documentation>
 							</xs:annotation>
 						</xs:element>
+                                                <xs:element name="psps" minOccurs="0" maxOccurs="1">
+                                                    <xs:annotation>
+                                                            <xs:documentation>
+                                                                    List of Psps for which transactions should be found
+                                                            </xs:documentation>
+                                                    </xs:annotation>
+                                                    <xs:complexType>
+                                                            <xs:sequence>
+                                                                    <xs:element type="xs:positiveInteger" name="psp" minOccurs="1" maxOccurs="unbounded">
+                                                                            <xs:annotation>
+                                                                                    <xs:documentation>
+                                                                                            Unique ID for the Psps for which transactions should be found 
+                                                                                    </xs:documentation>
+                                                                            </xs:annotation>
+                                                                    </xs:element>
+                                                            </xs:sequence>
+                                                    </xs:complexType>
+                                            </xs:element>
+                                            <xs:element name="cards" minOccurs="0" maxOccurs="1">
+                                                    <xs:annotation>
+                                                            <xs:documentation>
+                                                                    List of cards for which transactions should be found
+                                                            </xs:documentation>
+                                                    </xs:annotation>
+                                                    <xs:complexType>
+                                                            <xs:sequence>
+                                                                    <xs:element type="xs:positiveInteger" name="card" minOccurs="1" maxOccurs="unbounded">
+                                                                            <xs:annotation>
+                                                                                    <xs:documentation>
+                                                                                            Unique ID for the card for which transactions should be found 
+                                                                                    </xs:documentation>
+                                                                            </xs:annotation>
+                                                                    </xs:element>
+                                                            </xs:sequence>
+                                                    </xs:complexType>
+                                            </xs:element>
+                                            <xs:element name="states" minOccurs="0" maxOccurs="1">
+                                                    <xs:annotation>
+                                                            <xs:documentation>
+                                                                    List of states for which transactions should be found
+                                                            </xs:documentation>
+                                                    </xs:annotation>
+                                                    <xs:complexType>
+                                                            <xs:sequence>
+                                                                    <xs:element type="xs:positiveInteger" name="state" minOccurs="1" maxOccurs="unbounded">
+                                                                            <xs:annotation>
+                                                                                    <xs:documentation>
+                                                                                            Unique ID for the state for which transactions should be found 
+                                                                                    </xs:documentation>
+                                                                            </xs:annotation>
+                                                                    </xs:element>
+                                                            </xs:sequence>
+                                                    </xs:complexType>
+                                            </xs:element>
 					</xs:all>
 					<xs:attribute name="id" type="xs:positiveInteger" use="optional">
 						<xs:annotation>
@@ -476,7 +531,7 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
-					<xs:attribute name="order-no" type="xs:string" use="optional">
+					<xs:attribute name="order-no" type="xs:string" use="optional" default="0">
 						<xs:annotation>
 							<xs:documentation>
 								The Client's (Merchant's) Order Number for the transaction that should be found
@@ -1429,7 +1484,7 @@
 				</xs:annotation>
 				 <xs:complexType>
 					<xs:sequence>
-						<xs:element name="transaction-stats-by-date" minOccurs="0" maxOccurs="unbounded">
+						<xs:element name="transaction-stats-by-day" minOccurs="0" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:documentation>
 									Contains the transaction statistics by the individual date(day) within the given time span

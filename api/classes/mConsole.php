@@ -59,6 +59,7 @@ class mConsole extends Admin
 	const sPERMISSION_SEARCH_TRANSACTION_LOGS = "mpoint.transaction-logs.search.x";
 	const sPERMISSION_VOID_PAYMENTS = "mpoint.void-payments.get.x";
 	const sPERMISSION_CAPTURE_PAYMENTS = "mpoint.capture-payments.get.x";	
+	const sPERMISSION_GET_TRANSACTION_STATISTICS = "mpoint.dashboard.get.x";	
 	
 	public function saveClient($cc, $storecard, $autocapture, $name, $username, $password, $maxamt, $lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl, $id = -1)
 	{
@@ -247,7 +248,7 @@ class mConsole extends Admin
 	 * @param integer $id			The unique ID of the existing routing configuration that should be changed, pass -1 to create a new routing configuration
 	 * @return integer
 	 */
-	public function saveStaticRoute($clientid, $pmid, $pspid, $stateid, $countryid=-1, $id=-1)
+	public function saveStaticRoute($clientid, $pmid, $pspid, $stateid, $countryid=-1, $id=-1, $enabled='true')
 	{
 		$clientid = (integer) $clientid;
 		$pmid = (integer) $pmid;
@@ -269,9 +270,18 @@ class mConsole extends Admin
 		
 		if ($id > 0)
 		{
+			if($enabled == 'true')
+			{
+				$enabled = 1;
+			} 
+			else
+			{
+				$enabled = 0;
+			}
+			
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".CardAccess_Tbl
 					SET countryid = ". $countryid .", cardid = ". $pmid .", pspid = ". $pspid .", 
-						stateid = ". intval($stateid) .", enabled = '1'
+						stateid = ". intval($stateid) .", enabled = '".$enabled."'
 					WHERE id = ". $id;				
 		}
 		else
@@ -524,12 +534,29 @@ class mConsole extends Admin
 
 		try
 		{
+			$code = -1;
 			$h = trim($this->constHTTPHeaders() ) .HTTPClient::CRLF;
 			$h .= "X-Auth-Token: ". $authtoken .HTTPClient::CRLF;
 			$obj_HTTP = new HTTPClient(new Template(), $oCI);				
 			$obj_HTTP->connect();
-			$code = $obj_HTTP->send($h, $b);
-			$obj_HTTP->disConnect();		
+			$HTTPResponseCode = $obj_HTTP->send($h, $b);
+			$response = simpledom_load_string($obj_HTTP->getReplyBody());
+			foreach($response->attributes() as $key => $val) 
+			{
+    			if($key == "code")
+    			{
+    				$responseCode = intval($val);
+    			}
+			}			
+			$obj_HTTP->disConnect();
+			if(intval($HTTPResponseCode) == 200 )
+			{
+				$code = $responseCode;
+			}
+			else
+			{
+				$code = $HTTPResponseCode;
+			}
 			
 			switch ($code)
 			{
@@ -584,14 +611,14 @@ class mConsole extends Admin
 	 * @param integer $offset		The offset from which the results returned by the search should start, any results before the offset are skipped by the search
 	 * @return multitype:TransactionLogInfo
 	 */
-	public function searchTransactionLogs(array $aClientIDs, array $aAccountIDs, $id=-1, $ono="", CustomerInfo $oCI=null, $start="", $end="", $verbose=false, $limit=100, $offset=0)
+	public function searchTransactionLogs(array $aClientIDs, array $aAccountIDs, array $aPspIDs, array $aCardIDs, array $aStateIDs, $id=-1, $ono="", CustomerInfo $oCI=null, $start="", $end="", $verbose=false, $limit=100, $offset=0)
 	{
 		$sql = "";
 		// A search for an Order Number makes searching the end-user's Transaction table obsolete 
-		if (empty($ono) === true)
+		if ($ono == 0 && (count($aPspIDs) == 0 || count($aCardIDs) == 0))
 		{
 			// Fetch all Transfers
-			$sql = "SELECT EUT.id, '' AS orderno, '' AS externalid, EUT.typeid, CL.countryid, EUT.toid, EUT.fromid, EUT.created, EUT.stateid AS stateid,
+			$sql = "SELECT EUT.id, '' AS orderno, '' AS externalid, EUT.typeid, CL.countryid, EUT.toid, EUT.fromid, EUT.created, EUT.stateid AS stateid,EUT.created as createdfinal,
 						EUA.id AS customerid, EUA.firstname, EUA.lastname, EUA.externalid AS customer_ref, EUA.countryid * 100 AS operatorid, EUA.mobile, EUA.email, '' AS language,
 						CL.id AS clientid, CL.name AS client,
 						-1 AS accountid, '' AS account,
@@ -613,18 +640,30 @@ class mConsole extends Admin
 			if (empty($start) === false && strlen($start) > 0) { $sql .= " AND '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <= EUT.created"; }
 			if (empty($end) === false && strlen($end) > 0) { $sql .= " AND EUT.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
 			$sql .= "
-					UNION";
+					UNION ";
 		}
 		// Fetch all Purchases
-		$sql .= "
+		$sql .= "select * from(
 				SELECT Txn.id, Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
 					(CASE
+					 WHEN M7.stateid IS NOT NULL THEN M7.stateid
+					 WHEN M6.stateid IS NOT NULL THEN M6.stateid
+					 WHEN M5.stateid IS NOT NULL THEN M5.stateid
 					 WHEN M4.stateid IS NOT NULL THEN M4.stateid
 					 WHEN M3.stateid IS NOT NULL THEN M3.stateid
 					 WHEN M2.stateid IS NOT NULL THEN M2.stateid
 					 WHEN M1.stateid IS NOT NULL THEN M1.stateid
 					 ELSE -1
 					 END) AS stateid,
+					 (CASE
+					 WHEN M7.stateid IS NOT NULL THEN M7.created
+					 WHEN M6.stateid IS NOT NULL THEN M6.created
+					 WHEN M5.stateid IS NOT NULL THEN M5.created
+					 WHEN M4.stateid IS NOT NULL THEN M4.created
+					 WHEN M3.stateid IS NOT NULL THEN M3.created
+					 WHEN M2.stateid IS NOT NULL THEN M2.created
+					 WHEN M1.stateid IS NOT NULL THEN M1.created
+					 END) AS createdfinal,
 					EUA.id AS customerid, EUA.firstname, EUA.lastname, Coalesce(Txn.customer_ref, EUA.externalid) AS customer_ref, Txn.operatorid, Txn.mobile, Txn.email, Txn.lang AS language,
 					CL.id AS clientid, CL.name AS client,
 					Acc.id AS accountid, Acc.name AS account,
@@ -636,44 +675,79 @@ class mConsole extends Admin
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON Txn.accountid = Acc.id				
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON Txn.pspid = PSP.id
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl PM ON Txn.cardid = PM.id
-				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M1 ON Txn.id = M1.txnid AND M1.stateid = ". Constants::iPAYMENT_ACCEPTED_STATE ."
-				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M2 ON Txn.id = M2.txnid AND M2.stateid = ". Constants::iPAYMENT_CAPTURED_STATE ."
-				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M3 ON Txn.id = M3.txnid AND M3.stateid = ". Constants::iPAYMENT_REFUNDED_STATE ."
-				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M4 ON Txn.id = M4.txnid AND M4.stateid = ". Constants::iPAYMENT_CANCELLED_STATE ."
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M1 ON Txn.id = M1.txnid AND M1.stateid = ". Constants::iINPUT_VALID_STATE ."
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M2 ON Txn.id = M2.txnid AND M2.stateid = ". Constants::iPAYMENT_INIT_WITH_PSP_STATE ."
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M3 ON Txn.id = M3.txnid AND M3.stateid = ". Constants::iPAYMENT_ACCEPTED_STATE ."
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M4 ON Txn.id = M4.txnid AND M4.stateid = ". Constants::iPAYMENT_CAPTURED_STATE ."
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M5 ON Txn.id = M5.txnid AND M5.stateid = ". Constants::iPAYMENT_CANCELLED_STATE ."
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M6 ON Txn.id = M6.txnid AND M6.stateid = ". Constants::iPAYMENT_REFUNDED_STATE ."
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M7 ON Txn.id = M7.txnid AND M7.stateid = ". Constants::iPAYMENT_DECLINED_STATE ."
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON Txn.euaid = EUA.id
 				WHERE CL.id IN (". implode(",", $aClientIDs) .")";
 		if (count($aAccountIDs) > 0) { $sql .= " AND  Acc.id IN (". implode(",", $aAccountIDs) .")"; }
+		if (count($aPspIDs) > 0) { $sql .= " AND  PSP.id IN (". implode(",", $aPspIDs) .")"; }
+		if (count($aCardIDs) > 0) { $sql .= " AND  PM.id IN (". implode(",", $aCardIDs) .")"; }
 		if (intval($id) > 0) { $sql .= " AND Txn.id = '". floatval($id) ."'"; }
-		if (empty($ono) === false) { $sql .= " AND Txn.orderid = '". $this->getDBConn()->escStr($ono) ."'"; }
+		if ($ono > 0) { $sql .= " AND Txn.orderid = '". $this->getDBConn()->escStr($ono) ."'"; }
 		if ( ($oCI instanceof CustomerInfo) === true)
 		{
 			if ($oCI->getMobile() > 0) { $sql .= " AND Txn.operatorid / 100 = ". $oCI->getCountryID() ." AND Txn.mobile = '". $oCI->getMobile() ."'"; }
 			if (strlen($oCI->getEMail() ) > 0) { $sql .= " AND Txn.email = '". $this->getDBConn()->escStr($oCI->getEMail() ) ."'"; }
 			if (strlen($oCI->getCustomerRef() ) > 0) { $sql .= " AND Txn.customer_ref = '". $this->getDBConn()->escStr($oCI->getCustomerRef() ) ."'"; }
 		}
-		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <= Txn.created"; }
-		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND Txn.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
+		
 		$sql .= "
-				ORDER BY created DESC";
+				ORDER BY createdfinal DESC) as a ";
+		
+		if (empty($start) === false && strlen($start) > 0) { $sql .= " where  '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <=  a.createdfinal"; }
+		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND  a.createdfinal  <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
+		
 		if (intval($limit) > 0 || intval($offset) > 0)
 		{
 			$sql .= "\n";
 			if (intval($limit) > 0) { $sql .= "LIMIT ". intval($limit); }
 			if (intval($offset) > 0) { $sql .= " OFFSET ". intval($offset); }
 		}
+		
+	
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
-	
+		
+		if (count($aStateIDs) == 0) 
+		{
+		    
+			$aStateIDs = array(
+					Constants::iINPUT_VALID_STATE , 
+					Constants::iPAYMENT_INIT_WITH_PSP_STATE , 
+					Constants::iPAYMENT_ACCEPTED_STATE , 
+					Constants::iPAYMENT_CAPTURED_STATE, 
+					Constants::iPAYMENT_DECLINED_STATE, 
+					Constants::iPAYMENT_REJECTED_STATE, 
+					Constants::iPAYMENT_REFUNDED_STATE,
+					Constants::iPAYMENT_CANCELLED_STATE
+				);
+		}
+		
+		
 		$sql = "SELECT stateid
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
-				WHERE txnid = $1 AND stateid IN (". Constants::iINPUT_VALID_STATE .", ". Constants::iPAYMENT_INIT_WITH_PSP_STATE .", ". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_DECLINED_STATE .")
-				ORDER BY id DESC";
+				WHERE txnid = $1 AND stateid IN (". implode(",", $aStateIDs) .")
+				ORDER BY id DESC
+			";
+		
 //		echo $sql ."\n";
 		$stmt1 = $this->getDBConn()->prepare($sql);
 		$sql = "SELECT id, stateid, data, created
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
-				WHERE txnid = $1
-				ORDER BY id ASC";
+				WHERE txnid = $1";
+		
+		if (count($aStateIDs) > 0) 
+		{ 
+			$sql .= " AND stateid IN (". implode(",", $aStateIDs) .")"; 
+		}
+		
+		$sql.= "ORDER BY id ASC";
+		
 //		echo $sql ."\n";
 		$stmt2 = $this->getDBConn()->prepare($sql);
 		
@@ -722,27 +796,31 @@ class mConsole extends Admin
 					}
 				}
 			}
-			$aObj_TransactionLogs[] = new TransactionLogInfo($RS["ID"],
-															 $RS["TYPEID"],
-															 $RS["ORDERNO"],
-															 $RS["EXTERNALID"],
-															 new BasicConfig($RS["CLIENTID"], $RS["CLIENT"]),
-															 new BasicConfig($RS["ACCOUNTID"], $RS["ACCOUNT"]),
-															 $RS["PSPID"] > 0 ? new BasicConfig($RS["PSPID"], $RS["PSP"]) : null,
-															 $RS["PAYMENTMETHODID"] > 0 ? new BasicConfig($RS["PAYMENTMETHODID"], $RS["PAYMENTMETHOD"]) : null,
-															 $RS["STATEID"],
-															 $aObj_CountryConfigurations[$RS["COUNTRYID"] ],
-															 $RS["AMOUNT"],
-															 $RS["CAPTURED"],
-															 $RS["POINTS"],
-															 $RS["REWARD"],
-															 $RS["REFUND"],
-															 $RS["FEE"],
-															 $RS["MODE"],
-															 new CustomerInfo($RS["CUSTOMERID"], $RS["OPERATORID"]/100, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"], $RS["FIRSTNAME"] ." ". $RS["LASTNAME"], $RS["LANGUAGE"]),
-															 $RS["IP"],
-															 gmdate("Y-m-d H:i:sP", strtotime(substr($RS["CREATED"], 0, strpos($RS["CREATED"], ".") ) ) ),
-															 $aObj_Messages);
+			
+			if(in_array( $RS["STATEID"], $aStateIDs ) == true)
+			{
+				$aObj_TransactionLogs[] = new TransactionLogInfo($RS["ID"],
+																 $RS["TYPEID"],
+																 $RS["ORDERNO"],
+																 $RS["EXTERNALID"],
+																 new BasicConfig($RS["CLIENTID"], $RS["CLIENT"]),
+																 new BasicConfig($RS["ACCOUNTID"], $RS["ACCOUNT"]),
+																 $RS["PSPID"] > 0 ? new BasicConfig($RS["PSPID"], $RS["PSP"]) : null,
+																 $RS["PAYMENTMETHODID"] > 0 ? new BasicConfig($RS["PAYMENTMETHODID"], $RS["PAYMENTMETHOD"]) : null,
+																 $RS["STATEID"],
+																 $aObj_CountryConfigurations[$RS["COUNTRYID"] ],
+																 $RS["AMOUNT"],
+																 $RS["CAPTURED"],
+																 $RS["POINTS"],
+																 $RS["REWARD"],
+																 $RS["REFUND"],
+																 $RS["FEE"],
+																 $RS["MODE"],
+																 new CustomerInfo($RS["CUSTOMERID"], $RS["OPERATORID"]/100, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"], $RS["FIRSTNAME"] ." ". $RS["LASTNAME"], $RS["LANGUAGE"]),
+																 $RS["IP"],
+																 gmdate("Y-m-d H:i:sP", strtotime(substr($RS["CREATED"], 0, strpos($RS["CREATED"], ".") ) ) ),
+																 $aObj_Messages);
+			}
 		}
 	
 		return $aObj_TransactionLogs;
@@ -774,7 +852,7 @@ class mConsole extends Admin
 	 * 
 	 * @param HTTPConnInfo $oCI		The connection information for the mPoint's "Capture" API in the "Buy" API suite
 	 * @param integer $clientid		The unique ID of the Client on whose behalf the Capture operation is being performed
-	 * @param integer $txnid		The unique ID of the transaction that should be captured
+	 * @param integTer $txnid		The unique ID of the transaction that should be captured
 	 * @param string $ono			The order number for the transaction that should be captured
 	 * @param integer $amt			The amount that should be captured for the transaction
 	 * @return array
@@ -925,34 +1003,67 @@ class mConsole extends Admin
 	{
 		$aStateIDS = array(Constants::iINPUT_VALID_STATE, Constants::iPAYMENT_INIT_WITH_PSP_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CANCELLED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_REFUNDED_STATE, Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_DECLINED_STATE);
 		
-		$sql = "SELECT date(Msg.created) as createddate, Msg.stateid as stateid, COUNT(Msg.stateid) as stateidcount 
-			FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn, 
-			Log".sSCHEMA_POSTFIX.".Message_Tbl Msg 
-			WHERE Msg.stateid IN (". implode(",", $aStateIDS) .") AND 
-			(Msg.created BETWEEN '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' AND 
-			'". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."') AND
-			Msg.created = (SELECT max(created) FROM Log".sSCHEMA_POSTFIX.".Message_Tbl WHERE txnid = Txn.id) AND 
-			Txn.clientid IN (". implode(",", $aClientIDs) .") " ;
+		$where = "";
+		
+		if(empty($aClientIDs) === false)
+		{
+			$where .= " Txn.clientid IN (". implode(",", $aClientIDs) .")";
+		}
 		
 		if(empty($aAccountIDs) === false)
 		{
-			$sql .= " AND Txn.accountid IN (". implode(",", $aAccountIDs) .")";
+			if(empty($where) === false)
+			{
+				$where.=" AND ";
+			}
+			
+			$where .= " Txn.accountid IN (". implode(",", $aAccountIDs) .")";
 		}
 		
-		if($pspid > 0)
+		if(intval($pspid) > 0)
 		{
-			$sql .= " AND Txn.pspid = ".$pspid;
+			if(empty($where) === false)
+			{
+				$where.=" AND ";
+			}
+			
+			$where .= " Txn.pspid = ".intval($pspid);
 		}
 		
-		if($cardid > 0)
+		if(intval($cardid) > 0)
 		{
-			$sql .= " AND Txn.cardid = ".$cardid;
+			if(empty($where) === false)
+			{
+				$where.=" AND ";
+			}
+			
+			$where .= " Txn.cardid = ".intval($cardid);
 		}
 		
-		$sql .= " GROUP BY createddate, Msg.stateid ";
-		$sql .= " ORDER BY createddate ";
+		if(empty($where) === false)
+		{
+			$where = " WHERE ".$where;
+		}
 		
-		//echo $sql ."\n";exit;
+		$sql = "SELECT date(messages.max_created) AS createddate, messages.stateid AS stateid, count(messages.txnid) AS stateidcount
+			FROM (
+				SELECT Msg.created AS max_created, Msg.txnid, Msg.stateid 
+				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl AS Msg 
+				WHERE 
+				Msg.created BETWEEN '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' AND 
+				'". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'
+				AND Msg.created = (
+					select MAX(created) FROM Log.Message_Tbl
+						WHERE stateid IN (". implode(",", $aStateIDS) .") AND txnid = Msg.txnid
+				)
+				AND Msg.txnid IN (
+					SELECT Txn.id 
+						FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn ".$where."
+				)
+				
+			) AS messages GROUP BY createddate, messages.stateid ORDER BY createddate";
+		
+		//echo $sql ."\n";
 		
 		$aRS = array();
 		
@@ -960,6 +1071,8 @@ class mConsole extends Admin
 		
 		$res = $this->getDBConn()->query($sql);
 
+		$aTransactionStats = array();
+		
 		if (is_resource($res) === true)
 		{
 
@@ -970,14 +1083,13 @@ class mConsole extends Admin
 					$aRS[$RS['CREATEDDATE']][$RS['STATEID']] = $RS['STATEIDCOUNT']; 
 				}
 			}
-			
+
 			if(empty($aRS) === false)
 			{
-				$aTransactionStats = array();
-
 				foreach($aRS as $createddate => $transactioncountdata)
 				{
-					$missingstateids = array_diff($aStateIDS, array_flip($transactioncountdata));
+					$missingstateids = array_diff($aStateIDS, array_keys($transactioncountdata));
+
 					foreach($missingstateids as $stateid)
 					{
 						$aTransactionStats[$createddate][$stateid] = 0;
@@ -987,9 +1099,9 @@ class mConsole extends Admin
 				}
 
 				return new TransactionStatisticsInfo($aTransactionStats);
-			} else { return false; }
-		} else { return false; }
-
+			} else { return new TransactionStatisticsInfo($aTransactionStats); }
+		} 
+		else { return new TransactionStatisticsInfo($aTransactionStats); }
 		
 	}
     }

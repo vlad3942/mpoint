@@ -426,6 +426,18 @@ abstract class Constants
 	 *
 	 */
 	const iAMEX_EXPRESS_CHECKOUT_PSP = 16;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: Data Cash
+	 *
+	 */
+	const iDATA_CASH_PSP = 17;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: Wire Card
+	 *
+	 */
+	const iWIRE_CARD_PSP = 18;
 
 	/**
 	 * Unique ID for the Electronic Payment Flow
