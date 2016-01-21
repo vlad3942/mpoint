@@ -1101,9 +1101,9 @@
 			<xs:documentation>Configuration of a Payment Service Provider for an mPoint Client</xs:documentation>
 		</xs:annotation>
 		<xs:all>
-			<xs:element name="name" type="pspName" minOccurs="1" maxOccurs="1" />
-			<xs:element name="username" type="pspName" minOccurs="0" maxOccurs="1" />
-			<xs:element name="password" type="pspName" minOccurs="0" maxOccurs="1" />
+			<xs:element name="name" type="long-name" minOccurs="1" maxOccurs="1" />
+			<xs:element name="username" type="long-name" minOccurs="0" maxOccurs="1" />
+			<xs:element name="password" type="long-name" minOccurs="0" maxOccurs="1" />
 		</xs:all>
 		<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
 		<xs:attribute name="psp-id" type="xs:positiveInteger" use="required" />
@@ -1309,7 +1309,7 @@
 		</xs:restriction>
 	</xs:simpleType>
         
-	<xs:simpleType name="pspName">
+	<xs:simpleType name="long-name">
 		<xs:restriction base="xs:string">
 			<xs:minLength value="1" />
 		</xs:restriction>
