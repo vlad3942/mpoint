@@ -165,7 +165,7 @@ class DIBS extends Callback implements Captureable, Refundable
 	public function capture($iAmount = -1)
 	{
 		$extID = $this->getTxnInfo()->getExternalID();
-		if ($iAmount == -1) { $this->getTxnInfo()->getAmount(); }
+		if ($iAmount == -1) { $iAmount = $this->getTxnInfo()->getAmount(); }
 
 		$code = $this->status($extID);
 		// Transaction ready for Capture

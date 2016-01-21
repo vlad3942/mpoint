@@ -283,7 +283,7 @@ class WorldPay extends Callback implements Captureable, Refundable
 	 */
 	public function capture($iAmount = -1)
 	{
-		if ($iAmount == -1) { $this->getTxnInfo()->getAmount(); }
+		if ($iAmount == -1) { $iAmount = $this->getTxnInfo()->getAmount(); }
 		// Unmarshall the XML Document from WorldPay's "Payment Authorized" Notification
 		$a = $this->getMessageData($this->getTxnInfo()->getID(), Constants::iPAYMENT_ACCEPTED_STATE);
 		ob_start();
@@ -364,7 +364,7 @@ class WorldPay extends Callback implements Captureable, Refundable
 	 */
 	public function refund($iAmount = -1)
 	{
-		if ($iAmount == -1) { $this->getTxnInfo()->getAmount(); }
+		if ($iAmount == -1) { $iAmount = $this->getTxnInfo()->getAmount(); }
 		// Determine whether the payment was made with a Stored Card as WorldPay requires a different Merchant Code for these transactions
 		$bStoredCard = $this->_paidWithStoredCard();
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
