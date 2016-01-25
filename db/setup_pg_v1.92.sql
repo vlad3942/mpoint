@@ -19,7 +19,7 @@ INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength
 INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (19, 26);
 INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) SELECT C.id * -1 AS pricepointid, 26 FROM System.Country_Tbl C, System.Card_Tbl Card WHERE C.id = 100 GROUP BY pricepointid;
 
-INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10005, 26, 15);
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10005, 26, 19);
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username) VALUES (10005, 19, '', '');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT A.id, 19, '-1'  FROM Client.Account_Tbl A, System.PSP_Tbl P WHERE clientid = 10005 GROUP BY A.id;
 
