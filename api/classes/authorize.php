@@ -1,9 +1,6 @@
 <?php
 /**
- * Model Class containing all the Business Logic for handling the Callback request from the Payment Service Provider (PSP).
- * The class contains methods that completes the transaction log with information received from the PSP, notifies the Client
- * and sends out an SMS Receipt to the Customer.
- *
+ * Model Class containing all the Business Logic for handling the Authorize request Merchant applications.
  */
 class Authorize extends General
 {
@@ -26,12 +23,12 @@ class Authorize extends General
 	 *
 	 * @param    RDB $oDB Reference to the Database Object that holds the active connection to the mPoint Database
 	 * @param    TranslateText $oTxt Text Translation Object for translating any text into a specific language
-	 * @param TxnInfo $oTxn_Info
-	 * @param callable $oPSP
+	 * @param	 TxnInfo $oTxn_Info Transaction information object
+	 * @param	 callable $oPSP PSP Communication object
 	 */
 	public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTxn_Info, Callback $oPSP)
 	{
-		parent::__construct($oDB, $oTxt, $oTxn_Info->getClientConfig() );
+		parent::__construct($oDB, $oTxt);
 
 		$this->_obj_TxnInfo = $oTxn_Info;
 		$this->_obj_PSP = $oPSP;
