@@ -4,6 +4,9 @@
 FROM cellpointmobile/main:php-test
 EXPOSE 80 5432
 
+# Apache vhost
+COPY docker/000-default.conf /etc/apache2/sites-available/default
+
 WORKDIR /opt/cpm/mPoint
 
 RUN mkdir /opt/cpm/mPoint/log && chmod -R 777 /opt/cpm/mPoint/log

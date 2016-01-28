@@ -7,7 +7,6 @@ RUN apt-get update && apt-get install -y --force-yes apache2 postgresql libapach
 # Apache stuff
 COPY docker/php.ini /etc/php5/apache2/php.ini
 COPY docker/php.ini /etc/php5/cli/php.ini
-COPY docker/000-default.conf /etc/apache2/sites-available/default
 
 # Host file, database and timezone config
 RUN echo "host all all 127.0.0.1/32 trust" >/etc/postgresql/9.1/main/pg_hba.conf && echo "host all all ::1/128 trust" >>/etc/postgresql/9.1/main/pg_hba.conf && echo "local all postgres trust" >>/etc/postgresql/9.1/main/pg_hba.conf
