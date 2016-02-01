@@ -179,6 +179,11 @@ abstract class Constants
 	const iPAYMENT_REFUNDED_STATE = 2003;
 
 	/**
+	 * Defines the ID of the State that indicates that payment is being using a voucher
+	 *
+	 */
+	const iPAYMENT_WITH_VOUCHER_STATE = 2007;
+	/**
 	 * Defines the ID of the State that indicates that payment is being using the End-User's account
 	 *
 	 */
@@ -438,6 +443,12 @@ abstract class Constants
 	 *
 	 */
 	const iWIRE_CARD_PSP = 18;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: DSB
+	 *
+	 */
+	const iDSB_PSP = 19;
 
 	/**
 	 * Unique ID for the Electronic Payment Flow
@@ -572,12 +583,21 @@ abstract class Constants
 	 *
 	 */
 	const iMASTER_PASS_WALLET = 23;
-
+	/**
+	 * Unique Card ID for transaction's made using Invoice paymnet
+	 *
+	 */
+	const iINVOICE = 24;
 	/**
 	 * Unique Card ID for transaction's made using AMEX Express Checkout Wallet
 	 *
 	 */
 	const iAMEX_EXPRESS_CHECKOUT_WALLET = 25;
+	/**
+	 * Unique Card ID for transaction's made using Vouchers
+	 *
+	 */
+	const iVOUCHER_CARD = 26;
 	/**
 	 * Unique Fee Type ID for Top-Ups
 	 *
@@ -614,7 +634,17 @@ abstract class Constants
 	/*
 	 * mConsole Enterprise URL endpoint.
 	 */
-	const sMCONSOLE_SINGLE_SIGN_ON_PATH = '/mconsole/single-sign-on';	
+
+	/**
+	 * mPoint card states as also listed in System.CardState_Tbl
+	 */
+	const iCARD_ENABLED_STATE = 1;
+	const iCARD_DISABLED_BY_MERCHANT_STATE = 2;
+	const iCARD_DISABLED_BY_PSP_STATE = 3;
+	const iCARD_PREREQUISITE_NOT_MET_STATE = 4;
+	const iCARD_TEMPORARILY_UNAVAILABLE_STATE = 5;
+
+	const sMCONSOLE_SINGLE_SIGN_ON_PATH = '/mconsole/single-sign-on';
 	
 	/*
 	 * Value of the Payment Data retrieve call from the third party endpoint

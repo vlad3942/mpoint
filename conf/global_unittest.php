@@ -17,6 +17,9 @@ $aDB_CONN_INFO["mpoint"]["keycase"] = CASE_UPPER;
 $aDB_CONN_INFO["mpoint"]["debuglevel"] = 2;
 $aDB_CONN_INFO["mpoint"]["method"] = 1;
 
+$aDB_CONN_INFO["session"]["username"] = "postgres";
+$aDB_CONN_INFO["session"]["password"] = "postgres";
+
 $aMPOINT_CONN_INFO["protocol"] = "http";
 $aMPOINT_CONN_INFO["host"] = "mpoint.local.cellpointmobile.com";
 $aMPOINT_CONN_INFO["port"] = 80;
@@ -56,6 +59,12 @@ $aHTTP_CONN_INFO["netaxept"]["timeout"] = 120;
 $aHTTP_CONN_INFO["netaxept"]["path"] = "/_test/simulators/netaxept/netaxept.php?wsdl";
 $aHTTP_CONN_INFO["netaxept"]["method"] = "POST";
 $aHTTP_CONN_INFO["netaxept"]["contenttype"] = "application/x-www-form-urlencoded";
+
+$aHTTP_CONN_INFO["dsb"]["protocol"] = "http";
+$aHTTP_CONN_INFO["dsb"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["dsb"]["port"] = 80;
+$aHTTP_CONN_INFO["dsb"]["paths"]["redeem"] = "/_test/simulators/dsb/redeem.php";
+$aHTTP_CONN_INFO["dsb"]["paths"]["callback"] = "/callback/general.php";
 
 $aCPM_CONN_INFO = $aMPOINT_CONN_INFO;
 $aCPM_CONN_INFO["contenttype"] = "application/x-www-form-urlencoded";

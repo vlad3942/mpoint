@@ -89,8 +89,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$aMsgCds = array();
 
 						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->mobile, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->email);
-//						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->mobile); }
-//						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($obj_CountryConfig, $obj_DOM->{'delete-card'}[$i]->{'client-info'}->email); }
+                       
                         if (strlen((string) $obj_DOM->{'delete-card'}[$i]->password) > 1 && $obj_Validator->valPassword( (string) $obj_DOM->{'delete-card'}[$i]->password) != 10)
                         {
                             $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'delete-card'}[$i]->password) + 20;

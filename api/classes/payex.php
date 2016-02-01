@@ -460,5 +460,7 @@ class PayEx extends Callback
 		
 		return $obj_XML;
 	}
+
+	public function getPSPID() { return Constants::iPAYEX_PSP; }
 }
 ?>

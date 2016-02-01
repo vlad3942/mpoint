@@ -446,7 +446,7 @@ class Home extends General
 					EUAD.countryid, EUAD.firstname, EUAD.lastname,
 					EUAD.company, EUAD.street,
 					EUAD.postalcode, EUAD.city,
-					STS.code, STS.name AS state
+					STS.code, STS.name AS state, CA.position AS client_position
 				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl EUC
 				INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON EUC.pspid = PSP.id AND PSP.enabled = '1'
 				INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl SC ON EUC.cardid = SC.id AND SC.enabled = '1'
@@ -466,7 +466,7 @@ class Home extends General
 														       WHERE accountid = EUA.id) )";
 		}
 		$sql .= "
-				ORDER BY CL.name ASC";
+				ORDER BY CA.position ASC NULLS LAST, SC.name ASC";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 
@@ -474,7 +474,7 @@ class Home extends General
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
 			// Construct XML Document with data for saved cards
-			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'">';
+			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'" >';
 			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
 			$xml .= '<type id="'. $RS["TYPEID"] .'">'. $RS["TYPE"] .'</type>';
 			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';

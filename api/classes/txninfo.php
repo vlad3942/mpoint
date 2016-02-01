@@ -233,6 +233,12 @@ class TxnInfo
 	 */
 	private $_lCapturedAmount;
 	/**
+	 * Card-id used for the payment
+	 *
+	 * @var long
+	 */
+	private $_iCardID;
+	/**
 	 * Default Constructor
 	 *
 	 * @param 	integer $id 		Unique ID for the Transaction
@@ -269,7 +275,7 @@ class TxnInfo
 	 * @param	long $cptamt		The Full amount that has been captured for the Transaction
 	 *
 	 */
-	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="", $pspid=-1, $fee=0, $cptamt=0)
+	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="", $pspid=-1, $fee=0, $cptamt=0, $cardid = -1)
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -309,6 +315,8 @@ class TxnInfo
 		$this->_iPSPID = (integer) $pspid;
 		$this->_iFee = (integer) $fee;
 		$this->_lCapturedAmount = (float) $cptamt;
+		$this->_iCardID = (integer) $cardid;
+		
 	}
 
 	/**
@@ -554,6 +562,12 @@ class TxnInfo
 	 * @param 	integer $id 	Unique ID for the End-User's prepaid account
 	 */
 	public function setAccountID($id) { $this->_iAccountID = (integer) $id; }
+	/**
+	 * Returns Unique ID for the The card used for the transaction Defaults to -1.
+	 *
+	 * @return 	integer		Card id for the transaction
+	 */
+	public function getCardID() { return $this->_iCardID; }
 
 	/**
 	 * Converts the data object into XML.
@@ -606,7 +620,7 @@ class TxnInfo
 			$iHeight = iCLIENT_LOGO_SCALE ."%";
 		}
 
-		$xml  = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'" gmid="'. $this->_iGoMobileID .'" mode="'. $this->_iMode .'" eua-id="'. $this->_iAccountID .'" psp-id="'. $this->_iPSPID .'" external-id="'. htmlspecialchars($this->getExternalID(), ENT_NOQUOTES) .'">';
+		$xml  = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'" gmid="'. $this->_iGoMobileID .'" mode="'. $this->_iMode .'" eua-id="'. $this->_iAccountID .'" psp-id="'. $this->_iPSPID .'" card-id="'. $this->_iCardID .'" external-id="'. htmlspecialchars($this->getExternalID(), ENT_NOQUOTES) .'">';
 		$xml .= '<captured-amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $this->_lCapturedAmount .'</captured-amount>';
 		$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $this->_lAmount .'</amount>';
 		$xml .= '<fee country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $this->_iFee .'</fee>';
@@ -662,7 +676,7 @@ class TxnInfo
 	private static function _constProduceQuery()
 	{
 		$sql = "SELECT t.id, typeid, countryid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, extid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, iconurl, \"mode\", auto_capture, gomobileid,
-						t.clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, t.pspid, fee, captured
+						t.clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, t.pspid, fee, captured, cardid
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl t";
 
 		return $sql;
@@ -682,7 +696,7 @@ class TxnInfo
 			$obj_ClientConfig = ClientConfig::produceConfig($obj, $RS["CLIENTID"], $RS["ACCOUNTID"], $RS["KEYWORDID"]);
 			$obj_CountryConfig = CountryConfig::produceConfig($obj, $RS["COUNTRYID"]);
 
-			$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["PSPID"], $RS["FEE"], $RS["CAPTURED"]);
+			$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"]);
 		}
 		return $obj_TxnInfo;
 	}
@@ -715,6 +729,7 @@ class TxnInfo
 			if (array_key_exists("typeid", $misc) === false) { $misc["typeid"] = $obj->getTypeID(); }
 			if (array_key_exists("client-config", $misc) === false) { $misc["client-config"] = $obj->getClientConfig(); }
 			if (array_key_exists("country-config", $misc) === false) { $misc["country-config"] = $obj->getCountryConfig(); }
+			if (array_key_exists("card-id", $misc) === false) { $misc["card-id"] = $obj->getCardID(); }
 			if (array_key_exists("amount", $misc) === false) { $misc["amount"] = $obj->getAmount(); }
 			if (array_key_exists("points", $misc) === false) { $misc["points"] = $obj->getPoints(); }
 			if (array_key_exists("reward", $misc) === false) { $misc["reward"] = $obj->getReward(); }
@@ -746,7 +761,7 @@ class TxnInfo
 			if (array_key_exists("captured-amount", $misc) === false) { $misc["captured-amount"] = $obj->getCapturedAmount(); }
 				
 				
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["country-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"],  $misc["psp-id"],  $misc["fee"], $misc["captured-amount"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["country-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"],  $misc["psp-id"],  $misc["fee"], $misc["captured-amount"], $misc["card-id"]);
 			break;
 		case ($obj instanceof ClientConfig):	// Instantiate from array of Client Input
 			if (array_key_exists("country-config", $misc) === false) { $misc["country-config"] = $obj->getCountryConfig(); }
@@ -814,5 +829,19 @@ class TxnInfo
 		return $aMessages;  
 	}
 
+	public function hasEitherState(RDB $obj_DB, $aStateID)
+	{
+		if (is_array($aStateID) === false) { $aStateID = array($aStateID); }
+		$sStates = implode(',', array_map("intval", $aStateID) );
+
+		$sql = "SELECT COUNT(id) AS C
+				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
+				WHERE txnid = ". $this->getID() ." AND stateid IN (". $sStates .") AND enabled = '1'";
+//		echo $sql;
+		$res = $obj_DB->getName($sql);
+
+		if ($res === false) { trigger_error("Failed to determine whether transaction #". $this->getID() . " has states: ". $sStates, E_USER_WARNING); }
+		return is_array($res) === true && isset($res["C"]) === true && intval($res["C"]) > 0;
+	}
 }
 ?>

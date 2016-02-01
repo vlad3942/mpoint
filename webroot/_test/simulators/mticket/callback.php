@@ -17,6 +17,9 @@ case Constants::iPAYMENT_CANCELLED_STATE:
 case Constants::iPAYMENT_DECLINED_STATE:
 	$aRequiredArguments = array('status', 'mpoint-id', 'pspid', 'language');
 	break;
+case Constants::iPAYMENT_REJECTED_STATE:
+	$aRequiredArguments = array('status', 'mpoint-id', 'language');
+	break;
 default:
 	$sMsg = "mTicket callback, Unknown payment state: ". @$_REQUEST["status"];
 	trigger_error($sMsg, E_USER_WARNING);

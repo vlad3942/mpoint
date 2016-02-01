@@ -107,6 +107,8 @@ require_once(sCLASS_PATH ."/home.php");
 require_once(sINTERFACE_PATH ."/captureable.php");
 require_once(sINTERFACE_PATH ."/refundable.php");
 require_once(sINTERFACE_PATH ."/voidable.php");
+require_once(sINTERFACE_PATH ."/redeemable.php");
+require_once(sINTERFACE_PATH ."/invoiceable.php");
 
 // Require specific Business logic for the Status component
 require_once(sCLASS_PATH ."/status.php");
