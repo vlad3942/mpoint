@@ -48,12 +48,12 @@ class WireCard extends CPMPSP
 	{
 		if (intval($txnid) == 0) { $sql = ""; }
 		else { $sql = ", extid = '". $this->getDBConn()->escStr($txnid) ."'"; }
-		if ($this->_obj_TxnInfo->getAccountID() > 0) { $sql .= ", euaid = ". $this->_obj_TxnInfo->getAccountID(); }
+		if ($this->getTxnInfo()->getAccountID() > 0) { $sql .= ", euaid = ". $this->getTxnInfo()->getAccountID(); }
 		else { $sql .= ", euaid = NULL"; }
 	
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET pspid = ". intval($pspid) .", cardid = ". intval($cid).", fee =".intval($fee) . $sql ."
-				WHERE id = ". $this->_obj_TxnInfo->getID();
+				WHERE id = ". $this->getTxnInfo()->getID();
 		//		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 	
@@ -62,16 +62,18 @@ class WireCard extends CPMPSP
 		{
 			if ($this->getDBConn()->countAffectedRows($res) == 1 || $sid != Constants::iPAYMENT_ACCEPTED_STATE) 
 			{ 
-				$this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true) ); 
+				$this->newMessage($this->getTxnInfo()->getID(), $sid, var_export($debug, true) ); 
 			}
 		}
 		// Error: Unable to complete log for Transaction
 		else
 		{
-			$this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true) );
-			throw new CallbackException("Unable to complete log for Transaction: ". $this->_obj_TxnInfo->getID(), 1001);
+			$this->newMessage($this->getTxnInfo()->getID(), $sid, var_export($debug, true) );
+			throw new CallbackException("Unable to complete log for Transaction: ". $this->getTxnInfo()->getID(), 1001);
 		}
 	
 		return $sid;
 	}
+	
+	public function getPSPID() { return Constants::iWIRE_CARD_PSP; }
 }
