@@ -33,4 +33,5 @@ class MobilePay extends CPMPSP
 
 	public function initCallback(HTTPConnInfo &$oCI, $cardid, $txnid, $cardno, $expiry) { /* no operation */ }
 
+	public function getPSPID() { return Constants::iMOBILEPAY_PSP; }
 }

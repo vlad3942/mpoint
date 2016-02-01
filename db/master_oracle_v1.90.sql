@@ -1,5 +1,6 @@
-
-/* ========== ALTER TABLE FOR MERCHANT ACCOUNT TO HAVE PASSWORD OF 4000 CHARS START ====== */
-ALTER TABLE Client_Ownr.MerchantAccount_Tbl MODIFY passwd VARCHAR2(4000);
-ALTER TABLE Client_Ownr.MerchantAccount_Tbl MODIFY name VARCHAR2(100);
-/* ========== ALTER TABLE FOR MERCHANT ACCOUNT TO HAVE PASSWORD OF 4000 CHARS END ====== */
+/* ==================== LOG SCHEMA START ==================== */
+CREATE INDEX transaction_search_mobile_idx ON Log_Ownr.Transaction_Tbl (clientid, mobile, created);
+CREATE INDEX transaction_search_email_idx ON Log_Ownr.Transaction_Tbl (clientid, email, created);
+CREATE INDEX transaction_search_custref_idx ON Log_Ownr.Transaction_Tbl (clientid, customer_ref, created);
+CREATE INDEX transaction_search_order_idx ON Log_Ownr.Transaction_Tbl (clientid, orderid, created);
+/* ==================== LOG SCHEMA END ==================== */

@@ -27,7 +27,12 @@ require_once(sCLASS_PATH ."/enduser_account.php");
 require_once(sCLASS_PATH ."/mobile_web.php");
 // Require Business logic for the Select Credit Card component
 require_once(sCLASS_PATH ."/credit_card.php");
-
+// Require general Business logic for the Callback module
+require_once(sCLASS_PATH ."/callback.php");
+// Require specific Business logic for the CPM PSP component
+require_once(sINTERFACE_PATH ."/cpm_psp.php");
+// Require specific Business logic for the DSB PSP component
+require_once(sCLASS_PATH ."/dsb.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 
@@ -184,22 +189,40 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							else { $aObj_XML = $aObj_XML->xpath("/stored-cards/card"); }
 						}
 						else { $aObj_XML = array(); }
-						$xml .= '<cards>';
+						
+						$aPSPs = array();
+						$cardsXML = '<cards>';
 						for ($j=0; $j<count($obj_XML->item); $j++)
 						{
 							// Card does not represent "My Account" or the End-User has an acccount with Stored Cards or Stored Value Account is available
 							if ($obj_XML->item[$j]["type-id"] != 11
 								|| ($obj_TxnInfo->getAccountID() > 0 && (count($aObj_XML) > 0 || $obj_ClientConfig->getStoreCard() == 2) ) )
 							{
-								$xml .= '<card id="'. $obj_XML->item[$j]["id"] .'" type-id="'. $obj_XML->item[$j]["type-id"] .'" psp-id="'. $obj_XML->item[$j]["pspid"] .'" min-length="'. $obj_XML->item[$j]["min-length"] .'" max-length="'. $obj_XML->item[$j]["max-length"] .'" cvc-length="'. $obj_XML->item[$j]["cvc-length"] .'" state-id="'. $obj_XML->item[$j]["state-id"] .'">';
-								$xml .= '<name>'. htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) .'</name>';
-								$xml .= $obj_XML->item[$j]->prefixes->asXML();
-								$xml .= htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES);	// Backward compatibility
-								$xml .= '</card>';
+								if (in_array((integer) $obj_XML->item[$j]["pspid"], $aPSPs) === false) { $aPSPs[] = intval($obj_XML->item[$j]["pspid"] ); } 
+								$cardsXML .= '<card id="'. $obj_XML->item[$j]["id"] .'" type-id="'. $obj_XML->item[$j]["type-id"] .'" psp-id="'. $obj_XML->item[$j]["pspid"] .'" min-length="'. $obj_XML->item[$j]["min-length"] .'" max-length="'. $obj_XML->item[$j]["max-length"] .'" cvc-length="'. $obj_XML->item[$j]["cvc-length"] .'" state-id="'. $obj_XML->item[$j]["state-id"] .'">';
+								$cardsXML .= '<name>'. htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) .'</name>';
+								$cardsXML .= $obj_XML->item[$j]->prefixes->asXML();
+								$cardsXML .= htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES);	// Backward compatibility
+								$cardsXML .= '</card>';
 							}
 						}
-						$xml .= '</cards>';
-
+						$cardsXML .= '</cards>';
+						
+						for ($j=0; $j<count($aPSPs); $j++)
+						{
+							switch ($aPSPs[$j])
+							{
+							case (Constants::iDSB_PSP):
+								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iDSB_PSP);
+								$obj_PSP = new DSB($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["dsb"]);
+								$cardsXML =  $obj_PSP->getExternalPaymentMethods($cardsXML);
+								break;
+							default:
+								break;
+							}
+						}
+						$xml .= $cardsXML;
+							
 						// End-User has Stored Cards available
 						if (is_array($aObj_XML) === true && count($aObj_XML) > 0)
 						{

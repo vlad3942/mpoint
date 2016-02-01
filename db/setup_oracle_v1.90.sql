@@ -1,3 +1,33 @@
+=======
+/* ========== CONFIGURE UATP START ========== */
+INSERT INTO System_Ownr.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (21, 'UATP', 19, 15, 15, -1);
+INSERT INTO System_Ownr.CardPrefix_Tbl (cardid, min, max) VALUES (21, 1000, 1999);
+INSERT INTO System_Ownr.CardPricing_Tbl (cardid, pricepointid) SELECT 21, id FROM System_Ownr.PricePoint_Tbl WHERE amount = -1;
+/* ========== CONFIGURE UATP END ========== */
+
+/* ========== CONFIGURE ADYEN START ========== */
+INSERT INTO System_Ownr.PSP_Tbl (id, name) VALUES (12, 'Adyen');
+INSERT INTO System_Ownr.PSPCard_Tbl (pspid, cardid) VALUES (12, 1);	-- American Express
+INSERT INTO System_Ownr.PSPCard_Tbl (pspid, cardid) VALUES (12, 2);	-- Dankort
+INSERT INTO System_Ownr.PSPCard_Tbl (pspid, cardid) VALUES (12, 3);	-- Diners Club
+INSERT INTO System_Ownr.PSPCard_Tbl (pspid, cardid) VALUES (12, 4);	-- EuroCard
+INSERT INTO System_Ownr.PSPCard_Tbl (pspid, cardid) VALUES (12, 5);	-- JCB
+INSERT INTO System_Ownr.PSPCard_Tbl (pspid, cardid) VALUES (12, 6);	-- Maestro
+INSERT INTO System_Ownr.PSPCard_Tbl (pspid, cardid) VALUES (12, 7);	-- MasterCard
+INSERT INTO System_Ownr.PSPCard_Tbl (pspid, cardid) VALUES (12, 8);	-- VISA
+INSERT INTO System_Ownr.PSPCard_Tbl (pspid, cardid) VALUES (12, 9);	-- VISA Electron
+INSERT INTO System_Ownr.PSPCard_Tbl (pspid, cardid) VALUES (12, 15);	-- Apple Pay
+INSERT INTO System_Ownr.PSPCard_Tbl (pspid, cardid) VALUES (12, 21);	-- UATP
+INSERT INTO System_Ownr.PSPCurrency_Tbl (pspid, countryid, name) SELECT 12, id, currency FROM System_Ownr.Country_Tbl;
+/* ========== CONFIGURE ADYEN END ========== */
+
+/* ========== CONFIGURE URL TYPE FOR THE MOBILE ENTERPRISE SERVICE BUS START ========== */
+INSERT INTO System_Ownr.URLType_Tbl (id, name) VALUES (4, 'Mobile Enterprise Service Bus');
+
+-- Mobile Enterprise Service Bus
+INSERT INTO Client_Ownr.URL_Tbl (urltypeid, clientid, url) SELECT 4, id, 'http://localhost:9000/' FROM Client_Ownr.Client_Tbl;
+/* ========== CONFIGURE URL TYPE FOR THE MOBILE ENTERPRISE SERVICE BUS START ========== */
+
 /* ========== CONFIGURE CARD DISCOVER START ========== */
 INSERT INTO System.Card_Tbl (id, name, position, logo, minlength, maxlength, cvclength) VALUES (22, 'Discover', 20, NULL, 16, 16, 3);
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 22, id FROM System.PricePoint_Tbl WHERE amount = -1;
@@ -106,6 +136,15 @@ INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 16, 9
 -- Mobile Enterprise Service Bus
 INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (4, 10001, 'http://localhost:10080/');
 /* ========== CONFIGURE DEMO ACCOUNT FOR VISA CHECKOUT END ====== */
+
+/* ========== CONFIGURE MOBILE WEB ACCOUNT FOR VISA CHECKOUT START ====== */
+-- VISA Checkout
+INSERT INTO Client_Ownr.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10003, 13, '2X5JJ0751LFJG3EMYRMS13h-QPSi0pUet0c2zoXupm10tRL28', '2X5JJ0751LFJG3EMYRMS13h-QPSi0pUet0c2zoXupm10tRL28', '5PH9i3cNJ8ZmFK0B-xuSsMzq{8uSkO$o#GZPA+M}');
+INSERT INTO Client_Ownr.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100030, 13, '-1');
+INSERT INTO Client_Ownr.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10003, 16, 9);
+
+UPDATE Client_Ownr.MerchantAccount_Tbl SET username = 'MSC=EKIBE SKU=EKSKU SKM=EKSKU', passwd = 'MSC=*IBE$01$Ccep SKU=*SKU$01$Ccep SKM=*SKU$01$Ccep' WHERE clientid = 10003 AND pspid = 9; 
+/* ========== CONFIGURE MOBILE WEB ACCOUNT FOR VISA CHECKOUT END ====== */
 
 /* ========== CONFIGURE APPLE PAY START ========== */
 /*START: Adding PSP entries to the PSP_Tbl table for Apple Pay*/

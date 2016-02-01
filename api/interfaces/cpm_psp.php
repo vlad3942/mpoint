@@ -1,9 +1,11 @@
 <?php
-abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiadable
+
+abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiadable, Redeemable, Invoiceable
 {
-    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo)
+
+    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $obj_PSPConfig=null)
     {
-        parent::__construct($oDB, $oTxt, $oTI, $aConnInfo);
+        parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig);
     }
 
 	public function notifyClient($iStateId, array $vars) { parent::notifyClient($iStateId, $vars["transact"], $vars["amount"], $vars["card-id"]); }
@@ -330,6 +332,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		return $obj_XML;
 	}
+
 	public function authTicket(PSPConfig $obj_PSPConfig, $ticket)
 	{
 		$code = 0;
@@ -385,11 +388,83 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		
 		return $code;
 	}
-	
+
+	public function redeem($iVoucherID, $iAmount=-1)
+	{
+		$code = 0;
+		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<root>';
+		$b .= '<redeem-voucher id="'. $iVoucherID .'">';
+		$b .= '<transaction order-no="'. $this->getTxnInfo()->getOrderID() .'">';
+		$b .= '<amount country-id="1">'. $iAmount .'</amount>';
+		$b .= '</transaction>';
+		$b .= '</redeem-voucher>';
+		$b .= '</root>';
+
+		$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["redeem"]);
+
+		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+		$obj_HTTP->connect();
+		$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+		$obj_HTTP->disConnect();
+		if ($code == 200)
+		{
+			$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
+			if (isset($obj_XML->voucher->status["code"]) === true && strlen($obj_XML->voucher->status["code"]) > 0) { $code = (string)$obj_XML->voucher->transaction; }
+			else { throw new mPointException("Invalid response from voucher issuer: ". $this->getPSPConfig()->getName() .", Body: ". $obj_HTTP->getReplyBody(), $code); }
+		}
+		else if ($code == 402) { throw new UnexpectedValueException("Insufficient balance on voucher", 43); }
+		else if ($code == 423) { throw new UnexpectedValueException("Voucher usage is temporarily locked", 48); }
+		else { throw new mPointException("Redemption failed with PSP: ". $this->getPSPConfig()->getName() .", Txn: ". $this->getTxnInfo()->getID() ."\n\n". $obj_HTTP->getReplyBody(), $code); }
+
+		return $code;
+	}
+
+	public function initCallback(PSPConfig $obj_PSPConfig, TxnInfo $obj_TxnInfo, $iStateID, $sStateName, $iCardid)
+	{
+		$code = 0;
+		$xml  = '<?xml version="1.0" encoding="UTF-8"?>';
+		$xml .= '<root>';
+		$xml .= '<callback>';
+		$xml .= $obj_PSPConfig->toXML();
+		$xml .= '	<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. $obj_TxnInfo->getOrderID() .'" external-id="'. $obj_TxnInfo->getExternalID() .'">';
+		$xml .= '     	<amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID(). '">'. $obj_TxnInfo->getAmount(). '</amount>';
+		$xml .= '		<card id="'. $obj_TxnInfo->getExternalID(). '" type-id="'. $iCardid .'" psp-id="'. $obj_TxnInfo->getPSPID() .'">';
+		$xml .= '		</card>';
+		$xml .= '		<description>'. $obj_TxnInfo->getDescription() .'</description>';
+		$xml .= '	</transaction>';
+		
+		$xml .= '	<status code="'. $iStateID .'">'. $sStateName .'</status>';
+		$xml .= '</callback>';
+		$xml .= '</root>';
+
+		try
+		{
+			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["callback"]);
+
+			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+			$obj_HTTP->connect();
+			$code = $obj_HTTP->send($this->constHTTPHeaders(), $xml);
+			$obj_HTTP->disConnect();
+
+			if ($code == 200)
+			{
+				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+				if (isset($obj_XML->status["code"]) === true && strlen($obj_XML->status["code"]) > 0) { $code = $obj_XML->status["code"]; }
+				else { throw new mPointException("Invalid response from callback controller: ". $this->getPSPConfig()->getName() .", Body: ". $obj_HTTP->getReplyBody(), $code); }
+			}
+			else { throw new mPointException("Callback to mPoint callback controller: ". $this->getPSPConfig()->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
+		}
+		catch (mPointException $e)
+		{
+			trigger_error("Callback to mPoint for txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+			$code = -1*abs($code);
+		}
+		return $code;
+	}
+
 	private function _constTxnXML($actionAmount=null)
 	{
-		$obj_TxnInfo = $this->getTxnInfo();
-		
 		$obj_XML = simplexml_load_string($this->getTxnInfo()->toXML() );
 		$obj_XML->{'authorized-amount'} = (integer) $obj_XML->amount;
 		// Add all attributes from "amount" element
@@ -524,4 +599,48 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		if (is_array($RS) === true && count($RS) > 1) {	return new PSPConfig($RS["ID"], $RS["NAME"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], array()); }
 		else { return null; }
 	}	
+	
+	/*
+	 *  Fetches an updated list of Payment methods from the client.
+	 *  On any issue the provided Card XML will be returned unchanged
+	 * 
+	 * @param integer $sCards		String og cards XML with all allowed cards on the client 
+	 * @return Updated String XML
+	 */
+	public function getExternalPaymentMethods($sCards)
+	{
+		$obj_XML = $sCards;
+		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
+		$b .= '<root>';
+		$b .= '<get-extenal-payment-methods>';
+		$b .= '<transaction id="'. $this->getTxnInfo()->getID() .'" order-no="'. $this->getTxnInfo()->getOrderID() .'">';
+		$b .= $sCards;
+		$b .= '</transaction>';
+		$b .= '</get-extenal-payment-methods>';
+		$b .= '</root>';
+
+		try
+		{
+			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["get-extenal-payment-methods"]);
+		
+			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+			$obj_HTTP->connect();
+			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+			$obj_HTTP->disConnect();
+			if ($code == 200)
+			{
+				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+				$obj_XML = $obj_XML->transaction->cards->asXML();
+			}
+			else { throw new mPointException("Could not fetch updated payment card list responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
+		}
+		catch (mPointException $e)
+		{
+			trigger_error("construct  XML of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+		}
+		
+		return $obj_XML;
+	}
+	public function invoice($sMsg = "" ,$iAmount = -1) { return -1; }
+	
 }

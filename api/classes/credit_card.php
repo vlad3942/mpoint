@@ -99,7 +99,7 @@ class CreditCard extends EndUserAccount
 
 		$sql = "SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength,
 					PSP.id AS pspid, MA.name AS account, MSA.name AS subaccount, PC.name AS currency,
-					CA.stateid
+					CA.stateid, CA.position AS client_position
 				FROM System".sSCHEMA_POSTFIX.".Card_Tbl C
 				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON C.id = CA.cardid
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl MA ON CA.clientid = MA.clientid
@@ -117,7 +117,7 @@ class CreditCard extends EndUserAccount
 					AND PP.amount IN (-1, ". intval($amount) .")
 					AND C.enabled = '1' AND (MA.stored_card = '0' OR MA.stored_card IS NULL)
 					AND (CA.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ." OR CA.countryid IS NULL) AND CA.enabled = '1'
-				ORDER BY C.position ASC, C.name ASC";
+				ORDER BY CA.position ASC NULLS LAST, C.position ASC, C.name ASC";
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 

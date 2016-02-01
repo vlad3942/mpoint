@@ -9,7 +9,7 @@ require_once __DIR__ . '/../inc/testinclude.php';
 require_once sINTERFACE_PATH . '/cpm_psp.php';
 require_once sCLASS_PATH . '/mobilepay.php';
 
-class MobilePayCancelTest extends mPointBaseAPITest
+class MobilePayCancelTest extends baseAPITest
 {
 	/**
 	 * @var RDB

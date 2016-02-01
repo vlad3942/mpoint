@@ -515,5 +515,7 @@ class DIBS extends Callback implements Captureable, Refundable
 		
 		return $obj_XML;
 	}
+
+	public function getPSPID() { return Constants::iDIBS_PSP; }
 }
 ?>
