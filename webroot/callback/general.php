@@ -48,7 +48,7 @@ require_once(sCLASS_PATH ."/wirecard.php");
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
 	<callback>
-		<psp-config id="12">
+		<psp-config psp-id="12">
 			<name>CellpointMobileCOM</name>
 		</psp-config>
 		<transaction id="1825317" order-no="970-253176" external-id="8814395474257619">
@@ -134,7 +134,7 @@ try
 	}
 
 	$fee = 0;	
-	$obj_mPoint->completeTransaction( (integer) $obj_XML->callback->{'psp-config'}["id"],
+	$obj_mPoint->completeTransaction( (integer) $obj_XML->callback->{'psp-config'}["psp-id"],
 									  $obj_XML->callback->transaction["external-id"],
 									  (integer) $obj_XML->callback->transaction->card["type-id"],
 									  $iStateID,
