@@ -339,24 +339,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<authorize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
-		$b .= $obj_PSPConfig->toXML();
-		
-		$txnXML = $this->_constTxnXML();
-		$b .= $txnXML;
-		
+		$b .= $obj_PSPConfig->toXML();		
+		$b .= $this->_constTxnXML();				
 		$b .= '<card>';
 		$b .= '<token>'. $ticket .'</token>';
 		$b .= '</card>';
-		
-		/**
-		 * This change is done in order to send information
-		 * relate to accounts needed by Wirecard psp
-		 * for further authorization request.
-		 */
-		$obj_txnXML = simpledom_load_string($txnXML);		
-		$euaid = intval($obj_txnXML->xpath("/transaction/@eua-id")->{'eua-id'});
-		if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
-		
 		$b .= '</authorize>';
 		$b .= '</root>';
 
@@ -463,7 +450,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		return $code;
 	}
 
-	private function _constTxnXML($actionAmount=null)
+	protected  function _constTxnXML($actionAmount=null)
 	{
 		$obj_XML = simplexml_load_string($this->getTxnInfo()->toXML() );
 		$obj_XML->{'authorized-amount'} = (integer) $obj_XML->amount;
@@ -481,7 +468,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		return str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 	}
 
-	private function _constConnInfo($path)
+	protected function _constConnInfo($path)
 	{
 		$aCI = $this->aCONN_INFO;
 		$aURLInfo = parse_url($this->getClientConfig()->getMESBURL() );
