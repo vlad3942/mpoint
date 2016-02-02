@@ -571,7 +571,7 @@ try
 														
 																$obj_PSP = new WireCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["wire-card"]);
 													
-																$code = $obj_PSP->authTicket($obj_PSPConfig ,$obj_Elem->ticket);
+																$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_Elem);
 																// Authorization succeeded
 																if ($code == "100")
 																{
