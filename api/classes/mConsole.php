@@ -696,11 +696,12 @@ class mConsole extends Admin
 			if (strlen($oCI->getCustomerRef() ) > 0) { $sql .= " AND Txn.customer_ref = '". $this->getDBConn()->escStr($oCI->getCustomerRef() ) ."'"; }
 		}
 		
-		$sql .= "
-				ORDER BY createdfinal DESC) as a ";
+		$sql .= " ) as a ";
 		
 		if (empty($start) === false && strlen($start) > 0) { $sql .= " where  '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <=  a.createdfinal"; }
 		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND  a.createdfinal  <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
+		
+		$sql .= "ORDER BY createdfinal DESC";
 		
 		if (intval($limit) > 0 || intval($offset) > 0)
 		{
