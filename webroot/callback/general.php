@@ -41,7 +41,8 @@ require_once(sCLASS_PATH ."/amexexpresscheckout.php");
 require_once(sCLASS_PATH ."/masterpass.php");
 // Require specific Business logic for the Wirecard component
 require_once(sCLASS_PATH ."/wirecard.php");
-
+// Require specific Business logic for the DIBS component
+require_once(sCLASS_PATH ."/dibs.php");
 /**
  * Input XML format
  *
@@ -82,7 +83,6 @@ $obj_XML = simplexml_load_string(file_get_contents("php://input") );
 	
 $id = (integer)$obj_XML->callback->transaction["id"];
 $xml = '';
-
 try
 {
 	$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
@@ -92,9 +92,7 @@ try
 	
 	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]) );
 	$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
-
 	$iStateID = (integer) $obj_XML->callback->status["code"];
-
 	// Save Ticket ID representing the End-User's stored Card Info
 	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_XML->callback->transaction->card) == 1)
 	{
@@ -107,11 +105,11 @@ try
 		$iStatus = $obj_mPoint->saveCard($obj_TxnInfo,
 										 $obj_TxnInfo->getMobile(),
 										 (integer) $obj_XML->callback->transaction->card["type-id"],
-										 (integer) $obj_XML->callback->{'psp-config'}["psp-id"],
+										 (integer) $obj_XML->callback->{'psp-config'}["id"],
 										 $obj_XML->callback->transaction->card->token,
 										 $obj_XML->callback->transaction->card->{'card-number'}, 
 										 preg_replace('/\s+/', '', $sExpiry) ); // Remove all whitespaces from string.
-		// The End-User's existing account was linked to the Client when the card was stored
+		// The End-User's existing account was linked to the Client when the card was stored		
 		if ($iStatus == 1)
 		{
 			$obj_mPoint->sendLinkedInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo);
@@ -132,7 +130,6 @@ try
 		// E-Mail has been provided for the transaction
 		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
 	}
-
 	$fee = 0;	
 	$obj_mPoint->completeTransaction( (integer) $obj_XML->callback->{'psp-config'}["id"],
 									  $obj_XML->callback->transaction["external-id"],
