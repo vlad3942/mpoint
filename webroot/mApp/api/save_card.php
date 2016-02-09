@@ -149,6 +149,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$iAccountID = $obj_mPoint->newAccount($obj_CountryConfig->getID(), (float) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, (string) $obj_DOM->{'save-card'}[$i]->password, (string) $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, (string) $obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'});
 									}
 									if (intval($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'}) < 10) { $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} = "0". intval($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'}); }
+									
+									//The preferred attribute could be omitted as it is optional.
+									$bPreferred = NULL;
+									if(isset($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) === true )
+									{
+										$bPreferred = General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]);
+									}
+									
 									$code = $obj_mPoint->saveCard($iAccountID,
 																  $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"],
 																  $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"],
@@ -157,7 +165,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 																  (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} ."/". substr($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-year'}, -2),
 																  (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-holder-name'},
 																  (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name,
-																  General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]), 
+																  $bPreferred, 
 																  (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["charge-type-id"]) + 1;
 								}
 								// Naming a Stored Card

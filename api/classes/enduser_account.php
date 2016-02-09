@@ -256,21 +256,31 @@ class EndUserAccount extends Home
 		$id = $this->getCardIDFromCardDetails($iAccountID, $cardid, $mask, $exp, $token);
 
 		// Stored Card should be preferred
-		if ($pref === true)
+		$sPreferredString = "";
+		if (isset($pref) === true)
 		{
-			$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
-					SET preferred = '0'
-					WHERE accountid = ". $iAccountID ." AND clientid = ". $this->_obj_ClientConfig->getID();
-//			echo $sql ."\n";
-			$this->getDBConn()->query($sql);
+			if($pref === true)
+			{
+				$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
+						SET preferred = '0'
+						WHERE accountid = ". $iAccountID ." AND clientid = ". $this->_obj_ClientConfig->getID();
+	//			echo $sql ."\n";
+				$this->getDBConn()->query($sql);
+			}
+			
+			$sPreferredString = ", preferred = '". intval($pref) ."'";			
+		}
+		else
+		{
+			$pref = false;
 		}
 		// Card previously saved by End-User
 		if ($id > 0)
 		{
 			$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 					SET pspid = ". intval($pspid) .", ticket = '". $this->getDBConn()->escStr($token) ."',
-						mask = '". $this->getDBConn()->escStr(trim($mask) ) ."', expiry = '". $this->getDBConn()->escStr($exp) ."',
-						preferred = '". intval($pref) ."', enabled = '1'";
+						mask = '". $this->getDBConn()->escStr(trim($mask) ) ."', expiry = '". $this->getDBConn()->escStr($exp) ."'
+						". $sPreferredString .", enabled = '1'";
 			if (empty($name) === false) { $sql .= ", name = '". $this->getDBConn()->escStr(trim($name) ) ."'"; }
 			if (empty($chn) === false) { $sql .= ", card_holder_name = '". $this->getDBConn()->escStr(trim($chn) ) ."'"; }
 			if ($chargeid > 0) { $sql .= ", chargetypeid = ". intval($chargeid) .""; }
