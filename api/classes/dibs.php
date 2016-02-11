@@ -165,7 +165,7 @@ class DIBS extends Callback implements Captureable, Refundable
 	public function capture($iAmount = -1)
 	{
 		$extID = $this->getTxnInfo()->getExternalID();
-		if ($iAmount == -1) { $this->getTxnInfo()->getAmount(); }
+		if ($iAmount == -1) { $iAmount = $this->getTxnInfo()->getAmount(); }
 
 		$code = $this->status($extID);
 		// Transaction ready for Capture
@@ -249,16 +249,16 @@ class DIBS extends Callback implements Captureable, Refundable
 	 * 
 	 * @link	http://tech.dibs.dk/toolbox/dibs-error-codes/
 	 * 
-	 * @param 	integer $amount	full amount that needed to be refunded
+	 * @param 	integer $iAmount	full amount that needed to be refunded
 	 * @param 	integer $code	allows to control from the outside whether to cancel or refund the transaction
 	 * 							if this value is unset (-1), the txn status will be first queried at DIBS and the needed action (cancel/refund) will be performed
 	 * @return	integer
 	 * @throws	E_USER_WARNING
 	 */
-	public function refund($amount = -1, $code = -1)
+	public function refund($iAmount = -1, $code = -1)
 	{
 		$extID = $this->getTxnInfo()->getExternalID();
-		if ($amount == -1) { $this->getTxnInfo()->getAmount(); }
+		if ($iAmount == -1) { $iAmount = $this->getTxnInfo()->getAmount(); }
 
 		$aConnInfo = $this->aCONN_INFO;
 
@@ -281,7 +281,7 @@ class DIBS extends Callback implements Captureable, Refundable
 			$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
 			$b .= "&mpointid=". $this->getTxnInfo()->getID();
 			$b .= "&transact=". $extID;
-			$b .= "&amount=". $amount;
+			$b .= "&amount=". $iAmount;
 			$b .= "&orderid=". urlencode($this->getTxnInfo()->getOrderID() );
 			if ($this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP) > -1) { $b .= "&account=". $this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP); }
 			$b .= "&textreply=true";
@@ -515,5 +515,7 @@ class DIBS extends Callback implements Captureable, Refundable
 		
 		return $obj_XML;
 	}
+
+	public function getPSPID() { return Constants::iDIBS_PSP; }
 }
 ?>

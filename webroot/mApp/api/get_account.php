@@ -82,13 +82,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					if (count($aMsgCds) == 0)
 					{
 						$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'get-account'}[$i]->{'client-info'}->mobile["country-id"]);
-						// Construct Client Info
-						$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'get-account'}[$i]->{'client-info'}, $obj_CountryConfig, @$_SERVER['HTTP_X_FORWARDED_FOR']);
-						$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'get-account'}[$i]->mobile["country-id"]);
-						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'get-account'}[$i]->mobile, $obj_CountryConfig);
-						if ($iAccountID < 0 && count($obj_DOM->{'get-account'}[$i]->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'get-account'}[$i]->email, $obj_CountryConfig); }
-						if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'get-account'}[$i]->mobile, $obj_CountryConfig); }
-						if ($iAccountID < 0 && count($obj_DOM->{'get-account'}[$i]->email) == 1) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'get-account'}[$i]->email, $obj_CountryConfig); }
+						
+						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'get-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'get-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'get-account'}[$i]->{'client-info'}->email);
+						
 						
 						$obj_XML = simplexml_load_string($obj_mPoint->getAccountInfo($iAccountID) );
 						$xml = '<account id="'. $obj_XML["id"] .'">';

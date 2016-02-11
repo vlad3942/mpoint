@@ -23,7 +23,7 @@ class CallbackException extends mPointException { }
  * and sends out an SMS Receipt to the Customer.
  *
  */
-class Callback extends EndUserAccount
+abstract class Callback extends EndUserAccount
 {
 	/**
 	 * Data object with the Transaction Information
@@ -61,7 +61,8 @@ class Callback extends EndUserAccount
 		$this->_obj_TxnInfo = $oTI;
 		$this->aCONN_INFO = $aConnInfo;
 
-		if ($oPSPConfig == null && $oTI->getPSPID() > 0) { $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $oTI->getPSPID() ); }
+		$pspID = (integer)$oTI->getPSPID() > 0 ? $oTI->getPSPID() : $this->getPSPID();
+		if ($oPSPConfig == null) { $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID); }
 		$this->_obj_PSPConfig = $oPSPConfig;
 	}
 
@@ -144,6 +145,7 @@ class Callback extends EndUserAccount
 		else { $sql = ", extid = '". $this->getDBConn()->escStr($txnid) ."'"; }
 		if ($this->_obj_TxnInfo->getAccountID() > 0) { $sql .= ", euaid = ". $this->_obj_TxnInfo->getAccountID(); }
 		else { $sql .= ", euaid = NULL"; }
+		
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET pspid = ". intval($pspid) .", cardid = ". intval($cid).", fee =".intval($fee) . $sql ."
 				WHERE id = ". $this->_obj_TxnInfo->getID() ." AND (cardid IS NULL OR cardid = 0)";
@@ -326,6 +328,7 @@ class Callback extends EndUserAccount
 		if (intval($cardid) > 0) { $sBody .= "&card-id=". $cardid; }
 		if (empty($cardno) === false) { $sBody .= "&card-number=". urlencode($cardno); }
 		if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true) { $sBody .= "&pspid=". urlencode($pspid); }
+		if ( strlen($this->_obj_TxnInfo->getDescription() ) > 0) { $sBody .= "&description=". urlencode($this->_obj_TxnInfo->getDescription() ); }
 		$sBody .= $this->getVariables();
 		$sBody .= "&mac=". urlencode($this->_obj_TxnInfo->getMAC() );
 		/* ----- Construct Body End ----- */
@@ -568,9 +571,12 @@ class Callback extends EndUserAccount
 	}
 
 
-	public static function producePSP(RDB $obj_DB, TranslateText $obj_Txt, TxnInfo $obj_TxnInfo, array $aConnInfo)
+	public static function producePSP(RDB $obj_DB, TranslateText $obj_Txt, TxnInfo $obj_TxnInfo, array $aConnInfo, PSPConfig $obj_PSPConfig=null)
 	{
-		switch ($obj_TxnInfo->getPSPID() )
+		if (isset($obj_PSPConfig) === true && intval($obj_PSPConfig->getID() ) > 0) { $iPSPID = $obj_PSPConfig->getID(); }
+		else { $iPSPID = $obj_TxnInfo->getPSPID(); }
+
+		switch ($iPSPID)
 		{
 		case (Constants::iDIBS_PSP):
 			return new DIBS($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dibs"]);
@@ -584,7 +590,9 @@ class Callback extends EndUserAccount
 			return new MobilePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mobilepay"]);
 		case (Constants::iADYEN_PSP):
 			return new Adyen($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["adyen"]);
-		case (Constants::iVISA_CHECKOUT_PSP):
+		case (Constants::iDSB_PSP):
+			return new DSB($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dsb"], $obj_PSPConfig);
+		case (Constants::iVISA_CHECKOUT_PSP) :
 			return new VISACheckout($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["visa-checkout"]);
 		case (Constants::iAPPLE_PAY_PSP):
 			return new ApplePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["apple-pay"]);
@@ -592,9 +600,13 @@ class Callback extends EndUserAccount
 			return new CPG($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cpg"]);
 		case (Constants::iMASTER_PASS_PSP):
 			return new MasterPass($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["masterpass"]);
+		case (Constants::iWIRE_CARD_PSP):
+			return new WireCard($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["wire-card"]);
 		default:
 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
 	}
+
+	public abstract function getPSPID();
 }
 ?>

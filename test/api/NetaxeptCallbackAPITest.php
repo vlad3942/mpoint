@@ -6,7 +6,7 @@ require_once __DIR__ . '/../inc/testinclude.php';
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 
-class NetaxeptCallbackAPITest extends mPointBaseAPITest
+class NetaxeptCallbackAPITest extends baseAPITest
 {
 	protected $_aMPOINT_CONN_INFO;
 	protected $_httpClient;

@@ -153,7 +153,6 @@ class PSPConfig extends BasicConfig
 				WHERE CL.id = ". intval($clid) ." AND PSP.id = ". intval($pspid) ." AND PSP.enabled = '1' AND Acc.id = ". intval($accid) ." AND (MA.stored_card = '0' OR MA.stored_card IS NULL)";
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
-		
 		if (is_array($RS) === true && count($RS) > 1)
 		{
 			$sql = "SELECT I.language, I.text

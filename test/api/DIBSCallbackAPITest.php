@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../../webroot/inc/include.php';
 require_once __DIR__ . '/../inc/testinclude.php';
 
-class DIBSCallbackAPITest extends mPointBaseAPITest
+class DIBSCallbackAPITest extends baseAPITest
 {
     protected $_aMPOINT_CONN_INFO;
 
@@ -60,7 +60,7 @@ class DIBSCallbackAPITest extends mPointBaseAPITest
 	public function testSuccessfulAutoCapture()
 	{
 		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
-		$pspID = Constants::iMOBILEPAY_PSP;
+		$pspID = Constants::iDIBS_PSP;
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tusername', 'Tpassword')");
 		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (113, 4, 'http://mpoint.local.cellpointmobile.com/')");

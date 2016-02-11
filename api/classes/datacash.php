@@ -25,4 +25,6 @@ class DataCashException extends CallbackException { }
 class DataCash extends CPMPSP
 {
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new DataCashException("Method: getPaymentData is not supported by Data Cash"); }
+
+	public function getPSPID() { return Constants::iDATA_CASH_PSP; }
 }

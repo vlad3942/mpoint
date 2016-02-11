@@ -1,3 +1,25 @@
+/* ========== CONFIGURE UATP START ========== */
+INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (21, 'UATP', 19, 15, 15, -1);
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (21, 1000, 1999);
+INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 21, id FROM System.PricePoint_Tbl WHERE amount = -1;
+/* ========== CONFIGURE UATP END ========== */
+
+/* ========== CONFIGURE ADYEN START ========== */
+INSERT INTO System.PSP_Tbl (id, name) VALUES (12, 'Adyen');
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (12, 1);	-- American Express
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (12, 2);	-- Dankort
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (12, 3);	-- Diners Club
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (12, 4);	-- EuroCard
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (12, 5);	-- JCB
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (12, 6);	-- Maestro
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (12, 7);	-- MasterCard
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (12, 8);	-- VISA
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (12, 9);	-- VISA Electron
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (12, 15);	-- Apple Pay
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (12, 21);	-- UATP
+INSERT INTO System.PSPCurrency_Tbl (pspid, countryid, name) SELECT 12, id, currency FROM System.Country_Tbl;
+/* ========== CONFIGURE ADYEN END ========== */
+
 /* ========== CONFIGURE CARD DISCOVER START ========== */
 INSERT INTO System.Card_Tbl (id, name, position, logo, minlength, maxlength, cvclength) VALUES (22, 'Discover', 20, NULL, 16, 16, 3);
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 22, id FROM System.PricePoint_Tbl WHERE amount = -1;
@@ -184,19 +206,6 @@ UPDATE Client.MerchantAccount_Tbl SET name = username WHERE pspid = 4 AND name !
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 15, 4);
 /* ========== CONFIGURE DEMO ACCOUNT FOR APPLE PAY END ====== */
 
-/* ========== CONFIGURE DATA CASH START ========== */
-INSERT INTO System.PSP_Tbl (id, name) VALUES (17, 'Data Cash');
-INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) SELECT countryid, 17, name FROM System.PSPCurrency_Tbl WHERE pspid = 4;
-INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT cardid, 17 FROM System.PSPCard_Tbl WHERE pspid = 4;
-/* ========== CONFIGURE DATA CASH END ========== */
-
-/* ========== CONFIGURE DEMO ACCOUNT FOR DATA CASH START ========== */
--- Data Cash
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, password) VALUES (10001, 17, 'TESTCellpoint_02', 'merchant.TESTCellpoint_02', '684d51b8db5870b514404055d988512a');
-INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 17, '-1');
--- Route VISA Card to Data Cash
-UPDATE Client.CardAccess_Tbl SET pspid = 17 WHERE clientid = 10001 AND cardid = 8;
-/* ========== CONFIGURE DEMO ACCOUNT FOR DATA CASH END ====== */
 /* ========== ALTER TABLE FOR MERCHANT ACCOUNT TO HAVE PASSWORD OF 4000 CHARS START ====== */
 ALTER TABLE Client.MerchantAccount_Tbl ALTER COLUMN passwd TYPE character varying(4000);
 ALTER TABLE Client.MerchantAccount_Tbl ALTER COLUMN name TYPE character varying(100);

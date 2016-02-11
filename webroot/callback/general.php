@@ -27,6 +27,8 @@ require_once(sINTERFACE_PATH ."/cpm_psp.php");
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 // Require specific Business logic for the Adyen component
 require_once(sCLASS_PATH ."/adyen.php");
+// Require specific Business logic for the DSB PSP component
+require_once(sCLASS_PATH ."/dsb.php");
 // Require specific Business logic for the VISA checkout component
 require_once(sCLASS_PATH ."/visacheckout.php");
 // Require specific Business logic for the Apple Pay component
@@ -37,6 +39,10 @@ require_once(sCLASS_PATH ."/cpg.php");
 require_once(sCLASS_PATH ."/amexexpresscheckout.php");
 // Require specific Business logic for the Master Pass component
 require_once(sCLASS_PATH ."/masterpass.php");
+// Require specific Business logic for the Wirecard component
+require_once(sCLASS_PATH ."/wirecard.php");
+// Require specific Business logic for the DIBS component
+require_once(sCLASS_PATH ."/dibs.php");
 
 /**
  * Input XML format
@@ -73,10 +79,11 @@ while ( ($_OBJ_DB instanceof RDB) === false && $i < 5)
 	$_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
 	$i++;
 }
-$obj_XML = simplexml_load_string($HTTP_RAW_POST_DATA);
+$obj_XML = simplexml_load_string(file_get_contents("php://input") );
 
 	
 $id = (integer)$obj_XML->callback->transaction["id"];
+$xml = '';
 
 try
 {
@@ -85,12 +92,13 @@ try
 	// Intialise Text Translation Object
 	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 	
-	$obj_mPoint = new Callback($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
-	
+	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["psp-id"]) );
+	$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
+
 	$iStateID = (integer) $obj_XML->callback->status["code"];
-	
+
 	// Save Ticket ID representing the End-User's stored Card Info
-	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_mPoint->getMessageData($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, false) ) == 1)
+	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_XML->callback->transaction->card) == 1)
 	{
 		$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE);
 		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $obj_XML->callback->transaction->card->token);
@@ -126,7 +134,7 @@ try
 		// E-Mail has been provided for the transaction
 		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
 	}
-		
+
 	$fee = 0;	
 	$obj_mPoint->completeTransaction( (integer) $obj_XML->callback->{'psp-config'}["psp-id"],
 									  $obj_XML->callback->transaction["external-id"],
@@ -173,7 +181,7 @@ try
 		if ( ($obj_PSPConfig instanceof PSPConfig) === true) { $obj_Wallet->callback($obj_PSPConfig, $obj_XML->callback->transaction->card, $purchaseDate); }
 	}
 	// Account Top-Up
-	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getTypeID() >= 100 && $obj_TxnInfo->getTypeID() <= 109)
+	if ($obj_TxnInfo->getAccountID() > 0 && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getTypeID() >= 100 && $obj_TxnInfo->getTypeID() <= 109)
 	{
 		if ($obj_TxnInfo->getAccountID() > 0) { $iAccountID = $obj_TxnInfo->getAccountID(); }
 		else
@@ -187,12 +195,12 @@ try
 		}
 		switch ($obj_TxnInfo->getTypeID() )
 		{
-		case (Constants::iPURCHASE_OF_EMONEY):
-			$obj_mPoint->topup($iAccountID, Constants::iTOPUP_OF_EMONEY, $obj_TxnInfo->getID(), $obj_TxnInfo->getAmount() );
-			break;
-		case (Constants::iPURCHASE_OF_POINTS):
-			$obj_mPoint->topup($iAccountID, Constants::iTOPUP_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getPoints() );
-			break;
+			case (Constants::iPURCHASE_OF_EMONEY):
+				$obj_mPoint->topup($iAccountID, Constants::iTOPUP_OF_EMONEY, $obj_TxnInfo->getID(), $obj_TxnInfo->getAmount() );
+				break;
+			case (Constants::iPURCHASE_OF_POINTS):
+				$obj_mPoint->topup($iAccountID, Constants::iTOPUP_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getPoints() );
+				break;
 		}
 	}
 	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getReward() > 0 && $obj_TxnInfo->getAccountID() > 0)
@@ -222,7 +230,7 @@ try
 							   "amount" => $obj_TxnInfo->getAmount(),
 							   "card-id" =>  $obj_XML->callback->transaction->card["type-id"]);
 		
-		$responseCode = $obj_mPoint->capture($obj_TxnInfo->getAmount() );
+		$responseCode = $obj_mPoint->capture($obj_TxnInfo->getAmount());
 		
 		
 		if ($responseCode == 1000)
@@ -239,7 +247,7 @@ try
 	// Callback URL has been defined for Client
 	if ($obj_TxnInfo->getCallbackURL() != "")
 	{
-		$obj_mPoint->notifyClient($iStateID, $obj_XML);
+		$obj_mPoint->notifyClient($iStateID, array("transact"=>$id, "amount"=>$obj_XML->callback->transaction->amount, "card-id"=>$obj_XML->callback->transaction->card["type-id"]) );
 	}
 	$xml = '<status code="1000">Callback Success</status>';
 }
@@ -260,4 +268,3 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';
 echo $xml;
 echo '</root>';
-?>

@@ -1,6 +1,6 @@
 <?php
 
-abstract class mPointBaseDatabaseTest extends PHPUnit_Framework_TestCase
+abstract class BaseDatabaseTest extends PHPUnit_Framework_TestCase
 {
     protected $mPointDBInfo;
 
@@ -70,8 +70,6 @@ abstract class mPointBaseDatabaseTest extends PHPUnit_Framework_TestCase
         $h = fopen($confDir. 'global.php', 'a');
         fwrite($h, '<?php define("TESTDB_TOKEN", "'. TESTDB_TOKEN. '"); ?>'. file_get_contents($confDir. 'global_unittest.php') );
         fclose($h);
-
-        echo "Using DB token: ". TESTDB_TOKEN. "\n";
     }
 
     protected function restoreOriginalConfiguration()

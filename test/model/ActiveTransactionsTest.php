@@ -8,7 +8,7 @@ require_once __DIR__ . '/../../webroot/inc/include.php';
 require_once __DIR__ . '/../inc/testinclude.php';
 require_once sCLASS_PATH . '/status.php';
 
-class ActiveTransactionsTest extends mPointBaseAPITest
+class ActiveTransactionsTest extends baseAPITest
 {
 	/**
 	 * @var RDB

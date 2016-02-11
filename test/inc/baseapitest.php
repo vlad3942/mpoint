@@ -1,6 +1,6 @@
 <?php
 
-abstract class mPointBaseAPITest extends mPointBaseDatabaseTest
+abstract class baseAPITest extends BaseDatabaseTest
 {
 	protected $bIgnoreErrors = false;
 	private static $aVisited = array();
@@ -15,7 +15,9 @@ abstract class mPointBaseAPITest extends mPointBaseDatabaseTest
 		//empty error log file prior to test-run
 		if (count(self::$aVisited) == 0) { @copy(sERROR_LOG, sERROR_LOG .'.before-test.backup'); }
 		file_put_contents(sERROR_LOG, '');
-        parent::setup();
+
+		echo " ". get_class($this) ."::". $this->getName() ."()\n";
+		parent::setup();
     }
 
     /**

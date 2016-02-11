@@ -62,6 +62,8 @@ require_once(sCLASS_PATH ."/datacash.php");
 require_once(sCLASS_PATH ."/masterpass.php");
 // Require specific Business logic for the AMEX Express Checkout component
 require_once(sCLASS_PATH ."/amexexpresscheckout.php");
+// Require specific Business logic for the WireCard component
+require_once(sCLASS_PATH ."/wirecard.php");
 
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
@@ -133,19 +135,22 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						{
 							if ($obj_TxnInfo->getAccountID() == -1 && General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true)
 							{
-								$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getCountryConfig(), trim($obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}), (float) $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile, trim($obj_DOM->{'pay'}[$i]->{'client-info'}->email) );
+								$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, intval($obj_TxnInfo->getOperator()/100) );
+								$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, trim($obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}), (float) $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile, trim($obj_DOM->{'pay'}[$i]->{'client-info'}->email) );
 							
 								//	Create a new user as some PSP's needs our End-User Account ID for storing cards
 								if ($iAccountID < 0)
 								{
 									$obj_EUA = new EndUserAccount($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
-									$iAccountID = $obj_EUA->newAccount($obj_ClientConfig->getCountryConfig()->getID(),
+									$iAccountID = $obj_EUA->newAccount($obj_CountryConfig->getID(),
 																	   (float) $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile,
 																	   "",
 																	   trim($obj_DOM->{'pay'}[$i]->{'client-info'}->email),
 																	   trim($obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}) );
 								}
 								$obj_TxnInfo->setAccountID($iAccountID);
+								// Update Transaction Log
+								$obj_mPoint->logTransaction($obj_TxnInfo);
 							}
 							$obj_PSPConfig = null;
 							switch (intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) )
@@ -169,7 +174,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$obj_Elem = $obj_XML->xpath("/cards/item[@id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ."]");
 								if (array_key_exists(intval($obj_Elem["pspid"]), $aObj_PSPConfigs) === false)
 								{
-									$aObj_PSPConfigs[intval($obj_Elem["pspid"])] = PSPConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"],  (integer) $obj_DOM->pay[$i]["account"], (integer) $obj_Elem["pspid"]);
+									if (intval($obj_Elem["pspid"]) > 0)
+									{
+										$aObj_PSPConfigs[intval($obj_Elem["pspid"])] = PSPConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"],  (integer) $obj_DOM->pay[$i]["account"], (integer) $obj_Elem["pspid"]);
+									}
 								}
 								$obj_PSPConfig = $aObj_PSPConfigs[intval($obj_Elem["pspid"])];
 								break;
@@ -351,7 +359,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										{
 											$xml .= trim($obj_Elem->asXML() );
 										}
-										break;	
+										break;
 									case (Constants::iAPPLE_PAY_PSP):
 										$xml .= '<url method="app" />';
 										break;
@@ -359,6 +367,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$obj_PSP = new DataCash($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["data-cash"]);
 											
 										$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) );
+//										if (General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, ""); }
+									
+										foreach ($obj_XML->children() as $obj_Elem)
+										{
+											$xml .= trim($obj_Elem->asXML() );
+										}
+										break;
+									case (Constants::iWIRE_CARD_PSP):
+										$obj_PSP = new WireCard($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["wire-card"]);
+										$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"] );
 //										if (General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, ""); }
 									
 										foreach ($obj_XML->children() as $obj_Elem)
@@ -428,6 +446,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		header("HTTP/1.1 400 Bad Request");
 
 		$xml = '';
+
 		foreach ($obj_DOM->children() as $obj_XMLElem)
 		{
 			$xml .= '<status code="400">Wrong operation: '. $obj_XMLElem->getName() .'</status>';

@@ -65,5 +65,7 @@ class CellpointMobile extends Callback
 		$obj_HTTP->send($this->constHTTPHeaders(), $b);
 		$obj_HTTP->disConnect();
 	}
+
+	public function getPSPID() { return Constants::iCPM_PSP; }
 }
 ?>

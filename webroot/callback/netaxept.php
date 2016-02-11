@@ -74,8 +74,8 @@ try
 			{
 				$obj_TxnInfo->setAccountID(-1);
 			}
-			else if ($iMobileAccountID > 0) { $this->getTxnInfo()->setAccountID($iMobileAccountID); }
-			else if ($iEMailAccountID > 0) { $this->getTxnInfo()->setAccountID($iEMailAccountID); }
+			else if ($iMobileAccountID > 0) { $obj_TxnInfo->setAccountID($iMobileAccountID); }
+			else if ($iEMailAccountID > 0) { $obj_TxnInfo->setAccountID($iEMailAccountID); }
 		}
 
 		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
