@@ -701,7 +701,7 @@ class mConsole extends Admin
 		
 		$sql .= " ) as a where stateid != -1 ";
 		
-		if (empty($start) === false && strlen($start) > 0) { $sql .= " where  '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <=  a.createdfinal"; }
+		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND   '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <=  a.createdfinal"; }
 		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND  a.createdfinal  <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
 		
 		$sql .= "ORDER BY createdfinal DESC";
