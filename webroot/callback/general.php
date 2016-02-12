@@ -41,6 +41,8 @@ require_once(sCLASS_PATH ."/amexexpresscheckout.php");
 require_once(sCLASS_PATH ."/masterpass.php");
 // Require specific Business logic for the Wirecard component
 require_once(sCLASS_PATH ."/wirecard.php");
+// Require specific Business logic for the DIBS component
+require_once(sCLASS_PATH ."/dibs.php");
 
 /**
  * Input XML format
