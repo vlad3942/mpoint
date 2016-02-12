@@ -34,16 +34,16 @@
 <h1>Download Url Logs</h1>
 <table>
 <tr>
-    <td><a href="http://<?= $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']; ?>?url=customer_import">Download Customer Import URL logs</a></td>
+    <td><a href="http://<?= $_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']; ?>?url=customer_import">Download Customer Import URL logs</a></td>
 </tr>
 <tr>
-    <td><a href="http://<?= $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']; ?>?url=callback">Download Callback URL logs</a></td>
+    <td><a href="http://<?= $_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']; ?>?url=callback">Download Callback URL logs</a></td>
 </tr>
 <tr>
-    <td><a href="http://<?= $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']; ?>?url=notification">Download Notification URL logs</a></td>
+    <td><a href="http://<?= $_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']; ?>?url=notification">Download Notification URL logs</a></td>
 </tr>
 <tr>
-    <td><a href="http://<?= $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']; ?>?url=auth">Download Auth URL logs</a></td>
+    <td><a href="http://<?= $_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']; ?>?url=auth">Download Auth URL logs</a></td>
 </tr>
 </table>
 </body>
