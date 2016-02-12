@@ -1,27 +1,22 @@
 <?php
-define("sAPI_CLASS_PATH", "/apps/php/php5api/classes/");
+define("sPHP5_API_CLASS_PATH", "/apps/php/php5api/classes/");
 
-require_once(sAPI_CLASS_PATH ."template.php");
-require_once(sAPI_CLASS_PATH ."http_client.php");
+require_once(__DIR__.'/../inc/include.php');
+require_once(sPHP5_API_CLASS_PATH ."template.php");
+require_once(sPHP5_API_CLASS_PATH ."http_client.php");
 // Require API for Simple DOM manipulation
-require_once(sAPI_CLASS_PATH ."simpledom.php");
+require_once(sPHP5_API_CLASS_PATH ."simpledom.php");
 
-if(isset($_POST['submit'])) 
+header('Content-Type: text/html; charset="UTF-8"');
+
+if(isset($_POST['submit']) === true ) 
 {	
 	/**
 	 * Connection info for sending error reports to a remote host
-	*/
-	$aHTTP_CONN_INFO["mesb"]["protocol"] = "http";
-	//$aHTTP_CONN_INFO["mesb"]["host"] = "10.150.242.42";
-	$aHTTP_CONN_INFO["mesb"]["host"] = $_SERVER['HTTP_HOST'];
-	$aHTTP_CONN_INFO["mesb"]["port"] = 80; // mPoint
-	//$aHTTP_CONN_INFO["mesb"]["port"] = 9000; // MESB
-	$aHTTP_CONN_INFO["mesb"]["timeout"] = 120;
-	$aHTTP_CONN_INFO["mesb"]["path"] = "/mApp/api/pay.php";
-	$aHTTP_CONN_INFO["mesb"]["method"] = "POST";
-	$aHTTP_CONN_INFO["mesb"]["contenttype"] = "text/xml";
-	$aHTTP_CONN_INFO["mesb"]["username"] = $_POST['client-username'];
-	$aHTTP_CONN_INFO["mesb"]["password"] = $_POST['client-password'];
+	*/	
+	$aHTTP_CONN_INFO["mesb"]["path"] = "/mpoint/pay";
+	$aHTTP_CONN_INFO["mesb"]["username"] = trim($_POST['client-username']);
+	$aHTTP_CONN_INFO["mesb"]["password"] = trim($_POST['client-password']);
 	
 	$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
 	
@@ -35,15 +30,15 @@ if(isset($_POST['submit']))
 	
 	$b = '<?xml version="1.0" encoding="UTF-8"?>
 	<root>
-		<pay client-id="'.$_POST['client-id'].'" account="'.$_POST['account-id'].'">
-			<transaction id="'.$_POST['transaction-id'].'" store-card="false">
+		<pay client-id="'.intval($_POST['client-id']).'" account="'.intval($_POST['account-id']).'">
+			<transaction id="'.intval($_POST['transaction-id']).'" store-card="false">
 				<card type-id="23">
-					<amount country-id="'.$_POST['country-id'].'">'.$_POST['amount'].'</amount>
+					<amount country-id="'.intval($_POST['country-id']).'">'.$_POST['amount'].'</amount>
 				</card>
 			</transaction>
 			<client-info language="us" version="1.28" platform="iOS/8.1">
-	            <mobile operator-id="10000" country-id="602">288828610</mobile>
-	            <email>jona@oismail.com</email>
+	            <mobile operator-id="10000" country-id="'.intval($_POST['country-id']).'">'.intval($_POST['mobile']).'</mobile>
+	            <email>'.trim($_POST['email']).'</email>
 	            <device-id>23lkhfgjh24qsdfkjh</device-id>
 	        </client-info>
 		</pay>
@@ -79,11 +74,13 @@ if(isset($_POST['submit']))
 		</body>
 		</html>
 		<script type = "text/javascript"><!--
-			function mpSuccessCallback(data) { 
+			function mpSuccessCallback(data) { 	
 				console.log(data); 
 				var url = 'masterpass_authorize.php';
 				var username = '<?php echo $_POST['client-username']; ?>';
 				var password = '<?php echo $_POST['client-password']; ?>';
+				var euapassword = '<?php echo $_POST['password']; ?>';
+				var euaemail = '<?php echo $_POST['email']; ?>';
 				var form = $('<form action="' + url + '" method="post">' +
 				  '<input type="hidden" name="client-id" value="' + <?php echo $_POST['client-id']; ?> + '" />' +
 				  '<input type="hidden" name="client-username" value="' + username + '" />' +
@@ -92,6 +89,9 @@ if(isset($_POST['submit']))
 				  '<input type="hidden" name="transaction-id" value="' + <?php echo $_POST['transaction-id']; ?> + '" />' +
 				  '<input type="hidden" name="country-id" value="' + <?php echo $_POST['country-id']; ?> + '" />' +
 				  '<input type="hidden" name="amount" value="' + <?php echo $_POST['amount']; ?> + '" />' +
+				  '<input type="hidden" name="email" value="' + euaemail + '" />' +
+				  '<input type="hidden" name="mobile" value="' + <?php echo $_POST['mobile']; ?> + '" />' +
+				  '<input type="hidden" name="password" value="' + euapassword + '" />' +		  
 				  '<input type="hidden" name="token" value="' + data.oauth_token + '" />' +
 				  '<input type="hidden" name="verifier" value="' + data.oauth_verifier + '" />' +
 				  '<input type="hidden" name="checkouturl" value="' + data.checkout_resource_url + '" />' +				  
@@ -99,8 +99,8 @@ if(isset($_POST['submit']))
 				$('body').append(form);
 				form.submit();
 			}
-			function mpFailureCallback(data) { console.log(data); }
-			function mpCancelCallback(data) { console.log(data); }
+			function mpFailureCallback(data) { console.log("in FAILURE"); console.log(data); }
+			function mpCancelCallback(data) { console.log("in CANCEL"); console.log(data); }
 		</script>
 	<?php
 	}
@@ -121,7 +121,10 @@ else {
    <br>
    <label>Account ID&nbsp;&nbsp;&nbsp;</label><input type="text" name="account-id"><br>
    <label>Transaction ID&nbsp;&nbsp;&nbsp;</label><input type="text" name="transaction-id"><br>   
-   <label>Amount&nbsp;&nbsp;&nbsp;</label><input type="text" name="amount"><br>
+   <label>Amount&nbsp;&nbsp;&nbsp;</label><input type="text" name="amount"><br>   
+   <label>EndUser Email&nbsp;&nbsp;&nbsp;</label><input type="text" name="email"><br>
+   <label>EndUser Mobile&nbsp;&nbsp;&nbsp;</label><input type="text" name="mobile"><br>
+   <label>EndUser Password&nbsp;&nbsp;&nbsp;</label><input type="text" name="password"><br>
    <label>Country&nbsp;&nbsp;&nbsp;</label>
    <select name = "country-id">
 	  <option value="100">Denmark</option>
