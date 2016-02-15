@@ -153,17 +153,20 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$obj_PSPConfig = null;
 							switch (intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) )
 							{
-							case (Constants::iAPPLE_PAY):	// 3rd Party Wallet: Apple Pay
+							case (Constants::iAPPLE_PAY):						// 3rd Party Wallet: Apple Pay
 								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAPPLE_PAY_PSP);
 								break;
-							case (Constants::iVISA_CHECKOUT_WALLET):	// 3rd Party Wallet: VISA Checkout
+							case (Constants::iVISA_CHECKOUT_WALLET):			// 3rd Party Wallet: VISA Checkout
 								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
 								break;
-							case (Constants::iMASTER_PASS_WALLET):	// 3rd Party Wallet: Master Pass
+							case (Constants::iMASTER_PASS_WALLET):				// 3rd Party Wallet: Master Pass
 								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iMASTER_PASS_PSP);
 								break;
 							case (Constants::iAMEX_EXPRESS_CHECKOUT_WALLET):	// 3rd Party Wallet: AMEX Express Checkout
 								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
+								break;
+							case (Constants::iANDROID_PAY_WALLET):				// 3rd Party Wallet: Android Pay
+								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iANDROID_PAY_PSP);
 								break;
 							default:	// Standard Payment Service Provider
 								// Find Configuration for Payment Service Provider
@@ -359,6 +362,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										}
 										break;
 									case (Constants::iAPPLE_PAY_PSP):
+									case (Constants::iANDROID_PAY_PSP):
 										$xml .= '<url method="app" />';
 										break;
 									case (Constants::iDATA_CASH_PSP):
