@@ -72,6 +72,8 @@ require_once(sCLASS_PATH ."/datacash.php");
 require_once(sCLASS_PATH ."/masterpass.php");
 // Require specific Business logic for the AMEX Express Checkout component
 require_once(sCLASS_PATH ."/amexexpresscheckout.php");
+// Require specific Business logic for the Android Pay component
+require_once(sCLASS_PATH ."/androidpay.php");
 
 ignore_user_abort(true);
 set_time_limit(120);
