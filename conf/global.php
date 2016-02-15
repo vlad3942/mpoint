@@ -363,6 +363,20 @@ $aHTTP_CONN_INFO["data-cash"]["paths"]["capture"] = "/mpoint/data-cash/capture";
 $aHTTP_CONN_INFO["data-cash"]["paths"]["status"] = "/mpoint/data-cash/status";
 $aHTTP_CONN_INFO["data-cash"]["paths"]["cancel"] = "/mpoint/data-cash/cancel";
 $aHTTP_CONN_INFO["data-cash"]["paths"]["refund"] = "/mpoint/data-cash/refund";
+
+/**
+ * Connection info for connecting to Android Pay
+ */
+$aHTTP_CONN_INFO["android-pay"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["android-pay"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["android-pay"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["android-pay"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["android-pay"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["android-pay"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["android-pay"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["android-pay"]["paths"]["initialize"] = "/mpoint/android-pay/initialize";
+$aHTTP_CONN_INFO["android-pay"]["paths"]["get-payment-data"] = "/mpoint/android-pay/get-payment-data";
+
 /**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
