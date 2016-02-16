@@ -66,6 +66,7 @@ foreach ($aTxns as $txn)
 			}
 			break;
 		case Constants::iMOBILEPAY_PSP:
+		case Constants::iDSB_PSP:
 			$iStatus = $obj_PSP->cancel();
 			break;
 		default:

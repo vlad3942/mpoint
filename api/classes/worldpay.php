@@ -651,5 +651,7 @@ class WorldPay extends Callback implements Captureable, Refundable
 		}
 		else { return false; }
 	}
+
+	public function getPSPID() { return Constants::iWORLDPAY_PSP; }
 }
 ?>

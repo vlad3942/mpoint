@@ -226,6 +226,9 @@ class CPG extends Callback
 				case (Constants::iAMEX_EXPRESS_CHECKOUT_WALLET):
 					$b = str_replace('<bkgChannel>MPH-AMEX-Checkout</bkgChannel></enchancedData>', '</enchancedData>', $b);
 					break;
+				case (Constants::iMASTER_PASS_WALLET):
+					$b = str_replace('<bkgChannel>MPH-MasterPass</bkgChannel></enchancedData>', '</enchancedData>', $b);
+					break;
 				}
 			}
 		}
@@ -1060,5 +1063,7 @@ class CPG extends Callback
 			break;
 		}
 	}
+
+	public function getPSPID() { return Constants::iCPG_PSP; }
 }
 ?>
