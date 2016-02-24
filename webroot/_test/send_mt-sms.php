@@ -35,6 +35,7 @@
  *
  */
 define("sCONF_PATH", "conf");
+define("sGOMOBILE_API_PATH", "conf/lib/gomobile");
 /* ========== Define System path Start ========== */
 // HTTP Request
 if(isset($_SERVER['DOCUMENT_ROOT']) === true && empty($_SERVER['DOCUMENT_ROOT']) === false)
@@ -65,7 +66,7 @@ require_once(sAPI_CLASS_PATH ."/template.php");
 // Require API for handling the connection to a remote webserver using HTTP
 require_once(sAPI_CLASS_PATH ."/http_client.php");
 // Require the PHP API for handling the connection to GoMobile
-require_once(sAPI_CLASS_PATH ."/gomobile.php");
+require_once(sGOMOBILE_API_PATH ."/gomobile.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."/simpledom.php");
 
@@ -76,6 +77,24 @@ $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 $xml = '';
 
+$iChannel = (integer) $obj_DOM->{'Pay-by-link'}->{'CommunicationChannel'};
+
+if($iChannel > 0)
+{
+	switch($iChannel)
+	{
+		case 1: //Send only Push Notification.
+			$aMsgTypes = array(11);
+			break;
+		case 2: //Send only MT-SMS.
+			$aMsgTypes = array(2);
+			break;
+		case 3: //Send both Push Notification and MT SMS
+			$aMsgTypes = array(2,11);
+			break;
+	}
+}
+
 if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->{'Pay-by-link'}) > 0 )
 {
 	// Instantiate object for holding the necessary information for connecting to GoMobile
@@ -83,54 +102,79 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->{'Pay-by
 	// Instantiate client object for communicating with GoMobile
 	$obj_GoMobile = new GoMobileClient($obj_ConnInfo);
 
-	/* ========== Create MT-SMS Start ========== */
-	$iType = 2;					
-	$iCountry = (integer) $obj_DOM->{'Pay-by-link'}->{'Country'};
-	$iOperator = (integer) $obj_DOM->{'Pay-by-link'}->{'OperatorId'};;			
-	$sChannel = 123;			
-	$sKeyword = "CPM";
-	$iPrice = 0;				
-	$sRecipient = (string) $obj_DOM->{'Pay-by-link'}->Mobile;	
-	
-	//Prepare query string for the URL.
-	$sQueryString = "FL=". (string) $obj_DOM->{'Pay-by-link'}->{'FlightNumber'};
-	$sQueryString .= "&OR=". (string) $obj_DOM->{'Pay-by-link'}->{'OrderNumber'};
-	$sQueryString .= "&BG=". (string) $obj_DOM->{'Pay-by-link'}->{'Baggage'};
-	$sQueryString .= "&AM=". (string) $obj_DOM->{'Pay-by-link'}->{'Amount'};
-	
-	$sBody = "Hello, To make payment for your excess baggage please click on the secure link below payByLink://?".$sQueryString;
-
-	// Instantiate Message Object for holding the message data which will be sent to GoMobile
-	$obj_MsgInfo = GoMobileMessage::produceMessage($iType, $iCountry, $iOperator, $sChannel, $sKeyword, $iPrice, $sRecipient, $sBody);
-	$obj_MsgInfo->setDescription("Test MT-SMS 1");
-	$obj_MsgInfo->setSender("CPM");
-	/* ========== Create MT-SMS End ========== */
-
-	/* ========== Send MT-SMS Start ========== */
-	$bSend = true;		// Continue to send messages
-	$iAttempts = 0;		// Number of Attempts
-	// Send messages
-	while ($bSend === true && $iAttempts < 3)
+	foreach ($aMsgTypes as $iMsgType)
 	{
-		$iAttempts++;
-		try
+		switch($iMsgType)
 		{
-			// Send MT-SMS to GoMobile
-			if ($obj_GoMobile->communicate($obj_MsgInfo) == 200)
-			{
-				$xml = '<status code="'. $obj_MsgInfo->getReturnCodes() .'">Message successfully sent with ID: '. $obj_MsgInfo->getGoMobileID() .'</status>';			
-			}
-			// Error
-			else
-			{
-				$xml = '<status code="'. $obj_MsgInfo->getReturnCodes() .'">Message sending failed</status>';			
-			}
-			$bSend = false;
-		}
-		// Communication error, retry message sending
-		catch (HTTPException $e)
+			case(2):
+				/* ========== Create MT-SMS Start ========== */
+				$iType = 2;					
+				$iCountry = (integer) $obj_DOM->{'Pay-by-link'}->{'Country'};
+				$iOperator = (integer) $obj_DOM->{'Pay-by-link'}->{'OperatorId'};;			
+				$sChannel = 123;			
+				$sKeyword = "CPM";
+				$iPrice = 0;				
+				$sRecipient = (string) $obj_DOM->{'Pay-by-link'}->Mobile;	
+				
+				//Prepare query string for the URL.	
+				$sQueryString = "FL=". (string) $obj_DOM->{'Pay-by-link'}->{'FlightNumber'};
+				$sQueryString .= "&OR=". (string) $obj_DOM->{'Pay-by-link'}->{'OrderNumber'};
+				$sQueryString .= "&BG=". (string) $obj_DOM->{'Pay-by-link'}->{'Baggage'};
+				$sQueryString .= "&AM=". (string) $obj_DOM->{'Pay-by-link'}->{'Amount'};
+				
+				$sBody = "Hello, To make payment for your excess baggage please click on the secure link below payByLink://?".$sQueryString;
+
+				// Instantiate Message Object for holding the message data which will be sent to GoMobile
+				$obj_MsgInfo = GoMobileMessage::produceMessage($iType, $iCountry, $iOperator, $sChannel, $sKeyword, $iPrice, $sRecipient, $sBody);
+				$obj_MsgInfo->setDescription("Test MT-SMS 1");
+				$obj_MsgInfo->setSender("CPM");
+				/* ========== Create MT-SMS End ========== */
+				break;
+			
+			case(11):
+				/* ========== Create MT-SMS Start ========== */
+				$iType = 11;					
+				$sChannel = 123;			
+				$sKeyword = "CPM";				
+				$sPushId = '29e86c78e2ffa6a3fcf706156660fd6b41f8ed2175956532e18d0fb32647def0';				
+				$sBody = "Make the payment for your excess baggage securely through the application now. ";
+				if (empty($sPushId) === false)
+				{
+					$b = array();					
+					$b["aps"] = array("alert" => array("body" => utf8_encode($sBody) ),
+									  "sound" => "default",
+									  "action" => "notify");
+					$obj_MsgInfo = GoMobileMessage::produceMessage($iType, $sChannel, $sKeyword, $sPushId, json_encode($b) );					
+				}
+				break;
+		}	
+
+		/* ========== Send MT-MESSAGE Start ========== */
+		$bSend = true;		// Continue to send messages
+		$iAttempts = 0;		// Number of Attempts
+		// Send messages
+		while ($bSend === true && $iAttempts < 3)
 		{
-			sleep(pow(5, $iAttempts) );
+			$iAttempts++;
+			try
+			{
+				// Send MT-MESSAGE to GoMobile
+				if ($obj_GoMobile->send($obj_MsgInfo) == 200)
+				{
+					$xml = '<status code="'. $obj_MsgInfo->getReturnCodes() .'">Message successfully sent with ID: '. $obj_MsgInfo->getGoMobileID() .'</status>';			
+				}
+				// Error
+				else
+				{
+					$xml = '<status code="'. $obj_MsgInfo->getReturnCodes() .'">Message sending failed</status>';			
+				}
+				$bSend = false;
+			}
+			// Communication error, retry message sending
+			catch (HTTPException $e)
+			{
+				sleep(pow(5, $iAttempts) );
+			}
 		}
 	}
 }
@@ -159,5 +203,4 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';
 echo preg_replace('~\s*(<([^>]*)>[^<]*</\2>|<[^>]*>)\s*~', '$1', $xml);
 echo '</root>';
-/* ========== Send MT-SMS End ========== */
 ?>
