@@ -1102,7 +1102,7 @@ class Validate
 			else
 			{
 				$sql = "SELECT count(id) AS numberofcards
-						FROM Enduser".sSCHEMA_POSTFIX.".Cards_Tbl
+						FROM Enduser".sSCHEMA_POSTFIX.".Card_Tbl
 						WHERE accountid = ". intval($userid)." AND enabled = '1'";
 				$RS = $oDB->getName($sql);
 
