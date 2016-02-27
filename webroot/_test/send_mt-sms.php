@@ -136,14 +136,19 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->{'Pay-by
 				$iType = 11;					
 				$sChannel = 123;			
 				$sKeyword = "CPM";				
-				$sPushId = '90e85b4a11c7625eb91142a8787c17a0ac9ec7aa2fd151c8b002bf8399cfdf63';				
-				$sBody = "Make the payment for your excess baggage securely through the application now. ";
+				$sPushId = '0957ce678dd8707e007e4966ad8ad01e7eeb654fcf67baaaf452f0024f68c260';				
+				$sBody = "Make the payment for your excess baggage securely through the application now.";
 				if (empty($sPushId) === false)
 				{
 					$b = array();					
 					$b["aps"] = array("alert" => array("body" => utf8_encode($sBody) ),
 									  "sound" => "default",
 									  "action" => "notify");
+					$b['FL'] = (string) $obj_DOM->{'Pay-by-link'}->{'FlightNumber'};
+					$b['OR'] = (string) $obj_DOM->{'Pay-by-link'}->{'OrderNumber'};
+					$b['BG'] = (string) $obj_DOM->{'Pay-by-link'}->{'Baggage'};
+					$b['AM'] = (string) $obj_DOM->{'Pay-by-link'}->{'Amount'};
+
 					$obj_MsgInfo = GoMobileMessage::produceMessage($iType, $sChannel, $sKeyword, $sPushId, json_encode($b) );					
 				}
 				break;
