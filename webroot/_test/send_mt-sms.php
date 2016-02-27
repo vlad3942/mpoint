@@ -79,6 +79,11 @@ $xml = '';
 
 $iChannel = (integer) $obj_DOM->{'Pay-by-link'}->{'CommunicationChannel'};
 
+$aPushIDMap = array(
+					'7443447997' => '0957ce678dd8707e007e4966ad8ad01e7eeb654fcf67baaaf452f0024f68c260'
+					);
+$bSendMessage = false;
+
 if($iChannel > 0)
 {
 	switch($iChannel)
@@ -115,6 +120,7 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->{'Pay-by
 				$sKeyword = "CPM";
 				$iPrice = 0;				
 				$sRecipient = (string) $obj_DOM->{'Pay-by-link'}->Mobile;	
+				$bSendMessage = true;
 				
 				//Prepare query string for the URL.	
 				$sQueryString = "FL=". (string) $obj_DOM->{'Pay-by-link'}->{'FlightNumber'};
@@ -132,53 +138,67 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->{'Pay-by
 				break;
 			
 			case(11):
-				/* ========== Create MT-SMS Start ========== */
-				$iType = 11;					
-				$sChannel = 123;			
-				$sKeyword = "CPM";				
-				$sPushId = '0957ce678dd8707e007e4966ad8ad01e7eeb654fcf67baaaf452f0024f68c260';				
-				$sBody = "Make the payment for your excess baggage securely through the application now.";
-				if (empty($sPushId) === false)
-				{
-					$b = array();					
-					$b["aps"] = array("alert" => array("body" => utf8_encode($sBody) ),
-									  "sound" => "default",
-									  "action" => "notify");
-					$b['FL'] = (string) $obj_DOM->{'Pay-by-link'}->{'FlightNumber'};
-					$b['OR'] = (string) $obj_DOM->{'Pay-by-link'}->{'OrderNumber'};
-					$b['BG'] = (string) $obj_DOM->{'Pay-by-link'}->{'Baggage'};
-					$b['AM'] = (string) $obj_DOM->{'Pay-by-link'}->{'Amount'};
+				/* ========== Create MT-PUSH NOTIFICATION Start ========== */
+				$sMobileNumber = (string) $obj_DOM->{'Pay-by-link'}->Mobile;					
+				if(empty($aPushIDMap[$sMobileNumber]) === false)
+				{					
+					$iType = 11;					
+					$sChannel = 123;			
+					$sKeyword = "CPM";				
+					$sPushId = $aPushIDMap[$sMobileNumber];
+					//print_r();die('here');
+					$sBody = "Make the payment for your excess baggage securely through the application now.";
+					if (empty($sPushId) === false)
+					{
+						$b = array();					
+						$b["aps"] = array("alert" => array("body" => utf8_encode($sBody) ),
+										  "sound" => "default",
+										  "action" => "notify");
+						$b['FL'] = (string) $obj_DOM->{'Pay-by-link'}->{'FlightNumber'};
+						$b['OR'] = (string) $obj_DOM->{'Pay-by-link'}->{'OrderNumber'};
+						$b['BG'] = (string) $obj_DOM->{'Pay-by-link'}->{'Baggage'};
+						$b['AM'] = (string) $obj_DOM->{'Pay-by-link'}->{'Amount'};
 
-					$obj_MsgInfo = GoMobileMessage::produceMessage($iType, $sChannel, $sKeyword, $sPushId, json_encode($b) );					
+						$obj_MsgInfo = GoMobileMessage::produceMessage($iType, $sChannel, $sKeyword, $sPushId, json_encode($b) );					
+					}
+					$bSendMessage = true;
+				}
+				else
+				{
+						$bSendMessage = false;
+						$xml .= '<status code="11">Push ID not found for the given Mobile Number</status>';			
 				}
 				break;
 		}	
 
-		/* ========== Send MT-MESSAGE Start ========== */
-		$bSend = true;		// Continue to send messages
-		$iAttempts = 0;		// Number of Attempts
-		// Send messages
-		while ($bSend === true && $iAttempts < 3)
-		{
-			$iAttempts++;
-			try
+		if($bSendMessage === true)
+		{	
+			/* ========== Send MT-MESSAGE Start ========== */
+			$bSend = true;		// Continue to send messages
+			$iAttempts = 0;		// Number of Attempts
+			// Send messages
+			while ($bSend === true && $iAttempts < 3)
 			{
-				// Send MT-MESSAGE to GoMobile
-				if ($obj_GoMobile->send($obj_MsgInfo) == 200)
+				$iAttempts++;
+				try
 				{
-					$xml = '<status code="'. $obj_MsgInfo->getReturnCodes() .'">Message successfully sent with ID: '. $obj_MsgInfo->getGoMobileID() .'</status>';			
+					// Send MT-MESSAGE to GoMobile
+					if ($obj_GoMobile->send($obj_MsgInfo) == 200)
+					{
+						$xml .= '<status code="'. $obj_MsgInfo->getReturnCodes() .'">Message successfully sent with ID: '. $obj_MsgInfo->getGoMobileID() .'</status>';			
+					}
+					// Error
+					else
+					{
+						$xml .= '<status code="'. $obj_MsgInfo->getReturnCodes() .'">Message sending failed</status>';			
+					}
+					$bSend = false;
 				}
-				// Error
-				else
+				// Communication error, retry message sending
+				catch (HTTPException $e)
 				{
-					$xml = '<status code="'. $obj_MsgInfo->getReturnCodes() .'">Message sending failed</status>';			
+					sleep(pow(5, $iAttempts) );
 				}
-				$bSend = false;
-			}
-			// Communication error, retry message sending
-			catch (HTTPException $e)
-			{
-				sleep(pow(5, $iAttempts) );
 			}
 		}
 	}

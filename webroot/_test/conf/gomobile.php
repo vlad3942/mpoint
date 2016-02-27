@@ -47,7 +47,7 @@ define("sLOG_PATH", dirname(__FILE__)."/log/");
  * @global 	array $aGM_CONN_INFO
  */
 $aGM_CONN_INFO["protocol"] = "http";
-$aGM_CONN_INFO["host"] = "gomobile.test.cellpointmobile.com";
+$aGM_CONN_INFO["host"] = "gomobile.cellpointmobile.com";
 $aGM_CONN_INFO["port"] = 8000;
 $aGM_CONN_INFO["timeout"] = 20;	// In seconds
 $aGM_CONN_INFO["path"] = "/";
