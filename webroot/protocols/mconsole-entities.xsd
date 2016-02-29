@@ -1121,6 +1121,9 @@
 						<xs:enumeration value="app" />
 						<xs:enumeration value="xhtml" />
 						<xs:enumeration value="html5" />
+						<xs:enumeration value="ivr" />
+						<xs:enumeration value="chat" />
+						<xs:enumeration value="email" />
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
