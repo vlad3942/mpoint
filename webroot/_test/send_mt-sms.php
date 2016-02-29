@@ -80,7 +80,8 @@ $xml = '';
 $iChannel = (integer) $obj_DOM->{'Pay-by-link'}->{'CommunicationChannel'};
 
 $aPushIDMap = array(
-					'7443447997' => '0957ce678dd8707e007e4966ad8ad01e7eeb654fcf67baaaf452f0024f68c260'
+					'7443447997' => '0957ce678dd8707e007e4966ad8ad01e7eeb654fcf67baaaf452f0024f68c260',
+					'28882861' => 'e1d4a3ba487251740426372396990fd644b54b81f4163028b5c8eb5a83eaf720'
 					);
 $bSendMessage = false;
 
@@ -127,6 +128,7 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->{'Pay-by
 				$sQueryString .= "&OR=". (string) $obj_DOM->{'Pay-by-link'}->{'OrderNumber'};
 				$sQueryString .= "&BG=". (string) $obj_DOM->{'Pay-by-link'}->{'Baggage'};
 				$sQueryString .= "&AM=". (string) $obj_DOM->{'Pay-by-link'}->{'Amount'};
+				$sQueryString = base64_encode($sQueryString);
 				
 				$sBody = "Hello, To make payment for your excess baggage please click on the secure link below payByLink://?".$sQueryString;
 
