@@ -36,7 +36,7 @@ class WireCard extends CPMPSP
 	 * @see 	General::newMessage()
 	 *
 	 * @param 	integer $pspid 	Unique ID for the Payment Service Provider (PSP) mPoint used to clear the transaction
-	 * @param 	integer $txnid 	Transaction ID returned by the PSP
+	 * @param 	string $txnid 	Transaction ID returned by the PSP
 	 * @param 	integer $cid 	Unique ID for the Credit Card the customer used to pay for the Purchase
 	 * @param 	integer $sid 	Unique ID indicating that final state of the Transaction
 	 * @param 	integer $fee	The amount the customer will pay in fees for the Transaction. Default value 0
@@ -46,7 +46,7 @@ class WireCard extends CPMPSP
 	 */
 	public function completeTransaction($pspid, $txnid, $cid, $sid, $fee=0, array $debug=null)
 	{
-		if (intval($txnid) == 0) { $sql = ""; }
+		if (empty($txnid) == true) { $sql = ""; }
 		else { $sql = ", extid = '". $this->getDBConn()->escStr($txnid) ."'"; }
 		if ($this->getTxnInfo()->getAccountID() > 0) { $sql .= ", euaid = ". $this->getTxnInfo()->getAccountID(); }
 		else { $sql .= ", euaid = NULL"; }
