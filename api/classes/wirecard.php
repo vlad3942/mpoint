@@ -54,7 +54,7 @@ class WireCard extends CPMPSP
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET pspid = ". intval($pspid) .", cardid = ". intval($cid).", fee =".intval($fee) . $sql ."
 				WHERE id = ". $this->getTxnInfo()->getID();
-		//		echo $sql ."\n";
+		//		echo $sql ."\n";exit;
 		$res = $this->getDBConn()->query($sql);
 	
 		// Transaction completed successfully
@@ -90,7 +90,7 @@ class WireCard extends CPMPSP
 		
 		list($expiry_month, $expiry_year) = explode("/", $obj_Elem->expiry);
 		
-		$b .= '<card type="'.$obj_Elem->type.'">';
+		$b .= '<card type="'.strtolower(trim($obj_Elem->type)).'">';
 		$b .= '<masked_account_number>'. $obj_Elem->mask .'</masked_account_number>';
 		$b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
 		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
