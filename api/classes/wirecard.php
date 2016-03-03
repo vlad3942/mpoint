@@ -36,7 +36,7 @@ class WireCard extends CPMPSP
 	 * @see 	General::newMessage()
 	 *
 	 * @param 	integer $pspid 	Unique ID for the Payment Service Provider (PSP) mPoint used to clear the transaction
-	 * @param 	integer $txnid 	Transaction ID returned by the PSP
+	 * @param 	string $txnid 	Transaction ID returned by the PSP
 	 * @param 	integer $cid 	Unique ID for the Credit Card the customer used to pay for the Purchase
 	 * @param 	integer $sid 	Unique ID indicating that final state of the Transaction
 	 * @param 	integer $fee	The amount the customer will pay in fees for the Transaction. Default value 0
@@ -46,7 +46,7 @@ class WireCard extends CPMPSP
 	 */
 	public function completeTransaction($pspid, $txnid, $cid, $sid, $fee=0, array $debug=null)
 	{
-		if (intval($txnid) == 0) { $sql = ""; }
+		if (empty($txnid) == true) { $sql = ""; }
 		else { $sql = ", extid = '". $this->getDBConn()->escStr($txnid) ."'"; }
 		if ($this->getTxnInfo()->getAccountID() > 0) { $sql .= ", euaid = ". $this->getTxnInfo()->getAccountID(); }
 		else { $sql .= ", euaid = NULL"; }
@@ -54,7 +54,7 @@ class WireCard extends CPMPSP
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET pspid = ". intval($pspid) .", cardid = ". intval($cid).", fee =".intval($fee) . $sql ."
 				WHERE id = ". $this->getTxnInfo()->getID();
-		//		echo $sql ."\n";
+		//		echo $sql ."\n";exit;
 		$res = $this->getDBConn()->query($sql);
 	
 		// Transaction completed successfully
@@ -90,7 +90,7 @@ class WireCard extends CPMPSP
 		
 		list($expiry_month, $expiry_year) = explode("/", $obj_Elem->expiry);
 		
-		$b .= '<card type="'.$obj_Elem->type.'">';
+		$b .= '<card type="'.strtolower(trim($obj_Elem->type)).'">';
 		$b .= '<masked_account_number>'. $obj_Elem->mask .'</masked_account_number>';
 		$b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
 		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
