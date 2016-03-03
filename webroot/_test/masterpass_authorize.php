@@ -1,27 +1,22 @@
 <?php
-define("sAPI_CLASS_PATH", "/apps/php/php5api/classes/");
+define("sPHP5_API_CLASS_PATH", "/apps/php/php5api/classes/");
 
-require_once(sAPI_CLASS_PATH ."template.php");
-require_once(sAPI_CLASS_PATH ."http_client.php");
+require_once(__DIR__.'/../inc/include.php');
+require_once(sPHP5_API_CLASS_PATH ."template.php");
+require_once(sPHP5_API_CLASS_PATH ."http_client.php");
 // Require API for Simple DOM manipulation
-require_once(sAPI_CLASS_PATH ."simpledom.php");
+require_once(sPHP5_API_CLASS_PATH ."simpledom.php");
+
+header('Content-Type: text/html; charset="UTF-8"');
 
 if(count($_POST) > 0 ) 
 {	
 	/**
 	 * Connection info for sending error reports to a remote host
 	*/
-	$aHTTP_CONN_INFO["mesb"]["protocol"] = "http";
-	//$aHTTP_CONN_INFO["mesb"]["host"] = "10.150.242.42";
-	$aHTTP_CONN_INFO["mesb"]["host"] = $_SERVER['HTTP_HOST'];
-	$aHTTP_CONN_INFO["mesb"]["port"] = 80; // mPoint
-	//$aHTTP_CONN_INFO["mesb"]["port"] = 9000; // MESB
-	$aHTTP_CONN_INFO["mesb"]["timeout"] = 120;
-	$aHTTP_CONN_INFO["mesb"]["path"] = "/mApp/api/authorize.php";
-	$aHTTP_CONN_INFO["mesb"]["method"] = "POST";
-	$aHTTP_CONN_INFO["mesb"]["contenttype"] = "text/xml";
-	$aHTTP_CONN_INFO["mesb"]["username"] = $_POST['client-username'];
-	$aHTTP_CONN_INFO["mesb"]["password"] = $_POST['client-password'];
+	$aHTTP_CONN_INFO["mesb"]["path"] = "/mpoint/authorize-payment";
+	$aHTTP_CONN_INFO["mesb"]["username"] = trim($_POST['client-username']);
+	$aHTTP_CONN_INFO["mesb"]["password"] = trim($_POST['client-password']);
 	
 	$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
 	
@@ -44,10 +39,10 @@ if(count($_POST) > 0 )
 					<checkout-url>'.$_POST['checkouturl'].'</checkout-url>
 				</card>
 			</transaction>			
-			<password>oisJona</password>
+			<password>'.$_POST['password'].'</password>
 			<client-info language="us" version="1.28" platform="iOS/8.1">
-	            <mobile operator-id="10000" country-id="602">288828610</mobile>
-	            <email>jona@oismail.com</email>
+	            <mobile operator-id="10000" country-id="'.$_POST['country-id'].'">'.$_POST['mobile'].'</mobile>
+	            <email>'.$_POST['email'].'</email>
 	            <device-id>23lkhfgjh24qsdfkjh</device-id>
 	        </client-info>
 		</authorize-payment>
@@ -62,8 +57,7 @@ if(count($_POST) > 0 )
 		$obj_Client->disconnect();
 		if ($code == 200 && strlen($obj_Client->getReplyBody() ) > 0)
 		{
-			echo '<pre>', htmlentities($obj_Client->getReplyBody()), '</pre>';
-			//print_r($obj_Client->getReplyBody());die;
+			echo '<pre>', htmlentities($obj_Client->getReplyBody()), '</pre>';			
 		}
 		else
 		{

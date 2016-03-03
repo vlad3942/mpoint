@@ -646,6 +646,7 @@ class mConsole extends Admin
 		$sql .= "select * from(
 				SELECT Txn.id, Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
 					(CASE
+					 WHEN M8.stateid IS NOT NULL THEN M8.stateid
 					 WHEN M7.stateid IS NOT NULL THEN M7.stateid
 					 WHEN M6.stateid IS NOT NULL THEN M6.stateid
 					 WHEN M5.stateid IS NOT NULL THEN M5.stateid
@@ -656,6 +657,7 @@ class mConsole extends Admin
 					 ELSE -1
 					 END) AS stateid,
 					 (CASE
+					 WHEN M8.stateid IS NOT NULL THEN M8.created
 					 WHEN M7.stateid IS NOT NULL THEN M7.created
 					 WHEN M6.stateid IS NOT NULL THEN M6.created
 					 WHEN M5.stateid IS NOT NULL THEN M5.created
@@ -682,6 +684,7 @@ class mConsole extends Admin
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M5 ON Txn.id = M5.txnid AND M5.stateid = ". Constants::iPAYMENT_CANCELLED_STATE ."
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M6 ON Txn.id = M6.txnid AND M6.stateid = ". Constants::iPAYMENT_REFUNDED_STATE ."
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M7 ON Txn.id = M7.txnid AND M7.stateid = ". Constants::iPAYMENT_DECLINED_STATE ."
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M8 ON Txn.id = M8.txnid AND M8.stateid = ". Constants::iPAYMENT_REJECTED_STATE ."
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON Txn.euaid = EUA.id
 				WHERE CL.id IN (". implode(",", $aClientIDs) .")";
 		if (count($aAccountIDs) > 0) { $sql .= " AND  Acc.id IN (". implode(",", $aAccountIDs) .")"; }
@@ -696,11 +699,17 @@ class mConsole extends Admin
 			if (strlen($oCI->getCustomerRef() ) > 0) { $sql .= " AND Txn.customer_ref = '". $this->getDBConn()->escStr($oCI->getCustomerRef() ) ."'"; }
 		}
 		
-		$sql .= "
-				ORDER BY createdfinal DESC) as a ";
+		$sql .= " ) as a where a.stateid != -1 ";
 		
-		if (empty($start) === false && strlen($start) > 0) { $sql .= " where  '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <=  a.createdfinal"; }
+		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND   '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <=  a.createdfinal"; }
 		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND  a.createdfinal  <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
+		
+		$sql .= " AND a.createdfinal = (
+					select MAX(msg.created) FROM Log.Message_Tbl as msg
+						WHERE msg.stateid = a.stateid AND msg.txnid = a.id
+				)";
+		
+		$sql .= "\n ORDER BY createdfinal DESC";
 		
 		if (intval($limit) > 0 || intval($offset) > 0)
 		{
@@ -710,7 +719,7 @@ class mConsole extends Admin
 		}
 		
 	
-//		echo $sql ."\n";
+		//echo $sql ."\n";exit;
 		$res = $this->getDBConn()->query($sql);
 		
 		if (count($aStateIDs) == 0) 
@@ -725,6 +734,7 @@ class mConsole extends Admin
 					Constants::iPAYMENT_REJECTED_STATE, 
 					Constants::iPAYMENT_REFUNDED_STATE,
 					Constants::iPAYMENT_CANCELLED_STATE
+					
 				);
 		}
 		

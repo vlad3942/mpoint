@@ -1,3 +1,7 @@
+/* ========== ALTER TABLE FOR MERCHANT ACCOUNT TO HAVE PASSWORD OF 4000 CHARS START ====== */
+ALTER TABLE Client.MerchantAccount_Tbl ALTER COLUMN passwd TYPE character varying(4000);
+ALTER TABLE Client.MerchantAccount_Tbl ALTER COLUMN name TYPE character varying(100);
+/* ========== ALTER TABLE FOR MERCHANT ACCOUNT TO HAVE PASSWORD OF 4000 CHARS END ====== */
 /* ==================== LOG SCHEMA START ==================== */
 CREATE INDEX CONCURRENTLY transaction_search_mobile_idx ON Log.Transaction_Tbl (clientid, mobile, created);
 CREATE INDEX CONCURRENTLY transaction_search_email_idx ON Log.Transaction_Tbl (clientid, email, created);
