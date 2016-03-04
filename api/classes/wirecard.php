@@ -90,7 +90,15 @@ class WireCard extends CPMPSP
 		
 		list($expiry_month, $expiry_year) = explode("/", $obj_Elem->expiry);
 		
-		$b .= '<card type="'.strtolower(trim($obj_Elem->type)).'">';
+		$card_type = "";
+		
+		if(strpos($obj_Elem->type, " ") === false)
+		{
+			$card_type = $obj_Elem->type;
+		}
+		else { $card_type = strtolower(str_replace(" ","",$obj_Elem->type)); }
+		
+		$b .= '<card type="'.$card_type.'">';
 		$b .= '<masked_account_number>'. $obj_Elem->mask .'</masked_account_number>';
 		$b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
 		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
