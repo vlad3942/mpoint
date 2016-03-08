@@ -699,12 +699,17 @@ class mConsole extends Admin
 			if (strlen($oCI->getCustomerRef() ) > 0) { $sql .= " AND Txn.customer_ref = '". $this->getDBConn()->escStr($oCI->getCustomerRef() ) ."'"; }
 		}
 		
-		$sql .= " ) as a where stateid != -1 ";
+		$sql .= " ) as a where a.stateid != -1 ";
 		
 		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND   '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <=  a.createdfinal"; }
 		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND  a.createdfinal  <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
 		
-		$sql .= "ORDER BY createdfinal DESC";
+		$sql .= " AND a.createdfinal = (
+					select MAX(msg.created) FROM Log.Message_Tbl as msg
+						WHERE msg.stateid = a.stateid AND msg.txnid = a.id
+				)";
+		
+		$sql .= "\n ORDER BY createdfinal DESC";
 		
 		if (intval($limit) > 0 || intval($offset) > 0)
 		{
@@ -714,7 +719,7 @@ class mConsole extends Admin
 		}
 		
 	
-//		echo $sql ."\n";
+		//echo $sql ."\n";exit;
 		$res = $this->getDBConn()->query($sql);
 		
 		if (count($aStateIDs) == 0) 
