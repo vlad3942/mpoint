@@ -43,6 +43,8 @@ require_once(sCLASS_PATH ."/masterpass.php");
 require_once(sCLASS_PATH ."/wirecard.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
+// Require specific Business logic for the Datacash component
+require_once(sCLASS_PATH ."/datacash.php");
 
 /**
  * Input XML format
