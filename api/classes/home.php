@@ -473,12 +473,18 @@ class Home extends General
 		$xml = '<stored-cards accountid="'. $id .'">';
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
+			if ( ($oCC  instanceof ClientConfig) === true)
+			{
+				// Replace up 0-4 of the last 4-digits in the masked card number with *
+				$sMaskedCardNumber = substr_replace(trim($RS["MASK"]), str_repeat("*", 4 - $oCC->getNumberOfMaskedDigits() ), -4, 4 - $oCC->getNumberOfMaskedDigits() );
+			}
+			else { $sMaskedCardNumber = trim($RS["MASK"]); }
 			// Construct XML Document with data for saved cards
 			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'" >';
 			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
 			$xml .= '<type id="'. $RS["TYPEID"] .'">'. $RS["TYPE"] .'</type>';
 			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';
-			$xml .= '<mask>'. trim(chunk_split($RS["MASK"], 4, " ") ) .'</mask>';
+			$xml .= '<mask>'. chunk_split($sMaskedCardNumber, 4, " ") .'</mask>';
 			$xml .= '<expiry>'. $RS["EXPIRY"] .'</expiry>';
 			$xml .= '<enabled>'. General::bool2xml($RS["PREFERRED"]) .'</enabled>';
 			$xml .= '<ticket>'. $RS["TICKET"] .'</ticket>';

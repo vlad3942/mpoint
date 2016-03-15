@@ -366,8 +366,7 @@ try
 														$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 														$obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 														$iInvoiceStatus = $obj_Authorize->invoice($obj_DOM->{'authorize-payment'}[$i]->transaction->description);
-														// Set the code to 5 so stored card payemnt if statment is skipped.
-														$code = 5;
+														$code = 10;
 														if ($iInvoiceStatus == 100) { $xml .= '<status code="100">Payment authorized using Invoice</status>'; }
 														else
 														{
@@ -389,7 +388,11 @@ try
 													else { $code = 10; }
 												}
 
-												if ($code >= 10)
+												if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] ) == Constants::iINVOICE)
+												{
+													// XML previously constructed
+												}
+												elseif ($code >= 10)
 												{
 													try
 													{
