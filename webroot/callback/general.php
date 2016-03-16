@@ -122,7 +122,7 @@ try
 		 * irrespective of save card api call. Those card details won't be saved or updated
 		 * in card_tbl.
 		 */
-		if($iCardID === -1)
+		if($iCardID !== -1)
 		{
 			$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE);
 			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $obj_XML->callback->transaction->card->token);
