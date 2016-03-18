@@ -24,6 +24,8 @@ require_once(sCLASS_PATH ."/wannafind.php");
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
 // Require specific Business logic for the MobilePay component
 require_once(sCLASS_PATH ."/mobilepay.php");
+// Require specific Business logic for the DSB component
+require_once(sCLASS_PATH ."/dsb.php");
 
 
 set_time_limit(0);
