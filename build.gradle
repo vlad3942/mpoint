@@ -24,7 +24,7 @@ projectinfo
         {
             group = 'com.cellpointmobile.mpoint'
             artifact = 'mPoint'
-            version = '1.93.MCDEV-SNAPSHOT'
+            version = '1.93.2-SNAPSHOT'
             description = 'mPoint'
             packaging = 'zip'
         }
