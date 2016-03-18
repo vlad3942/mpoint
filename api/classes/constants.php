@@ -410,7 +410,7 @@ abstract class Constants
 	 * Unique ID for the Payment Service Provider: Adyen
 	 *
 	 */
-	const iADYEN_PSP = 12;
+	const iADYEN_PSP = 12;	
 	/**
 	 * Unique ID for the Payment Service Provider: VISA Checkout
 	 *
@@ -431,16 +431,25 @@ abstract class Constants
 	 *
 	 */
 	const iAMEX_EXPRESS_CHECKOUT_PSP = 16;
+	
 	/**
 	 * Unique ID for the Payment Service Provider: Data Cash
 	 *
 	 */
 	const iDATA_CASH_PSP = 17;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: Wire Card
+	 *
+	 */
+	const iWIRE_CARD_PSP = 18;
+	
 	/**
 	 * Unique ID for the Payment Service Provider: DSB
 	 *
 	 */
 	const iDSB_PSP = 19;
+
 	/**
 	 * Unique ID for the Electronic Payment Flow
 	 *

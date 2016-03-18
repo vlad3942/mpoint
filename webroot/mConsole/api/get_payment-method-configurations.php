@@ -12,6 +12,8 @@
 // Require Global Include File
 require_once("../../inc/include.php");
 
+// Require API for Simple DOM manipulation
+require_once(sAPI_CLASS_PATH ."simpledom.php");
 // Require Business logic for General Administration of mPoint
 require_once(sCLASS_PATH ."admin.php");
 // Require Business logic for the mConsole Module

@@ -290,7 +290,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		else { throw new UnexpectedValueException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 	}
 
-	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false)
+	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1)
 	{
 		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML() );
 		unset ($obj_XML->password);
@@ -302,6 +302,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 		$b .= $this->_constTxnXML();
 		if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
+		if($card_type_id > 0) { $b .= "<card type-id='".$card_type_id."'></card>"; }
 		$b .= '</initialize>';
 		$b .= '</root>';
 		
@@ -339,14 +340,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<authorize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
-		$b .= $obj_PSPConfig->toXML();
-		$b .= $this->_constTxnXML();
+		$b .= $obj_PSPConfig->toXML();		
+		$b .= $this->_constTxnXML();				
 		$b .= '<card>';
 		$b .= '<token>'. $ticket .'</token>';
 		$b .= '</card>';
 		$b .= '</authorize>';
 		$b .= '</root>';
-	
+
 		try
 		{
 			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["auth"]);
@@ -450,7 +451,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		return $code;
 	}
 
-	private function _constTxnXML($actionAmount=null)
+	protected  function _constTxnXML($actionAmount=null)
 	{
 		$obj_XML = simplexml_load_string($this->getTxnInfo()->toXML() );
 		$obj_XML->{'authorized-amount'} = (integer) $obj_XML->amount;
@@ -468,7 +469,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		return str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 	}
 
-	private function _constConnInfo($path)
+	protected function _constConnInfo($path)
 	{
 		$aCI = $this->aCONN_INFO;
 		$aURLInfo = parse_url($this->getClientConfig()->getMESBURL() );

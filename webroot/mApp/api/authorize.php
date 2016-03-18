@@ -72,6 +72,8 @@ require_once(sCLASS_PATH ."/datacash.php");
 require_once(sCLASS_PATH ."/masterpass.php");
 // Require specific Business logic for the AMEX Express Checkout component
 require_once(sCLASS_PATH ."/amexexpresscheckout.php");
+// Require specific Business logic for the WireCard component
+require_once(sCLASS_PATH ."/wirecard.php");
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -567,6 +569,27 @@ try
 																	$xml .= '<status code="92">Authorization failed, Adyen returned error: '. $code .'</status>';
 																}
 																break;
+														case (Constants::iWIRE_CARD_PSP): // WireCard
+																$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iWIRE_CARD_PSP);
+														
+																$obj_PSP = new WireCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["wire-card"]);
+													
+																$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_Elem);
+																// Authorization succeeded
+																if ($code == "100")
+																{
+																	$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
+																}
+																// Error: Authorization declined
+																else
+																{
+																	$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+													
+																	header("HTTP/1.1 502 Bad Gateway");
+													
+																	$xml .= '<status code="92">Authorization failed, WireCard returned error: '. $code .'</status>';
+																}
+														break;
 														default:	// Unkown Error
 															$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 
