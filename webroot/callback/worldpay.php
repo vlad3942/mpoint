@@ -177,17 +177,34 @@ try
 		$obj_mPoint->associate($obj_TxnInfo->getAccountID(), $obj_TxnInfo->getID() );
 	}
 
+	
+	// Transaction uses Auto Capture and Authorization was accepted
+	if ($obj_TxnInfo->getCallbackURL() != "" && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
+	{
+		// Reload so we have the newest version of the TxnInfo
+		$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
+		$obj_mPoint = new WorldPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["worldpay"]);
+				
+		$responseCode = $obj_mPoint->capture($obj_TxnInfo->getAmount());
+				
+		if ($responseCode == 1000)
+		{				
+			if ($obj_TxnInfo->getCallbackURL() != "") { $obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, new SurePayConfig(6, 5) ); }
+			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
+		}
+		else
+		{
+			if ($obj_TxnInfo->getCallbackURL() != "") { $obj_mPoint->notifyClient(Constants::iPAYMENT_DECLINED_STATE, new SurePayConfig(6, 5) ); }
+			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, "Payment Declined (2010)");
+		}
+	}
+	
 	// Client has SMS Receipt enabled
 	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getClientConfig()->smsReceiptEnabled() === true)
 	{
 		$obj_mPoint->sendSMSReceipt(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
 	}
-
-	// Callback URL has been defined for Client
-	if ($obj_TxnInfo->getCallbackURL() != "")
-	{
-		$obj_mPoint->notifyClient($iStateID, $obj_XML, new SurePayConfig(6, 5) );
-	}
+	
 	echo "[OK]";
 }
 catch (TxnInfoException $e)
