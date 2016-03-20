@@ -212,7 +212,7 @@ class CPG extends Callback
 		if (array_key_exists("var_enhanced-data", $aClientVars) === true)
 		{
 			$b .= trim($aClientVars["var_enhanced-data"]);
-			// ApplePay token which may be authorized directly through CPG
+			// Token from 3rd party wallet, which may be authorized directly through CPG
 			if (count($obj_XML->ticket) == 0 && stristr($aClientVars["var_enhanced-data"], "bkgChannel") == false)
 			{
 				switch (intval($obj_XML["wallet-type-id"]) )
@@ -228,6 +228,9 @@ class CPG extends Callback
 					break;
 				case (Constants::iMASTER_PASS_WALLET):
 					$b = str_replace('<bkgChannel>MPH-MasterPass</bkgChannel></enchancedData>', '</enchancedData>', $b);
+					break;
+				case (Constants::iANDROID_PAY_WALLET):
+					$b = str_replace('<bkgChannel>MIPH-AndroidPay</bkgChannel></enchancedData>', '</enchancedData>', $b);
 					break;
 				}
 			}
