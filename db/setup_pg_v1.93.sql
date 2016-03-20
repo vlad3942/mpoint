@@ -1,12 +1,7 @@
-/* ========== CONFIGURE ANDROID PAY START ========== */
-INSERT INTO System.PSP_Tbl (id, name) VALUES (20, 'Android Pay');
-INSERT INTO System.PSPCurrency_Tbl (pspid, countryid, name) VALUES (20, 200, 'USD');
+UPDATE Client.Client_Tbl SET num_masked_digits = 2 WHERE id = 10005;	-- DSB App PRODUCTION
+UPDATE Client.Client_Tbl SET num_masked_digits = 2 WHERE id = 10014;	-- DSB App Test
+UPDATE Client.Client_Tbl SET num_masked_digits = 2 WHERE id = 10019;	-- Mobile Travel Card
 
-INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (27, 'Android Pay', 19, -1, -1, -1);
-INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (27, -1, -1);
-INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 27, id FROM System.PricePoint_Tbl WHERE amount = -1 AND countryid = 200;
--- Enable Android Pay Wallet for WorldPay
-INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (4, 27);
--- Enable Android Pay Wallet for Android Pay PSP
-INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (20, 27);
-/* ========== CONFIGURE ANDROID PAY END ========== */
+-- Setting maxamount for DSB clients to DKK 50.000,- since new and more expensive products have been introduced
+UPDATE Client.Client_Tbl SET maxamount = 5000000 WHERE id = 10005; -- DSB App PRODUCTION
+UPDATE Client.Client_Tbl SET maxamount = 5000000 WHERE id = 10014; -- DSB App Test
