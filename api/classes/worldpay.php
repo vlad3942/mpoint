@@ -173,7 +173,6 @@ class WorldPay extends Callback implements Captureable, Refundable
 		$obj_HTTP->connect();
 		$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
 		$obj_HTTP->disConnect();
-		
 		$obj_XML = null;
 		if ($code == 200)
 		{
@@ -182,6 +181,15 @@ class WorldPay extends Callback implements Captureable, Refundable
 			{
 				$obj_XML["code"] = Constants::iPAYMENT_ACCEPTED_STATE;
 				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, $obj_XML->asXML() );
+			}
+			// Error: Unable to initialize payment transaction
+			elseif (count($obj_XML->reply->orderStatus) == 1)
+			{
+				$obj_XML["code"] = Constants::iPAYMENT_DECLINED_STATE;
+				// Normalize response
+				$obj_XML->reply = (string) $obj_XML->reply->orderStatus->error;
+				$obj_XML->reply["error"] = $obj_XML->reply->orderStatus->error["code"];
+				trigger_error("Unable to initialize payment with WorldPay for transaction: ". $this->getTxnInfo()->getID() .", error code: ". $obj_XML->reply->orderStatus->error["code"] ."\n". $obj_XML->reply->orderStatus->error->asXML(), E_USER_WARNING);
 			}
 			// Error: Unable to initialize payment transaction
 			else
