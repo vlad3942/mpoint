@@ -16,7 +16,7 @@
  * This directory MUST be writeable for the application user / webserver user
  *
  */
-define("sLOG_PATH", dirname(__FILE__)."/log/");
+define("sLOG_PATH","/var/log/cpm/mPoint/");
 
 /**
  * GoMobile Connection Info.

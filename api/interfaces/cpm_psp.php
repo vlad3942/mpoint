@@ -600,16 +600,16 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$obj_XML = $sCards;
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
-		$b .= '<get-extenal-payment-methods>';
+		$b .= '<get-external-payment-methods>';
 		$b .= '<transaction id="'. $this->getTxnInfo()->getID() .'" order-no="'. $this->getTxnInfo()->getOrderID() .'">';
 		$b .= $sCards;
 		$b .= '</transaction>';
-		$b .= '</get-extenal-payment-methods>';
+		$b .= '</get-external-payment-methods>';
 		$b .= '</root>';
 
 		try
 		{
-			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["get-extenal-payment-methods"]);
+			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["get-external-payment-methods"]);
 		
 			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
 			$obj_HTTP->connect();

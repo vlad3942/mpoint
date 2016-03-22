@@ -55,7 +55,7 @@
 <xs:complexType name="mobile">
 	<xs:simpleContent>
 		<xs:restriction base="phone">
-			<xs:minLength value="8" />
+			<xs:minLength value="6" />
 			<xs:maxLength value="15" />
 			<xs:pattern value="([0-9])*"/>
 		</xs:restriction>
