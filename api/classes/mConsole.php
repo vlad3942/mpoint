@@ -689,7 +689,18 @@ class mConsole extends Admin
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M7 ON Txn.id = M7.txnid AND M7.stateid = ". Constants::iPAYMENT_DECLINED_STATE ."
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M8 ON Txn.id = M8.txnid AND M8.stateid = ". Constants::iPAYMENT_REJECTED_STATE ."
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON Txn.euaid = EUA.id
-				WHERE CL.id IN (". implode(",", $aClientIDs) .")";
+				WHERE CL.id = ".$iClientID;
+			
+				array_pop($aClientIDs);
+				
+				if(count($aClientIDs) > 0)
+				{
+					$sql .= "
+							UNION
+						";
+				}
+		}	
+				
 		if (count($aAccountIDs) > 0) { $sql .= " AND  Acc.id IN (". implode(",", $aAccountIDs) .")"; }
 		if (count($aPspIDs) > 0) { $sql .= " AND  PSP.id IN (". implode(",", $aPspIDs) .")"; }
 		if (count($aCardIDs) > 0) { $sql .= " AND  PM.id IN (". implode(",", $aCardIDs) .")"; }
