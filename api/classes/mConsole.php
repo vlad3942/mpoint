@@ -643,8 +643,11 @@ class mConsole extends Admin
 					UNION ";
 		}
 		// Fetch all Purchases
-		$sql .= "select * from(
-				SELECT Txn.id, Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
+		$sql .= "select * from(";
+		
+		foreach($aClientIDs as $iClientID)
+		{
+			$sql .= "SELECT Txn.id, Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
 					(CASE
 					 WHEN M8.stateid IS NOT NULL THEN M8.stateid
 					 WHEN M7.stateid IS NOT NULL THEN M7.stateid
