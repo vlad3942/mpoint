@@ -647,7 +647,7 @@ class mConsole extends Admin
 		
 		foreach($aClientIDs as $iClientID)
 		{
-			$sql .= "SELECT Txn.id, Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
+			$sql .= "SELECT Txn.id as txnid, Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
 					(CASE
 					 WHEN M8.stateid IS NOT NULL THEN M8.stateid
 					 WHEN M7.stateid IS NOT NULL THEN M7.stateid
@@ -701,11 +701,14 @@ class mConsole extends Admin
 				}
 		}	
 				
-		if (count($aAccountIDs) > 0) { $sql .= " AND  Acc.id IN (". implode(",", $aAccountIDs) .")"; }
-		if (count($aPspIDs) > 0) { $sql .= " AND  PSP.id IN (". implode(",", $aPspIDs) .")"; }
-		if (count($aCardIDs) > 0) { $sql .= " AND  PM.id IN (". implode(",", $aCardIDs) .")"; }
-		if (intval($id) > 0) { $sql .= " AND Txn.id = '". floatval($id) ."'"; }
-		if ($ono > 0) { $sql .= " AND Txn.orderid = '". $this->getDBConn()->escStr($ono) ."'"; }
+		$sql .= " ) as a where a.stateid != -1 ";
+		
+
+		if (count($aAccountIDs) > 0) { $sql .= " AND  a.accountid IN (". implode(",", $aAccountIDs) .")"; }
+		if (count($aPspIDs) > 0) { $sql .= " AND  a.pspid IN (". implode(",", $aPspIDs) .")"; }
+		if (count($aCardIDs) > 0) { $sql .= " AND  a.paymentmethodid IN (". implode(",", $aCardIDs) .")"; }
+		if (intval($id) > 0) { $sql .= " AND a.txnid = '". floatval($id) ."'"; }
+		if ($ono > 0) { $sql .= " AND a.orderno = '". $this->getDBConn()->escStr($ono) ."'"; }
 		if ( ($oCI instanceof CustomerInfo) === true)
 		{
 			if ($oCI->getMobile() > 0) { $sql .= " AND Txn.operatorid / 100 = ". $oCI->getCountryID() ." AND Txn.mobile = '". $oCI->getMobile() ."'"; }
@@ -713,14 +716,12 @@ class mConsole extends Admin
 			if (strlen($oCI->getCustomerRef() ) > 0) { $sql .= " AND Txn.customer_ref = '". $this->getDBConn()->escStr($oCI->getCustomerRef() ) ."'"; }
 		}
 		
-		$sql .= " ) as a where a.stateid != -1 ";
-		
 		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND   '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <=  a.createdfinal"; }
 		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND  a.createdfinal  <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
 		
 		$sql .= " AND a.createdfinal = (
 					select MAX(msg.created) FROM Log.Message_Tbl as msg
-						WHERE msg.stateid = a.stateid AND msg.txnid = a.id
+						WHERE msg.stateid = a.stateid AND msg.txnid = a.txnid
 				)";
 		
 		$sql .= "\n ORDER BY createdfinal DESC";
