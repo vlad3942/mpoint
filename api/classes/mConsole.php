@@ -683,7 +683,8 @@ class mConsole extends Admin
 					 WHEN M2.stateid IS NOT NULL THEN M2.created
 					 WHEN M1.stateid IS NOT NULL THEN M1.created
 					 END) AS createdfinal,
-					EUA.id AS customerid, EUA.firstname, EUA.lastname, Coalesce(Txn.customer_ref, EUA.externalid) AS customer_ref, Txn.operatorid, Txn.mobile, Txn.email, Txn.lang AS language,
+					EUA.id AS customerid, EUA.firstname, EUA.lastname, Coalesce(Txn.customer_ref, EUA.externalid) AS customer_ref, Txn.operatorid as operatorid, 
+					Txn.mobile as mobile, Txn.email as email, Txn.lang AS language,
 					CL.id AS clientid, CL.name AS client,
 					Acc.id AS accountid, Acc.name AS account,
 					PSP.id AS pspid, PSP.name AS psp,
@@ -725,9 +726,9 @@ class mConsole extends Admin
 		if ($ono > 0) { $sql .= " AND a.orderno = '". $this->getDBConn()->escStr($ono) ."'"; }
 		if ( ($oCI instanceof CustomerInfo) === true)
 		{
-			if ($oCI->getMobile() > 0) { $sql .= " AND Txn.operatorid / 100 = ". $oCI->getCountryID() ." AND Txn.mobile = '". $oCI->getMobile() ."'"; }
-			if (strlen($oCI->getEMail() ) > 0) { $sql .= " AND Txn.email = '". $this->getDBConn()->escStr($oCI->getEMail() ) ."'"; }
-			if (strlen($oCI->getCustomerRef() ) > 0) { $sql .= " AND Txn.customer_ref = '". $this->getDBConn()->escStr($oCI->getCustomerRef() ) ."'"; }
+			if ($oCI->getMobile() > 0) { $sql .= " AND a.operatorid / 100 = ". $oCI->getCountryID() ." AND a.mobile = '". $oCI->getMobile() ."'"; }
+			if (strlen($oCI->getEMail() ) > 0) { $sql .= " AND a.email = '". $this->getDBConn()->escStr($oCI->getEMail() ) ."'"; }
+			if (strlen($oCI->getCustomerRef() ) > 0) { $sql .= " AND a.customer_ref = '". $this->getDBConn()->escStr($oCI->getCustomerRef() ) ."'"; }
 		}
 		
 		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND   '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <=  a.createdfinal"; }
