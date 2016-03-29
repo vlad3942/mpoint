@@ -93,6 +93,20 @@ class mConsole extends Admin
 	
 	public function saveAccount($clientid, $name, $markup, $id = -1)
 	{	
+		
+		if(empty($id) === true )
+		{
+			//Entry exists but is disabled.
+			$sqlSelect = "SELECT id FROM Client". sSCHEMA_POSTFIX .".Account_Tbl
+						WHERE name = '". $this->getDBConn()->escStr($name) ."'
+						AND markup = '". $this->getDBConn()->escStr($markup) ."'
+						AND clientid = ". intval($clientid);
+				
+			$RSONE = $this->getDBConn()->getName($sqlSelect);
+				
+			$id = $RSONE["ID"];
+		}
+		
 		if ($id > 0)
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".Account_Tbl
