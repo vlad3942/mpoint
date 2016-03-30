@@ -1099,11 +1099,13 @@ class Validate
 			if (empty($userid) === true ) { $code = 1; }	// Undefined user-ID
 			elseif (empty($max) === true ) { $code = 2; }	// $max undefined
 			elseif (empty($clid) === true ) { $code = 3; }	// $max undefined
+			elseif ($max == -1) { $code = 10; }
 			else
 			{
 				$sql = "SELECT count(id) AS numberofcards
 						FROM Enduser".sSCHEMA_POSTFIX.".Card_Tbl
 						WHERE accountid = ". intval($userid)." AND enabled = '1'";
+				//echo $sql;exit;
 				$RS = $oDB->getName($sql);
 
 				if ($RS["NUMBEROFCARDS"] >= $max) { $code = 4; }	//  User has the max amount of cards
