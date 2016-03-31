@@ -52,7 +52,7 @@ require_once(sCLASS_PATH ."/datacash.php");
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
 	<callback>
-		<psp-config psp-id="12">
+		<psp-config id="12">
 			<name>CellpointMobileCOM</name>
 		</psp-config>
 		<transaction id="1825317" order-no="970-253176" external-id="8814395474257619">
