@@ -2,6 +2,7 @@
 ALTER TABLE Client.CardAccess_tbl ADD position integer default NULL;
 /* ==================== Client SCHEMA END ==================== */
 
+CREATE INDEX CONCURRENTLY externalid_transaction_idx ON Log.Transaction_Tbl (extid, pspid);
 /* ==================== LOG.ORDER_TBL SCHEMA START ==================== */
 CREATE TABLE log.order_tbl
 (

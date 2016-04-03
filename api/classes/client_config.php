@@ -274,6 +274,12 @@ class ClientConfig extends BasicConfig
 	 */
 	private $_iTransactionTTL;
 	/**
+	 * The number of the last 4 masked digits, which should be returned for a Stored Card
+	 *
+	 * @var integer
+	 */
+	private $_iNumMaskedDigits;
+	/**
 	 * Default Constructor
 	 *
 	 * @param 	integer $id 				Unique ID for the Client in mPoint
@@ -304,6 +310,7 @@ class ClientConfig extends BasicConfig
 	 * @param 	integer $mc					The max number of cards a user can have on the Client, set to -1 for inifite
 	 * @param 	integer $ident				Set of binary flags which specifies how customers may be identified
 	 * @param 	integer $txnttl				Transaction time to live value in seconds
+	 * @param   integer $nmd				Number of the last 4 masked digits, which should be returned for a Stored Card
 	 * @param   ClientURLConfig $oCIURL		Object that holds the customer import URL.
 	 * @param   ClientURLConfig $oAURL		Object that holds the customer customer authetication URL
 	 * @param   ClientURLConfig $oNURL		Object that holds the customer notification URL
@@ -311,9 +318,9 @@ class ClientConfig extends BasicConfig
 	 * @param   array $aObj_ACs				List of Configurations for the Accounts the Transaction can be processed through
 	 * @param   array $aObj_MAs				List of Merchant Accounts for each Payment Service Providers
 	 * @param   array $aObj_PMs				List of Payment Methods (Cards) that the client offers
-	 * @param   array $aObj_IINRs			List of IIN Range values for the client.	 
+	 * @param   array $aObj_IINRs			List of IIN Range values for the client.
 	 */
-	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=null, ClientURLConfig $oCSSURL=null, ClientURLConfig $oAccURL=null, ClientURLConfig $oCURL=null, ClientURLConfig $oCBURL=null, ClientURLConfig $oIURL=null, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array() )
+	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=null, ClientURLConfig $oCSSURL=null, ClientURLConfig $oAccURL=null, ClientURLConfig $oCURL=null, ClientURLConfig $oCBURL=null, ClientURLConfig $oIURL=null, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array())
 	{
 		parent::__construct($id, $name);
 
@@ -355,6 +362,7 @@ class ClientConfig extends BasicConfig
 		$this->_iMaxCards = (integer) $mc;
 		$this->_iIdentification = (integer) $ident;
 		$this->_iTransactionTTL = (integer) $txnttl;
+		$this->_iNumMaskedDigits = (integer) $nmd;
 		$this->_aObj_AccountsConfigurations = $aObj_ACs;
 		$this->_aObj_MerchantAccounts = $aObj_MAs;
 		$this->_aObj_PaymentMethodConfigurations = $aObj_PMs;
@@ -653,6 +661,13 @@ class ClientConfig extends BasicConfig
 	public function getSecret() { return sha1($this->getID() . $this->_sPassword); }
 
 	public function showAllCards() { return $this->_bShowAllCards; }
+	
+	/**
+	 * Returns the number of the last 4 masked digits, which should be returned for a Stored Card
+	 * 
+	 * @return 	integer
+	 */
+	public function getNumberOfMaskedDigits() { return $this->_iNumMaskedDigits; }
 	/**
 	 * Returns the XML payload of array of Configurations for the Cards used by the client.
 	 *
@@ -740,7 +755,7 @@ class ClientConfig extends BasicConfig
 
 	public function toXML()
 	{
-		$xml = '<client-config id="'. $this->getID() .'" flow-id="'. $this->_iFlowID .'" mode="'. $this->_iMode .'" max-cards="'. $this->_iMaxCards .'" identification="'. $this->_iIdentification .'">';
+		$xml = '<client-config id="'. $this->getID() .'" flow-id="'. $this->_iFlowID .'" mode="'. $this->_iMode .'" max-cards="'. $this->_iMaxCards .'" identification="'. $this->_iIdentification .'" masked-digits="'. $this->_iNumMaskedDigits .'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
 		$xml .= '<username>'. htmlspecialchars($this->getUsername(), ENT_NOQUOTES) .'</username>';
 		$xml .= '<logo-url>'. htmlspecialchars($this->getLogoURL(), ENT_NOQUOTES) .'</logo-url>';
@@ -770,7 +785,7 @@ class ClientConfig extends BasicConfig
 	
 	public function toFullXML()
 	{
-		$xml = '<client-config id="'. $this->getID() .'" auto-capture = "'. General::bool2xml($this->_bAutoCapture).'" country-id = "'.$this->getCountryConfig()->getID().'" language = "'.$this->_sLanguage.'" sms-receipt = "'.General::bool2xml($this->_bSMSReceipt).'" email-receipt = "'.General::bool2xml($this->_bEmailReceipt).'" mode="'. $this->_iMode .'">';
+		$xml = '<client-config id="'. $this->getID() .'" auto-capture = "'. General::bool2xml($this->_bAutoCapture).'" country-id = "'.$this->getCountryConfig()->getID().'" language = "'.$this->_sLanguage.'" sms-receipt = "'.General::bool2xml($this->_bSMSReceipt).'" email-receipt = "'.General::bool2xml($this->_bEmailReceipt).'" mode="'. $this->_iMode .'" masked-digits="'. $this->_iNumMaskedDigits .'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
 		$xml .= '<username>'. htmlspecialchars($this->getUsername(), ENT_NOQUOTES) .'</username>';
 		$xml .= '<password>'. htmlspecialchars($this->getPassword(), ENT_NOQUOTES) .'</password>';
@@ -817,7 +832,7 @@ class ClientConfig extends BasicConfig
 					CL.smsrcpt, CL.emailrcpt, CL.method,
 					CL.maxamount, CL.lang, CL.terms,
 					CL.\"mode\", CL.auto_capture, CL.send_pspid, CL.store_card, CL.show_all_cards, CL.max_cards,
-					CL.identification, CL.transaction_ttl,
+					CL.identification, CL.transaction_ttl, CL.num_masked_digits,
 					C.id AS countryid,
 					Acc.id AS accountid, Acc.name AS account, Acc.mobile, Acc.markup,
 					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price,
@@ -924,11 +939,9 @@ class ClientConfig extends BasicConfig
 			}
 		}
 		// Error: Client Configuration not found
-		else
-		{
-			trigger_error("Client Configuration not found using ID: ". $id .", Account: ". $acc .", Keyword: ". $kw, E_USER_WARNING);
-		}	
-		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_CallbackURL, $obj_IconURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations,$aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations);
+		else { trigger_error("Client Configuration not found using ID: ". $id .", Account: ". $acc .", Keyword: ". $kw, E_USER_WARNING); }
+			
+		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_CallbackURL, $obj_IconURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $RS["NUM_MASKED_DIGITS"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations,$aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations);
 	}
 
 	/**

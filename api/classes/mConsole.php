@@ -93,6 +93,20 @@ class mConsole extends Admin
 	
 	public function saveAccount($clientid, $name, $markup, $id = -1)
 	{	
+		
+		if(empty($id) === true )
+		{
+			//Entry exists but is disabled.
+			$sqlSelect = "SELECT id FROM Client". sSCHEMA_POSTFIX .".Account_Tbl
+						WHERE name = '". $this->getDBConn()->escStr($name) ."'
+						AND markup = '". $this->getDBConn()->escStr($markup) ."'
+						AND clientid = ". intval($clientid);
+				
+			$RSONE = $this->getDBConn()->getName($sqlSelect);
+				
+			$id = $RSONE["ID"];
+		}
+		
 		if ($id > 0)
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".Account_Tbl
@@ -643,8 +657,11 @@ class mConsole extends Admin
 					UNION ";
 		}
 		// Fetch all Purchases
-		$sql .= "select * from(
-				SELECT Txn.id, Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
+		$sql .= "select * from(";
+		
+		foreach($aClientIDs as $iClientID)
+		{
+			$sql .= "SELECT Txn.id as txnid, Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
 					(CASE
 					 WHEN M8.stateid IS NOT NULL THEN M8.stateid
 					 WHEN M7.stateid IS NOT NULL THEN M7.stateid
@@ -666,7 +683,8 @@ class mConsole extends Admin
 					 WHEN M2.stateid IS NOT NULL THEN M2.created
 					 WHEN M1.stateid IS NOT NULL THEN M1.created
 					 END) AS createdfinal,
-					EUA.id AS customerid, EUA.firstname, EUA.lastname, Coalesce(Txn.customer_ref, EUA.externalid) AS customer_ref, Txn.operatorid, Txn.mobile, Txn.email, Txn.lang AS language,
+					EUA.id AS customerid, EUA.firstname, EUA.lastname, Coalesce(Txn.customer_ref, EUA.externalid) AS customer_ref, Txn.operatorid as operatorid, 
+					Txn.mobile as mobile, Txn.email as email, Txn.lang AS language,
 					CL.id AS clientid, CL.name AS client,
 					Acc.id AS accountid, Acc.name AS account,
 					PSP.id AS pspid, PSP.name AS psp,
@@ -686,25 +704,42 @@ class mConsole extends Admin
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M7 ON Txn.id = M7.txnid AND M7.stateid = ". Constants::iPAYMENT_DECLINED_STATE ."
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M8 ON Txn.id = M8.txnid AND M8.stateid = ". Constants::iPAYMENT_REJECTED_STATE ."
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON Txn.euaid = EUA.id
-				WHERE CL.id IN (". implode(",", $aClientIDs) .")";
-		if (count($aAccountIDs) > 0) { $sql .= " AND  Acc.id IN (". implode(",", $aAccountIDs) .")"; }
-		if (count($aPspIDs) > 0) { $sql .= " AND  PSP.id IN (". implode(",", $aPspIDs) .")"; }
-		if (count($aCardIDs) > 0) { $sql .= " AND  PM.id IN (". implode(",", $aCardIDs) .")"; }
-		if (intval($id) > 0) { $sql .= " AND Txn.id = '". floatval($id) ."'"; }
-		if ($ono > 0) { $sql .= " AND Txn.orderid = '". $this->getDBConn()->escStr($ono) ."'"; }
+				WHERE CL.id = ".$iClientID;
+			
+				array_pop($aClientIDs);
+				
+				if(count($aClientIDs) > 0)
+				{
+					$sql .= "
+							UNION
+						";
+				}
+		}	
+				
+		$sql .= " ) as a where a.stateid != -1 ";
+		
+
+		if (count($aAccountIDs) > 0) { $sql .= " AND  a.accountid IN (". implode(",", $aAccountIDs) .")"; }
+		if (count($aPspIDs) > 0) { $sql .= " AND  a.pspid IN (". implode(",", $aPspIDs) .")"; }
+		if (count($aCardIDs) > 0) { $sql .= " AND  a.paymentmethodid IN (". implode(",", $aCardIDs) .")"; }
+		if (intval($id) > 0) { $sql .= " AND a.txnid = '". floatval($id) ."'"; }
+		if ($ono > 0) { $sql .= " AND a.orderno = '". $this->getDBConn()->escStr($ono) ."'"; }
 		if ( ($oCI instanceof CustomerInfo) === true)
 		{
-			if ($oCI->getMobile() > 0) { $sql .= " AND Txn.operatorid / 100 = ". $oCI->getCountryID() ." AND Txn.mobile = '". $oCI->getMobile() ."'"; }
-			if (strlen($oCI->getEMail() ) > 0) { $sql .= " AND Txn.email = '". $this->getDBConn()->escStr($oCI->getEMail() ) ."'"; }
-			if (strlen($oCI->getCustomerRef() ) > 0) { $sql .= " AND Txn.customer_ref = '". $this->getDBConn()->escStr($oCI->getCustomerRef() ) ."'"; }
+			if ($oCI->getMobile() > 0) { $sql .= " AND a.operatorid / 100 = ". $oCI->getCountryID() ." AND a.mobile = '". $oCI->getMobile() ."'"; }
+			if (strlen($oCI->getEMail() ) > 0) { $sql .= " AND a.email = '". $this->getDBConn()->escStr($oCI->getEMail() ) ."'"; }
+			if (strlen($oCI->getCustomerRef() ) > 0) { $sql .= " AND a.customer_ref = '". $this->getDBConn()->escStr($oCI->getCustomerRef() ) ."'"; }
 		}
-		
-		$sql .= " ) as a where stateid != -1 ";
 		
 		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND   '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <=  a.createdfinal"; }
 		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND  a.createdfinal  <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
 		
-		$sql .= "ORDER BY createdfinal DESC";
+		$sql .= " AND a.createdfinal = (
+					select MAX(msg.created) FROM Log.Message_Tbl as msg
+						WHERE msg.stateid = a.stateid AND msg.txnid = a.txnid
+				)";
+		
+		$sql .= "\n ORDER BY createdfinal DESC";
 		
 		if (intval($limit) > 0 || intval($offset) > 0)
 		{
@@ -714,7 +749,7 @@ class mConsole extends Admin
 		}
 		
 	
-//		echo $sql ."\n";
+		//echo $sql ."\n";exit;
 		$res = $this->getDBConn()->query($sql);
 		
 		if (count($aStateIDs) == 0) 

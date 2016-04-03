@@ -63,7 +63,7 @@ class Authorize extends General
 				{
 					$iStateID = Constants::iPAYMENT_ACCEPTED_STATE;
 
-					// Add pspid, extenalid to transaction info
+					// Add pspid, externalid to transaction info
 					$misc = array('psp-id'=>$this->_obj_PSP->getPSPID(), 'extid'=>$code);
 					$this->_obj_TxnInfo = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->_obj_TxnInfo, $misc);
 					$code = 100;
@@ -88,17 +88,18 @@ class Authorize extends General
 
 		return $code;
 	}
-	
+
 	/**
-	 * Performs a invoicing with a PSP and forwards the user message. 
-	 * 
+	 * Performs a invoicing with a PSP and forwards the user message.
+	 *
 	 * @param string 	$sMsg		The message that should be forwarded to the PSP
 	 * @param integer 	$iAmount	(optional) amount to be captured
+	 * @return integer
 	 * @throws BadMethodCallException
 	 */
 	public function invoice($sMsg, $iAmount=-1)
 	{
-		// Add pspid, extenalid to transaction info
+		// Add pspid, externalid to transaction info
 		$misc = array('psp-id'=>$this->_obj_PSP->getPSPID(), 'description'=>$sMsg);
 		$this->_obj_TxnInfo = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->_obj_TxnInfo, $misc);
 	

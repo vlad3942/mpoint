@@ -318,6 +318,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			if ($code == 200)
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+				
+				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, $obj_HTTP->getReplyBody());
+				
 				// save ext id in database
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 						SET pspid = ". $obj_PSPConfig->getID() ."
@@ -600,16 +603,16 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$obj_XML = $sCards;
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
-		$b .= '<get-extenal-payment-methods>';
+		$b .= '<get-external-payment-methods>';
 		$b .= '<transaction id="'. $this->getTxnInfo()->getID() .'" order-no="'. $this->getTxnInfo()->getOrderID() .'">';
 		$b .= $sCards;
 		$b .= '</transaction>';
-		$b .= '</get-extenal-payment-methods>';
+		$b .= '</get-external-payment-methods>';
 		$b .= '</root>';
 
 		try
 		{
-			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["get-extenal-payment-methods"]);
+			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["get-external-payment-methods"]);
 		
 			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
 			$obj_HTTP->connect();
