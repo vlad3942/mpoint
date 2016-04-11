@@ -1067,6 +1067,7 @@
 				</xs:simpleType>
 			</xs:element>
 			<xs:element name="transaction-time-to-live" type="xs:nonNegativeInteger" minOccurs="1" maxOccurs="1" />
+			<xs:element name="salt" type="salt" minOccurs="0" maxOccurs="1" />
 		</xs:all>
 		<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
 		<xs:attribute name="country-id" type="countryid" use="required" />
@@ -1309,6 +1310,13 @@
 		<xs:restriction base="xs:string">
 			<xs:minLength value="1" />
 			<xs:maxLength value="50" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="salt">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0" />
+			<xs:maxLength value="20" />
 		</xs:restriction>
 	</xs:simpleType>
         
