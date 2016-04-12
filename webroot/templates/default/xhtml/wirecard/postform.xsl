@@ -29,24 +29,16 @@
 				</xsl:if>
 				
 				<xsl:variable name="card-number">
-					<xsl:if test="transaction/@mode &gt; 0">
-						4012000300001003
-					</xsl:if>
+					<xsl:if test="transaction/@mode &gt; 0">4012000300001003</xsl:if>
 				</xsl:variable>
 				<xsl:variable name="expiry-month">
-					<xsl:if test="transaction/@mode &gt; 0">
-						01
-					</xsl:if>
+					<xsl:if test="transaction/@mode &gt; 0">01</xsl:if>
 				</xsl:variable>
 				<xsl:variable name="expiry-year">
-					<xsl:if test="transaction/@mode &gt; 0">
-						2019
-					</xsl:if>
+					<xsl:if test="transaction/@mode &gt; 0">2019</xsl:if>
 				</xsl:variable>
 				<xsl:variable name="cvc">
-					<xsl:if test="transaction/@mode &gt; 0">
-						003
-					</xsl:if>
+					<xsl:if test="transaction/@mode &gt; 0">003</xsl:if>
 				</xsl:variable>
 
 				<xsl:variable name="card-url"
@@ -250,6 +242,8 @@
 									value="{wirecard/hidden-fields/card_type}" />
 								<input type="hidden" id="notification_url_1" name="notification_url_1"
 									value="{wirecard/hidden-fields/notification_url_1}" />
+								<input type="hidden" id="cardid" name="cardid"
+									value="{wirecard/hidden-fields/field_value_3}" />
 							</div>
 
 							<div>
@@ -361,12 +355,12 @@
 									</tr>
 								</table>
 							</div>
-
-
-
+							<div>
+								<input name="store-card" type="checkbox" value="true" />
+								Save card info
+							</div>
 							<div id="submit">
-								<input type="submit" id="wirecardSubmit" name="wirecardSubmit"
-									value="{labels/submit}" />
+								<input type="submit" id="wirecardSubmit" name="wirecardSubmit" value="{labels/submit}" />
 							</div>
 						</form>
 					</div>

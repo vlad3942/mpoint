@@ -106,7 +106,7 @@
 ?>
 <tr>
 	<td>
-	    <select name="accounts" onchange="document.getElementById('markupname').innerHTML = this.value; document.getElementById('markup').value=this.value; document.getElementById('accountid').innerHTML = this.options[this.selectedIndex].text;;document.getElementById('account').value = this.options[this.selectedIndex].text;">
+	    <select name="accounts" onchange="showAccountDataOnChange(this);">
 		<option value="-1">No Account</option>
 		<?php
 			if(empty($accounts) === false)
@@ -129,33 +129,45 @@
 	<td><b>Selected markup : <span id="markupname"></span></b><input type="hidden" name="markup" id="markup" value="xhtml" /></td>
 </tr>
 <tr>
-	<td><input type="hidden" name="mobile" value="30206172" /></td>
+	<td><b>Amount* : </b><input type="tel" name="amount" value="100" /></td>
 </tr>
 <tr>
-	<td><input type="hidden" name="operator" value="10002" /></td>
+	
+	<?php $orderid = 'UAT-'.rand(10000000,99999999); ?>
+	<td><b>Order Id : </b><?php echo $orderid; ?><input type="hidden" name="orderid" value="<?php echo $orderid; ?>" /></td>
 </tr>
 <tr>
-	<td><input type="hidden" name="email" value="abhishek@cellpointmobile.com" /></td>
+	<td><b>Mobile Number : </b><input type="tel" name="mobile" value="30206172" /></td>
 </tr>
 <tr>
-	<td><input type="hidden" name="amount" value="100" /></td>
+	<td><b>Operator Number : </b><input type="tel" name="operator" value="10002" /></td>
 </tr>
 <tr>
-	<td><input type="hidden" name="language" value="gb" /></td>
+	<td><b>Email : </b><input type="email" name="email" value="abhishek@cellpointmobile.com" /></td>
+</tr>
+
+<tr>
+	<td><b>Language : </b><input type="text" name="language" value="gb" /></td>
 </tr>
 <tr>
-	<td><input type="hidden" name="auth-token" value="" /></td>
+	<td><b>Auth Token : </b><input type="text" name="auth-token" value="" /></td>
 </tr>
 <tr>
-	<td><input type="hidden" name="customer-ref" value="1234412" /></td>
-</tr>
-<tr>
-	<td><input type="hidden" name="orderid" value="UAT-<?= rand(10000000,99999999) ?>" /></td>
+	<td><b>Customer-Ref : </b><input type="text" name="customer-ref" value="1234412" /></td>
 </tr>
 <tr>
 	<td colspan="2"><input type="submit" value="Send" /></td>
 </tr>
 </table>
 </form>
+<script type="text/javascript">
+	function showAccountDataOnChange(obj)
+	{
+		document.getElementById('markupname').innerHTML = obj.value; 
+		document.getElementById('markup').value=obj.value; 
+		document.getElementById('accountid').innerHTML = obj.options[obj.selectedIndex].text;
+		document.getElementById('account').value = obj.options[obj.selectedIndex].text;
+	}
+</script>
 </body>
 </html>
