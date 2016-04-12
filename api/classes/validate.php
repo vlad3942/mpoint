@@ -1151,6 +1151,42 @@ class Validate
 		return $code;
 	}
 	
+	
+	/**
+	 * Performs validation of the Message Authentication Code (MAC).
+	 * The is calculated based on the following data fields in the request (in that order):
+	 * 	- clientid
+	 * 	- order number
+	 * 	- amount
+	 * 	- amount country-id
+	 * 	- mobile
+	 *  - mobile country-id
+	 *  - e-mail
+	 *  - device id
+	 *  - salt
+	 * Additionally the provided salt is appended at the end.
+	 *
+	 * The method will return the following status codes:
+	 * 	 1. Invald Message Authentication Code (MAC)
+	 * 	10. Success
+	 *
+	 * @param 	string $mac		Message Authentication Code provided by the client in the request
+	 * @param 	array $data		Array of request data on which the Message Authentication Code should be calculated
+	 * @param 	string $salt	The shared secret configured for the Client
+	 * @return 	integer
+	 */
+	public function valHMAC($mac, array &$data, $salt)
+	{		
+		if (@$data["orderno"] == null) { $orderno = ""; }
+		else { $orderno = @$data["orderno"]; }
+		$chk = hash('sha256', @$data["client-id"] . $orderno . @$data["amount"] . @$data["amount-country-id"] . @$data["mobile"] . @$data["mobile-country-id"] . @$data["email"] . @$data["device-id"] . $salt);
+		if ($mac == $chk) { $code = 10; }
+		else { $code = 1; }
+		
+		return $code;
+	}
+	
+	
 	/**
 	 * Performs validation of the Issuer Identification Number (IIN) to determine whether it has been blocked by the client.
 	 * The method will return the following status codes:

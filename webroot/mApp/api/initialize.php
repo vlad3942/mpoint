@@ -76,7 +76,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'initialize-payment'}[$i]["account"]);
 			if ($code == 100)
 			{
-				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'initialize-payment'}[$i]["account"]);
+				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'initialize-payment'}[$i]["account"]);				
 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])
 					&& $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true)
 				{
@@ -86,6 +86,27 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 					
 					if ($obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(),  (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount) != 10) { $aMsgCds[$obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount) + 50] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount; }
+					
+					if ($obj_ClientConfig->hasSalt())
+					{
+						$aMACParams = array();
+						$aMACParams['client-id'] = (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"] ;
+						$aMACParams['order-no'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction['order-no'] ;
+						$aMACParams['amount'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount ;
+						$aMACParams['amount-country-id'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"] ;
+						$aMACParams['mobile'] = (float) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile ;
+						$aMACParams['mobile-country-id'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile['country-id'] ;
+						$aMACParams['email'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->email ;
+						$aMACParams['device-id'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->{'device-id'} ;	
+						
+						$sMAC = "";
+						if (count($obj_DOM->{'initialize-payment'}[$i]->transaction->mac) == 1)
+						{
+							$sMAC = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->mac ;
+						}
+						
+						if( $obj_Validator->valHMAC($sMAC, $aMACParams, $obj_ClientConfig->getSalt() ) != 10) { $aMsgCds[$obj_Validator->valHMAC($sMAC, $aMACParams, $obj_ClientConfig->getSalt() ) + 200] = $sMAC; }						
+					}
 					
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)

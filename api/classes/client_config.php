@@ -676,6 +676,14 @@ class ClientConfig extends BasicConfig
 	public function showAllCards() { return $this->_bShowAllCards; }
 	
 	/**
+	 * Checks if a partilcular Client has sal value set in the database and hence should have an
+	 * HMAC generated.
+	 *
+	 * @return 	Bool
+	 */
+	public function hasSalt() {return (empty($this->_sSalt) === false); }
+	
+	/**
 	 * Returns the number of the last 4 masked digits, which should be returned for a Stored Card
 	 * 
 	 * @return 	integer
@@ -846,7 +854,7 @@ class ClientConfig extends BasicConfig
 					CL.smsrcpt, CL.emailrcpt, CL.method,
 					CL.maxamount, CL.lang, CL.terms,
 					CL.\"mode\", CL.auto_capture, CL.send_pspid, CL.store_card, CL.show_all_cards, CL.max_cards,
-					CL.identification, CL.transaction_ttl, CL.num_masked_digits, CL.salt 
+					CL.identification, CL.transaction_ttl, CL.num_masked_digits, CL.salt,
 					C.id AS countryid,
 					Acc.id AS accountid, Acc.name AS account, Acc.mobile, Acc.markup,
 					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price,

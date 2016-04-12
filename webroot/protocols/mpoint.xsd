@@ -38,6 +38,7 @@
 											</xs:sequence>
 										</xs:complexType>
 									</xs:element>
+									<xs:element name="mac" type="mac" minOccurs="0" maxOccurs="1" />
 								</xs:all>
 								<xs:attribute name="order-no" type="xs:string" use="optional" />
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="40" />
@@ -899,6 +900,12 @@
 		<!-- Unknown -->
 		<xs:enumeration value="N/A" />
 	</xs:restriction>
+</xs:simpleType>
+<xs:simpleType name="mac">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0" />
+			<xs:maxLength value="100" />
+		</xs:restriction>
 </xs:simpleType>
 
 </xs:schema>
