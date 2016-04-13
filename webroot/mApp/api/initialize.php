@@ -84,8 +84,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					if ( ($obj_CountryConfig instanceof CountryConfig) === false || $obj_CountryConfig->getID() < 1) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
 					
 					$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
-					
-					if ($obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(),  (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount) != 10) { $aMsgCds[$obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount) + 50] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount; }
+					$iValResult = $obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount);
+					if ($obj_ClientConfig->getMaxAmount() > 0 && $iValResult != 10) { $aMsgCds[$iValResult + 50] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount; }
 					
 					if ($obj_ClientConfig->hasSalt())
 					{

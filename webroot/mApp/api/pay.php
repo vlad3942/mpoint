@@ -130,8 +130,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$code = $obj_Validator->valIssuerIdentificationNumber($_OBJ_DB, $obj_ClientConfig->getID(), (integer) $obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'});
 						}
 						else { $code = 10; }
-						
-						if ($obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(),  (integer) $obj_DOM->pay[$i]->transaction->card->amount) != 10) { $aMsgCds[$obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), (integer) $obj_DOM->pay[$i]->transaction->card->amount) + 50] = (string) $obj_DOM->pay[$i]->transaction->card->amount; }
+
+						$iValResult = $obj_Validator->valPrice($obj_TxnInfo->getAmount(), (integer)$obj_DOM->pay[$i]->transaction->card->amount);
+						if ($iValResult != 10) { $aMsgCds[$iValResult + 50] = (string) $obj_DOM->pay[$i]->transaction->card->amount; }
 						
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
