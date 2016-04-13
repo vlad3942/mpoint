@@ -47,7 +47,7 @@ task phpDependencies(type:Copy) {
 task dockerTest(type:Exec) {
 
     workingDir 'docker'
-    commandLine 'chmod +x dockerw && ./dockerw'
+    commandLine './dockerw'
 }
 
 tasks.dockerTest.dependsOn extractPhpUnit
