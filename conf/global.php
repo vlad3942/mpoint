@@ -533,3 +533,4 @@ define("sSCHEMA_POSTFIX","");
  *	will be expire. When set to "0" No logs will be purged. 
  */
 define("iPURGED_DAYS", 30);
+?>
