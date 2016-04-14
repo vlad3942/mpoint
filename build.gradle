@@ -24,7 +24,11 @@ projectinfo
         {
             group = 'com.cellpointmobile.mpoint'
             artifact = 'mPoint'
+<<<<<<< HEAD
             version = '1.94.DEV-SNAPSHOT'
+=======
+            version = '1.94.EKW-405-SNAPSHOT'
+>>>>>>> feature/EKW-405---Android-Pay
             description = 'mPoint'
             packaging = 'zip'
         }
