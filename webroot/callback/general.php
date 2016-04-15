@@ -52,7 +52,7 @@ require_once(sCLASS_PATH ."/datacash.php");
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
 	<callback>
-		<psp-config psp-id="12">
+		<psp-config id="12">
 			<name>CellpointMobileCOM</name>
 		</psp-config>
 		<transaction id="1825317" order-no="970-253176" external-id="8814395474257619">
@@ -94,7 +94,7 @@ try
 	// Intialise Text Translation Object
 	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 	
-	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["psp-id"]) );
+	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]) );
 	$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 
 	$iStateID = (integer) $obj_XML->callback->status["code"];
@@ -111,7 +111,7 @@ try
 		$iStatus = $obj_mPoint->saveCard($obj_TxnInfo,
 										 $obj_TxnInfo->getMobile(),
 										 (integer) $obj_XML->callback->transaction->card["type-id"],
-										 (integer) $obj_XML->callback->{'psp-config'}["psp-id"],
+										 (integer) $obj_XML->callback->{'psp-config'}["id"],
 										 $obj_XML->callback->transaction->card->token,
 										 $obj_XML->callback->transaction->card->{'card-number'}, 
 										 preg_replace('/\s+/', '', $sExpiry) ); // Remove all whitespaces from string.
@@ -138,7 +138,7 @@ try
 	}
 
 	$fee = 0;	
-	$obj_mPoint->completeTransaction( (integer) $obj_XML->callback->{'psp-config'}["psp-id"],
+	$obj_mPoint->completeTransaction( (integer) $obj_XML->callback->{'psp-config'}["id"],
 									  $obj_XML->callback->transaction["external-id"],
 									  (integer) $obj_XML->callback->transaction->card["type-id"],
 									  $iStateID,

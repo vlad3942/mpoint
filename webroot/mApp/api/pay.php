@@ -173,6 +173,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								case (Constants::iAMEX_EXPRESS_CHECKOUT_WALLET):	// 3rd Party Wallet: AMEX Express Checkout
 									$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
 									break;
+								case (Constants::iANDROID_PAY_WALLET):				// 3rd Party Wallet: Android Pay
+									$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iANDROID_PAY_PSP);
+									break;
 								default:	// Standard Payment Service Provider
 									// Find Configuration for Payment Service Provider
 									$obj_XML = simpledom_load_string($obj_mPoint->getCards( (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount) );
@@ -369,6 +372,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										case (Constants::iAPPLE_PAY_PSP):
 											$xml .= '<url method="app" />';
 											break;
+									case (Constants::iAPPLE_PAY_PSP):
+										$xml .= '<url method="app" />';
+										break;
+									case (Constants::iANDROID_PAY_PSP):
+										$xml .= '<url method="app" />';
+										break;
 										case (Constants::iDATA_CASH_PSP):
 											$obj_PSP = new DataCash($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["data-cash"]);
 												
