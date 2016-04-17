@@ -310,6 +310,11 @@ else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->not
 	
 	$code = saveMessage($_OBJ_DB_MBE, $iUserID, $iSystemUserID, $sText);
 	
+	if(checkIfFlightQuery($sText) === true)
+	{
+		sendFlightItinerary($_OBJ_DB_MBE, $aGM_CONN_INFO, $sText, $sChatName);
+	}
+	
 	if ($code > 0)
 	{
 		$xml .= '<status code="20">Message successfully sent with ID: '. $code .'</status>';
