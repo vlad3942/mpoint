@@ -199,7 +199,6 @@
 
 				</style>
 
-
 				<div id="progress" class="mPoint_Info">
 					<xsl:value-of select="labels/progress" />
 					<br />
@@ -211,39 +210,22 @@
 						<form id="wirecardform" action="authorisewirecard.php"
 							method="POST">
 							<div>
-								<!-- wirecard Required Data -->
-								<input type="hidden" id="merchant_account_id" name="merchant_account_id"
-									value="{wirecard/@merchant-account}" />
-								<input type="hidden" id="request_id" name="request_id"
-									value="{wirecard/hidden-fields/request_id}" />
-								<input type="hidden" id="request_time_stamp" name="request_time_stamp"
-									value="{wirecard/request_time_stamp}" />
-								<input type="hidden" id="transaction_type" name="transaction_type"
-									value="{wirecard/hidden-fields/transaction_type}" />
-								<input type="hidden" id="requested_amount" name="requested_amount"
-									value="{wirecard/hidden-fields/requested_amount}" />
-								<input type="hidden" id="requested_amount_currency" name="requested_amount_currency"
-									value="{wirecard/hidden-fields/requested_amount_currency}" />
-								<input type="hidden" id="payment_ip_address" name="payment_ip_address"
-									value="{wirecard/hidden-fields/payment_ip_address}" />
-								<input type="hidden" id="email" name="email"
-									value="{wirecard/hidden-fields/email}" />
-								<input type="hidden" id="phone" name="phone"
-									value="{wirecard/hidden-fields/phone}" />
-								<input type="hidden" id="field_name_1" name="field_name_1"
-									value="{wirecard/hidden-fields/field_name_1}" />
-								<input type="hidden" id="field_name_2" name="field_name_2"
-									value="{wirecard/hidden-fields/field_name_2}" />
-								<input type="hidden" id="field_name_3" name="field_name_3"
-									value="{wirecard/hidden-fields/field_name_3}" />
-								<input type="hidden" id="field_value_3" name="field_value_3"
-									value="{wirecard/hidden-fields/field_value_3}" />
-								<input type="hidden" id="card_type" name="card_type"
-									value="{wirecard/hidden-fields/card_type}" />
-								<input type="hidden" id="notification_url_1" name="notification_url_1"
-									value="{wirecard/hidden-fields/notification_url_1}" />
-								<input type="hidden" id="cardid" name="cardid"
-									value="{wirecard/hidden-fields/field_value_3}" />
+								<input type="hidden" id="pspid" name="pspid"
+								value="{transaction/@psp-id}" />
+								<xsl:choose>
+								<!-- Wirecard -->
+								<xsl:when test="transaction/@psp-id = 18">
+									<xsl:apply-templates select="item" mode="wirecard" />
+								</xsl:when>
+								<!-- Datacash -->
+								<xsl:when test="transaction/@psp-id = 17">
+									<xsl:apply-templates select="item" mode="datacash" />
+								</xsl:when>
+								<!-- Error -->
+								<xsl:otherwise>
+			
+								</xsl:otherwise>
+							</xsl:choose>
 							</div>
 
 							<div>
@@ -367,5 +349,51 @@
 				</div>
 			</body>
 		</html>
+	</xsl:template>
+	<xsl:template match="item" mode="wirecard">
+			<!-- wirecard Required Data -->
+		<input type="hidden" id="merchant_account_id" name="merchant_account_id"
+			value="{@merchant-account}" />
+		<input type="hidden" id="request_id" name="request_id"
+			value="{hidden-fields/request_id}" />
+		<input type="hidden" id="request_time_stamp" name="request_time_stamp"
+			value="{request_time_stamp}" />
+		<input type="hidden" id="transaction_type" name="transaction_type"
+			value="{hidden-fields/transaction_type}" />
+		<input type="hidden" id="requested_amount" name="requested_amount"
+			value="{hidden-fields/requested_amount}" />
+		<input type="hidden" id="requested_amount_currency" name="requested_amount_currency"
+			value="{hidden-fields/requested_amount_currency}" />
+		<input type="hidden" id="payment_ip_address" name="payment_ip_address"
+			value="{hidden-fields/payment_ip_address}" />
+		<input type="hidden" id="email" name="email"
+			value="{hidden-fields/email}" />
+		<input type="hidden" id="phone" name="phone"
+			value="{hidden-fields/phone}" />
+		<input type="hidden" id="field_name_1" name="field_name_1" 
+			value="{hidden-fields/field_name_1}" />
+		<input type="hidden" id="field_name_2" name="field_name_2"
+			value="{hidden-fields/field_name_2}" />
+		<input type="hidden" id="field_name_3" name="field_name_3"
+			value="{hidden-fields/field_name_3}" />
+		<input type="hidden" id="field_value_3" name="field_value_3"
+			value="{hidden-fields/field_value_3}" />
+		<input type="hidden" id="card_type" name="card_type"
+			value="{hidden-fields/card_type}" />
+		<input type="hidden" id="notification_url_1" name="notification_url_1"
+			value="{hidden-fields/notification_url_1}" />
+		<input type="hidden" id="cardid" name="cardid"
+			value="{hidden-fields/field_value_3}" />
+	</xsl:template>
+	<xsl:template match="item" mode="datacash">
+		<input type="hidden" name="merchant" value="{hidden-fields/merchant}"/>
+	    <input type="hidden" name="orderid" value="{hidden-fields/order.id}"/>
+	    <input type="hidden" name="orderamount" value="{hidden-fields/order.amount div 100}"/>
+	    <input type="hidden" name="ordercurrency" value="GBP"/>
+	    <input type="hidden" name="sessionid" value="{hidden-fields/session.id}"/>
+	    <input type="hidden" name="transactionid" value="{hidden-fields/transaction.id}"/>
+	    <input type="hidden" name="sourceOfFundstype" value="CARD"/>
+	    <input type="hidden" name="mpoint-id" value="{hidden-fields/mpoint-id}"/>
+	    <input type="hidden" name="gatewayReturnURL" value="{hidden-fields/gatewayReturnURL}"/>
 	</xsl:template>
 </xsl:stylesheet>
