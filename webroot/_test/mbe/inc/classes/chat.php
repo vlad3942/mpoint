@@ -28,43 +28,73 @@ function saveMessage(RDB $obj_DB, $iFromID , $iToID, $sText)
 	return $id;
 }
 
-function checkIfFlightQuery($sText, $iMax = 3)
+function checkIfFlightQuery($sText)
 {	
-	$aCat['search'] = array('flight','from','to');	
+	$aCat['salut'] = array('value' => '/\b(hi|hello)\b/i' , 'max' => 1);
+	$aCat['search'] = array('value' => '/\b(flight|from|to)\b/i' , 'max' => 3);
 	$sString = strtolower($sText);
 	
-	$bMatched = false; 
+	$sMatched = ""; 
 	foreach($aCat as $k => $v) 
 	{
-	  $replaced = str_replace($v, '##########', $sString);
-	  preg_match_all('/##########/i', $replaced, $matches);	 	  
-	  if(count($matches[0]) >= $iMax)
+	  $replaced = preg_replace($v['value'], '##########', $sString);
+	  preg_match_all('/##########/i', $replaced, $matches);	  
+	  if(count($matches[0]) >= $v['max'])
 	  {	    
-	    $bMatched = true;
+	    $sMatched = $k;
 	  }
 	}
-	return $bMatched;
+	return $sMatched;
 }
 
 function sendFlightItinerary($obj_DB, $aGMConnInfo, $sText, $sChatName)
 {	
 	$aReturnArray = array();
 	$bReturnValue = false;
+	$aLookUp = array(
+		'JED' => 'JEDDAH',
+		'RUH' => 'RIYADH',
+		'MED' => 'MEDINA',
+		'DMM' => 'DAMMAM'
+	);
+	$i = $iIterations = 1;
 	$sString = strtolower($sText);
 	$aWordsArray = explode(" ", $sString);
 	$iSourceKey = intval(array_search('from', $aWordsArray) ) + 1 ;
 	$iDestinationKey = intval(array_search('to', $aWordsArray) ) + 1 ;
-	if($iSourceKey > 0 && $iDestinationKey > 0){
-		$aReturnArray['SRC'] = $aWordsArray[$iSourceKey];
-		$aReturnArray['DEST'] = $aWordsArray[$iDestinationKey];
-		
+	if($iSourceKey > 0 && $iDestinationKey > 0)
+	{		
+			$aReturnArray['JT'] = 0; //One Way Journey
+			$aReturnArray['FR'] = array_search(strtoupper($aWordsArray[$iSourceKey]), $aLookUp);
+			$aReturnArray['TO'] = array_search(strtoupper($aWordsArray[$iDestinationKey]), $aLookUp);
+			$aReturnArray['DD'] = date("d/m/Y");
+			$aReturnArray['AD'] = date("d/m/Y");
+			$aReturnArray['A'] = 1;
+			$aReturnArray['C'] = 0;
+			$aReturnArray['I'] = 0;
+			$aReturnArray['CL'] = "Economy Class";
+			$aReturnArray['TR'] = "02:00";
+			$aReturnArray['ST'] = (string) (10+$i).":00";
+			$aReturnArray['ET'] = (string) (12+$i).":00";		
+			$aReturnArray['PR'] = 1200;
+			$aReturnArray['FN'] = (string) "SGA-".(120 * ($i + 1) );
+			$aReturnArray['SN'] = 0;			
+				
 	}
 	$sMessageText = "Please find the options below : ";
-	$bReturnValue = sendMessageFromSystem($obj_DB, $aGMConnInfo, $sChatName, $sMessageText, $aReturnArray);
+	$bReturnValue = sendMessageFromSystem($obj_DB, $aGMConnInfo, $sChatName, $sMessageText, 3, $aReturnArray);
 	return $bReturnValue;
 }
 
-function sendMessageFromSystem(RDB $obj_DB, $aGMConnInfo, $sChatName, $sText, $aParams = array() )
+function sendSalutationMessage($obj_DB, $aGMConnInfo, $sText, $sChatName)
+{	
+	$bReturnValue = false;
+	$sMessageText = "Hi,  Al Salam Alaikum";
+	$bReturnValue = sendMessageFromSystem($obj_DB, $aGMConnInfo, $sChatName, $sMessageText);
+	return $bReturnValue;
+}
+
+function sendMessageFromSystem(RDB $obj_DB, $aGMConnInfo, $sChatName, $sText, $iAction = 2, $aParams = array() )
 {
 	$bReturn = true;
 	
@@ -96,12 +126,12 @@ function sendMessageFromSystem(RDB $obj_DB, $aGMConnInfo, $sChatName, $sText, $a
 			$b["aps"] = array("alert" => array("body" => utf8_encode($sBody) ),
 					"sound" => "default",
 					"action" => "notify");
-			$b['CHAT'] = 1;
+			$b['ACTION'] = $iAction;
 			if(count($aParams) > 0)
 			{
 				foreach ($aParams as $key=>$value)
 				{
-					$b[$key] = $value;
+					$b["TD"][$key] = $value;
 				}
 			}
 			$obj_MsgInfo = GoMobileMessage::produceMessage($iType, $sChannel, $sKeyword, $iPushIDForUser, json_encode($b) );

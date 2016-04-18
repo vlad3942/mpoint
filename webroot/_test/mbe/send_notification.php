@@ -59,12 +59,12 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->notify->
 				flush();
 				/* ========== Create MT-SMS Start ========== */
 				$iType = 2;					
-				$iCountry = (integer) $obj_DOM->{'client-info'}->mobile['country-id'];
-				$iOperator = (integer) $obj_DOM->{'client-info'}->mobile['operator-id'];			
+				$iCountry = (integer) $obj_DOM->notify->{'client-info'}->mobile['country-id'];
+				$iOperator = (integer) $obj_DOM->notify->{'client-info'}->mobile['operator-id'];			
 				$sChannel = 123;			
 				$sKeyword = "CPM";
 				$iPrice = 0;				
-				$sRecipient = (string) $obj_DOM->{'client-info'}->mobile;	
+				$sRecipient = (string) $obj_DOM->notify->{'client-info'}->mobile;	
 				$bSendMessage = true;
 				
 				//Prepare query string for the URL.	
@@ -186,12 +186,12 @@ else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->not
 				
 				/* ========== Create MT-SMS Start ========== */
 				$iType = 2;
-				$iCountry = (integer) $obj_DOM->{'client-info'}->mobile['country-id'];
-				$iOperator = (integer) $obj_DOM->{'client-info'}->mobile['operator-id'];
+				$iCountry = (integer) $obj_DOM->notify->{'client-info'}->mobile['country-id'];
+				$iOperator = (integer) $obj_DOM->notify->{'client-info'}->mobile['operator-id'];
 				$sChannel = 123;
 				$sKeyword = "CPM";
 				$iPrice = 0;
-				$sRecipient = (string) $obj_DOM->{'client-info'}->mobile;
+				$sRecipient = (string) $obj_DOM->notify->{'client-info'}->mobile;
 				$bSendMessage = true;
 
 				//Prepare query string for the URL.	
@@ -288,13 +288,6 @@ else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->not
 }
 else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->notify->Messenger) > 0 && $iType == $sTypes['MO_MESSAGE'])
 {
-	// Tell the client that it is OK to close the connection by now, callback is accepted, further processing will happen in the background
-	header("HTTP/1.1 202 Accepted");
-	header("Content-Length: 0");
-	header("Connection: close");
-	ignore_user_abort(true);
-	flush();
-	
 	$sChatName = (string) $obj_DOM->notify->ChatName;
 	
 	$iUserID = getIDFromChatName($_OBJ_DB_MBE, $sChatName);
@@ -310,9 +303,14 @@ else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->not
 	
 	$code = saveMessage($_OBJ_DB_MBE, $iUserID, $iSystemUserID, $sText);
 	
-	if(checkIfFlightQuery($sText) === true)
+	$sChatMessageType = checkIfFlightQuery($sText);
+	if(empty($sChatMessageType) === false && $sChatMessageType == "search")
 	{
 		sendFlightItinerary($_OBJ_DB_MBE, $aGM_CONN_INFO, $sText, $sChatName);
+	}
+	else if(empty($sChatMessageType) === false && $sChatMessageType == "salut")
+	{
+		sendSalutationMessage($_OBJ_DB_MBE, $aGM_CONN_INFO, $sText, $sChatName);
 	}
 	
 	if ($code > 0)
@@ -324,6 +322,12 @@ else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->not
 	{
 		$xml .= '<status code="14">Message sending failed</status>';
 	}	
+	
+	header("Content-Type: text/xml; charset=\"UTF-8\"");
+	echo '<?xml version="1.0" encoding="UTF-8"?>';
+	echo '<root>';
+	echo preg_replace('~\s*(<([^>]*)>[^<]*</\2>|<[^>]*>)\s*~', '$1', $xml);
+	echo '</root>';
 	
 }
 else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->notify->Messenger) > 0 && $iType == $sTypes['MT_MESSAGE'])
@@ -372,14 +376,7 @@ else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->not
 	}
 	
 	if($bSendMessage === true)
-	{
-		// Tell the client that it is OK to close the connection by now, callback is accepted, further processing will happen in the background
-		header("HTTP/1.1 202 Accepted");
-		header("Content-Length: 0");
-		header("Connection: close");
-		ignore_user_abort(true);
-		flush();
-				
+	{				
 		/* ========== Send MT-MESSAGE Start ========== */
 		$bSend = true;		// Continue to send messages
 		$iAttempts = 1;		// Number of Attempts
@@ -406,7 +403,13 @@ else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->not
 			{
 				sleep(pow(10, $iAttempts) );
 			}
-		}
+		}		
+		
+		header("Content-Type: text/xml; charset=\"UTF-8\"");
+		echo '<?xml version="1.0" encoding="UTF-8"?>';
+		echo '<root>';
+		echo preg_replace('~\s*(<([^>]*)>[^<]*</\2>|<[^>]*>)\s*~', '$1', $xml);
+		echo '</root>';
 	}
 	else 
 	{
