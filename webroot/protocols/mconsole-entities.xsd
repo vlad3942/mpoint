@@ -1143,6 +1143,7 @@
 		</xs:annotation>
 		<xs:all>
 			<xs:element name="name" type="name" minOccurs="1" maxOccurs="1" />
+			<xs:element name="modified-date" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
 		</xs:all>
 		<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
 		<xs:attribute name="psp-id" type="xs:positiveInteger" use="required" />
