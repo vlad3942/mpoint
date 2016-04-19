@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	 <url method="post" content-type="application/x-www-form-urlencoded">https://payment.architrade.com/cgi-ssl/3dsecure.cgi</url> 
+	 <decline_url><PML_VAL>string.HTMLencode(cgi.declineurl)</PML_VAL></decline_url>
+	 <cancel_url><PML_VAL>string.HTMLencode(cgi.cancelurl)</PML_VAL></cancel_url>
+	 <accept_url><PML_VAL>string.HTMLencode(cgi.accepturl)</PML_VAL></accept_url>
+		<card_number>cardno</card_number>
+		<expiry_month>expmon</expiry_month>
+		<expiry_year>expyear</expiry_year>
+		<cvc>cvc</cvc>
+		<store_card>preauth</store_card>
+	<hidden_fields>
+		<paytype><PML_VAL>cgi.paytype</PML_VAL></paytype>
+		<fullreply>true</fullreply>
+		<merchant><PML_VAL>cgi.merchant</PML_VAL></merchant>
+		<amount><PML_VAL>cgi.amount</PML_VAL></amount>
+		<currency><PML_VAL>cgi.currency</PML_VAL></currency>
+		<orderid><PML_VAL>cgi.orderid</PML_VAL></orderid>
+		<callbackurl><PML_VAL>string.HTMLencode(cgi.callbackurl)</PML_VAL></callbackurl>
+		<declineurl><PML_VAL>string.HTMLencode(cgi.declineurl)</PML_VAL></declineurl>
+		<cancelurl><PML_VAL>string.HTMLencode(cgi.cancelurl)</PML_VAL></cancelurl>
+		<accepturl><PML_VAL>string.HTMLencode(cgi.accepturl)</PML_VAL></accepturl>
+		<PML_IF COND="cgi.capturenow = 'true'">
+		<capturenow><PML_VAL>cgi.capturenow</PML_VAL></capturenow>
+		</PML_IF>
+			<PML_IF COND="cgi.accounts > 0">
+				<account><PML_VAL>cgi.accounts</PML_VAL></account>
+		</PML_IF>
+		<lang><PML_VAL>cgi.lang</PML_VAL></lang>
+		<language><PML_VAL>cgi.language</PML_VAL></language>
+		<cardid><PML_VAL>cgi.cardid</PML_VAL></cardid>
+		<mpointid><PML_VAL>cgi.mpointid</PML_VAL></mpointid>
+		<PML_IF COND="cgi.org_mpointid > 0">
+				<org_mpointid><PML_VAL>cgi.org_mpointid</PML_VAL></org_mpointid>
+		</PML_IF>
+		<euaid><PML_VAL>cgi.euaid</PML_VAL></euaid>
+		<!-- Store Credit Card -->
+		<PML_IF COND="cgi.store_card > 0">
+			<store_card><PML_VAL>cgi.store_card</PML_VAL></store_card>
+			<auto_store_card><PML_VAL>cgi.auto_store_card</PML_VAL></auto_store_card>
+		</PML_IF>
+		<!-- Dynamic Page Data -->
+		<clientid><PML_VAL>cgi.clientid</PML_VAL></clientid>
+		<accountid><PML_VAL>cgi.accountid</PML_VAL></accountid>
+		<markup><PML_VAL>cgi.markup</PML_VAL></markup>		
+	</hidden_fields>
+</root>
