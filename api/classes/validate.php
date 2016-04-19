@@ -201,28 +201,19 @@ class Validate
 	 * 	 1. Undefined E-Mail address
 	 * 	 2. E-Mail address is too short, as defined by iAUTH_MIN_LENGTH
 	 * 	 3. E-Mail address is too long, as defined by iAUTH_MAX_LENGTH
-	 *   4. E-Mail address contains invalid characters: [^0-9a-zæøåÆØÅäöÄÖ_.@-]
-	 *   5. E-Mail has an invalid form: ^[^@ ]+@[^@ ]+\.[^@ \.]+$
+	 *   4. ** RESERVED, BUT CURRENTLY UNUSED **
+	 *   5. E-Mail has an invalid form.
 	 *	10. Success
 	 *
-	 * @see		Constants::iAUTH_MIN_LENGTH
-	 * @see		Constants::iAUTH_MAX_LENGTH
+	 * @see		iAUTH_MIN_LENGTH
+	 * @see		iAUTH_MAX_LENGTH
 	 *
 	 * @param	string $email 	E-Mail address to validate
 	 * @return	integer
 	 */
 	public function valEMail($email)
 	{
-		$email = trim($email);
-		// Validate E-Mail
-		if (empty($email) === true) { $code = 1; }								// E-Mail is undefined
-		elseif (strlen($email) < Constants::iAUTH_MIN_LENGTH) { $code = 2; }	// E-Mail is too short
-		elseif (strlen($email) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }	// E-Mail is too long
-		elseif (eregi("[^0-9a-zæøåÆØÅäöÄÖ_.@-]", $email) == true) { $code = 4; }// E-Mail contains Invalid Characters
-		elseif (ereg("^[^@]+@[^@]+\.[^@\.]+$", $email) == false) { $code = 5; }	// E-Mail has an invalid form
-		else { $code = 10; }													// E-Mail is valid
-
-		return $code;
+		return parent::valEmail($email, Constants::iAUTH_MIN_LENGTH, Constants::iAUTH_MAX_LENGTH);
 	}
 
 	/**

@@ -20,7 +20,7 @@ COPY conf conf
 COPY webroot webroot
 
 # Runtime dependencies
-COPY build/php5api-1.0.zip /opt/php5api.zip
+COPY build/php5api-*.zip /opt/php5api.zip
 COPY build/phpunit/phpunit-4.3.5.phar phpunit.phar
 
 # Unzip php5api

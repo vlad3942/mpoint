@@ -74,6 +74,8 @@ require_once(sCLASS_PATH ."/masterpass.php");
 require_once(sCLASS_PATH ."/amexexpresscheckout.php");
 // Require specific Business logic for the WireCard component
 require_once(sCLASS_PATH ."/wirecard.php");
+// Require specific Business logic for the Android Pay component
+require_once(sCLASS_PATH ."/androidpay.php");
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -792,4 +794,3 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';
 echo $xml;
 echo '</root>';
-?>
