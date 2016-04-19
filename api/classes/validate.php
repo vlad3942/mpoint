@@ -1177,8 +1177,8 @@ class Validate
 	 */
 	public function valHMAC($mac, array &$data, $salt)
 	{		
-		if (@$data["orderno"] == null) { $orderno = ""; }
-		else { $orderno = @$data["orderno"]; }
+		if (@$data["order-no"] == null) { $orderno = ""; }
+		else { $orderno = @$data["order-no"]; }
 		$chk = hash('sha256', @$data["client-id"] . $orderno . @$data["amount"] . @$data["amount-country-id"] . @$data["mobile"] . @$data["mobile-country-id"] . @$data["email"] . @$data["device-id"] . $salt);
 		if ($mac == $chk) { $code = 10; }
 		else { $code = 1; }
