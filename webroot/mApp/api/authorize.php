@@ -589,7 +589,28 @@ try
 													
 																	$xml .= '<status code="92">Authorization failed, WireCard returned error: '. $code .'</status>';
 																}
-														break;
+																break;
+														case (Constants::iDATA_CASH_PSP): // WireCard
+																$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iDATA_CASH_PSP);
+															
+																$obj_PSP = new DataCash($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["data-cash"]);
+																	
+																$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_Elem->ticket);
+																// Authorization succeeded
+																if ($code == "100")
+																{
+																	$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
+																}
+																// Error: Authorization declined
+																else
+																{
+																	$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+																		
+																	header("HTTP/1.1 502 Bad Gateway");
+																		
+																	$xml .= '<status code="92">Authorization failed, Datacash returned error: '. $code .'</status>';
+																}
+																break;
 														default:	// Unkown Error
 															$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 
