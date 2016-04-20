@@ -18,6 +18,8 @@ $iChannel = (integer) $obj_DOM->notify->{'CommunicationChannel'};
 
 $sPushId = (string) $obj_DOM->notify->{'PushId'};
 
+$sSessionID = (string) $obj_DOM->notify->{'SessionID'};
+
 $iType = (integer) $obj_DOM->notify->type;
 
 
@@ -102,7 +104,7 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->notify->
 						$b['OR'] = (string) $obj_DOM->notify->{'Pay-by-link'}->{'OrderNumber'};
 						$b['BG'] = (string) $obj_DOM->notify->{'Pay-by-link'}->{'Baggage'};
 						$b['AM'] = (string) $obj_DOM->notify->{'Pay-by-link'}->{'Amount'};
-						$b['CHAT'] = 0;						
+						$b['ACTION'] = 0;						
 
 						$obj_MsgInfo = GoMobileMessage::produceMessage($iType, $sChannel, $sKeyword, $sPushId, json_encode($b) );					
 					}
@@ -225,7 +227,7 @@ else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->not
 										  "action" => "notify");
 						$b['FL'] = (string) $obj_DOM->notify->{'CheckIn-by-link'}->{'FlightNumber'};
 						$b['TN'] = (string) $obj_DOM->notify->{'CheckIn-by-link'}->{'TicketNumber'};
-						$b['CHAT'] = 0;												
+						$b['ACTION'] = 1;												
 
 						$obj_MsgInfo = GoMobileMessage::produceMessage($iType, $sChannel, $sKeyword, $sPushId, json_encode($b) );					
 					}
@@ -304,13 +306,19 @@ else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->not
 	$code = saveMessage($_OBJ_DB_MBE, $iUserID, $iSystemUserID, $sText);
 	
 	$sChatMessageType = checkIfFlightQuery($sText);
-	if(empty($sChatMessageType) === false && $sChatMessageType == "search")
-	{
-		sendFlightItinerary($_OBJ_DB_MBE, $aGM_CONN_INFO, $sText, $sChatName);
+	if(empty($sChatMessageType) === false && ($sChatMessageType == "search" || $sChatMessageType == "number" || $sChatMessageType == "confirm") )
+	{ 
+		sendMessageForFlightQuery($_OBJ_DB_MBE, $aGM_CONN_INFO, $sText, $sChatName, $sSessionID);
+	
 	}
+	else if(empty($sChatMessageType) === false && $sChatMessageType == "option" )
+	{ 
+		sendMessageForFlightQuery($_OBJ_DB_MBE, $aGM_CONN_INFO, $sText, $sChatName, $sSessionID, $_OBJ_DB, $obj_DOM->notify->{'client-info'});
+	
+	}	
 	else if(empty($sChatMessageType) === false && $sChatMessageType == "salut")
 	{
-		sendSalutationMessage($_OBJ_DB_MBE, $aGM_CONN_INFO, $sText, $sChatName);
+		sendSalutationMessage($_OBJ_DB_MBE, $aGM_CONN_INFO, $sText, $sChatName, $sSessionID);
 	}
 	
 	if ($code > 0)
@@ -364,7 +372,7 @@ else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->not
 			$b["aps"] = array("alert" => array("body" => utf8_encode($sBody) ),
 							  "sound" => "default",
 							  "action" => "notify");			
-			$b['CHAT'] = 1;	
+			$b['ACTION'] = 2;	
 			$obj_MsgInfo = GoMobileMessage::produceMessage($iType, $sChannel, $sKeyword, $iPushIDForUser, json_encode($b) );					
 		}
 		$bSendMessage = true;
