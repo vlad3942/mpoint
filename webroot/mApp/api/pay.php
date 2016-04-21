@@ -344,7 +344,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												$xml .= trim($obj_XMLElem->asXML() );
 											}
 											break;
-										case (Constants::iMASTER_PASS_PSP):
+										case (Constants::iMASTER_PASS_PSP):										
+											
+											//Fetch Order/cart details as part of the transaction data
+											$oTI->produceOrderConfig($_OBJ_DB);
+										
 											$obj_PSP = new MasterPass($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["masterpass"]);
 											
 											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), false);

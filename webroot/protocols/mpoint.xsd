@@ -13,6 +13,7 @@
 							<xs:complexType>
 								<xs:all>
 									<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
+									<xs:element ref="orders" minOccurs="0" maxOccurs="1" />
 									<xs:element name="points" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
 									<xs:element name="reward" minOccurs="0" maxOccurs="1">
 										<xs:complexType>
@@ -757,6 +758,33 @@
                         <xs:element name="password" type="name" minOccurs="0" maxOccurs="1"/>
                     </xs:all>
                     <xs:attribute name="id" use="optional" type="xs:positiveInteger"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:element>
+
+<xs:element name="orders">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element name="line-item" minOccurs="1" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:all>
+                    	<xs:element name="product" minOccurs="1" maxOccurs="1">
+                    		<xs:complexType>
+                    			<xs:all>
+		                        	<xs:element name="name" type="name" minOccurs="1" maxOccurs="1"/>
+		                        	<xs:element name="description" type="name" minOccurs="1" maxOccurs="1"/>
+		                        	<xs:element name="image-url" type="url" minOccurs="1" maxOccurs="1"/>
+		                        </xs:all>
+		                        <xs:attribute name="sku" use="required" type="xs:string"/>
+		                     </xs:complexType>
+                        </xs:element>
+                        <xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="points" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="reward" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="quantity" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+                    </xs:all> 
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
