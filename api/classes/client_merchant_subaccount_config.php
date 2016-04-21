@@ -19,6 +19,10 @@ class ClientMerchantSubAccountConfig extends BasicConfig
 	 * @var string
 	 */
 	private $_obj_PSP;
+	/**
+	 * The modified date is updated whenever any changes in record happens in merchantsubaccount_tbl.
+	 * @var unknown
+	 */
 	
 	private $_sModifiedDate;
 
@@ -72,7 +76,7 @@ class ClientMerchantSubAccountConfig extends BasicConfig
 	{			
 		$sql = "SELECT id	
 				FROM Client". sSCHEMA_POSTFIX .".MerchantSubAccount_Tbl				
-				WHERE accountid = ". intval($accountid) ." AND enabled = '1' ORDER BY modified";		
+				WHERE accountid = ". intval($accountid) ." AND enabled = '1' ORDER BY modified DESC";		
 //		echo $sql ."\n";
 		$aObj_Configurations = array();
 		$res = $oDB->query($sql);
