@@ -280,6 +280,10 @@ try
 														$obj_Wallet = new AMEXExpressCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["amex-express-checkout"]);
 														$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
 														break;
+														case (Constants::iANDROID_PAY_WALLET):
+															$obj_Wallet = new AndroidPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["android-pay"]);
+															$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iANDROID_PAY_PSP);
+															break;
 													default:
 														break;
 													}
@@ -342,8 +346,6 @@ try
 														$obj_Elem["wallet-type-id"] = intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]);
 													}
 													// 3rd Party Wallet returned error
-
-
 													elseif (count($obj_XML->status) == 1)
 													{
 														$obj_XML->status["code"] = intval($obj_XML->status["code"]) - 20;
@@ -368,7 +370,8 @@ try
 														$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 														$obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 														$iInvoiceStatus = $obj_Authorize->invoice($obj_DOM->{'authorize-payment'}[$i]->transaction->description);
-														$code = 10;
+															// Set the code to 5 so stored card payemnt if statment is skipped.
+															$code = 5;
 														if ($iInvoiceStatus == 100) { $xml .= '<status code="100">Payment authorized using Invoice</status>'; }
 														else
 														{
@@ -390,11 +393,7 @@ try
 													else { $code = 10; }
 												}
 
-												if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] ) == Constants::iINVOICE)
-												{
-													// XML previously constructed
-												}
-												elseif ($code >= 10)
+													if ($code >= 10)
 												{
 													try
 													{
