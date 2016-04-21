@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
-	 <url method="post" content-type="application/x-www-form-urlencoded">https://payment.architrade.com/cgi-ssl/3dsecure.cgi</url> 
-	 <decline_url><PML_VAL>string.HTMLencode(cgi.declineurl)</PML_VAL></decline_url>
-	 <cancel_url><PML_VAL>string.HTMLencode(cgi.cancelurl)</PML_VAL></cancel_url>
-	 <accept_url><PML_VAL>string.HTMLencode(cgi.accepturl)</PML_VAL></accept_url>
+	<PML_IF COND="cgi.cardid = 2">
+		<url method="post" content-type="application/x-www-form-urlencoded">https://payment.architrade.com/shoppages/<PML_VAL>cgi.merchant</PML_VAL>/auth.pml</url>
+	</PML_IF>
+	<PML_ELSE>
+		 <url method="post" content-type="application/x-www-form-urlencoded">https://payment.architrade.com/cgi-ssl/3dsecure.cgi</url> 
+		  <decline_url><PML_VAL>string.HTMLencode(cgi.declineurl)</PML_VAL></decline_url>
+		  <cancel_url><PML_VAL>string.HTMLencode(cgi.cancelurl)</PML_VAL></cancel_url>
+		  <accept_url><PML_VAL>string.HTMLencode(cgi.accepturl)</PML_VAL></accept_url>
+	</PML_ELSE>
+	
 		<card_number>cardno</card_number>
 		<expiry_month>expmon</expiry_month>
 		<expiry_year>expyear</expiry_year>
