@@ -62,7 +62,9 @@ try
 	$obj_mPoint = new DIBS($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['dibs']);
 
 	// Save Ticket ID representing the End-User's stored Card Info
-	if (array_key_exists("preauth", $_POST) === true && @$_POST['preauth'] == "true" || array_key_exists("ticket", $_POST) === true && $_POST['ticket'] > 0)
+	$ticket = @$_POST["ticket"];
+	
+	if (array_key_exists("preauth", $_POST) === true && @$_POST['preauth'] == "true" || strlen($ticket) > 0)
 	{
 		$iMobileAccountID = -1;
 		$iEMailAccountID = -1;
@@ -76,9 +78,8 @@ try
 				$obj_mPoint->getTxnInfo()->setAccountID(-1);
 			}
 		}
-		$ticket = $_POST['transact'];
-		if (array_key_exists("ticket", $_POST) === true && $_POST['ticket'] > 0) { $ticket = $_POST['ticket']; }
-		
+		$ticket = strlen($ticket) > 0 ? $ticket : $_POST["transact"];
+				
 		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $ticket);
 		$sMask = $_POST['cardprefix'] . substr($_POST['cardnomask'], strlen($_POST['cardprefix']) );
 		$sExpiry = substr($_POST['cardexpdate'], 2) ."/". substr($_POST['cardexpdate'], 0, 2);
