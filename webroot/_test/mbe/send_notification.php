@@ -252,6 +252,7 @@ else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->not
 			/* ========== Send MT-MESSAGE Start ========== */
 			$bSend = true;		// Continue to send messages
 			$iAttempts = 1;		// Number of Attempts
+			sleep(60);
 			// Send messages
 			while ($bSend === true && $iAttempts <= 3)
 			{
@@ -273,7 +274,7 @@ else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->not
 				// Communication error, retry message sending
 				catch (HTTPException $e)
 				{
-					sleep(pow(10, $iAttempts) );
+					sleep(pow(1, $iAttempts) );
 				}
 			}
 		}
