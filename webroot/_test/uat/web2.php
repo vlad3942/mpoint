@@ -3,11 +3,19 @@
     $accounts = array();
     $urls = array();
     $id = "";
+    $RSCountry = array();
     if(isset($_REQUEST['id']) && $_REQUEST['id'] > 0)
     {
 		$id = $_REQUEST['id'];
 		
 		$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $_REQUEST['id'], -1);
+		
+		$sql = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmob, maxmob, channel, priceformat, decimals,
+					addr_lookup, doi, add_card_amount, max_psms_amount, min_pwd_amount, min_2fa_amount
+				FROM System".sSCHEMA_POSTFIX.".Country_Tbl
+				WHERE enabled = '1' ORDER BY name";
+		//		echo $sql ."\n";
+		$RSCountry = $_OBJ_DB->getAllNames($sql);
 		
 		if(is_object( $obj_ClientConfig )) 
 		{
@@ -107,13 +115,28 @@
 <tr>
 	<td>
 	    <select name="accounts" onchange="showAccountDataOnChange(this);">
-		<option value="-1">No Account</option>
+		<option value="-1">select Account</option>
 		<?php
 			if(empty($accounts) === false)
 			{
 				foreach ($accounts as $account)
 				{
 				    echo "<option value='".$account->getMarkupLanguage()."'>".$account->getId()."</option>";
+				}
+			}
+		?>
+	</select></td>
+</tr>
+<tr>
+	<td>
+	    <select name="country">
+		<option value="-1">select Country</option>
+		<?php
+			if(empty($RSCountry) === false)
+			{
+				foreach ($RSCountry as $country)
+				{
+				    echo "<option value='".$country['ID']."'>".$country['NAME']."</option>";
 				}
 			}
 		?>

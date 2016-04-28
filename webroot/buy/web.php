@@ -62,7 +62,9 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if (array_key_exists("language", $_REQUEST) === false) { $_REQUEST['language'] = $obj_ClientConfig->getLanguage(); }
 	if (array_key_exists("markup", $_REQUEST) === false) { $_REQUEST['markup'] = $obj_ClientConfig->getAccountConfig()->getMarkupLanguage(); }
 	if (array_key_exists("auth-url", $_REQUEST) === false) { $_REQUEST['auth-url'] = $obj_ClientConfig->getAuthenticationURL(); }
-
+	
+	if (array_key_exists("country", $_REQUEST) === true && empty($_REQUEST['country']) == false) { $_REQUEST['country-config'] = CountryConfig::produceConfig($_OBJ_DB, (integer) $_REQUEST['country']); }
+	
 	$obj_mPoint = new MobileWeb($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 	$iTxnID = $obj_mPoint->newTransaction(Constants::iPURCHASE_VIA_WEB);
 
