@@ -45,6 +45,8 @@ require_once(sCLASS_PATH ."/wirecard.php");
 require_once(sCLASS_PATH ."/dibs.php");
 // Require specific Business logic for the Datacash component
 require_once(sCLASS_PATH ."/datacash.php");
+// Require specific Business logic for the Global Collect component
+require_once(sCLASS_PATH ."/globalcollect.php");
 
 /**
  * Input XML format

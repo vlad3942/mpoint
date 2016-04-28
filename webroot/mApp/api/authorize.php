@@ -74,6 +74,8 @@ require_once(sCLASS_PATH ."/masterpass.php");
 require_once(sCLASS_PATH ."/amexexpresscheckout.php");
 // Require specific Business logic for the WireCard component
 require_once(sCLASS_PATH ."/wirecard.php");
+// Require specific Business logic for the Global Collect component
+require_once(sCLASS_PATH ."/globalcollect.php");
 
 ignore_user_abort(true);
 set_time_limit(120);
