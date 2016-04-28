@@ -383,6 +383,24 @@ $aHTTP_CONN_INFO["wire-card"]["paths"]["callback"] = "/mpoint/wire-card/callback
 $aHTTP_CONN_INFO["wire-card"]["paths"]["cancel"] = "/mpoint/wire-card/cancel";
 
 /**
+ * Connection info for connecting to GlobalCollect
+ */
+$aHTTP_CONN_INFO["global-collect"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["global-collect"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["global-collect"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["global-collect"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["global-collect"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["global-collect"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["global-collect"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["global-collect"]["paths"]["initialize"] = "/mpoint/global-collect/initialize";
+$aHTTP_CONN_INFO["global-collect"]["paths"]["auth"] = "/mpoint/global-collect/authorize-payment";
+$aHTTP_CONN_INFO["global-collect"]["paths"]["capture"] = "/mpoint/global-collect/capture";
+$aHTTP_CONN_INFO["global-collect"]["paths"]["status"] = "/mpoint/global-collect/status";
+$aHTTP_CONN_INFO["global-collect"]["paths"]["refund"] = "/mpoint/global-collect/refund";
+$aHTTP_CONN_INFO["global-collect"]["paths"]["callback"] = "/mpoint/global-collect/callback";
+$aHTTP_CONN_INFO["global-collect"]["paths"]["cancel"] = "/mpoint/global-collect/cancel";
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>
