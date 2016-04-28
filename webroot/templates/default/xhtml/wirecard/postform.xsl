@@ -388,7 +388,7 @@
 	<xsl:template match="item" mode="datacash">
 		<input type="hidden" name="merchant" value="{hidden-fields/merchant}"/>
 	    <input type="hidden" name="orderid" value="{hidden-fields/order.id}"/>
-	    <input type="hidden" name="orderamount" value="{hidden-fields/order.amount div 100}"/>
+	    <input type="hidden" name="orderamount" value="{hidden-fields/order.amount}"/>
 	    <input type="hidden" name="ordercurrency" value="GBP"/>
 	    <input type="hidden" name="sessionid" value="{hidden-fields/session.id}"/>
 	    <input type="hidden" name="transactionid" value="{hidden-fields/transaction.id}"/>

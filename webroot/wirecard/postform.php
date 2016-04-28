@@ -47,7 +47,9 @@ $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']
 
 $obj_XML_initialize = $obj_mPoint->initialize($obj_PSPConfig, $_SESSION['obj_TxnInfo']->getAccountID(), false, intval($_POST['cardid']) );
 
-if(empty($obj_XML_initialize->username->__toString()) == true)
+$checkUserName = $obj_XML_initialize->username->__toString();
+
+if(empty($checkUserName) == true)
 {
 	$_SESSION['obj_XML_initialize']['user_name'] = htmlspecialchars($_SESSION['obj_TxnInfo']->getClientConfig()->getUsername(), ENT_NOQUOTES);
 	$_SESSION['obj_XML_initialize']['password'] = htmlspecialchars($_SESSION['obj_TxnInfo']->getClientConfig()->getPassword(), ENT_NOQUOTES);
@@ -154,4 +156,5 @@ $xml .= '</root>';
 file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_postform.log", $xml, FILE_APPEND);
 
 echo $xml;
+exit;
 ?>
