@@ -6850,3 +6850,8 @@ ALTER TABLE Client.Client_Tbl ADD CONSTRAINT MaskedDigits_Chk CHECK (0 <= num_ma
 /* ==================== CLIENT SCHEMA START ==================== */
 ALTER TABLE Client.MerchantAccount_Tbl ALTER name TYPE VARCHAR(255);
 /* ==================== CLIENT SCHEMA END ==================== */
+
+------- MASTER v1.95 ---
+/* ==================== Client SCHEMA START ==================== */
+ALTER TABLE Client.Client_Tbl ADD declineurl character varying(255);
+/* ==================== Client SCHEMA END ==================== */
