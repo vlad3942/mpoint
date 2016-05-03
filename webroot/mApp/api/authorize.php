@@ -592,7 +592,7 @@ try
 																	$xml .= '<status code="92">Authorization failed, WireCard returned error: '. $code .'</status>';
 																}
 																break;
-														case (Constants::iDATA_CASH_PSP): // WireCard
+														case (Constants::iDATA_CASH_PSP): // DataCash
 																$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iDATA_CASH_PSP);
 															
 																$obj_PSP = new DataCash($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["data-cash"]);
@@ -611,6 +611,31 @@ try
 																	header("HTTP/1.1 502 Bad Gateway");
 																		
 																	$xml .= '<status code="92">Authorization failed, Datacash returned error: '. $code .'</status>';
+																}
+																break;
+														case (Constants::iGLOBAL_COLLECT_PSP): // GlobalCollect
+																$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iGLOBAL_COLLECT_PSP);
+																	
+																$obj_PSP = new GlobalCollect($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["global-collect"]);
+																	
+																$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_Elem);
+
+																// Authorization succeeded
+																if ($code == "100")
+																{
+																	$obj_TxnInfo = TxnInfo::produceInfo( (integer) $obj_TxnInfo->getID(), $_OBJ_DB);
+																	$obj_PSP->initCallback($obj_PSPConfig, $obj_TxnInfo, Constants::iPAYMENT_ACCEPTED_STATE, "Payment Authorized using store card.", intval($obj_Elem->type["id"]));
+																	
+																	$xml .= '<status code="100">Payment authorized using stored card</status>';
+																}
+																// Error: Authorization declined
+																else
+																{
+																	$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+															
+																	header("HTTP/1.1 502 Bad Gateway");
+															
+																	$xml .= '<status code="92">Authorization failed, Globalcollect returned error: '. $code .'</status>';
 																}
 																break;
 														default:	// Unkown Error
