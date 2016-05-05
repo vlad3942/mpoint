@@ -16,6 +16,8 @@ require_once(sINTERFACE_PATH ."/cpm_psp.php");
 require_once(sCLASS_PATH ."/wirecard.php");
 // Require specific Business logic for the datacash component
 require_once(sCLASS_PATH ."/datacash.php");
+// Require specific Business logic for the globalcollect component
+require_once(sCLASS_PATH ."/globalcollect.php");
 
 // Require Business logic for the Select Credit Card component
 require_once(sCLASS_PATH ."/credit_card.php");
@@ -197,7 +199,65 @@ if (strlen($_SESSION['obj_TxnInfo']->getOrderID() ) > 0 && $obj_mPoint->orderAlr
 				$code = 502;
 			} */
 			
-			break;	
+			break;
+			
+		case (Constants::iGLOBAL_COLLECT_PSP):	
+						
+		    $b = "publicMerchantId=".$_POST['publicMerchantId'];
+		    $b .= "&locale=".$_POST['locale'];
+		    $b .= "&isPaymentProductDetailsShown=".$_POST['isPaymentProductDetailsShown'];
+		    $b .= "&paymentProductId=".$_POST['paymentProductId'];
+		    $b .= "&isAccountOnFileSelectionShown=".$_POST['isAccountOnFileSelectionShown'];
+		    $b .= "&variantCode=".$_POST['variantCode'];
+		    $b .= "&cardNumber=".$_POST['card-number'];
+		    $b .= "&expiryDate=".$_POST['emonth']."".substr($_POST['eyear'], -2);
+		    $b .= "&cvv=".$_POST['cvc'];
+		    $b .= "&token=".$_POST['token'];
+  
+						
+			$urlData = parse_url($_POST['url']);
+			
+			$aHTTP_CONN_INFO["global-collect"]["protocol"] = $urlData['scheme'];
+			$aHTTP_CONN_INFO["global-collect"]["port"] = "443";
+			$aHTTP_CONN_INFO["global-collect"]["host"] = $urlData['host'];
+			$aHTTP_CONN_INFO["global-collect"]["path"] = $urlData['path'];
+			$aHTTP_CONN_INFO["global-collect"]["method"] = "POST";
+			$aHTTP_CONN_INFO["global-collect"]["contenttype"] = "application/x-www-form-urlencoded";
+			/* $aHTTP_CONN_INFO["wire-card"]["username"] = $_SESSION['obj_XML_initialize']['user_name'];
+			$aHTTP_CONN_INFO["wire-card"]["password"] = $_SESSION['obj_XML_initialize']['password']; */
+				
+			unset($_SESSION['obj_XML_initialize']);
+							
+			$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["global-collect"]);
+				
+			$h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
+			$h .= "host: {HOST}" .HTTPClient::CRLF;
+			$h .= "referer: {REFERER}" .HTTPClient::CRLF;
+			$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
+			$h .= "content-type: {CONTENTTYPE}" .HTTPClient::CRLF;
+			$h .= "user-agent: mPoint" .HTTPClient::CRLF;
+			//$h .= "Authorization: Basic ". base64_encode($aHTTP_CONN_INFO["wire-card"]["username"] .":". $aHTTP_CONN_INFO["wire-card"]["password"]) .HTTPClient::CRLF;
+			
+			file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_globalcollect.log", "Request Details : ".var_export($aHTTP_CONN_INFO, true)."\n\n", FILE_APPEND);
+			
+			file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_globalcollect.log", "body Request Details : ".$b."\n\n", FILE_APPEND);
+				
+			$obj_Client = new HTTPClient(new Template(), $obj_ConnInfo);
+			$obj_Client->connect();
+			$code = $obj_Client->send($h, $b);
+			$obj_Client->disconnect();
+			
+			$obj_XML = $obj_Client->getReplyBody();
+			
+			echo "<pre/>";
+			print_r($obj_XML);exit;
+				
+			if($code == 201)
+			{
+				$code = 2000;
+			}
+			
+			break;
 	}
 	try
 	{
