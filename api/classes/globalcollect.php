@@ -28,9 +28,9 @@ class GlobalCollect extends CPMPSP
 
 	public function getPSPID() { return Constants::iGLOBAL_COLLECT_PSP; }
 	
-	public function authTicket($obj_PSPConfig, $obj_Elem)
+	public function authTicket($obj_PSPConfig, $obj_Elem, $token = null)
 	{
-	
+
 		$attributes = $obj_Elem->attributes();
 		
 		$code = 0;
@@ -40,15 +40,34 @@ class GlobalCollect extends CPMPSP
 		$b .= $obj_PSPConfig->toXML();		
 		$b .= $this->_constTxnXML();				
 		$b .= '<card id="'.$attributes['type-id'].'">';
-		$b .= '<token>'.$obj_Elem->ticket.'</token>';
-		$b .= '<cvc>'.intval($obj_Elem->cvc).'</cvc>';
+		
+		if(is_null($token) == true)
+		{
+			$b .= '<token>'.$obj_Elem->ticket.'</token>';
+		} 
+		else 
+		{
+			
+			$b .= '<token>'.$token.'</token>';
+		}
+		
+		if(count($obj_Elem->cvc) == 1)
+		{
+			$b .= '<cvc>'.intval($obj_Elem->cvc).'</cvc>';
+			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["auth"]);
+		}
+		else
+		{
+			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["auth-complete"]);
+		}		
+		
 		$b .= '</card>';
 		$b .= '</authorize>';
 		$b .= '</root>';
-			
+					
 		try
 		{
-			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["auth"]);
+			
 	
 			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
 			$obj_HTTP->connect();

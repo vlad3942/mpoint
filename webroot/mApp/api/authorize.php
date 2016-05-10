@@ -260,29 +260,31 @@ try
 											case (Constants::iCARD_PURCHASE_TYPE):		// Authorize Purchase using Stored Card
 											default:
 												// 3rd Party Wallet
-												if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1)
+												
+												switch (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) )
 												{
-													switch (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) )
-													{
-													case (Constants::iAPPLE_PAY):
-														$obj_Wallet = new ApplePay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["apple-pay"]);
-														$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAPPLE_PAY_PSP);
-														break;
-													case (Constants::iVISA_CHECKOUT_WALLET):
-														$obj_Wallet = new VisaCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["visa-checkout"]);
-														$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
-														break;
-													case (Constants::iMASTER_PASS_WALLET):
-														$obj_Wallet = new MasterPass($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["masterpass"]);
-														$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iMASTER_PASS_PSP);
-														break;
-													case (Constants::iAMEX_EXPRESS_CHECKOUT_WALLET):
-														$obj_Wallet = new AMEXExpressCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["amex-express-checkout"]);
-														$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
-														break;
-													default:
-														break;
-													}
+												case (Constants::iAPPLE_PAY):
+													$obj_Wallet = new ApplePay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["apple-pay"]);
+													$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAPPLE_PAY_PSP);
+													break;
+												case (Constants::iVISA_CHECKOUT_WALLET):
+													$obj_Wallet = new VisaCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["visa-checkout"]);
+													$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
+													break;
+												case (Constants::iMASTER_PASS_WALLET):
+													$obj_Wallet = new MasterPass($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["masterpass"]);
+													$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iMASTER_PASS_PSP);
+													break;
+												case (Constants::iAMEX_EXPRESS_CHECKOUT_WALLET):
+													$obj_Wallet = new AMEXExpressCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["amex-express-checkout"]);
+													$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
+													break;
+												default:
+													break;
+												}
+												
+												if(is_object($obj_Wallet) == true && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1)
+												{	
 													$obj_XML = simpledom_load_string($obj_Wallet->getPaymentData($obj_PSPConfig, $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]) );
 													if (count($obj_XML->{'payment-data'}) == 1)
 													{
@@ -617,8 +619,14 @@ try
 																$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iGLOBAL_COLLECT_PSP);
 																	
 																$obj_PSP = new GlobalCollect($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["global-collect"]);
+																
+																$token = null;
+																if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1)
+																{
+																	$token = $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token;
+																}
 																	
-																$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_Elem);
+																$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_Elem, $token);
 
 																// Authorization succeeded
 																if ($code == "100")
@@ -627,7 +635,7 @@ try
 																	$obj_PSP->initCallback($obj_PSPConfig, $obj_TxnInfo, Constants::iPAYMENT_ACCEPTED_STATE, "Payment Authorized using store card.", intval($obj_Elem->type["id"]));
 																	
 																	$xml .= '<status code="100">Payment authorized using stored card</status>';
-																}
+																} else if($code == "2000") { $xml .= '<status code="2000">Payment authorized using stored card</status>'; }
 																// Error: Authorization declined
 																else
 																{
