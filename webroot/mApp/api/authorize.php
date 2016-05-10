@@ -281,7 +281,11 @@ try
 														$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
 														break;
 													default:
-														
+														/**
+														 * This changes is made for globalcollect since rightnow it is the only psp which will send
+														 * token value in authorize  request but for new card.
+														 * @var unknown
+														 */
 														$obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 														// Find Configuration for Payment Service Provider
 														$obj_XML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
@@ -291,7 +295,7 @@ try
 														break;
 													}
 												
-													if(is_object($obj_Wallet) == true)
+													if(isset($obj_Wallet) == true && is_object($obj_Wallet) == true)
 													{
 														$obj_XML = simpledom_load_string($obj_Wallet->getPaymentData($obj_PSPConfig, $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]) );
 														if (count($obj_XML->{'payment-data'}) == 1)
