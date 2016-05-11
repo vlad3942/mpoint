@@ -650,6 +650,7 @@ try
 																	
 																	$xml .= '<status code="100">Payment authorized using stored card</status>';
 																} else if($code == "2000") { $xml .= '<status code="2000">Payment authorized using stored card</status>'; }
+																else if(is_null($token) == true) { $xml .= '<status code="'.$code.'">Globalcollect returned : '. $code .'</status>'; }
 																// Error: Authorization declined
 																else
 																{
