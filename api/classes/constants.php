@@ -454,7 +454,7 @@ abstract class Constants
 	 * Unique ID for the Payment Service Provider: GlobalCollect
 	 *
 	 */
-	const iGLOBAL_COLLECT_PSP = 20;
+	const iGLOBAL_COLLECT_PSP = 21;
 
 	/**
 	 * Unique ID for the Electronic Payment Flow
