@@ -206,13 +206,18 @@ if (strlen($_SESSION['obj_TxnInfo']->getOrderID() ) > 0 && $obj_mPoint->orderAlr
 		    $b = "publicMerchantId=".$_POST['publicMerchantId'];
 		    $b .= "&locale=".$_POST['locale'];
 		    $b .= "&isPaymentProductDetailsShown=".$_POST['isPaymentProductDetailsShown'];
-		    $b .= "&paymentProductId=".$_POST['paymentProductId'];
+		    $b .= "&paymentProductId=1";//.$_POST['paymentProductId'];
 		    $b .= "&isAccountOnFileSelectionShown=".$_POST['isAccountOnFileSelectionShown'];
 		    $b .= "&variantCode=".$_POST['variantCode'];
 		    $b .= "&cardNumber=".$_POST['card-number'];
-		    $b .= "&expiryDate=".$_POST['emonth']."".substr($_POST['eyear'], -2);
+		    $b .= "&expiryDate=".$_POST['emonth']."/".substr($_POST['eyear'], -2);
 		    $b .= "&cvv=".$_POST['cvc'];
-		    $b .= "&token=".$_POST['token'];
+		    $b .= "&token=".str_replace(":","%3A",$_POST['token']);
+		    $b .= "&true=true";
+		    $b .= "&hostedCheckoutID=".$_POST['hostedCheckoutID']; 
+		    
+		    
+		  // $b = "isAccountOnFileSelectionShown=true&locale=en_GB&remember=on&hostedCheckoutID=".$_POST['hostedCheckoutID']."&isPaymentProductDetailsShown=true&publicMerchantId=337&token=".$_POST['token']."&variantCode=101&paymentProductId=3&cardNumber=5425233430109903&expiryDate=04/18&cvv=116&true=true";
   
 						
 			$urlData = parse_url($_POST['url']);
@@ -239,7 +244,7 @@ if (strlen($_SESSION['obj_TxnInfo']->getOrderID() ) > 0 && $obj_mPoint->orderAlr
 			//$h .= "Authorization: Basic ". base64_encode($aHTTP_CONN_INFO["wire-card"]["username"] .":". $aHTTP_CONN_INFO["wire-card"]["password"]) .HTTPClient::CRLF;
 			
 			file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_globalcollect.log", "Request Details : ".var_export($aHTTP_CONN_INFO, true)."\n\n", FILE_APPEND);
-			
+						
 			file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_globalcollect.log", "body Request Details : ".$b."\n\n", FILE_APPEND);
 				
 			$obj_Client = new HTTPClient(new Template(), $obj_ConnInfo);
@@ -248,10 +253,9 @@ if (strlen($_SESSION['obj_TxnInfo']->getOrderID() ) > 0 && $obj_mPoint->orderAlr
 			$obj_Client->disconnect();
 			
 			$obj_XML = $obj_Client->getReplyBody();
-			
-			echo "<pre/>";
-			print_r($obj_XML);exit;
-				
+		
+			file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_globalcollect.log", "response Details : ".$obj_XML."\n\n", FILE_APPEND);
+						
 			if($code == 201)
 			{
 				$code = 2000;
