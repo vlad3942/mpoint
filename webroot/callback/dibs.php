@@ -62,7 +62,9 @@ try
 	$obj_mPoint = new DIBS($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['dibs']);
 
 	// Save Ticket ID representing the End-User's stored Card Info
-	if (array_key_exists("preauth", $_POST) === true && @$_POST['preauth'] == "true")
+	$ticket = @$_POST["ticket"];
+	
+	if (array_key_exists("preauth", $_POST) === true && @$_POST['preauth'] == "true" || strlen($ticket) > 0)
 	{
 		$iMobileAccountID = -1;
 		$iEMailAccountID = -1;
@@ -76,10 +78,12 @@ try
 				$obj_mPoint->getTxnInfo()->setAccountID(-1);
 			}
 		}
-		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $_POST['transact']);
+		$ticket = strlen($ticket) > 0 ? $ticket : $_POST["transact"];
+				
+		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $ticket);
 		$sMask = $_POST['cardprefix'] . substr($_POST['cardnomask'], strlen($_POST['cardprefix']) );
 		$sExpiry = substr($_POST['cardexpdate'], 2) ."/". substr($_POST['cardexpdate'], 0, 2);
-		$iStatus = $obj_mPoint->saveCard($obj_TxnInfo, $obj_TxnInfo->getMobile(), $_POST['cardid'], Constants::iDIBS_PSP, $_POST['transact'], str_replace("X", "*", $sMask), $sExpiry);
+		$iStatus = $obj_mPoint->saveCard($obj_TxnInfo, $obj_TxnInfo->getMobile(), $_POST['cardid'], Constants::iDIBS_PSP, $ticket, str_replace("X", "*", $sMask), $sExpiry);
 		// The End-User's existing account was linked to the Client when the card was stored
 		if ($iStatus == 1)
 		{
@@ -103,7 +107,7 @@ try
 		}
 		// E-Mail has been provided for the transaction
 		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
-		$_POST['transact'] = $obj_mPoint->authTicket($_POST['transact']);
+		$_POST['transact'] = $obj_mPoint->authTicket($ticket);
 	}
 
 	//

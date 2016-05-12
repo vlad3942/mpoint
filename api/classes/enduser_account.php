@@ -224,7 +224,7 @@ class EndUserAccount extends Home
 						$mob = "";
 						$email = "";
 						if (floatval($addr) > $obj_CountryConfig->getMinMobile() ) { $mob = $addr; }
-						else { $email = $addr; }
+						elseif (strpos($addr, '@') !== false) { $email = $addr; }
 
 						$iAccountID = $this->newAccount($obj_CountryConfig->getID(), $mob, "", $email, $oTI->getCustomerRef() );
 						$code = 2;

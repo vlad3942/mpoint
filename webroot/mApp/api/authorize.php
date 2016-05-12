@@ -74,8 +74,13 @@ require_once(sCLASS_PATH ."/masterpass.php");
 require_once(sCLASS_PATH ."/amexexpresscheckout.php");
 // Require specific Business logic for the WireCard component
 require_once(sCLASS_PATH ."/wirecard.php");
+
 // Require specific Business logic for the Global Collect component
 require_once(sCLASS_PATH ."/globalcollect.php");
+
+// Require specific Business logic for the Android Pay component
+require_once(sCLASS_PATH ."/androidpay.php");
+
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -280,6 +285,10 @@ try
 														$obj_Wallet = new AMEXExpressCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["amex-express-checkout"]);
 														$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
 														break;
+														case (Constants::iANDROID_PAY_WALLET):
+															$obj_Wallet = new AndroidPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["android-pay"]);
+															$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iANDROID_PAY_PSP);
+															break;
 													default:
 														/**
 														 * This changes is made for globalcollect since rightnow it is the only psp which will send
@@ -364,8 +373,10 @@ try
 															$xml = str_replace('<?xml version="1.0"?>', '', $obj_XML->status->asXML() );
 															$code = 5;
 														}
+
 														// 3rd Party Wallet returned unknown error
 														else { $code = 6; }
+
 													}
 												}
 												else if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] ) == Constants::iINVOICE)
@@ -383,7 +394,8 @@ try
 														$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 														$obj_Authorize = new Authorize($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 														$iInvoiceStatus = $obj_Authorize->invoice($obj_DOM->{'authorize-payment'}[$i]->transaction->description);
-														$code = 10;
+															// Set the code to 5 so stored card payemnt if statment is skipped.
+															$code = 5;
 														if ($iInvoiceStatus == 100) { $xml .= '<status code="100">Payment authorized using Invoice</status>'; }
 														else
 														{
@@ -405,11 +417,7 @@ try
 													else { $code = 10; }
 												}
 
-												if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] ) == Constants::iINVOICE)
-												{
-													// XML previously constructed
-												}
-												elseif ($code >= 10)
+												if ($code >= 10)
 												{
 													try
 													{
@@ -863,4 +871,3 @@ echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';
 echo $xml;
 echo '</root>';
-?>
