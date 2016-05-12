@@ -64,7 +64,7 @@ try
 	// Save Ticket ID representing the End-User's stored Card Info
 	$ticket = @$_POST["ticket"];
 	
-	if (array_key_exists("preauth", $_POST) === true && @$_POST['preauth'] == "true" || strlen($ticket) > 0)
+	if ( (array_key_exists("preauth", $_POST) === true && @$_POST['preauth'] == "true") || strlen($ticket) > 0)
 	{
 		$iMobileAccountID = -1;
 		$iEMailAccountID = -1;
