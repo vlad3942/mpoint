@@ -412,6 +412,7 @@ $aHTTP_CONN_INFO["global-collect"]["paths"]["status"] = "/mpoint/global-collect/
 $aHTTP_CONN_INFO["global-collect"]["paths"]["refund"] = "/mpoint/global-collect/refund";
 $aHTTP_CONN_INFO["global-collect"]["paths"]["callback"] = "/mpoint/global-collect/callback";
 $aHTTP_CONN_INFO["global-collect"]["paths"]["cancel"] = "/mpoint/global-collect/cancel";
+$aHTTP_CONN_INFO["global-collect"]["paths"]["auth-complete"] = "/mpoint/global-collect/auth-complete";
 
 /**
  * GoMobile Connection Info.
