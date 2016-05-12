@@ -107,7 +107,7 @@ try
 		}
 		// E-Mail has been provided for the transaction
 		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
-		$_POST['transact'] = $obj_mPoint->authTicket($ticket);
+		if (array_key_exists("maketicket", $_POST) === false) { $_POST['transact'] = $obj_mPoint->authTicket($ticket); }
 	}
 
 	//
