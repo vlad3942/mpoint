@@ -6849,3 +6849,10 @@ ALTER TABLE Client.Client_Tbl ADD CONSTRAINT MaskedDigits_Chk CHECK (0 <= num_ma
 UPDATE Client.Client_Tbl SET num_masked_digits = 2 WHERE id = 10005;	-- DSB App PRODUCTION
 UPDATE Client.Client_Tbl SET num_masked_digits = 2 WHERE id = 10014;	-- DSB App Test
 UPDATE Client.Client_Tbl SET num_masked_digits = 2 WHERE id = 10019;	-- Mobile Travel Card
+
+--- SETUP v1.94 --
+/* ========== CONFIGURE GlobalCollect AS PSP ================ */
+INSERT INTO System.PSP_Tbl (id, name) VALUES (20, 'GlobalCollect');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) SELECT countryid, 20, name FROM System.PSPCurrency_Tbl WHERE pspid = 4;
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT cardid, 20 FROM System.PSPCard_Tbl WHERE pspid = 4;
+/* ========== CONFIGURE DATA CASH END ========== */
