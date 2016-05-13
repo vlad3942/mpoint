@@ -133,7 +133,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						}
 						else { $code = 10; }
 						
-							if ($obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(),  (integer) $obj_DOM->pay[$i]->transaction->card->amount) != 10) { $aMsgCds[$obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), (integer) $obj_DOM->pay[$i]->transaction->card->amount) + 50] = (string) $obj_DOM->pay[$i]->transaction->card->amount; }
+						/**
+						 * The validation of input amount will be done against the original transaction amount, rather than the client config max amount
+						 */
+						if ($obj_Validator->valPrice($obj_TxnInfo->getAmount(),  (integer) $obj_DOM->pay[$i]->transaction->card->amount) != 10) { $aMsgCds[$obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), (integer) $obj_DOM->pay[$i]->transaction->card->amount) + 50] = (string) $obj_DOM->pay[$i]->transaction->card->amount; }
 						
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
