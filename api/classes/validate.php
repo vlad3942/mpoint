@@ -21,7 +21,7 @@
  * Validation Class containing the shared Business Logic for ensuring that the data received from a client appears to be useful.
  *
  */
-class Validate
+class Validate extends ValidateBase
 {
 	/**
 	 * Data object with the Country's default configuration
