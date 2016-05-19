@@ -178,6 +178,24 @@ class EndUserAccount extends Home
 	}
 	
 	/**
+	 * Retrieves the Number of Preferred cards added by a customer
+	 *
+	 * @param integer 	$iAccountID		Account ID
+	 * @return integer
+	 */
+	
+	public function getPreferredCardsCount($iAccountID)
+	{
+		$sql = "SELECT count(1) AS prefcount
+				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
+				WHERE accountid = ". $iAccountID ." AND enabled = '1' AND preferred = '1'";
+		//		echo $sql ."\n";
+		$RS = $this->getDBConn()->getName($sql);
+	
+		return is_array($RS) === true ? intval($RS["PREFCOUNT"]) : 0;
+	}
+	
+	/**
 	 * Saves a credit card to an End-User Account.
 	 * If no account can be found for the End-User a new account will automatically be created.
 	 * The method will update the Ticket ID if the card has been saved previously and return the following status codes:
@@ -272,10 +290,11 @@ class EndUserAccount extends Home
 
 		// Check if card has already been saved
 		$id = $this->getCardIDFromCardDetails($iAccountID, $cardid, $mask, $exp, $token);
-		$iCardCount = $this->getActiveCardsCount($iAccountID);
+		$iCardCount = $this->getActiveCardsCount($iAccountID);		
 
 		// Stored Card should be preferred.
 		$sPreferredString = "";
+		$bPrefValue = false;
 		//if the preferred option is passed.
 		if (isset($pref) === true)
 		{
@@ -287,22 +306,20 @@ class EndUserAccount extends Home
 						WHERE accountid = ". $iAccountID ." AND clientid = ". $this->_obj_ClientConfig->getID();
 	//			echo $sql ."\n";
 				$this->getDBConn()->query($sql);
+				$bPrefValue = true;
 			}
 			
-			$sPreferredString = ", preferred = '". intval($pref) ."'";			
+			$sPreferredString = ", preferred = '". intval($bPrefValue) ."'";		
 		}
 		else //preferred option is not set.
 		{
-			if($iCardCount == 0) //If this is the first card being added, it should be preferred.
-			{
-				$pref = true;
-				$sPreferredString = ", preferred = '". intval($pref) ."'";
-			}
-			else //If there are any disbaled preferred cards.
-			{			
-				$pref = false;
-				$sPreferredString = ", preferred = '". intval($pref) ."'";
-			}
+			$bPrefValue = false;
+		}		
+		
+		if($iCardCount == 0 && isset($pref) === false) //If this is the first card being added, it should be preferred.
+		{
+			$bPrefValue = true;
+			$sPreferredString = ", preferred = '". intval($bPrefValue) ."'";
 		}		
 		
 		// Card previously saved by End-User
@@ -331,7 +348,7 @@ class EndUserAccount extends Home
 					VALUES
 						(". $iAccountID .", ". $this->_obj_ClientConfig->getID() .", ". intval($cardid) .", ". intval($pspid) .", 
 						 '". $this->getDBConn()->escStr($token) ."', '". $this->getDBConn()->escStr(trim($mask) ) ."', '". $this->getDBConn()->escStr($exp) ."',
-						 '". $this->getDBConn()->escStr(trim($name) ) ."', '". intval($pref) ."','". $this->getDBConn()->escStr(trim($chn) )."', ". intval($chargeid) .")";
+						 '". $this->getDBConn()->escStr(trim($name) ) ."', '". intval($bPrefValue) ."','". $this->getDBConn()->escStr(trim($chn) )."', ". intval($chargeid) .")";
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
 
