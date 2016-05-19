@@ -160,6 +160,24 @@ class EndUserAccount extends Home
 	}
 
 	/**
+	 * Retrieves the Number of active cards added by a customer
+	 *
+	 * @param integer 	$iAccountID		Account ID
+	 * @return integer
+	 */
+	
+	public function getActiveCardsCount($iAccountID)
+	{
+		$sql = "SELECT count(1) AS cardcount
+				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
+				WHERE accountid = ". $iAccountID ." AND enabled = '1'";
+		//		echo $sql ."\n";
+		$RS = $this->getDBConn()->getName($sql);
+	
+		return is_array($RS) === true ? intval($RS["CARDCOUNT"]) : 0;
+	}
+	
+	/**
 	 * Saves a credit card to an End-User Account.
 	 * If no account can be found for the End-User a new account will automatically be created.
 	 * The method will update the Ticket ID if the card has been saved previously and return the following status codes:
@@ -254,13 +272,16 @@ class EndUserAccount extends Home
 
 		// Check if card has already been saved
 		$id = $this->getCardIDFromCardDetails($iAccountID, $cardid, $mask, $exp, $token);
+		$iCardCount = $this->getActiveCardsCount($iAccountID);
 
-		// Stored Card should be preferred
+		// Stored Card should be preferred.
 		$sPreferredString = "";
+		//if the preferred option is passed.
 		if (isset($pref) === true)
 		{
 			if($pref === true)
 			{
+				//Set all the previous preferred cards to false.
 				$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 						SET preferred = '0'
 						WHERE accountid = ". $iAccountID ." AND clientid = ". $this->_obj_ClientConfig->getID();
@@ -270,10 +291,20 @@ class EndUserAccount extends Home
 			
 			$sPreferredString = ", preferred = '". intval($pref) ."'";			
 		}
-		else
+		else //preferred option is not set.
 		{
-			$pref = false;
-		}
+			if($iCardCount == 0) //If this is the first card being added, it should be preferred.
+			{
+				$pref = true;
+				$sPreferredString = ", preferred = '". intval($pref) ."'";
+			}
+			else //If there are any disbaled preferred cards.
+			{			
+				$pref = false;
+				$sPreferredString = ", preferred = '". intval($pref) ."'";
+			}
+		}		
+		
 		// Card previously saved by End-User
 		if ($id > 0)
 		{
