@@ -34,10 +34,12 @@ $obj_Status = new Status($_OBJ_DB, $_OBJ_TXT);
 
 $tOffset = isset($_GET['to']) === true ? intval($_GET['to']) : 3600*24*5;
 $fOffset = isset($_GET['from']) === true ? intval($_GET['from']) : 3600*24*30;
-
 $to = time() - $tOffset;
 $from = time() - $fOffset;
-$aTxns = $obj_Status->getActiveTransactions($from, $to, 0, true, 50);
+
+$clients = isset($_GET['clients']) === true ? explode(",", $_GET['clients']) : array();
+
+$aTxns = $obj_Status->getActiveTransactions($from, $to, 0, true, 500, $clients);
 $aSuccess = array();
 
 echo date("r"). "\n";
