@@ -449,7 +449,18 @@ abstract class Constants
 	 *
 	 */
 	const iDSB_PSP = 19;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: GlobalCollect
+	 *
+	 */
+	const iGLOBAL_COLLECT_PSP = 21;
 
+	/**
+	 * Unique ID for the Payment Service Provider: Android Pay
+	 *
+	 */
+	const iANDROID_PAY_PSP = 20;
 	/**
 	 * Unique ID for the Electronic Payment Flow
 	 *
@@ -598,6 +609,12 @@ abstract class Constants
 	 *
 	 */
 	const iVOUCHER_CARD = 26;
+	/**
+	 * Unique Card ID for transaction's made using Android Pay
+	 *
+	 */
+	const iANDROID_PAY_WALLET = 27;
+	
 	/**
 	 * Unique Fee Type ID for Top-Ups
 	 *

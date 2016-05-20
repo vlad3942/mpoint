@@ -29,24 +29,16 @@
 				</xsl:if>
 				
 				<xsl:variable name="card-number">
-					<xsl:if test="transaction/@mode &gt; 0">
-						4012000300001003
-					</xsl:if>
+					<xsl:if test="transaction/@mode &gt; 0">4012000300001003</xsl:if>
 				</xsl:variable>
 				<xsl:variable name="expiry-month">
-					<xsl:if test="transaction/@mode &gt; 0">
-						01
-					</xsl:if>
+					<xsl:if test="transaction/@mode &gt; 0">01</xsl:if>
 				</xsl:variable>
 				<xsl:variable name="expiry-year">
-					<xsl:if test="transaction/@mode &gt; 0">
-						2019
-					</xsl:if>
+					<xsl:if test="transaction/@mode &gt; 0">2019</xsl:if>
 				</xsl:variable>
 				<xsl:variable name="cvc">
-					<xsl:if test="transaction/@mode &gt; 0">
-						003
-					</xsl:if>
+					<xsl:if test="transaction/@mode &gt; 0">003</xsl:if>
 				</xsl:variable>
 
 				<xsl:variable name="card-url"
@@ -207,7 +199,6 @@
 
 				</style>
 
-
 				<div id="progress" class="mPoint_Info">
 					<xsl:value-of select="labels/progress" />
 					<br />
@@ -219,37 +210,26 @@
 						<form id="wirecardform" action="authorisewirecard.php"
 							method="POST">
 							<div>
-								<!-- wirecard Required Data -->
-								<input type="hidden" id="merchant_account_id" name="merchant_account_id"
-									value="{wirecard/@merchant-account}" />
-								<input type="hidden" id="request_id" name="request_id"
-									value="{wirecard/hidden-fields/request_id}" />
-								<input type="hidden" id="request_time_stamp" name="request_time_stamp"
-									value="{wirecard/request_time_stamp}" />
-								<input type="hidden" id="transaction_type" name="transaction_type"
-									value="{wirecard/hidden-fields/transaction_type}" />
-								<input type="hidden" id="requested_amount" name="requested_amount"
-									value="{wirecard/hidden-fields/requested_amount}" />
-								<input type="hidden" id="requested_amount_currency" name="requested_amount_currency"
-									value="{wirecard/hidden-fields/requested_amount_currency}" />
-								<input type="hidden" id="payment_ip_address" name="payment_ip_address"
-									value="{wirecard/hidden-fields/payment_ip_address}" />
-								<input type="hidden" id="email" name="email"
-									value="{wirecard/hidden-fields/email}" />
-								<input type="hidden" id="phone" name="phone"
-									value="{wirecard/hidden-fields/phone}" />
-								<input type="hidden" id="field_name_1" name="field_name_1"
-									value="{wirecard/hidden-fields/field_name_1}" />
-								<input type="hidden" id="field_name_2" name="field_name_2"
-									value="{wirecard/hidden-fields/field_name_2}" />
-								<input type="hidden" id="field_name_3" name="field_name_3"
-									value="{wirecard/hidden-fields/field_name_3}" />
-								<input type="hidden" id="field_value_3" name="field_value_3"
-									value="{wirecard/hidden-fields/field_value_3}" />
-								<input type="hidden" id="card_type" name="card_type"
-									value="{wirecard/hidden-fields/card_type}" />
-								<input type="hidden" id="notification_url_1" name="notification_url_1"
-									value="{wirecard/hidden-fields/notification_url_1}" />
+								<input type="hidden" id="pspid" name="pspid"
+								value="{transaction/@psp-id}" />
+								<xsl:choose>
+								<!-- Wirecard -->
+								<xsl:when test="transaction/@psp-id = 18">
+									<xsl:apply-templates select="item" mode="wirecard" />
+								</xsl:when>
+								<!-- Datacash -->
+								<xsl:when test="transaction/@psp-id = 17">
+									<xsl:apply-templates select="item" mode="datacash" />
+								</xsl:when>
+								<!-- Datacash -->
+								<xsl:when test="transaction/@psp-id = 20">
+									<xsl:apply-templates select="item" mode="globalcollect" />
+								</xsl:when>
+								<!-- Error -->
+								<xsl:otherwise>
+			
+								</xsl:otherwise>
+							</xsl:choose>
 							</div>
 
 							<div>
@@ -361,17 +341,65 @@
 									</tr>
 								</table>
 							</div>
-
-
-
+							<div>
+								<input name="store-card" type="checkbox" value="true" />
+								Save card info
+							</div>
 							<div id="submit">
-								<input type="submit" id="wirecardSubmit" name="wirecardSubmit"
-									value="{labels/submit}" />
+								<input type="submit" id="wirecardSubmit" name="wirecardSubmit" value="{labels/submit}" />
 							</div>
 						</form>
 					</div>
 				</div>
 			</body>
 		</html>
+	</xsl:template>
+	<xsl:template match="item" mode="wirecard">
+			<!-- wirecard Required Data -->
+		<input type="hidden" id="merchant_account_id" name="merchant_account_id"
+			value="{@merchant-account}" />
+		<input type="hidden" id="request_id" name="request_id"
+			value="{hidden-fields/request_id}" />
+		<input type="hidden" id="request_time_stamp" name="request_time_stamp"
+			value="{request_time_stamp}" />
+		<input type="hidden" id="transaction_type" name="transaction_type"
+			value="{hidden-fields/transaction_type}" />
+		<input type="hidden" id="requested_amount" name="requested_amount"
+			value="{hidden-fields/requested_amount}" />
+		<input type="hidden" id="requested_amount_currency" name="requested_amount_currency"
+			value="{hidden-fields/requested_amount_currency}" />
+		<input type="hidden" id="payment_ip_address" name="payment_ip_address"
+			value="{hidden-fields/payment_ip_address}" />
+		<input type="hidden" id="email" name="email"
+			value="{hidden-fields/email}" />
+		<input type="hidden" id="phone" name="phone"
+			value="{hidden-fields/phone}" />
+		<input type="hidden" id="field_name_1" name="field_name_1" 
+			value="{hidden-fields/field_name_1}" />
+		<input type="hidden" id="field_name_2" name="field_name_2"
+			value="{hidden-fields/field_name_2}" />
+		<input type="hidden" id="field_name_3" name="field_name_3"
+			value="{hidden-fields/field_name_3}" />
+		<input type="hidden" id="field_value_3" name="field_value_3"
+			value="{hidden-fields/field_value_3}" />
+		<input type="hidden" id="card_type" name="card_type"
+			value="{hidden-fields/card_type}" />
+		<input type="hidden" id="notification_url_1" name="notification_url_1"
+			value="{hidden-fields/notification_url_1}" />
+		<input type="hidden" id="cardid" name="cardid"
+			value="{hidden-fields/field_value_3}" />
+	</xsl:template>
+	<xsl:template match="item" mode="globalcollect">
+		<input type="hidden" name="publicMerchantId" value="{hidden-fields/publicMerchantId}"/>
+	    <input type="hidden" name="locale" value="{hidden-fields/locale}"/>
+	    <input type="hidden" name="isPaymentProductDetailsShown" value="{hidden-fields/isPaymentProductDetailsShown}"/>
+	    <input type="hidden" name="paymentProductId" value="{hidden-fields/paymentProductId}"/>
+	    <input type="hidden" name="token" value="{hidden-fields/token}"/>
+	    <input type="hidden" name="isAccountOnFileSelectionShown" value="{hidden-fields/isAccountOnFileSelectionShown}"/>
+	    <input type="hidden" name="variantCode" value="{hidden-fields/variantCode}"/>
+	    <input type="hidden" name="url" value="{url}"/>
+	    <input type="hidden" name="cardNumber" value="cardNumber"/>
+	    <input type="hidden" name="expiryDate" value="expiryDate"/>
+	    <input type="hidden" name="cvv" value="cvv"/>
 	</xsl:template>
 </xsl:stylesheet>

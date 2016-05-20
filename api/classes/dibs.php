@@ -476,6 +476,9 @@ class DIBS extends Callback implements Captureable, Refundable
 		// Client is in Test or Certification mode
 		if ($this->getTxnInfo()->getMode() > 0) { $b .= "&test=". $this->getTxnInfo()->getMode(); }
 		$b .= "&callbackurl=". urlencode("http://". $_SERVER['HTTP_HOST'] ."/callback/dibs.php");
+		$b .= "&accepturl=". urlencode($this->getClientConfig()->getAcceptURL() );
+		$b .= "&cancelurl=". urlencode($this->getClientConfig()->getCancelURL() );
+		$b .= "&declineurl=". urlencode($this->getClientConfig()->getDeclineURL() );
 		$b .= "&amount=". $this->getTxnInfo()->getAmount();
 		$b .= "&currency=". $currency;
 		$b .= "&orderid=". $oid;
@@ -497,7 +500,6 @@ class DIBS extends Callback implements Captureable, Refundable
 		$obj_HTTP->connect();
 		$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
 		$obj_HTTP->disConnect();
-		
 		if ($code == 200)
 		{
 			$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
@@ -512,6 +514,9 @@ class DIBS extends Callback implements Captureable, Refundable
 			$xml = str_replace("card_number>", "card-number>", $obj_HTTP->getReplyBody() );
 			$xml = str_replace("expiry_month>", "expiry-month>", $xml);
 			$xml = str_replace("expiry_year>", "expiry-year>", $xml);
+			$xml = str_replace("accept_url>", "accept-url>", $xml);
+			$xml = str_replace("cancel_url>", "cancel-url>", $xml);
+			$xml = str_replace("decline_url>", "decline-url>", $xml);
 			$xml = str_replace("hidden_fields>", "hidden-fields>", $xml);
 			// Replace _ with - without changing the hidden fields where "store_card" is also present
 			$obj_XML = simplexml_load_string($xml); 

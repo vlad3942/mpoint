@@ -48,6 +48,8 @@ require_once(sCLASS_PATH ."/wannafind.php");
 require_once(sCLASS_PATH ."/worldpay.php");
 
 require_once(sCLASS_PATH ."/wirecard.php");
+require_once(sCLASS_PATH ."/datacash.php");
+require_once(sCLASS_PATH ."/globalcollect.php");
 
 ignore_user_abort(true);
 set_time_limit(0);
@@ -221,6 +223,64 @@ if (count($aMsgCds) == 0)
 						$aMsgCds[] = 51;
 					}
 					break;
+				case (Constants::iDATA_CASH_PSP): // datacash
+						$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig()->getID(), $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getID(), Constants::iDATA_CASH_PSP);
+					
+						$obj_PSP = new DataCash($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["data-cash"]);
+					
+						$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_XML->ticket);
+						// Authorization succeeded
+						if ($code == "100")
+						{
+							$aMsgCds[] = 100;
+							//$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
+						}
+						// Error: Authorization declined
+						else
+						{
+							$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+								
+							//header("HTTP/1.1 502 Bad Gateway");
+								
+							//$xml .= '<status code="92">Authorization failed, WireCard returned error: '. $code .'</status>';
+							$aMsgCds[] = 51;
+						}
+						break;
+				case (Constants::iGLOBAL_COLLECT_PSP): //GlobalCollect
+					
+							$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig()->getID(), $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getID(), Constants::iGLOBAL_COLLECT_PSP);
+								
+							$obj_PSP = new GlobalCollect($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["global-collect"]);
+							
+							if(empty($_POST['cvc']) == false)
+							{
+								$obj_XML->addChild('cvc', $_POST['cvc']);
+							} else { $obj_XML->addChild('cvc', "123"); }
+								
+							$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_XML);
+							
+							// Authorization succeeded
+							if ($code == "100")
+							{
+								$obj_TxnInfo = TxnInfo::produceInfo( (integer) $_SESSION['obj_TxnInfo']->getID(), $_OBJ_DB);
+								$obj_PSP->initCallback($obj_PSPConfig, $obj_TxnInfo, Constants::iPAYMENT_ACCEPTED_STATE, "Payment Authorized using store card.", intval($obj_XML->type["id"]));
+									
+								$xml .= '<status code="100">Payment authorized using stored card</status>';
+								
+								$aMsgCds[] = 100;
+							}
+							// Error: Authorization declined
+							else
+							{
+								$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+									
+								header("HTTP/1.1 502 Bad Gateway");
+									
+								$xml .= '<status code="92">Authorization failed, Globalcollect returned error: '. $code .'</status>';
+								
+								$aMsgCds[] = 51;
+							}							
+							break;
 				default:	// Unkown Error
 					$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 					$aMsgCds[] = 59;
