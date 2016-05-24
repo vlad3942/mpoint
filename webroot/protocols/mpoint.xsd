@@ -617,7 +617,7 @@
 					  <xs:sequence>
 						<xs:element type="xs:string" name="name"/>
 					  </xs:sequence>
-					  <xs:attribute type="xs:int" name="psp-id"/>
+					  <xs:attribute type="xs:int" name="id"/>
 					</xs:complexType>
 				  </xs:element>
 				  <xs:element name="transaction" minOccurs="1" maxOccurs="1">
