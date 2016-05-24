@@ -38,7 +38,9 @@ class ClientConfig extends BasicConfig
 	const iCALLBACK_URL = 7;
 	const iACCEPT_URL = 8;
 	const iCANCEL_URL = 9;
-	const iICON_URL = 10;		
+	const iICON_URL = 10;	
+	const iDECLINE_URL = 11;
+	
 	/**
 	 * ID of the Flow the Client's customers have to go through in order to complete the Payment Transaction
 	 *
@@ -124,6 +126,12 @@ class ClientConfig extends BasicConfig
 	 * @var ClientURLConfig
 	 */
 	private $_obj_CancelURL;
+	/**
+	 * Object that holds where the Customer should be returned to in case the PSP declines the Transaction
+	 *
+	 * @var ClientURLConfig
+	 */
+	private $_obj_DeclineURL;
 	/**
 	 * Object that holds the URL to the Client's Back Office where mPoint should send the Payment Status to
 	 *
@@ -319,8 +327,9 @@ class ClientConfig extends BasicConfig
 	 * @param   array $aObj_MAs				List of Merchant Accounts for each Payment Service Providers
 	 * @param   array $aObj_PMs				List of Payment Methods (Cards) that the client offers
 	 * @param   array $aObj_IINRs			List of IIN Range values for the client.
+	 * @param	ClientURLConfig $oDURL		Object that holds the URL to the Client's Back Office where mPoint should send the Payment Status to
 	 */
-	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=null, ClientURLConfig $oCSSURL=null, ClientURLConfig $oAccURL=null, ClientURLConfig $oCURL=null, ClientURLConfig $oCBURL=null, ClientURLConfig $oIURL=null, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array())
+	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=null, ClientURLConfig $oCSSURL=null, ClientURLConfig $oAccURL=null, ClientURLConfig $oCURL=null, ClientURLConfig $oCBURL=null, ClientURLConfig $oIURL=null, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), ClientURLConfig $oDURL=null)
 	{
 		parent::__construct($id, $name);
 
@@ -336,9 +345,9 @@ class ClientConfig extends BasicConfig
 		$this->_obj_CSSURL = $oCSSURL;
 		$this->_obj_AcceptURL = $oAccURL;
 		$this->_obj_CancelURL = $oCURL;
+		$this->_obj_DeclineURL = $oDURL;
 		$this->_obj_CallbackURL = $oCBURL;
 		$this->_obj_IconURL = $oIURL;
-
 		$this->_iMaxAmount = (integer) $ma;
 		$this->_sLanguage = trim($l);
 
@@ -485,6 +494,19 @@ class ClientConfig extends BasicConfig
 		if ( ($this->_obj_CallbackURL instanceof ClientURLConfig) === true)
 		{
 			return $this->_obj_CallbackURL->getURL();
+		}
+		else { return ""; }
+	}
+	/**
+	 * Object that holds where the Customer should be returned to in case the PSP declines the Transaction
+	 *
+	 * @return 	string
+	 */
+	public function getDeclineURL()
+	{
+		if ( ($this->_obj_DeclineURL instanceof ClientURLConfig) === true)
+		{
+			return $this->_obj_DeclineURL->getURL();
 		}
 		else { return ""; }
 	}
@@ -762,6 +784,7 @@ class ClientConfig extends BasicConfig
 		$xml .= '<css-url>'. htmlspecialchars($this->getCSSURL(), ENT_NOQUOTES) .'</css-url>';
 		$xml .= '<accept-url>'. htmlspecialchars($this->getAcceptURL(), ENT_NOQUOTES) .'</accept-url>';
 		$xml .= '<cancel-url>'. htmlspecialchars($this->getCancelURL(), ENT_NOQUOTES) .'</cancel-url>';
+		$xml .= '<decline-url>'. htmlspecialchars($this->getDeclineURL(), ENT_NOQUOTES) .'</decline-url>';
 		$xml .= '<callback-url>'. htmlspecialchars($this->getCallbackURL(), ENT_NOQUOTES) .'</callback-url>';
 		$xml .= '<icon-url>'. htmlspecialchars($this->getIconURL(), ENT_NOQUOTES) .'</icon-url>';
 		$xml .= '<customer-import-url>'. htmlspecialchars($this->getCustomerImportURL(), ENT_NOQUOTES) .'</customer-import-url>';
@@ -795,6 +818,7 @@ class ClientConfig extends BasicConfig
 		if ( ($this->_obj_CSSURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_CSSURL->toXML(); }
 		if ( ($this->_obj_AcceptURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_AcceptURL->toXML(); }
 		if ( ($this->_obj_CancelURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_CancelURL->toXML(); }
+		if ( ($this->_obj_DeclineURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_DeclineURL->toXML(); }
 		if ( ($this->_obj_CallbackURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_CallbackURL->toXML(); }
 		if ( ($this->_obj_IconURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_IconURL->toXML(); }
 		if ( ($this->_obj_CustomerImportURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_CustomerImportURL->toXML(); }
@@ -828,7 +852,7 @@ class ClientConfig extends BasicConfig
 	{
 		$acc = (integer) $acc;
 		$sql = "SELECT CL.id AS clientid, CL.name AS client, CL.flowid, CL.username, CL.passwd,
-					CL.logourl, CL.cssurl, CL.accepturl, CL.cancelurl, CL.callbackurl, CL.iconurl,
+					CL.logourl, CL.cssurl, CL.accepturl, CL.cancelurl, CL.declineurl, CL.callbackurl, CL.iconurl,
 					CL.smsrcpt, CL.emailrcpt, CL.method,
 					CL.maxamount, CL.lang, CL.terms,
 					CL.\"mode\", CL.auto_capture, CL.send_pspid, CL.store_card, CL.show_all_cards, CL.max_cards,
@@ -857,7 +881,7 @@ class ClientConfig extends BasicConfig
 		else { $sql .= " AND KW.id = ". intval($kw); }
 		$sql .= "{ACCOUNT CLAUSE}
 				GROUP BY CL.id, CL.name, CL.flowid, CL.username, CL.passwd,
-					CL.logourl, CL.cssurl, CL.accepturl, CL.cancelurl, CL.callbackurl, CL.iconurl,
+					CL.logourl, CL.cssurl, CL.accepturl, CL.cancelurl, CL.declineurl, CL.callbackurl, CL.iconurl,
 					CL.smsrcpt, CL.emailrcpt, CL.method,
 					CL.maxamount, CL.lang, CL.terms,
 					CL.\"mode\", CL.auto_capture, CL.send_pspid, CL.store_card, CL.show_all_cards, CL.max_cards,
@@ -906,6 +930,7 @@ class ClientConfig extends BasicConfig
 			$obj_CSSURL = null;
 			$obj_AcceptURL = null;
 			$obj_CancelURL = null;
+			$obj_DeclineURL = null;
 			$obj_CallbackURL = null;
 			$obj_IconURL = null;
 			$obj_CustomerImportURL = null;
@@ -917,6 +942,7 @@ class ClientConfig extends BasicConfig
 			if (strlen($RS["CSSURL"]) > 0) { $obj_CSSURL = new ClientURLConfig($RS["CLIENTID"], self::iCSS_URL, $RS["CSSURL"]); }
 			if (strlen($RS["ACCEPTURL"]) > 0) { $obj_AcceptURL = new ClientURLConfig($RS["CLIENTID"], self::iACCEPT_URL, $RS["ACCEPTURL"]); }
 			if (strlen($RS["CANCELURL"]) > 0) { $obj_CancelURL = new ClientURLConfig($RS["CLIENTID"], self::iCANCEL_URL, $RS["CANCELURL"]); }
+			if (strlen($RS["DECLINEURL"]) > 0) { $obj_DeclineURL = new ClientURLConfig($RS["CLIENTID"], self::iDECLINE_URL, $RS["DECLINEURL"]); }
 			if (strlen($RS["CALLBACKURL"]) > 0) { $obj_CallbackURL = new ClientURLConfig($RS["CLIENTID"], self::iCALLBACK_URL, $RS["CALLBACKURL"]); }
 			if (strlen($RS["ICONURL"]) > 0) { $obj_IconURL = new ClientURLConfig($RS["CLIENTID"], self::iICON_URL, $RS["ICONURL"]); }
 			if ($RS["CUSTOMERIMPORTURLID"] > 0) { $obj_CustomerImportURL = new ClientURLConfig($RS["CUSTOMERIMPORTURLID"], self::iCUSTOMER_IMPORT_URL, $RS["CUSTOMERIMPORTURL"]); }
@@ -941,7 +967,7 @@ class ClientConfig extends BasicConfig
 		// Error: Client Configuration not found
 		else { trigger_error("Client Configuration not found using ID: ". $id .", Account: ". $acc .", Keyword: ". $kw, E_USER_WARNING); }
 			
-		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_CallbackURL, $obj_IconURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $RS["NUM_MASKED_DIGITS"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations,$aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations);
+		return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_CallbackURL, $obj_IconURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $RS["NUM_MASKED_DIGITS"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations,$aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations, $obj_DeclineURL);
 	}
 
 	/**

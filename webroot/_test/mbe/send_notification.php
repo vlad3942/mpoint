@@ -18,6 +18,8 @@ $iChannel = (integer) $obj_DOM->notify->{'CommunicationChannel'};
 
 $sPushId = (string) $obj_DOM->notify->{'PushId'};
 
+$sSessionID = (string) $obj_DOM->notify->{'SessionID'};
+
 $iType = (integer) $obj_DOM->notify->type;
 
 
@@ -40,7 +42,7 @@ if($iChannel > 0)
 }
 
 if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->notify->{'Pay-by-link'}) > 0 && $iType == $sTypes['PAY_BY_LINK'])
-{
+{	
 	// Instantiate object for holding the necessary information for connecting to GoMobile
 	$obj_ConnInfo = GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO);
 	// Instantiate client object for communicating with GoMobile
@@ -51,14 +53,20 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->notify->
 		switch($iMsgType)
 		{
 			case(2):
+				// Tell the client that it is OK to close the connection by now, callback is accepted, further processing will happen in the background
+				header("HTTP/1.1 202 Accepted");
+				header("Content-Length: 0");
+				header("Connection: close");
+				ignore_user_abort(true);
+				flush();
 				/* ========== Create MT-SMS Start ========== */
 				$iType = 2;					
-				$iCountry = (integer) $obj_DOM->{'client-info'}->mobile['country-id'];
-				$iOperator = (integer) $obj_DOM->{'client-info'}->mobile['operator-id'];			
+				$iCountry = (integer) $obj_DOM->notify->{'client-info'}->mobile['country-id'];
+				$iOperator = (integer) $obj_DOM->notify->{'client-info'}->mobile['operator-id'];			
 				$sChannel = 123;			
 				$sKeyword = "CPM";
 				$iPrice = 0;				
-				$sRecipient = (string) $obj_DOM->{'client-info'}->mobile;	
+				$sRecipient = (string) $obj_DOM->notify->{'client-info'}->mobile;	
 				$bSendMessage = true;
 				
 				//Prepare query string for the URL.	
@@ -96,7 +104,7 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->notify->
 						$b['OR'] = (string) $obj_DOM->notify->{'Pay-by-link'}->{'OrderNumber'};
 						$b['BG'] = (string) $obj_DOM->notify->{'Pay-by-link'}->{'Baggage'};
 						$b['AM'] = (string) $obj_DOM->notify->{'Pay-by-link'}->{'Amount'};
-						$b['CHAT'] = 0;						
+						$b['ACTION'] = 0;						
 
 						$obj_MsgInfo = GoMobileMessage::produceMessage($iType, $sChannel, $sKeyword, $sPushId, json_encode($b) );					
 					}
@@ -112,6 +120,12 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->notify->
 
 		if($bSendMessage === true)
 		{	
+			// Tell the client that it is OK to close the connection by now, callback is accepted, further processing will happen in the background
+			header("HTTP/1.1 202 Accepted");
+			header("Content-Length: 0");
+			header("Connection: close");
+			ignore_user_abort(true);
+			flush();
 			/* ========== Send MT-MESSAGE Start ========== */
 			$bSend = true;		// Continue to send messages
 			$iAttempts = 1;		// Number of Attempts
@@ -140,10 +154,19 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->notify->
 				}
 			}
 		}
+		else
+		{
+			header("HTTP/1.1 400 Bad Request");
+			header("Content-Type: text/xml; charset=\"UTF-8\"");
+			echo '<?xml version="1.0" encoding="UTF-8"?>';
+			echo '<root>';
+			echo preg_replace('~\s*(<([^>]*)>[^<]*</\2>|<[^>]*>)\s*~', '$1', $xml);
+			echo '</root>';
+		}
 	}
 }
 else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->notify->{'CheckIn-by-link'}) > 0 && $iType == $sTypes['CHECKIN_BY_LINK'])
-{
+{	
 	// Instantiate object for holding the necessary information for connecting to GoMobile
 	$obj_ConnInfo = GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO);
 	// Instantiate client object for communicating with GoMobile
@@ -155,14 +178,22 @@ else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->not
 		switch($iMsgType)
 		{
 			case(2):
+				
+				// Tell the client that it is OK to close the connection by now, callback is accepted, further processing will happen in the background
+				header("HTTP/1.1 202 Accepted");
+				header("Content-Length: 0");
+				header("Connection: close");
+				ignore_user_abort(true);
+				flush();
+				
 				/* ========== Create MT-SMS Start ========== */
 				$iType = 2;
-				$iCountry = (integer) $obj_DOM->{'client-info'}->mobile['country-id'];
-				$iOperator = (integer) $obj_DOM->{'client-info'}->mobile['operator-id'];
+				$iCountry = (integer) $obj_DOM->notify->{'client-info'}->mobile['country-id'];
+				$iOperator = (integer) $obj_DOM->notify->{'client-info'}->mobile['operator-id'];
 				$sChannel = 123;
 				$sKeyword = "CPM";
 				$iPrice = 0;
-				$sRecipient = (string) $obj_DOM->{'client-info'}->mobile;
+				$sRecipient = (string) $obj_DOM->notify->{'client-info'}->mobile;
 				$bSendMessage = true;
 
 				//Prepare query string for the URL.	
@@ -196,7 +227,7 @@ else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->not
 										  "action" => "notify");
 						$b['FL'] = (string) $obj_DOM->notify->{'CheckIn-by-link'}->{'FlightNumber'};
 						$b['TN'] = (string) $obj_DOM->notify->{'CheckIn-by-link'}->{'TicketNumber'};
-						$b['CHAT'] = 0;												
+						$b['ACTION'] = 1;												
 
 						$obj_MsgInfo = GoMobileMessage::produceMessage($iType, $sChannel, $sKeyword, $sPushId, json_encode($b) );					
 					}
@@ -212,9 +243,16 @@ else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->not
 
 		if($bSendMessage === true)
 		{
+			// Tell the client that it is OK to close the connection by now, callback is accepted, further processing will happen in the background
+			header("HTTP/1.1 202 Accepted");
+			header("Content-Length: 0");
+			header("Connection: close");
+			ignore_user_abort(true);
+			flush();
 			/* ========== Send MT-MESSAGE Start ========== */
 			$bSend = true;		// Continue to send messages
 			$iAttempts = 1;		// Number of Attempts
+			sleep(60);
 			// Send messages
 			while ($bSend === true && $iAttempts <= 3)
 			{
@@ -236,9 +274,18 @@ else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->not
 				// Communication error, retry message sending
 				catch (HTTPException $e)
 				{
-					sleep(pow(10, $iAttempts) );
+					sleep(pow(1, $iAttempts) );
 				}
 			}
+		}
+		else
+		{
+			header("HTTP/1.1 400 Bad Request");
+			header("Content-Type: text/xml; charset=\"UTF-8\"");
+			echo '<?xml version="1.0" encoding="UTF-8"?>';
+			echo '<root>';
+			echo preg_replace('~\s*(<([^>]*)>[^<]*</\2>|<[^>]*>)\s*~', '$1', $xml);
+			echo '</root>';
 		}
 	}
 }
@@ -259,6 +306,22 @@ else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->not
 	
 	$code = saveMessage($_OBJ_DB_MBE, $iUserID, $iSystemUserID, $sText);
 	
+	$sChatMessageType = checkIfFlightQuery($sText);
+	if(empty($sChatMessageType) === false && ($sChatMessageType == "search" || $sChatMessageType == "number" || $sChatMessageType == "confirm") )
+	{ 
+		sendMessageForFlightQuery($_OBJ_DB_MBE, $aGM_CONN_INFO, $sText, $sChatName, $sSessionID);
+	
+	}
+	else if(empty($sChatMessageType) === false && $sChatMessageType == "option" )
+	{ 
+		sendMessageForFlightQuery($_OBJ_DB_MBE, $aGM_CONN_INFO, $sText, $sChatName, $sSessionID, $_OBJ_DB, $obj_DOM->notify->{'client-info'});
+	
+	}	
+	else if(empty($sChatMessageType) === false && $sChatMessageType == "salut")
+	{
+		sendSalutationMessage($_OBJ_DB_MBE, $aGM_CONN_INFO, $sText, $sChatName, $sSessionID);
+	}
+	
 	if ($code > 0)
 	{
 		$xml .= '<status code="20">Message successfully sent with ID: '. $code .'</status>';
@@ -268,6 +331,12 @@ else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->not
 	{
 		$xml .= '<status code="14">Message sending failed</status>';
 	}	
+	
+	header("Content-Type: text/xml; charset=\"UTF-8\"");
+	echo '<?xml version="1.0" encoding="UTF-8"?>';
+	echo '<root>';
+	echo preg_replace('~\s*(<([^>]*)>[^<]*</\2>|<[^>]*>)\s*~', '$1', $xml);
+	echo '</root>';
 	
 }
 else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->notify->Messenger) > 0 && $iType == $sTypes['MT_MESSAGE'])
@@ -304,7 +373,7 @@ else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->not
 			$b["aps"] = array("alert" => array("body" => utf8_encode($sBody) ),
 							  "sound" => "default",
 							  "action" => "notify");			
-			$b['CHAT'] = 1;	
+			$b['ACTION'] = 2;	
 			$obj_MsgInfo = GoMobileMessage::produceMessage($iType, $sChannel, $sKeyword, $iPushIDForUser, json_encode($b) );					
 		}
 		$bSendMessage = true;
@@ -316,7 +385,7 @@ else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->not
 	}
 	
 	if($bSendMessage === true)
-	{
+	{				
 		/* ========== Send MT-MESSAGE Start ========== */
 		$bSend = true;		// Continue to send messages
 		$iAttempts = 1;		// Number of Attempts
@@ -343,8 +412,23 @@ else if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->not
 			{
 				sleep(pow(10, $iAttempts) );
 			}
-		}
-	}	
+		}		
+		
+		header("Content-Type: text/xml; charset=\"UTF-8\"");
+		echo '<?xml version="1.0" encoding="UTF-8"?>';
+		echo '<root>';
+		echo preg_replace('~\s*(<([^>]*)>[^<]*</\2>|<[^>]*>)\s*~', '$1', $xml);
+		echo '</root>';
+	}
+	else 
+	{
+		header("HTTP/1.1 400 Bad Request");
+		header("Content-Type: text/xml; charset=\"UTF-8\"");
+		echo '<?xml version="1.0" encoding="UTF-8"?>';
+		echo '<root>';
+		echo preg_replace('~\s*(<([^>]*)>[^<]*</\2>|<[^>]*>)\s*~', '$1', $xml);
+		echo '</root>';
+	}
 	
 }
 // Error: Invalid XML Document
@@ -353,6 +437,13 @@ elseif ( ($obj_DOM instanceof SimpleDOMElement) === false)
 	header("HTTP/1.1 415 Unsupported Media Type");
 
 	$xml = '<status code="415">Invalid XML Document</status>';
+	
+	header("Content-Type: text/xml; charset=\"UTF-8\"");
+	
+	echo '<?xml version="1.0" encoding="UTF-8"?>';
+	echo '<root>';
+	echo preg_replace('~\s*(<([^>]*)>[^<]*</\2>|<[^>]*>)\s*~', '$1', $xml);
+	echo '</root>';
 }
 // Error: Wrong operation
 elseif (count($obj_DOM->notify) == 0)
@@ -364,6 +455,12 @@ elseif (count($obj_DOM->notify) == 0)
 	{
 		$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>';
 	}
+	header("Content-Type: text/xml; charset=\"UTF-8\"");
+	
+	echo '<?xml version="1.0" encoding="UTF-8"?>';
+	echo '<root>';
+	echo preg_replace('~\s*(<([^>]*)>[^<]*</\2>|<[^>]*>)\s*~', '$1', $xml);
+	echo '</root>';
 }
 elseif (count($obj_DOM->notify->type) == 0)
 {
@@ -372,13 +469,20 @@ elseif (count($obj_DOM->notify->type) == 0)
 	$xml = '';
 	
 	$xml .= '<status code="400">Wrong operation: type missing in the given request</status>';
+	header("Content-Type: text/xml; charset=\"UTF-8\"");
+	
+	echo '<?xml version="1.0" encoding="UTF-8"?>';
+	echo '<root>';
+	echo preg_replace('~\s*(<([^>]*)>[^<]*</\2>|<[^>]*>)\s*~', '$1', $xml);
+	echo '</root>';
 	
 }
-
+/*
 header("Content-Type: text/xml; charset=\"UTF-8\"");
 
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';
 echo preg_replace('~\s*(<([^>]*)>[^<]*</\2>|<[^>]*>)\s*~', '$1', $xml);
 echo '</root>';
+*/
 ?>

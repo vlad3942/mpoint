@@ -58,6 +58,7 @@ require_once(sGOMOBILE_CONF_PATH ."/gomobile.php");
 // Local mBE classes
 require_once ("classes/enduseraccount.php");
 require_once ("classes/chat.php");
+require_once ("classes/transaction.php");
 
 // Instantiate connection to the Database
 $_OBJ_DB = RDB::produceDatabase ( $aDB_CONN_INFO ["mpoint"] );
