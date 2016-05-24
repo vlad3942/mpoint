@@ -6840,3 +6840,18 @@ INSERT INTO Log.State_Tbl (id, name) VALUES (2007, 'Payment with voucher');
 ALTER TABLE Client.CardAccess_tbl ADD position integer default NULL;
 /* ==================== Client SCHEMA END ==================== */
 
+------- MASTER v1.93 ---
+/* ==================== Client SCHEMA START ==================== */
+ALTER TABLE Client.Client_Tbl ADD num_masked_digits INT4 DEFAULT 4;
+ALTER TABLE Client.Client_Tbl ADD CONSTRAINT MaskedDigits_Chk CHECK (0 <= num_masked_digits AND num_masked_digits <= 4);
+/* ==================== Client SCHEMA END ==================== */
+
+------- MASTER v1.94 ---
+/* ==================== CLIENT SCHEMA START ==================== */
+ALTER TABLE Client.MerchantAccount_Tbl ALTER name TYPE VARCHAR(255);
+/* ==================== CLIENT SCHEMA END ==================== */
+
+------- MASTER v1.95 ---
+/* ==================== Client SCHEMA START ==================== */
+ALTER TABLE Client.Client_Tbl ADD declineurl character varying(255);
+/* ==================== Client SCHEMA END ==================== */

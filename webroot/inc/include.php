@@ -64,6 +64,8 @@ require_once(sAPI_CLASS_PATH ."output.php");
 require_once(sAPI_CLASS_PATH ."image.php");
 // Require API for determining device capabilities via the User Agent Profile
 require_once(sAPI_CLASS_PATH ."uaprofile.php");
+// Require API containing generic validation functions
+require_once(sAPI_CLASS_PATH ."validate_base.php");
 
 // Require Global function file
 require_once(sAPI_FUNCTION_PATH ."global.php");
@@ -101,6 +103,8 @@ require_once(sCLASS_PATH ."/shopconfig.php");
 require_once(sCLASS_PATH ."/pspconfig.php");
 // Require data data class for Transaction Information
 require_once(sCLASS_PATH ."/txninfo.php");
+// Require data data class for Order/Cart Information
+require_once(sCLASS_PATH ."/order_info.php");
 // Require Business logic for the End-User Administration Component
 require_once(sCLASS_PATH ."/home.php");
 // Require PSP functionality interfaces

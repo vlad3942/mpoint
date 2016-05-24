@@ -62,6 +62,18 @@
 					<xsl:when test="@pspid = 7">
 						<xsl:apply-templates select="." mode="wannafind" />
 					</xsl:when>
+					<!-- Wirecard -->
+					<xsl:when test="@pspid = 18">
+						<xsl:apply-templates select="." mode="wirecard" />
+					</xsl:when>
+					<!-- Datacash -->
+					<xsl:when test="@pspid = 17">
+						<xsl:apply-templates select="." mode="datacash" />
+					</xsl:when>
+					<!-- Datacash -->
+					<xsl:when test="@pspid = 20">
+						<xsl:apply-templates select="." mode="globalcollect" />
+					</xsl:when>
 					<!-- Error -->
 					<xsl:otherwise>
 
@@ -505,5 +517,87 @@
 		</form>
 	</div>
 </xsl:template>
+
+<xsl:template match="item" mode="wirecard">
+	<xsl:variable name="url" select="concat('https://', /root/system/host, '/img/', logo-width, 'x', logo-height, '_card_', @id, '_', /root/system/session/@id, '.png')" />
+	<div>
+		<form action="{concat('http://', /root/system/host, '/wirecard/postform.php') }" method="post">
+			<div class="mPoint_Card">
+				<!-- wirecard Required Data -->
+				<input type="hidden" name="merchant_account_id" value="{account}" />
+				<input type="hidden" name="requested_amount" value="{/root/transaction/amount}" />
+				<input type="hidden" name="requested_amount_currency" value="{currency}" />
+				<input type="hidden" name="transaction_type" value="authorization" />
+				<input type="hidden" name="pspid" value="{@pspid}" />	
+				<input type="hidden" name="cardid" value="{@id}" />
+				<input type="hidden" name="card_name" value="{name}" />
+				<input type="hidden" name="card_width" value="{logo-width}" />
+				<input type="hidden" name="card_height" value="{logo-height}" />
+				<input type="hidden" name="card_url" value="{$url}" />
+				<table>
+				<tr>
+					<td><img src="/img/{logo-width}x{logo-height}_card_{@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
+					<td colspan="3"><input type="submit" value="{name}" class="mPoint_Card_Button" /></td>
+				</tr>
+				</table>
+			</div>
+		</form>
+	</div>
+</xsl:template>
+
+<xsl:template match="item" mode="datacash">
+	<xsl:variable name="url" select="concat('https://', /root/system/host, '/img/', logo-width, 'x', logo-height, '_card_', @id, '_', /root/system/session/@id, '.png')" />
+	<div>
+		<form action="{concat('http://', /root/system/host, '/wirecard/postform.php') }" method="post">
+			<div class="mPoint_Card">
+				<!-- wirecard Required Data -->
+				<input type="hidden" name="merchant_account_id" value="{account}" />
+				<input type="hidden" name="requested_amount" value="{/root/transaction/amount}" />
+				<input type="hidden" name="requested_amount_currency" value="{currency}" />
+				<input type="hidden" name="transaction_type" value="authorization" />
+				<input type="hidden" name="pspid" value="{@pspid}" />	
+				<input type="hidden" name="cardid" value="{@id}" />
+				<input type="hidden" name="card_name" value="{name}" />
+				<input type="hidden" name="card_width" value="{logo-width}" />
+				<input type="hidden" name="card_height" value="{logo-height}" />
+				<input type="hidden" name="card_url" value="{$url}" />
+				<table>
+				<tr>
+					<td><img src="/img/{logo-width}x{logo-height}_card_{@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
+					<td colspan="3"><input type="submit" value="{name}" class="mPoint_Card_Button" /></td>
+				</tr>
+				</table>
+			</div>
+		</form>
+	</div>
+</xsl:template>
+
+<xsl:template match="item" mode="globalcollect">
+	<xsl:variable name="url" select="concat('https://', /root/system/host, '/img/', logo-width, 'x', logo-height, '_card_', @id, '_', /root/system/session/@id, '.png')" />
+	<div>
+		<form action="{concat('http://', /root/system/host, '/wirecard/postform.php') }" method="post">
+			<div class="mPoint_Card">
+				<!-- wirecard Required Data -->
+				<input type="hidden" name="merchant_account_id" value="{account}" />
+				<input type="hidden" name="requested_amount" value="{/root/transaction/amount}" />
+				<input type="hidden" name="requested_amount_currency" value="{currency}" />
+				<input type="hidden" name="transaction_type" value="authorization" />
+				<input type="hidden" name="pspid" value="{@pspid}" />	
+				<input type="hidden" name="cardid" value="{@id}" />
+				<input type="hidden" name="card_name" value="{name}" />
+				<input type="hidden" name="card_width" value="{logo-width}" />
+				<input type="hidden" name="card_height" value="{logo-height}" />
+				<input type="hidden" name="card_url" value="{$url}" />
+				<table>
+				<tr>
+					<td><img src="/img/{logo-width}x{logo-height}_card_{@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="" /></td>
+					<td colspan="3"><input type="submit" value="{name}" class="mPoint_Card_Button" /></td>
+				</tr>
+				</table>
+			</div>
+		</form>
+	</div>
+</xsl:template>
+
 
 </xsl:stylesheet>

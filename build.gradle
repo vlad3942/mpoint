@@ -36,7 +36,7 @@ configurations
 
 dependencies
         {
-            runtime 'com.cellpointmobile.php5api:php5api:1.0'
+            runtime 'com.cellpointmobile.php5api:php5api:1.31'
         }
 
 task phpDependencies(type:Copy) {

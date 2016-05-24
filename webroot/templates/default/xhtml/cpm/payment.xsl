@@ -241,6 +241,12 @@
 							</table>
 						</xsl:when>
 						</xsl:choose>
+						
+						<div id="password">
+							<div class="mPoint_Label">CVC:</div>
+							<input type="password" name="cvc" value="" />
+						</div>
+						
 						<xsl:if test="@single-sign-on != 'true' or string-length(transaction/auth-url) = 0">
 							<div id="password">
 								<div class="mPoint_Label"><xsl:value-of select="labels/password" />:</div>
@@ -309,7 +315,7 @@
 			</xsl:choose>
 		</td>
 		<td><img src="/img/{logo-width}x{logo-height}_card_{type/@id}_{/root/system/session/@id}.png" width="{logo-width}" height="{logo-height}" alt="{type}" /></td>
-		<td colspan="3"><xsl:value-of select="$card-name" /></td>
+		<td colspan="2"><xsl:value-of select="$card-name" /></td>
 		<td class="mPoint_Info">
 			<xsl:if test="string-length(expiry) &gt; 0">
 				(<xsl:value-of select="expiry" />)
