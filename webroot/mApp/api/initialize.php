@@ -35,6 +35,8 @@ require_once(sINTERFACE_PATH ."/cpm_psp.php");
 require_once(sCLASS_PATH ."/dsb.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
+// Require Data Class for Client Information
+require_once(sCLASS_PATH ."/clientinfo.php");
 
 $aMsgCds = array();
 
@@ -47,14 +49,15 @@ $_SERVER['PHP_AUTH_PW'] = "Ghdy4_ah1G";
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
 $HTTP_RAW_POST_DATA .= '<initialize-payment client-id="10019" account="100026">';
-$HTTP_RAW_POST_DATA .= '<transaction order-no="1234abc">';
-$HTTP_RAW_POST_DATA .= '<amount country-id="100">200</amount>';
+$HTTP_RAW_POST_DATA .= '<transaction order-no="904-70158922">';
+$HTTP_RAW_POST_DATA .= '<amount country-id="100">2400</amount>';
 $HTTP_RAW_POST_DATA .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
+$HTTP_RAW_POST_DATA .= '<mac>0489be0b8439cc6543787bd722f8d8352e23fc7e</mac>';
 $HTTP_RAW_POST_DATA .= '</transaction>';
 $HTTP_RAW_POST_DATA .= '<client-info platform="iOS" version="5.1.1" language="da">';
-$HTTP_RAW_POST_DATA .= '<mobile country-id="100" operator-id="10000">288828610</mobile>';
+$HTTP_RAW_POST_DATA .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
 $HTTP_RAW_POST_DATA .= '<email>jona@oismail.com</email>';
-$HTTP_RAW_POST_DATA .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
+$HTTP_RAW_POST_DATA .= '<device-id>4615F4E94A9749D7B7BB9654EAC00ED314212383</device-id>';
 $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</initialize-payment>';
 $HTTP_RAW_POST_DATA .= '</root>';
@@ -87,25 +90,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					$iValResult = $obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount);
 					if ($obj_ClientConfig->getMaxAmount() > 0 && $iValResult != 10) { $aMsgCds[$iValResult + 50] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount; }
 					
-					if ($obj_ClientConfig->hasSalt())
+					// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
+					if (strlen($obj_ClientConfig->getSalt() ) > 0 && strlen($obj_DOM->{'initialize-payment'}[$i]->transaction['order-no']) > 0 && intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount) > 100)
 					{
-						$aMACParams = array();
-						$aMACParams['client-id'] = (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"] ;
-						$aMACParams['order-no'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction['order-no'] ;
-						$aMACParams['amount'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount ;
-						$aMACParams['amount-country-id'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"] ;
-						$aMACParams['mobile'] = (float) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile ;
-						$aMACParams['mobile-country-id'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile['country-id'] ;
-						$aMACParams['email'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->email ;
-						$aMACParams['device-id'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->{'device-id'} ;	
-						
-						$sMAC = "";
-						if (count($obj_DOM->{'initialize-payment'}[$i]->transaction->mac) == 1)
-						{
-							$sMAC = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->mac ;
-						}
-						
-						if( $obj_Validator->valHMAC($sMAC, $aMACParams, $obj_ClientConfig->getSalt() ) != 10) { $aMsgCds[$obj_Validator->valHMAC($sMAC, $aMACParams, $obj_ClientConfig->getSalt() ) + 200] = $sMAC; }						
+						$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'},
+																  CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
+																  $_SERVER['HTTP_X_FORWARDED_FOR']);
+						if ($obj_Validator->valHMAC(trim($obj_DOM->{'initialize-payment'}[$i]->transaction->mac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_DOM->{'initialize-payment'}[$i]->transaction['order-no']), intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount), intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"]) ) != 10) { $aMsgCds[210] = trim($obj_DOM->{'initialize-payment'}[$i]->transaction->mac); }						
 					}
 					
 					// Success: Input Valid

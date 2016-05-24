@@ -676,14 +676,6 @@ class ClientConfig extends BasicConfig
 	public function showAllCards() { return $this->_bShowAllCards; }
 	
 	/**
-	 * Checks if a partilcular Client has sal value set in the database and hence should have an
-	 * HMAC generated.
-	 *
-	 * @return 	Bool
-	 */
-	public function hasSalt() {return (empty($this->_sSalt) === false); }
-	
-	/**
 	 * Returns the number of the last 4 masked digits, which should be returned for a Stored Card
 	 * 
 	 * @return 	integer
@@ -792,7 +784,7 @@ class ClientConfig extends BasicConfig
 		$xml .= '<email-receipt>'. General::bool2xml($this->_bEmailReceipt) .'</email-receipt>';
 		$xml .= '<auto-capture>'. General::bool2xml($this->_bAutoCapture) .'</auto-capture>';
 		$xml .= '<store-card>'. $this->_iStoreCard .'</store-card>';
-		$xml .= '<salt>'. $this->getSalt() .'</salt>';
+		$xml .= '<salt>'. htmlspecialchars($this->_sSalt, ENT_NOQUOTES) .'</salt>';
 		$xml .= '<ip-list>';
 		foreach ($this->_aIPList as $value)
 		{
@@ -831,7 +823,8 @@ class ClientConfig extends BasicConfig
 		$xml .= '<callback-protocol send-psp-id = "'.General::bool2xml($this->sendPSPID()).'">'. htmlspecialchars($this->_sMethod, ENT_NOQUOTES) .'</callback-protocol>';
 		$xml .= '<identification>'. $this->_iIdentification .'</identification>';
 		$xml .= '<transaction-time-to-live>'. $this->getTransactionTTL() .'</transaction-time-to-live>';
-		$xml .= $this->_getIINRangesConfigAsXML();						
+		$xml .= $this->_getIINRangesConfigAsXML();		
+		$xml .= '<salt>'. htmlspecialchars($this->_sSalt, ENT_NOQUOTES) .'</salt>';
 		$xml .= '</client-config>';
 		
 		return $xml;

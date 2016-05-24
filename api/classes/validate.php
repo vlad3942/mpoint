@@ -1142,10 +1142,9 @@ class Validate
 		return $code;
 	}
 	
-	
 	/**
-	 * Performs validation of the Message Authentication Code (MAC).
-	 * The is calculated based on the following data fields in the request (in that order):
+	 * Performs validation of the provided Hash based Message Authentication Code (HMAC) by generating the equivalent as a SHA1 hash.
+	 * The HMAC is generated based on the following data fields in the request (in that order):
 	 * 	- clientid
 	 * 	- order number
 	 * 	- amount
@@ -1154,25 +1153,26 @@ class Validate
 	 *  - mobile country-id
 	 *  - e-mail
 	 *  - device id
-	 *  - salt
 	 * Additionally the provided salt is appended at the end.
+	 *  
+	 * @see		Validate::valMAC()
 	 *
-	 * The method will return the following status codes:
-	 * 	 1. Invald Message Authentication Code (MAC)
-	 * 	10. Success
-	 *
-	 * @param 	string $mac		Message Authentication Code provided by the client in the request
-	 * @param 	array $data		Array of request data on which the Message Authentication Code should be calculated
-	 * @param 	string $salt	The shared secret configured for the Client
+	 * @param 	string $mac						Message Authentication Code provided by the client in the request
+	 * @param	ClientConfig $obj_ClientConfig	The Client Configuration from which fields such Client ID and Salt are retrieved
+	 * @param	ClientInfo $obj_ClientInfo		The Client Information from which fields such as the customer's mobile & email is retrieved
+	 * @param	string $orderno					The order number returned by the upstream Selling System
+	 * @param	integer $amount					The total amount for the order in the country's smallest currency
+	 * @param	integer $countryid				The unique ID of the country that designates the currency
 	 * @return 	integer
 	 */
-	public function valHMAC($mac, array &$data, $salt)
-	{		
-		if (@$data["order-no"] == null) { $orderno = ""; }
-		else { $orderno = @$data["order-no"]; }
-		$chk = hash('sha256', @$data["client-id"] . $orderno . @$data["amount"] . @$data["amount-country-id"] . @$data["mobile"] . @$data["mobile-country-id"] . @$data["email"] . @$data["device-id"] . $salt);
-		if ($mac == $chk) { $code = 10; }
-		else { $code = 1; }
+	public function valHMAC($mac, ClientConfig $obj_ClientConfig, ClientInfo $obj_ClientInfo, $orderno, $amount, $countryid)
+	{
+		$code = 1;
+		$chk = sha1($obj_ClientConfig->getID() . $orderno . $amount . $countryid . $obj_ClientInfo->getMobile() . $obj_ClientInfo->getCountryConfig()->getID() . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt() );
+		if ($mac == $chk)
+		{
+			$code = 10;
+		}
 		
 		return $code;
 	}
