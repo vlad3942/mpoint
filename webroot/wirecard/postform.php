@@ -95,36 +95,6 @@ foreach($obj_XML_initialize as $key => $data)
 	}	
 }
 
-/* $initObject = $obj_XML_initialize->{'hidden-fields'};
-$request_time_stamp = gmdate('YmdHis');
-$request_id = $initObject->request_id;
-$merchant_account_id = $initObject->merchant_account_id;
-$transaction_type = $initObject->transaction_type;
-$requested_amount = $initObject->requested_amount;
-$request_amount_currency = $initObject->request_amount_currency;
-$redirect_url = "https://sandbox-engine.thesolution.com/shop/success.html";
-$cancel_redirect_url = "https://sandbox-engine.thesolution.com/shop/cancel.html";
-$success_redirect_url = "https://sandbox-engine.thesolution.com/shop/success.html";
-$ip_address = $initObject->payment_ip_address;
-$secret_key = "d1efed51-4cb9-46a5-ba7b-0fdc87a66544";
-
-$sha256 = trim(
-		$request_time_stamp
-		.$request_id
-		.$merchant_account_id
-		.$transaction_type
-		.$requested_amount
-		.$request_amount_currency
-		.$redirect_url
-		.$ip_address
-		.$secret_key
-		);
-
-$request_signature = hash('sha256', $sha256);
-
-$itemFields .= '<request_signature>'.$request_signature.'</request_signature>';
-$itemFields .= '<request_time_stamp>'.$request_time_stamp.'</request_time_stamp>'; */
-
 $xml .= '<labels>';
 $xml .= '<progress>Step 2 of 2</progress>';
 $xml .= '	<info>Please enter your card information below</info>';
