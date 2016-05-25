@@ -36,8 +36,8 @@ $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<save-card client-id="100" >';
-$HTTP_RAW_POST_DATA .= '<card type-id="6" psp-id = "9" preferred="true" charge-type-id="2">';
+$HTTP_RAW_POST_DATA .= '<save-card client-id="100">';
+$HTTP_RAW_POST_DATA .= '<card type-id="6" psp-id="9" preferred="true" charge-type-id="2">';
 $HTTP_RAW_POST_DATA .= '<name>My VISA</name>';
 $HTTP_RAW_POST_DATA .= '<card-number-mask>540287******5344</card-number-mask>';
 $HTTP_RAW_POST_DATA .= '<expiry-month>10</expiry-month>';
@@ -49,7 +49,7 @@ $HTTP_RAW_POST_DATA .= '<first-name>Jonatan Evald</first-name>';
 $HTTP_RAW_POST_DATA .= '<last-name>Buus</last-name>';
 $HTTP_RAW_POST_DATA .= '<street>Dexter Gordons Vej 3, 6.tv</street>';
 $HTTP_RAW_POST_DATA .= '<postal-code>2450</postal-code>';
-$HTTP_RAW_POST_DATA .= '<city>'. utf8_encode("København SV") .'</city>';
+$HTTP_RAW_POST_DATA .= '<city>'. utf8_encode("KÃ¸benhavn SV") .'</city>';
 $HTTP_RAW_POST_DATA .= '<state>N/A</state>';
 $HTTP_RAW_POST_DATA .= '</address>';
 $HTTP_RAW_POST_DATA .= '</card>';
@@ -149,6 +149,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$iAccountID = $obj_mPoint->newAccount($obj_CountryConfig->getID(), (float) $obj_DOM->{'save-card'}[$i]->{'client-info'}->mobile, (string) $obj_DOM->{'save-card'}[$i]->password, (string) $obj_DOM->{'save-card'}[$i]->{'client-info'}->email, (string) $obj_DOM->{'save-card'}[$i]->{'client-info'}->{'customer-ref'});
 									}
 									if (intval($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'}) < 10) { $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} = "0". intval($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'}); }
+									
+									// The preferred attribute could be omitted as it is optional.
+									$bPreferred = NULL;
+									if (strlen($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) > 0)
+									{
+										$bPreferred = General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]);
+									}
+									
 									$code = $obj_mPoint->saveCard($iAccountID,
 																  $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"],
 																  $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"],
@@ -157,7 +165,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 																  (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} ."/". substr($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-year'}, -2),
 																  (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-holder-name'},
 																  (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name,
-																  General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]), 
+																  $bPreferred, 
 																  (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["charge-type-id"]) + 1;
 								}
 								// Naming a Stored Card
