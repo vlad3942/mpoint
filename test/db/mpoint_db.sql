@@ -6851,7 +6851,7 @@ ALTER TABLE Client.Client_Tbl ADD CONSTRAINT MaskedDigits_Chk CHECK (0 <= num_ma
 ALTER TABLE Client.MerchantAccount_Tbl ALTER name TYPE VARCHAR(255);
 /* ==================== CLIENT SCHEMA END ==================== */
 
--- MASTER V1.96 ---
+-- MASTER V1.97 ---
 /* ==================== CLIENT.CLIENT_TBL SCHEMA START ==================== */
 ALTER TABLE Client.Client_Tbl ADD COLUMN salt VARCHAR(20);
 /* ==================== CLIENT.CLIENT_TBL SCHEMA END ==================== */
