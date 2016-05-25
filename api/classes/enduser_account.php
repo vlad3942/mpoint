@@ -160,42 +160,6 @@ class EndUserAccount extends Home
 	}
 
 	/**
-	 * Retrieves the Number of active cards added by a customer
-	 *
-	 * @param integer 	$iAccountID		Account ID
-	 * @return integer
-	 */
-	
-	public function getActiveCardsCount($iAccountID)
-	{
-		$sql = "SELECT count(1) AS cardcount
-				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
-				WHERE accountid = ". $iAccountID ." AND enabled = '1'";
-		//		echo $sql ."\n";
-		$RS = $this->getDBConn()->getName($sql);
-	
-		return is_array($RS) === true ? intval($RS["CARDCOUNT"]) : 0;
-	}
-	
-	/**
-	 * Retrieves the Number of Preferred cards added by a customer
-	 *
-	 * @param integer 	$iAccountID		Account ID
-	 * @return integer
-	 */
-	
-	public function getPreferredCardsCount($iAccountID)
-	{
-		$sql = "SELECT count(1) AS prefcount
-				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
-				WHERE accountid = ". $iAccountID ." AND enabled = '1' AND preferred = '1'";
-		//		echo $sql ."\n";
-		$RS = $this->getDBConn()->getName($sql);
-	
-		return is_array($RS) === true ? intval($RS["PREFCOUNT"]) : 0;
-	}
-	
-	/**
 	 * Saves a credit card to an End-User Account.
 	 * If no account can be found for the End-User a new account will automatically be created.
 	 * The method will update the Ticket ID if the card has been saved previously and return the following status codes:
@@ -290,49 +254,27 @@ class EndUserAccount extends Home
 
 		// Check if card has already been saved
 		$id = $this->getCardIDFromCardDetails($iAccountID, $cardid, $mask, $exp, $token);
-		$iCardCount = $this->getActiveCardsCount($iAccountID);		
 
-		// Stored Card should be preferred.
-		$sPreferredString = "";
-		$bPrefValue = false;
-		//if the preferred option is passed.
-		if (isset($pref) === true)
+		// Stored Card should be preferred
+		if ($pref === true)
 		{
-			if($pref === true)
-			{
-				//Set all the previous preferred cards to false.
-				$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
-						SET preferred = '0'
-						WHERE accountid = ". $iAccountID ." AND clientid = ". $this->_obj_ClientConfig->getID();
-	//			echo $sql ."\n";
-				$this->getDBConn()->query($sql);
-				$bPrefValue = true;
-			}
-			
-			$sPreferredString = ", preferred = '". intval($bPrefValue) ."'";		
+			$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
+					SET preferred = '0'
+					WHERE accountid = ". $iAccountID ." AND clientid = ". $this->_obj_ClientConfig->getID();
+//			echo $sql ."\n";
+			$this->getDBConn()->query($sql);
 		}
-		else //preferred option is not set.
-		{
-			$bPrefValue = false;
-		}		
-		
-		if($iCardCount == 0 && isset($pref) === false) //If this is the first card being added, it should be preferred.
-		{
-			$bPrefValue = true;
-			$sPreferredString = ", preferred = '". intval($bPrefValue) ."'";
-		}		
-		
 		// Card previously saved by End-User
 		if ($id > 0)
 		{
 			$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 					SET pspid = ". intval($pspid) .", ticket = '". $this->getDBConn()->escStr($token) ."',
-						mask = '". $this->getDBConn()->escStr(trim($mask) ) ."', expiry = '". $this->getDBConn()->escStr($exp) ."'
-						". $sPreferredString .", enabled = '1'";
+						mask = '". $this->getDBConn()->escStr(trim($mask) ) ."', expiry = '". $this->getDBConn()->escStr($exp) ."',
+						enabled = '1'";
+			if (is_null($pref) === false) { $sql .= ", preferred = '". intval($pref) ."'"; }
 			if (empty($name) === false) { $sql .= ", name = '". $this->getDBConn()->escStr(trim($name) ) ."'"; }
 			if (empty($chn) === false) { $sql .= ", card_holder_name = '". $this->getDBConn()->escStr(trim($chn) ) ."'"; }
 			if ($chargeid > 0) { $sql .= ", chargetypeid = ". intval($chargeid) .""; }
-				
 			$sql .= "
 					WHERE id = ". $id;
 //			echo $sql ."\n";
@@ -343,15 +285,21 @@ class EndUserAccount extends Home
 		// Card not previously saved, add card info to database
 		else
 		{
+			// Preferred status undefined
+			if (is_null($pref) === true)
+			{
+				$obj_XML = simplexml_load_string($this->getStoredCards($iAccountID, $this->_obj_ClientConfig) );
+				// Customer doesn't have other cards saved for this client
+				if (count($obj_XML->xpath("/stored-cards/card[client/@id = ". $this->_obj_ClientConfig->getID() ."]")) == 0) { $pref = true; }
+			}
 			$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 						(accountid, clientid, cardid, pspid, ticket, mask, expiry, name, preferred, card_holder_name, chargetypeid)
 					VALUES
 						(". $iAccountID .", ". $this->_obj_ClientConfig->getID() .", ". intval($cardid) .", ". intval($pspid) .", 
 						 '". $this->getDBConn()->escStr($token) ."', '". $this->getDBConn()->escStr(trim($mask) ) ."', '". $this->getDBConn()->escStr($exp) ."',
-						 '". $this->getDBConn()->escStr(trim($name) ) ."', '". intval($bPrefValue) ."','". $this->getDBConn()->escStr(trim($chn) )."', ". intval($chargeid) .")";
+						 '". $this->getDBConn()->escStr(trim($name) ) ."', '". intval($pref) ."','". $this->getDBConn()->escStr(trim($chn) )."', ". intval($chargeid) .")";
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
-
 			if (is_resource($res) === true)
 			{
 				$sql = "SELECT id
