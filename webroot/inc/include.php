@@ -22,11 +22,11 @@ else
 /* ========== Define System path End ========== */
 
 // Define path to the General API classes
-define("sAPI_CLASS_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/../../php5api/classes/");
+define("sAPI_CLASS_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/../php5api/classes/");
 // Define path to the General API interfaces
-define("sAPI_INTERFACE_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/../../php5api/interfaces/");
+define("sAPI_INTERFACE_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/../php5api/interfaces/");
 // Define path to the General API functions
-define("sAPI_FUNCTION_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/../../php5api/functions/");
+define("sAPI_FUNCTION_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/../php5api/functions/");
 
 // Define path to the System classes
 define("sCLASS_PATH", sSYSTEM_PATH ."/api/classes/");
