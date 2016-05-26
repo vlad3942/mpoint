@@ -104,8 +104,6 @@ if (strlen($_SESSION['obj_TxnInfo']->getOrderID() ) > 0 && $obj_mPoint->orderAlr
 			$b .= "&sourceOfFunds.type=CARD";
 			$b .= "&mpoint-id=".$_POST['mpoint-id'];
 			$b .= "&store-card=".(!empty($_POST['store-card'])?true:false);
-			
-			file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_datacash.log", "FirstRequest : ".$b."\n\n", FILE_APPEND);
 									
 			$aHTTP_CONN_INFO["data-cash"]["protocol"] = "https";
 			$aHTTP_CONN_INFO["data-cash"]["port"] = "443";
@@ -151,9 +149,7 @@ if (strlen($_SESSION['obj_TxnInfo']->getOrderID() ) > 0 && $obj_mPoint->orderAlr
 				}
 								
 				$b = http_build_query($dataToSend);
-				
-				file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_datacash.log", "second request : ".$b."\n\n", FILE_APPEND);
-				
+								
 				$urlData = parse_url($dataToSend['gatewayReturnURL']);
 				
 				$aHTTP_CONN_INFO["data-cash"]["protocol"] = $urlData['scheme'];
@@ -169,9 +165,7 @@ if (strlen($_SESSION['obj_TxnInfo']->getOrderID() ) > 0 && $obj_mPoint->orderAlr
 				$aHTTP_CONN_INFO["data-cash"]["contenttype"] = "application/x-www-form-urlencoded";
 				$aHTTP_CONN_INFO["data-cash"]["username"] = $_SESSION['obj_XML_initialize']['user_name'];
 				$aHTTP_CONN_INFO["data-cash"]["password"] = $_SESSION['obj_XML_initialize']['password'];
-				
-				file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_datacash.log", "Second Request Details : ".var_export($aHTTP_CONN_INFO, true)."\n\n", FILE_APPEND);
-								
+												
 				unset($_SESSION['obj_XML_initialize']);				
 				
 				$h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
@@ -188,8 +182,7 @@ if (strlen($_SESSION['obj_TxnInfo']->getOrderID() ) > 0 && $obj_mPoint->orderAlr
 				$obj_Client->connect();
 				$code = $obj_Client->send($h, $b);
 				$obj_Client->disconnect();	
-				
-				file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_datacash.log", "Final Response : ".var_export($obj_Client->getReplyBody(), true)."\n", FILE_APPEND);
+					
 	
 				if($code == 200)
 				{
@@ -242,10 +235,10 @@ if (strlen($_SESSION['obj_TxnInfo']->getOrderID() ) > 0 && $obj_mPoint->orderAlr
 			$h .= "content-type: {CONTENTTYPE}" .HTTPClient::CRLF;
 			$h .= "user-agent: mPoint" .HTTPClient::CRLF;
 			//$h .= "Authorization: Basic ". base64_encode($aHTTP_CONN_INFO["wire-card"]["username"] .":". $aHTTP_CONN_INFO["wire-card"]["password"]) .HTTPClient::CRLF;
-			
+			/* 
 			file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_globalcollect.log", "Request Details : ".var_export($aHTTP_CONN_INFO, true)."\n\n", FILE_APPEND);
 						
-			file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_globalcollect.log", "body Request Details : ".$b."\n\n", FILE_APPEND);
+			file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_globalcollect.log", "body Request Details : ".$b."\n\n", FILE_APPEND); */
 				
 			$obj_Client = new HTTPClient(new Template(), $obj_ConnInfo);
 			$obj_Client->connect();
@@ -254,7 +247,7 @@ if (strlen($_SESSION['obj_TxnInfo']->getOrderID() ) > 0 && $obj_mPoint->orderAlr
 			
 			$obj_XML = $obj_Client->getReplyBody();
 		
-			file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_globalcollect.log", "response Details : ".$obj_XML."\n\n", FILE_APPEND);
+			/* file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_globalcollect.log", "response Details : ".$obj_XML."\n\n", FILE_APPEND); */
 						
 			if($code == 201)
 			{
