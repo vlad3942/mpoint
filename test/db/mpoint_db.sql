@@ -6855,3 +6855,8 @@ ALTER TABLE Client.MerchantAccount_Tbl ALTER name TYPE VARCHAR(255);
 /* ==================== Client SCHEMA START ==================== */
 ALTER TABLE Client.Client_Tbl ADD declineurl character varying(255);
 /* ==================== Client SCHEMA END ==================== */
+
+-- MASTER V1.97 ---
+/* ==================== CLIENT.CLIENT_TBL SCHEMA START ==================== */
+ALTER TABLE Client.Client_Tbl ADD COLUMN salt VARCHAR(20);
+/* ==================== CLIENT.CLIENT_TBL SCHEMA END ==================== */

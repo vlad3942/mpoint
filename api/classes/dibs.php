@@ -281,7 +281,12 @@ class DIBS extends Callback implements Captureable, Refundable
 			$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
 			$b .= "&mpointid=". $this->getTxnInfo()->getID();
 			$b .= "&transact=". $extID;
-			$b .= "&amount=". $iAmount;
+			
+			if($code == 5) 
+			{
+				$b .= "&amount=". $iAmount;
+			}
+			
 			$b .= "&orderid=". urlencode($this->getTxnInfo()->getOrderID() );
 			if ($this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP) > -1) { $b .= "&account=". $this->getMerchantSubAccount($this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID(), Constants::iDIBS_PSP); }
 			$b .= "&textreply=true";
@@ -300,7 +305,15 @@ class DIBS extends Callback implements Captureable, Refundable
 				{
 					if (array_key_exists("result", $aStatus) === false) { $str = var_export($aStatus, true); }
 					else { $str = "Result Code: ". $aStatus["result"]; }
-					trigger_error("Refund declined by DIBS for Transaction: ". $this->getTxnInfo()->getID() ."(". $extID ."), ". $str, E_USER_WARNING);
+					
+					if($code == 2)
+					{
+						trigger_error("Cancel declined by DIBS for Transaction: ". $this->getTxnInfo()->getID() ."(". $extID ."), ". $str, E_USER_WARNING);
+					} 
+					else 
+					{
+						trigger_error("Refund declined by DIBS for Transaction: ". $this->getTxnInfo()->getID() ."(". $extID ."), ". $str, E_USER_WARNING);
+					}
 					
 					return $aStatus["result"];
 				}

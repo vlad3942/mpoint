@@ -218,6 +218,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 															 General::xml2bool($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'callback-protocol'}["send-psp-id"]),
 															 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->identification,
 															 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'transaction-time-to-live'},
+															 trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'salt'}),
 															 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]["id"] );
 						// Success
 						if ($iClientID > 0)
