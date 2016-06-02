@@ -2,19 +2,20 @@
 <root>
 	<PML_IF COND="cgi.cardid = 2">
 		<url method="post" content-type="application/x-www-form-urlencoded">https://payment.architrade.com/shoppages/<PML_VAL>cgi.merchant</PML_VAL>/auth.pml</url>
+		<store_card>preauth</store_card>
 	</PML_IF>
 	<PML_ELSE>
 		 <url method="post" content-type="application/x-www-form-urlencoded">https://payment.architrade.com/cgi-ssl/3dsecure.cgi</url> 
 		  <decline_url><PML_VAL>string.HTMLencode(cgi.declineurl)</PML_VAL></decline_url>
 		  <cancel_url><PML_VAL>string.HTMLencode(cgi.cancelurl)</PML_VAL></cancel_url>
 		  <accept_url><PML_VAL>string.HTMLencode(cgi.accepturl)</PML_VAL></accept_url>
+		  <store_card>maketicket</store_card>
 	</PML_ELSE>
 	
 		<card_number>cardno</card_number>
 		<expiry_month>expmon</expiry_month>
 		<expiry_year>expyear</expiry_year>
 		<cvc>cvc</cvc>
-		<store_card>maketicket</store_card>
 	<hidden_fields>
 		<paytype><PML_VAL>cgi.paytype</PML_VAL></paytype>
 		<fullreply>true</fullreply>
