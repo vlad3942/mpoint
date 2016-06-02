@@ -330,7 +330,7 @@ abstract class Callback extends EndUserAccount
 		if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true) { $sBody .= "&pspid=". urlencode($pspid); }
 		if ( strlen($this->_obj_TxnInfo->getDescription() ) > 0) { $sBody .= "&description=". urlencode($this->_obj_TxnInfo->getDescription() ); }
 		$sBody .= $this->getVariables();
-		$sBody .= "&mac=". urlencode($this->_obj_TxnInfo->getMAC() );
+		$sBody .= "&mac=". urlencode($this->_obj_TxnInfo->getHMAC() );
 		/* ----- Construct Body End ----- */
 
 		$this->performCallback($sBody, $obj_SurePay);
