@@ -129,7 +129,7 @@
 	<td><b>Selected markup : <span id="markupname"></span></b><input type="hidden" name="markup" id="markup" value="xhtml" /></td>
 </tr>
 <tr>
-	<td><input type="hidden" name="mobile" value="28882861" /></td>
+	<td><input type="hidden" name="mobile" value="30206172" /></td>
 </tr>
 <tr>
 	<td><input type="hidden" name="operator" value="10002" /></td>
@@ -144,7 +144,7 @@
 	<td><input type="hidden" name="language" value="gb" /></td>
 </tr>
 <tr>
-	<td><input type="hidden" name="auth-token" value="123abc" /></td>
+	<td><input type="hidden" name="auth-token" value="" /></td>
 </tr>
 <tr>
 	<td><input type="hidden" name="customer-ref" value="1234412" /></td>

@@ -527,7 +527,7 @@ class TxnInfo
 	 */
 	public function getIP() { return $this->_sIP; }
 	/**
-	 * Returns the Message Authentication Code (MAC) for the Transaction using the sha1 algorithm.
+	 * Returns the Message Authentication Code (HMAC) for the Transaction using the sha1 algorithm.
 	 * The Message Authentication Code is calculated from the following fields (in that order):
 	 * 	- Client ID
 	 * 	- Account ID
@@ -542,7 +542,7 @@ class TxnInfo
 	 *
 	 * @return 	string		Message Authentication Code
 	 */
-	public function getMAC() { return sha1($this->_obj_ClientConfig->getID() . $this->_obj_ClientConfig->getAccountConfig()->getID() . $this->_iID . $this->_sOrderID . $this->_obj_CountryConfig->getID() . $this->_lAmount . $this->_sCustomerRef . $this->_sEMail . $this->_sMobile . $this->_obj_ClientConfig->getPassword() ); }
+	public function getHMAC() { return sha1($this->_obj_ClientConfig->getID() . $this->_obj_ClientConfig->getAccountConfig()->getID() . $this->_iID . $this->_sOrderID . $this->_obj_CountryConfig->getID() . $this->_lAmount . $this->_sCustomerRef . $this->_sEMail . $this->_sMobile . $this->_obj_ClientConfig->getPassword() ); }
 	/**
 	 * Returns Unique ID for the The PSP used for the transaction Defaults to -1.
 	 *
@@ -650,7 +650,7 @@ class TxnInfo
 		$xml .= '<customer-ref>'. htmlspecialchars($this->_sCustomerRef, ENT_NOQUOTES) .'</customer-ref>';
 		$xml .= '<description>'. htmlspecialchars($this->_sDescription, ENT_NOQUOTES) .'</description>';
 		$xml .= '<ip>'. htmlspecialchars($this->_sIP, ENT_NOQUOTES) .'</ip>';
-		$xml .= '<mac>'. htmlspecialchars($this->getMAC(), ENT_NOQUOTES) .'</mac>';
+		$xml .= '<hmac>'. htmlspecialchars($this->getHMAC(), ENT_NOQUOTES) .'</hmac>';
 		$xml .= '</transaction>';
 
 		return $xml;
