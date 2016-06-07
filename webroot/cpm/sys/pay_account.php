@@ -17,6 +17,12 @@ require_once("../../inc/include.php");
 // Require the PHP API for handling the connection to GoMobile
 require_once(sAPI_CLASS_PATH ."/gomobile.php");
 
+// Require API for Simple DOM manipulation
+require_once(sAPI_CLASS_PATH ."simpledom.php");
+
+// Require data class for Payment Service Provider Configurations
+require_once(sCLASS_PATH ."/pspconfig.php");
+
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 // Require Business logic for the End-User Account Component
@@ -24,8 +30,14 @@ require_once(sCLASS_PATH ."/enduser_account.php");
 // Require data data class for Customer Information
 require_once(sCLASS_PATH ."/customer_info.php");
 
+require_once(sCLASS_PATH ."/credit_card.php");
+
 // Require general Business logic for the Callback module
 require_once(sCLASS_PATH ."/callback.php");
+
+// Require specific Business logic for the CPM PSP component
+require_once(sINTERFACE_PATH ."/cpm_psp.php");
+
 // Require general Business logic for the Cellpoint Mobile module
 require_once(sCLASS_PATH ."/cpm.php");
 // Require specific Business logic for the DIBS component
@@ -34,6 +46,8 @@ require_once(sCLASS_PATH ."/dibs.php");
 require_once(sCLASS_PATH ."/wannafind.php");
 // Require specific Business logic for the WorldPay component
 require_once(sCLASS_PATH ."/worldpay.php");
+
+require_once(sCLASS_PATH ."/wirecard.php");
 
 ignore_user_abort(true);
 set_time_limit(0);
@@ -181,6 +195,29 @@ if (count($aMsgCds) == 0)
 					else
 					{
 						$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+						$aMsgCds[] = 51;
+					}
+					break;
+				case (Constants::iWIRE_CARD_PSP): // WireCard
+					$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig()->getID(), $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getID(), Constants::iWIRE_CARD_PSP);
+				
+					$obj_PSP = new WireCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["wire-card"]);
+						
+					$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_XML);
+					// Authorization succeeded
+					if ($code == "100")
+					{
+						$aMsgCds[] = 100;
+						//$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
+					}
+					// Error: Authorization declined
+					else
+					{
+						$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+							
+						//header("HTTP/1.1 502 Bad Gateway");
+							
+						//$xml .= '<status code="92">Authorization failed, WireCard returned error: '. $code .'</status>';
 						$aMsgCds[] = 51;
 					}
 					break;

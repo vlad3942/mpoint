@@ -24,6 +24,8 @@ require_once(sCLASS_PATH ."/wannafind.php");
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
 // Require specific Business logic for the MobilePay component
 require_once(sCLASS_PATH ."/mobilepay.php");
+// Require specific Business logic for the DSB component
+require_once(sCLASS_PATH ."/dsb.php");
 
 
 set_time_limit(0);
@@ -32,10 +34,12 @@ $obj_Status = new Status($_OBJ_DB, $_OBJ_TXT);
 
 $tOffset = isset($_GET['to']) === true ? intval($_GET['to']) : 3600*24*5;
 $fOffset = isset($_GET['from']) === true ? intval($_GET['from']) : 3600*24*30;
-
 $to = time() - $tOffset;
 $from = time() - $fOffset;
-$aTxns = $obj_Status->getActiveTransactions($from, $to, 0, true, 50);
+
+$clients = isset($_GET['clients']) === true ? explode(",", $_GET['clients']) : array();
+
+$aTxns = $obj_Status->getActiveTransactions($from, $to, 0, true, 500, $clients);
 $aSuccess = array();
 
 echo date("r"). "\n";
@@ -66,6 +70,7 @@ foreach ($aTxns as $txn)
 			}
 			break;
 		case Constants::iMOBILEPAY_PSP:
+		case Constants::iDSB_PSP:
 			$iStatus = $obj_PSP->cancel();
 			break;
 		default:

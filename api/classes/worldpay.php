@@ -173,7 +173,6 @@ class WorldPay extends Callback implements Captureable, Refundable
 		$obj_HTTP->connect();
 		$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
 		$obj_HTTP->disConnect();
-		
 		$obj_XML = null;
 		if ($code == 200)
 		{
@@ -182,6 +181,15 @@ class WorldPay extends Callback implements Captureable, Refundable
 			{
 				$obj_XML["code"] = Constants::iPAYMENT_ACCEPTED_STATE;
 				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, $obj_XML->asXML() );
+			}
+			// Error: Unable to initialize payment transaction
+			elseif (count($obj_XML->reply->orderStatus) == 1)
+			{
+				$obj_XML["code"] = Constants::iPAYMENT_DECLINED_STATE;
+				// Normalize response
+				$obj_XML->reply = (string) $obj_XML->reply->orderStatus->error;
+				$obj_XML->reply["error"] = $obj_XML->reply->orderStatus->error["code"];
+				trigger_error("Unable to initialize payment with WorldPay for transaction: ". $this->getTxnInfo()->getID() .", error code: ". $obj_XML->reply->orderStatus->error["code"] ."\n". $obj_XML->reply->orderStatus->error->asXML(), E_USER_WARNING);
 			}
 			// Error: Unable to initialize payment transaction
 			else
@@ -283,7 +291,7 @@ class WorldPay extends Callback implements Captureable, Refundable
 	 */
 	public function capture($iAmount = -1)
 	{
-		if ($iAmount == -1) { $this->getTxnInfo()->getAmount(); }
+		if ($iAmount == -1) { $iAmount = $this->getTxnInfo()->getAmount(); }
 		// Unmarshall the XML Document from WorldPay's "Payment Authorized" Notification
 		$a = $this->getMessageData($this->getTxnInfo()->getID(), Constants::iPAYMENT_ACCEPTED_STATE);
 		ob_start();
@@ -364,7 +372,7 @@ class WorldPay extends Callback implements Captureable, Refundable
 	 */
 	public function refund($iAmount = -1)
 	{
-		if ($iAmount == -1) { $this->getTxnInfo()->getAmount(); }
+		if ($iAmount == -1) { $iAmount = $this->getTxnInfo()->getAmount(); }
 		// Determine whether the payment was made with a Stored Card as WorldPay requires a different Merchant Code for these transactions
 		$bStoredCard = $this->_paidWithStoredCard();
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -651,5 +659,7 @@ class WorldPay extends Callback implements Captureable, Refundable
 		}
 		else { return false; }
 	}
+
+	public function getPSPID() { return Constants::iWORLDPAY_PSP; }
 }
 ?>

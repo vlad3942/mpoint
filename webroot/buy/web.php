@@ -154,7 +154,7 @@ if (array_key_exists(1000, $aMsgCds) === true)
 {
 	$_SESSION['obj_Info']->delInfo("payment-completed");
 	// Instantiate data object with the User Agent Profile for the customer's mobile device.
-	$_SESSION['obj_UA'] = UAProfile::produceUAProfile(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["iemendo"]) );
+	$_SESSION['obj_UA'] = UAProfile::produceUAProfile(HTTPConnInfo::produceConnInfo($aUA_CONN_INFO) );
 	unset($_SESSION['temp']);
 	// Start Shop Flow
 	if ($_SESSION['obj_TxnInfo']->getClientConfig()->getFlowID() == Constants::iPHYSICAL_FLOW)

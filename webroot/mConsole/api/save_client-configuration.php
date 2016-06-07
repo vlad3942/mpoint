@@ -218,6 +218,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 															 General::xml2bool($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'callback-protocol'}["send-psp-id"]),
 															 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->identification,
 															 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'transaction-time-to-live'},
+															 trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'salt'}),
 															 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]["id"] );
 						// Success
 						if ($iClientID > 0)
@@ -296,13 +297,20 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								{
 									for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}); $j++)											
 									{
+										$enabled = $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["enabled"];
+										if(is_null($enabled) == true)
+										{
+											$enabled = 'true';
+										}
+										
 										//Save card access data.
 										$iPMID = $obj_mPoint->saveStaticRoute($iClientID,
 																			 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["type-id"],
 																			 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["psp-id"],
 																			 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["state-id"],
 																			 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["country-id"],
-																			 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["id"]);
+																			 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["id"],
+																			 $enabled);
 										// Error: Break out of loop
 										if ($iPMID < 0) { throw new mConsoleSaveCardAccessFailedException("Error during save card access: ". $iPMID ." for client: ". $iClientID); }
 									}

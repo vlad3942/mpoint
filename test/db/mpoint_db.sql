@@ -32,7 +32,7 @@ $BODY$;
 
 CREATE OR REPLACE VIEW Public.DUAL AS SELECT E'Provides compatibility with Oracle when selecting from functions.\nUse "SELECT [FUNCTION] FROM DUAL" rather than "SELECT [FUNCTION]"';
 
-GRANT SELECT ON TABLE Public.DUAL TO mpoint;
+GRANT SELECT ON TABLE Public.DUAL TO postgres;
 
 
 CREATE SCHEMA system;
@@ -6152,7 +6152,7 @@ SELECT pg_catalog.setval('state_tbl_id_seq', 1, true);
 CREATE SCHEMA admin;
 
 
-ALTER SCHEMA admin OWNER TO mpoint;
+ALTER SCHEMA admin OWNER TO postgres;
 
 SET search_path = admin, pg_catalog;
 
@@ -6162,7 +6162,7 @@ SET default_with_oids = false;
 
 --
 -- TOC entry 176 (class 1259 OID 553686)
--- Name: access_tbl; Type: TABLE; Schema: admin; Owner: mpoint; Tablespace:
+-- Name: access_tbl; Type: TABLE; Schema: admin; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE access_tbl (
@@ -6175,11 +6175,11 @@ CREATE TABLE access_tbl (
 );
 
 
-ALTER TABLE admin.access_tbl OWNER TO mpoint;
+ALTER TABLE admin.access_tbl OWNER TO postgres;
 
 --
 -- TOC entry 177 (class 1259 OID 553692)
--- Name: access_tbl_id_seq; Type: SEQUENCE; Schema: admin; Owner: mpoint
+-- Name: access_tbl_id_seq; Type: SEQUENCE; Schema: admin; Owner: postgres
 --
 
 CREATE SEQUENCE access_tbl_id_seq
@@ -6190,12 +6190,12 @@ NO MAXVALUE
 CACHE 1;
 
 
-ALTER TABLE admin.access_tbl_id_seq OWNER TO mpoint;
+ALTER TABLE admin.access_tbl_id_seq OWNER TO postgres;
 
 --
 -- TOC entry 2272 (class 0 OID 0)
 -- Dependencies: 177
--- Name: access_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: admin; Owner: mpoint
+-- Name: access_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: admin; Owner: postgres
 --
 
 ALTER SEQUENCE access_tbl_id_seq OWNED BY access_tbl.id;
@@ -6203,7 +6203,7 @@ ALTER SEQUENCE access_tbl_id_seq OWNED BY access_tbl.id;
 
 --
 -- TOC entry 178 (class 1259 OID 553694)
--- Name: role_tbl; Type: TABLE; Schema: admin; Owner: mpoint; Tablespace:
+-- Name: role_tbl; Type: TABLE; Schema: admin; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE role_tbl (
@@ -6217,11 +6217,11 @@ CREATE TABLE role_tbl (
 );
 
 
-ALTER TABLE admin.role_tbl OWNER TO mpoint;
+ALTER TABLE admin.role_tbl OWNER TO postgres;
 
 --
 -- TOC entry 179 (class 1259 OID 553704)
--- Name: role_tbl_id_seq; Type: SEQUENCE; Schema: admin; Owner: mpoint
+-- Name: role_tbl_id_seq; Type: SEQUENCE; Schema: admin; Owner: postgres
 --
 
 CREATE SEQUENCE role_tbl_id_seq
@@ -6232,12 +6232,12 @@ NO MAXVALUE
 CACHE 1;
 
 
-ALTER TABLE admin.role_tbl_id_seq OWNER TO mpoint;
+ALTER TABLE admin.role_tbl_id_seq OWNER TO postgres;
 
 --
 -- TOC entry 2275 (class 0 OID 0)
 -- Dependencies: 179
--- Name: role_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: admin; Owner: mpoint
+-- Name: role_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: admin; Owner: postgres
 --
 
 ALTER SEQUENCE role_tbl_id_seq OWNED BY role_tbl.id;
@@ -6245,7 +6245,7 @@ ALTER SEQUENCE role_tbl_id_seq OWNED BY role_tbl.id;
 
 --
 -- TOC entry 180 (class 1259 OID 553706)
--- Name: roleaccess_tbl; Type: TABLE; Schema: admin; Owner: mpoint; Tablespace:
+-- Name: roleaccess_tbl; Type: TABLE; Schema: admin; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE roleaccess_tbl (
@@ -6258,11 +6258,11 @@ CREATE TABLE roleaccess_tbl (
 );
 
 
-ALTER TABLE admin.roleaccess_tbl OWNER TO mpoint;
+ALTER TABLE admin.roleaccess_tbl OWNER TO postgres;
 
 --
 -- TOC entry 181 (class 1259 OID 553712)
--- Name: roleaccess_tbl_id_seq; Type: SEQUENCE; Schema: admin; Owner: mpoint
+-- Name: roleaccess_tbl_id_seq; Type: SEQUENCE; Schema: admin; Owner: postgres
 --
 
 CREATE SEQUENCE roleaccess_tbl_id_seq
@@ -6273,12 +6273,12 @@ NO MAXVALUE
 CACHE 1;
 
 
-ALTER TABLE admin.roleaccess_tbl_id_seq OWNER TO mpoint;
+ALTER TABLE admin.roleaccess_tbl_id_seq OWNER TO postgres;
 
 --
 -- TOC entry 2278 (class 0 OID 0)
 -- Dependencies: 181
--- Name: roleaccess_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: admin; Owner: mpoint
+-- Name: roleaccess_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: admin; Owner: postgres
 --
 
 ALTER SEQUENCE roleaccess_tbl_id_seq OWNED BY roleaccess_tbl.id;
@@ -6286,7 +6286,7 @@ ALTER SEQUENCE roleaccess_tbl_id_seq OWNED BY roleaccess_tbl.id;
 
 --
 -- TOC entry 182 (class 1259 OID 553714)
--- Name: roleinfo_tbl; Type: TABLE; Schema: admin; Owner: mpoint; Tablespace:
+-- Name: roleinfo_tbl; Type: TABLE; Schema: admin; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE roleinfo_tbl (
@@ -6301,11 +6301,11 @@ CREATE TABLE roleinfo_tbl (
 );
 
 
-ALTER TABLE admin.roleinfo_tbl OWNER TO mpoint;
+ALTER TABLE admin.roleinfo_tbl OWNER TO postgres;
 
 --
 -- TOC entry 183 (class 1259 OID 553723)
--- Name: roleinfo_tbl_id_seq; Type: SEQUENCE; Schema: admin; Owner: mpoint
+-- Name: roleinfo_tbl_id_seq; Type: SEQUENCE; Schema: admin; Owner: postgres
 --
 
 CREATE SEQUENCE roleinfo_tbl_id_seq
@@ -6316,12 +6316,12 @@ NO MAXVALUE
 CACHE 1;
 
 
-ALTER TABLE admin.roleinfo_tbl_id_seq OWNER TO mpoint;
+ALTER TABLE admin.roleinfo_tbl_id_seq OWNER TO postgres;
 
 --
 -- TOC entry 2281 (class 0 OID 0)
 -- Dependencies: 183
--- Name: roleinfo_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: admin; Owner: mpoint
+-- Name: roleinfo_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: admin; Owner: postgres
 --
 
 ALTER SEQUENCE roleinfo_tbl_id_seq OWNED BY roleinfo_tbl.id;
@@ -6329,7 +6329,7 @@ ALTER SEQUENCE roleinfo_tbl_id_seq OWNED BY roleinfo_tbl.id;
 
 --
 -- TOC entry 184 (class 1259 OID 553725)
--- Name: user_tbl; Type: TABLE; Schema: admin; Owner: mpoint; Tablespace:
+-- Name: user_tbl; Type: TABLE; Schema: admin; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE user_tbl (
@@ -6347,11 +6347,11 @@ CREATE TABLE user_tbl (
 );
 
 
-ALTER TABLE admin.user_tbl OWNER TO mpoint;
+ALTER TABLE admin.user_tbl OWNER TO postgres;
 
 --
 -- TOC entry 185 (class 1259 OID 553731)
--- Name: user_tbl_id_seq; Type: SEQUENCE; Schema: admin; Owner: mpoint
+-- Name: user_tbl_id_seq; Type: SEQUENCE; Schema: admin; Owner: postgres
 --
 
 CREATE SEQUENCE user_tbl_id_seq
@@ -6362,12 +6362,12 @@ NO MAXVALUE
 CACHE 1;
 
 
-ALTER TABLE admin.user_tbl_id_seq OWNER TO mpoint;
+ALTER TABLE admin.user_tbl_id_seq OWNER TO postgres;
 
 --
 -- TOC entry 2284 (class 0 OID 0)
 -- Dependencies: 185
--- Name: user_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: admin; Owner: mpoint
+-- Name: user_tbl_id_seq; Type: SEQUENCE OWNED BY; Schema: admin; Owner: postgres
 --
 
 ALTER SEQUENCE user_tbl_id_seq OWNED BY user_tbl.id;
@@ -6375,7 +6375,7 @@ ALTER SEQUENCE user_tbl_id_seq OWNED BY user_tbl.id;
 
 --
 -- TOC entry 2116 (class 2604 OID 554138)
--- Name: id; Type: DEFAULT; Schema: admin; Owner: mpoint
+-- Name: id; Type: DEFAULT; Schema: admin; Owner: postgres
 --
 
 ALTER TABLE ONLY access_tbl ALTER COLUMN id SET DEFAULT nextval('access_tbl_id_seq'::regclass);
@@ -6383,7 +6383,7 @@ ALTER TABLE ONLY access_tbl ALTER COLUMN id SET DEFAULT nextval('access_tbl_id_s
 
 --
 -- TOC entry 2121 (class 2604 OID 554139)
--- Name: id; Type: DEFAULT; Schema: admin; Owner: mpoint
+-- Name: id; Type: DEFAULT; Schema: admin; Owner: postgres
 --
 
 ALTER TABLE ONLY role_tbl ALTER COLUMN id SET DEFAULT nextval('role_tbl_id_seq'::regclass);
@@ -6391,7 +6391,7 @@ ALTER TABLE ONLY role_tbl ALTER COLUMN id SET DEFAULT nextval('role_tbl_id_seq':
 
 --
 -- TOC entry 2125 (class 2604 OID 554140)
--- Name: id; Type: DEFAULT; Schema: admin; Owner: mpoint
+-- Name: id; Type: DEFAULT; Schema: admin; Owner: postgres
 --
 
 ALTER TABLE ONLY roleaccess_tbl ALTER COLUMN id SET DEFAULT nextval('roleaccess_tbl_id_seq'::regclass);
@@ -6399,7 +6399,7 @@ ALTER TABLE ONLY roleaccess_tbl ALTER COLUMN id SET DEFAULT nextval('roleaccess_
 
 --
 -- TOC entry 2129 (class 2604 OID 554141)
--- Name: id; Type: DEFAULT; Schema: admin; Owner: mpoint
+-- Name: id; Type: DEFAULT; Schema: admin; Owner: postgres
 --
 
 ALTER TABLE ONLY roleinfo_tbl ALTER COLUMN id SET DEFAULT nextval('roleinfo_tbl_id_seq'::regclass);
@@ -6407,7 +6407,7 @@ ALTER TABLE ONLY roleinfo_tbl ALTER COLUMN id SET DEFAULT nextval('roleinfo_tbl_
 
 --
 -- TOC entry 2133 (class 2604 OID 554142)
--- Name: id; Type: DEFAULT; Schema: admin; Owner: mpoint
+-- Name: id; Type: DEFAULT; Schema: admin; Owner: postgres
 --
 
 ALTER TABLE ONLY user_tbl ALTER COLUMN id SET DEFAULT nextval('user_tbl_id_seq'::regclass);
@@ -6415,7 +6415,7 @@ ALTER TABLE ONLY user_tbl ALTER COLUMN id SET DEFAULT nextval('user_tbl_id_seq':
 
 --
 -- TOC entry 2135 (class 2606 OID 554203)
--- Name: access_pk; Type: CONSTRAINT; Schema: admin; Owner: mpoint; Tablespace:
+-- Name: access_pk; Type: CONSTRAINT; Schema: admin; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY access_tbl
@@ -6424,7 +6424,7 @@ ADD CONSTRAINT access_pk PRIMARY KEY (id);
 
 --
 -- TOC entry 2137 (class 2606 OID 554205)
--- Name: access_uq; Type: CONSTRAINT; Schema: admin; Owner: mpoint; Tablespace:
+-- Name: access_uq; Type: CONSTRAINT; Schema: admin; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY access_tbl
@@ -6433,7 +6433,7 @@ ADD CONSTRAINT access_uq UNIQUE (userid, clientid);
 
 --
 -- TOC entry 2139 (class 2606 OID 554207)
--- Name: role_pk; Type: CONSTRAINT; Schema: admin; Owner: mpoint; Tablespace:
+-- Name: role_pk; Type: CONSTRAINT; Schema: admin; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY role_tbl
@@ -6442,7 +6442,7 @@ ADD CONSTRAINT role_pk PRIMARY KEY (id);
 
 --
 -- TOC entry 2142 (class 2606 OID 554209)
--- Name: roleaccess_pk; Type: CONSTRAINT; Schema: admin; Owner: mpoint; Tablespace:
+-- Name: roleaccess_pk; Type: CONSTRAINT; Schema: admin; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY roleaccess_tbl
@@ -6451,7 +6451,7 @@ ADD CONSTRAINT roleaccess_pk PRIMARY KEY (id);
 
 --
 -- TOC entry 2144 (class 2606 OID 554211)
--- Name: roleaccess_uq; Type: CONSTRAINT; Schema: admin; Owner: mpoint; Tablespace:
+-- Name: roleaccess_uq; Type: CONSTRAINT; Schema: admin; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY roleaccess_tbl
@@ -6460,7 +6460,7 @@ ADD CONSTRAINT roleaccess_uq UNIQUE (roleid, userid);
 
 --
 -- TOC entry 2146 (class 2606 OID 554213)
--- Name: roleinfo_pk; Type: CONSTRAINT; Schema: admin; Owner: mpoint; Tablespace:
+-- Name: roleinfo_pk; Type: CONSTRAINT; Schema: admin; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY roleinfo_tbl
@@ -6469,7 +6469,7 @@ ADD CONSTRAINT roleinfo_pk PRIMARY KEY (id);
 
 --
 -- TOC entry 2148 (class 2606 OID 554215)
--- Name: roleinfo_uq; Type: CONSTRAINT; Schema: admin; Owner: mpoint; Tablespace:
+-- Name: roleinfo_uq; Type: CONSTRAINT; Schema: admin; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY roleinfo_tbl
@@ -6478,7 +6478,7 @@ ADD CONSTRAINT roleinfo_uq UNIQUE (roleid, languageid);
 
 --
 -- TOC entry 2152 (class 2606 OID 554217)
--- Name: user_pk; Type: CONSTRAINT; Schema: admin; Owner: mpoint; Tablespace:
+-- Name: user_pk; Type: CONSTRAINT; Schema: admin; Owner: postgres; Tablespace:
 --
 
 ALTER TABLE ONLY user_tbl
@@ -6487,7 +6487,7 @@ ADD CONSTRAINT user_pk PRIMARY KEY (id);
 
 --
 -- TOC entry 2140 (class 1259 OID 554332)
--- Name: role_uq; Type: INDEX; Schema: admin; Owner: mpoint; Tablespace:
+-- Name: role_uq; Type: INDEX; Schema: admin; Owner: postgres; Tablespace:
 --
 
 CREATE UNIQUE INDEX role_uq ON role_tbl USING btree (lower((name)::text));
@@ -6495,7 +6495,7 @@ CREATE UNIQUE INDEX role_uq ON role_tbl USING btree (lower((name)::text));
 
 --
 -- TOC entry 2149 (class 1259 OID 554333)
--- Name: user_email_uq; Type: INDEX; Schema: admin; Owner: mpoint; Tablespace:
+-- Name: user_email_uq; Type: INDEX; Schema: admin; Owner: postgres; Tablespace:
 --
 
 CREATE UNIQUE INDEX user_email_uq ON user_tbl USING btree (countryid, upper((email)::text));
@@ -6503,7 +6503,7 @@ CREATE UNIQUE INDEX user_email_uq ON user_tbl USING btree (countryid, upper((ema
 
 --
 -- TOC entry 2150 (class 1259 OID 554334)
--- Name: user_mobile_uq; Type: INDEX; Schema: admin; Owner: mpoint; Tablespace:
+-- Name: user_mobile_uq; Type: INDEX; Schema: admin; Owner: postgres; Tablespace:
 --
 
 CREATE UNIQUE INDEX user_mobile_uq ON user_tbl USING btree (countryid, mobile);
@@ -6511,7 +6511,7 @@ CREATE UNIQUE INDEX user_mobile_uq ON user_tbl USING btree (countryid, mobile);
 
 --
 -- TOC entry 2153 (class 1259 OID 554335)
--- Name: user_username_uq; Type: INDEX; Schema: admin; Owner: mpoint; Tablespace:
+-- Name: user_username_uq; Type: INDEX; Schema: admin; Owner: postgres; Tablespace:
 --
 
 CREATE UNIQUE INDEX user_username_uq ON user_tbl USING btree (username);
@@ -6519,7 +6519,7 @@ CREATE UNIQUE INDEX user_username_uq ON user_tbl USING btree (username);
 
 --
 -- TOC entry 2154 (class 2606 OID 554361)
--- Name: access2client_fk; Type: FK CONSTRAINT; Schema: admin; Owner: mpoint
+-- Name: access2client_fk; Type: FK CONSTRAINT; Schema: admin; Owner: postgres
 --
 
 ALTER TABLE ONLY access_tbl
@@ -6528,7 +6528,7 @@ ADD CONSTRAINT access2client_fk FOREIGN KEY (clientid) REFERENCES client.client_
 
 --
 -- TOC entry 2155 (class 2606 OID 554366)
--- Name: access2user_fk; Type: FK CONSTRAINT; Schema: admin; Owner: mpoint
+-- Name: access2user_fk; Type: FK CONSTRAINT; Schema: admin; Owner: postgres
 --
 
 ALTER TABLE ONLY access_tbl
@@ -6537,7 +6537,7 @@ ADD CONSTRAINT access2user_fk FOREIGN KEY (userid) REFERENCES user_tbl(id) ON UP
 
 --
 -- TOC entry 2156 (class 2606 OID 554371)
--- Name: roleaccess2role_fk; Type: FK CONSTRAINT; Schema: admin; Owner: mpoint
+-- Name: roleaccess2role_fk; Type: FK CONSTRAINT; Schema: admin; Owner: postgres
 --
 
 ALTER TABLE ONLY roleaccess_tbl
@@ -6546,7 +6546,7 @@ ADD CONSTRAINT roleaccess2role_fk FOREIGN KEY (roleid) REFERENCES role_tbl(id) O
 
 --
 -- TOC entry 2157 (class 2606 OID 554376)
--- Name: roleaccess2user_fk; Type: FK CONSTRAINT; Schema: admin; Owner: mpoint
+-- Name: roleaccess2user_fk; Type: FK CONSTRAINT; Schema: admin; Owner: postgres
 --
 
 ALTER TABLE ONLY roleaccess_tbl
@@ -6555,7 +6555,7 @@ ADD CONSTRAINT roleaccess2user_fk FOREIGN KEY (userid) REFERENCES user_tbl(id) O
 
 --
 -- TOC entry 2158 (class 2606 OID 554381)
--- Name: user2country_fk; Type: FK CONSTRAINT; Schema: admin; Owner: mpoint
+-- Name: user2country_fk; Type: FK CONSTRAINT; Schema: admin; Owner: postgres
 --
 
 ALTER TABLE ONLY user_tbl
@@ -6565,133 +6565,133 @@ ADD CONSTRAINT user2country_fk FOREIGN KEY (countryid) REFERENCES system.country
 --
 -- TOC entry 2270 (class 0 OID 0)
 -- Dependencies: 12
--- Name: admin; Type: ACL; Schema: -; Owner: mpoint
+-- Name: admin; Type: ACL; Schema: -; Owner: postgres
 --
 
 REVOKE ALL ON SCHEMA admin FROM PUBLIC;
-REVOKE ALL ON SCHEMA admin FROM mpoint;
-GRANT ALL ON SCHEMA admin TO mpoint;
-GRANT ALL ON SCHEMA admin TO mpoint;
+REVOKE ALL ON SCHEMA admin FROM postgres;
+GRANT ALL ON SCHEMA admin TO postgres;
+GRANT ALL ON SCHEMA admin TO postgres;
 
 
 --
 -- TOC entry 2271 (class 0 OID 0)
 -- Dependencies: 176
--- Name: access_tbl; Type: ACL; Schema: admin; Owner: mpoint
+-- Name: access_tbl; Type: ACL; Schema: admin; Owner: postgres
 --
 
 REVOKE ALL ON TABLE access_tbl FROM PUBLIC;
-REVOKE ALL ON TABLE access_tbl FROM mpoint;
-GRANT ALL ON TABLE access_tbl TO mpoint;
-GRANT ALL ON TABLE access_tbl TO mpoint;
+REVOKE ALL ON TABLE access_tbl FROM postgres;
+GRANT ALL ON TABLE access_tbl TO postgres;
+GRANT ALL ON TABLE access_tbl TO postgres;
 
 
 --
 -- TOC entry 2273 (class 0 OID 0)
 -- Dependencies: 177
--- Name: access_tbl_id_seq; Type: ACL; Schema: admin; Owner: mpoint
+-- Name: access_tbl_id_seq; Type: ACL; Schema: admin; Owner: postgres
 --
 
 REVOKE ALL ON SEQUENCE access_tbl_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE access_tbl_id_seq FROM mpoint;
-GRANT ALL ON SEQUENCE access_tbl_id_seq TO mpoint;
-GRANT ALL ON SEQUENCE access_tbl_id_seq TO mpoint;
+REVOKE ALL ON SEQUENCE access_tbl_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE access_tbl_id_seq TO postgres;
+GRANT ALL ON SEQUENCE access_tbl_id_seq TO postgres;
 
 
 --
 -- TOC entry 2274 (class 0 OID 0)
 -- Dependencies: 178
--- Name: role_tbl; Type: ACL; Schema: admin; Owner: mpoint
+-- Name: role_tbl; Type: ACL; Schema: admin; Owner: postgres
 --
 
 REVOKE ALL ON TABLE role_tbl FROM PUBLIC;
-REVOKE ALL ON TABLE role_tbl FROM mpoint;
-GRANT ALL ON TABLE role_tbl TO mpoint;
-GRANT ALL ON TABLE role_tbl TO mpoint;
+REVOKE ALL ON TABLE role_tbl FROM postgres;
+GRANT ALL ON TABLE role_tbl TO postgres;
+GRANT ALL ON TABLE role_tbl TO postgres;
 
 
 --
 -- TOC entry 2276 (class 0 OID 0)
 -- Dependencies: 179
--- Name: role_tbl_id_seq; Type: ACL; Schema: admin; Owner: mpoint
+-- Name: role_tbl_id_seq; Type: ACL; Schema: admin; Owner: postgres
 --
 
 REVOKE ALL ON SEQUENCE role_tbl_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE role_tbl_id_seq FROM mpoint;
-GRANT ALL ON SEQUENCE role_tbl_id_seq TO mpoint;
-GRANT ALL ON SEQUENCE role_tbl_id_seq TO mpoint;
+REVOKE ALL ON SEQUENCE role_tbl_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE role_tbl_id_seq TO postgres;
+GRANT ALL ON SEQUENCE role_tbl_id_seq TO postgres;
 
 
 --
 -- TOC entry 2277 (class 0 OID 0)
 -- Dependencies: 180
--- Name: roleaccess_tbl; Type: ACL; Schema: admin; Owner: mpoint
+-- Name: roleaccess_tbl; Type: ACL; Schema: admin; Owner: postgres
 --
 
 REVOKE ALL ON TABLE roleaccess_tbl FROM PUBLIC;
-REVOKE ALL ON TABLE roleaccess_tbl FROM mpoint;
-GRANT ALL ON TABLE roleaccess_tbl TO mpoint;
-GRANT ALL ON TABLE roleaccess_tbl TO mpoint;
+REVOKE ALL ON TABLE roleaccess_tbl FROM postgres;
+GRANT ALL ON TABLE roleaccess_tbl TO postgres;
+GRANT ALL ON TABLE roleaccess_tbl TO postgres;
 
 
 --
 -- TOC entry 2279 (class 0 OID 0)
 -- Dependencies: 181
--- Name: roleaccess_tbl_id_seq; Type: ACL; Schema: admin; Owner: mpoint
+-- Name: roleaccess_tbl_id_seq; Type: ACL; Schema: admin; Owner: postgres
 --
 
 REVOKE ALL ON SEQUENCE roleaccess_tbl_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE roleaccess_tbl_id_seq FROM mpoint;
-GRANT ALL ON SEQUENCE roleaccess_tbl_id_seq TO mpoint;
-GRANT ALL ON SEQUENCE roleaccess_tbl_id_seq TO mpoint;
+REVOKE ALL ON SEQUENCE roleaccess_tbl_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE roleaccess_tbl_id_seq TO postgres;
+GRANT ALL ON SEQUENCE roleaccess_tbl_id_seq TO postgres;
 
 
 --
 -- TOC entry 2280 (class 0 OID 0)
 -- Dependencies: 182
--- Name: roleinfo_tbl; Type: ACL; Schema: admin; Owner: mpoint
+-- Name: roleinfo_tbl; Type: ACL; Schema: admin; Owner: postgres
 --
 
 REVOKE ALL ON TABLE roleinfo_tbl FROM PUBLIC;
-REVOKE ALL ON TABLE roleinfo_tbl FROM mpoint;
-GRANT ALL ON TABLE roleinfo_tbl TO mpoint;
-GRANT ALL ON TABLE roleinfo_tbl TO mpoint;
+REVOKE ALL ON TABLE roleinfo_tbl FROM postgres;
+GRANT ALL ON TABLE roleinfo_tbl TO postgres;
+GRANT ALL ON TABLE roleinfo_tbl TO postgres;
 
 
 --
 -- TOC entry 2282 (class 0 OID 0)
 -- Dependencies: 183
--- Name: roleinfo_tbl_id_seq; Type: ACL; Schema: admin; Owner: mpoint
+-- Name: roleinfo_tbl_id_seq; Type: ACL; Schema: admin; Owner: postgres
 --
 
 REVOKE ALL ON SEQUENCE roleinfo_tbl_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE roleinfo_tbl_id_seq FROM mpoint;
-GRANT ALL ON SEQUENCE roleinfo_tbl_id_seq TO mpoint;
-GRANT ALL ON SEQUENCE roleinfo_tbl_id_seq TO mpoint;
+REVOKE ALL ON SEQUENCE roleinfo_tbl_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE roleinfo_tbl_id_seq TO postgres;
+GRANT ALL ON SEQUENCE roleinfo_tbl_id_seq TO postgres;
 
 
 --
 -- TOC entry 2283 (class 0 OID 0)
 -- Dependencies: 184
--- Name: user_tbl; Type: ACL; Schema: admin; Owner: mpoint
+-- Name: user_tbl; Type: ACL; Schema: admin; Owner: postgres
 --
 
 REVOKE ALL ON TABLE user_tbl FROM PUBLIC;
-REVOKE ALL ON TABLE user_tbl FROM mpoint;
-GRANT ALL ON TABLE user_tbl TO mpoint;
-GRANT ALL ON TABLE user_tbl TO mpoint;
+REVOKE ALL ON TABLE user_tbl FROM postgres;
+GRANT ALL ON TABLE user_tbl TO postgres;
+GRANT ALL ON TABLE user_tbl TO postgres;
 
 
 --
 -- TOC entry 2285 (class 0 OID 0)
 -- Dependencies: 185
--- Name: user_tbl_id_seq; Type: ACL; Schema: admin; Owner: mpoint
+-- Name: user_tbl_id_seq; Type: ACL; Schema: admin; Owner: postgres
 --
 
 REVOKE ALL ON SEQUENCE user_tbl_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE user_tbl_id_seq FROM mpoint;
-GRANT ALL ON SEQUENCE user_tbl_id_seq TO mpoint;
-GRANT ALL ON SEQUENCE user_tbl_id_seq TO mpoint;
+REVOKE ALL ON SEQUENCE user_tbl_id_seq FROM postgres;
+GRANT ALL ON SEQUENCE user_tbl_id_seq TO postgres;
+GRANT ALL ON SEQUENCE user_tbl_id_seq TO postgres;
 
 
 -- from setup_pg_v1.88 --
@@ -6758,8 +6758,8 @@ CREATE TABLE System.CardState_Tbl
   LIKE Template.General_Tbl INCLUDING DEFAULTS
 ) WITHOUT OIDS;
 
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE System.CardState_Tbl TO mpoint;
-GRANT SELECT, UPDATE, USAGE ON TABLE System.CardState_Tbl_id_seq TO mpoint;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE System.CardState_Tbl TO postgres;
+GRANT SELECT, UPDATE, USAGE ON TABLE System.CardState_Tbl_id_seq TO postgres;
 /* ==================== SYSTEM SCHEMA END ==================== */
 
 INSERT INTO System.CardState_Tbl (id, name) VALUES (1, 'Enabled');
@@ -6784,7 +6784,7 @@ CREATE TABLE System.IINAction_Tbl
 
 CREATE UNIQUE INDEX IINAction_UQ ON System.IINAction_Tbl (Lower(name) );
 
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE System.IINAction_Tbl TO mpoint;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE System.IINAction_Tbl TO postgres;
 
 
 -- Table: Client.IINList_Tbl
@@ -6805,8 +6805,8 @@ CREATE TABLE Client.IINList_Tbl
 ) WITHOUT OIDS;
 
 
-GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.IINList_Tbl TO mpoint;
-GRANT SELECT, UPDATE, INSERT ON TABLE Client.IINList_Tbl_id_seq TO mpoint;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE Client.IINList_Tbl TO postgres;
+GRANT SELECT, UPDATE, INSERT ON TABLE Client.IINList_Tbl_id_seq TO postgres;
 
 CREATE INDEX IINRanges_Idx ON Client.IINList_Tbl (clientid, min, max);
 
@@ -6818,3 +6818,45 @@ INSERT INTO System.IINAction_Tbl (id, name, note) VALUES (2, 'Whitelisted', 'Use
 ALTER TABLE EndUser.Card_Tbl ADD COLUMN chargetypeid INT4 DEFAULT 0;
 
 CREATE INDEX Transaction_Created_Idx ON Log.Transaction_Tbl (created);
+
+
+-- SETUP v1.88 --
+INSERT INTO Client.InfoType_Tbl (id, name, note) VALUES (1, 'PSP Message', 'A message which is shown during payment through a specific Payment Service Provider');
+
+-- SETUP v1.89 --
+
+/* ========== CONFIGURE DSB PSP AND VOUCHER PAYMENT ========= */
+INSERT INTO System.PSP_Tbl (id, name) VALUES (19, 'DSB');
+INSERT INTO System.PSPCurrency_Tbl (pspid, countryid, name) VALUES (19, 100, 'DKK');
+INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (26, 'Voucher', 22, -1, -1, -1);
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (19, 26);
+INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) SELECT C.id * -1 AS pricepointid, 26 FROM System.Country_Tbl C, System.Card_Tbl Card WHERE C.id = 100 GROUP BY pricepointid;
+
+INSERT INTO Log.State_Tbl (id, name) VALUES (2007, 'Payment with voucher');
+/* ========== CONFIGURE DSB PSP AND VOUCHER PAYMENT ========= */
+
+------- MASTER v1.90 ---
+/* ==================== Client SCHEMA START ==================== */
+ALTER TABLE Client.CardAccess_tbl ADD position integer default NULL;
+/* ==================== Client SCHEMA END ==================== */
+
+------- MASTER v1.93 ---
+/* ==================== Client SCHEMA START ==================== */
+ALTER TABLE Client.Client_Tbl ADD num_masked_digits INT4 DEFAULT 4;
+ALTER TABLE Client.Client_Tbl ADD CONSTRAINT MaskedDigits_Chk CHECK (0 <= num_masked_digits AND num_masked_digits <= 4);
+/* ==================== Client SCHEMA END ==================== */
+
+------- MASTER v1.94 ---
+/* ==================== CLIENT SCHEMA START ==================== */
+ALTER TABLE Client.MerchantAccount_Tbl ALTER name TYPE VARCHAR(255);
+/* ==================== CLIENT SCHEMA END ==================== */
+
+------- MASTER v1.95 ---
+/* ==================== Client SCHEMA START ==================== */
+ALTER TABLE Client.Client_Tbl ADD declineurl character varying(255);
+/* ==================== Client SCHEMA END ==================== */
+
+-- MASTER V1.97 ---
+/* ==================== CLIENT.CLIENT_TBL SCHEMA START ==================== */
+ALTER TABLE Client.Client_Tbl ADD COLUMN salt VARCHAR(20);
+/* ==================== CLIENT.CLIENT_TBL SCHEMA END ==================== */

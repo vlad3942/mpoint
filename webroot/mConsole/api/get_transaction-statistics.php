@@ -62,11 +62,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 		for ($i=0; $i<count($obj_DOM->{'get-transaction-statistics'}->clients->client); $i++)
 		{
-			$aClientIDs[] = (int)$obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->attributes()['id'];
-			
-			if($obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->accounts instanceof SimpleDOMElement)
+			if (intval($obj_DOM->{'get-transaction-statistics'}->clients->client[$i]['id']) > 0)
 			{
-				$aAccountIDs = array_merge($aAccountIDs, (array)$obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->accounts->{'account-id'});
+				$aClientIDs[] = (integer) $obj_DOM->{'get-transaction-statistics'}->clients->client[$i]['id'];
+			}
+			if (count($obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->accounts) == 1)
+			{
+				for ($j=0; $j<count($obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->accounts->{'account-id'}); $j++)
+				{
+					if (intval($obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->accounts->{'account-id'}[$j]) > 0)
+					{
+						$aAccountIDs[] = (integer) $obj_DOM->{'get-transaction-statistics'}->clients->client[$i]->accounts->{'account-id'}[$j];
+					}
+				}
 			}
 		}
 
@@ -76,7 +84,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
 
-		$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_SEARCH_TRANSACTION_LOGS, $aClientIDs);
+		$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_TRANSACTION_STATISTICS, $aClientIDs);
 		switch ($code)
 		{
 		case (mConsole::iSERVICE_CONNECTION_TIMEOUT_ERROR):
@@ -107,10 +115,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		case (mConsole::iAUTHORIZATION_SUCCESSFUL):
 			header("HTTP/1.1 200 OK");
 			
-			$pspid = intval($obj_DOM->{'get-transaction-statistics'}->attributes()['psp-id']);
-			$cardid = intval($obj_DOM->{'get-transaction-statistics'}->attributes()['card-id']);
+			$pspid = intval($obj_DOM->{'get-transaction-statistics'}['psp-id']);
+			$cardid = intval($obj_DOM->{'get-transaction-statistics'}['card-id']);
+						
+			$start_date = date( 'Y-m-d H:i:s', strtotime($obj_DOM->{'get-transaction-statistics'}->{'start-date'}));
 			
-			$obj_TransactionStats = $obj_mPoint->getTransactionStats($aClientIDs, str_replace("T", " ", $obj_DOM->{'get-transaction-statistics'}->{'start-date'}), str_replace("T", " ", $obj_DOM->{'get-transaction-statistics'}->{'end-date'}), $aAccountIDs, $pspid, $cardid);
+			$end_date = date( 'Y-m-d H:i:s', strtotime($obj_DOM->{'get-transaction-statistics'}->{'end-date'}));
+			
+			$obj_TransactionStats = $obj_mPoint->getTransactionStats($aClientIDs, $start_date, $end_date, $aAccountIDs, $pspid, $cardid);
 			if($obj_TransactionStats instanceof TransactionStatisticsInfo)
 			{
 				$xml = $obj_TransactionStats->toXML();
@@ -138,7 +150,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$xml = '<status code="415">Invalid XML Document</status>';
 	}
 	// Error: Wrong operation
-	elseif (count($obj_DOM->{'search-transaction-logs'}) == 0)
+	elseif (count($obj_DOM->{'get-transaction-statistics'}) == 0)
 	{
 		header("HTTP/1.1 400 Bad Request");
 

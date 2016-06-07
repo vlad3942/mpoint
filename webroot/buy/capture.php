@@ -31,6 +31,8 @@ require_once(sCLASS_PATH ."/worldpay.php");
 require_once(sCLASS_PATH ."/netaxept.php");
 // Require specific Business logic for the WannaFind component
 require_once(sCLASS_PATH ."/wannafind.php");
+// Require specific Business logic for the DSB PSP component
+require_once(sCLASS_PATH ."/dsb.php");
 if (function_exists("json_encode") === true && function_exists("curl_init") === true)
 {
 	// Require specific Business logic for the Stripe component
@@ -42,6 +44,14 @@ require_once(sCLASS_PATH ."/mobilepay.php");
 require_once(sCLASS_PATH ."/adyen.php");
 // Require specific Business logic for the VISA checkout component
 require_once(sCLASS_PATH ."/visacheckout.php");
+// Require specific Business logic for the Data Cash component
+require_once(sCLASS_PATH ."/datacash.php");
+// Require specific Business logic for the Master Pass component
+require_once(sCLASS_PATH ."/masterpass.php");
+// Require specific Business logic for the AMEX Express Checkout component
+require_once(sCLASS_PATH ."/amexexpresscheckout.php");
+// Require specific Business logic for the WireCard component
+require_once(sCLASS_PATH ."/wirecard.php");
 
 header("Content-Type: application/x-www-form-urlencoded");
 

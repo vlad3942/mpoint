@@ -54,7 +54,7 @@ class NetAxept extends Callback implements Captureable, Refundable
 						 				  "OrderNumber" => $sOrderNo),
 						 "ServiceType" => "M",
 						 "Terminal" => array("Language" => "en_GB",
-										  	 "RedirectUrl" => "http://". $_SERVER['HTTP_HOST'] ."/netaxept/accept.php?mpoint-id=". $this->getTxnInfo()->getID(),
+										  	 "RedirectUrl" => "https://". $_SERVER['HTTP_HOST'] ."/netaxept/accept.php?mpoint-id=". $this->getTxnInfo()->getID(),
 										  	 "SinglePage" => "true"),
 										  	 "TransactionId" => $this->getTxnInfo()->getID() ."-". time() );
 
@@ -75,8 +75,8 @@ class NetAxept extends Callback implements Captureable, Refundable
 
 		try
 		{
+				
 			$obj_Std = $obj_SOAP->Register($aParams);
-
 			if (intval($obj_Std->RegisterResult->TransactionId) == $this->getTxnInfo()->getID() )
 			{
 				$xml = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -96,7 +96,7 @@ class NetAxept extends Callback implements Captureable, Refundable
 				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, serialize($data) );
 
 				$obj_XML = simplexml_load_string($xml);
-
+				
 				// save ext id in database
 						$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 								SET pspid = ". Constants::iNETAXEPT_PSP .", extid = '".$obj_Std->RegisterResult->TransactionId."'
@@ -553,5 +553,7 @@ class NetAxept extends Callback implements Captureable, Refundable
 			return -1;
 		}
 	}
+
+	public function getPSPID() { return Constants::iNETAXEPT_PSP; }
 }
 ?>

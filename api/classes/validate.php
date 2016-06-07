@@ -21,7 +21,7 @@
  * Validation Class containing the shared Business Logic for ensuring that the data received from a client appears to be useful.
  *
  */
-class Validate
+class Validate extends ValidateBase
 {
 	/**
 	 * Data object with the Country's default configuration
@@ -201,28 +201,19 @@ class Validate
 	 * 	 1. Undefined E-Mail address
 	 * 	 2. E-Mail address is too short, as defined by iAUTH_MIN_LENGTH
 	 * 	 3. E-Mail address is too long, as defined by iAUTH_MAX_LENGTH
-	 *   4. E-Mail address contains invalid characters: [^0-9a-zæøåÆØÅäöÄÖ_.@-]
-	 *   5. E-Mail has an invalid form: ^[^@ ]+@[^@ ]+\.[^@ \.]+$
+	 *   4. ** RESERVED, BUT CURRENTLY UNUSED **
+	 *   5. E-Mail has an invalid form.
 	 *	10. Success
 	 *
-	 * @see		Constants::iAUTH_MIN_LENGTH
-	 * @see		Constants::iAUTH_MAX_LENGTH
+	 * @see		iAUTH_MIN_LENGTH
+	 * @see		iAUTH_MAX_LENGTH
 	 *
 	 * @param	string $email 	E-Mail address to validate
 	 * @return	integer
 	 */
 	public function valEMail($email)
 	{
-		$email = trim($email);
-		// Validate E-Mail
-		if (empty($email) === true) { $code = 1; }								// E-Mail is undefined
-		elseif (strlen($email) < Constants::iAUTH_MIN_LENGTH) { $code = 2; }	// E-Mail is too short
-		elseif (strlen($email) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }	// E-Mail is too long
-		elseif (eregi("[^0-9a-zæøåÆØÅäöÄÖ_.@-]", $email) == true) { $code = 4; }// E-Mail contains Invalid Characters
-		elseif (ereg("^[^@]+@[^@]+\.[^@\.]+$", $email) == false) { $code = 5; }	// E-Mail has an invalid form
-		else { $code = 10; }													// E-Mail is valid
-
-		return $code;
+		return parent::valEmail($email, Constants::iAUTH_MIN_LENGTH, Constants::iAUTH_MAX_LENGTH);
 	}
 
 	/**
@@ -1099,11 +1090,13 @@ class Validate
 			if (empty($userid) === true ) { $code = 1; }	// Undefined user-ID
 			elseif (empty($max) === true ) { $code = 2; }	// $max undefined
 			elseif (empty($clid) === true ) { $code = 3; }	// $max undefined
+			elseif ($max == -1) { $code = 10; }
 			else
 			{
 				$sql = "SELECT count(id) AS numberofcards
-						FROM Enduser".sSCHEMA_POSTFIX.".Cards_Tbl
+						FROM Enduser".sSCHEMA_POSTFIX.".Card_Tbl
 						WHERE accountid = ". intval($userid)." AND enabled = '1'";
+				//echo $sql;exit;
 				$RS = $oDB->getName($sql);
 
 				if ($RS["NUMBEROFCARDS"] >= $max) { $code = 4; }	//  User has the max amount of cards
@@ -1148,6 +1141,42 @@ class Validate
 
 		return $code;
 	}
+	
+	/**
+	 * Performs validation of the provided Hash based Message Authentication Code (HMAC) by generating the equivalent as a SHA1 hash.
+	 * The HMAC is generated based on the following data fields in the request (in that order):
+	 * 	- clientid
+	 * 	- order number
+	 * 	- amount
+	 * 	- amount country-id
+	 * 	- mobile
+	 *  - mobile country-id
+	 *  - e-mail
+	 *  - device id
+	 * Additionally the provided salt is appended at the end.
+	 *  
+	 * @see		Validate::valMAC()
+	 *
+	 * @param 	string $mac						Message Authentication Code provided by the client in the request
+	 * @param	ClientConfig $obj_ClientConfig	The Client Configuration from which fields such Client ID and Salt are retrieved
+	 * @param	ClientInfo $obj_ClientInfo		The Client Information from which fields such as the customer's mobile & email is retrieved
+	 * @param	string $orderno					The order number returned by the upstream Selling System
+	 * @param	integer $amount					The total amount for the order in the country's smallest currency
+	 * @param	integer $countryid				The unique ID of the country that designates the currency
+	 * @return 	integer
+	 */
+	public function valHMAC($mac, ClientConfig $obj_ClientConfig, ClientInfo $obj_ClientInfo, $orderno, $amount, $countryid)
+	{
+		$code = 1;
+		$chk = sha1($obj_ClientConfig->getID() . $orderno . $amount . $countryid . $obj_ClientInfo->getMobile() . $obj_ClientInfo->getCountryConfig()->getID() . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt() );
+		if ($mac == $chk)
+		{
+			$code = 10;
+		}
+		
+		return $code;
+	}
+	
 	
 	/**
 	 * Performs validation of the Issuer Identification Number (IIN) to determine whether it has been blocked by the client.

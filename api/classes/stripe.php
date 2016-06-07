@@ -142,5 +142,7 @@ class Stripe_PSP extends Callback
 	{
 	
 	}
+
+	public function getPSPID() { return Constants::iSTRIPE_PSP; }
 }
 ?>

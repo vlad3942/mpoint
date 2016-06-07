@@ -30,4 +30,6 @@ class ApplePay extends CPMPSP
 	public function cancel() { throw new ApplePayException("Method: cancel is not supported by Apple Pay"); }
 	public function authTicket(PSPConfig $obj_PSPConfig, $ticket) { throw new ApplePayException("Method: authTicket is not supported by Apple Pay"); }
 	public function status() { throw new ApplePayException("Method: status is not supported by Apple Pay"); }
+
+	public function getPSPID() { return Constants::iAPPLE_PAY_PSP; }
 }

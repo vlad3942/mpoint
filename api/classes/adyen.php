@@ -26,4 +26,6 @@ class AdyenException extends CallbackException { }
 class Adyen extends CPMPSP
 {
 	public function status() { throw new AdyenException("Transact status call is not supported by Adyen"); }
+
+	public function getPSPID() { return Constants::iADYEN_PSP; }
 }

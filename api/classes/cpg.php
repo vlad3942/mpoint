@@ -127,7 +127,8 @@ class CPG extends Callback
 		// Other Type of token which may be authorized directly through CPG
 		else
 		{
-			$b .= '<cardNumber>'. htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) .'</cardNumber>';
+			if (count($obj_XML->cvc) == 1) { $b .= '<cvc>'. intval($obj_XML->cvc) .'</cvc>'; }
+                        $b .= '<cardNumber>'. htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) .'</cardNumber>';
 			$b .= '<expiryDate>';
 			$b .= '<date month="'. substr($obj_XML->expiry, 0, 2) .'" year="20'. substr($obj_XML->expiry, -2) .'" />'; // mandatory
 			$b .= '</expiryDate>';
@@ -212,7 +213,7 @@ class CPG extends Callback
 		if (array_key_exists("var_enhanced-data", $aClientVars) === true)
 		{
 			$b .= trim($aClientVars["var_enhanced-data"]);
-			// ApplePay token which may be authorized directly through CPG
+			// Token from 3rd party wallet, which may be authorized directly through CPG
 			if (count($obj_XML->ticket) == 0 && stristr($aClientVars["var_enhanced-data"], "bkgChannel") == false)
 			{
 				switch (intval($obj_XML["wallet-type-id"]) )
@@ -222,6 +223,15 @@ class CPG extends Callback
 					break;
 				case (Constants::iVISA_CHECKOUT_WALLET):
 					$b = str_replace('<bkgChannel>MPH-VISA-Checkout</bkgChannel></enchancedData>', '</enchancedData>', $b);
+					break;
+				case (Constants::iAMEX_EXPRESS_CHECKOUT_WALLET):
+					$b = str_replace('<bkgChannel>MPH-AMEX-Checkout</bkgChannel></enchancedData>', '</enchancedData>', $b);
+					break;
+				case (Constants::iMASTER_PASS_WALLET):
+					$b = str_replace('<bkgChannel>MPH-MasterPass</bkgChannel></enchancedData>', '</enchancedData>', $b);
+					break;
+				case (Constants::iANDROID_PAY_WALLET):
+					$b = str_replace('<bkgChannel>MIPH-AndroidPay</bkgChannel></enchancedData>', '</enchancedData>', $b);
 					break;
 				}
 			}
@@ -1057,5 +1067,7 @@ class CPG extends Callback
 			break;
 		}
 	}
+
+	public function getPSPID() { return Constants::iCPG_PSP; }
 }
 ?>

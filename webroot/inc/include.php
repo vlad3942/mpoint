@@ -64,6 +64,8 @@ require_once(sAPI_CLASS_PATH ."output.php");
 require_once(sAPI_CLASS_PATH ."image.php");
 // Require API for determining device capabilities via the User Agent Profile
 require_once(sAPI_CLASS_PATH ."uaprofile.php");
+// Require API containing generic validation functions
+require_once(sAPI_CLASS_PATH ."validate_base.php");
 
 // Require Global function file
 require_once(sAPI_FUNCTION_PATH ."global.php");
@@ -107,6 +109,8 @@ require_once(sCLASS_PATH ."/home.php");
 require_once(sINTERFACE_PATH ."/captureable.php");
 require_once(sINTERFACE_PATH ."/refundable.php");
 require_once(sINTERFACE_PATH ."/voidable.php");
+require_once(sINTERFACE_PATH ."/redeemable.php");
+require_once(sINTERFACE_PATH ."/invoiceable.php");
 
 // Require specific Business logic for the Status component
 require_once(sCLASS_PATH ."/status.php");

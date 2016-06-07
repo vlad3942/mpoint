@@ -40,11 +40,14 @@
 										<xs:element name="transaction" maxOccurs="unbounded">
 											<xs:complexType>
 												<xs:all>
-													<xs:element name="amount" type="amount"/>
 													<xs:element name="captured-amount" type="amount"/>
 													<xs:element name="authorized-amount" type="amount"/>
-													<xs:element name="fee-amount" type="amount"/>
-													<xs:element name="refunded-amount" type="amount"/>
+													<xs:element name="amount" type="amount"/>
+													<xs:element name="fee" type="amount"/>
+													<xs:element name="price" type="xs:string"/>
+													<xs:element name="points" type="amount"/>
+													<xs:element name="reward" type="amount"/>
+													<xs:element name="refund" type="amount"/>
 													<xs:element name="orderid" type="xs:string"/>
 													<xs:element name="mobile">
 														<xs:complexType>
@@ -55,7 +58,22 @@
 															</xs:simpleContent>
 														</xs:complexType>
 													</xs:element>
+													<xs:element name="operator" type="xs:integer"/>
 													<xs:element name="email" type="xs:string"/>
+													<xs:element name="logo" type="logo"/>
+													<xs:element name="css-url" type="xs:string"/>
+													<xs:element name="accept-url" type="xs:string"/>
+													<xs:element name="cancel-url" type="xs:string"/>
+													<xs:element name="callback-url" type="xs:string"/>
+													<xs:element name="icon-url" type="xs:string"/>
+													<xs:element name="auth-url" type="xs:string"/>
+													<xs:element name="auto-capture" type="xs:boolean"/>
+													<xs:element name="auto-store-card" type="xs:boolean"/>
+													<xs:element name="markup-language" type="xs:string"/>
+													<xs:element name="customer-ref" type="xs:string"/>
+													<xs:element name="description" type="xs:string"/>
+													<xs:element name="ip" type="xs:string"/>
+													<xs:element name="hmac" type="xs:string"/>
 													<xs:element name="language" type="xs:string"/>
 												</xs:all>
 												<xs:attribute type="xs:positiveInteger" name="id"/>
@@ -64,7 +82,8 @@
 												<xs:attribute type="xs:integer" name="mode"/>
 												<xs:attribute type="xs:integer" name="eua-id"/>
 												<xs:attribute type="xs:positiveInteger" name="psp-id"/>
-												<xs:attribute type="xs:positiveInteger" name="external-id"/>
+												<xs:attribute type="xs:integer" name="card-id" use="optional"/>
+												<xs:attribute type="xs:string" name="external-id"/>
 											</xs:complexType>
 										</xs:element>
 									</xs:sequence>
@@ -88,5 +107,13 @@
 				<xs:attribute name="format" type="xs:string"/>
 			</xs:extension>
 		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="logo">
+		<xs:sequence>
+			<xs:element name="url" type="xs:string"/>
+			<xs:element name="width" type="xs:string"/>
+			<xs:element name="height" type="xs:string"/>
+		</xs:sequence>
 	</xs:complexType>
 </xs:schema>

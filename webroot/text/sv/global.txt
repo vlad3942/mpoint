@@ -1418,7 +1418,7 @@ Kind Regards
 msgid @@@ mPoint - Account Disabled @@@
 msgstr @@@ mPoint - Account Disabled @@@
 
-#: /api/classes/callback.php:94
+#: /api/classes/callback.php:95
 msgid @@@ mPoint - SMS Receipt @@@
 msgstr @@@ Tack f�r att du anv�nder mPoint, information om din order:
 mPoint ID: {MPOINTID}

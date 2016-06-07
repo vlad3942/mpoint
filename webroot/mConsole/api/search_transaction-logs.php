@@ -68,6 +68,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	{
 		$aAccounts = array();	
 		$aAccountIDs = array();	
+		$aPspIDs = array();
+		$aCardIDs = array();
+		$aStateIDs = array();
+		
 		for ($i=0; $i<count($obj_DOM->{'search-transaction-logs'}->clients->client); $i++)
 		{
 			$iClientID = (integer) $obj_DOM->{'search-transaction-logs'}->clients->client[$i]['id'];
@@ -136,7 +140,22 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			{
 				$obj_CustomerInfo = CustomerInfo::produceInfo($obj_DOM->{'search-transaction-logs'}->transaction->customer);
 			}
-			$aObj_Logs = $obj_mPoint->searchTransactionLogs(array_keys($aAccounts), $aAccountIDs, (integer) $obj_DOM->{'search-transaction-logs'}->transaction["id"], trim($obj_DOM->{'search-transaction-logs'}->transaction["order-no"]), $obj_CustomerInfo, str_replace("T", " ", $obj_DOM->{'search-transaction-logs'}->{'start-date'}), str_replace("T", " ", $obj_DOM->{'search-transaction-logs'}->{'end-date'}), General::xml2bool($obj_DOM->{'search-transaction-logs'}["verbose"]), (integer) $obj_DOM->{'search-transaction-logs'}["limit"], (integer) $obj_DOM->{'search-transaction-logs'}["offset"]);
+			
+			for ($j=0; $j<count($obj_DOM->{'search-transaction-logs'}->transaction->psps->{'psp'}); $j++)
+			{				
+				$aPspIDs[] = (integer) $obj_DOM->{'search-transaction-logs'}->transaction->psps->{'psp'}[$j];
+			}
+			for ($j=0; $j<count($obj_DOM->{'search-transaction-logs'}->transaction->cards->{'card'}); $j++)
+			{				
+				$aCardIDs[] = (integer) $obj_DOM->{'search-transaction-logs'}->transaction->cards->{'card'}[$j];
+			}
+			for ($j=0; $j<count($obj_DOM->{'search-transaction-logs'}->transaction->states->{'state'}); $j++)
+			{				
+				$aStateIDs[] = (integer) $obj_DOM->{'search-transaction-logs'}->transaction->states->{'state'}[$j];
+			}
+			
+			
+			$aObj_Logs = $obj_mPoint->searchTransactionLogs(array_keys($aAccounts), $aAccountIDs, $aPspIDs, $aCardIDs, $aStateIDs, (integer) $obj_DOM->{'search-transaction-logs'}->transaction["id"], trim($obj_DOM->{'search-transaction-logs'}->transaction["order-no"]), $obj_CustomerInfo, str_replace("T", " ", $obj_DOM->{'search-transaction-logs'}->{'start-date'}), str_replace("T", " ", $obj_DOM->{'search-transaction-logs'}->{'end-date'}), General::xml2bool($obj_DOM->{'search-transaction-logs'}["verbose"]), (integer) $obj_DOM->{'search-transaction-logs'}["limit"], (integer) $obj_DOM->{'search-transaction-logs'}["offset"]);
 			foreach ($aObj_Logs as $obj_Log)
 			{
 				$xml .= $obj_Log->toXML();

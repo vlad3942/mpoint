@@ -24,10 +24,34 @@ projectinfo
         {
             group = 'com.cellpointmobile.mpoint'
             artifact = 'mPoint'
-            version = '1.89.DEV-SNAPSHOT'
+            version = '1.98.DEV-SNAPSHOT'
             description = 'mPoint'
             packaging = 'zip'
         }
+
+configurations
+        {
+            runtime
+        }
+
+dependencies
+        {
+            runtime 'com.cellpointmobile.php5api:php5api:1.31'
+        }
+
+task phpDependencies(type:Copy) {
+    into project.buildDir
+    from configurations.runtime
+}
+
+task dockerTest(type:Exec) {
+
+    workingDir 'docker'
+    commandLine './dockerw'
+}
+
+tasks.dockerTest.dependsOn extractPhpUnit
+tasks.dockerTest.dependsOn phpDependencies
 
 sourceSets {
     main {
