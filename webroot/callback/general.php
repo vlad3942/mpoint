@@ -145,8 +145,8 @@ try
 									  $fee,
 									  array($HTTP_RAW_POST_DATA) );
 	
-	// Payment Authorized: Perform a callback to the 3rd party Wallet if required
-	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
+	// Payment Authorized: Perform a callback to the 3rd party Wallet if required, if the status is a valid Payment state
+	if ($iStateID >= Constants::iPAYMENT_ACCEPTED_STATE && $iStateID <= Constants::iPAYMENT_DUPLICATED_STATE)
 	{
 		$obj_PSPConfig = null;
 		$purchaseDate = null;
@@ -180,7 +180,7 @@ try
 			break;
 		}
 		// 3rd party Wallet requires Callback
-		if ( ($obj_PSPConfig instanceof PSPConfig) === true) { $obj_Wallet->callback($obj_PSPConfig, $obj_XML->callback->transaction->card, $purchaseDate); }
+		if ( ($obj_PSPConfig instanceof PSPConfig) === true) { $obj_Wallet->callback($obj_PSPConfig, $obj_XML->callback->transaction->card, $obj_XML->callback->status); }
 	}
 	// Account Top-Up
 	if ($obj_TxnInfo->getAccountID() > 0 && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getTypeID() >= 100 && $obj_TxnInfo->getTypeID() <= 109)
