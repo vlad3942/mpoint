@@ -71,7 +71,7 @@
 						<xsl:apply-templates select="." mode="datacash" />
 					</xsl:when>
 					<!-- Datacash -->
-					<xsl:when test="@pspid = 20">
+					<xsl:when test="@pspid = 21">
 						<xsl:apply-templates select="." mode="globalcollect" />
 					</xsl:when>
 					<!-- Error -->

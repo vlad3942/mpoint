@@ -222,7 +222,7 @@
 									<xsl:apply-templates select="item" mode="datacash" />
 								</xsl:when>
 								<!-- Datacash -->
-								<xsl:when test="transaction/@psp-id = 20">
+								<xsl:when test="transaction/@psp-id = 21">
 									<xsl:apply-templates select="item" mode="globalcollect" />
 								</xsl:when>
 								<!-- Error -->
