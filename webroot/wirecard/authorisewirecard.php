@@ -210,7 +210,7 @@ if (strlen($_SESSION['obj_TxnInfo']->getOrderID() ) > 0 && $obj_mPoint->orderAlr
 		    $b .= "&hostedCheckoutID=".$_POST['hostedCheckoutID']; 
 		    
 		    
-		  // $b = "isAccountOnFileSelectionShown=true&locale=en_GB&remember=on&hostedCheckoutID=".$_POST['hostedCheckoutID']."&isPaymentProductDetailsShown=true&publicMerchantId=337&token=".$_POST['token']."&variantCode=101&paymentProductId=3&cardNumber=5425233430109903&expiryDate=04/18&cvv=116&true=true";
+		  	$b = "isAccountOnFileSelectionShown=true&locale=en_GB&remember=on&hostedCheckoutID=".$_POST['hostedCheckoutID']."&isPaymentProductDetailsShown=true&publicMerchantId=337&token=".$_POST['token']."&variantCode=101&paymentProductId=3&cardNumber=5425233430109903&expiryDate=04/18&cvv=116&true=true";
   
 						
 			$urlData = parse_url($_POST['url']);
@@ -235,10 +235,10 @@ if (strlen($_SESSION['obj_TxnInfo']->getOrderID() ) > 0 && $obj_mPoint->orderAlr
 			$h .= "content-type: {CONTENTTYPE}" .HTTPClient::CRLF;
 			$h .= "user-agent: mPoint" .HTTPClient::CRLF;
 			//$h .= "Authorization: Basic ". base64_encode($aHTTP_CONN_INFO["wire-card"]["username"] .":". $aHTTP_CONN_INFO["wire-card"]["password"]) .HTTPClient::CRLF;
-			/* 
+			 
 			file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_globalcollect.log", "Request Details : ".var_export($aHTTP_CONN_INFO, true)."\n\n", FILE_APPEND);
 						
-			file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_globalcollect.log", "body Request Details : ".$b."\n\n", FILE_APPEND); */
+			file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_globalcollect.log", "body Request Details : ".$b."\n\n", FILE_APPEND); 
 				
 			$obj_Client = new HTTPClient(new Template(), $obj_ConnInfo);
 			$obj_Client->connect();
@@ -247,7 +247,7 @@ if (strlen($_SESSION['obj_TxnInfo']->getOrderID() ) > 0 && $obj_mPoint->orderAlr
 			
 			$obj_XML = $obj_Client->getReplyBody();
 		
-			/* file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_globalcollect.log", "response Details : ".$obj_XML."\n\n", FILE_APPEND); */
+			file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_globalcollect.log", "response Details : ".$obj_XML."\n\n", FILE_APPEND);
 						
 			if($code == 201)
 			{

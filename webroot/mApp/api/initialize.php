@@ -88,7 +88,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					/**
 					 *  If the client configuration max-amount is set to zero or null in the Client.Client_Tbl, the amount validation will not be performed. By doing this, we allow for the requirement that a client do not wish to have a transaction amount limit enforced.
 					 */
-					if (($obj_ClientConfig->getMaxAmount() != 0 || is_null($obj_ClientConfig->getMaxAmount()) == false) && $obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(),  (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount) != 10) { $aMsgCds[$obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount) + 50] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount; }
+					if ($obj_ClientConfig->getMaxAmount() > 0 && $obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(),  (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount) != 10) { $aMsgCds[$obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount) + 50] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount; }
 					
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
