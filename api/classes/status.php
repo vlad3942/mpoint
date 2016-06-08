@@ -15,7 +15,7 @@ class Status extends General
 											Constants::iPAYMENT_CAPTURED_STATE,
 											Constants::iPAYMENT_REFUNDED_STATE);
 
-	public function getActiveTransactions($from, $to, $enduser=0, $serialize=false, $limit=0)
+	public function getActiveTransactions($from, $to, $enduser=0, $serialize=false, $limit=0, $clients=array() )
 	{
 		$sFrom = $this->getDBConn()->escStr(date("Y-m-d H:i:s", $from) );
 		$sTo = $this->getDBConn()->escStr(date("Y-m-d H:i:s", $to) );
@@ -33,6 +33,7 @@ class Status extends General
 		$enduser = intval($enduser);
 		$limit = intval($limit);
 		if ($enduser > 0) { $sql .= " AND Txn.euaid = ". $enduser; }
+		if (count($clients) > 0) { $sql .= " AND Txn.clientid IN (". implode(",", $clients) .")"; }
 		if ($limit > 0) { $sql .= " LIMIT ". $limit; }
 		if ($serialize === true) { $sql .= " FOR UPDATE NOWAIT"; }
 //		echo $sql ."\n";

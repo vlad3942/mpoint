@@ -145,6 +145,7 @@ abstract class Callback extends EndUserAccount
 		else { $sql = ", extid = '". $this->getDBConn()->escStr($txnid) ."'"; }
 		if ($this->_obj_TxnInfo->getAccountID() > 0) { $sql .= ", euaid = ". $this->_obj_TxnInfo->getAccountID(); }
 		else { $sql .= ", euaid = NULL"; }
+		
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET pspid = ". intval($pspid) .", cardid = ". intval($cid).", fee =".intval($fee) . $sql ."
 				WHERE id = ". $this->_obj_TxnInfo->getID() ." AND (cardid IS NULL OR cardid = 0)";
@@ -242,7 +243,6 @@ abstract class Callback extends EndUserAccount
 			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_CONNECTED_STATE, "Host: ". $obj_ConnInfo->getHost() .", Port: ". $obj_ConnInfo->getPort() .", Path: ". $obj_ConnInfo->getPath() );
 			// Send Callback data
 			$iCode = $obj_HTTP->send($this->constHTTPHeaders(), $body);
-				
 			$obj_HTTP->disConnect();
 			if (200 <= $iCode && $iCode < 300)
 			{
@@ -594,7 +594,7 @@ abstract class Callback extends EndUserAccount
 			return new DSB($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dsb"], $obj_PSPConfig);
 		case (Constants::iVISA_CHECKOUT_PSP) :
 			return new VISACheckout($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["visa-checkout"]);
-		case (Constants::iAPPLE_PAY_PSP) :
+		case (Constants::iAPPLE_PAY_PSP):
 			return new ApplePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["apple-pay"]);
 		case (Constants::iCPG_PSP):
 			return new CPG($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cpg"]);
@@ -602,6 +602,12 @@ abstract class Callback extends EndUserAccount
 			return new MasterPass($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["masterpass"]);
 		case (Constants::iAMEX_EXPRESS_CHECKOUT_PSP):
 			return new AMEXExpressCheckout($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["amex-express-checkout"]);
+		case (Constants::iWIRE_CARD_PSP):
+			return new WireCard($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["wire-card"]);
+		case (Constants::iDATA_CASH_PSP):
+			return new DataCash($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["data-cash"]);
+		case (Constants::iGLOBAL_COLLECT_PSP):
+			return new GlobalCollect($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["global-collect"]);
 		default:
 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}

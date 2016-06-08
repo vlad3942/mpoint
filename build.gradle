@@ -24,7 +24,7 @@ projectinfo
         {
             group = 'com.cellpointmobile.mpoint'
             artifact = 'mPoint'
-            version = '1.93.DEV-SNAPSHOT'
+            version = '1.93.MCDEV-SNAPSHOT'
             description = 'mPoint'
             packaging = 'zip'
         }
@@ -36,7 +36,7 @@ configurations
 
 dependencies
         {
-            runtime 'com.cellpointmobile.php5api:php5api:1.0'
+            runtime 'com.cellpointmobile.php5api:php5api:1.31'
         }
 
 task phpDependencies(type:Copy) {

@@ -62,13 +62,15 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 	if (array_key_exists("language", $_REQUEST) === false) { $_REQUEST['language'] = $obj_ClientConfig->getLanguage(); }
 	if (array_key_exists("markup", $_REQUEST) === false) { $_REQUEST['markup'] = $obj_ClientConfig->getAccountConfig()->getMarkupLanguage(); }
 	if (array_key_exists("auth-url", $_REQUEST) === false) { $_REQUEST['auth-url'] = $obj_ClientConfig->getAuthenticationURL(); }
-
+	
+	if (array_key_exists("country", $_REQUEST) === true && empty($_REQUEST['country']) == false) { $_REQUEST['country-config'] = CountryConfig::produceConfig($_OBJ_DB, (integer) $_REQUEST['country']); }
+	
 	$obj_mPoint = new MobileWeb($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 	$iTxnID = $obj_mPoint->newTransaction(Constants::iPURCHASE_VIA_WEB);
 
 	/* ========== Input Validation Start ========== */
 	if ($obj_Validator->valMobile($_REQUEST['mobile']) != 10 && $obj_ClientConfig->smsReceiptEnabled() === true) { $aMsgCds[$obj_Validator->valMobile($_REQUEST['mobile']) + 30] = $_REQUEST['mobile']; }
-	if ($obj_Validator->valOperator($_REQUEST['operator']) != 10) { $aMsgCds[$obj_Validator->valOperator($_REQUEST['operator']) + 40] = $_REQUEST['operator']; }
+	if ($obj_Validator->valOperator($_REQUEST['operator']) != 10 && $obj_ClientConfig->smsReceiptEnabled() === true) { $aMsgCds[$obj_Validator->valOperator($_REQUEST['operator']) + 40] = $_REQUEST['operator']; }
 	if ($obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), $_REQUEST['amount']) != 10) { $aMsgCds[$obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), $_REQUEST['amount']) + 50] = $_REQUEST['amount']; }
 	// Validate URLs
 	if ($obj_Validator->valURL($_REQUEST['logo-url']) > 1 && $obj_Validator->valURL($_REQUEST['logo-url']) != 10) { $aMsgCds[$obj_Validator->valURL($_REQUEST['logo-url']) + 70] = $_REQUEST['logo-url']; }
@@ -154,7 +156,7 @@ if (array_key_exists(1000, $aMsgCds) === true)
 {
 	$_SESSION['obj_Info']->delInfo("payment-completed");
 	// Instantiate data object with the User Agent Profile for the customer's mobile device.
-	$_SESSION['obj_UA'] = UAProfile::produceUAProfile(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["iemendo"]) );
+	$_SESSION['obj_UA'] = UAProfile::produceUAProfile(HTTPConnInfo::produceConnInfo($aUA_CONN_INFO) );
 	unset($_SESSION['temp']);
 	// Start Shop Flow
 	if ($_SESSION['obj_TxnInfo']->getClientConfig()->getFlowID() == Constants::iPHYSICAL_FLOW)
