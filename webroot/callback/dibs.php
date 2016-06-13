@@ -64,7 +64,7 @@ try
 	// Save Ticket ID representing the End-User's stored Card Info
 	$ticket = @$_POST["ticket"];
 	
-	if (array_key_exists("preauth", $_POST) === true && @$_POST['preauth'] == "true" || strlen($ticket) > 0)
+	if ( (array_key_exists("preauth", $_POST) === true && @$_POST['preauth'] == "true") || strlen($ticket) > 0)
 	{
 		$iMobileAccountID = -1;
 		$iEMailAccountID = -1;
@@ -107,7 +107,7 @@ try
 		}
 		// E-Mail has been provided for the transaction
 		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
-		$_POST['transact'] = $obj_mPoint->authTicket($ticket);
+		if (array_key_exists("maketicket", $_POST) === false) { $_POST['transact'] = $obj_mPoint->authTicket($ticket); }
 	}
 
 	//

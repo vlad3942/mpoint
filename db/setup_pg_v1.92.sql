@@ -1,4 +1,3 @@
-
 /* ========== CONFIGURE DSB AS PSP ================ */
 INSERT INTO System.PSP_Tbl (id, name) VALUES (19, 'DSB');
 /* ========== =================== ================ */
@@ -25,3 +24,7 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) SELECT A.id, 
 
 INSERT INTO Log.State_Tbl (id, name) VALUES (2007, 'Payment with voucher');
 /* ========== CONFIGURE DSB PSP AND VOUCHER PAYMENT ========= */
+
+/* ========== CONFIGURE State table for support Card block by PSP ========== */
+INSERT INTO Log.State_Tbl (id, name, module) VALUES (2012, 'Card blocked by PSP', 'Payment');
+/* ========== END CONFIGURE State table for support Card block by PSP ========= */

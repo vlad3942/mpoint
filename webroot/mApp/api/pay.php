@@ -113,7 +113,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			if ($code == 100)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]);
-
+				
 				// Client successfully authenticated
  				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])
 					&& $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true)
@@ -132,11 +132,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$code = $obj_Validator->valIssuerIdentificationNumber($_OBJ_DB, $obj_ClientConfig->getID(), (integer) $obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'});
 						}
 						else { $code = 10; }
-						
-						/**
-						 * The validation of input amount will be done against the original transaction amount, rather than the client config max amount
-						 */
-						if ($obj_Validator->valPrice($obj_TxnInfo->getAmount(),  (integer) $obj_DOM->pay[$i]->transaction->card->amount) != 10) { $aMsgCds[$obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), (integer) $obj_DOM->pay[$i]->transaction->card->amount) + 50] = (string) $obj_DOM->pay[$i]->transaction->card->amount; }
+
+						$iValResult = $obj_Validator->valPrice($obj_TxnInfo->getAmount(), (integer)$obj_DOM->pay[$i]->transaction->card->amount);
+						if ($iValResult != 10) { $aMsgCds[$iValResult + 50] = (string) $obj_DOM->pay[$i]->transaction->card->amount; }
 						
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
@@ -377,12 +375,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										case (Constants::iAPPLE_PAY_PSP):
 											$xml .= '<url method="app" />';
 											break;
-										case (Constants::iAPPLE_PAY_PSP):
-											$xml .= '<url method="app" />';
-											break;
-										case (Constants::iANDROID_PAY_PSP):
-											$xml .= '<url method="app" />';
-											break;
+									case (Constants::iAPPLE_PAY_PSP):
+										$xml .= '<url method="app" />';
+										break;
+									case (Constants::iANDROID_PAY_PSP):
+										$xml .= '<url method="app" />';
+										break;
 										case (Constants::iDATA_CASH_PSP):
 											$obj_PSP = new DataCash($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["data-cash"]);
 												
