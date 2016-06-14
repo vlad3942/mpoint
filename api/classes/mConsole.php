@@ -68,7 +68,7 @@ class mConsole extends Admin
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".Client_Tbl
 					SET store_card = ". intval($storecard) .", auto_capture = '". intval($autocapture) ."', name = '". $this->getDBConn()->escStr($name) ."', username='". $this->getDBConn()->escStr($username) ."', passwd='". $this->getDBConn()->escStr($password) ."', countryid = ". $cc .",
 						maxamount = ". intval($maxamt) .", lang = '". $this->getDBConn()->escStr($lang) ."', smsrcpt = '". intval($smsrcpt) ."', emailrcpt = '". intval($emailrcpt) ."' , mode = ". intval($mode) .", method = '". $this->getDBConn()->escStr($method) ."', send_pspid = '". intval($send_pspid) ."',
-						identification = ". intval($identification) .", transaction_ttl = ". intval($transaction_ttl) .", salt = ". $this->getDBConn()->escStr($salt) ."
+						identification = ". intval($identification) .", transaction_ttl = ". intval($transaction_ttl) .", salt = '". $this->getDBConn()->escStr($salt) ."'
 					WHERE id = ". intval($id);
 		}
 		else
@@ -111,7 +111,18 @@ class mConsole extends Admin
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".Account_Tbl
 					SET name = '". $this->getDBConn()->escStr($name) ."', markup='". $this->getDBConn()->escStr($markup) ."', enabled = '1'
-					WHERE id = ". intval($id);
+					WHERE id = ". intval($id) ." AND (name != '". $this->getDBConn()->escStr($name) ."' OR markup !='". $this->getDBConn()->escStr($markup) ."')";
+			$res = $this->getDBConn()->query($sql);
+			
+			if($this->getDBConn()->countAffectedRows($res) > 0)
+			{
+				//This query will force trigger to update modified date to same date where account_tbl is updated.				
+				$sql = "UPDATE Client". sSCHEMA_POSTFIX .".MerchantSubAccount_Tbl
+						SET accountid = '". intval($id)."'
+						WHERE accountid = ". intval($id);
+				
+				$res = $this->getDBConn()->query($sql);
+			}
 		}
 		else
 		{
@@ -123,20 +134,21 @@ class mConsole extends Admin
 						(id, clientid, name, markup)
 					 VALUES
 						(". $id .", ". intval($clientid) .", '". $this->getDBConn()->escStr($name) ."', '". $this->getDBConn()->escStr($markup) ."')";
+			$res = $this->getDBConn()->query($sql);
 		}
 		//echo $sql ."\n";
-		$res = $this->getDBConn()->query($sql);
+		
 		// Unable execute SQL query
 		if (is_resource($res) === false) { $id = -1; }
 		
 		return $id;
 	}
 	
-	public function disableAccounts($clientid)
+	public function disableAccounts($clientid, $aAccountIds)
 	{
 		$sql = "UPDATE Client". sSCHEMA_POSTFIX .".Account_Tbl
 				SET enabled = '0'
-				WHERE clientid = ". intval($clientid);
+				WHERE clientid = ". intval($clientid)." and id NOT IN (".implode(",", $aAccountIds).")";
 //		echo $sql ."\n";
 				
 		return is_resource($this->getDBConn()->query($sql) );
@@ -157,7 +169,7 @@ class mConsole extends Admin
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".MerchantSubAccount_Tbl
 					SET name = '". $this->getDBConn()->escStr($name) ."', pspid = ". intval($pspid) ." , enabled = '1'
-					WHERE id = ". intval($id);
+					WHERE id = ". intval($id) ."AND (name != '".$this->getDBConn()->escStr($name)."' OR pspid != ".intval($pspid).")";
 		}
 		else
 		{
@@ -178,12 +190,12 @@ class mConsole extends Admin
 		return $id;
 	}
 	
-	public function disableMerchantSubAccounts($accountid)
+	public function disableMerchantSubAccounts($accountid, $aMerchantSubAccountIds)
 	{
 		$sql = "UPDATE Client". sSCHEMA_POSTFIX .".MerchantSubAccount_Tbl
 				SET enabled = '". intval(false)."'
-				WHERE accountid = ". intval($accountid);
-		//echo $sql ."\n";				
+				WHERE accountid = ". intval($accountid)." and id NOT IN (".implode(",", $aMerchantSubAccountIds).")";
+		//echo $sql ."\n";		
 		return is_resource($this->getDBConn()->query($sql) );
 	}
 	
@@ -531,7 +543,6 @@ class mConsole extends Admin
 	 */
 	public function singleSignOn(HTTPConnInfo &$oCI, $authtoken, $permissioncode, array $aClientIDs=array() )
 	{
-				
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<single-sign-on permission-code="'.htmlspecialchars($permissioncode, ENT_NOQUOTES) .'">';

@@ -24,10 +24,10 @@ require_once(sCLASS_PATH ."/validate.php");
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 
-/*
+
 $_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
-
+/*
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
 $HTTP_RAW_POST_DATA .= '<save-client-configuration>  ';
@@ -225,10 +225,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						{
 							if (count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}) == 1 )
 							{							
-								//Disbale all accounts linked to the client.
-								$bDisableAccounts = $obj_mPoint->disableAccounts($iClientID);
-								
-								if($bDisableAccounts === false) {throw new mConsoleDisableAccountFailedException("Error during disable Accounts for client: ". $iClientID); }
+								$aAccountIds = array();
 								
 								for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}); $j++)
 								{
@@ -236,13 +233,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 																		   trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->name),
 																		   trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->markup),
 																		   (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}->{'account-configurations'}->{'account-config'}[$j]["id"]);
+									
 									// Success
 									if ($iAccountID > 0)
 									{
-										//Disable all Merchant Sub Account.
-										$bDisableMSA = $obj_mPoint->disableMerchantSubAccounts($iAccountID);
-	
-										if($bDisableMSA === false) { throw new mConsoleDisableMerchantSubAccountFailedException("Error during disable payment service providers for account: ". $iAccountID); }
+										$aAccountIds[$j] = $iAccountID;
+										
+										$aMerchantSubAccountIds = array();
 										
 										for ($k=0; $k<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}); $k++)
 										{
@@ -250,14 +247,29 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 																						  (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$k]["psp-id"],
 																						  trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$k]->name),
 																						  (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$k]["id"]);
+											
 											// Error: Break out of loop
 											if ($iMSAID < 0) { throw new mConsoleSaveMerchantSubAccountFailedException("Error during save payment service provider: ". $iMSAID ." for account: ". $iAccountID); }
+											
+											$aMerchantSubAccountIds[$k] = $iMSAID;
 										}
+										
+										$bDisableMSA = $obj_mPoint->disableMerchantSubAccounts($iAccountID, $aMerchantSubAccountIds);
+										
+										if($bDisableMSA === false) { throw new mConsoleDisableMerchantSubAccountFailedException("Error during disable payment service providers for account: ". $iAccountID); }
+										
 									}
 									// Error: Break out of loop
 									else { throw new mConsoleSaveAccountFailedException("Error during Save Account: ". $iAccountID ." for client: ". $iClientID); }							
 								
 								}
+								
+								
+								//Disbale all accounts linked to the client.
+								$bDisableAccounts = $obj_mPoint->disableAccounts($iClientID, $aAccountIds);
+									
+								if($bDisableAccounts === false) {throw new mConsoleDisableAccountFailedException("Error during disable Accounts for client: ". $iClientID); }
+								
 							}
 							
 							//Disable Merchant Accounts
