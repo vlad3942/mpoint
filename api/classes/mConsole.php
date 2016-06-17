@@ -543,6 +543,7 @@ class mConsole extends Admin
 	 */
 	public function singleSignOn(HTTPConnInfo &$oCI, $authtoken, $permissioncode, array $aClientIDs=array() )
 	{
+
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<single-sign-on permission-code="'.htmlspecialchars($permissioncode, ENT_NOQUOTES) .'">';
@@ -771,12 +772,13 @@ class mConsole extends Admin
 					Constants::iINPUT_VALID_STATE , 
 					Constants::iPAYMENT_INIT_WITH_PSP_STATE , 
 					Constants::iPAYMENT_ACCEPTED_STATE , 
+					Constants::iPAYMENT_WITH_ACCOUNT_STATE,
 					Constants::iPAYMENT_CAPTURED_STATE, 
 					Constants::iPAYMENT_DECLINED_STATE, 
 					Constants::iPAYMENT_REJECTED_STATE, 
 					Constants::iPAYMENT_REFUNDED_STATE,
-					Constants::iPAYMENT_CANCELLED_STATE
-					
+					Constants::iPAYMENT_CANCELLED_STATE,
+					Constants::iTICKET_CREATED_STATE					
 				);
 		}
 		
@@ -789,9 +791,10 @@ class mConsole extends Admin
 		
 //		echo $sql ."\n";
 		$stmt1 = $this->getDBConn()->prepare($sql);
+		
 		$sql = "SELECT id, stateid, data, created
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
-				WHERE txnid = $1";
+				WHERE txnid = $1 and enabled = true";
 		
 		if (count($aStateIDs) > 0) 
 		{ 
@@ -820,6 +823,7 @@ class mConsole extends Admin
 			// Purchase
 			if ($RS["STATEID"] < 0 && in_array($RS["TYPEID"], $aTypes) === true)
 			{
+				echo $RS["ID"]." :: ".$RS["STATEID"]."\n";
 				$aParams = array($RS["ID"]);
 				$res1 = $this->getDBConn()->execute($stmt1, $aParams);
 				if (is_resource($res1) === true)
