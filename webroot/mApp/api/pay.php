@@ -136,6 +136,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$iValResult = $obj_Validator->valPrice($obj_TxnInfo->getAmount(), (integer)$obj_DOM->pay[$i]->transaction->card->amount);
 						if ($iValResult != 10) { $aMsgCds[$iValResult + 50] = (string) $obj_DOM->pay[$i]->transaction->card->amount; }
 						
+						//Check if card or payment method is enabled or disabled by merchant
+						//Same check is  also implemented at app side.
+						$obj_CardXML = simpledom_load_string($obj_mPoint->getCards( (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount) );
+
+						$obj_Elem = $obj_CardXML->xpath("/cards/item[@id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ."]");
+						if (intval($obj_Elem["state-id"]) !== 1 || intval($obj_Elem["state-id"]) !== 2)
+						{
+							$aMsgCds[14] = "The selected payment card is disabled. Select another card";
+						}
+						
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
 						{

@@ -175,7 +175,17 @@ try
 										intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) > 0 && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) !== Constants::iINVOICE &&
 										$obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) < 10)
 										{ $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) + 40; }
-
+									
+									//Check if card or payment method is enabled or disabled by merchant
+									//Same check is  also implemented at app side.
+									$obj_CardXML = simpledom_load_string($obj_mPoint->getCards( (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount) );
+									
+									$obj_Elem = $obj_CardXML->xpath("/cards/item[@id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ."]");
+									if (intval($obj_Elem["state-id"]) !== 1 || intval($obj_Elem["state-id"]) !== 2)
+									{
+										$aMsgCds[14] = "The selected payment card is disabled. Select another card";
+									}	
+									
 									// Success: Input Valid
 									if (count($aMsgCds) == 0)
 									{
