@@ -159,7 +159,7 @@ try
 
 									//TODO: Move most of the logic of this for-loop into model layer, api/classes/authorize.php
 									for ($j=0; $j<count($obj_DOM->{'authorize-payment'}[$i]->transaction->card); $j++)
-								{
+									{
 									$obj_XML = simpledom_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig, true) );
 
 		//							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"]);
@@ -178,7 +178,8 @@ try
 									
 									//Check if card or payment method is enabled or disabled by merchant
 									//Same check is  also implemented at app side.
-									$obj_CardXML = simpledom_load_string($obj_mPoint->getCards( (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount) );
+									$obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+									$obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount) );
 									
 									$obj_Elem = $obj_CardXML->xpath("/cards/item[@id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ."]");
 									if (intval($obj_Elem["state-id"]) !== 1 || intval($obj_Elem["state-id"]) !== 2)
@@ -305,7 +306,6 @@ try
 														 * token value in authorize  request but for new card.
 														 * @var unknown
 														 */
-														$obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 														// Find Configuration for Payment Service Provider
 														$obj_XML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
 														// Determine Payment Service Provider based on selected card
