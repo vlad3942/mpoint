@@ -141,7 +141,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$obj_CardXML = simpledom_load_string($obj_mPoint->getCards( (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount) );
 
 						$obj_Elem = $obj_CardXML->xpath("/cards/item[@id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ."]");
-						if (intval($obj_Elem["state-id"]) !== 1 || intval($obj_Elem["state-id"]) !== 2)
+						if (intval($obj_Elem["state-id"]) !== 1)
 						{
 							$aMsgCds[14] = "The selected payment card is disabled. Select another card";
 						}

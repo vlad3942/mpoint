@@ -181,8 +181,9 @@ try
 									$obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 									$obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount) );
 									
-									$obj_Elem = $obj_CardXML->xpath("/cards/item[@id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ."]");
-									if (intval($obj_Elem["state-id"]) !== 1 || intval($obj_Elem["state-id"]) !== 2)
+									$obj_Elem = $obj_CardXML->xpath("/cards/item[@id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ."]");
+									
+									if (intval($obj_Elem["state-id"]) !== 1)
 									{
 										$aMsgCds[14] = "The selected payment card is disabled. Select another card";
 									}	
