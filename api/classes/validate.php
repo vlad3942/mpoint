@@ -208,7 +208,7 @@ class Validate extends ValidateBase
 	 * @see		iAUTH_MIN_LENGTH
 	 * @see		iAUTH_MAX_LENGTH
 	 *
-	 * @param	string	$email	E-Mail address to validate
+	 * @param	string $email 	E-Mail address to validate
 	 * @return	integer
 	 */
 	public function valEMail($email)
@@ -1141,6 +1141,42 @@ class Validate extends ValidateBase
 
 		return $code;
 	}
+	
+	/**
+	 * Performs validation of the provided Hash based Message Authentication Code (HMAC) by generating the equivalent as a SHA1 hash.
+	 * The HMAC is generated based on the following data fields in the request (in that order):
+	 * 	- clientid
+	 * 	- order number
+	 * 	- amount
+	 * 	- amount country-id
+	 * 	- mobile
+	 *  - mobile country-id
+	 *  - e-mail
+	 *  - device id
+	 * Additionally the provided salt is appended at the end.
+	 *  
+	 * @see		Validate::valMAC()
+	 *
+	 * @param 	string $mac						Message Authentication Code provided by the client in the request
+	 * @param	ClientConfig $obj_ClientConfig	The Client Configuration from which fields such Client ID and Salt are retrieved
+	 * @param	ClientInfo $obj_ClientInfo		The Client Information from which fields such as the customer's mobile & email is retrieved
+	 * @param	string $orderno					The order number returned by the upstream Selling System
+	 * @param	integer $amount					The total amount for the order in the country's smallest currency
+	 * @param	integer $countryid				The unique ID of the country that designates the currency
+	 * @return 	integer
+	 */
+	public function valHMAC($mac, ClientConfig $obj_ClientConfig, ClientInfo $obj_ClientInfo, $orderno, $amount, $countryid)
+	{
+		$code = 1;
+		$chk = sha1($obj_ClientConfig->getID() . $orderno . $amount . $countryid . $obj_ClientInfo->getMobile() . $obj_ClientInfo->getCountryConfig()->getID() . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt() );
+		if ($mac == $chk)
+		{
+			$code = 10;
+		}
+		
+		return $code;
+	}
+	
 	
 	/**
 	 * Performs validation of the Issuer Identification Number (IIN) to determine whether it has been blocked by the client.

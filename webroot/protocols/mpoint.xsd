@@ -39,6 +39,14 @@
 											</xs:sequence>
 										</xs:complexType>
 									</xs:element>
+									<xs:element name="hmac" minOccurs="0" maxOccurs="1">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:minLength value="0" />
+												<xs:maxLength value="64" />
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
 								</xs:all>
 								<xs:attribute name="order-no" type="xs:string" use="optional" />
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="40" />
