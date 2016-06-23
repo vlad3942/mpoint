@@ -337,20 +337,34 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		return $obj_XML;
 	}
 
-	public function authTicket(PSPConfig $obj_PSPConfig, $ticket)
+	public function authTicket(PSPConfig $obj_PSPConfig, $obj_Elem)
 	{
 		$code = 0;
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<authorize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
-		$b .= $obj_PSPConfig->toXML();		
-		$b .= $this->_constTxnXML();				
-		$b .= '<card>';
-		$b .= '<token>'. $ticket .'</token>';
+		$b .= $obj_PSPConfig->toXML();
+		
+		$txnXML = $this->_constTxnXML();
+		$b .= $txnXML;
+		
+		list($expiry_month, $expiry_year) = explode("/", $obj_Elem->expiry);
+				
+		$b .= '<card type-id="'.intval($obj_Elem['type-id']).'">';
+		$b .= '<masked_account_number>'. $obj_Elem->mask .'</masked_account_number>';
+		$b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
+		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
+		$b .= '<token>'. $obj_Elem->ticket .'</token>';
+		$b .= '<cvc>'. $obj_Elem->cvc .'</cvc>';
 		$b .= '</card>';
+	
+		$obj_txnXML = simpledom_load_string($txnXML);
+		$euaid = intval($obj_txnXML->xpath("/transaction/@eua-id")->{'eua-id'});
+		if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
+		
 		$b .= '</authorize>';
 		$b .= '</root>';
-
+		
 		try
 		{
 			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["auth"]);
@@ -362,10 +376,18 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			if ($code == 200)
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+				
+				$sql = "";
+				if(isset($obj_XML["external-id"]) === true)
+				{
+					$txnid = $obj_XML["external-id"];
+					$sql = ",extid = '". $this->getDBConn()->escStr($txnid) ."'";
+				}
+				
 				$code = $obj_XML->status["code"];
-				// save ext id in database
+
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-						SET pspid = ". $obj_PSPConfig->getID() ."
+						SET pspid = ". $obj_PSPConfig->getID() . $sql."
 						WHERE id = ". $this->getTxnInfo()->getID();
 //				echo $sql ."\n";
 				$this->getDBConn()->query($sql);
