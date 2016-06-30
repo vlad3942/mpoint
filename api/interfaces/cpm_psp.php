@@ -333,6 +333,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		catch (mPointException $e)
 		{
 			trigger_error("construct  XML of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+			//re-throw the exception to the calling controller.
+			throw $e;
 		}
 		return $obj_XML;
 	}
