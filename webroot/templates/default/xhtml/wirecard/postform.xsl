@@ -212,6 +212,8 @@
 							<div>
 								<input type="hidden" id="pspid" name="pspid"
 								value="{transaction/@psp-id}" />
+								<input type="hidden" id="cardid" name="cardid"
+								value="{card/@id}" />
 								<xsl:choose>
 								<!-- Wirecard -->
 								<xsl:when test="transaction/@psp-id = 18">
