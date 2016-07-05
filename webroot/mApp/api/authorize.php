@@ -154,7 +154,7 @@ try
 								if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card) > 0)
 								{
 									// Add control state and immediately commit database transaction
-									$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, "");
+									//$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, "");
 									$_OBJ_DB->query("COMMIT");
 
 									//TODO: Move most of the logic of this for-loop into model layer, api/classes/authorize.php
@@ -631,7 +631,7 @@ try
 															
 																$obj_PSP = new DataCash($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["data-cash"]);
 																	
-																$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_Elem->ticket);
+																$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_Elem);
 																// Authorization succeeded
 																if ($code == "100")
 																{
@@ -653,13 +653,22 @@ try
 																	
 																$obj_PSP = new GlobalCollect($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["global-collect"]);
 																
-																$token = null;
 																if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1)
 																{
-																	$token = $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token;
+																	$obj_Elem->addChild("ticket", $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token);
+																}																
+																
+																/**
+																 * Here on the basis of cvc we will be overriding 
+																 * auth request with authcompelete request defined
+																 * in global.php.
+																 */
+																if(count($obj_Elem->cvc) !== 1)
+																{
+																	$obj_PSP->setAuthPath(true);
 																}
-																	
-																$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_Elem, $token);
+																
+																$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_Elem);
 
 																// Authorization succeeded
 																if ($code == "100")
