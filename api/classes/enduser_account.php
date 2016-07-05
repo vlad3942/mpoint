@@ -224,7 +224,7 @@ class EndUserAccount extends Home
 						$mob = "";
 						$email = "";
 						if (floatval($addr) > $obj_CountryConfig->getMinMobile() ) { $mob = $addr; }
-						elseif (strpos($addr, '@') !== false) { $email = $addr; }
+						else { $email = $addr; }
 
 						$iAccountID = $this->newAccount($obj_CountryConfig->getID(), $mob, "", $email, $oTI->getCustomerRef() );
 						$code = 2;
@@ -232,7 +232,7 @@ class EndUserAccount extends Home
 				}
 				else
 				{
-					$pref = false;
+					$pref = null;
 					$code = 0;
 				}
 				$name = "";
@@ -270,11 +270,11 @@ class EndUserAccount extends Home
 			$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 					SET pspid = ". intval($pspid) .", ticket = '". $this->getDBConn()->escStr($token) ."',
 						mask = '". $this->getDBConn()->escStr(trim($mask) ) ."', expiry = '". $this->getDBConn()->escStr($exp) ."',
-						enabled = '1'";
-			if (is_null($pref) === false) { $sql .= ", preferred = '". intval($pref) ."'"; }
+						preferred = '". intval($pref) ."', enabled = '1'";
 			if (empty($name) === false) { $sql .= ", name = '". $this->getDBConn()->escStr(trim($name) ) ."'"; }
 			if (empty($chn) === false) { $sql .= ", card_holder_name = '". $this->getDBConn()->escStr(trim($chn) ) ."'"; }
 			if ($chargeid > 0) { $sql .= ", chargetypeid = ". intval($chargeid) .""; }
+				
 			$sql .= "
 					WHERE id = ". $id;
 //			echo $sql ."\n";
@@ -285,13 +285,6 @@ class EndUserAccount extends Home
 		// Card not previously saved, add card info to database
 		else
 		{
-			// Preferred status undefined
-			if (is_null($pref) === true)
-			{
-				$obj_XML = simplexml_load_string($this->getStoredCards($iAccountID, $this->_obj_ClientConfig) );
-				// Customer doesn't have other cards saved for this client
-				if (count($obj_XML->xpath("/stored-cards/card[client/@id = ". $this->_obj_ClientConfig->getID() ."]")) == 0) { $pref = true; }
-			}
 			$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Card_Tbl
 						(accountid, clientid, cardid, pspid, ticket, mask, expiry, name, preferred, card_holder_name, chargetypeid)
 					VALUES
@@ -300,6 +293,7 @@ class EndUserAccount extends Home
 						 '". $this->getDBConn()->escStr(trim($name) ) ."', '". intval($pref) ."','". $this->getDBConn()->escStr(trim($chn) )."', ". intval($chargeid) .")";
 //			echo $sql ."\n";
 			$res = $this->getDBConn()->query($sql);
+
 			if (is_resource($res) === true)
 			{
 				$sql = "SELECT id
