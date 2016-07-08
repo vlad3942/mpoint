@@ -105,61 +105,41 @@ if ( ($obj_XML instanceof SimpleDOMElement) === true && $obj_XML->validate(sPROT
 		// Save Ticket ID representing the End-User's stored Card Info
 		if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_XML->callback->transaction->card->token) == 1)
 		{
-			
-			$iAccountID = -1;
-			if ($obj_TxnInfo->getAccountID() > 0) { $iAccountID = $obj_TxnInfo->getAccountID(); }
-			
+						
 			$sExpiry =  $obj_XML->callback->transaction->card->expiry->month ."/". $obj_XML->callback->transaction->card->expiry->year;
 	
-			/**
-			 * This function will return cardid if card is saved during save card
-			 * call.Other wise it will return -1.		 * 
-			 * @var integer $iCardID
-			 */		
-			$iCardID = (integer) $obj_mPoint->getCardIDFromCardDetails($iAccountID,
-																		(integer) $obj_XML->callback->transaction->card["type-id"],
-																		$obj_XML->callback->transaction->card->{'card-number'},
-																		preg_replace('/\s+/', '', $sExpiry),
-																		$obj_XML->callback->transaction->card->token);
+	
+			$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE);
+			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $obj_XML->callback->transaction->card->token);
 			
-			/**
-			 * This check will assure that the psp who are sending mask card as well as token
-			 * irrespective of save card api call. Those card details won't be saved or updated
-			 * in card_tbl.
-			 */
-			if($iCardID !== -1)
+			$iStatus = $obj_mPoint->saveCard($obj_TxnInfo,
+											 $obj_TxnInfo->getMobile(),
+											 (integer) $obj_XML->callback->transaction->card["type-id"],
+											 (integer) $obj_XML->callback->{'psp-config'}["id"],
+											 $obj_XML->callback->transaction->card->token,
+											 $obj_XML->callback->transaction->card->{'card-number'}, 
+											 preg_replace('/\s+/', '', $sExpiry) ); // Remove all whitespaces from string.
+			// The End-User's existing account was linked to the Client when the card was stored
+			if ($iStatus == 1)
 			{
-				$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE);
-				$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $obj_XML->callback->transaction->card->token);
-				
-				$iStatus = $obj_mPoint->saveCard($obj_TxnInfo,
-												 $obj_TxnInfo->getMobile(),
-												 (integer) $obj_XML->callback->transaction->card["type-id"],
-												 (integer) $obj_XML->callback->{'psp-config'}["id"],
-												 $obj_XML->callback->transaction->card->token,
-												 $obj_XML->callback->transaction->card->{'card-number'}, 
-												 preg_replace('/\s+/', '', $sExpiry) ); // Remove all whitespaces from string.
-				// The End-User's existing account was linked to the Client when the card was stored
-				if ($iStatus == 1)
-				{
-					$obj_mPoint->sendLinkedInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo);
-				}
-				// New Account automatically created when Card was saved
-				else if ($iStatus == 2)
-				{
-					$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile() );
-					if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail() ); }
-					$obj_TxnInfo->setAccountID($iAccountID);
-					$obj_mPoint->getTxnInfo()->setAccountID($iAccountID);
-					// SMS communication enabled
-					if ($obj_TxnInfo->getClientConfig()->smsReceiptEnabled() === true)
-					{
-						$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo);
-					}
-				}
-				// E-Mail has been provided for the transaction
-				if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }		
+				$obj_mPoint->sendLinkedInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo);
 			}
+			// New Account automatically created when Card was saved
+			else if ($iStatus == 2)
+			{
+				$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile() );
+				if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail() ); }
+				$obj_TxnInfo->setAccountID($iAccountID);
+				$obj_mPoint->getTxnInfo()->setAccountID($iAccountID);
+				// SMS communication enabled
+				if ($obj_TxnInfo->getClientConfig()->smsReceiptEnabled() === true)
+				{
+					$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo);
+				}
+			}
+			// E-Mail has been provided for the transaction
+			if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }		
+		
 		}
 	
 		$fee = 0;	
