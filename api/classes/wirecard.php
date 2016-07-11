@@ -11,20 +11,20 @@
  * @version 1.00
  */
 
-/* ==================== Data Cash Exception Classes Start ==================== */
+/* ==================== Wire Card Exception Classes Start ==================== */
 /**
- * Super class for all Data Cash Exceptions
+ * Super class for all Wire Card Exceptions
  */
 class WireCardException extends CallbackException { }
-/* ==================== Data Cash Exception Classes End ==================== */
+/* ==================== Wire card Exception Classes End ==================== */
 
 /**
- * Model Class containing all the Business Logic for the Payment Service Provider: Data Cash
+ * Model Class containing all the Business Logic for the Payment Service Provider: Wire Card
  *
  */
 class WireCard extends CPMPSP
 {
-	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new DataCashException("Method: getPaymentData is not supported by Wire Card"); }
+	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new WireCardException("Method: getPaymentData is not supported by Wire Card"); }
 
 	/**
 	 * Completes the Transaction by updating the Transaction Log with the final details for the Payment.

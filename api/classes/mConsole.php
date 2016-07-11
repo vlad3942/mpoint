@@ -543,7 +543,7 @@ class mConsole extends Admin
 	 */
 	public function singleSignOn(HTTPConnInfo &$oCI, $authtoken, $permissioncode, array $aClientIDs=array() )
 	{
-
+				
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<single-sign-on permission-code="'.htmlspecialchars($permissioncode, ENT_NOQUOTES) .'">';
@@ -823,7 +823,6 @@ class mConsole extends Admin
 			// Purchase
 			if ($RS["STATEID"] < 0 && in_array($RS["TYPEID"], $aTypes) === true)
 			{
-				echo $RS["ID"]." :: ".$RS["STATEID"]."\n";
 				$aParams = array($RS["ID"]);
 				$res1 = $this->getDBConn()->execute($stmt1, $aParams);
 				if (is_resource($res1) === true)
