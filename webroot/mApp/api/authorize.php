@@ -154,12 +154,13 @@ try
 								if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card) > 0)
 								{
 									// Add control state and immediately commit database transaction
-									//$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, "");
+									$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, "");
 									$_OBJ_DB->query("COMMIT");
 
 									//TODO: Move most of the logic of this for-loop into model layer, api/classes/authorize.php
 									for ($j=0; $j<count($obj_DOM->{'authorize-payment'}[$i]->transaction->card); $j++)
 									{
+										
 									$obj_XML = simpledom_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig, true) );
 
 		//							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"]);
@@ -177,13 +178,13 @@ try
 										{ $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) + 40; }
 									
 									//Check if card or payment method is enabled or disabled by merchant
-									//Same check is  also implemented at app side.
+									//Same check is  also implemented at app side.									
 									$obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-									$obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount) );
+									$obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
 									
-									$obj_Elem = $obj_CardXML->xpath("/cards/item[@id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ."]");
+									$obj_Elem = $obj_CardXML->xpath("/cards/item[@id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1]");
 									
-									if (intval($obj_Elem["state-id"]) !== 1)
+									if (count($obj_Elem) === 0)
 									{
 										$aMsgCds[14] = "The selected payment card is disabled. Select another card";
 									}	
@@ -297,7 +298,7 @@ try
 														$obj_Wallet = new AMEXExpressCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["amex-express-checkout"]);
 														$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
 														break;
-														case (Constants::iANDROID_PAY_WALLET):
+													case (Constants::iANDROID_PAY_WALLET):
 															$obj_Wallet = new AndroidPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["android-pay"]);
 															$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iANDROID_PAY_PSP);
 															break;
@@ -318,6 +319,7 @@ try
 													if(isset($obj_Wallet) == true && is_object($obj_Wallet) == true)
 													{
 														$obj_XML = simpledom_load_string($obj_Wallet->getPaymentData($obj_PSPConfig, $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]) );
+														
 														if (count($obj_XML->{'payment-data'}) == 1)
 														{
 															$obj_Elem = $obj_XML->{'payment-data'}->card;
@@ -370,14 +372,13 @@ try
 															{
 																$obj_Elem->cvc = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc;
 															}
+																														
 															$obj_PSPConfig = $obj_Wallet->getPSPConfigForRoute(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]),
 																											   intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"]) );
 															$obj_Elem["pspid"] = $obj_PSPConfig->getID();
 															$obj_Elem["wallet-type-id"] = intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]);
 														}
-														// 3rd Party Wallet returned error
-	
-	
+														// 3rd Party Wallet returned error	
 														elseif (count($obj_XML->status) == 1)
 														{
 															$obj_XML->status["code"] = intval($obj_XML->status["code"]) - 20;

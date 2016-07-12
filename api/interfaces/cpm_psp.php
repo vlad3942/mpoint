@@ -339,8 +339,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		return $obj_XML;
 	}
 
-	public function authTicket(PSPConfig $obj_PSPConfig, $obj_Elem)
+	public function authTicket(PSPConfig $obj_PSPConfig, $obj_Card)
 	{
+		
 		$code = 0;
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
@@ -350,23 +351,22 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$txnXML = $this->_constTxnXML();
 		$b .= $txnXML;
 		
-		list($expiry_month, $expiry_year) = explode("/", $obj_Elem->expiry);
-				
-		$b .= '<card type-id="'.intval($obj_Elem['type-id']).'">';
-		$b .= '<masked_account_number>'. $obj_Elem->mask .'</masked_account_number>';
-		$b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
-		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
-		$b .= '<token>'. $obj_Elem->ticket .'</token>';
-		$b .= '<cvc>'. $obj_Elem->cvc .'</cvc>';
-		$b .= '</card>';
-	
-		$obj_txnXML = simpledom_load_string($txnXML);
-		$euaid = intval($obj_txnXML->xpath("/transaction/@eua-id")->{'eua-id'});
-		if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
+		if (count($obj_Card->ticket) == 0)
+		{
+			$b .=  $this->_constNewCardAuthorizationRequest($obj_Card);
+		} 
+		else 
+		{ 
+			$b.= $this->_constStoredCardAuthorizationRequest($obj_Card); 
+			$obj_txnXML = simpledom_load_string($txnXML);
+			$euaid = intval($obj_txnXML->xpath("/transaction/@eua-id")->{'eua-id'});
+			if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
+		}
+			
 		
 		$b .= '</authorize>';
 		$b .= '</root>';
-		
+
 		try
 		{
 			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["auth"]);
@@ -658,5 +658,46 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		return $obj_XML;
 	}
 	public function invoice($sMsg = "" ,$iAmount = -1) { return -1; }
+	
+	private function _constNewCardAuthorizationRequest($obj_Card)
+	{
+		
+		list($expiry_month, $expiry_year) = explode("/", $obj_Card->expiry);
+												
+		$expiry_year = substr_replace(date('Y'), $expiry_year, -2);
+										
+		$b = '<card type-id="'.intval($obj_Card['type-id']).'">';
+		$b .= '<card-number>'. $obj_Card->{'card-number'} .'</card-number>';
+		$b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
+		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
+		
+		if(count($obj_Card->cvc) > 0) { $b .= '<cvc>'. $obj_Card->cvc .'</cvc>'; }	
+		
+		$b .= '</card>';
+		
+		$b .= '<account country-id="'.$obj_Card->address['country-id'].'">';
+        $b .= '<first-name>'.$obj_Card->address->{'first-name'}.'</first-name>';
+        $b .= '<last-name>'.$obj_Card->address->{'last-name'}.'</last-name>';
+        $b .= '</account>'; 
+		
+		return $b;
+	}
+	
+	private function _constStoredCardAuthorizationRequest($obj_Card)
+	{
+		list($expiry_month, $expiry_year) = explode("/", $obj_Card->expiry);
+		
+		$b = '<card type-id="'.intval($obj_Card['type-id']).'">';
+		$b .= '<masked_account_number>'. $obj_Card->mask .'</masked_account_number>';
+		$b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
+		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
+		$b .= '<token>'. $obj_Card->ticket .'</token>';
+		
+		if(count($obj_Card->cvc) > 0) { $b .= '<cvc>'. $obj_Card->cvc .'</cvc>'; }		
+
+		$b .= '</card>';
+		
+		return $b;
+	}
 	
 }
