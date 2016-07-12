@@ -29,150 +29,47 @@ $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']
 
 if (strlen($_SESSION['obj_TxnInfo']->getOrderID() ) > 0 && $obj_mPoint->orderAlreadyAuthorized($_SESSION['obj_TxnInfo']->getOrderID() ) == false) 
 {
-	switch(intval($_POST['pspid']))
+	try
 	{
-		case (Constants::iWIRE_CARD_PSP):
-			
-			$b = 'merchant_account_id='.$_POST['merchant_account_id'];
-			$b .= '&requested_amount='.$_POST['requested_amount'];
-			$b .= '&request_id='.$_POST['request_id'];
-			$b .= '&transaction_type='.$_POST['transaction_type'];
-			$b .= '&requested_amount_currency='.$_POST['requested_amount_currency'];
-			$b .= '&account_number='.$_POST['card-number'];
-			$b .= '&expiration_month='.$_POST['emonth'];
-			$b .= '&expiration_year='.$_POST['eyear'];
-			$b .= '&card_security_code='.$_POST['cvc'];
-			$b .= '&last_name='.$_POST['last_name'];
-			$b .= '&field_name_1=exp_month';
-			$b .= '&phone='.$_POST['phone'];
-			$b .= '&field_name_2=exp_year';
-			$b .= '&field_name_3=card_type_id';
-			$b .= '&field_value_3='.$_POST['field_value_3'];//7
-			$b .= '&field_value_1='.$_POST['emonth'];//01
-			$b .= '&field_value_2='.substr($_POST['eyear'], -2);//19
-			$b .= '&payment_ip_address='.$_POST['payment_ip_address'];
-			$b .= '&email='.$_POST['email'];
-			$b .= '&first_name='.$_POST['first_name'];
-			$b .= '&notification_url_1='.$_POST['notification_url_1'];
-			$b .= '&card_type='.$_POST['card_type'];
-			
-			$aHTTP_CONN_INFO["wire-card"]["protocol"] = "https";
-			$aHTTP_CONN_INFO["wire-card"]["port"] = "443";
-			$aHTTP_CONN_INFO["wire-card"]["host"] = "api-test.wirecard.com";
-			$aHTTP_CONN_INFO["wire-card"]["path"] = "/engine/rest/payments/";
-			$aHTTP_CONN_INFO["wire-card"]["method"] = "POST";
-			$aHTTP_CONN_INFO["wire-card"]["contenttype"] = "application/x-www-form-urlencoded";
-			$aHTTP_CONN_INFO["wire-card"]["username"] = $_SESSION['obj_XML_initialize']['user_name'];
-			$aHTTP_CONN_INFO["wire-card"]["password"] = $_SESSION['obj_XML_initialize']['password'];
-			
-			unset($_SESSION['obj_XML_initialize']);
-			
-			$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["wire-card"]);
-			
-			$h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
-			$h .= "host: {HOST}" .HTTPClient::CRLF;
-			$h .= "referer: {REFERER}" .HTTPClient::CRLF;
-			$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
-			$h .= "content-type: {CONTENTTYPE}" .HTTPClient::CRLF;
-			$h .= "user-agent: mPoint" .HTTPClient::CRLF;
-			$h .= "Authorization: Basic ". base64_encode($aHTTP_CONN_INFO["wire-card"]["username"] .":". $aHTTP_CONN_INFO["wire-card"]["password"]) .HTTPClient::CRLF;
-			
-			$obj_Client = new HTTPClient(new Template(), $obj_ConnInfo);
-			$obj_Client->connect();
-			$code = $obj_Client->send($h, $b);
-			$obj_Client->disconnect();
-			
-			if($code == 201)
-			{
-				$code = 2000;
-			}
-		break;
-			
-		case (Constants::iDATA_CASH_PSP):
-			
-			$b = "gatewayReturnURL=".$_POST['gatewayReturnURL'];
-			$b .= "&gatewayCardNumber=".$_POST['card-number'];
-			$b .= "&gatewayCardExpiryDateMonth=".$_POST['emonth'];
-			$b .= "&gatewayCardExpiryDateYear=".substr($_POST['eyear'], -2);
-			$b .= "&gatewayCardSecurityCode=".$_POST['cvc'];
-			$b .= "&merchant=".$_POST['merchant'];
-			$b .= "&order.id=".$_POST['orderid'];
-			$b .= "&order.amount=".$_POST['orderamount'];
-			$b .= "&order.currency=GBP";
-			$b .= "&session.id=".$_POST['sessionid'];
-			$b .= "&transaction.id=".$_POST['transactionid'];
-			$b .= "&sourceOfFunds.type=CARD";
-			$b .= "&mpoint-id=".$_POST['mpoint-id'];
-			$b .= "&store-card=".(!empty($_POST['store-card'])?true:false);
-			
-			file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_datacash.log", "FirstRequest : ".$b."\n\n", FILE_APPEND);
-									
-			$aHTTP_CONN_INFO["data-cash"]["protocol"] = "https";
-			$aHTTP_CONN_INFO["data-cash"]["port"] = "443";
-			$aHTTP_CONN_INFO["data-cash"]["host"] = "test-gateway.mastercard.com";
-			$aHTTP_CONN_INFO["data-cash"]["path"] = "/form/".$_POST['sessionid'];
-			$aHTTP_CONN_INFO["data-cash"]["method"] = "POST";
-			$aHTTP_CONN_INFO["data-cash"]["contenttype"] = "application/x-www-form-urlencoded";
-							
-			$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["data-cash"]);
+		switch(intval($_POST['pspid']))
+		{
+			case (Constants::iWIRE_CARD_PSP):
 				
-			$h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
-			$h .= "host: {HOST}" .HTTPClient::CRLF;
-			$h .= "referer: {REFERER}" .HTTPClient::CRLF;
-			$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
-			$h .= "content-type: {CONTENTTYPE}" .HTTPClient::CRLF;
-			$h .= "user-agent: mPoint" .HTTPClient::CRLF;
-										
-			$obj_Client = new HTTPClient(new Template(), $obj_ConnInfo);
-			$obj_Client->connect();
-			$code = $obj_Client->send($h, $b);
-			$obj_Client->disconnect();
-			
-						
-			//if (strlen($obj_Client->getReplyBody() ) > 0)
-			{
-				$obj_XML = $obj_Client->getReplyBody();
+				$b = 'merchant_account_id='.$_POST['merchant_account_id'];
+				$b .= '&requested_amount='.$_POST['requested_amount'];
+				$b .= '&request_id='.$_POST['request_id'];
+				$b .= '&transaction_type='.$_POST['transaction_type'];
+				$b .= '&requested_amount_currency='.$_POST['requested_amount_currency'];
+				$b .= '&account_number='.$_POST['card-number'];
+				$b .= '&expiration_month='.$_POST['emonth'];
+				$b .= '&expiration_year='.$_POST['eyear'];
+				$b .= '&card_security_code='.$_POST['cvc'];
+				$b .= '&last_name='.$_POST['last_name'];
+				$b .= '&field_name_1=exp_month';
+				$b .= '&phone='.$_POST['phone'];
+				$b .= '&field_name_2=exp_year';
+				$b .= '&field_name_3=card_type_id';
+				$b .= '&field_value_3='.$_POST['field_value_3'];//7
+				$b .= '&field_value_1='.$_POST['emonth'];//01
+				$b .= '&field_value_2='.substr($_POST['eyear'], -2);//19
+				$b .= '&payment_ip_address='.$_POST['payment_ip_address'];
+				$b .= '&email='.$_POST['email'];
+				$b .= '&first_name='.$_POST['first_name'];
+				$b .= '&notification_url_1='.$_POST['notification_url_1'];
+				$b .= '&card_type='.$_POST['card_type'];
 				
-				$dom = new DOMDocument();
+				$aHTTP_CONN_INFO["wire-card"]["protocol"] = "https";
+				$aHTTP_CONN_INFO["wire-card"]["port"] = "443";
+				$aHTTP_CONN_INFO["wire-card"]["host"] = "api-test.wirecard.com";
+				$aHTTP_CONN_INFO["wire-card"]["path"] = "/engine/rest/payments/";
+				$aHTTP_CONN_INFO["wire-card"]["method"] = "POST";
+				$aHTTP_CONN_INFO["wire-card"]["contenttype"] = "application/x-www-form-urlencoded";
+				$aHTTP_CONN_INFO["wire-card"]["username"] = $_SESSION['obj_XML_initialize']['user_name'];
+				$aHTTP_CONN_INFO["wire-card"]["password"] = $_SESSION['obj_XML_initialize']['password'];
 				
-				$dom->loadHTML($obj_XML);
+				unset($_SESSION['obj_XML_initialize']);
 				
-				$requiredData = current(element_to_obj($dom->documentElement)['children'][1]['children'])['children'];
-				
-				$dataToSend = array();
-				
-				foreach($requiredData as $data)
-				{
-					if(isset($data['name']) == true)
-					{
-						$dataToSend[$data['name']] = $data['value'];
-					}
-				
-				}
-								
-				$b = http_build_query($dataToSend);
-				
-				file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_datacash.log", "second request : ".$b."\n\n", FILE_APPEND);
-				
-				$urlData = parse_url($dataToSend['gatewayReturnURL']);
-				
-				$aHTTP_CONN_INFO["data-cash"]["protocol"] = $urlData['scheme'];
-				
-				if(isset($urlData['port']) == true)
-				{
-					$aHTTP_CONN_INFO["data-cash"]["port"] = $urlData['port'];
-				} else { $aHTTP_CONN_INFO["data-cash"]["port"] = 10080; }			
-				
-				$aHTTP_CONN_INFO["data-cash"]["host"] = $urlData['host'];
-				$aHTTP_CONN_INFO["data-cash"]["path"] = $urlData['path'];
-				$aHTTP_CONN_INFO["data-cash"]["method"] = "POST";
-				$aHTTP_CONN_INFO["data-cash"]["contenttype"] = "application/x-www-form-urlencoded";
-				$aHTTP_CONN_INFO["data-cash"]["username"] = $_SESSION['obj_XML_initialize']['user_name'];
-				$aHTTP_CONN_INFO["data-cash"]["password"] = $_SESSION['obj_XML_initialize']['password'];
-				
-				file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_datacash.log", "Second Request Details : ".var_export($aHTTP_CONN_INFO, true)."\n\n", FILE_APPEND);
-								
-				unset($_SESSION['obj_XML_initialize']);				
+				$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["wire-card"]);
 				
 				$h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
 				$h .= "host: {HOST}" .HTTPClient::CRLF;
@@ -180,87 +77,213 @@ if (strlen($_SESSION['obj_TxnInfo']->getOrderID() ) > 0 && $obj_mPoint->orderAlr
 				$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
 				$h .= "content-type: {CONTENTTYPE}" .HTTPClient::CRLF;
 				$h .= "user-agent: mPoint" .HTTPClient::CRLF;
-				$h .= "Authorization: Basic ". base64_encode($aHTTP_CONN_INFO["data-cash"]["username"] .":". $aHTTP_CONN_INFO["data-cash"]["password"]) .HTTPClient::CRLF;
+				$h .= "Authorization: Basic ". base64_encode($aHTTP_CONN_INFO["wire-card"]["username"] .":". $aHTTP_CONN_INFO["wire-card"]["password"]) .HTTPClient::CRLF;
 				
+				$obj_Client = new HTTPClient(new Template(), $obj_ConnInfo);
+				$obj_Client->connect();
+				$code = $obj_Client->send($h, $b);
+				$obj_Client->disconnect();
+				
+				if($code == 201)
+				{
+					$code = 2000;
+				}
+			break;
+				
+			case (Constants::iDATA_CASH_PSP):
+				
+				$b = "gatewayReturnURL=".$_POST['gatewayReturnURL'];
+				$b .= "&gatewayCardNumber=".$_POST['card-number'];
+				$b .= "&gatewayCardExpiryDateMonth=".$_POST['emonth'];
+				$b .= "&gatewayCardExpiryDateYear=".substr($_POST['eyear'], -2);
+				$b .= "&gatewayCardSecurityCode=".$_POST['cvc'];
+				$b .= "&merchant=".$_POST['merchant'];
+				$b .= "&order.id=".$_POST['orderid'];
+				$b .= "&order.amount=".$_POST['orderamount'];
+				$b .= "&order.currency=GBP";
+				$b .= "&session.id=".$_POST['sessionid'];
+				$b .= "&transaction.id=".$_POST['transactionid'];
+				$b .= "&sourceOfFunds.type=CARD";
+				$b .= "&mpoint-id=".$_POST['mpoint-id'];
+				$b .= "&store-card=".(!empty($_POST['store-card'])?true:false);
+										
+				$aHTTP_CONN_INFO["data-cash"]["protocol"] = "https";
+				$aHTTP_CONN_INFO["data-cash"]["port"] = "443";
+				$aHTTP_CONN_INFO["data-cash"]["host"] = "test-gateway.mastercard.com";
+				$aHTTP_CONN_INFO["data-cash"]["path"] = "/form/".$_POST['sessionid'];
+				$aHTTP_CONN_INFO["data-cash"]["method"] = "POST";
+				$aHTTP_CONN_INFO["data-cash"]["contenttype"] = "application/x-www-form-urlencoded";
+								
 				$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["data-cash"]);
+					
+				$h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
+				$h .= "host: {HOST}" .HTTPClient::CRLF;
+				$h .= "referer: {REFERER}" .HTTPClient::CRLF;
+				$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
+				$h .= "content-type: {CONTENTTYPE}" .HTTPClient::CRLF;
+				$h .= "user-agent: mPoint" .HTTPClient::CRLF;
+											
+				$obj_Client = new HTTPClient(new Template(), $obj_ConnInfo);
+				$obj_Client->connect();
+				$code = $obj_Client->send($h, $b);
+				$obj_Client->disconnect();
+				
+							
+				//if (strlen($obj_Client->getReplyBody() ) > 0)
+				{
+					$obj_XML = $obj_Client->getReplyBody();
+					
+					$dom = new DOMDocument();
+					
+					$dom->loadHTML($obj_XML);
+					
+					$requiredData = current(element_to_obj($dom->documentElement)['children'][1]['children'])['children'];
+					
+					$dataToSend = array();
+					
+					foreach($requiredData as $data)
+					{
+						if(isset($data['name']) == true)
+						{
+							$dataToSend[$data['name']] = $data['value'];
+						}
+					
+					}
+									
+					$b = http_build_query($dataToSend);
+									
+					$urlData = parse_url($dataToSend['gatewayReturnURL']);
+					
+					$aHTTP_CONN_INFO["data-cash"]["protocol"] = $urlData['scheme'];
+					
+					if(isset($urlData['port']) == true)
+					{
+						$aHTTP_CONN_INFO["data-cash"]["port"] = $urlData['port'];
+					} else { $aHTTP_CONN_INFO["data-cash"]["port"] = 10080; }			
+					
+					$aHTTP_CONN_INFO["data-cash"]["host"] = $urlData['host'];
+					$aHTTP_CONN_INFO["data-cash"]["path"] = $urlData['path'];
+					$aHTTP_CONN_INFO["data-cash"]["method"] = "POST";
+					$aHTTP_CONN_INFO["data-cash"]["contenttype"] = "application/x-www-form-urlencoded";
+					$aHTTP_CONN_INFO["data-cash"]["username"] = $_SESSION['obj_XML_initialize']['user_name'];
+					$aHTTP_CONN_INFO["data-cash"]["password"] = $_SESSION['obj_XML_initialize']['password'];
+													
+					unset($_SESSION['obj_XML_initialize']);				
+					
+					$h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
+					$h .= "host: {HOST}" .HTTPClient::CRLF;
+					$h .= "referer: {REFERER}" .HTTPClient::CRLF;
+					$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
+					$h .= "content-type: {CONTENTTYPE}" .HTTPClient::CRLF;
+					$h .= "user-agent: mPoint" .HTTPClient::CRLF;
+					$h .= "Authorization: Basic ". base64_encode($aHTTP_CONN_INFO["data-cash"]["username"] .":". $aHTTP_CONN_INFO["data-cash"]["password"]) .HTTPClient::CRLF;
+					
+					$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["data-cash"]);
+						
+					$obj_Client = new HTTPClient(new Template(), $obj_ConnInfo);
+					$obj_Client->connect();
+					$code = $obj_Client->send($h, $b);
+					$obj_Client->disconnect();	
+						
+		
+					if($code == 200)
+					{
+						$code = 2000;
+					}
+				} /* else {
+					$code = 502;
+				} */
+				
+				break;
+				
+			case (Constants::iGLOBAL_COLLECT_PSP):	
+
+				$requestData = array(
+					"cardNumber" => $_POST['card-number'],
+					"expiryDate" => $_POST['emonth']."/".substr($_POST['eyear'], -2),
+					"cvv" => $_POST['cvc'],
+					"isAccountOnFileSelectionShown" => $_POST['isAccountOnFileSelectionShown'],
+					"paymentProductId" => $_POST['paymentProductId'],
+				    "publicMerchantId" => $_POST['publicMerchantId'],
+				    "variantCode" => $_POST['variantCode'],				    
+				    "locale" => $_POST['locale'],
+				    "token" => $_POST['token'],
+				    "isPaymentProductDetailsShown" => $_POST['isPaymentProductDetailsShown'],		    
+				    "hostedCheckoutID" => $_POST['hostedCheckoutID']    
+			    );
+				
+			    $b = http_build_query($requestData);
+			  	
+			    $ch = curl_init();
+			    
+			    curl_setopt_array($ch, array(
+			    		CURLOPT_URL => 'https://payment.pay1.preprod.poweredbyglobalcollect.com/checkout',
+			    		CURLOPT_RETURNTRANSFER => false,
+			    		CURLOPT_POST => true,
+			    		CURLOPT_POSTFIELDS => $b,
+			    		CURLOPT_FOLLOWLOCATION => true
+			    ));
+			    
+			    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			    
+			    $output = curl_exec($ch);
+			    
+			    if ($output == false) {
+			    	
+			    	var_dump(curl_getinfo($ch));
+			    	// if curl_exec() returned false and thus failed
+			    	throw new Exception('An error has occurred: ' . curl_error($ch));
+			    }
+			   			    
+			    // free
+			    curl_close($ch);
+			    				
+								
+				$aHTTP_CONN_INFO["global-collect"]["path"] = "/mpoint/authorize-payment";
+				$aHTTP_CONN_INFO["global-collect"]["username"] = $_SESSION['obj_XML_initialize']['user_name'];
+				$aHTTP_CONN_INFO["global-collect"]["password"] = $_SESSION['obj_XML_initialize']['password'];
+								
+				unset($_SESSION['obj_XML_initialize']);
+								
+				$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["global-collect"]);
+					
+				$h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
+				$h .= "host: {HOST}" .HTTPClient::CRLF;
+				$h .= "referer: {REFERER}" .HTTPClient::CRLF;
+				$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
+				$h .= "content-type: {CONTENTTYPE}" .HTTPClient::CRLF;
+				$h .= "user-agent: mPoint" .HTTPClient::CRLF;
+				$h .= "Authorization: Basic ". base64_encode($aHTTP_CONN_INFO["global-collect"]["username"] .":". $aHTTP_CONN_INFO["global-collect"]["password"]) .HTTPClient::CRLF;
+				
+				
+				$clientId = $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getClientID();
+				$accountId = $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getID();
+				
+				$b = '<?xml version="1.0" encoding="UTF-8"?>
+						<root>
+						  <authorize-payment account="'.$accountId.'" client-id="'.$clientId.'">
+						    <transaction type-id="'.Constants::iPURCHASE_VIA_WEB.'" id="'.$_SESSION['obj_TxnInfo']->getID().'">
+						      <card type-id="'.$_POST['cardid'].'">
+						        <amount country-id="'.$_SESSION['obj_TxnInfo']->getCountryConfig()->getID().'">'.$_SESSION['obj_TxnInfo']->getAmount().'</amount>
+						         <token>'.$_POST['hostedCheckoutID'].'</token>
+						      </card>
+						    </transaction>
+						    <client-info language="da" version="1.20" platform="iOS/8.1.3">
+						      <mobile operator-id="'.$_SESSION['obj_TxnInfo']->getOperator().'" country-id="'.$_SESSION['obj_TxnInfo']->getCountryConfig()->getID().'">'.$_SESSION['obj_TxnInfo']->getMobile().'</mobile>
+						      <device-id>32E475F7295C488EBEA2C0FAF455915D14298774</device-id>
+						    </client-info>
+						  </authorize-payment>
+						</root>';
+				
 					
 				$obj_Client = new HTTPClient(new Template(), $obj_ConnInfo);
 				$obj_Client->connect();
 				$code = $obj_Client->send($h, $b);
-				$obj_Client->disconnect();	
+				$obj_Client->disconnect();
 				
-				file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_datacash.log", "Final Response : ".var_export($obj_Client->getReplyBody(), true)."\n", FILE_APPEND);
+				break;
+		}
 	
-				if($code == 200)
-				{
-					$code = 2000;
-				}
-			} /* else {
-				$code = 502;
-			} */
-			
-			break;
-			
-		case (Constants::iGLOBAL_COLLECT_PSP):	
-						
-		    $b = "publicMerchantId=".$_POST['publicMerchantId'];
-		    $b .= "&locale=".$_POST['locale'];
-		    $b .= "&isPaymentProductDetailsShown=".$_POST['isPaymentProductDetailsShown'];
-		    $b .= "&paymentProductId=".$_POST['paymentProductId'];
-		    $b .= "&isAccountOnFileSelectionShown=".$_POST['isAccountOnFileSelectionShown'];
-		    $b .= "&variantCode=".$_POST['variantCode'];
-		    $b .= "&cardNumber=".$_POST['card-number'];
-		    $b .= "&expiryDate=".$_POST['emonth']."".substr($_POST['eyear'], -2);
-		    $b .= "&cvv=".$_POST['cvc'];
-		    $b .= "&token=".$_POST['token'];
-  
-						
-			$urlData = parse_url($_POST['url']);
-			
-			$aHTTP_CONN_INFO["global-collect"]["protocol"] = $urlData['scheme'];
-			$aHTTP_CONN_INFO["global-collect"]["port"] = "443";
-			$aHTTP_CONN_INFO["global-collect"]["host"] = $urlData['host'];
-			$aHTTP_CONN_INFO["global-collect"]["path"] = $urlData['path'];
-			$aHTTP_CONN_INFO["global-collect"]["method"] = "POST";
-			$aHTTP_CONN_INFO["global-collect"]["contenttype"] = "application/x-www-form-urlencoded";
-			/* $aHTTP_CONN_INFO["wire-card"]["username"] = $_SESSION['obj_XML_initialize']['user_name'];
-			$aHTTP_CONN_INFO["wire-card"]["password"] = $_SESSION['obj_XML_initialize']['password']; */
-				
-			unset($_SESSION['obj_XML_initialize']);
-							
-			$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["global-collect"]);
-				
-			$h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
-			$h .= "host: {HOST}" .HTTPClient::CRLF;
-			$h .= "referer: {REFERER}" .HTTPClient::CRLF;
-			$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
-			$h .= "content-type: {CONTENTTYPE}" .HTTPClient::CRLF;
-			$h .= "user-agent: mPoint" .HTTPClient::CRLF;
-			//$h .= "Authorization: Basic ". base64_encode($aHTTP_CONN_INFO["wire-card"]["username"] .":". $aHTTP_CONN_INFO["wire-card"]["password"]) .HTTPClient::CRLF;
-			
-			file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_globalcollect.log", "Request Details : ".var_export($aHTTP_CONN_INFO, true)."\n\n", FILE_APPEND);
-			
-			file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") ."_globalcollect.log", "body Request Details : ".$b."\n\n", FILE_APPEND);
-				
-			$obj_Client = new HTTPClient(new Template(), $obj_ConnInfo);
-			$obj_Client->connect();
-			$code = $obj_Client->send($h, $b);
-			$obj_Client->disconnect();
-			
-			$obj_XML = $obj_Client->getReplyBody();
-			
-			echo "<pre/>";
-			print_r($obj_XML);exit;
-				
-			if($code == 201)
-			{
-				$code = 2000;
-			}
-			
-			break;
-	}
-	try
-	{
 	
 		if ($code == 2000)
 		{

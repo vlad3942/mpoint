@@ -73,7 +73,7 @@
 													<xs:element name="customer-ref" type="xs:string"/>
 													<xs:element name="description" type="xs:string"/>
 													<xs:element name="ip" type="xs:string"/>
-													<xs:element name="mac" type="xs:string"/>
+													<xs:element name="hmac" type="xs:string"/>
 													<xs:element name="language" type="xs:string"/>
 												</xs:all>
 												<xs:attribute type="xs:positiveInteger" name="id"/>

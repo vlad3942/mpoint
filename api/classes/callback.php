@@ -330,7 +330,7 @@ abstract class Callback extends EndUserAccount
 		if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true) { $sBody .= "&pspid=". urlencode($pspid); }
 		if ( strlen($this->_obj_TxnInfo->getDescription() ) > 0) { $sBody .= "&description=". urlencode($this->_obj_TxnInfo->getDescription() ); }
 		$sBody .= $this->getVariables();
-		$sBody .= "&mac=". urlencode($this->_obj_TxnInfo->getMAC() );
+		$sBody .= "&hmac=". urlencode($this->_obj_TxnInfo->getHMAC() );
 		/* ----- Construct Body End ----- */
 
 		$this->performCallback($sBody, $obj_SurePay);
@@ -600,6 +600,8 @@ abstract class Callback extends EndUserAccount
 			return new CPG($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cpg"]);
 		case (Constants::iMASTER_PASS_PSP):
 			return new MasterPass($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["masterpass"]);
+		case (Constants::iAMEX_EXPRESS_CHECKOUT_PSP):
+			return new AMEXExpressCheckout($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["amex-express-checkout"]);
 		case (Constants::iWIRE_CARD_PSP):
 			return new WireCard($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["wire-card"]);
 		case (Constants::iDATA_CASH_PSP):

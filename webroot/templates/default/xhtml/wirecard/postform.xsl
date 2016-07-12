@@ -212,6 +212,8 @@
 							<div>
 								<input type="hidden" id="pspid" name="pspid"
 								value="{transaction/@psp-id}" />
+								<input type="hidden" id="cardid" name="cardid"
+								value="{card/@id}" />
 								<xsl:choose>
 								<!-- Wirecard -->
 								<xsl:when test="transaction/@psp-id = 18">
@@ -222,7 +224,7 @@
 									<xsl:apply-templates select="item" mode="datacash" />
 								</xsl:when>
 								<!-- Datacash -->
-								<xsl:when test="transaction/@psp-id = 20">
+								<xsl:when test="transaction/@psp-id = 21">
 									<xsl:apply-templates select="item" mode="globalcollect" />
 								</xsl:when>
 								<!-- Error -->
@@ -389,6 +391,17 @@
 		<input type="hidden" id="cardid" name="cardid"
 			value="{hidden-fields/field_value_3}" />
 	</xsl:template>
+	<xsl:template match="item" mode="datacash">
+		<input type="hidden" name="merchant" value="{hidden-fields/merchant}"/>
+	    <input type="hidden" name="orderid" value="{hidden-fields/order.id}"/>
+	    <input type="hidden" name="orderamount" value="{hidden-fields/order.amount}"/>
+	    <input type="hidden" name="ordercurrency" value="GBP"/>
+	    <input type="hidden" name="sessionid" value="{hidden-fields/session.id}"/>
+	    <input type="hidden" name="transactionid" value="{hidden-fields/transaction.id}"/>
+	    <input type="hidden" name="sourceOfFundstype" value="CARD"/>
+	    <input type="hidden" name="mpoint-id" value="{hidden-fields/mpoint-id}"/>
+	    <input type="hidden" name="gatewayReturnURL" value="{hidden-fields/gatewayReturnURL}"/>
+	</xsl:template>	
 	<xsl:template match="item" mode="globalcollect">
 		<input type="hidden" name="publicMerchantId" value="{hidden-fields/publicMerchantId}"/>
 	    <input type="hidden" name="locale" value="{hidden-fields/locale}"/>
@@ -401,5 +414,6 @@
 	    <input type="hidden" name="cardNumber" value="cardNumber"/>
 	    <input type="hidden" name="expiryDate" value="expiryDate"/>
 	    <input type="hidden" name="cvv" value="cvv"/>
+	    <input type="hidden" name="hostedCheckoutID" value="{hidden-fields/hostedCheckoutID}"/>
 	</xsl:template>
 </xsl:stylesheet>

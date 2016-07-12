@@ -333,21 +333,37 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		catch (mPointException $e)
 		{
 			trigger_error("construct  XML of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+			//re-throw the exception to the calling controller.
+			throw $e;
 		}
 		return $obj_XML;
 	}
 
-	public function authTicket(PSPConfig $obj_PSPConfig, $ticket)
+	public function authTicket(PSPConfig $obj_PSPConfig, $obj_Card)
 	{
+		
 		$code = 0;
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<authorize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
-		$b .= $obj_PSPConfig->toXML();		
-		$b .= $this->_constTxnXML();				
-		$b .= '<card>';
-		$b .= '<token>'. $ticket .'</token>';
-		$b .= '</card>';
+		$b .= $obj_PSPConfig->toXML();
+		
+		$txnXML = $this->_constTxnXML();
+		$b .= $txnXML;
+		
+		if (count($obj_Card->ticket) == 0)
+		{
+			$b .=  $this->_constNewCardAuthorizationRequest($obj_Card);
+		} 
+		else 
+		{ 
+			$b.= $this->_constStoredCardAuthorizationRequest($obj_Card); 
+			$obj_txnXML = simpledom_load_string($txnXML);
+			$euaid = intval($obj_txnXML->xpath("/transaction/@eua-id")->{'eua-id'});
+			if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
+		}
+			
+		
 		$b .= '</authorize>';
 		$b .= '</root>';
 
@@ -362,10 +378,18 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			if ($code == 200)
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+				
+				$sql = "";
+				if(isset($obj_XML["external-id"]) === true)
+				{
+					$txnid = $obj_XML["external-id"];
+					$sql = ",extid = '". $this->getDBConn()->escStr($txnid) ."'";
+				}
+				
 				$code = $obj_XML->status["code"];
-				// save ext id in database
+
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-						SET pspid = ". $obj_PSPConfig->getID() ."
+						SET pspid = ". $obj_PSPConfig->getID() . $sql."
 						WHERE id = ". $this->getTxnInfo()->getID();
 //				echo $sql ."\n";
 				$this->getDBConn()->query($sql);
@@ -527,7 +551,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 * @param SimpleXMLElement $obj_Card	Details for the token that should be used to retrieve the payment data from the 3rd Party Wallet.
 	 * @return string
 	 */
-	public function callback(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $purchaseDate = null)
+	public function callback(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, SimpleXMLElement $obj_Status, $purchaseDate = null)
 	{
 		$purchaseDateNode = "";
 		
@@ -545,6 +569,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= $obj_PSPConfig->toXML();
 		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 		$b .= str_replace("</transaction>", str_replace('<?xml version="1.0"?>', '', $obj_Card->asXML().$purchaseDateNode ). "</transaction>", $this->_constTxnXML() );
+		$b .= str_replace('<?xml version="1.0"?>', '', $obj_Status->asXML() ) ;
 		$b .= '</callback>';
 		$b .= '</root>';
 		
@@ -633,5 +658,46 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		return $obj_XML;
 	}
 	public function invoice($sMsg = "" ,$iAmount = -1) { return -1; }
+	
+	private function _constNewCardAuthorizationRequest($obj_Card)
+	{
+		
+		list($expiry_month, $expiry_year) = explode("/", $obj_Card->expiry);
+												
+		$expiry_year = substr_replace(date('Y'), $expiry_year, -2);
+										
+		$b = '<card type-id="'.intval($obj_Card['type-id']).'">';
+		$b .= '<card-number>'. $obj_Card->{'card-number'} .'</card-number>';
+		$b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
+		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
+		
+		if(count($obj_Card->cvc) > 0) { $b .= '<cvc>'. $obj_Card->cvc .'</cvc>'; }	
+		
+		$b .= '</card>';
+		
+		$b .= '<account country-id="'.$obj_Card->address['country-id'].'">';
+        $b .= '<first-name>'.$obj_Card->address->{'first-name'}.'</first-name>';
+        $b .= '<last-name>'.$obj_Card->address->{'last-name'}.'</last-name>';
+        $b .= '</account>'; 
+		
+		return $b;
+	}
+	
+	private function _constStoredCardAuthorizationRequest($obj_Card)
+	{
+		list($expiry_month, $expiry_year) = explode("/", $obj_Card->expiry);
+		
+		$b = '<card type-id="'.intval($obj_Card['type-id']).'">';
+		$b .= '<masked_account_number>'. $obj_Card->mask .'</masked_account_number>';
+		$b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
+		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
+		$b .= '<token>'. $obj_Card->ticket .'</token>';
+		
+		if(count($obj_Card->cvc) > 0) { $b .= '<cvc>'. $obj_Card->cvc .'</cvc>'; }		
+
+		$b .= '</card>';
+		
+		return $b;
+	}
 	
 }

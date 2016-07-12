@@ -83,189 +83,223 @@ while ( ($_OBJ_DB instanceof RDB) === false && $i < 5)
 	$_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
 	$i++;
 }
-$obj_XML = simplexml_load_string(file_get_contents("php://input") );
+$obj_XML = simpledom_load_string(file_get_contents("php://input") );
 
-	
-$id = (integer)$obj_XML->callback->transaction["id"];
-$xml = '';
-
-try
+if ( ($obj_XML instanceof SimpleDOMElement) === true && $obj_XML->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_XML->{'callback'}) > 0)
 {
-	$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
-
-	// Intialise Text Translation Object
-	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+	$id = (integer)$obj_XML->callback->transaction["id"];
+	$xml = '';
 	
-	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]) );
-	$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
-
-	$iStateID = (integer) $obj_XML->callback->status["code"];
-
-	// Save Ticket ID representing the End-User's stored Card Info
-	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_XML->callback->transaction->card->token) == 1)
+	try
 	{
-		$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE);
-		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $obj_XML->callback->transaction->card->token);
-
+		$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
+	
+		// Intialise Text Translation Object
+		$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 		
-		$sExpiry =  $obj_XML->callback->transaction->card->expiry->month ."/". $obj_XML->callback->transaction->card->expiry->year;
+		$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]) );
+		$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
+	
+		$iStateID = (integer) $obj_XML->callback->status["code"];
 		
-		$iStatus = $obj_mPoint->saveCard($obj_TxnInfo,
-										 $obj_TxnInfo->getMobile(),
-										 (integer) $obj_XML->callback->transaction->card["type-id"],
-										 (integer) $obj_XML->callback->{'psp-config'}["id"],
-										 $obj_XML->callback->transaction->card->token,
-										 $obj_XML->callback->transaction->card->{'card-number'}, 
-										 preg_replace('/\s+/', '', $sExpiry) ); // Remove all whitespaces from string.
-		// The End-User's existing account was linked to the Client when the card was stored
-		if ($iStatus == 1)
+		// Save Ticket ID representing the End-User's stored Card Info
+		if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_XML->callback->transaction->card->token) == 1)
 		{
-			$obj_mPoint->sendLinkedInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo);
-		}
-		// New Account automatically created when Card was saved
-		else if ($iStatus == 2)
-		{
-			$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile() );
-			if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail() ); }
-			$obj_TxnInfo->setAccountID($iAccountID);
-			$obj_mPoint->getTxnInfo()->setAccountID($iAccountID);
-			// SMS communication enabled
-			if ($obj_TxnInfo->getClientConfig()->smsReceiptEnabled() === true)
+						
+			$sExpiry =  $obj_XML->callback->transaction->card->expiry->month ."/". $obj_XML->callback->transaction->card->expiry->year;
+	
+	
+			$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE);
+			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $obj_XML->callback->transaction->card->token);
+			
+			$iStatus = $obj_mPoint->saveCard($obj_TxnInfo,
+											 $obj_TxnInfo->getMobile(),
+											 (integer) $obj_XML->callback->transaction->card["type-id"],
+											 (integer) $obj_XML->callback->{'psp-config'}["id"],
+											 $obj_XML->callback->transaction->card->token,
+											 $obj_XML->callback->transaction->card->{'card-number'}, 
+											 preg_replace('/\s+/', '', $sExpiry) ); // Remove all whitespaces from string.
+			// The End-User's existing account was linked to the Client when the card was stored
+			if ($iStatus == 1)
 			{
-				$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo);
+				$obj_mPoint->sendLinkedInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo);
+			}
+			// New Account automatically created when Card was saved
+			else if ($iStatus == 2)
+			{
+				$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile() );
+				if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail() ); }
+				$obj_TxnInfo->setAccountID($iAccountID);
+				$obj_mPoint->getTxnInfo()->setAccountID($iAccountID);
+				// SMS communication enabled
+				if ($obj_TxnInfo->getClientConfig()->smsReceiptEnabled() === true)
+				{
+					$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo);
+				}
+			}
+			// E-Mail has been provided for the transaction
+			if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }		
+		
+		}
+	
+		$fee = 0;	
+		$obj_mPoint->completeTransaction( (integer) $obj_XML->callback->{'psp-config'}["id"],
+										  $obj_XML->callback->transaction["external-id"],
+										  (integer) $obj_XML->callback->transaction->card["type-id"],
+										  $iStateID,
+										  $fee,
+										  array($HTTP_RAW_POST_DATA) );
+		
+		// Payment Authorized: Perform a callback to the 3rd party Wallet if required, if the status is a valid Payment state
+		if ($iStateID >= Constants::iPAYMENT_ACCEPTED_STATE && $iStateID <= Constants::iPAYMENT_DUPLICATED_STATE)
+		{
+			$obj_PSPConfig = null;
+			$purchaseDate = null;
+			
+			switch (intval($obj_XML->callback->transaction->card["type-id"]) )
+			{
+			case (Constants::iVISA_CHECKOUT_WALLET):
+				$obj_Wallet = new VisaCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["visa-checkout"]);
+				$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
+				break;
+			case (Constants::iAMEX_EXPRESS_CHECKOUT_WALLET):
+				$obj_Wallet = new AMEXExpressCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["amex-express-checkout"]);
+				$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
+				break;
+			case (Constants::iMASTER_PASS_WALLET):
+				$obj_Wallet = new MasterPass($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["masterpass"]);
+				$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMASTER_PASS_PSP);
+	
+				if($obj_XML->callback->transaction->PurchaseDate == "")
+				{
+					$purchaseDate = date('c',time());
+				}
+				else
+				{
+					$purchaseDate = $obj_XML->callback->transaction->PurchaseDate;
+				}
+				
+				break;
+			case (Constants::iAPPLE_PAY):
+			default:
+				break;
+			}
+			// 3rd party Wallet requires Callback
+			if ( ($obj_PSPConfig instanceof PSPConfig) === true) { $obj_Wallet->callback($obj_PSPConfig, $obj_XML->callback->transaction->card, $obj_XML->callback->status); }
+		}
+		// Account Top-Up
+		if ($obj_TxnInfo->getAccountID() > 0 && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getTypeID() >= 100 && $obj_TxnInfo->getTypeID() <= 109)
+		{
+			if ($obj_TxnInfo->getAccountID() > 0) { $iAccountID = $obj_TxnInfo->getAccountID(); }
+			else
+			{
+				$obj_Home = new Home($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo->getClientConfig()->getCountryConfig() );
+				$iAccountID = $obj_Home->getAccountID($obj_TxnInfo->getClientConfig()->getCountryConfig(), $obj_TxnInfo->getMobile() );
+				if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = $obj_Home->getAccountID($obj_TxnInfo->getClientConfig()->getCountryConfig(), $obj_TxnInfo->getEMail() ); }
+	
+				$obj_mPoint->link($iAccountID);
+				$obj_TxnInfo->setAccountID($iAccountID);
+			}
+			switch ($obj_TxnInfo->getTypeID() )
+			{
+				case (Constants::iPURCHASE_OF_EMONEY):
+					$obj_mPoint->topup($iAccountID, Constants::iTOPUP_OF_EMONEY, $obj_TxnInfo->getID(), $obj_TxnInfo->getAmount() );
+					break;
+				case (Constants::iPURCHASE_OF_POINTS):
+					$obj_mPoint->topup($iAccountID, Constants::iTOPUP_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getPoints() );
+					break;
 			}
 		}
-		// E-Mail has been provided for the transaction
-		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
-	}
-
-	$fee = 0;	
-	$obj_mPoint->completeTransaction( (integer) $obj_XML->callback->{'psp-config'}["id"],
-									  $obj_XML->callback->transaction["external-id"],
-									  (integer) $obj_XML->callback->transaction->card["type-id"],
-									  $iStateID,
-									  $fee,
-									  array($HTTP_RAW_POST_DATA) );
-	
-	// Payment Authorized: Perform a callback to the 3rd party Wallet if required
-	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
-	{
-		$obj_PSPConfig = null;
-		$purchaseDate = null;
-		
-		switch (intval($obj_XML->callback->transaction->card["type-id"]) )
+		if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getReward() > 0 && $obj_TxnInfo->getAccountID() > 0)
 		{
-		case (Constants::iVISA_CHECKOUT_WALLET):
-			$obj_Wallet = new VisaCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["visa-checkout"]);
-			$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
-			break;
-		case (Constants::iAMEX_EXPRESS_CHECKOUT_WALLET):
-			$obj_Wallet = new AMEXExpressCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["amex-express-checkout"]);
-			$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
-			break;
-		case (Constants::iMASTER_PASS_WALLET):
-			$obj_Wallet = new MasterPass($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["masterpass"]);
-			$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMASTER_PASS_PSP);
-
-			if($obj_XML->callback->transaction->PurchaseDate == "")
-			{
-				$purchaseDate = date('c',time());
+			$obj_mPoint->topup($obj_TxnInfo->getAccountID(), Constants::iREWARD_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getReward() );
+		}
+	
+		// Customer has an account
+		if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getAccountID() > 0)
+		{
+			$obj_mPoint->associate($obj_TxnInfo->getAccountID(), $obj_TxnInfo->getID() );
+		}
+	
+		// Client has SMS Receipt enabled
+		if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getClientConfig()->smsReceiptEnabled() === true)
+		{
+			$obj_mPoint->sendSMSReceipt(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
+		}
+		// Transaction uses Auto Capture and Authorization was accepted
+		if ($obj_TxnInfo->useAutoCapture() === true && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
+		{
+			// Reload so we have the newest version of the TxnInfo
+			$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
+			$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
+			
+			$aCallbackArgs = array("transact" => $obj_XML->callback->transaction["external-id"],
+								   "amount" => $obj_TxnInfo->getAmount(),
+								   "card-id" =>  $obj_XML->callback->transaction->card["type-id"]);
+			
+			$responseCode = $obj_mPoint->capture($obj_TxnInfo->getAmount());
+			
+			
+			if ($responseCode == 1000)
+			{				
+				if ($obj_TxnInfo->getCallbackURL() != "") { $obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $aCallbackArgs); }
+				$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
 			}
 			else
 			{
-				$purchaseDate = $obj_XML->callback->transaction->PurchaseDate;
+				if ($obj_TxnInfo->getCallbackURL() != "") { $obj_mPoint->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $aCallbackArgs); }
+				$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, "Payment Declined (2010)");
 			}
-			
-			break;
-		case (Constants::iAPPLE_PAY):
-		default:
-			break;
 		}
-		// 3rd party Wallet requires Callback
-		if ( ($obj_PSPConfig instanceof PSPConfig) === true) { $obj_Wallet->callback($obj_PSPConfig, $obj_XML->callback->transaction->card, $purchaseDate); }
-	}
-	// Account Top-Up
-	if ($obj_TxnInfo->getAccountID() > 0 && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getTypeID() >= 100 && $obj_TxnInfo->getTypeID() <= 109)
-	{
-		if ($obj_TxnInfo->getAccountID() > 0) { $iAccountID = $obj_TxnInfo->getAccountID(); }
-		else
+		// Callback URL has been defined for Client
+		if ($obj_TxnInfo->getCallbackURL() != "")
 		{
-			$obj_Home = new Home($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo->getClientConfig()->getCountryConfig() );
-			$iAccountID = $obj_Home->getAccountID($obj_TxnInfo->getClientConfig()->getCountryConfig(), $obj_TxnInfo->getMobile() );
-			if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = $obj_Home->getAccountID($obj_TxnInfo->getClientConfig()->getCountryConfig(), $obj_TxnInfo->getEMail() ); }
-
-			$obj_mPoint->link($iAccountID);
-			$obj_TxnInfo->setAccountID($iAccountID);
+			$obj_mPoint->notifyClient($iStateID, array("transact"=>$id, "amount"=>$obj_XML->callback->transaction->amount, "card-id"=>$obj_XML->callback->transaction->card["type-id"]) );
 		}
-		switch ($obj_TxnInfo->getTypeID() )
-		{
-			case (Constants::iPURCHASE_OF_EMONEY):
-				$obj_mPoint->topup($iAccountID, Constants::iTOPUP_OF_EMONEY, $obj_TxnInfo->getID(), $obj_TxnInfo->getAmount() );
-				break;
-			case (Constants::iPURCHASE_OF_POINTS):
-				$obj_mPoint->topup($iAccountID, Constants::iTOPUP_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getPoints() );
-				break;
-		}
+		$xml = '<status code="1000">Callback Success</status>';
 	}
-	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getReward() > 0 && $obj_TxnInfo->getAccountID() > 0)
+	catch (TxnInfoException $e)
 	{
-		$obj_mPoint->topup($obj_TxnInfo->getAccountID(), Constants::iREWARD_OF_POINTS, $obj_TxnInfo->getID(), $obj_TxnInfo->getReward() );
+		header("HTTP/1.1 500 Internal Server Error");
+		$xml .= '<status code="'. $e->getCode() .'">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES). '</status>';
+		trigger_error($e->getMessage() ."\n". $HTTP_RAW_POST_DATA, E_USER_WARNING);
 	}
-
-	// Customer has an account
-	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getAccountID() > 0)
+	catch (CallbackException $e)
 	{
-		$obj_mPoint->associate($obj_TxnInfo->getAccountID(), $obj_TxnInfo->getID() );
+		header("HTTP/1.1 500 Internal Server Error");
+		$xml .= '<status code="'. $e->getCode() .'">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES). '</status>';
+		trigger_error($e->getMessage() ."\n". $HTTP_RAW_POST_DATA, E_USER_WARNING);
 	}
-
-	// Client has SMS Receipt enabled
-	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_TxnInfo->getClientConfig()->smsReceiptEnabled() === true)
-	{
-		$obj_mPoint->sendSMSReceipt(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO) );
-	}
-	// Transaction uses Auto Capture and Authorization was accepted
-	if ($obj_TxnInfo->useAutoCapture() === true && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
-	{
-		// Reload so we have the newest version of the TxnInfo
-		$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
-		$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
-		
-		$aCallbackArgs = array("transact" => $obj_XML->callback->transaction["external-id"],
-							   "amount" => $obj_TxnInfo->getAmount(),
-							   "card-id" =>  $obj_XML->callback->transaction->card["type-id"]);
-		
-		$responseCode = $obj_mPoint->capture($obj_TxnInfo->getAmount());
-		
-		
-		if ($responseCode == 1000)
-		{				
-			if ($obj_TxnInfo->getCallbackURL() != "") { $obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $aCallbackArgs); }
-			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
-		}
-		else
-		{
-			if ($obj_TxnInfo->getCallbackURL() != "") { $obj_mPoint->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $aCallbackArgs); }
-			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, "Payment Declined (2010)");
-		}
-	}
-	// Callback URL has been defined for Client
-	if ($obj_TxnInfo->getCallbackURL() != "")
-	{
-		$obj_mPoint->notifyClient($iStateID, array("transact"=>$id, "amount"=>$obj_XML->callback->transaction->amount, "card-id"=>$obj_XML->callback->transaction->card["type-id"]) );
-	}
-	$xml = '<status code="1000">Callback Success</status>';
 }
-catch (TxnInfoException $e)
+// Error: Invalid XML Document
+elseif ( ($obj_XML instanceof SimpleDOMElement) === false)
 {
-	header("HTTP/1.1 500 Internal Server Error");
-	$xml .= '<status code="'. $e->getCode() .'">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES). '</status>';
-	trigger_error($e->getMessage() ."\n". $HTTP_RAW_POST_DATA, E_USER_WARNING);
+	header("HTTP/1.1 415 Unsupported Media Type");
+
+	$xml = '<status code="415">Invalid XML Document</status>';
 }
-catch (CallbackException $e)
+// Error: Wrong operation
+elseif (count($obj_XML->{'callback'}) == 0)
 {
-	header("HTTP/1.1 500 Internal Server Error");
-	$xml .= '<status code="'. $e->getCode() .'">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES). '</status>';
-	trigger_error($e->getMessage() ."\n". $HTTP_RAW_POST_DATA, E_USER_WARNING);
+	header("HTTP/1.1 400 Bad Request");
+
+	$xml = '';
+	foreach ($obj_XML->children() as $obj_Elem)
+	{
+		$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>';
+	}
+}
+// Error: Invalid Input
+else
+{
+	header("HTTP/1.1 400 Bad Request");
+	$aObj_Errs = libxml_get_errors();
+
+	$xml = '';
+	for ($i=0; $i<count($aObj_Errs); $i++)
+	{
+		$xml .= '<status code="400">'. htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES) .'</status>';
+	}
 }
 header("Content-Type: text/xml; charset=\"UTF-8\"");
 echo '<?xml version="1.0" encoding="UTF-8"?>';

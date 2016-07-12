@@ -35,7 +35,7 @@ if(empty($iPushIDForUser) === false && $code > 0)
 		$b["aps"] = array("alert" => array("body" => utf8_encode($sBody) ),
 						  "sound" => "default",
 						  "action" => "notify");			
-		$b['CHAT'] = 1;	
+		$b['ACTION'] = 2;	
 		$obj_MsgInfo = GoMobileMessage::produceMessage($iType, $sChannel, $sKeyword, $iPushIDForUser, json_encode($b) );					
 	}
 	$bSendMessage = true;
