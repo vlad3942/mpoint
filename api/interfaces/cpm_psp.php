@@ -670,7 +670,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '<card-number>'. $obj_Card->{'card-number'} .'</card-number>';
 		$b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
 		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
-		$b .= '<cvc>'. $obj_Card->cvc .'</cvc>';
+		
+		if(count($obj_Card->cvc) > 0) { $b .= '<cvc>'. $obj_Card->cvc .'</cvc>'; }	
+		
 		$b .= '</card>';
 		
 		$b .= '<account country-id="'.$obj_Card->address['country-id'].'">';
