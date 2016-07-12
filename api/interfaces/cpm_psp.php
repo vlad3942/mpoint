@@ -483,9 +483,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$obj_XML = simplexml_load_string($this->getTxnInfo()->toXML() );
 		$obj_XML->{'authorized-amount'} = (integer) $obj_XML->amount;
 		// Add all attributes from "amount" element
-		foreach($obj_XML->amount->attributes() as $name => $value)
+		if(count($obj_XML->amount->attributes() ) > 0 && $obj_XML->amount->attributes() instanceof SimpleXMLElement)
 		{
-			$obj_XML->{'authorized-amount'}->addAttribute($name, $value);
+			foreach($obj_XML->amount->attributes() as $name => $value)
+			{
+				$obj_XML->{'authorized-amount'}->addAttribute($name, $value);
+			}
 		}
 		if (isset($actionAmount) === true && is_null($actionAmount) === false)
 		{
