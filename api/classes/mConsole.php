@@ -1017,8 +1017,10 @@ class mConsole extends Admin
 				$aMessages = explode("&", $obj_Client->getReplyBody() );
 				foreach ($aMessages as $msg)
 				{
-					if(!empty($msg) === true )
+					if(empty($msg) === false)
+					{
 						$aStatusCodes[] = (integer) substr($msg, strpos($msg, "=") + 1);
+					}
 				}
 				if (count($aStatusCodes) == 0) { $aStatusCodes[] = 500; }
 				break;
