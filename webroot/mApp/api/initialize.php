@@ -90,11 +90,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					$iValResult = $obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount);
 					if ($obj_ClientConfig->getMaxAmount() > 0 && $iValResult != 10) { $aMsgCds[$iValResult + 50] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount; }
 					
-					/**
-					 *  If the client configuration max-amount is set to zero or null in the Client.Client_Tbl, the amount validation will not be performed. By doing this, we allow for the requirement that a client do not wish to have a transaction amount limit enforced.
-					 */
-					if ($obj_ClientConfig->getMaxAmount() > 0 && $obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(),  (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount) != 10) { $aMsgCds[$obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount) + 50] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount; }
-
 					// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
 					if (strlen($obj_ClientConfig->getSalt() ) > 0
 						&& (strlen($obj_DOM->{'initialize-payment'}[$i]->transaction['order-no']) > 0 || intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount) > 100 || count($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac) == 1) )
