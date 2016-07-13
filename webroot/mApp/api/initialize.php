@@ -130,7 +130,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$data['customer-ref'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->{'customer-ref'};
 							$data['mobile'] = (float) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile;
 							$data['operator'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["operator-id"];
-							if (intval($data['operator']) == 0) { $data['operator'] = $obj_CountryConfig->getID() * 100; }
+							if (intval($data['operator']) == 0) { $data['operator'] = intval($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]) * 100; }
 							$data['email'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->email;
 							$data['device-id'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->{'device-id'};
 							if (count($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip) == 1) { $data['ip'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip; }
