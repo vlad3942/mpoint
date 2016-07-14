@@ -6846,6 +6846,12 @@ ALTER TABLE Client.Client_Tbl ADD num_masked_digits INT4 DEFAULT 4;
 ALTER TABLE Client.Client_Tbl ADD CONSTRAINT MaskedDigits_Chk CHECK (0 <= num_masked_digits AND num_masked_digits <= 4);
 /* ==================== Client SCHEMA END ==================== */
 
+--- SETUP v1.94 --
+/* ========== CONFIGURE GlobalCollect AS PSP ================ */
+INSERT INTO System.PSP_Tbl (id, name) VALUES (20, 'GlobalCollect');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) SELECT countryid, 20, name FROM System.PSPCurrency_Tbl WHERE pspid = 4;
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT cardid, 20 FROM System.PSPCard_Tbl WHERE pspid = 4;
+/* ========== CONFIGURE DATA CASH END ========== */
 ------- MASTER v1.94 ---
 /* ==================== CLIENT SCHEMA START ==================== */
 ALTER TABLE Client.MerchantAccount_Tbl ALTER name TYPE VARCHAR(255);

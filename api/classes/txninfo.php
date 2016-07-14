@@ -56,6 +56,12 @@ class TxnInfo
 	 */
 	private $_obj_CountryConfig;
 	/**
+	 * Configuration for the Orders in the cart of the user send as part of the transaction.
+	 *
+	 * @var OrderInfo
+	 */
+	private $_obj_OrderConfigs = null;
+	/**
 	 * Total amount the customer will pay for the Transaction without fee
 	 *
 	 * @var long
@@ -651,6 +657,10 @@ class TxnInfo
 		$xml .= '<description>'. htmlspecialchars($this->_sDescription, ENT_NOQUOTES) .'</description>';
 		$xml .= '<ip>'. htmlspecialchars($this->_sIP, ENT_NOQUOTES) .'</ip>';
 		$xml .= '<hmac>'. htmlspecialchars($this->getHMAC(), ENT_NOQUOTES) .'</hmac>';
+		if( empty($this->_obj_OrderConfigs) === false )
+		{
+			$xml .= $this->getOrdersXML();
+		}
 		$xml .= '</transaction>';
 
 		return $xml;
@@ -842,6 +852,71 @@ class TxnInfo
 
 		if ($res === false) { trigger_error("Failed to determine whether transaction #". $this->getID() . " has states: ". $sStates, E_USER_WARNING); }
 		return is_array($res) === true && isset($res["C"]) === true && intval($res["C"]) > 0;
+	}
+	
+		/**
+	 * Function to insert new records in the order table that are send as part of the transaction cart details  
+	 *
+	 * @param 	Array $orderData   	Data object with the order details
+	 * 	 
+	 */
+	public function setOrderDetails(RDB $obj_DB, $aOrderData)
+	{
+		$aReturnArray = array();
+		if( is_array($aOrderData) === true )
+		{
+			foreach ($aOrderData as $aOrderDataObj)
+			{
+				$sql = "SELECT Nextvalue('Log".sSCHEMA_POSTFIX.".Order_Tbl_id_seq') AS id FROM DUAL";
+				$RS = $obj_DB->getName($sql);
+				// Error: Unable to generate a new Order ID
+				if (is_array($RS) === false) { throw new mPointException("Unable to generate new Order ID", 1001); }
+				
+				
+				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Order_Tbl
+							(id, txnid, countryid, amount, quantity, productsku, productname, productdescription, productimageurl, points, reward)
+						VALUES
+							(". $RS["ID"] .", ". $this->getID() .", ". $aOrderDataObj["country-id"] .", ". $aOrderDataObj["amount"] .", ". $aOrderDataObj["quantity"] .", '". $obj_DB->escStr($aOrderDataObj["product-sku"]) ."', '". $obj_DB->escStr($aOrderDataObj["product-name"]) ."', 
+							 '". $obj_DB->escStr($aOrderDataObj["product-description"]) ."', '". $obj_DB->escStr($aOrderDataObj["product-image-url"]) ."', ". $aOrderDataObj["points"] .", ". $aOrderDataObj["reward"] ." )";
+				// echo $sql ."\n";
+				// Error: Unable to insert a new order record in the Order Table
+				if (is_resource($obj_DB->query($sql) ) === false)
+				{
+					if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for Order: ". $RS["ID"], 1002); }
+				}
+				else 
+				{
+					$aReturnArray[] = $RD["ID"];
+				}
+			}
+	
+			return $aReturnArray;
+		}
+	}
+
+	public function produceOrderConfig(RDB $obj_DB)
+	{
+		//Get Order Detail of a given transaction if supplied by the e-commerce platform.
+		$this->_obj_OrderConfigs = OrderInfo::produceConfigurations($obj_DB, $this->getID());
+	}
+	
+	public function getOrdersXML()
+	{
+		$xml = '';
+		if( empty($this->_obj_OrderConfigs) === false )
+		{
+			$xml .= '<orders>';
+			foreach ($this->_obj_OrderConfigs as $obj_OrderInfo)
+			{
+				if( ($obj_OrderInfo instanceof OrderInfo) === true )
+				{
+					$xml.= $obj_OrderInfo->toXML();
+				}
+			}
+			$xml .= '</orders>';
+		}
+		
+		return $xml;
 	}
 }
 ?>

@@ -13,6 +13,7 @@
 							<xs:complexType>
 								<xs:all>
 									<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
+									<xs:element ref="orders" minOccurs="0" maxOccurs="1" />
 									<xs:element name="points" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
 									<xs:element name="reward" minOccurs="0" maxOccurs="1">
 										<xs:complexType>
@@ -616,6 +617,65 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+			<xs:element name="callback" minOccurs="1" maxOccurs="1">
+			  <xs:complexType>
+				<xs:sequence>
+				  <xs:element name="psp-config" minOccurs="1" maxOccurs="1">
+					<xs:complexType>
+					  <xs:sequence>
+						<xs:element type="xs:string" name="name"/>
+					  </xs:sequence>
+					  <xs:attribute type="xs:int" name="id"/>
+					</xs:complexType>
+				  </xs:element>
+				  <xs:element name="transaction" minOccurs="1" maxOccurs="1">
+					<xs:complexType>
+					  <xs:sequence>
+						<xs:element name="amount">
+						  <xs:complexType>
+							<xs:simpleContent>
+							  <xs:extension base="xs:nonNegativeInteger">
+								<xs:attribute type="xs:positiveInteger" name="country-id"/>
+								<xs:attribute type="xs:string" name="currency"/>
+							  </xs:extension>
+							</xs:simpleContent>
+						  </xs:complexType>
+						</xs:element>
+						<xs:element name="card">
+						  <xs:complexType>
+							<xs:sequence>
+							  <xs:element type="xs:string" name="card-number" minOccurs="0" maxOccurs="1"/>
+							  <xs:element type="xs:long" name="token" minOccurs="0" maxOccurs="1"/>
+							  <xs:element name="expiry" minOccurs="0" maxOccurs="1">
+								<xs:complexType>
+								  <xs:sequence>
+									<xs:element type="xs:int" name="month"/>
+									<xs:element type="xs:int" name="year"/>
+								  </xs:sequence>
+								</xs:complexType>
+							  </xs:element>
+							</xs:sequence>
+							<xs:attribute type="xs:int" name="type-id" use="required"/>
+						  </xs:complexType>
+						</xs:element>
+					  </xs:sequence>
+					  <xs:attribute type="xs:int" name="id" use="required"/>
+					  <xs:attribute type="xs:string" name="order-no" use="optional"/>
+					  <xs:attribute type="xs:string" name="external-id" use="required"/>
+					</xs:complexType>
+				  </xs:element>
+				  <xs:element name="status" minOccurs="1" maxOccurs="1">
+					<xs:complexType>
+					  <xs:simpleContent>
+						<xs:extension base="xs:string">
+						  <xs:attribute type="xs:short" name="code"/>
+						</xs:extension>
+					  </xs:simpleContent>
+					</xs:complexType>
+				  </xs:element>
+				</xs:sequence>
+			  </xs:complexType>
+			</xs:element>			
 		</xs:choice>
 	</xs:complexType>
 </xs:element>
@@ -765,6 +825,33 @@
                         <xs:element name="password" type="name" minOccurs="0" maxOccurs="1"/>
                     </xs:all>
                     <xs:attribute name="id" use="optional" type="xs:positiveInteger"/>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+</xs:element>
+
+<xs:element name="orders">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element name="line-item" minOccurs="1" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:all>
+                    	<xs:element name="product" minOccurs="1" maxOccurs="1">
+                    		<xs:complexType>
+                    			<xs:all>
+		                        	<xs:element name="name" type="name" minOccurs="1" maxOccurs="1"/>
+		                        	<xs:element name="description" type="name" minOccurs="1" maxOccurs="1"/>
+		                        	<xs:element name="image-url" type="url" minOccurs="1" maxOccurs="1"/>
+		                        </xs:all>
+		                        <xs:attribute name="sku" use="required" type="xs:string"/>
+		                     </xs:complexType>
+                        </xs:element>
+                        <xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="points" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="reward" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="quantity" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+                    </xs:all> 
                 </xs:complexType>
             </xs:element>
         </xs:sequence>

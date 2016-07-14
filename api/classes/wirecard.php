@@ -11,20 +11,20 @@
  * @version 1.00
  */
 
-/* ==================== Data Cash Exception Classes Start ==================== */
+/* ==================== Wire Card Exception Classes Start ==================== */
 /**
- * Super class for all Data Cash Exceptions
+ * Super class for all Wire Card Exceptions
  */
 class WireCardException extends CallbackException { }
-/* ==================== Data Cash Exception Classes End ==================== */
+/* ==================== Wire card Exception Classes End ==================== */
 
 /**
- * Model Class containing all the Business Logic for the Payment Service Provider: Data Cash
+ * Model Class containing all the Business Logic for the Payment Service Provider: Wire Card
  *
  */
 class WireCard extends CPMPSP
 {
-	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new DataCashException("Method: getPaymentData is not supported by Wire Card"); }
+	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new WireCardException("Method: getPaymentData is not supported by Wire Card"); }
 
 	/**
 	 * Completes the Transaction by updating the Transaction Log with the final details for the Payment.
@@ -76,69 +76,5 @@ class WireCard extends CPMPSP
 	}
 	
 	public function getPSPID() { return Constants::iWIRE_CARD_PSP; }
-	
-	public function authTicket($obj_PSPConfig, $obj_Elem)
-	{
-		$code = 0;
-		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
-		$b .= '<root>';
-		$b .= '<authorize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
-		$b .= $obj_PSPConfig->toXML();
-		
-		$txnXML = $this->_constTxnXML();
-		$b .= $txnXML;
-		
-		list($expiry_month, $expiry_year) = explode("/", $obj_Elem->expiry);
-		
-		$card_type = "";
-		
-		if(strpos($obj_Elem->type, " ") === false)
-		{
-			$card_type = $obj_Elem->type;
-		}
-		else { $card_type = strtolower(str_replace(" ","",$obj_Elem->type)); }
-		
-		$b .= '<card type="'.$card_type.'">';
-		$b .= '<masked_account_number>'. $obj_Elem->mask .'</masked_account_number>';
-		$b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
-		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
-		$b .= '<token>'. $obj_Elem->ticket .'</token>';
-		$b .= '</card>';
-	
-		$obj_txnXML = simpledom_load_string($txnXML);
-		$euaid = intval($obj_txnXML->xpath("/transaction/@eua-id")->{'eua-id'});
-		if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
-		
-		$b .= '</authorize>';
-		$b .= '</root>';
-				
-		try
-		{
-			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["auth"]);
-		
-			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
-			$obj_HTTP->connect();
-			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
-			$obj_HTTP->disConnect();
-			if ($code == 200)
-			{
-				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
-				$code = $obj_XML->status["code"];
-				// save ext id in database
-				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-						SET pspid = ". $obj_PSPConfig->getID() ."
-						WHERE id = ". $this->getTxnInfo()->getID();
-				//				echo $sql ."\n";
-				$this->getDBConn()->query($sql);
-			}
-			else { throw new mPointException("Authorization failed with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
-		}
-		catch (mPointException $e)
-		{
-			trigger_error("Authorization failed of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
-		}
-		
-		return $code;
-	}
 	
 }

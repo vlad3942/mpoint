@@ -74,8 +74,13 @@ require_once(sCLASS_PATH ."/masterpass.php");
 require_once(sCLASS_PATH ."/amexexpresscheckout.php");
 // Require specific Business logic for the WireCard component
 require_once(sCLASS_PATH ."/wirecard.php");
+
+// Require specific Business logic for the Global Collect component
+require_once(sCLASS_PATH ."/globalcollect.php");
+
 // Require specific Business logic for the Android Pay component
 require_once(sCLASS_PATH ."/androidpay.php");
+
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -154,7 +159,8 @@ try
 
 									//TODO: Move most of the logic of this for-loop into model layer, api/classes/authorize.php
 									for ($j=0; $j<count($obj_DOM->{'authorize-payment'}[$i]->transaction->card); $j++)
-								{
+									{
+										
 									$obj_XML = simpledom_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig, true) );
 
 		//							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"]);
@@ -170,7 +176,19 @@ try
 										intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) > 0 && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) !== Constants::iINVOICE &&
 										$obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) < 10)
 										{ $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) + 40; }
-
+									
+									//Check if card or payment method is enabled or disabled by merchant
+									//Same check is  also implemented at app side.									
+									$obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
+									$obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
+									
+									$obj_Elem = $obj_CardXML->xpath("/cards/item[@id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1]");
+									
+									if (count($obj_Elem) === 0)
+									{
+										$aMsgCds[14] = "The selected payment card is disabled. Select another card";
+									}	
+									
 									// Success: Input Valid
 									if (count($aMsgCds) == 0)
 									{
@@ -260,7 +278,7 @@ try
 											case (Constants::iCARD_PURCHASE_TYPE):		// Authorize Purchase using Stored Card
 											default:
 												// 3rd Party Wallet
-												if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1)
+												if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1)
 												{
 													switch (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) )
 													{
@@ -280,80 +298,98 @@ try
 														$obj_Wallet = new AMEXExpressCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["amex-express-checkout"]);
 														$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
 														break;
-														case (Constants::iANDROID_PAY_WALLET):
+													case (Constants::iANDROID_PAY_WALLET):
 															$obj_Wallet = new AndroidPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["android-pay"]);
 															$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iANDROID_PAY_PSP);
 															break;
 													default:
+														/**
+														 * This changes is made for globalcollect since rightnow it is the only psp which will send
+														 * token value in authorize  request but for new card.
+														 * @var unknown
+														 */
+														// Find Configuration for Payment Service Provider
+														$obj_XML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
+														// Determine Payment Service Provider based on selected card
+														$obj_Elem = $obj_XML->xpath("/cards/item[@id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ."]");
+														if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1) { $obj_Elem->cvc = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc; }
 														break;
 													}
-													$obj_XML = simpledom_load_string($obj_Wallet->getPaymentData($obj_PSPConfig, $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]) );
-													if (count($obj_XML->{'payment-data'}) == 1)
+												
+													if(isset($obj_Wallet) == true && is_object($obj_Wallet) == true)
 													{
-														$obj_Elem = $obj_XML->{'payment-data'}->card;
-														// Add billing address from request as no billing address was returned by the 3rd party wallet
-														if (count($obj_Elem->address) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address) == 1)
+														$obj_XML = simpledom_load_string($obj_Wallet->getPaymentData($obj_PSPConfig, $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]) );
+														
+														if (count($obj_XML->{'payment-data'}) == 1)
 														{
-															/*
-															 * Some versions of LibXML will report a wrong element name for "address" unless the XML element is marshalled into a string first
-															 */
-															$obj_Elem->addChild(simplexml_load_string($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->asXML() ) );
-															// Normalize full name into first name / last name
-															if (count($obj_Elem->address->{'full-name'}) == 1)
+															$obj_Elem = $obj_XML->{'payment-data'}->card;
+															// Add billing address from request as no billing address was returned by the 3rd party wallet
+															if (count($obj_Elem->address) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address) == 1)
 															{
-																$pos = strrpos($obj_Elem->address->{'full-name'}, " ");
-																if ($pos > 0)
+																/*
+																 * Some versions of LibXML will report a wrong element name for "address" unless the XML element is marshalled into a string first
+																 */
+																$obj_Elem->addChild(simplexml_load_string($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->asXML() ) );
+																// Normalize full name into first name / last name
+																if (count($obj_Elem->address->{'full-name'}) == 1)
 																{
-																	$obj_Elem->address->{'first-name'} = trim(substr($obj_Elem->address->{'full-name'}, 0, $pos) );
-																	$obj_Elem->address->{'last-name'} = trim(substr($obj_Elem->address->{'full-name'}, $pos) );
+																	$pos = strrpos($obj_Elem->address->{'full-name'}, " ");
+																	if ($pos > 0)
+																	{
+																		$obj_Elem->address->{'first-name'} = trim(substr($obj_Elem->address->{'full-name'}, 0, $pos) );
+																		$obj_Elem->address->{'last-name'} = trim(substr($obj_Elem->address->{'full-name'}, $pos) );
+																	}
+																	else { $obj_Elem->address->{'first-name'} = trim($obj_Elem->address->{'full-name'}); }
 																}
-																else { $obj_Elem->address->{'first-name'} = trim($obj_Elem->address->{'full-name'}); }
 															}
-														}
-														// Merge billing address from request with the billing address returned by the 3rd party wallet
-														elseif (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address) == 1)
-														{
-															$obj_Elem->address["country-id"] = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address["country-id"];
-															// Normalize full name into first name / last name
-															if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'full-name'}) == 1)
+															// Merge billing address from request with the billing address returned by the 3rd party wallet
+															elseif (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address) == 1)
 															{
-																$pos = strrpos($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'full-name'}, " ");
-																if ($pos > 0)
+																$obj_Elem->address["country-id"] = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address["country-id"];
+																// Normalize full name into first name / last name
+																if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'full-name'}) == 1)
 																{
-																	$obj_Elem->address->{'first-name'} = trim(substr($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'full-name'}, 0, $pos) );
-																	$obj_Elem->address->{'last-name'} = trim(substr($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'full-name'}, $pos) );
+																	$pos = strrpos($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'full-name'}, " ");
+																	if ($pos > 0)
+																	{
+																		$obj_Elem->address->{'first-name'} = trim(substr($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'full-name'}, 0, $pos) );
+																		$obj_Elem->address->{'last-name'} = trim(substr($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'full-name'}, $pos) );
+																	}
+																	else { $obj_Elem->address->{'first-name'} = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'full-name'}); }
 																}
-																else { $obj_Elem->address->{'first-name'} = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'full-name'}); }
+																else
+																{
+																	if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'first-name'}) == 1) { $obj_Elem->address->{'first-name'} = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'first-name'}); }
+																	if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'last-name'}) == 1) { $obj_Elem->address->{'last-name'} = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'last-name'}); }
+																}
+																$obj_Elem->address->street = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->street);
+																if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'postal-code'}) == 1) { $obj_Elem->address->{'postal-code'} = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'postal-code'}); }
+																$obj_Elem->address->city = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->city);
+																if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->state) == 1) { $obj_Elem->address->state = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->state); }
 															}
-															else
+															// Merge CVC / CVV code from request
+															if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1)
 															{
-																if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'first-name'}) == 1) { $obj_Elem->address->{'first-name'} = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'first-name'}); }
-																if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'last-name'}) == 1) { $obj_Elem->address->{'last-name'} = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'last-name'}); }
+																$obj_Elem->cvc = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc;
 															}
-															$obj_Elem->address->street = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->street);
-															if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'postal-code'}) == 1) { $obj_Elem->address->{'postal-code'} = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->{'postal-code'}); }
-															$obj_Elem->address->city = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->city);
-															if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->state) == 1) { $obj_Elem->address->state = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->state); }
+																														
+															$obj_PSPConfig = $obj_Wallet->getPSPConfigForRoute(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]),
+																											   intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"]) );
+															$obj_Elem["pspid"] = $obj_PSPConfig->getID();
+															$obj_Elem["wallet-type-id"] = intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]);
 														}
-														// Merge CVC / CVV code from request
-														if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1)
+														// 3rd Party Wallet returned error	
+														elseif (count($obj_XML->status) == 1)
 														{
-															$obj_Elem->cvc = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc;
+															$obj_XML->status["code"] = intval($obj_XML->status["code"]) - 20;
+															$xml = str_replace('<?xml version="1.0"?>', '', $obj_XML->status->asXML() );
+															$code = 5;
 														}
-														$obj_PSPConfig = $obj_Wallet->getPSPConfigForRoute(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]),
-																										   intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"]) );
-														$obj_Elem["pspid"] = $obj_PSPConfig->getID();
-														$obj_Elem["wallet-type-id"] = intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]);
+
+														// 3rd Party Wallet returned unknown error
+														else { $code = 6; }
+
 													}
-													// 3rd Party Wallet returned error
-													elseif (count($obj_XML->status) == 1)
-													{
-														$obj_XML->status["code"] = intval($obj_XML->status["code"]) - 20;
-														$xml = str_replace('<?xml version="1.0"?>', '', $obj_XML->status->asXML() );
-														$code = 5;
-													}
-													// 3rd Party Wallet returned unknown error
-													else { $code = 6; }
 												}
 												else if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"] ) == Constants::iINVOICE)
 												{
@@ -393,7 +429,7 @@ try
 													else { $code = 10; }
 												}
 
-													if ($code >= 10)
+												if ($code >= 10)
 												{
 													try
 													{
@@ -590,7 +626,70 @@ try
 													
 																	$xml .= '<status code="92">Authorization failed, WireCard returned error: '. $code .'</status>';
 																}
-														break;
+																break;
+														case (Constants::iDATA_CASH_PSP): // DataCash
+																$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iDATA_CASH_PSP);
+															
+																$obj_PSP = new DataCash($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["data-cash"]);
+																	
+																$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_Elem);
+																// Authorization succeeded
+																if ($code == "100")
+																{
+																	$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
+																}
+																// Error: Authorization declined
+																else
+																{
+																	$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+																		
+																	header("HTTP/1.1 502 Bad Gateway");
+																		
+																	$xml .= '<status code="92">Authorization failed, Datacash returned error: '. $code .'</status>';
+																}
+																break;
+														case (Constants::iGLOBAL_COLLECT_PSP): // GlobalCollect
+														
+																$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iGLOBAL_COLLECT_PSP);
+																	
+																$obj_PSP = new GlobalCollect($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["global-collect"]);
+																
+																if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1)
+																{
+																	$obj_Elem->addChild("ticket", $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token);
+																}																
+																
+																/**
+																 * Here on the basis of cvc we will be overriding 
+																 * auth request with authcompelete request defined
+																 * in global.php.
+																 */
+																if(count($obj_Elem->cvc) !== 1)
+																{
+																	$obj_PSP->setAuthPath(true);
+																}
+																
+																$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_Elem);
+
+																// Authorization succeeded
+																if ($code == "100")
+																{
+																	$obj_TxnInfo = TxnInfo::produceInfo( (integer) $obj_TxnInfo->getID(), $_OBJ_DB);
+																	$obj_PSP->initCallback($obj_PSPConfig, $obj_TxnInfo, Constants::iPAYMENT_ACCEPTED_STATE, "Payment Authorized using store card.", intval($obj_Elem->type["id"]));
+																	
+																	$xml .= '<status code="100">Payment authorized using stored card</status>';
+																} else if($code == "2000") { $xml .= '<status code="2000">Payment authorized using stored card</status>'; }
+																else if(is_null($token) == false) { $xml .= '<status code="'.$code.'">Globalcollect returned : '. $code .'</status>'; }
+																// Error: Authorization declined
+																else
+																{
+																	$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+															
+																	header("HTTP/1.1 502 Bad Gateway");
+															
+																	$xml .= '<status code="92">Authorization failed, Globalcollect returned error: '. $code .'</status>';
+																}
+																break;
 														default:	// Unkown Error
 															$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 
