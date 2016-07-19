@@ -140,11 +140,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						//Same check is  also implemented at app side.
 						$obj_CardXML = simpledom_load_string($obj_mPoint->getCards( (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount) );
 
-						$obj_Elem = $obj_CardXML->xpath("/cards/item[@id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1]");
-						if (count($obj_Elem) === 0)
-						{
-							$aMsgCds[14] = "The selected payment card is disabled. Select another card";
-						}
+						$obj_Elem = $obj_CardXML->xpath("/cards/item[@id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ." and @state-id = 1]");
+						if (count($obj_Elem) == 0)	{ $aMsgCds[24] = "The selected payment card is not available"; }
 						
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
