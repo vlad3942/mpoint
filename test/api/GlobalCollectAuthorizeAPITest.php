@@ -89,9 +89,10 @@ class GlobalCollectAuthorizeAPITest extends AuthorizeAPITest
     	$this->assertEquals(5001, $row["accountid"]);
     }
 
-	/* public function testSuccessfulAuthorizeIncludingAutoCapture()
+	public function testSuccessfulAuthorizeIncludingAutoCapture()
 	{
-		parent::testSuccessfulAuthorizeIncludingAutoCapture(Constants::iDIBS_PSP);
-	} */
+		//TODO: Implement test case
+		$this->assertTrue(true);
+	}
 
 }
