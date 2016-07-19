@@ -457,6 +457,12 @@ abstract class Constants
 	const iGLOBAL_COLLECT_PSP = 21;
 
 	/**
+	 * Unique ID for the Payment Service Provider: GlobalCollect
+	 *
+	 */
+	const iSECURE_TRADING_PSP = 22;
+	
+	/**
 	 * Unique ID for the Payment Service Provider: Android Pay
 	 *
 	 */

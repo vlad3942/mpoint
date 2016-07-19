@@ -81,6 +81,9 @@ require_once(sCLASS_PATH ."/globalcollect.php");
 // Require specific Business logic for the Android Pay component
 require_once(sCLASS_PATH ."/androidpay.php");
 
+// Require specific Business logic for the Secure Trading component
+require_once(sCLASS_PATH ."/securetrading.php");
+
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -690,6 +693,29 @@ try
 																	$xml .= '<status code="92">Authorization failed, Globalcollect returned error: '. $code .'</status>';
 																}
 																break;
+													         case (Constants::iSECURE_TRADING_PSP): // Secure Trading
+																	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iDATA_CASH_PSP);
+																		
+																	$obj_PSP = new DataCash($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["data-cash"]);
+																		
+																	$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_Elem);
+																	// Authorization succeeded
+																	if ($code == "100")
+																	{
+																		$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
+																	}
+																	// Error: Authorization declined
+																	else
+																	{
+																		$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+																
+																		header("HTTP/1.1 502 Bad Gateway");
+																
+																		$xml .= '<status code="92">Authorization failed, Secure Trading returned error: '. $code .'</status>';
+																	}
+																	break;
+																
+																
 														default:	// Unkown Error
 															$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 
