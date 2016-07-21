@@ -620,14 +620,7 @@
 			<xs:element name="callback" minOccurs="1" maxOccurs="1">
 			  <xs:complexType>
 				<xs:sequence>
-				  <xs:element name="psp-config" minOccurs="1" maxOccurs="1">
-					<xs:complexType>
-					  <xs:sequence>
-						<xs:element type="xs:string" name="name"/>
-					  </xs:sequence>
-					  <xs:attribute type="xs:int" name="id"/>
-					</xs:complexType>
-				  </xs:element>
+				  <xs:element name="psp-config" type="psp-config" minOccurs="1" maxOccurs="1" />
 				  <xs:element name="transaction" minOccurs="1" maxOccurs="1">
 					<xs:complexType>
 					  <xs:sequence>
@@ -656,8 +649,10 @@
 							  </xs:element>
 							</xs:sequence>
 							<xs:attribute type="xs:int" name="type-id" use="required"/>
+							<xs:attribute type="xs:int" name="psp-id" use="optional"/>
 						  </xs:complexType>
 						</xs:element>
+						<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
 					  </xs:sequence>
 					  <xs:attribute type="xs:int" name="id" use="required"/>
 					  <xs:attribute type="xs:string" name="order-no" use="optional"/>
@@ -857,6 +852,32 @@
         </xs:sequence>
     </xs:complexType>
 </xs:element>
+
+<xs:complexType name="psp-config">
+	<xs:sequence>
+		<xs:element type="xs:string" name="name"/>
+		<xs:element type="xs:string" name="merchant-account" minOccurs="0" />
+		<xs:element type="xs:string" name="merchant-sub-account" minOccurs="0" />
+		<xs:element type="xs:string" name="username" minOccurs="0" />
+		<xs:element type="xs:string" name="password" minOccurs="0"/>
+		<xs:element name="messages" minOccurs="0">
+			<xs:complexType>
+				<xs:sequence>
+					<xs:element name="message" minOccurs="0">
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="xs:string">
+									<xs:attribute name="language" use="required" type="xs:string"/>
+								</xs:extension>
+							</xs:simpleContent>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:complexType>
+		</xs:element>
+	</xs:sequence>
+	<xs:attribute type="xs:int" name="id"/>
+</xs:complexType>
 
 <xs:simpleType name="name">
     <xs:restriction base="xs:string">
