@@ -182,12 +182,9 @@ try
 									$obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 									$obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
 									
-									$obj_Elem = $obj_CardXML->xpath("/cards/item[@id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1]");
-									
-									if (count($obj_Elem) === 0)
-									{
-										$aMsgCds[14] = "The selected payment card is disabled. Select another card";
-									}	
+									$obj_Elem = $obj_CardXML->xpath("/cards/item[@id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ."]");
+									if (count($obj_Elem) == 0) { $aMsgCds[] = 90; } // Unable to find configuration for Payment Service Provider and card
+									else if ( (integer)$obj_Elem["state-id"] != 1) { $aMsgCds[] = 24; } // Card disabled
 									
 									// Success: Input Valid
 									if (count($aMsgCds) == 0)
