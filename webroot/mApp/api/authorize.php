@@ -694,9 +694,9 @@ try
 																}
 																break;
 													         case (Constants::iSECURE_TRADING_PSP): // Secure Trading
-																	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iDATA_CASH_PSP);
+																	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iSECURE_TRADING_PSP);
 																		
-																	$obj_PSP = new DataCash($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["data-cash"]);
+																	$obj_PSP = new SecureTrading($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["secure-trading"]);
 																		
 																	$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_Elem);
 																	// Authorization succeeded
