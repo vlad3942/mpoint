@@ -47,6 +47,8 @@ require_once(sCLASS_PATH ."/dibs.php");
 require_once(sCLASS_PATH ."/datacash.php");
 // Require specific Business logic for the Global Collect component
 require_once(sCLASS_PATH ."/globalcollect.php");
+// Require specific Business logic for the Secure Trading component
+require_once(sCLASS_PATH ."/securetrading.php");
 
 /**
  * Input XML format
