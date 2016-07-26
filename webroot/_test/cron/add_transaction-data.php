@@ -1,9 +1,10 @@
 <?php
 /***
  * This cron can be executed by using below command as example
- * php add_transaction-data.php client-account=10007-100006
+ *  php _test/cron/add_transaction-data.php client-account=10007-100006
  */
-require_once("../../inc/include.php");
+
+require_once(realpath('inc/include.php'));
 
 // Require Business logic for the End-User Account Component
 require_once(sCLASS_PATH ."/enduser_account.php");
