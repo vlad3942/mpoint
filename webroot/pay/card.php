@@ -47,6 +47,10 @@ $xml .= '<labels>
 		<progress>'.$_OBJ_TXT->_("Step 1 of 2").'</progress>
 		<info>'.$_OBJ_TXT->_("Please select your Payment Method").'</info>
 		<cancel>'.$_OBJ_TXT->_("Cancel Payment").'</cancel>
+		<cardnumber>'.$_OBJ_TXT->_("Card Number").'</cardnumber>
+		<expiry>'.$_OBJ_TXT->_("Expiry Date").'</expiry>
+		<cvv>'.$_OBJ_TXT->_("CVV Code").'</cvv>
+		<button>'.$_OBJ_TXT->_("Pay now").'</button>
 	</labels>';
 
 $xml .= $obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount() );

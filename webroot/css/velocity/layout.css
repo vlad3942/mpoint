@@ -1,0 +1,153 @@
+/**
+ * CSS files are generated automatically, any changes will be overridden.
+ */
+html {
+  box-sizing: border-box; }
+
+*, *::after, *::before {
+  box-sizing: inherit; }
+
+.header {
+  background: #676A6F;
+  height: 60px; }
+  .header .logo {
+    float: left; }
+    .header .logo img {
+      width: auto;
+      height: 60px; }
+  .header .client-name {
+    float: right;
+    font-size: 1.25em;
+    line-height: 1.3;
+    color: #FFF;
+    height: 60px;
+    line-height: 60px;
+    margin-right: 1.618em; }
+
+@media screen and (max-width: 40.0625em) {
+  .wrapper {
+    padding: 0 20px; } }
+.wrapper .content .progress {
+  height: 60px;
+  background: #EDEDED;
+  line-height: 60px;
+  text-align: center; }
+.wrapper .content .card-wrapper {
+  max-width: 80em;
+  margin-left: auto;
+  margin-right: auto; }
+  .wrapper .content .card-wrapper::after {
+    clear: both;
+    content: "";
+    display: block; }
+  .wrapper .content .card-wrapper .mpoint-help {
+    text-align: center;
+    margin-top: 30px; }
+  .wrapper .content .card-wrapper .cards {
+    width: 48.82117%;
+    margin: 0 auto; }
+    @media screen and (max-width: 48.0625em) {
+      .wrapper .content .card-wrapper .cards {
+        width: 82.94039%; } }
+    @media screen and (max-width: 40.0625em) {
+      .wrapper .content .card-wrapper .cards {
+        width: 100%; } }
+    .wrapper .content .card-wrapper .cards .card {
+      -webkit-transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+      -moz-transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+      transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+      margin-top: 15px;
+      padding: 30px;
+      background: #FFF;
+      border: 1px solid #DDD;
+      border-radius: 5px;
+      position: relative; }
+      .wrapper .content .card-wrapper .cards .card::after {
+        clear: both;
+        content: "";
+        display: block; }
+      .wrapper .content .card-wrapper .cards .card:hover, .wrapper .content .card-wrapper .cards .card.hover {
+        background: #339EF7;
+        color: #FFF;
+        cursor: pointer; }
+      .wrapper .content .card-wrapper .cards .card .card-logo {
+        float: left;
+        display: block;
+        margin-right: 4.82916%;
+        width: 30.11389%; }
+        .wrapper .content .card-wrapper .cards .card .card-logo:last-child {
+          margin-right: 0; }
+        .wrapper .content .card-wrapper .cards .card .card-logo img {
+          max-height: 30px;
+          width: auto; }
+      .wrapper .content .card-wrapper .cards .card .card-name {
+        float: left;
+        display: block;
+        margin-right: 4.82916%;
+        width: 47.58542%;
+        line-height: 30px; }
+        .wrapper .content .card-wrapper .cards .card .card-name:last-child {
+          margin-right: 0; }
+      .wrapper .content .card-wrapper .cards .card .card-arrow {
+        float: left;
+        display: block;
+        margin-right: 4.82916%;
+        width: 12.64237%;
+        float: right;
+        text-align: right;
+        font-weight: 200;
+        line-height: 30px; }
+        .wrapper .content .card-wrapper .cards .card .card-arrow:last-child {
+          margin-right: 0; }
+    .wrapper .content .card-wrapper .cards .payment-form {
+      display: none;
+      background: #FFF;
+      margin-top: 15px;
+      padding: 30px 60px;
+      background: #FFF;
+      border: 1px solid #DDD;
+      border-radius: 5px; }
+      .wrapper .content .card-wrapper .cards .payment-form::after {
+        clear: both;
+        content: "";
+        display: block; }
+      @media screen and (max-width: 40.0625em) {
+        .wrapper .content .card-wrapper .cards .payment-form {
+          padding: 30px; } }
+      .wrapper .content .card-wrapper .cards .payment-form .additional {
+        margin-top: 30px; }
+        .wrapper .content .card-wrapper .cards .payment-form .additional::after {
+          clear: both;
+          content: "";
+          display: block; }
+        .wrapper .content .card-wrapper .cards .payment-form .additional .expiry {
+          float: left;
+          display: block;
+          margin-right: 4.82916%;
+          width: 47.58542%; }
+          .wrapper .content .card-wrapper .cards .payment-form .additional .expiry:last-child {
+            margin-right: 0; }
+          .wrapper .content .card-wrapper .cards .payment-form .additional .expiry label {
+            display: block; }
+          .wrapper .content .card-wrapper .cards .payment-form .additional .expiry input {
+            float: left;
+            display: block;
+            margin-right: 10.1484%;
+            width: 44.9258%; }
+            .wrapper .content .card-wrapper .cards .payment-form .additional .expiry input:last-child {
+              margin-right: 0; }
+        .wrapper .content .card-wrapper .cards .payment-form .additional .cvv {
+          float: left;
+          display: block;
+          margin-right: 4.82916%;
+          width: 47.58542%; }
+          .wrapper .content .card-wrapper .cards .payment-form .additional .cvv:last-child {
+            margin-right: 0; }
+      .wrapper .content .card-wrapper .cards .payment-form input[type="submit"] {
+        width: 65.05695%;
+        display: block;
+        margin: 0 auto;
+        margin-top: 60px;
+        text-transform: uppercase; }
+
+/*# sourceMappingURL=layout.css.map */

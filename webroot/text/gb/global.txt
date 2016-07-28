@@ -1043,6 +1043,22 @@ msgstr @@@ Please select your payment method @@@
 msgid @@@ Cancel Payment @@@
 msgstr @@@ Cancel @@@
 
+#: /webroot/pay/card.php:50
+msgid @@@ Card Number @@@
+msgstr @@@ Card Number @@@
+
+#: /webroot/pay/card.php:51
+msgid @@@ Expiry Date @@@
+msgstr @@@ Expiry Date @@@
+
+#: /webroot/pay/card.php:52
+msgid @@@ CVV Code @@@
+msgstr @@@ CVV Code @@@
+
+#: /webroot/pay/card.php:53
+msgid @@@ Pay now @@@
+msgstr @@@ Pay now @@@
+
 #: /webroot/overview.php:38
 msgid @@@ Order Overview @@@
 msgstr @@@ Order Overview @@@

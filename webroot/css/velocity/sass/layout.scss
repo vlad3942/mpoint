@@ -1,0 +1,133 @@
+@import 'settings/base';
+
+.header {
+	background: $dark-grey;
+	height: 60px;
+	.logo	{
+		float: left;
+		img {
+			width: auto;
+			height: 60px;
+		}
+	}
+	
+	.client-name {
+		float: right;
+		@include font('medium');
+		color: $white;
+		height: 60px;
+		line-height: 60px;
+		margin-right: $gutter;
+	}
+}
+
+.wrapper {
+	@include media($mobile) {
+		padding: 0 20px;
+	}
+	.content {
+		.progress {
+			height: 60px;
+			background: $light-grey;
+			line-height: 60px;
+			text-align: center;
+		}
+		
+		.card-wrapper {
+			@include outer-container;
+			
+			.mpoint-help {
+				text-align: center;
+				margin-top: $content;
+			}
+			.cards {
+				width: flex-grid(6, 12);
+				margin: 0 auto;
+				
+				@include media($tablet) {
+					width: flex-grid(10, 12);
+				}
+				@include media($mobile) {
+					width: 100%;
+				}
+				
+				.card {
+					@include clearfix;
+					@include animate;
+					margin-top: $body;
+					padding: $content;
+					background: $white;
+					border: 1px solid $grey;
+					border-radius: 5px;
+					position: relative;
+					
+					&:hover, &.hover {
+						background: $blue;
+						color: $white;
+						cursor: pointer;
+					}
+					
+					.card-logo {
+						@include span-columns(2 of 6);
+						img {
+							max-height: 30px;
+							width: auto;
+						}
+					}
+					.card-name {
+						@include span-columns(3 of 6);
+						line-height: 30px;
+					}
+					.card-arrow {
+						@include span-columns(1 of 6);
+						float: right;
+						text-align: right;
+						font-weight: 200;
+						line-height: 30px;
+					}
+				}
+				
+				.payment-form {
+					display: none;
+					@include clearfix;
+					background: $white;
+					margin-top: $body;
+					padding: $content $section;
+					background: $white;
+					border: 1px solid $grey;
+					border-radius: 5px;
+					
+					@include media($mobile) {
+						padding: $content;
+					}
+					
+					.additional {
+						@include clearfix;
+						margin-top: $content;
+						.expiry {
+							@include span-columns(3 of 6);
+							label {
+								display: block;
+							}
+							input {
+								@include span-columns(1.5 of 3);
+							}
+						}
+						
+						.cvv {
+							@include span-columns(3 of 6);
+						}
+					}
+					
+					input[type="submit"] {
+						width: flex-grid(4, 6);
+						display: block;
+						margin: 0 auto;
+						margin-top: $section;
+						text-transform: uppercase;
+					}
+				}
+			}
+		}
+	}
+}

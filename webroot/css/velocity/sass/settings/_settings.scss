@@ -1,0 +1,52 @@
+﻿/**
+ * CSS files are generated automatically, any changes will be overridden.
+ */
+
+
+// Default settings for velocity theme
+
+
+// Color definitions
+$black: #454545;
+$white: #FFF;
+$light-grey: #EDEDED;
+$grey: #DDD;
+$dark-grey: #676A6F;
+$blue: #339EF7;
+$dark-blue: #337AB7;
+
+// Layout definition
+$grid-columns:              12;
+$max-width:                 em(1280);
+
+// Fonts
+$fonts: 'Open Sans', Helvetica, Verdana, sans-serif;
+
+// Margins
+$section: 60px;
+$content: 30px;
+$body: 15px;
+
+// Custom mixins
+@mixin font($name) {
+  @if $name == 'small' {
+    font-size: em(10);
+	line-height: 1.5;
+  }
+  @if $name == 'regular' {
+    font-size: em(14);
+	line-height: 1.5;
+  }
+  @if $name == 'medium' {
+    font-size: em(20);
+	line-height: 1.3;
+  }
+  @if $name == 'title' {
+    font-size: em(60);
+	line-height: 1;
+  }
+}
+
+@mixin animate() {
+	@include transition (all 0.15s $ease-out-cubic);
+}
