@@ -73,21 +73,45 @@ try
 	// Begin validations specific to this controller
 	$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 
-	$iValResult = $obj_Validator->valOrderID($_OBJ_DB, $root->transaction, $root->transaction["id"]);
+	$iValResult = $obj_Validator->valOrderID($_OBJ_DB, (string) $root->transaction, (integer) $root->transaction["id"]);
 	if ($iValResult != 10) { $aMsgCds[$iValResult + 20] = "mPoint ID: ". $root->transaction["id"] ." Order ID: ". $root->transaction; }
 	$iValResult = $obj_Validator->valChallenge($root->challenge);
 	if ($iValResult != 10) { $aMsgCds[$iValResult + 30] = "Content-Type: ". $root->challenge["content-type"] ." URL: ". $root->challenge["url"]; }
 
+	// Validation errors have occurred
 	if (count($aMsgCds) > 0) { throw new mPointCustomValidationException($aMsgCds); }
+	// 3dsecure is not configured for client
+	if (strlen($obj_ClientConfig->getParse3DSecureChallengeURL() ) == 0) { throw new mPointSimpleControllerException(HTTP::METHOD_NOT_ALLOWED, 41, "Mobile Optimized 3D secure not configured for client");	}
 
-	//TODO: Check for 3d secure intepretation URL on Client
+	try
+	{
+		$obj_ConnInfo = $this->_constConnInfo($obj_ClientConfig->getParse3DSecureChallengeURL() );
 
-	// -- Validation OK - now do stuff --
-	$obj_TxnInfo = TxnInfo::produceInfo($root->transaction["id"], $_OBJ_DB);
+		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+		$obj_HTTP->connect();
+		$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+		$obj_HTTP->disConnect();
+
+		// Try-parse response
+		$obj_Response = simpledom_load_string($obj_HTTP->getReplyBody() );
+
+		if ( ($obj_Response instanceof SimpleDOMElement) === true)
+		{
+			// Forward external response directly to client
+			header(HTTP::getHTTPHeader($code) );
+			$xml = $obj_HTTP->getReplyBody();
+		}
+		else { throw new mPointException("Could not parse response from 3D Secure Challenge Parser, txnid: ". $root->transaction["id"]. " URL: ". $obj_ClientConfig->getParse3DSecureChallengeURL(), 92); }
+	}
+	catch (mPointException $e)
+	{
+		trigger_error("Attempt to externally parse 3D Secure challenge failed for txn: ". $root->transaction["id"]. " with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+		throw new mPointSimpleControllerException(HTTP::BAD_GATEWAY, $e->getCode(), $e->getMessage(), $e);
+	}
 }
 catch (mPointControllerException $e)
 {
-	header($e->getHTTPHeader() );
+	header(HTTP::getHTTPHeader($e->getHTTPCode() ) );
 	$xml = $e->getResponseXML();
 }
 

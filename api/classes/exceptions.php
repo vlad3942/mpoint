@@ -9,32 +9,6 @@ class mPointException extends Exception { }
  */
 abstract class mPointControllerException extends mPointException
 {
-	protected abstract function getHTTPCode();
-
-
-	const HTTP_NOCONTENT = 204;
-	const HTTP_NOTMODIFIED = 304;
-	const HTTP_BADREQUEST = 400;
-	const HTTP_UNAUTHORIZED = 401;
-	const HTTP_FORBIDDEN = 403;
-	const HTTP_FILENOTFOUND = 404;
-	const HTTP_METHODNOTALLOWED = 405;
-	const HTTP_UNSUPPORTEDMEDIATYPE = 415;
-	const HTTP_INTERNALSERVERERROR = 500;
-
-	protected static $responses =
-		array(
-			self::HTTP_NOCONTENT => 'HTTP/1.1 204 No Content',
-			self::HTTP_NOTMODIFIED => 'HTTP/1.1 304 Not Modified',
-			self::HTTP_BADREQUEST => 'HTTP/1.1 400 Bad Request',
-			self::HTTP_UNAUTHORIZED => 'HTTP/1.1 401 Unauthorized',
-			self::HTTP_FORBIDDEN => 'HTTP/1.1 403 Forbidden',
-			self::HTTP_FILENOTFOUND => 'HTTP/1.1 404 File Not Found',
-			self::HTTP_METHODNOTALLOWED => 'HTTP/1.1 405 Method Not Allowed',
-			self::HTTP_UNSUPPORTEDMEDIATYPE => 'HTTP/1.1 415 Unsupported Media Type',
-			self::HTTP_INTERNALSERVERERROR => 'HTTP/1.1 500 Internal Server Error'
-		);
-
 	public function __construct($code, $message='', $previous=null)
 	{
 		parent::__construct($message, $code, $previous);
@@ -44,7 +18,20 @@ abstract class mPointControllerException extends mPointException
 
 	public function getResponseXML() { return $this->statusElement($this->code, $this->message); }
 
-	public function getHTTPHeader() { return self::$responses[$this->getHTTPCode()]; }
+	public abstract function getHTTPCode();
+}
+
+class mPointSimpleControllerException extends mPointControllerException
+{
+	private $_httpCode;
+
+	public function __construct($httpCode, $code, $message='', $previous=null)
+	{
+		parent::__construct($code, $message, $previous);
+		$this->_httpCode = $httpCode;
+	}
+
+	public function getHTTPCode() { return $this->_httpCode; }
 }
 
 class mPointSecurityException extends mPointControllerException
@@ -86,7 +73,7 @@ class mPointSecurityException extends mPointControllerException
 		}
 	}
 
-	protected function getHTTPCode()
+	public function getHTTPCode()
 	{
 		switch ($this->code)
 		{
@@ -98,14 +85,14 @@ class mPointSecurityException extends mPointControllerException
 		case self::INVALID_ACCOUNT:
 		case self::UNKNOWN_ACCOUNT:
 		case self::ACCOUNT_DISABLED:
-			return self::HTTP_BADREQUEST;
+			return HTTP::BAD_REQUEST;
 		case self::UNAUTHORIZED:
 		case self::INVALID_CREDENTIALS:
-			return self::HTTP_UNAUTHORIZED;
+			return HTTP::UNAUTHORIZED;
 		case self::FORBIDDEN:
-			return self::HTTP_FORBIDDEN;
+			return HTTP::FORBIDDEN;
 		default:
-			return self::HTTP_INTERNALSERVERERROR;
+			return HTTP::INTERNAL_SERVER_ERROR;
 		}
 	}
 }
@@ -142,17 +129,17 @@ class mPointBaseValidationException extends mPointControllerException
 		}
 	}
 
-	protected function getHTTPCode()
+	public function getHTTPCode()
 	{
 		switch ($this->code)
 		{
 		case self::NOT_XML:
-			return self::HTTP_UNSUPPORTEDMEDIATYPE;
+			return HTTP::UNSUPPORTED_MEDIA_TYPE;
 		case self::INVALID_XML:
 		case self::WRONG_OPERATION:
-			return self::HTTP_BADREQUEST;
+			return HTTP::BAD_REQUEST;
 		default:
-			return self::HTTP_INTERNALSERVERERROR;
+			return HTTP::INTERNAL_SERVER_ERROR;
 		}
 	}
 
@@ -206,6 +193,6 @@ class mPointCustomValidationException extends mPointControllerException
 		return $msg;
 	}
 
-	protected function getHTTPCode() { return self::HTTP_BADREQUEST; }
+	public function getHTTPCode() { return HTTP::BADREQUEST; }
 }
 /* ==================== mPoint Exception Classes End ==================== */

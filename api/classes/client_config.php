@@ -32,7 +32,6 @@ class ClientConfig extends BasicConfig
 	const iAUTHENTICATION_URL = 2;
 	const iNOTIFICATION_URL = 3;
 	const iMESB_URL = 4;
-
 	const iLOGO_URL = 5;
 	const iCSS_URL = 6;
 	const iCALLBACK_URL = 7;
@@ -40,7 +39,8 @@ class ClientConfig extends BasicConfig
 	const iCANCEL_URL = 9;
 	const iICON_URL = 10;	
 	const iDECLINE_URL = 11;
-	
+	const iPARSE_3DSECURE_CHALLENGE_URL = 12;
+
 	/**
 	 * ID of the Flow the Client's customers have to go through in order to complete the Payment Transaction
 	 *
@@ -143,7 +143,13 @@ class ClientConfig extends BasicConfig
 	 *
 	 * @var ClientURLConfig
 	 */
-	private $_obj_IconURL;	
+	private $_obj_IconURL;
+	/**
+	 * Object that holds the URL to the Client URL for parsing 3D secure challenge
+	 *
+	 * @var ClientURLConfig
+	 */
+	private $_obj_Parse3DSecureChallengeURL;
 	/**
 	 * Object that holds the customer import URL
 	 *
@@ -296,46 +302,47 @@ class ClientConfig extends BasicConfig
 	/**
 	 * Default Constructor
 	 *
-	 * @param 	integer $id 				Unique ID for the Client in mPoint
-	 * @param 	integer $fid 				ID of the Flow the Client's customers have to go through in order to complete the Payment Transaction
-	 * @param 	string $name 				Client's name in mPoint
-	 * @param 	AccountConfig $oAC 			Configuration for the Account the Transaction will be associated with
-	 * @param 	string $un 					Client's Username for GoMobile
-	 * @param 	string $pw 					Client's Password for GoMobile
-	 * @param 	CountryConfig $oCC 			Configuration for the Country the Client can process transactions in
-	 * @param 	KeywordConfig $oKC 			Configuration for the Keyword the Client uses to send messages through
-	 * @param 	ClientURLConfig $oLURL 		Object that holds the URL to the Client's Logo which will be displayed on all payment pages
-	 * @param 	ClientURLConfig $oCSSURL 	Object that holds the URL to the CSS file that should be used to customising the payment pages
-	 * @param 	ClientURLConfig $oAccURL 	Object that holds the URL where the Customer should be returned to upon successfully completing the Transaction
-	 * @param 	ClientURLConfig $oCURL 		Object that holds the URL where the Customer should be returned to in case he / she cancels the Transaction midway
-	 * @param	ClientURLConfig $oDURL		Object that holds the URL where the Customer should be returned to when the transaction is declined
-	 * @param 	ClientURLConfig $oCBURL 	Object that holds the URL to the Client's Back Office where mPoint should send the Payment Status to
-	 * @param 	ClientURLConfig $oIURL 		Object that holds the  URL to the Client's My Account Icon
-	 * @param 	string $ma 					Max Amount an mPoint Transaction can cost the customer for the Client
-	 * @param 	string $l 					The language that all payment pages should be rendered in by default for the Client
-	 * @param 	boolean $sms 				Boolean Flag indicating whether mPoint should send out an SMS Receipt to the Customer upon successful completion of the Payment
-	 * @param 	boolean $email				Boolean Flag indicating whether access to the E-Mail Receipt component should be enabled for customers
-	 * @param 	string $mtd					The method used by mPoint when performing a Callback to the Client
-	 * @param 	string $terms 				Terms & Conditions for the Shop
-	 * @param 	integer $m 					Client mode: 0 = Production, 1 = Test Mode with prefilled card Info, 2 = Certification Mode
-	 * @param 	boolean $ac					Boolean Flag indicating whether Auto Capture should be used for the transactions
-	 * @param 	boolean $sp					Boolean Flag indicating whether the PSP's ID for the Payment should be included in the Callback
-	 * @param	array $aIPs					List of Whitelisted IP addresses in mPoint, pass an empty array to disable IP Whitelisting
-	 * @param 	boolean $dc					Boolean Flag indicating whether to include disabled/expired cards; default is false
-	 * @param 	integer $mc					The max number of cards a user can have on the Client, set to -1 for inifite
-	 * @param 	integer $ident				Set of binary flags which specifies how customers may be identified
-	 * @param 	integer $txnttl				Transaction time to live value in seconds
-	 * @param   integer $nmd				Number of the last 4 masked digits, which should be returned for a Stored Card
-	 * @param   ClientURLConfig $oCIURL		Object that holds the customer import URL.
-	 * @param   ClientURLConfig $oAURL		Object that holds the customer customer authetication URL
-	 * @param   ClientURLConfig $oNURL		Object that holds the customer notification URL
-	 * @param   ClientURLConfig $oMESBURL	Object that holds the MESB URL
-	 * @param   array $aObj_ACs				List of Configurations for the Accounts the Transaction can be processed through
-	 * @param   array $aObj_MAs				List of Merchant Accounts for each Payment Service Providers
-	 * @param   array $aObj_PMs				List of Payment Methods (Cards) that the client offers
-	 * @param   array $aObj_IINRs			List of IIN Range values for the client.
+	 * @param 	integer $id 								Unique ID for the Client in mPoint
+	 * @param 	integer $fid 								ID of the Flow the Client's customers have to go through in order to complete the Payment Transaction
+	 * @param 	string $name 								Client's name in mPoint
+	 * @param 	AccountConfig $oAC 							Configuration for the Account the Transaction will be associated with
+	 * @param 	string $un 									Client's Username for GoMobile
+	 * @param 	string $pw 									Client's Password for GoMobile
+	 * @param 	CountryConfig $oCC 							Configuration for the Country the Client can process transactions in
+	 * @param 	KeywordConfig $oKC 							Configuration for the Keyword the Client uses to send messages through
+	 * @param 	ClientURLConfig $oLURL 						Object that holds the URL to the Client's Logo which will be displayed on all payment pages
+	 * @param 	ClientURLConfig $oCSSURL 					Object that holds the URL to the CSS file that should be used to customising the payment pages
+	 * @param 	ClientURLConfig $oAccURL 					Object that holds the URL where the Customer should be returned to upon successfully completing the Transaction
+	 * @param 	ClientURLConfig $oCURL 						Object that holds the URL where the Customer should be returned to in case he / she cancels the Transaction midway
+	 * @param	ClientURLConfig $oDURL						Object that holds the URL where the Customer should be returned to when the transaction is declined
+	 * @param 	ClientURLConfig $oCBURL 					Object that holds the URL to the Client's Back Office where mPoint should send the Payment Status to
+	 * @param 	ClientURLConfig $oIURL 						Object that holds the  URL to the Client's My Account Icon
+	 * @param 	ClientURLConfig $oParse3DSecureChallengeURL Object that holds the  URL to the Client's My Account Icon
+	 * @param 	string $ma 									Max Amount an mPoint Transaction can cost the customer for the Client
+	 * @param 	string $l 									The language that all payment pages should be rendered in by default for the Client
+	 * @param 	boolean $sms 								Boolean Flag indicating whether mPoint should send out an SMS Receipt to the Customer upon successful completion of the Payment
+	 * @param 	boolean $email								Boolean Flag indicating whether access to the E-Mail Receipt component should be enabled for customers
+	 * @param 	string $mtd									The method used by mPoint when performing a Callback to the Client
+	 * @param 	string $terms 								Terms & Conditions for the Shop
+	 * @param 	integer $m 									Client mode: 0 = Production, 1 = Test Mode with prefilled card Info, 2 = Certification Mode
+	 * @param 	boolean $ac									Boolean Flag indicating whether Auto Capture should be used for the transactions
+	 * @param 	boolean $sp									Boolean Flag indicating whether the PSP's ID for the Payment should be included in the Callback
+	 * @param	array $aIPs									List of Whitelisted IP addresses in mPoint, pass an empty array to disable IP Whitelisting
+	 * @param 	boolean $dc									Boolean Flag indicating whether to include disabled/expired cards; default is false
+	 * @param 	integer $mc									The max number of cards a user can have on the Client, set to -1 for inifite
+	 * @param 	integer $ident								Set of binary flags which specifies how customers may be identified
+	 * @param 	integer $txnttl								Transaction time to live value in seconds
+	 * @param   integer $nmd								Number of the last 4 masked digits, which should be returned for a Stored Card
+	 * @param   ClientURLConfig $oCIURL						Object that holds the customer import URL.
+	 * @param   ClientURLConfig $oAURL						Object that holds the customer customer authetication URL
+	 * @param   ClientURLConfig $oNURL						Object that holds the customer notification URL
+	 * @param   ClientURLConfig $oMESBURL					Object that holds the MESB URL
+	 * @param   array $aObj_ACs								List of Configurations for the Accounts the Transaction can be processed through
+	 * @param   array $aObj_MAs								List of Merchant Accounts for each Payment Service Providers
+	 * @param   array $aObj_PMs								List of Payment Methods (Cards) that the client offers
+	 * @param   array $aObj_IINRs							List of IIN Range values for the client.
 	 */
-	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=null, ClientURLConfig $oCSSURL=null, ClientURLConfig $oAccURL=null, ClientURLConfig $oCURL=null, ClientURLConfig $oDURL=null, ClientURLConfig $oCBURL=null, ClientURLConfig $oIURL=null, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array() )
+	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=null, ClientURLConfig $oCSSURL=null, ClientURLConfig $oAccURL=null, ClientURLConfig $oCURL=null, ClientURLConfig $oDURL=null, ClientURLConfig $oCBURL=null, ClientURLConfig $oIURL=null, ClientURLConfig $oParse3DSecureChallengeURL=null, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array() )
 	{
 		parent::__construct($id, $name);
 
@@ -354,6 +361,7 @@ class ClientConfig extends BasicConfig
 		$this->_obj_DeclineURL = $oDURL;
 		$this->_obj_CallbackURL = $oCBURL;
 		$this->_obj_IconURL = $oIURL;
+		$this->_obj_Parse3DSecureChallengeURL = $oParse3DSecureChallengeURL;
 		$this->_iMaxAmount = (integer) $ma;
 		$this->_sLanguage = trim($l);
 
@@ -527,6 +535,19 @@ class ClientConfig extends BasicConfig
 		if ( ($this->_obj_IconURL instanceof ClientURLConfig) === true)
 		{
 			return $this->_obj_IconURL->getURL();
+		}
+		else { return ""; }
+	}
+	/**
+	 * Returns the Absolute URL for parsing 3D secure challenge
+	 *
+	 * @return 	string
+	 */
+	public function getParse3DSecureChallengeURL()
+	{
+		if ( ($this->_obj_Parse3DSecureChallengeURL instanceof ClientURLConfig) === true)
+		{
+			return $this->_obj_Parse3DSecureChallengeURL->getURL();
 		}
 		else { return ""; }
 	}
@@ -835,6 +856,7 @@ class ClientConfig extends BasicConfig
 		if ( ($this->_obj_DeclineURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_DeclineURL->toXML(); }
 		if ( ($this->_obj_CallbackURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_CallbackURL->toXML(); }
 		if ( ($this->_obj_IconURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_IconURL->toXML(); }
+		if ( ($this->_obj_Parse3DSecureChallengeURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_Parse3DSecureChallengeURL->toXML(); }
 		if ( ($this->_obj_CustomerImportURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_CustomerImportURL->toXML(); }
 		if ( ($this->_obj_AuthenticationURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_AuthenticationURL->toXML(); }
 		if ( ($this->_obj_NotificationURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_NotificationURL->toXML(); }
@@ -875,8 +897,9 @@ class ClientConfig extends BasicConfig
 					C.id AS countryid,
 					Acc.id AS accountid, Acc.name AS account, Acc.mobile, Acc.markup,
 					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price,
-					U1.id AS customerimporturlid, U2.id AS authurlid, U3.id AS notifyurlid, U4.id AS mesburlid,
-					U1.url AS customerimporturl, U2.url AS authurl, U3.url AS notifyurl, U4.url AS mesburl
+					U1.id AS customerimporturlid, U2.id AS authurlid, U3.id AS notifyurlid, U4.id AS mesburlid, U5.id AS parse3dsecureurlid,
+					U1.url AS customerimporturl, U2.url AS authurl, U3.url AS notifyurl, U4.url AS mesburl,
+					U5.url AS parse3dsecureurl
 				FROM Client". sSCHEMA_POSTFIX .".Client_Tbl CL
 				INNER JOIN System". sSCHEMA_POSTFIX .".Country_Tbl C ON CL.countryid = C.id AND C.enabled = '1'
 				INNER JOIN Client". sSCHEMA_POSTFIX .".Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
@@ -886,6 +909,7 @@ class ClientConfig extends BasicConfig
 				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U2 ON CL.id = U2.clientid AND U2.urltypeid = ". self::iAUTHENTICATION_URL ." AND U2.enabled = '1'
 				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U3 ON CL.id = U3.clientid AND U3.urltypeid = ". self::iNOTIFICATION_URL ." AND U3.enabled = '1'
 				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U4 ON CL.id = U4.clientid AND U4.urltypeid = ". self::iMESB_URL ." AND U4.enabled = '1'
+				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U5 ON CL.id = U5.clientid AND U5.urltypeid = ". self::iPARSE_3DSECURE_CHALLENGE_URL ." AND U5.enabled = '1'
 				WHERE CL.id = ". intval($id) ." AND CL.enabled = '1'";
 		// Use Default Keyword
 		if ($kw == -1)
@@ -952,7 +976,8 @@ class ClientConfig extends BasicConfig
 			$obj_AuthenticationURL = null;
 			$obj_NotificationURL = null;
 			$obj_MESBURL = null;
-			
+			$obj_Parse3DSecureURL = null;
+
 			if (strlen($RS["LOGOURL"]) > 0) { $obj_LogoURL = new ClientURLConfig($RS["CLIENTID"], self::iLOGO_URL, $RS["LOGOURL"]); }
 			if (strlen($RS["CSSURL"]) > 0) { $obj_CSSURL = new ClientURLConfig($RS["CLIENTID"], self::iCSS_URL, $RS["CSSURL"]); }
 			if (strlen($RS["ACCEPTURL"]) > 0) { $obj_AcceptURL = new ClientURLConfig($RS["CLIENTID"], self::iACCEPT_URL, $RS["ACCEPTURL"]); }
@@ -964,7 +989,8 @@ class ClientConfig extends BasicConfig
 			if ($RS["AUTHURLID"] > 0) { $obj_AuthenticationURL = new ClientURLConfig($RS["AUTHURLID"], self::iAUTHENTICATION_URL, $RS["AUTHURL"]); }
 			if ($RS["NOTIFYURLID"] > 0) { $obj_NotificationURL = new ClientURLConfig($RS["NOTIFYURLID"], self::iNOTIFICATION_URL, $RS["NOTIFYURL"]); }
 			if ($RS["MESBURLID"] > 0) { $obj_MESBURL = new ClientURLConfig($RS["MESBURLID"], self::iMESB_URL, $RS["MESBURL"]); }
-			
+			if ($RS["PARSE3DSECUREURLID"] > 0) { $obj_Parse3DSecureURL = new ClientURLConfig($RS["PARSE3DSECUREURLID"], self::iPARSE_3DSECURE_CHALLENGE_URL, $RS["PARSE3DSECUREURL"]); }
+
 			$sql  = "SELECT ipaddress
 					 FROM Client". sSCHEMA_POSTFIX .".IPAddress_Tbl
 					 WHERE clientid = ". intval($id) ."";
@@ -979,7 +1005,7 @@ class ClientConfig extends BasicConfig
 				}
 			}
 
-			return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_DeclineURL, $obj_CallbackURL, $obj_IconURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $RS["NUM_MASKED_DIGITS"], $RS["SALT"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations, $aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations);
+			return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_DeclineURL, $obj_CallbackURL, $obj_IconURL, $obj_Parse3DSecureURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $RS["NUM_MASKED_DIGITS"], $RS["SALT"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations, $aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations);
 		}
 		// Error: Client Configuration not found
 		else { trigger_error("Client Configuration not found using ID: ". $id .", Account: ". $acc .", Keyword: ". $kw, E_USER_WARNING); }
