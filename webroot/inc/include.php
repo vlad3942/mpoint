@@ -73,6 +73,8 @@ require_once(sAPI_FUNCTION_PATH ."global.php");
 
 // Require API for Web Session handling
 require_once(sCLASS_PATH ."websession.php");
+// Require general mPoint exceptions classes
+require_once(sCLASS_PATH ."/exceptions.php");
 // Require API for general functionality
 require_once(sCLASS_PATH ."general.php");
 // Require abstract class with system wide constants

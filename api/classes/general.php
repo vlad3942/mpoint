@@ -13,13 +13,6 @@
  * @version 1.11
  */
 
-/* ==================== mPoint Exception Classes Start ==================== */
-/**
- * Super class for all mPoint Exceptions
- */
-class mPointException extends Exception { }
-/* ==================== mPoint Exception Classes End ==================== */
-
 /**
  * General class for functionality methods which are used by several different modules or components
  *
