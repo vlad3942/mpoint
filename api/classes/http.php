@@ -26,7 +26,7 @@ class HTTP
 			self::UNSUPPORTED_MEDIA_TYPE => 'HTTP/1.1 415 Unsupported Media Type',
 			self::INTERNAL_SERVER_ERROR => 'HTTP/1.1 500 Internal Server Error',
 			self::NOT_IMPLEMENTED => 'HTTP/1.1 501 Not Implemented',
-			self::BADGATEWAY => 'HTTP/1.1 502 Bad Gateway',
+			self::BAD_GATEWAY => 'HTTP/1.1 502 Bad Gateway',
 		);
 
 	public static function getHTTPHeader($code) { return self::$responses[$code]; }

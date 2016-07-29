@@ -928,8 +928,8 @@ class ClientConfig extends BasicConfig
 					C.id,
 					Acc.id, Acc.name, Acc.mobile, Acc.markup,
 					KW.id, KW.name,
-					U1.id, U2.id, U3.id, U4.id,
-					U1.url, U2.url, U3.url, U4.url";
+					U1.id, U2.id, U3.id, U4.id, U5.id,
+					U1.url, U2.url, U3.url, U4.url, U5.url";
 		// Use Default Account
 		if ($acc == -1)
 		{

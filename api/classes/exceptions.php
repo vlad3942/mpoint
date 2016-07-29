@@ -193,6 +193,6 @@ class mPointCustomValidationException extends mPointControllerException
 		return $msg;
 	}
 
-	public function getHTTPCode() { return HTTP::BADREQUEST; }
+	public function getHTTPCode() { return HTTP::BAD_REQUEST; }
 }
 /* ==================== mPoint Exception Classes End ==================== */
