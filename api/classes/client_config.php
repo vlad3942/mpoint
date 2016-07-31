@@ -541,16 +541,9 @@ class ClientConfig extends BasicConfig
 	/**
 	 * Returns the Absolute URL for parsing 3D secure challenge
 	 *
-	 * @return 	string
+	 * @return ClientURLConfig
 	 */
-	public function getParse3DSecureChallengeURL()
-	{
-		if ( ($this->_obj_Parse3DSecureChallengeURL instanceof ClientURLConfig) === true)
-		{
-			return $this->_obj_Parse3DSecureChallengeURL->getURL();
-		}
-		else { return ""; }
-	}
+	public function getParse3DSecureChallengeURLConfig() { return $this->_obj_Parse3DSecureChallengeURL; }
 	/**
 	 * Absolute URL to the external system where customer data may be imported from.
 	 * This is generally an existing e-Commerce site or a CRM system.

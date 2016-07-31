@@ -26,6 +26,8 @@ require_once(sCLASS_PATH ."/callback.php");
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
+// Require Business logic for the 3D Secure model operation
+require_once(sCLASS_PATH ."/threedsecure.php");
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
@@ -74,47 +76,44 @@ try
 	$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 
 	$iValResult = $obj_Validator->valOrderID($_OBJ_DB, (string) $root->transaction, (integer) $root->transaction["id"]);
-	if ($iValResult != 10) { $aMsgCds[$iValResult + 20] = "mPoint ID: ". $root->transaction["id"] ." Order ID: ". $root->transaction; }
+	if ($iValResult != 10) { $aMsgCds[$iValResult + 20] = "Transaction and Order ID doesn't match. mPoint ID: ". $root->transaction["id"] ." Order ID: ". $root->transaction; }
+	$iValResult = $obj_Validator->valmPointID($_OBJ_DB, (integer) $root->transaction["id"], $obj_ClientConfig->getID() );
+	if ($iValResult != 3) { $aMsgCds[$iValResult + 30] = "Transaction not in right state. mPoint ID: ". $root->transaction["id"] ." Client ID: ". $obj_ClientConfig->getID(); }
 	$iValResult = $obj_Validator->valChallenge($root->challenge);
-	if ($iValResult != 10) { $aMsgCds[$iValResult + 30] = "Content-Type: ". $root->challenge["content-type"] ." URL: ". $root->challenge["url"]; }
+	if ($iValResult != 10) { $aMsgCds[$iValResult + 40] = "Challenge invalid. Content-Type: ". $root->challenge["content-type"] ." URL: ". $root->challenge["url"]; }
 
 	// Validation errors have occurred
 	if (count($aMsgCds) > 0) { throw new mPointCustomValidationException($aMsgCds); }
 	// 3dsecure is not configured for client
-	if (strlen($obj_ClientConfig->getParse3DSecureChallengeURL() ) == 0) { throw new mPointSimpleControllerException(HTTP::METHOD_NOT_ALLOWED, 41, "Mobile Optimized 3D secure not configured for client");	}
+	if ( ($obj_ClientConfig->getParse3DSecureChallengeURLConfig() instanceof ClientURLConfig) === false) { throw new mPointSimpleControllerException(HTTP::METHOD_NOT_ALLOWED, 51, "Mobile Optimized 3D secure not configured for client: ". $obj_ClientConfig->getID() );	}
 
 	try
 	{
-		$obj_ConnInfo = $this->_constConnInfo($obj_ClientConfig->getParse3DSecureChallengeURL() );
+		$obj_TxnInfo = TxnInfo::produceInfo($root->transaction["id"], $_OBJ_DB);
+		$obj_3DSecure = new ThreeDSecure($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
+		$obj_HTTP = $obj_3DSecure->parse3DSecureChallenge($obj_TxnInfo, $root->challenge);
 
-		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
-		$obj_HTTP->connect();
-		$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
-		$obj_HTTP->disConnect();
-
-		// Try-parse response
-		$obj_Response = simpledom_load_string($obj_HTTP->getReplyBody() );
-
-		if ( ($obj_Response instanceof SimpleDOMElement) === true)
-		{
-			// Forward external response directly to client
-			header(HTTP::getHTTPHeader($code) );
-			$xml = $obj_HTTP->getReplyBody();
-		}
-		else { throw new mPointException("Could not parse response from 3D Secure Challenge Parser, txnid: ". $root->transaction["id"]. " URL: ". $obj_ClientConfig->getParse3DSecureChallengeURL(), 92); }
+		// Forward external response directly to client
+		header(HTTP::getHTTPHeader($obj_HTTP->getReturnCode() ) );
+		$xml = $obj_HTTP->getReplyBody();
 	}
 	catch (mPointException $e)
 	{
-		trigger_error("Attempt to externally parse 3D Secure challenge failed for txn: ". $root->transaction["id"]. " with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+		trigger_error($e, E_USER_WARNING);
 		throw new mPointSimpleControllerException(HTTP::BAD_GATEWAY, $e->getCode(), $e->getMessage(), $e);
+	}
+	catch (Exception $e)
+	{
+		trigger_error($e, E_USER_ERROR);
+		throw new mPointSimpleControllerException(HTTP::INTERNAL_SERVER_ERROR, $e->getCode(), $e->getMessage(), $e);
 	}
 }
 catch (mPointControllerException $e)
 {
 	header(HTTP::getHTTPHeader($e->getHTTPCode() ) );
-	$xml = $e->getResponseXML();
+	$xml = '<?xml version="1.0" encoding="UTF-8"?>';
+	$xml .= '<root>'. $e->getResponseXML() .'</root>';
 }
 
 header("Content-Type: text/xml; charset=\"UTF-8\"");
-echo '<?xml version="1.0" encoding="UTF-8"?>';
-echo '<root>'. $xml .'</root>';
+echo $xml;

@@ -2,7 +2,9 @@
 
 class HTTP
 {
+	const OK = 200;
 	const NO_CONTENT = 204;
+	const PARTIAL_CONTENT = 206;
 	const NOT_MODIFIED = 304;
 	const BAD_REQUEST = 400;
 	const UNAUTHORIZED = 401;
@@ -16,7 +18,9 @@ class HTTP
 
 	protected static $responses =
 		array(
+			self::OK => 'HTTP/1.1 200 OK',
 			self::NO_CONTENT => 'HTTP/1.1 204 No Content',
+			self::PARTIAL_CONTENT => 'HTTP/1.1 206 Partial Content',
 			self::NOT_MODIFIED => 'HTTP/1.1 304 Not Modified',
 			self::BAD_REQUEST => 'HTTP/1.1 400 Bad Request',
 			self::UNAUTHORIZED => 'HTTP/1.1 401 Unauthorized',
