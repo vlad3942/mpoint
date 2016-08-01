@@ -1,10 +1,10 @@
 <?php
 /***
  * This cron can be executed by using below command as example
- *  php _test/cron/add_transaction-data.php client-account=10007-100006
+ *  lynx -dump http://mpoint.sit.cellpointmobile.com/internal/add_transaction-data.php?client-account=10047-100098 >> /var/log/cpm/mPoint/notify.log
  */
 
-require_once(realpath('inc/include.php'));
+require_once("../inc/include.php");
 
 // Require Business logic for the End-User Account Component
 require_once(sCLASS_PATH ."/enduser_account.php");
@@ -17,21 +17,25 @@ require_once(sCLASS_PATH ."/clientinfo.php");
 
 $totalRecordsToAdd = 17;
 
-if($argc == 2)
+if(isset($_REQUEST['client-account']) == true)
 {
-	$requiredParameters = $argv[$argc-1];
+	$requiredParameters = $_REQUEST['client-account'];
 	
-	if(strstr($requiredParameters, 'client-account') != false)
+	if(isset($requiredParameters) == true)
 	{
-		$sClientAccount = explode("=", $requiredParameters)[1];
+		$sClientAccount = $requiredParameters;
 				
 		$aPaymentMethods = array(Constants::iVISA_CARD, Constants::iMASTERCARD, Constants::iAMEX_CARD, Constants::iDANKORT_CARD);
 		
 		$aPsp = array(Constants::iDIBS_PSP, Constants::iWIRE_CARD_PSP, Constants::iWORLDPAY_PSP);
 		
-		$aClientAccount =  explode(",", $sClientAccount);
+		if(strpos($sClientAccount, ",") > 0)
+		{
+			$aClientAccounts =  explode(",", $sClientAccount);
+		} else {$aClientAccounts = array($sClientAccount);}
 		
-		foreach($aClientAccount as $clientAccount)
+		
+		foreach($aClientAccounts as $clientAccount)
 		{
 			list($iClientId, $iAccountId) = explode("-", $clientAccount); 
 			
@@ -86,7 +90,7 @@ if($argc == 2)
 				
 				while ($RS = $_OBJ_DB->fetchName($res) )
 				{
-					if(empty(trim($RS['TXNID'])) === false)
+					if(empty($RS['TXNID']) === false)
 					{
 												
 						$obj_mPoint->newMessage($RS['TXNID'], Constants::iPAYMENT_WITH_ACCOUNT_STATE, "Payment with storecard from script");
@@ -116,7 +120,7 @@ if($argc == 2)
 				$iCount = 0;
 				while ($RS = $_OBJ_DB->fetchName($res) )
 				{
-					if(empty(trim($RS['TXNID'])) === false)
+					if(empty($RS['TXNID']) === false)
 					{
 						$obj_mPoint->newMessage($RS['TXNID'], Constants::iPAYMENT_CAPTURED_STATE, "Captured from script");
 						
@@ -132,7 +136,7 @@ if($argc == 2)
 				$iCount = 0;
 				while ($RS = $_OBJ_DB->fetchName($res) )
 				{
-					if(empty(trim($RS['TXNID'])) === false)
+					if(empty($RS['TXNID']) === false)
 					{
 						$obj_mPoint->newMessage($RS['TXNID'], Constants::iPAYMENT_REFUNDED_STATE, "Refunded from script");
 				
@@ -148,7 +152,7 @@ if($argc == 2)
 				$iCount = 0;
 				while ($RS = $_OBJ_DB->fetchName($res) )
 				{
-					if(empty(trim($RS['TXNID'])) === false)
+					if(empty($RS['TXNID']) === false)
 					{
 						$obj_mPoint->newMessage($RS['TXNID'], Constants::iPAYMENT_DECLINED_STATE, "Declined from script");
 				
@@ -164,7 +168,7 @@ if($argc == 2)
 				$iCount = 0;
 				while ($RS = $_OBJ_DB->fetchName($res) )
 				{
-					if(empty(trim($RS['TXNID'])) === false)
+					if(empty($RS['TXNID']) === false)
 					{
 						$obj_mPoint->newMessage($RS['TXNID'], Constants::iPAYMENT_CANCELLED_STATE, "Cancelled from script");
 				
