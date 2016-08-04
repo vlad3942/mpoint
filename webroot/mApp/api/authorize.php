@@ -81,6 +81,9 @@ require_once(sCLASS_PATH ."/globalcollect.php");
 // Require specific Business logic for the Android Pay component
 require_once(sCLASS_PATH ."/androidpay.php");
 
+// Require specific Business logic for the Secure Trading component
+require_once(sCLASS_PATH ."/securetrading.php");
+
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -166,14 +169,17 @@ try
 		//							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"]);
 		//							if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
 									$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
-									if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0 && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) !== Constants::iINVOICE)
+									
+									if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0 && 
+									(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) !== Constants::iINVOICE && intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) !== Constants::iNEW_CARD_PURCHASE_TYPE))
 									{
 										if ($obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) + 25; }
 									}
 									$iTypeID = intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]);
 									// Authorize Purchase using Stored Value Account
 									if ($iTypeID == Constants::iCARD_PURCHASE_TYPE && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0 &&
-										intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) > 0 && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) !== Constants::iINVOICE &&
+										intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) > 0 && 
+										(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) !== Constants::iINVOICE || intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) !== Constants::iNEW_CARD_PURCHASE_TYPE) &&
 										$obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) < 10)
 										{ $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) + 40; }
 									
@@ -185,6 +191,11 @@ try
 									$obj_Elem = $obj_CardXML->xpath("/cards/item[@id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ."]");
 									if (count($obj_Elem) == 0) { $aMsgCds[] = 90; } // Unable to find configuration for Payment Service Provider and card
 									else if ( (integer)$obj_Elem["state-id"] != 1) { $aMsgCds[] = 24; } // Card disabled
+									
+									if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}) > 0 && 
+										intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) === Constants::iNEW_CARD_PURCHASE_TYPE &&
+										$obj_Validator->valCardNumber($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}) != 10										
+									) { $aMsgCds[] = 21; }
 									
 									// Success: Input Valid
 									if (count($aMsgCds) == 0)
@@ -206,7 +217,8 @@ try
 											$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($obj_TxnInfo->getAuthenticationURL() ), $obj_CustomerInfo, trim($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) );
 										}
 										// Authentication is not required for payment methods that are sending a token or Invoice
-										elseif ( (count($obj_DOM->{'authorize-payment'}[$i]->password) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1) || intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) === Constants::iINVOICE )
+										elseif ( (count($obj_DOM->{'authorize-payment'}[$i]->password) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1) || 
+										(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) === Constants::iINVOICE || intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) === Constants::iNEW_CARD_PURCHASE_TYPE) )
 										{
 											$code = 10;
 										}
@@ -272,6 +284,7 @@ try
 													header("HTTP/1.1 400 Bad Request");
 												}
 												break;
+											case (Constants::iNEW_CARD_PURCHASE_TYPE): //Authorize Purchase using New card
 											case (Constants::iCARD_PURCHASE_TYPE):		// Authorize Purchase using Stored Card
 											default:
 												// 3rd Party Wallet
@@ -417,6 +430,14 @@ try
 														header("HTTP/1.1 412 Precondition Failed");
 														$xml .= '<status code="99">Invoice payment not configured for client</status>';
 													}
+												} else if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"] ) == Constants::iNEW_CARD_PURCHASE_TYPE)
+												{
+																										
+													$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->addAttribute("pspid", $obj_Elem["pspid"]);
+													
+													$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->addChild("name", $obj_Elem->name);
+													
+													$obj_Elem = $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j];
 												}
 												else
 												{
@@ -687,6 +708,29 @@ try
 																	$xml .= '<status code="92">Authorization failed, Globalcollect returned error: '. $code .'</status>';
 																}
 																break;
+													      case (Constants::iSECURE_TRADING_PSP): // Secure Trading
+																	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iSECURE_TRADING_PSP);
+																		
+																	$obj_PSP = new SecureTrading($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["secure-trading"]);
+
+																	$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_Elem);
+																	// Authorization succeeded
+																	if ($code == "100")
+																	{
+																		$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
+																	}
+																	// Error: Authorization declined
+																	else
+																	{
+																		$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+																
+																		header("HTTP/1.1 502 Bad Gateway");
+																
+																		$xml .= '<status code="92">Authorization failed, Secure Trading returned error: '. $code .'</status>';
+																	}
+																	break;
+																
+																
 														default:	// Unkown Error
 															$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 

@@ -370,7 +370,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		try
 		{
 			$obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["auth"]);
-	
+
 			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
 			$obj_HTTP->connect();
 			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
@@ -378,15 +378,18 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			if ($code == 200)
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
-				
+							
 				$sql = "";
-				if(isset($obj_XML["external-id"]) === true)
+				if(count($obj_XML->transaction) > 0)
 				{
-					$txnid = $obj_XML["external-id"];
-					$sql = ",extid = '". $this->getDBConn()->escStr($txnid) ."'";
-				}
-				
-				$code = $obj_XML->status["code"];
+					if(isset($obj_XML["external-id"]) === true)
+					{
+						$txnid = $obj_XML["external-id"];
+						$sql = ",extid = '". $this->getDBConn()->escStr($txnid) ."'";
+					}
+					
+					$code = $obj_XML->transaction->status["code"];
+				} else { $code = $obj_XML->status["code"]; }
 
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 						SET pspid = ". $obj_PSPConfig->getID() . $sql."
@@ -670,6 +673,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$expiry_year = substr_replace(date('Y'), $expiry_year, -2);
 										
 		$b = '<card type-id="'.intval($obj_Card['type-id']).'">';
+		
+		if(count($obj_Card->{'card-holder-name'}) > 0) { $b .= '<card-holder-name>'. $obj_Card->{'card-holder-name'} .'</card-holder-name>'; }
+		else { $b .= '<card-holder-name>John Doe</card-holder-name>'; }//refered worldpay _constDirectXMLRequest
+		
 		$b .= '<card-number>'. $obj_Card->{'card-number'} .'</card-number>';
 		$b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
 		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
@@ -678,10 +685,13 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		
 		$b .= '</card>';
 		
-		$b .= '<account country-id="'.$obj_Card->address['country-id'].'">';
-        $b .= '<first-name>'.$obj_Card->address->{'first-name'}.'</first-name>';
-        $b .= '<last-name>'.$obj_Card->address->{'last-name'}.'</last-name>';
-        $b .= '</account>'; 
+		if(count($obj_Card->address) > 0)
+		{
+			$b .= '<account country-id="'.$obj_Card->address['country-id'].'">';
+	        $b .= '<first-name>'.$obj_Card->address->{'first-name'}.'</first-name>';
+	        $b .= '<last-name>'.$obj_Card->address->{'last-name'}.'</last-name>';
+	        $b .= '</account>'; 
+		}
 		
 		return $b;
 	}

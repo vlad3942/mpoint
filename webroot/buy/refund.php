@@ -55,6 +55,8 @@ require_once(sCLASS_PATH ."/amexexpresscheckout.php");
 require_once(sCLASS_PATH ."/wirecard.php");
 // Require specific Business logic for the Global Collect component
 require_once(sCLASS_PATH ."/globalcollect.php");
+// Require specific Business logic for the Secure Trading component
+require_once(sCLASS_PATH ."/securetrading.php");
 
 header("Content-Type: application/x-www-form-urlencoded");
 

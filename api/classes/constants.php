@@ -328,6 +328,12 @@ abstract class Constants
 	 *
 	 */
 	const iCARD_PURCHASE_TYPE = 1009;
+	
+	/**
+	 * Defined Type ID for a New Card which are not stored card and not associated with End-User's prepaid account at mPoint side.
+	 * 
+	 */	
+	const iNEW_CARD_PURCHASE_TYPE = 10091;
 
 	/**
 	 * Defines the min length for all authentication data:
@@ -456,6 +462,12 @@ abstract class Constants
 	 */
 	const iGLOBAL_COLLECT_PSP = 21;
 
+	/**
+	 * Unique ID for the Payment Service Provider: GlobalCollect
+	 *
+	 */
+	const iSECURE_TRADING_PSP = 22;
+	
 	/**
 	 * Unique ID for the Payment Service Provider: Android Pay
 	 *
