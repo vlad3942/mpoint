@@ -34,7 +34,10 @@
 						<div class="payment-form">
 							<form class="card-form" action="{func:constLink('/cpm/payment.php') }" method="post" autocomplete="on">
 								<input type="hidden" name="cardtype" value="" />
+								<input type="hidden" name="pspid" value="{@pspid}" />
 								<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
+								<label for="cardholdername"><xsl:value-of select="/root/labels/cardholdername" /></label>
+								<input type="text" name="cardholdername" class="cc-number" autocomplete="cc-number" maxlength="50" />
 								<label for="cardnumber"><xsl:value-of select="/root/labels/cardnumber" /></label>
 								<input type="tel" name="cardnumber" class="cc-number" autocomplete="cc-number" maxlength="19" required="required" placeholder="1111 2222 3333 4444" />
 								

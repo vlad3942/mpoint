@@ -104,37 +104,53 @@ class DIBS extends Callback implements Captureable, Refundable
 	 * @return 	integer
 	 * @throws	E_USER_WARNING
 	 */
-	public function authTicket($ticket)
+	public function authTicket()
 	{
-		// Construct Order ID
-		$oid = $this->getTxnInfo()->getOrderID();
-		if (empty($oid) === true) { $oid = $this->getTxnInfo()->getID(); }
-//		$oid .= "-". date("Y-m-d H:i:s");
-		
-		$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
-		$b .= "&mpointid=". $this->getTxnInfo()->getID();
-		$b .= "&ticket=". $ticket;
-		$b .= "&amount=". $this->getTxnInfo()->getAmount();
-		$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getClientConfig()->getCountryConfig()->getID(), Constants::iDIBS_PSP);
-		$b .= "&orderid=". urlencode($oid);
-		if ($this->getTxnInfo()->getClientConfig()->getMode() > 0) { $b .= "&test=". $this->getTxnInfo()->getClientConfig()->getMode(); }
-		$b .= "&textreply=true";
-
-		$aConnInfo = $this->aCONN_INFO;
-		$aConnInfo["path"] = $aConnInfo["paths"]["auth"];
-		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aConnInfo);
-		$obj_HTTP = parent::send($obj_ConnInfo, $this->constHTTPHeaders(), $b);
-
-		$aStatus = array();
-		parse_str($obj_HTTP->getReplyBody(), $aStatus);
-		// Auhtorisation Declined
-		if (strtoupper($aStatus["status"]) != "ACCEPTED")
+		$aArgs = func_get_args();
+		switch (count($aArgs) )
 		{
-			trigger_error(trim("Authorisation declined by DIBS for Ticket: ". $ticket .", Reason Code: ". $aStatus["reason"] ."\n". @$aStatus["message"]), E_USER_WARNING);
-			$aStatus["transact"] = $aStatus["reason"] * -1;
+			case (1):
+				
+				list($ticket) = $aArgs;
+				
+				// Construct Order ID
+				$oid = $this->getTxnInfo()->getOrderID();
+				if (empty($oid) === true) { $oid = $this->getTxnInfo()->getID(); }
+		//		$oid .= "-". date("Y-m-d H:i:s");
+				
+				$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
+				$b .= "&mpointid=". $this->getTxnInfo()->getID();
+				$b .= "&ticket=". $ticket;
+				$b .= "&amount=". $this->getTxnInfo()->getAmount();
+				$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getClientConfig()->getCountryConfig()->getID(), Constants::iDIBS_PSP);
+				$b .= "&orderid=". urlencode($oid);
+				if ($this->getTxnInfo()->getClientConfig()->getMode() > 0) { $b .= "&test=". $this->getTxnInfo()->getClientConfig()->getMode(); }
+				$b .= "&textreply=true";
+		
+				$aConnInfo = $this->aCONN_INFO;
+				$aConnInfo["path"] = $aConnInfo["paths"]["auth"];
+				$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aConnInfo);
+				$obj_HTTP = parent::send($obj_ConnInfo, $this->constHTTPHeaders(), $b);
+		
+				$aStatus = array();
+				parse_str($obj_HTTP->getReplyBody(), $aStatus);
+				// Auhtorisation Declined
+				if (strtoupper($aStatus["status"]) != "ACCEPTED")
+				{
+					trigger_error(trim("Authorisation declined by DIBS for Ticket: ". $ticket .", Reason Code: ". $aStatus["reason"] ."\n". @$aStatus["message"]), E_USER_WARNING);
+					$aStatus["transact"] = $aStatus["reason"] * -1;
+				}
+		
+				return $aStatus["transact"];
+				break;
+			case (2):
+				
+				trigger_error("New card authorization not supported by DIBS. ", E_USER_ERROR);
+				
+				throw new Exception("New card authorization not supported by DIBS.");
+				break;
 		}
-
-		return $aStatus["transact"];
+				
 	}
 
 	/**
