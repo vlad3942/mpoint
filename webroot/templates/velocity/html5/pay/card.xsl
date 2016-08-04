@@ -32,7 +32,7 @@
 							<div class="card-arrow">&#10095;</div>
 						</div>
 						<div class="payment-form">
-							<form class="card-form" action="{func:constLink('/cpm/payment.php') }" method="post" autocomplete="on">
+							<form class="card-form" action="{func:constLink('/pay/authorize.php') }" method="post" autocomplete="on">
 								<input type="hidden" name="cardtype" value="" />
 								<input type="hidden" name="pspid" value="{@pspid}" />
 								<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
