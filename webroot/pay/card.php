@@ -51,6 +51,9 @@ $xml .= '<labels>
 		<expiry>'.$_OBJ_TXT->_("Expiry Date").'</expiry>
 		<cvv>'.$_OBJ_TXT->_("CVV Code").'</cvv>
 		<button>'.$_OBJ_TXT->_("Pay now").'</button>
+		<paymentcard>'.$_OBJ_TXT->_("Payment card").'</paymentcard>
+		<savecard>'.$_OBJ_TXT->_("Save card info").'</savecard>
+		<cardholder>'.$_OBJ_TXT->_("Card holder").'</cardholder>
 	</labels>';
 
 $xml .= $obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount() );

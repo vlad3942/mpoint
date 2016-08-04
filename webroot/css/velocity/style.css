@@ -133,6 +133,23 @@ input[type="submit"] {
     cursor: pointer;
     background: #337AB7; }
 
+input[type="checkbox"], input[type="radio"] {
+  margin: 4px 10px 0 0;
+  line-height: normal; }
+
+.radio,
+.checkbox {
+  position: relative;
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 10px; }
+  .radio label,
+  .checkbox label {
+    min-height: 20px;
+    margin-bottom: 0;
+    cursor: pointer;
+    -webkit-user-select: none; }
+
 .loader-screen {
   opacity: 0;
   z-index: -1;

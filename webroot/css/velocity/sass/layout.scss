@@ -73,6 +73,13 @@
 							max-height: 30px;
 							width: auto;
 						}
+						
+						.icon {
+							height: 30px;
+							background-size: 300%;
+							width: 41px;
+							background-position: -82px -30px;
+						}
 					}
 					.card-name {
 						@include span-columns(3 of 6);
@@ -106,17 +113,40 @@
 						margin-top: $content;
 						.expiry {
 							@include span-columns(3 of 6);
+							position: relative;
+
 							label {
 								display: block;
 							}
+
 							input {
 								@include span-columns(1.5 of 3);
+								position: relative;
+								z-index: 10;
+							}
+							
+							span {
+								position: absolute;
+								line-height: 41px;
+								width: 100%;
+								text-align: center;
+								left: 0;
+								z-index: 1;
+								font-weight: 300;
 							}
 						}
 						
 						.cvv {
 							@include span-columns(3 of 6);
 						}
+					}
+					
+					label[for="cardholder"] {
+						margin-top: $content;
+					}
+					
+					.checkbox {
+						margin-top: $content;
 					}
 					
 					input[type="submit"] {

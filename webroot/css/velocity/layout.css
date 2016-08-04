@@ -80,6 +80,11 @@ html {
         .wrapper .content .card-wrapper .cards .card .card-logo img {
           max-height: 30px;
           width: auto; }
+        .wrapper .content .card-wrapper .cards .card .card-logo .icon {
+          height: 30px;
+          background-size: 300%;
+          width: 41px;
+          background-position: -82px -30px; }
       .wrapper .content .card-wrapper .cards .card .card-name {
         float: left;
         display: block;
@@ -124,7 +129,8 @@ html {
           float: left;
           display: block;
           margin-right: 4.82916%;
-          width: 47.58542%; }
+          width: 47.58542%;
+          position: relative; }
           .wrapper .content .card-wrapper .cards .payment-form .additional .expiry:last-child {
             margin-right: 0; }
           .wrapper .content .card-wrapper .cards .payment-form .additional .expiry label {
@@ -133,9 +139,19 @@ html {
             float: left;
             display: block;
             margin-right: 10.1484%;
-            width: 44.9258%; }
+            width: 44.9258%;
+            position: relative;
+            z-index: 10; }
             .wrapper .content .card-wrapper .cards .payment-form .additional .expiry input:last-child {
               margin-right: 0; }
+          .wrapper .content .card-wrapper .cards .payment-form .additional .expiry span {
+            position: absolute;
+            line-height: 41px;
+            width: 100%;
+            text-align: center;
+            left: 0;
+            z-index: 1;
+            font-weight: 300; }
         .wrapper .content .card-wrapper .cards .payment-form .additional .cvv {
           float: left;
           display: block;
@@ -143,6 +159,10 @@ html {
           width: 47.58542%; }
           .wrapper .content .card-wrapper .cards .payment-form .additional .cvv:last-child {
             margin-right: 0; }
+      .wrapper .content .card-wrapper .cards .payment-form label[for="cardholder"] {
+        margin-top: 30px; }
+      .wrapper .content .card-wrapper .cards .payment-form .checkbox {
+        margin-top: 30px; }
       .wrapper .content .card-wrapper .cards .payment-form input[type="submit"] {
         width: 65.05695%;
         display: block;

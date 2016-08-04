@@ -1053,11 +1053,23 @@ msgstr @@@ Expiry Date @@@
 
 #: /webroot/pay/card.php:52
 msgid @@@ CVV Code @@@
-msgstr @@@ CVV Code @@@
+msgstr @@@ Security Code @@@
 
 #: /webroot/pay/card.php:53
 msgid @@@ Pay now @@@
 msgstr @@@ Pay now @@@
+
+#: /webroot/pay/card.php:54
+msgid @@@ Payment card @@@
+msgstr @@@ Payment card @@@
+
+#: /webroot/pay/card.php:55
+msgid @@@ Save card info @@@
+msgstr @@@ Save card info @@@
+
+#: /webroot/pay/card.php:56
+msgid @@@ Card holder @@@
+msgstr @@@ Name on card @@@
 
 #: /webroot/overview.php:38
 msgid @@@ Order Overview @@@
