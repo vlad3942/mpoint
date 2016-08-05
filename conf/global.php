@@ -414,6 +414,27 @@ $aHTTP_CONN_INFO["global-collect"]["paths"]["callback"] = "/mpoint/global-collec
 $aHTTP_CONN_INFO["global-collect"]["paths"]["cancel"] = "/mpoint/global-collect/cancel";
 $aHTTP_CONN_INFO["global-collect"]["paths"]["auth-complete"] = "/mpoint/global-collect/auth-complete";
 
+
+/**
+ * Connection info for connecting to SecureTrading
+ */
+$aHTTP_CONN_INFO["secure-trading"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["secure-trading"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["secure-trading"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["secure-trading"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["secure-trading"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["secure-trading"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["secure-trading"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["secure-trading"]["paths"]["initialize"] = "/mpoint/secure-trading/initialize";
+$aHTTP_CONN_INFO["secure-trading"]["paths"]["auth"] = "/mpoint/secure-trading/authorize-payment";
+$aHTTP_CONN_INFO["secure-trading"]["paths"]["capture"] = "/mpoint/secure-trading/capture";
+$aHTTP_CONN_INFO["secure-trading"]["paths"]["status"] = "/mpoint/secure-trading/status";
+$aHTTP_CONN_INFO["secure-trading"]["paths"]["refund"] = "/mpoint/secure-trading/refund";
+$aHTTP_CONN_INFO["secure-trading"]["paths"]["callback"] = "/mpoint/secure-trading/callback";
+$aHTTP_CONN_INFO["secure-trading"]["paths"]["cancel"] = "/mpoint/secure-trading/cancel";
+
+
+
 /**
  * GoMobile Connection Info.
  * The array should contain the following indexes:

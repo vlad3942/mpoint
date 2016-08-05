@@ -1361,5 +1361,72 @@ class Validate extends ValidateBase
         }
         return $code;
     }
+    
+
+    /**
+     * Performs validation of the Card number to determine whether it is valid.
+     * This validation is developed on https://en.wikipedia.org/wiki/Luhn_algorithm.
+     * The method will return the following status codes:
+     *     1. number is undefied
+     *     2. number is too small
+     *     3. number is too large
+     *     4. number is not valid card
+     *    10. given number is valid card number
+     *
+     * @param    integer $number       Card number
+     * @return   integer
+     */
+    public function valCardNumber($number)
+    {
+    	
+    	$code = 0;
+    	
+    	if (empty($number) === true) { $code = 1; }    	
+    	else {
+    	
+	    		settype($number, 'string');	    	
+	    		
+	    		if(strlen($number) < 13) { $code = 2; }
+	    		else if(strlen($number) > 16) { $code = 3; }
+	    		else
+	    		{
+		    		$aCardNumber = str_split(strrev(preg_replace("/[^0-9]/", "", $number)));
+		    		
+		    		$sumOfNumber = 0;
+		    	
+		    		$count = 1;
+		    		
+		    		for($i = 0; $i < count($aCardNumber); $i++)
+		    		{
+		    			
+		    			$iCardNumber = intval($aCardNumber[$i]);
+		    					    			
+		    			if(($count % 2) === 0)
+		    			{
+		    				$iCardNumber = $iCardNumber * 2;
+		    				
+		    				if($iCardNumber >= 10)
+		    				{
+		    					$tempNum = $iCardNumber % 10;
+		    					$tempNum += $iCardNumber / 10;
+		    					 
+		    					$iCardNumber = $tempNum;
+		    				}
+		    			}
+		    			 
+		    			$sumOfNumber += $iCardNumber;
+		    			
+		    			$count++;
+		    		}
+		    		
+		    		if($sumOfNumber % 10 === 0)
+		    		{
+		    			$code = 10;
+		    		} else { $code = 4; }
+	    		}
+	    	}
+    	    	    	
+    	return $code;
+    }
 }
 ?>

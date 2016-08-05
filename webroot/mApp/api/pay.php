@@ -67,6 +67,10 @@ require_once(sCLASS_PATH ."/wirecard.php");
 // Require specific Business logic for the GlobalCollect component
 require_once(sCLASS_PATH ."/globalcollect.php");
 
+// Require specific Business logic for the Secure Trading component
+require_once(sCLASS_PATH ."/securetrading.php");
+
+
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 
@@ -140,12 +144,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						//Same check is  also implemented at app side.
 						$obj_CardXML = simpledom_load_string($obj_mPoint->getCards( (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount) );
 
-						$obj_Elem = $obj_CardXML->xpath("/cards/item[@id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1]");
-						if (count($obj_Elem) === 0)
-						{
-							$aMsgCds[14] = "The selected payment card is disabled. Select another card";
-						}
-						
+						$obj_Elem = $obj_CardXML->xpath("/cards/item[@id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ."]");
+						if (count($obj_Elem) == 0) { $aMsgCds[90] = "Unable to find configuration for Payment Service Provider and card"; }
+						else if ( (integer)$obj_Elem["state-id"] != 1) { $aMsgCds[24] = "The selected payment card is not available"; }
+
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
 						{
@@ -421,7 +423,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													$xml .= trim($obj_Elem->asXML() );
 												}
 												break;
+										case (Constants::iSECURE_TRADING_PSP):
+											$obj_PSP = new SecureTrading($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["secure-trading"]);
+											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"] );
+												
+											foreach ($obj_XML->children() as $obj_Elem)
+											{
+												$xml .= trim($obj_Elem->asXML() );
+											}
+											break;
 										}
+										
 										$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. htmlspecialchars($obj_PSPConfig->getMessage($obj_TxnInfo->getLanguage() ), ENT_NOQUOTES) .'</message>';
 										$xml .= '</psp-info>';
 									}
