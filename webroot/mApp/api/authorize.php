@@ -608,7 +608,7 @@ try
 
 																$obj_PSP = new Adyen($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["adyen"]);
 
-																$code = $obj_PSP->authTicket($obj_PSPConfig ,$obj_Elem->ticket);
+																$code = $obj_PSP->authorize($obj_PSPConfig ,$obj_Elem->ticket);
 																// Authorization succeeded
 																if ($code == "100")
 																{
@@ -629,7 +629,7 @@ try
 														
 																$obj_PSP = new WireCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["wire-card"]);
 													
-																$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_Elem);
+																$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
 																// Authorization succeeded
 																if ($code == "100")
 																{
@@ -650,7 +650,7 @@ try
 															
 																$obj_PSP = new DataCash($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["data-cash"]);
 																	
-																$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_Elem);
+																$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
 																// Authorization succeeded
 																if ($code == "100")
 																{
@@ -687,7 +687,7 @@ try
 																	$obj_PSP->setAuthPath(true);
 																}
 																
-																$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_Elem);
+																$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
 
 																// Authorization succeeded
 																if ($code == "100")
@@ -713,7 +713,7 @@ try
 																		
 																	$obj_PSP = new SecureTrading($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["secure-trading"]);
 
-																	$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_Elem);
+																	$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
 																	// Authorization succeeded
 																	if ($code == "100")
 																	{
