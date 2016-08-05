@@ -205,7 +205,7 @@ if (count($aMsgCds) == 0)
 				
 					$obj_PSP = new WireCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["wire-card"]);
 						
-					$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_XML);
+					$code = $obj_PSP->authorize($obj_PSPConfig , $obj_XML);
 					// Authorization succeeded
 					if ($code == "100")
 					{
@@ -228,7 +228,7 @@ if (count($aMsgCds) == 0)
 					
 						$obj_PSP = new DataCash($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["data-cash"]);
 					
-						$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_XML->ticket);
+						$code = $obj_PSP->authorize($obj_PSPConfig , $obj_XML->ticket);
 						// Authorization succeeded
 						if ($code == "100")
 						{
@@ -257,7 +257,7 @@ if (count($aMsgCds) == 0)
 								$obj_XML->addChild('cvc', $_POST['cvc']);
 							} else { $obj_XML->addChild('cvc', "123"); }
 								
-							$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_XML);
+							$code = $obj_PSP->authorize($obj_PSPConfig , $obj_XML);
 							
 							// Authorization succeeded
 							if ($code == "100")
