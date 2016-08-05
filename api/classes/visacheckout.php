@@ -30,7 +30,7 @@ class VISACheckout extends CPMPSP
 	public function refund($iAmount=-1) { throw new VISACheckoutException("Method: refund is not supported by VISA Checkout"); }
 	public function void($iAmount=-1) { throw new VISACheckoutException("Method: void is not supported by VISA Checkout"); }
 	public function cancel() { throw new VISACheckoutException("Method: cancel is not supported by VISA Checkout"); }
-	public function authTicket(PSPConfig $obj_PSPConfig, $ticket) { throw new VISACheckoutException("Method: authTicket is not supported by VISA Checkout"); }
+	public function authorize(PSPConfig $obj_PSPConfig, $ticket) { throw new VISACheckoutException("Method: authTicket is not supported by VISA Checkout"); }
 	public function status() { throw new VISACheckoutException("Method: status is not supported by VISA Checkout"); }
 
 	public function getPSPID() { return Constants::iVISA_CHECKOUT_PSP; }

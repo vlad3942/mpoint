@@ -339,7 +339,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		return $obj_XML;
 	}
 
-	public function authTicket(PSPConfig $obj_PSPConfig, $obj_Card)
+	public function authorize(PSPConfig $obj_PSPConfig, $obj_Card)
 	{
 		
 		$code = 0;
@@ -691,6 +691,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	        $b .= '<first-name>'.$obj_Card->address->{'first-name'}.'</first-name>';
 	        $b .= '<last-name>'.$obj_Card->address->{'last-name'}.'</last-name>';
 	        $b .= '</account>'; 
+	        
+	        $b .= $obj_Card->address->asXML();
 		}
 		
 		return $b;

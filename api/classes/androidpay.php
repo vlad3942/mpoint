@@ -28,7 +28,7 @@ class AndroidPay extends CPMPSP
 	public function refund($iAmount=-1) { throw new AndroidPayException("Method: refund is not supported by Android Pay"); }
 	public function void($iAmount=-1) { throw new AndroidPayException("Method: void is not supported by Android Pay"); }
 	public function cancel() { throw new AndroidPayException("Method: cancel is not supported by Android Pay"); }
-	public function authTicket(PSPConfig $obj_PSPConfig, $ticket) { throw new AndroidPayException("Method: authTicket is not supported by Android Pay"); }
+	public function authorize(PSPConfig $obj_PSPConfig, $ticket) { throw new AndroidPayException("Method: authTicket is not supported by Android Pay"); }
 	public function status() { throw new AndroidPayException("Method: status is not supported by Android Pay"); }
 
 	public function getPSPID() { return Constants::iAPPLE_PAY_PSP; }
