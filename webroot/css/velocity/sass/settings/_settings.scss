@@ -50,3 +50,18 @@ $body: 15px;
 @mixin animate() {
 	@include transition (all 0.15s $ease-out-cubic);
 }
+
+// Convert a background image position from pixels to percent
+// $position: negative x or y position of the background image in the container in pixels
+// $img-size: total height or width of the background image in pixels
+// $container-size: total height or width of the container
+// $scale: multiplier to scale bacground image down width (for retina displays).
+// $y: set to false to position on the x axis instead.
+@mixin background-image-scale($position, $img-size, $container-size, $scale: 1, $y: true) {
+	@if $y == true {
+		background-position-y: ($position/(($img-size/$scale) - $container-size)) * 100%;
+	}
+	@else {
+		background-position-x: ($position/(($img-size/$scale) - $container-size)) * 100%;
+	}
+}

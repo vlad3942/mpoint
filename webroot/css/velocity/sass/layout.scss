@@ -65,6 +65,10 @@
 						background: $blue;
 						color: $white;
 						cursor: pointer;
+						background-image: none;
+						.card-logo .icon .hover {
+							opacity: 1;
+						}
 					}
 					
 					.card-logo {
@@ -76,11 +80,108 @@
 						
 						.icon {
 							height: 30px;
-							background-size: 300%;
-							width: 41px;
-							background-position: -82px -30px;
+							background-size: 100%;
+							width: 48px;
+							background-position: 0px 0%;
+							opacity: 1;
+							
+							.hover {
+								height: 30px;
+								background-size: 100%;
+								width: 48px;
+								background-position: 0px 0%;
+								opacity: 0;
+								@include transition (all 0.15s $ease-out-cubic);
+							}
+							
+							// Add additional cards here
+
+							// Background positions are calculated like this:
+							// $negative-position-in-px / ($image-height - $container-height) * 100 %
+							$img-height: 4500;
+							$container-height: 30;
+
+							&.card-1 { // Amex
+								@include background-image-scale(570, $img-height, $container-height, 3);
+								.hover {
+									@include background-image-scale(540, $img-height, $container-height, 3);
+								}
+							}
+							&.card-2 { // Dankort
+								@include background-image-scale(60, $img-height, $container-height, 3);
+								.hover {
+									@include background-image-scale(30, $img-height, $container-height, 3);
+								}
+							}
+							&.card-3 { // Diners
+								@include background-image-scale(420, $img-height, $container-height, 3);
+								.hover {
+									@include background-image-scale(390, $img-height, $container-height, 3);
+								}
+							}
+							&.card-4, &.card-7 { // EuroCard / Mastercard
+								@include background-image-scale(240, $img-height, $container-height, 3);
+								.hover {
+									@include background-image-scale(210, $img-height, $container-height, 3);
+								}
+							}
+							&.card-5 { // JCB
+								@include background-image-scale(510, $img-height, $container-height, 3);
+								.hover {
+									@include background-image-scale(480, $img-height, $container-height, 3);
+								}
+							}
+							&.card-6 { // Maestro
+								@include background-image-scale(300, $img-height, $container-height, 3);
+								.hover {
+									@include background-image-scale(270, $img-height, $container-height, 3);
+								}
+							}
+							&.card-8 { // VISA
+								@include background-image-scale(120, $img-height, $container-height, 3);
+								.hover {
+									@include background-image-scale(90, $img-height, $container-height, 3);
+								}
+							}
+							&.card-9 { // VISA Electron
+								@include background-image-scale(180, $img-height, $container-height, 3);
+								.hover {
+									@include background-image-scale(150, $img-height, $container-height, 3);
+								}
+							}
+							&.card-12 { // Solo Switch
+								@include background-image-scale(2730, $img-height, $container-height, 3);
+								.hover {
+									@include background-image-scale(2700, $img-height, $container-height, 3);
+								}
+							}
+							&.card-13 { // Solo
+								@include background-image-scale(2790, $img-height, $container-height, 3);
+								.hover {
+									@include background-image-scale(2760, $img-height, $container-height, 3);
+								}
+							}
+							&.card-14 { // Delta
+								@include background-image-scale(570, $img-height, $container-height, 3);
+								.hover {
+									@include background-image-scale(540, $img-height, $container-height, 3);
+								}
+							}
+							&.card-22 { // Discover
+								@include background-image-scale(1950, $img-height, $container-height, 3);
+								.hover {
+									@include background-image-scale(1950, $img-height, $container-height, 3);
+								}
+							}
 						}
 					}
+					
+					&:hover, &.hover {
+						.card-logo .icon .hover {
+						
+						}
+					}
+					
 					.card-name {
 						@include span-columns(3 of 6);
 						line-height: 30px;
@@ -91,6 +192,68 @@
 						text-align: right;
 						font-weight: 200;
 						line-height: 30px;
+					}
+				}
+				
+				.stored-cards-wrapper {
+					@include clearfix;
+					.card {
+						@include span-columns(4 of 12);
+						padding: $body;
+						text-align: center;
+						
+						@include media($tablet) {
+							@include span-columns(6 of 12);
+							@include omega(2n);
+						}
+						
+						.card-arrow {
+							display: none;
+						}
+						
+						.card-logo {
+							float: none;
+							width: 100%;
+							
+							.icon {
+								margin: 0 auto;
+								height: 40px;
+								width: 64px;
+								.hover {
+									height: 40px;
+									width: 64px;
+								}
+							}
+						}
+						
+						.card-name {
+							float: none;
+							width: 100%;
+							line-height: normal;
+							margin-top: 15px;
+						}
+						
+						&.selected {
+							width: 100%;
+							padding: 0;
+							background: none;
+							display: block !important;
+							right: 0 !important;
+							opacity: 1 !important;
+							border: 0;
+							
+							&:hover {
+								color: $black;
+								cursor: inherit;
+							}
+							
+							.card-logo {
+								display: none;
+							}
+							.payment-form {
+								display: block;
+							}
+						}
 					}
 				}
 				

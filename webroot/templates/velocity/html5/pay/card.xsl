@@ -15,9 +15,45 @@
 			<div class="card-wrapper">
 				<div class="mpoint-help"><xsl:value-of select="labels/info" /></div>
 				<div class="cards">
+					<!-- Display stored cards -->
+					<xsl:if test="contains(cards/item/@id, 11)">
+						<div class="stored-cards-wrapper">
+							<xsl:for-each select="stored-cards/card">
+								<xsl:if test="client/@id = /root/client-config/@id">
+									<div class="card stored card-{type/@id}">
+										<div class="card-logo">
+											<div class="icon card-{type/@id}" style="background-image: url({/root/system/protocol}://{/root/system/host}/img/card_payment.png)">
+												<div class="hover" style="background-image: url({/root/system/protocol}://{/root/system/host}/img/card_payment.png)" />
+											</div>
+										</div>
+										<div class="card-name">
+											<div class="card-button"><xsl:value-of select="name" /></div>
+										</div>
+										<div class="card-arrow">&#10095;</div>
+										<div class="payment-form">
+											<form id="pay-account" class="card-form" action="{func:constLink('/cpm/pay_account.php') }" method="post">
+												<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
+												<input type="hidden" name="cardtype" value="11" />
+												<input type="hidden" name="prepaid" value="false" />
+												<input type="hidden" id="cardid" name="cardid" value="{@id}" />
+
+												<label for="password"><xsl:value-of select="/root/labels/password" /></label>
+												<input type="password" name="pwd" value="" />
+												
+												<input type="submit" value="{/root/labels/submit}" />
+											</form>
+										</div>
+									</div>
+								</xsl:if>
+							</xsl:for-each>
+						</div>
+					</xsl:if>
+					
 					<!-- Display alternative payment methods -->
 					<xsl:for-each select="cards/item">
-						<xsl:apply-templates select="." mode="cpm-wallet" />
+						<xsl:if test="@id != 1 and @id != 2 and @id != 3 and @id != 5 and @id != 6 and @id != 7 and @id != 8 and @id != 9 and @id != 11">
+							<xsl:apply-templates select="." mode="cpm-wallet" />
+						</xsl:if>
 					</xsl:for-each>
 					
 					<!-- Display payment form for normal payment cards -->
@@ -78,7 +114,7 @@
 		
 		// Display loading screen on submit
 		$('form.card-form').submit(function() {
-			$('.loader-screen').css({'opacity': 1, 'z-index': 1});
+			$('.loader-screen').css({'opacity': 1, 'z-index': 100});
 		});
 		
 		$('.card').not('.wallet').click(function() {
@@ -90,7 +126,11 @@
 					opacity: 0
 				}, 400, 'easeOutCubic', function() {
 					$('.card').hide();
-					$this.next().fadeIn();
+					if($this.hasClass('stored')) {
+						$this.addClass('selected');
+					} else {
+						$this.next().fadeIn();
+					}
 				});
 			});
 			var replace = ($('.progress').text()).replace('1', '2');

@@ -69,7 +69,10 @@ html {
       .wrapper .content .card-wrapper .cards .card:hover, .wrapper .content .card-wrapper .cards .card.hover {
         background: #339EF7;
         color: #FFF;
-        cursor: pointer; }
+        cursor: pointer;
+        background-image: none; }
+        .wrapper .content .card-wrapper .cards .card:hover .card-logo .icon .hover, .wrapper .content .card-wrapper .cards .card.hover .card-logo .icon .hover {
+          opacity: 1; }
       .wrapper .content .card-wrapper .cards .card .card-logo {
         float: left;
         display: block;
@@ -82,9 +85,67 @@ html {
           width: auto; }
         .wrapper .content .card-wrapper .cards .card .card-logo .icon {
           height: 30px;
-          background-size: 300%;
-          width: 41px;
-          background-position: -82px -30px; }
+          background-size: 100%;
+          width: 48px;
+          background-position: 0px 0%;
+          opacity: 1; }
+          .wrapper .content .card-wrapper .cards .card .card-logo .icon .hover {
+            height: 30px;
+            background-size: 100%;
+            width: 48px;
+            background-position: 0px 0%;
+            opacity: 0;
+            -webkit-transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+            -moz-transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+            transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1); }
+          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-1 {
+            background-position-y: 38.77551%; }
+            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-1 .hover {
+              background-position-y: 36.73469%; }
+          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-2 {
+            background-position-y: 4.08163%; }
+            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-2 .hover {
+              background-position-y: 2.04082%; }
+          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-3 {
+            background-position-y: 28.57143%; }
+            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-3 .hover {
+              background-position-y: 26.53061%; }
+          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-4, .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-7 {
+            background-position-y: 16.32653%; }
+            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-4 .hover, .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-7 .hover {
+              background-position-y: 14.28571%; }
+          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-5 {
+            background-position-y: 34.69388%; }
+            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-5 .hover {
+              background-position-y: 32.65306%; }
+          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-6 {
+            background-position-y: 20.40816%; }
+            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-6 .hover {
+              background-position-y: 18.36735%; }
+          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-8 {
+            background-position-y: 8.16327%; }
+            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-8 .hover {
+              background-position-y: 6.12245%; }
+          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-9 {
+            background-position-y: 12.2449%; }
+            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-9 .hover {
+              background-position-y: 10.20408%; }
+          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-12 {
+            background-position-y: 185.71429%; }
+            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-12 .hover {
+              background-position-y: 183.67347%; }
+          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-13 {
+            background-position-y: 189.79592%; }
+            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-13 .hover {
+              background-position-y: 187.7551%; }
+          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-14 {
+            background-position-y: 38.77551%; }
+            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-14 .hover {
+              background-position-y: 36.73469%; }
+          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-22 {
+            background-position-y: 132.65306%; }
+            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-22 .hover {
+              background-position-y: 132.65306%; }
       .wrapper .content .card-wrapper .cards .card .card-name {
         float: left;
         display: block;
@@ -104,6 +165,63 @@ html {
         line-height: 30px; }
         .wrapper .content .card-wrapper .cards .card .card-arrow:last-child {
           margin-right: 0; }
+    .wrapper .content .card-wrapper .cards .stored-cards-wrapper::after {
+      clear: both;
+      content: "";
+      display: block; }
+    .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card {
+      float: left;
+      display: block;
+      margin-right: 2.35765%;
+      width: 31.76157%;
+      padding: 15px;
+      text-align: center; }
+      .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card:last-child {
+        margin-right: 0; }
+      @media screen and (max-width: 48.0625em) {
+        .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card {
+          float: left;
+          display: block;
+          margin-right: 2.35765%;
+          width: 48.82117%; }
+          .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card:last-child {
+            margin-right: 0; }
+          .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card:nth-child(2n) {
+            margin-right: 0; }
+          .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card:nth-child(2n+1) {
+            clear: left; } }
+      .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card .card-arrow {
+        display: none; }
+      .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card .card-logo {
+        float: none;
+        width: 100%; }
+        .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card .card-logo .icon {
+          margin: 0 auto;
+          height: 40px;
+          width: 64px; }
+          .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card .card-logo .icon .hover {
+            height: 40px;
+            width: 64px; }
+      .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card .card-name {
+        float: none;
+        width: 100%;
+        line-height: normal;
+        margin-top: 15px; }
+      .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.selected {
+        width: 100%;
+        padding: 0;
+        background: none;
+        display: block !important;
+        right: 0 !important;
+        opacity: 1 !important;
+        border: 0; }
+        .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.selected:hover {
+          color: #454545;
+          cursor: inherit; }
+        .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.selected .card-logo {
+          display: none; }
+        .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.selected .payment-form {
+          display: block; }
     .wrapper .content .card-wrapper .cards .payment-form {
       display: none;
       background: #FFF;

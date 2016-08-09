@@ -55,6 +55,8 @@ $xml .= '<labels>
 		<paymentcard>'.$_OBJ_TXT->_("Payment card").'</paymentcard>
 		<savecard>'.$_OBJ_TXT->_("Save card info").'</savecard>
 		<cardholder>'.$_OBJ_TXT->_("Card holder").'</cardholder>
+		<password>'. $_OBJ_TXT->_("Password") .'</password>
+		<submit>'. $_OBJ_TXT->_("Complete Payment") .'</submit>
 	</labels>';
 
 $xml .= $obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount() );
