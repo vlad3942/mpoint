@@ -277,7 +277,7 @@ html {
           width: 47.58542%; }
           .wrapper .content .card-wrapper .cards .payment-form .additional .cvv:last-child {
             margin-right: 0; }
-      .wrapper .content .card-wrapper .cards .payment-form label[for="cardholder"] {
+      .wrapper .content .card-wrapper .cards .payment-form label[for="cardholdername"] {
         margin-top: 30px; }
       .wrapper .content .card-wrapper .cards .payment-form .checkbox {
         margin-top: 30px; }

@@ -72,8 +72,6 @@
 								<input type="hidden" name="cardtype" value="" />
 								<input type="hidden" name="pspid" value="{@pspid}" />
 								<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
-								<label for="cardholdername"><xsl:value-of select="/root/labels/cardholdername" /></label>
-								<input type="text" name="cardholdername" class="cc-number" autocomplete="cc-number" maxlength="50" />
 								<label for="cardnumber"><xsl:value-of select="/root/labels/cardnumber" /></label>
 								<input type="tel" name="cardnumber" class="cc-number" autocomplete="cc-number" maxlength="19" required="required" placeholder="1111 2222 3333 4444" />
 								
@@ -91,8 +89,8 @@
 									</div>
 								</div>
 								
-								<label for="cardholder"><xsl:value-of select="/root/labels/cardholder" /></label>
-								<input type="text" name="cardholder" class="cc-cardholder" autocomplete="off" required="required" placeholder="{/root/labels/cardholder}" />
+								<label for="cardholdername"><xsl:value-of select="/root/labels/cardholdername" /></label>
+								<input type="text" name="cardholdername" class="cc-cardholder" autocomplete="off" required="required" maxlength="50" placeholder="{/root/labels/cardholdername}" />
 								
 								<div class="checkbox">
 									<label>
