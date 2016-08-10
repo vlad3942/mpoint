@@ -312,6 +312,38 @@
 						margin-top: $content;
 					}
 					
+					.save-card {
+						@include transition (opacity 0.3s $ease-out-cubic);
+						height: 0px;
+						width: 0px;
+						overflow: hidden;
+						opacity: 0;
+						
+						&.active {
+							height: auto;
+							width: auto;
+							opacity: 1;
+						}
+						
+						label[for="new-password"] {
+							float: left;
+							margin-top: $content;
+						}
+						
+						.new-password, .repeat-password {
+							@include span-columns(3 of 6);
+							@include media($mobile) {
+								@include span-columns(6 of 6);
+								&:last-child {
+									margin-top: $content;
+								}
+							}
+						}
+						.new-password {
+							clear: left;
+						}
+					}
+					
 					input[type="submit"] {
 						width: flex-grid(4, 6);
 						display: block;

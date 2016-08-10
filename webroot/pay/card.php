@@ -57,6 +57,10 @@ $xml .= '<labels>
 		<cardholder>'.$_OBJ_TXT->_("Card holder").'</cardholder>
 		<password>'. $_OBJ_TXT->_("Password") .'</password>
 		<submit>'. $_OBJ_TXT->_("Complete Payment") .'</submit>
+		<password>'. $_OBJ_TXT->_("Create Password - Help Checkout") .'</password>
+		<new-password>'. $_OBJ_TXT->_("New Password") .'</new-password>
+		<repeat-password>'. $_OBJ_TXT->_("Repeat Password") .'</repeat-password>
+		<name>'. $_OBJ_TXT->_("Card Name") .'</name>
 	</labels>';
 
 $xml .= $obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount() );

@@ -99,6 +99,24 @@
 									</label>
 								</div>
 								
+								<xsl:choose>
+									<xsl:when test="/root/cards/@accountid > 0">
+										<div class="save-card">
+											<label for="cardname"><xsl:value-of select="/root/labels/name" /></label>
+											<input type="text" name="cardname" placeholder="{/root/labels/name}" />
+										</div>
+									</xsl:when>
+									<xsl:otherwise>
+										<div class="save-card">
+											<label for="cardname"><xsl:value-of select="/root/labels/name" /></label>
+											<input type="text" name="cardname" placeholder="{/root/labels/name}" />
+											<label for="new-password"><xsl:value-of select="/root/labels/password" /></label>
+											<input type="password" class="new-password" name="new-password" maxlength="20" required="required" placeholder="{/root/labels/new-password}" title="new-password" />
+											<input type="password" class="repeat-password" name="repeat-password" maxlength="20" required="required" placeholder="{/root/labels/repeat-password}" title="repeat-password" />
+										</div>
+									</xsl:otherwise>
+								</xsl:choose>
+								
 								<input type="submit" value="{/root/labels/button}" />
 							</form>
 						</div>
@@ -143,6 +161,15 @@
 				$(this).next().fadeIn();
 			}
 			*/
+		});
+		
+		// Toggle card name and password fields
+		$('.checkbox input[name="store-card"]').change(function() {
+			if(this.checked) {
+				$('.payment-form .save-card').addClass('active');
+			} else {
+				$('.payment-form .save-card').removeClass('active');
+			}
 		});
 	</script>
 </xsl:template>

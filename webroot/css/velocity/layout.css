@@ -281,6 +281,40 @@ html {
         margin-top: 30px; }
       .wrapper .content .card-wrapper .cards .payment-form .checkbox {
         margin-top: 30px; }
+      .wrapper .content .card-wrapper .cards .payment-form .save-card {
+        -webkit-transition: opacity 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+        -moz-transition: opacity 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+        transition: opacity 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+        height: 0px;
+        width: 0px;
+        overflow: hidden;
+        opacity: 0; }
+        .wrapper .content .card-wrapper .cards .payment-form .save-card.active {
+          height: auto;
+          width: auto;
+          opacity: 1; }
+        .wrapper .content .card-wrapper .cards .payment-form .save-card label[for="new-password"] {
+          float: left;
+          margin-top: 30px; }
+        .wrapper .content .card-wrapper .cards .payment-form .save-card .new-password, .wrapper .content .card-wrapper .cards .payment-form .save-card .repeat-password {
+          float: left;
+          display: block;
+          margin-right: 4.82916%;
+          width: 47.58542%; }
+          .wrapper .content .card-wrapper .cards .payment-form .save-card .new-password:last-child, .wrapper .content .card-wrapper .cards .payment-form .save-card .repeat-password:last-child {
+            margin-right: 0; }
+          @media screen and (max-width: 40.0625em) {
+            .wrapper .content .card-wrapper .cards .payment-form .save-card .new-password, .wrapper .content .card-wrapper .cards .payment-form .save-card .repeat-password {
+              float: left;
+              display: block;
+              margin-right: 4.82916%;
+              width: 100%; }
+              .wrapper .content .card-wrapper .cards .payment-form .save-card .new-password:last-child, .wrapper .content .card-wrapper .cards .payment-form .save-card .repeat-password:last-child {
+                margin-right: 0; }
+              .wrapper .content .card-wrapper .cards .payment-form .save-card .new-password:last-child, .wrapper .content .card-wrapper .cards .payment-form .save-card .repeat-password:last-child {
+                margin-top: 30px; } }
+        .wrapper .content .card-wrapper .cards .payment-form .save-card .new-password {
+          clear: left; }
       .wrapper .content .card-wrapper .cards .payment-form input[type="submit"] {
         width: 65.05695%;
         display: block;
