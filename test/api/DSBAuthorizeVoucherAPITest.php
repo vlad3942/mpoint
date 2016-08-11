@@ -50,13 +50,14 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 		$pspID = Constants::iDSB_PSP;
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+		$this->queryDB("UPDATE Client.Client_Tbl SET smsrcpt = false where id = 113");
 		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (113, 4, 'http://mpoint.local.cellpointmobile.com/')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', TRUE)");
 		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 113, $pspID, '4216310')");
 		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
-		$this->queryDB("INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) VALUES (-100, 2)");
-		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (113, ". Constants::iVOUCHER_CARD .", $pspID, false, 1)"); //Authorize must be possible even with disabled cardac
+		//$this->queryDB("INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) VALUES (-100, 2)");
+		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled) VALUES (113, ". Constants::iVOUCHER_CARD .", $pspID, false)"); //Authorize must be possible even with disabled cardac
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
 		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
 		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, $pspID, '501910******3742', '06/24', TRUE, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
@@ -87,12 +88,13 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 		$this->assertEquals($pspID, $trow["pspid"]);
 		$this->assertEquals(2, $trow["amount"]);
 		
-		$this->assertEquals(5, count($aStates) );
+		$this->assertEquals(6, count($aStates) );
 		$this->assertEquals(2007, $aStates[0]);
-		$this->assertEquals(2000, $aStates[1]);
-		$this->assertEquals(1991, $aStates[2]);
-		$this->assertEquals(1992, $aStates[3]);
-		$this->assertEquals(1990, $aStates[4]);
+		$this->assertEquals(2009, $aStates[1]);
+		$this->assertEquals(2000, $aStates[2]);
+		$this->assertEquals(1991, $aStates[3]);
+		$this->assertEquals(1992, $aStates[4]);
+		$this->assertEquals(1990, $aStates[5]); 
 	}
 
 	public function testVoucherRedemptionDeniedByIssuer()
