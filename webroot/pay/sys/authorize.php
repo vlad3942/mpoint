@@ -110,17 +110,12 @@ if (count($aMsgCds) == 0)
 		$obj_HTTP->connect();
 		$code = $obj_HTTP->send($h, $b);
 		$obj_HTTP->disconnect();
-		
-		echo $b;
-		
+				
 	}
 	catch(Exception $e)
 	{
 		$msg = 59;
 	}
-	
-	echo $code;
-	exit;
 	
 	if ($code == 200)
 	{
