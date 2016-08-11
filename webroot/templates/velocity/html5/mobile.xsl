@@ -11,7 +11,7 @@
 		<meta http-equiv="Content-Style-Type" content="text/css" />	
 		<meta http-equiv="Content-Script-Type" content="text/javascript" />
 		<meta name="format-detection" content="telephone=no" />
-		<meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 		<title><xsl:value-of select="/root/title" /></title>
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,300,600,700" rel="stylesheet" type="text/css" />
 		<link href="{/root/transaction/css-url}" type="text/css" rel="stylesheet" />
@@ -19,6 +19,7 @@
 		<link href="/css/velocity/layout.css" type="text/css" rel="stylesheet" />
 		<script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+		<script type="text/javascript">var j = jQuery.noConflict();</script>
 		<!-- Pre-load pages -->
 		<xsl:choose>
 			<!-- Order Overview -->

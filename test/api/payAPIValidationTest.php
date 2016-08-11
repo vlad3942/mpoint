@@ -165,11 +165,16 @@ class PayAPIValidationTest extends baseAPITest
 		$this->assertContains('<status code="401">Username / Password doesn\'t match</status>', $sReplyBody);
 	}
 
-	public function testInvalidMerchantConfiguration()
+/* 	public function testInvalidMerchantConfiguration()
 	{
+		$pspID = 2;
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 113, $pspID, '4216310')");
+		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
+		$this->queryDB("INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) VALUES (-100, 7)");
+		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (113, 7, $pspID, true, 1)");
 		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, countryid, amount, ip, enabled) VALUES (1001001, 100, 113, 1100, 1, 100, 5000, '127.0.0.1', TRUE)");
 
 		$xml = $this->getPayDoc(113, 1100, 1001001);
@@ -181,7 +186,7 @@ class PayAPIValidationTest extends baseAPITest
 
 		$this->assertEquals(400, $iStatus);
 		$this->assertContains('<status code="90">Unable to find configuration for Payment Service Provider and card', $sReplyBody);
-	}
+	} */
 
 	public function testDisabledCard()
 	{
@@ -209,6 +214,34 @@ class PayAPIValidationTest extends baseAPITest
 
 		$this->assertEquals(400, $iStatus);
 		$this->assertContains('<status code="24">The selected payment card is not available', $sReplyBody);
+	}
+	
+	public function testDisabledCardWithOneActiveCard()
+	{
+		$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
+	
+			
+		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, auto_capture) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass', TRUE)");
+		$this->queryDB("INSERT INTO Client.URL_Tbl (clientid, urltypeid, url) VALUES (113, 4, 'http://mpoint.local.cellpointmobile.com/')");
+		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid, markup) VALUES (1100, 113, 'app')");
+		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', TRUE)");
+		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 113, 2, '4216310')");
+		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 2, '-1')");
+		$this->queryDB("INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) VALUES (-100, 7)");
+		//As per talk with Jona and Simon 2016-07-19 it should not be possible to authorize a disabled card, since the client can ignore flags sent from initialize
+		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid) VALUES (113, 7, 2, true, 4)");
+		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, stateid, countryid) VALUES (113, 7, 2, true, 1, 100)");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, pspid, countryid, orderid, callbackurl, amount, ip, auto_capture, enabled) VALUES (1001001, 100, 113, 1100, 1,  2, 100, '103-1418291', '". $sCallbackURL ."', 5000, '127.0.0.1', TRUE, TRUE)");
+			
+		
+		$xml = $this->getPayDoc(113, 1100, 1001001);
+	
+		$this->_httpClient->connect();
+	
+		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+		$sReplyBody = $this->_httpClient->getReplyBody();
+		
+		$this->assertEquals(200, $iStatus);
 	}
 
 }

@@ -183,14 +183,14 @@ try
 										$obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) < 10)
 										{ $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $obj_TxnInfo->getAccountID(), $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]) + 40; }
 									
-									//Check if card or payment method is enabled or disabled by merchant
-									//Same check is  also implemented at app side.									
+									
 									$obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 									$obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
-									
-									$obj_Elem = $obj_CardXML->xpath("/cards/item[@id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ."]");
-									if (count($obj_Elem) == 0) { $aMsgCds[] = 90; } // Unable to find configuration for Payment Service Provider and card
-									else if ( (integer)$obj_Elem["state-id"] != 1) { $aMsgCds[] = 24; } // Card disabled
+
+									//Check if card or payment method is enabled or disabled by merchant
+									//Same check is  also implemented at app side.
+									$obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1]");
+									if (count($obj_Elem) == 0) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled									 
 									
 									if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}) > 0 && 
 										intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) === Constants::iNEW_CARD_PURCHASE_TYPE &&
@@ -321,7 +321,7 @@ try
 														// Find Configuration for Payment Service Provider
 														$obj_XML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
 														// Determine Payment Service Provider based on selected card
-														$obj_Elem = $obj_XML->xpath("/cards/item[@id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ."]");
+														$obj_Elem = $obj_XML->xpath("/cards/item[@type-id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ."]");
 														if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1) { $obj_Elem->cvc = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc; }
 														break;
 													}
@@ -633,7 +633,7 @@ try
 																// Authorization succeeded
 																if ($code == "100")
 																{
-																	$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
+																	$xml .= '<status code="100">Payment Authorized using Card</status>';
 																}
 																// Error: Authorization declined
 																else
@@ -654,7 +654,7 @@ try
 																// Authorization succeeded
 																if ($code == "100")
 																{
-																	$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
+																	$xml .= '<status code="100">Payment Authorized using Card</status>';
 																}
 																// Error: Authorization declined
 																else
@@ -695,8 +695,8 @@ try
 																	$obj_TxnInfo = TxnInfo::produceInfo( (integer) $obj_TxnInfo->getID(), $_OBJ_DB);
 																	$obj_PSP->initCallback($obj_PSPConfig, $obj_TxnInfo, Constants::iPAYMENT_ACCEPTED_STATE, "Payment Authorized using store card.", intval($obj_Elem->type["id"]));
 																	
-																	$xml .= '<status code="100">Payment authorized using stored card</status>';
-																} else if($code == "2000") { $xml .= '<status code="2000">Payment authorized using stored card</status>'; }
+																	$xml .= '<status code="100">Payment authorized using  card</status>';
+																} else if($code == "2000") { $xml .= '<status code="2000">Payment authorized using card</status>'; }
 																else if(is_null($token) == false) { $xml .= '<status code="'.$code.'">Globalcollect returned : '. $code .'</status>'; }
 																// Error: Authorization declined
 																else

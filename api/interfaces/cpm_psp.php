@@ -675,8 +675,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b = '<card type-id="'.intval($obj_Card['type-id']).'">';
 		
 		if(count($obj_Card->{'card-holder-name'}) > 0) { $b .= '<card-holder-name>'. $obj_Card->{'card-holder-name'} .'</card-holder-name>'; }
-		else { $b .= '<card-holder-name>John Doe</card-holder-name>'; }//refered worldpay _constDirectXMLRequest
-		
+				
 		$b .= '<card-number>'. $obj_Card->{'card-number'} .'</card-number>';
 		$b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
 		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
@@ -687,11 +686,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		
 		if(count($obj_Card->address) > 0)
 		{
-			$b .= '<account country-id="'.$obj_Card->address['country-id'].'">';
-	        $b .= '<first-name>'.$obj_Card->address->{'first-name'}.'</first-name>';
-	        $b .= '<last-name>'.$obj_Card->address->{'last-name'}.'</last-name>';
-	        $b .= '</account>'; 
-	        
 	        $b .= $obj_Card->address->asXML();
 		}
 		

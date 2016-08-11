@@ -4,91 +4,139 @@ require_once("../../inc/include.php");
 
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 
-// Require data class for Payment Service Provider Configurations
-require_once(sCLASS_PATH ."/pspconfig.php");
-
 // Require Business logic for the End-User Account Component
 require_once(sCLASS_PATH ."/enduser_account.php");
 
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 
-// Require general Business logic for the Callback module
-require_once(sCLASS_PATH ."/callback.php");
-
-// Require specific Business logic for the CPM PSP component
-require_once(sINTERFACE_PATH ."/cpm_psp.php");
-
-// Require specific Business logic for the DIBS component
-require_once(sCLASS_PATH ."/dibs.php");
-// Require specific Business logic for the WannaFind component
-require_once(sCLASS_PATH ."/wannafind.php");
-// Require specific Business logic for the WorldPay component
-require_once(sCLASS_PATH ."/worldpay.php");
-// Require specific Business logic for the wirecard component
-require_once(sCLASS_PATH ."/wirecard.php");
-// Require specific Business logic for the datacash component
-require_once(sCLASS_PATH ."/datacash.php");
-// Require specific Business logic for the globalcollect component
-require_once(sCLASS_PATH ."/globalcollect.php");
-
 // Require Business logic for the Select Credit Card component
 require_once(sCLASS_PATH ."/credit_card.php");
 
 $aMsgCds = array();
 $msg = "";
+$sCardHolderName = "";
+
+$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SESSION['obj_UA']);
 
 $obj_Validator = new Validate($_SESSION['obj_TxnInfo']->getCountryConfig() );
 
-$currentMonthDate = date('m/y');
-$givenDate = $_POST['expiry-month'].'/'.$_POST['expiry-year'];
-
-
-if(preg_match('/^\\d{2}\\/\\d{2}$/', $givenDate) == 0 || $givenDate < $currentMonthDate) { $aMsgCds[] = 20; }
-
-
-if( count($_POST['cardnumber']) == 0 || (count($_POST['cardnumber']) > 0 && $obj_Validator->valCardNumber($_POST['cardnumber']) != 10)
-) { $aMsgCds[] = 25; }
+if(isset($_POST['token']) == false)
+{
+	$givenDate = $_POST['expiry-month'].'/'.$_POST['expiry-year'];
+	
+	if(preg_match('/^\\d{2}\\/\\d{2}$/', $givenDate) == 0) 
+	{  
+		$aMsgCds[] = 20;
+	}
+	else 
+	{
+		$givenDateTimeStamp = strtotime(gmdate("Y-m-d H:i:sP", mktime(0, 0, 0, $_POST['expiry-month'], 01, $_POST['expiry-year'])));
+		
+		if ($givenDateTimeStamp < strtotime('today') ) { $aMsgCds[] = 20; }
+	}
+	
+	if( (count($_POST['cardnumber']) == 0 || (count($_POST['cardnumber']) > 0 && $obj_Validator->valCardNumber($_POST['cardnumber']) != 10))
+		) { $aMsgCds[] = 25; }
+	
+	if(empty($_POST['cardholdername']) == false)
+	{
+		$sCardHolderName = $_POST['cardholdername'];
+	} else { $sCardHolderName = "John Doe"; }
+}
 
 if (count($aMsgCds) == 0)
 {
 	$msg = 99;
 	
-	$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SESSION['obj_UA']);
-	
-	$obj_mPoint->newMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, "");
-	
-	$obj_XML = simplexml_load_string($obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount() ) );
-	$obj_XML = $obj_XML->xpath("item[@id = ". intval($_POST['cardtype']) ." and @pspid = ".intval($_POST['pspid'])."]");
-	$obj_XML = $obj_XML[0];
-	
-	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getClientID(),
-			$_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getID(), intval($_POST['pspid']));
-	
-	$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO, $obj_PSPConfig);
-	
-	$card_XML = '<card type-id="'.intval($_POST['cardtype']).'">
-		        <amount country-id="'.$_SESSION['obj_TxnInfo']->getCountryConfig()->getID().'">'.$_SESSION['obj_TxnInfo']->getAmount().'</amount>
-		        <card-holder-name>'.$_POST['cardholdername'].'</card-holder-name>
-		         <card-number>'.$_POST['cardnumber'].'</card-number>
-		         <expiry>'.$givenDate.'</expiry>
-		         <cvc>'.$_POST['cvv'].'</cvc>
-		      </card>';
-	
-	$obj_Card = simplexml_load_string($card_XML);
-	
 	try 
 	{
-		$code = $obj_mPoint->authTicket($obj_PSPConfig, $obj_Card);
+	
+		$aHTTP_CONN_INFO["mesb"]["path"] = "/mpoint/authorize-payment";
+		$aHTTP_CONN_INFO["mesb"]["username"] = $_SESSION['obj_TxnInfo']->getClientConfig()->getUsername();
+		$aHTTP_CONN_INFO["mesb"]["password"] = $_SESSION['obj_TxnInfo']->getClientConfig()->getPassword();
+				
+		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
+			
+		$h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
+		$h .= "host: {HOST}" .HTTPClient::CRLF;
+		$h .= "referer: {REFERER}" .HTTPClient::CRLF;
+		$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
+		$h .= "content-type: {CONTENTTYPE}" .HTTPClient::CRLF;
+		$h .= "user-agent: mPoint" .HTTPClient::CRLF;
+		$h .= "Authorization: Basic ". base64_encode($aHTTP_CONN_INFO["mesb"]["username"] .":". $aHTTP_CONN_INFO["mesb"]["password"]) .HTTPClient::CRLF;
+		
+		
+		$clientId = $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getClientID();
+		$accountId = $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getID();
+		
+		if(isset($_POST['token']) == false)
+		{
+			$transactionType = Constants::iNEW_CARD_PURCHASE_TYPE;
+			$cardDetails = ' <card-holder-name>'.$sCardHolderName.'</card-holder-name>
+			         <card-number>'.$_POST['cardnumber'].'</card-number>
+			         <expiry>'.$givenDate.'</expiry>
+			         <cvc>'.$_POST['cvv'].'</cvc>';
+		}
+		else 
+		{
+			$transactionType = Constants::iCARD_PURCHASE_TYPE;
+			$cardDetails = '<token>'.$_POST['token'].'</token>';
+			
+			if(intval($_POST['cardtype']) == 23)
+			{
+				$cardDetails .= '<verifier>'.$_POST['verifier'].'</verifier>';
+				$cardDetails .= '<checkout-url>'.$_POST['checkouturl'].'</checkout-url>';
+			}
+		}
+		
+		
+		$b = '<?xml version="1.0" encoding="UTF-8"?>
+			<root>
+			  <authorize-payment account="'.$accountId.'" client-id="'.$clientId.'">
+			    <transaction type-id="'.$transactionType.'" id="'.$_SESSION['obj_TxnInfo']->getID().'">
+			      <card type-id="'.intval($_POST['cardtype']).'">
+			        <amount country-id="'.$_SESSION['obj_TxnInfo']->getCountryConfig()->getID().'">'.$_SESSION['obj_TxnInfo']->getAmount().'</amount>
+			         '.$cardDetails.'
+			      </card>
+			    </transaction>
+			    <client-info language="'.sDEFAULT_LANGUAGE.'" version="1.20" platform="HTML5">
+			    </client-info>
+			  </authorize-payment>
+			</root>';
+		
+			
+		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+		$obj_HTTP->connect();
+		$code = $obj_HTTP->send($h, $b);
+		$obj_HTTP->disconnect();
+		
+		echo $b;
+		
 	}
 	catch(Exception $e)
 	{
 		$msg = 59;
 	}
 	
-	if ($code == 100)
+	echo $code;
+	exit;
+	
+	if ($code == 200)
 	{
-		$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id();
+		$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+		
+		$code = $obj_XML->status["code"];
+		if($code == 100)
+		{
+			$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id();
+		} 
+		else 
+		{
+			$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+			
+			$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=".$code;
+		}
 	}
 	else
 	{
