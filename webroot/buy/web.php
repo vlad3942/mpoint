@@ -189,7 +189,7 @@ if (array_key_exists(1000, $aMsgCds) === true)
 				|| count($obj_CardsXML->xpath("/stored-cards/card[client/@id = ". $_SESSION['obj_TxnInfo']->getClientConfig()->getID() ."]") ) > 0
 				|| ($_SESSION['obj_TxnInfo']->getClientConfig()->getStoreCard() > 3 && count($obj_CardsXML->card) > 0) ) )
 			{
-				header("Location: /cpm/payment.php?". session_name() ."=". session_id() ."&cardtype=11");
+				header("Location: /cpm/card.php?". session_name() ."=". session_id() ."&cardtype=11");
 			}
 			// Go to step 1: Select payment method
 			else { header("Location: /pay/card.php?". session_name() ."=". session_id() ); }
