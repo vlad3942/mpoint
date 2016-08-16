@@ -34,6 +34,26 @@ html {
   background: #EDEDED;
   line-height: 60px;
   text-align: center; }
+.wrapper .content .mpoint-status {
+  max-width: 80em;
+  margin-left: auto;
+  margin-right: auto; }
+  .wrapper .content .mpoint-status::after {
+    clear: both;
+    content: "";
+    display: block; }
+  .wrapper .content .mpoint-status .status {
+    margin-top: 15px;
+    padding: 30px;
+    background: #FFF;
+    border: 1px solid #DDD;
+    border-radius: 5px;
+    width: 65.88078%;
+    margin: 0 auto;
+    text-align: center; }
+    @media screen and (max-width: 40.0625em) {
+      .wrapper .content .mpoint-status .status {
+        width: 100%; } }
 .wrapper .content .card-wrapper {
   max-width: 80em;
   margin-left: auto;

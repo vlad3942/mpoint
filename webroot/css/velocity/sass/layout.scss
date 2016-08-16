@@ -35,6 +35,25 @@
 			text-align: center;
 		}
 		
+		.mpoint-status {
+			@include outer-container;
+			
+			.status {
+				margin-top: 15px;
+				padding: 30px;
+				background: #FFF;
+				border: 1px solid #DDD;
+				border-radius: 5px;
+				width: flex-grid(8, 12);
+				margin: 0 auto;
+				text-align: center;
+				
+				@include media($mobile) {
+					width: 100%;
+				}
+			}
+		}
+		
 		.card-wrapper {
 			@include outer-container;
 			

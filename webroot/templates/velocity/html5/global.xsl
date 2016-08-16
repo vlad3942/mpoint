@@ -4,19 +4,21 @@
 	
 <xsl:template match="messages">
 	<xsl:if test="count(item) &gt; 0">
-		<div class="mPoint_Status">
-			<xsl:choose>
-			<xsl:when test="count(item) = 1">
-				<xsl:value-of select="item" />
-			</xsl:when>
-			<xsl:otherwise>
-				<ul>
-				<xsl:for-each select="item">
-					<li><xsl:value-of select="." /></li>
-				</xsl:for-each>
-				</ul>
-			</xsl:otherwise>
-			</xsl:choose>
+		<div class="mpoint-status">
+			<div class="status">
+				<xsl:choose>
+				<xsl:when test="count(item) = 1">
+					<xsl:value-of select="item" />
+				</xsl:when>
+				<xsl:otherwise>
+					<ul>
+					<xsl:for-each select="item">
+						<li><xsl:value-of select="." /></li>
+					</xsl:for-each>
+					</ul>
+				</xsl:otherwise>
+				</xsl:choose>
+			</div>
 		</div>
 	</xsl:if>
 </xsl:template>
