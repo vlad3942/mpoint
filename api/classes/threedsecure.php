@@ -71,33 +71,15 @@ class ThreeDSecure extends General
 							  HTTP::SEE_OTHER,
 							  HTTP::NOT_ACCEPTABLE);
 			if (in_array($code, $aDontLog, true) === false) { $debug = $obj_HTTP->getReplyBody(); }
-			$this->newMessage($obj_TxnInfo->getID(), Constants::i3D_SECURE_ACTIVATED_STATE, var_export(array("URL" => $this->_obj_ClientConfig->getParse3DSecureChallengeURLConfig()->getURL(), "Response-Code" => $code, "Response-Body "=> $debug), true) );
 
-			// For specific response codes the reply body must be parsable
-			switch ($code)
+			$this->newMessage($obj_TxnInfo->getID(), Constants::i3D_SECURE_ACTIVATED_STATE, var_export(array("URL" => $this->_obj_ClientConfig->getParse3DSecureChallengeURLConfig()->getURL(), "Response-Code" => $code, "Response-Body "=> $debug), true) );
+			// Try-parse response
+			if ( (simpledom_load_string($obj_HTTP->getReplyBody() ) instanceof SimpleDOMElement) === false)
 			{
-			case HTTP::OK:
-			case HTTP::PARTIAL_CONTENT:
-			case HTTP::BAD_REQUEST:
-			case HTTP::UNAUTHORIZED:
-			case HTTP::FORBIDDEN:
-			case HTTP::METHOD_NOT_ALLOWED:
-			case HTTP::NOT_ACCEPTABLE:
-			case HTTP::NOT_IMPLEMENTED:
-			case HTTP::BAD_GATEWAY:
-				// Try-parse response
-				if ( (simpledom_load_string($obj_HTTP->getReplyBody() ) instanceof SimpleDOMElement) === false)
-				{
-					throw new mPointException("Could not parse response from 3D Secure Challenge Parser for Transaction ID: ". $obj_TxnInfo->getID(). " using URL: ". $this->_obj_ClientConfig->getParse3DSecureChallengeURLConfig()->getURL(), 94);
-				}
+				throw new mPointException("Could not parse response from 3D Secure Challenge Parser for Transaction ID: ". $obj_TxnInfo->getID(). " using URL: ". $this->_obj_ClientConfig->getParse3DSecureChallengeURLConfig()->getURL(), 94);
 			}
 
 			return $obj_HTTP;
-		}
-		catch (mPointException $e)
-		{
-			$this->newMessage($obj_TxnInfo->getID(), Constants::i3D_SECURE_ACTIVATED_STATE, var_export(array("URL" => $this->_obj_ClientConfig->getParse3DSecureChallengeURLConfig()->getURL(), "Response-Code" => $code, "Response-Body "=> $debug, "Exception" => $e), true) );
-			throw $e;
 		}
 		catch (HTTPException $e)
 		{
