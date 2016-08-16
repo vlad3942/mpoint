@@ -39,19 +39,19 @@
 		
 		jQuery(document).ready(function($) {
 			// Display loading screen on submit
-			$('form.card-form').submit(function() {
-				$('.loader-screen').css({'opacity': 1, 'z-index': 20});
+			jQuery('form.card-form').submit(function() {
+				jQuery('.loader-screen').css({'opacity': 1, 'z-index': 20});
 			});
 			
-			$('.card').not('.wallet').click(function() {
+			jQuery('.card').not('.wallet').click(function() {
 				// Use this code for showing the payment form in a second step
-				var $this = $(this);
-				$('.card').each(function(i) {
-					$(this).delay(50*i).animate({
+				var $this = jQuery(this);
+				jQuery('.card').each(function(i) {
+					j(this).delay(50*i).animate({
 						right: '-=1000',
 						opacity: 0
 					}, 400, 'easeOutCubic', function() {
-						$('.card').hide();
+						jQuery('.card').hide();
 						if($this.hasClass('stored')) {
 							$this.addClass('selected');
 						} else {
@@ -59,8 +59,8 @@
 						}
 					});
 				});
-				var replace = ($('.progress').text()).replace('1', '2');
-				$('.progress').text(replace);
+				var replace = (jQuery('.progress').text()).replace('1', '2');
+				jQuery('.progress').text(replace);
 				
 				/*
 				// Use this code for showing the payment form inline.
@@ -152,8 +152,8 @@
 
 <xsl:template match="item"  mode="other-wallet">
 	<div class="card wallet card-{@id}">
-		<div class="card-logo">
-			<img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}.png" alt="" />
+		<div class="card-logo" id="card-{@id}">
+			<!-- <img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}.png" alt="" /> -->
 		</div>
 		<div class="card-name">
 			<div class="card-button"><xsl:value-of select="name" /></div>
@@ -174,7 +174,7 @@
 
 		jQuery("head").append("<xsl:value-of select="head"/>");
 						
-		jQuery("#body-"+id).html('<xsl:value-of select="body"/>');
+		jQuery("#card-"+id).html('<xsl:value-of select="body"/>');
 	</script>
 </xsl:template>
 
