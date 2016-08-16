@@ -255,7 +255,7 @@ class ThreeDSecureAPITest extends baseAPITest
 			$aStates[] = $row["stateid"];
 		}
 
-		$this->assertEquals(1, count($aStates) );
+		$this->assertEquals(2, count($aStates) );
 		$this->assertEquals(Constants::iINPUT_VALID_STATE, $aStates[0]);
 	}
 
@@ -288,7 +288,7 @@ class ThreeDSecureAPITest extends baseAPITest
 			$aStates[] = $row["stateid"];
 		}
 
-		$this->assertEquals(1, count($aStates) );
+		$this->assertEquals(2, count($aStates) );
 		$this->assertEquals(Constants::iINPUT_VALID_STATE, $aStates[0]);
 	}
 }
