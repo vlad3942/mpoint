@@ -24,7 +24,9 @@ require_once(sCLASS_PATH ."/credit_card.php");
 // Require Business logic for the Payment Accepted component
 require_once(sCLASS_PATH ."/accept.php");
 
-$aWallets = array(Constants::iVISA_CHECKOUT_WALLET, Constants::iMASTER_PASS_WALLET, Constants::iAMEX_EXPRESS_CHECKOUT_WALLET);
+//$aWallets = array(Constants::iVISA_CHECKOUT_WALLET, Constants::iMASTER_PASS_WALLET, Constants::iAMEX_EXPRESS_CHECKOUT_WALLET);
+
+$aWallets = array(Constants::iVISA_CHECKOUT_WALLET);
 
 try
 {
