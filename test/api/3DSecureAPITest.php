@@ -257,6 +257,7 @@ class ThreeDSecureAPITest extends baseAPITest
 
 		$this->assertEquals(2, count($aStates) );
 		$this->assertEquals(Constants::iINPUT_VALID_STATE, $aStates[0]);
+		$this->assertEquals(Constants::i3D_SECURE_ACTIVATED_STATE, $aStates[1]);
 	}
 
 	public function testHTTPErrorFromEndpoint()
@@ -290,5 +291,6 @@ class ThreeDSecureAPITest extends baseAPITest
 
 		$this->assertEquals(2, count($aStates) );
 		$this->assertEquals(Constants::iINPUT_VALID_STATE, $aStates[0]);
+		$this->assertEquals(Constants::i3D_SECURE_ACTIVATED_STATE, $aStates[1]);
 	}
 }
