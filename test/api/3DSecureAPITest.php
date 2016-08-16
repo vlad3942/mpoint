@@ -244,7 +244,7 @@ class ThreeDSecureAPITest extends baseAPITest
 
 		$this->bIgnoreErrors = true;
 		$this->assertEquals(502, $iStatus);
-		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="94">Could not parse response from 3D Secure Challenge Parser, txnid: 1001001 URL: http://mpoint.local.cellpointmobile.com/_test/simulators/parse-3dsecure-challenge.php</status></root>', $sReplyBody);
+		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="94">Could not parse response from 3D Secure Challenge Parser for Transaction ID: 1001001 using URL: http://mpoint.local.cellpointmobile.com/_test/simulators/parse-3dsecure-challenge.php</status></root>', $sReplyBody);
 
 		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
 		$this->assertTrue(is_resource($res) );
