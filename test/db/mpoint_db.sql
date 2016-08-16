@@ -6838,6 +6838,19 @@ INSERT INTO Log.State_Tbl (id, name) VALUES (2007, 'Payment with voucher');
 ------- MASTER v1.90 ---
 /* ==================== Client SCHEMA START ==================== */
 ALTER TABLE Client.CardAccess_tbl ADD position integer default NULL;
+ALTER TABLE Client.CardAccess_tbl
+DROP CONSTRAINT cardaccess_uq;
+
+/*ALTER TABLE Client.CardAccess_tbl
+ADD CONSTRAINT cardaccess_uq UNIQUE (clientid, cardid);
+
+ALTER TABLE Client.CardAccess_tbl
+ADD CONSTRAINT cardaccess_card_country_uq UNIQUE (clientid, cardid, countryid);
+*/
+
+CREATE UNIQUE INDEX cardaccess_uq ON Client.CardAccess_tbl (clientid, cardid) WHERE countryid IS NULL;
+CREATE UNIQUE INDEX cardaccess_card_country_uq ON Client.CardAccess_tbl (clientid, cardid, countryid) WHERE countryid IS NOT NULL;
+
 /* ==================== Client SCHEMA END ==================== */
 
 ------- MASTER v1.93 ---
@@ -6846,12 +6859,6 @@ ALTER TABLE Client.Client_Tbl ADD num_masked_digits INT4 DEFAULT 4;
 ALTER TABLE Client.Client_Tbl ADD CONSTRAINT MaskedDigits_Chk CHECK (0 <= num_masked_digits AND num_masked_digits <= 4);
 /* ==================== Client SCHEMA END ==================== */
 
---- SETUP v1.94 --
-/* ========== CONFIGURE GlobalCollect AS PSP ================ */
-INSERT INTO System.PSP_Tbl (id, name) VALUES (20, 'GlobalCollect');
-INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) SELECT countryid, 20, name FROM System.PSPCurrency_Tbl WHERE pspid = 4;
-INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT cardid, 20 FROM System.PSPCard_Tbl WHERE pspid = 4;
-/* ========== CONFIGURE DATA CASH END ========== */
 ------- MASTER v1.94 ---
 /* ==================== CLIENT SCHEMA START ==================== */
 ALTER TABLE Client.MerchantAccount_Tbl ALTER name TYPE VARCHAR(255);

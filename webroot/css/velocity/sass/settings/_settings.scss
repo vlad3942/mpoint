@@ -1,0 +1,67 @@
+﻿/**
+ * CSS files are generated automatically, any changes will be overridden.
+ */
+
+
+// Default settings for velocity theme
+
+
+// Color definitions
+$black: #454545;
+$white: #FFF;
+$light-grey: #EDEDED;
+$grey: #DDD;
+$dark-grey: #676A6F;
+$blue: #339EF7;
+$dark-blue: #337AB7;
+
+// Layout definition
+$grid-columns:              12;
+$max-width:                 em(1280);
+
+// Fonts
+$fonts: 'Open Sans', Helvetica, Verdana, sans-serif;
+
+// Margins
+$section: 60px;
+$content: 30px;
+$body: 15px;
+
+// Custom mixins
+@mixin font($name) {
+  @if $name == 'small' {
+    font-size: em(13);
+	line-height: 1.5;
+  }
+  @if $name == 'regular' {
+    font-size: em(14);
+	line-height: 1.5;
+  }
+  @if $name == 'medium' {
+    font-size: em(20);
+	line-height: 1.3;
+  }
+  @if $name == 'title' {
+    font-size: em(60);
+	line-height: 1;
+  }
+}
+
+@mixin animate() {
+	@include transition (all 0.15s $ease-out-cubic);
+}
+
+// Convert a background image position from pixels to percent
+// $position: negative x or y position of the background image in the container in pixels
+// $img-size: total height or width of the background image in pixels
+// $container-size: total height or width of the container
+// $scale: multiplier to scale bacground image down width (for retina displays).
+// $y: set to false to position on the x axis instead.
+@mixin background-image-scale($position, $img-size, $container-size, $scale: 1, $y: true) {
+	@if $y == true {
+		background-position: 0 ($position/(($img-size/$scale) - $container-size)) * 100%;
+	}
+	@else {
+		background-position: ($position/(($img-size/$scale) - $container-size)) * 100% 0;
+	}
+}

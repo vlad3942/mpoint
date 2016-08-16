@@ -140,13 +140,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$iValResult = $obj_Validator->valPrice($obj_TxnInfo->getAmount(), (integer)$obj_DOM->pay[$i]->transaction->card->amount);
 						if ($iValResult != 10) { $aMsgCds[$iValResult + 50] = (string) $obj_DOM->pay[$i]->transaction->card->amount; }
 						
+						
+						$obj_CardXML = simpledom_load_string($obj_mPoint->getCards( (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount) );
+						
 						//Check if card or payment method is enabled or disabled by merchant
 						//Same check is  also implemented at app side.
-						$obj_CardXML = simpledom_load_string($obj_mPoint->getCards( (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount) );
+						$obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1]");
 
-						$obj_Elem = $obj_CardXML->xpath("/cards/item[@id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ."]");
-						if (count($obj_Elem) == 0) { $aMsgCds[90] = "Unable to find configuration for Payment Service Provider and card"; }
-						else if ( (integer)$obj_Elem["state-id"] != 1) { $aMsgCds[24] = "The selected payment card is not available"; }
+						
+						if (count($obj_Elem) == 0) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled
 
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
@@ -192,10 +194,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iANDROID_PAY_PSP);
 									break;
 								default:	// Standard Payment Service Provider
-									// Find Configuration for Payment Service Provider
-									$obj_XML = simpledom_load_string($obj_mPoint->getCards( (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount) );
-									// Determine Payment Service Provider based on selected card
-									$obj_Elem = $obj_XML->xpath("/cards/item[@id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ."]");
+									
 									if (array_key_exists(intval($obj_Elem["pspid"]), $aObj_PSPConfigs) === false)
 									{
 										if (intval($obj_Elem["pspid"]) > 0)
