@@ -43,6 +43,8 @@ html {
     content: "";
     display: block; }
   .wrapper .content .mpoint-status .status {
+    font-size: 0.8125em;
+    line-height: 1.5;
     margin-top: 15px;
     padding: 30px;
     background: #FFF;
@@ -53,7 +55,8 @@ html {
     text-align: center; }
     @media screen and (max-width: 40.0625em) {
       .wrapper .content .mpoint-status .status {
-        width: 100%; } }
+        width: 100%;
+        padding: 15px; } }
 .wrapper .content .card-wrapper {
   max-width: 80em;
   margin-left: auto;
@@ -353,6 +356,9 @@ html {
   -moz-transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
   transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
   display: none; }
+  @media screen and (max-width: 40.0625em) {
+    .wrapper .content .back-button {
+      width: 100%; } }
   .wrapper .content .back-button:hover {
     cursor: pointer;
     color: #339EF7; }

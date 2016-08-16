@@ -39,6 +39,7 @@
 			@include outer-container;
 			
 			.status {
+				@include font('small');
 				margin-top: 15px;
 				padding: 30px;
 				background: #FFF;
@@ -50,6 +51,7 @@
 				
 				@include media($mobile) {
 					width: 100%;
+					padding: $body;
 				}
 			}
 		}
@@ -383,6 +385,10 @@
 			@include font('small');
 			@include animate;
 			display: none;
+			
+			@include media($mobile) {
+				width: 100%;
+			}
 			
 			&:hover {
 				cursor: pointer;
