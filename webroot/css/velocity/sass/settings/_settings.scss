@@ -30,7 +30,7 @@ $body: 15px;
 // Custom mixins
 @mixin font($name) {
   @if $name == 'small' {
-    font-size: em(10);
+    font-size: em(13);
 	line-height: 1.5;
   }
   @if $name == 'regular' {

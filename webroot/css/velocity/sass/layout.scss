@@ -272,7 +272,7 @@
 								display: none;
 							}
 							.payment-form {
-								display: block;
+								display: block !important;
 							}
 						}
 					}
@@ -373,6 +373,20 @@
 						text-transform: uppercase;
 					}
 				}
+			}
+		}
+		
+		.back-button {
+			width: flex-grid(6, 12);
+			margin: 0 auto;
+			margin-top: $body;
+			@include font('small');
+			@include animate;
+			display: none;
+			
+			&:hover {
+				cursor: pointer;
+				color: $blue;
 			}
 		}
 	}

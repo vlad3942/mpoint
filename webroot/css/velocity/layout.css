@@ -243,7 +243,7 @@ html {
         .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.selected .card-logo {
           display: none; }
         .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.selected .payment-form {
-          display: block; }
+          display: block !important; }
     .wrapper .content .card-wrapper .cards .payment-form {
       display: none;
       background: #FFF;
@@ -343,5 +343,18 @@ html {
         margin: 0 auto;
         margin-top: 60px;
         text-transform: uppercase; }
+.wrapper .content .back-button {
+  width: 48.82117%;
+  margin: 0 auto;
+  margin-top: 15px;
+  font-size: 0.8125em;
+  line-height: 1.5;
+  -webkit-transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+  -moz-transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+  transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+  display: none; }
+  .wrapper .content .back-button:hover {
+    cursor: pointer;
+    color: #339EF7; }
 
 /*# sourceMappingURL=layout.css.map */

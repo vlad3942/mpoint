@@ -31,7 +31,10 @@
 						<xsl:apply-templates select="cards" mode="cpm" />
 					</xsl:if>
 				</div>
-			</div>
+				<div class="back-button">
+					&#10229; <xsl:value-of select="/root/labels/back-button" />
+				</div>
+			</div>		
 		</div>
 	</div>
 	<script type="text/javascript">
@@ -57,6 +60,8 @@
 						} else {
 							$this.next().fadeIn();
 						}
+						
+						j('.back-button').delay(200).slideDown('fast');
 					});
 				});
 				var replace = (jQuery('.progress').text()).replace('1', '2');
@@ -73,6 +78,26 @@
 				*/
 			});
 			
+			// Enable back button
+			jQuery('.back-button').click(function() {
+				j(this).fadeOut('fast');
+				jQuery('.card').each(function(i) {
+					j(this).animate({
+						right: '0',
+						opacity: 1
+					}, 0, 'easeOutCubic', function() {
+						jQuery('.card').show();
+						if(j(this).hasClass('stored')) {
+							j(this).removeClass('selected');
+						} else {
+							j('.payment-form').hide();
+						}
+					});
+				});
+				var replace = (jQuery('.progress').text()).replace('2', '1');
+				jQuery('.progress').text(replace);
+			});
+
 			// Toggle card name and password fields
 			$('.checkbox input[name="store-card"]').change(function() {
 				if(this.checked) {

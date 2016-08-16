@@ -139,6 +139,7 @@ try
 			<new-password>'. $_OBJ_TXT->_("New Password") .'</new-password>
 			<repeat-password>'. $_OBJ_TXT->_("Repeat Password") .'</repeat-password>
 			<name>'. $_OBJ_TXT->_("Card Name") .'</name>
+			<back-button>'. $_OBJ_TXT->_("Back button") .'</back-button>
 		</labels>';
 	
 	//$xml .= $obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount() );

@@ -1071,6 +1071,10 @@ msgstr @@@ Save card info @@@
 msgid @@@ Card holder @@@
 msgstr @@@ Name on card @@@
 
+#: /webroot/pay/card.php:142
+msgid @@@ Back button @@@
+msgstr @@@ Back to payment options @@@
+
 #: /webroot/overview.php:38
 msgid @@@ Order Overview @@@
 msgstr @@@ Order Overview @@@
