@@ -255,6 +255,14 @@ msgid @@@ Delivery - 77 @@@
 msgstr @@@ The entered Delivery Date is in the Past @@@
 msgid @@@ Overview - 11 @@@
 msgstr @@@ Please accept the Terms & Conditions to continue @@@
+msgid @@@ Select Card - 19 @@@
+msgstr @@@ You haven't entered expiry date, please try again? @@@
+msgid @@@ Select Card - 20 @@@
+msgstr @@@ Entered expiry date is less then present day, please try again? @@@
+msgid @@@ Select Card - 21 @@@
+msgstr @@@ Please enter card holder name, please try again? @@@
+msgid @@@ Select Card - 25 @@@
+msgstr @@@ Enter card number is invalid, please try again? @@@
 msgid @@@ Select Card - 43 @@@
 msgstr @@@ The payment could not be authorised with the provided password, your account has been deleted. @@@
 msgid @@@ Select Card - 49 @@@
