@@ -63,16 +63,7 @@ class ThreeDSecure extends General
 			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
 			$obj_HTTP->disConnect();
 
-			// Log 3D secure activated state along with the reply from the challenge parser endpoint
-			$debug = "-";
-			// Log only response if something went wrong
-			$aDontLog = array(HTTP::OK,
-						   	  HTTP::PARTIAL_CONTENT,
-							  HTTP::SEE_OTHER,
-							  HTTP::NOT_ACCEPTABLE);
-			if (in_array($code, $aDontLog, true) === false) { $debug = $obj_HTTP->getReplyBody(); }
-
-			$this->newMessage($obj_TxnInfo->getID(), Constants::i3D_SECURE_ACTIVATED_STATE, var_export(array("URL" => $this->_obj_ClientConfig->getParse3DSecureChallengeURLConfig()->getURL(), "Response-Code" => $code, "Response-Body "=> $debug), true) );
+			$this->newMessage($obj_TxnInfo->getID(), Constants::i3D_SECURE_ACTIVATED_STATE, var_export(array("URL" => $this->_obj_ClientConfig->getParse3DSecureChallengeURLConfig()->getURL(), "Response-Code" => $code, "Response-Body "=> $obj_HTTP->getReplyBody() ), true) );
 			// Try-parse response
 			if ( (simpledom_load_string($obj_HTTP->getReplyBody() ) instanceof SimpleDOMElement) === false)
 			{
