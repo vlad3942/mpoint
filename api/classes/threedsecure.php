@@ -32,8 +32,9 @@ class ThreeDSecure extends General
 
 
 	/**
-	 * Invokes external service for parsing 3D Secure challenge provided
-	 * Unless this operation fails with a fatal error, a state #1100 - 3D Secure Activated will be logged on the transaction
+	 * Invokes external service for parsing 3D Secure challenge provided.
+	 * This will log State: 1100 - 3D Secure Activated for the transaction.
+	 * 
 	 * @see Constants::i3D_SECURE_ACTIVATED_STATE
 	 *
 	 * @param TxnInfo $obj_TxnInfo Transaction to activate 3D Secure for
@@ -44,10 +45,9 @@ class ThreeDSecure extends General
 	 */
 	public function parse3DSecureChallenge(TxnInfo $obj_TxnInfo, SimpleXMLElement $obj_Challenge)
 	{
+		$code = -1;
 		try
 		{
-			$this->getDBConn()->query("BEGIN");
-
 			$obj_ConnInfo = $this->_obj_ClientConfig->getParse3DSecureChallengeURLConfig()->constConnInfo();
 
 			$b = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -64,8 +64,10 @@ class ThreeDSecure extends General
 			$obj_HTTP->disConnect();
 
 			// Log 3D secure activated state along with the reply from the challenge parser endpoint
-			$debug = $code == HTTP::OK || $code == HTTP::PARTIAL_CONTENT ? '-' : $obj_HTTP->getReplyBody(); // Log only response if something went wrong
-			$this->newMessage($obj_TxnInfo->getID(), Constants::i3D_SECURE_ACTIVATED_STATE, var_export(array("URL"=>$this->_obj_ClientConfig->getParse3DSecureChallengeURLConfig()->getURL(), "Response-Code"=>$code, "Response-Body"=>$debug), true) );
+			$debug = "-";
+			// Log only response if something went wrong
+			if ($code != HTTP::OK && $code != HTTP::PARTIAL_CONTENT) { $debug = $obj_HTTP->getReplyBody(); }
+			$this->newMessage($obj_TxnInfo->getID(), Constants::i3D_SECURE_ACTIVATED_STATE, var_export(array("URL" => $this->_obj_ClientConfig->getParse3DSecureChallengeURLConfig()->getURL(), "Response-Code" => $code, "Response-Body "=> $debug), true) );
 
 			// For specific response codes the reply body must be parsable
 			switch ($code)
@@ -81,22 +83,21 @@ class ThreeDSecure extends General
 				// Try-parse response
 				if ( (simpledom_load_string($obj_HTTP->getReplyBody() ) instanceof SimpleDOMElement) === false)
 				{
-					throw new mPointException("Could not parse response from 3D Secure Challenge Parser, txnid: ". $obj_TxnInfo->getID(). " URL: ". $this->_obj_ClientConfig->getParse3DSecureChallengeURLConfig()->getURL(), 94);
+					throw new mPointException("Could not parse response from 3D Secure Challenge Parser for Transaction ID: ". $obj_TxnInfo->getID(). " using URL: ". $this->_obj_ClientConfig->getParse3DSecureChallengeURLConfig()->getURL(), 94);
 				}
 			}
 
-			$this->getDBConn()->query("COMMIT");
 			return $obj_HTTP;
 		}
 		catch (mPointException $e)
 		{
-			$this->getDBConn()->query("ROLLBACK");
+			$this->newMessage($obj_TxnInfo->getID(), Constants::i3D_SECURE_ACTIVATED_STATE, var_export(array("URL" => $this->_obj_ClientConfig->getParse3DSecureChallengeURLConfig()->getURL(), "Response-Code" => $code, "Response-Body "=> $debug, "Exception" => $e), true) );
 			throw $e;
 		}
 		catch (HTTPException $e)
 		{
-			$this->getDBConn()->query("ROLLBACK");
-			throw new mPointException("Communication with 3D Secure Challenge parser failed, txnid: ". $obj_TxnInfo->getID() .", URL: ". $this->_obj_ClientConfig->getParse3DSecureChallengeURLConfig()->getURL(), 95, $e);
+			$this->newMessage($obj_TxnInfo->getID(), Constants::i3D_SECURE_ACTIVATED_STATE, var_export(array("URL" => $this->_obj_ClientConfig->getParse3DSecureChallengeURLConfig()->getURL(), "Exception" => $e), true) );
+			throw new mPointException("Communication with 3D Secure Challenge parser failed for Transaction ID: ". $obj_TxnInfo->getID() ." using URL: ". $this->_obj_ClientConfig->getParse3DSecureChallengeURLConfig()->getURL(), 95, $e);
 		}
 	}
 }
