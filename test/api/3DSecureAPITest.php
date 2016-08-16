@@ -277,7 +277,7 @@ class ThreeDSecureAPITest extends baseAPITest
 
 		$this->bIgnoreErrors = true;
 		$this->assertEquals(502, $iStatus);
-		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="95">Communication with 3D Secure Challenge parser failed, txnid: 1001001, URL: really.wrongdnsname</status></root>', $sReplyBody);
+		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="95">Communication with 3D Secure Challenge parser failed for Transaction ID: 1001001 using URL: really.wrongdnsname</status></root>', $sReplyBody);
 
 		$res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
 		$this->assertTrue(is_resource($res) );

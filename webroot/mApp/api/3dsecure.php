@@ -65,22 +65,22 @@ try
 	if (isset($_SERVER["PHP_AUTH_USER"]) === false || isset($_SERVER["PHP_AUTH_PW"]) === false) { throw new mPointSecurityException(mPointSecurityException::UNAUTHORIZED); }
 
 	// Validate basic information
-	$obj_3DSecure = Validate::valRequestFormat($obj_DOM, "mpoint.xsd", "request-3dsecure");
+	$obj_Challenge = Validate::valRequestFormat($obj_DOM, "mpoint.xsd", "request-3dsecure");
 
-	$code = Validate::valBasic($_OBJ_DB, (integer) $obj_3DSecure["client-id"], (integer) $obj_3DSecure["account"]);
+	$code = Validate::valBasic($_OBJ_DB, (integer) $obj_Challenge["client-id"], (integer) $obj_Challenge["account"]);
 	if ($code != 100) { throw new mPointSecurityException($code); }
 
-	$obj_ClientConfig = ClientConfig::authenticate($_OBJ_DB, (integer) $obj_3DSecure["client-id"], (integer) $obj_3DSecure["account"], $_SERVER["PHP_AUTH_USER"], $_SERVER["PHP_AUTH_PW"], $_SERVER["REMOTE_ADDR"]);
+	$obj_ClientConfig = ClientConfig::authenticate($_OBJ_DB, (integer) $obj_Challenge["client-id"], (integer) $obj_Challenge["account"], $_SERVER["PHP_AUTH_USER"], $_SERVER["PHP_AUTH_PW"], $_SERVER["REMOTE_ADDR"]);
 
 	// Begin validations specific to this controller
 	$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 
-	$iValResult = $obj_Validator->valOrderID($_OBJ_DB, (string) $obj_3DSecure->transaction, (integer) $obj_3DSecure->transaction["id"]);
-	if ($iValResult != 10) { $aMsgCds[$iValResult + 20] = "Transaction and Order ID doesn't match. mPoint ID: ". $obj_3DSecure->transaction["id"] ." Order ID: ". $obj_3DSecure->transaction; }
-	$iValResult = $obj_Validator->valmPointID($_OBJ_DB, (integer) $obj_3DSecure->transaction["id"], $obj_ClientConfig->getID() );
-	if ($iValResult != 3) { $aMsgCds[$iValResult + 30] = "Transaction not in right state. mPoint ID: ". $obj_3DSecure->transaction["id"] ." Client ID: ". $obj_ClientConfig->getID(); }
-	$iValResult = $obj_Validator->valChallenge($obj_3DSecure->challenge);
-	if ($iValResult != 10) { $aMsgCds[$iValResult + 40] = "Challenge invalid. Content-Type: ". $obj_3DSecure->challenge["content-type"] ." URL: ". $obj_3DSecure->challenge["url"]; }
+	$iValResult = $obj_Validator->valOrderID($_OBJ_DB, (string) $obj_Challenge->transaction, (integer) $obj_Challenge->transaction["id"]);
+	if ($iValResult != 10) { $aMsgCds[$iValResult + 20] = "Transaction and Order ID doesn't match. mPoint ID: ". $obj_Challenge->transaction["id"] ." Order ID: ". $obj_Challenge->transaction; }
+	$iValResult = $obj_Validator->valmPointID($_OBJ_DB, (integer) $obj_Challenge->transaction["id"], $obj_ClientConfig->getID() );
+	if ($iValResult != 3) { $aMsgCds[$iValResult + 30] = "Transaction not in right state. mPoint ID: ". $obj_Challenge->transaction["id"] ." Client ID: ". $obj_ClientConfig->getID(); }
+	$iValResult = $obj_Validator->valChallenge($obj_Challenge->challenge);
+	if ($iValResult != 10) { $aMsgCds[$iValResult + 40] = "Challenge invalid. Content-Type: ". $obj_Challenge->challenge["content-type"] ." URL: ". $obj_Challenge->challenge["url"]; }
 
 	// Validation errors have occurred
 	if (count($aMsgCds) > 0) { throw new mPointCustomValidationException($aMsgCds); }
@@ -89,9 +89,9 @@ try
 
 	try
 	{
-		$obj_TxnInfo = TxnInfo::produceInfo($obj_3DSecure->transaction["id"], $_OBJ_DB);
+		$obj_TxnInfo = TxnInfo::produceInfo($obj_Challenge->transaction["id"], $_OBJ_DB);
 		$obj_3DSecure = new ThreeDSecure($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
-		$obj_HTTP = $obj_3DSecure->parse3DSecureChallenge($obj_TxnInfo, $obj_3DSecure->challenge);
+		$obj_HTTP = $obj_3DSecure->parse3DSecureChallenge($obj_TxnInfo, $obj_Challenge->challenge);
 
 		// Forward external response directly to client
 		header(HTTP::getHTTPHeader($obj_HTTP->getReturnCode() ) );
@@ -99,12 +99,12 @@ try
 	}
 	catch (mPointException $e)
 	{
-		trigger_error($e->getMessage(), E_USER_WARNING);
+		trigger_error($e, E_USER_WARNING);
 		throw new mPointSimpleControllerException(HTTP::BAD_GATEWAY, $e->getCode(), $e->getMessage(), $e);
 	}
 	catch (Exception $e)
 	{
-		trigger_error($e->getMessage(), E_USER_ERROR);
+		trigger_error($e, E_USER_ERROR);
 		throw new mPointSimpleControllerException(HTTP::INTERNAL_SERVER_ERROR, $e->getCode(), $e->getMessage(), $e);
 	}
 }
