@@ -193,7 +193,7 @@
 					</div>
 					<div class="card-arrow">&#10095;</div>
 					<div class="payment-form">
-						<form id="pay-account" class="card-form" action="{func:constLink('/cpm/pay_account.php') }" method="post">
+						<form id="pay-account" class="card-form" action="{func:constLink('/cpm/sys/pay_account.php') }" method="post">
 							<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
 							<input type="hidden" name="cardtype" value="11" />
 							<input type="hidden" name="prepaid" value="false" />
