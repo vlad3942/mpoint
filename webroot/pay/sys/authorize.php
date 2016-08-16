@@ -27,22 +27,36 @@ if(isset($_POST['token']) == false)
 	
 	if(preg_match('/^\\d{2}\\/\\d{2}$/', $givenDate) == 0) 
 	{  
-		$aMsgCds[] = 20;
+		$aMsgCds[] = 19;
+		$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 	}
 	else 
 	{
 		$givenDateTimeStamp = strtotime(gmdate("Y-m-d H:i:sP", mktime(0, 0, 0, $_POST['expiry-month'], 01, $_POST['expiry-year'])));
 		
-		if ($givenDateTimeStamp < strtotime('today') ) { $aMsgCds[] = 20; }
+		if ($givenDateTimeStamp < strtotime('today') ) 
+		{ 
+			$aMsgCds[] = 20; 
+			$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+		}
 	}
 	
 	if( (count($_POST['cardnumber']) == 0 || (count($_POST['cardnumber']) > 0 && $obj_Validator->valCardNumber($_POST['cardnumber']) != 10))
-		) { $aMsgCds[] = 25; }
+		) 
+	{ 
+		$aMsgCds[] = 25; 
+		$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+	}
 	
 	if(empty($_POST['cardholdername']) == false)
 	{
 		$sCardHolderName = $_POST['cardholdername'];
-	} else { $sCardHolderName = "John Doe"; }
+	} 
+	else 
+	{ 
+		$aMsgCds[] = 25; 
+		$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE); 
+	}
 }
 
 if (count($aMsgCds) == 0)
