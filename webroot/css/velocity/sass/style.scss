@@ -1,0 +1,233 @@
+@import 'settings/base';
+
+/**
+ General styles goes here
+*/
+
+body {
+	font-family: $fonts;
+	font-style: normal;
+	font-size: 100%;
+	color: $black;
+	margin: 0;
+	background: $light-grey;
+	overflow-x: hidden;
+	width: 100%;
+	height: 100%;
+}
+
+h1, h2, strong, b {
+	font-weight: normal;
+}
+
+img {
+	width: 100%;
+	max-width: 100%;
+	height: auto;
+	vertical-align: bottom;
+}
+
+/* Fonts */
+h1 {
+	@include font('title');
+}
+
+h2 {
+	@include font('medium');
+}
+
+h3 {
+	@include font('medium');
+	margin: 0;
+}
+
+h4 {
+	@include font('regular');
+}
+
+/* Links */
+a:link, a:visited, li a.active, input[type="submit"] {
+	color: $black;
+	text-decoration: none;
+	@include animate;
+}
+
+a:hover, a:active {
+	color: $dark-grey;
+}
+
+p {
+  margin: 0 0 1.5em 0;
+}
+
+::-moz-selection {
+	color: white;
+	background: $blue;
+}
+
+::selection {
+	color: white;
+	background: $blue;
+}
+
+/* Form elements */
+#{$all-text-inputs} {
+	font-family: $fonts;
+	font-weight: normal;
+	font-style:normal;
+	color: $black;
+	border: 1px solid $grey;
+	border-radius: 2px;
+	@include font('regular');
+	padding: 10px;
+	line-height: normal;
+	width: 100%;
+}
+
+label {
+    font-weight: 300;
+    font-style: italic;
+    -webkit-user-select: none;
+    display: inline-block;
+    max-width: 100%;
+    margin-bottom: 5px;
+}
+
+input::input-placeholder {
+	color: $grey;
+}
+input::-moz-placeholder {
+	color: $grey;
+}
+input:-moz-placeholder {
+	color: $grey;
+}
+input:-ms-input-placeholder {
+	color: $grey;
+}
+input::-webkit-input-placeholder {
+	color: $grey;
+}
+
+select {
+	font-family: $fonts;
+	font-style:normal;
+	color: $black;
+	border: 1px solid $grey;
+	@include font('regular');
+	padding: 10px;
+	line-height: normal;
+	width: 100%;
+}
+
+input[type="submit"] {
+	@include font('medium');
+	font-family: $fonts;
+	font-style:normal;
+	font-weight: 300;
+	color: $white;
+	background: $blue;
+	border: 0;
+	border-radius: 4px;
+	padding: 8px 0;
+	&:hover {
+		cursor: pointer;
+		background: $dark-blue;
+	}
+}
+
+input[type="checkbox"], input[type="radio"] {
+  margin: 4px 10px 0 0;
+  line-height: normal;
+}
+
+.radio,
+.checkbox {
+	position: relative;
+	display: block;
+	margin-top: 10px;
+	margin-bottom: 10px;
+
+	label {
+		min-height: 20px;
+		margin-bottom: 0;
+		cursor: pointer;
+		-webkit-user-select: none;
+	}
+}
+
+.loader-screen {
+	opacity: 0;
+	z-index: -1;
+	background: rgba(255, 255, 255, .6);
+	height: 100vh;
+	width: 100%;
+	top: 0px;
+	position: absolute;
+	@include animate();
+	
+	.loader {
+		background: none;
+		position: absolute;
+		width: 200px;
+		height: 200px;
+		margin: auto;
+		top: -60px;
+		bottom: 0;
+		right: 0;
+		left: 0;
+		@include transform(scale(0.54));
+
+		> div {
+			position: absolute;
+			top: 160px;
+			left: 100px;
+			width: 40px;
+			height: 40px;
+			margin-top: -20px;
+			margin-left: -20px;
+			border-radius: 20px;
+			background: #339ef7;
+			@include animation(loader0 1s linear infinite);
+		}
+	}
+}
+
+@include keyframes(loader0) {
+  0% {
+    top: 160px;
+  }
+  12% {
+    top: 105px;
+  }
+  25% {
+    top: 62px;
+  }
+  37% {
+    top: 38px;
+  }
+  50% {
+    top: 30px;
+  }
+  62% {
+    top: 37px;
+  }
+  75% {
+    top: 62px;
+  }
+  87% {
+    top: 101px;
+  }
+  100% {
+    top: 160px;
+  }
+}
+
+@include keyframes(loader1) {
+  0% {
+    @include transform(translate(0, -60px) rotate(0deg) translate(60px, 0));
+  }
+  100% {
+    @include transform(translate(0, -60px) rotate(360deg) translate(60px, 0));
+  }
+}

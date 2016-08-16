@@ -106,6 +106,7 @@ class DIBS extends Callback implements Captureable, Refundable
 	 */
 	public function authTicket($ticket)
 	{
+					
 		// Construct Order ID
 		$oid = $this->getTxnInfo()->getOrderID();
 		if (empty($oid) === true) { $oid = $this->getTxnInfo()->getID(); }
@@ -134,7 +135,8 @@ class DIBS extends Callback implements Captureable, Refundable
 			$aStatus["transact"] = $aStatus["reason"] * -1;
 		}
 
-		return $aStatus["transact"];
+		return $aStatus["transact"];				
+				
 	}
 
 	/**

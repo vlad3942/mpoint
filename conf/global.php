@@ -109,7 +109,7 @@ $aHTTP_CONN_INFO["mesb"]["password"] = "";
  * Connection info for sending error reports to a remote host
  */
 $aHTTP_CONN_INFO["iemendo"]["protocol"] = "http";
-$aHTTP_CONN_INFO["iemendo"]["host"] = "iemendo.cellpointmobile.com";
+$aHTTP_CONN_INFO["iemendo"]["host"] = "iemendo.test.cellpointmobile.com";
 $aHTTP_CONN_INFO["iemendo"]["port"] = 80;
 $aHTTP_CONN_INFO["iemendo"]["timeout"] = 20;
 $aHTTP_CONN_INFO["iemendo"]["path"] = "/api/receive_report.php";
@@ -122,7 +122,7 @@ $aHTTP_CONN_INFO["iemendo"]["contenttype"] = "text/xml";
  * Connection info for identifying a mobile device by sending its UA Profile information to iEmendo
  */
 $aUA_CONN_INFO["protocol"] = "http";
-$aUA_CONN_INFO["host"] = "iemendo.cellpointmobile.com";
+$aUA_CONN_INFO["host"] = "iemendo.test.cellpointmobile.com";
 $aUA_CONN_INFO["port"] = 80;
 $aUA_CONN_INFO["timeout"] = 20;
 $aUA_CONN_INFO["path"] = "/api/uaprofile.php";
@@ -482,7 +482,7 @@ $aGM_CONN_INFO["logpath"] = sLOG_PATH;
 $aGM_CONN_INFO["mode"] = 1;
 
 $aCPM_CONN_INFO["protocol"] = "http";
-$aCPM_CONN_INFO["host"] = "mpoint.localhost";
+$aCPM_CONN_INFO["host"] = "mpoint.local.cellpointmobile.com";
 $aCPM_CONN_INFO["port"] = 80;
 $aCPM_CONN_INFO["timeout"] = 20;
 $aCPM_CONN_INFO["path"] = "/callback/cpm.php";
@@ -494,7 +494,7 @@ $aCPM_CONN_INFO["contenttype"] = "application/x-www-form-urlencoded";
 /**
  * Template for website design
  */
-define("sTEMPLATE", "default");
+define("sTEMPLATE", "velocity");
 
 /**
  * Language for GUI
