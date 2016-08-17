@@ -203,6 +203,11 @@ html {
       text-align: center; }
       .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card:last-child {
         margin-right: 0; }
+      @media screen and (min-width: 48.0625em) {
+        .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card:nth-child(3n) {
+          margin-right: 0; }
+        .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card:nth-child(3n+1) {
+          clear: left; } }
       @media screen and (max-width: 48.0625em) {
         .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card {
           float: left;
@@ -231,7 +236,9 @@ html {
         float: none;
         width: 100%;
         line-height: normal;
-        margin-top: 15px; }
+        margin-top: 15px;
+        font-size: 0.8125em;
+        line-height: 1.5; }
       .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.selected {
         width: 100%;
         padding: 0;
