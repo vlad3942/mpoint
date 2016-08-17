@@ -225,6 +225,10 @@
 						padding: $body;
 						text-align: center;
 						
+						@include media($desktop) {
+							@include omega(3n);
+						}
+						
 						@include media($tablet) {
 							@include span-columns(6 of 12);
 							@include omega(2n);
@@ -254,6 +258,7 @@
 							width: 100%;
 							line-height: normal;
 							margin-top: 15px;
+							@include font('small');
 						}
 						
 						&.selected {

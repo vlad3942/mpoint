@@ -4,7 +4,7 @@
 $iphone: new-breakpoint(max-width em(481) 4);
 $mobile: new-breakpoint(max-width em(641) 6);
 $tablet: new-breakpoint(max-width em(769) 12);
-$desktop: new-breakpoint(max-width em(1025) 12);
+$desktop: new-breakpoint(min-width em(769) 12);
 
 // Visual grid
 $visual-grid:               false; // Set to true to display the grid.
