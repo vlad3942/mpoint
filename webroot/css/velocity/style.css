@@ -83,6 +83,8 @@ input[type="color"], input[type="date"], input[type="datetime"], input[type="dat
   padding: 10px;
   line-height: normal;
   width: 100%; }
+  input[type="color"].has-error, input[type="date"].has-error, input[type="datetime"].has-error, input[type="datetime-local"].has-error, input[type="email"].has-error, input[type="month"].has-error, input[type="number"].has-error, input[type="password"].has-error, input[type="search"].has-error, input[type="tel"].has-error, input[type="text"].has-error, input[type="time"].has-error, input[type="url"].has-error, input[type="week"].has-error, input:not([type]).has-error, textarea.has-error {
+    box-shadow: 0 0 5px red; }
 
 label {
   font-weight: 300;

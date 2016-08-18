@@ -82,6 +82,10 @@ p {
 	padding: 10px;
 	line-height: normal;
 	width: 100%;
+	
+	&.has-error {
+		box-shadow: 0 0 5px red;
+	}
 }
 
 label {
