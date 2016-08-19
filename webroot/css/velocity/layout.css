@@ -98,79 +98,6 @@ html {
         background-image: none; }
         .wrapper .content .card-wrapper .cards .card:hover .card-logo .icon .hover, .wrapper .content .card-wrapper .cards .card.hover .card-logo .icon .hover {
           opacity: 1; }
-      .wrapper .content .card-wrapper .cards .card .card-logo {
-        float: left;
-        display: block;
-        margin-right: 4.82916%;
-        width: 30.11389%; }
-        .wrapper .content .card-wrapper .cards .card .card-logo:last-child {
-          margin-right: 0; }
-        .wrapper .content .card-wrapper .cards .card .card-logo img {
-          max-height: 30px;
-          width: auto; }
-        .wrapper .content .card-wrapper .cards .card .card-logo .icon {
-          height: 30px;
-          background-size: 100%;
-          width: 48px;
-          background-position: 0px 0%;
-          opacity: 1; }
-          .wrapper .content .card-wrapper .cards .card .card-logo .icon .hover {
-            height: 30px;
-            background-size: 100%;
-            width: 48px;
-            background-position: 0px 0%;
-            opacity: 0;
-            -webkit-transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
-            -moz-transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
-            transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1); }
-          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-1 {
-            background-position: 0 38.77551%; }
-            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-1 .hover {
-              background-position: 0 36.73469%; }
-          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-2 {
-            background-position: 0 4.08163%; }
-            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-2 .hover {
-              background-position: 0 2.04082%; }
-          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-3 {
-            background-position: 0 28.57143%; }
-            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-3 .hover {
-              background-position: 0 26.53061%; }
-          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-4, .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-7 {
-            background-position: 0 16.32653%; }
-            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-4 .hover, .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-7 .hover {
-              background-position: 0 14.28571%; }
-          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-5 {
-            background-position: 0 34.69388%; }
-            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-5 .hover {
-              background-position: 0 32.65306%; }
-          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-6 {
-            background-position: 0 20.40816%; }
-            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-6 .hover {
-              background-position: 0 18.36735%; }
-          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-8 {
-            background-position: 0 8.16327%; }
-            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-8 .hover {
-              background-position: 0 6.12245%; }
-          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-9 {
-            background-position: 0 12.2449%; }
-            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-9 .hover {
-              background-position: 0 10.20408%; }
-          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-12 {
-            background-position: 0 185.71429%; }
-            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-12 .hover {
-              background-position: 0 183.67347%; }
-          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-13 {
-            background-position: 0 189.79592%; }
-            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-13 .hover {
-              background-position: 0 187.7551%; }
-          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-14 {
-            background-position: 0 38.77551%; }
-            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-14 .hover {
-              background-position: 0 36.73469%; }
-          .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-22 {
-            background-position: 0 132.65306%; }
-            .wrapper .content .card-wrapper .cards .card .card-logo .icon.card-22 .hover {
-              background-position: 0 132.65306%; }
       .wrapper .content .card-wrapper .cards .card .card-name {
         float: left;
         display: block;
@@ -190,6 +117,79 @@ html {
         line-height: 30px; }
         .wrapper .content .card-wrapper .cards .card .card-arrow:last-child {
           margin-right: 0; }
+    .wrapper .content .card-wrapper .cards .card-logo {
+      float: left;
+      display: block;
+      margin-right: 4.82916%;
+      width: 30.11389%; }
+      .wrapper .content .card-wrapper .cards .card-logo:last-child {
+        margin-right: 0; }
+      .wrapper .content .card-wrapper .cards .card-logo img {
+        max-height: 30px;
+        width: auto; }
+      .wrapper .content .card-wrapper .cards .card-logo .icon {
+        height: 30px;
+        background-size: 100%;
+        width: 48px;
+        background-position: 0px 0%;
+        opacity: 1; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon .hover {
+          height: 30px;
+          background-size: 100%;
+          width: 48px;
+          background-position: 0px 0%;
+          opacity: 0;
+          -webkit-transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+          -moz-transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+          transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1); }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-1 {
+          background-position: 0 38.77551%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-1 .hover {
+            background-position: 0 36.73469%; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-2 {
+          background-position: 0 4.08163%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-2 .hover {
+            background-position: 0 2.04082%; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-3 {
+          background-position: 0 28.57143%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-3 .hover {
+            background-position: 0 26.53061%; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-4, .wrapper .content .card-wrapper .cards .card-logo .icon.card-7 {
+          background-position: 0 16.32653%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-4 .hover, .wrapper .content .card-wrapper .cards .card-logo .icon.card-7 .hover {
+            background-position: 0 14.28571%; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-5 {
+          background-position: 0 34.69388%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-5 .hover {
+            background-position: 0 32.65306%; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-6 {
+          background-position: 0 20.40816%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-6 .hover {
+            background-position: 0 18.36735%; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-8 {
+          background-position: 0 8.16327%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-8 .hover {
+            background-position: 0 6.12245%; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-9 {
+          background-position: 0 12.2449%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-9 .hover {
+            background-position: 0 10.20408%; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-12 {
+          background-position: 0 185.71429%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-12 .hover {
+            background-position: 0 183.67347%; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-13 {
+          background-position: 0 189.79592%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-13 .hover {
+            background-position: 0 187.7551%; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-14 {
+          background-position: 0 38.77551%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-14 .hover {
+            background-position: 0 36.73469%; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-22 {
+          background-position: 0 132.65306%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-22 .hover {
+            background-position: 0 132.65306%; }
     .wrapper .content .card-wrapper .cards .stored-cards-wrapper::after {
       clear: both;
       content: "";
@@ -269,6 +269,18 @@ html {
       @media screen and (max-width: 40.0625em) {
         .wrapper .content .card-wrapper .cards .payment-form {
           padding: 30px; } }
+      .wrapper .content .card-wrapper .cards .payment-form .cardnumber {
+        position: relative; }
+        .wrapper .content .card-wrapper .cards .payment-form .cardnumber .card-logo {
+          float: none;
+          margin: 0;
+          width: auto;
+          position: absolute;
+          right: 7px;
+          top: 7px; }
+          .wrapper .content .card-wrapper .cards .payment-form .cardnumber .card-logo .icon {
+            height: 28px;
+            width: 44px; }
       .wrapper .content .card-wrapper .cards .payment-form .additional {
         margin-top: 30px; }
         .wrapper .content .card-wrapper .cards .payment-form .additional::after {

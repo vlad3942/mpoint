@@ -121,12 +121,17 @@
 		<div class="card-arrow">&#10095;</div>
 	</div>
 	<div class="payment-form">
-		<form class="card-form" action="{func:constLink('/pay/sys/authorize.php') }" method="post" autocomplete="on">
+		<form class="new-card-form" action="{func:constLink('/pay/sys/authorize.php') }" method="post" autocomplete="on">
 			<input type="hidden" name="cardtype" value="" />
 			<input type="hidden" name="pspid" value="{@pspid}" />
 			<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
 			<label for="cardnumber"><xsl:value-of select="/root/labels/cardnumber" /></label>
-			<input type="tel" name="cardnumber" class="cc-number" autocomplete="cc-number" maxlength="19" required="required" placeholder="1111 2222 3333 4444" />
+			<div class="cardnumber">
+				<div class="cc-card-type card-logo">
+					<div class="icon" style="background-image: url({/root/system/protocol}://{/root/system/host}/img/card_payment.png)" />
+				</div>
+				<input type="tel" name="cardnumber" class="cc-number" autocomplete="cc-number" maxlength="19" required="required" placeholder="1111 2222 3333 4444" />
+			</div>
 			
 			<div class="additional">
 				<div class="expiry">
@@ -173,6 +178,103 @@
 			<input type="submit" value="{/root/labels/button}" />
 		</form>
 	</div>
+	<script type="text/javascript">
+		var cards = [
+		<xsl:for-each select="/root/cards/item">
+			<xsl:if test="@id = 1 or @id = 2 or @id = 3 or @id = 5 or @id = 6 or @id = 7 or @id = 8 or @id = 9">
+			{
+				type: 'card-<xsl:value-of select="@id" />',
+				patterns: [
+					<xsl:for-each select="prefixes/prefix">
+						[<xsl:value-of select="min" />, <xsl:value-of select="max" />],
+					</xsl:for-each>
+				],
+				format: 
+				<xsl:choose>
+					<xsl:when test="@id = 1 or @id = 3">
+						/(\d{1,4})(\d{1,6})?(\d{1,4})?/
+					</xsl:when>
+					<xsl:otherwise>
+						/(\d{1,4})/g
+					</xsl:otherwise>
+				</xsl:choose>,
+				length: [<xsl:value-of select="@min-length" />, <xsl:value-of select="@max-length" />],
+				cvcLength: [<xsl:value-of select="@cvc-length" />],
+				luhn: true
+			},
+			</xsl:if>
+		</xsl:for-each>
+		];
+		
+		for(i = 0; i &lt; cards.length; i++) {
+			// Convert patterns to a non-nested array:
+			var new_pattern = [];
+			for(x = 0; x &lt; cards[i].patterns.length; x++) {
+				if(cards[i].patterns[x][0] == cards[i].patterns[x][1]) {
+					new_pattern.push(cards[i].patterns[x][0]);
+				} else if (cards[i].patterns[x][0] &lt; cards[i].patterns[x][1]) {
+					for(y = cards[i].patterns[x][0]; y &lt;= cards[i].patterns[x][1]; y++) {
+						new_pattern.push(y);
+					}
+				}
+			}
+			cards[i].patterns = new_pattern;
+			
+			// Provide one length if min and max are the same:
+			if(cards[i].length[0] == cards[i].length[1]) {
+				cards[i].length.pop(cards[i].length[1]);
+			}
+		}
+
+		jQuery(function($) {
+			var hasError = true;
+			$.payment.cards = cards;
+			
+			// Format input fields
+			$('input.cc-number').payment('formatCardNumber');
+			$('input.cc-cvv').payment('formatCardCVC');
+			$('input.cc-month').payment('restrictNumeric');
+			$('input.cc-year').payment('restrictNumeric');
+			
+			// Toggle error class for input fields
+			$.fn.toggleInputError = function(erred) {
+				$(this).toggleClass('has-error', erred);
+				return erred;
+			};
+			
+			// Validate the card input fields
+			function validateInput() {
+				var cardType = $.payment.cardType($('.cc-number').val());
+				var cardError = $('.cc-number').toggleInputError(!$.payment.validateCardNumber($('.cc-number').val()));
+				var expiryError = $('.cc-month').toggleInputError(!$.payment.validateCardExpiry($('.cc-month').val(), $('.cc-year').val()));
+				var expiryError = $('.cc-year').toggleInputError(!$.payment.validateCardExpiry($('.cc-month').val(), $('.cc-year').val()));
+				var cvcError = $('.cc-cvv').toggleInputError(!$.payment.validateCardCVC($('.cc-cvv').val(), cardType));
+				$('.cc-card-type div').attr('class', 'icon ' + cardType);
+				
+				if(cardError == true || expiryError == true || cvcError == true) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+			
+			$('.cc-number, .cc-cvv, .cc-month, .cc-year').on('change paste keyup input', function(){
+				validateInput();
+			});
+			
+			// Prevent form submission if input does not validate
+			$('form.new-card-form').submit(function(e) {
+				hasError = validateInput();
+				
+				if(hasError) {
+					e.preventDefault();
+				} else {
+					// Display loading screen
+					$('.loader-screen').css({'opacity': 1, 'z-index': 20});
+				}
+			});
+		});
+	</script>
 </xsl:template>
 
 <xsl:template match="item"  mode="other-wallet">
