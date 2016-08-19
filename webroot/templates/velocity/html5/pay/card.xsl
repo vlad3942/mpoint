@@ -145,7 +145,7 @@
 				<div class="cc-card-type card-logo">
 					<div class="icon" style="background-image: url({/root/system/protocol}://{/root/system/host}/img/card_payment.png)" />
 				</div>
-				<input type="tel" name="cardnumber" class="cc-number" autocomplete="cc-number" maxlength="19" required="required" placeholder="1111 2222 3333 4444" />
+				<input type="tel" name="cardnumber" class="cc-number" autocomplete="cc-number" maxlength="23" required="required" placeholder="1111 2222 3333 4444" />
 			</div>
 			
 			<div class="additional">
@@ -235,9 +235,15 @@
 			}
 			cards[i].patterns = new_pattern;
 			
-			// Provide one length if min and max are the same:
+			// Provide one length if min and max are the same, otherwise all possible lengths:
 			if(cards[i].length[0] == cards[i].length[1]) {
 				cards[i].length.pop(cards[i].length[1]);
+			} else {
+				var new_length = [];
+				for(z = cards[i].length[0]; z &lt;= cards[i].length[1]; z++) {
+					new_length.push(z);
+				}
+				cards[i].length = new_length;
 			}
 		}
 
@@ -265,6 +271,9 @@
 				var expiryError = $('.cc-year').toggleInputError(!$.payment.validateCardExpiry($('.cc-month').val(), $('.cc-year').val()));
 				var cvcError = $('.cc-cvv').toggleInputError(!$.payment.validateCardCVC($('.cc-cvv').val(), cardType));
 				$('.cc-card-type div').attr('class', 'icon ' + cardType);
+				if(Boolean(cardType) != false) {
+					$('input[name="cardtype"]').val(cardType.replace('card-', ''));
+				}
 				
 				if(cardError == true || expiryError == true || cvcError == true) {
 					return true;
