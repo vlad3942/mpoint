@@ -46,36 +46,43 @@
 				jQuery('.loader-screen').css({'opacity': 1, 'z-index': 20});
 			});
 			
-			jQuery('.card').not('.wallet').click(function() {
+			jQuery('.card').not('.wallet').click(function(event) {
 				// Use this code for showing the payment form in a second step
 				var $this = jQuery(this);
-				jQuery('.card').each(function(i) {
-					j(this).delay(50*i).animate({
-						right: '-=1000',
-						opacity: 0
-					}, 400, 'easeOutCubic', function() {
-						jQuery('.card').hide();
-						if($this.hasClass('stored')) {
-							$this.addClass('selected');
-						} else {
-							$this.next().fadeIn();
-						}
-						
-						j('.back-button').delay(200).slideDown('fast');
+				if($this.hasClass('delete-selected') === false &amp;&amp; $this.hasClass('selected') === false) {
+					jQuery('.card').each(function(i) {
+						j(this).delay(50*i).animate({
+							right: '-=1000',
+							opacity: 0
+						}, 400, 'easeOutCubic', function() {
+							jQuery('.card').hide();
+							if(event.target.className === 'delete-card-icon') {
+								$this.addClass('delete-selected');
+								$($this).find('.deletion-form').fadeIn();
+							} else {
+								if($this.hasClass('stored')) {
+									$this.addClass('selected');
+								} else {
+									$this.next().fadeIn();
+								}
+							}
+							
+							j('.back-button').delay(200).slideDown('fast');
+						});
 					});
-				});
-				var replace = (jQuery('.progress').text()).replace('1', '2');
-				jQuery('.progress').text(replace);
-				
-				/*
-				// Use this code for showing the payment form inline.
-				if($(this).hasClass('hover') === false) {
-					$('.card').removeClass('hover');
-					$(this).addClass('hover');
-					$('.payment-form').slideUp('fast', 'easeOutCubic');
-					$(this).next().fadeIn();
+					var replace = (jQuery('.progress').text()).replace('1', '2');
+					jQuery('.progress').text(replace);
+					
+					/*
+					// Use this code for showing the payment form inline.
+					if($(this).hasClass('hover') === false) {
+						$('.card').removeClass('hover');
+						$(this).addClass('hover');
+						$('.payment-form').slideUp('fast', 'easeOutCubic');
+						$(this).next().fadeIn();
+					}
+					*/
 				}
-				*/
 			});
 			
 			// Enable back button
@@ -89,6 +96,7 @@
 						jQuery('.card').show();
 						if(j(this).hasClass('stored')) {
 							j(this).removeClass('selected');
+							j(this).removeClass('delete-selected');
 						} else {
 							j('.payment-form').hide();
 						}
@@ -105,6 +113,13 @@
 				} else {
 					$('.payment-form .save-card').removeClass('active');
 				}
+			});
+			
+			// Stored card deletion form show
+			$('.delete-card-icon').hover(function() {
+				$(this).parent().addClass('ignore-hover');
+			}, function() {
+				$(this).parent().removeClass('ignore-hover');
 			});
 		});
 	</script>
@@ -130,7 +145,7 @@
 				<div class="cc-card-type card-logo">
 					<div class="icon" style="background-image: url({/root/system/protocol}://{/root/system/host}/img/card_payment.png)" />
 				</div>
-				<input type="tel" name="cardnumber" class="cc-number" autocomplete="cc-number" maxlength="19" required="required" placeholder="1111 2222 3333 4444" />
+				<input type="tel" name="cardnumber" class="cc-number" autocomplete="cc-number" maxlength="23" required="required" placeholder="1111 2222 3333 4444" />
 			</div>
 			
 			<div class="additional">
@@ -220,9 +235,15 @@
 			}
 			cards[i].patterns = new_pattern;
 			
-			// Provide one length if min and max are the same:
+			// Provide one length if min and max are the same, otherwise all possible lengths:
 			if(cards[i].length[0] == cards[i].length[1]) {
 				cards[i].length.pop(cards[i].length[1]);
+			} else {
+				var new_length = [];
+				for(z = cards[i].length[0]; z &lt;= cards[i].length[1]; z++) {
+					new_length.push(z);
+				}
+				cards[i].length = new_length;
 			}
 		}
 
@@ -250,6 +271,9 @@
 				var expiryError = $('.cc-year').toggleInputError(!$.payment.validateCardExpiry($('.cc-month').val(), $('.cc-year').val()));
 				var cvcError = $('.cc-cvv').toggleInputError(!$.payment.validateCardCVC($('.cc-cvv').val(), cardType));
 				$('.cc-card-type div').attr('class', 'icon ' + cardType);
+				if(Boolean(cardType) != false) {
+					$('input[name="cardtype"]').val(cardType.replace('card-', ''));
+				}
 				
 				if(cardError == true || expiryError == true || cvcError == true) {
 					return true;
@@ -310,6 +334,7 @@
 		<xsl:for-each select="/root/stored-cards/card">
 			<xsl:if test="client/@id = /root/client-config/@id">
 				<div class="card stored card-{type/@id}">
+					<div class="delete-card-icon" title="{/root/labels/delete-card}">&#10006;</div>
 					<div class="card-logo">
 						<div class="icon card-{type/@id}" style="background-image: url({/root/system/protocol}://{/root/system/host}/img/card_payment.png)">
 							<div class="hover" style="background-image: url({/root/system/protocol}://{/root/system/host}/img/card_payment.png)" />
@@ -318,7 +343,35 @@
 					<div class="card-name">
 						<div class="card-button"><xsl:value-of select="name" /></div>
 					</div>
-					<div class="card-arrow">&#10095;</div>
+
+					<div class="deletion-form">
+						<div class="card-info">
+							<div class="card-logo">
+								<div class="icon card-{type/@id}" style="background-image: url({/root/system/protocol}://{/root/system/host}/img/card_payment.png)">
+									<div class="hover" style="background-image: url({/root/system/protocol}://{/root/system/host}/img/card_payment.png)" />
+								</div>
+							</div>
+							<div class="card-name">
+								<div class="card-button"><xsl:value-of select="name" /></div>
+							</div>
+							<div class="card-mask">
+								<div class="card-button"><xsl:value-of select="mask" /></div>
+							</div>
+							<div class="card-expiry">
+								<div class="card-button"><xsl:value-of select="expiry" /></div>
+							</div>							
+						</div>
+						
+						<form id="delete-card" class="card-form" action="{func:constLink('/cpm/sys/del_card.php') }" method="post">
+							<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
+							<input type="hidden" name="cardtype" value="11" />
+							<input type="hidden" name="prepaid" value="false" />
+							<input type="hidden" id="cardid" name="cardid" value="{@id}" />
+							<input type="password" class="password" name="pwd" value="" required="required" placeholder="{/root/labels/password}" />
+							<input type="submit" value="{/root/labels/delete-card}" />
+						</form>
+					</div>
+
 					<div class="payment-form">
 						<form id="pay-account" class="card-form" action="{func:constLink('/cpm/sys/pay_account.php') }" method="post">
 							<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
@@ -327,7 +380,7 @@
 							<input type="hidden" id="cardid" name="cardid" value="{@id}" />
 
 							<label for="password"><xsl:value-of select="/root/labels/password" /></label>
-							<input type="password" name="pwd" value="" />
+							<input type="password" name="pwd" value="" required="required" />
 							
 							<input type="submit" value="{/root/labels/submit}" />
 						</form>

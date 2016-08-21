@@ -84,7 +84,7 @@
 					border-radius: 5px;
 					position: relative;
 					
-					&:hover, &.hover {
+					&:not(.ignore-hover):hover, &:not(.ignore-hover).hover {
 						background: $blue;
 						color: $white;
 						cursor: pointer;
@@ -228,8 +228,22 @@
 							@include omega(2n);
 						}
 						
-						.card-arrow {
-							display: none;
+						.delete-card-icon {
+							background: $grey;
+							color: $black;
+							position: absolute;
+							right: 15px;
+							border-radius: 10px;
+							height: 16px;
+							width: 16px;
+							font-size: 10px;
+							line-height: 16px;
+							
+							&:hover {
+								background: $dark-grey;
+								color: white;
+								cursor: pointer;
+							}
 						}
 						
 						.card-logo {
@@ -268,18 +282,57 @@
 								color: $black;
 								cursor: inherit;
 							}
-							
-							.card-logo {
+
+							.card-logo, .delete-card-icon, .card-name {
 								display: none;
 							}
 							.payment-form {
 								display: block !important;
 							}
 						}
+						
+						&.delete-selected {
+							width: 100%;
+							padding: 0;
+							background: none;
+							display: block !important;
+							right: 0 !important;
+							opacity: 1 !important;
+							border: 0;
+							
+							&:hover {
+								color: $black;
+								cursor: inherit;
+							}
+							
+							.card-logo, .delete-card-icon, .card-name {
+								display: none;
+							}
+							.deletion-form {
+								display: block !important;
+								.card-logo, .delete-card-icon, .card-name {
+									display: block;
+								}
+								
+								.card-logo {
+									.icon {
+										height: 55px;
+										width: 88px;
+									}
+									.hover {
+										display: none;
+									}
+								}
+								
+								.card-name {
+									margin-bottom: $body;
+								}
+							}
+						}
 					}
 				}
 				
-				.payment-form {
+				.payment-form, .deletion-form {
 					display: none;
 					@include clearfix;
 					background: $white;
@@ -382,6 +435,10 @@
 						.new-password {
 							clear: left;
 						}
+					}
+					
+					.password {
+						margin-top: $content;
 					}
 					
 					input[type="submit"] {
