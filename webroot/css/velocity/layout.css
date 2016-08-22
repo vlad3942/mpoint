@@ -420,4 +420,87 @@ html {
     cursor: pointer;
     color: #339EF7; }
 
+.success-page-wrapper {
+  max-width: 80em;
+  margin-left: auto;
+  margin-right: auto; }
+  .success-page-wrapper::after {
+    clear: both;
+    content: "";
+    display: block; }
+  @media screen and (max-width: 40.0625em) {
+    .success-page-wrapper {
+      padding: 0 20px; } }
+  .success-page-wrapper .content {
+    margin: 30px auto 0 auto;
+    padding: 30px;
+    background: #FFF;
+    border: 1px solid #DDD;
+    border-radius: 5px;
+    width: 65.88078%;
+    text-align: center; }
+    @media screen and (max-width: 48.0625em) {
+      .success-page-wrapper .content {
+        width: 82.94039%; } }
+    @media screen and (max-width: 40.0625em) {
+      .success-page-wrapper .content {
+        width: 100%; } }
+    .success-page-wrapper .content .status {
+      margin-top: 60px;
+      margin-bottom: 15px; }
+      .success-page-wrapper .content .status .checkmark {
+        display: inline-block;
+        height: 40px;
+        width: 40px;
+        margin-right: 10px;
+        margin-bottom: -15px;
+        background: #5AB304;
+        border-radius: 20px; }
+        @media screen and (max-width: 40.0625em) {
+          .success-page-wrapper .content .status .checkmark {
+            margin-bottom: 0; } }
+        .success-page-wrapper .content .status .checkmark:after {
+          content: '';
+          display: block;
+          width: 10px;
+          height: 20px;
+          border: solid #FFF;
+          border-width: 0 4px 4px 0;
+          transform: rotate(45deg);
+          margin: 8px auto 0 auto; }
+      .success-page-wrapper .content .status .info {
+        display: inline; }
+        @media screen and (max-width: 40.0625em) {
+          .success-page-wrapper .content .status .info {
+            display: block; } }
+    .success-page-wrapper .content .receipt {
+      font-size: 0.8125em;
+      line-height: 1.5;
+      width: 48.21067%;
+      margin: 30px auto 60px auto;
+      text-align: left; }
+      .success-page-wrapper .content .receipt::after {
+        clear: both;
+        content: "";
+        display: block; }
+      @media screen and (max-width: 40.0625em) {
+        .success-page-wrapper .content .receipt {
+          width: 74.10533%; } }
+      .success-page-wrapper .content .receipt .label {
+        width: 50%;
+        float: left;
+        font-style: italic;
+        clear: left; }
+      .success-page-wrapper .content .receipt .number {
+        width: 50%;
+        float: left;
+        text-align: right;
+        margin-right: 0; }
+    .success-page-wrapper .content input {
+      padding: 8px 16px; }
+      @media screen and (max-width: 40.0625em) {
+        .success-page-wrapper .content input {
+          font-size: 0.875em;
+          line-height: 1.5; } }
+
 /*# sourceMappingURL=layout.css.map */
