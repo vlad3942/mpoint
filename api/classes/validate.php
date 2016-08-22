@@ -1383,14 +1383,15 @@ class Validate extends ValidateBase
     	
     	if (empty($number) === true) { $code = 1; }    	
     	else {
-    	
-	    		settype($number, 'string');	    	
+    	   		settype($number, 'string');	    	
 	    		
+    	   		$number = preg_replace("/[^0-9]/", "", $number);
+    	   		
 	    		if(strlen($number) < 13) { $code = 2; }
 	    		else if(strlen($number) > 16) { $code = 3; }
 	    		else
 	    		{
-		    		$aCardNumber = str_split(strrev(preg_replace("/[^0-9]/", "", $number)));
+		    		$aCardNumber = str_split(strrev($number));
 		    		
 		    		$sumOfNumber = 0;
 		    	
@@ -1425,7 +1426,7 @@ class Validate extends ValidateBase
 		    		} else { $code = 4; }
 	    		}
 	    	}
-    	    	    	
+   	
     	return $code;
     }
 }

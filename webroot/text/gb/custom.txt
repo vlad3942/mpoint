@@ -255,6 +255,8 @@ msgid @@@ Delivery - 77 @@@
 msgstr @@@ The entered Delivery Date is in the Past @@@
 msgid @@@ Overview - 11 @@@
 msgstr @@@ Please accept the Terms & Conditions to continue @@@
+msgid @@@ Select Card - 3 @@@
+msgstr @@@ The selected card couldn't be found, please try again? @@@
 msgid @@@ Select Card - 19 @@@
 msgstr @@@ You haven't entered expiry date, please try again? @@@
 msgid @@@ Select Card - 20 @@@
