@@ -304,7 +304,7 @@
 
 <xsl:template match="item"  mode="other-wallet">
 
-<xsl:if test="node/head !='' and node/body != '' ">
+<xsl:if test="head !='' and body != '' ">
 
 	<div class="card wallet card-{@id}">
 		<div class="card-logo" id="card-{@id}">
