@@ -156,6 +156,7 @@
 					<input type="tel" name="expiry-year" class="cc-year" autocomplete="cc-year" maxlength="2" required="required" placeholder="YY" />
 				</div>
 				<div class="cvv">
+				
 					<div class="tooltip"></div>
 					<label for="cvv"><xsl:value-of select="/root/labels/cvv" /></label>
 					<input type="tel" name="cvv" class="cc-cvv" autocomplete="off" maxlength="4" required="required" placeholder="CVV" />
@@ -302,6 +303,9 @@
 </xsl:template>
 
 <xsl:template match="item"  mode="other-wallet">
+
+<xsl:if test="head !='' and body != '' ">
+
 	<div class="card wallet card-{@id}">
 		<div class="card-logo" id="card-{@id}">
 			<!-- <img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}.png" alt="" /> -->
@@ -313,13 +317,12 @@
 	</div>
 	<form name="walletform_{@id}" id="walletform_{@id}" action="{func:constLink('/pay/sys/authorize.php') }" method="post">
 		<input type="hidden" name="cardtype" value="{@id}" />
-		<input type="hidden" name="pspid" value="{@pspid}" />
 		<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
 		<input type="hidden" name="token" id="token" value=""/>
 		<input type="hidden" name="verifier" id="verifier" value="" />
 		<input type="hidden" name="checkouturl" id="checkouturl" value="" />
 	</form>
-					
+						
 	<script type="text/javascript">
 		var id = <xsl:value-of select="@id"/>;
 
@@ -327,6 +330,7 @@
 						
 		jQuery("#card-"+id).html('<xsl:value-of select="body"/>');
 	</script>
+</xsl:if>
 </xsl:template>
 
 <xsl:template match="item"  mode="cpm-wallet">
