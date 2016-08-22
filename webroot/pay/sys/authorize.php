@@ -213,7 +213,12 @@ if (count($aMsgCds) == 0)
 			$obj_HTTP->connect();
 			$code = $obj_HTTP->send($h, $b);
 			$obj_HTTP->disconnect();
-		} else { throw new Exception("Not able to stored card.");}
+		} 
+		else 
+		{ 
+			trigger_error("Not able to stored card.", E_USER_WARNING);
+			throw new Exception("Not able to stored card.");
+		}
 				
 	}
 	catch(Exception $e)
@@ -232,7 +237,7 @@ if (count($aMsgCds) == 0)
 
 			if($_SESSION['obj_TxnInfo']->getAccountID() == -1)
 			{
-				$iStatus = $obj_mPoint->savePassword($_SESSION['obj_TxnInfo']->getMobile(), $sPassword, $_SESSION['obj_TxnInfo']->getCountryConfig()->getID());
+				$iStatus = $obj_mPoint->savePassword($_SESSION['obj_TxnInfo']->getMobile(), $sPassword, $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig());
 			}			
 			
 			$code = saveCardName($_OBJ_DB, $obj_mPoint, $_SESSION['obj_TxnInfo'], $cardTypeId, $sCardName);
