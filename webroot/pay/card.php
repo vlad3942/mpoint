@@ -34,9 +34,15 @@ try
 		header("location: ".$_SERVER['HTTP_REFERER']);
 		exit;
 	}
-	
+		
 	// Instantiate main mPoint object for handling the component's functionality
 	$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SESSION['obj_UA']);
+	
+	if(isset($_REQUEST['mpoint-id']) && $_REQUEST['mpoint-id'] > 0)
+	{
+		$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+	}
+	
 	// Instantiate main special object in order to pass all relevant data for the Accept Payment page through DIBS: Custom Pages
 	$obj_Accept = new Accept($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_UA']);
 	
