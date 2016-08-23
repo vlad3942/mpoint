@@ -24,7 +24,7 @@ require_once(sCLASS_PATH ."/credit_card.php");
 // Require Business logic for the Payment Accepted component
 require_once(sCLASS_PATH ."/accept.php");
 
-$aWallets = array(Constants::iVISA_CHECKOUT_WALLET, Constants::iMASTER_PASS_WALLET, Constants::iAMEX_EXPRESS_CHECKOUT_WALLET);
+$aWallets = array(Constants::iVISA_CHECKOUT_WALLET, Constants::iMASTER_PASS_WALLET);
 
 try
 {
@@ -73,33 +73,43 @@ try
 			
 			$obj_Wallet_Response = getXMLResponse($b, $aHTTP_CONN_INFO);
 			
-			
-			$sHead = str_replace("</script>","<\/script>",html_entity_decode($obj_Wallet_Response->{'psp-info'}->head));
-			
-			if($obj_Elem['type-id'] == 16)
+			if(count($obj_Wallet_Response->{'psp-info'}->head) > 0 && count($obj_Wallet_Response->{'psp-info'}->body) > 0)
 			{
-				$sHead = str_replace("{PAYMENT SUCCESS}", "var jsonObject = JSON.parse(JSON.stringify(payment));document.getElementById('walletform_16').elements.namedItem('token').value = jsonObject['callid'];document.getElementById('walletform_16').submit();", $sHead);
+				$sHead = str_replace("</script>","<\/script>",html_entity_decode($obj_Wallet_Response->{'psp-info'}->head));
 				
-				$sHead = str_replace("{PAYMENT ERROR}", "", $sHead);
-				$sHead = str_replace("{PAYMENT CANCEL}", "", $sHead);
-			}
-			
-			if($obj_Elem['type-id'] == 23)
+				if($obj_Elem['type-id'] == 16)
+				{
+					$sHead = str_replace("{PAYMENT SUCCESS}", "var jsonObject = JSON.parse(JSON.stringify(payment));document.getElementById('walletform_16').elements.namedItem('token').value = jsonObject['callid'];document.getElementById('walletform_16').submit();", $sHead);
+					
+					$sHead = str_replace("{PAYMENT ERROR}", "", $sHead);
+					$sHead = str_replace("{PAYMENT CANCEL}", "", $sHead);
+				}
+				
+				if($obj_Elem['type-id'] == 23)
+				{
+					$sHead = str_replace("mpSuccessCallback", "function (data){ console.log(data); document.getElementById('walletform_23').elements.namedItem('token').value = data.oauth_token; document.getElementById('walletform_23').elements.namedItem('verifier').value = data.oauth_verifier; document.getElementById('walletform_23').elements.namedItem('checkouturl').value = data.checkout_resource_url; document.getElementById('walletform_23').submit();}", $sHead);
+					$sHead = str_replace("mpFailureCallback", "function (data) { console.log('in FAILURE'); console.log(data); }", $sHead);
+					$sHead = str_replace("mpCancelCallback", "function (data) { console.log('in CANCEL'); console.log(data); }", $sHead);	
+					
+					$sHead = str_replace("<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js'><\/script>", " ", $sHead);
+				}
+				
+				$obj_Elem->head = NULL;			
+				$obj_Elem1 = dom_import_simplexml($obj_Elem->head);
+				$cdata = $obj_Elem1->ownerDocument->createCDataSection($sHead);
+				$obj_Elem1->appendChild($cdata);
+				
+				$obj_Elem->body = NULL;
+				$obj_Elem2 = dom_import_simplexml($obj_Elem->body);
+				$cdata = $obj_Elem2->ownerDocument->createCDataSection(str_replace("</","<\/",html_entity_decode($obj_Wallet_Response->{'psp-info'}->body)));
+				$obj_Elem2->appendChild($cdata);
+			} 
+			else
 			{
-				$sHead = str_replace("mpSuccessCallback", "function (data){ console.log(data); document.getElementById('walletform_23').elements.namedItem('token').value = data.oauth_token; document.getElementById('walletform_23').elements.namedItem('verifier').value = data.oauth_verifier; document.getElementById('walletform_23').elements.namedItem('checkouturl').value = data.checkout_resource_url; document.getElementById('walletform_23').submit();}", $sHead);
-				$sHead = str_replace("mpFailureCallback", "function (data) { console.log('in FAILURE'); console.log(data); }", $sHead);
-				$sHead = str_replace("mpCancelCallback", "function (data) { console.log('in CANCEL'); console.log(data); }", $sHead);		
+				$dom = dom_import_simplexml($obj_Elem);
+				$dom->parentNode->removeChild($dom);
+				unset($dom);
 			}
-			
-			$obj_Elem->head = NULL;			
-			$obj_Elem1 = dom_import_simplexml($obj_Elem->head);
-			$cdata = $obj_Elem1->ownerDocument->createCDataSection($sHead);
-			$obj_Elem1->appendChild($cdata);
-			
-			$obj_Elem->body = NULL;
-			$obj_Elem2 = dom_import_simplexml($obj_Elem->body);
-			$cdata = $obj_Elem2->ownerDocument->createCDataSection(str_replace("</","<\/",html_entity_decode($obj_Wallet_Response->{'psp-info'}->body)));
-			$obj_Elem2->appendChild($cdata);
 			
 		}
 	
@@ -140,9 +150,8 @@ try
 			<repeat-password>'. $_OBJ_TXT->_("Repeat Password") .'</repeat-password>
 			<name>'. $_OBJ_TXT->_("Card Name") .'</name>
 			<back-button>'. $_OBJ_TXT->_("Back button") .'</back-button>
+			<delete-card>'.$_OBJ_TXT->_("Delete Card").'</delete-card>
 		</labels>';
-	
-	//$xml .= $obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount() );
 	
 	$xml .= trim(str_replace('<?xml version="1.0"?>', '',$obj_CardXML->asXML()));
 		

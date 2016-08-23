@@ -50,6 +50,7 @@
 		<script type="text/javascript" src="/inc/iScroll.js"></script>
 		<script type="text/javascript" src="/inc/menu.js"></script>
 		<script type="text/javascript" src="/inc/mpoint.js"></script>
+		<script type="text/javascript" src="/inc/card.js"></script>
 	</head>
 	<body>
 		<div class="header">

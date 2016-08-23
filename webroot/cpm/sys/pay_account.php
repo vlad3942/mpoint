@@ -314,7 +314,7 @@ $msg = "";
 if ($aMsgCds[0] == 100) { $sPath = "pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&"; }
 else
 {
-	if (isset($sPath) === false) { $sPath = "cpm/payment.php?"; }
+	if (isset($sPath) === false) { $sPath = "pay/card.php?"; }
 	for ($i=0; $i<count($aMsgCds); $i++)
 	{
 		$msg .= "&msg=". $aMsgCds[$i];
