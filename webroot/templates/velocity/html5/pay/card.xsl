@@ -40,22 +40,22 @@
 	<script type="text/javascript">
 		parent.postMessage('mpoint-list-cards,<xsl:value-of select="system/session/@id" />', '*');
 		
-		jQuery(document).ready(function($) {
+		jQuery(function($) {
 			// Display loading screen on submit
-			jQuery('form.card-form').submit(function() {
-				jQuery('.loader-screen').css({'opacity': 1, 'z-index': 20});
+			$('form.card-form').submit(function() {
+				$('.loader-screen').css({'opacity': 1, 'z-index': 20});
 			});
 			
-			jQuery('.card').not('.wallet').click(function(event) {
+			$('.card').not('.wallet').click(function(event) {
 				// Use this code for showing the payment form in a second step
-				var $this = jQuery(this);
+				var $this = $(this);
 				if($this.hasClass('delete-selected') === false &amp;&amp; $this.hasClass('selected') === false) {
-					jQuery('.card').each(function(i) {
-						j(this).delay(50*i).animate({
+					$('.card').each(function(i) {
+						$(this).delay(50*i).animate({
 							right: '-=1000',
 							opacity: 0
 						}, 400, 'easeOutCubic', function() {
-							jQuery('.card').hide();
+							$('.card').hide();
 							if(event.target.className === 'delete-card-icon') {
 								$this.addClass('delete-selected');
 								$($this).find('.deletion-form').fadeIn();
@@ -67,34 +67,34 @@
 								}
 							}
 							
-							j('.back-button').delay(200).slideDown('fast');
+							$('.back-button').delay(200).slideDown('fast');
 						});
 					});
-					var replace = (jQuery('.progress').text()).replace('1', '2');
-					jQuery('.progress').text(replace);
+					var replace = ($('.progress').text()).replace('1', '2');
+					$('.progress').text(replace);
 
 				}
 			});
 			
 			// Enable back button
-			jQuery('.back-button').click(function() {
-				j(this).fadeOut('fast');
-				jQuery('.card').each(function(i) {
-					j(this).animate({
+			$('.back-button').click(function() {
+				$(this).fadeOut('fast');
+				$('.card').each(function(i) {
+					$(this).animate({
 						right: '0',
 						opacity: 1
 					}, 0, 'easeOutCubic', function() {
-						jQuery('.card').show();
-						if(j(this).hasClass('stored')) {
-							j(this).removeClass('selected');
-							j(this).removeClass('delete-selected');
+						$('.card').show();
+						if($(this).hasClass('stored')) {
+							$(this).removeClass('selected');
+							$(this).removeClass('delete-selected');
 						} else {
-							j('.payment-form').hide();
+							$('.payment-form').hide();
 						}
 					});
 				});
-				var replace = (jQuery('.progress').text()).replace('2', '1');
-				jQuery('.progress').text(replace);
+				var replace = ($('.progress').text()).replace('2', '1');
+				$('.progress').text(replace);
 			});
 
 			// Toggle card name and password fields

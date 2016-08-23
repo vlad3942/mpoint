@@ -19,7 +19,6 @@
 		<link href="/css/velocity/layout.css" type="text/css" rel="stylesheet" />
 		<script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
-		<script type="text/javascript">var j = jQuery.noConflict();</script>
 		<!-- Pre-load pages -->
 		<xsl:choose>
 			<!-- Order Overview -->
