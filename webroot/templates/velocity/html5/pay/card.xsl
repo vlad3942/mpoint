@@ -72,16 +72,7 @@
 					});
 					var replace = (jQuery('.progress').text()).replace('1', '2');
 					jQuery('.progress').text(replace);
-					
-					/*
-					// Use this code for showing the payment form inline.
-					if($(this).hasClass('hover') === false) {
-						$('.card').removeClass('hover');
-						$(this).addClass('hover');
-						$('.payment-form').slideUp('fast', 'easeOutCubic');
-						$(this).next().fadeIn();
-					}
-					*/
+
 				}
 			});
 			
@@ -304,8 +295,6 @@
 
 <xsl:template match="item"  mode="other-wallet">
 
-<xsl:if test="head !='' and body != '' ">
-
 	<div class="card wallet card-{@id}">
 		<div class="card-logo" id="card-{@id}">
 			<!-- <img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}.png" alt="" /> -->
@@ -330,7 +319,7 @@
 						
 		jQuery("#card-"+id).html('<xsl:value-of select="body"/>');
 	</script>
-</xsl:if>
+
 </xsl:template>
 
 <xsl:template match="item"  mode="cpm-wallet">
