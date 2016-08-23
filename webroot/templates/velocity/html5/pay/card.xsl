@@ -20,7 +20,7 @@
 						  <xsl:when test="@id = '11'">
 						  	<xsl:apply-templates select="." mode="cpm-wallet" />
 						  </xsl:when>
-						  <xsl:when test="@id = '16' or @id = '23' or @id = '25'">
+						  <xsl:when test="@id = '16' or @id = '23'">
 						  	<xsl:apply-templates select="." mode="other-wallet" />
 						  </xsl:when>
 					   </xsl:choose>
