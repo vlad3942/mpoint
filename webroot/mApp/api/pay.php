@@ -242,7 +242,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										case (Constants::iWORLDPAY_PSP):
 											// Construct list of cards supported by the Payment Service Provider
 											$aCards = array();
-											foreach ($obj_XML->children() as $obj_XMLElem)
+											foreach ($obj_CardXML->children() as $obj_XMLElem)
 											{
 												if ($obj_PSPConfig->getID() == $obj_XMLElem["pspid"]) { $aCards[] = $obj_XMLElem["type-id"]; }
 											}
