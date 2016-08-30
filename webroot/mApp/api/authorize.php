@@ -380,7 +380,7 @@ try
 															// Merge CVC / CVV code from request
 															if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1)
 															{
-																$obj_Elem->cvc = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc;
+																$obj_Elem->cvc = $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc;
 															}
 																														
 															$obj_PSPConfig = $obj_Wallet->getPSPConfigForRoute(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]),
