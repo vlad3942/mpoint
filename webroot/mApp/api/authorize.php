@@ -380,7 +380,7 @@ try
 															// Merge CVC / CVV code from request
 															if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1)
 															{
-																$obj_Elem->cvc = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc;
+																$obj_Elem->cvc = $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc;
 															}
 																														
 															$obj_PSPConfig = $obj_Wallet->getPSPConfigForRoute(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]),
@@ -476,18 +476,22 @@ try
 														case (Constants::iWORLDPAY_PSP):
 															// Authorise payment with PSP based on Ticket
 															$obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["worldpay"]);
+															
 															if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["worldpay"]["host"] = str_replace("secure.", "secure-test.", $aHTTP_CONN_INFO["worldpay"]["host"]); }
+															
 															// WorldPay doesn't enable support for 3D Secure on Mechant Codes intended for Recurring payments
-															if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1)
+															if (empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]['id']) == false)
 															{
-																$bStoredCard = false;
+																$bStoredCard = true;
 															}
-															else { $bStoredCard = true; }
+															else { $bStoredCard = false; }
+
 															$aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, $bStoredCard);
 															$aHTTP_CONN_INFO["worldpay"]["username"] = $aLogin["username"];
 															$aHTTP_CONN_INFO["worldpay"]["password"] = $aLogin["password"];
 
 															$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["worldpay"]);
+															
 															$obj_XML = $obj_PSP->authTicket($obj_ConnInfo, $obj_Elem);
 															// Authorization succeeded
 															if (is_null($obj_XML) === false && ($obj_XML instanceof SimpleXMLElement) === true && intval($obj_XML["code"]) == Constants::iPAYMENT_ACCEPTED_STATE)
