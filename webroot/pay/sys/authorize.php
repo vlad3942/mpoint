@@ -232,6 +232,11 @@ if (count($aMsgCds) == 0)
 		
 		$code = $obj_XML->status["code"];
 		
+		if(empty($code) === false)
+		{
+			$code = 59;
+		}
+		
 		if(array_key_exists("store-card", $_POST) === true && $_POST['store-card'] == 'on')
 		{
 

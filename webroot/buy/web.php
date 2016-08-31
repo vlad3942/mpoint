@@ -209,7 +209,7 @@ else
 	$_GET['msg'] = array_keys($aMsgCds);
 
 	$xml = '<?xml version="1.0" encoding="UTF-8"?>';
-	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/xhtml/status.xsl"?>';
+	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/html5/status.xsl"?>';
 	$xml .= '<root>';
 	$xml .= $obj_mPoint->getMessages("Status");
 	$xml .= '</root>';
