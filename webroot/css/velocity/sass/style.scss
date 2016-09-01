@@ -4,7 +4,8 @@
  General styles goes here
 */
 
-body {
+body
+{
 	font-family: $fonts;
 	font-style: normal;
 	font-size: 100%;
@@ -16,11 +17,13 @@ body {
 	height: 100%;
 }
 
-h1, h2, strong, b {
+h1, h2, strong, b
+{
 	font-weight: normal;
 }
 
-img {
+img
+{
 	width: 100%;
 	max-width: 100%;
 	height: auto;
@@ -28,50 +31,60 @@ img {
 }
 
 /* Fonts */
-h1 {
+h1
+{
 	@include font('title');
 }
 
-h2 {
+h2
+{
 	@include font('medium');
 }
 
-h3 {
+h3
+{
 	@include font('medium');
 	margin: 0;
 }
 
-h4 {
+h4
+{
 	@include font('regular');
 }
 
 /* Links */
-a:link, a:visited, li a.active, input[type="submit"] {
+a:link, a:visited, li a.active, input[type="submit"]
+{
 	color: $black;
 	text-decoration: none;
 	@include animate;
 }
 
-a:hover, a:active {
+a:hover, a:active
+{
 	color: $dark-grey;
 }
 
-p {
+p
+{
   margin: 0 0 1.5em 0;
 }
 
-::-moz-selection {
+::-moz-selection
+{
 	color: white;
 	background: $blue;
 }
 
-::selection {
+::selection
+{
 	color: white;
 	background: $blue;
 }
 
 /* Form elements */
-#{$all-text-inputs} {
+#{$all-text-inputs}
+{
 	font-family: $fonts;
 	font-weight: normal;
 	font-style:normal;
@@ -83,12 +96,14 @@ p {
 	line-height: normal;
 	width: 100%;
 	
-	&.has-error {
+	&.has-error
+	{
 		box-shadow: 0 0 5px red;
 	}
 }
 
-label {
+label
+{
     font-weight: 300;
     font-style: italic;
     -webkit-user-select: none;
@@ -97,23 +112,29 @@ label {
     margin-bottom: 5px;
 }
 
-input::input-placeholder {
+input::input-placeholder
+{
 	color: $grey;
 }
-input::-moz-placeholder {
+input::-moz-placeholder
+{
 	color: $grey;
 }
-input:-moz-placeholder {
+input:-moz-placeholder
+{
 	color: $grey;
 }
-input:-ms-input-placeholder {
+input:-ms-input-placeholder
+{
 	color: $grey;
 }
-input::-webkit-input-placeholder {
+input::-webkit-input-placeholder
+{
 	color: $grey;
 }
 
-select {
+select
+{
 	font-family: $fonts;
 	font-style:normal;
 	color: $black;
@@ -124,7 +145,8 @@ select {
 	width: 100%;
 }
 
-input[type="submit"] {
+input[type="submit"]
+{
 	@include font('medium');
 	font-family: $fonts;
 	font-style:normal;
@@ -134,25 +156,29 @@ input[type="submit"] {
 	border: 0;
 	border-radius: 4px;
 	padding: 8px 0;
-	&:hover {
+	&:hover
+	{
 		cursor: pointer;
 		background: $dark-blue;
 	}
 }
 
-input[type="checkbox"], input[type="radio"] {
+input[type="checkbox"], input[type="radio"]
+{
   margin: 4px 10px 0 0;
   line-height: normal;
 }
 
 .radio,
-.checkbox {
+.checkbox
+{
 	position: relative;
 	display: block;
 	margin-top: 10px;
 	margin-bottom: 10px;
 
-	label {
+	label
+	{
 		min-height: 20px;
 		margin-bottom: 0;
 		cursor: pointer;
@@ -160,7 +186,8 @@ input[type="checkbox"], input[type="radio"] {
 	}
 }
 
-.loader-screen {
+.loader-screen
+{
 	opacity: 0;
 	z-index: -1;
 	background: rgba(255, 255, 255, .6);
@@ -170,7 +197,8 @@ input[type="checkbox"], input[type="radio"] {
 	position: absolute;
 	@include animate();
 	
-	.loader {
+	.loader
+	{
 		background: none;
 		position: absolute;
 		width: 200px;
@@ -182,7 +210,8 @@ input[type="checkbox"], input[type="radio"] {
 		left: 0;
 		@include transform(scale(0.54));
 
-		> div {
+		> div
+		{
 			position: absolute;
 			top: 160px;
 			left: 100px;
@@ -197,41 +226,54 @@ input[type="checkbox"], input[type="radio"] {
 	}
 }
 
-@include keyframes(loader0) {
-  0% {
+@include keyframes(loader0)
+{
+  0%
+  {
     top: 160px;
   }
-  12% {
+  12%
+  {
     top: 105px;
   }
-  25% {
+  25%
+  {
     top: 62px;
   }
-  37% {
+  37%
+  {
     top: 38px;
   }
-  50% {
+  50%
+  {
     top: 30px;
   }
-  62% {
+  62%
+  {
     top: 37px;
   }
-  75% {
+  75%
+  {
     top: 62px;
   }
-  87% {
+  87%
+  {
     top: 101px;
   }
-  100% {
+  100%
+  {
     top: 160px;
   }
 }
 
-@include keyframes(loader1) {
-  0% {
+@include keyframes(loader1)
+{
+  0%
+  {
     @include transform(translate(0, -60px) rotate(0deg) translate(60px, 0));
   }
-  100% {
+  100%
+  {
     @include transform(translate(0, -60px) rotate(360deg) translate(60px, 0));
   }
 }

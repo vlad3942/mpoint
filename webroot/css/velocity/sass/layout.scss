@@ -1,19 +1,23 @@
 @import 'settings/base';
 
-.header {
+.header
+{
 	background: $dark-grey;
 	height: 60px;
 	position: relative;
 	z-index: 30;
-	.logo	{
+	.logo
+	{
 		float: left;
-		img {
+		img
+		{
 			width: auto;
 			height: 60px;
 		}
 	}
 	
-	.client-name {
+	.client-name
+	{
 		float: right;
 		@include font('medium');
 		color: $white;
@@ -23,22 +27,28 @@
 	}
 }
 
-.wrapper {
-	@include media($mobile) {
+.wrapper
+{
+	@include media($mobile)
+	{
 		padding: 0 20px;
 	}
-	.content {
-		.progress {
+	.content
+	{
+		.progress
+		{
 			height: 60px;
 			background: $light-grey;
 			line-height: 60px;
 			text-align: center;
 		}
 		
-		.mpoint-status {
+		.mpoint-status
+		{
 			@include outer-container;
 			
-			.status {
+			.status
+			{
 				@include font('small');
 				margin-top: 15px;
 				padding: 30px;
@@ -49,32 +59,39 @@
 				margin: 0 auto;
 				text-align: center;
 				
-				@include media($mobile) {
+				@include media($mobile)
+				{
 					width: 100%;
 					padding: $body;
 				}
 			}
 		}
 		
-		.card-wrapper {
+		.card-wrapper
+		{
 			@include outer-container;
 			
-			.mpoint-help {
+			.mpoint-help
+			{
 				text-align: center;
 				margin-top: $content;
 			}
-			.cards {
+			.cards
+			{
 				width: flex-grid(6, 12);
 				margin: 0 auto;
 				
-				@include media($tablet) {
+				@include media($tablet)
+				{
 					width: flex-grid(10, 12);
 				}
-				@include media($mobile) {
+				@include media($mobile)
+				{
 					width: 100%;
 				}
 				
-				.card {
+				.card
+				{
 					@include clearfix;
 					@include animate;
 					margin-top: $body;
@@ -84,21 +101,25 @@
 					border-radius: 5px;
 					position: relative;
 					
-					&:not(.ignore-hover):hover, &:not(.ignore-hover).hover {
+					&:not(.ignore-hover):hover, &:not(.ignore-hover).hover
+					{
 						background: $blue;
 						color: $white;
 						cursor: pointer;
 						background-image: none;
-						.card-logo .icon .hover {
+						.card-logo .icon .hover
+						{
 							opacity: 1;
 						}
 					}
 					
-					.card-name {
+					.card-name
+					{
 						@include span-columns(3 of 6);
 						line-height: 30px;
 					}
-					.card-arrow {
+					.card-arrow
+					{
 						@include span-columns(1 of 6);
 						float: right;
 						text-align: right;
@@ -107,21 +128,25 @@
 					}
 				}
 				
-				.card-logo {
+				.card-logo
+				{
 					@include span-columns(2 of 6);
-					img {
+					img
+					{
 						max-height: 30px;
 						width: auto;
 					}
 					
-					.icon {
+					.icon
+					{
 						height: 30px;
 						background-size: 100%;
 						width: 48px;
 						background-position: 0px 0%;
 						opacity: 1;
 						
-						.hover {
+						.hover
+						{
 							height: 30px;
 							background-size: 100%;
 							width: 48px;
@@ -137,98 +162,125 @@
 						$img-height: 4500;
 						$container-height: 30;
 
-						&.card-1 { // Amex
+						&.card-1
+						{ // Amex
 							@include background-image-scale(570, $img-height, $container-height, 3);
-							.hover {
+							.hover
+							{
 								@include background-image-scale(540, $img-height, $container-height, 3);
 							}
 						}
-						&.card-2 { // Dankort
+						&.card-2
+						{ // Dankort
 							@include background-image-scale(60, $img-height, $container-height, 3);
-							.hover {
+							.hover
+							{
 								@include background-image-scale(30, $img-height, $container-height, 3);
 							}
 						}
-						&.card-3 { // Diners
+						&.card-3
+						{ // Diners
 							@include background-image-scale(420, $img-height, $container-height, 3);
-							.hover {
+							.hover
+							{
 								@include background-image-scale(390, $img-height, $container-height, 3);
 							}
 						}
 						&.card-4, &.card-7 { // EuroCard / Mastercard
 							@include background-image-scale(240, $img-height, $container-height, 3);
-							.hover {
+							.hover
+							{
 								@include background-image-scale(210, $img-height, $container-height, 3);
 							}
 						}
-						&.card-5 { // JCB
+						&.card-5
+						{ // JCB
 							@include background-image-scale(510, $img-height, $container-height, 3);
-							.hover {
+							.hover
+							{
 								@include background-image-scale(480, $img-height, $container-height, 3);
 							}
 						}
-						&.card-6 { // Maestro
+						&.card-6
+						{ // Maestro
 							@include background-image-scale(300, $img-height, $container-height, 3);
-							.hover {
+							.hover
+							{
 								@include background-image-scale(270, $img-height, $container-height, 3);
 							}
 						}
-						&.card-8 { // VISA
+						&.card-8
+						{ // VISA
 							@include background-image-scale(120, $img-height, $container-height, 3);
-							.hover {
+							.hover
+							{
 								@include background-image-scale(90, $img-height, $container-height, 3);
 							}
 						}
-						&.card-9 { // VISA Electron
+						&.card-9
+						{ // VISA Electron
 							@include background-image-scale(180, $img-height, $container-height, 3);
-							.hover {
+							.hover
+							{
 								@include background-image-scale(150, $img-height, $container-height, 3);
 							}
 						}
-						&.card-12 { // Solo Switch
+						&.card-12
+						{ // Solo Switch
 							@include background-image-scale(2730, $img-height, $container-height, 3);
 							.hover {
 								@include background-image-scale(2700, $img-height, $container-height, 3);
 							}
 						}
-						&.card-13 { // Solo
+						&.card-13
+						{ // Solo
 							@include background-image-scale(2790, $img-height, $container-height, 3);
-							.hover {
+							.hover
+							{
 								@include background-image-scale(2760, $img-height, $container-height, 3);
 							}
 						}
-						&.card-14 { // Delta
+						&.card-14
+						{ // Delta
 							@include background-image-scale(570, $img-height, $container-height, 3);
-							.hover {
+							.hover
+							{
 								@include background-image-scale(540, $img-height, $container-height, 3);
 							}
 						}
-						&.card-22 { // Discover
+						&.card-22
+						{ // Discover
 							@include background-image-scale(1950, $img-height, $container-height, 3);
-							.hover {
+							.hover
+							{
 								@include background-image-scale(1950, $img-height, $container-height, 3);
 							}
 						}
 					}
 				}
 				
-				.stored-cards-wrapper {
+				.stored-cards-wrapper
+				{
 					@include clearfix;
-					.card {
+					.card
+					{
 						@include span-columns(4 of 12);
 						padding: $body;
 						text-align: center;
 						
-						@include media($desktop) {
+						@include media($desktop)
+						{
 							@include omega(3n);
 						}
 						
-						@include media($tablet) {
+						@include media($tablet)
+						{
 							@include span-columns(6 of 12);
 							@include omega(2n);
 						}
 						
-						.delete-card-icon {
+						.delete-card-icon
+						{
 							background: $grey;
 							color: $black;
 							position: absolute;
@@ -239,29 +291,34 @@
 							font-size: 10px;
 							line-height: 16px;
 							
-							&:hover {
+							&:hover
+							{
 								background: $dark-grey;
 								color: white;
 								cursor: pointer;
 							}
 						}
 						
-						.card-logo {
+						.card-logo
+						{
 							float: none;
 							width: 100%;
 							
-							.icon {
+							.icon
+							{
 								margin: 0 auto;
 								height: 40px;
 								width: 64px;
-								.hover {
+								.hover
+								{
 									height: 40px;
 									width: 64px;
 								}
 							}
 						}
 						
-						.card-name {
+						.card-name
+						{
 							float: none;
 							width: 100%;
 							line-height: normal;
@@ -269,7 +326,8 @@
 							@include font('small');
 						}
 						
-						&.selected {
+						&.selected
+						{
 							width: 100%;
 							padding: 0;
 							background: none;
@@ -278,20 +336,24 @@
 							opacity: 1 !important;
 							border: 0;
 							
-							&:hover {
+							&:hover
+							{
 								color: $black;
 								cursor: inherit;
 							}
 
-							.card-logo, .delete-card-icon, .card-name {
+							.card-logo, .delete-card-icon, .card-name
+							{
 								display: none;
 							}
-							.payment-form {
+							.payment-form
+							{
 								display: block !important;
 							}
 						}
 						
-						&.delete-selected {
+						&.delete-selected
+						{
 							width: 100%;
 							padding: 0;
 							background: none;
@@ -300,31 +362,39 @@
 							opacity: 1 !important;
 							border: 0;
 							
-							&:hover {
+							&:hover
+							{
 								color: $black;
 								cursor: inherit;
 							}
 							
-							.card-logo, .delete-card-icon, .card-name {
+							.card-logo, .delete-card-icon, .card-name
+							{
 								display: none;
 							}
-							.deletion-form {
+							.deletion-form
+							{
 								display: block !important;
-								.card-logo, .delete-card-icon, .card-name {
+								.card-logo, .delete-card-icon, .card-name
+								{
 									display: block;
 								}
 								
-								.card-logo {
-									.icon {
+								.card-logo
+								{
+									.icon
+									{
 										height: 55px;
 										width: 88px;
 									}
-									.hover {
+									.hover
+									{
 										display: none;
 									}
 								}
 								
-								.card-name {
+								.card-name
+								{
 									margin-bottom: $body;
 								}
 							}
@@ -332,7 +402,8 @@
 					}
 				}
 				
-				.payment-form, .deletion-form {
+				.payment-form, .deletion-form
+				{
 					display: none;
 					@include clearfix;
 					background: $white;
@@ -342,14 +413,17 @@
 					border: 1px solid $grey;
 					border-radius: 5px;
 					
-					@include media($mobile) {
+					@include media($mobile)
+					{
 						padding: $content;
 					}
 					
-					.cardnumber {
+					.cardnumber
+					{
 						position: relative;
 						
-						.card-logo {
+						.card-logo
+						{
 							float: none;
 							margin: 0;
 							width: auto;
@@ -357,31 +431,37 @@
 							right: 7px;
 							top: 7px;
 
-							.icon {
+							.icon
+							{
 								height: 28px;
 								width: 44px;
 							}
 						}
 					}
 					
-					.additional {
+					.additional
+					{
 						@include clearfix;
 						margin-top: $content;
-						.expiry {
+						.expiry
+						{
 							@include span-columns(3 of 6);
 							position: relative;
 
-							label {
+							label
+							{
 								display: block;
 							}
 
-							input {
+							input
+							{
 								@include span-columns(1.5 of 3);
 								position: relative;
 								z-index: 10;
 							}
 							
-							span {
+							span
+							{
 								position: absolute;
 								line-height: 41px;
 								width: 100%;
@@ -392,56 +472,68 @@
 							}
 						}
 						
-						.cvv {
+						.cvv
+						{
 							@include span-columns(3 of 6);
 						}
 					}
 					
-					label[for="cardholdername"] {
+					label[for="cardholdername"]
+					{
 						margin-top: $content;
 					}
 					
-					.checkbox {
+					.checkbox
+					{
 						margin-top: $content;
 					}
 					
-					.save-card {
+					.save-card
+					{
 						@include transition (opacity 0.3s $ease-out-cubic);
 						height: 0px;
 						width: 0px;
 						overflow: hidden;
 						opacity: 0;
 						
-						&.active {
+						&.active
+						{
 							height: auto;
 							width: auto;
 							opacity: 1;
 						}
 						
-						label[for="new-password"] {
+						label[for="new-password"]
+						{
 							float: left;
 							margin-top: $content;
 						}
 						
-						.new-password, .repeat-password {
+						.new-password, .repeat-password
+						{
 							@include span-columns(3 of 6);
-							@include media($mobile) {
+							@include media($mobile)
+							{
 								@include span-columns(6 of 6);
-								&:last-child {
+								&:last-child
+								{
 									margin-top: $content;
 								}
 							}
 						}
-						.new-password {
+						.new-password
+						{
 							clear: left;
 						}
 					}
 					
-					.password {
+					.password
+					{
 						margin-top: $content;
 					}
 					
-					input[type="submit"] {
+					input[type="submit"]
+					{
 						width: flex-grid(4, 6);
 						display: block;
 						margin: 0 auto;
@@ -452,7 +544,8 @@
 			}
 		}
 		
-		.back-button {
+		.back-button
+		{
 			width: flex-grid(6, 12);
 			margin: 0 auto;
 			margin-top: $body;
@@ -460,11 +553,13 @@
 			@include animate;
 			display: none;
 			
-			@include media($mobile) {
+			@include media($mobile)
+			{
 				width: 100%;
 			}
 			
-			&:hover {
+			&:hover
+			{
 				cursor: pointer;
 				color: $blue;
 			}
@@ -476,13 +571,16 @@
 }
 
 // Success page
-.success-page-wrapper {
+.success-page-wrapper
+{
 	@include outer-container;
-	@include media($mobile) {
+	@include media($mobile)
+	{
 		padding: 0 20px;
 	}
 	
-	.content {
+	.content
+	{
 		margin: $content auto 0 auto;
 		padding: $content;
 		background: $white;
@@ -491,18 +589,22 @@
 		width: flex-grid(8, 12);
 		text-align: center;
 
-		@include media($tablet) {
+		@include media($tablet)
+		{
 			width: flex-grid(10, 12);
 		}
-		@include media($mobile) {
+		@include media($mobile)
+		{
 			width: 100%;
 		}
 		
-		.status {
+		.status
+		{
 			margin-top: $section;
 			margin-bottom: 15px;
 			
-			.checkmark {
+			.checkmark
+			{
 				display: inline-block;
 				height: 40px;
 				width: 40px;
@@ -511,11 +613,13 @@
 				background: $green;
 				border-radius: 20px;
 				
-				@include media($mobile) {
+				@include media($mobile)
+				{
 					margin-bottom: 0;
 				}
 				
-				&:after {
+				&:after
+				{
 					content: '';
 					display: block;
 					width: 10px;
@@ -527,32 +631,38 @@
 				}
 			}
 			
-			.info {
+			.info
+			{
 				display: inline;
-				@include media($mobile) {
+				@include media($mobile)
+				{
 					display: block;
 				}
 			}
 		}
 		
-		.receipt {
+		.receipt
+		{
 			@include font('small');
 			width: flex-grid(4, 8);
 			margin: $content auto $section auto;
 			text-align: left;
 			@include clearfix;
 			
-			@include media($mobile) {
+			@include media($mobile)
+			{
 				width: flex-grid(6, 8);
 			}
 			
-			.label{
+			.label
+			{
 				width: 50%;
 				float: left;
 				font-style: italic;
 				clear: left;
 			}
-			.number {
+			.number
+			{
 				width: 50%;
 				float: left;
 				text-align: right;
@@ -560,9 +670,11 @@
 			}
 		}
 		
-		input {
+		input
+		{
 			padding: 8px 16px;
-			@include media($mobile) {
+			@include media($mobile)
+			{
 				@include font('regular');
 			}
 		}

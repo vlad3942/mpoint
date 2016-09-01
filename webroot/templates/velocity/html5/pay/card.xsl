@@ -40,29 +40,41 @@
 	<script type="text/javascript">
 		parent.postMessage('mpoint-list-cards,<xsl:value-of select="system/session/@id" />', '*');
 		
-		jQuery(function($) {
+		jQuery(function($)
+		{
 			// Display loading screen on submit
-			$('form.card-form').submit(function() {
+			$('form.card-form').submit(function()
+			{
 				$('.loader-screen').css({'opacity': 1, 'z-index': 20});
 			});
 			
-			$('.card').not('.wallet').click(function(event) {
+			$('.card').not('.wallet').click(function(event)
+			{
 				// Use this code for showing the payment form in a second step
 				var $this = $(this);
-				if($this.hasClass('delete-selected') === false &amp;&amp; $this.hasClass('selected') === false) {
-					$('.card').each(function(i) {
+				if($this.hasClass('delete-selected') === false &amp;&amp; $this.hasClass('selected') === false)
+				{
+					$('.card').each(function(i)
+					{
 						$(this).delay(50*i).animate({
 							right: '-=1000',
 							opacity: 0
-						}, 400, 'easeOutCubic', function() {
+						}, 400, 'easeOutCubic', function()
+						{
 							$('.card').hide();
-							if(event.target.className === 'delete-card-icon') {
+							if(event.target.className === 'delete-card-icon')
+							{
 								$this.addClass('delete-selected');
 								$($this).find('.deletion-form').fadeIn();
-							} else {
-								if($this.hasClass('stored')) {
+							}
+							else
+							{
+								if($this.hasClass('stored'))
+								{
 									$this.addClass('selected');
-								} else {
+								}
+								else
+								{
 									$this.next().fadeIn();
 								}
 							}
@@ -72,23 +84,27 @@
 					});
 					var replace = ($('.progress').text()).replace('1', '2');
 					$('.progress').text(replace);
-
 				}
 			});
 			
 			// Enable back button
-			$('.back-button').click(function() {
+			$('.back-button').click(function()
+			{
 				$(this).fadeOut('fast');
-				$('.card').each(function(i) {
+				$('.card').each(function(i)
+				{
 					$(this).animate({
 						right: '0',
 						opacity: 1
 					}, 0, 'easeOutCubic', function() {
 						$('.card').show();
-						if($(this).hasClass('stored')) {
+						if($(this).hasClass('stored'))
+						{
 							$(this).removeClass('selected');
 							$(this).removeClass('delete-selected');
-						} else {
+						}
+						else
+						{
 							$('.payment-form').hide();
 						}
 					});
@@ -98,18 +114,24 @@
 			});
 
 			// Toggle card name and password fields
-			$('.checkbox input[name="store-card"]').change(function() {
-				if(this.checked) {
+			$('.checkbox input[name="store-card"]').change(function()
+			{
+				if(this.checked)
+				{
 					$('.payment-form .save-card').addClass('active');
-				} else {
+				}
+				else
+				{
 					$('.payment-form .save-card').removeClass('active');
 				}
 			});
 			
 			// Stored card deletion form show
-			$('.delete-card-icon').hover(function() {
+			$('.delete-card-icon').hover(function()
+			{
 				$(this).parent().addClass('ignore-hover');
-			}, function() {
+			}, function()
+			{
 				$(this).parent().removeClass('ignore-hover');
 			});
 		});
@@ -213,14 +235,20 @@
 		</xsl:for-each>
 		];
 		
-		for(i = 0; i &lt; cards.length; i++) {
+		for(i = 0; i &lt; cards.length; i++)
+		{
 			// Convert patterns to a non-nested array:
 			var new_pattern = [];
-			for(x = 0; x &lt; cards[i].patterns.length; x++) {
-				if(cards[i].patterns[x][0] == cards[i].patterns[x][1]) {
+			for(x = 0; x &lt; cards[i].patterns.length; x++)
+			{
+				if(cards[i].patterns[x][0] == cards[i].patterns[x][1])
+				{
 					new_pattern.push(cards[i].patterns[x][0]);
-				} else if (cards[i].patterns[x][0] &lt; cards[i].patterns[x][1]) {
-					for(y = cards[i].patterns[x][0]; y &lt;= cards[i].patterns[x][1]; y++) {
+				}
+				else if (cards[i].patterns[x][0] &lt; cards[i].patterns[x][1])
+				{
+					for(y = cards[i].patterns[x][0]; y &lt;= cards[i].patterns[x][1]; y++)
+					{
 						new_pattern.push(y);
 					}
 				}
@@ -228,18 +256,23 @@
 			cards[i].patterns = new_pattern;
 			
 			// Provide one length if min and max are the same, otherwise all possible lengths:
-			if(cards[i].length[0] == cards[i].length[1]) {
+			if(cards[i].length[0] == cards[i].length[1])
+			{
 				cards[i].length.pop(cards[i].length[1]);
-			} else {
+			}
+			else
+			{
 				var new_length = [];
-				for(z = cards[i].length[0]; z &lt;= cards[i].length[1]; z++) {
+				for(z = cards[i].length[0]; z &lt;= cards[i].length[1]; z++)
+				{
 					new_length.push(z);
 				}
 				cards[i].length = new_length;
 			}
 		}
 
-		jQuery(function($) {
+		jQuery(function($)
+		{
 			var hasError = true;
 			$.payment.cards = cards;
 			
@@ -250,41 +283,52 @@
 			$('input.cc-year').payment('restrictNumeric');
 			
 			// Toggle error class for input fields
-			$.fn.toggleInputError = function(erred) {
+			$.fn.toggleInputError = function(erred)
+			{
 				$(this).toggleClass('has-error', erred);
 				return erred;
 			};
 			
 			// Validate the card input fields
-			function validateInput() {
+			function validateInput()
+			{
 				var cardType = $.payment.cardType($('.cc-number').val());
 				var cardError = $('.cc-number').toggleInputError(!$.payment.validateCardNumber($('.cc-number').val()));
 				var expiryError = $('.cc-month').toggleInputError(!$.payment.validateCardExpiry($('.cc-month').val(), $('.cc-year').val()));
 				var expiryError = $('.cc-year').toggleInputError(!$.payment.validateCardExpiry($('.cc-month').val(), $('.cc-year').val()));
 				var cvcError = $('.cc-cvv').toggleInputError(!$.payment.validateCardCVC($('.cc-cvv').val(), cardType));
 				$('.cc-card-type div').attr('class', 'icon ' + cardType);
-				if(Boolean(cardType) != false) {
+				if(Boolean(cardType) != false)
+				{
 					$('input[name="cardtype"]').val(cardType.replace('card-', ''));
 				}
 				
-				if(cardError == true || expiryError == true || cvcError == true) {
+				if(cardError == true || expiryError == true || cvcError == true)
+				{
 					return true;
-				} else {
+				}
+				else
+				{
 					return false;
 				}
 			}
 			
-			$('.cc-number, .cc-cvv, .cc-month, .cc-year').on('change paste keyup input', function(){
+			$('.cc-number, .cc-cvv, .cc-month, .cc-year').on('change paste keyup input', function()
+			{
 				validateInput();
 			});
 			
 			// Prevent form submission if input does not validate
-			$('form.new-card-form').submit(function(e) {
+			$('form.new-card-form').submit(function(e)
+			{
 				hasError = validateInput();
 				
-				if(hasError) {
+				if(hasError)
+				{
 					e.preventDefault();
-				} else {
+				}
+				else
+				{
 					// Display loading screen
 					$('.loader-screen').css({'opacity': 1, 'z-index': 20});
 				}
