@@ -29,7 +29,8 @@ $content: 30px;
 $body: 15px;
 
 // Custom mixins
-@mixin font($name) {
+@mixin font($name)
+{
   @if $name == 'small' {
     font-size: em(13);
 	line-height: 1.5;
@@ -48,7 +49,8 @@ $body: 15px;
   }
 }
 
-@mixin animate() {
+@mixin animate()
+{
 	@include transition (all 0.15s $ease-out-cubic);
 }
 
@@ -58,11 +60,14 @@ $body: 15px;
 // $container-size: total height or width of the container
 // $scale: multiplier to scale bacground image down width (for retina displays).
 // $y: set to false to position on the x axis instead.
-@mixin background-image-scale($position, $img-size, $container-size, $scale: 1, $y: true) {
-	@if $y == true {
+@mixin background-image-scale($position, $img-size, $container-size, $scale: 1, $y: true)
+{
+	@if $y == true
+	{
 		background-position: 0 ($position/(($img-size/$scale) - $container-size)) * 100%;
 	}
-	@else {
+	@else
+	{
 		background-position: ($position/(($img-size/$scale) - $container-size)) * 100% 0;
 	}
 }
