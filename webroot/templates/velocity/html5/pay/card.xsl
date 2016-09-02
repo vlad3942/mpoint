@@ -119,10 +119,22 @@
 				if(this.checked)
 				{
 					$('.payment-form .save-card').addClass('active');
-				}
-				else
-				{
-					$('.payment-form .save-card').removeClass('active');
+									$('.save-card').show();
+					
+					if($('#new-password').length > 0)
+					{
+						$("#new-password").attr("required", "required");
+						$("#repeat-password").attr("required", "required");
+					}
+					
+ 				} else {
+ 					$('.payment-form .save-card').removeClass('active');
+					$('.save-card').hide();
+					if($('#new-password').length > 0)
+					{
+						$("#new-password").removeAttr("required");
+						$("#repeat-password").removeAttr("required");
+					}
 				}
 			});
 			
@@ -188,18 +200,18 @@
 			
 			<xsl:choose>
 				<xsl:when test="/root/cards/@accountid > 0">
-					<div class="save-card">
+					<div class="save-card" style="display:none;">
 						<label for="cardname"><xsl:value-of select="/root/labels/name" /></label>
 						<input type="text" name="cardname" placeholder="{/root/labels/name}" />
 					</div>
 				</xsl:when>
 				<xsl:otherwise>
-					<div class="save-card">
+					<div class="save-card" style="display:none;">
 						<label for="cardname"><xsl:value-of select="/root/labels/name" /></label>
 						<input type="text" name="cardname" placeholder="{/root/labels/name}" />
 						<label for="new-password"><xsl:value-of select="/root/labels/password" /></label>
-						<input type="password" class="new-password" name="new-password" maxlength="20" required="required" placeholder="{/root/labels/new-password}" title="new-password" />
-						<input type="password" class="repeat-password" name="repeat-password" maxlength="20" required="required" placeholder="{/root/labels/repeat-password}" title="repeat-password" />
+						<input type="password" class="new-password" name="new-password" maxlength="20" placeholder="{/root/labels/new-password}" title="new-password" />
+						<input type="password" class="repeat-password" name="repeat-password" maxlength="20" placeholder="{/root/labels/repeat-password}" title="repeat-password" />
 					</div>
 				</xsl:otherwise>
 			</xsl:choose>
