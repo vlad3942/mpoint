@@ -28,26 +28,29 @@ if (array_key_exists("mpoint-id", $_REQUEST) === true
 
 $obj_mPoint = new Accept($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_UA']);
 
-echo '<?xml version="1.0" encoding="UTF-8"?>';
-echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA'], $_SESSION['obj_TxnInfo']) .'/pay/re-enter.xsl"?>';
-?>
-<root>
-	<title><?= $_OBJ_TXT->_("Payment Already Completed"); ?></title>
+$xml = '<?xml version="1.0" encoding="UTF-8"?>';
+$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA'], $_SESSION['obj_TxnInfo']) .'/pay/re-enter.xsl"?>';
+
+$xml .= '<root>';
+$xml .=  '<title>'.$_OBJ_TXT->_("Payment Already Completed").'</title>';
 	
-	<?= $obj_mPoint->getSystemInfo(); ?>
+$xml .= $obj_mPoint->getSystemInfo(); 
 	
-	<?= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML(); ?>
+$xml .= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML(); 
 
-	<?= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']); ?>
+$xml .= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']); 
 
-	<?= $obj_mPoint->getClientVars($_SESSION['obj_TxnInfo']->getID() ); ?>
+$xml .= $obj_mPoint->getClientVars($_SESSION['obj_TxnInfo']->getID() ); 
 
-	<labels>
-		<status><?= $_OBJ_TXT->_("Status - Payment Already Completed"); ?></status>
-		<txnid><?= $_OBJ_TXT->_("mPoint ID"); ?></txnid>
-		<orderid><?= $_OBJ_TXT->_("Order No"); ?></orderid>
-		<price><?= $_OBJ_TXT->_("Price"); ?></price>
-		<note><?= $_OBJ_TXT->_("Note - Payment Already Completed"); ?></note>
-		<continue><?= htmlspecialchars($_OBJ_TXT->_("Continue >>") ); ?></continue>
-	</labels>
-</root>
+$xml .= '<labels>';
+$xml .= '		<status>'.$_OBJ_TXT->_("Status - Payment Already Completed").'</status>';
+$xml .= '		<txnid>'.$_OBJ_TXT->_("mPoint ID").'</txnid>';
+$xml .= '		<orderid>'.$_OBJ_TXT->_("Order No").'</orderid>';
+$xml .= '		<price>'.$_OBJ_TXT->_("Price").'</price>';
+$xml .= '		<note>'.$_OBJ_TXT->_("Note - Payment Already Completed").'</note>';
+$xml .= '		<continue>'.htmlspecialchars($_OBJ_TXT->_("Continue >>") ).'</continue>';
+$xml .= '	</labels>';
+$xml .= '</root>';
+
+echo $xml;
+exit;

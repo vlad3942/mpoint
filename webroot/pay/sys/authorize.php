@@ -39,12 +39,12 @@ if (intval($_POST['cardtype']) > 0)
 	if ($obj_Validator->valCardTypeID($_OBJ_DB, intval($_POST['cardtype']))  != 10) 
 	{ 
 		$aMsgCds[] = 3;
-		$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE); 
+		
 	}
 } else 
 { 
 		$aMsgCds[] = 3;
-		$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE); 
+		
 }
 
 $cardTypeId = intval($_POST['cardtype']);
@@ -55,7 +55,7 @@ if(array_key_exists("store-card", $_POST) === true && $_POST['store-card'] == 'o
 	if ($obj_Validator->valName($_POST['cardname']) > 1 && $obj_Validator->valName($_POST['cardname']) != 10) 
 	{ 
 		$aMsgCds[] = $obj_Validator->valName($_POST['cardname']) + 33; 
-		$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+		
 	}
 	
 	if(array_key_exists("new-password", $_POST) === true && array_key_exists("repeat-password", $_POST) === true)
@@ -76,7 +76,7 @@ if(isset($_POST['token']) == false)
 	if(preg_match('/^\\d{2}\\/\\d{2}$/', $givenDate) == 0) 
 	{  
 		$aMsgCds[] = 19;
-		$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+		
 	}
 	else 
 	{
@@ -85,7 +85,7 @@ if(isset($_POST['token']) == false)
 		if ($givenDateTimeStamp < strtotime('today') ) 
 		{ 
 			$aMsgCds[] = 20; 
-			$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+			
 		}
 	}
 	
@@ -93,7 +93,7 @@ if(isset($_POST['token']) == false)
 		) 
 	{ 
 		$aMsgCds[] = 25; 
-		$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+		
 	}
 	
 	if(empty($_POST['cardholdername']) == false)
@@ -103,7 +103,7 @@ if(isset($_POST['token']) == false)
 	else 
 	{ 
 		$aMsgCds[] = 25; 
-		$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE); 
+		
 	}
 }
 
@@ -155,7 +155,12 @@ if (count($aMsgCds) == 0)
 			$payResponseCode = $obj_HTTP->send($h, $payRequestBody);
 			$obj_HTTP->disconnect();
 						
-		}		
+		} 
+		else 
+		{ 
+			$obj_mPoint->newMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, "Transaction From HPP.");
+			$_OBJ_DB->query("COMMIT"); 
+		}
 	
 		if($payResponseCode == 200)
 		{
@@ -232,44 +237,36 @@ if (count($aMsgCds) == 0)
 		
 		$code = $obj_XML->status["code"];
 		
-		if(empty($code) === false)
+		if(empty($code) === true || $code != 100)
 		{
 			$code = 59;
-		}
 		
-		if(array_key_exists("store-card", $_POST) === true && $_POST['store-card'] == 'on')
-		{
-
-			if($_SESSION['obj_TxnInfo']->getAccountID() == -1)
-			{
-				$iStatus = $obj_mPoint->savePassword($_SESSION['obj_TxnInfo']->getMobile(), $sPassword, $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig());
-			}			
-			
-			$code = saveCardName($_OBJ_DB, $obj_mPoint, $_SESSION['obj_TxnInfo'], $cardTypeId, $sCardName);
-			
-			if($code == 2 or $code == 1) { $msg = 102; }
-			
-			$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=". $msg;
-			
-		} 
-		else 
-		{
-			
-			if($code == 100)
-			{
-				$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id();
-			} 
-			else 
-			{
-				$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+			$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=".$code;
 				
-				$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=".$code;
+		} 
+		else
+		{
+		
+			if(array_key_exists("store-card", $_POST) === true && $_POST['store-card'] == 'on')
+			{
+	
+				if($_SESSION['obj_TxnInfo']->getAccountID() == -1)
+				{
+					$iStatus = $obj_mPoint->savePassword($_SESSION['obj_TxnInfo']->getMobile(), $sPassword, $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig());
+				}			
+				
+				$code = saveCardName($_OBJ_DB, $obj_mPoint, $_SESSION['obj_TxnInfo'], $cardTypeId, $sCardName);
+				
+				if($code == 2 or $code == 1) { $code = 102; }
+		
 			}
+			
+			$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=". $code;
 		}
 	}
 	else
 	{
-		$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+		
 		
 		$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=".$msg;
 	}
