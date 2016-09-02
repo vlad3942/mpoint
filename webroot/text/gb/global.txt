@@ -889,7 +889,7 @@ msgstr @@@ Price @@@
 
 #: /webroot/pay/re-enter.php:50
 msgid @@@ Note - Payment Already Completed @@@
-msgstr @@@ Your payment has already been processed, please continue back to the merchant site and do not use the "Back" button @@@
+msgstr @@@ Your payment has already been processed, please continue back to the merchant site. @@@
 
 #: /webroot/pay/re-enter.php:51
 msgid @@@ Continue >> @@@
