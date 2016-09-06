@@ -12,29 +12,29 @@
 			
 			<!-- Display Status Messages -->
 			<xsl:apply-templates select="messages" />
-			<div class="card-wrapper">
-				<div class="mpoint-help"><xsl:value-of select="labels/info" /></div>
-				<div class="cards">
-					<xsl:for-each select="cards/item">
-						<xsl:choose>
-						  <xsl:when test="@id = '11'">
-						  	<xsl:apply-templates select="." mode="cpm-wallet" />
-						  </xsl:when>
-						  <xsl:when test="@id = '16' or @id = '23'">
-						  	<xsl:apply-templates select="." mode="other-wallet" />
-						  </xsl:when>
-					   </xsl:choose>
-					</xsl:for-each>
-					
-					<!-- Display payment form for normal payment cards -->
-					<xsl:if test="cards/item/@id = 1 or cards/item/@id = 2 or cards/item/@id = 3 or cards/item/@id = 5 or cards/item/@id = 6 or cards/item/@id = 7 or cards/item/@id = 8 or cards/item/@id = 9">
-						<xsl:apply-templates select="cards" mode="cpm" />
-					</xsl:if>
-				</div>
-				<div class="back-button">
-					&#10229; <xsl:value-of select="/root/labels/back-button" />
-				</div>
-			</div>		
+				<div class="card-wrapper">
+					<div class="mpoint-help"><xsl:value-of select="labels/info" /></div>
+					<div class="cards">
+						<xsl:for-each select="cards/item">
+							<xsl:choose>
+							  <xsl:when test="@id = '11'">
+							  	<xsl:apply-templates select="." mode="cpm-wallet" />
+							  </xsl:when>
+							  <xsl:when test="@id = '16' or @id = '23'">
+							  	<xsl:apply-templates select="." mode="other-wallet" />
+							  </xsl:when>
+						   </xsl:choose>
+						</xsl:for-each>
+						
+						<!-- Display payment form for normal payment cards -->
+						<xsl:if test="cards/item/@id = 1 or cards/item/@id = 2 or cards/item/@id = 3 or cards/item/@id = 5 or cards/item/@id = 6 or cards/item/@id = 7 or cards/item/@id = 8 or cards/item/@id = 9">
+							<xsl:apply-templates select="cards" mode="cpm" />
+						</xsl:if>
+					</div>
+					<div class="back-button">
+						&#10229; <xsl:value-of select="/root/labels/back-button" />
+					</div>
+				</div>		
 		</div>
 	</div>
 	<script type="text/javascript">
@@ -119,7 +119,6 @@
 				if(this.checked)
 				{
 					$('.payment-form .save-card').addClass('active');
-									$('.save-card').show();
 					
 					if($('#new-password').length > 0)
 					{
@@ -129,7 +128,7 @@
 					
  				} else {
  					$('.payment-form .save-card').removeClass('active');
-					$('.save-card').hide();
+
 					if($('#new-password').length > 0)
 					{
 						$("#new-password").removeAttr("required");
@@ -200,13 +199,13 @@
 			
 			<xsl:choose>
 				<xsl:when test="/root/cards/@accountid > 0">
-					<div class="save-card" style="display:none;">
+					<div class="save-card">
 						<label for="cardname"><xsl:value-of select="/root/labels/name" /></label>
 						<input type="text" name="cardname" placeholder="{/root/labels/name}" />
 					</div>
 				</xsl:when>
 				<xsl:otherwise>
-					<div class="save-card" style="display:none;">
+					<div class="save-card">
 						<label for="cardname"><xsl:value-of select="/root/labels/name" /></label>
 						<input type="text" name="cardname" placeholder="{/root/labels/name}" />
 						<label for="new-password"><xsl:value-of select="/root/labels/password" /></label>
