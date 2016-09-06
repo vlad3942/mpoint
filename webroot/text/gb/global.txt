@@ -822,7 +822,7 @@ msgid @@@ - Authorizing Payment Text - @@@
 msgstr @@@ Your stored-card payment request is now being processed.
 Please do not navigate away early by clicking "Back" or another button, but wait until this page is automatically updated to reflect your payment status. @@@
 
-#: /webroot/cpm/payment.php:150
+#: /webroot/cpm/payment.php:141
 msgid @@@ Cancel Payment @@@
 msgstr @@@ Cancel @@@
 
@@ -1027,53 +1027,85 @@ msgstr @@@ SMS Purchase - Unknown Reponse @@@
 msgid @@@ SMS Purchase - Transaction not found @@@
 msgstr @@@ SMS Purchase - Transaction not found @@@
 
-#: /webroot/pay/card.php:34
+#: /webroot/pay/card.php:27
 msgid @@@ Select Payment Method @@@
 msgstr @@@ Select Payment Method @@@
 
-#: /webroot/pay/card.php:47
+#: /webroot/pay/card.php:29
 msgid @@@ Step 1 of 2 @@@
 msgstr @@@ Step 1 of 2 @@@
 
-#: /webroot/pay/card.php:48
+#: /webroot/pay/card.php:30
 msgid @@@ Please select your Payment Method @@@
 msgstr @@@ Please select your payment method @@@
 
-#: /webroot/pay/card.php:49
+#: /webroot/pay/card.php:31
 msgid @@@ Cancel Payment @@@
 msgstr @@@ Cancel @@@
 
-#: /webroot/pay/card.php:50
+#: /webroot/pay/card.php:32
 msgid @@@ Card Number @@@
 msgstr @@@ Card Number @@@
 
-#: /webroot/pay/card.php:51
+#: /webroot/pay/card.php:33
 msgid @@@ Expiry Date @@@
 msgstr @@@ Expiry Date @@@
 
-#: /webroot/pay/card.php:52
+#: /webroot/pay/card.php:34
 msgid @@@ CVV Code @@@
 msgstr @@@ Security Code @@@
 
-#: /webroot/pay/card.php:53
+#: /webroot/pay/card.php:35
 msgid @@@ Pay now @@@
 msgstr @@@ Pay now @@@
 
-#: /webroot/pay/card.php:54
+#: /webroot/pay/card.php:36
 msgid @@@ Payment card @@@
 msgstr @@@ Payment card @@@
 
-#: /webroot/pay/card.php:55
+#: /webroot/pay/card.php:37
 msgid @@@ Save card info @@@
 msgstr @@@ Save card info @@@
 
-#: /webroot/pay/card.php:56
+#: /webroot/pay/card.php:38
 msgid @@@ Card holder @@@
 msgstr @@@ Name on card @@@
 
-#: /webroot/pay/card.php:159
+#: /webroot/pay/card.php:39
 msgid @@@ Back button @@@
 msgstr @@@ Back to payment options @@@
+
+#: /webroot/pay/card.php:40
+msgid @@@ Password @@@
+msgstr @@@ Password @@@
+
+#: /webroot/pay/card.php:41
+msgid @@@ Complete Payment @@@
+msgstr @@@ Complete Payment @@@
+
+#: /webroot/pay/card.php:42
+msgid @@@ Create Password - Help Checkout @@@
+msgstr @@@ Create Password - Help Checkout @@@
+
+#: /webroot/pay/card.php:43
+msgid @@@ New Password @@@
+msgstr @@@ New Password @@@
+
+#: /webroot/pay/card.php:44
+msgid @@@ Repeat Password @@@
+msgstr @@@ Repeat Password @@@
+
+#: /webroot/pay/card.php:45
+msgid @@@ Card Name @@@
+msgstr @@@ Card Name @@@
+
+#: /webroot/pay/card.php:46
+msgid @@@ Delete Card @@@
+msgstr @@@ Delete Card @@@
+
+#: /webroot/pay/card.php:47
+msgid @@@ Card Holder Name @@@
+msgstr @@@ Card Holder Name @@@
 
 #: /webroot/overview.php:38
 msgid @@@ Order Overview @@@

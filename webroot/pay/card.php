@@ -24,9 +24,30 @@ require_once(sCLASS_PATH ."/credit_card.php");
 // Require Business logic for the Payment Accepted component
 require_once(sCLASS_PATH ."/accept.php");
 
-$aWallets = array(Constants::iVISA_CHECKOUT_WALLET, Constants::iMASTER_PASS_WALLET);
+$xmlData = '<title>'.$_OBJ_TXT->_("Select Payment Method").'</title>';
+$xmlData .= '<labels>
+			<progress>'.$_OBJ_TXT->_("Step 1 of 2").'</progress>
+			<info>'.$_OBJ_TXT->_("Please select your Payment Method").'</info>
+			<cancel>'.$_OBJ_TXT->_("Cancel Payment").'</cancel>
+			<cardnumber>'.$_OBJ_TXT->_("Card Number").'</cardnumber>
+			<expiry>'.$_OBJ_TXT->_("Expiry Date").'</expiry>
+			<cvv>'.$_OBJ_TXT->_("CVV Code").'</cvv>
+			<button>'.$_OBJ_TXT->_("Pay now").'</button>
+			<paymentcard>'.$_OBJ_TXT->_("Payment card").'</paymentcard>
+			<savecard>'.$_OBJ_TXT->_("Save card info").'</savecard>
+			<cardholder>'.$_OBJ_TXT->_("Card holder").'</cardholder>
+			<back-button>'. $_OBJ_TXT->_("Back button") .'</back-button>
+			<password>'. $_OBJ_TXT->_("Password") .'</password>
+			<submit>'. $_OBJ_TXT->_("Complete Payment") .'</submit>
+			<password>'. $_OBJ_TXT->_("Create Password - Help Checkout") .'</password>
+			<new-password>'. $_OBJ_TXT->_("New Password") .'</new-password>
+			<repeat-password>'. $_OBJ_TXT->_("Repeat Password") .'</repeat-password>
+			<name>'. $_OBJ_TXT->_("Card Name") .'</name>
+			<delete-card>'.$_OBJ_TXT->_("Delete Card").'</delete-card>
+			<cardholdername>'.$_OBJ_TXT->_("Card Holder Name").'</cardholdername>
+		</labels>';
 
-$xmlData = "";
+$aWallets = array(Constants::iVISA_CHECKOUT_WALLET, Constants::iMASTER_PASS_WALLET);
 
 try
 {
@@ -40,23 +61,14 @@ try
 		
 		// Instantiate main mPoint object for handling the component's functionality
 		$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SESSION['obj_UA']);
-		
-		if(isset($_REQUEST['mpoint-id']) && $_REQUEST['mpoint-id'] > 0)
-		{
-			$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-		}
-		
-		// Instantiate main special object in order to pass all relevant data for the Accept Payment page through DIBS: Custom Pages
-		$obj_Accept = new Accept($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_UA']);
-		
-		
+			
 		$card_xml = $obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount() );
 		
 		$clientId = $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getClientID();
 		$accountId = $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getID();
 		
 		$obj_CardXML = simplexml_load_string($card_xml );
-		
+				
 		foreach($aWallets as $iWallet)
 		{
 			$obj_Elem = current($obj_CardXML->xpath("/cards/item[@id = ".$iWallet."]"));
@@ -126,8 +138,6 @@ try
 		
 		}	
 		
-		$xmlData = '<title>'.$_OBJ_TXT->_("Select Payment Method").'</title>';
-		
 		$xmlData .= $obj_mPoint->getSystemInfo();
 		
 		$xmlData .= $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->toXML();
@@ -135,47 +145,13 @@ try
 		$xmlData .= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML();
 		
 		$xmlData .= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']);
-		
+
 		$xmlData .= $_SESSION['obj_UA']->toXML();
-		
-		$xmlData .= '<labels>
-			<progress>'.$_OBJ_TXT->_("Step 1 of 2").'</progress>
-			<info>'.$_OBJ_TXT->_("Please select your Payment Method").'</info>
-			<cancel>'.$_OBJ_TXT->_("Cancel Payment").'</cancel>
-			<cardholdername>'.$_OBJ_TXT->_("Card Holder Name").'</cardholdername>
-			<cardnumber>'.$_OBJ_TXT->_("Card Number").'</cardnumber>
-			<expiry>'.$_OBJ_TXT->_("Expiry Date").'</expiry>
-			<cvv>'.$_OBJ_TXT->_("CVV Code").'</cvv>
-			<button>'.$_OBJ_TXT->_("Pay now").'</button>
-			<paymentcard>'.$_OBJ_TXT->_("Payment card").'</paymentcard>
-			<savecard>'.$_OBJ_TXT->_("Save card info").'</savecard>
-			<cardholder>'.$_OBJ_TXT->_("Card holder").'</cardholder>
-			<password>'. $_OBJ_TXT->_("Password") .'</password>
-			<submit>'. $_OBJ_TXT->_("Complete Payment") .'</submit>
-			<password>'. $_OBJ_TXT->_("Create Password - Help Checkout") .'</password>
-			<new-password>'. $_OBJ_TXT->_("New Password") .'</new-password>
-			<repeat-password>'. $_OBJ_TXT->_("Repeat Password") .'</repeat-password>
-			<name>'. $_OBJ_TXT->_("Card Name") .'</name>
-			<back-button>'. $_OBJ_TXT->_("Back button") .'</back-button>
-			<delete-card>'.$_OBJ_TXT->_("Delete Card").'</delete-card>
-		</labels>';
-		
+				
 		$xmlData .= trim(str_replace('<?xml version="1.0"?>', '',$obj_CardXML->asXML()));
 		
 		$xmlData .= $obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_TxnInfo']->getClientConfig(), false, $_SESSION['obj_UA']);
-		
-		//DIBS Custom Pages: Payment Accepted
-		$xmlData .= '<accept>';
-		$xmlData .= $obj_Accept->getmPointLogoInfo();
-		
-		$xmlData .= $obj_Accept->getClientVars($_SESSION['obj_TxnInfo']->getID() );
-		$xmlData .= '</accept>';
-				
-		// Current transaction is an Account Top-Up and a previous transaction is in progress
-		if ($_SESSION['obj_TxnInfo']->getTypeID() >= 100 && $_SESSION['obj_TxnInfo']->getTypeID() <= 109 && array_key_exists("obj_OrgTxnInfo", $_SESSION) === true)
-		{
-			$xmlData .= '<original-transaction-id>'. $_SESSION['obj_OrgTxnInfo']->getID() .'</original-transaction-id>';
-		}		
+						
 	}	
 	
 }
