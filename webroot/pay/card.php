@@ -176,30 +176,30 @@ try
 		{
 			$xmlData .= '<original-transaction-id>'. $_SESSION['obj_OrgTxnInfo']->getID() .'</original-transaction-id>';
 		}		
-	}
+	}	
 	
-	$xml = '<?xml version="1.0" encoding="UTF-8"?>';
-	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/html5/pay/card.xsl"?>';
-	
-	$xml .= '<root>';
-	
-	$xml .= $xmlData;
-	
-	$xml .= $obj_mPoint->getMessages("Select Card");
-	
-	$xml .= '</root>';
-	
-	//file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") .".log", $xml);
-	
-	echo $xml;
-	exit;
 }
 catch(Exception $e)
 {
 	trigger_error($e->getMessage(), E_USER_ERROR);
-	header("location: ".$_SERVER['HTTP_REFERER']);
-	exit;	
+	$_GET['msg'] = 1;
 }
+
+$xml = '<?xml version="1.0" encoding="UTF-8"?>';
+$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/html5/pay/card.xsl"?>';
+
+$xml .= '<root>';
+
+$xml .= $xmlData;
+
+$xml .= $obj_mPoint->getMessages("Select Card");
+
+$xml .= '</root>';
+
+//file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") .".log", $xml);
+
+echo $xml;
+exit;
 
 function getXMLResponse($b, $aHTTP_CONN_INFO)
 {
@@ -225,14 +225,13 @@ function getXMLResponse($b, $aHTTP_CONN_INFO)
 		{
 			$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
 		}
+		
+		return $obj_XML;
 	}
 	catch(Exception $e)
 	{
 		trigger_error($e->getMessage(), E_USER_ERROR);
-		header("location: ".$_SERVER['HTTP_REFERER']);
-		exit;
+		$_GET['msg'] = 1;
 	}
-	
-	return $obj_XML;
 }
 ?>
