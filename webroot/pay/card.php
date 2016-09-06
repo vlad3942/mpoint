@@ -204,7 +204,7 @@ exit;
 function getXMLResponse($b, $aHTTP_CONN_INFO)
 {
 	try
-		{
+	{
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
 			
 		$h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;

@@ -54,6 +54,8 @@
 				var $this = $(this);
 				if($this.hasClass('delete-selected') === false &amp;&amp; $this.hasClass('selected') === false)
 				{
+					$('.mpoint-status').remove();
+					
 					$('.card').each(function(i)
 					{
 						$(this).delay(50*i).animate({
