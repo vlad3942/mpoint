@@ -41,7 +41,8 @@ if (intval($_POST['cardtype']) > 0)
 		$aMsgCds[] = 3;
 		
 	}
-} else 
+} 
+else 
 { 
 		$aMsgCds[] = 3;
 		
@@ -49,13 +50,14 @@ if (intval($_POST['cardtype']) > 0)
 
 $cardTypeId = intval($_POST['cardtype']);
 
+$bNewAccount = false;
+
 if(array_key_exists("store-card", $_POST) === true && $_POST['store-card'] == 'on')
 {
 	
 	if ($obj_Validator->valName($_POST['cardname']) > 1 && $obj_Validator->valName($_POST['cardname']) != 10) 
 	{ 
-		$aMsgCds[] = $obj_Validator->valName($_POST['cardname']) + 33; 
-		
+		$aMsgCds[] = $obj_Validator->valName($_POST['cardname']) + 33; 		
 	}
 	
 	if(array_key_exists("new-password", $_POST) === true && array_key_exists("repeat-password", $_POST) === true)
@@ -63,7 +65,7 @@ if(array_key_exists("store-card", $_POST) === true && $_POST['store-card'] == 'o
 		if ($obj_Validator->valPassword($_POST['new-password']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_POST['new-password']) + 10; }
 		else if ($obj_Validator->valPassword($_POST['repeat-password']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_POST['repeat-password']) + 20; }	
 		else if (count($aMsgCds) == 0 && $_POST['new-password'] != $_POST['repeat-password']) { $aMsgCds[] = 31; }
-		else { $sPassword = $_POST['new-password']; }
+		else { $sPassword = $_POST['new-password']; $bNewAccount = true; }
 	}
 	
 	$sCardName = $_POST['cardname'];
@@ -246,30 +248,64 @@ if (count($aMsgCds) == 0)
 		} 
 		else
 		{
-		
-			if(array_key_exists("store-card", $_POST) === true && $_POST['store-card'] == 'on')
+			if(array_key_exists("store-card", $_POST) == true && $_POST['store-card'] == 'on')
 			{
-	
-				if($_SESSION['obj_TxnInfo']->getAccountID() == -1)
+				$obj_TxnInfo = TxnInfo::produceInfo($_SESSION['obj_TxnInfo']->getID(), $_OBJ_DB);
+				
+				
+				if($obj_TxnInfo->getAccountID() != -1)
 				{
-					$iStatus = $obj_mPoint->savePassword($_SESSION['obj_TxnInfo']->getMobile(), $sPassword, $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig());
-				}			
+					if($bNewAccount == true)
+					{
+						$obj_mPoint->saveCustomerReference($obj_TxnInfo->getAccountID(), $obj_TxnInfo->getCustomerRef());
+							
+						$mobile = $obj_TxnInfo->getMobile();
+							
+						if(empty($mobile) == false)
+						{
+							$obj_mPoint->saveMobile($obj_TxnInfo->getAccountID(), $mobile);
+						}
+							
+						$email = $obj_TxnInfo->getEMail();
+							
+						if(empty($email) == false)
+						{
+							$obj_mPoint->saveEmail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail(), $obj_TxnInfo->getClientConfig()->getCountryConfig());
+						}
+						
+						$obj_mPoint->savePassword($obj_TxnInfo->getMobile(), $sPassword, $obj_TxnInfo->getClientConfig()->getCountryConfig());
+					}
+										
+					$code = $obj_mPoint->saveCardName($obj_TxnInfo->getAccountID(), $cardTypeId, (string) $sCardName);
+					
+					if($code == 2 or $code == 1) { $code = 102; }
+					
+				} else {
+					
+					$iAccountID = EndUserAccount::getAccountID(
+							$_OBJ_DB, $obj_TxnInfo->getClientConfig(), 
+							$obj_TxnInfo->getClientConfig()->getCountryConfig(), 
+							$obj_TxnInfo->getCustomerRef(), 
+							$obj_TxnInfo->getMobile(), 
+							$obj_TxnInfo->getEMail()
+					);
+					
+					if($iAccountID == -1)
+					{
+						$iStatus = $obj_mPoint->savePassword($_SESSION['obj_TxnInfo']->getMobile(), $sPassword, $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig());
+					}
+					
+					$code = $obj_mPoint->saveCardName($iAccountID, $cardTypeId, (string) $sCardName);
+					
+					if($code == 2 or $code == 1) { $code = 102; }
+				}
 				
-				$code = saveCardName($_OBJ_DB, $obj_mPoint, $_SESSION['obj_TxnInfo'], $cardTypeId, $sCardName);
-				
-				if($code == 2 or $code == 1) { $code = 102; }
-		
 			}
 			
 			$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=". $code;
+			
 		}
-	}
-	else
-	{
-		
-		
-		$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=".$msg;
-	}
+	} else { $url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=". $msg; }
 	
 	header("location: ". $url);
 	exit;
@@ -286,23 +322,4 @@ else
 	header("location: http://". $_SERVER['HTTP_HOST'] ."/". $sPath . session_name() ."=". session_id() . $msg);
 	exit;
 }
-
-function saveCardName($_OBJ_DB, $obj_mPoint, $obj_TxnInfo, $cardid, $name)
-{
-
-	$iAccountID = -1;
-	if ($obj_TxnInfo->getAccountID() > 0) { $iAccountID = $obj_TxnInfo->getAccountID(); }
-	elseif (strlen($obj_TxnInfo->getCustomerRef() ) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getCustomerRef() ); }
-	if ($iAccountID == -1 && trim($obj_TxnInfo->getMobile() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getMobile() ); }
-	if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getEMail() ); }
-	// Client supports global storage of payment cards
-	if ($iAccountID == -1 && $obj_TxnInfo->getClientConfig()->getStoreCard() > 3)
-	{
-		if (strlen($obj_TxnInfo->getCustomerRef() ) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getCustomerRef(), false); }
-		if ($iAccountID == -1 && trim($obj_TxnInfo->getMobile() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getCountryConfig(), $obj_TxnInfo->getMobile(), false); }
-		if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_TxnInfo->getClientConfig(), $obj_TxnInfo->getCountryConfig(), $obj_TxnInfo->getEMail(), false); }
-	}
-	$iStatus = $obj_mPoint->saveCardName($iAccountID, $cardid, $name);
-	
-	return $iStatus;
-}
+?>
