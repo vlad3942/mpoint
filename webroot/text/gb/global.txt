@@ -1071,7 +1071,7 @@ msgstr @@@ Save card info @@@
 msgid @@@ Card holder @@@
 msgstr @@@ Name on card @@@
 
-#: /webroot/pay/card.php:142
+#: /webroot/pay/card.php:159
 msgid @@@ Back button @@@
 msgstr @@@ Back to payment options @@@
 
