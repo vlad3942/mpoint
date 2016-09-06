@@ -371,10 +371,14 @@
 						
 	<script type="text/javascript">
 		var id = <xsl:value-of select="@id"/>;
-
+		
 		jQuery("head").append("<xsl:value-of select="head"/>");
 						
 		jQuery("#card-"+id).html('<xsl:value-of select="body"/>');
+		
+		$('.card-'+id).click(function (){
+		    $('#card-'+id+' img').trigger('click');
+		});
 	</script>
 
 </xsl:template>
