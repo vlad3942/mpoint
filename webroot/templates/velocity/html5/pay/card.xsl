@@ -47,7 +47,17 @@
 			{
 				$('.loader-screen').css({'opacity': 1, 'z-index': 20});
 			});
+
+			// Enable wallet button
+			$('.card.wallet').on('click', function(event) {
+				$('.card-logo', this).find('img').first().click();
+			});
+			$(".card.wallet .card-logo img").click(function(event) {
+				// A click that triggers a click on itself, better stop propagation:
+				event.stopPropagation();
+			});
 			
+			// Enable all other buttons
 			$('.card').not('.wallet').click(function(event)
 			{
 				// Use this code for showing the payment form in a second step
@@ -375,10 +385,6 @@
 		jQuery("head").append("<xsl:value-of select="head"/>");
 						
 		jQuery("#card-"+id).html('<xsl:value-of select="body"/>');
-		
-		$('.card-'+id).click(function (){
-		    $('#card-'+id+' img').trigger('click');
-		});
 	</script>
 
 </xsl:template>
