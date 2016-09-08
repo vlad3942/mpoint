@@ -10,3 +10,10 @@ INSERT INTO System.Type_Tbl (id, name) VALUES (10091, 'New Card Purchase');
  * CMP-999
  */
 UPDATE system.country_tbl SET symbol='Kr.' WHERE id = 100;
+
+/***
+ * CMP-1030
+ */
+INSERT INTO System.CardChargeType_Tbl(id, name) VALUES
+(4, 'CHARGE'),
+(5, 'DEFERRED_DEBIT');
