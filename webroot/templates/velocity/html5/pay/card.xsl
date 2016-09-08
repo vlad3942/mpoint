@@ -12,29 +12,29 @@
 			
 			<!-- Display Status Messages -->
 			<xsl:apply-templates select="messages" />
-			<div class="card-wrapper">
-				<div class="mpoint-help"><xsl:value-of select="labels/info" /></div>
-				<div class="cards">
-					<xsl:for-each select="cards/item">
-						<xsl:choose>
-						  <xsl:when test="@id = '11'">
-						  	<xsl:apply-templates select="." mode="cpm-wallet" />
-						  </xsl:when>
-						  <xsl:when test="@id = '16' or @id = '23'">
-						  	<xsl:apply-templates select="." mode="other-wallet" />
-						  </xsl:when>
-					   </xsl:choose>
-					</xsl:for-each>
-					
-					<!-- Display payment form for normal payment cards -->
-					<xsl:if test="cards/item/@id = 1 or cards/item/@id = 2 or cards/item/@id = 3 or cards/item/@id = 5 or cards/item/@id = 6 or cards/item/@id = 7 or cards/item/@id = 8 or cards/item/@id = 9">
-						<xsl:apply-templates select="cards" mode="cpm" />
-					</xsl:if>
-				</div>
-				<div class="back-button">
-					&#10229; <xsl:value-of select="/root/labels/back-button" />
-				</div>
-			</div>		
+				<div class="card-wrapper">
+					<div class="mpoint-help"><xsl:value-of select="labels/info" /></div>
+					<div class="cards">
+						<xsl:for-each select="cards/item">
+							<xsl:choose>
+							  <xsl:when test="@id = '11'">
+							  	<xsl:apply-templates select="." mode="cpm-wallet" />
+							  </xsl:when>
+							  <xsl:when test="@id = '16' or @id = '23'">
+							  	<xsl:apply-templates select="." mode="other-wallet" />
+							  </xsl:when>
+						   </xsl:choose>
+						</xsl:for-each>
+						
+						<!-- Display payment form for normal payment cards -->
+						<xsl:if test="cards/item/@id = 1 or cards/item/@id = 2 or cards/item/@id = 3 or cards/item/@id = 5 or cards/item/@id = 6 or cards/item/@id = 7 or cards/item/@id = 8 or cards/item/@id = 9">
+							<xsl:apply-templates select="cards" mode="cpm" />
+						</xsl:if>
+					</div>
+					<div class="back-button">
+						&#10229; <xsl:value-of select="/root/labels/back-button" />
+					</div>
+				</div>		
 		</div>
 	</div>
 	<script type="text/javascript">
@@ -54,6 +54,8 @@
 				var $this = $(this);
 				if($this.hasClass('delete-selected') === false &amp;&amp; $this.hasClass('selected') === false)
 				{
+					$('.mpoint-status').remove();
+					
 					$('.card').each(function(i)
 					{
 						$(this).delay(50*i).animate({
@@ -119,10 +121,21 @@
 				if(this.checked)
 				{
 					$('.payment-form .save-card').addClass('active');
-				}
-				else
-				{
-					$('.payment-form .save-card').removeClass('active');
+					
+					if($('#new-password').length > 0)
+					{
+						$("#new-password").attr("required", "required");
+						$("#repeat-password").attr("required", "required");
+					}
+					
+ 				} else {
+ 					$('.payment-form .save-card').removeClass('active');
+
+					if($('#new-password').length > 0)
+					{
+						$("#new-password").removeAttr("required");
+						$("#repeat-password").removeAttr("required");
+					}
 				}
 			});
 			
@@ -198,8 +211,8 @@
 						<label for="cardname"><xsl:value-of select="/root/labels/name" /></label>
 						<input type="text" name="cardname" placeholder="{/root/labels/name}" />
 						<label for="new-password"><xsl:value-of select="/root/labels/password" /></label>
-						<input type="password" class="new-password" name="new-password" maxlength="20" required="required" placeholder="{/root/labels/new-password}" title="new-password" />
-						<input type="password" class="repeat-password" name="repeat-password" maxlength="20" required="required" placeholder="{/root/labels/repeat-password}" title="repeat-password" />
+						<input type="password" class="new-password" name="new-password" maxlength="20" placeholder="{/root/labels/new-password}" title="new-password" />
+						<input type="password" class="repeat-password" name="repeat-password" maxlength="20" placeholder="{/root/labels/repeat-password}" title="repeat-password" />
 					</div>
 				</xsl:otherwise>
 			</xsl:choose>
@@ -358,10 +371,14 @@
 						
 	<script type="text/javascript">
 		var id = <xsl:value-of select="@id"/>;
-
+		
 		jQuery("head").append("<xsl:value-of select="head"/>");
 						
 		jQuery("#card-"+id).html('<xsl:value-of select="body"/>');
+		
+		$('.card-'+id).click(function (){
+		    $('#card-'+id+' img').trigger('click');
+		});
 	</script>
 
 </xsl:template>
