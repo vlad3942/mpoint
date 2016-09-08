@@ -76,7 +76,8 @@ try
 	$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 
 	$iValResult = $obj_Validator->valOrderID($_OBJ_DB, (string) $obj_Challenge->transaction, (integer) $obj_Challenge->transaction["id"]);
-	if ($iValResult != 10) { $aMsgCds[$iValResult + 20] = "Transaction and Order ID doesn't match. mPoint ID: ". $obj_Challenge->transaction["id"] ." Order ID: ". $obj_Challenge->transaction; }
+	// We allow validation result to be 1 here, since the order number can be unset in the case of the scenario for store card without an order
+	if ($iValResult != 1 && $iValResult != 10) { $aMsgCds[$iValResult + 20] = "Transaction and Order ID doesn't match. mPoint ID: ". $obj_Challenge->transaction["id"] ." Order ID: ". $obj_Challenge->transaction; }
 	$iValResult = $obj_Validator->valmPointID($_OBJ_DB, (integer) $obj_Challenge->transaction["id"], $obj_ClientConfig->getID() );
 	if ($iValResult != 3) { $aMsgCds[$iValResult + 30] = "Transaction not in right state. mPoint ID: ". $obj_Challenge->transaction["id"] ." Client ID: ". $obj_ClientConfig->getID(); }
 	$iValResult = $obj_Validator->valChallenge($obj_Challenge->challenge);
