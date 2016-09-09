@@ -16,4 +16,5 @@ UPDATE system.country_tbl SET symbol='Kr.' WHERE id = 100;
  */
 INSERT INTO System.CardChargeType_Tbl(id, name) VALUES
 (4, 'CHARGE'),
-(5, 'DEFERRED_DEBIT');
+(5, 'DEFERRED_DEBIT'),
+(6, 'NONE');

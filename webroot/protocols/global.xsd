@@ -119,7 +119,7 @@
 
 <xs:simpleType name="charge-type">
 	<xs:restriction base="xs:positiveInteger">
-		<xs:minInclusive value="0" />
+		<xs:minInclusive value="1" />
 		<xs:maxInclusive value="5" />
 	 </xs:restriction>
 </xs:simpleType >
