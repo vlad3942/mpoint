@@ -83,6 +83,9 @@ class CPG extends Callback
 		case (20):	// Poste Master
 			$name = "ECMC-SSL";
 			break;
+		case (21):	//UATP
+			$name = "TPCARD-SSL";
+			break;
 		default:	// Unknown
 			$name = $id;
 			break;
