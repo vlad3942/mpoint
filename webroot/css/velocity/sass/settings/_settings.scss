@@ -58,7 +58,7 @@ $body: 15px;
 // $position: negative x or y position of the background image in the container in pixels
 // $img-size: total height or width of the background image in pixels
 // $container-size: total height or width of the container
-// $scale: multiplier to scale bacground image down width (for retina displays).
+// $scale: multiplier to scale bacground image down with (for retina displays).
 // $y: set to false to position on the x axis instead.
 @mixin background-image-scale($position, $img-size, $container-size, $scale: 1, $y: true)
 {
