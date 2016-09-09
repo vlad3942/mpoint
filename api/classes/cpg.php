@@ -144,7 +144,7 @@ class CPG extends Callback
 		{
 			if (count($obj_XML->cvc) == 1) { $b .= '<cvc>'. intval($obj_XML->cvc) .'</cvc>'; }
             $b .= '<cardNumber>'. htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) .'</cardNumber>';
-            if(count($obj_XML["charge-type-id"]) > 0)
+            if(isset($obj_XML["charge-type-id"]) == true)
             {
             	$b .= '<cardDebitCreditType>'.$this->getChargeTypeName($obj_XML["charge-type-id"]).'</cardDebitCreditType>';
             }
@@ -258,7 +258,7 @@ class CPG extends Callback
 		$b .= '</order>';
 		$b .= '<returnURL>'. htmlspecialchars($this->getTxnInfo()->getAcceptURL(), ENT_NOQUOTES) .'</returnURL>';
 		$b .= '</submit>';
-		
+
 		$aLogin = $this->getMerchantLogin($this->getTxnInfo()->getClientConfig()->getID(), Constants::iCPG_PSP);
 		$sUsername = "";
 		$sPassword = "";
