@@ -18,6 +18,18 @@
  */
 class CPG extends Callback
 {
+	
+	public function getChargeTypeName($id)
+	{
+		$sql = "SELECT name
+				FROM System".sSCHEMA_POSTFIX.".CardChargeType_Tbl
+				WHERE id = ". intval($id) ." AND enabled = '1'";
+		
+		//		echo $sql ."\n";
+		$RS = $this->getDBConn()->getName($sql);
+		
+		return $RS["NAME"];		
+	}
 
 	public function getCardName($id)
 	{
@@ -128,7 +140,11 @@ class CPG extends Callback
 		else
 		{
 			if (count($obj_XML->cvc) == 1) { $b .= '<cvc>'. intval($obj_XML->cvc) .'</cvc>'; }
-                        $b .= '<cardNumber>'. htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) .'</cardNumber>';
+            $b .= '<cardNumber>'. htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) .'</cardNumber>';
+            if(count($obj_XML["charge-type-id"]) > 0)
+            {
+            	$b .= '<cardDebitCreditType>'.$this->getChargeTypeName($obj_XML["charge-type-id"]).'</cardDebitCreditType>';
+            }
 			$b .= '<expiryDate>';
 			$b .= '<date month="'. substr($obj_XML->expiry, 0, 2) .'" year="20'. substr($obj_XML->expiry, -2) .'" />'; // mandatory
 			$b .= '</expiryDate>';
