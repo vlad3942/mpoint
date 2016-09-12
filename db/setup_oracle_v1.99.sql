@@ -1,11 +1,10 @@
 /***
  * CMP-1030
  */
-INSERT INTO System_OWNR.CardChargeType_Tbl(id, name) VALUES
-(4, 'CHARGE'),
-(5, 'DEFERRED_DEBIT'),
-(6, 'NONE');
-
+INSERT INTO System_OWNR.CardChargeType_Tbl(id, name) VALUES(4, 'CHARGE');
+INSERT INTO System_OWNR.CardChargeType_Tbl(id, name) VALUES(5, 'DEFERRED_DEBIT');
+INSERT INTO System_OWNR.CardChargeType_Tbl(id, name) VALUES(5, 'DEFERRED_DEBIT');
+INSERT INTO System_OWNR.CardChargeType_Tbl(id, name) VALUES(6, 'NONE');
 /***
  * CMP-1041
  */
