@@ -1,4 +1,6 @@
 <?php
+echo "<pre/>";
+print_r($_POST);exit;
 // Require Global Include File
 require_once("../../inc/include.php");
 
@@ -305,7 +307,7 @@ if (count($aMsgCds) == 0)
 			$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=". $code;
 			
 		}
-	} else { $url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=". $msg; }
+	} else { $url = "http://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=".$msg; }
 	
 	header("location: ". $url);
 	exit;
