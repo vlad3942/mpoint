@@ -615,7 +615,7 @@ try
 	
 																	$obj_PSP = new Adyen($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["adyen"]);
 	
-																	$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+																	
 																	// Authorization succeeded
 																	if ($code == "100")
 																	{
