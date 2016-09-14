@@ -615,12 +615,13 @@ try
 	
 																	$obj_PSP = new Adyen($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["adyen"]);
 	
-																	$code = $obj_PSP->authorize($obj_PSPConfig ,$obj_Elem->ticket);
+																	$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
 																	// Authorization succeeded
 																	if ($code == "100")
 																	{
 																		$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
 																	}
+																	else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
 																	// Error: Authorization declined
 																	else
 																	{
