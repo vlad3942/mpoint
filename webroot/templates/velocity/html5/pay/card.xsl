@@ -45,7 +45,7 @@
 			// Display loading screen on submit
 			$('form.card-form').submit(function()
 			{
-				$('.loader-screen').css({'opacity': 1, 'z-index': 20});
+				$('body').addClass('loading');
 			});
 
 			// Enable wallet button
@@ -360,7 +360,7 @@
 				else
 				{
 					// Display loading screen
-					$('.loader-screen').css({'opacity': 1, 'z-index': 20});
+					$('body').addClass('loading');
 				}
 			});
 		});
