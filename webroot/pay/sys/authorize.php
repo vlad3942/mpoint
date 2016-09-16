@@ -1,6 +1,4 @@
 <?php
-echo "<pre/>";
-print_r($_POST);exit;
 // Require Global Include File
 require_once("../../inc/include.php");
 
@@ -135,6 +133,10 @@ if (count($aMsgCds) == 0)
 						      </card>
 						    </transaction>
 						    <client-info language="da" version="1.20" platform="iOS/8.1.3">
+			       				<customer-ref>"'.$_SESSION['obj_TxnInfo']->getCustomerRef().'"</customer-ref>
+			       				<mobile country-id="'.$_SESSION['obj_TxnInfo']->getCountryConfig()->getID().'">"'.$_SESSION['obj_TxnInfo']->getMobile().'"</mobile>
+								<email>"'.$_SESSION['obj_TxnInfo']->getEMail().'"</email>
+							    <ip>"'.$_SESSION['obj_TxnInfo']->getIP().'"</ip>
 						    </client-info>
 						</pay>
 					</root>';
@@ -213,6 +215,10 @@ if (count($aMsgCds) == 0)
 				      </card>
 				    </transaction>
 				    <client-info language="'.sDEFAULT_LANGUAGE.'" version="1.20" platform="HTML5">
+			    		<customer-ref>"'.$_SESSION['obj_TxnInfo']->getCustomerRef().'"</customer-ref>
+       					<mobile country-id="'.$_SESSION['obj_TxnInfo']->getCountryConfig()->getID().'">"'.$_SESSION['obj_TxnInfo']->getMobile().'"</mobile>
+						<email>"'.$_SESSION['obj_TxnInfo']->getEMail().'"</email>
+				   		<ip>"'.$_SESSION['obj_TxnInfo']->getIP().'"</ip>
 				    </client-info>
 				  </authorize-payment>
 				</root>';
@@ -241,7 +247,7 @@ if (count($aMsgCds) == 0)
 		
 		$code = $obj_XML->status["code"];
 		
-		if(empty($code) === true || $code != 100)
+		if(empty($code) === true  || in_array($code, array(100, 2000)) == false)
 		{
 			$code = 59;
 		
