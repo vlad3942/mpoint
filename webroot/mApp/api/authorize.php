@@ -610,11 +610,12 @@ try
 	
 																$xml .= $obj_PSP->authTicket($obj_ConnInfo, $obj_Elem);
 																break;
-															case (Constants::iADYEN_PSP): // NetAxept
+															case (Constants::iADYEN_PSP): // Adyen
 																	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iADYEN_PSP);
 	
 																	$obj_PSP = new Adyen($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["adyen"]);
 	
+																	$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
 																	
 																	// Authorization succeeded
 																	if ($code == "100")
