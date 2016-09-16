@@ -31,5 +31,5 @@ class AndroidPay extends CPMPSP
 	public function authorize(PSPConfig $obj_PSPConfig, $ticket) { throw new AndroidPayException("Method: authTicket is not supported by Android Pay"); }
 	public function status() { throw new AndroidPayException("Method: status is not supported by Android Pay"); }
 
-	public function getPSPID() { return Constants::iAPPLE_PAY_PSP; }
+	public function getPSPID() { return Constants::iANDROID_PAY_PSP; }
 }
