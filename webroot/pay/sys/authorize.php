@@ -1,6 +1,4 @@
 <?php
-echo "<pre/>";
-print_r($_POST);exit;
 // Require Global Include File
 require_once("../../inc/include.php");
 
