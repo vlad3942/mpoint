@@ -25,3 +25,10 @@ INSERT INTO System.CardChargeType_Tbl(id, name) VALUES
 INSERT INTO System.PspCard_Tbl(cardid, pspid) VALUES (21, 9);
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (10001, 21, 9);
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 9, '-1');
+
+
+/**
+ * EKW-517
+ */
+UPDATE System.Country_Tbl SET decimals = 3 WHERE currency = 'OMR' and id = 605;
+UPDATE System.Country_Tbl SET decimals = 3 WHERE currency = 'KWD' and id = 604;
