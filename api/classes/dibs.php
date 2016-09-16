@@ -99,19 +99,38 @@ class DIBS extends Callback implements Captureable, Refundable
 	 *  -20. Cancelled by user at 3D Secure authentication step
 	 *  
 	 * @link	http://tech.dibs.dk/toolbox/dibs-error-codes/
+	 * @see		DIBS::_authTicket()
+	 * @see		DIBS::authNewCard()
 	 *  
-	 * @param 	integer $ticket		Valid ticket which references a previously stored card 
+	 * @param 	SimpleXMLElement $obj_XML	The "card" XML element which contains either a valid token which references a previously stored card or the card details of a new card 
 	 * @return 	integer
 	 * @throws	E_USER_WARNING
 	 */
-	public function authTicket($ticket)
+	public function authTicket(SimpleXMLElement $obj_XML)
 	{
-					
+		if (count($obj_XML->ticket) == 1)
+		{
+			return $this->_authTicket( (integer) $obj_XML->ticket);
+		}
+		else
+		{
+			return $this->authNewCard($obj_XML->{'card-number'}, $obj_XML->{'expiry-month'}, $obj_XML->{'expiry-year'}, $obj_XML->cvc, $obj_XML->{'card-holder-name'});
+		}			
+	}
+	
+	/**
+	 * 
+	 * @param 	integer $ticket		Valid ticket which references a previously stored card
+	 * @return 	integer
+	 * @throws	E_USER_WARNING
+	 */
+	private function _authTicket($ticket)
+	{
 		// Construct Order ID
 		$oid = $this->getTxnInfo()->getOrderID();
 		if (empty($oid) === true) { $oid = $this->getTxnInfo()->getID(); }
 //		$oid .= "-". date("Y-m-d H:i:s");
-		
+	
 		$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
 		$b .= "&mpointid=". $this->getTxnInfo()->getID();
 		$b .= "&ticket=". $ticket;
@@ -120,12 +139,12 @@ class DIBS extends Callback implements Captureable, Refundable
 		$b .= "&orderid=". urlencode($oid);
 		if ($this->getTxnInfo()->getClientConfig()->getMode() > 0) { $b .= "&test=". $this->getTxnInfo()->getClientConfig()->getMode(); }
 		$b .= "&textreply=true";
-
+	
 		$aConnInfo = $this->aCONN_INFO;
-		$aConnInfo["path"] = $aConnInfo["paths"]["auth"];
+		$aConnInfo["path"] = $aConnInfo["paths"]["auth-ticket"];
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aConnInfo);
 		$obj_HTTP = parent::send($obj_ConnInfo, $this->constHTTPHeaders(), $b);
-
+	
 		$aStatus = array();
 		parse_str($obj_HTTP->getReplyBody(), $aStatus);
 		// Auhtorisation Declined
@@ -134,9 +153,54 @@ class DIBS extends Callback implements Captureable, Refundable
 			trigger_error(trim("Authorisation declined by DIBS for Ticket: ". $ticket .", Reason Code: ". $aStatus["reason"] ."\n". @$aStatus["message"]), E_USER_WARNING);
 			$aStatus["transact"] = $aStatus["reason"] * -1;
 		}
-
-		return $aStatus["transact"];				
-				
+	
+		return $aStatus["transact"];
+	}
+	
+	/**
+	 * 
+	 * @param long $cardno			Card Number
+	 * @param integer $expmonth		Expiry Month
+	 * @param integer $expyear		Expiry Year
+	 * @param integer $cvc			CVC / CVV
+	 * @param string $chn			Card Holder Name (optional)
+	 * @return integer
+	 * @throws E_USER_WARNING
+	 */
+	public function authNewCard($cardno, $expmonth, $expyear, $cvc, $chn="")
+	{
+		// Construct Order ID
+		$oid = $this->getTxnInfo()->getOrderID();
+		if (empty($oid) === true) { $oid = $this->getTxnInfo()->getID(); }
+//		$oid .= "-". date("Y-m-d H:i:s");
+	
+		$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
+		$b .= "&mpointid=". $this->getTxnInfo()->getID();
+		$b .= "&cardno=". trim($cardno);
+		$b .= "&expmon=". trim($expmonth);
+		$b .= "&expyear=". trim($expyear);
+		$b .= "&cvc=". trim($cvc);
+		$b .= "&amount=". $this->getTxnInfo()->getAmount();
+		$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getClientConfig()->getCountryConfig()->getID(), Constants::iDIBS_PSP);
+		$b .= "&orderid=". urlencode($oid);
+		if ($this->getTxnInfo()->getClientConfig()->getMode() > 0) { $b .= "&test=". $this->getTxnInfo()->getClientConfig()->getMode(); }
+		$b .= "&textreply=true";
+	
+		$aConnInfo = $this->aCONN_INFO;
+		$aConnInfo["path"] = $aConnInfo["paths"]["auth-new-card"];
+		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aConnInfo);
+		$obj_HTTP = parent::send($obj_ConnInfo, $this->constHTTPHeaders(), $b);
+	
+		$aStatus = array();
+		parse_str($obj_HTTP->getReplyBody(), $aStatus);
+		// Auhtorisation Declined
+		if (strtoupper($aStatus["status"]) != "ACCEPTED")
+		{
+			trigger_error(trim("Authorisation declined by DIBS for Card Details: ". $this->_getMaskedCardNumber($cardno) .", Reason Code: ". $aStatus["reason"] ."\n". @$aStatus["message"]), E_USER_WARNING);
+			$aStatus["transact"] = $aStatus["reason"] * -1;
+		}
+	
+		return $aStatus["transact"];
 	}
 
 	/**
@@ -505,9 +569,9 @@ class DIBS extends Callback implements Captureable, Refundable
 		if ($code == 200)
 		{
 			$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-								SET pspid = ". Constants::iDIBS_PSP ."
-								WHERE id = ". $this->getTxnInfo()->getID();
-			//					echo $sql ."\n";
+					SET pspid = ". Constants::iDIBS_PSP ."
+					WHERE id = ". $this->getTxnInfo()->getID();
+//			echo $sql ."\n";
 			$this->getDBConn()->query($sql);
 			
 			$data = array("psp-id" => Constants::iDIBS_PSP,
@@ -537,5 +601,10 @@ class DIBS extends Callback implements Captureable, Refundable
 	}
 
 	public function getPSPID() { return Constants::iDIBS_PSP; }
+	
+	private function _getMaskedCardNumber($cardno)
+	{
+		return substr($cardno, 0, 6) . str_repeat("*", strlen($cardno) - 10) . substr($cardno, -4);
+	}
 }
 ?>
