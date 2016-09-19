@@ -186,6 +186,11 @@ input[type="checkbox"], input[type="radio"]
 	}
 }
 
+body.loading .loader-screen {
+	opacity: 1;
+	z-index: 20;
+}
+
 .loader-screen
 {
 	opacity: 0;

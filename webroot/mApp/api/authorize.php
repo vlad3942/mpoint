@@ -524,7 +524,7 @@ try
 															case (Constants::iDIBS_PSP):	// DIBS
 																// Authorise payment with PSP based on Ticket
 																$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['dibs']);
-																$iTxnID = $obj_PSP->authTicket( (integer) $obj_Elem->ticket);
+																$iTxnID = $obj_PSP->authTicket($obj_Elem);
 																// Authorization succeeded
 																if ($iTxnID > 0)
 																{

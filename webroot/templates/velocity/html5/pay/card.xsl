@@ -12,29 +12,29 @@
 			
 			<!-- Display Status Messages -->
 			<xsl:apply-templates select="messages" />
-			<div class="card-wrapper">
-				<div class="mpoint-help"><xsl:value-of select="labels/info" /></div>
-				<div class="cards">
-					<xsl:for-each select="cards/item">
-						<xsl:choose>
-						  <xsl:when test="@id = '11'">
-						  	<xsl:apply-templates select="." mode="cpm-wallet" />
-						  </xsl:when>
-						  <xsl:when test="@id = '16' or @id = '23'">
-						  	<xsl:apply-templates select="." mode="other-wallet" />
-						  </xsl:when>
-					   </xsl:choose>
-					</xsl:for-each>
-					
-					<!-- Display payment form for normal payment cards -->
-					<xsl:if test="cards/item/@id = 1 or cards/item/@id = 2 or cards/item/@id = 3 or cards/item/@id = 5 or cards/item/@id = 6 or cards/item/@id = 7 or cards/item/@id = 8 or cards/item/@id = 9">
-						<xsl:apply-templates select="cards" mode="cpm" />
-					</xsl:if>
-				</div>
-				<div class="back-button">
-					&#10229; <xsl:value-of select="/root/labels/back-button" />
-				</div>
-			</div>		
+				<div class="card-wrapper">
+					<div class="mpoint-help"><xsl:value-of select="labels/info" /></div>
+					<div class="cards">
+						<xsl:for-each select="cards/item">
+							<xsl:choose>
+							  <xsl:when test="@id = '11'">
+							  	<xsl:apply-templates select="." mode="cpm-wallet" />
+							  </xsl:when>
+							  <xsl:when test="@id = '16' or @id = '23'">
+							  	<xsl:apply-templates select="." mode="other-wallet" />
+							  </xsl:when>
+						   </xsl:choose>
+						</xsl:for-each>
+						
+						<!-- Display payment form for normal payment cards -->
+						<xsl:if test="cards/item/@id = 1 or cards/item/@id = 2 or cards/item/@id = 3 or cards/item/@id = 5 or cards/item/@id = 6 or cards/item/@id = 7 or cards/item/@id = 8 or cards/item/@id = 9">
+							<xsl:apply-templates select="cards" mode="cpm" />
+						</xsl:if>
+					</div>
+					<div class="back-button">
+						&#10229; <xsl:value-of select="/root/labels/back-button" />
+					</div>
+				</div>		
 		</div>
 	</div>
 	<script type="text/javascript">
@@ -45,15 +45,27 @@
 			// Display loading screen on submit
 			$('form.card-form').submit(function()
 			{
-				$('.loader-screen').css({'opacity': 1, 'z-index': 20});
+				$('body').addClass('loading');
+			});
+
+			// Enable wallet button
+			$('.card.wallet').on('click', function(event) {
+				$('.card-logo', this).find('img').first().click();
+			});
+			$(".card.wallet .card-logo img").click(function(event) {
+				// A click that triggers a click on itself, better stop propagation:
+				event.stopPropagation();
 			});
 			
+			// Enable all other buttons
 			$('.card').not('.wallet').click(function(event)
 			{
 				// Use this code for showing the payment form in a second step
 				var $this = $(this);
 				if($this.hasClass('delete-selected') === false &amp;&amp; $this.hasClass('selected') === false)
 				{
+					$('.mpoint-status').remove();
+					
 					$('.card').each(function(i)
 					{
 						$(this).delay(50*i).animate({
@@ -119,10 +131,21 @@
 				if(this.checked)
 				{
 					$('.payment-form .save-card').addClass('active');
-				}
-				else
-				{
-					$('.payment-form .save-card').removeClass('active');
+					
+					if($('#new-password').length > 0)
+					{
+						$("#new-password").attr("required", "required");
+						$("#repeat-password").attr("required", "required");
+					}
+					
+ 				} else {
+ 					$('.payment-form .save-card').removeClass('active');
+
+					if($('#new-password').length > 0)
+					{
+						$("#new-password").removeAttr("required");
+						$("#repeat-password").removeAttr("required");
+					}
 				}
 			});
 			
@@ -159,6 +182,13 @@
 					<div class="icon" style="background-image: url({/root/system/protocol}://{/root/system/host}/img/card_payment.png)" />
 				</div>
 				<input type="tel" name="cardnumber" class="cc-number" autocomplete="cc-number" maxlength="23" required="required" placeholder="1111 2222 3333 4444" />
+				<div class="card-logo enabled-cards">
+					<xsl:for-each select="/root/cards/item">
+						<xsl:if test="@id = 1 or @id = 2 or @id = 3 or @id = 5 or @id = 6 or @id = 7 or @id = 8 or @id = 9">
+							<div class="icon card-{@id}" style="background-image: url({/root/system/protocol}://{/root/system/host}/img/card_payment.png)"></div>
+						</xsl:if>
+					</xsl:for-each>
+				</div>
 			</div>
 			
 			<div class="additional">
@@ -198,8 +228,8 @@
 						<label for="cardname"><xsl:value-of select="/root/labels/name" /></label>
 						<input type="text" name="cardname" placeholder="{/root/labels/name}" />
 						<label for="new-password"><xsl:value-of select="/root/labels/password" /></label>
-						<input type="password" class="new-password" name="new-password" maxlength="20" required="required" placeholder="{/root/labels/new-password}" title="new-password" />
-						<input type="password" class="repeat-password" name="repeat-password" maxlength="20" required="required" placeholder="{/root/labels/repeat-password}" title="repeat-password" />
+						<input type="password" class="new-password" name="new-password" maxlength="20" placeholder="{/root/labels/new-password}" title="new-password" />
+						<input type="password" class="repeat-password" name="repeat-password" maxlength="20" placeholder="{/root/labels/repeat-password}" title="repeat-password" />
 					</div>
 				</xsl:otherwise>
 			</xsl:choose>
@@ -330,7 +360,7 @@
 				else
 				{
 					// Display loading screen
-					$('.loader-screen').css({'opacity': 1, 'z-index': 20});
+					$('body').addClass('loading');
 				}
 			});
 		});
@@ -358,7 +388,7 @@
 						
 	<script type="text/javascript">
 		var id = <xsl:value-of select="@id"/>;
-
+		
 		jQuery("head").append("<xsl:value-of select="head"/>");
 						
 		jQuery("#card-"+id).html('<xsl:value-of select="body"/>');

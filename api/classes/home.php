@@ -1156,6 +1156,23 @@ class Home extends General
 
 		return is_resource($this->getDBConn()->query($sql) );
 	}
+	
+	/**
+	 * Saves the customer ref number for the End-User Account.
+	 *
+	 * @param 	string $cr		the Client's Reference for the Customer (optional)
+	 * @return	integer 		The unique ID of the created End-User Account
+	 * @return	boolean
+	 */
+	public function saveCustomerReference($id, $cr = '')
+	{
+		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Account_Tbl
+				SET externalid = '".$cr."'
+				WHERE id = ". intval($id);
+		//		echo $sql ."\n";
+	
+		return is_resource($this->getDBConn()->query($sql) );
+	}
 }
 
 ?>
