@@ -229,7 +229,7 @@ if (count($aMsgCds) == 0)
 					
 						$obj_PSP = new DataCash($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["data-cash"]);
 					
-						$code = $obj_PSP->authorize($obj_PSPConfig , $obj_XML->ticket);
+						$code = $obj_PSP->authorize($obj_PSPConfig , $obj_XML);
 						// Authorization succeeded
 						if ($code == "100")
 						{
