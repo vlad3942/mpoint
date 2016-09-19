@@ -664,7 +664,7 @@ try
 																	if ($code == "100")
 																	{
 																		$xml .= '<status code="100">Payment Authorized using Card</status>';
-																	}
+																	} else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
 																	// Error: Authorization declined
 																	else
 																	{
