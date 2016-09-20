@@ -524,7 +524,7 @@ try
 															case (Constants::iDIBS_PSP):	// DIBS
 																// Authorise payment with PSP based on Ticket
 																$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['dibs']);
-																$iTxnID = $obj_PSP->authTicket( (integer) $obj_Elem->ticket);
+																$iTxnID = $obj_PSP->authTicket($obj_Elem);
 																// Authorization succeeded
 																if ($iTxnID > 0)
 																{
@@ -610,12 +610,13 @@ try
 	
 																$xml .= $obj_PSP->authTicket($obj_ConnInfo, $obj_Elem);
 																break;
-															case (Constants::iADYEN_PSP): // NetAxept
+															case (Constants::iADYEN_PSP): // Adyen
 																	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iADYEN_PSP);
 	
 																	$obj_PSP = new Adyen($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["adyen"]);
 	
-																	$code = $obj_PSP->authorize($obj_PSPConfig ,$obj_Elem);
+																	$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+																	
 																	// Authorization succeeded
 																	if ($code == "100")
 																	{
@@ -663,7 +664,8 @@ try
 																	if ($code == "100")
 																	{
 																		$xml .= '<status code="100">Payment Authorized using Card</status>';
-																	}
+																	} else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+																	else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and card stored.</status>'; }
 																	// Error: Authorization declined
 																	else
 																	{

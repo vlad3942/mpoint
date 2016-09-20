@@ -100,11 +100,12 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			$_REQUEST['gomobileid'] = -1;
 			$_REQUEST['description'] = "";
 			$_REQUEST['ip'] = $_SERVER['REMOTE_ADDR'];
+			$_REQUEST['amount'] = $_REQUEST['amount'] * 100;
 			$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, var_export($_REQUEST, true) );
 			if (array_key_exists("auth-token", $_REQUEST) === true) { $_SESSION['obj_Info']->setInfo("auth-token", $_REQUEST['auth-token']); }
 			$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $_REQUEST);
 			// Associate End-User Account (if exists) with Transaction
-			$iAccountID = -1;
+			/* $iAccountID = -1;
 			if (array_key_exists("customer-ref", $_REQUEST) === true) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $_REQUEST['customer-ref']); }
 			if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getMobile() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getMobile() ); }
 			if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getEMail() ); }
@@ -114,7 +115,16 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 				if (array_key_exists("customer-ref", $_REQUEST) === true && strlen($_REQUEST['customer-ref']) > 0) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $_REQUEST['customer-ref'], false); }
 				if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getMobile() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getMobile(), $_SESSION['obj_TxnInfo']->getCountryConfig(), false); }
 				if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getEMail(), $_SESSION['obj_TxnInfo']->getCountryConfig(), false); }
-			}
+			} */
+			
+			$iAccountID = EndUserAccount::getAccountID(
+					$_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig(),
+					$_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig(),
+					$_SESSION['obj_TxnInfo']->getCustomerRef(),
+					$_SESSION['obj_TxnInfo']->getMobile(),
+					$_SESSION['obj_TxnInfo']->getEMail()
+			);
+			
 			$_SESSION['obj_TxnInfo']->setAccountID($iAccountID);
 			// Update Transaction Log
 			$obj_mPoint->logTransaction($_SESSION['obj_TxnInfo']);
