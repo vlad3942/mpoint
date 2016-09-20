@@ -216,7 +216,7 @@ if (count($aMsgCds) == 0)
 				    </transaction>
 				    <client-info language="'.sDEFAULT_LANGUAGE.'" version="1.20" platform="HTML5">
 			    		<customer-ref>'.$_SESSION['obj_TxnInfo']->getCustomerRef().'</customer-ref>
-       					<mobile country-id='.$_SESSION['obj_TxnInfo']->getCountryConfig()->getID().'">"'.$_SESSION['obj_TxnInfo']->getMobile().'</mobile>
+       					<mobile country-id="'.$_SESSION['obj_TxnInfo']->getCountryConfig()->getID().'">'.$_SESSION['obj_TxnInfo']->getMobile().'</mobile>
 						<email>'.$_SESSION['obj_TxnInfo']->getEMail().'</email>
 				   		<ip>'.$_SESSION['obj_TxnInfo']->getIP().'</ip>
 				    </client-info>
