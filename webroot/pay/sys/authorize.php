@@ -247,7 +247,7 @@ if (count($aMsgCds) == 0)
 		
 		$code = $obj_XML->status["code"];
 		
-		if(empty($code) === true  || in_array($code, array(100, 2000)) == false)
+		if(empty($code) === true  || in_array($code, array(100, 2000, 2009)) == false)
 		{
 			$code = 59;
 		
