@@ -160,9 +160,10 @@ try
 									{
 										// Add control state and immediately commit database transaction
 										$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, "");
-										$_OBJ_DB->query("COMMIT");
 									}
-
+									
+									$_OBJ_DB->query("COMMIT");
+									
 									//TODO: Move most of the logic of this for-loop into model layer, api/classes/authorize.php
 									for ($j=0; $j<count($obj_DOM->{'authorize-payment'}[$i]->transaction->card); $j++)
 									{
