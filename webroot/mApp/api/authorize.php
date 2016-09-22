@@ -160,9 +160,10 @@ try
 									{
 										// Add control state and immediately commit database transaction
 										$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, "");
-										$_OBJ_DB->query("COMMIT");
 									}
-
+									
+									$_OBJ_DB->query("COMMIT");
+									
 									//TODO: Move most of the logic of this for-loop into model layer, api/classes/authorize.php
 									for ($j=0; $j<count($obj_DOM->{'authorize-payment'}[$i]->transaction->card); $j++)
 									{
@@ -668,7 +669,8 @@ try
 																	if ($code == "100")
 																	{
 																		$xml .= '<status code="100">Payment Authorized using Card</status>';
-																	}
+																	} else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+																	else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and card stored.</status>'; }
 																	// Error: Authorization declined
 																	else
 																	{
