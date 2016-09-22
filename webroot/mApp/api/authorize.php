@@ -528,13 +528,17 @@ try
 																// Authorization succeeded
 																if ($iTxnID > 0)
 																{
-																	try
+																	// Only generate internal callback for payments made with a Stored Card
+																	if (count($obj_Elem->ticket) == 1)
 																	{
-																		// Initialise Callback to Client
-																		$aCPM_CONN_INFO["path"] = "/callback/dibs.php";
-																		$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_Elem->type["id"]), $iTxnID, (string) $obj_Elem->mask, (string) $obj_Elem->expiry);
+																		try
+																		{
+																			// Initialise Callback to Client
+																			$aCPM_CONN_INFO["path"] = "/callback/dibs.php";
+																			$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_Elem->type["id"]), $iTxnID, (string) $obj_Elem->mask, (string) $obj_Elem->expiry);
+																		}
+																		catch (HTTPException $ignore) { /* Ignore */ }
 																	}
-																	catch (HTTPException $ignore) { /* Ignore */ }
 	
 																	$xml = '<status code="100">Payment Authorized using Stored Card</status>';
 																}
