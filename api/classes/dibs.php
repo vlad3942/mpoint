@@ -114,7 +114,8 @@ class DIBS extends Callback implements Captureable, Refundable
 		}
 		else
 		{
-			return $this->authNewCard($obj_XML->{'card-number'}, $obj_XML->{'expiry-month'}, $obj_XML->{'expiry-year'}, $obj_XML->cvc, $obj_XML->{'card-holder-name'});
+			// expiry date received in mm/yy format 
+			return $this->authNewCard($obj_XML->{'card-number'}, substr($obj_XML->{'expiry'}, 0, 2), substr($obj_XML->{'expiry'}, -2), $obj_XML->cvc, $obj_XML->{'card-holder-name'});
 		}			
 	}
 	
