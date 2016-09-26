@@ -160,9 +160,10 @@ try
 									{
 										// Add control state and immediately commit database transaction
 										$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, "");
-										$_OBJ_DB->query("COMMIT");
 									}
-
+									
+									$_OBJ_DB->query("COMMIT");
+									
 									//TODO: Move most of the logic of this for-loop into model layer, api/classes/authorize.php
 									for ($j=0; $j<count($obj_DOM->{'authorize-payment'}[$i]->transaction->card); $j++)
 									{
@@ -528,13 +529,17 @@ try
 																// Authorization succeeded
 																if ($iTxnID > 0)
 																{
-																	try
+																	// Only generate internal callback for payments made with a Stored Card
+																	if (count($obj_Elem->ticket) == 1)
 																	{
-																		// Initialise Callback to Client
-																		$aCPM_CONN_INFO["path"] = "/callback/dibs.php";
-																		$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_Elem->type["id"]), $iTxnID, (string) $obj_Elem->mask, (string) $obj_Elem->expiry);
+																		try
+																		{
+																			// Initialise Callback to Client
+																			$aCPM_CONN_INFO["path"] = "/callback/dibs.php";
+																			$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_Elem->type["id"]), $iTxnID, (string) $obj_Elem->mask, (string) $obj_Elem->expiry);
+																		}
+																		catch (HTTPException $ignore) { /* Ignore */ }
 																	}
-																	catch (HTTPException $ignore) { /* Ignore */ }
 	
 																	$xml = '<status code="100">Payment Authorized using Stored Card</status>';
 																}
