@@ -144,7 +144,7 @@ class CPG extends Callback
 		{
 			if (count($obj_XML->cvc) == 1) { $b .= '<cvc>'. intval($obj_XML->cvc) .'</cvc>'; }
             $b .= '<cardNumber>'. htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) .'</cardNumber>';
-            if(isset($obj_XML["charge-type-id"]) == true)
+            if(isset($obj_XML["charge-type-id"]) == true && intval($obj_XML["charge-type-id"]) != 0)
             {
             	$b .= '<cardDebitCreditType>'.$this->getChargeTypeName($obj_XML["charge-type-id"]).'</cardDebitCreditType>';
             }
