@@ -115,12 +115,10 @@ try
 		//modified to add xml wrapper to suite to the DIBS authTicket function change.
 		if (array_key_exists("maketicket", $_POST) === false)
 		{
-			//$_POST['transact'] = $obj_mPoint->authTicket($ticket);
-			$callbackXML = new SimpleXMLElement("<callback></callback>");
-			$ticket_node = $callbackXML.addChild("ticket", $ticket);
-			$_POST['transact'] = $obj_mPoint->authTicket($callbackXML);
-		}
-		
+        	$xml = "<callback><ticket>" .$ticket ."</ticket></callback>";
+            $callbackXML = new SimpleXMLElement($xml);
+            $_POST['transact'] = $obj_mPoint->authTicket($callbackXML);
+   		}
 	}
 
 	//
