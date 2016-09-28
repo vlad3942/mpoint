@@ -115,7 +115,14 @@ class DIBS extends Callback implements Captureable, Refundable
 		else
 		{
 			// expiry date received in mm/yy format 
-			return $this->authNewCard($obj_XML->{'card-number'}, substr($obj_XML->{'expiry'}, 0, 2), substr($obj_XML->{'expiry'}, -2), $obj_XML->cvc, $obj_XML->{'card-holder-name'});
+			return $this->authNewCard(
+					$obj_XML->{'card-number'}, 
+					substr($obj_XML->{'expiry'}, 0, 2), 
+					substr($obj_XML->{'expiry'}, -2), 
+					$obj_XML->cvc, 
+					$obj_XML->{'card-holder-name'},
+					$obj_XML['type-id']
+			);
 		}			
 	}
 	
@@ -168,12 +175,11 @@ class DIBS extends Callback implements Captureable, Refundable
 	 * @return integer
 	 * @throws E_USER_WARNING
 	 */
-	public function authNewCard($cardno, $expmonth, $expyear, $cvc, $chn="")
+	public function authNewCard($cardno, $expmonth, $expyear, $cvc, $chn="", $cardid)
 	{
 		// Construct Order ID
 		$oid = $this->getTxnInfo()->getOrderID();
 		if (empty($oid) === true) { $oid = $this->getTxnInfo()->getID(); }
-//		$oid .= "-". date("Y-m-d H:i:s");
 	
 		$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
 		$b .= "&mpointid=". $this->getTxnInfo()->getID();
@@ -186,12 +192,20 @@ class DIBS extends Callback implements Captureable, Refundable
 		$b .= "&orderid=". urlencode($oid);
 		if ($this->getTxnInfo()->getClientConfig()->getMode() > 0) { $b .= "&test=". $this->getTxnInfo()->getClientConfig()->getMode(); }
 		$b .= "&textreply=true";
-	
+		$b .= "&callbackurl=". urlencode("http://". $_SERVER['HTTP_HOST'] ."/callback/dibs.php");
+		$b .= "&fullreply=true";
+		$b .= "&language=". $this->getTxnInfo()->getLanguage();
+		$b .= "&cardid=". $cardid;
+		$b .= "&clientid=". $this->getTxnInfo()->getClientConfig()->getID();
+		$b .= "&accountid=". $this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID();
+		$b .= "&store_card=". $this->getTxnInfo()->getClientConfig()->getStoreCard();
+		$b .= "&auto_store_card=". parent::bool2xml($this->getTxnInfo()->autoStoreCard() );
+
 		$aConnInfo = $this->aCONN_INFO;
 		$aConnInfo["path"] = $aConnInfo["paths"]["auth-new-card"];
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aConnInfo);
 		$obj_HTTP = parent::send($obj_ConnInfo, $this->constHTTPHeaders(), $b);
-	
+
 		$aStatus = array();
 		parse_str($obj_HTTP->getReplyBody(), $aStatus);
 		// Auhtorisation Declined

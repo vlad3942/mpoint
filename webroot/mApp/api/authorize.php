@@ -539,9 +539,12 @@ try
 																			$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_Elem->type["id"]), $iTxnID, (string) $obj_Elem->mask, (string) $obj_Elem->expiry);
 																		}
 																		catch (HTTPException $ignore) { /* Ignore */ }
-																	}
-	
+																		
+																		//$xml = '<status code="100">Payment Authorized using Stored Card</status>';
+																	} //else { $xml = '<status code="2000">Payment authorized using new card</status>'; }
+																
 																	$xml = '<status code="100">Payment Authorized using Stored Card</status>';
+																	
 																}
 																// Error: Authorization declined
 																else
