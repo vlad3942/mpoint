@@ -143,7 +143,7 @@ if (count($aMsgCds) == 0)
 				case (Constants::iDIBS_PSP):	// DIBS
 					// Authorise payment with PSP based on Ticket
 					$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO['dibs']);
-					$iTxnID = $obj_PSP->authTicket( (integer) $obj_XML->ticket);
+					$iTxnID = $obj_PSP->authTicket($obj_XML);
 					// Authorization succeeded
 					if ($iTxnID > 0)
 					{

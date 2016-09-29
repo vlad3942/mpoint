@@ -200,6 +200,12 @@ class DIBS extends Callback implements Captureable, Refundable
 		$b .= "&accountid=". $this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID();
 		$b .= "&store_card=". $this->getTxnInfo()->getClientConfig()->getStoreCard();
 		$b .= "&auto_store_card=". parent::bool2xml($this->getTxnInfo()->autoStoreCard() );
+		
+		if(count($this->getMessageData($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, false) ) == 1 )
+		{
+			$b .= "&preauth=true";
+		} else { $b .= "&preauth=false"; }
+		
 
 		$aConnInfo = $this->aCONN_INFO;
 		$aConnInfo["path"] = $aConnInfo["paths"]["auth-new-card"];
