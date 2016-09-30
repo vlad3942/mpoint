@@ -204,7 +204,7 @@ class DIBS extends Callback implements Captureable, Refundable
 		if(count($this->getMessageData($this->getTxnInfo()->getID(), Constants::iTICKET_CREATED_STATE, false) ) == 1 )
 		{
 			$b .= "&preauth=true";
-		} else { $b .= "&preauth=false"; }
+		}
 		
 
 		$aConnInfo = $this->aCONN_INFO;
