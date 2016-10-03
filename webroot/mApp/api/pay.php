@@ -238,6 +238,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												}
 												else { $xml .= $obj_XMLElem->asXML(); }
 											}
+											
+											if (General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, ""); }
+											
 											break;
 										case (Constants::iWORLDPAY_PSP):
 											

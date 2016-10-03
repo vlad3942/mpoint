@@ -143,7 +143,7 @@ class DIBS extends Callback implements Captureable, Refundable
 		$b .= "&mpointid=". $this->getTxnInfo()->getID();
 		$b .= "&ticket=". $ticket;
 		$b .= "&amount=". $this->getTxnInfo()->getAmount();
-		$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getClientConfig()->getCountryConfig()->getID(), Constants::iDIBS_PSP);
+		$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iDIBS_PSP);
 		$b .= "&orderid=". urlencode($oid);
 		if ($this->getTxnInfo()->getClientConfig()->getMode() > 0) { $b .= "&test=". $this->getTxnInfo()->getClientConfig()->getMode(); }
 		$b .= "&textreply=true";
@@ -188,7 +188,7 @@ class DIBS extends Callback implements Captureable, Refundable
 		$b .= "&expyear=". trim($expyear);
 		$b .= "&cvc=". trim($cvc);
 		$b .= "&amount=". $this->getTxnInfo()->getAmount();
-		$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getClientConfig()->getCountryConfig()->getID(), Constants::iDIBS_PSP);
+		$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iDIBS_PSP);
 		$b .= "&orderid=". urlencode($oid);
 		if ($this->getTxnInfo()->getClientConfig()->getMode() > 0) { $b .= "&test=". $this->getTxnInfo()->getClientConfig()->getMode(); }
 		$b .= "&textreply=true";
@@ -200,6 +200,12 @@ class DIBS extends Callback implements Captureable, Refundable
 		$b .= "&accountid=". $this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID();
 		$b .= "&store_card=". $this->getTxnInfo()->getClientConfig()->getStoreCard();
 		$b .= "&auto_store_card=". parent::bool2xml($this->getTxnInfo()->autoStoreCard() );
+		
+		if(count($this->getMessageData($this->getTxnInfo()->getID(), Constants::iTICKET_CREATED_STATE, false) ) == 1 )
+		{
+			$b .= "&preauth=true";
+		}
+		
 
 		$aConnInfo = $this->aCONN_INFO;
 		$aConnInfo["path"] = $aConnInfo["paths"]["auth-new-card"];
