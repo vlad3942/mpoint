@@ -23,11 +23,20 @@ $sCardHolderName = "";
 $sCardName = "";
 $sPassword = "";
 
-if($_SESSION['obj_TxnInfo'] === null)
+//trigger_error(print_r($_POST,true), E_USER_ERROR);
+
+
+if($_SESSION['obj_TxnInfo'] === null && empty($_POST['transactionid']) == true)
 {
 	trigger_error("Session expired.", E_USER_ERROR);
 	header("location: ".$_SERVER['HTTP_REFERER']);
 	exit;
+}
+
+if(array_key_exists('transactionid', $_POST) == true) 
+{ 
+	$_SESSION['obj_UA'] = UAProfile::produceUAProfile(HTTPConnInfo::produceConnInfo($aUA_CONN_INFO) );
+	$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($_POST['transactionid'], $_OBJ_DB);
 }
 
 $obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SESSION['obj_UA']);
