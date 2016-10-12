@@ -269,6 +269,10 @@ msgid @@@ Select Card - 21 @@@
 msgstr @@@ Please enter card holder name, please try again? @@@
 msgid @@@ Select Card - 25 @@@
 msgstr @@@ Enter card number is invalid, please try again? @@@
+msgid @@@ Select Card - 41 @@@
+msgstr @@@ Authorization failed using the entered password, please re-enter your password? @@@
+msgid @@@ Select Card - 42 @@@
+msgstr @@@ Authorization failed using the entered password, another invalid attempt will result in the account being deleted! @@@
 msgid @@@ Select Card - 43 @@@
 msgstr @@@ The payment could not be authorised with the provided password, your account has been deleted. @@@
 msgid @@@ Select Card - 49 @@@

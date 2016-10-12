@@ -114,7 +114,15 @@ class DIBS extends Callback implements Captureable, Refundable
 		}
 		else
 		{
-			return $this->authNewCard($obj_XML->{'card-number'}, $obj_XML->{'expiry-month'}, $obj_XML->{'expiry-year'}, $obj_XML->cvc, $obj_XML->{'card-holder-name'});
+			// expiry date received in mm/yy format 
+			return $this->authNewCard(
+					$obj_XML->{'card-number'}, 
+					substr($obj_XML->{'expiry'}, 0, 2), 
+					substr($obj_XML->{'expiry'}, -2), 
+					$obj_XML->cvc, 
+					$obj_XML->{'card-holder-name'},
+					$obj_XML['type-id']
+			);
 		}			
 	}
 	
@@ -135,7 +143,7 @@ class DIBS extends Callback implements Captureable, Refundable
 		$b .= "&mpointid=". $this->getTxnInfo()->getID();
 		$b .= "&ticket=". $ticket;
 		$b .= "&amount=". $this->getTxnInfo()->getAmount();
-		$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getClientConfig()->getCountryConfig()->getID(), Constants::iDIBS_PSP);
+		$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iDIBS_PSP);
 		$b .= "&orderid=". urlencode($oid);
 		if ($this->getTxnInfo()->getClientConfig()->getMode() > 0) { $b .= "&test=". $this->getTxnInfo()->getClientConfig()->getMode(); }
 		$b .= "&textreply=true";
@@ -167,12 +175,11 @@ class DIBS extends Callback implements Captureable, Refundable
 	 * @return integer
 	 * @throws E_USER_WARNING
 	 */
-	public function authNewCard($cardno, $expmonth, $expyear, $cvc, $chn="")
+	public function authNewCard($cardno, $expmonth, $expyear, $cvc, $chn="", $cardid)
 	{
 		// Construct Order ID
 		$oid = $this->getTxnInfo()->getOrderID();
 		if (empty($oid) === true) { $oid = $this->getTxnInfo()->getID(); }
-//		$oid .= "-". date("Y-m-d H:i:s");
 	
 		$b = "merchant=". $this->getMerchantAccount($this->getTxnInfo()->getClientConfig()->getID(), Constants::iDIBS_PSP);
 		$b .= "&mpointid=". $this->getTxnInfo()->getID();
@@ -181,16 +188,30 @@ class DIBS extends Callback implements Captureable, Refundable
 		$b .= "&expyear=". trim($expyear);
 		$b .= "&cvc=". trim($cvc);
 		$b .= "&amount=". $this->getTxnInfo()->getAmount();
-		$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getClientConfig()->getCountryConfig()->getID(), Constants::iDIBS_PSP);
+		$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iDIBS_PSP);
 		$b .= "&orderid=". urlencode($oid);
 		if ($this->getTxnInfo()->getClientConfig()->getMode() > 0) { $b .= "&test=". $this->getTxnInfo()->getClientConfig()->getMode(); }
 		$b .= "&textreply=true";
-	
+		$b .= "&callbackurl=". urlencode("http://". $_SERVER['HTTP_HOST'] ."/callback/dibs.php");
+		$b .= "&fullreply=true";
+		$b .= "&language=". $this->getTxnInfo()->getLanguage();
+		$b .= "&cardid=". $cardid;
+		$b .= "&clientid=". $this->getTxnInfo()->getClientConfig()->getID();
+		$b .= "&accountid=". $this->getTxnInfo()->getClientConfig()->getAccountConfig()->getID();
+		$b .= "&store_card=". $this->getTxnInfo()->getClientConfig()->getStoreCard();
+		$b .= "&auto_store_card=". parent::bool2xml($this->getTxnInfo()->autoStoreCard() );
+		
+		if(count($this->getMessageData($this->getTxnInfo()->getID(), Constants::iTICKET_CREATED_STATE, false) ) == 1 )
+		{
+			$b .= "&preauth=true";
+		}
+		
+
 		$aConnInfo = $this->aCONN_INFO;
 		$aConnInfo["path"] = $aConnInfo["paths"]["auth-new-card"];
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aConnInfo);
 		$obj_HTTP = parent::send($obj_ConnInfo, $this->constHTTPHeaders(), $b);
-	
+
 		$aStatus = array();
 		parse_str($obj_HTTP->getReplyBody(), $aStatus);
 		// Auhtorisation Declined

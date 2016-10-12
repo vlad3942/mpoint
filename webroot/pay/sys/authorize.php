@@ -23,11 +23,20 @@ $sCardHolderName = "";
 $sCardName = "";
 $sPassword = "";
 
-if($_SESSION['obj_TxnInfo'] === null)
+//trigger_error(print_r($_POST,true), E_USER_ERROR);
+
+
+if($_SESSION['obj_TxnInfo'] === null && empty($_POST['transactionid']) == true)
 {
 	trigger_error("Session expired.", E_USER_ERROR);
 	header("location: ".$_SERVER['HTTP_REFERER']);
 	exit;
+}
+
+if(array_key_exists('transactionid', $_POST) == true) 
+{ 
+	$_SESSION['obj_UA'] = UAProfile::produceUAProfile(HTTPConnInfo::produceConnInfo($aUA_CONN_INFO) );
+	$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($_POST['transactionid'], $_OBJ_DB);
 }
 
 $obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SESSION['obj_UA']);
@@ -278,10 +287,11 @@ if (count($aMsgCds) == 0)
 							
 						if(empty($email) == false)
 						{
-							$obj_mPoint->saveEmail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail(), $obj_TxnInfo->getClientConfig()->getCountryConfig());
+							$obj_mPoint->saveEmail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail(), $obj_TxnInfo->getCountryConfig());
 						}
 						
-						$obj_mPoint->savePassword($obj_TxnInfo->getMobile(), $sPassword, $obj_TxnInfo->getClientConfig()->getCountryConfig());
+						$obj_mPoint->savePassword($obj_TxnInfo->getMobile(), $sPassword, $obj_TxnInfo->getCountryConfig());
+
 					}
 										
 					$code = $obj_mPoint->saveCardName($obj_TxnInfo->getAccountID(), $cardTypeId, (string) $sCardName);
