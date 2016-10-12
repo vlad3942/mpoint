@@ -822,7 +822,7 @@ class mConsole extends Admin
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
 			// Purchase
-			if ($RS["asStateid"] < 0 && in_array($RS["TYPEID"], $aTypes) === true)
+			if ($RS["ASSTATEID"] < 0 && in_array($RS["TYPEID"], $aTypes) === true)
 			{
 				$aParams = array($RS["ID"]);
 				$res1 = $this->getDBConn()->execute($stmt1, $aParams);
@@ -853,7 +853,7 @@ class mConsole extends Admin
 				}
 			}
 			
-			if(in_array( $RS["asStateid"], $aStateIDs ) == true)
+			if(in_array( $RS["ASSTATEID"], $aStateIDs ) == true)
 			{
 				$aObj_TransactionLogs[] = new TransactionLogInfo($RS["ID"],
 																 $RS["TYPEID"],
@@ -863,7 +863,7 @@ class mConsole extends Admin
 																 new BasicConfig($RS["ACCOUNTID"], $RS["ACCOUNT"]),
 																 $RS["PSPID"] > 0 ? new BasicConfig($RS["PSPID"], $RS["PSP"]) : null,
 																 $RS["PAYMENTMETHODID"] > 0 ? new BasicConfig($RS["PAYMENTMETHODID"], $RS["PAYMENTMETHOD"]) : null,
-																 $RS["asStateid"],
+																 $RS["ASSTATEID"],
 																 $aObj_CountryConfigurations[$RS["COUNTRYID"] ],
 																 $RS["AMOUNT"],
 																 $RS["CAPTURED"],
