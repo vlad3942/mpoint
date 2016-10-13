@@ -105,10 +105,10 @@ class CPG extends Callback
 		$b .= '<order orderCode="'. htmlspecialchars($this->getTxnInfo()->getOrderID(), ENT_NOQUOTES) .'">'; // mandatory, needs to be unique
 		$b .= '<description>Emirates Airline Ticket Purchase '. $pnr .'</description>';
 		if (strtoupper($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP) ) == "VND") { $b .= '<amount value="'. $this->getTxnInfo()->getAmount()/100 .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="0" debitCreditIndicator="credit" />'; }
-		else { $b .= '<amount value="'. $this->getTxnInfo()->getAmount() .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="2" debitCreditIndicator="credit" />'; }
+		else { $b .= '<amount value="'. $this->getTxnInfo()->getAmount() .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="'.$this->getCurrencyExponent($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP).'" debitCreditIndicator="credit" />'; }
 		if  (array_key_exists("var_tax", $aClientVars) === true)
 		{
-			$b .= '<tax value="'. $aClientVars["var_tax"] .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="2" />';
+			$b .= '<tax value="'. $aClientVars["var_tax"] .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="'.$this->getCurrencyExponent($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP).'" />';
 		}
 		if (array_key_exists("var_mcp", $aClientVars) === true) { $b .= trim($aClientVars["var_mcp"]); }	// Multi-Currency Payment
 		$b .= '<orderContent>'. htmlspecialchars($this->getTxnInfo()->getDescription(), ENT_NOQUOTES) .'</orderContent>';
@@ -144,7 +144,8 @@ class CPG extends Callback
 		{
 			if (count($obj_XML->cvc) == 1) { $b .= '<cvc>'. intval($obj_XML->cvc) .'</cvc>'; }
             $b .= '<cardNumber>'. htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) .'</cardNumber>';
-            if(isset($obj_XML["charge-type-id"]) == true)
+
+            if(isset($obj_XML["charge-type-id"]) == true && intval($obj_XML["charge-type-id"]) != 0)
             {
             	$b .= '<cardDebitCreditType>'.$this->getChargeTypeName($obj_XML["charge-type-id"]).'</cardDebitCreditType>';
             }
