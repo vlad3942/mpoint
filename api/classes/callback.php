@@ -616,5 +616,26 @@ abstract class Callback extends EndUserAccount
 	}
 
 	public abstract function getPSPID();
+	
+	/**
+	 * Returns exponent of currency of country on given country-id and psp-id.
+	 *
+	 * @param 	integer $cid	Unique ID for the Country that the Currency should be found in
+	 * @param 	integer $pspid	Unique ID for the PSP that the currency code should be found for
+	 * @return 	int
+	 */
+	
+	public function getCurrencyExponent($cid, $pspid)
+	{
+		$currency_name = $this->getCurrency($cid, $pspid);
+		
+		$sql = "SELECT decimals
+				FROM System".sSCHEMA_POSTFIX.".Country_Tbl
+				WHERE id = ". intval($cid) ." AND currency = '". $currency_name ."' AND enabled = '1'";
+		//		echo $sql ."\n";
+		$RS = $this->getDBConn($sql)->getName($sql);
+		
+		return $RS["DECIMALS"];
+	}
 }
 ?>
