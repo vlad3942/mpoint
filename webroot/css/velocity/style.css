@@ -152,10 +152,6 @@ input[type="checkbox"], input[type="radio"] {
     cursor: pointer;
     -webkit-user-select: none; }
 
-body.loading .loader-screen {
-  opacity: 1;
-  z-index: 20; }
-
 .loader-screen {
   opacity: 0;
   z-index: -1;

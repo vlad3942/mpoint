@@ -160,10 +160,9 @@ try
 									{
 										// Add control state and immediately commit database transaction
 										$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE, "");
+										$_OBJ_DB->query("COMMIT");
 									}
-									
-									$_OBJ_DB->query("COMMIT");
-									
+
 									//TODO: Move most of the logic of this for-loop into model layer, api/classes/authorize.php
 									for ($j=0; $j<count($obj_DOM->{'authorize-payment'}[$i]->transaction->card); $j++)
 									{
@@ -525,26 +524,19 @@ try
 															case (Constants::iDIBS_PSP):	// DIBS
 																// Authorise payment with PSP based on Ticket
 																$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['dibs']);
-																$iTxnID = $obj_PSP->authTicket($obj_Elem);
+																$iTxnID = $obj_PSP->authTicket( (integer) $obj_Elem->ticket);
 																// Authorization succeeded
 																if ($iTxnID > 0)
 																{
-																	// Only generate internal callback for payments made with a Stored Card
-																	if (count($obj_Elem->ticket) == 1)
+																	try
 																	{
-																		try
-																		{
-																			// Initialise Callback to Client
-																			$aCPM_CONN_INFO["path"] = "/callback/dibs.php";
-																			$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_Elem->type["id"]), $iTxnID, (string) $obj_Elem->mask, (string) $obj_Elem->expiry);
-																		}
-																		catch (HTTPException $ignore) { /* Ignore */ }
-																		
-																		//$xml = '<status code="100">Payment Authorized using Stored Card</status>';
-																	} //else { $xml = '<status code="2000">Payment authorized using new card</status>'; }
-																
+																		// Initialise Callback to Client
+																		$aCPM_CONN_INFO["path"] = "/callback/dibs.php";
+																		$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), intval($obj_Elem->type["id"]), $iTxnID, (string) $obj_Elem->mask, (string) $obj_Elem->expiry);
+																	}
+																	catch (HTTPException $ignore) { /* Ignore */ }
+	
 																	$xml = '<status code="100">Payment Authorized using Stored Card</status>';
-																	
 																}
 																// Error: Authorization declined
 																else
@@ -618,19 +610,17 @@ try
 	
 																$xml .= $obj_PSP->authTicket($obj_ConnInfo, $obj_Elem);
 																break;
-															case (Constants::iADYEN_PSP): // Adyen
+															case (Constants::iADYEN_PSP): // NetAxept
 																	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iADYEN_PSP);
 	
 																	$obj_PSP = new Adyen($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["adyen"]);
 	
-																	$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
-																	
+																	$code = $obj_PSP->authorize($obj_PSPConfig ,$obj_Elem->ticket);
 																	// Authorization succeeded
 																	if ($code == "100")
 																	{
 																		$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
 																	}
-																	else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
 																	// Error: Authorization declined
 																	else
 																	{
@@ -672,8 +662,7 @@ try
 																	if ($code == "100")
 																	{
 																		$xml .= '<status code="100">Payment Authorized using Card</status>';
-																	} else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
-																	else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and card stored.</status>'; }
+																	}
 																	// Error: Authorization declined
 																	else
 																	{

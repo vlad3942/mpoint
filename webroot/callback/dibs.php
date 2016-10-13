@@ -107,18 +107,7 @@ try
 		}
 		// E-Mail has been provided for the transaction
 		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
-		
-		//The call to AuthTicket from DIBS Callback is to support 3D Secure Implementation.
-		// In some cases DIBS has already made a ticket, when getting a callback from a purchase.. In some cases they have not..
-		// The callback/dibs.php needs refactoring and to be moved to MESB.
-
-		//modified to add xml wrapper to suite to the DIBS authTicket function change.
-		if (array_key_exists("maketicket", $_POST) === false)
-		{
-        	$xml = "<callback><ticket>" .$ticket ."</ticket></callback>";
-            $callbackXML = new SimpleXMLElement($xml);
-            $_POST['transact'] = $obj_mPoint->authTicket($callbackXML);
-   		}
+		if (array_key_exists("maketicket", $_POST) === false) { $_POST['transact'] = $obj_mPoint->authTicket($ticket); }
 	}
 
 	//

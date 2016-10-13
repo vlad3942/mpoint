@@ -45,19 +45,9 @@
 			// Display loading screen on submit
 			$('form.card-form').submit(function()
 			{
-				$('body').addClass('loading');
-			});
-
-			// Enable wallet button
-			$('.card.wallet').on('click', function(event) {
-				$('.card-logo', this).find('img').first().click();
-			});
-			$(".card.wallet .card-logo img").click(function(event) {
-				// A click that triggers a click on itself, better stop propagation:
-				event.stopPropagation();
+				$('.loader-screen').css({'opacity': 1, 'z-index': 20});
 			});
 			
-			// Enable all other buttons
 			$('.card').not('.wallet').click(function(event)
 			{
 				// Use this code for showing the payment form in a second step
@@ -182,13 +172,6 @@
 					<div class="icon" style="background-image: url({/root/system/protocol}://{/root/system/host}/img/card_payment.png)" />
 				</div>
 				<input type="tel" name="cardnumber" class="cc-number" autocomplete="cc-number" maxlength="23" required="required" placeholder="1111 2222 3333 4444" />
-				<div class="card-logo enabled-cards">
-					<xsl:for-each select="/root/cards/item">
-						<xsl:if test="@id = 1 or @id = 2 or @id = 3 or @id = 5 or @id = 6 or @id = 7 or @id = 8 or @id = 9">
-							<div class="icon card-{@id}" style="background-image: url({/root/system/protocol}://{/root/system/host}/img/card_payment.png)"></div>
-						</xsl:if>
-					</xsl:for-each>
-				</div>
 			</div>
 			
 			<div class="additional">
@@ -360,7 +343,7 @@
 				else
 				{
 					// Display loading screen
-					$('body').addClass('loading');
+					$('.loader-screen').css({'opacity': 1, 'z-index': 20});
 				}
 			});
 		});
@@ -392,6 +375,10 @@
 		jQuery("head").append("<xsl:value-of select="head"/>");
 						
 		jQuery("#card-"+id).html('<xsl:value-of select="body"/>');
+		
+		$('.card-'+id).click(function (){
+		    $('#card-'+id+' img').trigger('click');
+		});
 	</script>
 
 </xsl:template>
