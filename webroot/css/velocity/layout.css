@@ -315,8 +315,18 @@ html {
           right: 7px;
           top: 7px; }
           .wrapper .content .card-wrapper .cards .payment-form .cardnumber .card-logo .icon, .wrapper .content .card-wrapper .cards .deletion-form .cardnumber .card-logo .icon {
-            height: 28px;
+            height: 27px;
             width: 44px; }
+          .wrapper .content .card-wrapper .cards .payment-form .cardnumber .card-logo.enabled-cards, .wrapper .content .card-wrapper .cards .deletion-form .cardnumber .card-logo.enabled-cards {
+            position: relative;
+            top: auto;
+            right: auto;
+            margin-top: 5px; }
+            .wrapper .content .card-wrapper .cards .payment-form .cardnumber .card-logo.enabled-cards .icon, .wrapper .content .card-wrapper .cards .deletion-form .cardnumber .card-logo.enabled-cards .icon {
+              float: right;
+              width: 31px;
+              height: 19px;
+              margin-left: 2px; }
       .wrapper .content .card-wrapper .cards .payment-form .additional, .wrapper .content .card-wrapper .cards .deletion-form .additional {
         margin-top: 30px; }
         .wrapper .content .card-wrapper .cards .payment-form .additional::after, .wrapper .content .card-wrapper .cards .deletion-form .additional::after {

@@ -133,6 +133,10 @@ if (count($aMsgCds) == 0)
 						      </card>
 						    </transaction>
 						    <client-info language="da" version="1.20" platform="iOS/8.1.3">
+			       				<customer-ref>'.$_SESSION['obj_TxnInfo']->getCustomerRef().'</customer-ref>
+			       				<mobile country-id="'.$_SESSION['obj_TxnInfo']->getCountryConfig()->getID().'">'.$_SESSION['obj_TxnInfo']->getMobile().'</mobile>
+								<email>'.$_SESSION['obj_TxnInfo']->getEMail().'</email>
+							    <ip>'.$_SESSION['obj_TxnInfo']->getIP().'</ip>
 						    </client-info>
 						</pay>
 					</root>';
@@ -211,6 +215,10 @@ if (count($aMsgCds) == 0)
 				      </card>
 				    </transaction>
 				    <client-info language="'.sDEFAULT_LANGUAGE.'" version="1.20" platform="HTML5">
+			    		<customer-ref>'.$_SESSION['obj_TxnInfo']->getCustomerRef().'</customer-ref>
+       					<mobile country-id="'.$_SESSION['obj_TxnInfo']->getCountryConfig()->getID().'">'.$_SESSION['obj_TxnInfo']->getMobile().'</mobile>
+						<email>'.$_SESSION['obj_TxnInfo']->getEMail().'</email>
+				   		<ip>'.$_SESSION['obj_TxnInfo']->getIP().'</ip>
 				    </client-info>
 				  </authorize-payment>
 				</root>';
@@ -239,7 +247,7 @@ if (count($aMsgCds) == 0)
 		
 		$code = $obj_XML->status["code"];
 		
-		if(empty($code) === true || $code != 100)
+		if(empty($code) === true  || in_array($code, array(100, 2000, 2009)) == false)
 		{
 			$code = 59;
 		
@@ -270,10 +278,11 @@ if (count($aMsgCds) == 0)
 							
 						if(empty($email) == false)
 						{
-							$obj_mPoint->saveEmail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail(), $obj_TxnInfo->getClientConfig()->getCountryConfig());
+							$obj_mPoint->saveEmail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail(), $obj_TxnInfo->getCountryConfig());
 						}
 						
-						$obj_mPoint->savePassword($obj_TxnInfo->getMobile(), $sPassword, $obj_TxnInfo->getClientConfig()->getCountryConfig());
+						$obj_mPoint->savePassword($obj_TxnInfo->getMobile(), $sPassword, $obj_TxnInfo->getCountryConfig());
+
 					}
 										
 					$code = $obj_mPoint->saveCardName($obj_TxnInfo->getAccountID(), $cardTypeId, (string) $sCardName);
@@ -305,7 +314,7 @@ if (count($aMsgCds) == 0)
 			$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=". $code;
 			
 		}
-	} else { $url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=". $msg; }
+	} else { $url = "http://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=".$msg; }
 	
 	header("location: ". $url);
 	exit;

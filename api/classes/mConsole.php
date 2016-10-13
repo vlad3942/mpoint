@@ -543,7 +543,6 @@ class mConsole extends Admin
 	 */
 	public function singleSignOn(HTTPConnInfo &$oCI, $authtoken, $permissioncode, array $aClientIDs=array() )
 	{
-				
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<single-sign-on permission-code="'.htmlspecialchars($permissioncode, ENT_NOQUOTES) .'">';
@@ -674,7 +673,7 @@ class mConsole extends Admin
 		
 		foreach($aClientIDs as $iClientID)
 		{
-			$sql .= "SELECT Txn.id as txnid, Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
+			$sql .= "SELECT Txn.id, Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
 					(CASE
 					 WHEN M8.stateid IS NOT NULL THEN M8.stateid
 					 WHEN M7.stateid IS NOT NULL THEN M7.stateid
@@ -735,7 +734,7 @@ class mConsole extends Admin
 		if (count($aAccountIDs) > 0) { $sql .= " AND  a.accountid IN (". implode(",", $aAccountIDs) .")"; }
 		if (count($aPspIDs) > 0) { $sql .= " AND  a.pspid IN (". implode(",", $aPspIDs) .")"; }
 		if (count($aCardIDs) > 0) { $sql .= " AND  a.paymentmethodid IN (". implode(",", $aCardIDs) .")"; }
-		if (intval($id) > 0) { $sql .= " AND a.txnid = '". floatval($id) ."'"; }
+		if (intval($id) > 0) { $sql .= " AND a.id = '". floatval($id) ."'"; }
 		if ($ono > 0) { $sql .= " AND a.orderno = '". $this->getDBConn()->escStr($ono) ."'"; }
 		if ( ($oCI instanceof CustomerInfo) === true)
 		{
@@ -749,7 +748,7 @@ class mConsole extends Admin
 		
 		$sql .= " AND a.createdfinal = (
 					select MAX(msg.created) FROM Log.Message_Tbl as msg
-						WHERE msg.stateid = a.stateid AND msg.txnid = a.txnid
+						WHERE msg.stateid = a.stateid AND msg.txnid = a.id
 				)";
 		
 		$sql .= "\n ORDER BY createdfinal DESC";
