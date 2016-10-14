@@ -1361,7 +1361,6 @@ class Validate extends ValidateBase
         }
         return $code;
     }
-    
 
     /**
      * Performs validation of the Card number to determine whether it is valid.
@@ -1429,5 +1428,52 @@ class Validate extends ValidateBase
    	
     	return $code;
     }
+
+	/**
+	 * Performs generic validations on the request format of a raw API request 
+	 * This function throws an @see mPointBaseValidationException in case of validation errors
+	 * In case of success, it returns the main operation XML element of the request, usually the direct child of <root>
+	 * 
+	 * @param SimpleDOMElement $obj_DOM The XML request
+	 * @param string $xsdFile The XSD file to validate the request against
+	 * @param string $operationElement Name of the operation element to expect for the API
+	 * @return SimpleXMLElement Operation element for the request with tag name matching $operationElement
+	 * @throws mPointBaseValidationException
+	 */
+	public static function valRequestFormat(SimpleDOMElement $obj_DOM, $xsdFile, $operationElement)
+	{
+		if ( ($obj_DOM instanceof SimpleDOMElement) === false) { throw new mPointBaseValidationException(mPointBaseValidationException::NOT_XML, $obj_DOM); }
+		else if ($obj_DOM->validate(sPROTOCOL_XSD_PATH .$xsdFile) === false) { throw new mPointBaseValidationException(mPointBaseValidationException::INVALID_XML, $obj_DOM); }
+		else if (count($obj_DOM->{$operationElement}) == 0) { throw new mPointBaseValidationException(mPointBaseValidationException::WRONG_OPERATION, $obj_DOM); }
+
+		return $obj_DOM->{$operationElement};
+	}
+	
+		/**
+	 * Performs validation of a challenge document og file sent by a client
+	 * This method will return the following status codes:
+	 *	1. Undefined challenge
+	 * 	2. Invalid content-type
+	 * 	3. Invalid URL
+	 * 	4. Malformed challenge
+	 * 10. Validation successful
+	 *
+	 * @param $challenge
+	 * @return integer
+	 */
+	public function valChallenge(SimpleDOMElement $challenge, $minChallengeLength=10)
+	{
+		$code = 10;
+		$content = (string) $challenge;
+		$urlParts = parse_url( (string) $challenge["url"]);
+
+		if (strlen($content) < 1) { $code = 1; }
+		else if (intval(preg_match("#^[a-z\-\+]+/[a-z\-\+]+$#", (string) $challenge["content-type"]) ) < 1) { $code = 2; }
+		else if (is_array($urlParts) === false || strlen($urlParts["scheme"]) < 1 || strlen($urlParts["host"]) < 1) { $code = 3; }
+		else if (strlen($content) < $minChallengeLength) { $code = 4; }
+
+		return $code;
+	}
+
 }
 ?>

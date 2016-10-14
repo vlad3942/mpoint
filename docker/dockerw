@@ -1,6 +1,0 @@
-#!/bin/bash
-trap "echo TRAPed signal" HUP INT QUIT KILL TERM
-
-echo "Building docker container. This may take a while ..."
-MID=$(sudo docker build .. |tail -n1 |awk '{print $3}')
-sudo docker run -i $MID

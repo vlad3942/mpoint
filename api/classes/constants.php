@@ -121,6 +121,12 @@ abstract class Constants
 	 *
 	 */
 	const iEMAIL_REJECTED_STATE = 1031;
+
+	/**
+	 * Defines the ID of the State that indicates that 3D Secure has been activated for the payment
+	 *
+	 */
+	const i3D_SECURE_ACTIVATED_STATE = 1100;
 	/**
 	 * Defines the ID of the State that indicates that mPoint's Callback request has been accepted
 	 *
