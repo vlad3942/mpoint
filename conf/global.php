@@ -455,6 +455,21 @@ $aHTTP_CONN_INFO["payfort"]["paths"]["callback"] = "/mpoint/payfort/callback";
 
 
 /**
+ * Connection info for connecting to PayPal
+ */
+$aHTTP_CONN_INFO["paypal"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["paypal"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["paypal"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["paypal"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["paypal"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["paypal"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["paypal"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["paypal"]["paths"]["initialize"] = "/mpoint/paypal/initialize";
+$aHTTP_CONN_INFO["paypal"]["paths"]["auth"] = "/mpoint/paypal/authorize-payment";
+//$aHTTP_CONN_INFO["paypal"]["paths"]["capture"] = "/mpoint/paypal/capture";
+
+
+/**
  * Connection info for connecting to CCAvenue
  */
 $aHTTP_CONN_INFO["ccavenue"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];

@@ -481,6 +481,12 @@ abstract class Constants
 	const iPAYFORT_PSP = 23;
 	
 	/**
+	 * Unique ID for the Payment Service Provider: PayPal
+	 *
+	 */
+	const iPAYPAL_PSP = 24;
+	
+	/**
 	 * Unique ID for the Payment Service Provider: CCAvenue
 	 *
 	 */

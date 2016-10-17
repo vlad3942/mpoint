@@ -87,6 +87,9 @@ require_once(sCLASS_PATH ."/securetrading.php");
 // Require specific Business logic for the PayFort component
 require_once(sCLASS_PATH ."/payfort.php");
 
+// Require specific Business logic for the PayPal component
+require_once(sCLASS_PATH ."/paypal.php");
+
 // Require specific Business logic for the CCAvenue component
 require_once(sCLASS_PATH ."/ccavenue.php");
 

@@ -47,6 +47,8 @@ require_once(sCLASS_PATH ."/dibs.php");
 require_once(sCLASS_PATH ."/securetrading.php");
 // Require specific Business logic for the CCAvenue component
 require_once(sCLASS_PATH ."/ccavenue.php");
+// Require specific Business logic for the PayPal component
+require_once(sCLASS_PATH ."/paypal.php");
 /**
  * Input XML format
  *

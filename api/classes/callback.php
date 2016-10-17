@@ -612,6 +612,8 @@ abstract class Callback extends EndUserAccount
 			return new SecureTrading($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["secure-trading"]);
 		case (Constants::iPAYFORT_PSP):
 			return new PayFort($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["payfort"]);
+		case (Constants::iPAYPAL_PSP):
+			return new PayPal($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paypal"]);
 		case (Constants::iCCAVENUE_PSP):
 				return new CCAvenue($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ccavenue"]);
 		default:
