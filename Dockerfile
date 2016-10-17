@@ -10,7 +10,7 @@ COPY docker/000-default.conf /etc/apache2/sites-available/default
 WORKDIR /opt/cpm/mPoint
 
 RUN mkdir /opt/cpm/mPoint/log && chmod -R 777 /opt/cpm/mPoint/log
-VOLUME ["/var/log/apache2", "/etc/apache2", "/opt/cpm/mPoint"]
+VOLUME ["/opt/cpm/mPoint"]
 RUN setfacl -d -m group:www-data:rwx /opt/cpm/mPoint/log
 
 # Project files
@@ -30,4 +30,5 @@ WORKDIR /opt/cpm/mPoint
 
 # Prepare entrypoint script
 COPY docker/docker.sh /docker.sh
-ENTRYPOINT ["/docker.sh"]
+RUN dos2unix /docker.sh
+CMD ["/docker.sh"]
