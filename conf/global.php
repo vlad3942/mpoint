@@ -445,6 +445,7 @@ $aHTTP_CONN_INFO["payfort"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
 $aHTTP_CONN_INFO["payfort"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["payfort"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["payfort"]["contenttype"] = "text/json";
+$aHTTP_CONN_INFO["payfort"]["paths"]["initialize"] = "/mpoint/payfort/initialize";
 $aHTTP_CONN_INFO["payfort"]["paths"]["authorize"] = "/mpoint/payfort/authorize-payment";
 $aHTTP_CONN_INFO["payfort"]["paths"]["capture"] = "/mpoint/payfort/capture";
 $aHTTP_CONN_INFO["payfort"]["paths"]["refund"] = "/mpoint/payfort/refund";
