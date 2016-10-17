@@ -260,7 +260,7 @@ INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT cardid, 24 FROM System.PSP
 /* ========== CONFIGURE CCAvenue END ========== */
 
 /* ========== CONFIGURE Test account - 100001 FOR CCAvenue STARTS ========== */
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, password) VALUES (10001, 24, '110880', 'bha_110880', 'malindo123$');
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 24, '110880', 'bha_110880', 'malindo123$');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 24, '-1');
 -- Route VISA Card to CCAvenue
 UPDATE Client.CardAccess_Tbl SET pspid = 24 WHERE clientid = 10001 AND cardid = 8;
