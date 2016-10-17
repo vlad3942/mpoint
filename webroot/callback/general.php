@@ -45,6 +45,8 @@ require_once(sCLASS_PATH ."/wirecard.php");
 require_once(sCLASS_PATH ."/dibs.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/securetrading.php");
+// Require specific Business logic for the CCAvenue component
+require_once(sCLASS_PATH ."/ccavenue.php");
 /**
  * Input XML format
  *
