@@ -435,6 +435,23 @@ $aHTTP_CONN_INFO["secure-trading"]["paths"]["callback"] = "/mpoint/secure-tradin
 $aHTTP_CONN_INFO["secure-trading"]["paths"]["cancel"] = "/mpoint/secure-trading/cancel";
 
 
+/**
+ * Connection info for connecting to PayFort
+ */
+$aHTTP_CONN_INFO["payfort"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["payfort"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["payfort"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["payfort"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["payfort"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["payfort"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["payfort"]["contenttype"] = "text/json";
+$aHTTP_CONN_INFO["payfort"]["paths"]["authorize"] = "/mpoint/payfort/authorize-payment";
+$aHTTP_CONN_INFO["payfort"]["paths"]["capture"] = "/mpoint/payfort/capture";
+$aHTTP_CONN_INFO["payfort"]["paths"]["refund"] = "/mpoint/payfort/refund";
+$aHTTP_CONN_INFO["payfort"]["paths"]["status"] = "/mpoint/payfort/status";
+$aHTTP_CONN_INFO["payfort"]["paths"]["cancel"] = "/mpoint/payfort/cancel";
+$aHTTP_CONN_INFO["payfort"]["paths"]["callback"] = "/mpoint/payfort/callback";
+
 
 /**
  * GoMobile Connection Info.

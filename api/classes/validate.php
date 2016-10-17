@@ -145,7 +145,7 @@ class Validate extends ValidateBase
 	 * 	 1. Undefined Username
 	 * 	 2. Username is too short, min length is 3 characters
 	 * 	 3. Username is too long, as defined by iAUTH_MAX_LENGTH
-	 *   4. Username contains invalid characters: [^a-z0-9 √¶√∏√•√Ü√ò√Ö√§√∂√Ñ√ñ.-]
+	 *   4. Username contains invalid characters: [^a-z0-9 Ê¯Â∆ÿ≈‰ˆƒ÷.-]
 	 * 	10. Success
 	 *
 	 * @see		Constants::iAUTH_MIN_LENGTH
@@ -161,7 +161,7 @@ class Validate extends ValidateBase
 		if (empty($un) === true){ $code = 1; }											// Username is undefined
 		elseif (strlen($un) < 3) { $code = 2; }											// Username is too short
 		elseif (strlen($un) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }				// Username is too long
-		elseif (eregi("[^a-z0-9 √¶√∏√•√Ü√ò√Ö√§√∂√Ñ√ñ._-]", utf8_encode($un) ) == true) { $code = 4; }	// Username contains Invalid Characters
+		elseif (eregi("[^a-z0-9 Ê¯Â∆ÿ≈‰ˆƒ÷._-]", utf8_encode($un) ) == true) { $code = 4; }	// Username contains Invalid Characters
 		else { $code = 10; }															// Username is valid
 
 		return $code;
@@ -222,7 +222,7 @@ class Validate extends ValidateBase
 	 * 	 1. Undefined Name
 	 * 	 2. Name is too short, must be 2 characters or longer
 	 * 	 3. Name is too long, must be shorter than 100 characters
-	 *   4. Name contains invalid characters: [^0-9a-z√¶√∏√•√Ü√ò√Ö√§√∂√Ñ√ñ_.@-]
+	 *   4. Name contains invalid characters: [^0-9a-zÊ¯Â∆ÿ≈‰ˆƒ÷_.@-]
 	 * 	10. Success
 	 *
 	 * @see		General::valUsername()
@@ -304,7 +304,7 @@ class Validate extends ValidateBase
 	 * 	10. Success
 	 *
 	 * @param 	long $max 	Maximum amount allowed for the Client
-	 * @param 	long $prc 	The price of the merchandise the customer is buying in the country's smallest currency (cents for USA, √Ø¬ø¬Ωre for Denmark etc.)
+	 * @param 	long $prc 	The price of the merchandise the customer is buying in the country's smallest currency (cents for USA, ÔøΩre for Denmark etc.)
 	 * @return 	integer
 	 */
 	public function valPrice($max, $prc)
@@ -921,7 +921,7 @@ class Validate extends ValidateBase
 
 	public function valFullname($fullname)
 	{
-		if(preg_match("/^[a-z√¶√∏√•A-Z√Ü√ò√Ö][a-zA-Z -\']+$/",$fullname) == false)
+		if(preg_match("/^[a-zÊ¯ÂA-Z∆ÿ≈][a-zA-Z -\']+$/",$fullname) == false)
 		{
 			$code = 1;
 		}
@@ -1390,39 +1390,26 @@ class Validate extends ValidateBase
 	    		else if(strlen($number) > 16) { $code = 3; }
 	    		else
 	    		{
-		    		$aCardNumber = str_split(strrev($number));
-		    		
-		    		$sumOfNumber = 0;
-		    	
-		    		$count = 1;
-		    		
-		    		for($i = 0; $i < count($aCardNumber); $i++)
-		    		{
-		    			
-		    			$iCardNumber = intval($aCardNumber[$i]);
-		    					    			
-		    			if(($count % 2) === 0)
-		    			{
-		    				$iCardNumber = $iCardNumber * 2;
-		    				
-		    				if($iCardNumber >= 10)
-		    				{
-		    					$tempNum = $iCardNumber % 10;
-		    					$tempNum += $iCardNumber / 10;
-		    					 
-		    					$iCardNumber = $tempNum;
-		    				}
-		    			}
-		    			 
-		    			$sumOfNumber += $iCardNumber;
-		    			
-		    			$count++;
-		    		}
-		    		
-		    		if($sumOfNumber % 10 === 0)
-		    		{
-		    			$code = 10;
-		    		} else { $code = 4; }
+	    			$checksum = 0;
+	    			for ($i=(2-(strlen($number) % 2)); $i<=strlen($number); $i+=2) 
+	    			{
+	    				$checksum += (int) ($number{$i-1});
+	    			}
+
+	    			for ($i=(strlen($number)% 2) + 1; $i<strlen($number); $i+=2) 
+	    			{
+	    				$digit = (int) ($number{$i-1}) * 2;
+	    				if ($digit < 10) 
+	    				{
+	    					$checksum += $digit;
+	    				} 
+	    				else { $checksum += ($digit-9); }
+	    			}
+	    			
+	    			if (($checksum % 10) == 0) 
+	    			{
+	    				$code = 10;
+	    			} else { $code = 4; }
 	    		}
 	    	}
    	
