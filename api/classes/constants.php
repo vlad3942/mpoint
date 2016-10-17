@@ -481,7 +481,7 @@ abstract class Constants
 	const iPAYFORT_PSP = 23;
 	
 	/**
-	 * Unique ID for the Payment Service Provider: PayFort
+	 * Unique ID for the Payment Service Provider: CCAvenue
 	 *
 	 */
 	const iCCAVENUE_PSP = 25;
