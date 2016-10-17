@@ -58,6 +58,8 @@ require_once(sCLASS_PATH ."/globalcollect.php");
 require_once(sCLASS_PATH ."/securetrading.php");
 // Require specific Business logic for the PayFort component
 require_once(sCLASS_PATH ."/payfort.php");
+// Require specific Business logic for the CCAvenue component
+require_once(sCLASS_PATH ."/ccavenue.php");
 
 header("Content-Type: application/x-www-form-urlencoded");
 
