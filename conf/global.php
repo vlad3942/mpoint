@@ -456,19 +456,20 @@ $aHTTP_CONN_INFO["payfort"]["paths"]["callback"] = "/mpoint/payfort/callback";
 /**
  * Connection info for connecting to CCAvenue
  */
-$aHTTP_CONN_INFO["payfort"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
-$aHTTP_CONN_INFO["payfort"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
-$aHTTP_CONN_INFO["payfort"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
-$aHTTP_CONN_INFO["payfort"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
-$aHTTP_CONN_INFO["payfort"]["path"] = ""; // Set by calling class
-$aHTTP_CONN_INFO["payfort"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
-$aHTTP_CONN_INFO["payfort"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["payfort"]["paths"]["authorize"] = "/mpoint/ccavenue/authorize-payment";
-$aHTTP_CONN_INFO["payfort"]["paths"]["capture"] = "/mpoint/ccavenue/capture";
-$aHTTP_CONN_INFO["payfort"]["paths"]["refund"] = "/mpoint/ccavenue/refund";
-$aHTTP_CONN_INFO["payfort"]["paths"]["status"] = "/mpoint/ccavenue/status";
-$aHTTP_CONN_INFO["payfort"]["paths"]["cancel"] = "/mpoint/ccavenue/cancel";
-$aHTTP_CONN_INFO["payfort"]["paths"]["callback"] = "/mpoint/ccavenue/callback";
+$aHTTP_CONN_INFO["ccavenue"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["ccavenue"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["ccavenue"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["ccavenue"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["ccavenue"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["ccavenue"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["ccavenue"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["ccavenue"]["paths"]["initialize"] = "/mpoint/ccavenue/initialize";
+$aHTTP_CONN_INFO["ccavenue"]["paths"]["authorize"] = "/mpoint/ccavenue/authorize-payment";
+$aHTTP_CONN_INFO["ccavenue"]["paths"]["capture"] = "/mpoint/ccavenue/capture";
+$aHTTP_CONN_INFO["ccavenue"]["paths"]["refund"] = "/mpoint/ccavenue/refund";
+$aHTTP_CONN_INFO["ccavenue"]["paths"]["status"] = "/mpoint/ccavenue/status";
+$aHTTP_CONN_INFO["ccavenue"]["paths"]["cancel"] = "/mpoint/ccavenue/cancel";
+$aHTTP_CONN_INFO["ccavenue"]["paths"]["callback"] = "/mpoint/ccavenue/callback";
 
 
 
