@@ -251,3 +251,19 @@ INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (12, 10005, 'http:/
 INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (12, 10014, 'http://dsb.mesb.test.cellpointmobile.com:10080/mpoint/parse-3dsecure-challenge');
 /* ========== Mobile Optimized 3D Secure END ========== */
 
+
+
+/* ========== Global Configuration for CCAvenue ========== */
+INSERT INTO System.PSP_Tbl (id, name) VALUES (24, 'CCAvenue');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) SELECT countryid, 24, name FROM System.PSPCurrency_Tbl WHERE pspid = 4;
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT cardid, 24 FROM System.PSPCard_Tbl WHERE pspid = 4;
+/* ========== CONFIGURE CCAvenue END ========== */
+
+/* ========== CONFIGURE Test account - 100001 FOR CCAvenue STARTS ========== */
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, password) VALUES (10001, 24, '110880', 'bha_110880', 'malindo123$');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 24, '-1');
+-- Route VISA Card to CCAvenue
+UPDATE Client.CardAccess_Tbl SET pspid = 24 WHERE clientid = 10001 AND cardid = 8;
+/* ==========  CONFIGURE Test account - 100001 FOR CCAvenue END ====== */
+
+
