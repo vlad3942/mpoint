@@ -84,6 +84,8 @@ require_once(sCLASS_PATH ."/androidpay.php");
 // Require specific Business logic for the Secure Trading component
 require_once(sCLASS_PATH ."/securetrading.php");
 
+// Require specific Business logic for the PayFort component
+require_once(sCLASS_PATH ."/payfort.php");
 
 ignore_user_abort(true);
 set_time_limit(120);

@@ -66,13 +66,13 @@ require_once(sCLASS_PATH ."/amexexpresscheckout.php");
 require_once(sCLASS_PATH ."/wirecard.php");
 // Require specific Business logic for the GlobalCollect component
 require_once(sCLASS_PATH ."/globalcollect.php");
-
 // Require specific Business logic for the Secure Trading component
 require_once(sCLASS_PATH ."/securetrading.php");
-
-
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
+// Require specific Business logic for the PayFort component
+require_once(sCLASS_PATH ."/payfort.php");
+
 
 $aMsgCds = array();
 
