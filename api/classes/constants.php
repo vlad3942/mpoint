@@ -469,6 +469,13 @@ abstract class Constants
 	const iSECURE_TRADING_PSP = 22;
 	
 	/**
+	 * Unique ID for the Payment Service Provider: PayFort
+	 *
+	 */
+	const iPAYFORT_PSP = 23;
+	
+	
+	/**
 	 * Unique ID for the Payment Service Provider: Android Pay
 	 *
 	 */
