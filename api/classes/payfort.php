@@ -20,6 +20,10 @@ class PayFortException extends CallbackException { }
 Class PayFort extends CPMPSP
 {
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new PayFortException("Method: getPaymentData is not supported by PayFort"); }
+	
+	
+	public function getPSPID() { return Constants::iPAYFORT_PSP; }
+	
 }
 
 ?>
