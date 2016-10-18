@@ -273,7 +273,7 @@ INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (28, 24);
 
 INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (28, 'PayPal', 23, -1, -1, -1);
 INSERT INTO System.CardPrefix_Tbl (cardid, min, "max") VALUES (28, -1, -1);
-INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 28, id FROM System_Ownr.PricePoint_Tbl WHERE amount = -1 AND countryid = 103;
+INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 28, id FROM System.PricePoint_Tbl WHERE amount = -1 AND countryid = 103;
 /* ========== CONFIGURE PayPal END ========== */
 
 /* ========== CONFIGURE Test account - 100001 FOR PayPal STARTS ========== */
