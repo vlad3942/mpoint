@@ -269,11 +269,12 @@ UPDATE Client.CardAccess_Tbl SET pspid = 24 WHERE clientid = 10001 AND cardid = 
 /* ========== Global Configuration for PayPal ========== */
 INSERT INTO System.PSP_Tbl (id, name) VALUES (24, 'PayPal');
 INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (103, 24, 'GBP');
-INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (28, 24);
 
 INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (28, 'PayPal', 23, -1, -1, -1);
-INSERT INTO System.CardPrefix_Tbl (cardid, min, "max") VALUES (28, -1, -1);
+INSERT INTO System.CardPrefix_Tbl (cardid, min, "max") VALUES (28, 0, 0);
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 28, id FROM System.PricePoint_Tbl WHERE amount = -1 AND countryid = 103;
+
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (28, 24);
 /* ========== CONFIGURE PayPal END ========== */
 
 /* ========== CONFIGURE Test account - 100001 FOR PayPal STARTS ========== */
