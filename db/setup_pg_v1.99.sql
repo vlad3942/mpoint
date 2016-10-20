@@ -258,7 +258,7 @@ INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT cardid, 23 FROM System.PSP
 /* ========== CONFIGURE PayFort END ========== */
 
 /* ========== CONFIGURE Test account - 100001 FOR PayFort STARTS ========== */
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 23, 'CPMDemo', 'integration@cellpointmobile.com', 'Abcd@123');
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 23, 'CPMDemo', 'CTjbJcSI', 'BMMVFHwUGyfjDZk2PzMc');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 23, '-1');
 -- Route VISA Card to PayFort
 UPDATE Client.CardAccess_Tbl SET pspid = 23 WHERE clientid = 10001 AND cardid = 8;
