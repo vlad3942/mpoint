@@ -6866,3 +6866,9 @@ ALTER TABLE Client.Client_Tbl ADD declineurl character varying(255);
 /* ==================== CLIENT.CLIENT_TBL SCHEMA START ==================== */
 ALTER TABLE Client.Client_Tbl ADD COLUMN salt VARCHAR(20);
 /* ==================== CLIENT.CLIENT_TBL SCHEMA END ==================== */
+
+-- SETUP V1.99 ---
+/* ========== Mobile Optimized 3D Secure BEGIN ========== */
+INSERT INTO System.URLType_Tbl (id, name) VALUES (12, 'Parse 3D Secure Challenge URL');
+INSERT INTO Log.State_Tbl (id, name) VALUES (1100, '3D Secure Activated');
+/* ========== Mobile Optimized 3D Secure END ========== */
