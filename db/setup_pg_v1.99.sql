@@ -1,7 +1,3 @@
-UPDATE Client.Client_Tbl SET salt = 'Fh17_8sFgd' WHERE id = 10005;
-UPDATE Client.Client_Tbl SET salt = 'Fh17_8sFgd' WHERE id = 10014;
-UPDATE Client.Client_Tbl SET salt = '8sFgd_Fh17' WHERE id = 10019;
-
 /* ========== Mobile Optimized 3D Secure BEGIN ========== */
 INSERT INTO System.URLType_Tbl (id, name) VALUES (12, 'Parse 3D Secure Challenge URL');
 INSERT INTO Log.State_Tbl (id, name) VALUES (1100, '3D Secure Activated');
