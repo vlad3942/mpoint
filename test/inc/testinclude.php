@@ -5,6 +5,7 @@ chdir(sPROJECT_BASE_DIR);
 
 if (defined('sAPI_INTERFACE_PATH') === false) { define('sAPI_INTERFACE_PATH', '/opt/php5api'); }
 
+include_once 'api/classes/exceptions.php';
 include_once 'api/classes/general.php';
 include_once 'api/classes/home.php';
 include_once 'api/classes/enduser_account.php';
