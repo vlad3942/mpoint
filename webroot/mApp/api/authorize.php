@@ -752,6 +752,28 @@ try
 																			$xml .= '<status code="92">Authorization failed, Secure Trading returned error: '. $code .'</status>';
 																		}
 																		break;
+															case (Constants::iCCAVENUE_PSP): // CCAvenue
+																			$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCCAVENUE_PSP);
+																				
+																			$obj_PSP = new CCAvenue($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["ccavenue"]);
+																		
+																			$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+																			// Authorization succeeded
+																			if ($code == "100")
+																			{
+																				$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
+																			}
+																			else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+																			// Error: Authorization declined
+																			else
+																			{
+																				$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+																					
+																				header("HTTP/1.1 502 Bad Gateway");
+																					
+																				$xml .= '<status code="92">Authorization failed, CCAvenue returned error: '. $code .'</status>';
+																			}
+																			break;
 																	
 																	
 															default:	// Unkown Error
