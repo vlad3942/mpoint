@@ -266,18 +266,17 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10000
 UPDATE Client.CardAccess_Tbl SET pspid = 25 WHERE clientid = 10001 AND cardid = 8;
 /* ==========  CONFIGURE Test account - 100001 FOR CCAvenue END ====== */
 
-/* ========== Global Configuration for PayFort ========== */
+/* ========== Global Configuration for PayFort = STARTS ========== */
 INSERT INTO System.PSP_Tbl (id, name) VALUES (23, 'PayFort');
-INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) SELECT countryid, 23, name FROM System.PSPCurrency_Tbl WHERE pspid = 4;
-INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT cardid, 23 FROM System.PSPCard_Tbl WHERE pspid = 4;
-/* ========== CONFIGURE PayFort END ========== */
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (608,1,'SAR');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (608,23,'SAR');
 
-/* ========== CONFIGURE Test account - 100001 FOR PayFort STARTS ========== */
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (7, 23);
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (8, 23);
+
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 23, 'CPMDemo', 'CTjbJcSI', 'BMMVFHwUGyfjDZk2PzMc');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 23, '-1');
--- Route VISA Card to PayFort
-UPDATE Client.CardAccess_Tbl SET pspid = 23 WHERE clientid = 10001 AND cardid = 8;
-/* ==========  CONFIGURE Test account - 100001 FOR PayFort END ====== */
+/* ========== Global Configuration for PayFort = ENDS ========== */
 
 /* ========== Global Configuration for PayPal ========== */
 INSERT INTO System.PSP_Tbl (id, name) VALUES (24, 'PayPal');
