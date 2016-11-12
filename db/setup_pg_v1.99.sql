@@ -295,3 +295,6 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10000
 -- Route Paypal Card to PayPal
 INSERT INTO Client.CardAccess_Tbl (pspid, clientid, cardid) VALUES (24, 10001, 28);
 /* ==========  CONFIGURE Test account - 100001 FOR PayPal END ====== */
+
+/* ============= SETTLED PAYMENT STATE added for mPoint Settlement & Reconciliation feature ========= */
+INSERT INTO Log.State_Tbl (id, name,module, func, enabled) VALUES (2020, 'Payment Settled', 'Payment' ,'settleTransaction',true);
