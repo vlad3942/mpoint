@@ -221,7 +221,7 @@ abstract class Constants
 	 * Defines the ID of the State that indicates that payment has been settled
 	 *
 	 */
-	const iPAYMENT_DUPLICATED_STATE = 2020;
+	const iPAYMENT_SETTLED_STATE = 2020;
 	
 	/**
 	 * Defines GoMobile's type identifier for an MT-SMS message
