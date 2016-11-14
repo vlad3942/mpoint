@@ -215,7 +215,7 @@ abstract class Constants
 	 * Defines the ID of the State that indicates that payment has accidentally been duplicated by DIBS
 	 *
 	 */
-	const iPAYMENT_DUPLICATED_STATE = 2019;
+	const iPAYMENT_SETTLED_STATE = 2019;
 
 	/**
 	 * Defines GoMobile's type identifier for an MT-SMS message
