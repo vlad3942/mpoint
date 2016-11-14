@@ -675,6 +675,7 @@ class mConsole extends Admin
 		{
 			$sql .= "SELECT Txn.id, Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
 					 (CASE
+                                                 WHEN M9.stateid IS NOT NULL THEN M9.stateid
 						 WHEN M6.stateid IS NOT NULL THEN M6.stateid
 						 WHEN M5.stateid IS NOT NULL THEN M5.stateid
 						 WHEN M4.stateid IS NOT NULL THEN M4.stateid
@@ -686,6 +687,7 @@ class mConsole extends Admin
 						 ELSE -1
 						 END) AS asStateid,
 					 (CASE
+                                                 WHEN M9.stateid IS NOT NULL THEN Max(M9.created)
 						 WHEN M6.stateid IS NOT NULL THEN Max(M6.created)
 						 WHEN M5.stateid IS NOT NULL THEN Max(M5.created)
 						 WHEN M4.stateid IS NOT NULL THEN Max(M4.created)
@@ -715,9 +717,10 @@ class mConsole extends Admin
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M6 ON Txn.id = M6.txnid AND M6.stateid = ". Constants::iPAYMENT_REFUNDED_STATE ."
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M7 ON Txn.id = M7.txnid AND M7.stateid = ". Constants::iPAYMENT_DECLINED_STATE ."
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M8 ON Txn.id = M8.txnid AND M8.stateid = ". Constants::iPAYMENT_REJECTED_STATE ."
+                                LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M9 ON Txn.id = M9.txnid AND M9.stateid = ". Constants::iPAYMENT_SETTLED_STATE ."
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON Txn.euaid = EUA.id
 				WHERE CL.id = ".$iClientID."
-				GROUP BY M8.stateid, M7.stateid, M6.stateid, M5.stateid, M4.stateid, M3.stateid, M2.stateid, M1.stateid, Txn.id, orderno, externalid, Txn.typeid, Txn.countryid, toid, fromid, Txn.created, asStateid ,Acc.id,customerid, EUA.firstname, EUA.lastname, customer_ref, operatorid,Txn.mobile, Txn.email, language,CL.id, client,accountid, account,PSP.id, psp,paymentmethodid, paymentmethod,Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description";
+				GROUP BY M9.stateid, M8.stateid, M7.stateid, M6.stateid, M5.stateid, M4.stateid, M3.stateid, M2.stateid, M1.stateid, Txn.id, orderno, externalid, Txn.typeid, Txn.countryid, toid, fromid, Txn.created, asStateid ,Acc.id,customerid, EUA.firstname, EUA.lastname, customer_ref, operatorid,Txn.mobile, Txn.email, language,CL.id, client,accountid, account,PSP.id, psp,paymentmethodid, paymentmethod,Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description";
 		
 				array_pop($aClientIDs);
 				
@@ -779,6 +782,7 @@ class mConsole extends Admin
 					Constants::iPAYMENT_REJECTED_STATE, 
 					Constants::iPAYMENT_REFUNDED_STATE,
 					Constants::iPAYMENT_CANCELLED_STATE,
+                                        Constants::iPAYMENT_SETTLED_STATE,
 					Constants::iTICKET_CREATED_STATE					
 				);
 		}
@@ -1059,7 +1063,7 @@ class mConsole extends Admin
 	 */
 	public function getTransactionStats(array $aClientIDs, $start, $end, array $aAccountIDs = array(), $pspid = 0, $cardid = 0 )
 	{
-		$aStateIDS = array(Constants::iINPUT_VALID_STATE, Constants::iPAYMENT_INIT_WITH_PSP_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CANCELLED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_REFUNDED_STATE, Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_DECLINED_STATE);
+		$aStateIDS = array(Constants::iINPUT_VALID_STATE, Constants::iPAYMENT_INIT_WITH_PSP_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CANCELLED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_REFUNDED_STATE, Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_DECLINED_STATE,Constants::iPAYMENT_SETTLED_STATE);
 		
 		$where = "";
 		
