@@ -375,7 +375,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			$obj_HTTP->connect();
 			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
 			$obj_HTTP->disConnect();
-			if ($code == 200)
+			if ($code == 200 || $code == 303 )
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
 							
@@ -389,8 +389,17 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					}
 					
 					$code = $obj_XML->transaction->status["code"];
-				} else { $code = $obj_XML->status["code"]; }
-
+				} 
+				else { $code = $obj_XML->status["code"]; }
+				
+				// In case of 3D verification status code 2005 will be received
+				if($code == 2005)
+				{
+					$str = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>","",$obj_HTTP->getReplyBody());
+					$str = str_replace("<root>","",$str);
+					$code = str_replace("</root>","",$str);
+				}
+				
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 						SET pspid = ". $obj_PSPConfig->getID() . $sql."
 						WHERE id = ". $this->getTxnInfo()->getID();
