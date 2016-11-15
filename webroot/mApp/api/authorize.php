@@ -100,6 +100,7 @@ $aMsgCds = array();
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
+
 /*
 $_SERVER['PHP_AUTH_USER'] = "1415";
 $_SERVER['PHP_AUTH_PW'] = "Ghdy4_ah1G";
@@ -755,6 +756,30 @@ try
 																			$xml .= '<status code="92">Authorization failed, Secure Trading returned error: '. $code .'</status>';
 																		}
 																		break;
+															case (Constants::iCCAVENUE_PSP): // CCAvenue
+																			$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCCAVENUE_PSP);
+																				
+																			$obj_PSP = new CCAvenue($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["ccavenue"]);
+																		
+																			$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+																			// Authorization succeeded
+																			if ($code == "100")
+																			{
+																				$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
+																			}
+																			else if($code == "2000") { $xml .= '<status code = "2000">Payment authorized</status>'; }
+																			else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and card stored.</status>'; }
+																			else if(strpos($code, '2005') !== false) { $xml = $code; }
+																			// Error: Authorization declined
+																			else
+																			{
+																				$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+																					
+																				header("HTTP/1.1 502 Bad Gateway");
+																					
+																				$xml .= '<status code="92">Authorization failed, CCAvenue returned error: '. $code .'</status>';
+																			}
+																			break;
 																	
 															  case (Constants::iPAYPAL_PSP): // PayPal
 																	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iPAYPAL_PSP);
@@ -779,6 +804,30 @@ try
 																		$xml .= '<status code="92">Authorization failed, Paypal returned error: '. $code .'</status>';
 																	}
 																	break;	
+														      case (Constants::iPAYFORT_PSP): // PayFort	
+																      	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iPAYFORT_PSP);
+																      		
+																      	$obj_PSP = new PayFort($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["payfort"]);
+																      	
+																      	$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+																      	
+																      	// Authorization succeeded
+																      	if ($code == "100")
+																      	{
+																      		$xml .= '<status code="100">Payment Authorized using stored card</status>';
+																      	} else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+																      	else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and card stored.</status>'; }
+																      	
+																      	// Error: Authorization declined
+																      	else
+																      	{
+																      		$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+																      			
+																      		header("HTTP/1.1 502 Bad Gateway");
+																      			
+																      		$xml .= '<status code="92">Authorization failed, PayFort returned error: '. $code .'</status>';
+																      	}
+																      	break;
 															default:	// Unkown Error
 																$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 	

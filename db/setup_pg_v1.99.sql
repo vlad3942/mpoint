@@ -1,8 +1,4 @@
-UPDATE Client.Client_Tbl SET salt = 'Fh17_8sFgd' WHERE id = 10005;
-UPDATE Client.Client_Tbl SET salt = 'Fh17_8sFgd' WHERE id = 10014;
-UPDATE Client.Client_Tbl SET salt = '8sFgd_Fh17' WHERE id = 10019;
 
-/**
  * CMP-917
  */
 INSERT INTO System.Type_Tbl (id, name) VALUES (10091, 'New Card Purchase');
@@ -254,17 +250,29 @@ INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (12, 10014, 'http:/
 
 
 /* ========== Global Configuration for CCAvenue ========== */
-INSERT INTO System.PSP_Tbl (id, name) VALUES (24, 'CCAvenue');
-INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) SELECT countryid, 24, name FROM System.PSPCurrency_Tbl WHERE pspid = 4;
-INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT cardid, 24 FROM System.PSPCard_Tbl WHERE pspid = 4;
+INSERT INTO System.PSP_Tbl (id, name) VALUES (25, 'CCAvenue');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) SELECT countryid, 25, name FROM System.PSPCurrency_Tbl WHERE pspid = 4;
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT cardid, 25 FROM System.PSPCard_Tbl WHERE pspid = 4;
 /* ========== CONFIGURE CCAvenue END ========== */
 
 /* ========== CONFIGURE Test account - 100001 FOR CCAvenue STARTS ========== */
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, password) VALUES (10001, 24, '110880', 'bha_110880', 'malindo123$');
-INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 24, '-1');
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 25, '110880', 'bha_110880', 'malindo123$');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 25, '-1');
 -- Route VISA Card to CCAvenue
-UPDATE Client.CardAccess_Tbl SET pspid = 24 WHERE clientid = 10001 AND cardid = 8;
+UPDATE Client.CardAccess_Tbl SET pspid = 25 WHERE clientid = 10001 AND cardid = 8;
 /* ==========  CONFIGURE Test account - 100001 FOR CCAvenue END ====== */
+
+/* ========== Global Configuration for PayFort = STARTS ========== */
+INSERT INTO System.PSP_Tbl (id, name) VALUES (23, 'PayFort');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (608,1,'SAR');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (608,23,'SAR');
+
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (7, 23);
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (8, 23);
+
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 23, 'CPMDemo', 'CTjbJcSI', 'BMMVFHwUGyfjDZk2PzMc');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 23, '-1');
+/* ========== Global Configuration for PayFort = ENDS ========== */
 
 /* ========== Global Configuration for PayPal ========== */
 INSERT INTO System.PSP_Tbl (id, name) VALUES (24, 'PayPal');
@@ -284,3 +292,5 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10000
 INSERT INTO Client.CardAccess_Tbl (pspid, clientid, cardid) VALUES (24, 10001, 28);
 /* ==========  CONFIGURE Test account - 100001 FOR PayPal END ====== */
 
+/* ============= SETTLED PAYMENT STATE added for mPoint Settlement & Reconciliation feature ========= */
+INSERT INTO Log.State_Tbl (id, name,module, func, enabled) VALUES (2020, 'Payment Settled', 'Payment' ,'settleTransaction',true);
