@@ -334,7 +334,8 @@ try
 															// Find Configuration for Payment Service Provider
 															$obj_XML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
 															// Determine Payment Service Provider based on selected card
-															$obj_Elem = $obj_XML->xpath("/cards/item[@type-id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ."]");
+//															$obj_Elem = $obj_XML->xpath("/cards/item[@type-id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ."]");
+							//								$obj_Elem = $obj_DOM->{'authorize-payment'}->transaction;
 															if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1) { $obj_Elem->cvc = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc; }
 															break;
 														}
@@ -785,7 +786,13 @@ try
 																	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iPAYPAL_PSP);
 	
 																	$obj_PSP = new PayPal($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["paypal"]);
-	
+	                                                                                                                               
+                                                                                                                                       $obj_Elem = $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j];
+
+	if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1)
+																	{
+																		$obj_Elem->addChild("ticket", $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token);
+																	}	
 																	$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
 																	
 																	// Authorization succeeded
