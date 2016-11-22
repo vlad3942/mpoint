@@ -51,6 +51,8 @@ require_once(sCLASS_PATH ."/ccavenue.php");
 require_once(sCLASS_PATH ."/paypal.php");
 // Require specific Business logic for the PayFort component
 require_once(sCLASS_PATH ."/payfort.php");
+// Require specific Business logic for the DataCash component
+require_once(sCLASS_PATH ."/datacash.php");
 /**
  * Input XML format
  *
