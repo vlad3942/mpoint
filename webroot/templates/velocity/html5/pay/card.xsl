@@ -440,12 +440,15 @@
 					</div>
 
 					<div class="payment-form">
-						<form id="pay-account" class="card-form" action="{func:constLink('/cpm/sys/pay_account.php') }" method="post">
+						<form id="pay-account" class="card-form" action="{func:constLink('/pay/sys/authorize.php') }" method="post">
 							<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
-							<input type="hidden" name="cardtype" value="11" />
+							<input type="hidden" name="cardtype" value="{@type-id}" />
 							<input type="hidden" name="prepaid" value="false" />
 							<input type="hidden" id="cardid" name="cardid" value="{@id}" />
-
+							<input type="hidden" name="storedcard" value="true" />
+							
+							<label for="cvv"><xsl:value-of select="/root/labels/cvv" /></label>
+							<input type="tel" name="cvv" class="cc-cvv" autocomplete="off" maxlength="4" required="required" placeholder="CVV" />
 							<label for="password"><xsl:value-of select="/root/labels/password" /></label>
 							<input type="password" name="pwd" value="" required="required" />
 							
