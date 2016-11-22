@@ -54,10 +54,10 @@ $aDB_CONN_INFO["mpoint"]["password"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["class"] = "Oracle";
 */
 $aDB_CONN_INFO["mpoint"]["host"] = "localhost";
-$aDB_CONN_INFO["mpoint"]["port"] = 5434;
+$aDB_CONN_INFO["mpoint"]["port"] = 5432;
 $aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
-$aDB_CONN_INFO["mpoint"]["username"] = "postgres";
-$aDB_CONN_INFO["mpoint"]["password"] = "postgres";
+$aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
+$aDB_CONN_INFO["mpoint"]["password"] = "hspzr735abl";
 $aDB_CONN_INFO["mpoint"]["class"] = "PostGreSQL";
 $aDB_CONN_INFO["mpoint"]["timeout"] = 10;
 $aDB_CONN_INFO["mpoint"]["charset"] = "UTF8";
@@ -74,7 +74,7 @@ $aDB_CONN_INFO["mpoint"]["method"] = 1;
  * Database settings for Session database
  */
 $aDB_CONN_INFO["session"]["host"] = "localhost";
-$aDB_CONN_INFO["session"]["port"] = 5434;
+$aDB_CONN_INFO["session"]["port"] = 5432;
 $aDB_CONN_INFO["session"]["path"] = "session";
 $aDB_CONN_INFO["session"]["username"] = "session";
 $aDB_CONN_INFO["session"]["password"] = "2a2ac8447e";
@@ -96,7 +96,7 @@ $aDB_CONN_INFO["session"]["method"] = 1;
  */
 $aHTTP_CONN_INFO["mesb"]["protocol"] = "http";
 //$aHTTP_CONN_INFO["mesb"]["host"] = "213.173.252.92";
-$aHTTP_CONN_INFO["mesb"]["host"] = "tutorial.localhost";
+$aHTTP_CONN_INFO["mesb"]["host"] = "localhost";
 $aHTTP_CONN_INFO["mesb"]["port"] = 10080;
 $aHTTP_CONN_INFO["mesb"]["timeout"] = 120;
 $aHTTP_CONN_INFO["mesb"]["path"] = "/";
@@ -452,6 +452,21 @@ $aHTTP_CONN_INFO["payfort"]["paths"]["refund"] = "/mpoint/payfort/refund";
 $aHTTP_CONN_INFO["payfort"]["paths"]["status"] = "/mpoint/payfort/status";
 $aHTTP_CONN_INFO["payfort"]["paths"]["cancel"] = "/mpoint/payfort/cancel";
 $aHTTP_CONN_INFO["payfort"]["paths"]["callback"] = "/mpoint/payfort/callback";
+
+
+/**
+ * Connection info for connecting to PayPal
+ */
+$aHTTP_CONN_INFO["paypal"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["paypal"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["paypal"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["paypal"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["paypal"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["paypal"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["paypal"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["paypal"]["paths"]["initialize"] = "/mpoint/paypal/initialize";
+$aHTTP_CONN_INFO["paypal"]["paths"]["auth"] = "/mpoint/paypal/authorize-payment";
+//$aHTTP_CONN_INFO["paypal"]["paths"]["capture"] = "/mpoint/paypal/capture";
 
 
 /**
