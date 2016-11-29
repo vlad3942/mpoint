@@ -231,19 +231,27 @@ if (count($aMsgCds) == 0)
 				
 				$transactionType = Constants::iCARD_PURCHASE_TYPE;
 				
-				$cardDetails .= '
-								<cvc>'.$_POST['cvv'].'</cvc>
-				';
+				if(isset($_POST['cvv']) === true)
+				{
+					$cardDetails .= '
+									<cvc>'.$_POST['cvv'].'</cvc>
+					';
+				}
 				
 				if(isset($_POST['storedcard']) == false)
 				{
-					$cardDetails .= '<token>'.$_POST['token'].'</token>';
-					
 					if(intval($cardTypeId) == 23)
 					{
 						$cardDetails .= '<verifier>'.$_POST['verifier'].'</verifier>';
 						$cardDetails .= '<checkout-url>'.$_POST['checkouturl'].'</checkout-url>';
 					}
+					
+					if(intval($cardTypeId) == 28)
+					{
+						
+						$cardDetails .= '<token>'.base64_encode($_POST['token']).'</token>';
+						
+					} else { $cardDetails .= '<token>'.$_POST['token'].'</token>'; }
 				} 
 				else 
 				{ 

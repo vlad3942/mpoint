@@ -297,7 +297,6 @@ try
 														header("HTTP/1.1 400 Bad Request");
 													}
 													break;
-												case (Constants::iNEW_CARD_PURCHASE_TYPE): //Authorize Purchase using New card
 												case (Constants::iCARD_PURCHASE_TYPE):		// Authorize Purchase using Stored Card
 												default:
 													// 3rd Party Wallet
@@ -326,6 +325,20 @@ try
 																$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iANDROID_PAY_PSP);
 																break;
 														default:
+															/**
+															 * This changes is made for globalcollect since rightnow it is the only psp which will send
+															 * token value in authorize  request but for new card.
+															 * @var unknown
+															 */
+															// Find Configuration for Payment Service Provider
+															$obj_XML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
+															
+															if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1) { $obj_Elem->cvc = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc; }
+															
+															if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1)
+															{
+																$obj_Elem->ticket = (string) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token;
+															}
 															break;
 														}
 													
@@ -447,11 +460,6 @@ try
 														{ 
 															$obj_Elem->cvc = (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc; 
 														}
-														
-														if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1)
-														{
-															$obj_Elem->addChild("ticket", $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token);
-														}
 													}
 													else
 													{
@@ -460,7 +468,7 @@ try
 														if (count($obj_Elem->mask) == 1) { $code = $obj_Validator->valIssuerIdentificationNumber($_OBJ_DB, $obj_ClientConfig->getID(), substr(str_replace(" ", "", $obj_Elem->mask), 0, 6) ); }
 														else { $code = 10; }
 													}
-	
+												
 													if ($code >= 10)
 													{
 														try
@@ -784,7 +792,7 @@ try
 																$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iPAYPAL_PSP);
 
 																$obj_PSP = new PayPal($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["paypal"]);
-
+																
 																$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
 
 																// Authorization succeeded
