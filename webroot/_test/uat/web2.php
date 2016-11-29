@@ -162,9 +162,9 @@
 <tr>
 	<td><b>Mobile Number : </b><input type="tel" name="mobile" value="30206172" /></td>
 </tr>
-<!-- <tr>
+<tr>
 	<td><b>Operator Number : </b><input type="tel" name="operator" value="10002" /></td>
-</tr> -->
+</tr>
 <tr>
 	<td><b>Email : </b><input type="email" name="email" value="abhishek@cellpointmobile.com" /></td>
 </tr>

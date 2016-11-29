@@ -52,6 +52,7 @@ require_once(sCLASS_PATH ."/datacash.php");
 require_once(sCLASS_PATH ."/globalcollect.php");
 require_once(sCLASS_PATH ."/adyen.php");
 require_once(sCLASS_PATH ."/ccavenue.php");
+require_once(sCLASS_PATH ."/payfort.php");
 
 ignore_user_abort(true);
 set_time_limit(0);
@@ -333,6 +334,32 @@ if (count($aMsgCds) == 0)
 						       
 							}
 							break;
+						case (Constants::iPAYFORT_PSP): // PayFort
+								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iPAYFORT_PSP);
+							
+								$obj_PSP = new PayFort($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["payfort"]);
+									
+								$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+									
+								// Authorization succeeded
+								if ($code == "100")
+								{
+									$xml .= '<status code="100">Payment Authorized using stored card</status>';
+								} else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+								else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and card stored.</status>'; }
+								else if(strpos($code, '2005') !== false) { $xml = $code; }
+								// Error: Authorization declined
+								else
+								{
+									$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+										
+									/* header("HTTP/1.1 502 Bad Gateway");
+										
+									$xml .= '<status code="92">Authorization failed, PayFort returned error: '. $code .'</status>'; */
+									
+									$aMsgCds[] = 51;
+								}
+								break;
 									
 				default:	// Unkown Error
 					$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
