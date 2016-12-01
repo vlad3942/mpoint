@@ -644,7 +644,7 @@ class mConsole extends Admin
 		if ($ono == 0 && (count($aPspIDs) == 0 || count($aCardIDs) == 0))
 		{
 			// Fetch all Transfers
-			$sql = "SELECT EUT.id, '' AS orderno, '' AS externalid, EUT.typeid, CL.countryid, EUT.toid, EUT.fromid, EUT.created, EUT.stateid AS stateid,EUT.created as createdfinal,
+			$sql = "SELECT EUT.id, '' AS orderno, '' AS externalid, EUT.typeid, CL.countryid, EUT.toid, EUT.fromid, EUT.created, EUT.stateid AS asStateid,EUT.created as createdfinal,
 						EUA.id AS customerid, EUA.firstname, EUA.lastname, EUA.externalid AS customer_ref, EUA.countryid * 100 AS operatorid, EUA.mobile, EUA.email, '' AS language,
 						CL.id AS clientid, CL.name AS client,
 						-1 AS accountid, '' AS account,
@@ -674,27 +674,29 @@ class mConsole extends Admin
 		foreach($aClientIDs as $iClientID)
 		{
 			$sql .= "SELECT Txn.id, Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
-					(CASE
-					 WHEN M8.stateid IS NOT NULL THEN M8.stateid
-					 WHEN M7.stateid IS NOT NULL THEN M7.stateid
-					 WHEN M6.stateid IS NOT NULL THEN M6.stateid
-					 WHEN M5.stateid IS NOT NULL THEN M5.stateid
-					 WHEN M4.stateid IS NOT NULL THEN M4.stateid
-					 WHEN M3.stateid IS NOT NULL THEN M3.stateid
-					 WHEN M2.stateid IS NOT NULL THEN M2.stateid
-					 WHEN M1.stateid IS NOT NULL THEN M1.stateid
-					 ELSE -1
-					 END) AS stateid,
 					 (CASE
-					 WHEN M8.stateid IS NOT NULL THEN M8.created
-					 WHEN M7.stateid IS NOT NULL THEN M7.created
-					 WHEN M6.stateid IS NOT NULL THEN M6.created
-					 WHEN M5.stateid IS NOT NULL THEN M5.created
-					 WHEN M4.stateid IS NOT NULL THEN M4.created
-					 WHEN M3.stateid IS NOT NULL THEN M3.created
-					 WHEN M2.stateid IS NOT NULL THEN M2.created
-					 WHEN M1.stateid IS NOT NULL THEN M1.created
-					 END) AS createdfinal,
+                                                 WHEN M9.stateid IS NOT NULL THEN M9.stateid
+						 WHEN M6.stateid IS NOT NULL THEN M6.stateid
+						 WHEN M5.stateid IS NOT NULL THEN M5.stateid
+						 WHEN M4.stateid IS NOT NULL THEN M4.stateid
+						 WHEN M7.stateid IS NOT NULL THEN M7.stateid
+						 WHEN M3.stateid IS NOT NULL THEN M3.stateid
+						 WHEN M8.stateid IS NOT NULL THEN M8.stateid
+						 WHEN M2.stateid IS NOT NULL THEN M2.stateid
+						 WHEN M1.stateid IS NOT NULL THEN M1.stateid
+						 ELSE -1
+						 END) AS asStateid,
+					 (CASE
+                                                 WHEN M9.stateid IS NOT NULL THEN Max(M9.created)
+						 WHEN M6.stateid IS NOT NULL THEN Max(M6.created)
+						 WHEN M5.stateid IS NOT NULL THEN Max(M5.created)
+						 WHEN M4.stateid IS NOT NULL THEN Max(M4.created)
+						 WHEN M7.stateid IS NOT NULL THEN Max(M7.created)
+						 WHEN M3.stateid IS NOT NULL THEN Max(M3.created)
+						 WHEN M8.stateid IS NOT NULL THEN Max(M8.created)
+						 WHEN M2.stateid IS NOT NULL THEN Max(M2.created)
+						 WHEN M1.stateid IS NOT NULL THEN Max(M1.created)
+						 END) AS createdfinal,
 					EUA.id AS customerid, EUA.firstname, EUA.lastname, Coalesce(Txn.customer_ref, EUA.externalid) AS customer_ref, Txn.operatorid as operatorid, 
 					Txn.mobile as mobile, Txn.email as email, Txn.lang AS language,
 					CL.id AS clientid, CL.name AS client,
@@ -715,9 +717,11 @@ class mConsole extends Admin
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M6 ON Txn.id = M6.txnid AND M6.stateid = ". Constants::iPAYMENT_REFUNDED_STATE ."
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M7 ON Txn.id = M7.txnid AND M7.stateid = ". Constants::iPAYMENT_DECLINED_STATE ."
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M8 ON Txn.id = M8.txnid AND M8.stateid = ". Constants::iPAYMENT_REJECTED_STATE ."
+                                LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M9 ON Txn.id = M9.txnid AND M9.stateid = ". Constants::iPAYMENT_SETTLED_STATE ."
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON Txn.euaid = EUA.id
-				WHERE CL.id = ".$iClientID;
-			
+				WHERE CL.id = ".$iClientID."
+				GROUP BY M9.stateid, M8.stateid, M7.stateid, M6.stateid, M5.stateid, M4.stateid, M3.stateid, M2.stateid, M1.stateid, Txn.id, orderno, externalid, Txn.typeid, Txn.countryid, toid, fromid, Txn.created, asStateid ,Acc.id,customerid, EUA.firstname, EUA.lastname, customer_ref, operatorid,Txn.mobile, Txn.email, language,CL.id, client,accountid, account,PSP.id, psp,paymentmethodid, paymentmethod,Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description";
+		
 				array_pop($aClientIDs);
 				
 				if(count($aClientIDs) > 0)
@@ -728,7 +732,7 @@ class mConsole extends Admin
 				}
 		}	
 				
-		$sql .= " ) as a where a.stateid != -1 ";
+		$sql .= " ) as a where a.asStateid != -1 ";
 		
 
 		if (count($aAccountIDs) > 0) { $sql .= " AND  a.accountid IN (". implode(",", $aAccountIDs) .")"; }
@@ -748,7 +752,7 @@ class mConsole extends Admin
 		
 		$sql .= " AND a.createdfinal = (
 					select MAX(msg.created) FROM Log.Message_Tbl as msg
-						WHERE msg.stateid = a.stateid AND msg.txnid = a.id
+						WHERE msg.stateid = a.asStateid AND msg.txnid = a.id
 				)";
 		
 		$sql .= "\n ORDER BY createdfinal DESC";
@@ -762,6 +766,7 @@ class mConsole extends Admin
 		
 	
 		//echo $sql ."\n";exit;
+		//trigger_error( $sql ."\n");
 		$res = $this->getDBConn()->query($sql);
 		
 		if (count($aStateIDs) == 0) 
@@ -777,6 +782,7 @@ class mConsole extends Admin
 					Constants::iPAYMENT_REJECTED_STATE, 
 					Constants::iPAYMENT_REFUNDED_STATE,
 					Constants::iPAYMENT_CANCELLED_STATE,
+                                        Constants::iPAYMENT_SETTLED_STATE,
 					Constants::iTICKET_CREATED_STATE					
 				);
 		}
@@ -788,7 +794,7 @@ class mConsole extends Admin
 				ORDER BY id DESC
 			";
 		
-//		echo $sql ."\n";
+		//trigger_error( $sql ."\n");
 		$stmt1 = $this->getDBConn()->prepare($sql);
 		
 		$sql = "SELECT id, stateid, data, created
@@ -802,7 +808,7 @@ class mConsole extends Admin
 		
 		$sql.= "ORDER BY id ASC";
 		
-//		echo $sql ."\n";
+		//trigger_error( $sql ."\n" );
 		$stmt2 = $this->getDBConn()->prepare($sql);
 		
 		$aObj_TransactionLogs = array();
@@ -820,14 +826,14 @@ class mConsole extends Admin
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
 			// Purchase
-			if ($RS["STATEID"] < 0 && in_array($RS["TYPEID"], $aTypes) === true)
+			if ($RS["ASSTATEID"] < 0 && in_array($RS["TYPEID"], $aTypes) === true)
 			{
 				$aParams = array($RS["ID"]);
 				$res1 = $this->getDBConn()->execute($stmt1, $aParams);
 				if (is_resource($res1) === true)
 				{
 					$RS1 = $this->getDBConn()->fetchName($res1);
-					if (is_array($RS1) === true) { $RS["STATEID"] = $RS1["STATEID"]; }
+					if (is_array($RS1) === true) { $RS["asStateid"] = $RS1["STATEID"]; }
 				}
 			}
 			
@@ -851,7 +857,7 @@ class mConsole extends Admin
 				}
 			}
 			
-			if(in_array( $RS["STATEID"], $aStateIDs ) == true)
+			if(in_array( $RS["ASSTATEID"], $aStateIDs ) == true)
 			{
 				$aObj_TransactionLogs[] = new TransactionLogInfo($RS["ID"],
 																 $RS["TYPEID"],
@@ -861,7 +867,7 @@ class mConsole extends Admin
 																 new BasicConfig($RS["ACCOUNTID"], $RS["ACCOUNT"]),
 																 $RS["PSPID"] > 0 ? new BasicConfig($RS["PSPID"], $RS["PSP"]) : null,
 																 $RS["PAYMENTMETHODID"] > 0 ? new BasicConfig($RS["PAYMENTMETHODID"], $RS["PAYMENTMETHOD"]) : null,
-																 $RS["STATEID"],
+																 $RS["ASSTATEID"],
 																 $aObj_CountryConfigurations[$RS["COUNTRYID"] ],
 																 $RS["AMOUNT"],
 																 $RS["CAPTURED"],
@@ -876,7 +882,7 @@ class mConsole extends Admin
 																 $aObj_Messages);
 			}
 		}
-	
+
 		return $aObj_TransactionLogs;
 	}
 	
@@ -1057,7 +1063,7 @@ class mConsole extends Admin
 	 */
 	public function getTransactionStats(array $aClientIDs, $start, $end, array $aAccountIDs = array(), $pspid = 0, $cardid = 0 )
 	{
-		$aStateIDS = array(Constants::iINPUT_VALID_STATE, Constants::iPAYMENT_INIT_WITH_PSP_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CANCELLED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_REFUNDED_STATE, Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_DECLINED_STATE);
+		$aStateIDS = array(Constants::iINPUT_VALID_STATE, Constants::iPAYMENT_INIT_WITH_PSP_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CANCELLED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_REFUNDED_STATE, Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_DECLINED_STATE,Constants::iPAYMENT_SETTLED_STATE);
 		
 		$where = "";
 		

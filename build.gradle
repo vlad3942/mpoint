@@ -24,7 +24,7 @@ projectinfo
         {
             group = 'com.cellpointmobile.mpoint'
             artifact = 'mPoint'
-            version = '1.99.MCDEV-SNAPSHOT'
+            version = '2.00.MCDEV-SNAPSHOT'
             description = 'mPoint'
             packaging = 'zip'
         }
@@ -46,8 +46,11 @@ task phpDependencies(type:Copy) {
 
 task dockerTest(type:Exec) {
 
-    workingDir 'docker'
-    commandLine './dockerw'
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/c', 'docker\\dockerw.cmd'
+    } else {
+        commandLine './docker/dockerw.sh'
+    }
 }
 
 tasks.dockerTest.dependsOn extractPhpUnit

@@ -145,7 +145,7 @@ class Validate extends ValidateBase
 	 * 	 1. Undefined Username
 	 * 	 2. Username is too short, min length is 3 characters
 	 * 	 3. Username is too long, as defined by iAUTH_MAX_LENGTH
-	 *   4. Username contains invalid characters: [^a-z0-9 √¶√∏√•√Ü√ò√Ö√§√∂√Ñ√ñ.-]
+	 *   4. Username contains invalid characters: [^a-z0-9 Ê¯Â∆ÿ≈‰ˆƒ÷.-]
 	 * 	10. Success
 	 *
 	 * @see		Constants::iAUTH_MIN_LENGTH
@@ -161,7 +161,7 @@ class Validate extends ValidateBase
 		if (empty($un) === true){ $code = 1; }											// Username is undefined
 		elseif (strlen($un) < 3) { $code = 2; }											// Username is too short
 		elseif (strlen($un) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }				// Username is too long
-		elseif (eregi("[^a-z0-9 √¶√∏√•√Ü√ò√Ö√§√∂√Ñ√ñ._-]", utf8_encode($un) ) == true) { $code = 4; }	// Username contains Invalid Characters
+		elseif (eregi("[^a-z0-9 Ê¯Â∆ÿ≈‰ˆƒ÷._-]", utf8_encode($un) ) == true) { $code = 4; }	// Username contains Invalid Characters
 		else { $code = 10; }															// Username is valid
 
 		return $code;
@@ -222,7 +222,7 @@ class Validate extends ValidateBase
 	 * 	 1. Undefined Name
 	 * 	 2. Name is too short, must be 2 characters or longer
 	 * 	 3. Name is too long, must be shorter than 100 characters
-	 *   4. Name contains invalid characters: [^0-9a-z√¶√∏√•√Ü√ò√Ö√§√∂√Ñ√ñ_.@-]
+	 *   4. Name contains invalid characters: [^0-9a-zÊ¯Â∆ÿ≈‰ˆƒ÷_.@-]
 	 * 	10. Success
 	 *
 	 * @see		General::valUsername()
@@ -304,7 +304,7 @@ class Validate extends ValidateBase
 	 * 	10. Success
 	 *
 	 * @param 	long $max 	Maximum amount allowed for the Client
-	 * @param 	long $prc 	The price of the merchandise the customer is buying in the country's smallest currency (cents for USA, √Ø¬ø¬Ωre for Denmark etc.)
+	 * @param 	long $prc 	The price of the merchandise the customer is buying in the country's smallest currency (cents for USA, ÔøΩre for Denmark etc.)
 	 * @return 	integer
 	 */
 	public function valPrice($max, $prc)
@@ -921,7 +921,7 @@ class Validate extends ValidateBase
 
 	public function valFullname($fullname)
 	{
-		if(preg_match("/^[a-z√¶√∏√•A-Z√Ü√ò√Ö][a-zA-Z -\']+$/",$fullname) == false)
+		if(preg_match("/^[a-zÊ¯ÂA-Z∆ÿ≈][a-zA-Z -\']+$/",$fullname) == false)
 		{
 			$code = 1;
 		}
@@ -1361,7 +1361,6 @@ class Validate extends ValidateBase
         }
         return $code;
     }
-    
 
     /**
      * Performs validation of the Card number to determine whether it is valid.
@@ -1391,43 +1390,77 @@ class Validate extends ValidateBase
 	    		else if(strlen($number) > 16) { $code = 3; }
 	    		else
 	    		{
-		    		$aCardNumber = str_split(strrev($number));
-		    		
-		    		$sumOfNumber = 0;
-		    	
-		    		$count = 1;
-		    		
-		    		for($i = 0; $i < count($aCardNumber); $i++)
-		    		{
-		    			
-		    			$iCardNumber = intval($aCardNumber[$i]);
-		    					    			
-		    			if(($count % 2) === 0)
-		    			{
-		    				$iCardNumber = $iCardNumber * 2;
-		    				
-		    				if($iCardNumber >= 10)
-		    				{
-		    					$tempNum = $iCardNumber % 10;
-		    					$tempNum += $iCardNumber / 10;
-		    					 
-		    					$iCardNumber = $tempNum;
-		    				}
-		    			}
-		    			 
-		    			$sumOfNumber += $iCardNumber;
-		    			
-		    			$count++;
-		    		}
-		    		
-		    		if($sumOfNumber % 10 === 0)
-		    		{
-		    			$code = 10;
-		    		} else { $code = 4; }
+	    			$checksum = 0;
+	    			for ($i=(2-(strlen($number) % 2)); $i<=strlen($number); $i+=2) 
+	    			{
+	    				$checksum += (int) ($number{$i-1});
+	    			}
+
+	    			for ($i=(strlen($number)% 2) + 1; $i<strlen($number); $i+=2) 
+	    			{
+	    				$digit = (int) ($number{$i-1}) * 2;
+	    				if ($digit < 10) 
+	    				{
+	    					$checksum += $digit;
+	    				} 
+	    				else { $checksum += ($digit-9); }
+	    			}
+	    			
+	    			if (($checksum % 10) == 0) 
+	    			{
+	    				$code = 10;
+	    			} else { $code = 4; }
 	    		}
 	    	}
    	
     	return $code;
     }
+
+	/**
+	 * Performs generic validations on the request format of a raw API request 
+	 * This function throws an @see mPointBaseValidationException in case of validation errors
+	 * In case of success, it returns the main operation XML element of the request, usually the direct child of <root>
+	 * 
+	 * @param SimpleDOMElement $obj_DOM The XML request
+	 * @param string $xsdFile The XSD file to validate the request against
+	 * @param string $operationElement Name of the operation element to expect for the API
+	 * @return SimpleXMLElement Operation element for the request with tag name matching $operationElement
+	 * @throws mPointBaseValidationException
+	 */
+	public static function valRequestFormat(SimpleDOMElement $obj_DOM, $xsdFile, $operationElement)
+	{
+		if ( ($obj_DOM instanceof SimpleDOMElement) === false) { throw new mPointBaseValidationException(mPointBaseValidationException::NOT_XML, $obj_DOM); }
+		else if ($obj_DOM->validate(sPROTOCOL_XSD_PATH .$xsdFile) === false) { throw new mPointBaseValidationException(mPointBaseValidationException::INVALID_XML, $obj_DOM); }
+		else if (count($obj_DOM->{$operationElement}) == 0) { throw new mPointBaseValidationException(mPointBaseValidationException::WRONG_OPERATION, $obj_DOM); }
+
+		return $obj_DOM->{$operationElement};
+	}
+	
+		/**
+	 * Performs validation of a challenge document og file sent by a client
+	 * This method will return the following status codes:
+	 *	1. Undefined challenge
+	 * 	2. Invalid content-type
+	 * 	3. Invalid URL
+	 * 	4. Malformed challenge
+	 * 10. Validation successful
+	 *
+	 * @param $challenge
+	 * @return integer
+	 */
+	public function valChallenge(SimpleDOMElement $challenge, $minChallengeLength=10)
+	{
+		$code = 10;
+		$content = (string) $challenge;
+		$urlParts = parse_url( (string) $challenge["url"]);
+
+		if (strlen($content) < 1) { $code = 1; }
+		else if (intval(preg_match("#^[a-z\-\+]+/[a-z\-\+]+$#", (string) $challenge["content-type"]) ) < 1) { $code = 2; }
+		else if (is_array($urlParts) === false || strlen($urlParts["scheme"]) < 1 || strlen($urlParts["host"]) < 1) { $code = 3; }
+		else if (strlen($content) < $minChallengeLength) { $code = 4; }
+
+		return $code;
+	}
+
 }
 ?>

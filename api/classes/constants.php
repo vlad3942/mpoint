@@ -121,6 +121,12 @@ abstract class Constants
 	 *
 	 */
 	const iEMAIL_REJECTED_STATE = 1031;
+
+	/**
+	 * Defines the ID of the State that indicates that 3D Secure has been activated for the payment
+	 *
+	 */
+	const i3D_SECURE_ACTIVATED_STATE = 1100;
 	/**
 	 * Defines the ID of the State that indicates that mPoint's Callback request has been accepted
 	 *
@@ -211,6 +217,12 @@ abstract class Constants
 	 */
 	const iPAYMENT_DUPLICATED_STATE = 2019;
 
+	/**
+	 * Defines the ID of the State that indicates that payment has been settled
+	 *
+	 */
+	const iPAYMENT_SETTLED_STATE = 2020;
+	
 	/**
 	 * Defines GoMobile's type identifier for an MT-SMS message
 	 *
@@ -469,6 +481,24 @@ abstract class Constants
 	const iSECURE_TRADING_PSP = 22;
 	
 	/**
+	 * Unique ID for the Payment Service Provider: PayFort
+	 *
+	 */
+	const iPAYFORT_PSP = 23;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: PayPal
+	 *
+	 */
+	const iPAYPAL_PSP = 24;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: CCAvenue
+	 *
+	 */
+	const iCCAVENUE_PSP = 25;
+	
+	/**
 	 * Unique ID for the Payment Service Provider: Android Pay
 	 *
 	 */
@@ -626,6 +656,11 @@ abstract class Constants
 	 *
 	 */
 	const iANDROID_PAY_WALLET = 27;
+	/**
+	 * Unique Card ID for transaction's made using Android Pay
+	 *
+	 */
+	const iPAYPAL_PAY_WALLET = 28;
 	
 	/**
 	 * Unique Fee Type ID for Top-Ups

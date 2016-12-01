@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # USE the trap if you need to also do manual cleanup after the service is stopped,
 #     or need to start multiple services in the one container
 trap "echo TRAPed signal" HUP INT QUIT KILL TERM
@@ -16,13 +15,8 @@ setfacl -d -m group:www-data:rwx /opt/cpm/mPoint/log
 cd /opt/cpm/mPoint
 chmod -R 777 log
 
-php phpunit.phar test
-
-EXITVAL=$?
-if [[ $EXITVAL -gt 0 ]]; then
-  echo "Tests failed.. Dropping to shell";
-  /bin/bash -i
+if [ -z ${debug+x} ]; then
+	php phpunit.phar test
+else
+	/bin/bash
 fi
-
-echo "testcases exited with $EXITVAL"
-exit $EXITVAL

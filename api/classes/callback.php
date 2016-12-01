@@ -610,11 +610,38 @@ abstract class Callback extends EndUserAccount
 			return new GlobalCollect($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["global-collect"]);
 		case (Constants::iSECURE_TRADING_PSP):
 			return new SecureTrading($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["secure-trading"]);
+		case (Constants::iPAYFORT_PSP):
+			return new PayFort($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["payfort"]);
+		case (Constants::iPAYPAL_PSP):
+			return new PayPal($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paypal"]);
+		case (Constants::iCCAVENUE_PSP):
+				return new CCAvenue($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ccavenue"]);
 		default:
 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
 	}
 
 	public abstract function getPSPID();
+	
+	/**
+	 * Returns exponent of currency of country on given country-id and psp-id.
+	 *
+	 * @param 	integer $cid	Unique ID for the Country that the Currency should be found in
+	 * @param 	integer $pspid	Unique ID for the PSP that the currency code should be found for
+	 * @return 	int
+	 */
+	
+	public function getCurrencyExponent($cid, $pspid)
+	{
+		$currency_name = $this->getCurrency($cid, $pspid);
+		
+		$sql = "SELECT decimals
+				FROM System".sSCHEMA_POSTFIX.".Country_Tbl
+				WHERE id = ". intval($cid) ." AND currency = '". $currency_name ."' AND enabled = '1'";
+		//		echo $sql ."\n";
+		$RS = $this->getDBConn($sql)->getName($sql);
+		
+		return $RS["DECIMALS"];
+	}
 }
 ?>

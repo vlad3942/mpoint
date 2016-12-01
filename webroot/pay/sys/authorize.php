@@ -13,6 +13,9 @@ require_once(sCLASS_PATH ."/clientinfo.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 
+// Require data data class for Customer Information
+require_once(sCLASS_PATH ."/customer_info.php");
+
 // Require Business logic for the Select Credit Card component
 require_once(sCLASS_PATH ."/credit_card.php");
 
@@ -80,7 +83,7 @@ if(array_key_exists("store-card", $_POST) === true && $_POST['store-card'] == 'o
 	$sCardName = $_POST['cardname'];
 }
 
-if(isset($_POST['token']) == false)
+if(isset($_POST['token']) == false && isset($_POST['storedcard']) == false)
 {
 	$givenDate = $_POST['expiry-month'].'/'.$_POST['expiry-year'];
 	
@@ -116,6 +119,22 @@ if(isset($_POST['token']) == false)
 		$aMsgCds[] = 25; 
 		
 	}
+}
+
+if($_POST['storedcard'] == true)
+{
+	if ($obj_Validator->valStoredCard($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAccountID(), $_POST['cardid']) != 10) 
+	{ 
+		$aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAccountID(), $_POST['cardid']) + 20; 
+	}
+	
+	if ($obj_Validator->valPassword($_POST['pwd']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_POST['pwd']) + 30; }
+	
+	if ($_SESSION['obj_Info']->getInfo("auth-token") === false || strlen($_SESSION['obj_TxnInfo']->getAuthenticationURL() ) == 0)
+	{
+		$msg = $obj_mPoint->auth($_SESSION['obj_TxnInfo']->getAccountID(), $_POST['pwd']);
+	}
+	else { $msg = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($_SESSION['obj_TxnInfo']->getAuthenticationURL() ), CustomerInfo::produceInfo($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAccountID()), $_SESSION['obj_Info']->getInfo("auth-token") ); }
 }
 
 if (count($aMsgCds) == 0)
@@ -194,35 +213,66 @@ if (count($aMsgCds) == 0)
 			$h .= "Authorization: Basic ". base64_encode($aHTTP_CONN_INFO["mesb"]["username"] .":". $aHTTP_CONN_INFO["mesb"]["password"]) .HTTPClient::CRLF;
 			
 			
-			if(isset($_POST['token']) == false)
+			$cardDetails = '<card type-id="'.intval($cardTypeId).'" >
+				        		<amount country-id="'.$_SESSION['obj_TxnInfo']->getCountryConfig()->getID().'">'.$_SESSION['obj_TxnInfo']->getAmount().'</amount>';
+			
+			$password = "";
+			
+			if(isset($_POST['token']) == false && isset($_POST['storedcard']) == false)
 			{
 				$transactionType = Constants::iNEW_CARD_PURCHASE_TYPE;
-				$cardDetails = ' <card-holder-name>'.$sCardHolderName.'</card-holder-name>
+				$cardDetails .= ' <card-holder-name>'.$sCardHolderName.'</card-holder-name>
 				         <card-number>'.preg_replace("/[^0-9]/", "", $_POST['cardnumber']).'</card-number>
 				         <expiry>'.$givenDate.'</expiry>
 				         <cvc>'.$_POST['cvv'].'</cvc>';
 			}
 			else 
 			{
-				$transactionType = Constants::iCARD_PURCHASE_TYPE;
-				$cardDetails = '<token>'.$_POST['token'].'</token>';
 				
-				if(intval($cardTypeId) == 23)
+				$transactionType = Constants::iCARD_PURCHASE_TYPE;
+				
+				if(isset($_POST['cvv']) === true)
 				{
-					$cardDetails .= '<verifier>'.$_POST['verifier'].'</verifier>';
-					$cardDetails .= '<checkout-url>'.$_POST['checkouturl'].'</checkout-url>';
+					$cardDetails .= '
+									<cvc>'.$_POST['cvv'].'</cvc>
+					';
 				}
+				
+				if(isset($_POST['storedcard']) == false)
+				{
+					if(intval($cardTypeId) == 23)
+					{
+						$cardDetails .= '<verifier>'.$_POST['verifier'].'</verifier>';
+						$cardDetails .= '<checkout-url>'.$_POST['checkouturl'].'</checkout-url>';
+					}
+					
+					if(intval($cardTypeId) == 28)
+					{
+						
+						$cardDetails .= '<token>'.base64_encode($_POST['token']).'</token>';
+						
+					} else { $cardDetails .= '<token>'.$_POST['token'].'</token>'; }
+				} 
+				else 
+				{ 
+					$cardDetails = str_replace('<card type-id="'.intval($cardTypeId).'" >','<card type-id="'.intval($cardTypeId).'" id="'.intval($_POST['cardid']).'">' ,$cardDetails);
+					
+					$password = '<password>'.$_POST['pwd'].'</password>';
+				}
+				
 			}
+			
+			$cardDetails .= '
+					</card>
+			';
 						
 			$b = '<?xml version="1.0" encoding="UTF-8"?>
 				<root>
 				  <authorize-payment account="'.$accountId.'" client-id="'.$clientId.'">
 				    <transaction type-id="'.$transactionType.'" id="'.$_SESSION['obj_TxnInfo']->getID().'">
-				      <card type-id="'.intval($cardTypeId).'">
-				        <amount country-id="'.$_SESSION['obj_TxnInfo']->getCountryConfig()->getID().'">'.$_SESSION['obj_TxnInfo']->getAmount().'</amount>
 				         '.$cardDetails.'
-				      </card>
 				    </transaction>
+				     '.$password.'
 				    <client-info language="'.sDEFAULT_LANGUAGE.'" version="1.20" platform="HTML5">
 			    		<customer-ref>'.$_SESSION['obj_TxnInfo']->getCustomerRef().'</customer-ref>
        					<mobile country-id="'.$_SESSION['obj_TxnInfo']->getCountryConfig()->getID().'">'.$_SESSION['obj_TxnInfo']->getMobile().'</mobile>
@@ -231,7 +281,6 @@ if (count($aMsgCds) == 0)
 				    </client-info>
 				  </authorize-payment>
 				</root>';
-			
 				
 			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
 			$obj_HTTP->connect();

@@ -47,7 +47,7 @@ $xmlData .= '<labels>
 			<cardholdername>'.$_OBJ_TXT->_("Card Holder Name").'</cardholdername>
 		</labels>';
 
-$aWallets = array(Constants::iVISA_CHECKOUT_WALLET, Constants::iMASTER_PASS_WALLET);
+$aWallets = array(Constants::iVISA_CHECKOUT_WALLET, Constants::iMASTER_PASS_WALLET, Constants::iPAYPAL_PAY_WALLET);
 
 try
 {
@@ -68,7 +68,7 @@ try
 		$accountId = $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getID();
 		
 		$obj_CardXML = simplexml_load_string($card_xml );
-				
+	
 		foreach($aWallets as $iWallet)
 		{
 			$obj_Elem = current($obj_CardXML->xpath("/cards/item[@id = ".$iWallet."]"));
@@ -94,9 +94,12 @@ try
 				
 				$obj_Wallet_Response = getXMLResponse($b, $aHTTP_CONN_INFO);
 				
-				if(count($obj_Wallet_Response->{'psp-info'}->head) > 0 && count($obj_Wallet_Response->{'psp-info'}->body) > 0)
+				if(count($obj_Wallet_Response->{'psp-info'}) > 0)
 				{
-					$sHead = str_replace("</script>","<\/script>",html_entity_decode($obj_Wallet_Response->{'psp-info'}->head));
+					if(count($obj_Wallet_Response->{'psp-info'}->head) > 0)
+					{
+						$sHead = str_replace("</script>","<\/script>",html_entity_decode($obj_Wallet_Response->{'psp-info'}->head));
+					}
 										
 					switch($obj_Elem['type-id'])
 					{
@@ -116,16 +119,45 @@ try
 						break;
 					}
 					
+					if(is_null($sHead) == false)
+					{
+						$obj_Elem->head = NULL;			
+						$obj_Elem1 = dom_import_simplexml($obj_Elem->head);
+						$cdata = $obj_Elem1->ownerDocument->createCDataSection($sHead);
+						$obj_Elem1->appendChild($cdata);
+					}
 					
-					$obj_Elem->head = NULL;			
-					$obj_Elem1 = dom_import_simplexml($obj_Elem->head);
-					$cdata = $obj_Elem1->ownerDocument->createCDataSection($sHead);
-					$obj_Elem1->appendChild($cdata);
+					if(count($obj_Wallet_Response->{'psp-info'}->body) > 0)
+					{
+						$obj_Elem->body = NULL;
+						$obj_Elem2 = dom_import_simplexml($obj_Elem->body);
+						$cdata = $obj_Elem2->ownerDocument->createCDataSection(str_replace("</","<\/",html_entity_decode($obj_Wallet_Response->{'psp-info'}->body)));
+						$obj_Elem2->appendChild($cdata);
+					}
 					
-					$obj_Elem->body = NULL;
-					$obj_Elem2 = dom_import_simplexml($obj_Elem->body);
-					$cdata = $obj_Elem2->ownerDocument->createCDataSection(str_replace("</","<\/",html_entity_decode($obj_Wallet_Response->{'psp-info'}->body)));
-					$obj_Elem2->appendChild($cdata);
+					if(count($obj_Wallet_Response->{'psp-info'}->url) > 0)
+					{
+						$obj_Elem->url = $obj_Wallet_Response->{'psp-info'}->url;
+					}
+					
+					if(count($obj_Wallet_Response->{'psp-info'}->{'hidden-fields'}) > 0)
+					{
+						$hidden_inputs = '';
+						
+						$hidden_fields = $obj_Wallet_Response->{'psp-info'}->{'hidden-fields'}->children();
+						
+						foreach($hidden_fields as $hidden_field)
+						{
+							$hidden_inputs .= '<input type="hidden" name="'.$hidden_field->getName().'" value="'.$hidden_field.'" /> ';
+						}
+					
+						$obj_Elem->hiddenfields = NULL;
+						$obj_Elem3 = dom_import_simplexml($obj_Elem->hiddenfields);
+						$cdata = $obj_Elem3->ownerDocument->createCDataSection(str_replace("</","<\/",html_entity_decode($hidden_inputs)));
+						$obj_Elem3->appendChild($cdata);
+						
+					}
+					
 				} 
 				else
 				{
@@ -137,7 +169,7 @@ try
 			}
 		
 		}	
-		
+
 		$xmlData .= $obj_mPoint->getSystemInfo();
 		
 		$xmlData .= $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->toXML();
