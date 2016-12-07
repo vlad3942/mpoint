@@ -656,6 +656,11 @@ abstract class Constants
 	 *
 	 */
 	const iANDROID_PAY_WALLET = 27;
+	/**
+	 * Unique Card ID for transaction's made using Android Pay
+	 *
+	 */
+	const iPAYPAL_PAY_WALLET = 28;
 	
 	/**
 	 * Unique Fee Type ID for Top-Ups
