@@ -28,7 +28,6 @@ $sPassword = "";
 
 //trigger_error(print_r($_POST,true), E_USER_ERROR);
 
-
 if($_SESSION['obj_TxnInfo'] === null && empty($_POST['transactionid']) == true)
 {
 	trigger_error("Session expired.", E_USER_ERROR);
@@ -281,7 +280,7 @@ if (count($aMsgCds) == 0)
 				    </client-info>
 				  </authorize-payment>
 				</root>';
-				
+
 			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
 			$obj_HTTP->connect();
 			$code = $obj_HTTP->send($h, $b);
@@ -298,7 +297,7 @@ if (count($aMsgCds) == 0)
 	{
 		$msg = 59;
 	}
-	
+
 	if ($code == 200)
 	{
 		$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
@@ -308,7 +307,7 @@ if (count($aMsgCds) == 0)
 			$code = $obj_XML->transaction->status["code"];
 		} 
 		else { $code = $obj_XML->status["code"]; }
-		
+
 		if(empty($code) === true  || in_array($code, array(100, 2000, 2005, 2009)) == false)
 		{
 			$code = 59;
@@ -318,7 +317,8 @@ if (count($aMsgCds) == 0)
 		} 
 		else
 		{
-			
+			$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=". $msg;
+
 			if($code == 2005)
 			{
 				$timestamp = date("YmdHis");
@@ -349,7 +349,7 @@ if (count($aMsgCds) == 0)
 						
 						$html .= $hidden_inputs;
 						
-						$html .= '</form></body>';
+						$html .= '</form>';
 						
 						$html .= '<script type="text/javascript">
 								
@@ -357,7 +357,7 @@ if (count($aMsgCds) == 0)
 								{
 									document.getElementById("secure_page_'.$timestamp.'").submit();
 								}
-							</script>';
+							</script></body>';
 					}
 				}
 				else
@@ -369,6 +369,7 @@ if (count($aMsgCds) == 0)
 				file_put_contents($_SERVER['DOCUMENT_ROOT'] ."/_test/securepages/".$file_name, $html);
 				$url = "http://". $_SERVER['SERVER_NAME'] ."/_test/securepages/".$file_name;
 			}
+			
 			if(array_key_exists("store-card", $_POST) == true && $_POST['store-card'] == 'on')
 			{
 				$obj_TxnInfo = TxnInfo::produceInfo($_SESSION['obj_TxnInfo']->getID(), $_OBJ_DB);
@@ -424,11 +425,8 @@ if (count($aMsgCds) == 0)
 				
 				$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=". $code;
 			}
-			
-			
-			
 		}
-	} else { $url = "http://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=".$msg; }
+	} else { $url = "http://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=".$code; }
 	
 	header("location: ". $url);
 	exit;
