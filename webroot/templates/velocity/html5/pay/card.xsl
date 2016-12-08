@@ -476,7 +476,7 @@
 							<input type="hidden" name="storedcard" value="true" />
 							
 							<label for="cvv"><xsl:value-of select="/root/labels/cvv" /></label>
-							<input type="tel" name="cvv" class="cc-cvv" autocomplete="off" maxlength="4" required="required" placeholder="CVV" />
+							<input type="tel" name="cvv" autocomplete="off" maxlength="4" required="required" placeholder="CVV" />
 							<label for="password"><xsl:value-of select="/root/labels/password" /></label>
 							<input type="password" name="pwd" value="" required="required" />
 							
