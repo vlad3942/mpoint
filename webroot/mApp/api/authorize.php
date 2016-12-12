@@ -816,7 +816,8 @@ try
 																	$xml .= '<status code="100">Payment Authorized using stored card</status>';
 																} else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
 																else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and card stored.</status>'; }
-																
+																else if(strpos($code, '2005') !== false) { $xml = $code; }
+																	
 																// Error: Authorization declined
 																else
 																{
