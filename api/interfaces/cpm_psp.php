@@ -375,16 +375,18 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			$obj_HTTP->connect();
 			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
 			$obj_HTTP->disConnect();
+		
 			if ($code == 200 || $code == 303 )
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
-							
+
 				$sql = "";
+				
 				if(count($obj_XML->transaction) > 0)
 				{
-					if(isset($obj_XML["external-id"]) === true)
+					if(isset($obj_XML->transaction["external-id"]) === true)
 					{
-						$txnid = $obj_XML["external-id"];
+						$txnid = $obj_XML->transaction["external-id"];
 						$sql = ",extid = '". $this->getDBConn()->escStr($txnid) ."'";
 					}
 					
@@ -399,11 +401,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					$str = str_replace("<root>","",$str);
 					$code = str_replace("</root>","",$str);
 				}
-				
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 						SET pspid = ". $obj_PSPConfig->getID() . $sql."
 						WHERE id = ". $this->getTxnInfo()->getID();
-//				echo $sql ."\n";
+				//echo $sql ."\n";
 				$this->getDBConn()->query($sql);
 			}
 			

@@ -28,7 +28,6 @@ $sPassword = "";
 
 //trigger_error(print_r($_POST,true), E_USER_ERROR);
 
-
 if($_SESSION['obj_TxnInfo'] === null && empty($_POST['transactionid']) == true)
 {
 	trigger_error("Session expired.", E_USER_ERROR);
@@ -231,19 +230,27 @@ if (count($aMsgCds) == 0)
 				
 				$transactionType = Constants::iCARD_PURCHASE_TYPE;
 				
-				$cardDetails .= '
-								<cvc>'.$_POST['cvv'].'</cvc>
-				';
+				if(isset($_POST['cvv']) === true)
+				{
+					$cardDetails .= '
+									<cvc>'.$_POST['cvv'].'</cvc>
+					';
+				}
 				
 				if(isset($_POST['storedcard']) == false)
 				{
-					$cardDetails .= '<token>'.$_POST['token'].'</token>';
-					
 					if(intval($cardTypeId) == 23)
 					{
 						$cardDetails .= '<verifier>'.$_POST['verifier'].'</verifier>';
 						$cardDetails .= '<checkout-url>'.$_POST['checkouturl'].'</checkout-url>';
 					}
+					
+					if(intval($cardTypeId) == 28)
+					{
+						
+						$cardDetails .= '<token>'.base64_encode($_POST['token']).'</token>';
+						
+					} else { $cardDetails .= '<token>'.$_POST['token'].'</token>'; }
 				} 
 				else 
 				{ 
@@ -273,7 +280,7 @@ if (count($aMsgCds) == 0)
 				    </client-info>
 				  </authorize-payment>
 				</root>';
-				
+
 			$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
 			$obj_HTTP->connect();
 			$code = $obj_HTTP->send($h, $b);
@@ -290,14 +297,18 @@ if (count($aMsgCds) == 0)
 	{
 		$msg = 59;
 	}
-	
+
 	if ($code == 200)
 	{
 		$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
 		
-		$code = $obj_XML->status["code"];
-		
-		if(empty($code) === true  || in_array($code, array(100, 2000, 2009)) == false)
+		if(count($obj_XML->transaction) > 0)
+		{
+			$code = $obj_XML->transaction->status["code"];
+		} 
+		else { $code = $obj_XML->status["code"]; }
+
+		if(empty($code) === true  || in_array($code, array(100, 2000, 2005, 2009)) == false)
 		{
 			$code = 59;
 		
@@ -306,6 +317,8 @@ if (count($aMsgCds) == 0)
 		} 
 		else
 		{
+			$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=". $msg;
+			
 			if(array_key_exists("store-card", $_POST) == true && $_POST['store-card'] == 'on')
 			{
 				$obj_TxnInfo = TxnInfo::produceInfo($_SESSION['obj_TxnInfo']->getID(), $_OBJ_DB);
@@ -335,9 +348,9 @@ if (count($aMsgCds) == 0)
 
 					}
 										
-					$code = $obj_mPoint->saveCardName($obj_TxnInfo->getAccountID(), $cardTypeId, (string) $sCardName);
+					$saveCardCode = $obj_mPoint->saveCardName($obj_TxnInfo->getAccountID(), $cardTypeId, (string) $sCardName);
 					
-					if($code == 2 or $code == 1) { $code = 102; }
+					if($saveCardCode == 2 or $saveCardCode == 1) { $saveCardCode = 102; }
 					
 				} else {
 					
@@ -354,17 +367,67 @@ if (count($aMsgCds) == 0)
 						$iStatus = $obj_mPoint->savePassword($_SESSION['obj_TxnInfo']->getMobile(), $sPassword, $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig());
 					}
 					
-					$code = $obj_mPoint->saveCardName($iAccountID, $cardTypeId, (string) $sCardName);
+					$saveCardCode = $obj_mPoint->saveCardName($iAccountID, $cardTypeId, (string) $sCardName);
 					
-					if($code == 2 or $code == 1) { $code = 102; }
+					if($saveCardCode == 2 or $saveCardCode == 1) { $saveCardCode = 102; }
 				}
 				
+				$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=". $saveCardCode;
 			}
 			
-			$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=". $code;
+			if($code == 2005)
+			{
+				$timestamp = date("YmdHis");
+				if(count($obj_XML->{'parsed-challenge'}->action) > 0)
+				{
+					if($obj_XML->{'parsed-challenge'}->action['type-id'] == 10)
+					{
+			
+						if(count($obj_XML->{'parsed-challenge'}->action->url) > 0)
+						{
+							$url = $obj_XML->{'parsed-challenge'}->action->url;
+						}
+			
+						$html .= "<body onload='submitForm();' >";
+						$html .= "<form name='secure_page_".$timestamp."' id='secure_page_".$timestamp."' action='".$url."' method='POST'>";
+			
+						if(count($obj_XML->{'parsed-challenge'}->action->{'hidden-fields'}) > 0)
+						{
+							$hidden_inputs = '';
+			
+							$hidden_fields = $obj_XML->{'parsed-challenge'}->action->{'hidden-fields'}->children();
+			
+							foreach($hidden_fields as $hidden_field)
+							{
+								$hidden_inputs .= '<input type="hidden" name="'.$hidden_field->getName().'" value="'.$hidden_field.'" /> ';
+							}
+						}
+			
+						$html .= $hidden_inputs;
+			
+						$html .= '</form>';
+			
+						$html .= '<script type="text/javascript">
+			
+								function submitForm()
+								{
+									document.getElementById("secure_page_'.$timestamp.'").submit();
+								}
+							</script></body>';
+					}
+				}
+				else
+				{
+					$html = html_entity_decode($obj_XML->{'parsed-challenge'});
+				}
+			
+				$file_name = "secure_page_".$timestamp.".html";
+				file_put_contents($_SERVER['DOCUMENT_ROOT'] ."/_test/securepages/".$file_name, $html);
+				$url = "http://". $_SERVER['SERVER_NAME'] ."/_test/securepages/".$file_name;
+			}
 			
 		}
-	} else { $url = "http://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=".$msg; }
+	} else { $url = "http://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=".$code; }
 	
 	header("location: ". $url);
 	exit;

@@ -20,7 +20,7 @@
 							  <xsl:when test="@id = '11'">
 							  	<xsl:apply-templates select="." mode="cpm-wallet" />
 							  </xsl:when>
-							  <xsl:when test="@id = '16' or @id = '23'">
+							  <xsl:when test="@id = '16' or @id = '23' or @id = '28'">
 							  	<xsl:apply-templates select="." mode="other-wallet" />
 							  </xsl:when>
 						   </xsl:choose>
@@ -369,31 +369,59 @@
 
 <xsl:template match="item"  mode="other-wallet">
 
-	<div class="card wallet card-{@id}">
-		<div class="card-logo" id="card-{@id}">
-			<!-- <img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}.png" alt="" /> -->
-		</div>
-		<div class="card-name">
-			<div class="card-button"><xsl:value-of select="name" /></div>
-		</div>
-		<div class="card-arrow">&#10095;</div>
-	</div>
-	<form name="walletform_{@id}" id="walletform_{@id}" action="{func:constLink('/pay/sys/authorize.php') }" method="post">
-		<input type="hidden" name="cardtype" value="{@id}" />
-		<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
-		<input type="hidden" name="token" id="token" value=""/>
-		<input type="hidden" name="verifier" id="verifier" value="" />
-		<input type="hidden" name="checkouturl" id="checkouturl" value="" />
-	</form>
-						
-	<script type="text/javascript">
-		var id = <xsl:value-of select="@id"/>;
+	<xsl:choose>
+		<xsl:when test="@id = '28'">
+			<div class="card wallet card-{@id}">
+				<div class="card-logo" id="card-{@id}">
+					<form name="walletform_{@id}" id="walletform_{@id}" action="{url}" method="post">
+						<script type="text/javascript">
+							var id = <xsl:value-of select="@id"/>;
+							jQuery("#walletform_"+id).html('<xsl:value-of select="hiddenfields"/>');
+						</script>
+						<img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}.gif" alt="" onclick="submitForm();"/>
+					</form>
+					<script type="text/javascript">
+						var id = <xsl:value-of select="@id"/>;
+						function submitForm()
+						{
+							document.getElementById("walletform_"+id).submit();
+						}
+					</script>
+				</div>
+				<div class="card-name">
+					<div class="card-button"><xsl:value-of select="name" /></div>
+				</div>
+				<div class="card-arrow">&#10095;</div>
+			</div>
+		</xsl:when>
+		<xsl:otherwise>
+			<div class="card wallet card-{@id}">
+				<div class="card-logo" id="card-{@id}">
+					<!-- <img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}.png" alt="" /> -->
+				</div>
+				<div class="card-name">
+					<div class="card-button"><xsl:value-of select="name" /></div>
+				</div>
+				<div class="card-arrow">&#10095;</div>
+			</div>
 		
-		jQuery("head").append("<xsl:value-of select="head"/>");
-						
-		jQuery("#card-"+id).html('<xsl:value-of select="body"/>');
-	</script>
-
+			<form name="walletform_{@id}" id="walletform_{@id}" action="{func:constLink('/pay/sys/authorize.php') }" method="post">
+				<input type="hidden" name="cardtype" value="{@id}" />
+				<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
+				<input type="hidden" name="token" id="token" value=""/>
+				<input type="hidden" name="verifier" id="verifier" value="" />
+				<input type="hidden" name="checkouturl" id="checkouturl" value="" />
+			</form>
+								
+			<script type="text/javascript">
+				var id = <xsl:value-of select="@id"/>;
+				
+				jQuery("head").append("<xsl:value-of select="head"/>");
+								
+				jQuery("#card-"+id).html('<xsl:value-of select="body"/>');
+			</script>
+		  </xsl:otherwise>
+	</xsl:choose>
 </xsl:template>
 
 <xsl:template match="item"  mode="cpm-wallet">
@@ -448,7 +476,7 @@
 							<input type="hidden" name="storedcard" value="true" />
 							
 							<label for="cvv"><xsl:value-of select="/root/labels/cvv" /></label>
-							<input type="tel" name="cvv" class="cc-cvv" autocomplete="off" maxlength="4" required="required" placeholder="CVV" />
+							<input type="tel" name="cvv" autocomplete="off" maxlength="4" required="required" placeholder="CVV" />
 							<label for="password"><xsl:value-of select="/root/labels/password" /></label>
 							<input type="password" name="pwd" value="" required="required" />
 							
