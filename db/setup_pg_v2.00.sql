@@ -16,3 +16,13 @@ INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 30, id FROM Sys
 
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (30, 24);
 /* ========== Global Configuration for MobilePay Online- Payment Method : END========== */
+
+/* ============= Configure / Update PayFort accounts per environment (UAT/SIT/DEV/POC) =============== */
+-- UAT
+Update Client.merchantaccount_tbl SET passwd = 'thE78UJRWmnGyxPSQGAT' WHERE username = 'CTjbJcSI' AND pspid = 23;
+-- SIT
+Update Client.merchantaccount_tbl SET passwd = 'DhZyZO6VP6A1z325jphn' WHERE username = 'CTjbJcSI' AND pspid = 23;
+-- DEV PUNE
+Update Client.merchantaccount_tbl SET passwd = 'BMMVFHwUGyfjDZk2PzMc' WHERE username = 'CTjbJcSI' AND pspid = 23;
+-- POC
+Update Client.merchantaccount_tbl SET passwd = 'rYBDTQunZRTgG2cVmMJZ' WHERE username = 'CTjbJcSI' AND pspid = 23;
