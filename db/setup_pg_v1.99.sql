@@ -276,7 +276,8 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10000
 
 /* ========== Global Configuration for PayPal ========== */
 INSERT INTO System.PSP_Tbl (id, name) VALUES (24, 'PayPal');
-INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (103, 24, 'GBP');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) SELECT countryid, 24, name FROM System.PSPCurrency_Tbl WHERE pspid = 4;
+
 
 INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (28, 'PayPal', 23, -1, -1, -1);
 INSERT INTO System.CardPrefix_Tbl (cardid, min, "max") VALUES (28, 0, 0);
