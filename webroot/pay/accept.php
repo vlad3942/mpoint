@@ -51,7 +51,7 @@ else
 	
 		$xml .= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML();
 	
-		$xml .= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']);
+		//$xml .= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']);
 	
 		$xml .= $obj_mPoint->getmPointLogoInfo();
 	
@@ -76,6 +76,8 @@ else
 		}
 	
 		$xml .= $obj_mPoint->getMessages("Accept");
+		$xml .= '<transactionstatus>'.$_REQUEST['transactionStatus'].'</transactionstatus>';
+		$xml .= '<transactionid>'.$_REQUEST['mpoint-id'].'</transactionid>';
 	$xml .= '</root>';
 	
 	file_put_contents(sLOG_PATH ."/debug_accept". date("Y-m-d") .".log", $xml);
