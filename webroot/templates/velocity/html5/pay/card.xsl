@@ -47,7 +47,7 @@
 			{
 				$('body').addClass('loading');
 			});
-
+			
 			// Enable wallet button
 			$('.card.wallet').on('click', function(event) {
 				$('.card-logo', this).find('img').first().click();
@@ -68,12 +68,14 @@
 					
 					$('.card').each(function(i)
 					{
+					
 						$(this).delay(50*i).animate({
 							right: '-=1000',
 							opacity: 0
 						}, 400, 'easeOutCubic', function()
 						{
 							$('.card').hide();
+							$('.paypal-card').hide();
 							if(event.target.className === 'delete-card-icon')
 							{
 								$this.addClass('delete-selected');
@@ -110,6 +112,7 @@
 						opacity: 1
 					}, 0, 'easeOutCubic', function() {
 						$('.card').show();
+						$('.paypal-card').show();
 						if($(this).hasClass('stored'))
 						{
 							$(this).removeClass('selected');
@@ -128,23 +131,37 @@
 			// Toggle card name and password fields
 			$('.checkbox input[name="store-card"]').change(function()
 			{
+				var paymentClass = $(this).closest('form').parent().prop('class');
+				
+				if(paymentClass.indexOf(" ") > 0)
+				{
+					paymentClass = "div."+paymentClass.split(" ")[0];
+				}
+				else
+				{
+					paymentClass = "div."+paymentClass;
+				}
+				
 				if(this.checked)
 				{
-					$('.payment-form .save-card').addClass('active');
 					
-					if($('#new-password').length > 0)
+					$(paymentClass+' .save-card').addClass('active');
+					
+					if($(paymentClass+' .save-card #new-password').length > 0)
 					{
-						$("#new-password").attr("required", "required");
-						$("#repeat-password").attr("required", "required");
+						$(paymentClass+' .save-card #cardname').attr("required", "required");
+						$(paymentClass+' .save-card #new-password').attr("required", "required");
+						$(paymentClass+' .save-card #repeat-password').attr("required", "required");
 					}
 					
  				} else {
- 					$('.payment-form .save-card').removeClass('active');
+ 					$(paymentClass+' .save-card').removeClass('active');
 
-					if($('#new-password').length > 0)
+					if($(paymentClass+' .save-card #new-password').length > 0)
 					{
-						$("#new-password").removeAttr("required");
-						$("#repeat-password").removeAttr("required");
+						$(paymentClass+' .save-card #cardname').removeAttr("required");
+						$(paymentClass+' .save-card #new-password').removeAttr("required");
+						$(paymentClass+' .save-card #repeat-password').removeAttr("required");
 					}
 				}
 			});
@@ -363,6 +380,12 @@
 					$('body').addClass('loading');
 				}
 			});
+			
+			$('#walletform_28').submit(function (e) 
+			{
+				// Display loading screen
+				$('body').addClass('loading');
+			});
 		});
 	</script>
 </xsl:template>
@@ -371,27 +394,67 @@
 
 	<xsl:choose>
 		<xsl:when test="@id = '28'">
-			<div class="card wallet card-{@id}">
-				<div class="card-logo" id="card-{@id}">
-					<form name="walletform_{@id}" id="walletform_{@id}" action="{url}" method="post">
-						<script type="text/javascript">
-							var id = <xsl:value-of select="@id"/>;
-							jQuery("#walletform_"+id).html('<xsl:value-of select="hiddenfields"/>');
-						</script>
-						<img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}.gif" alt="" onclick="submitForm();"/>
+			<div class="paypal-card wallet card-{@id}">
+				<div class="payment-paypal-form payment-form">
+					<form action="{func:constLink('/pay/sys/paypal.php') }" method="POST" name="walletform_{@id}" id="walletform_{@id}">
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" name="store-card" />
+								<xsl:value-of select="/root/labels/savecard" />
+							</label>
+						</div>
+						
+						<xsl:choose>
+							<xsl:when test="/root/cards/@accountid > 0">
+								<div class="save-card">
+									<label for="cardname"><xsl:value-of select="/root/labels/name" /></label>
+									<input type="text" name="cardname" id="cardname" placeholder="{/root/labels/name}" />
+								</div>
+							</xsl:when>
+							<xsl:otherwise>
+								<div class="save-card">
+									<label for="cardname"><xsl:value-of select="/root/labels/name" /></label>
+									<input type="text" name="cardname" id="cardname" placeholder="{/root/labels/name}" />
+									<label for="new-password"><xsl:value-of select="/root/labels/password" /></label>
+									<input type="password" class="new-password" name="new-password" id="new-password" maxlength="20" placeholder="{/root/labels/new-password}" title="new-password"/>
+									<input type="password" class="repeat-password" name="repeat-password" id="repeat-password" maxlength="20" placeholder="{/root/labels/repeat-password}" title="repeat-password" />
+								</div>
+							</xsl:otherwise>
+						</xsl:choose>
+						<input type="hidden" name="transactionid" value="{/root/transaction/@id}" /> 
+						<input type="hidden" name="cardtype" value="{@id}" /> 
+						
+						<div class="card wallet card-{@id}">
+							<div id="card-{@id}" class="card-logo">
+								<!-- <img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}.gif" alt="" onclick="submitForm();" class="paypal-image"/> -->
+								<input type="submit" id="paypal" name="paypal" alt="paypal" value="" />
+							</div>
+							<div class="card-name">
+								<div class="card-button"><xsl:value-of select="name" /></div>
+							</div>
+							<div class="card-arrow">&#10095;</div>
+						</div>
 					</form>
 					<script type="text/javascript">
 						var id = <xsl:value-of select="@id"/>;
-						function submitForm()
+						function submitForm(e)
 						{
-							document.getElementById("walletform_"+id).submit();
+							hasError = validateInput();
+				
+							if(hasError)
+							{
+								e.preventDefault();
+							}
+							else
+							{
+								// Display loading screen
+								$('body').addClass('loading');
+								
+								document.getElementById("walletform_"+id).submit();
+							}							
 						}
 					</script>
 				</div>
-				<div class="card-name">
-					<div class="card-button"><xsl:value-of select="name" /></div>
-				</div>
-				<div class="card-arrow">&#10095;</div>
 			</div>
 		</xsl:when>
 		<xsl:otherwise>

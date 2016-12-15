@@ -47,7 +47,7 @@ $xmlData .= '<labels>
 			<cardholdername>'.$_OBJ_TXT->_("Card Holder Name").'</cardholdername>
 		</labels>';
 
-$aWallets = array(Constants::iVISA_CHECKOUT_WALLET, Constants::iMASTER_PASS_WALLET, Constants::iPAYPAL_PAY_WALLET);
+$aWallets = array(Constants::iVISA_CHECKOUT_WALLET, Constants::iMASTER_PASS_WALLET);
 
 try
 {
@@ -61,6 +61,8 @@ try
 		
 		// Instantiate main mPoint object for handling the component's functionality
 		$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SESSION['obj_UA']);
+		
+		$messages = $obj_mPoint->getMessages("Select Card");
 			
 		$card_xml = $obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount() );
 		
@@ -200,11 +202,11 @@ $xml .= '<root>';
 
 $xml .= $xmlData;
 
-$xml .= $obj_mPoint->getMessages("Select Card");
+$xml .= $messages;
 
 $xml .= '</root>';
 
-//file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") .".log", $xml);
+file_put_contents(sLOG_PATH ."/debug_card_". date("Y-m-d") .".log", $xml);
 
 echo $xml;
 exit;
