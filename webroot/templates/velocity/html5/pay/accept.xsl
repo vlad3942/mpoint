@@ -6,17 +6,15 @@
 <xsl:template match="/root">
 
 <xsl:choose>
-         <xsl:when test="transactionstatus = 1">
- 
-			         <xsl:apply-templates select="." mode="success">
-			           		<xsl:with-param name="transactionidd" select="transactionid"/>
-			         </xsl:apply-templates>
+         <xsl:when test="transactionstatus = 0">
+					    <xsl:apply-templates select="." mode="fail">
+										<xsl:with-param name="transaction_id" select="transactionid"/>
+						</xsl:apply-templates>     
          </xsl:when>
 		 <xsl:otherwise>       	
-		
-		         <xsl:apply-templates select="." mode="fail">
-		            <xsl:with-param name="transactionfidd" select="transactionid"/>
-		        </xsl:apply-templates>
+					 <xsl:apply-templates select="." mode="success">
+			           		<xsl:with-param name="transaction_id" select="transactionid"/>
+			         </xsl:apply-templates>
 		 </xsl:otherwise>
        </xsl:choose>
 
@@ -120,7 +118,7 @@
  
  <xsl:template match="root" mode="success">
  
- <xsl:param name="transactionidd" />
+ <xsl:param name="transaction_id" />
   		  <link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet"/>
   <link href="/css/bootstrap/styles.css" rel="stylesheet"/>
 
@@ -155,7 +153,7 @@
 
 <xsl:template match="root" mode="fail">
  
- <xsl:param name="transactionfidd" />
+ <xsl:param name="transaction_id" />
  		  <link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet"/>
   <link href="/css/bootstrap/styles.css" rel="stylesheet"/>
 
