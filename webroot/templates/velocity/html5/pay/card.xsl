@@ -556,33 +556,33 @@
 	</div>
 </xsl:template>
 <xsl:template match="item"  mode="sadad">
-	<div class="stored-cards-wrapper">
-		<div class="card stored card-{type/@id}">
-			<div class="card-logo">
-				<div class="icon" style="background-image: url({/root/system/protocol}://{/root/system/host}/img/card_payment.png)" />
-			</div>
-			<div class="card-name">
-				<div class="card-button"><xsl:value-of select="/root/labels/paymentcard" /></div>
-			</div>
-			<div class="payment-form">
-				<form class="sadad-form" action="{func:constLink('/pay/sys/sadad.php') }" method="post" autocomplete="on">
-					<input type="hidden" name="pspid" value="{@pspid}" />
-					<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
-					<label for="cardnumber"><xsl:value-of select="/root/labels/sadad_payment_id" /></label>
-					<div class="cardnumber">
-						<input type="tel" name="sadad_payment_id" maxlength="23" required="required" placeholder="SADAD Payment Id" />
-					</div>
-					<input type="submit" value="{/root/labels/button}" />
-				</form>
-			</div>	
+	<div class="card card-{@id}">
+		<div class="card-logo" id="card-{@id}">
+			<!-- <img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}.png" alt="" /> -->
+			<div class="icon card-{type/@id} hover sadad-card" style="background-image: url({/root/system/protocol}://{/root/system/host}/img/card_31.png)" />
 		</div>
+		<div class="card-name">
+			<div class="card-button sadad-card-button"><xsl:value-of select="name" /></div>
+		</div>
+		<div class="card-arrow sadad-card-arrow">&#10095;</div>
+	</div>
+	<div class="payment-form">
+		<form class="card-form" action="{func:constLink('/pay/sys/sadad.php') }" method="post" autocomplete="on">
+			<input type="hidden" name="pspid" value="{@pspid}" />
+			<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
+			<label for="cardnumber"><xsl:value-of select="/root/labels/sadad_payment_id" /></label>
+			<div class="cardnumber">
+				<input type="tel" name="sadad_payment_id" maxlength="23" required="required" placeholder="SADAD Payment Id" />
+			</div>
+			<input type="submit" value="{/root/labels/button}" />
+		</form>
 	</div>
 	
 	<script type="text/javascript">
 		jQuery(function($)
 		{
 			// Prevent form submission if input does not validate
-			$('form.sadad-form').submit(function(e)
+			$('form.card-form').submit(function(e)
 			{
 				// Display loading screen
 				$('body').addClass('loading');
