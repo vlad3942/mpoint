@@ -48,7 +48,7 @@ $_SERVER['PHP_AUTH_PW'] = "Ghdy4_ah1G";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<initialize-payment client-id="10019" account="100026">';
+$HTTP_RAW_POST_DATA .= '<payment-method-inquiry client-id="10019" account="100026">';
 $HTTP_RAW_POST_DATA .= '<transaction order-no="904-70158922">';
 $HTTP_RAW_POST_DATA .= '<amount country-id="100">2400</amount>';
 $HTTP_RAW_POST_DATA .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
@@ -59,39 +59,39 @@ $HTTP_RAW_POST_DATA .= '<mobile country-id="100" operator-id="10000">28882861</m
 $HTTP_RAW_POST_DATA .= '<email>jona@oismail.com</email>';
 $HTTP_RAW_POST_DATA .= '<device-id>4615F4E94A9749D7B7BB9654EAC00ED314212383</device-id>';
 $HTTP_RAW_POST_DATA .= '</client-info>';
-$HTTP_RAW_POST_DATA .= '</initialize-payment>';
+$HTTP_RAW_POST_DATA .= '</payment-method-inquiry>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
-	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint_updation.xsd") === true && count($obj_DOM->{'initialize-payment'}) > 0)
+	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_DOM->{'payment-method-inquiry'}) > 0)
 	{
 		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 
-		for ($i=0; $i<count($obj_DOM->{'initialize-payment'}); $i++)
+		for ($i=0; $i<count($obj_DOM->{'payment-method-inquiry'}); $i++)
 		{
 			// Set Global Defaults
-		if (empty($obj_DOM->{'initialize-payment'}[$i]["account"]) === true || intval($obj_DOM->{'initialize-payment'}[$i]["account"]) < 1) { $obj_DOM->{'initialize-payment'}[$i]["account"] = -1; }
+		if (empty($obj_DOM->{'payment-method-inquiry'}[$i]["account"]) === true || intval($obj_DOM->{'payment-method-inquiry'}[$i]["account"]) < 1) { $obj_DOM->{'payment-method-inquiry'}[$i]["account"] = -1; }
 
 			// Validate basic information
-			$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'initialize-payment'}[$i]["account"]);
+			$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'payment-method-inquiry'}[$i]["client-id"], (integer) $obj_DOM->{'payment-method-inquiry'}[$i]["account"]);
 			
 			if ($code == 100)
 			{
 				
-				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'initialize-payment'}[$i]["account"]);				
+				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'payment-method-inquiry'}[$i]["client-id"], (integer) $obj_DOM->{'payment-method-inquiry'}[$i]["account"]);				
 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])
 					&& $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true)
 				{
-					$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"]);
+					$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'payment-method-inquiry'}[$i]->transaction->amount["country-id"]);
 					if ( ($obj_CountryConfig instanceof CountryConfig) === false || $obj_CountryConfig->getID() < 1) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
 					
 					$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 					
-					$iValResult = $obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount);
-					if ($obj_ClientConfig->getMaxAmount() > 0 && $iValResult != 10) { $aMsgCds[$iValResult + 50] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount; }
+					$iValResult = $obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), (integer) $obj_DOM->{'payment-method-inquiry'}[$i]->transaction->amount);
+					if ($obj_ClientConfig->getMaxAmount() > 0 && $iValResult != 10) { $aMsgCds[$iValResult + 50] = (string) $obj_DOM->{'payment-method-inquiry'}[$i]->transaction->amount; }
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
 					{
@@ -103,7 +103,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							// Update Transaction State
 							$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, $obj_DOM->asXML() );
 	
-							$data['amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
+							$data['amount'] = (float) $obj_DOM->{'payment-method-inquiry'}[$i]->transaction->amount;
 							$data['country-config'] = $obj_CountryConfig;
 							$obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $data);
 							$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
@@ -186,7 +186,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$xml = '<status code="415">Invalid XML Document</status>';
 	}
 	// Error: Wrong operation
-	elseif (count($obj_DOM->{'initialize-payment'}) == 0)
+	elseif (count($obj_DOM->{'payment-method-inquiry'}) == 0)
 	{
 		header("HTTP/1.1 400 Bad Request");
 
