@@ -302,7 +302,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 		$b .= $this->_constTxnXML();
 		if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
-		if($card_type_id > 0) { $b .= "<card type-id='".$card_type_id."'></card>"; }
+		if($card_type_id > 0) { $b .= '<card type-id="'.$card_type_id.'"></card>'; }
 		$b .= '</initialize>';
 		$b .= '</root>';
 		
