@@ -278,3 +278,47 @@ body.loading .loader-screen {
     transform: translate(0, -60px) rotate(360deg) translate(60px, 0); } }
 
 /*# sourceMappingURL=style.css.map */
+
+/*PayPal Branding*/
+.paypal-card {
+	background: #fff none repeat scroll 0 0;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	margin-top: 15px;
+	padding: 30px;
+	position: relative;
+	transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1) 0s;
+}
+
+.payment-paypal-form {
+	display: block !important;
+	border: 0px !important;
+	padding: 0px !important;
+	margin: 0px !important;
+}
+
+.paypal-image {
+	max-height: 40px !important;
+}
+
+input#paypal {
+	background:
+		url('http://mpoint.local.cellpointmobile.com/img/card_28.gif');
+	background-repeat: no-repeat;
+	width: 100%;
+	margin: 0px;
+}
+
+/*SADAD Branding*/
+.sadad-card {
+	height:72px !important;
+	width:100% !important
+}
+
+.sadad-card-arrow {
+	margin-top: 4% !important;
+}
+
+.sadad-card-button {
+	margin-top: 8% !important;
+}
