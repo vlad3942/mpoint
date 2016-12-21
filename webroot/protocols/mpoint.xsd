@@ -856,17 +856,6 @@
     </xs:complexType>
 </xs:element>
 
-<xs:element name="tokenType">
-	<xs:complexType>
-		<xs:choice>
-			<xs:element name="apple-pay-token" type="xs:string"
-				minOccurs="0" maxOccurs="1" />
-			<xs:element name="token" type="xs:string" minOccurs="0"
-				maxOccurs="1" />
-		</xs:choice>
-	</xs:complexType>
-</xs:element>
-
 <xs:element name="orders">
     <xs:complexType>
         <xs:sequence>
