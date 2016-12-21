@@ -46,10 +46,10 @@
 			
 			input#paypal    
 			{
-				background:url('http://mpoint.local.cellpointmobile.com/img/card_28.gif');
 				background-repeat: no-repeat;
 				width:100%;
 				margin : 0px;
+				background-size: 100%;
 			}
 			
 		</style>

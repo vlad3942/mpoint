@@ -427,7 +427,7 @@
 						<div class="card wallet card-{@id}">
 							<div id="card-{@id}" class="card-logo">
 								<!-- <img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}.gif" alt="" onclick="submitForm();" class="paypal-image"/> -->
-								<input type="submit" id="paypal" name="paypal" alt="paypal" value="" />
+								<input type="submit" id="paypal" name="paypal" alt="paypal" value="" style="background-image:url({/root/system/protocol}://{/root/system/host}/img/card_28.gif);"/>
 							</div>
 							<div class="card-name">
 								<div class="card-button"><xsl:value-of select="name" /></div>
