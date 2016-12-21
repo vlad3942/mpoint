@@ -49,16 +49,9 @@ $_SERVER['PHP_AUTH_PW'] = "Ghdy4_ah1G";
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
 $HTTP_RAW_POST_DATA .= '<payment-method-inquiry client-id="10019" account="100026">';
-$HTTP_RAW_POST_DATA .= '<transaction order-no="904-70158922">';
+$HTTP_RAW_POST_DATA .= '<transaction">';
 $HTTP_RAW_POST_DATA .= '<amount country-id="100">2400</amount>';
-$HTTP_RAW_POST_DATA .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
-$HTTP_RAW_POST_DATA .= '<hmac>0489be0b8439cc6543787bd722f8d8352e23fc7e</hmac>';
 $HTTP_RAW_POST_DATA .= '</transaction>';
-$HTTP_RAW_POST_DATA .= '<client-info platform="iOS" version="5.1.1" language="da">';
-$HTTP_RAW_POST_DATA .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
-$HTTP_RAW_POST_DATA .= '<email>jona@oismail.com</email>';
-$HTTP_RAW_POST_DATA .= '<device-id>4615F4E94A9749D7B7BB9654EAC00ED314212383</device-id>';
-$HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</payment-method-inquiry>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
