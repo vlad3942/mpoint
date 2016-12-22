@@ -121,6 +121,7 @@
   <xsl:param name="cssurldata" />
  <xsl:param name="transaction_id" />
   		  <link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet"/>
+  		  <link href="/css/bootstrap/styles.css" rel="stylesheet"/>
  <link href="{$cssurldata}" rel="stylesheet"/>
 
 

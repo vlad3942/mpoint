@@ -32,12 +32,12 @@ if (array_key_exists("mpoint-id", $_REQUEST) === true
 //print_r($_SESSION['obj_TxnInfo']);exit;
 // User is re-entering the payment flow
 //echo "<pre>";print_r($_SESSION['obj_TxnInfo']);exit;
-if ($_SESSION['obj_Info']->getInfo("payment-completed") === true)
+/* if ($_SESSION['obj_Info']->getInfo("payment-completed") === true)
 {
 	header("Location: /pay/re-enter.php?". session_name() ."=". session_id() ."&mpoint-id=". $_SESSION['obj_TxnInfo']->getID() );
 }
 else
-{
+{ */
 	$obj_mPoint = new Accept($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_UA']);
 	
 	$_SESSION['obj_Info']->setInfo("payment-completed", true);
@@ -95,5 +95,5 @@ else
 	echo $xml;
 	exit;
 
-}
+//}
 ?>
