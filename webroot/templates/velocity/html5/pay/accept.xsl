@@ -6,24 +6,23 @@
 <xsl:template match="/root">
 
 <xsl:choose>
-         <xsl:when test="transactionstatus = 1">
- 
-			         <xsl:apply-templates select="." mode="success">
-			           		<xsl:with-param name="transactionidd" select="transactionid"/>
-			         </xsl:apply-templates>
+         <xsl:when test="transactionstatus = 0">
+					    <xsl:apply-templates select="." mode="fail">
+										<xsl:with-param name="transaction_id" select="transactionid"/>
+											<xsl:with-param name="cssurldata" select="cssurl"/>		
+						</xsl:apply-templates>     
          </xsl:when>
 		 <xsl:otherwise>       	
-		
-		         <xsl:apply-templates select="." mode="fail">
-		            <xsl:with-param name="transactionfidd" select="transactionid"/>
-		        </xsl:apply-templates>
+					 <xsl:apply-templates select="." mode="success">
+			           		<xsl:with-param name="transaction_id" select="transactionid"/>
+			           		<xsl:with-param name="cssurldata" select="cssurl"/>		
+			         </xsl:apply-templates>
 		 </xsl:otherwise>
        </xsl:choose>
+       
 
-<!--	<xsl:apply-templates select="." mode="success">
-     	<xsl:with-param name="transactionid" select="transactionid" />
-    </xsl:apply-templates>-->
 
+	
 
 
 	<!-- <div class="success-page-wrapper">
@@ -119,10 +118,10 @@
  --></xsl:template>
  
  <xsl:template match="root" mode="success">
- 
- <xsl:param name="transactionidd" />
+  <xsl:param name="cssurldata" />
+ <xsl:param name="transaction_id" />
   		  <link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet"/>
-  <link href="/css/bootstrap/styles.css" rel="stylesheet"/>
+ <link href="{$cssurldata}" rel="stylesheet"/>
 
 
 <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet"/>
@@ -141,7 +140,7 @@
 	            <div class="col-md-6 col-md-offset-3 text-center">
 	              <p class="success-icon"><span class="glyphicon glyphicon-ok"></span></p>
 	              <h3>Your payment has been processed successfuly!</h3>
-	              <p>Payment reference id: <xsl:value-of select="$transactionidd" /></p>
+	              <p>Payment reference id:<xsl:value-of select="$transaction_id" /></p>
 	              <a href="#" class="btn">Finish <span class="glyphicon glyphicon-ok"></span></a>
 	            </div>
 	          </div>
@@ -155,9 +154,9 @@
 
 <xsl:template match="root" mode="fail">
  
- <xsl:param name="transactionfidd" />
+ <xsl:param name="transaction_id" />
  		  <link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet"/>
-  <link href="/css/bootstrap/styles.css" rel="stylesheet"/>
+  <link href="{$cssurldata}" rel="stylesheet"/>
 
 
 <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet"/>
@@ -176,7 +175,7 @@
             <div class="col-md-6 col-md-offset-3 text-center">
               <p class="failure-icon"><span class="glyphicon glyphicon-remove"></span></p>
               <h3>Oops... Something went wrong!</h3>
-              <p>failed Payment ReferenceId <xsl:value-of select="$transactionfidd" /></p>
+              <p>failed Payment ReferenceId <xsl:value-of select="$transaction_id" /></p>
               <p>Please try with another payment method or different card.</p>
               <a href="#" class="btn"><span class="glyphicon glyphicon-arrow-left"></span> Try again</a>
             </div>

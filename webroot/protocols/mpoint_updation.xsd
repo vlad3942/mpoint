@@ -6,7 +6,7 @@
 <xs:element name="root">
 	<xs:complexType>
 		<xs:choice>
-		<xs:element name="payment-method-inquiry" minOccurs="1" maxOccurs="1">
+			<xs:element name="initialize-payment" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
 					<xs:all>
 						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
@@ -18,58 +18,6 @@
 							</xs:complexType>
 						</xs:element>
 						
-					</xs:all>
-					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
-					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="initialize-payment" minOccurs="1" maxOccurs="1">
-				<xs:complexType>
-					<xs:all>
-						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
-							<xs:complexType>
-								<xs:all>
-									<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
-									<xs:element ref="orders" minOccurs="0" maxOccurs="1" />
-									<xs:element name="points" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
-									<xs:element name="reward" minOccurs="0" maxOccurs="1">
-										<xs:complexType>
-											<xs:simpleContent>
-												<xs:extension base="xs:positiveInteger">
-													<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
-												</xs:extension>
-											</xs:simpleContent>
-										</xs:complexType>
-									</xs:element>
-									<xs:element name="callback-url" type="url" minOccurs="0" maxOccurs="1" />
-									<xs:element name="accept-url" type="url" minOccurs="0" maxOccurs="1">
-									<xs:annotation>
-						            	<xs:documentation>URL that is sent to the wallet API for redirecting the application after payment authorization.</xs:documentation>
-						            </xs:annotation>
-									</xs:element>
-									<xs:element name="auth-url" type="url" minOccurs="0" maxOccurs="1" />
-									<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
-									<xs:element name="custom-variables" minOccurs="0" maxOccurs="1">
-										<xs:complexType>
-											<xs:sequence minOccurs="1" maxOccurs="unbounded">
-												<xs:any processContents="lax" />
-											</xs:sequence>
-										</xs:complexType>
-									</xs:element>
-									<xs:element name="hmac" minOccurs="0" maxOccurs="1">
-										<xs:simpleType>
-											<xs:restriction base="xs:string">
-												<xs:minLength value="0" />
-												<xs:maxLength value="64" />
-											</xs:restriction>
-										</xs:simpleType>
-									</xs:element>
-								</xs:all>
-								<xs:attribute name="order-no" type="xs:string" use="optional" />
-								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="40" />
-							</xs:complexType>
-						</xs:element>
-						<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1" />
 					</xs:all>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
 					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
@@ -93,8 +41,7 @@
 														</xs:restriction>
 													</xs:simpleType>
 												</xs:element>
-												<xs:element name="apple-pay-token" type="xs:string"	minOccurs="0" maxOccurs="1" />
-												<xs:element name="token" type="xs:string" minOccurs="0" maxOccurs="1" />
+												<xs:element name="apple-pay-token" type="xs:string" minOccurs="0" maxOccurs="1" />
 												<xs:element name="visa-key" type="xs:string" minOccurs="0" maxOccurs="1" />
 												<xs:element name="visa-data" type="xs:string" minOccurs="0" maxOccurs="1" />
 											</xs:all>

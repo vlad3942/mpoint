@@ -2,8 +2,8 @@
     require_once("../../inc/include.php");
     
     header('Content-Type: text/html; charset="UTF-8"');
-    
-    $accounts = array();
+
+    /*$accounts = array();
     $urls = array();
     $id = "";
     $RSCountry = array();
@@ -32,7 +32,7 @@
 			if($obj_ClientConfig->getNotificationURL() !== "")
 				$urls["Notification"] = $obj_ClientConfig->getNotificationURL()."?".htmlentities("from=webpage&url=notification");
 			else
-				$urls["Notification"] = ""; */
+				$urls["Notification"] = ""; *//*
 			
 			if($obj_ClientConfig->getAcceptURL() !== "")
 				$urls["Accept"] = htmlentities($obj_ClientConfig->getAcceptURL());
@@ -47,7 +47,7 @@
 			/* if($obj_ClientConfig->getAuthenticationURL() !== "")
 			$urls['SSO'] = $obj_ClientConfig->getAuthenticationURL()."?".htmlentities("from=webpage&url=SSO");
 			else
-				$urls["SSO"] = ""; */
+				$urls["SSO"] = ""; *//*
 			
 			if($obj_ClientConfig->getCSSURL() !== "")
 			$urls['CSS'] = htmlentities($obj_ClientConfig->getCSSURL());
@@ -57,27 +57,27 @@
 			if($obj_ClientConfig->getLogoURL() !== "")
 			$urls['Logo'] = htmlentities($obj_ClientConfig->getLogoURL());
 			else
-				$urls["Logo"] = "";
+				$urls["Logo"] = "";*/
 			
 			/* if($obj_ClientConfig->getMESBURL() !== "")
 			$urls['PSP'] = htmlentities($obj_ClientConfig->getMESBURL());
 			else
-				$urls["PSP"] = ""; */
+				$urls["PSP"] = ""; *//*
 			
 			if($obj_ClientConfig->getIconURL() !== "")
 			$urls['Icon'] = htmlentities($obj_ClientConfig->getIconURL());
 			else
-				$urls["Icon"] = "";
+				$urls["Icon"] = "";*/
 			
 			/* if($obj_ClientConfig->getCustomerImportURL() !== "")
 			$urls['CustomerImportURL'] = htmlentities($obj_ClientConfig->getCustomerImportURL());
 			else
 				$urls["CustomerImportURL"] = ""; */
 			
-		}
-    }
+		/*}
+    }*/
    // $details=Array ("accounts" => 'html5', "country" => 100, "clientid" => 10007, "account" => 100007, "markup" => 'html5', "amount" => 100 ,"orderid" => 'UAT-77813110' ,"mobile" => 30206172 ,"operator" => 10002 ,"email" => 'abhishek@cellpointmobile.com' ,"language" => 'gb', "auth-token" => '',"customer-ref" => 1234412);
-	if(isset($_REQUEST['account']) && $_REQUEST['account'] > 0 && isset($_REQUEST['client']) && $_REQUEST['client'] > 0)
+	if(!empty($_REQUEST))
 	{
 		
 		function generateRandomString($length = 10) {
@@ -90,20 +90,77 @@
     return $randomString;
 }
 		
-	$accountidd=$_REQUEST['account'];
-	  $clientidd=$_REQUEST['client'];	
-	  $countryidd=$_REQUEST['country'];	
-	  $orderidd=generateRandomString();
-	  $operatoridd=$countryidd*100;
-	  $customeridd=generateRandomString();
-	  $mobileno="7385793006";
-		// $sql = "SELECT markup as abc FROM client.account_tbl where id='".$accountidd."'";
-		//		echo $sql ."\n";
-		// $getmarkup = $_OBJ_DB->getAllNames($sql);
-		// echo "<pre/>";
-		// print_r($getmarkup);
-		// print($getmarkup['ABC']);
-		// $markup=$getmarkup['ABC'];
+	$accountidd=$_REQUEST['accountsel'];
+	$clientidd=$_REQUEST['clientsel'];	
+	$countryidd=$_REQUEST['countrysel'];	
+	$orderidd='ORD'.generateRandomString();
+	$operatoridd=$countryidd*100;
+	$customeridd=generateRandomString();
+	$mobileno=$_REQUEST['mobile'];
+	$language=$_REQUEST['lan'];
+	$auth=$_REQUEST['AT'];	
+	$email=$_REQUEST['email'];
+	$flightno = $_REQUEST['FN'];
+    $from = $_REQUEST['from'];
+$fromh="";
+if(strlen($from)>2)
+{
+	for($i=0;$i<=2;$i++)
+	{
+		$fromh.=$from[$i];
+	}
+	
+}
+else
+{
+	$fromh.=$from;
+}
+		
+    $to = $_REQUEST['to'];
+	
+	$toh="";
+if(strlen($to)>2)
+{
+	for($i=0;$i<=2;$i++)
+	{
+		$toh.=$to[$i];
+	}
+	
+}
+else
+{
+	$toh.=$to;
+}
+    $ticket = $_REQUEST['ticket'];
+	if($ticket==0)
+	{
+		$ticket = "NA";
+	}
+    $excb = $_REQUEST['excb'];
+	if($excb==0)
+	{
+		$excb = "NA";
+	}
+    $taxes = $_REQUEST['taxes'];
+	if($taxes==0)
+	{
+		$taxes = "NA";
+	}
+    $fuel = $_REQUEST['fuel'];
+	if($fuel==0)
+	{
+		$fuel = "NA";
+	}
+    $premium = $_REQUEST['premium'];
+	if($premium==0)
+	{
+		$premium = "NA";
+	}
+    $total = $_REQUEST['total'];
+	if($total==0)
+	{
+		$total = "NA";
+	}
 		
 	}
 ?>
@@ -162,17 +219,23 @@
 	<td><?php echo "<input name=\"operator\" id=\"operator\" value='".$operatoridd."' type=\"hidden\" /></td>"; ?></td>
 </tr>
 <tr>
-	<td><input name="email" value="abhishek@cellpointmobile.com" type="hidden" /></td>
+	<td><?php echo "<input name=\"email\" id=\"email\" value='".$email."' type=\"hidden\" /></td>"; ?></td>
 </tr>
 
 <tr>
-	<td><input name="language" value="gb" type="hidden" /></td>
+	<td><?php echo "<input name=\"language\" id=\"language\" value='".$language."' type=\"hidden\" /></td>"; ?></td>
 </tr>
 <tr>
-	<td><input name="auth-token" value="" type="hidden" /></td>
+	<td><?php echo "<input name=\"auth-token\" id=\"auth-token\" value='".$auth."' type=\"hidden\" /></td>"; ?></td>
 </tr>
 <tr>
 	<td><?php echo "<input name=\"customer-ref\" id=\"customer-ref\" value='".$customeridd."' type=\"hidden\" /></td>"; ?></td>
+</tr>
+<tr>
+	<td><?php echo "<input name=\"accounts\" id=\"accounts\" value=\"html5\" type=\"hidden\" /></td>"; ?></td>
+</tr>
+<tr>
+	<td><?php echo "<input name=\"markup\" id=\"markup\" value=\"html5\" type=\"hidden\" /></td>"; ?></td>
 </tr>
 <tr>
 	
@@ -196,12 +259,12 @@
                     <img src="img/airplane-white.png" class="depart-img" alt="Departure flight">
                     <div class="col-md-1">
                      
-                      <h4>LON-141292</h4>
+                      <h4><?php echo $flightno;?></h4>
                     </div>
 					<div class="col-md-4 text-right">
 					
-                      <h1>LON</h1>
-                      <p>London</p>
+                      <h1 class="text-uppercase"><?php echo $fromh;?></h1>
+                      <p><?php echo $from;?></p>
                       <hr>
                       <h3>03:00</h3>
                       <p>Mon, 19 December 2016</p>
@@ -210,8 +273,8 @@
                       &nbsp;
                     </div>
                     <div class="col-md-4 text-left">
-                      <h1>DXB</h1>
-                      <p>Dubai</p>
+                      <h1 class="text-uppercase"><?php echo $toh;?></h1>
+                      <p><?php echo $to; ?></p>
                       <hr>
                       <h3>04:40</h3>
                       <p>Mon, 19 December 2016</p>
@@ -236,7 +299,7 @@
                       <p>Total</p>
                     </div>
                     <div class="col-md-6 text-right">
-                      <h2 class="blue">32,000 USD</h2>
+                      <h2 class="blue"><?php echo $total;?> USD</h2>
                     </div>
                   </div>
                 </div>
@@ -250,27 +313,28 @@
                   <tbody> 
                     <tr> 
                       <th scope="row">Ticket</th>
-                      <td>29,040</td>
+                      <td><?php echo $ticket;?></td>
                     </tr>
                     <tr> 
                       <th scope="row">Excess Baggage</th>
-                      <td>2,000</td>
+                      <td><?php echo $excb;?></td>
                     </tr>
                     <tr> 
                       <th scope="row">Taxes</th>
-                      <td>4,500</td> 
+                      <td><?php echo $taxes;?></td> 
                     </tr> 
                     <tr> 
                       <th scope="row">Fuel surcharge</th> 
-                      <td>3,460</td> 
+                      <td><?php echo $fuel;?></td> 
                     </tr>
                     <tr> 
                       <th scope="row">Premium Seat</th> 
-                      <td>NA</td> 
+                      <td><?php echo $premium;?></td> 
                     </tr>
                     <tr class="active"> 
                       <th scope="row">Total (in USD)</th> 
-                      <td> 38,000 <input type="hidden" name="amount" value="38,000" /></td> 
+                      <td> <?php echo $total; echo "<input type=\"hidden\" name=\"amount\" value='".$total."' />";?>
+					  </td> 
                     </tr>
                   </tbody>
                 </table>
@@ -296,6 +360,8 @@
       <script src="js/bootstrap.min.js"></script>
       <!-- <script src="js/custom.js"></script> -->
       <script src="js/validate.js"></script>
+	  
+	 
     </body>
     </html>
 

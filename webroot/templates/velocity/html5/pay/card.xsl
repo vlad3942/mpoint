@@ -431,7 +431,7 @@
 						<div class="card wallet card-{@id}">
 							<div id="card-{@id}" class="card-logo">
 								<!-- <img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}.gif" alt="" onclick="submitForm();" class="paypal-image"/> -->
-								<input type="submit" id="paypal" name="paypal" alt="paypal" value="" />
+								<input type="submit" id="paypal" name="paypal" alt="paypal" value="" style="background-image:url({/root/system/protocol}://{/root/system/host}/img/card_28.gif);"/>
 							</div>
 							<div class="card-name">
 								<div class="card-button"><xsl:value-of select="name" /></div>
@@ -542,8 +542,12 @@
 							<input type="hidden" id="cardid" name="cardid" value="{@id}" />
 							<input type="hidden" name="storedcard" value="true" />
 							
-							<label for="cvv"><xsl:value-of select="/root/labels/cvv" /></label>
-							<input type="tel" name="cvv" autocomplete="off" maxlength="4" required="required" placeholder="CVV" />
+							
+							<xsl:if test="@type-id != 28">
+								<label for="cvv"><xsl:value-of select="/root/labels/cvv" /></label>
+								<input type="tel" name="cvv" autocomplete="off" maxlength="4" required="required" placeholder="CVV" />
+							</xsl:if>
+							
 							<label for="password"><xsl:value-of select="/root/labels/password" /></label>
 							<input type="password" name="pwd" value="" required="required" />
 							
