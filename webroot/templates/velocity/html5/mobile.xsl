@@ -19,40 +19,6 @@
 		<link href="{/root/transaction/css-url}" type="text/css" rel="stylesheet" />
 		<script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
-		<style type="text/css">
-		
-			.paypal-card
-			{
-				background: #fff none repeat scroll 0 0;
-			    border: 1px solid #ddd;
-			    border-radius: 5px;
-			    margin-top: 15px;
-			    padding: 30px;
-			    position: relative;
-			    transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1) 0s;
-			}
-			.payment-paypal-form
-			{
-				display: block !important;
-				border : 0px !important;
-				padding : 0px !important;
-				margin : 0px !important;
-			}
-			
-			.paypal-image
-			{
-				max-height: 40px !important;
-			}
-			
-			input#paypal    
-			{
-				background-repeat: no-repeat;
-				width:100%;
-				margin : 0px;
-				background-size: 100%;
-			}
-			
-		</style>
 		<script>
 			(function(i, s, o, g, r, a, m)
 			{
