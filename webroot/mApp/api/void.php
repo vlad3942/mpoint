@@ -161,7 +161,9 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 								if (count($aMsgCds) == 0)
 								{
 									$obj_TxnInfo = TxnInfo::produceInfo($transactionID, $_OBJ_DB);
-										
+								
+									
+									
 							if (array_key_exists("HTTP_X_AUTH_TOKEN", $_SERVER) === true)
 							{
 								$obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
@@ -190,11 +192,14 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 										{	
 											try
 											{
+											
 												$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 												$obj_mPoint = new Refund($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 
 												// Refund operation succeeded
 												$code = $obj_mPoint->refund($amount);
+												
+											
 												if ($code == 1000 || $code == 1001)
 												{
 													header("HTTP/1.0 200 OK");
