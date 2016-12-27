@@ -26,6 +26,8 @@
 					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
 				</xs:complexType>
 			</xs:element>
+			
+			
 			<xs:element name="capture" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
 					<xs:all>
