@@ -90,7 +90,6 @@ $HTTP_RAW_POST_DATA .= '</root>';
 $xml = '';
 
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
-
 for ($i=0; $i<count($obj_DOM->void); $i++)
 	{
 					
@@ -124,8 +123,7 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 						/* ========== INPUT VALIDATION END ========== */
 						
 						if (count($aMsgCodes) == 0 )
-						{		 
-							
+						{	
 							$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $clientID);
 										
 							set_time_limit(120);
@@ -163,7 +161,25 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 								if (count($aMsgCds) == 0)
 								{
 									$obj_TxnInfo = TxnInfo::produceInfo($transactionID, $_OBJ_DB);
+								
 									
+									
+							if (array_key_exists("HTTP_X_AUTH_TOKEN", $_SERVER) === true)
+							{
+								$obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
+								$obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML() );
+								if (strlen($obj_TxnInfo->getCustomerRef() ) > 0) { $obj_Customer["customer-ref"] = $obj_TxnInfo->getCustomerRef(); }
+								if (floatval($obj_TxnInfo->getMobile() ) > 0)
+								{
+									$obj_Customer->mobile = $obj_TxnInfo->getMobile();
+									$obj_Customer->mobile["country-id"] = intval($obj_TxnInfo->getOperator() / 100);
+									$obj_Customer->mobile["operator-id"] = $obj_TxnInfo->getOperator();
+								}
+								if (strlen($obj_TxnInfo->getEMail() ) > 0) { $obj_Customer->email = $obj_TxnInfo->getEMail(); }
+								$obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
+								$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($obj_TxnInfo->getAuthenticationURL() ), $obj_CustomerInfo, trim($_SERVER['HTTP_X_AUTH_TOKEN']) );
+							}
+							
 									/* ========== Input Validation Start ========== */
 									if ($obj_Validator->valPrice($obj_TxnInfo->getAmount(), $amount) != 10) { $aMsgCds[$obj_Validator->valPrice($obj_TxnInfo->getAmount(), $amount) + 50] = $amount; }
 									/* ========== Input Validation End ========== */
@@ -176,11 +192,14 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 										{	
 											try
 											{
+											
 												$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 												$obj_mPoint = new Refund($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 
 												// Refund operation succeeded
 												$code = $obj_mPoint->refund($amount);
+												
+											
 												if ($code == 1000 || $code == 1001)
 												{
 													header("HTTP/1.0 200 OK");
