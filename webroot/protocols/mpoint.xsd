@@ -926,6 +926,9 @@
 		                        	<xs:element name="image-url" type="url" minOccurs="1" maxOccurs="1"/>
 		                        </xs:all>
 		                        <xs:attribute name="sku" use="required" type="xs:string"/>
+		                        <xs:choice>
+		                          <xs:group ref="airline-data" />
+		                        </xs:choice>
 		                     </xs:complexType>
                         </xs:element>
                         <xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
@@ -938,6 +941,46 @@
         </xs:sequence>
     </xs:complexType>
 </xs:element>
+
+<xs:group name="airline-data">
+	<xs:sequence>
+		<xs:element name="flight-detail" type="flight-detail" minOccurs="1" maxOccurs="unbounded" />
+		<xs:element name="passenger-detail" type="passenger-detail" minOccurs="1" maxOccurs="unbounded" />
+	</xs:sequence>
+</xs:group>
+
+<xs:complexType name="flight-detail">
+ <xs:sequence>
+   <xs:element type="xs:string" name="service-class" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="departure-airport" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="arrival-airport" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="airline-code" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="departure-date" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="arrival-date" minOccurs="1" maxOccurs="1" />
+   <xs:element name="additional-data" type="additional-data" minOccurs="0" maxOccurs="1" />
+ </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="passenger-detail">
+ <xs:sequence>
+   <xs:element type="xs:string" name="first-name" minOccurs="1"  maxOccurs="1" />
+   <xs:element type="xs:string" name="last-name" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="type" minOccurs="1" maxOccurs="1" />
+   <xs:element name="additional-data" type="additional-data" minOccurs="0" maxOccurs="1" />
+ </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="additional-data">
+ <xs:sequence>
+   <xs:element type="param" name="param" minOccurs="0"  maxOccurs="unbounded" />
+ </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="param">
+ <xs:sequence>
+  <xs:attribute type="xs:string" name="name" use="required"/>
+ </xs:sequence>
+</xs:complexType>
 
 <xs:complexType name="psp-config">
 	<xs:sequence>
