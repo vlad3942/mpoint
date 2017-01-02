@@ -6,7 +6,7 @@
 <xs:element name="root">
 	<xs:complexType>
 		<xs:choice>
-		<xs:element name="payment-method-inquiry" minOccurs="1" maxOccurs="1">
+		<xs:element name="get-payment-methods" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
 					<xs:all>
 						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
