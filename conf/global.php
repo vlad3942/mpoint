@@ -467,6 +467,8 @@ $aHTTP_CONN_INFO["paypal"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["paypal"]["paths"]["initialize"] = "/mpoint/paypal/initialize";
 $aHTTP_CONN_INFO["paypal"]["paths"]["auth"] = "/mpoint/paypal/authorize-payment";
 //$aHTTP_CONN_INFO["paypal"]["paths"]["capture"] = "/mpoint/paypal/capture";
+$aHTTP_CONN_INFO["paypal"]["paths"]["refund"] = "/mpoint/paypal/refund";
+$aHTTP_CONN_INFO["paypal"]["paths"]["cancel"] = "/mpoint/paypal/cancel";
 
 
 /**
