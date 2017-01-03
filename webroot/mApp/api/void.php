@@ -62,11 +62,7 @@ require_once(sCLASS_PATH ."/ccavenue.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 
-// Require Business logic for General Administration of mPoint
-require_once(sCLASS_PATH ."admin.php");
 
-// Require Business logic for the mConsole Module
-require_once(sCLASS_PATH ."/mConsole.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 
@@ -108,9 +104,7 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 			{	
 				if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_DOM->{'void'}) > 0)
 				{
-					$code=10;
-					if ($code == mConsole::iAUTHORIZATION_SUCCESSFUL)
-					{	
+					
 						/* ========== INPUT VALIDATION START ========== */
 						$obj_Validate = new Validate();
 						$aMsgCodes = array();		
@@ -118,7 +112,7 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 						if ($account <= 0) { $account = -1; }		
 						$code = $obj_Validate->valBasic($_OBJ_DB, $clientID, $account);							
 						if ($code < 10) { $aMsgCodes[$clientID][] = new BasicConfig($code + 10, "Validation of Client : ". $clientID ." failed"); }
-						elseif ($code < 20) { $aMsgCodes[$clientID][] = new BasicConfig($code + 10, "Validation of Account : ". $accountSSSSSSSSSSSSS ." failed"); }						
+						elseif ($code < 20) { $aMsgCodes[$clientID][] = new BasicConfig($code + 10, "Validation of Account : ". $account ." failed"); }						
 						
 						/* ========== INPUT VALIDATION END ========== */
 						
@@ -203,7 +197,7 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 												if ($code == 1000 || $code == 1001)
 												{
 													header("HTTP/1.0 200 OK");
-													$xml .= '<status code="1000"/>';
+													$xml .= '<status code="1000"></status>';
 													$aMsgCds[$code] = "Success";
 													// Perform callback to Client
 													if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
@@ -325,7 +319,7 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 							}			
 						}
 					
-					}		
+							
 					
 				}
 				// Error: Invalid XML Document
