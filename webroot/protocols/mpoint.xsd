@@ -6,62 +6,6 @@
 <xs:element name="root">
 	<xs:complexType>
 		<xs:choice>
-		<xs:element name="get-payment-methods" minOccurs="1" maxOccurs="1">
-				<xs:complexType>
-					<xs:all>
-						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
-							<xs:complexType>
-								<xs:all>
-									<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
-								</xs:all>
-							
-							</xs:complexType>
-						</xs:element>
-						
-					</xs:all>
-					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
-					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
-				</xs:complexType>
-			</xs:element>
-			
-			
-			<xs:element name="capture" minOccurs="1" maxOccurs="1">
-				<xs:complexType>
-					<xs:all>
-						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
-							<xs:complexType>
-								<xs:all>
-									<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
-								</xs:all>
-							<xs:attribute name="id" type="xs:positiveInteger" use="required"/>
-							<xs:attribute name="order-no" use="optional"/>
-							</xs:complexType>
-						</xs:element>
-						
-					</xs:all>
-					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
-					<xs:attribute name="account" type="xs:positiveInteger" use="required" />
-				</xs:complexType>
-			</xs:element>
-			
-			<xs:element name="void" minOccurs="1" maxOccurs="1">
-				<xs:complexType>
-					<xs:all>
-						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
-							<xs:complexType>
-								<xs:all>
-									<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
-									
-								</xs:all>
-							<xs:attribute name="id" type="xs:positiveInteger" use="required"/>
-							<xs:attribute name="order-no" use="optional"/>
-							</xs:complexType>
-						</xs:element>
-					</xs:all>
-					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
-					<xs:attribute name="account" type="xs:positiveInteger" use="required" />
-				</xs:complexType>
-			</xs:element>
 			<xs:element name="initialize-payment" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
 					<xs:all>
@@ -756,6 +700,59 @@
 				</xs:sequence>
 			  </xs:complexType>
 			</xs:element>			
+			<xs:element name="get-payment-methods" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
+							<xs:complexType>
+								<xs:all>
+									<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
+								</xs:all>
+							
+							</xs:complexType>
+						</xs:element>
+						
+					</xs:all>
+					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
+					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="capture" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
+							<xs:complexType>
+								<xs:all>
+									<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
+								</xs:all>
+							<xs:attribute name="id" type="xs:positiveInteger" use="required"/>
+							<xs:attribute name="order-no" use="optional"/>
+							</xs:complexType>
+						</xs:element>
+						
+					</xs:all>
+					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
+					<xs:attribute name="account" type="xs:positiveInteger" use="required" />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="void" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
+							<xs:complexType>
+								<xs:all>
+									<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
+									
+								</xs:all>
+							<xs:attribute name="id" type="xs:positiveInteger" use="required"/>
+							<xs:attribute name="order-no" use="optional"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:all>
+					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
+					<xs:attribute name="account" type="xs:positiveInteger" use="required" />
+				</xs:complexType>
+			</xs:element>
 		</xs:choice>
 	</xs:complexType>
 </xs:element>
