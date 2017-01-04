@@ -862,7 +862,7 @@ class TxnInfo
 	 */
 	public function setOrderDetails(RDB $obj_DB, $aOrderData)
 	{
-		$aReturnArray = array();
+		
 		if( is_array($aOrderData) === true )
 		{
 			foreach ($aOrderData as $aOrderDataObj)
@@ -886,10 +886,130 @@ class TxnInfo
 				}
 				else 
 				{
-					$aReturnArray[] = $RD["ID"];
+					
+					$order_iD = $RS["ID"];
+					
 				}
 			}
+			
+			return $order_iD;
+		}
+	}
 	
+	/**
+	 * Function to insert new records in the Additional Data table that are send as part of the transaction cart details
+	 *
+	 * @param 	Array $additionalData	Data object with the Additional Data details
+	 *
+	 */
+	public function setAdditionalDetails(RDB $obj_DB, $aAdditionalData)
+	{
+		
+		$additional_id = "";
+		if( is_array($aAdditionalData) === true )
+		{
+			$sql = "SELECT Nextvalue('Log".sSCHEMA_POSTFIX.".additional_data_Tbl_id_seq') AS id FROM DUAL";
+				$RS = $obj_DB->getName($sql);
+				// Error: Unable to generate a new Additional Data ID
+				if (is_array($RS) === false) { throw new mPointException("Unable to generate new Additional Data ID", 1001); }
+					
+					$sql = "INSERT INTO log".sSCHEMA_POSTFIX.".additional_data_tbl(id, name, value, type)
+							VALUES(". $RS["ID"] .", '". $aAdditionalData["name"] ."', '". $aAdditionalData["value"] ."', '". $aAdditionalData["type"] ."')";
+
+				// Error: Unable to insert a new Additional Data record in the Additional Data Table
+				if (is_resource($obj_DB->query($sql) ) === false)
+				{
+					if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for Additional Data: ". $RS["ID"], 1002); }
+				}
+				else
+				{
+					$additional_id = $RS["ID"];
+				}
+			
+			return $additional_id;
+			
+		}
+	}
+	
+	/**
+	 * Function to insert new records in the Flight table that are send as part of the transaction cart details
+	 *
+	 * @param 	Array $flightData   	Data object with the flight details
+	 * @param 	Array $aAdditionalDatas   	Data object with the Additional data details
+	 *
+	 */
+	public function setFlightDetails(RDB $obj_DB, $aFlightData, $aAdditionalDatas)
+	{
+		
+		$aReturnArray = array();
+		if( is_array($aFlightData) === true )
+		{
+			foreach ($aFlightData as $aFlightDataObj)
+			{
+				$sql = "SELECT Nextvalue('Log".sSCHEMA_POSTFIX.".flight_Tbl_id_seq') AS id FROM DUAL";
+				$RS = $obj_DB->getName($sql);
+
+				$idd = $this->setAdditionalDetails($obj_DB, $aAdditionalDatas);
+
+				// Error: Unable to generate a new Flight ID
+				if (is_array($RS) === false) { throw new mPointException("Unable to generate new Flight ID", 1001); }
+	
+				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".flight_Tbl(id, service_class, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified,additional_data_ref)
+						VALUES('". $RS["ID"] ."','". $aFlightDataObj["service_class"] ."','". $aFlightDataObj["departure_airport"] ."','". $aFlightDataObj["arrival_airport"] ."','". $aFlightDataObj["airline_code"] ."','". $aFlightDataObj["order_id"] ."','". $aFlightDataObj["arrival_date"] ."', '". $aFlightDataObj["departure_date"] ."',now(),now(),".$idd.")";
+				
+				// Error: Unable to insert a new flight record in the Flight Table
+				if (is_resource($obj_DB->query($sql) ) === false)
+				{
+					if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for Flight: ". $RS["ID"], 1002); }
+				}
+				else
+				{
+					$aReturnArray[] = $RS["ID"];
+
+				}
+	
+			}
+			return $aReturnArray;
+		}
+	}
+	
+	/**
+	 * Function to insert new records in the passenger table that are send as part of the transaction cart details
+	 *
+	 * @param 	Array $passengerData   	Data object with the passenger details
+	 * @param 	Array $aAdditionalDatas   	Data object with the Additional data details
+	 *
+	 */
+	public function setPassengerDetails(RDB $obj_DB, $aPassengerData, $aAdditionalDatas)
+	{
+		$aReturnArray = array();
+		if( is_array($aPassengerData) === true )
+		{
+			foreach ($aPassengerData as $aPassengerDataObj)
+			{
+				$sql = "SELECT Nextvalue('Log".sSCHEMA_POSTFIX.".passenger_Tbl_id_seq') AS id FROM DUAL";
+				$RS = $obj_DB->getName($sql);
+				
+				$idd = $this->setAdditionalDetails($obj_DB, $aAdditionalDatas,$type);
+				
+				// Error: Unable to generate a new Passenger ID
+				if (is_array($RS) === false) { throw new mPointException("Unable to generate new Passenger ID", 1001); }
+
+				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".passenger_tbl(id, first_name, last_name, type, order_id, created, modified,additional_data_ref)
+						VALUES(". $RS["ID"] .", '". $aPassengerDataObj["first_name"] ."', '". $aPassengerDataObj["last_name"] ."','". $aPassengerDataObj["type"] ."', ". $aPassengerDataObj["order_id"] .", now(), now(), ".$idd.")";
+				
+				// Error: Unable to insert a new passenger record in the Passenger Table
+				if (is_resource($obj_DB->query($sql) ) === false)
+				{
+					if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for Passenger: ". $RS["ID"], 1002); }
+				}
+				else
+				{
+					$aReturnArray[] = $RS["ID"];
+	
+				}
+				
+			}
 			return $aReturnArray;
 		}
 	}
