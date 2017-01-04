@@ -96,13 +96,18 @@ $xml = '';
 try
 {
 	$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
-
+	$iAccountValidation = $obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iPAYMENT_ACCOUNT_VALIDATED);
 	// Intialise Text Translation Object
 	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 	
 	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]) );
 	$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 	$iStateID = (integer) $obj_XML->callback->status["code"];
+	
+	// If transaction is in Account Validated i.e 1998 state no action to be done
+	if($iAccountValidation != 1)
+	{
+	
 	// Save Ticket ID representing the End-User's stored Card Info
 	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_XML->callback->transaction->card->token) == 1)
 	{
@@ -249,12 +254,16 @@ try
 			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, "Payment Declined (2010)");
 		}
 	}
-	// Callback URL has been defined for Client
-	if ($obj_TxnInfo->getCallbackURL() != "")
-	{
-		$obj_mPoint->notifyClient($iStateID, array("transact"=>$id, "amount"=>$obj_XML->callback->transaction->amount, "card-id"=>$obj_XML->callback->transaction->card["type-id"]) );
-	}
-	$xml = '<status code="1000">Callback Success</status>';
+	
+  }
+  
+  // Callback URL has been defined for Client
+  if ($obj_TxnInfo->getCallbackURL() != "")
+  {
+  	$obj_mPoint->notifyClient($iStateID, array("transact"=>$id, "amount"=>$obj_XML->callback->transaction->amount, "card-id"=>$obj_XML->callback->transaction->card["type-id"]) );
+  }
+  
+ $xml = '<status code="1000">Callback Success</status>';
 }
 catch (TxnInfoException $e)
 {
