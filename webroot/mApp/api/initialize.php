@@ -187,8 +187,42 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$data['orders'][$j]['reward'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->reward;
 									$data['orders'][$j]['quantity'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->quantity;
 								}				
+								$order_id=$obj_TxnInfo->setOrderDetails($_OBJ_DB, $data['orders']); 
 								
-								$obj_TxnInfo->setOrderDetails($_OBJ_DB, $data['orders']); 
+								for ($j=0; $j<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}); $j++ )
+								{
+									for ($k=0; $k<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}); $k++ )
+									{
+									$data['flights'][$k]['service_class'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'service-class'};
+									$data['flights'][$k]['departure_airport'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'departure-airport'};
+									$data['flights'][$k]['arrival_airport'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'arrival-airport'};
+									$data['flights'][$k]['airline_code'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'airline-code'};
+									$data['flights'][$k]['arrival_date'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'arrival-date'};
+									$data['flights'][$k]['departure_date'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'departure-date'};
+									$data['flights'][$k]['order_id'] = $order_id;
+									$data['additional']['name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}->param['name'];
+									$data['additional']['value'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}->{'param'};
+									$data['additional']['type'] = (string) "Flight";
+									}
+									$obj_TxnInfo->setFlightDetails($_OBJ_DB, $data['flights'], $data['additional']);
+								}
+								
+								for ($j=0; $j<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}); $j++ )
+								{
+									for ($k=0; $k<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}); $k++ )
+									{
+										$data['passenger'][$k]['first_name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'first-name'};
+										$data['passenger'][$k]['last_name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'last-name'};
+										$data['passenger'][$k]['type'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'type'};
+										$data['passenger'][$k]['order_id'] = $order_id;
+										$data['additionalp']['name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'additional-data'}->param['name'];
+										$data['additionalp']['value'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'additional-data'}->{'param'};
+										$data['additionalp']['type'] = (string) "Passenger";
+									}
+									$obj_TxnInfo->setPassengerDetails($_OBJ_DB, $data['passenger'], $data['additionalp']);
+										
+								}
+								
 							}
 							
 							if (count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'custom-variables'}) == 1 && count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'custom-variables'}->children() ) > 0)

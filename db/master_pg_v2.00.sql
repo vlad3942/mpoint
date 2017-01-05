@@ -1,6 +1,7 @@
 -------------  Airline Data ----------------
 
 
+
 -- Type: log.additional_data_ref
 
 -- DROP TYPE log.additional_data_ref;
