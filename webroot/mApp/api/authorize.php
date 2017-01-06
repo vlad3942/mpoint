@@ -150,6 +150,9 @@ try
 						try
 						{
 							$obj_TxnInfo = TxnInfo::produceInfo( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction["id"], $_OBJ_DB);
+						
+							$obj_TxnInfo->produceOrderConfig($_OBJ_DB);
+							
 						}
 						catch (TxnInfoException $e) { $obj_TxnInfo = null; } // Transaction not found
 
@@ -179,8 +182,6 @@ try
 											
 										$obj_XML = simpledom_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig, true) );
 	
-			//							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"]);
-			//							if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
 										$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 										
 										if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0 && 
@@ -239,6 +240,7 @@ try
 											// Authentication succeeded
 											if ($code == 10 || ($code == 11 && $obj_ClientConfig->smsReceiptEnabled() === false) )
 											{
+												
 												if ($obj_TxnInfo->getMobile() > 0) { $obj_mPoint->saveMobile($obj_TxnInfo->getAccountID(), $obj_TxnInfo->getMobile(), true); }
 												switch ($iTypeID)
 												{
