@@ -208,7 +208,8 @@ class OrderInfo
 		while ($RS = $oDB->fetchName($res) )
 		{
 			$aConfigurations[] = self::produceConfig($oDB, $RS["ID"]);
-		}		
+		}	
+		
 		return $aConfigurations;		
 	}
 	
