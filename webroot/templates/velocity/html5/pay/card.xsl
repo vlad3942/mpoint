@@ -23,6 +23,9 @@
 							  <xsl:when test="@id = '16' or @id = '23' or @id = '28'">
 							  	<xsl:apply-templates select="." mode="other-wallet" />
 							  </xsl:when>
+							  <xsl:when test="@id = '31'">
+							  	<xsl:apply-templates select="." mode="sadad" />
+							  </xsl:when>
 						   </xsl:choose>
 						</xsl:for-each>
 						
@@ -254,6 +257,7 @@
 			<input type="submit" value="{/root/labels/button}" />
 		</form>
 	</div>
+
 	<script type="text/javascript">
 		var cards = [
 		<xsl:for-each select="/root/cards/item">
@@ -427,7 +431,7 @@
 						<div class="card wallet card-{@id}">
 							<div id="card-{@id}" class="card-logo">
 								<!-- <img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}.gif" alt="" onclick="submitForm();" class="paypal-image"/> -->
-								<input type="submit" id="paypal" name="paypal" alt="paypal" value="" />
+								<input type="submit" id="paypal" name="paypal" alt="paypal" value="" style="background-image:url({/root/system/protocol}://{/root/system/host}/img/card_28.gif);"/>
 							</div>
 							<div class="card-name">
 								<div class="card-button"><xsl:value-of select="name" /></div>
@@ -538,8 +542,12 @@
 							<input type="hidden" id="cardid" name="cardid" value="{@id}" />
 							<input type="hidden" name="storedcard" value="true" />
 							
-							<label for="cvv"><xsl:value-of select="/root/labels/cvv" /></label>
-							<input type="tel" name="cvv" autocomplete="off" maxlength="4" required="required" placeholder="CVV" />
+							
+							<xsl:if test="@type-id != 28">
+								<label for="cvv"><xsl:value-of select="/root/labels/cvv" /></label>
+								<input type="tel" name="cvv" autocomplete="off" maxlength="4" required="required" placeholder="CVV" />
+							</xsl:if>
+							
 							<label for="password"><xsl:value-of select="/root/labels/password" /></label>
 							<input type="password" name="pwd" value="" required="required" />
 							
@@ -550,5 +558,40 @@
 			</xsl:if>
 		</xsl:for-each>
 	</div>
+</xsl:template>
+<xsl:template match="item"  mode="sadad">
+	<div class="card card-{@id}">
+		<div class="card-logo" id="card-{@id}">
+			<!-- <img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}.png" alt="" /> -->
+			<div class="icon card-{type/@id} hover sadad-card" style="background-image: url({/root/system/protocol}://{/root/system/host}/img/card_31.png)" />
+		</div>
+		<div class="card-name">
+			<div class="card-button sadad-card-button"><xsl:value-of select="name" /></div>
+		</div>
+		<div class="card-arrow sadad-card-arrow">&#10095;</div>
+	</div>
+	<div class="payment-form">
+		<form class="card-form" action="{func:constLink('/pay/sys/sadad.php') }" method="post" autocomplete="on">
+			<input type="hidden" name="pspid" value="{@pspid}" />
+			<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
+			<label for="cardnumber"><xsl:value-of select="/root/labels/sadad_payment_id" /></label>
+			<div class="cardnumber">
+				<input type="tel" name="sadad_payment_id" maxlength="23" required="required" placeholder="SADAD Payment Id" />
+			</div>
+			<input type="submit" value="{/root/labels/button}" />
+		</form>
+	</div>
+	
+	<script type="text/javascript">
+		jQuery(function($)
+		{
+			// Prevent form submission if input does not validate
+			$('form.card-form').submit(function(e)
+			{
+				// Display loading screen
+				$('body').addClass('loading');
+			});
+		});
+	</script>
 </xsl:template>
 </xsl:stylesheet>
