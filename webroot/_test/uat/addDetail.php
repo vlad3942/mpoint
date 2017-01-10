@@ -12,7 +12,7 @@ $sqlcountry = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmo
 $RSCountry = $_OBJ_DB->getAllNames($sqlcountry);
 //print_r($RSCountry);
 $sqlclient = "SELECT id,concat_ws(' - ',id,name) as clientnm
-  FROM client.client_tbl where id!=10007 ORDER BY name";
+  FROM client.client_tbl ORDER BY name";
 
 $client = $_OBJ_DB->getAllNames($sqlclient);
 //print_r($client);
@@ -50,7 +50,7 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
   <div class="col-md-4">
   
     <select id="clientsel" name="clientsel" class="form-control input-md">
-    <option value="10007">10007 - WalletDK</option>
+    <option value="-1">Please Select</option>
 		<?php
 			if(empty($client) === false)
 			{
@@ -69,10 +69,10 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
   <label class="col-md-4 control-label" for="accountsel">Account Id</label>
   <div class="col-md-4">
     <select id="accountsel" name="accountsel" class="form-control input-md">
-      <option value="100007">100007 - Android</option>
+      <option value="-1">Please Select</option>
 		<?php
 		$sqlaccount = "SELECT id,concat_ws(' - ',id,name) as accnm 
-  FROM client.account_tbl where id!=100007 ORDER BY name ";
+  FROM client.account_tbl ORDER BY name ";
 			
 		$account = $_OBJ_DB->getAllNames($sqlaccount);
 			if(empty($account) === false)
@@ -92,7 +92,7 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
   <label class="col-md-4 control-label" for="countrysel">Country</label>
   <div class="col-md-4">
     <select id="countrysel" name="countrysel" class="form-control input-md">
-       <option value="100">Denmark</option>
+       <option value="0">Please Select</option>
 		<?php
 			if(empty($RSCountry) === false)
 			{
@@ -109,7 +109,7 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
 <div class="form-group">
   <label class="col-md-4 control-label" for="email">Email</label>  
   <div class="col-md-4">
-  <input id="email" name="email" type="text" placeholder="email" value="abs@in.com" class="form-control input-md" >
+  <input id="email" name="email" type="text" placeholder="email" class="form-control input-md" >
     
   </div>
 </div>
@@ -118,7 +118,7 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
 <div class="form-group">
   <label class="col-md-4 control-label" for="add1">Mobile</label>  
   <div class="col-md-4">
-  <input id="mobile" name="mobile" type="text" placeholder="" value="30206172" class="form-control input-md" >
+  <input id="mobile" name="mobile" type="text" placeholder="" class="form-control input-md" >
     
   </div>
 </div>
@@ -160,7 +160,7 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
 <div class="form-group">
   <label class="col-md-4 control-label" for="add1">From</label>  
   <div class="col-md-4">
-  <input id="from" name="from" type="text" placeholder="" value="London" class="form-control input-md" >
+  <input id="from" name="from" type="text" placeholder="" class="form-control input-md" >
     
   </div>
 </div>
@@ -169,7 +169,7 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
 <div class="form-group">
   <label class="col-md-4 control-label" for="add1">To</label>  
   <div class="col-md-4">
-  <input id="to" name="to" type="text" placeholder="" value="Miami" class="form-control input-md" >
+  <input id="to" name="to" type="text" placeholder="" class="form-control input-md" >
     
   </div>
 </div>
