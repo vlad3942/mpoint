@@ -111,9 +111,7 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 	{
 		if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_DOM->capture) > 0)
 		{
-			$code=10;
-			if ($code == mConsole::iAUTHORIZATION_SUCCESSFUL)
-			{
+			
 				/* ========== INPUT VALIDATION START ========== */
 				$obj_Validate = new Validate();
 				$aMsgCodes = array();
@@ -141,7 +139,7 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 						/* ========== Input Validation Start ========== */
 						$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 
-						if ($obj_Validator->valmPointID($_OBJ_DB, $transactionID, $obj_ClientConfig->getID() ) != 10) { $aMsgCds[$obj_Validator->valmPointID($_OBJ_DB, $transactionID, $obj_ClientConfig->getID() ) + 170] = $obj_DOM->capture[$i]->transaction["id"]; }
+					    if ($obj_Validator->valmPointID($_OBJ_DB, $transactionID, $obj_ClientConfig->getID() ) != 10) { $aMsgCds[$obj_Validator->valmPointID($_OBJ_DB, $transactionID, $obj_ClientConfig->getID() ) + 170] = $obj_DOM->capture[$i]->transaction["id"]; }
 						if ($obj_Validator->valOrderID($_OBJ_DB, $orderno, $transactionID) > 1 && $obj_Validator->valOrderID($_OBJ_DB, $orderno, $transactionID) < 10) { $aMsgCds[$obj_Validator->valOrderID($_OBJ_DB, $orderno, $transactionID) + 180] = $obj_DOM->capture[$i]->transaction["order-no"]; }
 						/* ========== Input Validation End ========== */
 
@@ -165,30 +163,30 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 								$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($obj_TxnInfo->getAuthenticationURL() ), $obj_CustomerInfo, trim($_SERVER['HTTP_X_AUTH_TOKEN']) );
 							}
 							/* ========== Input Validation Start ========== */
-							if ($obj_Validator->valPrice($obj_TxnInfo->getAmount(), $amount) != 10) { $aMsgCds[$obj_Validator->valPrice($obj_TxnInfo->getAmount(), $amount) + 50] = $obj_DOM->capture[$i]->transaction->amount; }
+							$code = $obj_Validator->valPrice($obj_TxnInfo->getAmount(), $amount) ;
+							if ($code != 10) 
+							{ 
+							  $aMsgCds[$code + 50] = $obj_DOM->capture[$i]->transaction->amount;
+							}
 							/* ========== Input Validation End ========== */
-
 							// Success: Input Valid
 							if (count($aMsgCds) == 0)
 							{
-								
-							
 								try
 								{
 									$obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
 									$obj_mPoint = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_PSP);
 									$code = $obj_mPoint->capture( (integer) $amount);
-
 									// Refresh transactioninfo object once the capture is performed
 									$obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(), $_OBJ_DB);
 
 									// Capture operation succeeded
-									if ($code >= 2000)
+									if ($code == 1000)
 									{
 										header("HTTP/1.0 200 OK");
 											
-										$aMsgCds[2000] = "Success";
-										$xml .= '<status code="2000" ></status>';
+										$aMsgCds[1000] = "Success";
+										$xml .= '<status code="1000" ></status>';
 										// Perform callback to Client
 										if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
 										{
@@ -306,10 +304,6 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 						$aMsgCds[Validate::valBasic($_OBJ_DB, $clientID, $account)+10] = "Client: ". $clientID .", Account: ". $account;
 					}
 
-
-						
-
-
 				}
 				else
 				{
@@ -323,10 +317,6 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 						}
 					}
 				}
-
-			}
-
-
 
 		}
 		elseif ( ($obj_DOM instanceof SimpleDOMElement) === false)
