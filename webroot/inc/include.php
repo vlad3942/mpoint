@@ -1,4 +1,5 @@
 <?php
+
 /* ========== Define System path Start ========== */
 // HTTP Request
 if(isset($_SERVER['DOCUMENT_ROOT']) === true && empty($_SERVER['DOCUMENT_ROOT']) === false)
@@ -109,6 +110,10 @@ require_once(sCLASS_PATH ."/pspconfig.php");
 require_once(sCLASS_PATH ."/txninfo.php");
 // Require data data class for Order/Cart Information
 require_once(sCLASS_PATH ."/order_info.php");
+// Require data data class for Flight Information
+require_once(sCLASS_PATH ."/flight_info.php");
+// Require data data class for Passenger Information
+require_once(sCLASS_PATH ."/passenger_info.php");
 // Require Business logic for the End-User Administration Component
 require_once(sCLASS_PATH ."/home.php");
 // Require PSP functionality interfaces
@@ -129,9 +134,9 @@ new RemoteReport(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["iemendo"]), iOU
 
 // Web Request
 if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_SERVER['PHP_SELF']) == true || eregi("/buy/topup.php", $_SERVER['PHP_SELF']) == true)
-	&& eregi("/subscr/", $_SERVER['PHP_SELF']) == false && eregi("/callback/", $_SERVER['PHP_SELF']) == false
-	&& eregi("/surepay/", $_SERVER['PHP_SELF']) == false && empty($_SERVER['DOCUMENT_ROOT']) === false
-	&& eregi("/pay/sys/sms.php", $_SERVER['PHP_SELF']) == false && eregi("/api/", $_SERVER['PHP_SELF']) == false)
+		&& eregi("/subscr/", $_SERVER['PHP_SELF']) == false && eregi("/callback/", $_SERVER['PHP_SELF']) == false
+		&& eregi("/surepay/", $_SERVER['PHP_SELF']) == false && empty($_SERVER['DOCUMENT_ROOT']) === false
+		&& eregi("/pay/sys/sms.php", $_SERVER['PHP_SELF']) == false && eregi("/api/", $_SERVER['PHP_SELF']) == false)
 {
 	// Start user session
 	new Session($aDB_CONN_INFO["session"], iOUTPUT_METHOD, sERROR_LOG);
@@ -144,14 +149,14 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 
 	// Not fetching an Image or performing a back-end process and accessing the mobile website
 	if (eregi("/img/", $_SERVER['PHP_SELF']) == false && eregi("/sys/", $_SERVER['PHP_SELF']) == false
-		&& (eregi("/pay/", $_SERVER['PHP_SELF']) == true || eregi("/shop/", $_SERVER['PHP_SELF']) == true
-			|| eregi("/anet/", $_SERVER['PHP_SELF']) == true || eregi("/wannafind/", $_SERVER['PHP_SELF']) == true
-			|| $_SERVER['PHP_SELF'] == "/overview.php" || $_SERVER['PHP_SELF'] == "/terms.php"
-			|| (eregi("/new/", $_SERVER['PHP_SELF']) == true && General::getBrowserType() == "mobile") ) )
+			&& (eregi("/pay/", $_SERVER['PHP_SELF']) == true || eregi("/shop/", $_SERVER['PHP_SELF']) == true
+					|| eregi("/anet/", $_SERVER['PHP_SELF']) == true || eregi("/wannafind/", $_SERVER['PHP_SELF']) == true
+					|| $_SERVER['PHP_SELF'] == "/overview.php" || $_SERVER['PHP_SELF'] == "/terms.php"
+					|| (eregi("/new/", $_SERVER['PHP_SELF']) == true && General::getBrowserType() == "mobile") ) )
 	{
 		// User Agent Profile not instantiated
 		if (array_key_exists("obj_UA", $_SESSION) === false)
-		{	
+		{
 			// Instantiate data object with the User Agent Profile for the customer's mobile device.
 			$_SESSION['obj_UA'] = UAProfile::produceUAProfile(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["iemendo"]) );
 		}
