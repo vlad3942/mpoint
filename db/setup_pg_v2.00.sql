@@ -26,7 +26,6 @@ Update Client.merchantaccount_tbl SET passwd = 'DhZyZO6VP6A1z325jphn' WHERE user
 Update Client.merchantaccount_tbl SET passwd = 'BMMVFHwUGyfjDZk2PzMc' WHERE username = 'CTjbJcSI' AND pspid = 23;
 -- POC
 Update Client.merchantaccount_tbl SET passwd = 'rYBDTQunZRTgG2cVmMJZ' WHERE username = 'CTjbJcSI' AND pspid = 23;
-INSERT INTO Log.State_Tbl (id, name) VALUES (2020, 'Payment Settled');
 
 
 
@@ -36,3 +35,11 @@ INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (31, 0, 0);
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 31, id FROM System.PricePoint_Tbl WHERE amount = -1 AND countryid = 608;
 
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (31, 23);
+
+
+/**
+ * CMP-1276 Support "Payment Settled" state for mConsole Search transaction API
+ */ 
+INSERT INTO Log.State_Tbl (id, name) VALUES (1998, 'Account Validated');
+INSERT INTO Log.State_Tbl (id, name) VALUES (19980, 'Account Validated and Cancelled');
+INSERT INTO Log.State_Tbl (id, name) VALUES (1997, 'Account Validation Failed');

@@ -298,7 +298,7 @@ if (count($aMsgCds) == 0)
 		$msg = 59;
 	}
 
-	if ($code == 200)
+	if (in_array($code, array(200, 303)) == true)
 	{
 		$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
 		
