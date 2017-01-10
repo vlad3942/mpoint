@@ -6908,8 +6908,6 @@ CREATE TABLE log.order_tbl
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE log.order_tbl
-  OWNER TO mpoint;
 
 CREATE INDEX order_created_idx
   ON log.order_tbl
