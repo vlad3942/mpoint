@@ -158,6 +158,21 @@ abstract class Constants
 	 */
 	const iCB_REJECTED_STATE = 1995;
 	/**
+	 * Defines the ID of the State that indicates that the transaction has been done for Account Validation and authorisation was successful.
+	 *
+	 */
+	const iPAYMENT_ACCOUNT_VALIDATED = 1998;
+	/**
+	 * Defines the ID of the State that indicates that the transaction has been done for Account Validation and it failed authorisation.
+	 *
+	 */
+	const iPAYMENT_ACCOUNT_VALIDATION_FAILED = 1997;
+	/**
+	 * Defines the ID of the State that indicates that the transaction has been done for Account Validation(successful) and has been cancelled now.
+	 *
+	 */
+	const iPAYMENT_ACCOUNT_VALIDATED_CANCELLED = 19980;
+	/**
 	 * Defines the ID of the State that indicates that mPoint's Callback request is being retried
 	 *
 	 */

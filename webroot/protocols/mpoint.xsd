@@ -6,23 +6,6 @@
 <xs:element name="root">
 	<xs:complexType>
 		<xs:choice>
-		<xs:element name="payment-method-inquiry" minOccurs="1" maxOccurs="1">
-				<xs:complexType>
-					<xs:all>
-						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
-							<xs:complexType>
-								<xs:all>
-									<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
-								</xs:all>
-							
-							</xs:complexType>
-						</xs:element>
-						
-					</xs:all>
-					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
-					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
-				</xs:complexType>
-			</xs:element>
 			<xs:element name="initialize-payment" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
 					<xs:all>
@@ -718,6 +701,59 @@
 				</xs:sequence>
 			  </xs:complexType>
 			</xs:element>			
+			<xs:element name="get-payment-methods" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
+							<xs:complexType>
+								<xs:all>
+									<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
+								</xs:all>
+							
+							</xs:complexType>
+						</xs:element>
+						
+					</xs:all>
+					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
+					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="capture" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
+							<xs:complexType>
+								<xs:all>
+									<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
+								</xs:all>
+							<xs:attribute name="id" type="xs:positiveInteger" use="required"/>
+							<xs:attribute name="order-no" use="optional"/>
+							</xs:complexType>
+						</xs:element>
+						
+					</xs:all>
+					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
+					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="void" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
+							<xs:complexType>
+								<xs:all>
+									<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
+									
+								</xs:all>
+							<xs:attribute name="id" type="xs:positiveInteger" use="required"/>
+							<xs:attribute name="order-no" use="optional"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:all>
+					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
+					<xs:attribute name="account" type="xs:positiveInteger" use="required" />
+				</xs:complexType>
+			</xs:element>
 		</xs:choice>
 	</xs:complexType>
 </xs:element>
@@ -881,12 +917,13 @@
                     <xs:all>
                     	<xs:element name="product" minOccurs="1" maxOccurs="1">
                     		<xs:complexType>
-                    			<xs:all>
-		                        	<xs:element name="name" type="name" minOccurs="1" maxOccurs="1"/>
-		                        	<xs:element name="description" type="name" minOccurs="1" maxOccurs="1"/>
-		                        	<xs:element name="image-url" type="url" minOccurs="1" maxOccurs="1"/>
-		                        </xs:all>
-		                        <xs:attribute name="sku" use="required" type="xs:string"/>
+                    		<xs:all>
+		                        <xs:element name="name" type="name" minOccurs="1" maxOccurs="1"/>
+		                        <xs:element name="description" type="name" minOccurs="1" maxOccurs="1"/>
+		                        <xs:element name="image-url" type="url" minOccurs="1" maxOccurs="1"/>
+		                        <xs:element name="airline-data" type="airline-data"  minOccurs="0" maxOccurs="1" />
+		                       </xs:all> 
+		                       <xs:attribute name="sku" use="required" type="xs:string"/>
 		                     </xs:complexType>
                         </xs:element>
                         <xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
@@ -898,6 +935,58 @@
             </xs:element>
         </xs:sequence>
     </xs:complexType>
+</xs:element>
+
+<xs:complexType name="airline-data">
+	<xs:sequence>
+		<xs:element ref="flight-detail"  minOccurs="1" maxOccurs="unbounded" />
+		<xs:element ref="passenger-detail" minOccurs="1" maxOccurs="unbounded" /> 
+	</xs:sequence>
+</xs:complexType>	
+
+ 
+<xs:element name="flight-detail">
+<xs:complexType>
+ <xs:sequence>
+   <xs:element type="xs:string" name="service-class" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="departure-airport" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="arrival-airport" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="airline-code" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="departure-date" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="arrival-date" minOccurs="1" maxOccurs="1" />
+   <xs:element ref="additional-data" minOccurs="0" maxOccurs="unbounded" /> 
+ </xs:sequence>
+</xs:complexType>
+</xs:element>
+
+<xs:element name="passenger-detail">
+<xs:complexType>
+ <xs:sequence>
+   <xs:element type="xs:string" name="first-name" minOccurs="1"  maxOccurs="1" />
+   <xs:element type="xs:string" name="last-name" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="type" minOccurs="1" maxOccurs="1" />
+   <xs:element ref="additional-data" minOccurs="0" maxOccurs="unbounded" /> 
+ </xs:sequence>
+</xs:complexType>
+</xs:element>
+ 
+<xs:element name="additional-data">
+<xs:complexType>
+ <xs:sequence>
+     <xs:element ref="param" minOccurs="0" maxOccurs="unbounded" />
+ </xs:sequence>
+</xs:complexType>
+</xs:element>
+
+
+<xs:element name="param">
+   <xs:complexType>
+    <xs:simpleContent>
+     <xs:extension base="xs:string">
+      <xs:attribute name="name" type="xs:string" use="required" />
+      </xs:extension>
+     </xs:simpleContent>
+   </xs:complexType>
 </xs:element>
 
 <xs:complexType name="psp-config">
