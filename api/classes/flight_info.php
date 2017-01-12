@@ -75,6 +75,12 @@ class FlightInfo
 	 * @var string
 	 */
 	private  $_aAdditionalValue;
+	/**
+	* Flight number of this flight
+	*
+	* @var string
+	*/
+	private $_aFlightNumber;
 
 
 	/**
@@ -83,7 +89,7 @@ class FlightInfo
 
 	 *
 	 */
-	public function __construct($id, $scid, $daid, $aaid, $alid, $adid, $ddid, $ain, $aiv)
+	public function __construct($id, $scid, $daid, $aaid, $alid, $adid, $ddid,$fnum, $ain, $aiv)
 	{
 		$this->_iID =  (integer) $id;
 		$this->_ServiceClass = $scid;
@@ -94,6 +100,7 @@ class FlightInfo
 		$this->_DepartureDate = $ddid;
 		$this->_aAdditionalName = $ain;
 		$this->_aAdditionalValue = $aiv;
+		$this->_aFlightNumber = $fnum;
 	}
 
 	/**
@@ -150,12 +157,18 @@ class FlightInfo
 	 * @return 	array
 	 */
 	public function getAdditionalValue() { return $this->_aAdditionalValue; }
+	/**
+	 * Returns the flight number of this flight
+	 *
+	 * @return 	array
+	 */
+	public function getFlightNumber() { return $this->_aFlightNumber; }
 
 	
 	
 	public static function produceConfig(RDB $oDB, $id)
 	{
-		$sql = "SELECT id, service_class, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified, additional_data_ref
+		$sql = "SELECT id,flight_number, service_class, flight_number, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified, additional_data_ref
 					FROM log".sSCHEMA_POSTFIX.".flight_tbl where id=".$id;
 			//echo $sql ."\n";
 		$RS = $oDB->getName($sql);
@@ -167,12 +180,12 @@ class FlightInfo
 		
 			     if(is_array($RSA) === true && count($RSA) > 0)
 			     {
-			     	return new FlightInfo($RS["ID"], $RS["SERVICE_CLASS"], $RS["DEPARTURE_AIRPORT"], $RS["ARRIVAL_AIRPORT"], $RS["AIRLINE_CODE"],
+			     	return new FlightInfo($RS["ID"], $RS["SERVICE_CLASS"], $RS["FLIGHT_NUMBER"], $RS["DEPARTURE_AIRPORT"], $RS["ARRIVAL_AIRPORT"], $RS["AIRLINE_CODE"],
 			     		 $RS["ARRIVAL_DATE"], $RS["DEPARTURE_DATE"],  $RSA["NAME"], $RSA["VALUE"]);
 			     }
 			     else 
 			     {
-			     	return new FlightInfo($RS["ID"], $RS["SERVICE_CLASS"], $RS["DEPARTURE_AIRPORT"], $RS["ARRIVAL_AIRPORT"], $RS["AIRLINE_CODE"],
+			     	return new FlightInfo($RS["ID"], $RS["SERVICE_CLASS"],$RS["FLIGHT_NUMBER"], $RS["DEPARTURE_AIRPORT"], $RS["ARRIVAL_AIRPORT"], $RS["AIRLINE_CODE"],
 			     			 $RS["ARRIVAL_DATE"], $RS["DEPARTURE_DATE"]);
 			     }
 			    
@@ -203,6 +216,7 @@ class FlightInfo
 		$xml = '';
 		$xml .= '<flight-detail>';
 		$xml .= '<service-class>'. $this->getServiceClass() .'</service-class>';
+		$xml .= '<flight-number>'. $this->getFlightNumber() .'</flight-number>';
 		$xml .= '<departure-airport>'. $this->getDepartureAirport() .'</departure-airport>';
 		$xml .= '<arrival-airport>'. $this->getArrivalAirport() .'</arrival-airport>';
 		$xml .= '<airline-code>'. $this->getAirline() .'</airline-code>';
