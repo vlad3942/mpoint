@@ -968,13 +968,13 @@ class TxnInfo
 	
 				if($idd!="")
 				{
-				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".flight_Tbl(id, service_class, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified,additional_data_ref)
-						VALUES('". $RS["ID"] ."','". $aFlightDataObj["service_class"] ."','". $aFlightDataObj["departure_airport"] ."','". $aFlightDataObj["arrival_airport"] ."','". $aFlightDataObj["airline_code"] ."','". $aFlightDataObj["order_id"] ."','". $aFlightDataObj["arrival_date"] ."', '". $aFlightDataObj["departure_date"] ."',now(),now(),".$idd.")";
+				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".flight_Tbl(id, service_class,flight_number, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified,additional_data_ref)
+						VALUES('". $RS["ID"] ."','". $aFlightDataObj["service_class"] ."','". $aFlightDataObj["flight_number"] ."','". $aFlightDataObj["departure_airport"] ."','". $aFlightDataObj["arrival_airport"] ."','". $aFlightDataObj["airline_code"] ."','". $aFlightDataObj["order_id"] ."','". $aFlightDataObj["arrival_date"] ."', '". $aFlightDataObj["departure_date"] ."',now(),now(),".$idd.")";
 				}
 				else 
 				{
-					$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".flight_Tbl(id, service_class, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified)
-						VALUES('". $RS["ID"] ."','". $aFlightDataObj["service_class"] ."','". $aFlightDataObj["departure_airport"] ."','". $aFlightDataObj["arrival_airport"] ."','". $aFlightDataObj["airline_code"] ."','". $aFlightDataObj["order_id"] ."','". $aFlightDataObj["arrival_date"] ."', '". $aFlightDataObj["departure_date"] ."',now(),now())";
+					$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".flight_Tbl(id, service_class,flight_number, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified)
+						VALUES('". $RS["ID"] ."','". $aFlightDataObj["service_class"] ."','". $aFlightDataObj["flight_number"] ."','". $aFlightDataObj["departure_airport"] ."','". $aFlightDataObj["arrival_airport"] ."','". $aFlightDataObj["airline_code"] ."','". $aFlightDataObj["order_id"] ."','". $aFlightDataObj["arrival_date"] ."', '". $aFlightDataObj["departure_date"] ."',now(),now())";
 				}
 				// Error: Unable to insert a new flight record in the Flight Table
 				if (is_resource($obj_DB->query($sql) ) === false)
