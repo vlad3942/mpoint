@@ -1046,11 +1046,7 @@ class TxnInfo
 	{
 		//Get Order Detail of a given transaction if supplied by the e-commerce platform.
 		$this->_obj_OrderConfigs = OrderInfo::produceConfigurations($obj_DB, $this->getID());
-		foreach ($this->_obj_OrderConfigs as $obj_OrderInfo)
-		{
-			$this->_obj_FlightConfigs = FlightInfo::produceConfigurations($obj_DB, $obj_OrderInfo->getID());
-			$this->_obj_PassengerConfigs = PassengerInfo::produceConfigurations($obj_DB, $obj_OrderInfo->getID());
-		}
+		
 		
 	}
 	
@@ -1066,22 +1062,7 @@ class TxnInfo
 				{
 					
 					$xml .= $obj_OrderInfo->toXML();
-					$xml .= '<airline-data>';
-					foreach ($this->_obj_FlightConfigs as $obj_FlightInfo)
-					{
-						if( ($obj_FlightInfo instanceof FlightInfo) === true )
-						{
-							$xml .= $obj_FlightInfo->toXML();
-						}
-					}
-					foreach ($this->_obj_PassengerConfigs as $obj_PassengerInfo)
-					{
-						if( ($obj_PassengerInfo instanceof PassengerInfo) === true )
-						{
-							$xml .= $obj_PassengerInfo->toXML();
-						}
-					}
-					$xml .= '</airline-data>';
+					
 					
 				}
 			}
