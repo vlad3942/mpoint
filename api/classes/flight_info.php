@@ -89,7 +89,7 @@ class FlightInfo
 
 	 *
 	 */
-	public function __construct($id, $scid, $daid, $aaid, $alid, $adid, $ddid,$fnum, $ain, $aiv)
+	public function __construct($id, $scid, $fnum, $daid, $aaid, $alid, $adid, $ddid, $ain, $aiv)
 	{
 		$this->_iID =  (integer) $id;
 		$this->_ServiceClass = $scid;
@@ -168,7 +168,7 @@ class FlightInfo
 	
 	public static function produceConfig(RDB $oDB, $id)
 	{
-		$sql = "SELECT id,flight_number, service_class, flight_number, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified, additional_data_ref
+		$sql = "SELECT id, service_class, flight_number, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified, additional_data_ref
 					FROM log".sSCHEMA_POSTFIX.".flight_tbl where id=".$id;
 			//echo $sql ."\n";
 		$RS = $oDB->getName($sql);
