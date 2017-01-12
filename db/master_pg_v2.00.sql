@@ -17,7 +17,7 @@ CREATE TYPE log.additional_data_ref AS ENUM
 
 CREATE TABLE log.flight_tbl
 (
-  id serial NOT NULL,
+ id serial NOT NULL,
   service_class character varying(10) NOT NULL,
   departure_airport character varying(10) NOT NULL,
   arrival_airport character varying(10) NOT NULL,
@@ -27,7 +27,7 @@ CREATE TABLE log.flight_tbl
   departure_date timestamp without time zone NOT NULL,
   created timestamp without time zone NOT NULL DEFAULT now(),
   modified timestamp without time zone NOT NULL DEFAULT now(),
-  additional_data_ref integer NOT NULL,
+  additional_data_ref integer,
   CONSTRAINT flight_pk PRIMARY KEY (id),
   CONSTRAINT order_fk FOREIGN KEY (order_id)
       REFERENCES log.order_tbl (id) MATCH SIMPLE
@@ -47,14 +47,14 @@ WITHOUT OIDS;
 
 CREATE TABLE log.passenger_tbl
 (
-   id serial NOT NULL,
+     id serial NOT NULL,
   first_name character varying(20) NOT NULL,
   last_name character varying(20) NOT NULL,
   type character varying(10) NOT NULL,
   order_id integer NOT NULL,
   created timestamp without time zone DEFAULT now(),
   modified timestamp without time zone DEFAULT now(),
-  additional_data_ref integer NOT NULL,
+  additional_data_ref integer,
   CONSTRAINT passenger_pk PRIMARY KEY (id),
   CONSTRAINT order_fk FOREIGN KEY (order_id)
       REFERENCES log.order_tbl (id) MATCH SIMPLE
