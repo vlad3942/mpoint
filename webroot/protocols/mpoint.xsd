@@ -949,6 +949,7 @@
 <xs:complexType>
  <xs:sequence>
    <xs:element type="xs:string" name="service-class" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="flight-number" minOccurs="1" maxOccurs="1" />
    <xs:element type="xs:string" name="departure-airport" minOccurs="1" maxOccurs="1" />
    <xs:element type="xs:string" name="arrival-airport" minOccurs="1" maxOccurs="1" />
    <xs:element type="xs:string" name="airline-code" minOccurs="1" maxOccurs="1" />

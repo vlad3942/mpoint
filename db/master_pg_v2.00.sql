@@ -19,6 +19,7 @@ CREATE TABLE log.flight_tbl
 (
  id serial NOT NULL,
   service_class character varying(10) NOT NULL,
+  flight_number character varying(20) NOT NULL,
   departure_airport character varying(10) NOT NULL,
   arrival_airport character varying(10) NOT NULL,
   airline_code character varying(10) NOT NULL,

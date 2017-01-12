@@ -962,27 +962,23 @@ class TxnInfo
 				{
 				$idd = $this->setAdditionalDetails($obj_DB, $aAdditionalDatas);
 				}
-				
+	
 				// Error: Unable to generate a new Flight ID
 				if (is_array($RS) === false) { throw new mPointException("Unable to generate new Flight ID", 1001); }
-				
+	
 				if($idd!="")
 				{
-					
-				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".flight_Tbl(id, service_class, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified,additional_data_ref)
-						VALUES('". $RS["ID"] ."','". $aFlightDataObj["service_class"] ."','". $aFlightDataObj["departure_airport"] ."','". $aFlightDataObj["arrival_airport"] ."','". $aFlightDataObj["airline_code"] ."','". $aFlightDataObj["order_id"] ."','". $aFlightDataObj["arrival_date"] ."', '". $aFlightDataObj["departure_date"] ."',now(),now(),".$idd.")";
+				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".flight_Tbl(id, service_class,flight_number, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified,additional_data_ref)
+						VALUES('". $RS["ID"] ."','". $aFlightDataObj["service_class"] ."','". $aFlightDataObj["flight_number"] ."','". $aFlightDataObj["departure_airport"] ."','". $aFlightDataObj["arrival_airport"] ."','". $aFlightDataObj["airline_code"] ."','". $aFlightDataObj["order_id"] ."','". $aFlightDataObj["arrival_date"] ."', '". $aFlightDataObj["departure_date"] ."',now(),now(),".$idd.")";
 				}
 				else 
 				{
-					
-					$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".flight_Tbl(id, service_class, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified)
-						VALUES('". $RS["ID"] ."','". $aFlightDataObj["service_class"] ."','". $aFlightDataObj["departure_airport"] ."','". $aFlightDataObj["arrival_airport"] ."','". $aFlightDataObj["airline_code"] ."','". $aFlightDataObj["order_id"] ."','". $aFlightDataObj["arrival_date"] ."', '". $aFlightDataObj["departure_date"] ."',now(),now())";
+					$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".flight_Tbl(id, service_class,flight_number, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified)
+						VALUES('". $RS["ID"] ."','". $aFlightDataObj["service_class"] ."','". $aFlightDataObj["flight_number"] ."','". $aFlightDataObj["departure_airport"] ."','". $aFlightDataObj["arrival_airport"] ."','". $aFlightDataObj["airline_code"] ."','". $aFlightDataObj["order_id"] ."','". $aFlightDataObj["arrival_date"] ."', '". $aFlightDataObj["departure_date"] ."',now(),now())";
 				}
-			
 				// Error: Unable to insert a new flight record in the Flight Table
-				if (is_resource($obj_DB->query($sql)) === false)
+				if (is_resource($obj_DB->query($sql) ) === false)
 				{
-					
 					if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for Flight: ". $RS["ID"], 1002); }
 				}
 				else
@@ -1012,17 +1008,17 @@ class TxnInfo
 			{
 				$sql = "SELECT Nextvalue('Log".sSCHEMA_POSTFIX.".passenger_Tbl_id_seq') AS id FROM DUAL";
 				$RS = $obj_DB->getName($sql);
-				
+	
 				if(!empty($aAdditionalDatas))
 				{
 				$idd = $this->setAdditionalDetails($obj_DB, $aAdditionalDatas,$type);
 				}
 				// Error: Unable to generate a new Passenger ID
 				if (is_array($RS) === false) { throw new mPointException("Unable to generate new Passenger ID", 1001); }
-				
+	
 				if($idd!="")
 					{
-						$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".passenger_tbl(id, first_name, last_name, type, order_id, created, modified,additional_data_ref)
+				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".passenger_tbl(id, first_name, last_name, type, order_id, created, modified,additional_data_ref)
 						VALUES(". $RS["ID"] .", '". $aPassengerDataObj["first_name"] ."', '". $aPassengerDataObj["last_name"] ."','". $aPassengerDataObj["type"] ."', ". $aPassengerDataObj["order_id"] .", now(), now(), ".$idd.")";
 					}
 					else 
@@ -1050,6 +1046,11 @@ class TxnInfo
 	{
 		//Get Order Detail of a given transaction if supplied by the e-commerce platform.
 		$this->_obj_OrderConfigs = OrderInfo::produceConfigurations($obj_DB, $this->getID());
+		foreach ($this->_obj_OrderConfigs as $obj_OrderInfo)
+		{
+			$this->_obj_FlightConfigs = FlightInfo::produceConfigurations($obj_DB, $obj_OrderInfo->getID());
+			$this->_obj_PassengerConfigs = PassengerInfo::produceConfigurations($obj_DB, $obj_OrderInfo->getID());
+		}
 		
 	}
 	
@@ -1064,8 +1065,23 @@ class TxnInfo
 				if( ($obj_OrderInfo instanceof OrderInfo) === true )
 				{
 					
-					
 					$xml .= $obj_OrderInfo->toXML();
+					$xml .= '<airline-data>';
+					foreach ($this->_obj_FlightConfigs as $obj_FlightInfo)
+					{
+						if( ($obj_FlightInfo instanceof FlightInfo) === true )
+						{
+							$xml .= $obj_FlightInfo->toXML();
+						}
+					}
+					foreach ($this->_obj_PassengerConfigs as $obj_PassengerInfo)
+					{
+						if( ($obj_PassengerInfo instanceof PassengerInfo) === true )
+						{
+							$xml .= $obj_PassengerInfo->toXML();
+						}
+					}
+					$xml .= '</airline-data>';
 					
 				}
 			}

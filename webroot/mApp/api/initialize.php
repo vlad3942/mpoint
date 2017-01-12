@@ -1,19 +1,19 @@
 <?php
 /**
  * This files contains the Controller for mPoint's Mobile Web API.
-* The Controller will ensure that all input from a Mobile Internet Site or Mobile Application is validated and a new payment transaction is started.
-* Finally, assuming the Client Input is valid, the Controller will redirect the Customer to one of the following flow start pages:
-* 	- Payment Flow: /pay/card.php
-* 	- Shop Flow: /shop/delivery.php
-* If the input provided was determined to be invalid, an error page will be generated.
-*
-* @author Jonatan Evald Buus
-* @copyright Cellpoint Mobile
-* @link http://www.cellpointmobile.com
-* @package API
-* @subpackage MobileApp
-* @version 1.10
-*/
+ * The Controller will ensure that all input from a Mobile Internet Site or Mobile Application is validated and a new payment transaction is started.
+ * Finally, assuming the Client Input is valid, the Controller will redirect the Customer to one of the following flow start pages:
+ * 	- Payment Flow: /pay/card.php
+ * 	- Shop Flow: /shop/delivery.php
+ * If the input provided was determined to be invalid, an error page will be generated.
+ *
+ * @author Jonatan Evald Buus
+ * @copyright Cellpoint Mobile
+ * @link http://www.cellpointmobile.com
+ * @package API
+ * @subpackage MobileApp
+ * @version 1.10
+ */
 
 // Require Global Include File
 require_once("../../inc/include.php");
@@ -43,25 +43,25 @@ $aMsgCds = array();
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 /*
- $_SERVER['PHP_AUTH_USER'] = "1415";
- $_SERVER['PHP_AUTH_PW'] = "Ghdy4_ah1G";
+$_SERVER['PHP_AUTH_USER'] = "1415";
+$_SERVER['PHP_AUTH_PW'] = "Ghdy4_ah1G";
 
- $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
- $HTTP_RAW_POST_DATA .= '<root>';
- $HTTP_RAW_POST_DATA .= '<initialize-payment client-id="10019" account="100026">';
- $HTTP_RAW_POST_DATA .= '<transaction order-no="904-70158922">';
- $HTTP_RAW_POST_DATA .= '<amount country-id="100">2400</amount>';
- $HTTP_RAW_POST_DATA .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
- $HTTP_RAW_POST_DATA .= '<hmac>0489be0b8439cc6543787bd722f8d8352e23fc7e</hmac>';
- $HTTP_RAW_POST_DATA .= '</transaction>';
- $HTTP_RAW_POST_DATA .= '<client-info platform="iOS" version="5.1.1" language="da">';
- $HTTP_RAW_POST_DATA .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
- $HTTP_RAW_POST_DATA .= '<email>jona@oismail.com</email>';
- $HTTP_RAW_POST_DATA .= '<device-id>4615F4E94A9749D7B7BB9654EAC00ED314212383</device-id>';
- $HTTP_RAW_POST_DATA .= '</client-info>';
- $HTTP_RAW_POST_DATA .= '</initialize-payment>';
- $HTTP_RAW_POST_DATA .= '</root>';
- */
+$HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
+$HTTP_RAW_POST_DATA .= '<root>';
+$HTTP_RAW_POST_DATA .= '<initialize-payment client-id="10019" account="100026">';
+$HTTP_RAW_POST_DATA .= '<transaction order-no="904-70158922">';
+$HTTP_RAW_POST_DATA .= '<amount country-id="100">2400</amount>';
+$HTTP_RAW_POST_DATA .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
+$HTTP_RAW_POST_DATA .= '<hmac>0489be0b8439cc6543787bd722f8d8352e23fc7e</hmac>';
+$HTTP_RAW_POST_DATA .= '</transaction>';
+$HTTP_RAW_POST_DATA .= '<client-info platform="iOS" version="5.1.1" language="da">';
+$HTTP_RAW_POST_DATA .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
+$HTTP_RAW_POST_DATA .= '<email>jona@oismail.com</email>';
+$HTTP_RAW_POST_DATA .= '<device-id>4615F4E94A9749D7B7BB9654EAC00ED314212383</device-id>';
+$HTTP_RAW_POST_DATA .= '</client-info>';
+$HTTP_RAW_POST_DATA .= '</initialize-payment>';
+$HTTP_RAW_POST_DATA .= '</root>';
+*/
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
@@ -79,38 +79,38 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'initialize-payment'}[$i]["account"]);
 			if ($code == 100)
 			{
-				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'initialize-payment'}[$i]["account"]);
+				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'initialize-payment'}[$i]["account"]);				
 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])
-						&& $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true)
+					&& $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true)
 				{
 					$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"]);
 					if ( ($obj_CountryConfig instanceof CountryConfig) === false || $obj_CountryConfig->getID() < 1) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
-						
+					
 					$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 					$iValResult = $obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount);
 					if ($obj_ClientConfig->getMaxAmount() > 0 && $iValResult != 10) { $aMsgCds[$iValResult + 50] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount; }
-						
+					
 					// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
 					if (strlen($obj_ClientConfig->getSalt() ) > 0
-							&& (strlen($obj_DOM->{'initialize-payment'}[$i]->transaction['order-no']) > 0 || intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount) > 100 || count($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac) == 1) )
+						&& (strlen($obj_DOM->{'initialize-payment'}[$i]->transaction['order-no']) > 0 || intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount) > 100 || count($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac) == 1) )
 					{
 						$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'},
-						CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
-						$_SERVER['HTTP_X_FORWARDED_FOR']);
+																  CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
+																  $_SERVER['HTTP_X_FORWARDED_FOR']);
 						if ($obj_Validator->valHMAC(trim($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_DOM->{'initialize-payment'}[$i]->transaction['order-no']), intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount), intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"]) ) != 10) { $aMsgCds[210] = trim($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac); }
 					}
-						
+					
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
 					{
-							
+					
 						$obj_mPoint = new MobileWeb($_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig);
 						$iTxnID = $obj_mPoint->newTransaction(Constants::iPURCHASE_VIA_APP);
 						try
 						{
 							// Update Transaction State
 							$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, $obj_DOM->asXML() );
-
+	
 							$data['typeid'] = $obj_DOM->{'initialize-payment'}[$i]->transaction["type-id"];
 							$data['amount'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount;
 							$data['country-config'] = $obj_CountryConfig;
@@ -123,11 +123,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$data['reward'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->reward;
 								$data['reward-type'] = (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->reward["type-id"];
 							}
-
+	
 							$data['description'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->description;
 							$data['gomobileid'] = -1;
 							$data['orderid'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction["order-no"];
-								
+							
 							// Adding/Updating the client data in to the enduser account.
 							$data['customer-ref'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->{'customer-ref'};
 							$data['mobile'] = (float) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile;
@@ -163,16 +163,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$data['icon-url'] = "";
 							$data['language'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}["language"];
 							$data['markup'] = $obj_ClientConfig->getAccountConfig()->getMarkupLanguage();
-
+	
 							$obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $data);
 							// Associate End-User Account (if exists) with Transaction
 							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]);
-
+	
 							$obj_TxnInfo->setAccountID(EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_TxnInfo->getCustomerRef(), $obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ) );
 							// Update Transaction Log
 							$obj_mPoint->logTransaction($obj_TxnInfo);
-								
-							//Test if the order/cart details are passed as part of the input XML request.
+							
+							//Test if the order/cart details are passed as part of the input XML request. 
 							if(count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders) == 1 && count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->children()) > 0 )
 							{
 								for ($j=0; $j<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}); $j++ )
@@ -186,30 +186,31 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$data['orders'][$j]['points'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->points;
 									$data['orders'][$j]['reward'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->reward;
 									$data['orders'][$j]['quantity'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->quantity;
-								}
-								$order_id=$obj_TxnInfo->setOrderDetails($_OBJ_DB, $data['orders']);
-
+								}				
+								$order_id=$obj_TxnInfo->setOrderDetails($_OBJ_DB, $data['orders']); 
+								
 								for ($j=0; $j<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}); $j++ )
 								{
 									for ($k=0; $k<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}); $k++ )
 									{
-										$data['flights'][$k]['service_class'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'service-class'};
-										$data['flights'][$k]['departure_airport'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'departure-airport'};
-										$data['flights'][$k]['arrival_airport'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'arrival-airport'};
-										$data['flights'][$k]['airline_code'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'airline-code'};
-										$data['flights'][$k]['arrival_date'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'arrival-date'};
-										$data['flights'][$k]['departure_date'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'departure-date'};
-										$data['flights'][$k]['order_id'] = $order_id;
-										if(count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}) == 1 && count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}->children()) > 0 )
+									$data['flights'][$k]['service_class'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'service-class'};
+									$data['flights'][$k]['departure_airport'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'departure-airport'};
+									$data['flights'][$k]['arrival_airport'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'arrival-airport'};
+									$data['flights'][$k]['airline_code'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'airline-code'};
+									$data['flights'][$k]['arrival_date'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'arrival-date'};
+									$data['flights'][$k]['departure_date'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'departure-date'};
+									$data['flights'][$k]['flight_number'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'flight-number'};
+									$data['flights'][$k]['order_id'] = $order_id;
+									if(count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}) == 1 && count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}->children()) > 0 )
 										{
-											$data['additional']['name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}->param['name'];
-											$data['additional']['value'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}->{'param'};
-											$data['additional']['type'] = (string) "Flight";
-										}
+									$data['additional']['name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}->param['name'];
+									$data['additional']['value'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}->{'param'};
+									$data['additional']['type'] = (string) "Flight";
+									    }
 									}
 									$obj_TxnInfo->setFlightDetails($_OBJ_DB, $data['flights'], $data['additional']);
 								}
-
+								
 								for ($j=0; $j<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}); $j++ )
 								{
 									for ($k=0; $k<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}); $k++ )
@@ -221,19 +222,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$data['passenger'][$k]['order_id'] = $order_id;
 										if(count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'additional-data'}) == 1 && count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'additional-data'}->children()) > 0 )
 										{
-											$data['additionalp']['name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'additional-data'}->param['name'];
-											$data['additionalp']['value'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'additional-data'}->{'param'};
-											$data['additionalp']['type'] = (string) "Passenger";
-										}
+										$data['additionalp']['name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'additional-data'}->param['name'];
+										$data['additionalp']['value'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'additional-data'}->{'param'};
+										$data['additionalp']['type'] = (string) "Passenger";
+									}
 										else
 										{
-												
-										}
+										
+								}
 									}
 									$abc = $obj_TxnInfo->setPassengerDetails($_OBJ_DB, $data['passenger'], $data['additionalp']);
 									//print_r($abc);
 								}
-
+								
 							}
 							if (count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'custom-variables'}) == 1 && count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'custom-variables'}->children() ) > 0)
 							{
@@ -266,7 +267,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$xml .= $obj_XML->{'accept-url'}->asXML();
 							$xml .= '</transaction>';
 							$obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount() ), "SimpleXMLElement", LIBXML_COMPACT);
-
+	
 							// End-User already has an account and payment with Account enabled
 							if ($obj_TxnInfo->getAccountID() > 0 && count($obj_XML->xpath("/cards/item[@type-id = 11]") ) == 1)
 							{
@@ -276,16 +277,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								else { $aObj_XML = $aObj_XML->xpath("/stored-cards/card"); }
 							}
 							else { $aObj_XML = array(); }
-								
+							
 							$aPSPs = array();
 							$cardsXML = '<cards>';
 							for ($j=0; $j<count($obj_XML->item); $j++)
 							{
 								// Card does not represent "My Account" or the End-User has an acccount with Stored Cards or Stored Value Account is available
 								if ($obj_XML->item[$j]["type-id"] != 11
-										|| ($obj_TxnInfo->getAccountID() > 0 && (count($aObj_XML) > 0 || $obj_ClientConfig->getStoreCard() == 2) ) )
+									|| ($obj_TxnInfo->getAccountID() > 0 && (count($aObj_XML) > 0 || $obj_ClientConfig->getStoreCard() == 2) ) )
 								{
-									if (in_array((integer) $obj_XML->item[$j]["pspid"], $aPSPs) === false) { $aPSPs[] = intval($obj_XML->item[$j]["pspid"] ); }
+									if (in_array((integer) $obj_XML->item[$j]["pspid"], $aPSPs) === false) { $aPSPs[] = intval($obj_XML->item[$j]["pspid"] ); } 
 									$cardsXML .= '<card id="'. $obj_XML->item[$j]["id"] .'" type-id="'. $obj_XML->item[$j]["type-id"] .'" psp-id="'. $obj_XML->item[$j]["pspid"] .'" min-length="'. $obj_XML->item[$j]["min-length"] .'" max-length="'. $obj_XML->item[$j]["max-length"] .'" cvc-length="'. $obj_XML->item[$j]["cvc-length"] .'" state-id="'. $obj_XML->item[$j]["state-id"] .'">';
 									$cardsXML .= '<name>'. htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) .'</name>';
 									$cardsXML .= $obj_XML->item[$j]->prefixes->asXML();
@@ -294,22 +295,22 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								}
 							}
 							$cardsXML .= '</cards>';
-								
+							
 							for ($j=0; $j<count($aPSPs); $j++)
 							{
 								switch ($aPSPs[$j])
 								{
-									case (Constants::iDSB_PSP):
-										$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iDSB_PSP);
-										$obj_PSP = new DSB($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["dsb"]);
-										$cardsXML =  $obj_PSP->getExternalPaymentMethods($cardsXML);
-										break;
-									default:
-										break;
+								case (Constants::iDSB_PSP):
+									$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iDSB_PSP);
+									$obj_PSP = new DSB($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["dsb"]);
+									$cardsXML =  $obj_PSP->getExternalPaymentMethods($cardsXML);
+									break;
+								default:
+									break;
 								}
 							}
 							$xml .= $cardsXML;
-
+								
 							// End-User has Stored Cards available
 							if (is_array($aObj_XML) === true && count($aObj_XML) > 0)
 							{
@@ -339,9 +340,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						catch (mPointException $e)
 						{
 							trigger_error("Unknown error: ". $e->getMessage() ."(". $e->getCode() .")" ."\n". $e->getTrace(), E_USER_WARNING);
-
+	
 							header("HTTP/1.1 500 Internal Server Error");
-
+	
 							$xml = '<status code="'. $e->getCode() .'">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES) .'</status>';
 						}
 					}
@@ -349,7 +350,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					else
 					{
 						header("HTTP/1.1 400 Bad Request");
-							
+					
 						foreach ($aMsgCds as $code => $data)
 						{
 							$xml .= '<status code="'. $code .'">'. htmlspecialchars($data, ENT_NOQUOTES) .'</status>';
