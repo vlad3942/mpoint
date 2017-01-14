@@ -11,7 +11,7 @@ abstract class mPointControllerException extends mPointException
 {
 	public function __construct($code, $message='', $previous=null)
 	{
-		parent::__construct($message, $code, $previous);
+		parent::__construct($message, $code);
 	}
 
 	protected function statusElement($code, $message) { return '<status code="'. $code .'">'. $message .'</status>'; }
@@ -27,7 +27,7 @@ class mPointSimpleControllerException extends mPointControllerException
 
 	public function __construct($httpCode, $code, $message='', $previous=null)
 	{
-		parent::__construct($code, $message, $previous);
+		parent::__construct($code, $message);
 		$this->_httpCode = $httpCode;
 	}
 
