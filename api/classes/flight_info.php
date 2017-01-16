@@ -150,6 +150,7 @@ class FlightInfo
 	 *
 	 * @return 	array
 	 */
+	
 	public function getAdditionalName() { return $this->_aAdditionalName; }
 	/**
 	 * Returns the Additional Data of this flight

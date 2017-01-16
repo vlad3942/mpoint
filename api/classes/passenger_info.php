@@ -157,6 +157,7 @@ class PassengerInfo
 
 	public function toXML()
 	{
+		
 		$xml = '';
 		$xml .= '<passenger-detail>';
 		$xml .= '<first-name>'. $this->getFirstName() .'</first-name>';
