@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file contains the Controller for mPoint's Card Selection component.
  * The component will generate a page using the Client Configuration listing the credit cards available to the Customer.
@@ -196,7 +197,7 @@ catch(Exception $e)
 }
 
 $xml = '<?xml version="1.0" encoding="UTF-8"?>';
-$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/html5/pay/card.xsl"?>';
+$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/html5/pay/webcard.xsl"?>';
 
 $xml .= '<root>';
 

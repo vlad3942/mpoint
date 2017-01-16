@@ -81,7 +81,7 @@ else
 		$xml .= '<transactionid>'.$_REQUEST['mpoint-id'].'</transactionid>';
 		if($_SESSION['obj_TxnInfo']->getCSSURL()=="")
 		{
-			$cssurll="http://mpoint.local.cellpointmobile.com/css/bootstrap/styles.css";
+			$cssurll="http://". $_SERVER["HTTP_HOST"] ."/css/bootstrap/styles.css";
 		}
 		else 
 		{
