@@ -43,3 +43,23 @@ INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (31, 23);
 INSERT INTO Log.State_Tbl (id, name) VALUES (1998, 'Account Validated');
 INSERT INTO Log.State_Tbl (id, name) VALUES (19980, 'Account Validated and Cancelled');
 INSERT INTO Log.State_Tbl (id, name) VALUES (1997, 'Account Validation Failed');
+
+
+/* ========== Global Configuration for 2C2P = STARTS ========== */
+INSERT INTO System.PSP_Tbl (id, name) VALUES (26, '2C2P');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (644,1,'THB');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (644,26,'THB');
+
+/*Amex*/
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (1, 26);
+/*MasterCard*/
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (7, 26);
+/*VISA*/
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (8, 26);
+
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 26, 'CPMDemo', 'gXPRPPam3j58', 'BMMVFHwUGyfjDZk2PzMc');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 26, '-1');
+
+-- Route VISA Card to 2C2P with country Thailand
+UPDATE Client.CardAccess_Tbl SET pspid = 26, countryid = 644 WHERE clientid = 10001 AND cardid = 8;
+/* ========== Global Configuration for 2C2P = ENDS ========== */
