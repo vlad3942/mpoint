@@ -1,23 +1,23 @@
-<?php 
+<?php
 require_once("../../inc/include.php");
-    header('Content-Type: text/html; charset="UTF-8"');
-    $client = array();
-	$account = array();
-    $RSCountry = array();
+header('Content-Type: text/html; charset="UTF-8"');
+$client = array();
+$account = array();
+$RSCountry = array();
 $sqlcountry = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmob, maxmob, channel, priceformat, decimals,
 					addr_lookup, doi, add_card_amount, max_psms_amount, min_pwd_amount, min_2fa_amount
 				FROM System".sSCHEMA_POSTFIX.".Country_Tbl
 				WHERE enabled = '1' ORDER BY name";
-		
-		$RSCountry = $_OBJ_DB->getAllNames($sqlcountry);
-		//print_r($RSCountry);
-		$sqlclient = "SELECT id,concat_ws(' - ',id,name) as clientnm
+
+$RSCountry = $_OBJ_DB->getAllNames($sqlcountry);
+//print_r($RSCountry);
+$sqlclient = "SELECT id,concat_ws(' - ',id,name) as clientnm
   FROM client.client_tbl ORDER BY name";
-		
-		$client = $_OBJ_DB->getAllNames($sqlclient);
-		//print_r($client);
-		
-		/**/
+
+$client = $_OBJ_DB->getAllNames($sqlclient);
+//print_r($client);
+
+/**/
 
 ?>
 <!DOCTYPE html>
@@ -50,7 +50,7 @@ $sqlcountry = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmo
   <div class="col-md-4">
   
     <select id="clientsel" name="clientsel" class="form-control input-md">
-     <option value="-1">select Client</option>
+    <option value="-1">Please Select</option>
 		<?php
 			if(empty($client) === false)
 			{
@@ -69,10 +69,10 @@ $sqlcountry = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmo
   <label class="col-md-4 control-label" for="accountsel">Account Id</label>
   <div class="col-md-4">
     <select id="accountsel" name="accountsel" class="form-control input-md">
-      <option value="-1">select account</option>
+      <option value="-1">Please Select</option>
 		<?php
 		$sqlaccount = "SELECT id,concat_ws(' - ',id,name) as accnm 
-  FROM client.account_tbl ORDER BY name";
+  FROM client.account_tbl ORDER BY name ";
 			
 		$account = $_OBJ_DB->getAllNames($sqlaccount);
 			if(empty($account) === false)
@@ -92,7 +92,7 @@ $sqlcountry = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmo
   <label class="col-md-4 control-label" for="countrysel">Country</label>
   <div class="col-md-4">
     <select id="countrysel" name="countrysel" class="form-control input-md">
-       <option value="-1">select Country</option>
+       <option value="0">Please Select</option>
 		<?php
 			if(empty($RSCountry) === false)
 			{
@@ -109,7 +109,7 @@ $sqlcountry = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmo
 <div class="form-group">
   <label class="col-md-4 control-label" for="email">Email</label>  
   <div class="col-md-4">
-  <input id="email" name="email" type="text" placeholder="email" value="manish@cellpointmobile.com" class="form-control input-md" >
+  <input id="email" name="email" type="text" placeholder="email" class="form-control input-md" >
     
   </div>
 </div>
@@ -118,7 +118,7 @@ $sqlcountry = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmo
 <div class="form-group">
   <label class="col-md-4 control-label" for="add1">Mobile</label>  
   <div class="col-md-4">
-  <input id="mobile" name="mobile" type="text" placeholder="" value="7385793006" class="form-control input-md" >
+  <input id="mobile" name="mobile" type="text" placeholder="" class="form-control input-md" >
     
   </div>
 </div>
@@ -127,7 +127,15 @@ $sqlcountry = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmo
 <div class="form-group">
   <label class="col-md-4 control-label" for="add1">Language</label>  
   <div class="col-md-4">
-  <input id="lan" name="lan" type="text" placeholder="" value="ga" class="form-control input-md" >
+  <input id="lan" name="lan" type="text" placeholder="" value="da" class="form-control input-md" >
+    
+  </div>
+</div>
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="add1">Customer Reference</label>  
+  <div class="col-md-4">
+  <input id="customerref" name="customerref" type="text" placeholder=""  class="form-control input-md" >
     
   </div>
 </div>
@@ -169,7 +177,7 @@ $sqlcountry = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmo
 <div class="form-group">
   <label class="col-md-4 control-label" for="add1">Ticket</label>  
   <div class="col-md-4">
-  <input id="ticket" name="ticket" type="text" placeholder="" class="form-control input-md" value="0" >
+  <input id="ticket" name="ticket" type="text" placeholder=""  class="form-control input-md" value="0" >
     
   </div>
 </div>
@@ -243,6 +251,7 @@ $sqlcountry = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmo
 			
 			var tott = parseInt(ticket) + parseInt(excb) + parseInt(tax) + parseInt(fuel) + parseInt(pre);
 			  $("#total").val(tott);
+			  
 			 var tttt = $("#total").val();
 			
 		  }

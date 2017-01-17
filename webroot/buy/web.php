@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This files contains the Controller for mPoint's Mobile Web API.
  * The Controller will ensure that all input from a Mobile Internet Site or Mobile Application is validated and a new payment transaction is started.
@@ -14,6 +15,8 @@
  * @subpackage MobileWeb
  * @version 1.10
  */
+
+
 
 // Require Global Include File
 require_once("../inc/include.php");
@@ -32,7 +35,7 @@ require_once(sCLASS_PATH ."/credit_card.php");
 require_once(sCLASS_PATH ."/validate.php");
 
 $aMsgCds = array();
-
+header('Content-Type: text/xml; charset="UTF-8"');
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 
@@ -119,7 +122,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			
 			$iAccountID = EndUserAccount::getAccountID(
 					$_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig(),
-					$_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig(),
+					$_SESSION['obj_TxnInfo']->getCountryConfig(),
 					$_SESSION['obj_TxnInfo']->getCustomerRef(),
 					$_SESSION['obj_TxnInfo']->getMobile(),
 					$_SESSION['obj_TxnInfo']->getEMail()
@@ -166,7 +169,9 @@ if (array_key_exists(1000, $aMsgCds) === true)
 {
 	$_SESSION['obj_Info']->delInfo("payment-completed");
 	// Instantiate data object with the User Agent Profile for the customer's mobile device.
+	
 	$_SESSION['obj_UA'] = UAProfile::produceUAProfile(HTTPConnInfo::produceConnInfo($aUA_CONN_INFO) );
+	
 	unset($_SESSION['temp']);
 	// Start Shop Flow
 	if ($_SESSION['obj_TxnInfo']->getClientConfig()->getFlowID() == Constants::iPHYSICAL_FLOW)
@@ -178,6 +183,7 @@ if (array_key_exists(1000, $aMsgCds) === true)
 	// Start Payment Flow
 	else
 	{
+		
 		if (strlen($_SESSION['obj_TxnInfo']->getOrderID() ) > 0 && $obj_mPoint->orderAlreadyAuthorized($_SESSION['obj_TxnInfo']->getOrderID() ) === true)
 		{
 			$obj_mPoint->newMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_DUPLICATED_STATE, "Order: ". $_SESSION['obj_TxnInfo']->getOrderID() ." already authorized");
@@ -187,6 +193,7 @@ if (array_key_exists(1000, $aMsgCds) === true)
 		// End-User already has an account that is linked to the Client
 		elseif ($_SESSION['obj_TxnInfo']->getAccountID() > 0)
 		{
+			
 			$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SESSION['obj_UA']);
 			$obj_XML = simplexml_load_string($obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount() ) );
 			$obj_CardsXML = simplexml_load_string($obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID(), $obj_ClientConfig) );
