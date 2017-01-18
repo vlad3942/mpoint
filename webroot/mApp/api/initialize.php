@@ -175,6 +175,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							//Test if the order/cart details are passed as part of the input XML request. 
 							if(count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders) == 1 && count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->children()) > 0 )
 							{
+								
+								
 								for ($j=0; $j<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}); $j++ )
 								{
 									$data['orders'][$j]['product-sku'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product["sku"];
@@ -186,11 +188,31 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$data['orders'][$j]['points'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->points;
 									$data['orders'][$j]['reward'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->reward;
 									$data['orders'][$j]['quantity'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->quantity;
-								}				
-								$order_id=$obj_TxnInfo->setOrderDetails($_OBJ_DB, $data['orders']); 
+									
+								}
+								$order_id = $obj_TxnInfo->setOrderDetails($_OBJ_DB, $data['orders']);
 								
+								for ($j=0; $j<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}); $j++ )
+								{
+									
+									$data['shipping_address'][$j]['name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->name;
+									$data['shipping_address'][$j]['street'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->street;
+									$data['shipping_address'][$j]['street2'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->street2;
+									$data['shipping_address'][$j]['city'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->city;
+									$data['shipping_address'][$j]['state'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->state;
+									$data['shipping_address'][$j]['zip'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->zip;
+									$data['shipping_address'][$j]['country'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'shipping-address'}[$j]->country;
+									if($order_id!="")
+									{
+										$data['shipping_address'][$j]['external-id'] = $order_id;
+									}
+								}
+								$shipping_id = $obj_TxnInfo->setShippingDetails($_OBJ_DB, $data['shipping_address']);
+
 								for ($j=0; $j<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}); $j++ )
 								{
+			
+									
 									for ($k=0; $k<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}); $k++ )
 									{
 									$data['flights'][$k]['service_class'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'service-class'};

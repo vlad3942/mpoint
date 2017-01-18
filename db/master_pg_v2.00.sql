@@ -85,3 +85,20 @@ CREATE TABLE log.additional_data_tbl
   CONSTRAINT additional_data_pk PRIMARY KEY (id)
 )
 WITHOUT OIDS;
+
+
+-- Table: log.address_tbl
+
+CREATE TABLE log.address_tbl
+(
+  id serial NOT NULL,
+  name character varying(200),
+  street text,
+  street2 text,
+  city character varying(200),
+  state character varying(200),
+  country character varying(200),
+  zip character varying(200),
+  external_ref integer,
+  CONSTRAINT address_pk PRIMARY KEY (id)
+)

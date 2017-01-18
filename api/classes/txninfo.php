@@ -907,6 +907,50 @@ class TxnInfo
 	}
 	
 	/**
+	 * Function to insert new records in the Shipping Address Related to that Order in table that are send as part of the transaction cart details
+	 *
+	 * @param 	Array $aShippingData	Data object with the Shipping Address Data details
+	 *
+	 */
+	public function setShippingDetails(RDB $obj_DB, $aShippingData)
+	{
+		if( is_array($aShippingData) === true )
+		{
+			foreach ($aShippingData as $aShippingObj)
+			{
+				$sql = "SELECT Nextvalue('Log".sSCHEMA_POSTFIX.".Address_Tbl_id_seq') AS id FROM DUAL";
+				
+				$RS = $obj_DB->getName($sql);
+				// Error: Unable to generate a new Order ID
+				if (is_array($RS) === false) { throw new mPointException("Unable to generate new address ID", 1001); }
+	
+	
+				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Address_Tbl
+							(id, name, street, street2, city, state, zip, country, external_ref)
+						VALUES
+							(". $RS["ID"] .", '". $aShippingObj["name"] ."', '". $aShippingObj["street"] ."', '". $aShippingObj["street2"] ."', '". $aShippingObj["city"] ."', '". $aShippingObj["state"] ."',
+							 '". $aShippingObj["zip"] ."', '". $aShippingObj["country"] ."', '". $aShippingObj["external-id"] ."' )";
+				//echo $sql ."\n";exit;
+				// Error: Unable to insert a new order record in the Order Table
+				if (is_resource($obj_DB->query($sql) ) === false)
+				{
+					if (is_array($RS) === vxxx) { throw new mPointException("Unable to insert new record for Address: ". $RS["ID"], 1002); }
+				}
+				else
+				{
+	
+					$Address_iD = $RS["ID"];
+	
+				}
+			}
+	
+			return $Address_iD;
+		}
+	}
+	
+	
+	
+	/**
 	 * Function to insert new records in the Additional Data table that are send as part of the transaction cart details
 	 *
 	 * @param 	Array $additionalData	Data object with the Additional Data details
