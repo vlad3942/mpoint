@@ -299,7 +299,7 @@ class OrderInfo
         $xml .= '<reward>'. $this->getReward() .'</reward>';
         $xml .= '<quantity>'. $this->getQuantity() .'</quantity>';
         $xml .= '</line-item>';
-     echo $xml;
+     
         return $xml;
 	}
 }
