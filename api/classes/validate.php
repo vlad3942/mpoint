@@ -58,6 +58,7 @@ class Validate extends ValidateBase
 	 * @param 	integer $acc 	Unique ID or Account Number that the transaction should be associated with, set to -1 to use the default account
 	 * @return 	integer
 	 */
+	
 	public static function valBasic(RDB &$oDB, $id, $acc)
 	{
 		if (empty($id) === true) { $code = 1; }			// Undefined Client ID
@@ -103,6 +104,44 @@ class Validate extends ValidateBase
 			else { $code = 3; }	// Unknown Client ID
 		}
 
+		return $code;
+	}
+	
+	
+	/**
+	 * Performs basic validation ensuring that the client exists.
+	 * The method will return the following status codes:
+	 * 	 1. Undefined Client ID
+	 * 	 2. Invalid Client ID
+	 * 	 3. Unknown Client ID
+	 * 	100. Success
+	 *
+	 * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param 	integer $id 	Unique ID for the Client performing the request
+	 * @return 	integer
+	 */
+	
+	public static function valClient(RDB &$oDB, $id)
+	{
+		if (empty($id) === true) { $code = 1; }			// Undefined Client ID
+		elseif (intval($id) < 100 || (intval($id) > 999 && intval($id) < 10000) ) { $code = 2; }		// Invalid Client ID
+		else
+		{
+			$acc = (integer) $acc;
+			$sql = "SELECT CL.id AS clientid, Cl.enabled AS clientactive
+					FROM Client".sSCHEMA_POSTFIX.".Client_Tbl Cl
+					WHERE Cl.id = ". intval($id);
+			//			echo $sql ."\n";
+			$RS = $oDB->getName($sql);
+	
+			if (is_array($RS) === true)
+			{
+				if ($RS["CLIENTACTIVE"] === false) { $code = 4; }		// Client Disabled
+				else { $code = 100; }
+			}
+			else { $code = 3; }	// Unknown Client ID
+		}
+	
 		return $code;
 	}
 
@@ -807,7 +846,7 @@ class Validate extends ValidateBase
 					FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
 					INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid AND Msg.enabled = '1'
 					WHERE Txn.id = ". intval($mpointid) ." AND Txn.clientid = ". intval($clientid) ."
-						AND Msg.stateid >= ". Constants::iPAYMENT_ACCEPTED_STATE ."
+						AND (Msg.stateid >= ". Constants::iPAYMENT_ACCEPTED_STATE ." OR  Msg.stateid = ". Constants::iPAYMENT_ACCOUNT_VALIDATED .")
 					ORDER BY Msg.stateid ASC";
 //			echo $sql ."\n";
 			$aRS = $oDB->getAllNames($sql);

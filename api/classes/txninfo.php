@@ -62,6 +62,18 @@ class TxnInfo
 	 */
 	private $_obj_OrderConfigs = null;
 	/**
+	 * Configuration for the Flights in the cart of the user send as part of the transaction.
+	 *
+	 * @var OrderInfo
+	 */
+	private $_obj_FlightConfigs = null;
+	/**
+	 * Configuration for the Passenger in the cart of the user send as part of the transaction.
+	 *
+	 * @var OrderInfo
+	 */
+	private $_obj_PassengerConfigs = null;
+	/**
 	 * Total amount the customer will pay for the Transaction without fee
 	 *
 	 * @var long
@@ -659,6 +671,7 @@ class TxnInfo
 		$xml .= '<hmac>'. htmlspecialchars($this->getHMAC(), ENT_NOQUOTES) .'</hmac>';
 		if( empty($this->_obj_OrderConfigs) === false )
 		{
+			
 			$xml .= $this->getOrdersXML();
 		}
 		$xml .= '</transaction>';
@@ -854,15 +867,12 @@ class TxnInfo
 		return is_array($res) === true && isset($res["C"]) === true && intval($res["C"]) > 0;
 	}
 	
-		/**
-	 * Function to insert new records in the order table that are send as part of the transaction cart details  
-	 *
-	 * @param 	Array $orderData   	Data object with the order details
-	 * 	 
-	 */
+	
 	public function setOrderDetails(RDB $obj_DB, $aOrderData)
 	{
-		$aReturnArray = array();
+	
+	
+	
 		if( is_array($aOrderData) === true )
 		{
 			foreach ($aOrderData as $aOrderDataObj)
@@ -871,25 +881,145 @@ class TxnInfo
 				$RS = $obj_DB->getName($sql);
 				// Error: Unable to generate a new Order ID
 				if (is_array($RS) === false) { throw new mPointException("Unable to generate new Order ID", 1001); }
-				
-				
+	
+	
 				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Order_Tbl
 							(id, txnid, countryid, amount, quantity, productsku, productname, productdescription, productimageurl, points, reward)
 						VALUES
-							(". $RS["ID"] .", ". $this->getID() .", ". $aOrderDataObj["country-id"] .", ". $aOrderDataObj["amount"] .", ". $aOrderDataObj["quantity"] .", '". $obj_DB->escStr($aOrderDataObj["product-sku"]) ."', '". $obj_DB->escStr($aOrderDataObj["product-name"]) ."', 
+							(". $RS["ID"] .", ". $this->getID() .", ". $aOrderDataObj["country-id"] .", ". $aOrderDataObj["amount"] .", ". $aOrderDataObj["quantity"] .", '". $obj_DB->escStr($aOrderDataObj["product-sku"]) ."', '". $obj_DB->escStr($aOrderDataObj["product-name"]) ."',
 							 '". $obj_DB->escStr($aOrderDataObj["product-description"]) ."', '". $obj_DB->escStr($aOrderDataObj["product-image-url"]) ."', ". $aOrderDataObj["points"] .", ". $aOrderDataObj["reward"] ." )";
-				// echo $sql ."\n";
+				//echo $sql ."\n";exit;
 				// Error: Unable to insert a new order record in the Order Table
 				if (is_resource($obj_DB->query($sql) ) === false)
 				{
 					if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for Order: ". $RS["ID"], 1002); }
 				}
-				else 
+				else
 				{
-					$aReturnArray[] = $RD["ID"];
+						
+					$order_iD = $RS["ID"];
+						
 				}
 			}
+				
+			return $order_iD;
+		}
+	}
 	
+	/**
+	 * Function to insert new records in the Additional Data table that are send as part of the transaction cart details
+	 *
+	 * @param 	Array $additionalData	Data object with the Additional Data details
+	 *
+	 */
+	public function setAdditionalDetails(RDB $obj_DB, $aAdditionalData)
+	{
+	
+		$additional_id = "";
+		if( is_array($aAdditionalData) === true )
+		{
+			$sql = "SELECT Nextvalue('Log".sSCHEMA_POSTFIX.".additional_data_Tbl_id_seq') AS id FROM DUAL";
+			$RS = $obj_DB->getName($sql);
+			// Error: Unable to generate a new Additional Data ID
+			if (is_array($RS) === false) { throw new mPointException("Unable to generate new Additional Data ID", 1001); }
+				
+			$sql = "INSERT INTO log".sSCHEMA_POSTFIX.".additional_data_tbl(id, name, value, type)
+							VALUES(". $RS["ID"] .", '". $aAdditionalData["name"] ."', '". $aAdditionalData["value"] ."', '". $aAdditionalData["type"] ."')";
+	
+			// Error: Unable to insert a new Additional Data record in the Additional Data Table
+			if (is_resource($obj_DB->query($sql) ) === false)
+			{
+				if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for Additional Data: ". $RS["ID"], 1002); }
+			}
+			else
+			{
+				$additional_id = $RS["ID"];
+			}
+				
+			return $additional_id;
+				
+		}
+	}
+	
+	/**
+	 * Function to insert new records in the Flight table that are send as part of the transaction cart details
+	 *
+	 * @param 	Array $flightData   	Data object with the flight details
+	 * @param 	Array $aAdditionalDatas   	Data object with the Additional data details
+	 *
+	 */
+	public function setFlightDetails(RDB $obj_DB, $aFlightData, $aAdditionalDatas)
+	{
+	
+		$aReturnArray = array();
+		if( is_array($aFlightData) === true )
+		{
+			foreach ($aFlightData as $aFlightDataObj)
+			{
+				$sql = "SELECT Nextvalue('Log".sSCHEMA_POSTFIX.".flight_Tbl_id_seq') AS id FROM DUAL";
+				$RS = $obj_DB->getName($sql);
+	
+				$idd = $this->setAdditionalDetails($obj_DB, $aAdditionalDatas);
+	
+				// Error: Unable to generate a new Flight ID
+				if (is_array($RS) === false) { throw new mPointException("Unable to generate new Flight ID", 1001); }
+	
+				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".flight_Tbl(id, service_class, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified,additional_data_ref)
+						VALUES('". $RS["ID"] ."','". $aFlightDataObj["service_class"] ."','". $aFlightDataObj["departure_airport"] ."','". $aFlightDataObj["arrival_airport"] ."','". $aFlightDataObj["airline_code"] ."','". $aFlightDataObj["order_id"] ."','". $aFlightDataObj["arrival_date"] ."', '". $aFlightDataObj["departure_date"] ."',now(),now(),".$idd.")";
+	
+				// Error: Unable to insert a new flight record in the Flight Table
+				if (is_resource($obj_DB->query($sql) ) === false)
+				{
+					if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for Flight: ". $RS["ID"], 1002); }
+				}
+				else
+				{
+					$aReturnArray[] = $RS["ID"];
+	
+				}
+	
+			}
+			return $aReturnArray;
+		}
+	}
+	
+	/**
+	 * Function to insert new records in the passenger table that are send as part of the transaction cart details
+	 *
+	 * @param 	Array $passengerData   	Data object with the passenger details
+	 * @param 	Array $aAdditionalDatas   	Data object with the Additional data details
+	 *
+	 */
+	public function setPassengerDetails(RDB $obj_DB, $aPassengerData, $aAdditionalDatas)
+	{
+		$aReturnArray = array();
+		if( is_array($aPassengerData) === true )
+		{
+			foreach ($aPassengerData as $aPassengerDataObj)
+			{
+				$sql = "SELECT Nextvalue('Log".sSCHEMA_POSTFIX.".passenger_Tbl_id_seq') AS id FROM DUAL";
+				$RS = $obj_DB->getName($sql);
+	
+				$idd = $this->setAdditionalDetails($obj_DB, $aAdditionalDatas,$type);
+	
+				// Error: Unable to generate a new Passenger ID
+				if (is_array($RS) === false) { throw new mPointException("Unable to generate new Passenger ID", 1001); }
+	
+				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".passenger_tbl(id, first_name, last_name, type, order_id, created, modified,additional_data_ref)
+						VALUES(". $RS["ID"] .", '". $aPassengerDataObj["first_name"] ."', '". $aPassengerDataObj["last_name"] ."','". $aPassengerDataObj["type"] ."', ". $aPassengerDataObj["order_id"] .", now(), now(), ".$idd.")";
+	
+				// Error: Unable to insert a new passenger record in the Passenger Table
+				if (is_resource($obj_DB->query($sql) ) === false)
+				{
+					if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for Passenger: ". $RS["ID"], 1002); }
+				}
+				else
+				{
+					$aReturnArray[] = $RS["ID"];
+	
+				}
+	
+			}
 			return $aReturnArray;
 		}
 	}
@@ -898,6 +1028,12 @@ class TxnInfo
 	{
 		//Get Order Detail of a given transaction if supplied by the e-commerce platform.
 		$this->_obj_OrderConfigs = OrderInfo::produceConfigurations($obj_DB, $this->getID());
+		foreach ($this->_obj_OrderConfigs as $obj_OrderInfo)
+		{
+			$this->_obj_FlightConfigs = FlightInfo::produceConfigurations($obj_DB, $obj_OrderInfo->getID());
+			$this->_obj_PassengerConfigs = PassengerInfo::produceConfigurations($obj_DB, $obj_OrderInfo->getID());
+		}
+		
 	}
 	
 	public function getOrdersXML()
@@ -910,7 +1046,25 @@ class TxnInfo
 			{
 				if( ($obj_OrderInfo instanceof OrderInfo) === true )
 				{
-					$xml.= $obj_OrderInfo->toXML();
+					
+					$xml .= $obj_OrderInfo->toXML();
+					$xml .= '<airline-data>';
+					foreach ($this->_obj_FlightConfigs as $obj_FlightInfo)
+					{
+						if( ($obj_FlightInfo instanceof FlightInfo) === true )
+						{
+							$xml .= $obj_FlightInfo->toXML();
+						}
+					}
+					foreach ($this->_obj_PassengerConfigs as $obj_PassengerInfo)
+					{
+						if( ($obj_PassengerInfo instanceof PassengerInfo) === true )
+						{
+							$xml .= $obj_PassengerInfo->toXML();
+						}
+					}
+					$xml .= '</airline-data>';
+					
 				}
 			}
 			$xml .= '</orders>';
