@@ -365,7 +365,6 @@ else
         </div>
 		</form>
       </section>
-      
 <div id="modal-cancel" href="http://www.google.co.in" class="modal fade" id="confirm-delete" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"> 
 <div class="modal-dialog">
 <div class="modal-content">
