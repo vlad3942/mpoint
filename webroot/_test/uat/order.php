@@ -102,6 +102,18 @@
 	$email=$_REQUEST['email'];
 	$flightno = $_REQUEST['FN'];
     $from = $_REQUEST['from'];
+    
+    $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $clientidd);
+    
+    if(is_object( $obj_ClientConfig ))
+    {
+    	if($obj_ClientConfig->getCancelURL() !== "")
+    	$urls["Cancel"] = $obj_ClientConfig->getCancelURL();
+    	else
+    	$urls["Cancel"] = "http://". $_SERVER["HTTP_HOST"] ."/_test/uat/addDetail.php";
+    }
+
+    
 $fromh="";
 if(strlen($from)>2)
 {
@@ -343,7 +355,7 @@ else
           </div> 
           <div class="row panel-footer">
             <div class="col-sm-6">
-              <a class="btn cancel" href="#" role="button">Cancel</a>
+              <a class="btn cancel" id="cancel"  role="button">Cancel</a>
             </div>
             <div class="col-sm-6">
 			<input class="btn pull-right" type="submit" value="Proceed to pay" />
@@ -353,6 +365,28 @@ else
         </div>
 		</form>
       </section>
+      
+<div id="modal-cancel" href="http://www.google.co.in" class="modal fade" id="confirm-delete" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"> 
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-body">
+<button type="button" class="bootbox-close-button close" data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;"> × </button>
+<div class="bootbox-body " align="center"><h3 class="text-warning"> Warning!!!</h3></div>
+</div>
+<div class="modal-footer">
+<div class="row">
+<div class="col-md-12">
+<div class="col-md-12" align="center"><h4>Are you sure you want to cancel the Transaction? </h4></div>
+
+</div>
+</div>
+<br>
+<a href=<?php echo $urls["Cancel"] ?> class="btn btn-success btn-sm">Yes</a>
+<button id="no" data-bb-handler="No" type="button" class="btn btn-danger btn-sm">No</button>
+</div>
+</div>
+</div>
+</div>
 
       <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
@@ -360,8 +394,20 @@ else
       <script src="js/bootstrap.min.js"></script>
       <!-- <script src="js/custom.js"></script> -->
       <script src="js/validate.js"></script>
+    
 	  
-	 
+	 <script type="text/javascript">
+$('#cancel').on('click', function() {
+	$('#modal-cancel').modal('show');	
+});
+
+$('#no').on('click', function() {
+	$('#modal-cancel').modal('hide');	
+});
+</script>
+
+
+
     </body>
     </html>
 

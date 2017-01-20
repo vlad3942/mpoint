@@ -1361,6 +1361,7 @@ a.text-info:focus {
 .text-warning {
   color: #8a6d3b;
 }
+
 a.text-warning:hover,
 a.text-warning:focus {
   color: #66512c;
@@ -3175,8 +3176,8 @@ fieldset[disabled] .btn-primary.focus {
 }
 .btn-success {
   color: #fff;
-  background-color: #5cb85c;
-  border-color: #4cae4c;
+  background-color: #5cb85c !important;
+  border-color: #4cae4c !important;
 }
 .btn-success:focus,
 .btn-success.focus {

@@ -137,6 +137,19 @@ hr {
   background: #f62f5e;
   line-height: 36px;
 }
+
+.btn-success {
+    color: #fff !important;
+background-color: #24b145 !important;
+border-color: #1f9c3d !important;
+}
+
+.btn-danger {
+    color: #fff !important;
+background-color: #ee3d3d !important;
+border-color: #ec2626 !important;
+}
+
 .btn:hover {
   color: #fff;
   transform: scale(1.1);
@@ -436,8 +449,13 @@ form.classy-form .input-group-addon {
   color: red;
 }
 
+h3.text-warning{
+color: #f0ad4e;
+}
 
-
+.mainblue{
+	color:#2a6df0;
+}
 
 
 
