@@ -1,6 +1,9 @@
 <?php
+
     require_once("../../inc/include.php");
     
+   
+
     header('Content-Type: text/html; charset="UTF-8"');
 
     /*$accounts = array();
@@ -77,102 +80,116 @@
 		/*}
     }*/
    // $details=Array ("accounts" => 'html5', "country" => 100, "clientid" => 10007, "account" => 100007, "markup" => 'html5', "amount" => 100 ,"orderid" => 'UAT-77813110' ,"mobile" => 30206172 ,"operator" => 10002 ,"email" => 'abhishek@cellpointmobile.com' ,"language" => 'gb', "auth-token" => '',"customer-ref" => 1234412);
+			
+			
+			if($_SERVER['HTTP_REFERER'])
+			{
+				$returnvalue = $_SERVER['HTTP_REFERER'];
+			}
+			else
+			{
+				$returnvalue = "#";
+			}
+				
+			
+			
 	if(!empty($_REQUEST))
 	{
 		
-		function generateRandomString($length = 10) {
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    $charactersLength = strlen($characters);
-    $randomString = '';
-    for ($i = 0; $i < $length; $i++) {
-        $randomString .= $characters[rand(0, $charactersLength - 1)];
-    }
-    return $randomString;
-}
+		function generateRandomString($length = 10) 
+		{
+		    $characters = '0123456789';
+		    $charactersLength = strlen($characters);
+		    $randomString = '';
+		    for ($i = 0; $i < $length; $i++) {
+		        $randomString .= $characters[rand(0, $charactersLength - 1)];
+		    }
+		    return $randomString;
+		}
 		
-	$accountidd=$_REQUEST['accountsel'];
-	$clientidd=$_REQUEST['clientsel'];	
-	$countryidd=$_REQUEST['countrysel'];	
-	$orderidd='ORD'.generateRandomString();
-	$operatoridd=$countryidd*100;
-	$customeridd=generateRandomString();
-	$mobileno=$_REQUEST['mobile'];
-	$language=$_REQUEST['lan'];
-	$auth=$_REQUEST['AT'];	
-	$email=$_REQUEST['email'];
-	$flightno = $_REQUEST['FN'];
-    $from = $_REQUEST['from'];
-    
-    $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $clientidd);
-    
-    if(is_object( $obj_ClientConfig ))
-    {
-    	if($obj_ClientConfig->getCancelURL() !== "")
-    	$urls["Cancel"] = $obj_ClientConfig->getCancelURL();
-    	else
-    	$urls["Cancel"] = "http://". $_SERVER["HTTP_HOST"] ."/_test/uat/addDetail.php";
-    }
-
-    
-$fromh="";
-if(strlen($from)>2)
-{
-	for($i=0;$i<=2;$i++)
-	{
-		$fromh.=$from[$i];
-	}
+		$accountidd=$_REQUEST['accountsel'];
+		$clientidd=$_REQUEST['clientsel'];	
+		$countryidd=$_REQUEST['countrysel'];	
+		$orderidd='UAT-'.generateRandomString();
+		$operatoridd=$countryidd*100;
+		$customeridd=$_REQUEST['customerref'];
+		$mobileno=$_REQUEST['mobile'];
+		$language=$_REQUEST['lan'];
+		$auth=$_REQUEST['AT'];	
+		$email=$_REQUEST['email'];
+		$flightno = $_REQUEST['FN'];
+	    $from = $_REQUEST['from'];
+	    
+	    $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $clientidd);
+	    
+	    if(is_object( $obj_ClientConfig ))
+	    {
+	    	if($obj_ClientConfig->getCancelURL() !== "")
+	    	$urls["Cancel"] = $obj_ClientConfig->getCancelURL();
+	    	else
+	    	$urls["Cancel"] = "http://". $_SERVER["HTTP_HOST"] ."/_test/uat/addDetail.php";
+	    }
 	
-}
-else
-{
-	$fromh.=$from;
-}
-		
-    $to = $_REQUEST['to'];
-	
-	$toh="";
-if(strlen($to)>2)
-{
-	for($i=0;$i<=2;$i++)
-	{
-		$toh.=$to[$i];
-	}
-	
-}
-else
-{
-	$toh.=$to;
-}
-    $ticket = $_REQUEST['ticket'];
-	if($ticket==0)
-	{
-		$ticket = "NA";
-	}
-    $excb = $_REQUEST['excb'];
-	if($excb==0)
-	{
-		$excb = "NA";
-	}
-    $taxes = $_REQUEST['taxes'];
-	if($taxes==0)
-	{
-		$taxes = "NA";
-	}
-    $fuel = $_REQUEST['fuel'];
-	if($fuel==0)
-	{
-		$fuel = "NA";
-	}
-    $premium = $_REQUEST['premium'];
-	if($premium==0)
-	{
-		$premium = "NA";
-	}
-    $total = $_REQUEST['total'];
-	if($total==0)
-	{
-		$total = "NA";
-	}
+	    
+		$fromh="";
+		if(strlen($from)>2)
+		{
+			for($i=0;$i<=2;$i++)
+			{
+				$fromh.=$from[$i];
+			}
+			
+		}
+		else
+		{
+			$fromh.=$from;
+		}
+				
+		    $to = $_REQUEST['to'];
+			
+			$toh="";
+		if(strlen($to)>2)
+		{
+			for($i=0;$i<=2;$i++)
+			{
+				$toh.=$to[$i];
+			}
+			
+		}
+		else
+		{
+			$toh.=$to;
+		}
+	    $ticket = $_REQUEST['ticket'];
+		if($ticket==0)
+		{
+			$ticket = "NA";
+		}
+	    $excb = $_REQUEST['excb'];
+		if($excb==0)
+		{
+			$excb = "NA";
+		}
+	    $taxes = $_REQUEST['taxes'];
+		if($taxes==0)
+		{
+			$taxes = "NA";
+		}
+	    $fuel = $_REQUEST['fuel'];
+		if($fuel==0)
+		{
+			$fuel = "NA";
+		}
+	    $premium = $_REQUEST['premium'];
+		if($premium==0)
+		{
+			$premium = "NA";
+		}
+	    $total = $_REQUEST['total'];
+		if($total==0)
+		{
+			$total = "NA";
+		}
 		
 	}
 ?>
@@ -198,12 +215,6 @@ else
 	  <form action="http://<?= $_SERVER['HTTP_HOST']; ?>/buy/web.php" method="post">
 	  <table>
     <!--<tr><td></td></tr>-->
-
-
-	
-	
-	
-	
 <tr>
 	
 </tr>
@@ -216,6 +227,9 @@ else
 </tr>
 <tr>
     <td><?php echo "<input name=\"account\" id=\"account\" value='".$accountidd."' type=\"hidden\" /></td>"; ?></td>
+</tr>
+<tr>
+    <td><?php echo "<input name=\"return\" id=\"return\" value='".$returnvalue."' type=\"hidden\" /></td>"; ?></td>
 </tr>
 <tr>
 	
