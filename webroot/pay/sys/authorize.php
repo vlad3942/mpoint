@@ -298,7 +298,7 @@ if (count($aMsgCds) == 0)
 		$msg = 59;
 	}
 
-	if ($code == 200)
+	if (in_array($code, array(200, 303)) == true)
 	{
 		$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
 		
@@ -318,57 +318,6 @@ if (count($aMsgCds) == 0)
 		else
 		{
 			$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=". $msg;
-
-			if($code == 2005)
-			{
-				$timestamp = date("YmdHis");
-				if(count($obj_XML->{'parsed-challenge'}->action) > 0)
-				{
-					if($obj_XML->{'parsed-challenge'}->action['type-id'] == 10)
-					{
-						
-						if(count($obj_XML->{'parsed-challenge'}->action->url) > 0)
-						{
-							$url = $obj_XML->{'parsed-challenge'}->action->url;
-						}
-						
-						$html .= "<body onload='submitForm();' >";
-						$html .= "<form name='secure_page_".$timestamp."' id='secure_page_".$timestamp."' action='".$url."' method='POST'>";
-						
-						if(count($obj_XML->{'parsed-challenge'}->action->{'hidden-fields'}) > 0)
-						{
-							$hidden_inputs = '';
-						
-							$hidden_fields = $obj_XML->{'parsed-challenge'}->action->{'hidden-fields'}->children();
-						
-							foreach($hidden_fields as $hidden_field)
-							{
-								$hidden_inputs .= '<input type="hidden" name="'.$hidden_field->getName().'" value="'.$hidden_field.'" /> ';
-							}
-						}
-						
-						$html .= $hidden_inputs;
-						
-						$html .= '</form>';
-						
-						$html .= '<script type="text/javascript">
-								
-								function submitForm()
-								{
-									document.getElementById("secure_page_'.$timestamp.'").submit();
-								}
-							</script></body>';
-					}
-				}
-				else
-				{
-					$html = html_entity_decode($obj_XML->{'parsed-challenge'});
-				}
-				
-				$file_name = "secure_page_".$timestamp.".html";
-				file_put_contents($_SERVER['DOCUMENT_ROOT'] ."/_test/securepages/".$file_name, $html);
-				$url = "http://". $_SERVER['SERVER_NAME'] ."/_test/securepages/".$file_name;
-			}
 			
 			if(array_key_exists("store-card", $_POST) == true && $_POST['store-card'] == 'on')
 			{
@@ -399,9 +348,9 @@ if (count($aMsgCds) == 0)
 
 					}
 										
-					$code = $obj_mPoint->saveCardName($obj_TxnInfo->getAccountID(), $cardTypeId, (string) $sCardName);
+					$saveCardCode = $obj_mPoint->saveCardName($obj_TxnInfo->getAccountID(), $cardTypeId, (string) $sCardName);
 					
-					if($code == 2 or $code == 1) { $code = 102; }
+					if($saveCardCode == 2 or $saveCardCode == 1) { $saveCardCode = 102; }
 					
 				} else {
 					
@@ -418,13 +367,71 @@ if (count($aMsgCds) == 0)
 						$iStatus = $obj_mPoint->savePassword($_SESSION['obj_TxnInfo']->getMobile(), $sPassword, $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig());
 					}
 					
-					$code = $obj_mPoint->saveCardName($iAccountID, $cardTypeId, (string) $sCardName);
+					$saveCardCode = $obj_mPoint->saveCardName($iAccountID, $cardTypeId, (string) $sCardName);
 					
-					if($code == 2 or $code == 1) { $code = 102; }
+					if($saveCardCode == 2 or $saveCardCode == 1) { $saveCardCode = 102; }
 				}
 				
-				$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=". $code;
+				$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=". $saveCardCode;
 			}
+			
+			if($code == 2005)
+			{
+				$html = "";
+				$timestamp = date("YmdHis");
+				
+				if(count($obj_XML->{'parsed-challenge'}->action) > 0)
+				{
+					if($obj_XML->{'parsed-challenge'}->action['type-id'] == 10)
+					{
+			
+						if(count($obj_XML->{'parsed-challenge'}->action->url) > 0)
+						{
+							$url = $obj_XML->{'parsed-challenge'}->action->url;
+						}
+			
+						if(count($obj_XML->{'parsed-challenge'}->action->{'hidden-fields'}) > 0)
+						{
+							$html .= "<body onload='submitForm();' >";
+							$html .= "<form name='secure_page_".$timestamp."' id='secure_page_".$timestamp."' action='".$url."' method='POST'>";
+							
+							$hidden_inputs = '';
+			
+							$hidden_fields = $obj_XML->{'parsed-challenge'}->action->{'hidden-fields'}->children();
+			
+							foreach($hidden_fields as $hidden_field)
+							{
+								$hidden_inputs .= '<input type="hidden" name="'.$hidden_field->getName().'" value="'.$hidden_field.'" /> ';
+							}
+							
+							$html .= $hidden_inputs;
+								
+							$html .= '</form>';
+								
+							$html .= '<script type="text/javascript">
+		
+								function submitForm()
+								{
+									document.getElementById("secure_page_'.$timestamp.'").submit();
+								}
+							</script></body>';
+						}			
+						
+					}
+				}
+				else
+				{
+					$html = html_entity_decode($obj_XML->{'parsed-challenge'});
+				}
+			
+				if(empty($html) == false)
+				{
+					$file_name = "secure_page_".$timestamp.".html";
+					file_put_contents($_SERVER['DOCUMENT_ROOT'] ."/_test/securepages/".$file_name, $html);
+					$url = "http://". $_SERVER['SERVER_NAME'] ."/_test/securepages/".$file_name;
+				}
+			}
+			
 		}
 	} else { $url = "http://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=".$code; }
 	

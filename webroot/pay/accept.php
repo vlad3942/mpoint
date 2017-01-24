@@ -29,14 +29,15 @@ if (array_key_exists("mpoint-id", $_REQUEST) === true
 {
 	$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($_REQUEST['mpoint-id'], $_OBJ_DB);
 }
-
+//print_r($_SESSION['obj_TxnInfo']);exit;
 // User is re-entering the payment flow
-if ($_SESSION['obj_Info']->getInfo("payment-completed") === true)
+//echo "<pre>";print_r($_SESSION['obj_TxnInfo']);exit;
+/* if ($_SESSION['obj_Info']->getInfo("payment-completed") === true)
 {
 	header("Location: /pay/re-enter.php?". session_name() ."=". session_id() ."&mpoint-id=". $_SESSION['obj_TxnInfo']->getID() );
 }
 else
-{
+{ */
 	$obj_mPoint = new Accept($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_UA']);
 	
 	$_SESSION['obj_Info']->setInfo("payment-completed", true);
@@ -51,7 +52,7 @@ else
 	
 		$xml .= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML();
 	
-		$xml .= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']);
+		//$xml .= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']);
 	
 		$xml .= $obj_mPoint->getmPointLogoInfo();
 	
@@ -76,6 +77,17 @@ else
 		}
 	
 		$xml .= $obj_mPoint->getMessages("Accept");
+		$xml .= '<transactionstatus>'.$_REQUEST['transactionStatus'].'</transactionstatus>';
+		$xml .= '<transactionid>'.$_REQUEST['mpoint-id'].'</transactionid>';
+		if($_SESSION['obj_TxnInfo']->getCSSURL()=="")
+		{
+			$cssurll="http://". $_SERVER["HTTP_HOST"] ."/css/bootstrap/styles.css";
+		}
+		else 
+		{
+			$cssurll=$_SESSION['obj_TxnInfo']->getCSSURL();
+		}
+		$xml .= '<cssurl>'.$cssurll.'</cssurl>';
 	$xml .= '</root>';
 	
 	file_put_contents(sLOG_PATH ."/debug_accept". date("Y-m-d") .".log", $xml);
@@ -83,5 +95,5 @@ else
 	echo $xml;
 	exit;
 
-}
+//}
 ?>

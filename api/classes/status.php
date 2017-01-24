@@ -48,6 +48,22 @@ class Status extends General
 		return $aRS;
 	}
 
+	public function getTransactionInStatus($status=null)
+	{
+		$sql = "SELECT distinct Txn.id
+			    	 FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl Txn
+					 INNER JOIN Log" . sSCHEMA_POSTFIX . ".Message_Tbl Msg1 ON Msg1.txnid = Txn.id AND Msg1.stateid = " . $status . " AND Msg1.enabled = '1'";
+	
+		$res = $this->getDBConn()->query($sql);
+		if (is_resource($res) === false) { throw new mPointException("Fetching  transactions failed: ". print_r($this->getDBConn()->getError(), true) ); }
+	
+		$aRS = array();
+		while ($RS = $this->getDBConn()->fetchName($res) ) { $aRS[] = $RS; }
+		
+		return $aRS;
+	}
+	
+	
 	/**
 	 * @param Callback $obj_PSP
 	 * @param TxnInfo $obj_TxnInfo

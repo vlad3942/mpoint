@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <title>Select Payment Method</title>
+
+  <!-- Bootstrap -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+
+
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
+
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+    </head>
+    <body>
+
+      <section>
+        <div class="container main">
+          <div class="row">
+            <div class="col-md-3">
+              <a href="" class="logo"><img src="img/logo.jpg" alt="CellPoint Mobile" /></a>
+            </div>
+            <div class="col-md-9 text-right">
+              <h2 class="sub-header">Select Payment Method <small>(step 2/3)</small></h2>
+            </div>
+          </div> 
+          <hr>
+          <div class="row panel-main">
+            <div class="col-md-12">
+
+              <!-- Start: Saved card remove alert -->
+              <div id="remove-card-alert" class="alert fade in alert-danger" role="alert" style="display:none">Are you sure you want to remove this card?
+                <div class="pull-right">
+                  <a href="#" class="btn btn-sm"> Yes, remove it.</a>
+                  <a href="#" class="btn btn-sm cancel"> Cancel</a>
+                </div>
+              </div>
+              <!-- End: Saved card remove alert -->
+
+              <!-- Start: Tab section for various payment methods -->
+              <section>
+                <div class="tabs tabs-style-flip">
+                  <nav>
+                    <ul>
+                      <li><a href="#section-flip-5" class="icon icon-plane"><span>Stored Cards</span></a></li>
+                      <li><a href="#section-flip-4" class="icon icon-date"><span>Debit / Credit Card</span></a></li>
+                      <li><a href="#section-flip-2" class="icon icon-gift"><span>Wallets</span></a></li>
+                      <!-- <li><a href="#section-flip-3" class="icon icon-coffee"><span>Drinks</span></a></li>
+                      <li><a href="#section-flip-5" class="icon icon-tools"><span>Settings</span></a></li> -->
+                    </ul>
+                  </nav>
+                  <div class="content-wrap">
+                    <section id="section-flip-1">
+                      <div class="row">
+                        <!-- Start: Single saved card -->
+                        <div class="col-md-4">
+                          <a type="button" data-toggle="modal" data-target=".cvv-password">
+                            <div class="saved-card">
+                              <img src="img/visa-card.png" class="card-type" alt="Visa">
+                              <h4 class="red">John Smith C1</h4>
+                              <p>xxxx xxxx xxxx 9018</p>
+                              <p><small>Expiry: 02/24</small></p>
+                              <p class="remove-card">
+                                <a class="red remove-alert"><small>Remove </small> <span class="glyphicon glyphicon-trash"></span>
+                                </a>
+                              </p>
+                            </div>
+                          </a>
+                        </div>
+                        <!-- End: Single saved card -->
+
+                        <!-- Start: Single saved card -->
+                        <div class="col-md-4">
+                          <div class="saved-card">
+                            <img src="img/mastercard.png" class="card-type" alt="Visa">
+                            <h4 class="red">My MasterCard</h4>
+                            <p>xxxx xxxx xxxx 4332</p>
+                            <p><small>Expiry: 01/18</small></p>
+                            <p class="remove-card"><a href="#" class="red"><small>Remove </small> <span class="glyphicon glyphicon-trash"></span></a></p>
+                          </div>
+                        </div>
+                        <!-- End: Single saved card -->
+
+                        <!-- Start: Single saved card -->
+                        <div class="col-md-4">
+                          <div class="saved-card">
+                            <img src="img/visa-card.png" class="card-type" alt="Visa">
+                            <h4 class="red">Card 01</h4>
+                            <p>xxxx xxxx xxxx 6754</p>
+                            <p><small>Expiry: 11/26</small></p>
+                            <p class="remove-card"><a href="#" class="red"><small>Remove </small> <span class="glyphicon glyphicon-trash"></span></a></p>
+                          </div>
+                        </div>
+                        <!-- End: Single saved card -->
+
+                        
+                        <div class="col-md-4">
+                          <a href="#">
+                            <div class="saved-card text-center">
+                              <p><span class="glyphicon glyphicon-plus"></span> Add new card</p>
+                            </div>
+                          </a>
+                        </div>
+                        
+
+                        <!-- Start: Enter password modal -->
+                        <div class="modal fade cvv-password" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content text-center">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title">Enter details to pay with this card</h4>
+                              </div>
+                              <form class="form-inline classy-form">
+                                <div class="form-group">
+                                  <label class="sr-only" for="exampleInputAmount">CVV</label>
+                                  <div class="input-group">
+                                    <div class="input-group-addon">CVV</div>
+                                    <input type="password" class="form-control" id="exampleInputAmount">
+                                  </div>
+                                </div>
+                                <div class="form-group">
+                                  <label class="sr-only" for="exampleInputAmount">Password</label>
+                                  <div class="input-group">
+                                    <div class="input-group-addon">Password</div>
+                                    <input type="password" class="form-control" id="exampleInputAmount">
+                                  </div>
+                                </div>
+                                <button type="submit" class="btn">Confirm Payment</button>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Start: Enter password modal -->
+
+                      </div>
+                    </section>
+                    
+                    <section id="section-flip-2">
+                      <div class="row">
+                        <div class="col-md-5 text-center">
+                          <h3>We accept:</h3>
+                          <ul class="list-inline cards-accepted">
+                            <li>
+                              <img src="img/visa-card.png"> Visa
+                            </li>
+                            <li>
+                              <img src="img/mastercard.png"> MasterCard
+                            </li>
+                          </ul>
+                          <p class="gray"><small>Please note that, depending on card type processing fees may apply or vary.</small></p>
+                        </div>
+                        <div class="col-md-5 col-md-offset-2">
+                          <form class="classy-form">
+                            <div class="row">
+                              <div class="form-group col-md-12">
+                                <label for="exampleInputEmail1">Cardholder's Name</label>
+                                <input type="text" class="form-control" id="exampleInputEmail1" placeholder="John Doe">
+                              </div>
+                              <div class="form-group col-md-12">
+                                <label for="exampleInputEmail1">Card Number</label>
+                                <input type="number" class="form-control" id="exampleInputEmail1" placeholder="xxxx xxxx xxxx xxxx">
+                              </div>
+                              <div class="form-group col-md-6">
+                                <label for="exampleInputPassword1">Expiry</label>
+                                <input type="number" class="form-control" id="exampleInputPassword1" placeholder="MM/YY">
+                              </div>
+                              <div class="form-group col-md-6">
+                                <label for="exampleInputPassword1">CVV</label>
+                                <input type="password" class="form-control" id="exampleInputPassword1">
+                              </div>
+                              <div class="checkbox col-md-12">
+                                <label>
+                                  <input id="save-this-card" type="checkbox" onchange="valueChanged()"> Save this card details for future use.
+                                </label>
+                              </div>
+                              <div id="saveNewCardName" class="form-group col-md-12" style="display: none">
+                                <label for="exampleInputPassword1">Name this card</label>
+                                <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Name your card">
+                              </div>
+                              <div class="col-md-12 text-right">
+                                <br>
+                                <button type="submit" class="btn">Confirm Payment</button>
+                              </div>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </section>
+                    <section id="section-flip-3">
+                      <div class="row">
+                        <!-- Start: Single saved card -->
+                        <div class="col-md-4">
+                          <div class="wallet-type text-center">
+                            <img src="img/paypal.png" class="wallet-img" alt="PayPal">
+                            <h4 class="red">Paypal</h4>
+                          </div>
+                        </div>
+                        <!-- End: Single saved card -->
+
+                        <!-- Start: Single saved card -->
+                        <div class="col-md-4">
+                          <div class="wallet-type text-center">
+                            <img src="img/masterpass.png" class="wallet-img" alt="Masterpass">
+                            <h4 class="red">Masterpass</h4>
+                          </div>
+                        </div>
+                        <!-- End: Single saved card -->
+
+                        <!-- Start: Single saved card -->
+                        <div class="col-md-4">
+                          <div class="wallet-type text-center">
+                            <img src="img/visa-checkout.png" class="wallet-img" alt="Visa Checkout">
+                            <h4 class="red">Visa Checkout</h4>
+                          </div>
+                        </div>
+                        <!-- End: Single saved card -->
+
+                        <!-- Start: Single saved card -->
+                        <div class="col-md-4">
+                          <div class="wallet-type text-center">
+                            <img src="img/apple-pay.png" class="wallet-img" alt="Apple Pay">
+                            <h4 class="red">Apple Pay</h4>
+                          </div>
+                        </div>
+                        <!-- End: Single saved card -->
+                      </div>
+                      <div class="row panel-footer">
+                        <div class="col-sm-12">
+                          <a class="btn pull-right" href="#" role="button">Proceed to pay</a>
+                        </div>
+                      </div>
+                    </section>
+                    <!-- <section id="section-flip-4"><p>4</p></section>
+                    <section id="section-flip-5"><p>5</p></section> -->
+                  </div><!-- /content -->
+                </div><!-- /tabs -->
+              </section>
+            </div>
+          </div> 
+        </div>
+      </section>
+      <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+      <!-- Include all compiled plugins (below), or include individual files as needed -->
+      <script src="js/bootstrap.min.js"></script>
+      <script src="js/cbpFWTabs.js"></script>
+      <script>
+      (function() {
+
+        [].slice.call( document.querySelectorAll( '.tabs' ) ).forEach( function( el ) {
+          new CBPFWTabs( el );
+        });
+
+      })();
+      </script>
+
+      <!-- Script for remove card alert -->
+      <script type="text/javascript">
+      $('.alert .cancel').on('click', function(e) {
+        $('#remove-card-alert').hide(100);
+        $('.remove-alert').parents(':eq(1)').removeClass('disabled-card');
+      });
+      $('.remove-alert').on('click', function(e) {
+        $('#remove-card-alert').show(100);
+        $('.remove-alert').parents(':eq(1)').addClass('disabled-card');
+      });
+      </script>
+
+      <!-- Script for Wallet type selection -->
+      <script type="text/javascript">
+      $('.wallet-type').on('click', function(e) {
+        $('.wallet-type.selected').removeClass('selected');
+        $(this).addClass('selected');
+      });
+      </script>
+
+      <!-- Script for save card checkbox -->
+      <script type="text/javascript">
+      function valueChanged()
+      {
+        if($('#save-this-card').is(":checked"))   
+          $("#saveNewCardName").show();
+        else
+          $("#saveNewCardName").hide();
+      }
+      </script>
+    </body>
+    </html>

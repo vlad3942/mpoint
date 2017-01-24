@@ -348,9 +348,9 @@ class DIBS extends Callback implements Captureable, Refundable
 		if ($iAmount == -1) { $iAmount = $this->getTxnInfo()->getAmount(); }
 
 		$aConnInfo = $this->aCONN_INFO;
-
-		if ($code == -1) { $code = $this->status($extID); }
-
+		
+		if ($code == -1 or empty($code) == true) { $code = $this->status($extID); }
+		
 		//Set the api type depending on the return value that is returned from DIBS
 		switch ($code)
 		{
