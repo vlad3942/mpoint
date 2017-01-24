@@ -17,7 +17,6 @@
  */
 
 
-
 // Require Global Include File
 require_once("../inc/include.php");
 
@@ -34,6 +33,11 @@ require_once(sCLASS_PATH ."/credit_card.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
 
+session_start();
+if($_REQUEST["return"])
+{
+	$_SESSION["return"] = $_REQUEST["return"];
+}
 $aMsgCds = array();
 header('Content-Type: text/xml; charset="UTF-8"');
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement

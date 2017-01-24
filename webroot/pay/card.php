@@ -25,6 +25,7 @@ require_once(sCLASS_PATH ."/credit_card.php");
 // Require Business logic for the Payment Accepted component
 require_once(sCLASS_PATH ."/accept.php");
 
+
 $xmlData = '<title>'.$_OBJ_TXT->_("Select Payment Method").'</title>';
 $xmlData .= '<labels>
 			<progress>'.$_OBJ_TXT->_("Step 1 of 2").'</progress>
@@ -37,7 +38,8 @@ $xmlData .= '<labels>
 			<paymentcard>'.$_OBJ_TXT->_("Payment card").'</paymentcard>
 			<savecard>'.$_OBJ_TXT->_("Save card info").'</savecard>
 			<cardholder>'.$_OBJ_TXT->_("Card holder").'</cardholder>
-			<back-button>'. $_OBJ_TXT->_("Back button") .'</back-button>
+			<back-button>'. $_OBJ_TXT->_("back to cart") .'</back-button>
+			<returnurl>'. $_OBJ_TXT->_($_SESSION["return"]) .'</returnurl>
 			<password>'. $_OBJ_TXT->_("Password") .'</password>
 			<submit>'. $_OBJ_TXT->_("Complete Payment") .'</submit>
 			<password>'. $_OBJ_TXT->_("Create Password - Help Checkout") .'</password>
@@ -52,8 +54,10 @@ $aWallets = array(Constants::iVISA_CHECKOUT_WALLET, Constants::iMASTER_PASS_WALL
 
 try
 {
+	
 	if($_SESSION['obj_TxnInfo'] === null)
 	{
+		
 		trigger_error("Session expired.", E_USER_ERROR);
 		$_GET['msg'] = 0;
 	}
@@ -186,7 +190,7 @@ try
 		$xmlData .= trim(str_replace('<?xml version="1.0"?>', '',$obj_CardXML->asXML()));
 		
 		$xmlData .= $obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_TxnInfo']->getClientConfig(), false, $_SESSION['obj_UA']);
-						
+		
 	}	
 	
 }
@@ -195,6 +199,7 @@ catch(Exception $e)
 	trigger_error($e->getMessage(), E_USER_ERROR);
 	$_GET['msg'] = 1;
 }
+
 
 $xml = '<?xml version="1.0" encoding="UTF-8"?>';
 $xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/html5/pay/webcard.xsl"?>';

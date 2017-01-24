@@ -34,12 +34,46 @@
 											<!-- Display payment form for normal payment cards -->
 											<xsl:if test="cards/item/@id = 1 or cards/item/@id = 2 or cards/item/@id = 3 or cards/item/@id = 5 or cards/item/@id = 6 or cards/item/@id = 7 or cards/item/@id = 8 or cards/item/@id = 9">
 												<xsl:apply-templates select="cards" mode="cpm" />
+												
 											</xsl:if>
 										    <!-- </div>
 										</div>		
 									</div>
 								</div> -->
 				  		</div>
+				  		
+				  	
+					<div class="col-md-12">
+					<p class="remove-card text-center">
+					<a href="#" data-toggle="modal" data-target="#modal-cancel" class="red remove-alert66469">
+					<span class="glyphicon glyphicon-chevron-left" title="Delete Card"></span>
+					<big><xsl:value-of select="/root/labels/back-button" /> </big>
+					</a>
+					</p>
+					</div>
+					
+					<div id="modal-cancel" href="http://www.google.co.in" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"> 
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-body">
+<button type="button" class="bootbox-close-button close" data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;"> × </button>
+<div class="bootbox-body " align="center"><h3 class="text-warning"> Warning!!!</h3></div>
+</div>
+<div class="modal-footer">
+<div class="row">
+<div class="col-md-12">
+<div class="col-md-12" align="center"><h4>Are you sure you want to cancel the Transaction? </h4></div>
+
+</div>
+</div>
+<br/>
+<xsl:variable name="returnurl" select="/root/labels/returnurl"/>
+<a href="{$returnurl}" class="btn btn-success btn-sm">Yes</a>
+<button id="no" data-dismiss="modal" data-bb-handler="No" type="button" class="btn btn-danger btn-sm">No</button>
+</div>
+</div>
+</div>
+</div>
                 </div>
               </div>
             </section>
@@ -87,7 +121,7 @@
                             <xsl:if test="client/@id = /root/client-config/@id">
                             <div class="saved-card col-md-12  " style="border:none;box-shadow:none;">
                             <div id="modalshow{@id}" class="col-md-12 saved-card">
-                                <img src="/css/img/visa-card.png" class="card-type" alt="Visa"/>
+                                <img src="/css/swag/img/visa-card.png" class="card-type" alt="Visa"/>
                                   <h4 class="red"><xsl:value-of select="name" /></h4>
                                   <p><xsl:value-of select="mask"  /></p>
                                   <p><small>Expiry: <xsl:value-of select="expiry" /></small></p>
@@ -183,6 +217,7 @@
 </xsl:template>
 
 <xsl:template match="cards" mode="cpm">
+
                      <div class="panel panel-default add-card">
                       <div class="panel-heading" role="tab" id="headingThree">
                         <a role="button" data-toggle="collapse" data-parent="#accordion1" href="#collapseThree" aria-expanded="true" aria-controls="collapseTwo" >
@@ -372,7 +407,7 @@
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
-  <script src="/css/js/bootstrap.min.js"></script>
+  <script src="/css/swag/js/bootstrap.min.js"></script>
 <!-- Script for remove card alert -->
 <!-- Script for save card checkbox -->
   <script type="text/javascript">
@@ -425,7 +460,7 @@ Wallets
 
 					<div class="row" data-toggle="modal" data-target=".login-wallet">
 						<div class="col-xs-12 col-sm-4 col-md-4" id="card-{@id}">
-							<!-- <img src="/css/img/paypal.png" class="wallet-img" alt="Paypal"/> -->
+							<!-- <img src="/css/swag/img/paypal.png" class="wallet-img" alt="Paypal"/> -->
 							
 						</div>
 						<div class="col-xs-10 col-sm-6 col-md-6">
