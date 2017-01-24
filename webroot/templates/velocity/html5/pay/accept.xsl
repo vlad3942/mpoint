@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:func="http://exslt.org/functions" extension-element-prefixes="func">
 <xsl:output method="html" indent="no" media-type="text/html" doctype-public="HTML" omit-xml-declaration="yes" standalone="yes" />
 <xsl:include href="../mobile.xsl"/>
@@ -9,13 +10,17 @@
          <xsl:when test="transactionstatus = 0">
 					    <xsl:apply-templates select="." mode="fail">
 										<xsl:with-param name="transaction_id" select="transactionid"/>
-											<xsl:with-param name="cssurldata" select="cssurl"/>		
+											<xsl:with-param name="cssurldata" select="cssurl"/>	
+											<xsl:with-param name="accepturldata" select="accepturl"/>	
+											<xsl:with-param name="cancelurldata" select="cancelurl"/>		
 						</xsl:apply-templates>     
          </xsl:when>
 		 <xsl:otherwise>       	
 					 <xsl:apply-templates select="." mode="success">
 			           		<xsl:with-param name="transaction_id" select="transactionid"/>
-			           		<xsl:with-param name="cssurldata" select="cssurl"/>		
+			           		<xsl:with-param name="cssurldata" select="cssurl"/>	
+						<xsl:with-param name="accepturldata" select="accepturl"/>	
+						<xsl:with-param name="cancelurldata" select="cancelurl"/>		
 			         </xsl:apply-templates>
 		 </xsl:otherwise>
        </xsl:choose>
@@ -119,6 +124,7 @@
  
  <xsl:template match="root" mode="success">
   <xsl:param name="cssurldata" />
+  <xsl:param name="accepturldata" />
  <xsl:param name="transaction_id" />
   		  <link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet"/>
   		  <link href="/css/bootstrap/styles.css" rel="stylesheet"/>
@@ -142,7 +148,7 @@
 	              <p class="success-icon"><span class="glyphicon glyphicon-ok"></span></p>
 	              <h3>Your payment has been processed successfuly!</h3>
 	              <p>Payment reference id:<xsl:value-of select="$transaction_id" /></p>
-	              <a href="#" class="btn">Finish <span class="glyphicon glyphicon-ok"></span></a>
+	              <a href="{$accepturldata}" class="btn">Finish <span class="glyphicon glyphicon-ok"></span></a>
 	            </div>
 	          </div>
 	        </div>
@@ -154,9 +160,12 @@
  </xsl:template>
 
 <xsl:template match="root" mode="fail">
- 
+ <xsl:param name="cssurldata" /> 
+ <xsl:param name="cancelurldata" />
  <xsl:param name="transaction_id" />
+      
  		  <link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet"/>
+                    <link href="/css/bootstrap/styles.css" rel="stylesheet"/>
   <link href="{$cssurldata}" rel="stylesheet"/>
 
 
@@ -178,7 +187,7 @@
               <h3>Oops... Something went wrong!</h3>
               <p>failed Payment ReferenceId <xsl:value-of select="$transaction_id" /></p>
               <p>Please try with another payment method or different card.</p>
-              <a href="#" class="btn"><span class="glyphicon glyphicon-arrow-left"></span> Try again</a>
+              <a href="{$cancelurldata}" class="btn"><span class="glyphicon glyphicon-arrow-left"></span> Try again</a>
             </div>
           </div>
         </div>

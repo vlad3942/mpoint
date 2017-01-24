@@ -87,7 +87,31 @@ else
 		{
 			$cssurll=$_SESSION['obj_TxnInfo']->getCSSURL();
 		}
+		
+		
+		
+		if($_SESSION['obj_TxnInfo']->getACCEPTURL()=="")
+		{
+			$accept = "#";
+		}
+		else
+		{
+			$accept = $_SESSION['obj_TxnInfo']->getACCEPTURL();
+		}
+		
+		if($_SESSION['obj_TxnInfo']->getCSSURL()=="")
+		{
+			$cancel = "#";
+		}
+		else
+		{
+			$cancel = $_SESSION['obj_TxnInfo']->getCANCELURL();
+		}
+
+
 		$xml .= '<cssurl>'.$cssurll.'</cssurl>';
+		$xml .= '<accepturl>'.$accept.'</accepturl>';
+		$xml .= '<cancelurl>'.$cancel.'</cancelurl>';
 	$xml .= '</root>';
 	
 	file_put_contents(sLOG_PATH ."/debug_accept". date("Y-m-d") .".log", $xml);
