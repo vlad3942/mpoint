@@ -115,15 +115,18 @@ hr {
   font-size: 18px;
   text-align: right;
 }
+
 .billing-summary .table-bordered>tbody>tr>th {
   color: #666;
   font-weight: normal;
 }
+
 .panel-footer {
   background-color: transparent;
   border: none;
   padding: 2em 0;
 }
+
 .btn {
   font-size: 16px;
   cursor: pointer;
@@ -138,26 +141,16 @@ hr {
   line-height: 36px;
 }
 
-.btn-success {
-    color: #fff !important;
-background-color: #24b145 !important;
-border-color: #1f9c3d !important;
-}
-
-.btn-danger {
-    color: #fff !important;
-background-color: #ee3d3d !important;
-border-color: #ec2626 !important;
-}
-
 .btn:hover {
   color: #fff;
   transform: scale(1.1);
 }
+
 .btn.cancel {
   color: #222;
   background-color: #eef3f6;
 }
+
 .btn.btn-sm {
   font-size: 14px;
   line-height: 28px;
@@ -179,7 +172,7 @@ border-color: #ec2626 !important;
   text-align: center;
 }
 
-.tabs nav ul {
+.pay-options ul {
   position: relative;
   display: -ms-flexbox;
   display: -webkit-flex;
@@ -202,7 +195,7 @@ border-color: #ec2626 !important;
   justify-content: center;
 }
 
-.tabs nav ul li {
+.pay-options ul li {
   position: relative;
   z-index: 1;
   display: block;
@@ -214,7 +207,7 @@ border-color: #ec2626 !important;
   flex: 1;
 }
 
-.tabs nav a {
+/*.tabs nav a {
   position: relative;
   display: block;
   overflow: hidden;
@@ -237,6 +230,8 @@ border-color: #ec2626 !important;
   outline: none;
 }
 
+*/
+
 
 /* Content */
 .content-wrap {
@@ -244,9 +239,9 @@ border-color: #ec2626 !important;
 }
 
 .content-wrap section {
-  display: none;
+  display: block;
   margin: 0 auto;
-  padding: 2em 1em;
+  padding: 1em 1em 0em;
   max-width: 1200px;
 }
 
@@ -255,39 +250,48 @@ border-color: #ec2626 !important;
 }
 
 .content-wrap .saved-card,
+.content-wrap .add-card,
 .content-wrap .wallet-type {
   background-color: #fff;
   border-radius: 3px;
   border: 1px solid #acbecc;
   padding: 1em;
-  margin-bottom: 2em;
+  margin-bottom: 1em;
   color: #666;
   position: relative;
   cursor: pointer;
   transition: all .2s ease-in-out;
 }
+
 .content-wrap .saved-card:hover,
+.content-wrap .add-card:hover,
 .content-wrap .wallet-type:hover {
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
   /*transform: scale(1.01);*/
 }
+
 .content-wrap .saved-card img.card-type {
   position: absolute;
   max-width: 46px;
   right: 1em;
 }
+
 .content-wrap .saved-card h4,
 .content-wrap .wallet-type h4 {
   margin-top: 0;
   margin-bottom: 1em;
 }
+
 .content-wrap .wallet-type h4 {
   margin-bottom: 0;
+  line-height: 2;
 }
+
 .content-wrap .saved-card p,
 .content-wrap .wallet-type p {
   margin-bottom: 0px;
 }
+
 .content-wrap .saved-card .remove-card {
   opacity: 0;
   position: absolute;
@@ -297,23 +301,41 @@ border-color: #ec2626 !important;
   color: #999;
   transition: all .2s;
 }
+
 .content-wrap .wallet-type img.wallet-img {
   max-width: 50%;
-  margin-bottom: 1em;
+  /* margin-bottom: 1em;*/
 }
+
 .content-wrap .saved-card:hover .remove-card {
   opacity: 0.6;
 }
+
 .content-wrap .saved-card:hover .remove-card:hover {
   opacity: 1;
 }
+
 .content-wrap .saved-card:hover .remove-card:hover a {
   color: #f62f5e;
 }
+
 .content-wrap .wallet-type.selected {
   border-color: #33bb56;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
   transform: scale(1.02);
+}
+
+.content-wrap .right-icon{
+  line-height: 2;
+}
+
+.content-wrap .add-card .panel-heading{
+  background: transparent;
+  border: none;
+}
+
+.content-wrap .add-card .panel-title{
+  font-size: 18px;
 }
 
 /* Fallback */
@@ -332,32 +354,31 @@ border-color: #ec2626 !important;
   display: inline-block;
 }
 
-
-.tabs-style-flip {
+/*.pay-options {
   max-width: 1200px;
-}
+}*/
 
-.tabs-style-flip nav a {
+.pay-options nav a {
   padding: 0.5em 0;
   color: #2a6df0;
   -webkit-transition: color 0.3s;
   transition: color 0.3s;
 }
 
-.tabs-style-flip nav a:hover,
-.tabs-style-flip nav a:focus,
-.tabs-style-flip nav li.tab-current a {
+.pay-options nav a:hover,
+.pay-options nav a:focus,
+.pay-options nav li.tab-current a {
   color: #74777b;
 }
 
-.tabs-style-flip nav a span {
+.pay-options nav a span {
   text-transform: uppercase;
   letter-spacing: 1px;
   font-weight: 700;
   font-size: 0.625em;
 }
 
-.tabs-style-flip nav a::after {
+.pay-options nav a::after {
   position: absolute;
   top: 0;
   left: 0;
@@ -376,14 +397,15 @@ border-color: #ec2626 !important;
   perspective-origin: 50% 100%;
 }
 
-.tabs-style-flip nav li.tab-current a::after {
+.pay-options nav li.tab-current a::after {
   background-color: #eef3f6;
   -webkit-transform: perspective(900px) rotate3d(1,0,0,0deg);
   transform: perspective(900px) rotate3d(1,0,0,0deg);
 }
 
-.tabs-style-flip .content-wrap {
+.pay-options .content-wrap {
   background: #eef3f6;
+  padding: 30px 50px 0px;
 }
 
 .cvv-password .modal-content {
@@ -393,6 +415,22 @@ border-color: #ec2626 !important;
   margin-top: 2em;
 }
 .cvv-password .modal-content .btn {
+  margin-top: 2em;
+}
+
+.login-wallet .modal-content {
+  padding-bottom: 1em;
+}
+.login-wallet .modal-content form {
+  margin-top: 2em;
+}
+
+.login-wallet .modal-content .form-group{
+  display: block; 
+  margin: 1em;
+}
+
+.login-wallet .modal-content .btn {
   margin-top: 2em;
 }
 
@@ -407,11 +445,16 @@ border-color: #ec2626 !important;
   margin-top: 2em;
   margin-bottom: 2em;
 }
+
+.content-wrap .add-card .panel-heading a{display:block;width:100%; padding:1.5em}
+.content-wrap .add-card{padding: 0}
+.content-wrap .add-card .panel-heading {padding: 0}
 /*Form styling*/
 form.classy-form label {
   font-weight: 400;
   font-size: 14px;
 }
+
 form.classy-form .form-control {
   padding: 12px;
   box-shadow: none;
@@ -421,10 +464,17 @@ form.classy-form .form-control {
   border-radius: 3px;
   height: inherit;
 }
+
 form.classy-form .input-group-addon {
   background-color: #eef3f6;
   border-color: #acbecc;
   border-radius: 3px 0 0 3px;
+}
+
+.more-less {
+  float: right;
+  color: #777;
+  font-size: 14px;
 }
 
 /*Success Page*/
@@ -449,13 +499,20 @@ form.classy-form .input-group-addon {
   color: red;
 }
 
-h3.text-warning{
-color: #f0ad4e;
+
+@media only screen and (max-width: 767px) {
+.pay-options .content-wrap{
+  padding: 30px 10px 0px;
+}
+.content-wrap .saved-card img.card-type {
+  position: inherit;
+  margin-bottom: 10px;
+}
+h2.sub-header {
+    font-size: 25px;
+}
 }
 
-.mainblue{
-	color:#2a6df0;
-}
 
 
 
