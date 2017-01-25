@@ -90,7 +90,7 @@ header ( 'Content-Type: text/html; charset="UTF-8"' );
  * }
  * }
  */
-// $details=Array ("accounts" => 'html5', "country" => 100, "clientid" => 10007, "account" => 100007, "markup" => 'html5', "amount" => 100 ,"orderid" => 'UAT-77813110' ,"mobile" => 30206172 ,"operator" => 10002 ,"email" => 'abhishek@cellpointmobile.com' ,"language" => 'gb', "auth-token" => '',"customer-ref" => 1234412);
+// $details=Array("accounts" => 'html5', "country" => 100, "clientid" => 10007, "account" => 100007, "markup" => 'html5', "amount" => 100 ,"orderid" => 'UAT-77813110' ,"mobile" => 30206172 ,"operator" => 10002 ,"email" => 'abhishek@cellpointmobile.com' ,"language" => 'gb', "auth-token" => '',"customer-ref" => 1234412);
 
 if ($_SERVER ['HTTP_REFERER']) {
 	$returnvalue = $_SERVER ['HTTP_REFERER'];
