@@ -912,6 +912,19 @@
 <xs:element name="orders">
     <xs:complexType>
         <xs:sequence>
+           <xs:element name="shipping-address" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:all>
+                        <xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="street" type="xs:string" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="street2" type="xs:string" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="city" type="xs:string" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="state" type="xs:string" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="zip" type="xs:string" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="country" type="xs:string" minOccurs="1" maxOccurs="1" />
+                    </xs:all> 
+                </xs:complexType>
+            </xs:element>
             <xs:element name="line-item" minOccurs="1" maxOccurs="unbounded">
                 <xs:complexType>
                     <xs:all>
@@ -949,12 +962,13 @@
 <xs:complexType>
  <xs:sequence>
    <xs:element type="xs:string" name="service-class" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="flight-number" minOccurs="1" maxOccurs="1" />
    <xs:element type="xs:string" name="departure-airport" minOccurs="1" maxOccurs="1" />
    <xs:element type="xs:string" name="arrival-airport" minOccurs="1" maxOccurs="1" />
    <xs:element type="xs:string" name="airline-code" minOccurs="1" maxOccurs="1" />
    <xs:element type="xs:string" name="departure-date" minOccurs="1" maxOccurs="1" />
    <xs:element type="xs:string" name="arrival-date" minOccurs="1" maxOccurs="1" />
-   <xs:element ref="additional-data" minOccurs="0" maxOccurs="unbounded" /> 
+   <xs:element ref="additional-data" minOccurs="0" maxOccurs="1" /> 
  </xs:sequence>
 </xs:complexType>
 </xs:element>
@@ -965,7 +979,7 @@
    <xs:element type="xs:string" name="first-name" minOccurs="1"  maxOccurs="1" />
    <xs:element type="xs:string" name="last-name" minOccurs="1" maxOccurs="1" />
    <xs:element type="xs:string" name="type" minOccurs="1" maxOccurs="1" />
-   <xs:element ref="additional-data" minOccurs="0" maxOccurs="unbounded" /> 
+   <xs:element ref="additional-data" minOccurs="0" maxOccurs="1" /> 
  </xs:sequence>
 </xs:complexType>
 </xs:element>
@@ -973,7 +987,7 @@
 <xs:element name="additional-data">
 <xs:complexType>
  <xs:sequence>
-     <xs:element ref="param" minOccurs="0" maxOccurs="unbounded" />
+     <xs:element ref="param" minOccurs="1" maxOccurs="unbounded" />
  </xs:sequence>
 </xs:complexType>
 </xs:element>

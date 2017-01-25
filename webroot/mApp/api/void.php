@@ -151,7 +151,7 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 								{
 									$aMsgCds[$code + 170] = $transactionID;
 								}
-								if ($obj_Validator->valOrderID($_OBJ_DB, $orderno, $transactionID) > 1 && $obj_Validator->valOrderID($_OBJ_DB, $orderno, $transactionID) < 10) { $aMsgCds[$obj_Validator->valOrderID($_OBJ_DB, $orderno, $transactionID) + 180] = $orderno; }
+								//if ($obj_Validator->valOrderID($_OBJ_DB, $orderno, $transactionID) > 1 && $obj_Validator->valOrderID($_OBJ_DB, $orderno, $transactionID) < 10) { $aMsgCds[$obj_Validator->valOrderID($_OBJ_DB, $orderno, $transactionID) + 180] = $orderno; }
 								/* ========== Input Validation End ========== */
 								// Success: Input Valid
 								if (count($aMsgCds) == 0)
