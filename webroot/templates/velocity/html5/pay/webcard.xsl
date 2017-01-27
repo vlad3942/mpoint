@@ -17,28 +17,26 @@
 							<section id="section-1">
 								<div class="row">
 									<div class="col-md-12">
-										<div class="panel-group" id="accordion1" role="tablist"
-											aria-multiselectable="true">
+										<div class="panel-group" id="accordion1" role="tablist" aria-multiselectable="true">
 											<!-- <div class="wrapper"> <div class="content"> <xsl:apply-templates 
 												select="messages" /> <div class="card-wrapper"> <div class="cards"> -->
-											<xsl:for-each select="cards/item">
+												<xsl:for-each select="cards/item">
 												<xsl:choose>
 													<xsl:when test="@id = '11'">
-														<xsl:apply-templates select="."
-															mode="cpm-wallet" />
+														<xsl:apply-templates select="." mode="cpm-wallet" />
 													</xsl:when>
 													<xsl:when test="@id = '16'">
-														<xsl:apply-templates select="."
-															mode="other-wallet" />
+														<xsl:apply-templates select="." mode="other-wallet" />
+													</xsl:when>
+													<xsl:when test="@id = '31'">
+														<xsl:apply-templates select="." mode="sadad" />
 													</xsl:when>
 												</xsl:choose>
 											</xsl:for-each>
+									
 											<!-- Display payment form for normal payment cards -->
-											<xsl:if
-												test="cards/item/@id = 1 or cards/item/@id = 2 or cards/item/@id = 3 or cards/item/@id = 5 or cards/item/@id = 6 or cards/item/@id = 7 or cards/item/@id = 8 or cards/item/@id = 9">
-												<xsl:apply-templates select="cards"
-													mode="cpm" />
-
+											<xsl:if test="cards/item/@id = 1 or cards/item/@id = 2 or cards/item/@id = 3 or cards/item/@id = 5 or cards/item/@id = 6 or cards/item/@id = 7 or cards/item/@id = 8 or cards/item/@id = 9">
+												<xsl:apply-templates select="cards" mode="cpm" />
 											</xsl:if>
 											<!-- </div> </div> </div> </div> -->
 										</div>
@@ -99,9 +97,7 @@
 
 
 		<script type="text/javascript">
-			parent.postMessage('mpoint-list-cards,
-			<xsl:value-of select="system/session/@id" />
-			', '*');
+			parent.postMessage('mpoint-list-cards,<xsl:value-of select="system/session/@id" />', '*');
 
 			jQuery(function($)
 			{
@@ -239,34 +235,17 @@
 										</div>
 									</div>
 									<script type="text/javascript">
-										$('#modalshow
-										<xsl:value-of select="@id" />
-										').on('click', function(e) {
-
-										$('#modal
-										<xsl:value-of select="@id" />
-										').modal('show');
+										$('#modalshow<xsl:value-of select="@id" />').on('click', function(e) {
+										$('#modal<xsl:value-of select="@id" />').modal('show');
 										});
 										$('.alert .cancel').on('click', function(e) {
-										$('#remove-card-alert
-										<xsl:value-of select="@id" />
-										').hide(100);
-										$('.remove-alert
-										<xsl:value-of select="@id" />
-										').parents(':eq(1)').removeClass('disabled-card');
+										$('#remove-card-alert<xsl:value-of select="@id" />').hide(100);
+										$('.remove-alert<xsl:value-of select="@id" />').parents(':eq(1)').removeClass('disabled-card');
 										});
-										$('.remove-alert
-										<xsl:value-of select="@id" />
-										').on('click', function(e) {
-										$('#modalshow
-										<xsl:value-of select="@id" />
-										').off('click');
-										$('#remove-card-alert
-										<xsl:value-of select="@id" />
-										').show(100);
-										$('.remove-alert
-										<xsl:value-of select="@id" />
-										').parents(':eq(1)').addClass('disabled-card');
+										$('.remove-alert<xsl:value-of select="@id" />').on('click', function(e) {
+										$('#modalshow<xsl:value-of select="@id" />').off('click');
+										$('#remove-card-alert<xsl:value-of select="@id" />').show(100);
+										$('.remove-alert<xsl:value-of select="@id" />').parents(':eq(1)').addClass('disabled-card');
 										});
 
 									</script>
@@ -392,37 +371,24 @@
 				<xsl:if
 					test="@id = 1 or @id = 2 or @id = 3 or @id = 5 or @id = 6 or @id = 7 or @id = 8 or @id = 9">
 					{
-					type: 'card-
-					<xsl:value-of select="@id" />
-					',
-					patterns: [
+					type: 'card-<xsl:value-of select="@id" />',
+				patterns: [
 					<xsl:for-each select="prefixes/prefix">
-						[
-						<xsl:value-of select="min" />
-						,
-						<xsl:value-of select="max" />
-						],
+						[<xsl:value-of select="min" />, <xsl:value-of select="max" />],
 					</xsl:for-each>
-					],
-					format:
-					<xsl:choose>
-						<xsl:when test="@id = 1 or @id = 3">
-							/(\d{1,4})(\d{1,6})?(\d{1,4})?/
-						</xsl:when>
-						<xsl:otherwise>
-							/(\d{1,4})/g
-						</xsl:otherwise>
-					</xsl:choose>
-					,
-					length: [
-					<xsl:value-of select="@min-length" />
-					,
-					<xsl:value-of select="@max-length" />
-					],
-					cvcLength: [
-					<xsl:value-of select="@cvc-length" />
-					],
-					luhn: true
+				],
+					format: 
+				<xsl:choose>
+					<xsl:when test="@id = 1 or @id = 3">
+						/(\d{1,4})(\d{1,6})?(\d{1,4})?/
+					</xsl:when>
+					<xsl:otherwise>
+						/(\d{1,4})/g
+					</xsl:otherwise>
+				</xsl:choose>,
+				length: [<xsl:value-of select="@min-length" />, <xsl:value-of select="@max-length" />],
+				cvcLength: [<xsl:value-of select="@cvc-length" />],
+				luhn: true
 					},
 				</xsl:if>
 			</xsl:for-each>
@@ -432,25 +398,23 @@
 			{
 			// Convert patterns to a non-nested array:
 			var new_pattern = [];
-			for(x
-			= 0; x &lt; cards[i].patterns.length; x++)
+			for(x = 0; x &lt; cards[i].patterns.length; x++)
 			{
-			if(cards[i].patterns[x][0] == cards[i].patterns[x][1])
-			{
-			new_pattern.push(cards[i].patterns[x][0]);
-			}
-			else if (cards[i].patterns[x][0] &lt; cards[i].patterns[x][1])
-			{
-			for(y = cards[i].patterns[x][0]; y &lt;= cards[i].patterns[x][1]; y++)
-			{
-			new_pattern.push(y);
-			}
-			}
+				if(cards[i].patterns[x][0] == cards[i].patterns[x][1])
+				{
+					new_pattern.push(cards[i].patterns[x][0]);
+				}
+				else if (cards[i].patterns[x][0] &lt; cards[i].patterns[x][1])
+				{
+					for(y = cards[i].patterns[x][0]; y &lt;= cards[i].patterns[x][1]; y++)
+					{
+						new_pattern.push(y);
+					}
+				}
 			}
 			cards[i].patterns = new_pattern;
 
-			// Provide one length if min and max are the same, otherwise all
-			possible lengths:
+			// Provide one length if min and max are the same, otherwise all possible lengths:
 			if(cards[i].length[0] == cards[i].length[1])
 			{
 			cards[i].length.pop(cards[i].length[1]);
@@ -478,28 +442,20 @@
 			$('input.cc-year').payment('restrictNumeric');
 
 			// Toggle error class for input fields
-			$.fn.toggleInputError =
-			function(erred)
+			$.fn.toggleInputError = function(erred)
 			{
-			$(this).toggleClass('has-error', erred);
-			return erred;
+				$(this).toggleClass('has-error', erred);
+				return erred;
 			};
 
 			// Validate the card input fields
 			function validateInput()
 			{
 			var cardType = $.payment.cardType($('.cc-number').val());
-			var cardError =
-			$('.cc-number').toggleInputError(!$.payment.validateCardNumber($('.cc-number').val()));
-			var expiryError =
-			$('.cc-month').toggleInputError(!$.payment.validateCardExpiry($('.cc-month').val(),
-			$('.cc-year').val()));
-			var expiryError =
-			$('.cc-year').toggleInputError(!$.payment.validateCardExpiry($('.cc-month').val(),
-			$('.cc-year').val()));
-			var cvcError =
-			$('.cc-cvv').toggleInputError(!$.payment.validateCardCVC($('.cc-cvv').val(),
-			cardType));
+			var cardError =$('.cc-number').toggleInputError(!$.payment.validateCardNumber($('.cc-number').val()));
+			var expiryError =$('.cc-month').toggleInputError(!$.payment.validateCardExpiry($('.cc-month').val(),$('.cc-year').val()));
+			var expiryError =$('.cc-year').toggleInputError(!$.payment.validateCardExpiry($('.cc-month').val(),$('.cc-year').val()));
+			var cvcError =$('.cc-cvv').toggleInputError(!$.payment.validateCardCVC($('.cc-cvv').val(),cardType));
 			$('.cc-card-type div').attr('class', 'icon ' + cardType);
 			if(Boolean(cardType) != false)
 			{
@@ -516,26 +472,14 @@
 			}
 			}
 
-			$('.cc-number, .cc-cvv, .cc-month, .cc-year').on('change paste keyup input',
-			function()
+			$('.cc-number, .cc-cvv, .cc-month, .cc-year').on('change paste keyup input',function()
 			{
 			validateInput();
 			});
-
-
-
-
 			});
 		</script>
 
-		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-		<script
-			src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-		<!-- Include all compiled plugins (below), or include individual files 
-			as needed -->
-		<script src="/css/swag/js/bootstrap.min.js"></script>
-		<!-- Script for remove card alert -->
-		<!-- Script for save card checkbox -->
+		
 		<script type="text/javascript">
 			function valueChanged()
 			{
@@ -616,17 +560,11 @@
 									</form>
 
 									<script type="text/javascript">
-										var id =
-										<xsl:value-of select="@id" />
-										;
+										var id =<xsl:value-of select="@id" />;
 
-										jQuery("head").append("
-										<xsl:value-of select="head" />
-										");
+										jQuery("head").append("<xsl:value-of select="head" />");
 
-										jQuery("#card-"+id).html('
-										<xsl:value-of select="body" />
-										');
+										jQuery("#card-"+id).html('<xsl:value-of select="body" />');
 									</script>
 								</xsl:when>
 							</xsl:choose>
