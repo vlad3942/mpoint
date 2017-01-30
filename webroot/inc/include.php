@@ -114,6 +114,8 @@ require_once(sCLASS_PATH ."/order_info.php");
 require_once(sCLASS_PATH ."/flight_info.php");
 // Require data data class for Passenger Information
 require_once(sCLASS_PATH ."/passenger_info.php");
+// Require data data class for Address Information
+require_once(sCLASS_PATH ."/address_info.php");
 // Require Business logic for the End-User Administration Component
 require_once(sCLASS_PATH ."/home.php");
 // Require PSP functionality interfaces

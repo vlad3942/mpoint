@@ -102,6 +102,12 @@ class OrderInfo
 	 * @var array
 	 */
 	private  $_PassengerConfigs;
+	/**
+	 * The Address Configuration of the Order for a Customer
+	 *
+	 * @var array
+	 */
+	private  $_AddressConfigs;
 	
 	
 	/**
@@ -110,7 +116,7 @@ class OrderInfo
 	 
 	 *
 	 */
-	public function __construct($id, $tid, $cid, $amt, $pnt, $rwd, $qty, $productsku, $productname, $productdesc, $productimgurl,$flightd,$passengerd)
+	public function __construct($id, $tid, $cid, $amt, $pnt, $rwd, $qty, $productsku, $productname, $productdesc, $productimgurl,$flightd,$passengerd,$addressd)
 	{		
 		$this->_iID =  (integer) $id;
 		$this->_iTransactionID = $tid;
@@ -125,6 +131,7 @@ class OrderInfo
 		$this->_sProductImageURL = (string) $productimgurl;	
 		$this->_FlightConfigs =  (array) $flightd;
 		$this->_PassengerConfigs =  (array) $passengerd;
+		$this->_AddressConfigs = (array) $addressd;
 	}
 
 	/**
@@ -205,7 +212,12 @@ class OrderInfo
 	 * @return 	array
 	 */
 	public function getPassengerConfigs() { return $this->_PassengerConfigs; }
-	
+	/**
+	 * Returns the Address Configuration of the Order a Customer
+	 *
+	 * @return 	array
+	 */
+	public function getAddressConfigs() { return $this->_AddressConfigs; }
 	
 	
 		
@@ -222,8 +234,9 @@ class OrderInfo
 			
 			$flightdata = FlightInfo::produceConfigurations($oDB, $id);
 			$passengerdata = PassengerInfo::produceConfigurations($oDB, $id);
+			$addressdata = AddressInfo::produceConfigurations($oDB, $id);
 			return new OrderInfo($RS["ID"], $RS["TXNID"], $RS["COUNTRYID"], $RS["AMOUNT"], $RS["POINTS"], 
-								 $RS["REWARD"], $RS["QUANTITY"], $RS["PRODUCTSKU"], $RS["PRODUCTNAME"], $RS["PRODUCTDESCRIPTION"], $RS["PRODUCTIMAGEURL"], $flightdata, $passengerdata);
+								 $RS["REWARD"], $RS["QUANTITY"], $RS["PRODUCTSKU"], $RS["PRODUCTNAME"], $RS["PRODUCTDESCRIPTION"], $RS["PRODUCTIMAGEURL"], $flightdata, $passengerdata, $addressdata);
 		}
 		else { return null; }
 	}
@@ -246,6 +259,15 @@ class OrderInfo
 	public function toXML()
 	{
 		$xml = '';
+		foreach ($this->getAddressConfigs() as $address_Obj)
+		{
+			if( ($address_Obj instanceof AddressInfo) === true )
+			{
+				 
+				$xml .= $address_Obj->toXML();
+				 
+			}
+		}
 		$xml .= '<line-item>';
         $xml .= '<product sku="'. $this->getProductSKU() .'">';
         $xml .= '<name>'. $this->getProductName() .'</name>';
