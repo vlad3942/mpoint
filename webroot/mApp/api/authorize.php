@@ -184,11 +184,11 @@ try
 	
 										$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 										
-										/*if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0 && 
+										if (count($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0 && 
 										(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) !== Constants::iINVOICE && intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) !== Constants::iNEW_CARD_PURCHASE_TYPE))
 										{
 											if ($obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'authorize-payment'}[$i]->password) + 25; }
-										}*/
+										}
 										$iTypeID = intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]);
 										// Authorize Purchase using Stored Value Account
 										if ($iTypeID == Constants::iCARD_PURCHASE_TYPE && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 0 &&
@@ -238,7 +238,7 @@ try
 											}
 											else { $code = $obj_mPoint->auth($obj_TxnInfo->getAccountID(), (string) $obj_DOM->{'authorize-payment'}[$i]->password); }
 											// Authentication succeeded
-											$code = 10;
+											
 											if ($code == 10 || ($code == 11 && $obj_ClientConfig->smsReceiptEnabled() === false) )
 											{
 												
