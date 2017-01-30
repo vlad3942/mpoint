@@ -237,7 +237,7 @@ try
 												$code = 10;
 											}
 											else { $code = $obj_mPoint->auth($obj_TxnInfo->getAccountID(), (string) $obj_DOM->{'authorize-payment'}[$i]->password); }
-											// Authentication succeeded
+											// Authentication succeeded											
 											if ($code == 10 || ($code == 11 && $obj_ClientConfig->smsReceiptEnabled() === false) )
 											{
 												
@@ -274,7 +274,7 @@ try
 															try
 															{
 																$obj_PSP = new CellpointMobile($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-																// Initialise Callback to Client
+																//Initialise Callback to Client
 																$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), Constants::iWALLET, Constants::iPAYMENT_ACCEPTED_STATE);
 															}
 															catch (HTTPException $ignore) { /* Ignore */ }
@@ -285,9 +285,9 @@ try
 														else
 														{
 															$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-	
+															
 															header("HTTP/1.1 500 Internal Server Error");
-	
+															
 															$xml .= '<status code="91">Unable to debit account</status>';
 														}
 													}
@@ -303,7 +303,7 @@ try
 												default:
 													// 3rd Party Wallet
 													if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1)
-													{
+													{														
 														switch (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) )
 														{
 														case (Constants::iAPPLE_PAY):
@@ -509,7 +509,7 @@ try
 																	$bStoredCard = true;
 																}
 																else { $bStoredCard = false; }
-	
+																
 																$aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, $bStoredCard);
 																$aHTTP_CONN_INFO["worldpay"]["username"] = $aLogin["username"];
 																$aHTTP_CONN_INFO["worldpay"]["password"] = $aLogin["password"];
@@ -544,12 +544,13 @@ try
 																break;
 															case (Constants::iDIBS_PSP):	// DIBS
 																// Authorise payment with PSP based on Ticket
-																$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['dibs']);
-																$iTxnID = $obj_PSP->authTicket($obj_Elem);
+																
+																$obj_PSP = new DIBS($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['dibs']);	
+																$iTxnID = $obj_PSP->authTicket($obj_Elem);														
 																// Authorization succeeded
 																if ($iTxnID > 0)
 																{
-																	// Only generate internal callback for payments made with a Stored Card
+																    // Only generate internal callback for payments made with a Stored Card
 																	if (count($obj_Elem->ticket) == 1)
 																	{
 																		try
@@ -562,9 +563,7 @@ try
 																		
 																		//$xml = '<status code="100">Payment Authorized using Stored Card</status>';
 																	} //else { $xml = '<status code="2000">Payment authorized using new card</status>'; }
-																
-																	$xml = '<status code="100">Payment Authorized using Stored Card</status>';
-																	
+																	$xml = '<status code="100">Payment Authorized using Stored Card</status>';	
 																}
 																// Error: Authorization declined
 																else
@@ -576,7 +575,7 @@ try
 																	$xml .= '<status code="92">Authorization failed, DIBS returned error code'. $iTxnID .'</status>';
 																}
 																break;
-															case (Constants::iWANNAFIND_PSP):	// WannaFind
+																case (Constants::iWANNAFIND_PSP):	// WannaFind
 																// Authorise payment with PSP based on Ticket
 																$obj_PSP = new WannaFind($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["wannafind"]);
 																$iTxnID = $obj_PSP->authTicket( (integer) $obj_Elem->ticket);
@@ -686,8 +685,8 @@ try
 																$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iDATA_CASH_PSP);
 															
 																$obj_PSP = new DataCash($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["data-cash"]);
-																	
-																$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+															
+																$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);																
 																// Authorization succeeded
 																if ($code == "100")
 																{
