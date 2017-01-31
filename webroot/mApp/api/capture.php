@@ -60,6 +60,8 @@ require_once(sCLASS_PATH ."/securetrading.php");
 require_once(sCLASS_PATH ."/payfort.php");
 // Require specific Business logic for the CCAvenue component
 require_once(sCLASS_PATH ."/ccavenue.php");
+// Require specific Business logic for the 2C2P component
+require_once(sCLASS_PATH ."/ccpp.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 // Require Business logic for General Administration of mPoint
