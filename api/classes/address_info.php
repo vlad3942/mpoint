@@ -204,7 +204,7 @@ class AddressInfo
 		$xml .= '<state>'. $this->getState() .'</state>';
 		$xml .= '<zip>'. $this->getZip() .'</zip>';
 		$xml .= '<country>'. $this->getCountry() .'</country>';
-		$xml .= '<shipping-address>';
+		$xml .= '</shipping-address>';
 		return $xml;
 	}
 }
