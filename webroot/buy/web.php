@@ -37,7 +37,7 @@ if ($_REQUEST ["return"]) {
 	$_SESSION ["return"] = $_REQUEST ["return"];
 }
 $aMsgCds = array ();
-header ( 'Content-Type: text/xml; charset="UTF-8"' );
+header ( 'Content-Type: text/html; charset="UTF-8"' );
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants ( array (
 		"AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH,
@@ -103,7 +103,15 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 	}
 	
 	$obj_mPoint = new MobileWeb ( $_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig );
-	$iTxnID = $obj_mPoint->newTransaction ( Constants::iPURCHASE_VIA_WEB );
+	
+	if($_REQUEST["txnid"] == true & $_REQUEST["txnid"]!="")
+	{
+		$iTxnID = $_REQUEST["txnid"];
+	}
+	else 
+	{
+		$iTxnID = $obj_mPoint->newTransaction ( Constants::iPURCHASE_VIA_WEB );
+	}
 	
 	/* ========== Input Validation Start ========== */
 	if ($obj_Validator->valMobile ( $_REQUEST ['mobile'] ) != 10 && $obj_ClientConfig->smsReceiptEnabled () === true) {
@@ -164,7 +172,26 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 			if (array_key_exists ( "auth-token", $_REQUEST ) === true) {
 				$_SESSION ['obj_Info']->setInfo ( "auth-token", $_REQUEST ['auth-token'] );
 			}
-			$_SESSION ['obj_TxnInfo'] = TxnInfo::produceInfo ( $iTxnID, $obj_ClientConfig, $_REQUEST );
+			
+			if($_REQUEST["txnid"] == true & $_REQUEST["txnid"]!="")
+			{
+				$txninfo = TxnInfo::produceInfo ($iTxnID, $_OBJ_DB);
+				$_REQUEST["mobile"] = $txninfo->getMobile();
+				$_REQUEST["email"] = $txninfo->getEMail();
+				$_REQUEST["orderid"] = $txninfo->getEMail();
+				$_REQUEST["language"] = $txninfo->getEMail();
+				$_REQUEST["operator"] = $txninfo->getEMail();
+				$_REQUEST["markup"] = $txninfo->getEMail();
+				$_REQUEST["accounts"] = $txninfo->getEMail();
+				
+				$_SESSION ['obj_TxnInfo'] = $txninfo;
+			}
+			else
+			{
+				$_SESSION ['obj_TxnInfo'] = TxnInfo::produceInfo ( $iTxnID, $obj_ClientConfig, $_REQUEST);
+			}
+			
+
 			// Associate End-User Account (if exists) with Transaction
 			/*
 			 * $iAccountID = -1;
