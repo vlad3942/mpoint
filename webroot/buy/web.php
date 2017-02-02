@@ -37,7 +37,7 @@ if ($_REQUEST ["return"]) {
 	$_SESSION ["return"] = $_REQUEST ["return"];
 }
 $aMsgCds = array ();
-header ( 'Content-Type: text/xml; charset="UTF-8"' );
+header ( 'Content-Type: text/html; charset="UTF-8"' );
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants ( array (
 		"AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH,
@@ -103,18 +103,56 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 	}
 	
 	$obj_mPoint = new MobileWeb ( $_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig );
-	$iTxnID = $obj_mPoint->newTransaction ( Constants::iPURCHASE_VIA_WEB );
+	
+	if(array_key_exists("txnid", $_REQUEST) === true && $_REQUEST["txnid"]!="")
+	{
+		$iTxnID = $_REQUEST["txnid"];
+	}
+	else 
+	{
+		$iTxnID = $obj_mPoint->newTransaction ( Constants::iPURCHASE_VIA_WEB );
+	}
 	
 	/* ========== Input Validation Start ========== */
+	if(array_key_exists("mobile", $_REQUEST) === true & $_REQUEST["mobile"]!="")
+	{
 	if ($obj_Validator->valMobile ( $_REQUEST ['mobile'] ) != 10 && $obj_ClientConfig->smsReceiptEnabled () === true) {
 		$aMsgCds [$obj_Validator->valMobile ( $_REQUEST ['mobile'] ) + 30] = $_REQUEST ['mobile'];
 	}
+	}
+	if(array_key_exists("operator", $_REQUEST) === true & $_REQUEST["operator"]!="")
+	{
 	if ($obj_Validator->valOperator ( $_REQUEST ['operator'] ) != 10 && $obj_ClientConfig->smsReceiptEnabled () === true) {
 		$aMsgCds [$obj_Validator->valOperator ( $_REQUEST ['operator'] ) + 40] = $_REQUEST ['operator'];
 	}
+	}
+	if(array_key_exists("amount", $_REQUEST) === true & $_REQUEST["amount"]!="")
+	{
 	if ($obj_Validator->valPrice ( $obj_ClientConfig->getMaxAmount (), $_REQUEST ['amount'] ) != 10) {
 		$aMsgCds [$obj_Validator->valPrice ( $obj_ClientConfig->getMaxAmount (), $_REQUEST ['amount'] ) + 50] = $_REQUEST ['amount'];
 	}
+	}
+	if(array_key_exists("language", $_REQUEST) === true & $_REQUEST["language"]!="")
+	{
+	if ($obj_Validator->valLanguage ( $_REQUEST ['language'] ) != 10) {
+		$aMsgCds [$obj_Validator->valLanguage ( $_REQUEST ['language'] ) + 130] = $_REQUEST ['language'];
+	}
+	}
+	if(array_key_exists("email", $_REQUEST) === true & $_REQUEST["email"]!="")
+	{
+	if ($obj_Validator->valEMail ( $_REQUEST ['email'] ) != 1 && $obj_Validator->valEMail ( $_REQUEST ['email'] ) != 10) {
+		$aMsgCds [$obj_Validator->valEMail ( $_REQUEST ['email'] ) + 140] = $_REQUEST ['email'];
+	}
+	}
+	if(array_key_exists("markup", $_REQUEST) === true & $_REQUEST["markup"]!="")
+	{
+	if ($obj_Validator->valMarkupLanguage ( $_REQUEST ['markup'] ) != 10) {
+		$aMsgCds [$obj_Validator->valMarkupLanguage ( $_REQUEST ['markup'] ) + 190] = $_REQUEST ['markup'];
+	}
+	}
+	
+	
+	
 	// Validate URLs
 	if ($obj_Validator->valURL ( $_REQUEST ['logo-url'] ) > 1 && $obj_Validator->valURL ( $_REQUEST ['logo-url'] ) != 10) {
 		$aMsgCds [$obj_Validator->valURL ( $_REQUEST ['logo-url'] ) + 70] = $_REQUEST ['logo-url'];
@@ -131,17 +169,8 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 	if ($obj_Validator->valURL ( $_REQUEST ['callback-url'] ) != 10) {
 		$aMsgCds [$obj_Validator->valURL ( $_REQUEST ['callback-url'] ) + 110] = $_REQUEST ['callback-url'];
 	}
-	if ($obj_Validator->valLanguage ( $_REQUEST ['language'] ) != 10) {
-		$aMsgCds [$obj_Validator->valLanguage ( $_REQUEST ['language'] ) + 130] = $_REQUEST ['language'];
-	}
-	if ($obj_Validator->valEMail ( $_REQUEST ['email'] ) != 1 && $obj_Validator->valEMail ( $_REQUEST ['email'] ) != 10) {
-		$aMsgCds [$obj_Validator->valEMail ( $_REQUEST ['email'] ) + 140] = $_REQUEST ['email'];
-	}
 	if ($obj_Validator->valURL ( $_REQUEST ['icon-url'] ) > 1 && $obj_Validator->valURL ( $_REQUEST ['icon-url'] ) != 10) {
 		$aMsgCds [$obj_Validator->valURL ( $_REQUEST ['icon-url'] ) + 160] = $_REQUEST ['icon-url'];
-	}
-	if ($obj_Validator->valMarkupLanguage ( $_REQUEST ['markup'] ) != 10) {
-		$aMsgCds [$obj_Validator->valMarkupLanguage ( $_REQUEST ['markup'] ) + 190] = $_REQUEST ['markup'];
 	}
 	// Security Violation: Authentication URL must be configured for Client
 	if (strlen ( $_REQUEST ['auth-url'] ) > 0 && strlen ( $obj_ClientConfig->getAuthenticationURL () ) == 0) {
@@ -149,6 +178,7 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 	} elseif ($obj_Validator->valURL ( $_REQUEST ['auth-url'], $obj_ClientConfig->getAuthenticationURL () ) > 1 && $obj_Validator->valURL ( $_REQUEST ['auth-url'], $obj_ClientConfig->getAuthenticationURL () ) != 10) {
 		$aMsgCds [$obj_Validator->valURL ( $_REQUEST ['auth-url'], $obj_ClientConfig->getAuthenticationURL () ) + 200] = $_REQUEST ['auth-url'];
 	}
+	
 	/* ========== Input Validation End ========== */
 	
 	// Success: Input Valid
@@ -164,7 +194,21 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 			if (array_key_exists ( "auth-token", $_REQUEST ) === true) {
 				$_SESSION ['obj_Info']->setInfo ( "auth-token", $_REQUEST ['auth-token'] );
 			}
-			$_SESSION ['obj_TxnInfo'] = TxnInfo::produceInfo ( $iTxnID, $obj_ClientConfig, $_REQUEST );
+			
+			if(array_key_exists("txnid", $_REQUEST) === true && $_REQUEST["txnid"]!="")
+			{
+				$txninfo = TxnInfo::produceInfo ($iTxnID, $_OBJ_DB);
+				$_REQUEST["mobile"] = $txninfo->getMobile();
+				$_REQUEST["email"] = $txninfo->getEMail();
+				$_REQUEST["language"] = $txninfo->getLanguage();
+				$_REQUEST["markup"] = $txninfo->getMarkupLanguage();
+				$_SESSION ['obj_TxnInfo'] = $txninfo;
+			}
+			else
+			{
+				$_SESSION ['obj_TxnInfo'] = TxnInfo::produceInfo ( $iTxnID, $obj_ClientConfig, $_REQUEST);
+			}
+			
 			// Associate End-User Account (if exists) with Transaction
 			/*
 			 * $iAccountID = -1;
