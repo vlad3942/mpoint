@@ -37,7 +37,7 @@ if ($_REQUEST ["return"]) {
 	$_SESSION ["return"] = $_REQUEST ["return"];
 }
 $aMsgCds = array ();
-header ( 'Content-Type: text/html; charset="UTF-8"' );
+header ( 'Content-Type: text/xml; charset="UTF-8"' );
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants ( array (
 		"AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH,
@@ -104,7 +104,7 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 	
 	$obj_mPoint = new MobileWeb ( $_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig );
 	
-	if(array_key_exists("txnid", $_REQUEST) === true && $_REQUEST["txnid"]!="")
+	if(array_key_exists("txnid", $_REQUEST) === true && empty($_REQUEST["mobile"]) == false)
 	{
 		$iTxnID = $_REQUEST["txnid"];
 	}
@@ -114,7 +114,7 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 	}
 	
 	/* ========== Input Validation Start ========== */
-	if(array_key_exists("mobile", $_REQUEST) === true & $_REQUEST["mobile"]!="")
+	if(array_key_exists("mobile", $_REQUEST) === true && empty($_REQUEST["mobile"]) == false)
 	{
 	if ($obj_Validator->valMobile ( $_REQUEST ['mobile'] ) != 10 && $obj_ClientConfig->smsReceiptEnabled () === true) {
 		$aMsgCds [$obj_Validator->valMobile ( $_REQUEST ['mobile'] ) + 30] = $_REQUEST ['mobile'];
@@ -178,7 +178,6 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 	} elseif ($obj_Validator->valURL ( $_REQUEST ['auth-url'], $obj_ClientConfig->getAuthenticationURL () ) > 1 && $obj_Validator->valURL ( $_REQUEST ['auth-url'], $obj_ClientConfig->getAuthenticationURL () ) != 10) {
 		$aMsgCds [$obj_Validator->valURL ( $_REQUEST ['auth-url'], $obj_ClientConfig->getAuthenticationURL () ) + 200] = $_REQUEST ['auth-url'];
 	}
-	
 	/* ========== Input Validation End ========== */
 	
 	// Success: Input Valid
@@ -195,7 +194,7 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 				$_SESSION ['obj_Info']->setInfo ( "auth-token", $_REQUEST ['auth-token'] );
 			}
 			
-			if(array_key_exists("txnid", $_REQUEST) === true && $_REQUEST["txnid"]!="")
+			if(array_key_exists("txnid", $_REQUEST) === true && empty($_REQUEST["txnid"]) == false)
 			{
 				$txninfo = TxnInfo::produceInfo ($iTxnID, $_OBJ_DB);
 				$_REQUEST["mobile"] = $txninfo->getMobile();
