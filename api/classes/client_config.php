@@ -656,7 +656,7 @@ class ClientConfig extends BasicConfig
 	 */
 	public function getSalt() { return $this->_sSalt; }
 	
-	public function getSecurityKey() { return $this->_sSecureKey; }
+	public function getSecureKey() { return $this->_sSecureKey; }
 	
 	/**
 	 * Returns the Client Mode in which all Transactions are Processed
@@ -871,7 +871,7 @@ class ClientConfig extends BasicConfig
 		$xml .= '<transaction-time-to-live>'. $this->getTransactionTTL() .'</transaction-time-to-live>';
 		$xml .= $this->_getIINRangesConfigAsXML();		
 		$xml .= '<salt>'. htmlspecialchars($this->_sSalt, ENT_NOQUOTES) .'</salt>';
-		$xml .= '<securitykey>'. htmlspecialchars($this->_sSecureKey, ENT_NOQUOTES) .'</securitykey>';
+		$xml .= '<secret-key>'. htmlspecialchars($this->_sSecureKey, ENT_NOQUOTES) .'</secret-key>';
 		$xml .= '</client-config>';
 		
 		return $xml;
