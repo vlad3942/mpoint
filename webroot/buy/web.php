@@ -194,7 +194,20 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 				$_SESSION ['obj_Info']->setInfo ( "auth-token", $_REQUEST ['auth-token'] );
 			}
 
-			$obj_TxnInfo = TxnInfo::produceInfo ( $iTxnID, $obj_ClientConfig, $_REQUEST );
+			if(array_key_exists("txnid", $_REQUEST) === true && empty($_REQUEST["txnid"]) == false)
+			{
+				$obj_TxnInfo = TxnInfo::produceInfo ($iTxnID, $_OBJ_DB);
+				$_REQUEST["mobile"] = $obj_TxnInfo->getMobile();
+				$_REQUEST["email"] = $obj_TxnInfo->getEMail();
+				$_REQUEST["language"] = $obj_TxnInfo->getLanguage();
+				$_REQUEST["markup"] = $obj_TxnInfo->getMarkupLanguage();
+				
+			}
+			else
+			{
+				$obj_TxnInfo = TxnInfo::produceInfo ( $iTxnID, $obj_ClientConfig, $_REQUEST );
+				
+			}
 			$aAirlinedata = unserialize($_REQUEST["orderdata"]);
 			if(count($aAirlinedata) == 1 && count($aAirlinedata["orders"]) > 0)
 			{
