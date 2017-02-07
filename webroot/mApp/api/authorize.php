@@ -93,6 +93,9 @@ require_once(sCLASS_PATH ."/paypal.php");
 // Require specific Business logic for the CCAvenue component
 require_once(sCLASS_PATH ."/ccavenue.php");
 
+// Require specific Business logic for the 2C2P component
+require_once(sCLASS_PATH ."/ccpp.php");
+
 ignore_user_abort(true);
 set_time_limit(120);
 
@@ -827,7 +830,6 @@ try
 																} else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
 																else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and card stored.</status>'; }
 																else if(strpos($code, '2005') !== false) { $xml = $code; }
-																	
 																// Error: Authorization declined
 																else
 																{
@@ -836,6 +838,30 @@ try
 																	header("HTTP/1.1 502 Bad Gateway");
 																		
 																	$xml .= '<status code="92">Authorization failed, PayFort returned error: '. $code .'</status>';
+																}
+																break;
+															case (Constants::i2C2P_PSP): // 2C2P
+																$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::i2C2P_PSP);
+																	
+																$obj_PSP = new CCPP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["2c2p"]);
+															
+																$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+																
+																// Authorization succeeded
+																if ($code == "100")
+																{
+																	$xml .= '<status code="100">Payment Authorized using stored card</status>';
+																} else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+																else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and card stored.</status>'; }
+																else if(strpos($code, '2005') !== false) { $xml = $code; }
+																// Error: Authorization declined
+																else
+																{
+																	$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+															
+																	header("HTTP/1.1 502 Bad Gateway");
+																
+																	$xml .= '<status code="92">Authorization failed, 2C2P returned error: '. $code .'</status>';
 																}
 																break;
 															default:	// Unkown Error
