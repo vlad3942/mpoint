@@ -489,7 +489,23 @@ $aHTTP_CONN_INFO["ccavenue"]["paths"]["status"] = "/mpoint/ccavenue/status";
 $aHTTP_CONN_INFO["ccavenue"]["paths"]["cancel"] = "/mpoint/ccavenue/cancel";
 $aHTTP_CONN_INFO["ccavenue"]["paths"]["callback"] = "/mpoint/ccavenue/callback";
 
-
+/**
+ * Connection info for connecting to 2C2P
+ */
+$aHTTP_CONN_INFO["2c2p"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["2c2p"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["2c2p"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["2c2p"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["2c2p"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["2c2p"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["2c2p"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["2c2p"]["paths"]["initialize"] = "/mpoint/2c2p/initialize";
+$aHTTP_CONN_INFO["2c2p"]["paths"]["auth"] = "/mpoint/2c2p/authorize-payment";
+$aHTTP_CONN_INFO["2c2p"]["paths"]["capture"] = "/mpoint/2c2p/capture";
+$aHTTP_CONN_INFO["2c2p"]["paths"]["refund"] = "/mpoint/2c2p/refund";
+$aHTTP_CONN_INFO["2c2p"]["paths"]["status"] = "/mpoint/2c2p/status";
+$aHTTP_CONN_INFO["2c2p"]["paths"]["cancel"] = "/mpoint/2c2p/cancel";
+$aHTTP_CONN_INFO["2c2p"]["paths"]["callback"] = "/mpoint/2c2p/callback";
 
 /**
  * GoMobile Connection Info.

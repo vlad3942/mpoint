@@ -223,7 +223,7 @@ class OrderInfo
 		
 	public static function produceConfig(RDB $oDB, $id)
 	{
-		$sql = "SELECT id, txnid, countryid, amount, productsku, productname, productdescription, productimageurl, points, reward, quantity 
+		$sql = "SELECT id, txnid, countryid, amount, productsku, productname, productdescription, productimageurl, points, reward, quantity
 				FROM Log". sSCHEMA_POSTFIX .".Order_Tbl				
 				WHERE id = ". intval($id) ." AND enabled = '1'";
 //		echo $sql ."\n";	
@@ -231,11 +231,11 @@ class OrderInfo
 		
 		if (is_array($RS) === true && count($RS) > 0)
 		{		
-			
+			$order_type = "order";
 			$flightdata = FlightInfo::produceConfigurations($oDB, $id);
 			$passengerdata = PassengerInfo::produceConfigurations($oDB, $id);
-			$addressdata = AddressInfo::produceConfigurations($oDB, $id);
-			return new OrderInfo($RS["ID"], $RS["TXNID"], $RS["COUNTRYID"], $RS["AMOUNT"], $RS["POINTS"], 
+			$addressdata = AddressInfo::produceConfigurations($oDB, $id, $order_type);
+			return new OrderInfo($RS["ID"], $RS["TXNID"], $RS["COUNTRYID"], $RS["AMOUNT"], $RS["POINTS"],
 								 $RS["REWARD"], $RS["QUANTITY"], $RS["PRODUCTSKU"], $RS["PRODUCTNAME"], $RS["PRODUCTDESCRIPTION"], $RS["PRODUCTIMAGEURL"], $flightdata, $passengerdata, $addressdata);
 		}
 		else { return null; }
