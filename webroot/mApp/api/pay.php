@@ -76,7 +76,8 @@ require_once(sCLASS_PATH ."/payfort.php");
 require_once(sCLASS_PATH ."/paypal.php");
 // Require specific Business logic for the CCAvenue component
 require_once(sCLASS_PATH ."/ccavenue.php");
-
+// Require specific Business logic for the 2C2P component
+require_once(sCLASS_PATH ."/ccpp.php");
 
 $aMsgCds = array();
 
@@ -470,6 +471,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											$obj_PSP = new PayFort($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["payfort"]);
 											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token);
 												
+											foreach ($obj_XML->children() as $obj_Elem)
+											{
+												$xml .= trim($obj_Elem->asXML() );
+											}
+											break;
+										case (Constants::i2C2P_PSP):
+											$obj_PSP = new CCPP($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["2c2p"]);
+											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token);
+											
 											foreach ($obj_XML->children() as $obj_Elem)
 											{
 												$xml .= trim($obj_Elem->asXML() );
