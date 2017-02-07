@@ -99,3 +99,29 @@ INSERT INTO System.Country_Tbl (id, name, currency, minmob, maxmob, channel, pri
 INSERT INTO System.PricePoint_Tbl (id, countryid, amount) VALUES (-652, 652, -1);
 INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) SELECT -652, id FROM System.Card_Tbl WHERE id > 0;
 INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (652, 9, 'MMK');
+
+
+
+/* ========== Global Configuration for MayBank = STARTS ========== */
+INSERT INTO System.PSP_Tbl (id, name) VALUES (27, 'MayBank');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (638,1,'MYR');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (638,27,'MYR');
+
+/*Amex*/
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (1, 27);
+/*MasterCard*/
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (7, 27);
+/*VISA*/
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (8, 27);
+
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 27, 'TBD', 'TBD', 'TBD');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 27, '-1');
+
+-- Route VISA Card to MayBank with country Malaysia
+UPDATE Client.CardAccess_Tbl SET pspid = 27, countryid = 638 WHERE clientid = 10001 AND cardid = 8;
+-- Route Master Card to MayBank with country Malaysia
+UPDATE Client.CardAccess_Tbl SET pspid = 27, countryid = 638 WHERE clientid = 10001 AND cardid = 7;
+-- Route AMEX Card to MayBank with country Malaysia
+UPDATE Client.CardAccess_Tbl SET pspid = 27, countryid = 638 WHERE clientid = 10001 AND cardid = 1;
+
+/* ========== Global Configuration for MayBank = ENDS ========== */

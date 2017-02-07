@@ -62,6 +62,8 @@ require_once(sCLASS_PATH ."/payfort.php");
 require_once(sCLASS_PATH ."/ccavenue.php");
 // Require specific Business logic for the 2C2P component
 require_once(sCLASS_PATH ."/ccpp.php");
+// Require specific Business logic for the MayBank component
+require_once(sCLASS_PATH ."/maybank.php");
 
 
 header("Content-Type: application/x-www-form-urlencoded");

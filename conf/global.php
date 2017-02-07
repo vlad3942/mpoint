@@ -508,6 +508,24 @@ $aHTTP_CONN_INFO["2c2p"]["paths"]["cancel"] = "/mpoint/2c2p/cancel";
 $aHTTP_CONN_INFO["2c2p"]["paths"]["callback"] = "/mpoint/2c2p/callback";
 
 /**
+ * Connection info for connecting to MayBank
+ */
+$aHTTP_CONN_INFO["maybank"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["maybank"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["maybank"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["maybank"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["maybank"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["maybank"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["maybank"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["maybank"]["paths"]["initialize"] = "/mpoint/maybank/initialize";
+$aHTTP_CONN_INFO["maybank"]["paths"]["auth"] = "/mpoint/maybank/authorize-payment";
+$aHTTP_CONN_INFO["maybank"]["paths"]["capture"] = "/mpoint/maybank/capture";
+$aHTTP_CONN_INFO["maybank"]["paths"]["refund"] = "/mpoint/maybank/refund";
+$aHTTP_CONN_INFO["maybank"]["paths"]["status"] = "/mpoint/maybank/status";
+$aHTTP_CONN_INFO["maybank"]["paths"]["cancel"] = "/mpoint/maybank/cancel";
+$aHTTP_CONN_INFO["maybank"]["paths"]["callback"] = "/mpoint/maybank/callback";
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>
