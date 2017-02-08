@@ -21,9 +21,8 @@ Class PayPal extends CPMPSP
 {
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new PayPalException("Method: getPaymentData is not supported by PayPal"); }
 	
-	
 	public function getPSPID() { return Constants::iPAYPAL_PSP; }
-	
+
 }
 
 ?>

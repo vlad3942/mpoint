@@ -23,6 +23,6 @@ class PublicBankException extends CallbackException { }
  */
 Class PublicBank extends CPMPSP
 {
-	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new CCPPException("Method: getPaymentData is not supported by PublicBank"); }
+	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new PublicBankException("Method: getPaymentData is not supported by PublicBank"); }
 	public function getPSPID() { return Constants::iPUBLIC_BANK_PSP;}
 }

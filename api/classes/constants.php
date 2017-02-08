@@ -520,7 +520,7 @@ abstract class Constants
 	const i2C2P_PSP = 26;
 	
 	/**
-	 * Unique ID for the Payment Service Provider: Android Pay
+	 * Unique ID for the Payment Service Provider: Public Bank
 	 *
 	 */
 	const iPUBLIC_BANK_PSP = 28;

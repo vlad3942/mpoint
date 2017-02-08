@@ -871,7 +871,7 @@ try
 																case (Constants::iPUBLIC_BANK_PSP): // PublicBank
 																	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iPUBLIC_BANK_PSP);
 																		
-																	$obj_PSP = new CCPP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["publicbank"]);
+																	$obj_PSP = new PublicBank($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["publicbank"]);
 																		
 																	$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
 																
