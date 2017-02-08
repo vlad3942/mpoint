@@ -99,3 +99,30 @@ INSERT INTO System.Country_Tbl (id, name, currency, minmob, maxmob, channel, pri
 INSERT INTO System.PricePoint_Tbl (id, countryid, amount) VALUES (-652, 652, -1);
 INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) SELECT -652, id FROM System.Card_Tbl WHERE id > 0;
 INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (652, 9, 'MMK');
+
+
+
+/* ========== Global Configuration for Publicbank = STARTS ========== */
+INSERT INTO System.PSP_Tbl (id, name) VALUES (28, 'PublicBank');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (644,1,'THB');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (644,28,'THB');
+
+/*Amex*/
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (1, 28);
+/*MasterCard*/
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (7, 28);
+/*VISA*/
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (8, 28);
+
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 28, 'TBD', 'TBD', 'TBD');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 28, '-1');
+
+-- Route VISA Card to Publicbank with country Thailand
+UPDATE Client.CardAccess_Tbl SET pspid = 28, countryid = 644 WHERE clientid = 10001 AND cardid = 1;
+-- Route VISA Card to Publicbank with country Thailand
+UPDATE Client.CardAccess_Tbl SET pspid = 28, countryid = 644 WHERE clientid = 10001 AND cardid = 7;
+-- Route VISA Card to Publicbank with country Thailand
+UPDATE Client.CardAccess_Tbl SET pspid = 28, countryid = 644 WHERE clientid = 10001 AND cardid = 8;
+/* ========== Global Configuration for Publicbank = ENDS ========== */
+
+

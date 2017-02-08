@@ -523,6 +523,12 @@ abstract class Constants
 	 * Unique ID for the Payment Service Provider: Android Pay
 	 *
 	 */
+	const iPUBLIC_BANK_PSP = 28;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: Android Pay
+	 *
+	 */
 	const iANDROID_PAY_PSP = 20;
 	/**
 	 * Unique ID for the Electronic Payment Flow

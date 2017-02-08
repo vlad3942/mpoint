@@ -96,6 +96,9 @@ require_once(sCLASS_PATH ."/ccavenue.php");
 // Require specific Business logic for the 2C2P component
 require_once(sCLASS_PATH ."/ccpp.php");
 
+// Require specific Business logic for the PublicBank component
+require_once(sCLASS_PATH ."/publicbank.php");
+
 ignore_user_abort(true);
 set_time_limit(120);
 

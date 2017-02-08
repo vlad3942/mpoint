@@ -507,6 +507,25 @@ $aHTTP_CONN_INFO["2c2p"]["paths"]["status"] = "/mpoint/2c2p/status";
 $aHTTP_CONN_INFO["2c2p"]["paths"]["cancel"] = "/mpoint/2c2p/cancel";
 $aHTTP_CONN_INFO["2c2p"]["paths"]["callback"] = "/mpoint/2c2p/callback";
 
+
+/**
+ * Connection info for connecting to PublicBank
+ */
+$aHTTP_CONN_INFO["publicbank"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["publicbank"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["publicbank"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["publicbank"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["publicbank"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["publicbank"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["publicbank"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["publicbank"]["paths"]["initialize"] = "/mpoint/publicbank/initialize";
+$aHTTP_CONN_INFO["publicbank"]["paths"]["auth"] = "/mpoint/publicbank/authorize-payment";
+$aHTTP_CONN_INFO["publicbank"]["paths"]["capture"] = "/mpoint/publicbank/capture";
+$aHTTP_CONN_INFO["publicbank"]["paths"]["refund"] = "/mpoint/publicbank/refund";
+$aHTTP_CONN_INFO["publicbank"]["paths"]["status"] = "/mpoint/publicbank/status";
+$aHTTP_CONN_INFO["publicbank"]["paths"]["cancel"] = "/mpoint/publicbank/cancel";
+$aHTTP_CONN_INFO["publicbank"]["paths"]["callback"] = "/mpoint/publicbank/callback";
+
 /**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
