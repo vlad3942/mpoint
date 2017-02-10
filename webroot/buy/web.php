@@ -104,7 +104,7 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 	
 	$obj_mPoint = new MobileWeb ( $_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig );
 	
-	if(array_key_exists("txnid", $_REQUEST) === true && empty($_REQUEST["mobile"]) == false)
+	if(array_key_exists("txnid", $_REQUEST) === true && empty($_REQUEST["txnid"]) == false)
 	{
 		$iTxnID = $_REQUEST["txnid"];
 	}
