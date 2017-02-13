@@ -157,7 +157,7 @@ if (count($aMsgCds) == 0)
 						    <transaction store-card="true" id="'.$_SESSION['obj_TxnInfo']->getID().'">
 						       <card type-id="'.intval($cardTypeId).'">
 			       					 <amount country-id="'.$_SESSION['obj_TxnInfo']->getCountryConfig()->getID().'">'.$_SESSION['obj_TxnInfo']->getAmount().'</amount>
-						       </card>
+						      </card>
 						    </transaction>
 						    <client-info language="da" version="1.20" platform="iOS/8.1.3">
 			       				<customer-ref>'.$_SESSION['obj_TxnInfo']->getCustomerRef().'</customer-ref>

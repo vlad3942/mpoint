@@ -15,7 +15,8 @@ msgid @@@ Status - 23 @@@
 msgstr @@@ Unknown Account ID @@@
 msgid @@@ Status - 24 @@@
 msgstr @@@ Account Disabled @@@
-Smsgstr @@@ Undefined Recipient @@@
+msgid @@@ Status - 31 @@@
+msgstr @@@ Undefined Recipient @@@
 msgid @@@ Status - 32 @@@
 msgstr @@@ Recipient is too short @@@
 msgid @@@ Status - 33 @@@

@@ -142,7 +142,7 @@ $(document).ready(function() {
 																	</h4>
 																</div>
 
-															</div>
+
 														</div>
 														<br />								
 														<button id="ok" data-dismiss="modal"
