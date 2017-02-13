@@ -514,6 +514,12 @@ abstract class Constants
 	const iCCAVENUE_PSP = 25;
 	
 	/**
+	 * Unique ID for the Payment Service Provider: 2C2P
+	 *
+	 */
+	const i2C2P_PSP = 26;
+	
+	/**
 	 * Unique ID for the Payment Service Provider: Android Pay
 	 *
 	 */
@@ -676,6 +682,11 @@ abstract class Constants
 	 *
 	 */
 	const iPAYPAL_PAY_WALLET = 28;
+	/**
+	 * Unique Card ID for transaction's made using SADAD
+	 *
+	 */
+	const iSADAD = 31;
 	
 	/**
 	 * Unique Fee Type ID for Top-Ups

@@ -66,10 +66,15 @@ class AddressInfo
 	 */
 	private $_CountryCode;
 	/**
-	 * External Reference Data related to Address
+	 * External Reference ID related to Address
 	 *
 	 */
-	private  $_aExternalValue;
+	private  $_aReferenceID;
+	/**
+	 * External Reference TYPE related to Address
+	 *
+	 */
+	private  $_aReferenceType;
 
 	/**
 	 * Default Constructor
@@ -77,7 +82,7 @@ class AddressInfo
 
 	 *
 	 */
-	public function __construct($id, $nm, $street, $streets, $city, $state, $zip, $country, $extra)
+	public function __construct($id, $nm, $street, $streets, $city, $state, $zip, $country, $refid, $reftype)
 	{
 		$this->_iID =  (integer) $id;
 		$this->_Name = $nm;
@@ -87,7 +92,8 @@ class AddressInfo
 		$this->_StateCode = $state;
 		$this->_ZipCode = $zip;
 		$this->_CountryCode = $country;
-		$this->_aExternalValue = $extra;
+		$this->_aReferenceID = $refid;
+		$this->_aReferenceType = $reftype;
 	}
 
 	/**
@@ -139,19 +145,25 @@ class AddressInfo
 	 */
 	public function getCountry() { return $this->_CountryCode; }
 	/**
-	 * Returns the External Reference Value for which the Address is Inserted.
+	 * Returns the External Reference ID for which the Address is Inserted.
 	 *
 	 * @return 	integer
 	 */
-	public function getExternal() { return $this->_aExternalValue; }
+	public function getReferenceId() { return $this->_aReferenceID; }
+	/**
+	 * Returns the External Reference Type for which the Address is Inserted.
+	 *
+	 * @return 	integer
+	 */
+	public function getReferenceType() { return $this->_aReferenceType; }
 
 
 	
 	
 	public static function produceConfig(RDB $oDB, $id)
 	{
-		$sql = "SELECT id, name, street, street2, city, state, country, zip, external_ref
-					FROM log".sSCHEMA_POSTFIX.".address_tbl where id=".$id;
+		$sql = "SELECT id, name, street, street2, city, state, country, zip, reference_id, reference_type
+					FROM log".sSCHEMA_POSTFIX.".address_tbl WHERE id=".$id;
 			//echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 		if (is_array($RS) === true && count($RS) > 0)
@@ -159,18 +171,17 @@ class AddressInfo
 			$RSA = $oDB->getName($sqlA);
 		
 			    
-			     	return new AddressInfo($RS["ID"], $RS["NAME"],$RS["STREET"], $RS["STREET2"], $RS["CITY"], $RS["STATE"],
-			     			 $RS["COUNTRY"], $RS["ZIP"], $RS["EXTERNAL_REF"]);
+			return new AddressInfo($RS["ID"], $RS["NAME"],$RS["STREET"], $RS["STREET2"], $RS["CITY"], $RS["STATE"],
+					$RS["COUNTRY"], $RS["ZIP"], $RS["REFERENCE_ID"], $RS["REFERENCE_TYPE"]);
 			     	
 		}
 		else { return null; }
 	}
 
-	public static function produceConfigurations(RDB $oDB, $fid)
-	{
+	public static function produceConfigurations(RDB $oDB, $fid, $type) {
 		$sql = "SELECT id
-				FROM Log". sSCHEMA_POSTFIX .".address_tbl
-				WHERE external_ref = ". intval($fid) ."";
+				FROM Log" . sSCHEMA_POSTFIX . ".address_tbl
+				WHERE reference_id = " . intval ( $fid ) . " AND reference_type='". $type ."'";
 		//echo $sql ."\n";
 		$aConfigurations = array();
 		$res = $oDB->query($sql);
@@ -193,7 +204,7 @@ class AddressInfo
 		$xml .= '<state>'. $this->getState() .'</state>';
 		$xml .= '<zip>'. $this->getZip() .'</zip>';
 		$xml .= '<country>'. $this->getCountry() .'</country>';
-		$xml .= '<shipping-address>';
+		$xml .= '</shipping-address>';
 		return $xml;
 	}
 }

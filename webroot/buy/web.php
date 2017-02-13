@@ -103,18 +103,56 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 	}
 	
 	$obj_mPoint = new MobileWeb ( $_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig );
-	$iTxnID = $obj_mPoint->newTransaction ( Constants::iPURCHASE_VIA_WEB );
+	
+	if(array_key_exists("txnid", $_REQUEST) === true && empty($_REQUEST["mobile"]) == false)
+	{
+		$iTxnID = $_REQUEST["txnid"];
+	}
+	else 
+	{
+		$iTxnID = $obj_mPoint->newTransaction ( Constants::iPURCHASE_VIA_WEB );
+	}
 	
 	/* ========== Input Validation Start ========== */
+	if(array_key_exists("mobile", $_REQUEST) === true && empty($_REQUEST["mobile"]) == false)
+	{
 	if ($obj_Validator->valMobile ( $_REQUEST ['mobile'] ) != 10 && $obj_ClientConfig->smsReceiptEnabled () === true) {
 		$aMsgCds [$obj_Validator->valMobile ( $_REQUEST ['mobile'] ) + 30] = $_REQUEST ['mobile'];
 	}
+	}
+	if(array_key_exists("operator", $_REQUEST) === true & $_REQUEST["operator"]!="")
+	{
 	if ($obj_Validator->valOperator ( $_REQUEST ['operator'] ) != 10 && $obj_ClientConfig->smsReceiptEnabled () === true) {
 		$aMsgCds [$obj_Validator->valOperator ( $_REQUEST ['operator'] ) + 40] = $_REQUEST ['operator'];
 	}
+	}
+	if(array_key_exists("amount", $_REQUEST) === true & $_REQUEST["amount"]!="")
+	{
 	if ($obj_Validator->valPrice ( $obj_ClientConfig->getMaxAmount (), $_REQUEST ['amount'] ) != 10) {
 		$aMsgCds [$obj_Validator->valPrice ( $obj_ClientConfig->getMaxAmount (), $_REQUEST ['amount'] ) + 50] = $_REQUEST ['amount'];
 	}
+	}
+	if(array_key_exists("language", $_REQUEST) === true & $_REQUEST["language"]!="")
+	{
+	if ($obj_Validator->valLanguage ( $_REQUEST ['language'] ) != 10) {
+		$aMsgCds [$obj_Validator->valLanguage ( $_REQUEST ['language'] ) + 130] = $_REQUEST ['language'];
+	}
+	}
+	if(array_key_exists("email", $_REQUEST) === true & $_REQUEST["email"]!="")
+	{
+	if ($obj_Validator->valEMail ( $_REQUEST ['email'] ) != 1 && $obj_Validator->valEMail ( $_REQUEST ['email'] ) != 10) {
+		$aMsgCds [$obj_Validator->valEMail ( $_REQUEST ['email'] ) + 140] = $_REQUEST ['email'];
+	}
+	}
+	if(array_key_exists("markup", $_REQUEST) === true & $_REQUEST["markup"]!="")
+	{
+	if ($obj_Validator->valMarkupLanguage ( $_REQUEST ['markup'] ) != 10) {
+		$aMsgCds [$obj_Validator->valMarkupLanguage ( $_REQUEST ['markup'] ) + 190] = $_REQUEST ['markup'];
+	}
+	}
+	
+	
+	
 	// Validate URLs
 	if ($obj_Validator->valURL ( $_REQUEST ['logo-url'] ) > 1 && $obj_Validator->valURL ( $_REQUEST ['logo-url'] ) != 10) {
 		$aMsgCds [$obj_Validator->valURL ( $_REQUEST ['logo-url'] ) + 70] = $_REQUEST ['logo-url'];
@@ -131,17 +169,8 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 	if ($obj_Validator->valURL ( $_REQUEST ['callback-url'] ) != 10) {
 		$aMsgCds [$obj_Validator->valURL ( $_REQUEST ['callback-url'] ) + 110] = $_REQUEST ['callback-url'];
 	}
-	if ($obj_Validator->valLanguage ( $_REQUEST ['language'] ) != 10) {
-		$aMsgCds [$obj_Validator->valLanguage ( $_REQUEST ['language'] ) + 130] = $_REQUEST ['language'];
-	}
-	if ($obj_Validator->valEMail ( $_REQUEST ['email'] ) != 1 && $obj_Validator->valEMail ( $_REQUEST ['email'] ) != 10) {
-		$aMsgCds [$obj_Validator->valEMail ( $_REQUEST ['email'] ) + 140] = $_REQUEST ['email'];
-	}
 	if ($obj_Validator->valURL ( $_REQUEST ['icon-url'] ) > 1 && $obj_Validator->valURL ( $_REQUEST ['icon-url'] ) != 10) {
 		$aMsgCds [$obj_Validator->valURL ( $_REQUEST ['icon-url'] ) + 160] = $_REQUEST ['icon-url'];
-	}
-	if ($obj_Validator->valMarkupLanguage ( $_REQUEST ['markup'] ) != 10) {
-		$aMsgCds [$obj_Validator->valMarkupLanguage ( $_REQUEST ['markup'] ) + 190] = $_REQUEST ['markup'];
 	}
 	// Security Violation: Authentication URL must be configured for Client
 	if (strlen ( $_REQUEST ['auth-url'] ) > 0 && strlen ( $obj_ClientConfig->getAuthenticationURL () ) == 0) {
@@ -164,7 +193,142 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 			if (array_key_exists ( "auth-token", $_REQUEST ) === true) {
 				$_SESSION ['obj_Info']->setInfo ( "auth-token", $_REQUEST ['auth-token'] );
 			}
-			$_SESSION ['obj_TxnInfo'] = TxnInfo::produceInfo ( $iTxnID, $obj_ClientConfig, $_REQUEST );
+
+			if(array_key_exists("txnid", $_REQUEST) === true && empty($_REQUEST["txnid"]) == false)
+			{
+				$obj_TxnInfo = TxnInfo::produceInfo ($iTxnID, $_OBJ_DB);
+				$_REQUEST["mobile"] = $obj_TxnInfo->getMobile();
+				$_REQUEST["email"] = $obj_TxnInfo->getEMail();
+				$_REQUEST["language"] = $obj_TxnInfo->getLanguage();
+				$_REQUEST["markup"] = $obj_TxnInfo->getMarkupLanguage();
+				
+			}
+			else
+			{
+				$obj_TxnInfo = TxnInfo::produceInfo ( $iTxnID, $obj_ClientConfig, $_REQUEST );
+				
+			}
+			$aAirlinedata = unserialize($_REQUEST["orderdata"]);
+			if(count($aAirlinedata) == 1 && count($aAirlinedata["orders"]) > 0)
+			{
+				for($i=0; $i<count($aAirlinedata["orders"]); $i++)
+				{
+					for ($j=0; $j<count($aAirlinedata["orders"][$i]["lineitem"]); $j++)
+					{
+						if(count($aAirlinedata["orders"][$i]["lineitem"]) > 0)
+						{
+							$data['orders'][$j]['product-sku'] = (string) $aAirlinedata["orders"][$i]["lineitem"][$j]['product']['sku'];
+							$data['orders'][$j]['product-name'] = (string) $aAirlinedata["orders"][$i]["lineitem"][$j]['product']['name'];
+							$data['orders'][$j]['product-description'] = (string) $aAirlinedata["orders"][$i]["lineitem"][$j]['product']['description'];
+							$data['orders'][$j]['product-image-url'] = (string) $aAirlinedata["orders"][$i]["lineitem"][$j]['product']['imageurl'];
+							$data['orders'][$j]['amount'] = (float) $aAirlinedata["orders"][$i]["lineitem"][$j]["amount"];
+							if (array_key_exists ( "country", $_REQUEST ) === true && empty ( $_REQUEST ['country'] ) == false)
+							{
+								$country = $_REQUEST["country"];
+							}
+							else
+							{
+								$country = $obj_ClientConfig->getCountryConfig ()->getID();
+							}
+							$data['orders'][$j]['country-id'] = $country;
+							$data['orders'][$j]['points'] = (float) $aAirlinedata["orders"][$i]["lineitem"][$j]["points"];
+							$data['orders'][$j]['reward'] = (float) $aAirlinedata["orders"][$i]["lineitem"][$j]["reward"];
+							$data['orders'][$j]['quantity'] = (float) $aAirlinedata["orders"][$i]["lineitem"][$j]["quantity"];
+						}
+					}
+					$order_id = $obj_TxnInfo->setOrderDetails($_OBJ_DB, $data['orders']);
+					for ($j=0; $j<count($aAirlinedata["orders"][$i]["lineitem"]); $j++)
+					{
+						if(count($aAirlinedata["orders"][$i]["lineitem"][$j]['product']['airlinedata']['flightdata']) > 0)
+						{
+							for ($k=0; $k<count($aAirlinedata["orders"][$i]["lineitem"][$j]['product']['airlinedata']['flightdata']); $k++ )
+							{
+								$data['flights']['service_class'] = (string) $aAirlinedata["orders"][$i]["lineitem"][$j]['product']['airlinedata']['flightdata'][$k]['serviceclass'];
+								$data['flights']['departure_airport'] = (string) $aAirlinedata["orders"][$i]["lineitem"][$j]['product']['airlinedata']['flightdata'][$k]['departureairport'];
+								$data['flights']['arrival_airport'] = (string) $aAirlinedata["orders"][$i]["lineitem"][$j]['product']['airlinedata']['flightdata'][$k]['arrivalairport'];
+								$data['flights']['airline_code'] = (string) $aAirlinedata["orders"][$i]["lineitem"][$j]['product']['airlinedata']['flightdata'][$k]['airlinecode'];
+								$data['flights']['arrival_date'] = (string) $aAirlinedata["orders"][$i]["lineitem"][$j]['product']['airlinedata']['flightdata'][$k]['arrivaldate'];
+								$data['flights']['departure_date'] = (string) $aAirlinedata["orders"][$i]["lineitem"][$j]['product']['airlinedata']['flightdata'][$k]['departuredate'];
+								$data['flights']['flight_number'] = (string) $aAirlinedata["orders"][$i]["lineitem"][$j]['product']['airlinedata']['flightdata'][$k]['flightnumber'];
+								$data['flights']['order_id'] = $order_id;
+								if(count($aAirlinedata["orders"][$i]["lineitem"][$j]['product']['airlinedata']['flightdata'][$k]['additionaldata']) > 0)
+								{
+									for ($l=0; $l<count($aAirlinedata["orders"][$i]["lineitem"][$j]['product']['airlinedata']['flightdata'][$k]['additionaldata']['param']); $l++)
+									{
+										$data['additional'][$l]['name'] = (string) $aAirlinedata["orders"][$i]["lineitem"][$j]['product']['airlinedata']['flightdata'][$k]['additionaldata']['param'][$l]['name'];
+										$data['additional'][$l]['value'] = (string) $aAirlinedata["orders"][$i]["lineitem"][$j]['product']['airlinedata']['flightdata'][$k]['additionaldata']['param'][$l]['value'];
+										$data['additional'][$l]['type'] = (string) "Flight";
+									}
+								}
+								else
+								{
+									$data['additional'] = array();
+								}
+								$flight = $obj_TxnInfo->setFlightDetails($_OBJ_DB, $data['flights'], $data['additional']);
+							}
+						}
+						if(count($aAirlinedata["orders"][$i]["lineitem"][$j]['product']['airlinedata']['passengerdata']) > 0)
+						{
+							for ($k=0; $k<count($aAirlinedata["orders"][$i]["lineitem"][$j]['product']['airlinedata']['passengerdata']); $k++ )
+							{
+								$data['passenger']['first_name'] = (string) $aAirlinedata["orders"][$i]["lineitem"][$j]['product']['airlinedata']['passengerdata'][$k]['firstname'];
+								$data['passenger']['last_name'] = (string) $aAirlinedata["orders"][$i]["lineitem"][$j]['product']['airlinedata']['passengerdata'][$k]['lastname'];
+								$data['passenger']['type'] = (string) $aAirlinedata["orders"][$i]["lineitem"][$j]['product']['airlinedata']['passengerdata'][$k]['type'];
+								$data['passenger']['order_id'] = $order_id;
+								if(count($aAirlinedata["orders"][$i]["lineitem"][$j]['product']['airlinedata']['passengerdata'][$k]['additionaldata']) > 0)
+								{
+									for ($l=0; $l<count($aAirlinedata["orders"][$i]["lineitem"][$j]['product']['airlinedata']['passengerdata'][$k]['additionaldata']['param']); $l++)
+									{
+										$data['additional'][$l]['name'] = (string) $aAirlinedata["orders"][$i]["lineitem"][$j]['product']['airlinedata']['passengerdata'][$k]['additionaldata']['param'][$l]['name'];
+										$data['additional'][$l]['value'] = (string) $aAirlinedata["orders"][$i]["lineitem"][$j]['product']['airlinedata']['passengerdata'][$k]['additionaldata']['param'][$l]['value'];
+										$data['additional'][$l]['type'] = (string) "Passenger";
+									}
+								}
+								else
+								{
+									$data['additional'] = array();
+								}
+								$passenger = $obj_TxnInfo->setPassengerDetails($_OBJ_DB, $data['passenger'], $data['additional']);
+							}
+						}
+					}
+					if(count($aAirlinedata["orders"][$i]['shipping']) > 0)
+					{
+						for ($j=0; $j<count($aAirlinedata["orders"][$i]['shipping']); $j++ )
+						{
+							$data['shipping_address'][$j]['name'] = (string) $aAirlinedata["orders"][$i]['shipping'][$j]['name'];
+							$data['shipping_address'][$j]['street'] = (string) $aAirlinedata["orders"][$i]['shipping'][$j]['street'];
+							$data['shipping_address'][$j]['street2'] = (string) $aAirlinedata["orders"][$i]['shipping'][$j]['street2'];
+							$data['shipping_address'][$j]['city'] = (string) $aAirlinedata["orders"][$i]['shipping'][$j]['city'];
+							$data['shipping_address'][$j]['state'] = (string) $aAirlinedata["orders"][$i]['shipping'][$j]['state'];
+							$data['shipping_address'][$j]['zip'] = (string) $aAirlinedata["orders"][$i]['shipping'][$j]['zip'];
+							$data['shipping_address'][$j]['country'] = (string) $aAirlinedata["orders"][$i]['shipping'][$j]['country'];
+							$data['shipping_address'][$j]['reference_type'] = (string) "order";
+							if($order_id!="")
+							{
+								$data['shipping_address'][$j]['reference_id'] = $order_id;
+							}
+						}
+						$shipping_id = $obj_TxnInfo->setShippingDetails($_OBJ_DB, $data['shipping_address']);
+					}
+				}
+			}
+			$_SESSION ['obj_TxnInfo'] = $obj_TxnInfo;
+			
+			if(array_key_exists("txnid", $_REQUEST) === true && empty($_REQUEST["txnid"]) == false)
+			{
+				$txninfo = TxnInfo::produceInfo ($iTxnID, $_OBJ_DB);
+				$_REQUEST["mobile"] = $txninfo->getMobile();
+				$_REQUEST["email"] = $txninfo->getEMail();
+				$_REQUEST["language"] = $txninfo->getLanguage();
+				$_REQUEST["markup"] = $txninfo->getMarkupLanguage();
+				$_SESSION ['obj_TxnInfo'] = $txninfo;
+			}
+			else
+			{
+				$_SESSION ['obj_TxnInfo'] = TxnInfo::produceInfo ( $iTxnID, $obj_ClientConfig, $_REQUEST);
+			}
+			
 			// Associate End-User Account (if exists) with Transaction
 			/*
 			 * $iAccountID = -1;
