@@ -1,4 +1,4 @@
-#: /api/classes/general.php:100
+#: /api/classes/general.php:93
 msgid @@@ Status - 11 @@@
 msgstr @@@ Undefined Client ID @@@
 msgid @@@ Status - 12 @@@
@@ -15,8 +15,7 @@ msgid @@@ Status - 23 @@@
 msgstr @@@ Unknown Account ID @@@
 msgid @@@ Status - 24 @@@
 msgstr @@@ Account Disabled @@@
-msgid @@@ Status - 31 @@@
-msgstr @@@ Undefined Recipient @@@
+Smsgstr @@@ Undefined Recipient @@@
 msgid @@@ Status - 32 @@@
 msgstr @@@ Recipient is too short @@@
 msgid @@@ Status - 33 @@@
@@ -261,6 +260,26 @@ msgid @@@ Select Card - 49 @@@
 msgstr @@@ The specified account is not active. @@@
 msgid @@@ Select Card - 99 @@@
 msgstr @@@ We're sorry but we could not complete the payment through your selected payment method. Please select another one to try again. @@@
+msgid @@@ Select Card - 25 @@@
+msgstr @@@ Card holder name is not valid. @@@
+msgid @@@ Select Card - 3 @@@
+msgstr @@@ Card type is not valid. @@@
+msgid @@@ Select Card - 19 @@@
+msgstr @@@ Expiry month or year is not valid. @@@
+msgid @@@ Select Card - 20 @@@
+msgstr @@@ Expiry month or year is not valid. @@@
+msgid @@@ Select Card - 34 @@@
+msgstr @@@ Username is empty. @@@
+msgid @@@ Select Card - 35 @@@
+msgstr @@@ Username length is too short. @@@
+msgid @@@ Select Card - 36 @@@
+msgstr @@@ Username length is too big. @@@
+msgid @@@ Select Card - 37 @@@
+msgstr @@@ Username doesn't contain special characters. @@@
+msgid @@@ Select Card - 26 @@@
+msgstr @@@ card number is not valid. @@@
+msgid @@@ Select Card - 59 @@@
+msgstr @@@ Payment method not supported. @@@
 msgid @@@ Select Card - 101 @@@
 msgstr @@@ All your stored cards have been deleted. @@@
 msgid @@@ Select Payment Method - 99 @@@

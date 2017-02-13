@@ -105,7 +105,7 @@ if(isset($_POST['token']) == false && isset($_POST['storedcard']) == false)
 	if( (count($_POST['cardnumber']) == 0 || (count($_POST['cardnumber']) > 0 && $obj_Validator->valCardNumber($_POST['cardnumber']) != 10))
 		) 
 	{ 
-		$aMsgCds[] = 25; 
+		$aMsgCds[] = 26; 
 		
 	}
 	
@@ -157,7 +157,7 @@ if (count($aMsgCds) == 0)
 						    <transaction store-card="true" id="'.$_SESSION['obj_TxnInfo']->getID().'">
 						       <card type-id="'.intval($cardTypeId).'">
 			       					 <amount country-id="'.$_SESSION['obj_TxnInfo']->getCountryConfig()->getID().'">'.$_SESSION['obj_TxnInfo']->getAmount().'</amount>
-						      </card>
+						       </card>
 						    </transaction>
 						    <client-info language="da" version="1.20" platform="iOS/8.1.3">
 			       				<customer-ref>'.$_SESSION['obj_TxnInfo']->getCustomerRef().'</customer-ref>
@@ -295,6 +295,7 @@ if (count($aMsgCds) == 0)
 	}
 	catch(Exception $e)
 	{
+		$code = 59;
 		$msg = 59;
 	}
 
