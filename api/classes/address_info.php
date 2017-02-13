@@ -36,7 +36,7 @@ class AddressInfo
 	 */
 	private $_Name;
 	/**
-	 * Value of the Street of that Address 
+	 * Value of the Street of that Address
 	 *
 	 */
 	private $_Street;
@@ -50,17 +50,17 @@ class AddressInfo
 	 *
 	 */
 	private $_CityCode;
-		/**
+	/**
 	 * Value of the State of that Address
 	 *
 	 */
 	private $_StateCode;
-		/**
+	/**
 	 * Value of the Zip of that Address
 	 *
 	 */
 	private $_ZipCode;
-		/**
+	/**
 	 * Value of the Country of that Address
 	 *
 	 */
@@ -158,22 +158,22 @@ class AddressInfo
 	public function getReferenceType() { return $this->_aReferenceType; }
 
 
-	
-	
+
+
 	public static function produceConfig(RDB $oDB, $id)
 	{
 		$sql = "SELECT id, name, street, street2, city, state, country, zip, reference_id, reference_type
 					FROM log".sSCHEMA_POSTFIX.".address_tbl WHERE id=".$id;
-			//echo $sql ."\n";
+		//echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 		if (is_array($RS) === true && count($RS) > 0)
 		{
 			$RSA = $oDB->getName($sqlA);
-		
-			    
+
+			 
 			return new AddressInfo($RS["ID"], $RS["NAME"],$RS["STREET"], $RS["STREET2"], $RS["CITY"], $RS["STATE"],
-					$RS["COUNTRY"], $RS["ZIP"], $RS["REFERENCE_ID"], $RS["REFERENCE_TYPE"]);
-			     	
+					$RS["ZIP"], $RS["COUNTRY"], $RS["REFERENCE_ID"], $RS["REFERENCE_TYPE"]);
+			 
 		}
 		else { return null; }
 	}
@@ -189,7 +189,7 @@ class AddressInfo
 		{
 			$aConfigurations[] = self::produceConfig($oDB, $RS["ID"]);
 		}
-		
+
 		return $aConfigurations;
 	}
 
