@@ -21,7 +21,7 @@ $xmlData .= '<labels>
 			<info>' . $_OBJ_TXT->_ ( "Please select your Payment Method" ) . '</info>
 			<cancel>' . $_OBJ_TXT->_ ( "Cancel Payment" ) . '</cancel>
 			<cardnumber>' . $_OBJ_TXT->_ ( "Card Number" ) . '</cardnumber>
-			<expiry>' . $_OBJ_TXT->_ ( "Expiry Date" ) . '</expiry>
+			<expiry>' . $_OBJ_TXT->_ ( "Expiry Month" ) . '</expiry>
 			<cvv>' . $_OBJ_TXT->_ ( "CVV Code" ) . '</cvv>
 			<button>' . $_OBJ_TXT->_ ( "Pay now" ) . '</button>
 			<paymentcard>' . $_OBJ_TXT->_ ( "Payment card" ) . '</paymentcard>

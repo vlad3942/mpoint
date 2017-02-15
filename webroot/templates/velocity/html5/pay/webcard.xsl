@@ -352,14 +352,11 @@ $(document).ready(function() {
 									<label for="expiry-month">
 										<xsl:value-of select="/root/labels/expiry" />
 									</label>
-									<input type="number" name="expiry-month" class="form-control cc-month"
-										maxlength="2" required="required" placeholder="MM" />
+									<input type="text" name="expiry-month" class="form-control cc-month" maxlength="2" required="required" placeholder="MM" />
 								</div>
 								<div class="col-md-3">
 									<label for="expiry-year">Enter Year</label>
-									<input type="number" name="expiry-year" class="form-control cc-year"
-										autocomplete="cc-year" maxlength="2" required="required"
-										placeholder="YY" />
+									<input type="text" name="expiry-year" class="form-control cc-year" autocomplete="cc-year" maxlength="2" required="required" placeholder="YY" />
 								</div>
 								<div class="form-group col-md-6">
 									<label for="cvv">
