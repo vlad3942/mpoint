@@ -190,7 +190,7 @@ class FlightInfo {
 		return $aConfigurations;
 	}
 	public function getAdditionalDataArr($aDataArr) {
-		$Axml = '<data name="' . $aDataArr ["NAME"] . '">' . $aDataArr ["VALUE"] . '</data>';
+		$Axml = '<param name="' . $aDataArr ["NAME"] . '">' . $aDataArr ["VALUE"] . '</param>';
 		return $Axml;
 	}
 	public function toXML() {
