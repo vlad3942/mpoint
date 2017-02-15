@@ -15,7 +15,7 @@
  * @subpackage MobileWeb
  * @version 1.10
  */
-
+$_REQUEST["language"] = "us";
 // Require Global Include File
 require_once ("../inc/include.php");
 
@@ -314,20 +314,6 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 				}
 			}
 			$_SESSION ['obj_TxnInfo'] = $obj_TxnInfo;
-			
-			if(array_key_exists("txnid", $_REQUEST) === true && empty($_REQUEST["txnid"]) == false)
-			{
-				$txninfo = TxnInfo::produceInfo ($iTxnID, $_OBJ_DB);
-				$_REQUEST["mobile"] = $txninfo->getMobile();
-				$_REQUEST["email"] = $txninfo->getEMail();
-				$_REQUEST["language"] = $txninfo->getLanguage();
-				$_REQUEST["markup"] = $txninfo->getMarkupLanguage();
-				$_SESSION ['obj_TxnInfo'] = $txninfo;
-			}
-			else
-			{
-				$_SESSION ['obj_TxnInfo'] = TxnInfo::produceInfo ( $iTxnID, $obj_ClientConfig, $_REQUEST);
-			}
 			
 			// Associate End-User Account (if exists) with Transaction
 			/*
