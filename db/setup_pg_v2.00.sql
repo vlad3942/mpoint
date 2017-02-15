@@ -114,7 +114,7 @@ INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (7, 27);
 /*VISA*/
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (8, 27);
 
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 27, 'TBD', 'TBD', 'TBD');
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 27, 'MayBank', '02700770202075001284', '4GkR2Hkk');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 27, '-1');
 
 -- Route VISA Card to MayBank with country Malaysia
