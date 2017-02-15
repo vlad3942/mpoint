@@ -104,7 +104,7 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 	
 	$obj_mPoint = new MobileWeb ( $_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig );
 	
-	if(array_key_exists("txnid", $_REQUEST) === true && empty($_REQUEST["mobile"]) == false)
+	if(array_key_exists("txnid", $_REQUEST) === true && empty($_REQUEST["txnid"]) == false)
 	{
 		$iTxnID = $_REQUEST["txnid"];
 	}
@@ -317,18 +317,18 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 			
 			if(array_key_exists("txnid", $_REQUEST) === true && empty($_REQUEST["txnid"]) == false)
 			{
-				$txninfo = TxnInfo::produceInfo ($iTxnID, $_OBJ_DB);
-				$_REQUEST["mobile"] = $txninfo->getMobile();
-				$_REQUEST["email"] = $txninfo->getEMail();
-				$_REQUEST["language"] = $txninfo->getLanguage();
-				$_REQUEST["markup"] = $txninfo->getMarkupLanguage();
-				$_SESSION ['obj_TxnInfo'] = $txninfo;
+				$obj_TxnInfo = TxnInfo::produceInfo ($iTxnID, $_OBJ_DB);
+				$_REQUEST["mobile"] = $obj_TxnInfo->getMobile();
+				$_REQUEST["email"] = $obj_TxnInfo->getEMail();
+				$_REQUEST["language"] = $obj_TxnInfo->getLanguage();
+				$_REQUEST["markup"] = $obj_TxnInfo->getMarkupLanguage();
 			}
 			else
 			{
-				$_SESSION ['obj_TxnInfo'] = TxnInfo::produceInfo ( $iTxnID, $obj_ClientConfig, $_REQUEST);
+				$obj_TxnInfo = TxnInfo::produceInfo ( $iTxnID, $obj_ClientConfig, $_REQUEST );
 			}
 			
+			$_SESSION ['obj_TxnInfo'] = $obj_TxnInfo;
 			// Associate End-User Account (if exists) with Transaction
 			/*
 			 * $iAccountID = -1;
