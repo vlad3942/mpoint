@@ -122,11 +122,13 @@ if (! empty ( $_REQUEST )) {
 	$flightno = $_REQUEST ['FN'];
 	$from = $_REQUEST ['from'];
 	
-	$obj_ClientConfig = ClientConfig::produceConfig ( $_OBJ_DB, $clientidd );
+	$Ccountry = ClientConfig::produceConfig ( $_OBJ_DB, $clientidd );
 	
 	if (is_object ( $obj_ClientConfig )) {
-		if ($obj_ClientConfig->getCancelURL () !== "")
-			$urls ["Cancel"] = $obj_ClientConfig->getCancelURL ();
+		
+		$Ccountry = $obj_ClientConfig->getCancelURL();
+		if (empty($Ccountry) == false)
+			$urls ["Cancel"] = $obj_ClientConfig->getCancelURL();
 		else
 			$urls ["Cancel"] = "http://" . $_SERVER ["HTTP_HOST"] . "/_test/uat/addDetail.php";
 	}
@@ -448,10 +450,10 @@ if (! empty ( $_REQUEST )) {
 
 						</div>
 					</div>
-					<br> <a href=<?php echo $urls["Cancel"]?>
-						class="btn btn-success btn-sm">Yes</a>
-					<button id="no" data-bb-handler="No" type="button"
-						class="btn btn-danger btn-sm">No</button>
+					<br> 
+					
+					<?php  echo "<a href='".$urls["Cancel"]."' class=\"btn btn-success btn-sm\" >Yes </a>"; ?>
+					<button id="no" data-bb-handler="No" type="button" class="btn btn-danger btn-sm">No</button>
 				</div>
 			</div>
 		</div>
