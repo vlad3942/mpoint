@@ -119,7 +119,13 @@
 <xsl:param name="errorvalue" />
 <script type="text/javascript">
 $(document).ready(function() {
-    $('#modalerror').modal('show');
+  $('#modalerror').modal('show'); 
+  
+    $("#ok").click(function(){
+    var Qurl = window.location.href;
+    var url = Qurl.substr(0, Qurl.indexOf("&amp;msg"));
+	window.location.href = url;
+    });
 });
 </script>
 	<div id="modalerror" href="http://www.google.co.in" class="modal fade" data-backdrop="static" data-keyboard="false"
