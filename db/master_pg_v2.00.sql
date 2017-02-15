@@ -35,6 +35,8 @@ CREATE TABLE log.flight_tbl
 )
 WITHOUT OIDS;
 
+  ALTER TABLE log.flight_tbl
+  OWNER TO mpoint;
   
   
   
@@ -58,9 +60,9 @@ CREATE TABLE log.passenger_tbl
 )
 WITHOUT OIDS;
 
-  
-  
-  
+  ALTER TABLE log.passenger_tbl
+  OWNER TO mpoint;
+    
   
 -- Table: log.additional_data_tbl
 
@@ -79,7 +81,14 @@ CREATE TABLE log.additional_data_tbl
 )
 WITHOUT OIDS;
 
+  ALTER TABLE log.additional_data_tbl
+  OWNER TO mpoint;
 
+-- Table: create type
+  CREATE TYPE log.address_tbl_ref AS ENUM
+   ('order',
+    'transaction');
+    
 -- Table: log.address_tbl
 
 CREATE TABLE log.address_tbl
@@ -92,6 +101,15 @@ CREATE TABLE log.address_tbl
   state character varying(200),
   country character varying(200),
   zip character varying(200),
-  external_ref integer,
+  reference_id integer,
+  reference_type log.address_tbl_ref,
   CONSTRAINT address_pk PRIMARY KEY (id)
 )
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE log.address_tbl
+  OWNER TO mpoint;
+
+ALTER TABLE log.order_tbl
+  OWNER TO mpoint;

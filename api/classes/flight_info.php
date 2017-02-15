@@ -1,20 +1,20 @@
 <?php
 /**
  * The Info package contains various data classes holding information such as:
- * 	- Flight specific details as received by the cart that is send when a transation is initialized.
- *
- * @author Manish S Dewani
- * @copyright Cellpoint Mobile
- * @link http://www.cellpointmobile.com
- * @package Info
- * @subpackage FlightInfo
- * @version 1.10
- */
+* 	- Flight specific details as received by the cart that is send when a transation is initialized.
+*
+* @author Manish S Dewani
+* @copyright Cellpoint Mobile
+* @link http://www.cellpointmobile.com
+* @package Info
+* @subpackage FlightInfo
+* @version 1.10
+*/
 
 /* ==================== Flight Information Exception Classes Start ==================== */
 /**
  * Exception class for all Flight Information exceptions
- */
+*/
 class FlightInfoException extends mPointException {
 }
 /* ==================== Flight Information Exception Classes End ==================== */
@@ -71,7 +71,7 @@ class FlightInfo {
 	 * @var string
 	 */
 	private $_aFlightNumber;
-	
+
 	/**
 	 * Default Constructor
 	 */
@@ -86,7 +86,7 @@ class FlightInfo {
 		$this->_aAdditionalData = $Adata;
 		$this->_aFlightNumber = $fnum;
 	}
-	
+
 	/**
 	 * Returns the Unique ID for the Flight
 	 *
@@ -190,7 +190,7 @@ class FlightInfo {
 		return $aConfigurations;
 	}
 	public function getAdditionalDataArr($aDataArr) {
-		$Axml = '<data name="' . $aDataArr ["NAME"] . '">' . $aDataArr ["VALUE"] . '</data>';
+		$Axml = '<param name="' . $aDataArr ["NAME"] . '">' . $aDataArr ["VALUE"] . '</param>';
 		return $Axml;
 	}
 	public function toXML() {

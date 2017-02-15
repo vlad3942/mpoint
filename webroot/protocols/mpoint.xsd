@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
 <xs:include schemaLocation="global.xsd" />
+
 <xs:element name="root">
 	<xs:complexType>
 		<xs:choice>
@@ -749,7 +751,7 @@
 						</xs:element>
 					</xs:all>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
-					<xs:attribute name="account" type="xs:positiveInteger" use="required" />
+					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
 				</xs:complexType>
 			</xs:element>
 		</xs:choice>

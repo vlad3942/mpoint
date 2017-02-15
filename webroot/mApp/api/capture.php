@@ -58,8 +58,12 @@ require_once(sCLASS_PATH ."/globalcollect.php");
 require_once(sCLASS_PATH ."/securetrading.php");
 // Require specific Business logic for the PayFort component
 require_once(sCLASS_PATH ."/payfort.php");
+// Require specific Business logic for the PayPal component
+require_once(sCLASS_PATH ."/paypal.php");
 // Require specific Business logic for the CCAvenue component
 require_once(sCLASS_PATH ."/ccavenue.php");
+// Require specific Business logic for the 2C2P component
+require_once(sCLASS_PATH ."/ccpp.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 // Require Business logic for General Administration of mPoint
@@ -79,7 +83,7 @@ require_once(sCLASS_PATH ."/validate.php");
  $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
  $HTTP_RAW_POST_DATA .= '<root>';
  $HTTP_RAW_POST_DATA .= '<capture client-id="10007" account="100007">';
- $HTTP_RAW_POST_DATA .= '<transaction id="1812096" order-no="UAT-28577880">';
+ $HTTP_RAW_POST_DATA .= '<transaction id="1813219" order-no="UAT-28577880">';
  $HTTP_RAW_POST_DATA .= '<amount country-id="100">10000</amount>';
  $HTTP_RAW_POST_DATA .= '</transaction>';
  $HTTP_RAW_POST_DATA .= '</capture>';
@@ -147,6 +151,7 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 						if (count($aMsgCds) == 0)
 						{
 							$obj_TxnInfo = TxnInfo::produceInfo($transactionID, $_OBJ_DB);
+							$obj_TxnInfo->produceOrderConfig($_OBJ_DB);
 							if (array_key_exists("HTTP_X_AUTH_TOKEN", $_SERVER) === true)
 							{
 								$obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
