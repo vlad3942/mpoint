@@ -160,7 +160,7 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 								if (count($aMsgCds) == 0)
 								{
 									$obj_TxnInfo = TxnInfo::produceInfo($transactionID, $_OBJ_DB);
-								
+									$obj_TxnInfo->produceOrderConfig($_OBJ_DB);
 									
 									
 							if (array_key_exists("HTTP_X_AUTH_TOKEN", $_SERVER) === true)
