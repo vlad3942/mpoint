@@ -172,8 +172,8 @@ class AddressInfo
 		
 			    
 			return new AddressInfo($RS["ID"], $RS["NAME"],$RS["STREET"], $RS["STREET2"], $RS["CITY"], $RS["STATE"],
-					$RS["COUNTRY"], $RS["ZIP"], $RS["REFERENCE_ID"], $RS["REFERENCE_TYPE"]);
-			     	
+					$RS["ZIP"], $RS["COUNTRY"], $RS["REFERENCE_ID"], $RS["REFERENCE_TYPE"]);
+			 
 		}
 		else { return null; }
 	}
@@ -204,7 +204,7 @@ class AddressInfo
 		$xml .= '<state>'. $this->getState() .'</state>';
 		$xml .= '<zip>'. $this->getZip() .'</zip>';
 		$xml .= '<country>'. $this->getCountry() .'</country>';
-		$xml .= '<shipping-address>';
+		$xml .= '</shipping-address>';
 		return $xml;
 	}
 }
