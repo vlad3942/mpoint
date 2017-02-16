@@ -573,7 +573,7 @@ $(document).ready(function() {
 							<xsl:choose>
 								<xsl:when test="@id = '16'">
 									<div class="col-md-12">
-										<div class="wallet-type" id="walletvisa_@id">
+										<div class="wallet-type" id="walletvisa_@id" onClick="document.forms['walletform_{@id}'].submit();">
 
 											<div class="row" data-toggle="modal" data-target=".login-wallet">
 												<div class="col-xs-12 col-sm-4 col-md-4" id="card-{@id}">
