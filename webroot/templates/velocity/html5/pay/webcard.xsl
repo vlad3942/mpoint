@@ -18,27 +18,22 @@
 								<div class="row">
 									<div class="col-md-12">
 										<div class="panel-group" id="accordion1" role="tablist" aria-multiselectable="true">
-											<!-- <div class="wrapper"> <div class="content"> <xsl:apply-templates 
-												select="messages" /> <div class="card-wrapper"> <div class="cards"> -->
-												<xsl:for-each select="cards/item">
-												<xsl:choose>
-													<xsl:when test="@id = '11'">
-														<xsl:apply-templates select="." mode="cpm-wallet" />
-													</xsl:when>
-													<xsl:when test="@id = '16'">
-														<xsl:apply-templates select="." mode="other-wallet" />
-													</xsl:when>
-													<xsl:when test="@id = '31'">
-														<xsl:apply-templates select="." mode="sadad" />
-													</xsl:when>
-												</xsl:choose>
+											<xsl:for-each select="cards/item">
+											<xsl:choose>
+												<xsl:when test="@id = '11'">
+													<xsl:apply-templates select="." mode="cpm-wallet" />
+												</xsl:when>
+											</xsl:choose>
 											</xsl:for-each>
-									
+											<!-- Display payment form for other payment methods -->
+											<xsl:if test="cards/item/@id = '16' or cards/item/@id = '23' or cards/item/@id = '28' or cards/item/@id = '31'">
+												<xsl:apply-templates select="cards" mode="other-wallet" />
+											</xsl:if>								
 											<!-- Display payment form for normal payment cards -->
 											<xsl:if test="cards/item/@id = 1 or cards/item/@id = 2 or cards/item/@id = 3 or cards/item/@id = 5 or cards/item/@id = 6 or cards/item/@id = 7 or cards/item/@id = 8 or cards/item/@id = 9">
 												<xsl:apply-templates select="cards" mode="cpm" />
 											</xsl:if>
-												
+												<!-- Display error messages template -->
 											<xsl:if test="messages/item">
 												<xsl:apply-templates select="messages" mode="error" >
 													<xsl:with-param name="errorvalue" select="messages/item" />
@@ -553,15 +548,14 @@ $(document).ready(function() {
 
 
 
-	<xsl:template match="item" mode="other-wallet">
-
+	<xsl:template match="cards" mode="other-wallet">
 		<div class="panel panel-default add-card">
 			<div class="panel-heading" role="tab" id="headingTwo">
 				<a role="button" data-toggle="collapse" data-parent="#accordion1"
 					href="#collapseTwo" aria-expanded="true" aria-controls="collapseThree">
 					<h4 class="panel-title red">
 						<i class="more-less glyphicon glyphicon-plus"></i>
-						Wallets
+						Other Payment Options
 					</h4>
 				</a>
 			</div>
@@ -570,56 +564,160 @@ $(document).ready(function() {
 				<div class="panel-body">
 					<div class="row">
 						<xsl:for-each select="/root/cards/item">
-							<xsl:choose>
-								<xsl:when test="@id = '16'">
+							<xsl:choose>					
+								<xsl:when test="@id = '28'">
 									<div class="col-md-12">
-										<div class="wallet-type" id="walletvisa_@id" onClick="document.forms['walletform_{@id}'].submit();">
+										<div class="wallet-type" id="walletvisa_{@id}" onClick="document.forms['walletform_{@id}'].submit();">
 
 											<div class="row" data-toggle="modal" data-target=".login-wallet">
-												<div class="col-xs-12 col-sm-4 col-md-4" id="card-{@id}">
-													<!-- <img src="/css/swag/img/paypal.png" class="wallet-img" 
-														alt="Paypal"/> -->
+												<div class="payment-paypal-form payment-form">
+													<form action="{func:constLink('/pay/sys/paypal.php') }" method="POST" name="walletform_{@id}" id="walletform_{@id}">
+															<span class="glyphicon glyphicon-chevron-right right-icon pull-icon-right"
+																	aria-hidden="true"></span>
+															<div class="col-md-12" id="card-{@id}">
+																<!-- <img src="/css/swag/img/paypal.png" class="wallet-img" 
+																	alt="Paypal"/> -->
+																	<img src="{/root/system/protocol}://{/root/system/host}/img/card_28.png" alt="PayPal" style="max-height: 80px"/>
+															</div>
+															<div class="checkbox col-md-12">
+																<label>
+																	<input id="save-this-paypal" name="store-card" type="checkbox" onchange="valueChangedPaypal()" />
+																	<xsl:value-of select="/root/labels/savecard" />
+																</label>
+															</div>
+															<xsl:choose>
+																<xsl:when test="/root/cards/@accountid > 0">
+																	<div id="saveNewPaypal" class="form-group col-md-12"
+																		style="display: none">
+																		<label for="cardname"><xsl:value-of select="/root/labels/name" /></label>
+																		<input type="text" id="cardname" name="cardname" class="form-control"
+																			 placeholder="{/root/labels/name}" />
+																	</div>
+																</xsl:when>
+																<xsl:otherwise>
+																	<div id="saveNewPaypal" class="form-group col-md-12"
+																		style="display: none">
+																		<label for="cardname"><xsl:value-of select="/root/labels/name" /></label>
+																		<input type="text" name="cardname" class="form-control"
+																			id="cardname" placeholder="{/root/labels/name}" />
+																		<label for="new-password">
+																			<xsl:value-of select="/root/labels/password" />
+																		</label>
+																		<input type="password" class="form-control password"
+																			name="new-password" maxlength="20" placeholder="{/root/labels/new-password}"
+																			title="new-password" />
+																		<input type="password" class="form-control password"
+																			name="repeat-password" maxlength="20"
+																			placeholder="{/root/labels/repeat-password}" title="repeat-password" />
+																	</div>
+																</xsl:otherwise>
+															</xsl:choose>
+														<input type="hidden" name="transactionid" value="{/root/transaction/@id}" /> 
+														<input type="hidden" name="cardtype" value="{@id}" /> 	
+													</form>
+													<script type="text/javascript">
+														function valueChangedPaypal()
+														{
+														if($('#save-this-paypal').is(":checked"))
+														$("#saveNewPaypal").show();
+														else
+														$("#saveNewPaypal").hide();
+														}
+													</script>
+													
+											</div>
+										</div>
+									</div>
+								</div>
+							</xsl:when>
+							<xsl:when test="@id = '16'">
+								<div class="col-md-12">
+									<div class="wallet-type" id="walletvisa_{@id}" >
+										<div class="row" data-toggle="modal" data-target=".login-wallet">
+											<span class="glyphicon glyphicon-chevron-right right-icon pull-icon-right" aria-hidden="true"></span>
+											<div class="col-md-12" id="card-{@id}">
+												<!-- <img src="/css/swag/img/paypal.png" class="wallet-img" 
+													alt="Paypal"/> -->
+													<img src="{/root/system/protocol}://{/root/system/host}/img/card_28.png" alt="PayPal" style="max-height: 80px"/>
+											</div>
+										</div>
+									</div>
+								</div>
+								<form name="walletform_{@id}" id="walletform_{@id}"
+									action="{func:constLink('/pay/sys/authorize.php') }" method="post">
+									<input type="hidden" name="cardtype" value="{@id}" />
+									<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
+									<input type="hidden" name="token" id="token" value="" />
+									<input type="hidden" name="verifier" id="verifier"
+										value="" />
+									<input type="hidden" name="checkouturl" id="checkouturl" value="" />
+								</form>
+								<script type="text/javascript">
+									var id =<xsl:value-of select="@id" />;
 
+									jQuery("head").append("<xsl:value-of select="head" />");
+
+									jQuery("#card-"+id).html('<xsl:value-of select="body" />');
+			
+									$('#walletvisa_<xsl:value-of select="@id" />').on('click', function() {
+										$('img.v-button').trigger('click');
+										});
+								</script>
+							</xsl:when>
+							<xsl:when test="@id = '31'">
+								<div class="col-md-12">
+									<div class="wallet-type" id="sadad_{@id}" name="sadad_{@id}" >
+										<div class="row" >
+										<span class="glyphicon glyphicon-chevron-right right-icon pull-icon-right" aria-hidden="true"></span>
+											<div class="col-md-12" id="card-{@id}">
+													<img src="{/root/system/protocol}://{/root/system/host}/img/card_31.png" alt="SaDaD" style="max-height: 60px"/>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div id="modalsadad{@id}" class="modal fade cvv-password"
+										tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabelsadad{@id}">
+										<div class="modal-dialog" role="document">
+											<div class="modal-content text-center">
+												<div class="modal-header">
+													<button type="button" class="close" data-dismiss="modalsadad{@id}"
+														aria-label="Close">
+														<span aria-hidden="true"></span>
+													</button>
+													<h4 class="modal-title">Enter details to pay with sadad account</h4>
 												</div>
-												<div class="col-xs-10 col-sm-6 col-md-6">
-													<h4 class="red">
-														<xsl:value-of select="name" />
-													</h4>
-												</div>
-												<div class="col-xs-2 col-sm-2 col-md-2 text-right">
-													<span class="glyphicon glyphicon-chevron-right right-icon"
-														aria-hidden="true"></span>
+												<div class="payment-form">
+													<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/sadad.php') }" method="post" autocomplete="on">
+														<input type="hidden" name="pspid" value="{@pspid}" />
+														<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
+														<div class="form-group row">
+															<div class="col-lg-12 text-center">
+																<div class="input-group">
+																		<input type="tel" name="sadad_payment_id" class="form-control" maxlength="23" required="required" placeholder="SADAD Payment Id" />
+																</div>
+															</div>
+															<div class="col-lg-12 text-center">
+																<button type="submit" class="btn"> <xsl:value-of select="/root/labels/button" /></button>
+																</div>
+														</div>
+													</form>
 												</div>
 											</div>
 										</div>
 									</div>
-									<form name="walletform_{@id}" id="walletform_{@id}"
-										action="{func:constLink('/pay/sys/authorize.php') }" method="post">
-										<input type="hidden" name="cardtype" value="{@id}" />
-										<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
-										<input type="hidden" name="token" id="token" value="" />
-										<input type="hidden" name="verifier" id="verifier"
-											value="" />
-										<input type="hidden" name="checkouturl" id="checkouturl"
-											value="" />
-									</form>
-
 									<script type="text/javascript">
-										var id =<xsl:value-of select="@id" />;
-
-										jQuery("head").append("<xsl:value-of select="head" />");
-
-										jQuery("#card-"+id).html('<xsl:value-of select="body" />');
+										$('#sadad_<xsl:value-of select="@id" />').on('click', function(e) {
+										$('#modalsadad<xsl:value-of select="@id" />').modal('show');
+										});
 									</script>
-								</xsl:when>
-							</xsl:choose>
-						</xsl:for-each>
-					</div>
+							</xsl:when>
+						</xsl:choose>
+					</xsl:for-each>
 				</div>
 			</div>
 		</div>
-		<script type="text/javascript">
+	</div>
+</xsl:template>
 
-		</script>
-	</xsl:template>
+
 </xsl:stylesheet>
