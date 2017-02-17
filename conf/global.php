@@ -10,7 +10,7 @@ error_reporting(E_ERROR | E_PARSE | E_WARNING | E_USER_ERROR | E_USER_WARNING | 
  */
 define("sLOG_PATH", sSYSTEM_PATH ."/log/");
 /**
- * Output method for the error handler:
+ * Output method for the error handler:	
  *	0 - Store Internally
  *	1 - Output to file
  *	2 - Output to screen
@@ -56,8 +56,8 @@ $aDB_CONN_INFO["mpoint"]["class"] = "Oracle";
 $aDB_CONN_INFO["mpoint"]["host"] = "localhost";
 $aDB_CONN_INFO["mpoint"]["port"] = 5432;
 $aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
-$aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
-$aDB_CONN_INFO["mpoint"]["password"] = "hspzr735abl";
+$aDB_CONN_INFO["mpoint"]["username"] = "postgres";
+$aDB_CONN_INFO["mpoint"]["password"] = "postgres";
 $aDB_CONN_INFO["mpoint"]["class"] = "PostGreSQL";
 $aDB_CONN_INFO["mpoint"]["timeout"] = 10;
 $aDB_CONN_INFO["mpoint"]["charset"] = "UTF8";
@@ -438,6 +438,7 @@ $aHTTP_CONN_INFO["secure-trading"]["paths"]["cancel"] = "/mpoint/secure-trading/
 /**
  * Connection info for connecting to PayFort
  */
+
 $aHTTP_CONN_INFO["payfort"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
 $aHTTP_CONN_INFO["payfort"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
 $aHTTP_CONN_INFO["payfort"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
