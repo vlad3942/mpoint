@@ -520,6 +520,12 @@ abstract class Constants
 	const i2C2P_PSP = 26;
 	
 	/**
+	 * Unique ID for the Payment Service Provider: MayBank
+	 *
+	 */
+	const iMAYBANK_PSP = 27;
+	
+	/**
 	 * Unique ID for the Payment Service Provider: Android Pay
 	 *
 	 */
