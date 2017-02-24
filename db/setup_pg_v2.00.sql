@@ -57,7 +57,7 @@ INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (7, 26);
 /*VISA*/
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (8, 26);
 
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 26, '-----BEGIN CERTIFICATE-----
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 26, 'gXPRPPam3j58', '764764000000278', '-----BEGIN CERTIFICATE-----
 MIIFJzCCBA+gAwIBAgIKHoPmwQAAAAAADDANBgkqhkiG9w0BAQUFADAWMRQwEgYD
 VQQDEwtTaW5hcHRJUSBDQTAeFw0xMTA4MTkwMzA2MDFaFw0xNjA4MTkwMzE2MDFa
 MHgxCzAJBgNVBAYTAlNHMRIwEAYDVQQIEwlTaW5nYXBvcmUxEjAQBgNVBAcTCVNp
@@ -86,7 +86,7 @@ z+/Teo3irXFgY32RgDe8AwbENPZkkQpG99YuzntIScX9nReJU5k4oGBwV+RJReb3
 lk0NCLRX9NIg5oDYrhrnoqnOVguGRulVv8/l3zcE1G+FHrA9suixvAs+KDgyTIaS
 AwkGxB7OQomWYE/YQMbQSgzwoJ9axbclJOLvzSoigEdMy/kApMGu2KuPVYxfD9qz
 ZcwraxkBhlV1WYGe0lK7QwwCRddSyLVRmx/r
------END CERTIFICATE-----', '764764000000278', 'gXPRPPam3j58');
+-----END CERTIFICATE-----');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 26, '-1');
 
 -- Route VISA Card to 2C2P with country Thailand
