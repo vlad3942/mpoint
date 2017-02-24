@@ -126,15 +126,15 @@ INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (7, 28);
 /*VISA*/
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (8, 28);
 
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 28, 'PUBLICBANK', 'NA', 'APPLE001');
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 28, 'PUBLICBANK', 'sandbox', 'APPLE001');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 28, '-1');
 
 -- Route VISA Card to Publicbank with country Thailand
-UPDATE Client.CardAccess_Tbl SET pspid = 28, countryid = 644 WHERE clientid = 10001 AND cardid = 1;
+UPDATE Client.CardAccess_Tbl SET pspid = 28, countryid = 638 WHERE clientid = 10001 AND cardid = 1;
 -- Route VISA Card to Publicbank with country Thailand
-UPDATE Client.CardAccess_Tbl SET pspid = 28, countryid = 644 WHERE clientid = 10001 AND cardid = 7;
+UPDATE Client.CardAccess_Tbl SET pspid = 28, countryid = 638 WHERE clientid = 10001 AND cardid = 7;
 -- Route VISA Card to Publicbank with country Thailand
-UPDATE Client.CardAccess_Tbl SET pspid = 28, countryid = 644 WHERE clientid = 10001 AND cardid = 8;
+UPDATE Client.CardAccess_Tbl SET pspid = 28, countryid = 638 WHERE clientid = 10001 AND cardid = 8;
 
 /* ========== Global Configuration for Publicbank = ENDS ========== */
 

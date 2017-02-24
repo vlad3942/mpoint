@@ -56,8 +56,8 @@ $aDB_CONN_INFO["mpoint"]["class"] = "Oracle";
 $aDB_CONN_INFO["mpoint"]["host"] = "localhost";
 $aDB_CONN_INFO["mpoint"]["port"] = 5432;
 $aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
-$aDB_CONN_INFO["mpoint"]["username"] = "postgres";
-$aDB_CONN_INFO["mpoint"]["password"] = "postgres";
+$aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
+$aDB_CONN_INFO["mpoint"]["password"] = "hspzr735abl";
 $aDB_CONN_INFO["mpoint"]["class"] = "PostGreSQL";
 $aDB_CONN_INFO["mpoint"]["timeout"] = 10;
 $aDB_CONN_INFO["mpoint"]["charset"] = "UTF8";
@@ -512,20 +512,20 @@ $aHTTP_CONN_INFO["2c2p"]["paths"]["callback"] = "/mpoint/2c2p/callback";
 /**
  * Connection info for connecting to PublicBank
  */
-$aHTTP_CONN_INFO["publicbank"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
-$aHTTP_CONN_INFO["publicbank"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
-$aHTTP_CONN_INFO["publicbank"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
-$aHTTP_CONN_INFO["publicbank"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
-$aHTTP_CONN_INFO["publicbank"]["path"] = ""; // Set by calling class
-$aHTTP_CONN_INFO["publicbank"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
-$aHTTP_CONN_INFO["publicbank"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["publicbank"]["paths"]["initialize"] = "/mpoint/publicbank/initialize";
-$aHTTP_CONN_INFO["publicbank"]["paths"]["auth"] = "/mpoint/publicbank/authorize-payment";
-$aHTTP_CONN_INFO["publicbank"]["paths"]["capture"] = "/mpoint/publicbank/capture";
-$aHTTP_CONN_INFO["publicbank"]["paths"]["refund"] = "/mpoint/publicbank/refund";
-$aHTTP_CONN_INFO["publicbank"]["paths"]["status"] = "/mpoint/publicbank/status";
-$aHTTP_CONN_INFO["publicbank"]["paths"]["cancel"] = "/mpoint/publicbank/cancel";
-$aHTTP_CONN_INFO["publicbank"]["paths"]["callback"] = "/mpoint/publicbank/callback";
+$aHTTP_CONN_INFO["public-bank"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["public-bank"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["public-bank"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["public-bank"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["public-bank"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["public-bank"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["public-bank"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["public-bank"]["paths"]["initialize"] = "/mpoint/public-bank/initialize";
+$aHTTP_CONN_INFO["public-bank"]["paths"]["auth"] = "/mpoint/public-bank/authorize-payment";
+$aHTTP_CONN_INFO["public-bank"]["paths"]["capture"] = "/mpoint/public-bank/capture";
+$aHTTP_CONN_INFO["public-bank"]["paths"]["refund"] = "/mpoint/public-bank/refund";
+$aHTTP_CONN_INFO["public-bank"]["paths"]["status"] = "/mpoint/public-bank/status";
+$aHTTP_CONN_INFO["public-bank"]["paths"]["cancel"] = "/mpoint/public-bank/cancel";
+$aHTTP_CONN_INFO["public-bank"]["paths"]["callback"] = "/mpoint/public-bank/callback";
 
 /**
  * GoMobile Connection Info.
