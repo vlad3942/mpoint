@@ -428,6 +428,13 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			if (isset($obj_XML->voucher->status["code"]) === true && strlen($obj_XML->voucher->status["code"]) > 0) { $code = (string)$obj_XML->voucher->transaction; }
 			else { throw new mPointException("Invalid response from voucher issuer: ". $this->getPSPConfig()->getName() .", Body: ". $obj_HTTP->getReplyBody(), $code); }
 		}
+		else if ($code == 400)
+		{
+			$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
+				
+			if (isset($obj_XML->voucher->status["code"]) === true && strlen($obj_XML->voucher->status["code"]) > 0) {  throw new UnexpectedValueException("Redeem failed in validation", (integer) $obj_XML->voucher->status["code"] ); }
+			else { throw new mPointException("Invalid response from voucher issuer: ". $this->getPSPConfig()->getName() .", Body: ". $obj_HTTP->getReplyBody(), $code); }
+		}
 		else if ($code == 402) { throw new UnexpectedValueException("Insufficient balance on voucher", 43); }
 		else if ($code == 423) { throw new UnexpectedValueException("Voucher usage is temporarily locked", 48); }
 		else { throw new mPointException("Redemption failed with PSP: ". $this->getPSPConfig()->getName() .", Txn: ". $this->getTxnInfo()->getID() ."\n\n". $obj_HTTP->getReplyBody(), $code); }
