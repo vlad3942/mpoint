@@ -38,7 +38,12 @@
 											<xsl:if test="cards/item/@id = 1 or cards/item/@id = 2 or cards/item/@id = 3 or cards/item/@id = 5 or cards/item/@id = 6 or cards/item/@id = 7 or cards/item/@id = 8 or cards/item/@id = 9">
 												<xsl:apply-templates select="cards" mode="cpm" />
 											</xsl:if>
-											<!-- </div> </div> </div> </div> -->
+												
+											<xsl:if test="messages/item">
+												<xsl:apply-templates select="messages" mode="error" >
+													<xsl:with-param name="errorvalue" select="messages/item" />
+												</xsl:apply-templates>
+											</xsl:if>
 										</div>
 
 
@@ -110,8 +115,51 @@
 			});
 		</script>
 	</xsl:template>
+<xsl:template match="messages" mode="error">
+<xsl:param name="errorvalue" />
+<script type="text/javascript">
+$(document).ready(function() {
+  $('#modalerror').modal('show'); 
+  
+    $("#ok").click(function(){
+    var Qurl = window.location.href;
+    var url = Qurl.substr(0, Qurl.indexOf("&amp;msg"));
+	window.location.href = url;
+    });
+});
+</script>
+	<div id="modalerror" href="http://www.google.co.in" class="modal fade" data-backdrop="static" data-keyboard="false"
+											tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+											aria-hidden="true">
+											<div class="modal-dialog">
+												<div class="modal-content">
+													<div class="modal-body">
+														<button type="button" class="bootbox-close-button close"
+															data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;"> × </button>
+														<div class="bootbox-body " align="center">
+															<h3 class="text-warning"> Oops something went wrong!!!</h3>
+														</div>
+													</div>
+													<div class="modal-footer">
+														<div class="row">
+															<div class="col-md-12">
+																<div class="col-md-12" align="center">
+																	<h4><xsl:value-of select="$errorvalue" />
+																	</h4>
+																</div>
 
-
+															</div>
+														</div>
+														<br />								
+														<button id="ok" data-dismiss="modal"
+															data-bb-handler="Ok" type="button" class="btn btn-danger btn-sm">Ok</button>
+													</div>
+												</div>
+											</div>
+										</div>
+								</xsl:template>	
+								
+									
 	<xsl:template match="item" mode="cpm-wallet">
 		<xsl:variable name="storedcards" select="count(/root/stored-cards/card)" />
 		<xsl:if test="count(/root/stored-cards/card) > 0">
@@ -304,14 +352,11 @@
 									<label for="expiry-month">
 										<xsl:value-of select="/root/labels/expiry" />
 									</label>
-									<input type="number" name="expiry-month" class="form-control cc-month"
-										maxlength="2" required="required" placeholder="MM" />
+									<input type="text" name="expiry-month" class="form-control cc-month" maxlength="2" required="required" placeholder="MM" />
 								</div>
 								<div class="col-md-3">
 									<label for="expiry-year">Enter Year</label>
-									<input type="number" name="expiry-year" class="form-control cc-year"
-										autocomplete="cc-year" maxlength="2" required="required"
-										placeholder="YY" />
+									<input type="text" name="expiry-year" class="form-control cc-year" autocomplete="cc-year" maxlength="2" required="required" placeholder="YY" />
 								</div>
 								<div class="form-group col-md-6">
 									<label for="cvv">

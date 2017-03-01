@@ -78,6 +78,8 @@ require_once(sCLASS_PATH ."/paypal.php");
 require_once(sCLASS_PATH ."/ccavenue.php");
 // Require specific Business logic for the 2C2P component
 require_once(sCLASS_PATH ."/ccpp.php");
+// Require specific Business logic for the MayBank component
+require_once(sCLASS_PATH ."/maybank.php");
 // Require specific Business logic for the PublicBank component
 require_once(sCLASS_PATH ."/publicbank.php");
 
@@ -221,6 +223,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										// TO DO: Extend to add support for Split Tender
 										$data['amount'] = (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount;
 										$oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(), $obj_TxnInfo, $data);
+										//getting order config with transaction to pass to particular psp for initialize with psp for AID
+										$oTI->produceOrderConfig($_OBJ_DB);
 										// Initialize payment with Payment Service Provider
 										$xml = '<psp-info id="'. $obj_PSPConfig->getID() .'" merchant-account="'. htmlspecialchars($obj_PSPConfig->getMerchantAccount(), ENT_NOQUOTES) .'">';
 										switch ($obj_PSPConfig->getID() )
@@ -482,6 +486,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											$obj_PSP = new CCPP($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["2c2p"]);
 											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token);
 											
+											foreach ($obj_XML->children() as $obj_Elem)
+											{
+												$xml .= trim($obj_Elem->asXML() );
+											}
+											break;
+										case (Constants::iMAYBANK_PSP):
+											
+											$obj_PSP = new MayBank($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["maybank"]);
+											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token);
+												
 											foreach ($obj_XML->children() as $obj_Elem)
 											{
 												$xml .= trim($obj_Elem->asXML() );
