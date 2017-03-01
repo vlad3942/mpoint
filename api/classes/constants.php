@@ -526,6 +526,12 @@ abstract class Constants
 	const iMAYBANK_PSP = 27;
 	
 	/**
+	 * Unique ID for the Payment Service Provider: Public Bank
+	 *
+	 */
+	const iPUBLIC_BANK_PSP = 28;
+	
+	/**
 	 * Unique ID for the Payment Service Provider: Android Pay
 	 *
 	 */

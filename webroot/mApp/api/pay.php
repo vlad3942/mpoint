@@ -80,6 +80,8 @@ require_once(sCLASS_PATH ."/ccavenue.php");
 require_once(sCLASS_PATH ."/ccpp.php");
 // Require specific Business logic for the MayBank component
 require_once(sCLASS_PATH ."/maybank.php");
+// Require specific Business logic for the PublicBank component
+require_once(sCLASS_PATH ."/publicbank.php");
 
 $aMsgCds = array();
 
@@ -499,6 +501,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												$xml .= trim($obj_Elem->asXML() );
 											}
 											break;
+										case (Constants::iPUBLIC_BANK_PSP):
+												$obj_PSP = new PublicBank($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["public-bank"]);
+												$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token);
+													
+												foreach ($obj_XML->children() as $obj_Elem)
+												{
+													$xml .= trim($obj_Elem->asXML() );
+												}
+												break;
 										}
 										
 										$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. htmlspecialchars($obj_PSPConfig->getMessage($obj_TxnInfo->getLanguage() ), ENT_NOQUOTES) .'</message>';

@@ -67,6 +67,8 @@ require_once(sCLASS_PATH ."/ccpp.php");
 // Require specific Business logic for the MayBank component
 require_once(sCLASS_PATH ."/maybank.php");
 
+// Require specific Business logic for the PublicBank component
+require_once(sCLASS_PATH ."/publicbank.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 // Require Business logic for General Administration of mPoint

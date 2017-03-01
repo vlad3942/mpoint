@@ -67,6 +67,8 @@ require_once(sCLASS_PATH ."/paypal.php");
 require_once(sCLASS_PATH ."/ccpp.php");
 // Require specific Business logic for the MayBank component
 require_once(sCLASS_PATH ."/maybank.php");
+// Require specific Business logic for the PublicBank component
+require_once(sCLASS_PATH ."/publicbank.php");
 
 header("Content-Type: application/x-www-form-urlencoded");
 
