@@ -196,4 +196,17 @@ if ($payResponseCode == 200 && strlen($obj_HTTP->getReplyBody() ) > 0)
 	echo $html;
 	exit;
 }
+else
+{
+	$aMsgCds[] = $payResponseCode;
+	if (isset($sPath) === false) { $sPath = "pay/card.php?"; }
+	for ($i=0; $i<count($aMsgCds); $i++)
+	{
+		$msg .= "&msg=". $aMsgCds[$i];
+	}
 
+	header("location: http://". $_SERVER['HTTP_HOST'] ."/". $sPath . session_name() ."=". session_id() . $msg);
+	exit;
+
+
+}

@@ -249,11 +249,11 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
 			var fuel = $("#fuel").val();
 			var pre = $("#premium").val();
 			
-			var tott = parseInt(ticket) + parseInt(excb) + parseInt(tax) + parseInt(fuel) + parseInt(pre);
+			var totti = parseFloat(ticket) + parseFloat(excb) + parseFloat(tax) + parseFloat(fuel) + parseFloat(pre);
+			var tott = totti.toFixed(2);
 			  $("#total").val(tott);
 			  
 			 var tttt = $("#total").val();
-			
 		  }
 		  $('#ticket').change(function(){
 			  add();
