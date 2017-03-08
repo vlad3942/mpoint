@@ -165,4 +165,13 @@ UPDATE Client.CardAccess_Tbl SET pspid = 28, countryid = 638 WHERE clientid = 10
 
 /* ========== Global Configuration for Publicbank = ENDS ========== */
 
+/* ========== Global Configuration for AliPay - Payment Method : START========== */
+INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (32, 'AliPay', 23, -1, -1, -1);
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (32, 0, 0);
+INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 32, id FROM System.PricePoint_Tbl WHERE amount = -1 AND countryid = 200;
+
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (32, 23/*TBD with AliPay PSP ID*/);
+/* ========== Global Configuration for AliPay - Payment Method : END========== */
+
+
 

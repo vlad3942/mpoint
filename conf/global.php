@@ -383,7 +383,7 @@ $aHTTP_CONN_INFO["wire-card"]["paths"]["refund"] = "/mpoint/wire-card/refund";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["callback"] = "/mpoint/wire-card/callback";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["cancel"] = "/mpoint/wire-card/cancel";
 
-/*
+/**
  * Connection info for connecting to Android Pay
  */
 $aHTTP_CONN_INFO["android-pay"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
@@ -544,6 +544,21 @@ $aHTTP_CONN_INFO["maybank"]["paths"]["refund"] = "/mpoint/maybank/refund";
 $aHTTP_CONN_INFO["maybank"]["paths"]["status"] = "/mpoint/maybank/status";
 $aHTTP_CONN_INFO["maybank"]["paths"]["cancel"] = "/mpoint/maybank/cancel";
 $aHTTP_CONN_INFO["maybank"]["paths"]["callback"] = "/mpoint/maybank/callback";
+
+/**
+ * Connection info for connecting to AliPay
+ */
+$aHTTP_CONN_INFO["payfort"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["payfort"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["payfort"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["payfort"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["payfort"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["payfort"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["payfort"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["payfort"]["paths"]["initialize"] = "/mpoint/alipay/initialize";
+$aHTTP_CONN_INFO["payfort"]["paths"]["refund"] = "/mpoint/alipay/refund";
+$aHTTP_CONN_INFO["payfort"]["paths"]["status"] = "/mpoint/alipay/status";
+$aHTTP_CONN_INFO["payfort"]["paths"]["callback"] = "/mpoint/alipay/callback";
 
 /**
  * GoMobile Connection Info.
