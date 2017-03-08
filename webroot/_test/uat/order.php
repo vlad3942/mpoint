@@ -363,7 +363,7 @@ if (! empty ( $_REQUEST )) {
 			$orderdata['orders'][0]['shipping'][0]['city'] = "Cambridge";
 			$orderdata['orders'][0]['shipping'][0]['state'] = "Cambridgeshire";
 			$orderdata['orders'][0]['shipping'][0]['zip'] = "5555";
-			$orderdata['orders'][0]['shipping'][0]['country'] = "UK";
+			$orderdata['orders'][0]['shipping'][0]['country'] = "GB";
 			$orderdata['orders'][0]['lineitem'][0]['product']['sku'] = "RTY678M";
 			$orderdata['orders'][0]['lineitem'][0]['product']['name'] = "Product1";
 			$orderdata['orders'][0]['lineitem'][0]['product']['description'] = "Product Desc";
@@ -373,7 +373,7 @@ if (! empty ( $_REQUEST )) {
 			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['flightdata'][0]['departureairport'] = "LON";
 			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['flightdata'][0]['arrivalairport'] = "AMS";
 			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['flightdata'][0]['airlinecode'] = "MY";
-			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['flightdata'][0]['departuredate'] = "2018-12-28 12:35:00";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['flightdata'][0]['departuredate'] = "2017-12-28 12:35:00";
 			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['flightdata'][0]['arrivaldate'] = "2017-12-28 19:53:00";
 			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['flightdata'][0]['additionaldata']['param'][0]['value'] = "A320";
 			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['flightdata'][0]['additionaldata']['param'][0]['name'] = "Type";
