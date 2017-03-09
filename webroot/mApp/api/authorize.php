@@ -1013,6 +1013,11 @@ try
 												header("HTTP/1.1 402 Payment Required");
 												$xml .= '<status code="43">Insufficient balance on voucher</status>';
 											}
+											else if ($code == 45)
+											{
+												header("HTTP/1.1 401 Unauthorized");
+												$xml .= '<status code="45">Voucher and Redeem device-ids not equal</status>';
+											}
 											else if ($code == 48)
 											{
 												header("HTTP/1.1 423 Locked");
