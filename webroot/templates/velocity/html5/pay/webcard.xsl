@@ -26,7 +26,7 @@
 											</xsl:choose>
 											</xsl:for-each>
 											<!-- Display payment form for other payment methods -->
-											<xsl:if test="cards/item/@id = '16' or cards/item/@id = '23' or cards/item/@id = '28' or cards/item/@id = '31'">
+											<xsl:if test="cards/item/@id = '16' or cards/item/@id = '23' or cards/item/@id = '28' or cards/item/@id = '31' or cards/item/@id = '32'">
 												<xsl:apply-templates select="cards" mode="other-wallet" />
 											</xsl:if>								
 											<!-- Display payment form for normal payment cards -->

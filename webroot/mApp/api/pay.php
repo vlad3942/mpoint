@@ -161,11 +161,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 						
 						if (count($obj_Elem) == 0) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled
-
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
 						{
-						
+							
+								
 							if ($code >= 10)
 							{
 								if ($obj_TxnInfo->getAccountID() == -1 && General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true)
@@ -204,9 +204,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									break;
 								case (Constants::iANDROID_PAY_WALLET):				// 3rd Party Wallet: Android Pay
 									$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iANDROID_PAY_PSP);
-									break;
-								case (Constants::iALIPAY_WALLET):				// 3rd Party Wallet: AliPay
-									$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iALIPAY_PSP);
 									break;
 								default:	// Standard Payment Service Provider
 									
@@ -518,10 +515,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											}
 											break;
 										case (Constants::iALIPAY_PSP):
-										
 											$obj_PSP = new AliPay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["alipay"]);
-											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token);
-													
+											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);	
+												
 											foreach ($obj_XML->children() as $obj_Elem)
 											{
 												$xml .= trim($obj_Elem->asXML() );

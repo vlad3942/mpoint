@@ -24,11 +24,10 @@ class AliPayException extends CallbackException { }
  */
 class AliPay extends CPMPSP
 {
-	
-	
 	public function capture($iAmount=-1) { throw new AliPayException("Method: capture is not supported by AliPay"); }
 	public function void($iAmount=-1) { throw new AliPayException("Method: void is not supported by AliPay"); }
 	public function cancel() { throw new AliPayException("Method: cancel is not supported by AliPay"); }
+	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new AliPayException("Method: getPaymentData is not supported by AliPay"); }
 	public function authorize(PSPConfig $obj_PSPConfig, $ticket) { throw new AliPayException("Method: authTicket is not supported by AliPay"); }
 	public function getPSPID() { return Constants::iALIPAY_PSP; }
 }
