@@ -537,6 +537,12 @@ abstract class Constants
 	 */
 	const iALIPAY_PSP = 30;
 	
+	/**
+	 * Unique ID for the Payment Service Provider: Qiwi
+	 *
+	 */
+	const iQIWI_PSP = 31;
+	
 	
 	/**
 	 * Unique ID for the Payment Service Provider: Android Pay
@@ -711,7 +717,11 @@ abstract class Constants
 	 *
 	 */
 	const iALIPAY_WALLET = 32;
-	
+	/**
+	 * Unique Card ID for transaction's made using Qiwi
+	 *
+	 */
+	const iQIWI_WALLET = 33;	
 	
 	/**
 	 * Unique Fee Type ID for Top-Ups

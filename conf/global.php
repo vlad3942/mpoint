@@ -561,6 +561,22 @@ $aHTTP_CONN_INFO["alipay"]["paths"]["status"] = "/mpoint/alipay/status";
 $aHTTP_CONN_INFO["alipay"]["paths"]["callback"] = "/mpoint/alipay/callback";
 
 /**
+ * Connection info for connecting to QIWI Wallet
+ */
+$aHTTP_CONN_INFO["qiwi"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["qiwi"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["qiwi"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["qiwi"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["qiwi"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["qiwi"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["qiwi"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["qiwi"]["paths"]["initialize"] = "/mpoint/qiwi/initialize";
+$aHTTP_CONN_INFO["qiwi"]["paths"]["refund"] = "/mpoint/qiwi/refund";
+$aHTTP_CONN_INFO["qiwi"]["paths"]["status"] = "/mpoint/qiwi/status";
+$aHTTP_CONN_INFO["qiwi"]["paths"]["cancel"] = "/mpoint/qiwi/cancel";
+$aHTTP_CONN_INFO["qiwi"]["paths"]["callback"] = "/mpoint/qiwi/callback";
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>
