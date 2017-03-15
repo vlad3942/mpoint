@@ -36,11 +36,11 @@ class PSPConfig extends BasicConfig
 	 */
 	private $_sMerchantSubAccount;
 	/**
-	 * The name of the System Type i.e if it is APM,PM,Wallet etc with the Payment Service Provider
+	 * The value of the System Type i.e if it is APM = 4,Wallet = 3,Bank = 2,PSP = 1 etc with the Payment Service Provider
 	 *
 	 * @var integer
 	 */
-	private $_sSystemType;
+	private $_iType;
 	/**
 	 * Client's Username for the Payment Service Provider
 	 *
@@ -76,7 +76,7 @@ class PSPConfig extends BasicConfig
 		parent::__construct($id, $name);
 		$this->_sMerchantAccount = trim($ma);
 		$this->_sMerchantSubAccount = trim($msa);
-		$this->_sSystemType = trim($system_type);
+		$this->_iType = intval($system_type);
 		$this->_sUsername = trim($un);
 		$this->_sPassword = trim($pw);
 		$this->_aMessages = $aMsgs;
@@ -99,7 +99,7 @@ class PSPConfig extends BasicConfig
 	 *
 	 * @return 	integer
 	 */
-	public function getProcessorType(){ return $this->_sSystemType; }
+	public function getProcessorType(){ return $this->_iType; }
 	/**
 	 * Returns the Client's Username for the Payment Service Provider
 	 *
@@ -127,13 +127,12 @@ class PSPConfig extends BasicConfig
 
 	public function toXML()
 	{
-		$xml  = '<psp-config id="'. $this->getID() .'">';
+		$xml  = '<psp-config id="'. $this->getID() .'" type="'. $this->getProcessorType().'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
 		$xml .= '<merchant-account>'. htmlspecialchars($this->_sMerchantAccount, ENT_NOQUOTES) .'</merchant-account>';
 		$xml .= '<merchant-sub-account>'. htmlspecialchars($this->_sMerchantSubAccount, ENT_NOQUOTES) .'</merchant-sub-account>';
 		$xml .= '<username>'. htmlspecialchars($this->_sUsername, ENT_NOQUOTES) .'</username>';
 		$xml .= '<password>'. htmlspecialchars($this->_sPassword, ENT_NOQUOTES) .'</password>';
-		$xml .= '<systemtype>'. htmlspecialchars($this->_sSystemType, ENT_NOQUOTES) .'</systemtype>';
 		$xml .= '<messages>';
 		foreach ($this->_aMessages as $lang => $msg)
 		{
@@ -165,7 +164,7 @@ class PSPConfig extends BasicConfig
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON Acc.id = MSA.accountid AND PSP.id = MSA.pspid AND MSA.enabled = '1'
 				INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".processortype_tbl PT ON PSP.system_type = PT.id	
 				WHERE CL.id = ". intval($clid) ." AND PSP.id = ". intval($pspid) ." AND PSP.enabled = '1' AND Acc.id = ". intval($accid) ." AND (MA.stored_card = '0' OR MA.stored_card IS NULL)";
-//		echo $sql ."\n";exit;
+//		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 		if (is_array($RS) === true && count($RS) > 1)
 		{
