@@ -36,6 +36,12 @@ class PSPConfig extends BasicConfig
 	 */
 	private $_sMerchantSubAccount;
 	/**
+	 * The name of the System Type i.e if it is APM,PM,Wallet etc with the Payment Service Provider
+	 *
+	 * @var integer
+	 */
+	private $_sSystemType;
+	/**
 	 * Client's Username for the Payment Service Provider
 	 *
 	 * @var string
@@ -65,12 +71,12 @@ class PSPConfig extends BasicConfig
 	 * @param 	string $pw 		Client's Password for the Payment Service Provider
 	 * @param 	array $aMsgs 	List of messages that are sent to the Payment Service Provider
 	 */
-	public function __construct($id, $name, $ma, $msa, $un, $pw, array $aMsgs=array() )
+	public function __construct($id, $name, $system_type, $ma, $msa, $un, $pw, array $aMsgs=array() )
 	{
 		parent::__construct($id, $name);
-
 		$this->_sMerchantAccount = trim($ma);
 		$this->_sMerchantSubAccount = trim($msa);
+		$this->_sSystemType = trim($system_type);
 		$this->_sUsername = trim($un);
 		$this->_sPassword = trim($pw);
 		$this->_aMessages = $aMsgs;
@@ -88,6 +94,12 @@ class PSPConfig extends BasicConfig
 	 * @return 	string
 	 */
 	public function getMerchantSubAccount() { return $this->_sMerchantSubAccount; }
+	/**
+	 * Returns the ID of System Type with the Payment Service Provider
+	 *
+	 * @return 	integer
+	 */
+	public function getProcessorType(){ return $this->_sSystemType; }
 	/**
 	 * Returns the Client's Username for the Payment Service Provider
 	 *
@@ -121,6 +133,7 @@ class PSPConfig extends BasicConfig
 		$xml .= '<merchant-sub-account>'. htmlspecialchars($this->_sMerchantSubAccount, ENT_NOQUOTES) .'</merchant-sub-account>';
 		$xml .= '<username>'. htmlspecialchars($this->_sUsername, ENT_NOQUOTES) .'</username>';
 		$xml .= '<password>'. htmlspecialchars($this->_sPassword, ENT_NOQUOTES) .'</password>';
+		$xml .= '<systemtype>'. htmlspecialchars($this->_sSystemType, ENT_NOQUOTES) .'</systemtype>';
 		$xml .= '<messages>';
 		foreach ($this->_aMessages as $lang => $msg)
 		{
@@ -143,15 +156,16 @@ class PSPConfig extends BasicConfig
 	 */
 	public static function produceConfig(RDB &$oDB, $clid, $accid, $pspid)
 	{
-		$sql = "SELECT DISTINCT PSP.id, PSP.name,
+		$sql = "SELECT DISTINCT PSP.id, PSP.name, PSP.system_type,
 					MA.name AS ma, MA.username, MA.passwd AS password, MSA.name AS msa
 				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl PSP
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl MA ON PSP.id = MA.pspid AND MA.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON MA.clientid = CL.id AND CL.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON Acc.id = MSA.accountid AND PSP.id = MSA.pspid AND MSA.enabled = '1'
+				INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".processortype_tbl PT ON PSP.system_type = PT.id	
 				WHERE CL.id = ". intval($clid) ." AND PSP.id = ". intval($pspid) ." AND PSP.enabled = '1' AND Acc.id = ". intval($accid) ." AND (MA.stored_card = '0' OR MA.stored_card IS NULL)";
-//		echo $sql ."\n";
+//		echo $sql ."\n";exit;
 		$RS = $oDB->getName($sql);
 		if (is_array($RS) === true && count($RS) > 1)
 		{
@@ -169,7 +183,7 @@ class PSPConfig extends BasicConfig
 					$aMessages[strtolower($aRS[$i]["LANGUAGE"])] = $aRS[$i]["TEXT"];
 				}
 			}
-			return new PSPConfig($RS["ID"], $RS["NAME"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], $aMessages);
+			return new PSPConfig($RS["ID"], $RS["NAME"], $RS["SYSTEM_TYPE"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], $aMessages);
 		}
 		else
 		{
