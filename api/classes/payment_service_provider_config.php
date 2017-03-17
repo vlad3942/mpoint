@@ -94,7 +94,7 @@ class PaymentServiceProviderConfig extends BasicConfig
 	 *
 	 * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
 	 * @param 	integer $id 	The unique ID for the Payment Service Provider that should be instantiated
-	 * @param 	string $name 	The value of Proccessor Type for the Payment Service Provider that should be instantiated
+	 * @param 	string $sSystemType 	The value of Proccessor Type for the Payment Service Provider that should be instantiated
 	 * @return	PaymentServiceProviderConfig|NULL
 	 */
 	public static function produceConfig(RDB $oDB, $id , $sSystemType)
