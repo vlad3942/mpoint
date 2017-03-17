@@ -638,8 +638,9 @@ $(document).ready(function() {
 											<div class="col-md-12" id="card-{@id}">
 												<!-- <img src="/css/swag/img/paypal.png" class="wallet-img" 
 													alt="Paypal"/> -->
-													<img src="{/root/system/protocol}://{/root/system/host}/img/card_28.png" alt="PayPal" style="max-height: 80px"/>
+													<!-- <img src="{/root/system/protocol}://{/root/system/host}/img/card_28.png" alt="PayPal" style="max-height: 80px"/> -->
 											</div>
+											<input type="hidden" id="hostPath" name="hostPath" value="{/root/system/protocol}://{/root/system/host}" />
 										</div>
 									</div>
 								</div>
@@ -658,6 +659,10 @@ $(document).ready(function() {
 									jQuery("head").append("<xsl:value-of select="head" />");
 
 									jQuery("#card-"+id).html('<xsl:value-of select="body" />');
+									
+										var hostPath = $("#hostPath").val();
+										jQuery("#card-"+id).find(".v-button").attr("src",hostPath+"/img/card_"+id+".png");
+										jQuery("#card-"+id).find(".v-button").attr("style","width:28%");
 			
 									$('#walletvisa_<xsl:value-of select="@id" />').on('click', function() {
 										$('img.v-button').trigger('click');
