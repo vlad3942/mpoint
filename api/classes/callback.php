@@ -623,7 +623,7 @@ abstract class Callback extends EndUserAccount
 		case (Constants::iPUBLIC_BANK_PSP):
 			return new PublicBank($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["public-bank"]);
 		case (Constants::iALIPAY_PSP):
-			return new PublicBank($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["alipay"]);
+			return new AliPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["alipay"]);
 		default:
 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
