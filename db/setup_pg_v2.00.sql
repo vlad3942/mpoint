@@ -188,18 +188,18 @@ INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, countryid) 
 /* ========== Global Configuration for POLi - Payment Method : START========== */
 INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (34, 'POLi', 23, -1, -1, -1);
 INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (34, 0, 0);
-INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 34, id FROM System.PricePoint_Tbl WHERE amount = -1 AND countryid = 200;
+INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) VALUES (34, -500);
 /* ========== Global Configuration for POLi - Payment Method : END========== */
 /* ========== Global Configuration for POLi = STARTS ========== */
 INSERT INTO System.PSP_Tbl (id, name) VALUES (32, 'POLi');
-INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (200,32,'USD');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (500,32,'AUD');
 
 /*POLi*/
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (34, 32);
 
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 32, 'POLi', 'TBD', 'TBD');
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 32, 'POLi', '6101816', 'MdXqHAM!Y2EWQvVC4WsT');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 32, '-1');
 
 -- Route POLi Card to POLi with country USA
-INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, countryid) VALUES (10001, 34, 32, true, 200);
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, countryid) VALUES (10001, 34, 32, true, 500);
 /* ========== Global Configuration for POLi = ENDS ========== */
