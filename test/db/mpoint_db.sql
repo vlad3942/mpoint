@@ -7029,7 +7029,6 @@ ALTER TABLE system.processortype_tbl
 -- ALTER TABLE system.psp_tbl DROP COLUMN system_type;
 
 ALTER TABLE system.psp_tbl ADD COLUMN system_type integer;
-ALTER TABLE system.psp_tbl ALTER COLUMN system_type SET NOT NULL;
 
    -- Insert data : system.processortype_tbl;
 
@@ -7073,6 +7072,8 @@ ALTER TABLE system.psp_tbl ALTER COLUMN system_type SET NOT NULL;
 
 -- Foreign Key: system.psptoproccessingtype_fk
 -- ALTER TABLE system.psp_tbl DROP CONSTRAINT psptoproccessingtype_fk;
+ALTER TABLE system.psp_tbl ALTER COLUMN system_type SET NOT NULL;
+
 ALTER TABLE system.psp_tbl
   ADD CONSTRAINT psptoproccessingtype_fk FOREIGN KEY (system_type)
       REFERENCES system.processortype_tbl (id) MATCH SIMPLE
