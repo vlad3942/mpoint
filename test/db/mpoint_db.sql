@@ -7031,15 +7031,6 @@ ALTER TABLE system.processortype_tbl
 ALTER TABLE system.psp_tbl ADD COLUMN system_type integer;
 ALTER TABLE system.psp_tbl ALTER COLUMN system_type SET NOT NULL;
 
-   -- Foreign Key: system.psptoproccessingtype_fk
-
--- ALTER TABLE system.psp_tbl DROP CONSTRAINT psptoproccessingtype_fk;
-
-ALTER TABLE system.psp_tbl
-  ADD CONSTRAINT psptoproccessingtype_fk FOREIGN KEY (system_type)
-      REFERENCES system.processortype_tbl (id) MATCH SIMPLE
-      ON UPDATE CASCADE ON DELETE CASCADE;
-
    -- Insert data : system.processortype_tbl;
 
   INSERT INTO system.processortype_tbl(id, name) VALUES (1, 'PSP');
@@ -7080,4 +7071,10 @@ ALTER TABLE system.psp_tbl
     UPDATE system.psp_tbl SET system_type=2 WHERE id=27;
     UPDATE system.psp_tbl SET system_type=2 WHERE id=28;
 
+-- Foreign Key: system.psptoproccessingtype_fk
+-- ALTER TABLE system.psp_tbl DROP CONSTRAINT psptoproccessingtype_fk;
+ALTER TABLE system.psp_tbl
+  ADD CONSTRAINT psptoproccessingtype_fk FOREIGN KEY (system_type)
+      REFERENCES system.processortype_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE;
 
