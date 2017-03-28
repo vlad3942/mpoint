@@ -879,7 +879,7 @@ try
 																	$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
 																
 																	if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
-																	else if(strpos($code, '2005') !== false) { $xml = $code; }
+																	else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml = $code; }
 																	// Error: Authorization declined
 																	else
 																	{
@@ -904,7 +904,7 @@ try
 																		$xml .= '<status code="100">Payment Authorized using stored card</status>';
 																	} else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
 																	else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and card stored.</status>'; }
-																	else if(strpos($code, '2005') !== false) { $xml = $code; }
+																	else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml = $code; }
 																	// Error: Authorization declined
 																	else
 																	{
