@@ -719,13 +719,13 @@ $(document).ready(function() {
 											});
 										</script>
 								</xsl:when>
-								<xsl:when test="@id = '32'">
+								<xsl:when test="@id = '32' or @id = '34'">
 									<div class="col-md-12">
 										<div class="wallet-type" id="apm_{@id}" name="apm_{@id}" >
 											<div class="row" >
 											<span class="glyphicon glyphicon-chevron-right right-icon pull-icon-right" aria-hidden="true"></span>
 												<div class="col-md-12" id="card-{@id}">
-														<img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}.png" alt="AliPay" style="max-height: 60px"/>
+														<img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}.png" alt="{name}" style="max-height: 60px"/>
 												</div>
 											</div>
 										</div>

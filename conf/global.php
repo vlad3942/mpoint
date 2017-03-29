@@ -561,6 +561,19 @@ $aHTTP_CONN_INFO["alipay"]["paths"]["status"] = "/mpoint/alipay/status";
 $aHTTP_CONN_INFO["alipay"]["paths"]["callback"] = "/mpoint/alipay/callback";
 
 /**
+ * Connection info for connecting to POLi
+ */
+$aHTTP_CONN_INFO["poli"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["poli"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["poli"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["poli"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["poli"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["poli"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["poli"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["poli"]["paths"]["initialize"] = "/mpoint/poli/initialize";
+$aHTTP_CONN_INFO["poli"]["paths"]["callback"] = "/mpoint/poli/callback";
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>
