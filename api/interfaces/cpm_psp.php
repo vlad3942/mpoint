@@ -302,7 +302,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		else { throw new UnexpectedValueException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 	}
 
-	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='')
+	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, $obj_ClientInfo = NULL)
 	{
 		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML() );
 		unset ($obj_XML->password);
@@ -326,6 +326,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			 			  <token>'.$card_token.'</token>
 			 		   </card>';
 			 }
+		}
+		if(is_null($obj_BillingAddress) == true)
+		{
+		$b .= $obj_BillingAddress->asXML();
+		}
+		if(is_null($obj_ClientInfo) == true)
+		{
+		$b .= $obj_ClientInfo->asXML();
 		}
 		$b .= '</initialize>';
 		$b .= '</root>';
