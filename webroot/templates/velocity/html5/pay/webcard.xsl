@@ -717,7 +717,7 @@ $(document).ready(function() {
 											});
 										</script>
 								</xsl:when>
-								<xsl:when test="@id = '32' or @id = '34'">
+								<xsl:when test="@id = '32'">
 									<div class="col-md-12">
 										<div class="wallet-type" id="apm_{@id}" name="apm_{@id}" >
 											<div class="row" >
@@ -741,7 +741,32 @@ $(document).ready(function() {
 											document.forms['walletform_<xsl:value-of select="@id" />'].submit();
 										});
 									</script>
-								</xsl:when>								
+								</xsl:when>	
+								<xsl:when test="@id = '34'">
+									<div class="col-md-12">
+										<div class="wallet-type" id="apm_{@id}" name="apm_{@id}" >
+											<div class="row" >
+											<span class="glyphicon glyphicon-chevron-right right-icon pull-icon-right" aria-hidden="true"></span>
+												<div class="col-md-12" id="card-{@id}">
+														<img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}.png" alt="{name}" style="max-height: 60px"/>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="payment-form hide">
+										<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/apm.php') }" method="post">
+											<input type="hidden" name="pspid" value="{@pspid}" />
+											<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
+											<input type="hidden" name="transactionid" value="{/root/transaction/@id}" /> 
+											<input type="hidden" name="cardtype" value="{@id}" /> 												
+										</form>
+									</div>
+									<script type="text/javascript">
+										$('#apm_<xsl:value-of select="@id" />').on('click', function(e) {
+											document.forms['walletform_<xsl:value-of select="@id" />'].submit();
+										});
+									</script>
+								</xsl:when>									
 						</xsl:choose>
 					</xsl:for-each>
 				</div>
