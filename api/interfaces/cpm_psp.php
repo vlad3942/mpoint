@@ -327,11 +327,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			 		   </card>';
 			 }
 		}
-		if(is_null($obj_BillingAddress) == true)
+		if(is_null($obj_BillingAddress) == false)
 		{
 		$b .= $obj_BillingAddress->asXML();
 		}
-		if(is_null($obj_ClientInfo) == true)
+		if(is_null($obj_ClientInfo) == false)
 		{
 		$b .= $obj_ClientInfo->asXML();
 		}
