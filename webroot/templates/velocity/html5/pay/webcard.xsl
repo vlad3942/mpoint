@@ -26,22 +26,20 @@
 											</xsl:choose>
 											</xsl:for-each>
 											<!-- Display payment form for other payment methods -->
-											<xsl:choose>
-											<xsl:when test="cards/item/@id = '16' or cards/item/@id = '23' or cards/item/@id = '28' or cards/item/@id = '31' or cards/item/@id = '32'">
+											<xsl:if test="cards/item/@id = '16' or cards/item/@id = '23' or cards/item/@id = '28' or cards/item/@id = '31' or cards/item/@id = '32'">
 												<xsl:apply-templates select="cards" mode="other-wallet" />
-											</xsl:when>								
+											</xsl:if>								
 											<!-- Display payment form for normal payment cards -->
-											<xsl:when test="cards/item/@id = 1 or cards/item/@id = 2 or cards/item/@id = 3 or cards/item/@id = 5 or cards/item/@id = 6 or cards/item/@id = 7 or cards/item/@id = 8 or cards/item/@id = 9">
+											<xsl:if test="cards/item/@id = 1 or cards/item/@id = 2 or cards/item/@id = 3 or cards/item/@id = 5 or cards/item/@id = 6 or cards/item/@id = 7 or cards/item/@id = 8 or cards/item/@id = 9">
 												<xsl:apply-templates select="cards" mode="cpm" />
-											</xsl:when>
-											<xsl:when test="cards/item">
-												<xsl:apply-templates select="cards" mode="cpm" />
-											</xsl:when>
-											<xsl:otherwise>
-												<xsl:apply-templates select="cards" mode="cpm" />
-											</xsl:otherwise>
-											</xsl:choose>
+											</xsl:if>
 												<!-- Display error messages template -->
+											<xsl:if test="messages/item">
+												<xsl:apply-templates select="messages" mode="error" >
+													<xsl:with-param name="errorvalue" select="messages/item" />
+												</xsl:apply-templates>
+											</xsl:if>
+											<!-- Display error messages template -->
 											<xsl:if test="messages/item">
 												<xsl:apply-templates select="messages" mode="error" >
 													<xsl:with-param name="errorvalue" select="messages/item" />
@@ -70,7 +68,7 @@
 												<div class="modal-content">
 													<div class="modal-body">
 														<button type="button" class="bootbox-close-button close"
-															data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;"> × </button>
+															data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;"> Ã— </button>
 														<div class="bootbox-body " align="center">
 															<h3 class="text-warning"> Warning!!!</h3>
 														</div>
@@ -138,7 +136,7 @@ $(document).ready(function() {
 												<div class="modal-content">
 													<div class="modal-body">
 														<button type="button" class="bootbox-close-button close"
-															data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;"> × </button>
+															data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;"> Ã— </button>
 														<div class="bootbox-body " align="center">
 															<h3 class="text-warning"> Oops something went wrong!!!</h3>
 														</div>
@@ -719,13 +717,13 @@ $(document).ready(function() {
 											});
 										</script>
 								</xsl:when>
-								<xsl:when test="@id = '32'">
+								<xsl:when test="@id = '32' or @id = '34'">
 									<div class="col-md-12">
 										<div class="wallet-type" id="apm_{@id}" name="apm_{@id}" >
 											<div class="row" >
 											<span class="glyphicon glyphicon-chevron-right right-icon pull-icon-right" aria-hidden="true"></span>
 												<div class="col-md-12" id="card-{@id}">
-														<img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}.png" alt="AliPay" style="max-height: 60px"/>
+														<img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}.png" alt="{name}" style="max-height: 60px"/>
 												</div>
 											</div>
 										</div>
