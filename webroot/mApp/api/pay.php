@@ -82,6 +82,10 @@ require_once(sCLASS_PATH ."/ccpp.php");
 require_once(sCLASS_PATH ."/maybank.php");
 // Require specific Business logic for the PublicBank component
 require_once(sCLASS_PATH ."/publicbank.php");
+// Require specific Business logic for the AliPay component
+require_once(sCLASS_PATH ."/alipay.php");
+// Require specific Business logic for the POLi component
+require_once(sCLASS_PATH ."/poli.php");
 
 $aMsgCds = array();
 
@@ -158,11 +162,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 						
 						if (count($obj_Elem) == 0) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled
-
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
 						{
-						
+							
+								
 							if ($code >= 10)
 							{
 								if ($obj_TxnInfo->getAccountID() == -1 && General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true)
@@ -502,16 +506,34 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											}
 											break;
 										case (Constants::iPUBLIC_BANK_PSP):
-												$obj_PSP = new PublicBank($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["public-bank"]);
-												$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token);
-													
-												foreach ($obj_XML->children() as $obj_Elem)
-												{
-													$xml .= trim($obj_Elem->asXML() );
-												}
-												break;
-										}
-										
+
+											$obj_PSP = new PublicBank($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["public-bank"]);
+											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token);
+												
+											foreach ($obj_XML->children() as $obj_Elem)
+											{
+												$xml .= trim($obj_Elem->asXML() );
+											}
+											break;
+										case (Constants::iALIPAY_PSP):
+											$obj_PSP = new AliPay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["alipay"]);
+											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);	
+												
+											foreach ($obj_XML->children() as $obj_Elem)
+											{
+												$xml .= trim($obj_Elem->asXML() );
+											}
+											break;	
+										case (Constants::iPOLI_PSP):
+											$obj_PSP = new Poli($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["poli"]);
+											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
+											
+											foreach ($obj_XML->children() as $obj_Elem)
+											{
+												$xml .= trim($obj_Elem->asXML() );
+											}
+											break;											
+										}										
 										$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. htmlspecialchars($obj_PSPConfig->getMessage($obj_TxnInfo->getLanguage() ), ENT_NOQUOTES) .'</message>';
 										$xml .= '</psp-info>';
 									}

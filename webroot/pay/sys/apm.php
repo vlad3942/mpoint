@@ -158,6 +158,7 @@ if ($payResponseCode == 200 && strlen($obj_HTTP->getReplyBody() ) > 0)
 	if(count($obj_Wallet_Response->{'psp-info'}->url) > 0)
 	{
 		$url = $obj_Wallet_Response->{'psp-info'}->url;
+		$method = $obj_Wallet_Response->{'psp-info'}->url['method'];
 	}
 	
 	$html = "";
@@ -170,15 +171,14 @@ if ($payResponseCode == 200 && strlen($obj_HTTP->getReplyBody() ) > 0)
 	
 	
 		$timestamp = date("YmdHis");
-	
+		$html .= "<meta name='referrer' content='no-referrer'>";
 		$html .= "<body onload='submitForm();' >";
-		$html .= "<form name='secure_page_".$timestamp."' id='secure_page_".$timestamp."' action='".$url."' method='POST'>";
+		$html .= "<form name='secure_page_".$timestamp."' id='secure_page_".$timestamp."' action='".$url."' method='".$method."'>";
 	
 		foreach($hidden_fields as $hidden_field)
 		{
 			$hidden_inputs .= '<input type="hidden" name="'.$hidden_field->getName().'" value="'.$hidden_field.'" /> ';
 		}
-	
 	
 		$html .= $hidden_inputs;
 	

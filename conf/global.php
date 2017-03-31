@@ -383,7 +383,7 @@ $aHTTP_CONN_INFO["wire-card"]["paths"]["refund"] = "/mpoint/wire-card/refund";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["callback"] = "/mpoint/wire-card/callback";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["cancel"] = "/mpoint/wire-card/cancel";
 
-/*
+/**
  * Connection info for connecting to Android Pay
  */
 $aHTTP_CONN_INFO["android-pay"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
@@ -544,6 +544,34 @@ $aHTTP_CONN_INFO["maybank"]["paths"]["refund"] = "/mpoint/maybank/refund";
 $aHTTP_CONN_INFO["maybank"]["paths"]["status"] = "/mpoint/maybank/status";
 $aHTTP_CONN_INFO["maybank"]["paths"]["cancel"] = "/mpoint/maybank/cancel";
 $aHTTP_CONN_INFO["maybank"]["paths"]["callback"] = "/mpoint/maybank/callback";
+
+/**
+ * Connection info for connecting to AliPay
+ */
+$aHTTP_CONN_INFO["alipay"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["alipay"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["alipay"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["alipay"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["alipay"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["alipay"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["alipay"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["alipay"]["paths"]["initialize"] = "/mpoint/alipay/initialize";
+$aHTTP_CONN_INFO["alipay"]["paths"]["refund"] = "/mpoint/alipay/refund";
+$aHTTP_CONN_INFO["alipay"]["paths"]["status"] = "/mpoint/alipay/status";
+$aHTTP_CONN_INFO["alipay"]["paths"]["callback"] = "/mpoint/alipay/callback";
+
+/**
+ * Connection info for connecting to POLi
+ */
+$aHTTP_CONN_INFO["poli"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["poli"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["poli"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["poli"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["poli"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["poli"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["poli"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["poli"]["paths"]["initialize"] = "/mpoint/poli/initialize";
+$aHTTP_CONN_INFO["poli"]["paths"]["callback"] = "/mpoint/poli/callback";
 
 /**
  * GoMobile Connection Info.

@@ -532,6 +532,19 @@ abstract class Constants
 	const iPUBLIC_BANK_PSP = 28;
 	
 	/**
+	 * Unique ID for the Payment Service Provider: AliPay
+	 *
+	 */
+	const iALIPAY_PSP = 30;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: POLi
+	 *
+	 */
+	const iPOLI_PSP = 32;
+	
+	
+	/**
 	 * Unique ID for the Payment Service Provider: Android Pay
 	 *
 	 */
@@ -699,6 +712,16 @@ abstract class Constants
 	 *
 	 */
 	const iSADAD = 31;
+	/**
+	 * Unique Card ID for transaction's made using AliPay
+	 *
+	 */
+	const iALIPAY_WALLET = 32;
+	/**
+	 * Unique Card ID for transaction's made using POLi
+	 *
+	 */
+	const iPOLI_WALLET = 34;
 	
 	/**
 	 * Unique Fee Type ID for Top-Ups

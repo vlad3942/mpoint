@@ -879,7 +879,7 @@ try
 																	$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
 																
 																	if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
-																	else if(strpos($code, '2005') !== false) { $xml = $code; }
+																	else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml = $code; }
 																	// Error: Authorization declined
 																	else
 																	{
@@ -904,7 +904,7 @@ try
 																		$xml .= '<status code="100">Payment Authorized using stored card</status>';
 																	} else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
 																	else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and card stored.</status>'; }
-																	else if(strpos($code, '2005') !== false) { $xml = $code; }
+																	else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml = $code; }
 																	// Error: Authorization declined
 																	else
 																	{
@@ -1012,6 +1012,11 @@ try
 											{
 												header("HTTP/1.1 402 Payment Required");
 												$xml .= '<status code="43">Insufficient balance on voucher</status>';
+											}
+											else if ($code == 45)
+											{
+												header("HTTP/1.1 401 Unauthorized");
+												$xml .= '<status code="45">Voucher and Redeem device-ids not equal</status>';
 											}
 											else if ($code == 48)
 											{

@@ -59,6 +59,10 @@ require_once(sCLASS_PATH ."/ccpp.php");
 require_once(sCLASS_PATH ."/maybank.php");
 // Require specific Business logic for the PublicBank component
 require_once(sCLASS_PATH ."/publicbank.php");
+// Require specific Business logic for the AliPay component
+require_once(sCLASS_PATH ."/alipay.php");
+// Require specific Business logic for the POLi component
+require_once(sCLASS_PATH ."/poli.php");
 
 /**
  * Input XML format
