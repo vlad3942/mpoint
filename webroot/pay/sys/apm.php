@@ -90,7 +90,7 @@ $payRequestBody = '<?xml version="1.0" encoding="UTF-8"?>
 		       				<customer-ref>'.$_SESSION['obj_TxnInfo']->getCustomerRef().'</customer-ref>
 		       				<mobile country-id="'.$_SESSION['obj_TxnInfo']->getCountryConfig()->getID().'">'.$_SESSION['obj_TxnInfo']->getMobile().'</mobile>
 							<email>'.$_SESSION['obj_TxnInfo']->getEMail().'</email>
-						    <ip>'.$_SESSION['obj_TxnInfo']->getIP().'</ip>
+						    <ip>0.0.0.0</ip>
 					    </client-info>
 					</pay>
 				</root>';
@@ -165,10 +165,7 @@ if ($payResponseCode == 200 && strlen($obj_HTTP->getReplyBody() ) > 0)
 	
 	if(count($obj_Wallet_Response->{'psp-info'}->{'hidden-fields'}) > 0)
 	{
-		$hidden_inputs = '';
-	
 		$hidden_fields = $obj_Wallet_Response->{'psp-info'}->{'hidden-fields'}->children();
-	
 	
 		$timestamp = date("YmdHis");
 	
@@ -177,7 +174,10 @@ if ($payResponseCode == 200 && strlen($obj_HTTP->getReplyBody() ) > 0)
 	
 		foreach($hidden_fields as $hidden_field)
 		{
-			$hidden_inputs .= '<input type="hidden" name="'.$hidden_field->getName().'" value="'.$hidden_field.'" /> ';
+			if($hidden_field['type'] != "custom")
+			{
+				$hidden_inputs .= '<input type="hidden" name="'.$hidden_field->getName().'" value="'.$hidden_field.'" /> ';
+			}
 		}
 	
 		$html .= $hidden_inputs;
