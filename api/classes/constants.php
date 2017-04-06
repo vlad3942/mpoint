@@ -538,6 +538,11 @@ abstract class Constants
 	const iALIPAY_PSP = 30;
 	
 	/**
+	 * Unique ID for the Payment Service Provider: POLi
+	 *
+	 */
+	const iPOLI_PSP = 32;
+	/**
 	 * Unique ID for the Payment Service Provider: Qiwi
 	 *
 	 */
@@ -717,6 +722,11 @@ abstract class Constants
 	 *
 	 */
 	const iALIPAY_WALLET = 32;
+	/**
+	 * Unique Card ID for transaction's made using POLi
+	 *
+	 */
+	const iPOLI_WALLET = 34;
 	/**
 	 * Unique Card ID for transaction's made using Qiwi
 	 *

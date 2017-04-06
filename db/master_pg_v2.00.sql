@@ -113,3 +113,36 @@ ALTER TABLE log.address_tbl
 
 ALTER TABLE log.order_tbl
   OWNER TO mpoint;
+  
+  -- Table: system.processortype_tbl
+
+-- DROP TABLE system.processortype_tbl;
+
+CREATE TABLE system.processortype_tbl
+(
+  id serial NOT NULL,
+  name character varying(50),
+  CONSTRAINT id_pk PRIMARY KEY (id),
+  CONSTRAINT iduk UNIQUE (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE system.processortype_tbl
+  OWNER TO mpoint;
+
+-- Column: system_type
+
+-- ALTER TABLE system.psp_tbl DROP COLUMN system_type;
+
+ALTER TABLE system.psp_tbl ADD COLUMN system_type integer;
+ALTER TABLE system.psp_tbl ALTER COLUMN system_type SET NOT NULL;
+
+   -- Foreign Key: system.psptoproccessingtype_fk
+
+-- ALTER TABLE system.psp_tbl DROP CONSTRAINT psptoproccessingtype_fk;
+
+ALTER TABLE system.psp_tbl
+  ADD CONSTRAINT psptoproccessingtype_fk FOREIGN KEY (system_type)
+      REFERENCES system.processortype_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE;

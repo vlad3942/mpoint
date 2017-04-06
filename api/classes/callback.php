@@ -623,7 +623,7 @@ abstract class Callback extends EndUserAccount
 		case (Constants::iPUBLIC_BANK_PSP):
 			return new PublicBank($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["public-bank"]);
 		case (Constants::iALIPAY_PSP):
-			return new AliPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["alipay"]);
+	        return new AliPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["alipay"]);
 		case (Constants::iQIWI_PSP):
 			return new Qiwi($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["qiwi"]);
 		default:

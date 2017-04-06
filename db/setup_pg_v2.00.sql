@@ -145,6 +145,8 @@ INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (609,28,'CNY'
 INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (644,28,'THB');
 INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (646,28,'TWD');
 INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (608,28,'SAR');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (505,28,'IDR');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (200,28,'USD');
 
 /*Amex*/
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (1, 28);
@@ -185,6 +187,133 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10000
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, countryid) VALUES (10001, 32, 30, true, 200);
 /* ========== Global Configuration for AliPay = ENDS ========== */
 
+/* ========== Global Configuration for POLi - Payment Method : START========== */
+INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (34, 'POLi', 23, -1, -1, -1);
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (34, 0, 0);
+INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) VALUES (34, -500);
+/* ========== Global Configuration for POLi - Payment Method : END========== */
+/* ========== Global Configuration for POLi = STARTS ========== */
+INSERT INTO System.PSP_Tbl (id, name) VALUES (32, 'POLi');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (500,32,'AUD');
+
+/*POLi*/
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (34, 32);
+
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 32, 'POLi', '6101816', 'MdXqHAM!Y2EWQvVC4WsT');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 32, '-1');
+
+-- Route POLi Card to POLi with country USA
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, countryid) VALUES (10001, 34, 32, true, 500);
+/* ========== Global Configuration for POLi = ENDS ========== */
+
+
+  -- Insert data : system.processortype_tbl;
+  
+  INSERT INTO system.processortype_tbl(
+            id, name)
+    VALUES (1, 'PSP');
+    INSERT INTO system.processortype_tbl(
+            id, name)
+    VALUES (2, 'Bank');
+    INSERT INTO system.processortype_tbl(
+            id, name)
+    VALUES (3, 'Wallet');
+    INSERT INTO system.processortype_tbl(
+            id, name)
+    VALUES (4, 'APM');
+	
+   -- Insert data : system.psp_tbl 
+   -- Value : system_type;	
+   
+   UPDATE system.psp_tbl
+   SET system_type=1
+ WHERE id=0;
+ UPDATE system.psp_tbl
+   SET system_type=1
+ WHERE id=1;
+  UPDATE system.psp_tbl
+   SET system_type=1
+ WHERE id=2;
+  UPDATE system.psp_tbl
+   SET system_type=1
+ WHERE id=3;
+  UPDATE system.psp_tbl
+   SET system_type=1
+ WHERE id=4;
+   UPDATE system.psp_tbl
+   SET system_type=1
+ WHERE id=5;
+   UPDATE system.psp_tbl
+   SET system_type=1
+ WHERE id=6;
+   UPDATE system.psp_tbl
+   SET system_type=1
+ WHERE id=7;
+   UPDATE system.psp_tbl
+   SET system_type=1
+ WHERE id=8;
+   UPDATE system.psp_tbl
+   SET system_type=1
+ WHERE id=9;
+   UPDATE system.psp_tbl
+   SET system_type=1
+ WHERE id=10;
+   UPDATE system.psp_tbl
+   SET system_type=3
+ WHERE id=11;
+   UPDATE system.psp_tbl
+   SET system_type=1
+ WHERE id=12;
+   UPDATE system.psp_tbl
+   SET system_type=3
+ WHERE id=13;
+   UPDATE system.psp_tbl
+   SET system_type=3
+ WHERE id=14;
+   UPDATE system.psp_tbl
+   SET system_type=3
+ WHERE id=15;
+   UPDATE system.psp_tbl
+   SET system_type=3
+ WHERE id=16;
+   UPDATE system.psp_tbl
+   SET system_type=1
+ WHERE id=17;
+   UPDATE system.psp_tbl
+   SET system_type=1
+ WHERE id=18;
+   UPDATE system.psp_tbl
+   SET system_type=2
+ WHERE id=19;
+   UPDATE system.psp_tbl
+   SET system_type=3
+ WHERE id=20;
+   UPDATE system.psp_tbl
+   SET system_type=1
+ WHERE id=21;
+   UPDATE system.psp_tbl
+   SET system_type=1
+ WHERE id=22;
+   UPDATE system.psp_tbl
+   SET system_type=1
+ WHERE id=23;
+   UPDATE system.psp_tbl
+   SET system_type=4
+ WHERE id=24;
+   UPDATE system.psp_tbl
+   SET system_type=1
+ WHERE id=25;
+   UPDATE system.psp_tbl
+   SET system_type=1
+ WHERE id=26;
+   UPDATE system.psp_tbl
+   SET system_type=2
+ WHERE id=27;
+   UPDATE system.psp_tbl
+   SET system_type=2
+ WHERE id=28;
+ 
+	
 /* ========== Global Configuration for AliPay - Payment Method : START========== */
 INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (32, 'AliPay', 23, -1, -1, -1);
 INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (32, 0, 0);
