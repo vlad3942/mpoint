@@ -63,6 +63,8 @@ require_once(sCLASS_PATH ."/publicbank.php");
 require_once(sCLASS_PATH ."/alipay.php");
 // Require specific Business logic for the POLi component
 require_once(sCLASS_PATH ."/poli.php");
+// Require specific Business logic for the QIWI component
+require_once(sCLASS_PATH ."/qiwi.php");
 
 /**
  * Input XML format
