@@ -17,4 +17,4 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10000
 
 -- Route Qiwi Card to Qiwi with country Russia
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, countryid) VALUES (10007, 33, 31, true, 607);
-/* ========== Global Configuration for Qiwi = ENDS ========== */
+/* ========== Global Configuration f
