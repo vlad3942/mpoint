@@ -609,12 +609,17 @@ try
 																$obj_PSP = new WireCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["wire-card"]);
 													
 																$code = $obj_PSP->authTicket($obj_PSPConfig , $obj_Elem);
+																
 																// Authorization succeeded
 																if ($code == "100")
 																{
-																	$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
+																	$xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
 																}
+																else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+																else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and Card Details Stored.</status>'; }
+																else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml .= $code;}
 																// Error: Authorization declined
+																
 																else
 																{
 																	$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
@@ -623,6 +628,7 @@ try
 													
 																	$xml .= '<status code="92">Authorization failed, WireCard returned error: '. $code .'</status>';
 																}
+																
 																break;
 														case (Constants::iDATA_CASH_PSP): // DataCash
 																$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iDATA_CASH_PSP);
@@ -890,7 +896,5 @@ catch (Exception $e)
 }
 header("Content-Type: text/xml; charset=\"UTF-8\"");
 
-echo '<?xml version="1.0" encoding="UTF-8"?>';
-echo '<root>';
 echo $xml;
 echo '</root>';
