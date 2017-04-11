@@ -54,6 +54,20 @@ require_once(sCLASS_PATH ."/amexexpresscheckout.php");
 require_once(sCLASS_PATH ."/wirecard.php");
 // Require specific Business logic for the Global Collect component
 require_once(sCLASS_PATH ."/globalcollect.php");
+// Require specific Business logic for the Secure Trading component
+require_once(sCLASS_PATH ."/securetrading.php");
+// Require specific Business logic for the PayFort component
+require_once(sCLASS_PATH ."/payfort.php");
+// Require specific Business logic for the CCAvenue component
+require_once(sCLASS_PATH ."/ccavenue.php");
+// Require specific Business logic for the 2C2P component
+require_once(sCLASS_PATH ."/ccpp.php");
+// Require specific Business logic for the MayBank component
+require_once(sCLASS_PATH ."/maybank.php");
+// Require specific Business logic for the PublicBank component
+require_once(sCLASS_PATH ."/publicbank.php");
+// Require specific Business logic for the Paypal component
+require_once(sCLASS_PATH ."/paypal.php");
 
 header("Content-Type: application/x-www-form-urlencoded");
 

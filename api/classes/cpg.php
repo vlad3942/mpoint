@@ -18,6 +18,18 @@
  */
 class CPG extends Callback
 {
+	
+	public function getChargeTypeName($id)
+	{
+		$sql = "SELECT name
+				FROM System".sSCHEMA_POSTFIX.".CardChargeType_Tbl
+				WHERE id = ". intval($id) ." AND enabled = '1'";
+		
+		//		echo $sql ."\n";
+		$RS = $this->getDBConn()->getName($sql);
+		
+		return $RS["NAME"];		
+	}
 
 	public function getCardName($id)
 	{
@@ -71,6 +83,9 @@ class CPG extends Callback
 		case (20):	// Poste Master
 			$name = "ECMC-SSL";
 			break;
+		case (21):	//UATP
+			$name = "TPCARD-SSL";
+			break;
 		default:	// Unknown
 			$name = $id;
 			break;
@@ -90,10 +105,10 @@ class CPG extends Callback
 		$b .= '<order orderCode="'. htmlspecialchars($this->getTxnInfo()->getOrderID(), ENT_NOQUOTES) .'">'; // mandatory, needs to be unique
 		$b .= '<description>Emirates Airline Ticket Purchase '. $pnr .'</description>';
 		if (strtoupper($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP) ) == "VND") { $b .= '<amount value="'. $this->getTxnInfo()->getAmount()/100 .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="0" debitCreditIndicator="credit" />'; }
-		else { $b .= '<amount value="'. $this->getTxnInfo()->getAmount() .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="2" debitCreditIndicator="credit" />'; }
+		else { $b .= '<amount value="'. $this->getTxnInfo()->getAmount() .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="'.$this->getCurrencyExponent($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP).'" debitCreditIndicator="credit" />'; }
 		if  (array_key_exists("var_tax", $aClientVars) === true)
 		{
-			$b .= '<tax value="'. $aClientVars["var_tax"] .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="2" />';
+			$b .= '<tax value="'. $aClientVars["var_tax"] .'" currencyCode="'. htmlspecialchars($this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP), ENT_NOQUOTES) .'" exponent="'.$this->getCurrencyExponent($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iCPG_PSP).'" />';
 		}
 		if (array_key_exists("var_mcp", $aClientVars) === true) { $b .= trim($aClientVars["var_mcp"]); }	// Multi-Currency Payment
 		$b .= '<orderContent>'. htmlspecialchars($this->getTxnInfo()->getDescription(), ENT_NOQUOTES) .'</orderContent>';
@@ -128,7 +143,12 @@ class CPG extends Callback
 		else
 		{
 			if (count($obj_XML->cvc) == 1) { $b .= '<cvc>'. intval($obj_XML->cvc) .'</cvc>'; }
-                        $b .= '<cardNumber>'. htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) .'</cardNumber>';
+            $b .= '<cardNumber>'. htmlspecialchars($obj_XML->{'card-number'}, ENT_NOQUOTES) .'</cardNumber>';
+
+            if(isset($obj_XML["charge-type-id"]) == true && intval($obj_XML["charge-type-id"]) != 0)
+            {
+            	$b .= '<cardDebitCreditType>'.$this->getChargeTypeName($obj_XML["charge-type-id"]).'</cardDebitCreditType>';
+            }
 			$b .= '<expiryDate>';
 			$b .= '<date month="'. substr($obj_XML->expiry, 0, 2) .'" year="20'. substr($obj_XML->expiry, -2) .'" />'; // mandatory
 			$b .= '</expiryDate>';
@@ -239,7 +259,7 @@ class CPG extends Callback
 		$b .= '</order>';
 		$b .= '<returnURL>'. htmlspecialchars($this->getTxnInfo()->getAcceptURL(), ENT_NOQUOTES) .'</returnURL>';
 		$b .= '</submit>';
-		
+
 		$aLogin = $this->getMerchantLogin($this->getTxnInfo()->getClientConfig()->getID(), Constants::iCPG_PSP);
 		$sUsername = "";
 		$sPassword = "";

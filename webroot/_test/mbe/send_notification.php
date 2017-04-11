@@ -7,7 +7,8 @@ $sTypes = array(
 		'PAY_BY_LINK' => 1,
 		'CHECKIN_BY_LINK' => 2,
 		'MO_MESSAGE' => 3,
-		'MT_MESSAGE' => 4
+		'MT_MESSAGE' => 4,
+		'LOYALTY_MESSAGE' => 5
 );
 
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
@@ -41,7 +42,77 @@ if($iChannel > 0)
 	}
 }
 
-if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->notify->{'Pay-by-link'}) > 0 && $iType == $sTypes['PAY_BY_LINK'])
+if($iType == $sTypes['LOYALTY_MESSAGE'])
+{
+	// Instantiate object for holding the necessary information for connecting to GoMobile
+	$obj_ConnInfo = GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO);
+	// Instantiate client object for communicating with GoMobile
+	$obj_GoMobile = new GoMobileClient($obj_ConnInfo);
+	
+	$iType = 11;
+	$sChannel = 123;
+	$sKeyword = "AK";
+	//print_r();die('here');
+	if (empty($sPushId) === false)
+	{
+		$b = array();
+		
+		
+		$airline = (string) $obj_DOM->notify->test1;
+		$sBody = "";
+		if(strcmp($airline, "AK") == 0){
+			$sBody = "AirAsia BIG - ";
+		}else if(strcmp($airline, "OD") == 0){
+			$sBody = "Malindo Miles - ";
+		}else if(strcmp($airline, "SGA") == 0){
+			$sBody = "SGA Loyalty - ";
+		}
+		$sBody = $sBody . "Just one more step to go - Complete the missing fields for personalized offers.";
+		
+		$b["aps"] = array("alert" => array("body" => utf8_encode($sBody) ),
+				"sound" => "default",
+				"action" => "notify");
+		
+		$b['ACTION'] = 5;
+		
+		$obj_MsgInfo = GoMobileMessage::produceMessage($iType, $sChannel, $sKeyword, $sPushId, json_encode($b) );
+		$obj_MsgInfo->setDescription("Test MT-SMS 1");
+		//$obj_MsgInfo->setSender("CPM");
+		
+		$bSendMessage = true;
+		// Send messages
+		while ($bSendMessage === true && $iAttempts <= 3)
+		{
+			$iAttempts++;
+			try
+			{
+				if ($obj_GoMobile->send($obj_MsgInfo) == 200)
+				{
+					$xml .= '<status code="'. $obj_MsgInfo->getReturnCodes() .'">Message successfully sent with ID: '. $obj_MsgInfo->getGoMobileID() .'</status>';
+				}
+				// Error
+				else
+				{
+					$xml .= '<status code="'. $obj_MsgInfo->getReturnCodes() .'">Message sending failed</status>';
+				}
+				$bSend = false;
+				break;
+			}
+			// Communication error, retry message sending
+			catch (HTTPException $e)
+			{
+				sleep(pow(10, $iAttempts) );
+			}
+		}
+		
+		header("Content-Type: text/xml; charset=\"UTF-8\"");
+		echo '<?xml version="1.0" encoding="UTF-8"?>';
+		echo '<root>';
+		echo preg_replace('~\s*(<([^>]*)>[^<]*</\2>|<[^>]*>)\s*~', '$1', $xml);
+		echo '</root>';
+		}
+}
+elseif ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->notify->{'Pay-by-link'}) > 0 && $iType == $sTypes['PAY_BY_LINK'])
 {	
 	// Instantiate object for holding the necessary information for connecting to GoMobile
 	$obj_ConnInfo = GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO);

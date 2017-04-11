@@ -441,7 +441,7 @@ class Home extends General
 
 		// Select all active cards that are not yet expired
 		$sql = "SELECT DISTINCT EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name, EUC.enabled, EUC.card_holder_name, EUC.chargetypeid,
-					SC.id AS typeid, SC.name AS type, CA.stateid,
+					SC.id AS typeid, SC.name AS type, CA.stateid, SC.cvclength AS cvclength,
 					CL.id AS clientid, CL.name AS client,
 					EUAD.countryid, EUAD.firstname, EUAD.lastname,
 					EUAD.company, EUAD.street,
@@ -480,7 +480,7 @@ class Home extends General
 			}
 			else { $sMaskedCardNumber = trim($RS["MASK"]); }
 			// Construct XML Document with data for saved cards
-			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'" >';
+			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'" cvc-length="'. $RS["CVCLENGTH"] .'">';
 			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
 			$xml .= '<type id="'. $RS["TYPEID"] .'">'. $RS["TYPE"] .'</type>';
 			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';
@@ -506,7 +506,6 @@ class Home extends General
 			$xml .= '</card>';
 		}
 		$xml .= '</stored-cards>';
-
 		return $xml;
 	}
 	/**
@@ -1154,6 +1153,23 @@ class Home extends General
 					(". intval($uid) .", ". intval($oid)  .", '". $this->getDBConn()->escStr($msg) ."')";
 		//		echo $sql ."\n";
 
+		return is_resource($this->getDBConn()->query($sql) );
+	}
+	
+	/**
+	 * Saves the customer ref number for the End-User Account.
+	 *
+	 * @param 	string $cr		the Client's Reference for the Customer (optional)
+	 * @return	integer 		The unique ID of the created End-User Account
+	 * @return	boolean
+	 */
+	public function saveCustomerReference($id, $cr = '')
+	{
+		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Account_Tbl
+				SET externalid = '".$cr."'
+				WHERE id = ". intval($id);
+		//		echo $sql ."\n";
+	
 		return is_resource($this->getDBConn()->query($sql) );
 	}
 }

@@ -1,0 +1,516 @@
+/**
+ * CSS files are generated automatically, any changes will be overridden.
+ */
+html {
+  box-sizing: border-box; }
+
+*, *::after, *::before {
+  box-sizing: inherit; }
+
+.header {
+  background: #676A6F;
+  height: 60px;
+  position: relative;
+  z-index: 30; }
+  .header .logo {
+    float: left; }
+    .header .logo img {
+      width: auto;
+      height: 60px; }
+  .header .client-name {
+    float: right;
+    font-size: 1.25em;
+    line-height: 1.3;
+    color: #FFF;
+    height: 60px;
+    line-height: 60px;
+    margin-right: 1.618em; }
+
+@media screen and (max-width: 40.0625em) {
+  .wrapper {
+    padding: 0 20px; } }
+.wrapper .content .progress {
+  height: 60px;
+  background: #EDEDED;
+  line-height: 60px;
+  text-align: center; }
+.wrapper .content .mpoint-status {
+  max-width: 80em;
+  margin-left: auto;
+  margin-right: auto; }
+  .wrapper .content .mpoint-status::after {
+    clear: both;
+    content: "";
+    display: block; }
+  .wrapper .content .mpoint-status .status {
+    font-size: 0.8125em;
+    line-height: 1.5;
+    margin-top: 15px;
+    padding: 30px;
+    background: #FFF;
+    border: 1px solid #DDD;
+    border-radius: 5px;
+    width: 65.88078%;
+    margin: 0 auto;
+    text-align: center; }
+    @media screen and (max-width: 40.0625em) {
+      .wrapper .content .mpoint-status .status {
+        width: 100%;
+        padding: 15px; } }
+.wrapper .content .card-wrapper {
+  max-width: 80em;
+  margin-left: auto;
+  margin-right: auto; }
+  .wrapper .content .card-wrapper::after {
+    clear: both;
+    content: "";
+    display: block; }
+  .wrapper .content .card-wrapper .mpoint-help {
+    text-align: center;
+    margin-top: 30px; }
+  .wrapper .content .card-wrapper .cards {
+    width: 48.82117%;
+    margin: 0 auto; }
+    @media screen and (max-width: 48.0625em) {
+      .wrapper .content .card-wrapper .cards {
+        width: 82.94039%; } }
+    @media screen and (max-width: 40.0625em) {
+      .wrapper .content .card-wrapper .cards {
+        width: 100%; } }
+    .wrapper .content .card-wrapper .cards .card {
+      -webkit-transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+      -moz-transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+      transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+      margin-top: 15px;
+      padding: 30px;
+      background: #FFF;
+      border: 1px solid #DDD;
+      border-radius: 5px;
+      position: relative; }
+      .wrapper .content .card-wrapper .cards .card::after {
+        clear: both;
+        content: "";
+        display: block; }
+      .wrapper .content .card-wrapper .cards .card:not(.ignore-hover):hover, .wrapper .content .card-wrapper .cards .card:not(.ignore-hover).hover {
+        background: #339EF7;
+        color: #FFF;
+        cursor: pointer;
+        background-image: none; }
+        .wrapper .content .card-wrapper .cards .card:not(.ignore-hover):hover .card-logo .icon .hover, .wrapper .content .card-wrapper .cards .card:not(.ignore-hover).hover .card-logo .icon .hover {
+          opacity: 1; }
+      .wrapper .content .card-wrapper .cards .card .card-name {
+        float: left;
+        display: block;
+        margin-right: 4.82916%;
+        width: 47.58542%;
+        line-height: 30px; }
+        .wrapper .content .card-wrapper .cards .card .card-name:last-child {
+          margin-right: 0; }
+      .wrapper .content .card-wrapper .cards .card .card-arrow {
+        float: left;
+        display: block;
+        margin-right: 4.82916%;
+        width: 12.64237%;
+        float: right;
+        text-align: right;
+        font-weight: 200;
+        line-height: 30px; }
+        .wrapper .content .card-wrapper .cards .card .card-arrow:last-child {
+          margin-right: 0; }
+    .wrapper .content .card-wrapper .cards .card-logo {
+      float: left;
+      display: block;
+      margin-right: 4.82916%;
+      width: 30.11389%; }
+      .wrapper .content .card-wrapper .cards .card-logo:last-child {
+        margin-right: 0; }
+      .wrapper .content .card-wrapper .cards .card-logo img {
+        max-height: 30px;
+        width: auto; }
+      .wrapper .content .card-wrapper .cards .card-logo .icon {
+        height: 30px;
+        background-size: 100%;
+        width: 48px;
+        background-position: 0px 0%;
+        opacity: 1; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon .hover {
+          height: 30px;
+          background-size: 100%;
+          width: 48px;
+          background-position: 0px 0%;
+          opacity: 0;
+          -webkit-transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+          -moz-transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+          transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1); }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-1 {
+          background-position: 0 38.77551%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-1 .hover {
+            background-position: 0 36.73469%; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-2 {
+          background-position: 0 4.08163%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-2 .hover {
+            background-position: 0 2.04082%; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-3 {
+          background-position: 0 28.57143%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-3 .hover {
+            background-position: 0 26.53061%; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-4, .wrapper .content .card-wrapper .cards .card-logo .icon.card-7 {
+          background-position: 0 16.32653%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-4 .hover, .wrapper .content .card-wrapper .cards .card-logo .icon.card-7 .hover {
+            background-position: 0 14.28571%; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-5 {
+          background-position: 0 34.69388%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-5 .hover {
+            background-position: 0 32.65306%; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-6 {
+          background-position: 0 20.40816%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-6 .hover {
+            background-position: 0 18.36735%; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-8 {
+          background-position: 0 8.16327%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-8 .hover {
+            background-position: 0 6.12245%; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-9 {
+          background-position: 0 12.2449%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-9 .hover {
+            background-position: 0 10.20408%; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-12 {
+          background-position: 0 185.71429%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-12 .hover {
+            background-position: 0 183.67347%; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-13 {
+          background-position: 0 189.79592%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-13 .hover {
+            background-position: 0 187.7551%; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-14 {
+          background-position: 0 38.77551%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-14 .hover {
+            background-position: 0 36.73469%; }
+        .wrapper .content .card-wrapper .cards .card-logo .icon.card-22 {
+          background-position: 0 132.65306%; }
+          .wrapper .content .card-wrapper .cards .card-logo .icon.card-22 .hover {
+            background-position: 0 132.65306%; }
+    .wrapper .content .card-wrapper .cards .stored-cards-wrapper::after {
+      clear: both;
+      content: "";
+      display: block; }
+    .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card {
+      float: left;
+      display: block;
+      margin-right: 2.35765%;
+      width: 31.76157%;
+      padding: 15px;
+      text-align: center; }
+      .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card:last-child {
+        margin-right: 0; }
+      @media screen and (min-width: 48.0625em) {
+        .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card:nth-child(3n) {
+          margin-right: 0; }
+        .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card:nth-child(3n+1) {
+          clear: left; } }
+      @media screen and (max-width: 48.0625em) {
+        .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card {
+          float: left;
+          display: block;
+          margin-right: 2.35765%;
+          width: 48.82117%; }
+          .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card:last-child {
+            margin-right: 0; }
+          .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card:nth-child(2n) {
+            margin-right: 0; }
+          .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card:nth-child(2n+1) {
+            clear: left; } }
+      .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card .delete-card-icon {
+        background: #DDD;
+        color: #454545;
+        position: absolute;
+        right: 15px;
+        border-radius: 10px;
+        height: 16px;
+        width: 16px;
+        font-size: 10px;
+        line-height: 16px; }
+        .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card .delete-card-icon:hover {
+          background: #676A6F;
+          color: white;
+          cursor: pointer; }
+      .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card .card-logo {
+        float: none;
+        width: 100%; }
+        .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card .card-logo .icon {
+          margin: 0 auto;
+          height: 40px;
+          width: 64px; }
+          .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card .card-logo .icon .hover {
+            height: 40px;
+            width: 64px; }
+      .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card .card-name {
+        float: none;
+        width: 100%;
+        line-height: normal;
+        margin-top: 15px;
+        font-size: 0.8125em;
+        line-height: 1.5; }
+      .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.selected {
+        width: 100%;
+        padding: 0;
+        background: none;
+        display: block !important;
+        right: 0 !important;
+        opacity: 1 !important;
+        border: 0; }
+        .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.selected:hover {
+          color: #454545;
+          cursor: inherit; }
+        .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.selected .card-logo, .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.selected .delete-card-icon, .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.selected .card-name {
+          display: none; }
+        .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.selected .payment-form {
+          display: block !important; }
+      .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.delete-selected {
+        width: 100%;
+        padding: 0;
+        background: none;
+        display: block !important;
+        right: 0 !important;
+        opacity: 1 !important;
+        border: 0; }
+        .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.delete-selected:hover {
+          color: #454545;
+          cursor: inherit; }
+        .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.delete-selected .card-logo, .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.delete-selected .delete-card-icon, .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.delete-selected .card-name {
+          display: none; }
+        .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.delete-selected .deletion-form {
+          display: block !important; }
+          .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.delete-selected .deletion-form .card-logo, .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.delete-selected .deletion-form .delete-card-icon, .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.delete-selected .deletion-form .card-name {
+            display: block; }
+          .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.delete-selected .deletion-form .card-logo .icon {
+            height: 55px;
+            width: 88px; }
+          .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.delete-selected .deletion-form .card-logo .hover {
+            display: none; }
+          .wrapper .content .card-wrapper .cards .stored-cards-wrapper .card.delete-selected .deletion-form .card-name {
+            margin-bottom: 15px; }
+    .wrapper .content .card-wrapper .cards .payment-form, .wrapper .content .card-wrapper .cards .deletion-form {
+      display: none;
+      background: #FFF;
+      margin-top: 15px;
+      padding: 30px 60px;
+      background: #FFF;
+      border: 1px solid #DDD;
+      border-radius: 5px; }
+      .wrapper .content .card-wrapper .cards .payment-form::after, .wrapper .content .card-wrapper .cards .deletion-form::after {
+        clear: both;
+        content: "";
+        display: block; }
+      @media screen and (max-width: 40.0625em) {
+        .wrapper .content .card-wrapper .cards .payment-form, .wrapper .content .card-wrapper .cards .deletion-form {
+          padding: 30px; } }
+      .wrapper .content .card-wrapper .cards .payment-form .cardnumber, .wrapper .content .card-wrapper .cards .deletion-form .cardnumber {
+        position: relative; }
+        .wrapper .content .card-wrapper .cards .payment-form .cardnumber .card-logo, .wrapper .content .card-wrapper .cards .deletion-form .cardnumber .card-logo {
+          float: none;
+          margin: 0;
+          width: auto;
+          position: absolute;
+          right: 7px;
+          top: 7px; }
+          .wrapper .content .card-wrapper .cards .payment-form .cardnumber .card-logo .icon, .wrapper .content .card-wrapper .cards .deletion-form .cardnumber .card-logo .icon {
+            height: 27px;
+            width: 44px; }
+          .wrapper .content .card-wrapper .cards .payment-form .cardnumber .card-logo.enabled-cards, .wrapper .content .card-wrapper .cards .deletion-form .cardnumber .card-logo.enabled-cards {
+            position: relative;
+            top: auto;
+            right: auto;
+            margin-top: 5px; }
+            .wrapper .content .card-wrapper .cards .payment-form .cardnumber .card-logo.enabled-cards .icon, .wrapper .content .card-wrapper .cards .deletion-form .cardnumber .card-logo.enabled-cards .icon {
+              float: right;
+              width: 31px;
+              height: 19px;
+              margin-left: 2px; }
+      .wrapper .content .card-wrapper .cards .payment-form .additional, .wrapper .content .card-wrapper .cards .deletion-form .additional {
+        margin-top: 30px; }
+        .wrapper .content .card-wrapper .cards .payment-form .additional::after, .wrapper .content .card-wrapper .cards .deletion-form .additional::after {
+          clear: both;
+          content: "";
+          display: block; }
+        .wrapper .content .card-wrapper .cards .payment-form .additional .expiry, .wrapper .content .card-wrapper .cards .deletion-form .additional .expiry {
+          float: left;
+          display: block;
+          margin-right: 4.82916%;
+          width: 47.58542%;
+          position: relative; }
+          .wrapper .content .card-wrapper .cards .payment-form .additional .expiry:last-child, .wrapper .content .card-wrapper .cards .deletion-form .additional .expiry:last-child {
+            margin-right: 0; }
+          .wrapper .content .card-wrapper .cards .payment-form .additional .expiry label, .wrapper .content .card-wrapper .cards .deletion-form .additional .expiry label {
+            display: block; }
+          .wrapper .content .card-wrapper .cards .payment-form .additional .expiry input, .wrapper .content .card-wrapper .cards .deletion-form .additional .expiry input {
+            float: left;
+            display: block;
+            margin-right: 10.1484%;
+            width: 44.9258%;
+            position: relative;
+            z-index: 10; }
+            .wrapper .content .card-wrapper .cards .payment-form .additional .expiry input:last-child, .wrapper .content .card-wrapper .cards .deletion-form .additional .expiry input:last-child {
+              margin-right: 0; }
+          .wrapper .content .card-wrapper .cards .payment-form .additional .expiry span, .wrapper .content .card-wrapper .cards .deletion-form .additional .expiry span {
+            position: absolute;
+            line-height: 41px;
+            width: 100%;
+            text-align: center;
+            left: 0;
+            z-index: 1;
+            font-weight: 300; }
+        .wrapper .content .card-wrapper .cards .payment-form .additional .cvv, .wrapper .content .card-wrapper .cards .deletion-form .additional .cvv {
+          float: left;
+          display: block;
+          margin-right: 4.82916%;
+          width: 47.58542%; }
+          .wrapper .content .card-wrapper .cards .payment-form .additional .cvv:last-child, .wrapper .content .card-wrapper .cards .deletion-form .additional .cvv:last-child {
+            margin-right: 0; }
+      .wrapper .content .card-wrapper .cards .payment-form label[for="cardholdername"], .wrapper .content .card-wrapper .cards .deletion-form label[for="cardholdername"] {
+        margin-top: 30px; }
+      .wrapper .content .card-wrapper .cards .payment-form .checkbox, .wrapper .content .card-wrapper .cards .deletion-form .checkbox {
+        margin-top: 30px; }
+      .wrapper .content .card-wrapper .cards .payment-form .save-card, .wrapper .content .card-wrapper .cards .deletion-form .save-card {
+        -webkit-transition: opacity 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+        -moz-transition: opacity 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+        transition: opacity 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+        height: 0px;
+        width: 0px;
+        overflow: hidden;
+        opacity: 0; }
+        .wrapper .content .card-wrapper .cards .payment-form .save-card.active, .wrapper .content .card-wrapper .cards .deletion-form .save-card.active {
+          height: auto;
+          width: auto;
+          opacity: 1; }
+        .wrapper .content .card-wrapper .cards .payment-form .save-card label[for="new-password"], .wrapper .content .card-wrapper .cards .deletion-form .save-card label[for="new-password"] {
+          float: left;
+          margin-top: 30px; }
+        .wrapper .content .card-wrapper .cards .payment-form .save-card .new-password, .wrapper .content .card-wrapper .cards .payment-form .save-card .repeat-password, .wrapper .content .card-wrapper .cards .deletion-form .save-card .new-password, .wrapper .content .card-wrapper .cards .deletion-form .save-card .repeat-password {
+          float: left;
+          display: block;
+          margin-right: 4.82916%;
+          width: 47.58542%; }
+          .wrapper .content .card-wrapper .cards .payment-form .save-card .new-password:last-child, .wrapper .content .card-wrapper .cards .payment-form .save-card .repeat-password:last-child, .wrapper .content .card-wrapper .cards .deletion-form .save-card .new-password:last-child, .wrapper .content .card-wrapper .cards .deletion-form .save-card .repeat-password:last-child {
+            margin-right: 0; }
+          @media screen and (max-width: 40.0625em) {
+            .wrapper .content .card-wrapper .cards .payment-form .save-card .new-password, .wrapper .content .card-wrapper .cards .payment-form .save-card .repeat-password, .wrapper .content .card-wrapper .cards .deletion-form .save-card .new-password, .wrapper .content .card-wrapper .cards .deletion-form .save-card .repeat-password {
+              float: left;
+              display: block;
+              margin-right: 4.82916%;
+              width: 100%; }
+              .wrapper .content .card-wrapper .cards .payment-form .save-card .new-password:last-child, .wrapper .content .card-wrapper .cards .payment-form .save-card .repeat-password:last-child, .wrapper .content .card-wrapper .cards .deletion-form .save-card .new-password:last-child, .wrapper .content .card-wrapper .cards .deletion-form .save-card .repeat-password:last-child {
+                margin-right: 0; }
+              .wrapper .content .card-wrapper .cards .payment-form .save-card .new-password:last-child, .wrapper .content .card-wrapper .cards .payment-form .save-card .repeat-password:last-child, .wrapper .content .card-wrapper .cards .deletion-form .save-card .new-password:last-child, .wrapper .content .card-wrapper .cards .deletion-form .save-card .repeat-password:last-child {
+                margin-top: 30px; } }
+        .wrapper .content .card-wrapper .cards .payment-form .save-card .new-password, .wrapper .content .card-wrapper .cards .deletion-form .save-card .new-password {
+          clear: left; }
+      .wrapper .content .card-wrapper .cards .payment-form .password, .wrapper .content .card-wrapper .cards .deletion-form .password {
+        margin-top: 30px; }
+      .wrapper .content .card-wrapper .cards .payment-form input[type="submit"], .wrapper .content .card-wrapper .cards .deletion-form input[type="submit"] {
+        width: 65.05695%;
+        display: block;
+        margin: 0 auto;
+        margin-top: 60px;
+        text-transform: uppercase; }
+.wrapper .content .back-button {
+  width: 48.82117%;
+  margin: 0 auto;
+  margin-top: 15px;
+  font-size: 0.8125em;
+  line-height: 1.5;
+  -webkit-transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+  -moz-transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+  transition: all 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+  display: none; }
+  @media screen and (max-width: 40.0625em) {
+    .wrapper .content .back-button {
+      width: 100%; } }
+  .wrapper .content .back-button:hover {
+    cursor: pointer;
+    color: #339EF7; }
+
+.success-page-wrapper {
+  max-width: 80em;
+  margin-left: auto;
+  margin-right: auto; }
+  .success-page-wrapper::after {
+    clear: both;
+    content: "";
+    display: block; }
+  @media screen and (max-width: 40.0625em) {
+    .success-page-wrapper {
+      padding: 0 20px; } }
+  .success-page-wrapper .content {
+    margin: 30px auto 0 auto;
+    padding: 30px;
+    background: #FFF;
+    border: 1px solid #DDD;
+    border-radius: 5px;
+    width: 65.88078%;
+    text-align: center; }
+    @media screen and (max-width: 48.0625em) {
+      .success-page-wrapper .content {
+        width: 82.94039%; } }
+    @media screen and (max-width: 40.0625em) {
+      .success-page-wrapper .content {
+        width: 100%; } }
+    .success-page-wrapper .content .status {
+      margin-top: 60px;
+      margin-bottom: 15px; }
+      .success-page-wrapper .content .status .checkmark {
+        display: inline-block;
+        height: 40px;
+        width: 40px;
+        margin-right: 10px;
+        margin-bottom: -15px;
+        background: #5AB304;
+        border-radius: 20px; }
+        @media screen and (max-width: 40.0625em) {
+          .success-page-wrapper .content .status .checkmark {
+            margin-bottom: 0; } }
+        .success-page-wrapper .content .status .checkmark:after {
+          content: '';
+          display: block;
+          width: 10px;
+          height: 20px;
+          border: solid #FFF;
+          border-width: 0 4px 4px 0;
+          transform: rotate(45deg);
+          margin: 8px auto 0 auto; }
+      .success-page-wrapper .content .status .info {
+        display: inline; }
+        @media screen and (max-width: 40.0625em) {
+          .success-page-wrapper .content .status .info {
+            display: block; } }
+    .success-page-wrapper .content .receipt {
+      font-size: 0.8125em;
+      line-height: 1.5;
+      width: 48.21067%;
+      margin: 30px auto 60px auto;
+      text-align: left; }
+      .success-page-wrapper .content .receipt::after {
+        clear: both;
+        content: "";
+        display: block; }
+      @media screen and (max-width: 40.0625em) {
+        .success-page-wrapper .content .receipt {
+          width: 74.10533%; } }
+      .success-page-wrapper .content .receipt .label {
+        width: 50%;
+        float: left;
+        font-style: italic;
+        clear: left; }
+      .success-page-wrapper .content .receipt .number {
+        width: 50%;
+        float: left;
+        text-align: right;
+        margin-right: 0; }
+    .success-page-wrapper .content input {
+      padding: 8px 16px; }
+      @media screen and (max-width: 40.0625em) {
+        .success-page-wrapper .content input {
+          font-size: 0.875em;
+          line-height: 1.5; } }
+
+/*# sourceMappingURL=layout.css.map */

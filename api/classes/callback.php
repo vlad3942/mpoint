@@ -608,11 +608,50 @@ abstract class Callback extends EndUserAccount
 			return new DataCash($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["data-cash"]);
 		case (Constants::iGLOBAL_COLLECT_PSP):
 			return new GlobalCollect($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["global-collect"]);
+		case (Constants::iSECURE_TRADING_PSP):
+			return new SecureTrading($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["secure-trading"]);
+		case (Constants::iPAYFORT_PSP):
+			return new PayFort($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["payfort"]);
+		case (Constants::iPAYPAL_PSP):
+			return new PayPal($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paypal"]);
+		case (Constants::iCCAVENUE_PSP):
+			return new CCAvenue($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ccavenue"]);
+		case (Constants::i2C2P_PSP):
+			return new CCPP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["2c2p"]);
+		case (Constants::iMAYBANK_PSP):
+			return new MayBank($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["maybank"]);			
+		case (Constants::iPUBLIC_BANK_PSP):
+			return new PublicBank($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["public-bank"]);
+		case (Constants::iALIPAY_PSP):
+	        return new AliPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["alipay"]);
+		case (Constants::iQIWI_PSP):
+			return new Qiwi($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["qiwi"]);
 		default:
 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
 	}
 
 	public abstract function getPSPID();
+	
+	/**
+	 * Returns exponent of currency of country on given country-id and psp-id.
+	 *
+	 * @param 	integer $cid	Unique ID for the Country that the Currency should be found in
+	 * @param 	integer $pspid	Unique ID for the PSP that the currency code should be found for
+	 * @return 	int
+	 */
+	
+	public function getCurrencyExponent($cid, $pspid)
+	{
+		$currency_name = $this->getCurrency($cid, $pspid);
+		
+		$sql = "SELECT decimals
+				FROM System".sSCHEMA_POSTFIX.".Country_Tbl
+				WHERE id = ". intval($cid) ." AND currency = '". $currency_name ."' AND enabled = '1'";
+		//		echo $sql ."\n";
+		$RS = $this->getDBConn($sql)->getName($sql);
+		
+		return $RS["DECIMALS"];
+	}
 }
 ?>

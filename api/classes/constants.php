@@ -158,6 +158,21 @@ abstract class Constants
 	 */
 	const iCB_REJECTED_STATE = 1995;
 	/**
+	 * Defines the ID of the State that indicates that the transaction has been done for Account Validation and authorisation was successful.
+	 *
+	 */
+	const iPAYMENT_ACCOUNT_VALIDATED = 1998;
+	/**
+	 * Defines the ID of the State that indicates that the transaction has been done for Account Validation and it failed authorisation.
+	 *
+	 */
+	const iPAYMENT_ACCOUNT_VALIDATION_FAILED = 1997;
+	/**
+	 * Defines the ID of the State that indicates that the transaction has been done for Account Validation(successful) and has been cancelled now.
+	 *
+	 */
+	const iPAYMENT_ACCOUNT_VALIDATED_CANCELLED = 19980;
+	/**
 	 * Defines the ID of the State that indicates that mPoint's Callback request is being retried
 	 *
 	 */
@@ -217,6 +232,12 @@ abstract class Constants
 	 */
 	const iPAYMENT_DUPLICATED_STATE = 2019;
 
+	/**
+	 * Defines the ID of the State that indicates that payment has been settled
+	 *
+	 */
+	const iPAYMENT_SETTLED_STATE = 2020;
+	
 	/**
 	 * Defines GoMobile's type identifier for an MT-SMS message
 	 *
@@ -334,6 +355,12 @@ abstract class Constants
 	 *
 	 */
 	const iCARD_PURCHASE_TYPE = 1009;
+	
+	/**
+	 * Defined Type ID for a New Card which are not stored card and not associated with End-User's prepaid account at mPoint side.
+	 * 
+	 */	
+	const iNEW_CARD_PURCHASE_TYPE = 10091;
 
 	/**
 	 * Defines the min length for all authentication data:
@@ -462,6 +489,66 @@ abstract class Constants
 	 */
 	const iGLOBAL_COLLECT_PSP = 21;
 
+	/**
+	 * Unique ID for the Payment Service Provider: GlobalCollect
+	 *
+	 */
+	const iSECURE_TRADING_PSP = 22;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: PayFort
+	 *
+	 */
+	const iPAYFORT_PSP = 23;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: PayPal
+	 *
+	 */
+	const iPAYPAL_PSP = 24;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: CCAvenue
+	 *
+	 */
+	const iCCAVENUE_PSP = 25;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: 2C2P
+	 *
+	 */
+	const i2C2P_PSP = 26;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: MayBank
+	 *
+	 */
+	const iMAYBANK_PSP = 27;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: Public Bank
+	 *
+	 */
+	const iPUBLIC_BANK_PSP = 28;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: AliPay
+	 *
+	 */
+	const iALIPAY_PSP = 30;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: POLi
+	 *
+	 */
+	const iPOLI_PSP = 32;
+	/**
+	 * Unique ID for the Payment Service Provider: Qiwi
+	 *
+	 */
+	const iQIWI_PSP = 31;
+	
+	
 	/**
 	 * Unique ID for the Payment Service Provider: Android Pay
 	 *
@@ -620,6 +707,31 @@ abstract class Constants
 	 *
 	 */
 	const iANDROID_PAY_WALLET = 27;
+	/**
+	 * Unique Card ID for transaction's made using Android Pay
+	 *
+	 */
+	const iPAYPAL_PAY_WALLET = 28;
+	/**
+	 * Unique Card ID for transaction's made using SADAD
+	 *
+	 */
+	const iSADAD = 31;
+	/**
+	 * Unique Card ID for transaction's made using AliPay
+	 *
+	 */
+	const iALIPAY_WALLET = 32;
+	/**
+	 * Unique Card ID for transaction's made using POLi
+	 *
+	 */
+	const iPOLI_WALLET = 34;
+	/**
+	 * Unique Card ID for transaction's made using Qiwi
+	 *
+	 */
+	const iQIWI_WALLET = 33;	
 	
 	/**
 	 * Unique Fee Type ID for Top-Ups

@@ -58,6 +58,7 @@ class Validate extends ValidateBase
 	 * @param 	integer $acc 	Unique ID or Account Number that the transaction should be associated with, set to -1 to use the default account
 	 * @return 	integer
 	 */
+	
 	public static function valBasic(RDB &$oDB, $id, $acc)
 	{
 		if (empty($id) === true) { $code = 1; }			// Undefined Client ID
@@ -105,6 +106,44 @@ class Validate extends ValidateBase
 
 		return $code;
 	}
+	
+	
+	/**
+	 * Performs basic validation ensuring that the client exists.
+	 * The method will return the following status codes:
+	 * 	 1. Undefined Client ID
+	 * 	 2. Invalid Client ID
+	 * 	 3. Unknown Client ID
+	 * 	100. Success
+	 *
+	 * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param 	integer $id 	Unique ID for the Client performing the request
+	 * @return 	integer
+	 */
+	
+	public static function valClient(RDB &$oDB, $id)
+	{
+		if (empty($id) === true) { $code = 1; }			// Undefined Client ID
+		elseif (intval($id) < 100 || (intval($id) > 999 && intval($id) < 10000) ) { $code = 2; }		// Invalid Client ID
+		else
+		{
+			$acc = (integer) $acc;
+			$sql = "SELECT CL.id AS clientid, Cl.enabled AS clientactive
+					FROM Client".sSCHEMA_POSTFIX.".Client_Tbl Cl
+					WHERE Cl.id = ". intval($id);
+			//			echo $sql ."\n";
+			$RS = $oDB->getName($sql);
+	
+			if (is_array($RS) === true)
+			{
+				if ($RS["CLIENTACTIVE"] === false) { $code = 4; }		// Client Disabled
+				else { $code = 100; }
+			}
+			else { $code = 3; }	// Unknown Client ID
+		}
+	
+		return $code;
+	}
 
 	/**
 	 * Performs basic validation ensuring that the Country exists.
@@ -145,7 +184,7 @@ class Validate extends ValidateBase
 	 * 	 1. Undefined Username
 	 * 	 2. Username is too short, min length is 3 characters
 	 * 	 3. Username is too long, as defined by iAUTH_MAX_LENGTH
-	 *   4. Username contains invalid characters: [^a-z0-9 √¶√∏√•√Ü√ò√Ö√§√∂√Ñ√ñ.-]
+	 *   4. Username contains invalid characters: [^a-z0-9 Ê¯Â∆ÿ≈‰ˆƒ÷.-]
 	 * 	10. Success
 	 *
 	 * @see		Constants::iAUTH_MIN_LENGTH
@@ -161,7 +200,7 @@ class Validate extends ValidateBase
 		if (empty($un) === true){ $code = 1; }											// Username is undefined
 		elseif (strlen($un) < 3) { $code = 2; }											// Username is too short
 		elseif (strlen($un) > Constants::iAUTH_MAX_LENGTH) { $code = 3; }				// Username is too long
-		elseif (eregi("[^a-z0-9 √¶√∏√•√Ü√ò√Ö√§√∂√Ñ√ñ._-]", utf8_encode($un) ) == true) { $code = 4; }	// Username contains Invalid Characters
+		elseif (eregi("[^a-z0-9 Ê¯Â∆ÿ≈‰ˆƒ÷._-]", utf8_encode($un) ) == true) { $code = 4; }	// Username contains Invalid Characters
 		else { $code = 10; }															// Username is valid
 
 		return $code;
@@ -222,7 +261,7 @@ class Validate extends ValidateBase
 	 * 	 1. Undefined Name
 	 * 	 2. Name is too short, must be 2 characters or longer
 	 * 	 3. Name is too long, must be shorter than 100 characters
-	 *   4. Name contains invalid characters: [^0-9a-z√¶√∏√•√Ü√ò√Ö√§√∂√Ñ√ñ_.@-]
+	 *   4. Name contains invalid characters: [^0-9a-zÊ¯Â∆ÿ≈‰ˆƒ÷_.@-]
 	 * 	10. Success
 	 *
 	 * @see		General::valUsername()
@@ -304,7 +343,7 @@ class Validate extends ValidateBase
 	 * 	10. Success
 	 *
 	 * @param 	long $max 	Maximum amount allowed for the Client
-	 * @param 	long $prc 	The price of the merchandise the customer is buying in the country's smallest currency (cents for USA, √Ø¬ø¬Ωre for Denmark etc.)
+	 * @param 	long $prc 	The price of the merchandise the customer is buying in the country's smallest currency (cents for USA, ÔøΩre for Denmark etc.)
 	 * @return 	integer
 	 */
 	public function valPrice($max, $prc)
@@ -807,7 +846,7 @@ class Validate extends ValidateBase
 					FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
 					INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid AND Msg.enabled = '1'
 					WHERE Txn.id = ". intval($mpointid) ." AND Txn.clientid = ". intval($clientid) ."
-						AND Msg.stateid >= ". Constants::iPAYMENT_ACCEPTED_STATE ."
+						AND (Msg.stateid >= ". Constants::iPAYMENT_ACCEPTED_STATE ." OR  Msg.stateid = ". Constants::iPAYMENT_ACCOUNT_VALIDATED .")
 					ORDER BY Msg.stateid ASC";
 //			echo $sql ."\n";
 			$aRS = $oDB->getAllNames($sql);
@@ -921,7 +960,7 @@ class Validate extends ValidateBase
 
 	public function valFullname($fullname)
 	{
-		if(preg_match("/^[a-z√¶√∏√•A-Z√Ü√ò√Ö][a-zA-Z -\']+$/",$fullname) == false)
+		if(preg_match("/^[a-zÊ¯ÂA-Z∆ÿ≈][a-zA-Z -\']+$/",$fullname) == false)
 		{
 			$code = 1;
 		}
@@ -1362,6 +1401,60 @@ class Validate extends ValidateBase
         return $code;
     }
 
+    /**
+     * Performs validation of the Card number to determine whether it is valid.
+     * This validation is developed on https://en.wikipedia.org/wiki/Luhn_algorithm.
+     * The method will return the following status codes:
+     *     1. number is undefied
+     *     2. number is too small
+     *     3. number is too large
+     *     4. number is not valid card
+     *    10. given number is valid card number
+     *
+     * @param    integer $number       Card number
+     * @return   integer
+     */
+    public function valCardNumber($number)
+    {
+    	
+    	$code = 0;
+    	
+    	if (empty($number) === true) { $code = 1; }    	
+    	else {
+    	   		settype($number, 'string');	    	
+	    		
+    	   		$number = preg_replace("/[^0-9]/", "", $number);
+    	   		
+	    		if(strlen($number) < 13) { $code = 2; }
+	    		else if(strlen($number) > 16) { $code = 3; }
+	    		else
+	    		{
+	    			$checksum = 0;
+	    			for ($i=(2-(strlen($number) % 2)); $i<=strlen($number); $i+=2) 
+	    			{
+	    				$checksum += (int) ($number{$i-1});
+	    			}
+
+	    			for ($i=(strlen($number)% 2) + 1; $i<strlen($number); $i+=2) 
+	    			{
+	    				$digit = (int) ($number{$i-1}) * 2;
+	    				if ($digit < 10) 
+	    				{
+	    					$checksum += $digit;
+	    				} 
+	    				else { $checksum += ($digit-9); }
+	    			}
+	    			
+	    			if (($checksum % 10) == 0) 
+	    			{
+	    				$code = 10;
+	    			} else { $code = 4; }
+	    		}
+	    	}
+   	
+    	return $code;
+    }
+
 	/**
 	 * Performs generic validations on the request format of a raw API request 
 	 * This function throws an @see mPointBaseValidationException in case of validation errors
@@ -1407,5 +1500,6 @@ class Validate extends ValidateBase
 
 		return $code;
 	}
+
 }
 ?>

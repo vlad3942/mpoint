@@ -6838,6 +6838,19 @@ INSERT INTO Log.State_Tbl (id, name) VALUES (2007, 'Payment with voucher');
 ------- MASTER v1.90 ---
 /* ==================== Client SCHEMA START ==================== */
 ALTER TABLE Client.CardAccess_tbl ADD position integer default NULL;
+ALTER TABLE Client.CardAccess_tbl
+DROP CONSTRAINT cardaccess_uq;
+
+/*ALTER TABLE Client.CardAccess_tbl
+ADD CONSTRAINT cardaccess_uq UNIQUE (clientid, cardid);
+
+ALTER TABLE Client.CardAccess_tbl
+ADD CONSTRAINT cardaccess_card_country_uq UNIQUE (clientid, cardid, countryid);
+*/
+
+CREATE UNIQUE INDEX cardaccess_uq ON Client.CardAccess_tbl (clientid, cardid) WHERE countryid IS NULL;
+CREATE UNIQUE INDEX cardaccess_card_country_uq ON Client.CardAccess_tbl (clientid, cardid, countryid) WHERE countryid IS NOT NULL;
+
 /* ==================== Client SCHEMA END ==================== */
 
 ------- MASTER v1.93 ---
@@ -6846,12 +6859,6 @@ ALTER TABLE Client.Client_Tbl ADD num_masked_digits INT4 DEFAULT 4;
 ALTER TABLE Client.Client_Tbl ADD CONSTRAINT MaskedDigits_Chk CHECK (0 <= num_masked_digits AND num_masked_digits <= 4);
 /* ==================== Client SCHEMA END ==================== */
 
---- SETUP v1.94 --
-/* ========== CONFIGURE GlobalCollect AS PSP ================ */
-INSERT INTO System.PSP_Tbl (id, name) VALUES (20, 'GlobalCollect');
-INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) SELECT countryid, 20, name FROM System.PSPCurrency_Tbl WHERE pspid = 4;
-INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT cardid, 20 FROM System.PSPCard_Tbl WHERE pspid = 4;
-/* ========== CONFIGURE DATA CASH END ========== */
 ------- MASTER v1.94 ---
 /* ==================== CLIENT SCHEMA START ==================== */
 ALTER TABLE Client.MerchantAccount_Tbl ALTER name TYPE VARCHAR(255);
@@ -6872,3 +6879,203 @@ ALTER TABLE Client.Client_Tbl ADD COLUMN salt VARCHAR(20);
 INSERT INTO System.URLType_Tbl (id, name) VALUES (12, 'Parse 3D Secure Challenge URL');
 INSERT INTO Log.State_Tbl (id, name) VALUES (1100, '3D Secure Activated');
 /* ========== Mobile Optimized 3D Secure END ========== */
+
+/* ==================== LOG.ORDER_TBL SCHEMA START ==================== */
+CREATE TABLE log.order_tbl
+(
+  id serial NOT NULL,
+  txnid integer NOT NULL,
+  countryid integer NOT NULL,
+  amount integer,
+  productsku character varying(40),
+  productname character varying(40),
+  productdescription text,
+  productimageurl character varying(255),
+  points integer,
+  reward integer,
+  quantity integer,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true,
+  CONSTRAINT order_pk PRIMARY KEY (id),
+  CONSTRAINT order2country_fk FOREIGN KEY (countryid)
+      REFERENCES system.country_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT order2txn_fk FOREIGN KEY (txnid)
+      REFERENCES log.transaction_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE RESTRICT
+)
+WITH (
+  OIDS=FALSE
+);
+
+CREATE INDEX order_created_idx
+  ON log.order_tbl
+  USING btree
+  (created);
+
+CREATE INDEX order_transaction_idx
+  ON log.order_tbl
+  USING btree
+  (id, txnid);
+  
+/* ==================== LOG.ORDER_TBL SCHEMA START ==================== */
+
+
+
+
+-------------  Airline Data ----------------
+
+
+
+-- Type: log.additional_data_ref
+
+-- DROP TYPE log.additional_data_ref;
+
+CREATE TYPE log.additional_data_ref AS ENUM
+   ('Flight',
+    'Passenger');
+    
+-- Table: log.additional_data_tbl
+
+-- DROP TABLE log.additional_data_tbl;
+
+CREATE TABLE log.additional_data_tbl
+(
+ id serial NOT NULL,
+  name character varying(20),
+  value character varying(20),
+  type log.additional_data_ref,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  CONSTRAINT additional_data_pk PRIMARY KEY (id)
+)
+WITHOUT OIDS;
+
+
+-- Table: log.flight_tbl
+
+-- DROP TABLE log.flight_tbl;
+
+CREATE TABLE log.flight_tbl
+(
+  id serial NOT NULL,
+  service_class character varying(10) NOT NULL,
+  departure_airport character varying(10) NOT NULL,
+  arrival_airport character varying(10) NOT NULL,
+  airline_code character varying(10) NOT NULL,
+  order_id integer NOT NULL,
+  arrival_date timestamp without time zone NOT NULL,
+  departure_date timestamp without time zone NOT NULL,
+  created timestamp without time zone NOT NULL DEFAULT now(),
+  modified timestamp without time zone NOT NULL DEFAULT now(),
+  additional_data_ref integer NOT NULL,
+  CONSTRAINT flight_pk PRIMARY KEY (id),
+  CONSTRAINT order_fk FOREIGN KEY (order_id)
+      REFERENCES log.order_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT ref_additional_fk FOREIGN KEY (additional_data_ref)
+      REFERENCES log.additional_data_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE
+)
+WITHOUT OIDS;
+
+  
+  
+  
+-- Table: log.passenger_tbl
+
+-- DROP TABLE log.passenger_tbl;
+
+CREATE TABLE log.passenger_tbl
+(
+   id serial NOT NULL,
+  first_name character varying(20) NOT NULL,
+  last_name character varying(20) NOT NULL,
+  type character varying(10) NOT NULL,
+  order_id integer NOT NULL,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  additional_data_ref integer NOT NULL,
+  CONSTRAINT passenger_pk PRIMARY KEY (id),
+  CONSTRAINT order_fk FOREIGN KEY (order_id)
+      REFERENCES log.order_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT ref_additional_fk FOREIGN KEY (additional_data_ref)
+      REFERENCES log.additional_data_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE
+)
+WITHOUT OIDS;
+
+-- Table: system.processortype_tbl
+
+-- DROP TABLE system.processortype_tbl;
+
+CREATE TABLE system.processortype_tbl
+(
+  id serial NOT NULL,
+  name character varying(50),
+  CONSTRAINT id_pk PRIMARY KEY (id),
+  CONSTRAINT iduk UNIQUE (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE system.processortype_tbl
+  OWNER TO postgres;
+
+-- Column: system_type
+
+-- ALTER TABLE system.psp_tbl DROP COLUMN system_type;
+
+ALTER TABLE system.psp_tbl ADD COLUMN system_type integer;
+
+   -- Insert data : system.processortype_tbl;
+
+  INSERT INTO system.processortype_tbl(id, name) VALUES (1, 'PSP');
+  INSERT INTO system.processortype_tbl(id, name) VALUES (2, 'Bank');
+  INSERT INTO system.processortype_tbl(id, name) VALUES (3, 'Wallet');
+  INSERT INTO system.processortype_tbl(id, name) VALUES (4, 'APM');
+
+   -- Insert data : system.psp_tbl
+   -- Value : system_type;
+
+    UPDATE system.psp_tbl SET system_type=1 WHERE id=0;
+    UPDATE system.psp_tbl SET system_type=1 WHERE id=1;
+    UPDATE system.psp_tbl SET system_type=1 WHERE id=2;
+    UPDATE system.psp_tbl SET system_type=1 WHERE id=3;
+    UPDATE system.psp_tbl SET system_type=1 WHERE id=4;
+    UPDATE system.psp_tbl SET system_type=1 WHERE id=5;
+    UPDATE system.psp_tbl SET system_type=1 WHERE id=6;
+    UPDATE system.psp_tbl SET system_type=1 WHERE id=7;
+    UPDATE system.psp_tbl SET system_type=1 WHERE id=8;
+    UPDATE system.psp_tbl SET system_type=1 WHERE id=9;
+    UPDATE system.psp_tbl SET system_type=1 WHERE id=10;
+    UPDATE system.psp_tbl SET system_type=3 WHERE id=11;
+    UPDATE system.psp_tbl SET system_type=1 WHERE id=12;
+    UPDATE system.psp_tbl SET system_type=3 WHERE id=13;
+    UPDATE system.psp_tbl SET system_type=3 WHERE id=14;
+    UPDATE system.psp_tbl SET system_type=3 WHERE id=15;
+    UPDATE system.psp_tbl SET system_type=3 WHERE id=16;
+    UPDATE system.psp_tbl SET system_type=1 WHERE id=17;
+    UPDATE system.psp_tbl SET system_type=1 WHERE id=18;
+    UPDATE system.psp_tbl SET system_type=2 WHERE id=19;
+    UPDATE system.psp_tbl SET system_type=3 WHERE id=20;
+    UPDATE system.psp_tbl SET system_type=1 WHERE id=21;
+    UPDATE system.psp_tbl SET system_type=1 WHERE id=22;
+    UPDATE system.psp_tbl SET system_type=1 WHERE id=23;
+    UPDATE system.psp_tbl SET system_type=4 WHERE id=24;
+    UPDATE system.psp_tbl SET system_type=1 WHERE id=25;
+    UPDATE system.psp_tbl SET system_type=1 WHERE id=26;
+    UPDATE system.psp_tbl SET system_type=2 WHERE id=27;
+    UPDATE system.psp_tbl SET system_type=2 WHERE id=28;
+
+-- Foreign Key: system.psptoproccessingtype_fk
+-- ALTER TABLE system.psp_tbl DROP CONSTRAINT psptoproccessingtype_fk;
+ALTER TABLE system.psp_tbl ALTER COLUMN system_type SET NOT NULL;
+
+ALTER TABLE system.psp_tbl
+  ADD CONSTRAINT psptoproccessingtype_fk FOREIGN KEY (system_type)
+      REFERENCES system.processortype_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE;
+

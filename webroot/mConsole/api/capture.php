@@ -8,7 +8,7 @@
  * @version 1.10
  */
 
-// Require Global Include File
+//// Require Global Include File
 require_once("../../inc/include.php");
 
 // Require API for Simple DOM manipulation

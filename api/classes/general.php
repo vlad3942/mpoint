@@ -422,8 +422,18 @@ class General
 		// Error: Unable to generate a new Transaction ID
 		if (is_array($RS) === false) { throw new mPointException("Unable to generate new Transaction ID", 1001); }
 
-		$ip = $_SERVER['REMOTE_ADDR'];
-		if (array_key_exists("HTTP_X_FORWARDED_FOR", $_SERVER) === true) { $ip = $_SERVER['HTTP_X_FORWARDED_FOR']; }
+		//Will take ip on the basis of interface used for accessing project.
+		if(php_sapi_name() == "cli")
+		{
+			$ip = gethostbyname(gethostname());
+		} else if(isset($_SERVER['REMOTE_ADDR']) == true)
+		{ 
+			$ip = $_SERVER['REMOTE_ADDR']; 
+		} else if (array_key_exists("HTTP_X_FORWARDED_FOR", $_SERVER) === true) 
+		{ 
+			$ip = $_SERVER['HTTP_X_FORWARDED_FOR']; 
+		}
+		
 		$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 					(id, typeid, clientid, accountid, countryid, keywordid, \"mode\", ip)
 				VALUES
