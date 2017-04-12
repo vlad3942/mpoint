@@ -1123,6 +1123,7 @@ catch (Exception $e)
 	trigger_error("Exception thrown in mApp/api/authorize.php: ". $e->getMessage() ."\n". $e->getTraceAsString(), E_USER_ERROR);
 }
 header("Content-Type: text/xml; charset=\"UTF-8\"");
-
+echo '<?xml version="1.0" encoding="UTF-8"?>';
+echo '<root>';
 echo $xml;
 echo '</root>';
