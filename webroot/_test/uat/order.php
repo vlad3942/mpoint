@@ -112,7 +112,7 @@ if (! empty ( $_REQUEST )) {
 	$accountidd = $_REQUEST ['accountsel'];
 	$clientidd = $_REQUEST ['clientsel'];
 	$countryidd = $_REQUEST ['countrysel'];
-	$orderidd = 'UAT-' . generateRandomString ();
+	$orderidd = 'UAT' . generateRandomString ();
 	$operatoridd = $countryidd * 100;
 	$customeridd = $_REQUEST ['customerref'];
 	$mobileno = $_REQUEST ['mobile'];
@@ -122,11 +122,13 @@ if (! empty ( $_REQUEST )) {
 	$flightno = $_REQUEST ['FN'];
 	$from = $_REQUEST ['from'];
 	
-	$obj_ClientConfig = ClientConfig::produceConfig ( $_OBJ_DB, $clientidd );
+	$Ccountry = ClientConfig::produceConfig ( $_OBJ_DB, $clientidd );
 	
 	if (is_object ( $obj_ClientConfig )) {
-		if ($obj_ClientConfig->getCancelURL () !== "")
-			$urls ["Cancel"] = $obj_ClientConfig->getCancelURL ();
+		
+		$Ccountry = $obj_ClientConfig->getCancelURL();
+		if (empty($Ccountry) == false)
+			$urls ["Cancel"] = $obj_ClientConfig->getCancelURL();
 		else
 			$urls ["Cancel"] = "http://" . $_SERVER ["HTTP_HOST"] . "/_test/uat/addDetail.php";
 	}
@@ -252,9 +254,7 @@ if (! empty ( $_REQUEST )) {
 				<tr>
 					<td><?php echo "<input name=\"markup\" id=\"markup\" value=\"html5\" type=\"hidden\" /></td>"; ?></td>
 				</tr>
-				<tr>
-
-				</tr>
+	
 			</table>
 			<div class="container main">
 				<div class="row">
@@ -354,11 +354,54 @@ if (! empty ( $_REQUEST )) {
 										<th scope="row">Premium Seat</th>
 										<td><?php echo $premium;?></td>
 									</tr>
-									<tr class="active">
-										<th scope="row">Total (in USD)</th>
-										<td> <?php echo $total; echo "<input type=\"hidden\" name=\"amount\" value='".$total."' />";?>
-					  </td>
-									</tr>
+											<tr>
+			<?php 
+			$orderdata = array();
+			$orderdata['orders'][0]['shipping'][0]['name'] = "JOHN B.GOOD";
+			$orderdata['orders'][0]['shipping'][0]['street'] = "Apartment 6B";
+			$orderdata['orders'][0]['shipping'][0]['street2'] = "MAINSTR8";
+			$orderdata['orders'][0]['shipping'][0]['city'] = "Cambridge";
+			$orderdata['orders'][0]['shipping'][0]['state'] = "Cambridgeshire";
+			$orderdata['orders'][0]['shipping'][0]['zip'] = "5555";
+			$orderdata['orders'][0]['shipping'][0]['country'] = "GB";
+			$orderdata['orders'][0]['lineitem'][0]['product']['sku'] = "RTY678M";
+			$orderdata['orders'][0]['lineitem'][0]['product']['name'] = "Product1";
+			$orderdata['orders'][0]['lineitem'][0]['product']['description'] = "Product Desc";
+			$orderdata['orders'][0]['lineitem'][0]['product']['imageurl'] = "http://www.google.com";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['flightdata'][0]['serviceclass'] = "V";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['flightdata'][0]['flightnumber'] = "M1";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['flightdata'][0]['departureairport'] = "LON";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['flightdata'][0]['arrivalairport'] = "AMS";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['flightdata'][0]['airlinecode'] = "MY";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['flightdata'][0]['departuredate'] = "2017-12-28 12:35:00";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['flightdata'][0]['arrivaldate'] = "2017-12-28 19:53:00";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['flightdata'][0]['additionaldata']['param'][0]['value'] = "A320";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['flightdata'][0]['additionaldata']['param'][0]['name'] = "Type";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['flightdata'][0]['additionaldata']['param'][1]['value'] = "5";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['flightdata'][0]['additionaldata']['param'][1]['name'] = "Fee";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['flightdata'][0]['additionaldata']['param'][2]['value'] = "2";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['flightdata'][0]['additionaldata']['param'][2]['name'] = "Tax";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['passengerdata'][0]['firstname'] = "Donald";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['passengerdata'][0]['lastname'] = "John";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['passengerdata'][0]['type'] = "Business";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['passengerdata'][0]['additionaldata']['param'][0]['value'] = "A320";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['passengerdata'][0]['additionaldata']['param'][0]['name'] = "Type";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['passengerdata'][0]['additionaldata']['param'][1]['value'] = "5";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['passengerdata'][0]['additionaldata']['param'][1]['name'] = "Fee";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['passengerdata'][0]['additionaldata']['param'][2]['value'] = "2";
+			$orderdata['orders'][0]['lineitem'][0]['product']['airlinedata']['passengerdata'][0]['additionaldata']['param'][2]['name'] = "Tax";
+			$orderdata['orders'][0]['lineitem'][0]['amount'] = $total;
+			$orderdata['orders'][0]['lineitem'][0]['points'] = "1";
+			$orderdata['orders'][0]['lineitem'][0]['reward'] = "1";
+			$orderdata['orders'][0]['lineitem'][0]['quantity'] = "1";
+			?>
+			<td><?php echo "<input name=\"orderdata\" id=\"orderdata\" value='".htmlentities(serialize($orderdata))."' type=\"hidden\" /></td>"; ?></td>
+				</tr>
+				<tr class="active">
+					<th scope="row">Total (in USD)</th>
+						<td> <?php echo $total; echo "<input type=\"hidden\" name=\"amount\" value='".$total."' />";?>
+				    </td>
+				</tr>
 								</tbody>
 							</table>
 						</div>
@@ -399,10 +442,10 @@ if (! empty ( $_REQUEST )) {
 
 						</div>
 					</div>
-					<br> <a href=<?php echo $urls["Cancel"]?>
-						class="btn btn-success btn-sm">Yes</a>
-					<button id="no" data-bb-handler="No" type="button"
-						class="btn btn-danger btn-sm">No</button>
+					<br> 
+					
+					<?php  echo "<a href='".$urls["Cancel"]."' class=\"btn btn-success btn-sm\" >Yes </a>"; ?>
+					<button id="no" data-bb-handler="No" type="button" class="btn btn-danger btn-sm">No</button>
 				</div>
 			</div>
 		</div>

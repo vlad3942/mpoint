@@ -513,6 +513,13 @@ h2.sub-header {
 }
 }
 
+.pull-icon-right {
+	position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-14px);
+    -webkit-transform: translateY(-14px);
+}
 
 
 

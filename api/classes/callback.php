@@ -618,6 +618,14 @@ abstract class Callback extends EndUserAccount
 			return new CCAvenue($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ccavenue"]);
 		case (Constants::i2C2P_PSP):
 			return new CCPP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["2c2p"]);
+		case (Constants::iMAYBANK_PSP):
+			return new MayBank($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["maybank"]);			
+		case (Constants::iPUBLIC_BANK_PSP):
+			return new PublicBank($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["public-bank"]);
+		case (Constants::iALIPAY_PSP):
+	        return new AliPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["alipay"]);
+		case (Constants::iQIWI_PSP):
+			return new Qiwi($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["qiwi"]);
 		default:
 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}

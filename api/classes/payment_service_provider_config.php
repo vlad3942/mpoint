@@ -27,6 +27,13 @@ class PaymentServiceProviderConfig extends BasicConfig
 	 * @var array
 	 */
 	private $_aCurrencies = array();
+	/**
+	 * Holding the string value of the processor type for the Payment Service Provider
+	 *
+	 * @var string
+	 */
+	private $_sType;
+
 
 	/**
 	 * Default constructor
@@ -35,21 +42,29 @@ class PaymentServiceProviderConfig extends BasicConfig
 	 * @param string $name			The name of the Payment Service Provider
 	 * @param array $pms			List of Payment Methods (Cards) which are supported by the Payment Service Provider
 	 * @param array $currencies		List of Currencies for each Country that is supported by the Payment Service Provider
+	 * @param string $sType			The value of Proccessor Type for the Payment Service Provider
 	 */
-	public function __construct($id, $name, array $pms, array $currencies)
+	public function __construct($id, $name, array $pms, array $currencies, $sType)
 	{
 		parent::__construct($id, $name);
 
 		$this->_aPaymentMethods = $pms;
 		$this->_aCurrencies = $currencies;
+		$this->_sType = $sType;
 	}
 
 	public function getPaymentMethods() { return $this->_aPaymentMethods; }
 	public function getCurrencies() { return $this->_aCurrencies; }
+	/**
+	 * Returns string value of the processor type for the Payment Service Provider
+	 *
+	 * @return 	string
+	 */
+	public function getProcessorType() { return $this->_sType; }
 	
 	public function toXML()
 	{
-		$xml = '<payment-service-provider-config id="'. $this->getID() .'">';
+		$xml = '<payment-service-provider-config id="'. $this->getID() .'" type="'. htmlspecialchars($this->getProcessorType(), ENT_NOQUOTES) .'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
 		if (count($this->_aPaymentMethods) > 0)
 		{
@@ -79,9 +94,10 @@ class PaymentServiceProviderConfig extends BasicConfig
 	 *
 	 * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
 	 * @param 	integer $id 	The unique ID for the Payment Service Provider that should be instantiated
+	 * @param 	string $sSystemType 	The value of Proccessor Type for the Payment Service Provider that should be instantiated
 	 * @return	PaymentServiceProviderConfig|NULL
 	 */
-	public static function produceConfig(RDB $oDB, $id)
+	public static function produceConfig(RDB $oDB, $id , $sSystemType)
 	{
 		$sql = "SELECT id, name
 				FROM System". sSCHEMA_POSTFIX .".PSP_Tbl
@@ -107,7 +123,7 @@ class PaymentServiceProviderConfig extends BasicConfig
 					$aPaymentMethods[$aRS[$i]["ID"] ] = $aRS[$i]["NAME"];
 				}
 			}
-			return new PaymentServiceProviderConfig($id, $RS["NAME"], $aPaymentMethods, $aCurrencies);
+			return new PaymentServiceProviderConfig($id, $RS["NAME"], $aPaymentMethods, $aCurrencies, $sSystemType);
 		}
 		else { return null; }
 	}
@@ -120,8 +136,9 @@ class PaymentServiceProviderConfig extends BasicConfig
 	 */
 	public static function produceAll(RDB $oDB)
 	{
-		$sql = "SELECT id
-				FROM System". sSCHEMA_POSTFIX .".PSP_Tbl
+		$sql = "SELECT PSP.id, PT.name
+				FROM System". sSCHEMA_POSTFIX .".PSP_Tbl PSP
+				INNER JOIN System". sSCHEMA_POSTFIX .".processortype_Tbl PT ON PSP.system_type = PT.id
 				WHERE enabled = '1'
 				ORDER BY id ASC";
 //		echo $sql ."\n";
@@ -129,7 +146,7 @@ class PaymentServiceProviderConfig extends BasicConfig
 		$aObj_Configurations = array();
 		while ($RS = $oDB->fetchName($res) )
 		{
-			$aObj_Configurations[] = self::produceConfig($oDB, $RS["ID"]); 
+			$aObj_Configurations[] = self::produceConfig($oDB, $RS["ID"], $RS["NAME"]); 
 		}
 		
 		return $aObj_Configurations;

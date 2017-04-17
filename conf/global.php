@@ -10,7 +10,7 @@ error_reporting(E_ERROR | E_PARSE | E_WARNING | E_USER_ERROR | E_USER_WARNING | 
  */
 define("sLOG_PATH", sSYSTEM_PATH ."/log/");
 /**
- * Output method for the error handler:
+ * Output method for the error handler:	
  *	0 - Store Internally
  *	1 - Output to file
  *	2 - Output to screen
@@ -383,7 +383,7 @@ $aHTTP_CONN_INFO["wire-card"]["paths"]["refund"] = "/mpoint/wire-card/refund";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["callback"] = "/mpoint/wire-card/callback";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["cancel"] = "/mpoint/wire-card/cancel";
 
-/*
+/**
  * Connection info for connecting to Android Pay
  */
 $aHTTP_CONN_INFO["android-pay"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
@@ -438,6 +438,7 @@ $aHTTP_CONN_INFO["secure-trading"]["paths"]["cancel"] = "/mpoint/secure-trading/
 /**
  * Connection info for connecting to PayFort
  */
+
 $aHTTP_CONN_INFO["payfort"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
 $aHTTP_CONN_INFO["payfort"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
 $aHTTP_CONN_INFO["payfort"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
@@ -466,7 +467,7 @@ $aHTTP_CONN_INFO["paypal"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["paypal"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["paypal"]["paths"]["initialize"] = "/mpoint/paypal/initialize";
 $aHTTP_CONN_INFO["paypal"]["paths"]["auth"] = "/mpoint/paypal/authorize-payment";
-//$aHTTP_CONN_INFO["paypal"]["paths"]["capture"] = "/mpoint/paypal/capture";
+$aHTTP_CONN_INFO["paypal"]["paths"]["capture"] = "/mpoint/paypal/capture";
 $aHTTP_CONN_INFO["paypal"]["paths"]["refund"] = "/mpoint/paypal/refund";
 $aHTTP_CONN_INFO["paypal"]["paths"]["cancel"] = "/mpoint/paypal/cancel";
 
@@ -506,6 +507,87 @@ $aHTTP_CONN_INFO["2c2p"]["paths"]["refund"] = "/mpoint/2c2p/refund";
 $aHTTP_CONN_INFO["2c2p"]["paths"]["status"] = "/mpoint/2c2p/status";
 $aHTTP_CONN_INFO["2c2p"]["paths"]["cancel"] = "/mpoint/2c2p/cancel";
 $aHTTP_CONN_INFO["2c2p"]["paths"]["callback"] = "/mpoint/2c2p/callback";
+
+
+/**
+ * Connection info for connecting to PublicBank
+ */
+$aHTTP_CONN_INFO["public-bank"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["public-bank"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["public-bank"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["public-bank"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["public-bank"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["public-bank"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["public-bank"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["public-bank"]["paths"]["initialize"] = "/mpoint/public-bank/initialize";
+$aHTTP_CONN_INFO["public-bank"]["paths"]["auth"] = "/mpoint/public-bank/authorize-payment";
+$aHTTP_CONN_INFO["public-bank"]["paths"]["capture"] = "/mpoint/public-bank/capture";
+$aHTTP_CONN_INFO["public-bank"]["paths"]["refund"] = "/mpoint/public-bank/refund";
+$aHTTP_CONN_INFO["public-bank"]["paths"]["status"] = "/mpoint/public-bank/status";
+$aHTTP_CONN_INFO["public-bank"]["paths"]["cancel"] = "/mpoint/public-bank/cancel";
+$aHTTP_CONN_INFO["public-bank"]["paths"]["callback"] = "/mpoint/public-bank/callback";
+
+/**
+ * Connection info for connecting to MayBank
+ */
+$aHTTP_CONN_INFO["maybank"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["maybank"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["maybank"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["maybank"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["maybank"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["maybank"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["maybank"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["maybank"]["paths"]["initialize"] = "/mpoint/maybank/initialize";
+$aHTTP_CONN_INFO["maybank"]["paths"]["auth"] = "/mpoint/maybank/authorize-payment";
+$aHTTP_CONN_INFO["maybank"]["paths"]["capture"] = "/mpoint/maybank/capture";
+$aHTTP_CONN_INFO["maybank"]["paths"]["refund"] = "/mpoint/maybank/refund";
+$aHTTP_CONN_INFO["maybank"]["paths"]["status"] = "/mpoint/maybank/status";
+$aHTTP_CONN_INFO["maybank"]["paths"]["cancel"] = "/mpoint/maybank/cancel";
+$aHTTP_CONN_INFO["maybank"]["paths"]["callback"] = "/mpoint/maybank/callback";
+
+/**
+ * Connection info for connecting to AliPay
+ */
+$aHTTP_CONN_INFO["alipay"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["alipay"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["alipay"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["alipay"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["alipay"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["alipay"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["alipay"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["alipay"]["paths"]["initialize"] = "/mpoint/alipay/initialize";
+$aHTTP_CONN_INFO["alipay"]["paths"]["refund"] = "/mpoint/alipay/refund";
+$aHTTP_CONN_INFO["alipay"]["paths"]["status"] = "/mpoint/alipay/status";
+$aHTTP_CONN_INFO["alipay"]["paths"]["callback"] = "/mpoint/alipay/callback";
+
+/**
+ * Connection info for connecting to POLi
+ */
+$aHTTP_CONN_INFO["poli"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["poli"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["poli"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["poli"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["poli"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["poli"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["poli"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["poli"]["paths"]["initialize"] = "/mpoint/poli/initialize";
+$aHTTP_CONN_INFO["poli"]["paths"]["callback"] = "/mpoint/poli/callback";
+
+/**
+ * Connection info for connecting to QIWI Wallet
+ */
+$aHTTP_CONN_INFO["qiwi"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["qiwi"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["qiwi"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["qiwi"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["qiwi"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["qiwi"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["qiwi"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["qiwi"]["paths"]["initialize"] = "/mpoint/qiwi/initialize";
+$aHTTP_CONN_INFO["qiwi"]["paths"]["refund"] = "/mpoint/qiwi/refund";
+$aHTTP_CONN_INFO["qiwi"]["paths"]["status"] = "/mpoint/qiwi/status";
+$aHTTP_CONN_INFO["qiwi"]["paths"]["cancel"] = "/mpoint/qiwi/cancel";
+$aHTTP_CONN_INFO["qiwi"]["paths"]["callback"] = "/mpoint/qiwi/callback";
 
 /**
  * GoMobile Connection Info.
