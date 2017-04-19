@@ -164,9 +164,12 @@
   </wsdl:types>
   <wsdl:message name="InitInputMessage">
     <wsdl:part name="parameters" element="tns:Init" />
+	<wsdl:part name="header" element="ssgw:RequestHeader" />
+	<wsdl:part name="header2" element="wsse:Security" />
   </wsdl:message>
   <wsdl:message name="InitOutputMessage">
     <wsdl:part name="parameters" element="tns:InitResponse" />
+	<wsdl:part name="header2" element="wsse:Security" />
   </wsdl:message>
   <wsdl:message name="Security">
     <wsdl:part name="Security" element="wsse:Security" />
@@ -186,12 +189,12 @@
       <wsdlsoap12:operation soapAction="" style="document" />
       <wsdl:input>
         <wsdlsoap12:body use="literal" />
-        <wsdlsoap12:header wsdl:required="true" message="tns:Security" part="Security" use="literal" />
-        <wsdlsoap12:header wsdl:required="true" message="tns:RequestHeader" part="RequestHeader" use="literal" />
+        <wsdlsoap12:header wsdl:required="true" message="tns:InitInputMessage" part="header2" use="literal"/>
+        <wsdlsoap12:header wsdl:required="true" message="tns:InitInputMessage" part="header" use="literal" />
       </wsdl:input>
       <wsdl:output>
         <wsdlsoap12:body use="literal" />
-        <wsdlsoap12:header message="tns:Security" part="Security" use="literal" />
+        <wsdlsoap12:header wsdl:required="true" message="tns:InitOutputMessage" part="header2" use="literal"/>
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>

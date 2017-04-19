@@ -18,13 +18,13 @@ INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (30, 24);
 /* ========== Global Configuration for MobilePay Online- Payment Method : END========== */
 
 /* ========== Global Configuration for MobilePay Online = STARTS ========== */
-INSERT INTO System.PSP_Tbl (id, name) VALUES (33, 'MobilePay Online');
+INSERT INTO System.PSP_Tbl (id, name, system_type) VALUES (33, 'MobilePay Online', 4);
 INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (100,33,'DKK');
 
 /*MobilePay Online*/
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (30, 33);
 
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 33, 'MobilePay Online', 'TBD', 'TBD');
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 33, 'MobilePay Online', '19', '5K4506');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 33, '-1');
 
 -- Route MobilePay Online Card to MobilePay Online with country Denmark
