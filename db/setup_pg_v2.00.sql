@@ -12,9 +12,7 @@ INSERT INTO Log.State_Tbl (id, name) VALUES (2020, 'Payment Settled');
 /* ========== Global Configuration for MobilePay Online- Payment Method : START========== */
 INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (30, 'MobilePay Online', 23, -1, -1, -1);
 INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (30, 0, 0);
-INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 30, id FROM System.PricePoint_Tbl WHERE amount = -1 AND countryid = 103;
-
-INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (30, 24);
+INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) VALUES(30, -100);
 /* ========== Global Configuration for MobilePay Online- Payment Method : END========== */
 
 /* ========== Global Configuration for MobilePay Online = STARTS ========== */
