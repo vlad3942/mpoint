@@ -11,10 +11,10 @@
     </types>
 
     <message name="ProcessInputMessage">
-        <part name="arg0" type="tns:ProcessRequest" />
+        <part name="arg0" type="tns:arg0" />
     </message>
     <message name="ProcessOutputMessage">
-        <part name="return" type="tns:ProcessResponse" />
+        <part name="return" type="tns:return" />
     </message>
     <portType name="PSPProcessPaymentWS">
         <operation name="Process" parameterOrder='arg0'>

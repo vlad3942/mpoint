@@ -3,6 +3,9 @@
     xmlns="http://www.w3.org/2001/XMLSchema" xmlns:mpc="http://www.danskebank.com/mobilepay/services/pspprocesspayment">
     <include schemaLocation="MobilePay.xsd" />
 
+	<element name="arg0" type="ProcessRequest" />
+	<element name="return" type="ProcessResponse" />
+
     <complexType name="ProcessRequest">
         <sequence>
             <element name="SessionToken" type="mpc:String100" />
