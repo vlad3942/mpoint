@@ -887,6 +887,92 @@ class mConsole extends Admin
 	}
 	
 	/**
+	 * Returns information about the failed transaction across clients that the administrative user has access to.
+	 * The method optionally takes a parameter: $sCode which specifies which mPoint Transaction Status Codes.
+	 * should be returned for.
+	 * The method will return an array with the following format:
+	 * 	id => mPoint's unique ID for the transaction
+	 * 	timestamp => Database timestamp for when the transaction occurred
+	 *
+	 * @param	integer $uid 	Unique ID for the mPoint Administrator
+	 * @param	integer $clid 	Unique ID of the mPoint Transaction Status Codes for which the failed transaction should be found
+	 * @return	array
+	 */
+	public function getFailedTransactions(array $aClientIDs,array $aStateIDs)
+	{
+		$sql = "";
+		$states = implode(",",$aStateIDs);
+		
+		foreach($aClientIDs as $iClientID)
+		{
+			$sql .= "SELECT Txn.id,p2.st AS asStateid,Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
+					EUA.id AS customerid, EUA.firstname, EUA.lastname, Coalesce(Txn.customer_ref, EUA.externalid) AS customer_ref, Txn.operatorid as operatorid,
+					Txn.mobile as mobile, Txn.email as email, Txn.lang AS language,CL.id AS clientid, CL.name AS client,
+					Acc.id AS accountid, Acc.name AS account,PSP.id AS pspid, PSP.name AS psp,
+					PM.id AS paymentmethodid, PM.name AS paymentmethod,Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description
+				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON Txn.accountid = Acc.id
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON Txn.pspid = PSP.id
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl PM ON Txn.cardid = PM.id
+				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON Txn.euaid = EUA.id
+				INNER JOIN (select txnid,max(stateid) as st from log.message_tbl group by txnid) p2 ON (txn.id = p2.txnid)
+				WHERE CL.id = ".$iClientID."  and p2.st IN (".$states.")";
+				
+	
+			array_pop($aClientIDs);
+	
+			if(count($aClientIDs) > 0)
+			{
+				$sql .= "
+							UNION
+						";
+			}
+		}
+		//echo $sql ."\n";exit;
+		//trigger_error( $sql ."\n");
+		$res = $this->getDBConn()->query($sql);
+		
+		$aObj_TransactionLogs = array();
+		$aObj_CountryConfigurations = array();
+		//trigger_error( $sql ."\n" );
+		// Construct XML Document with data for Transaction
+		while ($RS = $this->getDBConn()->fetchName($res) )
+		{
+			if (array_key_exists($RS["COUNTRYID"], $aObj_CountryConfigurations) === false) { $aObj_CountryConfigurations[$RS["COUNTRYID"] ] = CountryConfig::produceConfig($this->getDBConn(), $RS["COUNTRYID"]); }
+			$aObj_Messages = array();
+	
+			if(in_array( $RS["ASSTATEID"], $aStateIDs ) == true)
+			{
+				$aObj_TransactionLogs[] = new TransactionLogInfo($RS["ID"],
+						$RS["TYPEID"],
+						$RS["ORDERNO"],
+						$RS["EXTERNALID"],
+						new BasicConfig($RS["CLIENTID"], $RS["CLIENT"]),
+						new BasicConfig($RS["ACCOUNTID"], $RS["ACCOUNT"]),
+						$RS["PSPID"] > 0 ? new BasicConfig($RS["PSPID"], $RS["PSP"]) : null,
+						$RS["PAYMENTMETHODID"] > 0 ? new BasicConfig($RS["PAYMENTMETHODID"], $RS["PAYMENTMETHOD"]) : null,
+						$RS["ASSTATEID"],
+						$aObj_CountryConfigurations[$RS["COUNTRYID"] ],
+						$RS["AMOUNT"],
+						$RS["CAPTURED"],
+						$RS["POINTS"],
+						$RS["REWARD"],
+						$RS["REFUND"],
+						$RS["FEE"],
+						$RS["MODE"],
+						new CustomerInfo($RS["CUSTOMERID"], $RS["OPERATORID"]/100, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"], $RS["FIRSTNAME"] ." ". $RS["LASTNAME"], $RS["LANGUAGE"]),
+						$RS["IP"],
+						gmdate("Y-m-d H:i:sP", strtotime(substr($RS["CREATED"], 0, strpos($RS["CREATED"], ".") ) ) ),
+						$aObj_Messages);
+			}
+		}
+
+		return $aObj_TransactionLogs;
+	}
+	
+	
+	/**
 	 * Performs a capture operation on the specified transaction by invoking mPoint's "Capture" API in the "Buy" API suite.
 	 * The method may return an array containing the following status codes:
 	 * 	 1. Internal Error while Communicating with Capture Service
