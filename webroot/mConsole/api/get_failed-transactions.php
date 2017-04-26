@@ -66,6 +66,8 @@ $obj_mPoint = new mConsole($_OBJ_DB, $_OBJ_TXT);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
+	$xml = "<failed-transactions>";
+	
 	if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->{'get-failed-transactions'}->clients->{'client-id'}) > 0)
 	{
 		$clients = array();
@@ -79,10 +81,22 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 
 		$aObj_Logs = $obj_mPoint->getFailedTransactions($clients, $aStateIDs);
+		foreach ($aObj_Logs as $obj_Log)
+		{
+			$xml .= $obj_Log->toXML();
+		}
+		
+	$xml .="</failed-transactions>";
 
-		print_r($aObj_Logs);
 
 	}
 
 }
+
+header("Content-Type: text/xml; charset=\"UTF-8\"");
+
+echo '<?xml version="1.0" encoding="UTF-8"?>';
+echo '<root>';
+echo $xml;
+echo '</root>';
 ?>
