@@ -898,7 +898,7 @@ class mConsole extends Admin
 	 * @param	integer $clid 	Unique ID of the mPoint Transaction Status Codes for which the failed transaction should be found
 	 * @return	array
 	 */
-	public function getFailedTransactions(array $aClientIDs,array $aStateIDs)
+	public function getFailedTransactions(array $aClientIDs,array $aStateIDs, $start="", $end="")
 	{
 		$sql = "";
 		$states = implode(",",$aStateIDs);
@@ -919,7 +919,8 @@ class mConsole extends Admin
 				INNER JOIN (select txnid,max(stateid) as st from log.message_tbl group by txnid) p2 ON (txn.id = p2.txnid)
 				WHERE CL.id = ".$iClientID."  and p2.st IN (".$states.")";
 				
-	
+			if (empty($start) === false && strlen($start) > 0) { $sql .= " AND Txn.created >='". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."'"; }
+			if (empty($end) === false && strlen($end) > 0) { $sql .= " AND Txn.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
 			array_pop($aClientIDs);
 	
 			if(count($aClientIDs) > 0)
@@ -929,6 +930,7 @@ class mConsole extends Admin
 						";
 			}
 		}
+		if ((empty($start) === false or empty($end) === false) && (strlen($start) > 0 or strlen($end) > 0)){ $sql .="ORDER BY created DESC";}else{$sql .="ORDER BY ID DESC";}
 		//echo $sql ."\n";exit;
 		//trigger_error( $sql ."\n");
 		$res = $this->getDBConn()->query($sql);

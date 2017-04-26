@@ -57,6 +57,8 @@ $HTTP_RAW_POST_DATA .= '<mobile country-id="100">28882861</mobile>';
 $HTTP_RAW_POST_DATA .= '<email>jona@oismail.com</email>';
 $HTTP_RAW_POST_DATA .= '</customer>';
 $HTTP_RAW_POST_DATA .= '</transaction>';
+$HTTP_RAW_POST_DATA .= '<start-date>2017-01-23T00:00:00</start-date>';
+$HTTP_RAW_POST_DATA .= '<end-date>2017-01-30T00:00:00</end-date>';
 $HTTP_RAW_POST_DATA .= '</get-failed-transactions>';
 $HTTP_RAW_POST_DATA .= '</root>';
 
@@ -66,7 +68,7 @@ $obj_mPoint = new mConsole($_OBJ_DB, $_OBJ_TXT);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
-	$xml = "<failed-transactions>";
+	$xml = "<failed-transaction-response>";
 	
 	if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->{'get-failed-transactions'}->clients->{'client-id'}) > 0)
 	{
@@ -80,13 +82,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		}
 
 
-		$aObj_Logs = $obj_mPoint->getFailedTransactions($clients, $aStateIDs);
+		$aObj_Logs = $obj_mPoint->getFailedTransactions($clients, $aStateIDs, str_replace("T", " ", $obj_DOM->{'get-failed-transactions'}->{'start-date'}), str_replace("T", " ", $obj_DOM->{'get-failed-transactions'}->{'end-date'}));
 		foreach ($aObj_Logs as $obj_Log)
 		{
 			$xml .= $obj_Log->toXML();
 		}
 		
-	$xml .="</failed-transactions>";
+	$xml .="</failed-transaction-response>";
 
 
 	}
