@@ -66,11 +66,12 @@ $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 $obj_mPoint = new mConsole($_OBJ_DB, $_OBJ_TXT);
 
+$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
 	$xml = "<failed-transaction-response>";
 	
-	if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->{'get-failed-transactions'}->clients->{'client-id'}) > 0)
+	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mconsole.xsd") === true && count($obj_DOM->{'get-failed-transactions'}->clients->{'client-id'}) > 0)
 	{
 		$clients = array();
 		$aStateIDs = array('1001','1009');
@@ -91,6 +92,36 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	$xml .="</failed-transaction-response>";
 
 
+	}
+	// Error: Invalid XML Document
+	elseif ( ($obj_DOM instanceof SimpleDOMElement) === false)
+	{
+		header("HTTP/1.1 415 Unsupported Media Type");
+	
+		$xml = '<status code="415">Invalid XML Document</status>';
+	}
+	// Error: Wrong operation
+	elseif (count($obj_DOM->{'get-failed-transactions'}) == 0)
+	{
+		header("HTTP/1.1 400 Bad Request");
+	
+		$xml = '';
+		foreach ($obj_DOM->children() as $obj_Elem)
+		{
+			$xml .= '<status code="400">Wrong operation: '. $obj_Elem->getName() .'</status>';
+		}
+	}
+	// Error: Invalid Input
+	else
+	{
+		header("HTTP/1.1 400 Bad Request");
+		$aObj_Errs = libxml_get_errors();
+	
+		$xml = '';
+		for ($i=0; $i<count($aObj_Errs); $i++)
+		{
+			$xml = '<status code="400">'. htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES) .'</status>';
+		}
 	}
 
 }
