@@ -14,20 +14,14 @@
 
 // Require Global Include File
 require_once("../../inc/include.php");
-
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
-
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
-
 // Require Business logic for the Failed Transactions for Status Input
 require_once(sCLASS_PATH ."/admin.php");
-
 // Require Business logic for the mConsole Module
 require_once(sCLASS_PATH ."/mConsole.php");
-
-
 // Require data data class for Transaction Log Information
 require_once(sCLASS_PATH ."/transaction_log_info.php");
 // Require data data class for Customer Information
@@ -36,12 +30,10 @@ require_once(sCLASS_PATH ."/customer_info.php");
 require_once(sCLASS_PATH ."/message_info.php");
 // Require data data class for Information about an Amount
 require_once(sCLASS_PATH ."/amount_info.php");
-
-
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 
-$_SERVER['PHP_AUTH_USER'] = "CPMDemo";
+/*$_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -60,7 +52,7 @@ $HTTP_RAW_POST_DATA .= '</transaction>';
 $HTTP_RAW_POST_DATA .= '<start-date>2017-01-23T00:00:00</start-date>';
 $HTTP_RAW_POST_DATA .= '<end-date>2017-01-30T00:00:00</end-date>';
 $HTTP_RAW_POST_DATA .= '</get-failed-transactions>';
-$HTTP_RAW_POST_DATA .= '</root>';
+$HTTP_RAW_POST_DATA .= '</root>';*/
 
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
@@ -69,19 +61,17 @@ $obj_mPoint = new mConsole($_OBJ_DB, $_OBJ_TXT);
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
-	$xml = "<failed-transaction-response>";
+	$xml = "<failed-transactions>";
 	
 	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mconsole.xsd") === true && count($obj_DOM->{'get-failed-transactions'}->clients->{'client-id'}) > 0)
 	{
 		$clients = array();
-		$aStateIDs = array('1001','1009');
-
-
+		$aStateIDs = array(Constants::iINPUT_VALID_STATE,Constants::iPAYMENT_INIT_WITH_PSP_STATE);
+		
 		for($i = 0;$i<count($obj_DOM->{'get-failed-transactions'}->clients->{'client-id'});$i++)
 		{
 			$clients[] .= $obj_DOM->{'get-failed-transactions'}->clients->{'client-id'}[$i];
 		}
-
 
 		$aObj_Logs = $obj_mPoint->getFailedTransactions($clients, $aStateIDs, str_replace("T", " ", $obj_DOM->{'get-failed-transactions'}->{'start-date'}), str_replace("T", " ", $obj_DOM->{'get-failed-transactions'}->{'end-date'}));
 		foreach ($aObj_Logs as $obj_Log)
@@ -89,9 +79,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			$xml .= $obj_Log->toXML();
 		}
 		
-	$xml .="</failed-transaction-response>";
-
-
+	$xml .="</failed-transactions>";
 	}
 	// Error: Invalid XML Document
 	elseif ( ($obj_DOM instanceof SimpleDOMElement) === false)
@@ -123,11 +111,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			$xml = '<status code="400">'. htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES) .'</status>';
 		}
 	}
-
 }
-
 header("Content-Type: text/xml; charset=\"UTF-8\"");
-
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';
 echo $xml;
