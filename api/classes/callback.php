@@ -312,7 +312,7 @@ abstract class Callback extends EndUserAccount
 	 * @param 	SurePayConfig $$obj_SurePay SurePay Configuration Object. Default value null
 	 * @param 	integer $fee				The amount the customer will pay in fee�s for the Transaction. Default value 0
 	 */
-	public function notifyClient($sid, $pspid, $amt, $cardid=0, $cardno="", SurePayConfig &$obj_SurePay=null, $fee=0)
+	public function notifyClient($sid, $pspid, $amt,  $cardno="", $cardid=0, SurePayConfig &$obj_SurePay=null, $fee=0)
 	{		
 		/* ----- Construct Body Start ----- */
 		$sBody = "";
