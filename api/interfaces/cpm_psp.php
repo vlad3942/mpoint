@@ -421,16 +421,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				if($code == 2005)
 				{
 					$str = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>","",$obj_HTTP->getReplyBody());
-					if(strpos($str, '<root xmlns:UrlClient="clients.urlencode.Client" xmlns:XmlClient="clients.xml.Client">') !== false)
-					{
-						$str = str_replace('<root xmlns:UrlClient="clients.urlencode.Client" xmlns:XmlClient="clients.xml.Client">',"",$str);
-					}
-					else 
-					{
-						$str = str_replace("<root>","",$str);
-					}
+					$str = str_replace("<root>","",$str);
 					$code = str_replace("</root>","",$str);
 				}
+				
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 						SET pspid = ". $obj_PSPConfig->getID() . $sql."
 						WHERE id = ". $this->getTxnInfo()->getID();
