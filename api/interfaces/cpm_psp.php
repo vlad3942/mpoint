@@ -424,6 +424,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					$str = str_replace("<root>","",$str);
 					$code = str_replace("</root>","",$str);
 				}
+				
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 						SET pspid = ". $obj_PSPConfig->getID() . $sql."
 						WHERE id = ". $this->getTxnInfo()->getID();
