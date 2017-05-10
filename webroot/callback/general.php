@@ -273,8 +273,16 @@ try
   // Callback URL has been defined for Client
   if ($obj_TxnInfo->getCallbackURL() != "")
   {
-  
-  	$obj_mPoint->notifyClient($iStateID, array("transact"=>(integer) $obj_XML->callback->{'psp-config'}["id"] , "amount"=>$obj_XML->callback->transaction->amount, "card-no"=>(string)$obj_XML->callback->transaction->card->{'card-number'} ,"card-id"=>$obj_XML->callback->transaction->card["type-id"]) );
+    /*
+     * Return the success code 202 to indicate Request Accepted and
+     * the request to notify the upstream  retail system.
+    */
+      ignore_user_abort(true);
+      header("HTTP/1.1 202 Accepted");
+      header("Content-Length: 0");
+      header("Connection: Close");
+      flush();
+      $obj_mPoint->notifyClient($iStateID, array("transact"=>(integer) $obj_XML->callback->{'psp-config'}["id"] , "amount"=>$obj_XML->callback->transaction->amount, "card-no"=>(string)$obj_XML->callback->transaction->card->{'card-number'} ,"card-id"=>$obj_XML->callback->transaction->card["type-id"]) );
   }
   
  $xml = '<status code="1000">Callback Success</status>';
