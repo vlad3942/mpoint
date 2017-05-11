@@ -8,7 +8,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig);
     }
 
-	public function notifyClient($iStateId, array $vars) { parent::notifyClient($iStateId, $vars["transact"], $vars["amount"], $vars["card-id"]); }
+	public function notifyClient($iStateId, array $vars) { parent::notifyClient($iStateId, $vars["transact"], $vars["amount"], $vars["card-no"] , $vars["card-id"]); }
 
 	/**
      * Performs a capture operation with CPM PSP for the provided transaction.
@@ -432,6 +432,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					$str = str_replace("<root>","",$str);
 					$code = str_replace("</root>","",$str);
 				}
+				
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 						SET pspid = ". $obj_PSPConfig->getID() . $sql."
 						WHERE id = ". $this->getTxnInfo()->getID();

@@ -312,7 +312,7 @@ abstract class Callback extends EndUserAccount
 	 * @param 	SurePayConfig $$obj_SurePay SurePay Configuration Object. Default value null
 	 * @param 	integer $fee				The amount the customer will pay in fee�s for the Transaction. Default value 0
 	 */
-	public function notifyClient($sid, $pspid, $amt, $cardid=0, $cardno="", SurePayConfig &$obj_SurePay=null, $fee=0)
+	public function notifyClient($sid, $pspid, $amt,  $cardno="", $cardid=0, SurePayConfig &$obj_SurePay=null, $fee=0)
 	{		
 		/* ----- Construct Body Start ----- */
 		$sBody = "";
@@ -623,7 +623,9 @@ abstract class Callback extends EndUserAccount
 		case (Constants::iPUBLIC_BANK_PSP):
 			return new PublicBank($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["public-bank"]);
 		case (Constants::iALIPAY_PSP):
-			return new AliPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["alipay"]);
+	        return new AliPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["alipay"]);
+		case (Constants::iQIWI_PSP):
+			return new Qiwi($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["qiwi"]);
 		default:
 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}

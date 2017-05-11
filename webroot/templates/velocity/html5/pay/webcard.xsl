@@ -26,7 +26,7 @@
 											</xsl:choose>
 											</xsl:for-each>
 											<!-- Display payment form for other payment methods -->
-											<xsl:if test="cards/item/@id = '16' or cards/item/@id = '23' or cards/item/@id = '28' or cards/item/@id = '31' or cards/item/@id = '32'">
+											<xsl:if test="cards/item/@id = '16' or cards/item/@id = '23' or cards/item/@id = '28' or cards/item/@id = '31' or cards/item/@id = '32' or cards/item/@id = '33'">
 												<xsl:apply-templates select="cards" mode="other-wallet" />
 											</xsl:if>								
 											<!-- Display payment form for normal payment cards -->
@@ -34,6 +34,12 @@
 												<xsl:apply-templates select="cards" mode="cpm" />
 											</xsl:if>
 												<!-- Display error messages template -->
+											<xsl:if test="messages/item">
+												<xsl:apply-templates select="messages" mode="error" >
+													<xsl:with-param name="errorvalue" select="messages/item" />
+												</xsl:apply-templates>
+											</xsl:if>
+											<!-- Display error messages template -->
 											<xsl:if test="messages/item">
 												<xsl:apply-templates select="messages" mode="error" >
 													<xsl:with-param name="errorvalue" select="messages/item" />
@@ -62,7 +68,7 @@
 												<div class="modal-content">
 													<div class="modal-body">
 														<button type="button" class="bootbox-close-button close"
-															data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;"> × </button>
+															data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;"> Ã— </button>
 														<div class="bootbox-body " align="center">
 															<h3 class="text-warning"> Warning!!!</h3>
 														</div>
@@ -130,7 +136,7 @@ $(document).ready(function() {
 												<div class="modal-content">
 													<div class="modal-body">
 														<button type="button" class="bootbox-close-button close"
-															data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;"> × </button>
+															data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;"> Ã— </button>
 														<div class="bootbox-body " align="center">
 															<h3 class="text-warning"> Oops something went wrong!!!</h3>
 														</div>
@@ -711,13 +717,13 @@ $(document).ready(function() {
 											});
 										</script>
 								</xsl:when>
-								<xsl:when test="@id = '32'">
+								<xsl:when test="@id = '32' or @id = '33'">
 									<div class="col-md-12">
 										<div class="wallet-type" id="apm_{@id}" name="apm_{@id}" >
 											<div class="row" >
 											<span class="glyphicon glyphicon-chevron-right right-icon pull-icon-right" aria-hidden="true"></span>
 												<div class="col-md-12" id="card-{@id}">
-														<img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}.png" alt="AliPay" style="max-height: 60px"/>
+														<img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}.png" alt="{name}" style="max-height: 60px"/>
 												</div>
 											</div>
 										</div>
@@ -735,7 +741,32 @@ $(document).ready(function() {
 											document.forms['walletform_<xsl:value-of select="@id" />'].submit();
 										});
 									</script>
-								</xsl:when>								
+								</xsl:when>	
+								<xsl:when test="@id = '34'">
+									<div class="col-md-12">
+										<div class="wallet-type" id="apm_{@id}" name="apm_{@id}" >
+											<div class="row" >
+											<span class="glyphicon glyphicon-chevron-right right-icon pull-icon-right" aria-hidden="true"></span>
+												<div class="col-md-12" id="card-{@id}">
+														<img src="{/root/system/protocol}://{/root/system/host}/img/card_{@id}.png" alt="{name}" style="max-height: 60px"/>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="payment-form hide">
+										<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/apm.php') }" method="post">
+											<input type="hidden" name="pspid" value="{@pspid}" />
+											<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
+											<input type="hidden" name="transactionid" value="{/root/transaction/@id}" /> 
+											<input type="hidden" name="cardtype" value="{@id}" /> 												
+										</form>
+									</div>
+									<script type="text/javascript">
+										$('#apm_<xsl:value-of select="@id" />').on('click', function(e) {
+											document.forms['walletform_<xsl:value-of select="@id" />'].submit();
+										});
+									</script>
+								</xsl:when>									
 						</xsl:choose>
 					</xsl:for-each>
 				</div>

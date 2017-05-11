@@ -61,7 +61,10 @@ require_once(sCLASS_PATH ."/maybank.php");
 require_once(sCLASS_PATH ."/publicbank.php");
 // Require specific Business logic for the AliPay component
 require_once(sCLASS_PATH ."/alipay.php");
-
+// Require specific Business logic for the POLi component
+require_once(sCLASS_PATH ."/poli.php");
+// Require specific Business logic for the QIWI component
+require_once(sCLASS_PATH ."/qiwi.php");
 
 /**
  * Input XML format
@@ -270,7 +273,8 @@ try
   // Callback URL has been defined for Client
   if ($obj_TxnInfo->getCallbackURL() != "")
   {
-  	$obj_mPoint->notifyClient($iStateID, array("transact"=>$id, "amount"=>$obj_XML->callback->transaction->amount, "card-id"=>$obj_XML->callback->transaction->card["type-id"]) );
+  
+  	$obj_mPoint->notifyClient($iStateID, array("transact"=>(integer) $obj_XML->callback->{'psp-config'}["id"] , "amount"=>$obj_XML->callback->transaction->amount, "card-no"=>(string)$obj_XML->callback->transaction->card->{'card-number'} ,"card-id"=>$obj_XML->callback->transaction->card["type-id"]) );
   }
   
  $xml = '<status code="1000">Callback Success</status>';

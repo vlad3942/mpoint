@@ -171,7 +171,7 @@ if ($payResponseCode == 200 && strlen($obj_HTTP->getReplyBody() ) > 0)
 	
 	
 		$timestamp = date("YmdHis");
-	
+		$html .= "<meta name='referrer' content='no-referrer'>";
 		$html .= "<body onload='submitForm();' >";
 		$html .= "<form name='secure_page_".$timestamp."' id='secure_page_".$timestamp."' action='".$url."' method='".$method."'>";
 	
