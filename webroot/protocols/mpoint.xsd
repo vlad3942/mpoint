@@ -84,19 +84,6 @@
 											<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
 										</xs:complexType>
 									</xs:element>
-									<xs:element name="billing-address" minOccurs="0" maxOccurs="1">
-										<xs:complexType>
-											<xs:all>
-												<xs:element name="full-name" type="xs:string"	minOccurs="0" maxOccurs="1" />
-												<xs:element name="company" type="xs:string" minOccurs="0" maxOccurs="1" />
-												<xs:element name="street" type="xs:string" minOccurs="0" maxOccurs="1" />
-												<xs:element name="state" type="xs:string" minOccurs="0" maxOccurs="1" />
-												<xs:element name="postal-code" type="xs:string" minOccurs="0" maxOccurs="1" />
-												<xs:element name="city" type="xs:string" minOccurs="0" maxOccurs="1" />
-											</xs:all>
-											<xs:attribute name="country-id" type="xs:positiveInteger" use="required" />
-										</xs:complexType>
-									</xs:element>
 								</xs:sequence>
 								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 								<xs:attribute name="store-card" type="xs:boolean" use="required" />
