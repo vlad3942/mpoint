@@ -526,7 +526,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											{
 												$xml .= trim($obj_Elem->asXML() );
 											}
-											
+											break;
 										case (Constants::iPOLI_PSP):
 											$obj_PSP = new Poli($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["poli"]);
 											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
@@ -536,7 +536,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												$xml .= trim($obj_Elem->asXML() );
 											}
 											break;											
-											
 										case (Constants::iQIWI_PSP):
 											$obj_PSP = new Qiwi($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["qiwi"]);
 											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
