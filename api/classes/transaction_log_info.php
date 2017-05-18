@@ -264,7 +264,7 @@ class TransactionLogInfo
 		if (strlen($this->_sExternalID) > 0) { $xml .= ' external-id="'. htmlspecialchars($this->_sExternalID, ENT_NOQUOTES) .'"'; }
 		$xml .= ' mode="'. $this->_iMode .'">';
 		$xml .= '<client id="'. $this->_obj_Client->getID() .'">'. htmlspecialchars($this->_obj_Client->getName(), ENT_NOQUOTES) .'</client>';
-		$xml .= '<sub-account id="'. $this->_obj_SubAccount->getID() .'">'. htmlspecialchars($this->_obj_SubAccount->getName(), ENT_NOQUOTES) .'</sub-account>';
+		$xml .= $this->_getSubAccountXML();
 		if ( ($this->_obj_PSP instanceof BasicConfig) === true) { $xml .= '<payment-service-provider id="'. $this->_obj_PSP->getID() .'">'. htmlspecialchars($this->_obj_PSP->getName(), ENT_NOQUOTES) .'</payment-service-provider>'; }
 		if ( ($this->_obj_PaymentMethod instanceof BasicConfig) === true) { $xml .= '<payment-method id="'. $this->_obj_PaymentMethod->getID() .'">'. htmlspecialchars($this->_obj_PaymentMethod->getName(), ENT_NOQUOTES) .'</payment-method>'; }
 		
@@ -291,6 +291,19 @@ class TransactionLogInfo
 		$xml .= '</transaction>';
 
 		return $xml;
+	}
+	
+	private function _getSubAccountXML(){
+		
+		$sReturnString = '<sub-account id="'. $this->_obj_SubAccount->getID() .'"';
+			
+		if(($this->_obj_SubAccount instanceof AccountConfig) === true)
+		{
+			$sReturnString .= ' markup="'. $this->_obj_SubAccount->getMarkupLanguage().'"';
+		}
+		$sReturnString .= '>'. htmlspecialchars($this->_obj_SubAccount->getName(), ENT_NOQUOTES) .'</sub-account>';
+		
+		return $sReturnString;
 	}
 }
 ?>
