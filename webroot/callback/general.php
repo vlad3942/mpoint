@@ -128,7 +128,8 @@ try
 		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $obj_XML->callback->transaction->card->token);
 
 		
-		$sExpiry =  $obj_XML->callback->transaction->card->expiry->month ."/". $obj_XML->callback->transaction->card->expiry->year;
+		$year = substr(strftime("%Y"), 0, 2);
+		$sExpiry =  $year.$obj_XML->callback->transaction->card->expiry->year ."-". $obj_XML->callback->transaction->card->expiry->month;
 		
 		$iStatus = $obj_mPoint->saveCard($obj_TxnInfo,
 										 $obj_TxnInfo->getMobile(),
