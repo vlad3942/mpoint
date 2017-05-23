@@ -117,6 +117,8 @@ try
 	$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 	$iStateID = (integer) $obj_XML->callback->status["code"];
 	
+	$year = substr(strftime("%Y"), 0, 2);
+	$sExpirydate =  $year.$obj_XML->callback->transaction->card->expiry->year ."-". $obj_XML->callback->transaction->card->expiry->month;
 	// If transaction is in Account Validated i.e 1998 state no action to be done
 	if($iAccountValidation != 1)
 	{
@@ -128,8 +130,7 @@ try
 		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $obj_XML->callback->transaction->card->token);
 
 		
-		$year = substr(strftime("%Y"), 0, 2);
-		$sExpiry =  $year.$obj_XML->callback->transaction->card->expiry->year ."-". $obj_XML->callback->transaction->card->expiry->month;
+		$sExpiry =  $obj_XML->callback->transaction->card->expiry->month ."/". $obj_XML->callback->transaction->card->expiry->year;
 		
 		$iStatus = $obj_mPoint->saveCard($obj_TxnInfo,
 										 $obj_TxnInfo->getMobile(),
@@ -283,7 +284,15 @@ try
       header("Content-Length: 0");
       header("Connection: Close");
       flush();
-      $obj_mPoint->notifyClient($iStateID, array("transact"=>(integer) $obj_XML->callback->{'psp-config'}["id"] , "amount"=>$obj_XML->callback->transaction->amount, "card-no"=>(string)$obj_XML->callback->transaction->card->{'card-number'} ,"card-id"=>$obj_XML->callback->transaction->card["type-id"]) );
+      if($iStateID == 2000)
+      {
+      	$obj_mPoint->notifyClient($iStateID, array("transact"=>(integer) $obj_XML->callback->{'psp-config'}["id"] , "amount"=>$obj_XML->callback->transaction->amount, "card-no"=>(string)$obj_XML->callback->transaction->card->{'card-number'} ,"card-id"=>$obj_XML->callback->transaction->card["type-id"],"expiry"=>$sExpirydate) );
+      }
+      else
+      {
+      	$obj_mPoint->notifyClient($iStateID, array("transact"=>(integer) $obj_XML->callback->{'psp-config'}["id"] , "amount"=>$obj_XML->callback->transaction->amount, "card-no"=>(string)$obj_XML->callback->transaction->card->{'card-number'} ,"card-id"=>$obj_XML->callback->transaction->card["type-id"]) );
+      }
+      
   }
   
  $xml = '<status code="1000">Callback Success</status>';
