@@ -174,7 +174,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 																		   (float) $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile,
 																		   "",
 																		   trim($obj_DOM->{'pay'}[$i]->{'client-info'}->email),
-																		   trim($obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}) );
+																		   trim($obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}),
+																		   $obj_DOM->{'pay'}[$i]->{'client-info'}["pushid"]);
 									}
 									$obj_TxnInfo->setAccountID($iAccountID);
 									// Update Transaction Log

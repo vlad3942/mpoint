@@ -99,3 +99,9 @@ INSERT INTO System.Country_Tbl (id, name, currency, minmob, maxmob, channel, pri
 INSERT INTO System.PricePoint_Tbl (id, countryid, amount) VALUES (-652, 652, -1);
 INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) SELECT -652, id FROM System.Card_Tbl WHERE id > 0;
 INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (652, 9, 'MMK');
+/*End Myanmar*/
+
+
+/*Pushid in Enduser Account for PayByLink*/
+ALTER TABLE enduser.account_tbl ADD COLUMN pushid character varying(100);
+/*Pushid in Enduser Account for PayByLink*/
