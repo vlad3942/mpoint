@@ -999,7 +999,7 @@ class Home extends General
 					(id, countryid, mobile, passwd, email, externalid, pushid)
 				VALUES
 					(". $RS["ID"] .", ". intval($cid) .", ". (floatval($mob) > 0 ? "'". floatval($mob) ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". (strlen($email) > 0 ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .", '". $this->getDBConn()->escStr($cr) ."', ". (strlen($pid) > 0 ? "'". $this->getDBConn()->escStr($pid) ."'" : "NULL") .")";
-		echo $sql ."\n";
+		//echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 
 		return $RS["ID"];
