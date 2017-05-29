@@ -271,6 +271,7 @@ class TxnInfo
 	 * @param 	string $addr 		Customer's Mobile Number (MSISDN)
 	 * @param 	integer $oid 		GoMobile's ID for the Customer's Mobile Network Operator
 	 * @param 	string $email 		Customer's E-Mail Address where a receipt is sent to upon successful completion of the payment transaction
+	 * @param 	string $devid 		Customer's Device id of the platform which is used for transaction
 	 * @param 	string $lurl 		Absolute URL to the Client's Logo which will be displayed on all payment pages
 	 * @param 	string $cssurl 		Absolute URL to the CSS file that should be used to customising the payment pages
 	 * @param 	string $accurl 		Absolute URL where the Customer should be returned to upon successfully completing the Transaction
@@ -293,7 +294,7 @@ class TxnInfo
 	 * @param	long $cptamt		The Full amount that has been captured for the Transaction
 	 *
 	 */
-	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="", $pspid=-1, $fee=0, $cptamt=0, $cardid = -1)
+	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="", $pspid=-1, $fee=0, $cptamt=0, $cardid = -1)
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -334,6 +335,7 @@ class TxnInfo
 		$this->_iFee = (integer) $fee;
 		$this->_lCapturedAmount = (float) $cptamt;
 		$this->_iCardID = (integer) $cardid;
+		$this->_sDevice = trim($devid);
 		
 	}
 
@@ -434,6 +436,13 @@ class TxnInfo
 	 * @return 	string
 	 */
 	public function getEMail() { return $this->_sEMail; }
+	
+	/**
+	 * Returns the Customer's Device id of the platform which is used for transaction
+	 *
+	 * @return 	string
+	 */
+	public function getDevice() { return $this->_sDevice; }
 
 	/**
 	 * Returns the Absolute URL to the Client's Logo which will be displayed on all payment pages
@@ -600,6 +609,7 @@ class TxnInfo
 	 *		<mobile>{CUSTOMER'S MSISDN WHERE SMS MESSAGE CAN BE SENT TO}</mobile>
 	 *		<operator>{GOMOBILE ID FOR THE CUSTOMER'S MOBILE NETWORK OPERATOR}</operator>
 	 * 		<email>{CUSTOMER'S E-MAIL ADDRESS WHERE RECEIPT WILL BE SENT TO}</email>
+	 * 		<device-id>{CUSTOMER'S DEVICE ID OF THE PLATFORM WHICH IS USED FOR TRANSACTION}</device-id>
 	 *		<logo>
 	 * 			<url>{ABSOLUTE URL TO THE CLIENT'S LOGO}</url>
 	 * 			<width>{WIDTH OF THE LOGO AFTER IT HAS BEEN SCALED TO FIT THE SCREENSIZE OF THE CUSTOMER'S MOBILE DEVICE}</width>
@@ -650,6 +660,7 @@ class TxnInfo
 		$xml .= '<mobile country-id="'. intval($this->_iOperatorID/100) .'">'. $this->_sMobile .'</mobile>';
 		$xml .= '<operator>'. $this->_iOperatorID .'</operator>';
 		$xml .= '<email>'. $this->_sEMail .'</email>';
+		$xml .= '<device-id>'. $this->sDevice .'</device-id>';
 		$xml .= '<logo>';
 		$xml .= '<url>'. htmlspecialchars($this->_sLogoURL, ENT_NOQUOTES) .'</url>';
 		$xml .= '<width>'. $iWidth .'</width>';
@@ -699,7 +710,7 @@ class TxnInfo
 	private static function _constProduceQuery()
 	{
 		$sql = "SELECT t.id, typeid, countryid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, extid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, iconurl, \"mode\", auto_capture, gomobileid,
-						t.clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, t.pspid, fee, captured, cardid
+						t.clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, t.pspid, fee, captured, cardid, deviceid
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl t";
 
 		return $sql;
@@ -719,7 +730,7 @@ class TxnInfo
 			$obj_ClientConfig = ClientConfig::produceConfig($obj, $RS["CLIENTID"], $RS["ACCOUNTID"], $RS["KEYWORDID"]);
 			$obj_CountryConfig = CountryConfig::produceConfig($obj, $RS["COUNTRYID"]);
 
-			$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"]);
+			$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"]);
 		}
 		return $obj_TxnInfo;
 	}
@@ -792,12 +803,13 @@ class TxnInfo
 			if (array_key_exists("reward", $misc) === false) { $misc["reward"] = -1; }
 			if (array_key_exists("extid", $misc) === false) { $misc["extid"] = -1; }
 			if (array_key_exists("email", $misc) === false) { $misc["email"] = ""; }
+			if (array_key_exists("device-id", $misc) === false) { $misc["device-id"] = ""; }
 			if (array_key_exists("accountid", $misc) === false) { $misc["accountid"] = -1; }
 			if (array_key_exists("auto-store-card", $misc) === false) { $misc["auto-store-card"] = false; }
 			if (array_key_exists("refund", $misc) === false) { $misc["refund"] = 0; }
 			if (array_key_exists("auth-url", $misc) === false) { $misc["auth-url"] = $obj->getAuthenticationURL(); }
 
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"]);
 			break;
 		case ($obj instanceof RDB):		// Instantiate from Transaction Log
 			$sql  = self::_constProduceQuery();
