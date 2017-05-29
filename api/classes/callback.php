@@ -331,6 +331,14 @@ abstract class Callback extends EndUserAccount
 		if ( strlen($this->_obj_TxnInfo->getDescription() ) > 0) { $sBody .= "&description=". urlencode($this->_obj_TxnInfo->getDescription() ); }
 		$sBody .= $this->getVariables();
 		$sBody .= "&hmac=". urlencode($this->_obj_TxnInfo->getHMAC() );
+		if($this->_obj_TxnInfo->getDevice() != '')
+		{
+		$sBody .= "&device-id=". urlencode($this->_obj_TxnInfo->getDevice() );
+		}
+		if($this->_obj_TxnInfo->getEMail() != '')
+		{
+		$sBody .= "&email=". urlencode($this->_obj_TxnInfo->getEMail() );
+		}
 		if(empty($exp)===false)
 		{
 			$sBody .= "&expiry=". $exp;
