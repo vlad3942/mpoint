@@ -257,6 +257,12 @@ class TxnInfo
 	 */
 	private $_iCardID;
 	/**
+	 * Customer's Device id of the platform which is used for transaction
+	 *
+	 * @var string
+	 */
+	private $_sDeviceID;
+	/**
 	 * Default Constructor
 	 *
 	 * @param 	integer $id 		Unique ID for the Transaction
@@ -335,7 +341,7 @@ class TxnInfo
 		$this->_iFee = (integer) $fee;
 		$this->_lCapturedAmount = (float) $cptamt;
 		$this->_iCardID = (integer) $cardid;
-		$this->_sDevice = trim($devid);
+		$this->_sDeviceID = trim($devid);
 		
 	}
 
@@ -442,7 +448,7 @@ class TxnInfo
 	 *
 	 * @return 	string
 	 */
-	public function getDevice() { return $this->_sDevice; }
+	public function getDeviceID() { return $this->_sDeviceID; }
 
 	/**
 	 * Returns the Absolute URL to the Client's Logo which will be displayed on all payment pages
@@ -660,7 +666,7 @@ class TxnInfo
 		$xml .= '<mobile country-id="'. intval($this->_iOperatorID/100) .'">'. $this->_sMobile .'</mobile>';
 		$xml .= '<operator>'. $this->_iOperatorID .'</operator>';
 		$xml .= '<email>'. $this->_sEMail .'</email>';
-		$xml .= '<device-id>'. $this->sDevice .'</device-id>';
+		$xml .= '<device-id>'. $this->_sDeviceID .'</device-id>';
 		$xml .= '<logo>';
 		$xml .= '<url>'. htmlspecialchars($this->_sLogoURL, ENT_NOQUOTES) .'</url>';
 		$xml .= '<width>'. $iWidth .'</width>';

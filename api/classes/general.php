@@ -469,7 +469,7 @@ class General
 					authurl = '". $this->getDBConn()->escStr($oTI->getAuthenticationURL() ) ."', customer_ref = '". $this->getDBConn()->escStr($oTI->getCustomerRef() ) ."',
 					gomobileid = ". $oTI->getGoMobileID() .", auto_capture = '". ($oTI->useAutoCapture() === true ? "1" : "0") ."', markup = '". $this->getDBConn()->escStr($oTI->getMarkupLanguage() ) ."',
 					description = '". $this->getDBConn()->escStr($oTI->getDescription() ) ."',
-					deviceid = '". $this->getDBConn()->escStr($oTI->getDevice()) ."'";
+					deviceid = '". $this->getDBConn()->escStr($oTI->getDeviceID()) ."'";
 		if (strlen($oTI->getIP() ) > 0) { $sql .= " , ip = '". $this->getDBConn()->escStr( $oTI->getIP() ) ."'"; }
 		if ($oTI->getAccountID() > 0) { $sql .= ", euaid = ". $oTI->getAccountID(); }
 		elseif ($oTI->getAccountID() == -1) { $sql .= ", euaid = NULL"; }
