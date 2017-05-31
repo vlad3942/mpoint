@@ -146,3 +146,8 @@ ALTER TABLE system.psp_tbl
   ADD CONSTRAINT psptoproccessingtype_fk FOREIGN KEY (system_type)
       REFERENCES system.processortype_tbl (id) MATCH SIMPLE
       ON UPDATE CASCADE ON DELETE CASCADE;
+	  
+--Add coloumn device-id in log.Transaction_tbl
+ALTER TABLE log.transaction_tbl ADD COLUMN deviceid character varying(50);	  
+	  
+	  
