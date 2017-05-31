@@ -314,8 +314,8 @@ abstract class Callback extends EndUserAccount
 	 */
 	public function notifyClient($sid, $pspid, $amt,  $cardno="", $cardid=0, $exp=null, SurePayConfig &$obj_SurePay=null, $fee=0)
 	{		
-		$DeviceID = $this->_obj_TxnInfo->getDeviceID();
-		$Email = $this->_obj_TxnInfo->getEMail();
+		$sDeviceID = $this->_obj_TxnInfo->getDeviceID();
+		$sEmail = $this->_obj_TxnInfo->getEMail();
 		/* ----- Construct Body Start ----- */
 		$sBody = "";
 		$sBody .= "mpoint-id=". $this->_obj_TxnInfo->getID();
@@ -333,13 +333,13 @@ abstract class Callback extends EndUserAccount
 		if ( strlen($this->_obj_TxnInfo->getDescription() ) > 0) { $sBody .= "&description=". urlencode($this->_obj_TxnInfo->getDescription() ); }
 		$sBody .= $this->getVariables();
 		$sBody .= "&hmac=". urlencode($this->_obj_TxnInfo->getHMAC() );
-		if(empty($DeviceID) === false)
+		if(empty($sDeviceID) === false)
 		{
-		$sBody .= "&device-id=". urlencode($DeviceID);
+		$sBody .= "&device-id=". urlencode($sDeviceID);
 		}
-		if(empty($Email) === false)
+		if(empty($sEmail) === false)
 		{
-		$sBody .= "&email=". urlencode($Email);
+		$sBody .= "&email=". urlencode($sEmail);
 		}
 		if(empty($exp)===false)
 		{
