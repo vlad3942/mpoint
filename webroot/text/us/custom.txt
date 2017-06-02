@@ -287,6 +287,8 @@ msgid @@@ Select Card - 59 @@@
 msgstr @@@ Payment method not supported. @@@
 msgid @@@ Select Card - 101 @@@
 msgstr @@@ All your stored cards have been deleted. @@@
+msgid @@@ Select Card - 502 @@@
+msgstr @@@ Authorization Failed please contact support. @@@
 msgid @@@ Select Payment Method - 99 @@@
 msgstr @@@ We're sorry but we could not complete the payment through your selected payment method. Please select another one to try again. @@@
 msgid @@@ CPM Payment - 1 @@@

@@ -8,7 +8,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig);
     }
 
-	public function notifyClient($iStateId, array $vars) { parent::notifyClient($iStateId, $vars["transact"], $vars["amount"], $vars["card-id"]); }
+	public function notifyClient($iStateId, array $vars) { parent::notifyClient($iStateId, $vars["transact"], $vars["amount"], $vars["card-no"] , $vars["card-id"], $vars["expiry"]); }
 
 	/**
      * Performs a capture operation with CPM PSP for the provided transaction.
@@ -302,7 +302,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		else { throw new UnexpectedValueException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 	}
 
-	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='')
+	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, $obj_ClientInfo = NULL)
 	{
 		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML() );
 		unset ($obj_XML->password);
@@ -326,6 +326,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			 			  <token>'.$card_token.'</token>
 			 		   </card>';
 			 }
+		}
+		if(is_null($obj_BillingAddress) == false)
+		{
+		$b .= $obj_BillingAddress->asXML();
+		}
+		if(is_null($obj_ClientInfo) == false)
+		{
+		$b .= $obj_ClientInfo->asXML();
 		}
 		$b .= '</initialize>';
 		$b .= '</root>';
@@ -424,6 +432,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					$str = str_replace("<root>","",$str);
 					$code = str_replace("</root>","",$str);
 				}
+				
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 						SET pspid = ". $obj_PSPConfig->getID() . $sql."
 						WHERE id = ". $this->getTxnInfo()->getID();
@@ -463,6 +472,13 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		{
 			$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
 			if (isset($obj_XML->voucher->status["code"]) === true && strlen($obj_XML->voucher->status["code"]) > 0) { $code = (string)$obj_XML->voucher->transaction; }
+			else { throw new mPointException("Invalid response from voucher issuer: ". $this->getPSPConfig()->getName() .", Body: ". $obj_HTTP->getReplyBody(), $code); }
+		}
+		else if ($code == 400)
+		{
+			$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
+				
+			if (isset($obj_XML->voucher->status["code"]) === true && strlen($obj_XML->voucher->status["code"]) > 0) {  throw new UnexpectedValueException("Redeem failed in validation", (integer) $obj_XML->voucher->status["code"] ); }
 			else { throw new mPointException("Invalid response from voucher issuer: ". $this->getPSPConfig()->getName() .", Body: ". $obj_HTTP->getReplyBody(), $code); }
 		}
 		else if ($code == 402) { throw new UnexpectedValueException("Insufficient balance on voucher", 43); }

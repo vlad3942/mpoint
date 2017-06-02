@@ -520,6 +520,36 @@ abstract class Constants
 	const i2C2P_PSP = 26;
 	
 	/**
+	 * Unique ID for the Payment Service Provider: MayBank
+	 *
+	 */
+	const iMAYBANK_PSP = 27;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: Public Bank
+	 *
+	 */
+	const iPUBLIC_BANK_PSP = 28;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: AliPay
+	 *
+	 */
+	const iALIPAY_PSP = 30;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: POLi
+	 *
+	 */
+	const iPOLI_PSP = 32;
+	/**
+	 * Unique ID for the Payment Service Provider: Qiwi
+	 *
+	 */
+	const iQIWI_PSP = 31;
+	
+	
+	/**
 	 * Unique ID for the Payment Service Provider: Android Pay
 	 *
 	 */
@@ -687,6 +717,21 @@ abstract class Constants
 	 *
 	 */
 	const iSADAD = 31;
+	/**
+	 * Unique Card ID for transaction's made using AliPay
+	 *
+	 */
+	const iALIPAY_WALLET = 32;
+	/**
+	 * Unique Card ID for transaction's made using POLi
+	 *
+	 */
+	const iPOLI_WALLET = 34;
+	/**
+	 * Unique Card ID for transaction's made using Qiwi
+	 *
+	 */
+	const iQIWI_WALLET = 33;	
 	
 	/**
 	 * Unique Fee Type ID for Top-Ups

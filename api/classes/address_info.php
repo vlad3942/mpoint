@@ -172,8 +172,8 @@ class AddressInfo
 		
 			    
 			return new AddressInfo($RS["ID"], $RS["NAME"],$RS["STREET"], $RS["STREET2"], $RS["CITY"], $RS["STATE"],
-					$RS["COUNTRY"], $RS["ZIP"], $RS["REFERENCE_ID"], $RS["REFERENCE_TYPE"]);
-			     	
+					$RS["ZIP"], $RS["COUNTRY"], $RS["REFERENCE_ID"], $RS["REFERENCE_TYPE"]);
+			 
 		}
 		else { return null; }
 	}

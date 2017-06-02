@@ -15,7 +15,7 @@
  * @subpackage MobileWeb
  * @version 1.10
  */
-
+$_REQUEST["language"] = "us";
 // Require Global Include File
 require_once ("../inc/include.php");
 
