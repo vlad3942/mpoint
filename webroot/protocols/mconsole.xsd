@@ -15,6 +15,7 @@
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="search-transaction-logs" type="transaction-search-request" />
+				<xs:element name="get-failed-transactions" type="failed-transaction-search-request"/>
 				<xs:element name="search" type="transaction-search-request" />
 				<xs:element name="void" type="transaction-state-changes-request" />
 				<xs:element name="capture" type="transaction-state-changes-request" />
