@@ -28,8 +28,7 @@
 											</xsl:choose>
 											</xsl:for-each>
 											<!-- Display payment form for other payment methods -->
-											
-											<xsl:if test="cards/item/@id = '16' or cards/item/@id = '23' or cards/item/@id = '28' or cards/item/@id = '31' or cards/item/@id = '32' or cards/item/@id = '34'">
+											<xsl:if test="cards/item/@id = '16' or cards/item/@id = '23' or cards/item/@id = '28' or cards/item/@id = '31' or cards/item/@id = '32' or cards/item/@id = '33' or cards/item/@id = '34'">
 												<xsl:apply-templates select="cards" mode="other-wallet" />
 											</xsl:if>						
 													
@@ -727,7 +726,7 @@ $(document).ready(function() {
 											});
 										</script>
 								</xsl:when>
-								<xsl:when test="@id = '32' or @id = '34'">
+								<xsl:when test="@id = '32' or @id = '33' or @id = '34'">
 									<div class="col-md-12">
 										<div class="wallet-type" id="apm_{@id}" name="apm_{@id}" >
 											<div class="row" >
@@ -751,7 +750,7 @@ $(document).ready(function() {
 											document.forms['walletform_<xsl:value-of select="@id" />'].submit();
 										});
 									</script>
-								</xsl:when>								
+								</xsl:when>							
 						</xsl:choose>
 					</xsl:for-each>
 				</div>

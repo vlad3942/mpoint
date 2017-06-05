@@ -680,6 +680,96 @@
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
+	<xs:complexType name="failed-transaction-search-request">
+			<xs:annotation>
+				<xs:documentation>
+					Specifies the criteria for executing a transaction
+					search for failed transactions
+				</xs:documentation>
+			</xs:annotation>
+			<xs:all>
+				<xs:element name="clients" minOccurs="1" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="client-id" minOccurs="1" maxOccurs="unbounded">
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="transaction" minOccurs="0" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>
+							Specifies the criteria for searching for one or
+							more specific transactions
+						</xs:documentation>
+					</xs:annotation>
+		
+					<xs:complexType>
+						<xs:all>
+							<xs:element name="customer" minOccurs="0" maxOccurs="1">
+								<xs:annotation>
+									<xs:documentation>
+										Specifies the criteria for searching for a
+										customer's transactions
+									</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+								<xs:sequence>
+									<xs:element name="mobile" type="mobile" minOccurs="0" maxOccurs="1">
+										<xs:annotation>
+											<xs:documentation>
+												The customer's mobile number, which may be obtained from one of the following record types:
+												- The customer's profile
+												- A transaction record
+												Alternatively the mobile number may be specified as a search criteria when performing one of the following operations:
+												- Transaction Search
+												- Audit Log Search
+											</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="email" type="xs:string" minOccurs="0" maxOccurs="1">
+										<xs:annotation>
+											<xs:documentation>
+												The customer's email address, which may be obtained from one of the following record types:
+												- The customer's profile
+												- A transaction record
+												Alternatively the email address may be specified as a search criteria when performing one of the following operations:
+												- Transaction Search
+												- Audit Log Search
+											</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+								<xs:attribute name="country-id" type="xs:positiveInteger" use="optional">
+									<xs:annotation>
+										<xs:documentation>
+											mPoint's unique ID for the country that the Payment Service Provider uses the currency in
+										</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+						</xs:all>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="start-date" type="xs:dateTime" minOccurs="0" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>
+							Specifies the start date / time for the
+							transaction that should be found
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="end-date" type="xs:dateTime" minOccurs="0" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>
+							Specifies the end date / time for the transaction
+							that should be found
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
 	<xs:complexType name="transaction-search-response">
 		<xs:annotation>
 			<xs:documentation>
