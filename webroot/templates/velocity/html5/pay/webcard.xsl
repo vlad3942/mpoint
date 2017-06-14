@@ -193,7 +193,7 @@ $(document).ready(function() {
 								<xsl:if test="client/@id = /root/client-config/@id">
 									<div class="saved-card col-md-12  " style="border:none;box-shadow:none;">
 										<div id="modalshow{@id}" class="col-md-12 saved-card">
-											<img src="/css/swag/img/visa-card.png" class="card-type"
+											<img src="/css/swag/img/card_{@type-id}.png" class="card-type" 
 												alt="Visa" />
 											<h4 class="red">
 												<xsl:value-of select="name" />
@@ -553,9 +553,10 @@ $(document).ready(function() {
 			.find(".more-less")
 			.toggleClass('glyphicon-plus glyphicon-minus');
 			}
-			$('.panel-group').on('hidden.bs.collapse', toggleIcon);
-			$('.panel-group').on('shown.bs.collapse', toggleIcon);
-
+			$(function() {
+				$('.panel-group').on('hidden.bs.collapse', toggleIcon);
+				$('.panel-group').on('shown.bs.collapse', toggleIcon);
+			});
 		</script>
 
 
@@ -582,14 +583,14 @@ $(document).ready(function() {
 							<xsl:choose>					
 								<xsl:when test="@id = '28'">
 									<div class="col-md-12">
-										<div class="wallet-type" id="walletvisa_{@id}" onClick="document.forms['walletform_{@id}'].submit();">
+										<div class="wallet-type" id="walletvisa_{@id}" >
 
 											<div class="row" data-toggle="modal" data-target=".login-wallet">
 												<div class="payment-paypal-form payment-form">
 													<form action="{func:constLink('/pay/sys/apm.php') }" method="POST" name="walletform_{@id}" id="walletform_{@id}">
 															<span class="glyphicon glyphicon-chevron-right right-icon pull-icon-right"
 																	aria-hidden="true"></span>
-															<div class="col-md-12" id="card-{@id}">
+															<div class="col-md-12" id="card-{@id}" onClick="document.forms['walletform_{@id}'].submit();">
 																<!-- <img src="/css/swag/img/paypal.png" class="wallet-img" 
 																	alt="Paypal"/> -->
 																	<img src="{/root/system/protocol}://{/root/system/host}/img/card_28.png" alt="PayPal" style="max-height: 80px"/>
