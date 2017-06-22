@@ -910,7 +910,6 @@ class Validate extends ValidateBase
 		elseif (strtolower($mrk) == "app") { $code = 10; }
 		elseif(is_dir($_SERVER['DOCUMENT_ROOT'] ."/templates/". sTEMPLATE ."/". $mrk) === false) { $code = 2; }	// Markup Language doesn't exist in Template
 		else { $code = 10; }								// Success
-
 		return $code;
 	}
 

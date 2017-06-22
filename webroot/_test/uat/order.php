@@ -1,5 +1,5 @@
 <?php
-require_once ("../../inc/include.php");
+require_once ("include.php");
 
 header ( 'Content-Type: text/html; charset="UTF-8"' );
 
@@ -130,7 +130,7 @@ if (! empty ( $_REQUEST )) {
 		if (empty($Ccountry) == false)
 			$urls ["Cancel"] = $obj_ClientConfig->getCancelURL();
 		else
-			$urls ["Cancel"] = "http://" . $_SERVER ["HTTP_HOST"] . "/_test/uat/addDetail.php";
+			$urls ["Cancel"] = "http://" . $_SERVER ["HTTP_HOST"] . "/addDetail.php";
 	}
 	
 	$fromh = "";

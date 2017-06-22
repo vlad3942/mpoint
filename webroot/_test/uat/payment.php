@@ -12,7 +12,7 @@
  */
 
 // Require Global Include File
-require_once("../inc/include.php");
+require_once("/include.php");
 
 // Require the PHP API for handling the connection to GoMobile
 require_once(sAPI_CLASS_PATH ."/gomobile.php");

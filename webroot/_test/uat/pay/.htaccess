@@ -1,0 +1,2 @@
+RewriteEngine on
+RewriteRule ^([^/\.]+)/?$ /overview.php?checksum=$1 [L]
