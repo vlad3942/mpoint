@@ -1,6 +1,6 @@
 <?php
 // Require Global Include File
-require_once("/include.php");
+require_once("../../include.php");
 
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 
@@ -167,8 +167,9 @@ if (count($aMsgCds) == 0)
 						    </client-info>
 						</pay>
 					</root>';
-			
 
+            $aURLInfo = parse_url($_SESSION['obj_TxnInfo']->getClientConfig()->getMESBURL() );
+            $aHTTP_CONN_INFO["mesb"]["host"]=$aURLInfo["host"];
 			$aHTTP_CONN_INFO["mesb"]["path"] = "/mpoint/pay";
 			$aHTTP_CONN_INFO["mesb"]["username"] = $_SESSION['obj_TxnInfo']->getClientConfig()->getUsername();
 			$aHTTP_CONN_INFO["mesb"]["password"] = $_SESSION['obj_TxnInfo']->getClientConfig()->getPassword();
@@ -197,6 +198,8 @@ if (count($aMsgCds) == 0)
 	
 		if($payResponseCode == 200)
 		{
+            $aURLInfo = parse_url($_SESSION['obj_TxnInfo']->getClientConfig()->getMESBURL() );
+            $aHTTP_CONN_INFO["mesb"]["host"]=$aURLInfo["host"];
 			$aHTTP_CONN_INFO["mesb"]["path"] = "/mpoint/authorize-payment";
 			$aHTTP_CONN_INFO["mesb"]["username"] = $_SESSION['obj_TxnInfo']->getClientConfig()->getUsername();
 			$aHTTP_CONN_INFO["mesb"]["password"] = $_SESSION['obj_TxnInfo']->getClientConfig()->getPassword();
@@ -427,8 +430,8 @@ if (count($aMsgCds) == 0)
 				if(empty($html) == false)
 				{
 					$file_name = "secure_page_".$timestamp.".html";
-					file_put_contents($_SERVER['DOCUMENT_ROOT'] ."/_test/securepages/".$file_name, $html);
-					$url = "http://". $_SERVER['SERVER_NAME'] ."/_test/securepages/".$file_name;
+					file_put_contents($_SERVER['DOCUMENT_ROOT'] ."/securepages/".$file_name, $html);
+					$url = "http://". $_SERVER['SERVER_NAME'] ."/securepages/".$file_name;
 				}
 			}
 			

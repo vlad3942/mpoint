@@ -1,6 +1,6 @@
 <?php
 // Require Global Include File
-require_once("/include.php");
+require_once("/../../include.php");
 
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 
