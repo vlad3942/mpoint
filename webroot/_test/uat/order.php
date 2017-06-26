@@ -1,5 +1,5 @@
 <?php
-require_once ("../../inc/include.php");
+require_once ("include.php");
 
 header ( 'Content-Type: text/html; charset="UTF-8"' );
 
@@ -130,7 +130,7 @@ if (! empty ( $_REQUEST )) {
 		if (empty($Ccountry) == false)
 			$urls ["Cancel"] = $obj_ClientConfig->getCancelURL();
 		else
-			$urls ["Cancel"] = "http://" . $_SERVER ["HTTP_HOST"] . "/_test/uat/addDetail.php";
+			$urls ["Cancel"] = "https://" . $_SERVER ["HTTP_HOST"] . "/addDetail.php";
 	}
 	
 	$fromh = "";
@@ -188,8 +188,8 @@ if (! empty ( $_REQUEST )) {
 <title>Cart Screen</title>
 
 <!-- Bootstrap -->
-<link href="css/bootstrap.min.css" rel="stylesheet">
-<link href="css/style.css" rel="stylesheet">
+<link href="css/bootstrap/bootstrap.min.css" rel="stylesheet">
+<link href="css/css/style.css" rel="stylesheet">
 
 
 <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700"
@@ -198,7 +198,7 @@ if (! empty ( $_REQUEST )) {
 <body>
 
 	<section>
-		<form action="http://<?= $_SERVER['HTTP_HOST']; ?>/buy/web.php"
+		<form action="https://<?= $_SERVER['HTTP_HOST']; ?>/buy/web.php"
 			method="post">
 			<table>
 				<!--<tr><td></td></tr>-->
@@ -259,7 +259,7 @@ if (! empty ( $_REQUEST )) {
 			<div class="container main">
 				<div class="row">
 					<div class="col-md-3">
-						<a href="" class="logo"><img src="img/logo.jpg"
+						<a href="" class="logo"><img src="css/img/logo.jpg"
 							alt="CellPoint Mobile" /></a>
 					</div>
 					<div class="col-md-9 text-right">
@@ -428,7 +428,7 @@ if (! empty ( $_REQUEST )) {
 				<div class="modal-body">
 					<button type="button" class="bootbox-close-button close"
 						data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;">
-						×</button>
+						Ã—</button>
 					<div class="bootbox-body " align="center">
 						<h3 class="text-warning">Warning!!!</h3>
 					</div>

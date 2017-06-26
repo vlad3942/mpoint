@@ -426,14 +426,14 @@ class General
 		if(php_sapi_name() == "cli")
 		{
 			$ip = gethostbyname(gethostname());
-		} else if(isset($_SERVER['REMOTE_ADDR']) == true)
-		{ 
-			$ip = $_SERVER['REMOTE_ADDR']; 
-		} else if (array_key_exists("HTTP_X_FORWARDED_FOR", $_SERVER) === true) 
-		{ 
-			$ip = $_SERVER['HTTP_X_FORWARDED_FOR']; 
-		}
-		
+		}  else if (array_key_exists("HTTP_X_FORWARDED_FOR", $_SERVER) === true)
+		{
+			$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		}else if(isset($_SERVER['REMOTE_ADDR']) == true)
+        {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+
 		$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 					(id, typeid, clientid, accountid, countryid, keywordid, \"mode\", ip)
 				VALUES
