@@ -183,11 +183,18 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 	// Success: Input Valid
 	if (count ( $aMsgCds ) == 0) {
 		try {
+            if (array_key_exists("HTTP_X_FORWARDED_FOR", $_SERVER) === true)
+            {
+                $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            }else if(isset($_SERVER['REMOTE_ADDR']) == true)
+            {
+                $ip = $_SERVER['REMOTE_ADDR'];
+            }
 			// Update Transaction State
 			$_REQUEST ['typeid'] = Constants::iPURCHASE_VIA_WEB;
 			$_REQUEST ['gomobileid'] = - 1;
 			$_REQUEST ['description'] = "";
-			$_REQUEST ['ip'] = $_SERVER ['REMOTE_ADDR'];
+			$_REQUEST ['ip'] =$id;
 			$_REQUEST ['amount'] = $_REQUEST ['amount'] * 100;
 			$obj_mPoint->newMessage ( $iTxnID, Constants::iINPUT_VALID_STATE, var_export ( $_REQUEST, true ) );
 			if (array_key_exists ( "auth-token", $_REQUEST ) === true) {

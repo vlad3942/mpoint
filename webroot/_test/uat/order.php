@@ -130,7 +130,7 @@ if (! empty ( $_REQUEST )) {
 		if (empty($Ccountry) == false)
 			$urls ["Cancel"] = $obj_ClientConfig->getCancelURL();
 		else
-			$urls ["Cancel"] = "http://" . $_SERVER ["HTTP_HOST"] . "/addDetail.php";
+			$urls ["Cancel"] = "https://" . $_SERVER ["HTTP_HOST"] . "/addDetail.php";
 	}
 	
 	$fromh = "";
@@ -198,7 +198,7 @@ if (! empty ( $_REQUEST )) {
 <body>
 
 	<section>
-		<form action="http://<?= $_SERVER['HTTP_HOST']; ?>/buy/web.php"
+		<form action="https://<?= $_SERVER['HTTP_HOST']; ?>/buy/web.php"
 			method="post">
 			<table>
 				<!--<tr><td></td></tr>-->

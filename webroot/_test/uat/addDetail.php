@@ -38,7 +38,7 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
 </head>
     <body style="background-color:#fff;text-align:center">
 
-<form class="form-horizontal" action="http://<?= $_SERVER['HTTP_HOST']; ?>/order.php" method="post">
+<form class="form-horizontal" action="https://<?= $_SERVER['HTTP_HOST']; ?>/order.php" method="post">
 <fieldset>
 
 <!-- Form Name -->
