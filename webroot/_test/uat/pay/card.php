@@ -13,7 +13,7 @@
  */
 
 // Require Global Include File
-require_once ("/../include.php");
+require_once ("../include.php");
 
 $xmlData = '<title>' . $_OBJ_TXT->_ ( "Select Payment Method" ) . '</title>';
 $xmlData .= '<labels>

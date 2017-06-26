@@ -14,7 +14,7 @@
  */
 
 // Require Global Include File
-require_once ("/../include.php");
+require_once ("../include.php");
 
 // Require Business logic for the Payment Accepted component
 require_once (sCLASS_PATH . "/accept.php");

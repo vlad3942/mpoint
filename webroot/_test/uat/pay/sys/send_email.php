@@ -12,7 +12,7 @@
  */
 
 // Require Global Include File
-require_once("/include.php");
+require_once("../../include.php");
 
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");

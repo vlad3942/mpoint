@@ -11,7 +11,7 @@
  */
 
 // Require Global Include File
-require_once("/include.php");
+require_once("../include.php");
 
 $xmlData = '<title>'. $_OBJ_TXT->_("Loading..") .'</title>';
 $xmlData .= '<post>'. json_encode($_POST) .'</post>';
