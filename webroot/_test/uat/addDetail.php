@@ -217,6 +217,21 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
   </div>
 </div>
 
+
+    <div class="form-group">
+        <label class="col-md-4 control-label" for="accept-url">Accept Url</label>
+        <div class="col-md-4">
+            <input id="accept-url" name="accept-url" type="text" placeholder="" class="form-control input-md" >
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-4 control-label" for="cancel-url">Cancel Url</label>
+        <div class="col-md-4">
+            <input id="cancel-url" name="cancel-url" type="text" placeholder="" class="form-control input-md" >
+        </div>
+    </div>
+
 <div class="form-group">
   <label class="col-md-4 control-label" for="submit"></label>
   <div class="col-md-4">
