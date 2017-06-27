@@ -198,7 +198,7 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 			$_REQUEST ['typeid'] = Constants::iPURCHASE_VIA_WEB;
 			$_REQUEST ['gomobileid'] = - 1;
 			$_REQUEST ['description'] = "";
-			$_REQUEST ['ip'] =$id;
+			$_REQUEST ['ip'] =$ip;
 			$_REQUEST ['amount'] = $_REQUEST ['amount'] * 100;
 			$obj_mPoint->newMessage ( $iTxnID, Constants::iINPUT_VALID_STATE, var_export ( $_REQUEST, true ) );
 			if (array_key_exists ( "auth-token", $_REQUEST ) === true) {
