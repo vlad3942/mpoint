@@ -92,11 +92,11 @@ header ( 'Content-Type: text/html; charset="UTF-8"' );
  */
 // $details=Array("accounts" => 'html5', "country" => 100, "clientid" => 10007, "account" => 100007, "markup" => 'html5', "amount" => 100 ,"orderid" => 'UAT-77813110' ,"mobile" => 30206172 ,"operator" => 10002 ,"email" => 'abhishek@cellpointmobile.com' ,"language" => 'gb', "auth-token" => '',"customer-ref" => 1234412);
 
-if ($_SERVER ['HTTP_REFERER']) {
+/*if ($_SERVER ['HTTP_REFERER']) {
 	$returnvalue = $_SERVER ['HTTP_REFERER'];
 } else {
 	$returnvalue = "#";
-}
+}*/
 
 if (! empty ( $_REQUEST )) {
 	function generateRandomString($length = 10) {
@@ -121,18 +121,24 @@ if (! empty ( $_REQUEST )) {
 	$email = $_REQUEST ['email'];
 	$flightno = $_REQUEST ['FN'];
 	$from = $_REQUEST ['from'];
-	
-	$Ccountry = ClientConfig::produceConfig ( $_OBJ_DB, $clientidd );
-	
-	if (is_object ( $obj_ClientConfig )) {
-		
-		$Ccountry = $obj_ClientConfig->getCancelURL();
-		if (empty($Ccountry) == false)
-			$urls ["Cancel"] = $obj_ClientConfig->getCancelURL();
-		else
-			$urls ["Cancel"] = "https://" . $_SERVER ["HTTP_HOST"] . "/addDetail.php";
-	}
-	
+	$cancelurl = $_REQUEST['cancel-url'];
+    $accepturl = $_REQUEST['accept-url'];
+
+    if(isset($cancelurl) && !empty($cancelurl))
+        $urls ["Cancel"] = $cancelurl;
+    else {
+        $Ccountry = ClientConfig::produceConfig($_OBJ_DB, $clientidd);
+
+        if (is_object($Ccountry)) {
+
+          //  $Ccountry = $obj_ClientConfig->getCancelURL();
+
+            if (empty($Ccountry) == false)
+                $urls ["Cancel"] = $Ccountry->getCancelURL();
+            else
+                $urls ["Cancel"] = "https://" . $_SERVER ["HTTP_HOST"] . "/addDetail.php";
+        }
+    }
 	$fromh = "";
 	if (strlen ( $from ) > 2) {
 		for($i = 0; $i <= 2; $i ++) {
@@ -219,9 +225,9 @@ if (! empty ( $_REQUEST )) {
 				<tr>
 					<td><?php echo "<input name=\"account\" id=\"account\" value='".$accountidd."' type=\"hidden\" /></td>"; ?></td>
 				</tr>
-				<tr>
+				<!--<tr>
 					<td><?php echo "<input name=\"return\" id=\"return\" value='".$returnvalue."' type=\"hidden\" /></td>"; ?></td>
-				</tr>
+				</tr>-->
 				<tr>
 
 				</tr>
@@ -254,7 +260,12 @@ if (! empty ( $_REQUEST )) {
 				<tr>
 					<td><?php echo "<input name=\"markup\" id=\"markup\" value=\"html5\" type=\"hidden\" /></td>"; ?></td>
 				</tr>
-	
+                <tr>
+                    <td><?php echo "<input name=\"accept-url\" id=\"accept-url\" value='".$accepturl."' type=\"hidden\" /></td>"; ?></td>
+                </tr>
+                <tr>
+                    <td><?php echo "<input name=\"cancel-url\" id=\"cancel-url\" value='".$cancelurl."' type=\"hidden\" /></td>"; ?></td>
+                </tr>
 			</table>
 			<div class="container main">
 				<div class="row">
@@ -274,7 +285,7 @@ if (! empty ( $_REQUEST )) {
 						<div class="row">
 							<div class="col-md-12 flight">
 								<div class="row flight-main">
-									<img src="img/airplane-white.png" class="depart-img"
+									<img src="css/img/airplane-white.png" class="depart-img"
 										alt="Departure flight">
 									<div class="col-md-1">
 

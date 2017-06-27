@@ -32,9 +32,9 @@ require_once (sCLASS_PATH . "/credit_card.php");
 require_once (sCLASS_PATH . "/validate.php");
 
 session_start ();
-if ($_REQUEST ["return"]) {
+/*if ($_REQUEST ["return"]) {
 	$_SESSION ["return"] = $_REQUEST ["return"];
-}
+}*/
 $aMsgCds = array ();
 header ( 'Content-Type: text/html; charset="UTF-8"' );
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
@@ -75,10 +75,10 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 	if (array_key_exists ( "css-url", $_REQUEST ) === false) {
 		$_REQUEST ['css-url'] = $obj_ClientConfig->getCSSURL ();
 	}
-	if (array_key_exists ( "accept-url", $_REQUEST ) === false) {
+	if (array_key_exists ( "accept-url", $_REQUEST ) === false || empty($_REQUEST['accept-url'])) {
 		$_REQUEST ['accept-url'] = $obj_ClientConfig->getAcceptURL ();
 	}
-	if (array_key_exists ( "cancel-url", $_REQUEST ) === false) {
+	if (array_key_exists ( "cancel-url", $_REQUEST ) === false || empty($_REQUEST['cancel-url'])) {
 		$_REQUEST ['cancel-url'] = $obj_ClientConfig->getCancelURL ();
 	}
 	if (array_key_exists ( "callback-url", $_REQUEST ) === false) {
@@ -111,7 +111,11 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 	{
 		$iTxnID = $obj_mPoint->newTransaction ( Constants::iPURCHASE_VIA_WEB );
 	}
-	
+
+    if ($_REQUEST ["cancel-url"]) {
+        $_SESSION ["cancel-url"] = $_REQUEST ["cancel-url"];
+    }
+
 	/* ========== Input Validation Start ========== */
 	if(array_key_exists("mobile", $_REQUEST) === true && empty($_REQUEST["mobile"]) == false)
 	{
