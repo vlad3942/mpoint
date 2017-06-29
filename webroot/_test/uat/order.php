@@ -112,7 +112,7 @@ if (! empty ( $_REQUEST )) {
 	$accountidd = $_REQUEST ['accountsel'];
 	$clientidd = $_REQUEST ['clientsel'];
 	$countryidd = $_REQUEST ['countrysel'];
-	$orderidd = 'UAT' . generateRandomString ();
+	$orderidd = 'UAT3006';
 	$operatoridd = $countryidd * 100;
 	$customeridd = $_REQUEST ['customerref'];
 	$mobileno = $_REQUEST ['mobile'];
@@ -123,7 +123,7 @@ if (! empty ( $_REQUEST )) {
 	$from = $_REQUEST ['from'];
 	$cancelurl = $_REQUEST['cancel-url'];
     $accepturl = $_REQUEST['accept-url'];
-
+    $hmac = $_REQUEST['hmac'];
     if(isset($cancelurl) && !empty($cancelurl))
         $urls ["Cancel"] = $cancelurl;
     else {
@@ -265,6 +265,9 @@ if (! empty ( $_REQUEST )) {
                 </tr>
                 <tr>
                     <td><?php echo "<input name=\"cancel-url\" id=\"cancel-url\" value='".$cancelurl."' type=\"hidden\" /></td>"; ?></td>
+                </tr>
+                <tr>
+                    <td><?php echo "<input name=\"hmac\" id=\"cancel-url\" value='".$hmac."' type=\"hidden\" /></td>"; ?></td>
                 </tr>
 			</table>
 			<div class="container main">
