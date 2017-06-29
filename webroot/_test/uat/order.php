@@ -112,7 +112,7 @@ if (! empty ( $_REQUEST )) {
 	$accountidd = $_REQUEST ['accountsel'];
 	$clientidd = $_REQUEST ['clientsel'];
 	$countryidd = $_REQUEST ['countrysel'];
-	$orderidd = 'UAT3006';
+	$orderidd = $_REQUEST ['order-id'];
 	$operatoridd = $countryidd * 100;
 	$customeridd = $_REQUEST ['customerref'];
 	$mobileno = $_REQUEST ['mobile'];

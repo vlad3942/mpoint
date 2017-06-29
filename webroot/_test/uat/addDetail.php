@@ -107,6 +107,15 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
 </div>
 <!-- Text input-->
 <div class="form-group">
+    <label class="col-md-4 control-label" for="order-id">OrderID</label>
+    <div class="col-md-4">
+        <input id="order-id" name="order-id" type="text" placeholder="orderID" class="form-control input-md" >
+
+    </div>
+</div>
+
+<!-- Text input-->
+<div class="form-group">
   <label class="col-md-4 control-label" for="email">Email</label>  
   <div class="col-md-4">
   <input id="email" name="email" type="text" placeholder="email" class="form-control input-md" >
