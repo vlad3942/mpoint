@@ -345,3 +345,8 @@ INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, countryid) 
 /*Pushid in Enduser Account for PayByLink*/
 ALTER TABLE enduser.account_tbl ADD COLUMN pushid character varying(100);
 /*Pushid in Enduser Account for PayByLink*/
+
+
+/*Merchant Name changed for Maybank (AMEX Implementation)*/
+UPDATE client.merchantaccount_tbl SET name='sandbox' WHERE clientid=10007 and pspid=27;
+/*Merchant Name changed for Maybank (AMEX Implementation)*/
