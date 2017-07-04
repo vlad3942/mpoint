@@ -65,10 +65,9 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 		$aMsgCds [210] = $_REQUEST ['mac'];
 	}
 
-    if (array_key_exists ( "hmac", $_REQUEST ) === true && $obj_Validator->valHPPHMAC ( $_REQUEST ['hmac'], $obj_ClientConfig, $_REQUEST["mobile"], $_REQUEST ['country'], $_REQUEST ['email'], $_REQUEST ['orderid'], $_REQUEST["amount"], $_REQUEST ['country']) != 10) {
-        $aMsgCds [220] = $_REQUEST ['hmac'];
+    if (isset ( $_REQUEST["hmac"])  === true && (empty( $_REQUEST["hmac"]) === false ) && $obj_Validator->valHPPHMAC ( $_REQUEST ['hmac'], $obj_ClientConfig, $_REQUEST["mobile"], $_REQUEST ['country'], $_REQUEST ['email'], $_REQUEST ['orderid'], $_REQUEST["amount"], $_REQUEST ['country']) != 10) {
+        $aMsgCds [210] = $_REQUEST ['hmac'];
     }
-	
 	// Set Client Defaults
 	if (array_key_exists ( "operator", $_REQUEST ) === false) {
 		$_REQUEST ['operator'] = $obj_ClientConfig->getCountryConfig ()->getID () * 100;
