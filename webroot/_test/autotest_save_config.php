@@ -391,7 +391,7 @@ class AutoTest
         $b .=    '<cards>';
         $b .=     '<card id="5" psp-id="7" country-id="100">VISA</card>';
         $b .=     '<card id="6" psp-id="7" country-id="100">VISA</card>';
-        $b .=     '<card id="7" psp-id="7" country-id="100">MasterCard</card>';
+        $b .=     '<card id="7" psp-id="7" country-id="100">Mastercard</card>';
         $b .=    '</cards>';
         $b .=    '<payment-service-providers>';
         $b .=     '<payment-service-provider id="7">';
@@ -498,7 +498,7 @@ class AutoTest
         $b .=    '<keyword>EK</keyword>';
         $b .=    '<cards>';
         $b .=     '<card id="6" psp-id="7" country-id="100">VISA</card>';
-        $b .=     '<card id="7" psp-id="7" country-id="100">MasterCard</card>';
+        $b .=     '<card id="7" psp-id="7" country-id="100">Mastercard</card>';
         $b .=    '</cards>';
         $b .=    '<payment-service-providers>';
         $b .=     '<payment-service-provider id="7">';

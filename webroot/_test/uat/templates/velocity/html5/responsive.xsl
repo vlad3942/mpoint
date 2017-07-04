@@ -104,7 +104,7 @@
 		<script type="text/javascript" src="/inc/mpoint.js"></script>
 		<script type="text/javascript" src="/inc/card.js"></script>
 	</head>
-	<body>
+	<body oncontextmenu="return false">
 		<!-- <div class="header"> -->
 			<!-- Display Client Logo using the provided URL -->
 			<!-- <xsl:if test="string-length(/root/transaction/logo/url) &gt; 0">

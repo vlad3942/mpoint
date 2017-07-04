@@ -521,7 +521,19 @@ h2.sub-header {
     -webkit-transform: translateY(-14px);
 }
 
+.vertical-align {
+  min-height: 74px; /*Add a height or minimum height to the containers*/
+  position: relative;
+}
 
+.vertical-align img{
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  margin-right: auto;
+  margin-left:auto;
+}
 
 
 

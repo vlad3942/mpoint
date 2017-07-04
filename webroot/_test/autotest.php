@@ -1418,18 +1418,18 @@ $obj_AutoTest = new AutoTest($aHTTP_CONN_INFO["mesb"], $iClientID, $iAccount, $s
 		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
-		<td class="name">Save Masked MasterCard with Name</td>
-		<td><?//= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "MAST", "My MasterCard"); ?></td>
+		<td class="name">Save Masked Mastercard with Name</td>
+		<td><?//= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "MAST", "My Mastercard"); ?></td>
 		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
-		<td class="name">Save Masked MasterCard with Name and Unknown State</td>
-		<td><?//= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "MASTER", "My MasterCard", "ÆØ"); ?></td>
+		<td class="name">Save Masked Mastercard with Name and Unknown State</td>
+		<td><?//= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "MASTER", "My Mastercard", "ï¿½ï¿½"); ?></td>
 		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
-		<td class="name">Save Masked Postpay MasterCard with Name</td>
-		<td><?//= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "POSTEPAYMAST", "My PostPay MasterCard"); ?></td>
+		<td class="name">Save Masked Postpay Mastercard with Name</td>
+		<td><?//= $obj_AutoTest->saveMaskedCardTest($sAuthToken, "POSTEPAYMAST", "My PostPay Mastercard"); ?></td>
 		<td><?//= htmlspecialchars($obj_AutoTest->getDebug(), ENT_NOQUOTES); ?></td>
 	</tr>
 	<tr>
