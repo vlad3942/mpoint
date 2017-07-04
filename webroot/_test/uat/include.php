@@ -140,8 +140,8 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 		&& eregi("/pay/sys/sms.php", $_SERVER['PHP_SELF']) == false && eregi("/api/", $_SERVER['PHP_SELF']) == false)
 {
 	// Start user session
-	new Session($aDB_CONN_INFO["session"], iOUTPUT_METHOD, sERROR_LOG);
-
+//	new Session($aDB_CONN_INFO["session"], iOUTPUT_METHOD, sERROR_LOG);
+	session_start();
 	// Session object not initialized
 	if (isset($_SESSION['obj_Info']) === false)
 	{
