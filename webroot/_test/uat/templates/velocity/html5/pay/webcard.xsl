@@ -334,11 +334,13 @@ $(document).ready(function() {
 							<input type="hidden" name="pspid" value="{@pspid}" />
 							<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
 							<div class="form-group col-md-12">
+								<div class="form-group col-md-12">
 								<label for="cardholdername">
 									<xsl:value-of select="/root/labels/cardholdername" />
 								</label>
 								<input type="text" name="cardholdername" class="form-control"
 									id="card-name" placeholder="John Doe" />
+								</div>
 							</div>
 							<div class="form-group col-md-12">
 								<div class="col-md-10">

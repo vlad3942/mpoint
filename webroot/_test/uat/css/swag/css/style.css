@@ -524,6 +524,7 @@ h2.sub-header {
 .vertical-align {
   min-height: 74px; /*Add a height or minimum height to the containers*/
   position: relative;
+  display: none;
 }
 
 .vertical-align img{
