@@ -16,7 +16,7 @@ echo '<Checkout>
 	</AuthenticationOptions>
     <Card>
         <BrandId>master</BrandId>
-        <BrandName>MasterCard</BrandName>
+        <BrandName>Mastercard</BrandName>
         <AccountNumber>5435579315709649</AccountNumber>
         <BillingAddress>
             <City>Anytown</City>

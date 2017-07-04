@@ -165,9 +165,9 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 	if ($obj_Validator->valURL ( $_REQUEST ['logo-url'] ) > 1 && $obj_Validator->valURL ( $_REQUEST ['logo-url'] ) != 10) {
 		$aMsgCds [$obj_Validator->valURL ( $_REQUEST ['logo-url'] ) + 70] = $_REQUEST ['logo-url'];
 	}
-	if ($obj_Validator->valURL ( $_REQUEST ['css-url'] ) != 10) {
+	if ($obj_Validator->valURL ( $_REQUEST ['css-url'] ) > 1 && $obj_Validator->valURL ( $_REQUEST ['css-url'] ) != 10) {
 		$aMsgCds [$obj_Validator->valURL ( $_REQUEST ['css-url'] ) + 80] = $_REQUEST ['css-url'];
-	}
+	} 
 	if ($obj_Validator->valURL ( $_REQUEST ['accept-url'] ) > 1 && $obj_Validator->valURL ( $_REQUEST ['accept-url'] ) != 10) {
 		$aMsgCds [$obj_Validator->valURL ( $_REQUEST ['accept-url'] ) + 90] = $_REQUEST ['accept-url'];
 	}
