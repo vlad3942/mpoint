@@ -434,7 +434,7 @@ $(document).ready(function() {
 					format: 
 				<xsl:choose>
 					<xsl:when test="@id = 1 or @id = 3">
-						/(\d{1,4})(\d{1,6})?(\d{1,4})?/
+						/(\d{1,4})(\d{1,6})?(\d{1,5})?/
 					</xsl:when>
 					<xsl:otherwise>
 						/(\d{1,4})/g
