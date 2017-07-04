@@ -15,7 +15,7 @@
  */
 
 // Require Global Include File
-require_once("/include.php");
+require_once("../include.php");
 
 // Require Business logic for the End-User Account Component
 require_once(sCLASS_PATH ."/enduser_account.php");

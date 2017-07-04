@@ -13,7 +13,7 @@
  */
 
 // Require Global Include File
-require_once("/include.php");
+require_once("../include.php");
 
 // Require specific Business logic for the Capture component
 require_once(sCLASS_PATH ."/capture.php");

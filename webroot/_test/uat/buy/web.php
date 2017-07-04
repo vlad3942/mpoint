@@ -17,7 +17,7 @@
  */
 $_REQUEST["language"] = "us";
 // Require Global Include File
-require_once ("/../include.php");
+require_once ("../include.php");
 // Require the PHP API for handling the connection to GoMobile
 require_once (sAPI_CLASS_PATH . "/gomobile.php");
 
@@ -32,9 +32,9 @@ require_once (sCLASS_PATH . "/credit_card.php");
 require_once (sCLASS_PATH . "/validate.php");
 
 session_start ();
-if ($_REQUEST ["return"]) {
+/*if ($_REQUEST ["return"]) {
 	$_SESSION ["return"] = $_REQUEST ["return"];
-}
+}*/
 $aMsgCds = array ();
 header ( 'Content-Type: text/html; charset="UTF-8"' );
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
@@ -64,7 +64,10 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 	if (array_key_exists ( "mac", $_REQUEST ) === true && $obj_Validator->valMAC ( $_REQUEST ['mac'], $_REQUEST, $obj_ClientConfig->getPassword () ) != 10) {
 		$aMsgCds [210] = $_REQUEST ['mac'];
 	}
-	
+
+    if (isset ( $_REQUEST["hmac"])  === true && (empty( $_REQUEST["hmac"]) === false ) && $obj_Validator->valHPPHMAC ( $_REQUEST ['hmac'], $obj_ClientConfig, $_REQUEST["mobile"], $_REQUEST ['country'], $_REQUEST ['email'], $_REQUEST ['orderid'], $_REQUEST["amount"], $_REQUEST ['country']) != 10) {
+        $aMsgCds [210] = $_REQUEST ['hmac'];
+    }
 	// Set Client Defaults
 	if (array_key_exists ( "operator", $_REQUEST ) === false) {
 		$_REQUEST ['operator'] = $obj_ClientConfig->getCountryConfig ()->getID () * 100;
@@ -75,10 +78,10 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 	if (array_key_exists ( "css-url", $_REQUEST ) === false) {
 		$_REQUEST ['css-url'] = $obj_ClientConfig->getCSSURL ();
 	}
-	if (array_key_exists ( "accept-url", $_REQUEST ) === false) {
+	if (array_key_exists ( "accept-url", $_REQUEST ) === false || empty($_REQUEST['accept-url'])) {
 		$_REQUEST ['accept-url'] = $obj_ClientConfig->getAcceptURL ();
 	}
-	if (array_key_exists ( "cancel-url", $_REQUEST ) === false) {
+	if (array_key_exists ( "cancel-url", $_REQUEST ) === false || empty($_REQUEST['cancel-url'])) {
 		$_REQUEST ['cancel-url'] = $obj_ClientConfig->getCancelURL ();
 	}
 	if (array_key_exists ( "callback-url", $_REQUEST ) === false) {
@@ -111,7 +114,11 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 	{
 		$iTxnID = $obj_mPoint->newTransaction ( Constants::iPURCHASE_VIA_WEB );
 	}
-	
+
+    if ($_REQUEST ["cancel-url"]) {
+        $_SESSION ["cancel-url"] = $_REQUEST ["cancel-url"];
+    }
+
 	/* ========== Input Validation Start ========== */
 	if(array_key_exists("mobile", $_REQUEST) === true && empty($_REQUEST["mobile"]) == false)
 	{
@@ -183,11 +190,18 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 	// Success: Input Valid
 	if (count ( $aMsgCds ) == 0) {
 		try {
+            if (array_key_exists("HTTP_X_FORWARDED_FOR", $_SERVER) === true)
+            {
+                $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            }else if(isset($_SERVER['REMOTE_ADDR']) == true)
+            {
+                $ip = $_SERVER['REMOTE_ADDR'];
+            }
 			// Update Transaction State
 			$_REQUEST ['typeid'] = Constants::iPURCHASE_VIA_WEB;
 			$_REQUEST ['gomobileid'] = - 1;
 			$_REQUEST ['description'] = "";
-			$_REQUEST ['ip'] = $_SERVER ['REMOTE_ADDR'];
+			$_REQUEST ['ip'] =$ip;
 			$_REQUEST ['amount'] = $_REQUEST ['amount'] * 100;
 			$obj_mPoint->newMessage ( $iTxnID, Constants::iINPUT_VALID_STATE, var_export ( $_REQUEST, true ) );
 			if (array_key_exists ( "auth-token", $_REQUEST ) === true) {
@@ -373,14 +387,14 @@ if (array_key_exists ( 1000, $aMsgCds ) === true) {
 	if ($_SESSION ['obj_TxnInfo']->getClientConfig ()->getFlowID () == Constants::iPHYSICAL_FLOW) {
 		$_SESSION ['obj_Info']->setInfo ( "order_cost", $_SESSION ['obj_TxnInfo']->getAmount () );
 		
-		header ( "Location: /shop/delivery.php?" . session_name () . "=" . session_id () );
+		header ( "Location: /shop/delivery.php");
 	} 	// Start Payment Flow
 	else {
 		
 		if (strlen ( $_SESSION ['obj_TxnInfo']->getOrderID () ) > 0 && $obj_mPoint->orderAlreadyAuthorized ( $_SESSION ['obj_TxnInfo']->getOrderID () ) === true) {
 			$obj_mPoint->newMessage ( $_SESSION ['obj_TxnInfo']->getID (), Constants::iPAYMENT_DUPLICATED_STATE, "Order: " . $_SESSION ['obj_TxnInfo']->getOrderID () . " already authorized" );
 			
-			header ( "Location: /pay/accept.php?" . session_name () . "=" . session_id () . "&mpoint-id=" . $_SESSION ['obj_TxnInfo']->getID () );
+			header ( "Location: /pay/accept.php?mpoint-id=" . $_SESSION ['obj_TxnInfo']->getID () );
 		}		// End-User already has an account that is linked to the Client
 		elseif ($_SESSION ['obj_TxnInfo']->getAccountID () > 0) {
 			
@@ -393,14 +407,14 @@ if (array_key_exists ( 1000, $aMsgCds ) === true) {
 			 * Go to step 2: My Account
 			 */
 			if (count ( $obj_XML->xpath ( "/cards[item/@id = 11]" ) ) > 0 && (count ( $obj_XML->item ) == 1 || count ( $obj_CardsXML->xpath ( "/stored-cards/card[client/@id = " . $_SESSION ['obj_TxnInfo']->getClientConfig ()->getID () . "]" ) ) > 0 || ($_SESSION ['obj_TxnInfo']->getClientConfig ()->getStoreCard () > 3 && count ( $obj_CardsXML->card ) > 0))) {
-				header ( "Location: /pay/card.php?" . session_name () . "=" . session_id () . "&cardtype=11" );
+				header ( "Location: /pay/card.php?cardtype=11" );
 			} 			// Go to step 1: Select payment method
 			else {
-				header ( "Location: /pay/card.php?" . session_name () . "=" . session_id () );
+				header ( "Location: /pay/card.php");
 			}
 		} 		// Go to step 1: Select payment method
 		else {
-			header ( "Location: /pay/card.php?" . session_name () . "=" . session_id () );
+			header ( "Location: /pay/card.php");
 		}
 	}
 } // Error: Construct Status Page

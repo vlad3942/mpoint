@@ -12,7 +12,7 @@
  * @version 1.00
  */
 // Require Global Include File
-require_once("/include.php");
+require_once("../include.php");
 
 // Require data class for Payment Service Provider Configurations
 require_once(sCLASS_PATH ."/pspconfig.php");

@@ -18,6 +18,8 @@
 								<div class="row">
 									<div class="col-md-12">
 										<div class="panel-group" id="accordion1" role="tablist" aria-multiselectable="true">
+										<xsl:choose>
+										<xsl:when test="cards/item">
 											<xsl:for-each select="cards/item">
 											<xsl:choose>
 												<xsl:when test="@id = '11'">
@@ -28,23 +30,30 @@
 											<!-- Display payment form for other payment methods -->
 											<xsl:if test="cards/item/@id = '16' or cards/item/@id = '23' or cards/item/@id = '28' or cards/item/@id = '31' or cards/item/@id = '32' or cards/item/@id = '33' or cards/item/@id = '34'">
 												<xsl:apply-templates select="cards" mode="other-wallet" />
-											</xsl:if>								
+											</xsl:if>						
+													
 											<!-- Display payment form for normal payment cards -->
-											<xsl:if test="cards/item/@id = 1 or cards/item/@id = 2 or cards/item/@id = 3 or cards/item/@id = 5 or cards/item/@id = 6 or cards/item/@id = 7 or cards/item/@id = 8 or cards/item/@id = 9">
+											<xsl:choose>
+											<xsl:when test="cards/item/@id = 1 or cards/item/@id = 2 or cards/item/@id = 3 or cards/item/@id = 5 or cards/item/@id = 6 or cards/item/@id = 7 or cards/item/@id = 8 or cards/item/@id = 9">
 												<xsl:apply-templates select="cards" mode="cpm" />
-											</xsl:if>
+											</xsl:when>
+											<xsl:otherwise>
+												<xsl:apply-templates select="cards" mode="cpm" />
+											</xsl:otherwise>
+											</xsl:choose>
+										
+											
 												<!-- Display error messages template -->
 											<xsl:if test="messages/item">
 												<xsl:apply-templates select="messages" mode="error" >
 													<xsl:with-param name="errorvalue" select="messages/item" />
 												</xsl:apply-templates>
 											</xsl:if>
-											<!-- Display error messages template -->
-											<xsl:if test="messages/item">
-												<xsl:apply-templates select="messages" mode="error" >
-													<xsl:with-param name="errorvalue" select="messages/item" />
-												</xsl:apply-templates>
-											</xsl:if>
+											</xsl:when>
+											<xsl:otherwise>
+												<xsl:apply-templates select="cards" mode="cpm" />
+											</xsl:otherwise>
+										</xsl:choose>	
 										</div>
 
 
@@ -184,7 +193,7 @@ $(document).ready(function() {
 								<xsl:if test="client/@id = /root/client-config/@id">
 									<div class="saved-card col-md-12  " style="border:none;box-shadow:none;">
 										<div id="modalshow{@id}" class="col-md-12 saved-card">
-											<img src="/css/swag/img/visa-card.png" class="card-type"
+											<img src="/css/swag/img/card_{@type-id}.png" class="card-type" 
 												alt="Visa" />
 											<h4 class="red">
 												<xsl:value-of select="name" />
@@ -544,9 +553,10 @@ $(document).ready(function() {
 			.find(".more-less")
 			.toggleClass('glyphicon-plus glyphicon-minus');
 			}
-			$('.panel-group').on('hidden.bs.collapse', toggleIcon);
-			$('.panel-group').on('shown.bs.collapse', toggleIcon);
-
+			$(function() {
+				$('.panel-group').on('hidden.bs.collapse', toggleIcon);
+				$('.panel-group').on('shown.bs.collapse', toggleIcon);
+			});
 		</script>
 
 
@@ -573,14 +583,14 @@ $(document).ready(function() {
 							<xsl:choose>					
 								<xsl:when test="@id = '28'">
 									<div class="col-md-12">
-										<div class="wallet-type" id="walletvisa_{@id}" onClick="document.forms['walletform_{@id}'].submit();">
+										<div class="wallet-type" id="walletvisa_{@id}" >
 
 											<div class="row" data-toggle="modal" data-target=".login-wallet">
 												<div class="payment-paypal-form payment-form">
 													<form action="{func:constLink('/pay/sys/apm.php') }" method="POST" name="walletform_{@id}" id="walletform_{@id}">
 															<span class="glyphicon glyphicon-chevron-right right-icon pull-icon-right"
 																	aria-hidden="true"></span>
-															<div class="col-md-12" id="card-{@id}">
+															<div class="col-md-12" id="card-{@id}" onClick="document.forms['walletform_{@id}'].submit();">
 																<!-- <img src="/css/swag/img/paypal.png" class="wallet-img" 
 																	alt="Paypal"/> -->
 																	<img src="{/root/system/protocol}://{/root/system/host}/img/card_28.png" alt="PayPal" style="max-height: 80px"/>

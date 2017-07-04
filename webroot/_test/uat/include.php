@@ -23,11 +23,11 @@ else
 /* ========== Define System path End ========== */
 
 // Define path to the General API classes
-define("sAPI_CLASS_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/../../../../php5api/classes/");
+define("sAPI_CLASS_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/../../../php5api/classes/");
 // Define path to the General API interfaces
-define("sAPI_INTERFACE_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/../../../../php5api/interfaces/");
+define("sAPI_INTERFACE_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/../../../php5api/interfaces/");
 // Define path to the General API functions
-define("sAPI_FUNCTION_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/../../../../php5api/functions/");
+define("sAPI_FUNCTION_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/") ) ."/../../../php5api/functions/");
 
 // Define path to the System classes
 define("sCLASS_PATH", sSYSTEM_PATH ."/../../api/classes/");
@@ -70,7 +70,9 @@ require_once(sAPI_CLASS_PATH ."validate_base.php");
 
 // Require Global function file
 require_once(sAPI_FUNCTION_PATH ."global.php");
-define("sLOG_PATH", sSYSTEM_PATH ."/../../log/");
+
+//Uncomment following line if you are running hpp on localhost
+//define("sLOG_PATH", sSYSTEM_PATH ."/../../log/");
 
 // Require API for Web Session handling
 require_once(sCLASS_PATH ."websession.php");
@@ -141,8 +143,8 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 		&& eregi("/pay/sys/sms.php", $_SERVER['PHP_SELF']) == false && eregi("/api/", $_SERVER['PHP_SELF']) == false)
 {
 	// Start user session
-	new Session($aDB_CONN_INFO["session"], iOUTPUT_METHOD, sERROR_LOG);
-
+//	new Session($aDB_CONN_INFO["session"], iOUTPUT_METHOD, sERROR_LOG);
+	session_start();
 	// Session object not initialized
 	if (isset($_SESSION['obj_Info']) === false)
 	{

@@ -505,7 +505,7 @@ form.classy-form .input-group-addon {
   padding: 30px 10px 0px;
 }
 .content-wrap .saved-card img.card-type {
-  position: inherit;
+  /*position: inherit;*/
   margin-bottom: 10px;
 }
 h2.sub-header {
@@ -521,8 +521,20 @@ h2.sub-header {
     -webkit-transform: translateY(-14px);
 }
 
+.vertical-align {
+  min-height: 74px; /*Add a height or minimum height to the containers*/
+  position: relative;
+  display: none;
+}
 
-
+.vertical-align img{
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  margin-right: auto;
+  margin-left:auto;
+}
 
 
 

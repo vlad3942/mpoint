@@ -93,9 +93,9 @@ if(isset($_POST['token']) == false && isset($_POST['storedcard']) == false)
 	}
 	else 
 	{
-		$givenDateTimeStamp = strtotime(gmdate("Y-m-d H:i:sP", mktime(0, 0, 0, $_POST['expiry-month'], 01, $_POST['expiry-year'])));
-		
-		if ($givenDateTimeStamp < strtotime('today') ) 
+		$givenDateTimeStamp = strtotime(gmdate("Y-m-t H:i:sP", mktime(0, 0, 0, $_POST['expiry-month'], 01, $_POST['expiry-year'])));
+		$givenDateTimeStamp =  date("Y-m-t",$givenDateTimeStamp);
+		if (strtotime($givenDateTimeStamp) < strtotime('today') ) 
 		{ 
 			$aMsgCds[] = 20; 
 			

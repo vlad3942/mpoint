@@ -184,7 +184,7 @@ $(document).ready(function() {
 								<xsl:if test="client/@id = /root/client-config/@id">
 									<div class="saved-card col-md-12  " style="border:none;box-shadow:none;">
 										<div id="modalshow{@id}" class="col-md-12 saved-card">
-											<img src="/css/swag/img/visa-card.png" class="card-type"
+											<img src="/css/swag/img/card_{@type-id}.png" class="card-type"
 												alt="Visa" />
 											<h4 class="red">
 												<xsl:value-of select="name" />
@@ -334,19 +334,27 @@ $(document).ready(function() {
 							<input type="hidden" name="pspid" value="{@pspid}" />
 							<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
 							<div class="form-group col-md-12">
+								<div class="form-group col-md-12">
 								<label for="cardholdername">
 									<xsl:value-of select="/root/labels/cardholdername" />
 								</label>
 								<input type="text" name="cardholdername" class="form-control"
 									id="card-name" placeholder="John Doe" />
+								</div>
 							</div>
 							<div class="form-group col-md-12">
-								<label for="cardnumber">
-									<xsl:value-of select="/root/labels/cardnumber" />
-								</label>
-								<input type="tel" name="cardnumber" class="form-control cc-number"
-									autocomplete="cc-number" maxlength="23" required="required"
-									placeholder="1111 2222 3333 4444" />
+								<div class="col-md-10">
+									<label for="cardnumber">
+										<xsl:value-of select="/root/labels/cardnumber" />
+									</label>
+									<input type="tel" name="cardnumber" class="form-control cc-number"
+										   autocomplete="cc-number" maxlength="23" required="required"
+										   placeholder="1111 2222 3333 4444" />
+								</div>
+								<div class="col-md-2 vertical-align input-card-type-img-div" >
+									<img name="card-logo" src="" class="input-card-type"
+										 alt="Card" height="48"  />
+								</div>
 							</div>
 							<div class="form-group col-md-12">
 								<div class="col-md-3">
@@ -426,7 +434,7 @@ $(document).ready(function() {
 					format: 
 				<xsl:choose>
 					<xsl:when test="@id = 1 or @id = 3">
-						/(\d{1,4})(\d{1,6})?(\d{1,4})?/
+						/(\d{1,4})(\d{1,6})?(\d{1,5})?/
 					</xsl:when>
 					<xsl:otherwise>
 						/(\d{1,4})/g
@@ -503,6 +511,15 @@ $(document).ready(function() {
 			var expiryError =$('.cc-year').toggleInputError(!$.payment.validateCardExpiry($('.cc-month').val(),$('.cc-year').val()));
 			var cvcError =$('.cc-cvv').toggleInputError(!$.payment.validateCardCVC($('.cc-cvv').val(),cardType));
 			$('.cc-card-type div').attr('class', 'icon ' + cardType);
+			if(cardType===null)
+			{
+			$(".input-card-type-img-div").hide();
+			$(".input-card-type").attr("src","");
+			}
+			else{
+			$(".input-card-type").attr("src","/css/swag/img/" + cardType.replace('-',"_") +".png");
+			$(".input-card-type-img-div").show();
+			}
 			if(Boolean(cardType) != false)
 			{
 			$('input[name="cardtype"]').val(cardType.replace('card-', ''));

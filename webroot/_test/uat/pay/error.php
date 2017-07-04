@@ -8,8 +8,8 @@
   <title>Payment Status</title>
 
   <!-- Bootstrap -->
-  <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/style.css" rel="stylesheet">
+  <link href="../css/bootstrap/bootstrap.min.css" rel="stylesheet">
+  <link href="../css/css/style.css" rel="stylesheet">
 
 
   <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">

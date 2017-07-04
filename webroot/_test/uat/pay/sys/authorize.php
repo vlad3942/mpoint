@@ -147,7 +147,10 @@ if (count($aMsgCds) == 0)
 		$accountId = $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getID();
 		
 		$payResponseCode = 200;
-		
+
+        $aURLInfo = parse_url($_SESSION['obj_TxnInfo']->getClientConfig()->getMESBURL() );
+        $aHTTP_CONN_INFO["mesb"]["host"]=$aURLInfo["host"];
+
 		if(isset($_POST['store-card']) && $_POST['store-card'] == 'on')
 		{
 			
@@ -168,8 +171,7 @@ if (count($aMsgCds) == 0)
 						</pay>
 					</root>';
 
-            $aURLInfo = parse_url($_SESSION['obj_TxnInfo']->getClientConfig()->getMESBURL() );
-            $aHTTP_CONN_INFO["mesb"]["host"]=$aURLInfo["host"];
+
 			$aHTTP_CONN_INFO["mesb"]["path"] = "/mpoint/pay";
 			$aHTTP_CONN_INFO["mesb"]["username"] = $_SESSION['obj_TxnInfo']->getClientConfig()->getUsername();
 			$aHTTP_CONN_INFO["mesb"]["password"] = $_SESSION['obj_TxnInfo']->getClientConfig()->getPassword();
@@ -198,8 +200,6 @@ if (count($aMsgCds) == 0)
 	
 		if($payResponseCode == 200)
 		{
-            $aURLInfo = parse_url($_SESSION['obj_TxnInfo']->getClientConfig()->getMESBURL() );
-            $aHTTP_CONN_INFO["mesb"]["host"]=$aURLInfo["host"];
 			$aHTTP_CONN_INFO["mesb"]["path"] = "/mpoint/authorize-payment";
 			$aHTTP_CONN_INFO["mesb"]["username"] = $_SESSION['obj_TxnInfo']->getClientConfig()->getUsername();
 			$aHTTP_CONN_INFO["mesb"]["password"] = $_SESSION['obj_TxnInfo']->getClientConfig()->getPassword();
@@ -315,12 +315,12 @@ if (count($aMsgCds) == 0)
 		{
 			$code = 59;
 		
-			$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=".$code;
+			$url = "https://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=".$code;
 				
 		} 
 		else
 		{
-			$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=". $msg;
+			$url = "https://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=". $msg;
 			
 			if(array_key_exists("store-card", $_POST) == true && $_POST['store-card'] == 'on')
 			{
@@ -375,7 +375,7 @@ if (count($aMsgCds) == 0)
 					if($saveCardCode == 2 or $saveCardCode == 1) { $saveCardCode = 102; }
 				}
 				
-				$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=". $saveCardCode;
+				$url = "https://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=". $saveCardCode;
 			}
 			
 			if($code == 2005)
@@ -431,12 +431,12 @@ if (count($aMsgCds) == 0)
 				{
 					$file_name = "secure_page_".$timestamp.".html";
 					file_put_contents($_SERVER['DOCUMENT_ROOT'] ."/securepages/".$file_name, $html);
-					$url = "http://". $_SERVER['SERVER_NAME'] ."/securepages/".$file_name;
+					$url = "https://". $_SERVER['SERVER_NAME'] ."/securepages/".$file_name;
 				}
 			}
 			
 		}
-	} else { $url = "http://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=".$msg; }
+	} else { $url = "https://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=".$msg; }
 	
 	header("location: ". $url);
 	exit;
@@ -450,7 +450,7 @@ else
 		$msg .= "&msg=". $aMsgCds[$i];
 	}
 
-	header("location: http://". $_SERVER['HTTP_HOST'] ."/". $sPath . session_name() ."=". session_id() . $msg);
+	header("location: https://". $_SERVER['HTTP_HOST'] ."/". $sPath . session_name() ."=". session_id() . $msg);
 	exit;
 }
 ?>

@@ -13,7 +13,7 @@
  */
 
 // Require Global Include File
-require_once ("/../include.php");
+require_once ("../include.php");
 
 $xmlData = '<title>' . $_OBJ_TXT->_ ( "Select Payment Method" ) . '</title>';
 $xmlData .= '<labels>
@@ -28,7 +28,7 @@ $xmlData .= '<labels>
 			<savecard>' . $_OBJ_TXT->_ ( "Save card info" ) . '</savecard>
 			<cardholder>' . $_OBJ_TXT->_ ( "Card holder" ) . '</cardholder>
 			<back-button>' . $_OBJ_TXT->_ ( "back to cart" ) . '</back-button>
-			<returnurl>' . $_OBJ_TXT->_ ( $_SESSION ["return"] ) . '</returnurl>
+			<returnurl>' . $_OBJ_TXT->_ ( $_SESSION ["cancel-url"] ) . '</returnurl>
 			<password>' . $_OBJ_TXT->_ ( "Password" ) . '</password>
 			<submit>' . $_OBJ_TXT->_ ( "Complete Payment" ) . '</submit>
 			<password>' . $_OBJ_TXT->_ ( "Create Password - Help Checkout" ) . '</password>
