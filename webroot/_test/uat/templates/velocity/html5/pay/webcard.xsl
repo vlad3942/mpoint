@@ -184,7 +184,7 @@ $(document).ready(function() {
 								<xsl:if test="client/@id = /root/client-config/@id">
 									<div class="saved-card col-md-12  " style="border:none;box-shadow:none;">
 										<div id="modalshow{@id}" class="col-md-12 saved-card">
-											<img src="/css/swag/img/visa-card.png" class="card-type"
+											<img src="/css/swag/img/card_{@type-id}.png" class="card-type"
 												alt="Visa" />
 											<h4 class="red">
 												<xsl:value-of select="name" />
@@ -334,11 +334,13 @@ $(document).ready(function() {
 							<input type="hidden" name="pspid" value="{@pspid}" />
 							<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
 							<div class="form-group col-md-12">
+								<div class="form-group col-md-12">
 								<label for="cardholdername">
 									<xsl:value-of select="/root/labels/cardholdername" />
 								</label>
 								<input type="text" name="cardholdername" class="form-control"
 									id="card-name" placeholder="John Doe" />
+								</div>
 							</div>
 							<div class="form-group col-md-12">
 								<div class="col-md-10">
