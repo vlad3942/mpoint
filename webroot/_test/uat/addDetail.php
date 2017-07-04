@@ -107,6 +107,15 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
 </div>
 <!-- Text input-->
 <div class="form-group">
+    <label class="col-md-4 control-label" for="order-id">OrderID</label>
+    <div class="col-md-4">
+        <input id="order-id" name="order-id" type="text" placeholder="orderID" class="form-control input-md" >
+
+    </div>
+</div>
+
+<!-- Text input-->
+<div class="form-group">
   <label class="col-md-4 control-label" for="email">Email</label>  
   <div class="col-md-4">
   <input id="email" name="email" type="text" placeholder="email" class="form-control input-md" >
@@ -231,6 +240,13 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
             <input id="cancel-url" name="cancel-url" type="text" placeholder="" class="form-control input-md" >
         </div>
     </div>
+    
+    <div class="form-group">
+        <label class="col-md-4 control-label" for="hmac">HMAC</label>
+        <div class="col-md-4">
+            <input id="hmac" name="hmac" type="text" placeholder="" class="form-control input-md" >
+        </div>
+    </div>
 
 <div class="form-group">
   <label class="col-md-4 control-label" for="submit"></label>
@@ -265,7 +281,7 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
 			var pre = $("#premium").val();
 			
 			var totti = parseFloat(ticket) + parseFloat(excb) + parseFloat(tax) + parseFloat(fuel) + parseFloat(pre);
-			var tott = totti.toFixed(2);
+			var tott = totti;
 			  $("#total").val(tott);
 			  
 			 var tttt = $("#total").val();
