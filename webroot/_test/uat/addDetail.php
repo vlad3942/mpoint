@@ -1,5 +1,5 @@
 <?php
-require_once("../../inc/include.php");
+require_once("include.php");
 header('Content-Type: text/html; charset="UTF-8"');
 $client = array();
 $account = array();
@@ -30,15 +30,15 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
   <title>Cart Screen</title>
 
   <!-- Bootstrap -->
-  <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/style.css" rel="stylesheet">
+  <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet">
+  <link href="css/css/style.css" rel="stylesheet">
 
 
   <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet"/>
 </head>
     <body style="background-color:#fff;text-align:center">
 
-<form class="form-horizontal" action="http://<?= $_SERVER['HTTP_HOST']; ?>/_test/uat/order.php" method="post">
+<form class="form-horizontal" action="https://<?= $_SERVER['HTTP_HOST']; ?>/order.php" method="post">
 <fieldset>
 
 <!-- Form Name -->
@@ -105,6 +105,15 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
     </select>
   </div>
 </div>
+<!-- Text input-->
+<div class="form-group">
+    <label class="col-md-4 control-label" for="order-id">OrderID</label>
+    <div class="col-md-4">
+        <input id="order-id" name="order-id" type="text" placeholder="orderID" class="form-control input-md" >
+
+    </div>
+</div>
+
 <!-- Text input-->
 <div class="form-group">
   <label class="col-md-4 control-label" for="email">Email</label>  
@@ -217,6 +226,28 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
   </div>
 </div>
 
+
+    <div class="form-group">
+        <label class="col-md-4 control-label" for="accept-url">Accept Url</label>
+        <div class="col-md-4">
+            <input id="accept-url" name="accept-url" type="text" placeholder="" class="form-control input-md" >
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-4 control-label" for="cancel-url">Cancel Url</label>
+        <div class="col-md-4">
+            <input id="cancel-url" name="cancel-url" type="text" placeholder="" class="form-control input-md" >
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label class="col-md-4 control-label" for="hmac">HMAC</label>
+        <div class="col-md-4">
+            <input id="hmac" name="hmac" type="text" placeholder="" class="form-control input-md" >
+        </div>
+    </div>
+
 <div class="form-group">
   <label class="col-md-4 control-label" for="submit"></label>
   <div class="col-md-4">
@@ -250,7 +281,7 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
 			var pre = $("#premium").val();
 			
 			var totti = parseFloat(ticket) + parseFloat(excb) + parseFloat(tax) + parseFloat(fuel) + parseFloat(pre);
-			var tott = totti.toFixed(2);
+			var tott = totti;
 			  $("#total").val(tott);
 			  
 			 var tttt = $("#total").val();

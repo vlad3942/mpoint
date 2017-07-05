@@ -312,8 +312,10 @@ abstract class Callback extends EndUserAccount
 	 * @param 	SurePayConfig $$obj_SurePay SurePay Configuration Object. Default value null
 	 * @param 	integer $fee				The amount the customer will pay in fee�s for the Transaction. Default value 0
 	 */
-	public function notifyClient($sid, $pspid, $amt, $cardid=0, $cardno="", SurePayConfig &$obj_SurePay=null, $fee=0)
+	public function notifyClient($sid, $pspid, $amt,  $cardno="", $cardid=0, $exp=null, SurePayConfig &$obj_SurePay=null, $fee=0)
 	{		
+		$sDeviceID = $this->_obj_TxnInfo->getDeviceID();
+		$sEmail = $this->_obj_TxnInfo->getEMail();
 		/* ----- Construct Body Start ----- */
 		$sBody = "";
 		$sBody .= "mpoint-id=". $this->_obj_TxnInfo->getID();
@@ -331,6 +333,18 @@ abstract class Callback extends EndUserAccount
 		if ( strlen($this->_obj_TxnInfo->getDescription() ) > 0) { $sBody .= "&description=". urlencode($this->_obj_TxnInfo->getDescription() ); }
 		$sBody .= $this->getVariables();
 		$sBody .= "&hmac=". urlencode($this->_obj_TxnInfo->getHMAC() );
+		if(empty($sDeviceID) === false)
+		{
+		$sBody .= "&device-id=". urlencode($sDeviceID);
+		}
+		if(empty($sEmail) === false)
+		{
+		$sBody .= "&email=". urlencode($sEmail);
+		}
+		if(empty($exp)===false)
+		{
+			$sBody .= "&expiry=". $exp;
+		}
 		/* ----- Construct Body End ----- */
 
 		$this->performCallback($sBody, $obj_SurePay);
@@ -626,6 +640,8 @@ abstract class Callback extends EndUserAccount
 	        return new AliPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["alipay"]);
 		case (Constants::iQIWI_PSP):
 			return new Qiwi($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["qiwi"]);
+		case (Constants::iPOLI_PSP):
+			return new Poli($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["poli"]);			
 		default:
 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}

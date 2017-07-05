@@ -322,4 +322,15 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10000
 
 -- Route Qiwi Card to Qiwi with country USA
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, countryid) VALUES (10001, 33, 31, true, 200);
-/* ========== Global Configuration for Qiwi = ENDS ========== */
+/* ========== Global Configuration for Qiwi = ENDS ========== */INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (652, 9, 'MMK');
+/*End Myanmar*/
+
+
+/*Pushid in Enduser Account for PayByLink*/
+ALTER TABLE enduser.account_tbl ADD COLUMN pushid character varying(100);
+/*Pushid in Enduser Account for PayByLink*/
+
+
+/*Merchant Name changed for Maybank (AMEX Implementation)*/
+UPDATE client.merchantaccount_tbl SET name='sandbox' WHERE clientid=10007 and pspid=27;
+/*Merchant Name changed for Maybank (AMEX Implementation)*/

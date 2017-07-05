@@ -101,7 +101,11 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 	if (array_key_exists ( "country", $_REQUEST ) === true && empty ( $_REQUEST ['country'] ) == false) {
 		$_REQUEST ['country-config'] = CountryConfig::produceConfig ( $_OBJ_DB, ( integer ) $_REQUEST ['country'] );
 	}
-	
+	else
+	{
+		$aMsgCds [44] = 44;
+	}
+
 	$obj_mPoint = new MobileWeb ( $_OBJ_DB, $_OBJ_TXT, $obj_ClientConfig );
 	
 	if(array_key_exists("txnid", $_REQUEST) === true && empty($_REQUEST["txnid"]) == false)
@@ -132,6 +136,10 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 		$aMsgCds [$obj_Validator->valPrice ( $obj_ClientConfig->getMaxAmount (), $_REQUEST ['amount'] ) + 50] = $_REQUEST ['amount'];
 	}
 	}
+	else
+	{
+		$aMsgCds[51] = 51;
+	}
 	if(array_key_exists("language", $_REQUEST) === true & $_REQUEST["language"]!="")
 	{
 	if ($obj_Validator->valLanguage ( $_REQUEST ['language'] ) != 10) {
@@ -157,9 +165,9 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 	if ($obj_Validator->valURL ( $_REQUEST ['logo-url'] ) > 1 && $obj_Validator->valURL ( $_REQUEST ['logo-url'] ) != 10) {
 		$aMsgCds [$obj_Validator->valURL ( $_REQUEST ['logo-url'] ) + 70] = $_REQUEST ['logo-url'];
 	}
-	if ($obj_Validator->valURL ( $_REQUEST ['css-url'] ) != 10) {
+	if ($obj_Validator->valURL ( $_REQUEST ['css-url'] ) > 1 && $obj_Validator->valURL ( $_REQUEST ['css-url'] ) != 10) {
 		$aMsgCds [$obj_Validator->valURL ( $_REQUEST ['css-url'] ) + 80] = $_REQUEST ['css-url'];
-	}
+	} 
 	if ($obj_Validator->valURL ( $_REQUEST ['accept-url'] ) > 1 && $obj_Validator->valURL ( $_REQUEST ['accept-url'] ) != 10) {
 		$aMsgCds [$obj_Validator->valURL ( $_REQUEST ['accept-url'] ) + 90] = $_REQUEST ['accept-url'];
 	}
@@ -315,7 +323,6 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 			}
 			$_SESSION ['obj_TxnInfo'] = $obj_TxnInfo;
 			
-			$_SESSION ['obj_TxnInfo'] = $obj_TxnInfo;
 			// Associate End-User Account (if exists) with Transaction
 			/*
 			 * $iAccountID = -1;
@@ -351,10 +358,14 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 		}
 	} 	// Error: Invalid Input
 	else {
+		$aError = array_keys ( $aMsgCds );
+		$sError = implode(',', $aError);
+		header ( "Location: /pay/status.php?msg=".$sError);
 		// Log Errors
-		foreach ( $aMsgCds as $state => $debug ) {
+		/*foreach ( $aMsgCds as $state => $debug ) {
 			$obj_mPoint->newMessage ( $iTxnID, $state, $debug );
-		}
+				
+			}*/
 	}
 } // Error: Basic information is invalid
 else {
@@ -409,16 +420,8 @@ else {
 	$s .= "REQUEST: " . "\n" . var_export ( $_REQUEST, true ) . "\n";
 	$s .= "ERRORS: " . "\n" . var_export ( $aMsgCds, true ) . "\n";
 	file_put_contents ( sLOG_PATH . "/debug_" . date ( "Y-m-d" ) . ".log", $s );
-	
-	$_GET ['msg'] = array_keys ( $aMsgCds );
-	
-	$xml = '<?xml version="1.0" encoding="UTF-8"?>';
-	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/' . sTEMPLATE . '/html5/status.xsl"?>';
-	$xml .= '<root>';
-	$xml .= $obj_mPoint->getMessages ( "Status" );
-	$xml .= '</root>';
-	
-	// Display page
-	echo $xml;
+	$aError = array_keys ( $aMsgCds );
+	$sError = implode(',', $aError);
+	header ( "Location: /pay/status.php?msg=".$sError);
 }
 ?>
