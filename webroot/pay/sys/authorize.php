@@ -312,12 +312,12 @@ if (count($aMsgCds) == 0)
 		{
 			$code = 59;
 		
-			$url = "https://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=".$code;
+			$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&msg=".$code;
 				
 		} 
 		else
 		{
-			$url = "https://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=". $msg;
+			$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&msg=". $msg;
 			
 			if(array_key_exists("store-card", $_POST) == true && $_POST['store-card'] == 'on')
 			{
@@ -372,7 +372,7 @@ if (count($aMsgCds) == 0)
 					if($saveCardCode == 2 or $saveCardCode == 1) { $saveCardCode = 102; }
 				}
 				
-				$url = "https://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=". $saveCardCode;
+				$url = "http://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&msg=". $saveCardCode;
 			}
 			
 			if($code == 2005)
@@ -428,12 +428,12 @@ if (count($aMsgCds) == 0)
 				{
 					$file_name = "secure_page_".$timestamp.".html";
 					file_put_contents($_SERVER['DOCUMENT_ROOT'] ."/_test/securepages/".$file_name, $html);
-					$url = "https://". $_SERVER['SERVER_NAME'] ."/_test/securepages/".$file_name;
+					$url = "http://". $_SERVER['SERVER_NAME'] ."/_test/securepages/".$file_name;
 				}
 			}
 			
 		}
-	} else { $url = "https://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=".$msg; }
+	} else { $url = "http://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&msg=".$msg; }
 	
 	header("location: ". $url);
 	exit;
@@ -447,7 +447,7 @@ else
 		$msg .= "&msg=". $aMsgCds[$i];
 	}
 
-	header("location: https://". $_SERVER['HTTP_HOST'] ."/". $sPath . session_name() ."=". session_id() . $msg);
+	header("location: http://". $_SERVER['HTTP_HOST'] ."/". $sPath . $msg);
 	exit;
 }
 ?>
