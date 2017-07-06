@@ -72,7 +72,7 @@ require_once(sAPI_CLASS_PATH ."validate_base.php");
 require_once(sAPI_FUNCTION_PATH ."global.php");
 
 //Uncomment following line if you are running hpp on localhost
-//define("sLOG_PATH", sSYSTEM_PATH ."/../../log/");
+define("sLOG_PATH", sSYSTEM_PATH ."/../../log/");
 
 // Require API for Web Session handling
 require_once(sCLASS_PATH ."websession.php");
@@ -143,8 +143,9 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 		&& eregi("/pay/sys/sms.php", $_SERVER['PHP_SELF']) == false && eregi("/api/", $_SERVER['PHP_SELF']) == false)
 {
 	// Start user session
-//	new Session($aDB_CONN_INFO["session"], iOUTPUT_METHOD, sERROR_LOG);
+	//new Session($aDB_CONN_INFO["session"], iOUTPUT_METHOD, sERROR_LOG);
 	session_start();
+	session_regenerate_id();
 	// Session object not initialized
 	if (isset($_SESSION['obj_Info']) === false)
 	{
