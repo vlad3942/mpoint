@@ -590,6 +590,19 @@ $aHTTP_CONN_INFO["qiwi"]["paths"]["cancel"] = "/mpoint/qiwi/cancel";
 $aHTTP_CONN_INFO["qiwi"]["paths"]["callback"] = "/mpoint/qiwi/callback";
 
 /**
+ * Connection info for connecting to MobilePay Online
+ */
+$aHTTP_CONN_INFO["mobilepay-online"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["mobilepay-online"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["mobilepay-online"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["mobilepay-online"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["mobilepay-online"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["mobilepay-online"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["mobilepay-online"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["mobilepay-online"]["paths"]["initialize"] = "/mpoint/mobilepay-online/initialize";
+$aHTTP_CONN_INFO["mobilepay-online"]["paths"]["auth"] = "/mpoint/mobilepay-online/authorize-payment";
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>
