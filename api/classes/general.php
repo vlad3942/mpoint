@@ -388,9 +388,11 @@ class General
 			break;
 		}
 		$dir = str_replace("\\", "/", dirname($_SERVER['PHP_SELF']) );
+		//$protocol =  stripos($_SERVER['SERVER_PROTOCOL'],'https') === true ? 'https' : 'http';
+        $protocol = isset($_SERVER["HTTPS"]) ? 'https' : 'http';
 		if (substr($dir, -1) != "/") { $dir .= "/"; }
 		$xml = '<system>';
-		$xml .= '<protocol>http</protocol>';
+		$xml .= '<protocol>'.$protocol .'</protocol>';
 		$xml .= '<host>'. $_SERVER['HTTP_HOST'] .'</host>';
 		$xml .= '<dir>'. $dir .'</dir>';
 		$xml .= '<file>'. substr($_SERVER['PHP_SELF'], strrpos($_SERVER['PHP_SELF'], "/")+1) .'</file>';

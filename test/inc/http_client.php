@@ -941,9 +941,11 @@ class HTTPClient
 			else { $aHeaderInfo["method"] = "POST"; }
 		}
 		$aHeaderInfo["contenttype"] = $this->getConnInfo()->getContentType();
+        //$protocol =  stripos($_SERVER['SERVER_PROTOCOL'],'https') === true ? 'https' : 'http';
+        $protocol = isset($_SERVER["HTTPS"]) ? 'https' : 'http';
 		// Construct referer
-		if (isset($_SERVER['SCRIPT_NAME']) === true && isset($_SERVER['HTTP_HOST']) === true) { $aHeaderInfo["referer"] = "http://". $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME']; }
-		elseif (isset($_SERVER['HTTP_HOST']) === true) { $aHeaderInfo["referer"] = "http://". $_SERVER['HTTP_HOST'] . end(explode(" ", $_SERVER['argv'][0]) ); }
+		if (isset($_SERVER['SCRIPT_NAME']) === true && isset($_SERVER['HTTP_HOST']) === true) { $aHeaderInfo["referer"] = $protocol."://". $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME']; }
+		elseif (isset($_SERVER['HTTP_HOST']) === true) { $aHeaderInfo["referer"] = $protocol."://". $_SERVER['HTTP_HOST'] . end(explode(" ", $_SERVER['argv'][0]) ); }
 		elseif (isset($_SERVER['SCRIPT_NAME']) === true) { $aHeaderInfo["referer"] = $_SERVER['SCRIPT_NAME']; }
 		else { $aHeaderInfo["referer"] = end(explode(" ", $_SERVER['argv'][0]) ); }
 		// Calculate content length after parsing
