@@ -110,7 +110,7 @@ try {
 							$sHead = str_replace ( "mpFailureCallback", "function (data) { console.log('in FAILURE'); console.log(data); }", $sHead );
 							$sHead = str_replace ( "mpCancelCallback", "function (data) { console.log('in CANCEL'); console.log(data); }", $sHead );
 							
-							$sHead = str_replace ( "<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js'><\/script>", " ", $sHead );
+							$sHead = str_replace ( "<script type='text/javascript' src='../js/jquery.min.js'><\/script>", " ", $sHead );
 							break;
 						
 						case Constants::iVISA_CHECKOUT_WALLET :
