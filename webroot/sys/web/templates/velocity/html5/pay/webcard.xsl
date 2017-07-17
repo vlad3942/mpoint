@@ -60,7 +60,7 @@
 											</p>
 										</div>
 
-										<div id="modal-cancel" href="http://www.google.co.in"
+										<div id="modal-cancel" href="https://www.google.co.in"
 											class="modal fade" data-backdrop="static" data-keyboard="false"
 											tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
 											aria-hidden="true">

@@ -161,7 +161,7 @@ try {
 			}
 		}
 		
-		$xmlData .= $obj_mPoint->getSystemInfo ();
+		$xmlData .= $obj_mPoint->getSystemInfo ($aHTTP_CONN_INFO["hpp"]["protocol"]);
 		
 		$xmlData .= $_SESSION ['obj_TxnInfo']->getClientConfig ()->getCountryConfig ()->toXML ();
 		$xmlData .= $_SESSION ['obj_TxnInfo']->getClientConfig ()->getAccountConfig ()->toXML ();

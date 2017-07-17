@@ -12,7 +12,7 @@ $sqlcountry = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmo
 $RSCountry = $_OBJ_DB->getAllNames($sqlcountry);
 //print_r($RSCountry);
 $sqlclient = "SELECT id,concat_ws(' - ',id,name) as clientnm
-  FROM client.client_tbl ORDER BY name";
+  FROM client.client_tbl WHERE enabled = '1' ORDER BY name";
 
 $client = $_OBJ_DB->getAllNames($sqlclient);
 //print_r($client);
@@ -72,7 +72,7 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
       <option value="-1">Please Select</option>
 		<?php
 		$sqlaccount = "SELECT id,concat_ws(' - ',id,name) as accnm 
-  FROM client.account_tbl ORDER BY name ";
+  FROM client.account_tbl WHERE enabled = '1' ORDER BY name ";
 			
 		$account = $_OBJ_DB->getAllNames($sqlaccount);
 			if(empty($account) === false)
