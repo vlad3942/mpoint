@@ -18,7 +18,7 @@
 		<link href="/css/swag/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
 		<link href="/css/swag/css/style.css" type="text/css" rel="stylesheet" />
 		<!-- <link href="{/root/transaction/css-url}" type="text/css" rel="stylesheet" />-->
-		<script src="../js/jquery.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+		<script src="../js/jquery.min.js"></script>
 		<script type="text/javascript" src="../js/jquery.easing.min.js"></script>
 		<style type="text/css">
 		
