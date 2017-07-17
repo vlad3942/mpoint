@@ -144,8 +144,11 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 {
 	// Start user session
 	//new Session($aDB_CONN_INFO["session"], iOUTPUT_METHOD, sERROR_LOG);
-	session_start();
-	session_regenerate_id();
+    $sess_name = session_name();
+    if (session_start()) {
+        session_regenerate_id();
+        setcookie($sess_name, session_id(), time()+ 1200, '/', null, true, true);
+    }
 	// Session object not initialized
 	if (isset($_SESSION['obj_Info']) === false)
 	{
