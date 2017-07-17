@@ -179,7 +179,7 @@ else
 	$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/xhtml/status.xsl"?>';
 	$xml .= '<root>';
-	$xml .= $obj_mPoint->getSystemInfo();
+	$xml .= $obj_mPoint->getSystemInfo($aHTTP_CONN_INFO["hpp"]["protocol"]);
 	if (isset($obj_ClientConfig) === true)
 	{
 		$xml .= $obj_ClientConfig->toXML();

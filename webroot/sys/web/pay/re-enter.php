@@ -34,7 +34,7 @@ $xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Ge
 $xml .= '<root>';
 $xml .=  '<title>'.$_OBJ_TXT->_("Payment Already Completed").'</title>';
 	
-$xml .= $obj_mPoint->getSystemInfo(); 
+$xml .= $obj_mPoint->getSystemInfo($aHTTP_CONN_INFO["hpp"]["protocol"]);
 	
 $xml .= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML(); 
 

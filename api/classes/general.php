@@ -362,8 +362,9 @@ class General
 	 *
 	 * @return 	string
 	 */
-	public function getSystemInfo()
-	{
+    public function getSystemInfo($protocol)
+    {
+        $protocol = isset($protocol) === true ? $protocol : "http";
 		if (array_key_exists("QUERY_STRING", $_SERVER) === false) { $_SERVER['QUERY_STRING'] = ""; }
 	switch (true)
 		{
@@ -388,8 +389,6 @@ class General
 			break;
 		}
 		$dir = str_replace("\\", "/", dirname($_SERVER['PHP_SELF']) );
-		//$protocol =  stripos($_SERVER['SERVER_PROTOCOL'],'https') === true ? 'https' : 'http';
-        $protocol = isset($_SERVER["HTTPS"]) ? 'https' : 'http';
 		if (substr($dir, -1) != "/") { $dir .= "/"; }
 		$xml = '<system>';
 		$xml .= '<protocol>'.$protocol .'</protocol>';

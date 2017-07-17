@@ -659,6 +659,16 @@ $aCPM_CONN_INFO["contenttype"] = "application/x-www-form-urlencoded";
 //$aCPM_CONN_INFO["password"] = "";
 
 /**
+ *
+ *     Configuration for HPP
+ *
+ */
+
+$aHTTP_CONN_INFO["hpp"]["protocol"] = "https";
+
+
+
+/**
  * Template for website design
  */
 define("sTEMPLATE", "velocity");
