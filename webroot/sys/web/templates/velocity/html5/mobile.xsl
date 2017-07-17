@@ -17,8 +17,8 @@
 		<link href="/css/velocity/style.css" type="text/css" rel="stylesheet" />
 		<link href="/css/velocity/layout.css" type="text/css" rel="stylesheet" />
 		<link href="{/root/transaction/css-url}" type="text/css" rel="stylesheet" />
-		<script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
-		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+		<script src="../js/jquery.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.easing.min.js"></script>
 		<script>
 			(function(i, s, o, g, r, a, m)
 			{
