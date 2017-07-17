@@ -31,7 +31,7 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 <root>
 	<title><?= $_OBJ_TXT->_("Store Card"); ?></title>
 
-	<?= $obj_mPoint->getSystemInfo(); ?>
+	<?= $obj_mPoint->getSystemInfo($aHTTP_CONN_INFO["hpp"]["protocol"]); ?>
 
 	<?= $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->toXML(); ?>
 	<?= $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->toXML(); ?>

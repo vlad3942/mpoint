@@ -37,7 +37,7 @@ echo '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Gener
 <root>
 	<title><?= $_OBJ_TXT->_("Order Overview"); ?></title>
 	
-	<?= $obj_mPoint->getSystemInfo(); ?>
+	<?= $obj_mPoint->getSystemInfo($aHTTP_CONN_INFO["hpp"]["protocol"]); ?>
 	
 	<?= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML(); ?>
 	
