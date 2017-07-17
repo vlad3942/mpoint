@@ -26,7 +26,7 @@
 											</xsl:choose>
 											</xsl:for-each>
 											<!-- Display payment form for other payment methods -->
-											<xsl:if test="cards/item/@id = '16' or cards/item/@id = '23' or cards/item/@id = '28' or cards/item/@id = '31' or cards/item/@id = '32' or cards/item/@id = '33'">
+											<xsl:if test="cards/item/@id = '16' or cards/item/@id = '23' or cards/item/@id = '28' or cards/item/@id = '30' or cards/item/@id = '31' or cards/item/@id = '32' or cards/item/@id = '33'">
 												<xsl:apply-templates select="cards" mode="other-wallet" />
 											</xsl:if>								
 											<!-- Display payment form for normal payment cards -->
@@ -685,6 +685,31 @@ $(document).ready(function() {
 										$('#walletvisa_<xsl:value-of select="@id" />').on('click', function() {
 											$('img.v-button').trigger('click');
 											});
+									</script>
+								</xsl:when>
+								<xsl:when test="@id = '30'">
+									<div class="col-md-12">
+										<div class="wallet-type" id="apm_{@id}" name="apm_{@id}" >
+											<div class="row" data-toggle="modal" data-target=".login-wallet">
+												<span class="glyphicon glyphicon-chevron-right right-icon pull-icon-right" aria-hidden="true"></span>
+												<div class="col-md-12" id="card-{@id}">
+													<img src="{/root/system/protocol}://{/root/system/host}/img/card_30.png" alt="MobilePay-Online" style="max-height: 80px"/>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="payment-form hide">
+										<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/apm.php') }" method="post">
+											<input type="hidden" name="pspid" value="{@pspid}" />
+											<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
+											<input type="hidden" name="transactionid" value="{/root/transaction/@id}" />
+											<input type="hidden" name="cardtype" value="{@id}" />
+										</form>
+									</div>
+									<script type="text/javascript">
+										$('#apm_<xsl:value-of select="@id" />').on('click', function(e) {
+										document.forms['walletform_<xsl:value-of select="@id" />'].submit();
+										});
 									</script>
 								</xsl:when>
 								<xsl:when test="@id = '31'">
