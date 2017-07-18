@@ -218,7 +218,7 @@ $(document).ready(function() {
 
 											<div class="col-md-6">
 												<form id="delete-card" class="classy-form"
-													action="{func:constLink('/cpm/sys/del_card.php') }" method="post">
+													action="{func:constLink('/cpm/sys/del_card.php') }" method="post" autocomplete="off">
 													<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
 													<input type="hidden" name="cardtype" value="11" />
 													<input type="hidden" name="prepaid" value="false" />
@@ -249,7 +249,7 @@ $(document).ready(function() {
 												</div>
 												<form class="form-inline classy-form" id="pay-account"
 													action="{func:constLink('/pay/sys/authorize.php') }"
-													method="post">
+													method="post"  autocomplete="off">
 													<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
 													<input type="hidden" name="cardtype" value="{@type-id}" />
 													<input type="hidden" name="prepaid" value="false" />
@@ -328,7 +328,7 @@ $(document).ready(function() {
 				aria-labelledby="headingThree">
 				<div class="panel-body">
 					<form class="classy-form" action="{func:constLink('/pay/sys/authorize.php') }"
-						method="post" autocomplete="on">
+						method="post" autocomplete="off">
 						<div class="row">
 							<input type="hidden" name="cardtype" value="" />
 							<input type="hidden" name="pspid" value="{@pspid}" />
@@ -594,7 +594,7 @@ $(document).ready(function() {
 
 											<div class="row" data-toggle="modal" data-target=".login-wallet">
 												<div class="payment-paypal-form payment-form">
-													<form action="{func:constLink('/pay/sys/apm.php') }" method="POST" name="walletform_{@id}" id="walletform_{@id}">
+													<form action="{func:constLink('/pay/sys/apm.php') }" method="POST" name="walletform_{@id}" id="walletform_{@id}"  autocomplete="off">
 															<span class="glyphicon glyphicon-chevron-right right-icon pull-icon-right"
 																	aria-hidden="true"></span>
 															<div class="col-md-12" id="card-{@id}">
@@ -667,7 +667,7 @@ $(document).ready(function() {
 										</div>
 									</div>
 									<form name="walletform_{@id}" id="walletform_{@id}"
-										action="{func:constLink('/pay/sys/authorize.php') }" method="post">
+										action="{func:constLink('/pay/sys/authorize.php') }" method="post"  autocomplete="off">
 										<input type="hidden" name="cardtype" value="{@id}" />
 										<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
 										<input type="hidden" name="token" id="token" value="" />
@@ -699,7 +699,7 @@ $(document).ready(function() {
 										</div>
 									</div>
 									<div class="payment-form hide">
-										<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/apm.php') }" method="post">
+										<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/apm.php') }" method="post"  autocomplete="off">
 											<input type="hidden" name="pspid" value="{@pspid}" />
 											<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
 											<input type="hidden" name="transactionid" value="{/root/transaction/@id}" />
@@ -735,7 +735,7 @@ $(document).ready(function() {
 														<h4 class="modal-title">Enter details to pay with sadad account</h4>
 													</div>
 													<div class="payment-form">
-														<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/sadad.php') }" method="post" autocomplete="on">
+														<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/sadad.php') }" method="post" autocomplete="off">
 															<input type="hidden" name="pspid" value="{@pspid}" />
 															<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
 															<div class="form-group row">
@@ -771,7 +771,7 @@ $(document).ready(function() {
 										</div>
 									</div>
 									<div class="payment-form hide">
-										<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/apm.php') }" method="post">
+										<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/apm.php') }" method="post"  autocomplete="off">
 											<input type="hidden" name="pspid" value="{@pspid}" />
 											<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
 											<input type="hidden" name="transactionid" value="{/root/transaction/@id}" /> 
@@ -796,7 +796,7 @@ $(document).ready(function() {
 										</div>
 									</div>
 									<div class="payment-form hide">
-										<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/apm.php') }" method="post">
+										<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/apm.php') }" method="post"  autocomplete="off">
 											<input type="hidden" name="pspid" value="{@pspid}" />
 											<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
 											<input type="hidden" name="transactionid" value="{/root/transaction/@id}" /> 
