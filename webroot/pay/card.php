@@ -15,23 +15,13 @@
 // Require Global Include File
 require_once ("../inc/include.php");
 
-require_once (sAPI_CLASS_PATH . "simpledom.php");
-
-// Require Business logic for the End-User Account Component
-require_once (sCLASS_PATH . "/enduser_account.php");
-// Require Business logic for the Select Credit Card component
-require_once (sCLASS_PATH . "/credit_card.php");
-
-// Require Business logic for the Payment Accepted component
-require_once (sCLASS_PATH . "/accept.php");
-
 $xmlData = '<title>' . $_OBJ_TXT->_ ( "Select Payment Method" ) . '</title>';
 $xmlData .= '<labels>
 			<progress>' . $_OBJ_TXT->_ ( "Step 1 of 2" ) . '</progress>
 			<info>' . $_OBJ_TXT->_ ( "Please select your Payment Method" ) . '</info>
 			<cancel>' . $_OBJ_TXT->_ ( "Cancel Payment" ) . '</cancel>
 			<cardnumber>' . $_OBJ_TXT->_ ( "Card Number" ) . '</cardnumber>
-			<expiry>' . $_OBJ_TXT->_ ( "Expiry Date" ) . '</expiry>
+			<expiry>' . $_OBJ_TXT->_ ( "Expiry Month" ) . '</expiry>
 			<cvv>' . $_OBJ_TXT->_ ( "CVV Code" ) . '</cvv>
 			<button>' . $_OBJ_TXT->_ ( "Pay now" ) . '</button>
 			<paymentcard>' . $_OBJ_TXT->_ ( "Payment card" ) . '</paymentcard>
@@ -48,6 +38,18 @@ $xmlData .= '<labels>
 			<delete-card>' . $_OBJ_TXT->_ ( "Delete Card" ) . '</delete-card>
 			<cardholdername>' . $_OBJ_TXT->_ ( "Card Holder Name" ) . '</cardholdername>
 		</labels>';
+
+require_once (sAPI_CLASS_PATH . "simpledom.php");
+
+// Require Business logic for the End-User Account Component
+require_once (sCLASS_PATH . "/enduser_account.php");
+// Require Business logic for the Select Credit Card component
+require_once (sCLASS_PATH . "/credit_card.php");
+
+// Require Business logic for the Payment Accepted component
+require_once (sCLASS_PATH . "/accept.php");
+
+
 
 $aWallets = array (
 		Constants::iVISA_CHECKOUT_WALLET,

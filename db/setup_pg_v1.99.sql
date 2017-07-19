@@ -295,3 +295,5 @@ INSERT INTO Client.CardAccess_Tbl (pspid, clientid, cardid) VALUES (24, 10001, 2
 
 /* ============= SETTLED PAYMENT STATE added for mPoint Settlement & Reconciliation feature ========= */
 INSERT INTO Log.State_Tbl (id, name,module, func, enabled) VALUES (2020, 'Payment Settled', 'Payment' ,'settleTransaction',true);
+
+ALTER table Client.Client_Tbl ADD secretkey VARCHAR(100);

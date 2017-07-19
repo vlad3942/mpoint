@@ -93,9 +93,9 @@ if(isset($_POST['token']) == false && isset($_POST['storedcard']) == false)
 	}
 	else 
 	{
-		$givenDateTimeStamp = strtotime(gmdate("Y-m-d H:i:sP", mktime(0, 0, 0, $_POST['expiry-month'], 01, $_POST['expiry-year'])));
-		
-		if ($givenDateTimeStamp < strtotime('today') ) 
+		$givenDateTimeStamp = strtotime(gmdate("Y-m-t H:i:sP", mktime(0, 0, 0, $_POST['expiry-month'], 01, $_POST['expiry-year'])));
+		$givenDateTimeStamp =  date("Y-m-t",$givenDateTimeStamp);
+		if (strtotime($givenDateTimeStamp) < strtotime('today') ) 
 		{ 
 			$aMsgCds[] = 20; 
 			
@@ -105,7 +105,7 @@ if(isset($_POST['token']) == false && isset($_POST['storedcard']) == false)
 	if( (count($_POST['cardnumber']) == 0 || (count($_POST['cardnumber']) > 0 && $obj_Validator->valCardNumber($_POST['cardnumber']) != 10))
 		) 
 	{ 
-		$aMsgCds[] = 25; 
+		$aMsgCds[] = 26; 
 		
 	}
 	
@@ -433,7 +433,7 @@ if (count($aMsgCds) == 0)
 			}
 			
 		}
-	} else { $url = "http://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=".$code; }
+	} else { $url = "http://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&". session_name() ."=". session_id() ."&msg=".$msg; }
 	
 	header("location: ". $url);
 	exit;
