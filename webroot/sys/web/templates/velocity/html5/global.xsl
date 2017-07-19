@@ -78,7 +78,7 @@
 <func:function name="func:appendQueryString">
 	<xsl:param name="url" />
 	
-	<xsl:variable name="session" select="concat(/root/system/session, '=', /root/system/session/@id)" />
+	<!--<xsl:variable name="session" select="concat(/root/system/session, '=', /root/system/session/@id)" />-->
 	
 	<xsl:choose>
 		<!-- URL with Query String -->
@@ -87,7 +87,7 @@
 			<xsl:variable name="vars" select="substring-after($url, '?')" />
 			
 			<func:result>
-				<xsl:value-of select="concat($link, '?', $session, '&amp;', $vars)" />
+				<xsl:value-of select="$link" />
 			</func:result>
 		</xsl:when>
 		<!-- URL with Anchor -->
@@ -96,13 +96,13 @@
 			<xsl:variable name="anchor" select="substring-after($url, '#')" />
 			
 			<func:result>
-				<xsl:value-of select="concat($link, '?', $session, '#', $anchor)" />
+				<xsl:value-of select="concat($link,'#', $anchor)" />
 			</func:result>
 		</xsl:when>
 		<!-- Normal URL -->
 		<xsl:otherwise>
 			<func:result>
-				<xsl:value-of select="concat($url, '?', $session)" />
+				<xsl:value-of select="$url" />
 			</func:result>
 		</xsl:otherwise>
 	</xsl:choose>
