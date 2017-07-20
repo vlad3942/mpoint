@@ -87,5 +87,5 @@ for ($i=0; $i<count($aMsgCds); $i++)
 header("content-type: text/plain");
 header("content-length: 0");
 
-header("location: http://". $_SERVER['HTTP_HOST'] ."/pay/". $sFile ."?". session_name() ."=". session_id() . $msg);
+header("location: http://". $_SERVER['HTTP_HOST'] ."/pay/". $sFile ."?" . $msg);
 ?>

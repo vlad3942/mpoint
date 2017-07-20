@@ -206,7 +206,7 @@ else
 		$msg .= "&msg=". $aMsgCds[$i];
 	}
 
-	header("location: https://". $_SERVER['HTTP_HOST'] ."/". $sPath . session_name() ."=". session_id() . $msg);
+	header("location: https://". $_SERVER['HTTP_HOST'] ."/". $sPath . $msg);
 	exit;
 
 

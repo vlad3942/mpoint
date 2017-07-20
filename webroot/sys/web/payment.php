@@ -166,6 +166,6 @@ try
 // Error: Billing SMS rejected by GoMobile
 catch (mPointException  $e)
 {
-	header("location: http://". $_SERVER['HTTP_HOST'] ."/pay/card.php?". session_name() ."=". session_id() ."&msg=99");
+	header("location: http://". $_SERVER['HTTP_HOST'] ."/pay/card.php?msg=99");
 }
 ?>

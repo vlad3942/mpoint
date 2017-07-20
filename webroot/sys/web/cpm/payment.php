@@ -52,7 +52,7 @@ try
 		ignore_user_abort(true);
 		// Redirect customer
 		header("Content-Length: 0");
-		header("location: https://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?". session_name() ."=". session_id() );
+		header("location: https://". $_SERVER['HTTP_HOST'] ."/pay/accept.php" );
 		header("Connection: close");
 		flush();
 
@@ -98,7 +98,7 @@ try
 			ignore_user_abort(true);
 			// Redirect customer
 			header("Content-Length: 0");
-			header("location: https://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?". session_name() ."=". session_id() );
+			header("location: https://". $_SERVER['HTTP_HOST'] ."/pay/accept.php" );
 			header("Connection: close");
 			flush();
 
@@ -166,6 +166,6 @@ try
 // Error: Billing SMS rejected by GoMobile
 catch (mPointException  $e)
 {
-	header("location: https://". $_SERVER['HTTP_HOST'] ."/pay/card.php?". session_name() ."=". session_id() ."&msg=99");
+	header("location: https://". $_SERVER['HTTP_HOST'] ."/pay/card.php?msg=99");
 }
 ?>

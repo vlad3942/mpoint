@@ -79,7 +79,7 @@ $xml .= $obj_mPoint->getMessages ( "Accept" );
 $xml .= '<transactionstatus>' . $_REQUEST ['transactionStatus'] . '</transactionstatus>';
 $xml .= '<transactionid>' . $_REQUEST ['mpoint-id'] . '</transactionid>';
 if ($_SESSION ['obj_TxnInfo']->getCSSURL () == "") {
-	$cssurll = "http://" . $_SERVER ["HTTP_HOST"] . "/css/bootstrap/styles.css";
+	$cssurll = "https://" . $_SERVER ["HTTP_HOST"] . "/css/bootstrap/styles.css";
 } else {
 	$cssurll = $_SESSION ['obj_TxnInfo']->getCSSURL ();
 }

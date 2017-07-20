@@ -52,7 +52,7 @@ try
 		ignore_user_abort(true);
 		// Redirect customer
 		header("Content-Length: 0");
-		header("location: http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?". session_name() ."=". session_id() );
+		header("location: http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php" );
 		header("Connection: close");
 		flush();
 
@@ -98,7 +98,7 @@ try
 			ignore_user_abort(true);
 			// Redirect customer
 			header("Content-Length: 0");
-			header("location: http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?". session_name() ."=". session_id() );
+			header("location: http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php");
 			header("Connection: close");
 			flush();
 
