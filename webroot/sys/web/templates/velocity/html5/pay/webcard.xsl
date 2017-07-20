@@ -35,15 +35,7 @@
 											</xsl:if>
 												<!-- Display error messages template -->
 											<xsl:if test="messages/item">
-												<xsl:apply-templates select="messages" mode="error" >
-													<xsl:with-param name="errorvalue" select="messages/item" />
-												</xsl:apply-templates>
-											</xsl:if>
-											<!-- Display error messages template -->
-											<xsl:if test="messages/item">
-												<xsl:apply-templates select="messages" mode="error" >
-													<xsl:with-param name="errorvalue" select="messages/item" />
-												</xsl:apply-templates>
+												<xsl:apply-templates select="messages" mode="error" ></xsl:apply-templates>
 											</xsl:if>
 										</div>
 
@@ -135,8 +127,8 @@ $(document).ready(function() {
 											<div class="modal-dialog">
 												<div class="modal-content">
 													<div class="modal-body">
-														<button type="button" class="bootbox-close-button close"
-															data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;"> Ã— </button>
+														<!-- <button type="button" class="bootbox-close-button close"
+															data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;"> Ã— </button> -->
 														<div class="bootbox-body " align="center">
 															<h3 class="text-warning"> Oops something went wrong!!!</h3>
 														</div>
@@ -145,10 +137,10 @@ $(document).ready(function() {
 														<div class="row">
 															<div class="col-md-12">
 																<div class="col-md-12" align="center">
-																	<h4><xsl:value-of select="$errorvalue" />
-																	</h4>
+																	<xsl:for-each select="/root/messages/item">
+																		<h4><xsl:value-of select="." /></h4>
+																	</xsl:for-each>
 																</div>
-
 															</div>
 														</div>
 														<br />								
@@ -590,14 +582,14 @@ $(document).ready(function() {
 							<xsl:choose>					
 								<xsl:when test="@id = '28'">
 									<div class="col-md-12">
-										<div class="wallet-type" id="walletvisa_{@id}" onClick="document.forms['walletform_{@id}'].submit();">
+										<div class="wallet-type" id="walletvisa_{@id}">
 
 											<div class="row" data-toggle="modal" data-target=".login-wallet">
 												<div class="payment-paypal-form payment-form">
 													<form action="{func:constLink('/pay/sys/apm.php') }" method="POST" name="walletform_{@id}" id="walletform_{@id}"  autocomplete="off">
 															<span class="glyphicon glyphicon-chevron-right right-icon pull-icon-right"
 																	aria-hidden="true"></span>
-															<div class="col-md-12" id="card-{@id}">
+															<div class="col-md-12" id="card-{@id}"  onClick="document.forms['walletform_{@id}'].submit();">
 																<!-- <img src="/css/swag/img/paypal.png" class="wallet-img" 
 																	alt="Paypal"/> -->
 																	<img src="{/root/system/protocol}://{/root/system/host}/img/card_28.png" alt="PayPal" style="max-height: 80px"/>
