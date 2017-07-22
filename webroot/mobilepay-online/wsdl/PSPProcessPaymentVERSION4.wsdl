@@ -23,7 +23,7 @@
         </operation>
     </portType>
     <binding name="PSPProcessPaymentWSBinding" type="tns2:PSPProcessPaymentWS">
-        <soap:binding style='rpc' transport='http://schemas.xmlsoap.org/soap/http' />
+        <soap:binding style='document' transport='http://schemas.xmlsoap.org/soap/http' />
         <operation name="Process">
             <soap:operation soapAction="" />
             <input>
@@ -36,7 +36,7 @@
     </binding>
     <service name="PSPProcessPaymentWS">
         <port name="PSPProcessPaymentWSImplPort" binding="tns2:PSPProcessPaymentWSBinding">
-            <soap:address location='REPLACE_WITH_ACTUAL_URL' />
+            <soap:address location='https://pay-mesb-uat.cellpointmobile.com/mpoint/soap/v1_1/mobilepay-online/services' />
         </port>
     </service>
 </definitions>

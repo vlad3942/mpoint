@@ -86,7 +86,7 @@ class General
 		// Message codes returned from server
 		if (array_key_exists("msg", $_GET) === true)
 		{
-			settype($_GET['msg'], "array");
+
 			// Loop through all returned message codes
 			for ($i=0; $i<count($_GET['msg']); $i++)
 			{
@@ -391,12 +391,11 @@ class General
 		$dir = str_replace("\\", "/", dirname($_SERVER['PHP_SELF']) );
 		if (substr($dir, -1) != "/") { $dir .= "/"; }
 		$xml = '<system>';
-		$xml .= '<protocol>'.$protocol .'</protocol>';
+		$xml .= '<protocol>http</protocol>';
 		$xml .= '<host>'. $_SERVER['HTTP_HOST'] .'</host>';
 		$xml .= '<dir>'. $dir .'</dir>';
 		$xml .= '<file>'. substr($_SERVER['PHP_SELF'], strrpos($_SERVER['PHP_SELF'], "/")+1) .'</file>';
 		$xml .= '<query-string>'. htmlspecialchars($_SERVER['QUERY_STRING'], ENT_NOQUOTES) .'</query-string>';
-		$xml .= '<session id="'. session_id() .'">'. session_name() .'</session>';
 		$xml .= '<language>'. sLANG .'</language>';
 		$xml .= '<spinner format="base64">'. base64_encode(file_get_contents($_SERVER['DOCUMENT_ROOT'] ."/img/loader.gif") ) .'</spinner>';
 		$xml .= '<loading>'. $this->getText()->_("Loading...") .'</loading>';
