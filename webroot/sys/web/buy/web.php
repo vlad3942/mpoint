@@ -429,7 +429,9 @@ else {
 	$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/' . sTEMPLATE . '/html5/status.xsl"?>';
 	$xml .= '<root>';
-	$xml .= $obj_mPoint->getMessages ( "Status" );
+	$xml .= '<messages>';
+	$xml .= '<item>Unknown Error, Please contact support.</item>';
+	$xml .= '</messages>';
 	$xml .= '</root>';
 	
 	// Display page

@@ -72,7 +72,7 @@ require_once(sAPI_CLASS_PATH ."validate_base.php");
 require_once(sAPI_FUNCTION_PATH ."global.php");
 
 //Uncomment following line if you are running hpp on localhost
-define("sLOG_PATH", sSYSTEM_PATH ."/../../log/");
+//define("sLOG_PATH", sSYSTEM_PATH ."/../../log/");
 
 // Require API for Web Session handling
 require_once(sCLASS_PATH ."websession.php");
