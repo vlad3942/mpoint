@@ -92,7 +92,7 @@ elseif ($obj_Validator->valStoredCard($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAcc
 if ($_SESSION['obj_TxnInfo']->getAmount() > $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->getMaxPSMSAmount()
 	&& ($_SESSION['obj_Info']->getInfo("auth-token") === false || strlen($_SESSION['obj_TxnInfo']->getAuthenticationURL() ) == 0) )
 {	
-	if ($obj_Validator->valPassword($_POST['pwd']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_POST['pwd']) + 30; }
+	if ($obj_Validator->valPassword($_POST['pwd']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_POST['pwd']) + 10; }
 }
 
 // Success: Input Valid
@@ -445,7 +445,7 @@ else
 	if (isset($sPath) === false) { $sPath = "pay/card.php?"; }
 	for ($i=0; $i<count($aMsgCds); $i++)
 	{
-		$msg .= "&msg=". $aMsgCds[$i];
+		$msg .= "&msg[]=". $aMsgCds[$i];
 	}
 }
 

@@ -112,8 +112,8 @@
 <xsl:param name="errorvalue" />
 <script type="text/javascript">
 $(document).ready(function() {
-  $('#modalerror').modal('show'); 
-  
+  $('#modalerror').modal('show');
+
     $("#ok").click(function(){
     var Qurl = window.location.href;
     var url = Qurl.substr(0, Qurl.indexOf("&amp;msg"));
@@ -766,8 +766,8 @@ $(document).ready(function() {
 										<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/apm.php') }" method="post"  autocomplete="off">
 											<input type="hidden" name="pspid" value="{@pspid}" />
 											<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
-											<input type="hidden" name="transactionid" value="{/root/transaction/@id}" /> 
-											<input type="hidden" name="cardtype" value="{@id}" /> 												
+											<input type="hidden" name="transactionid" value="{/root/transaction/@id}" />
+											<input type="hidden" name="cardtype" value="{@id}" />
 										</form>
 									</div>
 									<script type="text/javascript">
@@ -791,8 +791,8 @@ $(document).ready(function() {
 										<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/apm.php') }" method="post"  autocomplete="off">
 											<input type="hidden" name="pspid" value="{@pspid}" />
 											<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
-											<input type="hidden" name="transactionid" value="{/root/transaction/@id}" /> 
-											<input type="hidden" name="cardtype" value="{@id}" /> 												
+											<input type="hidden" name="transactionid" value="{/root/transaction/@id}" />
+											<input type="hidden" name="cardtype" value="{@id}" />
 										</form>
 									</div>
 									<script type="text/javascript">
