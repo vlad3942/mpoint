@@ -74,8 +74,8 @@ if(array_key_exists("store-card", $_POST) === true && $_POST['store-card'] == 'o
 	if(array_key_exists("new-password", $_POST) === true && array_key_exists("repeat-password", $_POST) === true)
 	{
 		if ($obj_Validator->valPassword($_POST['new-password']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_POST['new-password']) + 10; }
-		else if ($obj_Validator->valPassword($_POST['repeat-password']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_POST['repeat-password']) + 20; }	
-		else if (count($aMsgCds) == 0 && $_POST['new-password'] != $_POST['repeat-password']) { $aMsgCds[] = 31; }
+		else if ($obj_Validator->valPassword($_POST['repeat-password']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_POST['repeat-password']) + 14; }
+            else if (count($aMsgCds) == 0 && $_POST['new-password'] != $_POST['repeat-password']) { $aMsgCds[] = 19; }
 		else { $sPassword = $_POST['new-password']; $bNewAccount = true; }
 	}
 	
@@ -127,7 +127,7 @@ if($_POST['storedcard'] == true)
 		$aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAccountID(), $_POST['cardid']) + 20; 
 	}
 	
-	if ($obj_Validator->valPassword($_POST['pwd']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_POST['pwd']) + 30; }
+	if ($obj_Validator->valPassword($_POST['pwd']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_POST['pwd']) + 10; }
 	
 	if ($_SESSION['obj_Info']->getInfo("auth-token") === false || strlen($_SESSION['obj_TxnInfo']->getAuthenticationURL() ) == 0)
 	{
@@ -352,8 +352,9 @@ if (count($aMsgCds) == 0)
 					}
 										
 					$saveCardCode = $obj_mPoint->saveCardName($obj_TxnInfo->getAccountID(), $cardTypeId, (string) $sCardName);
+                    $saveCardCode+=60;
 					
-					if($saveCardCode == 2 or $saveCardCode == 1) { $saveCardCode = 102; }
+					//if($saveCardCode == 2 or $saveCardCode == 1) { $saveCardCode = 102; }
 					
 				} else {
 					
@@ -371,8 +372,8 @@ if (count($aMsgCds) == 0)
 					}
 					
 					$saveCardCode = $obj_mPoint->saveCardName($iAccountID, $cardTypeId, (string) $sCardName);
-					
-					if($saveCardCode == 2 or $saveCardCode == 1) { $saveCardCode = 102; }
+                    $saveCardCode+=60;
+					//if($saveCardCode == 2 or $saveCardCode == 1) { $saveCardCode = 102; }
 				}
 				
 				$url = "https://". $_SERVER['SERVER_NAME'] ."/pay/accept.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&msg=". $saveCardCode;
@@ -447,7 +448,7 @@ else
 	if (isset($sPath) === false) { $sPath = "pay/card.php?"; }
 	for ($i=0; $i<count($aMsgCds); $i++)
 	{
-		$msg .= "&msg[]=". $aMsgCds[$i];
+		$msg .= "msg=". $aMsgCds[$i];
 	}
 
 	header("location: https://". $_SERVER['HTTP_HOST'] ."/". $sPath . $msg);

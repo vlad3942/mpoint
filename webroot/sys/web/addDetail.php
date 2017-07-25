@@ -307,7 +307,10 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
 			  add();
 		  
 		  })
-		 	
+          var d = new Date();
+          var n = d.getTime();
+
+          $("#order-id").val("UAT-"+n);
 	  })
 	  
 	  </script>

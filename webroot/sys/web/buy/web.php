@@ -419,13 +419,17 @@ if (array_key_exists ( 1000, $aMsgCds ) === true) {
 	}
 } // Error: Construct Status Page
 else {
+    $_GET ['msg'] = array_keys ( $aMsgCds );
+    $message = $obj_mPoint->getMessages ( "Status" );
 	$s = date ( "Y-m-d H:i:s" ) . "\n";
 	$s .= "REQUEST: " . "\n" . var_export ( $_REQUEST, true ) . "\n";
 	$s .= "ERRORS: " . "\n" . var_export ( $aMsgCds, true ) . "\n";
+    $s .= "MESSAGE:". "\n" .$message;
 	file_put_contents ( sLOG_PATH . "/debug_" . date ( "Y-m-d" ) . ".log", $s );
-	
-	$_GET ['msg'] = array_keys ( $aMsgCds );
-	
+    $protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
+    header($protocol." 400 ". $message,TRUE,400);
+    header("Location: ". $_SERVER['HTTP_REFERER'].'?status='.$_GET ['msg'][0]  );
+/*
 	$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/' . sTEMPLATE . '/html5/status.xsl"?>';
 	$xml .= '<root>';
@@ -435,6 +439,6 @@ else {
 	$xml .= '</root>';
 	
 	// Display page
-	echo $xml;
+	echo $xml;*/
 }
 ?>

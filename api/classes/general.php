@@ -86,7 +86,7 @@ class General
 		// Message codes returned from server
 		if (array_key_exists("msg", $_GET) === true)
 		{
-
+            settype($_GET['msg'], "array");
 			// Loop through all returned message codes
 			for ($i=0; $i<count($_GET['msg']); $i++)
 			{
@@ -391,7 +391,7 @@ class General
 		$dir = str_replace("\\", "/", dirname($_SERVER['PHP_SELF']) );
 		if (substr($dir, -1) != "/") { $dir .= "/"; }
 		$xml = '<system>';
-		$xml .= '<protocol>'.$protocol .'</protocol>';
+		$xml .= '<protocol>'.$protocol.'</protocol>';
 		$xml .= '<host>'. $_SERVER['HTTP_HOST'] .'</host>';
 		$xml .= '<dir>'. $dir .'</dir>';
 		$xml .= '<file>'. substr($_SERVER['PHP_SELF'], strrpos($_SERVER['PHP_SELF'], "/")+1) .'</file>';
