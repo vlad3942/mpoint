@@ -445,7 +445,7 @@ else
 	if (isset($sPath) === false) { $sPath = "pay/card.php?"; }
 	for ($i=0; $i<count($aMsgCds); $i++)
 	{
-		$msg .= "&msg=". $aMsgCds[$i];
+		$msg .= "&msg[]=". $aMsgCds[$i];
 	}
 }
 

@@ -72,7 +72,7 @@ if (count($aMsgCds) == 0)
 $msg = "";
 for ($i=0; $i<count($aMsgCds); $i++)
 {
-	$msg .= "msg=". $aMsgCds[$i];
+	$msg .= "&msg[]=". $aMsgCds[$i];
 }
 
 header("location: ". $sPath ."?" . $msg);

@@ -112,43 +112,13 @@
 <xsl:param name="errorvalue" />
 <script type="text/javascript">
 $(document).ready(function() {
-  $('#modalerror').modal('show'); 
-  
+  $('#modalerror').modal('show');
+
     $("#ok").click(function(){
     var Qurl = window.location.href;
-	var url = removeURLParameter(Qurl,"msg");
-	var urlLen = url.length;
-	if(url.substr(urlLen-1) === '?')
-		url =url.substr(0,urlLen-1);
+    var url = Qurl.substr(0, Qurl.indexOf("&amp;msg"));
 	window.location.href = url;
     });
-
-	function removeURLParameter(url, parameter) {
-		//prefer to use l.search if you have a location/link object
-		var urlparts= url.split('?');
-		if (urlparts.length>=2) {
-
-			var prefix= encodeURIComponent(parameter)+'=';
-			var pars= urlparts[1].split(/[&amp;;]/g);
-
-			//reverse iteration as may be destructive
-			for (var i= pars.length; i-- > 0;) {
-			//idiom for string.startsWith
-				if (pars[i].lastIndexOf(prefix, 0) !== -1) {
-					pars.splice(i, 1);
-					}
-			}
-
-		url= urlparts[0]+'?'+pars.join('&amp;');
-			return url;
-		} else {
-			return url;
-		}
-	}
-
-
-
-
 });
 </script>
 	<div id="modalerror" href="http://www.google.co.in" class="modal fade" data-backdrop="static" data-keyboard="false"
@@ -796,8 +766,8 @@ $(document).ready(function() {
 										<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/apm.php') }" method="post"  autocomplete="off">
 											<input type="hidden" name="pspid" value="{@pspid}" />
 											<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
-											<input type="hidden" name="transactionid" value="{/root/transaction/@id}" /> 
-											<input type="hidden" name="cardtype" value="{@id}" /> 												
+											<input type="hidden" name="transactionid" value="{/root/transaction/@id}" />
+											<input type="hidden" name="cardtype" value="{@id}" />
 										</form>
 									</div>
 									<script type="text/javascript">
@@ -821,8 +791,8 @@ $(document).ready(function() {
 										<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/apm.php') }" method="post"  autocomplete="off">
 											<input type="hidden" name="pspid" value="{@pspid}" />
 											<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
-											<input type="hidden" name="transactionid" value="{/root/transaction/@id}" /> 
-											<input type="hidden" name="cardtype" value="{@id}" /> 												
+											<input type="hidden" name="transactionid" value="{/root/transaction/@id}" />
+											<input type="hidden" name="cardtype" value="{@id}" />
 										</form>
 									</div>
 									<script type="text/javascript">

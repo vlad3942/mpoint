@@ -86,7 +86,7 @@ class General
 		// Message codes returned from server
 		if (array_key_exists("msg", $_GET) === true)
 		{
-            settype($_GET['msg'], "array");
+           // settype($_GET['msg'], "array");
 			// Loop through all returned message codes
 			for ($i=0; $i<count($_GET['msg']); $i++)
 			{
