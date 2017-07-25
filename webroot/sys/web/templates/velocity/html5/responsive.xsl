@@ -99,7 +99,6 @@
 				<link href="{func:constLink('email.php')}" rel="next" type="text/html" />
 			</xsl:when>
 		</xsl:choose>
-		<script type="text/javascript" src="/inc/iScroll.js"></script>
 		<script type="text/javascript" src="/inc/menu.js"></script>
 		<script type="text/javascript" src="/inc/mpoint.js"></script>
 		<script type="text/javascript" src="/inc/card.js"></script>
