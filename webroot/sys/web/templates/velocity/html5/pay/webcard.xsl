@@ -126,17 +126,17 @@ $(document).ready(function() {
 											aria-hidden="true">
 											<div class="modal-dialog">
 												<div class="modal-content">
-													<div class="modal-body">
-														<!-- <button type="button" class="bootbox-close-button close"
-															data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;"> Ã— </button> -->
+													<!--<div class="modal-body">
+														&lt;!&ndash; <button type="button" class="bootbox-close-button close"
+															data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;"> Ã— </button> &ndash;&gt;
 														<div class="bootbox-body " align="center">
 															<h3 class="text-warning"> Oops something went wrong!!!</h3>
 														</div>
-													</div>
+													</div>-->
 													<div class="modal-footer">
 														<div class="row">
 															<div class="col-md-12">
-																<div class="col-md-12" align="center">
+																<div class="col-md-12" align="left">
 																	<xsl:for-each select="/root/messages/item">
 																		<h4><xsl:value-of select="." /></h4>
 																	</xsl:for-each>

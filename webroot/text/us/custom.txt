@@ -260,7 +260,7 @@ msgstr @@@ The entered Delivery Date is in the Past @@@
 msgid @@@ Overview - 11 @@@
 msgstr @@@ Please accept the Terms & Conditions to continue @@@
 msgid @@@ Select Card - 43 @@@
-msgstr @@@ The payment could not be authorised with the provided password, your account has been deleted. @@@
+msgstr @@@ Your account has been deleted because of three invalid attempts.. @@@
 msgid @@@ Select Card - 49 @@@
 msgstr @@@ The specified account is not active. @@@
 msgid @@@ Select Card - 99 @@@
@@ -273,20 +273,12 @@ msgid @@@ Select Card - 19 @@@
 msgstr @@@ Expiry month or year is not valid. @@@
 msgid @@@ Select Card - 20 @@@
 msgstr @@@ The entered Card is already expired. Please enter valid details. @@@
-msgid @@@ Select Card - 34 @@@
-msgstr @@@ Unknown Error. Please try again. @@@
-msgid @@@ Select Card - 35 @@@
-msgstr @@@ Unknown Error. Please try again. @@@
-msgid @@@ Select Card - 36 @@@
-msgstr @@@ Unknown Error. Please try again. @@@
-msgid @@@ Select Card - 37 @@@
-msgstr @@@ Unknown Error. Please try again. @@@
 msgid @@@ Select Card - 26 @@@
 msgstr @@@ Card number is not valid. @@@
 msgid @@@ Select Card - 59 @@@
 msgstr @@@ Payment method not supported. @@@
 msgid @@@ Select Card - 101 @@@
-msgstr @@@ Your stored card(s) have been deleted. @@@
+msgstr @@@ Your stored card has been deleted.. @@@
 msgid @@@ Select Card - 502 @@@
 msgstr @@@ Transaction failed. Please try again later or contact support. @@@
 msgid @@@ Select Card - 11 @@@
@@ -346,15 +338,13 @@ msgstr @@@ Account disabled. @@@
 msgid @@@ Select Card - 81 @@@
 msgstr @@@ Login successful - Mobile Number not verified. @@@
 msgid @@@ Select Card - 100 @@@
-msgstr @@@ Your stored card have been deleted. @@@
+msgstr @@@ Your stored card has been deleted. @@@
 msgid @@@ Select Card - 102 @@@
 msgstr @@@ Active transactions. @@@
 msgid @@@ Select Card - 103 @@@
 msgstr @@@ No matching cards. @@@
 msgid @@@ Select Card - 104 @@@
 msgstr @@@ Internal Error. @@@
-msgid @@@ Select Payment Method - 99 @@@
-msgstr @@@ We're sorry but we could not complete the payment through your selected payment method. Please select another one to try again. @@@
 msgid @@@ CPM Payment - 1 @@@
 msgstr @@@ Your account has been topped up and the original payment has been resumed @@@
 msgid @@@ CPM Payment - 11 @@@
