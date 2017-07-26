@@ -90,7 +90,7 @@ $payRequestBody = '<?xml version="1.0" encoding="UTF-8"?>
 		       				<customer-ref>'.$_SESSION['obj_TxnInfo']->getCustomerRef().'</customer-ref>
 		       				<mobile country-id="'.$_SESSION['obj_TxnInfo']->getCountryConfig()->getID().'">'.$_SESSION['obj_TxnInfo']->getMobile().'</mobile>
 							<email>'.$_SESSION['obj_TxnInfo']->getEMail().'</email>
-						    <ip>0.0.0.0</ip>
+						    <ip>'.$_SESSION['obj_TxnInfo']->getIP().'</ip>
 					    </client-info>
 					</pay>
 				</root>';

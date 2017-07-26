@@ -398,19 +398,12 @@ if (count($aMsgCds) == 0)
 							$hidden_inputs = '';
 			
 							$hidden_fields = $obj_XML->{'parsed-challenge'}->action->{'hidden-fields'}->children();
-							
-							
 			
 							foreach($hidden_fields as $hidden_field)
 							{
-								if($hidden_field['type'] != "custom")
-								{
-									$hidden_inputs .= '<input type="hidden" name="'.$hidden_field->getName().'" value="'.$hidden_field.'" /> ';
-								}
-								
+								$hidden_inputs .= '<input type="hidden" name="'.$hidden_field->getName().'" value="'.$hidden_field.'" /> ';
 							}
 							
-							exit;
 							$html .= $hidden_inputs;
 								
 							$html .= '</form>';
