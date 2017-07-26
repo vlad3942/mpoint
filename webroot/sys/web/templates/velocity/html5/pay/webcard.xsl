@@ -136,7 +136,7 @@ $(document).ready(function() {
 													<div class="modal-footer">
 														<div class="row">
 															<div class="col-md-12">
-																<div class="col-md-12" align="center">
+																<div class="col-md-12" align="left">
 																	<xsl:for-each select="/root/messages/item">
 																		<h4><xsl:value-of select="." /></h4>
 																	</xsl:for-each>
