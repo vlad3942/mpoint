@@ -165,6 +165,8 @@ if ($payResponseCode == 200 && strlen($obj_HTTP->getReplyBody() ) > 0)
 	
 	if(count($obj_Wallet_Response->{'psp-info'}->{'hidden-fields'}) > 0)
 	{
+		$hidden_inputs = '';
+	
 		$hidden_fields = $obj_Wallet_Response->{'psp-info'}->{'hidden-fields'}->children();
 	
 		$timestamp = date("YmdHis");
@@ -174,10 +176,7 @@ if ($payResponseCode == 200 && strlen($obj_HTTP->getReplyBody() ) > 0)
 	
 		foreach($hidden_fields as $hidden_field)
 		{
-			if($hidden_field['type'] != "custom")
-			{
-				$hidden_inputs .= '<input type="hidden" name="'.$hidden_field->getName().'" value="'.$hidden_field.'" /> ';
-			}
+			$hidden_inputs .= '<input type="hidden" name="'.$hidden_field->getName().'" value="'.$hidden_field.'" /> ';
 		}
 	
 		$html .= $hidden_inputs;
