@@ -68,7 +68,7 @@ $xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. Ge
 $xml .= '<root>';
 $xml .= '<title>Card Info</title>';
 
-	$xml .= $obj_mPoint->getSystemInfo();
+	$xml .= $obj_mPoint->getSystemInfo($aHTTP_CONN_INFO["hpp"]["protocol"]);
 	$xml .= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML();
 	$xml .= str_replace('psp-id="-1" card-id="-1"', 'psp-id="'.intval($_POST['pspid']).'" card-id="'.intval($_POST['cardid']).'"', $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']));
 	

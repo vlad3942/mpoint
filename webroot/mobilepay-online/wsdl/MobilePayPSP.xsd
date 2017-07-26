@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.danskebank.com/mobilepay/services/pspprocesspayment" elementFormDefault="qualified"
+    xmlns="http://www.w3.org/2001/XMLSchema" xmlns:mpc="http://www.danskebank.com/mobilepay/services/pspprocesspayment">
+    <include schemaLocation="MobilePay.xsd" />
+
+	<element name="arg0" type="ProcessRequest" />
+	<element name="return" type="ProcessResponse" />
+
+    <complexType name="ProcessRequest">
+        <sequence>
+            <element name="SessionToken" type="mpc:String100" />
+            <element name="EncryptedCardData" type="base64Binary" />
+            <element name="ValidUntil" type="string" />
+            <element name="CardType" type="mpc:CardType" />
+        </sequence>
+    </complexType>
+
+    <complexType name="ProcessResponse">
+        <sequence>
+            <element default="0" name="ResponseCode">
+                <simpleType>
+                    <restriction base="integer">
+                        <enumeration value="0" />
+                        <enumeration value="1" />
+                        <enumeration value="2" />
+                        <enumeration value="3" />
+                        <enumeration value="4" />
+                    </restriction>
+                </simpleType>
+            </element>
+            <element name="ReasonMsg" type="mpc:String255" />
+        </sequence>
+    </complexType>
+
+</schema>

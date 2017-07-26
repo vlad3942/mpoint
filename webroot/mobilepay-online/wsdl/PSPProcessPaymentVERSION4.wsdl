@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions name='PSPProcessPaymentWS' targetNamespace='http://www.danskebank.com/mobilepay/services/pspprocesspayment'
+    xmlns='http://schemas.xmlsoap.org/wsdl/' xmlns:soap='http://schemas.xmlsoap.org/wsdl/soap/' xmlns:tns='http://www.danskebank.com/mobilepay/services/pspprocesspayment'
+    xmlns:tns2='http://www.danskebank.com/mobilepay/services/pspprocesspayment'>
+
+    <types>
+        <xsd:schema targetNamespace="http://www.danskebank.com/mobilepay/services/pspprocesspayment"
+            xmlns:tns="MobilePayPSP.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            <xsd:include schemaLocation="MobilePayPSP.xsd" />
+        </xsd:schema>
+    </types>
+
+    <message name="ProcessInputMessage">
+        <part name="arg0" element="tns:arg0" />
+    </message>
+    <message name="ProcessOutputMessage">
+        <part name="return" element="tns:return" />
+    </message>
+    <portType name="PSPProcessPaymentWS">
+        <operation name="Process" parameterOrder='arg0'>
+            <input message="tns2:ProcessInputMessage" />
+            <output message="tns2:ProcessOutputMessage" />
+        </operation>
+    </portType>
+    <binding name="PSPProcessPaymentWSBinding" type="tns2:PSPProcessPaymentWS">
+        <soap:binding style='document' transport='http://schemas.xmlsoap.org/soap/http' />
+        <operation name="Process">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" namespace="http://www.danskebank.com/mobilepay/services/pspprocesspayment" />
+            </input>
+            <output>
+                <soap:body use="literal" namespace="http://www.danskebank.com/mobilepay/services/pspprocesspayment" />
+            </output>
+        </operation>
+    </binding>
+    <service name="PSPProcessPaymentWS">
+        <port name="PSPProcessPaymentWSImplPort" binding="tns2:PSPProcessPaymentWSBinding">
+            <soap:address location='https://pay-mesb-uat.cellpointmobile.com/mpoint/soap/v1_1/mobilepay-online/services' />
+        </port>
+    </service>
+</definitions>

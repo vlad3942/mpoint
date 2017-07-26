@@ -74,34 +74,26 @@ require_once(sCLASS_PATH ."/masterpass.php");
 require_once(sCLASS_PATH ."/amexexpresscheckout.php");
 // Require specific Business logic for the WireCard component
 require_once(sCLASS_PATH ."/wirecard.php");
-
 // Require specific Business logic for the Global Collect component
 require_once(sCLASS_PATH ."/globalcollect.php");
-
 // Require specific Business logic for the Android Pay component
 require_once(sCLASS_PATH ."/androidpay.php");
-
 // Require specific Business logic for the Secure Trading component
 require_once(sCLASS_PATH ."/securetrading.php");
-
 // Require specific Business logic for the PayFort component
 require_once(sCLASS_PATH ."/payfort.php");
-
 // Require specific Business logic for the PayPal component
 require_once(sCLASS_PATH ."/paypal.php");
-
 // Require specific Business logic for the CCAvenue component
 require_once(sCLASS_PATH ."/ccavenue.php");
-
 // Require specific Business logic for the 2C2P component
 require_once(sCLASS_PATH ."/ccpp.php");
-
 // Require specific Business logic for the MayBank component
 require_once(sCLASS_PATH ."/maybank.php");
-
-
 // Require specific Business logic for the PublicBank component
 require_once(sCLASS_PATH ."/publicbank.php");
+// Require specific Business logic for the MobilePay Online component
+require_once(sCLASS_PATH ."/mobilepayonline.php");
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -676,12 +668,17 @@ try
 																$obj_PSP = new WireCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["wire-card"]);
 													
 																$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+																
 																// Authorization succeeded
 																if ($code == "100")
 																{
-																	$xml .= '<status code="100">Payment Authorized using Card</status>';
+																	$xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
 																}
+																else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+																else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and Card Details Stored.</status>'; }
+																else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml .= $code;}
 																// Error: Authorization declined
+																
 																else
 																{
 																	$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
@@ -690,6 +687,7 @@ try
 													
 																	$xml .= '<status code="92">Authorization failed, WireCard returned error: '. $code .'</status>';
 																}
+																
 																break;
 															case (Constants::iDATA_CASH_PSP): // DataCash
 																$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iDATA_CASH_PSP);
@@ -836,7 +834,7 @@ try
 																	$xml .= '<status code="100">Payment Authorized using stored card</status>';
 																} else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
 																else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and card stored.</status>'; }
-																else if(strpos($code, '2005') !== false) { $xml = $code; }
+																else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml = $code; }
 																// Error: Authorization declined
 																else
 																{
@@ -879,7 +877,7 @@ try
 																	$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
 																
 																	if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
-																	else if(strpos($code, '2005') !== false) { $xml = $code; }
+																	else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml = $code; }
 																	// Error: Authorization declined
 																	else
 																	{
@@ -904,7 +902,7 @@ try
 																		$xml .= '<status code="100">Payment Authorized using stored card</status>';
 																	} else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
 																	else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and card stored.</status>'; }
-																	else if(strpos($code, '2005') !== false) { $xml = $code; }
+																	else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml = $code; }
 																	// Error: Authorization declined
 																	else
 																	{
@@ -915,6 +913,25 @@ try
 																		$xml .= '<status code="92">Authorization failed, PublicBank returned error: '. $code .'</status>';
 																	}
 																	break;
+																case (Constants::iMOBILEPAY_ONLINE_PSP): // MobilePay Online
+																	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMOBILEPAY_ONLINE_PSP);
+																	
+																	$obj_PSP = new MobilePayOnline($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["mobilepay-online"]);
+																	
+																	$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+																	
+																	// Authorization succeeded
+																	if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+																	// Error: Authorization declined
+																	else
+																	{
+																		$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+																			
+																		header("HTTP/1.1 502 Bad Gateway");
+																
+																		$xml .= '<status code="92">Authorization failed, MobilePay Online returned error: '. $code .'</status>';
+																	}
+																	break;																	
 															default:	// Unkown Error
 																$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 	
@@ -1117,7 +1134,6 @@ catch (Exception $e)
 	trigger_error("Exception thrown in mApp/api/authorize.php: ". $e->getMessage() ."\n". $e->getTraceAsString(), E_USER_ERROR);
 }
 header("Content-Type: text/xml; charset=\"UTF-8\"");
-
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';
 echo $xml;

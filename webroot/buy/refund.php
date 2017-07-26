@@ -69,6 +69,9 @@ require_once(sCLASS_PATH ."/ccpp.php");
 require_once(sCLASS_PATH ."/maybank.php");
 // Require specific Business logic for the PublicBank component
 require_once(sCLASS_PATH ."/publicbank.php");
+// Require specific Business logic for the Qiwi component
+require_once(sCLASS_PATH ."/qiwi.php");
+
 
 header("Content-Type: application/x-www-form-urlencoded");
 

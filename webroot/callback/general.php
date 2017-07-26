@@ -61,7 +61,10 @@ require_once(sCLASS_PATH ."/maybank.php");
 require_once(sCLASS_PATH ."/publicbank.php");
 // Require specific Business logic for the AliPay component
 require_once(sCLASS_PATH ."/alipay.php");
-
+// Require specific Business logic for the POLi component
+require_once(sCLASS_PATH ."/poli.php");
+// Require specific Business logic for the QIWI component
+require_once(sCLASS_PATH ."/qiwi.php");
 
 /**
  * Input XML format
@@ -114,6 +117,8 @@ try
 	$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 	$iStateID = (integer) $obj_XML->callback->status["code"];
 	
+	$year = substr(strftime("%Y"), 0, 2);
+	$sExpirydate =  $year.$obj_XML->callback->transaction->card->expiry->year ."-". $obj_XML->callback->transaction->card->expiry->month;
 	// If transaction is in Account Validated i.e 1998 state no action to be done
 	if($iAccountValidation != 1)
 	{
@@ -270,7 +275,24 @@ try
   // Callback URL has been defined for Client
   if ($obj_TxnInfo->getCallbackURL() != "")
   {
-  	$obj_mPoint->notifyClient($iStateID, array("transact"=>$id, "amount"=>$obj_XML->callback->transaction->amount, "card-id"=>$obj_XML->callback->transaction->card["type-id"]) );
+    /*
+     * Return the success code 202 to indicate Request Accepted and
+     * the request to notify the upstream  retail system.
+    */
+      ignore_user_abort(true);
+      header("HTTP/1.1 202 Accepted");
+      header("Content-Length: 0");
+      header("Connection: Close");
+      flush();
+      if($iStateID == 2000)
+      {
+      	$obj_mPoint->notifyClient($iStateID, array("transact"=>(integer) $obj_XML->callback->{'psp-config'}["id"] , "amount"=>$obj_XML->callback->transaction->amount, "card-no"=>(string)$obj_XML->callback->transaction->card->{'card-number'} ,"card-id"=>$obj_XML->callback->transaction->card["type-id"],"expiry"=>$sExpirydate) );
+      }
+      else
+      {
+      	$obj_mPoint->notifyClient($iStateID, array("transact"=>(integer) $obj_XML->callback->{'psp-config'}["id"] , "amount"=>$obj_XML->callback->transaction->amount, "card-no"=>(string)$obj_XML->callback->transaction->card->{'card-number'} ,"card-id"=>$obj_XML->callback->transaction->card["type-id"]) );
+      }
+      
   }
   
  $xml = '<status code="1000">Callback Success</status>';

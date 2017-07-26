@@ -1,0 +1,13 @@
+// Settings only related to the grid layout.
+
+// Define breakpoints (has to be defined after Neat import, so they can't go into settings)
+$iphone: new-breakpoint(max-width em(481) 4);
+$mobile: new-breakpoint(max-width em(641) 6);
+$tablet: new-breakpoint(max-width em(769) 12);
+$desktop: new-breakpoint(min-width em(769) 12);
+
+// Visual grid
+$visual-grid:               false; // Set to true to display the grid.
+$visual-grid-opacity:       0.1;
+$visual-grid-color:         grey;
+$visual-grid-index:         'back';

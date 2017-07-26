@@ -146,9 +146,9 @@ class EndUserAccount extends Home
 	 * @param 	string $cr		the Client's Reference for the Customer (optional)
 	 * @return	integer 		The unique ID of the created End-User Account
 	 */
-	public function newAccount($cid, $mob, $pwd="", $email="", $cr="")
+	public function newAccount($cid, $mob, $pwd="", $email="", $cr="", $pid="")
 	{
-		$iAccountID = parent::newAccount($cid, $mob, $pwd, $email, $cr);
+		$iAccountID = parent::newAccount($cid, $mob, $pwd, $email, $cr, $pid);
 
 		// Created account should only be available to Client
 		if ($iAccountID > 0 && ($this->_obj_ClientConfig->getStoreCard()&2) == 2)
@@ -196,11 +196,12 @@ class EndUserAccount extends Home
 		switch (count($aArgs) )
 		{
 		case (7):
+		case (8):
 			$chargeid = 0;
 			// Card Saved during Authorization
 			if ( ($aArgs[0] instanceof TxnInfo) === true)
 			{
-				list($oTI, $addr, $cardid, $pspid, $token, $mask, $exp) = $aArgs;
+				list($oTI, $addr, $cardid, $pspid, $token, $mask, $exp, $pid) = $aArgs;
 				$obj_CountryConfig = $oTI->getCountryConfig();
 				$iAccountID = -1;
 				if ($oTI->getAccountID() > 0) { $iAccountID = $oTI->getAccountID(); }
@@ -225,8 +226,13 @@ class EndUserAccount extends Home
 						$email = "";
 						if (floatval($addr) > $obj_CountryConfig->getMinMobile() ) { $mob = $addr; }
 						else { $email = $addr; }
-
-						$iAccountID = $this->newAccount($obj_CountryConfig->getID(), $mob, "", $email, $oTI->getCustomerRef() );
+						if ( empty( $pid ) ) {
+							$pushid = "";
+						}
+						else {
+							$pushid = $pid;
+						}
+						$iAccountID = $this->newAccount($obj_CountryConfig->getID(), $mob, "", $email, $oTI->getCustomerRef(), $pushid );
 						$code = 2;
 					}
 				}

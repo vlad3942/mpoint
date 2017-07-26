@@ -561,6 +561,48 @@ $aHTTP_CONN_INFO["alipay"]["paths"]["status"] = "/mpoint/alipay/status";
 $aHTTP_CONN_INFO["alipay"]["paths"]["callback"] = "/mpoint/alipay/callback";
 
 /**
+ * Connection info for connecting to POLi
+ */
+$aHTTP_CONN_INFO["poli"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["poli"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["poli"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["poli"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["poli"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["poli"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["poli"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["poli"]["paths"]["initialize"] = "/mpoint/poli/initialize";
+$aHTTP_CONN_INFO["poli"]["paths"]["callback"] = "/mpoint/poli/callback";
+
+/**
+ * Connection info for connecting to QIWI Wallet
+ */
+$aHTTP_CONN_INFO["qiwi"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["qiwi"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["qiwi"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["qiwi"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["qiwi"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["qiwi"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["qiwi"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["qiwi"]["paths"]["initialize"] = "/mpoint/qiwi/initialize";
+$aHTTP_CONN_INFO["qiwi"]["paths"]["refund"] = "/mpoint/qiwi/refund";
+$aHTTP_CONN_INFO["qiwi"]["paths"]["status"] = "/mpoint/qiwi/status";
+$aHTTP_CONN_INFO["qiwi"]["paths"]["cancel"] = "/mpoint/qiwi/cancel";
+$aHTTP_CONN_INFO["qiwi"]["paths"]["callback"] = "/mpoint/qiwi/callback";
+
+/**
+ * Connection info for connecting to MobilePay Online
+ */
+$aHTTP_CONN_INFO["mobilepay-online"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["mobilepay-online"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["mobilepay-online"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["mobilepay-online"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["mobilepay-online"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["mobilepay-online"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["mobilepay-online"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["mobilepay-online"]["paths"]["initialize"] = "/mpoint/mobilepay-online/initialize";
+$aHTTP_CONN_INFO["mobilepay-online"]["paths"]["auth"] = "/mpoint/mobilepay-online/authorize-payment";
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>
@@ -615,6 +657,16 @@ $aCPM_CONN_INFO["method"] = "POST";
 $aCPM_CONN_INFO["contenttype"] = "application/x-www-form-urlencoded";
 //$aCPM_CONN_INFO["username"] = "";
 //$aCPM_CONN_INFO["password"] = "";
+
+/**
+ *
+ *     Configuration for HPP
+ *
+ */
+
+$aHTTP_CONN_INFO["hpp"]["protocol"] = "https";
+
+
 
 /**
  * Template for website design

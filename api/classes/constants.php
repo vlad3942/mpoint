@@ -536,7 +536,24 @@ abstract class Constants
 	 *
 	 */
 	const iALIPAY_PSP = 30;
+
+	/**
+	 * Unique ID for the Payment Service Provider: Qiwi
+	 *
+	 */
+	const iQIWI_PSP = 31;
 	
+	/**
+	 * Unique ID for the Payment Service Provider: POLi
+	 *
+	 */
+	const iPOLI_PSP = 32;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: MobilePay Online
+	 *
+	 */
+	const iMOBILEPAY_ONLINE_PSP = 33;
 	
 	/**
 	 * Unique ID for the Payment Service Provider: Android Pay
@@ -702,6 +719,11 @@ abstract class Constants
 	 */
 	const iPAYPAL_PAY_WALLET = 28;
 	/**
+	 * Unique Card ID for transaction's made using MobilePay Online
+	 *
+	 */
+	const iMOBILEPAY_ONLINE = 30;
+	/**
 	 * Unique Card ID for transaction's made using SADAD
 	 *
 	 */
@@ -711,7 +733,16 @@ abstract class Constants
 	 *
 	 */
 	const iALIPAY_WALLET = 32;
-	
+	/**
+	 * Unique Card ID for transaction's made using POLi
+	 *
+	 */
+	const iPOLI_WALLET = 34;
+	/**
+	 * Unique Card ID for transaction's made using Qiwi
+	 *
+	 */
+	const iQIWI_WALLET = 33;	
 	
 	/**
 	 * Unique Fee Type ID for Top-Ups
