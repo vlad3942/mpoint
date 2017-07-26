@@ -169,7 +169,6 @@ if ($payResponseCode == 200 && strlen($obj_HTTP->getReplyBody() ) > 0)
 	
 		$hidden_fields = $obj_Wallet_Response->{'psp-info'}->{'hidden-fields'}->children();
 	
-	
 		$timestamp = date("YmdHis");
 		$html .= "<meta name='referrer' content='no-referrer'>";
 		$html .= "<body onload='submitForm();' >";
