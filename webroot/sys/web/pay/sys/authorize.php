@@ -437,7 +437,7 @@ if (count($aMsgCds) == 0)
 			}
 			
 		}
-	} else { $url = "https://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&msg=".$msg; }
+	} else { $url = "https://". $_SERVER['SERVER_NAME'] ."/pay/card.php?mpoint-id=". $_SESSION['obj_TxnInfo']->getID() ."&msg[]=".$msg; }
 	
 	header("location: ". $url);
 	exit;
