@@ -16,6 +16,7 @@
 					<xsl:with-param name="cssurldata" select="cssurl" />
 					<xsl:with-param name="accepturldata" select="accepturl" />
 					<xsl:with-param name="cancelurldata" select="cancelurl" />
+					<xsl:with-param name="logourl" select="logourl" />
 				</xsl:apply-templates>
 			</xsl:when>
 			<xsl:otherwise>
@@ -24,6 +25,7 @@
 					<xsl:with-param name="cssurldata" select="cssurl" />
 					<xsl:with-param name="accepturldata" select="accepturl" />
 					<xsl:with-param name="cancelurldata" select="cancelurl" />
+					<xsl:with-param name="logourl" select="logourl" />
 				</xsl:apply-templates>
 			</xsl:otherwise>
 		</xsl:choose>
@@ -75,6 +77,7 @@
 	<xsl:template match="root" mode="success">
 		<xsl:param name="cssurldata" />
 		<xsl:param name="accepturldata" />
+		<xsl:param name="logourl" />
 		<xsl:param name="transaction_id" />
 		<link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
 		<link href="/css/bootstrap/styles.css" rel="stylesheet" />
@@ -88,7 +91,7 @@
 				<div class="row">
 					<div class="col-md-3">
 						<a href="" class="logo">
-							<img src="/../templates/velocity/html5/pay/img/logo.jpg" alt="CellPoint Mobile" />
+							<img src="{$logourl}" alt="Logo" />
 						</a>
 					</div>
 					<div class="col-md-9 text-right">
@@ -109,7 +112,7 @@
 							Payment reference id:
 							<xsl:value-of select="$transaction_id" />
 						</p>
-						<a href="{$accepturldata}" class="btn">
+						<a id="redirect" href="{$accepturldata}" class="btn">
 							Finish
 							<span class="glyphicon glyphicon-ok"></span>
 						</a>
@@ -122,13 +125,19 @@
 		<!-- Include all compiled plugins (below), or include individual files 
 			as needed -->
 		<script src="js/bootstrap.min.js"></script>
+		<script type="text/javascript">
+			function redirect(){
+			window.location = $('a#redirect').attr('href');
+			}
+			document.onload = setTimeout(redirect, 10000);
+		</script>
 	</xsl:template>
 
 	<xsl:template match="root" mode="fail">
 		<xsl:param name="cssurldata" />
 		<xsl:param name="cancelurldata" />
 		<xsl:param name="transaction_id" />
-
+		<xsl:param name="logourl" />
 		<link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
 		<link href="/css/bootstrap/styles.css" rel="stylesheet" />
 		<link href="{$cssurldata}" rel="stylesheet" />
@@ -141,7 +150,7 @@
 				<div class="row">
 					<div class="col-md-3">
 						<a href="" class="logo">
-							<img src="/../templates/velocity/html5/pay/img/logo.jpg" alt="CellPoint Mobile" />
+							<img src="{$logourl}" alt="Logo" />
 						</a>
 					</div>
 					<div class="col-md-9 text-right">
@@ -163,7 +172,7 @@
 							<xsl:value-of select="$transaction_id" />
 						</p>
 						<p>Please try with another payment method or different card.</p>
-						<a href="{$cancelurldata}" class="btn">
+						<a id="fail-redirect" href="{$cancelurldata}" class="btn">
 							<span class="glyphicon glyphicon-arrow-left"></span>
 							Try again
 						</a>
@@ -176,6 +185,11 @@
 		<!-- Include all compiled plugins (below), or include individual files 
 			as needed -->
 		<script src="js/bootstrap.min.js"></script>
-
+		<script type="text/javascript">
+			function redirect(){
+			window.location = $('a#fail-redirect').attr('href');
+			}
+			document.onload = setTimeout(redirect, 10000);
+		</script>
 	</xsl:template>
 </xsl:stylesheet>

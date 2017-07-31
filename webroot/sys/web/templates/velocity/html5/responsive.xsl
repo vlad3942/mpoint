@@ -117,8 +117,15 @@
 		 <div class="container main">
 		<div class="row">
         <div class="col-xs-3 col-sm-3 col-md-3">
-          <a href="" class="logo"><img src="/css/swag/img/logo.jpg" alt="CellPoint Mobile" /></a>
-        </div>
+			<xsl:choose>
+				<xsl:when test="string-length(/root/transaction/logo/url) > 0">
+					<a href="" class="logo"><img src="{/root/transaction/logo/url}"/></a>
+				</xsl:when>
+				<xsl:otherwise>
+					<a href="" class="logo"><img src="/css/swag/img/logo.jpg" alt="" /></a>
+				</xsl:otherwise>
+			</xsl:choose>
+		</div>
         <div class="col-xs-9 col-sm-9 col-md-9 text-right">
           <h2 class="sub-header">Select Payment Method <small>(step 2/3)</small></h2>
         </div>
