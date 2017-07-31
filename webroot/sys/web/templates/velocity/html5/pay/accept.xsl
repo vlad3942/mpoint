@@ -13,6 +13,7 @@
 			<xsl:when test="transactionstatus = 0">
 				<xsl:apply-templates select="." mode="fail">
 					<xsl:with-param name="transaction_id" select="transactionid" />
+					<xsl:with-param name="order_id" select="orderid" />
 					<xsl:with-param name="cssurldata" select="cssurl" />
 					<xsl:with-param name="accepturldata" select="accepturl" />
 					<xsl:with-param name="cancelurldata" select="cancelurl" />
@@ -22,6 +23,7 @@
 			<xsl:otherwise>
 				<xsl:apply-templates select="." mode="success">
 					<xsl:with-param name="transaction_id" select="transactionid" />
+					<xsl:with-param name="order_id" select="orderid" />
 					<xsl:with-param name="cssurldata" select="cssurl" />
 					<xsl:with-param name="accepturldata" select="accepturl" />
 					<xsl:with-param name="cancelurldata" select="cancelurl" />
@@ -79,6 +81,7 @@
 		<xsl:param name="accepturldata" />
 		<xsl:param name="logourl" />
 		<xsl:param name="transaction_id" />
+		<xsl:param name="order_id" />
 		<link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
 		<link href="/css/bootstrap/styles.css" rel="stylesheet" />
 		<link href="{$cssurldata}" rel="stylesheet" />
@@ -86,7 +89,7 @@
 
 		<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700"
 			rel="stylesheet" />
-		<section>
+		<form action="{$accepturldata}" method="post">
 			<div class="container main">
 				<div class="row">
 					<div class="col-md-3">
@@ -112,14 +115,16 @@
 							Payment reference id:
 							<xsl:value-of select="$transaction_id" />
 						</p>
-						<a id="redirect" href="{$accepturldata}" class="btn">
+						<input id="transaction-id" name="transaction-id" style="display:none" value="{$transaction_id}" />
+						<input id="order-id" name="order-id" style="display:none" value="{$order_id}" />
+						<button type="sumbit" id="redirect" class="btn" >
 							Finish
 							<span class="glyphicon glyphicon-ok"></span>
-						</a>
+						</button >
 					</div>
 				</div>
 			</div>
-		</section>
+		</form>
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 		<script src="js/jquery.min.js"></script>
 		<!-- Include all compiled plugins (below), or include individual files 
@@ -127,7 +132,7 @@
 		<script src="js/bootstrap.min.js"></script>
 		<script type="text/javascript">
 			function redirect(){
-			window.location = $('a#redirect').attr('href');
+			$('#redirect').trigger("click");
 			}
 			document.onload = setTimeout(redirect, 10000);
 		</script>
@@ -138,6 +143,7 @@
 		<xsl:param name="cancelurldata" />
 		<xsl:param name="transaction_id" />
 		<xsl:param name="logourl" />
+		<xsl:param name="order_id" />
 		<link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
 		<link href="/css/bootstrap/styles.css" rel="stylesheet" />
 		<link href="{$cssurldata}" rel="stylesheet" />
@@ -145,7 +151,7 @@
 
 		<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700"
 			rel="stylesheet" />
-		<section>
+		<form  action="{$cancelurldata}" method="post">
 			<div class="container main">
 				<div class="row">
 					<div class="col-md-3">
@@ -172,14 +178,16 @@
 							<xsl:value-of select="$transaction_id" />
 						</p>
 						<p>Please try with another payment method or different card.</p>
-						<a id="fail-redirect" href="{$cancelurldata}" class="btn">
+						<input id="transaction-id" name="transaction-id" style="display:none" value="{$transaction_id}" />
+						<input id="order-id" name="order-id" style="display:none" value="{$order_id}" />
+						<button id="fail-redirect" type="sumbit" class="btn">
 							<span class="glyphicon glyphicon-arrow-left"></span>
 							Try again
-						</a>
+						</button>
 					</div>
 				</div>
 			</div>
-		</section>
+		</form>
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 		<script src="js/jquery.min.js"></script>
 		<!-- Include all compiled plugins (below), or include individual files 
@@ -187,7 +195,7 @@
 		<script src="js/bootstrap.min.js"></script>
 		<script type="text/javascript">
 			function redirect(){
-			window.location = $('a#fail-redirect').attr('href');
+			$('#fail-redirect').trigger("click");
 			}
 			document.onload = setTimeout(redirect, 10000);
 		</script>
