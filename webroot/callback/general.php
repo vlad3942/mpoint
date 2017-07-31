@@ -106,6 +106,9 @@ $obj_XML = simplexml_load_string(file_get_contents("php://input") );
 	
 $id = (integer)$obj_XML->callback->transaction["id"];
 $xml = '';
+
+$aStateId = array();
+
 try
 {
 	$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
@@ -120,7 +123,10 @@ try
 	$year = substr(strftime("%Y"), 0, 2);
 	$sExpirydate =  $year.$obj_XML->callback->transaction->card->expiry->year ."-". $obj_XML->callback->transaction->card->expiry->month;
 	// If transaction is in Account Validated i.e 1998 state no action to be done
-	if($iAccountValidation != 1)
+
+    array_push($aStateId,$iStateID);
+
+    if($iAccountValidation != 1)
 	{
 	
 	// Save Ticket ID representing the End-User's stored Card Info
@@ -260,12 +266,12 @@ try
 		
 		if ($responseCode == 1000)
 		{				
-			if ($obj_TxnInfo->getCallbackURL() != "") { $obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $aCallbackArgs); }
+		    array_push($aStateId,Constants::iPAYMENT_CAPTURED_STATE);
 			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
 		}
 		else
 		{
-			if ($obj_TxnInfo->getCallbackURL() != "") { $obj_mPoint->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $aCallbackArgs); }
+            array_push($aStateId,Constants::iPAYMENT_DECLINED_STATE);
 			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, "Payment Declined (2010)");
 		}
 	}
@@ -284,14 +290,13 @@ try
       header("Content-Length: 0");
       header("Connection: Close");
       flush();
-      if($iStateID == 2000)
-      {
-      	$obj_mPoint->notifyClient($iStateID, array("transact"=>(integer) $obj_XML->callback->{'psp-config'}["id"] , "amount"=>$obj_XML->callback->transaction->amount, "card-no"=>(string)$obj_XML->callback->transaction->card->{'card-number'} ,"card-id"=>$obj_XML->callback->transaction->card["type-id"],"expiry"=>$sExpirydate) );
-      }
-      else
-      {
-      	$obj_mPoint->notifyClient($iStateID, array("transact"=>(integer) $obj_XML->callback->{'psp-config'}["id"] , "amount"=>$obj_XML->callback->transaction->amount, "card-no"=>(string)$obj_XML->callback->transaction->card->{'card-number'} ,"card-id"=>$obj_XML->callback->transaction->card["type-id"]) );
-      }
+     foreach ($aStateId as $iStateId) {
+         if ($iStateId == 2000) {
+             $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate));
+         } else {
+             $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"]));
+         }
+     }
       
   }
   
