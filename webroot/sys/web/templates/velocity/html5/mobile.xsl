@@ -69,7 +69,7 @@
 		<script type="text/javascript" src="/inc/card.js"></script>
 	</head>
 	<body>
-		<div class="header">
+		<div class="header" style="visibility:hidden">
 			<!-- Display Client Logo using the provided URL -->
 			<xsl:if test="string-length(/root/transaction/logo/url) &gt; 0">
 				<div class="logo">

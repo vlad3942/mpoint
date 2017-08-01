@@ -13,17 +13,21 @@
 			<xsl:when test="transactionstatus = 0">
 				<xsl:apply-templates select="." mode="fail">
 					<xsl:with-param name="transaction_id" select="transactionid" />
+					<xsl:with-param name="order_id" select="orderid" />
 					<xsl:with-param name="cssurldata" select="cssurl" />
 					<xsl:with-param name="accepturldata" select="accepturl" />
 					<xsl:with-param name="cancelurldata" select="cancelurl" />
+					<xsl:with-param name="logourl" select="logourl" />
 				</xsl:apply-templates>
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:apply-templates select="." mode="success">
 					<xsl:with-param name="transaction_id" select="transactionid" />
+					<xsl:with-param name="order_id" select="orderid" />
 					<xsl:with-param name="cssurldata" select="cssurl" />
 					<xsl:with-param name="accepturldata" select="accepturl" />
 					<xsl:with-param name="cancelurldata" select="cancelurl" />
+					<xsl:with-param name="logourl" select="logourl" />
 				</xsl:apply-templates>
 			</xsl:otherwise>
 		</xsl:choose>
@@ -75,7 +79,9 @@
 	<xsl:template match="root" mode="success">
 		<xsl:param name="cssurldata" />
 		<xsl:param name="accepturldata" />
+		<xsl:param name="logourl" />
 		<xsl:param name="transaction_id" />
+		<xsl:param name="order_id" />
 		<link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
 		<link href="/css/bootstrap/styles.css" rel="stylesheet" />
 		<link href="{$cssurldata}" rel="stylesheet" />
@@ -83,12 +89,12 @@
 
 		<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700"
 			rel="stylesheet" />
-		<section>
+		<form action="{$accepturldata}" method="post">
 			<div class="container main">
 				<div class="row">
 					<div class="col-md-3">
 						<a href="" class="logo">
-							<img src="/../templates/velocity/html5/pay/img/logo.jpg" alt="CellPoint Mobile" />
+							<img src="{$logourl}" alt="Logo" />
 						</a>
 					</div>
 					<div class="col-md-9 text-right">
@@ -109,26 +115,35 @@
 							Payment reference id:
 							<xsl:value-of select="$transaction_id" />
 						</p>
-						<a href="{$accepturldata}" class="btn">
+						<input id="transaction-id" name="transaction-id" style="display:none" value="{$transaction_id}" />
+						<input id="order-id" name="order-id" style="display:none" value="{$order_id}" />
+						<button type="sumbit" id="redirect" class="btn" >
 							Finish
 							<span class="glyphicon glyphicon-ok"></span>
-						</a>
+						</button >
 					</div>
 				</div>
 			</div>
-		</section>
+		</form>
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 		<script src="js/jquery.min.js"></script>
 		<!-- Include all compiled plugins (below), or include individual files 
 			as needed -->
 		<script src="js/bootstrap.min.js"></script>
+		<script type="text/javascript">
+			function redirect(){
+			$('#redirect').trigger("click");
+			}
+			document.onload = setTimeout(redirect, 10000);
+		</script>
 	</xsl:template>
 
 	<xsl:template match="root" mode="fail">
 		<xsl:param name="cssurldata" />
 		<xsl:param name="cancelurldata" />
 		<xsl:param name="transaction_id" />
-
+		<xsl:param name="logourl" />
+		<xsl:param name="order_id" />
 		<link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
 		<link href="/css/bootstrap/styles.css" rel="stylesheet" />
 		<link href="{$cssurldata}" rel="stylesheet" />
@@ -136,12 +151,12 @@
 
 		<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700"
 			rel="stylesheet" />
-		<section>
+		<form  action="{$cancelurldata}" method="post">
 			<div class="container main">
 				<div class="row">
 					<div class="col-md-3">
 						<a href="" class="logo">
-							<img src="/../templates/velocity/html5/pay/img/logo.jpg" alt="CellPoint Mobile" />
+							<img src="{$logourl}" alt="Logo" />
 						</a>
 					</div>
 					<div class="col-md-9 text-right">
@@ -163,19 +178,26 @@
 							<xsl:value-of select="$transaction_id" />
 						</p>
 						<p>Please try with another payment method or different card.</p>
-						<a href="{$cancelurldata}" class="btn">
+						<input id="transaction-id" name="transaction-id" style="display:none" value="{$transaction_id}" />
+						<input id="order-id" name="order-id" style="display:none" value="{$order_id}" />
+						<button id="fail-redirect" type="sumbit" class="btn">
 							<span class="glyphicon glyphicon-arrow-left"></span>
 							Try again
-						</a>
+						</button>
 					</div>
 				</div>
 			</div>
-		</section>
+		</form>
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 		<script src="js/jquery.min.js"></script>
 		<!-- Include all compiled plugins (below), or include individual files 
 			as needed -->
 		<script src="js/bootstrap.min.js"></script>
-
+		<script type="text/javascript">
+			function redirect(){
+			$('#fail-redirect').trigger("click");
+			}
+			document.onload = setTimeout(redirect, 10000);
+		</script>
 	</xsl:template>
 </xsl:stylesheet>
