@@ -913,6 +913,10 @@ try
 																		$xml .= '<status code="92">Authorization failed, PublicBank returned error: '. $code .'</status>';
 																	}
 																	break;
+																//TODO: This should be refactored and all APMs should be handled separately
+																case (Constants::iALIPAY_PSP): // ALIPAY
+																		$xml .= '<status code="2001">Payment authorized</status>';
+																		break;
 																case (Constants::iMOBILEPAY_ONLINE_PSP): // MobilePay Online
 																	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMOBILEPAY_ONLINE_PSP);
 																	
