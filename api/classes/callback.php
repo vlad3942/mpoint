@@ -323,7 +323,7 @@ abstract class Callback extends EndUserAccount
 		$sBody .= "&status=". $sid;
 		$sBody .= "&amount=". $amt;
 		$sBody .= "&fee=". intval($fee);
-		$sBody .= "&currency=". urlencode($this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getCurrency() );
+		$sBody .= "&currency=". urlencode($this->_obj_TxnInfo->getCountryConfig()->getCurrency() );
 		$sBody .= "&mobile=". urlencode($this->_obj_TxnInfo->getMobile() );
 		$sBody .= "&operator=". urlencode($this->_obj_TxnInfo->getOperator() );
 		$sBody .= "&language=". urlencode($this->_obj_TxnInfo->getLanguage() );
