@@ -350,13 +350,7 @@ abstract class Callback extends EndUserAccount
 		if (($this->_obj_TxnInfo->getAccountID() > 0) === true )
         {
             $obj_CustomerInfo = CustomerInfo::produceInfo($this->getDBConn(), $this->_obj_TxnInfo->getAccountID());
-            $sBody .= "&customer-email=". urlencode($obj_CustomerInfo->getEMail()).
-                "&customer-mobile=". $obj_CustomerInfo->getMobile().
-                "&customer-country-id=". $obj_CustomerInfo->getCountryID();
-            if(empty($sDeviceID) === false)
-            {
-                $sBody .= "&customer-device-id=". urlencode($sDeviceID);
-            }
+            $sBody .= "&customer-country-id=". $obj_CustomerInfo->getCountryID();
         }
 
         /* ----- Construct Body End ----- */
