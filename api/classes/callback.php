@@ -323,7 +323,7 @@ abstract class Callback extends EndUserAccount
 		$sBody .= "&status=". $sid;
 		$sBody .= "&amount=". $amt;
 		$sBody .= "&fee=". intval($fee);
-		$sBody .= "&currency=". urlencode($this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getCurrency() );
+		$sBody .= "&currency=". urlencode($this->_obj_TxnInfo->getCountryConfig()->getCurrency() );
 		$sBody .= "&mobile=". urlencode($this->_obj_TxnInfo->getMobile() );
 		$sBody .= "&operator=". urlencode($this->_obj_TxnInfo->getOperator() );
 		$sBody .= "&language=". urlencode($this->_obj_TxnInfo->getLanguage() );
@@ -345,9 +345,16 @@ abstract class Callback extends EndUserAccount
 		{
 			$sBody .= "&expiry=". $exp;
 		}
-		/* ----- Construct Body End ----- */
 
-		$this->performCallback($sBody, $obj_SurePay);
+		/* Adding customer Info as part of the callback query params */
+		if (($this->_obj_TxnInfo->getAccountID() > 0) === true )
+        {
+            $obj_CustomerInfo = CustomerInfo::produceInfo($this->getDBConn(), $this->_obj_TxnInfo->getAccountID());
+            $sBody .= "&customer-country-id=". $obj_CustomerInfo->getCountryID();
+        }
+
+        /* ----- Construct Body End ----- */
+        $this->performCallback($sBody, $obj_SurePay);
 	}
 
 	/**

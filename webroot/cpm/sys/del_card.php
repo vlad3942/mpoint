@@ -74,5 +74,5 @@ for ($i=0; $i<count($aMsgCds); $i++)
 	$msg .= "&msg=". $aMsgCds[$i];
 }
 
-header("location: ". $sPath ."?" . session_name() ."=". session_id() . $msg);
+header("location: ". $sPath ."?" . $msg);
 ?>

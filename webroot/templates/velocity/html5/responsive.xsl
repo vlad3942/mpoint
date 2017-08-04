@@ -14,9 +14,16 @@
 		<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 		<title><xsl:value-of select="/root/title" /></title>
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,300,600,700" rel="stylesheet" type="text/css" />
-		
-		<link href="/css/swag/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
-		<link href="/css/swag/css/style.css" type="text/css" rel="stylesheet" />
+		<xsl:choose>
+		<xsl:when test="string-length(/root/transaction/css-url) &gt; 0">
+				<link href="/css/swag/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+				<link href="{/root/transaction/css-url}" type="text/css" rel="stylesheet" />
+		</xsl:when>
+		<xsl:otherwise>
+				<link href="/css/swag/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+				<link href="/css/swag/css/style.css" type="text/css" rel="stylesheet" />
+		</xsl:otherwise>
+		</xsl:choose>
 		<!-- <link href="{/root/transaction/css-url}" type="text/css" rel="stylesheet" />-->
 		<script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
@@ -118,7 +125,16 @@
 		 <div class="container main">
 		<div class="row">
         <div class="col-xs-3 col-sm-3 col-md-3">
-          <a href="" class="logo"><img src="/css/swag/img/logo.jpg" alt="CellPoint Mobile" /></a>
+         <!-- Display Client Logo using the provided URL -->
+         <xsl:choose>
+			<xsl:when test="string-length(/root/transaction/logo/url) &gt; 0">
+					<a href="" class="logo"><img src="{/root/transaction/logo/url}"/></a>
+					 <!-- src="{/root/transaction/logo/url}" -->
+			</xsl:when>
+			<xsl:otherwise>
+					<a href="" class="logo"><img src="/css/swag/img/logo.jpg" alt="CellPoint Mobile" /></a>
+			</xsl:otherwise>
+		</xsl:choose>   
         </div>
         <div class="col-xs-9 col-sm-9 col-md-9 text-right">
           <h2 class="sub-header">Select Payment Method <small>(step 2/3)</small></h2>
@@ -134,8 +150,7 @@
 		</section>
 		
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-		<script
-			src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script src="js/jquery.min.js"></script>
 		<!-- Include all compiled plugins (below), or include individual files 
 			as needed -->
 		<script src="/css/swag/js/bootstrap.min.js"></script>

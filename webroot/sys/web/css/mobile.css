@@ -1,0 +1,708 @@
+/* ========== Tag Classes Start ========== */
+body
+{
+	width: 100%;
+	margin: 0px;
+	padding: 0px;
+	-webkit-user-select: none;
+    -webkit-text-size-adjust: none;
+	
+}
+body
+{
+	background-color: #e5e8ed;
+	text-align: left;
+}
+body, table, div
+{
+	font-size: 1em;
+	font: 16px Helvetica;
+	color: #000;
+}
+
+h1
+{
+	font-size: 130%;
+	white-space: nowrap;
+	text-align: center;
+	color: #000;
+}
+h2
+{
+	font-size: 110%;
+	white-space: nowrap;
+	text-align: center;
+	margin-bottom: 5px;
+}
+
+form, table
+{
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 0px 0px;
+}
+
+a
+{
+	color: blue;
+	text-decoration: none;
+}
+
+a:hover
+{
+	text-decoration: underline;
+}
+
+input.number
+{
+	-wap-input-format: '*N';
+}
+ul, ul li
+{
+	padding: 0;
+	margin: 0;
+}
+ul li
+{
+	margin-left: 1em;
+}
+/* ========== Tag Classes End ========== */
+
+/* ========== Input Fields Start ========== */
+input.text 
+{
+    width: 140px;
+}
+input[type="password"] 
+{
+    width: 100px;
+}
+input.control-scroll
+{
+	position: relative;
+	top: -27px;
+	left: 0px;
+	width: 172px;
+	height: 21px;
+	z-index: 1;
+	margin: 0px 0px -35px 0px;
+	padding: 0px 0px -35px 0px;
+	border: none;
+/*	border: 1px solid red; */
+	background-color: transparent;
+	-webkit-appearance: none;
+}
+.control-scroll
+{
+	position: relative;
+	top: -25px;
+	left: 0px;
+	height: 21px;
+	margin: 0px 0px -20px 0px;
+	z-index: 1;
+}
+.control-scroll input[type="button"]
+{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 172px;
+	height: 21px;
+	border: none;
+	background-color: transparent;
+	-webkit-appearance: none;
+}
+.control-focus
+{
+	position: relative;
+	top: -25px;
+	left: 0px;
+	height: 35px;
+	margin: 0px 0px -35px 0px;
+	z-index: 1;
+}
+.control-focus input[type="button"]
+{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 35px;
+	border: none;
+	background-color: transparent;
+	-webkit-appearance: none;
+}
+/* ========== Input Fields End ========== */
+				
+/* ========== Table List Start ========== */
+table.grouped
+{
+	padding-right: 10px;
+	width: 100%;
+}
+table.grouped tr th
+{
+	white-space: nowrap;
+}
+tr.row, tr.first-row, tr.last-row
+{
+	padding: 0px;
+	background-color: white;
+	height: 45px;
+}
+.stretch
+{
+	width: 100%;
+}
+table.grouped tr.row > th, table.grouped tr.first-row > th, table.grouped tr.last-row > th, table.grouped tr.row > td, table.grouped tr.first-row > td, table.grouped tr.last-row > td
+{
+	padding-left: 5px;
+	border-bottom: 1px solid rgb(217, 217, 217);
+}
+table.grouped tr.combined-row
+{
+	height: 22px;
+}
+table.grouped tr.row th.combined-row, table.grouped tr.row td.combined-row, table.grouped tr.first-row th.combined-row, table.grouped tr.first-row td.combined-row
+{
+	border-bottom: none;
+}
+
+table.grouped tr.row img, table.grouped tr.first-row img, table.grouped tr.last-row img
+{
+	border: none;
+	vertical-align: middle;
+}
+table.grouped tr.first-row > th, table.grouped tr.first-row > td
+{
+	border-top: 1px solid rgb(217, 217, 217);
+}
+table.grouped tr.last-row > th, table.grouped tr.last-row > td
+{
+	
+}
+table.grouped th.left-column, table.grouped td.left-column, table.grouped th.column, table.grouped td.column
+{
+	border-left: 1px solid rgb(217, 217, 217);
+}
+table.grouped th.right-column, table.grouped td.right-column
+{
+	border-right: 1px solid rgb(217, 217, 217);
+	padding-right: 5px;
+}
+table.grouped tr.first-row th.left-column, table.grouped tr.first-row td.left-column
+{
+	-moz-border-top-left-radius: 8px;
+	-webkit-border-top-left-radius: 8px;
+	-o-border-border-top-left-radius: 8px;	
+}
+table.grouped tr.last-row th.left-column, table.grouped tr.last-row td.left-column
+{
+	-moz-border-bottom-left-radius: 8px;
+	-webkit-border-bottom-left-radius: 8px;
+	-o-border-border-bottom-left-radius: 8px;	
+}
+table.grouped tr.first-row th.right-column, table.grouped tr.first-row td.right-column
+{
+	-moz-border-top-right-radius: 8px;
+	-webkit-border-top-right-radius: 8px;
+	-o-border-border-top-right-radius: 8px;	
+}
+table.grouped tr.last-row th.right-column, table.grouped tr.last-row td.right-column
+{
+	-moz-border-bottom-right-radius: 8px;
+	-webkit-border-bottom-right-radius: 8px;
+	-o-border-border-bottom-right-radius: 8px;	
+}
+table.grouped tr.selected th, table.grouped tr.selected td, table.grouped th.selected, table.grouped td.selected
+{
+	color: #fff;
+}
+table.grouped .info
+{
+	padding-top: 0px;
+	font-style: italic;
+	font-size: 90%;
+}
+table.grouped h2
+{
+	font-weight: bold;
+	margin: 0px;
+}
+table.grouped tr.selected, table.grouped th.selected, table.grouped td.selected
+{
+	background-color: #F4423B;
+	color: #fff;
+}
+/* ========== Table List End ========== */
+
+/* ========== Large Submit Button Start ========== */
+a.submit-button
+{
+	height: 30px;
+	width: 200px;
+	color: #fff;
+	text-decoration: none;
+	background: -webkit-gradient(
+								linear,
+								left top,
+								left bottom,
+								color-stop(0.00, #86C28C),
+								color-stop(0.50, #009F11),
+								color-stop(0.51, #009F11),
+								color-stop(1.00, #008F0B)
+								);
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-o-border-radius: 10px;
+	border-radius: 10px;
+	border-top: 1px solid #D0D0D0;
+	border-bottom: 2px solid #2A422C;
+	border-left: 1px solid #5A5A5C;
+	border-right: 2px solid #374139;
+	display: block;
+	padding: 5px 10px;
+	margin: 15px auto;
+}
+a.submit-button h2
+{
+	height: 30px;
+	width: 200px;
+	vertical-align: middle;
+	text-align: center;
+	display: table-cell;
+}
+/* ========== Large Button End ========== */
+
+/* ========== Loader Start ========== */
+span#loader
+{
+	visibility: hidden;
+	position: absolute;
+	left: 40%;
+	top: 50%;
+	width: 50px;
+	height: 50px;
+	text-align: center;
+	color: #000;
+	font-size: 10px;
+	background-color: #fff;
+	border: 2px solid #013C64;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	padding: 5px;
+	z-index: 30;
+}
+/* ========== Loader End ========== */
+
+/* ========== Button Start ========== */
+.button
+{
+	position: absolute;
+	top: 5px;
+	right: 20px;
+	width: 43px;
+	height: 30px;
+	margin: 0px 3px;
+	border-top: 1px solid #fff;
+	border-left: 1px solid #fff;
+	border-bottom: 2px solid #494949;
+	border-right: 2px solid #494949;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	-o-border-radius: 4px;
+	border-radius: 4px;
+	line-height: 30px;
+	z-index: 1;
+	background: -webkit-gradient(
+								linear,
+								left top,
+								left bottom,
+								color-stop(0.00, #3E82FF),
+								color-stop(0.50, #1164FF),
+								color-stop(0.51, #0052EA),
+								color-stop(1.00, #00318C)
+								);
+	font-weight: bold;
+	color: white;
+	text-align: center;
+}
+.clicked
+{
+	background-color: #D0D0D0;
+	color: #374139;
+	opacity: 0.4;
+	filter: alpha(opacity=40);
+	border-top: 0px;
+	border-left: 0px;
+	border-bottom-width: 1px;
+	border-right-width: 1px;
+}
+/* ========== Button End ========== */
+
+/* ========== Content Start ========== */
+#wrapper
+{
+	width: 100%;
+	height: 99%;
+	position: relative;
+    z-index: 1;
+    overflow: auto;
+}
+#content
+{
+/*	-webkit-touch-callout: none;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0); */
+	width: 97%;
+	position: absolute;
+	z-index: 1;
+	padding-top: 10px;
+	padding-bottom: 5px;
+	padding-left: 10px;
+}
+span.hidden-data
+{
+	visibility: hidden;
+	position: absolute;
+	left: 1px;
+	top: 1px;
+}
+/* ========== Content End ========== */
+
+/* ========== Checkbox Start ========== */
+.checkbox
+{
+	width: 30px;
+	height: 30px;
+	border: 1px solid #000;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-o-border-radius: 10px;
+	border-radius: 10px;
+	margin: 0px 10px 0px 5px;
+}
+.checkbox img
+{
+	visibility: hidden;
+}
+.checkbox-checked img
+{
+	visibility: visible;
+}
+/* ========== Checkbox End ========== */
+
+/* ========== mPoint Classes Start ========== */
+.mPoint_Label
+{
+	font-weight: bold;
+	padding-right: 0.5em;
+	padding-top: 0.3em;
+	white-space: nowrap;
+}
+
+.mPoint_Info
+{
+	font-weight: normal;
+	color: #000;
+	text-align: left;
+	padding: 0px;
+	margin: 0px;	
+}
+
+.mPoint_Help
+{
+	margin-left: 15px;
+}
+
+.mPoint_Status
+{
+	font-size: 90%;
+	color: red;
+	font-style: italic;
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+}
+div#info .mPoint_Status
+{
+	color: darkgreen;
+}
+
+td.mPoint_Number
+{
+	padding-right: 0.5em;
+	text-align: right;
+	white-space: nowrap;
+}
+.mPoint_Card
+{
+	white-space: nowrap;
+}
+/* ========== mPoint Classes End ========== */
+
+/* ========== ID Classes Start ========== */
+div#logo, div#progress, div#mPoint, div#status, div#top-up div#close
+{
+	text-align: center;
+}
+#price
+{
+	white-space: nowrap;
+}
+div#progress a:hover
+{
+	text-decoration: none;
+}
+/* ========== ID Classes End ========== */
+/*
+tr.mPoint_Even, div.mPoint_Even
+{
+	color: #000;
+}
+input.mPoint_Even_Card_Button
+{
+	border-width: 0px;
+	border-style: none;
+	background-color: #e5e8ed;
+	border-color: #fff;
+	color: #000;
+	text-decoration: underline;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 2px 0px;
+}
+tr.mPoint_Uneven, div.mPoint_Uneven
+{
+	background-color: #000045;
+}
+input.mPoint_Uneven_Card_Button
+{
+	border-width: 0px;
+	border-style: none;
+	background-color: #000045;
+	border-color: #000045;
+	color: #fff;
+	text-decoration: underline;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 2px 0px;
+}
+
+input.mPoint_Button
+{
+	font-size: 1em;
+	font-weight: bold;
+	color: #000;
+}
+
+input.mPoint_Card_Button
+{
+	font-size: 1em;
+	border-width: 0px;
+	border-style: none;
+	background-color: #e5e8ed;
+	border-color: #fff;
+	color: blue;
+	text-decoration: underline;
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 2px 0px;
+}
+input.mPoint_Card_Button:hover
+{
+	cursor: pointer; cursor: hand;
+}
+
+div.mPoint_Card
+{
+}
+
+div.mPoint_Account
+{
+	width: 100%;
+}
+div.mPoint_Account
+{
+	width: 100%;
+	border-bottom: 2px dashed #014a7d;
+}
+div.mPoint_Account input.mPoint_Card_Button
+{
+	color: #000;
+	font-weight: bold;
+}
+/* ========== mPoint Classes Start ========== */
+
+/* ========== ID Classes Start ========== */
+/*
+table#products tr td
+{
+	padding-left: 3px;
+	padding-top: 3px;
+}
+
+table#receipt, div#top-up div.mPoint_Info
+{
+	background-color: #e5e8ed;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+table#receipt, table#products tr.mPoint_Uneven
+{
+	color: #000;
+}
+
+div#logo, div#progress, div#mPoint, div#status, div#top-up div#close
+{
+	text-align: center;
+}
+div#logo
+{
+	margin-right: 5px;
+}
+
+div#status table tr td
+{
+	vertical-align: middle;
+	padding-left: 0.5em;
+}
+
+div#terms
+{
+	white-space: pre;
+}
+
+div#delivery, div#email, div#cardinfo, div#prepaid, div#accountinfo, div#my-account table
+{
+	background-color: #e5e8ed;
+}
+div#delivery, div#email, div#cardinfo, div#prepaid, div#accountinfo
+{
+	padding-left: 3px;
+	padding-bottom: 3px;
+}
+
+div#shipping div table tr td
+{
+	padding-top: 3px;
+	padding-left: 3px;
+}
+
+div#cards, div#my-account div#inner-border, table#receipt, div#email
+{
+	padding: 0px 10px 0px 10px;
+	border: 2px solid #014a7d;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+}
+
+div#my-account
+{
+}
+div#my-account div#prepaid div, div#my-account div#prepaid table, div#my-account div#cardinfo div, div#my-account div#cardinfo table, div#my-account div#cardinfo table * .mPoint_Info
+{
+	color: #000;
+}
+div#my-account .passive
+{
+	color: #708090;
+}
+div#my-account a#top-up
+{
+	color: red;
+}
+div#my-account div#cardinfo, div#my-account div#accountinfo, div#email
+{
+	margin-bottom: 5px;
+}
+div#my-account div#password
+{
+	padding-bottom: 5px;
+	border-top: 2px dashed #014a7d;
+}
+
+div#price
+{
+	margin-left: 15px;
+	padding-bottom: 0.5em;
+}
+div#outer-border
+{
+	
+}
+div#info div#submit
+{
+	margin-left: 0px;
+}
+div#info, div#submit, div#link
+{
+	margin-left: 10px;
+}
+div#progress #link
+{
+	position: fixed;
+	top: 5px;
+	right: 0px;
+	font-style: normal;
+	height: 32px;
+	margin: 0px 1px;
+	border-top: 1px solid #fff;
+	border-left: 1px solid #fff;
+	border-bottom: 2px solid #494949;
+	border-right: 2px solid #494949;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	-o-border-radius: 4px;
+	border-radius: 4px;
+}
+div#progress #link.clicked
+{
+	opacity: 0.4;
+	filter: alpha(opacity=40);
+	border-top: 0px;
+	border-left: 0px;
+	border-bottom-width: 1px;
+	border-right-width: 1px;
+}
+#my-account a#pay
+{
+	height: 30px;
+	width: 180px;
+	color: #fff;
+	text-decoration: none;
+	background: -webkit-gradient(
+								linear,
+								left top,
+								left bottom,
+								color-stop(0.00, #86C28C),
+								color-stop(0.50, #009F11),
+								color-stop(0.51, #009F11),
+								color-stop(1.00, #008F0B)
+								);
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-o-border-radius: 10px;
+	border-radius: 10px;
+	border-top: 1px solid #D0D0D0;
+	border-bottom: 2px solid #2A422C;
+	border-left: 1px solid #5A5A5C;
+	border-right: 2px solid #374139;
+	display: block;
+	padding: 5px 10px;
+	margin: 15px auto;
+}
+#my-account a#pay.clicked
+{
+	opacity: 0.4;
+	filter: alpha(opacity=40);
+	border-top: 0px;
+	border-left: 0px;
+	border-bottom-width: 1px;
+	border-right-width: 1px;	
+}
+#my-account a#pay h2
+{
+	height: 30px;
+	width: 180px;
+	vertical-align: middle;
+	text-align: center;
+	display: table-cell;
+}
+/* ========== ID Classes End ========== */

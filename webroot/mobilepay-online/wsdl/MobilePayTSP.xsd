@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.danskebank.com/mobilepay/services/tspcardrequest" elementFormDefault="qualified"
+    xmlns="http://www.w3.org/2001/XMLSchema" xmlns:mpc="http://www.danskebank.com/mobilepay/services/tspcardrequest">
+    <include schemaLocation="MobilePay.xsd" />
+
+    <complexType name="CardRequest">
+        <sequence>
+            <element name="OwnerId" type="mpc:String50" />
+            <element name="PartnerId" type="mpc:String50" />
+            <element name="SessionToken" type="mpc:String100" />
+            <element name="TokenId" type="mpc:String100" />
+        </sequence>
+    </complexType>
+
+    <complexType name="CardRequestResponse">
+        <sequence>
+            <element name="EncryptedCardData" type="base64Binary" />
+            <element default="0" name="ResponseCode">
+                <simpleType>
+                    <restriction base="integer">
+                        <enumeration value="0" />
+                        <enumeration value="1" />
+                        <enumeration value="2" />
+                    </restriction>
+                </simpleType>
+            </element>
+            <element name="ReasonMessage" type="mpc:String255" />
+        </sequence>
+    </complexType>
+</schema>

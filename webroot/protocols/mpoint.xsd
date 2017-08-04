@@ -670,7 +670,7 @@
 						<xs:element name="amount">
 						  <xs:complexType>
 							<xs:simpleContent>
-							  <xs:extension base="xs:nonNegativeInteger">
+							  <xs:extension base="xs:decimal">
 								<xs:attribute type="xs:positiveInteger" name="country-id"/>
 								<xs:attribute type="xs:string" name="currency"/>
 							  </xs:extension>
@@ -773,7 +773,7 @@
 
 <xs:complexType name="amount">
 	<xs:simpleContent>
-		<xs:extension base="xs:nonNegativeInteger">
+		<xs:extension base="xs:decimal">
 			<xs:attribute name="country-id" type="xs:positiveInteger" use="optional" />
 		</xs:extension>
 	</xs:simpleContent>

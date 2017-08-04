@@ -42,7 +42,7 @@ if (General::getBrowserType() == "mobile")
 ?>
 	<title><?= $_OBJ_TXT->_("Create Account"); ?></title>
 	
-	<?= $obj_mPoint->getSystemInfo(); ?>
+	<?= $obj_mPoint->getSystemInfo($aHTTP_CONN_INFO["hpp"]["protocol"]); ?>
 	<user-info>
 		<mobile countryid="<?= $_SESSION['obj_Info']->getInfo("countryid"); ?>"><?= $_SESSION['obj_Info']->getInfo("mobile"); ?></mobile>
 	</user-info>

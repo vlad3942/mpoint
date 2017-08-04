@@ -142,7 +142,7 @@ msgstr @@@ Undefined E-Mail Address @@@
 msgid @@@ Status - 142 @@@
 msgstr @@@ E-Mail address is too short, min length is {AUTH MIN LENGTH} @@@
 msgid @@@ Status - 143 @@@
-msgstr @@@ E-Mail address contains invalid characters, an e-mail may only contain the following characters: 0-9 a-z A-Z æ ø å Æ Ø Å ä ö Ä Ö _ . @ and - @@@
+msgstr @@@ E-Mail address contains invalid characters, an e-mail may only contain the following characters: 0-9 a-z A-Z Ã¦ Ã¸ Ã¥ Ã† Ã˜ Ã… Ã¤ Ã¶ Ã„ Ã– _ . @ and - @@@
 msgid @@@ Status - 144 @@@
 msgstr @@@  E-Mail has an invalid form, an e-mail should have the form: john.doe@hotmail.com @@@
 msgid @@@ Status - 151 @@@
@@ -176,7 +176,7 @@ msgstr @@@ E-Mail address is too short, a valid e-mail address must be min 5 cha
 msgid @@@ E-Mail - 13 @@@
 msgstr @@@ E-Mail address is too long, a valid e-mail address must be max 50 characters @@@
 msgid @@@ E-Mail - 14 @@@
-msgstr @@@ E-Mail address contains invalid characters, an e-mail address may only contain the following characters: 0-9 A-Z a-z æ ø å ä ö Æ Ø Å Ä Ö _ . - @ @@@
+msgstr @@@ E-Mail address contains invalid characters, an e-mail address may only contain the following characters: 0-9 A-Z a-z ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ _ . - @ @@@
 msgid @@@ E-Mail - 15 @@@
 msgstr @@@ E-Mail has an invalid format, a valid e-mail address must be in the format of: donald.duck@cellpointmobile.com @@@
 msgid @@@ E-Mail - 91 @@@
@@ -260,11 +260,11 @@ msgstr @@@ The entered Delivery Date is in the Past @@@
 msgid @@@ Overview - 11 @@@
 msgstr @@@ Please accept the Terms & Conditions to continue @@@
 msgid @@@ Select Card - 43 @@@
-msgstr @@@ The payment could not be authorised with the provided password, your account has been deleted. @@@
+msgstr @@@ Your account has been deleted because of three invalid attempts.. @@@
 msgid @@@ Select Card - 49 @@@
 msgstr @@@ The specified account is not active. @@@
 msgid @@@ Select Card - 99 @@@
-msgstr @@@ We're sorry but we could not complete the payment through your selected payment method. Please select another one to try again. @@@
+msgstr @@@ We're sorry, we could not complete the payment through your selected payment method. Please try again. @@@
 msgid @@@ Select Card - 25 @@@
 msgstr @@@ Card holder name is not valid. @@@
 msgid @@@ Select Card - 3 @@@
@@ -272,25 +272,79 @@ msgstr @@@ Card type is not valid. @@@
 msgid @@@ Select Card - 19 @@@
 msgstr @@@ Expiry month or year is not valid. @@@
 msgid @@@ Select Card - 20 @@@
-msgstr @@@ Expiry month or year is not valid. @@@
-msgid @@@ Select Card - 34 @@@
-msgstr @@@ Username is empty. @@@
-msgid @@@ Select Card - 35 @@@
-msgstr @@@ Username length is too short. @@@
-msgid @@@ Select Card - 36 @@@
-msgstr @@@ Username length is too big. @@@
-msgid @@@ Select Card - 37 @@@
-msgstr @@@ Username doesn't contain special characters. @@@
+msgstr @@@ The entered Card is already expired. Please enter valid details. @@@
 msgid @@@ Select Card - 26 @@@
-msgstr @@@ card number is not valid. @@@
+msgstr @@@ Card number is not valid. @@@
 msgid @@@ Select Card - 59 @@@
 msgstr @@@ Payment method not supported. @@@
 msgid @@@ Select Card - 101 @@@
-msgstr @@@ All your stored cards have been deleted. @@@
+msgstr @@@ Your stored card has been deleted.. @@@
 msgid @@@ Select Card - 502 @@@
-msgstr @@@ Authorization Failed please contact support. @@@
-msgid @@@ Select Payment Method - 99 @@@
-msgstr @@@ We're sorry but we could not complete the payment through your selected payment method. Please select another one to try again. @@@
+msgstr @@@ Transaction failed. Please try again later or contact support. @@@
+msgid @@@ Select Card - 11 @@@
+msgstr @@@ Undefined Password. @@@
+msgid @@@ Select Card - 12 @@@
+msgstr @@@ Password is too short. @@@
+msgid @@@ Select Card - 13 @@@
+msgstr @@@ Password is too long. @@@
+msgid @@@ Select Card - 14 @@@
+msgstr @@@ Password contains invalid characters. @@@
+msgid @@@ Select Card - 15 @@@
+msgstr @@@ Undefined Password. @@@
+msgid @@@ Select Card - 16 @@@
+msgstr @@@ Password is too short. @@@
+msgid @@@ Select Card - 17 @@@
+msgstr @@@ Password is too long. @@@
+msgid @@@ Select Card - 18 @@@
+msgstr @@@ Password contains invalid characters. @@@
+msgid @@@ Select Card - 31 @@@
+msgstr @@@ new-password and repeat-password does not match. @@@
+msgid @@@ Select Card - 21 @@@
+msgstr @@@ Undefined Card ID. @@@
+msgid @@@ Select Card - 22 @@@
+msgstr @@@ Card ID is too small, amount must be greater than 0. @@@
+msgid @@@ Select Card - 23 @@@
+msgstr @@@ Card not found. @@@
+msgid @@@ Select Card - 24 @@@
+msgstr @@@ Card disabled. @@@
+msgid @@@ Select Card - 34 @@@
+msgstr @@@ Undefined Name. @@@
+msgid @@@ Select Card - 35 @@@
+msgstr @@@ Name is too short, must be 2 characters or longer. @@@
+msgid @@@ Select Card - 36 @@@
+msgstr @@@ Name is too long, must be shorter than 100 characters. @@@
+msgid @@@ Select Card - 36 @@@
+msgstr @@@ Name contains invalid characters. @@@
+msgid @@@ Select Card - 61 @@@
+msgstr @@@ Unable to store card name. @@@
+msgid @@@ Select Card - 62 @@@
+msgstr @@@ Card name successfully set for card. @@@
+msgid @@@ Select Card - 63 @@@
+msgstr @@@ New card created with name. @@@
+msgid @@@ Select Card - 64 @@@
+msgstr @@@ Card renamed. @@@
+msgid @@@ Select Card - 71 @@@
+msgstr @@@ Account ID / Password doesn't match. @@@
+msgid @@@ Select Card - 72 @@@
+msgstr @@@ Account ID / Password doesn't match - Next invalid login will disable the account. @@@
+msgid @@@ Select Card - 73 @@@
+msgstr @@@ Account ID / Password doesn't match - Account has been disabled. @@@
+msgid @@@ Select Card - 74 @@@
+msgstr @@@ Account ID / Password doesn't match - Next invalid login will disable the account + And there is an active payment transaction. @@@
+msgid @@@ Select Card - 75 @@@
+msgstr @@@ Account not found. @@@
+msgid @@@ Select Card - 79 @@@
+msgstr @@@ Account disabled. @@@
+msgid @@@ Select Card - 81 @@@
+msgstr @@@ Login successful - Mobile Number not verified. @@@
+msgid @@@ Select Card - 100 @@@
+msgstr @@@ Your stored card has been deleted. @@@
+msgid @@@ Select Card - 102 @@@
+msgstr @@@ Active transactions. @@@
+msgid @@@ Select Card - 103 @@@
+msgstr @@@ No matching cards. @@@
+msgid @@@ Select Card - 104 @@@
+msgstr @@@ Internal Error. @@@
 msgid @@@ CPM Payment - 1 @@@
 msgstr @@@ Your account has been topped up and the original payment has been resumed @@@
 msgid @@@ CPM Payment - 11 @@@
@@ -366,7 +420,7 @@ msgstr @@@ The entered card name is too short, min length is 2 characters @@@
 msgid @@@ Create Account - 36 @@@
 msgstr @@@ The entered card name is too long, max length is 50 characters @@@
 msgid @@@ Create Account - 37 @@@
-msgstr @@@ A card name may only consist of the following characters: 0-9 a-z æ ø å Æ Ø Å ä ö Ä Ö _ . @ and - @@@
+msgstr @@@ A card name may only consist of the following characters: 0-9 a-z ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ _ . @ and - @@@
 msgid @@@ Create Account - 41 @@@
 msgstr @@@ Please select a country from the dropdown? @@@
 msgid @@@ Create Account - 42 @@@
@@ -499,7 +553,7 @@ msgstr @@@ The entered E-Mail address is too short, min length is: {AUTH MIN LEN
 msgid @@@ username - code: 13 @@@
 msgstr @@@ The entered E-Mail address is too long, max length is: {AUTH MAX LENGTH} @@@
 msgid @@@ username - code: 14 @@@
-msgstr @@@ E-Mail address contains invalid characters, an e-mail address can only contain the following charcters: a-z æøå A-Z ÆØÅ 0-9 and _-.@ @@@
+msgstr @@@ E-Mail address contains invalid characters, an e-mail address can only contain the following charcters: a-z ï¿½ï¿½ï¿½ A-Z ï¿½ï¿½ï¿½ 0-9 and _-.@ @@@
 msgid @@@ username - code: 15 @@@
 msgstr @@@ E-Mail address has an invalid format, an e-mail address must have the following format: user@domain.topdomain, i.e. john.doe@hotmail.com or john_joe@mail.hot.com @@@
 
@@ -539,7 +593,7 @@ msgstr @@@ The entered E-Mail address is too short, min length is: {AUTH MIN LEN
 msgid @@@ username - code: 13 @@@
 msgstr @@@ The entered E-Mail address is too long, max length is: {AUTH MAX LENGTH} @@@
 msgid @@@ username - code: 14 @@@
-msgstr @@@ E-Mail address contains invalid characters, an e-mail address can only contain the following characters: a-z æøå A-Z ÆØÅ 0-9 and _-.@ @@@
+msgstr @@@ E-Mail address contains invalid characters, an e-mail address can only contain the following characters: a-z ï¿½ï¿½ï¿½ A-Z ï¿½ï¿½ï¿½ 0-9 and _-.@ @@@
 msgid @@@ username - code: 15 @@@
 msgstr @@@ E-Mail address has an invalid format, an e-mail address must have the following format: user@domain.topdomain, i.e. john.doe@hotmail.com or john_joe@mail.hot.com @@@
 msgid @@@ otp - code: 1 @@@
@@ -797,7 +851,7 @@ msgstr @@@ The entered e-mail address is too short @@@
 msgid @@@ email - code: 3 @@@
 msgstr @@@ The entered e-mail address is too long @@@
 msgid @@@ email - code: 4 @@@
-msgstr @@@ E-Mail address contains invalid characters, an e-mail address may only contain the following characters: 0-9 A-Z a-z æ ø å ä ö Æ Ø Å Ä Ö _ . - @ @@@
+msgstr @@@ E-Mail address contains invalid characters, an e-mail address may only contain the following characters: 0-9 A-Z a-z ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ _ . - @ @@@
 msgid @@@ email - code: 5 @@@
 msgstr @@@ E-Mail has an invalid format, a valid e-mail address must be in the format of: donald.duck@cellpointmobile.com @@@
 msgid @@@ email - code: 6 @@@
@@ -815,7 +869,7 @@ msgstr @@@ The entered e-mail address is too short @@@
 msgid @@@ email - code: 3 @@@
 msgstr @@@ The entered e-mail address is too long @@@
 msgid @@@ email - code: 4 @@@
-msgstr @@@ E-Mail address contains invalid characters, an e-mail address may only contain the following characters: 0-9 A-Z a-z æ ø å ä ö Æ Ø Å Ä Ö _ . - @ @@@
+msgstr @@@ E-Mail address contains invalid characters, an e-mail address may only contain the following characters: 0-9 A-Z a-z ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ _ . - @ @@@
 msgid @@@ email - code: 5 @@@
 msgstr @@@ E-Mail has an invalid format, a valid e-mail address must be in the format of: donald.duck@cellpointmobile.com @@@
 msgid @@@ email - code: 6 @@@
@@ -877,7 +931,7 @@ msgstr @@@ The entered E-Mail address is too short, min length is: {AUTH MIN LEN
 msgid @@@ recipient - code: 6 @@@
 msgstr @@@ The entered E-Mail address is too long, max length is: {AUTH MAX LENGTH} @@@
 msgid @@@ recipient - code: 7 @@@
-msgstr @@@ E-Mail address contains invalid characters, an e-mail address can only contain the following charcters: a-z æøå A-Z ÆØÅ 0-9 and _-.@ @@@
+msgstr @@@ E-Mail address contains invalid characters, an e-mail address can only contain the following charcters: a-z ï¿½ï¿½ï¿½ A-Z ï¿½ï¿½ï¿½ 0-9 and _-.@ @@@
 msgid @@@ recipient - code: 8 @@@
 msgstr @@@ E-Mail address has an invalid format, an e-mail address must have the following format: user@domain.topdomain, i.e. john.doe@hotmail.com or john_joe@mail.hot.com @@@
 msgid @@@ recipient - code: 10 @@@
@@ -931,7 +985,7 @@ msgstr @@@ The entered E-Mail address is too short, min length is: {AUTH MIN LEN
 msgid @@@ recipient - code: 13 @@@
 msgstr @@@ The entered E-Mail address is too long, max length is: {AUTH MAX LENGTH} @@@
 msgid @@@ recipient - code: 14 @@@
-msgstr @@@ E-Mail address contains invalid characters, an e-mail address can only contain the following charcters: a-z æøå A-Z ÆØÅ 0-9 and _-.@ @@@
+msgstr @@@ E-Mail address contains invalid characters, an e-mail address can only contain the following charcters: a-z ï¿½ï¿½ï¿½ A-Z ï¿½ï¿½ï¿½ 0-9 and _-.@ @@@
 msgid @@@ recipient - code: 15 @@@
 msgstr @@@ E-Mail address has an invalid format, an e-mail address must have the following format: user@domain.topdomain, i.e. john.doe@hotmail.com or john_joe@mail.hot.com @@@
 msgid @@@ password - code: 1 @@@
@@ -1115,7 +1169,7 @@ msgstr @@@ The entered e-mail address is too short @@@
 msgid @@@ email - code: 3 @@@
 msgstr @@@ The entered e-mail address is too long @@@
 msgid @@@ email - code: 4 @@@
-msgstr @@@ E-Mail address contains invalid characters, an e-mail address may only contain the following characters: 0-9 A-Z a-z æ ø å ä ö Æ Ø Å Ä Ö _ . - @ @@@
+msgstr @@@ E-Mail address contains invalid characters, an e-mail address may only contain the following characters: 0-9 A-Z a-z ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ _ . - @ @@@
 msgid @@@ email - code: 5 @@@
 msgstr @@@ E-Mail has an invalid format, a valid e-mail address must be in the format of: donald.duck@cellpointmobile.com @@@
 msgid @@@ email - code: 6 @@@
@@ -1203,7 +1257,7 @@ msgstr @@@ The entered e-mail address is too short @@@
 msgid @@@ email - code: 3 @@@
 msgstr @@@ The entered e-mail address is too long @@@
 msgid @@@ email - code: 4 @@@
-msgstr @@@ E-Mail address contains invalid characters, an e-mail address may only contain the following characters: 0-9 A-Z a-z æ ø å ä ö Æ Ø Å Ä Ö _ . - @ @@@
+msgstr @@@ E-Mail address contains invalid characters, an e-mail address may only contain the following characters: 0-9 A-Z a-z ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ ï¿½ _ . - @ @@@
 msgid @@@ email - code: 5 @@@
 msgstr @@@ E-Mail has an invalid format, a valid e-mail address must be in the format of: donald.duck@cellpointmobile.com @@@
 msgid @@@ email - code: 6 @@@

@@ -195,6 +195,7 @@ class EndUserAccount extends Home
 		$aArgs = func_get_args();
 		switch (count($aArgs) )
 		{
+		case (7):
 		case (8):
 			$chargeid = 0;
 			// Card Saved during Authorization
