@@ -1211,6 +1211,38 @@
 			</xs:element>
 		</xs:all>
 	</xs:complexType>
+	<!-- Get Client GoMobile Configurations -->
+	<xs:complexType name="client-gomobile-configuration-search-request">
+		<xs:annotation>
+			<xs:documentation>
+				Specifies the criteria for executing a
+				configuration search
+			</xs:documentation>
+		</xs:annotation>
+		<xs:all>
+			<xs:element name="clients" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Contains the list of unique IDs for the client
+						configurations that should be fetched
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element type="xs:integer" name="client-id"
+							minOccurs="1" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>
+									The unique ID for the client whose
+									configuration should be fetched
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:all>
+	</xs:complexType>
 	<xs:complexType name="client-configuration-search-response">
 		<xs:choice>
 			<xs:element name="client-configurations" minOccurs="1"
