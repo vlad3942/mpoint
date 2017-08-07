@@ -39,8 +39,6 @@ $HTTP_RAW_POST_DATA .= '</get-client-gomobile-configurations>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
 
-
-
 $xml = '';
 
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
@@ -67,7 +65,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
 				
 		//Currently bypassing validation SSO validation from mConsole.
-		$code = 10;//$obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_CLIENTS, $aClientIDs);
+		$code = mConsole::iAUTHORIZATION_SUCCESSFUL;//$obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_CLIENTS, $aClientIDs);
 		switch ($code)
 		{
 		case (mConsole::iSERVICE_CONNECTION_TIMEOUT_ERROR):
