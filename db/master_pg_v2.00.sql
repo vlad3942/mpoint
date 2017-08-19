@@ -179,7 +179,7 @@ WITH (
   OIDS=FALSE
 );
 ALTER TABLE client.gomobileconfiguration_tbl
-  OWNER TO postgres;
+  OWNER TO mpoint;
 
 
 
