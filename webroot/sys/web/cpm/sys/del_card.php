@@ -34,7 +34,7 @@ $obj_mPoint = new MyAccount($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo']->getCl
 if ($obj_Validator->valStoredCard($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAccountID(), $_POST['cardid']) != 10) { $aMsgCds[] = $obj_Validator->valStoredCard($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAccountID(), $_POST['cardid']) + 20; }
 if ($_SESSION['obj_Info']->getInfo("auth-token") === false || strlen($_SESSION['obj_TxnInfo']->getAuthenticationURL() ) == 0)
 {
-	if ($obj_Validator->valPassword($_POST['pwd']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_POST['pwd']) + 30; }
+	if ($obj_Validator->valPassword($_POST['pwd']) != 10) { $aMsgCds[] = $obj_Validator->valPassword($_POST['pwd']) + 10; }
 }
 
 $sPath = "/pay/card.php";
@@ -48,7 +48,8 @@ if (count($aMsgCds) == 0)
 	else { $msg = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($_SESSION['obj_TxnInfo']->getAuthenticationURL() ), CustomerInfo::produceInfo($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAccountID() ), $_SESSION['obj_Info']->getInfo("auth-token") ); }
 	if ($msg >= 10)
 	{
-		if ($obj_mPoint->delStoredCard($_SESSION['obj_TxnInfo']->getAccountID(), $_POST['cardid']) == 10)
+	    $delStoredCardCode =$obj_mPoint->delStoredCard($_SESSION['obj_TxnInfo']->getAccountID(), $_POST['cardid']);
+		if ($delStoredCardCode == 10)
 		{
 			$obj_CardsXML = simplexml_load_string($obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_TxnInfo']->getClientConfig(), true, $_SESSION['obj_UA']) );
 			if (count($obj_CardsXML) > 0)
@@ -63,16 +64,16 @@ if (count($aMsgCds) == 0)
 			}
 			else { $aMsgCds[] = 100; }
 		}
-		else { $aMsgCds[] = 99; }
+		else { $aMsgCds[] = $delStoredCardCode + 101; }
 	}
-	else { $aMsgCds[] = $msg + 40; }
+	else { $aMsgCds[] = $msg + 70; }
 }
 
 $msg = "";
 for ($i=0; $i<count($aMsgCds); $i++)
 {
-	$msg .= "&msg=". $aMsgCds[$i];
+	$msg .= "&msg[]=". $aMsgCds[$i];
 }
 
-header("location: ". $sPath ."?" . session_name() ."=". session_id() . $msg);
+header("location: ". $sPath ."?" . $msg);
 ?>

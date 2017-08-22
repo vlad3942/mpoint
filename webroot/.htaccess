@@ -1,1 +1,1 @@
-ErrorDocument 404 http://mpay.demo.cellpointmobile.com?id=100010001
+ErrorDocument 404 /404.html

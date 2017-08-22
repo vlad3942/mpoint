@@ -75,11 +75,15 @@ if ($_SESSION ['obj_TxnInfo']->getTypeID () >= 100 && $_SESSION ['obj_TxnInfo']-
 	$xml .= '<original-transaction-id>' . $_SESSION ['obj_OrgTxnInfo']->getID () . '</original-transaction-id>';
 }
 
+$mpointId=  $_SESSION ['obj_TxnInfo']->getID();
+$orderid =  urlencode($_SESSION ['obj_TxnInfo']->getOrderID() );
+
 $xml .= $obj_mPoint->getMessages ( "Accept" );
 $xml .= '<transactionstatus>' . $_REQUEST ['transactionStatus'] . '</transactionstatus>';
 $xml .= '<transactionid>' . $_REQUEST ['mpoint-id'] . '</transactionid>';
+$xml .= '<orderid>' . $orderid . '</orderid>';
 if ($_SESSION ['obj_TxnInfo']->getCSSURL () == "") {
-	$cssurll = "http://" . $_SERVER ["HTTP_HOST"] . "/css/bootstrap/styles.css";
+	$cssurll = "https://" . $_SERVER ["HTTP_HOST"] . "/css/bootstrap/styles.css";
 } else {
 	$cssurll = $_SESSION ['obj_TxnInfo']->getCSSURL ();
 }
@@ -96,13 +100,23 @@ if ($_SESSION ['obj_TxnInfo']->getCSSURL () == "") {
 	$cancel = $_SESSION ['obj_TxnInfo']->getCANCELURL ();
 }
 
+if ($_SESSION ['obj_TxnInfo']->getLogoURL()  == "") {
+    $logourl = "#";
+} else {
+    $logourl= $_SESSION ['obj_TxnInfo']->getLogoURL();
+}
+
+$_SESSION = array();
 $xml .= '<cssurl>' . $cssurll . '</cssurl>';
 $xml .= '<accepturl>' . $accept . '</accepturl>';
 $xml .= '<cancelurl>' . $cancel . '</cancelurl>';
+$xml .= '<logourl>' . $logourl . '</logourl>';
 $xml .= '</root>';
 
 file_put_contents ( sLOG_PATH . "/debug_accept" . date ( "Y-m-d" ) . ".log", $xml );
 
+$_SESSION['transaction-id']=$mpointId;
+$_SESSION['order-id'] = $orderid;
 echo $xml;
 exit ();
 

@@ -203,10 +203,10 @@ else
 	if (isset($sPath) === false) { $sPath = "pay/card.php?"; }
 	for ($i=0; $i<count($aMsgCds); $i++)
 	{
-		$msg .= "&msg=". $aMsgCds[$i];
+		$msg .= "&msg[]=". $aMsgCds[$i];
 	}
 
-	header("location: https://". $_SERVER['HTTP_HOST'] ."/". $sPath . session_name() ."=". session_id() . $msg);
+	header("location: https://". $_SERVER['HTTP_HOST'] ."/". $sPath . $msg);
 	exit;
 
 

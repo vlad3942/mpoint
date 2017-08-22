@@ -35,15 +35,7 @@
 											</xsl:if>
 												<!-- Display error messages template -->
 											<xsl:if test="messages/item">
-												<xsl:apply-templates select="messages" mode="error" >
-													<xsl:with-param name="errorvalue" select="messages/item" />
-												</xsl:apply-templates>
-											</xsl:if>
-											<!-- Display error messages template -->
-											<xsl:if test="messages/item">
-												<xsl:apply-templates select="messages" mode="error" >
-													<xsl:with-param name="errorvalue" select="messages/item" />
-												</xsl:apply-templates>
+												<xsl:apply-templates select="messages" mode="error" ></xsl:apply-templates>
 											</xsl:if>
 										</div>
 
@@ -60,7 +52,7 @@
 											</p>
 										</div>
 
-										<div id="modal-cancel" href="http://www.google.co.in"
+										<div id="modal-cancel" href="https://www.google.co.in"
 											class="modal fade" data-backdrop="static" data-keyboard="false"
 											tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
 											aria-hidden="true">
@@ -120,8 +112,8 @@
 <xsl:param name="errorvalue" />
 <script type="text/javascript">
 $(document).ready(function() {
-  $('#modalerror').modal('show'); 
-  
+  $('#modalerror').modal('show');
+
     $("#ok").click(function(){
     var Qurl = window.location.href;
     var url = Qurl.substr(0, Qurl.indexOf("&amp;msg"));
@@ -134,21 +126,21 @@ $(document).ready(function() {
 											aria-hidden="true">
 											<div class="modal-dialog">
 												<div class="modal-content">
-													<div class="modal-body">
-														<button type="button" class="bootbox-close-button close"
-															data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;"> Ã— </button>
+													<!--<div class="modal-body">
+														&lt;!&ndash; <button type="button" class="bootbox-close-button close"
+															data-dismiss="modal" aria-hidden="true" style="margin-top: -10px;"> Ã— </button> &ndash;&gt;
 														<div class="bootbox-body " align="center">
 															<h3 class="text-warning"> Oops something went wrong!!!</h3>
 														</div>
-													</div>
+													</div>-->
 													<div class="modal-footer">
 														<div class="row">
 															<div class="col-md-12">
-																<div class="col-md-12" align="center">
-																	<h4><xsl:value-of select="$errorvalue" />
-																	</h4>
+																<div class="col-md-12" align="left">
+																	<xsl:for-each select="/root/messages/item">
+																		<h4><xsl:value-of select="." /></h4>
+																	</xsl:for-each>
 																</div>
-
 															</div>
 														</div>
 														<br />								
@@ -218,7 +210,7 @@ $(document).ready(function() {
 
 											<div class="col-md-6">
 												<form id="delete-card" class="classy-form"
-													action="{func:constLink('/cpm/sys/del_card.php') }" method="post">
+													action="{func:constLink('/cpm/sys/del_card.php') }" method="post" autocomplete="off">
 													<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
 													<input type="hidden" name="cardtype" value="11" />
 													<input type="hidden" name="prepaid" value="false" />
@@ -249,7 +241,7 @@ $(document).ready(function() {
 												</div>
 												<form class="form-inline classy-form" id="pay-account"
 													action="{func:constLink('/pay/sys/authorize.php') }"
-													method="post">
+													method="post"  autocomplete="off">
 													<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
 													<input type="hidden" name="cardtype" value="{@type-id}" />
 													<input type="hidden" name="prepaid" value="false" />
@@ -328,7 +320,7 @@ $(document).ready(function() {
 				aria-labelledby="headingThree">
 				<div class="panel-body">
 					<form class="classy-form" action="{func:constLink('/pay/sys/authorize.php') }"
-						method="post" autocomplete="on">
+						method="post" autocomplete="off">
 						<div class="row">
 							<input type="hidden" name="cardtype" value="" />
 							<input type="hidden" name="pspid" value="{@pspid}" />
@@ -590,14 +582,14 @@ $(document).ready(function() {
 							<xsl:choose>					
 								<xsl:when test="@id = '28'">
 									<div class="col-md-12">
-										<div class="wallet-type" id="walletvisa_{@id}" onClick="document.forms['walletform_{@id}'].submit();">
+										<div class="wallet-type" id="walletvisa_{@id}">
 
 											<div class="row" data-toggle="modal" data-target=".login-wallet">
 												<div class="payment-paypal-form payment-form">
-													<form action="{func:constLink('/pay/sys/apm.php') }" method="POST" name="walletform_{@id}" id="walletform_{@id}">
+													<form action="{func:constLink('/pay/sys/apm.php') }" method="POST" name="walletform_{@id}" id="walletform_{@id}"  autocomplete="off">
 															<span class="glyphicon glyphicon-chevron-right right-icon pull-icon-right"
 																	aria-hidden="true"></span>
-															<div class="col-md-12" id="card-{@id}">
+															<div class="col-md-12" id="card-{@id}"  onClick="document.forms['walletform_{@id}'].submit();">
 																<!-- <img src="/css/swag/img/paypal.png" class="wallet-img" 
 																	alt="Paypal"/> -->
 																	<img src="{/root/system/protocol}://{/root/system/host}/img/card_28.png" alt="PayPal" style="max-height: 80px"/>
@@ -667,7 +659,7 @@ $(document).ready(function() {
 										</div>
 									</div>
 									<form name="walletform_{@id}" id="walletform_{@id}"
-										action="{func:constLink('/pay/sys/authorize.php') }" method="post">
+										action="{func:constLink('/pay/sys/authorize.php') }" method="post"  autocomplete="off">
 										<input type="hidden" name="cardtype" value="{@id}" />
 										<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
 										<input type="hidden" name="token" id="token" value="" />
@@ -699,7 +691,7 @@ $(document).ready(function() {
 										</div>
 									</div>
 									<div class="payment-form hide">
-										<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/apm.php') }" method="post">
+										<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/apm.php') }" method="post"  autocomplete="off">
 											<input type="hidden" name="pspid" value="{@pspid}" />
 											<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
 											<input type="hidden" name="transactionid" value="{/root/transaction/@id}" />
@@ -735,7 +727,7 @@ $(document).ready(function() {
 														<h4 class="modal-title">Enter details to pay with sadad account</h4>
 													</div>
 													<div class="payment-form">
-														<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/sadad.php') }" method="post" autocomplete="on">
+														<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/sadad.php') }" method="post" autocomplete="off">
 															<input type="hidden" name="pspid" value="{@pspid}" />
 															<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
 															<div class="form-group row">
@@ -771,11 +763,11 @@ $(document).ready(function() {
 										</div>
 									</div>
 									<div class="payment-form hide">
-										<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/apm.php') }" method="post">
+										<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/apm.php') }" method="post"  autocomplete="off">
 											<input type="hidden" name="pspid" value="{@pspid}" />
 											<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
-											<input type="hidden" name="transactionid" value="{/root/transaction/@id}" /> 
-											<input type="hidden" name="cardtype" value="{@id}" /> 												
+											<input type="hidden" name="transactionid" value="{/root/transaction/@id}" />
+											<input type="hidden" name="cardtype" value="{@id}" />
 										</form>
 									</div>
 									<script type="text/javascript">
@@ -796,11 +788,11 @@ $(document).ready(function() {
 										</div>
 									</div>
 									<div class="payment-form hide">
-										<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/apm.php') }" method="post">
+										<form name="walletform_{@id}" id="walletform_{@id}" class="form-inline classy-form" action="{func:constLink('/pay/sys/apm.php') }" method="post"  autocomplete="off">
 											<input type="hidden" name="pspid" value="{@pspid}" />
 											<input type="hidden" name="euaid" value="{/root/cards/@accountid}" />
-											<input type="hidden" name="transactionid" value="{/root/transaction/@id}" /> 
-											<input type="hidden" name="cardtype" value="{@id}" /> 												
+											<input type="hidden" name="transactionid" value="{/root/transaction/@id}" />
+											<input type="hidden" name="cardtype" value="{@id}" />
 										</form>
 									</div>
 									<script type="text/javascript">

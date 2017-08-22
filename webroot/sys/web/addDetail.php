@@ -12,7 +12,7 @@ $sqlcountry = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmo
 $RSCountry = $_OBJ_DB->getAllNames($sqlcountry);
 //print_r($RSCountry);
 $sqlclient = "SELECT id,concat_ws(' - ',id,name) as clientnm
-  FROM client.client_tbl ORDER BY name";
+  FROM client.client_tbl WHERE enabled = '1' ORDER BY name";
 
 $client = $_OBJ_DB->getAllNames($sqlclient);
 //print_r($client);
@@ -72,7 +72,7 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
       <option value="-1">Please Select</option>
 		<?php
 		$sqlaccount = "SELECT id,concat_ws(' - ',id,name) as accnm 
-  FROM client.account_tbl ORDER BY name ";
+  FROM client.account_tbl WHERE enabled = '1' ORDER BY name ";
 			
 		$account = $_OBJ_DB->getAllNames($sqlaccount);
 			if(empty($account) === false)
@@ -261,7 +261,7 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
 </fieldset>
 </form>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+       <script src="js/jquery.min.js"></script>
       <!-- Include all compiled plugins (below), or include individual files as needed -->
       <script src="js/bootstrap.min.js"></script>
       <!-- <script src="js/custom.js"></script> -->
@@ -307,7 +307,10 @@ $client = $_OBJ_DB->getAllNames($sqlclient);
 			  add();
 		  
 		  })
-		 	
+          var d = new Date();
+          var n = d.getTime();
+
+          $("#order-id").val("UAT-"+n);
 	  })
 	  
 	  </script>

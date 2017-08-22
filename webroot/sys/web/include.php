@@ -72,7 +72,7 @@ require_once(sAPI_CLASS_PATH ."validate_base.php");
 require_once(sAPI_FUNCTION_PATH ."global.php");
 
 //Uncomment following line if you are running hpp on localhost
-define("sLOG_PATH", sSYSTEM_PATH ."/../../log/");
+//define("sLOG_PATH", sSYSTEM_PATH ."/../../log/");
 
 // Require API for Web Session handling
 require_once(sCLASS_PATH ."websession.php");
@@ -144,8 +144,11 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 {
 	// Start user session
 	//new Session($aDB_CONN_INFO["session"], iOUTPUT_METHOD, sERROR_LOG);
-	session_start();
-	session_regenerate_id();
+    $sess_name = session_name();
+    if (session_start()) {
+        session_regenerate_id();
+        setcookie($sess_name, session_id(), time()+ 1200, '/', null, true, true);
+    }
 	// Session object not initialized
 	if (isset($_SESSION['obj_Info']) === false)
 	{
@@ -187,5 +190,5 @@ if (array_key_exists("checksum", $_GET) === true && $_SERVER['REQUEST_METHOD'] =
 define("sLANG", General::getLanguage() );
 
 // Intialise Text Translation Object
-$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
+$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . sLANG ."/global.txt", sLANGUAGE_PATH . sLANG ."/custom.txt"), substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/webroot") ), 0, "UTF-8");
 ?>

@@ -23,7 +23,7 @@
         </operation>
     </portType>
     <binding name="PSPProcessPaymentWSBinding" type="tns2:PSPProcessPaymentWS">
-        <soap:binding style='rpc' transport='http://schemas.xmlsoap.org/soap/http' />
+        <soap:binding style='document' transport='http://schemas.xmlsoap.org/soap/http' />
         <operation name="Process">
             <soap:operation soapAction="" />
             <input>

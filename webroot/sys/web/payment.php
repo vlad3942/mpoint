@@ -120,7 +120,7 @@ try
 	?>
 			<root single-sign-on="<?= ($_SESSION['obj_Info']->getInfo("auth-token") === false ? "false" : "true"); ?>">
 				<title><?= $_OBJ_TXT->_("Pay using Account"); ?></title>
-				<?= $obj_mPoint->getSystemInfo(); ?>
+				<?= $obj_mPoint->getSystemInfo($aHTTP_CONN_INFO["hpp"]["protocol"]); ?>
 				<?= $_SESSION['obj_UA']->toXML(); ?>
 				<?= $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->toXML(); ?>
 				<?= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML(); ?>
@@ -166,6 +166,6 @@ try
 // Error: Billing SMS rejected by GoMobile
 catch (mPointException  $e)
 {
-	header("location: http://". $_SERVER['HTTP_HOST'] ."/pay/card.php?". session_name() ."=". session_id() ."&msg=99");
+	header("location: http://". $_SERVER['HTTP_HOST'] ."/pay/card.php?msg=99");
 }
 ?>
