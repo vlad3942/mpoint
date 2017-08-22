@@ -11,10 +11,10 @@
     </types>
 
     <message name="ProcessInputMessage">
-        <part name="arg0" element="tns:arg0" />
+        <part name="arg0" type="tns:ProcessRequest" />
     </message>
     <message name="ProcessOutputMessage">
-        <part name="return" element="tns:return" />
+        <part name="return" type="tns:ProcessResponse" />
     </message>
     <portType name="PSPProcessPaymentWS">
         <operation name="Process" parameterOrder='arg0'>
@@ -36,7 +36,7 @@
     </binding>
     <service name="PSPProcessPaymentWS">
         <port name="PSPProcessPaymentWSImplPort" binding="tns2:PSPProcessPaymentWSBinding">
-            <soap:address location='REPLACE_WITH_ACTUAL_URL' />
+            <soap:address location='https://pay-mesb-uat.cellpointmobile.com/mpoint/soap/v1_1/mobilepay-online/services' />
         </port>
     </service>
 </definitions>
