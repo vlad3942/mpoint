@@ -94,6 +94,8 @@ require_once(sCLASS_PATH ."/maybank.php");
 require_once(sCLASS_PATH ."/publicbank.php");
 // Require specific Business logic for the MobilePay Online component
 require_once(sCLASS_PATH ."/mobilepayonline.php");
+// Require Data Class for Client Information
+require_once(sCLASS_PATH ."/clientinfo.php");
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -213,6 +215,19 @@ try
 											$obj_Validator->valCardNumber($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}) != 10										
 										) { $aMsgCds[] = 21; }
 										
+										if(count(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount)) > 0 && empty(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount)) == false){
+											if($obj_TxnInfo->getAmount() != intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount)){
+												$aMsgCds[52] = $obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
+											}
+										}
+										// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
+										if (strlen($obj_ClientConfig->getSalt() ) > 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac) == 1)
+										{
+											$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'},
+											CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
+											$_SERVER['HTTP_X_FORWARDED_FOR']);
+											if ($obj_Validator->valHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]) ) != 10) { $aMsgCds[210] = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
+										}
 										// Success: Input Valid
 										if (count($aMsgCds) == 0)
 										{
