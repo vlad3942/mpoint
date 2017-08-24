@@ -221,8 +221,7 @@ try
 											}
 										}
 										// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
-										if (strlen($obj_ClientConfig->getSalt() ) > 0
-										&& (strlen($obj_TxnInfo->getOrderID()) > 0 || empty(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount)) == false || count($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac) == 1) )
+										if (strlen($obj_ClientConfig->getSalt() ) > 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac) == 1)
 										{
 											$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'},
 											CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
