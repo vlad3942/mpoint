@@ -334,3 +334,13 @@ ALTER TABLE enduser.account_tbl ADD COLUMN pushid character varying(100);
 /*Merchant Name changed for Maybank (AMEX Implementation)*/
 UPDATE client.merchantaccount_tbl SET name='sandbox' WHERE clientid=10007 and pspid=27;
 /*Merchant Name changed for Maybank (AMEX Implementation)*/
+
+/*MPO*/
+INSERT INTO System.URLType_Tbl (id, name) VALUES (13, 'Merchant App return URL');
+
+INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (13, 10007, 'com.mobilepayonline.return');
+
+/*MPO*/
+
+
+
