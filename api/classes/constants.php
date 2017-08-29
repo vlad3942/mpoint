@@ -554,7 +554,14 @@ abstract class Constants
 	 *
 	 */
 	const iMOBILEPAY_ONLINE_PSP = 33;
-	
+
+
+    /**
+     * Unique ID for the Acquirer: NETS
+     *
+     */
+    const iNETS_ACQUIRER = 35;
+
 	/**
 	 * Unique ID for the Payment Service Provider: Android Pay
 	 *

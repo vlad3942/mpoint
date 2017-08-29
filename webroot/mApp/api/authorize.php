@@ -96,7 +96,8 @@ require_once(sCLASS_PATH ."/publicbank.php");
 require_once(sCLASS_PATH ."/mobilepayonline.php");
 // Require Data Class for Client Information
 require_once(sCLASS_PATH ."/clientinfo.php");
-
+// Require specific Business logic for the Nets component
+require_once(sCLASS_PATH ."/nets.php");
 ignore_user_abort(true);
 set_time_limit(120);
 

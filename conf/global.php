@@ -603,6 +603,21 @@ $aHTTP_CONN_INFO["mobilepay-online"]["paths"]["initialize"] = "/mpoint/mobilepay
 $aHTTP_CONN_INFO["mobilepay-online"]["paths"]["auth"] = "/mpoint/mobilepay-online/authorize-payment";
 
 /**
+ * Connection info for connecting to Nets
+ */
+$aHTTP_CONN_INFO["nets"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["nets"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["nets"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["nets"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["nets"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["nets"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["nets"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["nets"]["paths"]["auth"] = "/mpsp/nets/authorize-payment";
+$aHTTP_CONN_INFO["nets"]["paths"]["capture"] = "/mpsp/nets/capture";
+$aHTTP_CONN_INFO["nets"]["paths"]["refund"] = "/mpsp/nets/refund";
+$aHTTP_CONN_INFO["nets"]["paths"]["cancel"] = "/mpsp/nets/cancel";
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>

@@ -90,7 +90,8 @@ require_once(sCLASS_PATH ."/poli.php");
 require_once(sCLASS_PATH ."/qiwi.php");
 // Require specific Business logic for the MobilePay Online component
 require_once(sCLASS_PATH ."/mobilepayonline.php");
-
+// Require specific Business logic for the Nets component
+require_once(sCLASS_PATH ."/nets.php");
 $aMsgCds = array();
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
