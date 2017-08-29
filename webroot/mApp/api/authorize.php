@@ -98,6 +98,8 @@ require_once(sCLASS_PATH ."/mobilepayonline.php");
 require_once(sCLASS_PATH ."/klarna.php");
 // Require Data Class for Client Information
 require_once(sCLASS_PATH ."/clientinfo.php");
+// Require specific Business logic for the Nets component
+require_once(sCLASS_PATH ."/nets.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/mvault.php");
 ignore_user_abort(true);

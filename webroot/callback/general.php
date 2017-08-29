@@ -67,6 +67,8 @@ require_once(sCLASS_PATH ."/alipay.php");
 require_once(sCLASS_PATH ."/poli.php");
 // Require specific Business logic for the QIWI component
 require_once(sCLASS_PATH ."/qiwi.php");
+// Require specific Business logic for the Nets component
+require_once(sCLASS_PATH ."/nets.php");
 // Require specific Business logic for the Klarna component
 require_once(sCLASS_PATH ."/klarna.php");
 

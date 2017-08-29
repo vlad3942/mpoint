@@ -92,6 +92,8 @@ require_once(sCLASS_PATH ."/qiwi.php");
 require_once(sCLASS_PATH ."/klarna.php");
 // Require specific Business logic for the MobilePay Online component
 require_once(sCLASS_PATH ."/mobilepayonline.php");
+// Require specific Business logic for the Nets component
+require_once(sCLASS_PATH ."/nets.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/mvault.php");
 $aMsgCds = array();

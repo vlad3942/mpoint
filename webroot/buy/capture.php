@@ -69,6 +69,9 @@ require_once(sCLASS_PATH ."/publicbank.php");
 // Require specific Business logic for the Paypal component
 require_once(sCLASS_PATH ."/paypal.php");
 
+// Require specific Business logic for the Nets component
+require_once(sCLASS_PATH ."/nets.php");
+
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/mvault.php");
 
