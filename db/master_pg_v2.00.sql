@@ -183,5 +183,36 @@ ALTER TABLE client.gomobileconfiguration_tbl
 
 
 
+ /**
+  * 
+  * mPoint Core Refactoring - to hold multiple MIDs per payment method/currency/3d-non3d etc for one PSP+Merchant
+  * 
+  * 
+  */
 	  
+  
+  -- Table: client.additionalproperty_tbl
+
+-- DROP TABLE client.additionalproperty_tbl;
+
+CREATE TABLE client.additionalproperty_tbl
+(
+  id serial NOT NULL,
+  property_key character varying(200) NOT NULL,
+  property_value character varying(200) NOT NULL,
+  modified timestamp without time zone DEFAULT now(),
+  created timestamp without time zone DEFAULT now(),
+  enabled boolean NOT NULL DEFAULT true,
+  merchantaccountid integer NOT NULL,
+  CONSTRAINT additionalprop_pk PRIMARY KEY (id),
+  CONSTRAINT merchantaccount2additional_fk FOREIGN KEY (merchantaccountid)
+      REFERENCES client.merchantaccount_tbl (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE client.additionalproperty_tbl
+  OWNER TO mpoint;
+
 	  
