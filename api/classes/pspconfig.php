@@ -164,8 +164,6 @@ class PSPConfig extends BasicConfig
 		
 		$xml .= '</psp-config>';
 		
-		
-		echo $xml;
 		return $xml;
 	}
 
