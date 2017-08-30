@@ -98,7 +98,7 @@ INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (7, 27);
 /*VISA*/
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (8, 27);
 
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 27, 'MayBank', '02700770202075001284', '4GkR2Hkk');
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 27, 'sandbox', '02700770202075001284', '4GkR2Hkk');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 27, '-1');
 
 -- Route VISA Card to MayBank with country Malaysia
@@ -341,6 +341,18 @@ INSERT INTO System.URLType_Tbl (id, name) VALUES (13, 'Merchant App return URL')
 INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (13, 10007, 'com.mobilepayonline.return');
 
 /*MPO*/
+
+
+/* Maybank configuration in additional configuration for Malindo (sandbox/production has same set of mid and password)  */
+
+INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.8', '02700770202075001284',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27));
+INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.7', '02700770202075001284',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27));
+INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.1', '02701700290875100472',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27));
+INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'pwd.8', '4GkR2Hkk',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27));
+INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'pwd.7', '4GkR2Hkk',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27));
+INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'pwd.1', '6sjhPN9X',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27));
+
+/* Maybank configuration in additional configuration for merchant:production  */
 
 
 
