@@ -344,3 +344,33 @@ INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (13, 10007, 'com.mo
 
 
 
+
+/* Update process type 2's name from Bank to Acquirer*/
+
+UPDATE system.processortype_tbl SET name = 'Acquirer' WHERE id = 2;
+
+/* ========== CONFIGURE NETS START ========== */
+/*START: Adding PSP entries to the PSP_Tbl table for NETS*/
+
+INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (35, 'NETS',2);
+
+/*END: Adding PSP entries to the PSP_Tbl table for NETS*/
+
+/*START: Adding Currency entries to the PSPCurrency_Tbl table for NETS*/
+
+INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (100,35,'DKK');
+INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (101,35,'SEK');
+INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (102,35,'NOK');
+INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (104,35,'EUR');
+INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (127,35,'DKK');
+INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (130,35,'DKK');
+INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (132,35,'ISK');
+
+/*END: Adding Currency entries to the PSPCurrency_Tbl table for NETS*/
+
+/* ========== CONFIGURE DEMO ACCOUNT FOR NETS START ========== */
+-- Wire-Card
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10007, 35, '9105bb4f-ae68-4768-9c3b-3eda968f57ea', '70000-APILUHN-CARD', '8mhwavKVb91T');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100007, 35, '-1');
+
+/* ========== CONFIGURE DEMO ACCOUNT FOR NETS END ====== */
