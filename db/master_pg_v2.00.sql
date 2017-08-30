@@ -199,7 +199,7 @@ CREATE TABLE client.additionalproperty_tbl
 (
   id serial NOT NULL,
   property_key character varying(200) NOT NULL,
-  property_value character varying(200) NOT NULL,
+  property_value character varying(4000) NOT NULL,
   modified timestamp without time zone DEFAULT now(),
   created timestamp without time zone DEFAULT now(),
   enabled boolean NOT NULL DEFAULT true,
@@ -207,7 +207,8 @@ CREATE TABLE client.additionalproperty_tbl
   CONSTRAINT additionalprop_pk PRIMARY KEY (id),
   CONSTRAINT merchantaccount2additional_fk FOREIGN KEY (merchantaccountid)
       REFERENCES client.merchantaccount_tbl (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT additionalprop_uk UNIQUE (merchantaccountid, property_key)     
 )
 WITH (
   OIDS=FALSE
