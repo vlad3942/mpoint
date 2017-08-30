@@ -555,6 +555,12 @@ abstract class Constants
 	 */
 	const iMOBILEPAY_ONLINE_PSP = 33;
 	
+    /**
+     * Unique ID for the Payment Service Provider: mVault
+     *
+     */
+    const iMVault_PSP = 36;
+
 	/**
 	 * Unique ID for the Payment Service Provider: Android Pay
 	 *
@@ -744,6 +750,12 @@ abstract class Constants
 	 */
 	const iQIWI_WALLET = 33;	
 	
+    /**
+     * Unique Card ID for transaction's made using mVault
+     *
+     */
+    const iMVault_WALLET = 35;
+
 	/**
 	 * Unique Fee Type ID for Top-Ups
 	 *

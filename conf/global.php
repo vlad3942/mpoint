@@ -603,6 +603,19 @@ $aHTTP_CONN_INFO["mobilepay-online"]["paths"]["initialize"] = "/mpoint/mobilepay
 $aHTTP_CONN_INFO["mobilepay-online"]["paths"]["auth"] = "/mpoint/mobilepay-online/authorize-payment";
 
 /**
+ * Connection info for connecting to mVault
+ */
+$aHTTP_CONN_INFO["mvault"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["mvault"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["mvault"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["mvault"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["mvault"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["mvault"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["mvault"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["mvault"]["paths"]["get-payment-data"] = "/mpoint/mvault/get-payment-data";
+$aHTTP_CONN_INFO["mvault"]["paths"]["get-token"] = "/mpoint/mvault/get-token";
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>
