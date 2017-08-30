@@ -154,13 +154,16 @@ class PSPConfig extends BasicConfig
 			$xml .= '<message language="'. htmlspecialchars($lang, ENT_NOQUOTES) .'">'. htmlspecialchars($msg, ENT_NOQUOTES) .'</message>';
 		}
 		$xml .= '</messages>';
-		$xml .= '<additional-configurations>';
 		
-		foreach ($this->_aProperties as $propKey => $propValue)
+		if(!empty($this->_aProperties) )
 		{
-			$xml .= '<additional-config key="'. htmlspecialchars($propKey, ENT_NOQUOTES) .'">'. htmlspecialchars($propValue, ENT_NOQUOTES) .'</additional-config>';
+			$xml .= '<additional-configurations>';
+			foreach ($this->_aProperties as $propKey => $propValue)
+			{
+				$xml .= '<additional-config key="'. htmlspecialchars($propKey, ENT_NOQUOTES) .'">'. htmlspecialchars($propValue, ENT_NOQUOTES) .'</additional-config>';
+			}
+			$xml .= '</additional-configurations>';
 		}
-		$xml .= '</additional-configurations>';
 		
 		$xml .= '</psp-config>';
 		
