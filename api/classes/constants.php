@@ -237,7 +237,19 @@ abstract class Constants
 	 *
 	 */
 	const iPAYMENT_SETTLED_STATE = 2020;
-	
+
+    /**
+     * Defines the ID of the State that indicates that Tokenization request successfully completed
+     *
+     */
+    const iCARD_TOKENIZE_SUCCESS = 2100;
+
+    /**
+     * Defines the ID of the State that indicates that Tokenization request failed
+     *
+     */
+    const iCARD_TOKENIZE_FAILED = 2101;
+
 	/**
 	 * Defines GoMobile's type identifier for an MT-SMS message
 	 *
