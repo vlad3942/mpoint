@@ -343,4 +343,9 @@ INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (13, 10007, 'com.mo
 /*MPO*/
 
 
-
+/* ==================== LOG SCHEMA START ==================== */
+INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2099, 'Save Card Initiate', 'Save Card', true);
+INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2100, 'Card Tokenization Success ', 'Save Card', true);
+INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2101, 'Card Tokenization Failed', 'Save Card', true);
+INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2102, 'Save Card Complete', 'Save Card', true);
+/* ==================== LOG SCHEMA END ==================== */
