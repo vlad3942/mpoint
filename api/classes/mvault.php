@@ -30,7 +30,6 @@ class MVault extends CPMPSP
     public function refund($iAmount=-1) { throw new MVaultException("Method: refund is not supported by mVault"); }
     public function void($iAmount=-1) { throw new MVaultException("Method: void is not supported by mVault"); }
     public function cancel() { throw new MVaultException("Method: cancel is not supported by mVault"); }
-    public function authorize(PSPConfig $obj_PSPConfig, $ticket) { throw new MVaultException("Method: authTicket is not supported by mVault"); }
     public function status() { throw new MVaultException("Method: status is not supported by mVault"); }
 
     public function getPSPID() { return Constants::iMVault_PSP; }

@@ -221,12 +221,14 @@ try
 												$aMsgCds[52] = $obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
 											}
 										}
+										$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'},
+                                        CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
+                                        $_SERVER['HTTP_X_FORWARDED_FOR']);
+
 										// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
 										if (strlen($obj_ClientConfig->getSalt() ) > 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac) == 1)
 										{
-											$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'},
-											CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
-											$_SERVER['HTTP_X_FORWARDED_FOR']);
+
 											if ($obj_Validator->valHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]) ) != 10) { $aMsgCds[210] = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
 										}
 										// Success: Input Valid
@@ -947,8 +949,34 @@ try
 																
 																		$xml .= '<status code="92">Authorization failed, MobilePay Online returned error: '. $code .'</status>';
 																	}
-																	break;																	
-															default:	// Unkown Error
+																	break;
+                                                                case (Constants::iMVault_PSP): // mVault
+                                                                    $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMVault_PSP);
+
+                                                                    $obj_PSP = new MVault($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["mvault"]);
+
+                                                                    $obj_Status = new Status($_OBJ_DB, $_OBJ_TXT);
+                                                                    $aTxns = $obj_Status->getTransactionInStatus(Constants::iSAVE_CARD_INITIATE);
+
+                                                                    if(isset($aTxns[0]) && General::bool2xml($aTxns[0]['data'])) {
+                                                                        $obj_PSP->tokenize($obj_Elem, $obj_ClientInfo);
+                                                                    }
+
+                                                                    $code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+
+                                                                    // Authorization succeeded
+                                                                    if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+                                                                    // Error: Authorization declined
+                                                                    else
+                                                                    {
+                                                                        $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+
+                                                                        header("HTTP/1.1 502 Bad Gateway");
+
+                                                                        $xml .= '<status code="92">Authorization failed, mVault returned error: '. $code .'</status>';
+                                                                    }
+                                                                    break;
+                                                                default:	// Unkown Error
 																$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 	
 																header("HTTP/1.1 500 Internal Server Error");

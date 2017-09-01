@@ -193,6 +193,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$obj_TxnInfo->setAccountID($iAccountID);
 									// Update Transaction Log
 									$obj_mPoint->logTransaction($obj_TxnInfo);
+									$obj_mPoint->newMessage($obj_TxnInfo->getID(),Constants::iSAVE_CARD_INITIATE,General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]));
 								}
 								$obj_PSPConfig = null;
 								switch (intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) )
@@ -556,8 +557,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											{
 												$xml .= trim($obj_Elem->asXML() );
 											}
-											break;											
-										}										
+											break;
+                                        case (Constants::iMVault_PSP):
+                                            $obj_PSP = new MVault($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["mvault"]);
+                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
+
+                                            foreach ($obj_XML->children() as $obj_Elem)
+                                            {
+                                                $xml .= trim($obj_Elem->asXML() );
+                                            }
+                                            break;
+										}
 										$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. htmlspecialchars($obj_PSPConfig->getMessage($obj_TxnInfo->getLanguage() ), ENT_NOQUOTES) .'</message>';
 										$xml .= '</psp-info>';
 									}
