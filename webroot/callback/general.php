@@ -149,7 +149,9 @@ try
 										 $obj_XML->callback->transaction->card->{'card-number'}, 
 										 preg_replace('/\s+/', '', $sExpiry) ); // Remove all whitespaces from string.
 		// The End-User's existing account was linked to the Client when the card was stored		
- 		if ($iStatus == 1)
+
+        $obj_mPoint->newMessage($obj_TxnInfo->getID(),Constants::iSAVE_CARD_COMPLETE,$iStatus);
+        if ($iStatus == 1)
 		{
 			$obj_mPoint->sendLinkedInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo);
 		}

@@ -426,6 +426,18 @@ class EndUserAccount extends Home
 		}
 	}
 
+	function changeCardNameAndStatus($accountid,$cardName,$state){
+        $sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
+                SET enabled = '". intval($state)."',
+                name = '". $this->getDBConn()->escStr($cardName) ."'
+                WHERE AND accountid = ". intval($accountid);
+//			echo $sql ."\n";
+        $res= $this->getDBConn()->query($sql);
+
+
+        return $this->getDBConn()->countAffectedRows($res) > 0 ? 1 : 0;
+    }
+
 	/**
 	 * Saves the specified Card Name for the newest card without a name which has been created recently (within the last 5 minutes).
 	 * The method will automatically create a new card and set it as inactive if no card has been created recently.
