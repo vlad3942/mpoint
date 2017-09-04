@@ -866,4 +866,17 @@ UPDATE System.Country_Tbl SET alpha2code = 'YE', alpha3code = 'YEM', code = 887,
 /*---------END : ADDED CHANGE FOR SUPPORTING CURRENCY SCHEMA-------------*/
 
 
+/* ========== Global Configuration for Klarna = STARTS ========== */
+INSERT INTO System.PSP_Tbl (id, name) VALUES (37, 'Klarna');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (100,37,'DKK');
+
+/*Klarna*/
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (36, 37);
+
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 37, 'Klarna', 'K501301_bb08592951b1', 'nlxpjKJqnwO1SYKZ');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 37, '-1');
+
+-- Route Klarna Card to Klarna with country Denmark
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, countryid) VALUES (10001, 36, 37, true, 100);
+/* ========== Global Configuration for Klarna = ENDS ========== */
 
