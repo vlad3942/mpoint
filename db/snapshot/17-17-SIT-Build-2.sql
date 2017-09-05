@@ -599,7 +599,7 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_COUNTRY', 'ABC', 10007, 'client');
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('POS_DATA_CODE', '1234', 206, 'merchant');
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('FUNCTION_CODE', 'FULL', 206, 'merchant');
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_TERMINAL_ID', 'ABCD1234', 206, 'merchant');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_TERMINAL_ID', '208752', 206, 'merchant');
 /*====================== Test Data END =========================*/
 
 /* END */
