@@ -376,23 +376,6 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10000
 /* ========== CONFIGURE DEMO ACCOUNT FOR NETS END ====== */
 
 /* Additional Properties for client, merchant and PSP */
-CREATE TABLE client.additionalproperty_tbl
-(
-  id serial NOT NULL,
-  key character varying(200) NOT NULL,
-  value character varying(4000) NOT NULL,
-  modified timestamp without time zone DEFAULT now(),
-  created timestamp without time zone DEFAULT now(),
-  enabled boolean NOT NULL DEFAULT true,
-  externalid integer NOT NULL,
-  type VARCHAR(20) NOT NULL,
-  CONSTRAINT additionalprop_pk PRIMARY KEY (id)
-)
-WITH (
-  OIDS=FALSE
-);
-ALTER TABLE client.additionalproperty_tbl
-  OWNER TO mpoint;
 
 
 /*====================== Test Data =========================*/
