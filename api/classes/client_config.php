@@ -312,7 +312,7 @@ class ClientConfig extends BasicConfig
      * Array that hold the Addotional Data in
      * @var array
      */
-    private $_aAdditionalProperties;
+    private $_aAdditionalProperties=array();
 	
 	/**
 	 * Default Constructor
