@@ -25,6 +25,8 @@ require_once(sCLASS_PATH ."/callback.php");
 require_once(sCLASS_PATH ."/capture.php");
 // Require specific Business logic for the CPM PSP component
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
+// Require specific Business logic for the CPM ACQUIRER component
+require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 // Require specific Business logic for the Adyen component
