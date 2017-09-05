@@ -1255,3 +1255,41 @@ INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd)
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100007, 35, '-1');
 
 /* ========== CONFIGURE DEMO ACCOUNT FOR NETS END ====== */
+
+/* Additional Properties for client, merchant and PSP */
+CREATE TABLE client.additionalproperty_tbl
+(
+  id serial NOT NULL,
+  key character varying(200) NOT NULL,
+  value character varying(4000) NOT NULL,
+  modified timestamp without time zone DEFAULT now(),
+  created timestamp without time zone DEFAULT now(),
+  enabled boolean NOT NULL DEFAULT true,
+  externalid integer NOT NULL,
+  type VARCHAR(20) NOT NULL,
+  CONSTRAINT additionalprop_pk PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE client.additionalproperty_tbl
+  OWNER TO mpoint;
+
+
+/*====================== Test Data =========================*/
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('PROCESSING_CODE', '000000', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_BUSINESS_CODE', '4511
+', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_IDENTIFICATION_CODE', '1234', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_NAME', 'Test', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_ADDRESS', 'Test', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_CITY', 'Test', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_ZIP', '123456', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_REGION', 'ABC', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_COUNTRY', 'ABC', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('POS_DATA_CODE', '1234', 206, 'merchant');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('FUNCTION_CODE', 'FULL', 206, 'merchant');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_TERMINAL_ID', 'ABCD1234', 206, 'merchant');
+/*====================== Test Data END =========================*/
+
+/* END */
