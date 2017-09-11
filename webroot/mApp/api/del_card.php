@@ -132,7 +132,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								{
 									$_OBJ_DB->query("START TRANSACTION");
 									$iDelStatus = $obj_mPoint->delStoredCard($iAccountID, (integer) $obj_DOM->{'delete-card'}[$i]->card);
-									
+									$obj_MyAccount = $obj_mPoint;
 									// Success: Stored Card Deleted
 									if ($iDelStatus == 10)		
 									{
@@ -176,6 +176,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													$_OBJ_DB->query("COMMIT");
 
 													$xml = '<status code="100">Card successfully deleted and CRM system notified</status>';
+                                                    $xml .= '<token>'. $obj_MyAccount->getDeletedCardToken()  .'</token>';
 													break;
 												default:	// Error: Unknown response from CRM System
 													// Abort transaction and rollback to previous state
@@ -218,6 +219,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											$_OBJ_DB->query("COMMIT");
 
 											$xml = '<status code="100">Card successfully deleted</status>';
+                                            $xml .= '<token>'. $obj_MyAccount->getDeletedCardToken()  .'</token>';
 										}
 									}
 									else if ($iDelStatus == 1)
