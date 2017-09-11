@@ -550,7 +550,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											}
 											break;
 										case (Constants::iKLARNA_PSP):
-											$obj_PSP = new Klarna($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["qiwi"]);
+											$obj_PSP = new Klarna($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["klarna"]);
 											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
 												
 											foreach ($obj_XML->children() as $obj_Elem)
