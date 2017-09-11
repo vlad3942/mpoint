@@ -329,7 +329,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		if(is_null($obj_BillingAddress) == false)
 		{
-		$b .= $obj_BillingAddress->asXML();
+		    //Produce Country config based on the country id
+            CountryConfig::setISO3166Attributes($obj_BillingAddress, $this->getDBConn(), intval($obj_BillingAddress["country-id"]));
+            $b .= $obj_BillingAddress->asXML();
 		}
 		if(is_null($obj_ClientInfo) == false)
 		{
