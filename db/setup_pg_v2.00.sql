@@ -873,7 +873,7 @@ INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (36, 0, 0);
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 36, id FROM System.PricePoint_Tbl WHERE amount = -1 AND countryid = 100;
 
 
-INSERT INTO System.PSP_Tbl (id, name) VALUES (37, 'Klarna');
+INSERT INTO System.PSP_Tbl (id, name, system_type) VALUES (37, 'Klarna', 3);
 INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (100,37,'DKK');
 
 /*Klarna*/
