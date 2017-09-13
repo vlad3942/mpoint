@@ -32,7 +32,7 @@ class MVault extends CPMPSP
     public function cancel() { throw new MVaultException("Method: cancel is not supported by mVault"); }
     public function status() { throw new MVaultException("Method: status is not supported by mVault"); }
 
-    public function getPSPID() { return Constants::iMVault_PSP; }
+    public function getPSPID() { return Constants::iMVAULT_PSP; }
 
 
 }

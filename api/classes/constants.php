@@ -239,12 +239,6 @@ abstract class Constants
 	const iPAYMENT_SETTLED_STATE = 2020;
 
     /**
-     * Defines the ID of the State that indicates that Store Card is initiate or not
-     *
-     */
-    const iSAVE_CARD_INITIATE = 2099;
-
-    /**
      * Defines the ID of the State that indicates that Tokenization request successfully completed
      *
      */
@@ -256,11 +250,6 @@ abstract class Constants
      */
     const iCARD_TOKENIZE_FAILED = 2101;
 
-    /**
-     * Defines the ID of the State that indicates that Save card operation is complete
-     *
-     */
-    const iSAVE_CARD_COMPLETE = 2102;
 
 	/**
 	 * Defines GoMobile's type identifier for an MT-SMS message
@@ -583,7 +572,7 @@ abstract class Constants
      * Unique ID for the Payment Service Provider: mVault
      *
      */
-    const iMVault_PSP = 36;
+    const iMVAULT_PSP = 36;
 
 	/**
 	 * Unique ID for the Payment Service Provider: Android Pay
@@ -778,7 +767,7 @@ abstract class Constants
      * Unique Card ID for transaction's made using mVault
      *
      */
-    const iMVault_WALLET = 35;
+    const iMVAULT_WALLET = 35;
 
 	/**
 	 * Unique Fee Type ID for Top-Ups
