@@ -396,3 +396,17 @@ INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchant
 INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'ccavenue.working.key', '93C3C30ED0AF63F7D222ACB2A53DB025',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 25));
 /*--PROD working key-*/
 INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'ccavenue.working.key', 'F9D8D501AB87FC404EAC9C5CA682C1D9',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 25));
+
+/*
+End of CCAvenue additional config
+ */
+
+/*
+--WireCard additional config for enrollment mid key - same for all environments
+ */
+
+INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'enrollment.mid.key', '33f6d473-3036-4ca5-acb5-8c64dac862d1',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 18));
+
+/*
+End of WireCard additional config
+ */
