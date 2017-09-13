@@ -1,6 +1,6 @@
 <?php
 
-abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiadable, Redeemable, Invoiceable, Tokenizable
+abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiadable, Redeemable, Invoiceable
 {
 
     public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $obj_PSPConfig=null)
@@ -599,54 +599,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		
 		return $obj_HTTP->getReplyBody();
 	}
-
-	public function tokenize($obj_Card, ClientInfo $obj_ClientInfo)
-    {
-
-        list($expiry_month, $expiry_year) = explode("/", $obj_Card->expiry);
-        $expiry_year = substr_replace(date('Y'), $expiry_year, -2);
-
-        $accountConfig= $this->getClientConfig()->getAccountConfig();
-
-        $b  = '<?xml version="1.0" encoding="UTF-8"?>';
-        $b .= '<root>';
-        $b .= '<save-card account="'.$accountConfig->getID().'" client-id="'.$accountConfig->getClientID().'" transaction-id = "'.$this->getTxnInfo()->getID() .'">';
-        $b .= '<card type-id="'.intval($obj_Card['type-id']).'">';
-        if(count($obj_Card->{'card-holder-name'}) > 0)
-        {
-            $b .= '<card-holder-name>'. $obj_Card->{'card-holder-name'} .'</card-holder-name>';
-        }
-        $b .= '<card-number>'. $obj_Card->{'card-number'} .'</card-number>';
-        $b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
-        $b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
-
-        $b .= '</card>';
-        $b .= $obj_ClientInfo->toXML();
-        $b .= '</save-card>';
-        $b .= '</root>';
-
-        $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["tokenize"]);
-        $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
-        $obj_HTTP->connect();
-        $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
-        $obj_HTTP->disConnect();
-        if ($code == 200 || $code == 303 ){
-            $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
-            $code = $obj_XML->status["code"];
-            if($code == Constants::iCARD_TOKENIZE_SUCCESS)
-                $this->newMessage($this->getTxnInfo()->getID(), Constants::iCARD_TOKENIZE_SUCCESS, utf8_encode($obj_HTTP->getReplyBody() ) );
-            else
-                $this->newMessage($this->getTxnInfo()->getID(), Constants::iCARD_TOKENIZE_FAILED, "");
-        }
-        else
-        {
-           // throw new mPointException("Save Card failed with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code );
-            trigger_error("Save Card failed with PSP: ". $this->getPSPConfig()->getName() ." for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $code ." and body: ". $obj_HTTP->getReplyBody(), E_USER_WARNING);
-        }
-
-        return $obj_HTTP->getReplyBody();
-
-}
 
     /**
 	 * Function used to make a callback to the wallet instance for updating it with the transaction status.
