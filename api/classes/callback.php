@@ -648,7 +648,9 @@ abstract class Callback extends EndUserAccount
 		case (Constants::iQIWI_PSP):
 			return new Qiwi($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["qiwi"]);
 		case (Constants::iPOLI_PSP):
-			return new Poli($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["poli"]);			
+			return new Poli($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["poli"]);	
+		case (Constants::iKLARNA_PSP):
+				return new Klarna($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["klarna"]);
 		default:
 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
