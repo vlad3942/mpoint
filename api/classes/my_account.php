@@ -20,7 +20,7 @@
 class MyAccount extends Home
 {
 
-    private $_deleletedCardToken = null;
+    private $_deletedCardToken = null;
 
 	/**
 	 * Generates and sends an Activation Code to the End-User using the provided Mobile Number (MSISDN).
@@ -244,7 +244,7 @@ class MyAccount extends Home
 			if (is_array($RS) === true)
 			{
 				$iTTL = intval($RS["TTL"]);
-				$this->_deleletedCardToken =$RS["TICKET"];
+				$this->_deletedCardToken =$RS["TICKET"];
 				if ($iTTL > 0)
 				{
 					$obj_Status = new Status($this->getDBConn(), $this->getText() );
@@ -273,7 +273,7 @@ class MyAccount extends Home
 		return 3;
 	}
 
-	public function getDeletedCardToken(){return $this->_deleletedCardToken;}
+	public function getDeletedCardToken(){return $this->_deletedCardToken;}
 
 	/**
 	 * Sets a new preferred card for a specific client.

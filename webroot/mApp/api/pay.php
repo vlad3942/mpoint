@@ -195,7 +195,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$obj_TxnInfo->setAccountID($iAccountID);
 									// Update Transaction Log
 									$obj_mPoint->logTransaction($obj_TxnInfo);
-									$obj_mPoint->newMessage($obj_TxnInfo->getID(),Constants::iSAVE_CARD_INITIATE,General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]));
 								}
 								$obj_PSPConfig = null;
 								switch (intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) )
