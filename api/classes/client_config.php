@@ -78,12 +78,6 @@ class ClientConfig extends BasicConfig
 	 * @var Array
 	 */
 	private $_aObj_IINRangeConfigurations;
-    /**
-     * Configuration for the GoMobile Channel Specific for the client.
-     *
-     * @var Array
-     */
-    private $_aObj_GoMobileConfigurations;
 	/**
 	 * Client's Username for GoMobile
 	 *
@@ -358,7 +352,7 @@ class ClientConfig extends BasicConfig
 	 * @param   array $aObj_PMs								List of Payment Methods (Cards) that the client offers
 	 * @param   array $aObj_IINRs							List of IIN Range values for the client.
 	 */
-	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=null, ClientURLConfig $oCSSURL=null, ClientURLConfig $oAccURL=null, ClientURLConfig $oCURL=null, ClientURLConfig $oDURL=null, ClientURLConfig $oCBURL=null, ClientURLConfig $oIURL=null, ClientURLConfig $oParse3DSecureChallengeURL=null, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), $aObj_GMPs = array(), ClientURLConfig $oAppURL=null )
+	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=null, ClientURLConfig $oCSSURL=null, ClientURLConfig $oAccURL=null, ClientURLConfig $oCURL=null, ClientURLConfig $oDURL=null, ClientURLConfig $oCBURL=null, ClientURLConfig $oIURL=null, ClientURLConfig $oParse3DSecureChallengeURL=null, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), ClientURLConfig $oAppURL=null )
 	{
 		parent::__construct($id, $name);
 
@@ -408,7 +402,6 @@ class ClientConfig extends BasicConfig
 		$this->_aObj_MerchantAccounts = $aObj_MAs;
 		$this->_aObj_PaymentMethodConfigurations = $aObj_PMs;
 		$this->_aObj_IINRangeConfigurations = $aObj_IINRs;		
-		$this->_aObj_GoMobileConfigurations = $aObj_GMPs;
 	}
 
 	/**
@@ -826,26 +819,6 @@ class ClientConfig extends BasicConfig
 			
 		return $xml;
 	}
-
-	/**
-	 * Returns the XML payload of array of Configurations for the Client's GoMobile Account.
-	 *
-	 * @return 	String
-	 */
-	private function _getGoMobileConfigAsXML()
-	{
-		$xml = '<gomobile-configuration-params>';
-		foreach ($this->_aObj_GoMobileConfigurations as $obj_GMP)
-		{
-			if ( ($obj_GMP instanceof ClientGoMobileConfig) === true)
-			{
-				$xml .= $obj_GMP->toXML();
-			}
-		}
-		$xml .= '</gomobile-configuration-params>';
-
-		return $xml;
-	}
 	
 	/**
 	 * Returns the transaction time to live in seconds.	 
@@ -913,7 +886,6 @@ class ClientConfig extends BasicConfig
 		$xml .= $this->_getPaymentMethodsAsXML();
 		$xml .= $this->_getMerchantAccountsConfigAsXML();				
 		$xml .= $this->_getAccountsConfigurationsAsXML();		
-		$xml .= $this->_getGoMobileConfigAsXML();
 		$xml .= '<callback-protocol send-psp-id = "'.General::bool2xml($this->sendPSPID()).'">'. htmlspecialchars($this->_sMethod, ENT_NOQUOTES) .'</callback-protocol>';
 		$xml .= '<identification>'. $this->_iIdentification .'</identification>';
 		$xml .= '<transaction-time-to-live>'. $this->getTransactionTTL() .'</transaction-time-to-live>';
@@ -1013,8 +985,7 @@ class ClientConfig extends BasicConfig
 			$aObj_ClientMerchantAccountConfigurations = ClientMerchantAccountConfig::produceConfigurations($oDB, $id);
 			$aObj_ClientCardsAccountConfigurations = ClientPaymentMethodConfig::produceConfigurations($oDB, $id);
 			$aObj_ClientIINRangesConfigurations = ClientIINRangeConfig::produceConfigurations($oDB, $id);		
-			$aObj_ClientGoMobileConfigurations = ClientGoMobileConfig::produceConfigurations($oDB, $id);
-
+			
 			$obj_LogoURL = null;
 			$obj_CSSURL = null;
 			$obj_AcceptURL = null;
@@ -1058,7 +1029,7 @@ class ClientConfig extends BasicConfig
 				}
 			}
 
-			return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_DeclineURL, $obj_CallbackURL, $obj_IconURL, $obj_Parse3DSecureURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $RS["NUM_MASKED_DIGITS"], $RS["SALT"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations, $aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations, $aObj_ClientGoMobileConfigurations,$obj_AppURL);
+			return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_DeclineURL, $obj_CallbackURL, $obj_IconURL, $obj_Parse3DSecureURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $RS["NUM_MASKED_DIGITS"], $RS["SALT"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations, $aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations,$obj_AppURL);
 		}
 		// Error: Client Configuration not found
 		else { trigger_error("Client Configuration not found using ID: ". $id .", Account: ". $acc .", Keyword: ". $kw, E_USER_WARNING); }
@@ -1093,13 +1064,5 @@ class ClientConfig extends BasicConfig
 		if (count($this->_aIPList) == 0) { return true; }
 		else { return in_array($ip, $this->_aIPList); }
 	}
-
-	public function getClientGoMobileConfigurationToXML()
-    {
-        $xml = '<client-config id="'. $this->getID() .'">';
-        $xml .= $this->_getGoMobileConfigAsXML();
-        $xml .= '</client-config>';
-        return $xml;
-    }
 }
 ?>

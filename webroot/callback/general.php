@@ -67,6 +67,9 @@ require_once(sCLASS_PATH ."/alipay.php");
 require_once(sCLASS_PATH ."/poli.php");
 // Require specific Business logic for the QIWI component
 require_once(sCLASS_PATH ."/qiwi.php");
+// Require specific Business logic for the Klarna component
+require_once(sCLASS_PATH ."/klarna.php");
+
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/mvault.php");
 /**
@@ -149,9 +152,7 @@ try
 										 $obj_XML->callback->transaction->card->{'card-number'}, 
 										 preg_replace('/\s+/', '', $sExpiry) ); // Remove all whitespaces from string.
 		// The End-User's existing account was linked to the Client when the card was stored		
-
-        $obj_mPoint->newMessage($obj_TxnInfo->getID(),Constants::iSAVE_CARD_COMPLETE,$iStatus);
-        if ($iStatus == 1)
+ 		if ($iStatus == 1)
 		{
 			$obj_mPoint->sendLinkedInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo);
 		}

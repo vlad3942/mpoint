@@ -94,6 +94,8 @@ require_once(sCLASS_PATH ."/maybank.php");
 require_once(sCLASS_PATH ."/publicbank.php");
 // Require specific Business logic for the MobilePay Online component
 require_once(sCLASS_PATH ."/mobilepayonline.php");
+// Require specific Business logic for the Klarna Online component
+require_once(sCLASS_PATH ."/klarna.php");
 // Require Data Class for Client Information
 require_once(sCLASS_PATH ."/clientinfo.php");
 // Require specific Business logic for the mVault component
@@ -346,6 +348,10 @@ try
 																$obj_Wallet = new AndroidPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["android-pay"]);
 																$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iANDROID_PAY_PSP);
 																break;
+                                                        case (Constants::iMVAULT_WALLET):
+                                                            $obj_Wallet = new AndroidPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["mvault"]);
+                                                            $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iMVAULT_PSP);
+                                                            break;
 														default:
 															/**
 															 * This changes is made for globalcollect since rightnow it is the only psp which will send
@@ -949,33 +955,28 @@ try
 																
 																		$xml .= '<status code="92">Authorization failed, MobilePay Online returned error: '. $code .'</status>';
 																	}
+																	
 																	break;
-                                                                case (Constants::iMVault_PSP): // mVault
-                                                                    $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iMVault_PSP);
+																case (Constants::iKLARNA_PSP): // Klarna Pay
+																		$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iKLARNA_PSP);
+																			
+																		$obj_PSP = new Klarna($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["klarna"]);
+																			
+																		$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+																			
+																		// Authorization succeeded
+																		if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+																		// Error: Authorization declined
+																		else
+																		{
+																			$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+																				
+																			header("HTTP/1.1 502 Bad Gateway");
+																	
+																			$xml .= '<status code="92">Authorization failed, Klarna returned error: '. $code .'</status>';
+																		}
+																		break;
 
-                                                                    $obj_PSP = new MVault($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["mvault"]);
-
-                                                                    $obj_Status = new Status($_OBJ_DB, $_OBJ_TXT);
-                                                                    $aTxns = $obj_Status->getTransactionInStatus(Constants::iSAVE_CARD_INITIATE);
-
-                                                                    if(isset($aTxns[0]) && General::bool2xml($aTxns[0]['data'])) {
-                                                                        $obj_PSP->tokenize($obj_Elem, $obj_ClientInfo);
-                                                                    }
-
-                                                                    $code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
-
-                                                                    // Authorization succeeded
-                                                                    if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
-                                                                    // Error: Authorization declined
-                                                                    else
-                                                                    {
-                                                                        $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-
-                                                                        header("HTTP/1.1 502 Bad Gateway");
-
-                                                                        $xml .= '<status code="92">Authorization failed, mVault returned error: '. $code .'</status>';
-                                                                    }
-                                                                    break;
                                                                 default:	// Unkown Error
 																$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 	

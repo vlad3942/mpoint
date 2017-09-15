@@ -589,6 +589,26 @@ $aHTTP_CONN_INFO["qiwi"]["paths"]["status"] = "/mpoint/qiwi/status";
 $aHTTP_CONN_INFO["qiwi"]["paths"]["cancel"] = "/mpoint/qiwi/cancel";
 $aHTTP_CONN_INFO["qiwi"]["paths"]["callback"] = "/mpoint/qiwi/callback";
 
+
+/**
+ * Connection info for connecting to Klarna
+ */
+$aHTTP_CONN_INFO["klarna"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["klarna"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["klarna"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["klarna"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["klarna"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["klarna"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["klarna"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["klarna"]["paths"]["initialize"] = "/mpoint/klarna/initialize";
+$aHTTP_CONN_INFO["klarna"]["paths"]["auth"] = "/mpoint/klarna/authorize-payment";
+$aHTTP_CONN_INFO["klarna"]["paths"]["refund"] = "/mpoint/klarna/refund";
+$aHTTP_CONN_INFO["klarna"]["paths"]["status"] = "/mpoint/klarna/status";
+$aHTTP_CONN_INFO["klarna"]["paths"]["cancel"] = "/mpoint/klarna/cancel";
+$aHTTP_CONN_INFO["klarna"]["paths"]["callback"] = "/mpoint/klarna/callback";
+
+
+
 /**
  * Connection info for connecting to MobilePay Online
  */

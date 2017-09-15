@@ -409,25 +409,6 @@ if (count($aMsgCds) == 0)
 								$xml .= '<status code="92">Authorization failed, 2C2P returned error: '. $code .'</status>'; */
 							}
 							break;
-                    case (Constants::iMVault_PSP): // mVault
-                        $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $_SESSION['obj_TxnInfo']->getClientConfig()->getID(), $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getID(), Constants::iMVault_PSP);
-
-                        $obj_PSP = new MVault($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $aHTTP_CONN_INFO["mvault"]);
-
-                        $code = $obj_PSP->authorize($obj_PSPConfig , $obj_XML);
-                        // Authorization succeeded
-                        if ($code == "100")
-                        {
-                            $aMsgCds[] = 100;
-                        }
-                        // Error: Authorization declined
-                        else
-                        {
-                            $obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-                            $aMsgCds[] = 51;
-                        }
-                        break;
-									
 				default:	// Unkown Error
 					$obj_mPoint->delMessage($_SESSION['obj_TxnInfo']->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 					$aMsgCds[] = 59;
