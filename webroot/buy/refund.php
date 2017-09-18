@@ -75,10 +75,10 @@ require_once(sCLASS_PATH ."/publicbank.php");
 require_once(sCLASS_PATH ."/qiwi.php");
 // Require specific Business logic for the Klarna component
 require_once(sCLASS_PATH ."/klarna.php");
+// Require specific Business logic for the Alipay component
+require_once(sCLASS_PATH ."/alipay.php");
 // Require specific Business logic for the customerinfo component
 require_once(sCLASS_PATH ."/customer_info.php");
-// Require specific Business logic for the Nets component
-require_once(sCLASS_PATH ."/nets.php");
 
 // Require specific Business logic for the Nets component
 require_once(sCLASS_PATH ."/nets.php");
