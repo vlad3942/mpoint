@@ -986,8 +986,9 @@ try
 																			
 																		$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
 																			
-																		// Authorization succeeded
+																		// Authorization succeeded with klarna
 																		if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+																		else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml = $code; }
 																		// Error: Authorization declined
 																		else
 																		{
