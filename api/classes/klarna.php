@@ -25,6 +25,5 @@ class KlarnaException extends CallbackException { }
 class Klarna extends CPMPSP
 {
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new KlarnaException("Method: getPaymentData is not supported by Klarna"); }
-	public function authorize(PSPConfig $obj_PSPConfig, $ticket) { throw new KlarnaException("Method: authTicket is not supported by Klarna"); }
 	public function getPSPID() { return Constants::iKLARNA_PSP; }
 }
