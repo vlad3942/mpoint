@@ -7079,29 +7079,3 @@ ALTER TABLE system.psp_tbl
       REFERENCES system.processortype_tbl (id) MATCH SIMPLE
       ON UPDATE CASCADE ON DELETE CASCADE;
 
--- Table: client.gomobileconfiguration_tbl
-
--- DROP TABLE client.gomobileconfiguration_tbl;
-
-CREATE TABLE client.gomobileconfiguration_tbl
-(
-  id serial NOT NULL,
-  clientid integer NOT NULL,
-  name character varying(100),
-  value character varying(100),
-  channel character varying(5),
-  created timestamp without time zone DEFAULT now(),
-  modified timestamp without time zone DEFAULT now(),
-  enabled boolean DEFAULT true,
-  CONSTRAINT gomobileconfiguration_pk PRIMARY KEY (id),
-  CONSTRAINT gomobileconfiguration2client_fk FOREIGN KEY (clientid)
-      REFERENCES client.client_tbl (id) MATCH SIMPLE
-      ON UPDATE CASCADE ON DELETE CASCADE
-)
-WITH (
-  OIDS=FALSE
-);
-ALTER TABLE client.gomobileconfiguration_tbl
-  OWNER TO postgres;
-
-

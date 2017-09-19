@@ -78,12 +78,6 @@ class ClientConfig extends BasicConfig
 	 * @var Array
 	 */
 	private $_aObj_IINRangeConfigurations;
-    /**
-     * Configuration for the GoMobile Channel Specific for the client.
-     *
-     * @var Array
-     */
-    private $_aObj_GoMobileConfigurations;
 	/**
 	 * Client's Username for GoMobile
 	 *
@@ -832,26 +826,6 @@ class ClientConfig extends BasicConfig
 			
 		return $xml;
 	}
-
-	/**
-	 * Returns the XML payload of array of Configurations for the Client's GoMobile Account.
-	 *
-	 * @return 	String
-	 */
-	private function _getGoMobileConfigAsXML()
-	{
-		$xml = '<gomobile-configuration-params>';
-		foreach ($this->_aObj_GoMobileConfigurations as $obj_GMP)
-		{
-			if ( ($obj_GMP instanceof ClientGoMobileConfig) === true)
-			{
-				$xml .= $obj_GMP->toXML();
-			}
-		}
-		$xml .= '</gomobile-configuration-params>';
-
-		return $xml;
-	}
 	
 	/**
 	 * Returns the transaction time to live in seconds.	 
@@ -925,7 +899,6 @@ class ClientConfig extends BasicConfig
 		$xml .= $this->_getPaymentMethodsAsXML();
 		$xml .= $this->_getMerchantAccountsConfigAsXML();				
 		$xml .= $this->_getAccountsConfigurationsAsXML();		
-		$xml .= $this->_getGoMobileConfigAsXML();
 		$xml .= '<callback-protocol send-psp-id = "'.General::bool2xml($this->sendPSPID()).'">'. htmlspecialchars($this->_sMethod, ENT_NOQUOTES) .'</callback-protocol>';
 		$xml .= '<identification>'. $this->_iIdentification .'</identification>';
 		$xml .= '<transaction-time-to-live>'. $this->getTransactionTTL() .'</transaction-time-to-live>';
@@ -1025,8 +998,7 @@ class ClientConfig extends BasicConfig
 			$aObj_ClientMerchantAccountConfigurations = ClientMerchantAccountConfig::produceConfigurations($oDB, $id);
 			$aObj_ClientCardsAccountConfigurations = ClientPaymentMethodConfig::produceConfigurations($oDB, $id);
 			$aObj_ClientIINRangesConfigurations = ClientIINRangeConfig::produceConfigurations($oDB, $id);		
-			$aObj_ClientGoMobileConfigurations = ClientGoMobileConfig::produceConfigurations($oDB, $id);
-
+			
 			$obj_LogoURL = null;
 			$obj_CSSURL = null;
 			$obj_AcceptURL = null;
@@ -1069,8 +1041,6 @@ class ClientConfig extends BasicConfig
 					$aIPs[] = $aRS[$i]["IPADDRESS"];
 				}
 			}
-
-
 
             $sql  = "SELECT key,value
 					 FROM Client". sSCHEMA_POSTFIX .".AdditionalProperty_tbl
@@ -1132,6 +1102,5 @@ class ClientConfig extends BasicConfig
     }
 
     public function getAdditionalProperties(){return $this->_aAdditionalProperties;}
-
 }
 ?>
