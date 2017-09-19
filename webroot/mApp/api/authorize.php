@@ -41,6 +41,8 @@ require_once(sCLASS_PATH ."/authorize.php");
 require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for the CPM PSP component
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
+// Require specific Business logic for the CPM ACQUIRER component
+require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
 // Require general Business logic for the Cellpoint Mobile module
@@ -98,7 +100,8 @@ require_once(sCLASS_PATH ."/mobilepayonline.php");
 require_once(sCLASS_PATH ."/klarna.php");
 // Require Data Class for Client Information
 require_once(sCLASS_PATH ."/clientinfo.php");
-
+// Require specific Business logic for the Nets component
+require_once(sCLASS_PATH ."/nets.php");
 ignore_user_abort(true);
 set_time_limit(120);
 
@@ -948,9 +951,34 @@ try
 																
 																		$xml .= '<status code="92">Authorization failed, MobilePay Online returned error: '. $code .'</status>';
 																	}
-																	break;	
-																
 																	break;
+                                                                case (Constants::iNETS_ACQUIRER): // NETS
+                                                                    $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETS_ACQUIRER);
+
+                                                                    $obj_PSP = new Nets($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["nets"]);
+
+                                                                    $code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+
+                                                                    // Authorization succeeded
+                                                                    if ($code == "100")
+                                                                    {
+                                                                        $xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
+                                                                    }
+                                                                    else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+                                                                    else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and Card Details Stored.</status>'; }
+                                                                    else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml .= $code;}
+                                                                    // Error: Authorization declined
+
+                                                                    else
+                                                                    {
+                                                                        $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+
+                                                                        header("HTTP/1.1 502 Bad Gateway");
+
+                                                                        $xml .= '<status code="92">Authorization failed, NETS returned error: '. $code .'</status>';
+                                                                    }
+
+                                                                    break;
 																case (Constants::iKLARNA_PSP): // Klarna Pay
 																		$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iKLARNA_PSP);
 																			

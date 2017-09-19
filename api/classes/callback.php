@@ -648,7 +648,9 @@ abstract class Callback extends EndUserAccount
 		case (Constants::iQIWI_PSP):
 			return new Qiwi($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["qiwi"]);
 		case (Constants::iPOLI_PSP):
-			return new Poli($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["poli"]);	
+			return new Poli($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["poli"]);			
+        case (Constants::iNETS_ACQUIRER):
+            return new Nets($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["nets"]);
 		case (Constants::iKLARNA_PSP):
 				return new Klarna($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["klarna"]);
 		default:

@@ -886,3 +886,54 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10000
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, countryid) VALUES (10001, 36, 37, true, 100);
 /* ========== Global Configuration for Klarna = ENDS ========== */
 
+
+/* Update process type 2's name from Bank to Acquirer*/
+
+UPDATE system.processortype_tbl SET name = 'Acquirer' WHERE id = 2;
+
+/* ========== CONFIGURE NETS START ========== */
+/*START: Adding PSP entries to the PSP_Tbl table for NETS*/
+
+INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (35, 'NETS',2);
+
+/*END: Adding PSP entries to the PSP_Tbl table for NETS*/
+
+/*START: Adding Currency entries to the PSPCurrency_Tbl table for NETS*/
+
+INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (100,35,'DKK');
+INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (101,35,'SEK');
+INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (102,35,'NOK');
+INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (104,35,'EUR');
+INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (127,35,'DKK');
+INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (130,35,'DKK');
+INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (132,35,'ISK');
+
+/*END: Adding Currency entries to the PSPCurrency_Tbl table for NETS*/
+
+/* ========== CONFIGURE DEMO ACCOUNT FOR NETS START ========== */
+-- Wire-Card
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10007, 35, '9105bb4f-ae68-4768-9c3b-3eda968f57ea', '70000-APILUHN-CARD', '8mhwavKVb91T');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100007, 35, '-1');
+
+/* ========== CONFIGURE DEMO ACCOUNT FOR NETS END ====== */
+
+/* Additional Properties for client, merchant and PSP */
+
+
+/*====================== Test Data =========================*/
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('PROCESSING_CODE', '000000', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_BUSINESS_CODE', '4511
+', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_IDENTIFICATION_CODE', '1234', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_NAME', 'Test', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_ADDRESS', 'Test', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_CITY', 'Test', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_ZIP', '123456', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_REGION', 'ABC', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_COUNTRY', 'ABC', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('POS_DATA_CODE', '1234', 206, 'merchant');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('FUNCTION_CODE', 'FULL', 206, 'merchant');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_TERMINAL_ID', 'ABCD1234', 206, 'merchant');
+/*====================== Test Data END =========================*/
+
+/* END */

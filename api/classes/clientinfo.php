@@ -75,12 +75,18 @@ class ClientInfo
 	 * @var string
 	 */
 	private $_sLanguage;
-	
+
+    /*
+     * Array that hold the Addotional Data in
+     * @var array
+     */
+    private $_aAdditionalProperties =array();
+
 	/**
 	 * Default Constructor.
 	 *
 	 */
-	public function __construct($appid, $pf, $ver, CountryConfig $oCC, $mob, $email, $dvc, $lang, $ip="")
+	public function __construct($appid, $pf, $ver, CountryConfig $oCC, $mob, $email, $dvc, $lang, $ip="",$aAdditionalProperties)
 	{
 		$this->_iAppID = (integer) $appid;
 		$this->_sPlatform = trim($pf);
@@ -91,6 +97,7 @@ class ClientInfo
 		$this->_sDeviceID = trim($dvc);
 		$this->_sIP = trim($ip);
 		$this->_sLanguage = trim($lang);
+        $this->_aAdditionalProperties=$aAdditionalProperties;
 	}
 	/**
 	 * Returns the ID of the App that the Client Info is constructed for:
@@ -157,6 +164,12 @@ class ClientInfo
 		$xml .= '<email>'. htmlspecialchars($this->_sEMail, ENT_NOQUOTES) .'</email>';
 		$xml .= '<device-id>'. htmlspecialchars($this->_sDeviceID, ENT_NOQUOTES) .'</device-id>';
 		$xml .= '<ip>'. htmlspecialchars($this->_sIP, ENT_NOQUOTES) .'</ip>';
+        $xml .= '<additional-config>';
+        foreach ($this->_aAdditionalProperties as $aAdditionalProperty)
+        {
+            $xml .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
+        }
+        $xml .= '</additional-config>';
 		$xml .= '</client-info>';
 		
 		return $xml;
@@ -188,7 +201,7 @@ class ClientInfo
 	private static function _produceInfoFromDatabase(RDB &$oDB, $id)
 	{
 		$sql = "SELECT T.countryid, T.platform, T.version, T.deviceid, P.mobile, P.email,
-					L.code AS language
+					L.code, T.clientid AS language
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl T
 				INNER JOIN Customer".sSCHEMA_POSTFIX.".Profile_Tbl P ON T.customerid = P.id AND P.enabled = '1'
 				INNER JOIN System".sSCHEMA_POSTFIX.".Language_Tbl L ON T.languageid = L.id AND L.enabled = '1'
@@ -199,8 +212,24 @@ class ClientInfo
 		if (is_array($RS) === true & count($RS) > 0)
 		{
 			$oCC = CountryConfig::produceConfig($oDB, $RS["COUNTRYID"], true);
-			
-			return new ClientInfo(-1, $RS["PLATFORM"], $RS["VERSION"], $oCC, $RS["MOBILE"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LANGUAGE"], "");
+
+
+            $sql  = "SELECT key,value
+					 FROM Client". sSCHEMA_POSTFIX .".AdditionalProperty_tbl
+					 WHERE externalid = ". intval($RS["CLIENTID"]) ." and type='client'";
+            //		echo $sql ."\n";
+            $aRS = $oDB->getAllNames($sql);
+            $aAdditionalProperties = array();
+            if (is_array($aRS) === true && count($aRS) > 0)
+            {
+                for ($i=0; $i<count($aRS); $i++)
+                {
+                    $aAdditionalProperties[$i]["key"] =$aRS[$i]["KEY"];
+                    $aAdditionalProperties[$i]["value"] = $aRS[$i]["VALUE"];
+                }
+            }
+
+			return new ClientInfo(-1, $RS["PLATFORM"], $RS["VERSION"], $oCC, $RS["MOBILE"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LANGUAGE"], "",$aAdditionalProperties);
 		}
 		else { return null; }
 	}
