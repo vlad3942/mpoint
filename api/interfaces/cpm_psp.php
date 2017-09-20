@@ -329,7 +329,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		if(is_null($obj_BillingAddress) == false)
 		{
-		$b .= $obj_BillingAddress->asXML();
+		    //Produce Country config based on the country id
+            CountryConfig::setISO3166Attributes($obj_BillingAddress, $this->getDBConn(), intval($obj_BillingAddress["country-id"]));
+            $b .= $obj_BillingAddress->asXML();
 		}
 		if(is_null($obj_ClientInfo) == false)
 		{
@@ -715,7 +717,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	}
 	public function invoice($sMsg = "" ,$iAmount = -1) { return -1; }
 	
-	private function _constNewCardAuthorizationRequest($obj_Card)
+	protected function _constNewCardAuthorizationRequest($obj_Card)
 	{
 		
 		list($expiry_month, $expiry_year) = explode("/", $obj_Card->expiry);
@@ -742,7 +744,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		return $b;
 	}
 	
-	private function _constStoredCardAuthorizationRequest($obj_Card)
+    protected function _constStoredCardAuthorizationRequest($obj_Card)
 	{
 		list($expiry_month, $expiry_year) = explode("/", $obj_Card->expiry);
 		

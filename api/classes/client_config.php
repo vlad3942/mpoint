@@ -40,6 +40,7 @@ class ClientConfig extends BasicConfig
 	const iICON_URL = 10;	
 	const iDECLINE_URL = 11;
 	const iPARSE_3DSECURE_CHALLENGE_URL = 12;
+	const iMERCHANT_APP_RETURN_URL = 13;
 
 	/**
 	 * ID of the Flow the Client's customers have to go through in order to complete the Payment Transaction
@@ -77,12 +78,6 @@ class ClientConfig extends BasicConfig
 	 * @var Array
 	 */
 	private $_aObj_IINRangeConfigurations;
-    /**
-     * Configuration for the GoMobile Channel Specific for the client.
-     *
-     * @var Array
-     */
-    private $_aObj_GoMobileConfigurations;
 	/**
 	 * Client's Username for GoMobile
 	 *
@@ -305,6 +300,20 @@ class ClientConfig extends BasicConfig
 	 * @var string
 	 */
 	private $_sSalt;
+	
+	/**
+	 * Object that holds the URL of Merchant App URL scheme should be returned to upon successfully completing the Transaction
+	 *
+	 * @var ClientURLConfig
+	 */
+	private $_obj_AppURL;
+
+    /*
+     * Array that hold the Addotional Data in
+     * @var array
+     */
+    private $_aAdditionalProperties=array();
+	
 	/**
 	 * Default Constructor
 	 *
@@ -348,7 +357,7 @@ class ClientConfig extends BasicConfig
 	 * @param   array $aObj_PMs								List of Payment Methods (Cards) that the client offers
 	 * @param   array $aObj_IINRs							List of IIN Range values for the client.
 	 */
-	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=null, ClientURLConfig $oCSSURL=null, ClientURLConfig $oAccURL=null, ClientURLConfig $oCURL=null, ClientURLConfig $oDURL=null, ClientURLConfig $oCBURL=null, ClientURLConfig $oIURL=null, ClientURLConfig $oParse3DSecureChallengeURL=null, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), $aObj_GMPs = array() )
+	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=null, ClientURLConfig $oCSSURL=null, ClientURLConfig $oAccURL=null, ClientURLConfig $oCURL=null, ClientURLConfig $oDURL=null, ClientURLConfig $oCBURL=null, ClientURLConfig $oIURL=null, ClientURLConfig $oParse3DSecureChallengeURL=null, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), $aObj_GMPs = array(), ClientURLConfig $oAppURL=null,$aAdditionalProperties )
 	{
 		parent::__construct($id, $name);
 
@@ -363,6 +372,7 @@ class ClientConfig extends BasicConfig
 		$this->_obj_LogoURL = $oLURL;
 		$this->_obj_CSSURL = $oCSSURL;
 		$this->_obj_AcceptURL = $oAccURL;
+		$this->_obj_AppURL = $oAppURL;
 		$this->_obj_CancelURL = $oCURL;
 		$this->_obj_DeclineURL = $oDURL;
 		$this->_obj_CallbackURL = $oCBURL;
@@ -398,6 +408,7 @@ class ClientConfig extends BasicConfig
 		$this->_aObj_PaymentMethodConfigurations = $aObj_PMs;
 		$this->_aObj_IINRangeConfigurations = $aObj_IINRs;		
 		$this->_aObj_GoMobileConfigurations = $aObj_GMPs;
+		$this->_aAdditionalProperties=$aAdditionalProperties;
 	}
 
 	/**
@@ -493,6 +504,20 @@ class ClientConfig extends BasicConfig
 		}
 		else { return ""; }
 	}
+	/**
+	 * Returns the Merchant App URL scheme where the Customer should be returned to upon successfully completing the Transaction
+	 *
+	 * @return 	string
+	 */
+	public function getAppURL()
+	{
+		if ( ($this->_obj_AppURL instanceof ClientURLConfig) === true)
+		{
+			return $this->_obj_AppURL->getURL();
+		}
+		else { return ""; }
+	}
+	
 	/**
 	 * Returns the Absolute URL where the Customer should be returned to in case he / she cancels the Transaction midway
 	 *
@@ -801,26 +826,6 @@ class ClientConfig extends BasicConfig
 			
 		return $xml;
 	}
-
-	/**
-	 * Returns the XML payload of array of Configurations for the Client's GoMobile Account.
-	 *
-	 * @return 	String
-	 */
-	private function _getGoMobileConfigAsXML()
-	{
-		$xml = '<gomobile-configuration-params>';
-		foreach ($this->_aObj_GoMobileConfigurations as $obj_GMP)
-		{
-			if ( ($obj_GMP instanceof ClientGoMobileConfig) === true)
-			{
-				$xml .= $obj_GMP->toXML();
-			}
-		}
-		$xml .= '</gomobile-configuration-params>';
-
-		return $xml;
-	}
 	
 	/**
 	 * Returns the transaction time to live in seconds.	 
@@ -837,6 +842,7 @@ class ClientConfig extends BasicConfig
 		$xml .= '<logo-url>'. htmlspecialchars($this->getLogoURL(), ENT_NOQUOTES) .'</logo-url>';
 		$xml .= '<css-url>'. htmlspecialchars($this->getCSSURL(), ENT_NOQUOTES) .'</css-url>';
 		$xml .= '<accept-url>'. htmlspecialchars($this->getAcceptURL(), ENT_NOQUOTES) .'</accept-url>';
+		$xml .= '<app-url>'. htmlspecialchars($this->getAppURL(), ENT_NOQUOTES) .'</app-url>';
 		$xml .= '<cancel-url>'. htmlspecialchars($this->getCancelURL(), ENT_NOQUOTES) .'</cancel-url>';
 		$xml .= '<decline-url>'. htmlspecialchars($this->getDeclineURL(), ENT_NOQUOTES) .'</decline-url>';
 		$xml .= '<callback-url>'. htmlspecialchars($this->getCallbackURL(), ENT_NOQUOTES) .'</callback-url>';
@@ -855,6 +861,12 @@ class ClientConfig extends BasicConfig
 			$xml .= '<ip>'.$value.'</ip>';
 		}
 		$xml .= '</ip-list>';
+		$xml .= '<additional-config>';
+        foreach ($this->_aAdditionalProperties as $aAdditionalProperty)
+        {
+            $xml .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
+        }
+        $xml .= '</additional-config>';
 		$xml .= '<show-all-cards>'. $this->_bShowAllCards .'</show-all-cards>';
 		$xml .= '</client-config>';
 
@@ -872,6 +884,7 @@ class ClientConfig extends BasicConfig
 		if ( ($this->_obj_LogoURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_LogoURL->toXML(); }
 		if ( ($this->_obj_CSSURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_CSSURL->toXML(); }
 		if ( ($this->_obj_AcceptURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_AcceptURL->toXML(); }
+		if ( ($this->_obj_AppURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_AppURL->toXML(); }
 		if ( ($this->_obj_CancelURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_CancelURL->toXML(); }
 		if ( ($this->_obj_DeclineURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_DeclineURL->toXML(); }
 		if ( ($this->_obj_CallbackURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_CallbackURL->toXML(); }
@@ -886,7 +899,6 @@ class ClientConfig extends BasicConfig
 		$xml .= $this->_getPaymentMethodsAsXML();
 		$xml .= $this->_getMerchantAccountsConfigAsXML();				
 		$xml .= $this->_getAccountsConfigurationsAsXML();		
-		$xml .= $this->_getGoMobileConfigAsXML();
 		$xml .= '<callback-protocol send-psp-id = "'.General::bool2xml($this->sendPSPID()).'">'. htmlspecialchars($this->_sMethod, ENT_NOQUOTES) .'</callback-protocol>';
 		$xml .= '<identification>'. $this->_iIdentification .'</identification>';
 		$xml .= '<transaction-time-to-live>'. $this->getTransactionTTL() .'</transaction-time-to-live>';
@@ -920,7 +932,7 @@ class ClientConfig extends BasicConfig
 					KW.id AS keywordid, KW.name AS keyword, Sum(P.price) AS price,
 					U1.id AS customerimporturlid, U2.id AS authurlid, U3.id AS notifyurlid, U4.id AS mesburlid, U5.id AS parse3dsecureurlid,
 					U1.url AS customerimporturl, U2.url AS authurl, U3.url AS notifyurl, U4.url AS mesburl,
-					U5.url AS parse3dsecureurl
+					U5.url AS parse3dsecureurl,U6.id AS appurlid,U6.url AS appurl
 				FROM Client". sSCHEMA_POSTFIX .".Client_Tbl CL
 				INNER JOIN System". sSCHEMA_POSTFIX .".Country_Tbl C ON CL.countryid = C.id AND C.enabled = '1'
 				INNER JOIN Client". sSCHEMA_POSTFIX .".Account_Tbl Acc ON CL.id = Acc.clientid AND Acc.enabled = '1'
@@ -931,6 +943,7 @@ class ClientConfig extends BasicConfig
 				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U3 ON CL.id = U3.clientid AND U3.urltypeid = ". self::iNOTIFICATION_URL ." AND U3.enabled = '1'
 				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U4 ON CL.id = U4.clientid AND U4.urltypeid = ". self::iMESB_URL ." AND U4.enabled = '1'
 				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U5 ON CL.id = U5.clientid AND U5.urltypeid = ". self::iPARSE_3DSECURE_CHALLENGE_URL ." AND U5.enabled = '1'
+				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U6 ON CL.id = U6.clientid AND U6.urltypeid = ". self::iMERCHANT_APP_RETURN_URL ." AND U6.enabled = '1'
 				WHERE CL.id = ". intval($id) ." AND CL.enabled = '1'";
 		// Use Default Keyword
 		if ($kw == -1)
@@ -949,8 +962,8 @@ class ClientConfig extends BasicConfig
 					C.id,
 					Acc.id, Acc.name, Acc.mobile, Acc.markup,
 					KW.id, KW.name,
-					U1.id, U2.id, U3.id, U4.id, U5.id,
-					U1.url, U2.url, U3.url, U4.url, U5.url";
+					U1.id, U2.id, U3.id, U4.id, U5.id,U6.id,
+					U1.url, U2.url, U3.url, U4.url, U5.url,U6.url";
 		// Use Default Account
 		if ($acc == -1)
 		{
@@ -973,7 +986,7 @@ class ClientConfig extends BasicConfig
 		}
 		// Remove Account clause if it hasn't been already
 		$sql = str_replace("{ACCOUNT CLAUSE}", "", $sql);
-//		echo $sql ."\n";
+	   //echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 
 		if (is_array($RS) === true && $RS["CLIENTID"] > 0)
@@ -985,8 +998,7 @@ class ClientConfig extends BasicConfig
 			$aObj_ClientMerchantAccountConfigurations = ClientMerchantAccountConfig::produceConfigurations($oDB, $id);
 			$aObj_ClientCardsAccountConfigurations = ClientPaymentMethodConfig::produceConfigurations($oDB, $id);
 			$aObj_ClientIINRangesConfigurations = ClientIINRangeConfig::produceConfigurations($oDB, $id);		
-			$aObj_ClientGoMobileConfigurations = ClientGoMobileConfig::produceConfigurations($oDB, $id);
-
+			
 			$obj_LogoURL = null;
 			$obj_CSSURL = null;
 			$obj_AcceptURL = null;
@@ -999,6 +1011,7 @@ class ClientConfig extends BasicConfig
 			$obj_NotificationURL = null;
 			$obj_MESBURL = null;
 			$obj_Parse3DSecureURL = null;
+			$obj_AppURL = null;
 
 			if (strlen($RS["LOGOURL"]) > 0) { $obj_LogoURL = new ClientURLConfig($RS["CLIENTID"], self::iLOGO_URL, $RS["LOGOURL"]); }
 			if (strlen($RS["CSSURL"]) > 0) { $obj_CSSURL = new ClientURLConfig($RS["CLIENTID"], self::iCSS_URL, $RS["CSSURL"]); }
@@ -1012,7 +1025,9 @@ class ClientConfig extends BasicConfig
 			if ($RS["NOTIFYURLID"] > 0) { $obj_NotificationURL = new ClientURLConfig($RS["NOTIFYURLID"], self::iNOTIFICATION_URL, $RS["NOTIFYURL"]); }
 			if ($RS["MESBURLID"] > 0) { $obj_MESBURL = new ClientURLConfig($RS["MESBURLID"], self::iMESB_URL, $RS["MESBURL"]); }
 			if ($RS["PARSE3DSECUREURLID"] > 0) { $obj_Parse3DSecureURL = new ClientURLConfig($RS["PARSE3DSECUREURLID"], self::iPARSE_3DSECURE_CHALLENGE_URL, $RS["PARSE3DSECUREURL"]); }
-
+			if ($RS["APPURLID"] > 0) { $obj_AppURL = new ClientURLConfig($RS["APPURLID"], self::iMERCHANT_APP_RETURN_URL, $RS["APPURL"]); }
+			
+			
 			$sql  = "SELECT ipaddress
 					 FROM Client". sSCHEMA_POSTFIX .".IPAddress_Tbl
 					 WHERE clientid = ". intval($id) ."";
@@ -1027,7 +1042,22 @@ class ClientConfig extends BasicConfig
 				}
 			}
 
-			return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_DeclineURL, $obj_CallbackURL, $obj_IconURL, $obj_Parse3DSecureURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $RS["NUM_MASKED_DIGITS"], $RS["SALT"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations, $aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations, $aObj_ClientGoMobileConfigurations);
+            $sql  = "SELECT key,value
+					 FROM Client". sSCHEMA_POSTFIX .".AdditionalProperty_tbl
+					 WHERE externalid = ". intval($id) ." and type='client'";
+            //		echo $sql ."\n";
+            $aRS = $oDB->getAllNames($sql);
+            $aAdditionalProperties = array();
+            if (is_array($aRS) === true && count($aRS) > 0)
+            {
+                for ($i=0; $i<count($aRS); $i++)
+                {
+                	$aAdditionalProperties[$i]["key"] =$aRS[$i]["KEY"];
+                	$aAdditionalProperties[$i]["value"] = $aRS[$i]["VALUE"];
+                }
+            }
+
+			return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_DeclineURL, $obj_CallbackURL, $obj_IconURL, $obj_Parse3DSecureURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $RS["NUM_MASKED_DIGITS"], $RS["SALT"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations, $aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations, $aObj_ClientGoMobileConfigurations,$obj_AppURL,$aAdditionalProperties);
 		}
 		// Error: Client Configuration not found
 		else { trigger_error("Client Configuration not found using ID: ". $id .", Account: ". $acc .", Keyword: ". $kw, E_USER_WARNING); }
@@ -1070,5 +1100,7 @@ class ClientConfig extends BasicConfig
         $xml .= '</client-config>';
         return $xml;
     }
+
+    public function getAdditionalProperties(){return $this->_aAdditionalProperties;}
 }
 ?>

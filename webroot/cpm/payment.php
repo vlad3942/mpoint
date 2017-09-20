@@ -25,7 +25,8 @@ require_once(sCLASS_PATH ."/callback.php");
 require_once(sCLASS_PATH ."/dibs.php");
 // Require general Business logic for the Cellpoint Mobile module
 require_once(sCLASS_PATH ."/cpm.php");
-
+// Require specific Business logic for the CPM ACQUIRER component
+require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
 // Re-Build HTTP GET super global to support arrays
 rebuild_get();
 

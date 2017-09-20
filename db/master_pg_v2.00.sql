@@ -148,40 +148,39 @@ ALTER TABLE system.psp_tbl
       ON UPDATE CASCADE ON DELETE CASCADE;
 	  
 --Add coloumn device-id in log.Transaction_tbl
-ALTER TABLE log.transaction_tbl ADD COLUMN deviceid character varying(50);
+ALTER TABLE log.transaction_tbl ADD COLUMN deviceid character varying(50);	  
+
+/*---------END : ADDED CHANGE FOR SUPPORTING CURRENCY SCHEMA-------------*/
+
+
 
  /*
  *
- * Created a new Table in the client schema {Client.GoMobileConfiguration_Tbl} to retain gomobile configuration
- * for every channel - CMP-1820
+ * Created a new Table in the client schema {Client.AdditionalProperty_tbl} to retain additional client and merchant configuration
+ * for every channel - CMP-1862
  *
  */
--- Table: client.gomobileconfiguration_tbl
+-- Table: client.additionalproperty_tbl
 
--- DROP TABLE client.gomobileconfiguration_tbl;
+-- DROP TABLE client.additionalproperty_tbl;
 
-CREATE TABLE client.gomobileconfiguration_tbl
+CREATE TABLE client.additionalproperty_tbl
 (
   id serial NOT NULL,
-  clientid integer NOT NULL,
-  name character varying(100),
-  value character varying(100),
-  channel character varying(5),
-  created timestamp without time zone DEFAULT now(),
+  key character varying(200) NOT NULL,
+  value character varying(4000) NOT NULL,
   modified timestamp without time zone DEFAULT now(),
-  enabled boolean DEFAULT true,
-  CONSTRAINT gomobileconfiguration_pk PRIMARY KEY (id),
-  CONSTRAINT gomobileconfiguration2client_fk FOREIGN KEY (clientid)
-      REFERENCES client.client_tbl (id) MATCH SIMPLE
-      ON UPDATE CASCADE ON DELETE CASCADE
+  created timestamp without time zone DEFAULT now(),
+  enabled boolean NOT NULL DEFAULT true,
+  externalid integer NOT NULL,
+  type VARCHAR(20) NOT NULL,
+  CONSTRAINT additionalprop_pk PRIMARY KEY (id)
 )
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE client.gomobileconfiguration_tbl
+ALTER TABLE client.additionalproperty_tbl
   OWNER TO mpoint;
-
-
 
 	  
 	  
