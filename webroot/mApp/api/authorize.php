@@ -218,7 +218,9 @@ try
 											$obj_Validator->valCardNumber($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}) != 10										
 										) { $aMsgCds[] = 21; }
 										
-										if(count(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount)) > 0 && empty(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount)) == false){
+										$amt =intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount);
+
+										if(count($amt) > 0 && empty($amt) == false){
 											if($obj_TxnInfo->getAmount() != intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount)){
 												$aMsgCds[52] = $obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
 											}
