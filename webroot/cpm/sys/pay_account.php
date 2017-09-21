@@ -37,7 +37,8 @@ require_once(sCLASS_PATH ."/callback.php");
 
 // Require specific Business logic for the CPM PSP component
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
-
+// Require specific Business logic for the CPM ACQUIRER component
+require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
 // Require general Business logic for the Cellpoint Mobile module
 require_once(sCLASS_PATH ."/cpm.php");
 // Require specific Business logic for the DIBS component
