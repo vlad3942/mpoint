@@ -554,6 +554,19 @@ abstract class Constants
 	 *
 	 */
 	const iMOBILEPAY_ONLINE_PSP = 33;
+
+    /**
+     * Unique ID for the Acquirer: NETS
+     *
+     */
+    const iNETS_ACQUIRER = 35;
+
+	/**
+	 * Unique ID for the Payment Service Provider: Klarna
+	 *
+	 */
+	const iKLARNA_PSP = 37;
+	
 	
 	/**
 	 * Unique ID for the Payment Service Provider: Android Pay
@@ -743,6 +756,11 @@ abstract class Constants
 	 *
 	 */
 	const iQIWI_WALLET = 33;	
+	/**
+	 * Unique Card ID for transaction's made using Klarna
+	 *
+	 */
+	const iKLARNA_PAY = 36;
 	
 	/**
 	 * Unique Fee Type ID for Top-Ups

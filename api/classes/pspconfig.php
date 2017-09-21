@@ -60,7 +60,14 @@ class PSPConfig extends BasicConfig
 	 */
 	private $_aMessages;
 
-	/**
+
+    /*
+     * Array that hold the Addotional Data in
+     * @var array
+     */
+    private $_aAdditionalProperties=array();
+
+    /**
 	 * Default Constructor
 	 *
 	 * @param 	integer $id 	Unique ID for the Payment Service Provider in mPoint
@@ -71,7 +78,7 @@ class PSPConfig extends BasicConfig
 	 * @param 	string $pw 		Client's Password for the Payment Service Provider
 	 * @param 	array $aMsgs 	List of messages that are sent to the Payment Service Provider
 	 */
-	public function __construct($id, $name, $system_type, $ma, $msa, $un, $pw, array $aMsgs=array() )
+	public function __construct($id, $name, $system_type, $ma, $msa, $un, $pw, array $aMsgs=array(),$aAdditionalProperties )
 	{
 		parent::__construct($id, $name);
 		$this->_sMerchantAccount = trim($ma);
@@ -80,6 +87,7 @@ class PSPConfig extends BasicConfig
 		$this->_sUsername = trim($un);
 		$this->_sPassword = trim($pw);
 		$this->_aMessages = $aMsgs;
+		$this->_aAdditionalProperties =$aAdditionalProperties;
 	}
 
 	/**
@@ -139,6 +147,12 @@ class PSPConfig extends BasicConfig
 			$xml .= '<message language="'. htmlspecialchars($lang, ENT_NOQUOTES) .'">'. htmlspecialchars($msg, ENT_NOQUOTES) .'</message>';
 		}
 		$xml .= '</messages>';
+        $xml .= '<additional-config>';
+        foreach ($this->_aAdditionalProperties as $aAdditionalProperty)
+        {
+            $xml .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
+        }
+        $xml .= '</additional-config>';
 		$xml .= '</psp-config>';
 
 		return $xml;
@@ -156,7 +170,7 @@ class PSPConfig extends BasicConfig
 	public static function produceConfig(RDB &$oDB, $clid, $accid, $pspid)
 	{
 		$sql = "SELECT DISTINCT PSP.id, PSP.name, PSP.system_type,
-					MA.name AS ma, MA.username, MA.passwd AS password, MSA.name AS msa
+					MA.name AS ma, MA.username, MA.passwd AS password, MSA.name AS msa, MA.id as MerchantId
 				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl PSP
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl MA ON PSP.id = MA.pspid AND MA.enabled = '1'
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON MA.clientid = CL.id AND CL.enabled = '1'
@@ -182,7 +196,23 @@ class PSPConfig extends BasicConfig
 					$aMessages[strtolower($aRS[$i]["LANGUAGE"])] = $aRS[$i]["TEXT"];
 				}
 			}
-			return new PSPConfig($RS["ID"], $RS["NAME"], $RS["SYSTEM_TYPE"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], $aMessages);
+
+            $sql  = "SELECT key,value
+					 FROM Client". sSCHEMA_POSTFIX .".AdditionalProperty_tbl
+					 WHERE externalid = ". intval($RS["MERCHANTID"]) ." and type='merchant'" ;
+            //		echo $sql ."\n";
+            $aRS = $oDB->getAllNames($sql);
+            $aAdditionalProperties = array();
+            if (is_array($aRS) === true && count($aRS) > 0)
+            {
+                for ($i=0; $i<count($aRS); $i++)
+                {
+                    $aAdditionalProperties[$i]["key"] =$aRS[$i]["KEY"];
+                    $aAdditionalProperties[$i]["value"] = $aRS[$i]["VALUE"];
+                }
+            }
+
+			return new PSPConfig($RS["ID"], $RS["NAME"], $RS["SYSTEM_TYPE"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], $aMessages,$aAdditionalProperties);
 		}
 		else
 		{
