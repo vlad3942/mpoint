@@ -589,6 +589,26 @@ $aHTTP_CONN_INFO["qiwi"]["paths"]["status"] = "/mpoint/qiwi/status";
 $aHTTP_CONN_INFO["qiwi"]["paths"]["cancel"] = "/mpoint/qiwi/cancel";
 $aHTTP_CONN_INFO["qiwi"]["paths"]["callback"] = "/mpoint/qiwi/callback";
 
+
+/**
+ * Connection info for connecting to Klarna
+ */
+$aHTTP_CONN_INFO["klarna"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["klarna"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["klarna"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["klarna"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["klarna"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["klarna"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["klarna"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["klarna"]["paths"]["initialize"] = "/mpoint/klarna/initialize";
+$aHTTP_CONN_INFO["klarna"]["paths"]["auth"] = "/mpoint/klarna/authorize-payment";
+$aHTTP_CONN_INFO["klarna"]["paths"]["refund"] = "/mpoint/klarna/refund";
+$aHTTP_CONN_INFO["klarna"]["paths"]["status"] = "/mpoint/klarna/status";
+$aHTTP_CONN_INFO["klarna"]["paths"]["cancel"] = "/mpoint/klarna/cancel";
+$aHTTP_CONN_INFO["klarna"]["paths"]["callback"] = "/mpoint/klarna/callback";
+
+
+
 /**
  * Connection info for connecting to MobilePay Online
  */
@@ -601,6 +621,21 @@ $aHTTP_CONN_INFO["mobilepay-online"]["method"] = $aHTTP_CONN_INFO["mesb"]["metho
 $aHTTP_CONN_INFO["mobilepay-online"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["mobilepay-online"]["paths"]["initialize"] = "/mpoint/mobilepay-online/initialize";
 $aHTTP_CONN_INFO["mobilepay-online"]["paths"]["auth"] = "/mpoint/mobilepay-online/authorize-payment";
+
+/**
+ * Connection info for connecting to Nets
+ */
+$aHTTP_CONN_INFO["nets"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["nets"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["nets"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["nets"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["nets"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["nets"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["nets"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["nets"]["paths"]["auth"] = "/mpsp/nets/authorize-payment";
+$aHTTP_CONN_INFO["nets"]["paths"]["capture"] = "/mpsp/nets/capture";
+$aHTTP_CONN_INFO["nets"]["paths"]["refund"] = "/mpsp/nets/refund";
+$aHTTP_CONN_INFO["nets"]["paths"]["cancel"] = "/mpsp/nets/cancel";
 
 /**
  * GoMobile Connection Info.
