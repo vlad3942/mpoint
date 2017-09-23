@@ -1019,5 +1019,23 @@ class EndUserAccount extends Home
 
 		return $code;
 	}
+
+    /**
+     * Retrieves the Ticket of the card from EndUser.Card_Tbl
+     *
+     * @param integer 	$cardid 		ID from System.Card_Tbl
+     * @return string	$ticket			Token of the card at the PSP
+     */
+    public function getTicket($cardid)
+    {
+        $sql = "SELECT ticket
+				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
+				WHERE clientid = ". $this->_obj_ClientConfig->getID() ." AND id = ". intval($cardid);
+
+//		echo $sql ."\n";
+        $RS = $this->getDBConn()->getName($sql);
+
+        return is_array($RS) === true ? $RS["TICKET"] : NULL;
+    }
 }
 ?>
