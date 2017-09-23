@@ -182,5 +182,10 @@ WITH (
 ALTER TABLE client.additionalproperty_tbl
   OWNER TO mpoint;
 
-	  
+
+ALTER TABLE log.transaction_tbl ADD mask VARCHAR(20) NULL;
+ALTER TABLE log.transaction_tbl ADD expiry VARCHAR(5) NULL;
+ALTER TABLE log.transaction_tbl ADD token CHARACTER VARYING(512) COLLATE pg_catalog."default" NULL;
+CREATE UNIQUE INDEX transaction_tbl_token_uindex ON log.transaction_tbl (token);
+ALTER TABLE log.transaction_tbl ADD authOriginalData VARYING(512) NULL;
 	  

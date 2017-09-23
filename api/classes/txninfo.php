@@ -262,6 +262,13 @@ class TxnInfo
 	 * @var string
 	 */
 	private $_sDeviceID;
+
+    private $_mask;
+    private $_expiry;
+    private $_token;
+    private $_authOriginalData;
+
+
 	/**
 	 * Default Constructor
 	 *
@@ -300,7 +307,7 @@ class TxnInfo
 	 * @param	long $cptamt		The Full amount that has been captured for the Transaction
 	 *
 	 */
-	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="", $pspid=-1, $fee=0, $cptamt=0, $cardid = -1)
+	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="", $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$mask="",$expiry="",$token="",$authOriginalData="")
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -342,7 +349,11 @@ class TxnInfo
 		$this->_lCapturedAmount = (float) $cptamt;
 		$this->_iCardID = (integer) $cardid;
 		$this->_sDeviceID = trim($devid);
-		
+
+		$this->_mask = trim($mask);
+        $this->_expiry =trim($expiry);
+        $this->_token = trim($token);
+        $this->_authOriginalData = trim($authOriginalData);
 	}
 
 	/**
@@ -686,6 +697,7 @@ class TxnInfo
 		$xml .= '<description>'. htmlspecialchars($this->_sDescription, ENT_NOQUOTES) .'</description>';
 		$xml .= '<ip>'. htmlspecialchars($this->_sIP, ENT_NOQUOTES) .'</ip>';
 		$xml .= '<hmac>'. htmlspecialchars($this->getHMAC(), ENT_NOQUOTES) .'</hmac>';
+		$xml .= '<auth-original-data>'.htmlspecialchars($this->_authOriginalData, ENT_NOQUOTES).'<auth-original-data>';
 		if( empty($this->_obj_OrderConfigs) === false )
 		{
 			
@@ -716,7 +728,7 @@ class TxnInfo
 	private static function _constProduceQuery()
 	{
 		$sql = "SELECT t.id, typeid, countryid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, extid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, iconurl, \"mode\", auto_capture, gomobileid,
-						t.clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, t.pspid, fee, captured, cardid, deviceid
+						t.clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, t.pspid, fee, captured, cardid, deviceid, mask, expiry, token, authOriginalData
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl t";
 
 		return $sql;
@@ -736,7 +748,7 @@ class TxnInfo
 			$obj_ClientConfig = ClientConfig::produceConfig($obj, $RS["CLIENTID"], $RS["ACCOUNTID"], $RS["KEYWORDID"]);
 			$obj_CountryConfig = CountryConfig::produceConfig($obj, $RS["COUNTRYID"]);
 
-			$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"]);
+			$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["mask"],$RS["expiry"],$RS["token"],$RS["authOriginalData"]);
 		}
 		return $obj_TxnInfo;
 	}
