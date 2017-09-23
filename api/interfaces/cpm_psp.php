@@ -2,7 +2,7 @@
 
 abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiadable, Redeemable, Invoiceable
 {
-
+    private $_obj_ResposenceXML = null;
     public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $obj_PSPConfig=null)
     {
         parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig);
@@ -43,6 +43,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             if ($code == 200)
             {
                 $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+                $this->_obj_ResposenceXML =$obj_XML;
                 // Expect there is only one transaction in the reply
                 $obj_Txn = $obj_XML->transactions->transaction;
                 if ( (integer)$obj_Txn["id"] == $this->getTxnInfo()->getID() )
@@ -110,6 +111,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				if ($code == 200)
 				{
 					$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+                    $this->_obj_ResposenceXML =$obj_XML;
 					// Expect there is only one transaction in the reply
 					$obj_Txn = $obj_XML->transactions->transaction;
 					if ( (integer)$obj_Txn["id"] == $this->getTxnInfo()->getID() )
@@ -163,6 +165,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			if ($code == 200)
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+                $this->_obj_ResposenceXML =$obj_XML;
 				// Expect there is only one transaction in the reply
 				$obj_Txn = $obj_XML->transactions->transaction;
 				if ( (integer)$obj_Txn["id"] == $this->getTxnInfo()->getID() )
@@ -216,6 +219,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			if ($code == 200)
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+                $this->_obj_ResposenceXML =$obj_XML;
 				// Expect there is only one transaction in the reply
 				$obj_Txn = $obj_XML->transactions->transaction;
 				if ( (integer)$obj_Txn["id"] == $this->getTxnInfo()->getID() )
@@ -277,6 +281,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		if ($code == 200)
 		{
 			$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+            $this->_obj_ResposenceXML =$obj_XML;
 			// Expect there is only one transaction in the reply
 			$obj_Txn = $obj_XML->transactions->transaction;
 			if (intval($obj_Txn["id"]) == $this->getTxnInfo()->getID() )
@@ -352,7 +357,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			if ($code == 200)
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
-				
+                $this->_obj_ResposenceXML =$obj_XML;
 				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, $obj_HTTP->getReplyBody());
 				
 				// save ext id in database
@@ -384,26 +389,37 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<authorize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
-		$b .= $obj_PSPConfig->toXML();
-		
-		$txnXML = $this->_constTxnXML();
-		$b .= $txnXML;
-		
-		if (count($obj_Card->ticket) == 0)
-		{
-			$b .=  $this->_constNewCardAuthorizationRequest($obj_Card);
-		} 
-		else 
-		{ 
-			$b.= $this->_constStoredCardAuthorizationRequest($obj_Card); 
-			$obj_txnXML = simpledom_load_string($txnXML);
-			$euaid = intval($obj_txnXML->xpath("/transaction/@eua-id")->{'eua-id'});
-			if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
-		}
-			
-		
-		$b .= '</authorize>';
-		$b .= '</root>';
+        $b .= '<client-config>';
+        $b .= '<additional-config>';
+
+        foreach ($this->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+        {
+            $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
+        }
+
+        $b .= '</additional-config>';
+        $b .= '</client-config>';
+
+        $b .= $obj_PSPConfig->toXML();
+
+        $txnXML = $this->_constTxnXML();
+        $b .= $txnXML;
+
+        if (count($obj_Card->ticket) == 0)
+        {
+            $b .=  $this->_constNewCardAuthorizationRequest($obj_Card);
+        }
+        else
+        {
+            $b.= $this->_constStoredCardAuthorizationRequest($obj_Card);
+            $obj_txnXML = simpledom_load_string($txnXML);
+            $euaid = intval($obj_txnXML->xpath("/transaction/@eua-id")->{'eua-id'});
+            if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
+        }
+
+
+        $b .= '</authorize>';
+        $b .= '</root>';
 
 		try
 		{
@@ -417,7 +433,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			if ($code == 200 || $code == 303 )
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
-
+                $this->_obj_ResposenceXML =$obj_XML;
 				$sql = "";
 				
 				if(count($obj_XML->transaction) > 0)
@@ -765,5 +781,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		
 		return $b;
 	}
-	
+    
+	protected function _getLastResponce(){ return $this->_obj_ResposenceXML;}
+
 }
