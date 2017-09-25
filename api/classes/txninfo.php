@@ -697,7 +697,7 @@ class TxnInfo
 		$xml .= '<description>'. htmlspecialchars($this->_sDescription, ENT_NOQUOTES) .'</description>';
 		$xml .= '<ip>'. htmlspecialchars($this->_sIP, ENT_NOQUOTES) .'</ip>';
 		$xml .= '<hmac>'. htmlspecialchars($this->getHMAC(), ENT_NOQUOTES) .'</hmac>';
-		$xml .= '<auth-original-data>'.htmlspecialchars($this->_authOriginalData, ENT_NOQUOTES).'<auth-original-data>';
+		$xml .= '<auth-original-data>'.htmlspecialchars($this->_authOriginalData, ENT_NOQUOTES).'</auth-original-data>';
 		if( empty($this->_obj_OrderConfigs) === false )
 		{
 			
