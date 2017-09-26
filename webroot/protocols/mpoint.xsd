@@ -222,7 +222,6 @@
 													</xs:simpleType>
 												</xs:attribute>
 												<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
-												<xs:attribute name="store-card" type="xs:boolean" use="optional"/>
 											</xs:complexType>
 										</xs:element>
 									</xs:choice>
@@ -238,6 +237,7 @@
 								</xs:sequence>
 								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="1009" />
+								<xs:attribute name="store-card" type="xs:boolean" use="optional"/>
 							</xs:complexType>
 						</xs:element>
 						<xs:choice>
