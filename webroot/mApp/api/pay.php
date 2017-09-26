@@ -238,7 +238,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										//getting order config with transaction to pass to particular psp for initialize with psp for AID
 										$oTI->produceOrderConfig($_OBJ_DB);
 										// Initialize payment with Payment Service Provider
-                                        $storecard = $obj_DOM->pay[$i]->transaction["store-card"];
 										$xml = '<psp-info id="'. $obj_PSPConfig->getID() .'" merchant-account="'. htmlspecialchars($obj_PSPConfig->getMerchantAccount(), ENT_NOQUOTES) .'"  type="'.$obj_PSPConfig->getProcessorType().'">';
 										switch ($obj_PSPConfig->getID() )
 										{
@@ -571,7 +570,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											break;
 										}
 										$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. htmlspecialchars($obj_PSPConfig->getMessage($obj_TxnInfo->getLanguage() ), ENT_NOQUOTES) .'</message>';
-										$xml .= '<store-card>'.$storecard.'</store-card>';
 										$xml .= '</psp-info>';
 									}
 									catch (mPointException $e)
