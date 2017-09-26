@@ -73,8 +73,12 @@ require_once(sCLASS_PATH ."/paypal.php");
 
 // Require specific Business logic for the Nets component
 require_once(sCLASS_PATH ."/nets.php");
+
 // Require specific Business logic for Customer Info component
 require_once(sCLASS_PATH ."/customer_info.php");
+// Require specific Business logic for the mVault component
+require_once(sCLASS_PATH ."/mvault.php");
+
 header("Content-Type: application/x-www-form-urlencoded");
 
 // Require Business logic for the validating client Input

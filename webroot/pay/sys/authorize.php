@@ -147,10 +147,10 @@ if (count($aMsgCds) == 0)
 		$accountId = $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getID();
 		
 		$payResponseCode = 200;
-		
+		$storeCard = false;
 		if(isset($_POST['store-card']) && $_POST['store-card'] == 'on')
 		{
-			
+            $storeCard = true;
 			$payRequestBody = '<?xml version="1.0" encoding="UTF-8"?>
 					<root>
 						<pay account="'.$accountId.'" client-id="'.$clientId.'">
@@ -268,7 +268,7 @@ if (count($aMsgCds) == 0)
 			$b = '<?xml version="1.0" encoding="UTF-8"?>
 				<root>
 				  <authorize-payment account="'.$accountId.'" client-id="'.$clientId.'">
-				    <transaction type-id="'.$transactionType.'" id="'.$_SESSION['obj_TxnInfo']->getID().'">
+				    <transaction  store-card="'.$storeCard.'" type-id="'.$transactionType.'" id="'.$_SESSION['obj_TxnInfo']->getID().'">
 				         '.$cardDetails.'
 				    </transaction>
 				     '.$password.'

@@ -96,6 +96,8 @@ require_once(sCLASS_PATH ."/klarna.php");
 require_once(sCLASS_PATH ."/mobilepayonline.php");
 // Require specific Business logic for the Nets component
 require_once(sCLASS_PATH ."/nets.php");
+// Require specific Business logic for the mVault component
+require_once(sCLASS_PATH ."/mvault.php");
 $aMsgCds = array();
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement

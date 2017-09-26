@@ -426,6 +426,7 @@ class EndUserAccount extends Home
 		}
 	}
 
+
 	/**
 	 * Saves the specified Card Name for the newest card without a name which has been created recently (within the last 5 minutes).
 	 * The method will automatically create a new card and set it as inactive if no card has been created recently.
@@ -1018,5 +1019,23 @@ class EndUserAccount extends Home
 
 		return $code;
 	}
+
+    /**
+     * Retrieves the Ticket of the card from EndUser.Card_Tbl
+     *
+     * @param integer 	$cardid 		ID from System.Card_Tbl
+     * @return string	$ticket			Token of the card at the PSP
+     */
+    public function getTicket($cardid)
+    {
+        $sql = "SELECT ticket
+				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
+				WHERE clientid = ". $this->_obj_ClientConfig->getID() ." AND id = ". intval($cardid);
+
+//		echo $sql ."\n";
+        $RS = $this->getDBConn()->getName($sql);
+
+        return is_array($RS) === true ? $RS["TICKET"] : NULL;
+    }
 }
 ?>

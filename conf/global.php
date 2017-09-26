@@ -638,6 +638,20 @@ $aHTTP_CONN_INFO["nets"]["paths"]["refund"] = "/mpsp/nets/refund";
 $aHTTP_CONN_INFO["nets"]["paths"]["cancel"] = "/mpsp/nets/cancel";
 
 /**
+ * Connection info for connecting to mVault
+ */
+$aHTTP_CONN_INFO["mvault"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["mvault"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["mvault"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["mvault"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["mvault"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["mvault"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["mvault"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["mvault"]["paths"]["get-payment-data"] = "/mpoint/mvault/get-payment-data";
+$aHTTP_CONN_INFO["mvault"]["paths"]["get-token"] = "/mpoint/mvault/get-token";
+$aHTTP_CONN_INFO["mvault"]["paths"]["tokenize"] = "/mpoint/mvault/save-card";
+$aHTTP_CONN_INFO["mvault"]["paths"]["save-card"] = "/mpoint/save-card";
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>

@@ -102,6 +102,8 @@ require_once(sCLASS_PATH ."/klarna.php");
 require_once(sCLASS_PATH ."/clientinfo.php");
 // Require specific Business logic for the Nets component
 require_once(sCLASS_PATH ."/nets.php");
+// Require specific Business logic for the mVault component
+require_once(sCLASS_PATH ."/mvault.php");
 ignore_user_abort(true);
 set_time_limit(120);
 
@@ -227,12 +229,14 @@ try
 												$aMsgCds[52] = $obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
 											}
 										}
+										$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'},
+                                        CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
+                                        $_SERVER['HTTP_X_FORWARDED_FOR']);
+
 										// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
 										if (strlen($obj_ClientConfig->getSalt() ) > 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac) == 1)
 										{
-											$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'},
-											CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
-											$_SERVER['HTTP_X_FORWARDED_FOR']);
+
 											if ($obj_Validator->valHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]) ) != 10) { $aMsgCds[210] = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
 										}
 										// Success: Input Valid
@@ -326,7 +330,7 @@ try
 												case (Constants::iCARD_PURCHASE_TYPE):		// Authorize Purchase using Stored Card
 												default:
 													// 3rd Party Wallet
-													if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1)
+													if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1 || intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) == Constants::iMVAULT_WALLET)
 													{														
 														switch (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) )
 														{
@@ -350,6 +354,10 @@ try
 																$obj_Wallet = new AndroidPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["android-pay"]);
 																$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iANDROID_PAY_PSP);
 																break;
+                                                        case (Constants::iMVAULT_WALLET):
+                                                            $obj_Wallet = new MVault($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["mvault"]);
+                                                            $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iMVAULT_PSP);
+                                                            break;
 														default:
 															/**
 															 * This changes is made for globalcollect since rightnow it is the only psp which will send
@@ -981,8 +989,8 @@ try
 
                                                                         $xml .= '<status code="92">Authorization failed, NETS returned error: '. $code .'</status>';
                                                                     }
-
-                                                                    break;
+																	
+																	break;
 																case (Constants::iKLARNA_PSP): // Klarna Pay
 																		$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iKLARNA_PSP);
 																			
@@ -1003,7 +1011,8 @@ try
 																			$xml .= '<status code="92">Authorization failed, Klarna returned error: '. $code .'</status>';
 																		}
 																		break;
-															default:	// Unkown Error
+
+                                                                default:	// Unkown Error
 																$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 	
 																header("HTTP/1.1 500 Internal Server Error");
