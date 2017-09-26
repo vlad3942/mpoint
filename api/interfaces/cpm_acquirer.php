@@ -29,7 +29,7 @@ abstract class CPMACQUIRER extends CPMPSP
             $token = $obj_XML->token;
             $authOriginalData = $obj_XML->{'auth-original-data'};
 
-            if (count($approvalCode) == 0 && count($actionCode) == 0 && count($mask) == 0 && count($expiry) == 0 && count($token) == 0 && count($authOriginalData) == 0) {
+            if (count($approvalCode) != 0 && count($actionCode) != 0 && count($mask) != 0 && count($expiry) != 0 && count($token) != 0 && count($authOriginalData) != 0) {
                 $extId = $approvalCode . ":" . $actionCode;
 
                 $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
