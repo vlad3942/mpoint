@@ -942,7 +942,7 @@ INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (236,'Baht','T
 INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (237,'US Dollar','USD',2);
 INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (238,'CFA Franc BCEAO','XOF',0);
 INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (239,'New Zealand Dollar','NZD',2);
-INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (240,'Pa’anga','TOP',2);
+INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (240,'Paâ€™anga','TOP',2);
 INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (241,'Trinidad and Tobago Dollar','TTD',2);
 INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (242,'Tunisian Dinar','TND',3);
 INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (243,'Turkish Lira','TRY',2);
@@ -960,7 +960,7 @@ INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (254,'Peso Uru
 INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (255,'Uruguay Peso en Unidades Indexadas (URUIURUI)','UYI',0);
 INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (256,'Uzbekistan Sum','UZS',2);
 INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (257,'Vatu','VUV',0);
-INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (258,'Bolívar','VEF',2);
+INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (258,'BolÃ­var','VEF',2);
 INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (259,'Dong','VND',0);
 INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (260,'US Dollar','USD',2);
 INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (261,'US Dollar','USD',2);
@@ -1224,6 +1224,20 @@ UPDATE System.Country_Tbl SET alpha2code = 'EH', alpha3code = 'ESH', code = 732,
 UPDATE System.Country_Tbl SET alpha2code = 'YE', alpha3code = 'YEM', code = 887, currencyid = 264 WHERE id = 650;
 /*---------END : ADDED CHANGE FOR SUPPORTING CURRENCY SCHEMA-------------*/
 
+
+
+/* Update process type 2's name from Bank to Acquirer*/
+
+UPDATE system.processortype_tbl SET name = 'Acquirer' WHERE id = 2;
+
+/* ========== CONFIGURE NETS START ========== */
+/*START: Adding PSP entries to the PSP_Tbl table for NETS*/
+
+INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (35, 'NETS',2);
+
+/*END: Adding PSP entries to the PSP_Tbl table for NETS*/
+
+/*START: Adding Currency entries to the PSPCurrency_Tbl table for NETS*/
 
 
 /* Update process type 2's name from Bank to Acquirer*/

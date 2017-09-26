@@ -407,6 +407,7 @@ class ClientConfig extends BasicConfig
 		$this->_aObj_MerchantAccounts = $aObj_MAs;
 		$this->_aObj_PaymentMethodConfigurations = $aObj_PMs;
 		$this->_aObj_IINRangeConfigurations = $aObj_IINRs;		
+		$this->_aObj_GoMobileConfigurations = $aObj_GMPs;
 		$this->_aAdditionalProperties=$aAdditionalProperties;
 	}
 
@@ -1041,8 +1042,6 @@ class ClientConfig extends BasicConfig
 				}
 			}
 
-
-
             $sql  = "SELECT key,value
 					 FROM Client". sSCHEMA_POSTFIX .".AdditionalProperty_tbl
 					 WHERE externalid = ". intval($id) ." and type='client'";
@@ -1094,7 +1093,14 @@ class ClientConfig extends BasicConfig
 		else { return in_array($ip, $this->_aIPList); }
 	}
 
-    public function getAdditionalProperties(){return $this->_aAdditionalProperties;}
+	public function getClientGoMobileConfigurationToXML()
+    {
+        $xml = '<client-config id="'. $this->getID() .'">';
+        $xml .= $this->_getGoMobileConfigAsXML();
+        $xml .= '</client-config>';
+        return $xml;
+    }
 
+    public function getAdditionalProperties(){return $this->_aAdditionalProperties;}
 }
 ?>
