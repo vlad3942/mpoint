@@ -121,6 +121,13 @@ class Home extends General
 			}
 			else { return $this->_authInternal($aArgs[0], $aArgs[1], $aArgs[2]); }
 			break;
+		case (4):
+			if ( ($aArgs[0] instanceof HTTPConnInfo) === true)
+			{
+				return $this->_authExternal($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3]);
+			}
+			else { return $this->_authInternal($aArgs[0], $aArgs[1], $aArgs[2]); }
+			break;
 		default:
 			break;
 		}
@@ -237,12 +244,14 @@ class Home extends General
 
 		return $code;
 	}
-	private function _authExternal(HTTPConnInfo &$oCI, CustomerInfo $obj_CustomerInfo, $pwd)
+	private function _authExternal(HTTPConnInfo &$oCI, CustomerInfo $obj_CustomerInfo, $pwd, $clientId=-1)
 	{
 		$obj_ConnInfo = new HTTPConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), "POST", "text/xml", $oCI->getUsername(), $oCI->getPassword() );
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<login>';
+		 if($clientId > 0)
+		 	$b .= '<client-id>'.$clientId.'</client-id>' ;
 		$b .= $obj_CustomerInfo->toXML();
 		$b .= '<password>'. htmlspecialchars($pwd, ENT_NOQUOTES) .'</password>';
 		$b .= '</login>';
