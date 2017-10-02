@@ -1037,5 +1037,23 @@ class EndUserAccount extends Home
 
         return is_array($RS) === true ? $RS["TICKET"] : NULL;
     }
+
+    /**
+     * Retrieves the psp-id of the card from EndUser.Card_Tbl
+     *
+     * @param integer 	$id 		ID from Enduser.Card_Tbl
+     * @return string	$psp-id		pspid of the card from which token was returned
+     */
+    public function getCardPSPId($id)
+    {
+        $sql = "SELECT pspid
+				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
+				WHERE id = ". intval($id);
+
+		//echo $sql ."\n";
+        $RS = $this->getDBConn()->getName($sql);
+
+        return is_array($RS) === true ? $RS["PSPID"] : NULL;
+    }
 }
 ?>
