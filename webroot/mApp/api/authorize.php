@@ -378,8 +378,8 @@ try
                                                                 if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1) {
                                                                     $obj_Elem->ticket = (string)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token;
                                                                 }
-                                                                break;
                                                             }
+                                                                break;
 														}
 													
 														if(isset($obj_Wallet) == true && is_object($obj_Wallet) == true)
