@@ -352,8 +352,8 @@
 								<xs:attribute name="charge-type-id" type="charge-type" use="optional" />
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="client-info" type="client-info" minOccurs="0" maxOccurs="1" />
 						<xs:element name="auth-token" type="xs:string" minOccurs="0" maxOccurs="1" />
+						<xs:element name="client-info" type="client-info" minOccurs="0" maxOccurs="1" />
 					</xs:sequence>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
 					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
