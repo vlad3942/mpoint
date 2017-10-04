@@ -381,11 +381,11 @@ try
                                                             }
                                                                 break;
 														}
-													
+
 														if(isset($obj_Wallet) == true && is_object($obj_Wallet) == true)
 														{
 															$obj_XML = simpledom_load_string($obj_Wallet->getPaymentData($obj_PSPConfig, $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]) );
-															
+
 															if (count($obj_XML->{'payment-data'}) == 1)
 															{
 																$obj_Elem = $obj_XML->{'payment-data'}->card;
@@ -434,8 +434,8 @@ try
 																	if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->state) == 1) { $obj_Elem->address->state = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->state); }
 																}
 																//For stored card if we do not have address element, fetch billing address from mpoint enduser.address_tbl
-																elseif (count($obj_Elem->address) == 0)
-                                                                {
+																/*elseif (count($obj_Elem->address) == 0)*/
+                                                                else {
                                                                     //Fetch address from db
                                                                     $address_xml = $obj_mPoint->getAddressFromCardId($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
                                                                     if (is_null($address_xml) === false)
