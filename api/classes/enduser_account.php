@@ -1069,7 +1069,7 @@ class EndUserAccount extends Home
 				FROM EndUser".sSCHEMA_POSTFIX.".Address_tbl
 				WHERE cardid = ". intval($cardid);
 
-        echo $sql ."\n";
+        //echo $sql ."\n";
         $RS = $this->getDBConn()->getName($sql);
         //we expect only one billing address for a card (identified by the cardid)
         if (is_array ( $RS ) === true && count ( $RS ) > 0) {
