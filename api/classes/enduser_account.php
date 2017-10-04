@@ -1055,5 +1055,27 @@ class EndUserAccount extends Home
 
         return is_array($RS) === true ? $RS["PSPID"] : NULL;
     }
+
+    /**
+     * Retrieves the billing address of the card from EndUser.Address_tbl
+     *
+     * @param integer 	$cardid 		ID from Enduser.Card_Tbl
+     * @return string
+     */
+    public function getAddressFromCardId($cardid)
+    {
+        $xml = null;
+        $sql = "SELECT firstname,lastname,company,street,postalcode,city,stateid,countryid
+				FROM EndUser".sSCHEMA_POSTFIX.".Address_tbl
+				WHERE cardid = ". intval($cardid);
+
+        echo $sql ."\n";
+        $RS = $this->getDBConn()->getName($sql);
+        //we expect only one billing address for a card (identified by the cardid)
+        if (is_array ( $RS ) === true && count ( $RS ) > 0) {
+            $xml = "<address country-id=\"".$RS ["COUNTRYID"]."\"><first-name>".$RS ["FIRSTNAME"]."</first-name><last-name>".$RS ["LASTNAME"]."</last-name><company>".$RS ["COMPANY"]."</company>        <street>".$RS ["STREET"]."</street><postal-code>".$RS ["POSTALCODE"]."</postal-code><city>".$RS ["CITY"]."</city><state>".$RS ["STATEID"]."</state></address>";
+        }
+        return $xml;
+    }
 }
 ?>

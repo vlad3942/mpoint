@@ -433,6 +433,16 @@ try
 																	$obj_Elem->address->city = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->city);
 																	if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->state) == 1) { $obj_Elem->address->state = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->state); }
 																}
+																//For stored card if we do not have address element, fetch billing address from mpoint enduser.address_tbl
+																elseif (count($obj_Elem->address) == 0)
+                                                                {
+                                                                    //Fetch address from db
+                                                                    $address_xml = $obj_mPoint->getAddressFromCardId($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
+                                                                    if (is_null($address_xml) === false)
+                                                                    {
+                                                                        $obj_Elem->addChild(simplexml_load_string($address_xml->asXML()));
+                                                                    }
+                                                                }
 																// Merge CVC / CVV code from request
 																if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1)
 																{
