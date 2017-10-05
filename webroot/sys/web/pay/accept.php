@@ -84,6 +84,9 @@ $xml .= '<transactionid>' . $_REQUEST ['mpoint-id'] . '</transactionid>';
 $xml .= '<orderid>' . $orderid . '</orderid>';
 if ($_SESSION ['obj_TxnInfo']->getCSSURL () == "") {
 	$cssurll = "https://" . $_SERVER ["HTTP_HOST"] . "/css/bootstrap/styles.css";
+
+    if($_SESSION['obj_TxnInfo']->getClientConfig()->getCSSURL() !=="")
+        $cssurll= $_SESSION['obj_TxnInfo']->getClientConfig()->getCSSURL();
 } else {
 	$cssurll = $_SESSION ['obj_TxnInfo']->getCSSURL ();
 }
@@ -102,6 +105,10 @@ if ($_SESSION ['obj_TxnInfo']->getCSSURL () == "") {
 
 if ($_SESSION ['obj_TxnInfo']->getLogoURL()  == "") {
     $logourl = "#";
+
+    if($_SESSION['obj_TxnInfo']->getClientConfig()->getLogoURL() !=="")
+        $logourl= $_SESSION['obj_TxnInfo']->getClientConfig()->getLogoURL();
+
 } else {
     $logourl= $_SESSION ['obj_TxnInfo']->getLogoURL();
 }

@@ -16,7 +16,7 @@
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,300,600,700" rel="stylesheet" type="text/css" />
 		
 		<link href="/css/swag/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
-		<link href="/css/swag/css/style.css" type="text/css" rel="stylesheet" />
+		<link href="{/root/client-config/css-url}" type="text/css" rel="stylesheet" />
 		<!-- <link href="{/root/transaction/css-url}" type="text/css" rel="stylesheet" />-->
 		<script src="../js/jquery.min.js"></script>
 		<script type="text/javascript" src="../js/jquery.easing.min.js"></script>
@@ -140,7 +140,7 @@
 		</section>
 		
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-		<script src="../js/jquery.min.js"></script>
+<!--		<script src="../js/jquery.min.js"></script>-->
 		<!-- Include all compiled plugins (below), or include individual files 
 			as needed -->
 		<script src="/css/swag/js/bootstrap.min.js"></script>

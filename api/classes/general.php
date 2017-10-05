@@ -435,9 +435,9 @@ class General
         }
 
 		$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-					(id, typeid, clientid, accountid, countryid, keywordid, \"mode\", ip)
+					(id, typeid, clientid, accountid, countryid, keywordid, \"mode\", ip,cssurl,logourl)
 				VALUES
-					(". $RS["ID"] .", ". intval($tid) .", ". $oCC->getID() .", ". $oCC->getAccountConfig()->getID() .", ". $oCC->getCountryConfig()->getID() .", ". $oCC->getKeywordConfig()->getID() .", ". $oCC->getMode() .", '". $this->getDBConn()->escStr($ip) ."')";
+					(". $RS["ID"] .", ". intval($tid) .", ". $oCC->getID() .", ". $oCC->getAccountConfig()->getID() .", ". $oCC->getCountryConfig()->getID() .", ". $oCC->getKeywordConfig()->getID() .", ". $oCC->getMode() .", '". $this->getDBConn()->escStr($ip) ."','". $oCC->getCSSURL()."','". $oCC->getLogoURL()."')";
 //		echo $sql ."\n";
 		// Error: Unable to insert a new record in the Transaction Log
 		if (is_resource($this->getDBConn()->query($sql) ) === false)
