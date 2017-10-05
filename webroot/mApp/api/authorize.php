@@ -434,13 +434,16 @@ try
 																	if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->state) == 1) { $obj_Elem->address->state = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->state); }
 																}
 																//For stored card if we do not have address element, fetch billing address from mpoint enduser.address_tbl
-																/*elseif (count($obj_Elem->address) == 0)*/
-                                                                else {
+																elseif (count($obj_Elem->address) == 1 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address) == 0)
+                                                                {
+
                                                                     //Fetch address from db
                                                                     $address_xml = $obj_mPoint->getAddressFromCardId($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
-                                                                    if (is_null($address_xml) === false)
+                                                                    if (empty($address_xml) == false)
                                                                     {
-                                                                        $obj_Elem->addChild(simplexml_load_string($address_xml->asXML()));
+                                                                        //TODO replace $obj_Elem->address with the $address_xml
+                                                                        //$obj_Elem = str_replace('<address/>',$address_xml,$obj_Elem);
+                                                                        //$obj_Elem->replaceChild("address", simplexml_load_string($address_xml));
                                                                     }
                                                                 }
 																// Merge CVC / CVV code from request
