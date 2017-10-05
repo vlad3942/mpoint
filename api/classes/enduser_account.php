@@ -1064,7 +1064,7 @@ class EndUserAccount extends Home
      */
     public function getAddressFromCardId($cardid)
     {
-        $xml = null;
+        $xml = '';
         $sql = "SELECT firstname,lastname,company,street,postalcode,city,stateid,address.countryid, state.name
 				FROM EndUser".sSCHEMA_POSTFIX.".Address_tbl as address INNER JOIN system".sSCHEMA_POSTFIX.".state_tbl as state on stateid = state.id
 				WHERE cardid = ". intval($cardid);

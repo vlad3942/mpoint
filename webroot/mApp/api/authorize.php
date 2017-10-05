@@ -434,8 +434,8 @@ try
 																	if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->state) == 1) { $obj_Elem->address->state = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->address->state); }
 																}
 																//For stored card if we do not have address element, fetch billing address from mpoint enduser.address_tbl
-																/*elseif (count($obj_Elem->address) == 0)*/
                                                                 else {
+
                                                                     //Fetch address from db
                                                                     $RS = $obj_mPoint->getAddressFromCardId($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
                                                                     if (is_array ( $RS ) === true && count ( $RS ) > 0)
