@@ -1065,17 +1065,14 @@ class EndUserAccount extends Home
     public function getAddressFromCardId($cardid)
     {
         $xml = null;
-        $sql = "SELECT firstname,lastname,company,street,postalcode,city,stateid,countryid
-				FROM EndUser".sSCHEMA_POSTFIX.".Address_tbl
+        $sql = "SELECT firstname,lastname,company,street,postalcode,city,stateid,address.countryid, state.name
+				FROM EndUser".sSCHEMA_POSTFIX.".Address_tbl as address INNER JOIN system".sSCHEMA_POSTFIX.".state_tbl as state on stateid = state.id
 				WHERE cardid = ". intval($cardid);
 
         //echo $sql ."\n";
         $RS = $this->getDBConn()->getName($sql);
-        //we expect only one billing address for a card (identified by the cardid)
-        if (is_array ( $RS ) === true && count ( $RS ) > 0) {
-            $xml = '<address country-id=\"'.$RS ["COUNTRYID"].'\"><first-name>'.$RS ["FIRSTNAME"].'</first-name><last-name>'.$RS ["LASTNAME"].'</last-name><company>'.$RS ["COMPANY"].'</company><street>'.$RS ["STREET"].'</street><postal-code>'.$RS ["POSTALCODE"].'</postal-code><city>'.$RS ["CITY"].'</city><state>'.$RS ["STATEID"].'</state></address>';
-        }
-        return $xml;
+        
+        return $RS;
     }
 }
 ?>

@@ -437,10 +437,17 @@ try
 																/*elseif (count($obj_Elem->address) == 0)*/
                                                                 else {
                                                                     //Fetch address from db
-                                                                    $address_xml = $obj_mPoint->getAddressFromCardId($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
-                                                                    if (is_null($address_xml) === false)
+                                                                    $RS = $obj_mPoint->getAddressFromCardId($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
+                                                                    if (is_array ( $RS ) === true && count ( $RS ) > 0)
                                                                     {
-                                                                        $obj_Elem->addChild(simplexml_load_string($address_xml->asXML()));
+                                                                        $obj_Elem->addChild('address','');
+                                                                        $obj_Elem->address["country-id"] =$RS ["COUNTRYID"];
+                                                                        $obj_Elem->address->{'first-name'} = $RS ["FIRSTNAME"];
+                                                                        $obj_Elem->address->{'last-name'} =$RS ["LASTNAME"];
+                                                                        $obj_Elem->address->street =$RS ["STREET"];
+                                                                        $obj_Elem->address->city =$RS ["CITY"];
+                                                                        $obj_Elem->address->state=$RS ["STATEID"];
+                                                                        $obj_Elem->address->{'postal-code'}=$RS ["POSTALCODE"];
                                                                     }
                                                                 }
 																// Merge CVC / CVV code from request
