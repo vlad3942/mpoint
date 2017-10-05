@@ -221,14 +221,11 @@ try
 											intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) === Constants::iNEW_CARD_PURCHASE_TYPE &&
 											$obj_Validator->valCardNumber($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}) != 10										
 										) { $aMsgCds[] = 21; }
-										
-										$amt =intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount);
+                                        
+                                        if($obj_TxnInfo->getAmount() != intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount)){
+                                            $aMsgCds[52] = $obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
+                                        }
 
-										if(count($amt) > 0 && empty($amt) == false){
-											if($obj_TxnInfo->getAmount() != intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount)){
-												$aMsgCds[52] = $obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
-											}
-										}
 										$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'},
                                         CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
                                         $_SERVER['HTTP_X_FORWARDED_FOR']);
