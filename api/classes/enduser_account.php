@@ -535,8 +535,15 @@ class EndUserAccount extends Home
 	 * @param 	string $ct		Address field - City
 	 * @return	integer
 	 */
-	public function saveAddress($cardid, $cid, $sid, $fn, $ln, $cmp, $st, $pc, $ct)
-	{
+	public function saveAddress($cardid, $cid, $sid, $fn, $ln, $cmp, $st, $pc, $ct,$fullName = "")
+    {
+        if(empty($fullName) === false) {
+            $name = explode(' ', $fullName);
+            $fn = $name[0];
+            if(count($name) > 1)
+                $ln = $name[1];
+        }
+
 		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Address_Tbl
 				SET countryid = ". intval($cid) .", stateid = ". intval($sid) .",
 					firstname = '". $this->getDBConn()->escStr($fn) ."', lastname = '". $this->getDBConn()->escStr($ln) ."', company = '". $this->getDBConn()->escStr($cmp) ."',
