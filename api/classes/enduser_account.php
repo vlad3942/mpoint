@@ -1064,7 +1064,7 @@ class EndUserAccount extends Home
      */
     public function getAddressFromCardId($cardid)
     {
-        $xml = null;
+        $xml = '';
         $sql = "SELECT firstname,lastname,company,street,postalcode,city,stateid,countryid
 				FROM EndUser".sSCHEMA_POSTFIX.".Address_tbl
 				WHERE cardid = ". intval($cardid);
@@ -1073,7 +1073,7 @@ class EndUserAccount extends Home
         $RS = $this->getDBConn()->getName($sql);
         //we expect only one billing address for a card (identified by the cardid)
         if (is_array ( $RS ) === true && count ( $RS ) > 0) {
-            $xml = '<address country-id=\"'.$RS ["COUNTRYID"].'\"><first-name>'.$RS ["FIRSTNAME"].'</first-name><last-name>'.$RS ["LASTNAME"].'</last-name><company>'.$RS ["COMPANY"].'</company><street>'.$RS ["STREET"].'</street><postal-code>'.$RS ["POSTALCODE"].'</postal-code><city>'.$RS ["CITY"].'</city><state>'.$RS ["STATEID"].'</state></address>';
+            $xml = '<address country-id="'.$RS ["COUNTRYID"].'"><first-name>'.$RS ["FIRSTNAME"].'</first-name><last-name>'.$RS ["LASTNAME"].'</last-name><company>'.$RS ["COMPANY"].'</company><street>'.$RS ["STREET"].'</street><postal-code>'.$RS ["POSTALCODE"].'</postal-code><city>'.$RS ["CITY"].'</city><state>'.$RS ["STATEID"].'</state></address>';
         }
         return $xml;
     }
