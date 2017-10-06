@@ -166,6 +166,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 																  (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name,
 																  $bPreferred, 
 																  (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["charge-type-id"]) + 1;
+
 								}
 								// Naming a Stored Card
 								else { $code = $obj_mPoint->saveCardName($iAccountID, $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) ); }

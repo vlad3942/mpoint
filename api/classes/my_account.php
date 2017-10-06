@@ -19,6 +19,9 @@
  */
 class MyAccount extends Home
 {
+
+    private $_deletedCardToken = null;
+
 	/**
 	 * Generates and sends an Activation Code to the End-User using the provided Mobile Number (MSISDN).
 	 *
@@ -227,7 +230,7 @@ class MyAccount extends Home
 	 */
 	public function delStoredCard($enduserid, $cardid)
 	{
-		$sql1 = "SELECT Card.id cardid, Cli.transaction_ttl ttl
+		$sql1 = "SELECT Card.id cardid, Cli.transaction_ttl ttl,Card.ticket
 				 FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl Card
 				 LEFT JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl Cli ON Cli.id = Card.clientid AND Cli.enabled = '1'
 				 WHERE Card.id = ". intval($cardid);
@@ -241,6 +244,7 @@ class MyAccount extends Home
 			if (is_array($RS) === true)
 			{
 				$iTTL = intval($RS["TTL"]);
+				$this->_deletedCardToken =$RS["TICKET"];
 				if ($iTTL > 0)
 				{
 					$obj_Status = new Status($this->getDBConn(), $this->getText() );
@@ -268,7 +272,9 @@ class MyAccount extends Home
 
 		return 3;
 	}
-	
+
+	public function getDeletedCardToken(){return $this->_deletedCardToken;}
+
 	/**
 	 * Sets a new preferred card for a specific client.
 	 * The method will reset the "preferred" flag for all other cards the End-User has stored for the Client
