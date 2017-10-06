@@ -93,12 +93,16 @@ if ($_SESSION ['obj_TxnInfo']->getCSSURL () == "") {
 
 if ($_SESSION ['obj_TxnInfo']->getACCEPTURL () == "") {
 	$accept = "#";
+    if($_SESSION['obj_TxnInfo']->getClientConfig()->getACCEPTURL() !=="")
+        $accept= $_SESSION['obj_TxnInfo']->getClientConfig()->getACCEPTURL();
 } else {
 	$accept = $_SESSION ['obj_TxnInfo']->getACCEPTURL ();
 }
 
-if ($_SESSION ['obj_TxnInfo']->getCSSURL () == "") {
+if ($_SESSION ['obj_TxnInfo']->getCANCELURL () == "") {
 	$cancel = "#";
+    if($_SESSION['obj_TxnInfo']->getClientConfig()->getCANCELURL() !=="")
+        $cancel= $_SESSION['obj_TxnInfo']->getClientConfig()->getCANCELURL();
 } else {
 	$cancel = $_SESSION ['obj_TxnInfo']->getCANCELURL ();
 }
