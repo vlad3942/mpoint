@@ -620,6 +620,11 @@ abstract class Constants
 	 *
 	 */
 	const iANDROID_PAY_WALLET = 27;
+	/**
+	 * Unique Card ID for transaction's made using the co-branded VISA / Dankort
+	 *
+	 */
+	const iVISA_DANKORT_CARD = 37;
 	
 	/**
 	 * Unique Fee Type ID for Top-Ups

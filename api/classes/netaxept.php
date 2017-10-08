@@ -113,16 +113,19 @@ class NetAxept extends Callback implements Captureable, Refundable
 		}
 		catch (Exception $e)
 		{
+			$msg = "";
 			if ($e->detail->BBSException->Result->ResponseCode != NULL)
 			{
 				// Transaction already processed
 				if (intval($e->detail->BBSException->Result->ResponseCode) == 98)
 				{
-					return "OK";
+					$msg = "Transaction already processed";
 				}
-				else { return $e->detail->BBSException->Result->ResponseCode; }
+				else { $msg = $e->detail->BBSException->Result->ResponseCode; }
 			}
-			else { return $e->getMessage();	}
+			else { $msg = $e->getMessage();	}
+			
+			$obj_XML = simplexml_load_string('<status code="92">'. htmlspecialchars($msg, ENT_NOQUOTES) .'</status>');
 		}
 
 		return $obj_XML;
