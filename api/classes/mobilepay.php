@@ -38,7 +38,7 @@ class MobilePay extends CPMPSP
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
 		$xml .= '<url method="app" />';
-		$xml .= '<callback-url>'. htmlspecialchars($this->getTxnInfo()->getClientConfig()->getMESBURL() ."/danskebank/callback", ENT_NOQUOTES) .'</callback-url>';
+		$xml .= '<callback-url>'. htmlspecialchars($this->getTxnInfo()->getClientConfig()->getMESBURL() ."/mpoint/danskebank/callback", ENT_NOQUOTES) .'</callback-url>';
 		$xml .= '</root>';
 		
 		return simplexml_load_string($xml);
