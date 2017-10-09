@@ -444,7 +444,7 @@ try
                                                                         $obj_Elem->address->{'full-name'} =$RS ["FIRSTNAME"]." ".$RS ["LASTNAME"];
                                                                         $obj_Elem->address->street =$RS ["STREET"];
                                                                         $obj_Elem->address->city =$RS ["CITY"];
-                                                                        $obj_Elem->address->state=$RS ["STATEID"];
+                                                                        $obj_Elem->address->state=$RS ["STATE"];
                                                                         $obj_Elem->address->{'postal-code'}=$RS ["POSTALCODE"];
                                                                     }
                                                                 }

@@ -139,7 +139,7 @@ try
     if($iAccountValidation != 1)
 	{
         $saveCard = true;
-        foreach ($this->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+        foreach ($obj_TxnInfo->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
         {
             if ($aAdditionalProperty['key'] == 'mvault' && $aAdditionalProperty['value'] == 'true'){
                 $saveCard = false;
