@@ -90,20 +90,20 @@ if ($_SESSION ['obj_TxnInfo']->getCSSURL () == "") {
 	$cssurll = $_SESSION ['obj_TxnInfo']->getCSSURL ();
 }
 
-if ($_SESSION ['obj_TxnInfo']->getACCEPTURL () == "") {
+if ($_SESSION ['obj_TxnInfo']->getAcceptURL () == "") {
 	$accept = "#";
-	 if($_SESSION['obj_TxnInfo']->getClientConfig()->getACCEPTURL() !=="")
-        $accept= $_SESSION['obj_TxnInfo']->getClientConfig()->getACCEPTURL();
+	 if($_SESSION['obj_TxnInfo']->getClientConfig()->getAcceptURL() !=="")
+        $accept= $_SESSION['obj_TxnInfo']->getClientConfig()->getAcceptURL();
 } else {
-	$accept = $_SESSION ['obj_TxnInfo']->getACCEPTURL ();
+	$accept = $_SESSION ['obj_TxnInfo']->getAcceptURL ();
 }
 
-if ($_SESSION ['obj_TxnInfo']->getCANCELURL () == "") {
+if ($_SESSION ['obj_TxnInfo']->getCancelURL () == "") {
 	$cancel = "#";
-	if($_SESSION['obj_TxnInfo']->getClientConfig()->getCANCELURL() !=="")
-        $cancel= $_SESSION['obj_TxnInfo']->getClientConfig()->getCANCELURL();
+	if($_SESSION['obj_TxnInfo']->getClientConfig()->getCancelURL() !=="")
+        $cancel= $_SESSION['obj_TxnInfo']->getClientConfig()->getCancelURL();
 } else {
-	$cancel = $_SESSION ['obj_TxnInfo']->getCANCELURL ();
+	$cancel = $_SESSION ['obj_TxnInfo']->getCancelURL ();
 }
 
 if ($_SESSION ['obj_TxnInfo']->getLogoURL()  == "") {
