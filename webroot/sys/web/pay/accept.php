@@ -84,24 +84,32 @@ $xml .= '<transactionid>' . $_REQUEST ['mpoint-id'] . '</transactionid>';
 $xml .= '<orderid>' . $orderid . '</orderid>';
 if ($_SESSION ['obj_TxnInfo']->getCSSURL () == "") {
 	$cssurll = "https://" . $_SERVER ["HTTP_HOST"] . "/css/bootstrap/styles.css";
+	 if($_SESSION['obj_TxnInfo']->getClientConfig()->getCSSURL() !=="")
+        $cssurll= $_SESSION['obj_TxnInfo']->getClientConfig()->getCSSURL();
 } else {
 	$cssurll = $_SESSION ['obj_TxnInfo']->getCSSURL ();
 }
 
 if ($_SESSION ['obj_TxnInfo']->getACCEPTURL () == "") {
 	$accept = "#";
+	 if($_SESSION['obj_TxnInfo']->getClientConfig()->getACCEPTURL() !=="")
+        $accept= $_SESSION['obj_TxnInfo']->getClientConfig()->getACCEPTURL();
 } else {
 	$accept = $_SESSION ['obj_TxnInfo']->getACCEPTURL ();
 }
 
-if ($_SESSION ['obj_TxnInfo']->getCSSURL () == "") {
+if ($_SESSION ['obj_TxnInfo']->getCANCELURL () == "") {
 	$cancel = "#";
+	if($_SESSION['obj_TxnInfo']->getClientConfig()->getCANCELURL() !=="")
+        $cancel= $_SESSION['obj_TxnInfo']->getClientConfig()->getCANCELURL();
 } else {
 	$cancel = $_SESSION ['obj_TxnInfo']->getCANCELURL ();
 }
 
 if ($_SESSION ['obj_TxnInfo']->getLogoURL()  == "") {
     $logourl = "#";
+	 if($_SESSION['obj_TxnInfo']->getClientConfig()->getLogoURL() !=="")
+        $logourl= $_SESSION['obj_TxnInfo']->getClientConfig()->getLogoURL();
 } else {
     $logourl= $_SESSION ['obj_TxnInfo']->getLogoURL();
 }
