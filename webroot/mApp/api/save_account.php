@@ -84,7 +84,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					if ($obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->password) + 20; }
 					if ($obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->{'confirm-password'}) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->{'confirm-password'} ) + 30; }
 					if (count($aMsgCds) == 0 && strval($obj_DOM->{'save-account'}[$i]->password) != strval($obj_DOM->{'save-account'}[$i]->{'confirm-password'}) ) { $aMsgCds[] = 41; }
-					if (count($obj_DOM->{'save-account'}[$i]->card) == 1 && $obj_Validator->valName( (string) $obj_DOM->{'save-account'}[$i]->card) != 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-account'}[$i]->card) + 50; }
+					if (count($obj_DOM->{'save-account'}[$i]->card) == 1 && $obj_Validator->valName( (string) $obj_DOM->{'save-account'}[$i]->{'card'}->name) != 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-account'}[$i]->{'card'}->name) + 50; }
 
 					// Seperate Full Name into First- and Last Name
 					if (count($obj_DOM->{'save-account'}[$i]->{'full-name'}) == 1)

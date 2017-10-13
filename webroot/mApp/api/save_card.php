@@ -117,10 +117,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if ($obj_Validator->valPSPID($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"]) != 10) { $aMsgCds[] = $obj_Validator->valPSPID($_OBJ_DB, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]["psp-id"]) + 60; }
 							if ($obj_Validator->valMaxCards($_OBJ_DB, $iAccountID, $obj_ClientConfig->getMaxCards(), (integer) $obj_DOM->{'save-card'}[$i]["client-id"] ) != 10) { $aMsgCds[] = $obj_Validator->valMaxCards($_OBJ_DB, $iAccountID, $obj_ClientConfig->getMaxCards(), (integer) $obj_DOM->{'save-card'}[$i]["client-id"]) + 70; }
 						}
-						if (count($obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}) == 1)
-						{
-							if ($obj_Validator->valState($_OBJ_DB, utf8_decode( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}->state) ) != 10) { $aMsgCds[] = $obj_Validator->valState($_OBJ_DB, utf8_decode( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}->state) ) + 80; }
-						}
+						//if (count($obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}) == 1)
+						//{
+						//	if ($obj_Validator->valState($_OBJ_DB, utf8_decode( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}->state) ) != 10) { $aMsgCds[] = $obj_Validator->valState($_OBJ_DB, utf8_decode( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}->state) ) + 80; }
+						//}
 
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
@@ -180,9 +180,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 																			(string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} ."/". substr($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-year'}, -2),
 																			(string) $obj_DOM->{'save-card'}[$i]->card[$j]->token );
 								
-								$sid = $obj_mPoint->getStateID( (integer) $obj_DOM->{'save-card'}[$i]->card[$j]->address["country-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->state);
-								if ($sid == 0) { $sid = $obj_mPoint->saveState( (integer) $obj_DOM->{'save-card'}[$i]->card[$j]->address["country-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->state); }
-								$code = $obj_mPoint->saveAddress($id, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]->address["country-id"], $sid, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{'first-name'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"last-name"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->company, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->street, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"postal-code"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->city);
+								//$sid = $obj_mPoint->getStateID( (integer) $obj_DOM->{'save-card'}[$i]->card[$j]->address["country-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->state);
+								//if ($sid == 0) { $sid = $obj_mPoint->saveState( (integer) $obj_DOM->{'save-card'}[$i]->card[$j]->address["country-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->state); }
+								$code = $obj_mPoint->saveAddress($id, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]->address["country-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->state, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{'first-name'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"last-name"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->company, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->street, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"postal-code"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->city,(string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{'full-name'});
 								if ($code == 10)
 								{
 									// Commit Saved Card

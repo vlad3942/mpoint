@@ -187,4 +187,8 @@ ALTER TABLE log.transaction_tbl ADD mask VARCHAR(20) NULL;
 ALTER TABLE log.transaction_tbl ADD expiry VARCHAR(5) NULL;
 ALTER TABLE log.transaction_tbl ADD token CHARACTER VARYING(512) COLLATE pg_catalog."default" NULL;
 ALTER TABLE log.transaction_tbl ADD authOriginalData CHARACTER VARYING(512) NULL;
-	  
+
+
+ALTER TABLE enduser.address_tbl DROP CONSTRAINT address2state_fk;
+ALTER TABLE enduser.address_tbl DROP stateid;
+ALTER TABLE enduser.address_tbl ADD state VARCHAR(200);

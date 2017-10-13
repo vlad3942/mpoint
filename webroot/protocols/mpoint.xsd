@@ -297,7 +297,7 @@
 					<xs:sequence>
 						<xs:element name="card" minOccurs="1" maxOccurs="1">
 							<xs:complexType>
-								<xs:sequence>
+								<xs:choice minOccurs="0" maxOccurs="unbounded">
 									<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1" />
 									<xs:element name="card-holder-name" type="xs:string" minOccurs="0" maxOccurs="1" />
 									<xs:choice minOccurs="0" maxOccurs="1">
@@ -306,7 +306,7 @@
 										<xs:group ref="card-token-only" />
 									</xs:choice>
 									<xs:element name="address" type="address" minOccurs="0" maxOccurs="1" />
-								</xs:sequence>
+								</xs:choice>
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" />
 								<xs:attribute name="psp-id" type="xs:positiveInteger" use="optional" />
 								<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
@@ -335,7 +335,7 @@
 						</xs:choice>
 						<xs:element name="card" minOccurs="0" maxOccurs="1">
 							<xs:complexType>
-								<xs:sequence>
+								<xs:choice minOccurs="0" maxOccurs="unbounded">
 									<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1" />
 									<xs:element name="card-holder-name" type="xs:string" minOccurs="0" maxOccurs="1" />
 									<xs:choice minOccurs="0" maxOccurs="1">
@@ -344,7 +344,7 @@
 										<xs:group ref="card-token-only" />
 									</xs:choice>
 									<xs:element name="address" type="address" minOccurs="0" maxOccurs="1" />
-								</xs:sequence>
+								</xs:choice>
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" />
 								<xs:attribute name="psp-id" type="xs:positiveInteger" use="optional" />
 								<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
@@ -352,8 +352,8 @@
 								<xs:attribute name="charge-type-id" type="charge-type" use="optional" />
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="client-info" type="client-info" minOccurs="0" maxOccurs="1" />
 						<xs:element name="auth-token" type="xs:string" minOccurs="0" maxOccurs="1" />
+						<xs:element name="client-info" type="client-info" minOccurs="0" maxOccurs="1" />
 					</xs:sequence>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
 					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
