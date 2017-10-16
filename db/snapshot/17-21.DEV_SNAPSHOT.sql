@@ -7,6 +7,6 @@ INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd)
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100007, 40, '-1');
 UPDATE Client.CardAccess_Tbl SET pspid = 40, countryid = 602 WHERE clientid = 10007 AND cardid = 31;
 
-INSERT INTO System.EndPoint_Tbl (productid, path, note) SELECT Max(id), 'mpoint/paytabs/initialize', 'mesb - Paytabs initialize of payment' FROM System.Product_Tbl WHERE id = 4;
-INSERT INTO System.Transformation_Tbl (endpointid, contenttypeid, note, xsl) SELECT Max(id), 4, 'pay tabs initalize', '' FROM System.EndPoint_Tbl;
-INSERT INTO Client.EndPointAccess_Tbl (groupid, endpointid) SELECT 29, Max(id) FROM System.EndPoint_Tbl;
+INSERT INTO System.EndPoint_Tbl (productid, path, note) SELECT Max(id), '/mpoint/paytabs/initialize', 'mesb - Paytabs initialize of payment' FROM System.Product_Tbl WHERE id = 4;
+INSERT INTO System.Transformation_Tbl (endpointid, contenttypeid, note) SELECT EP.id, 4, EP.note  FROM System.EndPoint_Tbl EP WHERE path = '/mpoint/paytabs/initialize';
+INSERT INTO Client.EndPointAccess_Tbl (groupid, endpointid) SELECT 29, EP.id FROM  System.EndPoint_Tbl EP WHERE path = '/mpoint/paytabs/initialize';
