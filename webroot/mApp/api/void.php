@@ -71,7 +71,8 @@ require_once(sCLASS_PATH ."/alipay.php");
 require_once(sCLASS_PATH ."/qiwi.php");
 // Require specific Business logic for the Klarna component
 require_once(sCLASS_PATH ."/klarna.php");
-
+// Require specific Business logic for the PayTabs component
+require_once(sCLASS_PATH ."/paytabs.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 
