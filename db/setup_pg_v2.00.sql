@@ -1290,3 +1290,14 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES 
 /*====================== Test Data END =========================*/
 
 /* END */
+
+
+
+/* ========== Global Configuration for Trustly - Payment Method : START========== */
+INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (38, 'Trustly', 23, -1, -1, -1);
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (38, 0, 0);
+INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 38, id FROM System.PricePoint_Tbl WHERE amount = -1 AND countryid = 200;
+
+/* ========== Global Configuration for Trustly - Payment Method : END========== */
+
+

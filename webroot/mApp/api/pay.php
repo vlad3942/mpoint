@@ -98,6 +98,8 @@ require_once(sCLASS_PATH ."/mobilepayonline.php");
 require_once(sCLASS_PATH ."/nets.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/mvault.php");
+// Require specific Business logic for the Trustly component
+require_once(sCLASS_PATH ."/trustly.php");
 $aMsgCds = array();
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
