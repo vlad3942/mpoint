@@ -25,5 +25,5 @@ class TrustlyException extends CallbackException { }
 class Trustly extends CPMPSP
 {
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new TrustlyException("Method: getPaymentData is not supported by Trustly"); }
-	public function getPSPID() { return Constants::iTRUSTLY_PSP }
+	public function getPSPID() { return Constants::iTRUSTLY_PSP ; }
 }
