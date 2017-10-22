@@ -1300,4 +1300,43 @@ INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 38, id FROM Sys
 
 /* ========== Global Configuration for Trustly - Payment Method : END========== */
 
+/* ========== Global Configuration for Trustly = STARTS ========== */
+INSERT INTO System.PSP_Tbl (id, name) VALUES (39, 'Trustly');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (200,39,'USD');
 
+/*Trustly*/
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (38, 39);
+
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 39, 'Trustly', 'cellpointmobile', '012bc48c-99b8-41de-8a20-9624cb5d6bd2');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 39, '-1');
+
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, countryid) VALUES (10001, 38, 39, true, 200);
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('SIGN_KEY', '-----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDTPuwSmQ5pYUXA
+2ypn/uv9Qz9qYGP7eXr59m62oSXMLwOe/vYEcXBnOedOcVNcnbBHqYzqWmWuMAkH
+B/pPW0dO6UJRFY9wjOy5Uc3W/Li1+uO3RN3ZEUCC07yUkXTFFnR0AP+U3T+juERb
+JuMCNSDk3lbxQuTM55AiCDB7GH1E+Pv1RBrlXLCpEwW+8SOS7ssoLGrec0iaKTov
+MYK8dBJePuAo9lGoBeB4AifldmMLkzqo8iHwvBSdG48o4QUiIkFzVI31LnfCbJw+
+QI7Aq66w6RF6mDH+owJ8JgMRiBxWNy0Q+0+zEA5V2yPFIx6MagqM5qGxYNpAgdIB
+Yf8+uHFPAgMBAAECggEAdAKPNNt3TaoM24/A5yHZSdnffrT204jwX0vVm1g+YLbE
+/1E3nFMMDrR+8dZMmIVE5OYZLC5+vr1Eh+b6sRAIxi5VrB/yCTZrXo6tQ07AxbfF
+zMT2LJpL2k0buF91SDM/uuE9euxSYb/1UjW132V77hSonJBHBLx6rCXhMgjN6szt
+RN+5/oC20fgNN7eJoU3WFBz+pETT3PZzL0/gUI4HJC/OZTO6PR901RXmmY77nptf
+zQ+exkaCGL7g0BAk7n/hI6CukiVfBf8Ujf6FW0MNru90W+u71DLJKDyNmYQVKW/a
+QbHlzdBv95z8Zgcz6IEvsOEAdz7hVw7xlFHeBdsMSQKBgQD/ywPPhJmW4/4CwVXl
+wXmaVflCzKt7su5X+TkWuvdoxLFDVIEinYv7+39u87JAs6DRO2in8JSgplssGyI9
+3BF1hfc/WJiXcFlYw7bm+vtzkgw+rR+K9dlQXNkKgI2Rjy3CegMSW48h5Wqkl3bV
+fHpXFTlKcbtMGse7vSrQ6yH4CwKBgQDTaq4C/t6W9X5JyXE1fXj6qfYxlaoRTWIT
+GXKAyV72E3m/0XK4NPpSu3f9x5jHosKlWADYo2oMXrThpGdVJI7h2kZWkKonZagC
+8zNCfHj21GzbfBs2VMGbHKZNiyQpcrhyBqJDOBdkJha3wud8hq2gxjvqjgc9USKF
+YAJxjWpCTQKBgQCC2GKWoInAedfRqPw7jwCZRik/VlrR5/Gr5ryhN/qfCR50BqIY
+Buc4eqnxI4+nMTuuS+l5HsOoefBhW2/knNIBgAm9yaAktz+8/EBvXyuJLsg8t2pP
+Nvt29EfB64h/UPJjbO5tUZCiEiy/DQuooQgjy6OGxS69+2T4UAe63sx9iQKBgBzz
+CKzkVXp6VzanXNckPUKlr06O3eDMpddTrrgv2s77T7qSZZEPwA9AGGgpwqPjh5+4
+czU2+ziCZ2ZWasff36jRiLwlxwbqBp2Qy74Y6T9zSwyq69b+uBwTSjpoCSWbzeHf
+QqzNq3ZNOOMkzyngDzpqqp2toRQmXgHBadQ+twQpAoGAOy043ssufkTbxYiEEijB
+/Ivwt4gx2dUJQQLpE4pCSuxqNMYI0h0r68xe+72teZ7O0iXpWa6ijLvYSHjJD3Zf
+YJ12KjO/YKi1H12EPzRC8zOk8YQBOL/wbSVRRXvM2U4y4K3CRRwplqbzL6SOHgJw
+KQ4vSiSKZ/vu5amf7qQ/YpE=
+-----END PRIVATE KEY-----', (SELECT ID from client.merchantaccount_tbl where clientid = 10007 and pspid = 39) , 'merchant');
