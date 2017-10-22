@@ -1301,7 +1301,7 @@ INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 38, id FROM Sys
 /* ========== Global Configuration for Trustly - Payment Method : END========== */
 
 /* ========== Global Configuration for Trustly = STARTS ========== */
-INSERT INTO System.PSP_Tbl (id, name) VALUES (39, 'Trustly');
+INSERT INTO System.PSP_Tbl (id, name ,system_type) VALUES (39, 'Trustly', 4);
 INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (200,39,'USD');
 
 /*Trustly*/
