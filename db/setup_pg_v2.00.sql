@@ -345,12 +345,12 @@ INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (13, 10007, 'com.mo
 
 /* Maybank configuration in additional configuration for Malindo (sandbox/production has same set of mid and password)  */
 
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.8', '02700770202075001284',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.7', '02700770202075001284',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.1', '02701700290875100472',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'pwd.8', '4GkR2Hkk',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'pwd.7', '4GkR2Hkk',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'pwd.1', '6sjhPN9X',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27));
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8', '02700770202075001284',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27),'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7', '02700770202075001284',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27),'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.1', '02701700290875100472',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27),'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'pwd.8', '4GkR2Hkk',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27),'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'pwd.7', '4GkR2Hkk',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27),'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'pwd.1', '6sjhPN9X',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27),'merchant');
 
 /* Maybank configuration in additional configuration for merchant:production  */
 
