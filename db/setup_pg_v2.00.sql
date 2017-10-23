@@ -391,11 +391,11 @@ End of Public Bank additional configuration
 --CCAvenue additional config for Working and access key
 --Access key is same for all envs
  */
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'ccavenue.access.key', 'AVBV69EB32BP61VBPB',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 25));
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'ccavenue.access.key', 'AVBV69EB32BP61VBPB',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 25),'merchant');
 /*--working key for all envs except PROD*/
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'ccavenue.working.key', '93C3C30ED0AF63F7D222ACB2A53DB025',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 25));
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'ccavenue.working.key', '93C3C30ED0AF63F7D222ACB2A53DB025',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 25),'merchant');
 /*--PROD working key-*/
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'ccavenue.working.key', 'F9D8D501AB87FC404EAC9C5CA682C1D9',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 25));
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'ccavenue.working.key', 'F9D8D501AB87FC404EAC9C5CA682C1D9',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 25),'merchant');
 
 /*
 End of CCAvenue additional config
