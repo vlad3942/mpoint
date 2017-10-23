@@ -360,29 +360,29 @@ INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES 
 --Public bank additional config for MID based on payment method and currency
  */
 
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.7.MYR', '5500003631',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.7.HKD', '5500003798',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.7.SGD', '5500003658',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.7.AUD', '5500003771',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.7.LKR', '5500003895',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.7.CNY', '5500003909',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.7.THB', '5500003887',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.7.TWD', '5500004077',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.7.SAR', '5500004492',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.7.USD', '5500003666',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.7.IDR', '5500004239',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28));
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7.MYR', '5500003631',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7.HKD', '5500003798',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7.SGD', '5500003658',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7.AUD', '5500003771',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7.LKR', '5500003895',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7.CNY', '5500003909',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7.THB', '5500003887',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7.TWD', '5500004077',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7.SAR', '5500004492',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7.USD', '5500003666',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7.IDR', '5500004239',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
 ---
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.8.MYR', '3300004667',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.8.HKD', '3300004802',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.8.SGD', '3300004675',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.8.AUD', '3300004799',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.8.LKR', '3300004918',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.8.CNY', '3300004942',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.8.THB', '3300004896',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.8.TWD', '3300005116',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.8.SAR', '3300005574',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.8.USD', '3300004683',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28));
-INSERT INTO client.additionalproperty_tbl( property_key, property_value,merchantaccountid)VALUES ( 'mid.8.IDR', '3300005302',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28));
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8.MYR', '3300004667',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8.HKD', '3300004802',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8.SGD', '3300004675',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8.AUD', '3300004799',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8.LKR', '3300004918',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8.CNY', '3300004942',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8.THB', '3300004896',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8.TWD', '3300005116',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8.SAR', '3300005574',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8.USD', '3300004683',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8.IDR', '3300005302',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
 /*
 End of Public Bank additional configuration
  */
