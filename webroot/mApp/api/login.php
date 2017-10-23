@@ -99,7 +99,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if (count($obj_DOM->login[$i]->{'auth-url'}) == 1) { $url = (string) $obj_DOM->login[$i]->{'auth-url'}; }
 							if ($obj_Validator->valURL($url, $obj_ClientConfig->getAuthenticationURL() ) == 10)
 							{
-								$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($url), CustomerInfo::produceInfo($_OBJ_DB, $iAccountID), trim($obj_DOM->login[$i]->{'auth-token'}) );
+								$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($url), CustomerInfo::produceInfo($_OBJ_DB, $iAccountID), trim($obj_DOM->login[$i]->{'auth-token'}),intval($obj_DOM->login[$i]["client-id"]) );
 							}
 							else { $code = 8; }
 						}
