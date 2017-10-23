@@ -334,7 +334,7 @@
 							<xs:element name="full-name" type="xs:string" />
 						</xs:choice>
 						<xs:element name="card" minOccurs="0" maxOccurs="1">
-							<xs:complexType>
+							<xs:complexType mixed="true">
 								<xs:choice minOccurs="0" maxOccurs="unbounded">
 									<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1" />
 									<xs:element name="card-holder-name" type="xs:string" minOccurs="0" maxOccurs="1" />
