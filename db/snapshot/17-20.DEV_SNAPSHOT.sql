@@ -108,7 +108,7 @@ ALTER TABLE enduser.address_tbl ADD state VARCHAR(200);
 
 INSERT INTO system.psp_tbl (id, name, system_type) VALUES (36, 'mVault', 3);
 INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (200,36,'USA');
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10007, 36, 'mVault', '', '');
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10007, 36, 'mVault', 'blank', 'blank');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100007, 36, '-1');
 INSERT INTO system.card_tbl (id, name, position) VALUES (35, 'mVault', -1);
 INSERT INTO client.cardaccess_tbl ( clientid, cardid, enabled, pspid, countryid, stateid, position) VALUES (10007, 35, true, 36, null, 1, null);
