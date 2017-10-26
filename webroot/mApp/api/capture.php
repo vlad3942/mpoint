@@ -82,9 +82,6 @@ require_once(sCLASS_PATH ."/mConsole.php");
 
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
-// Require specific Business logic for the PayTabs component
-require_once(sCLASS_PATH ."/paytabs.php");
-
 
 //header("Content-Type: application/x-www-form-urlencoded");
 

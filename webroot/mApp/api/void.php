@@ -71,8 +71,6 @@ require_once(sCLASS_PATH ."/alipay.php");
 require_once(sCLASS_PATH ."/qiwi.php");
 // Require specific Business logic for the Klarna component
 require_once(sCLASS_PATH ."/klarna.php");
-// Require specific Business logic for the PayTabs component
-require_once(sCLASS_PATH ."/paytabs.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 
@@ -102,7 +100,6 @@ $xml = '';
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 for ($i=0; $i<count($obj_DOM->void); $i++)
 	{
-					
 		$clientID=$obj_DOM->void[$i]["client-id"];
 		$account=$obj_DOM->void[$i]["account"];
 		$orderno=$obj_DOM->void[$i]->transaction["order-no"];
