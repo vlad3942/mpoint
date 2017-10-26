@@ -76,8 +76,6 @@ require_once(sCLASS_PATH ."/klarna.php");
 
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/mvault.php");
-// Require specific Business logic for the PayTabs component
-require_once(sCLASS_PATH ."/paytabs.php");
 
 /**
  * Input XML format
