@@ -592,7 +592,7 @@ abstract class Constants
      * Unique ID for the Payment Service Provider: Pay Tabs
      *
      */
-    const iPAY_TABS_PSP = 40;
+    const iPAY_TABS_PSP = 38;
     
 	/**
 	 * Unique ID for the Payment Service Provider: Android Pay
