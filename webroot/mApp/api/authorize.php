@@ -1038,7 +1038,7 @@ try
 																  case (Constants::iPAY_TABS_PSP): // PayTabs
 																			$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iPAY_TABS_PSP);
 																				
-																			$obj_PSP = new Klarna($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["paytabs"]);
+																			$obj_PSP = new PayTabs($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["paytabs"]);
 																				
 																			$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
 																				
