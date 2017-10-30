@@ -23,7 +23,7 @@ require_once(sCLASS_PATH ."/admin.php");
 // Require Business logic for the mConsole Module
 require_once(sCLASS_PATH ."/mConsole.php");
 // Require Business logic for the mProfile Module
-require_once(sCLASS_PATH ."/mProfile.php");
+require_once(sCLASS_PATH ."/mprofile.php");
 // Require data data class for Transaction Log Information
 require_once(sCLASS_PATH ."/transaction_log_info.php");
 // Require data data class for Customer Information
