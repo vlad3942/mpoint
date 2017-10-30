@@ -37,7 +37,7 @@ Class ClientGoMobileConfig extends BasicConfig
 
     public function toXML()
     {
-        $xml = '<gomobile-configuration-param id="' . $this->getID() . '" name="' . $this->getName() . '" value="'. $this->_sValue .'" />';
+        $xml = '<gomobile-configuration-param id="' . $this->getID() . '" name="' . $this->getName() . '">'. $this->_sValue .'</gomobile-configuration-param>';
 
         return $xml;
     }
