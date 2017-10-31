@@ -593,6 +593,13 @@ abstract class Constants
 	 *
 	 */
 	const iANDROID_PAY_PSP = 20;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: 2c2p-Alc
+	 *
+	 */
+	const i2C2P_ALC = 40;
+	
 	/**
 	 * Unique ID for the Electronic Payment Flow
 	 *
