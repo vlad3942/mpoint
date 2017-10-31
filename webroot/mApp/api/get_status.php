@@ -26,24 +26,24 @@ $aMsgCds = array();
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
-/*
-$_SERVER['PHP_AUTH_USER'] = "CPMTEST";
+
+$_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<get-status client-id="10024">';
+$HTTP_RAW_POST_DATA .= '<get-status client-id="10007" account="100007" test="true">';
 $HTTP_RAW_POST_DATA .= '<transactions>';
-$HTTP_RAW_POST_DATA .= '<transaction id="1813241" order-no="abc-123" />';
+$HTTP_RAW_POST_DATA .= '<transaction id="1815074" order-no="CPM-1507182553919" />';
 $HTTP_RAW_POST_DATA .= '</transactions>';
 $HTTP_RAW_POST_DATA .= '<client-info platform="iOS" version="1.00" language="da">';
-$HTTP_RAW_POST_DATA .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
-$HTTP_RAW_POST_DATA .= '<email>jona@oismail.com</email>';
+$HTTP_RAW_POST_DATA .= '<mobile country-id="200" operator-id="20000">9876543210</mobile>';
+$HTTP_RAW_POST_DATA .= '<email>sagar@cellpointmobile.com</email>';
 $HTTP_RAW_POST_DATA .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
 $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</get-status>';
 $HTTP_RAW_POST_DATA .= '</root>';
-*/
+
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
@@ -71,6 +71,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				
 				$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT, $obj_CountryConfig);
 
+				$testingRequset = (boolean)$obj_DOM->{'get-status'}["test"];
+
 				// Basic input valid
 				if (count($aMsgCds) == 0)
 				{
@@ -82,7 +84,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$misc = empty($t["order-no"]) === false ? array($t["order-no"]) : null;
 
 							$obj_TxnInfo = TxnInfo::produceInfo( (integer) $t["id"], $_OBJ_DB, $misc);
-							$aMessages = $obj_TxnInfo->getMessageHistory($_OBJ_DB);
+							$aMessages = $obj_TxnInfo->getMessageHistory($_OBJ_DB,$testingRequset);
 							$obj_CountryConfig = $obj_TxnInfo->getCountryConfig();
 
 							$aCurrentState = @$aMessages[0];
@@ -98,6 +100,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 								$historyXml .= '<message id="'. $m["id"]. '" state-id="'. $m["stateid"]. '">';
 								$historyXml .= '<timestamp>'. str_replace("T", " ", date("c", strtotime($m["created"]) ) ) .'</timestamp>';
+                                if($testingRequset)
+                                    $historyXml .= '<data>'. htmlspecialchars($m['data'], ENT_NOQUOTES) .'</data>';
 								$historyXml .= '</message>';
 							}
 

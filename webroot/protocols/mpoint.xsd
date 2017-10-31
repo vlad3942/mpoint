@@ -237,7 +237,7 @@
 								</xs:sequence>
 								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="1009" />
-								<xs:attribute name="store-card" type="xs:boolean" use="optional"/>
+								<xs:attribute name="store-card" type="xs:boolean" use="optional" default="false"/>
 							</xs:complexType>
 						</xs:element>
 						<xs:choice>
@@ -432,6 +432,7 @@
 					</xs:all>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
 					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
+					<xs:attribute name="test" type="xs:boolean" use="optional" default="false"/>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="transfer">

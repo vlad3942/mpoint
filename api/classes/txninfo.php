@@ -865,10 +865,13 @@ class TxnInfo
 		return $obj_TxnInfo;
 	}
 
-	public function getMessageHistory(RDB $obj_DB)
+	public function getMessageHistory(RDB $obj_DB,$testingRequset = false)
 	{
-		$sql = "SELECT id, stateid, created
-				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
+
+		$sql = "SELECT id, stateid, created ";
+		if($testingRequset)
+            $sql .= ",data ";
+        $sql .= " FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
 				WHERE txnid = ". $this->getID() ." AND enabled = '1'
 				ORDER BY id DESC";
 //		echo $sql;
