@@ -10,7 +10,8 @@ class CustomerInfoFactory
 {
     public static function getInstance(RDB $oDB, TranslateText $oTxt, ClientURLConfig $obj_URLConfig, $id, $cid, $mob, $email, $cr, $name, $lang, $clientid, $deviceid)
     {
-        if ( empty($obj_URLConfig->getURL() ) === true )
+		$url= $obj_URLConfig->getURL();
+        if (empty($url)  === true )
         {
             return new CustomerInfo($id, $cid, $mob, $email, $cr, $name, $lang);
         }
