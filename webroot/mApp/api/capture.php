@@ -14,7 +14,6 @@
 
 // Require Global Include File
 require_once("../../inc/include.php");
-
 // Require specific Business logic for the Capture component
 require_once(sCLASS_PATH ."/capture.php");
 // Require Business logic for the End-User Account Component
@@ -68,7 +67,6 @@ require_once(sCLASS_PATH ."/ccavenue.php");
 require_once(sCLASS_PATH ."/ccpp.php");
 // Require specific Business logic for the MayBank component
 require_once(sCLASS_PATH ."/maybank.php");
-
 // Require specific Business logic for the PublicBank component
 require_once(sCLASS_PATH ."/publicbank.php");
 // Require API for Simple DOM manipulation
@@ -79,9 +77,9 @@ require_once(sCLASS_PATH ."admin.php");
 require_once(sCLASS_PATH ."/nets.php");
 // Require Business logic for the mConsole Module
 require_once(sCLASS_PATH ."/mConsole.php");
-
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
+
 //header("Content-Type: application/x-www-form-urlencoded");
 
 /*
