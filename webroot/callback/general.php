@@ -73,11 +73,11 @@ require_once(sCLASS_PATH ."/qiwi.php");
 require_once(sCLASS_PATH ."/nets.php");
 // Require specific Business logic for the Klarna component
 require_once(sCLASS_PATH ."/klarna.php");
-
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/mvault.php");
 // Require specific Business logic for the 2C2P-ALC component
 require_once(sCLASS_PATH ."/ccpp_alc.php");
+
 /**
  * Input XML format
  *

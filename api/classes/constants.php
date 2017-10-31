@@ -588,6 +588,12 @@ abstract class Constants
      */
     const iMVAULT_PSP = 36;
 
+    /**
+     * Unique ID for the Payment Service Provider: Pay Tabs
+     *
+     */
+    const iPAY_TABS_PSP = 38;
+    
 	/**
 	 * Unique ID for the Payment Service Provider: Android Pay
 	 *
