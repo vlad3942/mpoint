@@ -98,6 +98,9 @@ require_once(sCLASS_PATH ."/mobilepayonline.php");
 require_once(sCLASS_PATH ."/nets.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/mvault.php");
+// Require specific Business logic for the PayTabs component
+require_once(sCLASS_PATH ."/paytabs.php");
+
 $aMsgCds = array();
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
@@ -141,11 +144,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			if ($code == 100)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]);
-				
 				// Client successfully authenticated
  				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])
 					&& $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true)
 				{
+					
 					$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 					$obj_TxnInfo = TxnInfo::produceInfo($obj_DOM->pay[$i]->transaction["id"], $_OBJ_DB);
 					$aObj_PSPConfigs = array();
@@ -219,7 +222,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iANDROID_PAY_PSP);
 									break;
 								default:	// Standard Payment Service Provider
-									
 									if (array_key_exists(intval($obj_Elem["pspid"]), $aObj_PSPConfigs) === false)
 									{
 										if (intval($obj_Elem["pspid"]) > 0)
@@ -230,7 +232,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$obj_PSPConfig = $aObj_PSPConfigs[intval($obj_Elem["pspid"])];
 									break;
 								}
-	
+	    
 								// Success: Payment Service Provider Configuration found
 								if ( ($obj_PSPConfig instanceof PSPConfig) === true)
 								{
@@ -563,6 +565,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												$xml .= trim($obj_Elem->asXML() );
 											}
 											break;
+										case (Constants::iPAY_TABS_PSP):
+												$obj_PSP = new PayTabs($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["paytabs"]);
+												$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
+											
+												foreach ($obj_XML->children() as $obj_Elem)
+												{
+													$xml .= trim($obj_Elem->asXML() );
+												}
+												break;
 										case (Constants::iMOBILEPAY_ONLINE_PSP):
 											$obj_PSP = new MobilePayOnline($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["mobilepay-online"]);
 											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
