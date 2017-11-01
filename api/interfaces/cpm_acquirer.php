@@ -33,7 +33,7 @@ abstract class CPMACQUIRER extends CPMPSP
                 $extId = $approvalCode . ":" . $actionCode;
 
                 $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
-                            SET pspid = " . $obj_PSPConfig->getID() . $sql . " , mask='" . $mask . "' , expiry='" . $expiry . "',token='" . $token . "', extid='" . $extId . "', authOriginalData='" . $authOriginalData . "'   
+                            SET pspid = " . $obj_PSPConfig->getID() . " , mask='" . $mask . "' , expiry='" . $expiry . "',token='" . $token . "', extid='" . $extId . "', authOriginalData='" . $authOriginalData . "'   
                             WHERE id = " . $this->getTxnInfo()->getID();
                 //echo $sql ."\n";
                 $this->getDBConn()->query($sql);
