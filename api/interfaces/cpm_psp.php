@@ -24,6 +24,16 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b  = '<?xml version="1.0" encoding="UTF-8"?>';
         $b .= '<root>';
         $b .= '<capture client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
+        $b .= '<client-config>';
+        $b .= '<additional-config>';
+
+        foreach ($this->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+        {
+            $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
+        }
+
+        $b .= '</additional-config>';
+        $b .= '</client-config>';
         $b .= $this->getPSPConfig()->toXML();
         $b .= '<transactions>';
         $b .= $this->_constTxnXML($iAmount);
@@ -92,6 +102,16 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 			$b .= '<root>';
 			$b .= '<refund client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
+            $b .= '<client-config>';
+            $b .= '<additional-config>';
+
+            foreach ($this->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+            {
+                $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
+            }
+
+            $b .= '</additional-config>';
+            $b .= '</client-config>';
 			$b .= $this->getPSPConfig()->toXML();
 			$b .= '<transactions>';
 			$b .= $this->_constTxnXML($iAmount);
@@ -147,6 +167,16 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<void client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
+        $b .= '<client-config>';
+        $b .= '<additional-config>';
+
+        foreach ($this->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+        {
+            $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
+        }
+
+        $b .= '</additional-config>';
+        $b .= '</client-config>';
 		$b .= $this->getPSPConfig()->toXML();
 		$b .= '<transactions>';
 		$b .= $this->_constTxnXML($iAmount);
@@ -200,6 +230,16 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<cancel client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
+        $b .= '<client-config>';
+        $b .= '<additional-config>';
+
+        foreach ($this->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+        {
+            $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
+        }
+
+        $b .= '</additional-config>';
+        $b .= '</client-config>';
 		$b .= $this->getPSPConfig()->toXML();
 		$b .= '<transactions>';
 		$b .= $this->_constTxnXML();
