@@ -604,7 +604,7 @@ abstract class Constants
 	 * Unique ID for the Payment Service Provider: 2c2p-Alc
 	 *
 	 */
-	const i2C2P_ALC = 40;
+	const i2C2P_ALC_PSP = 40;
 	
 	/**
 	 * Unique ID for the Electronic Payment Flow

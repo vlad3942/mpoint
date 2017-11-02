@@ -15,15 +15,15 @@
 /**
  * Super class for all 2C2P-ALC Exceptions
  */
-class CCPPException extends CallbackException { }
+class CCPPALCException extends CallbackException { }
 /* ==================== 2C2P-ALC Exception Classes End ==================== */
 
 /**
  * Model Class containing all the Business Logic for the Payment Service Provider: 2C2P-ALC
  *
  */
-class CCPP extends CPMPSP
+class CCPPALC extends CPMPSP
 {
-	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new CCPPException("Method: getPaymentData is not supported by 2C2P-ALC"); }
-	public function getPSPID() { return Constants::i2C2P_ALC; }
+	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new CCPPALCException("Method: getPaymentData is not supported by 2C2P-ALC"); }
+	public function getPSPID() { return Constants::i2C2P_ALC_PSP; }
 }
