@@ -6,6 +6,7 @@ $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 $sPushId = (string)$obj_DOM->notify->{'push-id'};
 $sBody = (string)$obj_DOM->notify->{'body'}->{'message'};
+$iPlatform = (integer)$obj_DOM->notify->{'platform'};
 
 $bSendMessage = false;
 
@@ -18,21 +19,33 @@ $iType = 11;
 $sChannel = 123;
 $sKeyword = "CPM";
 
-//print_r();die('here');
-if (empty($sPushId) === false) {
-    $b = array();
 
-    $b["aps"] = array("alert" => array("body" => utf8_encode($sBody) ),
-        "sound" => "default",
-        "action" => "notify");
+if (empty($sPushId) === false) {
 
     $aRequestParams = (array)$obj_DOM->notify->body->params->children();
-
-    foreach ($aRequestParams as $key => $value )
+    $b = array();
+    if($iPlatform == PLATFORM_ANDROID_DEVICE)
     {
-        $b['aps'][strtoupper($key)] = $value;
+        $b = array("data" => array("body" => utf8_encode($sBody) ) );
+
+        foreach ($aRequestParams as $key => $value )
+        {
+            $b['data'][strtoupper($key)] = $value;
+        }
     }
-    $b['ACTION'] = 5;
+    elseif ($iPlatform == PLATFORM_IOS_DEVICE)
+    {
+        $b["aps"] = array("alert" => array("body" => utf8_encode($sBody) ),
+            "sound" => "default",
+            "action" => "notify");
+
+       foreach ($aRequestParams as $key => $value )
+        {
+            $b['aps'][strtoupper($key)] = $value;
+        }
+        $b['ACTION'] = 5;
+    }
+
 
     $obj_MsgInfo = GoMobileMessage::produceMessage($iType, $sChannel, $sKeyword, $sPushId, json_encode($b));
 
