@@ -100,6 +100,8 @@ require_once(sCLASS_PATH ."/nets.php");
 require_once(sCLASS_PATH ."/mvault.php");
 // Require specific Business logic for the PayTabs component
 require_once(sCLASS_PATH ."/paytabs.php");
+// Require specific Business logic for the 2C2P ALC component
+require_once(sCLASS_PATH ."/ccpp_alc.php");
 
 $aMsgCds = array();
 
@@ -574,6 +576,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													$xml .= trim($obj_Elem->asXML() );
 												}
 												break;
+										case (Constants::i2C2P_ALC_PSP):
+													$obj_PSP = new CCPPALC($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["2c2p-alc"]);
+													$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
+														
+													foreach ($obj_XML->children() as $obj_Elem)
+													{
+														$xml .= trim($obj_Elem->asXML() );
+													}
+													break;
 										case (Constants::iMOBILEPAY_ONLINE_PSP):
 											$obj_PSP = new MobilePayOnline($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["mobilepay-online"]);
 											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
