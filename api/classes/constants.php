@@ -199,6 +199,12 @@ abstract class Constants
 	 */
 	const iPAYMENT_REFUNDED_STATE = 2003;
 
+    /**
+     * Defines the ID of the State that indicates that payment requires 3d verification
+     *
+     */
+    const iPAYMENT_3DS_VERIFICATION_STATE = 2005;
+
 	/**
 	 * Defines the ID of the State that indicates that payment is being using a voucher
 	 *

@@ -1,3 +1,7 @@
+
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (2004, 'Payment approved for partial amount', 'Payment', '');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (2005, '3d verification required for Authorization', 'Payment', '');
+
 <-- 2C2P ALC Database Script-->
 
 INSERT INTO system.psp_tbl (id, name, system_type) VALUES (40, '2c2p-alc', 1);
@@ -10,3 +14,4 @@ INSERT INTO system.cardpricing_tbl ( pricepointid, cardid) VALUES ( -644, 8);
 INSERT INTO system.cardpricing_tbl ( pricepointid, cardid) VALUES ( -644, 7);
 INSERT INTO system.pspcard_tbl (cardid, pspid) VALUES (8, 40);
 INSERT INTO system.pspcard_tbl (cardid, pspid) VALUES (7, 40);
+
