@@ -1,5 +1,4 @@
 <-- Pay Tabs Database Script-->
-
 INSERT INTO System.PSP_Tbl (id, name) VALUES (38, 'PayTabs');
 INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (602,38,'AED');
 INSERT INTO System.PspCard_Tbl(cardid, pspid) VALUES (31, 38);
