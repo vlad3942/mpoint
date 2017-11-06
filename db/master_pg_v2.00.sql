@@ -253,3 +253,7 @@ ALTER TABLE log.transaction_tbl ADD authOriginalData CHARACTER VARYING(512) NULL
 ALTER TABLE enduser.address_tbl DROP CONSTRAINT address2state_fk;
 ALTER TABLE enduser.address_tbl DROP stateid;
 ALTER TABLE enduser.address_tbl ADD state VARCHAR(200);
+
+
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (2004, 'Payment approved for partial amount', 'Payment', '');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (2005, '3d verification required for Authorization', 'Payment', '');
