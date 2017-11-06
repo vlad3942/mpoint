@@ -651,6 +651,20 @@ $aHTTP_CONN_INFO["mvault"]["paths"]["get-payment-data"] = "/mpoint/mvault/get-pa
 $aHTTP_CONN_INFO["mvault"]["paths"]["get-token"] = "/mpoint/mvault/get-token";
 $aHTTP_CONN_INFO["mvault"]["paths"]["tokenize"] = "/mpoint/mvault/save-card";
 $aHTTP_CONN_INFO["mvault"]["paths"]["save-card"] = "/mpoint/save-card";
+
+/**
+ * Connection info for connecting to Paytabs
+ */
+$aHTTP_CONN_INFO["paytabs"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["paytabs"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["paytabs"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["paytabs"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["paytabs"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["paytabs"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["paytabs"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["paytabs"]["paths"]["initialize"] = "/mpoint/paytabs/initialize";
+
+
 /**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
