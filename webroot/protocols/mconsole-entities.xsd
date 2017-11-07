@@ -1211,6 +1211,38 @@
 			</xs:element>
 		</xs:all>
 	</xs:complexType>
+	<!-- Get Client GoMobile Configurations -->
+	<xs:complexType name="client-gomobile-configuration-search-request">
+		<xs:annotation>
+			<xs:documentation>
+				Specifies the criteria for executing a
+				configuration search
+			</xs:documentation>
+		</xs:annotation>
+		<xs:all>
+			<xs:element name="clients" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Contains the list of unique IDs for the client
+						configurations that should be fetched
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element type="xs:integer" name="client-id"
+							minOccurs="1" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>
+									The unique ID for the client whose
+									configuration should be fetched
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:all>
+	</xs:complexType>
 	<xs:complexType name="client-configuration-search-response">
 		<xs:choice>
 			<xs:element name="client-configurations" minOccurs="1"
@@ -1331,6 +1363,8 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
+			<xs:element name="gomobile-configuration-params" type="client-go-mobile-configurations"
+						minOccurs="0" maxOccurs="1" />
 			<xs:element name="callback-protocol" minOccurs="1"
 				maxOccurs="1">
 				<xs:complexType>
@@ -1520,6 +1554,17 @@
 			</xs:simpleType>
 		</xs:attribute>
 	</xs:complexType>
+	<xs:complexType name="client-go-mobile-configurations">
+		<xs:annotation>
+			<xs:documentation>Contains a list of GoMobile
+				Configurations for an mPoint Client
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="gomobile-configuration-param" type="client-go-mobile-config"
+						minOccurs="1" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="client-payment-method-config">
 		<xs:annotation>
 			<xs:documentation>Configuration for a Payment Method (card) for an
@@ -1548,6 +1593,18 @@
 					use="required" />
 				<xs:attribute name="enabled" type="xs:boolean" use="optional"
 					default="true" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="client-go-mobile-config">
+		<xs:annotation>
+			<xs:documentation>Configuration for GoMobile parameters for an
+				mPoint Client</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="id" type="xs:positiveInteger" use="required" />
+				<xs:attribute name="name" type="xs:string" use="required" />
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>

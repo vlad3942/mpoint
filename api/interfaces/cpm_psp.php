@@ -24,6 +24,16 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b  = '<?xml version="1.0" encoding="UTF-8"?>';
         $b .= '<root>';
         $b .= '<capture client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
+        $b .= '<client-config>';
+        $b .= '<additional-config>';
+
+        foreach ($this->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+        {
+            $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
+        }
+
+        $b .= '</additional-config>';
+        $b .= '</client-config>';
         $b .= $this->getPSPConfig()->toXML();
         $b .= '<transactions>';
         $b .= $this->_constTxnXML($iAmount);
@@ -92,6 +102,16 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 			$b .= '<root>';
 			$b .= '<refund client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
+            $b .= '<client-config>';
+            $b .= '<additional-config>';
+
+            foreach ($this->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+            {
+                $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
+            }
+
+            $b .= '</additional-config>';
+            $b .= '</client-config>';
 			$b .= $this->getPSPConfig()->toXML();
 			$b .= '<transactions>';
 			$b .= $this->_constTxnXML($iAmount);
@@ -147,6 +167,16 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<void client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
+        $b .= '<client-config>';
+        $b .= '<additional-config>';
+
+        foreach ($this->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+        {
+            $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
+        }
+
+        $b .= '</additional-config>';
+        $b .= '</client-config>';
 		$b .= $this->getPSPConfig()->toXML();
 		$b .= '<transactions>';
 		$b .= $this->_constTxnXML($iAmount);
@@ -200,6 +230,16 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<cancel client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
+        $b .= '<client-config>';
+        $b .= '<additional-config>';
+
+        foreach ($this->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+        {
+            $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
+        }
+
+        $b .= '</additional-config>';
+        $b .= '</client-config>';
 		$b .= $this->getPSPConfig()->toXML();
 		$b .= '<transactions>';
 		$b .= $this->_constTxnXML();
@@ -365,6 +405,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						SET pspid = ". $obj_PSPConfig->getID() ."
 						WHERE id = ". $this->getTxnInfo()->getID();
 				$this->getDBConn()->query($sql);
+
+				if(count($obj_XML->{"hidden-fields"}) > 0){
+                    $obj_XML->{"hidden-fields"}->{"store-card"} = parent::bool2xml($sc);
+                }
+                $obj_XML->name = 'card_holderName';
 			}
 			else { throw new mPointException("Could not construct  XML for initializing payment with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 		}
@@ -443,6 +488,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				} 
 				else { $code = $obj_XML->status["code"]; }
 				
+                $this->newMessage($this->getTxnInfo()->getID(), $code, $obj_HTTP->getReplyBody());
 				// In case of 3D verification status code 2005 will be received
 				if($code == 2005)
 				{
@@ -618,7 +664,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		return $obj_HTTP->getReplyBody();
 	}
 
-	/**
+    /**
 	 * Function used to make a callback to the wallet instance for updating it with the transaction status.
 	 * 
 	 * @param PSPConfig $obj_PSPConfig		The configuration for the Wallet which the payment data should be retrieved from

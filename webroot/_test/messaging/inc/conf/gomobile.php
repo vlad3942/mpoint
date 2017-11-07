@@ -55,4 +55,8 @@ $aGM_CONN_INFO["logpath"] = sLOG_PATH;
  *
  */
 $aGM_CONN_INFO["mode"] = 1;
+
+
+const PLATFORM_ANDROID_DEVICE = 2;
+const PLATFORM_IOS_DEVICE = 1;
 ?>

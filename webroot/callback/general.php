@@ -73,6 +73,10 @@ require_once(sCLASS_PATH ."/qiwi.php");
 require_once(sCLASS_PATH ."/nets.php");
 // Require specific Business logic for the Klarna component
 require_once(sCLASS_PATH ."/klarna.php");
+// Require specific Business logic for the mVault component
+require_once(sCLASS_PATH ."/mvault.php");
+// Require specific Business logic for the 2C2P-ALC component
+require_once(sCLASS_PATH ."/ccpp_alc.php");
 
 /**
  * Input XML format
@@ -136,9 +140,16 @@ try
 
     if($iAccountValidation != 1)
 	{
-	
+        $saveCard = true;
+        foreach ($obj_TxnInfo->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+        {
+            if ($aAdditionalProperty['key'] == 'mvault' && $aAdditionalProperty['value'] == 'true'){
+                $saveCard = false;
+            }
+        }
+
 	// Save Ticket ID representing the End-User's stored Card Info
-	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_XML->callback->transaction->card->token) == 1)
+	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_XML->callback->transaction->card->token) == 1 && $saveCard)
 	{
 		$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE);
 		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $obj_XML->callback->transaction->card->token);

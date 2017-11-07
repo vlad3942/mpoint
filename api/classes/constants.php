@@ -199,6 +199,12 @@ abstract class Constants
 	 */
 	const iPAYMENT_REFUNDED_STATE = 2003;
 
+    /**
+     * Defines the ID of the State that indicates that payment requires 3d verification
+     *
+     */
+    const iPAYMENT_3DS_VERIFICATION_STATE = 2005;
+
 	/**
 	 * Defines the ID of the State that indicates that payment is being using a voucher
 	 *
@@ -237,7 +243,20 @@ abstract class Constants
 	 *
 	 */
 	const iPAYMENT_SETTLED_STATE = 2020;
-	
+
+    /**
+     * Defines the ID of the State that indicates that Tokenization request successfully completed
+     *
+     */
+    const iCARD_TOKENIZE_SUCCESS = 2100;
+
+    /**
+     * Defines the ID of the State that indicates that Tokenization request failed
+     *
+     */
+    const iCARD_TOKENIZE_FAILED = 2101;
+
+
 	/**
 	 * Defines GoMobile's type identifier for an MT-SMS message
 	 *
@@ -555,6 +574,7 @@ abstract class Constants
 	 */
 	const iMOBILEPAY_ONLINE_PSP = 33;
 
+
     /**
      * Unique ID for the Acquirer: NETS
      *
@@ -568,11 +588,30 @@ abstract class Constants
 	const iKLARNA_PSP = 37;
 	
 	
+    /**
+     * Unique ID for the Payment Service Provider: mVault
+     *
+     */
+    const iMVAULT_PSP = 36;
+
+    /**
+     * Unique ID for the Payment Service Provider: Pay Tabs
+     *
+     */
+    const iPAY_TABS_PSP = 38;
+    
 	/**
 	 * Unique ID for the Payment Service Provider: Android Pay
 	 *
 	 */
 	const iANDROID_PAY_PSP = 20;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: 2c2p-Alc
+	 *
+	 */
+	const i2C2P_ALC_PSP = 40;
+	
 	/**
 	 * Unique ID for the Electronic Payment Flow
 	 *
@@ -762,6 +801,12 @@ abstract class Constants
 	 */
 	const iKLARNA_PAY = 36;
 	
+    /**
+     * Unique Card ID for transaction's made using mVault
+     *
+     */
+    const iMVAULT_WALLET = 35;
+
 	/**
 	 * Unique Fee Type ID for Top-Ups
 	 *
