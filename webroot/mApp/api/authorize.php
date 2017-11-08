@@ -104,6 +104,8 @@ require_once(sCLASS_PATH ."/clientinfo.php");
 require_once(sCLASS_PATH ."/nets.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/mvault.php");
+// Require specific Business logic for the 2c2p alc component
+require_once(sCLASS_PATH ."/ccpp_alc.php");
 ignore_user_abort(true);
 set_time_limit(120);
 
@@ -1032,6 +1034,26 @@ try
 																			$xml .= '<status code="92">Authorization failed, Klarna returned error: '. $code .'</status>';
 																		}
 																		break;
+																 case (Constants::i2C2P_ALC_PSP): // 2C2P ALC
+																			$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::i2C2P_ALC_PSP);
+																				
+																			$obj_PSP = new CCPPALC($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["2c2p-alc"]);
+																				
+																			$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+																				
+																			// Authorization succeeded with 2c2p alc
+																			if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+																			else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml = $code; }
+																			// Error: Authorization declined
+																			else
+																			{
+																				$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+																		
+																				header("HTTP/1.1 502 Bad Gateway");
+																					
+																				$xml .= '<status code="92">Authorization failed, 2C2P ALC returned error: '. $code .'</status>';
+																			}
+																			break;
 
                                                                 default:	// Unkown Error
 																$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);

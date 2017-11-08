@@ -79,6 +79,8 @@ require_once(sCLASS_PATH ."/nets.php");
 require_once(sCLASS_PATH ."/mConsole.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
+// Require specific Business logic for the 2C2P ALC component
+require_once(sCLASS_PATH ."/ccpp_alc.php");
 
 //header("Content-Type: application/x-www-form-urlencoded");
 
