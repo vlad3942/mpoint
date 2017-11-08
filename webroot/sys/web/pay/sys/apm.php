@@ -97,6 +97,8 @@ $payRequestBody = '<?xml version="1.0" encoding="UTF-8"?>
 				</root>';
 	
 
+$aURLInfo = parse_url($_SESSION['obj_TxnInfo']->getClientConfig()->getMESBURL() );
+$aHTTP_CONN_INFO["mesb"]["host"] = $aURLInfo["host"];
 $aHTTP_CONN_INFO["mesb"]["path"] = "/mpoint/pay";
 $aHTTP_CONN_INFO["mesb"]["username"] = $_SESSION['obj_TxnInfo']->getClientConfig()->getUsername();
 $aHTTP_CONN_INFO["mesb"]["password"] = $_SESSION['obj_TxnInfo']->getClientConfig()->getPassword();

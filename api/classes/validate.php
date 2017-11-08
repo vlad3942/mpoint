@@ -846,7 +846,9 @@ class Validate extends ValidateBase
 					FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
 					INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid AND Msg.enabled = '1'
 					WHERE Txn.id = ". intval($mpointid) ." AND Txn.clientid = ". intval($clientid) ."
-						AND (Msg.stateid >= ". Constants::iPAYMENT_ACCEPTED_STATE ." OR  Msg.stateid = ". Constants::iPAYMENT_ACCOUNT_VALIDATED .")
+						AND (Msg.stateid >= ". Constants::iPAYMENT_ACCEPTED_STATE ."
+						AND  Msg.stateid NOT IN (". Constants::iPAYMENT_WITH_ACCOUNT_STATE .", ". Constants::iPAYMENT_3DS_VERIFICATION_STATE .") 
+						OR  Msg.stateid = ". Constants::iPAYMENT_ACCOUNT_VALIDATED .")
 					ORDER BY Msg.stateid ASC";
 //			echo $sql ."\n";
 			$aRS = $oDB->getAllNames($sql);

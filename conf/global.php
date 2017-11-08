@@ -589,6 +589,26 @@ $aHTTP_CONN_INFO["qiwi"]["paths"]["status"] = "/mpoint/qiwi/status";
 $aHTTP_CONN_INFO["qiwi"]["paths"]["cancel"] = "/mpoint/qiwi/cancel";
 $aHTTP_CONN_INFO["qiwi"]["paths"]["callback"] = "/mpoint/qiwi/callback";
 
+
+/**
+ * Connection info for connecting to Klarna
+ */
+$aHTTP_CONN_INFO["klarna"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["klarna"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["klarna"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["klarna"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["klarna"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["klarna"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["klarna"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["klarna"]["paths"]["initialize"] = "/mpoint/klarna/initialize";
+$aHTTP_CONN_INFO["klarna"]["paths"]["auth"] = "/mpoint/klarna/authorize-payment";
+$aHTTP_CONN_INFO["klarna"]["paths"]["refund"] = "/mpoint/klarna/refund";
+$aHTTP_CONN_INFO["klarna"]["paths"]["status"] = "/mpoint/klarna/status";
+$aHTTP_CONN_INFO["klarna"]["paths"]["cancel"] = "/mpoint/klarna/cancel";
+$aHTTP_CONN_INFO["klarna"]["paths"]["callback"] = "/mpoint/klarna/callback";
+
+
+
 /**
  * Connection info for connecting to MobilePay Online
  */
@@ -601,6 +621,66 @@ $aHTTP_CONN_INFO["mobilepay-online"]["method"] = $aHTTP_CONN_INFO["mesb"]["metho
 $aHTTP_CONN_INFO["mobilepay-online"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["mobilepay-online"]["paths"]["initialize"] = "/mpoint/mobilepay-online/initialize";
 $aHTTP_CONN_INFO["mobilepay-online"]["paths"]["auth"] = "/mpoint/mobilepay-online/authorize-payment";
+
+/**
+ * Connection info for connecting to Nets
+ */
+$aHTTP_CONN_INFO["nets"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["nets"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["nets"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["nets"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["nets"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["nets"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["nets"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["nets"]["paths"]["auth"] = "/mpsp/nets/authorize-payment";
+$aHTTP_CONN_INFO["nets"]["paths"]["capture"] = "/mpsp/nets/capture";
+$aHTTP_CONN_INFO["nets"]["paths"]["refund"] = "/mpsp/nets/refund";
+$aHTTP_CONN_INFO["nets"]["paths"]["cancel"] = "/mpsp/nets/cancel";
+
+/**
+ * Connection info for connecting to mVault
+ */
+$aHTTP_CONN_INFO["mvault"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["mvault"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["mvault"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["mvault"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["mvault"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["mvault"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["mvault"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["mvault"]["paths"]["get-payment-data"] = "/mpoint/mvault/get-payment-data";
+$aHTTP_CONN_INFO["mvault"]["paths"]["get-token"] = "/mpoint/mvault/get-token";
+$aHTTP_CONN_INFO["mvault"]["paths"]["tokenize"] = "/mpoint/mvault/save-card";
+$aHTTP_CONN_INFO["mvault"]["paths"]["save-card"] = "/mpoint/save-card";
+
+/**
+ * Connection info for connecting to Paytabs
+ */
+$aHTTP_CONN_INFO["paytabs"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["paytabs"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["paytabs"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["paytabs"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["paytabs"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["paytabs"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["paytabs"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["paytabs"]["paths"]["initialize"] = "/mpoint/paytabs/initialize";
+
+/**
+ * Connection info for connecting to 2C2P ALC
+ */
+$aHTTP_CONN_INFO["2c2p-alc"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["2c2p-alc"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["2c2p-alc"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["2c2p-alc"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["2c2p-alc"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["2c2p-alc"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["2c2p-alc"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["initialize"] = "/mpoint/2c2p-alc/initialize";
+$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["auth"] = "/mpoint/2c2p-alc/authorize-payment";
+$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["capture"] = "/mpoint/2c2p-alc/capture";
+$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["refund"] = "/mpoint/2c2p-alc/refund";
+$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["cancel"] = "/mpoint/2c2p-alc/cancel";
+$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["callback"] = "/mpoint/2c2p-alc/callback";
+
 
 /**
  * GoMobile Connection Info.

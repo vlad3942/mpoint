@@ -181,34 +181,61 @@ WITH (
 ALTER TABLE client.gomobileconfiguration_tbl
   OWNER TO mpoint;
 
+/*---------START : ADDED CHANGE FOR SUPPORTING CURRENCY SCHEMA-------------*/
+-- Table: system.currency_tbl
+
+-- DROP TABLE system.currency_tbl;
+
+CREATE TABLE system.currency_tbl
+(
+  id serial NOT NULL,
+  name character varying(100),
+  code character(3),
+  decimals integer,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true,
+  CONSTRAINT currency_pk PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE system.currency_tbl
+  OWNER TO postgres;
 
 
- /**
-  * 
-  * mPoint Core Refactoring - to hold multiple MIDs per payment method/currency/3d-non3d etc for one PSP+Merchant
-  * 
-  * 
-  */
-	  
-  
-  -- Table: client.additionalproperty_tbl
+ALTER TABLE system.country_tbl ADD COLUMN alpha2code character(2) DEFAULT NULL;
+ALTER TABLE system.country_tbl ADD COLUMN alpha3code character(3) DEFAULT NULL;
+ALTER TABLE system.country_tbl ADD COLUMN code integer DEFAULT NULL;
+ALTER TABLE system.country_tbl ADD COLUMN currencyid integer DEFAULT 0;
+ALTER TABLE system.country_tbl ADD CONSTRAINT Country2Currency_FK FOREIGN KEY (currencyid) REFERENCES System.Currency_Tbl(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+/*---------END : ADDED CHANGE FOR SUPPORTING CURRENCY SCHEMA-------------*/
+
+
+
+ /*
+ *
+ * Created a new Table in the client schema {Client.AdditionalProperty_tbl} to retain additional client and merchant configuration
+ * for every channel - CMP-1862
+ *
+ */
+-- Table: client.additionalproperty_tbl
 
 -- DROP TABLE client.additionalproperty_tbl;
 
 CREATE TABLE client.additionalproperty_tbl
 (
   id serial NOT NULL,
-  property_key character varying(200) NOT NULL,
-  property_value character varying(4000) NOT NULL,
+  key character varying(200) NOT NULL,
+  value character varying(4000) NOT NULL,
   modified timestamp without time zone DEFAULT now(),
   created timestamp without time zone DEFAULT now(),
   enabled boolean NOT NULL DEFAULT true,
-  merchantaccountid integer NOT NULL,
-  CONSTRAINT additionalprop_pk PRIMARY KEY (id),
-  CONSTRAINT merchantaccount2additional_fk FOREIGN KEY (merchantaccountid)
-      REFERENCES client.merchantaccount_tbl (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT additionalprop_uk UNIQUE (merchantaccountid, property_key)     
+  externalid integer NOT NULL,
+  type VARCHAR(20) NOT NULL,
+  CONSTRAINT additionalprop_pk PRIMARY KEY (id)
 )
 WITH (
   OIDS=FALSE
@@ -216,4 +243,17 @@ WITH (
 ALTER TABLE client.additionalproperty_tbl
   OWNER TO mpoint;
 
-	  
+
+ALTER TABLE log.transaction_tbl ADD mask VARCHAR(20) NULL;
+ALTER TABLE log.transaction_tbl ADD expiry VARCHAR(5) NULL;
+ALTER TABLE log.transaction_tbl ADD token CHARACTER VARYING(512) COLLATE pg_catalog."default" NULL;
+ALTER TABLE log.transaction_tbl ADD authOriginalData CHARACTER VARYING(512) NULL;
+
+
+ALTER TABLE enduser.address_tbl DROP CONSTRAINT address2state_fk;
+ALTER TABLE enduser.address_tbl DROP stateid;
+ALTER TABLE enduser.address_tbl ADD state VARCHAR(200);
+
+
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (2004, 'Payment approved for partial amount', 'Payment', '');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (2005, '3d verification required for Authorization', 'Payment', '');
