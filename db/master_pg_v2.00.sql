@@ -148,7 +148,68 @@ ALTER TABLE system.psp_tbl
       ON UPDATE CASCADE ON DELETE CASCADE;
 	  
 --Add coloumn device-id in log.Transaction_tbl
-ALTER TABLE log.transaction_tbl ADD COLUMN deviceid character varying(50);	  
+ALTER TABLE log.transaction_tbl ADD COLUMN deviceid character varying(50);
+
+ /*
+ *
+ * Created a new Table in the client schema {Client.GoMobileConfiguration_Tbl} to retain gomobile configuration
+ * for every channel - CMP-1820
+ *
+ */
+-- Table: client.gomobileconfiguration_tbl
+
+-- DROP TABLE client.gomobileconfiguration_tbl;
+
+CREATE TABLE client.gomobileconfiguration_tbl
+(
+  id serial NOT NULL,
+  clientid integer NOT NULL,
+  name character varying(100),
+  value character varying(100),
+  channel character varying(5),
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true,
+  CONSTRAINT gomobileconfiguration_pk PRIMARY KEY (id),
+  CONSTRAINT gomobileconfiguration2client_fk FOREIGN KEY (clientid)
+      REFERENCES client.client_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE client.gomobileconfiguration_tbl
+  OWNER TO mpoint;
+
+/*---------START : ADDED CHANGE FOR SUPPORTING CURRENCY SCHEMA-------------*/
+-- Table: system.currency_tbl
+
+-- DROP TABLE system.currency_tbl;
+
+CREATE TABLE system.currency_tbl
+(
+  id serial NOT NULL,
+  name character varying(100),
+  code character(3),
+  decimals integer,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true,
+  CONSTRAINT currency_pk PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE system.currency_tbl
+  OWNER TO postgres;
+
+
+ALTER TABLE system.country_tbl ADD COLUMN alpha2code character(2) DEFAULT NULL;
+ALTER TABLE system.country_tbl ADD COLUMN alpha3code character(3) DEFAULT NULL;
+ALTER TABLE system.country_tbl ADD COLUMN code integer DEFAULT NULL;
+ALTER TABLE system.country_tbl ADD COLUMN currencyid integer DEFAULT 0;
+ALTER TABLE system.country_tbl ADD CONSTRAINT Country2Currency_FK FOREIGN KEY (currencyid) REFERENCES System.Currency_Tbl(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
 
 /*---------END : ADDED CHANGE FOR SUPPORTING CURRENCY SCHEMA-------------*/
 
@@ -192,3 +253,7 @@ ALTER TABLE log.transaction_tbl ADD authOriginalData CHARACTER VARYING(512) NULL
 ALTER TABLE enduser.address_tbl DROP CONSTRAINT address2state_fk;
 ALTER TABLE enduser.address_tbl DROP stateid;
 ALTER TABLE enduser.address_tbl ADD state VARCHAR(200);
+
+
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (2004, 'Payment approved for partial amount', 'Payment', '');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (2005, '3d verification required for Authorization', 'Payment', '');

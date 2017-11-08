@@ -199,6 +199,12 @@ abstract class Constants
 	 */
 	const iPAYMENT_REFUNDED_STATE = 2003;
 
+    /**
+     * Defines the ID of the State that indicates that payment requires 3d verification
+     *
+     */
+    const iPAYMENT_3DS_VERIFICATION_STATE = 2005;
+
 	/**
 	 * Defines the ID of the State that indicates that payment is being using a voucher
 	 *
@@ -594,11 +600,24 @@ abstract class Constants
      */
     const iMVAULT_PSP = 36;
 
+    /**
+     * Unique ID for the Payment Service Provider: Pay Tabs
+     *
+     */
+    const iPAY_TABS_PSP = 38;
+    
 	/**
 	 * Unique ID for the Payment Service Provider: Android Pay
 	 *
 	 */
 	const iANDROID_PAY_PSP = 20;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: 2c2p-Alc
+	 *
+	 */
+	const i2C2P_ALC_PSP = 40;
+	
 	/**
 	 * Unique ID for the Electronic Payment Flow
 	 *

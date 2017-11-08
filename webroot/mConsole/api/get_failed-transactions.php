@@ -22,10 +22,16 @@ require_once(sCLASS_PATH ."/validate.php");
 require_once(sCLASS_PATH ."/admin.php");
 // Require Business logic for the mConsole Module
 require_once(sCLASS_PATH ."/mConsole.php");
+// Require Business logic for the mProfile Module
+require_once(sCLASS_PATH ."/mprofile.php");
 // Require data data class for Transaction Log Information
 require_once(sCLASS_PATH ."/transaction_log_info.php");
 // Require data data class for Customer Information
 require_once(sCLASS_PATH ."/customer_info.php");
+// Require data class for Customer Information factory
+require_once(sCLASS_PATH ."/mprofile_customer_info.php");
+// Require data class for Customer Information factory
+require_once(sCLASS_PATH ."/customer_info_factory.php");
 // Require data data class for Message Information about each State a Transaction has passed through
 require_once(sCLASS_PATH ."/message_info.php");
 // Require data data class for Information about an Amount

@@ -86,7 +86,7 @@ class ClientInfo
 	 * Default Constructor.
 	 *
 	 */
-	public function __construct($appid, $pf, $ver, CountryConfig $oCC, $mob, $email, $dvc, $lang, $ip="",$aAdditionalProperties)
+	public function __construct($appid, $pf, $ver, CountryConfig $oCC, $mob, $email, $dvc, $lang, $ip="",$aAdditionalProperties = array())
 	{
 		$this->_iAppID = (integer) $appid;
 		$this->_sPlatform = trim($pf);

@@ -77,6 +77,9 @@ require_once(sCLASS_PATH ."/klarna.php");
 require_once(sCLASS_PATH ."/mvault.php");
 // Require specific Business logic for the Trustly component
 require_once(sCLASS_PATH ."/trustly.php");
+// Require specific Business logic for the 2C2P-ALC component
+require_once(sCLASS_PATH ."/ccpp_alc.php");
+
 /**
  * Input XML format
  *

@@ -351,7 +351,7 @@ INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2101, 'Card Tokeni
 
 INSERT INTO system.psp_tbl (id, name, system_type) VALUES (36, 'mVault', 3);
 INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (200,36,'USA');
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10007, 36, 'mVault', '', '');
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10007, 36, 'mVault', 'blank', 'blank');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100007, 36, '-1');
 INSERT INTO system.card_tbl (id, name, position) VALUES (35, 'mVault', -1);
 INSERT INTO client.cardaccess_tbl ( clientid, cardid, enabled, pspid, countryid, stateid, position) VALUES (10007, 35, true, 36, null, 1, null);
@@ -364,7 +364,7 @@ UPDATE Client.Client_Tbl SET salt = '8sFgd_Fh17' WHERE id = 10019;
 
 /**
  * CMP-1146 Support "Payment Settled" state for mConsole Search transaction API
- */ 
+ */
 INSERT INTO Log.State_Tbl (id, name) VALUES (2020, 'Payment Settled');
 
 
@@ -411,7 +411,7 @@ INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (31, 23);
 
 /**
  * CMP-1276 Support "Payment Settled" state for mConsole Search transaction API
- */ 
+ */
 INSERT INTO Log.State_Tbl (id, name) VALUES (1998, 'Account Validated');
 INSERT INTO Log.State_Tbl (id, name) VALUES (19980, 'Account Validated and Cancelled');
 INSERT INTO Log.State_Tbl (id, name) VALUES (1997, 'Account Validation Failed');
@@ -551,7 +551,7 @@ INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, countryid) 
 
 
   -- Insert data : system.processortype_tbl;
-  
+
   INSERT INTO system.processortype_tbl(
             id, name)
     VALUES (1, 'PSP');
@@ -564,10 +564,10 @@ INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, countryid) 
     INSERT INTO system.processortype_tbl(
             id, name)
     VALUES (4, 'APM');
-	
-   -- Insert data : system.psp_tbl 
-   -- Value : system_type;	
-   
+
+   -- Insert data : system.psp_tbl
+   -- Value : system_type;
+
    UPDATE system.psp_tbl
    SET system_type=1
  WHERE id=0;
@@ -655,8 +655,8 @@ INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, countryid) 
    UPDATE system.psp_tbl
    SET system_type=2
  WHERE id=28;
- 
-	
+
+
 /* ========== Global Configuration for AliPay - Payment Method : START========== */
 INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (32, 'AliPay', 23, -1, -1, -1);
 INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (32, 0, 0);
@@ -1274,23 +1274,34 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10000
 
 
 /*====================== Test Data =========================*/
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('PROCESSING_CODE', '000000', 10007, 'client');
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_BUSINESS_CODE', '4511
-', 10007, 'client');
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_IDENTIFICATION_CODE', '1234', 10007, 'client');
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_NAME', 'Test', 10007, 'client');
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_ADDRESS', 'Test', 10007, 'client');
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_CITY', 'Test', 10007, 'client');
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_ZIP', '123456', 10007, 'client');
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_REGION', 'ABC', 10007, 'client');
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_COUNTRY', 'ABC', 10007, 'client');
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('POS_DATA_CODE', '1234', 206, 'merchant');
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('FUNCTION_CODE', 'FULL', 206, 'merchant');
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_TERMINAL_ID', 'ABCD1234', 206, 'merchant');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_BUSINESS_CODE', '4816', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_IDENTIFICATION_CODE', '1978551', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_NAME', 'NETS TESTER', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_ADDRESS', 'Boulevard 4', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_CITY', 'Broby', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_ZIP', '3266', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_REGION', 'DK', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_COUNTRY', 'DNK', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('POS_DATA_CODE', 'K00500K00130', 206, 'merchant');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_TERMINAL_ID', '208752', 206, 'merchant');
 /*====================== Test Data END =========================*/
 
-/* END */
 
+/*=========================PayTabs===================================== */
+
+INSERT INTO System.PSP_Tbl (id, name) VALUES (38, 'PayTabs');
+INSERT INTO System.PSPCurrency_Tbl (countryid, pspid, name) VALUES (602,38,'AED');
+INSERT INTO System.PspCard_Tbl(cardid, pspid) VALUES (31, 38);
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10007, 38, 'PayTabs', 'Arun123', 'zoVCrg1wOzCN22cXIZt5YM3TnAKoA5paulNWBOtqo6eq8roRqSWoEZh1A2qb7PlCa9yMX2cm8qMgSb7i34HH3ZID19P9YaL9jkVh');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100007, 38, '-1');
+UPDATE Client.CardAccess_Tbl SET pspid = 38, countryid = 602 WHERE clientid = 10007 AND cardid = 31;
+
+
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('MERCHANT_URL', 'test_sadad@paytabs.com', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = 10007 and pspid = 38), 'merchant');
+
+
+/* END */
 
 
 /* ========== Global Configuration for Trustly - Payment Method : START========== */
@@ -1340,3 +1351,86 @@ QqzNq3ZNOOMkzyngDzpqqp2toRQmXgHBadQ+twQpAoGAOy043ssufkTbxYiEEijB
 YJ12KjO/YKi1H12EPzRC8zOk8YQBOL/wbSVRRXvM2U4y4K3CRRwplqbzL6SOHgJw
 KQ4vSiSKZ/vu5amf7qQ/YpE=
 -----END PRIVATE KEY-----', (SELECT ID from client.merchantaccount_tbl where clientid = 10007 and pspid = 39) , 'merchant');
+=======
+/*=========================2C2P ALC===================================== */
+
+INSERT INTO system.psp_tbl (id, name, system_type) VALUES (40, '2c2p-alc', 1);
+INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (644,40,'THB');
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10007, 40, '2c2p-alc', 'CELLPM', 'TG2009');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100007, 40, '-1');
+INSERT INTO client.cardaccess_tbl ( clientid, cardid, enabled, pspid, countryid, stateid, position) VALUES (10007, 8, true, 40, 644, 1, null);
+INSERT INTO client.cardaccess_tbl ( clientid, cardid, enabled, pspid, countryid, stateid, position) VALUES (10007, 7, true, 40, 644, 1, null);
+INSERT INTO system.cardpricing_tbl ( pricepointid, cardid) VALUES ( -644, 8);
+INSERT INTO system.cardpricing_tbl ( pricepointid, cardid) VALUES ( -644, 7);
+INSERT INTO system.pspcard_tbl (cardid, pspid) VALUES (8, 40);
+INSERT INTO system.pspcard_tbl (cardid, pspid) VALUES (7, 40);
+
+/* END*/
+
+/* Maybank configuration in additional configuration for Malindo (sandbox/production has same set of mid and password)  */
+
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8', '02700770202075001284',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27),'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7', '02700770202075001284',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27),'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.1', '02701700290875100472',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27),'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'pwd.8', '4GkR2Hkk',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27),'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'pwd.7', '4GkR2Hkk',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27),'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'pwd.1', '6sjhPN9X',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 27),'merchant');
+
+/* Maybank configuration in additional configuration for merchant:production  */
+
+
+
+/*
+--Public bank additional config for MID based on payment method and currency
+ */
+
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7.MYR', '5500003631',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7.HKD', '5500003798',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7.SGD', '5500003658',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7.AUD', '5500003771',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7.LKR', '5500003895',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7.CNY', '5500003909',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7.THB', '5500003887',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7.TWD', '5500004077',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7.SAR', '5500004492',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7.USD', '5500003666',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.7.IDR', '5500004239',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+---
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8.MYR', '3300004667',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8.HKD', '3300004802',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8.SGD', '3300004675',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8.AUD', '3300004799',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8.LKR', '3300004918',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8.CNY', '3300004942',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8.THB', '3300004896',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8.TWD', '3300005116',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8.SAR', '3300005574',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8.USD', '3300004683',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'mid.8.IDR', '3300005302',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 28) ,'merchant');
+/*
+End of Public Bank additional configuration
+ */
+
+/*
+--CCAvenue additional config for Working and access key
+--Access key is same for all envs
+ */
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'ccavenue.access.key', 'AVBV69EB32BP61VBPB',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 25),'merchant');
+/*--working key for all envs except PROD*/
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'ccavenue.working.key', '93C3C30ED0AF63F7D222ACB2A53DB025',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 25),'merchant');
+/*--PROD working key-*/
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'ccavenue.working.key', 'F9D8D501AB87FC404EAC9C5CA682C1D9',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 25),'merchant');
+
+/*
+End of CCAvenue additional config
+ */
+
+/*
+--WireCard additional config for enrollment mid key - same for all environments
+ */
+
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'enrollment.mid.key', '33f6d473-3036-4ca5-acb5-8c64dac862d1',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 18),'merchant');
+
+/*
+End of WireCard additional config
+ */
