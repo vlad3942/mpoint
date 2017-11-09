@@ -526,7 +526,7 @@ class EndUserAccount extends Home
 	 * 	10. Success
 	 *
 	 * @param 	integer $cid 	ID of the Country
-	 * @param 	integer $sid	ID of the State
+	 * @param 	string $state	Address field - State
 	 * @param 	string $fn 		Address field - First Name
 	 * @param   string $ln		Address field - Last Name
 	 * @param 	string $cmp		Address field - Company
@@ -535,10 +535,17 @@ class EndUserAccount extends Home
 	 * @param 	string $ct		Address field - City
 	 * @return	integer
 	 */
-	public function saveAddress($cardid, $cid, $sid, $fn, $ln, $cmp, $st, $pc, $ct)
-	{
+	public function saveAddress($cardid, $cid, $state, $fn, $ln, $cmp, $st, $pc, $ct,$fullName = "")
+    {
+        if(empty($fullName) === false) {
+            $name = explode(' ', $fullName);
+            $fn = $name[0];
+            if(count($name) > 1)
+                $ln = $name[1];
+        }
+
 		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Address_Tbl
-				SET countryid = ". intval($cid) .", stateid = ". intval($sid) .",
+				SET countryid = ". intval($cid) .", state = '". $this->getDBConn()->escStr($state) ."',
 					firstname = '". $this->getDBConn()->escStr($fn) ."', lastname = '". $this->getDBConn()->escStr($ln) ."', company = '". $this->getDBConn()->escStr($cmp) ."',
 					street = '". $this->getDBConn()->escStr($st) ."', postalcode = '". $this->getDBConn()->escStr($pc) ."', city = '". $this->getDBConn()->escStr($ct) ."'
 				WHERE cardid = ". intval($cardid);
@@ -549,9 +556,9 @@ class EndUserAccount extends Home
 			if ($this->getDBConn()->countAffectedRows($res) == 0)
 			{
 				$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Address_Tbl
-							(cardid, countryid, stateid, firstname, lastname, company, street, postalcode, city)
+							(cardid, countryid, state, firstname, lastname, company, street, postalcode, city)
 						VALUES
-							(". intval($cardid) .", ". intval($cid) .", ". intval($sid) ." , '". $this->getDBConn()->escStr($fn) ."', '". $this->getDBConn()->escStr($ln) ."', '". $this->getDBConn()->escStr($cmp) ."', '". $this->getDBConn()->escStr($st) ."', '". $this->getDBConn()->escStr($pc) ."', '". $this->getDBConn()->escStr($ct) ."')";
+							(". intval($cardid) .", ". intval($cid) .", '". $this->getDBConn()->escStr($state) ."' , '". $this->getDBConn()->escStr($fn) ."', '". $this->getDBConn()->escStr($ln) ."', '". $this->getDBConn()->escStr($cmp) ."', '". $this->getDBConn()->escStr($st) ."', '". $this->getDBConn()->escStr($pc) ."', '". $this->getDBConn()->escStr($ct) ."')";
 //				echo $sql ."\n";
 				if (is_resource($this->getDBConn()->query($sql) ) === true) { $code = 10; }
 				else { $code = 2; }
@@ -1036,6 +1043,43 @@ class EndUserAccount extends Home
         $RS = $this->getDBConn()->getName($sql);
 
         return is_array($RS) === true ? $RS["TICKET"] : NULL;
+    }
+
+    /**
+     * Retrieves the psp-id of the card from EndUser.Card_Tbl
+     *
+     * @param integer 	$id 		ID from Enduser.Card_Tbl
+     * @return string	$psp-id		pspid of the card from which token was returned
+     */
+    public function getCardPSPId($id)
+    {
+        $sql = "SELECT pspid
+				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
+				WHERE id = ". intval($id);
+
+		//echo $sql ."\n";
+        $RS = $this->getDBConn()->getName($sql);
+
+        return is_array($RS) === true ? $RS["PSPID"] : NULL;
+    }
+
+    /**
+     * Retrieves the billing address of the card from EndUser.Address_tbl
+     *
+     * @param integer 	$cardid 		ID from Enduser.Card_Tbl
+     * @return string
+     */
+    public function getAddressFromCardId($cardid)
+    {
+        $xml = '';
+        $sql = "SELECT firstname,lastname,company,street,postalcode,city,state,countryid
+				FROM EndUser".sSCHEMA_POSTFIX.".Address_tbl
+				WHERE cardid = ". intval($cardid);
+
+        //echo $sql ."\n";
+        $RS = $this->getDBConn()->getName($sql);
+        
+        return $RS;
     }
 }
 ?>

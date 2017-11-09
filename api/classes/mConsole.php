@@ -906,13 +906,14 @@ class mConsole extends Admin
 		foreach($aClientIDs as $iClientID)
 		{
 			$sql .= "SELECT Txn.id,p2.st AS asStateid,Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
-					EUA.id AS customerid, EUA.firstname, EUA.lastname, Coalesce(Txn.customer_ref, EUA.externalid) AS customer_ref, Txn.operatorid as operatorid,
-					Txn.mobile as mobile, Txn.email as email, Txn.lang AS language,CL.id AS clientid, CL.name AS client,
+					EUA.id AS customerid, EUA.firstname, EUA.lastname, Coalesce(Txn.customer_ref, EUA.externalid) AS customer_ref, Txn.operatorid as operatorid, Txn.deviceid as deviceid,
+					Txn.mobile as mobile, Txn.email as email, Txn.lang AS language,CL.id AS clientid, CL.name AS client, U1.url AS authurl,
 					Acc.id AS accountid, Acc.markup as markup, Acc.mobile as acc_mobile, Acc.name AS account,PSP.id AS pspid, PSP.name AS psp,
 					PM.id AS paymentmethodid, PM.name AS paymentmethod,Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON Txn.accountid = Acc.id
+				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U1 ON CL.id = U1.clientid AND U1.urltypeid = ". ClientConfig::iAUTHENTICATION_URL ." AND U1.enabled = '1'
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON Txn.pspid = PSP.id
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl PM ON Txn.cardid = PM.id
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON Txn.euaid = EUA.id
@@ -963,7 +964,9 @@ class mConsole extends Admin
 						$RS["REFUND"],
 						$RS["FEE"],
 						$RS["MODE"],
-						new CustomerInfo($RS["CUSTOMERID"], $RS["OPERATORID"]/100, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"], $RS["FIRSTNAME"] ." ". $RS["LASTNAME"], $RS["LANGUAGE"]),
+						CustomerInfoFactory::getInstance($this->getDBConn(), $this->getText(), new ClientURLConfig($RS["CLIENTID"], ClientConfig::iAUTHENTICATION_URL, $RS['AUTHURL']),
+							$RS["CUSTOMERID"], $RS["OPERATORID"]/100, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"],
+							$RS["FIRSTNAME"] ." ". $RS["LASTNAME"], $RS["LANGUAGE"], $RS["CLIENTID"], $RS['DEVICEID'] ),
 						$RS["IP"],
 						date("Y-m-d H:i:s", strtotime($RS["CREATED"]) ),
 						$aObj_Messages);

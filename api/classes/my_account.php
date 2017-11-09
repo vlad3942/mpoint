@@ -334,5 +334,58 @@ class MyAccount extends Home
 
 		return $code;
 	}
+
+
+    /**
+     * Deletes a stored card from an End-User Account And Disable Account.
+     *
+     * @param 	integer $enduserid	Unqiue ID of the End-User's Account
+     * @return 	object
+     */
+    public function delStoredCardAndDisableAccount($enduserid)
+    {
+        //$obj = ;
+        $obj->tokens = array();
+        $obj->status = -1;
+        $sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".account_tbl 
+                SET enabled = FALSE 
+                WHERE id = ". intval($enduserid);
+
+        $res = $this->getDBConn()->query($sql);
+        if (is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) > 0) {
+
+            $sql1 = "SELECT id cardid,ticket
+                     FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
+                     WHERE accountid = ". intval($enduserid);
+    //		echo $sql1 ."\n";
+
+            $res1 = $this->getDBConn()->query($sql1);
+
+            if (is_resource($res1) === true )
+            {
+                while ($RS = $this->getDBConn()->fetchName($res1) )
+                {
+                    if(!empty($RS["TICKET"]))
+                    array_push($obj->tokens,$RS["TICKET"]);
+                }
+
+                $sql2 = "DELETE FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
+                         WHERE accountid = ". intval($enduserid);
+    //			echo $sql ."\n";
+
+                $res2 = $this->getDBConn()->query($sql2);
+                if (is_resource($res2) === true && $this->getDBConn()->countAffectedRows($res2) > 0) {
+                    $obj->status= 10;
+                }else {
+                    $obj->status=3;
+                }
+            }
+            else { $obj->status= 10; }
+        }
+        else {$obj->status=1;}
+
+        return $obj;
+
+    }
 }
 ?>

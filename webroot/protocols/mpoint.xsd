@@ -237,7 +237,7 @@
 								</xs:sequence>
 								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="1009" />
-								<xs:attribute name="store-card" type="xs:boolean" use="optional"/>
+								<xs:attribute name="store-card" type="xs:boolean" use="optional" default="false"/>
 							</xs:complexType>
 						</xs:element>
 						<xs:choice>
@@ -297,7 +297,7 @@
 					<xs:sequence>
 						<xs:element name="card" minOccurs="1" maxOccurs="1">
 							<xs:complexType>
-								<xs:sequence>
+								<xs:choice minOccurs="0" maxOccurs="unbounded">
 									<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1" />
 									<xs:element name="card-holder-name" type="xs:string" minOccurs="0" maxOccurs="1" />
 									<xs:choice minOccurs="0" maxOccurs="1">
@@ -306,7 +306,7 @@
 										<xs:group ref="card-token-only" />
 									</xs:choice>
 									<xs:element name="address" type="address" minOccurs="0" maxOccurs="1" />
-								</xs:sequence>
+								</xs:choice>
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" />
 								<xs:attribute name="psp-id" type="xs:positiveInteger" use="optional" />
 								<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
@@ -334,8 +334,8 @@
 							<xs:element name="full-name" type="xs:string" />
 						</xs:choice>
 						<xs:element name="card" minOccurs="0" maxOccurs="1">
-							<xs:complexType>
-								<xs:sequence>
+							<xs:complexType mixed="true">
+								<xs:choice minOccurs="0" maxOccurs="unbounded">
 									<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1" />
 									<xs:element name="card-holder-name" type="xs:string" minOccurs="0" maxOccurs="1" />
 									<xs:choice minOccurs="0" maxOccurs="1">
@@ -344,7 +344,7 @@
 										<xs:group ref="card-token-only" />
 									</xs:choice>
 									<xs:element name="address" type="address" minOccurs="0" maxOccurs="1" />
-								</xs:sequence>
+								</xs:choice>
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" />
 								<xs:attribute name="psp-id" type="xs:positiveInteger" use="optional" />
 								<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
@@ -352,8 +352,8 @@
 								<xs:attribute name="charge-type-id" type="charge-type" use="optional" />
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="client-info" type="client-info" minOccurs="0" maxOccurs="1" />
 						<xs:element name="auth-token" type="xs:string" minOccurs="0" maxOccurs="1" />
+						<xs:element name="client-info" type="client-info" minOccurs="0" maxOccurs="1" />
 					</xs:sequence>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
 					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
@@ -432,6 +432,7 @@
 					</xs:all>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
 					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
+					<xs:attribute name="test" type="xs:boolean" use="optional" default="false"/>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="transfer">
@@ -466,6 +467,20 @@
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="card" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+						<xs:choice>
+							<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
+							<xs:group ref="single-sign-on" minOccurs="1" maxOccurs="1" />
+						</xs:choice>
+						<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1" />
+					</xs:sequence>
+					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
+					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="delete-account" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="euaid" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
 						<xs:choice>
 							<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
 							<xs:group ref="single-sign-on" minOccurs="1" maxOccurs="1" />
@@ -745,10 +760,11 @@
 								<xs:all>
 									<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
 								</xs:all>
-							
+								<xs:attribute name="id" type="xs:positiveInteger" use="optional"/>
+								<xs:attribute name="order-no" type="xs:string" use="optional"/>
 							</xs:complexType>
 						</xs:element>
-						
+						<xs:element name="client-info" type="client-info" minOccurs="0" maxOccurs="1" />
 					</xs:all>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
 					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
