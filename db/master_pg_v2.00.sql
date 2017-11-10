@@ -279,4 +279,6 @@ REFERENCES System.currency_tbl (id)
 ON UPDATE CASCADE ON DELETE RESTRICT;
 /* ==================== ALTER TRANSACTION LOG END ==================== */
 
+
+ALTER TABLE system.pspcurrency_tbl ADD COLUMN currencyid integer;
 	  
