@@ -201,7 +201,7 @@ WITH (
   OIDS=FALSE
 );
 ALTER TABLE system.currency_tbl
-  OWNER TO postgres;
+  OWNER TO mpoint;
 
 
 ALTER TABLE system.country_tbl ADD COLUMN alpha2code character(2);
