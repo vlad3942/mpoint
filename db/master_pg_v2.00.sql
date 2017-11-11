@@ -279,6 +279,25 @@ REFERENCES System.currency_tbl (id)
 ON UPDATE CASCADE ON DELETE RESTRICT;
 /* ==================== ALTER TRANSACTION LOG END ==================== */
 
-
 ALTER TABLE system.pspcurrency_tbl ADD COLUMN currencyid integer;
+/* Run Alter Scripts to update currency Id before deleting country id column */
+ALTER TABLE system.pspcurrency_tbl DROP COLUMN countryid integer;
+
+
+/* ================ Update pricepoint table  ===================*/
+
+ALTER TABLE system.pricepoint_tbl ADD COLUMN currencyid integer;
+
+ALTER TABLE system.pricepoint_tbl  ADD CONSTRAINT Price2Currency_FK FOREIGN KEY (currencyid)
+REFERENCES System.currency_tbl (id);
+
+
+
+ALTER TABLE system.pricepoint_tbl DROP COLUMN countryid;
+
+ALTER TABLE system.cardpricing_tbl ADD COLUMN currencyid integer;
+
+ALTER TABLE system.cardpricing_tbl  ADD CONSTRAINT Card2Currency_FK FOREIGN KEY (currencyid)
+REFERENCES System.currency_tbl (id);
+
 	  
