@@ -326,9 +326,10 @@
 			<xs:element name="save-account" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
-						<xs:element name="confirm-password" type="xs:string" minOccurs="1" maxOccurs="1" />
-						<xs:element name="social-security-number" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+					<xs:choice minOccurs="0" maxOccurs="1">
+						<xs:group ref="account-password" />
+					</xs:choice>
+					<xs:element name="social-security-number" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
 						<xs:choice minOccurs="0" maxOccurs="1">
 							<xs:group ref="names" />
 							<xs:element name="full-name" type="xs:string" />
@@ -822,6 +823,13 @@
 	<xs:sequence>
 		<xs:element name="first-name" type="xs:string" minOccurs="0" maxOccurs="1" />
 		<xs:element name="last-name" type="xs:string" minOccurs="0" maxOccurs="1" />
+	</xs:sequence>
+</xs:group>
+
+<xs:group name="account-password">
+	<xs:sequence>
+		<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
+		<xs:element name="confirm-password" type="xs:string" minOccurs="1" maxOccurs="1" />
 	</xs:sequence>
 </xs:group>
 
