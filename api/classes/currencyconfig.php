@@ -4,7 +4,7 @@
  * 	- Configuration for the Country the transaction is processed in
  * 	- Configuration for the Client on whose behalf mPoint is processing the transaction
  *
- * @author Jonatan Evald Buus
+ * @author Rohit Malhotra
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
  * @package Config

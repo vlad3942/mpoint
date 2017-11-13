@@ -174,7 +174,7 @@ class PaymentMethodConfig extends BasicConfig
 			$sql = "SELECT C.id, C.name
 					FROM System". sSCHEMA_POSTFIX .".CardPricing_Tbl CP
 					INNER JOIN System". sSCHEMA_POSTFIX .".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PP.enabled = '1'
-					INNER JOIN System". sSCHEMA_POSTFIX .".Country_Tbl C ON PP.countryid = C.id AND C.enabled = '1'
+					INNER JOIN System". sSCHEMA_POSTFIX .".Country_Tbl C ON PP.currencyid = C.currencyid AND C.enabled = '1'
 					WHERE CP.cardid = ". intval($id) ." AND CP.enabled = '1'
 					ORDER BY C.id ASC";
 //			echo $sql ."\n";
