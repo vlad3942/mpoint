@@ -94,7 +94,7 @@ End of CCAvenue additional config
 --WireCard additional config for enrollment mid key - same for all environments
  */
 
-INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'enrollment.mid.key', '33f6d473-3036-4ca5-acb5-8c64dac862d1',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 18),'merchant');
+INSERT INTO client.additionalproperty_tbl( key, value, externalid, type) VALUES ( 'check.enrollment.mid', '33f6d473-3036-4ca5-acb5-8c64dac862d1',(SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 18),'merchant');
 
 /*
 End of WireCard additional config
