@@ -3673,3 +3673,12 @@ INSERT INTO system.cardpricing_tbl (cardid,currencyid) values (25,604 );
 
 /* ========= Insert script for cardpricing_tbl ================ */
 
+
+
+
+/* ============  Update pspcurrency_tbl with currencyIds ============= */
+
+UPDATE system.pspcurrency_tbl pc SET currencyid = (SELECT currencyid FROM system.country_tbl WHERE id = pc.countryid) ;
+
+
+

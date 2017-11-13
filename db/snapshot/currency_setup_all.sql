@@ -2535,7 +2535,8 @@ INSERT INTO system.cardpricing_tbl (cardid,currencyid) values (4,64 );
 INSERT INTO system.cardpricing_tbl (cardid,currencyid) values (5,977 );
 INSERT INTO system.cardpricing_tbl (cardid,currencyid) values (25,12 );
 INSERT INTO system.cardpricing_tbl (cardid,currencyid) values (9,973 );
-INSERT INTO system.cardpricing_tbl (cardid,currencyid) values (25,48 );INSERT INTO system.cardpricing_tbl (cardid,currencyid) values (33,643 );
+INSERT INTO system.cardpricing_tbl (cardid,currencyid) values (25,48 );
+INSERT INTO system.cardpricing_tbl (cardid,currencyid) values (33,643 );
 INSERT INTO system.cardpricing_tbl (cardid,currencyid) values (7,608 );
 INSERT INTO system.cardpricing_tbl (cardid,currencyid) values (4,682 );
 INSERT INTO system.cardpricing_tbl (cardid,currencyid) values (13,986 );
@@ -2914,4 +2915,15 @@ INSERT INTO system.cardpricing_tbl (cardid,currencyid) values (25,604 );
 
 
 /* ========= Insert script for cardpricing_tbl ================ */
+
+
+/* ========== Scripts for pspcurrency_tbl =============== */
+
+ALTER TABLE system.pspcurrency_tbl ADD COLUMN currencyid integer;
+
+UPDATE system.pspcurrency_tbl pc SET currencyid = (SELECT currencyid FROM system.country_tbl WHERE id = pc.countryid) ;
+
+ALTER TABLE system.pspcurrency_tbl DROP COLUMN countryid integer;
+
+/* ========== Scripts for pspcurrency_tbl =============== */
 
