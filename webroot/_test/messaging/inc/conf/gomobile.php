@@ -45,7 +45,7 @@ $aGM_CONN_INFO["timeout"] = 20;	// In seconds
 $aGM_CONN_INFO["path"] = "/";
 $aGM_CONN_INFO["method"] = "POST";
 $aGM_CONN_INFO["contenttype"] = "text/xml";
-$aGM_CONN_INFO["username"] = "CPMDemo";
+$aGM_CONN_INFO["username"] = "CPMDemowallet";
 $aGM_CONN_INFO["password"] = "DEMOisNO_2";
 $aGM_CONN_INFO["logpath"] = sLOG_PATH;
 /**
@@ -55,4 +55,8 @@ $aGM_CONN_INFO["logpath"] = sLOG_PATH;
  *
  */
 $aGM_CONN_INFO["mode"] = 1;
+
+
+const PLATFORM_ANDROID_DEVICE = 2;
+const PLATFORM_IOS_DEVICE = 1;
 ?>

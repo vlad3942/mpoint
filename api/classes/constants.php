@@ -586,6 +586,12 @@ abstract class Constants
 	 *
 	 */
 	const iKLARNA_PSP = 37;
+
+	/**
+	 * Unique ID for the Payment Service Provider: Trustly
+	 *
+	 */
+	const iTRUSTLY_PSP = 39;
 	
 	
     /**
@@ -605,6 +611,13 @@ abstract class Constants
 	 *
 	 */
 	const iANDROID_PAY_PSP = 20;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: 2c2p-Alc
+	 *
+	 */
+	const i2C2P_ALC_PSP = 40;
+	
 	/**
 	 * Unique ID for the Electronic Payment Flow
 	 *
@@ -793,6 +806,11 @@ abstract class Constants
 	 *
 	 */
 	const iKLARNA_PAY = 36;
+	/**
+	 * Unique Card ID for transaction's made using Trustly
+	 *
+	 */
+	const iTRUSTLY_PAY = 38;
 	
     /**
      * Unique Card ID for transaction's made using mVault

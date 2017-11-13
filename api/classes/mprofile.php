@@ -7,7 +7,7 @@ class mProfile extends General
     const sHTTP_METHOD = 'POST';
     const sHTTP_TIMEOUT = 120;
     const sHTTP_CONTENT_TYPE = 'text/xml';
-    const sX_CPM_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjQ2NTg5OTIyOTYsImlhdCI6MTUwMzMxODY5NiwiaXNzIjoiQ1BNIiwicHJvZmlsZUlkIjoxLCJzZXNzaW9uSWQiOjF9.IeLj6HLMd5tLbIpr_70homfUNHi6cqgaN_iUj-omLow';
+    const sX_CPM_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjQ2NjEzOTU4MDEsImlhdCI6MTUwNTcyMjIwMSwiaXNzIjoiQ1BNIiwidHlwZSI6MiwiY2xpZW50aWQiOiIxMDAxOCIsInNlc3Npb25JZCI6MX0.GbnU1gTFPAY8jgJWsLJBXDxG8_0Rvazx69MP53hRL1w';
     const sGET_PROFILE_SERVICE_URL = '/mprofile/get-profile';
 
     private $_obj_ClientConfig;
@@ -17,6 +17,8 @@ class mProfile extends General
     private $_sDeviceID;
 
     private $_sPushID;
+
+    private $_iPlatformID;
 
     private $_bIsGuest;
 
@@ -51,10 +53,16 @@ class mProfile extends General
         $this->_sPushID = $iID;
     }
 
+    private function _setPlatformID($iID)
+    {
+        $this->_iPlatformID = $iID;
+    }
+
     public function getPushID()     { return $this->_sPushID; }
     public function getDeviceID()   { return $this->_sDeviceID; }
     public function getGuestFlag()  { return $this->_bIsGuest; }
     public function getMProfileID() { return $this->_iMProfileID; }
+    public function getPlatformID() { return $this->_iPlatformID; }
 
 
     protected function _constConnInfo($path)
@@ -100,6 +108,7 @@ class mProfile extends General
                 $this->_setDeviceID(($response->{'get-profile'}->{'profile'}->{'device-id'}) );
                 $this->_setPushID(($response->{'get-profile'}->{'profile'}->{'push-id'}) );
                 $this->_setMProfileID(($response->{'get-profile'}->{'profile'}["id"]) );
+                $this->_setPlatformID(intval($response->{'get-profile'}->{'profile'}->{'device-id'}['platform-id']) );
                 return 1000;
             }
             else
