@@ -3670,6 +3670,8 @@ INSERT INTO system.cardpricing_tbl (cardid,currencyid) values (11,446 );
 INSERT INTO system.cardpricing_tbl (cardid,currencyid) values (6,760 );
 INSERT INTO system.cardpricing_tbl (cardid,currencyid) values (25,604 );
 
+UPDATE system.cardpricing_tbl CT SET pricepointid = (SELECT id FROM system.pricepoint_tbl WHERE currencyid = CT.currencyid);
+
 
 /* ========= Insert script for cardpricing_tbl ================ */
 

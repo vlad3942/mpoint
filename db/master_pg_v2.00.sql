@@ -209,7 +209,7 @@ ALTER TABLE system.country_tbl ADD COLUMN alpha3code character(3);
 ALTER TABLE system.country_tbl ADD COLUMN code integer;
 ALTER TABLE system.country_tbl ADD COLUMN currencyid integer;
 ALTER TABLE system.country_tbl ADD CONSTRAINT Country2Currency_FK FOREIGN KEY (currencyid) REFERENCES System.Currency_Tbl(id) ON UPDATE CASCADE ON DELETE RESTRICT;
-
+ALTER TABLE system.country_tbl DROP COLUMN currency;
 
 /*---------END : ADDED CHANGE FOR SUPPORTING CURRENCY SCHEMA-------------*/
 

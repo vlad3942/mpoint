@@ -2914,6 +2914,8 @@ INSERT INTO system.cardpricing_tbl (cardid,currencyid) values (6,760 );
 INSERT INTO system.cardpricing_tbl (cardid,currencyid) values (25,604 );
 
 
+
+UPDATE system.cardpricing_tbl CT SET pricepointid = (SELECT id FROM system.pricepoint_tbl WHERE currencyid = CT.currencyid);
 /* ========= Insert script for cardpricing_tbl ================ */
 
 
@@ -2923,7 +2925,9 @@ ALTER TABLE system.pspcurrency_tbl ADD COLUMN currencyid integer;
 
 UPDATE system.pspcurrency_tbl pc SET currencyid = (SELECT currencyid FROM system.country_tbl WHERE id = pc.countryid) ;
 
-ALTER TABLE system.pspcurrency_tbl DROP COLUMN countryid integer;
+ALTER TABLE system.pspcurrency_tbl DROP COLUMN countryid ;
 
 /* ========== Scripts for pspcurrency_tbl =============== */
+
+
 
