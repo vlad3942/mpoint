@@ -21,7 +21,7 @@ class CurrencyConfig extends BasicConfig
     /**
      * The 3 Digit alphabetic code as per the ISO 4127 standards
      *
-     * @var integer
+     * @var string
      */
     private $_sCode;
 
@@ -47,7 +47,7 @@ class CurrencyConfig extends BasicConfig
 		$sql = "SELECT id, name, code
 				FROM System".sSCHEMA_POSTFIX.".Currency_Tbl CT			
 				WHERE CT.id = ". intval($id) ." AND CT.enabled = '1'";
-//		echo $sql ."\n";
+		
 		$RS = $oDB->getName($sql);
 
 		return new CurrencyConfig($RS["ID"], $RS["NAME"], $RS['CODE']);

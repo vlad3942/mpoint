@@ -361,9 +361,9 @@ class CountryConfig extends BasicConfig
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 		
-		$obj_CurrencyConfig = CurrencyConfig::produceConfig($obj, $RS["CURRENCYID"]);
-
-		return new CountryConfig($RS["ID"], $RS["NAME"],$obj_CurrencyConfig, $RS["CURRENCY"], $RS["SYMBOL"], $RS["MAXBALANCE"], $RS["MINTRANSFER"], $RS["MINMOB"], $RS["MAXMOB"], $RS["CHANNEL"], $RS["PRICEFORMAT"], $RS["DECIMALS"], $RS["ADDR_LOOKUP"], $RS["DOI"], $RS["ADD_CARD_AMOUNT"], $RS["MAX_PSMS_AMOUNT"], $RS["MIN_PWD_AMOUNT"], $RS["MIN_2FA_AMOUNT"], $RS['ALPHA2CODE'],$RS['ALPHA3CODE'],$RS['CODE']);
+		$obj_CurrencyConfig = CurrencyConfig::produceConfig($oDB, $RS["CURRENCYID"]);
+		
+		return new CountryConfig($RS["ID"], $RS["NAME"],$RS["CURRENCY"], $obj_CurrencyConfig, $RS["SYMBOL"], $RS["MAXBALANCE"], $RS["MINTRANSFER"], $RS["MINMOB"], $RS["MAXMOB"], $RS["CHANNEL"], $RS["PRICEFORMAT"], $RS["DECIMALS"], $RS["ADDR_LOOKUP"], $RS["DOI"], $RS["ADD_CARD_AMOUNT"], $RS["MAX_PSMS_AMOUNT"], $RS["MIN_PWD_AMOUNT"], $RS["MIN_2FA_AMOUNT"], $RS['ALPHA2CODE'],$RS['ALPHA3CODE'],$RS['CODE']);
 	}
 	
 	/**
