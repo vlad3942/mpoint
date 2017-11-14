@@ -14,7 +14,6 @@
 
 // Require Global Include File
 require_once("../../inc/include.php");
-
 // Require specific Business logic for the Capture component
 require_once(sCLASS_PATH ."/capture.php");
 // Require Business logic for the End-User Account Component
@@ -23,6 +22,8 @@ require_once(sCLASS_PATH ."/enduser_account.php");
 require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for the CPM PSP component
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
+// Require specific Business logic for the CPM ACQUIRER component
+require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
 // Require specific Business logic for the WorldPay component
@@ -66,19 +67,21 @@ require_once(sCLASS_PATH ."/ccavenue.php");
 require_once(sCLASS_PATH ."/ccpp.php");
 // Require specific Business logic for the MayBank component
 require_once(sCLASS_PATH ."/maybank.php");
-
 // Require specific Business logic for the PublicBank component
 require_once(sCLASS_PATH ."/publicbank.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 // Require Business logic for General Administration of mPoint
 require_once(sCLASS_PATH ."admin.php");
-
+// Require specific Business logic for the Nets component
+require_once(sCLASS_PATH ."/nets.php");
 // Require Business logic for the mConsole Module
 require_once(sCLASS_PATH ."/mConsole.php");
-
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
+// Require specific Business logic for the 2C2P ALC component
+require_once(sCLASS_PATH ."/ccpp_alc.php");
+
 //header("Content-Type: application/x-www-form-urlencoded");
 
 /*

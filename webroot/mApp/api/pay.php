@@ -35,6 +35,8 @@ require_once(sCLASS_PATH ."/credit_card.php");
 require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for the CPM PSP component
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
+// Require specific Business logic for the CPM ACQUIRER component
+require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
 // Require specific Business logic for the WorldPay component
@@ -88,8 +90,20 @@ require_once(sCLASS_PATH ."/alipay.php");
 require_once(sCLASS_PATH ."/poli.php");
 // Require specific Business logic for the Qiwi component
 require_once(sCLASS_PATH ."/qiwi.php");
+// Require specific Business logic for the Klarna component
+require_once(sCLASS_PATH ."/klarna.php");
 // Require specific Business logic for the MobilePay Online component
 require_once(sCLASS_PATH ."/mobilepayonline.php");
+// Require specific Business logic for the Nets component
+require_once(sCLASS_PATH ."/nets.php");
+// Require specific Business logic for the mVault component
+require_once(sCLASS_PATH ."/mvault.php");
+// Require specific Business logic for the Trustly component
+require_once(sCLASS_PATH ."/trustly.php");
+// Require specific Business logic for the PayTabs component
+require_once(sCLASS_PATH ."/paytabs.php");
+// Require specific Business logic for the 2C2P ALC component
+require_once(sCLASS_PATH ."/ccpp_alc.php");
 
 $aMsgCds = array();
 
@@ -134,11 +148,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			if ($code == 100)
 			{
 				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]["client-id"], (integer) $obj_DOM->pay[$i]["account"]);
-				
 				// Client successfully authenticated
  				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])
 					&& $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true)
 				{
+					
 					$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 					$obj_TxnInfo = TxnInfo::produceInfo($obj_DOM->pay[$i]->transaction["id"], $_OBJ_DB);
 					$aObj_PSPConfigs = array();
@@ -212,7 +226,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iANDROID_PAY_PSP);
 									break;
 								default:	// Standard Payment Service Provider
-									
 									if (array_key_exists(intval($obj_Elem["pspid"]), $aObj_PSPConfigs) === false)
 									{
 										if (intval($obj_Elem["pspid"]) > 0)
@@ -223,7 +236,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$obj_PSPConfig = $aObj_PSPConfigs[intval($obj_Elem["pspid"])];
 									break;
 								}
-	
+	    
 								// Success: Payment Service Provider Configuration found
 								if ( ($obj_PSPConfig instanceof PSPConfig) === true)
 								{
@@ -547,6 +560,33 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												$xml .= trim($obj_Elem->asXML() );
 											}
 											break;
+										case (Constants::iKLARNA_PSP):
+											$obj_PSP = new Klarna($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["klarna"]);
+											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
+												
+											foreach ($obj_XML->children() as $obj_Elem)
+											{
+												$xml .= trim($obj_Elem->asXML() );
+											}
+											break;
+										case (Constants::iPAY_TABS_PSP):
+												$obj_PSP = new PayTabs($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["paytabs"]);
+												$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
+											
+												foreach ($obj_XML->children() as $obj_Elem)
+												{
+													$xml .= trim($obj_Elem->asXML() );
+												}
+												break;
+										case (Constants::i2C2P_ALC_PSP):
+													$obj_PSP = new CCPPALC($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["2c2p-alc"]);
+													$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
+														
+													foreach ($obj_XML->children() as $obj_Elem)
+													{
+														$xml .= trim($obj_Elem->asXML() );
+													}
+													break;
 										case (Constants::iMOBILEPAY_ONLINE_PSP):
 											$obj_PSP = new MobilePayOnline($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["mobilepay-online"]);
 											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
@@ -555,8 +595,26 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											{
 												$xml .= trim($obj_Elem->asXML() );
 											}
-											break;											
-										}										
+											break;
+                                        case (Constants::iNETS_ACQUIRER):
+                                            $obj_PSP = new Nets($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["mobilepay-online"]);
+                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
+
+                                            foreach ($obj_XML->children() as $obj_Elem)
+                                            {
+                                                $xml .= trim($obj_Elem->asXML() );
+                                            }
+                                            break;
+                                        case (Constants::iTRUSTLY_PSP):
+                                           	$obj_PSP = new Trustly($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["trustly"]);
+                                           	$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
+                                            
+                                           	foreach ($obj_XML->children() as $obj_Elem)
+                                           	{
+                                           		$xml .= trim($obj_Elem->asXML() );
+                                           	}
+                                           	break;
+                                        }
 										$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. htmlspecialchars($obj_PSPConfig->getMessage($obj_TxnInfo->getLanguage() ), ENT_NOQUOTES) .'</message>';
 										$xml .= '</psp-info>';
 									}

@@ -118,7 +118,7 @@ class CreditCard extends EndUserAccount
 					AND C.enabled = '1' AND (MA.stored_card = '0' OR MA.stored_card IS NULL)
 					AND (CA.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ." OR CA.countryid IS NULL) AND CA.enabled = '1'
 				ORDER BY CA.position ASC NULLS LAST, C.position ASC, C.name ASC";
-//		echo $sql ."\n";
+		//echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 
 		$xml = '<cards accountid="'. $this->_obj_TxnInfo->getAccountID() .'">';

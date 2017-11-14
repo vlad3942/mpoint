@@ -121,6 +121,13 @@ class Home extends General
 			}
 			else { return $this->_authInternal($aArgs[0], $aArgs[1], $aArgs[2]); }
 			break;
+		case (4):
+			if ( ($aArgs[0] instanceof HTTPConnInfo) === true)
+			{
+				return $this->_authExternal($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3]);
+			}
+			else { return $this->_authInternal($aArgs[0], $aArgs[1], $aArgs[2]); }
+			break;
 		default:
 			break;
 		}
@@ -237,12 +244,14 @@ class Home extends General
 
 		return $code;
 	}
-	private function _authExternal(HTTPConnInfo &$oCI, CustomerInfo $obj_CustomerInfo, $pwd)
+	private function _authExternal(HTTPConnInfo &$oCI, CustomerInfo $obj_CustomerInfo, $pwd, $clientId=-1)
 	{
 		$obj_ConnInfo = new HTTPConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), "POST", "text/xml", $oCI->getUsername(), $oCI->getPassword() );
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<login>';
+		 if($clientId > 0)
+		 	$b .= '<client-id>'.$clientId.'</client-id>' ;
 		$b .= $obj_CustomerInfo->toXML();
 		$b .= '<password>'. htmlspecialchars($pwd, ENT_NOQUOTES) .'</password>';
 		$b .= '</login>';
@@ -446,7 +455,7 @@ class Home extends General
 					EUAD.countryid, EUAD.firstname, EUAD.lastname,
 					EUAD.company, EUAD.street,
 					EUAD.postalcode, EUAD.city,
-					STS.code, STS.name AS state, CA.position AS client_position
+					CA.position AS client_position
 				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl EUC
 				INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON EUC.pspid = PSP.id AND PSP.enabled = '1'
 				INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl SC ON EUC.cardid = SC.id AND SC.enabled = '1'
@@ -454,7 +463,6 @@ class Home extends General
 				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON CL.id = CA.clientid AND SC.id = CA.cardid
 				INNER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON EUC.accountid = EUA.id AND EUA.enabled = '1'
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Address_Tbl EUAD ON EUC.id = EUAD.cardid and EUA.enabled ='1'
-				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".State_Tbl STS ON EUAD.stateid = STS.id and EUA.enabled ='1'
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON EUA.id = CLA.accountid
 				WHERE EUC.accountid = ". intval($id);
 		if ($oCC->showAllCards() === false) { $sql .= " AND EUC.enabled = '1' AND ( (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."' OR length(EUC.expiry) = 0)"; }

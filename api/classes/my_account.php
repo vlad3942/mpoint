@@ -19,6 +19,9 @@
  */
 class MyAccount extends Home
 {
+
+    private $_deletedCardToken = null;
+
 	/**
 	 * Generates and sends an Activation Code to the End-User using the provided Mobile Number (MSISDN).
 	 *
@@ -227,7 +230,7 @@ class MyAccount extends Home
 	 */
 	public function delStoredCard($enduserid, $cardid)
 	{
-		$sql1 = "SELECT Card.id cardid, Cli.transaction_ttl ttl
+		$sql1 = "SELECT Card.id cardid, Cli.transaction_ttl ttl,Card.ticket
 				 FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl Card
 				 LEFT JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl Cli ON Cli.id = Card.clientid AND Cli.enabled = '1'
 				 WHERE Card.id = ". intval($cardid);
@@ -241,6 +244,7 @@ class MyAccount extends Home
 			if (is_array($RS) === true)
 			{
 				$iTTL = intval($RS["TTL"]);
+				$this->_deletedCardToken =$RS["TICKET"];
 				if ($iTTL > 0)
 				{
 					$obj_Status = new Status($this->getDBConn(), $this->getText() );
@@ -268,7 +272,9 @@ class MyAccount extends Home
 
 		return 3;
 	}
-	
+
+	public function getDeletedCardToken(){return $this->_deletedCardToken;}
+
 	/**
 	 * Sets a new preferred card for a specific client.
 	 * The method will reset the "preferred" flag for all other cards the End-User has stored for the Client
@@ -328,5 +334,58 @@ class MyAccount extends Home
 
 		return $code;
 	}
+
+
+    /**
+     * Deletes a stored card from an End-User Account And Disable Account.
+     *
+     * @param 	integer $enduserid	Unqiue ID of the End-User's Account
+     * @return 	object
+     */
+    public function delStoredCardAndDisableAccount($enduserid)
+    {
+        //$obj = ;
+        $obj->tokens = array();
+        $obj->status = -1;
+        $sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".account_tbl 
+                SET enabled = FALSE 
+                WHERE id = ". intval($enduserid);
+
+        $res = $this->getDBConn()->query($sql);
+        if (is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) > 0) {
+
+            $sql1 = "SELECT id cardid,ticket
+                     FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
+                     WHERE accountid = ". intval($enduserid);
+    //		echo $sql1 ."\n";
+
+            $res1 = $this->getDBConn()->query($sql1);
+
+            if (is_resource($res1) === true )
+            {
+                while ($RS = $this->getDBConn()->fetchName($res1) )
+                {
+                    if(!empty($RS["TICKET"]))
+                    array_push($obj->tokens,$RS["TICKET"]);
+                }
+
+                $sql2 = "DELETE FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
+                         WHERE accountid = ". intval($enduserid);
+    //			echo $sql ."\n";
+
+                $res2 = $this->getDBConn()->query($sql2);
+                if (is_resource($res2) === true && $this->getDBConn()->countAffectedRows($res2) > 0) {
+                    $obj->status= 10;
+                }else {
+                    $obj->status=3;
+                }
+            }
+            else { $obj->status= 10; }
+        }
+        else {$obj->status=1;}
+
+        return $obj;
+
+    }
 }
 ?>

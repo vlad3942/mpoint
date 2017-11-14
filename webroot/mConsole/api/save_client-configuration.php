@@ -350,7 +350,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							{
 										
 								//Disable Client URLs
-								$bDisabeURLs = $obj_mPoint->disableURLs($iClientID);
+								//$bDisabeURLs = $obj_mPoint->disableURLs($iClientID);
 								
 								if($bDisableKeyword === false) { throw new mConsoleDisableKeywordFailedException("Error during disable keyword for client: ". $iClientID ); }
 															

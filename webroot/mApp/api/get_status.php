@@ -71,6 +71,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				
 				$obj_mPoint = new Home($_OBJ_DB, $_OBJ_TXT, $obj_CountryConfig);
 
+				$testingRequset = (boolean)$obj_DOM->{'get-status'}["test"];
+
 				// Basic input valid
 				if (count($aMsgCds) == 0)
 				{
@@ -82,7 +84,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$misc = empty($t["order-no"]) === false ? array($t["order-no"]) : null;
 
 							$obj_TxnInfo = TxnInfo::produceInfo( (integer) $t["id"], $_OBJ_DB, $misc);
-							$aMessages = $obj_TxnInfo->getMessageHistory($_OBJ_DB);
+							$aMessages = $obj_TxnInfo->getMessageHistory($_OBJ_DB,$testingRequset);
 							$obj_CountryConfig = $obj_TxnInfo->getCountryConfig();
 
 							$aCurrentState = @$aMessages[0];
@@ -98,6 +100,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 								$historyXml .= '<message id="'. $m["id"]. '" state-id="'. $m["stateid"]. '">';
 								$historyXml .= '<timestamp>'. str_replace("T", " ", date("c", strtotime($m["created"]) ) ) .'</timestamp>';
+                                if($testingRequset)
+                                    $historyXml .= '<data>'. htmlspecialchars($m['data'], ENT_NOQUOTES) .'</data>';
 								$historyXml .= '</message>';
 							}
 

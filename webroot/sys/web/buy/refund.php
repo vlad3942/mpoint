@@ -26,6 +26,8 @@ require_once(sCLASS_PATH ."/enduser_account.php");
 require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for the CPM PSP component
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
+// Require specific Business logic for the CPM ACQUIRER component
+require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
 // Require specific Business logic for the WorldPay component
@@ -71,6 +73,8 @@ require_once(sCLASS_PATH ."/maybank.php");
 require_once(sCLASS_PATH ."/publicbank.php");
 // Require specific Business logic for the Qiwi component
 require_once(sCLASS_PATH ."/qiwi.php");
+// Require specific Business logic for the Nets component
+require_once(sCLASS_PATH ."/nets.php");
 
 
 header("Content-Type: application/x-www-form-urlencoded");

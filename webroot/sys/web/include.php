@@ -90,7 +90,7 @@ require_once(sCLASS_PATH ."/basicconfig.php");
 require_once(sCLASS_PATH ."/countryconfig.php");
 // Require data class for Client Configurations
 require_once(sCLASS_PATH ."/client_config.php");
-// Require data class for GoMobile Configurations
+// Require data class for Client Gomobile Config
 require_once(sCLASS_PATH ."/client_gomobile_config.php");
 // Require data class for Account Configurations
 require_once(sCLASS_PATH ."/account_config.php");

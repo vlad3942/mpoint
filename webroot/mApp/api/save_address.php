@@ -40,7 +40,7 @@ $HTTP_RAW_POST_DATA .= '<full-name>Jonatan Buus</full-name>';
 $HTTP_RAW_POST_DATA .= '<company>CellPoint Mobile</company>';
 $HTTP_RAW_POST_DATA .= '<street>Dexter Gordons Vej 3, 6.th</street>';
 $HTTP_RAW_POST_DATA .= '<postal-code>2450</postal-code>';
-$HTTP_RAW_POST_DATA .= '<city>'. utf8_encode("København SV") .'</city>';
+$HTTP_RAW_POST_DATA .= '<city>'. utf8_encode("KÃ¸benhavn SV") .'</city>';
 //$HTTP_RAW_POST_DATA .= '<state>N/A</state>';
 $HTTP_RAW_POST_DATA .= '<client-info app-id="4" platform="iOS" version="1.00" language="gb">';
 $HTTP_RAW_POST_DATA .= '<mobile country-id="100">28882861</mobile>';
@@ -161,8 +161,8 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 						// Address doesn't exist, add to profile
 						if ($bExists === false)
 						{
-							$sid = $obj_mPoint->getStateID( (integer) $obj_DOM->{'save-address'}->address[$i]["country-id"], (string) $obj_DOM->{'save-address'}->address[$i]->state);
-							$code = $obj_mPoint->saveAddress($iAccountID, (integer) $obj_DOM->{'save-address'}->address[$i]["country-id"], $sid, (string) $obj_DOM->{'save-address'}->address[$i]->{'first-name'}, (string) $obj_DOM->{'save-address'}->address[$i]->{"last-name"}, (string) $obj_DOM->{'save-address'}->address[$i]->company, (string) $obj_DOM->{'save-address'}->address[$i]->street, (string) $obj_DOM->{'save-address'}->address[$i]->{"postal-code"}, (string) $obj_DOM->{'save-address'}->address[$i]->city);
+							//$sid = $obj_mPoint->getStateID( (integer) $obj_DOM->{'save-address'}->address[$i]["country-id"], (string) $obj_DOM->{'save-address'}->address[$i]->state);
+							$code = $obj_mPoint->saveAddress($iAccountID, (integer) $obj_DOM->{'save-address'}->address[$i]["country-id"], (string) $obj_DOM->{'save-address'}->address[$i]->state, (string) $obj_DOM->{'save-address'}->address[$i]->{'first-name'}, (string) $obj_DOM->{'save-address'}->address[$i]->{"last-name"}, (string) $obj_DOM->{'save-address'}->address[$i]->company, (string) $obj_DOM->{'save-address'}->address[$i]->street, (string) $obj_DOM->{'save-address'}->address[$i]->{"postal-code"}, (string) $obj_DOM->{'save-address'}->address[$i]->city);
 							if ($code >= 10) { $code++; }
 						}
 						else { $code = 10; }

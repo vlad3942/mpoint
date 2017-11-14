@@ -300,4 +300,45 @@ ALTER TABLE system.cardpricing_tbl ADD COLUMN currencyid integer;
 ALTER TABLE system.cardpricing_tbl  ADD CONSTRAINT Card2Currency_FK FOREIGN KEY (currencyid)
 REFERENCES System.currency_tbl (id);
 
-	  
+ /*
+ *
+ * Created a new Table in the client schema {Client.AdditionalProperty_tbl} to retain additional client and merchant configuration
+ * for every channel - CMP-1862
+ *
+ */
+-- Table: client.additionalproperty_tbl
+
+-- DROP TABLE client.additionalproperty_tbl;
+
+CREATE TABLE client.additionalproperty_tbl
+(
+  id serial NOT NULL,
+  key character varying(200) NOT NULL,
+  value character varying(4000) NOT NULL,
+  modified timestamp without time zone DEFAULT now(),
+  created timestamp without time zone DEFAULT now(),
+  enabled boolean NOT NULL DEFAULT true,
+  externalid integer NOT NULL,
+  type VARCHAR(20) NOT NULL,
+  CONSTRAINT additionalprop_pk PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE client.additionalproperty_tbl
+  OWNER TO mpoint;
+
+
+ALTER TABLE log.transaction_tbl ADD mask VARCHAR(20) NULL;
+ALTER TABLE log.transaction_tbl ADD expiry VARCHAR(5) NULL;
+ALTER TABLE log.transaction_tbl ADD token CHARACTER VARYING(512) COLLATE pg_catalog."default" NULL;
+ALTER TABLE log.transaction_tbl ADD authOriginalData CHARACTER VARYING(512) NULL;
+
+
+ALTER TABLE enduser.address_tbl DROP CONSTRAINT address2state_fk;
+ALTER TABLE enduser.address_tbl DROP stateid;
+ALTER TABLE enduser.address_tbl ADD state VARCHAR(200);
+
+
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (2004, 'Payment approved for partial amount', 'Payment', '');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (2005, '3d verification required for Authorization', 'Payment', '');

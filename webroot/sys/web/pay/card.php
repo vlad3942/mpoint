@@ -53,7 +53,8 @@ require_once (sCLASS_PATH . "/accept.php");
 
 $aWallets = array (
 		Constants::iVISA_CHECKOUT_WALLET,
-		Constants::iMASTER_PASS_WALLET 
+		Constants::iMASTER_PASS_WALLET,
+        Constants::iMVAULT_WALLET,
 );
 
 try {
