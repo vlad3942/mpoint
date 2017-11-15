@@ -410,7 +410,7 @@ class TxnInfo
 	 */
 	public function getCurrencyConfig() {
 		if(is_null($this->_obj_CurrencyConfig) === false  && strlen($this->_obj_CurrencyConfig->getCode()) > 0)	{return $this->_obj_CurrencyConfig ;}
-		else {echo 'else'; print_r($this->_obj_CountryConfig->getCurrencyConfig()); return $this->_obj_CountryConfig->getCurrencyConfig();}
+		else {return $this->_obj_CountryConfig->getCurrencyConfig();}
 	}
 	/**
 	 * Returns the Total amount the customer will pay for the Transaction without fee
