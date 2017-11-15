@@ -16,7 +16,7 @@ $h .= "Content-Type: text/plain; charset=\"UTF-8\"" . SMTPClient::CRLF;
 $h .= "MIME-Version: 1.0" . SMTPClient::CRLF;
 $obj_EmailMessage = new EMailMessage($sRecipientEmail, $sSubject, utf8_encode($sBody), "text/plain", "UTF-8", $h);
 
-$obj_ConnInfo = new SMTPConnInfo($sFromEmail, "CellPoint Mobile Support", "SMTP", "", 0, 20, "", "");
+$obj_ConnInfo = new SMTPConnInfo($sFromEmail, "CellPoint Mobile Support", "tcp", "localhost", 25, 20, "", "");
 $obj_SMTP = new SMTPClient($obj_ConnInfo);
 $code = $obj_SMTP->mail($obj_EmailMessage);
 
