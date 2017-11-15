@@ -409,11 +409,8 @@ class TxnInfo
 	 * @return 	CurrencyConfig
 	 */
 	public function getCurrencyConfig() {
-		if(is_null($this->_obj_CurrencyConfig) === false  && strlen($this->_obj_CurrencyConfig->getCode()) > 0)
-		{
-			return $this->_obj_CurrencyConfig ;
-		}
-		else { return $this->_obj_CountryConfig->getCurrencyConfig();}
+		if(is_null($this->_obj_CurrencyConfig) === false  && strlen($this->_obj_CurrencyConfig->getCode()) > 0)	{return $this->_obj_CurrencyConfig ;}
+		else {echo 'else'; print_r($this->_obj_CountryConfig->getCurrencyConfig()); return $this->_obj_CountryConfig->getCurrencyConfig();}
 	}
 	/**
 	 * Returns the Total amount the customer will pay for the Transaction without fee
@@ -695,7 +692,7 @@ class TxnInfo
 
 		$xml  = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'" gmid="'. $this->_iGoMobileID .'" mode="'. $this->_iMode .'" eua-id="'. $this->_iAccountID .'" psp-id="'. $this->_iPSPID .'" card-id="'. $this->_iCardID .'" external-id="'. htmlspecialchars($this->getExternalID(), ENT_NOQUOTES) .'">';
 		$xml .= '<captured-amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CurrencyConfig->getCode() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $this->_lCapturedAmount .'</captured-amount>';
-		$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'.$this->_obj_CurrencyConfig->getCode() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $this->_lAmount .'</amount>';
+		$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency-id="'. $this->getCurrencyConfig()->getID() .'" currency="'.$this->getCurrencyConfig()->getCode() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $this->_lAmount .'</amount>';
 		$xml .= '<fee country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CurrencyConfig->getCode() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $this->_iFee .'</fee>';
 		$xml .= '<price>'. General::formatAmount($this->_obj_CountryConfig, $this->_lAmount) .'</price>';
 		$xml .= '<points country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">'. $this->_iPoints .'</points>';
