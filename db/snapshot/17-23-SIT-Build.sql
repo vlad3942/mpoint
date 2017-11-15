@@ -34,3 +34,10 @@ UPDATE system.card_tbl SET paymenttype = 4 WHERE id = 34;
 UPDATE system.card_tbl SET paymenttype = 4 WHERE id = 36;
 UPDATE system.card_tbl SET paymenttype = 5 WHERE id = 35;
 UPDATE system.card_tbl SET paymenttype = 5 WHERE id = 11;
+
+/*Base URL*/
+INSERT INTO System.URLType_Tbl (id, name) VALUES (14, 'Base URL for Images');
+
+INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (14, 10007, 'https://hpp-dev2.cellpointmobile.com/img/');
+
+/*Base URL*/
