@@ -31,5 +31,6 @@ UPDATE system.card_tbl SET paymenttype = 4 WHERE id = 28;
 UPDATE system.card_tbl SET paymenttype = 4 WHERE id = 31;
 UPDATE system.card_tbl SET paymenttype = 4 WHERE id = 32;
 UPDATE system.card_tbl SET paymenttype = 4 WHERE id = 34;
+UPDATE system.card_tbl SET paymenttype = 4 WHERE id = 36;
 UPDATE system.card_tbl SET paymenttype = 5 WHERE id = 35;
 UPDATE system.card_tbl SET paymenttype = 5 WHERE id = 11;
