@@ -703,7 +703,6 @@ INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (13, 10007, 'com.mo
 
 /*---------START : ADDED CHANGE FOR SUPPORTING CURRENCY SCHEMA-------------*/
 
-<<<<<<< HEAD
 INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (001,'﻿No Specific Currency','XXX',0);
 INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (008,'Lek','ALL',2);
 INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (012,'Algerian Dinar','DZD',2);
