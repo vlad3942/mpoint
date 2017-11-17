@@ -107,18 +107,8 @@ try
 		$iStateID = Constants::iPAYMENT_REJECTED_STATE;
 		break;
 	}
-
-    $saveCard = true;
-    foreach ($obj_TxnInfo->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
-    {
-        if ($aAdditionalProperty['key'] == 'mvault' && $aAdditionalProperty['value'] == 'true'){
-            $saveCard = false;
-            break;
-        }
-    }
-
 	// Save Ticket ID representing the End-User's stored Card Info
-	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_mPoint->getMessageData($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, false) ) == 1 && $saveCard)
+	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_mPoint->getMessageData($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, false) ) == 1)
 	{
 		$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE);
 		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $obj_XML->notify->orderStatusEvent["orderCode"]);

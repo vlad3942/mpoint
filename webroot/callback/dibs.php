@@ -63,15 +63,8 @@ try
 
 	// Save Ticket ID representing the End-User's stored Card Info
 	$ticket = @$_POST["ticket"];
-    $saveCard = true;
-    foreach ($obj_TxnInfo->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
-    {
-        if ($aAdditionalProperty['key'] == 'mvault' && $aAdditionalProperty['value'] == 'true'){
-            $saveCard = false;
-            break;
-        }
-    }
-	if ( (array_key_exists("preauth", $_POST) === true && @$_POST['preauth'] == "true") || strlen($ticket) > 0 && $saveCard)
+	
+	if ( (array_key_exists("preauth", $_POST) === true && @$_POST['preauth'] == "true") || strlen($ticket) > 0)
 	{
 		$iMobileAccountID = -1;
 		$iEMailAccountID = -1;

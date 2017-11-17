@@ -174,21 +174,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							// Save Address if passed and cards successfuly saved
 							if (count($obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}) == 1 && $code > 0)
 							{
-                                //update or insert address for stored card
-                                if (intval($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) > 0)
-                                {
-                                    $id = intval($obj_DOM->{'save-card'}[$i]->card[$j]["id"]);
-                                }
-                                //Saving a new card with address details
-                                else
-                                {
-                                    $id = $obj_mPoint->getCardIDFromCardDetails($iAccountID,
-                                        $obj_DOM->{'save-card'}[$i]->card[$j]["type-id"],
-                                        (string)$obj_DOM->{'save-card'}[$i]->card[$j]->{'card-number-mask'},
-                                        (string)$obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} . "/" . substr($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-year'}, -2),
-                                        (string)$obj_DOM->{'save-card'}[$i]->card[$j]->token);
-                                }
-
+								$id = $obj_mPoint->getCardIDFromCardDetails($iAccountID,
+																			$obj_DOM->{'save-card'}[$i]->card[$j]["type-id"],
+																			(string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'card-number-mask'},
+																			(string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-month'} ."/". substr($obj_DOM->{'save-card'}[$i]->card[$j]->{'expiry-year'}, -2),
+																			(string) $obj_DOM->{'save-card'}[$i]->card[$j]->token );
+								
 								//$sid = $obj_mPoint->getStateID( (integer) $obj_DOM->{'save-card'}[$i]->card[$j]->address["country-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->state);
 								//if ($sid == 0) { $sid = $obj_mPoint->saveState( (integer) $obj_DOM->{'save-card'}[$i]->card[$j]->address["country-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->state); }
 								$code = $obj_mPoint->saveAddress($id, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]->address["country-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->state, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{'first-name'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"last-name"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->company, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->street, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"postal-code"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->city,(string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{'full-name'});

@@ -798,7 +798,7 @@ class EndUserAccount extends Home
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON EUA.id = CLA.accountid
 				WHERE EUA.countryid = ". $oCC->getID() ."
 					AND ". $sql ." AND EUA.enabled = '1'";
-		if ( ($mode & 1) == 1 && empty($oClC->getAuthenticationURL())===true) { $sql .= " AND ( (EUA.passwd IS NOT NULL AND length(EUA.passwd) > 0) OR EUA.balance > 0)"; }
+		if ( ($mode & 1) == 1) { $sql .= " AND ( (EUA.passwd IS NOT NULL AND length(EUA.passwd) > 0) OR EUA.balance > 0)"; }
 		// Not a System Client
 		if ($oClC->getCountryConfig()->getID() != $oClC->getID() && ($mode & 2) == 2)
 		{
