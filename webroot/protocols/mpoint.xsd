@@ -807,6 +807,32 @@
 					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
 				</xs:complexType>
 			</xs:element>
+
+			<!-- Get Client Configuration -->
+
+			<xs:element name="get-client-configuration" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:annotation>
+							<xs:documentation>
+								Specifies the criteria for executing a
+								configuration search
+							</xs:documentation>
+						</xs:annotation>
+						<xs:element type="xs:integer" name="client-id"
+									minOccurs="1" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									The unique ID for the client whose
+									configuration should be fetched
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+
+			<!-- Get Client Configuration -->
 		</xs:choice>
 	</xs:complexType>
 </xs:element>
