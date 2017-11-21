@@ -767,6 +767,40 @@ class Home extends General
 
 		return $xml;
 	}
+
+
+    public function getTxnStatus($txnid)
+    {
+        $sql = "SELECT Txn.id, Txn.amount AS amount, C.id AS countryid, C.currency, C.symbol, C.priceformat, CL.id AS clientid,
+					   Txn.id AS mpointid, Txn.orderid, M1.stateid,Txn.logourl,Txn.cssurl,Txn.accepturl,Txn.cancelurl, CL.salt, Txn.accountid AS end_user_id,Txn.lang
+				FROM Log.Transaction_Tbl Txn
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON Txn.pspid = PSP.id
+				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Country_Tbl C ON Txn.countryid = C.id
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl Card ON Txn.cardid = Card.id
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M1 ON Txn.id = M1.txnid AND M1.stateid =  (select max(stateid) from Log".sSCHEMA_POSTFIX.".message_tbl WHERE txnid = '". $this->getDBConn()->escStr( (string) $txnid) ."')
+				WHERE Txn.id = '". $this->getDBConn()->escStr( (string) $txnid) ."'
+				ORDER BY Txn.created DESC LIMIT 1";
+//		echo $sql ."\n";
+        $RS = $this->getDBConn()->getName($sql);
+
+
+        $obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $RS["CLIENTID"]);
+        $amount = ((integer) $RS["AMOUNT"])/100;
+        $xml = '<transaction id="'. $RS["ID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" order-no="'. $RS["ORDERID"] .'" accoutid="'. $RS['END_USER_ID'] .'" clientid="'. $RS['CLIENTID'] .'" language="'.$RS['LANG'].'">';
+        $xml .= '<amount country-id="'. $RS["COUNTRYID"] .'" currency="'. $RS['CURRENCY']  .'" symbol="'. utf8_encode($RS['SYMBOL'] ) .'" format="'. $RS['PRICEFORMAT'] .'">'. htmlspecialchars($RS["AMOUNT"], ENT_NOQUOTES) .'</amount>';
+        $xml .= '<accept-url>'. htmlspecialchars($RS["ACCEPTURL"], ENT_NOQUOTES) .'</accept-url>';
+        $xml .= '<cancel-url>'. htmlspecialchars($RS["CANCELURL"], ENT_NOQUOTES) .'</cancel-url>';
+        $xml .= '<css-url>'. htmlspecialchars($RS["CSSURL"], ENT_NOQUOTES) .'</css-url>';
+        $xml .= '<logo-url>'. htmlspecialchars($RS["LOGOURL"], ENT_NOQUOTES) .'</logo-url>';
+        $xml .= '<status-id>'. $RS['STATEID'] .'</status-id>';
+        $xml .= '<sign>'. md5( $RS["CLIENTID"] .'&'. $RS["MPOINTID"] .'&'. $RS["ORDERID"] .'&'. $RS["CURRENCY"] .'&'.  htmlspecialchars($RS["AMOUNT"], ENT_NOQUOTES) .'&'. $RS["STATEID"] .'.'. $RS["SALT"]) .'</sign>';
+      //  $xml .= '<pre-sign>'.  $RS["CLIENTID"] .','. $RS["MPOINTID"] .','. $RS["ORDERID"] .','. $RS["CURRENCY"] .','.  htmlspecialchars($amount, ENT_NOQUOTES) .','. $RS["STATEID"] .','. $RS["SALT"] .'</pre-sign>';
+        $xml .= '</transaction>';
+
+        return $xml;
+    }
+
 	/**
 	 *
 	 *
