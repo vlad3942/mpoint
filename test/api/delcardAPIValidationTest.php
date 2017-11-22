@@ -90,7 +90,7 @@ class DelCardAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card successfully deleted</status><token>1767989 ### CELLPOINT ### 100 ### DKK</token></root>', $sReplyBody);
+		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card successfully deleted</status></root>', $sReplyBody);
 
 		$res =  $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775");
 		$this->assertTrue(is_resource($res) );
@@ -151,7 +151,7 @@ class DelCardAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card successfully deleted</status><token>1767989 ### CELLPOINT ### 100 ### DKK</token></root>', $sReplyBody);
+		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card successfully deleted</status></root>', $sReplyBody);
 
 		$res =  $this->queryDB("SELECT * FROM EndUser.Card_Tbl");
 		$this->assertTrue(is_resource($res) );
@@ -183,7 +183,7 @@ class DelCardAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card successfully deleted</status><token>1767989 ### CELLPOINT ### 100 ### DKK</token></root>', $sReplyBody);
+		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card successfully deleted</status></root>', $sReplyBody);
 
 		$res =  $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775");
 		$this->assertTrue(is_resource($res) );
@@ -213,7 +213,7 @@ class DelCardAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card successfully deleted</status><token>1767989 ### CELLPOINT ### 100 ### DKK</token></root>', $sReplyBody);
+		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card successfully deleted</status></root>', $sReplyBody);
 
 		$res =  $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775");
 		$this->assertTrue(is_resource($res) );
@@ -244,7 +244,7 @@ class DelCardAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card successfully deleted</status><token>1767989 ### CELLPOINT ### 100 ### DKK</token></root>', $sReplyBody);
+		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card successfully deleted</status></root>', $sReplyBody);
 
 		$res =  $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775");
 		$this->assertTrue(is_resource($res) );
@@ -271,7 +271,7 @@ class DelCardAPIValidationTest extends baseAPITest
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
-		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card successfully deleted</status><token>1767989 ### CELLPOINT ### 100 ### DKK</token></root>', $sReplyBody);
+		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Card successfully deleted</status></root>', $sReplyBody);
 
 		$res =  $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775");
 		$this->assertTrue(is_resource($res) );

@@ -171,6 +171,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$data['icon-url'] = "";
 							$data['language'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}["language"];
 							$data['markup'] = $obj_ClientConfig->getAccountConfig()->getMarkupLanguage();
+							
+							$obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"]);
+							$data['currency-config']= $obj_CurrencyConfig ;
 	
 							$obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $data);
 							// Associate End-User Account (if exists) with Transaction
@@ -303,7 +306,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$xml .= '<app-url>'. htmlspecialchars($obj_ClientConfig->getAppURL(), ENT_NOQUOTES) .'</app-url>';
 							$xml .= '<css-url>'. htmlspecialchars($obj_ClientConfig->getCSSURL(), ENT_NOQUOTES) .'</css-url>';
                             $xml .= '<logo-url>'. htmlspecialchars($obj_ClientConfig->getLogoURL(), ENT_NOQUOTES) .'</logo-url>';
-                            $xml .= '<base-image-url>'. htmlspecialchars($obj_ClientConfig->getBaseImageURL(), ENT_NOQUOTES) .'</base-image-url>';
                             $xml .= '<additional-config>';
                             foreach ($obj_ClientConfig->getAdditionalProperties() as $aAdditionalProperty)
                             {
@@ -341,7 +343,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									|| ($obj_TxnInfo->getAccountID() > 0 && (count($aObj_XML) > 0 || $obj_ClientConfig->getStoreCard() == 2) ) )
 								{
 									if (in_array((integer) $obj_XML->item[$j]["pspid"], $aPSPs) === false) { $aPSPs[] = intval($obj_XML->item[$j]["pspid"] ); } 
-									$cardsXML .= '<card id="'. $obj_XML->item[$j]["id"] .'" type-id="'. $obj_XML->item[$j]["type-id"] .'" psp-id="'. $obj_XML->item[$j]["pspid"] .'" min-length="'. $obj_XML->item[$j]["min-length"] .'" max-length="'. $obj_XML->item[$j]["max-length"] .'" cvc-length="'. $obj_XML->item[$j]["cvc-length"] .'" state-id="'. $obj_XML->item[$j]["state-id"] .'" payment-type="'. $obj_XML->item[$j]["payment-type"].'">';
+									$cardsXML .= '<card id="'. $obj_XML->item[$j]["id"] .'" type-id="'. $obj_XML->item[$j]["type-id"] .'" psp-id="'. $obj_XML->item[$j]["pspid"] .'" min-length="'. $obj_XML->item[$j]["min-length"] .'" max-length="'. $obj_XML->item[$j]["max-length"] .'" cvc-length="'. $obj_XML->item[$j]["cvc-length"] .'" state-id="'. $obj_XML->item[$j]["state-id"] .'">';
 									$cardsXML .= '<name>'. htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) .'</name>';
 									$cardsXML .= $obj_XML->item[$j]->prefixes->asXML();
 									$cardsXML .= htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES);	// Backward compatibility

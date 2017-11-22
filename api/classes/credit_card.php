@@ -99,7 +99,7 @@ class CreditCard extends EndUserAccount
 
 		$sql = "SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength,
 					PSP.id AS pspid, MA.name AS account, MSA.name AS subaccount, PC.name AS currency,
-					CA.stateid, CA.position AS client_position, C.paymenttype
+					CA.stateid, CA.position AS client_position
 				FROM System".sSCHEMA_POSTFIX.".Card_Tbl C
 				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON C.id = CA.cardid
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl MA ON CA.clientid = MA.clientid
@@ -109,11 +109,11 @@ class CreditCard extends EndUserAccount
 				INNER JOIN System".sSCHEMA_POSTFIX.".PSPCurrency_Tbl PC ON PSP.id = PC.pspid
 				INNER JOIN System".sSCHEMA_POSTFIX.".PSPCard_Tbl PCD ON PSP.id = PCD.pspid AND C.id = PCD.cardid
 				INNER JOIN System".sSCHEMA_POSTFIX.".CardPricing_Tbl CP ON C.id = CP.cardid
-				INNER JOIN System".sSCHEMA_POSTFIX.".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PC.countryid = PP.countryid AND PP.enabled = '1'
+				INNER JOIN System".sSCHEMA_POSTFIX.".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PC.currencyid = PP.currencyid AND PP.enabled = '1'
 				WHERE CA.clientid = ". $this->_obj_TxnInfo->getClientConfig()->getID() ."
 					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
-					AND PC.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ."
-					AND PP.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ."
+					AND PC.currencyid = ". $this->_obj_TxnInfo->getCountryConfig()->getCurrencyConfig()->getID()."
+					AND PP.currencyid = ". $this->_obj_TxnInfo->getCountryConfig()->getCurrencyConfig()->getID()."
 					AND PP.amount IN (-1, ". intval($amount) .")
 					AND C.enabled = '1' AND (MA.stored_card = '0' OR MA.stored_card IS NULL)
 					AND (CA.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ." OR CA.countryid IS NULL) AND CA.enabled = '1'
@@ -149,7 +149,7 @@ class CreditCard extends EndUserAccount
 					$aRS = $this->getDBConn()->getAllNames($sql);
 				}
 				// Construct XML Document with card data
-				$xml .= '<item id="'. $RS["ID"] .'" type-id="'. $RS["ID"] .'" pspid="'. $RS["PSPID"] .'" min-length="'. $RS["MINLENGTH"] .'" max-length="'. $RS["MAXLENGTH"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" state-id="'. $RS["STATEID"] .'" payment-type="'.$RS['PAYMENTTYPE'].'">';
+				$xml .= '<item id="'. $RS["ID"] .'" type-id="'. $RS["ID"] .'" pspid="'. $RS["PSPID"] .'" min-length="'. $RS["MINLENGTH"] .'" max-length="'. $RS["MAXLENGTH"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" state-id="'. $RS["STATEID"] .'">';
 				$xml .= '<name>'. htmlspecialchars($sName, ENT_NOQUOTES) .'</name>';
 				$xml .= '<logo-width>'. $iWidth .'</logo-width>';
 				$xml .= '<logo-height>'. $iHeight .'</logo-height>';
