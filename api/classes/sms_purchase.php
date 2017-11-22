@@ -128,7 +128,7 @@ class SMS_Purchase extends MobileWeb
 				INNER JOIN System".sSCHEMA_POSTFIX.".CardPricing_Tbl CP ON CA.cardid = CP.cardid
 				INNER JOIN System".sSCHEMA_POSTFIX.".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PP.enabled = '1'
 				WHERE CA.clientid = ". $this->getClientConfig()->getID() ."
-					AND PP.countryid = ". $this->getClientConfig()->getCountryConfig()->getID() ."
+					AND PP.currencyid = ". $this->getClientConfig()->getCountryConfig()->getCurrencyConfig()->getID()."
 					AND PP.amount IN (-1, ". intval($amount) .")
 					AND CA.cardid = ". Constants::iPREMIUM_SMS ."
 				LIMIT 1";

@@ -181,39 +181,65 @@ WITH (
 ALTER TABLE client.gomobileconfiguration_tbl
   OWNER TO mpoint;
 
-/*---------START : ADDED CHANGE FOR SUPPORTING CURRENCY SCHEMA-------------*/
--- Table: system.currency_tbl
 
--- DROP TABLE system.currency_tbl;
 
-CREATE TABLE system.currency_tbl
+
+/* ==================== SYSTEM PAYMENT MODE START ==================== */
+-- Table: system.paymentmode_tbl
+
+-- DROP TABLE system.paymentmode_tbl;
+
+CREATE TABLE system.paymentmode_tbl
 (
   id serial NOT NULL,
-  name character varying(100),
-  code character(3),
-  decimals integer,
+  name character(10),
   created timestamp without time zone DEFAULT now(),
   modified timestamp without time zone DEFAULT now(),
   enabled boolean DEFAULT true,
-  CONSTRAINT currency_pk PRIMARY KEY (id)
-)
-WITH (
-  OIDS=FALSE
+  CONSTRAINT paymentmode_pk PRIMARY KEY (id)
 );
-ALTER TABLE system.currency_tbl
+ALTER TABLE system.paymentmode_tbl
+  OWNER TO postgres;
+/* ==================== SYSTEM PAYMENT MODE END ==================== */
+
+/* ==================== CLIENT COUNTRY CONFIG START ==================== */
+-- Table: client.currencyconfig_tbl
+
+-- DROP TABLE client.currencyconfig_tbl
+
+CREATE TABLE client.currencyconfig_tbl
+(
+  id serial NOT NULL,
+  clientid integer NOT NULL,
+  countryid integer,
+  currency character(3),
+  decimals integer,
+  mode integer,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true,
+  CONSTRAINT currencyconfig_pk PRIMARY KEY (id),
+  CONSTRAINT currencyconfig2client_fk FOREIGN KEY (clientid)
+      REFERENCES client.client_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT currencyconfig2countryid_fk FOREIGN KEY (countryid)
+      REFERENCES system.country_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT currencyconfig2mode_fk FOREIGN KEY (mode)
+      REFERENCES system.paymentmode_tbl (id) MATCH SIMPLE
+);
+
+ALTER TABLE client.currencyconfig_tbl
   OWNER TO postgres;
 
+/* ==================== CLIENT COUNTRY CONFIG END ==================== */
 
-ALTER TABLE system.country_tbl ADD COLUMN alpha2code character(2) DEFAULT NULL;
-ALTER TABLE system.country_tbl ADD COLUMN alpha3code character(3) DEFAULT NULL;
-ALTER TABLE system.country_tbl ADD COLUMN code integer DEFAULT NULL;
-ALTER TABLE system.country_tbl ADD COLUMN currencyid integer DEFAULT 0;
-ALTER TABLE system.country_tbl ADD CONSTRAINT Country2Currency_FK FOREIGN KEY (currencyid) REFERENCES System.Currency_Tbl(id) ON UPDATE CASCADE ON DELETE RESTRICT;
-
-
-/*---------END : ADDED CHANGE FOR SUPPORTING CURRENCY SCHEMA-------------*/
-
-
+/* ==================== ALTER SYSTEM CARD START ==================== */
+ALTER TABLE system.Card_tbl ADD COLUMN mode integer;
+ALTER TABLE system.Card_tbl ADD CONSTRAINT Card2PaymentMode_FK FOREIGN KEY (mode)
+REFERENCES System.paymentmode_tbl (id)
+ON UPDATE CASCADE ON DELETE RESTRICT;
+/* ==================== ALTER SYSTEM CARD END ==================== */
 
  /*
  *

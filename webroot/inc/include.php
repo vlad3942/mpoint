@@ -86,6 +86,8 @@ require_once(sCLASS_PATH ."/constants.php");
 require_once(sCLASS_PATH ."/basicconfig.php");
 // Require data class for Country Configurations
 require_once(sCLASS_PATH ."/countryconfig.php");
+// Require data class for Currency Configurations
+require_once(sCLASS_PATH ."/currencyconfig.php");
 // Require data class for Client Configurations
 require_once(sCLASS_PATH ."/client_config.php");
 // Require data class for Account Configurations
