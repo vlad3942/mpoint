@@ -870,7 +870,6 @@
 				</xs:complexType>
 			</xs:element>
 			<!--  Get Transaction Status -->
-
 		</xs:choice>
 	</xs:complexType>
 </xs:element>
@@ -879,6 +878,7 @@
 	<xs:simpleContent>
 		<xs:extension base="xs:decimal">
 			<xs:attribute name="country-id" type="xs:positiveInteger" use="optional" />
+			<xs:attribute name="currency-id" type="xs:positiveInteger" use="optional" />
 		</xs:extension>
 	</xs:simpleContent>
 </xs:complexType>
