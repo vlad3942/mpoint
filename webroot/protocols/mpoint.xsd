@@ -806,6 +806,69 @@
 					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
 				</xs:complexType>
 			</xs:element>
+
+			<!-- Get Client Configuration -->
+
+			<xs:element name="get-client-configuration" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:annotation>
+							<xs:documentation>
+								Specifies the criteria for executing a
+								configuration search
+							</xs:documentation>
+						</xs:annotation>
+						<xs:element type="xs:integer" name="client-id"
+									minOccurs="1" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									The unique ID for the client whose
+									configuration should be fetched
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+
+			<!-- Get Client Configuration -->
+
+
+			<!-- Get Transaction Status -->
+			<xs:element name="get-transaction-status" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:annotation>
+						<xs:documentation>
+							Specifies the criteria for executing a
+							transaction search
+						</xs:documentation>
+					</xs:annotation>
+					<xs:all>
+						<xs:element name="transactions" minOccurs="1" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Contains the list of unique IDs for the transaction
+									that should be fetched
+								</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element type="xs:integer" name="transaction-id"
+												minOccurs="1" maxOccurs="unbounded">
+										<xs:annotation>
+											<xs:documentation>
+												The unique ID for the transaction  whose
+												configuration should be fetched
+											</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:all>
+				</xs:complexType>
+			</xs:element>
+			<!--  Get Transaction Status -->
 		</xs:choice>
 	</xs:complexType>
 </xs:element>
