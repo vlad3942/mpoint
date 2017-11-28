@@ -172,6 +172,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if ($iValResult != 10) { $aMsgCds[$iValResult + 50] = (string) $obj_DOM->pay[$i]->transaction->card->amount; }
 						
 						
+						// Validate currency if explicitly passed in request, which defer from default currency of the country
+						if(intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) > 0){
+							$obj_TransacionCountryConfig = CountryConfig::produceConfig($_OBJ_DB, intval($obj_DOM->pay[$i]->transaction->card->amount["country-id"])) ;
+							if($obj_Validator->valCurrency($_OBJ_DB, intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) ,$obj_TransacionCountryConfig, intval( $obj_DOM->pay[$i]["client-id"])) != 10 ){
+								$aMsgCds[56] = "Invalid Currency:".intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) ;
+							}
+						}
+							
+						
 						$obj_CardXML = simpledom_load_string($obj_mPoint->getCards( (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount) );
 						
 						//Check if card or payment method is enabled or disabled by merchant
