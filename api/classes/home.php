@@ -773,7 +773,7 @@ class Home extends General
     {
         $sql = "SELECT Txn.id, Txn.amount AS amount, C.id AS countryid, C.currency, C.symbol, C.priceformat, CL.id AS clientid,
 					   Txn.id AS mpointid, Txn.orderid, M1.stateid,Txn.logourl,Txn.cssurl,Txn.accepturl,Txn.cancelurl, CL.salt, 
-					   Txn.accountid AS end_user_id,Txn.lang,
+					   Txn.accountid AS end_user_id,Txn.lang,Txn.cardid,
 					   Txn.email, Txn.mobile,Txn.customer_ref,Txn.operatorid,Txn.markup,Txn.deviceid
 				FROM Log.Transaction_Tbl Txn
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON Txn.pspid = PSP.id
@@ -789,7 +789,7 @@ class Home extends General
 
         $obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $RS["CLIENTID"]);
         $amount = ((integer) $RS["AMOUNT"])/100;
-        $xml = '<transaction id="'. $RS["ID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" order-no="'. $RS["ORDERID"] .'" accoutid="'. $RS['END_USER_ID'] .'" clientid="'. $RS['CLIENTID'] .'" language="'.$RS['LANG'].'">';
+        $xml = '<transaction id="'. $RS["ID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" order-no="'. $RS["ORDERID"] .'" accoutid="'. $RS['END_USER_ID'] .'" clientid="'. $RS['CLIENTID'] .'" language="'.$RS['LANG'].'"  card-id="'. $RS["CARDID"] .'">';
         $xml .= '<amount country-id="'. $RS["COUNTRYID"] .'" currency="'. $RS['CURRENCY']  .'" symbol="'. utf8_encode($RS['SYMBOL'] ) .'" format="'. $RS['PRICEFORMAT'] .'">'. htmlspecialchars($RS["AMOUNT"], ENT_NOQUOTES) .'</amount>';
         $xml .= '<accept-url>'. htmlspecialchars($RS["ACCEPTURL"], ENT_NOQUOTES) .'</accept-url>';
         $xml .= '<cancel-url>'. htmlspecialchars($RS["CANCELURL"], ENT_NOQUOTES) .'</cancel-url>';
