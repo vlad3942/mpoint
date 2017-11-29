@@ -147,6 +147,7 @@ try
         {
             if ($aAdditionalProperty['key'] == 'mvault' && $aAdditionalProperty['value'] == 'true'){
                 $saveCard = false;
+                break;
             }
         }
 

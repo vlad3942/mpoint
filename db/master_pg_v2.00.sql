@@ -198,7 +198,7 @@ CREATE TABLE system.currency_tbl
   CONSTRAINT currency_pk PRIMARY KEY (id)
 )
 WITH (
-  OIDS=FALSE
+OIDS=FALSE
 );
 ALTER TABLE system.currency_tbl
   OWNER TO postgres;
@@ -213,7 +213,62 @@ ALTER TABLE system.country_tbl ADD CONSTRAINT Country2Currency_FK FOREIGN KEY (c
 
 /*---------END : ADDED CHANGE FOR SUPPORTING CURRENCY SCHEMA-------------*/
 
+/* ==================== SYSTEM PAYMENT MODE START ==================== */
+-- Table: system.paymentmode_tbl
 
+-- DROP TABLE system.paymentmode_tbl;
+
+CREATE TABLE system.paymentmode_tbl
+(
+  id serial NOT NULL,
+  name character(10),
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true,
+  CONSTRAINT paymentmode_pk PRIMARY KEY (id)
+);
+ALTER TABLE system.paymentmode_tbl
+  OWNER TO postgres;
+/* ==================== SYSTEM PAYMENT MODE END ==================== */
+
+/* ==================== CLIENT COUNTRY CONFIG START ==================== */
+-- Table: client.currencyconfig_tbl
+
+-- DROP TABLE client.currencyconfig_tbl
+
+CREATE TABLE client.currencyconfig_tbl
+(
+  id serial NOT NULL,
+  clientid integer NOT NULL,
+  countryid integer,
+  currency character(3),
+  decimals integer,
+  mode integer,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true,
+  CONSTRAINT currencyconfig_pk PRIMARY KEY (id),
+  CONSTRAINT currencyconfig2client_fk FOREIGN KEY (clientid)
+      REFERENCES client.client_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT currencyconfig2countryid_fk FOREIGN KEY (countryid)
+      REFERENCES system.country_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT currencyconfig2mode_fk FOREIGN KEY (mode)
+      REFERENCES system.paymentmode_tbl (id) MATCH SIMPLE
+);
+
+ALTER TABLE client.currencyconfig_tbl
+  OWNER TO postgres;
+
+/* ==================== CLIENT COUNTRY CONFIG END ==================== */
+
+/* ==================== ALTER SYSTEM CARD START ==================== */
+ALTER TABLE system.Card_tbl ADD COLUMN mode integer;
+ALTER TABLE system.Card_tbl ADD CONSTRAINT Card2PaymentMode_FK FOREIGN KEY (mode)
+REFERENCES System.paymentmode_tbl (id)
+ON UPDATE CASCADE ON DELETE RESTRICT;
+/* ==================== ALTER SYSTEM CARD END ==================== */
 
  /*
  *
