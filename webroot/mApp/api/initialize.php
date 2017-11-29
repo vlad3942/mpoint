@@ -140,8 +140,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if (count($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip) == 1) { $data['ip'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip; }
 							elseif (array_key_exists("HTTP_X_FORWARDED_FOR", $_SERVER) === true) { $data['ip'] = $_SERVER['HTTP_X_FORWARDED_FOR']; }
 							else { $data['ip'] = $_SERVER['REMOTE_ADDR']; }
-							$data['logo-url'] = "";
-							$data['css-url'] = "";
+							$data['logo-url'] = $obj_ClientConfig->getLogoURL();
+							$data['css-url'] = $obj_ClientConfig->getCSSURL();
 							/*
 							 *  Added capability to accept the transaction specific accept URL.
 							 *  Used by Master Pass wallet for sending a callback along with the checkout URL for getting user's card details
