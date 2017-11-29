@@ -752,6 +752,11 @@ class mConsole extends Admin
 						WHERE msg.stateid = a.stateid AND msg.txnid = a.txnid
 				)";
 		
+		if (count($aStateIDs) > 0)
+		{
+			$sql .= " AND a.stateid IN (". implode(",", $aStateIDs) .")";
+		}
+		
 		$sql .= "\n ORDER BY createdfinal DESC";
 		
 		if (intval($limit) > 0 || intval($offset) > 0)
