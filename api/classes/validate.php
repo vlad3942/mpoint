@@ -1538,6 +1538,34 @@ class Validate extends ValidateBase
 
 		return $code;
 	}
+	/**
+	 * Performs validation on the currency used for the transacion. Should either be the default currency
+	 * of the country in system.country_tbl, or should have a mapping present with the country for the client
+	 * in client.countrycurrency_tbl
+	 * Will return code as -
+	 * 
+	 * 10.success
+	 * 1. No mapping found (default or Client specific)
+	 * 
+	 * @param RDB $oDB
+	 * @param unknown $currencyid
+	 * @param unknown $obj_TransacionCountryConfig
+	 * @param unknown $clid
+	 * @return number
+	 */
+	public function valCurrency(RDB &$oDB, $currencyid, $obj_TransacionCountryConfig, $clid)
+	{
+			$sql = "SELECT COUNT(*) FROM Client".sSCHEMA_POSTFIX.".countrycurrency_tbl cct RIGHT JOIN 
+					System.country_tbl ct ON cct.countryid = ct.id  WHERE (cct.countryid = ".$obj_TransacionCountryConfig->getID().
+                    " AND cct.currencyid = ".$currencyid." AND cct.clientid= " . $clid . " AND cct.enabled = '1') 
+                     OR (ct.id = ".$obj_TransacionCountryConfig->getID()." AND ct.currencyid=". $currencyid . ")";
 
+				//echo $sql;exit;
+				$RS = $oDB->getName($sql);
+	
+				if ($RS["COUNT"] > 0) { $code = 10; }// Success
+				else { $code = 1 ; } 
+				return $code;
+	}
 }
 ?>
