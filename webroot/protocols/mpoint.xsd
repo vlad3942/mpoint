@@ -326,9 +326,11 @@
 			<xs:element name="save-account" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
-						<xs:element name="confirm-password" type="xs:string" minOccurs="1" maxOccurs="1" />
-						<xs:element name="social-security-number" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+					<xs:choice minOccurs="0" maxOccurs="1">
+						<xs:group ref="account-password" />
+						<xs:group ref="single-sign-on" />
+					</xs:choice>
+					<xs:element name="social-security-number" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
 						<xs:choice minOccurs="0" maxOccurs="1">
 							<xs:group ref="names" />
 							<xs:element name="full-name" type="xs:string" />
@@ -352,7 +354,6 @@
 								<xs:attribute name="charge-type-id" type="charge-type" use="optional" />
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="auth-token" type="xs:string" minOccurs="0" maxOccurs="1" />
 						<xs:element name="client-info" type="client-info" minOccurs="0" maxOccurs="1" />
 					</xs:sequence>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
@@ -806,6 +807,69 @@
 					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
 				</xs:complexType>
 			</xs:element>
+
+			<!-- Get Client Configuration -->
+
+			<xs:element name="get-client-configuration" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:annotation>
+							<xs:documentation>
+								Specifies the criteria for executing a
+								configuration search
+							</xs:documentation>
+						</xs:annotation>
+						<xs:element type="xs:integer" name="client-id"
+									minOccurs="1" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									The unique ID for the client whose
+									configuration should be fetched
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+
+			<!-- Get Client Configuration -->
+
+
+			<!-- Get Transaction Status -->
+			<xs:element name="get-transaction-status" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:annotation>
+						<xs:documentation>
+							Specifies the criteria for executing a
+							transaction search
+						</xs:documentation>
+					</xs:annotation>
+					<xs:all>
+						<xs:element name="transactions" minOccurs="1" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Contains the list of unique IDs for the transaction
+									that should be fetched
+								</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element type="xs:integer" name="transaction-id"
+												minOccurs="1" maxOccurs="unbounded">
+										<xs:annotation>
+											<xs:documentation>
+												The unique ID for the transaction  whose
+												configuration should be fetched
+											</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:all>
+				</xs:complexType>
+			</xs:element>
+			<!--  Get Transaction Status -->
 		</xs:choice>
 	</xs:complexType>
 </xs:element>
@@ -814,6 +878,7 @@
 	<xs:simpleContent>
 		<xs:extension base="xs:decimal">
 			<xs:attribute name="country-id" type="xs:positiveInteger" use="optional" />
+			<xs:attribute name="currency-id" type="xs:positiveInteger" use="optional" />
 		</xs:extension>
 	</xs:simpleContent>
 </xs:complexType>
@@ -822,6 +887,13 @@
 	<xs:sequence>
 		<xs:element name="first-name" type="xs:string" minOccurs="0" maxOccurs="1" />
 		<xs:element name="last-name" type="xs:string" minOccurs="0" maxOccurs="1" />
+	</xs:sequence>
+</xs:group>
+
+<xs:group name="account-password">
+	<xs:sequence>
+		<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
+		<xs:element name="confirm-password" type="xs:string" minOccurs="1" maxOccurs="1" />
 	</xs:sequence>
 </xs:group>
 

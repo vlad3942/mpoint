@@ -542,7 +542,7 @@ abstract class Callback extends EndUserAccount
 	{
 		$sql = "SELECT name
 				FROM System".sSCHEMA_POSTFIX.".PSPCurrency_Tbl
-				WHERE countryid = ". intval($cid) ." AND pspid = ". intval($pspid) ." AND enabled = '1'";
+				WHERE currencyid = ". intval($cid) ." AND pspid = ". intval($pspid) ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn($sql)->getName($sql);
 
