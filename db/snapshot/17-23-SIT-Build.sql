@@ -90,8 +90,7 @@ ALTER TABLE system.pspcurrency_tbl ADD COLUMN currencyid integer;
 ALTER TABLE system.pspcurrency_tbl  ADD CONSTRAINT Psp2Currency_FK FOREIGN KEY (currencyid)
 REFERENCES System.currency_tbl (id);
 
-/* Run Alter Scripts to update currency Id before deleting country id column */
-ALTER TABLE system.pspcurrency_tbl DROP COLUMN countryid ;
+
 
 
 /* ================ Update pricepoint table  ===================*/
@@ -101,6 +100,11 @@ ALTER TABLE system.pricepoint_tbl  ADD CONSTRAINT Price2Currency_FK FOREIGN KEY 
 REFERENCES System.currency_tbl (id);
 ALTER TABLE system.pricepoint_tbl DROP COLUMN countryid;
 
+
+
+/** Remove Foreign Key Constraint of currency-id from Country_tbl and run below query, once run put the constraint back **/
+
+DELETE FROM system.Currency_Tbl;
 
 
 /*---------START : ADDED CHANGE FOR SUPPORTING CURRENCY SCHEMA-------------*/
@@ -3503,5 +3507,6 @@ INSERT INTO system.cardpricing_tbl (cardid,pricepointid,enabled) values (10,-967
 
 UPDATE system.pspcurrency_tbl pc SET currencyid = (SELECT currencyid FROM system.country_tbl WHERE id = pc.countryid) ;
 
-
+/* Run Alter Scripts to update currency Id before deleting country id column */
+ALTER TABLE system.pspcurrency_tbl DROP COLUMN countryid ;
 /*========================END - Currency Configuration changes =======================*/
