@@ -72,7 +72,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mconsole.xsd") === true && count($obj_DOM->{'get-failed-transactions'}->clients->{'client-id'}) > 0)
 	{
 		$clients = array();
-		$aStateIDs = array(Constants::iINPUT_VALID_STATE,Constants::iPAYMENT_INIT_WITH_PSP_STATE);
+		$aStateIDs = array(Constants::iINPUT_VALID_STATE,Constants::iPAYMENT_INIT_WITH_PSP_STATE,
+                            Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_REJECTED_3D_SECURE_FAILURE_STATE,
+                            Constants::iPAYMENT_REJECTED_INCORRECT_INFO_STATE, Constants::iPAYMENT_REJECTED_PSP_UNAVAILABLE_STATE);
 		
 		for($i = 0;$i<count($obj_DOM->{'get-failed-transactions'}->clients->{'client-id'});$i++)
 		{
