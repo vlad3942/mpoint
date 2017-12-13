@@ -93,7 +93,7 @@ class mProfile extends General
             $oCI = $this->_constConnInfo(self::sGET_PROFILE_SERVICE_URL);
             $h = trim($this->constHTTPHeaders() ) .HTTPClient::CRLF;
             $h .= "x-cpm-Token: ". self::sX_CPM_TOKEN .HTTPClient::CRLF;
-            $h .= "X-CPM-client-id: 10018". HTTPClient::CRLF;
+            $h .= "X-CPM-client-id: ". $this->_obj_ClientConfig->getID(). HTTPClient::CRLF;
             $h .= "x-cpm-mobile: ". $this->_obj_CustomerInfo->getMobile() .HTTPClient::CRLF;
             $h .= "x-cpm-country-id: ". $this->_obj_CustomerInfo->getCountryID() .HTTPClient::CRLF;
             $h .= "x-cpm-device-id: ". $this->_sDeviceID .HTTPClient::CRLF;
