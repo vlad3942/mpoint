@@ -870,6 +870,40 @@
 				</xs:complexType>
 			</xs:element>
 			<!--  Get Transaction Status -->
+
+			<!-- Get Enduser stored card -->
+			<xs:element name="get-stored-card" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:annotation>
+						<xs:documentation>
+							Get stored cards based on card ids
+						</xs:documentation>
+					</xs:annotation>
+					<xs:all>
+						<xs:element name="cards" minOccurs="1" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Contains the list of unique Card IDs linked to an enduser account
+								</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element type="xs:integer" name="card"
+												minOccurs="1" maxOccurs="unbounded">
+										<xs:annotation>
+											<xs:documentation>
+												The unique ID for the card whose
+												details should be fetched
+											</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:all>
+				</xs:complexType>
+			</xs:element>
+			<!-- Get Enduser stored card -->
 		</xs:choice>
 	</xs:complexType>
 </xs:element>

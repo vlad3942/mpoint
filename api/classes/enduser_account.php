@@ -1081,5 +1081,46 @@ class EndUserAccount extends Home
         
         return $RS;
     }
+
+    /**
+     * Retrieves the card details and billing address of the card from EndUser.Card_tbl
+     * and EndUser.Address_tbl
+     *
+     * @param integer 	$cardid 		ID from Enduser.Card_Tbl
+     * @return string
+     */
+    public function getCardDetailsFromCardId($cardid)
+    {
+        $sql = "SELECT CARD.id, CARD.cardid, CARD.pspid, CARD.mask, CARD.expiry, 
+                CARD.ticket, CARD.preferred, CARD.name, CARD.card_holder_name, CARD.chargetypeid,
+				ADDR.countryid, ADDR.firstname, ADDR.lastname, ADDR.company, 
+				ADDR.street, ADDR.postalcode, ADDR.city, ADDR.state
+				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl CARD
+				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Address_Tbl ADDR ON CARD.id = ADDR.cardid
+				WHERE CARD.cardid = ". intval($cardid) ." AND CARD.enabled = '1'";
+
+        //echo $sql ."\n";
+        $RS = $this->getDBConn()->getName($sql);
+
+        $xml = '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" psp-id="'. $RS["PSPID"] .'" preferred="'. $RS['PREFERRED'] .'" charge-type-id="'. $RS['CHARGETYPEID'] .'">';
+        $xml .= '<name>'. $RS["NAME"] .'</name>';
+        $xml .= '<card-holder-name>'. $RS["CARD_HOLDER_NAME"] .'</card-holder-name>';
+        $xml .= '<card-number-mask>'. $RS["MASK"] .'</card-number-mask>';
+        $xml .= '<expiry>'. $RS["EXPIRY"] .'</expiry>';
+        $xml .= '<token>'. $RS['TICKET'] .'</token>';
+        if (intval($RS["COUNTRYID"]) > 0)
+        {
+            $xml .= '<address country-id="'. $RS["COUNTRYID"].'">';
+            $xml .= '<first-name>'. $RS["FIRSTNAME"] .'</first-name>';
+            $xml .= '<last-name>'. $RS["LASTNAME"] .'</last-name>';
+            $xml .= '<street>'. $RS["STREET"] .'</street>';
+            $xml .= '<postal-code>'. $RS["POSTALCODE"] .'</postal-code>';
+            $xml .= '<city>'. $RS["CITY"] .'</city>';
+            $xml .= '<state>'. $RS["STATE"] .'</state>';
+            $xml .= '</address>';
+        }
+        $xml .= '</card>';
+        return $xml;
+    }
 }
 ?>
