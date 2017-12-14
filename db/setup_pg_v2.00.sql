@@ -1284,6 +1284,7 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_COUNTRY', 'DNK', 10007, 'client');
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('POS_DATA_CODE', 'K00500K00130', 206, 'merchant');
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('CARD_ACCEPTOR_TERMINAL_ID', '208752', 206, 'merchant');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('DANKORT_AGREEMENT', 'true', 206, 'client');
 /*====================== Test Data END =========================*/
 
 

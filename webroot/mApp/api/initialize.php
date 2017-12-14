@@ -102,6 +102,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if ($obj_Validator->valHMAC(trim($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_DOM->{'initialize-payment'}[$i]->transaction['order-no']), intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount), intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"]) ) != 10) { $aMsgCds[210] = trim($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac); }
 					}
 					
+					// Validate currency if explicitly passed in request, which defer from default currency of the country
+					if(intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"]) > 0){
+					$obj_TransacionCountryConfig = CountryConfig::produceConfig($_OBJ_DB, intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"])) ;
+					if($obj_Validator->valCurrency($_OBJ_DB, intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"]) ,$obj_TransacionCountryConfig, intval( $obj_DOM->{'initialize-payment'}[$i]["client-id"])) != 10 ){
+						$aMsgCds[56] = "Invalid Currency:".intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"]) ;
+					  }
+					}
+					
+					
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
 					{
@@ -140,8 +149,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if (count($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip) == 1) { $data['ip'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip; }
 							elseif (array_key_exists("HTTP_X_FORWARDED_FOR", $_SERVER) === true) { $data['ip'] = $_SERVER['HTTP_X_FORWARDED_FOR']; }
 							else { $data['ip'] = $_SERVER['REMOTE_ADDR']; }
-							$data['logo-url'] = "";
-							$data['css-url'] = "";
+							$data['logo-url'] = $obj_ClientConfig->getLogoURL();
+							$data['css-url'] = $obj_ClientConfig->getCSSURL();
 							/*
 							 *  Added capability to accept the transaction specific accept URL.
 							 *  Used by Master Pass wallet for sending a callback along with the checkout URL for getting user's card details
