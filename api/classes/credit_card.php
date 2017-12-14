@@ -76,7 +76,7 @@ class CreditCard extends EndUserAccount
 	 * @param 	integer $id 	Unique Card ID that should be fetched
 	 * @return 	Image
 	 */
-	public function getCards($amount)
+	public function getCards($amount, $aDiabledPMs = array())
 	{
 		/* ========== Calculate Logo Dimensions Start ========== */
 		if ( ($this->_obj_UA instanceof UAProfile) === true)
@@ -99,7 +99,7 @@ class CreditCard extends EndUserAccount
 
 		$sql = "SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength,
 					PSP.id AS pspid, MA.name AS account, MSA.name AS subaccount, PC.name AS currency,
-					CA.stateid, CA.position AS client_position, C.paymenttype
+					CA.stateid, CA.position AS client_position, C.paymenttype, CA.preferred
 				FROM System".sSCHEMA_POSTFIX.".Card_Tbl C
 				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON C.id = CA.cardid
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl MA ON CA.clientid = MA.clientid
@@ -148,8 +148,10 @@ class CreditCard extends EndUserAccount
 //					echo $sql ."\n";
 					$aRS = $this->getDBConn()->getAllNames($sql);
 				}
+                $enabled = true;
+				if(in_array($RS['ID'], $aDiabledPMs) === true ) { $enabled = false; }
 				// Construct XML Document with card data
-				$xml .= '<item id="'. $RS["ID"] .'" type-id="'. $RS["ID"] .'" pspid="'. $RS["PSPID"] .'" min-length="'. $RS["MINLENGTH"] .'" max-length="'. $RS["MAXLENGTH"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" state-id="'. $RS["STATEID"] .'" payment-type="'.$RS['PAYMENTTYPE'].'">';
+				$xml .= '<item id="'. $RS["ID"] .'" type-id="'. $RS["ID"] .'" pspid="'. $RS["PSPID"] .'" min-length="'. $RS["MINLENGTH"] .'" max-length="'. $RS["MAXLENGTH"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" state-id="'. $RS["STATEID"] .'" payment-type="'.$RS['PAYMENTTYPE'].'"' .' preferred="'.General::bool2xml($RS['PREFERRED']).'"'. ' enabled = "'.General::bool2xml($enabled).'">';
 				$xml .= '<name>'. htmlspecialchars($sName, ENT_NOQUOTES) .'</name>';
 				$xml .= '<logo-width>'. $iWidth .'</logo-width>';
 				$xml .= '<logo-height>'. $iHeight .'</logo-height>';
