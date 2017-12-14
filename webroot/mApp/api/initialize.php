@@ -102,6 +102,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if ($obj_Validator->valHMAC(trim($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_DOM->{'initialize-payment'}[$i]->transaction['order-no']), intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount), intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"]) ) != 10) { $aMsgCds[210] = trim($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac); }
 					}
 					
+					// Validate currency if explicitly passed in request, which defer from default currency of the country
+					if(intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"]) > 0){
+					$obj_TransacionCountryConfig = CountryConfig::produceConfig($_OBJ_DB, intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"])) ;
+					if($obj_Validator->valCurrency($_OBJ_DB, intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"]) ,$obj_TransacionCountryConfig, intval( $obj_DOM->{'initialize-payment'}[$i]["client-id"])) != 10 ){
+						$aMsgCds[56] = "Invalid Currency:".intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"]) ;
+					  }
+					}
+					
+					
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
 					{
@@ -140,8 +149,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if (count($obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip) == 1) { $data['ip'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->ip; }
 							elseif (array_key_exists("HTTP_X_FORWARDED_FOR", $_SERVER) === true) { $data['ip'] = $_SERVER['HTTP_X_FORWARDED_FOR']; }
 							else { $data['ip'] = $_SERVER['REMOTE_ADDR']; }
-							$data['logo-url'] = "";
-							$data['css-url'] = "";
+							$data['logo-url'] = $obj_ClientConfig->getLogoURL();
+							$data['css-url'] = $obj_ClientConfig->getCSSURL();
 							/*
 							 *  Added capability to accept the transaction specific accept URL.
 							 *  Used by Master Pass wallet for sending a callback along with the checkout URL for getting user's card details
@@ -171,6 +180,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$data['icon-url'] = "";
 							$data['language'] = (string) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}["language"];
 							$data['markup'] = $obj_ClientConfig->getAccountConfig()->getMarkupLanguage();
+							
+							$obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"]);
+							$data['currency-config']= $obj_CurrencyConfig ;
 	
 							$obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $data);
 							// Associate End-User Account (if exists) with Transaction
@@ -303,6 +315,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$xml .= '<app-url>'. htmlspecialchars($obj_ClientConfig->getAppURL(), ENT_NOQUOTES) .'</app-url>';
 							$xml .= '<css-url>'. htmlspecialchars($obj_ClientConfig->getCSSURL(), ENT_NOQUOTES) .'</css-url>';
                             $xml .= '<logo-url>'. htmlspecialchars($obj_ClientConfig->getLogoURL(), ENT_NOQUOTES) .'</logo-url>';
+                            $xml .= '<base-image-url>'. htmlspecialchars($obj_ClientConfig->getBaseImageURL(), ENT_NOQUOTES) .'</base-image-url>';
                             $xml .= '<additional-config>';
                             foreach ($obj_ClientConfig->getAdditionalProperties() as $aAdditionalProperty)
                             {
@@ -340,7 +353,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									|| ($obj_TxnInfo->getAccountID() > 0 && (count($aObj_XML) > 0 || $obj_ClientConfig->getStoreCard() == 2) ) )
 								{
 									if (in_array((integer) $obj_XML->item[$j]["pspid"], $aPSPs) === false) { $aPSPs[] = intval($obj_XML->item[$j]["pspid"] ); } 
-									$cardsXML .= '<card id="'. $obj_XML->item[$j]["id"] .'" type-id="'. $obj_XML->item[$j]["type-id"] .'" psp-id="'. $obj_XML->item[$j]["pspid"] .'" min-length="'. $obj_XML->item[$j]["min-length"] .'" max-length="'. $obj_XML->item[$j]["max-length"] .'" cvc-length="'. $obj_XML->item[$j]["cvc-length"] .'" state-id="'. $obj_XML->item[$j]["state-id"] .'">';
+									$cardsXML .= '<card id="'. $obj_XML->item[$j]["id"] .'" type-id="'. $obj_XML->item[$j]["type-id"] .'" psp-id="'. $obj_XML->item[$j]["pspid"] .'" min-length="'. $obj_XML->item[$j]["min-length"] .'" max-length="'. $obj_XML->item[$j]["max-length"] .'" cvc-length="'. $obj_XML->item[$j]["cvc-length"] .'" state-id="'. $obj_XML->item[$j]["state-id"] .'" payment-type="'. $obj_XML->item[$j]["payment-type"].'">';
 									$cardsXML .= '<name>'. htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) .'</name>';
 									$cardsXML .= $obj_XML->item[$j]->prefixes->asXML();
 									$cardsXML .= htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES);	// Backward compatibility
@@ -370,7 +383,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$xml .= '<stored-cards>';
 								for ($j=0; $j<count($aObj_XML); $j++)
 								{
-									$xml .= '<card id="'. $aObj_XML[$j]["id"] .'" type-id="'. $aObj_XML[$j]->type["id"] .'" psp-id="'. $aObj_XML[$j]["pspid"] .'" preferred="'. $aObj_XML[$j]["preferred"] .'" state-id="'. $aObj_XML[$j]["state-id"] .'" charge-type-id="'. $aObj_XML[$j]["charge-type-id"] .'">';
+									$xml .= '<card id="'. $aObj_XML[$j]["id"] .'" type-id="'. $aObj_XML[$j]->type["id"] .'" psp-id="'. $aObj_XML[$j]["pspid"] .'" preferred="'. $aObj_XML[$j]["preferred"] .'" state-id="'. $aObj_XML[$j]["state-id"] .'" charge-type-id="'. $aObj_XML[$j]["charge-type-id"] .'" cvc-length="'. $aObj_XML[$j]["cvc-length"] .'">';
 									if (strlen($aObj_XML[$j]->name) > 0) { $xml .= $aObj_XML[$j]->name->asXML(); }
 									$xml .= '<card-number-mask>'. $aObj_XML[$j]->mask .'</card-number-mask>';
 									$xml .= $aObj_XML[$j]->expiry->asXML();

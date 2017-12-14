@@ -226,6 +226,24 @@ abstract class Constants
 	 *
 	 */
 	const iPAYMENT_REJECTED_STATE = 2010;
+    /**
+     * Defines the ID of the State that indicates that the payment was rejected by the Payment Service Provider (PSP)
+     * when doing an Authorisation due to incorrect payment information
+     *
+     */
+    const iPAYMENT_REJECTED_INCORRECT_INFO_STATE = 20101;
+    /**
+     * Defines the ID of the State that indicates that the payment was rejected by the Payment Service Provider (PSP)
+     * when doing an Authorisation
+     *
+     */
+    const iPAYMENT_REJECTED_PSP_UNAVAILABLE_STATE = 20102;
+    /**
+     * Defines the ID of the State that indicates that the payment was rejected by the Payment Service Provider (PSP)
+     * when doing an Authorisation
+     *
+     */
+    const iPAYMENT_REJECTED_3D_SECURE_FAILURE_STATE = 20103;
 	/**
 	 * Defines the ID of the State that indicates that the payment was declined by the Payment Service Provider (PSP)
 	 * when doing a Capture
@@ -586,6 +604,12 @@ abstract class Constants
 	 *
 	 */
 	const iKLARNA_PSP = 37;
+
+	/**
+	 * Unique ID for the Payment Service Provider: Trustly
+	 *
+	 */
+	const iTRUSTLY_PSP = 39;
 	
 	
     /**
@@ -800,6 +824,11 @@ abstract class Constants
 	 *
 	 */
 	const iKLARNA_PAY = 36;
+	/**
+	 * Unique Card ID for transaction's made using Trustly
+	 *
+	 */
+	const iTRUSTLY_PAY = 38;
 	
     /**
      * Unique Card ID for transaction's made using mVault

@@ -98,6 +98,8 @@ require_once(sCLASS_PATH ."/mobilepayonline.php");
 require_once(sCLASS_PATH ."/nets.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/mvault.php");
+// Require specific Business logic for the Trustly component
+require_once(sCLASS_PATH ."/trustly.php");
 // Require specific Business logic for the PayTabs component
 require_once(sCLASS_PATH ."/paytabs.php");
 // Require specific Business logic for the 2C2P ALC component
@@ -169,6 +171,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$iValResult = $obj_Validator->valPrice($obj_TxnInfo->getAmount(), (integer)$obj_DOM->pay[$i]->transaction->card->amount);
 						if ($iValResult != 10) { $aMsgCds[$iValResult + 50] = (string) $obj_DOM->pay[$i]->transaction->card->amount; }
 						
+						
+						// Validate currency if explicitly passed in request, which defer from default currency of the country
+						if(intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) > 0){
+							$obj_TransacionCountryConfig = CountryConfig::produceConfig($_OBJ_DB, intval($obj_DOM->pay[$i]->transaction->card->amount["country-id"])) ;
+							if($obj_Validator->valCurrency($_OBJ_DB, intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) ,$obj_TransacionCountryConfig, intval( $obj_DOM->pay[$i]["client-id"])) != 10 ){
+								$aMsgCds[56] = "Invalid Currency:".intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) ;
+							}
+						}
+							
 						
 						$obj_CardXML = simpledom_load_string($obj_mPoint->getCards( (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount) );
 						
@@ -603,6 +614,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                 $xml .= trim($obj_Elem->asXML() );
                                             }
                                             break;
+                                        case (Constants::iTRUSTLY_PSP):
+                                           	$obj_PSP = new Trustly($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["trustly"]);
+                                           	$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
+                                            
+                                           	foreach ($obj_XML->children() as $obj_Elem)
+                                           	{
+                                           		$xml .= trim($obj_Elem->asXML() );
+                                           	}
+                                           	break;
                                         }
 										$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. htmlspecialchars($obj_PSPConfig->getMessage($obj_TxnInfo->getLanguage() ), ENT_NOQUOTES) .'</message>';
 										$xml .= '</psp-info>';
