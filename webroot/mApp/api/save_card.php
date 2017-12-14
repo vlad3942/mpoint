@@ -192,7 +192,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								//$sid = $obj_mPoint->getStateID( (integer) $obj_DOM->{'save-card'}[$i]->card[$j]->address["country-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->state);
 								//if ($sid == 0) { $sid = $obj_mPoint->saveState( (integer) $obj_DOM->{'save-card'}[$i]->card[$j]->address["country-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->state); }
 								$code = $obj_mPoint->saveAddress($id, (integer) $obj_DOM->{'save-card'}[$i]->card[$j]->address["country-id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->state, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{'first-name'}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"last-name"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->company, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->street, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{"postal-code"}, (string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->city,(string) $obj_DOM->{'save-card'}[$i]->card[$j]->address->{'full-name'});
-								if ($code == 10)
+								//if saveAddress is successful or not commit changes
+                                if ($code > 0)
 								{
 									// Commit Saved Card
 									if ($obj_ClientConfig->getNotificationURL() == "" || count($obj_DOM->{'save-card'}[$i]->{'auth-token'}) == 0)
