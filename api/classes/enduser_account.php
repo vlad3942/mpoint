@@ -416,8 +416,14 @@ class EndUserAccount extends Home
 			}
 			else { return $this->_saveCardName($aArgs[0], $aArgs[1], $aArgs[2]); }
 			break;
-		case (4):	// Save Card Name and status (preferred)
-			return $this->_saveCardName($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3]);
+		case (4):
+            if ($aArgs[3] === false || $aArgs[3] === true) {// Save Card Name and status (preferred)
+                return $this->_saveCardName($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3]);
+            }
+            else
+            {
+                return $this->_renameCard($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3]);
+            }
 			break;
 		default: 	// Error: Invalid number of arguments
 			trigger_error("Invalid number of arguments: ". count($aArgs), E_USER_WARNING);
@@ -581,10 +587,11 @@ class EndUserAccount extends Home
 	 * @param 	integer $cardid ID of the Card
 	 * @param 	string $name	Card name entered by the end-user
 	 * @param 	boolean $pref	Boolean flag indicating whether a new card should be set as preferred (defaults to false)
-	 *
+	 * @param   string $cardholdername Card holder name
+     *
 	 * @return	integer
 	 */
-	private function _renameCard($cardid, $name, $pref=false)
+	private function _renameCard($cardid, $name, $pref=false, $cardholdername)
 	{
 		// Reset preferred flag on all cards
 		if ($pref === true)
@@ -600,8 +607,12 @@ class EndUserAccount extends Home
 
 		// Set name for card
 		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
-				SET name = '". $this->getDBConn()->escStr($name) ."', preferred = '" . intval($pref) . "'
-				WHERE id = ". intval($cardid) ." AND enabled = '1'";
+				SET name = '". $this->getDBConn()->escStr($name) ."', preferred = '" . intval($pref) . "'";
+        if(empty($cardholdername) === false) {
+            $sql .= " ,card_holder_name = '". $this->getDBConn()->escStr($cardholdername) ."'";
+        }
+        $sql .= " WHERE id = ". intval($cardid) ." AND enabled = '1'";
+
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 

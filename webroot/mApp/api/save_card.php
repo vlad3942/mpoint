@@ -130,7 +130,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							// Modifying an existing Stored Card
 							if (intval($obj_DOM->{'save-card'}[$i]->card[$j]["id"]) > 0)
 							{
-								$code = $obj_mPoint->saveCardName($obj_DOM->{'save-card'}[$i]->card[$j]["id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) );
+								if(intval($obj_DOM->{'save-card'}[$i]->card[$j]["card-holder-name"]) > 0)
+                                {
+                                    $code = $obj_mPoint->saveCardName($obj_DOM->{'save-card'}[$i]->card[$j]["id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]),(string) $obj_DOM->{'save-card'}[$i]->card[$j]->card-holder-name );
+                                }
+                                else
+                                {
+                                    $code = $obj_mPoint->saveCardName($obj_DOM->{'save-card'}[$i]->card[$j]["id"], (string) $obj_DOM->{'save-card'}[$i]->card[$j]->name, General::xml2bool($obj_DOM->{'save-card'}[$i]->card[$j]["preferred"]) );
+                                }
 							}
 							else
 							{
