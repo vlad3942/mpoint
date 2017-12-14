@@ -62,7 +62,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                 $aCardIDs = $obj_DOM->{'get-enduser-card'}->cards->{'card'};
 
-                for ($i=0; $i<count($aTransactionIDs); $i++)
+                for ($i=0; $i<count($aCardIDs); $i++)
                 {
                     $xml .= $obj_mPoint->getCardDetailsFromCardId($aCardIDs[$i]);
                 }
