@@ -310,7 +310,7 @@
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" />
 								<xs:attribute name="psp-id" type="xs:positiveInteger" use="optional" />
 								<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
-								<xs:attribute name="preferred" type="xs:boolean" use="optional" />
+								<xs:attribute name="preferred" type="xs:boolean" use="optional" default="false"/>
 								<xs:attribute name="charge-type-id" type="charge-type" use="optional" />
 							</xs:complexType>
 						</xs:element>
