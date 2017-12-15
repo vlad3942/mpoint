@@ -901,6 +901,8 @@
 							</xs:complexType>
 						</xs:element>
 					</xs:all>
+					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
+					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
 				</xs:complexType>
 			</xs:element>
 			<!-- Get Enduser stored card -->

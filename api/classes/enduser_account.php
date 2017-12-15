@@ -1108,7 +1108,7 @@ class EndUserAccount extends Home
 				ADDR.street, ADDR.postalcode, ADDR.city, ADDR.state
 				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl CARD
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Address_Tbl ADDR ON CARD.id = ADDR.cardid
-				WHERE CARD.cardid = ". intval($cardid) ." AND CARD.enabled = '1'";
+				WHERE CARD.id = ". intval($cardid) ." AND CARD.enabled = '1'";
 
         //echo $sql ."\n";
         $RS = $this->getDBConn()->getName($sql);
