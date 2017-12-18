@@ -965,7 +965,7 @@ class TxnInfo
 				{
 						
 					$order_iD = $RS["ID"];
-						
+                    $this->setAdditionalDetails($obj_DB,$aOrderDataObj['additionaldata'],$order_iD);
 				}
 			}
 				
