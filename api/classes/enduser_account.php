@@ -1102,7 +1102,7 @@ class EndUserAccount extends Home
      */
     public function getCardDetailsFromCardId($cardid)
     {
-        $sql = "SELECT CARD.id, CARD.cardid, CARD.pspid, CARD.mask, CARD.expiry, 
+        $sql = "SELECT CARD.id, CARD.accountid, CARD.cardid, CARD.pspid, CARD.mask, CARD.expiry, 
                 CARD.ticket, CARD.preferred, CARD.name, CARD.card_holder_name, CARD.chargetypeid,
 				ADDR.countryid, ADDR.firstname, ADDR.lastname, ADDR.company, 
 				ADDR.street, ADDR.postalcode, ADDR.city, ADDR.state
@@ -1113,7 +1113,7 @@ class EndUserAccount extends Home
         //echo $sql ."\n";
         $RS = $this->getDBConn()->getName($sql);
 
-        $xml = '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" psp-id="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" charge-type-id="'. $RS['CHARGETYPEID'] .'">';
+        $xml = '<card id="'. $RS["ID"] .'" eua-id="'. $RS["ACCOUNTID"] .'" type-id="'. $RS["CARDID"] .'" psp-id="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" charge-type-id="'. $RS['CHARGETYPEID'] .'">';
         $xml .= '<name>'. $RS["NAME"] .'</name>';
         $xml .= '<card-holder-name>'. $RS["CARD_HOLDER_NAME"] .'</card-holder-name>';
         $xml .= '<card-number-mask>'. $RS["MASK"] .'</card-number-mask>';
