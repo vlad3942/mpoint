@@ -219,7 +219,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								// One Time Password sent
 								if ($obj_mPoint->sendOneTimePassword(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $iAccountID, $obj_CountryConfig, (float) $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile) == 200)
 								{
-									$xml = '<status code="'. ($code+110) .'">Account information successfully saved and OTP sent</status>';
+									$xml = '<status code="'. ($code+110) .'" eua-id="'. intval($iAccountID) .'">Account information successfully saved and OTP sent</status>';
 								}
 								else
 								{
@@ -228,7 +228,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$xml = '<status code="91">Unable to send One Time Password</status>';
 								}
 							}
-							else { $xml = '<status code="'. ($code+100) .'">Account information successfully saved</status>'; }
+							else { $xml = '<status code="'. ($code+100) .'" eua-id="'. intval($iAccountID) .'">Account information successfully saved</status>'; }
 						}
 						else
 						{
