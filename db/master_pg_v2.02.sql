@@ -51,3 +51,38 @@ ALTER TABLE system.pricepoint_tbl ADD COLUMN currencyid integer;
 ALTER TABLE system.pricepoint_tbl  ADD CONSTRAINT Price2Currency_FK FOREIGN KEY (currencyid)
 REFERENCES System.currency_tbl (id);
 ALTER TABLE system.pricepoint_tbl DROP COLUMN countryid;
+
+
+/* ========= Create client.countrycurrency_tbl =============== */
+
+-- Table: client.countrycurrency_tbl
+
+-- DROP TABLE client.countrycurrency_tbl;
+
+CREATE TABLE client.countrycurrency_tbl
+(
+  id serial NOT NULL,
+  clientid integer NOT NULL,
+  countryid integer NOT NULL,
+  currencyid integer NOT NULL,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean,
+  CONSTRAINT countrycurrency_pk PRIMARY KEY (id),
+  CONSTRAINT client_fk FOREIGN KEY (clientid)
+      REFERENCES client.client_tbl (id) MATCH SIMPLE
+     ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT country_fk FOREIGN KEY (countryid)
+      REFERENCES system.country_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT currency_fk FOREIGN KEY (currencyid)
+      REFERENCES system.currency_tbl (id) MATCH SIMPLE
+     ON UPDATE CASCADE ON DELETE CASCADE
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE client.countrycurrency_tbl
+  OWNER TO mpoint;
+
+

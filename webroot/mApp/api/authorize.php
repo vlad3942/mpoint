@@ -225,9 +225,16 @@ try
 										) { $aMsgCds[] = 21; }
                                         
                                         if($obj_TxnInfo->getAmount() != intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount)){
-                                            $aMsgCds[52] = $obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
+                                            $aMsgCds[52] = "Invalid amount:".$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
                                         }
-
+                                        // Validate currency if explicitly passed in request, which defer from default currency of the country
+                                        if(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) > 0){
+                                        	$obj_TransacionCountryConfig = CountryConfig::produceConfig($_OBJ_DB, intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"])) ;
+                                        	if($obj_Validator->valCurrency($_OBJ_DB, intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) ,$obj_TransacionCountryConfig, intval( $obj_DOM->{'authorize-payment'}[$i]["client-id"])) != 10 ){
+                                        		$aMsgCds[56] = "Invalid Currency:".intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) ;
+                                        	}
+                                        }
+                                        
 										$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'authorize-payment'}[$i]->{'client-info'},
                                         CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'authorize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
                                         $_SERVER['HTTP_X_FORWARDED_FOR']);
@@ -237,7 +244,7 @@ try
 										{
 
 											if ($obj_Validator->valHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]) ) != 10) { $aMsgCds[210] = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
-										}
+										} 
 										// Success: Input Valid
 										if (count($aMsgCds) == 0)
 										{
@@ -1123,9 +1130,9 @@ try
 	
 											header("HTTP/1.1 400 Bad Request");
 	
-											foreach ($aMsgCds as $code)
+											foreach ($aMsgCds as $key => $value)
 											{
-												$xml .= '<status code="'. $code .'" />';
+												$xml .= '<status code="'. $key .'">'.$value.'</status>';
 											}
 										}
 									}	// End card loop
