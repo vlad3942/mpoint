@@ -112,8 +112,8 @@ class CreditCard extends EndUserAccount
 				INNER JOIN System".sSCHEMA_POSTFIX.".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PC.currencyid = PP.currencyid AND PP.enabled = '1'
 				WHERE CA.clientid = ". $this->_obj_TxnInfo->getClientConfig()->getID() ."
 					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
-					AND PC.currencyid = ". $this->_obj_TxnInfo->getCountryConfig()->getCurrencyConfig()->getID()."
-					AND PP.currencyid = ". $this->_obj_TxnInfo->getCountryConfig()->getCurrencyConfig()->getID()."
+					AND PC.currencyid = ". $this->_obj_TxnInfo->getCurrencyConfig()->getID()."
+					AND PP.currencyid = ". $this->_obj_TxnInfo->getCurrencyConfig()->getID()."
 					AND PP.amount IN (-1, ". intval($amount) .")
 					AND C.enabled = '1' AND (MA.stored_card = '0' OR MA.stored_card IS NULL)
 					AND (CA.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ." OR CA.countryid IS NULL) AND CA.enabled = '1'
