@@ -79,6 +79,9 @@ require_once(sCLASS_PATH ."/mvault.php");
 require_once(sCLASS_PATH ."/trustly.php");
 // Require specific Business logic for the 2C2P-ALC component
 require_once(sCLASS_PATH ."/ccpp_alc.php");
+// Require specific Business logic for the paytabs component
+require_once(sCLASS_PATH ."/paytabs.php");
+
 
 /**
  * Input XML format
@@ -147,6 +150,7 @@ try
         {
             if ($aAdditionalProperty['key'] == 'mvault' && $aAdditionalProperty['value'] == 'true'){
                 $saveCard = false;
+                break;
             }
         }
 

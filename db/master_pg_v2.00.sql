@@ -181,8 +181,37 @@ WITH (
 ALTER TABLE client.gomobileconfiguration_tbl
   OWNER TO mpoint;
 
+/*---------START : ADDED CHANGE FOR SUPPORTING CURRENCY SCHEMA-------------*/
+-- Table: system.currency_tbl
+
+-- DROP TABLE system.currency_tbl;
+
+CREATE TABLE system.currency_tbl
+(
+  id serial NOT NULL,
+  name character varying(100),
+  code character(3),
+  decimals integer,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true,
+  CONSTRAINT currency_pk PRIMARY KEY (id)
+)
+WITH (
+OIDS=FALSE
+);
+ALTER TABLE system.currency_tbl
+  OWNER TO postgres;
 
 
+ALTER TABLE system.country_tbl ADD COLUMN alpha2code character(2) DEFAULT NULL;
+ALTER TABLE system.country_tbl ADD COLUMN alpha3code character(3) DEFAULT NULL;
+ALTER TABLE system.country_tbl ADD COLUMN code integer DEFAULT NULL;
+ALTER TABLE system.country_tbl ADD COLUMN currencyid integer DEFAULT 0;
+ALTER TABLE system.country_tbl ADD CONSTRAINT Country2Currency_FK FOREIGN KEY (currencyid) REFERENCES System.Currency_Tbl(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+/*---------END : ADDED CHANGE FOR SUPPORTING CURRENCY SCHEMA-------------*/
 
 /* ==================== SYSTEM PAYMENT MODE START ==================== */
 -- Table: system.paymentmode_tbl

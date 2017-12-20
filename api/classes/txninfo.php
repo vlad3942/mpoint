@@ -323,7 +323,7 @@ class TxnInfo
 		$this->_obj_ClientConfig = $oClC;
 		$this->_obj_CountryConfig = $oCC;
 		$this->_obj_CurrencyConfig = $oCR;
-		
+
 		$this->_lAmount = (float) $amt;
 		$this->_iPoints = (integer) $pnt;
 		$this->_iReward = (integer) $rwd;
@@ -895,7 +895,7 @@ class TxnInfo
 			break;
 		}
 
-		
+
 		return $obj_TxnInfo;
 	}
 
@@ -965,7 +965,7 @@ class TxnInfo
 				{
 						
 					$order_iD = $RS["ID"];
-						
+                    $this->setAdditionalDetails($obj_DB,$aOrderDataObj['additionaldata'],$order_iD);
 				}
 			}
 				

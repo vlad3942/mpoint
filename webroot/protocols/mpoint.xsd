@@ -326,9 +326,11 @@
 			<xs:element name="save-account" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
-						<xs:element name="confirm-password" type="xs:string" minOccurs="1" maxOccurs="1" />
-						<xs:element name="social-security-number" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+					<xs:choice minOccurs="0" maxOccurs="1">
+						<xs:group ref="account-password" />
+						<xs:group ref="single-sign-on" />
+					</xs:choice>
+					<xs:element name="social-security-number" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
 						<xs:choice minOccurs="0" maxOccurs="1">
 							<xs:group ref="names" />
 							<xs:element name="full-name" type="xs:string" />
@@ -352,7 +354,6 @@
 								<xs:attribute name="charge-type-id" type="charge-type" use="optional" />
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="auth-token" type="xs:string" minOccurs="0" maxOccurs="1" />
 						<xs:element name="client-info" type="client-info" minOccurs="0" maxOccurs="1" />
 					</xs:sequence>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
@@ -889,6 +890,13 @@
 	</xs:sequence>
 </xs:group>
 
+<xs:group name="account-password">
+	<xs:sequence>
+		<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
+		<xs:element name="confirm-password" type="xs:string" minOccurs="1" maxOccurs="1" />
+	</xs:sequence>
+</xs:group>
+
 <xs:complexType name="address">
 	<xs:sequence>
 		<xs:choice minOccurs="1" maxOccurs="1">
@@ -1065,7 +1073,8 @@
                         <xs:element name="points" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
                         <xs:element name="reward" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
                         <xs:element name="quantity" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
-                    </xs:all> 
+						<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
+					</xs:all>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
@@ -1124,6 +1133,13 @@
      </xs:simpleContent>
    </xs:complexType>
 </xs:element>
+
+<xs:complexType name="additional-order-data" >
+	<xs:all>
+		<xs:element type="name" name="description" minOccurs="1" maxOccurs="1"/>
+		<xs:element type="xs:string" name="value" minOccurs="1" maxOccurs="1"/>
+	</xs:all>
+</xs:complexType>
 
 <xs:complexType name="psp-config">
 	<xs:sequence>
