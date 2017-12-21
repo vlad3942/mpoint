@@ -11,7 +11,8 @@ CREATE TABLE system.condition_tbl
   modified timestamp without time zone DEFAULT now(),
   enabled boolean DEFAULT true,
   type character(1),
-  CONSTRAINT rulefactor_pk PRIMARY KEY (id)
+  CONSTRAINT rulefactor_pk PRIMARY KEY (id),
+  CONSTRAINT type_check CHECK (type = 's'::bpchar OR type = 'd'::bpchar)
 )
 WITH (
   OIDS=FALSE
@@ -19,6 +20,25 @@ WITH (
 ALTER TABLE system.condition_tbl
   OWNER TO mpoint;
 
+-- Table: system.operator_tbl
+
+-- DROP TABLE system.operator_tbl;
+
+CREATE TABLE system.operator_tbl
+(
+  id serial NOT NULL,
+  name character varying(100),
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true,
+  symbol character varying(100),
+  CONSTRAINT operator_pk PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE system.operator_tbl
+  OWNER TO mpoint;
   
   
  -- Table: client.rulecondition_tbl
@@ -120,4 +140,7 @@ WITH (
 ALTER TABLE client.routing_tbl
   OWNER TO mpoint;
  
+  
+  
+  
   
