@@ -109,7 +109,7 @@ CREATE TABLE client.routing_tbl
 (
   id serial NOT NULL,
   ruleid integer NOT NULL,
-  operator character varying(100),
+  operatorid integer,
   created timestamp without time zone DEFAULT now(),
   modified timestamp without time zone DEFAULT now(),
   enabled boolean DEFAULT true,
@@ -134,6 +134,9 @@ CREATE TABLE client.routing_tbl
       ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT gateway4topsp_fk FOREIGN KEY (gateway4)
       REFERENCES system.psp_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT operator_fk FOREIGN KEY (operatorid)
+      REFERENCES system.operator_tbl (id) MATCH SIMPLE
       ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT routing_tbl_ruleid_gateway1_gateway2_gateway3_gateway4_prio_key UNIQUE (ruleid, gateway1, gateway2, gateway3, gateway4, priority)
 )
