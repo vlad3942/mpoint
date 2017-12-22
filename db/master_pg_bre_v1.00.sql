@@ -50,7 +50,7 @@ CREATE TABLE client.rulecondition_tbl
   id serial NOT NULL,
   conditionid integer NOT NULL,
   conditionvalue character varying(255),
-  relation character varying(100),
+  relationid integer NOT NULL,
   created timestamp without time zone DEFAULT now(),
   modified timestamp without time zone DEFAULT now(),
   enabled boolean DEFAULT true,
@@ -61,7 +61,10 @@ CREATE TABLE client.rulecondition_tbl
       ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT condition_fk FOREIGN KEY (conditionid)
       REFERENCES system.condition_tbl (id) MATCH SIMPLE
-      ON UPDATE CASCADE ON DELETE CASCADE
+      ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT relation_fk FOREIGN KEY (relationid)
+      REFERENCES system.operator_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE    
 )
 WITH (
   OIDS=FALSE
