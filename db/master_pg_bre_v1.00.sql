@@ -50,7 +50,7 @@ CREATE TABLE client.rulecondition_tbl
   id serial NOT NULL,
   conditionid integer NOT NULL,
   conditionvalue character varying(255),
-  relationid integer NOT NULL,
+  operatorid integer NOT NULL,
   created timestamp without time zone DEFAULT now(),
   modified timestamp without time zone DEFAULT now(),
   enabled boolean DEFAULT true,
