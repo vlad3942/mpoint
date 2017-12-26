@@ -3415,3 +3415,6 @@ INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (20101 , 'Payment r
 INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (20102 , 'Payment rejected as PSP unavailable', 'Callback', true);
 INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (20103 , 'Payment rejected due to 3D authorization failure', 'Callback', true);
 /*  ===========  END : Adding new transaction failure states in mPoint  ==================  */
+
+
+
