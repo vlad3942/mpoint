@@ -3416,15 +3416,5 @@ INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (20102 , 'Payment r
 INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (20103 , 'Payment rejected due to 3D authorization failure', 'Callback', true);
 /*  ===========  END : Adding new transaction failure states in mPoint  ==================  */
 
-/*  ===========  START : Adding column attempts to Log.Transaction_Tbl  ==================  */
-ALTER TABLE Log.Transaction_Tbl ADD COLUMN attempt integer DEFAULT 1;
-/*  ===========  END : Adding column attempts to Log.Transaction_Tbl  ==================  */
-
-/*  ===========  START : Adding column preferred to Client.CardAccess_Tbl  ==================  */
-ALTER TABLE Client.CardAccess_Tbl ADD COLUMN preferred boolean DEFAULT false;
-/*  ===========  END : Adding column preferred to Client.CardAccess_Tbl  ==================  */
-
-
-
 
 
