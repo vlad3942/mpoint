@@ -469,7 +469,7 @@ class General
 					authurl = '". $this->getDBConn()->escStr($oTI->getAuthenticationURL() ) ."', customer_ref = '". $this->getDBConn()->escStr($oTI->getCustomerRef() ) ."',
 					gomobileid = ". $oTI->getGoMobileID() .", auto_capture = '". ($oTI->useAutoCapture() === true ? "1" : "0") ."', markup = '". $this->getDBConn()->escStr($oTI->getMarkupLanguage() ) ."',
 					description = '". $this->getDBConn()->escStr($oTI->getDescription() ) ."',
-					deviceid = '". $this->getDBConn()->escStr($oTI->getDeviceID()) ."'";
+					deviceid = '". $this->getDBConn()->escStr($oTI->getDeviceID()) ."', attempt = ".intval($oTI->getAttemptNumber());
 		if (strlen($oTI->getIP() ) > 0) { $sql .= " , ip = '". $this->getDBConn()->escStr( $oTI->getIP() ) ."'"; }
 		if ($oTI->getAccountID() > 0) { $sql .= ", euaid = ". $oTI->getAccountID(); }
 		elseif ($oTI->getAccountID() == -1) { $sql .= ", euaid = NULL"; }
@@ -1196,6 +1196,50 @@ class General
 			
 		}
 		return $xml;
-	}	
+	}
+
+	/*
+	 * Fetch Transaction based on the orderID
+	 *
+	 * 	 1. First attempt
+	 * 	 2. Second attempt
+	 * 	 8. Invalid OrderID
+	 * 	 9. Transaction not found
+	 *
+	 *
+	 * @param integer 	$orderid  OrderID from input
+	 * @return string
+	 * */
+
+    public function getTxnAttemptsFromOrderID($orderid)
+    {
+        $sql = "SELECT attempt FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+					WHERE orderid = '" . trim($orderid) . "' AND enabled = true 
+					ORDER BY created DESC LIMIT 1";
+//			echo $sql ."\n";
+        $RS = $this->getDBConn()->getName($sql);
+
+        if (is_array($RS) === true) {   $code = intval($RS['ATTEMPT']);  } //Transaction attempt will have values 1/2
+        else { $code = -1; }    // Transaction not found
+
+        return $code;
+    }
+
+    public function getPreviousFailedAttempts($orderid)
+    {
+        $aPMArray = array();
+        $aRejectedStates = array(Constants::iPAYMENT_REJECTED_PSP_UNAVAILABLE_STATE);
+        $sql = "SELECT cardid FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn				
+				INNER JOIN (SELECT txnid, MAX(stateid) AS st FROM log.message_tbl GROUP BY txnid) p2 ON (txn.id = p2.txnid)
+				WHERE orderid = '" . trim($orderid) . "' AND enabled = true AND p2.st IN (".implode(",",$aRejectedStates).")";
+//			echo $sql ."\n";
+        $res = $this->getDBConn()->query($sql);
+
+        while ($RS = $this->getDBConn()->fetchName($res) ) {
+            array_push($aPMArray, intval($RS['CARDID'] ) );
+        }
+
+        return $aPMArray;
+    }
 }
 ?>
