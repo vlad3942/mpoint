@@ -769,6 +769,16 @@
 					</xs:annotation>
 				</xs:element>
 			</xs:all>
+			<xs:attribute name="sub-type" type="xs:positiveInteger" use="required">
+				<xs:annotation>
+					<xs:documentation>
+						Failed Transaction API modes
+						1. Get All Failed Transaction.
+						2. Get All Initialization Failed Txn
+						3. Get All Txns that have failed authorization with PSP
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 		</xs:complexType>
 	<xs:complexType name="transaction-search-response">
 		<xs:annotation>
