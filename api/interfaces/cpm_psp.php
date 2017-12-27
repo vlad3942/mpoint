@@ -580,7 +580,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			$code = $obj_HTTP->send($this->constHTTPHeaders(), $xml);
 			$obj_HTTP->disConnect();
 
-			if ($code == 200)
+			if($code == 202)
+            {
+                $code = 1000;
+            }
+            else if ($code == 200)
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
 				if (isset($obj_XML->status["code"]) === true && strlen($obj_XML->status["code"]) > 0) { $code = $obj_XML->status["code"]; }

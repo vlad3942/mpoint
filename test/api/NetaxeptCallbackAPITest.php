@@ -95,7 +95,7 @@ class NetaxeptCallbackAPITest extends baseAPITest
 		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 113, $pspID, '1')");
 		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (113, 17, $pspID)");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, pspid, extid, callbackurl, amount, ip, enabled, keywordid, mobile, email) VALUES (1001001, '900-55150298',". Constants::iPURCHASE_VIA_APP .", 113, 1100, 100, $pspID, 15469928, '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, '29612109', 'johan@cellpointmobile.com')");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, pspid, extid, callbackurl, amount, ip, enabled, keywordid, mobile, email, currencyid) VALUES (1001001, '900-55150298',". Constants::iPURCHASE_VIA_APP .", 113, 1100, 100, $pspID, 15469928, '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, '29612109', 'johan@cellpointmobile.com', 208)");
 
 		$this->_httpClient->connect();
 
