@@ -1375,6 +1375,8 @@
 			</xs:element>
 			<xs:element name="gomobile-configuration-params" type="client-go-mobile-configurations"
 						minOccurs="0" maxOccurs="1" />
+			<xs:element name="communication-channels" type="client-communication-channels-config"
+						minOccurs="0" maxOccurs="1" />
 			<xs:element name="callback-protocol" minOccurs="1"
 				maxOccurs="1">
 				<xs:complexType>
@@ -1575,6 +1577,17 @@
 						minOccurs="1" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
+	<xs:complexType name="client-communication-channels-config">
+		<xs:annotation>
+			<xs:documentation>Contains a sum of
+				communication channel values for an mPoint Client
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="channel" type="client-communication-channel-config"
+						minOccurs="1" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
 	<xs:complexType name="client-payment-method-config">
 		<xs:annotation>
 			<xs:documentation>Configuration for a Payment Method (card) for an
@@ -1615,6 +1628,17 @@
 			<xs:extension base="xs:string">
 				<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 				<xs:attribute name="name" type="xs:string" use="required" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="client-communication-channel-config">
+		<xs:annotation>
+			<xs:documentation>Configuration for Communication channel for an
+				mPoint Client</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
