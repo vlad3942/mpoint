@@ -104,6 +104,8 @@ require_once(sCLASS_PATH ."/client_url_config.php");
 require_once(sCLASS_PATH ."/client_issuer_identifcation_number_range_config.php");
 // Require data class for Client GoMobile Configurations
 require_once(sCLASS_PATH ."/client_gomobile_config.php");
+// Require data class for Client Communication Channels Configurations
+require_once(sCLASS_PATH ."/client_communication_channel_config.php");
 // Require data class for Keyword Configurations
 require_once(sCLASS_PATH ."/keywordconfig.php");
 // Require data class for Shop Configuration
