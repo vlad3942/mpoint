@@ -7200,11 +7200,14 @@ ALTER TABLE log.transaction_tbl ADD deviceid VARCHAR(50) NULL;
 INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (208,'Danish Krone','DKK',2);
 UPDATE System.Country_Tbl SET alpha2code = 'DK', alpha3code = 'DNK', code = 208, currencyid = 208 WHERE id = 100;
 
+INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (840,'US Dollar','USD',2);
+UPDATE System.Country_Tbl SET alpha2code = 'US', alpha3code = 'USA', code = 840, currencyid = 840 WHERE id = 200;
+
 DELETE FROM system.cardpricing_tbl;
 DELETE FROM system.pricepoint_tbl;
 
 INSERT INTO system.pricepoint_tbl (id, currencyid, amount) values (-208,208,-1) ;
-
+INSERT INTO system.pricepoint_tbl (id, currencyid, amount) values (-840,840,-1) ;
 
 UPDATE system.pspcurrency_tbl pc SET currencyid = (SELECT currencyid FROM system.country_tbl WHERE id = pc.countryid) ;
 
@@ -7260,3 +7263,5 @@ ALTER TABLE log.transaction_tbl ADD mask VARCHAR(20) NULL;
 ALTER TABLE log.transaction_tbl ADD expiry VARCHAR(5) NULL;
 ALTER TABLE log.transaction_tbl ADD token CHARACTER VARYING(512) COLLATE pg_catalog."default" NULL;
 ALTER TABLE log.transaction_tbl ADD authoriginaldata CHARACTER VARYING(512) NULL;
+
+ALTER TABLE enduser.account_tbl ADD COLUMN pushid character varying(100);
