@@ -7129,7 +7129,7 @@ WITH (
 OIDS=FALSE
 );
 ALTER TABLE system.currency_tbl
-  OWNER TO mpoint;
+  OWNER TO postgres;
 
 
 ALTER TABLE system.country_tbl ADD COLUMN alpha2code character(2);
@@ -7192,7 +7192,7 @@ WITH (
 OIDS=FALSE
 );
 ALTER TABLE client.countrycurrency_tbl
-  OWNER TO mpoint;
+  OWNER TO postgres;
 
 ALTER TABLE log.transaction_tbl ADD deviceid VARCHAR(50) NULL;
 
@@ -7231,7 +7231,7 @@ WITH (
 OIDS=FALSE
 );
 ALTER TABLE client.additionalproperty_tbl
-  OWNER TO mpoint;
+  OWNER TO postgres;
 
 
 
