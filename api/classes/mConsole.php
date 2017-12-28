@@ -951,7 +951,7 @@ class mConsole extends Admin
 						$RS["TYPEID"],
 						$RS["ORDERNO"],
 						$RS["EXTERNALID"],
-						new BasicConfig($RS["CLIENTID"], $RS["CLIENT"]),
+						ClientConfig::produceConfig($this->getDBConn(), $RS["CLIENTID"]),
 						new AccountConfig($RS["ACCOUNTID"],$RS["CLIENTID"], $RS["ACCOUNT"], $RS["ACC_MOBILE"], $RS["MARKUP"]),
 						$RS["PSPID"] > 0 ? new BasicConfig($RS["PSPID"], $RS["PSP"]) : null,
 						$RS["PAYMENTMETHODID"] > 0 ? new BasicConfig($RS["PAYMENTMETHODID"], $RS["PAYMENTMETHOD"]) : null,

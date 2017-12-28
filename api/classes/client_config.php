@@ -490,6 +490,12 @@ class ClientConfig extends BasicConfig
 	 * @return 	KeywordConfig
 	 */
 	public function getKeywordConfig() { return $this->_obj_KeywordConfig; }
+    /**
+     * Returns the Configuration for the Communication Channels for the Client
+     *
+     * @return 	ClientCommunicationChannelsConfig
+     */
+    public function getCommunicationChannelsConfig() { return $this->_obj_CommunicationChannelsConfig; }
 	/**
 	 * Returns the Absolute URL to the Client's Logo which will be displayed on all payment pages
 	 *
