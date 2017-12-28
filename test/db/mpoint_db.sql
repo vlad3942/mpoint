@@ -7129,7 +7129,7 @@ WITH (
 OIDS=FALSE
 );
 ALTER TABLE system.currency_tbl
-  OWNER TO mpoint;
+  OWNER TO postgres;
 
 
 ALTER TABLE system.country_tbl ADD COLUMN alpha2code character(2);
@@ -7192,7 +7192,7 @@ WITH (
 OIDS=FALSE
 );
 ALTER TABLE client.countrycurrency_tbl
-  OWNER TO mpoint;
+  OWNER TO postgres;
 
 ALTER TABLE log.transaction_tbl ADD deviceid VARCHAR(50) NULL;
 
@@ -7231,7 +7231,7 @@ WITH (
 OIDS=FALSE
 );
 ALTER TABLE client.additionalproperty_tbl
-  OWNER TO mpoint;
+  OWNER TO postgres;
 
 
 
@@ -7265,3 +7265,11 @@ ALTER TABLE log.transaction_tbl ADD token CHARACTER VARYING(512) COLLATE pg_cata
 ALTER TABLE log.transaction_tbl ADD authoriginaldata CHARACTER VARYING(512) NULL;
 
 ALTER TABLE enduser.account_tbl ADD COLUMN pushid character varying(100);
+
+/*  ===========  START : Adding column attempts to Log.Transaction_Tbl  ==================  */
+ALTER TABLE Log.Transaction_Tbl ADD COLUMN attempt integer DEFAULT 1;
+/*  ===========  END : Adding column attempts to Log.Transaction_Tbl  ==================  */
+
+/*  ===========  START : Adding column preferred to Client.CardAccess_Tbl  ==================  */
+ALTER TABLE Client.CardAccess_Tbl ADD COLUMN preferred boolean DEFAULT false;
+/*  ===========  END : Adding column preferred to Client.CardAccess_Tbl  ==================  */
