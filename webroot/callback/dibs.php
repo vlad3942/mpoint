@@ -26,7 +26,8 @@ require_once(sCLASS_PATH ."/enduser_account.php");
 require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
-
+// Require Business logic for the End-User Account Factory Provider
+require_once(sCLASS_PATH ."/customer_info.php");
 header("Content-Type: text/plain");
 set_time_limit(600);
 // Standard retry strategy connecting to the database has proven inadequate
@@ -63,8 +64,15 @@ try
 
 	// Save Ticket ID representing the End-User's stored Card Info
 	$ticket = @$_POST["ticket"];
-	
-	if ( (array_key_exists("preauth", $_POST) === true && @$_POST['preauth'] == "true") || strlen($ticket) > 0)
+    $saveCard = true;
+    foreach ($obj_TxnInfo->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+    {
+        if ($aAdditionalProperty['key'] == 'mvault' && $aAdditionalProperty['value'] == 'true'){
+            $saveCard = false;
+            break;
+        }
+    }
+	if ( (array_key_exists("preauth", $_POST) === true && @$_POST['preauth'] == "true") || strlen($ticket) > 0 && $saveCard)
 	{
 		$iMobileAccountID = -1;
 		$iEMailAccountID = -1;

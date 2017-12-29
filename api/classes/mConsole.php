@@ -641,7 +641,7 @@ class mConsole extends Admin
 	{
 		$sql = "";
 		// A search for an Order Number makes searching the end-user's Transaction table obsolete 
-		if ($ono == 0 && (count($aPspIDs) == 0 || count($aCardIDs) == 0))
+		/*if ($ono == 0 && (count($aPspIDs) == 0 || count($aCardIDs) == 0))
 		{
 			// Fetch all Transfers
 			$sql = "SELECT EUT.id, '' AS orderno, '' AS externalid, EUT.typeid, CL.countryid, EUT.toid, EUT.fromid, EUT.created, EUT.stateid AS asStateid,EUT.created as createdfinal,
@@ -667,7 +667,7 @@ class mConsole extends Admin
 			if (empty($end) === false && strlen($end) > 0) { $sql .= " AND EUT.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
 			$sql .= "
 					UNION ";
-		}
+		} */
 		// Fetch all Purchases
 		$sql .= "select * from(";
 		
@@ -675,7 +675,7 @@ class mConsole extends Admin
 		{
 			$sql .= "SELECT Txn.id, Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
 					 (CASE
-                                                 WHEN M9.stateid IS NOT NULL THEN M9.stateid
+                         WHEN M9.stateid IS NOT NULL THEN M9.stateid
 						 WHEN M6.stateid IS NOT NULL THEN M6.stateid
 						 WHEN M5.stateid IS NOT NULL THEN M5.stateid
 						 WHEN M4.stateid IS NOT NULL THEN M4.stateid
@@ -687,15 +687,15 @@ class mConsole extends Admin
 						 ELSE -1
 						 END) AS asStateid,
 					 (CASE
-                                                 WHEN M9.stateid IS NOT NULL THEN Max(M9.created)
-						 WHEN M6.stateid IS NOT NULL THEN Max(M6.created)
-						 WHEN M5.stateid IS NOT NULL THEN Max(M5.created)
-						 WHEN M4.stateid IS NOT NULL THEN Max(M4.created)
-						 WHEN M7.stateid IS NOT NULL THEN Max(M7.created)
-						 WHEN M3.stateid IS NOT NULL THEN Max(M3.created)
-						 WHEN M8.stateid IS NOT NULL THEN Max(M8.created)
-						 WHEN M2.stateid IS NOT NULL THEN Max(M2.created)
-						 WHEN M1.stateid IS NOT NULL THEN Max(M1.created)
+                         WHEN M9.stateid IS NOT NULL THEN (M9.created)
+						 WHEN M6.stateid IS NOT NULL THEN (M6.created)
+						 WHEN M5.stateid IS NOT NULL THEN (M5.created)
+						 WHEN M4.stateid IS NOT NULL THEN (M4.created)
+						 WHEN M7.stateid IS NOT NULL THEN (M7.created)
+						 WHEN M3.stateid IS NOT NULL THEN (M3.created)
+						 WHEN M8.stateid IS NOT NULL THEN (M8.created)
+						 WHEN M2.stateid IS NOT NULL THEN (M2.created)
+						 WHEN M1.stateid IS NOT NULL THEN (M1.created)
 						 END) AS createdfinal,
 					EUA.id AS customerid, EUA.firstname, EUA.lastname, Coalesce(Txn.customer_ref, EUA.externalid) AS customer_ref, Txn.operatorid as operatorid, 
 					Txn.mobile as mobile, Txn.email as email, Txn.lang AS language,
@@ -718,9 +718,11 @@ class mConsole extends Admin
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M7 ON Txn.id = M7.txnid AND M7.stateid = ". Constants::iPAYMENT_DECLINED_STATE ."
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M8 ON Txn.id = M8.txnid AND M8.stateid = ". Constants::iPAYMENT_REJECTED_STATE ."
                                 LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M9 ON Txn.id = M9.txnid AND M9.stateid = ". Constants::iPAYMENT_SETTLED_STATE ."
-				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON Txn.euaid = EUA.id
+				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON Txn.euaid = EUA.id 
+				INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid 
 				WHERE CL.id = ".$iClientID."
-				GROUP BY M9.stateid, M8.stateid, M7.stateid, M6.stateid, M5.stateid, M4.stateid, M3.stateid, M2.stateid, M1.stateid, Txn.id, orderno, externalid, Txn.typeid, Txn.countryid, toid, fromid, Txn.created, asStateid ,Acc.id,customerid, EUA.firstname, EUA.lastname, customer_ref, operatorid,Txn.mobile, Txn.email, language,CL.id, client,accountid, account,PSP.id, psp,paymentmethodid, paymentmethod,Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description";
+				AND Msg.id = (SELECT Max(id) FROM Log".sSCHEMA_POSTFIX.".Message_Tbl LMT WHERE LMT.txnid = Txn.id AND LMT.stateid = stateid )"; 
+				//GROUP BY M9.stateid, M8.stateid, M7.stateid, M6.stateid, M5.stateid, M4.stateid, M3.stateid, M2.stateid, M1.stateid, Txn.id, orderno, externalid, Txn.typeid, Txn.countryid, toid, fromid, Txn.created, asStateid ,Acc.id,customerid, EUA.firstname, EUA.lastname, customer_ref, operatorid,Txn.mobile, Txn.email, language,CL.id, client,accountid, account,PSP.id, psp,paymentmethodid, paymentmethod,Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description";
 		
 				array_pop($aClientIDs);
 				
@@ -750,12 +752,19 @@ class mConsole extends Admin
 		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND   '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <=  a.createdfinal"; }
 		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND  a.createdfinal  <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
 		
+		/*
 		$sql .= " AND a.createdfinal = (
 					select MAX(msg.created) FROM Log.Message_Tbl as msg
 						WHERE msg.stateid = a.asStateid AND msg.txnid = a.id
 				)";
+		*/
+		if (count($aStateIDs) > 0)
+		{
+			$sql .= " AND a.asStateid IN (". implode(",", $aStateIDs) .")";
+		}
 		
-		$sql .= "\n ORDER BY createdfinal DESC";
+	    //$sql .= "\n ORDER BY createdfinal DESC";
+		$sql .= "\n ORDER BY 1 DESC";
 		
 		if (intval($limit) > 0 || intval($offset) > 0)
 		{
@@ -1193,28 +1202,42 @@ class mConsole extends Admin
 			$where .= " Txn.cardid = ".intval($cardid);
 		}
 		
+		if(empty($start) === false && strlen($start) > 0)
+		{
+			if(empty($where) === false)
+			{
+				$where.=" AND ";
+			}
+			
+			$where .= "'". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) )."' <= Msg.created ";
+		}
+		
+		if(empty($end) === false && strlen($end) > 0)
+		{
+			if(empty($where) === false)
+			{
+				$where.=" AND ";
+			}
+			
+			$where .= " Msg.created <= '" .$this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ). "' ";
+		}
+		
+		
 		if(empty($where) === false)
 		{
 			$where = " WHERE ".$where;
 		}
 		
-		$sql = "SELECT date(messages.max_created) AS createddate, messages.stateid AS stateid, count(messages.txnid) AS stateidcount
-			FROM (
-				SELECT Msg.created AS max_created, Msg.txnid, Msg.stateid 
-				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl AS Msg 
-				WHERE 
-				Msg.created BETWEEN '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' AND 
-				'". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'
-				AND Msg.created = (
-					select MAX(created) FROM Log.Message_Tbl
-						WHERE stateid IN (". implode(",", $aStateIDS) .") AND txnid = Msg.txnid
-				)
-				AND Msg.txnid IN (
-					SELECT Txn.id 
-						FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn ".$where."
-				)
-				
-			) AS messages GROUP BY createddate, messages.stateid ORDER BY createddate";
+		//Date part will have values always hence $where will not be empty
+		
+		$sql = "SELECT date(Msg.created) AS createddate, Msg.stateid AS stateid, Count(Msg.id) AS stateidcount 
+				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
+				INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid
+				".$where.
+				" AND Msg.id = (SELECT Max(id) FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
+								WHERE Txn.id = txnid AND stateid IN (". implode(",", $aStateIDS) ."))
+				GROUP BY createddate, Msg.stateid 
+				ORDER BY createddate ASC, Msg.stateid ASC ";
 		
 		//echo $sql ."\n";
 		

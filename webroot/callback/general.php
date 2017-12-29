@@ -75,8 +75,13 @@ require_once(sCLASS_PATH ."/nets.php");
 require_once(sCLASS_PATH ."/klarna.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/mvault.php");
+// Require specific Business logic for the Trustly component
+require_once(sCLASS_PATH ."/trustly.php");
 // Require specific Business logic for the 2C2P-ALC component
 require_once(sCLASS_PATH ."/ccpp_alc.php");
+// Require specific Business logic for the paytabs component
+require_once(sCLASS_PATH ."/paytabs.php");
+
 
 /**
  * Input XML format
@@ -145,6 +150,7 @@ try
         {
             if ($aAdditionalProperty['key'] == 'mvault' && $aAdditionalProperty['value'] == 'true'){
                 $saveCard = false;
+                break;
             }
         }
 
@@ -316,10 +322,15 @@ try
              $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"]));
          }
      }
-      
+
   }
-  
- $xml = '<status code="1000">Callback Success</status>';
+  else {
+      header("Content-Type: text/xml; charset=\"UTF-8\"");
+      echo '<?xml version="1.0" encoding="UTF-8"?>';
+      echo '<root>';
+      echo '<status code="1000">Callback Success</status>';
+      echo '</root>';
+  }
 }
 catch (TxnInfoException $e)
 {
@@ -333,8 +344,4 @@ catch (CallbackException $e)
 	$xml .= '<status code="'. $e->getCode() .'">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES). '</status>';
 	trigger_error($e->getMessage() ."\n". $HTTP_RAW_POST_DATA, E_USER_WARNING);
 }
-header("Content-Type: text/xml; charset=\"UTF-8\"");
-echo '<?xml version="1.0" encoding="UTF-8"?>';
-echo '<root>';
-echo $xml;
-echo '</root>';
+

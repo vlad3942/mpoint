@@ -542,7 +542,7 @@ abstract class Callback extends EndUserAccount
 	{
 		$sql = "SELECT name
 				FROM System".sSCHEMA_POSTFIX.".PSPCurrency_Tbl
-				WHERE countryid = ". intval($cid) ." AND pspid = ". intval($pspid) ." AND enabled = '1'";
+				WHERE currencyid = ". intval($cid) ." AND pspid = ". intval($pspid) ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn($sql)->getName($sql);
 
@@ -655,6 +655,8 @@ abstract class Callback extends EndUserAccount
             return new MVault($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mvault"]);
         case (Constants::iNETS_ACQUIRER):
             return new Nets($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["nets"]);
+        case (Constants::iTRUSTLY_PSP):
+            	return new Trustly($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["trustly"]);
         case (Constants::iPAY_TABS_PSP):
         	return new PayTabs($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paytabs"]);
         case (Constants::i2C2P_ALC_PSP):

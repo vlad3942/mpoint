@@ -29,6 +29,8 @@ require_once(sCLASS_PATH ."/validate.php");
 require_once(sCLASS_PATH ."/enduser_account.php");
 // Require Data Class for Client Information
 require_once(sCLASS_PATH ."/clientinfo.php");
+// Require data data class for Customer Information
+require_once(sCLASS_PATH ."/customer_info.php");
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
@@ -81,9 +83,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					$obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
 					$aMsgCds = array();
 
-					if ($obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->password) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->password) + 20; }
-					if ($obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->{'confirm-password'}) != 10) { $aMsgCds[] = $obj_Validator->valPassword( (string) $obj_DOM->{'save-account'}[$i]->{'confirm-password'} ) + 30; }
-					if (count($aMsgCds) == 0 && strval($obj_DOM->{'save-account'}[$i]->password) != strval($obj_DOM->{'save-account'}[$i]->{'confirm-password'}) ) { $aMsgCds[] = 41; }
+					//validate password if present in the request
+                    if ( count($obj_DOM->{'save-account'}[$i]->password) == 1)
+                    {
+                        if ($obj_Validator->valPassword((string)$obj_DOM->{'save-account'}[$i]->password) != 10) {
+                            $aMsgCds[] = $obj_Validator->valPassword((string)$obj_DOM->{'save-account'}[$i]->password) + 20;
+                        }
+                        if ($obj_Validator->valPassword((string)$obj_DOM->{'save-account'}[$i]->{'confirm-password'}) != 10) {
+                            $aMsgCds[] = $obj_Validator->valPassword((string)$obj_DOM->{'save-account'}[$i]->{'confirm-password'}) + 30;
+                        }
+                        if (count($aMsgCds) == 0 && strval($obj_DOM->{'save-account'}[$i]->password) != strval($obj_DOM->{'save-account'}[$i]->{'confirm-password'})) {
+                            $aMsgCds[] = 41;
+                        }
+                    }
                     if (count($obj_DOM->{'save-account'}[$i]->card) == 1 ) {
                         $name = "";
                         if (count($obj_DOM->{'save-account'}[$i]->{'card'}->name) > 0)
@@ -121,15 +133,49 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						// Construct Client Info
 						$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'save-account'}[$i]->{'client-info'}, $obj_CountryConfig, @$_SERVER['HTTP_X_FORWARDED_FOR']);
 
-						$code = $obj_mPoint->savePassword( (float) $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, (string) $obj_DOM->{'save-account'}[$i]->password, $obj_CountryConfig);
+						//check if account already exists, and auth-token is present
+                        $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
+
+                        if ($iAccountID > -1) {
+                            if (count($obj_DOM->{'save-account'}[$i]->{'auth-token'}) == 1
+                                && (count($obj_DOM->{'save-account'}[$i]->{'auth-url'}) == 1 || strlen($obj_ClientConfig->getAuthenticationURL()) > 0)
+                            ) {
+                                $url = $obj_ClientConfig->getAuthenticationURL();
+                                if (count($obj_DOM->{'save-account'}[$i]->{'auth-url'}) == 1) {
+                                    $url = (string)$obj_DOM->{'save-account'}[$i]->{'auth-url'};
+                                }
+                                if ($obj_Validator->valURL($url, $obj_ClientConfig->getAuthenticationURL()) == 10) {
+                                    $code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($url), CustomerInfo::produceInfo($_OBJ_DB, $iAccountID), trim($obj_DOM->{'save-account'}[$i]->{'auth-token'}), intval($obj_DOM->{'save-account'}[$i]["client-id"]));
+                                } else {
+                                    $code = -1;
+                                }
+                            }
+                        }
+
+                        if ($code > 0)
+                        {
+
+                            //update or create new account
+                            $code = $obj_mPoint->savePassword((float)$obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'save-account'}[$i]->password, $obj_CountryConfig);
+                        }
 						// New Account automatically created when Password was saved
 						if ($code == 1 && $obj_ClientConfig->smsReceiptEnabled() === true)
 						{
 //							$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $_SESSION['obj_TxnInfo']);
 						}
-						$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
-						
-						$obj_mPoint->saveCardName($iAccountID, $obj_DOM->{'save-account'}[$i]->card["type-id"], (string) $obj_DOM->{'save-account'}[$i]->card, true);
+						if ($iAccountID < 0)
+						{
+                            $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
+                        }
+
+                        if (count($obj_DOM->{'save-account'}[$i]->card) == 1 && count($obj_DOM->{'save-account'}[$i]->{'card'}->name) > 0)
+                        {
+                            $obj_mPoint->saveCardName($iAccountID, $obj_DOM->{'save-account'}[$i]->card["type-id"], (string)$obj_DOM->{'save-account'}[$i]->{'card'}->name, true);
+                        }
+                        else
+                        {
+                            $obj_mPoint->saveCardName($iAccountID, $obj_DOM->{'save-account'}[$i]->card["type-id"], (string)$obj_DOM->{'save-account'}[$i]->card, true);
+                        }
 
 						// Success: Account Information Saved
 						if ($code >= 0)

@@ -30,8 +30,10 @@
 												</xs:sequence>
 											</xs:complexType>
 										</xs:element>
+										<xs:element name="additional-config" type="xs:string"/>
 									</xs:all>
 									<xs:attribute type="xs:positiveInteger" name="id" />
+									<xs:attribute type="xs:positiveInteger" name="type" />
 								</xs:complexType>
 							</xs:element>
 							<xs:element name="transactions">
@@ -59,6 +61,7 @@
 													</xs:element>
 													<xs:element name="operator" type="xs:integer"/>
 													<xs:element name="email" type="xs:string"/>
+													<xs:element name="device-id" type="xs:string"/>
 													<xs:element name="logo" type="logo"/>
 													<xs:element name="css-url" type="xs:string"/>
 													<xs:element name="accept-url" type="xs:string"/>
@@ -73,6 +76,12 @@
 													<xs:element name="description" type="xs:string"/>
 													<xs:element name="ip" type="xs:string"/>
 													<xs:element name="hmac" type="xs:string"/>
+													<xs:element name="token" type="xs:string"/>
+													<xs:element name="card-mask" type="xs:string"/>
+													<xs:element name="expiry" type="xs:string"/>
+													<xs:element name="approval-code" type="xs:string"/>
+													<xs:element name="action-code" type="xs:string"/>
+													<xs:element name="auth-original-data" type="xs:string"/>
 													<xs:element name="language" type="xs:string"/>
 												</xs:all>
 												<xs:attribute type="xs:positiveInteger" name="id"/>
@@ -104,6 +113,10 @@
 				<xs:attribute name="currency" type="xs:string"/>
 				<xs:attribute name="symbol" type="xs:string"/>
 				<xs:attribute name="format" type="xs:string"/>
+				<xs:attribute name="code" type="xs:string"/>
+				<xs:attribute name="alpha3code" type="xs:string"/>
+				<xs:attribute name="alpha2code" type="xs:string"/>
+				<xs:attribute name="currency-id" type="xs:string"/>
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
