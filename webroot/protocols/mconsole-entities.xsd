@@ -1967,4 +1967,65 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+	<xs:complexType name="get-routing-rules">
+		<xs:sequence>
+			<xs:element name="clients" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Contains the list of unique IDs for the client
+						configurations that should be fetched
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="client" minOccurs="1" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>
+									The unique ID for the client whose
+									configuration should be fetched
+								</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="accounts" minOccurs="0" maxOccurs="1">
+										<xs:annotation>
+											<xs:documentation>
+												The unique ID for the accounts who are
+												related with clients
+											</xs:documentation>
+										</xs:annotation>
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element type="xs:integer" name="account-id"
+													maxOccurs="unbounded" minOccurs="1" />
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+								<xs:attribute type="xs:integer" name="id" use="required" />
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="start-date" type="xs:dateTime"
+				minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Specifies the start date / time for the
+						transaction that should be found
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="end-date" type="xs:dateTime" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Specifies the end date / time for the transaction
+						that should be found
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
 </xs:schema>
