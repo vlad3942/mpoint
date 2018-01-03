@@ -39,3 +39,9 @@ COMMENT ON COLUMN log.Session_tbl.amount IS 'Total amount for payment';
 COMMENT ON COLUMN log.Session_tbl.externalid IS 'Profile id';
 COMMENT ON COLUMN log.Session_tbl.issplit IS 'is this session contains multiple transaction';
 COMMENT ON TABLE log.Session_tbl IS 'Session table act as master table for transaction. Split transactions will track by Session id';
+
+
+INSERT INTO log.state_tbl (id, name, module) VALUES (4001, 'Session Created', 'Payment');
+INSERT INTO log.state_tbl (id, name, module) VALUES (4010, 'Session Expire', 'Payment');
+INSERT INTO log.state_tbl (id, name, module) VALUES (4020, 'Session Decline (fail)', 'Payment');
+INSERT INTO log.state_tbl (id, name, module) VALUES (4030, 'Session Complete', 'Payment');
