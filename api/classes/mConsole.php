@@ -706,9 +706,9 @@ class mConsole extends Admin
 					Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description,
 					CT.code AS currencycode
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
-				INNER JOIN System".sSCHEMA_POSTFIX.".Currency_Tbl CT ON Txn.currencyid = CT.id
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
-				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON Txn.accountid = Acc.id				
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON Txn.accountid = Acc.id	
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Currency_Tbl CT ON Txn.currencyid = CT.id			
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON Txn.pspid = PSP.id
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl PM ON Txn.cardid = PM.id
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M1 ON Txn.id = M1.txnid AND M1.stateid = ". Constants::iINPUT_VALID_STATE ."
@@ -925,9 +925,9 @@ class mConsole extends Admin
 					PM.id AS paymentmethodid, PM.name AS paymentmethod,Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description,
 					CT.code AS currencycode
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
-				INNER JOIN System".sSCHEMA_POSTFIX.".Currency_Tbl CT ON Txn.currencyid = CT.id
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON Txn.accountid = Acc.id
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Currency_Tbl CT ON Txn.currencyid = CT.id
 				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U1 ON CL.id = U1.clientid AND U1.urltypeid = ". ClientConfig::iAUTHENTICATION_URL ." AND U1.enabled = '1'
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON Txn.pspid = PSP.id
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl PM ON Txn.cardid = PM.id
