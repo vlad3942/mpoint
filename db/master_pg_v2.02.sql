@@ -137,3 +137,7 @@ COMMENT ON COLUMN log.Session_tbl.externalid IS 'Profile id';
 COMMENT ON COLUMN log.Session_tbl.sessiontypeid IS 'Session Type id';
 COMMENT ON TABLE log.Session_tbl IS 'Session table act as master table for transaction. Split transactions will track by Session id';
 
+ALTER TABLE log.transaction_tbl ADD sessionid INTEGER NULL;
+ALTER TABLE log.transaction_tbl
+  ADD CONSTRAINT transaction_tbl_session_tbl_id_fk
+FOREIGN KEY (sessionid) REFERENCES log.session_tbl (id);
