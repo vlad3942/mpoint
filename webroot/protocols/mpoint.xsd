@@ -328,7 +328,6 @@
 					<xs:sequence>
 					<xs:choice minOccurs="0" maxOccurs="1">
 						<xs:group ref="account-password" />
-						<xs:group ref="single-sign-on" />
 					</xs:choice>
 					<xs:element name="social-security-number" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
 						<xs:choice minOccurs="0" maxOccurs="1">
@@ -354,6 +353,7 @@
 								<xs:attribute name="charge-type-id" type="charge-type" use="optional" />
 							</xs:complexType>
 						</xs:element>
+						<xs:group ref="single-sign-on" maxOccurs="1" minOccurs="0"/>
 						<xs:element name="client-info" type="client-info" minOccurs="0" maxOccurs="1" />
 					</xs:sequence>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
