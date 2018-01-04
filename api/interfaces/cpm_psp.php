@@ -580,7 +580,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			$code = $obj_HTTP->send($this->constHTTPHeaders(), $xml);
 			$obj_HTTP->disConnect();
 
-			if ($code == 200)
+			if($code == 202)
+            {
+                $code = 1000;
+            }
+            else if ($code == 200)
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
 				if (isset($obj_XML->status["code"]) === true && strlen($obj_XML->status["code"]) > 0) { $code = $obj_XML->status["code"]; }
@@ -612,10 +616,24 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		{
 			$obj_XML->amount = (integer) $actionAmount;
 		}
-		else { unset($obj_XML->amount); } 
+		else { unset($obj_XML->amount); }
+
+		$obj_XML->orderid = $this->_getFullOrderID();
 		
 		return str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 	}
+
+	protected function _getFullOrderID()
+    {
+        if(intval($this->getTxnInfo()->getAttemptNumber()) == 1)
+        {
+            return $this->getTxnInfo()->getOrderID();
+        }
+        else if(intval($this->getTxnInfo()->getAttemptNumber()) > 1)
+        {
+            return $this->getTxnInfo()->getOrderID()."_".$this->getTxnInfo()->getAttemptNumber();
+        }
+    }
 
 	protected function _constConnInfo($path)
 	{

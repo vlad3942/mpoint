@@ -88,7 +88,7 @@ class ThreeDSecureAPITest extends baseAPITest
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
 		$this->queryDB("INSERT INTO Client.Url_Tbl (urltypeid, clientid, url) VALUES (". ClientConfig::iPARSE_3DSECURE_CHALLENGE_URL .", 113, '". $this->s3DSecureURL ."')");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid) VALUES (1001001, 100, 113, 1100, 100, 2, '1512', '800-1234', '', 5000, '127.0.0.1', TRUE, 1)");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid,currencyid) VALUES (1001001, 100, 113, 1100, 100, 2, '1512', '800-1234', '', 5000, '127.0.0.1', TRUE, 1,208)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iINPUT_VALID_STATE .")");
 
 		$xml = $this->getRequestDoc(113, 1100);
@@ -124,7 +124,7 @@ class ThreeDSecureAPITest extends baseAPITest
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
 		$this->queryDB("INSERT INTO Client.Url_Tbl (urltypeid, clientid, url) VALUES (". ClientConfig::iPARSE_3DSECURE_CHALLENGE_URL .", 113, '". $this->s3DSecureURL ."')");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid) VALUES (1001001, 100, 113, 1100, 100, 2, '1512', '800-1234', '', 5000, '127.0.0.1', TRUE, 1)");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, enabled, keywordid,currencyid) VALUES (1001001, 100, 113, 1100, 100, 2, '1512', '800-1234', '', 5000, '127.0.0.1', TRUE, 1,208)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iINPUT_VALID_STATE .")");
 
 		$xml = $this->getRequestDoc(113, 1100, 1001001, 'text/html', 'http://cellpointmobile.com,', '');
