@@ -703,10 +703,12 @@ class mConsole extends Admin
 					Acc.id AS accountid, Acc.name AS account,
 					PSP.id AS pspid, PSP.name AS psp,
 					PM.id AS paymentmethodid, PM.name AS paymentmethod,
-					Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description
+					Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description,
+					CT.code AS currencycode
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
-				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON Txn.accountid = Acc.id				
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON Txn.accountid = Acc.id	
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Currency_Tbl CT ON Txn.currencyid = CT.id			
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON Txn.pspid = PSP.id
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl PM ON Txn.cardid = PM.id
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M1 ON Txn.id = M1.txnid AND M1.stateid = ". Constants::iINPUT_VALID_STATE ."
@@ -888,7 +890,9 @@ class mConsole extends Admin
 																 new CustomerInfo($RS["CUSTOMERID"], $RS["OPERATORID"]/100, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"], $RS["FIRSTNAME"] ." ". $RS["LASTNAME"], $RS["LANGUAGE"]),
 																 $RS["IP"],
 																 gmdate("Y-m-d H:i:sP", strtotime(substr($RS["CREATED"], 0, strpos($RS["CREATED"], ".") ) ) ),
-																 $aObj_Messages);
+																 $aObj_Messages, 
+																 "", 
+																 $RS["CURRENCYCODE"]);
 			}
 		}
 
@@ -918,10 +922,12 @@ class mConsole extends Admin
 					EUA.id AS customerid, EUA.firstname, EUA.lastname, Coalesce(Txn.customer_ref, EUA.externalid) AS customer_ref, Txn.operatorid as operatorid, Txn.deviceid as deviceid,
 					Txn.mobile as mobile, Txn.email as email, Txn.lang AS language,CL.id AS clientid, CL.name AS client, U1.url AS authurl,
 					Acc.id AS accountid, Acc.markup as markup, Acc.mobile as acc_mobile, Acc.name AS account,PSP.id AS pspid, PSP.name AS psp,
-					PM.id AS paymentmethodid, PM.name AS paymentmethod,Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description
+					PM.id AS paymentmethodid, PM.name AS paymentmethod,Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description,
+					CT.code AS currencycode
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON Txn.accountid = Acc.id
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Currency_Tbl CT ON Txn.currencyid = CT.id
 				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U1 ON CL.id = U1.clientid AND U1.urltypeid = ". ClientConfig::iAUTHENTICATION_URL ." AND U1.enabled = '1'
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON Txn.pspid = PSP.id
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl PM ON Txn.cardid = PM.id
@@ -978,7 +984,9 @@ class mConsole extends Admin
 							$RS["FIRSTNAME"] ." ". $RS["LASTNAME"], $RS["LANGUAGE"], $RS["CLIENTID"], $RS['DEVICEID'] ),
 						$RS["IP"],
 						date("Y-m-d H:i:s", strtotime($RS["CREATED"]) ),
-						$aObj_Messages);
+						$aObj_Messages,
+						"",
+						$RS["CURRENCYCODE"]);
 			}
 		}
 
