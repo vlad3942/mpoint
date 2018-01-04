@@ -1257,5 +1257,19 @@ class mConsole extends Admin
 		else { return new TransactionStatisticsInfo($aTransactionStats); }
 		
 	}
+	
+	public function getRoutingRules(array $aClientIDs, $start = null, $end = null, array $aAccountIDs = array()) {
+		$aRules = array ();
+		$aRoutingRules = array ();
+		foreach ( $aClientIDs as $clientid) {
+			$aRules = RoutingRule::produceConfig ( $this->getDBConn(), $clientid );
+			$aRoutingRules = array_merge ( $aRules , $aRoutingRules ) ;
+		}
+		return $aRoutingRules ;
+	}
+	
+	
+	
+	
     }
 ?>
