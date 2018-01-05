@@ -28,7 +28,7 @@ $obj_mPoint = new Shipping($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SESS
  * 	- Set the language based on the customer's device settings
  */
 $aTxnInfo = array("amount" => $_SESSION['obj_Info']->getInfo("order_cost") + $_GET['cost'], "language" => sLANG);
-$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($_SESSION['obj_TxnInfo']->getID(), $_SESSION['obj_TxnInfo'], $aTxnInfo);
+$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($_SESSION['obj_TxnInfo']->getID(), $_OBJ_DB, $_SESSION['obj_TxnInfo'], $aTxnInfo);
 
 // Re-Instantiate the Object with Business Logic for Shipping Information so it uses the re-instantiated Data Object with Transaction Information
 $obj_mPoint = new Shipping($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SESSION['obj_ShopConfig']);

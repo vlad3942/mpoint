@@ -87,7 +87,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			$_REQUEST['gomobileid'] = -1;
 			$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, var_export($_REQUEST, true) );
 
-			$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $_REQUEST);
+			$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($iTxnID,$_OBJ_DB, $obj_ClientConfig, $_REQUEST);
 			// Associate End-User Account (if exists) with Transaction
 			$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getMobile(), $obj_ClientConfig->getCountryConfig(), false);
 			if ($iAccountID == -1 && trim($_SESSION['obj_TxnInfo']->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $_SESSION['obj_TxnInfo']->getEMail(), false); }
@@ -99,7 +99,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			$obj_mPoint->logClientVars($iTxnID, $_REQUEST);
 			
 			$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getCountryConfig()->getID(), -1);
-			$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, array_merge($_REQUEST, array("accountid" => $iAccountID) ) );
+			$_SESSION['obj_TxnInfo'] = TxnInfo::produceInfo($iTxnID,$_OBJ_DB, $obj_ClientConfig, array_merge($_REQUEST, array("accountid" => $iAccountID) ) );
 
 			$aMsgCds[1000] = "Success";
 		}
