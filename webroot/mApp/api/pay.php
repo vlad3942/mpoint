@@ -168,8 +168,21 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						}
 						else { $code = 10; }
 
-						$iValResult = $obj_Validator->valPrice($obj_TxnInfo->getAmount(), (integer)$obj_DOM->pay[$i]->transaction->card->amount);
-						if ($iValResult != 10) { $aMsgCds[$iValResult + 50] = (string) $obj_DOM->pay[$i]->transaction->card->amount; }
+						if($obj_ClientConfig->getAdditionalProperties("sessiontype") > 1 ){
+						    $pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
+						    if((integer)$obj_DOM->pay[$i]->transaction->card->amount > $pendingAmount)
+                            {
+                                $aMsgCds[53] = "Amount is more than pending amount: ". (integer)$obj_DOM->pay[$i]->transaction->card->amount;
+                            }
+                            else{
+                                $obj_TxnInfo->updateTransactionAmount($_OBJ_DB,(integer)$obj_DOM->pay[$i]->transaction->card->amount);
+                            }
+                        }else {
+                            $iValResult = $obj_Validator->valPrice($obj_TxnInfo->getAmount(), (integer)$obj_DOM->pay[$i]->transaction->card->amount);
+                            if ($iValResult != 10) {
+                                $aMsgCds[$iValResult + 50] = (string)$obj_DOM->pay[$i]->transaction->card->amount;
+                            }
+                        }
 						
 						
 						// Validate currency if explicitly passed in request, which defer from default currency of the country
@@ -253,7 +266,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									{
 										// TO DO: Extend to add support for Split Tender
 										$data['amount'] = (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount;
-										$oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(), $obj_TxnInfo, $data);
+										$oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
 										//getting order config with transaction to pass to particular psp for initialize with psp for AID
 										$oTI->produceOrderConfig($_OBJ_DB);
 										// Initialize payment with Payment Service Provider
