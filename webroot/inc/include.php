@@ -112,6 +112,8 @@ require_once(sCLASS_PATH ."/shopconfig.php");
 require_once(sCLASS_PATH ."/pspconfig.php");
 // Require data data class for Transaction Information
 require_once(sCLASS_PATH ."/txninfo.php");
+// Require data data class for Payment Session Information
+require_once(sCLASS_PATH ."/paymentsession.php");
 // Require data data class for Order/Cart Information
 require_once(sCLASS_PATH ."/order_info.php");
 // Require data data class for Flight Information
