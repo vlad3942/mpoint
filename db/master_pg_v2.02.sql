@@ -111,20 +111,21 @@ CREATE TABLE log.Session_tbl
   currencyid INTEGER,
   countryid INTEGER,
   stateid INTEGER,
-  orderid INTEGER NOT NULL,
+  orderid VARCHAR(128) NOT NULL,
   amount DECIMAL NOT NULL,
   mobile NUMERIC NOT NULL,
   deviceid VARCHAR(128),
   ipaddress VARCHAR(15),
   externalid INTEGER,
   sessiontypeid INTEGER,
+  expire TIMESTAMP(6) DEFAULT current_timestamp,
   created TIMESTAMP(6) DEFAULT current_timestamp,
   modified TIMESTAMP(6) DEFAULT current_timestamp,
   CONSTRAINT Session_tbl_client_tbl_id_fk FOREIGN KEY (clientid) REFERENCES client.client_tbl (id),
   CONSTRAINT Session_tbl_account_tbl_id_fk FOREIGN KEY (accountid) REFERENCES client.account_tbl (id),
   CONSTRAINT Session_tbl_currency_tbl_id_fk FOREIGN KEY (currencyid) REFERENCES system.currency_tbl (id),
   CONSTRAINT Session_tbl_country_tbl_id_fk FOREIGN KEY (countryid) REFERENCES system.country_tbl (id),
-  CONSTRAINT Session_tbl_state_tbl_id_fk FOREIGN KEY (stateid) REFERENCES system.state_tbl (id),
+  CONSTRAINT Session_tbl_state_tbl_id_fk FOREIGN KEY (stateid) REFERENCES log.state_tbl (id),
   CONSTRAINT Session_tbl_sessiontype_tbl_id_fk FOREIGN KEY (sessiontypeid) REFERENCES system.SessionType_tbl (id)
 );
 COMMENT ON COLUMN log.Session_tbl.clientid IS 'Merchant Id';
