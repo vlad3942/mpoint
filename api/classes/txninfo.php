@@ -770,7 +770,7 @@ class TxnInfo
 		$obj_TxnInfo = self::_produceFromResultSet($obj, $RS);
 
 		if ( ($obj_TxnInfo instanceof TxnInfo) === false) { throw new TxnInfoException("Transaction with orderno: ". $orderNo. " not found", 1001); }
-		return self::produceInfo($obj_TxnInfo->getID(), $obj_TxnInfo, $data);
+		return self::produceInfo($obj_TxnInfo->getID(),  $obj, $obj_TxnInfo, $data);
 	}
 
 	private static function _constProduceQuery()
@@ -828,7 +828,7 @@ class TxnInfo
 	 * @return 	TxnInfo
 	 * @throws 	E_USER_ERROR, TxnInfoException
 	 */
-	public static function produceInfo($id, RDB $obj_db, &$obj, array &$misc=null)
+	public static function produceInfo($id, RDB $obj_db, &$obj= null, array &$misc=null)
 	{
 		$obj_TxnInfo = null;
 		switch (true)
