@@ -18,7 +18,7 @@ class mProfile extends General
 
     private $_sPushID;
 
-    private $_iPlatformID;
+    private $_iPlatformID = -1;
 
     private $_bIsGuest;
 
