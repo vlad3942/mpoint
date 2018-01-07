@@ -198,7 +198,11 @@ class TransactionLogInfo
 		$this->_iStateID =  (integer) $sid;
 		$this->_obj_CountryConfig = $oCC;
 		
-		$this->_obj_Amount = new AmountInfo($amt, $oCC->getID(), $oCC->getCurrency(), $oCC->getSymbol(), $oCC->getPriceFormat() );
+		$_sCurrencyCode =  $oCC->getCurrency();
+		if($currencyCode != null)
+			$_sCurrencyCode = $currencyCode;
+		
+		$this->_obj_Amount = new AmountInfo($amt, $oCC->getID(), $_sCurrencyCode, $oCC->getSymbol(), $oCC->getPriceFormat() );
 		if (intval($cptamt) > 0) { $this->_obj_CapturedAmount = new AmountInfo($cptamt, $oCC->getID(), $oCC->getCurrency(), $oCC->getSymbol(), $oCC->getPriceFormat() ); }
 		if (intval($pnt) > 0) { $this->_obj_Points = new AmountInfo($pnt, 0, "points", "points", "{PRICE} {CURRENCY}"); }
 		if (intval($rwd) > 0) { $this->_obj_Reward = new AmountInfo($rwd, 0, "points", "points", "{PRICE} {CURRENCY}"); }

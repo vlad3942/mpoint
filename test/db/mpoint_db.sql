@@ -3836,6 +3836,7 @@ INSERT INTO pricepoint_tbl VALUES (-650, 650, -1, '2013-11-04 13:27:37.01545', '
 -- Data for Name: cardpricing_tbl; Type: TABLE DATA; Schema: system; Owner: jona
 --
 
+/*
 INSERT INTO cardpricing_tbl VALUES (0, 0, 0, '2008-03-24 19:08:58.071781', '2008-03-24 19:08:58.071781', false);
 INSERT INTO cardpricing_tbl VALUES (21, 1, 10, '2008-03-24 19:08:58.071781', '2008-03-24 19:08:58.071781', true);
 INSERT INTO cardpricing_tbl VALUES (22, 2, 10, '2008-03-24 19:08:58.071781', '2008-03-24 19:08:58.071781', true);
@@ -3867,6 +3868,7 @@ INSERT INTO cardpricing_tbl VALUES (47, 27, 10, '2008-03-24 19:08:58.071781', '2
 INSERT INTO cardpricing_tbl VALUES (48, 28, 10, '2008-03-24 19:08:58.071781', '2008-03-24 19:08:58.071781', true);
 INSERT INTO cardpricing_tbl VALUES (49, 29, 10, '2008-03-24 19:08:58.071781', '2008-03-24 19:08:58.071781', true);
 INSERT INTO cardpricing_tbl VALUES (50, 30, 10, '2008-03-24 19:08:58.071781', '2008-03-24 19:08:58.071781', true);
+*/
 
 
 --
@@ -7105,3 +7107,169 @@ ALTER TABLE client.gomobileconfiguration_tbl
   OWNER TO postgres;
 
 
+
+
+/*---------START : ADDED CHANGE FOR SUPPORTING CURRENCY SCHEMA-------------*/
+-- Table: system.currency_tbl
+
+-- DROP TABLE system.currency_tbl;
+
+CREATE TABLE system.currency_tbl
+(
+  id serial NOT NULL,
+  name character varying(100),
+  code character(3),
+  decimals integer,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true,
+  CONSTRAINT currency_pk PRIMARY KEY (id)
+)
+WITH (
+OIDS=FALSE
+);
+ALTER TABLE system.currency_tbl
+  OWNER TO postgres;
+
+
+ALTER TABLE system.country_tbl ADD COLUMN alpha2code character(2);
+ALTER TABLE system.country_tbl ADD COLUMN alpha3code character(3);
+ALTER TABLE system.country_tbl ADD COLUMN code integer;
+ALTER TABLE system.country_tbl ADD COLUMN currencyid integer;
+ALTER TABLE system.country_tbl ADD CONSTRAINT Country2Currency_FK FOREIGN KEY (currencyid) REFERENCES System.Currency_Tbl(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE system.country_tbl DROP COLUMN currency;
+
+/*---------END : ADDED CHANGE FOR SUPPORTING CURRENCY SCHEMA-------------*/
+
+/* ==================== ALTER TRANSACTION LOG START ==================== */
+ALTER TABLE Log.Transaction_Tbl ADD COLUMN currencyid integer;
+ALTER TABLE Log.Transaction_Tbl ADD CONSTRAINT Txn2Currency_FK FOREIGN KEY (currencyid)
+REFERENCES System.currency_tbl (id)
+ON UPDATE CASCADE ON DELETE RESTRICT;
+/* ==================== ALTER TRANSACTION LOG END ==================== */
+
+ALTER TABLE system.pspcurrency_tbl ADD COLUMN currencyid integer;
+ALTER TABLE system.pspcurrency_tbl  ADD CONSTRAINT Psp2Currency_FK FOREIGN KEY (currencyid)
+REFERENCES System.currency_tbl (id);
+
+
+
+/* ================ Update pricepoint table  ===================*/
+
+ALTER TABLE system.pricepoint_tbl ADD COLUMN currencyid integer;
+ALTER TABLE system.pricepoint_tbl  ADD CONSTRAINT Price2Currency_FK FOREIGN KEY (currencyid)
+REFERENCES System.currency_tbl (id);
+ALTER TABLE system.pricepoint_tbl DROP COLUMN countryid;
+
+
+/* ========= Create client.countrycurrency_tbl =============== */
+
+-- Table: client.countrycurrency_tbl
+
+-- DROP TABLE client.countrycurrency_tbl;
+
+CREATE TABLE client.countrycurrency_tbl
+(
+  id serial NOT NULL,
+  clientid integer NOT NULL,
+  countryid integer NOT NULL,
+  currencyid integer NOT NULL,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean,
+  CONSTRAINT countrycurrency_pk PRIMARY KEY (id),
+  CONSTRAINT client_fk FOREIGN KEY (clientid)
+  REFERENCES client.client_tbl (id) MATCH SIMPLE
+  ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT country_fk FOREIGN KEY (countryid)
+  REFERENCES system.country_tbl (id) MATCH SIMPLE
+  ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT currency_fk FOREIGN KEY (currencyid)
+  REFERENCES system.currency_tbl (id) MATCH SIMPLE
+  ON UPDATE CASCADE ON DELETE CASCADE
+)
+WITH (
+OIDS=FALSE
+);
+ALTER TABLE client.countrycurrency_tbl
+  OWNER TO postgres;
+
+ALTER TABLE log.transaction_tbl ADD deviceid VARCHAR(50) NULL;
+
+
+INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (208,'Danish Krone','DKK',2);
+UPDATE System.Country_Tbl SET alpha2code = 'DK', alpha3code = 'DNK', code = 208, currencyid = 208 WHERE id = 100;
+
+INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (840,'US Dollar','USD',2);
+UPDATE System.Country_Tbl SET alpha2code = 'US', alpha3code = 'USA', code = 840, currencyid = 840 WHERE id = 200;
+
+DELETE FROM system.cardpricing_tbl;
+DELETE FROM system.pricepoint_tbl;
+
+INSERT INTO system.pricepoint_tbl (id, currencyid, amount) values (-208,208,-1) ;
+INSERT INTO system.pricepoint_tbl (id, currencyid, amount) values (-840,840,-1) ;
+
+UPDATE system.pspcurrency_tbl pc SET currencyid = (SELECT currencyid FROM system.country_tbl WHERE id = pc.countryid) ;
+
+/* Run Alter Scripts to update currency Id before deleting country id column */
+ALTER TABLE system.pspcurrency_tbl DROP COLUMN countryid ;
+
+
+CREATE TABLE client.additionalproperty_tbl
+(
+  id serial NOT NULL,
+  key character varying(200) NOT NULL,
+  value character varying(4000) NOT NULL,
+  modified timestamp without time zone DEFAULT now(),
+  created timestamp without time zone DEFAULT now(),
+  enabled boolean NOT NULL DEFAULT true,
+  externalid integer NOT NULL,
+  type VARCHAR(20) NOT NULL,
+  CONSTRAINT additionalprop_pk PRIMARY KEY (id)
+)
+WITH (
+OIDS=FALSE
+);
+ALTER TABLE client.additionalproperty_tbl
+  OWNER TO postgres;
+
+
+
+/* Update process type 2's name from Bank to Acquirer*/
+
+UPDATE system.processortype_tbl SET name = 'Acquirer' WHERE id = 2;
+
+CREATE TABLE system.paymenttype_tbl
+(
+  id SERIAL PRIMARY KEY NOT NULL,
+  name VARCHAR(50) NOT NULL
+);
+CREATE UNIQUE INDEX paymenttype_tbl_name_uindex ON system.paymenttype_tbl (name);
+
+INSERT INTO system.paymenttype_tbl (name) VALUES ('Card');
+INSERT INTO system.paymenttype_tbl (name) VALUES ('Voucher');
+INSERT INTO system.paymenttype_tbl (name) VALUES ('Wallet');
+INSERT INTO system.paymenttype_tbl (name) VALUES ('APM');
+INSERT INTO system.paymenttype_tbl (name) VALUES ('Card Token');
+
+
+ALTER TABLE system.card_tbl ADD paymenttype INTEGER DEFAULT 1 NOT NULL;
+
+ALTER TABLE system.card_tbl
+  ADD CONSTRAINT card_tbl_paymenttype_tbl_id_fk
+FOREIGN KEY (paymenttype) REFERENCES system.paymenttype_tbl (id);
+
+ALTER TABLE log.transaction_tbl ADD mask VARCHAR(20) NULL;
+ALTER TABLE log.transaction_tbl ADD expiry VARCHAR(5) NULL;
+ALTER TABLE log.transaction_tbl ADD token CHARACTER VARYING(512) COLLATE pg_catalog."default" NULL;
+ALTER TABLE log.transaction_tbl ADD authoriginaldata CHARACTER VARYING(512) NULL;
+
+ALTER TABLE enduser.account_tbl ADD COLUMN pushid character varying(100);
+
+/*  ===========  START : Adding column attempts to Log.Transaction_Tbl  ==================  */
+ALTER TABLE Log.Transaction_Tbl ADD COLUMN attempt integer DEFAULT 1;
+/*  ===========  END : Adding column attempts to Log.Transaction_Tbl  ==================  */
+
+/*  ===========  START : Adding column preferred to Client.CardAccess_Tbl  ==================  */
+ALTER TABLE Client.CardAccess_Tbl ADD COLUMN preferred boolean DEFAULT false;
+/*  ===========  END : Adding column preferred to Client.CardAccess_Tbl  ==================  */
