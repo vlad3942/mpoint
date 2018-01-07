@@ -104,6 +104,10 @@ require_once(sCLASS_PATH ."/trustly.php");
 require_once(sCLASS_PATH ."/paytabs.php");
 // Require specific Business logic for the 2C2P ALC component
 require_once(sCLASS_PATH ."/ccpp_alc.php");
+require_once(sCLASS_PATH ."/condition_info.php");
+require_once(sCLASS_PATH ."/gateway_info.php");
+require_once(sCLASS_PATH ."/routingrule.php");
+require_once(sCLASS_PATH ."/bre.php");
 
 $aMsgCds = array();
 
@@ -179,21 +183,40 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$aMsgCds[56] = "Invalid Currency:".intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) ;
 							}
 						}
+
+						$aAdditionalprop =$obj_TxnInfo->getClientConfig ()->getAdditionalProperties ();
+						$aRoutes = array();
+						
+						if ($aAdditionalprop ["DR_SERVICE"] = 'true') {
+							$obj_RoutingRuleInfos = RoutingRule::produceConfig ( $_OBJ_DB, intval ( $obj_DOM->pay [$i] ["client-id"] ) );
 							
-						
-						$obj_CardXML = simpledom_load_string($obj_mPoint->getCards( (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount) );
-						
+							$obj_ConnInfo = HTTPConnInfo::produceConnInfo("http://tutorial.localhost:10080/bre/get-payment-routes");
+							$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
+							$obj_BRE= new Bre($_OBJ_DB, $_OBJ_TXT);
+							$obj_XML = $obj_BRE->getroute($obj_TxnInfo->getClientConfig (),$obj_ConnInfo,$obj_DOM->pay [$i] ["client-id"] , $obj_DOM->pay[$i] , $obj_RoutingRuleInfos ) ;
+							$aRoutes = $obj_XML->{'get-routes-response'}->{'transaction'}->routes->route ;
+							
+						}
+						$obj_CardXML = '';
+						if (count ( $aRoutes ) == 0) {
+							$obj_CardXML = simpledom_load_string ( $obj_mPoint->getCards ( ( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount ) );
+						} else {
+							foreach ( $aRoutes as $oRoute ) {
+								if ($oRoute {'type-id'} == 1) {
+									//echo 'Primary Route : ' . $oRoute;
+									$iPrimaryRoute = $oRoute;
+									$obj_CardXML = simpledom_load_string ( $obj_mPoint->getCards ( ( integer ) $obj_DOM->pay [$i]->transaction->card [$j]->amount, $iPrimaryRoute ) );
+								}
+							}
+						}
 						//Check if card or payment method is enabled or disabled by merchant
 						//Same check is  also implemented at app side.
 						$obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1]");
-
 						
 						if (count($obj_Elem) == 0) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
 						{
-							
-								
 							if ($code >= 10)
 							{
 								if ($obj_TxnInfo->getAccountID() == -1 && General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true)

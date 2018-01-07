@@ -72,7 +72,7 @@ class GatewayInfo {
 	public static function toXML($oGatewayInfo) {
 		$xml = '<gateways>';
 		foreach ( $oGatewayInfo as $aGatewayObj ) {
-			$xml = $xml . '<gateway  id="' . $aGatewayObj->_iID . '" name ="' . $aGatewayObj->_sName . '" preference ="' . $aGatewayObj->_iPreference . '" available ="' . General::bool2xml ( $aGatewayObj->_bAvailable ) . '" />"';
+			$xml = $xml . '<gateway  id="' . $aGatewayObj->_iID . '" name ="' . $aGatewayObj->_sName . '" preference ="' . $aGatewayObj->_iPreference . '" available ="' . General::bool2xml ( $aGatewayObj->_bAvailable ) . '" />';
 		}
 		$xml = $xml. '</gateways>';
 		return $xml;
