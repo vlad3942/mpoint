@@ -184,10 +184,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 						}
 
-						$aAdditionalprop =$obj_TxnInfo->getClientConfig ()->getAdditionalProperties ();
-						$aRoutes = array();
+						$drEnabled = false;
+						foreach ( $obj_TxnInfo->getClientConfig ()->getAdditionalProperties () as $aAdditionalProperty ) {
+							if ($aAdditionalProperty ['key'] == 'DR_SERVICE' && $aAdditionalProperty ['value'] == 'true') {
+								$drEnabled = true;
+								break;
+							}
+						}
 						
-						if ($aAdditionalprop ["DR_SERVICE"] = 'true') {
+						
+						if ($drEnabled) {
 							$obj_RoutingRuleInfos = RoutingRule::produceConfig ( $_OBJ_DB, intval ( $obj_DOM->pay [$i] ["client-id"] ) );
 							$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 							$obj_BRE= new Bre($_OBJ_DB, $_OBJ_TXT);
