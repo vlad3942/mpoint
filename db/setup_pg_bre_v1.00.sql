@@ -15,10 +15,19 @@
   * Static master data for defining relation between conditions and values
   */
 
-INSERT INTO system.operator_tbl (id,name,symbol) values (1,'Greater than','>');
-INSERT INTO system.operator_tbl (id,name,symbol) values (2,'Less than','<');
-INSERT INTO system.operator_tbl (id,name,symbol) values (3,'Greater Than Equals To','>=');
-INSERT INTO system.operator_tbl (id,name,symbol) values (4,'Less Than Equals To','<=');
+INSERT INTO system.operator_tbl (id,name,symbol) values (1,'Greater than','gt&amp;');
+INSERT INTO system.operator_tbl (id,name,symbol) values (2,'Less than','lt&amp;');
+INSERT INTO system.operator_tbl (id,name,symbol) values (3,'Greater Than Equals To','gt&amp;=');
+INSERT INTO system.operator_tbl (id,name,symbol) values (4,'Less Than Equals To','lt&amp;=');
 INSERT INTO system.operator_tbl (id,name,symbol) values (5,'Equals','==');
-INSERT INTO system.operator_tbl (id,name,symbol) values (6,'AND','&&');
+INSERT INTO system.operator_tbl (id,name,symbol) values (6,'AND','&amp;&amp;');
 INSERT INTO system.operator_tbl (id,name,symbol) values (7,'OR','||');
+
+
+
+/**
+ * Enable DR service for a client 
+ */
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('DR_SERVICE', 'true', 10007, 'client');
+
