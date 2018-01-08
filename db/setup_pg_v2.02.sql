@@ -3417,4 +3417,10 @@ INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (20103 , 'Payment r
 /*  ===========  END : Adding new transaction failure states in mPoint  ==================  */
 
 
+INSERT INTO log.state_tbl (id, name, module) VALUES (4001, 'Session Created', 'Payment');
+INSERT INTO log.state_tbl (id, name, module) VALUES (4010, 'Session Expire', 'Payment');
+INSERT INTO log.state_tbl (id, name, module) VALUES (4020, 'Session Decline (fail)', 'Payment');
+INSERT INTO log.state_tbl (id, name, module) VALUES (4030, 'Session Complete', 'Payment');
 
+INSERT INTO system.sessiontype_tbl (id, name) VALUES (1, 'Normal Session');
+INSERT INTO system.sessiontype_tbl (id, name) VALUES (2, 'Split Payment Session');
