@@ -76,7 +76,7 @@ class CreditCard extends EndUserAccount
 	 * @param 	integer $id 	Unique Card ID that should be fetched
 	 * @return 	Image
 	 */
-	public function getCards($amount, $aDiabledPMs = array())
+	public function getCards($amount, $aDiabledPMs = array(),$iRoute = null)
 	{
 		/* ========== Calculate Logo Dimensions Start ========== */
 		if ( ($this->_obj_UA instanceof UAProfile) === true)
@@ -148,10 +148,20 @@ class CreditCard extends EndUserAccount
 //					echo $sql ."\n";
 					$aRS = $this->getDBConn()->getAllNames($sql);
 				}
+				
+				$pspId = '';
+				
+				if (is_null ( $iRoute )) {
+					$pspId = $RS ["PSPID"];
+				} else {
+					$pspId = $iRoute;
+				}
+				
+				// Construct XML Document with card data
                 $enabled = true;
 				if(in_array($RS['ID'], $aDiabledPMs) === true ) { $enabled = false; }
 				// Construct XML Document with card data
-				$xml .= '<item id="'. $RS["ID"] .'" type-id="'. $RS["ID"] .'" pspid="'. $RS["PSPID"] .'" min-length="'. $RS["MINLENGTH"] .'" max-length="'. $RS["MAXLENGTH"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" state-id="'. $RS["STATEID"] .'" payment-type="'.$RS['PAYMENTTYPE'].'"' .' preferred="'.General::bool2xml($RS['PREFERRED']).'"'. ' enabled = "'.General::bool2xml($enabled).'">';
+				$xml .= '<item id="'. $RS["ID"] .'" type-id="'. $RS["ID"] .'" pspid="'.$pspId.'" min-length="'. $RS["MINLENGTH"] .'" max-length="'. $RS["MAXLENGTH"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" state-id="'. $RS["STATEID"] .'" payment-type="'.$RS['PAYMENTTYPE'].'"' .' preferred="'.General::bool2xml($RS['PREFERRED']).'"'. ' enabled = "'.General::bool2xml($enabled).'">';
 				$xml .= '<name>'. htmlspecialchars($sName, ENT_NOQUOTES) .'</name>';
 				$xml .= '<logo-width>'. $iWidth .'</logo-width>';
 				$xml .= '<logo-height>'. $iHeight .'</logo-height>';
