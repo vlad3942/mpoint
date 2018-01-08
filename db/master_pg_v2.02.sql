@@ -93,4 +93,6 @@ ALTER TABLE Log.Transaction_Tbl ADD COLUMN attempt integer DEFAULT 1;
 ALTER TABLE Client.CardAccess_Tbl ADD COLUMN preferred boolean DEFAULT false;
 /*  ===========  END : Adding column preferred to Client.CardAccess_Tbl  ==================  */
 
-
+/*  ===========  START : Adding communicationchannels to Client.Client_Tbl  ==================  */
+ALTER TABLE client.client_tbl ADD COLUMN communicationchannels integer DEFAULT 0;
+/*  ===========  END : Adding communicationchannels to Client.Client_Tbl  ==================  */

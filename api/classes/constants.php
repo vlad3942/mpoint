@@ -895,5 +895,16 @@ abstract class Constants
 	 * To fetch the card details by passing the auth toke to the wallet instance.
 	 */
 	const sPAYMENT_DATA_FULL = "full";
+
+	/*
+	 * Failed Transaction API modes
+	 * 1. Get All Failed Transaction.
+	 * 2. Get All Initialization Failed Txn
+	 * 3. Get All Txns that have failed authorization with PSP
+	 *
+	 * */
+	const iFAILED_TXNS_ALL = 1;
+	const iFAILED_TXNS_FAILED_INIT = 2;
+	const iFAILED_TXNS_FAILED_AUTH = 3;
 }
 ?>
