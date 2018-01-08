@@ -65,4 +65,4 @@ ALTER TABLE log.transaction_tbl
 FOREIGN KEY (sessionid) REFERENCES log.session_tbl (id);
 /*  ===========  START : Adding communicationchannels to Client.Client_Tbl  ==================  */
 ALTER TABLE client.client_tbl ADD COLUMN communicationchannels integer DEFAULT 0;
-/*  ===========  END : Adding communicationchannels to Client.Client_Tbl  ==================  */d
+/*  ===========  END : Adding communicationchannels to Client.Client_Tbl  ==================  */

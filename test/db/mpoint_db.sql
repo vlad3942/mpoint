@@ -7335,4 +7335,8 @@ COMMENT ON TABLE log.Session_tbl IS 'Session table act as master table for trans
 ALTER TABLE log.transaction_tbl ADD sessionid INTEGER NULL;
 ALTER TABLE log.transaction_tbl
   ADD CONSTRAINT transaction_tbl_session_tbl_id_fk
-FOREIGN KEY (sessionid) REFERENCES log.session_tbl (id);
+FOREIGN KEY (sessionid) REFERENCES log.session_tbl (id);/*  ===========  END : Adding column preferred to Client.CardAccess_Tbl  ==================  */
+
+/*  ===========  START : Adding communicationchannels to Client.Client_Tbl  ==================  */
+ALTER TABLE client.client_tbl ADD COLUMN communicationchannels integer DEFAULT 0;
+/*  ===========  END : Adding communicationchannels to Client.Client_Tbl  ==================  */
