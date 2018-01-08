@@ -82,7 +82,7 @@ class RoutingRule {
 	 */
 	public static function produceConfig(RDB &$oDB, $clientid) {
 		// Availability of Gateway to be retrieve later from Gateway performance monitoring system
-		$sql = "SELECT RT.ID,RT.name,priority,OT.symbol as operator from client.Rule_tbl RT 
+		$sql = "SELECT RT.ID,RT.name,priority,OT.symbol as operator from client".sSCHEMA_POSTFIX.".Rule_tbl RT 
 				JOIN system".sSCHEMA_POSTFIX.".operator_tbl OT ON RT.operatorid = OT.id  where clientid = " . intval ( $clientid ) . " and RT.enabled = 't'";
 		
 		$res = $oDB->query ( $sql );
