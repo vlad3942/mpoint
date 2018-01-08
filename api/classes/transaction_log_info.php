@@ -185,7 +185,7 @@ class TransactionLogInfo
 	 * @param array $aObj_Msgs			List of Message Information instances identifying which states the transaction has gone through
 	 * @param string $desc 				String that holds the description of an order
 	 */
-	public function __construct($id, $tid, $ono, $extid, BasicConfig $oClient, BasicConfig $oSubAccount, BasicConfig $oPSP=null, BasicConfig $oPM=null, $sid, CountryConfig $oCC, $amt, $cptamt, $pnt, $rwd, $rfnd, $fee, $m, CustomerInfo $oCI, $ip, $ts, array $aObj_Msgs, $desc="")
+	public function __construct($id, $tid, $ono, $extid, ClientConfig $oClient, BasicConfig $oSubAccount, BasicConfig $oPSP=null, BasicConfig $oPM=null, $sid, CountryConfig $oCC, $amt, $cptamt, $pnt, $rwd, $rfnd, $fee, $m, CustomerInfo $oCI, $ip, $ts, array $aObj_Msgs, $desc="")
 	{
 		$this->_iID =  (integer) $id;
 		$this->_iTypeID =  (integer) $tid;
@@ -198,7 +198,11 @@ class TransactionLogInfo
 		$this->_iStateID =  (integer) $sid;
 		$this->_obj_CountryConfig = $oCC;
 		
-		$this->_obj_Amount = new AmountInfo($amt, $oCC->getID(), $oCC->getCurrency(), $oCC->getSymbol(), $oCC->getPriceFormat() );
+		$_sCurrencyCode =  $oCC->getCurrency();
+		if($currencyCode != null)
+			$_sCurrencyCode = $currencyCode;
+		
+		$this->_obj_Amount = new AmountInfo($amt, $oCC->getID(), $_sCurrencyCode, $oCC->getSymbol(), $oCC->getPriceFormat() );
 		if (intval($cptamt) > 0) { $this->_obj_CapturedAmount = new AmountInfo($cptamt, $oCC->getID(), $oCC->getCurrency(), $oCC->getSymbol(), $oCC->getPriceFormat() ); }
 		if (intval($pnt) > 0) { $this->_obj_Points = new AmountInfo($pnt, 0, "points", "points", "{PRICE} {CURRENCY}"); }
 		if (intval($rwd) > 0) { $this->_obj_Reward = new AmountInfo($rwd, 0, "points", "points", "{PRICE} {CURRENCY}"); }
@@ -264,6 +268,10 @@ class TransactionLogInfo
 		if (strlen($this->_sExternalID) > 0) { $xml .= ' external-id="'. htmlspecialchars($this->_sExternalID, ENT_NOQUOTES) .'"'; }
 		$xml .= ' mode="'. $this->_iMode .'">';
 		$xml .= '<client id="'. $this->_obj_Client->getID() .'">'. htmlspecialchars($this->_obj_Client->getName(), ENT_NOQUOTES) .'</client>';
+		if( ($this->_obj_Client instanceof ClientConfig) === true)
+        {
+            $xml .= $this->_obj_Client->getCommunicationChannelsConfig()->toXML();
+        }
 		$xml .= $this->_getSubAccountXML();
 		if ( ($this->_obj_PSP instanceof BasicConfig) === true) { $xml .= '<payment-service-provider id="'. $this->_obj_PSP->getID() .'">'. htmlspecialchars($this->_obj_PSP->getName(), ENT_NOQUOTES) .'</payment-service-provider>'; }
 		if ( ($this->_obj_PaymentMethod instanceof BasicConfig) === true) { $xml .= '<payment-method id="'. $this->_obj_PaymentMethod->getID() .'">'. htmlspecialchars($this->_obj_PaymentMethod->getName(), ENT_NOQUOTES) .'</payment-method>'; }

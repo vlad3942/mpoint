@@ -212,7 +212,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$obj_TxnInfo->setAccountID(EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_TxnInfo->getCustomerRef(), $obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ) );
 							// Update Transaction Log
 							$obj_mPoint->logTransaction($obj_TxnInfo);
-							
+
+                            $sOrderXML = '';
 							//Test if the order/cart details are passed as part of the input XML request. 
 							if(count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders) == 1 && count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->children()) > 0 )
 							{
@@ -316,6 +317,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$shipping_id = $obj_TxnInfo->setShippingDetails($_OBJ_DB, $data['shipping_address']);
 								}
 							}
+							elseif(count(count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders) == 0) && $iAttemptNumber > 1 )
+                            {
+                                $aObj_OrderInfoConfigs = OrderInfo::produceConfigurationsFromOrderID($_OBJ_DB, $obj_TxnInfo->getOrderID());
+                                if (count($aObj_OrderInfoConfigs) > 0)
+                                {
+                                    $sOrderXML .= '<orders>';
+                                    foreach ($aObj_OrderInfoConfigs as $obj_OrderInfo)
+                                    {
+                                        $sOrderXML .= $obj_OrderInfo->toXML();
+                                    }
+                                    $sOrderXML .= '</orders>';
+                                }
+                            }
 							
 							if (count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'custom-variables'}) == 1 && count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'custom-variables'}->children() ) > 0)
 							{
@@ -358,6 +372,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$xml .= '</client-config>';
 							$xml .= '<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. htmlspecialchars($obj_TxnInfo->getOrderID(), ENT_NOQUOTES) .'" type-id="'. $obj_TxnInfo->getTypeID() .'" eua-id="'. $obj_TxnInfo->getAccountID() .'" language="'. $obj_TxnInfo->getLanguage() .'" auto-capture="'. General::bool2xml($obj_TxnInfo->useAutoCapture() ) .'" mode="'. $obj_TxnInfo->getMode() .'">';
 							$xml .= $obj_XML->amount->asXML();
+							if (empty($sOrderXML) === false )  { $xml .= $sOrderXML; }
 							if ($obj_TxnInfo->getPoints() > 0) { $xml .= $obj_XML->points->asXML(); }
 							if ($obj_TxnInfo->getReward() > 0) { $xml .= $obj_XML->reward->asXML(); }
 							$xml .= '<mobile country-id="'. $obj_CountryConfig->getID() .'" operator-id="'. $obj_TxnInfo->getOperator() .'">'. floatval($obj_TxnInfo->getMobile() ) .'</mobile>';

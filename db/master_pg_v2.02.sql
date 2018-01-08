@@ -142,3 +142,6 @@ ALTER TABLE log.transaction_tbl ADD sessionid INTEGER NULL;
 ALTER TABLE log.transaction_tbl
   ADD CONSTRAINT transaction_tbl_session_tbl_id_fk
 FOREIGN KEY (sessionid) REFERENCES log.session_tbl (id);
+/*  ===========  START : Adding communicationchannels to Client.Client_Tbl  ==================  */
+ALTER TABLE client.client_tbl ADD COLUMN communicationchannels integer DEFAULT 0;
+/*  ===========  END : Adding communicationchannels to Client.Client_Tbl  ==================  */
