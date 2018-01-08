@@ -487,8 +487,17 @@ class Home extends General
 				$sMaskedCardNumber = substr_replace(trim($RS["MASK"]), str_repeat("*", 4 - $oCC->getNumberOfMaskedDigits() ), -4, 4 - $oCC->getNumberOfMaskedDigits() );
 			}
 			else { $sMaskedCardNumber = trim($RS["MASK"]); }
-			// Construct XML Document with data for saved cards
-			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'" cvc-length="'. $RS["CVCLENGTH"] .'">';
+
+			// set card expired status
+            $aExpiry = explode('/', $RS['EXPIRY']);
+            $expired = "false";
+            if(empty(trim($aExpiry[0])) === false && empty(trim($aExpiry[1])) === false && $this->_cardNotExpired(intval($aExpiry[0]), intval($aExpiry[1])) === false )
+            {
+                $expired = "true";
+            }
+
+            // Construct XML Document with data for saved cards
+			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" expired="'. $expired .'">';
 			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
 			$xml .= '<type id="'. $RS["TYPEID"] .'">'. $RS["TYPE"] .'</type>';
 			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';
@@ -516,6 +525,20 @@ class Home extends General
 		$xml .= '</stored-cards>';
 		return $xml;
 	}
+
+
+    private function _cardNotExpired($month, $year) {
+        /* Get timestamp of midnight on day after expiration month. */
+        $exp_ts = mktime(0, 0, 0, $month + 1, 1, $year);
+
+        $cur_ts = time();
+
+        if ($exp_ts > $cur_ts) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 	/**
 	 * Searches for transaction history given a client ID plus any of the other parameters
 	 *
