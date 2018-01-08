@@ -66,3 +66,6 @@ FOREIGN KEY (sessionid) REFERENCES log.session_tbl (id);
 /*  ===========  START : Adding communicationchannels to Client.Client_Tbl  ==================  */
 ALTER TABLE client.client_tbl ADD COLUMN communicationchannels integer DEFAULT 0;
 /*  ===========  END : Adding communicationchannels to Client.Client_Tbl  ==================  */
+
+ALTER TABLE system.SessionType_tbl  OWNER TO mpoint;
+ALTER TABLE log.Session_tbl  OWNER TO mpoint;
