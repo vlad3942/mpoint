@@ -190,3 +190,12 @@ INSERT INTO client.routing_tbl(ruleid, clientid, gatewayid, preference)    VALUE
 INSERT INTO client.routing_tbl(ruleid, clientid, gatewayid, preference)    VALUES (5,10007,26,3);
 INSERT INTO client.routing_tbl(ruleid, clientid, gatewayid, preference)    VALUES (5,10007,16,4);
 
+
+
+-------- Update operator table ----------
+
+UPDATE system.operator_tbl SET symbol='&gt;' where id=1 ;
+UPDATE system.operator_tbl SET symbol='&lt;' where id=2 ;
+UPDATE system.operator_tbl SET symbol='&gt;=' where id=3 ;
+UPDATE system.operator_tbl SET symbol='&lt;=' where id=4 ;
+
