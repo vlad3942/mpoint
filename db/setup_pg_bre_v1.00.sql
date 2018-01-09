@@ -31,3 +31,11 @@ INSERT INTO system.operator_tbl (id,name,symbol) values (7,'OR','||');
 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('DR_SERVICE', 'true', 10007, 'client');
 
+
+-------- Update operator table ----------
+
+UPDATE system.operator_tbl SET symbol='&gt;' where id=1 ;
+UPDATE system.operator_tbl SET symbol='&lt;' where id=2 ;
+UPDATE system.operator_tbl SET symbol='&gt;=' where id=3 ;
+UPDATE system.operator_tbl SET symbol='&lt;=' where id=4 ;
+
