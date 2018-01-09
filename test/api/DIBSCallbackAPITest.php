@@ -33,7 +33,8 @@ class DIBSCallbackAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 113, $pspID, '1')");
         $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (113, 17, $pspID)");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, mobile, pspid, extid, callbackurl, amount, ip, enabled, keywordid, currencyid) VALUES (1001001, '900-55150298', ". Constants::iPURCHASE_VIA_APP .", 113, 1100, 100, '29612109', null, null, '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 208)");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '900-55150298', 5000, 29612109, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, mobile, pspid, extid, callbackurl, amount, ip, enabled, keywordid, currencyid, sessionid) VALUES (1001001, '900-55150298', ". Constants::iPURCHASE_VIA_APP .", 113, 1100, 100, '29612109', null, null, '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 208,1)");
 
 		trigger_error("mRetail expect external transaction id: 15469928");
 
@@ -69,7 +70,8 @@ class DIBSCallbackAPITest extends baseAPITest
 		$this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 113, $pspID, '1')");
 		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (113, 17, $pspID)");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, mobile, pspid, extid, callbackurl, amount, ip, enabled, keywordid, auto_capture, currencyid) VALUES (1001001, '900-55150298', ". Constants::iPURCHASE_VIA_APP .", 113, 1100, 100, '29612109', null, null, '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, TRUE, 208)");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '900-55150298', 5000, 29612109, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, mobile, pspid, extid, callbackurl, amount, ip, enabled, keywordid, auto_capture, currencyid, sessionid) VALUES (1001001, '900-55150298', ". Constants::iPURCHASE_VIA_APP .", 113, 1100, 100, '29612109', null, null, '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, TRUE, 208, 1)");
 
 		trigger_error("mRetail expect external transaction id: 15469922");
 

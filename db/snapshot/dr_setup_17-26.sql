@@ -174,9 +174,28 @@ INSERT INTO system.operator_tbl (id,name,symbol) values (6,'AND','&amp;&amp;');
 INSERT INTO system.operator_tbl (id,name,symbol) values (7,'OR','||');
 
 
-/**
- * Enable DR service for a client 
- */
+-------- Setting UP sample rules for client 10007
 
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('DR_SERVICE', 'true', 10007, 'client');
+-- Insert a new Rule with operator as "AND" between conditions
+INSERT INTO client.rule_tbl(clientid, operatorid, name, priority)  VALUES (10007 , 6 ,'Amount Rule between 100 to 1000' ,1);
+
+-- Insert conditions for above created rule (id = 5)
+INSERT INTO client.rulecondition_tbl( conditionid, conditionvalue,clientid, operatorid, ruleid)values ( 1, 100 , 10007 , 1, 5);
+INSERT INTO client.rulecondition_tbl( conditionid, conditionvalue,clientid, operatorid, ruleid)values ( 1, 1000 , 10007 , 2, 5);
+
+-- Insert routing details per rule 
+
+INSERT INTO client.routing_tbl(ruleid, clientid, gatewayid, preference)    VALUES (5,10007,18,1);
+INSERT INTO client.routing_tbl(ruleid, clientid, gatewayid, preference)    VALUES (5,10007,25,2);
+INSERT INTO client.routing_tbl(ruleid, clientid, gatewayid, preference)    VALUES (5,10007,26,3);
+INSERT INTO client.routing_tbl(ruleid, clientid, gatewayid, preference)    VALUES (5,10007,16,4);
+
+
+
+-------- Update operator table ----------
+
+UPDATE system.operator_tbl SET symbol='&gt;' where id=1 ;
+UPDATE system.operator_tbl SET symbol='&lt;' where id=2 ;
+UPDATE system.operator_tbl SET symbol='&gt;=' where id=3 ;
+UPDATE system.operator_tbl SET symbol='&lt;=' where id=4 ;
 

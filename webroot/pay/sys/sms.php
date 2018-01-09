@@ -125,7 +125,7 @@ if ($obj_TxnInfo instanceof TxnInfo === true)
 					$iTxnID = $obj_General->newTransaction($obj_ClientConfig, Constants::iTOPUP_PURCHASE_TYPE);
 					$aTxnInfo = array("typeid" => Constants::iTOPUP_PURCHASE_TYPE, "accountid" => $iAccountID,
 									  "amount" => $obj_TxnInfo->getAmount() - $iAccountBalance);
-					$oTI = TxnInfo::produceInfo($iTxnID, $obj_TxnInfo, $aTxnInfo);
+					$oTI = TxnInfo::produceInfo($iTxnID,$_OBJ_DB, $obj_TxnInfo, $aTxnInfo);
 					// Update Transaction Log
 					$obj_mPoint->logTransaction($oTI);
 					
