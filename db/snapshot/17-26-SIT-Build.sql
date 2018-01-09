@@ -69,3 +69,6 @@ ALTER TABLE client.client_tbl ADD COLUMN communicationchannels integer DEFAULT 0
 
 ALTER TABLE system.SessionType_tbl  OWNER TO mpoint;
 ALTER TABLE log.Session_tbl  OWNER TO mpoint;
+
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled) VALUES ('sessiontype', '2', 10018, 'client', false); /* value 1- Normal Payment, 2 - Split Payment */

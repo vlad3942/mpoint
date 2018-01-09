@@ -3424,3 +3424,6 @@ INSERT INTO log.state_tbl (id, name, module) VALUES (4030, 'Session Complete', '
 
 INSERT INTO system.sessiontype_tbl (id, name) VALUES (1, 'Normal Session');
 INSERT INTO system.sessiontype_tbl (id, name) VALUES (2, 'Split Payment Session');
+
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled) VALUES ('sessiontype', '2', 10018, 'client', false); /* value 1- Normal Payment, 2 - Split Payment */
