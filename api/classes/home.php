@@ -788,15 +788,22 @@ class Home extends General
 
 
         $obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $RS["CLIENTID"]);
+
+        $obj_paymentSession = PaymentSession::Get($this->getDBConn(),$RS["SESSIONID"]);
+        $pendingAmount =intval( $obj_paymentSession->getPendingAmount());
+        if($pendingAmount > 0)
+            $pendingAmount = $pendingAmount /100;
         $amount = ((integer) $RS["AMOUNT"])/100;
-        $xml = '<transaction id="'. $RS["ID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" order-no="'. $RS["ORDERID"] .'" accoutid="'. $RS['END_USER_ID'] .'" clientid="'. $RS['CLIENTID'] .'" language="'.$RS['LANG'].'"  card-id="'. $RS["CARDID"] .'" session-id="'. $RS["SESSIONID"] .'">';
-        $xml .= '<amount country-id="'. $RS["COUNTRYID"] .'" currency="'. $RS['CURRENCYID']  .'" symbol="'. utf8_encode($RS['SYMBOL'] ) .'" format="'. $RS['PRICEFORMAT'] .'">'. htmlspecialchars($RS["AMOUNT"], ENT_NOQUOTES) .'</amount>';
+
+        $sessionType = $obj_ClientConfig->getAdditionalProperties("sessiondtype");
+        $xml = '<transaction id="'. $RS["ID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" order-no="'. $RS["ORDERID"] .'" accoutid="'. $RS['END_USER_ID'] .'" clientid="'. $RS['CLIENTID'] .'" language="'.$RS['LANG'].'"  card-id="'. $RS["CARDID"] .'" session-id="'. $RS["SESSIONID"] .'" session-type="'. $sessionType .'">';
+        $xml .= '<amount country-id="'. $RS["COUNTRYID"] .'" currency="'. $RS['CURRENCYID']  .'" symbol="'. utf8_encode($RS['SYMBOL'] ) .'" format="'. $RS['PRICEFORMAT'] .'" pending = "'.$pendingAmount .'">'. htmlspecialchars($amount, ENT_NOQUOTES) .'</amount>';
         $xml .= '<accept-url>'. htmlspecialchars($RS["ACCEPTURL"], ENT_NOQUOTES) .'</accept-url>';
         $xml .= '<cancel-url>'. htmlspecialchars($RS["CANCELURL"], ENT_NOQUOTES) .'</cancel-url>';
         $xml .= '<css-url>'. htmlspecialchars($RS["CSSURL"], ENT_NOQUOTES) .'</css-url>';
         $xml .= '<logo-url>'. htmlspecialchars($RS["LOGOURL"], ENT_NOQUOTES) .'</logo-url>';
         $xml .= '<status-id>'. $RS['STATEID'] .'</status-id>';
-        $xml .= '<sign>'. md5( $RS["CLIENTID"] .'&'. $RS["MPOINTID"] .'&'. $RS["ORDERID"] .'&'. $RS["CURRENCYID"] .'&'.  htmlspecialchars($RS["AMOUNT"], ENT_NOQUOTES) .'&'. $RS["STATEID"] .'.'. $RS["SALT"]) .'</sign>';
+        $xml .= '<sign>'. md5( $RS["CLIENTID"] .'&'. $RS["MPOINTID"] .'&'. $RS["ORDERID"] .'&'. $RS["CURRENCYID"] .'&'.  htmlspecialchars($amount, ENT_NOQUOTES) .'&'. $RS["STATEID"] .'.'. $RS["SALT"]) .'</sign>';
       //  $xml .= '<pre-sign>'.  $RS["CLIENTID"] .','. $RS["MPOINTID"] .','. $RS["ORDERID"] .','. $RS["CURRENCY"] .','.  htmlspecialchars($amount, ENT_NOQUOTES) .','. $RS["STATEID"] .','. $RS["SALT"] .'</pre-sign>';
         $xml .= '<client-info language="'.$RS["LANG"].'" platform="'.$RS["MARKUP"].'">';
         $xml .= '<mobile operator-id="'. $RS["OPERATORID"] .'" country-id="'.$RS["COUNTRYID"] .'">'. $RS["MOBILE"] .'</mobile>';
