@@ -190,16 +190,23 @@ final class PaymentSession
 
     public function getPendingAmount()
     {
-        $sql="SELECT coalesce(sum(amount),0) as amount  
-              FROM log.transaction_tbl txn 
-                INNER JOIN log.message_tbl msg ON txn.id = msg.txnid 
-              WHERE sessionid = ". $this->_id. " 
-                AND msg.stateid in (2000,2001,2007,2008)";
-        //return $this->_pendingAmount;
-        $res = $this->_obj_Db->query($sql);
-        $RS = $this->_obj_Db->fetchName($res);
-        $amount = intval($RS['AMOUNT']);
-        return $this->_amount - $amount;
+        try {
+            $sql = "SELECT  DISTINCT txn.id,  txn.amount 
+              FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn 
+                INNER JOIN log" . sSCHEMA_POSTFIX . ".message_tbl msg ON txn.id = msg.txnid 
+              WHERE sessionid = " . $this->_id . " 
+                AND msg.stateid in (2000,2001,2007,2008) GROUP BY txn.id,msg.stateid";
+            //return $this->_pendingAmount;
+            $res = $this->_obj_Db->query($sql);
+            $amount = 0;
+            while ($RS = $this->_obj_Db->fetchName($res)) {
+                $amount = ($amount + intval($RS['AMOUNT']));
+            }
+            return $this->_amount - $amount;
+        }
+        catch (Exception $e){
+            trigger_error ( "Session - ." . $e->getMessage(), E_USER_ERROR );
+        }
     }
 
     public function updateTransaction($txnId)
