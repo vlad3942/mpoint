@@ -194,8 +194,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             {
                                 $data['attempt'] = 1;
                             }
+                            $data['sessionid'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction["session-id"];
+                            $sessionType =  $obj_ClientConfig->getAdditionalProperties("sessiontype");
+                            if($sessionType > 1 )
+                                $data['sessiontype']=$sessionType;
                             //var_dump($data['attempt']);die;
-							$obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $data);
+                            $obj_TxnInfo = TxnInfo::produceInfo($iTxnID,$_OBJ_DB, $obj_ClientConfig, $data);
+
+                            if($obj_TxnInfo->getPaymentSession()->getPendingAmount() == 0){
+                                $xml = '<status code="4030">Payment session is already completed</status>';
+                                $obj_mPoint->newMessage($iTxnID, Constants::iPAYMENT_DECLINED_STATE, "Payment session is already completed, Session id - ". $obj_TxnInfo->getSessionId());
+                            }
+                            else {
 							// Associate End-User Account (if exists) with Transaction
 							$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]);
 	
@@ -370,6 +380,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$xml .= $obj_XML->{'callback-url'}->asXML();
 							$xml .= $obj_XML->{'accept-url'}->asXML();
 							$xml .= '</transaction>';
+							$xml .= $obj_TxnInfo->getPaymentSessionXML();
 							$obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount(), $aFailedPMArray ), "SimpleXMLElement", LIBXML_COMPACT);
 
 							// End-User already has an account and payment with Account enabled
@@ -390,7 +401,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								if ($obj_XML->item[$j]["type-id"] != 11
 									|| ($obj_TxnInfo->getAccountID() > 0 && (count($aObj_XML) > 0 || $obj_ClientConfig->getStoreCard() == 2) ) )
 								{
-									if (in_array((integer) $obj_XML->item[$j]["pspid"], $aPSPs) === false) { $aPSPs[] = intval($obj_XML->item[$j]["pspid"] ); } 
+									if (in_array((integer) $obj_XML->item[$j]["pspid"], $aPSPs) === false) { $aPSPs[] = intval($obj_XML->item[$j]["pspid"] ); }
 									$cardsXML .= '<card id="'. $obj_XML->item[$j]["id"] .'" type-id="'. $obj_XML->item[$j]["type-id"] .'" psp-id="'. $obj_XML->item[$j]["pspid"] .'" min-length="'. $obj_XML->item[$j]["min-length"] .'" max-length="'. $obj_XML->item[$j]["max-length"] .'" cvc-length="'. $obj_XML->item[$j]["cvc-length"] .'" state-id="'. $obj_XML->item[$j]["state-id"] .'" payment-type="'. $obj_XML->item[$j]["payment-type"].'" preferred="'. $obj_XML->item[$j]["preferred"].'" enabled="'. $obj_XML->item[$j]["enabled"].'">';
 									$cardsXML .= '<name>'. htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) .'</name>';
 									$cardsXML .= $obj_XML->item[$j]->prefixes->asXML();
@@ -439,6 +450,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$xml .= $obj_XML->points->asXML();
 								$xml .= '</account>';
 							}
+                            }
 						}
 						// Internal Error
 						catch (mPointException $e)

@@ -1,4 +1,3 @@
-
 <?php
 /**
  * The Info package contains various data classes holding information such as:

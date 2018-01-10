@@ -130,7 +130,7 @@ class Refund extends General
 			if (is_resource($res) === false) { trigger_error("Failed to update refunded amount for transaction: ". $this->getTxnInfo()->getID(), E_USER_WARNING); }
 
 			$aArgs = array("amount" => $iAmount);
-			$this->_obj_TxnInfo = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->_obj_TxnInfo, $aArgs);
+			$this->_obj_TxnInfo = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(),$this->getDBConn(), $this->_obj_TxnInfo, $aArgs);
 		}
 		
 		return $code;
