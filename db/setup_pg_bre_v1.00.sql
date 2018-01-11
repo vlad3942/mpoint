@@ -39,3 +39,5 @@ UPDATE system.operator_tbl SET symbol='&lt;' where id=2 ;
 UPDATE system.operator_tbl SET symbol='&gt;=' where id=3 ;
 UPDATE system.operator_tbl SET symbol='&lt;=' where id=4 ;
 
+INSERT INTO system.operator_tbl (id,name,symbol) values (8,'Not Equals','!=');
+
