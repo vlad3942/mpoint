@@ -89,9 +89,24 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
 					{
-                        try
-						{
-                            $obj_XML = simplexml_load_string($obj_TxnInfo->toXML(), "SimpleXMLElement", LIBXML_COMPACT);
+                        try {
+                            $sOrderXML = '';
+                            $aPSPs = array();
+                            $sOrderID = $obj_TxnInfo->getOrderID();
+                            if (empty($sOrderID) === false)
+                            {
+                                $aObj_OrderInfoConfigs = OrderInfo::produceConfigurationsFromOrderID($_OBJ_DB, $obj_TxnInfo->getOrderID());
+                                if (count($aObj_OrderInfoConfigs) > 0)
+                                {
+                                    $sOrderXML .= '<orders>';
+                                    foreach ($aObj_OrderInfoConfigs as $obj_OrderInfo) {
+                                        $sOrderXML .= $obj_OrderInfo->toXML();
+                                    }
+                                    $sOrderXML .= '</orders>';
+                                }
+                            }
+
+						    $obj_XML = simplexml_load_string($obj_TxnInfo->toXML(), "SimpleXMLElement", LIBXML_COMPACT);
                             $xml .= '';
                             $xml .= '<client-config id="'. $obj_ClientConfig->getID() .'" account="'. $obj_ClientConfig->getAccountConfig()->getID() .'" store-card="'. $obj_ClientConfig->getStoreCard() .'" auto-capture="'. General::bool2xml($obj_ClientConfig->useAutoCapture() ) .'" mode="'. $obj_ClientConfig->getMode() .'">';
                             $xml .= '<name>'. htmlspecialchars($obj_ClientConfig->getName(), ENT_NOQUOTES) .'</name>';
@@ -101,6 +116,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $xml .= '<app-url>'. htmlspecialchars($obj_ClientConfig->getAppURL(), ENT_NOQUOTES) .'</app-url>';
                             $xml .= '<css-url>'. htmlspecialchars($obj_ClientConfig->getCSSURL(), ENT_NOQUOTES) .'</css-url>';
                             $xml .= '<logo-url>'. htmlspecialchars($obj_ClientConfig->getLogoURL(), ENT_NOQUOTES) .'</logo-url>';
+                            $xml .= '<base-image-url>'. htmlspecialchars($obj_ClientConfig->getBaseImageURL(), ENT_NOQUOTES) .'</base-image-url>';
                             $xml .= '<additional-config>';
                             foreach ($obj_ClientConfig->getAdditionalProperties() as $aAdditionalProperty)
                             {
@@ -110,6 +126,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $xml .= '</client-config>';
                             $xml .= '<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. htmlspecialchars($obj_TxnInfo->getOrderID(), ENT_NOQUOTES) .'" type-id="'. $obj_TxnInfo->getTypeID() .'" eua-id="'. $obj_TxnInfo->getAccountID() .'" language="'. $obj_TxnInfo->getLanguage() .'" auto-capture="'. General::bool2xml($obj_TxnInfo->useAutoCapture() ) .'" mode="'. $obj_TxnInfo->getMode() .'">';
                             $xml .= $obj_XML->amount->asXML();
+                            if (empty($sOrderXML) === false )  { $xml .= $sOrderXML; }
                             if ($obj_TxnInfo->getPoints() > 0) { $xml .= $obj_XML->points->asXML(); }
                             if ($obj_TxnInfo->getReward() > 0) { $xml .= $obj_XML->reward->asXML(); }
                             $xml .= '<mobile country-id="'. $obj_CountryConfig->getID() .'" operator-id="'. $obj_TxnInfo->getOperator() .'">'. floatval($obj_TxnInfo->getMobile() ) .'</mobile>';

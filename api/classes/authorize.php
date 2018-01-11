@@ -65,7 +65,7 @@ class Authorize extends General
 
 					// Add pspid, externalid to transaction info
 					$misc = array('psp-id'=>$this->_obj_PSP->getPSPID(), 'extid'=>$code);
-					$this->_obj_TxnInfo = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->_obj_TxnInfo, $misc);
+					$this->_obj_TxnInfo = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(),$this->getDBConn(), $this->_obj_TxnInfo, $misc);
 					$code = 100;
 				}
 				else { $iStateID = Constants::iPAYMENT_REJECTED_STATE; }
@@ -101,7 +101,7 @@ class Authorize extends General
 	{
 		// Add pspid, externalid to transaction info
 		$misc = array('psp-id'=>$this->_obj_PSP->getPSPID(), 'description'=>$sMsg);
-		$this->_obj_TxnInfo = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->_obj_TxnInfo, $misc);
+		$this->_obj_TxnInfo = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(),$this->getDBConn(),  $this->_obj_TxnInfo, $misc);
 	
 		// If amount is not set by caller, assume full transaction amount
 		if ($iAmount <= 0) { $iAmount = $this->_obj_TxnInfo->getAmount(); }

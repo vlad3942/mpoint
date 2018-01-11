@@ -50,6 +50,7 @@
 								</xs:all>
 								<xs:attribute name="order-no" type="xs:string" use="optional" />
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="40" />
+                                <xs:attribute name="session-id" type="xs:positiveInteger" use="optional"/>
 							</xs:complexType>
 						</xs:element>
 						<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1" />
