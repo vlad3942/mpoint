@@ -259,9 +259,20 @@ try
 											intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) === Constants::iNEW_CARD_PURCHASE_TYPE &&
 											$obj_Validator->valCardNumber($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}) != 10										
 										) { $aMsgCds[] = 21; }
-                                        
-                                        if($obj_TxnInfo->getAmount() != intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount)){
-                                            $aMsgCds[52] = "Invalid amount:".$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
+
+                                        if($obj_ClientConfig->getAdditionalProperties("sessiontype") > 1 ){
+                                            $pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
+                                            if((integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount > $pendingAmount)
+                                            {
+                                                $aMsgCds[53] = "Amount is more than pending amount: ". (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
+                                            }
+                                            else{
+                                                $obj_TxnInfo->updateTransactionAmount($_OBJ_DB,(integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount);
+                                            }
+                                        }else {
+                                            if ($obj_TxnInfo->getAmount() != intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount)) {
+                                                $aMsgCds[52] = "Invalid amount:" . $obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount;
+                                            }
                                         }
                                         // Validate currency if explicitly passed in request, which defer from default currency of the country
                                         if(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["currency-id"]) > 0){

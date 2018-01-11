@@ -44,7 +44,7 @@ try
 	if ($obj_TxnInfo->getTypeID() >= 100 && $obj_TxnInfo->getTypeID() <= 109 && $obj_TxnInfo->getClientConfig()->getCountryConfig()->getID() == $_REQUEST['clientid'])
 	{
 		$aTxnInfo = array("client_config" => ClientConfig::produceConfig($_OBJ_DB, $_REQUEST['clientid'], -1) );
-		$obj_TxnInfo = TxnInfo::produceInfo($_REQUEST['mpoint-id'], $obj_TxnInfo, $aTxnInfo);
+		$obj_TxnInfo = TxnInfo::produceInfo($_REQUEST['mpoint-id'], $_OBJ_DB, $obj_TxnInfo, $aTxnInfo);
 	}
 	$obj_mPoint = new WannaFind($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["wannafind"]);
 
