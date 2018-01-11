@@ -169,7 +169,7 @@ abstract class Callback extends EndUserAccount
 			$this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true) );
 			throw new CallbackException("Unable to complete log for Transaction: ". $this->_obj_TxnInfo->getID(), 1001);
 		}
-
+        $this->_obj_TxnInfo->getPaymentSession()->updateState();
 		return $sid;
 	}
 	
