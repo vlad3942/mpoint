@@ -661,6 +661,12 @@ abstract class Constants
 	 *
 	 */
 	const i2C2P_ALC_PSP = 40;
+
+    /**
+     * Unique ID for the Payment Service Provider: Citcon - WeChat Pay
+     *
+     */
+    const iCITCON_PSP = 41;
 	
 	/**
 	 * Unique ID for the Electronic Payment Flow
