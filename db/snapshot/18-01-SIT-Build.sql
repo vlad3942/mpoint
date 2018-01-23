@@ -1,5 +1,5 @@
 /* ========== Global Configuration for Citcon - WeChat Pay - Payment Method : START========== */
-INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength) VALUES (39, 'WeChat Pay', 23, -1, -1, -1);
+INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength,paymenttype) VALUES (39, 'WeChat Pay', 23, -1, -1, -1,4);
 INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (39, 0, 0);
 INSERT INTO system.cardpricing_tbl ( pricepointid, cardid) VALUES ( -840, 39);
 
