@@ -405,11 +405,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						SET pspid = ". $obj_PSPConfig->getID() ."
 						WHERE id = ". $this->getTxnInfo()->getID();
 				$this->getDBConn()->query($sql);
-
-				if(count($obj_XML->{"hidden-fields"}) > 0){
+				
+               /* if(count($obj_XML->{"hidden-fields"}) > 0){
                     $obj_XML->{"hidden-fields"}->{"store-card"} = parent::bool2xml($sc);
                     $obj_XML->{"hidden-fields"}->{"requested_currency_id"} = $this->getTxnInfo()->getCurrencyConfig()->getID() ;
-                }
+                } */
+				
                 $obj_XML->name = 'card_holderName';
 			}
 			else { throw new mPointException("Could not construct  XML for initializing payment with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
