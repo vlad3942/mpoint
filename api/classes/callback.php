@@ -312,7 +312,7 @@ abstract class Callback extends EndUserAccount
 	 * @param 	SurePayConfig $$obj_SurePay SurePay Configuration Object. Default value null
 	 * @param 	integer $fee				The amount the customer will pay in fee�s for the Transaction. Default value 0
 	 */
-	public function notifyClient($sid, $sAdditionalData="", $pspid, $amt,  $cardno="", $cardid=0, $exp=null, SurePayConfig &$obj_SurePay=null, $fee=0)
+	public function notifyClient($sid, $sAdditionalData, $pspid, $amt,  $cardno="", $cardid=0, $exp=null, SurePayConfig &$obj_SurePay=null, $fee=0)
 	{		
 		trigger_error("*************additional data = ".(string) $sAdditionalData, E_USER_NOTICE);
 		$sDeviceID = $this->_obj_TxnInfo->getDeviceID();
