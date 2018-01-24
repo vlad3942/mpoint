@@ -199,6 +199,7 @@ try
 									  $fee,
 									  array($HTTP_RAW_POST_DATA) );
 	
+	
 	// Payment Authorized: Perform a callback to the 3rd party Wallet if required
 	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 	{
@@ -303,6 +304,10 @@ try
 	
   }
   
+  $sAdditionalData = (string) $obj_XML->callback->{'additional-data'};
+ 
+ trigger_error("*************additional data in general.php = ". $sAdditionalData , E_USER_NOTICE);
+  
   // Callback URL has been defined for Client
   if ($obj_TxnInfo->getCallbackURL() != "")
   {
@@ -317,9 +322,9 @@ try
       flush();
      foreach ($aStateId as $iStateId) {
          if ($iStateId == 2000) {
-             $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate));
+             $obj_mPoint->notifyClient($iStateId,(string)$sAdditionalData, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate));
          } else {
-             $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"]));
+             $obj_mPoint->notifyClient($iStateId,(string)$sAdditionalData, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"]));
          }
      }
 
