@@ -120,7 +120,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 			$_REQUEST['gomobileid'] = -1;
 			$obj_mPoint->newMessage($iTxnID, Constants::iINPUT_VALID_STATE, var_export($_REQUEST, true) );
 
-			$obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $_REQUEST);
+			$obj_TxnInfo = TxnInfo::produceInfo($iTxnID,$_OBJ_DB, $obj_ClientConfig, $_REQUEST);
 			// Associate End-User Account (if exists) with Transaction
 			$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getMobile() );
 			if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getEMail() ); }

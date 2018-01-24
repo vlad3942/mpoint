@@ -71,7 +71,7 @@ if(isset($_REQUEST['client-account']) == true)
 						$data['email'] = 'jona@oismail.com';
 						$data['customer-ref'] = 'Test-User';
 						
-						$obj_TxnInfo = TxnInfo::produceInfo($iTXNID, $obj_ClientConfig, $data);
+						$obj_TxnInfo = TxnInfo::produceInfo($iTXNID,$_OBJ_DB, $obj_ClientConfig, $data);
 						
 						// Update Transaction Log
 						$obj_mPoint->logTransaction($obj_TxnInfo);

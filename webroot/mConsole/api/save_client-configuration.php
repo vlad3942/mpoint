@@ -72,7 +72,11 @@ $HTTP_RAW_POST_DATA .= '<min>501999</min>';
 $HTTP_RAW_POST_DATA .= '<max>501999</max>';  
 $HTTP_RAW_POST_DATA .= '</issuer-identification-number-range>';  
 $HTTP_RAW_POST_DATA .= '</issuer-identification-number-ranges>';  
-$HTTP_RAW_POST_DATA .= '</client-config>';  
+$HTTP_RAW_POST_DATA .= '<communication-channels>';
+$HTTP_RAW_POST_DATA .= '<channel type = "1" />';
+$HTTP_RAW_POST_DATA .= '<channel type = "5" />';
+$HTTP_RAW_POST_DATA .= '</communication-channels>';
+$HTTP_RAW_POST_DATA .= '</client-config>';
 $HTTP_RAW_POST_DATA .= '</save-client-configuration>';  
 $HTTP_RAW_POST_DATA .= '</root>';  
 */
@@ -146,49 +150,58 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			/* ========== INPUT VALIDATION START ========== */
 			$obj_Validate = new Validate();
 			$aMsgCodes = array();		
-			for ($i=0; $i<count($obj_DOM->{'save-client-configuration'}->{'client-config'}); $i++)
-			{										
-				$iClientID = intval($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]["id"]);			
-				$code = $obj_Validate->valBasic($_OBJ_DB, $iClientID, -1);				
-				if (in_array($code, array(4, 14, 100) ) === false) { $aMsgCodes[$iClientID][] = new BasicConfig($code + 10, "Validation of Client : ". $iClientID ." failed"); }
-								
-				// Validate Account Configurations
-				for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}); $j++)
-				{
-					$iAccountID = intval($obj_DOM->{'save-client-configuration'}->{'client-config'}->{'account-configurations'}->{'account-config'}[$j]["id"]);
-					$code = $obj_Validate->valBasic($_OBJ_DB, $iClientID, $iAccountID);
-					if (in_array($code, array(14, 100, 11, 12) ) === true)
-					{
-						// Validate Merchant Sub-Accounts
-						for ($k=0; $k<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}); $k++)
-						{ 										
-							$id = intval($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$k]["id"]);
-							$code = $obj_Validate->valMerchantSubAccountID($_OBJ_DB, $id, $iAccountID);
-							if (1 < $code && $code < 10) { $aMsgCodes[$iClientID][] = new BasicConfig($code + 30, "Validation of Merchant Sub Account : ". $id ." failed"); }
-						}
-					}
-					else { $aMsgCodes[$iClientID][] = new BasicConfig($code + 20, "Validation of Account : ". $iAccountID ." failed"); }
-				}
-				// Validate Merchant Accounts				
-				for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-service-providers'}->{'payment-service-provider'} ); $j++)
-				{
-					$id = $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-service-providers'}->{'payment-service-provider'}[$j]["id"];
-					$code = $obj_Validate->valMerchantAccountID($_OBJ_DB, $id, $iClientID);
-					if (1 < $code && $code < 10) { $aMsgCodes[$iClientID][] = new BasicConfig($code + 40, "Validation of Merchant Account : ". $id ." failed"); }
-				}
-				// Validate Payment Methods
-				for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'} ); $j++)											
-				{
-					$id = $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["id"];
-					$code = $obj_Validate->valCardAccessID($_OBJ_DB, $id, $iClientID);
-					if (1 < $code && $code < 10) { $aMsgCodes[$iClientID][] = new BasicConfig($code + 50, "Validation of Payment Method : ". $id ." failed"); }
-				}					
-				// Validate Issuer Identification Number Ranges
-				for ($j=0; $j<count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}); $j++)
-				{
-					$id = $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}[$j]["id"];
-					$code = $obj_Validate->valIINRangeID($_OBJ_DB, $id, $iClientID);
-					if (1 < $code && $code < 10) { $aMsgCodes[$iClientID][] = new BasicConfig($code + 60, "Validation of Client IIN Range : ". $id ." failed"); }
+			for ($i=0; $i<count($obj_DOM->{'save-client-configuration'}->{'client-config'}); $i++) {
+                $iClientID = intval($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]["id"]);
+                $code = $obj_Validate->valBasic($_OBJ_DB, $iClientID, -1);
+                if (in_array($code, array(4, 14, 100)) === false) {
+                    $aMsgCodes[$iClientID][] = new BasicConfig($code + 10, "Validation of Client : " . $iClientID . " failed");
+                }
+
+                // Validate Account Configurations
+                for ($j = 0; $j < count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}); $j++) {
+                    $iAccountID = intval($obj_DOM->{'save-client-configuration'}->{'client-config'}->{'account-configurations'}->{'account-config'}[$j]["id"]);
+                    $code = $obj_Validate->valBasic($_OBJ_DB, $iClientID, $iAccountID);
+                    if (in_array($code, array(14, 100, 11, 12)) === true) {
+                        // Validate Merchant Sub-Accounts
+                        for ($k = 0; $k < count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}); $k++) {
+                            $id = intval($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'account-configurations'}->{'account-config'}[$j]->{'payment-service-providers'}->{'payment-service-provider'}[$k]["id"]);
+                            $code = $obj_Validate->valMerchantSubAccountID($_OBJ_DB, $id, $iAccountID);
+                            if (1 < $code && $code < 10) {
+                                $aMsgCodes[$iClientID][] = new BasicConfig($code + 30, "Validation of Merchant Sub Account : " . $id . " failed");
+                            }
+                        }
+                    } else {
+                        $aMsgCodes[$iClientID][] = new BasicConfig($code + 20, "Validation of Account : " . $iAccountID . " failed");
+                    }
+                }
+                // Validate Merchant Accounts
+                for ($j = 0; $j < count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-service-providers'}->{'payment-service-provider'}); $j++) {
+                    $id = $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-service-providers'}->{'payment-service-provider'}[$j]["id"];
+                    $code = $obj_Validate->valMerchantAccountID($_OBJ_DB, $id, $iClientID);
+                    if (1 < $code && $code < 10) {
+                        $aMsgCodes[$iClientID][] = new BasicConfig($code + 40, "Validation of Merchant Account : " . $id . " failed");
+                    }
+                }
+                // Validate Payment Methods
+                for ($j = 0; $j < count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}); $j++) {
+                    $id = $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'payment-methods'}->{'payment-method'}[$j]["id"];
+                    $code = $obj_Validate->valCardAccessID($_OBJ_DB, $id, $iClientID);
+                    if (1 < $code && $code < 10) {
+                        $aMsgCodes[$iClientID][] = new BasicConfig($code + 50, "Validation of Payment Method : " . $id . " failed");
+                    }
+                }
+                // Validate Issuer Identification Number Ranges
+                for ($j = 0; $j < count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}); $j++) {
+                    $id = $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'issuer-identification-number-ranges'}->{'issuer-identification-number-range'}[$j]["id"];
+                    $code = $obj_Validate->valIINRangeID($_OBJ_DB, $id, $iClientID);
+                    if (1 < $code && $code < 10) {
+                        $aMsgCodes[$iClientID][] = new BasicConfig($code + 60, "Validation of Client IIN Range : " . $id . " failed");
+                    }
+                }
+                //Summing Up communication channel values for the given client
+                $sumChannels = 0;
+                for ($j = 0; $j < count($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'communication-channels'}->{'channel'}); $j++) {
+                	$sumChannels += intval($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'communication-channels'}->{'channel'}[$j]["type"] );
 				}
 				
 			}
@@ -219,6 +232,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 															 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->identification,
 															 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'transaction-time-to-live'},
 															 trim($obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]->{'salt'}),
+															 $sumChannels,
 															 (integer) $obj_DOM->{'save-client-configuration'}->{'client-config'}[$i]["id"] );
 						// Success
 						if ($iClientID > 0)
