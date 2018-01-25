@@ -198,13 +198,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						}
 
 						$drEnabled = false;
+						$aRoutes = array();
 						foreach ( $obj_TxnInfo->getClientConfig ()->getAdditionalProperties () as $aAdditionalProperty ) {
 							if ($aAdditionalProperty ['key'] == 'DR_SERVICE' && $aAdditionalProperty ['value'] == 'true') {
 								$drEnabled = true;
 								break;
 							}
 						}
-						
 						
 						if ($drEnabled) {
 							$obj_RoutingRuleInfos = RoutingRule::produceConfig ( $_OBJ_DB, intval ( $obj_DOM->pay [$i] ["client-id"] ) );

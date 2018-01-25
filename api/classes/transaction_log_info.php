@@ -185,7 +185,7 @@ class TransactionLogInfo
 	 * @param array $aObj_Msgs			List of Message Information instances identifying which states the transaction has gone through
 	 * @param string $desc 				String that holds the description of an order
 	 */
-	public function __construct($id, $tid, $ono, $extid, ClientConfig $oClient, BasicConfig $oSubAccount, BasicConfig $oPSP=null, BasicConfig $oPM=null, $sid, CountryConfig $oCC, $amt, $cptamt, $pnt, $rwd, $rfnd, $fee, $m, CustomerInfo $oCI, $ip, $ts, array $aObj_Msgs, $desc="")
+	public function __construct($id, $tid, $ono, $extid, ClientConfig $oClient, BasicConfig $oSubAccount, BasicConfig $oPSP=null, BasicConfig $oPM=null, $sid, CountryConfig $oCC, $amt, $cptamt, $pnt, $rwd, $rfnd, $fee, $m, CustomerInfo $oCI, $ip, $ts, array $aObj_Msgs, $desc="", $currencyCode=null)
 	{
 		$this->_iID =  (integer) $id;
 		$this->_iTypeID =  (integer) $tid;
