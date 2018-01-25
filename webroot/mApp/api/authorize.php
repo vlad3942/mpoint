@@ -106,6 +106,13 @@ require_once(sCLASS_PATH ."/nets.php");
 require_once(sCLASS_PATH ."/mvault.php");
 // Require specific Business logic for the 2c2p alc component
 require_once(sCLASS_PATH ."/ccpp_alc.php");
+
+require_once(sCLASS_PATH ."/condition_info.php");
+require_once(sCLASS_PATH ."/gateway_info.php");
+require_once(sCLASS_PATH ."/routingrule.php");
+require_once(sCLASS_PATH ."/bre.php");
+
+
 ignore_user_abort(true);
 set_time_limit(120);
 
@@ -212,8 +219,39 @@ try
 										
 										
 										$obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-										$obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
-	
+										
+										$drEnabled = false;
+										$aRoutes = array();
+										
+										foreach ( $obj_TxnInfo->getClientConfig ()->getAdditionalProperties () as $aAdditionalProperty ) {
+											if ($aAdditionalProperty ['key'] == 'DR_SERVICE' && $aAdditionalProperty ['value'] == 'true') {
+												$drEnabled = true;
+												break;
+											}
+										}
+										
+										if ($drEnabled) {
+											$obj_RoutingRuleInfos = RoutingRule::produceConfig ( $_OBJ_DB, intval ( $obj_DOM->{'authorize-payment'} [$i] ["client-id"] ) );
+											$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
+											$obj_BRE= new Bre($_OBJ_DB, $_OBJ_TXT);
+											$obj_XML = $obj_BRE->getroute($obj_TxnInfo->getClientConfig (),$obj_ConnInfo,$obj_DOM->{'authorize-payment'} [$i] ["client-id"] , $obj_DOM->{'authorize-payment'}[$i] , $obj_RoutingRuleInfos ) ;
+											$aRoutes = $obj_XML->{'get-routes-response'}->{'transaction'}->routes->route ;
+										}
+										
+										$obj_CardXML = '';
+										
+										if (count ( $aRoutes ) == 0) {
+											$obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
+										} else {
+											foreach ( $aRoutes as $oRoute ) {
+												if ($oRoute {'type-id'} == 1) {
+													$empty = array();
+													$obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount,$empty,$oRoute) );
+													break;
+												}
+											}
+										}
+										
 										//Check if card or payment method is enabled or disabled by merchant
 										//Same check is  also implemented at app side.
 										$obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = ". intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1]");
