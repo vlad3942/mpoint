@@ -331,7 +331,7 @@ try
       echo '<status code="1000">Callback Success</status>';
       echo '</root>';
   }
-    $this->getTxnInfo()->getPaymentSession()->updateState();
+    $obj_mPoint->getTxnInfo()->getPaymentSession()->updateState();
 }
 catch (TxnInfoException $e)
 {
