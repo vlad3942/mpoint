@@ -306,7 +306,6 @@ try
   
   $sAdditionalData = (string) $obj_XML->callback->{'additional-data'};
  
- trigger_error("*************additional data in general.php = ". $sAdditionalData , E_USER_NOTICE);
   
   // Callback URL has been defined for Client
   if ($obj_TxnInfo->getCallbackURL() != "")
