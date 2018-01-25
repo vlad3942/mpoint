@@ -319,7 +319,7 @@ abstract class Callback extends EndUserAccount
 		/* ----- Construct Body Start ----- */
 		$sBody = "";
 		$sBody .= "mpoint-id=". $this->_obj_TxnInfo->getID();
-		if($sAdditionalData != "")
+		if(strlen($sAdditionalData) > 0)
 		$sBody .= "&".$sAdditionalData;	
 		$sBody .= "&orderid=". urlencode($this->_obj_TxnInfo->getOrderID() );
 		$sBody .= "&status=". $sid;
@@ -347,6 +347,7 @@ abstract class Callback extends EndUserAccount
 		{
 			$sBody .= "&expiry=". $exp;
 		}
+		trigger_error("********************* ". $sBody, E_USER_NOTICE);
 		/* Adding customer Info as part of the callback query params */
 		if (($this->_obj_TxnInfo->getAccountID() > 0) === true )
         {
