@@ -221,6 +221,8 @@ try
 										$obj_mCard = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 										
 										$drEnabled = false;
+										$aRoutes = array();
+										
 										foreach ( $obj_TxnInfo->getClientConfig ()->getAdditionalProperties () as $aAdditionalProperty ) {
 											if ($aAdditionalProperty ['key'] == 'DR_SERVICE' && $aAdditionalProperty ['value'] == 'true') {
 												$drEnabled = true;
