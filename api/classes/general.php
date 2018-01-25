@@ -13,13 +13,6 @@
  * @version 1.11
  */
 
-/* ==================== mPoint Exception Classes Start ==================== */
-/**
- * Super class for all mPoint Exceptions
- */
-class mPointException extends Exception { }
-/* ==================== mPoint Exception Classes End ==================== */
-
 /**
  * General class for functionality methods which are used by several different modules or components
  *
@@ -93,7 +86,7 @@ class General
 		// Message codes returned from server
 		if (array_key_exists("msg", $_GET) === true)
 		{
-			settype($_GET['msg'], "array");
+           // settype($_GET['msg'], "array");
 			// Loop through all returned message codes
 			for ($i=0; $i<count($_GET['msg']); $i++)
 			{
@@ -369,8 +362,9 @@ class General
 	 *
 	 * @return 	string
 	 */
-	public function getSystemInfo()
-	{
+    public function getSystemInfo($protocol)
+    {
+        $protocol = isset($protocol) === true ? $protocol : "http";
 		if (array_key_exists("QUERY_STRING", $_SERVER) === false) { $_SERVER['QUERY_STRING'] = ""; }
 	switch (true)
 		{
@@ -397,12 +391,11 @@ class General
 		$dir = str_replace("\\", "/", dirname($_SERVER['PHP_SELF']) );
 		if (substr($dir, -1) != "/") { $dir .= "/"; }
 		$xml = '<system>';
-		$xml .= '<protocol>http</protocol>';
+		$xml .= '<protocol>'.$protocol.'</protocol>';
 		$xml .= '<host>'. $_SERVER['HTTP_HOST'] .'</host>';
 		$xml .= '<dir>'. $dir .'</dir>';
 		$xml .= '<file>'. substr($_SERVER['PHP_SELF'], strrpos($_SERVER['PHP_SELF'], "/")+1) .'</file>';
 		$xml .= '<query-string>'. htmlspecialchars($_SERVER['QUERY_STRING'], ENT_NOQUOTES) .'</query-string>';
-		$xml .= '<session id="'. session_id() .'">'. session_name() .'</session>';
 		$xml .= '<language>'. sLANG .'</language>';
 		$xml .= '<spinner format="base64">'. base64_encode(file_get_contents($_SERVER['DOCUMENT_ROOT'] ."/img/loader.gif") ) .'</spinner>';
 		$xml .= '<loading>'. $this->getText()->_("Loading...") .'</loading>';
@@ -433,18 +426,18 @@ class General
 		if(php_sapi_name() == "cli")
 		{
 			$ip = gethostbyname(gethostname());
-		} else if(isset($_SERVER['REMOTE_ADDR']) == true)
-		{ 
-			$ip = $_SERVER['REMOTE_ADDR']; 
-		} else if (array_key_exists("HTTP_X_FORWARDED_FOR", $_SERVER) === true) 
-		{ 
-			$ip = $_SERVER['HTTP_X_FORWARDED_FOR']; 
-		}
-		
+		}  else if (array_key_exists("HTTP_X_FORWARDED_FOR", $_SERVER) === true)
+		{
+			$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		}else if(isset($_SERVER['REMOTE_ADDR']) == true)
+        {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+
 		$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-					(id, typeid, clientid, accountid, countryid, keywordid, \"mode\", ip)
+					(id, typeid, clientid, accountid, countryid, keywordid, \"mode\", ip,cssurl,logourl)
 				VALUES
-					(". $RS["ID"] .", ". intval($tid) .", ". $oCC->getID() .", ". $oCC->getAccountConfig()->getID() .", ". $oCC->getCountryConfig()->getID() .", ". $oCC->getKeywordConfig()->getID() .", ". $oCC->getMode() .", '". $this->getDBConn()->escStr($ip) ."')";
+					(". $RS["ID"] .", ". intval($tid) .", ". $oCC->getID() .", ". $oCC->getAccountConfig()->getID() .", ". $oCC->getCountryConfig()->getID() .", ". $oCC->getKeywordConfig()->getID() .", ". $oCC->getMode() .", '". $this->getDBConn()->escStr($ip) ."','". $oCC->getCSSURL()."','". $oCC->getLogoURL()."')";
 //		echo $sql ."\n";
 		// Error: Unable to insert a new record in the Transaction Log
 		if (is_resource($this->getDBConn()->query($sql) ) === false)
@@ -466,7 +459,7 @@ class General
 	{
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET typeid = ". $oTI->getTypeID() .", clientid = ". $oTI->getClientConfig()->getID() .", accountid = ". $oTI->getClientConfig()->getAccountConfig()->getID() .",
-					countryid = ". $oTI->getCountryConfig()->getID() .", keywordid = ". $oTI->getClientConfig()->getKeywordConfig()->getID() .",
+					countryid = ". $oTI->getCountryConfig()->getID() .",currencyid = ". $oTI->getCurrencyConfig()->getID().", keywordid = ". $oTI->getClientConfig()->getKeywordConfig()->getID() .",
 					amount = ". $oTI->getAmount() .", points = ". ($oTI->getPoints() > 0 ? $oTI->getPoints() : "NULL") .", reward = ". ($oTI->getReward() > 0 ? $oTI->getReward() : "NULL") .",
 					orderid = '". $this->getDBConn()->escStr($oTI->getOrderID() ) ."', lang = '". $this->getDBConn()->escStr($oTI->getLanguage() ) ."',
 					mobile = ". floatval($oTI->getMobile() ) .", operatorid = ". $oTI->getOperator() .", email = '". $this->getDBConn()->escStr($oTI->getEMail() ) ."',
@@ -475,7 +468,8 @@ class General
 					callbackurl = '". $this->getDBConn()->escStr($oTI->getCallbackURL() ) ."', iconurl = '". $this->getDBConn()->escStr($oTI->getIconURL() ) ."',
 					authurl = '". $this->getDBConn()->escStr($oTI->getAuthenticationURL() ) ."', customer_ref = '". $this->getDBConn()->escStr($oTI->getCustomerRef() ) ."',
 					gomobileid = ". $oTI->getGoMobileID() .", auto_capture = '". ($oTI->useAutoCapture() === true ? "1" : "0") ."', markup = '". $this->getDBConn()->escStr($oTI->getMarkupLanguage() ) ."',
-					description = '". $this->getDBConn()->escStr($oTI->getDescription() ) ."'";
+					description = '". $this->getDBConn()->escStr($oTI->getDescription() ) ."',
+					deviceid = '". $this->getDBConn()->escStr($oTI->getDeviceID()) ."', attempt = ".intval($oTI->getAttemptNumber());
 		if (strlen($oTI->getIP() ) > 0) { $sql .= " , ip = '". $this->getDBConn()->escStr( $oTI->getIP() ) ."'"; }
 		if ($oTI->getAccountID() > 0) { $sql .= ", euaid = ". $oTI->getAccountID(); }
 		elseif ($oTI->getAccountID() == -1) { $sql .= ", euaid = NULL"; }
@@ -1202,6 +1196,50 @@ class General
 			
 		}
 		return $xml;
-	}	
+	}
+
+	/*
+	 * Fetch Transaction based on the orderID
+	 *
+	 * 	 1. First attempt
+	 * 	 2. Second attempt
+	 * 	 8. Invalid OrderID
+	 * 	 9. Transaction not found
+	 *
+	 *
+	 * @param integer 	$orderid  OrderID from input
+	 * @return string
+	 * */
+
+    public function getTxnAttemptsFromOrderID($orderid)
+    {
+        $sql = "SELECT attempt FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+					WHERE orderid = '" . trim($orderid) . "' AND enabled = true 
+					ORDER BY created DESC LIMIT 1";
+//			echo $sql ."\n";
+        $RS = $this->getDBConn()->getName($sql);
+
+        if (is_array($RS) === true) {   $code = intval($RS['ATTEMPT']);  } //Transaction attempt will have values 1/2
+        else { $code = -1; }    // Transaction not found
+
+        return $code;
+    }
+
+    public function getPreviousFailedAttempts($orderid)
+    {
+        $aPMArray = array();
+        $aRejectedStates = array(Constants::iPAYMENT_REJECTED_PSP_UNAVAILABLE_STATE);
+        $sql = "SELECT cardid FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn				
+				INNER JOIN (SELECT txnid, MAX(stateid) AS st FROM log.message_tbl GROUP BY txnid) p2 ON (txn.id = p2.txnid)
+				WHERE orderid = '" . trim($orderid) . "' AND enabled = true AND p2.st IN (".implode(",",$aRejectedStates).")";
+//			echo $sql ."\n";
+        $res = $this->getDBConn()->query($sql);
+
+        while ($RS = $this->getDBConn()->fetchName($res) ) {
+            array_push($aPMArray, intval($RS['CARDID'] ) );
+        }
+
+        return $aPMArray;
+    }
 }
 ?>

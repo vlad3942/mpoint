@@ -33,7 +33,7 @@ if (General::getBrowserType() == "mobile")
 ?>
 	<title><?= $_OBJ_TXT->_("Create Account"); ?></title>
 	
-	<?= $obj_mPoint->getSystemInfo(); ?>
+	<?= $obj_mPoint->getSystemInfo($aHTTP_CONN_INFO["hpp"]["protocol"]); ?>
 <?php
 }
 ?>

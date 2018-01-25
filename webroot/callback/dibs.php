@@ -26,7 +26,8 @@ require_once(sCLASS_PATH ."/enduser_account.php");
 require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
-
+// Require Business logic for the End-User Account Factory Provider
+require_once(sCLASS_PATH ."/customer_info.php");
 header("Content-Type: text/plain");
 set_time_limit(600);
 // Standard retry strategy connecting to the database has proven inadequate
@@ -57,14 +58,21 @@ try
 	if ($obj_TxnInfo->getTypeID() >= 100 && $obj_TxnInfo->getTypeID() <= 109 && $obj_TxnInfo->getClientConfig()->getCountryConfig()->getID() == $_POST['clientid'])
 	{
 		$aTxnInfo = array("client-config" => ClientConfig::produceConfig($_OBJ_DB, $_POST['clientid'], -1) );
-		$obj_TxnInfo = TxnInfo::produceInfo($_POST['mpointid'], $obj_TxnInfo, $aTxnInfo);
+		$obj_TxnInfo = TxnInfo::produceInfo($_POST['mpointid'],$_OBJ_DB, $obj_TxnInfo, $aTxnInfo);
 	}
 	$obj_mPoint = new DIBS($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['dibs']);
 
 	// Save Ticket ID representing the End-User's stored Card Info
 	$ticket = @$_POST["ticket"];
-	
-	if ( (array_key_exists("preauth", $_POST) === true && @$_POST['preauth'] == "true") || strlen($ticket) > 0)
+    $saveCard = true;
+    foreach ($obj_TxnInfo->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+    {
+        if ($aAdditionalProperty['key'] == 'mvault' && $aAdditionalProperty['value'] == 'true'){
+            $saveCard = false;
+            break;
+        }
+    }
+	if ( (array_key_exists("preauth", $_POST) === true && @$_POST['preauth'] == "true") || strlen($ticket) > 0 && $saveCard)
 	{
 		$iMobileAccountID = -1;
 		$iEMailAccountID = -1;
@@ -107,7 +115,18 @@ try
 		}
 		// E-Mail has been provided for the transaction
 		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
-		if (array_key_exists("maketicket", $_POST) === false) { $_POST['transact'] = $obj_mPoint->authTicket($ticket); }
+		
+		//The call to AuthTicket from DIBS Callback is to support 3D Secure Implementation.
+		// In some cases DIBS has already made a ticket, when getting a callback from a purchase.. In some cases they have not..
+		// The callback/dibs.php needs refactoring and to be moved to MESB.
+
+		//modified to add xml wrapper to suite to the DIBS authTicket function change.
+		if (array_key_exists("maketicket", $_POST) === false)
+		{
+        	$xml = "<callback><ticket>" .$ticket ."</ticket></callback>";
+            $callbackXML = new SimpleXMLElement($xml);
+            $_POST['transact'] = $obj_mPoint->authTicket($callbackXML);
+   		}
 	}
 
 	//

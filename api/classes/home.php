@@ -121,6 +121,13 @@ class Home extends General
 			}
 			else { return $this->_authInternal($aArgs[0], $aArgs[1], $aArgs[2]); }
 			break;
+		case (4):
+			if ( ($aArgs[0] instanceof HTTPConnInfo) === true)
+			{
+				return $this->_authExternal($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3]);
+			}
+			else { return $this->_authInternal($aArgs[0], $aArgs[1], $aArgs[2]); }
+			break;
 		default:
 			break;
 		}
@@ -237,12 +244,14 @@ class Home extends General
 
 		return $code;
 	}
-	private function _authExternal(HTTPConnInfo &$oCI, CustomerInfo $obj_CustomerInfo, $pwd)
+	private function _authExternal(HTTPConnInfo &$oCI, CustomerInfo $obj_CustomerInfo, $pwd, $clientId=-1)
 	{
 		$obj_ConnInfo = new HTTPConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), "POST", "text/xml", $oCI->getUsername(), $oCI->getPassword() );
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<login>';
+		 if($clientId > 0)
+		 	$b .= '<client-id>'.$clientId.'</client-id>' ;
 		$b .= $obj_CustomerInfo->toXML();
 		$b .= '<password>'. htmlspecialchars($pwd, ENT_NOQUOTES) .'</password>';
 		$b .= '</login>';
@@ -441,12 +450,12 @@ class Home extends General
 
 		// Select all active cards that are not yet expired
 		$sql = "SELECT DISTINCT EUC.id, EUC.cardid, EUC.pspid, EUC.mask, EUC.expiry, EUC.ticket, EUC.preferred, EUC.name, EUC.enabled, EUC.card_holder_name, EUC.chargetypeid,
-					SC.id AS typeid, SC.name AS type, CA.stateid,
+					SC.id AS typeid, SC.name AS type, CA.stateid, SC.cvclength AS cvclength,
 					CL.id AS clientid, CL.name AS client,
 					EUAD.countryid, EUAD.firstname, EUAD.lastname,
 					EUAD.company, EUAD.street,
 					EUAD.postalcode, EUAD.city,
-					STS.code, STS.name AS state, CA.position AS client_position
+					CA.position AS client_position
 				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl EUC
 				INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON EUC.pspid = PSP.id AND PSP.enabled = '1'
 				INNER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl SC ON EUC.cardid = SC.id AND SC.enabled = '1'
@@ -454,7 +463,6 @@ class Home extends General
 				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON CL.id = CA.clientid AND SC.id = CA.cardid
 				INNER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON EUC.accountid = EUA.id AND EUA.enabled = '1'
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Address_Tbl EUAD ON EUC.id = EUAD.cardid and EUA.enabled ='1'
-				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".State_Tbl STS ON EUAD.stateid = STS.id and EUA.enabled ='1'
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON EUA.id = CLA.accountid
 				WHERE EUC.accountid = ". intval($id);
 		if ($oCC->showAllCards() === false) { $sql .= " AND EUC.enabled = '1' AND ( (substr(EUC.expiry, 4, 2) || substr(EUC.expiry, 1, 2) ) >= '". date("ym") ."' OR length(EUC.expiry) = 0)"; }
@@ -480,7 +488,7 @@ class Home extends General
 			}
 			else { $sMaskedCardNumber = trim($RS["MASK"]); }
 			// Construct XML Document with data for saved cards
-			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'" >';
+			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'" cvc-length="'. $RS["CVCLENGTH"] .'">';
 			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
 			$xml .= '<type id="'. $RS["TYPEID"] .'">'. $RS["TYPE"] .'</type>';
 			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';
@@ -506,7 +514,6 @@ class Home extends General
 			$xml .= '</card>';
 		}
 		$xml .= '</stored-cards>';
-
 		return $xml;
 	}
 	/**
@@ -760,6 +767,55 @@ class Home extends General
 
 		return $xml;
 	}
+
+
+    public function getTxnStatus($txnid)
+    {
+        $sql = "SELECT Txn.id, Txn.amount AS amount, C.id AS countryid, C.currencyid, C.symbol, C.priceformat, CL.id AS clientid,
+					   Txn.id AS mpointid, Txn.orderid, M1.stateid,Txn.logourl,Txn.cssurl,Txn.accepturl,Txn.cancelurl, CL.salt, 
+					   Txn.accountid AS end_user_id,Txn.lang,Txn.cardid,
+					   Txn.email, Txn.mobile,Txn.customer_ref,Txn.operatorid,Txn.markup,Txn.deviceid, Txn.sessionid
+				FROM Log.Transaction_Tbl Txn
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON Txn.pspid = PSP.id
+				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Country_Tbl C ON Txn.countryid = C.id
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl Card ON Txn.cardid = Card.id
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M1 ON Txn.id = M1.txnid AND M1.stateid =  (select max(stateid) from Log".sSCHEMA_POSTFIX.".message_tbl WHERE txnid = '". $this->getDBConn()->escStr( (string) $txnid) ."')
+				WHERE Txn.id = '". $this->getDBConn()->escStr( (string) $txnid) ."'
+				ORDER BY Txn.created DESC LIMIT 1";
+//		echo $sql ."\n";
+        $RS = $this->getDBConn()->getName($sql);
+
+
+        $obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $RS["CLIENTID"]);
+
+        $obj_paymentSession = PaymentSession::Get($this->getDBConn(),$RS["SESSIONID"]);
+        $pendingAmount =intval( $obj_paymentSession->getPendingAmount());
+        if($pendingAmount > 0)
+            $pendingAmount = $pendingAmount /100;
+        $amount = ((integer) $RS["AMOUNT"])/100;
+
+        $sessionType = $obj_ClientConfig->getAdditionalProperties("sessiondtype");
+        $xml = '<transaction id="'. $RS["ID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" order-no="'. $RS["ORDERID"] .'" accoutid="'. $RS['END_USER_ID'] .'" clientid="'. $RS['CLIENTID'] .'" language="'.$RS['LANG'].'"  card-id="'. $RS["CARDID"] .'" session-id="'. $RS["SESSIONID"] .'" session-type="'. $sessionType .'">';
+        $xml .= '<amount country-id="'. $RS["COUNTRYID"] .'" currency="'. $RS['CURRENCYID']  .'" symbol="'. utf8_encode($RS['SYMBOL'] ) .'" format="'. $RS['PRICEFORMAT'] .'" pending = "'.$pendingAmount .'">'. htmlspecialchars($amount, ENT_NOQUOTES) .'</amount>';
+        $xml .= '<accept-url>'. htmlspecialchars($RS["ACCEPTURL"], ENT_NOQUOTES) .'</accept-url>';
+        $xml .= '<cancel-url>'. htmlspecialchars($RS["CANCELURL"], ENT_NOQUOTES) .'</cancel-url>';
+        $xml .= '<css-url>'. htmlspecialchars($RS["CSSURL"], ENT_NOQUOTES) .'</css-url>';
+        $xml .= '<logo-url>'. htmlspecialchars($RS["LOGOURL"], ENT_NOQUOTES) .'</logo-url>';
+        $xml .= '<status-id>'. $RS['STATEID'] .'</status-id>';
+        $xml .= '<sign>'. md5( $RS["CLIENTID"] .'&'. $RS["MPOINTID"] .'&'. $RS["ORDERID"] .'&'. $RS["CURRENCYID"] .'&'.  htmlspecialchars($amount, ENT_NOQUOTES) .'&'. $RS["STATEID"] .'.'. $RS["SALT"]) .'</sign>';
+      //  $xml .= '<pre-sign>'.  $RS["CLIENTID"] .','. $RS["MPOINTID"] .','. $RS["ORDERID"] .','. $RS["CURRENCY"] .','.  htmlspecialchars($amount, ENT_NOQUOTES) .','. $RS["STATEID"] .','. $RS["SALT"] .'</pre-sign>';
+        $xml .= '<client-info language="'.$RS["LANG"].'" platform="'.$RS["MARKUP"].'">';
+        $xml .= '<mobile operator-id="'. $RS["OPERATORID"] .'" country-id="'.$RS["COUNTRYID"] .'">'. $RS["MOBILE"] .'</mobile>';
+        $xml .= '<email>'. $RS["EMAIL"] .'</email>';
+        $xml .= '<customer-ref>'.$RS["CUSTOMER_REF"].'</customer-ref>';
+        $xml .= '<device-id>'.$RS["DEVICEID"].'</device-id>';
+        $xml .= '</client-info>';
+        $xml .= '</transaction>';
+
+        return $xml;
+    }
+
 	/**
 	 *
 	 *
@@ -992,15 +1048,15 @@ class Home extends General
 	 * @param 	string $cr		the Client's Reference for the Customer (optional)
 	 * @return	integer 		The unique ID of the created End-User Account
 	 */
-	public function newAccount($cid, $mob="", $pwd="", $email="", $cr="")
+	public function newAccount($cid, $mob="", $pwd="", $email="", $cr="", $pid="")
 	{
 		$sql = "SELECT Nextvalue('EndUser".sSCHEMA_POSTFIX.".Account_Tbl_id_seq') AS id FROM DUAL";
 		$RS = $this->getDBConn()->getName($sql);
 		$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Account_Tbl
-					(id, countryid, mobile, passwd, email, externalid)
+					(id, countryid, mobile, passwd, email, externalid, pushid)
 				VALUES
-					(". $RS["ID"] .", ". intval($cid) .", ". (floatval($mob) > 0 ? "'". floatval($mob) ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". (strlen($email) > 0 ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .", '". $this->getDBConn()->escStr($cr) ."')";
-//		echo $sql ."\n";
+					(". $RS["ID"] .", ". intval($cid) .", ". (floatval($mob) > 0 ? "'". floatval($mob) ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". (strlen($email) > 0 ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .", '". $this->getDBConn()->escStr($cr) ."', ". (strlen($pid) > 0 ? "'". $this->getDBConn()->escStr($pid) ."'" : "NULL") .")";
+		//echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 
 		return $RS["ID"];
@@ -1154,6 +1210,23 @@ class Home extends General
 					(". intval($uid) .", ". intval($oid)  .", '". $this->getDBConn()->escStr($msg) ."')";
 		//		echo $sql ."\n";
 
+		return is_resource($this->getDBConn()->query($sql) );
+	}
+	
+	/**
+	 * Saves the customer ref number for the End-User Account.
+	 *
+	 * @param 	string $cr		the Client's Reference for the Customer (optional)
+	 * @return	integer 		The unique ID of the created End-User Account
+	 * @return	boolean
+	 */
+	public function saveCustomerReference($id, $cr = '')
+	{
+		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Account_Tbl
+				SET externalid = '".$cr."'
+				WHERE id = ". intval($id);
+		//		echo $sql ."\n";
+	
 		return is_resource($this->getDBConn()->query($sql) );
 	}
 }

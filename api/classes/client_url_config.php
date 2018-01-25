@@ -36,7 +36,29 @@ class ClientURLConfig
 	public function getID() { return $this->_iID; }
 	public function getTypeID() { return $this->_iTypeID; }	
 	public function getURL() { return $this->_sURL; }
-	
+
+	/**
+	 * Convenience method for constructing a HTTPConnInfo object based on a Client URL Configuration
+	 *
+	 * @param string $method 		HTTP Method to apply
+	 * @param string $contentType 	HTTP Content Type to apply
+	 * @param int $timeout			Connection timeout
+	 * @return HTTPConnInfo
+	 * @throws HTTPInvalidConnInfoException
+	 */
+	public function constConnInfo($method='POST', $contentType='text/xml', $timeout=120)
+	{
+		$urlParts = parse_url($this->_sURL);
+
+		if (is_array($urlParts) === true)
+		{
+			$iDefaultPort = $urlParts["scheme"] == 'https' ? 443 : 80;
+			$iPort = (integer) $urlParts["port"] > 0 ? (integer) $urlParts["port"] : $iDefaultPort;
+			return new HTTPConnInfo($urlParts["scheme"], $urlParts["host"], $iPort, $timeout, @$urlParts["path"], $method, $contentType, @$urlParts["user"], @$urlParts["pass"]);
+		}
+		else { throw new HTTPInvalidConnInfoException("URL could not be parsed: ". $this->_sURL); }
+	}
+
 	public function toXML()
 	{		
 		$xml = '<url id="'. intval($this->_iID) .'" type-id="'. intval($this->_iTypeID) .'">';

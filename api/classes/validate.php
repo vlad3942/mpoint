@@ -58,6 +58,7 @@ class Validate extends ValidateBase
 	 * @param 	integer $acc 	Unique ID or Account Number that the transaction should be associated with, set to -1 to use the default account
 	 * @return 	integer
 	 */
+	
 	public static function valBasic(RDB &$oDB, $id, $acc)
 	{
 		if (empty($id) === true) { $code = 1; }			// Undefined Client ID
@@ -103,6 +104,44 @@ class Validate extends ValidateBase
 			else { $code = 3; }	// Unknown Client ID
 		}
 
+		return $code;
+	}
+	
+	
+	/**
+	 * Performs basic validation ensuring that the client exists.
+	 * The method will return the following status codes:
+	 * 	 1. Undefined Client ID
+	 * 	 2. Invalid Client ID
+	 * 	 3. Unknown Client ID
+	 * 	100. Success
+	 *
+	 * @param 	RDB $oDB 		Reference to the Database Object that holds the active connection to the mPoint Database
+	 * @param 	integer $id 	Unique ID for the Client performing the request
+	 * @return 	integer
+	 */
+	
+	public static function valClient(RDB &$oDB, $id)
+	{
+		if (empty($id) === true) { $code = 1; }			// Undefined Client ID
+		elseif (intval($id) < 100 || (intval($id) > 999 && intval($id) < 10000) ) { $code = 2; }		// Invalid Client ID
+		else
+		{
+			$acc = (integer) $acc;
+			$sql = "SELECT CL.id AS clientid, Cl.enabled AS clientactive
+					FROM Client".sSCHEMA_POSTFIX.".Client_Tbl Cl
+					WHERE Cl.id = ". intval($id);
+			//			echo $sql ."\n";
+			$RS = $oDB->getName($sql);
+	
+			if (is_array($RS) === true)
+			{
+				if ($RS["CLIENTACTIVE"] === false) { $code = 4; }		// Client Disabled
+				else { $code = 100; }
+			}
+			else { $code = 3; }	// Unknown Client ID
+		}
+	
 		return $code;
 	}
 
@@ -807,7 +846,9 @@ class Validate extends ValidateBase
 					FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
 					INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid AND Msg.enabled = '1'
 					WHERE Txn.id = ". intval($mpointid) ." AND Txn.clientid = ". intval($clientid) ."
-						AND Msg.stateid >= ". Constants::iPAYMENT_ACCEPTED_STATE ."
+						AND (Msg.stateid >= ". Constants::iPAYMENT_ACCEPTED_STATE ."
+						AND  Msg.stateid NOT IN (". Constants::iPAYMENT_WITH_ACCOUNT_STATE .", ". Constants::iPAYMENT_3DS_VERIFICATION_STATE .") 
+						OR  Msg.stateid = ". Constants::iPAYMENT_ACCOUNT_VALIDATED .")
 					ORDER BY Msg.stateid ASC";
 //			echo $sql ."\n";
 			$aRS = $oDB->getAllNames($sql);
@@ -871,7 +912,6 @@ class Validate extends ValidateBase
 		elseif (strtolower($mrk) == "app") { $code = 10; }
 		elseif(is_dir($_SERVER['DOCUMENT_ROOT'] ."/templates/". sTEMPLATE ."/". $mrk) === false) { $code = 2; }	// Markup Language doesn't exist in Template
 		else { $code = 10; }								// Success
-
 		return $code;
 	}
 
@@ -1176,6 +1216,43 @@ class Validate extends ValidateBase
 		
 		return $code;
 	}
+
+    /**
+     * Performs validation of the provided Hash based Message Authentication Code (HMAC) by generating the equivalent as a SHA1 hash.
+     * The HMAC is generated based on the following data fields in the request (in that order):
+     * 	- clientid
+     * 	- order number
+     * 	- amount
+     * 	- amount country-id
+     * 	- mobile
+     *  - mobile country-id
+     *  - e-mail
+     *  - device id
+     * Additionally the provided salt is appended at the end.
+     *
+     * @see		Validate::valMAC()
+     *
+     * @param 	string $mac						Message Authentication Code provided by the client in the request
+     * @param	ClientConfig $obj_ClientConfig	The Client Configuration from which fields such Client ID and Salt are retrieved
+     * @param	string mobile                   The Mobile number returned by the upstream Selling System
+     * @param   integer country                 The Country code returned by the upstream Selling System
+     * @param   string email                    The Email returned by the upstream Selling System
+     * @param	string $orderno					The order number returned by the upstream Selling System
+     * @param	integer $amount					The total amount for the order in the country's smallest currency
+     * @param	integer $countryid				The unique ID of the country that designates the currency
+     * @return 	integer
+     */
+    public function valHPPHMAC($hmac, ClientConfig $obj_ClientConfig, $mobile, $country, $email, $orderno, $amount, $countryid)
+    {
+        $code = 1;
+        $chk = sha1($obj_ClientConfig->getID() . $orderno . $amount . $country . $mobile . $countryid . $email . $obj_ClientConfig->getSalt() );
+        if ($hmac == $chk)
+        {
+            $code = 10;
+        }
+
+        return $code;
+    }
 	
 	
 	/**
@@ -1361,7 +1438,6 @@ class Validate extends ValidateBase
         }
         return $code;
     }
-    
 
     /**
      * Performs validation of the Card number to determine whether it is valid.
@@ -1383,50 +1459,113 @@ class Validate extends ValidateBase
     	
     	if (empty($number) === true) { $code = 1; }    	
     	else {
-    	
-	    		settype($number, 'string');	    	
+    	   		settype($number, 'string');	    	
 	    		
+    	   		$number = preg_replace("/[^0-9]/", "", $number);
+    	   		
 	    		if(strlen($number) < 13) { $code = 2; }
 	    		else if(strlen($number) > 16) { $code = 3; }
 	    		else
 	    		{
-		    		$aCardNumber = str_split(strrev(preg_replace("/[^0-9]/", "", $number)));
-		    		
-		    		$sumOfNumber = 0;
-		    	
-		    		$count = 1;
-		    		
-		    		for($i = 0; $i < count($aCardNumber); $i++)
-		    		{
-		    			
-		    			$iCardNumber = intval($aCardNumber[$i]);
-		    					    			
-		    			if(($count % 2) === 0)
-		    			{
-		    				$iCardNumber = $iCardNumber * 2;
-		    				
-		    				if($iCardNumber >= 10)
-		    				{
-		    					$tempNum = $iCardNumber % 10;
-		    					$tempNum += $iCardNumber / 10;
-		    					 
-		    					$iCardNumber = $tempNum;
-		    				}
-		    			}
-		    			 
-		    			$sumOfNumber += $iCardNumber;
-		    			
-		    			$count++;
-		    		}
-		    		
-		    		if($sumOfNumber % 10 === 0)
-		    		{
-		    			$code = 10;
-		    		} else { $code = 4; }
+	    			$checksum = 0;
+	    			for ($i=(2-(strlen($number) % 2)); $i<=strlen($number); $i+=2) 
+	    			{
+	    				$checksum += (int) ($number{$i-1});
+	    			}
+
+	    			for ($i=(strlen($number)% 2) + 1; $i<strlen($number); $i+=2) 
+	    			{
+	    				$digit = (int) ($number{$i-1}) * 2;
+	    				if ($digit < 10) 
+	    				{
+	    					$checksum += $digit;
+	    				} 
+	    				else { $checksum += ($digit-9); }
+	    			}
+	    			
+	    			if (($checksum % 10) == 0) 
+	    			{
+	    				$code = 10;
+	    			} else { $code = 4; }
 	    		}
 	    	}
-    	    	    	
+   	
     	return $code;
     }
+
+	/**
+	 * Performs generic validations on the request format of a raw API request 
+	 * This function throws an @see mPointBaseValidationException in case of validation errors
+	 * In case of success, it returns the main operation XML element of the request, usually the direct child of <root>
+	 * 
+	 * @param SimpleDOMElement $obj_DOM The XML request
+	 * @param string $xsdFile The XSD file to validate the request against
+	 * @param string $operationElement Name of the operation element to expect for the API
+	 * @return SimpleXMLElement Operation element for the request with tag name matching $operationElement
+	 * @throws mPointBaseValidationException
+	 */
+	public static function valRequestFormat(SimpleDOMElement $obj_DOM, $xsdFile, $operationElement)
+	{
+		if ( ($obj_DOM instanceof SimpleDOMElement) === false) { throw new mPointBaseValidationException(mPointBaseValidationException::NOT_XML, $obj_DOM); }
+		else if ($obj_DOM->validate(sPROTOCOL_XSD_PATH .$xsdFile) === false) { throw new mPointBaseValidationException(mPointBaseValidationException::INVALID_XML, $obj_DOM); }
+		else if (count($obj_DOM->{$operationElement}) == 0) { throw new mPointBaseValidationException(mPointBaseValidationException::WRONG_OPERATION, $obj_DOM); }
+
+		return $obj_DOM->{$operationElement};
+	}
+	
+		/**
+	 * Performs validation of a challenge document og file sent by a client
+	 * This method will return the following status codes:
+	 *	1. Undefined challenge
+	 * 	2. Invalid content-type
+	 * 	3. Invalid URL
+	 * 	4. Malformed challenge
+	 * 10. Validation successful
+	 *
+	 * @param $challenge
+	 * @return integer
+	 */
+	public function valChallenge(SimpleDOMElement $challenge, $minChallengeLength=10)
+	{
+		$code = 10;
+		$content = (string) $challenge;
+		$urlParts = parse_url( (string) $challenge["url"]);
+
+		if (strlen($content) < 1) { $code = 1; }
+		else if (intval(preg_match("#^[a-z\-\+]+/[a-z\-\+]+$#", (string) $challenge["content-type"]) ) < 1) { $code = 2; }
+		else if (is_array($urlParts) === false || strlen($urlParts["scheme"]) < 1 || strlen($urlParts["host"]) < 1) { $code = 3; }
+		else if (strlen($content) < $minChallengeLength) { $code = 4; }
+
+		return $code;
+	}
+	/**
+	 * Performs validation on the currency used for the transacion. Should either be the default currency
+	 * of the country in system.country_tbl, or should have a mapping present with the country for the client
+	 * in client.countrycurrency_tbl
+	 * Will return code as -
+	 * 
+	 * 10.success
+	 * 1. No mapping found (default or Client specific)
+	 * 
+	 * @param RDB $oDB
+	 * @param unknown $currencyid
+	 * @param unknown $obj_TransacionCountryConfig
+	 * @param unknown $clid
+	 * @return number
+	 */
+	public function valCurrency(RDB &$oDB, $currencyid, $obj_TransacionCountryConfig, $clid)
+	{
+			$sql = "SELECT COUNT(*) FROM Client".sSCHEMA_POSTFIX.".countrycurrency_tbl cct RIGHT JOIN 
+					System.country_tbl ct ON cct.countryid = ct.id  WHERE (cct.countryid = ".$obj_TransacionCountryConfig->getID().
+                    " AND cct.currencyid = ".$currencyid." AND cct.clientid= " . $clid . " AND cct.enabled = '1') 
+                     OR (ct.id = ".$obj_TransacionCountryConfig->getID()." AND ct.currencyid=". $currencyid . ")";
+
+				//echo $sql;exit;
+				$RS = $oDB->getName($sql);
+	
+				if ($RS["COUNT"] > 0) { $code = 10; }// Success
+				else { $code = 1 ; } 
+				return $code;
+	}
 }
 ?>

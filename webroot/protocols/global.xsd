@@ -13,6 +13,7 @@
 	<xs:attribute name="platform" type="platform" use="required" />
 	<xs:attribute name="version" type="version" use="required" />
 	<xs:attribute name="language" type="language-code" use="required" />
+	<xs:attribute name="pushid" type="xs:string" use="optional"/>
 </xs:complexType>
 
 <xs:complexType name="get-updated-core-data">
@@ -120,7 +121,7 @@
 <xs:simpleType name="charge-type">
 	<xs:restriction base="xs:positiveInteger">
 		<xs:minInclusive value="1" />
-		<xs:maxInclusive value="3" />
+		<xs:maxInclusive value="5" />
 	 </xs:restriction>
 </xs:simpleType >
 </xs:schema>

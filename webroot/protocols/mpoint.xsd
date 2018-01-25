@@ -50,6 +50,7 @@
 								</xs:all>
 								<xs:attribute name="order-no" type="xs:string" use="optional" />
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="40" />
+                                <xs:attribute name="session-id" type="xs:positiveInteger" use="optional"/>
 							</xs:complexType>
 						</xs:element>
 						<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1" />
@@ -76,16 +77,59 @@
 														</xs:restriction>
 													</xs:simpleType>
 												</xs:element>
-												<xs:element name="apple-pay-token" type="xs:string" minOccurs="0" maxOccurs="1" />
+												<xs:element name="apple-pay-token" type="xs:string"	minOccurs="0" maxOccurs="1" />
+												<xs:element name="token" type="xs:string" minOccurs="0" maxOccurs="1" />
 												<xs:element name="visa-key" type="xs:string" minOccurs="0" maxOccurs="1" />
 												<xs:element name="visa-data" type="xs:string" minOccurs="0" maxOccurs="1" />
 											</xs:all>
 											<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
 										</xs:complexType>
 									</xs:element>
+									<xs:element name="billing-address" minOccurs="0" maxOccurs="1">
+										<xs:complexType>
+											<xs:all>
+												<xs:element name="full-name" type="xs:string"	minOccurs="0" maxOccurs="1" />
+												<xs:element name="company" type="xs:string" minOccurs="0" maxOccurs="1" />
+												<xs:element name="street" type="xs:string" minOccurs="0" maxOccurs="1" />
+												<xs:element name="state" type="xs:string" minOccurs="0" maxOccurs="1" />
+												<xs:element name="postal-code" type="xs:string" minOccurs="0" maxOccurs="1" />
+												<xs:element name="city" type="xs:string" minOccurs="0" maxOccurs="1" />
+											</xs:all>
+											<xs:attribute name="country-id" type="xs:positiveInteger" use="required" />
+										</xs:complexType>
+									</xs:element>
 								</xs:sequence>
 								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 								<xs:attribute name="store-card" type="xs:boolean" use="required" />
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1" />
+					</xs:all>
+					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
+					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="request-3dsecure" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="id" type="xs:positiveInteger" use="required" />
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="challenge">
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="content-type" type="xs:string" use="required" />
+										<xs:attribute name="url" type="xs:string" use="required" />
+										<xs:attribute name="encoding" type="encoding" use="optional" default="plain" />
+									</xs:extension>
+								</xs:simpleContent>
 							</xs:complexType>
 						</xs:element>
 						<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1" />
@@ -182,10 +226,19 @@
 											</xs:complexType>
 										</xs:element>
 									</xs:choice>
+									<xs:element name="hmac" minOccurs="0" maxOccurs="1">
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:minLength value="0" />
+												<xs:maxLength value="64" />
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
 									<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
 								</xs:sequence>
 								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="1009" />
+								<xs:attribute name="store-card" type="xs:boolean" use="optional" default="false"/>
 							</xs:complexType>
 						</xs:element>
 						<xs:choice>
@@ -245,15 +298,16 @@
 					<xs:sequence>
 						<xs:element name="card" minOccurs="1" maxOccurs="1">
 							<xs:complexType>
-								<xs:sequence>
+								<xs:choice minOccurs="0" maxOccurs="unbounded">
 									<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1" />
+									<xs:element name="card-holder-name" type="xs:string" minOccurs="0" maxOccurs="1" />
 									<xs:choice minOccurs="0" maxOccurs="1">
 										<xs:group ref="masked-card-details" />
 										<xs:group ref="complete-card-details" />
+										<xs:group ref="card-token-only" />
 									</xs:choice>
-									<xs:element name="card-holder-name" type="xs:string" minOccurs="0" maxOccurs="1" />
 									<xs:element name="address" type="address" minOccurs="0" maxOccurs="1" />
-								</xs:sequence>
+								</xs:choice>
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" />
 								<xs:attribute name="psp-id" type="xs:positiveInteger" use="optional" />
 								<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
@@ -263,35 +317,49 @@
 						</xs:element>
 						<xs:element name="password" type="xs:string" minOccurs="0" maxOccurs="1" />
 						<xs:group ref="single-sign-on" minOccurs="0" maxOccurs="1" />
-						<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1" />
+						<xs:element name="client-info" type="client-info" minOccurs="0" maxOccurs="1" />
 					</xs:sequence>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
 					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
+					<xs:attribute name="mvault" type="xs:boolean" use="optional" />
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="save-account" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
-						<xs:element name="confirm-password" type="xs:string" minOccurs="1" maxOccurs="1" />
-						<xs:element name="social-security-number" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+					<xs:choice minOccurs="0" maxOccurs="1">
+						<xs:group ref="account-password" />
+					</xs:choice>
+					<xs:element name="social-security-number" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
 						<xs:choice minOccurs="0" maxOccurs="1">
 							<xs:group ref="names" />
 							<xs:element name="full-name" type="xs:string" />
 						</xs:choice>
 						<xs:element name="card" minOccurs="0" maxOccurs="1">
-							<xs:complexType>
-								<xs:simpleContent>
-									<xs:extension base="xs:string">
-										<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
-									</xs:extension>
-								</xs:simpleContent>
+							<xs:complexType mixed="true">
+								<xs:choice minOccurs="0" maxOccurs="unbounded">
+									<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1" />
+									<xs:element name="card-holder-name" type="xs:string" minOccurs="0" maxOccurs="1" />
+									<xs:choice minOccurs="0" maxOccurs="1">
+										<xs:group ref="masked-card-details" />
+										<xs:group ref="complete-card-details" />
+										<xs:group ref="card-token-only" />
+									</xs:choice>
+									<xs:element name="address" type="address" minOccurs="0" maxOccurs="1" />
+								</xs:choice>
+								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" />
+								<xs:attribute name="psp-id" type="xs:positiveInteger" use="optional" />
+								<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
+								<xs:attribute name="preferred" type="xs:boolean" use="optional" />
+								<xs:attribute name="charge-type-id" type="charge-type" use="optional" />
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1" />
+						<xs:group ref="single-sign-on" maxOccurs="1" minOccurs="0"/>
+						<xs:element name="client-info" type="client-info" minOccurs="0" maxOccurs="1" />
 					</xs:sequence>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
 					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
+					<xs:attribute name="mvault" type="xs:boolean" use="optional" />
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="verify">
@@ -366,6 +434,7 @@
 					</xs:all>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
 					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
+					<xs:attribute name="test" type="xs:boolean" use="optional" default="false"/>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="transfer">
@@ -400,6 +469,20 @@
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="card" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+						<xs:choice>
+							<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
+							<xs:group ref="single-sign-on" minOccurs="1" maxOccurs="1" />
+						</xs:choice>
+						<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1" />
+					</xs:sequence>
+					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
+					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="delete-account" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="euaid" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
 						<xs:choice>
 							<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
 							<xs:group ref="single-sign-on" minOccurs="1" maxOccurs="1" />
@@ -627,7 +710,7 @@
 						<xs:element name="amount">
 						  <xs:complexType>
 							<xs:simpleContent>
-							  <xs:extension base="xs:nonNegativeInteger">
+							  <xs:extension base="xs:decimal">
 								<xs:attribute type="xs:positiveInteger" name="country-id"/>
 								<xs:attribute type="xs:string" name="currency"/>
 							  </xs:extension>
@@ -668,17 +751,136 @@
 					  </xs:simpleContent>
 					</xs:complexType>
 				  </xs:element>
+				 <xs:element name="additional-data" type="xs:string" minOccurs="0" maxOccurs="1" />
 				</xs:sequence>
 			  </xs:complexType>
 			</xs:element>			
+			<xs:element name="get-payment-methods" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
+							<xs:complexType>
+								<xs:all>
+									<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
+								</xs:all>
+								<xs:attribute name="id" type="xs:positiveInteger" use="optional"/>
+								<xs:attribute name="order-no" type="xs:string" use="optional"/>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="client-info" type="client-info" minOccurs="0" maxOccurs="1" />
+					</xs:all>
+					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
+					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="capture" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
+							<xs:complexType>
+								<xs:all>
+									<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
+								</xs:all>
+							<xs:attribute name="id" type="xs:positiveInteger" use="required"/>
+							<xs:attribute name="order-no" use="optional"/>
+							</xs:complexType>
+						</xs:element>
+						
+					</xs:all>
+					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
+					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="void" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
+							<xs:complexType>
+								<xs:all>
+									<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
+									
+								</xs:all>
+							<xs:attribute name="id" type="xs:positiveInteger" use="required"/>
+							<xs:attribute name="order-no" use="optional"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:all>
+					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
+					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
+				</xs:complexType>
+			</xs:element>
+
+			<!-- Get Client Configuration -->
+
+			<xs:element name="get-client-configuration" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:annotation>
+							<xs:documentation>
+								Specifies the criteria for executing a
+								configuration search
+							</xs:documentation>
+						</xs:annotation>
+						<xs:element type="xs:integer" name="client-id"
+									minOccurs="1" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									The unique ID for the client whose
+									configuration should be fetched
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+
+			<!-- Get Client Configuration -->
+
+
+			<!-- Get Transaction Status -->
+			<xs:element name="get-transaction-status" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:annotation>
+						<xs:documentation>
+							Specifies the criteria for executing a
+							transaction search
+						</xs:documentation>
+					</xs:annotation>
+					<xs:all>
+						<xs:element name="transactions" minOccurs="1" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Contains the list of unique IDs for the transaction
+									that should be fetched
+								</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element type="xs:integer" name="transaction-id"
+												minOccurs="1" maxOccurs="unbounded">
+										<xs:annotation>
+											<xs:documentation>
+												The unique ID for the transaction  whose
+												configuration should be fetched
+											</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:all>
+				</xs:complexType>
+			</xs:element>
+			<!--  Get Transaction Status -->
 		</xs:choice>
 	</xs:complexType>
 </xs:element>
 
 <xs:complexType name="amount">
 	<xs:simpleContent>
-		<xs:extension base="xs:nonNegativeInteger">
+		<xs:extension base="xs:decimal">
 			<xs:attribute name="country-id" type="xs:positiveInteger" use="optional" />
+			<xs:attribute name="currency-id" type="xs:positiveInteger" use="optional" />
 		</xs:extension>
 	</xs:simpleContent>
 </xs:complexType>
@@ -687,6 +889,13 @@
 	<xs:sequence>
 		<xs:element name="first-name" type="xs:string" minOccurs="0" maxOccurs="1" />
 		<xs:element name="last-name" type="xs:string" minOccurs="0" maxOccurs="1" />
+	</xs:sequence>
+</xs:group>
+
+<xs:group name="account-password">
+	<xs:sequence>
+		<xs:element name="password" type="xs:string" minOccurs="1" maxOccurs="1" />
+		<xs:element name="confirm-password" type="xs:string" minOccurs="1" maxOccurs="1" />
 	</xs:sequence>
 </xs:group>
 
@@ -744,6 +953,12 @@
 		<xs:element name="card-number" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
 		<xs:element name="expiry-month" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
 		<xs:element name="expiry-year" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+	</xs:sequence>
+</xs:group>
+
+<xs:group name="card-token-only">
+	<xs:sequence>
+		<xs:element name="token" type="xs:string" minOccurs="1" maxOccurs="1" />
 	</xs:sequence>
 </xs:group>
 
@@ -829,29 +1044,104 @@
 <xs:element name="orders">
     <xs:complexType>
         <xs:sequence>
+           <xs:element name="shipping-address" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:all>
+                        <xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="street" type="xs:string" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="street2" type="xs:string" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="city" type="xs:string" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="state" type="xs:string" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="zip" type="xs:string" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="country" type="xs:string" minOccurs="1" maxOccurs="1" />
+                    </xs:all> 
+                </xs:complexType>
+            </xs:element>
             <xs:element name="line-item" minOccurs="1" maxOccurs="unbounded">
                 <xs:complexType>
                     <xs:all>
                     	<xs:element name="product" minOccurs="1" maxOccurs="1">
                     		<xs:complexType>
-                    			<xs:all>
-		                        	<xs:element name="name" type="name" minOccurs="1" maxOccurs="1"/>
-		                        	<xs:element name="description" type="name" minOccurs="1" maxOccurs="1"/>
-		                        	<xs:element name="image-url" type="url" minOccurs="1" maxOccurs="1"/>
-		                        </xs:all>
-		                        <xs:attribute name="sku" use="required" type="xs:string"/>
+                    		<xs:all>
+		                        <xs:element name="name" type="name" minOccurs="1" maxOccurs="1"/>
+		                        <xs:element name="description" type="name" minOccurs="1" maxOccurs="1"/>
+		                        <xs:element name="image-url" type="url" minOccurs="1" maxOccurs="1"/>
+		                        <xs:element name="airline-data" type="airline-data"  minOccurs="0" maxOccurs="1" />
+		                       </xs:all> 
+		                       <xs:attribute name="sku" use="required" type="xs:string"/>
 		                     </xs:complexType>
                         </xs:element>
                         <xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
                         <xs:element name="points" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
                         <xs:element name="reward" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
                         <xs:element name="quantity" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
-                    </xs:all> 
+						<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
+					</xs:all>
                 </xs:complexType>
             </xs:element>
         </xs:sequence>
     </xs:complexType>
 </xs:element>
+
+<xs:complexType name="airline-data">
+	<xs:sequence>
+		<xs:element ref="flight-detail"  minOccurs="1" maxOccurs="unbounded" />
+		<xs:element ref="passenger-detail" minOccurs="1" maxOccurs="unbounded" /> 
+	</xs:sequence>
+</xs:complexType>	
+
+ 
+<xs:element name="flight-detail">
+<xs:complexType>
+ <xs:sequence>
+   <xs:element type="xs:string" name="service-class" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="flight-number" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="departure-airport" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="arrival-airport" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="airline-code" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="departure-date" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="arrival-date" minOccurs="1" maxOccurs="1" />
+   <xs:element ref="additional-data" minOccurs="0" maxOccurs="1" /> 
+ </xs:sequence>
+</xs:complexType>
+</xs:element>
+
+<xs:element name="passenger-detail">
+<xs:complexType>
+ <xs:sequence>
+   <xs:element type="xs:string" name="first-name" minOccurs="1"  maxOccurs="1" />
+   <xs:element type="xs:string" name="last-name" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="type" minOccurs="1" maxOccurs="1" />
+   <xs:element ref="additional-data" minOccurs="0" maxOccurs="1" /> 
+ </xs:sequence>
+</xs:complexType>
+</xs:element>
+ 
+<xs:element name="additional-data">
+<xs:complexType>
+ <xs:sequence>
+     <xs:element ref="param" minOccurs="1" maxOccurs="unbounded" />
+ </xs:sequence>
+</xs:complexType>
+</xs:element>
+
+
+<xs:element name="param">
+   <xs:complexType>
+    <xs:simpleContent>
+     <xs:extension base="xs:string">
+      <xs:attribute name="name" type="xs:string" use="required" />
+      </xs:extension>
+     </xs:simpleContent>
+   </xs:complexType>
+</xs:element>
+
+<xs:complexType name="additional-order-data" >
+	<xs:all>
+		<xs:element type="name" name="description" minOccurs="1" maxOccurs="1"/>
+		<xs:element type="xs:string" name="value" minOccurs="1" maxOccurs="1"/>
+	</xs:all>
+</xs:complexType>
 
 <xs:complexType name="psp-config">
 	<xs:sequence>
@@ -1014,6 +1304,14 @@
 		<xs:enumeration value="YT" />
 		<!-- Unknown -->
 		<xs:enumeration value="N/A" />
+	</xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name="encoding">
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="plain" />
+		<xs:enumeration value="base64" />
+		<xs:enumeration value="zip+base64" />
 	</xs:restriction>
 </xs:simpleType>
 

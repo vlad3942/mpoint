@@ -80,8 +80,9 @@ $xml = '';
 $iChannel = (integer) $obj_DOM->{'Pay-by-link'}->{'CommunicationChannel'};
 
 $aPushIDMap = array(
-					'7443447997' => '0957ce678dd8707e007e4966ad8ad01e7eeb654fcf67baaaf452f0024f68c260',
-					'28882861' => 'e1d4a3ba487251740426372396990fd644b54b81f4163028b5c8eb5a83eaf720'
+					'7443447997' => '0957ce678dd8707e007e4966ad8ad01e7eeb654fcf67baaaf452f0024f68c260',//lebara UK SIM
+					'28882861' => 'e1d4a3ba487251740426372396990fd644b54b81f4163028b5c8eb5a83eaf720',  //Jonatan
+					'20101715' => '3aa5c4bdc4452bfa38505c838ee9b17b73465fbbc389494e6130c2c671e53594'   //Kristian					
 					);
 $bSendMessage = false;
 

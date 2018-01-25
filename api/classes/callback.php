@@ -169,7 +169,7 @@ abstract class Callback extends EndUserAccount
 			$this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true) );
 			throw new CallbackException("Unable to complete log for Transaction: ". $this->_obj_TxnInfo->getID(), 1001);
 		}
-
+        $this->_obj_TxnInfo->getPaymentSession()->updateState();
 		return $sid;
 	}
 	
@@ -246,7 +246,7 @@ abstract class Callback extends EndUserAccount
 			$obj_HTTP->disConnect();
 			if (200 <= $iCode && $iCode < 300)
 			{
-				trigger_error("mPoint Callback request succeeded for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_NOTICE);
+				trigger_error("mPoint Callback request  succeeded for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_NOTICE);
 				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_ACCEPTED_STATE, $obj_HTTP->getReplyHeader() );
 			}
 			else
@@ -312,16 +312,20 @@ abstract class Callback extends EndUserAccount
 	 * @param 	SurePayConfig $$obj_SurePay SurePay Configuration Object. Default value null
 	 * @param 	integer $fee				The amount the customer will pay in fee�s for the Transaction. Default value 0
 	 */
-	public function notifyClient($sid, $pspid, $amt, $cardid=0, $cardno="", SurePayConfig &$obj_SurePay=null, $fee=0)
+	public function notifyClient($sid, $pspid, $amt,  $cardno="", $cardid=0, $exp=null,$sAdditionalData="", SurePayConfig &$obj_SurePay=null, $fee=0 )
 	{		
+		$sDeviceID = $this->_obj_TxnInfo->getDeviceID();
+		$sEmail = $this->_obj_TxnInfo->getEMail();
 		/* ----- Construct Body Start ----- */
 		$sBody = "";
 		$sBody .= "mpoint-id=". $this->_obj_TxnInfo->getID();
+		if(strlen($sAdditionalData) > 0)
+		$sBody .= "&".$sAdditionalData;	
 		$sBody .= "&orderid=". urlencode($this->_obj_TxnInfo->getOrderID() );
 		$sBody .= "&status=". $sid;
 		$sBody .= "&amount=". $amt;
 		$sBody .= "&fee=". intval($fee);
-		$sBody .= "&currency=". urlencode($this->_obj_TxnInfo->getClientConfig()->getCountryConfig()->getCurrency() );
+		$sBody .= "&currency=". urlencode($this->_obj_TxnInfo->getCountryConfig()->getCurrency() );
 		$sBody .= "&mobile=". urlencode($this->_obj_TxnInfo->getMobile() );
 		$sBody .= "&operator=". urlencode($this->_obj_TxnInfo->getOperator() );
 		$sBody .= "&language=". urlencode($this->_obj_TxnInfo->getLanguage() );
@@ -331,9 +335,28 @@ abstract class Callback extends EndUserAccount
 		if ( strlen($this->_obj_TxnInfo->getDescription() ) > 0) { $sBody .= "&description=". urlencode($this->_obj_TxnInfo->getDescription() ); }
 		$sBody .= $this->getVariables();
 		$sBody .= "&hmac=". urlencode($this->_obj_TxnInfo->getHMAC() );
-		/* ----- Construct Body End ----- */
+		if(empty($sDeviceID) === false)
+		{
+		$sBody .= "&device-id=". urlencode($sDeviceID);
+		}
+		if(empty($sEmail) === false)
+		{
+		$sBody .= "&email=". urlencode($sEmail);
+		}
+		if(empty($exp)===false)
+		{
+			$sBody .= "&expiry=". $exp;
+		}
+		trigger_error("********************* ". $sBody, E_USER_NOTICE);
+		/* Adding customer Info as part of the callback query params */
+		if (($this->_obj_TxnInfo->getAccountID() > 0) === true )
+        {
+            $obj_CustomerInfo = CustomerInfo::produceInfo($this->getDBConn(), $this->_obj_TxnInfo->getAccountID());
+            $sBody .= "&customer-country-id=". $obj_CustomerInfo->getCountryID();
+        }
 
-		$this->performCallback($sBody, $obj_SurePay);
+        /* ----- Construct Body End ----- */
+        $this->performCallback($sBody, $obj_SurePay);
 	}
 
 	/**
@@ -521,7 +544,7 @@ abstract class Callback extends EndUserAccount
 	{
 		$sql = "SELECT name
 				FROM System".sSCHEMA_POSTFIX.".PSPCurrency_Tbl
-				WHERE countryid = ". intval($cid) ." AND pspid = ". intval($pspid) ." AND enabled = '1'";
+				WHERE currencyid = ". intval($cid) ." AND pspid = ". intval($pspid) ." AND enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $this->getDBConn($sql)->getName($sql);
 
@@ -610,11 +633,62 @@ abstract class Callback extends EndUserAccount
 			return new GlobalCollect($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["global-collect"]);
 		case (Constants::iSECURE_TRADING_PSP):
 			return new SecureTrading($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["secure-trading"]);
+		case (Constants::iPAYFORT_PSP):
+			return new PayFort($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["payfort"]);
+		case (Constants::iPAYPAL_PSP):
+			return new PayPal($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paypal"]);
+		case (Constants::iCCAVENUE_PSP):
+			return new CCAvenue($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ccavenue"]);
+		case (Constants::i2C2P_PSP):
+			return new CCPP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["2c2p"]);
+		case (Constants::iMAYBANK_PSP):
+			return new MayBank($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["maybank"]);			
+		case (Constants::iPUBLIC_BANK_PSP):
+			return new PublicBank($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["public-bank"]);
+		case (Constants::iALIPAY_PSP):
+	        return new AliPay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["alipay"]);
+		case (Constants::iQIWI_PSP):
+			return new Qiwi($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["qiwi"]);
+		case (Constants::iPOLI_PSP):
+            return new Poli($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["poli"]);
+		case (Constants::iKLARNA_PSP):
+				return new Klarna($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["klarna"]);
+        case (Constants::iMVAULT_PSP):
+            return new MVault($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mvault"]);
+        case (Constants::iNETS_ACQUIRER):
+            return new Nets($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["nets"]);
+        case (Constants::iTRUSTLY_PSP):
+            	return new Trustly($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["trustly"]);
+        case (Constants::iPAY_TABS_PSP):
+        	return new PayTabs($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paytabs"]);
+        case (Constants::i2C2P_ALC_PSP):
+        		return new CCPPALC($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["2c2p-alc"]);
 		default:
 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
 	}
 
 	public abstract function getPSPID();
+	
+	/**
+	 * Returns exponent of currency of country on given country-id and psp-id.
+	 *
+	 * @param 	integer $cid	Unique ID for the Country that the Currency should be found in
+	 * @param 	integer $pspid	Unique ID for the PSP that the currency code should be found for
+	 * @return 	int
+	 */
+	
+	public function getCurrencyExponent($cid, $pspid)
+	{
+		$currency_name = $this->getCurrency($cid, $pspid);
+		
+		$sql = "SELECT decimals
+				FROM System".sSCHEMA_POSTFIX.".Country_Tbl
+				WHERE id = ". intval($cid) ." AND currency = '". $currency_name ."' AND enabled = '1'";
+		//		echo $sql ."\n";
+		$RS = $this->getDBConn($sql)->getName($sql);
+		
+		return $RS["DECIMALS"];
+	}
 }
 ?>

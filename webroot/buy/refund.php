@@ -26,6 +26,8 @@ require_once(sCLASS_PATH ."/enduser_account.php");
 require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for the CPM PSP component
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
+// Require specific Business logic for the CPM ACQUIRER component
+require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
 // Require specific Business logic for the WorldPay component
@@ -57,6 +59,31 @@ require_once(sCLASS_PATH ."/wirecard.php");
 require_once(sCLASS_PATH ."/globalcollect.php");
 // Require specific Business logic for the Secure Trading component
 require_once(sCLASS_PATH ."/securetrading.php");
+// Require specific Business logic for the PayFort component
+require_once(sCLASS_PATH ."/payfort.php");
+// Require specific Business logic for the CCAvenue component
+require_once(sCLASS_PATH ."/ccavenue.php");
+// Require specific Business logic for the PayPal component
+require_once(sCLASS_PATH ."/paypal.php");
+// Require specific Business logic for the 2C2P component
+require_once(sCLASS_PATH ."/ccpp.php");
+// Require specific Business logic for the MayBank component
+require_once(sCLASS_PATH ."/maybank.php");
+// Require specific Business logic for the PublicBank component
+require_once(sCLASS_PATH ."/publicbank.php");
+// Require specific Business logic for the Qiwi component
+require_once(sCLASS_PATH ."/qiwi.php");
+// Require specific Business logic for the Klarna component
+require_once(sCLASS_PATH ."/klarna.php");
+// Require specific Business logic for the Alipay component
+require_once(sCLASS_PATH ."/alipay.php");
+// Require specific Business logic for the customerinfo component
+require_once(sCLASS_PATH ."/customer_info.php");
+
+// Require specific Business logic for the Nets component
+require_once(sCLASS_PATH ."/nets.php");
+// Require specific Business logic for the mVault component
+require_once(sCLASS_PATH ."/mvault.php");
 
 header("Content-Type: application/x-www-form-urlencoded");
 

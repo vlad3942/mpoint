@@ -25,7 +25,8 @@ require_once(sCLASS_PATH ."/callback.php");
 require_once(sCLASS_PATH ."/dibs.php");
 // Require general Business logic for the Cellpoint Mobile module
 require_once(sCLASS_PATH ."/cpm.php");
-
+// Require specific Business logic for the CPM ACQUIRER component
+require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
 // Re-Build HTTP GET super global to support arrays
 rebuild_get();
 
@@ -52,7 +53,7 @@ try
 		ignore_user_abort(true);
 		// Redirect customer
 		header("Content-Length: 0");
-		header("location: http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?". session_name() ."=". session_id() );
+		header("location: http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php" );
 		header("Connection: close");
 		flush();
 
@@ -98,7 +99,7 @@ try
 			ignore_user_abort(true);
 			// Redirect customer
 			header("Content-Length: 0");
-			header("location: http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php?". session_name() ."=". session_id() );
+			header("location: http://". $_SERVER['HTTP_HOST'] ."/pay/accept.php");
 			header("Connection: close");
 			flush();
 
@@ -120,7 +121,7 @@ try
 	?>
 			<root single-sign-on="<?= ($_SESSION['obj_Info']->getInfo("auth-token") === false ? "false" : "true"); ?>">
 				<title><?= $_OBJ_TXT->_("Pay using Account"); ?></title>
-				<?= $obj_mPoint->getSystemInfo(); ?>
+				<?= $obj_mPoint->getSystemInfo($aHTTP_CONN_INFO["hpp"]["protocol"]); ?>
 				<?= $_SESSION['obj_UA']->toXML(); ?>
 				<?= $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->toXML(); ?>
 				<?= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML(); ?>

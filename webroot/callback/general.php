@@ -17,12 +17,16 @@ require_once(sAPI_CLASS_PATH ."/gomobile.php");
 
 // Require Business logic for the End-User Account Component
 require_once(sCLASS_PATH ."/enduser_account.php");
+// Require Business logic for the End-User Account Factory Provider
+require_once(sCLASS_PATH ."/customer_info.php");
 // Require general Business logic for the Callback module
 require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for Capture component (for use with auto-capture functionality)
 require_once(sCLASS_PATH ."/capture.php");
 // Require specific Business logic for the CPM PSP component
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
+// Require specific Business logic for the CPM ACQUIRER component
+require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 // Require specific Business logic for the Adyen component
@@ -45,6 +49,40 @@ require_once(sCLASS_PATH ."/wirecard.php");
 require_once(sCLASS_PATH ."/dibs.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/securetrading.php");
+// Require specific Business logic for the CCAvenue component
+require_once(sCLASS_PATH ."/ccavenue.php");
+// Require specific Business logic for the PayPal component
+require_once(sCLASS_PATH ."/paypal.php");
+// Require specific Business logic for the PayFort component
+require_once(sCLASS_PATH ."/payfort.php");
+// Require specific Business logic for the DataCash component
+require_once(sCLASS_PATH ."/datacash.php");
+// Require specific Business logic for the 2C2P component
+require_once(sCLASS_PATH ."/ccpp.php");
+// Require specific Business logic for the MayBank component
+require_once(sCLASS_PATH ."/maybank.php");
+// Require specific Business logic for the PublicBank component
+require_once(sCLASS_PATH ."/publicbank.php");
+// Require specific Business logic for the AliPay component
+require_once(sCLASS_PATH ."/alipay.php");
+// Require specific Business logic for the POLi component
+require_once(sCLASS_PATH ."/poli.php");
+// Require specific Business logic for the QIWI component
+require_once(sCLASS_PATH ."/qiwi.php");
+// Require specific Business logic for the Nets component
+require_once(sCLASS_PATH ."/nets.php");
+// Require specific Business logic for the Klarna component
+require_once(sCLASS_PATH ."/klarna.php");
+// Require specific Business logic for the mVault component
+require_once(sCLASS_PATH ."/mvault.php");
+// Require specific Business logic for the Trustly component
+require_once(sCLASS_PATH ."/trustly.php");
+// Require specific Business logic for the 2C2P-ALC component
+require_once(sCLASS_PATH ."/ccpp_alc.php");
+// Require specific Business logic for the paytabs component
+require_once(sCLASS_PATH ."/paytabs.php");
+
+
 /**
  * Input XML format
  *
@@ -85,18 +123,39 @@ $obj_XML = simplexml_load_string(file_get_contents("php://input") );
 	
 $id = (integer)$obj_XML->callback->transaction["id"];
 $xml = '';
+
+$aStateId = array();
+
 try
 {
 	$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
-
+	$iAccountValidation = $obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iPAYMENT_ACCOUNT_VALIDATED);
 	// Intialise Text Translation Object
 	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
 	
 	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]) );
 	$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 	$iStateID = (integer) $obj_XML->callback->status["code"];
+	
+	$year = substr(strftime("%Y"), 0, 2);
+	$sExpirydate =  $year.$obj_XML->callback->transaction->card->expiry->year ."-". $obj_XML->callback->transaction->card->expiry->month;
+	// If transaction is in Account Validated i.e 1998 state no action to be done
+
+    array_push($aStateId,$iStateID);
+
+    if($iAccountValidation != 1)
+	{
+        $saveCard = true;
+        foreach ($obj_TxnInfo->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+        {
+            if ($aAdditionalProperty['key'] == 'mvault' && $aAdditionalProperty['value'] == 'true'){
+                $saveCard = false;
+                break;
+            }
+        }
+
 	// Save Ticket ID representing the End-User's stored Card Info
-	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_XML->callback->transaction->card) == 1)
+	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_XML->callback->transaction->card->token) == 1 && $saveCard)
 	{
 		$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE);
 		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $obj_XML->callback->transaction->card->token);
@@ -112,7 +171,7 @@ try
 										 $obj_XML->callback->transaction->card->{'card-number'}, 
 										 preg_replace('/\s+/', '', $sExpiry) ); // Remove all whitespaces from string.
 		// The End-User's existing account was linked to the Client when the card was stored		
-		if ($iStatus == 1)
+ 		if ($iStatus == 1)
 		{
 			$obj_mPoint->sendLinkedInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo);
 		}
@@ -128,7 +187,7 @@ try
 			{
 				$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $obj_TxnInfo);
 			}
-		}
+		} 
 		// E-Mail has been provided for the transaction
 		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
 	}
@@ -139,6 +198,7 @@ try
 									  $iStateID,
 									  $fee,
 									  array($HTTP_RAW_POST_DATA) );
+	
 	
 	// Payment Authorized: Perform a callback to the 3rd party Wallet if required
 	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
@@ -232,21 +292,50 @@ try
 		
 		if ($responseCode == 1000)
 		{				
-			if ($obj_TxnInfo->getCallbackURL() != "") { $obj_mPoint->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $aCallbackArgs); }
+		    array_push($aStateId,Constants::iPAYMENT_CAPTURED_STATE);
 			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
 		}
 		else
 		{
-			if ($obj_TxnInfo->getCallbackURL() != "") { $obj_mPoint->notifyClient(Constants::iPAYMENT_DECLINED_STATE, $aCallbackArgs); }
+            array_push($aStateId,Constants::iPAYMENT_DECLINED_STATE);
 			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, "Payment Declined (2010)");
 		}
 	}
-	// Callback URL has been defined for Client
-	if ($obj_TxnInfo->getCallbackURL() != "")
-	{
-		$obj_mPoint->notifyClient($iStateID, array("transact"=>$id, "amount"=>$obj_XML->callback->transaction->amount, "card-id"=>$obj_XML->callback->transaction->card["type-id"]) );
-	}
-	$xml = '<status code="1000">Callback Success</status>';
+	
+  }
+  
+  $sAdditionalData = (string) $obj_XML->callback->{'additional-data'};
+ 
+  
+  // Callback URL has been defined for Client
+  if ($obj_TxnInfo->getCallbackURL() != "")
+  {
+    /*
+     * Return the success code 202 to indicate Request Accepted and
+     * the request to notify the upstream  retail system.
+    */
+      ignore_user_abort(true);
+      header("HTTP/1.1 202 Accepted");
+      header("Content-Length: 0");
+      header("Connection: Close");
+      flush();
+     foreach ($aStateId as $iStateId) {
+         if ($iStateId == 2000) {
+             $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate ,"additionaldata" => (string)$sAdditionalData));
+         } else {
+             $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"],"additionaldata" => (string)$sAdditionalData));
+         }
+     }
+
+  }
+  else {
+      header("Content-Type: text/xml; charset=\"UTF-8\"");
+      echo '<?xml version="1.0" encoding="UTF-8"?>';
+      echo '<root>';
+      echo '<status code="1000">Callback Success</status>';
+      echo '</root>';
+  }
+    $this->getTxnInfo()->getPaymentSession()->updateState();
 }
 catch (TxnInfoException $e)
 {
@@ -260,8 +349,4 @@ catch (CallbackException $e)
 	$xml .= '<status code="'. $e->getCode() .'">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES). '</status>';
 	trigger_error($e->getMessage() ."\n". $HTTP_RAW_POST_DATA, E_USER_WARNING);
 }
-header("Content-Type: text/xml; charset=\"UTF-8\"");
-echo '<?xml version="1.0" encoding="UTF-8"?>';
-echo '<root>';
-echo $xml;
-echo '</root>';
+

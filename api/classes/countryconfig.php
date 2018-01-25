@@ -18,6 +18,15 @@
  */
 class CountryConfig extends BasicConfig
 {
+	
+	
+	/**
+	 * Configuration for the Currency the transactions was processed in
+	 *
+	 * @var CurrencyConfig
+	 */
+	private $_obj_CurrencyConfig;
+	
 	/**
 	 * 3 digit ISO-4217 code for the currency used in the Country.
 	 *
@@ -111,7 +120,25 @@ class CountryConfig extends BasicConfig
 	 * @var integer
 	 */
 	private $_iMin2FAAmount;
-	
+	/**
+	 * The 3 Digit alphabetic code as per the ISO 3166 standards
+	 *
+	 * @var string
+	 */
+	private $_sAlpha3Code;
+    /**
+     * The 2 Digit alphabetic code as per the ISO 3166 standards
+     *
+     * @var string
+     */
+    private $_sAlpha2Code;
+    /**
+     * The 3 Digit numeric code as per the ISO 3166 standards
+     *
+     * @var integer
+     */
+    private $_iNumericCode;
+
 	/**
 	 * Default Constructor
 	 *
@@ -132,11 +159,15 @@ class CountryConfig extends BasicConfig
 	 * @param	integer $mpsms		The max amount that can be charged with a Premium SMS based flow (no authentication) 
 	 * @param	integer $mpwd		The min amount for a transaction before Password authentication is required
 	 * @param	integer $m2fa		The min amount for a transaction before 2-Factor Authentication is required
+	 * @param	string $a2code		The 2 Digit alphabetic code as per the ISO 3166 standards
+	 * @param	string $a3code		The 3 Digit alphabetic code as per the ISO 3166 standards
+	 * @param	integer $a3code		The 3 Digit numeric code as per the ISO 3166 standards
 	 */
-	public function __construct($id, $name, $currency, $sym, $maxbal, $mt, $minmob, $maxmob, $ch, $pf, $dec, $als, $doi, $aca, $mpsms, $mpwd, $m2fa)
+	public function __construct($id, $name, $currency, CurrencyConfig &$oCC, $sym, $maxbal, $mt, $minmob, $maxmob, $ch, $pf, $dec, $als, $doi, $aca, $mpsms, $mpwd, $m2fa, $a2code, $a3code, $numcode)
 	{
 		parent::__construct($id, $name);
 		
+		$this->_obj_CurrencyConfig = $oCC;
 		$this->_sCurrency = trim($currency);
 		$this->_sSymbol = trim($sym);
 		$this->_iMaxBalance = (integer) $maxbal;
@@ -152,14 +183,24 @@ class CountryConfig extends BasicConfig
 		$this->_iMaxPSMSAmount = (integer) $mpsms;
 		$this->_iMinPwdAmount = (integer) $mpwd;
 		$this->_iMin2FAAmount = (integer) $m2fa; 
+		$this->_sAlpha2Code = trim($a2code);
+		$this->_sAlpha3Code = trim($a3code);
+		$this->_iNumericCode = (integer) $numcode;
 	}
+	
+	/**
+	 * Returns the Configuration for the Currency the transactions was processed in
+	 *
+	 * @return 	CurrencyConfig
+	 */
+	public function getCurrencyConfig() { return $this->_obj_CurrencyConfig; }
 	
 	/**
 	 * Returns the 3 digit ISO-4217 code for the currency used in the Country.
 	 *
 	 * @return 	string
 	 */
-	public function getCurrency() { return $this->_sCurrency; }
+	public function getCurrency() { return $this->_obj_CurrencyConfig->getCode(); }
 	/**
 	 * Returns the Symbol used to represent the country's currency
 	 *
@@ -247,7 +288,11 @@ class CountryConfig extends BasicConfig
 	 * @return integer
 	 */
 	public function getMin2FAAmount() { return $this->_iMin2FAAmount; }
-	
+
+	public function getAlpha2code() { return $this->_sAlpha2Code; }
+	public function getAlpha3code() { return $this->_sAlpha3Code; }
+	public function getNumericCode() { return $this->_iNumericCode; }
+
 	/**
 	 * Constructs an XML Document with the Country Configuration.
 	 * The configuration is returned as an XML Document in the following format:
@@ -289,6 +334,9 @@ class CountryConfig extends BasicConfig
 		$xml .= '<max-psms-amount>'. $this->_iMaxPSMSAmount .'</max-psms-amount>';
 		$xml .= '<min-pwd-amount>'. $this->_iMinPwdAmount .'</min-pwd-amount>';
 		$xml .= '<min-2fa-amount>'. $this->_iMin2FAAmount .'</min-2fa-amount>';
+		$xml .= '<alpha2code>'. $this->_sAlpha2Code .'</alpha2code>';
+		$xml .= '<alpha3code>'. $this->_sAlpha3Code .'</alpha3code>';
+		$xml .= '<numeric-code>'. $this->_iNumericCode .'</numeric-code>';
 		$xml .= '</country-config>';
 		
 		return $xml;
@@ -303,14 +351,19 @@ class CountryConfig extends BasicConfig
 	 */
 	public static function produceConfig(RDB &$oDB, $id)
 	{
-		$sql = "SELECT id, name, currency, symbol, maxbalance, mintransfer, minmob, maxmob, channel, priceformat, decimals,
-					addr_lookup, doi, add_card_amount, max_psms_amount, min_pwd_amount, min_2fa_amount
-				FROM System".sSCHEMA_POSTFIX.".Country_Tbl
-				WHERE id = ". intval($id) ." AND enabled = '1'";
+		$sql = "SELECT CT.id, CT.name, CUT.code AS currency, CT.symbol, CT.maxbalance, CT.mintransfer, CT.minmob, CT.maxmob, 
+                CT.channel, CT.priceformat, CUT.decimals,
+					CT.addr_lookup, CT.doi, CT.add_card_amount, CT.max_psms_amount, CT.min_pwd_amount, CT.min_2fa_amount, 
+					CT.alpha2code, CT.alpha3code, CT.code,CUT.id AS currencyid
+				FROM System".sSCHEMA_POSTFIX.".Country_Tbl CT
+				INNER JOIN System".sSCHEMA_POSTFIX.".Currency_Tbl CUT ON CT.currencyid = CUT.id
+				WHERE CT.id = ". intval($id) ." AND CT.enabled = '1' AND CUT.enabled = '1'";
 //		echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 		
-		return new CountryConfig($RS["ID"], $RS["NAME"], $RS["CURRENCY"], $RS["SYMBOL"], $RS["MAXBALANCE"], $RS["MINTRANSFER"], $RS["MINMOB"], $RS["MAXMOB"], $RS["CHANNEL"], $RS["PRICEFORMAT"], $RS["DECIMALS"], $RS["ADDR_LOOKUP"], $RS["DOI"], $RS["ADD_CARD_AMOUNT"], $RS["MAX_PSMS_AMOUNT"], $RS["MIN_PWD_AMOUNT"], $RS["MIN_2FA_AMOUNT"]);
+		$obj_CurrencyConfig = CurrencyConfig::produceConfig($oDB, $RS["CURRENCYID"]);
+		
+		return new CountryConfig($RS["ID"], $RS["NAME"],$RS["CURRENCY"], $obj_CurrencyConfig, $RS["SYMBOL"], $RS["MAXBALANCE"], $RS["MINTRANSFER"], $RS["MINMOB"], $RS["MAXMOB"], $RS["CHANNEL"], $RS["PRICEFORMAT"], $RS["DECIMALS"], $RS["ADDR_LOOKUP"], $RS["DOI"], $RS["ADD_CARD_AMOUNT"], $RS["MAX_PSMS_AMOUNT"], $RS["MIN_PWD_AMOUNT"], $RS["MIN_2FA_AMOUNT"], $RS['ALPHA2CODE'],$RS['ALPHA3CODE'],$RS['CODE']);
 	}
 	
 	/**
@@ -327,14 +380,14 @@ class CountryConfig extends BasicConfig
      * 
      * @return bool Boolean A boolean value indicates if the operation was successful or not
 	 */
-	public static function updateConfig(RDB &$oDB, $id, $name, $currency, $sym, $pf, $al, $minmob, $maxmob)
+	public static function updateConfig(RDB &$oDB, $id, $name, $currencyid, $sym, $pf, $al, $minmob, $maxmob)
 	{
         if ($al === TRUE) { $addr_lookup = 'TRUE'; }
         else { $addr_lookup = 'FALSE'; }
         
 		$sql = "UPDATE System".sSCHEMA_POSTFIX.".Country_Tbl "
                 . "SET name = '". $oDB->escStr($name) ."'"
-                . ", currency = '" . $oDB->escStr($currency) ."'"
+                . ", currencyid = '" . $oDB->escStr($currencyid) ."'"
                 . ", symbol = '". $oDB->escStr($sym) ."'"
                 . ", priceformat = '". $oDB->escStr($pf) ."'"
                 . ", addr_lookup = ". $addr_lookup
@@ -342,6 +395,15 @@ class CountryConfig extends BasicConfig
 				. " WHERE id = ".intval($id);
         
         return is_resource($oDB->query($sql) );
+	}
+	
+
+	public static function setISO3166Attributes(SimpleDOMElement &$obj_XMLDOM, RDB &$oDB, $countryid)
+	{
+		$obj_CountryConfig = self::produceConfig($oDB, $countryid);
+		$obj_XMLDOM->addAttribute("alpha2code", $obj_CountryConfig->getAlpha2code());
+		$obj_XMLDOM->addAttribute("alpha3code", $obj_CountryConfig->getAlpha3code());
+		$obj_XMLDOM->addAttribute("code", $obj_CountryConfig->getNumericCode());
 	}
 }
 ?>

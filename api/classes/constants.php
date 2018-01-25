@@ -121,6 +121,12 @@ abstract class Constants
 	 *
 	 */
 	const iEMAIL_REJECTED_STATE = 1031;
+
+	/**
+	 * Defines the ID of the State that indicates that 3D Secure has been activated for the payment
+	 *
+	 */
+	const i3D_SECURE_ACTIVATED_STATE = 1100;
 	/**
 	 * Defines the ID of the State that indicates that mPoint's Callback request has been accepted
 	 *
@@ -152,6 +158,21 @@ abstract class Constants
 	 */
 	const iCB_REJECTED_STATE = 1995;
 	/**
+	 * Defines the ID of the State that indicates that the transaction has been done for Account Validation and authorisation was successful.
+	 *
+	 */
+	const iPAYMENT_ACCOUNT_VALIDATED = 1998;
+	/**
+	 * Defines the ID of the State that indicates that the transaction has been done for Account Validation and it failed authorisation.
+	 *
+	 */
+	const iPAYMENT_ACCOUNT_VALIDATION_FAILED = 1997;
+	/**
+	 * Defines the ID of the State that indicates that the transaction has been done for Account Validation(successful) and has been cancelled now.
+	 *
+	 */
+	const iPAYMENT_ACCOUNT_VALIDATED_CANCELLED = 19980;
+	/**
 	 * Defines the ID of the State that indicates that mPoint's Callback request is being retried
 	 *
 	 */
@@ -178,6 +199,12 @@ abstract class Constants
 	 */
 	const iPAYMENT_REFUNDED_STATE = 2003;
 
+    /**
+     * Defines the ID of the State that indicates that payment requires 3d verification
+     *
+     */
+    const iPAYMENT_3DS_VERIFICATION_STATE = 2005;
+
 	/**
 	 * Defines the ID of the State that indicates that payment is being using a voucher
 	 *
@@ -199,6 +226,24 @@ abstract class Constants
 	 *
 	 */
 	const iPAYMENT_REJECTED_STATE = 2010;
+    /**
+     * Defines the ID of the State that indicates that the payment was rejected by the Payment Service Provider (PSP)
+     * when doing an Authorisation due to incorrect payment information
+     *
+     */
+    const iPAYMENT_REJECTED_INCORRECT_INFO_STATE = 20101;
+    /**
+     * Defines the ID of the State that indicates that the payment was rejected by the Payment Service Provider (PSP)
+     * when doing an Authorisation
+     *
+     */
+    const iPAYMENT_REJECTED_PSP_UNAVAILABLE_STATE = 20102;
+    /**
+     * Defines the ID of the State that indicates that the payment was rejected by the Payment Service Provider (PSP)
+     * when doing an Authorisation
+     *
+     */
+    const iPAYMENT_REJECTED_3D_SECURE_FAILURE_STATE = 20103;
 	/**
 	 * Defines the ID of the State that indicates that the payment was declined by the Payment Service Provider (PSP)
 	 * when doing a Capture
@@ -212,6 +257,51 @@ abstract class Constants
 	const iPAYMENT_DUPLICATED_STATE = 2019;
 
 	/**
+	 * Defines the ID of the State that indicates that payment has been settled
+	 *
+	 */
+	const iPAYMENT_SETTLED_STATE = 2020;
+
+    /**
+     * Defines the ID of the State that indicates that Tokenization request successfully completed
+     *
+     */
+    const iCARD_TOKENIZE_SUCCESS = 2100;
+
+    /**
+     * Defines the ID of the State that indicates that Tokenization request failed
+     *
+     */
+    const iCARD_TOKENIZE_FAILED = 2101;
+
+
+    /**
+     * Defines the ID of the State that indicates that Session is created
+     *
+     */
+    const iSESSION_CREATED = 4001;
+    
+
+    /**
+     * Defines the ID of the State that indicates that Session is expired
+     *
+     */
+
+    const iSESSION_EXPIRED = 4020;
+
+    /**
+     * Defines the ID of the State that indicates that Session failed
+     *
+     */
+    const iSESSION_FAILED = 4020;
+
+    /**
+     * Defines the ID of the State that indicates that Session complete failed
+     *
+     */
+    const iSESSION_COMPLETED = 4030;
+
+    /**
 	 * Defines GoMobile's type identifier for an MT-SMS message
 	 *
 	 */
@@ -469,10 +559,109 @@ abstract class Constants
 	const iSECURE_TRADING_PSP = 22;
 	
 	/**
+	 * Unique ID for the Payment Service Provider: PayFort
+	 *
+	 */
+	const iPAYFORT_PSP = 23;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: PayPal
+	 *
+	 */
+	const iPAYPAL_PSP = 24;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: CCAvenue
+	 *
+	 */
+	const iCCAVENUE_PSP = 25;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: 2C2P
+	 *
+	 */
+	const i2C2P_PSP = 26;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: MayBank
+	 *
+	 */
+	const iMAYBANK_PSP = 27;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: Public Bank
+	 *
+	 */
+	const iPUBLIC_BANK_PSP = 28;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: AliPay
+	 *
+	 */
+	const iALIPAY_PSP = 30;
+
+	/**
+	 * Unique ID for the Payment Service Provider: Qiwi
+	 *
+	 */
+	const iQIWI_PSP = 31;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: POLi
+	 *
+	 */
+	const iPOLI_PSP = 32;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: MobilePay Online
+	 *
+	 */
+	const iMOBILEPAY_ONLINE_PSP = 33;
+
+
+    /**
+     * Unique ID for the Acquirer: NETS
+     *
+     */
+    const iNETS_ACQUIRER = 35;
+
+	/**
+	 * Unique ID for the Payment Service Provider: Klarna
+	 *
+	 */
+	const iKLARNA_PSP = 37;
+
+	/**
+	 * Unique ID for the Payment Service Provider: Trustly
+	 *
+	 */
+	const iTRUSTLY_PSP = 39;
+	
+	
+    /**
+     * Unique ID for the Payment Service Provider: mVault
+     *
+     */
+    const iMVAULT_PSP = 36;
+
+    /**
+     * Unique ID for the Payment Service Provider: Pay Tabs
+     *
+     */
+    const iPAY_TABS_PSP = 38;
+    
+	/**
 	 * Unique ID for the Payment Service Provider: Android Pay
 	 *
 	 */
 	const iANDROID_PAY_PSP = 20;
+	
+	/**
+	 * Unique ID for the Payment Service Provider: 2c2p-Alc
+	 *
+	 */
+	const i2C2P_ALC_PSP = 40;
+	
 	/**
 	 * Unique ID for the Electronic Payment Flow
 	 *
@@ -626,7 +815,53 @@ abstract class Constants
 	 *
 	 */
 	const iANDROID_PAY_WALLET = 27;
+	/**
+	 * Unique Card ID for transaction's made using Android Pay
+	 *
+	 */
+	const iPAYPAL_PAY_WALLET = 28;
+	/**
+	 * Unique Card ID for transaction's made using MobilePay Online
+	 *
+	 */
+	const iMOBILEPAY_ONLINE = 30;
+	/**
+	 * Unique Card ID for transaction's made using SADAD
+	 *
+	 */
+	const iSADAD = 31;
+	/**
+	 * Unique Card ID for transaction's made using AliPay
+	 *
+	 */
+	const iALIPAY_WALLET = 32;
+	/**
+	 * Unique Card ID for transaction's made using POLi
+	 *
+	 */
+	const iPOLI_WALLET = 34;
+	/**
+	 * Unique Card ID for transaction's made using Qiwi
+	 *
+	 */
+	const iQIWI_WALLET = 33;	
+	/**
+	 * Unique Card ID for transaction's made using Klarna
+	 *
+	 */
+	const iKLARNA_PAY = 36;
+	/**
+	 * Unique Card ID for transaction's made using Trustly
+	 *
+	 */
+	const iTRUSTLY_PAY = 38;
 	
+    /**
+     * Unique Card ID for transaction's made using mVault
+     *
+     */
+    const iMVAULT_WALLET = 35;
+
 	/**
 	 * Unique Fee Type ID for Top-Ups
 	 *
@@ -686,5 +921,16 @@ abstract class Constants
 	 * To fetch the card details by passing the auth toke to the wallet instance.
 	 */
 	const sPAYMENT_DATA_FULL = "full";
+
+	/*
+	 * Failed Transaction API modes
+	 * 1. Get All Failed Transaction.
+	 * 2. Get All Initialization Failed Txn
+	 * 3. Get All Txns that have failed authorization with PSP
+	 *
+	 * */
+	const iFAILED_TXNS_ALL = 1;
+	const iFAILED_TXNS_FAILED_INIT = 2;
+	const iFAILED_TXNS_FAILED_AUTH = 3;
 }
 ?>

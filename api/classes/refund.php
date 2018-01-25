@@ -106,11 +106,19 @@ class Refund extends General
 	 */
 	public function refund($iAmount = -1)
 	{
+		$status = null;
 		if ($iAmount <= 0) { $iAmount = $this->_obj_TxnInfo->getAmount(); }
-
+		
+		$obj_TxnInfo = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->getDBConn());
+		
+		$iAccountValidation = $obj_TxnInfo->hasEitherState($this->getDBConn(),Constants::iPAYMENT_ACCOUNT_VALIDATED);
+		
+		if($iAccountValidation == 1){
+ 			$status = Constants::iPAYMENT_ACCOUNT_VALIDATED_CANCELLED ;
+		}
 		// If PSP supports the Refund operation, perform the refund
-		if ( ($this->_obj_PSP instanceof Refundable) === true) { $code = $this->_obj_PSP->refund($iAmount); }
-		else { throw new BadMethodCallException("Refund not supported by PSP: ". get_class($this->_obj_PSP) ); }
+		if ( ($this->_obj_PSP instanceof Refundable) === true) { $code = $this->_obj_PSP->refund($iAmount,$status); }
+		else {throw new BadMethodCallException("Refund not supported by PSP: ". get_class($this->_obj_PSP) ); }
 
 		if ($code === 1000)
 		{
@@ -122,8 +130,9 @@ class Refund extends General
 			if (is_resource($res) === false) { trigger_error("Failed to update refunded amount for transaction: ". $this->getTxnInfo()->getID(), E_USER_WARNING); }
 
 			$aArgs = array("amount" => $iAmount);
-			$this->_obj_TxnInfo = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(), $this->_obj_TxnInfo, $aArgs);
+			$this->_obj_TxnInfo = TxnInfo::produceInfo($this->_obj_TxnInfo->getID(),$this->getDBConn(), $this->_obj_TxnInfo, $aArgs);
 		}
+		
 		return $code;
 	}
 	

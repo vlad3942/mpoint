@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file contains the Controller for mPoint's Card Selection component.
  * The component will generate a page using the Client Configuration listing the credit cards available to the Customer.
@@ -12,203 +13,213 @@
  */
 
 // Require Global Include File
-require_once("../inc/include.php");
+require_once ("../inc/include.php");
 
-require_once(sAPI_CLASS_PATH ."simpledom.php");
+$xmlData = '<title>' . $_OBJ_TXT->_ ( "Select Payment Method" ) . '</title>';
+$xmlData .= '<labels>
+			<progress>' . $_OBJ_TXT->_ ( "Step 1 of 2" ) . '</progress>
+			<info>' . $_OBJ_TXT->_ ( "Please select your Payment Method" ) . '</info>
+			<cancel>' . $_OBJ_TXT->_ ( "Cancel Payment" ) . '</cancel>
+			<cardnumber>' . $_OBJ_TXT->_ ( "Card Number" ) . '</cardnumber>
+			<expiry>' . $_OBJ_TXT->_ ( "Expiry Month" ) . '</expiry>
+			<cvv>' . $_OBJ_TXT->_ ( "CVV Code" ) . '</cvv>
+			<button>' . $_OBJ_TXT->_ ( "Pay now" ) . '</button>
+			<paymentcard>' . $_OBJ_TXT->_ ( "Payment card" ) . '</paymentcard>
+			<savecard>' . $_OBJ_TXT->_ ( "Save card info" ) . '</savecard>
+			<cardholder>' . $_OBJ_TXT->_ ( "Card holder" ) . '</cardholder>
+			<back-button>' . $_OBJ_TXT->_ ( "back to cart" ) . '</back-button>
+			<returnurl>' . $_OBJ_TXT->_ ( $_SESSION ["return"] ) . '</returnurl>
+			<password>' . $_OBJ_TXT->_ ( "Password" ) . '</password>
+			<submit>' . $_OBJ_TXT->_ ( "Complete Payment" ) . '</submit>
+			<password>' . $_OBJ_TXT->_ ( "Create Password - Help Checkout" ) . '</password>
+			<new-password>' . $_OBJ_TXT->_ ( "New Password" ) . '</new-password>
+			<repeat-password>' . $_OBJ_TXT->_ ( "Repeat Password" ) . '</repeat-password>
+			<name>' . $_OBJ_TXT->_ ( "Card Name" ) . '</name>
+			<delete-card>' . $_OBJ_TXT->_ ( "Delete Card" ) . '</delete-card>
+			<cardholdername>' . $_OBJ_TXT->_ ( "Card Holder Name" ) . '</cardholdername>
+		</labels>';
+
+require_once (sAPI_CLASS_PATH . "simpledom.php");
 
 // Require Business logic for the End-User Account Component
-require_once(sCLASS_PATH ."/enduser_account.php");
+require_once (sCLASS_PATH . "/enduser_account.php");
 // Require Business logic for the Select Credit Card component
-require_once(sCLASS_PATH ."/credit_card.php");
+require_once (sCLASS_PATH . "/credit_card.php");
 
 // Require Business logic for the Payment Accepted component
-require_once(sCLASS_PATH ."/accept.php");
+require_once (sCLASS_PATH . "/accept.php");
 
-$aWallets = array(Constants::iVISA_CHECKOUT_WALLET, Constants::iMASTER_PASS_WALLET, Constants::iAMEX_EXPRESS_CHECKOUT_WALLET);
 
-try
-{
-	if($_SESSION['obj_TxnInfo'] === null)
-	{
-		trigger_error("Session expired.", E_USER_ERROR);
-		header("location: ".$_SERVER['HTTP_REFERER']);
-		exit;
-	}
+
+$aWallets = array (
+		Constants::iVISA_CHECKOUT_WALLET,
+		Constants::iMASTER_PASS_WALLET 
+);
+
+try {
 	
-	// Instantiate main mPoint object for handling the component's functionality
-	$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_TxnInfo'], $_SESSION['obj_UA']);
-	// Instantiate main special object in order to pass all relevant data for the Accept Payment page through DIBS: Custom Pages
-	$obj_Accept = new Accept($_OBJ_DB, $_OBJ_TXT, $_SESSION['obj_UA']);
-	
-	
-	$card_xml = $obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount() );
-	
-	$clientId = $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getClientID();
-	$accountId = $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->getID();
-	
-	$obj_CardXML = simplexml_load_string($card_xml );
-	
-	foreach($aWallets as $iWallet)
-	{
-		$obj_Elem = current($obj_CardXML->xpath("/cards/item[@id = ".$iWallet."]"));
+	if ($_SESSION ['obj_TxnInfo'] === null) {
 		
-		if(empty($obj_Elem) === false)
-		{
-			$b = '<?xml version="1.0" encoding="UTF-8"?>
-					<root>
-						<pay client-id="'.$clientId.'" account="'.$accountId.'">
-							<transaction id="'.$_SESSION['obj_TxnInfo']->getID().'" store-card="false">
-								<card type-id="'.$obj_Elem['type-id'].'">
-									<amount country-id="'.$_SESSION['obj_TxnInfo']->getCountryConfig()->getID().'">'.$_SESSION['obj_TxnInfo']->getAmount().'</amount>
-								</card>
-							</transaction>
-							<client-info language="'.sDEFAULT_LANGUAGE.'" version="1.20" platform="HTML5">
-							</client-info>
-						</pay>
-					</root>';
+		trigger_error ( "Session expired.", E_USER_ERROR );
+		$_GET ['msg'] = 0;
+	} else {
+		
+		// Instantiate main mPoint object for handling the component's functionality
+		$obj_mPoint = new CreditCard ( $_OBJ_DB, $_OBJ_TXT, $_SESSION ['obj_TxnInfo'], $_SESSION ['obj_UA'] );
+		
+		$messages = $obj_mPoint->getMessages ( "Select Card" );
+		
+		$card_xml = $obj_mPoint->getCards ( $_SESSION ['obj_TxnInfo']->getAmount () );
+		
+		$clientId = $_SESSION ['obj_TxnInfo']->getClientConfig ()->getAccountConfig ()->getClientID ();
+		$accountId = $_SESSION ['obj_TxnInfo']->getClientConfig ()->getAccountConfig ()->getID ();
+		
+		$obj_CardXML = simplexml_load_string ( $card_xml );
+		
+		foreach ( $aWallets as $iWallet ) {
+			$obj_Elem = current ( $obj_CardXML->xpath ( "/cards/item[@id = " . $iWallet . "]" ) );
 			
-			$aHTTP_CONN_INFO["mesb"]["path"] = "/mpoint/pay";
-			$aHTTP_CONN_INFO["mesb"]["username"] = $_SESSION['obj_TxnInfo']->getClientConfig()->getUsername();
-			$aHTTP_CONN_INFO["mesb"]["password"] = $_SESSION['obj_TxnInfo']->getClientConfig()->getPassword();
-			
-			$obj_Wallet_Response = getXMLResponse($b, $aHTTP_CONN_INFO);
-			
-			
-			$sHead = str_replace("</script>","<\/script>",html_entity_decode($obj_Wallet_Response->{'psp-info'}->head));
-			
-			if($obj_Elem['type-id'] == 16)
-			{
-				$sHead = str_replace("{PAYMENT SUCCESS}", "var jsonObject = JSON.parse(JSON.stringify(payment));document.getElementById('walletform_16').elements.namedItem('token').value = jsonObject['callid'];document.getElementById('walletform_16').submit();", $sHead);
+			if (empty ( $obj_Elem ) === false) {
+				$b = '<?xml version="1.0" encoding="UTF-8"?>
+						<root>
+							<pay client-id="' . $clientId . '" account="' . $accountId . '">
+								<transaction id="' . $_SESSION ['obj_TxnInfo']->getID () . '" store-card="false">
+									<card type-id="' . $obj_Elem ['type-id'] . '">
+										<amount country-id="' . $_SESSION ['obj_TxnInfo']->getCountryConfig ()->getID () . '">' . $_SESSION ['obj_TxnInfo']->getAmount () . '</amount>
+									</card>
+								</transaction>
+								<client-info language="' . sDEFAULT_LANGUAGE . '" version="1.20" platform="HTML5">
+								</client-info>
+							</pay>
+						</root>';
 				
-				$sHead = str_replace("{PAYMENT ERROR}", "", $sHead);
-				$sHead = str_replace("{PAYMENT CANCEL}", "", $sHead);
+				$aHTTP_CONN_INFO ["mesb"] ["path"] = "/mpoint/pay";
+				$aHTTP_CONN_INFO ["mesb"] ["username"] = $_SESSION ['obj_TxnInfo']->getClientConfig ()->getUsername ();
+				$aHTTP_CONN_INFO ["mesb"] ["password"] = $_SESSION ['obj_TxnInfo']->getClientConfig ()->getPassword ();
+				
+				$obj_Wallet_Response = getXMLResponse ( $b, $aHTTP_CONN_INFO );
+				
+				if (count ( $obj_Wallet_Response->{'psp-info'} ) > 0) {
+					if (count ( $obj_Wallet_Response->{'psp-info'}->head ) > 0) {
+						$sHead = str_replace ( "</script>", "<\/script>", html_entity_decode ( $obj_Wallet_Response->{'psp-info'}->head ) );
+					}
+					
+					switch ($obj_Elem ['type-id']) {
+						case Constants::iMASTER_PASS_WALLET :
+							$sHead = str_replace ( "mpSuccessCallback", "function (data){ document.getElementById('walletform_23').elements.namedItem('token').value = data.oauth_token; document.getElementById('walletform_23').elements.namedItem('verifier').value = data.oauth_verifier; document.getElementById('walletform_23').elements.namedItem('checkouturl').value = data.checkout_resource_url; document.getElementById('walletform_23').submit();}", $sHead );
+							$sHead = str_replace ( "mpFailureCallback", "function (data) { console.log('in FAILURE'); console.log(data); }", $sHead );
+							$sHead = str_replace ( "mpCancelCallback", "function (data) { console.log('in CANCEL'); console.log(data); }", $sHead );
+							
+							$sHead = str_replace ( "<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js'><\/script>", " ", $sHead );
+							break;
+						
+						case Constants::iVISA_CHECKOUT_WALLET :
+							$sHead = str_replace ( "{PAYMENT SUCCESS}", "var jsonObject = JSON.parse(JSON.stringify(payment));document.getElementById('walletform_16').elements.namedItem('token').value = jsonObject['callid'];document.getElementById('walletform_16').submit();", $sHead );
+							
+							$sHead = str_replace ( "{PAYMENT ERROR}", "", $sHead );
+							$sHead = str_replace ( "{PAYMENT CANCEL}", "", $sHead );
+							break;
+					}
+					
+					if (is_null ( $sHead ) == false) {
+						$obj_Elem->head = NULL;
+						$obj_Elem1 = dom_import_simplexml ( $obj_Elem->head );
+						$cdata = $obj_Elem1->ownerDocument->createCDataSection ( $sHead );
+						$obj_Elem1->appendChild ( $cdata );
+					}
+					
+					if (count ( $obj_Wallet_Response->{'psp-info'}->body ) > 0) {
+						$obj_Elem->body = NULL;
+						$obj_Elem2 = dom_import_simplexml ( $obj_Elem->body );
+						$cdata = $obj_Elem2->ownerDocument->createCDataSection ( str_replace ( "</", "<\/", html_entity_decode ( $obj_Wallet_Response->{'psp-info'}->body ) ) );
+						$obj_Elem2->appendChild ( $cdata );
+					}
+					
+					if (count ( $obj_Wallet_Response->{'psp-info'}->url ) > 0) {
+						$obj_Elem->url = $obj_Wallet_Response->{'psp-info'}->url;
+					}
+					
+					if (count ( $obj_Wallet_Response->{'psp-info'}->{'hidden-fields'} ) > 0) {
+						$hidden_inputs = '';
+						
+						$hidden_fields = $obj_Wallet_Response->{'psp-info'}->{'hidden-fields'}->children ();
+						
+						foreach ( $hidden_fields as $hidden_field ) {
+							$hidden_inputs .= '<input type="hidden" name="' . $hidden_field->getName () . '" value="' . $hidden_field . '" /> ';
+						}
+						
+						$obj_Elem->hiddenfields = NULL;
+						$obj_Elem3 = dom_import_simplexml ( $obj_Elem->hiddenfields );
+						$cdata = $obj_Elem3->ownerDocument->createCDataSection ( str_replace ( "</", "<\/", html_entity_decode ( $hidden_inputs ) ) );
+						$obj_Elem3->appendChild ( $cdata );
+					}
+				} else {
+					$dom = dom_import_simplexml ( $obj_Elem );
+					$dom->parentNode->removeChild ( $dom );
+					unset ( $dom );
+				}
 			}
-			
-			if($obj_Elem['type-id'] == 23)
-			{
-				$sHead = str_replace("mpSuccessCallback", "function (data){ console.log(data); document.getElementById('walletform_23').elements.namedItem('token').value = data.oauth_token; document.getElementById('walletform_23').elements.namedItem('verifier').value = data.oauth_verifier; document.getElementById('walletform_23').elements.namedItem('checkouturl').value = data.checkout_resource_url; document.getElementById('walletform_23').submit();}", $sHead);
-				$sHead = str_replace("mpFailureCallback", "function (data) { console.log('in FAILURE'); console.log(data); }", $sHead);
-				$sHead = str_replace("mpCancelCallback", "function (data) { console.log('in CANCEL'); console.log(data); }", $sHead);		
-			}
-			
-			$obj_Elem->head = NULL;			
-			$obj_Elem1 = dom_import_simplexml($obj_Elem->head);
-			$cdata = $obj_Elem1->ownerDocument->createCDataSection($sHead);
-			$obj_Elem1->appendChild($cdata);
-			
-			$obj_Elem->body = NULL;
-			$obj_Elem2 = dom_import_simplexml($obj_Elem->body);
-			$cdata = $obj_Elem2->ownerDocument->createCDataSection(str_replace("</","<\/",html_entity_decode($obj_Wallet_Response->{'psp-info'}->body)));
-			$obj_Elem2->appendChild($cdata);
-			
 		}
-	
+		
+		$xmlData .= $obj_mPoint->getSystemInfo ();
+		
+		$xmlData .= $_SESSION ['obj_TxnInfo']->getClientConfig ()->getCountryConfig ()->toXML ();
+		$xmlData .= $_SESSION ['obj_TxnInfo']->getClientConfig ()->getAccountConfig ()->toXML ();
+		$xmlData .= $_SESSION ['obj_TxnInfo']->getClientConfig ()->toXML ();
+		
+		$xmlData .= $_SESSION ['obj_TxnInfo']->toXML ( $_SESSION ['obj_UA'] );
+		
+		$xmlData .= $_SESSION ['obj_UA']->toXML ();
+		
+		$xmlData .= trim ( str_replace ( '<?xml version="1.0"?>', '', $obj_CardXML->asXML () ) );
+		
+		$xmlData .= $obj_mPoint->getStoredCards ( $_SESSION ['obj_TxnInfo']->getAccountID (), $_SESSION ['obj_TxnInfo']->getClientConfig (), false, $_SESSION ['obj_UA'] );
 	}
-	
-	$xml = '<?xml version="1.0" encoding="UTF-8"?>';
-	$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/'. sTEMPLATE .'/'. General::getMarkupLanguage($_SESSION['obj_UA'], $_SESSION['obj_TxnInfo']) .'/pay/card.xsl"?>';
-	
-	$xml .= '<root>
-		<title>'.$_OBJ_TXT->_("Select Payment Method").'</title>';
-	
-	$xml .= $obj_mPoint->getSystemInfo();
-	
-	$xml .= $_SESSION['obj_TxnInfo']->getClientConfig()->getCountryConfig()->toXML();
-	$xml .= $_SESSION['obj_TxnInfo']->getClientConfig()->getAccountConfig()->toXML();
-	$xml .= $_SESSION['obj_TxnInfo']->getClientConfig()->toXML();
-	
-	$xml .= $_SESSION['obj_TxnInfo']->toXML($_SESSION['obj_UA']);
-		
-	$xml .= $_SESSION['obj_UA']->toXML();
-		
-	$xml .= '<labels>
-			<progress>'.$_OBJ_TXT->_("Step 1 of 2").'</progress>
-			<info>'.$_OBJ_TXT->_("Please select your Payment Method").'</info>
-			<cancel>'.$_OBJ_TXT->_("Cancel Payment").'</cancel>
-			<cardholdername>'.$_OBJ_TXT->_("Card Holder Name").'</cardholdername>
-			<cardnumber>'.$_OBJ_TXT->_("Card Number").'</cardnumber>
-			<expiry>'.$_OBJ_TXT->_("Expiry Date").'</expiry>
-			<cvv>'.$_OBJ_TXT->_("CVV Code").'</cvv>
-			<button>'.$_OBJ_TXT->_("Pay now").'</button>
-			<paymentcard>'.$_OBJ_TXT->_("Payment card").'</paymentcard>
-			<savecard>'.$_OBJ_TXT->_("Save card info").'</savecard>
-			<cardholder>'.$_OBJ_TXT->_("Card holder").'</cardholder>
-			<password>'. $_OBJ_TXT->_("Password") .'</password>
-			<submit>'. $_OBJ_TXT->_("Complete Payment") .'</submit>
-			<password>'. $_OBJ_TXT->_("Create Password - Help Checkout") .'</password>
-			<new-password>'. $_OBJ_TXT->_("New Password") .'</new-password>
-			<repeat-password>'. $_OBJ_TXT->_("Repeat Password") .'</repeat-password>
-			<name>'. $_OBJ_TXT->_("Card Name") .'</name>
-			<back-button>'. $_OBJ_TXT->_("Back button") .'</back-button>
-		</labels>';
-	
-	//$xml .= $obj_mPoint->getCards($_SESSION['obj_TxnInfo']->getAmount() );
-	
-	$xml .= trim(str_replace('<?xml version="1.0"?>', '',$obj_CardXML->asXML()));
-		
-	$xml .= $obj_mPoint->getStoredCards($_SESSION['obj_TxnInfo']->getAccountID(), $_SESSION['obj_TxnInfo']->getClientConfig(), false, $_SESSION['obj_UA']);
-	
-	//DIBS Custom Pages: Payment Accepted
-	$xml .= '<accept>';
-	$xml .= $obj_Accept->getmPointLogoInfo();
-	
-	$xml .= $obj_Accept->getClientVars($_SESSION['obj_TxnInfo']->getID() );
-	$xml .= '</accept>';
-	
-	$xml .= $obj_mPoint->getMessages("Select Card");
-	
-	// Current transaction is an Account Top-Up and a previous transaction is in progress
-	if ($_SESSION['obj_TxnInfo']->getTypeID() >= 100 && $_SESSION['obj_TxnInfo']->getTypeID() <= 109 && array_key_exists("obj_OrgTxnInfo", $_SESSION) === true)
-	{
-		$xml .= '<original-transaction-id>'. $_SESSION['obj_OrgTxnInfo']->getID() .'</original-transaction-id>';
-	}
-	
-	$xml .= '</root>';
-	
-	file_put_contents(sLOG_PATH ."/debug_". date("Y-m-d") .".log", $xml);
-	
-	echo $xml;
-	exit;
-}
-catch(Exception $e)
-{
-	trigger_error($e->getMessage(), E_USER_ERROR);
-	header("location: ".$_SERVER['HTTP_REFERER']);
-	exit;	
+} catch ( Exception $e ) {
+	trigger_error ( $e->getMessage (), E_USER_ERROR );
+	$_GET ['msg'] = 1;
 }
 
-function getXMLResponse($b, $aHTTP_CONN_INFO)
-{
-	try
-		{
-		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
-			
-		$h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
-		$h .= "host: {HOST}" .HTTPClient::CRLF;
-		$h .= "referer: {REFERER}" .HTTPClient::CRLF;
-		$h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
-		$h .= "content-type: {CONTENTTYPE}" .HTTPClient::CRLF;
-		$h .= "user-agent: mPoint" .HTTPClient::CRLF;
-		$h .= "Authorization: Basic ". base64_encode($aHTTP_CONN_INFO["mesb"]["username"] .":". $aHTTP_CONN_INFO["mesb"]["password"]) .HTTPClient::CRLF;
+$xml = '<?xml version="1.0" encoding="UTF-8"?>';
+$xml .= '<?xml-stylesheet type="text/xsl" href="/templates/' . sTEMPLATE . '/html5/pay/webcard.xsl"?>';
+
+$xml .= '<root>';
+
+$xml .= $xmlData;
+
+$xml .= $messages;
+
+$xml .= '</root>';
+
+file_put_contents ( sLOG_PATH . "/debug_card_" . date ( "Y-m-d" ) . ".log", $xml );
+
+echo $xml;
+exit ();
+function getXMLResponse($b, $aHTTP_CONN_INFO) {
+	try {
+		$obj_ConnInfo = HTTPConnInfo::produceConnInfo ( $aHTTP_CONN_INFO ["mesb"] );
 		
+		$h = "{METHOD} {PATH} HTTP/1.0" . HTTPClient::CRLF;
+		$h .= "host: {HOST}" . HTTPClient::CRLF;
+		$h .= "referer: {REFERER}" . HTTPClient::CRLF;
+		$h .= "content-length: {CONTENTLENGTH}" . HTTPClient::CRLF;
+		$h .= "content-type: {CONTENTTYPE}" . HTTPClient::CRLF;
+		$h .= "user-agent: mPoint" . HTTPClient::CRLF;
+		$h .= "Authorization: Basic " . base64_encode ( $aHTTP_CONN_INFO ["mesb"] ["username"] . ":" . $aHTTP_CONN_INFO ["mesb"] ["password"] ) . HTTPClient::CRLF;
 		
-		$obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
-		$obj_HTTP->connect();
-		$code = $obj_HTTP->send($h, $b);
-		$obj_HTTP->disconnect();
+		$obj_HTTP = new HTTPClient ( new Template (), $obj_ConnInfo );
+		$obj_HTTP->connect ();
+		$code = $obj_HTTP->send ( $h, $b );
+		$obj_HTTP->disconnect ();
 		
-		if ($code == 200 && strlen($obj_HTTP->getReplyBody() ) > 0)
-		{
-			$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+		if ($code == 200 && strlen ( $obj_HTTP->getReplyBody () ) > 0) {
+			$obj_XML = simplexml_load_string ( $obj_HTTP->getReplyBody () );
 		}
+		
+		return $obj_XML;
+	} catch ( Exception $e ) {
+		trigger_error ( $e->getMessage (), E_USER_ERROR );
+		$_GET ['msg'] = 1;
 	}
-	catch(Exception $e)
-	{
-		trigger_error($e->getMessage(), E_USER_ERROR);
-		header("location: ".$_SERVER['HTTP_REFERER']);
-		exit;
-	}
-	
-	return $obj_XML;
 }
 ?>

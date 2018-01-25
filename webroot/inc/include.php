@@ -1,4 +1,5 @@
 <?php
+
 /* ========== Define System path Start ========== */
 // HTTP Request
 if(isset($_SERVER['DOCUMENT_ROOT']) === true && empty($_SERVER['DOCUMENT_ROOT']) === false)
@@ -73,6 +74,10 @@ require_once(sAPI_FUNCTION_PATH ."global.php");
 
 // Require API for Web Session handling
 require_once(sCLASS_PATH ."websession.php");
+// Require Basic HTTP API and helper functions
+require_once(sCLASS_PATH ."/http.php");
+// Require general mPoint exceptions classes
+require_once(sCLASS_PATH ."/exceptions.php");
 // Require API for general functionality
 require_once(sCLASS_PATH ."general.php");
 // Require abstract class with system wide constants
@@ -81,6 +86,8 @@ require_once(sCLASS_PATH ."/constants.php");
 require_once(sCLASS_PATH ."/basicconfig.php");
 // Require data class for Country Configurations
 require_once(sCLASS_PATH ."/countryconfig.php");
+// Require data class for Currency Configurations
+require_once(sCLASS_PATH ."/currencyconfig.php");
 // Require data class for Client Configurations
 require_once(sCLASS_PATH ."/client_config.php");
 // Require data class for Account Configurations
@@ -95,6 +102,10 @@ require_once(sCLASS_PATH ."/client_payment_method_config.php");
 require_once(sCLASS_PATH ."/client_url_config.php");
 // Require data class for Client URL config
 require_once(sCLASS_PATH ."/client_issuer_identifcation_number_range_config.php");
+// Require data class for Client GoMobile Configurations
+require_once(sCLASS_PATH ."/client_gomobile_config.php");
+// Require data class for Client Communication Channels Configurations
+require_once(sCLASS_PATH ."/client_communication_channel_config.php");
 // Require data class for Keyword Configurations
 require_once(sCLASS_PATH ."/keywordconfig.php");
 // Require data class for Shop Configuration
@@ -103,8 +114,16 @@ require_once(sCLASS_PATH ."/shopconfig.php");
 require_once(sCLASS_PATH ."/pspconfig.php");
 // Require data data class for Transaction Information
 require_once(sCLASS_PATH ."/txninfo.php");
+// Require data data class for Payment Session Information
+require_once(sCLASS_PATH ."/paymentsession.php");
 // Require data data class for Order/Cart Information
 require_once(sCLASS_PATH ."/order_info.php");
+// Require data data class for Flight Information
+require_once(sCLASS_PATH ."/flight_info.php");
+// Require data data class for Passenger Information
+require_once(sCLASS_PATH ."/passenger_info.php");
+// Require data data class for Address Information
+require_once(sCLASS_PATH ."/address_info.php");
 // Require Business logic for the End-User Administration Component
 require_once(sCLASS_PATH ."/home.php");
 // Require PSP functionality interfaces
@@ -120,14 +139,18 @@ require_once(sCLASS_PATH ."/status.php");
 // Require global settings file
 require_once(sCONF_PATH ."global.php");
 
+require_once(sCLASS_PATH ."/routingrule.php");
+require_once(sCLASS_PATH ."/condition_info.php");
+require_once(sCLASS_PATH ."/gateway_info.php");
+
 // Set Custom Error & Exception handlers
 new RemoteReport(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["iemendo"]), iOUTPUT_METHOD, sERROR_LOG, iDEBUG_LEVEL);
 
 // Web Request
 if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_SERVER['PHP_SELF']) == true || eregi("/buy/topup.php", $_SERVER['PHP_SELF']) == true)
-	&& eregi("/subscr/", $_SERVER['PHP_SELF']) == false && eregi("/callback/", $_SERVER['PHP_SELF']) == false
-	&& eregi("/surepay/", $_SERVER['PHP_SELF']) == false && empty($_SERVER['DOCUMENT_ROOT']) === false
-	&& eregi("/pay/sys/sms.php", $_SERVER['PHP_SELF']) == false && eregi("/api/", $_SERVER['PHP_SELF']) == false)
+		&& eregi("/subscr/", $_SERVER['PHP_SELF']) == false && eregi("/callback/", $_SERVER['PHP_SELF']) == false
+		&& eregi("/surepay/", $_SERVER['PHP_SELF']) == false && empty($_SERVER['DOCUMENT_ROOT']) === false
+		&& eregi("/pay/sys/sms.php", $_SERVER['PHP_SELF']) == false && eregi("/api/", $_SERVER['PHP_SELF']) == false)
 {
 	// Start user session
 	new Session($aDB_CONN_INFO["session"], iOUTPUT_METHOD, sERROR_LOG);
@@ -140,14 +163,14 @@ if ( (eregi("/buy/", $_SERVER['PHP_SELF']) == false || eregi("/buy/web.php", $_S
 
 	// Not fetching an Image or performing a back-end process and accessing the mobile website
 	if (eregi("/img/", $_SERVER['PHP_SELF']) == false && eregi("/sys/", $_SERVER['PHP_SELF']) == false
-		&& (eregi("/pay/", $_SERVER['PHP_SELF']) == true || eregi("/shop/", $_SERVER['PHP_SELF']) == true
-			|| eregi("/anet/", $_SERVER['PHP_SELF']) == true || eregi("/wannafind/", $_SERVER['PHP_SELF']) == true
-			|| $_SERVER['PHP_SELF'] == "/overview.php" || $_SERVER['PHP_SELF'] == "/terms.php"
-			|| (eregi("/new/", $_SERVER['PHP_SELF']) == true && General::getBrowserType() == "mobile") ) )
+			&& (eregi("/pay/", $_SERVER['PHP_SELF']) == true || eregi("/shop/", $_SERVER['PHP_SELF']) == true
+					|| eregi("/anet/", $_SERVER['PHP_SELF']) == true || eregi("/wannafind/", $_SERVER['PHP_SELF']) == true
+					|| $_SERVER['PHP_SELF'] == "/overview.php" || $_SERVER['PHP_SELF'] == "/terms.php"
+					|| (eregi("/new/", $_SERVER['PHP_SELF']) == true && General::getBrowserType() == "mobile") ) )
 	{
 		// User Agent Profile not instantiated
 		if (array_key_exists("obj_UA", $_SESSION) === false)
-		{	
+		{
 			// Instantiate data object with the User Agent Profile for the customer's mobile device.
 			$_SESSION['obj_UA'] = UAProfile::produceUAProfile(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["iemendo"]) );
 		}
