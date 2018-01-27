@@ -3427,3 +3427,7 @@ INSERT INTO system.sessiontype_tbl (id, name) VALUES (2, 'Split Payment Session'
 
 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled) VALUES ('sessiontype', '2', 10018, 'client', false); /* value 1- Normal Payment, 2 - Split Payment */
+
+INSERT INTO system.paymenttype_tbl (id, name) VALUES (6, 'Virtual');
+
+INSERT INTO system.processortype_tbl (id, name) VALUES (6, 'Virtual');
