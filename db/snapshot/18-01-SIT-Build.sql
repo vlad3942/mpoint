@@ -1,6 +1,6 @@
 INSERT INTO system.paymenttype_tbl (id, name) VALUES (6, 'Virtual');
 
-INSERT INTO system.processortype_tbl (id, name) VALUES (6, 'Virtual');
+INSERT INTO system.processortype_tbl (id, name) VALUES (5, 'Virtual');
 
 /* ========== Global Configuration for Citcon - WeChat Pay - Payment Method : START========== */
 INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength,paymenttype) VALUES (39, 'WeChat Pay', 23, -1, -1, -1,6);
