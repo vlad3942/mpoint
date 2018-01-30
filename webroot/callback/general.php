@@ -303,6 +303,7 @@ try
 	
   }
   
+  $sAdditionalData = (string) $obj_XML->callback->{'additional-data'};
   // Callback URL has been defined for Client
   if ($obj_TxnInfo->getCallbackURL() != "")
   {
@@ -316,11 +317,11 @@ try
       header("Connection: Close");
       flush();
      foreach ($aStateId as $iStateId) {
-         if ($iStateId == 2000) {
-             $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate));
-         } else {
-             $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"]));
-         }
+     	if ($iStateId == 2000) {
+     		$obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate ,"additionaldata" => (string)$sAdditionalData));
+     	} else {
+     		$obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"],"additionaldata" => (string)$sAdditionalData));
+     	}
      }
       
   }

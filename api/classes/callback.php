@@ -312,13 +312,15 @@ abstract class Callback extends EndUserAccount
 	 * @param 	SurePayConfig $$obj_SurePay SurePay Configuration Object. Default value null
 	 * @param 	integer $fee				The amount the customer will pay in fee�s for the Transaction. Default value 0
 	 */
-	public function notifyClient($sid, $pspid, $amt,  $cardno="", $cardid=0, $exp=null, SurePayConfig &$obj_SurePay=null, $fee=0)
+	public function notifyClient($sid, $pspid, $amt,  $cardno="", $cardid=0, $exp=null,$sAdditionalData="", SurePayConfig &$obj_SurePay=null, $fee=0)
 	{		
 		$sDeviceID = $this->_obj_TxnInfo->getDeviceID();
 		$sEmail = $this->_obj_TxnInfo->getEMail();
 		/* ----- Construct Body Start ----- */
 		$sBody = "";
 		$sBody .= "mpoint-id=". $this->_obj_TxnInfo->getID();
+		if(strlen($sAdditionalData) > 0)
+		$sBody .= "&".$sAdditionalData;
 		$sBody .= "&orderid=". urlencode($this->_obj_TxnInfo->getOrderID() );
 		$sBody .= "&status=". $sid;
 		$sBody .= "&amount=". $amt;
