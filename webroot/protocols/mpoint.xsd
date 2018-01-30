@@ -750,6 +750,7 @@
 					  </xs:simpleContent>
 					</xs:complexType>
 				  </xs:element>
+				  <xs:element name="additional-data" type="xs:string" minOccurs="0" maxOccurs="1" />
 				</xs:sequence>
 			  </xs:complexType>
 			</xs:element>			
