@@ -295,6 +295,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										// TO DO: Extend to add support for Split Tender
 										$data['amount'] = (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount;
 										$data['client-config'] = ClientConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(),(integer) $obj_DOM->pay[$i]['account']);
+										if(($data['client-config'] instanceof ClientConfig) === true )
+                                        {
+                                            $data['markup'] = $data['client-config']->getAccountConfig()->getMarkupLanguage();
+                                        }
 										$oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
 										$obj_mPoint->logTransaction($oTI);
 										//getting order config with transaction to pass to particular psp for initialize with psp for AID
