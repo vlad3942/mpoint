@@ -275,7 +275,33 @@ abstract class Constants
     const iCARD_TOKENIZE_FAILED = 2101;
 
 
-	/**
+    /**
+     * Defines the ID of the State that indicates that Session is created
+     *
+     */
+    const iSESSION_CREATED = 4001;
+    
+
+    /**
+     * Defines the ID of the State that indicates that Session is expired
+     *
+     */
+
+    const iSESSION_EXPIRED = 4020;
+
+    /**
+     * Defines the ID of the State that indicates that Session failed
+     *
+     */
+    const iSESSION_FAILED = 4020;
+
+    /**
+     * Defines the ID of the State that indicates that Session complete failed
+     *
+     */
+    const iSESSION_COMPLETED = 4030;
+
+    /**
 	 * Defines GoMobile's type identifier for an MT-SMS message
 	 *
 	 */
@@ -895,5 +921,16 @@ abstract class Constants
 	 * To fetch the card details by passing the auth toke to the wallet instance.
 	 */
 	const sPAYMENT_DATA_FULL = "full";
+
+	/*
+	 * Failed Transaction API modes
+	 * 1. Get All Failed Transaction.
+	 * 2. Get All Initialization Failed Txn
+	 * 3. Get All Txns that have failed authorization with PSP
+	 *
+	 * */
+	const iFAILED_TXNS_ALL = 1;
+	const iFAILED_TXNS_FAILED_INIT = 2;
+	const iFAILED_TXNS_FAILED_AUTH = 3;
 }
 ?>
