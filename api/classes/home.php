@@ -490,14 +490,14 @@ class Home extends General
 
 			// set card expired status
             $aExpiry = explode('/', $RS['EXPIRY']);
-            $expired = "false";
+            $bIsExpired = "false";
             if(empty(trim($aExpiry[0])) === false && empty(trim($aExpiry[1])) === false && $this->_cardNotExpired(intval($aExpiry[0]), intval($aExpiry[1])) === false )
             {
-                $expired = "true";
+                $bIsExpired = "true";
             }
 
             // Construct XML Document with data for saved cards
-			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" expired="'. $expired .'">';
+			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" expired="'. $bIsExpired .'">';
 			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
 			$xml .= '<type id="'. $RS["TYPEID"] .'">'. $RS["TYPE"] .'</type>';
 			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';
