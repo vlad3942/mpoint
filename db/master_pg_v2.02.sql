@@ -100,7 +100,7 @@ CREATE TABLE system.SessionType_tbl
   name VARCHAR(50),
   enable BOOLEAN DEFAULT TRUE
 );
-COMMENT ON TABLE system.SessionType_tbl IS 'Contains all session type like normal session, split session and etc';
+COMMENT ON TABLE system.SessionType_tbl IS 'Contains all session type like full payment session, split payment session and etc';
 
 
 CREATE TABLE log.Session_tbl

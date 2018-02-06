@@ -791,13 +791,16 @@ class Home extends General
 
         $obj_paymentSession = PaymentSession::Get($this->getDBConn(),$RS["SESSIONID"]);
         $pendingAmount =intval( $obj_paymentSession->getPendingAmount());
-        if($pendingAmount > 0)
-            $pendingAmount = $pendingAmount /100;
+        if($pendingAmount > 0) {
+            $pendingAmount = $pendingAmount / 100;
+        }
         $amount = ((integer) $RS["AMOUNT"])/100;
 
-        $sessionType = $obj_ClientConfig->getAdditionalProperties("sessiondtype");
+        $obj_currencyConfig = CurrencyConfig::produceConfig($this->getDBConn(),$RS['CURRENCYID'] );
+
+        $sessionType = $obj_ClientConfig->getAdditionalProperties("sessiontype");
         $xml = '<transaction id="'. $RS["ID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" order-no="'. $RS["ORDERID"] .'" accoutid="'. $RS['END_USER_ID'] .'" clientid="'. $RS['CLIENTID'] .'" language="'.$RS['LANG'].'"  card-id="'. $RS["CARDID"] .'" session-id="'. $RS["SESSIONID"] .'" session-type="'. $sessionType .'">';
-        $xml .= '<amount country-id="'. $RS["COUNTRYID"] .'" currency="'. $RS['CURRENCYID']  .'" symbol="'. utf8_encode($RS['SYMBOL'] ) .'" format="'. $RS['PRICEFORMAT'] .'" pending = "'.$pendingAmount .'">'. htmlspecialchars($amount, ENT_NOQUOTES) .'</amount>';
+        $xml .= '<amount country-id="'. $RS["COUNTRYID"] .'" currency="'. $RS['CURRENCYID']  .'" symbol="'. utf8_encode($RS['SYMBOL'] ) .'" format="'. $RS['PRICEFORMAT'] .'" pending = "'.$pendingAmount .'"  currency-code = "'.$obj_currencyConfig->getCode() .'" >'. htmlspecialchars($amount, ENT_NOQUOTES) .'</amount>';
         $xml .= '<accept-url>'. htmlspecialchars($RS["ACCEPTURL"], ENT_NOQUOTES) .'</accept-url>';
         $xml .= '<cancel-url>'. htmlspecialchars($RS["CANCELURL"], ENT_NOQUOTES) .'</cancel-url>';
         $xml .= '<css-url>'. htmlspecialchars($RS["CSSURL"], ENT_NOQUOTES) .'</css-url>';

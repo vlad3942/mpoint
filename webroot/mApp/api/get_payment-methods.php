@@ -36,6 +36,8 @@ require_once(sCLASS_PATH ."/dsb.php");
 require_once(sCLASS_PATH ."/validate.php");
 // Require Data Class for Client Information
 require_once(sCLASS_PATH ."/clientinfo.php");
+// Require Data Class for Client Account Information
+require_once(sCLASS_PATH ."/account_config.php");
 
 $aMsgCds = array();
 
@@ -76,6 +78,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                 }
                 $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $_OBJ_DB);
 				$obj_ClientConfig = $obj_TxnInfo->getClientConfig();
+				$obj_ClientAccountsConfig = AccountConfig::produceConfigurations($_OBJ_DB, $obj_ClientConfig->getID());
 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])
 					&& $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true)
 				{
@@ -123,6 +126,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $xml .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
                             }
                             $xml .= '</additional-config>';
+							$xml .= '<accounts>';
+                            foreach ($obj_ClientAccountsConfig as $obj_AccountConfig)
+                            {
+                                $xml .= '<account id= "'. $obj_AccountConfig->getID() .'" markup= "'. $obj_AccountConfig->getMarkupLanguage() .'" />';
+                            }
+                            $xml .= '</accounts>'; 
                             $xml .= '</client-config>';
                             $xml .= '<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. htmlspecialchars($obj_TxnInfo->getOrderID(), ENT_NOQUOTES) .'" type-id="'. $obj_TxnInfo->getTypeID() .'" eua-id="'. $obj_TxnInfo->getAccountID() .'" language="'. $obj_TxnInfo->getLanguage() .'" auto-capture="'. General::bool2xml($obj_TxnInfo->useAutoCapture() ) .'" mode="'. $obj_TxnInfo->getMode() .'">';
                             $xml .= $obj_XML->amount->asXML();
