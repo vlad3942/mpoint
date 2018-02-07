@@ -560,13 +560,15 @@ class General
 		$obj_second_PSP = Callback::producePSP ( $this->getDBConn(), $_OBJ_TXT, $obj_AssociatedTxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig );
 		
 		$code = $obj_second_PSP->authorize( $obj_PSPConfig, $obj_Elem );
-	
 		if ($code == "100") {
 			$xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
 		} else if ($code == "2000") {
 			$xml .= '<status code="2000">Payment authorized</status>';
+		} else if (strpos ( $code, '2005' ) !== false) {
+			header ( "HTTP/1.1 303" );
+			$xml .= $code;
 		} else {
-			$xml .= '<status code="92">Authorization failed, '.$obj_PSPConfig->getName().' returned error: ' . $code . '</status>';
+			$xml .= '<status code="92">Authorization failed, ' . $obj_PSPConfig->getName () . ' returned error: ' . $code . '</status>';
 		}
 	
 		return $xml ;
