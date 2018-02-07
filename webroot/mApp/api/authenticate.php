@@ -117,7 +117,7 @@ try {
 
                                     $obj_MpiRoute = new Mpi();
                                     $obj_Mpi = $obj_MpiRoute->GetMpi($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo,$obj_Card,$aHTTP_CONN_INFO, $clientId, $countryId, $cardId);
-                                    $xml = $obj_Mpi->authentication();
+                                    $xml = $obj_Mpi->authenticate();
                                 } else {
                                     header("HTTP/1.1 404 File Not Found");
                                     $xml = '<status code="404">Transaction with ID: ' . $obj_DOM->{'authenticate'}[$i]->transaction["id"] . ' not found</status>';
