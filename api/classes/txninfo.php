@@ -1238,5 +1238,14 @@ class TxnInfo
         $obj_DB->query($sql);
     }
 
+    /**
+     * Returns the Card token.
+     *
+     * @return 	String
+     */
+    function getToken(){
+	    return $this->_token;
+    }
+
 }
 ?>

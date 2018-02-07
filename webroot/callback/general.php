@@ -143,6 +143,30 @@ try
 
     array_push($aStateId,$iStateID);
 
+    if($obj_PSPConfig->getProcessorType() === 2){
+        if($obj_XML->callback->transaction->TransactionStatus == "Y") {
+            $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
+            $mvault = new MVault($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['mvault']);
+            $xmlString = "<card id='" . $obj_XML->callback->transaction->card["typr-id"] . "'><token>" . $obj_TxnInfo->getToken() . "</token></card>";
+            $obj_Elem = $mvault->getPaymentData($obj_PSPConfig, simplexml_load_string($xmlString));
+            $card_obj = simplexml_load_string($obj_Elem);
+            $card_obj = $card_obj->{'payment-data'};
+            $card_obj->card->cvc = base64_decode(strrev($obj_TxnInfo->getExternalID()));
+            $card_obj->card['type-id'] = $obj_XML->callback->transaction->card["type-id"];
+            $cryptogram = $card_obj->card->{'info-3d-secure'}->addChild('cryptogram', $obj_XML->callback->transaction->SignatureISO9796);
+            $cryptogram->addAttribute('eci', $obj_XML->callback->transaction->TransactionStatus);
+            $cryptogram->addAttribute('algorithm-id', $obj_XML->callback->transaction->TXcavvAlgorithm);
+            $code = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card);
+        }
+        else{
+            $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+                            SET extid=''
+                            WHERE id = " . $obj_TxnInfo->getID();
+            //echo $sql ."\n";
+            $_OBJ_DB->query($sql);
+        }
+    }
+
     if($iAccountValidation != 1)
 	{
         $saveCard = true;

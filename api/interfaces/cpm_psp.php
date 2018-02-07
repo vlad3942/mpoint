@@ -818,6 +818,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		
 		if(count($obj_Card->cvc) > 0) { $b .= '<cvc>'. $obj_Card->cvc .'</cvc>'; }	
 		
+		if(count($obj_Card->{'info-3d-secure'}) > 0)
+        {
+            $b .= $obj_Card->{'info-3d-secure'}->asXML();
+        }
+
 		$b .= '</card>';
 		
 		if(count($obj_Card->address) > 0)
