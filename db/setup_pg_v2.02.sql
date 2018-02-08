@@ -3432,4 +3432,5 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled
 /*  ===========  START : Adding new product types in System.ProductType_Tbl ==================  */
 INSERT INTO system.producttype_tbl (id, name) VALUES (100, 'Ticket');
 INSERT INTO system.producttype_tbl (id, name) VALUES (200, 'Ancillary');
+INSERT INTO system.producttype_tbl (id, name) VALUES (210, 'Insurance');
 /*  ===========  END : Adding new product types in System.ProductType_Tbl ==================  */
