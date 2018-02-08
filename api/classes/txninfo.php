@@ -274,6 +274,12 @@ class TxnInfo
 	 * @var integer
 	 */
 	private $_iAttempt;
+    /**
+     * Transaction's virtual payment data that is stored in a tokenized format
+     *
+     * @var string
+     */
+    private $_sVirtualPaymentToken;
 
     private $_mask;
     private $_expiry;
@@ -322,7 +328,7 @@ class TxnInfo
 	 * @param	long $cptamt		The Full amount that has been captured for the Transaction
 	 *
 	 */
-	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt, $paymentSession, $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$mask="",$expiry="",$token="",$authOriginalData="")
+	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt, $paymentSession, $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$virtualtoken = "")
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -372,6 +378,7 @@ class TxnInfo
         $this->_token = trim($token);
         $this->_authOriginalData = trim($authOriginalData);
         $this->_iAttempt = (integer) $attempt;
+        $this->_sVirtualPaymentToken = trim($virtualtoken);
 
         $codes = explode(":",$this->_sExternalID);
         if(count($codes) == 2){
@@ -654,6 +661,12 @@ class TxnInfo
 	 * @return 	integer		Attempt number
 	 * */
 	public function getAttemptNumber() {  return $this->_iAttempt;  }
+    /*
+     * Returns the Transactions's virtual token
+     *
+     * @return 	string		virtual token
+     * */
+    public function getVirtualToken() {  return $this->_sVirtualPaymentToken;  }
 
 	public function getPaymentSession() { return $this->_obj_PaymentSession;}
 	/**
@@ -746,6 +759,7 @@ class TxnInfo
         $xml .= '<approval-code>'.htmlspecialchars($this->_approvalCode, ENT_NOQUOTES).'</approval-code>';
 		$xml .= '<action-code>'.htmlspecialchars($this->_actionCode, ENT_NOQUOTES).'</action-code>';
 		$xml .= '<auth-original-data>'.htmlspecialchars($this->_authOriginalData, ENT_NOQUOTES).'</auth-original-data>';
+		$xml .= '<virtual-token>'.htmlspecialchars($this->_sVirtualPaymentToken, ENT_NOQUOTES).'</virtual-token>';
 		if( empty($this->_obj_OrderConfigs) === false )
 		{
 			
@@ -776,7 +790,7 @@ class TxnInfo
 	private static function _constProduceQuery()
 	{
 		$sql = "SELECT t.id, typeid, countryid,currencyid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, extid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, iconurl, \"mode\", auto_capture, gomobileid,
-						t.clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, t.pspid, fee, captured, cardid, deviceid, mask, expiry, token, authoriginaldata,attempt,sessionid
+						t.clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, t.pspid, fee, captured, cardid, deviceid, mask, expiry, token, authoriginaldata, virtualtoken, attempt, sessionid
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl t";
 
 		return $sql;
@@ -805,7 +819,7 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj,$RS["SESSIONID"]);
             }
 
-			$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig,$obj_CurrencyConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["ATTEMPT"], $paymentSession, $RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["MASK"],$RS["EXPIRY"],$RS["TOKEN"],$RS["AUTHORIGINALDATA"]);
+			$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig,$obj_CurrencyConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["ATTEMPT"], $paymentSession, $RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["MASK"],$RS["EXPIRY"],$RS["TOKEN"],$RS["AUTHORIGINALDATA"],$RS["VIRTUALTOKEN"]);
 		}
 		return $obj_TxnInfo;
 	}
