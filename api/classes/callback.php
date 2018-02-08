@@ -347,6 +347,7 @@ abstract class Callback extends EndUserAccount
 		{
 			$sBody .= "&expiry=". $exp;
 		}
+        $sBody .= "&session-id=". $this->_obj_TxnInfo->getSessionId();
 		trigger_error("********************* ". $sBody, E_USER_NOTICE);
 		/* Adding customer Info as part of the callback query params */
 		if (($this->_obj_TxnInfo->getAccountID() > 0) === true )
