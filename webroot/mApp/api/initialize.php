@@ -202,7 +202,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             if($sessionType > 1 )
                                 $data['sessiontype']=$sessionType;
                             //var_dump($data['attempt']);die;
-                            $data['producttype'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction["product-type"];
+                            if (isset($obj_DOM->{'initialize-payment'}[$i]->transaction["product-type"]) == true) {
+                                $data['producttype'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction["product-type"];
+                            }
 
                             $obj_TxnInfo = TxnInfo::produceInfo($iTxnID,$_OBJ_DB, $obj_ClientConfig, $data);
 
