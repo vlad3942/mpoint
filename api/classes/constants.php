@@ -661,6 +661,12 @@ abstract class Constants
 	 *
 	 */
 	const i2C2P_ALC_PSP = 40;
+
+    /**
+     * Unique ID for the Payment Service Provider: AliPay Chinese
+     *
+     */
+    const iALIPAY_CHINESE_PSP = 43;
 	
 	/**
 	 * Unique ID for the Electronic Payment Flow

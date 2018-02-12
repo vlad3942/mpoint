@@ -86,6 +86,7 @@ require_once(sCLASS_PATH ."/maybank.php");
 require_once(sCLASS_PATH ."/publicbank.php");
 // Require specific Business logic for the AliPay component
 require_once(sCLASS_PATH ."/alipay.php");
+require_once(sCLASS_PATH ."/alipay_chinese.php");
 // Require specific Business logic for the POLi component
 require_once(sCLASS_PATH ."/poli.php");
 // Require specific Business logic for the Qiwi component
@@ -666,6 +667,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                            		$xml .= trim($obj_Elem->asXML() );
                                            	}
                                            	break;
+                                        case (Constants::iALIPAY_CHINESE_PSP):
+                                            $obj_PSP = new AliPayChinese($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["alipay-chinese"]);
+                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
+
+                                            foreach ($obj_XML->children() as $obj_Elem)
+                                            {
+                                                $xml .= trim($obj_Elem->asXML() );
+                                            }
+                                            break;
                                         }
 										$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. htmlspecialchars($obj_PSPConfig->getMessage($obj_TxnInfo->getLanguage() ), ENT_NOQUOTES) .'</message>';
 										$xml .= '</psp-info>';
