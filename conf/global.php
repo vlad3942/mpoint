@@ -700,6 +700,22 @@ $aHTTP_CONN_INFO["2c2p-alc"]["paths"]["callback"] = "/mpoint/2c2p-alc/callback";
 
 
 /**
+ * Connection info for connecting to AliPay Chinese
+ */
+$aHTTP_CONN_INFO["alipay"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["alipay"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["alipay"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["alipay"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["alipay"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["alipay"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["alipay"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["alipay"]["paths"]["initialize"] = "/mpoint/alipay-chinese/initialize";
+$aHTTP_CONN_INFO["alipay"]["paths"]["refund"] = "/mpoint/alipay-chinese/refund";
+$aHTTP_CONN_INFO["alipay"]["paths"]["status"] = "/mpoint/alipay-chinese/status";
+$aHTTP_CONN_INFO["alipay"]["paths"]["callback"] = "/mpoint/alipay-chinese/callback";
+
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>
