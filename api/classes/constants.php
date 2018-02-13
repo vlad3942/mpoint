@@ -868,6 +868,12 @@ abstract class Constants
      */
     const iMVAULT_WALLET = 35;
 
+    /**
+     * Unique Card ID for transaction's made using Alipay Chinese
+     *
+     */
+    const iALIPAY_CHINESE_WALLET = 40;
+
 	/**
 	 * Unique Fee Type ID for Top-Ups
 	 *
