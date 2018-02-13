@@ -871,6 +871,7 @@ try
 																{
 																	$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
 																}
+																else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml = $code; }
 																// Error: Authorization declined
 																else
 																{
