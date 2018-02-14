@@ -553,7 +553,7 @@ class General
 	    $data['device-id'] = $obj_TxnInfo->getDeviceID();
 	    $data['markup'] = $obj_TxnInfo->getMarkupLanguage();
 	    $data['orderid'] = $obj_TxnInfo->getOrderID();
-	    
+	    $data['sessionid'] = $obj_TxnInfo->getSessionId();
 	    
 		$obj_AssociatedTxnInfo = TxnInfo::produceInfo( (integer) $iAssociatedTxnId, $this->getDBConn(),$obj_TxnInfo->getClientConfig(),$data);
 		
