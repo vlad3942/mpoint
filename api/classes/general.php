@@ -482,6 +482,22 @@ class General
 			throw new mPointException("Unable to update Transaction: ". $oTI->getID(), 1004);
 		}
 	}
+	
+	public function newAssociatedTransaction(TxnInfo &$oTI)
+	{
+		$iTxnID = $this->newTransaction($oTI->getClientConfig(), $oTI->getTypeID());
+		
+		$iSessionId = $oTI->getSessionId() ;
+		
+		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+				SET sessionid = ".$iSessionId." WHERE id=".$iTxnID ;
+		
+		if (is_resource($this->getDBConn()->query($sql) ) === false)
+		{
+			throw new mPointException("Unable to update associated transaction: ". $iTxnID. " of original transaction: ".$oTI->getID(), 1004);
+		}
+		return $iTxnID ;
+	}
 
 	/**
 	 * Adds a new entry to the Message log with the provided debug data.
@@ -510,6 +526,53 @@ class General
 			}
 		}
 		else { throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003); }
+	}
+	
+	/**
+	 * Create a new transaction with same session id as the original transaction,
+	 * and authorize the new transaction using secondary PSP as part of Dynamic Routing
+	 * 
+	 * @param TxnInfo $obj_TxnInfo
+	 * @param unknown $iSecondaryRoute
+	 * @return string
+	 */
+	public function authWithSecondaryPSP(TxnInfo $obj_TxnInfo ,$iSecondaryRoute ,$aHTTP_CONN_INFO, $obj_Elem )
+	{
+		$xml = "" ;
+		$obj_PSPConfig = PSPConfig::produceConfig ( $this->getDBConn(), $obj_TxnInfo->getClientConfig ()->getID (), $obj_TxnInfo->getClientConfig ()->getAccountConfig ()->getID (), $iSecondaryRoute );
+	    $iAssociatedTxnId = $this->newAssociatedTransaction ( $obj_TxnInfo );
+	    $data = array();
+	    
+	    $data['amount'] = $obj_TxnInfo->getAmount();
+	    $data['country-config'] = $obj_TxnInfo->getCountryConfig();
+	    $data['currency-config'] = $obj_TxnInfo->getCurrencyConfig();
+	    $data['orderid'] = $obj_TxnInfo->getOrderID();
+	    $data['mobile'] = $obj_TxnInfo->getMobile();
+	    $data['operator'] = $obj_TxnInfo->getOperator();
+	    $data['email'] = $obj_TxnInfo->getEMail();
+	    $data['device-id'] = $obj_TxnInfo->getDeviceID();
+	    $data['markup'] = $obj_TxnInfo->getMarkupLanguage();
+	    $data['orderid'] = $obj_TxnInfo->getOrderID();
+	    $data['sessionid'] = $obj_TxnInfo->getSessionId();
+	    
+		$obj_AssociatedTxnInfo = TxnInfo::produceInfo( (integer) $iAssociatedTxnId, $this->getDBConn(),$obj_TxnInfo->getClientConfig(),$data);
+		
+		$obj_second_PSP = Callback::producePSP ( $this->getDBConn(), $_OBJ_TXT, $obj_AssociatedTxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig );
+		
+		$code = $obj_second_PSP->authorize( $obj_PSPConfig, $obj_Elem );
+		if ($code == "100") {
+			$xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
+		} else if ($code == "2000") {
+			$xml .= '<status code="2000">Payment authorized</status>';
+		} else if (strpos ( $code, '2005' ) !== false) {
+			header ( "HTTP/1.1 303" );
+			$xml .= $code;
+		} else {
+			$xml .= '<status code="92">Authorization failed, ' . $obj_PSPConfig->getName () . ' returned error: ' . $code . '</status>';
+		}
+	
+		return $xml ;
+			
 	}
 
 	/**

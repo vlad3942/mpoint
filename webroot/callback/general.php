@@ -65,6 +65,7 @@ require_once(sCLASS_PATH ."/maybank.php");
 require_once(sCLASS_PATH ."/publicbank.php");
 // Require specific Business logic for the AliPay component
 require_once(sCLASS_PATH ."/alipay.php");
+require_once(sCLASS_PATH ."/alipay_chinese.php");
 // Require specific Business logic for the POLi component
 require_once(sCLASS_PATH ."/poli.php");
 // Require specific Business logic for the QIWI component
@@ -335,7 +336,7 @@ try
       echo '<status code="1000">Callback Success</status>';
       echo '</root>';
   }
-    $this->getTxnInfo()->getPaymentSession()->updateState();
+    $obj_mPoint->getTxnInfo()->getPaymentSession()->updateState();
 }
 catch (TxnInfoException $e)
 {
