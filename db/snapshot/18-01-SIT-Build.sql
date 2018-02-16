@@ -1,13 +1,13 @@
 INSERT INTO system.paymenttype_tbl (id, name) VALUES (6, 'Virtual');
 
-INSERT INTO system.processortype_tbl (id, name) VALUES (6, 'Virtual');
+INSERT INTO system.processortype_tbl (id, name) VALUES (5, 'Virtual');
 
 /* ========== Global Configuration for Citcon - WeChat Pay - Payment Method : START========== */
 INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength,paymenttype) VALUES (39, 'WeChat Pay', 23, -1, -1, -1,6);
 INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (39, 0, 0);
 INSERT INTO system.cardpricing_tbl ( pricepointid, cardid) VALUES ( -840, 39);
 
-INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (41, 'Citcon',6);
+INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (41, 'Citcon',5);
 INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) VALUES (840,41,'USD');
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (39, 41);
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10007, 41, 'Citcon', '', '');
