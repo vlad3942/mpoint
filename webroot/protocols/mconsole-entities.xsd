@@ -1585,7 +1585,7 @@
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="channel" type="client-communication-channel-config"
-						minOccurs="1" maxOccurs="unbounded" />
+						minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="client-payment-method-config">

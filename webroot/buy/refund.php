@@ -77,6 +77,7 @@ require_once(sCLASS_PATH ."/qiwi.php");
 require_once(sCLASS_PATH ."/klarna.php");
 // Require specific Business logic for the Alipay component
 require_once(sCLASS_PATH ."/alipay.php");
+require_once(sCLASS_PATH ."/alipay_chinese.php");
 // Require specific Business logic for the customerinfo component
 require_once(sCLASS_PATH ."/customer_info.php");
 

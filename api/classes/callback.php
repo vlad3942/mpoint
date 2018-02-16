@@ -246,7 +246,7 @@ abstract class Callback extends EndUserAccount
 			$obj_HTTP->disConnect();
 			if (200 <= $iCode && $iCode < 300)
 			{
-				trigger_error("mPoint Callback request succeeded for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_NOTICE);
+				trigger_error("mPoint Callback request  succeeded for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_NOTICE);
 				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_ACCEPTED_STATE, $obj_HTTP->getReplyHeader() );
 			}
 			else
@@ -312,13 +312,15 @@ abstract class Callback extends EndUserAccount
 	 * @param 	SurePayConfig $$obj_SurePay SurePay Configuration Object. Default value null
 	 * @param 	integer $fee				The amount the customer will pay in fee�s for the Transaction. Default value 0
 	 */
-	public function notifyClient($sid, $pspid, $amt,  $cardno="", $cardid=0, $exp=null, SurePayConfig &$obj_SurePay=null, $fee=0)
+	public function notifyClient($sid, $pspid, $amt,  $cardno="", $cardid=0, $exp=null,$sAdditionalData="", SurePayConfig &$obj_SurePay=null, $fee=0 )
 	{		
 		$sDeviceID = $this->_obj_TxnInfo->getDeviceID();
 		$sEmail = $this->_obj_TxnInfo->getEMail();
 		/* ----- Construct Body Start ----- */
 		$sBody = "";
 		$sBody .= "mpoint-id=". $this->_obj_TxnInfo->getID();
+		if(strlen($sAdditionalData) > 0)
+		$sBody .= "&".$sAdditionalData;
 		$sBody .= "&orderid=". urlencode($this->_obj_TxnInfo->getOrderID() );
 		$sBody .= "&status=". $sid;
 		$sBody .= "&amount=". $amt;
@@ -345,7 +347,7 @@ abstract class Callback extends EndUserAccount
 		{
 			$sBody .= "&expiry=". $exp;
 		}
-
+		trigger_error("********************* ". $sBody, E_USER_NOTICE);
 		/* Adding customer Info as part of the callback query params */
 		if (($this->_obj_TxnInfo->getAccountID() > 0) === true )
         {
@@ -661,6 +663,8 @@ abstract class Callback extends EndUserAccount
         	return new PayTabs($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paytabs"]);
         case (Constants::i2C2P_ALC_PSP):
         		return new CCPPALC($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["2c2p-alc"]);
+        case (Constants::iALIPAY_CHINESE_PSP):
+                return new AliPayChinese($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["alipay-chinese"]);
         case (Constants::iCITCON_PSP):
                 return new Citcon($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["citcon"]);
 		default:
