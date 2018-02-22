@@ -116,7 +116,7 @@ if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROT
 				$data['language'] = "";
 				$data['accountid'] = "";
 				$data['language'] = "";
-				$obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $obj_ClientConfig, $data);
+				$obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $_OBJ_DB, $obj_ClientConfig, $data);
 				// Associate End-User Account (if exists) with Transaction
 				$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getMobile(), false);
 				if ($iAccountID == -1 && trim($obj_TxnInfo->getEMail() ) != "") { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_TxnInfo->getEMail(), false); }

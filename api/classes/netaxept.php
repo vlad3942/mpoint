@@ -16,6 +16,7 @@
  * Model Class containing all the Business Logic for handling interaction with NetAxept
  *
  */
+ini_set("max_execution_time", 120);
 class NetAxept extends Callback implements Captureable, Refundable
 {
 

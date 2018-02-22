@@ -258,6 +258,22 @@ class OrderInfo
 		}
 		else { return null; }
 	}
+
+    public static function produceConfigurationsFromOrderID(RDB $oDB, $orderid)
+    {
+        $sql = "SELECT OT.id			
+				FROM Log". sSCHEMA_POSTFIX .".Order_Tbl AS OT
+				INNER JOIN Log". sSCHEMA_POSTFIX .".Transaction_Tbl AS TT ON OT.txnid = TT.id 
+				WHERE TT.orderid = '". trim($orderid) ."' AND OT.enabled = '1' AND TT.enabled = '1'";
+        //echo $sql ."\n";
+        $aConfigurations = array();
+        $res = $oDB->query($sql);
+        while ($RS = $oDB->fetchName($res) )
+        {
+            $aConfigurations[] = self::produceConfig($oDB, $RS["ID"]);
+        }
+        return $aConfigurations;
+    }
 	
 	public static function produceConfigurations(RDB $oDB, $txnid)
 	{		
@@ -317,7 +333,7 @@ class OrderInfo
         $xml .= '<reward>'. $this->getReward() .'</reward>';
         $xml .= '<quantity>'. $this->getQuantity() .'</quantity>';
         $additionalData = $this->getAdditionalData();
-        if (isset($additionalData)) {
+        if (empty($additionalData) === false ) {
             $xml .= '<additional-data>';
             foreach ($additionalData as $fAdditionalData) {
                 $xml .= '<param name="' . $fAdditionalData ["NAME"] . '">' . $fAdditionalData ["VALUE"] . '</param>';

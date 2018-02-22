@@ -8,7 +8,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig);
     }
 
-	public function notifyClient($iStateId, array $vars) { parent::notifyClient($iStateId, $vars["transact"], $vars["amount"], $vars["card-no"] , $vars["card-id"], $vars["expiry"],$vars["additionaldata"]); }
+	public function notifyClient($iStateId, array $vars) { parent::notifyClient($iStateId, $vars["transact"], $vars["amount"], $vars["card-no"] , $vars["card-id"], $vars["expiry"], $vars["additionaldata"]); }
 
 	/**
      * Performs a capture operation with CPM PSP for the provided transaction.
@@ -405,11 +405,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						SET pspid = ". $obj_PSPConfig->getID() ."
 						WHERE id = ". $this->getTxnInfo()->getID();
 				$this->getDBConn()->query($sql);
-
-				if(count($obj_XML->{"hidden-fields"}) > 0){
+				
+               /* if(count($obj_XML->{"hidden-fields"}) > 0){
                     $obj_XML->{"hidden-fields"}->{"store-card"} = parent::bool2xml($sc);
                     $obj_XML->{"hidden-fields"}->{"requested_currency_id"} = $this->getTxnInfo()->getCurrencyConfig()->getID() ;
-                }
+                } */
+				
                 $obj_XML->name = 'card_holderName';
 			}
 			else { throw new mPointException("Could not construct  XML for initializing payment with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
@@ -488,8 +489,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					$code = $obj_XML->transaction->status["code"];
 				} 
 				else { $code = $obj_XML->status["code"]; }
-				
+
+				if($code == 2005)
                 $this->newMessage($this->getTxnInfo()->getID(), $code, $obj_HTTP->getReplyBody());
+                $this->getTxnInfo()->getPaymentSession()->updateState();
 				// In case of 3D verification status code 2005 will be received
 				if($code == 2005)
 				{
@@ -580,7 +583,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			$code = $obj_HTTP->send($this->constHTTPHeaders(), $xml);
 			$obj_HTTP->disConnect();
 
-			if ($code == 200)
+			if($code == 202)
+            {
+                $code = 1000;
+            }
+            else if ($code == 200)
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
 				if (isset($obj_XML->status["code"]) === true && strlen($obj_XML->status["code"]) > 0) { $code = $obj_XML->status["code"]; }
@@ -612,10 +619,24 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		{
 			$obj_XML->amount = (integer) $actionAmount;
 		}
-		else { unset($obj_XML->amount); } 
+		else { unset($obj_XML->amount); }
+
+		$obj_XML->orderid = $this->_getFullOrderID();
 		
 		return str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 	}
+
+	protected function _getFullOrderID()
+    {
+        if(intval($this->getTxnInfo()->getAttemptNumber()) == 1)
+        {
+            return $this->getTxnInfo()->getOrderID();
+        }
+        else if(intval($this->getTxnInfo()->getAttemptNumber()) > 1)
+        {
+            return $this->getTxnInfo()->getOrderID()."_".$this->getTxnInfo()->getAttemptNumber();
+        }
+    }
 
 	protected function _constConnInfo($path)
 	{

@@ -61,14 +61,14 @@ class mConsole extends Admin
 	const sPERMISSION_CAPTURE_PAYMENTS = "mpoint.capture-payments.get.x";	
 	const sPERMISSION_GET_TRANSACTION_STATISTICS = "mpoint.dashboard.get.x";	
 	
-	public function saveClient($cc, $storecard, $autocapture, $name, $username, $password, $maxamt, $lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl, $salt, $id = -1)
+	public function saveClient($cc, $storecard, $autocapture, $name, $username, $password, $maxamt, $lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl, $salt, $channels, $id = -1)
 	{
 		if ($id > 0)
 		{
 			$sql = "UPDATE Client". sSCHEMA_POSTFIX .".Client_Tbl
 					SET store_card = ". intval($storecard) .", auto_capture = '". intval($autocapture) ."', name = '". $this->getDBConn()->escStr($name) ."', username='". $this->getDBConn()->escStr($username) ."', passwd='". $this->getDBConn()->escStr($password) ."', countryid = ". $cc .",
 						maxamount = ". intval($maxamt) .", lang = '". $this->getDBConn()->escStr($lang) ."', smsrcpt = '". intval($smsrcpt) ."', emailrcpt = '". intval($emailrcpt) ."' , mode = ". intval($mode) .", method = '". $this->getDBConn()->escStr($method) ."', send_pspid = '". intval($send_pspid) ."',
-						identification = ". intval($identification) .", transaction_ttl = ". intval($transaction_ttl) .", salt = '". $this->getDBConn()->escStr($salt) ."'
+						identification = ". intval($identification) .", transaction_ttl = ". intval($transaction_ttl) .", salt = '". $this->getDBConn()->escStr($salt) ."', communicationchannels = ". intval($channels) ."
 					WHERE id = ". intval($id);
 		}
 		else
@@ -639,201 +639,144 @@ class mConsole extends Admin
 	 */
 	public function searchTransactionLogs(array $aClientIDs, array $aAccountIDs, array $aPspIDs, array $aCardIDs, array $aStateIDs, $id=-1, $ono="", CustomerInfo $oCI=null, $start="", $end="", $verbose=false, $limit=100, $offset=0)
 	{
-		$sql = "";
-		// A search for an Order Number makes searching the end-user's Transaction table obsolete 
-		if ($ono == 0 && (count($aPspIDs) == 0 || count($aCardIDs) == 0))
+		if (count($aStateIDs) == 0)
 		{
-			// Fetch all Transfers
-			$sql = "SELECT EUT.id, '' AS orderno, '' AS externalid, EUT.typeid, CL.countryid, EUT.toid, EUT.fromid, EUT.created, EUT.stateid AS asStateid,EUT.created as createdfinal,
-						EUA.id AS customerid, EUA.firstname, EUA.lastname, EUA.externalid AS customer_ref, EUA.countryid * 100 AS operatorid, EUA.mobile, EUA.email, '' AS language,
-						CL.id AS clientid, CL.name AS client,
-						-1 AS accountid, '' AS account,
-						-1 AS pspid, '' AS psp,
-						-1 AS paymentmethodid, '' AS paymentmethod,
-						EUT.amount, -1 AS captured, -1 AS points, -1 AS reward, -1 AS refund, EUT.fee, 0 AS mode, EUT.ip, EUT.message AS description
-					FROM EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl EUT
-	    			INNER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON EUT.accountid = EUA.id
-	    			INNER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON CLA.accountid = EUA.id
-					INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON  CL.id = CLA.clientid
-					WHERE EUT.txnid IS NULL AND CL.id IN (". implode(",", $aClientIDs) .")";
-			if (intval($id) > 0) { $sql .= " AND EUA.id = '". floatval($id) ."'"; }
-			if ( ($oCI instanceof CustomerInfo) === true)
-			{
-				if ($oCI->getMobile() > 0) { $sql .= " AND EUA.countryid = ". $oCI->getCountryID() ." AND EUA.mobile = '". $oCI->getMobile() ."'"; }
-				if (strlen($oCI->getEMail() ) > 0) { $sql .= " AND EUA.email = '". $this->getDBConn()->escStr($oCI->getEMail() ) ."'"; }
-				if (strlen($oCI->getCustomerRef() ) > 0) { $sql .= " AND EUA.externalid = '". $this->getDBConn()->escStr($oCI->getCustomerRef() ) ."'"; }
-			}
-			if (empty($start) === false && strlen($start) > 0) { $sql .= " AND '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <= EUT.created"; }
-			if (empty($end) === false && strlen($end) > 0) { $sql .= " AND EUT.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
-			$sql .= "
-					UNION ";
+			$aStateIDs = array(Constants::iINPUT_VALID_STATE,
+					Constants::iPAYMENT_INIT_WITH_PSP_STATE,
+					Constants::iPAYMENT_ACCEPTED_STATE,
+					Constants::iPAYMENT_CANCELLED_STATE,
+					Constants::iPAYMENT_CAPTURED_STATE,
+					Constants::iPAYMENT_REFUNDED_STATE,
+					Constants::iPAYMENT_REJECTED_STATE,
+					Constants::iPAYMENT_DECLINED_STATE);
 		}
-		// Fetch all Purchases
-		$sql .= "select * from(";
-		
-		foreach($aClientIDs as $iClientID)
+		$sql = "";
+		// A search for an Order Number makes searching the end-user's Transaction table obsolete
+		/*if ($ono == 0 && (count($aPspIDs) == 0 || count($aCardIDs) == 0))
+		 {
+		 // Fetch all Transfers
+		 $sql = " SELECT EUT.id, '' AS orderno, '' AS externalid, EUT.typeid, CL.countryid, EUT.toid, EUT.fromid, EUT.created, EUT.stateid AS stateid,EUT.created as createdfinal,
+		 EUA.id AS customerid, EUA.firstname, EUA.lastname, EUA.externalid AS customer_ref, EUA.countryid * 100 AS operatorid, EUA.mobile, EUA.email, '' AS language,
+		 CL.id AS clientid, CL.name AS client,
+		 -1 AS accountid, '' AS account,
+		 -1 AS pspid, '' AS psp,
+		 -1 AS paymentmethodid, '' AS paymentmethod,
+		 EUT.amount, -1 AS captured, -1 AS points, -1 AS reward, -1 AS refund, EUT.fee, 0 AS mode, EUT.ip, EUT.message AS description
+		 FROM EndUser".sSCHEMA_POSTFIX.".Transaction_Tbl EUT
+		 INNER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON EUT.accountid = EUA.id
+		 INNER JOIN EndUser".sSCHEMA_POSTFIX.".CLAccess_Tbl CLA ON CLA.accountid = EUA.id
+		 INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON  CL.id = CLA.clientid
+		 WHERE EUT.txnid IS NULL AND CL.id IN (". implode(",", $aClientIDs) .")";
+		 if (intval($id) > 0) { $sql .= " AND EUA.id = '". floatval($id) ."'"; }
+		 if ( ($oCI instanceof CustomerInfo) === true)
+		 {
+		 if ($oCI->getMobile() > 0) { $sql .= " AND EUA.countryid = ". $oCI->getCountryID() ." AND EUA.mobile = '". $oCI->getMobile() ."'"; }
+		 if (strlen($oCI->getEMail() ) > 0) { $sql .= " AND EUA.email = '". $this->getDBConn()->escStr($oCI->getEMail() ) ."'"; }
+		 if (strlen($oCI->getCustomerRef() ) > 0) { $sql .= " AND EUA.externalid = '". $this->getDBConn()->escStr($oCI->getCustomerRef() ) ."'"; }
+		 }
+		 if (empty($start) === false && strlen($start) > 0) { $sql .= " AND '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <= EUT.created"; }
+		 if (empty($end) === false && strlen($end) > 0) { $sql .= " AND EUT.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
+		 $sql .= "
+		 UNION";
+		 }*/
+		$sql .= "WITH Txn AS (
+					SELECT Txn.id as txnid, Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
+						Txn.operatorid as operatorid,
+						Txn.mobile as mobile, Txn.email as email, Txn.lang AS language,
+						Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description,
+						Txn.clientid, Txn.accountid, Txn.pspid, Txn.cardid, Txn.customer_ref, Txn.euaid,
+						Txn.currencyid as currencyid,
+						Msg.stateid, Msg.created AS createdfinal
+					FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
+					INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid
+					WHERE Txn.clientid IN (". implode(",", $aClientIDs) .")";
+		if (count($aAccountIDs) > 0) { $sql .= " AND Txn.accountid IN (". implode(", ", $aAccountIDs) .")"; }
+		if (count($aPspIDs) > 0) { $sql .= " AND Txn.pspid IN (". implode(", ", $aPspIDs) .")"; }
+		if (count($aCardIDs) > 0) { $sql .= " AND Txn.cardid IN (". implode(", ", $aCardIDs) .")"; }
+		if (intval($id) > 0) { $sql .= " AND Txn.id = '". floatval($id) ."'"; }
+		if (strlen($ono) > 0) { $sql .= " AND Txn.orderid = '". $this->getDBConn()->escStr($ono) ."'"; }
+		if ( ($oCI instanceof CustomerInfo) === true)
 		{
-			$sql .= "SELECT Txn.id, Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
-					 (CASE
-                                                 WHEN M9.stateid IS NOT NULL THEN M9.stateid
-						 WHEN M6.stateid IS NOT NULL THEN M6.stateid
-						 WHEN M5.stateid IS NOT NULL THEN M5.stateid
-						 WHEN M4.stateid IS NOT NULL THEN M4.stateid
-						 WHEN M7.stateid IS NOT NULL THEN M7.stateid
-						 WHEN M3.stateid IS NOT NULL THEN M3.stateid
-						 WHEN M8.stateid IS NOT NULL THEN M8.stateid
-						 WHEN M2.stateid IS NOT NULL THEN M2.stateid
-						 WHEN M1.stateid IS NOT NULL THEN M1.stateid
-						 ELSE -1
-						 END) AS asStateid,
-					 (CASE
-                                                 WHEN M9.stateid IS NOT NULL THEN Max(M9.created)
-						 WHEN M6.stateid IS NOT NULL THEN Max(M6.created)
-						 WHEN M5.stateid IS NOT NULL THEN Max(M5.created)
-						 WHEN M4.stateid IS NOT NULL THEN Max(M4.created)
-						 WHEN M7.stateid IS NOT NULL THEN Max(M7.created)
-						 WHEN M3.stateid IS NOT NULL THEN Max(M3.created)
-						 WHEN M8.stateid IS NOT NULL THEN Max(M8.created)
-						 WHEN M2.stateid IS NOT NULL THEN Max(M2.created)
-						 WHEN M1.stateid IS NOT NULL THEN Max(M1.created)
-						 END) AS createdfinal,
-					EUA.id AS customerid, EUA.firstname, EUA.lastname, Coalesce(Txn.customer_ref, EUA.externalid) AS customer_ref, Txn.operatorid as operatorid, 
-					Txn.mobile as mobile, Txn.email as email, Txn.lang AS language,
+			if ($oCI->getMobile() > 0) { $sql .= " AND Txn.operatorid / 100 = ". $oCI->getCountryID() ." AND Txn.mobile = '". $oCI->getMobile() ."'"; }
+			if (strlen($oCI->getEMail() ) > 0) { $sql .= " AND Txn.email = '". $this->getDBConn()->escStr($oCI->getEMail() ) ."'"; }
+			if (strlen($oCI->getCustomerRef() ) > 0) { $sql .= " AND Txn.customer_ref = '". $this->getDBConn()->escStr($oCI->getCustomerRef() ) ."'"; }
+		}
+		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <= Txn.created"; }
+		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND Txn.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
+		$sql .= "
+						AND Msg.id = (SELECT Max(id)
+									  FROM Log.Message_Tbl
+									  WHERE Txn.id = txnid AND stateid IN (". implode(", ", $aStateIDs) .") )
+				)
+				SELECT Txn.*,
+					CT.code AS currencycode,
 					CL.id AS clientid, CL.name AS client,
 					Acc.id AS accountid, Acc.name AS account,
 					PSP.id AS pspid, PSP.name AS psp,
 					PM.id AS paymentmethodid, PM.name AS paymentmethod,
-					Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description
-				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
+					EUA.id AS customerid, EUA.firstname, EUA.lastname, Coalesce(Txn.customer_ref, EUA.externalid) AS customer_ref
+				FROM Txn
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
-				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON Txn.accountid = Acc.id				
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON Txn.accountid = Acc.id
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Currency_Tbl CT ON Txn.currencyid = CT.id			
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON Txn.pspid = PSP.id
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl PM ON Txn.cardid = PM.id
-				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M1 ON Txn.id = M1.txnid AND M1.stateid = ". Constants::iINPUT_VALID_STATE ."
-				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M2 ON Txn.id = M2.txnid AND M2.stateid = ". Constants::iPAYMENT_INIT_WITH_PSP_STATE ."
-				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M3 ON Txn.id = M3.txnid AND M3.stateid = ". Constants::iPAYMENT_ACCEPTED_STATE ."
-				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M4 ON Txn.id = M4.txnid AND M4.stateid = ". Constants::iPAYMENT_CAPTURED_STATE ."
-				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M5 ON Txn.id = M5.txnid AND M5.stateid = ". Constants::iPAYMENT_CANCELLED_STATE ."
-				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M6 ON Txn.id = M6.txnid AND M6.stateid = ". Constants::iPAYMENT_REFUNDED_STATE ."
-				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M7 ON Txn.id = M7.txnid AND M7.stateid = ". Constants::iPAYMENT_DECLINED_STATE ."
-				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M8 ON Txn.id = M8.txnid AND M8.stateid = ". Constants::iPAYMENT_REJECTED_STATE ."
-                                LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl M9 ON Txn.id = M9.txnid AND M9.stateid = ". Constants::iPAYMENT_SETTLED_STATE ."
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON Txn.euaid = EUA.id
-				WHERE CL.id = ".$iClientID."
-				GROUP BY M9.stateid, M8.stateid, M7.stateid, M6.stateid, M5.stateid, M4.stateid, M3.stateid, M2.stateid, M1.stateid, Txn.id, orderno, externalid, Txn.typeid, Txn.countryid, toid, fromid, Txn.created, asStateid ,Acc.id,customerid, EUA.firstname, EUA.lastname, customer_ref, operatorid,Txn.mobile, Txn.email, language,CL.id, client,accountid, account,PSP.id, psp,paymentmethodid, paymentmethod,Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description";
-		
-				array_pop($aClientIDs);
-				
-				if(count($aClientIDs) > 0)
-				{
-					$sql .= "
-							UNION
-						";
-				}
-		}	
-				
-		$sql .= " ) as a where a.asStateid != -1 ";
-		
-
-		if (count($aAccountIDs) > 0) { $sql .= " AND  a.accountid IN (". implode(",", $aAccountIDs) .")"; }
-		if (count($aPspIDs) > 0) { $sql .= " AND  a.pspid IN (". implode(",", $aPspIDs) .")"; }
-		if (count($aCardIDs) > 0) { $sql .= " AND  a.paymentmethodid IN (". implode(",", $aCardIDs) .")"; }
-		if (intval($id) > 0) { $sql .= " AND a.id = '". floatval($id) ."'"; }
-		if ($ono > 0) { $sql .= " AND a.orderno = '". $this->getDBConn()->escStr($ono) ."'"; }
-		if ( ($oCI instanceof CustomerInfo) === true)
-		{
-			if ($oCI->getMobile() > 0) { $sql .= " AND a.operatorid / 100 = ". $oCI->getCountryID() ." AND a.mobile = '". $oCI->getMobile() ."'"; }
-			if (strlen($oCI->getEMail() ) > 0) { $sql .= " AND a.email = '". $this->getDBConn()->escStr($oCI->getEMail() ) ."'"; }
-			if (strlen($oCI->getCustomerRef() ) > 0) { $sql .= " AND a.customer_ref = '". $this->getDBConn()->escStr($oCI->getCustomerRef() ) ."'"; }
-		}
-		
-		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND   '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <=  a.createdfinal"; }
-		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND  a.createdfinal  <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
-		
-		$sql .= " AND a.createdfinal = (
-					select MAX(msg.created) FROM Log.Message_Tbl as msg
-						WHERE msg.stateid = a.asStateid AND msg.txnid = a.id
-				)";
-		
-		$sql .= "\n ORDER BY createdfinal DESC";
-		
+				ORDER BY Txn.txnid DESC";
 		if (intval($limit) > 0 || intval($offset) > 0)
 		{
 			$sql .= "\n";
 			if (intval($limit) > 0) { $sql .= "LIMIT ". intval($limit); }
 			if (intval($offset) > 0) { $sql .= " OFFSET ". intval($offset); }
 		}
-		
-	
-		//echo $sql ."\n";exit;
-		//trigger_error( $sql ."\n");
+		//		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
-		
-		if (count($aStateIDs) == 0) 
-		{
-		    
-			$aStateIDs = array(
-					Constants::iINPUT_VALID_STATE , 
-					Constants::iPAYMENT_INIT_WITH_PSP_STATE , 
-					Constants::iPAYMENT_ACCEPTED_STATE , 
-					Constants::iPAYMENT_WITH_ACCOUNT_STATE,
-					Constants::iPAYMENT_CAPTURED_STATE, 
-					Constants::iPAYMENT_DECLINED_STATE, 
-					Constants::iPAYMENT_REJECTED_STATE, 
-					Constants::iPAYMENT_REFUNDED_STATE,
-					Constants::iPAYMENT_CANCELLED_STATE,
-                                        Constants::iPAYMENT_SETTLED_STATE,
-					Constants::iTICKET_CREATED_STATE					
-				);
-		}
-		
 		
 		$sql = "SELECT stateid
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
 				WHERE txnid = $1 AND stateid IN (". implode(",", $aStateIDs) .")
-				ORDER BY id DESC
-			";
+				ORDER BY id DESC";
 		
-		//trigger_error( $sql ."\n");
+		//		echo $sql ."\n";
 		$stmt1 = $this->getDBConn()->prepare($sql);
 		
 		$sql = "SELECT id, stateid, data, created
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
 				WHERE txnid = $1 and enabled = true";
 		
-		if (count($aStateIDs) > 0) 
-		{ 
-			$sql .= " AND stateid IN (". implode(",", $aStateIDs) .")"; 
+		if (count($aStateIDs) > 0)
+		{
+			$sql .= " AND stateid IN (". implode(",", $aStateIDs) .")";
 		}
 		
 		$sql.= "ORDER BY id ASC";
 		
-		//trigger_error( $sql ."\n" );
+		//		echo $sql ."\n";
 		$stmt2 = $this->getDBConn()->prepare($sql);
 		
 		$aObj_TransactionLogs = array();
 		$aObj_CountryConfigurations = array();
 		$aTypes = array(Constants::iCARD_PURCHASE_TYPE,
-						Constants::iPURCHASE_VIA_WEB,
-						Constants::iWEB_SUBSCR_TYPE,
-						Constants::iPURCHASE_VIA_APP,
-						Constants::iAPP_SUBSCR_TYPE,
-						Constants::iPURCHASE_OF_EMONEY,
-						Constants::iTOPUP_SUBSCR_TYPE,
-						Constants::iPURCHASE_OF_POINTS);
-	
+				Constants::iPURCHASE_VIA_WEB,
+				Constants::iWEB_SUBSCR_TYPE,
+				Constants::iPURCHASE_VIA_APP,
+				Constants::iAPP_SUBSCR_TYPE,
+				Constants::iPURCHASE_OF_EMONEY,
+				Constants::iTOPUP_SUBSCR_TYPE,
+				Constants::iPURCHASE_OF_POINTS);
+		
 		// Construct XML Document with data for Transaction
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
 			// Purchase
-			if ($RS["ASSTATEID"] < 0 && in_array($RS["TYPEID"], $aTypes) === true)
+			if ($RS["STATEID"] < 0 && in_array($RS["TYPEID"], $aTypes) === true)
 			{
-				$aParams = array($RS["ID"]);
+				$aParams = array($RS["TXNID"]);
 				$res1 = $this->getDBConn()->execute($stmt1, $aParams);
 				if (is_resource($res1) === true)
 				{
 					$RS1 = $this->getDBConn()->fetchName($res1);
-					if (is_array($RS1) === true) { $RS["asStateid"] = $RS1["STATEID"]; }
+					if (is_array($RS1) === true) { $RS["STATEID"] = $RS1["STATEID"]; }
 				}
 			}
 			
@@ -841,48 +784,50 @@ class mConsole extends Admin
 			$aObj_Messages = array();
 			if ($verbose === true && in_array($RS["TYPEID"], $aTypes) === true)
 			{
-				$aParams = array($RS["ID"]);
+				$aParams = array($RS["TXNID"]);
 				$res2 = $this->getDBConn()->execute($stmt2, $aParams);
-			
+				
 				if (is_resource($res2) === true)
 				{
 					// Additional record sets
 					while ($RS2 = $this->getDBConn()->fetchName($res2) )
 					{
 						$aObj_Messages[] = new MessageInfo($RS2["ID"],
-														   $RS2["STATEID"],
-														   gmdate("Y-m-d H:i:sP", strtotime(substr($RS2["CREATED"], 0, strpos($RS2["CREATED"], ".") ) ) ),
-														   $RS2["DATA"]);
+								$RS2["STATEID"],
+								gmdate("Y-m-d H:i:sP", strtotime(substr($RS2["CREATED"], 0, strpos($RS2["CREATED"], ".") ) ) ),
+								$RS2["DATA"]);
 					}
 				}
 			}
 			
-			if(in_array( $RS["ASSTATEID"], $aStateIDs ) == true)
+			if(in_array( $RS["STATEID"], $aStateIDs ) == true)
 			{
-				$aObj_TransactionLogs[] = new TransactionLogInfo($RS["ID"],
-																 $RS["TYPEID"],
-																 $RS["ORDERNO"],
-																 $RS["EXTERNALID"],
-																 new BasicConfig($RS["CLIENTID"], $RS["CLIENT"]),
-																 new BasicConfig($RS["ACCOUNTID"], $RS["ACCOUNT"]),
-																 $RS["PSPID"] > 0 ? new BasicConfig($RS["PSPID"], $RS["PSP"]) : null,
-																 $RS["PAYMENTMETHODID"] > 0 ? new BasicConfig($RS["PAYMENTMETHODID"], $RS["PAYMENTMETHOD"]) : null,
-																 $RS["ASSTATEID"],
-																 $aObj_CountryConfigurations[$RS["COUNTRYID"] ],
-																 $RS["AMOUNT"],
-																 $RS["CAPTURED"],
-																 $RS["POINTS"],
-																 $RS["REWARD"],
-																 $RS["REFUND"],
-																 $RS["FEE"],
-																 $RS["MODE"],
-																 new CustomerInfo($RS["CUSTOMERID"], $RS["OPERATORID"]/100, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"], $RS["FIRSTNAME"] ." ". $RS["LASTNAME"], $RS["LANGUAGE"]),
-																 $RS["IP"],
-																 gmdate("Y-m-d H:i:sP", strtotime(substr($RS["CREATED"], 0, strpos($RS["CREATED"], ".") ) ) ),
-																 $aObj_Messages);
+				$aObj_TransactionLogs[] = new TransactionLogInfo($RS["TXNID"],
+						$RS["TYPEID"],
+						$RS["ORDERNO"],
+						$RS["EXTERNALID"],
+						new BasicConfig($RS["CLIENTID"], $RS["CLIENT"]),
+						new BasicConfig($RS["ACCOUNTID"], $RS["ACCOUNT"]),
+						$RS["PSPID"] > 0 ? new BasicConfig($RS["PSPID"], $RS["PSP"]) : null,
+						$RS["PAYMENTMETHODID"] > 0 ? new BasicConfig($RS["PAYMENTMETHODID"], $RS["PAYMENTMETHOD"]) : null,
+						$RS["STATEID"],
+						$aObj_CountryConfigurations[$RS["COUNTRYID"] ],
+						$RS["AMOUNT"],
+						$RS["CAPTURED"],
+						$RS["POINTS"],
+						$RS["REWARD"],
+						$RS["REFUND"],
+						$RS["FEE"],
+						$RS["MODE"],
+						new CustomerInfo($RS["CUSTOMERID"], $RS["OPERATORID"]/100, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"], $RS["FIRSTNAME"] ." ". $RS["LASTNAME"], $RS["LANGUAGE"]),
+						$RS["IP"],
+						gmdate("Y-m-d H:i:sP", strtotime(substr($RS["CREATED"], 0, strpos($RS["CREATED"], ".") ) ) ),
+						$aObj_Messages,
+						"",
+						$RS["CURRENCYCODE"]);
 			}
 		}
-
+		
 		return $aObj_TransactionLogs;
 	}
 	
@@ -909,10 +854,12 @@ class mConsole extends Admin
 					EUA.id AS customerid, EUA.firstname, EUA.lastname, Coalesce(Txn.customer_ref, EUA.externalid) AS customer_ref, Txn.operatorid as operatorid, Txn.deviceid as deviceid,
 					Txn.mobile as mobile, Txn.email as email, Txn.lang AS language,CL.id AS clientid, CL.name AS client, U1.url AS authurl,
 					Acc.id AS accountid, Acc.markup as markup, Acc.mobile as acc_mobile, Acc.name AS account,PSP.id AS pspid, PSP.name AS psp,
-					PM.id AS paymentmethodid, PM.name AS paymentmethod,Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description
+					PM.id AS paymentmethodid, PM.name AS paymentmethod,Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description,
+					CT.code AS currencycode
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON Txn.accountid = Acc.id
+				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Currency_Tbl CT ON Txn.currencyid = CT.id
 				LEFT OUTER JOIN Client". sSCHEMA_POSTFIX .".URL_Tbl U1 ON CL.id = U1.clientid AND U1.urltypeid = ". ClientConfig::iAUTHENTICATION_URL ." AND U1.enabled = '1'
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON Txn.pspid = PSP.id
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl PM ON Txn.cardid = PM.id
@@ -951,7 +898,7 @@ class mConsole extends Admin
 						$RS["TYPEID"],
 						$RS["ORDERNO"],
 						$RS["EXTERNALID"],
-						new BasicConfig($RS["CLIENTID"], $RS["CLIENT"]),
+						ClientConfig::produceConfig($this->getDBConn(), $RS["CLIENTID"]),
 						new AccountConfig($RS["ACCOUNTID"],$RS["CLIENTID"], $RS["ACCOUNT"], $RS["ACC_MOBILE"], $RS["MARKUP"]),
 						$RS["PSPID"] > 0 ? new BasicConfig($RS["PSPID"], $RS["PSP"]) : null,
 						$RS["PAYMENTMETHODID"] > 0 ? new BasicConfig($RS["PAYMENTMETHODID"], $RS["PAYMENTMETHOD"]) : null,
@@ -969,7 +916,9 @@ class mConsole extends Admin
 							$RS["FIRSTNAME"] ." ". $RS["LASTNAME"], $RS["LANGUAGE"], $RS["CLIENTID"], $RS['DEVICEID'] ),
 						$RS["IP"],
 						date("Y-m-d H:i:s", strtotime($RS["CREATED"]) ),
-						$aObj_Messages);
+						$aObj_Messages,
+						"",
+						$RS["CURRENCYCODE"]);
 			}
 		}
 
@@ -1193,69 +1142,96 @@ class mConsole extends Admin
 			$where .= " Txn.cardid = ".intval($cardid);
 		}
 		
+		if(empty($start) === false && strlen($start) > 0)
+		{
+			if(empty($where) === false)
+			{
+				$where.=" AND ";
+			}
+			
+			$where .= "'". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) )."' <= Txn.created ";
+		}
+		
+		if(empty($end) === false && strlen($end) > 0)
+		{
+			if(empty($where) === false)
+			{
+				$where.=" AND ";
+			}
+			
+			$where .= " Txn.created <= '" .$this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ). "' ";
+		}
+		
+		
 		if(empty($where) === false)
 		{
 			$where = " WHERE ".$where;
 		}
 		
-		$sql = "SELECT date(messages.max_created) AS createddate, messages.stateid AS stateid, count(messages.txnid) AS stateidcount
-			FROM (
-				SELECT Msg.created AS max_created, Msg.txnid, Msg.stateid 
-				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl AS Msg 
-				WHERE 
-				Msg.created BETWEEN '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' AND 
-				'". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'
-				AND Msg.created = (
-					select MAX(created) FROM Log.Message_Tbl
-						WHERE stateid IN (". implode(",", $aStateIDS) .") AND txnid = Msg.txnid
-				)
-				AND Msg.txnid IN (
-					SELECT Txn.id 
-						FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn ".$where."
-				)
-				
-			) AS messages GROUP BY createddate, messages.stateid ORDER BY createddate";
+		//Date part will have values always hence $where will not be empty
+		
+		$sql = "SELECT date(Msg.created) AS createddate, Msg.stateid AS stateid, Count(Msg.id) AS stateidcount
+				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
+				INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid
+				".$where.
+				" AND Msg.id = (SELECT Max(id) FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
+								WHERE Txn.id = txnid AND stateid IN (". implode(",", $aStateIDS) ."))
+				GROUP BY createddate, Msg.stateid
+				ORDER BY createddate ASC, Msg.stateid ASC ";
 		
 		//echo $sql ."\n";
-		
 		$aRS = array();
 		
 		$RS = array();
 		
 		$res = $this->getDBConn()->query($sql);
-
+		
 		$aTransactionStats = array();
 		
 		if (is_resource($res) === true)
 		{
-
+			
 			while($RS = $this->getDBConn()->fetchName($res))
 			{
-				if (is_array($RS) === true && (isset($RS['CREATEDDATE']) == true && isset($RS['STATEID']) == true)) 
+				if (is_array($RS) === true && (isset($RS['CREATEDDATE']) == true && isset($RS['STATEID']) == true))
 				{
-					$aRS[$RS['CREATEDDATE']][$RS['STATEID']] = $RS['STATEIDCOUNT']; 
+					$aRS[$RS['CREATEDDATE']][$RS['STATEID']] = $RS['STATEIDCOUNT'];
 				}
 			}
-
+			
 			if(empty($aRS) === false)
 			{
 				foreach($aRS as $createddate => $transactioncountdata)
 				{
 					$missingstateids = array_diff($aStateIDS, array_keys($transactioncountdata));
-
+					
 					foreach($missingstateids as $stateid)
 					{
 						$aTransactionStats[$createddate][$stateid] = 0;
 					}
-
+					
 					$aTransactionStats[$createddate] += $transactioncountdata;
 				}
-
+				
 				return new TransactionStatisticsInfo($aTransactionStats);
 			} else { return new TransactionStatisticsInfo($aTransactionStats); }
-		} 
+		}
 		else { return new TransactionStatisticsInfo($aTransactionStats); }
 		
 	}
+	
+	public function getRoutingRules(array $aClientIDs, $start = null, $end = null, array $aAccountIDs = array()) {
+		$aRules = array ();
+		$aRoutingRules = array ();
+		foreach ( $aClientIDs as $clientid) {
+			$aRules = RoutingRule::produceConfig ( $this->getDBConn(), $clientid );
+			$aRoutingRules = array_merge ( $aRules , $aRoutingRules ) ;
+		}
+		return $aRoutingRules ;
+	}
+	
+	
+	
+	
     }
 ?>

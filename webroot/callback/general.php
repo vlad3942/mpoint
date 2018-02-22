@@ -199,6 +199,7 @@ try
 									  $fee,
 									  array($HTTP_RAW_POST_DATA) );
 	
+	
 	// Payment Authorized: Perform a callback to the 3rd party Wallet if required
 	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 	{
@@ -322,11 +323,17 @@ try
      	} else {
      		$obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"],"additionaldata" => (string)$sAdditionalData));
      	}
-     }
-      
+       }
+
   }
-  
- $xml = '<status code="1000">Callback Success</status>';
+  else {
+      header("Content-Type: text/xml; charset=\"UTF-8\"");
+      echo '<?xml version="1.0" encoding="UTF-8"?>';
+      echo '<root>';
+      echo '<status code="1000">Callback Success</status>';
+      echo '</root>';
+  }
+    $obj_mPoint->getTxnInfo()->getPaymentSession()->updateState();
 }
 catch (TxnInfoException $e)
 {
@@ -340,8 +347,4 @@ catch (CallbackException $e)
 	$xml .= '<status code="'. $e->getCode() .'">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES). '</status>';
 	trigger_error($e->getMessage() ."\n". $HTTP_RAW_POST_DATA, E_USER_WARNING);
 }
-header("Content-Type: text/xml; charset=\"UTF-8\"");
-echo '<?xml version="1.0" encoding="UTF-8"?>';
-echo '<root>';
-echo $xml;
-echo '</root>';
+

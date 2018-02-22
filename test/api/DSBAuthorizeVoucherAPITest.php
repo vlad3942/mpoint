@@ -61,7 +61,8 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
 		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
 		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, $pspID, '501910******3742', '06/24', TRUE, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, countryid, orderid, callbackurl, amount, ip, enabled) VALUES (1001001, 100, 113, 1100, 1, 100, '103-1418291', '". $sCallbackURL ."', 2, '127.0.0.1', TRUE)");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '103-1418291', 2, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid,sessionid) VALUES (1001001, 100, 113, 1100, 1, 100, '103-1418291', '". $sCallbackURL ."', 2, '127.0.0.1', TRUE, 208,1)");
 
 		$xml = $this->getAuthDoc(113, 1100, 1001001, 100);
 
@@ -73,17 +74,23 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 		$this->assertEquals(200, $iStatus);
 		$this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100">Payment authorized using Voucher</status></root>', $sReplyBody);
 
-		$res =  $this->queryDB("SELECT t.extid, t.pspid, t.amount, m.stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE m.txnid = t.id AND t.id = 1001001 ORDER BY m.id ASC");
-		$this->assertTrue(is_resource($res) );
+        $retries = 0;
 
-		$aStates = array();
-		$trow = null;
-		while ($row = pg_fetch_assoc($res) )
-		{
-			$trow = $row;
-			$aStates[] = $row["stateid"];
-		}
-
+        while ($retries++ <= 5)
+        {
+            $res = $this->queryDB("SELECT t.extid, t.pspid, t.amount, m.stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE m.txnid = t.id AND t.id = 1001001 ORDER BY m.id ASC");
+            $this->assertTrue(is_resource($res) );
+            $aStates = array();
+            $trow = null;
+            while ($row = pg_fetch_assoc($res) )
+            {
+                $trow = $row;
+                $aStates[] = $row["stateid"];
+            }
+            if (count($aStates) == 5) { break; }
+            usleep(200000); // As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
+        }
+        
 		$this->assertEquals(61775, $trow["extid"]);
 		$this->assertEquals($pspID, $trow["pspid"]);
 		$this->assertEquals(2, $trow["amount"]);
@@ -112,7 +119,8 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, mobile_verified, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', TRUE, 'profilePass', TRUE)");
 		$this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
 		$this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, $pspID, '501910******3742', '06/24', TRUE, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, countryid, orderid, callbackurl, amount, ip, enabled) VALUES (1001001, 100, 113, 1100, 1, 100, '103-1418291', '". $sCallbackURL ."', 11, '127.0.0.1', TRUE)");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '103-1418291', 11, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, keywordid, countryid, orderid, callbackurl, amount, ip, enabled, currencyid,sessionid) VALUES (1001001, 100, 113, 1100, 1, 100, '103-1418291', '". $sCallbackURL ."', 11, '127.0.0.1', TRUE, 208,1)");
 
 		$xml = $this->getAuthDoc(113, 1100, 1001001, 100);
 

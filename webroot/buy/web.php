@@ -213,7 +213,7 @@ if (Validate::valBasic ( $_OBJ_DB, $_REQUEST ['clientid'], $_REQUEST ['account']
 			}
 			else
 			{
-				$obj_TxnInfo = TxnInfo::produceInfo ( $iTxnID, $obj_ClientConfig, $_REQUEST );
+				$obj_TxnInfo = TxnInfo::produceInfo ( $iTxnID,$_OBJ_DB, $obj_ClientConfig, $_REQUEST );
 				
 			}
 			$aAirlinedata = unserialize($_REQUEST["orderdata"]);
