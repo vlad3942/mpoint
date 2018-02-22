@@ -199,7 +199,10 @@ abstract class Callback extends EndUserAccount
 		// Capture completed successfully
 		if (is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) == 1)
 		{
-			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($debug, true) );
+            $iIsPaymentCapturedStateLogged = $this->_obj_TxnInfo->hasEitherState($this->getDBConn(),Constants::iPAYMENT_CAPTURED_STATE);
+		    if($iIsPaymentCapturedStateLogged != 1) {
+                $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($debug, true));
+            }
 			return true;
 		}
 		else { return false; }
