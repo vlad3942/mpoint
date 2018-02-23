@@ -65,6 +65,7 @@ require_once(sCLASS_PATH ."/maybank.php");
 require_once(sCLASS_PATH ."/publicbank.php");
 // Require specific Business logic for the AliPay component
 require_once(sCLASS_PATH ."/alipay.php");
+require_once(sCLASS_PATH ."/alipay_chinese.php");
 // Require specific Business logic for the POLi component
 require_once(sCLASS_PATH ."/poli.php");
 // Require specific Business logic for the QIWI component
