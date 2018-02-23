@@ -109,7 +109,8 @@
 		<xs:enumeration value="us" />
 		<xs:enumeration value="no" />
 		<xs:enumeration value="sv" />
-	</xs:restriction> 
+		<xs:enumeration value="en" />
+	</xs:restriction>
 </xs:simpleType>
 
 <xs:simpleType name="ip">

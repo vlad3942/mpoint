@@ -156,7 +156,12 @@ abstract class Callback extends EndUserAccount
 		// Transaction completed successfully
 		if (is_resource($res) === true)
 		{
-			if ($this->getDBConn()->countAffectedRows($res) == 1 || $sid != Constants::iPAYMENT_ACCEPTED_STATE) { $this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true) ); }
+			if ($this->getDBConn()->countAffectedRows($res) == 1 || $sid != Constants::iPAYMENT_ACCEPTED_STATE) {
+                $iIsCompleteTransactionStateLogged = $this->_obj_TxnInfo->hasEitherState($this->getDBConn(),$sid);
+                if($iIsCompleteTransactionStateLogged == 0) {
+                    $this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true));
+                }
+			}
 			else
 			{
 				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_DUPLICATED_STATE, var_export($debug, true) );

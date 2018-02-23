@@ -192,15 +192,12 @@ try
 		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
 	}
 	$fee = 0;
-    $iIsCompleteTransactionStateLogged = $obj_TxnInfo->hasEitherState($_OBJ_DB,$iStateID);
-    if($iIsCompleteTransactionStateLogged != 1) {
-        $obj_mPoint->completeTransaction((integer)$obj_XML->callback->{'psp-config'}["id"],
-            $obj_XML->callback->transaction["external-id"],
-            (integer)$obj_XML->callback->transaction->card["type-id"],
-            $iStateID,
-            $fee,
-            array($HTTP_RAW_POST_DATA));
-    }
+    $obj_mPoint->completeTransaction((integer)$obj_XML->callback->{'psp-config'}["id"],
+        $obj_XML->callback->transaction["external-id"],
+        (integer)$obj_XML->callback->transaction->card["type-id"],
+        $iStateID,
+        $fee,
+        array($HTTP_RAW_POST_DATA));
 	// Payment Authorized: Perform a callback to the 3rd party Wallet if required
 	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 	{
