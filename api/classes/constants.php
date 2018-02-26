@@ -669,6 +669,13 @@ abstract class Constants
     */
     const iNETS_MPI = 42;
 
+
+    /**
+     * Unique ID for the Payment Service Provider: AliPay Chinese
+     *
+     */
+    const iALIPAY_CHINESE_PSP = 43;
+	
 	/**
 	 * Unique ID for the Electronic Payment Flow
 	 *
@@ -868,6 +875,12 @@ abstract class Constants
      *
      */
     const iMVAULT_WALLET = 35;
+
+    /**
+     * Unique Card ID for transaction's made using Alipay Chinese
+     *
+     */
+    const iALIPAY_CHINESE_WALLET = 40;
 
 	/**
 	 * Unique Fee Type ID for Top-Ups
