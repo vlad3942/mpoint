@@ -1064,7 +1064,14 @@ try
 
                                                                     $obj_PSP = new Nets($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["nets"]);
 
-                                                                    $code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+                                                                    $propertyValue = $obj_ClientConfig->getAdditionalProperties("NETS_3DVERIFICATION");
+                                                                    if($propertyValue == true) {
+                                                                        $requset = str_replace("authorize-payment","authenticate",$HTTP_RAW_POST_DATA);
+                                                                        $code = $obj_PSP->authenticate($requset);
+                                                                    }
+                                                                    else {
+                                                                        $code = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem);
+                                                                    }
 
                                                                     // Authorization succeeded
                                                                     if ($code == "100")
