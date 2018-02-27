@@ -148,3 +148,55 @@ ALTER TABLE client.client_tbl ADD COLUMN communicationchannels integer DEFAULT 0
 
 ALTER TABLE system.SessionType_tbl  OWNER TO mpoint;
 ALTER TABLE log.Session_tbl  OWNER TO mpoint;
+
+
+
+
+/* =============== Added product tables ============ */
+
+-- Table: system.product_tbl
+
+-- DROP TABLE system.product_tbl;
+
+CREATE TABLE system.product_tbl
+(
+  id serial NOT NULL,
+  name character varying(100),
+  code character varying(100),
+  description character varying(255),
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true,
+  CONSTRAINT product_pk PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE system.product_tbl
+  OWNER TO mpoint;
+
+-- Table: client.txnproduct_tbl
+
+-- DROP TABLE client.txnproduct_tbl;
+
+CREATE TABLE client.txnproduct_tbl
+(
+  id serial NOT NULL,
+  productid integer NOT NULL,
+  clientid integer NOT NULL,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true,
+  CONSTRAINT clientproduct_pk PRIMARY KEY (id),
+  CONSTRAINT client_fk FOREIGN KEY (clientid)
+      REFERENCES client.client_tbl (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT product_fk FOREIGN KEY (productid)
+      REFERENCES system.product_tbl (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE client.txnproduct_tbl
+  OWNER TO mpoint;

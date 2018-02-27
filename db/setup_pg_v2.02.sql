@@ -3479,3 +3479,11 @@ VALUES (100071, 43, '2016080600179506', true);
 
 
 /* ========== Global Configuration for AliPay Chinese ENDS ========== */
+
+
+
+/* ========== Product Type ============ */
+
+INSERT INTO system.product_tbl( id, name, description, code )  VALUES (1, 'Airline Ticket', 'Flight Tickets', 'AIRTCKT');
+INSERT INTO system.product_tbl( id, name, description, code )  VALUES (2, 'Airline Insurance', 'Insurance products purchased', 'INSRNC');
+
