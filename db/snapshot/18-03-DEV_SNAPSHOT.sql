@@ -11,4 +11,10 @@ INSERT INTO System.PSPCurrency_Tbl (pspid, name,currencyid) VALUES (44,'USD',840
 INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (4, 41);
 -- Enable Google Pay Wallet for Google Pay PSP
 INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (44, 41);
+
+
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10052, 44, 'BARJB0sDNz5hR1S7/3OdMlHoslZuiQ+uLDfVudq3p7HFbPZAX7yK0HUjeUnAxF6w9iplh0wONq7s4g7QbmOZVTo=', NULL, NULL);
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100071, 44, 'Google Pay');
+INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid) VALUES (10052, 41, 4,200);
+
 /* ========== CONFIGURATION FOR GOOGLE PAY - END ========== */
