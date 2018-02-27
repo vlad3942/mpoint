@@ -3443,7 +3443,7 @@ INSERT INTO System.PSPCurrency_Tbl (pspid, name,currencyid) VALUES (43,'CNY',156
 
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (40, 43);
 
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 43, 'AliPay Chinese', '2088102135220161', 'MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAIBQnVnYfs/oHSZJZhE01Z9ukKRmEU1OrDFGggD9F9YLYQP+kPLSg2DcVVC1Xl4Yyjp2RhfSODXmQD+io2Pt+HUZ+3CMlkI0e1qiQhnfLNbNEIjq+RVsIFZNqPlo3Lg/hBqlPhqk4YfqOuoagMthyuSBZJZ3UwXsRHgdzfBAzyI/AgMBAAECgYB/uL6HefnwVOj+/Tx9kAu7YMDVA0vhmZfIjJhHB6Y8RqNQ6Im7SlO/jFHXvlCqdR6GxsfKWlPdQs1dCjR8+Zi+/jEPaGDmvYa7p4kNXgJ+6zY4rSMt1MC0Py5fVZ4J+75HdfSwmbcm3u8LkREidRBn0EKbwQ0SwQOZqb/T6scr8QJBALlJxw7Xh0Mx6Gs+L55j2iO+m5mhvrBZGt0nmCcz+HFoSo3oO5rHeBGUJF1eGrbbValC0j2wL0n1Wa7fVK0xKrsCQQCxSK4Lrdvrw3T3/t1kjVFXgkZ3JhWpFKPBroX/AsBhANcRVKMG5oh43dw5jMJFgQmWQ6QsKh5q52dnqoueL1hNAkBDjoHUiILZ3h2G1IKaNn/3nmyvREj5lVN1JRWV3Z4NA2CDgxQQaAAAMMpdfI0y9J+z+hgbw9xKE/niB62hBBc3AkACDDnebqqspXxTZQE/qRY4cYvI0orLgi6GDTMFCA4a0LyrOZQMf1syMjXaAFM6JExtDOj3jaD+UR/zpZepQxi9AkEAimPiAgmD9DQVSWXLyi2DLvJ8flOV6PFx3Fq0hx9P0VbScKdJy2ETSH4gTnm+CIfE/5VJP16+jfSVV3BlODhdug==');
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 43, 'AliPay Chinese', '2088102135220161', '');
 
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 43, '-1');
 
@@ -3451,7 +3451,13 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10000
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, countryid) VALUES (10001, 40, 43, true, 609);
 
 -- PSP config for SDK integration
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10002, 43, 'AliPay Chinese', '2088102170185364', 'MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDAtoXgD2JA0COk6Aa18Bhg5+tdKlq4
+--app id
+INSERT INTO client.merchantsubaccount_tbl(
+  accountid, pspid, name, enabled)
+VALUES (100071, 43, '2016080600179506', true);
+
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('key.app', 'MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDAtoXgD2JA0COk6Aa18Bhg5+tdKlq4
 Fs/5QJ4SrGXkElNIuHok1lKeIGfUc2eJK7IfVz5Lrl3GEAm4HyX+tytegvUjH68Cxria8ZKu9SzBVMpUc7RDKsf
 VNr9YmITWfMM59QWp4BaJAGPi9u4GXnlv8hiiJYaENPkTZFTCY7FX2ylCjhkfB7OLp8DVU6dqZm8DpeAu
 ScpLCHfT2q7XCG5pd78GDYDUxXG8kQEWvSXqYMYHlSxRQUrD13rtgLdJQL2TfP1rROoR0GO6tw5683id
@@ -3470,12 +3476,9 @@ nGqLX3ItFctsIGWK5vQsijFv/nHonB4+W3+Mm8ZPp/SxAoGAOzSTtqk266jdK+oToUYjCvmgVym2A6Oo
 Y+uUqtyJiiJlRgXun1vGBPSpYlSRH2tW87BgFffadeT403h6Va5wnsaqcRpZrGWtNrVjCXtaDxjiAg7JuWX+fUu
 csd1rhPA8e0/I65kSkkisk/RX6DHaP/+i1RtJ4TaHwwznYc7qECgYEA43aTdt0OIlwfb/VsuIIOQxabAmUq4wro7D
 TkmlIN1HHB1U4qU3qL2ScRViTpHlkIycOaknB27NrzNTd4JM3+ahdHzYCrRyVrd1vLEKMecM0cgWWr8RQz
-4RK2jO+tUG4v6V4Q5sJJHJfFxNGyaSMM9G4Tk8BYAcFs5ZwjhNYkMh8=');
+4RK2jO+tUG4v6V4Q5sJJHJfFxNGyaSMM9G4Tk8BYAcFs5ZwjhNYkMh8=', 10007, 'client');
 
---app id
-INSERT INTO client.merchantsubaccount_tbl(
-  accountid, pspid, name, enabled)
-VALUES (100071, 43, '2016080600179506', true);
 
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('key.html', 'MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAIBQnVnYfs/oHSZJZhE01Z9ukKRmEU1OrDFGggD9F9YLYQP+kPLSg2DcVVC1Xl4Yyjp2RhfSODXmQD+io2Pt+HUZ+3CMlkI0e1qiQhnfLNbNEIjq+RVsIFZNqPlo3Lg/hBqlPhqk4YfqOuoagMthyuSBZJZ3UwXsRHgdzfBAzyI/AgMBAAECgYB/uL6HefnwVOj+/Tx9kAu7YMDVA0vhmZfIjJhHB6Y8RqNQ6Im7SlO/jFHXvlCqdR6GxsfKWlPdQs1dCjR8+Zi+/jEPaGDmvYa7p4kNXgJ+6zY4rSMt1MC0Py5fVZ4J+75HdfSwmbcm3u8LkREidRBn0EKbwQ0SwQOZqb/T6scr8QJBALlJxw7Xh0Mx6Gs+L55j2iO+m5mhvrBZGt0nmCcz+HFoSo3oO5rHeBGUJF1eGrbbValC0j2wL0n1Wa7fVK0xKrsCQQCxSK4Lrdvrw3T3/t1kjVFXgkZ3JhWpFKPBroX/AsBhANcRVKMG5oh43dw5jMJFgQmWQ6QsKh5q52dnqoueL1hNAkBDjoHUiILZ3h2G1IKaNn/3nmyvREj5lVN1JRWV3Z4NA2CDgxQQaAAAMMpdfI0y9J+z+hgbw9xKE/niB62hBBc3AkACDDnebqqspXxTZQE/qRY4cYvI0orLgi6GDTMFCA4a0LyrOZQMf1syMjXaAFM6JExtDOj3jaD+UR/zpZepQxi9AkEAimPiAgmD9DQVSWXLyi2DLvJ8flOV6PFx3Fq0hx9P0VbScKdJy2ETSH4gTnm+CIfE/5VJP16+jfSVV3BlODhdug==', 10007, 'client');
 
 /* ========== Global Configuration for AliPay Chinese ENDS ========== */
