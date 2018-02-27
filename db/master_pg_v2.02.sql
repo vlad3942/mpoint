@@ -158,7 +158,7 @@ ALTER TABLE log.Session_tbl  OWNER TO mpoint;
 
 -- DROP TABLE system.product_tbl;
 
-CREATE TABLE system.product_tbl
+CREATE TABLE system.producttype_tbl
 (
   id serial NOT NULL,
   name character varying(100),
@@ -179,7 +179,7 @@ ALTER TABLE system.product_tbl
 
 -- DROP TABLE client.txnproduct_tbl;
 
-CREATE TABLE client.txnproduct_tbl
+CREATE TABLE client.producttype_tbl
 (
   id serial NOT NULL,
   productid integer NOT NULL,
