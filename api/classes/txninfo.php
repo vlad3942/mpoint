@@ -740,13 +740,26 @@ class TxnInfo
 		$xml .= '<description>'. htmlspecialchars($this->_sDescription, ENT_NOQUOTES) .'</description>';
 		$xml .= '<ip>'. htmlspecialchars($this->_sIP, ENT_NOQUOTES) .'</ip>';
 		$xml .= '<hmac>'. htmlspecialchars($this->getHMAC(), ENT_NOQUOTES) .'</hmac>';
-        $xml .= '<token>'.htmlspecialchars($this->_token, ENT_NOQUOTES).'</token>';
-        $xml .= '<card-mask>'.htmlspecialchars($this->_mask, ENT_NOQUOTES).'</card-mask>';
-        $xml .= '<expiry>'.htmlspecialchars($this->_expiry, ENT_NOQUOTES).'</expiry>';
-        $xml .= '<approval-code>'.htmlspecialchars($this->_approvalCode, ENT_NOQUOTES).'</approval-code>';
-		$xml .= '<action-code>'.htmlspecialchars($this->_actionCode, ENT_NOQUOTES).'</action-code>';
-		$xml .= '<auth-original-data>'.htmlspecialchars($this->_authOriginalData, ENT_NOQUOTES).'</auth-original-data>';
-		if( empty($this->_obj_OrderConfigs) === false )
+
+		if(!empty($this->_token))
+            $xml .= '<token>'.htmlspecialchars($this->_token, ENT_NOQUOTES).'</token>';
+
+        if(!empty($this->_mask))
+		    $xml .= '<card-mask>'.htmlspecialchars($this->_mask, ENT_NOQUOTES).'</card-mask>';
+
+        if(!empty($this->_expiry))
+            $xml .= '<expiry>'.htmlspecialchars($this->_expiry, ENT_NOQUOTES).'</expiry>';
+
+        if(!empty($this->_approvalCode))
+            $xml .= '<approval-code>'.htmlspecialchars($this->_approvalCode, ENT_NOQUOTES).'</approval-code>';
+
+        if(!empty($this->_actionCode))
+            $xml .= '<action-code>'.htmlspecialchars($this->_actionCode, ENT_NOQUOTES).'</action-code>';
+
+        if(!empty($this->_authOriginalData))
+            $xml .= '<auth-original-data>'.htmlspecialchars($this->_authOriginalData, ENT_NOQUOTES).'</auth-original-data>';
+
+        if( empty($this->_obj_OrderConfigs) === false )
 		{
 			
 			$xml .= $this->getOrdersXML();
@@ -1223,6 +1236,15 @@ class TxnInfo
     function updateTransactionAmount(RDB $obj_DB,$amount){
         $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".Transaction_Tbl SET amount = ".$amount." WHERE id = " . $this->_iID;
         $obj_DB->query($sql);
+    }
+
+    /**
+     * Returns the Card token.
+     *
+     * @return 	String
+     */
+    function getToken(){
+	    return $this->_token;
     }
 
 }
