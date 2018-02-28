@@ -3493,6 +3493,15 @@ VALUES (100071, 43, '2016080600179506', true);
 
 
 
+/* ========== Product Type ============ */
+
+INSERT INTO system.producttype_tbl( id, name, description, code )  VALUES (110, 'Airline Ticket', 'Flight Tickets', 'AIRTCKT');
+INSERT INTO system.producttype_tbl( id, name, description, code )  VALUES (210, 'Airline Insurance', 'Insurance products purchased', 'INSRNC');
+
+
+
+
+
 /* ========== CONFIGURATION FOR GOOGLE PAY - START ========== */
 INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength,paymenttype) VALUES (41, 'Google Pay', 19, -1, -1, -1,3);
 INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (41, -1, -1);

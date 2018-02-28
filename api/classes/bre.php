@@ -10,7 +10,7 @@ class Bre extends General
     const sBRE_ROUTING_URL = '/bre/get-payment-routes';
 
 
-    public function getroute(ClientConfig $objClientconfig,HTTPConnInfo &$oCI,$clientid , $aPayInfo , $obj_RoutingRuleInfos )
+    public function getroute(ClientConfig $objClientconfig,HTTPConnInfo &$oCI,$clientid , $aPayInfo  )
     {
     	//echo( $aPayInfo->{'client-info'}->mobile["country-id"]);
     	$b = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -27,7 +27,6 @@ class Bre extends General
     	$b .= '<email>'.$aPayInfo->{'client-info'}->email.'</email>';
     	$b .= '<device-id>'.$aPayInfo->{'client-info'}->{'device-id'}.'</device-id>';
     	$b .= '</client-info>';
-    	//$b .=  RoutingRule::toXML ( $obj_RoutingRuleInfos );
     	$b .= '</get-routes-request>';
     	$b .= '</root>';
     
