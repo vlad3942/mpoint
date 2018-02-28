@@ -154,9 +154,9 @@ ALTER TABLE log.Session_tbl  OWNER TO mpoint;
 
 /* =============== Added product tables ============ */
 
--- Table: system.product_tbl
+-- Table: system.producttype_tbl
 
--- DROP TABLE system.product_tbl;
+-- DROP TABLE system.producttype_tbl;
 
 CREATE TABLE system.producttype_tbl
 (
@@ -172,12 +172,12 @@ CREATE TABLE system.producttype_tbl
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE system.product_tbl
+ALTER TABLE system.producttype_tbl
   OWNER TO mpoint;
 
--- Table: client.txnproduct_tbl
+-- Table: client.producttype_tbl
 
--- DROP TABLE client.txnproduct_tbl;
+-- DROP TABLE client.producttype_tbl;
 
 CREATE TABLE client.producttype_tbl
 (
@@ -198,5 +198,7 @@ CREATE TABLE client.producttype_tbl
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE client.txnproduct_tbl
+ALTER TABLE client.producttype_tbl
   OWNER TO mpoint;
+
+ 
