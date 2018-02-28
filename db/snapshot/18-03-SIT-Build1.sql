@@ -55,3 +55,11 @@ ALTER TABLE client.producttype_tbl
 INSERT INTO system.producttype_tbl( id, name, description, code )  VALUES (110, 'Airline Ticket', 'Flight Tickets', 'AIRTCKT');
 INSERT INTO system.producttype_tbl( id, name, description, code )  VALUES (210, 'Airline Insurance', 'Insurance products purchased', 'INSRNC');
 
+ 
+ /* ========== Removing as Moved to BRE =============*/
+  
+DROP TABLE client.rulecondition_tbl;
+DROP TABLE client.routing_tbl;
+DROP TABLE client.rule_tbl;
+DROP TABLE system.condition_tbl;
+DROP TABLE system.operator_tbl;

@@ -202,3 +202,11 @@ ALTER TABLE client.producttype_tbl
   OWNER TO mpoint;
 
  
+  
+ /* ========== Removing as Moved to BRE =============*/
+  
+DROP TABLE client.rulecondition_tbl;
+DROP TABLE client.routing_tbl;
+DROP TABLE client.rule_tbl;
+DROP TABLE system.condition_tbl;
+DROP TABLE system.operator_tbl;
