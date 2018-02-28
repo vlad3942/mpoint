@@ -3473,3 +3473,11 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) SELECT 
 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'key.html', 'MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAIBQnVnYfs/oHSZJZhE01Z9ukKRmEU1OrDFGggD9F9YLYQP+kPLSg2DcVVC1Xl4Yyjp2RhfSODXmQD+io2Pt+HUZ+3CMlkI0e1qiQhnfLNbNEIjq+RVsIFZNqPlo3Lg/hBqlPhqk4YfqOuoagMthyuSBZJZ3UwXsRHgdzfBAzyI/AgMBAAECgYB/uL6HefnwVOj+/Tx9kAu7YMDVA0vhmZfIjJhHB6Y8RqNQ6Im7SlO/jFHXvlCqdR6GxsfKWlPdQs1dCjR8+Zi+/jEPaGDmvYa7p4kNXgJ+6zY4rSMt1MC0Py5fVZ4J+75HdfSwmbcm3u8LkREidRBn0EKbwQ0SwQOZqb/T6scr8QJBALlJxw7Xh0Mx6Gs+L55j2iO+m5mhvrBZGt0nmCcz+HFoSo3oO5rHeBGUJF1eGrbbValC0j2wL0n1Wa7fVK0xKrsCQQCxSK4Lrdvrw3T3/t1kjVFXgkZ3JhWpFKPBroX/AsBhANcRVKMG5oh43dw5jMJFgQmWQ6QsKh5q52dnqoueL1hNAkBDjoHUiILZ3h2G1IKaNn/3nmyvREj5lVN1JRWV3Z4NA2CDgxQQaAAAMMpdfI0y9J+z+hgbw9xKE/niB62hBBc3AkACDDnebqqspXxTZQE/qRY4cYvI0orLgi6GDTMFCA4a0LyrOZQMf1syMjXaAFM6JExtDOj3jaD+UR/zpZepQxi9AkEAimPiAgmD9DQVSWXLyi2DLvJ8flOV6PFx3Fq0hx9P0VbScKdJy2ETSH4gTnm+CIfE/5VJP16+jfSVV3BlODhdug==', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=43 ;
 /* ========== Global Configuration for AliPay Chinese ENDS ========== */
+
+
+
+/* ========== Product Type ============ */
+
+INSERT INTO system.producttype_tbl( id, name, description, code )  VALUES (110, 'Airline Ticket', 'Flight Tickets', 'AIRTCKT');
+INSERT INTO system.producttype_tbl( id, name, description, code )  VALUES (210, 'Airline Insurance', 'Insurance products purchased', 'INSRNC');
+
