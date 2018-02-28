@@ -139,10 +139,6 @@ require_once(sCLASS_PATH ."/status.php");
 // Require global settings file
 require_once(sCONF_PATH ."global.php");
 
-require_once(sCLASS_PATH ."/routingrule.php");
-require_once(sCLASS_PATH ."/condition_info.php");
-require_once(sCLASS_PATH ."/gateway_info.php");
-
 // Set Custom Error & Exception handlers
 new RemoteReport(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["iemendo"]), iOUTPUT_METHOD, sERROR_LOG, iDEBUG_LEVEL);
 

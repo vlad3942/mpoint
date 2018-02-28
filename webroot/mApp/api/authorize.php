@@ -107,9 +107,6 @@ require_once(sCLASS_PATH ."/mvault.php");
 // Require specific Business logic for the 2c2p alc component
 require_once(sCLASS_PATH ."/ccpp_alc.php");
 
-require_once(sCLASS_PATH ."/condition_info.php");
-require_once(sCLASS_PATH ."/gateway_info.php");
-require_once(sCLASS_PATH ."/routingrule.php");
 require_once(sCLASS_PATH ."/bre.php");
 
 
@@ -231,10 +228,9 @@ try
 										}
 										
 										if ($drEnabled) {
-											$obj_RoutingRuleInfos = RoutingRule::produceConfig ( $_OBJ_DB, intval ( $obj_DOM->{'authorize-payment'} [$i] ["client-id"] ) );
 											$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 											$obj_BRE= new Bre($_OBJ_DB, $_OBJ_TXT);
-											$obj_XML = $obj_BRE->getroute($obj_TxnInfo->getClientConfig (),$obj_ConnInfo,$obj_DOM->{'authorize-payment'} [$i] ["client-id"] , $obj_DOM->{'authorize-payment'}[$i] , $obj_RoutingRuleInfos ) ;
+											$obj_XML = $obj_BRE->getroute($obj_TxnInfo->getClientConfig (),$obj_ConnInfo,$obj_DOM->{'authorize-payment'} [$i] ["client-id"] , $obj_DOM->{'authorize-payment'}[$i]) ;
 											$aRoutes = $obj_XML->{'get-routes-response'}->{'transaction'}->routes->route ;
 										}
 										
@@ -878,7 +874,7 @@ try
 																{
 																	$xml .= '<status code="100">Payment Authorized using Stored Card</status>';
 																}
-																else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml = $code; }
+																else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml .= $code; }
 																// Error: Authorization declined
 																else
 																{
@@ -1064,7 +1060,14 @@ try
 
                                                                     $obj_PSP = new Nets($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["nets"]);
 
-                                                                    $code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+                                                                    $propertyValue = $obj_ClientConfig->getAdditionalProperties("NETS_3DVERIFICATION");
+                                                                    if($propertyValue == true) {
+                                                                        $requset = str_replace("authorize-payment","authenticate",$HTTP_RAW_POST_DATA);
+                                                                        $code = $obj_PSP->authenticate($requset);
+                                                                    }
+                                                                    else {
+                                                                        $code = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem);
+                                                                    }
 
                                                                     // Authorization succeeded
                                                                     if ($code == "100")

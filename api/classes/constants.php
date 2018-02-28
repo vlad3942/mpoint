@@ -662,6 +662,14 @@ abstract class Constants
 	 */
 	const i2C2P_ALC_PSP = 40;
 
+
+    /**
+    * Unique ID for the MPI : Nets
+    *
+    */
+    const iNETS_MPI = 42;
+
+
     /**
      * Unique ID for the Payment Service Provider: Citcon - WeChat Pay
      *

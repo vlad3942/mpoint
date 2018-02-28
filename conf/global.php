@@ -650,10 +650,20 @@ $aHTTP_CONN_INFO["nets"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["nets"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["nets"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["nets"]["paths"]["auth"] = "/mpsp/nets/authorize-payment";
+$aHTTP_CONN_INFO["nets"]["paths"]["authenticate"] = "/mpoint/authenticate";
 $aHTTP_CONN_INFO["nets"]["paths"]["capture"] = "/mpsp/nets/capture";
+$aHTTP_CONN_INFO["nets"]["paths"]["initialize"] = "/mpsp/nets/initialize";
 $aHTTP_CONN_INFO["nets"]["paths"]["refund"] = "/mpsp/nets/refund";
 $aHTTP_CONN_INFO["nets"]["paths"]["cancel"] = "/mpsp/nets/cancel";
 
+$aHTTP_CONN_INFO["netsmpi"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["netsmpi"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["netsmpi"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["netsmpi"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["netsmpi"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["netsmpi"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["netsmpi"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["netsmpi"]["paths"]["authenticate"] = "/mpi/nets/authentication";
 /**
  * Connection info for connecting to mVault
  */

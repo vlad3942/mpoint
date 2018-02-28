@@ -220,5 +220,28 @@ class PSPConfig extends BasicConfig
 			return null;
 		}
 	}
+
+    /*
+     * Get Additional properties
+     * If key is send as parameter then value of that key will return
+     * Otherwise all properties will return
+     *
+     * @param string key
+     *
+     * return string or array
+     */
+    public function getAdditionalProperties($key = "")
+    {
+        if ($key == "")
+            return $this->_aAdditionalProperties;
+        else {
+            foreach ($this->_aAdditionalProperties as $aAdditionalProperty) {
+                if ($aAdditionalProperty['key'] == $key)
+                    return $aAdditionalProperty['value'];
+            }
+        }
+		return false;
+    }
+
 }
 ?>

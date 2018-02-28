@@ -17,4 +17,31 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10000
 -- Route AliPay Card to AliPay with country CHN
 INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid, enabled, countryid) VALUES (10001, 40, 43, true, 609);
 
+-- PSP config for SDK integration
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10002, 43, 'AliPay Chinese', '2088102170185364', 'MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDAtoXgD2JA0COk6Aa18Bhg5+tdKlq4
+Fs/5QJ4SrGXkElNIuHok1lKeIGfUc2eJK7IfVz5Lrl3GEAm4HyX+tytegvUjH68Cxria8ZKu9SzBVMpUc7RDKsf
+VNr9YmITWfMM59QWp4BaJAGPi9u4GXnlv8hiiJYaENPkTZFTCY7FX2ylCjhkfB7OLp8DVU6dqZm8DpeAu
+ScpLCHfT2q7XCG5pd78GDYDUxXG8kQEWvSXqYMYHlSxRQUrD13rtgLdJQL2TfP1rROoR0GO6tw5683id
+x+l9jDvVNWbQ34mKWW33Vz4R0qDwQn0gkql96yAN9XuREUpiXsaddL5HT6PWUxd7AgMBAAECggEAP
+5X55kwtJyWGHUtRq4ZlBNSBHGR1OniMdrmTbqXjmLVTNZNo+e6do/8dQ0QwzVnVk/G9ZEtMNaXlDxN3/
+euCK9UZ/VTe8hOPpdA/jernsYLAn8ztlZvwA7HkwN7SNdNEt0LZc4u04891JdZEA2X4u68t4ZJwJ/8yj+ty7BDo
+2wuqKMJs4SMsqtW8mhUdto9C4AROul3GebHTC5/4dVfciCQ5ATZNkNqU8pLHCfQxNyM2P9gawQaycNrqh
+x5MJ2pSG0GpYxieo3xxN5k4L99DkON3WjExJerUJ9MQbYHmDM0ceh/5niLKxUOTttxYaeEsSRX7Sc+0owIo
+yQV/Neq2AQKBgQDxB+yjUKvZBhc2rlA/KENjO2VvPw+MJbNJqFlbTLmSoqsVnid0CP3ZpqICvVEzXNoMga
++T2CWW3mfnIoisPSwoeiASRgTBrL3iiXTxCXmHGrTbJ61aw2/EKAxjCK1IFou+8wjNbkya8zj4G6BrXn6OoV
+NVgq2RIRry1y84U8h5GwKBgQDMrmf/2bkrJKXzYHtP3906Y00NaRC//7q/Y9JZca4E+aZKcUh3u61itAHSWR
+lq++e8/blV4PzJTk+GgmlfLSbwJMc48MH77WroYMYMSbRu59tdKVnFzbk0Mlo0CxGKMOG8+YPKoJgcO8Q
+KSZJo2BOAj958Hxy5AVZXGNMiWo0hIQKBgAkme91XWq7KhGcXBwTeynAh+R/YDQcNB1lsgrfsmb7vXf9
+cGbNWBA0XPl9MQKDqjXycD8ZVFlg76UXlEbs4N0zyFfWbouKXZD4NadscuPhgEy2eu/4OHVgdDRtVYP6z
+nGqLX3ItFctsIGWK5vQsijFv/nHonB4+W3+Mm8ZPp/SxAoGAOzSTtqk266jdK+oToUYjCvmgVym2A6OoVC
+Y+uUqtyJiiJlRgXun1vGBPSpYlSRH2tW87BgFffadeT403h6Va5wnsaqcRpZrGWtNrVjCXtaDxjiAg7JuWX+fUu
+csd1rhPA8e0/I65kSkkisk/RX6DHaP/+i1RtJ4TaHwwznYc7qECgYEA43aTdt0OIlwfb/VsuIIOQxabAmUq4wro7D
+TkmlIN1HHB1U4qU3qL2ScRViTpHlkIycOaknB27NrzNTd4JM3+ahdHzYCrRyVrd1vLEKMecM0cgWWr8RQz
+4RK2jO+tUG4v6V4Q5sJJHJfFxNGyaSMM9G4Tk8BYAcFs5ZwjhNYkMh8=');
+
+--app id
+INSERT INTO client.merchantsubaccount_tbl(
+  accountid, pspid, name, enabled)
+VALUES (100071, 43, '2016080600179506', true);
+
 /* ========== Global Configuration for AliPay Chinese ENDS ========== */
