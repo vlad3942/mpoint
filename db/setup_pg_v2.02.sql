@@ -3484,6 +3484,6 @@ VALUES (100071, 43, '2016080600179506', true);
 
 /* ========== Product Type ============ */
 
-INSERT INTO system.producttype_tbl( id, name, description, code )  VALUES (1, 'Airline Ticket', 'Flight Tickets', 'AIRTCKT');
-INSERT INTO system.producttype_tbl( id, name, description, code )  VALUES (2, 'Airline Insurance', 'Insurance products purchased', 'INSRNC');
+INSERT INTO system.producttype_tbl( id, name, description, code )  VALUES (110, 'Airline Ticket', 'Flight Tickets', 'AIRTCKT');
+INSERT INTO system.producttype_tbl( id, name, description, code )  VALUES (210, 'Airline Insurance', 'Insurance products purchased', 'INSRNC');
 
