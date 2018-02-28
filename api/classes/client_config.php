@@ -1221,6 +1221,7 @@ class ClientConfig extends BasicConfig
                     return $aAdditionalProperty['value'];
             }
         }
+        return false;
     }
 }
 ?>
