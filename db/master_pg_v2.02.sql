@@ -150,8 +150,6 @@ ALTER TABLE system.SessionType_tbl  OWNER TO mpoint;
 ALTER TABLE log.Session_tbl  OWNER TO mpoint;
 
 
-
-
 /* =============== Added product tables ============ */
 
 -- Table: system.producttype_tbl
@@ -210,3 +208,16 @@ DROP TABLE client.routing_tbl;
 DROP TABLE client.rule_tbl;
 DROP TABLE system.condition_tbl;
 DROP TABLE system.operator_tbl;
+
+
+
+ALTER TABLE client.cardaccess_tbl ADD psp_type INT DEFAULT 1 NOT NULL;
+ALTER TABLE client.cardaccess_tbl
+  ADD CONSTRAINT cardaccess_tbl_processortype_tbl_id_fk
+FOREIGN KEY (psp_type) REFERENCES system.processortype_tbl (id);
+DROP INDEX client.cardaccess_card_country_uq RESTRICT;
+UPDATE client.cardaccess_tbl
+SET psp_type = psp_tbl.system_type
+FROM system.psp_tbl
+WHERE psp_tbl.id = cardaccess_tbl.pspid;
+CREATE UNIQUE INDEX cardaccess_card_country_uq ON client.cardaccess_tbl (clientid, cardid, countryid, psp_type);
