@@ -108,6 +108,8 @@ require_once(sCLASS_PATH ."/mvault.php");
 require_once(sCLASS_PATH ."/ccpp_alc.php");
 
 require_once(sCLASS_PATH ."/bre.php");
+// Require specific Business logic for the Amex component
+require_once(sCLASS_PATH ."/amex.php");
 
 
 ignore_user_abort(true);
@@ -1129,6 +1131,41 @@ try
 																				$xml .= '<status code="92">Authorization failed, 2C2P ALC returned error: '. $code .'</status>';
 																			}
 																			break;
+
+                                                                case (Constants::iAMEX_ACQUIRER): // AMEX
+                                                                    $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iAMEX_ACQUIRER);
+
+                                                                    $obj_PSP = new Amex($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["amex"]);
+
+                                                                    $propertyValue = $obj_ClientConfig->getAdditionalProperties("ACQUIRER_3DVERIFICATION");
+                                                                    if($propertyValue == true) {
+                                                                        $requset = str_replace("authorize-payment","authenticate",$HTTP_RAW_POST_DATA);
+                                                                        $code = $obj_PSP->authenticate($requset);
+                                                                    }
+                                                                    else {
+                                                                        $code = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem);
+                                                                    }
+
+                                                                    // Authorization succeeded
+                                                                    if ($code == "100")
+                                                                    {
+                                                                        $xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
+                                                                    }
+                                                                    else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+                                                                    else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and Card Details Stored.</status>'; }
+                                                                    else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml .= $code;}
+                                                                    // Error: Authorization declined
+
+                                                                    else
+                                                                    {
+                                                                        $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+
+                                                                        header("HTTP/1.1 502 Bad Gateway");
+
+                                                                        $xml .= '<status code="92">Authorization failed, NETS returned error: '. $code .'</status>';
+                                                                    }
+
+                                                                    break;
 
                                                                 default:	// Unkown Error
 																$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);

@@ -665,7 +665,10 @@ abstract class Callback extends EndUserAccount
         		return new CCPPALC($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["2c2p-alc"]);
         case (Constants::iALIPAY_CHINESE_PSP):
                 return new AliPayChinese($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["alipay-chinese"]);
-		default:
+        case (Constants::iAMEX_ACQUIRER):
+                return new Amex($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["amex"]);
+
+            default:
 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
 	}

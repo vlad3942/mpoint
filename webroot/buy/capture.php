@@ -78,6 +78,8 @@ require_once(sCLASS_PATH ."/nets.php");
 require_once(sCLASS_PATH ."/customer_info.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/mvault.php");
+// Require specific Business logic for the Amex component
+require_once(sCLASS_PATH ."/amex.php");
 
 header("Content-Type: application/x-www-form-urlencoded");
 

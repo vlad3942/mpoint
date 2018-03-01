@@ -82,8 +82,8 @@ require_once(sCLASS_PATH ."/trustly.php");
 require_once(sCLASS_PATH ."/ccpp_alc.php");
 // Require specific Business logic for the paytabs component
 require_once(sCLASS_PATH ."/paytabs.php");
-
-
+// Require specific Business logic for the Amex component
+require_once(sCLASS_PATH ."/amex.php");
 /**
  * Input XML format
  *

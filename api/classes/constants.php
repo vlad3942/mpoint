@@ -675,8 +675,14 @@ abstract class Constants
      *
      */
     const iALIPAY_CHINESE_PSP = 43;
-	
-	/**
+
+    /**
+     * Unique ID for the Acquirer: Amex
+     *
+     */
+    const iAMEX_ACQUIRER = 45;
+
+    /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
 	 */
