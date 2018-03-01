@@ -165,7 +165,7 @@ CREATE TABLE system.producttype_tbl
   created timestamp without time zone DEFAULT now(),
   modified timestamp without time zone DEFAULT now(),
   enabled boolean DEFAULT true,
-  CONSTRAINT product_pk PRIMARY KEY (id)
+  CONSTRAINT producttype_pk PRIMARY KEY (id)
 )
 WITH (
   OIDS=FALSE
@@ -173,7 +173,6 @@ WITH (
 ALTER TABLE system.producttype_tbl
   OWNER TO mpoint;
 
--- Table: client.producttype_tbl
 
 -- DROP TABLE client.producttype_tbl;
 
@@ -185,12 +184,12 @@ CREATE TABLE client.producttype_tbl
   created timestamp without time zone DEFAULT now(),
   modified timestamp without time zone DEFAULT now(),
   enabled boolean DEFAULT true,
-  CONSTRAINT clientproduct_pk PRIMARY KEY (id),
+  CONSTRAINT clientproducttype_pk PRIMARY KEY (id),
   CONSTRAINT client_fk FOREIGN KEY (clientid)
       REFERENCES client.client_tbl (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT product_fk FOREIGN KEY (productid)
-      REFERENCES system.product_tbl (id) MATCH SIMPLE
+      REFERENCES system.producttype_tbl(id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 )
 WITH (

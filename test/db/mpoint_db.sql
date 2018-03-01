@@ -7352,3 +7352,66 @@ SET psp_type = psp_tbl.system_type
 FROM system.psp_tbl
 WHERE psp_tbl.id = cardaccess_tbl.pspid;
 CREATE UNIQUE INDEX cardaccess_card_country_uq ON client.cardaccess_tbl (clientid, cardid, countryid, psp_type);
+
+
+
+
+
+
+
+/* =============== Added product tables ============ */
+
+-- Table: system.producttype_tbl
+
+-- DROP TABLE system.producttype_tbl;
+
+CREATE TABLE system.producttype_tbl
+(
+  id serial NOT NULL,
+  name character varying(100),
+  code character varying(100),
+  description character varying(255),
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true,
+  CONSTRAINT producttype_pk PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE system.producttype_tbl
+  OWNER TO postgres;
+
+
+-- DROP TABLE client.producttype_tbl;
+
+CREATE TABLE client.producttype_tbl
+(
+  id serial NOT NULL,
+  productid integer NOT NULL,
+  clientid integer NOT NULL,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true,
+  CONSTRAINT clientproducttype_pk PRIMARY KEY (id),
+  CONSTRAINT client_fk FOREIGN KEY (clientid)
+      REFERENCES client.client_tbl (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT product_fk FOREIGN KEY (productid)
+      REFERENCES system.producttype_tbl(id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE client.producttype_tbl
+  OWNER TO postgres;
+
+
+
+/* ========== Product Type ============ */
+
+INSERT INTO system.producttype_tbl( id, name, description, code )  VALUES (110, 'Airline Ticket', 'Flight Tickets', 'AIRTCKT');
+INSERT INTO system.producttype_tbl( id, name, description, code )  VALUES (210, 'Airline Insurance', 'Insurance products purchased', 'INSRNC');
+
+ 

@@ -1187,7 +1187,7 @@ class ClientConfig extends BasicConfig
             
             //Adding Products supported for the client
             
-            $sql = "SELECT pt.id,pt.name,pt.code FROM Client.Txnproduct_tbl tp JOIN System.Product_tbl pt ON (tp.productid = pt.id) WHERE clientid =". intval($id)  ;        
+            $sql = "SELECT pt.id,pt.name,pt.code FROM Client.producttype_tbl tp JOIN System.producttype_tbl pt ON (tp.productid = pt.id) WHERE clientid =". intval($id)  ;        
             $aRS = $oDB->getAllNames($sql);
             $aProducts = array();
             if (is_array($aRS) === true && count($aRS) > 0)
