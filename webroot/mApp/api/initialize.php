@@ -203,8 +203,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $data['sessiontype']=$sessionType;
                             //var_dump($data['attempt']);die;
                             $obj_TxnInfo = TxnInfo::produceInfo($iTxnID,$_OBJ_DB, $obj_ClientConfig, $data);
-
-                            if($obj_TxnInfo->getPaymentSession()->getPendingAmount() == 0){
+                            if ($obj_mPoint->getTxnAttemptsFromSessionID($data['sessionid']) >= 3) {
+                                $xml = '<status code="4030">Payment failed: Attempted 3 times</status>';
+                                $obj_mPoint->newMessage($iTxnID, Constants::iPAYMENT_DECLINED_STATE, "Payment failed: Attempted 3 times, Session id - ". $obj_TxnInfo->getSessionId());                                
+                            }
+                            elseif($obj_TxnInfo->getPaymentSession()->getPendingAmount() == 0){
                                 $xml = '<status code="4030">Payment session is already completed</status>';
                                 $obj_mPoint->newMessage($iTxnID, Constants::iPAYMENT_DECLINED_STATE, "Payment session is already completed, Session id - ". $obj_TxnInfo->getSessionId());
                             }
