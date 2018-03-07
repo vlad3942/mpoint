@@ -280,7 +280,7 @@ abstract class Constants
      *
      */
     const iSESSION_CREATED = 4001;
-    
+
 
     /**
      * Defines the ID of the State that indicates that Session is expired
@@ -671,6 +671,12 @@ abstract class Constants
 
 
     /**
+     * Unique ID for the Payment Service Provider: Citcon - WeChat Pay
+     *
+     */
+    const iCITCON_PSP = 41;
+
+    /**
      * Unique ID for the Payment Service Provider: AliPay Chinese
      *
      */
@@ -681,7 +687,7 @@ abstract class Constants
      *
      */
     const iGOOGLE_PAY_PSP = 44;
-	
+
 	/**
 	 * Unique ID for the Electronic Payment Flow
 	 *
