@@ -235,36 +235,12 @@ final class PaymentSession
         }
         return $this->_obj_CurrencyConfig;
     }
-
-    public function getSessionTransactionXML()
-    {
-        try {
-            $sql = "SELECT txn.id, txn.amount, txn.cardid, txn.pspid, msg.stateid   
-              FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn 
-                INNER JOIN log" . sSCHEMA_POSTFIX . ".message_tbl msg ON txn.id = msg.txnid 
-              WHERE sessionid = " . $this->_id .  " 
-                AND msg.stateid >= 2000";
-            
-            $res = $this->_obj_Db->query($sql);
-            $xml = '';
-            while ($RS = $this->_obj_Db->fetchName($res)) {
-                $xml .= '<transaction id="'.$RS['ID'].'" amount="'.$RS['AMOUNT'].'" card-id="'.$RS['CARDID'].'" psp-id="'.$RS['PSPID'].'" state-id="'.$RS['STATEID'].'" />';
-            }
-            return $xml;
-        }
-        catch (Exception $e){
-            trigger_error ( "Session - ." . $e->getMessage(), E_USER_ERROR );
-        }
-    }
     
     public function toXML(){
         $xml = "<session id='".$this->getId()."' type='".$this->getSessionType()."' total-amount='".$this->_amount."'>";
         $xml .= '<amount country-id="'. $this->getCountryConfig()->getID() .'" currency-id="'. $this->getCurrencyConfig()->getID() .'" currency="'.$this->getCurrencyConfig()->getCode() .'" symbol="'. $this->getCountryConfig()->getSymbol() .'" format="'. $this->getCountryConfig()->getPriceFormat() .'" alpha2code="'. $this->getCountryConfig()->getAlpha2code() .'" alpha3code="'. $this->getCountryConfig()->getAlpha3code() .'" code="'. $this->getCountryConfig()->getNumericCode() .'">'. $this->getPendingAmount() .'</amount>';
-        $xml .= '<transactions>';
-        $xml .= $this->getSessionTransactionXML();
-        $xml .= '</transactions>';
         $xml .= "</session>";
         return $xml;
-    }
+}
 
 }
