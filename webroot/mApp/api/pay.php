@@ -105,6 +105,8 @@ require_once(sCLASS_PATH ."/trustly.php");
 require_once(sCLASS_PATH ."/paytabs.php");
 // Require specific Business logic for the 2C2P ALC component
 require_once(sCLASS_PATH ."/ccpp_alc.php");
+// Require specific Business logic for the Citcon component
+require_once(sCLASS_PATH ."/citcon.php");
 
 require_once(sCLASS_PATH ."/bre.php");
 
@@ -658,6 +660,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             {
                                                 $xml .= trim($obj_Elem->asXML() );
                                             }
+                                            break;
+                                        case (Constants::iCITCON_PSP):
+                                                $obj_PSP = new Citcon($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["citcon"]);
+                                                $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"],$obj_DOM->pay[$i]->transaction->card->token);
+
+                                                foreach ($obj_XML->children() as $obj_Elem)
+                                                {
+                                                    $xml .= trim($obj_Elem->asXML() );
+                                                }
                                             break;
                                         case (Constants::iTRUSTLY_PSP):
                                            	$obj_PSP = new Trustly($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["trustly"]);
