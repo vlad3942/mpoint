@@ -1220,22 +1220,17 @@ class mConsole extends Admin
 		
 	}
 	public function saveGatewayTrigger(array $objTrigger, $clientId) {
-		
-		$pspid = $objTrigger{'psp-id'} ;
-		$enabled = $objTrigger{'enabled'} ;
-		$healthTriggerUnit = $objTrigger->{'health-trigger'}{'unit'};
+		$pspid = $objTrigger {'psp-id'};
+		$enabled = $objTrigger {'enabled'};
+		$healthTriggerUnit = $objTrigger->{'health-trigger'} {'unit'};
 		
 		$sql = "INSERT INTO client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl(clientid, gatewayid, enabled, healthtriggerunit, healthtriggervalue, 
             aggregationtriggerunit, aggregationtriggervalue, resetthresholdunit, resetthresholdvalue)
-		    VALUES (".$clientId.",".$pspid.",'".$enabled."',".$objTrigger->{'health-trigger'}{'unit'}.",".$objTrigger->{'health-trigger'}.",".
-		    		$objTrigger->{'aggregation-trigger'}{'unit'}.",". $objTrigger->{'aggregation-trigger'}.",".$objTrigger->{'reset-threshold'}{'unit'} .",". $objTrigger->{'reset-threshold'}."); ";
+		    VALUES (" . $clientId . "," . $pspid . ",'" . $enabled . "'," . $objTrigger->{'health-trigger'} {'unit'} . "," . $objTrigger->{'health-trigger'} . "," . $objTrigger->{'aggregation-trigger'} {'unit'} . "," . $objTrigger->{'aggregation-trigger'} . "," . $objTrigger->{'reset-threshold'} {'unit'} . "," . $objTrigger->{'reset-threshold'} . "); ";
 		
-		
-		if (is_resource($this->getDBConn()->query($sql) ) === false)
-		{
-			if (is_array($RS) === false) { throw new mPointException("Unable to insert new record for Order: ". $RS["ID"], 1002); }
+		if (is_resource ( $this->getDBConn ()->query ( $sql ) ) === false) {
+			throw new mPointException ( "Unable to insert new record for gatewayid : " . $pspid );
 		}
-		
 	}
 	
 	
