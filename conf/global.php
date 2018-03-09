@@ -736,6 +736,19 @@ $aHTTP_CONN_INFO["alipay-chinese"]["paths"]["refund"] = "/mpoint/alipay-chinese/
 $aHTTP_CONN_INFO["alipay-chinese"]["paths"]["status"] = "/mpoint/alipay-chinese/status";
 $aHTTP_CONN_INFO["alipay-chinese"]["paths"]["callback"] = "/mpoint/alipay-chinese/callback";
 
+/**
+ * Connection info for connecting to PPRO
+ */
+$aHTTP_CONN_INFO["ppro"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["ppro"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["ppro"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["ppro"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["ppro"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["ppro"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["ppro"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["ppro"]["paths"]["initialize"] = "/mpoint/ppro/initialize";
+$aHTTP_CONN_INFO["ppro"]["paths"]["refund"] = "/mpoint/ppro/refund";
+$aHTTP_CONN_INFO["ppro"]["paths"]["callback"] = "/mpoint/ppro/callback";
 
 /**
  * GoMobile Connection Info.
