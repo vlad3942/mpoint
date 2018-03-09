@@ -96,11 +96,11 @@ final class PaymentSession
         $this->_sEmail = $email;
         $this->_sIp = $ipaddress;
         $this->_sMobile = $mobile;
-
+        $expire = date("Y-m-d H:i:s.u", time() + (15 * 60));
         $sql = "INSERT INTO Log" . sSCHEMA_POSTFIX . ".session_tbl 
-                    (clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, sessiontypeid, externalid) 
+                    (clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, sessiontypeid, externalid, expire) 
                 VALUES 
-                    ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id;";
+                    ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id;";
 
         $res = $this->_obj_Db->prepare($sql);
         if (is_resource($res) === true) {
@@ -116,7 +116,8 @@ final class PaymentSession
                 $this->_sDeviceId,
                 $this->_sIp,
                 $sessiontypeid,
-                $externalId
+                $externalId,
+                $expire
             );
 
             $result = $this->_obj_Db->execute($res, $aParams);
