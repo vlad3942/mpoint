@@ -1351,6 +1351,14 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
+			<xs:element name="dynamic-routing-gateways">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="gateway" type="gateway" minOccurs="1"
+							maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 			<xs:element name="payment-methods" type="client-payment-method-configurations"
 				minOccurs="0" maxOccurs="1" />
 			<xs:element name="payment-service-providers" minOccurs="1"
@@ -1560,6 +1568,14 @@
 			use="required" />
 		<xs:attribute name="code" type="xs:string"
 			use="optional" />
+		<xs:attribute name="name" type="xs:string" 	use="optional" />
+	</xs:complexType>
+	<xs:complexType name="gateway">
+	   <xs:annotation>
+			<xs:documentation>Configuration for a Dynamic Routing Gateway
+			</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 		<xs:attribute name="name" type="xs:string" 	use="optional" />
 	</xs:complexType>
 	<xs:complexType name="client-payment-method-configurations">
