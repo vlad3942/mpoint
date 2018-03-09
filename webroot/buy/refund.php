@@ -85,7 +85,8 @@ require_once(sCLASS_PATH ."/customer_info.php");
 require_once(sCLASS_PATH ."/nets.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/mvault.php");
-
+// Require specific Business logic for the PPRO component
+require_once(sCLASS_PATH ."/ppro.php");
 header("Content-Type: application/x-www-form-urlencoded");
 
 // Require Business logic for the validating client Input
