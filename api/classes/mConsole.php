@@ -1266,8 +1266,14 @@ class mConsole extends Admin
 		$sql .= implode(", ", $aSelector);
 
 		$sql .= " FROM LOG".sSCHEMA_POSTFIX.".TRANSACTION_TBL AS T
-					INNER JOIN LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL AS M ON T.ID = M.TXNID
-					WHERE T.CLIENTID = " . intval($iClientID);
+					INNER JOIN LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL AS M ON T.ID = M.TXNID ";
+
+		if(array_key_exists('paymenttype', $aFilters) === true)
+		{
+			$sql .= " INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".CARD_TBL AS CARD ON T.CARDID = CARD.ID ";
+		}
+
+		$sql .= " WHERE T.CLIENTID = " . intval($iClientID);
 
 		$aFiltersClauses = array();
 
@@ -1286,6 +1292,9 @@ class mConsole extends Admin
 				case 'cardid':
                     $aFiltersClauses[] = ' AND T.cardid = '.intval($value);
                     break;
+				case 'paymenttype':
+					$aFiltersClauses[] = ' AND CARD.PAYMENTTYPE = '.intval($value);
+					break;
                 default:
                     $aFiltersClauses[] =  ' '.$key.' = '.$value ;
                     break;

@@ -50,6 +50,10 @@ $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>
 				<key>stateid</key>
 				<value>2001</value>
 			</filter>
+			<filter>
+				<key>paymenttype</key>
+				<value>1</value>
+			</filter>
 		</filters>
 		<aggregations>
 			<aggregation>stateid</aggregation>
