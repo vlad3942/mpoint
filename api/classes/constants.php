@@ -671,11 +671,17 @@ abstract class Constants
 
 
     /**
+     * Unique ID for the Payment Service Provider: Citcon - WeChat Pay
+     *
+     */
+    const iCITCON_PSP = 41;
+
+    /**
      * Unique ID for the Payment Service Provider: AliPay Chinese
      *
      */
     const iALIPAY_CHINESE_PSP = 43;
-	
+
 	/**
 	 * Unique ID for the Electronic Payment Flow
 	 *
