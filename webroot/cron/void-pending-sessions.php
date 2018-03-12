@@ -38,7 +38,7 @@ $_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
 
 $sql = "SELECT sn.id, sn.amount
           FROM log" . sSCHEMA_POSTFIX . ".session_tbl sn
-          WHERE sn.stateid not in (4030) AND sn.created >= (now() - interval '10 hour') AND sn.expire > now()";
+          WHERE sn.stateid not in (4030) AND sn.created >= (now() - interval '10 hour') AND sn.expire < now()";
 
 $res = $_OBJ_DB->query($sql);
 $results = array();
