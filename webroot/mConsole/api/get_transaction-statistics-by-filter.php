@@ -126,7 +126,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
             {
                 $key = (string) $obj_DOM->{'get-transaction-statistics-by-filter'}->filters->filter[$i]->key;
                 $value = (string) $obj_DOM->{'get-transaction-statistics-by-filter'}->filters->filter[$i]->value;
-                if(strtolower($key) == 'stateid')
+                if(strtolower($key) == 'stateid' || strtolower($key) == 'paymenttype')
                 {
                     $aFilter[$key][] = $value;
                 }

@@ -1293,7 +1293,7 @@ class mConsole extends Admin
                     $aFiltersClauses[] = ' AND T.cardid = '.intval($value);
                     break;
 				case 'paymenttype':
-					$aFiltersClauses[] = ' AND CARD.PAYMENTTYPE = '.intval($value);
+					$aFiltersClauses[] = ' AND CARD.PAYMENTTYPE IN ('.implode(",", $value).')';
 					break;
                 default:
                     $aFiltersClauses[] =  ' '.$key.' = '.$value ;
