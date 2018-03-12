@@ -204,8 +204,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             //var_dump($data['attempt']);die;
                             $obj_TxnInfo = TxnInfo::produceInfo($iTxnID,$_OBJ_DB, $obj_ClientConfig, $data);
                             if ($obj_mPoint->getTxnAttemptsFromSessionID($data['sessionid']) >= 3) {
-                                $xml = '<status code="4030">Payment failed: Attempted 3 times</status>';
-                                $obj_mPoint->newMessage($iTxnID, Constants::iPAYMENT_DECLINED_STATE, "Payment failed: Attempted 3 times, Session id - ". $obj_TxnInfo->getSessionId());                                
+                                $xml = '<status code="'.Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS.'">Payment failed: You have exceeded the maximum number of attempts</status>';
+                                $obj_mPoint->newMessage($iTxnID, Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS, "You have exceeded the maximum number of attempts, Session id - ". $obj_TxnInfo->getSessionId());
+                                $obj_TxnInfo->getPaymentSession()->updateState(Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS);
                             }
                             elseif($obj_TxnInfo->getPaymentSession()->getPendingAmount() == 0){
                                 $xml = '<status code="4030">Payment session is already completed</status>';

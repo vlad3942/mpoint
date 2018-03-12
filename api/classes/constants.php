@@ -296,6 +296,12 @@ abstract class Constants
     const iSESSION_FAILED = 4020;
 
     /**
+     * Defines the ID of the State that indicates that Session failed due to maximum transaction attempts
+     *
+     */
+    const iSESSION_FAILED_MAXIMUM_ATTEMPTS = 4021;
+    
+    /**
      * Defines the ID of the State that indicates that Session complete failed
      *
      */

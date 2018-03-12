@@ -38,7 +38,7 @@ $_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
 
 $sql = "SELECT sn.id, sn.amount
           FROM log" . sSCHEMA_POSTFIX . ".session_tbl sn
-          WHERE sn.stateid not in (4040, 4030) AND sn.created >= (now() - interval '10 hour') AND sn.expire > now()";
+          WHERE sn.stateid not in (4030) AND sn.created >= (now() - interval '10 hour') AND sn.expire > now()";
 
 $res = $_OBJ_DB->query($sql);
 $results = array();
@@ -61,8 +61,6 @@ while ($RS = $_OBJ_DB->fetchName($res)) {
         $results = array_merge($results, $transactionIds);
     }
 }
-echo "<pre>";
-print_r($results);die;
 // Call Void API for Cancel/Refund the transaction
 foreach ($results as $result) {
     $xml = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -73,7 +71,7 @@ foreach ($results as $result) {
     $xml .= '</transaction>';
     $xml .= '</void>';
     $xml .= '</root>';
-    //void($xml);
+    void($xml);
 }
 
 //Performs a VOID (Refund or cancel) operation for the provided transaction.
