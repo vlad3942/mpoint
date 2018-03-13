@@ -1219,18 +1219,19 @@ class mConsole extends Admin
 		else { return new TransactionStatisticsInfo($aTransactionStats); }
 		
 	}
-	
-	public function getRoutingRules(array $aClientIDs, $start = null, $end = null, array $aAccountIDs = array()) {
-		$aRules = array ();
-		$aRoutingRules = array ();
-		foreach ( $aClientIDs as $clientid) {
-			$aRules = RoutingRule::produceConfig ( $this->getDBConn(), $clientid );
-			$aRoutingRules = array_merge ( $aRules , $aRoutingRules ) ;
+	public function saveGatewayTrigger(array $objTrigger, $clientId) {
+		$pspid = $objTrigger {'psp-id'};
+		$enabled = $objTrigger {'enabled'};
+		$healthTriggerUnit = $objTrigger->{'health-trigger'} {'unit'};
+		
+		$sql = "INSERT INTO client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl(clientid, gatewayid, enabled, healthtriggerunit, healthtriggervalue, 
+            aggregationtriggerunit, aggregationtriggervalue, resetthresholdunit, resetthresholdvalue)
+		    VALUES (" . $clientId . "," . $pspid . ",'" . $enabled . "'," . $objTrigger->{'health-trigger'} {'unit'} . "," . $objTrigger->{'health-trigger'} . "," . $objTrigger->{'aggregation-trigger'} {'unit'} . "," . $objTrigger->{'aggregation-trigger'} . "," . $objTrigger->{'reset-threshold'} {'unit'} . "," . $objTrigger->{'reset-threshold'} . "); ";
+		
+		if (is_resource ( $this->getDBConn ()->query ( $sql ) ) === false) {
+			throw new mPointException ( "Unable to insert new record for gatewayid : " . $pspid );
 		}
-		return $aRoutingRules ;
 	}
-	
-	
 	
 	
     }
