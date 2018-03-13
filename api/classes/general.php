@@ -1304,5 +1304,21 @@ class General
 
         return $aPMArray;
     }
+    
+    public function getTxnAttemptsFromSessionID($sessionid)
+    {
+        $sql = "SELECT count(txn.id) AS attempts  
+          FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn 
+            INNER JOIN log" . sSCHEMA_POSTFIX . ".message_tbl msg ON txn.id = msg.txnid 
+          WHERE sessionid = " . $sessionid .  " 
+            AND msg.stateid in (20103, 20102, 20101, 2011, 2010) GROUP BY txn.sessionid";
+
+        $res = $this->getDBConn()->getName($sql);
+        $attempts = 0;
+        if (is_array($res) === true) {
+            $attempts = intval($res['ATTEMPTS']);
+        }
+        return $attempts;
+    }
 }
 ?>
