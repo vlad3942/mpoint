@@ -1346,7 +1346,7 @@
 			<xs:element name="products">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="product" type="product" minOccurs="1"
+						<xs:element name="product" type="product" minOccurs="0"
 							maxOccurs="unbounded" />
 					</xs:sequence>
 				</xs:complexType>
@@ -1354,7 +1354,7 @@
 			<xs:element name="dynamic-routing-gateways">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="gateway" type="gateway" minOccurs="1"
+						<xs:element name="gateway" type="gateway" minOccurs="0"
 							maxOccurs="unbounded" />
 					</xs:sequence>
 				</xs:complexType>
