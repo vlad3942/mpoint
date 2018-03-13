@@ -7479,4 +7479,11 @@ WITH (
 );
 ALTER TABLE client.gatewaytrigger_tbl
   OWNER TO postgres;
+  
+   /* ========= Gateway trigger system data ========== */
+
+INSERT INTO system.triggerunit_tbl( id, name, description) VALUES (1, 'time', 'Time based triggers counted in seconds');
+INSERT INTO system.triggerunit_tbl( id, name, description) VALUES (2, 'volume', 'Transaction based triggers counted in number of txns');
+
+/* ========= Gateway trigger system data ========== */
 
