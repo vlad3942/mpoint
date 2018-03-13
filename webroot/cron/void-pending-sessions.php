@@ -1,44 +1,9 @@
 <?php
-
-error_reporting(E_ALL);
-ini_set("display_errors", 1);
-if (isset($_SERVER['DOCUMENT_ROOT']) === true && empty($_SERVER['DOCUMENT_ROOT']) === false) {
-    $_SERVER['DOCUMENT_ROOT'] = str_replace("\\", "/", $_SERVER['DOCUMENT_ROOT']);
-    // Define system path constant
-    define("sSYSTEM_PATH", substr($_SERVER['DOCUMENT_ROOT'], 0, strrpos($_SERVER['DOCUMENT_ROOT'], "/")));
-}
-// Command line
-else {
-    $aTemp = explode("/", str_replace("\\", "/", __FILE__));
-    $sPath = "";
-    for ($i = 0; $i < count($aTemp) - 3; $i++) {
-        $sPath .= $aTemp[$i] . "/";
-    }
-    // Define system path constant
-    define("sSYSTEM_PATH", substr($sPath, 0, strlen($sPath) - 1));
-}
-// Define path to the General API classes
-define("sAPI_CLASS_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/")) . "/../php5api/classes/");
-// Define path to the General API interfaces
-define("sAPI_INTERFACE_PATH", substr(sSYSTEM_PATH, 0, strrpos(sSYSTEM_PATH, "/")) . "/../php5api/interfaces/");
-// Define path to the System Configuration
-define("sCONF_PATH", sSYSTEM_PATH . "/../conf/");
-// Define path to the System classes
-define("sCLASS_PATH", sSYSTEM_PATH . "/../api/classes/");
-
-require_once(sAPI_INTERFACE_PATH . "database.php");
-require_once(sCLASS_PATH . "general.php");
-require_once(sAPI_CLASS_PATH . "report.php");
-require_once(sAPI_CLASS_PATH ."/template.php");
-require_once(sAPI_CLASS_PATH ."/http_client.php");
-require_once(sAPI_CLASS_PATH . "database.php");
-require_once(sCONF_PATH . "global.php");
-
-$_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
+require_once("../inc/include.php");
 
 $sql = "SELECT sn.id, sn.amount
           FROM log" . sSCHEMA_POSTFIX . ".session_tbl sn
-          WHERE sn.stateid not in (4030) AND sn.created >= (now() - interval '10 hour') AND sn.expire < now()";
+          WHERE sn.stateid not in (4030) AND sn.created >= (now() - interval '10 hour') AND sn.expire > now()";
 
 $res = $_OBJ_DB->query($sql);
 $results = array();
@@ -71,24 +36,25 @@ foreach ($results as $result) {
     $xml .= '</transaction>';
     $xml .= '</void>';
     $xml .= '</root>';
-    void($xml);
+    
+    $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, $result['CLIENTID'], $result['ACCOUNTID']);
+    void($xml, $obj_ClientConfig);
 }
-
 //Performs a VOID (Refund or cancel) operation for the provided transaction.
-function void($xml) {
+function void($xml, $obj_ClientConfig) {
     try {
-        $obj_ConnInfo = new HTTPConnInfo('http', $_SERVER['HTTP_HOST'], 80, 20, '/mApp/api/void.php', 'POST', 'text/xml', 'MalindoDemo', 'DEMOisNO_2');
+        $obj_ConnInfo = new HTTPConnInfo('http', $_SERVER['HTTP_HOST'], 80, 20, '/mApp/api/void.php', 'POST', 'text/xml', $obj_ClientConfig->getUsername(), $obj_ClientConfig->getPassword());
 
         $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
         $obj_HTTP->connect();
-        $code = $obj_HTTP->send(constHTTPHeaders(), $xml);
+        $code = $obj_HTTP->send(constHTTPHeaders($obj_ClientConfig), $xml);
         $obj_HTTP->disConnect();
     } catch (Exception $e) {
         trigger_error("Void of txn: " . $this->getTxnInfo()->getID() . " failed with code: " . $e->getCode() . " and message: " . $e->getMessage(), E_USER_ERROR);
     }
 }
 
-function constHTTPHeaders()
+function constHTTPHeaders($obj_ClientConfig)
 {
         /* ----- Construct HTTP Header Start ----- */
         $h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
@@ -96,6 +62,7 @@ function constHTTPHeaders()
         $h .= "referer: {REFERER}" .HTTPClient::CRLF;
         $h .= "content-length: {CONTENTLENGTH}" .HTTPClient::CRLF;
         $h .= "content-type: {CONTENTTYPE}; charset=UTF-8" .HTTPClient::CRLF;
+        $h .= "Authorization: Basic ". base64_encode($obj_ClientConfig->getUsername() .":". $obj_ClientConfig->getPassword()) .HTTPClient::CRLF;
         $h .= "user-agent: mPoint" .HTTPClient::CRLF;
         /* ----- Construct HTTP Header End ----- */
         return $h;
