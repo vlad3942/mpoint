@@ -1346,7 +1346,15 @@
 			<xs:element name="products">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element name="product" type="product" minOccurs="1"
+						<xs:element name="product" type="product" minOccurs="0"
+							maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="dynamic-routing-gateways">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="gateway" type="gateway" minOccurs="0"
 							maxOccurs="unbounded" />
 					</xs:sequence>
 				</xs:complexType>
@@ -1560,6 +1568,14 @@
 			use="required" />
 		<xs:attribute name="code" type="xs:string"
 			use="optional" />
+		<xs:attribute name="name" type="xs:string" 	use="optional" />
+	</xs:complexType>
+	<xs:complexType name="gateway">
+	   <xs:annotation>
+			<xs:documentation>Configuration for a Dynamic Routing Gateway
+			</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 		<xs:attribute name="name" type="xs:string" 	use="optional" />
 	</xs:complexType>
 	<xs:complexType name="client-payment-method-configurations">
@@ -2116,5 +2132,54 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+	
+	<!-- Save Gateway trigger details -->
+	<xs:complexType name="save-gateway-triggers">
+			<xs:all>
+				<xs:element name="gateway-triggers" minOccurs="1" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="gateway-trigger" type="gateway-trigger" minOccurs="1" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+			<xs:attribute type="xs:integer" name="client-id" use="required" />
+	</xs:complexType>
+	<!-- Save Gateway trigger details -->
+	
+	<xs:complexType name="gateway-trigger">
+	 <xs:all>
+		<xs:element name="health-trigger">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:integer">
+					<xs:attribute type="xs:integer" name="unit" use="required" />
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	   </xs:element>
+		<xs:element name="aggregation-trigger">
+			<xs:complexType>
+				<xs:simpleContent>
+					<xs:extension base="xs:integer">
+						<xs:attribute type="xs:integer" name="unit" use="required" />
+					</xs:extension>
+				</xs:simpleContent>
+			</xs:complexType>
+		</xs:element>
+		<xs:element name="reset-threshold">
+			<xs:complexType>
+				<xs:simpleContent>
+					<xs:extension base="xs:integer">
+						<xs:attribute type="xs:integer" name="unit" use="required" />
+					</xs:extension>
+				</xs:simpleContent>
+			</xs:complexType>
+		</xs:element>
+	  </xs:all>	
+	  <xs:attribute name="psp-id" type="xs:integer" use="required" />
+	  <xs:attribute name="enabled" type="xs:boolean" use="required" />
+	</xs:complexType> 
 	
 </xs:schema>

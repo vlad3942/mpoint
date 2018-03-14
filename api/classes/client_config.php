@@ -342,6 +342,12 @@ class ClientConfig extends BasicConfig
      * @var Array
      */
     private $_aObj_Products=array();
+    /**
+     * Configuration for the DR gateways supported for the client.
+     *
+     * @var Array
+     */
+    private $_aObj_DRGateways=array();
 	
 	/**
 	 * Default Constructor
@@ -386,7 +392,7 @@ class ClientConfig extends BasicConfig
 	 * @param   array $aObj_PMs								List of Payment Methods (Cards) that the client offers
 	 * @param   array $aObj_IINRs							List of IIN Range values for the client.
 	 */
-	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=null, ClientURLConfig $oCSSURL=null, ClientURLConfig $oAccURL=null, ClientURLConfig $oCURL=null, ClientURLConfig $oDURL=null, ClientURLConfig $oCBURL=null, ClientURLConfig $oIURL=null, ClientURLConfig $oParse3DSecureChallengeURL=null, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), $aObj_GMPs = array(), ClientCommunicationChannelsConfig $obj_CCConfig, ClientURLConfig $oAppURL=null,$aAdditionalProperties=array(),ClientURLConfig $oBaseImageURL=null,$aProducts=array())
+	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=null, ClientURLConfig $oCSSURL=null, ClientURLConfig $oAccURL=null, ClientURLConfig $oCURL=null, ClientURLConfig $oDURL=null, ClientURLConfig $oCBURL=null, ClientURLConfig $oIURL=null, ClientURLConfig $oParse3DSecureChallengeURL=null, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), $aObj_GMPs = array(), ClientCommunicationChannelsConfig $obj_CCConfig, ClientURLConfig $oAppURL=null,$aAdditionalProperties=array(),ClientURLConfig $oBaseImageURL=null,$aProducts=array(),$aDRGateways=array())
 	{
 		parent::__construct($id, $name);
 
@@ -441,6 +447,8 @@ class ClientConfig extends BasicConfig
 		$this->_obj_CommunicationChannelsConfig = $obj_CCConfig;
 		$this->_aAdditionalProperties=$aAdditionalProperties;
 		$this->_aObj_Products=$aProducts;
+		$this->_aObj_DRGateways=$aDRGateways;
+		
 	}
 
 	/**
@@ -511,6 +519,13 @@ class ClientConfig extends BasicConfig
      * @return 	array
      */
     public function getProducts(){ return $this->$_aObj_Products; }
+    
+    /**
+     * Returns the array of DR gateways supported for the client
+     *
+     * @return 	array
+     */
+    public function getDRGateways(){ return $this->$_aObj_DRGateways; }
     
 	/**
 	 * Returns the Absolute URL to the Client's Logo which will be displayed on all payment pages
@@ -999,6 +1014,14 @@ class ClientConfig extends BasicConfig
 		}
 		$xml .= '</products>';
 		
+
+		$xml .= '<dynamic-routing-gateways>';
+		foreach ($this->_aObj_DRGateways as $aObj_DRGateway)
+		{
+			$xml .= '<gateway id="'.$aObj_DRGateway['id'].'" name="'.$aObj_DRGateway['name'].'" />';
+		}
+		$xml .= '</dynamic-routing-gateways>';
+		
 		
 		$xml .= '</client-config>';
 		
@@ -1200,7 +1223,20 @@ class ClientConfig extends BasicConfig
             	}
             }
             
-			return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_DeclineURL, $obj_CallbackURL, $obj_IconURL, $obj_Parse3DSecureURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $RS["NUM_MASKED_DIGITS"], $RS["SALT"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations, $aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations, $aObj_ClientGoMobileConfigurations, $obj_ClientCommunicationChannels, $obj_AppURL,$aAdditionalProperties,$obj_BaseImageURL,$aProducts);
+            
+            $sql = "SELECT gatewayid AS id,pt.name AS name FROM client.gatewaytrigger_tbl gt JOIN system.psp_tbl pt ON (gt.gatewayid = pt.id) WHERE clientid = ".intval($id)." AND gt.enabled = 't'"  ;
+            $aRS = $oDB->getAllNames($sql);
+            $aDRGateways= array();
+            if (is_array($aRS) === true && count($aRS) > 0)
+            {
+            	for ($i=0; $i<count($aRS); $i++)
+            	{
+            		$aDRGateways[$i]["id"] =$aRS[$i]["ID"];
+            		$aDRGateways[$i]["name"] = $aRS[$i]["NAME"];
+            	}
+            }
+            
+			return new ClientConfig($RS["CLIENTID"], $RS["CLIENT"], $RS["FLOWID"], $obj_AccountConfig, $RS["USERNAME"], $RS["PASSWD"], $obj_CountryConfig, $obj_KeywordConfig, $obj_LogoURL, $obj_CSSURL, $obj_AcceptURL, $obj_CancelURL, $obj_DeclineURL, $obj_CallbackURL, $obj_IconURL, $obj_Parse3DSecureURL, $RS["MAXAMOUNT"], $RS["LANG"], $RS["SMSRCPT"], $RS["EMAILRCPT"], $RS["METHOD"], utf8_decode($RS["TERMS"]), $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["SEND_PSPID"], $RS["STORE_CARD"], $aIPs, $RS["SHOW_ALL_CARDS"], $RS["MAX_CARDS"], $RS["IDENTIFICATION"], $RS["TRANSACTION_TTL"], $RS["NUM_MASKED_DIGITS"], $RS["SALT"], $obj_CustomerImportURL, $obj_AuthenticationURL, $obj_NotificationURL, $obj_MESBURL, $aObj_AccountsConfigurations, $aObj_ClientMerchantAccountConfigurations, $aObj_ClientCardsAccountConfigurations, $aObj_ClientIINRangesConfigurations, $aObj_ClientGoMobileConfigurations, $obj_ClientCommunicationChannels, $obj_AppURL,$aAdditionalProperties,$obj_BaseImageURL,$aProducts,$aDRGateways);
 		}
 		// Error: Client Configuration not found
 		else { trigger_error("Client Configuration not found using ID: ". $id .", Account: ". $acc .", Keyword: ". $kw, E_USER_WARNING); }
