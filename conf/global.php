@@ -710,6 +710,18 @@ $aHTTP_CONN_INFO["2c2p-alc"]["paths"]["callback"] = "/mpoint/2c2p-alc/callback";
 
 
 /**
+ * Connection info for connecting to Citcon
+ */
+$aHTTP_CONN_INFO["citcon"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["citcon"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["citcon"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["citcon"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["citcon"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["citcon"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["citcon"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["citcon"]["paths"]["initialize"] = "/mpoint/citcon/initialize";
+
+/**
  * Connection info for connecting to AliPay Chinese
  */
 $aHTTP_CONN_INFO["alipay-chinese"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];

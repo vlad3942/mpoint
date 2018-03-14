@@ -8,13 +8,26 @@ $actual_host = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP
 
 $xml = $h = '';
 
+if (isset($obj_DOM->notify->{'body'}->{'assets'}) === true && isset($obj_DOM->notify->{'body'}->{'assets'}->{'banner-image'}) === true )
+{
+
+    $sBannerImage = (string)$obj_DOM->notify->{'body'}->{'assets'}->{'banner-image'};
+}
+else
+{
+    $sBannerImage =  $actual_host.'/img/banner-2.png';
+}
+
 $sPaymentURL = (string)$obj_DOM->notify->{'body'}->{'message'};
 
 preg_match_all('#\bhttps?://[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#', $sPaymentURL, $match);
 
 $sURL = $match[0][0];
 
-
+if(empty ($sURL) === false )
+{
+    $sMessageText = trim(substr($sPaymentURL, 0, strpos($sPaymentURL, $sURL) ) );
+}
 
 $sBody = '
 <!DOCTYPE html>
@@ -26,10 +39,10 @@ $sBody = '
   <title>Payment Notification</title> 
 
   <style type="text/css">
-    .ReadMsgBody{width:100%;} .ExternalClass{width:100%;} /* Force Hotmail to display emails at full width */
-    .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {line-height: 100%;} /* Force Hotmail to display normal line spacing */
-    body, table, td, p, a, li, blockquote{-webkit-text-size-adjust:100%; -ms-text-size-adjust:100%;} /* Prevent WebKit and Windows mobile changing default text sizes */
-    table, td{mso-table-lspace:0pt; mso-table-rspace:0pt;} /* Remove spacing between tables in Outlook 2007 and up */
+    .ReadMsgBody{width:100%;} .ExternalClass{width:100%;} 
+    .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {line-height: 100%;} 
+    body, table, td, p, a, li, blockquote{-webkit-text-size-adjust:100%; -ms-text-size-adjust:100%;} 
+    table, td{mso-table-lspace:0pt; mso-table-rspace:0pt;} 
     td ul li {font-size: 16px;}
     body{margin:0; padding:0;}
     img{max-width:100%;border:0;line-height:100%;outline:none;text-decoration:none;}
@@ -38,7 +51,7 @@ $sBody = '
     .content img { height: auto; min-height: 1px; }
     #bodyTable{margin:0; padding:0; width:100% !important;}
     #bodyCell{margin:0; padding:0;}
-    #bodyCellFooter{margin:0; padding:0; width:100% !important;padding-top:39px;padding-bottom:15px;}
+    #bodyCellFooter{margin:0; padding:0; width:100% !important;padding-bottom:15px; background-color: #113754}
     body {margin: 0; padding: 0; min-width: 100%!important;}
 
     #templateContainerFootBrd{
@@ -85,7 +98,7 @@ $sBody = '
       margin-right:0;
       margin-bottom:15px;
       margin-left:0;
-      text-align:left;
+      text-align:center;
     }
 
     h5{
@@ -134,12 +147,12 @@ $sBody = '
       margin-right:0;
       margin-bottom:15px;
       margin-left:0;
-      text-align:left;
+      text-align:center;
     }
 
 
     .unSubContent h6 {
-      color: #a1a1a1;
+      color: #ffffff;
       font-size: 12px;
       line-height: 1.5em;
       margin-bottom: 0;
@@ -154,7 +167,7 @@ $sBody = '
       padding-right:3.5em;
       padding-left:3.5em;
       padding-bottom:0.714em;
-      text-align:left;
+      text-align:center;
     }
     .bodyContentImage {
       color:#505050;
@@ -186,7 +199,7 @@ $sBody = '
     .brdBottomPadd-lg .bodyContent{ padding-bottom: 2.286em; }
     .brdBottomPadd { border-bottom: 1px solid #f0f0f0; }
     .brdBottomPadd .bodyContent{ padding-bottom: 0em; }
-    a.blue-btn { background: #5098ea;display: inline-block;color: #FFFFFF; border-top:10px solid #5098ea;border-bottom:10px solid #5098ea; border-left:20px solid #5098ea;border-right:20px solid #5098ea;text-decoration: none;font-size: 14px; margin-top: 1.0em; border-radius: 3px 3px 3px 3px; background-clip: padding-box;}
+    a.blue-btn { background: #113754;display: inline-block;color: #FFFFFF; border-top:10px solid #113754;border-bottom:10px solid #113754; border-left:20px solid #113754;border-right:20px solid #113754;text-decoration: none;font-size: 14px; margin-top: 1.0em; border-radius: 3px 3px 3px 3px; background-clip: padding-box;padding: 0 20px}
     .bodyContentNewsLetterDate {color:#505050;font-family:Helvetica;font-size:14px;line-height:150%;padding-top:1.571em;padding-right:1.714em;padding-left:1.714em; padding-bottom:0;}
     .bodyContentNewsLetter {color:#505050; font-family:Helvetica; font-size:14px;line-height:150%;padding-top:0em; padding-right:1.714em;padding-left:1.714em;padding-bottom:0.714em;text-align:left;}
 
@@ -213,31 +226,25 @@ $sBody = '
     .ii a[href] {color: inherit !important;}
     span > a, span > a[href] {color: inherit !important;}
     a > span, .ii a[href] > span {text-decoration: inherit !important;}
+    #templateContainerFooter h6 a {color:#ffffff;}
   </style>
 
 </head>
 
-<body bgcolor="#ffffff">
-<table width="100%" bgcolor="#ffffff" border="0" cellpadding="10" cellspacing="0">
+<body bgcolor="#F2F3F2">
+<table width="100%" bgcolor="#F2F3F2" border="0" cellpadding="10" cellspacing="0">
 <tr>
-  <td>
-    <!--[if (gte mso 9)|(IE)]>
-      <table width="600" align="center" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td>
-    <![endif]-->
+  <td>   
     <table bgcolor="#ffffff" class="content" align="center" cellpadding="0" cellspacing="0" border="0">
       <tr>
 				<td align="center" valign="top">
 					<table border="0" cellpadding="0" cellspacing="0" width="100%" id="templateContainer">
-            <tr>
+            <tr>        
+              
               <td valign="top" class="bodyContentNewsLetter">
-                <p style="text-align:left;margin:0;padding:0;">
+                <p style="text-align:right;margin:0;padding:0;">
                   <img src="'.$actual_host.'/img/CellPoint-Mobile-Logo.jpg" />
                 </p> 
-              </td>
-              <td valign="top" class="bodyContentNewsLetterDate">              
-                
               </td>
             </tr>
 
@@ -250,7 +257,7 @@ $sBody = '
 						<tr>
 							<td valign="top" class="bodyContentImageFull">
                 <p style="text-align:center;margin:0;padding:0;">
-      						<img src="'.$actual_host.'/img/Mobile-Payments-Imperative-NG.jpg" style="display:block; margin:0; padding:0; border:0; max-width: 100%;" />
+      						<img src="'.$sBannerImage.'" style="display:block; margin:0; padding:0; border:0; max-width: 100%; width:100%;" />
       					</p>
 							</td>
 						</tr>
@@ -258,21 +265,32 @@ $sBody = '
 				</td>
 			</tr>
       <tr>
-				<td align="center" valign="top">
-						<!-- BEGIN BODY // -->
+				<td align="center" valign="top">						
 						<table border="0" cellpadding="0" cellspacing="0" width="100%" id="templateContainerMiddle" class="brdBottomPadd-lg">
 							<tr>
-								<td valign="top" class="bodyContent">
-									<h2><strong>Please find the link in the email below to complete your booking.</strong></h2>   
-										<a class="blue-btn" href="'.$sURL.'"><strong>Pay now</strong></a>
+								<td valign="top" class="bodyContent">									
+									<p>'.$sMessageText.'</p>
+                                    <a class="blue-btn" href="'.$sURL.'"><strong>Pay now</strong></a>
 								</td>
 							</tr>
-						</table>
-						<!-- // END BODY -->
+						</table>						
 					</td>
-			</tr>		
+			</tr>
+			<tr>
+				<td align="center" valign="top" id="bodyCellFooter" class="unSubContent">
+					<table width="100%" border="0" cellpadding="0" cellspacing="0" id="templateContainerFooter">
+						<tr>
+							<td valign="top" width="100%">
+								<h6 style="text-align:center;margin-top: 9px;">1111 Brickell Avenue, 11th Floor</h6>
+								<h6 style="text-align:center;">Miami FL 33131</h6>
+								<h6 style="text-align:center;">Phone: +1 (305) 913-7115</h6>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
 
-    </table>    
+    </table>   
     </td>
   </tr>
 </table>

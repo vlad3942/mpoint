@@ -105,9 +105,9 @@ require_once(sCLASS_PATH ."/trustly.php");
 require_once(sCLASS_PATH ."/paytabs.php");
 // Require specific Business logic for the 2C2P ALC component
 require_once(sCLASS_PATH ."/ccpp_alc.php");
-require_once(sCLASS_PATH ."/condition_info.php");
-require_once(sCLASS_PATH ."/gateway_info.php");
-require_once(sCLASS_PATH ."/routingrule.php");
+// Require specific Business logic for the Citcon component
+require_once(sCLASS_PATH ."/citcon.php");
+
 require_once(sCLASS_PATH ."/bre.php");
 
 $aMsgCds = array();
@@ -208,10 +208,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						}
 						
 						if ($drEnabled) {
-							$obj_RoutingRuleInfos = RoutingRule::produceConfig ( $_OBJ_DB, intval ( $obj_DOM->pay [$i] ["client-id"] ) );
 							$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 							$obj_BRE= new Bre($_OBJ_DB, $_OBJ_TXT);
-							$obj_XML = $obj_BRE->getroute($obj_TxnInfo->getClientConfig (),$obj_ConnInfo,$obj_DOM->pay [$i] ["client-id"] , $obj_DOM->pay[$i] , $obj_RoutingRuleInfos ) ;
+							$obj_XML = $obj_BRE->getroute($obj_TxnInfo->getClientConfig (),$obj_ConnInfo,$obj_DOM->pay [$i] ["client-id"] , $obj_DOM->pay[$i] ) ;
 							$aRoutes = $obj_XML->{'get-routes-response'}->{'transaction'}->routes->route ;
 							
 						}
@@ -661,6 +660,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             {
                                                 $xml .= trim($obj_Elem->asXML() );
                                             }
+                                            break;
+                                        case (Constants::iCITCON_PSP):
+                                                $obj_PSP = new Citcon($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["citcon"]);
+                                                $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"],$obj_DOM->pay[$i]->transaction->card->token);
+
+                                                foreach ($obj_XML->children() as $obj_Elem)
+                                                {
+                                                    $xml .= trim($obj_Elem->asXML() );
+                                                }
                                             break;
                                         case (Constants::iTRUSTLY_PSP):
                                            	$obj_PSP = new Trustly($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["trustly"]);

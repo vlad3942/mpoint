@@ -296,6 +296,12 @@ abstract class Constants
     const iSESSION_FAILED = 4020;
 
     /**
+     * Defines the ID of the State that indicates that Session failed due to maximum transaction attempts
+     *
+     */
+    const iSESSION_FAILED_MAXIMUM_ATTEMPTS = 4021;
+    
+    /**
      * Defines the ID of the State that indicates that Session complete failed
      *
      */
@@ -671,11 +677,17 @@ abstract class Constants
 
 
     /**
+     * Unique ID for the Payment Service Provider: Citcon - WeChat Pay
+     *
+     */
+    const iCITCON_PSP = 41;
+
+    /**
      * Unique ID for the Payment Service Provider: AliPay Chinese
      *
      */
     const iALIPAY_CHINESE_PSP = 43;
-	
+
 	/**
 	 * Unique ID for the Electronic Payment Flow
 	 *
