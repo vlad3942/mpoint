@@ -2036,6 +2036,42 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+
+	<xs:complexType name="transaction-statistics-search-by-filter-request">
+		<xs:sequence>
+			<xs:element name="filters">
+				<xs:complexType mixed="true">
+					<xs:sequence>
+						<xs:element name="filter" maxOccurs="unbounded" minOccurs="0">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element type="xs:string" name="key"/>
+									<xs:element type="xs:string" name="value"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="aggregations">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element type="xs:string" name="aggregation" maxOccurs="unbounded" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="columns">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element type="xs:string" name="column" maxOccurs="unbounded" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute type="xs:integer" name="client-id"/>
+	</xs:complexType>
+
+
 	<xs:complexType name="get-routing-rules">
 		<xs:sequence>
 			<xs:element name="clients" minOccurs="1" maxOccurs="1">

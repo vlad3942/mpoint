@@ -1089,14 +1089,14 @@ class mConsole extends Admin
 		
 		return $aStatusCodes;
 	}
-	
+
 	/**
 	 * Performs a search in mPoint's Transaction Logs and Message tables based on the specified parameters
-	 * 
+	 *
 	 * @param array $aClientIDs		A list of client IDs who must own the found transactions
 	 * @param string $start			The start date / time for when transactions must have been created in order to be included in the search result
 	 * @param string $end			The end date / time for when transactions must have been created in order to be included in the search result
-	 * @param array $aAccountIDs		A list of acount IDs related with client ids who must own the found transactions 
+	 * @param array $aAccountIDs		A list of acount IDs related with client ids who must own the found transactions
 	 * @param int $pspid			Psp id will be sent for more geting more granular results.
 	 * @param int $cardid			Card id will be sent for more geting more granular results.
 	 * @return multitype:TransactionStatisticsInfo
@@ -1104,72 +1104,72 @@ class mConsole extends Admin
 	public function getTransactionStats(array $aClientIDs, $start, $end, array $aAccountIDs = array(), $pspid = 0, $cardid = 0 )
 	{
 		$aStateIDS = array(Constants::iINPUT_VALID_STATE, Constants::iPAYMENT_INIT_WITH_PSP_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CANCELLED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_REFUNDED_STATE, Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_DECLINED_STATE,Constants::iPAYMENT_SETTLED_STATE);
-		
+
 		$where = "";
-		
+
 		if(empty($aClientIDs) === false)
 		{
 			$where .= " Txn.clientid IN (". implode(",", $aClientIDs) .")";
 		}
-		
+
 		if(empty($aAccountIDs) === false)
 		{
 			if(empty($where) === false)
 			{
 				$where.=" AND ";
 			}
-			
+
 			$where .= " Txn.accountid IN (". implode(",", $aAccountIDs) .")";
 		}
-		
+
 		if(intval($pspid) > 0)
 		{
 			if(empty($where) === false)
 			{
 				$where.=" AND ";
 			}
-			
+
 			$where .= " Txn.pspid = ".intval($pspid);
 		}
-		
+
 		if(intval($cardid) > 0)
 		{
 			if(empty($where) === false)
 			{
 				$where.=" AND ";
 			}
-			
+
 			$where .= " Txn.cardid = ".intval($cardid);
 		}
-		
+
 		if(empty($start) === false && strlen($start) > 0)
 		{
 			if(empty($where) === false)
 			{
 				$where.=" AND ";
 			}
-			
+
 			$where .= "'". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) )."' <= Txn.created ";
 		}
-		
+
 		if(empty($end) === false && strlen($end) > 0)
 		{
 			if(empty($where) === false)
 			{
 				$where.=" AND ";
 			}
-			
+
 			$where .= " Txn.created <= '" .$this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ). "' ";
 		}
-		
-		
+
+
 		if(empty($where) === false)
 		{
 			$where = " WHERE ".$where;
 		}
-		
+
 		//Date part will have values always hence $where will not be empty
-		
+
 		$sql = "SELECT date(Msg.created) AS createddate, Msg.stateid AS stateid, Count(Msg.id) AS stateidcount
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
 				INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid
@@ -1178,19 +1178,19 @@ class mConsole extends Admin
 								WHERE Txn.id = txnid AND stateid IN (". implode(",", $aStateIDS) ."))
 				GROUP BY createddate, Msg.stateid
 				ORDER BY createddate ASC, Msg.stateid ASC ";
-		
+
 		//echo $sql ."\n";
 		$aRS = array();
-		
+
 		$RS = array();
-		
+
 		$res = $this->getDBConn()->query($sql);
-		
+
 		$aTransactionStats = array();
-		
+
 		if (is_resource($res) === true)
 		{
-			
+
 			while($RS = $this->getDBConn()->fetchName($res))
 			{
 				if (is_array($RS) === true && (isset($RS['CREATEDDATE']) == true && isset($RS['STATEID']) == true))
@@ -1198,26 +1198,26 @@ class mConsole extends Admin
 					$aRS[$RS['CREATEDDATE']][$RS['STATEID']] = $RS['STATEIDCOUNT'];
 				}
 			}
-			
+
 			if(empty($aRS) === false)
 			{
 				foreach($aRS as $createddate => $transactioncountdata)
 				{
 					$missingstateids = array_diff($aStateIDS, array_keys($transactioncountdata));
-					
+
 					foreach($missingstateids as $stateid)
 					{
 						$aTransactionStats[$createddate][$stateid] = 0;
 					}
-					
+
 					$aTransactionStats[$createddate] += $transactioncountdata;
 				}
-				
+
 				return new TransactionStatisticsInfo($aTransactionStats);
 			} else { return new TransactionStatisticsInfo($aTransactionStats); }
 		}
 		else { return new TransactionStatisticsInfo($aTransactionStats); }
-		
+
 	}
 	public function saveGatewayTrigger(array $objTrigger, $clientId) {
 		$pspid = $objTrigger {'psp-id'};
@@ -1232,6 +1232,124 @@ class mConsole extends Admin
 			throw new mPointException ( "Unable to insert new record for gatewayid : " . $pspid );
 		}
 	}
+
+    /**
+     * Performs a search in mPoint's Transaction Logs and Message tables based on the specified parameters
+     *
+	 * @param integer $iClientID	The merchant ID
+     * @param array $aFilter		A list of Filter criterias
+     * @param array $aAggregations	The aggregator columns
+     * @param array $aColumns		The lister column
+     * @return array:resultSet
+     */
+
+    public function getTransactionStatsByFilter($iClientID, $aFilters = array(), $aAggregations = array(), $aColumns = array() )
+	{
+		$sql = 'SELECT ';
+
+		$aSelector = array();
+		foreach ($aColumns as $column)
+		{
+			switch(strtolower($column)){
+				case 'transaction_count' :
+					$aSelector[] = 'COUNT(*) AS TRANSACTION_COUNT';
+					break;
+            	case 'hour':
+            		$aSelector[] = 'EXTRACT(hour FROM T.created) AS HOUR';
+            		break;
+				case 'day':
+            		$aSelector[] = 'EXTRACT(day FROM T.created) AS DAY';
+            		break;
+				case 'stateid':
+					$aSelector[] = 'M.stateid AS STATEID';
+					break;
+				case 'revenue_count' :
+					$aSelector[] = 'sum(T.amount) AS revenue_count';
+					break;
+				default:
+					$aSelector[] = strtolower($column);
+					break;
+            }
+		}
+
+		$sql .= implode(", ", $aSelector);
+
+		$sql .= " FROM LOG".sSCHEMA_POSTFIX.".TRANSACTION_TBL AS T
+					INNER JOIN LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL AS M ON T.ID = M.TXNID ";
+
+		if(array_key_exists('paymenttype', $aFilters) === true)
+		{
+			$sql .= " INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".CARD_TBL AS CARD ON T.CARDID = CARD.ID ";
+		}
+
+		$sql .= " WHERE T.CLIENTID = " . intval($iClientID);
+
+		$aFiltersClauses = array();
+
+        foreach ($aFilters as $key=>$value)
+        {
+            switch(strtolower($key)){
+                case 'from' :
+                    $aFiltersClauses[] = " AND T.created >= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($value)))."'";
+                    break;
+                case 'to':
+                    $aFiltersClauses[] = " AND T.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($value)))."'";
+                    break;
+                case 'stateid':
+                    $aFiltersClauses[] = ' AND M.stateid IN ('.implode(",", $value).')';
+                    break;
+				case 'cardid':
+                    $aFiltersClauses[] = ' AND T.cardid = '.intval($value);
+                    break;
+				case 'paymenttype':
+					$aFiltersClauses[] = ' AND CARD.PAYMENTTYPE IN ('.implode(",", $value).')';
+					break;
+                default:
+                    $aFiltersClauses[] =  ' '.$key.' = '.$value ;
+                    break;
+            }
+        }
+
+        $sql .= implode(" ", $aFiltersClauses);
+
+        $sql .= ' GROUP BY ';
+
+        $aGroupClauses = array();
+        foreach ($aAggregations as $aggregation)
+        {
+            switch(strtolower($aggregation)){
+                default:
+                    $aGroupClauses[] =  strtolower($aggregation);
+                    break;
+            }
+        }
+
+        $sql .= implode(", ", $aGroupClauses);
+        //echo $sql;die;
+
+        $sReponseXML = '';
+
+        $res = $this->getDBConn()->query($sql);
+
+        if (is_resource($res) === true) {
+
+            $sReponseXML .= '<result-set>';
+            while ($RS = $this->getDBConn()->fetchName($res)) {
+				$sReponseXML .= '<result>';
+				foreach($RS as $k => $v)
+				{
+                    $sReponseXML .=	'<'.$k.'>'.$v.'</'.$k.'>';
+                }
+				$sReponseXML .= '</result>';
+            }
+
+            $sReponseXML .= '</result-set>';
+        }
+
+        return $sReponseXML;
+
+	}
+
 	
 	
     }
