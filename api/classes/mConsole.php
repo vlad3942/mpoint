@@ -1248,14 +1248,20 @@ class mConsole extends Admin
 		foreach ($aColumns as $column)
 		{
 			switch(strtolower($column)){
-				case 'count' :
-					$aSelector[] = 'COUNT(*) AS COUNT';
+				case 'transaction_count' :
+					$aSelector[] = 'COUNT(*) AS TRANSACTION_COUNT';
 					break;
             	case 'hour':
             		$aSelector[] = 'EXTRACT(hour FROM T.created) AS HOUR';
             		break;
+				case 'day':
+            		$aSelector[] = 'EXTRACT(day FROM T.created) AS DAY';
+            		break;
 				case 'stateid':
 					$aSelector[] = 'M.stateid AS STATEID';
+					break;
+				case 'revenue_count' :
+					$aSelector[] = 'sum(T.amount) AS revenue_count';
 					break;
 				default:
 					$aSelector[] = strtolower($column);
