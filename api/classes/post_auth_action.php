@@ -56,7 +56,6 @@ class PostAuthAction {
 	 *        	Configuration object with the PSP Information
 	 */
 	public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $oPSPConfig = null) {
-		parent::__construct ( $oDB, $oTxt, $oTI->getClientConfig () );
 		
 		$this->_obj_TxnInfo = $oTI;
 		$this->aCONN_INFO = $aConnInfo;
