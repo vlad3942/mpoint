@@ -698,5 +698,9 @@ abstract class Callback extends EndUserAccount
 		
 		return $RS["DECIMALS"];
 	}
+
+    function retryCallback($body, SurePayConfig &$obj_SurePay=null, $attempt=0){
+        $this->performCallback($body,$obj_SurePay, $attempt);
+    }
 }
 ?>
