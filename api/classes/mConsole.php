@@ -1266,6 +1266,9 @@ class mConsole extends Admin
 				case 'revenue_count' :
 					$aSelector[] = 'sum(T.amount) AS revenue_count';
 					break;
+				case 'currency' :
+					$aSelector[] = 'C.code AS CURRENCY';
+					break;
 				default:
 					$aSelector[] = strtolower($column);
 					break;
@@ -1280,6 +1283,11 @@ class mConsole extends Admin
 		if(array_key_exists('paymenttype', $aFilters) === true)
 		{
 			$sql .= " INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".CARD_TBL AS CARD ON T.CARDID = CARD.ID ";
+		}
+
+		if(in_array('currency', $aColumns) === true)
+		{
+			$sql .= " INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".CURRENCY_TBL AS C ON T.CURRENCYID = C.ID ";
 		}
 
 		$sql .= " WHERE T.CLIENTID = " . intval($iClientID);
