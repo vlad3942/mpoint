@@ -74,10 +74,13 @@ final class PaymentSession
             case 12:
                 $this->createSession($aArgs[1], $aArgs[2], $aArgs[3], $aArgs[4], $aArgs[5], $aArgs[6], $aArgs[7], $aArgs[8], $aArgs[9], $aArgs[10], $aArgs[11]);
                 break;
+            case 13:
+                $this->createSession($aArgs[1], $aArgs[2], $aArgs[3], $aArgs[4], $aArgs[5], $aArgs[6], $aArgs[7], $aArgs[8], $aArgs[9], $aArgs[10], $aArgs[11], $aArgs[12]);
+                break;
         }
     }
 
-    private function createSession(ClientConfig $clientConfig, CountryConfig $countryConfig, CurrencyConfig $currencyConfig, $amount, $orderid, $sessiontypeid, $mobile, $email, $externalId, $deviceid, $ipaddress)
+    private function createSession(ClientConfig $clientConfig, CountryConfig $countryConfig, CurrencyConfig $currencyConfig, $amount, $orderid, $sessiontypeid, $mobile, $email, $externalId, $deviceid, $ipaddress, $expire=null)
     {
 
         $this->_obj_ClientConfig = $clientConfig;
@@ -98,7 +101,11 @@ final class PaymentSession
         $this->_sEmail = $email;
         $this->_sIp = $ipaddress;
         $this->_sMobile = $mobile;
-        $this->_expire = date("Y-m-d H:i:s.u", time() + (15 * 60));
+        if ($expire != null) {
+            $this->_expire = $expire;
+        } else {
+            $this->_expire = date("Y-m-d H:i:s.u", time() + (15 * 60));
+        }
         $sql = "INSERT INTO Log" . sSCHEMA_POSTFIX . ".session_tbl 
                     (clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, sessiontypeid, externalid, expire) 
                 VALUES 

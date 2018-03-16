@@ -350,8 +350,8 @@ abstract class Callback extends EndUserAccount
                 $sessionObj = $this->_obj_TxnInfo->getPaymentSession();
                 if (is_object($sessionObj)) {
                     $sBody .= "&session-id=".$sessionObj->getId();
-                    $sBody .= "&state-id=".$sessionObj->getStateId();
-                    $sBody .= "&amount=".$sessionObj->getAmount();
+                    $sBody .= "&session-state-id=".$sessionObj->getStateId();
+                    $sBody .= "&session-amount=".$sessionObj->getAmount();
                     $sBody .= "&pending-amount=".$sessionObj->getPendingAmount();
                 }
 		trigger_error("********************* ". $sBody, E_USER_NOTICE);
