@@ -313,7 +313,7 @@ abstract class Callback extends EndUserAccount
 	 * @param 	integer $fee				The amount the customer will pay in fee�s for the Transaction. Default value 0
 	 */
 	public function notifyClient($sid, $pspid, $amt,  $cardno="", $cardid=0, $exp=null,$sAdditionalData="", SurePayConfig &$obj_SurePay=null, $fee=0 )
-	{		
+	{	
 		$sDeviceID = $this->_obj_TxnInfo->getDeviceID();
 		$sEmail = $this->_obj_TxnInfo->getEMail();
 		/* ----- Construct Body Start ----- */
@@ -347,6 +347,13 @@ abstract class Callback extends EndUserAccount
 		{
 			$sBody .= "&expiry=". $exp;
 		}
+                $sessionObj = $this->_obj_TxnInfo->getPaymentSession();
+                if (is_object($sessionObj)) {
+                    $sBody .= "&session-id=".$sessionObj->getId();
+                    $sBody .= "&state-id=".$sessionObj->getStateId();
+                    $sBody .= "&amount=".$sessionObj->getAmount();
+                    $sBody .= "&pending-amount=".$sessionObj->getPendingAmount();
+                }
 		trigger_error("********************* ". $sBody, E_USER_NOTICE);
 		/* Adding customer Info as part of the callback query params */
 		if (($this->_obj_TxnInfo->getAccountID() > 0) === true )
