@@ -686,7 +686,7 @@ abstract class Constants
      * Unique ID for the Payment Service Provider: PPRO
      *
      */
-    const iPPRO_PSP = 46;
+    const iPPRO_GATEWAY = 46;
 
 	/**
 	 * Unique ID for the Electronic Payment Flow
