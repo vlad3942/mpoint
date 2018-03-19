@@ -3516,4 +3516,9 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES 
 --Virtual payment page timer value in minutes, this should be less than or equal to the QR code timeout property
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('VIRTUAL_PAYMENT_TIMER', '3', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = 10007 and pspid = 41), 'merchant');
 
+--url to link wechat icon
+INSERT INTO client.url_tbl(urltypeid, clientid, url)
+VALUES (14, 10007, "https://s3-ap-southeast-1.amazonaws.com/cpmassets/payment/icons");
+
+
 /*=========================End===================================== */
