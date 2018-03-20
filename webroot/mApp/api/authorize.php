@@ -109,6 +109,7 @@ require_once(sCLASS_PATH ."/ccpp_alc.php");
 
 require_once(sCLASS_PATH ."/bre.php");
 
+require_once(sCLASS_PATH ."/post_auth_action.php");
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -250,6 +251,7 @@ try
 												}
 											}
 										}
+										
 										
 										//Check if card or payment method is enabled or disabled by merchant
 										//Same check is  also implemented at app side.
