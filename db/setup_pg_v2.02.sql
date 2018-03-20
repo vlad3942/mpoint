@@ -3522,3 +3522,14 @@ VALUES (14, 10007, "https://s3-ap-southeast-1.amazonaws.com/cpmassets/payment/ic
 
 
 /*=========================End===================================== */
+
+
+
+
+/* ================= Gateway Stat =============== */
+
+INSERT INTO system.statisticstype_tbl(  id, name, description)    VALUES (1,'Txn Volume', 'Volume of Transactions thourgh a particular gateway for a specific client');
+INSERT INTO system.statisticstype_tbl(  id, name, description)    VALUES (2,'Success Ratio', 'Succes vs. failure transactions using a gateway for a time period');
+INSERT INTO system.statisticstype_tbl(  id, name, description)    VALUES (3,'Response Time', 'Avg response time of a gateway during txn authorization');
+
+
