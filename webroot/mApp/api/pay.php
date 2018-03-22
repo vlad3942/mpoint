@@ -275,6 +275,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								case (Constants::iANDROID_PAY_WALLET):				// 3rd Party Wallet: Android Pay
 									$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iANDROID_PAY_PSP);
 									break;
+								case (Constants::iGOOGLE_PAY_WALLET):				// 3rd Party Wallet: Google Pay
+                                    $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iGOOGLE_PAY_PSP);
+                                    break;
 								default:	// Standard Payment Service Provider
 									if (array_key_exists(intval($obj_Elem["pspid"]), $aObj_PSPConfigs) === false)
 									{
@@ -491,6 +494,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										case (Constants::iANDROID_PAY_PSP):
 											$xml .= '<url method="app" />';
 											break;
+										case (Constants::iGOOGLE_PAY_PSP):
+                                            $xml .= '<url method="app" />';
+                                            break;
 										case (Constants::iDATA_CASH_PSP):
 											$obj_PSP = new DataCash($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["data-cash"]);
 												

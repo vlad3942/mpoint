@@ -280,7 +280,7 @@ abstract class Constants
      *
      */
     const iSESSION_CREATED = 4001;
-    
+
 
     /**
      * Defines the ID of the State that indicates that Session is expired
@@ -688,6 +688,13 @@ abstract class Constants
      */
     const iALIPAY_CHINESE_PSP = 43;
 
+
+    /**
+     * Unique ID for the Payment Service Provider: Google Pay
+     *
+     */
+    const iGOOGLE_PAY_PSP = 44;
+
 	/**
 	 * Unique ID for the Electronic Payment Flow
 	 *
@@ -893,6 +900,12 @@ abstract class Constants
      *
      */
     const iALIPAY_CHINESE_WALLET = 40;
+
+    /**
+     * Unique Card ID for transaction's made using Google Pay
+     *
+     */
+    const iGOOGLE_PAY_WALLET = 41;
 
 	/**
 	 * Unique Fee Type ID for Top-Ups
