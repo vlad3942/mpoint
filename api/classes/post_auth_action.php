@@ -97,10 +97,19 @@ class PostAuthAction {
 		
 		$clientId = $txnInfo->getClientConfig ()->getAccountConfig ()->getClientID ();
 		$pspId = $obj_PSPConfig->getID ();
+		$ID =  crc32 ( $clientId.' '.$pspId );
+		try {
 		
+	    $sql= "SELECT pg_advisory_lock(".$ID.")";
+	    
+	    $res = $oDB->query ( $sql );
+			
 		$sql = "SELECT id
 				FROM Client" . sSCHEMA_POSTFIX . ".gatewaystat_tbl
 				WHERE clientid = " . intval ( $clientId ) . " AND gatewayid = " . intval ( $pspId ) . " AND statetypeid=1 AND enabled = '1'";
+		
+		
+		echo "Locked with Id:".$ID ;
 		
 		// echo $sql ."\n";
 		$RS = $oDB->getName ( $sql );
@@ -126,8 +135,17 @@ class PostAuthAction {
 				trigger_error ( "Failed to insert count for transaction: " . $txnInfo->getID (), E_USER_ERROR );
 			}
 		}
-		
-		
+	    $sql= "SELECT pg_advisory_unlock(".$ID.")";
+	    
+	    $res = $oDB->query ( $sql );
+	    trigger_error ("Unlocked Id :".$ID, E_USER_NOTICE );
+		}
+		catch(Exception $e){
+			  $sql= "SELECT pg_advisory_unlock(".$ID.")";
+	    
+	    $res = $oDB->query ( $sql );
+	    trigger_error ("Unlocked Id :".$ID, E_USER_NOTICE );
+		}
 	}
 }
 ?>
