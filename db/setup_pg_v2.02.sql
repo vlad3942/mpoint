@@ -3561,3 +3561,17 @@ INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid, psp_type) 
 INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (18, 41);
 
 /* ========== CONFIGURATION FOR GOOGLE PAY - END ========== */
+
+
+/*-----------------Introducing new states for capturing 3DS approved/ rejected transactions: START ------------------*/
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (2006, '3d verification successful', 'Payment', '');
+INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (2016, '3d verification failed', 'Payment', '');
+/*-----------------Introducing new states for capturing 3DS approved/ rejected transactions: END ------------------*/
+
+/* ----------------Adding Configurations for Modirum MPI - START ------------------------------ */
+INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (45, 'MODIRUM MPI',6);
+INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) VALUES (840,45,'USD');
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10007, 45, 'MODIRUM MPI', '', '');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100007, 45, '-1');
+INSERT INTO client.cardaccess_tbl ( clientid, cardid, enabled, pspid, countryid, stateid, position) VALUES (10007, 1, true, 45, 200, 1, null);
+/* ----------------Adding Configurations for Modirum MPI - END ------------------------------ */
