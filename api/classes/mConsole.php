@@ -1263,9 +1263,9 @@ class mConsole extends Admin
             		$aSelector[] = 'EXTRACT(day FROM T.created) AS DAY';
 					$aOrderbyClauses[]='DAY';
             		break;
-				case 'stateid':
-					$aSelector[] = 'M.stateid AS STATEID';
-					$aOrderbyClauses[]='STATEID';
+				case 'state':
+					$aSelector[] = 'S.name AS STATE';
+					$aOrderbyClauses[]='STATE';
 					break;
 				case 'revenue_count' :
 					$aSelector[] = 'sum(T.amount) AS revenue_count';
@@ -1299,6 +1299,10 @@ class mConsole extends Admin
 			$sql .= " INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".CURRENCY_TBL AS C ON T.CURRENCYID = C.ID ";
 		}
 
+        if(in_array('state', $aColumns) === true)
+		{
+			$sql .= " INNER JOIN LOG".sSCHEMA_POSTFIX.".STATE_TBL AS S ON M.stateid = S.ID ";
+		}
 		$sql .= " WHERE T.CLIENTID = " . intval($iClientID);
 
 		$aFiltersClauses = array();
@@ -1312,7 +1316,7 @@ class mConsole extends Admin
                 case 'to':
                     $aFiltersClauses[] = " AND T.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($value)))."'";
                     break;
-                case 'stateid':
+                case 'state':
                     $aFiltersClauses[] = ' AND M.stateid IN ('.implode(",", $value).')';
                     break;
 				case 'cardid':
