@@ -32,6 +32,8 @@ class Mpi
             case Constants::iNETS_MPI:
                 $obj = new NetsMpi($objDb,$_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["netsmpi"],$pspConfig, $obj_Card);
                 break;
+            case Constants::iMODIRUM_MPI:
+                $obj = new ModirumMPI($objDb, $_OBJ_TXT,  $obj_TxnInfo, $aHTTP_CONN_INFO["modirummpi"], $pspConfig, $obj_Card);
         }
         return $obj;
     }
@@ -62,7 +64,7 @@ class Mpi
 //		echo $sql ."\n";
         $RS = $objDb->getName($sql);
 
-        if (is_array($RS) === true && count($RS) > 1) {	return new PSPConfig($RS["ID"], $RS["NAME"], "5", "", "", "","", array(),array()); }
+        if (is_array($RS) === true && count($RS) > 1) {	return new PSPConfig($RS["ID"], $RS["NAME"], "6", "", "", "","", array(),array()); }
         else { return null; }
     }
 }

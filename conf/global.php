@@ -749,6 +749,18 @@ $aHTTP_CONN_INFO["google-pay"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["google-pay"]["paths"]["get-payment-data"] = "/mpoint/google-pay/get-payment-data";
 
 /**
+ * Connection info for connecting to Modirum MPI
+ */
+$aHTTP_CONN_INFO["modirummpi"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["modirummpi"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["modirummpi"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["modirummpi"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["modirummpi"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["modirummpi"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["modirummpi"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["modirummpi"]["paths"]["authenticate"] = "/mpi/modirum/authentication";
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>

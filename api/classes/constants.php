@@ -695,6 +695,12 @@ abstract class Constants
      */
     const iGOOGLE_PAY_PSP = 44;
 
+    /**
+     * Unique ID for the MPI : Modirum
+     *
+     */
+    const iMODIRUM_MPI = 47;
+
 	/**
 	 * Unique ID for the Electronic Payment Flow
 	 *
