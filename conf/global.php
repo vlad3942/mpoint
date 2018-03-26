@@ -736,6 +736,17 @@ $aHTTP_CONN_INFO["alipay-chinese"]["paths"]["refund"] = "/mpoint/alipay-chinese/
 $aHTTP_CONN_INFO["alipay-chinese"]["paths"]["status"] = "/mpoint/alipay-chinese/status";
 $aHTTP_CONN_INFO["alipay-chinese"]["paths"]["callback"] = "/mpoint/alipay-chinese/callback";
 
+/**
+ * Connection info for connecting to Google Pay
+ */
+$aHTTP_CONN_INFO["google-pay"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["google-pay"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["google-pay"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["google-pay"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["google-pay"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["google-pay"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["google-pay"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["google-pay"]["paths"]["get-payment-data"] = "/mpoint/google-pay/get-payment-data";
 
 /**
  * GoMobile Connection Info.
