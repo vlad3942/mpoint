@@ -560,7 +560,7 @@ class WorldPay extends Callback implements Captureable, Refundable
 		// Payment Transaction not previously initialized with WorldPay
 		if (empty($url) === true)
 		{
-			$oc = htmlspecialchars($this->getTxnInfo()->getOrderID(), ENT_NOQUOTES);
+			$oc = htmlspecialchars($this->getTxnInfo()->getOrderID()."_".$this->getTxnInfo()->getAttemptNumber(), ENT_NOQUOTES);
 			if (empty($oc) === true) { $oc = $this->getTxnInfo()->getID(); }
 			$b = '<?xml version="1.0" encoding="UTF-8"?>';
 			$b .= '<!DOCTYPE paymentService PUBLIC "-//WorldPay/DTD WorldPay PaymentService v1//EN" "http://dtd.worldpay.com/paymentService_v1.dtd">';
