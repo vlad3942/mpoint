@@ -3569,9 +3569,9 @@ INSERT INTO Log.State_Tbl (id, name, module, func) VALUES (2016, '3d verificatio
 /*-----------------Introducing new states for capturing 3DS approved/ rejected transactions: END ------------------*/
 
 /* ----------------Adding Configurations for Modirum MPI - START ------------------------------ */
-INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (45, 'MODIRUM MPI',6);
-INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) VALUES (840,45,'USD');
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10007, 45, 'MODIRUM MPI', '', '');
-INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100007, 45, '-1');
-INSERT INTO client.cardaccess_tbl ( clientid, cardid, enabled, pspid, countryid, stateid, position) VALUES (10007, 1, true, 45, 200, 1, null);
+INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (47, 'MODIRUM MPI',6);
+INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) VALUES (840,47,'USD');
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10007, 47, 'MODIRUM MPI', '', '');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100007, 47, '-1');
+INSERT INTO client.cardaccess_tbl ( clientid, cardid, enabled, pspid, countryid, stateid, position) VALUES (10007, 1, true, 47, 200, 1, null);
 /* ----------------Adding Configurations for Modirum MPI - END ------------------------------ */
