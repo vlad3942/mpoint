@@ -1,4 +1,4 @@
-/* ========== CONFIGURE NETS START ========== */
+/* ========== CONFIGURE AMEX START ========== */
 /*START: Adding PSP entries to the PSP_Tbl table for AMEX*/
 
 INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (45, 'Amex',2);
@@ -7,14 +7,15 @@ INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (45, 'Amex',2);
 
 /*START: Adding Currency entries to the PSPCurrency_Tbl table for AMEX*/
 
-INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (100,45,'DKK');
-INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (101,45,'SEK');
-INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (102,45,'NOK');
-INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (103,45,'USD');
-INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (104,45,'EUR');
-INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (127,45,'DKK');
-INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (130,45,'DKK');
-INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (132,45,'ISK');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (208,45,'DKK');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (752,45,'SEK');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (578,45,'NOK');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (826,45,'USD');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (978,45,'EUR');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (208,45,'DKK');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (208,45,'DKK');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (352,45,'ISK');
+
 
 /*END: Adding Currency entries to the PSPCurrency_Tbl table for AMEX*/
 
