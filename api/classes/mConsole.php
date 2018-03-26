@@ -1248,6 +1248,7 @@ class mConsole extends Admin
 		$sql = 'SELECT ';
 
 		$aSelector = array();
+		$aOrderbyClauses = array();
 		foreach ($aColumns as $column)
 		{
 			switch(strtolower($column)){
@@ -1256,18 +1257,26 @@ class mConsole extends Admin
 					break;
             	case 'hour':
             		$aSelector[] = 'EXTRACT(hour FROM T.created) AS HOUR';
+					$aOrderbyClauses[]='HOUR';
             		break;
 				case 'day':
             		$aSelector[] = 'EXTRACT(day FROM T.created) AS DAY';
+					$aOrderbyClauses[]='DAY';
             		break;
 				case 'stateid':
 					$aSelector[] = 'M.stateid AS STATEID';
+					$aOrderbyClauses[]='STATEID';
 					break;
 				case 'revenue_count' :
 					$aSelector[] = 'sum(T.amount) AS revenue_count';
 					break;
 				case 'currency' :
 					$aSelector[] = 'C.code AS CURRENCY';
+					$aOrderbyClauses[]='CURRENCY';
+					break;
+				case 'paymenttypeid' :
+					$aSelector[] = 'CARD.name AS paymenttypeid';
+					$aOrderbyClauses[]='paymenttypeid';
 					break;
 				default:
 					$aSelector[] = strtolower($column);
@@ -1280,7 +1289,7 @@ class mConsole extends Admin
 		$sql .= " FROM LOG".sSCHEMA_POSTFIX.".TRANSACTION_TBL AS T
 					INNER JOIN LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL AS M ON T.ID = M.TXNID ";
 
-		if(array_key_exists('paymenttype', $aFilters) === true)
+		if(array_key_exists('paymenttypeid', $aFilters) === true)
 		{
 			$sql .= " INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".CARD_TBL AS CARD ON T.CARDID = CARD.ID ";
 		}
@@ -1307,9 +1316,9 @@ class mConsole extends Admin
                     $aFiltersClauses[] = ' AND M.stateid IN ('.implode(",", $value).')';
                     break;
 				case 'cardid':
-                    $aFiltersClauses[] = ' AND T.cardid = '.intval($value);
+                    $aFiltersClauses[] = ' AND T.cardid IN ('.implode(",", $value).')';
                     break;
-				case 'paymenttype':
+				case 'paymenttypeid':
 					$aFiltersClauses[] = ' AND CARD.PAYMENTTYPE IN ('.implode(",", $value).')';
 					break;
                 default:
@@ -1333,6 +1342,13 @@ class mConsole extends Admin
         }
 
         $sql .= implode(", ", $aGroupClauses);
+
+		$sql .= ' ORDER BY ';
+
+		$sql .= implode(", ", $aOrderbyClauses);
+
+
+
         //echo $sql;die;
 
         $sReponseXML = '';
