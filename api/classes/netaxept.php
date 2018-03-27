@@ -44,7 +44,7 @@ class NetAxept extends Callback implements Captureable, Refundable
 	public function initialize(HTTPConnInfo &$oCI, $merchant, $account, $currency, $cardid, $storecard)
 	{
 		$obj_SOAP = new SOAPClient($this->aCONN_INFO["protocol"] ."://". $oCI->getHost() . $oCI->getPath(), array("trace" => true,
-																						"exceptions" => true) );
+																												  "exceptions" => true) );
 		$sOrderNo = $this->getTxnInfo()->getOrderID();
 		if (empty($sOrderNo) === true) { $sOrderNo = $this->getTxnInfo()->getID(); }
 
@@ -62,13 +62,9 @@ class NetAxept extends Callback implements Captureable, Refundable
 		// check if we need to store the card
 		if ($storecard == true)
 		{
-	
 			$request['Recurring'] = array("Type" => "R",
 										  "Frequency" =>"0",
-										  "ExpiryDate" => date('Ymd', strtotime('+20 years') ) );
-											/* WE have to set the ExpiryDate of the Recurring as we dont have the ExpiryDate of the card,
-											 * so we set the ExpiryDate to 20 years in the future
-										     */
+										  "ExpiryDate" => "20380119");	// We have to set the ExpiryDate of the Recurring as we dont have the ExpiryDate of the card, so we set it to the end of unix Epoch
 		}
 		$aParams = array("merchantId" => $merchant,
 						 "token" => $oCI->getPassword(),
@@ -99,11 +95,11 @@ class NetAxept extends Callback implements Captureable, Refundable
 				$obj_XML = simplexml_load_string($xml);
 				
 				// save ext id in database
-						$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-								SET pspid = ". Constants::iNETAXEPT_PSP .", extid = '".$obj_Std->RegisterResult->TransactionId."'
-								WHERE id = ". $this->getTxnInfo()->getID();
-//					echo $sql ."\n";
-						$this->getDBConn()->query($sql);
+				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+						SET pspid = ". Constants::iNETAXEPT_PSP .", extid = '".$obj_Std->RegisterResult->TransactionId."'
+						WHERE id = ". $this->getTxnInfo()->getID();
+//				echo $sql ."\n";
+				$this->getDBConn()->query($sql);
 			}
 			// Error: Unable to initialize payment transaction
 			else
@@ -114,16 +110,19 @@ class NetAxept extends Callback implements Captureable, Refundable
 		}
 		catch (Exception $e)
 		{
+			$msg = "";
 			if ($e->detail->BBSException->Result->ResponseCode != NULL)
 			{
 				// Transaction already processed
 				if (intval($e->detail->BBSException->Result->ResponseCode) == 98)
 				{
-					return "OK";
+					$msg = "Transaction already processed";
 				}
-				else { return $e->detail->BBSException->Result->ResponseCode; }
+				else { $msg = $e->detail->BBSException->Result->ResponseCode; }
 			}
-			else { return $e->getMessage();	}
+			else { $msg = $e->getMessage();	}
+			
+			$obj_XML = simplexml_load_string('<status code="92">'. htmlspecialchars($msg, ENT_NOQUOTES) .'</status>');
 		}
 
 		return $obj_XML;
