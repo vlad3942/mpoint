@@ -133,6 +133,10 @@
 		<xsl:when test="$cardid = 9">
 			<func:result>ELEC</func:result>
 		</xsl:when>
+		<!-- VISA / Dankort -->
+		<xsl:when test="$cardid = 37">
+			<func:result>V-DK</func:result>
+		</xsl:when>
 		<!-- Error -->
 		<xsl:otherwise>
 			

@@ -723,6 +723,47 @@ class mConsole extends Admin
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl PM ON Txn.cardid = PM.id
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON Txn.euaid = EUA.id
 				ORDER BY Txn.txnid DESC";
+			
+				array_pop($aClientIDs);
+				
+				if(count($aClientIDs) > 0)
+				{
+					$sql .= "
+							UNION
+						";
+				}
+		}	
+				
+		$sql .= " ) as a where a.stateid != -1 ";
+		
+
+		if (count($aAccountIDs) > 0) { $sql .= " AND  a.accountid IN (". implode(",", $aAccountIDs) .")"; }
+		if (count($aPspIDs) > 0) { $sql .= " AND  a.pspid IN (". implode(",", $aPspIDs) .")"; }
+		if (count($aCardIDs) > 0) { $sql .= " AND  a.paymentmethodid IN (". implode(",", $aCardIDs) .")"; }
+		if (intval($id) > 0) { $sql .= " AND a.txnid = '". floatval($id) ."'"; }
+		if ($ono > 0) { $sql .= " AND a.orderno = '". $this->getDBConn()->escStr($ono) ."'"; }
+		if ( ($oCI instanceof CustomerInfo) === true)
+		{
+			if ($oCI->getMobile() > 0) { $sql .= " AND a.operatorid / 100 = ". $oCI->getCountryID() ." AND a.mobile = '". $oCI->getMobile() ."'"; }
+			if (strlen($oCI->getEMail() ) > 0) { $sql .= " AND a.email = '". $this->getDBConn()->escStr($oCI->getEMail() ) ."'"; }
+			if (strlen($oCI->getCustomerRef() ) > 0) { $sql .= " AND a.customer_ref = '". $this->getDBConn()->escStr($oCI->getCustomerRef() ) ."'"; }
+		}
+		
+		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND   '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <=  a.createdfinal"; }
+		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND  a.createdfinal  <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
+		
+		$sql .= " AND a.createdfinal = (
+					select MAX(msg.created) FROM Log.Message_Tbl as msg
+						WHERE msg.stateid = a.stateid AND msg.txnid = a.txnid
+				)";
+		
+		if (count($aStateIDs) > 0)
+		{
+			$sql .= " AND a.stateid IN (". implode(",", $aStateIDs) .")";
+		}
+		
+		$sql .= "\n ORDER BY createdfinal DESC";
+		
 		if (intval($limit) > 0 || intval($offset) > 0)
 		{
 			$sql .= "\n";

@@ -888,6 +888,11 @@ abstract class Constants
 	 *
 	 */
 	const iTRUSTLY_PAY = 38;
+	/**
+	 * Unique Card ID for transaction's made using the co-branded VISA / Dankort
+	 *
+	 */
+	const iVISA_DANKORT_CARD = 37;
 	
     /**
      * Unique Card ID for transaction's made using mVault
