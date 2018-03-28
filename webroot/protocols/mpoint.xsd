@@ -1216,17 +1216,21 @@
    <xs:element type="xs:string" name="arrival-date" minOccurs="1" maxOccurs="1" />
    <xs:element ref="additional-data" minOccurs="0" maxOccurs="1" /> 
  </xs:sequence>
+	<xs:attribute name="tag" use="optional" type="xs:positiveInteger"/>
+	<xs:attribute name="trip-count" use="optional" type="xs:positiveInteger"/>
 </xs:complexType>
 </xs:element>
 
 <xs:element name="passenger-detail">
 <xs:complexType>
  <xs:sequence>
+   <xs:element type="xs:string" name="title" minOccurs="1" maxOccurs="1" />
    <xs:element type="xs:string" name="first-name" minOccurs="1"  maxOccurs="1" />
    <xs:element type="xs:string" name="last-name" minOccurs="1" maxOccurs="1" />
    <xs:element type="xs:string" name="type" minOccurs="1" maxOccurs="1" />
    <xs:element ref="additional-data" minOccurs="0" maxOccurs="1" /> 
  </xs:sequence>
+	<xs:attribute name="id" use="optional" type="xs:string"/>
 </xs:complexType>
 </xs:element>
  
