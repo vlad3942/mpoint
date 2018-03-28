@@ -2149,6 +2149,12 @@
 	</xs:complexType>
 	<!-- Save Gateway trigger details -->
 	
+	
+	<xs:complexType name="delete-gateway-triggers">
+			<xs:attribute type="xs:integer" name="client-id" use="required" />
+			<xs:attribute type="xs:integer" name="psp-id" use="required" />
+	</xs:complexType>
+	
 	<xs:complexType name="gateway-trigger">
 	 <xs:all>
 		<xs:element name="health-trigger">

@@ -1233,6 +1233,15 @@ class mConsole extends Admin
 		}
 	}
 
+	
+	public function deleteGatewayTrigger( $clientId , $pspId) {
+		$sql = "UPDATE client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl SET enabled = '0' WHERE clientid = " . $clientId . " AND gatewayid =" . $pspId . " AND enabled = '1';  ";
+		
+		if (is_resource ( $this->getDBConn ()->query ( $sql ) ) === false) {
+			throw new mPointException ( "Unable to update new record for gatewayid : " . $pspid );
+		}
+		
+	}
     /**
      * Performs a search in mPoint's Transaction Logs and Message tables based on the specified parameters
      *

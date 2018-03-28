@@ -15,4 +15,5 @@
 	<xs:element name="transaction-search-response" type="transaction-search-response" />
 	<xs:element name="get-transaction-statistics" type="transaction-statistics-search-request" />
 	<xs:element name="save-gateway-triggers" type="save-gateway-triggers" />
+	<xs:element name="delete-gateway-triggers" type="delete-gateway-triggers" />
 </xs:schema>
