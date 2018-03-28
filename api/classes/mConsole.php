@@ -1224,7 +1224,7 @@ class mConsole extends Admin
 		$enabled = $objTrigger {'enabled'};
 		$healthTriggerUnit = $objTrigger->{'health-trigger'} {'unit'};
 		
-		$sql = "INSERT INTO client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl(clientid, gatewayid, enabled, healthtriggerunit, healthtriggervalue, 
+		$sql = "INSERT INTO client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl(clientid, gatewayid, status, healthtriggerunit, healthtriggervalue, 
             aggregationtriggerunit, aggregationtriggervalue, resetthresholdunit, resetthresholdvalue)
 		    VALUES (" . $clientId . "," . $pspid . ",'" . $enabled . "'," . $objTrigger->{'health-trigger'} {'unit'} . "," . $objTrigger->{'health-trigger'} . "," . $objTrigger->{'aggregation-trigger'} {'unit'} . "," . $objTrigger->{'aggregation-trigger'} . "," . $objTrigger->{'reset-threshold'} {'unit'} . "," . $objTrigger->{'reset-threshold'} . "); ";
 		

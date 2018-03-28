@@ -354,5 +354,6 @@ WITH (
 ALTER TABLE client.gatewaystat_tbl
   OWNER TO mpoint;
 
-  
-  
+/*===========================  Updating for gateway delete functionality   ======================*/  
+ALTER TABLE client.gatewaytrigger_tbl ADD COLUMN status boolean NOT NULL DEFAULT false;
+ALTER TABLE client.gatewaytrigger_tbl ALTER COLUMN enabled SET DEFAULT true ;

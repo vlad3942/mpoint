@@ -1225,7 +1225,8 @@ class ClientConfig extends BasicConfig
             	}
             }
             
-            $sql = "SELECT gatewayid AS id,pt.name AS name,gt.enabled FROM client.gatewaytrigger_tbl gt JOIN system.psp_tbl pt ON (gt.gatewayid = pt.id) WHERE clientid = ".intval($id);
+            $sql = "SELECT gatewayid AS id,pt.name AS name,gt.status AS enabled FROM client.gatewaytrigger_tbl gt JOIN system.psp_tbl pt ON (gt.gatewayid = pt.id) WHERE gt.enabled = '1' AND clientid = ".intval($id);
+            //echo $sql;
             $aRS = $oDB->getAllNames($sql);
             
             $aDRGateways= array();
