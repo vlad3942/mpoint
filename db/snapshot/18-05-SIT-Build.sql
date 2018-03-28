@@ -72,7 +72,3 @@ INSERT INTO client.url_tbl(urltypeid, clientid, url)
 VALUES (14, 10007, "https://s3-ap-southeast-1.amazonaws.com/cpmassets/payment/icons");
 --------------
 
-
-ALTER TABLE Client.routing_tbl DROP CONSTRAINT rulegateway_uk ;
-ALTER TABLE Client.routing_tbl ADD CONSTRAINT rulegateway_uk UNIQUE (ruleid, gatewayid);
-ALTER TABLE Client.routing_tbl ADD CONSTRAINT rulegatewaypre_uk UNIQUE (ruleid, preference);
