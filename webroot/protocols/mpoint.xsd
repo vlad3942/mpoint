@@ -1230,8 +1230,7 @@
    <xs:element type="xs:string" name="last-name" minOccurs="1" maxOccurs="1" />
    <xs:element type="xs:string" name="type" minOccurs="1" maxOccurs="1" />
    <xs:element ref="contact-info" minOccurs="0" maxOccurs="1" />
-   <xs:element type="countryid" name="country-id" minOccurs="0" maxOccurs="1" />
-   <xs:element ref="additional-data" minOccurs="0" maxOccurs="1" /> 
+   <xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
  </xs:sequence>
 </xs:complexType>
 </xs:element>
