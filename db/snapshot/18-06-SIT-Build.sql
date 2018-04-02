@@ -1,0 +1,1 @@
+ALTER TABLE client.gatewaystat_tbl ALTER COLUMN statvalue TYPE numeric ;

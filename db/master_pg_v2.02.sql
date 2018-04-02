@@ -357,3 +357,6 @@ ALTER TABLE client.gatewaystat_tbl
 /*===========================  Updating for gateway delete functionality   ======================*/  
 ALTER TABLE client.gatewaytrigger_tbl ADD COLUMN status boolean NOT NULL DEFAULT false;
 ALTER TABLE client.gatewaytrigger_tbl ALTER COLUMN enabled SET DEFAULT true ;
+
+ALTER TABLE client.gatewaystat_tbl ALTER COLUMN statvalue TYPE numeric ;
+
