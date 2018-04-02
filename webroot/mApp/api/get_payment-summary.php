@@ -51,6 +51,8 @@ require_once(sCLASS_PATH ."/androidpay.php");
 require_once(sCLASS_PATH ."/masterpass.php");
 // Require specific Business logic for the AMEX Express Checkout component
 require_once(sCLASS_PATH ."/amexexpresscheckout.php");
+// Require specific Business logic for the Google Pay component
+require_once(sCLASS_PATH ."/googlepay.php");
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -128,6 +130,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$obj_Wallet = new AndroidPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["android-pay"]);
 								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iANDROID_PAY_PSP);
 								break;
+							case (Constants::iGOOGLE_PAY_WALLET):
+                                $obj_Wallet = new GooglePay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["google-pay"]);
+                                $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iGOOGLE_PAY_PSP);
+                                break;
 							default:
 								break;
 							}

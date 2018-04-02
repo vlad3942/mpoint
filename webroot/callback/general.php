@@ -148,8 +148,8 @@ try
 	// If transaction is in Account Validated i.e 1998 state no action to be done
 
     array_push($aStateId,$iStateID);
-
-    if($obj_PSPConfig->getProcessorType() === 2){
+    $propertyValue = $obj_TxnInfo->getClientConfig()->getAdditionalProperties("NETS_3DVERIFICATION");
+    if($obj_PSPConfig->getProcessorType() === 2 && $propertyValue == true){
         if($obj_XML->callback->transaction->TransactionStatus == "Y") {
             $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
             $mvault = new MVault($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['mvault']);

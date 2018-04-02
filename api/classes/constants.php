@@ -280,7 +280,7 @@ abstract class Constants
      *
      */
     const iSESSION_CREATED = 4001;
-    
+
 
     /**
      * Defines the ID of the State that indicates that Session is expired
@@ -295,6 +295,12 @@ abstract class Constants
      */
     const iSESSION_FAILED = 4020;
 
+    /**
+     * Defines the ID of the State that indicates that Session failed due to maximum transaction attempts
+     *
+     */
+    const iSESSION_FAILED_MAXIMUM_ATTEMPTS = 4021;
+    
     /**
      * Defines the ID of the State that indicates that Session complete failed
      *
@@ -682,6 +688,13 @@ abstract class Constants
      */
     const iALIPAY_CHINESE_PSP = 43;
 
+
+    /**
+     * Unique ID for the Payment Service Provider: Google Pay
+     *
+     */
+    const iGOOGLE_PAY_PSP = 44;
+
     /**
      * Unique ID for the Payment Service Provider: PPRO
      *
@@ -881,6 +894,11 @@ abstract class Constants
 	 *
 	 */
 	const iTRUSTLY_PAY = 38;
+	/**
+	 * Unique Card ID for transaction's made using the co-branded VISA / Dankort
+	 *
+	 */
+	const iVISA_DANKORT_CARD = 37;
 	
     /**
      * Unique Card ID for transaction's made using mVault
@@ -893,6 +911,12 @@ abstract class Constants
      *
      */
     const iALIPAY_CHINESE_WALLET = 40;
+
+    /**
+     * Unique Card ID for transaction's made using Google Pay
+     *
+     */
+    const iGOOGLE_PAY_WALLET = 41;
 
     /**
      * Unique Card ID for transaction's made using PPRO
