@@ -204,6 +204,11 @@ abstract class Constants
      *
      */
     const iPAYMENT_3DS_VERIFICATION_STATE = 2005;
+    /**
+     * Defines the ID of the State that indicates that payment has successfully completed 3DS authentication
+     *
+     */
+    const iPAYMENT_3DS_SUCCESS_STATE = 2006;
 
 	/**
 	 * Defines the ID of the State that indicates that payment is being using a voucher
@@ -250,6 +255,11 @@ abstract class Constants
 	 *
 	 */
 	const iPAYMENT_DECLINED_STATE = 2011;
+    /**
+     * Defines the ID of the State that indicates that payment has successfully completed 3DS authentication
+     *
+     */
+    const iPAYMENT_3DS_FAILURE_STATE = 2016;
 	/**
 	 * Defines the ID of the State that indicates that payment has accidentally been duplicated by DIBS
 	 *
@@ -983,5 +993,15 @@ abstract class Constants
 	const iFAILED_TXNS_ALL = 1;
 	const iFAILED_TXNS_FAILED_INIT = 2;
 	const iFAILED_TXNS_FAILED_AUTH = 3;
+
+	/*
+	 * Payment Processor types in mPoint
+	 * */
+	const iPROCESSOR_TYPE_PSP = 1;
+	const iPROCESSOR_TYPE_ACQUIRER = 2;
+	const iPROCESSOR_TYPE_WALLET = 3;
+	const iPROCESSOR_TYPE_APM = 4;
+	const iPROCESSOR_TYPE_VIRTUAL = 5;
+	const iPROCESSOR_TYPE_MPI = 6;
 }
 ?>

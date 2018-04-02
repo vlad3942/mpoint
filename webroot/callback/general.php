@@ -139,22 +139,28 @@ try
 	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]) );
 	$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 	$iStateID = (integer) $obj_XML->callback->status["code"];
+
+    if ($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE)
+    {
+        $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
+
+    }
 	
 	$year = substr(strftime("%Y"), 0, 2);
 	$sExpirydate =  $year.$obj_XML->callback->transaction->card->expiry->year ."-". $obj_XML->callback->transaction->card->expiry->month;
 	// If transaction is in Account Validated i.e 1998 state no action to be done
 
     array_push($aStateId,$iStateID);
-    $propertyValue = $obj_TxnInfo->getClientConfig()->getAdditionalProperties("NETS_3DVERIFICATION");
-    if($obj_PSPConfig->getProcessorType() === 2 && $propertyValue == true){
+    $propertyValue = $obj_TxnInfo->getClientConfig()->getAdditionalProperties("3DVERIFICATION");
+    if($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER && $propertyValue == true && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
         if($obj_XML->callback->transaction->TransactionStatus == "Y") {
             $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
             $mvault = new MVault($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['mvault']);
-            $xmlString = "<card id='" . $obj_XML->callback->transaction->card["typr-id"] . "'><token>" . $obj_TxnInfo->getToken() . "</token></card>";
+            $xmlString = "<card id='" . $obj_XML->callback->transaction->card["type-id"] . "'><token>" . $obj_TxnInfo->getToken() . "</token></card>";
             $obj_Elem = $mvault->getPaymentData($obj_PSPConfig, simplexml_load_string($xmlString));
             $card_obj = simplexml_load_string($obj_Elem);
             $card_obj = $card_obj->{'payment-data'};
-            $card_obj->card->cvc = base64_decode(strrev($obj_TxnInfo->getExternalID()));
+            $card_obj->card->cvc = base64_decode(strrev($obj_TxnInfo->getExternalID() ) );
             $card_obj->card['type-id'] = $obj_XML->callback->transaction->card["type-id"];
             $cryptogram = $card_obj->card->{'info-3d-secure'}->addChild('cryptogram', $obj_XML->callback->transaction->SignatureISO9796);
             $cryptogram->addAttribute('eci', $obj_XML->callback->transaction->TransactionStatus);
