@@ -1018,10 +1018,12 @@ class ClientConfig extends BasicConfig
 		$xml .= '<dynamic-routing-gateways>';
 		foreach ($this->_aObj_DRGateways as $aObj_DRGateway)
 		{
-			$xml .= '<gateway id="'.$aObj_DRGateway['id'].'" name="'.$aObj_DRGateway['name'].'" />';
+			$enabled = 0 ;
+			if($aObj_DRGateway['enabled'] ==1)
+				$enabled = $aObj_DRGateway['enabled'];
+			$xml .= '<gateway id="'.$aObj_DRGateway['id'].'" name="'.$aObj_DRGateway['name'].'" enabled="'.$enabled.'" />';
 		}
 		$xml .= '</dynamic-routing-gateways>';
-		
 		
 		$xml .= '</client-config>';
 		
@@ -1133,7 +1135,7 @@ class ClientConfig extends BasicConfig
 		}
 		// Remove Account clause if it hasn't been already
 		$sql = str_replace("{ACCOUNT CLAUSE}", "", $sql);
-	   //echo $sql ."\n";
+	    //echo $sql ."\n";
 		$RS = $oDB->getName($sql);
 
 		if (is_array($RS) === true && $RS["CLIENTID"] > 0)
@@ -1223,9 +1225,9 @@ class ClientConfig extends BasicConfig
             	}
             }
             
-            
-            $sql = "SELECT gatewayid AS id,pt.name AS name FROM client.gatewaytrigger_tbl gt JOIN system.psp_tbl pt ON (gt.gatewayid = pt.id) WHERE clientid = ".intval($id)." AND gt.enabled = 't'"  ;
+            $sql = "SELECT gatewayid AS id,pt.name AS name,gt.enabled FROM client.gatewaytrigger_tbl gt JOIN system.psp_tbl pt ON (gt.gatewayid = pt.id) WHERE clientid = ".intval($id);
             $aRS = $oDB->getAllNames($sql);
+            
             $aDRGateways= array();
             if (is_array($aRS) === true && count($aRS) > 0)
             {
@@ -1233,6 +1235,7 @@ class ClientConfig extends BasicConfig
             	{
             		$aDRGateways[$i]["id"] =$aRS[$i]["ID"];
             		$aDRGateways[$i]["name"] = $aRS[$i]["NAME"];
+            		$aDRGateways[$i]["enabled"] = $aRS[$i]["ENABLED"];
             	}
             }
             
