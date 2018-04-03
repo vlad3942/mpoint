@@ -27,6 +27,8 @@ require_once(sCLASS_PATH ."/capture.php");
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
 // Require specific Business logic for the CPM ACQUIRER component
 require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
+// Require specific Business logic for the CPM GATEWAY component
+require_once(sINTERFACE_PATH ."/cpm_gateway.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 // Require specific Business logic for the Adyen component
@@ -84,7 +86,8 @@ require_once(sCLASS_PATH ."/ccpp_alc.php");
 require_once(sCLASS_PATH ."/paytabs.php");
 // Require specific Business logic for the citcon component
 require_once(sCLASS_PATH ."/citcon.php");
-
+// Require specific Business logic for the PPRO component
+require_once(sCLASS_PATH ."/ppro.php");
 
 /**
  * Input XML format
