@@ -1237,10 +1237,10 @@
 
 <xs:element name="contact-info">
 	<xs:complexType>
-		<xs:sequence>
-			<xs:element type="email" name="email" />
-			<xs:element type="mobile" name="mobile" />
-		</xs:sequence>
+		<xs:all>
+			<xs:element type="email" name="email" minOccurs="0" maxOccurs="1" />
+			<xs:element type="mobile" name="mobile" minOccurs="0" maxOccurs="1"/>
+		</xs:all>
 	</xs:complexType>
 </xs:element>
 
