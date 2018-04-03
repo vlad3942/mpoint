@@ -3520,6 +3520,8 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES 
 INSERT INTO client.url_tbl(urltypeid, clientid, url)
 VALUES (14, 10007, "https://s3-ap-southeast-1.amazonaws.com/cpmassets/payment/icons");
 
+--Redirect URL for HPP integration - can be blank or accept url or as required for client configuration
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('WECHAT_CALLBACK_URL', '', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = 10007 and pspid = 41), 'merchant');
 
 /*=========================End===================================== */
 
