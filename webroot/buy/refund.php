@@ -89,6 +89,8 @@ require_once(sCLASS_PATH ."/nets.php");
 require_once(sCLASS_PATH ."/mvault.php");
 // Require specific Business logic for the PPRO component
 require_once(sCLASS_PATH ."/ppro.php");
+// Require specific Business logic for the Citcon Wechat component
+require_once(sCLASS_PATH ."/citcon.php");
 header("Content-Type: application/x-www-form-urlencoded");
 
 // Require Business logic for the validating client Input
