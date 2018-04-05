@@ -650,7 +650,11 @@ try
 																		$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), $obj_XML);
 																	}
 																	catch (HTTPException $ignore) { /* Ignore */ }
-																	$xml = '<status code="100">Payment Authorized using Stored Card</status>';
+                                                                                                                                        if ($bStoredCard === true) {
+                                                                                                                                            $xml = '<status code="100">Payment Authorized using Stored Card</status>';
+                                                                                                                                        } else {
+                                                                                                                                            $xml = '<status code="2000">Payment authorized</status>';
+                                                                                                                                        }
 																}
 	
 																else
