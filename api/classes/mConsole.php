@@ -1253,6 +1253,7 @@ class mConsole extends Admin
 			switch(strtolower($column)){
 				case 'transaction_count' :
 					$aSelector[] = 'COUNT(*) AS TRANSACTION_COUNT';
+					$aOrderbyClauses[] = 'TRANSACTION_COUNT '.$orderby['TRANSACTION_COUNT'];
 					break;
             	case 'hour':
             		$aSelector[] = 'EXTRACT(hour FROM T.created) AS HOUR';
@@ -1268,6 +1269,7 @@ class mConsole extends Admin
 					break;
 				case 'revenue_count' :
 					$aSelector[] = 'sum(T.amount) AS revenue_count';
+					$aOrderbyClauses[] = 'revenue_count '.$orderby['revenue_count'];
 					break;
 				case 'currency' :
 					$aSelector[] = 'C.code AS CURRENCY';
