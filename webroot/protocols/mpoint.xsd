@@ -174,7 +174,7 @@
 															</xs:restriction>
 														</xs:simpleType>
 													</xs:element>
-                                                                                                        <xs:element name="valid-from" minOccurs="0" maxOccurs="1">
+                                                    <xs:element name="valid-from" minOccurs="0" maxOccurs="1">
 														<xs:simpleType>
 															<xs:restriction base="xs:string">
 																<xs:length value="5" />
