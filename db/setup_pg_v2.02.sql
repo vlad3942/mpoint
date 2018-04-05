@@ -3458,7 +3458,7 @@ INSERT INTO System.PSPCurrency_Tbl (pspid, name,currencyid) VALUES (43,'CNY',156
 
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (40, 43);
 
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 43, 'AliPay Chinese', '2088102135220161', '');
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10001, 43, 'AliPay Chinese', '', '');
 
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100001, 43, '-1');
 
@@ -3476,6 +3476,11 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) SELECT 
 
 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'key.html', 'MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAIBQnVnYfs/oHSZJZhE01Z9ukKRmEU1OrDFGggD9F9YLYQP+kPLSg2DcVVC1Xl4Yyjp2RhfSODXmQD+io2Pt+HUZ+3CMlkI0e1qiQhnfLNbNEIjq+RVsIFZNqPlo3Lg/hBqlPhqk4YfqOuoagMthyuSBZJZ3UwXsRHgdzfBAzyI/AgMBAAECgYB/uL6HefnwVOj+/Tx9kAu7YMDVA0vhmZfIjJhHB6Y8RqNQ6Im7SlO/jFHXvlCqdR6GxsfKWlPdQs1dCjR8+Zi+/jEPaGDmvYa7p4kNXgJ+6zY4rSMt1MC0Py5fVZ4J+75HdfSwmbcm3u8LkREidRBn0EKbwQ0SwQOZqb/T6scr8QJBALlJxw7Xh0Mx6Gs+L55j2iO+m5mhvrBZGt0nmCcz+HFoSo3oO5rHeBGUJF1eGrbbValC0j2wL0n1Wa7fVK0xKrsCQQCxSK4Lrdvrw3T3/t1kjVFXgkZ3JhWpFKPBroX/AsBhANcRVKMG5oh43dw5jMJFgQmWQ6QsKh5q52dnqoueL1hNAkBDjoHUiILZ3h2G1IKaNn/3nmyvREj5lVN1JRWV3Z4NA2CDgxQQaAAAMMpdfI0y9J+z+hgbw9xKE/niB62hBBc3AkACDDnebqqspXxTZQE/qRY4cYvI0orLgi6GDTMFCA4a0LyrOZQMf1syMjXaAFM6JExtDOj3jaD+UR/zpZepQxi9AkEAimPiAgmD9DQVSWXLyi2DLvJ8flOV6PFx3Fq0hx9P0VbScKdJy2ETSH4gTnm+CIfE/5VJP16+jfSVV3BlODhdug==', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=43 ;
+
+-- Alipay Chinese PIDs --
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) SELECT 'pid.html', '2088102135220161', id, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10007 AND pspid=43 ;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) SELECT 'pid.app', '2088102170185364', id, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10007 AND pspid=43 ;
+
 /* ========== Global Configuration for AliPay Chinese ENDS ========== */
 
 
@@ -3563,6 +3568,31 @@ INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid, psp_type) 
 INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (18, 41);
 
 /* ========== CONFIGURATION FOR GOOGLE PAY - END ========== */
+
+
+
+
+-- 2c2p alc Airline data improvement -- start --
+-- Alter Log.Passenger Tbl to store additional passenger data
+
+ALTER TABLE log.passenger_tbl
+  ADD COLUMN title character varying(20);
+ALTER TABLE log.passenger_tbl
+  ADD COLUMN email character varying(50);
+ALTER TABLE log.passenger_tbl
+  ADD COLUMN mobile character varying(15);
+ALTER TABLE log.passenger_tbl
+  ADD COLUMN "country_id" character varying(3);
+
+-- Alter Log.flight_tbl to store additional flight data
+ALTER TABLE log.flight_tbl
+  ADD COLUMN tag character varying(2);
+ALTER TABLE log.flight_tbl
+  ADD COLUMN "trip_count" character varying(2);
+ALTER TABLE log.flight_tbl
+  ADD COLUMN "service_level" character varying(2);
+-- 2c2p alc Airline data improvement -- end --
+
 /*=========================End===================================== */
 
 
