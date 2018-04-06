@@ -43,6 +43,8 @@ require_once(sCLASS_PATH ."/callback.php");
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
 // Require specific Business logic for the CPM ACQUIRER component
 require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
+// Require specific Business logic for the CPM GATEWAY component
+require_once(sINTERFACE_PATH ."/cpm_gateway.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
 // Require general Business logic for the Cellpoint Mobile module
@@ -106,11 +108,16 @@ require_once(sCLASS_PATH ."/nets.php");
 require_once(sCLASS_PATH ."/mvault.php");
 // Require specific Business logic for the 2c2p alc component
 require_once(sCLASS_PATH ."/ccpp_alc.php");
+// Require specific Business logic for the Google Pay component
+require_once(sCLASS_PATH ."/googlepay.php");
 
+// Require specific Business logic for the PPro component
+require_once(sCLASS_PATH ."/ppro.php");
 require_once(sCLASS_PATH ."/bre.php");
 // Require specific Business logic for the Amex component
 require_once(sCLASS_PATH ."/amex.php");
 
+require_once(sCLASS_PATH ."/post_auth_action.php");
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -252,6 +259,7 @@ try
 												}
 											}
 										}
+										
 										
 										//Check if card or payment method is enabled or disabled by merchant
 										//Same check is  also implemented at app side.
@@ -411,6 +419,10 @@ try
                                                                     $obj_Wallet = new AndroidPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["android-pay"]);
                                                                     $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iANDROID_PAY_PSP);
                                                                     break;
+                                                            case (Constants::iGOOGLE_PAY_WALLET):
+                                                                $obj_Wallet = new GooglePay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["google-pay"]);
+                                                                $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iGOOGLE_PAY_PSP);
+                                                                break;
                                                             default:
                                                                 /**For MVAULT - lookup card psp-id
                                                                  * if(psp-id is that of mVault) then create new MVault object                                                                            */
@@ -640,7 +652,11 @@ try
 																		$obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), $obj_XML);
 																	}
 																	catch (HTTPException $ignore) { /* Ignore */ }
-																	$xml = '<status code="100">Payment Authorized using Stored Card</status>';
+                                                                                                                                        if ($bStoredCard === true) {
+                                                                                                                                            $xml = '<status code="100">Payment Authorized using Stored Card</status>';
+                                                                                                                                        } else {
+                                                                                                                                            $xml = '<status code="2000">Payment authorized</status>';
+                                                                                                                                        }
 																}
 	
 																else
@@ -1131,6 +1147,26 @@ try
 																				$xml .= '<status code="92">Authorization failed, 2C2P ALC returned error: '. $code .'</status>';
 																			}
 																			break;
+                                                                case (Constants::iPPRO_GATEWAY): // PPro Gateway
+                                                                    $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iPPRO_GATEWAY);
+
+                                                                    $obj_PSP = new PPRO($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["ppro"]);
+
+                                                                    $code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+
+                                                                    // Authorization succeeded with 2c2p alc
+                                                                    if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+                                                                    else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml = $code; }
+                                                                    // Error: Authorization declined
+                                                                    else
+                                                                    {
+                                                                        $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+
+                                                                        header("HTTP/1.1 502 Bad Gateway");
+
+                                                                        $xml .= '<status code="92">Authorization failed, PPro returned error: '. $code .'</status>';
+                                                                    }
+                                                                    break;
 
                                                                 case (Constants::iAMEX_ACQUIRER): // AMEX
                                                                     $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iAMEX_ACQUIRER);

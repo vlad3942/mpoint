@@ -27,12 +27,14 @@ require_once(sCLASS_PATH ."/callback.php");
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
 // Require specific Business logic for the CPM ACQUIRER component
 require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
+// Require specific Business logic for the CPM GATEWAY component
+require_once(sINTERFACE_PATH ."/cpm_gateway.php");
 // Require specific Business logic for the CPM MPI component
 require_once(sINTERFACE_PATH ."/cpm_mpi.php");
 // Require specific Business logic for the CPM PSP component
-require_once(sCLASS_PATH ."/mpi.php");
+require_once(sCLASS_PATH ."/Mpi.php");
 // Require specific Business logic for Nets MPI component
-require_once(sINTERFACE_PATH ."/send.php");
+//require_once(sINTERFACE_PATH ."/send.php");
 // Require specific Business logic for Nets MPI component
 require_once(sCLASS_PATH ."/netsmpi.php");
 

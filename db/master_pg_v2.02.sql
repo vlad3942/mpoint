@@ -220,3 +220,157 @@ SET psp_type = psp_tbl.system_type
 FROM system.psp_tbl
 WHERE psp_tbl.id = cardaccess_tbl.pspid;
 CREATE UNIQUE INDEX cardaccess_card_country_uq ON client.cardaccess_tbl (clientid, cardid, countryid, psp_type);
+
+
+
+
+/*=========== Gateway Triggers ============*/
+
+-- Table: system.triggerunit_tbl
+
+-- DROP TABLE system.triggerunit_tbl;
+
+CREATE TABLE system.triggerunit_tbl
+(
+  id serial NOT NULL,
+  name character varying(200),
+  description character varying(200),
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true,
+  CONSTRAINT trigger_pk PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE system.triggerunit_tbl
+  OWNER TO mpoint;
+  
+  
+ -- Table: client.gatewaytrigger_tbl
+
+-- DROP TABLE client.gatewaytrigger_tbl;
+
+CREATE TABLE client.gatewaytrigger_tbl
+(
+  id serial NOT NULL,
+  gatewayid integer,
+  enabled boolean NOT NULL DEFAULT false,
+  healthtriggerunit integer,
+  healthtriggervalue integer,
+  aggregationtriggerunit integer,
+  clientid integer,
+  aggregationtriggervalue integer,
+  resetthresholdunit integer,
+  resetthresholdvalue integer,
+  created timestamp without time zone NOT NULL DEFAULT now(),
+  modified timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT trigger_pk PRIMARY KEY (id),
+  CONSTRAINT atriggerunit_fk FOREIGN KEY (aggregationtriggerunit)
+      REFERENCES system.triggerunit_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT gateway_fk FOREIGN KEY (gatewayid)
+      REFERENCES system.psp_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT htriggerunit_fk FOREIGN KEY (healthtriggerunit)
+      REFERENCES system.triggerunit_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT triggeclient_fk FOREIGN KEY (clientid)
+      REFERENCES client.client_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT ttriggerunit_fk FOREIGN KEY (resetthresholdunit)
+      REFERENCES system.triggerunit_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE client.gatewaytrigger_tbl
+  OWNER TO mpoint;
+
+
+  
+  /* ========= Gateway trigger system data ========== */
+
+INSERT INTO system.triggerunit_tbl( id, name, description) VALUES (1, 'time', 'Time based triggers counted in seconds');
+INSERT INTO system.triggerunit_tbl( id, name, description) VALUES (2, 'volume', 'Transaction based triggers counted in number of txns');
+
+/* ========= Gateway trigger system data ========== */
+
+
+
+/*=============== Gateway Stat Data -================ */
+
+-- Table: system.statisticstype_tbl
+
+-- DROP TABLE system.statisticstype_tbl;
+
+CREATE TABLE system.statisticstype_tbl
+(
+  id serial NOT NULL,
+  name character varying(200),
+  description character varying(200),
+  enabled boolean NOT NULL DEFAULT true,
+  created timestamp without time zone NOT NULL DEFAULT now(),
+  modified timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT stattype_pk PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE system.statisticstype_tbl
+  OWNER TO mpoint;
+
+  
+  -- Table: client.gatewaystat_tbl
+
+-- DROP TABLE client.gatewaystat_tbl;
+
+CREATE TABLE client.gatewaystat_tbl
+(
+  id serial NOT NULL,
+  gatewayid integer NOT NULL,
+  clientid integer NOT NULL,
+  statetypeid integer NOT NULL,
+  statvalue integer NOT NULL,
+  enabled boolean NOT NULL DEFAULT true,
+  created timestamp without time zone NOT NULL DEFAULT now(),
+  modified timestamp without time zone NOT NULL DEFAULT now(),
+  reseton timestamp without time zone,
+  CONSTRAINT stat_pk PRIMARY KEY (id),
+  CONSTRAINT clientstat_fk FOREIGN KEY (clientid)
+      REFERENCES client.client_tbl (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT gatewaystat_fk FOREIGN KEY (gatewayid)
+      REFERENCES system.psp_tbl (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT stattype_fk FOREIGN KEY (statetypeid)
+      REFERENCES system.statisticstype_tbl (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE client.gatewaystat_tbl
+  OWNER TO mpoint;
+
+-- 2c2p alc Airline data improvement -- start --
+-- Alter Log.Passenger Tbl to store additional passenger data
+
+ALTER TABLE log.passenger_tbl
+  ADD COLUMN title character varying(20);
+ALTER TABLE log.passenger_tbl
+  ADD COLUMN email character varying(50);
+ALTER TABLE log.passenger_tbl
+  ADD COLUMN mobile character varying(15);
+ALTER TABLE log.passenger_tbl
+  ADD COLUMN "country_id" character varying(3);
+
+-- Alter Log.flight_tbl to store additional flight data
+ALTER TABLE log.flight_tbl
+  ADD COLUMN tag character varying(2);
+ALTER TABLE log.flight_tbl
+  ADD COLUMN "trip_count" character varying(2);
+ALTER TABLE log.flight_tbl
+  ADD COLUMN "service_level" character varying(2);
+-- 2c2p alc Airline data improvement -- end --

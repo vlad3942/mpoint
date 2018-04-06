@@ -710,6 +710,18 @@ $aHTTP_CONN_INFO["2c2p-alc"]["paths"]["callback"] = "/mpoint/2c2p-alc/callback";
 
 
 /**
+ * Connection info for connecting to Citcon
+ */
+$aHTTP_CONN_INFO["citcon"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["citcon"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["citcon"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["citcon"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["citcon"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["citcon"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["citcon"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["citcon"]["paths"]["initialize"] = "/mpoint/citcon/initialize";
+
+/**
  * Connection info for connecting to AliPay Chinese
  */
 $aHTTP_CONN_INFO["alipay-chinese"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
@@ -724,6 +736,31 @@ $aHTTP_CONN_INFO["alipay-chinese"]["paths"]["refund"] = "/mpoint/alipay-chinese/
 $aHTTP_CONN_INFO["alipay-chinese"]["paths"]["status"] = "/mpoint/alipay-chinese/status";
 $aHTTP_CONN_INFO["alipay-chinese"]["paths"]["callback"] = "/mpoint/alipay-chinese/callback";
 
+/**
+ * Connection info for connecting to Google Pay
+ */
+$aHTTP_CONN_INFO["google-pay"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["google-pay"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["google-pay"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["google-pay"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["google-pay"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["google-pay"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["google-pay"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["google-pay"]["paths"]["get-payment-data"] = "/mpoint/google-pay/get-payment-data";
+/**
+ * Connection info for connecting to PPRO
+ */
+$aHTTP_CONN_INFO["ppro"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["ppro"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["ppro"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["ppro"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["ppro"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["ppro"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["ppro"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["ppro"]["paths"]["initialize"] = "/mpoint/ppro/initialize";
+$aHTTP_CONN_INFO["ppro"]["paths"]["auth"] = "/mpoint/ppro/authorize-payment";
+$aHTTP_CONN_INFO["ppro"]["paths"]["refund"] = "/mpoint/ppro/refund";
+$aHTTP_CONN_INFO["ppro"]["paths"]["callback"] = "/mpoint/ppro/callback";
 /**
  * Connection info for connecting to Amex
  */

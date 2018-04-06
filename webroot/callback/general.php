@@ -27,6 +27,8 @@ require_once(sCLASS_PATH ."/capture.php");
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
 // Require specific Business logic for the CPM ACQUIRER component
 require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
+// Require specific Business logic for the CPM GATEWAY component
+require_once(sINTERFACE_PATH ."/cpm_gateway.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 // Require specific Business logic for the Adyen component
@@ -82,6 +84,11 @@ require_once(sCLASS_PATH ."/trustly.php");
 require_once(sCLASS_PATH ."/ccpp_alc.php");
 // Require specific Business logic for the paytabs component
 require_once(sCLASS_PATH ."/paytabs.php");
+// Require specific Business logic for the citcon component
+require_once(sCLASS_PATH ."/citcon.php");
+// Require specific Business logic for the PPRO component
+require_once(sCLASS_PATH ."/ppro.php");
+
 // Require specific Business logic for the Amex component
 require_once(sCLASS_PATH ."/amex.php");
 /**
@@ -143,8 +150,8 @@ try
 	// If transaction is in Account Validated i.e 1998 state no action to be done
 
     array_push($aStateId,$iStateID);
-
-    if($obj_PSPConfig->getProcessorType() === 2){
+    $propertyValue = $obj_TxnInfo->getClientConfig()->getAdditionalProperties("NETS_3DVERIFICATION");
+    if($obj_PSPConfig->getProcessorType() === 2 && $propertyValue == true){
         if($obj_XML->callback->transaction->TransactionStatus == "Y") {
             $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
             $mvault = new MVault($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['mvault']);
