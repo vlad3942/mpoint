@@ -97,36 +97,42 @@ final class PaymentSession
         $this->_sIp = $ipaddress;
         $this->_sMobile = $mobile;
         $expire = date("Y-m-d H:i:s.u", time() + (15 * 60));
-        $sql = "INSERT INTO Log" . sSCHEMA_POSTFIX . ".session_tbl 
-                    (clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, sessiontypeid, externalid, expire) 
-                VALUES 
-                    ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id;";
+        if ($this->updateSessionDataFromOrderId() != true) {
+            try {
+                $sql = "INSERT INTO Log" . sSCHEMA_POSTFIX . ".session_tbl 
+                        (clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, sessiontypeid, externalid, expire) 
+                    VALUES 
+                        ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id;";
 
-        $res = $this->_obj_Db->prepare($sql);
-        if (is_resource($res) === true) {
-            $aParams = array(
-                $this->_iClientId,
-                $this->_iAccountId,
-                $this->_iCurrencyId,
-                $this->_iCountryId,
-                '4001',
-                $orderid,
-                $amount,
-                $this->_sMobile,
-                $this->_sDeviceId,
-                $this->_sIp,
-                $sessiontypeid,
-                $externalId,
-                $expire
-            );
+                $res = $this->_obj_Db->prepare($sql);
+                if (is_resource($res) === true) {
+                    $aParams = array(
+                        $this->_iClientId,
+                        $this->_iAccountId,
+                        $this->_iCurrencyId,
+                        $this->_iCountryId,
+                        '4001',
+                        $orderid,
+                        $amount,
+                        $this->_sMobile,
+                        $this->_sDeviceId,
+                        $this->_sIp,
+                        $sessiontypeid,
+                        $externalId,
+                        $expire
+                    );
 
-            $result = $this->_obj_Db->execute($res, $aParams);
+                    $result = $this->_obj_Db->execute($res, $aParams);
 
-            if ($result === false) {
-                throw new Exception("Fail to create session", E_USER_ERROR);
-            } else {
-                $RS = $this->_obj_Db->fetchName($result);
-                $this->_id = $RS["ID"];
+                    if ($result === false) {
+                        throw new Exception("Fail to create session", E_USER_ERROR);
+                    } else {
+                        $RS = $this->_obj_Db->fetchName($result);
+                        $this->_id = $RS["ID"];
+                    }
+                }
+            } catch (Exception $e) {
+                $this->updateSessionDataFromOrderId();
             }
         }
 
@@ -242,6 +248,26 @@ final class PaymentSession
         $xml .= '<amount country-id="'. $this->getCountryConfig()->getID() .'" currency-id="'. $this->getCurrencyConfig()->getID() .'" currency="'.$this->getCurrencyConfig()->getCode() .'" symbol="'. $this->getCountryConfig()->getSymbol() .'" format="'. $this->getCountryConfig()->getPriceFormat() .'" alpha2code="'. $this->getCountryConfig()->getAlpha2code() .'" alpha3code="'. $this->getCountryConfig()->getAlpha3code() .'" code="'. $this->getCountryConfig()->getNumericCode() .'">'. $this->getPendingAmount() .'</amount>';
         $xml .= "</session>";
         return $xml;
-}
+    }
+
+    private function updateSessionDataFromOrderId()
+    {
+        $status = false;
+        try {
+            $sql = "SELECT id, amount FROM log" . sSCHEMA_POSTFIX . ".session_tbl WHERE orderid = '" . $this->_orderId . "' ORDER BY id DESC LIMIT 1";
+            $RS = $this->_obj_Db->getName($sql);
+            if (is_array($RS) === true) {
+                $this->_id = $RS["ID"];
+                $amount = $this->_amount + $RS['AMOUNT'];
+                $query = "UPDATE Log" . sSCHEMA_POSTFIX . ".session_tbl
+                                SET amount = " . $amount . " WHERE id = " . $RS['ID'];
+                $this->_obj_Db->query($query);
+                $status = true;
+            }
+        } catch (Exception $e) {
+            trigger_error ( "Update Session Data - ." . $e->getMessage(), E_USER_ERROR );
+        }
+        return $status;
+    }
 
 }

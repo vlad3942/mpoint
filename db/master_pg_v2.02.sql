@@ -399,3 +399,7 @@ ALTER TABLE log.flight_tbl
 ALTER TABLE log.flight_tbl
   ADD COLUMN "service_level" character varying(2);
 -- 2c2p alc Airline data improvement -- end --
+
+-- To execute the above query first need to truncate the session_tbl data.
+-- Run the "TRUNCATE TABLE log.session_tbl CASCADE;" before executing below query.
+ALTER TABLE log.session_tbl ADD CONSTRAINT constraint_name UNIQUE (orderid);
