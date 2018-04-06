@@ -188,7 +188,7 @@ class DIBS extends Callback implements Captureable, Refundable
 		$b .= "&expyear=". trim($expyear);
 		$b .= "&cvc=". trim($cvc);
 		$b .= "&amount=". $this->getTxnInfo()->getAmount();
-		$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iDIBS_PSP);
+		$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getCurrencyConfig()->getID(), Constants::iDIBS_PSP);
 		$b .= "&orderid=". urlencode($oid);
 		if ($this->getTxnInfo()->getClientConfig()->getMode() > 0) { $b .= "&test=". $this->getTxnInfo()->getClientConfig()->getMode(); }
 		$b .= "&textreply=true";
