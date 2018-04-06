@@ -320,7 +320,7 @@ abstract class Callback extends EndUserAccount
 		$sBody = "";
 		$sBody .= "mpoint-id=". $this->_obj_TxnInfo->getID();
 		if(strlen($sAdditionalData) > 0)
-		$sBody .= "&".$sAdditionalData;	
+		$sBody .= "&".$sAdditionalData;
 		$sBody .= "&orderid=". urlencode($this->_obj_TxnInfo->getOrderID() );
 		$sBody .= "&status=". $sid;
 		$sBody .= "&amount=". $amt;
@@ -664,6 +664,12 @@ abstract class Callback extends EndUserAccount
         	return new PayTabs($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["paytabs"]);
         case (Constants::i2C2P_ALC_PSP):
         		return new CCPPALC($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["2c2p-alc"]);
+        case (Constants::iALIPAY_CHINESE_PSP):
+                return new AliPayChinese($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["alipay-chinese"]);
+        case (Constants::iCITCON_PSP):
+                return new Citcon($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["citcon"]);
+        case (Constants::iPPRO_GATEWAY):
+            return new PPRO($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["citcon"]);
 		default:
 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}

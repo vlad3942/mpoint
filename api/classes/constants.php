@@ -280,7 +280,7 @@ abstract class Constants
      *
      */
     const iSESSION_CREATED = 4001;
-    
+
 
     /**
      * Defines the ID of the State that indicates that Session is expired
@@ -295,6 +295,12 @@ abstract class Constants
      */
     const iSESSION_FAILED = 4020;
 
+    /**
+     * Defines the ID of the State that indicates that Session failed due to maximum transaction attempts
+     *
+     */
+    const iSESSION_FAILED_MAXIMUM_ATTEMPTS = 4021;
+    
     /**
      * Defines the ID of the State that indicates that Session complete failed
      *
@@ -661,7 +667,40 @@ abstract class Constants
 	 *
 	 */
 	const i2C2P_ALC_PSP = 40;
-	
+
+
+    /**
+    * Unique ID for the MPI : Nets
+    *
+    */
+    const iNETS_MPI = 42;
+
+
+    /**
+     * Unique ID for the Payment Service Provider: Citcon - WeChat Pay
+     *
+     */
+    const iCITCON_PSP = 41;
+
+    /**
+     * Unique ID for the Payment Service Provider: AliPay Chinese
+     *
+     */
+    const iALIPAY_CHINESE_PSP = 43;
+
+
+    /**
+     * Unique ID for the Payment Service Provider: Google Pay
+     *
+     */
+    const iGOOGLE_PAY_PSP = 44;
+
+    /**
+     * Unique ID for the Payment Service Provider: PPRO
+     *
+     */
+    const iPPRO_GATEWAY = 46;
+
 	/**
 	 * Unique ID for the Electronic Payment Flow
 	 *
@@ -855,12 +894,191 @@ abstract class Constants
 	 *
 	 */
 	const iTRUSTLY_PAY = 38;
+	/**
+	 * Unique Card ID for transaction's made using the co-branded VISA / Dankort
+	 *
+	 */
+	const iVISA_DANKORT_CARD = 37;
 	
     /**
      * Unique Card ID for transaction's made using mVault
      *
      */
     const iMVAULT_WALLET = 35;
+
+    /**
+     * Unique Card ID for transaction's made using Alipay Chinese
+     *
+     */
+    const iALIPAY_CHINESE_WALLET = 40;
+
+    /**
+     * Unique Card ID for transaction's made using Google Pay
+     *
+     */
+    const iGOOGLE_PAY_WALLET = 41;
+
+    /**
+     * Unique Card ID for transaction's made using PPRO
+     *
+     */
+    const iPPRO_PAY = 42;
+
+    /**
+     * Unique Card ID for transaction's made using AFFIN_BANK
+     *
+     */
+    const iAFFIN_BANK = 43;
+
+    /**
+     * Unique Card ID for transaction's made using AMBANK
+     *
+     */
+    const iAMBANK = 44;
+
+    /**
+     * Unique Card ID for transaction's made using BANCONTACT
+     *
+     */
+    const iBANCONTACT = 45;
+
+    /**
+     * Unique Card ID for transaction's made using CIMB_CLICKS
+     *
+     */
+    const iCIMB_CLICKS = 46;
+
+    /**
+     * Unique Card ID for transaction's made using DRAGONPAY
+     *
+     */
+    const iDRAGONPAY = 47;
+
+    /**
+     * Unique Card ID for transaction's made using ENETS
+     *
+     */
+    const iENETS = 48;
+
+    /**
+     * Unique Card ID for transaction's made using ENTERCASH
+     *
+     */
+    const iENTERCASH = 49;
+
+    /**
+     * Unique Card ID for transaction's made using EPS
+     *
+     */
+    const iEPS = 50;
+
+    /**
+     * Unique Card ID for transaction's made using ESTONIAN_BANKS
+     *
+     */
+    const iESTONIAN_BANKS = 51;
+
+    /**
+     * Unique Card ID for transaction's made using GIROPAY
+     *
+     */
+    const iGIROPAY = 52;
+
+    /**
+     * Unique Card ID for transaction's made using IDEAL
+     *
+     */
+    const iIDEAL = 53;
+
+    /**
+     * Unique Card ID for transaction's made using LATVIAN_BANKS
+     *
+     */
+    const iLATVIAN_BANKS = 54;
+
+    /**
+     * Unique Card ID for transaction's made using LITHUANIAN_BANKS
+     *
+     */
+    const iLITHUANIAN_BANKS = 55;
+
+    /**
+     * Unique Card ID for transaction's made using MAYBANK2U
+     *
+     */
+    const iMAYBANK2U = 56;
+
+    /**
+     * Unique Card ID for transaction's made using MULTIBANCO
+     *
+     */
+    const iMULTIBANCO = 57;
+
+    /**
+     * Unique Card ID for transaction's made using MYCLEAR_FPX
+     *
+     */
+    const iMYCLEAR_FPX = 58;
+
+    /**
+     * Unique Card ID for transaction's made using PAYSBUY
+     *
+     */
+    const iPAYSBUY = 59;
+
+    /**
+     * Unique Card ID for transaction's made using PAYU
+     *
+     */
+    const iPAYU = 60;
+
+    /**
+     * Unique Card ID for transaction's made using PRZELEWY24
+     *
+     */
+    const iPRZELEWY24  = 61;
+
+    /**
+     * Unique Card ID for transaction's made using RHB BANK
+     *
+     */
+    const iRHB_BANK = 62;
+
+    /**
+     * Unique Card ID for transaction's made using SAFETYPAY
+     *
+     */
+    const iSAFETYPAY = 63;
+
+    /**
+     * Unique Card ID for transaction's made using SEPA
+     *
+     */
+    const iSEPA = 64;
+
+    /**
+     * Unique Card ID for transaction's made using SINGPOST
+     *
+     */
+    const iSINGPOST = 65;
+
+    /**
+     * Unique Card ID for transaction's made using SOFORT BANKING
+     *
+     */
+    const iSOFORT_BANKING = 66;
+
+    /**
+     * Unique Card ID for transaction's made using UNIONPAY
+     *
+     */
+    const iUNIONPAY = 67;
+
+    /**
+     * Unique Card ID for transaction's made using VERKKOPANKKI
+     *
+     */
+    const iVERKKOPANKKI = 68;
 
 	/**
 	 * Unique Fee Type ID for Top-Ups

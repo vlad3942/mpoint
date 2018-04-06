@@ -109,7 +109,7 @@ try
 		// Notify client about Authorized/Declined state
 		$aCallbackArgs = array('amount' => $iAmount,
 							   'card-id' => (integer)$obj_TxnData["card-id"],
-							   'transact' => (integer)$obj_TxnData["external-id"] );
+							   'transact' => $obj_TxnData["external-id"] );
 		$obj_PSP->notifyClient($iStateID, $aCallbackArgs);
 
 		// Notify client about, and log, possible Captured state

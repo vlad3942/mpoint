@@ -27,6 +27,8 @@ require_once(sCLASS_PATH ."/capture.php");
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
 // Require specific Business logic for the CPM ACQUIRER component
 require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
+// Require specific Business logic for the CPM GATEWAY component
+require_once(sINTERFACE_PATH ."/cpm_gateway.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 // Require specific Business logic for the Adyen component
@@ -65,6 +67,7 @@ require_once(sCLASS_PATH ."/maybank.php");
 require_once(sCLASS_PATH ."/publicbank.php");
 // Require specific Business logic for the AliPay component
 require_once(sCLASS_PATH ."/alipay.php");
+require_once(sCLASS_PATH ."/alipay_chinese.php");
 // Require specific Business logic for the POLi component
 require_once(sCLASS_PATH ."/poli.php");
 // Require specific Business logic for the QIWI component
@@ -81,7 +84,10 @@ require_once(sCLASS_PATH ."/trustly.php");
 require_once(sCLASS_PATH ."/ccpp_alc.php");
 // Require specific Business logic for the paytabs component
 require_once(sCLASS_PATH ."/paytabs.php");
-
+// Require specific Business logic for the citcon component
+require_once(sCLASS_PATH ."/citcon.php");
+// Require specific Business logic for the PPRO component
+require_once(sCLASS_PATH ."/ppro.php");
 
 /**
  * Input XML format
@@ -142,6 +148,30 @@ try
 	// If transaction is in Account Validated i.e 1998 state no action to be done
 
     array_push($aStateId,$iStateID);
+    $propertyValue = $obj_TxnInfo->getClientConfig()->getAdditionalProperties("NETS_3DVERIFICATION");
+    if($obj_PSPConfig->getProcessorType() === 2 && $propertyValue == true){
+        if($obj_XML->callback->transaction->TransactionStatus == "Y") {
+            $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
+            $mvault = new MVault($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['mvault']);
+            $xmlString = "<card id='" . $obj_XML->callback->transaction->card["typr-id"] . "'><token>" . $obj_TxnInfo->getToken() . "</token></card>";
+            $obj_Elem = $mvault->getPaymentData($obj_PSPConfig, simplexml_load_string($xmlString));
+            $card_obj = simplexml_load_string($obj_Elem);
+            $card_obj = $card_obj->{'payment-data'};
+            $card_obj->card->cvc = base64_decode(strrev($obj_TxnInfo->getExternalID()));
+            $card_obj->card['type-id'] = $obj_XML->callback->transaction->card["type-id"];
+            $cryptogram = $card_obj->card->{'info-3d-secure'}->addChild('cryptogram', $obj_XML->callback->transaction->SignatureISO9796);
+            $cryptogram->addAttribute('eci', $obj_XML->callback->transaction->TransactionStatus);
+            $cryptogram->addAttribute('algorithm-id', $obj_XML->callback->transaction->TXcavvAlgorithm);
+            $code = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card);
+        }
+        else{
+            $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+                            SET extid=''
+                            WHERE id = " . $obj_TxnInfo->getID();
+            //echo $sql ."\n";
+            $_OBJ_DB->query($sql);
+        }
+    }
 
     if($iAccountValidation != 1)
 	{

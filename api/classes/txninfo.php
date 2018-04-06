@@ -792,13 +792,26 @@ class TxnInfo
 		$xml .= '<description>'. htmlspecialchars($this->_sDescription, ENT_NOQUOTES) .'</description>';
 		$xml .= '<ip>'. htmlspecialchars($this->_sIP, ENT_NOQUOTES) .'</ip>';
 		$xml .= '<hmac>'. htmlspecialchars($this->getHMAC(), ENT_NOQUOTES) .'</hmac>';
-        $xml .= '<token>'.htmlspecialchars($this->_token, ENT_NOQUOTES).'</token>';
-        $xml .= '<card-mask>'.htmlspecialchars($this->_mask, ENT_NOQUOTES).'</card-mask>';
-        $xml .= '<expiry>'.htmlspecialchars($this->_expiry, ENT_NOQUOTES).'</expiry>';
-        $xml .= '<approval-code>'.htmlspecialchars($this->_approvalCode, ENT_NOQUOTES).'</approval-code>';
-		$xml .= '<action-code>'.htmlspecialchars($this->_actionCode, ENT_NOQUOTES).'</action-code>';
-		$xml .= '<auth-original-data>'.htmlspecialchars($this->_authOriginalData, ENT_NOQUOTES).'</auth-original-data>';
-		if( empty($this->_obj_OrderConfigs) === false )
+
+		if(!empty($this->_token))
+            $xml .= '<token>'.htmlspecialchars($this->_token, ENT_NOQUOTES).'</token>';
+
+        if(!empty($this->_mask))
+		    $xml .= '<card-mask>'.htmlspecialchars($this->_mask, ENT_NOQUOTES).'</card-mask>';
+
+        if(!empty($this->_expiry))
+            $xml .= '<expiry>'.htmlspecialchars($this->_expiry, ENT_NOQUOTES).'</expiry>';
+
+        if(!empty($this->_approvalCode))
+            $xml .= '<approval-code>'.htmlspecialchars($this->_approvalCode, ENT_NOQUOTES).'</approval-code>';
+
+        if(!empty($this->_actionCode))
+            $xml .= '<action-code>'.htmlspecialchars($this->_actionCode, ENT_NOQUOTES).'</action-code>';
+
+        if(!empty($this->_authOriginalData))
+            $xml .= '<auth-original-data>'.htmlspecialchars($this->_authOriginalData, ENT_NOQUOTES).'</auth-original-data>';
+
+        if( empty($this->_obj_OrderConfigs) === false )
 		{
 			
 			$xml .= $this->getOrdersXML();
@@ -1175,8 +1188,8 @@ class TxnInfo
 				// Error: Unable to generate a new Flight ID
 				if (is_array($RS) === false) { throw new mPointException("Unable to generate new Flight ID", 1001); }
 
-				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".flight_Tbl(id, service_class,flight_number, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified)
-					VALUES('". $RS["ID"] ."','". $aFlightData["service_class"] ."','". $aFlightData["flight_number"] ."','". $aFlightData["departure_airport"] ."','". $aFlightData["arrival_airport"] ."','". $aFlightData["airline_code"] ."','". $aFlightData["order_id"] ."','". $aFlightData["arrival_date"] ."', '". $aFlightData["departure_date"] ."',now(),now())";
+				$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".flight_Tbl(id, service_class,flight_number, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified, tag, trip_count, service_level)
+					VALUES('". $RS["ID"] ."','". $aFlightData["service_class"] ."','". $aFlightData["flight_number"] ."','". $aFlightData["departure_airport"] ."','". $aFlightData["arrival_airport"] ."','". $aFlightData["airline_code"] ."','". $aFlightData["order_id"] ."','". $aFlightData["arrival_date"] ."', '". $aFlightData["departure_date"] ."',now(),now(), '". $aFlightData["tag"] ."', '". $aFlightData["trip_count"] ."', '". $aFlightData["service_level"] ."')";
 				$this->setAdditionalDetails($obj_DB, $aAdditionalDatas, $RS["ID"]);
 				
 				// Error: Unable to insert a new flight record in the Flight Table
@@ -1214,8 +1227,8 @@ class TxnInfo
 				if (is_array($RS) === false) { throw new mPointException("Unable to generate new Passenger ID", 1001); }
 	
 				
-						$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".passenger_tbl(id, first_name, last_name, type, order_id, created, modified)
-						VALUES(". $RS["ID"] .", '". $aPassengerData["first_name"] ."', '". $aPassengerData["last_name"] ."','". $aPassengerData["type"] ."', ". $aPassengerData["order_id"] .", now(), now())";
+						$sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".passenger_tbl(id, first_name, last_name, type, order_id, created, modified, title, email, mobile, country_id)
+						VALUES(". $RS["ID"] .", '". $aPassengerData["first_name"] ."', '". $aPassengerData["last_name"] ."','". $aPassengerData["type"] ."', ". $aPassengerData["order_id"] .", now(), now(), '". $aPassengerData["title"] ."', '". $aPassengerData["email"] ."', '". $aPassengerData["mobile"] ."', '". $aPassengerData["country_id"] ."')";
 				// Error: Unable to insert a new passenger record in the Passenger Table
 						$this->setAdditionalDetails($obj_DB, $aAdditionalDatas, $RS["ID"]);
 				if (is_resource($obj_DB->query($sql) ) === false)
@@ -1305,6 +1318,15 @@ class TxnInfo
      * @return 	integer
      */
     public function getProductType() { return $this->_iProductType; }
+
+    /**
+     * Returns the Card token.
+     *
+     * @return 	String
+     */
+    function getToken() {
+	    return $this->_token;
+    }
 
 }
 ?>
