@@ -13,11 +13,13 @@ INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (578,45,'NOK
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (826,45,'USD');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (978,45,'EUR');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (208,45,'DKK');
-INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (208,45,'DKK');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (352,45,'ISK');
 
 
 /*END: Adding Currency entries to the PSPCurrency_Tbl table for AMEX*/
+
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (1, 45, true);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, pspid, countryid, stateid, enabled) VALUES (10007, 1, 45, 200, 1, true);
 
 /* ========== CONFIGURE DEMO ACCOUNT FOR AMEX START ========== */
 -- Wire-Card
