@@ -2157,25 +2157,7 @@
 	
 	<xs:complexType name="gateway-trigger">
 	 <xs:all>
-		<xs:element name="health-trigger">
-		<xs:complexType>
-			<xs:simpleContent>
-				<xs:extension base="xs:integer">
-					<xs:attribute type="xs:integer" name="unit" use="required" />
-				</xs:extension>
-			</xs:simpleContent>
-		</xs:complexType>
-	   </xs:element>
 		<xs:element name="aggregation-trigger">
-			<xs:complexType>
-				<xs:simpleContent>
-					<xs:extension base="xs:integer">
-						<xs:attribute type="xs:integer" name="unit" use="required" />
-					</xs:extension>
-				</xs:simpleContent>
-			</xs:complexType>
-		</xs:element>
-		<xs:element name="reset-threshold">
 			<xs:complexType>
 				<xs:simpleContent>
 					<xs:extension base="xs:integer">
