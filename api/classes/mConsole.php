@@ -1236,6 +1236,28 @@ class mConsole extends Admin
 	}
 
 	
+	public function searchGatewayTrigger($clientId, $pspId) {
+		$RS = array();
+		$xml = "<search-gateway-triggers-response>";
+		$sql = "SELECT aggregationtriggerunit, aggregationtriggervalue, status FROM client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl WHERE clientid= " . $clientId . " AND gatewayid = " . $pspId . " AND enabled ='t'";
+		//echo $sql;
+		$res = $this->getDBConn()->query($sql);
+		if (is_resource($res) === true)
+		{
+			$RS = $this->getDBConn ()->fetchName ( $res );
+			if (is_array ( $RS ) === true) {
+				$xml .= '<aggregation-trigger unit="' . $RS ["AGGREGATIONTRIGGERUNIT"] . '">' . $RS ["AGGREGATIONTRIGGERVALUE"] . '</aggregation-trigger>';
+			} else {
+				throw new mPointException ( "No record found for gatewayid : " . $pspId );
+			}
+			$xml .= "</search-gateway-triggers-response>";
+		}
+		else{
+			throw new mPointException ( "Unable to retrieve records for gatewayid : " . $pspId );
+		}
+		return $xml;
+	}
+	
 	public function deleteGatewayTrigger( $clientId , $pspId) {
 		$sql = "UPDATE client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl SET enabled = '0' WHERE clientid = " . $clientId . " AND gatewayid =" . $pspId . " AND enabled = '1';  ";
 		
