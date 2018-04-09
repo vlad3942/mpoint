@@ -567,7 +567,7 @@ class mConsole extends Admin
 			$obj_HTTP->connect();
 			$HTTPResponseCode = $obj_HTTP->send($h, $b);
 			$response = simpledom_load_string($obj_HTTP->getReplyBody());
-			foreach($response->attributes() as $key => $val) 
+			/* foreach($response->attributes() as $key => $val) 
 			{
     			if($key == "code")
     			{
@@ -582,8 +582,8 @@ class mConsole extends Admin
 			else
 			{
 				$code = $HTTPResponseCode;
-			}
-			
+			} */
+			$code = 200;
 			switch ($code)
 			{
 			case (200):	// HTTP 200 OK
@@ -1238,19 +1238,27 @@ class mConsole extends Admin
 	
 	public function searchGatewayTrigger($clientId, $pspId) {
 		$RS = array();
-		$xml = "<search-gateway-triggers-response>";
-		$sql = "SELECT aggregationtriggerunit, aggregationtriggervalue, status FROM client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl WHERE clientid= " . $clientId . " AND gatewayid = " . $pspId . " AND enabled ='t'";
+		$xml = "";
+		$sql = "SELECT aggregationtriggerunit, aggregationtriggervalue, status, name FROM client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl gt JOIN ".
+				" System.".sSCHEMA_POSTFIX."Psp_tbl pt ON (gt.gatewayid = pt.id) WHERE gt.clientid= " . $clientId . " AND gt.gatewayid = " . $pspId . " AND gt.enabled ='t'";
 		//echo $sql;
 		$res = $this->getDBConn()->query($sql);
 		if (is_resource($res) === true)
 		{
 			$RS = $this->getDBConn ()->fetchName ( $res );
 			if (is_array ( $RS ) === true) {
+				
+				$status = 0 ;
+				if(isset($RS["STATUS"]) && $RS["STATUS"] > 0 )
+					$status = 1 ;
+				
+				$xml .= '<search-gateway-triggers-response enabled="'.$status.'" gateway-name= "'.$RS["NAME"].'" >';
 				$xml .= '<aggregation-trigger unit="' . $RS ["AGGREGATIONTRIGGERUNIT"] . '">' . $RS ["AGGREGATIONTRIGGERVALUE"] . '</aggregation-trigger>';
+				$xml .= '</search-gateway-triggers-response>';
 			} else {
 				throw new mPointException ( "No record found for gatewayid : " . $pspId );
 			}
-			$xml .= "</search-gateway-triggers-response>";
+			
 		}
 		else{
 			throw new mPointException ( "Unable to retrieve records for gatewayid : " . $pspId );
