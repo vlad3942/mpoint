@@ -71,3 +71,4 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES 
 INSERT INTO client.url_tbl(urltypeid, clientid, url)
 VALUES (14, 10007, "https://s3-ap-southeast-1.amazonaws.com/cpmassets/payment/icons");
 --------------
+

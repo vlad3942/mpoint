@@ -56,7 +56,6 @@ class PostAuthAction {
 	 *        	Configuration object with the PSP Information
 	 */
 	public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, array $aConnInfo, PSPConfig $oPSPConfig = null) {
-		
 		$this->_obj_TxnInfo = $oTI;
 		$this->aCONN_INFO = $aConnInfo;
 		
@@ -86,48 +85,63 @@ class PostAuthAction {
 	}
 	
 	/**
-	 * Inserts or updates transaction count for a PSP and merchant 
-	 * 
-	 * @param 	TxnInfo txnInfo
-	 * @param 	PSPConfig obj_PSPConfig
-	 * 
-	 * @throws 	E_USER_ERROR, E_USER_NOTICE
+	 * Inserts or updates transaction count for a PSP and merchant
+	 *
+	 * @param
+	 *        	TxnInfo txnInfo
+	 * @param
+	 *        	PSPConfig obj_PSPConfig
+	 *        	
+	 * @throws E_USER_ERROR, E_USER_NOTICE
 	 */
 	public function updateTxnVolume($txnInfo, $obj_PSPConfig, $oDB) {
-		
 		$clientId = $txnInfo->getClientConfig ()->getAccountConfig ()->getClientID ();
 		$pspId = $obj_PSPConfig->getID ();
-		
-		$sql = "SELECT id
-				FROM Client" . sSCHEMA_POSTFIX . ".gatewaystat_tbl
-				WHERE clientid = " . intval ( $clientId ) . " AND gatewayid = " . intval ( $pspId ) . " AND statetypeid=1 AND enabled = '1'";
-		
-		// echo $sql ."\n";
-		$RS = $oDB->getName ( $sql );
-		
-		if (is_array ( $RS ) === true && intval ( $RS ["ID"] ) > 0) {
-			// Record exists, and counter to be increased
-			$sql = "UPDATE client" . sSCHEMA_POSTFIX . ".gatewaystat_tbl gt SET statvalue = statvalue + 1 WHERE id = " . intval ( $RS ["ID"] );
+		$ID = crc32 ( $clientId . ' ' . $pspId );
+		try {
+			
+			$sql = "SELECT pg_advisory_lock(" . $ID . ")";
+			
 			$res = $oDB->query ( $sql );
 			
-			if (is_resource ( $res ) === true) {
-				trigger_error ( "Updated count for transaction: " . $txnInfo->getID (), E_USER_NOTICE );
+			$sql = "SELECT id
+				FROM Client" . sSCHEMA_POSTFIX . ".gatewaystat_tbl
+				WHERE clientid = " . intval ( $clientId ) . " AND gatewayid = " . intval ( $pspId ) . " AND statetypeid=1 AND enabled = '1'";
+			
+			// echo $sql ."\n";
+			$RS = $oDB->getName ( $sql );
+			
+			if (is_array ( $RS ) === true && intval ( $RS ["ID"] ) > 0) {
+				// Record exists, and counter to be increased
+				$sql = "UPDATE client" . sSCHEMA_POSTFIX . ".gatewaystat_tbl gt SET statvalue = statvalue + 1 WHERE id = " . intval ( $RS ["ID"] );
+				$res = $oDB->query ( $sql );
+				
+				if (is_resource ( $res ) === true) {
+					trigger_error ( "Updated count for transaction: " . $txnInfo->getID (), E_USER_NOTICE );
+				} else {
+					trigger_error ( "Failed to update count for transaction: " . $txnInfo->getID (), E_USER_ERROR );
+				}
 			} else {
-				trigger_error ( "Failed to update count for transaction: " . $txnInfo->getID (),  E_USER_ERROR  );
+				// No record exists and create a new one
+				$sql = "INSERT INTO client" . sSCHEMA_POSTFIX . ".gatewaystat_tbl( gatewayid, clientid, statetypeid, statvalue)" . " VALUES (" . $pspId . ", " . $clientId . ",1,1 )";
+				// echo $sql ;
+				$res = $oDB->query ( $sql );
+				if (is_resource ( $res ) === true) {
+					trigger_error ( "Inserted count for transaction: " . $txnInfo->getID (), E_USER_NOTICE );
+				} else {
+					trigger_error ( "Failed to insert count for transaction: " . $txnInfo->getID (), E_USER_ERROR );
+				}
 			}
-		} else {
-			// No record exists and create a new one
-			$sql = "INSERT INTO client" . sSCHEMA_POSTFIX . ".gatewaystat_tbl( gatewayid, clientid, statetypeid, statvalue)" . " VALUES (" . $pspId . ", " . $clientId . ",1,1 )";
-			// echo $sql ;
+			$sql = "SELECT pg_advisory_unlock(" . $ID . ")";
+			
 			$res = $oDB->query ( $sql );
-			if (is_resource ( $res ) === true) {
-				trigger_error ( "Inserted count for transaction: " . $txnInfo->getID (), E_USER_NOTICE );
-			} else {
-				trigger_error ( "Failed to insert count for transaction: " . $txnInfo->getID (), E_USER_ERROR );
-			}
+			trigger_error ( "Unlocked Id :" . $ID, E_USER_NOTICE );
+		} catch ( Exception $e ) {
+			$sql = "SELECT pg_advisory_unlock(" . $ID . ")";
+			
+			$res = $oDB->query ( $sql );
+			trigger_error ( "Unlocked Id :" . $ID, E_USER_NOTICE );
 		}
-		
-		
 	}
 }
 ?>

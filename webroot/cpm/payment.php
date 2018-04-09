@@ -27,6 +27,8 @@ require_once(sCLASS_PATH ."/dibs.php");
 require_once(sCLASS_PATH ."/cpm.php");
 // Require specific Business logic for the CPM ACQUIRER component
 require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
+// Require specific Business logic for the CPM GATEWAY component
+require_once(sINTERFACE_PATH ."/cpm_gateway.php");
 // Re-Build HTTP GET super global to support arrays
 rebuild_get();
 
