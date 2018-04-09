@@ -297,7 +297,7 @@ abstract class Constants
      *
      */
 
-    const iSESSION_EXPIRED = 4020;
+    const iSESSION_EXPIRED = 4010;
 
     /**
      * Defines the ID of the State that indicates that Session failed
