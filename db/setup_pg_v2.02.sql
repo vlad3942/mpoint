@@ -3615,3 +3615,8 @@ bNwLDrkEV6VmYvJIHNDGkkY=
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100007, 47, '-1');
 INSERT INTO client.cardaccess_tbl ( clientid, cardid, enabled, pspid, countryid, stateid, position) VALUES (10007, 1, true, 47, 200, 1, null);
 /* ----------------Adding Configurations for Modirum MPI - END ------------------------------ */
+
+
+/*-----------------START : Enabling 3DS for merchant-------------------------*/
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('3DVERIFICATION', 'true', 10007, 'client');
+/*-----------------END ; Enabling 3DS for merchant-------------------------*/
