@@ -50,6 +50,8 @@ final class PaymentSession
     private $_sDeviceId;
 
     private $_pendingAmount;
+    
+    private $_expire;
 
     protected function __construct()
     {
@@ -72,10 +74,13 @@ final class PaymentSession
             case 12:
                 $this->createSession($aArgs[1], $aArgs[2], $aArgs[3], $aArgs[4], $aArgs[5], $aArgs[6], $aArgs[7], $aArgs[8], $aArgs[9], $aArgs[10], $aArgs[11]);
                 break;
+            case 13:
+                $this->createSession($aArgs[1], $aArgs[2], $aArgs[3], $aArgs[4], $aArgs[5], $aArgs[6], $aArgs[7], $aArgs[8], $aArgs[9], $aArgs[10], $aArgs[11], $aArgs[12]);
+                break;
         }
     }
 
-    private function createSession(ClientConfig $clientConfig, CountryConfig $countryConfig, CurrencyConfig $currencyConfig, $amount, $orderid, $sessiontypeid, $mobile, $email, $externalId, $deviceid, $ipaddress)
+    private function createSession(ClientConfig $clientConfig, CountryConfig $countryConfig, CurrencyConfig $currencyConfig, $amount, $orderid, $sessiontypeid, $mobile, $email, $externalId, $deviceid, $ipaddress, $expire=null)
     {
 
         $this->_obj_ClientConfig = $clientConfig;
@@ -96,7 +101,11 @@ final class PaymentSession
         $this->_sEmail = $email;
         $this->_sIp = $ipaddress;
         $this->_sMobile = $mobile;
-        $expire = date("Y-m-d H:i:s.u", time() + (15 * 60));
+        if ($expire != null) {
+            $this->_expire = $expire;
+        } else {
+            $this->_expire = date("Y-m-d H:i:s.u", time() + (15 * 60));
+        }
         $sql = "INSERT INTO Log" . sSCHEMA_POSTFIX . ".session_tbl 
                     (clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, sessiontypeid, externalid, expire) 
                 VALUES 
@@ -117,7 +126,7 @@ final class PaymentSession
                 $this->_sIp,
                 $sessiontypeid,
                 $externalId,
-                $expire
+                $this->_expire
             );
 
             $result = $this->_obj_Db->execute($res, $aParams);
@@ -149,6 +158,7 @@ final class PaymentSession
             $this->_iCountryId = $RS["COUNTRYID"];
             $this->_iStateId = $RS["STATEID"];
             $this->_id=$RS["ID"];
+            $this->_expire = $RS["EXPIRE"];
             /* $RS["MOBILE"];
              $RS["DEVICEID"];
              $RS["IPADDRESS"];*/
@@ -171,10 +181,14 @@ final class PaymentSession
         return $this->_id;
     }
 
-    public function updateState($stateId =null)
+    public function updateState($stateId = null)
     {
-        if($stateId == null && $this->getPendingAmount() == 0){
-            $stateId = Constants::iSESSION_COMPLETED;
+        if ($stateId == null) {
+            if ($this->getPendingAmount() == 0) {
+                $stateId = Constants::iSESSION_COMPLETED;
+            } elseif ($this->getPendingAmount() != 0 && $this->getExpireTime() < date("Y-m-d H:i:s.u", time())) {
+                $stateId = Constants::iSESSION_EXPIRED;
+            }
         }
         if($stateId != null)
         {
@@ -242,6 +256,20 @@ final class PaymentSession
         $xml .= '<amount country-id="'. $this->getCountryConfig()->getID() .'" currency-id="'. $this->getCurrencyConfig()->getID() .'" currency="'.$this->getCurrencyConfig()->getCode() .'" symbol="'. $this->getCountryConfig()->getSymbol() .'" format="'. $this->getCountryConfig()->getPriceFormat() .'" alpha2code="'. $this->getCountryConfig()->getAlpha2code() .'" alpha3code="'. $this->getCountryConfig()->getAlpha3code() .'" code="'. $this->getCountryConfig()->getNumericCode() .'">'. $this->getPendingAmount() .'</amount>';
         $xml .= "</session>";
         return $xml;
-}
-
+    }
+    
+    public function getAmount()
+    {
+        return $this->_amount;
+    }
+    
+    public function getStateId()
+    {
+        return $this->_iStateId;
+    }
+    
+    public function getExpireTime()
+    {
+        return $this->_expire;
+    }
 }
