@@ -718,6 +718,14 @@ abstract class Constants
     const iMODIRUM_MPI = 47;
 
 	/**
+
+    /**
+     * Unique ID for the Acquirer: Amex
+     *
+     */
+    const iAMEX_ACQUIRER = 45;
+
+    /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
 	 */

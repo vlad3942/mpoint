@@ -113,7 +113,8 @@ require_once(sCLASS_PATH ."/citcon.php");
 require_once(sCLASS_PATH ."/ppro.php");
 
 require_once(sCLASS_PATH ."/bre.php");
-
+// Require specific Business logic for the Amex component
+require_once(sCLASS_PATH ."/amex.php");
 $aMsgCds = array();
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
@@ -700,6 +701,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             break;
                                         case (Constants::iPPRO_GATEWAY):
                                             $obj_PSP = new PPRO($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["ppro"]);
+                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
+
+                                            foreach ($obj_XML->children() as $obj_Elem)
+                                            {
+                                                $xml .= trim($obj_Elem->asXML() );
+                                            }
+                                            break;
+                                        case (Constants::iAMEX_ACQUIRER):
+                                            $obj_PSP = new Amex($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["amex"]);
                                             $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
 
                                             foreach ($obj_XML->children() as $obj_Elem)

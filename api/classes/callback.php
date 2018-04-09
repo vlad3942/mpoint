@@ -676,7 +676,9 @@ abstract class Callback extends EndUserAccount
                 return new Citcon($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["citcon"]);
         case (Constants::iPPRO_GATEWAY):
             return new PPRO($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["citcon"]);
-		default:
+        case (Constants::iAMEX_ACQUIRER):
+                return new Amex($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["amex"]);
+            default:
 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
 	}

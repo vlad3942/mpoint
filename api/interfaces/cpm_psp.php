@@ -426,7 +426,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 	public function authorize(PSPConfig $obj_PSPConfig, $obj_Card)
 	{
-		
 		$code = 0;
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
@@ -819,9 +818,16 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '<card-number>'. $obj_Card->{'card-number'} .'</card-number>';
 		$b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
 		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
-		
+                
+        if(count($obj_Card->{'valid-from'}) > 0) {
+            list($valid_from_month, $valid_from_year) = explode("/", $obj_Card->{'valid-from'});
+            $valid_from_year = substr_replace(date('Y'), $valid_from_year, -2);
+            $b .= '<valid-from-month>'. $valid_from_month .'</valid-from-month>';
+            $b .= '<valid-from-year>'. $valid_from_year .'</valid-from-year>';
+        }
+                
 		if(count($obj_Card->cvc) > 0) { $b .= '<cvc>'. $obj_Card->cvc .'</cvc>'; }	
-		
+
 		if(count($obj_Card->{'info-3d-secure'}) > 0)
         {
             $b .= $obj_Card->{'info-3d-secure'}->asXML();
@@ -846,7 +852,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
 		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
 		$b .= '<token>'. $obj_Card->ticket .'</token>';
-		
+                
+        if(count($obj_Card->{'valid-from'}) > 0) {
+            list($valid_from_month, $valid_from_year) = explode("/", $obj_Card->{'valid-from'});
+            $valid_from_year = substr_replace(date('Y'), $valid_from_year, -2);
+            $b .= '<valid-from-month>'. $valid_from_month .'</valid-from-month>';
+            $b .= '<valid-from-year>'. $valid_from_year .'</valid-from-year>';
+        }
+                
 		if(count($obj_Card->cvc) > 0) { $b .= '<cvc>'. $obj_Card->cvc .'</cvc>'; }		
 
 		$b .= '</card>';
