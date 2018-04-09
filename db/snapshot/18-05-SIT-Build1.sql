@@ -1,9 +1,12 @@
-/* ========== State table ============ */
+/*======= ADD NEW PROCESSOR TYPE FOR GATEWAY ======== */
 
-INSERT INTO log.state_tbl(id, name, module) VALUES(4040,'Session Rollback','Payment'), (4021,'Session Decline (Maximum attempt exeeds)','Payment');
+INSERT INTO system.processortype_tbl (id, name) VALUES (7, 'Gateway');
+
+/*======= END NEW PROCESSOR TYPE FOR GATEWAY ======== */
+
 /* ========== CONFIGURE PPRO START ========== */
 
-/* START: Adding CARD Configuration Entries */
+/* START: Adding CARD Configuration Entries FOR testing purpose only*/
 
 INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength,paymenttype) VALUES (42, 'PPRO', 23, -1, -1, -1,4);
 INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (42, 0, 0);
@@ -14,7 +17,7 @@ INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 42, id FROM Sys
 
 /*START: Adding PSP entries to the PSP_Tbl table for PPRO */
 
-INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (46, 'PPRO',4);
+INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (46, 'PPRO',7);
 
 /*END: Adding PSP entries to the PSP_Tbl table for PPRO*/
 
@@ -29,12 +32,15 @@ INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (752,46,'SEK
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (764,46,'THB');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (985,46,'PLN');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (203,46,'CZK');
+
 /*END: Adding Currency entries to the PSPCurrency_Tbl table for PPRO*/
 
 /* ========== CONFIGURE DEMO ACCOUNT FOR PPRO START ========== */
 -- Wire-Card
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10007, 46, 'CELLPOINTMOBILETESTCONTRACT', 'CELLPOINTTEST', '8eX67I13el8Q3LBF');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100007, 46, '-1');
+
+/* ========== CONFIGURE DEMO ACCOUNT FOR PPRO END ====== */
 
 /* START : Additional Properties */
 
@@ -135,5 +141,3 @@ INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 68, id FROM Sys
 
 
 /* END: Adding CARD Configuration Entries */
-
-/* ========== CONFIGURE DEMO ACCOUNT FOR PPRO END ====== */

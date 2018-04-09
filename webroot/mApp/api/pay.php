@@ -37,6 +37,8 @@ require_once(sCLASS_PATH ."/callback.php");
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
 // Require specific Business logic for the CPM ACQUIRER component
 require_once(sINTERFACE_PATH ."/cpm_acquirer.php");
+// Require specific Business logic for the CPM GATEWAY component
+require_once(sINTERFACE_PATH ."/cpm_gateway.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
 // Require specific Business logic for the WorldPay component
@@ -107,6 +109,8 @@ require_once(sCLASS_PATH ."/paytabs.php");
 require_once(sCLASS_PATH ."/ccpp_alc.php");
 // Require specific Business logic for the Citcon component
 require_once(sCLASS_PATH ."/citcon.php");
+// Require specific Business logic for the PPRO component
+require_once(sCLASS_PATH ."/ppro.php");
 
 require_once(sCLASS_PATH ."/bre.php");
 
@@ -687,6 +691,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                            	break;
                                         case (Constants::iALIPAY_CHINESE_PSP):
                                             $obj_PSP = new AliPayChinese($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["alipay-chinese"]);
+                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
+
+                                            foreach ($obj_XML->children() as $obj_Elem)
+                                            {
+                                                $xml .= trim($obj_Elem->asXML() );
+                                            }
+                                            break;
+                                        case (Constants::iPPRO_GATEWAY):
+                                            $obj_PSP = new PPRO($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["ppro"]);
                                             $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
 
                                             foreach ($obj_XML->children() as $obj_Elem)
