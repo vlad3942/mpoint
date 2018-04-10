@@ -71,11 +71,33 @@ class FlightInfo {
 	 * @var string
 	 */
 	private $_aFlightNumber;
-	
-	/**
+
+    /**
+     * Captures the itinerary sequence of this flight
+     *
+     * @var string
+     */
+    private $_aTag;
+
+    /**
+     * Captures the flight segment sequence
+     *
+     * @var string
+     */
+    private $_aTripCount;
+
+    /**
+     * Indicates the service level of this flight
+     *
+     * @var string
+     */
+    private $_aServiceLevel;
+
+
+    /**
 	 * Default Constructor
 	 */
-	public function __construct($id, $scid, $fnum, $daid, $aaid, $alid, $adid, $ddid, $Adata) {
+	public function __construct($id, $scid, $fnum, $daid, $aaid, $alid, $adid, $ddid, $tag, $tripCount, $serviceLevel, $Adata) {
 		$this->_iID = ( integer ) $id;
 		$this->_ServiceClass = $scid;
 		$this->_DepartureAirport = $daid;
@@ -85,6 +107,9 @@ class FlightInfo {
 		$this->_DepartureDate = $ddid;
 		$this->_aAdditionalData = $Adata;
 		$this->_aFlightNumber = $fnum;
+		$this->_aTag = $tag;
+		$this->_aTripCount = $tripCount;
+		$this->_aServiceLevel = $serviceLevel;
 	}
 	
 	/**
@@ -159,8 +184,36 @@ class FlightInfo {
 	public function getFlightNumber() {
 		return $this->_aFlightNumber;
 	}
+
+    /**
+     * Returns itinerary sequence of this flight
+     * @return string
+     */
+    public function getATag()
+    {
+        return $this->_aTag;
+    }
+
+    /**
+     * Returns the itinerary segment sequence
+     * @return string
+     */
+    public function getATripCount()
+    {
+        return $this->_aTripCount;
+    }
+
+    /**
+     * Returns the service level of this flight booking
+     * @return string
+     */
+    public function getAServiceLevel()
+    {
+        return $this->_aServiceLevel;
+    }
+
 	public static function produceConfig(RDB $oDB, $id) {
-		$sql = "SELECT id, service_class, flight_number, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified
+		$sql = "SELECT id, service_class, flight_number, departure_airport, arrival_airport, airline_code, order_id, arrival_date, departure_date, created, modified, tag, trip_count, service_level
 					FROM log" . sSCHEMA_POSTFIX . ".flight_tbl WHERE id=" . $id;
 		// echo $sql ."\n";
 		$RS = $oDB->getName ( $sql );
@@ -169,9 +222,9 @@ class FlightInfo {
 			// echo $sqlA;
 			$RSA = $oDB->getAllNames ( $sqlA );
 			if (is_array ( $RSA ) === true && count ( $RSA ) > 0) {
-				return new FlightInfo ( $RS ["ID"], $RS ["SERVICE_CLASS"], $RS ["FLIGHT_NUMBER"], $RS ["DEPARTURE_AIRPORT"], $RS ["ARRIVAL_AIRPORT"], $RS ["AIRLINE_CODE"], $RS ["ARRIVAL_DATE"], $RS ["DEPARTURE_DATE"], $RSA );
+				return new FlightInfo ( $RS ["ID"], $RS ["SERVICE_CLASS"], $RS ["FLIGHT_NUMBER"], $RS ["DEPARTURE_AIRPORT"], $RS ["ARRIVAL_AIRPORT"], $RS ["AIRLINE_CODE"], $RS ["ARRIVAL_DATE"], $RS ["DEPARTURE_DATE"], $RS ["TAG"],$RS ["TRIP_COUNT"],$RS ["SERVICE_LEVEL"], $RSA );
 			} else {
-				return new FlightInfo ( $RS ["ID"], $RS ["SERVICE_CLASS"], $RS ["FLIGHT_NUMBER"], $RS ["DEPARTURE_AIRPORT"], $RS ["ARRIVAL_AIRPORT"], $RS ["AIRLINE_CODE"], $RS ["ARRIVAL_DATE"], $RS ["DEPARTURE_DATE"] );
+				return new FlightInfo ( $RS ["ID"], $RS ["SERVICE_CLASS"], $RS ["FLIGHT_NUMBER"], $RS ["DEPARTURE_AIRPORT"], $RS ["ARRIVAL_AIRPORT"], $RS ["AIRLINE_CODE"], $RS ["ARRIVAL_DATE"], $RS ["DEPARTURE_DATE"],$RS ["TAG"],$RS ["TRIP_COUNT"],$RS ["SERVICE_LEVEL"] );
 			}
 		} else {
 			return null;
@@ -195,7 +248,7 @@ class FlightInfo {
 	}
 	public function toXML() {
 		$xml = '';
-		$xml .= '<flight-detail>';
+		$xml .= '<flight-detail tag="'. $this->getATag() .'" trip-count="' . $this->getATripCount() . '" service-level="'. $this->getAServiceLevel() .'">';
 		$xml .= '<service-class>' . $this->getServiceClass () . '</service-class>';
 		$xml .= '<flight-number>' . $this->getFlightNumber () . '</flight-number>';
 		$xml .= '<departure-airport>' . $this->getDepartureAirport () . '</departure-airport>';

@@ -1216,20 +1216,34 @@
    <xs:element type="xs:string" name="arrival-date" minOccurs="1" maxOccurs="1" />
    <xs:element ref="additional-data" minOccurs="0" maxOccurs="1" /> 
  </xs:sequence>
+	<xs:attribute name="tag" use="optional" type="xs:positiveInteger"/>
+	<xs:attribute name="trip-count" use="optional" type="xs:positiveInteger"/>
+	<xs:attribute name="service-level" use="optional" type="xs:positiveInteger"/>
 </xs:complexType>
 </xs:element>
 
 <xs:element name="passenger-detail">
 <xs:complexType>
  <xs:sequence>
+   <xs:element type="xs:string" name="title" minOccurs="0" maxOccurs="1" />
    <xs:element type="xs:string" name="first-name" minOccurs="1"  maxOccurs="1" />
    <xs:element type="xs:string" name="last-name" minOccurs="1" maxOccurs="1" />
    <xs:element type="xs:string" name="type" minOccurs="1" maxOccurs="1" />
-   <xs:element ref="additional-data" minOccurs="0" maxOccurs="1" /> 
+   <xs:element ref="contact-info" minOccurs="0" maxOccurs="1" />
+   <xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
  </xs:sequence>
 </xs:complexType>
 </xs:element>
- 
+
+<xs:element name="contact-info">
+	<xs:complexType>
+		<xs:all>
+			<xs:element type="email" name="email" minOccurs="0" maxOccurs="1" />
+			<xs:element type="mobile" name="mobile" minOccurs="0" maxOccurs="1"/>
+		</xs:all>
+	</xs:complexType>
+</xs:element>
+
 <xs:element name="additional-data">
 <xs:complexType>
  <xs:sequence>

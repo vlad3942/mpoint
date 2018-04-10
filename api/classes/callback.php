@@ -313,7 +313,7 @@ abstract class Callback extends EndUserAccount
 	 * @param 	integer $fee				The amount the customer will pay in fee�s for the Transaction. Default value 0
 	 */
 	public function notifyClient($sid, $pspid, $amt,  $cardno="", $cardid=0, $exp=null,$sAdditionalData="", SurePayConfig &$obj_SurePay=null, $fee=0 )
-	{		
+	{	
 		$sDeviceID = $this->_obj_TxnInfo->getDeviceID();
 		$sEmail = $this->_obj_TxnInfo->getEMail();
 		/* ----- Construct Body Start ----- */
@@ -347,6 +347,13 @@ abstract class Callback extends EndUserAccount
 		{
 			$sBody .= "&expiry=". $exp;
 		}
+                $sessionObj = $this->_obj_TxnInfo->getPaymentSession();
+                if (is_object($sessionObj)) {
+                    $sBody .= "&session-id=".$sessionObj->getId();
+                    $sBody .= "&session-state-id=".$sessionObj->getStateId();
+                    $sBody .= "&session-amount=".$sessionObj->getAmount();
+                    $sBody .= "&pending-amount=".$sessionObj->getPendingAmount();
+                }
 		trigger_error("********************* ". $sBody, E_USER_NOTICE);
 		/* Adding customer Info as part of the callback query params */
 		if (($this->_obj_TxnInfo->getAccountID() > 0) === true )
@@ -667,6 +674,8 @@ abstract class Callback extends EndUserAccount
                 return new AliPayChinese($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["alipay-chinese"]);
         case (Constants::iCITCON_PSP):
                 return new Citcon($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["citcon"]);
+        case (Constants::iPPRO_GATEWAY):
+            return new PPRO($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["citcon"]);
 		default:
 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
