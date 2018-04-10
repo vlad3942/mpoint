@@ -94,9 +94,8 @@ class PostAuthAction {
 	 *        	
 	 * @throws E_USER_ERROR, E_USER_NOTICE
 	 */
-	public function updateTxnVolume($txnInfo, $obj_PSPConfig, $oDB) {
+	public function updateTxnVolume($txnInfo, $pspId, $oDB) {
 		$clientId = $txnInfo->getClientConfig ()->getAccountConfig ()->getClientID ();
-		$pspId = $obj_PSPConfig->getID ();
 		$ID = crc32 ( $clientId . ' ' . $pspId );
 		try {
 			

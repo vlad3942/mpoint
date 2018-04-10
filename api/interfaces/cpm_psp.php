@@ -474,7 +474,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		
 			//call post auth actions
 			
-			PostAuthAction::updateTxnVolume($this->getTxnInfo(),$obj_PSPConfig ,$this->getDBConn());
+			PostAuthAction::updateTxnVolume($this->getTxnInfo(),$obj_PSPConfig->getID() ,$this->getDBConn());
 			
 			if ($code == 200 || $code == 303 )
 			{
