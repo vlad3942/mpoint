@@ -27,3 +27,6 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) SELECT 
 
 
 INSERT INTO log.state_tbl(id, name, module) VALUES(4031,'Session Partially Completed','Payment');
+
+---Datacash MID
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, password) VALUES (10007, 17, 'SGBSABB01', 'merchant.SGBSABB01', 'bebd68b2fa491f807e40462a6f85617e');
