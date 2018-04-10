@@ -128,7 +128,7 @@ final class PaymentSession
                         $this->_sIp,
                         $sessiontypeid,
                         $externalId,
-                        $expire
+                        $this->_expire
                     );
 
                     $result = $this->_obj_Db->execute($res, $aParams);
@@ -191,7 +191,19 @@ final class PaymentSession
     {
         if ($stateId == null) {
             if ($this->getPendingAmount() == 0) {
-                $stateId = Constants::iSESSION_COMPLETED;
+                if ($this->getTransactionStatesWithAncillary(2000, 2000) == true) {
+                    $stateId = Constants::iSESSION_COMPLETED;
+                } elseif ($this->getTransactionStatesWithAncillary(2000, 2010) == true) {
+                    $stateId = Constants::iSESSION_PARTIALLY_COMPLETED;
+                } elseif ($this->getTransactionStatesWithAncillary(2000) == true) {
+                    $stateId = Constants::iSESSION_COMPLETED;
+                }
+            } elseif ($this->getPendingAmount() != 0) {
+                if ($this->getTransactionStates(2000) == true) {
+                    $stateId = Constants::iSESSION_PARTIALLY_COMPLETED;
+                } elseif ($this->getTransactionStates(2010) == true) {
+                    $stateId = Constants::iSESSION_FAILED;
+                }
             } elseif ($this->getPendingAmount() != 0 && $this->getExpireTime() < date("Y-m-d H:i:s.u", time())) {
                 $stateId = Constants::iSESSION_EXPIRED;
             }
@@ -284,7 +296,6 @@ final class PaymentSession
         return $status;
     }
 
-    
     public function getAmount()
     {
         return $this->_amount;
@@ -298,5 +309,75 @@ final class PaymentSession
     public function getExpireTime()
     {
         return $this->_expire;
+    }
+
+
+    public function getTransactionStates($stateId)
+    {
+        $status = false;
+        try {
+            $sql = "SELECT COUNT(txn.id) AS CNT FROM log" . sSCHEMA_POSTFIX . ".message_tbl msg
+                    INNER JOIN log" . sSCHEMA_POSTFIX . ".transaction_tbl txn ON txn.id = msg.txnid
+                    WHERE sessionid = " . $this->_id . "
+                    AND (msg.stateid = ".$stateId." AND txn.productType = 100) LIMIT 1";
+            $RS = $this->_obj_Db->getName($sql);
+            if (is_array($RS) === true) {
+                if($RS["CNT"] != 0) {
+                    $status = true;
+                }
+            }
+        }
+        catch (Exception $e){
+            trigger_error ( "Session Get Transaction States- ." . $e->getMessage(), E_USER_ERROR );
+        }
+        return $status;
+    }
+
+    public function getTransactionStatesWithAncillary($ticketState, $ancillaryState = null)
+    {
+        $status = false;
+        try {
+            if ($ancillaryState != null) {
+                $sql = "SELECT COUNT(txn.id) AS CNT FROM log" . sSCHEMA_POSTFIX . ".message_tbl msg
+                    INNER JOIN log" . sSCHEMA_POSTFIX . ".transaction_tbl txn ON txn.id = msg.txnid
+                    WHERE sessionid = " . $this->_id . "
+                    AND (msg.stateid = " . $ticketState . " AND txn.productType = 100)
+                    AND (msg.stateid = " . $ancillaryState . " AND txn.productType = 200) LIMIT 1";
+            } else {
+                $sql = "SELECT COUNT(txn.id) AS CNT FROM log" . sSCHEMA_POSTFIX . ".message_tbl msg
+                    INNER JOIN log" . sSCHEMA_POSTFIX . ".transaction_tbl txn ON txn.id = msg.txnid
+                    WHERE sessionid = " . $this->_id . "
+                    AND (msg.stateid = " . $ticketState . " AND txn.productType = 100) LIMIT 1";
+            }
+            $RS = $this->_obj_Db->getName($sql);
+            if (is_array($RS) === true) {
+                if($RS["CNT"] != 0) {
+                    $status = true;
+                }
+            }
+        }
+        catch (Exception $e){
+            trigger_error ( "Session Get Transaction States- ." . $e->getMessage(), E_USER_ERROR );
+        }
+        return $status;
+    }
+
+    public function getSessionCallbackData()
+    {
+        $data = '';
+        try {
+            $sql = "SELECT msg.data FROM log" . sSCHEMA_POSTFIX . ".message_tbl msg
+                    INNER JOIN log" . sSCHEMA_POSTFIX . ".transaction_tbl txn ON txn.id = msg.txnid
+                    WHERE sessionid = " . $this->_id . "
+                    AND msg.stateid IN (".Constants::iSESSION_PARTIALLY_COMPLETED.", ".Constants::iSESSION_FAILED.") ORDER BY msg.id DESC  LIMIT 1";
+            $RS = $this->_obj_Db->getName($sql);
+            if (is_array($RS) === true) {
+                $data = strchr($RS['DATA'],"transaction-data");
+            }
+        }
+        catch (Exception $e){
+            trigger_error ( "Session CallBack- ." . $e->getMessage(), E_USER_ERROR );
+        }
+        return $data;
     }
 }

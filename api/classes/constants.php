@@ -308,6 +308,11 @@ abstract class Constants
     const iSESSION_COMPLETED = 4030;
 
     /**
+     * Defines the ID of the State that indicates that Session Partially Completed
+     *
+     */
+    const iSESSION_PARTIALLY_COMPLETED = 4031;
+    /**
 	 * Defines GoMobile's type identifier for an MT-SMS message
 	 *
 	 */
