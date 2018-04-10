@@ -738,17 +738,24 @@ abstract class Callback extends EndUserAccount
             $obj_CustomerInfo = CustomerInfo::produceInfo($this->getDBConn(), $this->_obj_TxnInfo->getAccountID());
             $sBody .= "&customer-country-id=". $obj_CustomerInfo->getCountryID();
         }
-        if(strlen($sAdditionalData) > 0)
-            $sBody .= "&".$sAdditionalData;
-
-        // TransactionData array
         $transactionId = $this->_obj_TxnInfo->getID();
+        // TransactionData array
         $sBody .= "&transaction-data[$transactionId][status]=". $sid;
         $sBody .= "&transaction-data[$transactionId][hmac]=". urlencode($this->_obj_TxnInfo->getHMAC());
         $sBody .= "&transaction-data[$transactionId][product-type]=". $this->_obj_TxnInfo->getProductType();
         $sBody .= "&transaction-data[$transactionId][amount]=". $amt;
         $sBody .= "&transaction-data[$transactionId][currency]=". urlencode($this->_obj_TxnInfo->getCountryConfig()->getCurrency());
         $sBody .= "&transaction-data[$transactionId][fee]=". intval($fee);
+
+        if (strlen($sAdditionalData) > 0) {
+            $eData = explode('&', $sAdditionalData);
+
+            foreach ($eData as $eResult) {
+                $txnData = explode('=', $eResult);
+                $txnKey = $txnData[0];
+                $sBody .= "&transaction-data[$transactionId][$txnKey] =". $txnData[1];
+            }
+        }
 
         $data = $sessionObj->getSessionCallbackData();
         if ($data != '') {
