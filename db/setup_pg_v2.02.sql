@@ -3768,3 +3768,7 @@ INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 68, id FROM Sys
 
 
 /* END: Adding CARD Configuration Entries */
+
+
+---Datacash MID
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, password) VALUES (10007, 17, 'SGBSABB01', 'merchant.SGBSABB01', 'bebd68b2fa491f807e40462a6f85617e');
