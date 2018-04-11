@@ -7580,3 +7580,21 @@ ALTER TABLE client.gatewaystat_tbl
 INSERT INTO system.statisticstype_tbl(  id, name, description)    VALUES (1,'Txn Volume', 'Volume of Transactions thourgh a particular gateway for a specific client');
 INSERT INTO system.statisticstype_tbl(  id, name, description)    VALUES (2,'Success Ratio', 'Succes vs. failure transactions using a gateway for a time period');
 INSERT INTO system.statisticstype_tbl(  id, name, description)    VALUES (3,'Response Time', 'Avg response time of a gateway during txn authorization');
+
+
+/*===========================  Updating for gateway delete functionality   ======================*/  
+ALTER TABLE client.gatewaytrigger_tbl ADD COLUMN status boolean NOT NULL DEFAULT false;
+ALTER TABLE client.gatewaytrigger_tbl ALTER COLUMN enabled SET DEFAULT true ;
+
+ALTER TABLE client.gatewaystat_tbl ALTER COLUMN statvalue TYPE numeric ;
+
+/*=================== Moving triggers to BRE =================== */
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN healthtriggerunit ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN healthtriggervalue ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN resetthresholdunit ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN resetthresholdvalue ;
+/*=================== Moving triggers to BRE =================== */
+
+-- To execute the above query first need to truncate the session_tbl data.
+-- Run the "TRUNCATE TABLE log.session_tbl CASCADE;" before executing below query.
+ALTER TABLE log.session_tbl ADD CONSTRAINT constraint_name UNIQUE (orderid);

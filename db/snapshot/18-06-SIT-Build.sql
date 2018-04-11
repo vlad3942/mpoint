@@ -1,3 +1,13 @@
+
+ALTER TABLE client.gatewaystat_tbl ALTER COLUMN statvalue TYPE numeric ;
+
+/*=================== Moving triggers to BRE =================== */
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN healthtriggerunit ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN healthtriggervalue ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN resetthresholdunit ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN resetthresholdvalue ;
+/*=================== Moving triggers to BRE =================== */
+
 -- 2c2p alc Airline data improvement -- start --
 
 -- Alter Log.Passenger Tbl to store additional passenger data
@@ -34,3 +44,4 @@ ALTER TABLE log.session_tbl ADD CONSTRAINT constraint_name UNIQUE (orderid);
 
 ---Datacash MID
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, password) VALUES (10007, 17, 'SGBSABB01', 'merchant.SGBSABB01', 'bebd68b2fa491f807e40462a6f85617e');
+

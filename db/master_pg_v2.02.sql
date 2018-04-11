@@ -379,6 +379,21 @@ WITH (
 ALTER TABLE client.gatewaystat_tbl
   OWNER TO mpoint;
 
+
+/*===========================  Updating for gateway delete functionality   ======================*/  
+ALTER TABLE client.gatewaytrigger_tbl ADD COLUMN status boolean NOT NULL DEFAULT false;
+ALTER TABLE client.gatewaytrigger_tbl ALTER COLUMN enabled SET DEFAULT true ;
+
+ALTER TABLE client.gatewaystat_tbl ALTER COLUMN statvalue TYPE numeric ;
+
+/*=================== Moving triggers to BRE =================== */
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN healthtriggerunit ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN healthtriggervalue ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN resetthresholdunit ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN resetthresholdvalue ;
+/*=================== Moving triggers to BRE =================== */
+ 
+
 -- 2c2p alc Airline data improvement -- start --
 -- Alter Log.Passenger Tbl to store additional passenger data
 
