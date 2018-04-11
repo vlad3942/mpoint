@@ -312,6 +312,19 @@ abstract class Constants
      *
      */
     const iSESSION_PARTIALLY_COMPLETED = 4031;
+
+    /**
+     * Defines the ProductType for the ticket
+     *
+     */
+    const iPrimaryProdTypeBase = 100;
+
+    /**
+     * Defines the ProductType for the Ancillary
+     *
+     */
+    const iAncillaryProdTypeBase = 200;
+
     /**
 	 * Defines GoMobile's type identifier for an MT-SMS message
 	 *

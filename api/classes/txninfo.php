@@ -432,7 +432,7 @@ class TxnInfo
         $this->_obj_PaymentSession = $paymentSession;
         $this->_obj_PaymentSession->updateTransaction($this->_iID);
 
-        $this->_iProductType = (integer)$productType;
+        $this->_iProductType = (integer) $productType;
 	}
 
 	/**
@@ -870,7 +870,7 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj,$RS["SESSIONID"]);
             }
 
-			$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig,$obj_CurrencyConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["ATTEMPT"], $paymentSession, $RS["producttype"],$RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["MASK"],$RS["EXPIRY"],$RS["TOKEN"],$RS["AUTHORIGINALDATA"]);
+			$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig,$obj_CurrencyConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["ATTEMPT"], $paymentSession, $RS["PRODUCTTYPE"],$RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["MASK"],$RS["EXPIRY"],$RS["TOKEN"],$RS["AUTHORIGINALDATA"]);
 		}
 		return $obj_TxnInfo;
 	}

@@ -191,17 +191,17 @@ final class PaymentSession
     {
         if ($stateId == null) {
             if ($this->getPendingAmount() == 0) {
-                if ($this->getTransactionStatesWithAncillary(2000, 2000) == true) {
+                if ($this->getTransactionStatesWithAncillary(Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_ACCEPTED_STATE) == true) {
                     $stateId = Constants::iSESSION_COMPLETED;
-                } elseif ($this->getTransactionStatesWithAncillary(2000, 2010) == true) {
+                } elseif ($this->getTransactionStatesWithAncillary(Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_REJECTED_STATE) == true) {
                     $stateId = Constants::iSESSION_PARTIALLY_COMPLETED;
-                } elseif ($this->getTransactionStatesWithAncillary(2000) == true) {
+                } elseif ($this->getTransactionStatesWithAncillary(Constants::iPAYMENT_ACCEPTED_STATE) == true) {
                     $stateId = Constants::iSESSION_COMPLETED;
                 }
             } elseif ($this->getPendingAmount() != 0) {
-                if ($this->getTransactionStates(2000) == true) {
+                if ($this->getTransactionStates(Constants::iPAYMENT_ACCEPTED_STATE) == true) {
                     $stateId = Constants::iSESSION_PARTIALLY_COMPLETED;
-                } elseif ($this->getTransactionStates(2010) == true) {
+                } elseif ($this->getTransactionStates(Constants::iPAYMENT_REJECTED_STATE) == true) {
                     $stateId = Constants::iSESSION_FAILED;
                 }
             } elseif ($this->getPendingAmount() != 0 && $this->getExpireTime() < date("Y-m-d H:i:s.u", time())) {
@@ -316,13 +316,14 @@ final class PaymentSession
     {
         $status = false;
         try {
+            $primaryProdBtwnCondition = " BETWEEN ". Constants::iPrimaryProdTypeBase ." AND ". Constants::iPrimaryProdTypeBase." + 99";
             $sql = "SELECT COUNT(txn.id) AS CNT FROM log" . sSCHEMA_POSTFIX . ".message_tbl msg
                     INNER JOIN log" . sSCHEMA_POSTFIX . ".transaction_tbl txn ON txn.id = msg.txnid
                     WHERE sessionid = " . $this->_id . "
-                    AND (msg.stateid = ".$stateId." AND txn.productType = 100) LIMIT 1";
+                    AND (msg.stateid = ".$stateId." AND txn.productType".$primaryProdBtwnCondition.") LIMIT 1";
             $RS = $this->_obj_Db->getName($sql);
             if (is_array($RS) === true) {
-                if($RS["CNT"] != 0) {
+                if($RS["CNT"] > 0) {
                     $status = true;
                 }
             }
@@ -337,17 +338,19 @@ final class PaymentSession
     {
         $status = false;
         try {
+            $primaryProdBtwnCondition = " BETWEEN ". Constants::iPrimaryProdTypeBase ." AND ". Constants::iPrimaryProdTypeBase." + 99";
+            $ancillaryProdBtwnCondition = " BETWEEN ". Constants::iAncillaryProdTypeBase ." AND ". Constants::iAncillaryProdTypeBase." + 99";
             if ($ancillaryState != null) {
                 $sql = "SELECT COUNT(txn.id) AS CNT FROM log" . sSCHEMA_POSTFIX . ".message_tbl msg
                     INNER JOIN log" . sSCHEMA_POSTFIX . ".transaction_tbl txn ON txn.id = msg.txnid
                     WHERE sessionid = " . $this->_id . "
-                    AND (msg.stateid = " . $ticketState . " AND txn.productType = 100)
-                    AND (msg.stateid = " . $ancillaryState . " AND txn.productType = 200) LIMIT 1";
+                    AND (msg.stateid = " . $ticketState . " AND txn.productType".$primaryProdBtwnCondition.")
+                    AND (msg.stateid = " . $ancillaryState . " AND txn.productType".$ancillaryProdBtwnCondition.") LIMIT 1";
             } else {
                 $sql = "SELECT COUNT(txn.id) AS CNT FROM log" . sSCHEMA_POSTFIX . ".message_tbl msg
                     INNER JOIN log" . sSCHEMA_POSTFIX . ".transaction_tbl txn ON txn.id = msg.txnid
                     WHERE sessionid = " . $this->_id . "
-                    AND (msg.stateid = " . $ticketState . " AND txn.productType = 100) LIMIT 1";
+                    AND (msg.stateid = " . $ticketState . " AND txn.productType".$primaryProdBtwnCondition.") LIMIT 1";
             }
             $RS = $this->_obj_Db->getName($sql);
             if (is_array($RS) === true) {
