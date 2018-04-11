@@ -1212,7 +1212,7 @@ class ClientConfig extends BasicConfig
             
             //Adding Products supported for the client
             
-            $sql = "SELECT pt.id,pt.name,pt.code FROM Client.producttype_tbl tp JOIN System.producttype_tbl pt ON (tp.productid = pt.id) WHERE clientid =". intval($id)  ;        
+            $sql = "SELECT pt.id,pt.name,pt.code FROM Client". sSCHEMA_POSTFIX .".producttype_tbl tp JOIN System". sSCHEMA_POSTFIX .".producttype_tbl pt ON (tp.productid = pt.id) WHERE clientid =". intval($id)  ;        
             $aRS = $oDB->getAllNames($sql);
             $aProducts = array();
             if (is_array($aRS) === true && count($aRS) > 0)
@@ -1225,7 +1225,8 @@ class ClientConfig extends BasicConfig
             	}
             }
             
-            $sql = "SELECT gatewayid AS id,pt.name AS name,gt.enabled FROM client.gatewaytrigger_tbl gt JOIN system.psp_tbl pt ON (gt.gatewayid = pt.id) WHERE clientid = ".intval($id);
+            $sql = "SELECT gatewayid AS id,pt.name AS name,gt.status AS enabled FROM client". sSCHEMA_POSTFIX .".gatewaytrigger_tbl gt JOIN system". sSCHEMA_POSTFIX .".psp_tbl pt ON (gt.gatewayid = pt.id) WHERE gt.enabled = '1' AND clientid = ".intval($id);
+            //echo $sql;
             $aRS = $oDB->getAllNames($sql);
             
             $aDRGateways= array();

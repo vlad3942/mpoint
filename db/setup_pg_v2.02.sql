@@ -3855,4 +3855,8 @@ INSERT INTO client.cardaccess_tbl (clientid, cardid, pspid, countryid, stateid, 
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10007, 45, '9105bb4f-ae68-4768-9c3b-3eda968f57ea', '70000-APILUHN-CARD', '8mhwavKVb91T');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100007, 45, '-1');
 
-/* ========== CONFIGURE DEMO ACCOUNT FOR AMEX END ====== */
+/* ========== CONFIGURE DEMO ACCOUNT FOR AMEX END ====== *//* END: Adding CARD Configuration Entries */
+
+
+---Datacash MID
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, password) VALUES (10007, 17, 'SGBSABB01', 'merchant.SGBSABB01', 'bebd68b2fa491f807e40462a6f85617e');
