@@ -1232,7 +1232,7 @@
 <xs:element name="passenger-detail">
 <xs:complexType>
  <xs:sequence>
-   <xs:element type="xs:string" name="title" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="title" minOccurs="0" maxOccurs="1" />
    <xs:element type="xs:string" name="first-name" minOccurs="1"  maxOccurs="1" />
    <xs:element type="xs:string" name="last-name" minOccurs="1" maxOccurs="1" />
    <xs:element type="xs:string" name="type" minOccurs="1" maxOccurs="1" />

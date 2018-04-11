@@ -67,7 +67,7 @@ class Bre
     private function getGatewayConfigurations(){
     	
     	$b = "";
-		$sql = "SELECT gst.gatewayid, gst.clientid, gst.statetypeid,gst.statvalue FROM Client.gatewaytrigger_tbl gtr JOIN Client.gatewaystat_tbl gst 
+		$sql = "SELECT gst.gatewayid, gst.clientid, gst.statetypeid,gst.statvalue FROM Client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl gtr JOIN Client." . sSCHEMA_POSTFIX . "gatewaystat_tbl gst 
             ON (gtr.gatewayid = gst.gatewayid) AND (gtr.clientid = gst.clientid) AND gtr.enabled = 't' AND gst.enabled = 't'";
 		
 		$aRS = $this->_obj_DB->getAllNames($sql);
