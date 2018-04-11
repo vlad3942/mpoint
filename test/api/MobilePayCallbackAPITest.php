@@ -198,7 +198,7 @@ class MobilePayCallbackAPITest extends baseAPITest
 		$xml .= '<name>Merchant-2</name>';
 		$xml .= '</psp-config>';
 		$xml .= '<transaction external-id="15469928" card-id="17">';
-		$xml .= '<orderid>900-55150298</orderid>';
+		$xml .= '<orderid>900-55150299</orderid>';
 		$xml .= '<amount country-id="100" currency="DKK" symbol="kr." format="">5000</amount>';
 		$xml .= '<status code="1000">Success</status>';
 		$xml .= '</transaction>';
