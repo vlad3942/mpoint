@@ -36,6 +36,11 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) SELECT 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) SELECT 'pid.app', '2088102170185364', id, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10007 AND pspid=43 ;
 
 
+INSERT INTO log.state_tbl(id, name, module) VALUES(4031,'Session Partially Completed','Payment');
+
+-- To execute the below query first need to truncate the session_tbl data.
+-- Run the "TRUNCATE TABLE log.session_tbl CASCADE;" before executing below query.
+ALTER TABLE log.session_tbl ADD CONSTRAINT constraint_name UNIQUE (orderid);
 
 ---Datacash MID
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, password) VALUES (10007, 17, 'SGBSABB01', 'merchant.SGBSABB01', 'bebd68b2fa491f807e40462a6f85617e');

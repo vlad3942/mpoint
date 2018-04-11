@@ -3428,6 +3428,12 @@ INSERT INTO system.sessiontype_tbl (id, name) VALUES (2, 'Split Payment Session'
 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled) VALUES ('sessiontype', '2', 10018, 'client', false); /* value 1- Normal Payment, 2 - Split Payment */
 
+
+/*  ===========  START : Adding new product types in System.ProductType_Tbl ==================  */
+INSERT INTO system.producttype_tbl (id, name) VALUES (100, 'Ticket');
+INSERT INTO system.producttype_tbl (id, name) VALUES (200, 'Ancillary');
+INSERT INTO system.producttype_tbl (id, name) VALUES (210, 'Insurance');
+/*  ===========  END : Adding new product types in System.ProductType_Tbl ==================  */
 INSERT INTO system.paymenttype_tbl (id, name) VALUES (6, 'Virtual');
 
 INSERT INTO system.processortype_tbl (id, name) VALUES (5, 'Virtual');
