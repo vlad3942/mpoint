@@ -1,3 +1,13 @@
+
+ALTER TABLE client.gatewaystat_tbl ALTER COLUMN statvalue TYPE numeric ;
+
+/*=================== Moving triggers to BRE =================== */
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN healthtriggerunit ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN healthtriggervalue ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN resetthresholdunit ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN resetthresholdvalue ;
+/*=================== Moving triggers to BRE =================== */
+
 -- 2c2p alc Airline data improvement -- start --
 
 -- Alter Log.Passenger Tbl to store additional passenger data
@@ -24,6 +34,17 @@ ALTER TABLE log.flight_tbl
 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) SELECT 'pid.html', '2088102135220161', id, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10007 AND pspid=43 ;
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) SELECT 'pid.app', '2088102170185364', id, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10007 AND pspid=43 ;
+
+
+INSERT INTO log.state_tbl(id, name, module) VALUES(4031,'Session Partially Completed','Payment');
+
+-- To execute the below query first need to truncate the session_tbl data.
+-- Run the "TRUNCATE TABLE log.session_tbl CASCADE;" before executing below query.
+ALTER TABLE log.session_tbl ADD CONSTRAINT constraint_name UNIQUE (orderid);
+
+---Datacash MID
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, password) VALUES (10007, 17, 'SGBSABB01', 'merchant.SGBSABB01', 'bebd68b2fa491f807e40462a6f85617e');
+
 
 
 

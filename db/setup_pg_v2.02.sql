@@ -3428,6 +3428,12 @@ INSERT INTO system.sessiontype_tbl (id, name) VALUES (2, 'Split Payment Session'
 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled) VALUES ('sessiontype', '2', 10018, 'client', false); /* value 1- Normal Payment, 2 - Split Payment */
 
+
+/*  ===========  START : Adding new product types in System.ProductType_Tbl ==================  */
+INSERT INTO system.producttype_tbl (id, name) VALUES (100, 'Ticket');
+INSERT INTO system.producttype_tbl (id, name) VALUES (200, 'Ancillary');
+INSERT INTO system.producttype_tbl (id, name) VALUES (210, 'Insurance');
+/*  ===========  END : Adding new product types in System.ProductType_Tbl ==================  */
 INSERT INTO system.paymenttype_tbl (id, name) VALUES (6, 'Virtual');
 
 INSERT INTO system.processortype_tbl (id, name) VALUES (5, 'Virtual');
@@ -3844,6 +3850,7 @@ INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (826,45,'USD
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (978,45,'EUR');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (208,45,'DKK');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (352,45,'ISK');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,45,'USD');
 
 /*END: Adding Currency entries to the PSPCurrency_Tbl table for AMEX*/
 
@@ -3855,4 +3862,8 @@ INSERT INTO client.cardaccess_tbl (clientid, cardid, pspid, countryid, stateid, 
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10007, 45, '9105bb4f-ae68-4768-9c3b-3eda968f57ea', '70000-APILUHN-CARD', '8mhwavKVb91T');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100007, 45, '-1');
 
-/* ========== CONFIGURE DEMO ACCOUNT FOR AMEX END ====== */
+/* ========== CONFIGURE DEMO ACCOUNT FOR AMEX END ====== *//* END: Adding CARD Configuration Entries */
+
+
+---Datacash MID
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, password) VALUES (10007, 17, 'SGBSABB01', 'merchant.SGBSABB01', 'bebd68b2fa491f807e40462a6f85617e');

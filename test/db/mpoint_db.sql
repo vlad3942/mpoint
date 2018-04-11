@@ -7342,6 +7342,36 @@ ALTER TABLE client.client_tbl ADD COLUMN communicationchannels integer DEFAULT 0
 /*  ===========  END : Adding communicationchannels to Client.Client_Tbl  ==================  */
 
 
+CREATE TABLE system.ProductType_Tbl
+(
+  id INT PRIMARY KEY,
+  name VARCHAR(10) NOT NULL
+);
+CREATE UNIQUE INDEX ProductType_Tbl_name_uindex ON system.ProductType_Tbl (name);
+COMMENT ON COLUMN system.ProductType_Tbl.id IS 'Unique number of product type';
+COMMENT ON COLUMN system.ProductType_Tbl.name IS 'Product type name';
+COMMENT ON TABLE system.ProductType_Tbl IS 'Contains all product types';
+
+ALTER TABLE system.ProductType_Tbl
+  OWNER TO mpoint;
+
+/*  ===========  END : Adding Table System.ProductType_Tbl  ==================  */
+
+/*  ===========  START : Adding new product types in System.ProductType_Tbl ==================  */
+INSERT INTO system.producttype_tbl (id, name) VALUES (100, 'Ticket');
+INSERT INTO system.producttype_tbl (id, name) VALUES (200, 'Ancillary');
+INSERT INTO system.producttype_tbl (id, name) VALUES (210, 'Insurance');
+/*  ===========  END : Adding new product types in System.ProductType_Tbl ==================  */
+
+
+/*  ===========  START : Adding producttype to Log.Transaction_Tbl  ==================  */
+ALTER TABLE log.transaction_tbl ADD producttype INT DEFAULT 100 NOT NULL;
+COMMENT ON COLUMN log.transaction_tbl.producttype IS 'Product type of transaction';
+ALTER TABLE log.transaction_tbl
+  ADD CONSTRAINT transaction_tbl_producttype_tbl_id_fk
+FOREIGN KEY (producttype) REFERENCES system.producttype_tbl (id);
+
+/*  ===========  END : Adding producttype to Log.Transaction_Tbl  ==================  */
 ALTER TABLE client.cardaccess_tbl ADD psp_type INT DEFAULT 1 NOT NULL;
 ALTER TABLE client.cardaccess_tbl
   ADD CONSTRAINT cardaccess_tbl_processortype_tbl_id_fk
@@ -7552,3 +7582,19 @@ INSERT INTO system.statisticstype_tbl(  id, name, description)    VALUES (2,'Suc
 INSERT INTO system.statisticstype_tbl(  id, name, description)    VALUES (3,'Response Time', 'Avg response time of a gateway during txn authorization');
 
 
+/*===========================  Updating for gateway delete functionality   ======================*/  
+ALTER TABLE client.gatewaytrigger_tbl ADD COLUMN status boolean NOT NULL DEFAULT false;
+ALTER TABLE client.gatewaytrigger_tbl ALTER COLUMN enabled SET DEFAULT true ;
+
+ALTER TABLE client.gatewaystat_tbl ALTER COLUMN statvalue TYPE numeric ;
+
+/*=================== Moving triggers to BRE =================== */
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN healthtriggerunit ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN healthtriggervalue ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN resetthresholdunit ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN resetthresholdvalue ;
+/*=================== Moving triggers to BRE =================== */
+
+-- To execute the above query first need to truncate the session_tbl data.
+-- Run the "TRUNCATE TABLE log.session_tbl CASCADE;" before executing below query.
+ALTER TABLE log.session_tbl ADD CONSTRAINT constraint_name UNIQUE (orderid);
