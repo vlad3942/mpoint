@@ -64,7 +64,7 @@ class Mpi
 //		echo $sql ."\n";
         $RS = $objDb->getName($sql);
 
-        if (is_array($RS) === true && count($RS) > 1) {	return new PSPConfig($RS["ID"], $RS["NAME"], "6", "", "", "","", array(),array()); }
+        if (is_array($RS) === true && count($RS) > 1) {	return new PSPConfig($RS["ID"], $RS["NAME"], "6", $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], array(),array()); }
         else { return null; }
     }
 }

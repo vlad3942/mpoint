@@ -789,7 +789,7 @@ $aHTTP_CONN_INFO["modirummpi"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
 $aHTTP_CONN_INFO["modirummpi"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["modirummpi"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["modirummpi"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["modirummpi"]["paths"]["authenticate"] = "/mpi/modirum/authentication";
+$aHTTP_CONN_INFO["modirummpi"]["paths"]["authenticate"] = "/mpi/modirum/authenticate";
 
 /**
  * GoMobile Connection Info.

@@ -1173,7 +1173,8 @@ try
 
                                                                     $obj_PSP = new Amex($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["amex"]);
 
-                                                                    $propertyValue = $obj_ClientConfig->getAdditionalProperties("ACQUIRER_3DVERIFICATION");
+                                                                    $propertyValue = $obj_ClientConfig->getAdditionalProperties("3DVERIFICATION");
+
                                                                     if($propertyValue == true) {
                                                                         $requset = str_replace("authorize-payment","authenticate",$HTTP_RAW_POST_DATA);
                                                                         $code = $obj_PSP->authenticate($requset);

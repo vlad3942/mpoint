@@ -19,6 +19,13 @@ class ModirumMPI extends CPMMPI
 
     public function authenticate()
     {
+        $cvv= strrev(base64_encode($this->obj_Card->cvc)) ;
+
+        $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+                            SET extid='" . $cvv . "'
+                            WHERE id = " . $this->getTxnInfo()->getID();
+        //echo $sql ."\n";
+        $this->getDBConn()->query($sql);
         $code = 0;
         $b  = '<?xml version="1.0" encoding="UTF-8"?>';
         $b .= '<root>';

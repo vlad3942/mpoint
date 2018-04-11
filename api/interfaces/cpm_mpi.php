@@ -61,7 +61,7 @@ abstract class CPMMPI extends CPMACQUIRER
                 }
             }
 
-            else { throw new mPointException("Authentication failed with PSP: ". $this->obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
+            else { throw new mPointException("Authentication failed with PSP: ". $this->getPSPConfig()->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
         }
         catch (mPointException $e)
         {
