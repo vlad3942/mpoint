@@ -3784,6 +3784,7 @@ INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (826,45,'USD
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (978,45,'EUR');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (208,45,'DKK');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (352,45,'ISK');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,45,'USD');
 
 /*END: Adding Currency entries to the PSPCurrency_Tbl table for AMEX*/
 
