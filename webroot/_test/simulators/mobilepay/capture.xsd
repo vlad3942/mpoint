@@ -125,7 +125,7 @@
 				<xs:attribute name="alpha3code" type="xs:string"/>
 				<xs:attribute name="alpha2code" type="xs:string"/>
 				<xs:attribute name="currency-id" type="xs:string"/>
-				<xs:attribute name="decimal" type="xs:positiveInteger"/>
+				<xs:attribute name="decimals" type="xs:positiveInteger"/>
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
