@@ -175,6 +175,13 @@
 															</xs:restriction>
 														</xs:simpleType>
 													</xs:element>
+                                                    <xs:element name="valid-from" minOccurs="0" maxOccurs="1">
+														<xs:simpleType>
+															<xs:restriction base="xs:string">
+																<xs:length value="5" />
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
 													<xs:element name="card-holder-name" type="xs:string" minOccurs="0" maxOccurs="1" />
 													<xs:element name="cryptogram" minOccurs="0" maxOccurs="1">
 														<xs:complexType>
@@ -282,6 +289,13 @@
 														</xs:simpleType>
 													</xs:element>
 													<xs:element name="expiry" minOccurs="0" maxOccurs="1">
+														<xs:simpleType>
+															<xs:restriction base="xs:string">
+																<xs:length value="5" />
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element name="valid-from" minOccurs="0" maxOccurs="1">
 														<xs:simpleType>
 															<xs:restriction base="xs:string">
 																<xs:length value="5" />
