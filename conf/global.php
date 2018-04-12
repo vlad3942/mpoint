@@ -720,6 +720,9 @@ $aHTTP_CONN_INFO["citcon"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["citcon"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["citcon"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["citcon"]["paths"]["initialize"] = "/mpoint/citcon/initialize";
+$aHTTP_CONN_INFO["citcon"]["paths"]["refund"] = "/mpoint/citcon/refund";
+$aHTTP_CONN_INFO["citcon"]["paths"]["status"] = "/mpoint/citcon/status";
+
 
 /**
  * Connection info for connecting to AliPay Chinese
