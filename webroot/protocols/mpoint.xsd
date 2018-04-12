@@ -51,6 +51,7 @@
 								<xs:attribute name="order-no" type="xs:string" use="optional" />
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="40" />
                                 <xs:attribute name="session-id" type="xs:positiveInteger" use="optional"/>
+								<xs:attribute name="product-type" type="xs:positiveInteger" use="optional" default="100" />
 							</xs:complexType>
 						</xs:element>
 						<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1" />
@@ -288,6 +289,13 @@
 														</xs:simpleType>
 													</xs:element>
 													<xs:element name="expiry" minOccurs="0" maxOccurs="1">
+														<xs:simpleType>
+															<xs:restriction base="xs:string">
+																<xs:length value="5" />
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:element>
+													<xs:element name="valid-from" minOccurs="0" maxOccurs="1">
 														<xs:simpleType>
 															<xs:restriction base="xs:string">
 																<xs:length value="5" />
