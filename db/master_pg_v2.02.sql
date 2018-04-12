@@ -150,6 +150,31 @@ ALTER TABLE system.SessionType_tbl  OWNER TO mpoint;
 ALTER TABLE log.Session_tbl  OWNER TO mpoint;
 
 
+/*  ===========  START : Adding Table System.ProductType_Tbl  ==================  */
+CREATE TABLE system.ProductType_Tbl
+(
+  id INT PRIMARY KEY,
+  name VARCHAR(10) NOT NULL
+);
+CREATE UNIQUE INDEX ProductType_Tbl_name_uindex ON system.ProductType_Tbl (name);
+COMMENT ON COLUMN system.ProductType_Tbl.id IS 'Unique number of product type';
+COMMENT ON COLUMN system.ProductType_Tbl.name IS 'Product type name';
+COMMENT ON TABLE system.ProductType_Tbl IS 'Contains all product types';
+
+ALTER TABLE system.ProductType_Tbl
+  OWNER TO mpoint;
+
+/*  ===========  END : Adding Table System.ProductType_Tbl  ==================  */
+
+/*  ===========  START : Adding producttype to Log.Transaction_Tbl  ==================  */
+ALTER TABLE log.transaction_tbl ADD producttype INT DEFAULT 100 NOT NULL;
+COMMENT ON COLUMN log.transaction_tbl.producttype IS 'Product type of transaction';
+ALTER TABLE log.transaction_tbl
+  ADD CONSTRAINT transaction_tbl_producttype_tbl_id_fk
+FOREIGN KEY (producttype) REFERENCES system.producttype_tbl (id);
+
+/*  ===========  END : Adding producttype to Log.Transaction_Tbl  ==================  */
+
 /* =============== Added product tables ============ */
 
 -- Table: system.producttype_tbl
@@ -354,6 +379,21 @@ WITH (
 ALTER TABLE client.gatewaystat_tbl
   OWNER TO mpoint;
 
+
+/*===========================  Updating for gateway delete functionality   ======================*/  
+ALTER TABLE client.gatewaytrigger_tbl ADD COLUMN status boolean NOT NULL DEFAULT false;
+ALTER TABLE client.gatewaytrigger_tbl ALTER COLUMN enabled SET DEFAULT true ;
+
+ALTER TABLE client.gatewaystat_tbl ALTER COLUMN statvalue TYPE numeric ;
+
+/*=================== Moving triggers to BRE =================== */
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN healthtriggerunit ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN healthtriggervalue ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN resetthresholdunit ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN resetthresholdvalue ;
+/*=================== Moving triggers to BRE =================== */
+ 
+
 -- 2c2p alc Airline data improvement -- start --
 -- Alter Log.Passenger Tbl to store additional passenger data
 
@@ -374,3 +414,7 @@ ALTER TABLE log.flight_tbl
 ALTER TABLE log.flight_tbl
   ADD COLUMN "service_level" character varying(2);
 -- 2c2p alc Airline data improvement -- end --
+
+-- To execute the above query first need to truncate the session_tbl data.
+-- Run the "TRUNCATE TABLE log.session_tbl CASCADE;" before executing below query.
+ALTER TABLE log.session_tbl ADD CONSTRAINT constraint_name UNIQUE (orderid);

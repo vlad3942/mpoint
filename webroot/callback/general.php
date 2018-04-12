@@ -89,6 +89,8 @@ require_once(sCLASS_PATH ."/citcon.php");
 // Require specific Business logic for the PPRO component
 require_once(sCLASS_PATH ."/ppro.php");
 
+// Require specific Business logic for the Amex component
+require_once(sCLASS_PATH ."/amex.php");
 /**
  * Input XML format
  *
@@ -135,39 +137,51 @@ $aStateId = array();
 try
 {
 	$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
+	$obj = ClientConfig::produceConfig($_OBJ_DB, 10018);
 	$iAccountValidation = $obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iPAYMENT_ACCOUNT_VALIDATED);
 	// Intialise Text Translation Object
 	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
-	
 	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]) );
-	$obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
+
 	$iStateID = (integer) $obj_XML->callback->status["code"];
-	
+
+    if ($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE || $iStateID == Constants::iPAYMENT_3DS_FAILURE_STATE)
+    {
+        $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_TxnInfo->getPSPID()) );
+    }
+    else
+    {
+        $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]) );
+    }
+    $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
+
 	$year = substr(strftime("%Y"), 0, 2);
 	$sExpirydate =  $year.$obj_XML->callback->transaction->card->expiry->year ."-". $obj_XML->callback->transaction->card->expiry->month;
 	// If transaction is in Account Validated i.e 1998 state no action to be done
 
     array_push($aStateId,$iStateID);
-    $propertyValue = $obj_TxnInfo->getClientConfig()->getAdditionalProperties("NETS_3DVERIFICATION");
-    if($obj_PSPConfig->getProcessorType() === 2 && $propertyValue == true){
-        if($obj_XML->callback->transaction->TransactionStatus == "Y") {
+    $propertyValue = $obj_TxnInfo->getClientConfig()->getAdditionalProperties("3DVERIFICATION");
+
+    if($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER && $propertyValue == true && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
+        if($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
             $obj_PSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO);
             $mvault = new MVault($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['mvault']);
-            $xmlString = "<card id='" . $obj_XML->callback->transaction->card["typr-id"] . "'><token>" . $obj_TxnInfo->getToken() . "</token></card>";
+            $xmlString = "<card id='" . $obj_XML->callback->transaction->card["type-id"] . "'><token>" . $obj_TxnInfo->getToken() . "</token></card>";
             $obj_Elem = $mvault->getPaymentData($obj_PSPConfig, simplexml_load_string($xmlString));
             $card_obj = simplexml_load_string($obj_Elem);
             $card_obj = $card_obj->{'payment-data'};
-            $card_obj->card->cvc = base64_decode(strrev($obj_TxnInfo->getExternalID()));
+            $card_obj->card->cvc = base64_decode(strrev($obj_TxnInfo->getExternalID()) );
             $card_obj->card['type-id'] = $obj_XML->callback->transaction->card["type-id"];
-            $cryptogram = $card_obj->card->{'info-3d-secure'}->addChild('cryptogram', $obj_XML->callback->transaction->SignatureISO9796);
-            $cryptogram->addAttribute('eci', $obj_XML->callback->transaction->TransactionStatus);
-            $cryptogram->addAttribute('algorithm-id', $obj_XML->callback->transaction->TXcavvAlgorithm);
+            $cryptogram = $card_obj->card->{'info-3d-secure'}->addChild('cryptogram', $obj_XML->callback->transaction->card->{'info-3d-secure'}->cryptogram);
+            $cryptogram->addAttribute('eci', $obj_XML->callback->transaction->card->{'info-3d-secure'}->cryptogram['eci']);
+            $cryptogram->addAttribute('algorithm-id', $obj_XML->callback->transaction->card->{'info-3d-secure'}->cryptogram['algorithm-id']);
+
             $code = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card);
         }
         else{
             $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
                             SET extid=''
-                            WHERE id = " . $obj_TxnInfo->getID();
+                            WHERE id = " . $obj_XML->callback->transaction['external-id'];
             //echo $sql ."\n";
             $_OBJ_DB->query($sql);
         }
@@ -349,14 +363,16 @@ try
       header("Content-Length: 0");
       header("Connection: Close");
       flush();
+
      foreach ($aStateId as $iStateId) {
          if ($iStateId == 2000) {
              $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate ,"additionaldata" => (string)$sAdditionalData));
+             $obj_mPoint->updateSessionState($iStateId, (integer)$obj_XML->callback->{'psp-config'}["id"], $obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, $obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData);
          } else {
              $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"],"additionaldata" => (string)$sAdditionalData));
+             $obj_mPoint->updateSessionState($iStateId, (integer)$obj_XML->callback->{'psp-config'}["id"], $obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, $obj_XML->callback->transaction->card["type-id"], (string)$sAdditionalData);
          }
      }
-
   }
   else {
       header("Content-Type: text/xml; charset=\"UTF-8\"");
@@ -364,8 +380,8 @@ try
       echo '<root>';
       echo '<status code="1000">Callback Success</status>';
       echo '</root>';
+      $obj_mPoint->getTxnInfo()->getPaymentSession()->updateState();
   }
-    $obj_mPoint->getTxnInfo()->getPaymentSession()->updateState();
 }
 catch (TxnInfoException $e)
 {

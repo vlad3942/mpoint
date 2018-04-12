@@ -204,6 +204,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             if($sessionType > 1 )
                                 $data['sessiontype']=$sessionType;
                             //var_dump($data['attempt']);die;
+                            if (isset($obj_DOM->{'initialize-payment'}[$i]->transaction["product-type"]) == true) {
+                                $data['producttype'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction["product-type"];
+                            }
+
                             $obj_TxnInfo = TxnInfo::produceInfo($iTxnID,$_OBJ_DB, $obj_ClientConfig, $data);
                             if ($obj_mPoint->getTxnAttemptsFromSessionID($data['sessionid']) >= 3) {
                                 $xml = '<status code="'.Constants::iSESSION_FAILED_MAXIMUM_ATTEMPTS.'">Payment failed: You have exceeded the maximum number of attempts</status>';
