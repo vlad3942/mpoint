@@ -3826,7 +3826,7 @@ bNwLDrkEV6VmYvJIHNDGkkY=
 -----END PRIVATE KEY-----
 ');
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100007, 47, '-1');
-INSERT INTO client.cardaccess_tbl ( clientid, cardid, enabled, pspid, countryid, stateid, position) VALUES (10007, 1, true, 47, 200, 1, null);
+INSERT INTO client.cardaccess_tbl ( clientid, cardid, enabled, pspid, countryid, stateid, position, psp_type) VALUES (10007, 1, true, 47, 200, 1, null, 6);
 /* ----------------Adding Configurations for Modirum MPI - END ------------------------------ */
 
 
