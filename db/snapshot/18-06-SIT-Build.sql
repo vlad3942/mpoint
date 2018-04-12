@@ -34,6 +34,9 @@ ALTER TABLE log.flight_tbl
 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) SELECT 'pid.html', '2088102135220161', id, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10007 AND pspid=43 ;
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) SELECT 'pid.app', '2088102170185364', id, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10007 AND pspid=43 ;
+--Citcon Wechat change for user experience
+--Redirect URL for HPP integration - can be blank or accept url or as required for client configuration
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('WECHAT_CALLBACK_URL', '', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = 10007 and pspid = 41), 'merchant');
 
 
 INSERT INTO log.state_tbl(id, name, module) VALUES(4031,'Session Partially Completed','Payment');

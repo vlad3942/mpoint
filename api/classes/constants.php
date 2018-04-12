@@ -948,6 +948,13 @@ abstract class Constants
      */
     const iMVAULT_WALLET = 35;
 
+
+    /**
+     * Unique Card ID for transaction's made using Citcon WeChat Pay
+     *
+     */
+    const iCITCON_WECHAT_WALLET = 39;
+
     /**
      * Unique Card ID for transaction's made using Alipay Chinese
      *
