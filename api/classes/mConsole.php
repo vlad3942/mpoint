@@ -1235,6 +1235,19 @@ class mConsole extends Admin
 		}
 	}
 
+	public function updateGatewayTrigger(array $objTrigger, $clientId) {
+		
+		$pspid = $objTrigger {'psp-id'};
+		$enabled = $objTrigger {'enabled'};
+		
+		$sql = "UPDATE client.gatewaytrigger_tbl SET aggregationtriggerunit = ". $objTrigger->{'aggregation-trigger'} {'unit'} .", aggregationtriggervalue = " . $objTrigger->{'aggregation-trigger'}. "
+				WHERE gatewayid=" . $pspid . " and clientid =" . $clientId . " ";
+		
+		if (is_resource ( $this->getDBConn ()->query ( $sql ) ) === false) {
+			throw new mPointException ( "Unable to upadte record for gatewayid : " . $pspid );
+		}
+		
+	}
 	
 	public function searchGatewayTrigger($clientId, $pspId) {
 		$RS = array();
