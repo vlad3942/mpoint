@@ -1241,7 +1241,7 @@ class mConsole extends Admin
 		$enabled = $objTrigger {'enabled'};
 		
 		$sql = "UPDATE client.gatewaytrigger_tbl SET aggregationtriggerunit = ". $objTrigger->{'aggregation-trigger'} {'unit'} .", aggregationtriggervalue = " . $objTrigger->{'aggregation-trigger'}. "
-				WHERE gatewayid=" . $pspid . " and clientid =" . $clientId . " ";
+				WHERE gatewayid=" . $pspid . " AND clientid =" . $clientId . " AND enabled = 't'";
 		
 		if (is_resource ( $this->getDBConn ()->query ( $sql ) ) === false) {
 			throw new mPointException ( "Unable to upadte record for gatewayid : " . $pspid );
