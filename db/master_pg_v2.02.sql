@@ -399,3 +399,7 @@ ALTER TABLE log.flight_tbl
 -- To execute the above query first need to truncate the session_tbl data.
 -- Run the "TRUNCATE TABLE log.session_tbl CASCADE;" before executing below query.
 ALTER TABLE log.session_tbl ADD CONSTRAINT constraint_name UNIQUE (orderid);
+
+ALTER TABLE system.ProductType_Tbl ADD COLUMN created timestamp without time zone DEFAULT now();
+ALTER TABLE system.ProductType_Tbl ADD COLUMN  modified timestamp without time zone DEFAULT now();
+ALTER TABLE system.ProductType_Tbl ADD COLUMN  enabled boolean DEFAULT true ; 
