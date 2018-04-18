@@ -89,12 +89,17 @@ if (array_key_exists ( "PHP_AUTH_USER", $_SERVER ) === true && array_key_exists 
 			case (mConsole::iAUTHORIZATION_SUCCESSFUL) :
 				header ( "HTTP/1.1 200 OK" );
 				try{
+					
 				$clientId = $obj_DOM->{'save-gateway-triggers'}{'client-id'} ;
 				for($i = 0; $i < count ( $obj_DOM->{'save-gateway-triggers'}->{'gateway-triggers'}->{'gateway-trigger'} ); $i ++) {
 					$objTrigger = $obj_DOM->{'save-gateway-triggers'}->{'gateway-triggers'}->{'gateway-trigger'}[$i]  ;
-					$obj_mPoint->saveGatewayTrigger($objTrigger, $clientId);
+					$status = $obj_mPoint->saveGatewayTrigger($objTrigger, $clientId);
 				}
-				$xml = '<status code="1000">success</status>';
+				
+				if($status != "success")
+				   $xml = '<status code="500">'.$status.'</status>';
+				else 
+					$xml = '<status code="1000">'.$status.'</status>';
 				}
 				catch (Exception $e)
 				{

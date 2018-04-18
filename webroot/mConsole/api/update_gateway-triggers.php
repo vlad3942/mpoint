@@ -51,8 +51,8 @@ if (array_key_exists ( "PHP_AUTH_USER", $_SERVER ) === true && array_key_exists 
 		
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo ( $aHTTP_CONN_INFO ["mesb"] );
 		
-		$code = $obj_mPoint->singleSignOn ( $obj_ConnInfo, $_SERVER ['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_TRANSACTION_STATISTICS, $aClientIDs );
-		//$code =10;
+		//$code = $obj_mPoint->singleSignOn ( $obj_ConnInfo, $_SERVER ['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_TRANSACTION_STATISTICS, $aClientIDs );
+		$code =10;
 		switch ($code) {
 			case (mConsole::iSERVICE_CONNECTION_TIMEOUT_ERROR) :
 				header ( "HTTP/1.1 504 Gateway Timeout" );
@@ -86,9 +86,13 @@ if (array_key_exists ( "PHP_AUTH_USER", $_SERVER ) === true && array_key_exists 
 				
 			    for($i = 0; $i < count ( $obj_DOM->{'edit-gateway-triggers'}->{'gateway-triggers'}->{'gateway-trigger'} ); $i ++) {
 					$objTrigger = $obj_DOM->{'edit-gateway-triggers'}->{'gateway-triggers'}->{'gateway-trigger'}[$i]  ;
-					$obj_mPoint->updateGatewayTrigger($objTrigger, $clientId);
+					$status = $obj_mPoint->updateGatewayTrigger($objTrigger, $clientId);
 				}
-				$xml = '<status code="1000">success</status>';
+				  if($status != "success")
+					 $xml = '<status code="500">'.$status.'</status>';
+				  else
+					$xml = '<status code="1000">'.$status.'</status>';
+					
 				} 
 				catch (Exception $e)
 				{

@@ -1223,30 +1223,72 @@ class mConsole extends Admin
 		$pspid = $objTrigger {'psp-id'};
 		$enabled = $objTrigger {'enabled'};
 		$healthTriggerUnit = $objTrigger->{'health-trigger'} {'unit'};
+		$result = '';
+	
+		$sql = "SELECT COUNT(*) as GATEWAYCOUNT FROM client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl WHERE 
+                gatewayid=". $pspid ." AND clientid =". $clientId ." AND enabled = 't'";
+	
+		$res = $this->getDBConn()->query($sql);
 		
-		$sql = "INSERT INTO client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl(clientid, gatewayid, status,
-            aggregationtriggerunit, aggregationtriggervalue)
-		    VALUES (" . $clientId . "," . $pspid . ",'" . $enabled . "'," . $objTrigger->{'aggregation-trigger'} {'unit'} . "," . $objTrigger->{'aggregation-trigger'}. "); ";
-		
-		//echo $sql ;
-		
-		if (is_resource ( $this->getDBConn ()->query ( $sql ) ) === false) {
-			throw new mPointException ( "Unable to insert new record for gatewayid : " . $pspid );
+		if (is_resource($res) === true){
+			
+			$RS = $this->getDBConn ()->fetchName ( $res );
+			if (is_array ( $RS ) === true) {
+				
+				if($RS["GATEWAYCOUNT"] > 0){
+					
+					$result = "Gateway is already exist";
+				}else{
+					
+					$sql = "INSERT INTO client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl(clientid, gatewayid, status,
+		            aggregationtriggerunit, aggregationtriggervalue)
+				    VALUES (" . $clientId . "," . $pspid . ",'" . $enabled . "'," . $objTrigger->{'aggregation-trigger'} {'unit'} . "," . $objTrigger->{'aggregation-trigger'}. "); ";
+					
+					if (is_resource ( $this->getDBConn ()->query ( $sql ) ) === false) {
+						throw new mPointException ( "Unable to insert new record for gatewayid : " . $pspid );
+					}else{
+					
+					  $result = "success";
+					}
+				}
+			}
 		}
-	}
+		
+		return $result;
+}
 
 	public function updateGatewayTrigger(array $objTrigger, $clientId) {
 		
 		$pspid = $objTrigger {'psp-id'};
 		$enabled = $objTrigger {'enabled'};
+		$result = '';
+		
+		$sql = "SELECT COUNT(*) as GATEWAYCOUNT FROM client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl WHERE
+                gatewayid=". $pspid ." AND clientid =". $clientId ." AND enabled = 't'";
+		
+		$res = $this->getDBConn()->query($sql);
+		
+		if (is_resource($res) === true){
+				
+			$RS = $this->getDBConn ()->fetchName ( $res );
+			if (is_array ( $RS ) === true) {
+		
+				if($RS["GATEWAYCOUNT"] > 0){
+						
+					$result = "Gateway is already exist";
+				}else{
 		
 		$sql = "UPDATE client.gatewaytrigger_tbl SET aggregationtriggerunit = ". $objTrigger->{'aggregation-trigger'} {'unit'} .", aggregationtriggervalue = " . $objTrigger->{'aggregation-trigger'}. "
 				WHERE gatewayid=" . $pspid . " AND clientid =" . $clientId . " AND enabled = 't'";
 		
-		if (is_resource ( $this->getDBConn ()->query ( $sql ) ) === false) {
-			throw new mPointException ( "Unable to upadte record for gatewayid : " . $pspid );
+				if (is_resource ( $this->getDBConn ()->query ( $sql ) ) === false) {
+					throw new mPointException ( "Unable to upadte record for gatewayid : " . $pspid );
+				}else{
+					  $result = "success";
+					}
+				}
+	        }
 		}
-		
 	}
 	
 	public function searchGatewayTrigger($clientId, $pspId) {
