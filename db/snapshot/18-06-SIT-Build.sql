@@ -8,6 +8,7 @@ ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN resetthresholdunit ;
 ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN resetthresholdvalue ;
 /*=================== Moving triggers to BRE =================== */
 
+ALTER TABLE Client.gatewaytrigger_tbl ADD COLUMN lastrun timestamp without time zone ;
 -- 2c2p alc Airline data improvement -- start --
 
 -- Alter Log.Passenger Tbl to store additional passenger data
@@ -138,3 +139,4 @@ INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd)
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100007, 45, '-1');
 
 /* ========== CONFIGURE DEMO ACCOUNT FOR AMEX END ====== */
+>>>>>>> 69a977035ae8c375bc7a1c90d65601edb6a12fa8

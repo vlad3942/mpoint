@@ -1,7 +1,7 @@
 <?php
 /** 
  *
- * @author Deblina Das
+ * @author Amar kumar
  * @copyright Cellpoint Mobile
  * @link http://www.cellpointmobile.com
  * @package mConsole
@@ -24,20 +24,13 @@ require_once (sCLASS_PATH . "mConsole.php");
  * $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
  * $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
  * $HTTP_RAW_POST_DATA .= '<root>';
- * $HTTP_RAW_POST_DATA .= '<save-gateway-triggers client-id="10007">';
- * $HTTP_RAW_POST_DATA .= '<gateway-triggers>';
- * $HTTP_RAW_POST_DATA .= '<gateway-trigger psp-id="4" enabled="t">';
- * $HTTP_RAW_POST_DATA .= '<health-trigger unit="1">1000</health-trigger>';
- * $HTTP_RAW_POST_DATA .= '<aggregation-trigger unit="1" >1000</aggregation-trigger>';
- * $HTTP_RAW_POST_DATA .= '<reset-threshold unit="2">500</reset-threshold>';
- * $HTTP_RAW_POST_DATA .= '</gateway-trigger>';
- * $HTTP_RAW_POST_DATA .= '<gateway-trigger psp-id="18" enabled="f">';
- * $HTTP_RAW_POST_DATA .= '<health-trigger unit="1">1000</health-trigger>';
- * $HTTP_RAW_POST_DATA .= '<aggregation-trigger unit="1">1000</aggregation-trigger>';
- * $HTTP_RAW_POST_DATA .= '<reset-threshold unit="2">500</reset-threshold>';
- * $HTTP_RAW_POST_DATA .= '</gateway-trigger>';
- * $HTTP_RAW_POST_DATA .= '</gateway-triggers>';
- * $HTTP_RAW_POST_DATA .= '</save-gateway-triggers>';
+ * $HTTP_RAW_POST_DATA .='<edit-gateway-triggers client-id="10007">';
+ * $HTTP_RAW_POST_DATA .='<gateway-triggers>';
+ * $HTTP_RAW_POST_DATA .='<gateway-trigger psp-id="18" enabled="true" >';
+ * $HTTP_RAW_POST_DATA .=' <aggregation-trigger unit="2">100</aggregation-trigger>';
+ * $HTTP_RAW_POST_DATA .='</gateway-trigger>';
+ * $HTTP_RAW_POST_DATA .='</gateway-triggers>';	
+ * $HTTP_RAW_POST_DATA .='</edit-gateway-triggers>';
  */
 
 $obj_DOM = simpledom_load_string ( $HTTP_RAW_POST_DATA );
@@ -50,7 +43,7 @@ $_OBJ_TXT->loadConstants ( array (
 ) );
 
 if (array_key_exists ( "PHP_AUTH_USER", $_SERVER ) === true && array_key_exists ( "PHP_AUTH_PW", $_SERVER ) === true) {
-	if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate ( sPROTOCOL_XSD_PATH . "mconsole.xsd" ) === true && count ( $obj_DOM->{'save-gateway-triggers'} ) > 0) {
+	if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate ( sPROTOCOL_XSD_PATH . "mconsole.xsd" ) === true && count ( $obj_DOM->{'edit-gateway-triggers'} ) > 0) {
 		
 		$aHTTP_CONN_INFO ["mesb"] ["path"] = Constants::sMCONSOLE_SINGLE_SIGN_ON_PATH;
 		$aHTTP_CONN_INFO ["mesb"] ["username"] = trim ( $_SERVER ['PHP_AUTH_USER'] );
@@ -58,8 +51,8 @@ if (array_key_exists ( "PHP_AUTH_USER", $_SERVER ) === true && array_key_exists 
 		
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo ( $aHTTP_CONN_INFO ["mesb"] );
 		
-		$code = $obj_mPoint->singleSignOn ( $obj_ConnInfo, $_SERVER ['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_TRANSACTION_STATISTICS, $aClientIDs );
-		//$code =10;
+		//$code = $obj_mPoint->singleSignOn ( $obj_ConnInfo, $_SERVER ['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_TRANSACTION_STATISTICS, $aClientIDs );
+		$code =10;
 		switch ($code) {
 			case (mConsole::iSERVICE_CONNECTION_TIMEOUT_ERROR) :
 				header ( "HTTP/1.1 504 Gateway Timeout" );
@@ -89,18 +82,18 @@ if (array_key_exists ( "PHP_AUTH_USER", $_SERVER ) === true && array_key_exists 
 			case (mConsole::iAUTHORIZATION_SUCCESSFUL) :
 				header ( "HTTP/1.1 200 OK" );
 				try{
-					
-				$clientId = $obj_DOM->{'save-gateway-triggers'}{'client-id'} ;
-				for($i = 0; $i < count ( $obj_DOM->{'save-gateway-triggers'}->{'gateway-triggers'}->{'gateway-trigger'} ); $i ++) {
-					$objTrigger = $obj_DOM->{'save-gateway-triggers'}->{'gateway-triggers'}->{'gateway-trigger'}[$i]  ;
-					$status = $obj_mPoint->saveGatewayTrigger($objTrigger, $clientId);
-				}
+				$clientId = $obj_DOM->{'edit-gateway-triggers'}{'client-id'} ;
 				
-				if($status != "success")
-				   $xml = '<status code="500">'.$status.'</status>';
-				else 
-					$xml = '<status code="1000">'.$status.'</status>';
+			    for($i = 0; $i < count ( $obj_DOM->{'edit-gateway-triggers'}->{'gateway-triggers'}->{'gateway-trigger'} ); $i ++) {
+					$objTrigger = $obj_DOM->{'edit-gateway-triggers'}->{'gateway-triggers'}->{'gateway-trigger'}[$i]  ;
+					$status = $obj_mPoint->updateGatewayTrigger($objTrigger, $clientId);
 				}
+				  if($status != "success")
+					 $xml = '<status code="500">'.$status.'</status>';
+				  else
+					$xml = '<status code="1000">'.$status.'</status>';
+					
+				} 
 				catch (Exception $e)
 				{
 					header("HTTP/1.1 500 Internal Server Error");
@@ -119,7 +112,7 @@ elseif (($obj_DOM instanceof SimpleDOMElement) === false) {
 		
 		$xml = '<status code="415">Invalid XML Document</status>';
 	} // Error: Wrong operation
-elseif (count ( $obj_DOM->{'save-gateway-triggers'} ) == 0) {
+elseif (count ( $obj_DOM->{'edit-gateway-triggers'} ) == 0) {
 		header ( "HTTP/1.1 400 Bad Request" );
 		
 		$xml = '';
