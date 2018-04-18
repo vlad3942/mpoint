@@ -735,6 +735,12 @@ abstract class Constants
      */
     const iMODIRUM_MPI = 47;
 
+    /**
+     * Unique ID for the PSP : CHUBB
+     *
+     */
+    const iCHUBB_PSP = 48;
+
 	/**
 
     /**
