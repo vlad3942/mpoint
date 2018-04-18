@@ -121,12 +121,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			$aFilter = array();
 			$aAggregations = array();
 			$aColumns = array();
+			$limit = $obj_DOM->{'get-transaction-statistics-by-filter'}->limit;
+			$orderby = array();
+			$orderby[(string)$obj_DOM->{'get-transaction-statistics-by-filter'}->orderby->key] = (string)$obj_DOM->{'get-transaction-statistics-by-filter'}->orderby->value;
 
             for ($i=0; $i<count($obj_DOM->{'get-transaction-statistics-by-filter'}->filters->filter); $i++)
             {
                 $key = (string) $obj_DOM->{'get-transaction-statistics-by-filter'}->filters->filter[$i]->key;
                 $value = (string) $obj_DOM->{'get-transaction-statistics-by-filter'}->filters->filter[$i]->value;
-                if(strtolower($key) == 'state' || strtolower($key) == 'paymenttypeid' || strtolower($key) == 'cardid')
+                if(strtolower($key) == 'state' || strtolower($key) == 'paymenttypeid' || strtolower($key) == 'cardid' || strtolower($key) == 'currency_id' | strtolower($key) == 'country_id')
                 {
                     $aFilter[$key][] = $value;
                 }
@@ -149,7 +152,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                 $aColumns[] = $value;
             }
 
-			$sTransactionStats = $obj_mPoint->getTransactionStatsByFilter($iClientID, $aFilter, $aAggregations, $aColumns);
+			$sTransactionStats = $obj_mPoint->getTransactionStatsByFilter($iClientID, $aFilter, $aAggregations, $aColumns,$limit,$orderby);
 			if(empty($sTransactionStats) === false)
 			{
 				$xml = $sTransactionStats;

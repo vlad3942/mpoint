@@ -1297,41 +1297,50 @@ class mConsole extends Admin
      * @return array:resultSet
      */
 
-    public function getTransactionStatsByFilter($iClientID, $aFilters = array(), $aAggregations = array(), $aColumns = array() )
+    public function getTransactionStatsByFilter($iClientID, $aFilters = array(), $aAggregations = array(), $aColumns = array(),$limit,$orderby = array())
 	{
 		$sql = 'SELECT ';
-
-		$aSelector = array();
+        $aSelector = array();
 		$aOrderbyClauses = array();
 		foreach ($aColumns as $column)
 		{
 			switch(strtolower($column)){
 				case 'transaction_count' :
 					$aSelector[] = 'COUNT(*) AS TRANSACTION_COUNT';
+					$aOrderbyClauses[] = 'TRANSACTION_COUNT '.$orderby['TRANSACTION_COUNT'];
 					break;
             	case 'hour':
             		$aSelector[] = 'EXTRACT(hour FROM T.created) AS HOUR';
-					$aOrderbyClauses[]='HOUR';
+					$aOrderbyClauses[] = 'HOUR';
             		break;
 				case 'day':
             		$aSelector[] = 'EXTRACT(day FROM T.created) AS DAY';
-					$aOrderbyClauses[]='DAY';
+					$aOrderbyClauses[] = 'DAY';
             		break;
 				case 'state':
 					$aSelector[] = 'S.name AS STATE';
-					$aOrderbyClauses[]='STATE';
+					$aOrderbyClauses[] = 'STATE '.$orderby['currency'];//if value present the it will return value(asc or desc) or ''(empty)
 					break;
 				case 'revenue_count' :
 					$aSelector[] = 'sum(T.amount) AS revenue_count';
+					$aOrderbyClauses[] = 'revenue_count '.$orderby['revenue_count'];
 					break;
 				case 'currency' :
 					$aSelector[] = 'C.code AS CURRENCY';
-					$aOrderbyClauses[]='CURRENCY';
+					$aOrderbyClauses[] =  'CURRENCY '.$orderby['currency'];
 					break;
 				case 'paymenttypeid' :
 					$aSelector[] = 'CARD.name AS paymenttypeid';
-					$aOrderbyClauses[]='paymenttypeid';
+					$aOrderbyClauses[ ] = 'paymenttypeid '.$orderby['paymenttypeid'];
 					break;
+				case 'currency_id' :
+        			$aSelector[] = 'c.code AS currency_id';
+        			$aOrderbyClauses[] = 'currency_id';
+        			break;
+				case 'country_id' :
+        			$aSelector[] = 'COUNTRY.NAME AS country_id';
+        			$aOrderbyClauses[] = 'country_id '.$orderby['country_id'];
+        			break;
 				default:
 					$aSelector[] = strtolower($column);
 					break;
@@ -1348,9 +1357,14 @@ class mConsole extends Admin
 			$sql .= " INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".CARD_TBL AS CARD ON T.CARDID = CARD.ID ";
 		}
 
-		if(in_array('currency', $aColumns) === true)
+		if(in_array('currency', $aColumns) === true || in_array('currency_id', $aColumns) === true)
 		{
 			$sql .= " INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".CURRENCY_TBL AS C ON T.CURRENCYID = C.ID ";
+		}
+
+		if(in_array('country_id', $aColumns) === true)
+		{
+			$sql .= " INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".COUNTRY_TBL AS COUNTRY ON T.COUNTRYID = COUNTRY.ID ";
 		}
 
         if(in_array('state', $aColumns) === true)
@@ -1379,6 +1393,12 @@ class mConsole extends Admin
 				case 'paymenttypeid':
 					$aFiltersClauses[] = ' AND CARD.PAYMENTTYPE IN ('.implode(",", $value).')';
 					break;
+				case 'currency_id':
+                	$aFiltersClauses[] = ' AND C.ID IN ('.implode(",", $value).')';
+					break;
+				case 'country_id':
+                	$aFiltersClauses[] = ' AND T.COUNTRYID IN ('.implode(",", $value).')';
+                	break;
                 default:
                     $aFiltersClauses[] =  ' '.$key.' = '.$value ;
                     break;
@@ -1406,6 +1426,12 @@ class mConsole extends Admin
 		$sql .= implode(", ", $aOrderbyClauses);
 
 
+
+
+		if (strlen($limit) > 0)
+		{
+			$sql .= ' LIMIT  ' . $limit;
+		}
 
         //echo $sql;die;
 
