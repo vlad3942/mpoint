@@ -1235,6 +1235,19 @@ class mConsole extends Admin
 		}
 	}
 
+	public function updateGatewayTrigger(array $objTrigger, $clientId) {
+		
+		$pspid = $objTrigger {'psp-id'};
+		$enabled = $objTrigger {'enabled'};
+		
+		$sql = "UPDATE client.gatewaytrigger_tbl SET aggregationtriggerunit = ". $objTrigger->{'aggregation-trigger'} {'unit'} .", aggregationtriggervalue = " . $objTrigger->{'aggregation-trigger'}. "
+				WHERE gatewayid=" . $pspid . " AND clientid =" . $clientId . " AND enabled = 't'";
+		
+		if (is_resource ( $this->getDBConn ()->query ( $sql ) ) === false) {
+			throw new mPointException ( "Unable to upadte record for gatewayid : " . $pspid );
+		}
+		
+	}
 	
 	public function searchGatewayTrigger($clientId, $pspId) {
 		$RS = array();
@@ -1284,32 +1297,50 @@ class mConsole extends Admin
      * @return array:resultSet
      */
 
-    public function getTransactionStatsByFilter($iClientID, $aFilters = array(), $aAggregations = array(), $aColumns = array() )
+    public function getTransactionStatsByFilter($iClientID, $aFilters = array(), $aAggregations = array(), $aColumns = array(),$limit,$orderby = array())
 	{
 		$sql = 'SELECT ';
-
-		$aSelector = array();
+        $aSelector = array();
+		$aOrderbyClauses = array();
 		foreach ($aColumns as $column)
 		{
 			switch(strtolower($column)){
 				case 'transaction_count' :
 					$aSelector[] = 'COUNT(*) AS TRANSACTION_COUNT';
+					$aOrderbyClauses[] = 'TRANSACTION_COUNT '.$orderby['TRANSACTION_COUNT'];
 					break;
             	case 'hour':
             		$aSelector[] = 'EXTRACT(hour FROM T.created) AS HOUR';
+					$aOrderbyClauses[] = 'HOUR';
             		break;
 				case 'day':
             		$aSelector[] = 'EXTRACT(day FROM T.created) AS DAY';
+					$aOrderbyClauses[] = 'DAY';
             		break;
-				case 'stateid':
-					$aSelector[] = 'M.stateid AS STATEID';
+				case 'state':
+					$aSelector[] = 'S.name AS STATE';
+					$aOrderbyClauses[] = 'STATE '.$orderby['currency'];//if value present the it will return value(asc or desc) or ''(empty)
 					break;
 				case 'revenue_count' :
 					$aSelector[] = 'sum(T.amount) AS revenue_count';
+					$aOrderbyClauses[] = 'revenue_count '.$orderby['revenue_count'];
 					break;
 				case 'currency' :
 					$aSelector[] = 'C.code AS CURRENCY';
+					$aOrderbyClauses[] =  'CURRENCY '.$orderby['currency'];
 					break;
+				case 'paymenttypeid' :
+					$aSelector[] = 'CARD.name AS paymenttypeid';
+					$aOrderbyClauses[ ] = 'paymenttypeid '.$orderby['paymenttypeid'];
+					break;
+				case 'currency_id' :
+        			$aSelector[] = 'c.code AS currency_id';
+        			$aOrderbyClauses[] = 'currency_id';
+        			break;
+				case 'country_id' :
+        			$aSelector[] = 'COUNTRY.NAME AS country_id';
+        			$aOrderbyClauses[] = 'country_id '.$orderby['country_id'];
+        			break;
 				default:
 					$aSelector[] = strtolower($column);
 					break;
@@ -1321,16 +1352,25 @@ class mConsole extends Admin
 		$sql .= " FROM LOG".sSCHEMA_POSTFIX.".TRANSACTION_TBL AS T
 					INNER JOIN LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL AS M ON T.ID = M.TXNID ";
 
-		if(array_key_exists('paymenttype', $aFilters) === true)
+		if(array_key_exists('paymenttypeid', $aFilters) === true)
 		{
 			$sql .= " INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".CARD_TBL AS CARD ON T.CARDID = CARD.ID ";
 		}
 
-		if(in_array('currency', $aColumns) === true)
+		if(in_array('currency', $aColumns) === true || in_array('currency_id', $aColumns) === true)
 		{
 			$sql .= " INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".CURRENCY_TBL AS C ON T.CURRENCYID = C.ID ";
 		}
 
+		if(in_array('country_id', $aColumns) === true)
+		{
+			$sql .= " INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".COUNTRY_TBL AS COUNTRY ON T.COUNTRYID = COUNTRY.ID ";
+		}
+
+        if(in_array('state', $aColumns) === true)
+		{
+			$sql .= " INNER JOIN LOG".sSCHEMA_POSTFIX.".STATE_TBL AS S ON M.stateid = S.ID ";
+		}
 		$sql .= " WHERE T.CLIENTID = " . intval($iClientID);
 
 		$aFiltersClauses = array();
@@ -1344,15 +1384,21 @@ class mConsole extends Admin
                 case 'to':
                     $aFiltersClauses[] = " AND T.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($value)))."'";
                     break;
-                case 'stateid':
+                case 'state':
                     $aFiltersClauses[] = ' AND M.stateid IN ('.implode(",", $value).')';
                     break;
 				case 'cardid':
-                    $aFiltersClauses[] = ' AND T.cardid = '.intval($value);
+                    $aFiltersClauses[] = ' AND T.cardid IN ('.implode(",", $value).')';
                     break;
-				case 'paymenttype':
+				case 'paymenttypeid':
 					$aFiltersClauses[] = ' AND CARD.PAYMENTTYPE IN ('.implode(",", $value).')';
 					break;
+				case 'currency_id':
+                	$aFiltersClauses[] = ' AND C.ID IN ('.implode(",", $value).')';
+					break;
+				case 'country_id':
+                	$aFiltersClauses[] = ' AND T.COUNTRYID IN ('.implode(",", $value).')';
+                	break;
                 default:
                     $aFiltersClauses[] =  ' '.$key.' = '.$value ;
                     break;
@@ -1374,6 +1420,19 @@ class mConsole extends Admin
         }
 
         $sql .= implode(", ", $aGroupClauses);
+
+		$sql .= ' ORDER BY ';
+
+		$sql .= implode(", ", $aOrderbyClauses);
+
+
+
+
+		if (strlen($limit) > 0)
+		{
+			$sql .= ' LIMIT  ' . $limit;
+		}
+
         //echo $sql;die;
 
         $sReponseXML = '';

@@ -7414,8 +7414,13 @@ ALTER TABLE client.producttype_tbl
 INSERT INTO system.producttype_tbl( id, name, description, code )  VALUES (110, 'Airline Ticket', 'Flight Tickets', 'AIRTCKT');
 INSERT INTO system.producttype_tbl( id, name, description, code )  VALUES (210, 'Airline Insurance', 'Insurance products purchased', 'INSRNC');
 
- 
 
+/*  ===========  START : Adding producttype to Log.Transaction_Tbl  ==================  */
+ALTER TABLE log.transaction_tbl ADD producttype INT ;
+COMMENT ON COLUMN log.transaction_tbl.producttype IS 'Product type of transaction';
+
+
+/*  ===========  END : Adding producttype to Log.Transaction_Tbl  ==================  */
 /*=========== Gateway Triggers ============*/
 
 -- Table: system.triggerunit_tbl
@@ -7551,6 +7556,7 @@ INSERT INTO system.statisticstype_tbl(  id, name, description)    VALUES (1,'Txn
 INSERT INTO system.statisticstype_tbl(  id, name, description)    VALUES (2,'Success Ratio', 'Succes vs. failure transactions using a gateway for a time period');
 INSERT INTO system.statisticstype_tbl(  id, name, description)    VALUES (3,'Response Time', 'Avg response time of a gateway during txn authorization');
 
+
 /*===========================  Updating for gateway delete functionality   ======================*/  
 ALTER TABLE client.gatewaytrigger_tbl ADD COLUMN status boolean NOT NULL DEFAULT false;
 ALTER TABLE client.gatewaytrigger_tbl ALTER COLUMN enabled SET DEFAULT true ;
@@ -7566,3 +7572,6 @@ ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN resetthresholdvalue ;
 
 ALTER TABLE Client.gatewaytrigger_tbl ADD COLUMN lastrun timestamp without time zone ;
 
+-- To execute the above query first need to truncate the session_tbl data.
+-- Run the "TRUNCATE TABLE log.session_tbl CASCADE;" before executing below query.
+ALTER TABLE log.session_tbl ADD CONSTRAINT constraint_name UNIQUE (orderid);

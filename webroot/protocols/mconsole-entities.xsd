@@ -2068,6 +2068,16 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
+			<xs:element name="limit" maxOccurs="unbounded" minOccurs="0"/>
+
+			<xs:element name="orderby" maxOccurs="unbounded" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element type="xs:string" name="key"/>
+						<xs:element type="xs:string" name="value"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 		</xs:sequence>
 		<xs:attribute type="xs:integer" name="client-id"/>
 	</xs:complexType>
@@ -2148,6 +2158,21 @@
 			<xs:attribute type="xs:integer" name="client-id" use="required" />
 	</xs:complexType>
 	<!-- Save Gateway trigger details -->
+	
+	<!-- Edit Gateway trigger details -->
+	<xs:complexType name="edit-gateway-triggers">
+			<xs:all>
+				<xs:element name="gateway-triggers" minOccurs="1" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="gateway-trigger" type="gateway-trigger" minOccurs="1" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+			<xs:attribute type="xs:integer" name="client-id" use="required" />
+	</xs:complexType>
+	<!-- Edit Gateway trigger details -->
 	
 	<!-- Search Gateway trigger details -->
 	<xs:complexType name="search-gateway-triggers">

@@ -204,6 +204,11 @@ abstract class Constants
      *
      */
     const iPAYMENT_3DS_VERIFICATION_STATE = 2005;
+    /**
+     * Defines the ID of the State that indicates that payment has successfully completed 3DS authentication
+     *
+     */
+    const iPAYMENT_3DS_SUCCESS_STATE = 2006;
 
 	/**
 	 * Defines the ID of the State that indicates that payment is being using a voucher
@@ -250,6 +255,11 @@ abstract class Constants
 	 *
 	 */
 	const iPAYMENT_DECLINED_STATE = 2011;
+    /**
+     * Defines the ID of the State that indicates that payment has successfully completed 3DS authentication
+     *
+     */
+    const iPAYMENT_3DS_FAILURE_STATE = 2016;
 	/**
 	 * Defines the ID of the State that indicates that payment has accidentally been duplicated by DIBS
 	 *
@@ -287,7 +297,7 @@ abstract class Constants
      *
      */
 
-    const iSESSION_EXPIRED = 4020;
+    const iSESSION_EXPIRED = 4010;
 
     /**
      * Defines the ID of the State that indicates that Session failed
@@ -306,6 +316,24 @@ abstract class Constants
      *
      */
     const iSESSION_COMPLETED = 4030;
+
+    /**
+     * Defines the ID of the State that indicates that Session Partially Completed
+     *
+     */
+    const iSESSION_PARTIALLY_COMPLETED = 4031;
+
+    /**
+     * Defines the ProductType for the ticket
+     *
+     */
+    const iPrimaryProdTypeBase = 100;
+
+    /**
+     * Defines the ProductType for the Ancillary
+     *
+     */
+    const iAncillaryProdTypeBase = 200;
 
     /**
 	 * Defines GoMobile's type identifier for an MT-SMS message
@@ -695,7 +723,27 @@ abstract class Constants
      */
     const iGOOGLE_PAY_PSP = 44;
 
+    /**
+     * Unique ID for the Payment Service Provider: PPRO
+     *
+     */
+    const iPPRO_GATEWAY = 46;
+
+    /**
+     * Unique ID for the MPI : Modirum
+     *
+     */
+    const iMODIRUM_MPI = 47;
+
 	/**
+
+    /**
+     * Unique ID for the Acquirer: Amex
+     *
+     */
+    const iAMEX_ACQUIRER = 45;
+
+    /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
 	 */
@@ -888,12 +936,24 @@ abstract class Constants
 	 *
 	 */
 	const iTRUSTLY_PAY = 38;
+	/**
+	 * Unique Card ID for transaction's made using the co-branded VISA / Dankort
+	 *
+	 */
+	const iVISA_DANKORT_CARD = 37;
 	
     /**
      * Unique Card ID for transaction's made using mVault
      *
      */
     const iMVAULT_WALLET = 35;
+
+
+    /**
+     * Unique Card ID for transaction's made using Citcon WeChat Pay
+     *
+     */
+    const iCITCON_WECHAT_WALLET = 39;
 
     /**
      * Unique Card ID for transaction's made using Alipay Chinese
@@ -906,6 +966,168 @@ abstract class Constants
      *
      */
     const iGOOGLE_PAY_WALLET = 41;
+
+    /**
+     * Unique Card ID for transaction's made using PPRO
+     *
+     */
+    const iPPRO_PAY = 42;
+
+    /**
+     * Unique Card ID for transaction's made using AFFIN_BANK
+     *
+     */
+    const iAFFIN_BANK = 43;
+
+    /**
+     * Unique Card ID for transaction's made using AMBANK
+     *
+     */
+    const iAMBANK = 44;
+
+    /**
+     * Unique Card ID for transaction's made using BANCONTACT
+     *
+     */
+    const iBANCONTACT = 45;
+
+    /**
+     * Unique Card ID for transaction's made using CIMB_CLICKS
+     *
+     */
+    const iCIMB_CLICKS = 46;
+
+    /**
+     * Unique Card ID for transaction's made using DRAGONPAY
+     *
+     */
+    const iDRAGONPAY = 47;
+
+    /**
+     * Unique Card ID for transaction's made using ENETS
+     *
+     */
+    const iENETS = 48;
+
+    /**
+     * Unique Card ID for transaction's made using ENTERCASH
+     *
+     */
+    const iENTERCASH = 49;
+
+    /**
+     * Unique Card ID for transaction's made using EPS
+     *
+     */
+    const iEPS = 50;
+
+    /**
+     * Unique Card ID for transaction's made using ESTONIAN_BANKS
+     *
+     */
+    const iESTONIAN_BANKS = 51;
+
+    /**
+     * Unique Card ID for transaction's made using GIROPAY
+     *
+     */
+    const iGIROPAY = 52;
+
+    /**
+     * Unique Card ID for transaction's made using IDEAL
+     *
+     */
+    const iIDEAL = 53;
+
+    /**
+     * Unique Card ID for transaction's made using LATVIAN_BANKS
+     *
+     */
+    const iLATVIAN_BANKS = 54;
+
+    /**
+     * Unique Card ID for transaction's made using LITHUANIAN_BANKS
+     *
+     */
+    const iLITHUANIAN_BANKS = 55;
+
+    /**
+     * Unique Card ID for transaction's made using MAYBANK2U
+     *
+     */
+    const iMAYBANK2U = 56;
+
+    /**
+     * Unique Card ID for transaction's made using MULTIBANCO
+     *
+     */
+    const iMULTIBANCO = 57;
+
+    /**
+     * Unique Card ID for transaction's made using MYCLEAR_FPX
+     *
+     */
+    const iMYCLEAR_FPX = 58;
+
+    /**
+     * Unique Card ID for transaction's made using PAYSBUY
+     *
+     */
+    const iPAYSBUY = 59;
+
+    /**
+     * Unique Card ID for transaction's made using PAYU
+     *
+     */
+    const iPAYU = 60;
+
+    /**
+     * Unique Card ID for transaction's made using PRZELEWY24
+     *
+     */
+    const iPRZELEWY24  = 61;
+
+    /**
+     * Unique Card ID for transaction's made using RHB BANK
+     *
+     */
+    const iRHB_BANK = 62;
+
+    /**
+     * Unique Card ID for transaction's made using SAFETYPAY
+     *
+     */
+    const iSAFETYPAY = 63;
+
+    /**
+     * Unique Card ID for transaction's made using SEPA
+     *
+     */
+    const iSEPA = 64;
+
+    /**
+     * Unique Card ID for transaction's made using SINGPOST
+     *
+     */
+    const iSINGPOST = 65;
+
+    /**
+     * Unique Card ID for transaction's made using SOFORT BANKING
+     *
+     */
+    const iSOFORT_BANKING = 66;
+
+    /**
+     * Unique Card ID for transaction's made using UNIONPAY
+     *
+     */
+    const iUNIONPAY = 67;
+
+    /**
+     * Unique Card ID for transaction's made using VERKKOPANKKI
+     *
+     */
+    const iVERKKOPANKKI = 68;
 
 	/**
 	 * Unique Fee Type ID for Top-Ups
@@ -977,5 +1199,15 @@ abstract class Constants
 	const iFAILED_TXNS_ALL = 1;
 	const iFAILED_TXNS_FAILED_INIT = 2;
 	const iFAILED_TXNS_FAILED_AUTH = 3;
+
+	/*
+	 * Payment Processor types in mPoint
+	 * */
+	const iPROCESSOR_TYPE_PSP = 1;
+	const iPROCESSOR_TYPE_ACQUIRER = 2;
+	const iPROCESSOR_TYPE_WALLET = 3;
+	const iPROCESSOR_TYPE_APM = 4;
+	const iPROCESSOR_TYPE_VIRTUAL = 5;
+	const iPROCESSOR_TYPE_MPI = 6;
 }
 ?>

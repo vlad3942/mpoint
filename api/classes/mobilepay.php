@@ -9,7 +9,7 @@
  * @link http://www.cellpointmobile.com
  * @package Callback
  * @subpackage MobilePay
- * @version 1.00
+ * @version 1.01
  */
 
 /**
@@ -18,15 +18,30 @@
  */
 class MobilePay extends CPMPSP
 {
+	/**
+	 * (non-PHPdoc)
+	 * @see CPMPSP::initialize()
+	 * 
+	 * Returns the XML document in the following format:
+	 * {code}
+	 * 	<?xml version="1.0" encoding="UTF-8"?>
+	 * 	<root>
+	 * 		<url method="app" />
+	 * 		<callback-url>[STRING]</callback-url>
+	 * 	</root>
+	 * {code}
+	 * 
+	 * @see		ClientConfig#getMESBURL();
+	 */
 	public function initialize(PSPConfig $obj_PSP)
 	{
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
 		$xml .= '<url method="app" />';
+		$xml .= '<callback-url>'. htmlspecialchars($this->getTxnInfo()->getClientConfig()->getMESBURL() ."/mpoint/danskebank/callback", ENT_NOQUOTES) .'</callback-url>';
 		$xml .= '</root>';
-		$obj_XML = simplexml_load_string($xml);
 		
-		return $obj_XML;
+		return simplexml_load_string($xml);
 	}
 
 	public function auth($ticket, $apiKey, $cardID, $storecard)  { /* no operation */ }
