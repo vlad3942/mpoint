@@ -37,6 +37,8 @@ require_once(sCLASS_PATH ."/Mpi.php");
 //require_once(sINTERFACE_PATH ."/send.php");
 // Require specific Business logic for Nets MPI component
 require_once(sCLASS_PATH ."/netsmpi.php");
+// Require specific Business logic for Modirum MPI component
+require_once(sCLASS_PATH ."/modirummpi.php");
 
 set_time_limit(120);
 

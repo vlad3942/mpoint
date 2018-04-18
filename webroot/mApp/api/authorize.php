@@ -114,6 +114,8 @@ require_once(sCLASS_PATH ."/googlepay.php");
 // Require specific Business logic for the PPro component
 require_once(sCLASS_PATH ."/ppro.php");
 require_once(sCLASS_PATH ."/bre.php");
+// Require specific Business logic for the Amex component
+require_once(sCLASS_PATH ."/amex.php");
 
 require_once(sCLASS_PATH ."/post_auth_action.php");
 
@@ -237,7 +239,7 @@ try
 										if ($drEnabled) {
 											$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 											$obj_BRE= new Bre($_OBJ_DB, $_OBJ_TXT);
-											$obj_XML = $obj_BRE->getroute($obj_TxnInfo->getClientConfig (),$obj_ConnInfo,$obj_DOM->{'authorize-payment'} [$i] ["client-id"] , $obj_DOM->{'authorize-payment'}[$i]) ;
+											$obj_XML = $obj_BRE->getroute($obj_TxnInfo,$obj_ConnInfo,$obj_DOM->{'authorize-payment'} [$i] ["client-id"] , $obj_DOM->{'authorize-payment'}[$i]) ;
 											$aRoutes = $obj_XML->{'get-routes-response'}->{'transaction'}->routes->route ;
 										}
 										
@@ -1164,6 +1166,42 @@ try
 
                                                                         $xml .= '<status code="92">Authorization failed, PPro returned error: '. $code .'</status>';
                                                                     }
+                                                                    break;
+
+                                                                case (Constants::iAMEX_ACQUIRER): // AMEX
+                                                                    $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iAMEX_ACQUIRER);
+
+                                                                    $obj_PSP = new Amex($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["amex"]);
+
+                                                                    $propertyValue = $obj_ClientConfig->getAdditionalProperties("3DVERIFICATION");
+
+                                                                    if($propertyValue == true) {
+                                                                        $requset = str_replace("authorize-payment","authenticate",$HTTP_RAW_POST_DATA);
+                                                                        $code = $obj_PSP->authenticate($requset);
+                                                                    }
+                                                                    else {
+                                                                        $code = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem);
+                                                                    }
+
+                                                                    // Authorization succeeded
+                                                                    if ($code == "100")
+                                                                    {
+                                                                        $xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
+                                                                    }
+                                                                    else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+                                                                    else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and Card Details Stored.</status>'; }
+                                                                    else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml .= $code;}
+                                                                    // Error: Authorization declined
+
+                                                                    else
+                                                                    {
+                                                                        $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+
+                                                                        header("HTTP/1.1 502 Bad Gateway");
+
+                                                                        $xml .= '<status code="92">Authorization failed, AMEX returned error: '. $code .'</status>';
+                                                                    }
+
                                                                     break;
 
                                                                 default:	// Unkown Error

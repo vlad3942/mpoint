@@ -720,6 +720,9 @@ $aHTTP_CONN_INFO["citcon"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["citcon"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["citcon"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["citcon"]["paths"]["initialize"] = "/mpoint/citcon/initialize";
+$aHTTP_CONN_INFO["citcon"]["paths"]["refund"] = "/mpoint/citcon/refund";
+$aHTTP_CONN_INFO["citcon"]["paths"]["status"] = "/mpoint/citcon/status";
+
 
 /**
  * Connection info for connecting to AliPay Chinese
@@ -761,6 +764,35 @@ $aHTTP_CONN_INFO["ppro"]["paths"]["initialize"] = "/mpoint/ppro/initialize";
 $aHTTP_CONN_INFO["ppro"]["paths"]["auth"] = "/mpoint/ppro/authorize-payment";
 $aHTTP_CONN_INFO["ppro"]["paths"]["refund"] = "/mpoint/ppro/refund";
 $aHTTP_CONN_INFO["ppro"]["paths"]["callback"] = "/mpoint/ppro/callback";
+/**
+ * Connection info for connecting to Amex
+ */
+$aHTTP_CONN_INFO["amex"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["amex"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["amex"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["amex"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["amex"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["amex"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["amex"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["amex"]["paths"]["auth"] = "/mpsp/amex/authorize-payment";
+$aHTTP_CONN_INFO["amex"]["paths"]["authenticate"] = "/mpoint/authenticate";
+$aHTTP_CONN_INFO["amex"]["paths"]["capture"] = "/mpsp/amex/capture";
+$aHTTP_CONN_INFO["amex"]["paths"]["initialize"] = "/mpsp/amex/initialize";
+$aHTTP_CONN_INFO["amex"]["paths"]["refund"] = "/mpsp/amex/refund";
+$aHTTP_CONN_INFO["amex"]["paths"]["cancel"] = "/mpsp/amex/cancel";
+
+
+/**
+ * Connection info for connecting to Modirum MPI
+ */
+$aHTTP_CONN_INFO["modirummpi"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["modirummpi"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["modirummpi"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["modirummpi"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["modirummpi"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["modirummpi"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["modirummpi"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["modirummpi"]["paths"]["authenticate"] = "/mpi/modirum/authenticate";
 
 /**
  * GoMobile Connection Info.

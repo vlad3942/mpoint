@@ -204,6 +204,11 @@ abstract class Constants
      *
      */
     const iPAYMENT_3DS_VERIFICATION_STATE = 2005;
+    /**
+     * Defines the ID of the State that indicates that payment has successfully completed 3DS authentication
+     *
+     */
+    const iPAYMENT_3DS_SUCCESS_STATE = 2006;
 
 	/**
 	 * Defines the ID of the State that indicates that payment is being using a voucher
@@ -250,6 +255,11 @@ abstract class Constants
 	 *
 	 */
 	const iPAYMENT_DECLINED_STATE = 2011;
+    /**
+     * Defines the ID of the State that indicates that payment has successfully completed 3DS authentication
+     *
+     */
+    const iPAYMENT_3DS_FAILURE_STATE = 2016;
 	/**
 	 * Defines the ID of the State that indicates that payment has accidentally been duplicated by DIBS
 	 *
@@ -306,6 +316,24 @@ abstract class Constants
      *
      */
     const iSESSION_COMPLETED = 4030;
+
+    /**
+     * Defines the ID of the State that indicates that Session Partially Completed
+     *
+     */
+    const iSESSION_PARTIALLY_COMPLETED = 4031;
+
+    /**
+     * Defines the ProductType for the ticket
+     *
+     */
+    const iPrimaryProdTypeBase = 100;
+
+    /**
+     * Defines the ProductType for the Ancillary
+     *
+     */
+    const iAncillaryProdTypeBase = 200;
 
     /**
 	 * Defines GoMobile's type identifier for an MT-SMS message
@@ -701,7 +729,21 @@ abstract class Constants
      */
     const iPPRO_GATEWAY = 46;
 
+    /**
+     * Unique ID for the MPI : Modirum
+     *
+     */
+    const iMODIRUM_MPI = 47;
+
 	/**
+
+    /**
+     * Unique ID for the Acquirer: Amex
+     *
+     */
+    const iAMEX_ACQUIRER = 45;
+
+    /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
 	 */
@@ -905,6 +947,13 @@ abstract class Constants
      *
      */
     const iMVAULT_WALLET = 35;
+
+
+    /**
+     * Unique Card ID for transaction's made using Citcon WeChat Pay
+     *
+     */
+    const iCITCON_WECHAT_WALLET = 39;
 
     /**
      * Unique Card ID for transaction's made using Alipay Chinese
@@ -1150,5 +1199,15 @@ abstract class Constants
 	const iFAILED_TXNS_ALL = 1;
 	const iFAILED_TXNS_FAILED_INIT = 2;
 	const iFAILED_TXNS_FAILED_AUTH = 3;
+
+	/*
+	 * Payment Processor types in mPoint
+	 * */
+	const iPROCESSOR_TYPE_PSP = 1;
+	const iPROCESSOR_TYPE_ACQUIRER = 2;
+	const iPROCESSOR_TYPE_WALLET = 3;
+	const iPROCESSOR_TYPE_APM = 4;
+	const iPROCESSOR_TYPE_VIRTUAL = 5;
+	const iPROCESSOR_TYPE_MPI = 6;
 }
 ?>

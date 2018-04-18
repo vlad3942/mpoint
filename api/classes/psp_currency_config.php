@@ -45,7 +45,7 @@ class PSPCurrencyConfig extends BasicConfig
 	 */
 	public function toXML()
 	{
-		$xml = '<currency id="'. $this->getID() .'" country-id="'. $this->_iCurrencyID .'">';
+		$xml = '<currency id="'. $this->getID() .'" country-id="'. $this->_iCurrencyID .'" currency-id="'. $this->_iCurrencyID .'">';
 		$xml .= htmlspecialchars($this->getName(), ENT_NOQUOTES);
 		$xml .= '</currency>';
 		

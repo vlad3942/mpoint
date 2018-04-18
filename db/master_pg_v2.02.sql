@@ -150,28 +150,34 @@ ALTER TABLE system.SessionType_tbl  OWNER TO mpoint;
 ALTER TABLE log.Session_tbl  OWNER TO mpoint;
 
 
+/*  ===========  START : Adding Table System.ProductType_Tbl  ==================  */
+CREATE TABLE system.ProductType_Tbl
+(
+  id INT PRIMARY KEY,
+  name VARCHAR(10) NOT NULL
+);
+CREATE UNIQUE INDEX ProductType_Tbl_name_uindex ON system.ProductType_Tbl (name);
+COMMENT ON COLUMN system.ProductType_Tbl.id IS 'Unique number of product type';
+COMMENT ON COLUMN system.ProductType_Tbl.name IS 'Product type name';
+COMMENT ON TABLE system.ProductType_Tbl IS 'Contains all product types';
+
+ALTER TABLE system.ProductType_Tbl
+  OWNER TO mpoint;
+
+/*  ===========  END : Adding Table System.ProductType_Tbl  ==================  */
+
+/*  ===========  START : Adding producttype to Log.Transaction_Tbl  ==================  */
+ALTER TABLE log.transaction_tbl ADD producttype INT DEFAULT 100 NOT NULL;
+COMMENT ON COLUMN log.transaction_tbl.producttype IS 'Product type of transaction';
+ALTER TABLE log.transaction_tbl
+  ADD CONSTRAINT transaction_tbl_producttype_tbl_id_fk
+FOREIGN KEY (producttype) REFERENCES system.producttype_tbl (id);
+
+/*  ===========  END : Adding producttype to Log.Transaction_Tbl  ==================  */
+
 /* =============== Added product tables ============ */
 
--- Table: system.producttype_tbl
 
--- DROP TABLE system.producttype_tbl;
-
-CREATE TABLE system.producttype_tbl
-(
-  id serial NOT NULL,
-  name character varying(100),
-  code character varying(100),
-  description character varying(255),
-  created timestamp without time zone DEFAULT now(),
-  modified timestamp without time zone DEFAULT now(),
-  enabled boolean DEFAULT true,
-  CONSTRAINT producttype_pk PRIMARY KEY (id)
-)
-WITH (
-  OIDS=FALSE
-);
-ALTER TABLE system.producttype_tbl
-  OWNER TO mpoint;
 
 
 -- DROP TABLE client.producttype_tbl;
@@ -189,7 +195,7 @@ CREATE TABLE client.producttype_tbl
       REFERENCES client.client_tbl (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT product_fk FOREIGN KEY (productid)
-      REFERENCES system.producttype_tbl(id) MATCH SIMPLE
+      REFERENCES system.ProductType_Tbl(id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 )
 WITH (
@@ -390,3 +396,10 @@ ALTER TABLE log.flight_tbl
   ADD COLUMN "service_level" character varying(2);
 -- 2c2p alc Airline data improvement -- end --
 
+-- To execute the above query first need to truncate the session_tbl data.
+-- Run the "TRUNCATE TABLE log.session_tbl CASCADE;" before executing below query.
+ALTER TABLE log.session_tbl ADD CONSTRAINT constraint_name UNIQUE (orderid);
+
+ALTER TABLE system.ProductType_Tbl ADD COLUMN created timestamp without time zone DEFAULT now();
+ALTER TABLE system.ProductType_Tbl ADD COLUMN  modified timestamp without time zone DEFAULT now();
+ALTER TABLE system.ProductType_Tbl ADD COLUMN  enabled boolean DEFAULT true ; 
