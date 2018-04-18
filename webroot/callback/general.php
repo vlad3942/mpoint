@@ -91,6 +91,8 @@ require_once(sCLASS_PATH ."/ppro.php");
 
 // Require specific Business logic for the Amex component
 require_once(sCLASS_PATH ."/amex.php");
+// Require specific Business logic for the CHUBB component
+require_once(sCLASS_PATH ."/chubb.php");
 /**
  * Input XML format
  *
