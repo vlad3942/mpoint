@@ -309,6 +309,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         {
                                             $data['markup'] = $data['client-config']->getAccountConfig()->getMarkupLanguage();
                                         }
+                                        $data['producttype'] = $obj_TxnInfo->getProductType();
 										$oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
 										$obj_mPoint->logTransaction($oTI);
 										//getting order config with transaction to pass to particular psp for initialize with psp for AID
