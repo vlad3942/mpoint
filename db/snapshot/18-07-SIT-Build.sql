@@ -39,6 +39,11 @@ ALTER TABLE client.producttype_tbl ADD CONSTRAINT product_fk FOREIGN KEY (produc
 ALTER TABLE system.ProductType_Tbl ADD COLUMN created timestamp without time zone DEFAULT now();
 ALTER TABLE system.ProductType_Tbl ADD COLUMN  modified timestamp without time zone DEFAULT now();
 ALTER TABLE system.ProductType_Tbl ADD COLUMN  enabled boolean DEFAULT true ; 
+
+/*-----------------START : Enabling DR for merchant-------------------------*/
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('DR_SERVICE', 'true', 10018, 'client');
+
+
 	  
 	  
 	  
