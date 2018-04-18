@@ -17,4 +17,5 @@
 	<xs:element name="save-gateway-triggers" type="save-gateway-triggers" />
 	<xs:element name="delete-gateway-triggers" type="delete-gateway-triggers" />
 	<xs:element name="search-gateway-triggers" type="search-gateway-triggers" />
+	<xs:element name="edit-gateway-triggers" type="edit-gateway-triggers" />
 </xs:schema>

@@ -7570,6 +7570,8 @@ ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN resetthresholdunit ;
 ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN resetthresholdvalue ;
 /*=================== Moving triggers to BRE =================== */
 
+ALTER TABLE Client.gatewaytrigger_tbl ADD COLUMN lastrun timestamp without time zone ;
+
 -- To execute the above query first need to truncate the session_tbl data.
 -- Run the "TRUNCATE TABLE log.session_tbl CASCADE;" before executing below query.
 ALTER TABLE log.session_tbl ADD CONSTRAINT constraint_name UNIQUE (orderid);
