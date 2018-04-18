@@ -91,6 +91,8 @@ require_once(sCLASS_PATH ."/ppro.php");
 
 // Require specific Business logic for the Amex component
 require_once(sCLASS_PATH ."/amex.php");
+// Require specific Business logic for the CHUBB component
+require_once(sCLASS_PATH ."/chubb.php");
 /**
  * Input XML format
  *
@@ -369,7 +371,9 @@ try
              $obj_mPoint->updateSessionState($iStateId, (integer)$obj_XML->callback->{'psp-config'}["id"], $obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, $obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData);
          } else {
              $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"],"additionaldata" => (string)$sAdditionalData));
-             $obj_mPoint->updateSessionState($iStateId, (integer)$obj_XML->callback->{'psp-config'}["id"], $obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, $obj_XML->callback->transaction->card["type-id"], (string)$sAdditionalData);
+             if ($iStateId != 2001) {
+                 $obj_mPoint->updateSessionState($iStateId, (integer)$obj_XML->callback->{'psp-config'}["id"], $obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, $obj_XML->callback->transaction->card["type-id"], (string)$sAdditionalData);
+             }
          }
      }
   }
