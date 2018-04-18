@@ -239,7 +239,7 @@ try
 										if ($drEnabled) {
 											$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
 											$obj_BRE= new Bre($_OBJ_DB, $_OBJ_TXT);
-											$obj_XML = $obj_BRE->getroute($obj_TxnInfo->getClientConfig (),$obj_ConnInfo,$obj_DOM->{'authorize-payment'} [$i] ["client-id"] , $obj_DOM->{'authorize-payment'}[$i]) ;
+											$obj_XML = $obj_BRE->getroute($obj_TxnInfo,$obj_ConnInfo,$obj_DOM->{'authorize-payment'} [$i] ["client-id"] , $obj_DOM->{'authorize-payment'}[$i]) ;
 											$aRoutes = $obj_XML->{'get-routes-response'}->{'transaction'}->routes->route ;
 										}
 										

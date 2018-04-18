@@ -177,26 +177,7 @@ FOREIGN KEY (producttype) REFERENCES system.producttype_tbl (id);
 
 /* =============== Added product tables ============ */
 
--- Table: system.producttype_tbl
 
--- DROP TABLE system.producttype_tbl;
-
-CREATE TABLE system.producttype_tbl
-(
-  id serial NOT NULL,
-  name character varying(100),
-  code character varying(100),
-  description character varying(255),
-  created timestamp without time zone DEFAULT now(),
-  modified timestamp without time zone DEFAULT now(),
-  enabled boolean DEFAULT true,
-  CONSTRAINT producttype_pk PRIMARY KEY (id)
-)
-WITH (
-  OIDS=FALSE
-);
-ALTER TABLE system.producttype_tbl
-  OWNER TO mpoint;
 
 
 -- DROP TABLE client.producttype_tbl;
@@ -214,7 +195,7 @@ CREATE TABLE client.producttype_tbl
       REFERENCES client.client_tbl (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT product_fk FOREIGN KEY (productid)
-      REFERENCES system.producttype_tbl(id) MATCH SIMPLE
+      REFERENCES system.ProductType_Tbl(id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 )
 WITH (
