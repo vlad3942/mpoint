@@ -31,13 +31,15 @@ class Bre
     }
 
 
-    public function getroute(ClientConfig $objClientconfig,HTTPConnInfo &$oCI,$clientid , $aPayInfo  )
+    public function getroute(TxnInfo $obj_TxnInfo,HTTPConnInfo &$oCI,$clientid , $aPayInfo  )
     {
+    	
+    	$objClientconfig = $obj_TxnInfo->getClientConfig ();
     	//echo( $aPayInfo->{'client-info'}->mobile["country-id"]);
     	$b = '<?xml version="1.0" encoding="UTF-8"?>';
     	$b .= '<root>';
     	$b .= '<get-routes-request client-id= "' . $clientid . '">';
-    	$b .= '<transaction id="' . $aPayInfo->transaction ["id"] . '">';
+    	$b .= '<transaction id="' . $aPayInfo->transaction ["id"] . '" product-type="'.$obj_TxnInfo->getProductType() .'">';
     	$b .= '<card type-id="' . $aPayInfo->transaction->card ["type-id"] . '">';
     	$b .= '<amount country-id="' . $aPayInfo->transaction->card->amount ["country-id"] . '" currency-id="' . $aPayInfo->transaction->card->amount ["currency-id"] . '">' . $aPayInfo->transaction->card->amount . '</amount>';
     	$b .= '</card>';
