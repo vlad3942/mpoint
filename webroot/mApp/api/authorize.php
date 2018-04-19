@@ -1210,7 +1210,7 @@ try
 
                                                                     $obj_PSP = new CHUBB($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["chubb"]);
 
-                                                                    $code = 2000;//$obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+                                                                    $code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem, $obj_DOM->{'authorize-payment'}[$i]->{'client-info'});
 
                                                                     // Authorization succeeded
                                                                     if ($code == "100")
