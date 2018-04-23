@@ -247,6 +247,7 @@ try
 										
 										$obj_CardXML = '';
 										$iSecondaryRoute = 0 ;
+$iPrimaryRoute = 0 ;
 										
 										if (count ( $aRoutes ) == 0) {
 											$obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount) );
@@ -255,6 +256,7 @@ try
 												if ($oRoute {'type-id'} == 1) {
 													$empty = array();
 													$obj_CardXML = simpledom_load_string($obj_mCard->getCards( (integer) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount,$empty,$oRoute) );
+$iPrimaryRoute = $oRoute ;
 												}
 												else{
 													$iSecondaryRoute = $oRoute ;
@@ -527,11 +529,15 @@ try
 																	$obj_Elem->cvc = (string) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc;
 																}
 																															
-																$obj_PSPConfig = $obj_Wallet->getPSPConfigForRoute(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]),
-																												   intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount["country-id"]) );
-																$obj_Elem["pspid"] = $obj_PSPConfig->getID();
-																$obj_Elem["wallet-type-id"] = intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]);
-															}
+																$obj_PSPConfig = $obj_Wallet->getPSPConfigForRoute ( intval ( $obj_DOM->{'authorize-payment'} [$i]->transaction->card [$j] ["type-id"] ), intval ( $obj_DOM->{'authorize-payment'} [$i]->transaction->card [$j]->amount ["country-id"] ) );
+																	
+																	if ($iPrimaryRoute > 0) {
+																		$obj_Elem ["pspid"] = $iPrimaryRoute;
+																	} else {
+																		$obj_Elem ["pspid"] = $obj_PSPConfig->getID ();
+																	}
+																	$obj_Elem ["wallet-type-id"] = intval ( $obj_DOM->{'authorize-payment'} [$i]->transaction->card [$j] ["type-id"] );
+																}
 															// 3rd Party Wallet returned error	
 															elseif (count($obj_XML->status) == 1)
 															{
@@ -1210,7 +1216,7 @@ try
 
                                                                     $obj_PSP = new CHUBB($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["chubb"]);
 
-                                                                    $code = 2000;//$obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+                                                                    $code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem, $obj_DOM->{'authorize-payment'}[$i]->{'client-info'});
 
                                                                     // Authorization succeeded
                                                                     if ($code == "100")
