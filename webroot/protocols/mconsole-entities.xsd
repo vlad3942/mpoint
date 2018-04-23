@@ -2159,6 +2159,21 @@
 	</xs:complexType>
 	<!-- Save Gateway trigger details -->
 	
+	<!-- Edit Gateway trigger details -->
+	<xs:complexType name="edit-gateway-triggers">
+			<xs:all>
+				<xs:element name="gateway-triggers" minOccurs="1" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="gateway-trigger" type="gateway-trigger" minOccurs="1" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+			<xs:attribute type="xs:integer" name="client-id" use="required" />
+	</xs:complexType>
+	<!-- Edit Gateway trigger details -->
+	
 	<!-- Search Gateway trigger details -->
 	<xs:complexType name="search-gateway-triggers">
 			<xs:attribute type="xs:integer" name="client-id" use="required" />
