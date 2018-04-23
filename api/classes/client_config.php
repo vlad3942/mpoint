@@ -1024,7 +1024,12 @@ class ClientConfig extends BasicConfig
 			$xml .= '<gateway id="'.$aObj_DRGateway['id'].'" name="'.$aObj_DRGateway['name'].'" enabled="'.$enabled.'" />';
 		}
 		$xml .= '</dynamic-routing-gateways>';
-		
+        $xml .= '<additional-config>';
+        foreach ($this->_aAdditionalProperties as $aAdditionalProperty)
+        {
+            $xml .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
+        }
+        $xml .= '</additional-config>';
 		$xml .= '</client-config>';
 		
 		return $xml;
