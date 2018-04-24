@@ -47,16 +47,37 @@ class PassengerInfo {
 	 * @var integer
 	 */
 	private $_AdditionalData;
+
+    /**
+     * Value of title
+     */
+    private $_Title;
+    /**
+     * Value of Email
+     */
+    private $_Email;
+    /**
+     * Value of Mobile
+     */
+    private $_Mobile;
+    /**
+     * Value of Country id
+     */
+    private $_CountryId;
 	
 	/**
 	 * Default Constructor
 	 */
-	public function __construct($id, $fnm, $lnm, $type, $Adata) {
+	public function __construct($id, $fnm, $lnm, $type, $title, $email, $mobile, $countryId, $Adata) {
 		$this->_iID = ( integer ) $id;
 		$this->_First_Name = $fnm;
 		$this->_Last_Name = $lnm;
 		$this->_Type = $type;
 		$this->_AdditionalData = $Adata;
+		$this->_Title = $title;
+		$this->_Email = $email;
+		$this->_Mobile = $mobile;
+		$this->_CountryId = $countryId;
 	}
 	
 	/**
@@ -99,10 +120,47 @@ class PassengerInfo {
 	public function getAdditionalData() {
 		return $this->_AdditionalData;
 	}
-	
+
+    /**
+     * Returns the title of the Passenger
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->_Title;
+    }
+
+    /**
+     * Returns the email id of the Passenger
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->_Email;
+    }
+
+    /**
+     * Returns the mobile number of the Passenger
+     * @return string
+     */
+    public function getMobile()
+    {
+        return $this->_Mobile;
+    }
+
+    /**
+     * Returns the country of the Passenger
+     * @return string
+     */
+    public function getCountryId()
+    {
+        return $this->_CountryId;
+    }
+
+
 	
 	public static function produceConfig(RDB $oDB, $id) {
-		$sql = "SELECT id, first_name, last_name, type, order_id, created, modified
+		$sql = "SELECT id, first_name, last_name, type, order_id, created, modified, title, email, mobile, country_id
 					FROM log" . sSCHEMA_POSTFIX . ".passenger_tbl WHERE id=" . $id;
 		// echo $sql ."\n";
 		$RS = $oDB->getName ( $sql );
@@ -112,9 +170,9 @@ class PassengerInfo {
 			$RSA = $oDB->getAllNames ( $sqlA );
 			
 			if (is_array ( $RSA ) === true && count ( $RSA ) > 0) {
-				return new PassengerInfo ( $RS ["ID"], $RS ["FIRST_NAME"], $RS ["LAST_NAME"], $RS ["TYPE"], $RSA );
+				return new PassengerInfo ( $RS ["ID"], $RS ["FIRST_NAME"], $RS ["LAST_NAME"], $RS ["TYPE"], $RS ["TITLE"],$RS ["EMAIL"],$RS ["MOBILE"],$RS ["COUNTRY_ID"],$RSA );
 			} else {
-				return new PassengerInfo ( $RS ["ID"], $RS ["FIRST_NAME"], $RS ["LAST_NAME"], $RS ["TYPE"] );
+				return new PassengerInfo ( $RS ["ID"], $RS ["FIRST_NAME"], $RS ["LAST_NAME"], $RS ["TYPE"], $RS ["TITLE"],$RS ["EMAIL"],$RS ["MOBILE"],$RS ["COUNTRY_ID"] );
 			}
 		} else {
 			return null;
@@ -142,9 +200,17 @@ class PassengerInfo {
 	public function toXML() {
 		$xml = '';
 		$xml .= '<passenger-detail>';
+		$xml .= '<title>' . $this->getTitle() . '</title>';
 		$xml .= '<first-name>' . $this->getFirstName () . '</first-name>';
 		$xml .= '<last-name>' . $this->getLastName () . '</last-name>';
 		$xml .= '<type>' . $this->getType () . '</type>';
+        if ($this->getEmail() || $this->getMobile())
+        {
+            $xml .= '<contact-info>';
+            $xml .= '<email>' . $this->getEmail() .'</email>';
+            $xml .= '<mobile country-id="' . $this->getCountryId() .'">' . $this->getMobile() .'</mobile>';
+            $xml .= '</contact-info>';
+        }
 		if ($this->getAdditionalData ()) {
 			$xml .= '<additional-data>';
 			foreach ( $this->getAdditionalData () as $pAdditionalData ) {

@@ -133,15 +133,13 @@ require_once(sINTERFACE_PATH ."/voidable.php");
 require_once(sINTERFACE_PATH ."/redeemable.php");
 require_once(sINTERFACE_PATH ."/invoiceable.php");
 
+require_once(sCLASS_PATH ."post_auth_action.php");
+
 // Require specific Business logic for the Status component
 require_once(sCLASS_PATH ."/status.php");
 
 // Require global settings file
 require_once(sCONF_PATH ."global.php");
-
-require_once(sCLASS_PATH ."/routingrule.php");
-require_once(sCLASS_PATH ."/condition_info.php");
-require_once(sCLASS_PATH ."/gateway_info.php");
 
 // Set Custom Error & Exception handlers
 new RemoteReport(HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["iemendo"]), iOUTPUT_METHOD, sERROR_LOG, iDEBUG_LEVEL);

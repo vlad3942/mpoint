@@ -186,9 +186,9 @@ class MobilePayCallbackAPITest extends baseAPITest
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (113, 17, $pspID)"); //Mobilepay
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (114, 17, $pspID)"); //Mobilepay
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '900-55150298', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (2, 113, 1100, 208, 100, 4001, '900-55150298', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
+        $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (2, 113, 1100, 208, 100, 4001, '900-55150299', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
         $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, pspid, callbackurl, amount, ip, enabled, keywordid, sessionid) VALUES (1001001, '900-55150298', 100, 113, 1100, 100, null, '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 1, 1)");
-		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, pspid, callbackurl, amount, ip, enabled, keywordid, sessionid) VALUES (1001002, '900-55150298', 100, 114, 1200, 100, null, '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 2, 2)");
+		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, orderid, typeid, clientid, accountid, countryid, pspid, callbackurl, amount, ip, enabled, keywordid, sessionid) VALUES (1001002, '900-55150299', 100, 114, 1200, 100, null, '". $sCallbackURL. "', 5000, '127.0.0.1', TRUE, 2, 2)");
 
 		$this->_httpClient->connect();
 
@@ -198,7 +198,7 @@ class MobilePayCallbackAPITest extends baseAPITest
 		$xml .= '<name>Merchant-2</name>';
 		$xml .= '</psp-config>';
 		$xml .= '<transaction external-id="15469928" card-id="17">';
-		$xml .= '<orderid>900-55150298</orderid>';
+		$xml .= '<orderid>900-55150299</orderid>';
 		$xml .= '<amount country-id="100" currency="DKK" symbol="kr." format="">5000</amount>';
 		$xml .= '<status code="1000">Success</status>';
 		$xml .= '</transaction>';
