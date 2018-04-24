@@ -197,6 +197,11 @@ class WorldPay extends Callback implements Captureable, Refundable
 				$obj_XML["code"] = Constants::iPAYMENT_DECLINED_STATE;
 				trigger_error("Unable to initialize payment with WorldPay for transaction: ". $this->getTxnInfo()->getID() .", error code: ". $obj_XML->reply->error["code"] ."\n". $obj_XML->reply->error->asXML(), E_USER_WARNING);
 			}
+			
+			//call post auth actions
+				
+			PostAuthAction::updateTxnVolume($this->getTxnInfo(), 4 ,$this->getDBConn());
+			
 		}
 		// Error: Unable to initialize payment transaction
 		else
@@ -560,7 +565,7 @@ class WorldPay extends Callback implements Captureable, Refundable
 		// Payment Transaction not previously initialized with WorldPay
 		if (empty($url) === true)
 		{
-			$oc = htmlspecialchars($this->getTxnInfo()->getOrderID(), ENT_NOQUOTES);
+			$oc = htmlspecialchars($this->getTxnInfo()->getOrderID()."_".$this->getTxnInfo()->getAttemptNumber(), ENT_NOQUOTES);
 			if (empty($oc) === true) { $oc = $this->getTxnInfo()->getID(); }
 			$b = '<?xml version="1.0" encoding="UTF-8"?>';
 			$b .= '<!DOCTYPE paymentService PUBLIC "-//WorldPay/DTD WorldPay PaymentService v1//EN" "http://dtd.worldpay.com/paymentService_v1.dtd">';

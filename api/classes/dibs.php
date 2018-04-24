@@ -162,6 +162,8 @@ class DIBS extends Callback implements Captureable, Refundable
 			$aStatus["transact"] = $aStatus["reason"] * -1;
 		}
 	
+		PostAuthAction::updateTxnVolume($this->getTxnInfo(), 2 ,$this->getDBConn());
+		
 		return $aStatus["transact"];
 	}
 	
@@ -188,7 +190,7 @@ class DIBS extends Callback implements Captureable, Refundable
 		$b .= "&expyear=". trim($expyear);
 		$b .= "&cvc=". trim($cvc);
 		$b .= "&amount=". $this->getTxnInfo()->getAmount();
-		$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iDIBS_PSP);
+		$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getCurrencyConfig()->getID(), Constants::iDIBS_PSP);
 		$b .= "&orderid=". urlencode($oid);
 		if ($this->getTxnInfo()->getClientConfig()->getMode() > 0) { $b .= "&test=". $this->getTxnInfo()->getClientConfig()->getMode(); }
 		$b .= "&textreply=true";
@@ -220,7 +222,7 @@ class DIBS extends Callback implements Captureable, Refundable
 			trigger_error(trim("Authorisation declined by DIBS for Card Details: ". $this->_getMaskedCardNumber($cardno) .", Reason Code: ". $aStatus["reason"] ."\n". @$aStatus["message"]), E_USER_WARNING);
 			$aStatus["transact"] = $aStatus["reason"] * -1;
 		}
-	
+		PostAuthAction::updateTxnVolume($this->getTxnInfo(), 2 ,$this->getDBConn());
 		return $aStatus["transact"];
 	}
 

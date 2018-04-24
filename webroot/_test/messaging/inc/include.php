@@ -42,9 +42,46 @@ require_once(sAPI_CLASS_PATH ."/http_client.php");
 // Require API for Simple DOM manipulation
 require_once(sAPI_CLASS_PATH ."/simpledom.php");
 
-
+// Require general mPoint exceptions classes
+require_once(sCLASS_PATH ."/exceptions.php");
 // Require API for general functionality
-require_once (sCLASS_PATH . "general.php");
+require_once(sCLASS_PATH ."general.php");
+// Require abstract class with system wide constants
+require_once(sCLASS_PATH ."/constants.php");
+// Require super class for all Configurations
+require_once(sCLASS_PATH ."/basicconfig.php");
+// Require data class for Country Configurations
+require_once(sCLASS_PATH ."/countryconfig.php");
+// Require data class for Currency Configurations
+require_once(sCLASS_PATH ."/currencyconfig.php");
+// Require data class for Client Configurations
+require_once(sCLASS_PATH ."/client_config.php");
+// Require data class for Account Configurations
+require_once(sCLASS_PATH ."/account_config.php");
+// Require data class for Merchant Sub Account config
+require_once(sCLASS_PATH ."/client_merchant_subaccount_config.php");
+// Require data class for Merchant Account config
+require_once(sCLASS_PATH ."/client_merchant_account_config.php");
+// Require data class for Client card config
+require_once(sCLASS_PATH ."/client_payment_method_config.php");
+// Require data class for Client URL config
+require_once(sCLASS_PATH ."/client_url_config.php");
+// Require data class for Client URL config
+require_once(sCLASS_PATH ."/client_issuer_identifcation_number_range_config.php");
+// Require data class for Client GoMobile Configurations
+require_once(sCLASS_PATH ."/client_gomobile_config.php");
+// Require data class for Client Communication Channels Configurations
+require_once(sCLASS_PATH ."/client_communication_channel_config.php");
+// Require data class for Keyword Configurations
+require_once(sCLASS_PATH ."/keywordconfig.php");
+// Require data class for Shop Configuration
+require_once(sCLASS_PATH ."/shopconfig.php");
+// Require data class for Payment Service Provider Configurations
+require_once(sCLASS_PATH ."/pspconfig.php");
+// Require data data class for Transaction Information
+require_once(sCLASS_PATH ."/txninfo.php");
+// Require data data class for Payment Session Information
+require_once(sCLASS_PATH ."/paymentsession.php");
 
 // Require global settings file
 require_once (sCONF_PATH . "global.php");
@@ -57,6 +94,9 @@ require_once(sAPI_CLASS_PATH ."/smtp.php");
 
 // Require global configuration file
 require_once(sGOMOBILE_CONF_PATH ."/gomobile.php");
+
+// Instantiate connection to the Database
+$_OBJ_DB = RDB::produceDatabase($aDB_CONN_INFO["mpoint"]);
 
 // Local mBE classes
 require_once ("classes/enduseraccount.php");
