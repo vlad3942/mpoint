@@ -1,8 +1,11 @@
 ------ Aggregated Payment Scripts mPoint ----------
 
+------- ******** RUN THESE ONLY IF system.producttype_tbl exists in database **********--------------
 ALTER TABLE log.transaction_tbl  DROP constraint transaction_tbl_producttype_tbl_id_fk;
 ALTER TABLE Client.producttype_tbl DROP constraint product_fk;
 DROP TABLE system.producttype_tbl;
+------- ******** RUN THESE ONLY IF system.producttype_tbl exists in database **********--------------
+
 
 CREATE TABLE system.ProductType_Tbl
 (
