@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 class BreException extends mPointException{}
 
