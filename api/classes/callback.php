@@ -156,7 +156,12 @@ abstract class Callback extends EndUserAccount
 		// Transaction completed successfully
 		if (is_resource($res) === true)
 		{
-			if ($this->getDBConn()->countAffectedRows($res) == 1 || $sid != Constants::iPAYMENT_ACCEPTED_STATE) { $this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true) ); }
+			if ($this->getDBConn()->countAffectedRows($res) == 1 || $sid != Constants::iPAYMENT_ACCEPTED_STATE) {
+                $iIsCompleteTransactionStateLogged = $this->_obj_TxnInfo->hasEitherState($this->getDBConn(),$sid);
+                if($iIsCompleteTransactionStateLogged != 1) {
+                    $this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true));
+                }
+			}
 			else
 			{
 				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_DUPLICATED_STATE, var_export($debug, true) );
@@ -199,7 +204,10 @@ abstract class Callback extends EndUserAccount
 		// Capture completed successfully
 		if (is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) == 1)
 		{
-			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($debug, true) );
+            $iIsPaymentCapturedStateLogged = $this->_obj_TxnInfo->hasEitherState($this->getDBConn(),Constants::iPAYMENT_CAPTURED_STATE);
+		    if($iIsPaymentCapturedStateLogged != 1) {
+                $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($debug, true));
+            }
 			return true;
 		}
 		else { return false; }
@@ -670,7 +678,11 @@ abstract class Callback extends EndUserAccount
                 return new Citcon($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["citcon"]);
         case (Constants::iPPRO_GATEWAY):
             return new PPRO($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["citcon"]);
-		default:
+        case (Constants::iAMEX_ACQUIRER):
+                return new Amex($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["amex"]);
+        case (Constants::iCHUBB_PSP):
+                return new CHUBB($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["chubb"]);
+            default:
 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
 	}
@@ -697,6 +709,10 @@ abstract class Callback extends EndUserAccount
 		
 		return $RS["DECIMALS"];
 	}
+
+    function retryCallback($body, SurePayConfig &$obj_SurePay=null, $attempt=0){
+        $this->performCallback($body,$obj_SurePay, $attempt);
+    }
 
     public function updateSessionState($sid, $pspid, $amt, $cardno="", $cardid=0, $exp=null, $sAdditionalData="", SurePayConfig &$obj_SurePay=null, $fee=0 )
     {
