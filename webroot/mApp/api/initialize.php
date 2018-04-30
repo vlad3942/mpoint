@@ -235,20 +235,25 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             if (isset($authToken) == true && $authToken !== false && (strlen($obj_ClientConfig->getAuthenticationURL() ) > 0 || count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'auth-url'}) == 1) && strlen($obj_ClientConfig->getSalt() ) > 0)
                             {
                                 $obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
-                                $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML() );
-                                if (strlen($obj_TxnInfo->getCustomerRef() ) > 0) { $obj_Customer["customer-ref"] = $obj_TxnInfo->getCustomerRef(); }
-                                if (floatval($obj_TxnInfo->getMobile() ) > 0)
-                                {
-                                    $obj_Customer->mobile = $obj_TxnInfo->getMobile();
-                                    $obj_Customer->mobile["country-id"] = intval( $obj_TxnInfo->getCountryConfig ()->getID () );
-                                    $obj_Customer->mobile["operator-id"] = $obj_TxnInfo->getOperator();
-                                }
-                                if (strlen($obj_TxnInfo->getEMail() ) > 0) { $obj_Customer->email = $obj_TxnInfo->getEMail(); }
-                                $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
+                                if (is_object($obj_CustomerInfo)) {
+                                    $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
+                                    if (strlen($obj_TxnInfo->getCustomerRef()) > 0) {
+                                        $obj_Customer["customer-ref"] = $obj_TxnInfo->getCustomerRef();
+                                    }
+                                    if (floatval($obj_TxnInfo->getMobile()) > 0) {
+                                        $obj_Customer->mobile = $obj_TxnInfo->getMobile();
+                                        $obj_Customer->mobile["country-id"] = intval($obj_TxnInfo->getCountryConfig()->getID());
+                                        $obj_Customer->mobile["operator-id"] = $obj_TxnInfo->getOperator();
+                                    }
+                                    if (strlen($obj_TxnInfo->getEMail()) > 0) {
+                                        $obj_Customer->email = $obj_TxnInfo->getEMail();
+                                    }
+                                    $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
 
-                                $code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($obj_TxnInfo->getAuthenticationURL() ), $obj_CustomerInfo, trim($obj_DOM->{'initialize-payment'}[$i]->{'auth-token'}),(integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"] );
-                                if($code == 10)
-                                    $bIsSingleSingOnPass = true;
+                                    $code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($obj_TxnInfo->getAuthenticationURL()), $obj_CustomerInfo, trim($obj_DOM->{'initialize-payment'}[$i]->{'auth-token'}), (integer)$obj_DOM->{'initialize-payment'}[$i]["client-id"]);
+                                    if ($code == 10)
+                                        $bIsSingleSingOnPass = true;
+                                }
                             }
                             else
                             {
