@@ -25,6 +25,8 @@ require_once(sAPI_CLASS_PATH ."simpledom.php");
 require_once(sCLASS_PATH ."/enduser_account.php");
 // Require Business logic for the Mobile Web module
 require_once(sCLASS_PATH ."/mobile_web.php");
+// Require data data class for Customer Information
+require_once(sCLASS_PATH ."/customer_info.php");
 // Require Business logic for the Select Credit Card component
 require_once(sCLASS_PATH ."/credit_card.php");
 // Require general Business logic for the Callback module
@@ -99,7 +101,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					
 					// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
 					if (strlen($obj_ClientConfig->getSalt() ) > 0
-						&& (strlen($obj_DOM->{'initialize-payment'}[$i]->transaction['order-no']) > 0 || intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount) > 100 || count($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac) == 1) )
+						&& count($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac) == 1 && (strlen($obj_DOM->{'initialize-payment'}[$i]->transaction['order-no']) > 0 || intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount) > 100) )
 					{
 						$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'},
 																  CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
@@ -226,7 +228,34 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							// Update Transaction Log
 							$obj_mPoint->logTransaction($obj_TxnInfo);
 
+                            $bIsSingleSingOnPass = false;
+
+                            // Single Sign-On
+                            $authToken = (string) $obj_DOM->{'initialize-payment'}[$i]->{'auth-token'};
+                            if (isset($authToken) == true && $authToken !== false && (strlen($obj_ClientConfig->getAuthenticationURL() ) > 0 || count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'auth-url'}) == 1) && strlen($obj_ClientConfig->getSalt() ) > 0)
+                            {
+                                $obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
+                                $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML() );
+                                if (strlen($obj_TxnInfo->getCustomerRef() ) > 0) { $obj_Customer["customer-ref"] = $obj_TxnInfo->getCustomerRef(); }
+                                if (floatval($obj_TxnInfo->getMobile() ) > 0)
+                                {
+                                    $obj_Customer->mobile = $obj_TxnInfo->getMobile();
+                                    $obj_Customer->mobile["country-id"] = intval( $obj_TxnInfo->getCountryConfig ()->getID () );
+                                    $obj_Customer->mobile["operator-id"] = $obj_TxnInfo->getOperator();
+                                }
+                                if (strlen($obj_TxnInfo->getEMail() ) > 0) { $obj_Customer->email = $obj_TxnInfo->getEMail(); }
+                                $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
+
+                                $code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($obj_TxnInfo->getAuthenticationURL() ), $obj_CustomerInfo, trim($obj_DOM->{'initialize-payment'}[$i]->{'auth-token'}),(integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"] );
+                                if($code == 10)
+                                    $bIsSingleSingOnPass = true;
+                            }
+                            else
+                            {
+                                $bIsSingleSingOnPass = false;
+                            }
                             $sOrderXML = '';
+
 							//Test if the order/cart details are passed as part of the input XML request. 
 							if(count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders) == 1 && count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->children()) > 0 )
 							{
@@ -412,7 +441,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount(), $aFailedPMArray ), "SimpleXMLElement", LIBXML_COMPACT);
 
 							// End-User already has an account and payment with Account enabled
-							if ($obj_TxnInfo->getAccountID() > 0 && count($obj_XML->xpath("/cards/item[@type-id = 11]") ) == 1)
+							if ($obj_TxnInfo->getAccountID() > 0 && count($obj_XML->xpath("/cards/item[@type-id = 11]") ) == 1 && $bIsSingleSingOnPass == true)
 							{
 								$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 								$aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig), "SimpleXMLElement", LIBXML_COMPACT);
