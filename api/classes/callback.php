@@ -174,7 +174,6 @@ abstract class Callback extends EndUserAccount
 			$this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true) );
 			throw new CallbackException("Unable to complete log for Transaction: ". $this->_obj_TxnInfo->getID(), 1001);
 		}
-        $this->_obj_TxnInfo->getPaymentSession()->updateState();
 		return $sid;
 	}
 	
@@ -717,8 +716,11 @@ abstract class Callback extends EndUserAccount
     public function updateSessionState($sid, $pspid, $amt, $cardno="", $cardid=0, $exp=null, $sAdditionalData="", SurePayConfig &$obj_SurePay=null, $fee=0 )
     {
         $sessionObj = $this->getTxnInfo()->getPaymentSession();
-        $sessionObj->updateState();
-
+        $isStateUpdated = $sessionObj->updateState();
+        if($isStateUpdated !== 1 )
+        {
+            return;
+        }
         $sDeviceID = $this->_obj_TxnInfo->getDeviceID();
         $sEmail = $this->_obj_TxnInfo->getEMail();
         /* ----- Construct Body Start ----- */
