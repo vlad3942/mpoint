@@ -56,7 +56,7 @@ class Bre
     	$b .= '</root>';
     
     	$aURLInfo = parse_url($objClientconfig->getMESBURL() );
-    	$obj_ConnInfo =  new HTTPConnInfo( $aURLInfo["scheme"], $aURLInfo["host"], '10080',  self::sHTTP_TIMEOUT, self::sBRE_ROUTING_URL,self::sHTTP_METHOD,"text/xml", $objClientconfig->getUsername(), $objClientconfig->getPassword() );
+    	$obj_ConnInfo =  new HTTPConnInfo( 'http', $aURLInfo["host"], '10080',  self::sHTTP_TIMEOUT, self::sBRE_ROUTING_URL,self::sHTTP_METHOD,"text/xml", $objClientconfig->getUsername(), $objClientconfig->getPassword() );
     
     	$obj_HTTP = new HTTPClient ( new Template (), $obj_ConnInfo );
     	$obj_HTTP->connect ();
