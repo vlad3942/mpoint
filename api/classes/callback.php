@@ -676,7 +676,7 @@ abstract class Callback extends EndUserAccount
         case (Constants::iCITCON_PSP):
                 return new Citcon($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["citcon"]);
         case (Constants::iPPRO_GATEWAY):
-            return new PPRO($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["citcon"]);
+            return new PPRO($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ppro"]);
         case (Constants::iAMEX_ACQUIRER):
                 return new Amex($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["amex"]);
         case (Constants::iCHUBB_PSP):
