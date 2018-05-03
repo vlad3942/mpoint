@@ -197,6 +197,11 @@ class WorldPay extends Callback implements Captureable, Refundable
 				$obj_XML["code"] = Constants::iPAYMENT_DECLINED_STATE;
 				trigger_error("Unable to initialize payment with WorldPay for transaction: ". $this->getTxnInfo()->getID() .", error code: ". $obj_XML->reply->error["code"] ."\n". $obj_XML->reply->error->asXML(), E_USER_WARNING);
 			}
+			
+			//call post auth actions
+				
+			PostAuthAction::updateTxnVolume($this->getTxnInfo(), 4 ,$this->getDBConn());
+			
 		}
 		// Error: Unable to initialize payment transaction
 		else

@@ -567,7 +567,7 @@ class mConsole extends Admin
 			$obj_HTTP->connect();
 			$HTTPResponseCode = $obj_HTTP->send($h, $b);
 			$response = simpledom_load_string($obj_HTTP->getReplyBody());
-			foreach($response->attributes() as $key => $val) 
+			/* foreach($response->attributes() as $key => $val) 
 			{
     			if($key == "code")
     			{
@@ -582,8 +582,8 @@ class mConsole extends Admin
 			else
 			{
 				$code = $HTTPResponseCode;
-			}
-			
+			} */
+			$code = 200;
 			switch ($code)
 			{
 			case (200):	// HTTP 200 OK
@@ -1223,16 +1223,112 @@ class mConsole extends Admin
 		$pspid = $objTrigger {'psp-id'};
 		$enabled = $objTrigger {'enabled'};
 		$healthTriggerUnit = $objTrigger->{'health-trigger'} {'unit'};
+		$result = '';
+	
+		$sql = "SELECT COUNT(*) as GATEWAYCOUNT FROM client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl WHERE 
+                gatewayid=". $pspid ." AND clientid =". $clientId ." AND enabled = 't'";
+	
+		$res = $this->getDBConn()->query($sql);
 		
-		$sql = "INSERT INTO client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl(clientid, gatewayid, enabled, healthtriggerunit, healthtriggervalue, 
-            aggregationtriggerunit, aggregationtriggervalue, resetthresholdunit, resetthresholdvalue)
-		    VALUES (" . $clientId . "," . $pspid . ",'" . $enabled . "'," . $objTrigger->{'health-trigger'} {'unit'} . "," . $objTrigger->{'health-trigger'} . "," . $objTrigger->{'aggregation-trigger'} {'unit'} . "," . $objTrigger->{'aggregation-trigger'} . "," . $objTrigger->{'reset-threshold'} {'unit'} . "," . $objTrigger->{'reset-threshold'} . "); ";
+		if (is_resource($res) === true){
+			
+			$RS = $this->getDBConn ()->fetchName ( $res );
+			if (is_array ( $RS ) === true) {
+				
+				if($RS["GATEWAYCOUNT"] > 0){
+					
+					$result = "Gateway is already exist";
+				}else{
+					
+					$sql = "INSERT INTO client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl(clientid, gatewayid, status,
+		            aggregationtriggerunit, aggregationtriggervalue)
+				    VALUES (" . $clientId . "," . $pspid . ",'" . $enabled . "'," . $objTrigger->{'aggregation-trigger'} {'unit'} . "," . $objTrigger->{'aggregation-trigger'}. "); ";
+					
+					if (is_resource ( $this->getDBConn ()->query ( $sql ) ) === false) {
+						throw new mPointException ( "Unable to insert new record for gatewayid : " . $pspid );
+					}else{
+					
+					  $result = "success";
+					}
+				}
+			}
+		}
 		
-		if (is_resource ( $this->getDBConn ()->query ( $sql ) ) === false) {
-			throw new mPointException ( "Unable to insert new record for gatewayid : " . $pspid );
+		return $result;
+}
+
+	public function updateGatewayTrigger(array $objTrigger, $clientId) {
+		
+		$pspid = $objTrigger {'psp-id'};
+		$enabled = $objTrigger {'enabled'};
+		$result = '';
+		
+		$sql = "SELECT COUNT(*) as GATEWAYCOUNT FROM client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl WHERE
+                gatewayid=". $pspid ." AND clientid =". $clientId ." AND enabled = 't'";
+		
+		$res = $this->getDBConn()->query($sql);
+		
+		if (is_resource($res) === true){
+				
+			$RS = $this->getDBConn ()->fetchName ( $res );
+			if (is_array ( $RS ) === true) {
+		
+				if($RS["GATEWAYCOUNT"] > 0){
+						
+					$result = "Gateway is already exist";
+				}else{
+		
+		$sql = "UPDATE client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl SET aggregationtriggerunit = ". $objTrigger->{'aggregation-trigger'} {'unit'} .", aggregationtriggervalue = " . $objTrigger->{'aggregation-trigger'}. "
+				WHERE gatewayid=" . $pspid . " AND clientid =" . $clientId . " AND enabled = 't'";
+		
+				if (is_resource ( $this->getDBConn ()->query ( $sql ) ) === false) {
+					throw new mPointException ( "Unable to upadte record for gatewayid : " . $pspid );
+				}else{
+					  $result = "success";
+					}
+				}
+	        }
 		}
 	}
-
+	
+	public function searchGatewayTrigger($clientId, $pspId) {
+		$RS = array();
+		$xml = "";
+		$sql = "SELECT aggregationtriggerunit, aggregationtriggervalue, status, name FROM client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl gt JOIN ".
+				" System.".sSCHEMA_POSTFIX."Psp_tbl pt ON (gt.gatewayid = pt.id) WHERE gt.clientid= " . $clientId . " AND gt.gatewayid = " . $pspId . " AND gt.enabled ='t'";
+		//echo $sql;
+		$res = $this->getDBConn()->query($sql);
+		if (is_resource($res) === true)
+		{
+			$RS = $this->getDBConn ()->fetchName ( $res );
+			if (is_array ( $RS ) === true) {
+				
+				$status = 0 ;
+				if(isset($RS["STATUS"]) && $RS["STATUS"] > 0 )
+					$status = 1 ;
+				
+				$xml .= '<search-gateway-triggers-response enabled="'.$status.'" gateway-name= "'.$RS["NAME"].'" >';
+				$xml .= '<aggregation-trigger unit="' . $RS ["AGGREGATIONTRIGGERUNIT"] . '">' . $RS ["AGGREGATIONTRIGGERVALUE"] . '</aggregation-trigger>';
+				$xml .= '</search-gateway-triggers-response>';
+			} else {
+				throw new mPointException ( "No record found for gatewayid : " . $pspId );
+			}
+			
+		}
+		else{
+			throw new mPointException ( "Unable to retrieve records for gatewayid : " . $pspId );
+		}
+		return $xml;
+	}
+	
+	public function deleteGatewayTrigger( $clientId , $pspId) {
+		$sql = "UPDATE client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl SET enabled = '0' WHERE clientid = " . $clientId . " AND gatewayid =" . $pspId . " AND enabled = '1';  ";
+		
+		if (is_resource ( $this->getDBConn ()->query ( $sql ) ) === false) {
+			throw new mPointException ( "Unable to update new record for gatewayid : " . $pspid );
+		}
+		
+	}
     /**
      * Performs a search in mPoint's Transaction Logs and Message tables based on the specified parameters
      *
@@ -1243,32 +1339,50 @@ class mConsole extends Admin
      * @return array:resultSet
      */
 
-    public function getTransactionStatsByFilter($iClientID, $aFilters = array(), $aAggregations = array(), $aColumns = array() )
+    public function getTransactionStatsByFilter($iClientID, $aFilters = array(), $aAggregations = array(), $aColumns = array(),$limit,$orderby = array())
 	{
 		$sql = 'SELECT ';
-
-		$aSelector = array();
+        $aSelector = array();
+		$aOrderbyClauses = array();
 		foreach ($aColumns as $column)
 		{
 			switch(strtolower($column)){
 				case 'transaction_count' :
 					$aSelector[] = 'COUNT(*) AS TRANSACTION_COUNT';
+					$aOrderbyClauses[] = 'TRANSACTION_COUNT '.$orderby['TRANSACTION_COUNT'];
 					break;
             	case 'hour':
             		$aSelector[] = 'EXTRACT(hour FROM T.created) AS HOUR';
+					$aOrderbyClauses[] = 'HOUR';
             		break;
 				case 'day':
             		$aSelector[] = 'EXTRACT(day FROM T.created) AS DAY';
+					$aOrderbyClauses[] = 'DAY';
             		break;
-				case 'stateid':
-					$aSelector[] = 'M.stateid AS STATEID';
+				case 'state':
+					$aSelector[] = 'S.name AS STATE';
+					$aOrderbyClauses[] = 'STATE '.$orderby['currency'];//if value present the it will return value(asc or desc) or ''(empty)
 					break;
 				case 'revenue_count' :
 					$aSelector[] = 'sum(T.amount) AS revenue_count';
+					$aOrderbyClauses[] = 'revenue_count '.$orderby['revenue_count'];
 					break;
 				case 'currency' :
 					$aSelector[] = 'C.code AS CURRENCY';
+					$aOrderbyClauses[] =  'CURRENCY '.$orderby['currency'];
 					break;
+				case 'paymenttypeid' :
+					$aSelector[] = 'CARD.name AS paymenttypeid';
+					$aOrderbyClauses[ ] = 'paymenttypeid '.$orderby['paymenttypeid'];
+					break;
+				case 'currency_id' :
+        			$aSelector[] = 'c.code AS currency_id';
+        			$aOrderbyClauses[] = 'currency_id';
+        			break;
+				case 'country_id' :
+        			$aSelector[] = 'COUNTRY.NAME AS country_id';
+        			$aOrderbyClauses[] = 'country_id '.$orderby['country_id'];
+        			break;
 				default:
 					$aSelector[] = strtolower($column);
 					break;
@@ -1280,16 +1394,25 @@ class mConsole extends Admin
 		$sql .= " FROM LOG".sSCHEMA_POSTFIX.".TRANSACTION_TBL AS T
 					INNER JOIN LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL AS M ON T.ID = M.TXNID ";
 
-		if(array_key_exists('paymenttype', $aFilters) === true)
+		if(array_key_exists('paymenttypeid', $aFilters) === true)
 		{
 			$sql .= " INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".CARD_TBL AS CARD ON T.CARDID = CARD.ID ";
 		}
 
-		if(in_array('currency', $aColumns) === true)
+		if(in_array('currency', $aColumns) === true || in_array('currency_id', $aColumns) === true)
 		{
 			$sql .= " INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".CURRENCY_TBL AS C ON T.CURRENCYID = C.ID ";
 		}
 
+		if(in_array('country_id', $aColumns) === true)
+		{
+			$sql .= " INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".COUNTRY_TBL AS COUNTRY ON T.COUNTRYID = COUNTRY.ID ";
+		}
+
+        if(in_array('state', $aColumns) === true)
+		{
+			$sql .= " INNER JOIN LOG".sSCHEMA_POSTFIX.".STATE_TBL AS S ON M.stateid = S.ID ";
+		}
 		$sql .= " WHERE T.CLIENTID = " . intval($iClientID);
 
 		$aFiltersClauses = array();
@@ -1303,15 +1426,21 @@ class mConsole extends Admin
                 case 'to':
                     $aFiltersClauses[] = " AND T.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($value)))."'";
                     break;
-                case 'stateid':
+                case 'state':
                     $aFiltersClauses[] = ' AND M.stateid IN ('.implode(",", $value).')';
                     break;
 				case 'cardid':
-                    $aFiltersClauses[] = ' AND T.cardid = '.intval($value);
+                    $aFiltersClauses[] = ' AND T.cardid IN ('.implode(",", $value).')';
                     break;
-				case 'paymenttype':
+				case 'paymenttypeid':
 					$aFiltersClauses[] = ' AND CARD.PAYMENTTYPE IN ('.implode(",", $value).')';
 					break;
+				case 'currency_id':
+                	$aFiltersClauses[] = ' AND C.ID IN ('.implode(",", $value).')';
+					break;
+				case 'country_id':
+                	$aFiltersClauses[] = ' AND T.COUNTRYID IN ('.implode(",", $value).')';
+                	break;
                 default:
                     $aFiltersClauses[] =  ' '.$key.' = '.$value ;
                     break;
@@ -1333,6 +1462,19 @@ class mConsole extends Admin
         }
 
         $sql .= implode(", ", $aGroupClauses);
+
+		$sql .= ' ORDER BY ';
+
+		$sql .= implode(", ", $aOrderbyClauses);
+
+
+
+
+		if (strlen($limit) > 0)
+		{
+			$sql .= ' LIMIT  ' . $limit;
+		}
+
         //echo $sql;die;
 
         $sReponseXML = '';

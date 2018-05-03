@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 class BreException extends mPointException{}
 
@@ -31,13 +31,15 @@ class Bre
     }
 
 
-    public function getroute(ClientConfig $objClientconfig,HTTPConnInfo &$oCI,$clientid , $aPayInfo  )
+    public function getroute(TxnInfo $obj_TxnInfo,HTTPConnInfo &$oCI,$clientid , $aPayInfo  )
     {
+    	
+    	$objClientconfig = $obj_TxnInfo->getClientConfig ();
     	//echo( $aPayInfo->{'client-info'}->mobile["country-id"]);
     	$b = '<?xml version="1.0" encoding="UTF-8"?>';
     	$b .= '<root>';
     	$b .= '<get-routes-request client-id= "' . $clientid . '">';
-    	$b .= '<transaction id="' . $aPayInfo->transaction ["id"] . '">';
+    	$b .= '<transaction id="' . $aPayInfo->transaction ["id"] . '" product-type="'.$obj_TxnInfo->getProductType() .'">';
     	$b .= '<card type-id="' . $aPayInfo->transaction->card ["type-id"] . '">';
     	$b .= '<amount country-id="' . $aPayInfo->transaction->card->amount ["country-id"] . '" currency-id="' . $aPayInfo->transaction->card->amount ["currency-id"] . '">' . $aPayInfo->transaction->card->amount . '</amount>';
     	$b .= '</card>';
@@ -46,6 +48,7 @@ class Bre
     	$b .= '<client-info platform="'. $aPayInfo->{'client-info'}['platform'].'" language="'. $aPayInfo->{'client-info'}['language'].'">';
     	$b .= '<mobile country-id="'.$aPayInfo->{'client-info'}->mobile["country-id"].'" operator-id="'.$aPayInfo->{'client-info'}->mobile["operator-id"].'">';
     	$b .=  $aPayInfo->{'client-info'}->mobile.'</mobile>';
+    	if(strlen($aPayInfo->{'client-info'}->email) > 0)
     	$b .= '<email>'.$aPayInfo->{'client-info'}->email.'</email>';
     	$b .= '<device-id>'.$aPayInfo->{'client-info'}->{'device-id'}.'</device-id>';
     	$b .= '</client-info>';
@@ -53,7 +56,7 @@ class Bre
     	$b .= '</root>';
     
     	$aURLInfo = parse_url($objClientconfig->getMESBURL() );
-    	$obj_ConnInfo =  new HTTPConnInfo( $aURLInfo["scheme"], $aURLInfo["host"], '10080',  self::sHTTP_TIMEOUT, self::sBRE_ROUTING_URL,self::sHTTP_METHOD,"text/xml", $objClientconfig->getUsername(), $objClientconfig->getPassword() );
+    	$obj_ConnInfo =  new HTTPConnInfo( 'http', $aURLInfo["host"], '10080',  self::sHTTP_TIMEOUT, self::sBRE_ROUTING_URL,self::sHTTP_METHOD,"text/xml", $objClientconfig->getUsername(), $objClientconfig->getPassword() );
     
     	$obj_HTTP = new HTTPClient ( new Template (), $obj_ConnInfo );
     	$obj_HTTP->connect ();
@@ -67,7 +70,7 @@ class Bre
     private function getGatewayConfigurations(){
     	
     	$b = "";
-		$sql = "SELECT gst.gatewayid, gst.clientid, gst.statetypeid,gst.statvalue FROM Client.gatewaytrigger_tbl gtr JOIN Client.gatewaystat_tbl gst 
+		$sql = "SELECT gst.gatewayid, gst.clientid, gst.statetypeid,gst.statvalue FROM Client." . sSCHEMA_POSTFIX . "gatewaytrigger_tbl gtr JOIN Client." . sSCHEMA_POSTFIX . "gatewaystat_tbl gst 
             ON (gtr.gatewayid = gst.gatewayid) AND (gtr.clientid = gst.clientid) AND gtr.enabled = 't' AND gst.enabled = 't'";
 		
 		$aRS = $this->_obj_DB->getAllNames($sql);
