@@ -117,6 +117,9 @@ require_once(sCLASS_PATH ."/bre.php");
 require_once(sCLASS_PATH ."/amex.php");
 // Require specific Business logic for the CHUBB component
 require_once(sCLASS_PATH ."/chubb.php");
+// Require Data Class for Client Information
+require_once(sCLASS_PATH ."/clientinfo.php");
+
 $aMsgCds = array();
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
@@ -239,6 +242,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1]");
 						
 						if (count($obj_Elem) == 0) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled
+                        if (strlen($obj_ClientConfig->getSalt() ) > 0 && count($obj_DOM->{'pay'}[$i]->transaction->hmac) == 1)
+                        {
+                            $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'},
+                                CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]),
+                                $_SERVER['HTTP_X_FORWARDED_FOR']);
+                            if ($obj_Validator->valHMAC(trim($obj_DOM->{'pay'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'pay'}[$i]->transaction->card->amount), intval($obj_DOM->{'pay'}[$i]->transaction->card->amount["country-id"]) ) != 10) { $aMsgCds[210] = trim($obj_DOM->{'pay'}[$i]->transaction->hmac); }
+                        }
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
 						{
