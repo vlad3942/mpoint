@@ -3488,7 +3488,9 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) SELECT 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) SELECT 'pid.app', '2088102170185364', id, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10007 AND pspid=43 ;
 
 
+--html supports MD5 or RSA
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'signtype.html', 'RSA', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=43 ;
+--app supports RSA and RSA2
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'signtype.app', 'RSA2', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=43 ;
 
 /* ========== Global Configuration for AliPay Chinese ENDS ========== */
