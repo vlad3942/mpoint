@@ -91,6 +91,8 @@ require_once(sCLASS_PATH ."/ppro.php");
 
 // Require specific Business logic for the Amex component
 require_once(sCLASS_PATH ."/amex.php");
+// Require specific Business logic for the CHUBB component
+require_once(sCLASS_PATH ."/chubb.php");
 /**
  * Input XML format
  *
@@ -234,15 +236,13 @@ try
 		// E-Mail has been provided for the transaction
 		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
 	}
-	$fee = 0;	
-	$obj_mPoint->completeTransaction( (integer) $obj_XML->callback->{'psp-config'}["id"],
-									  $obj_XML->callback->transaction["external-id"],
-									  (integer) $obj_XML->callback->transaction->card["type-id"],
-									  $iStateID,
-									  $fee,
-									  array($HTTP_RAW_POST_DATA) );
-	
-	
+	$fee = 0;
+    $obj_mPoint->completeTransaction((integer)$obj_XML->callback->{'psp-config'}["id"],
+        $obj_XML->callback->transaction["external-id"],
+        (integer)$obj_XML->callback->transaction->card["type-id"],
+        $iStateID,
+        $fee,
+        array($HTTP_RAW_POST_DATA));
 	// Payment Authorized: Perform a callback to the 3rd party Wallet if required
 	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 	{
@@ -335,8 +335,8 @@ try
 		
 		if ($responseCode == 1000)
 		{				
-		    array_push($aStateId,Constants::iPAYMENT_CAPTURED_STATE);
-			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
+		//    array_push($aStateId,Constants::iPAYMENT_CAPTURED_STATE);
+			//$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
 		}
 		else
 		{
@@ -348,8 +348,6 @@ try
   }
   
   $sAdditionalData = (string) $obj_XML->callback->{'additional-data'};
- 
-  
   // Callback URL has been defined for Client
   if ($obj_TxnInfo->getCallbackURL() != "")
   {
@@ -366,12 +364,11 @@ try
      foreach ($aStateId as $iStateId) {
          if ($iStateId == 2000) {
              $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate ,"additionaldata" => (string)$sAdditionalData));
-             $obj_mPoint->updateSessionState($iStateId, (integer)$obj_XML->callback->{'psp-config'}["id"], $obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, $obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData);
          } else {
              $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"],"additionaldata" => (string)$sAdditionalData));
-             $obj_mPoint->updateSessionState($iStateId, (integer)$obj_XML->callback->{'psp-config'}["id"], $obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, $obj_XML->callback->transaction->card["type-id"], (string)$sAdditionalData);
          }
      }
+     $obj_mPoint->updateSessionState($iStateId, (integer)$obj_XML->callback->{'psp-config'}["id"], $obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, $obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData);
   }
   else {
       header("Content-Type: text/xml; charset=\"UTF-8\"");

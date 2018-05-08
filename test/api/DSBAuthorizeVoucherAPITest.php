@@ -76,7 +76,7 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 
         $retries = 0;
 
-        while ($retries++ <= 7)
+        while ($retries++ <= 5)
         {
             $res = $this->queryDB("SELECT t.extid, t.pspid, t.amount, m.stateid FROM Log.Transaction_Tbl t, Log.Message_Tbl m WHERE m.txnid = t.id AND t.id = 1001001 ORDER BY m.id ASC");
             $this->assertTrue(is_resource($res) );
@@ -87,24 +87,22 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
                 $trow = $row;
                 $aStates[] = $row["stateid"];
             }
-            if (count($aStates) == 7) { break; }
+            if (count($aStates) == 5) { break; }
             usleep(200000); // As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
 
-     //   var_dump($aStates);
+        //var_dump($aStates);
 		$this->assertEquals(61775, $trow["extid"]);
 		$this->assertEquals($pspID, $trow["pspid"]);
 		$this->assertEquals(2, $trow["amount"]);
 		
-		$this->assertEquals(8, count($aStates) );
+		$this->assertEquals(5, count($aStates) );
 		$this->assertEquals(2007, $aStates[0]);
 		//$this->assertEquals(2009, $aStates[1]);
 		$this->assertEquals(2000, $aStates[1]);
 		$this->assertEquals(1991, $aStates[2]);
 		$this->assertEquals(1992, $aStates[3]);
 		$this->assertEquals(1990, $aStates[4]);
-        $this->assertEquals(1991, $aStates[5]);
-        $this->assertEquals(1992, $aStates[6]);
 	}
 
 	public function testVoucherRedemptionDeniedByIssuer()
@@ -150,11 +148,11 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 		$this->assertEquals($pspID, $trow["pspid"]);
 		$this->assertEquals(11, $trow["amount"]);
 
-		$this->assertEquals(5, count($aStates) );
+		$this->assertEquals(4, count($aStates) );
 		$this->assertEquals(2010, $aStates[0]);
-		$this->assertEquals(1991, $aStates[2]);
-		$this->assertEquals(1992, $aStates[3]);
-		$this->assertEquals(1990, $aStates[4]);
+		$this->assertEquals(1991, $aStates[1]);
+		$this->assertEquals(1992, $aStates[2]);
+		$this->assertEquals(1990, $aStates[3]);
 	}
 
 }

@@ -795,6 +795,20 @@ $aHTTP_CONN_INFO["modirummpi"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["modirummpi"]["paths"]["authenticate"] = "/mpi/modirum/authenticate";
 
 /**
+ * Connection info for connecting to CHUBB
+ */
+$aHTTP_CONN_INFO["chubb"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["chubb"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["chubb"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["chubb"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["chubb"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["chubb"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["chubb"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["chubb"]["paths"]["initialize"] = "/mpoint/chubb/initialize";
+$aHTTP_CONN_INFO["chubb"]["paths"]["auth"] = "/mpoint/chubb/authorize-payment";
+$aHTTP_CONN_INFO["chubb"]["paths"]["callback"] = "/mpoint/chubb/callback";
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>
