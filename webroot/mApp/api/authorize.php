@@ -1095,12 +1095,14 @@ $iPrimaryRoute = $oRoute ;
 
                                                                     $obj_PSP = new Nets($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["nets"]);
 
-                                                                    $propertyValue = $obj_ClientConfig->getAdditionalProperties("NETS_3DVERIFICATION");
-                                                                    if($propertyValue == true) {
+                                                                    $propertyValue = $obj_ClientConfig->getAdditionalProperties("3DVERIFICATION");
+                                                                    if(strtolower($propertyValue) == 'true')
+                                                                    {
                                                                         $requset = str_replace("authorize-payment","authenticate",$HTTP_RAW_POST_DATA);
                                                                         $code = $obj_PSP->authenticate($requset);
                                                                     }
-                                                                    else {
+                                                                    else
+                                                                    {
                                                                         $code = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem);
                                                                     }
 
