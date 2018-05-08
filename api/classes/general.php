@@ -1311,7 +1311,7 @@ class General
           FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn 
             INNER JOIN log" . sSCHEMA_POSTFIX . ".message_tbl msg ON txn.id = msg.txnid 
           WHERE sessionid = " . $sessionid .  " 
-            AND msg.stateid in (20103, 20102, 20101, 2011, 2010) GROUP BY txn.sessionid";
+            AND msg.stateid in (20109, 20103, 20102, 20101, 2011, 2010) GROUP BY txn.sessionid";
 
         $res = $this->getDBConn()->getName($sql);
         $attempts = 0;
@@ -1321,10 +1321,10 @@ class General
         return $attempts;
     }
     
-    public function getStateLogCount($txnid)
+    public function getStateLogCount($txnid , $sid)
     {
 		$count = 0;
-		$sql = "SELECT COUNT(id) FROM log" . sSCHEMA_POSTFIX . ".message_tbl WHERE txnid = " . $txnid . " AND stateid = 1991 AND data like '%status=20109%'";
+		$sql = "SELECT COUNT(id) FROM log" . sSCHEMA_POSTFIX . ".message_tbl WHERE txnid = " . $txnid . " AND stateid =".$sid;
 		
 		$res = $this->getDBConn ()->getName ( $sql );
 		$attempts = 0;
