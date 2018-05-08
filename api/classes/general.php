@@ -1320,18 +1320,5 @@ class General
         }
         return $attempts;
     }
-    
-    public function getStateLogCount($txnid , $sid)
-    {
-		$count = 0;
-		$sql = "SELECT COUNT(id) FROM log" . sSCHEMA_POSTFIX . ".message_tbl WHERE txnid = " . $txnid . " AND stateid =".$sid;
-		
-		$res = $this->getDBConn ()->getName ( $sql );
-		$attempts = 0;
-		if (is_array ( $res ) === true) {
-			$count = intval ( $res ['COUNT'] );
-		}
-		return $count;
-	}
 }
 ?>

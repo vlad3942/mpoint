@@ -367,7 +367,7 @@ try
              $obj_mPoint->updateSessionState($iStateId, (integer)$obj_XML->callback->{'psp-config'}["id"], $obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, $obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData);
          }
          else if ($iStateId == Constants::iPAYMENT_TIME_OUT_STATE){
-         	$count = $obj_mPoint->getStateLogCount($obj_TxnInfo->getID(), Constants::iCB_ACCEPTED_TIME_OUT_STATE );
+         	$count = $obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iCB_ACCEPTED_TIME_OUT_STATE);
          	//Check whether a notification has already been sent to retail system with status 20109
          	// Sending duplicate 20109 status may end up to retail sending time out emails to customers more than once
          	if($count == 0)  {
