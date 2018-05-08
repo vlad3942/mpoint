@@ -22,6 +22,10 @@
 				<xs:element name="capture" type="transaction-state-changes-request" />
 				<xs:element name="get-transaction-statistics" type="transaction-statistics-search-request" />
 				<xs:element name="save-gateway-triggers" type="save-gateway-triggers" />
+				<xs:element name="edit-gateway-triggers" type="edit-gateway-triggers" />
+				<xs:element name="delete-gateway-triggers" type="delete-gateway-triggers" />
+				<xs:element name="search-gateway-triggers" type="search-gateway-triggers" />
+				<xs:element name="get-transaction-statistics-by-filter" type="transaction-statistics-search-by-filter-request" />
 				<xs:element name="save-cards" type="save-cards" />
 				<xs:element name="get-cards" type="get-cards" />
 			</xs:choice>

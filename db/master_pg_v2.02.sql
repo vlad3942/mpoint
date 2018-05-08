@@ -150,28 +150,34 @@ ALTER TABLE system.SessionType_tbl  OWNER TO mpoint;
 ALTER TABLE log.Session_tbl  OWNER TO mpoint;
 
 
+/*  ===========  START : Adding Table System.ProductType_Tbl  ==================  */
+CREATE TABLE system.ProductType_Tbl
+(
+  id INT PRIMARY KEY,
+  name VARCHAR(10) NOT NULL
+);
+CREATE UNIQUE INDEX ProductType_Tbl_name_uindex ON system.ProductType_Tbl (name);
+COMMENT ON COLUMN system.ProductType_Tbl.id IS 'Unique number of product type';
+COMMENT ON COLUMN system.ProductType_Tbl.name IS 'Product type name';
+COMMENT ON TABLE system.ProductType_Tbl IS 'Contains all product types';
+
+ALTER TABLE system.ProductType_Tbl
+  OWNER TO mpoint;
+
+/*  ===========  END : Adding Table System.ProductType_Tbl  ==================  */
+
+/*  ===========  START : Adding producttype to Log.Transaction_Tbl  ==================  */
+ALTER TABLE log.transaction_tbl ADD producttype INT DEFAULT 100 NOT NULL;
+COMMENT ON COLUMN log.transaction_tbl.producttype IS 'Product type of transaction';
+ALTER TABLE log.transaction_tbl
+  ADD CONSTRAINT transaction_tbl_producttype_tbl_id_fk
+FOREIGN KEY (producttype) REFERENCES system.producttype_tbl (id);
+
+/*  ===========  END : Adding producttype to Log.Transaction_Tbl  ==================  */
+
 /* =============== Added product tables ============ */
 
--- Table: system.producttype_tbl
 
--- DROP TABLE system.producttype_tbl;
-
-CREATE TABLE system.producttype_tbl
-(
-  id serial NOT NULL,
-  name character varying(100),
-  code character varying(100),
-  description character varying(255),
-  created timestamp without time zone DEFAULT now(),
-  modified timestamp without time zone DEFAULT now(),
-  enabled boolean DEFAULT true,
-  CONSTRAINT producttype_pk PRIMARY KEY (id)
-)
-WITH (
-  OIDS=FALSE
-);
-ALTER TABLE system.producttype_tbl
-  OWNER TO mpoint;
 
 
 -- DROP TABLE client.producttype_tbl;
@@ -189,7 +195,7 @@ CREATE TABLE client.producttype_tbl
       REFERENCES client.client_tbl (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT product_fk FOREIGN KEY (productid)
-      REFERENCES system.producttype_tbl(id) MATCH SIMPLE
+      REFERENCES system.ProductType_Tbl(id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
 )
 WITH (
@@ -296,3 +302,129 @@ INSERT INTO system.triggerunit_tbl( id, name, description) VALUES (1, 'time', 'T
 INSERT INTO system.triggerunit_tbl( id, name, description) VALUES (2, 'volume', 'Transaction based triggers counted in number of txns');
 
 /* ========= Gateway trigger system data ========== */
+
+
+
+/*=============== Gateway Stat Data -================ */
+
+-- Table: system.statisticstype_tbl
+
+-- DROP TABLE system.statisticstype_tbl;
+
+CREATE TABLE system.statisticstype_tbl
+(
+  id serial NOT NULL,
+  name character varying(200),
+  description character varying(200),
+  enabled boolean NOT NULL DEFAULT true,
+  created timestamp without time zone NOT NULL DEFAULT now(),
+  modified timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT stattype_pk PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE system.statisticstype_tbl
+  OWNER TO mpoint;
+
+  
+  -- Table: client.gatewaystat_tbl
+
+-- DROP TABLE client.gatewaystat_tbl;
+
+CREATE TABLE client.gatewaystat_tbl
+(
+  id serial NOT NULL,
+  gatewayid integer NOT NULL,
+  clientid integer NOT NULL,
+  statetypeid integer NOT NULL,
+  statvalue integer NOT NULL,
+  enabled boolean NOT NULL DEFAULT true,
+  created timestamp without time zone NOT NULL DEFAULT now(),
+  modified timestamp without time zone NOT NULL DEFAULT now(),
+  reseton timestamp without time zone,
+  CONSTRAINT stat_pk PRIMARY KEY (id),
+  CONSTRAINT clientstat_fk FOREIGN KEY (clientid)
+      REFERENCES client.client_tbl (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT gatewaystat_fk FOREIGN KEY (gatewayid)
+      REFERENCES system.psp_tbl (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT stattype_fk FOREIGN KEY (statetypeid)
+      REFERENCES system.statisticstype_tbl (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE client.gatewaystat_tbl
+  OWNER TO mpoint;
+
+
+/*===========================  Updating for gateway delete functionality   ======================*/  
+ALTER TABLE client.gatewaytrigger_tbl ADD COLUMN status boolean NOT NULL DEFAULT false;
+ALTER TABLE client.gatewaytrigger_tbl ALTER COLUMN enabled SET DEFAULT true ;
+
+ALTER TABLE client.gatewaystat_tbl ALTER COLUMN statvalue TYPE numeric ;
+
+/*=================== Moving triggers to BRE =================== */
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN healthtriggerunit ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN healthtriggervalue ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN resetthresholdunit ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN resetthresholdvalue ;
+/*=================== Moving triggers to BRE =================== */
+ 
+
+-- 2c2p alc Airline data improvement -- start --
+-- Alter Log.Passenger Tbl to store additional passenger data
+
+ALTER TABLE log.passenger_tbl
+  ADD COLUMN title character varying(20);
+ALTER TABLE log.passenger_tbl
+  ADD COLUMN email character varying(50);
+ALTER TABLE log.passenger_tbl
+  ADD COLUMN mobile character varying(15);
+ALTER TABLE log.passenger_tbl
+  ADD COLUMN "country_id" character varying(3);
+
+-- Alter Log.flight_tbl to store additional flight data
+ALTER TABLE log.flight_tbl
+  ADD COLUMN tag character varying(2);
+ALTER TABLE log.flight_tbl
+  ADD COLUMN "trip_count" character varying(2);
+ALTER TABLE log.flight_tbl
+  ADD COLUMN "service_level" character varying(2);
+-- 2c2p alc Airline data improvement -- end --
+
+-- To execute the above query first need to truncate the session_tbl data.
+-- Run the "TRUNCATE TABLE log.session_tbl CASCADE;" before executing below query.
+ALTER TABLE log.session_tbl ADD CONSTRAINT constraint_name UNIQUE (orderid);
+
+ALTER TABLE system.ProductType_Tbl ADD COLUMN created timestamp without time zone DEFAULT now();
+ALTER TABLE system.ProductType_Tbl ADD COLUMN  modified timestamp without time zone DEFAULT now();
+ALTER TABLE system.ProductType_Tbl ADD COLUMN  enabled boolean DEFAULT true ;
+
+
+
+--PPro PSPCard
+
+INSERT INTO system.pspcard_tbl (pspid, cardid, enabled) VALUES (46, 39, true);
+INSERT INTO system.pspcard_tbl (pspid, cardid, enabled) VALUES (46, 34, true);
+
+--PPro PSPCurrency
+
+INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 840, 'USD', true);
+INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 458, 'MYR', true);
+INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 978, 'EUR', true);
+INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 608, 'PHP', true);
+INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 702, 'SGD', true);
+INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 752, 'SEK', true);
+INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 764, 'THB', true);
+INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 985, 'PLN', true);
+INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 203, 'CZK', true);
+INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 36, 'AUD', true);
+
+-- PPro SR
+
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, psp_type, stateid) VALUES (10047, 39, true, 46, 609, 7, 4);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, psp_type, stateid) VALUES (10047, 34, true, 46, 500, 7, 4);

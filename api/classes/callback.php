@@ -156,7 +156,12 @@ abstract class Callback extends EndUserAccount
 		// Transaction completed successfully
 		if (is_resource($res) === true)
 		{
-			if ($this->getDBConn()->countAffectedRows($res) == 1 || $sid != Constants::iPAYMENT_ACCEPTED_STATE) { $this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true) ); }
+			if ($this->getDBConn()->countAffectedRows($res) == 1 || $sid != Constants::iPAYMENT_ACCEPTED_STATE) {
+                $iIsCompleteTransactionStateLogged = $this->_obj_TxnInfo->hasEitherState($this->getDBConn(),$sid);
+                if($iIsCompleteTransactionStateLogged != 1) {
+                    $this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true));
+                }
+			}
 			else
 			{
 				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_DUPLICATED_STATE, var_export($debug, true) );
@@ -169,7 +174,6 @@ abstract class Callback extends EndUserAccount
 			$this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true) );
 			throw new CallbackException("Unable to complete log for Transaction: ". $this->_obj_TxnInfo->getID(), 1001);
 		}
-        $this->_obj_TxnInfo->getPaymentSession()->updateState();
 		return $sid;
 	}
 	
@@ -199,7 +203,10 @@ abstract class Callback extends EndUserAccount
 		// Capture completed successfully
 		if (is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) == 1)
 		{
-			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($debug, true) );
+            $iIsPaymentCapturedStateLogged = $this->_obj_TxnInfo->hasEitherState($this->getDBConn(),Constants::iPAYMENT_CAPTURED_STATE);
+		    if($iIsPaymentCapturedStateLogged != 1) {
+                $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($debug, true));
+            }
 			return true;
 		}
 		else { return false; }
@@ -313,7 +320,7 @@ abstract class Callback extends EndUserAccount
 	 * @param 	integer $fee				The amount the customer will pay in fee�s for the Transaction. Default value 0
 	 */
 	public function notifyClient($sid, $pspid, $amt,  $cardno="", $cardid=0, $exp=null,$sAdditionalData="", SurePayConfig &$obj_SurePay=null, $fee=0 )
-	{		
+	{
 		$sDeviceID = $this->_obj_TxnInfo->getDeviceID();
 		$sEmail = $this->_obj_TxnInfo->getEMail();
 		/* ----- Construct Body Start ----- */
@@ -347,6 +354,7 @@ abstract class Callback extends EndUserAccount
 		{
 			$sBody .= "&expiry=". $exp;
 		}
+        $sBody .= "&session-id=". $this->_obj_TxnInfo->getSessionId();
 		trigger_error("********************* ". $sBody, E_USER_NOTICE);
 		/* Adding customer Info as part of the callback query params */
 		if (($this->_obj_TxnInfo->getAccountID() > 0) === true )
@@ -667,7 +675,13 @@ abstract class Callback extends EndUserAccount
                 return new AliPayChinese($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["alipay-chinese"]);
         case (Constants::iCITCON_PSP):
                 return new Citcon($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["citcon"]);
-		default:
+        case (Constants::iPPRO_GATEWAY):
+            return new PPRO($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ppro"]);
+        case (Constants::iAMEX_ACQUIRER):
+                return new Amex($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["amex"]);
+        case (Constants::iCHUBB_PSP):
+                return new CHUBB($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["chubb"]);
+            default:
 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
 	}
@@ -694,5 +708,85 @@ abstract class Callback extends EndUserAccount
 		
 		return $RS["DECIMALS"];
 	}
+
+    function retryCallback($body, SurePayConfig &$obj_SurePay=null, $attempt=0){
+        $this->performCallback($body,$obj_SurePay, $attempt);
+    }
+
+    public function updateSessionState($sid, $pspid, $amt, $cardno="", $cardid=0, $exp=null, $sAdditionalData="", SurePayConfig &$obj_SurePay=null, $fee=0 )
+    {
+        $sessionObj = $this->getTxnInfo()->getPaymentSession();
+        $isStateUpdated = $sessionObj->updateState();
+        if($isStateUpdated !== 1 )
+        {
+            return;
+        }
+        $sDeviceID = $this->_obj_TxnInfo->getDeviceID();
+        $sEmail = $this->_obj_TxnInfo->getEMail();
+        /* ----- Construct Body Start ----- */
+        $sBody = "";
+        $sBody .= "session-id=". $this->_obj_TxnInfo->getSessionId();
+        $sBody .= "&orderid=". urlencode($this->_obj_TxnInfo->getOrderID() );
+        $sBody .= "&status=". $sessionObj->getStateId();
+        $sBody .= "&mobile=". urlencode($this->_obj_TxnInfo->getMobile() );
+        $sBody .= "&operator=". urlencode($this->_obj_TxnInfo->getOperator() );
+        $sBody .= "&language=". urlencode($this->_obj_TxnInfo->getLanguage() );
+        if (intval($cardid) > 0) { $sBody .= "&card-id=". $cardid; }
+        if (empty($cardno) === false) { $sBody .= "&card-number=". urlencode($cardno); }
+        if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true) { $sBody .= "&pspid=". urlencode($pspid); }
+        if ( strlen($this->_obj_TxnInfo->getDescription() ) > 0) { $sBody .= "&description=". urlencode($this->_obj_TxnInfo->getDescription() ); }
+        $sBody .= $this->getVariables();
+        if(empty($sDeviceID) === false)
+        {
+            $sBody .= "&device-id=". urlencode($sDeviceID);
+        }
+        if(empty($sEmail) === false)
+        {
+            $sBody .= "&email=". urlencode($sEmail);
+        }
+        if(empty($exp)===false)
+        {
+            $sBody .= "&expiry=". $exp;
+        }
+
+        trigger_error("********************* ". $sBody, E_USER_NOTICE);
+        /* Adding customer Info as part of the callback query params */
+        if (($this->_obj_TxnInfo->getAccountID() > 0) === true )
+        {
+            $obj_CustomerInfo = CustomerInfo::produceInfo($this->getDBConn(), $this->_obj_TxnInfo->getAccountID());
+            $sBody .= "&customer-country-id=". $obj_CustomerInfo->getCountryID();
+        }
+        $transactionId = $this->_obj_TxnInfo->getID();
+        // TransactionData array
+        $sBody .= "&transaction-data[$transactionId][status]=". $sid;
+        $sBody .= "&transaction-data[$transactionId][hmac]=". urlencode($this->_obj_TxnInfo->getHMAC());
+        $sBody .= "&transaction-data[$transactionId][product-type]=". $this->_obj_TxnInfo->getProductType();
+        $sBody .= "&transaction-data[$transactionId][amount]=". $amt;
+        $sBody .= "&transaction-data[$transactionId][currency]=". urlencode($this->_obj_TxnInfo->getCountryConfig()->getCurrency());
+        $sBody .= "&transaction-data[$transactionId][fee]=". intval($fee);
+
+        if (strlen($sAdditionalData) > 0) {
+            $eData = explode('&', $sAdditionalData);
+
+            foreach ($eData as $eResult) {
+                $txnData = explode('=', $eResult);
+                $txnKey = $txnData[0];
+                $sBody .= "&transaction-data[$transactionId][$txnKey] =". $txnData[1];
+            }
+        }
+
+        $data = $sessionObj->getSessionCallbackData();
+        if ($data != '') {
+            $sBody .= "&".$data;
+        }
+
+        if ($sessionObj->getStateId() != Constants::iSESSION_CREATED) {
+            $this->newMessage($this->_obj_TxnInfo->getID(), $sessionObj->getStateId(), $sBody);
+        }
+        /* ----- Construct Body End ----- */
+        if ($sessionObj->getPendingAmount() == 0) {
+            $this->performCallback($sBody, $obj_SurePay);
+        }
+    }
 }
 ?>
