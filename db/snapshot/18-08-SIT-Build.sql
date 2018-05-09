@@ -1,5 +1,3 @@
-INSERT INTO log.state_tbl (id, name, module) VALUES (20109, 'Payment timed out', 'Payment');
-INSERT INTO log.state_tbl (id, name, module) VALUES (19909, 'Callback accepted for Payment time out', 'Payment');
 
 --PPro PSPCard
 
@@ -28,3 +26,9 @@ INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'signtype.html', 'RSA', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=43 ;
 --app supports RSA and RSA2
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'signtype.app', 'RSA2', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=43 ;
+
+
+
+
+--- Datacash notification secret key for setting up https callback url
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'Notification-Secret', '379001F6E4852A832F8138F70190585A', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=17 ;
