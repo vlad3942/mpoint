@@ -364,7 +364,6 @@ try
      foreach ($aStateId as $iStateId) {
          if ($iStateId == 2000) {
              $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate ,"additionaldata" => (string)$sAdditionalData));
-             $obj_mPoint->updateSessionState($iStateId, (integer)$obj_XML->callback->{'psp-config'}["id"], $obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, $obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData);
          }
          else if ($iStateId == Constants::iPAYMENT_TIME_OUT_STATE){
          	$count = $obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iCB_ACCEPTED_TIME_OUT_STATE);
@@ -372,17 +371,14 @@ try
          	// Sending duplicate 20109 status may end up to retail sending time out emails to customers more than once
          	if($count == 0)  {
          		$obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate ,"additionaldata" => (string)$sAdditionalData));
-         		$obj_mPoint->updateSessionState($iStateId, (integer)$obj_XML->callback->{'psp-config'}["id"], $obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, $obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData);
          	}
          }
          else {
              $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"],"additionaldata" => (string)$sAdditionalData));
-             if ($iStateId != 2001) {
-                 $obj_mPoint->updateSessionState($iStateId, (integer)$obj_XML->callback->{'psp-config'}["id"], $obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, $obj_XML->callback->transaction->card["type-id"], (string)$sAdditionalData);
-             }
-         }
+        }
      }
-  }
+     $obj_mPoint->updateSessionState($iStateId, (integer)$obj_XML->callback->{'psp-config'}["id"], $obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, $obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData);
+   }
   else {
       header("Content-Type: text/xml; charset=\"UTF-8\"");
       echo '<?xml version="1.0" encoding="UTF-8"?>';
