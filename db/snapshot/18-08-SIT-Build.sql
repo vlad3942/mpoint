@@ -29,5 +29,6 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 
 
 
 
+
 --- Datacash notification secret key for setting up https callback url
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'Notification-Secret', '379001F6E4852A832F8138F70190585A', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=17 ;
