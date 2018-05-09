@@ -1311,7 +1311,7 @@ class General
           FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn 
             INNER JOIN log" . sSCHEMA_POSTFIX . ".message_tbl msg ON txn.id = msg.txnid 
           WHERE sessionid = " . $sessionid .  " 
-            AND msg.stateid in (20103, 20102, 20101, 2011, 2010) GROUP BY txn.sessionid";
+            AND msg.stateid in (20109, 20103, 20102, 20101, 2011, 2010) GROUP BY txn.sessionid";
 
         $res = $this->getDBConn()->getName($sql);
         $attempts = 0;
