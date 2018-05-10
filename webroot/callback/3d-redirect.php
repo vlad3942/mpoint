@@ -199,7 +199,9 @@ try
     }
     else
     {
-        $xml .= '<status code="2010">Transaction Declined as the the merchant does not support 3D verification.</status>';
+             $status = $obj_XML->{'threed-redirect'}->{'status'};
+        	 if (strlen($status) >0 == false){ $status .= 'Transaction Declined'; };
+        	 $xml .= '<status code="2010">'.$status.'</status>';
     }
 
 }
