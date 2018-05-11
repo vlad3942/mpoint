@@ -1370,6 +1370,7 @@ class mConsole extends Admin
 				case 'revenue_count' :
 					$aSelector[] = 'sum(T.amount) AS revenue_count';
 					$aOrderbyClauses[] = 'revenue_count '.$orderby['revenue_count'];
+					$aFiltersClauses[] = "AND M.STATEID IN (2001)";
 					break;
 				case 'currency' :
 					$aSelector[] = 'C.code AS CURRENCY';
