@@ -76,13 +76,5 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10021
 INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, position, preferred, psp_type) VALUES (10021, 31, true, 38, 608, 1, null, false, 1);
 
 
---html supports MD5 or RSA - Alipay
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'signtype.html', 'RSA', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=43 ;
---app supports RSA and RSA2
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'signtype.app', 'RSA2', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=43 ;
-
-
-
-
 --- Datacash notification secret key for setting up https callback url
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'Notification-Secret', '379001F6E4852A832F8138F70190585A', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=17 ;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'Notification-Secret', '379001F6E4852A832F8138F70190585A', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
