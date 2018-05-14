@@ -138,6 +138,11 @@ abstract class Constants
 	 */
 	const iCB_CONSTRUCTED_STATE = 1991;
 	/**
+	 * Defines the ID of the State that indicates that the callback request to the Client has been constructed
+	 *
+	 */
+	const iCB_ACCEPTED_TIME_OUT_STATE = 19909;
+	/**
 	 * Defines the ID of the State that mPoint has connected to the Client's server to perform a Callback
 	 *
 	 */
@@ -249,6 +254,12 @@ abstract class Constants
      *
      */
     const iPAYMENT_REJECTED_3D_SECURE_FAILURE_STATE = 20103;
+    /**
+     * Defines the ID of the State that indicates that the payment was not complete due to time out error
+     * from PSP or Issuer and system does not have the final status of payment yet
+     *  
+     */
+    const iPAYMENT_TIME_OUT_STATE = 20109;
 	/**
 	 * Defines the ID of the State that indicates that the payment was declined by the Payment Service Provider (PSP)
 	 * when doing a Capture

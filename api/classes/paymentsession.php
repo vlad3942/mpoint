@@ -191,11 +191,14 @@ final class PaymentSession
     {
         if ($stateId == null) {
             if ($this->getPendingAmount() == 0) {
-                if ($this->getTransactionStatesWithAncillary(Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_ACCEPTED_STATE) == true) {
+
+                $paymentAcceptStates = array(Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_WITH_VOUCHER_STATE,Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+
+                if ($this->getTransactionStatesWithAncillary($paymentAcceptStates , $paymentAcceptStates ) == true) {
                     $stateId = Constants::iSESSION_COMPLETED;
-                } elseif ($this->getTransactionStatesWithAncillary(Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_REJECTED_STATE) == true) {
+                } elseif ($this->getTransactionStatesWithAncillary($paymentAcceptStates , array(Constants::iPAYMENT_REJECTED_STATE)) == true) {
                     $stateId = Constants::iSESSION_PARTIALLY_COMPLETED;
-                } elseif ($this->getTransactionStatesWithAncillary(Constants::iPAYMENT_ACCEPTED_STATE) == true) {
+                } elseif ($this->getTransactionStatesWithAncillary($paymentAcceptStates ) == true) {
                     $stateId = Constants::iSESSION_COMPLETED;
                 }
             } elseif ($this->getPendingAmount() != 0) {
@@ -210,10 +213,26 @@ final class PaymentSession
         }
         if($stateId != null)
         {
+            $checkState = "SELECT count(id) FROM log" . sSCHEMA_POSTFIX . ".session_tbl WHERE  stateid = ".$stateId." and id =". $this->_id;
+
+            $RS = $this->_obj_Db->getName($checkState);
+            if (is_array($RS) === true)
+            {
+                if($RS["COUNT"] != 0)
+                {
+                    return 2;
+                }
+            }
+
             $this->_iStateId = intval($stateId);
             $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".session_tbl SET stateid = ".$stateId." WHERE id = " . $this->_id;
-            $this->_obj_Db->query($sql);
+            $RS1 = $this->_obj_Db->query($sql);
+            if (is_resource($RS1) === true)
+            {
+                return 1;
+            }
         }
+        return 0;
     }
 
     public function getSessionType()
@@ -338,16 +357,16 @@ final class PaymentSession
             $primaryProdBtwnCondition = " BETWEEN ". Constants::iPrimaryProdTypeBase ." AND ". Constants::iPrimaryProdTypeBase." + 99";
             $ancillaryProdBtwnCondition = " BETWEEN ". Constants::iAncillaryProdTypeBase ." AND ". Constants::iAncillaryProdTypeBase." + 99";
             if ($ancillaryState != null) {
-                $sql = "SELECT COUNT(txn.id) AS CNT FROM log" . sSCHEMA_POSTFIX . ".message_tbl msg
+                $sql = "SELECT COUNT( DISTINCT txn.id) AS CNT FROM log" . sSCHEMA_POSTFIX . ".message_tbl msg
                     INNER JOIN log" . sSCHEMA_POSTFIX . ".transaction_tbl txn ON txn.id = msg.txnid
                     WHERE sessionid = " . $this->_id . "
-                    AND (msg.stateid = " . $ticketState . " AND txn.productType".$primaryProdBtwnCondition.")
-                    AND (msg.stateid = " . $ancillaryState . " AND txn.productType".$ancillaryProdBtwnCondition.") LIMIT 1";
+                    AND (msg.stateid in ('" . implode("', '", $ticketState). "') AND txn.productType".$primaryProdBtwnCondition.")
+                    AND (msg.stateid in ('" . implode("', '", $ancillaryState ) . "') AND txn.productType".$ancillaryProdBtwnCondition.") LIMIT 1";
             } else {
                 $sql = "SELECT COUNT(txn.id) AS CNT FROM log" . sSCHEMA_POSTFIX . ".message_tbl msg
                     INNER JOIN log" . sSCHEMA_POSTFIX . ".transaction_tbl txn ON txn.id = msg.txnid
                     WHERE sessionid = " . $this->_id . "
-                    AND (msg.stateid = " . $ticketState . " AND txn.productType".$primaryProdBtwnCondition.") LIMIT 1";
+                    AND (msg.stateid in ('" . implode("', '", $ticketState)  . "') AND txn.productType".$primaryProdBtwnCondition.") LIMIT 1";
             }
             $RS = $this->_obj_Db->getName($sql);
             if (is_array($RS) === true) {

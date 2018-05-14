@@ -164,6 +164,12 @@ try
             $cryptogram->addAttribute('eci', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['eci']);
             $cryptogram->addAttribute('algorithm-id', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['algorithm-id']);
 
+            $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+                            SET extid=''
+                            WHERE id = " . $obj_XML->{'threed-redirect'}->transaction['id'];
+            //echo $sql ."\n";
+            $_OBJ_DB->query($sql);
+
             $code = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card);
 
             if ($code == "100")
@@ -193,7 +199,9 @@ try
     }
     else
     {
-        $xml .= '<status code="2010">Transaction Declined as the the merchant does not support 3D verification.</status>';
+             $status = $obj_XML->{'threed-redirect'}->{'status'};
+        	 if (strlen($status) >0 == false){ $status .= 'Transaction Declined'; };
+        	 $xml .= '<status code="2010">'.$status.'</status>';
     }
 
 }
