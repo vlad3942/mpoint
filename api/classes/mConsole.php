@@ -1350,6 +1350,10 @@ class mConsole extends Admin
 				case 'transaction_count' :
 					$aSelector[] = 'COUNT(*) AS TRANSACTION_COUNT';
 					$aOrderbyClauses[] = 'TRANSACTION_COUNT '.$orderby['TRANSACTION_COUNT'];
+					if (array_key_exists('state', $aFilters) === false) // Getting only last state data
+                     {
+                    	$aFiltersClauses[] = "AND M.ID IN (SELECT Max(id) FROM LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL	WHERE T.id = txnid )";
+                     }
 					break;
             	case 'hour':
             		$aSelector[] = 'EXTRACT(hour FROM T.created) AS HOUR';
@@ -1366,6 +1370,7 @@ class mConsole extends Admin
 				case 'revenue_count' :
 					$aSelector[] = 'sum(T.amount) AS revenue_count';
 					$aOrderbyClauses[] = 'revenue_count '.$orderby['revenue_count'];
+					$aFiltersClauses[] = "AND M.STATEID IN (2001)";
 					break;
 				case 'currency' :
 					$aSelector[] = 'C.code AS CURRENCY';
@@ -1427,7 +1432,8 @@ class mConsole extends Admin
                     $aFiltersClauses[] = " AND T.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($value)))."'";
                     break;
                 case 'state':
-                    $aFiltersClauses[] = ' AND M.stateid IN ('.implode(",", $value).')';
+                    $aFiltersClauses[] = " AND M.stateid IN (".implode(",", $value).") AND M.ID IN (SELECT Max(id) FROM LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL	WHERE T.id = txnid AND stateid IN (".implode(",", $value)."))";
+                    // Sub query for getting latest state only
                     break;
 				case 'cardid':
                     $aFiltersClauses[] = ' AND T.cardid IN ('.implode(",", $value).')';
