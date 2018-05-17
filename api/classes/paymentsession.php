@@ -303,7 +303,7 @@ final class PaymentSession
             $sql = "SELECT id, amount, stateid FROM log" . sSCHEMA_POSTFIX . ".session_tbl WHERE orderid = '" . $this->_orderId . "' ORDER BY id DESC LIMIT 1";
             $RS = $this->_obj_Db->getName($sql);
             if (is_array($RS) === true) {
-                if ($RS["STATEID"] == Constants::iSESSION_PARTIALLY_COMPLETED || $RS["STATEID"] == Constants::iSESSION_CREATED) {
+                if ($RS["STATEID"] == Constants::iSESSION_PARTIALLY_COMPLETED) {
                     $this->_id = $RS["ID"];
                     $status = true;
                 }
