@@ -87,7 +87,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'initialize-payment'}[$i]["account"]);
 			if ($code == 100)
 			{
-				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'initialize-payment'}[$i]["account"]);	
+				$obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"], (integer) $obj_DOM->{'initialize-payment'}[$i]["account"]);
 				$obj_ClientAccountsConfig = AccountConfig::produceConfigurations($_OBJ_DB, $obj_ClientConfig->getID());
 				if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])
 					&& $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true)
@@ -228,12 +228,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							// Update Transaction Log
 							$obj_mPoint->logTransaction($obj_TxnInfo);
 
-                            $bIsSingleSingOnPass = false;
 
                             // Single Sign-On
                             $authToken = (string) $obj_DOM->{'initialize-payment'}[$i]->{'auth-token'};
-                            if (!empty($authToken) && (strlen($obj_ClientConfig->getAuthenticationURL() ) > 0 || count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'auth-url'}) == 1) && strlen($obj_ClientConfig->getSalt() ) > 0)
+                            $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
+                            if (empty($authenticationURL) === false && !empty($authToken) && (strlen($obj_ClientConfig->getAuthenticationURL() ) > 0 || count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'auth-url'}) == 1) && strlen($obj_ClientConfig->getSalt() ) > 0)
                             {
+                                $bIsSingleSingOnPass = false;
                                 $obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
                                 if (is_object($obj_CustomerInfo)) {
                                     $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
@@ -251,13 +252,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
 
                                     $code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($obj_TxnInfo->getAuthenticationURL()), $obj_CustomerInfo, trim($obj_DOM->{'initialize-payment'}[$i]->{'auth-token'}), (integer)$obj_DOM->{'initialize-payment'}[$i]["client-id"]);
-                                    if ($code == 10)
+                                    if ($code == 10) {
                                         $bIsSingleSingOnPass = true;
+                                    }
                                 }
                             }
                             else
                             {
-                                $bIsSingleSingOnPass = false;
+                                $bIsSingleSingOnPass = true;
                             }
                             $sOrderXML = '';
 
