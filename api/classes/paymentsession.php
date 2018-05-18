@@ -106,6 +106,7 @@ final class PaymentSession
         } else {
             $this->_expire = date("Y-m-d H:i:s.u", time() + (15 * 60));
         }
+        // New session will not be generated, if the session is partially complete(4031) for same order id. 
         if ($this->updateSessionDataFromOrderId() != true) {
             try {
                 $sql = "INSERT INTO Log" . sSCHEMA_POSTFIX . ".session_tbl 
@@ -141,7 +142,7 @@ final class PaymentSession
                     }
                 }
             } catch (Exception $e) {
-                $this->updateSessionDataFromOrderId();
+                trigger_error ( "Failed to create a new session" . $e->getMessage(), E_USER_ERROR );
             }
         }
 
@@ -300,7 +301,11 @@ final class PaymentSession
     {
         $status = false;
         try {
-            $sql = "SELECT id, amount FROM log" . sSCHEMA_POSTFIX . ".session_tbl WHERE orderid = '" . $this->_orderId . "' ORDER BY id DESC LIMIT 1";
+            $sql = "SELECT id, amount, stateid FROM log" . sSCHEMA_POSTFIX . ".session_tbl
+                    WHERE orderid = '" . $this->_orderId . "'
+                    AND stateid = '" . Constants::iSESSION_PARTIALLY_COMPLETED . "'
+                    ORDER BY id DESC LIMIT 1";
+
             $RS = $this->_obj_Db->getName($sql);
             if (is_array($RS) === true) {
                 $this->_id = $RS["ID"];

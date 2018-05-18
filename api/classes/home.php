@@ -774,13 +774,14 @@ class Home extends General
         $sql = "SELECT Txn.id, Txn.amount AS amount, C.id AS countryid, C.currencyid, C.symbol, C.priceformat, CL.id AS clientid,
 					   Txn.id AS mpointid, Txn.orderid, M1.stateid,Txn.logourl,Txn.cssurl,Txn.accepturl,Txn.cancelurl, CL.salt, 
 					   Txn.accountid AS end_user_id,Txn.lang,Txn.cardid,
-					   Txn.email, Txn.mobile,Txn.customer_ref,Txn.operatorid,Txn.markup,Txn.deviceid, Txn.sessionid
+					   Txn.email, Txn.mobile,Txn.customer_ref,Txn.operatorid,Txn.markup,Txn.deviceid, Txn.sessionid, St.name
 				FROM Log.Transaction_Tbl Txn
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON Txn.pspid = PSP.id
 				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Country_Tbl C ON Txn.countryid = C.id
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl Card ON Txn.cardid = Card.id
 				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M1 ON Txn.id = M1.txnid AND M1.stateid =  (select max(stateid) from Log".sSCHEMA_POSTFIX.".message_tbl WHERE txnid = '". $this->getDBConn()->escStr( (string) $txnid) ."')
+				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".state_tbl St ON M1.stateid = St.id
 				WHERE Txn.id = '". $this->getDBConn()->escStr( (string) $txnid) ."'
 				ORDER BY Txn.created DESC LIMIT 1";
 //		echo $sql ."\n";
@@ -806,6 +807,7 @@ class Home extends General
         $xml .= '<css-url>'. htmlspecialchars($RS["CSSURL"], ENT_NOQUOTES) .'</css-url>';
         $xml .= '<logo-url>'. htmlspecialchars($RS["LOGOURL"], ENT_NOQUOTES) .'</logo-url>';
         $xml .= '<status-id>'. $RS['STATEID'] .'</status-id>';
+        $xml .= '<status-message>'. $RS['NAME'].'</status-message>';
         $xml .= '<sign>'. md5( $RS["CLIENTID"] .'&'. $RS["MPOINTID"] .'&'. $RS["ORDERID"] .'&'. $RS["CURRENCYID"] .'&'.  htmlspecialchars($amount, ENT_NOQUOTES) .'&'. $RS["STATEID"] .'.'. $RS["SALT"]) .'</sign>';
       //  $xml .= '<pre-sign>'.  $RS["CLIENTID"] .','. $RS["MPOINTID"] .','. $RS["ORDERID"] .','. $RS["CURRENCY"] .','.  htmlspecialchars($amount, ENT_NOQUOTES) .','. $RS["STATEID"] .','. $RS["SALT"] .'</pre-sign>';
         $xml .= '<client-info language="'.$RS["LANG"].'" platform="'.$RS["MARKUP"].'">';
