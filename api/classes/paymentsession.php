@@ -141,7 +141,7 @@ final class PaymentSession
                     }
                 }
             } catch (Exception $e) {
-                $this->updateSessionDataFromOrderId();
+                trigger_error ( "Failed to create a new session" . $e->getMessage(), E_USER_ERROR );
             }
         }
 
@@ -300,13 +300,15 @@ final class PaymentSession
     {
         $status = false;
         try {
-            $sql = "SELECT id, amount, stateid FROM log" . sSCHEMA_POSTFIX . ".session_tbl WHERE orderid = '" . $this->_orderId . "' ORDER BY id DESC LIMIT 1";
+            $sql = "SELECT id, amount, stateid FROM log" . sSCHEMA_POSTFIX . ".session_tbl
+                    WHERE orderid = '" . $this->_orderId . "'
+                    AND stateid = '" . Constants::iSESSION_PARTIALLY_COMPLETED . "'
+                    ORDER BY id DESC LIMIT 1";
+
             $RS = $this->_obj_Db->getName($sql);
             if (is_array($RS) === true) {
-                if ($RS["STATEID"] == Constants::iSESSION_PARTIALLY_COMPLETED) {
-                    $this->_id = $RS["ID"];
-                    $status = true;
-                }
+                $this->_id = $RS["ID"];
+                $status = true;
             }
         } catch (Exception $e) {
             trigger_error ( "Update Session Data - ." . $e->getMessage(), E_USER_ERROR );
