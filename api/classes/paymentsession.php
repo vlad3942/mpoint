@@ -106,6 +106,7 @@ final class PaymentSession
         } else {
             $this->_expire = date("Y-m-d H:i:s.u", time() + (15 * 60));
         }
+        // New session will not be generated, if the session is partially complete(4031) for same order id. 
         if ($this->updateSessionDataFromOrderId() != true) {
             try {
                 $sql = "INSERT INTO Log" . sSCHEMA_POSTFIX . ".session_tbl 
