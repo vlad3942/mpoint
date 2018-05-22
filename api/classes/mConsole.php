@@ -59,7 +59,10 @@ class mConsole extends Admin
 	const sPERMISSION_SEARCH_TRANSACTION_LOGS = "mpoint.transaction-logs.search.x";
 	const sPERMISSION_VOID_PAYMENTS = "mpoint.void-payments.get.x";
 	const sPERMISSION_CAPTURE_PAYMENTS = "mpoint.capture-payments.get.x";	
-	const sPERMISSION_GET_TRANSACTION_STATISTICS = "mpoint.dashboard.get.x";	
+	const sPERMISSION_GET_TRANSACTION_STATISTICS = "mpoint.dashboard.get.x";
+
+	//Transaction State
+	const iPAYMENT_CAPTURED_BY_PSP = 2001;
 	
 	public function saveClient($cc, $storecard, $autocapture, $name, $username, $password, $maxamt, $lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl, $salt, $channels, $id = -1)
 	{
@@ -1370,7 +1373,7 @@ class mConsole extends Admin
 				case 'revenue_count' :
 					$aSelector[] = 'sum(T.amount) AS revenue_count';
 					$aOrderbyClauses[] = 'revenue_count '.$orderby['revenue_count'];
-					$aFiltersClauses[] = "AND M.STATEID IN (2001)";
+					$aFiltersClauses[] = " AND M.STATEID IN (".self::iPAYMENT_CAPTURED_BY_PSP.")";
 					break;
 				case 'currency' :
 					$aSelector[] = 'C.code AS CURRENCY';
@@ -1420,7 +1423,6 @@ class mConsole extends Admin
 		}
 		$sql .= " WHERE T.CLIENTID = " . intval($iClientID);
 
-		$aFiltersClauses = array();
 
         foreach ($aFilters as $key=>$value)
         {
