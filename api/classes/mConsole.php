@@ -61,8 +61,6 @@ class mConsole extends Admin
 	const sPERMISSION_CAPTURE_PAYMENTS = "mpoint.capture-payments.get.x";	
 	const sPERMISSION_GET_TRANSACTION_STATISTICS = "mpoint.dashboard.get.x";
 
-	//Transaction State
-	const iPAYMENT_CAPTURED_BY_PSP = 2001;
 	
 	public function saveClient($cc, $storecard, $autocapture, $name, $username, $password, $maxamt, $lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl, $salt, $channels, $id = -1)
 	{
@@ -1373,7 +1371,7 @@ class mConsole extends Admin
 				case 'revenue_count' :
 					$aSelector[] = 'round(sum(T.amount)/100,2) AS revenue_count';//Dividing by 100 to get actual transaction amount
 					$aOrderbyClauses[] = 'revenue_count '.$orderby['revenue_count'];
-					$aFiltersClauses[] = " AND M.STATEID IN (".self::iPAYMENT_CAPTURED_BY_PSP.")";
+					$aFiltersClauses[] = " AND M.STATEID IN (".Constants::iPAYMENT_CAPTURED_STATE.")";
 					break;
 				case 'currency' :
 					$aSelector[] = 'C.code AS CURRENCY';
