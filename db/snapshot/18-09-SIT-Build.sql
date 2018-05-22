@@ -1,10 +1,10 @@
 
 /*START: Fixing incorrect values for USD in PSPCurrency_tbl in system schema */
 
-UPDATE system.pspcurrency_tbl
-SET name = currency_tbl.code
-FROM system.currency_tbl
-WHERE currency_tbl.id = pspcurrency_tbl.currencyid;
+UPDATE system.pspcurrency_tbl sp
+SET name = sc.code
+FROM system.currency_tbl sc
+WHERE sc.id = sp.currencyid;
 
 /*END: Fixing incorrect values for USD in PSPCurrency_tbl in system schema*/
 
