@@ -59,7 +59,8 @@ class mConsole extends Admin
 	const sPERMISSION_SEARCH_TRANSACTION_LOGS = "mpoint.transaction-logs.search.x";
 	const sPERMISSION_VOID_PAYMENTS = "mpoint.void-payments.get.x";
 	const sPERMISSION_CAPTURE_PAYMENTS = "mpoint.capture-payments.get.x";	
-	const sPERMISSION_GET_TRANSACTION_STATISTICS = "mpoint.dashboard.get.x";	
+	const sPERMISSION_GET_TRANSACTION_STATISTICS = "mpoint.dashboard.get.x";
+
 	
 	public function saveClient($cc, $storecard, $autocapture, $name, $username, $password, $maxamt, $lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl, $salt, $channels, $id = -1)
 	{
@@ -1344,6 +1345,8 @@ class mConsole extends Admin
 		$sql = 'SELECT ';
         $aSelector = array();
 		$aOrderbyClauses = array();
+		$aFiltersClauses = array();
+
 		foreach ($aColumns as $column)
 		{
 			switch(strtolower($column)){
@@ -1352,7 +1355,7 @@ class mConsole extends Admin
 					$aOrderbyClauses[] = 'TRANSACTION_COUNT '.$orderby['TRANSACTION_COUNT'];
 					if (array_key_exists('state', $aFilters) === false) // Getting only last state data
                      {
-                    	$aFiltersClauses[] = "AND M.ID IN (SELECT Max(id) FROM LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL	WHERE T.id = txnid )";
+                    	$aFiltersClauses[] = " AND M.ID IN (SELECT Max(id) FROM LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL	WHERE T.id = txnid )";
                      }
 					break;
             	case 'hour':
@@ -1368,9 +1371,9 @@ class mConsole extends Admin
 					$aOrderbyClauses[] = 'STATE '.$orderby['currency'];//if value present the it will return value(asc or desc) or ''(empty)
 					break;
 				case 'revenue_count' :
-					$aSelector[] = 'sum(T.amount) AS revenue_count';
+					$aSelector[] = 'round(sum(T.amount)/100,2) AS revenue_count';//Dividing by 100 to get actual transaction amount
 					$aOrderbyClauses[] = 'revenue_count '.$orderby['revenue_count'];
-					$aFiltersClauses[] = "AND M.STATEID IN (2001)";
+					$aFiltersClauses[] = " AND M.STATEID IN (".Constants::iPAYMENT_CAPTURED_STATE.")";
 					break;
 				case 'currency' :
 					$aSelector[] = 'C.code AS CURRENCY';
@@ -1420,7 +1423,6 @@ class mConsole extends Admin
 		}
 		$sql .= " WHERE T.CLIENTID = " . intval($iClientID);
 
-		$aFiltersClauses = array();
 
         foreach ($aFilters as $key=>$value)
         {
@@ -1432,7 +1434,7 @@ class mConsole extends Admin
                     $aFiltersClauses[] = " AND T.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($value)))."'";
                     break;
                 case 'state':
-                    $aFiltersClauses[] = " AND M.stateid IN (".implode(",", $value).") AND M.ID IN (SELECT Max(id) FROM LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL	WHERE T.id = txnid AND stateid IN (".implode(",", $value)."))";
+                    $aFiltersClauses[] = " AND M.ID IN (SELECT Max(id) FROM LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL	WHERE T.id = txnid AND stateid IN (".implode(",", $value)."))";
                     // Sub query for getting latest state only
                     break;
 				case 'cardid':
