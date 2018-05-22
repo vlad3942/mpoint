@@ -1345,6 +1345,8 @@ class mConsole extends Admin
 		$sql = 'SELECT ';
         $aSelector = array();
 		$aOrderbyClauses = array();
+		$aFiltersClauses = array();
+
 		foreach ($aColumns as $column)
 		{
 			switch(strtolower($column)){
@@ -1353,7 +1355,7 @@ class mConsole extends Admin
 					$aOrderbyClauses[] = 'TRANSACTION_COUNT '.$orderby['TRANSACTION_COUNT'];
 					if (array_key_exists('state', $aFilters) === false) // Getting only last state data
                      {
-                    	$aFiltersClauses[] = "AND M.ID IN (SELECT Max(id) FROM LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL	WHERE T.id = txnid )";
+                    	$aFiltersClauses[] = " AND M.ID IN (SELECT Max(id) FROM LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL	WHERE T.id = txnid )";
                      }
 					break;
             	case 'hour':
