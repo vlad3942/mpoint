@@ -1371,7 +1371,7 @@ class mConsole extends Admin
 					$aOrderbyClauses[] = 'STATE '.$orderby['currency'];//if value present the it will return value(asc or desc) or ''(empty)
 					break;
 				case 'revenue_count' :
-					$aSelector[] = 'sum(T.amount) AS revenue_count';
+					$aSelector[] = 'round(sum(T.amount)/100,2) AS revenue_count';//Dividing by 100 to get actual transaction amount
 					$aOrderbyClauses[] = 'revenue_count '.$orderby['revenue_count'];
 					$aFiltersClauses[] = " AND M.STATEID IN (".self::iPAYMENT_CAPTURED_BY_PSP.")";
 					break;
