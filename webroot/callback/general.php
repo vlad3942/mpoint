@@ -155,7 +155,7 @@ try
         $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), intval($obj_XML->callback->{"psp-config"}["id"]) );
     }
     $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
-
+    $sPSPName = $obj_PSPConfig->getName();
 	$year = substr(strftime("%Y"), 0, 2);
 	$sExpirydate =  $year.$obj_XML->callback->transaction->card->expiry->year ."-". $obj_XML->callback->transaction->card->expiry->month;
 	// If transaction is in Account Validated i.e 1998 state no action to be done
@@ -363,18 +363,18 @@ try
 
      foreach ($aStateId as $iStateId) {
          if ($iStateId == 2000) {
-             $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate ,"additionaldata" => (string)$sAdditionalData));
+             $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "psp-name" => $sPSPName, "additionaldata" => (string)$sAdditionalData));
          }
          else if ($iStateId == Constants::iPAYMENT_TIME_OUT_STATE){
          	$count = $obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iCB_ACCEPTED_TIME_OUT_STATE);
          	//Check whether a notification has already been sent to retail system with status 20109
          	// Sending duplicate 20109 status may end up to retail sending time out emails to customers more than once
          	if($count == 0)  {
-         		$obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate ,"additionaldata" => (string)$sAdditionalData));
+         		$obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "psp-name" => $sPSPName, "additionaldata" => (string)$sAdditionalData));
          	}
          }
          else {
-             $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"],"additionaldata" => (string)$sAdditionalData));
+             $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "psp-name" => $sPSPName, "additionaldata" => (string)$sAdditionalData));
         }
      }
      $obj_mPoint->updateSessionState($iStateId, (integer)$obj_XML->callback->{'psp-config'}["id"], $obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, $obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData);
