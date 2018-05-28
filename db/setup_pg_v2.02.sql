@@ -3487,6 +3487,12 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) SELECT 'pid.html', '2088102135220161', id, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10007 AND pspid=43 ;
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) SELECT 'pid.app', '2088102170185364', id, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10007 AND pspid=43 ;
 
+
+--html supports MD5 or RSA
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'signtype.html', 'RSA', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=43 ;
+--app supports RSA and RSA2
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'signtype.app', 'RSA2', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=43 ;
+
 /* ========== Global Configuration for AliPay Chinese ENDS ========== */
 
 
@@ -3878,3 +3884,7 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10000
 INSERT INTO client.cardaccess_tbl ( clientid, cardid, enabled, pspid, countryid, stateid, position, psp_type) VALUES (10007, 8, true, 48, 642, 1, null, 1);
 INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (8, 48, true);
 /* ----------------Adding Configurations for CHUBB PSP - END ------------------------------ */
+
+
+--- Datacash notification secret key for setting up https callback url
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'Notification-Secret', '379001F6E4852A832F8138F70190585A', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=17 ;

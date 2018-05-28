@@ -750,6 +750,7 @@ $aHTTP_CONN_INFO["google-pay"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["google-pay"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["google-pay"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["google-pay"]["paths"]["get-payment-data"] = "/mpoint/google-pay/get-payment-data";
+$aHTTP_CONN_INFO["google-pay"]["paths"]["initialize"] = "/mpoint/google-pay/initialize";
 /**
  * Connection info for connecting to PPRO
  */

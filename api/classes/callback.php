@@ -148,20 +148,22 @@ abstract class Callback extends EndUserAccount
 		
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET pspid = ". intval($pspid) .", cardid = ". intval($cid).", fee =".intval($fee) . $sql ."
-				WHERE id = ". $this->_obj_TxnInfo->getID() ." AND (cardid IS NULL OR cardid = 0)";
-		if (intval($txnid) != -1) { $sql .= " AND (extid IS NULL OR extid = '' OR extid = '". $this->getDBConn()->escStr($txnid) ."')"; }
-//		echo $sql ."\n";
+				WHERE id = ". $this->_obj_TxnInfo->getID();
+	//	if (intval($txnid) != -1) { $sql .= " AND (extid IS NULL OR extid = '' OR extid = '". $this->getDBConn()->escStr($txnid) ."')"; }
+	//	echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 
 		// Transaction completed successfully
 		if (is_resource($res) === true)
 		{
-			if ($this->getDBConn()->countAffectedRows($res) == 1 || $sid != Constants::iPAYMENT_ACCEPTED_STATE) { $this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true) ); }
-			else
-			{
-				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_DUPLICATED_STATE, var_export($debug, true) );
-				$sid = Constants::iPAYMENT_DUPLICATED_STATE;
-			}
+				$iIsCompleteTransactionStateLogged = $this->_obj_TxnInfo->hasEitherState ( $this->getDBConn (), $sid );
+				if ($iIsCompleteTransactionStateLogged > 0 && $sid == Constants::iPAYMENT_ACCEPTED_STATE) {
+					$this->newMessage ( $this->_obj_TxnInfo->getID (), Constants::iPAYMENT_DUPLICATED_STATE, var_export ( $debug, true ) );
+					$sid = Constants::iPAYMENT_DUPLICATED_STATE;
+				} else if ($iIsCompleteTransactionStateLogged == 0 ) {
+					$this->newMessage ( $this->_obj_TxnInfo->getID (), $sid, var_export ( $debug, true ) );
+				}
+			
 		}
 		// Error: Unable to complete log for Transaction
 		else
@@ -169,7 +171,6 @@ abstract class Callback extends EndUserAccount
 			$this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true) );
 			throw new CallbackException("Unable to complete log for Transaction: ". $this->_obj_TxnInfo->getID(), 1001);
 		}
-        $this->_obj_TxnInfo->getPaymentSession()->updateState();
 		return $sid;
 	}
 	
@@ -199,7 +200,10 @@ abstract class Callback extends EndUserAccount
 		// Capture completed successfully
 		if (is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) == 1)
 		{
-			$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($debug, true) );
+            $iIsPaymentCapturedStateLogged = $this->_obj_TxnInfo->hasEitherState($this->getDBConn(),Constants::iPAYMENT_CAPTURED_STATE);
+		    if($iIsPaymentCapturedStateLogged != 1) {
+                $this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, var_export($debug, true));
+            }
 			return true;
 		}
 		else { return false; }
@@ -214,7 +218,7 @@ abstract class Callback extends EndUserAccount
 	 * @param 	string $body 	HTTP Body to send as the Callback to the Client
 	 * @throws 	E_USER_WARNING, E_USER_NOTICE
 	 */
-	protected function performCallback($body, SurePayConfig &$obj_SurePay=null, $attempt=0)
+	protected function performCallback($body, SurePayConfig &$obj_SurePay=null, $attempt=0 ,$sid =0)
 	{
 		$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_CONSTRUCTED_STATE, $body);
 		/* ========== Instantiate Connection Info Start ========== */
@@ -247,7 +251,11 @@ abstract class Callback extends EndUserAccount
 			if (200 <= $iCode && $iCode < 300)
 			{
 				trigger_error("mPoint Callback request  succeeded for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_NOTICE);
-				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_ACCEPTED_STATE, $obj_HTTP->getReplyHeader() );
+				if ($sid == Constants::iPAYMENT_TIME_OUT_STATE) {
+					$this->newMessage ( $this->_obj_TxnInfo->getID (), Constants::iCB_ACCEPTED_TIME_OUT_STATE, $obj_HTTP->getReplyHeader () );
+				} else {
+					$this->newMessage ( $this->_obj_TxnInfo->getID (), Constants::iCB_ACCEPTED_STATE, $obj_HTTP->getReplyHeader () );
+				}
 			}
 			else
 			{
@@ -278,7 +286,7 @@ abstract class Callback extends EndUserAccount
 				sleep($obj_SurePay->getDelay() * $attempt);
 				trigger_error("mPoint Callback request retried for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_NOTICE);
 				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_RETRIED_STATE, "Attempt ". $attempt ." of ". $obj_SurePay->getMax() );
-				$this->performCallback($body, $obj_SurePay, $attempt);
+				$this->performCallback($body, $obj_SurePay, $attempt,$sid);
 			}
 		}
 	}
@@ -348,16 +356,14 @@ abstract class Callback extends EndUserAccount
 			$sBody .= "&expiry=". $exp;
 		}
         $sBody .= "&session-id=". $this->_obj_TxnInfo->getSessionId();
-		trigger_error("********************* ". $sBody, E_USER_NOTICE);
 		/* Adding customer Info as part of the callback query params */
 		if (($this->_obj_TxnInfo->getAccountID() > 0) === true )
         {
             $obj_CustomerInfo = CustomerInfo::produceInfo($this->getDBConn(), $this->_obj_TxnInfo->getAccountID());
             $sBody .= "&customer-country-id=". $obj_CustomerInfo->getCountryID();
         }
-
         /* ----- Construct Body End ----- */
-        $this->performCallback($sBody, $obj_SurePay);
+        $this->performCallback($sBody, $obj_SurePay ,0 ,$sid);
 	}
 
 	/**
@@ -669,7 +675,7 @@ abstract class Callback extends EndUserAccount
         case (Constants::iCITCON_PSP):
                 return new Citcon($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["citcon"]);
         case (Constants::iPPRO_GATEWAY):
-            return new PPRO($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["citcon"]);
+            return new PPRO($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["ppro"]);
         case (Constants::iAMEX_ACQUIRER):
                 return new Amex($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["amex"]);
         case (Constants::iCHUBB_PSP):
@@ -702,11 +708,18 @@ abstract class Callback extends EndUserAccount
 		return $RS["DECIMALS"];
 	}
 
+    function retryCallback($body, SurePayConfig &$obj_SurePay=null, $attempt=0){
+        $this->performCallback($body,$obj_SurePay, $attempt);
+    }
+
     public function updateSessionState($sid, $pspid, $amt, $cardno="", $cardid=0, $exp=null, $sAdditionalData="", SurePayConfig &$obj_SurePay=null, $fee=0 )
     {
         $sessionObj = $this->getTxnInfo()->getPaymentSession();
-        $sessionObj->updateState();
-
+        $isStateUpdated = $sessionObj->updateState();
+        if($isStateUpdated !== 1 )
+        {
+            return;
+        }
         $sDeviceID = $this->_obj_TxnInfo->getDeviceID();
         $sEmail = $this->_obj_TxnInfo->getEMail();
         /* ----- Construct Body Start ----- */

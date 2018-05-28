@@ -970,7 +970,18 @@ class Validate extends ValidateBase
 		return $code;
 	}
 
-	/**
+	public function valCardFullname($fullname)
+    {
+        if(preg_match("/^[a-zA-Z ]+$/",$fullname) == false)
+        {
+            $code = 1;
+        }
+        else{ $code = 10; }
+
+        return $code;
+    }
+
+    /**
 	 * Performs basic validation ensuring that the State exists.
 	 * The method will return the following status codes:
 	 * 	 1. Undefined State

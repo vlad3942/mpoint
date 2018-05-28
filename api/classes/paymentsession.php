@@ -50,7 +50,7 @@ final class PaymentSession
     private $_sDeviceId;
 
     private $_pendingAmount;
-    
+
     private $_expire;
 
     protected function __construct()
@@ -106,6 +106,7 @@ final class PaymentSession
         } else {
             $this->_expire = date("Y-m-d H:i:s.u", time() + (15 * 60));
         }
+        // New session will not be generated, if the session is partially complete(4031) for same order id. 
         if ($this->updateSessionDataFromOrderId() != true) {
             try {
                 $sql = "INSERT INTO Log" . sSCHEMA_POSTFIX . ".session_tbl 
@@ -141,7 +142,7 @@ final class PaymentSession
                     }
                 }
             } catch (Exception $e) {
-                $this->updateSessionDataFromOrderId();
+                trigger_error ( "Failed to create a new session" . $e->getMessage(), E_USER_ERROR );
             }
         }
 
@@ -191,11 +192,14 @@ final class PaymentSession
     {
         if ($stateId == null) {
             if ($this->getPendingAmount() == 0) {
-                if ($this->getTransactionStatesWithAncillary(Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_ACCEPTED_STATE) == true) {
+
+                $paymentAcceptStates = array(Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_WITH_VOUCHER_STATE,Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+
+                if ($this->getTransactionStatesWithAncillary($paymentAcceptStates , $paymentAcceptStates ) == true) {
                     $stateId = Constants::iSESSION_COMPLETED;
-                } elseif ($this->getTransactionStatesWithAncillary(Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_REJECTED_STATE) == true) {
+                } elseif ($this->getTransactionStatesWithAncillary($paymentAcceptStates , array(Constants::iPAYMENT_REJECTED_STATE)) == true) {
                     $stateId = Constants::iSESSION_PARTIALLY_COMPLETED;
-                } elseif ($this->getTransactionStatesWithAncillary(Constants::iPAYMENT_ACCEPTED_STATE) == true) {
+                } elseif ($this->getTransactionStatesWithAncillary($paymentAcceptStates ) == true) {
                     $stateId = Constants::iSESSION_COMPLETED;
                 }
             } elseif ($this->getPendingAmount() != 0) {
@@ -210,10 +214,26 @@ final class PaymentSession
         }
         if($stateId != null)
         {
+            $checkState = "SELECT count(id) FROM log" . sSCHEMA_POSTFIX . ".session_tbl WHERE  stateid = ".$stateId." and id =". $this->_id;
+
+            $RS = $this->_obj_Db->getName($checkState);
+            if (is_array($RS) === true)
+            {
+                if($RS["COUNT"] != 0)
+                {
+                    return 2;
+                }
+            }
+
             $this->_iStateId = intval($stateId);
             $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".session_tbl SET stateid = ".$stateId." WHERE id = " . $this->_id;
-            $this->_obj_Db->query($sql);
+            $RS1 = $this->_obj_Db->query($sql);
+            if (is_resource($RS1) === true)
+            {
+                return 1;
+            }
         }
+        return 0;
     }
 
     public function getSessionType()
@@ -228,7 +248,8 @@ final class PaymentSession
               FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn 
                 INNER JOIN log" . sSCHEMA_POSTFIX . ".message_tbl msg ON txn.id = msg.txnid 
               WHERE sessionid = " . $this->_id . " 
-                AND msg.stateid in (2000,2001,2007) GROUP BY txn.id,msg.stateid";
+                AND msg.stateid in (2000,2001,2007,2010,2011)
+                GROUP BY txn.id,msg.stateid";
             //return $this->_pendingAmount;
             $res = $this->_obj_Db->query($sql);
             $amount = 0;
@@ -268,7 +289,7 @@ final class PaymentSession
         }
         return $this->_obj_CurrencyConfig;
     }
-    
+
     public function toXML(){
         $xml = "<session id='".$this->getId()."' type='".$this->getSessionType()."' total-amount='".$this->_amount."'>";
         $xml .= '<amount country-id="'. $this->getCountryConfig()->getID() .'" currency-id="'. $this->getCurrencyConfig()->getID() .'" currency="'.$this->getCurrencyConfig()->getCode() .'" symbol="'. $this->getCountryConfig()->getSymbol() .'" format="'. $this->getCountryConfig()->getPriceFormat() .'" alpha2code="'. $this->getCountryConfig()->getAlpha2code() .'" alpha3code="'. $this->getCountryConfig()->getAlpha3code() .'" code="'. $this->getCountryConfig()->getNumericCode() .'">'. $this->getPendingAmount() .'</amount>';
@@ -280,14 +301,14 @@ final class PaymentSession
     {
         $status = false;
         try {
-            $sql = "SELECT id, amount FROM log" . sSCHEMA_POSTFIX . ".session_tbl WHERE orderid = '" . $this->_orderId . "' ORDER BY id DESC LIMIT 1";
+            $sql = "SELECT id, amount, stateid FROM log" . sSCHEMA_POSTFIX . ".session_tbl
+                    WHERE orderid = '" . $this->_orderId . "'
+                    AND stateid = '" . Constants::iSESSION_PARTIALLY_COMPLETED . "'
+                    ORDER BY id DESC LIMIT 1";
+
             $RS = $this->_obj_Db->getName($sql);
             if (is_array($RS) === true) {
                 $this->_id = $RS["ID"];
-                $amount = $this->_amount + $RS['AMOUNT'];
-                $query = "UPDATE Log" . sSCHEMA_POSTFIX . ".session_tbl
-                                SET amount = " . $amount . " WHERE id = " . $RS['ID'];
-                $this->_obj_Db->query($query);
                 $status = true;
             }
         } catch (Exception $e) {
@@ -300,12 +321,12 @@ final class PaymentSession
     {
         return $this->_amount;
     }
-    
+
     public function getStateId()
     {
         return $this->_iStateId;
     }
-    
+
     public function getExpireTime()
     {
         return $this->_expire;
@@ -341,16 +362,16 @@ final class PaymentSession
             $primaryProdBtwnCondition = " BETWEEN ". Constants::iPrimaryProdTypeBase ." AND ". Constants::iPrimaryProdTypeBase." + 99";
             $ancillaryProdBtwnCondition = " BETWEEN ". Constants::iAncillaryProdTypeBase ." AND ". Constants::iAncillaryProdTypeBase." + 99";
             if ($ancillaryState != null) {
-                $sql = "SELECT COUNT(txn.id) AS CNT FROM log" . sSCHEMA_POSTFIX . ".message_tbl msg
+                $sql = "SELECT COUNT( DISTINCT txn.id) AS CNT FROM log" . sSCHEMA_POSTFIX . ".message_tbl msg
                     INNER JOIN log" . sSCHEMA_POSTFIX . ".transaction_tbl txn ON txn.id = msg.txnid
                     WHERE sessionid = " . $this->_id . "
-                    AND (msg.stateid = " . $ticketState . " AND txn.productType".$primaryProdBtwnCondition.")
-                    AND (msg.stateid = " . $ancillaryState . " AND txn.productType".$ancillaryProdBtwnCondition.") LIMIT 1";
+                    AND (msg.stateid in ('" . implode("', '", $ticketState). "') AND txn.productType".$primaryProdBtwnCondition.")
+                    AND (msg.stateid in ('" . implode("', '", $ancillaryState ) . "') AND txn.productType".$ancillaryProdBtwnCondition.") LIMIT 1";
             } else {
                 $sql = "SELECT COUNT(txn.id) AS CNT FROM log" . sSCHEMA_POSTFIX . ".message_tbl msg
                     INNER JOIN log" . sSCHEMA_POSTFIX . ".transaction_tbl txn ON txn.id = msg.txnid
                     WHERE sessionid = " . $this->_id . "
-                    AND (msg.stateid = " . $ticketState . " AND txn.productType".$primaryProdBtwnCondition.") LIMIT 1";
+                    AND (msg.stateid in ('" . implode("', '", $ticketState)  . "') AND txn.productType".$primaryProdBtwnCondition.") LIMIT 1";
             }
             $RS = $this->_obj_Db->getName($sql);
             if (is_array($RS) === true) {

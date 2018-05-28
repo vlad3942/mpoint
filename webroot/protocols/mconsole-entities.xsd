@@ -1343,7 +1343,7 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="products">
+			<xs:element name="products" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="product" type="product" minOccurs="0"
@@ -1351,11 +1351,19 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="dynamic-routing-gateways">
+			<xs:element name="dynamic-routing-gateways" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="gateway" type="gateway" minOccurs="0"
 							maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="additional-config" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="property" type="property" minOccurs="0"
+									maxOccurs="unbounded" />
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -1578,6 +1586,16 @@
 		<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 		<xs:attribute name="name" type="xs:string" 	use="optional" />
 		<xs:attribute name="enabled" type="xs:boolean" 	use="optional" />
+	</xs:complexType>
+	<xs:complexType name="property">
+		<xs:annotation>
+			<xs:documentation>Configuration for a Additional properties</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="name" type="xs:string" 	use="optional" />
+			</xs:extension>
+		</xs:simpleContent>
 	</xs:complexType>
 	<xs:complexType name="client-payment-method-configurations">
 		<xs:annotation>
