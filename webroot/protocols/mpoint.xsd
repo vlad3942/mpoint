@@ -1010,6 +1010,34 @@
 				</xs:complexType>
 			</xs:element>
 			<!--  Get Transaction Status -->
+
+			<!-- payment settlements -->
+			<xs:element name="payment-settlements" maxOccurs="1" minOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="payment-settlement" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="service-providers" minOccurs="0" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="service-provider" minOccurs="1" maxOccurs="unbounded">
+													<xs:complexType>
+														<xs:attribute name="id"/>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+								<xs:attribute name="client-id"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<!-- payment settlements -->
+
 		</xs:choice>
 	</xs:complexType>
 </xs:element>

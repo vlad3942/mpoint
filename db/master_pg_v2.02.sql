@@ -428,3 +428,14 @@ INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46
 
 INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, psp_type, stateid) VALUES (10047, 39, true, 46, 609, 7, 4);
 INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, psp_type, stateid) VALUES (10047, 34, true, 46, 500, 7, 4);
+
+
+-- Settlement Improvement
+ALTER TABLE system.psp_tbl ADD capture_method int DEFAULT 0;
+COMMENT ON COLUMN system.psp_tbl.capture_method IS '0 - manual
+2 - bulk capture
+3 - bulk refund
+6 - bulk capture + bulk  refund';
+
+
+
