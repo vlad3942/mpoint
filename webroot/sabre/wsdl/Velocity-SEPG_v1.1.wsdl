@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions name='VelocityProcessPayment' targetNamespace='http://schemas.xmlsoap.org/wsdl/soap/ssg'
+    xmlns='http://schemas.xmlsoap.org/wsdl/' xmlns:soap='http://schemas.xmlsoap.org/wsdl/soap/' 
+    xmlns:tns='http://schemas.xmlsoap.org/wsdl/soap/ssg'
+    xmlns:tns2='http://schemas.xmlsoap.org/wsdl/soap/ssg'>
+
+    <types>
+        <xsd:schema targetNamespace="http://schemas.xmlsoap.org/wsdl/soap/ssg"
+            xmlns:tns="SupplierPaymentServices_v2.3.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            <xsd:include schemaLocation="SupplierPaymentServices_v2.3.xsd" />
+        </xsd:schema>
+    </types>
+
+   <message name="ProcessInputMessage">
+        <part name="arg0" type="tns:AuthRQ" />
+    </message>
+    <message name="ProcessOutputMessage" >
+        <part name="return" type="tns:AuthRS" />
+    </message>
+    
+    <portType name="VelocityProcessPayment">
+         <operation name="AuthRQ" parameterOrder='arg0'>
+            <input message="tns:ProcessInputMessage" />
+            <output message="tns:ProcessOutputMessage" />
+        </operation>
+    </portType>
+    
+    <binding name="VelocityProcessPaymentBinding" type="tns2:VelocityProcessPayment">
+        <soap:binding style='rpc' transport='http://schemas.xmlsoap.org/soap/http' />
+         <operation name="AuthRQ">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" namespace="http://www.danskebank.com/mobilepay/services/pspprocesspayment"/>
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+        </operation>
+    </binding>
+    
+    <service name="VelocityProcessPaymentAuth">
+        <port name="VelocityProcessPaymentImplPort" binding="tns2:VelocityProcessPaymentBinding">
+            <soap:address location="https://sepg.sit.mesb.cellpointmobile.com/mpoint/soap/v1_1/sabre/services" />
+        </port>
+    </service>
+</definitions>
