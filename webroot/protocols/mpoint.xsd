@@ -237,6 +237,7 @@
 															 <xs:enumeration value="visa" />
 															 <xs:enumeration value="visaelectron" />
 															 <xs:enumeration value="discover" />
+															 <xs:enumeration value="uatp" />
 														</xs:restriction>
 													</xs:simpleType>
 												</xs:attribute>
@@ -357,6 +358,7 @@
 															<xs:enumeration value="visa" />
 															<xs:enumeration value="visaelectron" />
 															<xs:enumeration value="discover" />
+															<xs:enumeration value="uatp" />
 														</xs:restriction>
 													</xs:simpleType>
 												</xs:attribute>
