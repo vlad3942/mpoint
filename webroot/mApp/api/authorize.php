@@ -121,6 +121,8 @@ require_once(sCLASS_PATH ."/chubb.php");
 // Require specific Business logic for the CHUBB component
 require_once(sCLASS_PATH ."/payment_processor.php");
 
+require_once(sCLASS_PATH ."/wallet_processor.php");
+
 require_once(sCLASS_PATH ."/post_auth_action.php");
 
 ignore_user_abort(true);
@@ -407,51 +409,15 @@ $iPrimaryRoute = $oRoute ;
 													break;
 												case (Constants::iCARD_PURCHASE_TYPE):		// Authorize Purchase using Stored Card
 												default:
+
                                                     $card_psp_id = $obj_mPoint->getCardPSPId($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["id"]);
 													// 3rd Party Wallet
 													if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1 || intval($card_psp_id)== Constants::iMVAULT_PSP)
 													{
-                                                        switch (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) )
-                                                        {
-                                                            case (Constants::iAPPLE_PAY):
-                                                                $obj_Wallet = new ApplePay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["apple-pay"]);
-                                                                $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAPPLE_PAY_PSP);
-                                                                break;
-                                                            case (Constants::iVISA_CHECKOUT_WALLET):
-                                                                $obj_Wallet = new VisaCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["visa-checkout"]);
-                                                                $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
-                                                                break;
-                                                            case (Constants::iMASTER_PASS_WALLET):
-                                                                $obj_Wallet = new MasterPass($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["masterpass"]);
-                                                                $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iMASTER_PASS_PSP);
-                                                                break;
-                                                            case (Constants::iAMEX_EXPRESS_CHECKOUT_WALLET):
-                                                                $obj_Wallet = new AMEXExpressCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["amex-express-checkout"]);
-                                                                $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
-                                                                break;
-                                                            case (Constants::iANDROID_PAY_WALLET):
-                                                                    $obj_Wallet = new AndroidPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["android-pay"]);
-                                                                    $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iANDROID_PAY_PSP);
-                                                                    break;
-                                                            case (Constants::iGOOGLE_PAY_WALLET):
-                                                                $obj_Wallet = new GooglePay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["google-pay"]);
-                                                                $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iGOOGLE_PAY_PSP);
-                                                                break;
-                                                            default:
-                                                                /**For MVAULT - lookup card psp-id
-                                                                 * if(psp-id is that of mVault) then create new MVault object                                                                            */
-
-                                                                if (intval($card_psp_id) == Constants::iMVAULT_PSP) {
-                                                                    $obj_Wallet = new MVault($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["mvault"]);
-                                                                    $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iMVAULT_PSP);
-                                                                } else {
-                                                                    /**
-                                                                     * This changes is made for globalcollect since rightnow it is the only psp which will send
-                                                                     * token value in authorize  request but for new card.
-                                                                     * @var unknown
-                                                                     */
-                                                                    // Find Configuration for Payment Service Provider
-                                                                    $obj_XML = simpledom_load_string($obj_mCard->getCards((integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount));
+                                                        if (intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) > 0) {
+                                                            $wallet_Processor = WalletProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]), $aHTTP_CONN_INFO, $card_psp_id);
+                                                            if (empty($wallet_Processor) === true) {
+                                                                $obj_XML = simpledom_load_string($obj_mCard->getCards((integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->amount));
 
                                                                 if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc) == 1) {
                                                                     $obj_Elem->cvc = (integer)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc;
@@ -461,13 +427,10 @@ $iPrimaryRoute = $oRoute ;
                                                                     $obj_Elem->ticket = (string)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token;
                                                                 }
                                                             }
-                                                                break;
-														}
-
-														if(isset($obj_Wallet) == true && is_object($obj_Wallet) == true)
+                                                        }
+														if(isset($wallet_Processor) == true && is_object($wallet_Processor) == true)
 														{
-															$obj_XML = simpledom_load_string($obj_Wallet->getPaymentData($obj_PSPConfig, $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]) );
-
+															$obj_XML = simpledom_load_string($wallet_Processor->getPaymentData($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]) );
 															if (count($obj_XML->{'payment-data'}) == 1)
 															{
 																$obj_Elem = $obj_XML->{'payment-data'}->card;
@@ -539,7 +502,7 @@ $iPrimaryRoute = $oRoute ;
 																	$obj_Elem->cvc = (string) $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->cvc;
 																}
 																															
-																$obj_PSPConfig = $obj_Wallet->getPSPConfigForRoute ( intval ( $obj_DOM->{'authorize-payment'} [$i]->transaction->card [$j] ["type-id"] ), intval ( $obj_DOM->{'authorize-payment'} [$i]->transaction->card [$j]->amount ["country-id"] ) );
+																$obj_PSPConfig = $wallet_Processor->getPSPConfigForRoute ( intval ( $obj_DOM->{'authorize-payment'} [$i]->transaction->card [$j] ["type-id"] ), intval ( $obj_DOM->{'authorize-payment'} [$i]->transaction->card [$j]->amount ["country-id"] ) );
 																	
 																	if ($iPrimaryRoute > 0) {
 																		$obj_Elem ["pspid"] = $iPrimaryRoute;
@@ -612,7 +575,7 @@ $iPrimaryRoute = $oRoute ;
 														if (count($obj_Elem->mask) == 1 && intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) != 28 )  { $code = $obj_Validator->valIssuerIdentificationNumber($_OBJ_DB, $obj_ClientConfig->getID(), substr(str_replace(" ", "", $obj_Elem->mask), 0, 6) ); }
 														else { $code = 10; }
 													}
-												
+
 													if ($code >= 10)
 													{
 														try
