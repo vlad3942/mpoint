@@ -37,19 +37,19 @@ class WalletProcessor
         else { throw new mPointException("Connection Info not found for the wallet :". $aConnInfo); }
     }
 
-    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iTypeId, $aConnInfo, $card_psp_id)
+    public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iTypeId, $aConnInfo)
     {
-        if ($card_psp_id == Constants::iMVAULT_PSP) {
-            $iTypeId = $card_psp_id;
-        }
         $this->_objPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), self::$aWalletConstants[$iTypeId]);
         $this->_setConnInfo($aConnInfo[self::$aWalletConnInfo[$iTypeId]]);
         $sPSPClassName = $this->_objPSPConfig->getName();
         $this->_objPSP = new $sPSPClassName($oDB, $oTxt, $oTI, $this->aConnInfo);
     }
 
-    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iTypeId, $aConnInfo)
+    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iTypeId, $aConnInfo, $card_psp_id)
     {
+        if ($card_psp_id == Constants::iMVAULT_PSP) {
+            $iTypeId = $card_psp_id;
+        }
         if (empty(self::$aWalletConstants[$iTypeId]) === false) {
             return new WalletProcessor($oDB, $oTxt, $oTI, $iTypeId, $aConnInfo);
         } else {
