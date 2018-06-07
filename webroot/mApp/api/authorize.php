@@ -623,7 +623,7 @@ $iPrimaryRoute = $oRoute ;
 
                                                                 // Authorization succeeded
                                                                 if ($code == "100") {
-                                                                    $xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
+                                                                    $xml .= '<status code="100">Payment Authorized using Stored Card</status>';
                                                                 } else if ($code == "2000") {
                                                                     $xml .= '<status code="2000">Payment authorized</status>';
                                                                 } else if ($code == "2009") {
