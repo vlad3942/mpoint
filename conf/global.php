@@ -295,16 +295,16 @@ $aHTTP_CONN_INFO["dsb"]["paths"]["cancel"] = "/mpoint/dsb/cancel";
 /**
  * Connection info for connecting to VISA Checkout
  */
-$aHTTP_CONN_INFO["visa-checkout"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
-$aHTTP_CONN_INFO["visa-checkout"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
-$aHTTP_CONN_INFO["visa-checkout"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
-$aHTTP_CONN_INFO["visa-checkout"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
-$aHTTP_CONN_INFO["visa-checkout"]["path"] = ""; // Set by calling class
-$aHTTP_CONN_INFO["visa-checkout"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
-$aHTTP_CONN_INFO["visa-checkout"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["visa-checkout"]["paths"]["initialize"] = "/mpoint/visa-checkout/initialize";
-$aHTTP_CONN_INFO["visa-checkout"]["paths"]["get-payment-data"] = "/mpoint/visa-checkout/get-payment-data";
-$aHTTP_CONN_INFO["visa-checkout"]["paths"]["callback"] = "/mpoint/visa-checkout/callback";
+$aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]["paths"]["initialize"] = "/mpoint/visa-checkout/initialize";
+$aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]["paths"]["get-payment-data"] = "/mpoint/visa-checkout/get-payment-data";
+$aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]["paths"]["callback"] = "/mpoint/visa-checkout/callback";
 
 /**
  * Connection info for connecting to AMEX Express Checkout

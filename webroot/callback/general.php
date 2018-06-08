@@ -252,7 +252,7 @@ try
 		switch (intval($obj_XML->callback->transaction->card["type-id"]) )
 		{
 		case (Constants::iVISA_CHECKOUT_WALLET):
-			$obj_Wallet = new VisaCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["visa-checkout"]);
+			$obj_Wallet = new VisaCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]);
 			$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
 			break;
 		case (Constants::iAMEX_EXPRESS_CHECKOUT_WALLET):

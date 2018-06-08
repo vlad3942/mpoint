@@ -623,7 +623,7 @@ abstract class Callback extends EndUserAccount
 		case (Constants::iDSB_PSP):
 			return new DSB($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dsb"], $obj_PSPConfig);
 		case (Constants::iVISA_CHECKOUT_PSP) :
-			return new VISACheckout($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["visa-checkout"]);
+			return new VISACheckout($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo[Constants::iVISA_CHECKOUT_PSP]);
 		case (Constants::iAPPLE_PAY_PSP):
 			return new ApplePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["apple-pay"]);
 		case (Constants::iCPG_PSP):

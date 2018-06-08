@@ -428,3 +428,11 @@ INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46
 
 INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, psp_type, stateid) VALUES (10047, 39, true, 46, 609, 7, 4);
 INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, psp_type, stateid) VALUES (10047, 34, true, 46, 500, 7, 4);
+
+UPDATE system.psp_tbl SET name = 'ApplePay' WHERE name = 'Apple Pay';
+UPDATE system.psp_tbl SET name = 'VisaCheckout' WHERE name = 'VISA Checkout';
+UPDATE system.psp_tbl SET name = 'MasterPass' WHERE name = 'Master Pass';
+UPDATE system.psp_tbl SET name = 'AMEXExpressCheckout' WHERE name = 'AMEX Express Checkout';
+UPDATE system.psp_tbl SET name = 'AndroidPay' WHERE name = 'Android Pay';
+UPDATE system.psp_tbl SET name = 'GooglePay' WHERE name = 'Google Pay';
+UPDATE system.psp_tbl SET name = 'MVault' WHERE name = 'mVault';

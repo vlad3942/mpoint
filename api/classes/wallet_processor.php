@@ -21,7 +21,7 @@ class WalletProcessor
         Constants::iMVAULT_PSP => Constants::iMVAULT_PSP);
 
     public static $aWalletConnInfo = array(Constants::iAPPLE_PAY => 'apple-pay',
-        Constants::iVISA_CHECKOUT_WALLET => 'visa-checkout',
+        Constants::iVISA_CHECKOUT_WALLET => Constants::iVISA_CHECKOUT_PSP,
         Constants::iMASTER_PASS_WALLET => 'masterpass',
         Constants::iAMEX_EXPRESS_CHECKOUT_WALLET => 'amex-express-checkout',
         Constants::iANDROID_PAY_WALLET => 'android-pay',
@@ -45,9 +45,9 @@ class WalletProcessor
         $this->_objPSP = new $sPSPClassName($oDB, $oTxt, $oTI, $this->aConnInfo);
     }
 
-    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iTypeId, $aConnInfo, $card_psp_id)
+    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iTypeId, $aConnInfo, $card_psp_id = NULL)
     {
-        if ($card_psp_id == Constants::iMVAULT_PSP) {
+        if (empty($card_psp_id) === false && $card_psp_id == Constants::iMVAULT_PSP) {
             $iTypeId = $card_psp_id;
         }
         if (empty(self::$aWalletConstants[$iTypeId]) === false) {
@@ -57,12 +57,17 @@ class WalletProcessor
         }
     }
 
-    public function getPaymentData($obj_Elem)
+    public function getPaymentData($obj_Elem, $mode = null)
     {
-        return $this->_objPSP->getPaymentData($this->_objPSPConfig, $obj_Elem);
+        if ($mode != null) {
+            $paymentData = $this->_objPSP->getPaymentData($this->_objPSPConfig, $obj_Elem, $mode);
+        } else {
+            $paymentData = $this->_objPSP->getPaymentData($this->_objPSPConfig, $obj_Elem);
+        }
+        return $paymentData;
     }
 
-    public function getPSPConfigForRoute($obj_Elem,$b)
+    public function getPSPConfigForRoute($obj_Elem, $b)
     {
         return $this->_objPSP->getPSPConfigForRoute($obj_Elem, $b);
     }
