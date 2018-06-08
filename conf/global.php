@@ -750,6 +750,7 @@ $aHTTP_CONN_INFO["google-pay"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["google-pay"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["google-pay"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["google-pay"]["paths"]["get-payment-data"] = "/mpoint/google-pay/get-payment-data";
+$aHTTP_CONN_INFO["google-pay"]["paths"]["initialize"] = "/mpoint/google-pay/initialize";
 /**
  * Connection info for connecting to PPRO
  */
@@ -807,6 +808,20 @@ $aHTTP_CONN_INFO["chubb"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["chubb"]["paths"]["initialize"] = "/mpoint/chubb/initialize";
 $aHTTP_CONN_INFO["chubb"]["paths"]["auth"] = "/mpoint/chubb/authorize-payment";
 $aHTTP_CONN_INFO["chubb"]["paths"]["callback"] = "/mpoint/chubb/callback";
+
+
+/**
+ * Connection info for connecting to UATP
+ */
+$aHTTP_CONN_INFO["uatp"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["uatp"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["uatp"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["uatp"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["uatp"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["uatp"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["uatp"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["uatp"]["paths"]["auth"] = "/mpsp/uatp/authorize-payment";
+$aHTTP_CONN_INFO["uatp"]["paths"]["initialize"] = "/mpsp/uatp/initialize";
 
 /**
  * GoMobile Connection Info.

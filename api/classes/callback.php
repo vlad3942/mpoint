@@ -148,25 +148,22 @@ abstract class Callback extends EndUserAccount
 		
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET pspid = ". intval($pspid) .", cardid = ". intval($cid).", fee =".intval($fee) . $sql ."
-				WHERE id = ". $this->_obj_TxnInfo->getID() ." AND (cardid IS NULL OR cardid = 0)";
-		if (intval($txnid) != -1) { $sql .= " AND (extid IS NULL OR extid = '' OR extid = '". $this->getDBConn()->escStr($txnid) ."')"; }
-//		echo $sql ."\n";
+				WHERE id = ". $this->_obj_TxnInfo->getID();
+	//	if (intval($txnid) != -1) { $sql .= " AND (extid IS NULL OR extid = '' OR extid = '". $this->getDBConn()->escStr($txnid) ."')"; }
+	//	echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 
 		// Transaction completed successfully
 		if (is_resource($res) === true)
 		{
-			if ($this->getDBConn()->countAffectedRows($res) == 1 || $sid != Constants::iPAYMENT_ACCEPTED_STATE) {
-                $iIsCompleteTransactionStateLogged = $this->_obj_TxnInfo->hasEitherState($this->getDBConn(),$sid);
-                if($iIsCompleteTransactionStateLogged != 1) {
-                    $this->newMessage($this->_obj_TxnInfo->getID(), $sid, var_export($debug, true));
-                }
-			}
-			else
-			{
-				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iPAYMENT_DUPLICATED_STATE, var_export($debug, true) );
-				$sid = Constants::iPAYMENT_DUPLICATED_STATE;
-			}
+				$iIsCompleteTransactionStateLogged = $this->_obj_TxnInfo->hasEitherState ( $this->getDBConn (), $sid );
+				if ($iIsCompleteTransactionStateLogged > 0 && $sid == Constants::iPAYMENT_ACCEPTED_STATE) {
+					$this->newMessage ( $this->_obj_TxnInfo->getID (), Constants::iPAYMENT_DUPLICATED_STATE, var_export ( $debug, true ) );
+					$sid = Constants::iPAYMENT_DUPLICATED_STATE;
+				} else if ($iIsCompleteTransactionStateLogged == 0 ) {
+					$this->newMessage ( $this->_obj_TxnInfo->getID (), $sid, var_export ( $debug, true ) );
+				}
+			
 		}
 		// Error: Unable to complete log for Transaction
 		else
@@ -359,7 +356,6 @@ abstract class Callback extends EndUserAccount
 			$sBody .= "&expiry=". $exp;
 		}
         $sBody .= "&session-id=". $this->_obj_TxnInfo->getSessionId();
-		trigger_error("********************* ". $sBody, E_USER_NOTICE);
 		/* Adding customer Info as part of the callback query params */
 		if (($this->_obj_TxnInfo->getAccountID() > 0) === true )
         {
