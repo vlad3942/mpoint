@@ -1476,7 +1476,7 @@ class Validate extends ValidateBase
     	   		
 	    		if(strlen($number) < 13) { $code = 2; }
                 else if(strlen($number) === 15) {
-	    		    if(substr($number,0,1) === 1)
+	    		    if(substr($number,0,1) === '1')
 	    		    {
 	    		        $code = 10;
 	    		    } else {
