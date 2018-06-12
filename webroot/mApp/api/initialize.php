@@ -229,9 +229,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 
                             // Single Sign-On
-                            $authToken = (string) $obj_DOM->{'initialize-payment'}[$i]->{'auth-token'};
                             $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
-                            if (empty($authenticationURL) === false && !empty($authToken) && (strlen($obj_ClientConfig->getAuthenticationURL() ) > 0 || count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'auth-url'}) == 1) && strlen($obj_ClientConfig->getSalt() ) > 0)
+                            if (empty($authenticationURL) === false && strlen($obj_ClientConfig->getSalt() ) > 0)
                             {
                                 $bIsSingleSingOnPass = false;
                                 $obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
