@@ -110,25 +110,16 @@ require_once(sCLASS_PATH . "/trustly.php");
 require_once(sCLASS_PATH . "/ccpp_alc.php");
 // Require specific Business logic for the paytabs component
 require_once(sCLASS_PATH . "/paytabs.php");
+// Require specific Business logic for mpoint Settlement component
+require_once(sCLASS_PATH . "/mPointSettlement.php");
+// Require specific Business logic for Amex Settlement component
+require_once(sCLASS_PATH . "/amexSettlement.php");
+// Require specific Business logic for Settlement Factory component
+require_once(sCLASS_PATH . "/settlementFactory.php");
 
 // </editor-fold>
 
-function getAccountIds($_OBJ_DB, $clientId)
-{
-    $sql = "SELECT id
-            FROM client.account_tbl
-            WHERE clientid = $clientId 
-            AND enabled" ;
 
-    $aRS = $_OBJ_DB->getAllNames($sql);
-    $aAccounts = [];
-    if (is_array($aRS) === true && count($aRS) > 0) {
-        foreach ($aRS as $rs) {
-            $aAccounts[(int)$rs["ID"]] = [];
-        }
-    }
-    return $aAccounts;
-}
 
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
@@ -144,14 +135,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
             foreach ($paymentSettlementNodes as $paymentSettlementNode) {
                 $arrayServiceProviders = [];
                 $clientId= (int)$paymentSettlementNode['client-id'];
+                if (array_key_exists($clientId, $arrayClients) == false) {
+                    $arrayClients[$clientId] =[];
 
-                $arrayAccounts = getAccountIds($_OBJ_DB,$clientId);
-
+                }
                 // <editor-fold defaultstate="collapsed" desc="if request contains the psp id / information">
                 $serviceProviders = $paymentSettlementNode->{'service-providers'}->children();
                 if(count($serviceProviders) > 0 ) {
                     foreach ($serviceProviders as $serviceProvider) {
-                        $arrayServiceProviders[(int)$serviceProvider["id"]] = [];
+                        array_push($arrayServiceProviders,(int)$serviceProvider["id"]);
+                        //$arrayServiceProviders[(int)$serviceProvider["id"]] = [];
                     }
                 }
                 // </editor-fold>
@@ -171,15 +164,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     $aRS = $_OBJ_DB->getAllNames($sql);
                     if (is_array($aRS) === true && count($aRS) > 0) {
                         foreach ($aRS as $rs) {
-                            $arrayServiceProviders[(int)$rs["PSPID"]] = [];
+                            array_push($arrayServiceProviders,(int)$rs["PSPID"]);
+                            //$arrayServiceProviders[(int)$rs["PSPID"]] = [];
                         }
                     }
                 }
                 // </editor-fold>
-                $arrayClients[$clientId] = $arrayAccounts;
-                foreach ($arrayClients[$clientId] as &$account){
-                    $account =$arrayServiceProviders;
-                }
+                $arrayClients[$clientId] = $arrayServiceProviders;
+
 
             }
         }
@@ -200,16 +192,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
             if (is_array($aRS) === true && count($aRS) > 0) {
                 foreach ($aRS as $rs) {
                     $clientId = $rs["CLIENTID"];
-                    if (array_key_exists($rs['CLIENTID'], $arrayClients) == false) {
-                        $arrayClients[$clientId] = getAccountIds($_OBJ_DB,$clientId);
+                    if (array_key_exists($clientId, $arrayClients) == false) {
+                        $arrayClients[$clientId] =[];
 
                     }
-                    foreach ($arrayClients[$clientId] as $accountid => &$account){
+                   /* foreach ($arrayClients[$clientId] as $accountid => &$account){
 
                         $account[(int)$rs["PSPID"]] = [];
-                    }
+                    }*/
                     //$arrayClients[$clientId][(int)$rs["PSPID"]] = [];
-                //    array_push($arrayClients[$clientId], (int)$rs["PSPID"]);
+                    array_push($arrayClients[$clientId], (int)$rs["PSPID"]);
                 }
             }
         }
@@ -218,61 +210,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
         // <editor-fold defaultstate="collapsed" desc="fetch all transaction which is authorized">
         foreach ($arrayClients as $clientid => &$client)
         {
-            foreach ($client as $accountid => &$account)
-            {
-                foreach ($account as $pspid => &$transactions) {
-                    $sql = "SELECT txn.id
-                        FROM log.transaction_tbl AS txn, log.message_tbl AS msg
-                        WHERE txn.clientid = $clientid
-                        AND txn.accountid = $accountid 
-                        AND txn.pspid = $pspid 
-                        AND txn.cardid NOTNULL 
-                        AND msg.stateid = 2000 
-                        AND msg.txnid = txn.id ";
+            foreach ($client as $pspid) {
 
-                    $aRS = $_OBJ_DB->getAllNames($sql);
-                    if (is_array($aRS) === true && count($aRS) > 0) {
-                        foreach ($aRS as $rs) {
-                            $transactionId = (int)$rs["ID"];
-                            if (array_key_exists($transactionId, $transactions) == false) {
-                                array_push($transactions, $transactionId);
-                            }
-                        }
-                    }
+                $obj_Settlement = SettlementFactory::create($clientid, $pspid, $aHTTP_CONN_INFO);
+                if($obj_Settlement != NULL) {
+              //      $obj_Settlement->createSettlementRecord($_OBJ_DB, "REFUND");
+                    $obj_Settlement->capture($_OBJ_DB);
+                    $obj_Settlement->sendRequest($_OBJ_DB);
+
                 }
             }
+
         }
-        // </editor-fold>
-
-
-        foreach ($arrayClients as $clientid => &$client)
-        {
-            foreach ($client as $accountid => &$account)
-            {
-                $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB,$clientid,$accountid);
-                $xml = $obj_ClientConfig->toXML();
-
-                foreach ($account as $pspid => &$transactions)
-                {
-                    if(count($transactions) > 0)
-                    {
-                        $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $clientid, $accountid, $pspid);
-
-                        $xml .= $obj_PSPConfig->toXML();
-                        $xml .= "<transactions>";
-                        foreach ($transactions as $index => $transaction)
-                        {
-                            $obj_TxnInfo = TxnInfo::produceInfo($transaction, $_OBJ_DB);
-                            $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
-                            $xml .= $obj_TxnInfo->toXML();
-                        }
-                        $xml .= "</transactions>";
-                    }
-                }
-            }
-        }
-
-    //    var_dump($arrayClients);
     }
 
     // Error: Invalid XML Document
@@ -302,10 +251,4 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 } else {
     header("HTTP/1.1 401 Unauthorized");
 }
-
-header("Content-Type: text/xml; charset=\"UTF-8\"");
-
-echo '<?xml version="1.0" encoding="UTF-8"?>';
-echo '<root>';
-echo preg_replace('~\s*(<([^>]*)>[^<]*</\2>|<[^>]*>)\s*~', '$1', $xml);
-echo '</root>';
+header("HTTP/1.1 200 Ok");
