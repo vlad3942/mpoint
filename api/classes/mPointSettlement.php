@@ -177,9 +177,7 @@ abstract class mPointSettlement
             $requestBody .= $this->toSettlementInfoXML();
             $requestBody .= $this->_pspConfig->toXML();
             $requestBody .= $this->_transactionXML;
-
-            echo $requestBody;
-
+            
             $obj_ConnInfo = $this->_constConnInfo($this->_connectionInfo["paths"]["settlement"]);
 
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
