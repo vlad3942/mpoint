@@ -163,6 +163,15 @@ try
             $cryptogram = $card_obj->card->{'info-3d-secure'}->addChild('cryptogram', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram);
             $cryptogram->addAttribute('eci', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['eci']);
             $cryptogram->addAttribute('algorithm-id', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['algorithm-id']);
+            if(count($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'additional-data'}) > 0)
+			{
+				$additionalData = $card_obj->card->{'info-3d-secure'}->addChild('additional-data');
+				foreach ($obj_XML->xpath('threed-redirect/transaction/card/info-3d-secure/additional-data/param') as $item)
+				{
+					$param = $additionalData->addChild('param',$item);
+					$param->addAttribute('name',$item['name']);
+				}
+			}
 
             $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
                             SET extid=''
