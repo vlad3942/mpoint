@@ -417,3 +417,26 @@ COMMENT ON COLUMN system.psp_tbl.capture_method IS '0 - manual
 2 - bulk capture
 3 - bulk refund
 6 - bulk capture + bulk  refund';
+
+CREATE TABLE log.settlement_tbl
+(
+  id                     serial PRIMARY KEY,
+  record_number          int         NOT NULL,
+  file_reference_number  varchar(10) NOT NULL,
+  file_sequence_number   int         NOT NULL,
+  created                timestamp DEFAULT now(),
+  client_id              int         NOT NULL,
+  record_tracking_number varchar(20),
+  record_type            varchar(20) NULL
+);
+
+CREATE TABLE log.settlement_record_tbl
+(
+  id            serial PRIMARY KEY,
+  settlementid  int,
+  transactionid int,
+  CONSTRAINT settlement_record_tbl_settlement_tbl_id_fk FOREIGN KEY (settlementid) REFERENCES log.settlement_tbl (id),
+  CONSTRAINT settlement_record_tbl_transaction_tbl_id_fk FOREIGN KEY (transactionid) REFERENCES log.transaction_tbl (id)
+);
+
+ALTER TABLE log.settlement_tbl ADD status varchar(10) DEFAULT 'active' NOT NULL;
