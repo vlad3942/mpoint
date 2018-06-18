@@ -332,6 +332,9 @@ class TxnInfo
 
     private $_iProductType;
 
+
+    private $_createdTimestamp;
+
     /**
 	 * Default Constructor
 	 *
@@ -372,7 +375,7 @@ class TxnInfo
 	 * @param	long $cptamt		The Full amount that has been captured for the Transaction
 	 *
 	 */
-	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt, $paymentSession = 1, $productType = 100, $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="")
+	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt, $paymentSession = 1, $productType = 100, $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "")
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -433,6 +436,7 @@ class TxnInfo
         $this->_obj_PaymentSession->updateTransaction($this->_iID);
 
         $this->_iProductType = (integer) $productType;
+        $this->_createdTimestamp =$createdTimestamp;
 	}
 
 	/**
@@ -792,6 +796,8 @@ class TxnInfo
 		$xml .= '<description>'. htmlspecialchars($this->_sDescription, ENT_NOQUOTES) .'</description>';
 		$xml .= '<ip>'. htmlspecialchars($this->_sIP, ENT_NOQUOTES) .'</ip>';
 		$xml .= '<hmac>'. htmlspecialchars($this->getHMAC(), ENT_NOQUOTES) .'</hmac>';
+        $xml .= '<created-date>'. htmlspecialchars(date("Ymd", strtotime($this->getCreatedTimestamp())), ENT_NOQUOTES) .'</created-date>'; //CCYYMMDD
+        $xml .= '<created-time>'. htmlspecialchars(date("His", strtotime($this->getCreatedTimestamp())), ENT_NOQUOTES) .'</created-time>'; //hhmmss
 
 		if(!empty($this->_token))
             $xml .= '<token>'.htmlspecialchars($this->_token, ENT_NOQUOTES).'</token>';
@@ -841,7 +847,7 @@ class TxnInfo
 	private static function _constProduceQuery()
 	{
 		$sql = "SELECT t.id, typeid, countryid,currencyid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, extid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, iconurl, \"mode\", auto_capture, gomobileid,
-						t.clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, t.pspid, fee, captured, cardid, deviceid, mask, expiry, token, authoriginaldata,attempt,sessionid, producttype,approval_action_code
+						t.clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, t.pspid, fee, captured, cardid, deviceid, mask, expiry, token, authoriginaldata,attempt,sessionid, producttype,approval_action_code,created
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl t";
 
 		return $sql;
@@ -870,7 +876,7 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj,$RS["SESSIONID"]);
             }
 
-			$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig,$obj_CurrencyConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["ATTEMPT"], $paymentSession, $RS["PRODUCTTYPE"],$RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["MASK"],$RS["EXPIRY"],$RS["TOKEN"],$RS["AUTHORIGINALDATA"],$RS["APPROVAL_ACTION_CODE"]);
+			$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig,$obj_CurrencyConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["ATTEMPT"], $paymentSession, $RS["PRODUCTTYPE"],$RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["MASK"],$RS["EXPIRY"],$RS["TOKEN"],$RS["AUTHORIGINALDATA"],$RS["APPROVAL_ACTION_CODE"],$RS['CREATED']);
 		}
 		return $obj_TxnInfo;
 	}
@@ -939,7 +945,12 @@ class TxnInfo
             if (array_key_exists("sessionid", $misc) === false) { $misc["sessionid"] = $obj->getSessionId(); }
             if (array_key_exists("sessiontype", $misc) === false) { $misc["sessiontype"] = 1; }
             if (array_key_exists("producttype", $misc) === false) { $misc["producttype"] = 100; }
-
+            if (array_key_exists("mask", $misc) === false) { $misc["mask"] = $obj->getCardMask(); }
+            if (array_key_exists("expiry", $misc) === false) { $misc["expiry"] = $obj->getCardExpiry(); }
+            if (array_key_exists("token", $misc) === false) { $misc["token"] = $obj->getToken(); }
+            if (array_key_exists("authoriginaldata", $misc) === false) { $misc["authoriginaldata"] = $obj->getAuthoriginalData(); }
+            if (array_key_exists("approval_action_code", $misc) === false) { $misc["approval_action_code"] = $obj->getApprovalActionCode(); }
+            if (array_key_exists("created", $misc) === false) { $misc["created"] = $obj->getCreatedTimestamp(); }
             $paymentSession = null;
             if( $misc["sessionid"] == -1){
                 $paymentSession = PaymentSession::Get($obj_db, $misc["client-config"],$misc["country-config"],$misc["currency-config"],$misc["amount"], $misc["orderid"],$misc["sessiontype"],$misc["mobile"], $misc["email"], $misc["extid"],$misc["device-id"], $misc["ip"]);
@@ -948,7 +959,7 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj_db,$misc["sessionid"]);
             }
 
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["country-config"], $misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"],  $misc["device-id"],$misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"], $misc["psp-id"],  $misc["fee"], $misc["captured-amount"], $misc["card-id"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["country-config"], $misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"],  $misc["device-id"],$misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"], $misc["psp-id"],  $misc["fee"], $misc["captured-amount"], $misc["card-id"],$misc["card-id"],$misc["mask"],$misc["expiry"],$misc["token"],$misc["authoriginaldata"],$misc["approval_action_code"],$misc["created"]);
 			break;
 		case ($obj instanceof ClientConfig):	// Instantiate from array of Client Input
 			if (array_key_exists("country-config", $misc) === false) { $misc["country-config"] = $obj->getCountryConfig(); }
@@ -1326,6 +1337,51 @@ class TxnInfo
      */
     function getToken() {
 	    return $this->_token;
+    }
+
+    /**
+     * Returns the Card Mask.
+     *
+     * @return 	String
+     */
+    function getCardMask() {
+        return $this->_mask;
+    }
+
+    /**
+     * Returns the Card Expiry.
+     *
+     * @return 	String
+     */
+    function getCardExpiry() {
+        return $this->_expiry;
+    }
+
+    /**
+     * Returns the Auth original Data
+     *
+     * @return 	String
+     */
+    function getAuthoriginalData() {
+        return $this->_authOriginalData;
+    }
+
+    /**
+     * Returns the Approcal and action code.
+     *
+     * @return 	String
+     */
+    function getApprovalActionCode() {
+        return $this->_approvalCode. ":".$this->_actionCode;
+    }
+
+    /**
+     * Returns the Transaction created date and time.
+     *
+     * @return 	String
+     */
+    function getCreatedTimestamp() {
+        return $this->_createdTimestamp;
     }
 
 }
