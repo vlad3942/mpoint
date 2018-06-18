@@ -752,6 +752,13 @@ abstract class Constants
      */
     const iCHUBB_PSP = 48;
 
+
+    /**
+     * Unique ID for the Acquirer: UATP
+     *
+     */
+    const iUATP_ACQUIRER = 49;
+
 	/**
 
     /**
