@@ -100,13 +100,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					if ($obj_ClientConfig->getMaxAmount() > 0 && $iValResult != 10) { $aMsgCds[$iValResult + 50] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount; }
 					
 					// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
-					if (strlen($obj_ClientConfig->getSalt() ) > 0
-						&& count($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac) == 1 && (strlen($obj_DOM->{'initialize-payment'}[$i]->transaction['order-no']) > 0 || intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount) > 100) )
+					if (strlen($obj_ClientConfig->getSalt() ) > 0)
 					{
 						$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'initialize-payment'}[$i]->{'client-info'},
 																  CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->{'client-info'}->mobile["country-id"]),
 																  $_SERVER['HTTP_X_FORWARDED_FOR']);
-						if ($obj_Validator->valHMAC(trim($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_DOM->{'initialize-payment'}[$i]->transaction['order-no']), intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount), intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"]) ) != 10) { $aMsgCds[210] = trim($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac); }
+						if ($obj_Validator->valHMAC(trim($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_DOM->{'initialize-payment'}[$i]->transaction['order-no']), intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount), intval($obj_DOM->{'initialize-payment'}[$i]->transaction->amount["country-id"]) ) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'initialize-payment'}[$i]->transaction->hmac); }
 					}
 					
 					// Validate currency if explicitly passed in request, which defer from default currency of the country
@@ -230,9 +229,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 
                             // Single Sign-On
-                            $authToken = (string) $obj_DOM->{'initialize-payment'}[$i]->{'auth-token'};
                             $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
-                            if (empty($authenticationURL) === false && !empty($authToken) && (strlen($obj_ClientConfig->getAuthenticationURL() ) > 0 || count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'auth-url'}) == 1) && strlen($obj_ClientConfig->getSalt() ) > 0)
+                            if (empty($authenticationURL) === false && strlen($obj_ClientConfig->getSalt() ) > 0)
                             {
                                 $bIsSingleSingOnPass = false;
                                 $obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );

@@ -1218,6 +1218,8 @@ class Validate extends ValidateBase
 	 */
 	public function valHMAC($mac, ClientConfig $obj_ClientConfig, ClientInfo $obj_ClientInfo, $orderno, $amount, $countryid)
 	{
+        $string = str_replace(' ', '-', $orderno);
+        $orderno = preg_replace('/[^A-Za-z0-9\-]/', '', $string);
 		$code = 1;
 		$chk = sha1($obj_ClientConfig->getID() . $orderno . $amount . $countryid . $obj_ClientInfo->getMobile() . $obj_ClientInfo->getCountryConfig()->getID() . $obj_ClientInfo->getEMail() . $obj_ClientInfo->getDeviceID() . $obj_ClientConfig->getSalt() );
 		if ($mac == $chk)
@@ -1476,7 +1478,7 @@ class Validate extends ValidateBase
     	   		
 	    		if(strlen($number) < 13) { $code = 2; }
                 else if(strlen($number) === 15) {
-	    		    if(substr($number,0,1) === 1)
+	    		    if(substr($number,0,1) === '1')
 	    		    {
 	    		        $code = 10;
 	    		    } else {
