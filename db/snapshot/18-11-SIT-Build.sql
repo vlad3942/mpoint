@@ -13,3 +13,9 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('FORCED_AUTH', 'true', 10007, 'client');
 
 --END NETS acquirer additional property
+
+--MPO Merchant PWD Update
+
+UPDATE CLIENT.MERCHANTACCOUNT_TBL SET PASSWD='5K4506' WHERE PSPID=33
+
+--End MPO Merchant PWD Update
