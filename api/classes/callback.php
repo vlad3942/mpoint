@@ -320,7 +320,7 @@ abstract class Callback extends EndUserAccount
 	 * @param 	SurePayConfig $$obj_SurePay SurePay Configuration Object. Default value null
 	 * @param 	integer $fee				The amount the customer will pay in fee�s for the Transaction. Default value 0
 	 */
-	public function notifyClient($sid, $pspid, $amt,  $cardno="", $cardid=0, $exp=null,$sAdditionalData="", SurePayConfig &$obj_SurePay=null, $fee=0 )
+	public function notifyClient($sid, $pspid, $amt,  $cardno="", $cardid=0, $exp=null, $pspName="", $sAdditionalData="", SurePayConfig &$obj_SurePay=null, $fee=0 )
 	{
 		$sDeviceID = $this->_obj_TxnInfo->getDeviceID();
 		$sEmail = $this->_obj_TxnInfo->getEMail();
@@ -339,7 +339,11 @@ abstract class Callback extends EndUserAccount
 		$sBody .= "&language=". urlencode($this->_obj_TxnInfo->getLanguage() );
 		if (intval($cardid) > 0) { $sBody .= "&card-id=". $cardid; }
 		if (empty($cardno) === false) { $sBody .= "&card-number=". urlencode($cardno); }
-		if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true) { $sBody .= "&pspid=". urlencode($pspid); }
+		if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true)
+		{
+			$sBody .= "&pspid=". urlencode($pspid);
+			$sBody .= "&psp-name=". urlencode($pspName);
+        }
 		if ( strlen($this->_obj_TxnInfo->getDescription() ) > 0) { $sBody .= "&description=". urlencode($this->_obj_TxnInfo->getDescription() ); }
 		$sBody .= $this->getVariables();
 		$sBody .= "&hmac=". urlencode($this->_obj_TxnInfo->getHMAC() );
