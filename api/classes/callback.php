@@ -288,6 +288,35 @@ abstract class Callback extends EndUserAccount
 				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_RETRIED_STATE, "Attempt ". $attempt ." of ". $obj_SurePay->getMax() );
 				$this->performCallback($body, $obj_SurePay, $attempt,$sid);
 			}
+			
+			
+			
+			//Retrial Based On Configuration 
+			$sql = "SELECT typeid,retrialvalue,delay FROM client".sSCHEMA_POSTFIX.".retrial_tbl WHERE clientid =". $this->_obj_TxnInfo->getClientConfig()->getID()." AND enabled = 't' ;";
+			$RS = $this->getDBConn($sql)->getName($sql);
+			if (is_array($RS) === true){
+				$retrialType = $RS["TYPEID"] ;
+				$retrialValue = $RS["RETRIALVALUE"] ;
+				$delayBetweenAttempts = $RS["DELAY"] ;
+				$attempt++;
+				
+				switch ($retrialType)
+				{
+					case (Constants::iRETRIAL_TYPE_RESPONSEBASED):
+						sleep($delayBetweenAttempts);
+						trigger_error("mPoint Callback request retried for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_NOTICE);
+						$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_RETRIED_STATE, "Attempt ". $attempt ." until '".$retrialValue."' message received" );
+						$this->performCallback($body,$obj_SurePay,$attempt,$sid);
+					break;
+					case (Constants::iRETRIAL_TYPE_TIMEBASED):
+						//To be implemented
+						break;
+					case (Constants::iRETRIAL_TYPE_MAXATTEMPTBASED):
+						//To be implemented
+						break;
+				}
+			}
+			//Retrial Based On Configuration Ends
 		}
 	}
 
