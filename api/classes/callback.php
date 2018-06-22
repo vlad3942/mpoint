@@ -320,7 +320,7 @@ abstract class Callback extends EndUserAccount
 	 * @param 	SurePayConfig $$obj_SurePay SurePay Configuration Object. Default value null
 	 * @param 	integer $fee				The amount the customer will pay in fee�s for the Transaction. Default value 0
 	 */
-	public function notifyClient($sid, $pspid, $amt,  $cardno="", $cardid=0, $exp=null, $pspName="", $sAdditionalData="", SurePayConfig &$obj_SurePay=null, $fee=0 )
+	public function notifyClient($sid, $pspid, $amt,  $cardno="", $cardid=0, $exp=null, $sAdditionalData="", SurePayConfig &$obj_SurePay=null, $fee=0 )
 	{
 		$sDeviceID = $this->_obj_TxnInfo->getDeviceID();
 		$sEmail = $this->_obj_TxnInfo->getEMail();
@@ -342,7 +342,7 @@ abstract class Callback extends EndUserAccount
 		if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true)
 		{
 			$sBody .= "&pspid=". urlencode($pspid);
-			$sBody .= "&psp-name=". urlencode($pspName);
+			$sBody .= "&psp-name=". urlencode($this->getPSPName($pspid));
         }
 		if ( strlen($this->_obj_TxnInfo->getDescription() ) > 0) { $sBody .= "&description=". urlencode($this->_obj_TxnInfo->getDescription() ); }
 		$sBody .= $this->getVariables();
@@ -561,6 +561,23 @@ abstract class Callback extends EndUserAccount
 
 		return $RS["NAME"];
 	}
+
+    /**
+     * Returns the specified PSP's name
+     *
+     * @param 	integer $pspid	Unique ID for the PSP
+     * @return 	string
+     */
+    public function getPSPName($pspid)
+    {
+        $sql = "SELECT name
+				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl
+				WHERE id = ". intval($pspid) ." AND enabled = '1'";
+//		echo $sql ."\n";
+        $RS = $this->getDBConn($sql)->getName($sql);
+
+        return $RS["NAME"];
+    }
 
 	/**
 	 * Static method for retrieving mPoint's unique Transaction ID based on the Client's Order Number and
