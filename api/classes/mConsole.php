@@ -1344,6 +1344,7 @@ class mConsole extends Admin
 	{
 		$sql = 'SELECT ';
         $aSelector = array();
+        $aSeriesSelector = array();
 		$aOrderbyClauses = array();
 		$aFiltersClauses = array();
 
@@ -1352,41 +1353,46 @@ class mConsole extends Admin
 			switch(strtolower($column)){
 				case 'transaction_count' :
 					$aSelector[] = 'COUNT(*) AS TRANSACTION_COUNT';
+					$aSeriesSelector[] = 'COALESCE(Q.TRANSACTION_COUNT,0) as TRANSACTION_COUNT';
 					$aOrderbyClauses[] = 'TRANSACTION_COUNT '.$orderby['TRANSACTION_COUNT'];
-					if (array_key_exists('state', $aFilters) === false) // Getting only last state data
-                     {
-                    	$aFiltersClauses[] = " AND M.ID IN (SELECT Max(id) FROM LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL	WHERE T.id = txnid )";
-                     }
+
 					break;
             	case 'hour':
             		$aSelector[] = 'EXTRACT(hour FROM T.created) AS HOUR';
+					$aSeriesSelector[] = 'number as HOUR';
 					$aOrderbyClauses[] = 'HOUR';
             		break;
 				case 'day':
             		$aSelector[] = 'EXTRACT(day FROM T.created) AS DAY';
+					$aSeriesSelector[] = 'number as DAY';
 					$aOrderbyClauses[] = 'DAY';
             		break;
 				case 'state':
 					$aSelector[] = 'S.name AS STATE';
+					$aSeriesSelector[] = "coalesce(Q.STATE,'') as STATE";
 					$aOrderbyClauses[] = 'STATE '.$orderby['currency'];//if value present the it will return value(asc or desc) or ''(empty)
 					break;
 				case 'revenue_count' :
 					$aSelector[] = 'round(sum(T.amount)/100,2) AS revenue_count';//Dividing by 100 to get actual transaction amount
+					$aSeriesSelector[] = 'coalesce(Q.revenue_count,0) as revenue_count';
 					$aOrderbyClauses[] = 'revenue_count '.$orderby['revenue_count'];
 					$aFiltersClauses[] = " AND M.STATEID IN (".Constants::iPAYMENT_CAPTURED_STATE.")";
 					break;
+				case 'currency_id' :
+        			$aSelector[] = 'c.code AS currency_id';
+					$aSeriesSelector[] = "COALESCE(Q.currency_id,'') as currency_id";
+        			$aOrderbyClauses[] = 'currency_id';
+        			break;
 				case 'currency' :
 					$aSelector[] = 'C.code AS CURRENCY';
+					$aSeriesSelector[] = "coalesce(Q.CURRENCY,'') as CURRENCY";
 					$aOrderbyClauses[] =  'CURRENCY '.$orderby['currency'];
 					break;
 				case 'paymenttypeid' :
 					$aSelector[] = 'CARD.name AS paymenttypeid';
+					$aSeriesSelector[] = "COALESCE(Q.paymenttypeid,'') as paymenttypeid";
 					$aOrderbyClauses[ ] = 'paymenttypeid '.$orderby['paymenttypeid'];
 					break;
-				case 'currency_id' :
-        			$aSelector[] = 'c.code AS currency_id';
-        			$aOrderbyClauses[] = 'currency_id';
-        			break;
 				case 'country_id' :
         			$aSelector[] = 'COUNTRY.NAME AS country_id';
         			$aOrderbyClauses[] = 'country_id '.$orderby['country_id'];
@@ -1399,8 +1405,17 @@ class mConsole extends Admin
 
 		$sql .= implode(", ", $aSelector);
 
-		$sql .= " FROM LOG".sSCHEMA_POSTFIX.".TRANSACTION_TBL AS T
-					INNER JOIN LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL AS M ON T.ID = M.TXNID ";
+		$sql .= " FROM LOG".sSCHEMA_POSTFIX.".TRANSACTION_TBL AS T";
+
+		if (array_key_exists('state', $aFilters) === true || in_array('revenue_count', $aColumns) === true)
+        {
+            $sql .= " INNER JOIN LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL AS M ON T.ID = M.TXNID";
+        }
+
+		if(in_array('state', $aColumns) === true)
+		{
+				$sql .= " INNER JOIN LOG".sSCHEMA_POSTFIX.".STATE_TBL AS S ON M.stateid = S.ID ";
+		}
 
 		if(array_key_exists('paymenttypeid', $aFilters) === true)
 		{
@@ -1417,12 +1432,7 @@ class mConsole extends Admin
 			$sql .= " INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".COUNTRY_TBL AS COUNTRY ON T.COUNTRYID = COUNTRY.ID ";
 		}
 
-        if(in_array('state', $aColumns) === true)
-		{
-			$sql .= " INNER JOIN LOG".sSCHEMA_POSTFIX.".STATE_TBL AS S ON M.stateid = S.ID ";
-		}
 		$sql .= " WHERE T.CLIENTID = " . intval($iClientID);
-
 
         foreach ($aFilters as $key=>$value)
         {
@@ -1475,15 +1485,33 @@ class mConsole extends Admin
 
 		$sql .= implode(", ", $aOrderbyClauses);
 
-
-
-
 		if (strlen($limit) > 0)
 		{
 			$sql .= ' LIMIT  ' . $limit;
 		}
 
-        //echo $sql;die;
+		if(in_array('hour', $aColumns) === true || in_array('day', $aColumns) === true )
+		{
+			$format = '';
+			$seriesJoin = '';
+			if(in_array('hour', $aColumns) === true)
+			{
+		     $format = 'H';
+			 $seriesJoin = 'Q.HOUR = number';
+			}
+			else
+			{
+		     $format = 'd';
+			 $seriesJoin = 'Q.DAY = number';
+		    }
+			$dFrom = new DateTime($aFilters['from']);
+            $dTo = new DateTime($aFilters['to']);
+            $startSeries = $dFrom->format($format);
+			$endSeries =   $dTo->format($format);
+
+           $sql = 'SELECT '.implode(", ", $aSeriesSelector).' FROM ('.$sql.') Q RIGHT join generate_series('.$startSeries.', '.$endSeries.')
+                   number on '.$seriesJoin;
+        }
 
         $sReponseXML = '';
 
@@ -1508,7 +1536,5 @@ class mConsole extends Admin
 
 	}
 
-	
-	
     }
 ?>
