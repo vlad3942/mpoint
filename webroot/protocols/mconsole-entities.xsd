@@ -1343,6 +1343,30 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
+			<xs:element name="products" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="product" type="product" minOccurs="0"
+							maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="dynamic-routing-gateways" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="gateway" type="gateway" minOccurs="0"
+							maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="additional-config" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="property" type="property" minOccurs="0"
+									maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
 			<xs:element name="payment-methods" type="client-payment-method-configurations"
 				minOccurs="0" maxOccurs="1" />
 			<xs:element name="payment-service-providers" minOccurs="1"
@@ -1540,6 +1564,36 @@
 					use="optional" />
 				<xs:attribute name="type-id" type="xs:positiveInteger"
 					use="required" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="product">
+	 <xs:annotation>
+			<xs:documentation>Configuration for a Product for an mPoint Client
+			</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="id" type="xs:positiveInteger"
+			use="required" />
+		<xs:attribute name="code" type="xs:string"
+			use="optional" />
+		<xs:attribute name="name" type="xs:string" 	use="optional" />
+	</xs:complexType>
+	<xs:complexType name="gateway">
+	   <xs:annotation>
+			<xs:documentation>Configuration for a Dynamic Routing Gateway
+			</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="id" type="xs:positiveInteger" use="required" />
+		<xs:attribute name="name" type="xs:string" 	use="optional" />
+		<xs:attribute name="enabled" type="xs:boolean" 	use="optional" />
+	</xs:complexType>
+	<xs:complexType name="property">
+		<xs:annotation>
+			<xs:documentation>Configuration for a Additional properties</xs:documentation>
+		</xs:annotation>
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="name" type="xs:string" 	use="optional" />
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
@@ -2001,6 +2055,52 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+
+	<xs:complexType name="transaction-statistics-search-by-filter-request">
+		<xs:sequence>
+			<xs:element name="filters">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="filter" maxOccurs="unbounded" minOccurs="0">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element type="xs:string" name="key"/>
+									<xs:element type="xs:string" name="value"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="aggregations">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element type="xs:string" name="aggregation" maxOccurs="unbounded" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="columns">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element type="xs:string" name="column" maxOccurs="unbounded" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="limit" maxOccurs="unbounded" minOccurs="0"/>
+
+			<xs:element name="orderby" maxOccurs="unbounded" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element type="xs:string" name="key"/>
+						<xs:element type="xs:string" name="value"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute type="xs:integer" name="client-id"/>
+	</xs:complexType>
+
+
 	<xs:complexType name="get-routing-rules">
 		<xs:sequence>
 			<xs:element name="clients" minOccurs="1" maxOccurs="1">
@@ -2061,5 +2161,63 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
+	
+	<!-- Save Gateway trigger details -->
+	<xs:complexType name="save-gateway-triggers">
+			<xs:all>
+				<xs:element name="gateway-triggers" minOccurs="1" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="gateway-trigger" type="gateway-trigger" minOccurs="1" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+			<xs:attribute type="xs:integer" name="client-id" use="required" />
+	</xs:complexType>
+	<!-- Save Gateway trigger details -->
+	
+	<!-- Edit Gateway trigger details -->
+	<xs:complexType name="edit-gateway-triggers">
+			<xs:all>
+				<xs:element name="gateway-triggers" minOccurs="1" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="gateway-trigger" type="gateway-trigger" minOccurs="1" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+			<xs:attribute type="xs:integer" name="client-id" use="required" />
+	</xs:complexType>
+	<!-- Edit Gateway trigger details -->
+	
+	<!-- Search Gateway trigger details -->
+	<xs:complexType name="search-gateway-triggers">
+			<xs:attribute type="xs:integer" name="client-id" use="required" />
+			<xs:attribute type="xs:integer" name="psp-id" use="required" />
+	</xs:complexType>
+	<!-- Save Gateway trigger details -->
+	
+	<xs:complexType name="delete-gateway-triggers">
+			<xs:attribute type="xs:integer" name="client-id" use="required" />
+			<xs:attribute type="xs:integer" name="psp-id" use="required" />
+	</xs:complexType>
+	
+	<xs:complexType name="gateway-trigger">
+	 <xs:all>
+		<xs:element name="aggregation-trigger">
+			<xs:complexType>
+				<xs:simpleContent>
+					<xs:extension base="xs:integer">
+						<xs:attribute type="xs:integer" name="unit" use="required" />
+					</xs:extension>
+				</xs:simpleContent>
+			</xs:complexType>
+		</xs:element>
+	  </xs:all>	
+	  <xs:attribute name="psp-id" type="xs:integer" use="required" />
+	  <xs:attribute name="enabled" type="xs:boolean" use="required" />
+	</xs:complexType> 
 	
 </xs:schema>

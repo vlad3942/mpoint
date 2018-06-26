@@ -90,7 +90,8 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
             if (count($aStates) == 5) { break; }
             usleep(200000); // As callback happens asynchroniously, sleep a bit here in order to wait for transaction to complete in other thread
         }
-        
+
+        //var_dump($aStates);
 		$this->assertEquals(61775, $trow["extid"]);
 		$this->assertEquals($pspID, $trow["pspid"]);
 		$this->assertEquals(2, $trow["amount"]);
@@ -101,7 +102,7 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 		$this->assertEquals(2000, $aStates[1]);
 		$this->assertEquals(1991, $aStates[2]);
 		$this->assertEquals(1992, $aStates[3]);
-		$this->assertEquals(1990, $aStates[4]); 
+		$this->assertEquals(1990, $aStates[4]);
 	}
 
 	public function testVoucherRedemptionDeniedByIssuer()
@@ -147,11 +148,11 @@ class DSBAuthorizeVoucherAPITest extends baseAPITest
 		$this->assertEquals($pspID, $trow["pspid"]);
 		$this->assertEquals(11, $trow["amount"]);
 
-		$this->assertEquals(5, count($aStates) );
+		$this->assertEquals(4, count($aStates) );
 		$this->assertEquals(2010, $aStates[0]);
-		$this->assertEquals(1991, $aStates[2]);
-		$this->assertEquals(1992, $aStates[3]);
-		$this->assertEquals(1990, $aStates[4]);
+		$this->assertEquals(1991, $aStates[1]);
+		$this->assertEquals(1992, $aStates[2]);
+		$this->assertEquals(1990, $aStates[3]);
 	}
 
 }

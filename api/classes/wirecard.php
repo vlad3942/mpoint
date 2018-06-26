@@ -62,7 +62,10 @@ class WireCard extends CPMPSP
 		{
 			if ($this->getDBConn()->countAffectedRows($res) == 1 || $sid != Constants::iPAYMENT_ACCEPTED_STATE) 
 			{ 
-				$this->newMessage($this->getTxnInfo()->getID(), $sid, var_export($debug, true) ); 
+                $iIsCompleteTransactionStateLogged =$this->getTxnInfo()->hasEitherState($this->getDBConn(),$sid);
+                if($iIsCompleteTransactionStateLogged != 1) {
+                    $this->newMessage($this->getTxnInfo()->getID(), $sid, var_export($debug, true));
+                }
 			}
 		}
 		// Error: Unable to complete log for Transaction

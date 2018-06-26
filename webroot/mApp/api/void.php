@@ -32,6 +32,9 @@ require_once(sCLASS_PATH ."/worldpay.php");
 require_once(sCLASS_PATH ."/netaxept.php");
 // Require specific Business logic for the DSB PSP component
 require_once(sCLASS_PATH ."/dsb.php");
+// Require specific customer info
+require_once(sCLASS_PATH ."/customer_info.php");
+
 if (function_exists("json_encode") === true && function_exists("curl_init") === true)
 {
 	// Require specific Business logic for the Stripe component
@@ -67,6 +70,7 @@ require_once(sCLASS_PATH ."/maybank.php");
 require_once(sCLASS_PATH ."/publicbank.php");
 // Require specific Business logic for the AliPay component
 require_once(sCLASS_PATH ."/alipay.php");
+require_once(sCLASS_PATH ."/alipay_chinese.php");
 // Require specific Business logic for the Qiwi component
 require_once(sCLASS_PATH ."/qiwi.php");
 // Require specific Business logic for the Klarna component
@@ -77,6 +81,10 @@ require_once(sCLASS_PATH ."/ccpp_alc.php");
 require_once(sAPI_CLASS_PATH ."simpledom.php");
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
+// Require specific Business logic for the PPRO component
+require_once(sCLASS_PATH ."/ppro.php");
+// Require specific Business logic for the Citcon Wechat component
+require_once(sCLASS_PATH ."/citcon.php");
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
