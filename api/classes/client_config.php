@@ -317,6 +317,12 @@ class ClientConfig extends BasicConfig
 	 * @var string
 	 */
 	private $_sSalt;
+	/**
+	 * The secret key shared by thirdparty gateway for client
+	 *
+	 * @var string
+	 */
+	private $_sSecretKey;
 	
 	/**
 	 * Object that holds the URL of Merchant App URL scheme should be returned to upon successfully completing the Transaction
@@ -399,7 +405,7 @@ class ClientConfig extends BasicConfig
 	 * @param   array $aObj_PMs								List of Payment Methods (Cards) that the client offers
 	 * @param   array $aObj_IINRs							List of IIN Range values for the client.
 	 */
-	public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=null, ClientURLConfig $oCSSURL=null, ClientURLConfig $oAccURL=null, ClientURLConfig $oCURL=null, ClientURLConfig $oDURL=null, ClientURLConfig $oCBURL=null, ClientURLConfig $oIURL=null, ClientURLConfig $oParse3DSecureChallengeURL=null, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), $aObj_GMPs = array(), ClientCommunicationChannelsConfig $obj_CCConfig, ClientURLConfig $oAppURL=null,$aAdditionalProperties=array(),ClientURLConfig $oBaseImageURL=null,$aProducts=array(),$aDRGateways=array())
+    public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=null, ClientURLConfig $oCSSURL=null, ClientURLConfig $oAccURL=null, ClientURLConfig $oCURL=null, ClientURLConfig $oDURL=null, ClientURLConfig $oCBURL=null, ClientURLConfig $oIURL=null, ClientURLConfig $oParse3DSecureChallengeURL=null, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), $aObj_GMPs = array(), ClientCommunicationChannelsConfig $obj_CCConfig, ClientURLConfig $oAppURL=null,$aAdditionalProperties=array(),ClientURLConfig $oBaseImageURL=null,$aProducts=array(),$aDRGateways=array(),ClientURLConfig $oThreedRedirectURL=null,$secretkey)
 	{
 		parent::__construct($id, $name);
 
@@ -447,6 +453,7 @@ class ClientConfig extends BasicConfig
 		$this->_iTransactionTTL = (integer) $txnttl;
 		$this->_iNumMaskedDigits = (integer) $nmd;
 		$this->_sSalt = trim($salt);
+		$this->_sSecretKey= trim($secretkey);
 		$this->_aObj_AccountsConfigurations = $aObj_ACs;
 		$this->_aObj_MerchantAccounts = $aObj_MAs;
 		$this->_aObj_PaymentMethodConfigurations = $aObj_PMs;
@@ -783,6 +790,12 @@ class ClientConfig extends BasicConfig
 	 */
 	public function getSalt() { return $this->_sSalt; }
 	/**
+	 * Returns Secret Key value for generating the HMAC for outgoing request
+	 *
+	 * @return 	string
+	 */
+	public function getSecretKey() { return $this->_sSecretKey; }
+	/**
 	 * Returns the Client Mode in which all Transactions are Processed
 	 * 	0. Production
 	 * 	1. Test Mode with prefilled card Info
@@ -974,6 +987,7 @@ class ClientConfig extends BasicConfig
 		$xml .= '<auto-capture>'. General::bool2xml($this->_bAutoCapture) .'</auto-capture>';
 		$xml .= '<store-card>'. $this->_iStoreCard .'</store-card>';
 		$xml .= '<salt>'. htmlspecialchars($this->_sSalt, ENT_NOQUOTES) .'</salt>';
+		$xml .= '<secretkey>'. htmlspecialchars($this->_sSecretKey, ENT_NOQUOTES) .'</secretkey>';
 		$xml .= '<ip-list>';
 		foreach ($this->_aIPList as $value)
 		{
@@ -1027,7 +1041,7 @@ class ClientConfig extends BasicConfig
 		$xml .= '<transaction-time-to-live>'. $this->getTransactionTTL() .'</transaction-time-to-live>';
 		$xml .= $this->_getIINRangesConfigAsXML();		
 		$xml .= '<salt>'. htmlspecialchars($this->_sSalt, ENT_NOQUOTES) .'</salt>';
-		
+		$xml .= '<secretkey>'. htmlspecialchars($this->_sSecretKey, ENT_NOQUOTES) .'</secretkey>';
 		
 		$xml .= '<products>';
 		foreach ($this->_aObj_Products as $aObj_Product)
