@@ -42,6 +42,7 @@ class ClientConfig extends BasicConfig
 	const iPARSE_3DSECURE_CHALLENGE_URL = 12;
 	const iMERCHANT_APP_RETURN_URL = 13;
     const iBASE_IMAGE_URL = 14;
+    const iTHREED_REDIRECT_URL= 15;
 	/**
 	 * ID of the Flow the Client's customers have to go through in order to complete the Payment Transaction
 	 *
