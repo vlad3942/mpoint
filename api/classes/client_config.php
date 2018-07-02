@@ -987,7 +987,7 @@ class ClientConfig extends BasicConfig
 		$xml .= '<auto-capture>'. General::bool2xml($this->_bAutoCapture) .'</auto-capture>';
 		$xml .= '<store-card>'. $this->_iStoreCard .'</store-card>';
 		$xml .= '<salt>'. htmlspecialchars($this->_sSalt, ENT_NOQUOTES) .'</salt>';
-		$xml .= '<secretkey>'. htmlspecialchars($this->_sSecretKey, ENT_NOQUOTES) .'</secretkey>';
+		$xml .= '<secret-key>'. htmlspecialchars($this->_sSecretKey, ENT_NOQUOTES) .'</secret-key>';
 		$xml .= '<ip-list>';
 		foreach ($this->_aIPList as $value)
 		{
@@ -1041,7 +1041,7 @@ class ClientConfig extends BasicConfig
 		$xml .= '<transaction-time-to-live>'. $this->getTransactionTTL() .'</transaction-time-to-live>';
 		$xml .= $this->_getIINRangesConfigAsXML();		
 		$xml .= '<salt>'. htmlspecialchars($this->_sSalt, ENT_NOQUOTES) .'</salt>';
-		$xml .= '<secretkey>'. htmlspecialchars($this->_sSecretKey, ENT_NOQUOTES) .'</secretkey>';
+		$xml .= '<secret-key>'. htmlspecialchars($this->_sSecretKey, ENT_NOQUOTES) .'</secret-key>';
 		
 		$xml .= '<products>';
 		foreach ($this->_aObj_Products as $aObj_Product)
