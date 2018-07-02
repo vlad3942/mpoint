@@ -384,7 +384,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		$b .= '</initialize>';
 		$b .= '</root>';
-		
 		$obj_XML = null;
 		try
 		{
@@ -645,7 +644,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	{
 		$aCI = $this->aCONN_INFO;
 		$aURLInfo = parse_url($this->getClientConfig()->getMESBURL() );
-		
+
 		return new HTTPConnInfo($aCI["protocol"], $aURLInfo["host"], $aCI["port"], $aCI["timeout"], $path, $aCI["method"], $aCI["contenttype"], $this->getClientConfig()->getUsername(), $this->getClientConfig()->getPassword() );
 	}
 	
@@ -869,4 +868,53 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
     
 	protected function _getResponse(){ return $this->_obj_ResponseXML;}
 
+    /**
+     * Performs a post status operation with CPM PSP for the provided transaction.
+     *
+     * @param object $obj_Elem
+     * @return int
+     */
+    public function postStatus($obj_Elem)
+    {
+        $code = 0;
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        $xml .= '<root>';
+        $xml .= '<callback>';
+        $xml .= '<psp-config id="'.$obj_Elem->{'psp-config'}['id'].'">';
+        $xml .= '<name>'.$obj_Elem->{'psp-config'}->name.'</name>';
+        $xml .= '</psp-config>';
+        $xml .= '<transaction id="'.$obj_Elem->transaction["id"].'" order-no="'.$obj_Elem->transaction["order-no"].'" external-id="">';
+        $xml .= '<amount country-id="'.$obj_Elem->transaction->amount['country-id'].'" currency="'.$obj_Elem->transaction->amount['currency'].'">';
+        $xml .=  $obj_Elem->transaction->amount;
+        $xml .= '</amount>';
+        $xml .= '<card type-id="'.$obj_Elem->transaction->card['type-id'].'" />';
+        $xml .= '</transaction>';
+        $xml .= '<status code="'.$obj_Elem->status['code'].'" />';
+        $xml .= '<url>'.$obj_Elem->url.'</url>';
+        $xml .= '</callback>';
+        $xml .= '</root>';
+
+        try
+        {
+            if (isset($this->aCONN_INFO["paths"]["post-status"])) {
+                $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["post-status"]);
+
+                $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+                $obj_HTTP->connect();
+
+                $code = $obj_HTTP->send($this->constHTTPHeaders(), $xml);
+                $obj_HTTP->disConnect();
+                if ($code != 200) {
+                    trigger_error("PostStatus failed for the transaction : " . $this->getTxnInfo()->getID() . " failed with code: " . $code . " and body: " . $obj_HTTP->getReplyBody(), E_USER_WARNING);
+                }
+            } else {
+                trigger_error("Endpoint is not available", E_USER_WARNING);
+            }
+        }
+        catch (mPointException $e)
+        {
+            trigger_error("PostStatus failed for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $code, E_USER_WARNING);
+        }
+        return $code;
+    }
 }
