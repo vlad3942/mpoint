@@ -118,6 +118,8 @@ require_once(sCLASS_PATH ."/bre.php");
 require_once(sCLASS_PATH ."/amex.php");
 // Require specific Business logic for the CHUBB component
 require_once(sCLASS_PATH ."/chubb.php");
+// Require specific Business logic for the UATP component
+require_once(sCLASS_PATH . "/uatp.php");
 
 require_once(sCLASS_PATH ."/post_auth_action.php");
 
@@ -310,10 +312,10 @@ $iPrimaryRoute = $oRoute ;
                                         $_SERVER['HTTP_X_FORWARDED_FOR']);
 
 										// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
-										if (strlen($obj_ClientConfig->getSalt() ) > 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac) == 1)
+										if (strlen($obj_ClientConfig->getSalt() ) > 0)
 										{
 
-											if ($obj_Validator->valHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]) ) != 10) { $aMsgCds[210] = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
+											if ($obj_Validator->valHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]) ) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
 										} 
 										// Success: Input Valid
 										if (count($aMsgCds) == 0)
@@ -1245,7 +1247,29 @@ $iPrimaryRoute = $oRoute ;
                                                                         $xml .= '<status code="92">Authorization failed, CHUBB returned error: '. $code .'</status>';
                                                                     }
                                                                     break;
+                                                                case (Constants::iUATP_ACQUIRER): // UATP
+                                                                    $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iUATP_ACQUIRER);
 
+                                                                    $obj_PSP = new UATP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["uatp"]);
+
+                                                                    $code = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem);
+
+                                                                    // Authorization succeeded
+                                                                    if ($code == "100")
+                                                                    {
+                                                                        $xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
+                                                                    }
+                                                                    else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+                                                                    else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and Card Details Stored.</status>'; }
+                                                                    // Error: Authorization declined
+                                                                    else
+                                                                    {
+                                                                        $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+
+                                                                        header("HTTP/1.1 502 Bad Gateway");
+                                                                        $xml .= '<status code="92">Authorization failed, UATP returned error: '. $code .'</status>';
+                                                                    }
+                                                                    break;
                                                                 default:	// Unkown Error
 																$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 	
