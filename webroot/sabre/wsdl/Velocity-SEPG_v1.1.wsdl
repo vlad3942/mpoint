@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions name='VelocityProcessPayment' targetNamespace='http://schemas.xmlsoap.org/wsdl/soap'
+    xmlns='http://schemas.xmlsoap.org/wsdl/' xmlns:soap='http://schemas.xmlsoap.org/wsdl/soap/' 
+    xmlns:tns='http://schemas.xmlsoap.org/wsdl/soap' >
+
+    <types>
+        <xsd:schema targetNamespace="http://schemas.xmlsoap.org/wsdl/soap"
+            xmlns:tns="SupplierPaymentServices_v2.3.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            <xsd:include schemaLocation="SupplierPaymentServices_v2.3.xsd" />
+        </xsd:schema>
+    </types>
+
+    <message name="ProcessInputMessage">
+        <part name="body" element="tns:AuthRQ"/>
+    </message>
+    <message name="ProcessOutputMessage">
+        <part name="body" element="tns:AuthRS" />
+    </message>
+    
+    <portType name="VelocityProcessPaymentPortType">
+         <operation name="AuthRQ">
+            <input message="tns:ProcessInputMessage" />
+            <output message="tns:ProcessOutputMessage" />
+        </operation>
+    </portType>
+    
+    <binding name="VelocityProcessPaymentBinding" type="tns:VelocityProcessPaymentPortType">
+        <soap:binding style="document" transport='http://schemas.xmlsoap.org/soap/http' />
+         <operation name="AuthRQ">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body parts="body" use="literal" />
+            </input>
+            <output>
+                <soap:body parts="body" use="literal" />
+            </output>
+        </operation>
+    </binding>
+    
+    <service name="VelocityProcessPaymentAuth">
+        <port name="VelocityProcessPaymentPortType" binding="tns:VelocityProcessPaymentBinding">
+            <soap:address location="https://sepg.sit.mesb.cellpointmobile.com/mpoint/soap/v1_1/sabre/services" />
+        </port>
+    </service>
+</definitions>

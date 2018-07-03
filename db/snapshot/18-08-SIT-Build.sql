@@ -1,3 +1,9 @@
+-------- TXN Time Out -------------
+
+INSERT INTO log.state_tbl (id, name, module) VALUES (20109, 'Payment timed out', 'Payment');
+INSERT INTO log.state_tbl (id, name, module) VALUES (19909, 'Callback accepted for Payment time out', 'Payment');
+
+-------- TXN Time Out -------------
 
 --PPro PSPCard
 

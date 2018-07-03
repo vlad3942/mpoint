@@ -1,0 +1,1 @@
+DELETE FROM client.cardaccess_tbl WHERE clientid = <ClientID> AND pspid IN (17, 38);
