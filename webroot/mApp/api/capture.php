@@ -83,6 +83,8 @@ require_once(sCLASS_PATH ."/mConsole.php");
 require_once(sCLASS_PATH ."/validate.php");
 // Require specific Business logic for the 2C2P ALC component
 require_once(sCLASS_PATH ."/ccpp_alc.php");
+// Require data data class for Customer Information
+require_once(sCLASS_PATH ."/customer_info.php");
 
 //header("Content-Type: application/x-www-form-urlencoded");
 
