@@ -260,6 +260,12 @@ abstract class Constants
      *  
      */
     const iPAYMENT_TIME_OUT_STATE = 20109;
+    /**
+     * Defines the ID of the State that indicates that the payment was not complete due to time out error
+     * from PSP or Issuer and system does not have the final status of payment yet
+     *
+     */
+    const iPSP_TIME_OUT_STATE = 20108;
 	/**
 	 * Defines the ID of the State that indicates that the payment was declined by the Payment Service Provider (PSP)
 	 * when doing a Capture
@@ -1233,5 +1239,11 @@ abstract class Constants
 	const iPROCESSOR_TYPE_APM = 4;
 	const iPROCESSOR_TYPE_VIRTUAL = 5;
 	const iPROCESSOR_TYPE_MPI = 6;
+	
+	
+	const iRETRIAL_TYPE_TIMEBASED = 1;
+	const iRETRIAL_TYPE_RESPONSEBASED = 2;
+	const iRETRIAL_TYPE_MAXATTEMPTBASED = 3;
+	
 }
 ?>
