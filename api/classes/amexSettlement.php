@@ -22,8 +22,8 @@ class AmexSettlement extends mPointSettlement
         $referenceNumber = $this->_recordType . "_" . $recordNumber;
 
         $sql = "INSERT INTO log" . sSCHEMA_POSTFIX . ".settlement_tbl
-                    (record_number, file_reference_number, file_sequence_number, client_id, record_type)
-                    values ($1, $2, $3, $4, $5) RETURNING id, created";
+                    (record_number, file_reference_number, file_sequence_number, client_id, record_type, psp_id)
+                    values ($1, $2, $3, $4, $5, $6) RETURNING id, created";
 
         $resource = $_OBJ_DB->prepare($sql);
 
@@ -33,7 +33,8 @@ class AmexSettlement extends mPointSettlement
                 $referenceNumber,
                 $recordNumber,
                 $this->_clientId,
-                $this->_recordType
+                $this->_recordType,
+                $this->_pspId
             );
 
             $result = $_OBJ_DB->execute($resource, $aParam);

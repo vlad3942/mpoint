@@ -10,7 +10,7 @@
  */
 
 // <editor-fold defaultstate="collapsed" desc="Sample request">
-$_SERVER['PHP_AUTH_USER'] = "1415";
+/*$_SERVER['PHP_AUTH_USER'] = "1415";
 $_SERVER['PHP_AUTH_PW'] = "Ghdy4_ah1G";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -27,9 +27,9 @@ $HTTP_RAW_POST_DATA .=  '            <service-providers>';
 $HTTP_RAW_POST_DATA .=  '                <service-provider id="222"/>';
 $HTTP_RAW_POST_DATA .=  '                <service-provider id="223"/>';
 $HTTP_RAW_POST_DATA .=  '            </service-providers>';
-$HTTP_RAW_POST_DATA .=  '        </payment-settlement>';*/
+$HTTP_RAW_POST_DATA .=  '        </payment-settlement>';
 $HTTP_RAW_POST_DATA .= '    </payment-settlements>';
-$HTTP_RAW_POST_DATA .= '</root>';
+$HTTP_RAW_POST_DATA .= '</root>';*/
 
 // </editor-fold>
 

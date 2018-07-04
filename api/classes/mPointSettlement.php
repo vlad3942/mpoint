@@ -11,7 +11,7 @@
 
 abstract class mPointSettlement
 {
-    private $_pspId = NULL;
+    protected $_pspId = NULL;
 
     protected $_clientId = NULL;
 
@@ -84,7 +84,9 @@ abstract class mPointSettlement
 
         $sql = "SELECT record_number, status
                 FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl
-                WHERE client_id = $this->_clientId AND record_type = '$this->_recordType'                
+                WHERE client_id = $this->_clientId 
+                AND psp_id = '$this->_pspId'                
+                AND record_type = '$this->_recordType'                
                 ORDER BY id DESC LIMIT 1 ";
 
         $res = $_OBJ_DB->getName($sql);
@@ -163,7 +165,7 @@ abstract class mPointSettlement
     {
         try {
 
-            $this->updateSettlementRecords($_OBJ_DB);
+            $this->insertSettlementRecords($_OBJ_DB);
 
             if ($this->_clientConfig == NULL) {
                 $this->getClientConfiguration($_OBJ_DB);
@@ -172,11 +174,12 @@ abstract class mPointSettlement
             if ($this->_pspConfig == NULL) {
                 $this->getPSPConfiguration($_OBJ_DB);
             }
-
-            $requestBody = $this->_clientConfig->toXML();
+            $requestBody = '<?xml version="1.0" encoding="UTF-8"?><root><settlement>';
+            $requestBody .= $this->_clientConfig->toXML();
             $requestBody .= $this->toSettlementInfoXML();
             $requestBody .= $this->_pspConfig->toXML();
             $requestBody .= $this->_transactionXML;
+            $requestBody .= '</settlement></root>';
 
             $obj_ConnInfo = $this->_constConnInfo($this->_connectionInfo["paths"]["settlement"]);
 
@@ -186,6 +189,19 @@ abstract class mPointSettlement
             $obj_HTTP->disConnect();
             if ($code != 200) {
                 throw new mPointException("Settlement Request Error code: " . $code . " and body: " . $obj_HTTP->getReplyBody(), $code);
+            }
+            else
+            {
+                $replyBody = simpledom_load_string($obj_HTTP->getReplyBody());
+                if($replyBody->settlement->file["upload-status"] == "true")
+                {
+                    $this->updateSettlementState($_OBJ_DB, "waiting");
+                    $this->updateDescription($_OBJ_DB, $replyBody);
+                }
+                else
+                {
+                    $this->updateSettlementState($_OBJ_DB, "fail");
+                }
             }
         } catch (Exception $e) {
             $this->updateSettlementState($_OBJ_DB, "fail");
@@ -234,7 +250,7 @@ abstract class mPointSettlement
         $_OBJ_DB->query($sql);
     }
 
-    protected function updateSettlementRecords($_OBJ_DB){
+    protected function insertSettlementRecords($_OBJ_DB){
         $sql = "INSERT INTO log" . sSCHEMA_POSTFIX . ".settlement_record_tbl 
                    (settlementid, transactionid) 
                    VALUES ($this->_settlementId, ". $this->_transactionIds[0] .")";
@@ -245,4 +261,25 @@ abstract class mPointSettlement
         }
         $_OBJ_DB->query($sql);
     }
+
+    protected function updateDescription($_OBJ_DB, $replyBody){
+
+        $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".settlement_tbl
+            SET description = '".$replyBody->settlement->file['description']."' 
+            WHERE id = $this->_settlementId";
+
+
+        $_OBJ_DB->query($sql);
+
+        for ($i=0; $i<count($replyBody->settlement->transactions->transaction); $i++)
+        {
+           $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".settlement_record_tbl
+                SET description = '".$replyBody->settlement->transactions->transaction[$i]["description"]."' 
+                WHERE settlementid = $this->_settlementId
+                AND transactionid=" . $replyBody->settlement->transactions->transaction[$i]["id"];
+
+            $_OBJ_DB->query($sql);
+        }
+    }
+
 }
