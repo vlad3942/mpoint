@@ -1239,5 +1239,11 @@ abstract class Constants
 	const iPROCESSOR_TYPE_APM = 4;
 	const iPROCESSOR_TYPE_VIRTUAL = 5;
 	const iPROCESSOR_TYPE_MPI = 6;
+	
+	
+	const iRETRIAL_TYPE_TIMEBASED = 1;
+	const iRETRIAL_TYPE_RESPONSEBASED = 2;
+	const iRETRIAL_TYPE_MAXATTEMPTBASED = 3;
+	
 }
 ?>
