@@ -908,7 +908,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                     trigger_error("PostStatus failed for the transaction : " . $this->getTxnInfo()->getID() . " failed with code: " . $code . " and body: " . $obj_HTTP->getReplyBody(), E_USER_WARNING);
                 }
             } else {
-                trigger_error("Endpoint is not available", E_USER_WARNING);
+                trigger_error("PostStatus failed - Endpoint not configured for the PSP: ".$obj_Elem->{'psp-config'}['id'], E_USER_WARNING);
             }
         }
         catch (mPointException $e)
