@@ -10,7 +10,8 @@
  *
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
-	<get-currency-config client-id="10018" currency-code="USD" country-code="US">
+	<get-currency-config client-id="10018">
+	  <currency code="USD" country-code="US" />
 	</get-currency-config>
 </root>
  */
@@ -36,14 +37,14 @@ $sql = "SELECT CT.id AS countryid, CC.id AS currencyid, CT.name AS country, CT.p
 CT.decimals from system".sSCHEMA_POSTFIX.".Country_tbl CT Join System".sSCHEMA_POSTFIX.".Currency_tbl CC ON (CT.currencyid = CC.id)";
 
 
-if (isset($obj_DOM->{'get-currency-config'}[$i]["currency-code"]) === true)
+if (isset($obj_DOM->{'get-currency-config'}[$i]->currency["code"]) === true)
 {
-	$sCurrencyCode= $obj_DOM->{'get-currency-config'}[$i]["currency-code"];
+	$sCurrencyCode= $obj_DOM->{'get-currency-config'}[$i]->currency["code"];
 	$sql .= " WHERE CC.code = '".$sCurrencyCode ."'" ;
 }
-if (isset($obj_DOM->{'get-currency-config'}[$i]["country-code"]) === true)
+if (isset($obj_DOM->{'get-currency-config'}[$i]->currency["country-code"]) === true)
 {
-	$sCountryCode= $obj_DOM->{'get-currency-config'}[$i]["country-code"];
+	$sCountryCode= $obj_DOM->{'get-currency-config'}[$i]->currency["country-code"];
 	$sql .= " AND CT.alpha2code = '".$sCountryCode."'";
 }
 
