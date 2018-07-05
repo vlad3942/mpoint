@@ -7577,7 +7577,7 @@ ALTER TABLE Client.gatewaytrigger_tbl ADD COLUMN lastrun timestamp without time 
 ALTER TABLE log.session_tbl ADD CONSTRAINT constraint_name UNIQUE (orderid);
 
 
-ALTER table Client.Client_Tbl ADD secretkey VARCHAR(100);
+ALTER TABLE Client.Client_Tbl ADD secretkey VARCHAR(100);
 
 	  
 	  
