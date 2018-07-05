@@ -85,3 +85,5 @@ CREATE TABLE log.settlement_record_tbl
   CONSTRAINT settlement_record_tbl_settlement_tbl_id_fk FOREIGN KEY (settlementid) REFERENCES log.settlement_tbl (id),
   CONSTRAINT settlement_record_tbl_transaction_tbl_id_fk FOREIGN KEY (transactionid) REFERENCES log.transaction_tbl (id)
 );
+
+ALTER table Client.Client_Tbl ADD secretkey VARCHAR(100);
