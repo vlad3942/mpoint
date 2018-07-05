@@ -59,3 +59,5 @@ INSERT INTO system.retrialtype_tbl( id, name, description) VALUES (3,'Max Attemp
 INSERT INTO client.retrial_tbl( typeid, retrialvalue, delay, clientid)    VALUES (2,'OK', 5 , 10007);
 ------- Retrial define for SEPG client ------------------
 
+
+ALTER table Client.Client_Tbl ADD secretkey VARCHAR(100);
