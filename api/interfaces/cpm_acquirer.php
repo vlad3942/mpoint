@@ -35,8 +35,8 @@ abstract class CPMACQUIRER extends CPMPSP
                             SET pspid = " . $obj_PSPConfig->getID() . " , mask='" . $mask . "' , expiry='" . $expiry . "',token='" . $token . "'";
 
                 if(count($approvalCode) != 0 && count($actionCode) != 0) {
-                    $extId = $approvalCode . ":" . $actionCode;
-                    $sql .= ", extid='" . $extId . "'";
+                    $approval_action_code = $approvalCode . ":" . $actionCode;
+                    $sql .= ", approval_action_code='" . $approval_action_code . "'";
                 }
 
                 if( count($authOriginalData) != 0) {
