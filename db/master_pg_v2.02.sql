@@ -444,3 +444,6 @@ CREATE TABLE log.settlement_record_tbl
   CONSTRAINT settlement_record_tbl_settlement_tbl_id_fk FOREIGN KEY (settlementid) REFERENCES log.settlement_tbl (id),
   CONSTRAINT settlement_record_tbl_transaction_tbl_id_fk FOREIGN KEY (transactionid) REFERENCES log.transaction_tbl (id)
 );
+-------- CMP-2426: PCI Password expose --------
+DROP TABLE admin.user_tbl CASCADE;
+-------- CMP-2426: PCI Password expose --------
