@@ -318,7 +318,7 @@ class ClientConfig extends BasicConfig
 	 */
 	private $_sSalt;
 	/**
-	 * The secret key shared by thirdparty gateway for client
+	 * The  key shared by thirdparty gateway for client
 	 *
 	 * @var string
 	 */
@@ -405,7 +405,7 @@ class ClientConfig extends BasicConfig
 	 * @param   array $aObj_PMs								List of Payment Methods (Cards) that the client offers
 	 * @param   array $aObj_IINRs							List of IIN Range values for the client.
 	 */
-    public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=null, ClientURLConfig $oCSSURL=null, ClientURLConfig $oAccURL=null, ClientURLConfig $oCURL=null, ClientURLConfig $oDURL=null, ClientURLConfig $oCBURL=null, ClientURLConfig $oIURL=null, ClientURLConfig $oParse3DSecureChallengeURL=null, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), $aObj_GMPs = array(), ClientCommunicationChannelsConfig $obj_CCConfig, ClientURLConfig $oAppURL=null,$aAdditionalProperties=array(),ClientURLConfig $oBaseImageURL=null,$aProducts=array(),$aDRGateways=array(),ClientURLConfig $oThreedRedirectURL=null,$secretkey)
+    public function __construct($id, $name, $fid, AccountConfig $oAC, $un, $pw, CountryConfig $oCC, KeywordConfig $oKC, ClientURLConfig $oLURL=null, ClientURLConfig $oCSSURL=null, ClientURLConfig $oAccURL=null, ClientURLConfig $oCURL=null, ClientURLConfig $oDURL=null, ClientURLConfig $oCBURL=null, ClientURLConfig $oIURL=null, ClientURLConfig $oParse3DSecureChallengeURL=null, $ma, $l, $sms, $email, $mtd, $terms, $m, $ac, $sp, $sc, $aIPs, $dc, $mc=-1, $ident=7, $txnttl, $nmd=4, $salt, ClientURLConfig $oCIURL=null, ClientURLConfig $oAURL=null, ClientURLConfig $oNURL=null, ClientURLConfig $oMESBURL=null, $aObj_ACs=array(), $aObj_MAs=array(), $aObj_PMs=array(), $aObj_IINRs = array(), $aObj_GMPs = array(), ClientCommunicationChannelsConfig $obj_CCConfig, ClientURLConfig $oAppURL=null,$aAdditionalProperties=array(),ClientURLConfig $oBaseImageURL=null,$aProducts=array(),$aDRGateways=array(),ClientURLConfig $oThreedRedirectURL=null,$secretkey=null)
 	{
 		parent::__construct($id, $name);
 
@@ -453,6 +453,7 @@ class ClientConfig extends BasicConfig
 		$this->_iTransactionTTL = (integer) $txnttl;
 		$this->_iNumMaskedDigits = (integer) $nmd;
 		$this->_sSalt = trim($salt);
+		if(!is_null($secretkey))
 		$this->_sSecretKey= trim($secretkey);
 		$this->_aObj_AccountsConfigurations = $aObj_ACs;
 		$this->_aObj_MerchantAccounts = $aObj_MAs;
