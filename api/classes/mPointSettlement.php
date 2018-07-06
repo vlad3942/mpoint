@@ -11,50 +11,50 @@
 
 abstract class mPointSettlement
 {
-    protected $_pspId = NULL;
+    protected $_iPspId = NULL;
 
-    protected $_clientId = NULL;
+    protected $_iClientId = NULL;
 
-    private $_clientConfig = NULL;
+    private $_objClientConfig = NULL;
 
-    private $_pspConfig = NULL;
+    private $_objPspConfig = NULL;
 
-    private $_connectionInfo = NULL;
+    private $_objConnectionInfo = NULL;
 
-    protected $_settlementId = NULL;
+    protected $_iSettlementId = NULL;
 
-    protected $_fileReferenceNumber = NULL;
+    protected $_sFileReferenceNumber = NULL;
 
-    protected $_recordNumber = NULL;
+    protected $_iRecordNumber = NULL;
 
-    protected $_fileSequenceNumber = NULL;
+    protected $_iFileSequenceNumber = NULL;
 
-    protected $_fileCreatedDate = NULL;
+    protected $_sFileCreatedDate = NULL;
 
-    protected $_recordType = NULL;
+    protected $_sRecordType = NULL;
 
-    private $_transactionXML = NULL;
+    private $_sTransactionXML = NULL;
 
-    protected $_accountId = NULL;
+    protected $_iAccountId = NULL;
 
-    protected $_totalTransactionAmount = 0;
+    protected $_iTotalTransactionAmount = 0;
 
-    protected $_transactionIds = [];
+    protected $_arrayTransactionIds = [];
 
     public function __construct($clientId, $pspId, $connectionInfo)
     {
-        $this->_clientId = $clientId;
-        $this->_pspId = $pspId;
-        $this->_connectionInfo = $connectionInfo;
+        $this->_iClientId = $clientId;
+        $this->_iPspId = $pspId;
+        $this->_objConnectionInfo = $connectionInfo;
     }
 
-    private function getAccountIds($_OBJ_DB)
+    private function _getAccountIds($_OBJ_DB)
     {
         $sql = "SELECT account.id
                 FROM client" . sSCHEMA_POSTFIX . ".account_tbl account
                   INNER JOIN client" . sSCHEMA_POSTFIX . ".merchantsubaccount_tbl submerchant ON submerchant.accountid = account.id
-                WHERE account.clientid = $this->_clientId
-                      AND submerchant.pspid = $this->_pspId
+                WHERE account.clientid = $this->_iClientId
+                      AND submerchant.pspid = $this->_iPspId
                       AND account.enabled
                       AND submerchant.enabled";
 
@@ -68,25 +68,25 @@ abstract class mPointSettlement
         return $aAccounts;
     }
 
-    private function getClientConfiguration($_OBJ_DB)
+    private function _getClientConfiguration($_OBJ_DB)
     {
-        $this->_clientConfig = ClientConfig::produceConfig($_OBJ_DB, $this->_clientId);
+        $this->_objClientConfig = ClientConfig::produceConfig($_OBJ_DB, $this->_iClientId);
     }
 
-    private function getPSPConfiguration($_OBJ_DB)
+    private function _getPSPConfiguration($_OBJ_DB)
     {
-        $accountIds = $this->getAccountIds($_OBJ_DB);
-        $this->_accountId =$accountIds[0];
-        $this->_pspConfig = PSPConfig::produceConfig($_OBJ_DB, $this->_clientId, $this->_accountId, $this->_pspId);
+        $accountIds = $this->_getAccountIds($_OBJ_DB);
+        $this->_iAccountId =$accountIds[0];
+        $this->_objPspConfig = PSPConfig::produceConfig($_OBJ_DB, $this->_iClientId, $this->_iAccountId, $this->_iPspId);
     }
 
-    private function getTransactions($_OBJ_DB, $stateIds){
+    private function _getTransactions($_OBJ_DB, $stateIds){
 
         $sql = "SELECT record_number, status
                 FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl
-                WHERE client_id = $this->_clientId 
-                AND psp_id = '$this->_pspId'                
-                AND record_type = '$this->_recordType'                
+                WHERE client_id = $this->_iClientId 
+                AND psp_id = '$this->_iPspId'                
+                AND record_type = '$this->_sRecordType'                
                 ORDER BY id DESC LIMIT 1 ";
 
         $res = $_OBJ_DB->getName($sql);
@@ -97,12 +97,12 @@ abstract class mPointSettlement
                 return;
         }
 
-        $this->_recordNumber = $recordNumber + 1 ;
+        $this->_iRecordNumber = $recordNumber + 1 ;
 
         $sql = "SELECT txn.id
                 FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl AS txn, log" . sSCHEMA_POSTFIX . ".message_tbl AS msg
-                WHERE txn.clientid = $this->_clientId
-                AND txn.pspid =  $this->_pspId
+                WHERE txn.clientid = $this->_iClientId
+                AND txn.pspid =  $this->_iPspId
                 AND txn.cardid NOTNULL
                 AND msg.stateid IN ( $stateIds) 
                 AND msg.txnid = txn.id ";
@@ -110,82 +110,82 @@ abstract class mPointSettlement
         $aRS = $_OBJ_DB->getAllNames($sql);
         if (is_array($aRS) === true && count($aRS) > 0) {
 
-            $this->_transactionXML = "<transactions>";
+            $this->_sTransactionXML = "<transactions>";
 
             foreach ($aRS as $rs) {
                 $transactionId = (int)$rs["ID"];
-                array_push($this->_transactionIds,$transactionId);
+                array_push($this->_arrayTransactionIds,$transactionId);
                 $obj_TxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB);
                 $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
-                $this->_transactionXML .= $obj_TxnInfo->toXML();
-                $this->_totalTransactionAmount += $obj_TxnInfo->getAmount();
+                $this->_sTransactionXML .= $obj_TxnInfo->toXML();
+                $this->_iTotalTransactionAmount += $obj_TxnInfo->getAmount();
             }
 
-            $this->_transactionXML .= "</transactions>";
+            $this->_sTransactionXML .= "</transactions>";
         }
     }
 
     public function capture($_OBJ_DB)
     {
-        $this->_recordType = "CAPTURE";
-        $this->getTransactions($_OBJ_DB, "2101");
+        $this->_sRecordType = "CAPTURE";
+        $this->_getTransactions($_OBJ_DB, "2101");
     }
 
     public function cancel($_OBJ_DB)
     {
-        $this->_recordType = "CANCEL";
-        $this->getTransactions($_OBJ_DB, "2102,2001,2101");
+        $this->_sRecordType = "CANCEL";
+        $this->_getTransactions($_OBJ_DB, "2102,2001,2101");
     }
 
     public function refund($_OBJ_DB)
     {
-        $this->_recordType = "REFUND";
-        $this->getTransactions($_OBJ_DB, "2103");
+        $this->_sRecordType = "REFUND";
+        $this->_getTransactions($_OBJ_DB, "2103");
     }
 
-    abstract protected function createSettlementRecord($_OBJ_DB);
+    abstract protected function _createSettlementRecord($_OBJ_DB);
 
-    protected function toSettlementInfoXML()
+    protected function _toSettlementInfoXML()
     {
 
         $xml = "<settlement-info>";
-        $xml .= "<record-number>$this->_recordNumber</record-number>";
-        $xml .= "<file-reference-number>$this->_fileReferenceNumber</file-reference-number>";
-        $xml .= "<file-sequence-number>$this->_fileSequenceNumber</file-sequence-number>";
-        $xml .= "<file-creation-date>" . date("Ymd", strtotime($this->_fileCreatedDate)) . "</file-creation-date>";
-        $xml .= "<file-creation-time>" . date("His", strtotime($this->_fileCreatedDate)) . "</file-creation-time>";
-        $xml .= "<record-type>$this->_recordType</record-type>";
-        $xml .= "<total-amount>$this->_totalTransactionAmount</total-amount>";
+        $xml .= "<record-number>$this->_iRecordNumber</record-number>";
+        $xml .= "<file-reference-number>$this->_sFileReferenceNumber</file-reference-number>";
+        $xml .= "<file-sequence-number>$this->_iFileSequenceNumber</file-sequence-number>";
+        $xml .= "<file-creation-date>" . date("Ymd", strtotime($this->_sFileCreatedDate)) . "</file-creation-date>";
+        $xml .= "<file-creation-time>" . date("His", strtotime($this->_sFileCreatedDate)) . "</file-creation-time>";
+        $xml .= "<record-type>$this->_sRecordType</record-type>";
+        $xml .= "<total-amount>$this->_iTotalTransactionAmount</total-amount>";
         $xml .= "</settlement-info>";
 
         return $xml;
     }
 
-    protected function send($_OBJ_DB)
+    protected function _send($_OBJ_DB)
     {
         try {
 
-            $this->insertSettlementRecords($_OBJ_DB);
+            $this->_insertSettlementRecords($_OBJ_DB);
 
-            if ($this->_clientConfig == NULL) {
-                $this->getClientConfiguration($_OBJ_DB);
+            if ($this->_objClientConfig == NULL) {
+                $this->_getClientConfiguration($_OBJ_DB);
             }
 
-            if ($this->_pspConfig == NULL) {
-                $this->getPSPConfiguration($_OBJ_DB);
+            if ($this->_objPspConfig == NULL) {
+                $this->_getPSPConfiguration($_OBJ_DB);
             }
             $requestBody = '<?xml version="1.0" encoding="UTF-8"?><root><settlement>';
-            $requestBody .= $this->_clientConfig->toXML();
-            $requestBody .= $this->toSettlementInfoXML();
-            $requestBody .= $this->_pspConfig->toXML();
-            $requestBody .= $this->_transactionXML;
+            $requestBody .= $this->_objClientConfig->toXML();
+            $requestBody .= $this->_toSettlementInfoXML();
+            $requestBody .= $this->_objPspConfig->toXML();
+            $requestBody .= $this->_sTransactionXML;
             $requestBody .= '</settlement></root>';
 
-            $obj_ConnInfo = $this->_constConnInfo($this->_connectionInfo["paths"]["settlement"]);
+            $obj_ConnInfo = $this->_constConnInfo($this->_objConnectionInfo["paths"]["settlement"]);
 
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
             $obj_HTTP->connect();
-            $code = $obj_HTTP->send($this->constHTTPHeaders($this->_clientConfig->getUsername(), $this->_clientConfig->getPassword()), $requestBody);
+            $code = $obj_HTTP->send($this->_constHTTPHeaders($this->_objClientConfig->getUsername(), $this->_objClientConfig->getPassword()), $requestBody);
             $obj_HTTP->disConnect();
             if ($code != 200) {
                 throw new mPointException("Settlement Request Error code: " . $code . " and body: " . $obj_HTTP->getReplyBody(), $code);
@@ -195,27 +195,27 @@ abstract class mPointSettlement
                 $replyBody = simpledom_load_string($obj_HTTP->getReplyBody());
                 if($replyBody->settlement->file["upload-status"] == "true")
                 {
-                    $this->updateSettlementState($_OBJ_DB, "waiting");
-                    $this->updateDescription($_OBJ_DB, $replyBody);
+                    $this->_updateSettlementState($_OBJ_DB, "waiting");
+                    $this->_updateDescription($_OBJ_DB, $replyBody);
                 }
                 else
                 {
-                    $this->updateSettlementState($_OBJ_DB, "fail");
+                    $this->_updateSettlementState($_OBJ_DB, "fail");
                 }
             }
         } catch (Exception $e) {
-            $this->updateSettlementState($_OBJ_DB, "fail");
-            trigger_error("Settlement record no: " . $this->_settlementId . " failed with code: " . $e->getCode() . " and message: " . $e->getMessage(), E_USER_ERROR);
+            $this->_updateSettlementState($_OBJ_DB, "fail");
+            trigger_error("Settlement record no: " . $this->_iSettlementId . " failed with code: " . $e->getCode() . " and message: " . $e->getMessage(), E_USER_ERROR);
             return $e->getCode();
         }
     }
 
     protected function _constConnInfo($path)
     {
-        $aCI = $this->_connectionInfo;
-        $aURLInfo = parse_url($this->_clientConfig->getMESBURL() );
+        $aCI = $this->_objConnectionInfo;
+        $aURLInfo = parse_url($this->_objClientConfig->getMESBURL() );
 
-        return new HTTPConnInfo($aCI["protocol"], $aURLInfo["host"], $aCI["port"], $aCI["timeout"], $path, $aCI["method"], $aCI["contenttype"], $this->_clientConfig->getUsername(), $this->_clientConfig->getPassword() );
+        return new HTTPConnInfo($aCI["protocol"], $aURLInfo["host"], $aCI["port"], $aCI["timeout"], $path, $aCI["method"], $aCI["contenttype"], $this->_objClientConfig->getUsername(), $this->_objClientConfig->getPassword() );
     }
 
     /**
@@ -223,7 +223,7 @@ abstract class mPointSettlement
      *
      * @return string
      */
-    protected function constHTTPHeaders($authUser=null,$authPass=null)
+    protected function _constHTTPHeaders($authUser=null, $authPass=null)
     {
         /* ----- Construct HTTP Header Start ----- */
         $h = "{METHOD} {PATH} HTTP/1.0" .HTTPClient::CRLF;
@@ -243,30 +243,30 @@ abstract class mPointSettlement
 
     abstract public function sendRequest($_OBJ_DB);
 
-    protected function updateSettlementState($_OBJ_DB, $status){
+    protected function _updateSettlementState($_OBJ_DB, $status){
         $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".settlement_tbl
                 SET status = '$status' 
-                WHERE id = $this->_settlementId";
+                WHERE id = $this->_iSettlementId";
         $_OBJ_DB->query($sql);
     }
 
-    protected function insertSettlementRecords($_OBJ_DB){
+    protected function _insertSettlementRecords($_OBJ_DB){
         $sql = "INSERT INTO log" . sSCHEMA_POSTFIX . ".settlement_record_tbl 
                    (settlementid, transactionid) 
-                   VALUES ($this->_settlementId, ". $this->_transactionIds[0] .")";
+                   VALUES ($this->_iSettlementId, ". $this->_arrayTransactionIds[0] .")";
 
-        for ($index = 1 ; $index < count($this->_transactionIds); $index++)
+        for ($index = 1 ; $index < count($this->_arrayTransactionIds); $index++)
         {
-            $sql .= " , ( $this->_settlementId, ".$this->_transactionIds[$index].")";
+            $sql .= " , ( $this->_iSettlementId, ".$this->_arrayTransactionIds[$index].")";
         }
         $_OBJ_DB->query($sql);
     }
 
-    protected function updateDescription($_OBJ_DB, $replyBody){
+    protected function _updateDescription($_OBJ_DB, $replyBody){
 
         $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".settlement_tbl
             SET description = '".$replyBody->settlement->file['description']."' 
-            WHERE id = $this->_settlementId";
+            WHERE id = $this->_iSettlementId";
 
 
         $_OBJ_DB->query($sql);
@@ -275,7 +275,7 @@ abstract class mPointSettlement
         {
            $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".settlement_record_tbl
                 SET description = '".$replyBody->settlement->transactions->transaction[$i]["description"]."' 
-                WHERE settlementid = $this->_settlementId
+                WHERE settlementid = $this->_iSettlementId
                 AND transactionid=" . $replyBody->settlement->transactions->transaction[$i]["id"];
 
             $_OBJ_DB->query($sql);
