@@ -125,26 +125,32 @@ $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH));
 
-if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true || true) {
-    if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH . "mpoint.xsd") === true && count($obj_DOM->{'payment-settlements'}) > 0) {
+if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true || true)
+{
+    if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH . "mpoint.xsd") === true && count($obj_DOM->{'payment-settlements'}) > 0)
+    {
+        $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
         $paymentSettlementNodes = $obj_DOM->{'payment-settlements'};
         $arrayClients = [];
         // <editor-fold defaultstate="collapsed" desc="if request contains the client id">
         $paymentSettlementNodes = $paymentSettlementNodes->children();
-        if (count($paymentSettlementNodes ) > 0) {
-            foreach ($paymentSettlementNodes as $paymentSettlementNode) {
+        if (count($paymentSettlementNodes ) > 0)
+        {
+            foreach ($paymentSettlementNodes as $paymentSettlementNode)
+            {
                 $arrayServiceProviders = [];
                 $clientId= (int)$paymentSettlementNode['client-id'];
-                if (array_key_exists($clientId, $arrayClients) == false) {
+                if (array_key_exists($clientId, $arrayClients) == false)
+                {
                     $arrayClients[$clientId] =[];
-
                 }
                 // <editor-fold defaultstate="collapsed" desc="if request contains the psp id / information">
                 $serviceProviders = $paymentSettlementNode->{'service-providers'}->children();
-                if(count($serviceProviders) > 0 ) {
-                    foreach ($serviceProviders as $serviceProvider) {
+                if(count($serviceProviders) > 0 )
+                {
+                    foreach ($serviceProviders as $serviceProvider)
+                    {
                         array_push($arrayServiceProviders,(int)$serviceProvider["id"]);
-                        //$arrayServiceProviders[(int)$serviceProvider["id"]] = [];
                     }
                 }
                 // </editor-fold>
@@ -152,55 +158,34 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                 // <editor-fold defaultstate="collapsed" desc="otherwise fetch details from data for all psp ids configured for client">
                 else
                 {
-                    $sql = "SELECT pspid
-                        FROM client.cardaccess_tbl
-                        WHERE pspid IN
-                              (SELECT id
-                               FROM system.psp_tbl
-                               WHERE capture_method <> 0)
-                        AND enabled 
-                        AND clientid = $clientId" ;
-
-                    $aRS = $_OBJ_DB->getAllNames($sql);
-                    if (is_array($aRS) === true && count($aRS) > 0) {
-                        foreach ($aRS as $rs) {
+                    $aRS = $obj_mPoint->getStaticRouteData($clientId);
+                    if (is_array($aRS) === true && count($aRS) > 0)
+                    {
+                        foreach ($aRS as $rs)
+                        {
                             array_push($arrayServiceProviders,(int)$rs["PSPID"]);
-                            //$arrayServiceProviders[(int)$rs["PSPID"]] = [];
                         }
                     }
                 }
                 // </editor-fold>
                 $arrayClients[$clientId] = $arrayServiceProviders;
-
-
             }
         }
         // </editor-fold>
 
         // <editor-fold defaultstate="collapsed" desc="otherwise fetch details from data for all client id">
         else
+        {
+            $aRS = $obj_mPoint->getStaticRouteData();
+            if (is_array($aRS) === true && count($aRS) > 0)
             {
-            $sql = "SELECT DISTINCT clientid, pspid
-                        FROM client.cardaccess_tbl
-                        WHERE pspid IN
-                              (SELECT id
-                               FROM system.psp_tbl
-                               WHERE capture_method <> 0)
-                        AND enabled";
-
-            $aRS = $_OBJ_DB->getAllNames($sql);
-            if (is_array($aRS) === true && count($aRS) > 0) {
-                foreach ($aRS as $rs) {
+                foreach ($aRS as $rs)
+                {
                     $clientId = $rs["CLIENTID"];
-                    if (array_key_exists($clientId, $arrayClients) == false) {
+                    if (array_key_exists($clientId, $arrayClients) == false)
+                    {
                         $arrayClients[$clientId] =[];
-
                     }
-                   /* foreach ($arrayClients[$clientId] as $accountid => &$account){
-
-                        $account[(int)$rs["PSPID"]] = [];
-                    }*/
-                    //$arrayClients[$clientId][(int)$rs["PSPID"]] = [];
                     array_push($arrayClients[$clientId], (int)$rs["PSPID"]);
                 }
             }
@@ -210,11 +195,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
         // <editor-fold defaultstate="collapsed" desc="fetch all transaction which is authorized">
         foreach ($arrayClients as $clientid => &$client)
         {
-            foreach ($client as $pspid) {
-
+            foreach ($client as $pspid)
+            {
                 $obj_Settlement = SettlementFactory::create($clientid, $pspid, $aHTTP_CONN_INFO);
-                if($obj_Settlement != NULL) {
-              //      $obj_Settlement->createSettlementRecord($_OBJ_DB, "REFUND");
+                if($obj_Settlement != NULL)
+                {
                     $obj_Settlement->capture($_OBJ_DB);
                     $obj_Settlement->sendRequest($_OBJ_DB);
 
