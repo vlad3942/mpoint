@@ -128,19 +128,19 @@ abstract class mPointSettlement
     public function capture($_OBJ_DB)
     {
         $this->_sRecordType = "CAPTURE";
-        $this->_getTransactions($_OBJ_DB, "2101");
+        $this->_getTransactions($_OBJ_DB, "20012");
     }
 
     public function cancel($_OBJ_DB)
     {
         $this->_sRecordType = "CANCEL";
-        $this->_getTransactions($_OBJ_DB, "2102,2001,2101");
+        $this->_getTransactions($_OBJ_DB, "20022,2001,20012");
     }
 
     public function refund($_OBJ_DB)
     {
         $this->_sRecordType = "REFUND";
-        $this->_getTransactions($_OBJ_DB, "2103");
+        $this->_getTransactions($_OBJ_DB, "20032");
     }
 
     abstract protected function _createSettlementRecord($_OBJ_DB);
