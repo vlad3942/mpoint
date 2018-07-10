@@ -13,7 +13,7 @@ class PaymentProcessor
 {
     private $_objPSPConfig;
     private $_objPSP;
-    private $aConnInfo;
+    private $aConnInfo = array();
 
     private function _setConnInfo($aConnInfo, $iPSPID)
     {
@@ -21,15 +21,21 @@ class PaymentProcessor
         {
             $this->aConnInfo = $aConnInfo[$iPSPID];
         }
-        else { throw new mPointException("Connection Info not found for the PSP ID :". $iPSPID); }
     }
 
     public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo)
     {
         $this->_objPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
-        $this->_setConnInfo($aConnInfo, $iPSPID);
         $sPSPClassName = $this->_objPSPConfig->getName();
-        $this->_objPSP = new $sPSPClassName($oDB, $oTxt, $oTI, $this->aConnInfo);
+        $this->_setConnInfo($aConnInfo, $iPSPID);
+        if (empty($this->aConnInfo) === true)
+        {
+            $this->_objPSP = Callback::producePSP($oDB, $oTxt, $oTI, $aConnInfo, $this->_objPSPConfig);
+        }
+        else
+        {
+            $this->_objPSP = new $sPSPClassName($oDB, $oTxt, $oTI, $this->aConnInfo);
+        }
     }
 
     public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo)

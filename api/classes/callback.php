@@ -633,7 +633,7 @@ abstract class Callback extends EndUserAccount
 		case (Constants::iAMEX_EXPRESS_CHECKOUT_PSP):
 			return new AMEXExpressCheckout($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["amex-express-checkout"]);
 		case (Constants::iWIRE_CARD_PSP):
-			return new WireCard($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["wire-card"]);
+			return new WireCard($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo[Constants::iWIRE_CARD_PSP]);
 		case (Constants::iDATA_CASH_PSP):
 			return new DataCash($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["data-cash"]);
 		case (Constants::iGLOBAL_COLLECT_PSP):

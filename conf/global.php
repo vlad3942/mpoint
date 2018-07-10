@@ -368,7 +368,7 @@ $aHTTP_CONN_INFO["data-cash"]["paths"]["refund"] = "/mpoint/data-cash/refund";
 /**
  * Connection info for connecting to Wire Card
  */
-$aHTTP_CONN_INFO["wire-card"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+/*$aHTTP_CONN_INFO["wire-card"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
 $aHTTP_CONN_INFO["wire-card"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
 $aHTTP_CONN_INFO["wire-card"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
 $aHTTP_CONN_INFO["wire-card"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
@@ -381,7 +381,7 @@ $aHTTP_CONN_INFO["wire-card"]["paths"]["capture"] = "/mpoint/wire-card/capture";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["status"] = "/mpoint/wire-card/status";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["refund"] = "/mpoint/wire-card/refund";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["callback"] = "/mpoint/wire-card/callback";
-$aHTTP_CONN_INFO["wire-card"]["paths"]["cancel"] = "/mpoint/wire-card/cancel";
+$aHTTP_CONN_INFO["wire-card"]["paths"]["cancel"] = "/mpoint/wire-card/cancel";*/
 
 /**
  * Connection info for connecting to Wire Card
