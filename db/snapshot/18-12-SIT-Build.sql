@@ -33,3 +33,7 @@ CREATE TABLE log.settlement_record_tbl
 -------- CMP-2426: PCI Password expose --------
 DROP TABLE admin.user_tbl CASCADE;
 -------- CMP-2426: PCI Password expose --------
+
+INSERT INTO log.state_tbl (id, name, module, func) VALUES (20032, 'Refund Initialized', 'Payment', 'refund');
+INSERT INTO log.state_tbl (id, name, module, func) VALUES (20022, 'Cancel Initialized', 'Payment', 'cancel');
+INSERT INTO log.state_tbl (id, name, module, func) VALUES (20012, 'Capture Initialized', 'Payment', 'capture');
