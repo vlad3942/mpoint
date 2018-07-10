@@ -1477,14 +1477,6 @@ class Validate extends ValidateBase
     	   		$number = preg_replace("/[^0-9]/", "", $number);
     	   		
 	    		if(strlen($number) < 13) { $code = 2; }
-                else if(strlen($number) === 15) {
-	    		    if(substr($number,0,1) === '1')
-	    		    {
-	    		        $code = 10;
-	    		    } else {
-	    		        $code = 4;
-                    }
-                }
 	    		else if(strlen($number) > 16) { $code = 3; }
 	    		else
 	    		{
