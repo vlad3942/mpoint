@@ -341,6 +341,24 @@ abstract class Constants
     const iSESSION_PARTIALLY_COMPLETED = 4031;
 
     /**
+	 * Defines the ID of the State that indicates that the payment has been initiated for captured.
+	 *
+	 */
+	const iPAYMENT_CAPTURE_INITIATED_STATE = 20012;
+
+	/**
+	 * Defines the ID of the State that indicates that a previously authorized payment has been initiated for cancel.
+	 *
+	 */
+	const iPAYMENT_CANCEL_INITIATED_STATE = 20022;
+
+	/**
+	 * Defines the ID of the State that indicates that previously captured payment has been initiated for refund.
+	 *
+	 */
+	const iPAYMENT_REFUND_INITIATED_STATE = 20032;
+
+    /**
      * Defines the ProductType for the ticket
      *
      */

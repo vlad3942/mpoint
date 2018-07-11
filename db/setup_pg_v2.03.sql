@@ -56,6 +56,6 @@ INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, 
 UPDATE system.psp_tbl SET  capture_method = 6 WHERE id = 45;
 
 
-INSERT INTO log.state_tbl (id, name, module, func) VALUES (2103, 'Refund Initialized', 'Payment', 'refund');
-INSERT INTO log.state_tbl (id, name, module, func) VALUES (2102, 'Cancel Initialized', 'Payment', 'cancel');
-INSERT INTO log.state_tbl (id, name, module, func) VALUES (2101, 'Capture Initialized', 'Payment', 'capture');
+INSERT INTO log.state_tbl (id, name, module, func) VALUES (20032, 'Refund Initialized', 'Payment', 'refund');
+INSERT INTO log.state_tbl (id, name, module, func) VALUES (20022, 'Cancel Initialized', 'Payment', 'cancel');
+INSERT INTO log.state_tbl (id, name, module, func) VALUES (20012, 'Capture Initialized', 'Payment', 'capture');

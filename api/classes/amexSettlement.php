@@ -16,10 +16,10 @@ class AmexSettlement extends mPointSettlement
         parent::__construct($clientId, Constants::iAMEX_ACQUIRER, $connecctionInfo["amex"]);
     }
 
-    protected function createSettlementRecord($_OBJ_DB)
+    protected function _createSettlementRecord($_OBJ_DB)
     {
-        $recordNumber = $this->_recordNumber;
-        $referenceNumber = $this->_recordType . "_" . $recordNumber;
+        $recordNumber = $this->_iRecordNumber;
+        $referenceNumber = $this->_sRecordType . "_" . $recordNumber;
 
         $sql = "INSERT INTO log" . sSCHEMA_POSTFIX . ".settlement_tbl
                     (record_number, file_reference_number, file_sequence_number, client_id, record_type, psp_id)
@@ -32,9 +32,9 @@ class AmexSettlement extends mPointSettlement
                 $recordNumber,
                 $referenceNumber,
                 $recordNumber,
-                $this->_clientId,
-                $this->_recordType,
-                $this->_pspId
+                $this->_iClientId,
+                $this->_sRecordType,
+                $this->_iPspId
             );
 
             $result = $_OBJ_DB->execute($resource, $aParam);
@@ -43,11 +43,11 @@ class AmexSettlement extends mPointSettlement
                 throw new Exception("Unable to create settlement record", E_USER_ERROR);
             } else {
                 $RS = $_OBJ_DB->fetchName($result);
-                $this->_settlementId = $RS["ID"];
-                $this->_fileCreatedDate = $RS["CREATED"];
-                $this->_fileReferenceNumber = $referenceNumber;
-                $this->_fileSequenceNumber = $recordNumber;
-                $this->_recordNumber = $recordNumber;
+                $this->_iSettlementId = $RS["ID"];
+                $this->_sFileCreatedDate = $RS["CREATED"];
+                $this->_sFileReferenceNumber = $referenceNumber;
+                $this->_iFileSequenceNumber = $recordNumber;
+                $this->_iRecordNumber = $recordNumber;
             }
         }
     }
@@ -55,10 +55,10 @@ class AmexSettlement extends mPointSettlement
 
     public function sendRequest($_OBJ_DB)
     {
-        if($this->_totalTransactionAmount > 0  )
+        if($this->_iTotalTransactionAmount > 0  )
         {
-            $this->createSettlementRecord($_OBJ_DB);
-            $this->send($_OBJ_DB);
+            $this->_createSettlementRecord($_OBJ_DB);
+            $this->_send($_OBJ_DB);
         }
     }
 }
