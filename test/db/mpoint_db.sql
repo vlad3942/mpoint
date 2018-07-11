@@ -7576,6 +7576,10 @@ ALTER TABLE Client.gatewaytrigger_tbl ADD COLUMN lastrun timestamp without time 
 -- Run the "TRUNCATE TABLE log.session_tbl CASCADE;" before executing below query.
 ALTER TABLE log.session_tbl ADD CONSTRAINT constraint_name UNIQUE (orderid);
 
+
+ALTER TABLE Client.Client_Tbl ADD secretkey VARCHAR(100);
+
+	  
 ALTER TABLE log.transaction_tbl
 ADD approval_action_code varchar(40) NULL;
 COMMENT ON COLUMN log.transaction_tbl.approval_action_code

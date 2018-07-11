@@ -148,6 +148,8 @@ try
     $propertyValue = $obj_TxnInfo->getClientConfig()->getAdditionalProperties("3DVERIFICATION");
 
     if($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER && $propertyValue == true && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
+        //Log the incoming status code.
+        $obj_mPoint->newMessage($obj_TxnInfo->getID(), $iStateID, $sRawXML);
         if($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
 
             $mvault = new MVault($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['mvault']);
@@ -232,9 +234,6 @@ catch (HTTPException $e)
     $xml .= '<status code="'. $e->getCode() .'">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES). '</status>';
     trigger_error($e->getMessage() ."\n". $HTTP_RAW_POST_DATA, E_USER_WARNING);
 }
-
-//Log the incoming status code.
-$obj_mPoint->newMessage($obj_TxnInfo->getID(), $iStateID, $sRawXML);
 
 header("Content-Type: text/xml; charset=\"UTF-8\"");
 echo '<?xml version="1.0" encoding="UTF-8"?>';

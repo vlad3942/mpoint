@@ -382,6 +382,7 @@ $aHTTP_CONN_INFO["wire-card"]["paths"]["status"] = "/mpoint/wire-card/status";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["refund"] = "/mpoint/wire-card/refund";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["callback"] = "/mpoint/wire-card/callback";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["cancel"] = "/mpoint/wire-card/cancel";
+$aHTTP_CONN_INFO["wire-card"]["paths"]["post-status"] = "/mpoint/wire-card/post-status";
 
 /**
  * Connection info for connecting to Android Pay
@@ -707,6 +708,7 @@ $aHTTP_CONN_INFO["2c2p-alc"]["paths"]["capture"] = "/mpoint/2c2p-alc/capture";
 $aHTTP_CONN_INFO["2c2p-alc"]["paths"]["refund"] = "/mpoint/2c2p-alc/refund";
 $aHTTP_CONN_INFO["2c2p-alc"]["paths"]["cancel"] = "/mpoint/2c2p-alc/cancel";
 $aHTTP_CONN_INFO["2c2p-alc"]["paths"]["callback"] = "/mpoint/2c2p-alc/callback";
+$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["post-status"] = "/mpoint/2c2p-alc/post-status";
 
 
 /**
@@ -781,6 +783,7 @@ $aHTTP_CONN_INFO["amex"]["paths"]["capture"] = "/mpsp/amex/capture";
 $aHTTP_CONN_INFO["amex"]["paths"]["initialize"] = "/mpsp/amex/initialize";
 $aHTTP_CONN_INFO["amex"]["paths"]["refund"] = "/mpsp/amex/refund";
 $aHTTP_CONN_INFO["amex"]["paths"]["cancel"] = "/mpsp/amex/cancel";
+$aHTTP_CONN_INFO["amex"]["paths"]["settlement"] = "/mpsp/amex/payment-settlement";
 
 
 /**
