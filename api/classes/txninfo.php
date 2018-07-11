@@ -427,6 +427,8 @@ class TxnInfo
         if(count($codes) == 2){
             $this->_approvalCode = $codes[0];
             $this->_actionCode = $codes[1];
+        }else{
+        	$this->_approvalCode = $approvalActionCode;
         }
 
         $this->_obj_PaymentSession = $paymentSession;
@@ -627,6 +629,12 @@ class TxnInfo
 	 * @return 	integer		Unique ID for the End-User's prepaid account or -1 if no account has been associated
 	 */
 	public function getAccountID() { return $this->_iAccountID; }
+	/**
+	 * Returns the txn issuer approval code
+	 *
+	 * @return 	string		
+	 */
+	public function getApprovalCode() { return $this->_approvalCode; }
 	/**
 	 * Returns the Client's Reference for the Customer
 	 *
