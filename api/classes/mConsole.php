@@ -649,7 +649,8 @@ class mConsole extends Admin
 					Constants::iPAYMENT_CAPTURED_STATE,
 					Constants::iPAYMENT_REFUNDED_STATE,
 					Constants::iPAYMENT_REJECTED_STATE,
-					Constants::iPAYMENT_DECLINED_STATE);
+					Constants::iPAYMENT_DECLINED_STATE,
+                    Constants::iPAYMENT_WITH_ACCOUNT_STATE);
 		}
 		$sql = "";
 		// A search for an Order Number makes searching the end-user's Transaction table obsolete
