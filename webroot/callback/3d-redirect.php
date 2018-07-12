@@ -146,10 +146,10 @@ try
 
     array_push($aStateId,$iStateID);
     $propertyValue = $obj_TxnInfo->getClientConfig()->getAdditionalProperties("3DVERIFICATION");
-
+    //Log the incoming status code.
+    $obj_mPoint->newMessage($obj_TxnInfo->getID(), $iStateID, $sRawXML);
     if($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER && $propertyValue == true && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
-        //Log the incoming status code.
-        $obj_mPoint->newMessage($obj_TxnInfo->getID(), $iStateID, $sRawXML);
+
         if($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
 
             $mvault = new MVault($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['mvault']);
