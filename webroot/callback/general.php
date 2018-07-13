@@ -116,6 +116,7 @@ require_once(sCLASS_PATH . "/uatp.php");
 			</card>
 		</transaction>
 		<status code="2000">17103%3A1111%3A6%2F2016</status>
+		<approval-code>45TE24355</approval-code>
 	</callback>
 </root>
  */
@@ -189,6 +190,14 @@ try
             $_OBJ_DB->query($sql);
         }
     }
+    
+    if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_XML->callback->{'approval-code'} >0){
+    	
+    	$sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+                            SET approval_action_code= '".$obj_XML->callback->{'approval-code'}."' WHERE id = " . $obj_XML->callback->transaction['id'];
+    	$_OBJ_DB->query($sql);
+    }
+    	
 
     if($iAccountValidation != 1)
 	{
