@@ -87,3 +87,5 @@ CREATE TABLE log.settlement_record_tbl
 );
 
 ALTER table Client.Client_Tbl ADD secretkey VARCHAR(100);
+
+UPDATE Client.Client_tbl SET secretkey='KJHs@iWqha91203e23' WHERE id = 10007 ;
