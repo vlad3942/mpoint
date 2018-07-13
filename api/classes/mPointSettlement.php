@@ -19,7 +19,7 @@ abstract class mPointSettlement
 
     private $_objPspConfig = NULL;
 
-    private $_objConnectionInfo = NULL;
+    protected $_objConnectionInfo = NULL;
 
     protected $_iSettlementId = NULL;
 
@@ -41,11 +41,14 @@ abstract class mPointSettlement
 
     protected $_arrayTransactionIds = [];
 
-    public function __construct($clientId, $pspId, $connectionInfo)
+    protected $_objTXT;
+
+    public function __construct($_OBJ_TXT, $clientId, $pspId, $connectionInfo)
     {
         $this->_iClientId = $clientId;
         $this->_iPspId = $pspId;
         $this->_objConnectionInfo = $connectionInfo;
+        $this->_objTXT = $_OBJ_TXT;
     }
 
     private function _getAccountIds($_OBJ_DB)
@@ -93,7 +96,7 @@ abstract class mPointSettlement
         $recordNumber = 0;
         if (is_array($res) === true && count($res) > 0) {
             $recordNumber = (int)$res["RECORD_NUMBER"];
-            if( strtolower( $res["STATUS"]) == "active")
+            if( strtolower( $res["STATUS"]) == "active" ||  strtolower( $res["STATUS"]) == "waiting")
                 return;
         }
 
@@ -282,4 +285,67 @@ abstract class mPointSettlement
         }
     }
 
+    public static function getInprogressSettlements($_OBJ_DB)
+    {
+        $sql = "SELECT psp_id, client_id
+                FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl
+                WHERE status = 'waiting' 
+                GROUP BY psp_id, client_id";
+
+        $res = $_OBJ_DB->getName($sql);
+        $settlementRecords = [];
+        $index = 0;
+        if (is_array($res) === true && count($res) > 0) {
+            $settlementRecords[$index]["client"] = (int)$res["CLIENT_ID"];
+            $settlementRecords[$index]["psp"] = (int)$res["PSP_ID"];
+        }
+        return $settlementRecords;
+    }
+
+    abstract protected function _parseConfirmationReport($_OBJ_DB, $response);
+
+    public function getConfirmationReport($_OBJ_DB)
+    {
+        try
+        {
+            if ($this->_objClientConfig == NULL) {
+                $this->_getClientConfiguration($_OBJ_DB);
+            }
+
+            if ($this->_objPspConfig == NULL) {
+                $this->_getPSPConfiguration($_OBJ_DB);
+            }
+            $requestBody = '<?xml version="1.0" encoding="UTF-8"?><root><process-settlement>';
+            $requestBody .= $this->_objClientConfig->toXML();
+            $requestBody .= $this->_objPspConfig->toXML();
+            $requestBody .= '</process-settlement></root>';
+
+            $obj_ConnInfo = $this->_constConnInfo($this->_objConnectionInfo["paths"]["process-settlement"]);
+
+            $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+            $obj_HTTP->connect();
+            $code = $obj_HTTP->send($this->_constHTTPHeaders($this->_objClientConfig->getUsername(), $this->_objClientConfig->getPassword()), $requestBody);
+            $obj_HTTP->disConnect();
+            if ($code != 200) {
+                throw new mPointException("Settlement Confirmation Process Request Error code: " . $code . " and body: " . $obj_HTTP->getReplyBody(), $code);
+            }
+            else
+            {
+                $replyBody = $obj_HTTP->getReplyBody();
+                if(trim($replyBody ) === "")
+                {
+                    throw new mPointException("Settlement Confirmation Process Request Error code: " . $code . " and body: " . $obj_HTTP->getReplyBody(), $code);
+                }
+                else
+                {
+                    $this->_parseConfirmationReport($_OBJ_DB, $replyBody);
+                }
+            }
+        } 
+		catch (Exception $e) 
+		{
+            trigger_error("Settlement Confirmation Process failed with code: " . $e->getCode() . " and message: " . $e->getMessage(), E_USER_ERROR);
+            return $e->getCode();
+        }
+    }
 }
