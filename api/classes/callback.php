@@ -398,7 +398,6 @@ abstract class Callback extends EndUserAccount
         if (strlen($this->_obj_TxnInfo->getApprovalCode()) >0){
         	$sBody .= "&approval-code=". $this->_obj_TxnInfo->getApprovalCode();
         }
-        trigger_error("********************* ". $sBody, E_USER_NOTICE);
         /* ----- Construct Body End ----- */
         $this->performCallback($sBody, $obj_SurePay ,0 ,$sid);
 	}
@@ -804,7 +803,6 @@ abstract class Callback extends EndUserAccount
             $sBody .= "&expiry=". $exp;
         }
 
-        trigger_error("********************* ". $sBody, E_USER_NOTICE);
         /* Adding customer Info as part of the callback query params */
         if (($this->_obj_TxnInfo->getAccountID() > 0) === true )
         {
