@@ -783,6 +783,7 @@ $aHTTP_CONN_INFO["amex"]["paths"]["capture"] = "/mpsp/amex/capture";
 $aHTTP_CONN_INFO["amex"]["paths"]["initialize"] = "/mpsp/amex/initialize";
 $aHTTP_CONN_INFO["amex"]["paths"]["refund"] = "/mpsp/amex/refund";
 $aHTTP_CONN_INFO["amex"]["paths"]["cancel"] = "/mpsp/amex/cancel";
+$aHTTP_CONN_INFO["amex"]["paths"]["settlement"] = "/mpsp/amex/payment-settlement";
 
 
 /**
