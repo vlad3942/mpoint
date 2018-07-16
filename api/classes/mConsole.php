@@ -1368,8 +1368,7 @@ class mConsole extends Admin
 					$aOrderbyClauses[] = 'DAY';
             		break;
 				case 'state':
-					$aSelector[] = 'S.name AS STATE';
-					$aSeriesSelector[] = "coalesce(Q.STATE,'') as STATE";
+					$aSelector[] = 'M.STATEID AS STATE';
 					$aOrderbyClauses[] = 'STATE '.$orderby['currency'];//if value present the it will return value(asc or desc) or ''(empty)
 					break;
 				case 'revenue_count' :
@@ -1412,11 +1411,6 @@ class mConsole extends Admin
             $sql .= " INNER JOIN LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL AS M ON T.ID = M.TXNID";
         }
 
-		if(in_array('state', $aColumns) === true)
-		{
-				$sql .= " INNER JOIN LOG".sSCHEMA_POSTFIX.".STATE_TBL AS S ON M.stateid = S.ID ";
-		}
-
 		if(array_key_exists('paymenttypeid', $aFilters) === true)
 		{
 			$sql .= " INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".CARD_TBL AS CARD ON T.CARDID = CARD.ID ";
@@ -1444,7 +1438,7 @@ class mConsole extends Admin
                     $aFiltersClauses[] = " AND T.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($value)))."'";
                     break;
                 case 'state':
-                    $aFiltersClauses[] = " AND M.STATEID in (".implode(",", $value).") AND M.ID IN (SELECT Max(id) FROM LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL	WHERE T.id = txnid AND stateid IN (".implode(",", $value)."))";
+                    $aFiltersClauses[] = " AND M.STATEID in (".implode(",", $value).") AND M.ID IN (SELECT Max(id) FROM LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL	WHERE T.id = txnid)";
                     // Sub query for getting latest state only
                     break;
 				case 'cardid':
@@ -1490,7 +1484,7 @@ class mConsole extends Admin
 			$sql .= ' LIMIT  ' . $limit;
 		}
 
-		if(in_array('hour', $aColumns) === true || in_array('day', $aColumns) === true )
+		if(in_array('hour', $aColumns) === true)
 		{
 			$format = '';
 			$seriesJoin = '';
