@@ -96,7 +96,7 @@ abstract class mPointSettlement
         $recordNumber = 0;
         if (is_array($res) === true && count($res) > 0) {
             $recordNumber = (int)$res["RECORD_NUMBER"];
-            if( strtolower( $res["STATUS"]) == "active" ||  strtolower( $res["STATUS"]) == "waiting")
+            if( strtolower( $res["STATUS"]) == Constants::sSETTLEMENT_REQUEST_ACTIVE  ||  strtolower( $res["STATUS"]) ==  Constants::sSETTLEMENT_REQUEST_WAITING )
                 return;
         }
 
@@ -198,16 +198,16 @@ abstract class mPointSettlement
                 $replyBody = simpledom_load_string($obj_HTTP->getReplyBody());
                 if($replyBody->settlement->file["upload-status"] == "true")
                 {
-                    $this->_updateSettlementState($_OBJ_DB, "waiting");
+                    $this->_updateSettlementState($_OBJ_DB, Constants::sSETTLEMENT_REQUEST_WAITING );
                     $this->_updateDescription($_OBJ_DB, $replyBody);
                 }
                 else
                 {
-                    $this->_updateSettlementState($_OBJ_DB, "fail");
+                    $this->_updateSettlementState($_OBJ_DB, Constants::sSETTLEMENT_REQUEST_FAIL);
                 }
             }
         } catch (Exception $e) {
-            $this->_updateSettlementState($_OBJ_DB, "fail");
+            $this->_updateSettlementState($_OBJ_DB, Constants::sSETTLEMENT_REQUEST_FAIL);
             trigger_error("Settlement record no: " . $this->_iSettlementId . " failed with code: " . $e->getCode() . " and message: " . $e->getMessage(), E_USER_ERROR);
             return $e->getCode();
         }
@@ -289,7 +289,7 @@ abstract class mPointSettlement
     {
         $sql = "SELECT psp_id, client_id
                 FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl
-                WHERE status = 'waiting' 
+                WHERE status = '".Constants::sSETTLEMENT_REQUEST_WAITING."' 
                 GROUP BY psp_id, client_id";
 
         $res = $_OBJ_DB->getName($sql);

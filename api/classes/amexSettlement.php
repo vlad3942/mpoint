@@ -23,7 +23,7 @@ class AmexSettlement extends mPointSettlement
                 FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl
                 WHERE client_id = $this->_iClientId 
                 AND psp_id = '$this->_iPspId'                
-                AND status <> 'waiting'                
+                AND status <> '" . Constants::sSETTLEMENT_REQUEST_WAITING . "'                
                 ORDER BY id DESC LIMIT 1 ";
 
         $res = $_OBJ_DB->getName($sql);
@@ -121,7 +121,7 @@ class AmexSettlement extends mPointSettlement
                         WHERE client_id = $this->_iClientId 
                         AND psp_id = '$this->_iPspId'                
                         AND file_reference_number = '".$file["reference-number"]."' 
-                        AND status= 'waiting' 
+                        AND status= '" . Constants::sSETTLEMENT_REQUEST_WAITING . "' 
                         ORDER BY id DESC LIMIT 1 ";
 
                 $res = $_OBJ_DB->getName($sql);
