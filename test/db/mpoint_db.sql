@@ -7589,6 +7589,8 @@ IS 'This field contains an action code and approval code
 -- Adding Virtual Token for Saving SUVTP in mPoint schema
 ALTER TABLE Log.Transaction_Tbl ADD COLUMN virtualtoken character varying(512);
 
+ALTER TABLE client.account_tbl  ALTER COLUMN markup type character varying(20); 
+ALTER TABLE log.transaction_tbl  ALTER COLUMN markup type character varying(20); 
 
 INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (45, 'Amex',2);
 
