@@ -76,6 +76,7 @@ $aHTTP_CONN_INFO["amex"]["timeout"] = 120;
 $aHTTP_CONN_INFO["amex"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["amex"]["paths"]["auth"] = "/_test/simulators/amex/auth.php";
 $aHTTP_CONN_INFO["amex"]["paths"]["pay"] = "/_test/simulators/amex/pay.php";
+$aHTTP_CONN_INFO["amex"]["paths"]["initialize"] = "/_test/simulators/amex/pay.php";
 $aHTTP_CONN_INFO["amex"]["path"] = $aHTTP_CONN_INFO["amex"]["paths"]["pay"];
 
 $aCPM_CONN_INFO = $aMPOINT_CONN_INFO;
