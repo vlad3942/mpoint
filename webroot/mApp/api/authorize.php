@@ -118,6 +118,8 @@ require_once(sCLASS_PATH ."/bre.php");
 require_once(sCLASS_PATH ."/amex.php");
 // Require specific Business logic for the CHUBB component
 require_once(sCLASS_PATH ."/chubb.php");
+// Require specific Business logic for the CHUBB component
+require_once(sCLASS_PATH ."/payment_processor.php");
 // Require specific Business logic for the UATP component
 require_once(sCLASS_PATH . "/uatp.php");
 
@@ -1280,15 +1282,14 @@ $iPrimaryRoute = $oRoute ;
 															}
                                                             
                                                             /*Complete Tokenization after successful authorization*/
-                                                            if ($code >= 2000 and $code < 2010)
+                                                            if ($code >= Constants::iPAYMENT_ACCEPTED_STATE and $code < Constants::iPAYMENT_REJECTED_STATE)
                                                             {
 
                                                                 $iTokenzationProcessor = intval($obj_mCard->getTokenizationRoute(intval(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ) ) );
                                                                 if(empty($iTokenzationProcessor) === false)
                                                                 {
-                                                                    $obj_TokenizationPSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iTokenzationProcessor);
-                                                                    $obj_TokenizationPSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_TokenizationPSPConfig);
-                                                                    $sToken = $obj_TokenizationPSP->tokenize($obj_TokenizationPSPConfig, $obj_Elem);
+                                                                    $obj_TokenizationPSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($iTokenzationProcessor), $aHTTP_CONN_INFO);
+                                                                    $sToken = $obj_TokenizationPSP->tokenize($obj_Elem);
 
                                                                     if(empty($sToken) === false)
                                                                     {
