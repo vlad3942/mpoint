@@ -1292,7 +1292,7 @@ $iPrimaryRoute = $oRoute ;
 
                                                                     if(empty($sToken) === false)
                                                                     {
-                                                                        $xml = str_replace('</status>', '<token>'.$sToken.'</token></status>', $xml);;
+                                                                        $xml .= '<token>'.$sToken.'</token>';
                                                                     }
 
                                                                 }
