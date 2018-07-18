@@ -487,10 +487,16 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						$txnid = $obj_XML->transaction["external-id"];
 						$sql = ",extid = '". $this->getDBConn()->escStr($txnid) ."'";
 					}
-					
-					$code = $obj_XML->transaction->status["code"];
+				 $code = $obj_XML->transaction->status["code"];
 				} 
 				else { $code = $obj_XML->status["code"]; }
+				
+				$approvalCode = $obj_XML->{'approval-code'};
+				
+				if($approvalCode != ''){
+					$sql = ",approval_action_code = '".$approvalCode."'";
+				}
+					
 
 				if($code == 2005)
                 $this->newMessage($this->getTxnInfo()->getID(), $code, $obj_HTTP->getReplyBody());

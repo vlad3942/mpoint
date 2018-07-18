@@ -892,6 +892,7 @@
 					</xs:complexType>
 				  </xs:element>
 				 <xs:element name="additional-data" type="xs:string" minOccurs="0" maxOccurs="1" />
+				 <xs:element name="approval-code" type="xs:string" minOccurs="0" maxOccurs="1" />
 				 <xs:element name="url" type="url" minOccurs="0" maxOccurs="1" />
 				</xs:sequence>
 			  </xs:complexType>
@@ -1305,7 +1306,7 @@
                     		<xs:all>
 		                        <xs:element name="name" type="name" minOccurs="1" maxOccurs="1"/>
 		                        <xs:element name="description" type="name" minOccurs="1" maxOccurs="1"/>
-		                        <xs:element name="image-url" type="url" minOccurs="1" maxOccurs="1"/>
+		                        <xs:element name="image-url" type="url" minOccurs="0" maxOccurs="1"/>
 		                        <xs:element name="airline-data" type="airline-data"  minOccurs="0" maxOccurs="1" />
 		                       </xs:all> 
 		                       <xs:attribute name="sku" use="required" type="xs:string"/>
