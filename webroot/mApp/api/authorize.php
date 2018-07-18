@@ -1278,6 +1278,27 @@ $iPrimaryRoute = $oRoute ;
 																$xml .= '<status code="99">Unknown Payment Service Provider: '. $obj_Elem["pspid"] .'</status>';
 																break;
 															}
+                                                            
+                                                            /*Complete Tokenization after successful authorization*/
+                                                            if ($code >= 2000 and $code < 2010)
+                                                            {
+
+                                                                $iTokenzationProcessor = intval($obj_mCard->getTokenizationRoute(intval(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ) ) );
+                                                                if(empty($iTokenzationProcessor) === false)
+                                                                {
+                                                                    $obj_TokenizationPSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), $iTokenzationProcessor);
+                                                                    $obj_TokenizationPSP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_TokenizationPSPConfig);
+                                                                    $sToken = $obj_TokenizationPSP->tokenize($obj_TokenizationPSPConfig, $obj_Elem);
+
+                                                                    if(empty($sToken) === false)
+                                                                    {
+                                                                        $xml = str_replace('</status>', '<token>'.$sToken.'</token></status>', $xml);;
+                                                                    }
+
+                                                                }
+
+                                                            }
+
 														}
 														catch (HTTPException $e)
 														{
