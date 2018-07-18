@@ -1337,5 +1337,11 @@ class General
          $aRS = $this->getDBConn()->getAllNames($sql);
          return $aRS;
     }
+
+    public static function getMaskCardNumber($cardno)
+    {
+        return substr($cardno, 0, 6) . str_repeat("*", strlen($cardno) - 10) . substr($cardno, -4);
+    }
+
 }
 ?>

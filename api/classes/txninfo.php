@@ -1405,5 +1405,19 @@ class TxnInfo
         return $this->_createdTimestamp;
     }
 
+    function updateCardDetails(RDB $obj_DB, $mask, $expiry)
+    {
+       try
+       {
+           $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+                    SET  mask='" . $mask . "' , expiry='" . $expiry . "'
+                    WHERE id=". $this->getID();
+           $obj_DB->query($sql);
+       }
+       catch (mPointException $e)
+       {
+            trigger_error("Fail to update card details (log.transaction_tbl)", E_USER_ERROR);
+       }
+    }
 }
 ?>
