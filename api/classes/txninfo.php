@@ -962,7 +962,7 @@ class TxnInfo
 			if (array_key_exists("fee", $misc) === false) { $misc["fee"] = $obj->getFee(); }
 			if (array_key_exists("captured-amount", $misc) === false) { $misc["captured-amount"] = $obj->getCapturedAmount(); }
             if (array_key_exists("device-id", $misc) === false) { $misc["device-id"] = NULL ; }
-            if (array_key_exists("attempt", $misc) === false) { $misc["attempt"] = 1 ; }
+            if (array_key_exists("attempt", $misc) === false) { $misc["attempt"] = 0 ; }
             if (array_key_exists("sessionid", $misc) === false) { $misc["sessionid"] = $obj->getSessionId(); }
             if (array_key_exists("sessiontype", $misc) === false) { $misc["sessiontype"] = 1; }
             if (array_key_exists("producttype", $misc) === false) { $misc["producttype"] = 100; }
