@@ -87,3 +87,12 @@ CREATE TABLE log.settlement_record_tbl
 );
 
 ALTER table Client.Client_Tbl ADD secretkey VARCHAR(100);
+
+UPDATE Client.Client_tbl SET secretkey='KJHs@iWqha91203e23' WHERE id = 10007 ;
+
+/* Threed Redirect URL*/
+INSERT INTO System.URLType_Tbl (id, name) VALUES (15, 'Threed redirect endpoint URL');
+
+INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (15, 10007, 'http://cpmrm.mesb.sit2.cellpointmobile.com//mpoint/sepg/threed-redirect');
+
+/* Threed Redirect URL */

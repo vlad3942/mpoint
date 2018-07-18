@@ -822,7 +822,11 @@ $iPrimaryRoute = $oRoute ;
 																{
 																	$xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
 																}
-																else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+																else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>';
+																$obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB);
+																//Approval code to return after succesfull authorization
+																$xml .= '<approval-code>'.$obj_TxnInfo->getApprovalCode().'</approval-code>' ;
+																}
 																else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and Card Details Stored.</status>'; }
 																else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml .= $code;}
 																else if($code == "20102" && $iSecondaryRoute > 0 ) {
