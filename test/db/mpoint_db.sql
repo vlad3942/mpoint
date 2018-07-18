@@ -7591,3 +7591,24 @@ ALTER TABLE Log.Transaction_Tbl ADD COLUMN virtualtoken character varying(512);
 
 ALTER TABLE client.account_tbl  ALTER COLUMN markup type character varying(20); 
 ALTER TABLE log.transaction_tbl  ALTER COLUMN markup type character varying(20); 
+
+INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (45, 'Amex',2);
+
+/*END: Adding PSP entries to the PSP_Tbl table for AMEX*/
+
+/*START: Adding Currency entries to the PSPCurrency_Tbl table for AMEX*/
+
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (208,45,'DKK');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,45,'USD');
+
+/*END: Adding Currency entries to the PSPCurrency_Tbl table for AMEX*/
+
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (1, 45, true);
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (2, 45, true);
+/*INSERT INTO client.cardaccess_tbl (clientid, cardid, pspid, countryid, stateid, enabled) VALUES (10007, 1, 45, 200, 1, true);*/
+
+/* ========== CONFIGURE DEMO ACCOUNT FOR AMEX START ========== */
+-- Wire-Card
+
+/* ========== CONFIGURE DEMO ACCOUNT FOR AMEX END ====== *//* END: Adding CARD Configuration Entries */
+
