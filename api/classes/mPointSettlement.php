@@ -83,8 +83,9 @@ abstract class mPointSettlement
         $this->_objPspConfig = PSPConfig::produceConfig($_OBJ_DB, $this->_iClientId, $this->_iAccountId, $this->_iPspId);
     }
 
-    private function _getTransactions($_OBJ_DB, $stateIds){
+    private function _getTransactions($_OBJ_DB, $aStateIds){
 
+        $stateIds = implode(",", $aStateIds);
         $sql = "SELECT record_number, status
                 FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl
                 WHERE client_id = $this->_iClientId 
@@ -131,19 +132,19 @@ abstract class mPointSettlement
     public function capture($_OBJ_DB)
     {
         $this->_sRecordType = "CAPTURE";
-        $this->_getTransactions($_OBJ_DB, "20012");
+        $this->_getTransactions($_OBJ_DB, array(Constants::iPAYMENT_CAPTURE_INITIATED_STATE));
     }
 
     public function cancel($_OBJ_DB)
     {
         $this->_sRecordType = "CANCEL";
-        $this->_getTransactions($_OBJ_DB, "20022,2001,20012");
+        $this->_getTransactions($_OBJ_DB, array(Constants::iPAYMENT_CANCEL_INITIATED_STATE));
     }
 
     public function refund($_OBJ_DB)
     {
         $this->_sRecordType = "REFUND";
-        $this->_getTransactions($_OBJ_DB, "20032");
+        $this->_getTransactions($_OBJ_DB, array(Constants::iPAYMENT_REFUND_INITIATED_STATE, Constants::iPAYMENT_CAPTURED_STATE));
     }
 
     abstract protected function _createSettlementRecord($_OBJ_DB);
