@@ -638,11 +638,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 	protected function _getFullOrderID()
     {
-        if(intval($this->getTxnInfo()->getAttemptNumber()) == 1)
+        if(intval($this->getTxnInfo()->getAttemptNumber()) == 0)
         {
             return $this->getTxnInfo()->getOrderID();
         }
-        else if(intval($this->getTxnInfo()->getAttemptNumber()) > 1)
+        else if(intval($this->getTxnInfo()->getAttemptNumber()) > 0)
         {
             return $this->getTxnInfo()->getOrderID()."_".$this->getTxnInfo()->getAttemptNumber();
         }

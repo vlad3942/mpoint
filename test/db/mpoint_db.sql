@@ -7633,7 +7633,7 @@ WITH (
   OIDS=FALSE
 );
 ALTER TABLE system.retrialtype_tbl
-  OWNER TO mpoint;
+  OWNER TO postgres;
   
   
   -- Table: client.retrial_tbl
@@ -7661,7 +7661,7 @@ WITH (
   OIDS=FALSE
 );
 ALTER TABLE client.retrial_tbl
-  OWNER TO mpoint;
+  OWNER TO postgres;
 
   
 ------- System data for retrial types ------------------
