@@ -102,7 +102,8 @@ abstract class mPointSettlement
         }
 
         $this->_iRecordNumber = $recordNumber + 1 ;
-
+        $this->_arrayTransactionIds=[];
+        $this->_iTotalTransactionAmount = 0;
         $sql = "SELECT txn.id
                 FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl AS txn, log" . sSCHEMA_POSTFIX . ".message_tbl AS msg
                 WHERE txn.clientid = $this->_iClientId
@@ -144,7 +145,7 @@ abstract class mPointSettlement
     public function refund($_OBJ_DB)
     {
         $this->_sRecordType = "REFUND";
-        $this->_getTransactions($_OBJ_DB, array(Constants::iPAYMENT_REFUND_INITIATED_STATE, Constants::iPAYMENT_CAPTURED_STATE));
+        $this->_getTransactions($_OBJ_DB, array(Constants::iPAYMENT_REFUND_INITIATED_STATE));
     }
 
     abstract protected function _createSettlementRecord($_OBJ_DB);
