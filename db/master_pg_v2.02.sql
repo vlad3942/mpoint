@@ -433,7 +433,12 @@ CREATE TABLE log.settlement_tbl
     status varchar(10) DEFAULT 'active' NOT NULL,
     CONSTRAINT settlement_tbl_client_tbl_id_fk FOREIGN KEY (client_id) REFERENCES client.client_tbl (id),
     CONSTRAINT settlement_tbl_psp_tbl_id_fk FOREIGN KEY (psp_id) REFERENCES system.psp_tbl (id)
+)
+WITH (
+  OIDS=FALSE
 );
+ALTER TABLE log.settlement_tbl
+  OWNER TO mpoint;
 
 CREATE TABLE log.settlement_record_tbl
 (
@@ -443,7 +448,13 @@ CREATE TABLE log.settlement_record_tbl
   description varchar(100),
   CONSTRAINT settlement_record_tbl_settlement_tbl_id_fk FOREIGN KEY (settlementid) REFERENCES log.settlement_tbl (id),
   CONSTRAINT settlement_record_tbl_transaction_tbl_id_fk FOREIGN KEY (transactionid) REFERENCES log.transaction_tbl (id)
+)
+WITH (
+  OIDS=FALSE
 );
+ALTER TABLE log.settlement_record_tbl
+  OWNER TO mpoint;
+
 -------- CMP-2426: PCI Password expose --------
 DROP TABLE admin.user_tbl CASCADE;
 -------- CMP-2426: PCI Password expose --------

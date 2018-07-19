@@ -11,12 +11,12 @@
 
 class SettlementFactory
 {
-    public static function create($clientId, $pspId, $connectionInfo)
+    public static function create($_OBJ_TXT,$clientId, $pspId, $connectionInfo)
     {
         switch ($pspId)
         {
             case Constants::iAMEX_ACQUIRER:
-                return new AmexSettlement($clientId, $pspId, $connectionInfo);
+                return new AmexSettlement($_OBJ_TXT,$clientId, $pspId, $connectionInfo);
             default:
                 NULL;
         }
