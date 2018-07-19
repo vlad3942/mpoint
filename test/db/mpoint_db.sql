@@ -7591,3 +7591,5 @@ ALTER TABLE Log.Transaction_Tbl ADD COLUMN virtualtoken character varying(512);
 
 ALTER TABLE client.account_tbl  ALTER COLUMN markup type character varying(20); 
 ALTER TABLE log.transaction_tbl  ALTER COLUMN markup type character varying(20); 
+
+ALTER TABLE log.transaction_tbl ALTER COLUMN attempt SET DEFAULT 0;
