@@ -1438,7 +1438,7 @@ class mConsole extends Admin
                     $aFiltersClauses[] = " AND T.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($value)))."'";
                     break;
                 case 'state':
-                    $aFiltersClauses[] = " AND M.STATEID in (".implode(",", $value).") AND M.ID IN (SELECT Max(id) FROM LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL	WHERE T.id = txnid)";
+                    $aFiltersClauses[] = " AND M.STATEID in (".implode(",", $value).") AND M.ID IN (SELECT Max(id) FROM LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL	WHERE T.id = txnid and STATEID in (".implode(",", $value)."))";
                     // Sub query for getting latest state only
                     break;
 				case 'cardid':
@@ -1475,9 +1475,11 @@ class mConsole extends Admin
 
         $sql .= implode(", ", $aGroupClauses);
 
+       if(in_array('state', $aColumns) === false)
+       {
 		$sql .= ' ORDER BY ';
-
 		$sql .= implode(", ", $aOrderbyClauses);
+	   }
 
 		if (strlen($limit) > 0)
 		{
