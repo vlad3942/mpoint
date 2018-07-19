@@ -66,6 +66,19 @@ $aHTTP_CONN_INFO["dsb"]["port"] = 80;
 $aHTTP_CONN_INFO["dsb"]["paths"]["redeem"] = "/_test/simulators/dsb/redeem.php";
 $aHTTP_CONN_INFO["dsb"]["paths"]["callback"] = "/callback/general.php";
 
+/**
+ * Connection info for connecting to Amex
+ */
+$aHTTP_CONN_INFO["amex"]["protocol"] = "http";
+$aHTTP_CONN_INFO["amex"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["amex"]["port"] = 80;
+$aHTTP_CONN_INFO["amex"]["timeout"] = 120;
+$aHTTP_CONN_INFO["amex"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["amex"]["paths"]["auth"] = "/_test/simulators/amex/auth.php";
+$aHTTP_CONN_INFO["amex"]["paths"]["pay"] = "/_test/simulators/amex/pay.php";
+$aHTTP_CONN_INFO["amex"]["paths"]["initialize"] = "/_test/simulators/amex/pay.php";
+$aHTTP_CONN_INFO["amex"]["path"] = $aHTTP_CONN_INFO["amex"]["paths"]["pay"];
+
 $aCPM_CONN_INFO = $aMPOINT_CONN_INFO;
 $aCPM_CONN_INFO["contenttype"] = "application/x-www-form-urlencoded";
 
@@ -73,4 +86,5 @@ $aGM_CONN_INFO = $aMPOINT_CONN_INFO;
 $aGM_CONN_INFO["path"] = "/_test/simulators/gomobile/send.php";
 $aGM_CONN_INFO["contenttype"] = "text/xml; charset=ISO-8859-1";
 $aGM_CONN_INFO["mode"] = 1;
+
 ?>
