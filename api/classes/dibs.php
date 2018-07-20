@@ -42,7 +42,7 @@ class DIBS extends Callback implements Captureable, Refundable
 		// Client is configured to use mPoint's protocol
 		if ($this->getTxnInfo()->getClientConfig()->getMethod() == "mPoint")
 		{
-			if ($sid == Constants::iPAYMENT_ACCEPTED_STATE) { parent::notifyClient($sid, $_post["transact"], $_post["amount"], $_post['cardid'], $_post['cardprefix'] . str_replace("X", "*", substr($_post['cardnomask'], strlen($_post['cardprefix']) ) ) ); }
+			if ($sid == Constants::iPAYMENT_ACCEPTED_STATE) { parent::notifyClient($sid,$_post["transact"], $_post["amount"],"", $_post['cardid'], $_post['cardprefix'] . str_replace("X", "*", substr($_post['cardnomask'], strlen($_post['cardprefix']) ) ) ); }
 			else { parent::notifyClient($sid, $_post["transact"], @$_post["amount"]); }
 		}
 		// Client is configured to use DIBS' protocol
@@ -143,7 +143,7 @@ class DIBS extends Callback implements Captureable, Refundable
 		$b .= "&mpointid=". $this->getTxnInfo()->getID();
 		$b .= "&ticket=". $ticket;
 		$b .= "&amount=". $this->getTxnInfo()->getAmount();
-		$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iDIBS_PSP);
+		$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getCurrencyConfig()->getID(), Constants::iDIBS_PSP);
 		$b .= "&orderid=". urlencode($oid);
 		if ($this->getTxnInfo()->getClientConfig()->getMode() > 0) { $b .= "&test=". $this->getTxnInfo()->getClientConfig()->getMode(); }
 		$b .= "&textreply=true";
@@ -162,6 +162,8 @@ class DIBS extends Callback implements Captureable, Refundable
 			$aStatus["transact"] = $aStatus["reason"] * -1;
 		}
 	
+		PostAuthAction::updateTxnVolume($this->getTxnInfo(), 2 ,$this->getDBConn());
+		
 		return $aStatus["transact"];
 	}
 	
@@ -188,7 +190,7 @@ class DIBS extends Callback implements Captureable, Refundable
 		$b .= "&expyear=". trim($expyear);
 		$b .= "&cvc=". trim($cvc);
 		$b .= "&amount=". $this->getTxnInfo()->getAmount();
-		$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getCountryConfig()->getID(), Constants::iDIBS_PSP);
+		$b .= "&currency=". $this->getCurrency($this->getTxnInfo()->getCurrencyConfig()->getID(), Constants::iDIBS_PSP);
 		$b .= "&orderid=". urlencode($oid);
 		if ($this->getTxnInfo()->getClientConfig()->getMode() > 0) { $b .= "&test=". $this->getTxnInfo()->getClientConfig()->getMode(); }
 		$b .= "&textreply=true";
@@ -220,7 +222,7 @@ class DIBS extends Callback implements Captureable, Refundable
 			trigger_error(trim("Authorisation declined by DIBS for Card Details: ". $this->_getMaskedCardNumber($cardno) .", Reason Code: ". $aStatus["reason"] ."\n". @$aStatus["message"]), E_USER_WARNING);
 			$aStatus["transact"] = $aStatus["reason"] * -1;
 		}
-	
+		PostAuthAction::updateTxnVolume($this->getTxnInfo(), 2 ,$this->getDBConn());
 		return $aStatus["transact"];
 	}
 

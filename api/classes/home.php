@@ -794,38 +794,51 @@ class Home extends General
 
     public function getTxnStatus($txnid)
     {
-        $sql = "SELECT Txn.id, Txn.amount AS amount, C.id AS countryid, C.currency, C.symbol, C.priceformat, CL.id AS clientid,
+        $sql = "SELECT Txn.id, Txn.amount AS amount, C.id AS countryid, C.currencyid, C.symbol, C.priceformat, CL.id AS clientid,
 					   Txn.id AS mpointid, Txn.orderid, M1.stateid,Txn.logourl,Txn.cssurl,Txn.accepturl,Txn.cancelurl, CL.salt, 
 					   Txn.accountid AS end_user_id,Txn.lang,Txn.cardid,
-					   Txn.email, Txn.mobile,Txn.customer_ref,Txn.operatorid,Txn.markup,Txn.deviceid
-				FROM Log.Transaction_Tbl Txn
-				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON Txn.pspid = PSP.id
-				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
-				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Country_Tbl C ON Txn.countryid = C.id
-				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl Card ON Txn.cardid = Card.id
-				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M1 ON Txn.id = M1.txnid AND M1.stateid =  (select max(stateid) from Log".sSCHEMA_POSTFIX.".message_tbl WHERE txnid = '". $this->getDBConn()->escStr( (string) $txnid) ."')
-				WHERE Txn.id = '". $this->getDBConn()->escStr( (string) $txnid) ."'
-				ORDER BY Txn.created DESC LIMIT 1";
+					   Txn.email, Txn.mobile,Txn.customer_ref,Txn.operatorid,Txn.markup,Txn.deviceid, Txn.sessionid, St.name
+				FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl Txn
+                LEFT OUTER JOIN System" . sSCHEMA_POSTFIX . ".PSP_Tbl PSP ON Txn.pspid = PSP.id
+                LEFT OUTER JOIN Client" . sSCHEMA_POSTFIX . ".Client_Tbl CL ON Txn.clientid = CL.id
+                LEFT OUTER JOIN System" . sSCHEMA_POSTFIX . ".Country_Tbl C ON Txn.countryid = C.id
+                LEFT OUTER JOIN System" . sSCHEMA_POSTFIX . ".Card_Tbl Card ON Txn.cardid = Card.id
+                LEFT OUTER JOIN Log" . sSCHEMA_POSTFIX . ".message_tbl M1 ON Txn.id = M1.txnid
+                LEFT OUTER JOIN Log" . sSCHEMA_POSTFIX . ".state_tbl St ON M1.stateid = St.id
+                WHERE Txn.id ='" . $this->getDBConn()->escStr((string)$txnid) . "'
+                    AND NOT M1.stateid::text SIMILAR TO '" . $this->getDBConn()->escStr('4%|19%') . "'
+                ORDER BY Txn.created, M1.created DESC LIMIT 1";
 //		echo $sql ."\n";
         $RS = $this->getDBConn()->getName($sql);
 
 
         $obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $RS["CLIENTID"]);
+
+        $obj_paymentSession = PaymentSession::Get($this->getDBConn(),$RS["SESSIONID"]);
+        $pendingAmount =intval( $obj_paymentSession->getPendingAmount());
+        if($pendingAmount > 0) {
+            $pendingAmount = $pendingAmount / 100;
+        }
         $amount = ((integer) $RS["AMOUNT"])/100;
-        $xml = '<transaction id="'. $RS["ID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" order-no="'. $RS["ORDERID"] .'" accoutid="'. $RS['END_USER_ID'] .'" clientid="'. $RS['CLIENTID'] .'" language="'.$RS['LANG'].'"  card-id="'. $RS["CARDID"] .'">';
-        $xml .= '<amount country-id="'. $RS["COUNTRYID"] .'" currency="'. $RS['CURRENCY']  .'" symbol="'. utf8_encode($RS['SYMBOL'] ) .'" format="'. $RS['PRICEFORMAT'] .'">'. htmlspecialchars($RS["AMOUNT"], ENT_NOQUOTES) .'</amount>';
+
+        $obj_currencyConfig = CurrencyConfig::produceConfig($this->getDBConn(),$RS['CURRENCYID'] );
+
+        $sessionType = $obj_ClientConfig->getAdditionalProperties("sessiontype");
+        $xml = '<transaction id="'. $RS["ID"] .'" mpoint-id="'. $RS["MPOINTID"] .'" order-no="'. $RS["ORDERID"] .'" accoutid="'. $RS['END_USER_ID'] .'" clientid="'. $RS['CLIENTID'] .'" language="'.$RS['LANG'].'"  card-id="'. $RS["CARDID"] .'" session-id="'. $RS["SESSIONID"] .'" session-type="'. $sessionType .'">';
+        $xml .= '<amount country-id="'. $RS["COUNTRYID"] .'" currency="'. $RS['CURRENCYID']  .'" symbol="'. utf8_encode($RS['SYMBOL'] ) .'" format="'. $RS['PRICEFORMAT'] .'" pending = "'.$pendingAmount .'"  currency-code = "'.$obj_currencyConfig->getCode() .'" >'. htmlspecialchars($amount, ENT_NOQUOTES) .'</amount>';
         $xml .= '<accept-url>'. htmlspecialchars($RS["ACCEPTURL"], ENT_NOQUOTES) .'</accept-url>';
         $xml .= '<cancel-url>'. htmlspecialchars($RS["CANCELURL"], ENT_NOQUOTES) .'</cancel-url>';
         $xml .= '<css-url>'. htmlspecialchars($RS["CSSURL"], ENT_NOQUOTES) .'</css-url>';
         $xml .= '<logo-url>'. htmlspecialchars($RS["LOGOURL"], ENT_NOQUOTES) .'</logo-url>';
         $xml .= '<status-id>'. $RS['STATEID'] .'</status-id>';
-        $xml .= '<sign>'. md5( $RS["CLIENTID"] .'&'. $RS["MPOINTID"] .'&'. $RS["ORDERID"] .'&'. $RS["CURRENCY"] .'&'.  htmlspecialchars($RS["AMOUNT"], ENT_NOQUOTES) .'&'. $RS["STATEID"] .'.'. $RS["SALT"]) .'</sign>';
+        $xml .= '<status-message>'. $RS['NAME'].'</status-message>';
+        $xml .= '<sign>'. md5( $RS["CLIENTID"] .'&'. $RS["MPOINTID"] .'&'. $RS["ORDERID"] .'&'. $RS["CURRENCYID"] .'&'.  htmlspecialchars($amount, ENT_NOQUOTES) .'&'. $RS["STATEID"] .'.'. $RS["SALT"]) .'</sign>';
       //  $xml .= '<pre-sign>'.  $RS["CLIENTID"] .','. $RS["MPOINTID"] .','. $RS["ORDERID"] .','. $RS["CURRENCY"] .','.  htmlspecialchars($amount, ENT_NOQUOTES) .','. $RS["STATEID"] .','. $RS["SALT"] .'</pre-sign>';
         $xml .= '<client-info language="'.$RS["LANG"].'" platform="'.$RS["MARKUP"].'">';
         $xml .= '<mobile operator-id="'. $RS["OPERATORID"] .'" country-id="'.$RS["COUNTRYID"] .'">'. $RS["MOBILE"] .'</mobile>';
         $xml .= '<email>'. $RS["EMAIL"] .'</email>';
         $xml .= '<customer-ref>'.$RS["CUSTOMER_REF"].'</customer-ref>';
-        $xml .= '<device-id>'.$RS["DEVICE"].'</device-id>';
+        $xml .= '<device-id>'.$RS["DEVICEID"].'</device-id>';
         $xml .= '</client-info>';
         $xml .= '</transaction>';
 

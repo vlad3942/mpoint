@@ -116,15 +116,21 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$obj_DOM->{'save-account'}[$i]->{'first-name'} = substr($obj_DOM->{'save-account'}[$i]->{'full-name'}, 0 , $pos);
 					}
 					// Validate First Name
+                    $chkFirstName = 10;
 					if (count($obj_DOM->{'save-account'}[$i]->{'first-name'}) == 1)
 					{
-						if ($obj_Validator->valName( (string) $obj_DOM->{'save-account'}[$i]->{'first-name'}) < 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-account'}[$i]->{'first-name'}) + 60; }
+                        $chkFirstName = $obj_Validator->valCardFullname( (string) $obj_DOM->{'save-account'}[$i]->{'first-name'});
 					}
 					// Validate Last Name
+                    $chkLastName = 10;
 					if (count($obj_DOM->{'save-account'}[$i]->{'last-name'}) == 1)
 					{
-						if ($obj_Validator->valName( (string) $obj_DOM->{'save-account'}[$i]->{'last-name'}) < 10) { $aMsgCds[] = $obj_Validator->valName( (string) $obj_DOM->{'save-account'}[$i]->{'last-name'}) + 64; }
+                        $chkLastName = $obj_Validator->valCardFullname( (string) $obj_DOM->{'save-account'}[$i]->{'last-name'});
 					}
+
+                    if($chkFirstName != 10 || $chkLastName != 10){
+                        $aMsgCds[] = 62;
+                    }
 
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)

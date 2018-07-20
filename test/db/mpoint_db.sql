@@ -3836,6 +3836,7 @@ INSERT INTO pricepoint_tbl VALUES (-650, 650, -1, '2013-11-04 13:27:37.01545', '
 -- Data for Name: cardpricing_tbl; Type: TABLE DATA; Schema: system; Owner: jona
 --
 
+/*
 INSERT INTO cardpricing_tbl VALUES (0, 0, 0, '2008-03-24 19:08:58.071781', '2008-03-24 19:08:58.071781', false);
 INSERT INTO cardpricing_tbl VALUES (21, 1, 10, '2008-03-24 19:08:58.071781', '2008-03-24 19:08:58.071781', true);
 INSERT INTO cardpricing_tbl VALUES (22, 2, 10, '2008-03-24 19:08:58.071781', '2008-03-24 19:08:58.071781', true);
@@ -3867,6 +3868,7 @@ INSERT INTO cardpricing_tbl VALUES (47, 27, 10, '2008-03-24 19:08:58.071781', '2
 INSERT INTO cardpricing_tbl VALUES (48, 28, 10, '2008-03-24 19:08:58.071781', '2008-03-24 19:08:58.071781', true);
 INSERT INTO cardpricing_tbl VALUES (49, 29, 10, '2008-03-24 19:08:58.071781', '2008-03-24 19:08:58.071781', true);
 INSERT INTO cardpricing_tbl VALUES (50, 30, 10, '2008-03-24 19:08:58.071781', '2008-03-24 19:08:58.071781', true);
+*/
 
 
 --
@@ -7105,3 +7107,565 @@ ALTER TABLE client.gomobileconfiguration_tbl
   OWNER TO postgres;
 
 
+
+
+/*---------START : ADDED CHANGE FOR SUPPORTING CURRENCY SCHEMA-------------*/
+-- Table: system.currency_tbl
+
+-- DROP TABLE system.currency_tbl;
+
+CREATE TABLE system.currency_tbl
+(
+  id serial NOT NULL,
+  name character varying(100),
+  code character(3),
+  decimals integer,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true,
+  CONSTRAINT currency_pk PRIMARY KEY (id)
+)
+WITH (
+OIDS=FALSE
+);
+ALTER TABLE system.currency_tbl
+  OWNER TO postgres;
+
+
+ALTER TABLE system.country_tbl ADD COLUMN alpha2code character(2);
+ALTER TABLE system.country_tbl ADD COLUMN alpha3code character(3);
+ALTER TABLE system.country_tbl ADD COLUMN code integer;
+ALTER TABLE system.country_tbl ADD COLUMN currencyid integer;
+ALTER TABLE system.country_tbl ADD CONSTRAINT Country2Currency_FK FOREIGN KEY (currencyid) REFERENCES System.Currency_Tbl(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+ALTER TABLE system.country_tbl DROP COLUMN currency;
+
+/*---------END : ADDED CHANGE FOR SUPPORTING CURRENCY SCHEMA-------------*/
+
+/* ==================== ALTER TRANSACTION LOG START ==================== */
+ALTER TABLE Log.Transaction_Tbl ADD COLUMN currencyid integer;
+ALTER TABLE Log.Transaction_Tbl ADD CONSTRAINT Txn2Currency_FK FOREIGN KEY (currencyid)
+REFERENCES System.currency_tbl (id)
+ON UPDATE CASCADE ON DELETE RESTRICT;
+/* ==================== ALTER TRANSACTION LOG END ==================== */
+
+ALTER TABLE system.pspcurrency_tbl ADD COLUMN currencyid integer;
+ALTER TABLE system.pspcurrency_tbl  ADD CONSTRAINT Psp2Currency_FK FOREIGN KEY (currencyid)
+REFERENCES System.currency_tbl (id);
+
+
+
+/* ================ Update pricepoint table  ===================*/
+
+ALTER TABLE system.pricepoint_tbl ADD COLUMN currencyid integer;
+ALTER TABLE system.pricepoint_tbl  ADD CONSTRAINT Price2Currency_FK FOREIGN KEY (currencyid)
+REFERENCES System.currency_tbl (id);
+ALTER TABLE system.pricepoint_tbl DROP COLUMN countryid;
+
+
+/* ========= Create client.countrycurrency_tbl =============== */
+
+-- Table: client.countrycurrency_tbl
+
+-- DROP TABLE client.countrycurrency_tbl;
+
+CREATE TABLE client.countrycurrency_tbl
+(
+  id serial NOT NULL,
+  clientid integer NOT NULL,
+  countryid integer NOT NULL,
+  currencyid integer NOT NULL,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean,
+  CONSTRAINT countrycurrency_pk PRIMARY KEY (id),
+  CONSTRAINT client_fk FOREIGN KEY (clientid)
+  REFERENCES client.client_tbl (id) MATCH SIMPLE
+  ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT country_fk FOREIGN KEY (countryid)
+  REFERENCES system.country_tbl (id) MATCH SIMPLE
+  ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT currency_fk FOREIGN KEY (currencyid)
+  REFERENCES system.currency_tbl (id) MATCH SIMPLE
+  ON UPDATE CASCADE ON DELETE CASCADE
+)
+WITH (
+OIDS=FALSE
+);
+ALTER TABLE client.countrycurrency_tbl
+  OWNER TO postgres;
+
+ALTER TABLE log.transaction_tbl ADD deviceid VARCHAR(50) NULL;
+
+
+INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (208,'Danish Krone','DKK',2);
+UPDATE System.Country_Tbl SET alpha2code = 'DK', alpha3code = 'DNK', code = 208, currencyid = 208 WHERE id = 100;
+
+INSERT INTO System.Currency_Tbl (id, name, code, decimals) VALUES (840,'US Dollar','USD',2);
+UPDATE System.Country_Tbl SET alpha2code = 'US', alpha3code = 'USA', code = 840, currencyid = 840 WHERE id = 200;
+
+DELETE FROM system.cardpricing_tbl;
+DELETE FROM system.pricepoint_tbl;
+
+INSERT INTO system.pricepoint_tbl (id, currencyid, amount) values (-208,208,-1) ;
+INSERT INTO system.pricepoint_tbl (id, currencyid, amount) values (-840,840,-1) ;
+
+UPDATE system.pspcurrency_tbl pc SET currencyid = (SELECT currencyid FROM system.country_tbl WHERE id = pc.countryid) ;
+
+/* Run Alter Scripts to update currency Id before deleting country id column */
+ALTER TABLE system.pspcurrency_tbl DROP COLUMN countryid ;
+
+
+CREATE TABLE client.additionalproperty_tbl
+(
+  id serial NOT NULL,
+  key character varying(200) NOT NULL,
+  value character varying(4000) NOT NULL,
+  modified timestamp without time zone DEFAULT now(),
+  created timestamp without time zone DEFAULT now(),
+  enabled boolean NOT NULL DEFAULT true,
+  externalid integer NOT NULL,
+  type VARCHAR(20) NOT NULL,
+  CONSTRAINT additionalprop_pk PRIMARY KEY (id)
+)
+WITH (
+OIDS=FALSE
+);
+ALTER TABLE client.additionalproperty_tbl
+  OWNER TO postgres;
+
+
+
+/* Update process type 2's name from Bank to Acquirer*/
+
+UPDATE system.processortype_tbl SET name = 'Acquirer' WHERE id = 2;
+
+CREATE TABLE system.paymenttype_tbl
+(
+  id SERIAL PRIMARY KEY NOT NULL,
+  name VARCHAR(50) NOT NULL
+);
+CREATE UNIQUE INDEX paymenttype_tbl_name_uindex ON system.paymenttype_tbl (name);
+
+INSERT INTO system.paymenttype_tbl (name) VALUES ('Card');
+INSERT INTO system.paymenttype_tbl (name) VALUES ('Voucher');
+INSERT INTO system.paymenttype_tbl (name) VALUES ('Wallet');
+INSERT INTO system.paymenttype_tbl (name) VALUES ('APM');
+INSERT INTO system.paymenttype_tbl (name) VALUES ('Card Token');
+
+
+ALTER TABLE system.card_tbl ADD paymenttype INTEGER DEFAULT 1 NOT NULL;
+
+ALTER TABLE system.card_tbl
+  ADD CONSTRAINT card_tbl_paymenttype_tbl_id_fk
+FOREIGN KEY (paymenttype) REFERENCES system.paymenttype_tbl (id);
+
+ALTER TABLE log.transaction_tbl ADD mask VARCHAR(20) NULL;
+ALTER TABLE log.transaction_tbl ADD expiry VARCHAR(5) NULL;
+ALTER TABLE log.transaction_tbl ADD token CHARACTER VARYING(512) COLLATE pg_catalog."default" NULL;
+ALTER TABLE log.transaction_tbl ADD authoriginaldata CHARACTER VARYING(512) NULL;
+
+ALTER TABLE enduser.account_tbl ADD COLUMN pushid character varying(100);
+
+/*  ===========  START : Adding column attempts to Log.Transaction_Tbl  ==================  */
+ALTER TABLE Log.Transaction_Tbl ADD COLUMN attempt integer DEFAULT 1;
+/*  ===========  END : Adding column attempts to Log.Transaction_Tbl  ==================  */
+
+/*  ===========  START : Adding column preferred to Client.CardAccess_Tbl  ==================  */
+ALTER TABLE Client.CardAccess_Tbl ADD COLUMN preferred boolean DEFAULT false;
+/*  ===========  END : Adding column preferred to Client.CardAccess_Tbl  ==================  */
+
+
+
+
+
+
+
+INSERT INTO log.state_tbl (id, name, module) VALUES (4001, 'Session Created', 'Payment');
+INSERT INTO log.state_tbl (id, name, module) VALUES (4010, 'Session Expire', 'Payment');
+INSERT INTO log.state_tbl (id, name, module) VALUES (4020, 'Session Decline (fail)', 'Payment');
+INSERT INTO log.state_tbl (id, name, module) VALUES (4030, 'Session Complete', 'Payment');
+
+
+CREATE TABLE system.SessionType_tbl
+(
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(50),
+  enable BOOLEAN DEFAULT TRUE
+);
+COMMENT ON TABLE system.SessionType_tbl IS 'Contains all session type like normal session, split session and etc';
+
+INSERT INTO system.sessiontype_tbl (id, name) VALUES (1, 'Normal Session');
+INSERT INTO system.sessiontype_tbl (id, name) VALUES (2, 'Split Payment Session');
+
+CREATE TABLE log.Session_tbl
+(
+  id SERIAL PRIMARY KEY,
+  clientid INTEGER,
+  accountid INTEGER,
+  currencyid INTEGER,
+  countryid INTEGER,
+  stateid INTEGER,
+  orderid VARCHAR(128) NOT NULL,
+  amount DECIMAL NOT NULL,
+  mobile NUMERIC NOT NULL,
+  deviceid VARCHAR(128),
+  ipaddress VARCHAR(15),
+  externalid INTEGER,
+  sessiontypeid INTEGER,
+  expire TIMESTAMP(6) DEFAULT current_timestamp,
+  created TIMESTAMP(6) DEFAULT current_timestamp,
+  modified TIMESTAMP(6) DEFAULT current_timestamp,
+  CONSTRAINT Session_tbl_client_tbl_id_fk FOREIGN KEY (clientid) REFERENCES client.client_tbl (id),
+  CONSTRAINT Session_tbl_account_tbl_id_fk FOREIGN KEY (accountid) REFERENCES client.account_tbl (id),
+  CONSTRAINT Session_tbl_currency_tbl_id_fk FOREIGN KEY (currencyid) REFERENCES system.currency_tbl (id),
+  CONSTRAINT Session_tbl_country_tbl_id_fk FOREIGN KEY (countryid) REFERENCES system.country_tbl (id),
+  CONSTRAINT Session_tbl_state_tbl_id_fk FOREIGN KEY (stateid) REFERENCES log.state_tbl (id),
+  CONSTRAINT Session_tbl_sessiontype_tbl_id_fk FOREIGN KEY (sessiontypeid) REFERENCES system.SessionType_tbl (id)
+);
+COMMENT ON COLUMN log.Session_tbl.clientid IS 'Merchant Id';
+COMMENT ON COLUMN log.Session_tbl.accountid IS 'Storefront Id';
+COMMENT ON COLUMN log.Session_tbl.currencyid IS 'Currency of transaction';
+COMMENT ON COLUMN log.Session_tbl.countryid IS 'Country of transaction';
+COMMENT ON COLUMN log.Session_tbl.stateid IS 'State of session';
+COMMENT ON COLUMN log.Session_tbl.amount IS 'Total amount for payment';
+COMMENT ON COLUMN log.Session_tbl.externalid IS 'Profile id';
+COMMENT ON COLUMN log.Session_tbl.sessiontypeid IS 'Session Type id';
+COMMENT ON TABLE log.Session_tbl IS 'Session table act as master table for transaction. Split transactions will track by Session id';
+
+ALTER TABLE log.transaction_tbl ADD sessionid INTEGER NULL;
+ALTER TABLE log.transaction_tbl
+  ADD CONSTRAINT transaction_tbl_session_tbl_id_fk
+FOREIGN KEY (sessionid) REFERENCES log.session_tbl (id);/*  ===========  END : Adding column preferred to Client.CardAccess_Tbl  ==================  */
+
+/*  ===========  START : Adding communicationchannels to Client.Client_Tbl  ==================  */
+ALTER TABLE client.client_tbl ADD COLUMN communicationchannels integer DEFAULT 0;
+/*  ===========  END : Adding communicationchannels to Client.Client_Tbl  ==================  */
+
+
+ALTER TABLE client.cardaccess_tbl ADD psp_type INT DEFAULT 1 NOT NULL;
+ALTER TABLE client.cardaccess_tbl
+  ADD CONSTRAINT cardaccess_tbl_processortype_tbl_id_fk
+FOREIGN KEY (psp_type) REFERENCES system.processortype_tbl (id);
+DROP INDEX client.cardaccess_card_country_uq RESTRICT;
+UPDATE client.cardaccess_tbl
+SET psp_type = psp_tbl.system_type
+FROM system.psp_tbl
+WHERE psp_tbl.id = cardaccess_tbl.pspid;
+CREATE UNIQUE INDEX cardaccess_card_country_uq ON client.cardaccess_tbl (clientid, cardid, countryid, psp_type);
+
+
+
+
+
+
+
+/* =============== Added product tables ============ */
+
+-- Table: system.producttype_tbl
+
+-- DROP TABLE system.producttype_tbl;
+
+CREATE TABLE system.producttype_tbl
+(
+  id serial NOT NULL,
+  name character varying(100),
+  code character varying(100),
+  description character varying(255),
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true,
+  CONSTRAINT producttype_pk PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE system.producttype_tbl
+  OWNER TO postgres;
+
+
+-- DROP TABLE client.producttype_tbl;
+
+CREATE TABLE client.producttype_tbl
+(
+  id serial NOT NULL,
+  productid integer NOT NULL,
+  clientid integer NOT NULL,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true,
+  CONSTRAINT clientproducttype_pk PRIMARY KEY (id),
+  CONSTRAINT client_fk FOREIGN KEY (clientid)
+      REFERENCES client.client_tbl (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT product_fk FOREIGN KEY (productid)
+      REFERENCES system.producttype_tbl(id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE client.producttype_tbl
+  OWNER TO postgres;
+
+
+
+/* ========== Product Type ============ */
+
+INSERT INTO system.producttype_tbl( id, name, description, code )  VALUES (110, 'Airline Ticket', 'Flight Tickets', 'AIRTCKT');
+INSERT INTO system.producttype_tbl( id, name, description, code )  VALUES (210, 'Airline Insurance', 'Insurance products purchased', 'INSRNC');
+
+
+/*  ===========  START : Adding producttype to Log.Transaction_Tbl  ==================  */
+ALTER TABLE log.transaction_tbl ADD producttype INT ;
+COMMENT ON COLUMN log.transaction_tbl.producttype IS 'Product type of transaction';
+
+
+/*  ===========  END : Adding producttype to Log.Transaction_Tbl  ==================  */
+/*=========== Gateway Triggers ============*/
+
+-- Table: system.triggerunit_tbl
+
+-- DROP TABLE system.triggerunit_tbl;
+
+CREATE TABLE system.triggerunit_tbl
+(
+  id serial NOT NULL,
+  name character varying(200),
+  description character varying(200),
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true,
+  CONSTRAINT trigger_pk PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE system.triggerunit_tbl
+  OWNER TO postgres;
+  
+  
+ -- Table: client.gatewaytrigger_tbl
+
+-- DROP TABLE client.gatewaytrigger_tbl;
+
+CREATE TABLE client.gatewaytrigger_tbl
+(
+  id serial NOT NULL,
+  gatewayid integer,
+  enabled boolean NOT NULL DEFAULT false,
+  healthtriggerunit integer,
+  healthtriggervalue integer,
+  aggregationtriggerunit integer,
+  clientid integer,
+  aggregationtriggervalue integer,
+  resetthresholdunit integer,
+  resetthresholdvalue integer,
+  created timestamp without time zone NOT NULL DEFAULT now(),
+  modified timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT trigger_pk PRIMARY KEY (id),
+  CONSTRAINT atriggerunit_fk FOREIGN KEY (aggregationtriggerunit)
+      REFERENCES system.triggerunit_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT gateway_fk FOREIGN KEY (gatewayid)
+      REFERENCES system.psp_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT htriggerunit_fk FOREIGN KEY (healthtriggerunit)
+      REFERENCES system.triggerunit_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT triggeclient_fk FOREIGN KEY (clientid)
+      REFERENCES client.client_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT ttriggerunit_fk FOREIGN KEY (resetthresholdunit)
+      REFERENCES system.triggerunit_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE client.gatewaytrigger_tbl
+  OWNER TO postgres;
+  
+   /* ========= Gateway trigger system data ========== */
+
+INSERT INTO system.triggerunit_tbl( id, name, description) VALUES (1, 'time', 'Time based triggers counted in seconds');
+INSERT INTO system.triggerunit_tbl( id, name, description) VALUES (2, 'volume', 'Transaction based triggers counted in number of txns');
+
+/* ========= Gateway trigger system data ========== */
+
+
+
+
+/*=============== Gateway Stat Data -================ */
+
+-- Table: system.statisticstype_tbl
+
+-- DROP TABLE system.statisticstype_tbl;
+
+CREATE TABLE system.statisticstype_tbl
+(
+  id serial NOT NULL,
+  name character varying(200),
+  description character varying(200),
+  enabled boolean NOT NULL DEFAULT true,
+  created timestamp without time zone NOT NULL DEFAULT now(),
+  modified timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT stattype_pk PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE system.statisticstype_tbl
+  OWNER TO postgres;
+
+  
+  -- Table: client.gatewaystat_tbl
+
+-- DROP TABLE client.gatewaystat_tbl;
+
+CREATE TABLE client.gatewaystat_tbl
+(
+  id serial NOT NULL,
+  gatewayid integer NOT NULL,
+  clientid integer NOT NULL,
+  statetypeid integer NOT NULL,
+  statvalue integer NOT NULL,
+  enabled boolean NOT NULL DEFAULT true,
+  created timestamp without time zone NOT NULL DEFAULT now(),
+  modified timestamp without time zone NOT NULL DEFAULT now(),
+  reseton timestamp without time zone,
+  CONSTRAINT stat_pk PRIMARY KEY (id),
+  CONSTRAINT clientstat_fk FOREIGN KEY (clientid)
+      REFERENCES client.client_tbl (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT gatewaystat_fk FOREIGN KEY (gatewayid)
+      REFERENCES system.psp_tbl (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT stattype_fk FOREIGN KEY (statetypeid)
+      REFERENCES system.statisticstype_tbl (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE client.gatewaystat_tbl
+  OWNER TO postgres;
+  
+  
+  
+INSERT INTO system.statisticstype_tbl(  id, name, description)    VALUES (1,'Txn Volume', 'Volume of Transactions thourgh a particular gateway for a specific client');
+INSERT INTO system.statisticstype_tbl(  id, name, description)    VALUES (2,'Success Ratio', 'Succes vs. failure transactions using a gateway for a time period');
+INSERT INTO system.statisticstype_tbl(  id, name, description)    VALUES (3,'Response Time', 'Avg response time of a gateway during txn authorization');
+
+
+/*===========================  Updating for gateway delete functionality   ======================*/  
+ALTER TABLE client.gatewaytrigger_tbl ADD COLUMN status boolean NOT NULL DEFAULT false;
+ALTER TABLE client.gatewaytrigger_tbl ALTER COLUMN enabled SET DEFAULT true ;
+
+ALTER TABLE client.gatewaystat_tbl ALTER COLUMN statvalue TYPE numeric ;
+
+/*=================== Moving triggers to BRE =================== */
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN healthtriggerunit ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN healthtriggervalue ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN resetthresholdunit ;
+ALTER TABLE client.gatewaytrigger_tbl DROP COLUMN resetthresholdvalue ;
+/*=================== Moving triggers to BRE =================== */
+
+ALTER TABLE Client.gatewaytrigger_tbl ADD COLUMN lastrun timestamp without time zone ;
+
+-- To execute the above query first need to truncate the session_tbl data.
+-- Run the "TRUNCATE TABLE log.session_tbl CASCADE;" before executing below query.
+ALTER TABLE log.session_tbl ADD CONSTRAINT constraint_name UNIQUE (orderid);
+
+
+ALTER TABLE Client.Client_Tbl ADD secretkey VARCHAR(100);
+
+	  
+ALTER TABLE log.transaction_tbl
+ADD approval_action_code varchar(40) NULL;
+COMMENT ON COLUMN log.transaction_tbl.approval_action_code
+IS 'This field contains an action code and approval code
+"approval code":"action code"';
+
+-- Adding Virtual Token for Saving SUVTP in mPoint schema
+ALTER TABLE Log.Transaction_Tbl ADD COLUMN virtualtoken character varying(512);
+
+ALTER TABLE client.account_tbl  ALTER COLUMN markup type character varying(20); 
+ALTER TABLE log.transaction_tbl  ALTER COLUMN markup type character varying(20); 
+
+ALTER TABLE log.transaction_tbl ALTER COLUMN attempt SET DEFAULT 0;
+INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (45, 'Amex',2);
+
+/*END: Adding PSP entries to the PSP_Tbl table for AMEX*/
+
+/*START: Adding Currency entries to the PSPCurrency_Tbl table for AMEX*/
+
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (208,45,'DKK');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,45,'USD');
+
+/*END: Adding Currency entries to the PSPCurrency_Tbl table for AMEX*/
+
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (1, 45, true);
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (2, 45, true);
+/*INSERT INTO client.cardaccess_tbl (clientid, cardid, pspid, countryid, stateid, enabled) VALUES (10007, 1, 45, 200, 1, true);*/
+
+/* ========== CONFIGURE DEMO ACCOUNT FOR AMEX START ========== */
+-- Wire-Card
+
+/* ========== CONFIGURE DEMO ACCOUNT FOR AMEX END ====== *//* END: Adding CARD Configuration Entries */
+
+
+
+-- Table: system.retrialtype_tbl
+
+-- DROP TABLE system.retrialtype_tbl;
+
+CREATE TABLE system.retrialtype_tbl
+(
+  id serial NOT NULL,
+  name character varying(255),
+  description character varying(255),
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true,
+  CONSTRAINT retrialtype_pk PRIMARY KEY (id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE system.retrialtype_tbl
+  OWNER TO postgres;
+  
+  
+  -- Table: client.retrial_tbl
+
+-- DROP TABLE client.retrial_tbl;
+
+CREATE TABLE client.retrial_tbl
+(
+  id serial NOT NULL,  
+  typeid integer  NOT NULL,
+  retrialvalue character varying(255),
+  delay integer,
+  clientid integer NOT NULL,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true,
+  CONSTRAINT retrial_pk PRIMARY KEY (id),
+  CONSTRAINT retrialtype_fk FOREIGN KEY (typeid)
+      REFERENCES system.retrialtype_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT client_fk FOREIGN KEY (clientid)
+      REFERENCES client.client_tbl (id) MATCH SIMPLE    
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE client.retrial_tbl
+  OWNER TO postgres;
+
+  
+------- System data for retrial types ------------------
+
+INSERT INTO system.retrialtype_tbl( id, name, description) VALUES (1,'Time Based','Retry till the defined time period');
+INSERT INTO system.retrialtype_tbl( id, name, description) VALUES (2,'Response Based','Retry until specified response received');
+INSERT INTO system.retrialtype_tbl( id, name, description) VALUES (3,'Max Attempt Based','Retry until Max attempts are over');

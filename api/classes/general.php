@@ -469,7 +469,7 @@ class General
 					authurl = '". $this->getDBConn()->escStr($oTI->getAuthenticationURL() ) ."', customer_ref = '". $this->getDBConn()->escStr($oTI->getCustomerRef() ) ."',
 					gomobileid = ". $oTI->getGoMobileID() .", auto_capture = '". ($oTI->useAutoCapture() === true ? "1" : "0") ."', markup = '". $this->getDBConn()->escStr($oTI->getMarkupLanguage() ) ."',
 					description = '". $this->getDBConn()->escStr($oTI->getDescription() ) ."',
-					deviceid = '". $this->getDBConn()->escStr($oTI->getDeviceID()) ."'";
+					deviceid = '". $this->getDBConn()->escStr($oTI->getDeviceID()) ."', attempt = ".intval($oTI->getAttemptNumber()) .", producttype = ".intval($oTI->getProductType());
 		if (strlen($oTI->getIP() ) > 0) { $sql .= " , ip = '". $this->getDBConn()->escStr( $oTI->getIP() ) ."'"; }
 		if ($oTI->getAccountID() > 0) { $sql .= ", euaid = ". $oTI->getAccountID(); }
 		elseif ($oTI->getAccountID() == -1) { $sql .= ", euaid = NULL"; }
@@ -481,6 +481,22 @@ class General
 		{
 			throw new mPointException("Unable to update Transaction: ". $oTI->getID(), 1004);
 		}
+	}
+	
+	public function newAssociatedTransaction(TxnInfo &$oTI)
+	{
+		$iTxnID = $this->newTransaction($oTI->getClientConfig(), $oTI->getTypeID());
+		
+		$iSessionId = $oTI->getSessionId() ;
+		
+		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+				SET sessionid = ".$iSessionId." WHERE id=".$iTxnID ;
+		
+		if (is_resource($this->getDBConn()->query($sql) ) === false)
+		{
+			throw new mPointException("Unable to update associated transaction: ". $iTxnID. " of original transaction: ".$oTI->getID(), 1004);
+		}
+		return $iTxnID ;
 	}
 
 	/**
@@ -510,6 +526,53 @@ class General
 			}
 		}
 		else { throw new mPointException("Unable to insert new message for Transaction: ". $txnid ." and State: ". $sid, 1003); }
+	}
+	
+	/**
+	 * Create a new transaction with same session id as the original transaction,
+	 * and authorize the new transaction using secondary PSP as part of Dynamic Routing
+	 * 
+	 * @param TxnInfo $obj_TxnInfo
+	 * @param unknown $iSecondaryRoute
+	 * @return string
+	 */
+	public function authWithSecondaryPSP(TxnInfo $obj_TxnInfo ,$iSecondaryRoute ,$aHTTP_CONN_INFO, $obj_Elem )
+	{
+		$xml = "" ;
+		$obj_PSPConfig = PSPConfig::produceConfig ( $this->getDBConn(), $obj_TxnInfo->getClientConfig ()->getID (), $obj_TxnInfo->getClientConfig ()->getAccountConfig ()->getID (), $iSecondaryRoute );
+	    $iAssociatedTxnId = $this->newAssociatedTransaction ( $obj_TxnInfo );
+	    $data = array();
+	    
+	    $data['amount'] = $obj_TxnInfo->getAmount();
+	    $data['country-config'] = $obj_TxnInfo->getCountryConfig();
+	    $data['currency-config'] = $obj_TxnInfo->getCurrencyConfig();
+	    $data['orderid'] = $obj_TxnInfo->getOrderID();
+	    $data['mobile'] = $obj_TxnInfo->getMobile();
+	    $data['operator'] = $obj_TxnInfo->getOperator();
+	    $data['email'] = $obj_TxnInfo->getEMail();
+	    $data['device-id'] = $obj_TxnInfo->getDeviceID();
+	    $data['markup'] = $obj_TxnInfo->getMarkupLanguage();
+	    $data['orderid'] = $obj_TxnInfo->getOrderID();
+	    $data['sessionid'] = $obj_TxnInfo->getSessionId();
+	    
+		$obj_AssociatedTxnInfo = TxnInfo::produceInfo( (integer) $iAssociatedTxnId, $this->getDBConn(),$obj_TxnInfo->getClientConfig(),$data);
+		
+		$obj_second_PSP = Callback::producePSP ( $this->getDBConn(), $_OBJ_TXT, $obj_AssociatedTxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig );
+		
+		$code = $obj_second_PSP->authorize( $obj_PSPConfig, $obj_Elem );
+		if ($code == "100") {
+			$xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
+		} else if ($code == "2000") {
+			$xml .= '<status code="2000">Payment authorized</status>';
+		} else if (strpos ( $code, '2005' ) !== false) {
+			header ( "HTTP/1.1 303" );
+			$xml .= $code;
+		} else {
+			$xml .= '<status code="92">Authorization failed, ' . $obj_PSPConfig->getName () . ' returned error: ' . $code . '</status>';
+		}
+	
+		return $xml ;
+			
 	}
 
 	/**
@@ -1196,6 +1259,83 @@ class General
 			
 		}
 		return $xml;
-	}	
+	}
+
+	/*
+	 * Fetch Transaction based on the orderID
+	 *
+	 * 	 1. First attempt
+	 * 	 2. Second attempt
+	 * 	 8. Invalid OrderID
+	 * 	 9. Transaction not found
+	 *
+	 *
+	 * @param integer 	$orderid  OrderID from input
+	 * @return string
+	 * */
+
+    public function getTxnAttemptsFromOrderID($orderid)
+    {
+        $sql = "SELECT attempt FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+					WHERE orderid = '" . trim($orderid) . "' AND enabled = true 
+					ORDER BY created DESC LIMIT 1";
+//			echo $sql ."\n";
+        $RS = $this->getDBConn()->getName($sql);
+
+        if (is_array($RS) === true) {   $code = intval($RS['ATTEMPT']);  } //Transaction attempt will have values 1/2
+        else { $code = -1; }    // Transaction not found
+
+        return $code;
+    }
+
+    public function getPreviousFailedAttempts($orderid)
+    {
+        $aPMArray = array();
+        $aRejectedStates = array(Constants::iPAYMENT_REJECTED_PSP_UNAVAILABLE_STATE);
+        $sql = "SELECT cardid FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn				
+				INNER JOIN (SELECT txnid, MAX(stateid) AS st FROM log.message_tbl GROUP BY txnid) p2 ON (txn.id = p2.txnid)
+				WHERE orderid = '" . trim($orderid) . "' AND enabled = true AND p2.st IN (".implode(",",$aRejectedStates).")";
+//			echo $sql ."\n";
+        $res = $this->getDBConn()->query($sql);
+
+        while ($RS = $this->getDBConn()->fetchName($res) ) {
+            array_push($aPMArray, intval($RS['CARDID'] ) );
+        }
+
+        return $aPMArray;
+    }
+    
+    public function getTxnAttemptsFromSessionID($sessionid)
+    {
+        $sql = "SELECT count(txn.id) AS attempts  
+          FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn 
+            INNER JOIN log" . sSCHEMA_POSTFIX . ".message_tbl msg ON txn.id = msg.txnid 
+          WHERE sessionid = " . $sessionid .  " 
+            AND msg.stateid in (20109, 20103, 20102, 20101, 2011, 2010) GROUP BY txn.sessionid";
+
+        $res = $this->getDBConn()->getName($sql);
+        $attempts = 0;
+        if (is_array($res) === true) {
+            $attempts = intval($res['ATTEMPTS']);
+        }
+        return $attempts;
+    }
+
+    public function getStaticRouteData($clientId = "")
+    {
+        $sql = "SELECT clientid, pspid
+                    FROM client" . sSCHEMA_POSTFIX . ".cardaccess_tbl
+                    WHERE pspid IN
+                          (SELECT id
+                           FROM system.psp_tbl
+                           WHERE capture_method <> 0)
+                    AND enabled ";
+         if($clientId !== "" )
+         {
+            $sql .= "AND clientid = $clientId" ;
+         }
+         $aRS = $this->getDBConn()->getAllNames($sql);
+         return $aRS;
+    }
 }
 ?>

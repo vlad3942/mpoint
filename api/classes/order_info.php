@@ -108,7 +108,13 @@ class OrderInfo
 	 * @var array
 	 */
 	private  $_AddressConfigs;
-	
+
+    /**
+     * The Additional Data of the Order for a Customer
+     *
+     * @var array
+     */
+    private $_aAdditionalData;
 	
 	/**
 	 * Default Constructor
@@ -116,7 +122,7 @@ class OrderInfo
 	 
 	 *
 	 */
-	public function __construct($id, $tid, $cid, $amt, $pnt, $rwd, $qty, $productsku, $productname, $productdesc, $productimgurl,$flightd,$passengerd,$addressd)
+	public function __construct($id, $tid, $cid, $amt, $pnt, $rwd, $qty, $productsku, $productname, $productdesc, $productimgurl,$flightd,$passengerd,$addressd,$additionaldata)
 	{		
 		$this->_iID =  (integer) $id;
 		$this->_iTransactionID = $tid;
@@ -132,6 +138,7 @@ class OrderInfo
 		$this->_FlightConfigs =  (array) $flightd;
 		$this->_PassengerConfigs =  (array) $passengerd;
 		$this->_AddressConfigs = (array) $addressd;
+        $this->_aAdditionalData = $additionaldata;
 	}
 
 	/**
@@ -218,8 +225,15 @@ class OrderInfo
 	 * @return 	array
 	 */
 	public function getAddressConfigs() { return $this->_AddressConfigs; }
-	
-	
+
+    /**
+     * Returns the Additional Data of this flight
+     *
+     * @return array
+     */
+    public function getAdditionalData() {
+        return $this->_aAdditionalData;
+    }
 		
 	public static function produceConfig(RDB $oDB, $id)
 	{
@@ -228,18 +242,38 @@ class OrderInfo
 				WHERE id = ". intval($id) ." AND enabled = '1'";
 //		echo $sql ."\n";	
 		$RS = $oDB->getName($sql);
-		
+
 		if (is_array($RS) === true && count($RS) > 0)
-		{		
+		{
+            $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Order' and externalid=" . $RS ["ID"];
+            // echo $sqlA;
+            $RSA = $oDB->getAllNames ( $sqlA );
+
 			$order_type = "order";
 			$flightdata = FlightInfo::produceConfigurations($oDB, $id);
 			$passengerdata = PassengerInfo::produceConfigurations($oDB, $id);
 			$addressdata = AddressInfo::produceConfigurations($oDB, $id, $order_type);
 			return new OrderInfo($RS["ID"], $RS["TXNID"], $RS["COUNTRYID"], $RS["AMOUNT"], $RS["POINTS"],
-								 $RS["REWARD"], $RS["QUANTITY"], $RS["PRODUCTSKU"], $RS["PRODUCTNAME"], $RS["PRODUCTDESCRIPTION"], $RS["PRODUCTIMAGEURL"], $flightdata, $passengerdata, $addressdata);
+								 $RS["REWARD"], $RS["QUANTITY"], $RS["PRODUCTSKU"], $RS["PRODUCTNAME"], $RS["PRODUCTDESCRIPTION"], $RS["PRODUCTIMAGEURL"], $flightdata, $passengerdata, $addressdata,$RSA);
 		}
 		else { return null; }
 	}
+
+    public static function produceConfigurationsFromOrderID(RDB $oDB, $orderid)
+    {
+        $sql = "SELECT OT.id			
+				FROM Log". sSCHEMA_POSTFIX .".Order_Tbl AS OT
+				INNER JOIN Log". sSCHEMA_POSTFIX .".Transaction_Tbl AS TT ON OT.txnid = TT.id 
+				WHERE TT.orderid = '". trim($orderid) ."' AND OT.enabled = '1' AND TT.enabled = '1'";
+        //echo $sql ."\n";
+        $aConfigurations = array();
+        $res = $oDB->query($sql);
+        while ($RS = $oDB->fetchName($res) )
+        {
+            $aConfigurations[] = self::produceConfig($oDB, $RS["ID"]);
+        }
+        return $aConfigurations;
+    }
 	
 	public static function produceConfigurations(RDB $oDB, $txnid)
 	{		
@@ -298,6 +332,14 @@ class OrderInfo
         $xml .= '<points>'. $this->getPoints() .'</points>';
         $xml .= '<reward>'. $this->getReward() .'</reward>';
         $xml .= '<quantity>'. $this->getQuantity() .'</quantity>';
+        $additionalData = $this->getAdditionalData();
+        if (empty($additionalData) === false ) {
+            $xml .= '<additional-data>';
+            foreach ($additionalData as $fAdditionalData) {
+                $xml .= '<param name="' . $fAdditionalData ["NAME"] . '">' . $fAdditionalData ["VALUE"] . '</param>';
+            }
+            $xml .= '</additional-data>';
+        }
         $xml .= '</line-item>';
      
         return $xml;

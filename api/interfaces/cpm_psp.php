@@ -8,7 +8,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         parent::__construct($oDB, $oTxt, $oTI, $aConnInfo, $obj_PSPConfig);
     }
 
-	public function notifyClient($iStateId, array $vars) { parent::notifyClient($iStateId, $vars["transact"], $vars["amount"], $vars["card-no"] , $vars["card-id"], $vars["expiry"]); }
+	public function notifyClient($iStateId, array $vars) { parent::notifyClient($iStateId, $vars["transact"], $vars["amount"], $vars["card-no"] , $vars["card-id"], $vars["expiry"], $vars["additionaldata"]); }
 
 	/**
      * Performs a capture operation with CPM PSP for the provided transaction.
@@ -358,6 +358,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= $obj_PSPConfig->toXML();
 		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 		$b .= $this->_constTxnXML();
+		$b .= $this->_constOrderDetails($this->getTxnInfo()) ;
 		if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
 		if($card_type_id > 0) 
 		{ 
@@ -384,7 +385,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		$b .= '</initialize>';
 		$b .= '</root>';
-		
 		$obj_XML = null;
 		try
 		{
@@ -405,11 +405,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						SET pspid = ". $obj_PSPConfig->getID() ."
 						WHERE id = ". $this->getTxnInfo()->getID();
 				$this->getDBConn()->query($sql);
-
-				if(count($obj_XML->{"hidden-fields"}) > 0){
+				
+               /* if(count($obj_XML->{"hidden-fields"}) > 0){
                     $obj_XML->{"hidden-fields"}->{"store-card"} = parent::bool2xml($sc);
                     $obj_XML->{"hidden-fields"}->{"requested_currency_id"} = $this->getTxnInfo()->getCurrencyConfig()->getID() ;
-                }
+                } */
+				
                 $obj_XML->name = 'card_holderName';
 			}
 			else { throw new mPointException("Could not construct  XML for initializing payment with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
@@ -425,7 +426,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 	public function authorize(PSPConfig $obj_PSPConfig, $obj_Card)
 	{
-		
 		$code = 0;
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
@@ -445,6 +445,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
         $txnXML = $this->_constTxnXML();
         $b .= $txnXML;
+        $b .= $this->_constOrderDetails($this->getTxnInfo()) ;
 
         if (count($obj_Card->ticket) == 0)
         {
@@ -471,6 +472,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			$code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
 			$obj_HTTP->disConnect();
 		
+			//call post auth actions
+			
+			PostAuthAction::updateTxnVolume($this->getTxnInfo(),$obj_PSPConfig->getID() ,$this->getDBConn());
+			
 			if ($code == 200 || $code == 303 )
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
@@ -484,12 +489,20 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						$txnid = $obj_XML->transaction["external-id"];
 						$sql = ",extid = '". $this->getDBConn()->escStr($txnid) ."'";
 					}
-					
-					$code = $obj_XML->transaction->status["code"];
+				 $code = $obj_XML->transaction->status["code"];
 				} 
 				else { $code = $obj_XML->status["code"]; }
 				
+				$approvalCode = $obj_XML->{'approval-code'};
+				
+				if($approvalCode != ''){
+					$sql = ",approval_action_code = '".$approvalCode."'";
+				}
+					
+
+				if($code == 2005)
                 $this->newMessage($this->getTxnInfo()->getID(), $code, $obj_HTTP->getReplyBody());
+                $this->getTxnInfo()->getPaymentSession()->updateState();
 				// In case of 3D verification status code 2005 will be received
 				if($code == 2005)
 				{
@@ -580,7 +593,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			$code = $obj_HTTP->send($this->constHTTPHeaders(), $xml);
 			$obj_HTTP->disConnect();
 
-			if ($code == 200)
+			if($code == 202)
+            {
+                $code = 1000;
+            }
+            else if ($code == 200)
 			{
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
 				if (isset($obj_XML->status["code"]) === true && strlen($obj_XML->status["code"]) > 0) { $code = $obj_XML->status["code"]; }
@@ -612,16 +629,30 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		{
 			$obj_XML->amount = (integer) $actionAmount;
 		}
-		else { unset($obj_XML->amount); } 
+		else { unset($obj_XML->amount); }
+
+		$obj_XML->orderid = $this->_getFullOrderID();
 		
 		return str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 	}
+
+	protected function _getFullOrderID()
+    {
+        if(intval($this->getTxnInfo()->getAttemptNumber()) == 0)
+        {
+            return $this->getTxnInfo()->getOrderID();
+        }
+        else if(intval($this->getTxnInfo()->getAttemptNumber()) > 0)
+        {
+            return $this->getTxnInfo()->getOrderID()."_".$this->getTxnInfo()->getAttemptNumber();
+        }
+    }
 
 	protected function _constConnInfo($path)
 	{
 		$aCI = $this->aCONN_INFO;
 		$aURLInfo = parse_url($this->getClientConfig()->getMESBURL() );
-		
+
 		return new HTTPConnInfo($aCI["protocol"], $aURLInfo["host"], $aCI["port"], $aCI["timeout"], $path, $aCI["method"], $aCI["contenttype"], $this->getClientConfig()->getUsername(), $this->getClientConfig()->getPassword() );
 	}
 	
@@ -794,9 +825,21 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '<card-number>'. $obj_Card->{'card-number'} .'</card-number>';
 		$b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
 		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
-		
+                
+        if(count($obj_Card->{'valid-from'}) > 0) {
+            list($valid_from_month, $valid_from_year) = explode("/", $obj_Card->{'valid-from'});
+            $valid_from_year = substr_replace(date('Y'), $valid_from_year, -2);
+            $b .= '<valid-from-month>'. $valid_from_month .'</valid-from-month>';
+            $b .= '<valid-from-year>'. $valid_from_year .'</valid-from-year>';
+        }
+                
 		if(count($obj_Card->cvc) > 0) { $b .= '<cvc>'. $obj_Card->cvc .'</cvc>'; }	
-		
+
+		if(count($obj_Card->{'info-3d-secure'}) > 0)
+        {
+            $b .= $obj_Card->{'info-3d-secure'}->asXML();
+        }
+
 		$b .= '</card>';
 		
 		if(count($obj_Card->address) > 0)
@@ -805,6 +848,16 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		
 		return $b;
+	}
+	
+	protected function _constOrderDetails($obj_txnInfo)
+	{
+		
+		$sql = "SELECT COUNT(id) FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl WHERE orderid = '".$obj_txnInfo->getOrderID()."'";
+		//		echo $sql ."\n";
+		$RS = $this->getDBConn()->getName($sql);
+		$xml = '<order-attempt>'.$RS["COUNT"].'</order-attempt>' ;
+		return $xml ;
 	}
 	
     protected function _constStoredCardAuthorizationRequest($obj_Card)
@@ -816,7 +869,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= '<expiry-month>'. $expiry_month .'</expiry-month>';
 		$b .= '<expiry-year>'. $expiry_year .'</expiry-year>';
 		$b .= '<token>'. $obj_Card->ticket .'</token>';
-		
+                
+        if(count($obj_Card->{'valid-from'}) > 0) {
+            list($valid_from_month, $valid_from_year) = explode("/", $obj_Card->{'valid-from'});
+            $valid_from_year = substr_replace(date('Y'), $valid_from_year, -2);
+            $b .= '<valid-from-month>'. $valid_from_month .'</valid-from-month>';
+            $b .= '<valid-from-year>'. $valid_from_year .'</valid-from-year>';
+        }
+                
 		if(count($obj_Card->cvc) > 0) { $b .= '<cvc>'. $obj_Card->cvc .'</cvc>'; }		
 
 		$b .= '</card>';
@@ -826,4 +886,53 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
     
 	protected function _getResponse(){ return $this->_obj_ResponseXML;}
 
+    /**
+     * Performs a post status operation with CPM PSP for the provided transaction.
+     *
+     * @param object $obj_Elem
+     * @return int
+     */
+    public function postStatus($obj_Elem)
+    {
+        $code = 0;
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        $xml .= '<root>';
+        $xml .= '<callback>';
+        $xml .= '<psp-config id="'.$obj_Elem->{'psp-config'}['id'].'">';
+        $xml .= '<name>'.$obj_Elem->{'psp-config'}->name.'</name>';
+        $xml .= '</psp-config>';
+        $xml .= '<transaction id="'.$obj_Elem->transaction["id"].'" order-no="'.$obj_Elem->transaction["order-no"].'" external-id="">';
+        $xml .= '<amount country-id="'.$obj_Elem->transaction->amount['country-id'].'" currency="'.$obj_Elem->transaction->amount['currency'].'">';
+        $xml .=  $obj_Elem->transaction->amount;
+        $xml .= '</amount>';
+        $xml .= '<card type-id="'.$obj_Elem->transaction->card['type-id'].'" />';
+        $xml .= '</transaction>';
+        $xml .= '<status code="'.$obj_Elem->status['code'].'" />';
+        $xml .= '<url>'.$obj_Elem->url.'</url>';
+        $xml .= '</callback>';
+        $xml .= '</root>';
+
+        try
+        {
+            if (isset($this->aCONN_INFO["paths"]["post-status"])) {
+                $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["post-status"]);
+
+                $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+                $obj_HTTP->connect();
+
+                $code = $obj_HTTP->send($this->constHTTPHeaders(), $xml);
+                $obj_HTTP->disConnect();
+                if ($code != 200) {
+                    trigger_error("PostStatus failed for the transaction : " . $this->getTxnInfo()->getID() . " failed with code: " . $code . " and body: " . $obj_HTTP->getReplyBody(), E_USER_WARNING);
+                }
+            } else {
+                trigger_error("PostStatus failed - Endpoint not configured for the PSP: ".$obj_Elem->{'psp-config'}['id'], E_USER_WARNING);
+            }
+        }
+        catch (mPointException $e)
+        {
+            trigger_error("PostStatus failed for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $code, E_USER_WARNING);
+        }
+        return $code;
+    }
 }

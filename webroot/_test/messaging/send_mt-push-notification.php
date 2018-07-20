@@ -16,7 +16,7 @@ $obj_ConnInfo = GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO);
 $obj_GoMobile = new GoMobileClient($obj_ConnInfo);
 
 $iType = 11;
-$sChannel = 123;
+$sChannel = "PBL";
 $sKeyword = "CPM";
 
 

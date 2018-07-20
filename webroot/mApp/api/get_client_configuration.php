@@ -44,7 +44,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
         if ($code == 100) {
             $obj_Config = ClientConfig::produceConfig($_OBJ_DB, $clientId);
             if ($obj_Config->getID() > 0) {
-                $xml .= $obj_Config->toCompactXML();
+                $xml = $obj_Config->toCompactXML();
 
                 if (empty($xml) === true) {
                     header("HTTP/1.1 404 Not Found");

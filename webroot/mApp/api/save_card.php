@@ -121,7 +121,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						//{
 						//	if ($obj_Validator->valState($_OBJ_DB, utf8_decode( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}->state) ) != 10) { $aMsgCds[] = $obj_Validator->valState($_OBJ_DB, utf8_decode( (string) $obj_DOM->{'save-card'}[$i]->card[$j]->{'address'}->state) ) + 80; }
 						//}
-
+                        $chkName = $obj_Validator->valCardFullname((string) $obj_DOM->{'save-card'}[$i]->card[$j]->name);
+                        if($chkName != 10){
+                            $aMsgCds[] = 62;
+                        }
 						// Success: Input Valid
 						if (count($aMsgCds) == 0)
 						{

@@ -26,7 +26,8 @@ require_once(sCLASS_PATH ."/enduser_account.php");
 require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
-
+// Require Business logic for the End-User Account Factory Provider
+require_once(sCLASS_PATH ."/customer_info.php");
 header("Content-Type: text/plain");
 set_time_limit(600);
 // Standard retry strategy connecting to the database has proven inadequate
@@ -57,7 +58,7 @@ try
 	if ($obj_TxnInfo->getTypeID() >= 100 && $obj_TxnInfo->getTypeID() <= 109 && $obj_TxnInfo->getClientConfig()->getCountryConfig()->getID() == $_POST['clientid'])
 	{
 		$aTxnInfo = array("client-config" => ClientConfig::produceConfig($_OBJ_DB, $_POST['clientid'], -1) );
-		$obj_TxnInfo = TxnInfo::produceInfo($_POST['mpointid'], $obj_TxnInfo, $aTxnInfo);
+		$obj_TxnInfo = TxnInfo::produceInfo($_POST['mpointid'],$_OBJ_DB, $obj_TxnInfo, $aTxnInfo);
 	}
 	$obj_mPoint = new DIBS($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['dibs']);
 

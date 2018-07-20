@@ -104,6 +104,8 @@ require_once(sCLASS_PATH ."/client_url_config.php");
 require_once(sCLASS_PATH ."/client_issuer_identifcation_number_range_config.php");
 // Require data class for Client GoMobile Configurations
 require_once(sCLASS_PATH ."/client_gomobile_config.php");
+// Require data class for Client Communication Channels Configurations
+require_once(sCLASS_PATH ."/client_communication_channel_config.php");
 // Require data class for Keyword Configurations
 require_once(sCLASS_PATH ."/keywordconfig.php");
 // Require data class for Shop Configuration
@@ -112,6 +114,8 @@ require_once(sCLASS_PATH ."/shopconfig.php");
 require_once(sCLASS_PATH ."/pspconfig.php");
 // Require data data class for Transaction Information
 require_once(sCLASS_PATH ."/txninfo.php");
+// Require data data class for Payment Session Information
+require_once(sCLASS_PATH ."/paymentsession.php");
 // Require data data class for Order/Cart Information
 require_once(sCLASS_PATH ."/order_info.php");
 // Require data data class for Flight Information
@@ -128,6 +132,8 @@ require_once(sINTERFACE_PATH ."/refundable.php");
 require_once(sINTERFACE_PATH ."/voidable.php");
 require_once(sINTERFACE_PATH ."/redeemable.php");
 require_once(sINTERFACE_PATH ."/invoiceable.php");
+
+require_once(sCLASS_PATH ."post_auth_action.php");
 
 // Require specific Business logic for the Status component
 require_once(sCLASS_PATH ."/status.php");
