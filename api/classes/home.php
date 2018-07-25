@@ -491,7 +491,9 @@ class Home extends General
 			// set card expired status
             $aExpiry = explode('/', $RS['EXPIRY']);
             $bIsExpired = "false";
-            if(empty(trim($aExpiry[0])) === false && empty(trim($aExpiry[1])) === false && $this->_cardNotExpired(intval($aExpiry[0]), intval($aExpiry[1])) === false )
+            $expiryMonth = trim($aExpiry[0]);
+            $expiryYear = trim($aExpiry[1]);
+            if(empty($expiryMonth) === false && empty($expiryYear) === false && $this->_cardNotExpired(intval($expiryMonth), intval($expiryYear)) === false )
             {
                 $bIsExpired = "true";
             }
