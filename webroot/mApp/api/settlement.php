@@ -197,12 +197,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
         {
             foreach ($client as $pspid)
             {
-                $obj_Settlement = SettlementFactory::create($clientid, $pspid, $aHTTP_CONN_INFO);
+                $obj_Settlement = SettlementFactory::create($_OBJ_TXT, $clientid, $pspid, $aHTTP_CONN_INFO);
                 if($obj_Settlement != NULL)
                 {
                     $obj_Settlement->capture($_OBJ_DB);
                     $obj_Settlement->sendRequest($_OBJ_DB);
-
+                     $obj_Settlement->refund($_OBJ_DB);
+                    $obj_Settlement->sendRequest($_OBJ_DB);
                 }
             }
 
