@@ -190,16 +190,16 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$obj_CurrencyConfig = CurrencyConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'initialize-payment'}[$i]->transaction->amount["currency-id"]);
 							$data['currency-config']= $obj_CurrencyConfig ;
 
-                            //Set attempt value based on the previous attempts using the same orderid
+                             //Set attempt value based on the previous attempts using the same orderid
                             $iAttemptNumber = $obj_mPoint->getTxnAttemptsFromOrderID($data['orderid']);
-                            if($iAttemptNumber > 0 )
+                           /* if($iAttemptNumber > 0 )
                             {
                                 $data['attempt'] = ++$iAttemptNumber;
                             }
                             else
                             {
                                 $data['attempt'] = 1;
-                            }
+                            } */
                             $data['sessionid'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction["session-id"];
                             $sessionType =  $obj_ClientConfig->getAdditionalProperties("sessiontype");
                             if($sessionType > 1 )

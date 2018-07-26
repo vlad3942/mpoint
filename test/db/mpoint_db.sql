@@ -7592,6 +7592,7 @@ ALTER TABLE Log.Transaction_Tbl ADD COLUMN virtualtoken character varying(512);
 ALTER TABLE client.account_tbl  ALTER COLUMN markup type character varying(20); 
 ALTER TABLE log.transaction_tbl  ALTER COLUMN markup type character varying(20); 
 
+ALTER TABLE log.transaction_tbl ALTER COLUMN attempt SET DEFAULT 0;
 INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (45, 'Amex',2);
 
 /*END: Adding PSP entries to the PSP_Tbl table for AMEX*/

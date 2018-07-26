@@ -1,0 +1,1 @@
+ALTER TABLE log.transaction_tbl ALTER COLUMN attempt SET DEFAULT 0;
