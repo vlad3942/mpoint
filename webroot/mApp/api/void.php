@@ -220,7 +220,7 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 													$xml .= '<status code="1000"></status>';
 													$aMsgCds[$code] = "Success";
 													// Perform callback to Client
-													if (strlen($obj_TxnInfo->getCallbackURL() ) > 0 && $obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === false)
+													if (strlen($obj_TxnInfo->getCallbackURL() ) > 0 && $obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === true)
 													{
 														$args = array("transact" => $obj_TxnInfo->getExternalID(),
 																	  "amount" => $amount);
