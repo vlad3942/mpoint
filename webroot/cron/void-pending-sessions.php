@@ -3,7 +3,7 @@ require_once("../inc/include.php");
 
 $sql = "SELECT sn.id, sn.amount
           FROM log" . sSCHEMA_POSTFIX . ".session_tbl sn
-          WHERE sn.stateid = 4031 AND sn.created >= (now() - interval '10 hour') AND sn.expire < now()";
+          WHERE sn.stateid = ".Constants::iSESSION_PARTIALLY_COMPLETED." AND sn.created >= (now() - interval '10 hour') AND sn.expire < now()";
 
 $res = $_OBJ_DB->query($sql);
 
@@ -14,7 +14,8 @@ while ($RS = $_OBJ_DB->fetchName($res)) {
               FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn 
                 INNER JOIN log" . sSCHEMA_POSTFIX . ".message_tbl msg ON txn.id = msg.txnid 
               WHERE sessionid = " . $RS['ID'] . " 
-                AND msg.stateid in (2000,2001,2007) GROUP BY txn.id, msg.stateid";
+                AND msg.stateid in (".Constants::iPAYMENT_ACCEPTED_STATE.",".Constants::iPAYMENT_CAPTURED_STATE.",".Constants::iPAYMENT_WITH_VOUCHER_STATE.")
+                GROUP BY txn.id, msg.stateid";
 
     $resultObj = $_OBJ_DB->query($query);
     $amount = 0;
