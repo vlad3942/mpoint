@@ -1292,10 +1292,12 @@ class General
     {
         $aPMArray = array();
         $aRejectedStates = array(Constants::iPAYMENT_REJECTED_PSP_UNAVAILABLE_STATE);
-        $sql = "SELECT cardid FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn				
-				INNER JOIN (SELECT txnid, MAX(stateid) AS st FROM log.message_tbl GROUP BY txnid) p2 ON (txn.id = p2.txnid)
-				WHERE orderid = '" . trim($orderid) . "' AND enabled = true AND p2.st IN (".implode(",",$aRejectedStates).")";
-//			echo $sql ."\n";
+        $sql = "SELECT Txn.id, Txn.cardid FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
+                INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg on Txn.id = Msg.txnid
+                WHERE Txn.orderid = '" . trim($orderid) . "' AND Txn.enabled = true
+                GROUP BY Txn.id
+                HAVING MAX(Msg.stateid) IN (".implode(",",$aRejectedStates).")";
+
         $res = $this->getDBConn()->query($sql);
 
         while ($RS = $this->getDBConn()->fetchName($res) ) {
