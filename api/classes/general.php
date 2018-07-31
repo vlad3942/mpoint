@@ -1292,7 +1292,7 @@ class General
     {
         $aPMArray = array();
         $aRejectedStates = array(Constants::iPAYMENT_REJECTED_PSP_UNAVAILABLE_STATE);
-        $sql = "SELECT Txn.id, Txn.cardid FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
+        $sql = "SELECT Txn.cardid FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
                 INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg on Txn.id = Msg.txnid
                 WHERE Txn.orderid = '" . trim($orderid) . "' AND Txn.enabled = true
                 GROUP BY Txn.id
