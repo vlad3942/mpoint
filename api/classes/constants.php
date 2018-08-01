@@ -1271,6 +1271,12 @@ abstract class Constants
 	const iRETRIAL_TYPE_TIMEBASED = 1;
 	const iRETRIAL_TYPE_RESPONSEBASED = 2;
 	const iRETRIAL_TYPE_MAXATTEMPTBASED = 3;
-	
+
+	/*
+	 * Settlement File status
+	 */
+	const sSETTLEMENT_REQUEST_ACTIVE = "active";
+	const sSETTLEMENT_REQUEST_WAITING = "waiting";
+	const sSETTLEMENT_REQUEST_FAIL = "fail";
 }
 ?>

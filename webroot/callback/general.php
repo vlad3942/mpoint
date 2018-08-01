@@ -190,14 +190,17 @@ try
             $_OBJ_DB->query($sql);
         }
     }
-    
     if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_XML->callback->{'approval-code'} >0){
-    	
     	$sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
                             SET approval_action_code= '".$obj_XML->callback->{'approval-code'}."' WHERE id = " . $obj_XML->callback->transaction['id'];
     	$_OBJ_DB->query($sql);
+    }  else if ($iStateID == Constants::iPAYMENT_REJECTED_STATE || $iStateID == Constants::iPAYMENT_REJECTED_PSP_UNAVAILABLE_STATE|| $iStateID == Constants::iPAYMENT_REJECTED_INCORRECT_INFO_STATE ||
+    		$iStateID == Constants::iPAYMENT_REJECTED_3D_SECURE_FAILURE_STATE || $iStateID == Constants::iPAYMENT_TIME_OUT_STATE|| $iStateID == Constants::iPSP_TIME_OUT_STATE){
+    	// In case of Declined tramsaction increase the attempt count as there's possibility of retrial
+       $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+                            SET attempt = attempt + 1 WHERE id = " . $obj_XML->callback->transaction['id'];
+       $_OBJ_DB->query($sql);
     }
-    	
 
     if($iAccountValidation != 1)
 	{

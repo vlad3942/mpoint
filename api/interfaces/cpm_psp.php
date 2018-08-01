@@ -358,6 +358,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b .= $obj_PSPConfig->toXML();
 		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 		$b .= $this->_constTxnXML();
+		$b .= $this->_constOrderDetails($this->getTxnInfo()) ;
 		if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
 		if($card_type_id > 0) 
 		{ 
@@ -444,6 +445,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
         $txnXML = $this->_constTxnXML();
         $b .= $txnXML;
+        $b .= $this->_constOrderDetails($this->getTxnInfo()) ;
 
         if (count($obj_Card->ticket) == 0)
         {
@@ -685,11 +687,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 	protected function _getFullOrderID()
     {
-        if(intval($this->getTxnInfo()->getAttemptNumber()) == 1)
+        if(intval($this->getTxnInfo()->getAttemptNumber()) == 0)
         {
             return $this->getTxnInfo()->getOrderID();
         }
-        else if(intval($this->getTxnInfo()->getAttemptNumber()) > 1)
+        else if(intval($this->getTxnInfo()->getAttemptNumber()) > 0)
         {
             return $this->getTxnInfo()->getOrderID()."_".$this->getTxnInfo()->getAttemptNumber();
         }
@@ -895,6 +897,16 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		
 		return $b;
+	}
+	
+	protected function _constOrderDetails($obj_txnInfo)
+	{
+		
+		$sql = "SELECT COUNT(id) FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl WHERE orderid = '".$obj_txnInfo->getOrderID()."'";
+		//		echo $sql ."\n";
+		$RS = $this->getDBConn()->getName($sql);
+		$xml = '<order-attempt>'.$RS["COUNT"].'</order-attempt>' ;
+		return $xml ;
 	}
 	
     protected function _constStoredCardAuthorizationRequest($obj_Card)

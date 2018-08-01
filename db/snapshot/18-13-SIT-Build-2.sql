@@ -1,3 +1,4 @@
+ALTER TABLE log.transaction_tbl ALTER COLUMN attempt SET DEFAULT 0;
 /*======= ADD NEW PROCESSOR TYPE FOR TOKENIZATION SYSTEM ======== */
 INSERT INTO system.processortype_tbl (id, name) VALUES (8, 'Tokenize');
 /*======= END NEW PROCESSOR TYPE FOR TOKENIZATION SYSTEM ======== */

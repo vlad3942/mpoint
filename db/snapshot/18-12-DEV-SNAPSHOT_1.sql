@@ -9,7 +9,7 @@ CREATE TABLE system.retrialtype_tbl
   description character varying(255),
   created timestamp without time zone DEFAULT now(),
   modified timestamp without time zone DEFAULT now(),
-  enabled boolean DEFAULT true
+  enabled boolean DEFAULT true,
   CONSTRAINT retrialtype_pk PRIMARY KEY (id)
 )
 WITH (
