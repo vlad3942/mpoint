@@ -783,6 +783,12 @@ abstract class Constants
      */
     const iUATP_ACQUIRER = 49;
 
+    /**
+     * Unique ID for the Card Account Service: UATP
+     *
+     */
+    const iUATP_CARD_ACCOUNT = 50;
+
 	/**
 
     /**

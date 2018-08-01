@@ -541,7 +541,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         try
         {
             $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["tokenize"]);
-
+            $sToken = "";
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
             $obj_HTTP->connect();
             $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
@@ -560,7 +560,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                     $this->getDBConn()->query($sql);
                 }
             }
-            else { throw new mPointException("Could not construct  XML for tokenizing with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
+            else
+            {
+                $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+                throw new mPointException("Could not construct  XML for tokenizing with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_XML->status, $code );
+            }
         }
         catch (mPointException $e)
         {
