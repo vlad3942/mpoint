@@ -104,21 +104,15 @@ abstract class mPointSettlement
         $this->_iRecordNumber = $recordNumber + 1 ;
         $this->_arrayTransactionIds=[];
         $this->_iTotalTransactionAmount = 0;
-        $sql = "SELECT id
-                FROM log." . sSCHEMA_POSTFIX . "transaction_tbl
-                WHERE id IN (
-                  SELECT txnid
-                  FROM (
-                         SELECT DISTINCT ON (txnid)
-                           txnid,
-                           stateid
-                         FROM log." . sSCHEMA_POSTFIX . "message_tbl
-                         ORDER BY txnid, created DESC
-                       ) sub
-                  WHERE stateid IN ( $stateIds))
-                      AND clientid = $this->_iClientId
-                      AND pspid = $this->_iPspId
-                      AND cardid NOTNULL;";
+        $sql = "SELECT Txn.id
+                FROM Log." . sSCHEMA_POSTFIX . "Transaction_Tbl Txn
+                  INNER JOIN Log." . sSCHEMA_POSTFIX . "Message_Tbl Msg on Txn.id = Msg.txnid
+                WHERE Txn.clientid = $this->_iClientId 
+                      AND txn.pspid = $this->_iPspId 
+                      AND Txn.cardid NOTNULL 
+                      AND Txn.enabled = true
+                GROUP BY Txn.id
+                HAVING MAX(Msg.stateid) IN ($stateIds);";
 
         $aRS = $_OBJ_DB->getAllNames($sql);
         if (is_array($aRS) === true && count($aRS) > 0) {
