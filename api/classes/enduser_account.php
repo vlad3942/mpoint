@@ -146,9 +146,9 @@ class EndUserAccount extends Home
 	 * @param 	string $cr		the Client's Reference for the Customer (optional)
 	 * @return	integer 		The unique ID of the created End-User Account
 	 */
-	public function newAccount($cid, $mob, $pwd="", $email="", $cr="", $pid="")
+	public function newAccount($cid, $mob, $pwd="", $email="", $cr="", $pid="", $enable=true)
 	{
-		$iAccountID = parent::newAccount($cid, $mob, $pwd, $email, $cr, $pid);
+		$iAccountID = parent::newAccount($cid, $mob, $pwd, $email, $cr, $pid, $enable);
 
 		// Created account should only be available to Client
 		if ($iAccountID > 0 && ($this->_obj_ClientConfig->getStoreCard()&2) == 2)
@@ -827,6 +827,53 @@ class EndUserAccount extends Home
 
 		return is_array($RS) === true ? $RS["ID"] : -1;
 	}
+
+    /**
+     * @param RDB $oDB
+     * @param ClientConfig $oClC
+     * @param CountryConfig|null $oCC
+     * @param $customerRef
+     * @param $mobile
+     * @param $email
+     * @return bool
+     */
+    public function enableAccountID(RDB &$oDB, ClientConfig &$oClC, CountryConfig &$oCC=null, $customerRef, $mobile, $email)
+    {
+        if (is_null($oCC) === true)
+        {
+            $oCC = $oClC->getCountryConfig();
+        }
+        //Identification - Mobile or Email or Customer Ref or (mobile and email)
+        if (floatval($mobile) > $oCC->getMinMobile() )
+        {
+            $sql = "mobile = '". floatval($mobile) ."'";
+        }
+
+        if(empty($email) === false)
+        {
+            if(empty($sql) === false) {
+                $sql .= " AND Upper(email) = Upper('". $oDB->escStr($email) ."')";
+            } else {
+                $sql = "Upper(email) = Upper('". $oDB->escStr($email) ."')";
+            }
+        }
+
+        if(empty($customerRef) === false)
+        {
+            if(empty($sql) === false) {
+                $sql .= " AND externalid = '". $oDB->escStr($customerRef) ."'";
+            } else {
+                $sql = "externalid = '" . $oDB->escStr($customerRef) . "'";
+            }
+        }
+
+        $sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Account_Tbl 
+				SET enabled = '1' WHERE countryid = ". $oCC->getID() ."
+				AND ". $sql ." AND enabled = '0' AND length(passwd) = 0";
+//		echo $sql ."\n";
+
+        return is_resource($oDB->query($sql) );
+    }
 
 	/**
 	 * Tops an End-User's e-money based prepaid account up with the specified amount
