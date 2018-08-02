@@ -97,8 +97,6 @@ abstract class mPointSettlement
         $recordNumber = 0;
         if (is_array($res) === true && count($res) > 0) {
             $recordNumber = (int)$res["RECORD_NUMBER"];
-            if( strtolower( $res["STATUS"]) == Constants::sSETTLEMENT_REQUEST_ACTIVE  ||  strtolower( $res["STATUS"]) ==  Constants::sSETTLEMENT_REQUEST_WAITING )
-                return;
         }
 
         $this->_iRecordNumber = $recordNumber + 1 ;
@@ -115,21 +113,43 @@ abstract class mPointSettlement
                 HAVING MAX(Msg.stateid) IN ($stateIds);";
 
         $aRS = $_OBJ_DB->getAllNames($sql);
-        if (is_array($aRS) === true && count($aRS) > 0) {
-
-            $this->_sTransactionXML = "<transactions>";
-
+        if (is_array($aRS) === true && count($aRS) > 0)
+        {
             foreach ($aRS as $rs) {
                 $transactionId = (int)$rs["ID"];
                 array_push($this->_arrayTransactionIds,$transactionId);
-                $obj_TxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB);
-                $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
-                $this->_sTransactionXML .= $obj_TxnInfo->toXML();
-                $this->_iTotalTransactionAmount += $obj_TxnInfo->getAmount();
             }
-
-            $this->_sTransactionXML .= "</transactions>";
         }
+
+        $arrayTempTransactionIds=[];
+        $sql = "SELECT transactionid
+                FROM log." . sSCHEMA_POSTFIX . "settlement_record_tbl settlent_record
+                  INNER JOIN log." . sSCHEMA_POSTFIX . "settlement_tbl settlement
+                    ON settlement.status NOT IN ('reject', 'fail') AND settlement.id = settlent_record.settlementid
+                GROUP BY transactionid";
+
+        $aRS = $_OBJ_DB->getAllNames($sql);
+        if (is_array($aRS) === true && count($aRS) > 0)
+        {
+            foreach ($aRS as $rs) {
+                $transactionId = (int)$rs["TRANSACTIONID"];
+                array_push($arrayTempTransactionIds,$transactionId);
+            }
+        }
+
+        $this->_arrayTransactionIds = array_diff($this->_arrayTransactionIds, $arrayTempTransactionIds);
+        $this->_sTransactionXML = "<transactions>";
+
+        foreach ($this->_arrayTransactionIds as $transactionId)
+        {
+            $obj_TxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB);
+            $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
+            $this->_sTransactionXML .= $obj_TxnInfo->toXML();
+            $this->_iTotalTransactionAmount += $obj_TxnInfo->getAmount();
+        }
+
+        $this->_sTransactionXML .= "</transactions>";
+
     }
 
     public function capture($_OBJ_DB)
