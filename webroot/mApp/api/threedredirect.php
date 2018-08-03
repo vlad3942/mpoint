@@ -71,7 +71,14 @@ try
 	 	
 	 $code = $obj_HTTP->send ($h, $b );
 	 $obj_HTTP->disconnect ();
-	 $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() ); 
+//	 $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() ); 
+
+         echo '<?xml version="1.0" encoding="UTF-8"?>';
+	 echo '<root>';
+	 echo '<redirect-url>';
+	 echo htmlspecialchars($obj_HTTP->getReplyBody()) ;
+	 echo '</redirect-url>';
+	 echo '</root>';
 }
 catch(mPointException $e){
 	header("HTTP/1.1 500 Internal Server Error");

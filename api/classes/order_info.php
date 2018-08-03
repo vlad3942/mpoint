@@ -264,7 +264,7 @@ class OrderInfo
         $sql = "SELECT OT.id			
 				FROM Log". sSCHEMA_POSTFIX .".Order_Tbl AS OT
 				INNER JOIN Log". sSCHEMA_POSTFIX .".Transaction_Tbl AS TT ON OT.txnid = TT.id 
-				WHERE TT.orderid = '". trim($orderid) ."' AND OT.enabled = '1' AND TT.enabled = '1'";
+				WHERE TT.orderid = '". $oDB->escStr($orderid) ."' AND OT.enabled = '1' AND TT.enabled = '1'";
         //echo $sql ."\n";
         $aConfigurations = array();
         $res = $oDB->query($sql);
