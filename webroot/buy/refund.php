@@ -156,7 +156,7 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 						
 						$aMsgCds[$code] = "Success";
 						// Perform callback to Client
-						if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
+						if (strlen($obj_TxnInfo->getCallbackURL() ) > 0 && $obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === true)
 						{
 							$args = array("transact" => $obj_TxnInfo->getExternalID(),
 										  "amount" => $_REQUEST['amount']);
