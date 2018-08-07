@@ -550,7 +550,6 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $obj_HTTP->disConnect();
             if ($code == 200)
             {
-                $sToken = "";
                 $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
                 if($obj_XML->status['code'] == '100')
                 {
@@ -787,6 +786,36 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		
 		return $code;
 	}
+
+    /**
+     * Function used to make a process the callback received for a given transaction from an external system and
+     * hence provide a specific handling for the same.
+     *
+     * @param PSPConfig $obj_PSPConfig		The configuration for the Wallet which the payment data should be retrieved from
+     * @param SimpleXMLElement $obj_Request	Details for the token that should be used to retrieve the payment data from the 3rd Party Wallet.
+     * @return string
+     */
+    public function processCallback(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Request)
+    {
+        $b = '';
+        $b  = '<?xml version="1.0" encoding="UTF-8"?>';
+        $b .= $obj_Request->asXML();
+
+
+        $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["callback"]);
+
+        $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+        $obj_HTTP->connect();
+        $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+        $obj_HTTP->disConnect();
+        if (!in_array($code, array(200, 202), true ))
+        {
+            trigger_error("Callback failed to ". $obj_PSPConfig->getName() ." for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $code ." and body: ". $obj_HTTP->getReplyBody(), E_USER_WARNING);
+            throw new mPointException("Callback failed to ". $obj_PSPConfig->getName() ." for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $code ." and body: ". $obj_HTTP->getReplyBody(), $code);
+        }
+
+        return $code;
+    }
 	
 	
 	/**
