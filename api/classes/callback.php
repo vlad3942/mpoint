@@ -735,6 +735,8 @@ abstract class Callback extends EndUserAccount
             return new CHUBB($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["chubb"]);
         case (Constants::iUATP_ACQUIRER):
             return new UATP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["uatp"]);
+		case (Constants::iUATP_CARD_ACCOUNT):
+                return new UATP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["uatp"]);
         default:
 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
