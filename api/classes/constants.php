@@ -783,6 +783,12 @@ abstract class Constants
      */
     const iUATP_ACQUIRER = 49;
 
+    /**
+     * Unique ID for the Card Account Service: UATP
+     *
+     */
+    const iUATP_CARD_ACCOUNT = 50;
+
 	/**
 
     /**
@@ -1257,6 +1263,9 @@ abstract class Constants
 	const iPROCESSOR_TYPE_APM = 4;
 	const iPROCESSOR_TYPE_VIRTUAL = 5;
 	const iPROCESSOR_TYPE_MPI = 6;
+	const iPROCESSOR_TYPE_GATEWAY = 7;
+	const iPROCESSOR_TYPE_TOKENIZATION = 8;
+
 	
 	
 	const iRETRIAL_TYPE_TIMEBASED = 1;
