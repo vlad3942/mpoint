@@ -36,31 +36,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					$i++;
 				}
 				
+				$sCurrencyCode= $obj_DOM->{'get-currency-config'}[$i]->currency["code"];
+				$sCountryCode= $obj_DOM->{'get-currency-config'}[$i]->currency["country-code"];
 				
-				$sql = "SELECT CT.id AS countryid, CC.id AS currencyid, CT.name AS country, CT.priceformat,CT.symbol,CC.code AS currencycode ,
-				CT.decimals from system".sSCHEMA_POSTFIX.".Country_tbl CT Join System".sSCHEMA_POSTFIX.".Currency_tbl CC ON (CT.currencyid = CC.id)";
+				$sql = "SELECT  CC.id AS currencyid, CT.id AS countryid, CT.priceformat,CT.symbol,CC.code AS currencycode ,CT.priceformat,
+				CC.decimals FROM system".sSCHEMA_POSTFIX.".Country_tbl CT , System".sSCHEMA_POSTFIX.".Currency_tbl CC
+                WHERE CC.code = '".$sCurrencyCode ."' AND CT.alpha2code = '".$sCountryCode."'";
 				
+				//echo $sql ;
+				$RS = $_OBJ_DB->getName($sql);
 				
-				if (isset($obj_DOM->{'get-currency-config'}[$i]->currency["code"]) === true)
-				{
-					$sCurrencyCode= $obj_DOM->{'get-currency-config'}[$i]->currency["code"];
-					$sql .= " WHERE CC.code = '".$sCurrencyCode ."'" ;
-				}
-				if (isset($obj_DOM->{'get-currency-config'}[$i]->currency["country-code"]) === true)
-				{
-					$sCountryCode= $obj_DOM->{'get-currency-config'}[$i]->currency["country-code"];
-					$sql .= " AND CT.alpha2code = '".$sCountryCode."'";
-				}
-				
-				
-				$aConfigurations = array();
-				$res = $_OBJ_DB->query($sql);
-				
-				while ($RS = $_OBJ_DB->fetchName($res) )
-				{
-					$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB,$RS["COUNTRYID"]);
-					$xml .= $obj_CountryConfig->toXML();
-				}
+				$xml .= '<currency id= "'.$RS["CURRENCYID"].'" decimals="'.$RS["DECIMALS"].'" price-format="'.$RS["SYMBOL"].'" country-id="'.$RS["COUNTRYID"].'" />' ;
 		}
 		elseif ( ($obj_DOM instanceof SimpleDOMElement) === false)
 		{
