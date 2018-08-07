@@ -801,7 +801,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $obj_HTTP->connect();
         $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
         $obj_HTTP->disConnect();
-        if (!in_array($code, array(200, 202), true ))
+
+        if (!in_array(intval($code), array(200, 202), true ))
         {
             trigger_error("Callback failed to ". $obj_PSPConfig->getName() ." for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $code ." and body: ". $obj_HTTP->getReplyBody(), E_USER_WARNING);
             throw new mPointException("Callback failed to ". $obj_PSPConfig->getName() ." for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $code ." and body: ". $obj_HTTP->getReplyBody(), $code);
