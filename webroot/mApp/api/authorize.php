@@ -123,7 +123,6 @@ require_once(sCLASS_PATH ."/payment_processor.php");
 // Require specific Business logic for the UATP component
 require_once(sCLASS_PATH . "/uatp.php");
 
-require_once(sCLASS_PATH ."/post_auth_action.php");
 
 ignore_user_abort(true);
 set_time_limit(120);
