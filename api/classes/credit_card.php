@@ -100,7 +100,7 @@ class CreditCard extends EndUserAccount
 		$sql = "SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength,
 					PSP.id AS pspid, MA.name AS account, MSA.name AS subaccount, PC.name AS currency,
 					CA.stateid, CA.position AS client_position, C.paymenttype, CA.preferred, CA.psp_type
-				FROM ". $this->_constQueryDataSource() ."
+				FROM ". $this->_constDataSourceQuery() ."
 				WHERE CA.clientid = ". $this->_obj_TxnInfo->getClientConfig()->getID() ."
 					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
 					AND PC.currencyid = ". $this->_obj_TxnInfo->getCurrencyConfig()->getID()."
@@ -187,21 +187,22 @@ class CreditCard extends EndUserAccount
 
     public function getTokenizationRoute($iCardID)
     {
-        $sql = "SELECT DISTINCT PSP.id AS pspid FROM". $this->_constQueryDataSource() .
+        $sql = "SELECT DISTINCT PSP.id AS pspid FROM ". $this->_constDataSourceQuery() .
 				"WHERE CA.clientid = ". $this->_obj_TxnInfo->getClientConfig()->getID() ."
 					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
 					AND PC.currencyid = ". $this->_obj_TxnInfo->getCurrencyConfig()->getID()."
 					AND PP.currencyid = ". $this->_obj_TxnInfo->getCurrencyConfig()->getID()."					
 					AND C.enabled = '1' 
 					AND CA.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ." AND CA.enabled = '1'
-					AND CA.cardid = ".$iCardID;
+					AND CA.cardid = ".$iCardID."
+					AND CA.psp_type = ". Constants::iPROCESSOR_TYPE_TOKENIZATION;
 
         //echo $sql ."\n";
         $RS = $this->getDBConn()->getName($sql);
         return $RS['PSPID'];
     }
 
-    private function _constQueryDataSource()
+    private function _constDataSourceQuery()
     {
         return "System".sSCHEMA_POSTFIX.".Card_Tbl C
 				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON C.id = CA.cardid 
