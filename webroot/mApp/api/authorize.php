@@ -122,6 +122,8 @@ require_once(sCLASS_PATH ."/chubb.php");
 require_once(sCLASS_PATH ."/payment_processor.php");
 // Require specific Business logic for the UATP component
 require_once(sCLASS_PATH . "/uatp.php");
+// Require specific Business logic for the UATP Card Account services
+require_once(sCLASS_PATH . "/uatp_card_account.php");
 
 
 ignore_user_abort(true);
