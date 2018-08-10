@@ -175,7 +175,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													// Commit Deleted Card
 													$_OBJ_DB->query("COMMIT");
 
-													$xml = '<status code="100">Card successfully deleted and CRM system notified</status>';
+													$xml = '<status code="100" eua-id="'. intval($iAccountID) .'">Card successfully deleted and CRM system notified</status>';
                                                     $xml .= '<token>'. $obj_MyAccount->getDeletedCardToken()  .'</token>';
 													break;
 												default:	// Error: Unknown response from CRM System
@@ -218,7 +218,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											// Commit Deleted Card
 											$_OBJ_DB->query("COMMIT");
 
-											$xml = '<status code="100">Card successfully deleted</status>';
+											$xml = '<status code="100" eua-id="'. intval($iAccountID) .'">Card successfully deleted</status>';
                                             $xml .= '<token>'. $obj_MyAccount->getDeletedCardToken()  .'</token>';
 										}
 									}
