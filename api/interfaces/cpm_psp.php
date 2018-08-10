@@ -512,7 +512,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				}
 				
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-						SET pspid = ". $obj_PSPConfig->getID() . $sql."
+						SET pspid = ". $obj_PSPConfig->getID() . $sql." ,token='" . $obj_Card->ticket . "' 
 						WHERE id = ". $this->getTxnInfo()->getID();
 				//echo $sql ."\n";
 				$this->getDBConn()->query($sql);
@@ -808,7 +808,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $obj_HTTP->connect();
         $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
         $obj_HTTP->disConnect();
-        if (!in_array($code, array(200, 202), true ))
+
+        if (!in_array(intval($code), array(200, 202), true ))
         {
             trigger_error("Callback failed to ". $obj_PSPConfig->getName() ." for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $code ." and body: ". $obj_HTTP->getReplyBody(), E_USER_WARNING);
             throw new mPointException("Callback failed to ". $obj_PSPConfig->getName() ." for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $code ." and body: ". $obj_HTTP->getReplyBody(), $code);
