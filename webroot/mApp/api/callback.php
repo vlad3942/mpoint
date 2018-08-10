@@ -114,28 +114,22 @@ $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH,
 	$_SERVER['PHP_AUTH_USER'] = "CPMDemo";
 	$_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
-	$HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
-	$HTTP_RAW_POST_DATA .= '<root>';
-	$HTTP_RAW_POST_DATA .= '<request-3dsecure client-id="10001" account="10022">';
-	$HTTP_RAW_POST_DATA .= '<transaction id="1002469">800-123456</transaction>';
-	$HTTP_RAW_POST_DATA .= '<challenge content-type="text/html" url="http://acs4.3dsecure.no/mdpayacs/pareq">
-	&lt;html lang=&quot;en&quot;&gt;
-	&lt;head&gt;
-		&lt;title&gt;Autentisering&lt;/title&gt;
-		&lt;meta content=&quot;text/html; charset=utf-8&quot; http-equiv=&quot;Content-Type&quot;&gt;
-		&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;content/040/screen.css&quot;&gt;
-		&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;content/040/dk/gh-buttons.css&quot;&gt;
-		&lt;script src=&quot;content/commons.js&quot;&gt;&lt;/script&gt;
-		&lt;script src=&quot;content/040/js/jquery-1.9.1.min.js&quot;&gt;&lt;/script&gt;
-		&lt;script type=&quot;text/javascript&quot;&gt;
-	... </challenge>';
-	$HTTP_RAW_POST_DATA .= '<client-info platform="iOS" version="1.00" language="da">';
-	$HTTP_RAW_POST_DATA .= '<mobile country-id="100" operator-id="10000">28882861</mobile>';
-	$HTTP_RAW_POST_DATA .= '<email>jona@oismail.com</email>';
-	$HTTP_RAW_POST_DATA .= '<device-id>23lkhfgjh24qsdfkjh</device-id>';
-	$HTTP_RAW_POST_DATA .= '</client-info>';
-	$HTTP_RAW_POST_DATA .= '</request-3dsecure>';
-	$HTTP_RAW_POST_DATA .= '</root>';
+	$HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>
+                            <callback>
+                              <transaction-reference>1829098</transaction-reference>
+                              <request-body>
+                                <request method="post" content-type="text/xml" charset="UTF-8" host="51b078b3.ngrok.io">
+                                  <headers>
+                                    <content-length>1567</content-length>
+                                  </headers>
+                                  <parameters>
+                                    <_id>1829098</_id>
+                                  </parameters>
+                                  <body>
+                                  </body>
+                                </request>
+                              </request-body>
+                            </callback>';
 */
 $obj_DOM = simpledom_load_string(file_get_contents("php://input") );
 
@@ -149,6 +143,11 @@ try
             $obj_PSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_TxnInfo->getPSPID() ), $aHTTP_CONN_INFO);
             $obj_Elem = $obj_DOM->{'request-body'}->request;
             $code = $obj_PSP->processCallback($obj_Elem);
+
+            if (in_array(intval($code), array(200, 202), true ))
+            {
+                $xml = '<status code = "200">Callback Accepted</status>';
+            }
         }
 	}
 	catch (mPointException $e)
@@ -165,10 +164,11 @@ try
 catch (mPointControllerException $e)
 {
 	header(HTTP::getHTTPHeader($e->getHTTPCode() ) );
-	
-	$xml = '<?xml version="1.0" encoding="UTF-8"?>';
-	$xml .= '<root>'. $e->getResponseXML() .'</root>';
+	$xml = $e->getResponseXML();
 }
 
 header("Content-Type: text/xml; charset=\"UTF-8\"");
+echo '<?xml version="1.0" encoding="UTF-8"?>';
+echo '<root>';
 echo $xml;
+echo '</root>';
