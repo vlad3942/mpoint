@@ -144,7 +144,7 @@ abstract class mPointSettlement
             }
         }
 
-        $this->_arrayTransactionIds = array_diff($this->_arrayTransactionIds, $arrayTempTransactionIds);
+        $this->_arrayTransactionIds = array_values(array_diff($this->_arrayTransactionIds, $arrayTempTransactionIds));
         $this->_sTransactionXML = "<transactions>";
 
         foreach ($this->_arrayTransactionIds as $transactionId)
