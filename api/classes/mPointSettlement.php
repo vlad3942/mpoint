@@ -132,6 +132,7 @@ abstract class mPointSettlement
                 FROM log." . sSCHEMA_POSTFIX . "settlement_record_tbl settlent_record
                   INNER JOIN log." . sSCHEMA_POSTFIX . "settlement_tbl settlement
                     ON settlement.status NOT IN ('reject', 'fail') AND settlement.id = settlent_record.settlementid
+                WHERE settlement.record_type = '$this->_sRecordType'    
                 GROUP BY transactionid";
 
         $aRS = $_OBJ_DB->getAllNames($sql);

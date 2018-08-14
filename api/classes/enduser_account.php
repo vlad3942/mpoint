@@ -146,9 +146,9 @@ class EndUserAccount extends Home
 	 * @param 	string $cr		the Client's Reference for the Customer (optional)
 	 * @return	integer 		The unique ID of the created End-User Account
 	 */
-	public function newAccount($cid, $mob, $pwd="", $email="", $cr="", $pid="")
+	public function newAccount($cid, $mob, $pwd="", $email="", $cr="", $pid="", $enable=true)
 	{
-		$iAccountID = parent::newAccount($cid, $mob, $pwd, $email, $cr, $pid);
+		$iAccountID = parent::newAccount($cid, $mob, $pwd, $email, $cr, $pid, $enable);
 
 		// Created account should only be available to Client
 		if ($iAccountID > 0 && ($this->_obj_ClientConfig->getStoreCard()&2) == 2)
@@ -416,8 +416,14 @@ class EndUserAccount extends Home
 			}
 			else { return $this->_saveCardName($aArgs[0], $aArgs[1], $aArgs[2]); }
 			break;
-		case (4):	// Save Card Name and status (preferred)
-			return $this->_saveCardName($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3]);
+		case (4):
+            if ($aArgs[3] === false || $aArgs[3] === true) {// Save Card Name and status (preferred)
+                return $this->_saveCardName($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3]);
+            }
+            else
+            {
+                return $this->_renameCard($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3]);
+            }
 			break;
 		default: 	// Error: Invalid number of arguments
 			trigger_error("Invalid number of arguments: ". count($aArgs), E_USER_WARNING);
@@ -581,10 +587,11 @@ class EndUserAccount extends Home
 	 * @param 	integer $cardid ID of the Card
 	 * @param 	string $name	Card name entered by the end-user
 	 * @param 	boolean $pref	Boolean flag indicating whether a new card should be set as preferred (defaults to false)
-	 *
+	 * @param   string $cardholdername Card holder name
+     *
 	 * @return	integer
 	 */
-	private function _renameCard($cardid, $name, $pref=false)
+	private function _renameCard($cardid, $name, $pref=false, $cardholdername)
 	{
 		// Reset preferred flag on all cards
 		if ($pref === true)
@@ -600,8 +607,12 @@ class EndUserAccount extends Home
 
 		// Set name for card
 		$sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
-				SET name = '". $this->getDBConn()->escStr($name) ."', preferred = '" . intval($pref) . "'
-				WHERE id = ". intval($cardid) ." AND enabled = '1'";
+				SET name = '". $this->getDBConn()->escStr($name) ."', preferred = '" . intval($pref) . "'";
+        if(empty($cardholdername) === false) {
+            $sql .= " ,card_holder_name = '". $this->getDBConn()->escStr($cardholdername) ."'";
+        }
+        $sql .= " WHERE id = ". intval($cardid) ." AND enabled = '1'";
+
 //		echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 
@@ -816,6 +827,53 @@ class EndUserAccount extends Home
 
 		return is_array($RS) === true ? $RS["ID"] : -1;
 	}
+
+    /**
+     * @param RDB $oDB
+     * @param ClientConfig $oClC
+     * @param CountryConfig|null $oCC
+     * @param $customerRef
+     * @param $mobile
+     * @param $email
+     * @return bool
+     */
+    public function enableAccountID(RDB &$oDB, ClientConfig &$oClC, CountryConfig &$oCC=null, $customerRef, $mobile, $email)
+    {
+        if (is_null($oCC) === true)
+        {
+            $oCC = $oClC->getCountryConfig();
+        }
+        //Identification - Mobile or Email or Customer Ref or (mobile and email)
+        if (floatval($mobile) > $oCC->getMinMobile() )
+        {
+            $sql = "mobile = '". floatval($mobile) ."'";
+        }
+
+        if(empty($email) === false)
+        {
+            if(empty($sql) === false) {
+                $sql .= " AND Upper(email) = Upper('". $oDB->escStr($email) ."')";
+            } else {
+                $sql = "Upper(email) = Upper('". $oDB->escStr($email) ."')";
+            }
+        }
+
+        if(empty($customerRef) === false)
+        {
+            if(empty($sql) === false) {
+                $sql .= " AND externalid = '". $oDB->escStr($customerRef) ."'";
+            } else {
+                $sql = "externalid = '" . $oDB->escStr($customerRef) . "'";
+            }
+        }
+
+        $sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".Account_Tbl 
+				SET enabled = '1' WHERE countryid = ". $oCC->getID() ."
+				AND ". $sql ." AND enabled = '0' AND length(passwd) = 0";
+//		echo $sql ."\n";
+
+        return is_resource($oDB->query($sql) );
+    }
 
 	/**
 	 * Tops an End-User's e-money based prepaid account up with the specified amount
@@ -1080,6 +1138,47 @@ class EndUserAccount extends Home
         $RS = $this->getDBConn()->getName($sql);
         
         return $RS;
+    }
+
+    /**
+     * Retrieves the card details and billing address of the card from EndUser.Card_tbl
+     * and EndUser.Address_tbl
+     *
+     * @param integer 	$cardid 		ID from Enduser.Card_Tbl
+     * @return string
+     */
+    public function getCardDetailsFromCardId($cardid)
+    {
+        $sql = "SELECT CARD.id, CARD.accountid, CARD.cardid, CARD.pspid, CARD.mask, CARD.expiry, 
+                CARD.ticket, CARD.preferred, CARD.name, CARD.card_holder_name, CARD.chargetypeid,
+				ADDR.countryid, ADDR.firstname, ADDR.lastname, ADDR.company, 
+				ADDR.street, ADDR.postalcode, ADDR.city, ADDR.state
+				FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl CARD
+				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Address_Tbl ADDR ON CARD.id = ADDR.cardid
+				WHERE CARD.id = ". intval($cardid) ." AND CARD.enabled = '1'";
+
+        //echo $sql ."\n";
+        $RS = $this->getDBConn()->getName($sql);
+
+        $xml = '<card id="'. $RS["ID"] .'" eua-id="'. $RS["ACCOUNTID"] .'" type-id="'. $RS["CARDID"] .'" psp-id="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" charge-type-id="'. $RS['CHARGETYPEID'] .'">';
+        $xml .= '<name>'. $RS["NAME"] .'</name>';
+        $xml .= '<card-holder-name>'. $RS["CARD_HOLDER_NAME"] .'</card-holder-name>';
+        $xml .= '<card-number-mask>'. $RS["MASK"] .'</card-number-mask>';
+        $xml .= '<expiry>'. $RS["EXPIRY"] .'</expiry>';
+        $xml .= '<token>'. $RS['TICKET'] .'</token>';
+        if (intval($RS["COUNTRYID"]) > 0)
+        {
+            $xml .= '<address country-id="'. $RS["COUNTRYID"].'">';
+            $xml .= '<first-name>'. $RS["FIRSTNAME"] .'</first-name>';
+            $xml .= '<last-name>'. $RS["LASTNAME"] .'</last-name>';
+            $xml .= '<street>'. $RS["STREET"] .'</street>';
+            $xml .= '<postal-code>'. $RS["POSTALCODE"] .'</postal-code>';
+            $xml .= '<city>'. $RS["CITY"] .'</city>';
+            $xml .= '<state>'. $RS["STATE"] .'</state>';
+            $xml .= '</address>';
+        }
+        $xml .= '</card>';
+        return $xml;
     }
 }
 ?>
