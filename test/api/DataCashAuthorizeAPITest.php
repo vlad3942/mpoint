@@ -35,30 +35,29 @@ class DataCashAuthorizeAPITest extends AuthorizeAPITest
 
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
-        echo $iStatus;die;
 
         $this->assertEquals(200, $iStatus);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="2000">Payment authorized</status></root>', $sReplyBody);
 
         $res =  $this->queryDB("SELECT stateid FROM Log.Message_Tbl WHERE txnid = 1001001 ORDER BY ID ASC");
         $this->assertTrue(is_resource($res) );
-//
-//        $aStates = array();
-//        while ($row = pg_fetch_assoc($res) )
-//        {
-//            $aStates[] = $row["stateid"];
-//        }
-//
-//        $this->assertEquals(1, count($aStates) );
-//
-//        $s = 0;
-//        $this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[$s++]);
-//
-//        /* Test that euaid has been set on txn */
-//        $res =  $this->queryDB("SELECT t.euaid, et.accountid FROM Log.Transaction_Tbl t LEFT JOIN Enduser.Transaction_Tbl et ON et.txnid = t.id WHERE t.id = 1001001");
-//        $this->assertTrue(is_resource($res) );
-//        $row = pg_fetch_assoc($res);
-//        $this->assertEquals(5001, $row["euaid"]);
+
+        $aStates = array();
+        while ($row = pg_fetch_assoc($res) )
+        {
+            $aStates[] = $row["stateid"];
+        }
+
+        $this->assertEquals(1, count($aStates) );
+
+        $s = 0;
+        $this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[$s++]);
+
+        /* Test that euaid has been set on txn */
+        $res =  $this->queryDB("SELECT t.euaid, et.accountid FROM Log.Transaction_Tbl t LEFT JOIN Enduser.Transaction_Tbl et ON et.txnid = t.id WHERE t.id = 1001001");
+        $this->assertTrue(is_resource($res) );
+        $row = pg_fetch_assoc($res);
+        $this->assertEquals(5001, $row["euaid"]);
     }
 
     public function testSuccessfulAuthorizeIncludingAutoCapture()

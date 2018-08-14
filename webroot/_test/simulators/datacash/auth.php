@@ -5,7 +5,6 @@ require_once(dirname(__FILE__). '/../../../inc/include.php');
 require_once(sAPI_CLASS_PATH ."/simpledom.php");
 
 $obj_XML = simpledom_load_string(file_get_contents('php://input') );
-trigger_error($obj_XML->validate(dirname(__FILE__). '/auth.xsd'), E_USER_NOTICE);
 if ($obj_XML->validate(dirname(__FILE__). '/auth.xsd') )
 {
     header("Content-Type: text/xml; charset=\"UTF-8\"");
