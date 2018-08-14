@@ -97,37 +97,66 @@ abstract class mPointSettlement
         $recordNumber = 0;
         if (is_array($res) === true && count($res) > 0) {
             $recordNumber = (int)$res["RECORD_NUMBER"];
-            if( strtolower( $res["STATUS"]) == Constants::sSETTLEMENT_REQUEST_ACTIVE  ||  strtolower( $res["STATUS"]) ==  Constants::sSETTLEMENT_REQUEST_WAITING )
-                return;
         }
 
         $this->_iRecordNumber = $recordNumber + 1 ;
         $this->_arrayTransactionIds=[];
         $this->_iTotalTransactionAmount = 0;
-        $sql = "SELECT txn.id
-                FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl AS txn, log" . sSCHEMA_POSTFIX . ".message_tbl AS msg
-                WHERE txn.clientid = $this->_iClientId
-                AND txn.pspid =  $this->_iPspId
-                AND txn.cardid NOTNULL
-                AND msg.stateid IN ( $stateIds) 
-                AND msg.txnid = txn.id ";
+        $sql = " SELECT txnid as id
+                  FROM (
+                         SELECT DISTINCT ON (txnid)
+                           txnid,
+                           stateid
+                         FROM log" . sSCHEMA_POSTFIX . ".message_tbl msg
+                         INNER JOIN log" . sSCHEMA_POSTFIX . ".transaction_tbl txn
+                           ON txn.id = msg.txnid
+                           where clientid = $this->_iClientId
+                              AND pspid = $this->_iPspId
+                              AND Txn.cardid NOTNULL
+                              AND stateid NOT IN (". Constants::iCB_ACCEPTED_STATE .", ". Constants::iCB_CONSTRUCTED_STATE .", ". Constants::iCB_CONNECTED_STATE .", ". Constants::iCB_CONN_FAILED_STATE .", ". Constants::iCB_REJECTED_STATE .",". Constants::iSESSION_COMPLETED .",". Constants::iSESSION_CREATED .", ". Constants::iSESSION_EXPIRED .", ". Constants::iSESSION_FAILED ." )
+                         ORDER BY txnid, msg.created DESC
+                       ) sub
+                  WHERE stateid IN ($stateIds);";
 
         $aRS = $_OBJ_DB->getAllNames($sql);
-        if (is_array($aRS) === true && count($aRS) > 0) {
-
-            $this->_sTransactionXML = "<transactions>";
-
+        if (is_array($aRS) === true && count($aRS) > 0)
+        {
             foreach ($aRS as $rs) {
                 $transactionId = (int)$rs["ID"];
                 array_push($this->_arrayTransactionIds,$transactionId);
-                $obj_TxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB);
-                $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
-                $this->_sTransactionXML .= $obj_TxnInfo->toXML();
-                $this->_iTotalTransactionAmount += $obj_TxnInfo->getAmount();
             }
-
-            $this->_sTransactionXML .= "</transactions>";
         }
+
+        $arrayTempTransactionIds=[];
+        $sql = "SELECT transactionid
+                FROM log." . sSCHEMA_POSTFIX . "settlement_record_tbl settlent_record
+                  INNER JOIN log." . sSCHEMA_POSTFIX . "settlement_tbl settlement
+                    ON settlement.status NOT IN ('reject', 'fail') AND settlement.id = settlent_record.settlementid
+                WHERE settlement.record_type = '$this->_sRecordType'    
+                GROUP BY transactionid";
+
+        $aRS = $_OBJ_DB->getAllNames($sql);
+        if (is_array($aRS) === true && count($aRS) > 0)
+        {
+            foreach ($aRS as $rs) {
+                $transactionId = (int)$rs["TRANSACTIONID"];
+                array_push($arrayTempTransactionIds,$transactionId);
+            }
+        }
+
+        $this->_arrayTransactionIds = array_values(array_diff($this->_arrayTransactionIds, $arrayTempTransactionIds));
+        $this->_sTransactionXML = "<transactions>";
+
+        foreach ($this->_arrayTransactionIds as $transactionId)
+        {
+            $obj_TxnInfo = TxnInfo::produceInfo($transactionId, $_OBJ_DB);
+            $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
+            $this->_sTransactionXML .= $obj_TxnInfo->toXML();
+            $this->_iTotalTransactionAmount += $obj_TxnInfo->getAmount();
+        }
+
+        $this->_sTransactionXML .= "</transactions>";
+
     }
 
     public function capture($_OBJ_DB)

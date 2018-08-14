@@ -19,20 +19,22 @@ class AmexSettlement extends mPointSettlement
     protected function _createSettlementRecord($_OBJ_DB)
     {
 
-        $sql = "SELECT file_reference_number
+        $sql = "SELECT file_reference_number, file_sequence_number
                 FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl
                 WHERE client_id = $this->_iClientId 
                 AND psp_id = '$this->_iPspId'                
-                AND status <> '" . Constants::sSETTLEMENT_REQUEST_WAITING . "'                
+                AND status <> '" . Constants::sSETTLEMENT_REQUEST_FAIL . "'                
                 ORDER BY id DESC LIMIT 1 ";
 
         $res = $_OBJ_DB->getName($sql);
         $referenceNumber  = 0;
+        $this->_iRecordNumber = 0;
         if (is_array($res) === true && count($res) > 0) {
             $referenceNumber  = (int)$res["FILE_REFERENCE_NUMBER"];
+            $this->_iRecordNumber  = (int)$res["FILE_SEQUENCE_NUMBER"];
         }
         $referenceNumber = $referenceNumber+1;
-        $recordNumber = $this->_iRecordNumber;
+        $this->_iRecordNumber = $this->_iRecordNumber + 1;
 
         $sql = "INSERT INTO log" . sSCHEMA_POSTFIX . ".settlement_tbl
                     (record_number, file_reference_number, file_sequence_number, client_id, record_type, psp_id)
@@ -42,9 +44,9 @@ class AmexSettlement extends mPointSettlement
 
         if (is_resource($resource) === true) {
             $aParam = array(
-                $recordNumber,
+                $this->_iRecordNumber,
                 $referenceNumber,
-                $recordNumber,
+                $this->_iRecordNumber,
                 $this->_iClientId,
                 $this->_sRecordType,
                 $this->_iPspId
@@ -59,8 +61,8 @@ class AmexSettlement extends mPointSettlement
                 $this->_iSettlementId = $RS["ID"];
                 $this->_sFileCreatedDate = $RS["CREATED"];
                 $this->_sFileReferenceNumber = $referenceNumber;
-                $this->_iFileSequenceNumber = $recordNumber;
-                $this->_iRecordNumber = $recordNumber;
+                $this->_iFileSequenceNumber = $this->_iRecordNumber;
+                $this->_iRecordNumber = $this->_iRecordNumber;
             }
         }
     }
@@ -214,17 +216,22 @@ class AmexSettlement extends mPointSettlement
                                             $args = array("transact" => $obj_TxnInfo->getExternalID(),
                                                     "amount" => $obj_TxnInfo->getAmount(),
                                                     "fee" => $obj_TxnInfo->getFee() );
+                                            if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
+                                            {
+                                                $obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
+                                            }
                                         }
                                         else
                                         {
                                             $obj_PSP->newMessage($txnId, Constants::iPAYMENT_REFUNDED_STATE, null );
                                             $args = array("transact" => $obj_TxnInfo->getExternalID(),
                                                     "amount" => $obj_TxnInfo->getAmount());
+                                            if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
+                                            {
+                                                $obj_PSP->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
+                                            }
                                         }
-                                        if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
-                                        {
-                                            $obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
-                                        }
+
                                     }
 
                                     if($isDescriptionUpdated === true)

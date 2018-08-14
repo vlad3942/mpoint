@@ -100,16 +100,7 @@ class CreditCard extends EndUserAccount
 		$sql = "SELECT DISTINCT C.position, C.id, C.name, C.minlength, C.maxlength, C.cvclength,
 					PSP.id AS pspid, MA.name AS account, MSA.name AS subaccount, PC.name AS currency,
 					CA.stateid, CA.position AS client_position, C.paymenttype, CA.preferred, CA.psp_type
-				FROM System".sSCHEMA_POSTFIX.".Card_Tbl C
-				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON C.id = CA.cardid
-				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl MA ON CA.clientid = MA.clientid
-				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl A ON CA.clientid = A.clientid AND A.enabled = '1'
-				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON A.id = MSA.accountid
-				INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON MA.pspid = PSP.id AND MSA.pspid = PSP.id AND CA.pspid = PSP.id AND PSP.enabled = '1'
-				INNER JOIN System".sSCHEMA_POSTFIX.".PSPCurrency_Tbl PC ON PSP.id = PC.pspid
-				INNER JOIN System".sSCHEMA_POSTFIX.".PSPCard_Tbl PCD ON PSP.id = PCD.pspid AND C.id = PCD.cardid
-				INNER JOIN System".sSCHEMA_POSTFIX.".CardPricing_Tbl CP ON C.id = CP.cardid
-				INNER JOIN System".sSCHEMA_POSTFIX.".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PC.currencyid = PP.currencyid AND PP.enabled = '1'
+				FROM ". $this->_constDataSourceQuery() ."
 				WHERE CA.clientid = ". $this->_obj_TxnInfo->getClientConfig()->getID() ."
 					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
 					AND PC.currencyid = ". $this->_obj_TxnInfo->getCurrencyConfig()->getID()."
@@ -188,5 +179,41 @@ class CreditCard extends EndUserAccount
 
 		return $xml;
 	}
+
+    /*Fetches the tokenization configuration set for a Client and card type
+    * @param	integer $iCardID 	Unqiue ID of the CardTypeUsed
+    * @return 	string
+   */
+
+    public function getTokenizationRoute($iCardID)
+    {
+        $sql = "SELECT DISTINCT PSP.id AS pspid FROM ". $this->_constDataSourceQuery() .
+				"WHERE CA.clientid = ". $this->_obj_TxnInfo->getClientConfig()->getID() ."
+					AND A.id = ". $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() ."
+					AND PC.currencyid = ". $this->_obj_TxnInfo->getCurrencyConfig()->getID()."
+					AND PP.currencyid = ". $this->_obj_TxnInfo->getCurrencyConfig()->getID()."					
+					AND C.enabled = '1' 
+					AND CA.countryid = ". $this->_obj_TxnInfo->getCountryConfig()->getID() ." AND CA.enabled = '1'
+					AND CA.cardid = ".$iCardID."
+					AND CA.psp_type = ". Constants::iPROCESSOR_TYPE_TOKENIZATION;
+
+        //echo $sql ."\n";
+        $RS = $this->getDBConn()->getName($sql);
+        return $RS['PSPID'];
+    }
+
+    private function _constDataSourceQuery()
+    {
+        return "System".sSCHEMA_POSTFIX.".Card_Tbl C
+				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON C.id = CA.cardid 
+				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl MA ON CA.clientid = MA.clientid
+				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl A ON CA.clientid = A.clientid AND A.enabled = '1'
+				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantSubAccount_Tbl MSA ON A.id = MSA.accountid
+				INNER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON MA.pspid = PSP.id AND MSA.pspid = PSP.id AND CA.pspid = PSP.id AND PSP.enabled = '1'
+				INNER JOIN System".sSCHEMA_POSTFIX.".PSPCurrency_Tbl PC ON PSP.id = PC.pspid
+				INNER JOIN System".sSCHEMA_POSTFIX.".PSPCard_Tbl PCD ON PSP.id = PCD.pspid AND C.id = PCD.cardid
+				INNER JOIN System".sSCHEMA_POSTFIX.".CardPricing_Tbl CP ON C.id = CP.cardid
+				INNER JOIN System".sSCHEMA_POSTFIX.".PricePoint_Tbl PP ON CP.pricepointid = PP.id AND PC.currencyid = PP.currencyid AND PP.enabled = '1'";
+    }
 }
 ?>
