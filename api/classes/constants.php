@@ -290,6 +290,18 @@ abstract class Constants
 	const iPAYMENT_SETTLED_STATE = 2020;
 
     /**
+     * Defines the ID of the State that indicates that payment transaction has been tokenized
+     *
+     */
+    const iPAYMENT_TOKENIZATION_COMPLETE_STATE = 2030;
+
+    /**
+     * Defines the ID of the State that indicates that payment transaction has failed tokenized
+     *
+     */
+    const iPAYMENT_TOKENIZATION_FAILURE_STATE = 2031;
+
+    /**
      * Defines the ID of the State that indicates that Tokenization request successfully completed
      *
      */
