@@ -24,6 +24,8 @@ require_once(sCLASS_PATH ."/enduser_account.php");
 require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for the CPM PSP component
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
+// Require specific Business logic for the CPM PSP component
+require_once(sINTERFACE_PATH ."/cpm_gateway.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
 // Require specific Business logic for the WorldPay component
@@ -85,7 +87,8 @@ require_once(sCLASS_PATH ."/validate.php");
 require_once(sCLASS_PATH ."/ppro.php");
 // Require specific Business logic for the Citcon Wechat component
 require_once(sCLASS_PATH ."/citcon.php");
-
+// Require specific Business logic for the Paytabs component
+require_once(sCLASS_PATH ."/paytabs.php");
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
  
