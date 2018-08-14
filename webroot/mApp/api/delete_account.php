@@ -156,7 +156,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                                     $_OBJ_DB->query("COMMIT");
 
                                                     $xml = '<status code="100">Card successfully deleted and CRM system notified</status>';
-                                                    $xml .= '<card-tokens>';
+                                                    $xml .= '<card-tokens eua-id="'. intval($iAccountID) .'">';
                                                     foreach ($obj->tokens as $token)
                                                         $xml .= '<token>' . $token . '</token>';
                                                     $xml .= '</card-tokens>';
@@ -196,7 +196,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         $_OBJ_DB->query("COMMIT");
 
                                         $xml = '<status code="100">Card successfully deleted</status>';
-                                        $xml .= '<card-tokens>';
+                                        $xml .= '<card-tokens eua-id="'. intval($iAccountID) .'">';
                                         foreach ($obj->tokens as $token)
                                             $xml .= '<token>' . $token . '</token>';
                                         $xml .= '</card-tokens>';
