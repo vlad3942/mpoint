@@ -1294,7 +1294,7 @@ $iPrimaryRoute = $oRoute ;
                                                                 if(empty($iTokenzationProcessor) === false)
                                                                 {
                                                                     $obj_TokenizationPSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($iTokenzationProcessor), $aHTTP_CONN_INFO);
-                                                                    $sToken = $obj_TokenizationPSP->tokenize($obj_Elem);
+                                                                    $sToken = $obj_TokenizationPSP->tokenize($aHTTP_CONN_INFO, $obj_Elem);
 
                                                                     if(empty($sToken) === false)
                                                                     {
