@@ -87,4 +87,16 @@ $aGM_CONN_INFO["path"] = "/_test/simulators/gomobile/send.php";
 $aGM_CONN_INFO["contenttype"] = "text/xml; charset=ISO-8859-1";
 $aGM_CONN_INFO["mode"] = 1;
 
+/**
+ * Connection info for connecting to DataCash
+ */
+$aHTTP_CONN_INFO["data-cash"]["protocol"] = "http";
+$aHTTP_CONN_INFO["data-cash"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["data-cash"]["port"] = 80;
+$aHTTP_CONN_INFO["data-cash"]["timeout"] = 120;
+$aHTTP_CONN_INFO["data-cash"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["data-cash"]["paths"]["auth"] = "/_test/simulators/datacash/auth.php";
+$aHTTP_CONN_INFO["data-cash"]["paths"]["pay"] = "/_test/simulators/datacash/pay.php";
+$aHTTP_CONN_INFO["data-cash"]["paths"]["initialize"] = "/_test/simulators/datacash/pay.php";
+$aHTTP_CONN_INFO["data-cash"]["path"] = $aHTTP_CONN_INFO["data-cash"]["paths"]["pay"];
 ?>

@@ -7674,3 +7674,14 @@ INSERT INTO System.PSP_Tbl (id, name, system_type) VALUES (17, 'Data Cash', 1);
 INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) SELECT 208, 17, 'DKK';
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 8, 17;
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 2, 17;
+
+ALTER TABLE log.transaction_tbl ALTER COLUMN attempt SET DEFAULT 0;
+/*======= ADD NEW PROCESSOR TYPE FOR TOKENIZATION SYSTEM ======== */
+INSERT INTO system.processortype_tbl (id, name) VALUES (8, 'Tokenize');
+/*======= END NEW PROCESSOR TYPE FOR TOKENIZATION SYSTEM ======== */
+
+/*=================== Adding new states for tokenization used for UATP SUVTP generation : START =======================*/
+INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2020 , 'Tokenization Complete - Virtual Card Created', 'Payment', true);
+INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2021 , 'Tokenization Failed', 'Payment', true);
+/*=================== Adding new states for tokenization used for UATP SUVTP generation : END =======================*/
+ALTER TYPE LOG.ADDITIONAL_DATA_REF ADD VALUE 'Transaction';

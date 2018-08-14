@@ -197,7 +197,7 @@ try
 
 							// Payment has not previously been attempted for transaction
 							$_OBJ_DB->query("START TRANSACTION");
-							if ($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_WITH_ACCOUNT_STATE, Constants::iPAYMENT_WITH_VOUCHER_STATE) ) === false)
+							if ($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_WITH_ACCOUNT_STATE, Constants::iPAYMENT_WITH_VOUCHER_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_3DS_VERIFICATION_STATE) ) === false)
 							{
 								if (count($obj_DOM->{'authorize-payment'}[$i]->transaction->card) > 0)
 								{
@@ -1294,7 +1294,7 @@ $iPrimaryRoute = $oRoute ;
                                                                 if(empty($iTokenzationProcessor) === false)
                                                                 {
                                                                     $obj_TokenizationPSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($iTokenzationProcessor), $aHTTP_CONN_INFO);
-                                                                    $sToken = $obj_TokenizationPSP->tokenize($obj_Elem);
+                                                                    $sToken = $obj_TokenizationPSP->tokenize($aHTTP_CONN_INFO, $obj_Elem);
 
                                                                     if(empty($sToken) === false)
                                                                     {
