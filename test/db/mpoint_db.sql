@@ -7669,3 +7669,8 @@ ALTER TABLE client.retrial_tbl
 INSERT INTO system.retrialtype_tbl( id, name, description) VALUES (1,'Time Based','Retry till the defined time period');
 INSERT INTO system.retrialtype_tbl( id, name, description) VALUES (2,'Response Based','Retry until specified response received');
 INSERT INTO system.retrialtype_tbl( id, name, description) VALUES (3,'Max Attempt Based','Retry until Max attempts are over');
+
+INSERT INTO System.PSP_Tbl (id, name, system_type) VALUES (17, 'Data Cash', 1);
+INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) SELECT 208, 17, 'DKK';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 8, 17;
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 2, 17;
