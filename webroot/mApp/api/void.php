@@ -230,6 +230,14 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 														$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
 													}
 												}
+												//Request send for refund the transaction,
+                                                //Once callback is receive 2003 state will update against transaction in general.php
+												else if($code == 1100) //Refund initiated
+                                                {
+                                                    header("HTTP/1.0 200 OK");
+													$xml .= '<status code="1000"></status>';
+													$aMsgCds[$code] = "Success";
+                                                }
 												else
 												{
 													header("HTTP/1.0 502 Bad Gateway");
