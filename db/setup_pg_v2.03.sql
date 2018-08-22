@@ -51,3 +51,32 @@ INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46
 INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, psp_type, stateid) VALUES (10047, 39, true, 46, 609, 7, 4);
 INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, psp_type, stateid) VALUES (10047, 34, true, 46, 500, 7, 4);
 
+
+-- Update AMEX PSP
+UPDATE system.psp_tbl SET  capture_method = 6 WHERE id = 45;
+
+
+INSERT INTO log.state_tbl (id, name, module, func) VALUES (20032, 'Refund Initialized', 'Payment', 'refund');
+INSERT INTO log.state_tbl (id, name, module, func) VALUES (20022, 'Cancel Initialized', 'Payment', 'cancel');
+INSERT INTO log.state_tbl (id, name, module, func) VALUES (20012, 'Capture Initialized', 'Payment', 'capture');
+
+ALTER TABLE log.transaction_tbl ALTER COLUMN attempt SET DEFAULT 0;
+/*======= ADD NEW PROCESSOR TYPE FOR TOKENIZATION SYSTEM ======== */
+INSERT INTO system.processortype_tbl (id, name) VALUES (8, 'Tokenize');
+/*======= END NEW PROCESSOR TYPE FOR TOKENIZATION SYSTEM ======== */
+
+/* ========== CONFIGURE UATP START FOR SOUTHWEST========== */
+INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (50, 'UATP CardAccount',8);
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (15, 50); /*With Apple-Pay*/
+
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (208,50,'DKK');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,50,'USD');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (826,50,'GBP');
+
+/*=================== Adding new states for tokenization used for UATP SUVTP generation : START =======================*/
+INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2020 , 'Tokenization complete - Virtual card created', 'Authorization', true);
+INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2021 , 'Tokenization Failed', 'Authorization', true);
+/*=================== Adding new states for tokenization used for UATP SUVTP generation : END =======================*/
+
+
+

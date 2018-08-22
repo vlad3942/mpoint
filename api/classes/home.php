@@ -487,8 +487,19 @@ class Home extends General
 				$sMaskedCardNumber = substr_replace(trim($RS["MASK"]), str_repeat("*", 4 - $oCC->getNumberOfMaskedDigits() ), -4, 4 - $oCC->getNumberOfMaskedDigits() );
 			}
 			else { $sMaskedCardNumber = trim($RS["MASK"]); }
-			// Construct XML Document with data for saved cards
-			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'" cvc-length="'. $RS["CVCLENGTH"] .'">';
+
+			// set card expired status
+            $aExpiry = explode('/', $RS['EXPIRY']);
+            $bIsExpired = "false";
+            $expiryMonth = trim($aExpiry[0]);
+            $expiryYear = trim($aExpiry[1]);
+            if(empty($expiryMonth) === false && empty($expiryYear) === false && $this->_cardNotExpired(intval($expiryMonth), intval($expiryYear)) === false )
+            {
+                $bIsExpired = "true";
+            }
+
+            // Construct XML Document with data for saved cards
+			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" expired="'. $bIsExpired .'">';
 			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
 			$xml .= '<type id="'. $RS["TYPEID"] .'">'. $RS["TYPE"] .'</type>';
 			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';
@@ -516,6 +527,20 @@ class Home extends General
 		$xml .= '</stored-cards>';
 		return $xml;
 	}
+
+
+    private function _cardNotExpired($month, $year) {
+        /* Get timestamp of midnight on day after expiration month. */
+        $exp_ts = mktime(0, 0, 0, $month + 1, 1, $year);
+
+        $cur_ts = time();
+
+        if ($exp_ts > $cur_ts) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 	/**
 	 * Searches for transaction history given a client ID plus any of the other parameters
 	 *
@@ -1054,14 +1079,14 @@ class Home extends General
 	 * @param 	string $cr		the Client's Reference for the Customer (optional)
 	 * @return	integer 		The unique ID of the created End-User Account
 	 */
-	public function newAccount($cid, $mob="", $pwd="", $email="", $cr="", $pid="")
+	public function newAccount($cid, $mob="", $pwd="", $email="", $cr="", $pid="", $enable=true)
 	{
 		$sql = "SELECT Nextvalue('EndUser".sSCHEMA_POSTFIX.".Account_Tbl_id_seq') AS id FROM DUAL";
 		$RS = $this->getDBConn()->getName($sql);
 		$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Account_Tbl
-					(id, countryid, mobile, passwd, email, externalid, pushid)
+					(id, countryid, mobile, passwd, email, externalid, pushid, enabled)
 				VALUES
-					(". $RS["ID"] .", ". intval($cid) .", ". (floatval($mob) > 0 ? "'". floatval($mob) ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". (strlen($email) > 0 ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .", '". $this->getDBConn()->escStr($cr) ."', ". (strlen($pid) > 0 ? "'". $this->getDBConn()->escStr($pid) ."'" : "NULL") .")";
+					(". $RS["ID"] .", ". intval($cid) .", ". (floatval($mob) > 0 ? "'". floatval($mob) ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". (strlen($email) > 0 ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .", '". $this->getDBConn()->escStr($cr) ."', ". (strlen($pid) > 0 ? "'". $this->getDBConn()->escStr($pid) ."'" : "NULL") . ($enable == false ? ", false" : ", true").")";
 		//echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 

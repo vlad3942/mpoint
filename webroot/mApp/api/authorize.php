@@ -118,10 +118,13 @@ require_once(sCLASS_PATH ."/bre.php");
 require_once(sCLASS_PATH ."/amex.php");
 // Require specific Business logic for the CHUBB component
 require_once(sCLASS_PATH ."/chubb.php");
+// Require specific Business logic for the CHUBB component
+require_once(sCLASS_PATH ."/payment_processor.php");
 // Require specific Business logic for the UATP component
 require_once(sCLASS_PATH . "/uatp.php");
+// Require specific Business logic for the UATP Card Account services
+require_once(sCLASS_PATH . "/uatp_card_account.php");
 
-require_once(sCLASS_PATH ."/post_auth_action.php");
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -820,7 +823,11 @@ $iPrimaryRoute = $oRoute ;
 																{
 																	$xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
 																}
-																else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+																else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>';
+																$obj_TxnInfo = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB);
+																//Approval code to return after succesfull authorization
+																$xml .= '<approval-code>'.$obj_TxnInfo->getApprovalCode().'</approval-code>' ;
+																}
 																else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and Card Details Stored.</status>'; }
 																else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml .= $code;}
 																else if($code == "20102" && $iSecondaryRoute > 0 ) {
@@ -1278,6 +1285,26 @@ $iPrimaryRoute = $oRoute ;
 																$xml .= '<status code="99">Unknown Payment Service Provider: '. $obj_Elem["pspid"] .'</status>';
 																break;
 															}
+                                                            
+                                                            /*Complete Tokenization after successful authorization*/
+                                                            if ($code >= Constants::iPAYMENT_ACCEPTED_STATE and $code < Constants::iPAYMENT_REJECTED_STATE)
+                                                            {
+
+                                                                $iTokenzationProcessor = intval($obj_mCard->getTokenizationRoute(intval(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ) ) );
+                                                                if(empty($iTokenzationProcessor) === false)
+                                                                {
+                                                                    $obj_TokenizationPSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($iTokenzationProcessor), $aHTTP_CONN_INFO);
+                                                                    $sToken = $obj_TokenizationPSP->tokenize($aHTTP_CONN_INFO, $obj_Elem);
+
+                                                                    if(empty($sToken) === false)
+                                                                    {
+                                                                        $xml .= '<token>'.$sToken.'</token>';
+                                                                    }
+
+                                                                }
+
+                                                            }
+
 														}
 														catch (HTTPException $e)
 														{

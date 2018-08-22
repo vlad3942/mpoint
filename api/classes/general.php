@@ -1288,14 +1288,15 @@ class General
         return $code;
     }
 
-    public function getPreviousFailedAttempts($orderid)
+    public function getPreviousFailedAttempts($orderid, $clientid)
     {
         $aPMArray = array();
         $aRejectedStates = array(Constants::iPAYMENT_REJECTED_PSP_UNAVAILABLE_STATE);
-        $sql = "SELECT cardid FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn				
-				INNER JOIN (SELECT txnid, MAX(stateid) AS st FROM log.message_tbl GROUP BY txnid) p2 ON (txn.id = p2.txnid)
-				WHERE orderid = '" . trim($orderid) . "' AND enabled = true AND p2.st IN (".implode(",",$aRejectedStates).")";
-//			echo $sql ."\n";
+        $sql = "SELECT Txn.cardid FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
+                INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg on Txn.id = Msg.txnid
+                WHERE Txn.orderid = '" . trim($orderid) . "' AND Txn.enabled = true AND Txn.clientid = $clientid
+                GROUP BY Txn.id
+                HAVING MAX(Msg.stateid) IN (".implode(",",$aRejectedStates).")";
         $res = $this->getDBConn()->query($sql);
 
         while ($RS = $this->getDBConn()->fetchName($res) ) {
@@ -1319,6 +1320,23 @@ class General
             $attempts = intval($res['ATTEMPTS']);
         }
         return $attempts;
+    }
+
+    public function getStaticRouteData($clientId = "")
+    {
+        $sql = "SELECT clientid, pspid
+                    FROM client" . sSCHEMA_POSTFIX . ".cardaccess_tbl
+                    WHERE pspid IN
+                          (SELECT id
+                           FROM system.psp_tbl
+                           WHERE capture_method <> 0)
+                    AND enabled ";
+         if($clientId !== "" )
+         {
+            $sql .= "AND clientid = $clientId" ;
+         }
+         $aRS = $this->getDBConn()->getAllNames($sql);
+         return $aRS;
     }
 }
 ?>
