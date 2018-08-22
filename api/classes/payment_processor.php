@@ -38,7 +38,10 @@ class PaymentProcessor
         }
     }
 
-    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo)
+    public function getPSPConfig() { return $this->_objPSPConfig; }
+    public function getPSPInfo()  { return $this->_objPSP; }
+
+    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo = array())
     {
         return new PaymentProcessor($oDB, $oTxt, $oTI, $iPSPID, $aConnInfo);
     }
@@ -46,5 +49,20 @@ class PaymentProcessor
     public function authorize($obj_Elem)
     {
         return $this->_objPSP->authorize($this->_objPSPConfig, $obj_Elem);
+    }
+
+    public function tokenize($aConnInfo, $obj_Elem)
+    {
+        return $this->_objPSP->tokenize($aConnInfo, $this->_objPSPConfig, $obj_Elem);
+    }
+
+    public function processCallback($obj_Elem)
+    {
+        return $this->_objPSP->processCallback($this->_objPSPConfig, $obj_Elem);
+    }
+
+    public function refund($iAmount=-1)
+    {
+        return $this->_objPSP->refund($iAmount);
     }
 }

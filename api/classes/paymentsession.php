@@ -50,7 +50,7 @@ final class PaymentSession
     private $_sDeviceId;
 
     private $_pendingAmount;
-    
+
     private $_expire;
 
     protected function __construct()
@@ -106,6 +106,7 @@ final class PaymentSession
         } else {
             $this->_expire = date("Y-m-d H:i:s.u", time() + (15 * 60));
         }
+        // New session will not be generated, if the session is partially complete(4031) for same order id. 
         if ($this->updateSessionDataFromOrderId() != true) {
             try {
                 $sql = "INSERT INTO Log" . sSCHEMA_POSTFIX . ".session_tbl 
@@ -141,7 +142,7 @@ final class PaymentSession
                     }
                 }
             } catch (Exception $e) {
-                $this->updateSessionDataFromOrderId();
+                trigger_error ( "Failed to create a new session" . $e->getMessage(), E_USER_ERROR );
             }
         }
 
@@ -247,7 +248,7 @@ final class PaymentSession
               FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn 
                 INNER JOIN log" . sSCHEMA_POSTFIX . ".message_tbl msg ON txn.id = msg.txnid 
               WHERE sessionid = " . $this->_id . " 
-                AND msg.stateid in (Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_WITH_VOUCHER_STATE, Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_DECLINED_STATE)
+                AND msg.stateid in (2000,2001,2007,2010,2011)
                 GROUP BY txn.id,msg.stateid";
             //return $this->_pendingAmount;
             $res = $this->_obj_Db->query($sql);
@@ -288,7 +289,7 @@ final class PaymentSession
         }
         return $this->_obj_CurrencyConfig;
     }
-    
+
     public function toXML(){
         $xml = "<session id='".$this->getId()."' type='".$this->getSessionType()."' total-amount='".$this->_amount."'>";
         $xml .= '<amount country-id="'. $this->getCountryConfig()->getID() .'" currency-id="'. $this->getCurrencyConfig()->getID() .'" currency="'.$this->getCurrencyConfig()->getCode() .'" symbol="'. $this->getCountryConfig()->getSymbol() .'" format="'. $this->getCountryConfig()->getPriceFormat() .'" alpha2code="'. $this->getCountryConfig()->getAlpha2code() .'" alpha3code="'. $this->getCountryConfig()->getAlpha3code() .'" code="'. $this->getCountryConfig()->getNumericCode() .'">'. $this->getPendingAmount() .'</amount>';
@@ -300,7 +301,11 @@ final class PaymentSession
     {
         $status = false;
         try {
-            $sql = "SELECT id, amount FROM log" . sSCHEMA_POSTFIX . ".session_tbl WHERE orderid = '" . $this->_orderId . "' ORDER BY id DESC LIMIT 1";
+            $sql = "SELECT id, amount, stateid FROM log" . sSCHEMA_POSTFIX . ".session_tbl
+                    WHERE orderid = '" . $this->_orderId . "'
+                    AND stateid = '" . Constants::iSESSION_PARTIALLY_COMPLETED . "'
+                    ORDER BY id DESC LIMIT 1";
+
             $RS = $this->_obj_Db->getName($sql);
             if (is_array($RS) === true) {
                 $this->_id = $RS["ID"];
@@ -316,12 +321,12 @@ final class PaymentSession
     {
         return $this->_amount;
     }
-    
+
     public function getStateId()
     {
         return $this->_iStateId;
     }
-    
+
     public function getExpireTime()
     {
         return $this->_expire;

@@ -487,8 +487,19 @@ class Home extends General
 				$sMaskedCardNumber = substr_replace(trim($RS["MASK"]), str_repeat("*", 4 - $oCC->getNumberOfMaskedDigits() ), -4, 4 - $oCC->getNumberOfMaskedDigits() );
 			}
 			else { $sMaskedCardNumber = trim($RS["MASK"]); }
-			// Construct XML Document with data for saved cards
-			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'" cvc-length="'. $RS["CVCLENGTH"] .'">';
+
+			// set card expired status
+            $aExpiry = explode('/', $RS['EXPIRY']);
+            $bIsExpired = "false";
+            $expiryMonth = trim($aExpiry[0]);
+            $expiryYear = trim($aExpiry[1]);
+            if(empty($expiryMonth) === false && empty($expiryYear) === false && $this->_cardNotExpired(intval($expiryMonth), intval($expiryYear)) === false )
+            {
+                $bIsExpired = "true";
+            }
+
+            // Construct XML Document with data for saved cards
+			$xml .= '<card id="'. $RS["ID"] .'" type-id="'. $RS["CARDID"] .'" pspid="'. $RS["PSPID"] .'" preferred="'. General::bool2xml($RS["PREFERRED"]) .'" state-id="'. $RS["STATEID"] .'" charge-type-id="'. $RS["CHARGETYPEID"] .'" cvc-length="'. $RS["CVCLENGTH"] .'" expired="'. $bIsExpired .'">';
 			$xml .= '<client id="'. $RS["CLIENTID"] .'">'. htmlspecialchars($RS["CLIENT"], ENT_NOQUOTES) .'</client>';
 			$xml .= '<type id="'. $RS["TYPEID"] .'">'. $RS["TYPE"] .'</type>';
 			$xml .= '<name>'. htmlspecialchars($RS["NAME"], ENT_NOQUOTES) .'</name>';
@@ -516,6 +527,20 @@ class Home extends General
 		$xml .= '</stored-cards>';
 		return $xml;
 	}
+
+
+    private function _cardNotExpired($month, $year) {
+        /* Get timestamp of midnight on day after expiration month. */
+        $exp_ts = mktime(0, 0, 0, $month + 1, 1, $year);
+
+        $cur_ts = time();
+
+        if ($exp_ts > $cur_ts) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 	/**
 	 * Searches for transaction history given a client ID plus any of the other parameters
 	 *
@@ -774,15 +799,17 @@ class Home extends General
         $sql = "SELECT Txn.id, Txn.amount AS amount, C.id AS countryid, C.currencyid, C.symbol, C.priceformat, CL.id AS clientid,
 					   Txn.id AS mpointid, Txn.orderid, M1.stateid,Txn.logourl,Txn.cssurl,Txn.accepturl,Txn.cancelurl, CL.salt, 
 					   Txn.accountid AS end_user_id,Txn.lang,Txn.cardid,
-					   Txn.email, Txn.mobile,Txn.customer_ref,Txn.operatorid,Txn.markup,Txn.deviceid, Txn.sessionid
-				FROM Log.Transaction_Tbl Txn
-				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON Txn.pspid = PSP.id
-				LEFT OUTER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
-				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Country_Tbl C ON Txn.countryid = C.id
-				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl Card ON Txn.cardid = Card.id
-				LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".message_tbl M1 ON Txn.id = M1.txnid AND M1.stateid =  (select max(stateid) from Log".sSCHEMA_POSTFIX.".message_tbl WHERE txnid = '". $this->getDBConn()->escStr( (string) $txnid) ."')
-				WHERE Txn.id = '". $this->getDBConn()->escStr( (string) $txnid) ."'
-				ORDER BY Txn.created DESC LIMIT 1";
+					   Txn.email, Txn.mobile,Txn.customer_ref,Txn.operatorid,Txn.markup,Txn.deviceid, Txn.sessionid, St.name
+				FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl Txn
+                LEFT OUTER JOIN System" . sSCHEMA_POSTFIX . ".PSP_Tbl PSP ON Txn.pspid = PSP.id
+                LEFT OUTER JOIN Client" . sSCHEMA_POSTFIX . ".Client_Tbl CL ON Txn.clientid = CL.id
+                LEFT OUTER JOIN System" . sSCHEMA_POSTFIX . ".Country_Tbl C ON Txn.countryid = C.id
+                LEFT OUTER JOIN System" . sSCHEMA_POSTFIX . ".Card_Tbl Card ON Txn.cardid = Card.id
+                LEFT OUTER JOIN Log" . sSCHEMA_POSTFIX . ".message_tbl M1 ON Txn.id = M1.txnid
+                LEFT OUTER JOIN Log" . sSCHEMA_POSTFIX . ".state_tbl St ON M1.stateid = St.id
+                WHERE Txn.id ='" . $this->getDBConn()->escStr((string)$txnid) . "'
+                    AND NOT M1.stateid::text SIMILAR TO '" . $this->getDBConn()->escStr('4%|19%') . "'
+                ORDER BY Txn.created, M1.created DESC LIMIT 1";
 //		echo $sql ."\n";
         $RS = $this->getDBConn()->getName($sql);
 
@@ -806,6 +833,7 @@ class Home extends General
         $xml .= '<css-url>'. htmlspecialchars($RS["CSSURL"], ENT_NOQUOTES) .'</css-url>';
         $xml .= '<logo-url>'. htmlspecialchars($RS["LOGOURL"], ENT_NOQUOTES) .'</logo-url>';
         $xml .= '<status-id>'. $RS['STATEID'] .'</status-id>';
+        $xml .= '<status-message>'. $RS['NAME'].'</status-message>';
         $xml .= '<sign>'. md5( $RS["CLIENTID"] .'&'. $RS["MPOINTID"] .'&'. $RS["ORDERID"] .'&'. $RS["CURRENCYID"] .'&'.  htmlspecialchars($amount, ENT_NOQUOTES) .'&'. $RS["STATEID"] .'.'. $RS["SALT"]) .'</sign>';
       //  $xml .= '<pre-sign>'.  $RS["CLIENTID"] .','. $RS["MPOINTID"] .','. $RS["ORDERID"] .','. $RS["CURRENCY"] .','.  htmlspecialchars($amount, ENT_NOQUOTES) .','. $RS["STATEID"] .','. $RS["SALT"] .'</pre-sign>';
         $xml .= '<client-info language="'.$RS["LANG"].'" platform="'.$RS["MARKUP"].'">';
@@ -1051,14 +1079,14 @@ class Home extends General
 	 * @param 	string $cr		the Client's Reference for the Customer (optional)
 	 * @return	integer 		The unique ID of the created End-User Account
 	 */
-	public function newAccount($cid, $mob="", $pwd="", $email="", $cr="", $pid="")
+	public function newAccount($cid, $mob="", $pwd="", $email="", $cr="", $pid="", $enable=true)
 	{
 		$sql = "SELECT Nextvalue('EndUser".sSCHEMA_POSTFIX.".Account_Tbl_id_seq') AS id FROM DUAL";
 		$RS = $this->getDBConn()->getName($sql);
 		$sql = "INSERT INTO EndUser".sSCHEMA_POSTFIX.".Account_Tbl
-					(id, countryid, mobile, passwd, email, externalid, pushid)
+					(id, countryid, mobile, passwd, email, externalid, pushid, enabled)
 				VALUES
-					(". $RS["ID"] .", ". intval($cid) .", ". (floatval($mob) > 0 ? "'". floatval($mob) ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". (strlen($email) > 0 ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .", '". $this->getDBConn()->escStr($cr) ."', ". (strlen($pid) > 0 ? "'". $this->getDBConn()->escStr($pid) ."'" : "NULL") .")";
+					(". $RS["ID"] .", ". intval($cid) .", ". (floatval($mob) > 0 ? "'". floatval($mob) ."'" : "NULL") .", '". $this->getDBConn()->escStr($pwd) ."', ". (strlen($email) > 0 ? "'". $this->getDBConn()->escStr($email) ."'" : "NULL") .", '". $this->getDBConn()->escStr($cr) ."', ". (strlen($pid) > 0 ? "'". $this->getDBConn()->escStr($pid) ."'" : "NULL") . ($enable == false ? ", false" : ", true").")";
 		//echo $sql ."\n";
 		$res = $this->getDBConn()->query($sql);
 

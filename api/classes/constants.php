@@ -260,6 +260,12 @@ abstract class Constants
      *  
      */
     const iPAYMENT_TIME_OUT_STATE = 20109;
+    /**
+     * Defines the ID of the State that indicates that the payment was not complete due to time out error
+     * from PSP or Issuer and system does not have the final status of payment yet
+     *
+     */
+    const iPSP_TIME_OUT_STATE = 20108;
 	/**
 	 * Defines the ID of the State that indicates that the payment was declined by the Payment Service Provider (PSP)
 	 * when doing a Capture
@@ -282,6 +288,18 @@ abstract class Constants
 	 *
 	 */
 	const iPAYMENT_SETTLED_STATE = 2020;
+
+    /**
+     * Defines the ID of the State that indicates that payment transaction has been tokenized
+     *
+     */
+    const iPAYMENT_TOKENIZATION_COMPLETE_STATE = 2030;
+
+    /**
+     * Defines the ID of the State that indicates that payment transaction has failed tokenized
+     *
+     */
+    const iPAYMENT_TOKENIZATION_FAILURE_STATE = 2031;
 
     /**
      * Defines the ID of the State that indicates that Tokenization request successfully completed
@@ -333,6 +351,24 @@ abstract class Constants
      *
      */
     const iSESSION_PARTIALLY_COMPLETED = 4031;
+
+    /**
+	 * Defines the ID of the State that indicates that the payment has been initiated for captured.
+	 *
+	 */
+	const iPAYMENT_CAPTURE_INITIATED_STATE = 20012;
+
+	/**
+	 * Defines the ID of the State that indicates that a previously authorized payment has been initiated for cancel.
+	 *
+	 */
+	const iPAYMENT_CANCEL_INITIATED_STATE = 20022;
+
+	/**
+	 * Defines the ID of the State that indicates that previously captured payment has been initiated for refund.
+	 *
+	 */
+	const iPAYMENT_REFUND_INITIATED_STATE = 20032;
 
     /**
      * Defines the ProductType for the ticket
@@ -751,6 +787,19 @@ abstract class Constants
      *
      */
     const iCHUBB_PSP = 48;
+
+
+    /**
+     * Unique ID for the Acquirer: UATP
+     *
+     */
+    const iUATP_ACQUIRER = 49;
+
+    /**
+     * Unique ID for the Card Account Service: UATP
+     *
+     */
+    const iUATP_CARD_ACCOUNT = 50;
 
 	/**
 
@@ -1226,5 +1275,20 @@ abstract class Constants
 	const iPROCESSOR_TYPE_APM = 4;
 	const iPROCESSOR_TYPE_VIRTUAL = 5;
 	const iPROCESSOR_TYPE_MPI = 6;
+	const iPROCESSOR_TYPE_GATEWAY = 7;
+	const iPROCESSOR_TYPE_TOKENIZATION = 8;
+
+	
+	
+	const iRETRIAL_TYPE_TIMEBASED = 1;
+	const iRETRIAL_TYPE_RESPONSEBASED = 2;
+	const iRETRIAL_TYPE_MAXATTEMPTBASED = 3;
+
+	/*
+	 * Settlement File status
+	 */
+	const sSETTLEMENT_REQUEST_ACTIVE = "active";
+	const sSETTLEMENT_REQUEST_WAITING = "waiting";
+	const sSETTLEMENT_REQUEST_FAIL = "fail";
 }
 ?>

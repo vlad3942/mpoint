@@ -111,7 +111,7 @@
 									</xs:element>
 								</xs:sequence>
 								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
-								<xs:attribute name="store-card" type="xs:boolean" use="required" />
+								<xs:attribute name="store-card" type="xs:boolean" use="optional" default="false" />
 							</xs:complexType>
 						</xs:element>
 						<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1" />
@@ -237,6 +237,7 @@
 															 <xs:enumeration value="visa" />
 															 <xs:enumeration value="visaelectron" />
 															 <xs:enumeration value="discover" />
+															 <xs:enumeration value="uatp" />
 														</xs:restriction>
 													</xs:simpleType>
 												</xs:attribute>
@@ -357,6 +358,7 @@
 															<xs:enumeration value="visa" />
 															<xs:enumeration value="visaelectron" />
 															<xs:enumeration value="discover" />
+															<xs:enumeration value="uatp" />
 														</xs:restriction>
 													</xs:simpleType>
 												</xs:attribute>
@@ -449,7 +451,7 @@
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" />
 								<xs:attribute name="psp-id" type="xs:positiveInteger" use="optional" />
 								<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
-								<xs:attribute name="preferred" type="xs:boolean" use="optional" />
+								<xs:attribute name="preferred" type="xs:boolean" use="optional" default="false"/>
 								<xs:attribute name="charge-type-id" type="charge-type" use="optional" />
 							</xs:complexType>
 						</xs:element>
@@ -890,6 +892,8 @@
 					</xs:complexType>
 				  </xs:element>
 				 <xs:element name="additional-data" type="xs:string" minOccurs="0" maxOccurs="1" />
+				 <xs:element name="approval-code" type="xs:string" minOccurs="0" maxOccurs="1" />
+				 <xs:element name="url" type="url" minOccurs="0" maxOccurs="1" />
 				</xs:sequence>
 			  </xs:complexType>
 			</xs:element>			
@@ -1010,6 +1014,93 @@
 				</xs:complexType>
 			</xs:element>
 			<!--  Get Transaction Status -->
+
+			<!-- payment settlements -->
+			<xs:element name="payment-settlements" maxOccurs="1" minOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="payment-settlement" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="service-providers" minOccurs="0" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="service-provider" minOccurs="1" maxOccurs="unbounded">
+													<xs:complexType>
+														<xs:attribute name="id"/>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+								<xs:attribute name="client-id"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<!-- payment settlements -->
+
+
+			<!-- Get Currency Configurations -->
+			<xs:element name="get-currency-config" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:annotation>
+						<xs:documentation>
+							Fetches all currency configurations
+						</xs:documentation>
+					</xs:annotation>
+					<xs:all>
+					  <xs:element name="currency" minOccurs="0" maxOccurs="1">
+					  <xs:complexType>
+					      <xs:attribute name="code" type="xs:string" use="required" />
+					       <xs:attribute name="country-code" type="xs:string" use="required" />
+					   </xs:complexType>
+					  </xs:element>
+					</xs:all>
+				  <xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
+				</xs:complexType>
+			</xs:element>
+			<!--  Get Currency Configurations -->
+
+
+
+			<!-- Get Enduser stored card -->
+			<xs:element name="get-stored-card" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:annotation>
+						<xs:documentation>
+							Get stored cards based on card ids
+						</xs:documentation>
+					</xs:annotation>
+					<xs:all>
+						<xs:element name="cards" minOccurs="1" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Contains the list of unique Card IDs linked to an enduser account
+								</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element type="xs:integer" name="card"
+												minOccurs="1" maxOccurs="unbounded">
+										<xs:annotation>
+											<xs:documentation>
+												The unique ID for the card whose
+												details should be fetched
+											</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:all>
+					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
+					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
+				</xs:complexType>
+			</xs:element>
+			<!-- Get Enduser stored card -->
 		</xs:choice>
 	</xs:complexType>
 </xs:element>
@@ -1195,6 +1286,52 @@
                     </xs:all> 
                 </xs:complexType>
             </xs:element>
+            <xs:element name="amount" type="amount" minOccurs="0" maxOccurs="1" />
+             <xs:element name="fees" maxOccurs="1" minOccurs="0">
+			    <xs:complexType>
+			      <xs:sequence>
+			        <xs:element name="fee" maxOccurs="unbounded" minOccurs="0">
+			          <xs:complexType>
+			            <xs:simpleContent>
+			                 <xs:extension base="xs:decimal">
+							    <xs:attribute name="type-id" type="xs:positiveInteger" use="optional" />
+								<xs:attribute name="country-id" type="xs:positiveInteger" use="optional" />
+								<xs:attribute name="currency-id" type="xs:positiveInteger" use="optional" />
+								<xs:attribute name="symbol" use="optional">
+										<xs:annotation>
+											<xs:documentation>
+												The symbol that is used to represent the
+												currency (kr. $, € etc.)
+											</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:minLength value="0" />
+												<xs:maxLength value="3" />
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+									<xs:attribute name="format" use="optional">
+										<xs:annotation>
+											<xs:documentation>
+												The price format that is used when displaying
+												prices in the country
+											</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="{CURRENCY}{PRICE}" />
+												<xs:enumeration value="{PRICE} {CURRENCY}" />
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+									</xs:extension>
+						            </xs:simpleContent>
+						          </xs:complexType>
+						        </xs:element>
+						      </xs:sequence>
+						    </xs:complexType>
+			  </xs:element>
             <xs:element name="line-item" minOccurs="1" maxOccurs="unbounded">
                 <xs:complexType>
                     <xs:all>
@@ -1203,7 +1340,7 @@
                     		<xs:all>
 		                        <xs:element name="name" type="name" minOccurs="1" maxOccurs="1"/>
 		                        <xs:element name="description" type="name" minOccurs="1" maxOccurs="1"/>
-		                        <xs:element name="image-url" type="url" minOccurs="1" maxOccurs="1"/>
+		                        <xs:element name="image-url" type="url" minOccurs="0" maxOccurs="1"/>
 		                        <xs:element name="airline-data" type="airline-data"  minOccurs="0" maxOccurs="1" />
 		                       </xs:all> 
 		                       <xs:attribute name="sku" use="required" type="xs:string"/>

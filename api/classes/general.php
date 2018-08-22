@@ -1320,5 +1320,22 @@ class General
         }
         return $attempts;
     }
+
+    public function getStaticRouteData($clientId = "")
+    {
+        $sql = "SELECT clientid, pspid
+                    FROM client" . sSCHEMA_POSTFIX . ".cardaccess_tbl
+                    WHERE pspid IN
+                          (SELECT id
+                           FROM system.psp_tbl
+                           WHERE capture_method <> 0)
+                    AND enabled ";
+         if($clientId !== "" )
+         {
+            $sql .= "AND clientid = $clientId" ;
+         }
+         $aRS = $this->getDBConn()->getAllNames($sql);
+         return $aRS;
+    }
 }
 ?>

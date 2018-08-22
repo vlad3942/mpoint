@@ -83,6 +83,8 @@ require_once(sCLASS_PATH ."/mConsole.php");
 require_once(sCLASS_PATH ."/validate.php");
 // Require specific Business logic for the 2C2P ALC component
 require_once(sCLASS_PATH ."/ccpp_alc.php");
+// Require data data class for Customer Information
+require_once(sCLASS_PATH ."/customer_info.php");
 
 //header("Content-Type: application/x-www-form-urlencoded");
 
@@ -203,7 +205,7 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 										$aMsgCds[1000] = "Success";
 										$xml .= '<status code="1000" ></status>';
 										// Perform callback to Client
-										if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
+										if (strlen($obj_TxnInfo->getCallbackURL() ) > 0 && $obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_CAPTURED_STATE) === true)
 										{
 											$args = array("transact" => $obj_TxnInfo->getExternalID(),
 													"amount" => $amount,

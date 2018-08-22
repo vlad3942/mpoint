@@ -120,6 +120,10 @@ require_once(sCLASS_PATH ."/amex.php");
 require_once(sCLASS_PATH ."/chubb.php");
 // Require specific Business logic for the CHUBB component
 require_once(sCLASS_PATH ."/payment_processor.php");
+// Require specific Business logic for the UATP component
+require_once(sCLASS_PATH . "/uatp.php");
+// Require specific Business logic for the UATP Card Account services
+require_once(sCLASS_PATH . "/uatp_card_account.php");
 
 require_once(sCLASS_PATH ."/wallet_processor.php");
 
@@ -314,10 +318,10 @@ $iPrimaryRoute = $oRoute ;
                                         $_SERVER['HTTP_X_FORWARDED_FOR']);
 
 										// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
-										if (strlen($obj_ClientConfig->getSalt() ) > 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac) == 1)
+										if (strlen($obj_ClientConfig->getSalt() ) > 0)
 										{
 
-											if ($obj_Validator->valHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]) ) != 10) { $aMsgCds[210] = trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
+											if ($obj_Validator->valHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]) ) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
 										} 
 										// Success: Input Valid
 										if (count($aMsgCds) == 0)
@@ -606,6 +610,26 @@ $iPrimaryRoute = $oRoute ;
 
                                                                     $xml .= '<status code="92">Authorization failed, PSP returned error: ' . $code . '</status>';
                                                                 }
+                                                            }
+
+                                                            
+                                                            /*Complete Tokenization after successful authorization*/
+                                                            if ($code >= Constants::iPAYMENT_ACCEPTED_STATE and $code < Constants::iPAYMENT_REJECTED_STATE)
+                                                            {
+
+                                                                $iTokenzationProcessor = intval($obj_mCard->getTokenizationRoute(intval(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ) ) );
+                                                                if(empty($iTokenzationProcessor) === false)
+                                                                {
+                                                                    $obj_TokenizationPSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($iTokenzationProcessor), $aHTTP_CONN_INFO);
+                                                                    $sToken = $obj_TokenizationPSP->tokenize($aHTTP_CONN_INFO, $obj_Elem);
+
+                                                                    if(empty($sToken) === false)
+                                                                    {
+                                                                        $xml .= '<token>'.$sToken.'</token>';
+                                                                    }
+
+                                                                }
+
                                                             }
 
 														}
