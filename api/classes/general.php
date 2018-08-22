@@ -1288,16 +1288,16 @@ class General
         return $code;
     }
 
-    public function getPreviousFailedAttempts($orderid)
+    public function getPreviousFailedAttempts($orderid, $clientid)
     {
         $aPMArray = array();
         $aRejectedStates = array(Constants::iPAYMENT_REJECTED_PSP_UNAVAILABLE_STATE);
         $sql = "SELECT Txn.cardid FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
                 INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg on Txn.id = Msg.txnid
-                WHERE Txn.orderid = '" . trim($orderid) . "' AND Txn.enabled = true
+                WHERE Txn.orderid = '" . trim($orderid) . "' AND Txn.enabled = true AND Txn.clientid = $clientid
                 GROUP BY Txn.id
                 HAVING MAX(Msg.stateid) IN (".implode(",",$aRejectedStates).")";
-
+echo $sql;die;
         $res = $this->getDBConn()->query($sql);
 
         while ($RS = $this->getDBConn()->fetchName($res) ) {
