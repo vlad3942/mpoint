@@ -1297,7 +1297,6 @@ class General
                 WHERE Txn.orderid = '" . trim($orderid) . "' AND Txn.enabled = true AND Txn.clientid = $clientid
                 GROUP BY Txn.id
                 HAVING MAX(Msg.stateid) IN (".implode(",",$aRejectedStates).")";
-echo $sql;die;
         $res = $this->getDBConn()->query($sql);
 
         while ($RS = $this->getDBConn()->fetchName($res) ) {
