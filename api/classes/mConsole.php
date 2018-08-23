@@ -650,7 +650,10 @@ class mConsole extends Admin
 					Constants::iPAYMENT_REFUNDED_STATE,
 					Constants::iPAYMENT_REJECTED_STATE,
 					Constants::iPAYMENT_DECLINED_STATE,
-                    Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+                    Constants::iPAYMENT_WITH_ACCOUNT_STATE,
+                    Constants::iPAYMENT_REFUND_INITIATED_STATE,
+					Constants::iPAYMENT_CAPTURE_INITIATED_STATE,
+					Constants::iPAYMENT_CANCEL_INITIATED_STATE);
 		}
 		$sql = "";
 		// A search for an Order Number makes searching the end-user's Transaction table obsolete
@@ -1105,7 +1108,18 @@ class mConsole extends Admin
 	 */
 	public function getTransactionStats(array $aClientIDs, $start, $end, array $aAccountIDs = array(), $pspid = 0, $cardid = 0 )
 	{
-		$aStateIDS = array(Constants::iINPUT_VALID_STATE, Constants::iPAYMENT_INIT_WITH_PSP_STATE, Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CANCELLED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_REFUNDED_STATE, Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_DECLINED_STATE,Constants::iPAYMENT_SETTLED_STATE);
+		$aStateIDS = array(Constants::iINPUT_VALID_STATE, 
+		Constants::iPAYMENT_INIT_WITH_PSP_STATE, 
+		Constants::iPAYMENT_ACCEPTED_STATE, 
+		Constants::iPAYMENT_CANCELLED_STATE, 
+		Constants::iPAYMENT_CAPTURED_STATE, 
+		Constants::iPAYMENT_REFUNDED_STATE, 
+		Constants::iPAYMENT_REJECTED_STATE, 
+		Constants::iPAYMENT_DECLINED_STATE,
+		Constants::iPAYMENT_SETTLED_STATE,
+		Constants::iPAYMENT_REFUND_INITIATED_STATE,
+		Constants::iPAYMENT_CAPTURE_INITIATED_STATE,
+		Constants::iPAYMENT_CANCEL_INITIATED_STATE);
 
 		$where = "";
 
