@@ -9,3 +9,4 @@ INSERT INTO client.url_tbl ( urltypeid, clientid, url) VALUES(12, <CLIENTID>, '<
 INSERT INTO client.url_tbl ( urltypeid, clientid, url) VALUES(12, <CLIENTID>, '<MESB-URL>/mpoint/parse-3dsecure-challenge');
 -- End Modirum 3D Optimized Flow Url Configuration
 
+ALTER TYPE LOG.ADDITIONAL_DATA_REF ADD VALUE 'Transaction';
