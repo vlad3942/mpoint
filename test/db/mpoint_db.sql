@@ -7679,3 +7679,7 @@ INSERT INTO system.processortype_tbl (id, name) VALUES (8, 'Tokenize');
 INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2020 , 'Tokenization Complete - Virtual Card Created', 'Payment', true);
 INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2021 , 'Tokenization Failed', 'Payment', true);
 /*=================== Adding new states for tokenization used for UATP SUVTP generation : END =======================*/
+
+DROP INDEX client.cardaccess_card_country_uq RESTRICT;
+
+CREATE UNIQUE INDEX cardaccess_card_country_uq ON client.cardaccess_tbl (clientid, cardid, countryid, psp_type) WHERE enabled='true';
