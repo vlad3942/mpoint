@@ -99,4 +99,18 @@ $aHTTP_CONN_INFO["data-cash"]["paths"]["auth"] = "/_test/simulators/datacash/aut
 $aHTTP_CONN_INFO["data-cash"]["paths"]["pay"] = "/_test/simulators/datacash/pay.php";
 $aHTTP_CONN_INFO["data-cash"]["paths"]["initialize"] = "/_test/simulators/datacash/pay.php";
 $aHTTP_CONN_INFO["data-cash"]["path"] = $aHTTP_CONN_INFO["data-cash"]["paths"]["pay"];
+
+
+/**
+ * Connection info for connecting to VisaCheckout
+ */
+$aHTTP_CONN_INFO["visa-checkout"]["protocol"] = "http";
+$aHTTP_CONN_INFO["visa-checkout"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["visa-checkout"]["port"] = 80;
+$aHTTP_CONN_INFO["visa-checkout"]["timeout"] = 120;
+$aHTTP_CONN_INFO["visa-checkout"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["visa-checkout"]["paths"]["auth"] = "/_test/simulators/visacheckout/auth.php";
+$aHTTP_CONN_INFO["visa-checkout"]["paths"]["pay"] = "/_test/simulators/visacheckout/pay.php";
+$aHTTP_CONN_INFO["visa-checkout"]["paths"]["initialize"] = "/_test/simulators/visacheckout/pay.php";
+$aHTTP_CONN_INFO["visa-checkout"]["path"] = $aHTTP_CONN_INFO["visa-checkout"]["paths"]["pay"];
 ?>

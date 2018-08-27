@@ -7685,3 +7685,8 @@ INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2020 , 'Tokenizati
 INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2021 , 'Tokenization Failed', 'Payment', true);
 /*=================== Adding new states for tokenization used for UATP SUVTP generation : END =======================*/
 ALTER TYPE LOG.ADDITIONAL_DATA_REF ADD VALUE 'Transaction';
+
+INSERT INTO System.PSP_Tbl (id, name, system_type) VALUES (13, 'VISA Checkout', 1);
+INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) SELECT 208, 13, 'DKK';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 8, 13;
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 2, 13;
