@@ -202,12 +202,12 @@ class TransactionLogInfo
 		if($currencyCode != null)
 			$_sCurrencyCode = $currencyCode;
 		
-		$this->_obj_Amount = new AmountInfo($amt, $oCC->getID(), $_sCurrencyCode, $oCC->getSymbol(), $oCC->getPriceFormat() );
-		if (intval($cptamt) > 0) { $this->_obj_CapturedAmount = new AmountInfo($cptamt, $oCC->getID(), $oCC->getCurrency(), $oCC->getSymbol(), $oCC->getPriceFormat() ); }
+		$this->_obj_Amount = new AmountInfo($amt, $oCC->getID(), $_sCurrencyCode, $oCC->getSymbol(), $oCC->getPriceFormat(), $oCC->getAlpha2code(), $oCC->getAlpha3code(), $oCC->getNumericCode(), $oCC->getDecimals(), $oCC->getCurrencyConfig()->getCode());
+		if (intval($cptamt) > 0) { $this->_obj_CapturedAmount = new AmountInfo($cptamt, $oCC->getID(), $oCC->getCurrency(), $oCC->getSymbol(), $oCC->getPriceFormat(), $oCC->getAlpha2code(), $oCC->getAlpha3code(), $oCC->getNumericCode(), $oCC->getDecimals(), $oCC->getCurrencyConfig()->getCode() ); }
 		if (intval($pnt) > 0) { $this->_obj_Points = new AmountInfo($pnt, 0, "points", "points", "{PRICE} {CURRENCY}"); }
 		if (intval($rwd) > 0) { $this->_obj_Reward = new AmountInfo($rwd, 0, "points", "points", "{PRICE} {CURRENCY}"); }
-		if (intval($rfnd) > 0) { $this->_obj_Refund = new AmountInfo($rfnd, $oCC->getID(), $oCC->getCurrency(), $oCC->getSymbol(), $oCC->getPriceFormat() ); }
-		if (intval($fee) > 0) { $this->_obj_Fee = new AmountInfo($fee, $oCC->getID(), $oCC->getCurrency(), $oCC->getSymbol(), $oCC->getPriceFormat() ); }
+		if (intval($rfnd) > 0) { $this->_obj_Refund = new AmountInfo($rfnd, $oCC->getID(), $oCC->getCurrency(), $oCC->getSymbol(), $oCC->getPriceFormat(), $oCC->getAlpha2code(), $oCC->getAlpha3code(), $oCC->getNumericCode(), $oCC->getDecimals(), $oCC->getCurrencyConfig()->getCode() ); }
+		if (intval($fee) > 0) { $this->_obj_Fee = new AmountInfo($fee, $oCC->getID(), $oCC->getCurrency(), $oCC->getSymbol(), $oCC->getPriceFormat(), $oCC->getAlpha2code(), $oCC->getAlpha3code(), $oCC->getNumericCode(), $oCC->getDecimals(), $oCC->getCurrencyConfig()->getCode() ); }
 		
 		$this->_iMode = (integer) $m;
 		$this->_obj_CustomerInfo = $oCI;
