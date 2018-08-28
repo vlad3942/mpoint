@@ -87,16 +87,4 @@ $aGM_CONN_INFO["path"] = "/_test/simulators/gomobile/send.php";
 $aGM_CONN_INFO["contenttype"] = "text/xml; charset=ISO-8859-1";
 $aGM_CONN_INFO["mode"] = 1;
 
-/**
- * Connection info for connecting to Wire Card
- */
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["protocol"] = "http";
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["host"] = "mpoint.local.cellpointmobile.com";
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["port"] = 80;
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["timeout"] = 120;
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["path"] = ""; // Set by calling class
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["method"] = "POST";
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["paths"]["initialize"] = "/_test/simulators/wire-card/init.php";
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["paths"]["auth"] = "/_test/simulators/wire-card/auth.php";
 ?>
