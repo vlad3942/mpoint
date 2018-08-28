@@ -762,7 +762,7 @@ class TxnInfo
                 }
                 return null;
             }
-            if (array_key_exists($key, $this->_aAdditionalData) === true)
+            if ($this->_aAdditionalData != null && array_key_exists($key, $this->_aAdditionalData) === true)
             {
                 return $this->_aAdditionalData[$key];
             }
