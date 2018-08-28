@@ -4731,6 +4731,9 @@ INSERT INTO pspcurrency_tbl VALUES (420, 650, 9, 'YER', '2013-11-04 13:27:37.015
 INSERT INTO pspcurrency_tbl VALUES (422, 100, 18, 'DKK', '2010-10-14 16:59:50.034982', '2010-10-14 16:59:50.034982', true);
 INSERT INTO pspcurrency_tbl VALUES (423, 101, 18, 'SEK', '2010-10-14 16:59:50.034982', '2010-10-14 16:59:50.034982', true);
 INSERT INTO pspcurrency_tbl VALUES (424, 200, 18, 'USD', '2010-10-14 16:59:50.034982', '2010-10-14 16:59:50.034982', true);
+INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (840,45,'USD');
+INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (840,45,'USD');
+INSERT INTO system.pspcurrency_tbl (countryid, pspid, name) VALUES (840,45,'USD');
 
 
 --

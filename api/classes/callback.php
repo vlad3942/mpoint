@@ -59,10 +59,17 @@ abstract class Callback extends EndUserAccount
 		parent::__construct($oDB, $oTxt, $oTI->getClientConfig() );
 
 		$this->_obj_TxnInfo = $oTI;
-		$this->aCONN_INFO = $aConnInfo;
+		$pspID = (integer)$this->getPSPID() > 0 ? $this->getPSPID() : $oTI->getPSPID();
+        if(empty($aConnInfo) === false )
+        {
+            $this->aCONN_INFO = $aConnInfo;
+        }
+        else
+        {
+            throw new CallbackException("Connection Configuration not found for the given PSP ID ". $pspID);
+        }
 
-		$pspID = (integer)$oTI->getPSPID() > 0 ? $oTI->getPSPID() : $this->getPSPID();
-		if ($oPSPConfig == null) { $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID); }
+        if ($oPSPConfig == null) { $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID); }
 		$this->_obj_PSPConfig = $oPSPConfig;
 	}
 
@@ -676,7 +683,7 @@ abstract class Callback extends EndUserAccount
 		case (Constants::iDSB_PSP):
 			return new DSB($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["dsb"], $obj_PSPConfig);
 		case (Constants::iVISA_CHECKOUT_PSP) :
-			return new VISACheckout($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo[Constants::iVISA_CHECKOUT_PSP]);
+			return new VISACheckout($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["visa-checkout"]);
 		case (Constants::iAPPLE_PAY_PSP):
 			return new ApplePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["apple-pay"]);
 		case (Constants::iCPG_PSP):
@@ -686,7 +693,7 @@ abstract class Callback extends EndUserAccount
 		case (Constants::iAMEX_EXPRESS_CHECKOUT_PSP):
 			return new AMEXExpressCheckout($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["amex-express-checkout"]);
 		case (Constants::iWIRE_CARD_PSP):
-			return new WireCard($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo[Constants::iWIRE_CARD_PSP]);
+			return new WireCard($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["wire-card"]);
 		case (Constants::iDATA_CASH_PSP):
 			return new DataCash($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["data-cash"]);
 		case (Constants::iGLOBAL_COLLECT_PSP):

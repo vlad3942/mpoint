@@ -295,16 +295,16 @@ $aHTTP_CONN_INFO["dsb"]["paths"]["cancel"] = "/mpoint/dsb/cancel";
 /**
  * Connection info for connecting to VISA Checkout
  */
-$aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
-$aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
-$aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
-$aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
-$aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]["path"] = ""; // Set by calling class
-$aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
-$aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]["paths"]["initialize"] = "/mpoint/visa-checkout/initialize";
-$aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]["paths"]["get-payment-data"] = "/mpoint/visa-checkout/get-payment-data";
-$aHTTP_CONN_INFO[Constants::iVISA_CHECKOUT_PSP]["paths"]["callback"] = "/mpoint/visa-checkout/callback";
+$aHTTP_CONN_INFO["visa-checkout"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["visa-checkout"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["visa-checkout"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["visa-checkout"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["visa-checkout"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["visa-checkout"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["visa-checkout"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["visa-checkout"]["paths"]["initialize"] = "/mpoint/visa-checkout/initialize";
+$aHTTP_CONN_INFO["visa-checkout"]["paths"]["get-payment-data"] = "/mpoint/visa-checkout/get-payment-data";
+$aHTTP_CONN_INFO["visa-checkout"]["paths"]["callback"] = "/mpoint/visa-checkout/callback";
 
 /**
  * Connection info for connecting to AMEX Express Checkout
@@ -368,7 +368,7 @@ $aHTTP_CONN_INFO["data-cash"]["paths"]["refund"] = "/mpoint/data-cash/refund";
 /**
  * Connection info for connecting to Wire Card
  */
-/*$aHTTP_CONN_INFO["wire-card"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["wire-card"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
 $aHTTP_CONN_INFO["wire-card"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
 $aHTTP_CONN_INFO["wire-card"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
 $aHTTP_CONN_INFO["wire-card"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
@@ -381,26 +381,9 @@ $aHTTP_CONN_INFO["wire-card"]["paths"]["capture"] = "/mpoint/wire-card/capture";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["status"] = "/mpoint/wire-card/status";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["refund"] = "/mpoint/wire-card/refund";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["callback"] = "/mpoint/wire-card/callback";
-$aHTTP_CONN_INFO["wire-card"]["paths"]["cancel"] = "/mpoint/wire-card/cancel";*/
+$aHTTP_CONN_INFO["wire-card"]["paths"]["cancel"] = "/mpoint/wire-card/cancel";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["post-status"] = "/mpoint/wire-card/post-status";
 
-/**
- * Connection info for connecting to Wire Card
- */
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["path"] = ""; // Set by calling class
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["paths"]["initialize"] = "/mpoint/wire-card/initialize";
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["paths"]["auth"] = "/mpoint/wire-card/authorize-payment";
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["paths"]["capture"] = "/mpoint/wire-card/capture";
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["paths"]["status"] = "/mpoint/wire-card/status";
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["paths"]["refund"] = "/mpoint/wire-card/refund";
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["paths"]["callback"] = "/mpoint/wire-card/callback";
-$aHTTP_CONN_INFO[Constants::iWIRE_CARD_PSP]["paths"]["cancel"] = "/mpoint/wire-card/cancel";
 
 /**
  * Connection info for connecting to Android Pay
