@@ -1,4 +1,14 @@
 <?php
+
+/* ==================== Wallet Processor Exception Classes Start ==================== */
+
+/**
+ * Exception class for all Wallet Processor exceptions
+ */
+class WalletProcessorException extends mPointException {}
+
+/* ==================== Wallet Processor Exception Classes End ==================== */
+
 /**
  * Abstraction Class that creates the basic functions for abstracting the functionality of PSP authorizations
  *
@@ -7,7 +17,7 @@
  * @link http://www.cellpointmobile.com
  * @version 1.00
  */
-class WalletProcessor
+class WalletProcessor extends PaymentProcessor
 {
     private $_objPSPConfig;
     private $_objPSP;
@@ -28,21 +38,21 @@ class WalletProcessor
         Constants::iGOOGLE_PAY_WALLET => 'google-pay',
         Constants::iMVAULT_PSP => 'mvault');
 
-    private function _setConnInfo($aConnInfo)
-    {
-        if(empty($aConnInfo) === false )
-        {
-            $this->aConnInfo = $aConnInfo;
-        }
-        else { throw new mPointException("Connection Info not found for the wallet :". $aConnInfo); }
-    }
 
     public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iTypeId, $aConnInfo)
     {
-        $this->_objPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), self::$aWalletConstants[$iTypeId]);
-        $this->_setConnInfo($aConnInfo[self::$aWalletConnInfo[$iTypeId]]);
-        $sPSPClassName = $this->_objPSPConfig->getName();
-        $this->_objPSP = new $sPSPClassName($oDB, $oTxt, $oTI, $this->aConnInfo);
+        try {
+            parent::__construct($oDB, $oTxt, $oTI, self::$aWalletConstants[$iTypeId], $aConnInfo);
+        }
+        catch (PaymentProcessorException $e)
+        {
+            trigger_error($e->getMessage(), E_USER_ERROR);
+            throw new WalletProcessorException($e->getMessage() );
+        }
+        catch (CallbackException $e)
+        {
+            throw new mPointException($e->getMessage() );
+        }
     }
 
     public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iTypeId, $aConnInfo, $card_psp_id = NULL)
@@ -50,25 +60,10 @@ class WalletProcessor
         if (empty($card_psp_id) === false && $card_psp_id == Constants::iMVAULT_PSP) {
             $iTypeId = $card_psp_id;
         }
-        if (empty(self::$aWalletConstants[$iTypeId]) === false) {
+        if (empty(self::$aWalletConstants[$iTypeId] ) === false) {
             return new WalletProcessor($oDB, $oTxt, $oTI, $iTypeId, $aConnInfo);
         } else {
             return false;
         }
-    }
-
-    public function getPaymentData($obj_Elem, $mode = null)
-    {
-        if ($mode != null) {
-            $paymentData = $this->_objPSP->getPaymentData($this->_objPSPConfig, $obj_Elem, $mode);
-        } else {
-            $paymentData = $this->_objPSP->getPaymentData($this->_objPSPConfig, $obj_Elem);
-        }
-        return $paymentData;
-    }
-
-    public function getPSPConfigForRoute($obj_Elem, $b)
-    {
-        return $this->_objPSP->getPSPConfigForRoute($obj_Elem, $b);
     }
 }
