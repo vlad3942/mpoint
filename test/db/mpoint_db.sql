@@ -6950,6 +6950,7 @@ CREATE TABLE log.additional_data_tbl
   type log.additional_data_ref,
   created timestamp without time zone DEFAULT now(),
   modified timestamp without time zone DEFAULT now(),
+  externalid integer,
   CONSTRAINT additional_data_pk PRIMARY KEY (id)
 )
 WITHOUT OIDS;
