@@ -48,11 +48,13 @@
 											</xs:restriction>
 										</xs:simpleType>
 									</xs:element>
+									<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
 								</xs:all>
 								<xs:attribute name="order-no" type="xs:string" use="optional" />
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="40" />
                                 <xs:attribute name="session-id" type="xs:positiveInteger" use="optional"/>
 								<xs:attribute name="product-type" type="xs:positiveInteger" use="optional" default="100" />
+								<xs:attribute name="booking-ref" type="xs:string" use="optional" />
 							</xs:complexType>
 						</xs:element>
 						<xs:element name="auth-token" type="xs:string" minOccurs="0" maxOccurs="1" />
@@ -451,7 +453,7 @@
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" />
 								<xs:attribute name="psp-id" type="xs:positiveInteger" use="optional" />
 								<xs:attribute name="id" type="xs:positiveInteger" use="optional" />
-								<xs:attribute name="preferred" type="xs:boolean" use="optional" />
+								<xs:attribute name="preferred" type="xs:boolean" use="optional" default="false"/>
 								<xs:attribute name="charge-type-id" type="charge-type" use="optional" />
 							</xs:complexType>
 						</xs:element>
@@ -1042,7 +1044,7 @@
 			</xs:element>
 			<!-- payment settlements -->
 
-			
+
 			<!-- Get Currency Configurations -->
 			<xs:element name="get-currency-config" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
@@ -1063,8 +1065,44 @@
 				</xs:complexType>
 			</xs:element>
 			<!--  Get Currency Configurations -->
-			
-			
+
+
+
+			<!-- Get Enduser stored card -->
+			<xs:element name="get-stored-card" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:annotation>
+						<xs:documentation>
+							Get stored cards based on card ids
+						</xs:documentation>
+					</xs:annotation>
+					<xs:all>
+						<xs:element name="cards" minOccurs="1" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Contains the list of unique Card IDs linked to an enduser account
+								</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element type="xs:integer" name="card"
+												minOccurs="1" maxOccurs="unbounded">
+										<xs:annotation>
+											<xs:documentation>
+												The unique ID for the card whose
+												details should be fetched
+											</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:all>
+					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
+					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
+				</xs:complexType>
+			</xs:element>
+			<!-- Get Enduser stored card -->
 		</xs:choice>
 	</xs:complexType>
 </xs:element>
@@ -1077,8 +1115,6 @@
 		</xs:extension>
 	</xs:simpleContent>
 </xs:complexType>
-
-
 
 <xs:group name="names">
 	<xs:sequence>

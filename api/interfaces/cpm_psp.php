@@ -497,23 +497,22 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				$approvalCode = $obj_XML->{'approval-code'};
 				
 				if($approvalCode != ''){
-					$sql = ",approval_action_code = '".$approvalCode."'";
+					$sql .= ",approval_action_code = '".$approvalCode."'";
 				}
 					
 
-				if($code == 2005)
-                $this->newMessage($this->getTxnInfo()->getID(), $code, $obj_HTTP->getReplyBody());
-                $this->getTxnInfo()->getPaymentSession()->updateState();
 				// In case of 3D verification status code 2005 will be received
 				if($code == 2005)
 				{
+                    $this->newMessage($this->getTxnInfo()->getID(), $code, $obj_HTTP->getReplyBody());
 					$str = str_replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>","",$obj_HTTP->getReplyBody());
 					$str = str_replace("<root>","",$str);
 					$code = str_replace("</root>","",$str);
 				}
+                $this->getTxnInfo()->getPaymentSession()->updateState();
 				
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-						SET pspid = ". $obj_PSPConfig->getID() . $sql."
+						SET pspid = ". $obj_PSPConfig->getID() . $sql." ,token='" . $obj_Card->ticket . "' 
 						WHERE id = ". $this->getTxnInfo()->getID();
 				//echo $sql ."\n";
 				$this->getDBConn()->query($sql);
@@ -528,6 +527,59 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		
 		return $code;
 	}
+
+    public function tokenize(array $aConnInfo, PSPConfig $obj_PSPConfig, $obj_Card)
+    {
+
+        $b  = '<?xml version="1.0" encoding="UTF-8"?>';
+        $b .= '<root>';
+        $b .= '<tokenize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '" store-card="'. parent::bool2xml($sc) .'">';
+        $b .= $obj_PSPConfig->toXML();
+        $b .= $this->_constTxnXML();
+        $b .= $this->_constNewCardAuthorizationRequest($obj_Card);
+        $b .= '</tokenize>';
+        $b .= '</root>';
+        $obj_XML = null;
+        try
+        {
+            $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["tokenize"]);
+            $sToken = "";
+            $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+            $obj_HTTP->connect();
+            $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+            $obj_HTTP->disConnect();
+            if ($code == 200)
+            {
+                $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+                if($obj_XML->status['code'] == '100')
+                {
+                    $sToken = $obj_XML->status->card->{'card-number'};
+                    $sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
+						SET token = ".$sToken."
+						WHERE id = ". $this->getTxnInfo()->getID();
+                    //echo $sql ."\n";
+                    $this->getDBConn()->query($sql);
+                    $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_TOKENIZATION_COMPLETE_STATE, $sToken. " generated for transactionID ". $this->getTxnInfo()->getID());
+                }
+            }
+            else
+            {
+                $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+                $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_TOKENIZATION_FAILURE_STATE, $obj_HTTP->getReplyBody());
+                //Rollback transaction
+                $obj_PaymentProcessor = PaymentProcessor::produceConfig($this->getDBConn(), $this->getText(), $this->getTxnInfo(), $this->getTxnInfo()->getPSPID(), $aConnInfo);
+                $obj_PaymentProcessor->refund($this->getTxnInfo()->getAmount());
+                throw new mPointException("Could not construct  XML for tokenizing with PSP: ". $obj_PSPConfig->getName() ." responded with HTTP status code: ". $code. " and body: ". $obj_XML->status, $code );
+            }
+        }
+        catch (mPointException $e)
+        {
+            trigger_error("construct  XML of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+            //re-throw the exception to the calling controller.
+            throw $e;
+        }
+        return $sToken;
+    }
 
 	public function redeem($iVoucherID, $iAmount=-1)
 	{
@@ -739,6 +791,37 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		
 		return $code;
 	}
+
+    /**
+     * Function used to make a process the callback received for a given transaction from an external system and
+     * hence provide a specific handling for the same.
+     *
+     * @param PSPConfig $obj_PSPConfig		The configuration for the Wallet which the payment data should be retrieved from
+     * @param SimpleXMLElement $obj_Request	Details for the token that should be used to retrieve the payment data from the 3rd Party Wallet.
+     * @return string
+     */
+    public function processCallback(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Request)
+    {
+        $b = '';
+        $b  = '<?xml version="1.0" encoding="UTF-8"?>';
+        $b .= $obj_Request->asXML();
+
+
+        $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["callback"]);
+
+        $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+        $obj_HTTP->connect();
+        $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+        $obj_HTTP->disConnect();
+
+        if (!in_array(intval($code), array(200, 202), true ))
+        {
+            trigger_error("Callback failed to ". $obj_PSPConfig->getName() ." for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $code ." and body: ". $obj_HTTP->getReplyBody(), E_USER_WARNING);
+            throw new mPointException("Callback failed to ". $obj_PSPConfig->getName() ." for the transaction : ". $this->getTxnInfo()->getID(). " failed with code: ". $code ." and body: ". $obj_HTTP->getReplyBody(), $code);
+        }
+
+        return $code;
+    }
 	
 	
 	/**

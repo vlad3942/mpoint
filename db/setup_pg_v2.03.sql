@@ -95,4 +95,25 @@ INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (69, 38, true);
 
 -- BENEFIT Stop
 
--- Paytabs Stop
+-- Paytabs StopINSERT INTO log.state_tbl (id, name, module, func) VALUES (20012, 'Capture Initialized', 'Payment', 'capture');
+
+ALTER TABLE log.transaction_tbl ALTER COLUMN attempt SET DEFAULT 0;
+/*======= ADD NEW PROCESSOR TYPE FOR TOKENIZATION SYSTEM ======== */
+INSERT INTO system.processortype_tbl (id, name) VALUES (8, 'Tokenize');
+/*======= END NEW PROCESSOR TYPE FOR TOKENIZATION SYSTEM ======== */
+
+/* ========== CONFIGURE UATP START FOR SOUTHWEST========== */
+INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (50, 'UATP CardAccount',8);
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (15, 50); /*With Apple-Pay*/
+
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (208,50,'DKK');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (840,50,'USD');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (826,50,'GBP');
+
+/*=================== Adding new states for tokenization used for UATP SUVTP generation : START =======================*/
+INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2020 , 'Tokenization complete - Virtual card created', 'Authorization', true);
+INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2021 , 'Tokenization Failed', 'Authorization', true);
+/*=================== Adding new states for tokenization used for UATP SUVTP generation : END =======================*/
+
+
+

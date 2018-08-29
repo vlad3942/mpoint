@@ -216,17 +216,22 @@ class AmexSettlement extends mPointSettlement
                                             $args = array("transact" => $obj_TxnInfo->getExternalID(),
                                                     "amount" => $obj_TxnInfo->getAmount(),
                                                     "fee" => $obj_TxnInfo->getFee() );
+                                            if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
+                                            {
+                                                $obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
+                                            }
                                         }
                                         else
                                         {
                                             $obj_PSP->newMessage($txnId, Constants::iPAYMENT_REFUNDED_STATE, null );
                                             $args = array("transact" => $obj_TxnInfo->getExternalID(),
                                                     "amount" => $obj_TxnInfo->getAmount());
+                                            if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
+                                            {
+                                                $obj_PSP->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
+                                            }
                                         }
-                                        if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
-                                        {
-                                            $obj_PSP->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
-                                        }
+
                                     }
 
                                     if($isDescriptionUpdated === true)

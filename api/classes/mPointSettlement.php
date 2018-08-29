@@ -102,15 +102,21 @@ abstract class mPointSettlement
         $this->_iRecordNumber = $recordNumber + 1 ;
         $this->_arrayTransactionIds=[];
         $this->_iTotalTransactionAmount = 0;
-        $sql = "SELECT Txn.id
-                FROM Log." . sSCHEMA_POSTFIX . "Transaction_Tbl Txn
-                  INNER JOIN Log." . sSCHEMA_POSTFIX . "Message_Tbl Msg on Txn.id = Msg.txnid
-                WHERE Txn.clientid = $this->_iClientId 
-                      AND txn.pspid = $this->_iPspId 
-                      AND Txn.cardid NOTNULL 
-                      AND Txn.enabled = true
-                GROUP BY Txn.id
-                HAVING MAX(Msg.stateid) IN ($stateIds);";
+        $sql = " SELECT txnid as id
+                  FROM (
+                         SELECT DISTINCT ON (txnid)
+                           txnid,
+                           stateid
+                         FROM log" . sSCHEMA_POSTFIX . ".message_tbl msg
+                         INNER JOIN log" . sSCHEMA_POSTFIX . ".transaction_tbl txn
+                           ON txn.id = msg.txnid
+                           where clientid = $this->_iClientId
+                              AND pspid = $this->_iPspId
+                              AND Txn.cardid NOTNULL
+                              AND stateid NOT IN (". Constants::iCB_ACCEPTED_STATE .", ". Constants::iCB_CONSTRUCTED_STATE .", ". Constants::iCB_CONNECTED_STATE .", ". Constants::iCB_CONN_FAILED_STATE .", ". Constants::iCB_REJECTED_STATE .",". Constants::iSESSION_COMPLETED .",". Constants::iSESSION_CREATED .", ". Constants::iSESSION_EXPIRED .", ". Constants::iSESSION_FAILED ." )
+                         ORDER BY txnid, msg.created DESC
+                       ) sub
+                  WHERE stateid IN ($stateIds);";
 
         $aRS = $_OBJ_DB->getAllNames($sql);
         if (is_array($aRS) === true && count($aRS) > 0)
@@ -126,6 +132,7 @@ abstract class mPointSettlement
                 FROM log." . sSCHEMA_POSTFIX . "settlement_record_tbl settlent_record
                   INNER JOIN log." . sSCHEMA_POSTFIX . "settlement_tbl settlement
                     ON settlement.status NOT IN ('reject', 'fail') AND settlement.id = settlent_record.settlementid
+                WHERE settlement.record_type = '$this->_sRecordType'    
                 GROUP BY transactionid";
 
         $aRS = $_OBJ_DB->getAllNames($sql);
@@ -137,7 +144,7 @@ abstract class mPointSettlement
             }
         }
 
-        $this->_arrayTransactionIds = array_diff($this->_arrayTransactionIds, $arrayTempTransactionIds);
+        $this->_arrayTransactionIds = array_values(array_diff($this->_arrayTransactionIds, $arrayTempTransactionIds));
         $this->_sTransactionXML = "<transactions>";
 
         foreach ($this->_arrayTransactionIds as $transactionId)
