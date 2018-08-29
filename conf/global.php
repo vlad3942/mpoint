@@ -384,6 +384,7 @@ $aHTTP_CONN_INFO["wire-card"]["paths"]["callback"] = "/mpoint/wire-card/callback
 $aHTTP_CONN_INFO["wire-card"]["paths"]["cancel"] = "/mpoint/wire-card/cancel";
 $aHTTP_CONN_INFO["wire-card"]["paths"]["post-status"] = "/mpoint/wire-card/post-status";
 
+
 /**
  * Connection info for connecting to Android Pay
  */
@@ -691,6 +692,7 @@ $aHTTP_CONN_INFO["paytabs"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["paytabs"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["paytabs"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["paytabs"]["paths"]["initialize"] = "/mpoint/paytabs/initialize";
+$aHTTP_CONN_INFO["paytabs"]["paths"]["refund"] = "/mpoint/paytabs/refund";
 
 /**
  * Connection info for connecting to 2C2P ALC

@@ -402,9 +402,9 @@ class CountryConfig extends BasicConfig
 	{
 		$obj_CountryConfig = self::produceConfig($oDB, $countryid);
 		
-		if($obj_CountryConfig->getAlpha2code() > 0)
+		if(empty( $obj_CountryConfig->getAlpha2code()) === false)
 		$obj_XMLDOM->addAttribute("alpha2code", $obj_CountryConfig->getAlpha2code());
-		if($obj_CountryConfig->getAlpha3code() > 0)
+		if(empty($obj_CountryConfig->getAlpha3code()) === false)
 		$obj_XMLDOM->addAttribute("alpha3code", $obj_CountryConfig->getAlpha3code());
 		if($obj_CountryConfig->getNumericCode() > 0)
 		$obj_XMLDOM->addAttribute("code", $obj_CountryConfig->getNumericCode());
