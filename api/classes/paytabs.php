@@ -25,7 +25,6 @@ class PayTabsException extends CallbackException { }
 class PayTabs extends CPMPSP
 {
 	public function capture($iAmount=-1) { throw new PayTabsException("Method: capture is not supported by PayTabs"); }
-	public function refund($iAmount=-1) { throw new PayTabsException("Method: refund is not supported by PayTabs"); }
 	public function void($iAmount=-1) { throw new PayTabsException("Method: void is not supported by PayTabs"); }
 	public function cancel() { throw new PayTabsException("Method: cancel is not supported by PayTabs"); }
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new PayTabsException("Method: getPaymentData is not supported by PayTabs"); }
