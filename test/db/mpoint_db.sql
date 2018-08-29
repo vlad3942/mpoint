@@ -4718,7 +4718,6 @@ INSERT INTO pspcurrency_tbl VALUES (418, 648, 9, 'UZS', '2013-11-04 13:27:37.015
 INSERT INTO pspcurrency_tbl VALUES (419, 649, 9, 'VND', '2013-11-04 13:27:37.01545', '2013-11-04 13:27:37.01545', true);
 INSERT INTO pspcurrency_tbl VALUES (420, 650, 9, 'YER', '2013-11-04 13:27:37.01545', '2013-11-04 13:27:37.01545', true);
 
-
 --
 -- TOC entry 3195 (class 0 OID 0)
 -- Dependencies: 240

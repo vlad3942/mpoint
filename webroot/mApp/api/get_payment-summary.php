@@ -54,6 +54,8 @@ require_once(sCLASS_PATH ."/amexexpresscheckout.php");
 // Require specific Business logic for the Google Pay component
 require_once(sCLASS_PATH ."/googlepay.php");
 
+require_once(sCLASS_PATH ."/wallet_processor.php");
+
 ignore_user_abort(true);
 set_time_limit(120);
 
@@ -108,37 +110,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					{
 						if(count($obj_DOM->{'get-payment-summary'}[$i]->transaction->card[$j]->token) == 1  || count($obj_DOM->{'get-payment-summary'}[$i]->transaction->card[$j]->cryptogram) == 1 )		
 						{
-							switch (intval($obj_DOM->{'get-payment-summary'}[$i]->transaction->card[$j]["type-id"]) )
-							{
-							case (Constants::iAPPLE_PAY):
-								$obj_Wallet = new ApplePay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["apple-pay"]);
-								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAPPLE_PAY_PSP);
-								break;
-							case (Constants::iVISA_CHECKOUT_WALLET):
-								$obj_Wallet = new VisaCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["visa-checkout"]);
-								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iVISA_CHECKOUT_PSP);
-								break;
-							case (Constants::iMASTER_PASS_WALLET):
-								$obj_Wallet = new MasterPass($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["masterpass"]);
-								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iMASTER_PASS_PSP);
-								break;
-							case (Constants::iAMEX_EXPRESS_CHECKOUT_WALLET):
-								$obj_Wallet = new AMEXExpressCheckout($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["amex-express-checkout"]);
-								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iAMEX_EXPRESS_CHECKOUT_PSP);
-								break;
-							case (Constants::iANDROID_PAY_WALLET):
-								$obj_Wallet = new AndroidPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["android-pay"]);
-								$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iANDROID_PAY_PSP);
-								break;
-							case (Constants::iGOOGLE_PAY_WALLET):
-                                $obj_Wallet = new GooglePay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["google-pay"]);
-                                $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_ClientConfig->getID(), $obj_ClientConfig->getAccountConfig()->getID(), Constants::iGOOGLE_PAY_PSP);
-                                break;
-							default:
-								break;
+                            if (intval($obj_DOM->{'get-payment-summary'}[$i]->transaction->card[$j]["type-id"]) ) {
+                                $wallet_Processor = WalletProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_DOM->{'get-payment-summary'}[$i]->transaction->card[$j]["type-id"]), $aHTTP_CONN_INFO);
 							}
-							$obj_XML = simpledom_load_string($obj_Wallet->getPaymentData($obj_PSPConfig, $obj_DOM->{'get-payment-summary'}[$i]->transaction->card[$j], Constants::sPAYMENT_DATA_SUMMARY) );
-							
+                            if (empty($wallet_Processor) === false) {
+                                $obj_XML = simpledom_load_string($wallet_Processor->getPaymentData($obj_DOM->{'get-payment-summary'}[$i]->transaction->card[$j], Constants::sPAYMENT_DATA_SUMMARY));
+                            }
 							if (count($obj_XML->{'payment-data'}) == 1)
 							{
 								$sXML = str_replace('<?xml version="1.0"?>', '', $obj_XML->{'payment-data'}->card->asXML() );								
