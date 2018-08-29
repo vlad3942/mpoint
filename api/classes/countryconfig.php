@@ -401,11 +401,13 @@ class CountryConfig extends BasicConfig
 	public static function setISO3166Attributes(SimpleDOMElement &$obj_XMLDOM, RDB &$oDB, $countryid)
 	{
 		$obj_CountryConfig = self::produceConfig($oDB, $countryid);
-		
-		if(empty( $obj_CountryConfig->getAlpha2code()) === false)
-		$obj_XMLDOM->addAttribute("alpha2code", $obj_CountryConfig->getAlpha2code());
-		if(empty($obj_CountryConfig->getAlpha3code()) === false)
-		$obj_XMLDOM->addAttribute("alpha3code", $obj_CountryConfig->getAlpha3code());
+
+		$alpha2code = $obj_CountryConfig->getAlpha2code();
+		$alpha3code = $obj_CountryConfig->getAlpha3code();
+		if(empty($alpha2code) === false)
+		$obj_XMLDOM->addAttribute("alpha2code", $alpha2code);
+		if(empty($alpha3code) === false)
+		$obj_XMLDOM->addAttribute("alpha3code", $alpha3code);
 		if($obj_CountryConfig->getNumericCode() > 0)
 		$obj_XMLDOM->addAttribute("code", $obj_CountryConfig->getNumericCode());
 	}
