@@ -4718,7 +4718,6 @@ INSERT INTO pspcurrency_tbl VALUES (418, 648, 9, 'UZS', '2013-11-04 13:27:37.015
 INSERT INTO pspcurrency_tbl VALUES (419, 649, 9, 'VND', '2013-11-04 13:27:37.01545', '2013-11-04 13:27:37.01545', true);
 INSERT INTO pspcurrency_tbl VALUES (420, 650, 9, 'YER', '2013-11-04 13:27:37.01545', '2013-11-04 13:27:37.01545', true);
 
-
 --
 -- TOC entry 3195 (class 0 OID 0)
 -- Dependencies: 240
@@ -6936,7 +6935,8 @@ CREATE INDEX order_transaction_idx
 
 CREATE TYPE log.additional_data_ref AS ENUM
    ('Flight',
-    'Passenger');
+    'Passenger',
+    'Transaction');
     
 -- Table: log.additional_data_tbl
 
@@ -6950,6 +6950,7 @@ CREATE TABLE log.additional_data_tbl
   type log.additional_data_ref,
   created timestamp without time zone DEFAULT now(),
   modified timestamp without time zone DEFAULT now(),
+  externalid integer,
   CONSTRAINT additional_data_pk PRIMARY KEY (id)
 )
 WITHOUT OIDS;
@@ -7679,3 +7680,7 @@ INSERT INTO system.processortype_tbl (id, name) VALUES (8, 'Tokenize');
 INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2020 , 'Tokenization Complete - Virtual Card Created', 'Payment', true);
 INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2021 , 'Tokenization Failed', 'Payment', true);
 /*=================== Adding new states for tokenization used for UATP SUVTP generation : END =======================*/
+
+DROP INDEX client.cardaccess_card_country_uq RESTRICT;
+
+CREATE UNIQUE INDEX cardaccess_card_country_uq ON client.cardaccess_tbl (clientid, cardid, countryid, psp_type) WHERE enabled='true';

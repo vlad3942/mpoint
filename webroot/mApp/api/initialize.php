@@ -261,6 +261,30 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             }
                             $sOrderXML = '';
 
+                            $additionalTxnData = [];
+                            $additionalTxnDataIndex = -1;
+                            if(isset($obj_DOM->{'initialize-payment'}[$i]->transaction['booking-ref']))
+                            {
+                                $additionalTxnDataIndex++;
+                                $additionalTxnData[$additionalTxnDataIndex]['name'] = "booking-ref";
+                                $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction['booking-ref'];
+                                $additionalTxnData[$additionalTxnDataIndex]['type'] = (string) 'Transaction';
+                            }
+                            if(isset($obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}))
+                            {
+                                for ($index = 0; $index < count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->children()); $index++)
+                                {
+                                    $additionalTxnDataIndex++;
+                                    $additionalTxnData[$additionalTxnDataIndex]['name'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$additionalTxnDataIndex - 1]['name'];
+                                    $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$additionalTxnDataIndex - 1];
+                                    $additionalTxnData[$additionalTxnDataIndex]['type'] = (string)'Transaction';
+                                }
+                            }
+                            if($additionalTxnDataIndex > -1)
+                            {
+                                $obj_TxnInfo->setAdditionalDetails($_OBJ_DB,$additionalTxnData,$obj_TxnInfo->getID());
+                            }
+
 							//Test if the order/cart details are passed as part of the input XML request. 
 							if(count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders) == 1 && count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->children()) > 0 )
 							{

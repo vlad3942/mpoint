@@ -59,10 +59,17 @@ abstract class Callback extends EndUserAccount
 		parent::__construct($oDB, $oTxt, $oTI->getClientConfig() );
 
 		$this->_obj_TxnInfo = $oTI;
-		$this->aCONN_INFO = $aConnInfo;
+		$pspID = (integer)$this->getPSPID() > 0 ? $this->getPSPID() : $oTI->getPSPID();
+        if(empty($aConnInfo) === false )
+        {
+            $this->aCONN_INFO = $aConnInfo;
+        }
+        else
+        {
+            throw new CallbackException("Connection Configuration not found for the given PSP ID ". $pspID);
+        }
 
-		$pspID = (integer)$oTI->getPSPID() > 0 ? $oTI->getPSPID() : $this->getPSPID();
-		if ($oPSPConfig == null) { $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID); }
+        if ($oPSPConfig == null) { $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID); }
 		$this->_obj_PSPConfig = $oPSPConfig;
 	}
 

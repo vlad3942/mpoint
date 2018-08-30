@@ -342,6 +342,13 @@ class TxnInfo
     private $_createdTimestamp;
 
     /**
+     * Transaction's Additional Data
+     *
+     * @var array
+     */
+    private $_aAdditionalData;
+
+    /**
 	 * Default Constructor
 	 *
 	 * @param 	integer $id 		Unique ID for the Transaction
@@ -381,7 +388,7 @@ class TxnInfo
 	 * @param	long $cptamt		The Full amount that has been captured for the Transaction
 	 *
 	 */
-	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt, $paymentSession = 1, $productType = 100, $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "")
+	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt, $paymentSession = 1, $productType = 100, $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[])
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -446,6 +453,7 @@ class TxnInfo
 
         $this->_iProductType = (integer) $productType;
         $this->_createdTimestamp =$createdTimestamp;
+        $this->_aAdditionalData = $additionalData;
 	}
 
 	/**
@@ -733,6 +741,39 @@ class TxnInfo
     public function getVirtualToken() {  return $this->_sVirtualPaymentToken;  }
 
 	public function getPaymentSession() { return $this->_obj_PaymentSession;}
+
+
+	/*
+     * Returns the Transactions's Additional data
+	 * if param is sent returns value of property
+     *
+	 * @param string    key
+     * @return 	string
+     * */
+	public function getAdditionalData($key = "")
+    {
+        try
+        {
+            if (empty($key) === true)
+            {
+                if (count($this->_aAdditionalData) > 0)
+                {
+                    return $this->_aAdditionalData;
+                }
+                return null;
+            }
+            if ($this->_aAdditionalData != null && array_key_exists($key, $this->_aAdditionalData) === true)
+            {
+                return $this->_aAdditionalData[$key];
+            }
+        }
+        catch (Exception $e)
+        {
+
+        }
+        return null;
+    }
+
 	/**
 	 * Converts the data object into XML.
 	 * If a User Agent Profile is provided, the method will automatically calculate the width and height of the client logo
@@ -820,6 +861,11 @@ class TxnInfo
         $xml .= '<created-date>'. htmlspecialchars(date("Ymd", strtotime($this->getCreatedTimestamp())), ENT_NOQUOTES) .'</created-date>'; //CCYYMMDD
         $xml .= '<created-time>'. htmlspecialchars(date("His", strtotime($this->getCreatedTimestamp())), ENT_NOQUOTES) .'</created-time>'; //hhmmss
 
+        if($this->getAdditionalData("booking-ref") != null)
+        {
+            $xml .= '<booking-ref>'. htmlspecialchars($this->getAdditionalData("booking-ref"), ENT_NOQUOTES) .'</booking-ref>';
+        }
+
 		if(!empty($this->_token))
             $xml .= '<token>'.htmlspecialchars($this->_token, ENT_NOQUOTES).'</token>';
 
@@ -843,6 +889,16 @@ class TxnInfo
 			
 			$xml .= $this->getOrdersXML();
 		}
+		if($this->getAdditionalData() != null)
+        {
+            $xml .= "<additional-data>";
+            foreach ($this->getAdditionalData() as $key=>$value)
+            {
+                $xml .= "<param name='".$key."'>".$value."</param>";
+            }
+            $xml .="</additional-data>";
+        }
+
 		$xml .= '</transaction>';
 
 		return $xml;
@@ -888,7 +944,7 @@ class TxnInfo
 			$obj_ClientConfig = ClientConfig::produceConfig($obj, $RS["CLIENTID"], $RS["ACCOUNTID"], $RS["KEYWORDID"]);
 			$obj_CountryConfig = CountryConfig::produceConfig($obj, $RS["COUNTRYID"]);
 			$obj_CurrencyConfig = CurrencyConfig::produceConfig($obj, $RS["CURRENCYID"]);
-
+            $obj_AdditionaData = self::_produceAdditionalData($obj, $RS["ID"]);
             $paymentSession = null;
             if($RS["SESSIONID"] == -1){
                 $paymentSession = PaymentSession::Get($obj, $obj_ClientConfig,$obj_CountryConfig,$obj_CurrencyConfig,$RS["AMOUNT"], $RS["ORDERID"],"",$RS["MOBILE"], $RS["EMAIL"], $RS["EXTID"],$RS["DEVICEID"], $RS["IP"]);
@@ -897,7 +953,7 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj,$RS["SESSIONID"]);
             }
 
-			$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig,$obj_CurrencyConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["ATTEMPT"], $paymentSession, $RS["PRODUCTTYPE"],$RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["MASK"],$RS["EXPIRY"],$RS["TOKEN"],$RS["AUTHORIGINALDATA"],$RS["APPROVAL_ACTION_CODE"],$RS['CREATED'],$RS["VIRTUALTOKEN"]);
+			$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig,$obj_CurrencyConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["ATTEMPT"], $paymentSession, $RS["PRODUCTTYPE"],$RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["MASK"],$RS["EXPIRY"],$RS["TOKEN"],$RS["AUTHORIGINALDATA"],$RS["APPROVAL_ACTION_CODE"],$RS['CREATED'],$RS["VIRTUALTOKEN"], $obj_AdditionaData);
 		}
 		return $obj_TxnInfo;
 	}
@@ -972,6 +1028,7 @@ class TxnInfo
             if (array_key_exists("authoriginaldata", $misc) === false) { $misc["authoriginaldata"] = $obj->getAuthoriginalData(); }
             if (array_key_exists("approval_action_code", $misc) === false) { $misc["approval_action_code"] = $obj->getApprovalActionCode(); }
             if (array_key_exists("created", $misc) === false) { $misc["created"] = $obj->getCreatedTimestamp(); }
+            if (array_key_exists("additionaldata", $misc) === false) { $misc["additionaldata"] = $obj->getAdditionalData(); }
             $paymentSession = null;
             if( $misc["sessionid"] == -1){
                 $paymentSession = PaymentSession::Get($obj_db, $misc["client-config"],$misc["country-config"],$misc["currency-config"],$misc["amount"], $misc["orderid"],$misc["sessiontype"],$misc["mobile"], $misc["email"], $misc["extid"],$misc["device-id"], $misc["ip"]);
@@ -980,7 +1037,7 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj_db,$misc["sessionid"]);
             }
 
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["country-config"], $misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"],  $misc["device-id"],$misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"], $misc["psp-id"],  $misc["fee"], $misc["captured-amount"], $misc["card-id"],$misc["card-id"],$misc["mask"],$misc["expiry"],$misc["token"],$misc["authoriginaldata"],$misc["approval_action_code"],$misc["created"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["country-config"], $misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"],  $misc["device-id"],$misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"], $misc["psp-id"],  $misc["fee"], $misc["captured-amount"], $misc["card-id"],$misc["mask"],$misc["expiry"],$misc["token"],$misc["authoriginaldata"],$misc["approval_action_code"],$misc["created"],"",$misc["additionaldata"]);
 			break;
 		case ($obj instanceof ClientConfig):	// Instantiate from array of Client Input
 			if (array_key_exists("country-config", $misc) === false) { $misc["country-config"] = $obj->getCountryConfig(); }
@@ -1036,6 +1093,7 @@ class TxnInfo
 			$RS = $obj->getName($sql);
 			$obj_TxnInfo = self::_produceFromResultSet($obj, $RS);
 
+
 			// Transaction found
 			if ( ($obj_TxnInfo instanceof TxnInfo) === false) { throw new TxnInfoException("Transaction with ID: ". $id ." not found". $sDebug, 1001); }
 			break;
@@ -1047,6 +1105,21 @@ class TxnInfo
 
 		return $obj_TxnInfo;
 	}
+
+	function  _produceAdditionalData($_OBJ_DB, $txnId)
+    {
+        $additionalData = [];
+        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Transaction' and externalid=" . $txnId;
+        $rsa = $_OBJ_DB->getAllNames ( $sqlA );
+        if (empty($rsa) === false )
+        {
+            foreach ($rsa as $rs)
+            {
+                $additionalData[$rs["NAME"] ] = $rs ["VALUE"];
+            }
+        }
+        return $additionalData;
+    }
 
 	public function getMessageHistory(RDB $obj_DB,$testingRequset = false)
 	{

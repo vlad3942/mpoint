@@ -458,3 +458,26 @@ ALTER TABLE log.settlement_record_tbl
 -------- CMP-2426: PCI Password expose --------
 DROP TABLE admin.user_tbl CASCADE;
 -------- CMP-2426: PCI Password expose --------
+INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 840, 'USD', true);
+INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 458, 'MYR', true);
+INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 978, 'EUR', true);
+INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 608, 'PHP', true);
+INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 702, 'SGD', true);
+INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 752, 'SEK', true);
+INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 764, 'THB', true);
+INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 985, 'PLN', true);
+INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 203, 'CZK', true);
+INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 36, 'AUD', true);
+
+-- PPro SR
+
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, psp_type, stateid) VALUES (10047, 39, true, 46, 609, 7, 4);
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, psp_type, stateid) VALUES (10047, 34, true, 46, 500, 7, 4);
+
+UPDATE system.psp_tbl SET name = 'ApplePay' WHERE name = 'Apple Pay';
+UPDATE system.psp_tbl SET name = 'VisaCheckout' WHERE name = 'VISA Checkout';
+UPDATE system.psp_tbl SET name = 'MasterPass' WHERE name = 'Master Pass';
+UPDATE system.psp_tbl SET name = 'AMEXExpressCheckout' WHERE name = 'AMEX Express Checkout';
+UPDATE system.psp_tbl SET name = 'AndroidPay' WHERE name = 'Android Pay';
+UPDATE system.psp_tbl SET name = 'GooglePay' WHERE name = 'Google Pay';
+UPDATE system.psp_tbl SET name = 'MVault' WHERE name = 'mVault';
