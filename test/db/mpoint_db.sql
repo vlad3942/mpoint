@@ -4727,9 +4727,12 @@ INSERT INTO pspcurrency_tbl VALUES (417, 647, 9, 'AED', '2013-11-04 13:27:37.015
 INSERT INTO pspcurrency_tbl VALUES (418, 648, 9, 'UZS', '2013-11-04 13:27:37.01545', '2013-11-04 13:27:37.01545', true);
 INSERT INTO pspcurrency_tbl VALUES (419, 649, 9, 'VND', '2013-11-04 13:27:37.01545', '2013-11-04 13:27:37.01545', true);
 INSERT INTO pspcurrency_tbl VALUES (420, 650, 9, 'YER', '2013-11-04 13:27:37.01545', '2013-11-04 13:27:37.01545', true);
+<<<<<<< HEAD
 INSERT INTO pspcurrency_tbl VALUES (432, 100, 18, 'DKK', '2010-10-14 16:59:50.034982', '2010-10-14 16:59:50.034982', true);
 INSERT INTO pspcurrency_tbl VALUES (433, 101, 18, 'SEK', '2010-10-14 16:59:50.034982', '2010-10-14 16:59:50.034982', true);
 INSERT INTO pspcurrency_tbl VALUES (434, 200, 18, 'USD', '2010-10-14 16:59:50.034982', '2010-10-14 16:59:50.034982', true);
+=======
+>>>>>>> 8f4e39fab5abac713254e576d4798dd37420324d
 
 --
 -- TOC entry 3195 (class 0 OID 0)
@@ -6948,7 +6951,8 @@ CREATE INDEX order_transaction_idx
 
 CREATE TYPE log.additional_data_ref AS ENUM
    ('Flight',
-    'Passenger');
+    'Passenger',
+    'Transaction');
     
 -- Table: log.additional_data_tbl
 
@@ -6962,6 +6966,7 @@ CREATE TABLE log.additional_data_tbl
   type log.additional_data_ref,
   created timestamp without time zone DEFAULT now(),
   modified timestamp without time zone DEFAULT now(),
+  externalid integer,
   CONSTRAINT additional_data_pk PRIMARY KEY (id)
 )
 WITHOUT OIDS;
@@ -7706,3 +7711,7 @@ INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 2, 13;
 INSERT INTO System.card_Tbl (id, name, position, paymenttype) VALUES (16, 'VISA Checkout', 16, 3);
 INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) SELECT 208, 18, 'DKK';
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 16, 18;
+
+DROP INDEX client.cardaccess_card_country_uq RESTRICT;
+
+CREATE UNIQUE INDEX cardaccess_card_country_uq ON client.cardaccess_tbl (clientid, cardid, countryid, psp_type) WHERE enabled='true';

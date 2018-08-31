@@ -270,13 +270,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction['booking-ref'];
                                 $additionalTxnData[$additionalTxnDataIndex]['type'] = (string) 'Transaction';
                             }
-
-                            for ($index = 0; $index < count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->children())  ; $index++ )
+                            if(isset($obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}))
                             {
-                                $additionalTxnDataIndex++;
-                                $additionalTxnData[$additionalTxnDataIndex]['name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$additionalTxnDataIndex-1]['name'];
-                                $additionalTxnData[$additionalTxnDataIndex]['value'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$additionalTxnDataIndex-1];
-                                $additionalTxnData[$additionalTxnDataIndex]['type'] = (string) 'Transaction';
+                                for ($index = 0; $index < count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->children()); $index++)
+                                {
+                                    $additionalTxnDataIndex++;
+                                    $additionalTxnData[$additionalTxnDataIndex]['name'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$additionalTxnDataIndex - 1]['name'];
+                                    $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$additionalTxnDataIndex - 1];
+                                    $additionalTxnData[$additionalTxnDataIndex]['type'] = (string)'Transaction';
+                                }
                             }
                             if($additionalTxnDataIndex > -1)
                             {
@@ -430,7 +432,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $aFailedPMArray = array();
 							if($iAttemptNumber > 1)
                             {
-                                $aFailedPMArray = $obj_mPoint->getPreviousFailedAttempts($obj_TxnInfo->getOrderID() );
+                                $aFailedPMArray = $obj_mPoint->getPreviousFailedAttempts($obj_TxnInfo->getOrderID(), (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"]);
                             }
 							$xml = '<client-config id="'. $obj_ClientConfig->getID() .'" account="'. $obj_ClientConfig->getAccountConfig()->getID() .'" store-card="'. $obj_ClientConfig->getStoreCard() .'" auto-capture="'. General::bool2xml($obj_ClientConfig->useAutoCapture() ) .'" mode="'. $obj_ClientConfig->getMode() .'">';
 							$xml .= '<name>'. htmlspecialchars($obj_ClientConfig->getName(), ENT_NOQUOTES) .'</name>';
