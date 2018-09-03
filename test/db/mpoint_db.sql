@@ -4347,7 +4347,7 @@ INSERT INTO psp_tbl VALUES (6, 'Authorize.Net', '2011-11-28 22:45:42.587193', '2
 INSERT INTO psp_tbl VALUES (7, 'WannaFind', '2012-03-02 11:01:31.155778', '2012-03-02 11:44:10.417562', true);
 INSERT INTO psp_tbl VALUES (8, 'NetAxept', '2012-12-19 08:45:22.30609', '2012-12-19 08:46:09.28319', true);
 INSERT INTO psp_tbl VALUES (9, 'CPG', '2013-11-01 08:57:50.594616', '2013-11-01 08:57:50.594616', true);
-
+INSERT INTO psp_tbl VALUES (18, 'WireCard', '2013-11-01 08:57:50.594616', '2013-11-01 08:57:50.594616', true);
 
 --
 -- TOC entry 3193 (class 0 OID 0)
@@ -7696,5 +7696,5 @@ INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 8, 13;
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 2, 13;
 
 INSERT INTO System.card_Tbl (id, name, position, paymenttype) VALUES (16, 'VISA Checkout', 16, 3);
---INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) SELECT 208, 18, 'DKK';
---INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 16, 18;
+INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) SELECT 208, 18, 'DKK';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 16, 18;
