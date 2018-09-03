@@ -7684,3 +7684,17 @@ INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2021 , 'Tokenizati
 DROP INDEX client.cardaccess_card_country_uq RESTRICT;
 
 CREATE UNIQUE INDEX cardaccess_card_country_uq ON client.cardaccess_tbl (clientid, cardid, countryid, psp_type) WHERE enabled='true';
+
+INSERT INTO System.PSP_Tbl (id, name, system_type) VALUES (17, 'Data Cash', 1);
+INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) SELECT 208, 17, 'DKK';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 8, 17;
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 2, 17;
+
+INSERT INTO System.PSP_Tbl (id, name, system_type) VALUES (13, 'VISA Checkout', 1);
+INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) SELECT 208, 13, 'DKK';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 8, 13;
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 2, 13;
+
+INSERT INTO System.card_Tbl (id, name, position, paymenttype) VALUES (16, 'VISA Checkout', 16, 3);
+--INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) SELECT 208, 18, 'DKK';
+--INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 16, 18;
