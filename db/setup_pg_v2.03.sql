@@ -115,5 +115,9 @@ INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2020 , 'Tokenizati
 INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2021 , 'Tokenization Failed', 'Authorization', true);
 /*=================== Adding new states for tokenization used for UATP SUVTP generation : END =======================*/
 
+--CMP-2558
+DROP INDEX client.cardaccess_card_country_uq RESTRICT;
+CREATE UNIQUE INDEX cardaccess_card_country_uq ON client.cardaccess_tbl (clientid, cardid, pspid, countryid, psp_type) WHERE enabled='true';
+
 
 
