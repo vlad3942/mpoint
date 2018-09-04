@@ -164,29 +164,19 @@
 							<xs:element type="xs:byte" name="order-attempt"/>
 							<xs:element name="card">
 								<xs:complexType>
-									<xs:sequence>
-										<xs:element type="xs:string" name="card-holder-name"/>
-										<xs:element type="xs:long" name="card-number"/>
-										<xs:element type="xs:byte" name="expiry-month"/>
-										<xs:element type="xs:short" name="expiry-year"/>
-										<xs:element type="xs:string" name="info-3d-secure"/>
-									</xs:sequence>
+									<xs:all>
+										<xs:element type="xs:string" name="card-holder-name" minOccurs="0" maxOccurs="1" />
+										<xs:element type="xs:string" name="masked_account_number" minOccurs="0" maxOccurs="1" />
+										<xs:element type="xs:long" name="card-number" minOccurs="0" maxOccurs="1" />
+										<xs:element type="xs:byte" name="expiry-month" minOccurs="0" maxOccurs="1" />
+										<xs:element type="xs:short" name="expiry-year" minOccurs="0" maxOccurs="1" />
+										<xs:element type="xs:string" name="info-3d-secure" minOccurs="0" maxOccurs="1" />
+										<xs:element type="xs:string" name="token" minOccurs="0" maxOccurs="1" />
+									</xs:all>
 									<xs:attribute type="xs:byte" name="type-id"/>
 								</xs:complexType>
 							</xs:element>
-							<xs:element name="address">
-								<xs:complexType>
-									<xs:sequence>
-										<xs:element type="xs:string" name="first-name"/>
-										<xs:element type="xs:string" name="last-name"/>
-										<xs:element type="xs:string" name="street"/>
-										<xs:element type="xs:int" name="postal-code"/>
-										<xs:element type="xs:string" name="city"/>
-										<xs:element type="xs:string" name="state"/>
-									</xs:sequence>
-									<xs:attribute type="xs:short" name="country-id"/>
-								</xs:complexType>
-							</xs:element>
+							<xs:any maxOccurs="1" processContents="skip"/>
 						</xs:sequence>
 						<xs:attribute type="xs:byte" name="client-id"/>
 						<xs:attribute type="xs:short" name="account"/>
