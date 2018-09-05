@@ -432,7 +432,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         }
         catch (Exception $e)
         {
-            trigger_error("Fail to update card details", E_USER_ERROR);
+            trigger_error("Failed to update card details", E_USER_ERROR);
         }
 
 		$code = 0;

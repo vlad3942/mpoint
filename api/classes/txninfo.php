@@ -1416,7 +1416,7 @@ class TxnInfo
        }
        catch (mPointException $e)
        {
-            trigger_error("Fail to update card details (log.transaction_tbl)", E_USER_ERROR);
+            trigger_error("Failed to update card details (log.transaction_tbl)", E_USER_ERROR);
        }
     }
 }
