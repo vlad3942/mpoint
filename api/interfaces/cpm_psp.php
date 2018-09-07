@@ -434,7 +434,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             {
                 $mask = self::getMaskCardNumber($obj_Card->{'card-number'});
             }
-            else if(isset($obj_Card->mask))
+            else if(isset($obj_Card->mask) && empty($obj_Card->mask) === false)
             {
                 $mask=str_replace(" ", "", $obj_Card->mask);
             }
