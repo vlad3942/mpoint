@@ -27,6 +27,13 @@ INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (72, 0, 0);
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 72, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 682;
 INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (72, 38, true);
 
+-- For new merchant config
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10007, 38, 'Paytabs', '10028311', 'wTMJj6gbalSZdnSWzdMF6m0Q1dkkFzlct7WMecXoyQoLegIOuutBRurTHMemlzyPHuCVHAkfqI1EZJtteX45rwZ8iduEM3tuy5qf');
+INSERT INTO client.merchantsubaccount_tbl (accountid, pspid, name, enabled) VALUES (100007, 38, '-1', true);
+
+-- Update if merchant account is exists
+UPDATE client.merchantaccount_tbl SET username = '10028311', passwd = 'wTMJj6gbalSZdnSWzdMF6m0Q1dkkFzlct7WMecXoyQoLegIOuutBRurTHMemlzyPHuCVHAkfqI1EZJtteX45rwZ8iduEM3tuy5qf' WHERE clientid = 10007  AND pspid = 38;
+
 -- End --
 
 --Additional Properties for Paytabs Integration --
