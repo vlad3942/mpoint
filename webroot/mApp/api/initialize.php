@@ -528,6 +528,22 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								}
 								$xml .= '</stored-cards>';
 							}
+
+							$walletsXML = '<wallets>';
+							for ($j=0; $j<count($obj_XML->item); $j++)
+							{
+                                if ($obj_XML->item[$j]["processor-type"] == Constants::iPROCESSOR_TYPE_WALLET)
+								{
+									if (in_array((integer) $obj_XML->item[$j]["pspid"], $aPSPs) === false) { $aPSPs[] = intval($obj_XML->item[$j]["pspid"] ); }
+									$walletsXML .= '<card id="'. $obj_XML->item[$j]["id"] .'" type-id="'. $obj_XML->item[$j]["type-id"] .'" psp-id="'. $obj_XML->item[$j]["pspid"] .'" min-length="'. $obj_XML->item[$j]["min-length"] .'" max-length="'. $obj_XML->item[$j]["max-length"] .'" cvc-length="'. $obj_XML->item[$j]["cvc-length"] .'" state-id="'. $obj_XML->item[$j]["state-id"] .'" payment-type="'. $obj_XML->item[$j]["payment-type"].'" preferred="'. $obj_XML->item[$j]["preferred"].'" enabled="'. $obj_XML->item[$j]["enabled"].'" processor-type="'. $obj_XML->item[$j]["processor-type"].'">';
+									$walletsXML .= '<name>'. htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) .'</name>';
+									$walletsXML .= $obj_XML->item[$j]->prefixes->asXML();
+                                    $walletsXML .= '</card>';
+								}
+							}
+							$walletsXML .= '</wallets>';
+                            $xml .=$walletsXML;
+
 							if ($obj_TxnInfo->getAccountID() > 0 && $obj_ClientConfig->getStoreCard() == 2)
 							{
 								$obj_XML = simplexml_load_string($obj_mPoint->getAccountInfo($obj_TxnInfo->getAccountID() ) );
