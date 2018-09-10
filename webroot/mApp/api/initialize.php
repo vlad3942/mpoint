@@ -45,6 +45,20 @@ require_once(sCLASS_PATH ."/validate.php");
 require_once(sCLASS_PATH ."/clientinfo.php");
 // Require Data Class for Client Account Information
 require_once(sCLASS_PATH ."/account_config.php");
+// Require Data class for Payment processor
+require_once(sCLASS_PATH ."/payment_processor.php");
+// Require Data class for Wallet processor
+require_once(sCLASS_PATH ."/wallet_processor.php");
+// Require specific Business logic for the VISA checkout component
+require_once(sCLASS_PATH ."/visacheckout.php");
+// Require specific Business logic for the Apple Pay component
+require_once(sCLASS_PATH ."/applepay.php");
+// Require specific Business logic for the Google Pay component
+require_once(sCLASS_PATH ."/googlepay.php");
+// Require specific Business logic for the Master Pass component
+require_once(sCLASS_PATH ."/masterpass.php");
+// Require specific Business logic for the mVault component
+require_once(sCLASS_PATH ."/mvault.php");
 
 $aMsgCds = array();
 
@@ -538,6 +552,22 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$walletsXML .= '<card id="'. $obj_XML->item[$j]["id"] .'" type-id="'. $obj_XML->item[$j]["type-id"] .'" psp-id="'. $obj_XML->item[$j]["pspid"] .'" min-length="'. $obj_XML->item[$j]["min-length"] .'" max-length="'. $obj_XML->item[$j]["max-length"] .'" cvc-length="'. $obj_XML->item[$j]["cvc-length"] .'" state-id="'. $obj_XML->item[$j]["state-id"] .'" payment-type="'. $obj_XML->item[$j]["payment-type"].'" preferred="'. $obj_XML->item[$j]["preferred"].'" enabled="'. $obj_XML->item[$j]["enabled"].'" processor-type="'. $obj_XML->item[$j]["processor-type"].'">';
 									$walletsXML .= '<name>'. htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) .'</name>';
 									$walletsXML .= $obj_XML->item[$j]->prefixes->asXML();
+									try
+                                    {
+                                        $obj_Processor = WalletProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_XML->item[$j]["id"]), $aHTTP_CONN_INFO);
+                                        if($obj_Processor !== false)
+                                        {
+                                            $initResponseXML = $obj_Processor->initialize();
+                                            foreach ($initResponseXML->children() as $obj_Elem)
+                                            {
+                                                if($obj_Elem->getName() !== "name")
+                                                {
+                                                    $walletsXML .= trim($obj_Elem->asXML());
+                                                }
+                                            }
+                                        }
+                                    }
+                                    catch (Exception $e){}
                                     $walletsXML .= '</card>';
 								}
 							}
