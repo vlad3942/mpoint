@@ -4952,7 +4952,7 @@ CREATE TABLE address_tbl (
     accountid integer,
     cardid integer,
     countryid integer NOT NULL,
-    stateid integer NOT NULL,
+    state integer NOT NULL,
     firstname character varying(50),
     lastname character varying(50),
     company character varying(50),
@@ -5909,7 +5909,7 @@ ALTER TABLE ONLY address_tbl
 --
 
 ALTER TABLE ONLY address_tbl
-    ADD CONSTRAINT address2state_fk FOREIGN KEY (stateid) REFERENCES system.state_tbl(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT address2state_fk FOREIGN KEY (state) REFERENCES system.state_tbl(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

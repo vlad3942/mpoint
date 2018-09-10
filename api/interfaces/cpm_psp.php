@@ -844,7 +844,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 */
 	public function getPSPConfigForRoute($cardid, $countryid)
 	{
-		$sql = "SELECT DISTINCT PSP.id, PSP.name,
+		$sql = "SELECT DISTINCT PSP.id, PSP.name, PSP.system_type,
 					MA.name AS ma, MA.username, MA.passwd AS password, MSA.name AS msa, CA.countryid
 				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl PSP
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl MA ON PSP.id = MA.pspid AND MA.enabled = '1'
@@ -855,10 +855,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				WHERE CL.id = ". intval($this->getClientConfig()->getID() ) ." AND CA.cardid = ". intval($cardid) ."
 					AND (CA.countryid = ". intval($countryid) ." OR CA.countryid IS NULL)
 				ORDER BY CA.countryid ASC";
-//		echo $sql ."\n";
-		$RS = $this->getDBConn()->getName($sql);	
 
-		if (is_array($RS) === true && count($RS) > 1) {	return new PSPConfig($RS["ID"], $RS["NAME"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], array()); }
+		$RS = $this->getDBConn()->getName($sql);
+		if (is_array($RS) === true && count($RS) > 1) {	return new PSPConfig($RS["ID"], $RS["NAME"], $RS["SYSTEM_TYPE"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], array()); }
 		else { return null; }
 	}	
 	
