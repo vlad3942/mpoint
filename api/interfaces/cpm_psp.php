@@ -429,8 +429,19 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	{
 	    try
         {
-            $mask = self::getMaskCardNumber($obj_Card->{'card-number'});
-	        $this->getTxnInfo()->updateCardDetails($this->getDBConn(), $mask, $obj_Card->expiry );
+            $mask =NULL;
+            if(isset($obj_Card->{'card-number'}))
+            {
+                $mask = self::getMaskCardNumber($obj_Card->{'card-number'});
+            }
+            else if(isset($obj_Card->mask) && empty($obj_Card->mask) === false)
+            {
+                $mask=str_replace(" ", "", $obj_Card->mask);
+            }
+            if($mask != NULL)
+            {
+                $this->getTxnInfo()->updateCardDetails($this->getDBConn(), $mask, $obj_Card->expiry);
+            }
         }
         catch (Exception $e)
         {
