@@ -140,3 +140,20 @@ INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 72, id FROM Sys
 INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (72, 38, true);
 
 -- End --
+
+--Additional Properties for Paytabs Integration --
+--To be configured based on Sandbox or PROD account configured for each of the APMs.
+--SADAD v2 and MADA may have same account while KNET and BENEFIT likely to have separate accounts,
+-- so expecting 3 accounts to be configured and hence the need for additional property to store merchant psp config.
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('KNET_MID', '10028311', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = 10007 and pspid = 38), 'merchant');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('KNET_Secret_Key', 'wTMJj6gbalSZdnSWzdMF6m0Q1dkkFzlct7WMecXoyQoLegIOuutBRurTHMemlzyPHuCVHAkfqI1EZJtteX45rwZ8iduEM3tuy5qf', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = 10007 and pspid = 38), 'merchant');
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('BENEFIT_MID', '10028311', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = 10007 and pspid = 38), 'merchant');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('BENEFIT_Secret_Key', 'wTMJj6gbalSZdnSWzdMF6m0Q1dkkFzlct7WMecXoyQoLegIOuutBRurTHMemlzyPHuCVHAkfqI1EZJtteX45rwZ8iduEM3tuy5qf', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = 10007 and pspid = 38), 'merchant');
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('SADAD_V2_MID', '10028311', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = 10007 and pspid = 38), 'merchant');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('SADAD_V2_Secret_Key', 'wTMJj6gbalSZdnSWzdMF6m0Q1dkkFzlct7WMecXoyQoLegIOuutBRurTHMemlzyPHuCVHAkfqI1EZJtteX45rwZ8iduEM3tuy5qf', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = 10007 and pspid = 38), 'merchant');
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('MADA_MID', 'urmila.s@cellpointmobile.com', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = 10007 and pspid = 38), 'merchant');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('MADA_Secret_Key', 'EZJZnZpSxpusvsKxtjFsTJedIyexXweBvXBSW1LuqgXWIHtb19DUSR7Bqm8oSn0okBhhC3M3jJZ1qtdsCRmvIt79QgxJDx7X9pfM', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = 10007 and pspid = 38), 'merchant');
+-- Paytabs Additional Property  - end --
