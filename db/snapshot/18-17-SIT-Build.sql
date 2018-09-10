@@ -8,6 +8,15 @@ INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 71, id FROM Sys
 INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (71, 38, true);
 
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 71, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 414;
+
+
+-- For new merchant config
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10007, 38, 'Paytabs-MADA', 'urmila.s@cellpointmobile.com', 'EZJZnZpSxpusvsKxtjFsTJedIyexXweBvXBSW1LuqgXWIHtb19DUSR7Bqm8oSn0okBhhC3M3jJZ1qtdsCRmvIt79QgxJDx7X9pfM');
+INSERT INTO client.merchantsubaccount_tbl (accountid, pspid, name, enabled) VALUES (100007, 38, '-1', true);
+
+-- Update if merchant account is exists
+UPDATE client.merchantaccount_tbl SET username = 'urmila.s@cellpointmobile.com', passwd = 'EZJZnZpSxpusvsKxtjFsTJedIyexXweBvXBSW1LuqgXWIHtb19DUSR7Bqm8oSn0okBhhC3M3jJZ1qtdsCRmvIt79QgxJDx7X9pfM' WHERE clientid = 10007  AND pspid = 38;
+
 -- MADA Integration stop --
 
 -- Paytabs SADAD v2 --
