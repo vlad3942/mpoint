@@ -126,4 +126,19 @@ $aHTTP_CONN_INFO["visa-checkout"]["paths"]["get-payment-data"] = "/_test/simulat
 $aHTTP_CONN_INFO["visa-checkout"]["paths"]["pay"] = "/_test/simulators/visacheckout/pay.php";
 $aHTTP_CONN_INFO["visa-checkout"]["paths"]["initialize"] = "/_test/simulators/visacheckout/pay.php";
 $aHTTP_CONN_INFO["visa-checkout"]["path"] = $aHTTP_CONN_INFO["visa-checkout"]["paths"]["pay"];
+
+
+/**
+ * Connection info for connecting to DataCash
+ */
+$aHTTP_CONN_INFO["alipay"]["protocol"] = "http";
+$aHTTP_CONN_INFO["alipay"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["alipay"]["port"] = 80;
+$aHTTP_CONN_INFO["alipay"]["timeout"] = 120;
+$aHTTP_CONN_INFO["alipay"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["alipay"]["paths"]["auth"] = "/_test/simulators/alipay/auth.php";
+$aHTTP_CONN_INFO["alipay"]["paths"]["pay"] = "/_test/simulators/alipay/pay.php";
+$aHTTP_CONN_INFO["alipay"]["paths"]["initialize"] = "/_test/simulators/alipay/pay.php";
+$aHTTP_CONN_INFO["alipay"]["path"] = $aHTTP_CONN_INFO["alipay"]["paths"]["pay"];
+
 ?>
