@@ -77,6 +77,8 @@ require_once(sCLASS_PATH ."/publicbank.php");
 require_once(sCLASS_PATH ."/qiwi.php");
 // Require specific Business logic for the Nets component
 require_once(sCLASS_PATH ."/nets.php");
+// Require specific Business logic for the Paytabs component
+require_once(sCLASS_PATH ."/paytabs.php");
 
 
 header("Content-Type: application/x-www-form-urlencoded");
