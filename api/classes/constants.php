@@ -1196,25 +1196,25 @@ abstract class Constants
     const iVERKKOPANKKI = 68;
 
     /**
-     * Unique Card ID for transaction's made using SADAD
+     * Unique Card ID for transaction's made using KNET
      *
      */
     const iKNET = 69;
 
     /**
-     * Unique Card ID for transaction's made using SADAD
+     * Unique Card ID for transaction's made using BENEFIT
      *
      */
     const iBENEFIT = 70;
 
     /**
-     * Unique Card ID for transaction's made using SADAD
+     * Unique Card ID for transaction's made using MADA
      *
      */
     const iMADA = 71;
 
     /**
-     * Unique Card ID for transaction's made using SADAD
+     * Unique Card ID for transaction's made using SADAD v2
      *
      */
     const iSADADV2 = 72;
