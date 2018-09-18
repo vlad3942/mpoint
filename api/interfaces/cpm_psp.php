@@ -427,6 +427,27 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 	public function authorize(PSPConfig $obj_PSPConfig, $obj_Card)
 	{
+	    try
+        {
+            $mask =NULL;
+            if(isset($obj_Card->{'card-number'}))
+            {
+                $mask = self::getMaskCardNumber($obj_Card->{'card-number'});
+            }
+            else if(isset($obj_Card->mask) && empty($obj_Card->mask) === false)
+            {
+                $mask=str_replace(" ", "", $obj_Card->mask);
+            }
+            if($mask != NULL)
+            {
+                $this->getTxnInfo()->updateCardDetails($this->getDBConn(), $mask, $obj_Card->expiry);
+            }
+        }
+        catch (Exception $e)
+        {
+            trigger_error("Failed to update card details", E_USER_ERROR);
+        }
+
 		$code = 0;
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';

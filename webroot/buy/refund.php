@@ -93,6 +93,8 @@ require_once(sCLASS_PATH ."/ppro.php");
 require_once(sCLASS_PATH ."/citcon.php");
 // Require specific Business logic for the Amex component
 require_once(sCLASS_PATH ."/amex.php");
+// Require specific Business logic for the Paytabs component
+require_once(sCLASS_PATH ."/paytabs.php");
 header("Content-Type: application/x-www-form-urlencoded");
 
 // Require Business logic for the validating client Input

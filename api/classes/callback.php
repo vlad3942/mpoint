@@ -366,7 +366,16 @@ abstract class Callback extends EndUserAccount
 		if(strlen($sAdditionalData) > 0)
 		$sBody .= "&".$sAdditionalData;
 		$sBody .= "&orderid=". urlencode($this->_obj_TxnInfo->getOrderID() );
-		$sBody .= "&status=". $sid;
+		if($this->hasTransactionFailureState($sid) === true)
+		{
+            $sBody .= "&status=". substr($sid, 0 ,4);
+            $sBody .= "&errorcode=". $sid;
+		}
+		else
+		{
+            $sBody .= "&status=". $sid;
+		}
+		$sBody .= "&desc=". urlencode($this->getStatusMessage($sid) );
 		$sBody .= "&amount=". $amt;
 		$sBody .= "&fee=". intval($fee);
 		$sBody .= "&currency=". urlencode($this->_obj_TxnInfo->getCountryConfig()->getCurrency() );
@@ -408,6 +417,36 @@ abstract class Callback extends EndUserAccount
         /* ----- Construct Body End ----- */
         $this->performCallback($sBody, $obj_SurePay ,0 ,$sid);
 	}
+
+	/*
+	 * Function to verify if the transaction has a failure state
+	 *
+	 * @param	interger $sid	Incoming state ID to mPoint
+	 * @return string
+	 * */
+	public function hasTransactionFailureState($sid)
+	{
+        $sParentStatusCode = substr($sid, 0 ,4);
+        return (in_array($sParentStatusCode, array(Constants::iPAYMENT_DECLINED_STATE, Constants::iPAYMENT_REJECTED_STATE)) === true);
+	}
+
+    /**
+     * Returns the Status Messgae for mPoint's internal status codes
+     *
+     * @param 	integer $sid	mPoint ststua code
+     * @return 	string
+     */
+	public function getStatusMessage($sid)
+	{
+        $sql = "SELECT name
+				FROM Log".sSCHEMA_POSTFIX.".State_Tbl
+				WHERE id = ". intval($sid);
+		//echo $sql ."\n";
+        $RS = $this->getDBConn($sql)->getName($sql);
+
+        return $RS["NAME"];
+	}
+
 
 	/**
 	 * Retrieves all Custom Client Variables and Customer Input from the Database and serialises them
