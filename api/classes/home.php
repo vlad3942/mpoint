@@ -168,7 +168,7 @@ class Home extends General
 				$bEnabled = false;
 			}
 			// Login successful
-			elseif ($RS["PASSWORD"] == $pwd)
+			elseif ($RS["PASSWORD"] == $pwd || $RS["PASSWORD"] == sha1($pwd))
 			{
 				if ($RS["MOBILE_VERIFIED"] === true) { $code = 10; }
 				else { $code = 11; }
