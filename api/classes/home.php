@@ -168,7 +168,7 @@ class Home extends General
 				$bEnabled = false;
 			}
 			// Login successful
-			elseif ($RS["PASSWORD"] == $pwd)
+			elseif ($RS["PASSWORD"] == $pwd || $RS["PASSWORD"] == sha1($pwd))
 			{
 				if ($RS["MOBILE_VERIFIED"] === true) { $code = 10; }
 				else { $code = 11; }
@@ -808,7 +808,7 @@ class Home extends General
                 LEFT OUTER JOIN Log" . sSCHEMA_POSTFIX . ".message_tbl M1 ON Txn.id = M1.txnid
                 LEFT OUTER JOIN Log" . sSCHEMA_POSTFIX . ".state_tbl St ON M1.stateid = St.id
                 WHERE Txn.id ='" . $this->getDBConn()->escStr((string)$txnid) . "'
-                    AND NOT M1.stateid::text SIMILAR TO '" . $this->getDBConn()->escStr('4%|19%') . "'
+                    AND M1.stateid IN (". Constants::iPAYMENT_ACCEPTED_STATE .", ". Constants::iPAYMENT_CAPTURED_STATE .", ". Constants::iPAYMENT_WITH_VOUCHER_STATE .")
                 ORDER BY Txn.created, M1.created DESC LIMIT 1";
 //		echo $sql ."\n";
         $RS = $this->getDBConn()->getName($sql);
