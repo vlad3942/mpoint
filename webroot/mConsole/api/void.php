@@ -164,6 +164,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								header("HTTP/1.0 405 Method Not Allowed");
 								break;
 							case (1000):
+							case (1100):
 							case (1001):
 								header("HTTP/1.1 200 OK");
 								break;
