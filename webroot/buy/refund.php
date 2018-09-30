@@ -165,6 +165,11 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 							$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
 						}
 					}
+                    else if ($code == 1100) {
+                        header("HTTP/1.0 200 OK");
+                        $aMsgCds[$code] = "Success";
+                        $obj_mPoint->newMessage($_REQUEST['mpointid'], Constants::iPAYMENT_REFUND_INITIATED_STATE, "Refund request Initiated");
+                    }
 					else
 					{
 						header("HTTP/1.0 502 Bad Gateway");
