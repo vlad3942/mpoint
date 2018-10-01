@@ -244,17 +244,19 @@ final class PaymentSession
     public function getPendingAmount()
     {
         try {
-            $sql = "SELECT  DISTINCT txn.id,  txn.amount 
+            $amount = 0;
+            if (empty($this->_id) === false) {
+                $sql = "SELECT  DISTINCT txn.id,  txn.amount 
               FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn 
                 INNER JOIN log" . sSCHEMA_POSTFIX . ".message_tbl msg ON txn.id = msg.txnid 
               WHERE sessionid = " . $this->_id . " 
                 AND msg.stateid in (2000,2001,2007,2010,2011)
                 GROUP BY txn.id,msg.stateid";
-            //return $this->_pendingAmount;
-            $res = $this->_obj_Db->query($sql);
-            $amount = 0;
-            while ($RS = $this->_obj_Db->fetchName($res)) {
-                $amount = ($amount + intval($RS['AMOUNT']));
+                //return $this->_pendingAmount;
+                $res = $this->_obj_Db->query($sql);
+                while ($RS = $this->_obj_Db->fetchName($res)) {
+                    $amount = ($amount + intval($RS['AMOUNT']));
+                }
             }
             return $this->_amount - $amount;
         }
