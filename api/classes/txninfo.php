@@ -835,7 +835,7 @@ class TxnInfo
 		$xml .= '<reward country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">'. $this->_iReward .'</reward>';
 		$xml .= '<refund country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $this->_iRefund .'</refund>';
 		$xml .= '<orderid>'. $this->_sOrderID .'</orderid>';
-		$xml .= '<mobile country-id="'. intval($this->_iOperatorID/100) .'">'. $this->_sMobile .'</mobile>';
+		$xml .= '<mobile country-id="'. intval($this->_iOperatorID/100) .'" country-code="'. $this->_obj_CountryConfig->getCountryCode() .'">'. $this->_sMobile .'</mobile>';
 		$xml .= '<operator>'. $this->_iOperatorID .'</operator>';
 		$xml .= '<email>'. $this->_sEMail .'</email>';
 		$xml .= '<device-id>'. $this->_sDeviceID .'</device-id>';
