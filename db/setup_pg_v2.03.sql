@@ -373,3 +373,6 @@ update system.country_tbl set country_calling_code=263 where alpha3code='ZWE';
 
 --Transaction under review for fraud, payment rejected sub state.
 INSERT INTO log.state_tbl (id, name, module) VALUES (20104, 'Payment rejected. Transaction under review.', 'Payment');
+
+--markup type 'api' introduced to redirect to client accept url when only API Integration is applicable.
+INSERT INTO Client.Account_Tbl (id,clientid, name, markup) VALUES ('1000077','10007', 'API', 'api');
