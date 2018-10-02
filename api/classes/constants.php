@@ -254,6 +254,14 @@ abstract class Constants
      *
      */
     const iPAYMENT_REJECTED_3D_SECURE_FAILURE_STATE = 20103;
+
+    /**
+     * Defines the ID of the State that indicates that the payment was rejected by the Payment Service Provider (PSP)
+     * when doing an Authorisation as fraud check failed.
+     *
+     */
+    const iPAYMENT_REJECTED_TXN_UNDER_REVIEW_STATE = 20104;
+
     /**
      * Defines the ID of the State that indicates that the payment was not complete due to time out error
      * from PSP or Issuer and system does not have the final status of payment yet
