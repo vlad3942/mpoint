@@ -370,3 +370,6 @@ update system.country_tbl set country_calling_code=967 where alpha3code='YEM';
 update system.country_tbl set country_calling_code=27 where alpha3code='ZAF';
 update system.country_tbl set country_calling_code=260 where alpha3code='ZMB';
 update system.country_tbl set country_calling_code=263 where alpha3code='ZWE';
+
+--Transaction under review for fraud, payment rejected sub state.
+INSERT INTO log.state_tbl (id, name, module) VALUES (20104, 'Payment rejected. Transaction under review.', 'Payment');
