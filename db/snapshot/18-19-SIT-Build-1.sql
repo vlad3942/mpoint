@@ -1,0 +1,1 @@
+ALTER TABLE system.country_tbl ADD country_calling_code INTEGER NULL;
