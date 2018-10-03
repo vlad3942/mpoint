@@ -376,3 +376,7 @@ INSERT INTO log.state_tbl (id, name, module) VALUES (20104, 'Payment rejected. T
 
 --markup type 'b2b-app' introduced to redirect to merchant from paytabs redirect connector to client accept or decline url, this is applicable for API Integrations like for ET.
 INSERT INTO Client.Account_Tbl (id,clientid, name, markup) VALUES ('1000077','10007', 'API Integration for Merchant app', 'b2b-app');
+
+-- URL where the customer may be redirected if txn fails.
+ALTER TABLE Log.Transaction_Tbl ADD declineurl VARCHAR(255);
+

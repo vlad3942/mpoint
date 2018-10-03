@@ -166,7 +166,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$data['accept-url'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->{'accept-url'};
 							}
 							else { $data['accept-url'] = $obj_ClientConfig->getAcceptURL(); }
-							
+
+							if (count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'decline-url'}) == 1)
+                            {
+                                $data['decline-url'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->{'decline-url'};
+                            }
+                            else { $data['decline-url'] = $obj_ClientConfig->getDeclineURL(); }
+
 							if (count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'cancel-url'}) == 1)
                             {
                                 $data['cancel-url'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->{'cancel-url'};

@@ -10,3 +10,6 @@ CREATE UNIQUE INDEX cardaccess_card_country_uq ON client.cardaccess_tbl (clienti
 
 -- country calling code
 ALTER TABLE system.country_tbl ADD country_calling_code INTEGER NULL;
+
+-- URL where the customer may be redirected if txn fails.
+ALTER TABLE Log.Transaction_Tbl ADD declineurl VARCHAR(255);
