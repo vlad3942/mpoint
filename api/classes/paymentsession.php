@@ -85,7 +85,7 @@ final class PaymentSession
 
         $this->_obj_ClientConfig = $clientConfig;
         $this->_obj_CountryConfig = $countryConfig;
-        $this->_obj_CurrencyConfig = $currencyConfig;
+
         $this->_orderId = $orderid;
         $this->_amount = $amount;
         $this->_externalId = $externalId;
@@ -105,6 +105,10 @@ final class PaymentSession
             $this->_expire = $expire;
         } else {
             $this->_expire = date("Y-m-d H:i:s.u", time() + (15 * 60));
+        }
+        $this->_obj_CurrencyConfig = $currencyConfig;
+        if(empty($this->_obj_CurrencyConfig->getId() === true) || ($this->_obj_CurrencyConfig instanceof CurrencyConfig) == false) {
+            $this->_obj_CurrencyConfig = CurrencyConfig::produceConfig($this->_obj_Db, $this->_iCurrencyId);
         }
         // New session will not be generated, if the session is partially complete(4031) for same order id. 
         if ($this->updateSessionDataFromOrderId() != true) {
@@ -286,9 +290,6 @@ final class PaymentSession
     }
 
     public function getCurrencyConfig(){
-        if(empty($this->_obj_CurrencyConfig->getId() === true) || ($this->_obj_CurrencyConfig instanceof CurrencyConfig) == false) {
-            $this->_obj_CurrencyConfig = CurrencyConfig::produceConfig($this->_obj_Db, $this->_iCurrencyId);
-        }
         return $this->_obj_CurrencyConfig;
     }
 
