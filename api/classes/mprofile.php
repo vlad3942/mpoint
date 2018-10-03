@@ -84,7 +84,7 @@ class mProfile extends General
     {
         $b = '<?xml version="1.0" encoding="UTF-8"?>
                 <root>
-                    <get-profile />
+                    <get-profile id = "'.$this->_obj_CustomerInfo->getCustomerRef().'" />
                 </root>';
 
         try
