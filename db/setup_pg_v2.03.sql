@@ -172,3 +172,6 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('MADA_MID', 'urmila.s@cellpointmobile.com', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = 10007 and pspid = 38), 'merchant');
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('MADA_Secret_Key', 'EZJZnZpSxpusvsKxtjFsTJedIyexXweBvXBSW1LuqgXWIHtb19DUSR7Bqm8oSn0okBhhC3M3jJZ1qtdsCRmvIt79QgxJDx7X9pfM', (SELECT id FROM Client.MerchantAccount_Tbl WHERE clientid = 10007 and pspid = 38), 'merchant');
 -- Paytabs Additional Property  - end --
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('HPP_HOST_URL', 'HPP_URL', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('debug', 'true', 10007, 'client');
