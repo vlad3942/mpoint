@@ -286,7 +286,7 @@ final class PaymentSession
     }
 
     public function getCurrencyConfig(){
-        if(($this->_obj_CurrencyConfig instanceof CurrencyConfig) == false) {
+        if(empty($this->_obj_CurrencyConfig->getId() === true) || ($this->_obj_CurrencyConfig instanceof CurrencyConfig) == false) {
             $this->_obj_CurrencyConfig = CurrencyConfig::produceConfig($this->_obj_Db, $this->_iCurrencyId);
         }
         return $this->_obj_CurrencyConfig;
