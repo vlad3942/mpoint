@@ -27,6 +27,7 @@
 									<xs:element name="cancel-url" type="url" minOccurs="0" maxOccurs="1" />
 									<xs:element name="callback-url" type="url" minOccurs="0" maxOccurs="1" />
 									<xs:element name="accept-url" type="url" minOccurs="0" maxOccurs="1">
+									<xs:element name="decline-url" type="url" minOccurs="0" maxOccurs="1" />
 									<xs:annotation>
 						            	<xs:documentation>URL that is sent to the wallet API for redirecting the application after payment authorization.</xs:documentation>
 						            </xs:annotation>
