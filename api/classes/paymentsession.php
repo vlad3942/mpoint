@@ -107,7 +107,8 @@ final class PaymentSession
             $this->_expire = date("Y-m-d H:i:s.u", time() + (15 * 60));
         }
         $this->_obj_CurrencyConfig = $currencyConfig;
-        if(empty($this->_obj_CurrencyConfig->getId()) === true || ($this->_obj_CurrencyConfig instanceof CurrencyConfig) == false) {
+        $currencyConfigId = $this->_obj_CurrencyConfig->getId();
+        if(empty($currencyConfigId) === true || ($this->_obj_CurrencyConfig instanceof CurrencyConfig) == false) {
             $this->_obj_CurrencyConfig = CurrencyConfig::produceConfig($this->_obj_Db, $this->_iCurrencyId);
         }
         // New session will not be generated, if the session is partially complete(4031) for same order id. 
