@@ -818,6 +818,11 @@ abstract class Constants
     const iAMEX_ACQUIRER = 45;
 
     /**
+     * Unique ID for the Acquirer: Chase Payment
+     *
+     */
+    const iCHASE_ACQUIRER = 52;
+    /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
 	 */

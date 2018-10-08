@@ -54,10 +54,10 @@ $aDB_CONN_INFO["mpoint"]["password"] = "mpoint";
 $aDB_CONN_INFO["mpoint"]["class"] = "Oracle";
 */
 $aDB_CONN_INFO["mpoint"]["host"] = "localhost";
-$aDB_CONN_INFO["mpoint"]["port"] = 5432;
+$aDB_CONN_INFO["mpoint"]["port"] = 5434;
 $aDB_CONN_INFO["mpoint"]["path"] = "mpoint";
-$aDB_CONN_INFO["mpoint"]["username"] = "mpoint";
-$aDB_CONN_INFO["mpoint"]["password"] = "hspzr735abl";
+$aDB_CONN_INFO["mpoint"]["username"] = "postgres";
+$aDB_CONN_INFO["mpoint"]["password"] = "postgres";
 $aDB_CONN_INFO["mpoint"]["class"] = "PostGreSQL";
 $aDB_CONN_INFO["mpoint"]["timeout"] = 10;
 $aDB_CONN_INFO["mpoint"]["charset"] = "UTF8";
@@ -829,6 +829,21 @@ $aHTTP_CONN_INFO["uatp"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["uatp"]["paths"]["auth"] = "/mpsp/uatp/authorize-payment";
 $aHTTP_CONN_INFO["uatp"]["paths"]["initialize"] = "/mpsp/uatp/initialize";
 $aHTTP_CONN_INFO["uatp"]["paths"]["tokenize"] = "/mpoint/uatp/generate-suvtp";
+
+
+/**
+ * Connection info for connecting to Chase
+ */
+$aHTTP_CONN_INFO["chase"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["chase"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["chase"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["chase"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["chase"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["chase"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["chase"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["chase"]["paths"]["auth"] = "/mpsp/chase/authorize-payment";
+$aHTTP_CONN_INFO["chase"]["paths"]["initialize"] = "/mpsp/chase/initialize";
+
 
 /**
  * GoMobile Connection Info.

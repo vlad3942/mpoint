@@ -129,6 +129,9 @@ require_once(sCLASS_PATH ."/wallet_processor.php");
 
 require_once(sCLASS_PATH ."/post_auth_action.php");
 
+// Require specific Business logic for the Chase component
+require_once(sCLASS_PATH ."/chase.php");
+
 ignore_user_abort(true);
 set_time_limit(120);
 
@@ -158,10 +161,12 @@ $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</authorize-payment>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
+	
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 try
 {
+	
 	if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 	{
 		if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_DOM->{'authorize-payment'}) > 0)
@@ -861,6 +866,38 @@ $iPrimaryRoute = $oRoute ;
                                                                         }
 
                                                                         break;
+                                                                    case (Constants::iAMEX_ACQUIRER): // AMEX
+                                                                        $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iAMEX_ACQUIRER);
+
+                                                                        $obj_PSP = new Amex($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["amex"]);
+
+                                                                        $propertyValue = $obj_ClientConfig->getAdditionalProperties("3DVERIFICATION");
+
+                                                                        if($propertyValue == true)
+                                                                        {
+                                                                         $requset = str_replace("authorize-payment","authenticate",$HTTP_RAW_POST_DATA);
+                                                                         $code = $obj_PSP->authenticate($requset);
+                                                                        }
+                                                                        else { $code = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem);  }
+
+                                                                           // Authorization succeeded
+                                                                           if ($code == "100")
+                                                                           {
+                                                                            $xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
+                                                                           }
+                                                                           else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+                                                                           else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and Card Details Stored.</status>'; }
+                                                                           else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml .= $code;}
+                                                                            // Error: Authorization declined
+                                                                            else
+                                                                           {
+                                                                            $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+                                                                            header("HTTP/1.1 502 Bad Gateway");
+                                                                            $xml .= '<status code="92">Authorization failed, AMEX returned error: '. $code .'</status>';
+                                                                            }
+
+                                                                        break;
+
                                                                     default:	// Use Payment processor for PSP.
                                                                         try {
 
