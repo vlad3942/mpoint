@@ -6,6 +6,7 @@ INSERT INTO client.cardaccess_tbl ( clientid, cardid, enabled, pspid, countryid,
 INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (73, 0, 0);
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 73, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 458;
 INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (73, 51, true);
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (458,51,'MYR');
 
 
 -- merchant config
