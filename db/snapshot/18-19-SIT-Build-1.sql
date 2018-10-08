@@ -208,3 +208,6 @@ INSERT INTO Client.Account_Tbl (id,clientid, name, markup) VALUES ('1000077','10
 
 -- URL where the customer may be redirected if txn fails.
 ALTER TABLE Log.Transaction_Tbl ADD declineurl VARCHAR(255);
+
+-- Set googleAnalytics Tracking ID for Per client
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled) VALUES ('googleAnalytics', 'UA-127114805-1', 10007, 'client', true);
