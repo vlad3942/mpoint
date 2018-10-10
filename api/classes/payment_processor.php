@@ -72,6 +72,11 @@ class PaymentProcessor
         return $this->_objPSP->authorize($this->_objPSPConfig, $obj_Elem);
     }
 
+    public function authenticate($obj_Elem)
+    {
+            return $this->_objPSP->authenticate( $obj_Elem);
+    }
+
     public function tokenize($aConnInfo, $obj_Elem)
     {
         return $this->_objPSP->tokenize($aConnInfo, $this->_objPSPConfig, $obj_Elem);

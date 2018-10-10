@@ -843,6 +843,7 @@ $aHTTP_CONN_INFO["chase"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["chase"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["chase"]["paths"]["auth"] = "/mpsp/chase/authorize-payment";
 $aHTTP_CONN_INFO["chase"]["paths"]["initialize"] = "/mpsp/chase/initialize";
+$aHTTP_CONN_INFO["chase"]["paths"]["authenticate"] = "/mpoint/authenticate";
 
 
 /**
