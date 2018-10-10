@@ -95,6 +95,8 @@ require_once(sCLASS_PATH ."/citcon.php");
 require_once(sCLASS_PATH ."/amex.php");
 // Require specific Business logic for the Paytabs component
 require_once(sCLASS_PATH ."/paytabs.php");
+// Require specific Business logic for the eGHL FPX component
+require_once(sCLASS_PATH ."/eghl.php");
 header("Content-Type: application/x-www-form-urlencoded");
 
 // Require Business logic for the validating client Input
