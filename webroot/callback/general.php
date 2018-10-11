@@ -97,6 +97,8 @@ require_once(sCLASS_PATH ."/chubb.php");
 require_once(sCLASS_PATH . "/uatp.php");
 // Require specific Business logic for the eGHL FPX component
 require_once(sCLASS_PATH ."/eghl.php");
+// Require specific Business logic for the chase component
+require_once(sCLASS_PATH ."/chase.php");
 /**
  * Input XML format
  *

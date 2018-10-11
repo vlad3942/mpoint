@@ -15,3 +15,5 @@ ALTER TABLE system.country_tbl ADD country_calling_code INTEGER NULL;
 
 -- URL where the customer may be redirected if txn fails.
 ALTER TABLE Log.Transaction_Tbl ADD declineurl VARCHAR(255);
+ALTER TABLE Log.Transaction_Tbl ADD declineurl VARCHAR(255);
+

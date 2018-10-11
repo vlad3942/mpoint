@@ -63,6 +63,8 @@ require_once(sCLASS_PATH ."/mvault.php");
 require_once(sCLASS_PATH ."/ccpp.php");
 // Require specific Business logic for the Nets component
 require_once(sCLASS_PATH ."/nets.php");
+// Require specific Business logic for the chase component
+require_once(sCLASS_PATH ."/chase.php");
 
 ignore_user_abort(true);
 set_time_limit(0);
