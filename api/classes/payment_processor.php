@@ -67,6 +67,11 @@ class PaymentProcessor
         return new PaymentProcessor($oDB, $oTxt, $oTI, $iPSPID, $aConnInfo);
     }
 
+    public function initialize($cardTypeId=-1, $cardToken='', $billingAddress = NULL, $clientInfo = NULL)
+    {
+        return $this->_objPSP->initialize($this->_objPSPConfig,$this->_objPSP->getTxnInfo()->getAccountID(), false, $cardTypeId, $cardToken, $billingAddress, $clientInfo);
+    }
+
     public function authorize($obj_Elem)
     {
         return $this->_objPSP->authorize($this->_objPSPConfig, $obj_Elem);
