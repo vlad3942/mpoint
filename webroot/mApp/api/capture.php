@@ -85,6 +85,8 @@ require_once(sCLASS_PATH ."/validate.php");
 require_once(sCLASS_PATH ."/ccpp_alc.php");
 // Require data data class for Customer Information
 require_once(sCLASS_PATH ."/customer_info.php");
+// Require specific Business logic for the chase component
+require_once(sCLASS_PATH ."/chase.php");
 
 //header("Content-Type: application/x-www-form-urlencoded");
 

@@ -82,6 +82,8 @@ require_once(sCLASS_PATH ."/citcon.php");
 require_once(sCLASS_PATH ."/ppro.php");
 // Require specific Business logic for the Amex component
 require_once(sCLASS_PATH ."/amex.php");
+// Require specific Business logic for the chase component
+require_once(sCLASS_PATH ."/chase.php");
 /**
  * Input XML format
  *

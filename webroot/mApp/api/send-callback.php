@@ -86,6 +86,8 @@ require_once(sCLASS_PATH . "/ccpp_alc.php");
 require_once(sCLASS_PATH . "/paytabs.php");
 // Require specific Business logic for the UATP component
 require_once(sCLASS_PATH . "/uatp.php");
+// Require specific Business logic for the chase component
+require_once(sCLASS_PATH ."/chase.php");
 
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH));
 
