@@ -1,3 +1,7 @@
+
+-- Drop orderId unique constraint --
+ALTER TABLE log.session_tbl DROP CONSTRAINT constraint_name;
+
 -- country calling code
 ALTER TABLE system.country_tbl ADD country_calling_code INTEGER NULL;
 
@@ -205,7 +209,5 @@ INSERT INTO Client.Account_Tbl (id,clientid, name, markup) VALUES ('1000077','10
 -- URL where the customer may be redirected if txn fails.
 ALTER TABLE Log.Transaction_Tbl ADD declineurl VARCHAR(255);
 
-
-
-
-
+-- Set googleAnalytics Tracking ID for Per client
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled) VALUES ('googleAnalyticsId', 'UA-127114805-1', 10007, 'client', true);

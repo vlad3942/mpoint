@@ -224,7 +224,7 @@ class FlightInfo {
 			if (is_array ( $RSA ) === true && count ( $RSA ) > 0) {
 				return new FlightInfo ( $RS ["ID"], $RS ["SERVICE_CLASS"], $RS ["FLIGHT_NUMBER"], $RS ["DEPARTURE_AIRPORT"], $RS ["ARRIVAL_AIRPORT"], $RS ["AIRLINE_CODE"], $RS ["ARRIVAL_DATE"], $RS ["DEPARTURE_DATE"], $RS ["TAG"],$RS ["TRIP_COUNT"],$RS ["SERVICE_LEVEL"], $RSA );
 			} else {
-				return new FlightInfo ( $RS ["ID"], $RS ["SERVICE_CLASS"], $RS ["FLIGHT_NUMBER"], $RS ["DEPARTURE_AIRPORT"], $RS ["ARRIVAL_AIRPORT"], $RS ["AIRLINE_CODE"], $RS ["ARRIVAL_DATE"], $RS ["DEPARTURE_DATE"],$RS ["TAG"],$RS ["TRIP_COUNT"],$RS ["SERVICE_LEVEL"] );
+				return new FlightInfo ( $RS ["ID"], $RS ["SERVICE_CLASS"], $RS ["FLIGHT_NUMBER"], $RS ["DEPARTURE_AIRPORT"], $RS ["ARRIVAL_AIRPORT"], $RS ["AIRLINE_CODE"], $RS ["ARRIVAL_DATE"], $RS ["DEPARTURE_DATE"],$RS ["TAG"],$RS ["TRIP_COUNT"],$RS ["SERVICE_LEVEL"], null );
 			}
 		} else {
 			return null;
