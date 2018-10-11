@@ -510,10 +510,19 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											}
 											break;
 										case (Constants::iAPPLE_PAY_PSP):
-											$xml .= '<url method="app" />';
-											break;
-										case (Constants::iAPPLE_PAY_PSP):
-											$xml .= '<url method="app" />';
+											$obj_PSP = new ApplePay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["apple-pay"]);
+
+											$token = '';
+                                            if (count($obj_DOM->pay[$i]->transaction->card->token) == 1)
+                                            {
+                                                $token = $obj_DOM->pay[$i]->transaction->card->token;
+                                            }
+											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), false, $obj_DOM->pay[$i]->transaction->card["type-id"],$token);
+
+											foreach ($obj_XML->children() as $obj_XMLElem)
+											{
+												$xml .= trim($obj_XMLElem->asXML() );
+											}
 											break;
 										case (Constants::iANDROID_PAY_PSP):
 											$xml .= '<url method="app" />';

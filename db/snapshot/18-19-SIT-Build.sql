@@ -13,4 +13,5 @@ INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (458,51,'MYR
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10007, 51, 'MALINDO AIRWAYS SDN BHD', 'MLD', 'mld12345');
 INSERT INTO client.merchantsubaccount_tbl (accountid, pspid, name, enabled) VALUES (100007, 51, '-1', true);
 
--- FPX Integration End --
+-- FPX Integration End --INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('HPP_HOST_URL', 'HPP_URL', 10007, 'client');
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('debug', 'true', 10007, 'client');
