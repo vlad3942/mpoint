@@ -95,6 +95,8 @@ require_once(sCLASS_PATH ."/citcon.php");
 require_once(sCLASS_PATH ."/amex.php");
 // Require specific Business logic for the Paytabs component
 require_once(sCLASS_PATH ."/paytabs.php");
+// Require specific Business logic for the eGHL FPX component
+require_once(sCLASS_PATH ."/eghl.php");
 // Require specific Business logic for the chase component
 require_once(sCLASS_PATH ."/chase.php");
 
@@ -171,7 +173,6 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
                     else if ($code == 1100) {
                         header("HTTP/1.0 200 OK");
                         $aMsgCds[$code] = "Success";
-                        $obj_mPoint->newMessage($_REQUEST['mpointid'], Constants::iPAYMENT_REFUND_INITIATED_STATE, "Refund request Initiated");
                     }
 					else
 					{

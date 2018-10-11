@@ -1484,7 +1484,7 @@ msgstr @@@ V�lkommen till {CLIENT} @@@
 msgid @@@ Billing SMS @@@
 msgstr @@@ Tack f�r att du anv�nder mPoint, du har betalat {PRICE} via din telefonr�kning @@@
 
-#: /api/classes/credit_card.php:137
+#: /api/classes/credit_card.php:128
 msgid @@@ Stored Cards @@@
 msgstr @@@ Stored Cards @@@
 

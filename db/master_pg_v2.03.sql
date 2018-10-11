@@ -7,11 +7,14 @@ ALTER TYPE LOG.ADDITIONAL_DATA_REF ADD VALUE 'Transaction';
 DROP INDEX client.cardaccess_card_country_uq RESTRICT;
 CREATE UNIQUE INDEX cardaccess_card_country_uq ON client.cardaccess_tbl (clientid, cardid, countryid, psp_type) WHERE enabled='true';
 
+-- Drop orderId unique constraint --
+ALTER TABLE log.session_tbl DROP CONSTRAINT constraint_name;
 
 -- country calling code
 ALTER TABLE system.country_tbl ADD country_calling_code INTEGER NULL;
 
 -- URL where the customer may be redirected if txn fails.
+ALTER TABLE Log.Transaction_Tbl ADD declineurl VARCHAR(255);
 ALTER TABLE Log.Transaction_Tbl ADD declineurl VARCHAR(255);
 
 --== CONFIGURE Chase Payment Acquirer ==--

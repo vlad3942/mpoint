@@ -832,6 +832,21 @@ $aHTTP_CONN_INFO["uatp"]["paths"]["tokenize"] = "/mpoint/uatp/generate-suvtp";
 
 
 /**
+ * Connection info for connecting to eGHL-FPX
+ */
+$aHTTP_CONN_INFO["eghl"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["eghl"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["eghl"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["eghl"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["eghl"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["eghl"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["eghl"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["eghl"]["paths"]["initialize"] = "/mpsp/eghl/initialize";
+$aHTTP_CONN_INFO["eghl"]["paths"]["refund"] = "/mpoint/eghl/refund";
+$aHTTP_CONN_INFO["eghl"]["paths"]["status"] = "/mpoint/eghl/status";
+
+
+/**
  * Connection info for connecting to Chase
  */
 $aHTTP_CONN_INFO["chase"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];

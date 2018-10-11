@@ -809,6 +809,12 @@ abstract class Constants
      */
     const iUATP_CARD_ACCOUNT = 50;
 
+    /**
+     * Unique ID for the Net banking aggregator : eGHL
+     *
+     */
+    const iEGHL_PSP = 51;
+
 	/**
 
     /**
@@ -1231,6 +1237,12 @@ abstract class Constants
      *
      */
     const iSADADV2 = 72;
+
+    /**
+     * Unique Card ID for transaction's made using FPX
+     *
+     */
+    const iFPX = 73;
     
 	/**
 	 * Unique Fee Type ID for Top-Ups
