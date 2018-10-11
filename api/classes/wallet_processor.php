@@ -28,7 +28,7 @@ class WalletProcessor extends PaymentProcessor
         Constants::iAMEX_EXPRESS_CHECKOUT_WALLET => Constants::iAMEX_EXPRESS_CHECKOUT_PSP,
         Constants::iANDROID_PAY_WALLET => Constants::iANDROID_PAY_PSP,
         Constants::iGOOGLE_PAY_WALLET => Constants::iGOOGLE_PAY_PSP,
-        Constants::iMVAULT_PSP => Constants::iMVAULT_PSP);
+        Constants::iMVAULT_WALLET => Constants::iMVAULT_PSP);
 
     public static $aWalletConnInfo = array(Constants::iAPPLE_PAY => 'apple-pay',
         Constants::iVISA_CHECKOUT_WALLET => Constants::iVISA_CHECKOUT_PSP,
@@ -36,7 +36,7 @@ class WalletProcessor extends PaymentProcessor
         Constants::iAMEX_EXPRESS_CHECKOUT_WALLET => 'amex-express-checkout',
         Constants::iANDROID_PAY_WALLET => 'android-pay',
         Constants::iGOOGLE_PAY_WALLET => 'google-pay',
-        Constants::iMVAULT_PSP => 'mvault');
+        Constants::iMVAULT_WALLET => 'mvault');
 
 
     public function __construct(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iTypeId, $aConnInfo)
