@@ -821,6 +821,19 @@ class Home extends General
 
         if(empty($RS) === false && count($RS) > 0) {
             $obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $RS["CLIENTID"]);
+            $obj_TxnInfo = TxnInfo::produceInfo($RS["ID"],  $this->getDBConn());
+
+            $sTxnAdditionalDataXml = "";
+            $aTxnAdditionalData = $obj_TxnInfo->getAdditionalData();
+            if($aTxnAdditionalData !== null)
+            {
+                $sTxnAdditionalDataXml ="<additional-data>";
+                foreach ($aTxnAdditionalData as $key => $value)
+                {
+                    $sTxnAdditionalDataXml .= "<param name='".$key."'>". $value ."</param>";
+                }
+                $sTxnAdditionalDataXml .="</additional-data>";
+            }
 
             $obj_paymentSession = PaymentSession::Get($this->getDBConn(), $RS["SESSIONID"]);
             $pendingAmount = intval($obj_paymentSession->getPendingAmount());
@@ -854,6 +867,7 @@ class Home extends General
             $xml .= '<customer-ref>' . $RS["CUSTOMER_REF"] . '</customer-ref>';
             $xml .= '<device-id>' . $RS["DEVICEID"] . '</device-id>';
             $xml .= '</client-info>';
+            $xml .= $sTxnAdditionalDataXml;
             $xml .= '</transaction>';
         }
 
