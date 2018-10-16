@@ -825,7 +825,7 @@ abstract class Callback extends EndUserAccount
     {
         $sessionObj = $this->getTxnInfo()->getPaymentSession();
         $isStateUpdated = $sessionObj->updateState();
-        if($isStateUpdated !== 1 )
+        if($isStateUpdated != 1)
         {
             return;
         }
