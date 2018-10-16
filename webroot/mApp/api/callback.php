@@ -104,8 +104,6 @@ require_once(sCLASS_PATH ."/amex.php");
 require_once(sCLASS_PATH ."/chubb.php");
 // Require specific Business logic for the CHUBB component
 require_once(sCLASS_PATH ."/payment_processor.php");
-// Require specific Business logic for the UATP component
-require_once(sCLASS_PATH . "/uatp.php");
 
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
