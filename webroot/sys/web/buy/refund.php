@@ -79,6 +79,10 @@ require_once(sCLASS_PATH ."/qiwi.php");
 require_once(sCLASS_PATH ."/nets.php");
 // Require specific Business logic for the Paytabs component
 require_once(sCLASS_PATH ."/paytabs.php");
+// Require specific Business logic for the eGHL FPX component
+require_once(sCLASS_PATH ."/eghl.php");
+// Require specific Business logic for the chase component
+require_once(sCLASS_PATH ."/chase.php");
 
 
 header("Content-Type: application/x-www-form-urlencoded");
@@ -150,6 +154,10 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 										  "amount" => $_REQUEST['amount']);
 							$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
 						}
+					}
+                    else if ($code == 1100) {
+                        header("HTTP/1.0 200 OK");
+                        $aMsgCds[$code] = "Success";
 					}
 					else
 					{

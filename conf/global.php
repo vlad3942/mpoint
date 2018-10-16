@@ -830,6 +830,38 @@ $aHTTP_CONN_INFO["uatp"]["paths"]["auth"] = "/mpsp/uatp/authorize-payment";
 $aHTTP_CONN_INFO["uatp"]["paths"]["initialize"] = "/mpsp/uatp/initialize";
 $aHTTP_CONN_INFO["uatp"]["paths"]["tokenize"] = "/mpoint/uatp/generate-suvtp";
 
+
+/**
+ * Connection info for connecting to eGHL-FPX
+ */
+$aHTTP_CONN_INFO["eghl"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["eghl"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["eghl"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["eghl"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["eghl"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["eghl"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["eghl"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["eghl"]["paths"]["initialize"] = "/mpsp/eghl/initialize";
+
+
+
+/**
+ * Connection info for connecting to Chase
+ */
+$aHTTP_CONN_INFO["chase"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["chase"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["chase"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["chase"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["chase"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["chase"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["chase"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["chase"]["paths"]["auth"] = "/mpsp/chase/authorize-payment";
+$aHTTP_CONN_INFO["chase"]["paths"]["initialize"] = "/mpsp/chase/initialize";
+$aHTTP_CONN_INFO["chase"]["paths"]["cancel"] = "/mpsp/chase/cancel";
+$aHTTP_CONN_INFO["chase"]["paths"]["authenticate"] = "/mpoint/authenticate";
+
+
+
 /**
  * GoMobile Connection Info.
  * The array should contain the following indexes:

@@ -254,6 +254,14 @@ abstract class Constants
      *
      */
     const iPAYMENT_REJECTED_3D_SECURE_FAILURE_STATE = 20103;
+
+    /**
+     * Defines the ID of the State that indicates that the payment was rejected by the Payment Service Provider (PSP)
+     * when doing an Authorisation as fraud check failed.
+     *
+     */
+    const iPAYMENT_REJECTED_TXN_UNDER_REVIEW_STATE = 20104;
+
     /**
      * Defines the ID of the State that indicates that the payment was not complete due to time out error
      * from PSP or Issuer and system does not have the final status of payment yet
@@ -801,6 +809,12 @@ abstract class Constants
      */
     const iUATP_CARD_ACCOUNT = 50;
 
+    /**
+     * Unique ID for the Net banking aggregator : eGHL
+     *
+     */
+    const iEGHL_PSP = 51;
+
 	/**
 
     /**
@@ -809,6 +823,11 @@ abstract class Constants
      */
     const iAMEX_ACQUIRER = 45;
 
+    /**
+     * Unique ID for the Acquirer: Chase Payment
+     *
+     */
+    const iCHASE_ACQUIRER = 52;
     /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
@@ -1218,6 +1237,12 @@ abstract class Constants
      *
      */
     const iSADADV2 = 72;
+
+    /**
+     * Unique Card ID for transaction's made using FPX
+     *
+     */
+    const iFPX = 73;
     
 	/**
 	 * Unique Fee Type ID for Top-Ups
