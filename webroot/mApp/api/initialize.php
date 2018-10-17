@@ -295,8 +295,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 for ($index = 0; $index < count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->children()); $index++)
                                 {
                                     $additionalTxnDataIndex++;
-                                    $additionalTxnData[$additionalTxnDataIndex]['name'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$additionalTxnDataIndex - 1]['name'];
-                                    $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$additionalTxnDataIndex - 1];
+                                    $additionalTxnData[$additionalTxnDataIndex]['name'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$index]['name'];
+                                    $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$index];
                                     $additionalTxnData[$additionalTxnDataIndex]['type'] = (string)'Transaction';
                                 }
                             }
