@@ -3886,5 +3886,7 @@ INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (8, 48, true);
 /* ----------------Adding Configurations for CHUBB PSP - END ------------------------------ */
 
 
---- Datacash notification secret key for setting up https callback url
+--- Datacash notification secret key for setting up https callback url and MID setup
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'Notification-Secret', '379001F6E4852A832F8138F70190585A', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=17 ;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'mid.USD', <MID>, id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<client-id> AND pspid=17 ;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'mid.AED', <MID>, id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<client-id> AND pspid=17 ;
