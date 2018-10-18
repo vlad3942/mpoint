@@ -78,3 +78,5 @@ INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, 
 
 --- Datacash notification secret key for setting up https callback url
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'Notification-Secret', '379001F6E4852A832F8138F70190585A', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'mid.USD', 'SGBSABB01', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'mid.AED', 'SGBSABB01', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
