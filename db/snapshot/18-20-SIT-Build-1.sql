@@ -1,3 +1,2 @@
-
--- Drop orderId unique constraint --
-ALTER TABLE log.session_tbl DROP CONSTRAINT session_tbl_orderid_uindex;
+-- Drop orderId index --
+DROP INDEX IF EXISTS log.session_tbl_orderid_uindex;
