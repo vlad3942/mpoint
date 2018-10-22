@@ -119,6 +119,8 @@ require_once(sCLASS_PATH ."/amex.php");
 require_once(sCLASS_PATH ."/chubb.php");
 // Require Data Class for Client Information
 require_once(sCLASS_PATH ."/clientinfo.php");
+// Require specific Business logic for the eGHL FPX component
+require_once(sCLASS_PATH . "/eghl.php");
 
 $aMsgCds = array();
 
@@ -734,6 +736,26 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                                             $obj_PSP = new CHUBB($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["chubb"]);
                                             $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $obj_DOM->pay[$i]->transaction->card->token, $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_DOM->{'pay'}[$i]->{'client-info'});
+
+                                            foreach ($obj_XML->children() as $obj_Elem)
+                                            {
+                                                $xml .= trim($obj_Elem->asXML() );
+                                            }
+                                            break;
+                                        case (Constants::iEGHL_PSP):
+                                            $obj_PSP = new EGHL($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["eghl"]);
+                                            $token = '';
+                                            if (count($obj_DOM->pay[$i]->transaction->card->token) == 1)
+                                            {
+                                                $token = $obj_DOM->pay[$i]->transaction->card->token;
+                                            }
+
+                                            $billingAddress = null;
+                                            if (count($obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}) == 1)
+                                            {
+                                                $billingAddress = $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'};
+                                            }
+                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $token, $billingAddress);
 
                                             foreach ($obj_XML->children() as $obj_Elem)
                                             {

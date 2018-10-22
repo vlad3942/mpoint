@@ -719,7 +719,9 @@ abstract class Callback extends EndUserAccount
                 return new Amex($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["amex"]);
         case (Constants::iCHUBB_PSP):
                 return new CHUBB($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["chubb"]);
-            default:
+        case (Constants::iEGHL_PSP):
+            return new EGHL($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["eghl"]);
+        default:
 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
 	}

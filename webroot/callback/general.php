@@ -93,6 +93,8 @@ require_once(sCLASS_PATH ."/ppro.php");
 require_once(sCLASS_PATH ."/amex.php");
 // Require specific Business logic for the CHUBB component
 require_once(sCLASS_PATH ."/chubb.php");
+// Require specific Business logic for the eGHL FPX component
+require_once(sCLASS_PATH ."/eghl.php");
 /**
  * Input XML format
  *

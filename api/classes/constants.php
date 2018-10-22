@@ -752,7 +752,13 @@ abstract class Constants
      */
     const iCHUBB_PSP = 48;
 
-	/**
+    /**
+     * Unique ID for the Net banking aggregator : eGHL
+     *
+     */
+    const iEGHL_PSP = 51;
+
+    /**
 
     /**
      * Unique ID for the Acquirer: Amex
