@@ -414,6 +414,16 @@ abstract class Callback extends EndUserAccount
         if (strlen($this->_obj_TxnInfo->getApprovalCode()) >0){
         	$sBody .= "&approval-code=". $this->_obj_TxnInfo->getApprovalCode();
         }
+
+        $aTxnAdditionalData = $this->_obj_TxnInfo->getAdditionalData();
+        if($aTxnAdditionalData !== null)
+        {
+            foreach ($aTxnAdditionalData as $key => $value)
+            {
+				$sBody .= "&custom-field[".$key."]=". $value;
+            }
+        }
+
         /* ----- Construct Body End ----- */
         $this->performCallback($sBody, $obj_SurePay ,0 ,$sid);
 	}
