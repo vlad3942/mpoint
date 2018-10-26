@@ -46,8 +46,9 @@ class Bre
     	$b .= '</transaction>';
     	$b .=  $this->getGatewayConfigurations() ;
     	$b .= '<client-info platform="'. $aPayInfo->{'client-info'}['platform'].'" language="'. $aPayInfo->{'client-info'}['language'].'">';
+    	if(strlen($aPayInfo->{'client-info'}->mobile) > 0) {
     	$b .= '<mobile country-id="'.$aPayInfo->{'client-info'}->mobile["country-id"].'" operator-id="'.$aPayInfo->{'client-info'}->mobile["operator-id"].'">';
-    	$b .=  $aPayInfo->{'client-info'}->mobile.'</mobile>';
+    	$b .=  $aPayInfo->{'client-info'}->mobile.'</mobile>';}
     	if(strlen($aPayInfo->{'client-info'}->email) > 0)
     	$b .= '<email>'.$aPayInfo->{'client-info'}->email.'</email>';
     	$b .= '<device-id>'.$aPayInfo->{'client-info'}->{'device-id'}.'</device-id>';
