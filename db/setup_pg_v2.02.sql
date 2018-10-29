@@ -3890,3 +3890,15 @@ INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (8, 48, true);
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'Notification-Secret', '379001F6E4852A832F8138F70190585A', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=17 ;
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'mid.USD', <MID>, id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<client-id> AND pspid=17 ;
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'mid.AED', <MID>, id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<client-id> AND pspid=17 ;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'mid.SAR', <MID>, id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<client-id> AND pspid=17 ;
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'username.USD',<USERNAME>, id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<client-id> AND pspid=17 ;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'password.USD', <PASSWORD>, id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<client-id> AND pspid=17 ;
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'username.AED', <USERNAME>, id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<client-id> AND pspid=17 ;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'password.AED', <PASSWORD>, id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<client-id> AND pspid=17 ;
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'username.SAR', <USERNAME>, id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<client-id>  AND pspid=17 ;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'password.SAR', <PASSWORD>, id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<client-id>  AND pspid=17 ;
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'HOST', <host>, id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<client-id>  AND pspid=17 ;

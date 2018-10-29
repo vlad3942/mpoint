@@ -81,3 +81,14 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'mid.USD', 'SGBSABB01', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'mid.AED', 'SGBSABB01', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'mid.SAR', 'SGBSABB01', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'username.USD', 'merchant.SGBSABB01', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'password.USD', 'bebd68b2fa491f807e40462a6f85617e', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'username.AED', 'merchant.SGBSABB01', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'password.AED', 'bebd68b2fa491f807e40462a6f85617e', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'username.SAR', 'merchant.SGBSABB01', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'password.SAR', 'bebd68b2fa491f807e40462a6f85617e', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'HOST', 'test-gateway.mastercard.com', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
