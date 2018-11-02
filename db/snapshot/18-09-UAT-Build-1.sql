@@ -93,6 +93,4 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 
 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'HOST', 'test-gateway.mastercard.com', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
 
-UPDATE system.transformation_tbl SET class = 'processors.Wallet'  where endpointid =(SELECT id from system.endpoint_tbl where path = '/mpoint/data-cash/threed-redirect');
-UPDATE system.transformation_tbl SET class = 'processors.Wallet'  where endpointid =(SELECT id from system.endpoint_tbl where path = '/mpoint/data-cash/authorize-payment');
 -----------END CTECH-934 Service Window --------
