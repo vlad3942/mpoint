@@ -169,9 +169,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                         if ($code > 0)
                         {
-
                             //update or create new account
                             $code = $obj_mPoint->savePassword((float)$obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'save-account'}[$i]->password, $obj_CountryConfig);
+                            //get the account id if new account was created
+                            if($iAccountID < 0)
+                            {
+                                $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
+                            }
                         }
 						// New Account automatically created when Password was saved
 						if ($code == 1 && $obj_ClientConfig->smsReceiptEnabled() === true)
