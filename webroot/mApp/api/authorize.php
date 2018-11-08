@@ -858,6 +858,7 @@ $iPrimaryRoute = $oRoute ;
                                                                 $iTokenzationProcessor = intval($obj_mCard->getTokenizationRoute(intval(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ) ) );
                                                                 if(empty($iTokenzationProcessor) === false)
                                                                 {
+                                                                    $obj_TxnInfo = $obj_TxnInfo = TxnInfo::produceInfo( (integer) $obj_TxnInfo->getID(), $_OBJ_DB);
                                                                     $obj_TokenizationPSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($iTokenzationProcessor), $aHTTP_CONN_INFO);
                                                                     $sToken = $obj_TokenizationPSP->tokenize($aHTTP_CONN_INFO, $obj_Elem);
 
