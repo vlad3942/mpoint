@@ -23,22 +23,4 @@ class Chase extends CPMACQUIRER
     {
         return Constants::iCHASE_ACQUIRER;
     }
-
-    public function capture($iAmount = -1)
-    {
-        if($this->getTxnInfo()->hasEitherState($this->getDBConn(), Constants::iPAYMENT_CAPTURE_INITIATED_STATE) === false)
-        {
-            $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURE_INITIATED_STATE, "");
-        }
-        return 1000;
-    }
-
-    public function refund($iAmount = -1, $iStatus = null)
-    {
-        if($this->getTxnInfo()->hasEitherState($this->getDBConn(), Constants::iPAYMENT_REFUND_INITIATED_STATE) === false)
-        {
-            $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUND_INITIATED_STATE, "");
-        }
-        return 1000;
-    }
 }
