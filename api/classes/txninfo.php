@@ -926,7 +926,7 @@ class TxnInfo
 		{
 			$sql .= " INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl ma ON t.clientid = ma.clientid AND ma.name = '". $obj->escStr($merchant) ."' AND ma.enabled = true";
 		}
-		$sql .= " WHERE orderid = '". $obj->escStr($orderNo) ."' ORDER BY modified DESC LIMIT 1";
+        $sql .= " WHERE orderid = '". $obj->escStr($orderNo) ."'";
 //		echo $sql ."\n";
 
 		$RS = $obj->getName($sql);
