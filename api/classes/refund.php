@@ -120,7 +120,7 @@ class Refund extends General
 		if ( ($this->_obj_PSP instanceof Refundable) === true) { $code = $this->_obj_PSP->refund($iAmount,$status); }
 		else {throw new BadMethodCallException("Refund not supported by PSP: ". get_class($this->_obj_PSP) ); }
 
-		if ($code === 1000)
+		if ($code === 1000 || $code === 1100)
 		{
 			$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 					SET refund = refund + ". intval($iAmount) ."

@@ -63,6 +63,7 @@
 															<xs:simpleContent>
 																<xs:extension base="xs:string">
 																	<xs:attribute name="country-id" type="xs:integer"/>
+																	<xs:attribute name="country-code" type="xs:integer"/>
 																</xs:extension>
 															</xs:simpleContent>
 														</xs:complexType>
@@ -73,6 +74,7 @@
 													<xs:element name="logo" type="logo"/>
 													<xs:element name="css-url" type="xs:string"/>
 													<xs:element name="accept-url" type="xs:string"/>
+													<xs:element name="decline-url" type="xs:string"/>
 													<xs:element name="cancel-url" type="xs:string"/>
 													<xs:element name="callback-url" type="xs:string"/>
 													<xs:element name="icon-url" type="xs:string"/>
@@ -84,6 +86,8 @@
 													<xs:element name="description" type="xs:string"/>
 													<xs:element name="ip" type="xs:string"/>
 													<xs:element name="hmac" type="xs:string"/>
+													<xs:element name="created-date" type="xs:string"/>
+													<xs:element name="created-time" type="xs:string"/>
 													<xs:element name="token" type="xs:string" minOccurs="0"/>
 													<xs:element name="card-mask" type="xs:string" minOccurs="0"/>
 													<xs:element name="expiry" type="xs:string" minOccurs="0"/>
@@ -95,6 +99,7 @@
 												<xs:attribute type="xs:positiveInteger" name="id"/>
 												<xs:attribute type="xs:positiveInteger" name="type"/>
 												<xs:attribute type="xs:integer" name="gmid"/>
+												<xs:attribute type="xs:integer" name="attempt"/>
 												<xs:attribute type="xs:integer" name="mode"/>
 												<xs:attribute type="xs:integer" name="eua-id"/>
 												<xs:attribute type="xs:positiveInteger" name="psp-id"/>

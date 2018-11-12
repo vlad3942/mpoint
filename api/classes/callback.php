@@ -59,10 +59,17 @@ abstract class Callback extends EndUserAccount
 		parent::__construct($oDB, $oTxt, $oTI->getClientConfig() );
 
 		$this->_obj_TxnInfo = $oTI;
-		$this->aCONN_INFO = $aConnInfo;
+		$pspID = (integer)$this->getPSPID() > 0 ? $this->getPSPID() : $oTI->getPSPID();
+        if(empty($aConnInfo) === false )
+        {
+            $this->aCONN_INFO = $aConnInfo;
+        }
+        else
+        {
+            throw new CallbackException("Connection Configuration not found for the given PSP ID ". $pspID);
+        }
 
-		$pspID = (integer)$oTI->getPSPID() > 0 ? $oTI->getPSPID() : $this->getPSPID();
-		if ($oPSPConfig == null) { $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID); }
+        if ($oPSPConfig == null) { $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID); }
 		$this->_obj_PSPConfig = $oPSPConfig;
 	}
 
@@ -288,6 +295,35 @@ abstract class Callback extends EndUserAccount
 				$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_RETRIED_STATE, "Attempt ". $attempt ." of ". $obj_SurePay->getMax() );
 				$this->performCallback($body, $obj_SurePay, $attempt,$sid);
 			}
+
+
+
+			//Retrial Based On Configuration
+			$sql = "SELECT typeid,retrialvalue,delay FROM client".sSCHEMA_POSTFIX.".retrial_tbl WHERE clientid =". $this->_obj_TxnInfo->getClientConfig()->getID()." AND enabled = 't' ;";
+			$RS = $this->getDBConn($sql)->getName($sql);
+			if (is_array($RS) === true){
+				$retrialType = $RS["TYPEID"] ;
+				$retrialValue = $RS["RETRIALVALUE"] ;
+				$delayBetweenAttempts = $RS["DELAY"] ;
+				$attempt++;
+
+				switch ($retrialType)
+				{
+					case (Constants::iRETRIAL_TYPE_RESPONSEBASED):
+						sleep($delayBetweenAttempts);
+						trigger_error("mPoint Callback request retried for Transaction: ". $this->_obj_TxnInfo->getID(), E_USER_NOTICE);
+						$this->newMessage($this->_obj_TxnInfo->getID(), Constants::iCB_RETRIED_STATE, "Attempt ". $attempt ." until '".$retrialValue."' message received" );
+						$this->performCallback($body,$obj_SurePay,$attempt,$sid);
+					break;
+					case (Constants::iRETRIAL_TYPE_TIMEBASED):
+						//To be implemented
+						break;
+					case (Constants::iRETRIAL_TYPE_MAXATTEMPTBASED):
+						//To be implemented
+						break;
+				}
+			}
+			//Retrial Based On Configuration Ends
 		}
 	}
 
@@ -320,7 +356,7 @@ abstract class Callback extends EndUserAccount
 	 * @param 	SurePayConfig $$obj_SurePay SurePay Configuration Object. Default value null
 	 * @param 	integer $fee				The amount the customer will pay in fee�s for the Transaction. Default value 0
 	 */
-	public function notifyClient($sid, $pspid, $amt,  $cardno="", $cardid=0, $exp=null,$sAdditionalData="", SurePayConfig &$obj_SurePay=null, $fee=0 )
+	public function notifyClient($sid, $pspid, $amt,  $cardno="", $cardid=0, $exp=null, $sAdditionalData="", SurePayConfig &$obj_SurePay=null, $fee=0 )
 	{
 		$sDeviceID = $this->_obj_TxnInfo->getDeviceID();
 		$sEmail = $this->_obj_TxnInfo->getEMail();
@@ -348,7 +384,11 @@ abstract class Callback extends EndUserAccount
 		$sBody .= "&language=". urlencode($this->_obj_TxnInfo->getLanguage() );
 		if (intval($cardid) > 0) { $sBody .= "&card-id=". $cardid; }
 		if (empty($cardno) === false) { $sBody .= "&card-number=". urlencode($cardno); }
-		if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true) { $sBody .= "&pspid=". urlencode($pspid); }
+		if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true)
+		{
+			$sBody .= "&pspid=". urlencode($pspid);
+			$sBody .= "&psp-name=". urlencode($this->getPSPName($pspid));
+        }
 		if ( strlen($this->_obj_TxnInfo->getDescription() ) > 0) { $sBody .= "&description=". urlencode($this->_obj_TxnInfo->getDescription() ); }
 		$sBody .= $this->getVariables();
 		$sBody .= "&hmac=". urlencode($this->_obj_TxnInfo->getHMAC() );
@@ -371,6 +411,19 @@ abstract class Callback extends EndUserAccount
             $obj_CustomerInfo = CustomerInfo::produceInfo($this->getDBConn(), $this->_obj_TxnInfo->getAccountID());
             $sBody .= "&customer-country-id=". $obj_CustomerInfo->getCountryID();
         }
+        if (strlen($this->_obj_TxnInfo->getApprovalCode()) >0){
+        	$sBody .= "&approval-code=". $this->_obj_TxnInfo->getApprovalCode();
+        }
+
+        $aTxnAdditionalData = $this->_obj_TxnInfo->getAdditionalData();
+        if($aTxnAdditionalData !== null)
+        {
+            foreach ($aTxnAdditionalData as $key => $value)
+            {
+				$sBody .= "&custom-field[".$key."]=". $value;
+            }
+        }
+
         /* ----- Construct Body End ----- */
         $this->performCallback($sBody, $obj_SurePay ,0 ,$sid);
 	}
@@ -597,6 +650,23 @@ abstract class Callback extends EndUserAccount
 		return $RS["NAME"];
 	}
 
+    /**
+     * Returns the specified PSP's name
+     *
+     * @param 	integer $pspid	Unique ID for the PSP
+     * @return 	string
+     */
+    public function getPSPName($pspid)
+    {
+        $sql = "SELECT name
+				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl
+				WHERE id = ". intval($pspid) ." AND enabled = '1'";
+//		echo $sql ."\n";
+        $RS = $this->getDBConn($sql)->getName($sql);
+
+        return $RS["NAME"];
+    }
+
 	/**
 	 * Static method for retrieving mPoint's unique Transaction ID based on the Client's Order Number and
 	 * the Payment Service Provider who processed the payment transction.
@@ -718,9 +788,17 @@ abstract class Callback extends EndUserAccount
         case (Constants::iAMEX_ACQUIRER):
                 return new Amex($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["amex"]);
         case (Constants::iCHUBB_PSP):
-                return new CHUBB($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["chubb"]);
+            return new CHUBB($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["chubb"]);
+        case (Constants::iUATP_ACQUIRER):
+            return new UATP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["uatp"]);
+		case (Constants::iUATP_CARD_ACCOUNT):
+            return new UATPCardAccount($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["uatp"]);
         case (Constants::iEGHL_PSP):
             return new EGHL($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["eghl"]);
+        case (Constants::iGOOGLE_PAY_PSP) :
+            return new GooglePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["google-pay"]);
+        case (Constants::iCHASE_ACQUIRER):
+                return new Chase($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["chase"]);
         default:
 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
@@ -757,7 +835,7 @@ abstract class Callback extends EndUserAccount
     {
         $sessionObj = $this->getTxnInfo()->getPaymentSession();
         $isStateUpdated = $sessionObj->updateState();
-        if($isStateUpdated !== 1 )
+        if($isStateUpdated != 1)
         {
             return;
         }
@@ -789,7 +867,6 @@ abstract class Callback extends EndUserAccount
             $sBody .= "&expiry=". $exp;
         }
 
-        trigger_error("********************* ". $sBody, E_USER_NOTICE);
         /* Adding customer Info as part of the callback query params */
         if (($this->_obj_TxnInfo->getAccountID() > 0) === true )
         {

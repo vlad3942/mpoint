@@ -24,6 +24,8 @@ require_once(sCLASS_PATH ."/enduser_account.php");
 require_once(sCLASS_PATH ."/callback.php");
 // Require specific Business logic for the CPM PSP component
 require_once(sINTERFACE_PATH ."/cpm_psp.php");
+// Require specific Business logic for the CPM PSP component
+require_once(sINTERFACE_PATH ."/cpm_gateway.php");
 // Require specific Business logic for the DIBS component
 require_once(sCLASS_PATH ."/dibs.php");
 // Require specific Business logic for the WorldPay component
@@ -85,7 +87,10 @@ require_once(sCLASS_PATH ."/validate.php");
 require_once(sCLASS_PATH ."/ppro.php");
 // Require specific Business logic for the Citcon Wechat component
 require_once(sCLASS_PATH ."/citcon.php");
-
+// Require specific Business logic for the Paytabs component
+require_once(sCLASS_PATH ."/paytabs.php");
+// Require specific Business logic for the eGHL FPX component
+require_once(sCLASS_PATH ."/eghl.php");
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
  
@@ -220,13 +225,21 @@ for ($i=0; $i<count($obj_DOM->void); $i++)
 													$xml .= '<status code="1000"></status>';
 													$aMsgCds[$code] = "Success";
 													// Perform callback to Client
-													if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
+													if (strlen($obj_TxnInfo->getCallbackURL() ) > 0 && $obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === true)
 													{
 														$args = array("transact" => $obj_TxnInfo->getExternalID(),
 																	  "amount" => $amount);
 														$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
 													}
 												}
+												//Request send for refund the transaction,
+                                                //Once callback is receive 2003 state will update against transaction in general.php
+												else if($code == 1100) //Refund initiated
+                                                {
+                                                    header("HTTP/1.0 200 OK");
+													$xml .= '<status code="1000"></status>';
+													$aMsgCds[$code] = "Success";
+                                                }
 												else
 												{
 													header("HTTP/1.0 502 Bad Gateway");

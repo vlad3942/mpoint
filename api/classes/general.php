@@ -464,7 +464,7 @@ class General
 					orderid = '". $this->getDBConn()->escStr($oTI->getOrderID() ) ."', lang = '". $this->getDBConn()->escStr($oTI->getLanguage() ) ."',
 					mobile = ". floatval($oTI->getMobile() ) .", operatorid = ". $oTI->getOperator() .", email = '". $this->getDBConn()->escStr($oTI->getEMail() ) ."',
 					logourl = '". $this->getDBConn()->escStr($oTI->getLogoURL() ) ."', cssurl = '". $this->getDBConn()->escStr($oTI->getCSSURL() ) ."',
-					accepturl = '". $this->getDBConn()->escStr($oTI->getAcceptURL() ) ."', cancelurl = '". $this->getDBConn()->escStr($oTI->getCancelURL() ) ."',
+					accepturl = '". $this->getDBConn()->escStr($oTI->getAcceptURL() ) ."', declineurl = '". $this->getDBConn()->escStr($oTI->getDeclineURL() ) ."', cancelurl = '". $this->getDBConn()->escStr($oTI->getCancelURL() ) ."',
 					callbackurl = '". $this->getDBConn()->escStr($oTI->getCallbackURL() ) ."', iconurl = '". $this->getDBConn()->escStr($oTI->getIconURL() ) ."',
 					authurl = '". $this->getDBConn()->escStr($oTI->getAuthenticationURL() ) ."', customer_ref = '". $this->getDBConn()->escStr($oTI->getCustomerRef() ) ."',
 					gomobileid = ". $oTI->getGoMobileID() .", auto_capture = '". ($oTI->useAutoCapture() === true ? "1" : "0") ."', markup = '". $this->getDBConn()->escStr($oTI->getMarkupLanguage() ) ."',
@@ -1288,14 +1288,15 @@ class General
         return $code;
     }
 
-    public function getPreviousFailedAttempts($orderid)
+    public function getPreviousFailedAttempts($orderid, $clientid)
     {
         $aPMArray = array();
         $aRejectedStates = array(Constants::iPAYMENT_REJECTED_PSP_UNAVAILABLE_STATE);
-        $sql = "SELECT cardid FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn				
-				INNER JOIN (SELECT txnid, MAX(stateid) AS st FROM log.message_tbl GROUP BY txnid) p2 ON (txn.id = p2.txnid)
-				WHERE orderid = '" . trim($orderid) . "' AND enabled = true AND p2.st IN (".implode(",",$aRejectedStates).")";
-//			echo $sql ."\n";
+        $sql = "SELECT Txn.cardid FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
+                INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg on Txn.id = Msg.txnid
+                WHERE Txn.orderid = '" . trim($orderid) . "' AND Txn.enabled = true AND Txn.clientid = $clientid
+                GROUP BY Txn.id
+                HAVING MAX(Msg.stateid) IN (".implode(",",$aRejectedStates).")";
         $res = $this->getDBConn()->query($sql);
 
         while ($RS = $this->getDBConn()->fetchName($res) ) {
@@ -1320,5 +1321,28 @@ class General
         }
         return $attempts;
     }
+
+    public function getStaticRouteData($clientId = "")
+    {
+        $sql = "SELECT clientid, pspid
+                    FROM client" . sSCHEMA_POSTFIX . ".cardaccess_tbl
+                    WHERE pspid IN
+                          (SELECT id
+                           FROM system.psp_tbl
+                           WHERE capture_method <> 0)
+                    AND enabled ";
+         if($clientId !== "" )
+         {
+            $sql .= "AND clientid = $clientId" ;
+         }
+         $aRS = $this->getDBConn()->getAllNames($sql);
+         return $aRS;
+    }
+
+    public static function getMaskCardNumber($cardno)
+    {
+        return substr($cardno, 0, 6) . str_repeat("*", strlen($cardno) - 10) . substr($cardno, -4);
+    }
+
 }
 ?>

@@ -82,6 +82,8 @@ require_once(sCLASS_PATH ."/citcon.php");
 require_once(sCLASS_PATH ."/ppro.php");
 // Require specific Business logic for the Amex component
 require_once(sCLASS_PATH ."/amex.php");
+// Require specific Business logic for the chase component
+require_once(sCLASS_PATH ."/chase.php");
 /**
  * Input XML format
  *
@@ -146,8 +148,10 @@ try
 
     array_push($aStateId,$iStateID);
     $propertyValue = $obj_TxnInfo->getClientConfig()->getAdditionalProperties("3DVERIFICATION");
-
+    //Log the incoming status code.
+    $obj_mPoint->newMessage($obj_TxnInfo->getID(), $iStateID, $sRawXML);
     if($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER && $propertyValue == true && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
+
         if($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
 
             $mvault = new MVault($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['mvault']);
@@ -163,6 +167,15 @@ try
             $cryptogram = $card_obj->card->{'info-3d-secure'}->addChild('cryptogram', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram);
             $cryptogram->addAttribute('eci', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['eci']);
             $cryptogram->addAttribute('algorithm-id', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['algorithm-id']);
+            if(count($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'additional-data'}) > 0)
+			{
+				$additionalData = $card_obj->card->{'info-3d-secure'}->addChild('additional-data');
+				foreach ($obj_XML->xpath('threed-redirect/transaction/card/info-3d-secure/additional-data/param') as $item)
+				{
+					$param = $additionalData->addChild('param',$item);
+					$param->addAttribute('name',$item['name']);
+				}
+			}
 
             $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
                             SET extid=''
@@ -223,9 +236,6 @@ catch (HTTPException $e)
     $xml .= '<status code="'. $e->getCode() .'">'. htmlspecialchars($e->getMessage(), ENT_NOQUOTES). '</status>';
     trigger_error($e->getMessage() ."\n". $HTTP_RAW_POST_DATA, E_USER_WARNING);
 }
-
-//Log the incoming status code.
-$obj_mPoint->newMessage($obj_TxnInfo->getID(), $iStateID, $sRawXML);
 
 header("Content-Type: text/xml; charset=\"UTF-8\"");
 echo '<?xml version="1.0" encoding="UTF-8"?>';

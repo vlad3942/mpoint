@@ -93,6 +93,13 @@ require_once(sCLASS_PATH ."/ppro.php");
 require_once(sCLASS_PATH ."/citcon.php");
 // Require specific Business logic for the Amex component
 require_once(sCLASS_PATH ."/amex.php");
+// Require specific Business logic for the Paytabs component
+require_once(sCLASS_PATH ."/paytabs.php");
+// Require specific Business logic for the eGHL FPX component
+require_once(sCLASS_PATH ."/eghl.php");
+// Require specific Business logic for the chase component
+require_once(sCLASS_PATH ."/chase.php");
+
 header("Content-Type: application/x-www-form-urlencoded");
 
 // Require Business logic for the validating client Input
@@ -156,13 +163,17 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 						
 						$aMsgCds[$code] = "Success";
 						// Perform callback to Client
-						if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
+						if (strlen($obj_TxnInfo->getCallbackURL() ) > 0 && $obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_REFUNDED_STATE) === true)
 						{
 							$args = array("transact" => $obj_TxnInfo->getExternalID(),
 										  "amount" => $_REQUEST['amount']);
 							$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
 						}
 					}
+                    else if ($code == 1100) {
+                        header("HTTP/1.0 200 OK");
+                        $aMsgCds[$code] = "Success";
+                    }
 					else
 					{
 						header("HTTP/1.0 502 Bad Gateway");

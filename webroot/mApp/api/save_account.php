@@ -142,6 +142,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						//check if account already exists, and auth-token is present
                         $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
 
+                        if($iAccountID < 0) {
+                            //account needs to be enabled
+                            $result = EndUserAccount::enableAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
+                            if($result === true){
+                                $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
+                            }
+                        }
+
+
                         if ($iAccountID > -1) {
                             if (count($obj_DOM->{'save-account'}[$i]->{'auth-token'}) == 1
                                 && (count($obj_DOM->{'save-account'}[$i]->{'auth-url'}) == 1 || strlen($obj_ClientConfig->getAuthenticationURL()) > 0)
@@ -160,19 +169,20 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                         if ($code > 0)
                         {
-
                             //update or create new account
                             $code = $obj_mPoint->savePassword((float)$obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'save-account'}[$i]->password, $obj_CountryConfig);
+                            //get the account id if new account was created
+                            if($iAccountID < 0)
+                            {
+                                $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
+                            }
                         }
 						// New Account automatically created when Password was saved
 						if ($code == 1 && $obj_ClientConfig->smsReceiptEnabled() === true)
 						{
 //							$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $_SESSION['obj_TxnInfo']);
 						}
-						if ($iAccountID < 0)
-						{
-                            $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
-                        }
+
 
                         if (count($obj_DOM->{'save-account'}[$i]->card) == 1 && count($obj_DOM->{'save-account'}[$i]->{'card'}->name) > 0)
                         {
@@ -225,7 +235,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								// One Time Password sent
 								if ($obj_mPoint->sendOneTimePassword(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $iAccountID, $obj_CountryConfig, (float) $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile) == 200)
 								{
-									$xml = '<status code="'. ($code+110) .'">Account information successfully saved and OTP sent</status>';
+									$xml = '<status code="'. ($code+110) .'" eua-id="'. intval($iAccountID) .'">Account information successfully saved and OTP sent</status>';
 								}
 								else
 								{
@@ -234,7 +244,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$xml = '<status code="91">Unable to send One Time Password</status>';
 								}
 							}
-							else { $xml = '<status code="'. ($code+100) .'">Account information successfully saved</status>'; }
+							else { $xml = '<status code="'. ($code+100) .'" eua-id="'. intval($iAccountID) .'">Account information successfully saved</status>'; }
 						}
 						else
 						{

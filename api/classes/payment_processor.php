@@ -9,6 +9,17 @@
  * @subpackage Visa Checkout
  * @version 1.00
  */
+
+/* ==================== Payment Processor Exception Classes Start ==================== */
+
+/**
+ * Exception class for all Payment Processor exceptions
+ */
+class PaymentProcessorException extends mPointException {}
+
+/* ==================== Payment Processor Exception Classes End ==================== */
+
+
 class PaymentProcessor
 {
     private $_objPSPConfig;
@@ -28,19 +39,37 @@ class PaymentProcessor
         $this->_objPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $iPSPID);
         $sPSPClassName = $this->_objPSPConfig->getName();
         $this->_setConnInfo($aConnInfo, $iPSPID);
-        if (empty($this->aConnInfo) === true)
-        {
-            $this->_objPSP = Callback::producePSP($oDB, $oTxt, $oTI, $aConnInfo, $this->_objPSPConfig);
+        try {
+            if (empty($this->aConnInfo) === true) {
+                $this->_objPSP = Callback::producePSP($oDB, $oTxt, $oTI, $aConnInfo, $this->_objPSPConfig);
+            } else if (class_exists($sPSPClassName) === true && empty($this->aConnInfo) === false) {
+                $this->_objPSP = new $sPSPClassName($oDB, $oTxt, $oTI, $this->aConnInfo);
+            } else {
+                throw new PaymentProcessorException("Could not construct PSP object for the given PSPID ".$iPSPID );
+            }
         }
-        else
+        catch (PaymentProcessorException $e)
         {
-            $this->_objPSP = new $sPSPClassName($oDB, $oTxt, $oTI, $this->aConnInfo);
+            trigger_error($e->getMessage(), E_USER_ERROR);
+            throw $e;
+        }
+        catch (CallbackException $e)
+        {
+            throw new mPointException($e->getMessage() );
         }
     }
 
-    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo)
+    public function getPSPConfig() { return $this->_objPSPConfig; }
+    public function getPSPInfo()  { return $this->_objPSP; }
+
+    public static function produceConfig(RDB $oDB, TranslateText $oTxt, TxnInfo $oTI, $iPSPID, $aConnInfo = array())
     {
         return new PaymentProcessor($oDB, $oTxt, $oTI, $iPSPID, $aConnInfo);
+    }
+
+    public function initialize($cardTypeId=-1, $cardToken='', $billingAddress = NULL, $clientInfo = NULL)
+    {
+        return $this->_objPSP->initialize($this->_objPSPConfig,$this->_objPSP->getTxnInfo()->getAccountID(), false, $cardTypeId, $cardToken, $billingAddress, $clientInfo);
     }
 
     public function authorize($obj_Elem)
@@ -48,13 +77,38 @@ class PaymentProcessor
         return $this->_objPSP->authorize($this->_objPSPConfig, $obj_Elem);
     }
 
-    public function tokenize($obj_Elem)
+    public function authenticate($obj_Elem)
     {
-        return $this->_objPSP->tokenize($this->_objPSPConfig, $obj_Elem);
+            return $this->_objPSP->authenticate( $obj_Elem);
+    }
+
+    public function tokenize($aConnInfo, $obj_Elem)
+    {
+        return $this->_objPSP->tokenize($aConnInfo, $this->_objPSPConfig, $obj_Elem);
     }
 
     public function processCallback($obj_Elem)
     {
         return $this->_objPSP->processCallback($this->_objPSPConfig, $obj_Elem);
+    }
+
+    public function refund($iAmount=-1)
+    {
+        return $this->_objPSP->refund($iAmount);
+    }
+
+    public function getPaymentData($obj_Elem, $mode = null)
+    {
+        if ($mode != null) {
+            $paymentData = $this->_objPSP->getPaymentData($this->_objPSPConfig, $obj_Elem, $mode);
+        } else {
+            $paymentData = $this->_objPSP->getPaymentData($this->_objPSPConfig, $obj_Elem);
+        }
+        return $paymentData;
+    }
+
+    public function getPSPConfigForRoute($obj_Elem, $b)
+    {
+        return $this->_objPSP->getPSPConfigForRoute($obj_Elem, $b);
     }
 }

@@ -405,6 +405,11 @@ ALTER TABLE system.ProductType_Tbl ADD COLUMN  modified timestamp without time z
 ALTER TABLE system.ProductType_Tbl ADD COLUMN  enabled boolean DEFAULT true ;
 
 
+ALTER TABLE log.transaction_tbl
+  ADD approval_action_code varchar(40) NULL;
+COMMENT ON COLUMN log.transaction_tbl.approval_action_code
+IS 'This field contains an action code and approval code
+"approval code":"action code"'
 
 --PPro PSPCard
 
@@ -413,6 +418,53 @@ INSERT INTO system.pspcard_tbl (pspid, cardid, enabled) VALUES (46, 34, true);
 
 --PPro PSPCurrency
 
+-- Settlement Improvement
+ALTER TABLE system.psp_tbl ADD capture_method int DEFAULT 0;
+COMMENT ON COLUMN system.psp_tbl.capture_method IS '0 - manual
+2 - bulk capture
+3 - bulk refund
+6 - bulk capture + bulk  refund';
+
+CREATE TABLE log.settlement_tbl
+(
+  id serial PRIMARY KEY,
+  record_number int NOT NULL,
+  file_reference_number varchar(10) NOT NULL,
+  file_sequence_number int NOT NULL,
+  created timestamp DEFAULT now(),
+  client_id int NOT NULL,
+  psp_id int NOT NULL,
+  record_tracking_number varchar(20),
+  record_type varchar(20),
+  description varchar(100),
+  status varchar(10) DEFAULT 'active' NOT NULL,
+  CONSTRAINT settlement_tbl_client_tbl_id_fk FOREIGN KEY (client_id) REFERENCES client.client_tbl (id),
+  CONSTRAINT settlement_tbl_psp_tbl_id_fk FOREIGN KEY (psp_id) REFERENCES system.psp_tbl (id)
+)
+WITH (
+OIDS=FALSE
+);
+ALTER TABLE log.settlement_tbl
+  OWNER TO mpoint;
+
+CREATE TABLE log.settlement_record_tbl
+(
+  id            serial PRIMARY KEY,
+  settlementid  int,
+  transactionid int,
+  description varchar(100),
+  CONSTRAINT settlement_record_tbl_settlement_tbl_id_fk FOREIGN KEY (settlementid) REFERENCES log.settlement_tbl (id),
+  CONSTRAINT settlement_record_tbl_transaction_tbl_id_fk FOREIGN KEY (transactionid) REFERENCES log.transaction_tbl (id)
+)
+WITH (
+OIDS=FALSE
+);
+ALTER TABLE log.settlement_record_tbl
+  OWNER TO mpoint;
+
+-------- CMP-2426: PCI Password expose --------
+DROP TABLE admin.user_tbl CASCADE;
+-------- CMP-2426: PCI Password expose --------
 INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 840, 'USD', true);
 INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 458, 'MYR', true);
 INSERT INTO system.pspcurrency_tbl (pspid, currencyid, name, enabled) VALUES (46, 978, 'EUR', true);
@@ -431,3 +483,11 @@ INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, 
 
 -- Drop orderId index --
 DROP INDEX IF EXISTS log.session_tbl_orderid_uindex;
+
+UPDATE system.psp_tbl SET name = 'ApplePay' WHERE name = 'Apple Pay';
+UPDATE system.psp_tbl SET name = 'VisaCheckout' WHERE name = 'VISA Checkout';
+UPDATE system.psp_tbl SET name = 'MasterPass' WHERE name = 'Master Pass';
+UPDATE system.psp_tbl SET name = 'AMEXExpressCheckout' WHERE name = 'AMEX Express Checkout';
+UPDATE system.psp_tbl SET name = 'AndroidPay' WHERE name = 'Android Pay';
+UPDATE system.psp_tbl SET name = 'GooglePay' WHERE name = 'Google Pay';
+UPDATE system.psp_tbl SET name = 'MVault' WHERE name = 'mVault';

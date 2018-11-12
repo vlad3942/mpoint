@@ -146,6 +146,12 @@ class TxnInfo
 	 * @var string
 	 */
 	private $_sAcceptURL;
+    /**
+     * Absolute URL where the Customer should be returned to upon Transaction failure
+     *
+     * @var string
+     */
+	private $_sDeclineURL;
 	/**
 	 * Absolute URL where the Customer should be returned to in case he / she cancels the Transaction midway
 	 *
@@ -274,6 +280,12 @@ class TxnInfo
 	 * @var integer
 	 */
 	private $_iAttempt;
+    /**
+     * Transaction's virtual payment data that is stored in a tokenized format
+     *
+     * @var string
+     */
+    private $_sVirtualPaymentToken;
 
     /**
      * Transaction's attempt number
@@ -332,6 +344,16 @@ class TxnInfo
 
     private $_iProductType;
 
+
+    private $_createdTimestamp;
+
+    /**
+     * Transaction's Additional Data
+     *
+     * @var array
+     */
+    private $_aAdditionalData;
+
     /**
 	 * Default Constructor
 	 *
@@ -372,7 +394,7 @@ class TxnInfo
 	 * @param	long $cptamt		The Full amount that has been captured for the Transaction
 	 *
 	 */
-	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt, $paymentSession = 1, $productType = 100, $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$mask="",$expiry="",$token="",$authOriginalData="")
+	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt, $paymentSession = 1, $productType = 100, $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[])
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
@@ -394,6 +416,7 @@ class TxnInfo
 		$this->_sLogoURL = trim($lurl);
 		$this->_sCSSURL = trim($cssurl);
 		$this->_sAcceptURL = trim($accurl);
+        $this->_sDeclineURL = trim($declineurl);
 		$this->_sCancelURL = trim($curl);
 		$this->_sCallbackURL = trim($cburl);
 		$this->_sIconURL = trim($iurl);
@@ -422,17 +445,22 @@ class TxnInfo
         $this->_token = trim($token);
         $this->_authOriginalData = trim($authOriginalData);
         $this->_iAttempt = (integer) $attempt;
+        $this->_sVirtualPaymentToken = trim($virtualtoken);
 
-        $codes = explode(":",$this->_sExternalID);
+        $codes = explode(":",$approvalActionCode);
         if(count($codes) == 2){
             $this->_approvalCode = $codes[0];
             $this->_actionCode = $codes[1];
+        }else{
+        	$this->_approvalCode = $approvalActionCode;
         }
 
         $this->_obj_PaymentSession = $paymentSession;
         $this->_obj_PaymentSession->updateTransaction($this->_iID);
 
         $this->_iProductType = (integer) $productType;
+        $this->_createdTimestamp =$createdTimestamp;
+        $this->_aAdditionalData = $additionalData;
 	}
 
 	/**
@@ -568,6 +596,13 @@ class TxnInfo
 	 */
 	public function getAcceptURL() { return $this->_sAcceptURL; }
 
+    /**
+     * Returns the Absolute URL where the Customer should be returned to upon Transaction failure
+     *
+     * @return 	string
+     */
+    public function getDeclineURL() { return $this->_sDeclineURL; }
+
 	/**
 	 * Returns the Absolute URL where the Customer should be returned to in case he / she cancels the Transaction midway
 	 *
@@ -627,6 +662,12 @@ class TxnInfo
 	 * @return 	integer		Unique ID for the End-User's prepaid account or -1 if no account has been associated
 	 */
 	public function getAccountID() { return $this->_iAccountID; }
+	/**
+	 * Returns the txn issuer approval code
+	 *
+	 * @return 	string		
+	 */
+	public function getApprovalCode() { return $this->_approvalCode; }
 	/**
 	 * Returns the Client's Reference for the Customer
 	 *
@@ -706,8 +747,47 @@ class TxnInfo
 	 * @return 	integer		Attempt number
 	 * */
 	public function getAttemptNumber() {  return $this->_iAttempt;  }
+    /*
+     * Returns the Transactions's virtual token
+     *
+     * @return 	string		virtual token
+     * */
+    public function getVirtualToken() {  return $this->_sVirtualPaymentToken;  }
 
 	public function getPaymentSession() { return $this->_obj_PaymentSession;}
+
+
+	/*
+     * Returns the Transactions's Additional data
+	 * if param is sent returns value of property
+     *
+	 * @param string    key
+     * @return 	string
+     * */
+	public function getAdditionalData($key = "")
+    {
+        try
+        {
+            if (empty($key) === true)
+            {
+                if (count($this->_aAdditionalData) > 0)
+                {
+                    return $this->_aAdditionalData;
+                }
+                return null;
+            }
+            if ($this->_aAdditionalData != null && array_key_exists($key, $this->_aAdditionalData) === true)
+            {
+                return $this->_aAdditionalData[$key];
+            }
+        }
+        catch (Exception $e)
+        {
+
+        }
+        return null;
+    }
+
 	/**
 	 * Converts the data object into XML.
 	 * If a User Agent Profile is provided, the method will automatically calculate the width and height of the client logo
@@ -760,7 +840,7 @@ class TxnInfo
 			$iHeight = iCLIENT_LOGO_SCALE ."%";
 		}
 
-		$xml  = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'" gmid="'. $this->_iGoMobileID .'" mode="'. $this->_iMode .'" eua-id="'. $this->_iAccountID .'" psp-id="'. $this->_iPSPID .'" card-id="'. $this->_iCardID .'" external-id="'. htmlspecialchars($this->getExternalID(), ENT_NOQUOTES) .'">';
+		$xml  = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'" gmid="'. $this->_iGoMobileID .'" mode="'. $this->_iMode .'" eua-id="'. $this->_iAccountID .'" attempt="'. $this->_iAttempt.'" psp-id="'. $this->_iPSPID .'" card-id="'. $this->_iCardID .'" external-id="'. htmlspecialchars($this->getExternalID(), ENT_NOQUOTES) .'">';
 		$xml .= '<captured-amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CurrencyConfig->getCode() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $this->_lCapturedAmount .'</captured-amount>';
 		$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency-id="'. $this->getCurrencyConfig()->getID() .'" currency="'.$this->getCurrencyConfig()->getCode() .'" decimals="'. $this->getCurrencyConfig()->getDecimals().'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $this->_lAmount .'</amount>';
 		$xml .= '<fee country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CurrencyConfig->getCode() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $this->_iFee .'</fee>';
@@ -769,7 +849,7 @@ class TxnInfo
 		$xml .= '<reward country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">'. $this->_iReward .'</reward>';
 		$xml .= '<refund country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CountryConfig->getCurrency() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $this->_iRefund .'</refund>';
 		$xml .= '<orderid>'. $this->_sOrderID .'</orderid>';
-		$xml .= '<mobile country-id="'. intval($this->_iOperatorID/100) .'">'. $this->_sMobile .'</mobile>';
+		$xml .= '<mobile country-id="'. intval($this->_iOperatorID/100) .'" country-code="'. $this->_obj_CountryConfig->getCountryCode() .'">'. $this->_sMobile .'</mobile>';
 		$xml .= '<operator>'. $this->_iOperatorID .'</operator>';
 		$xml .= '<email>'. $this->_sEMail .'</email>';
 		$xml .= '<device-id>'. $this->_sDeviceID .'</device-id>';
@@ -781,7 +861,8 @@ class TxnInfo
 		$xml .= '<css-url>'. htmlspecialchars($this->_sCSSURL, ENT_NOQUOTES) .'</css-url>';
 		$xml .= '<accept-url>'. htmlspecialchars($this->_sAcceptURL, ENT_NOQUOTES) .'</accept-url>';
 		$xml .= '<cancel-url>'. htmlspecialchars($this->_sCancelURL, ENT_NOQUOTES) .'</cancel-url>';
-		$xml .= '<callback-url>'. htmlspecialchars($this->_sCallbackURL, ENT_NOQUOTES) .'</callback-url>';
+        $xml .= '<decline-url>'. htmlspecialchars($this->_sDeclineURL, ENT_NOQUOTES) .'</decline-url>';
+        $xml .= '<callback-url>'. htmlspecialchars($this->_sCallbackURL, ENT_NOQUOTES) .'</callback-url>';
 		$xml .= '<icon-url>'. htmlspecialchars($this->_sIconURL, ENT_NOQUOTES) .'</icon-url>';
 		$xml .= '<auth-url>'. htmlspecialchars($this->_sAuthenticationURL, ENT_NOQUOTES) .'</auth-url>';
 		$xml .= '<language>'. $this->_sLanguage .'</language>';
@@ -792,6 +873,13 @@ class TxnInfo
 		$xml .= '<description>'. htmlspecialchars($this->_sDescription, ENT_NOQUOTES) .'</description>';
 		$xml .= '<ip>'. htmlspecialchars($this->_sIP, ENT_NOQUOTES) .'</ip>';
 		$xml .= '<hmac>'. htmlspecialchars($this->getHMAC(), ENT_NOQUOTES) .'</hmac>';
+        $xml .= '<created-date>'. htmlspecialchars(date("Ymd", strtotime($this->getCreatedTimestamp())), ENT_NOQUOTES) .'</created-date>'; //CCYYMMDD
+        $xml .= '<created-time>'. htmlspecialchars(date("His", strtotime($this->getCreatedTimestamp())), ENT_NOQUOTES) .'</created-time>'; //hhmmss
+
+        if($this->getAdditionalData("booking-ref") != null)
+        {
+            $xml .= '<booking-ref>'. htmlspecialchars($this->getAdditionalData("booking-ref"), ENT_NOQUOTES) .'</booking-ref>';
+        }
 
 		if(!empty($this->_token))
             $xml .= '<token>'.htmlspecialchars($this->_token, ENT_NOQUOTES).'</token>';
@@ -816,6 +904,16 @@ class TxnInfo
 			
 			$xml .= $this->getOrdersXML();
 		}
+		if($this->getAdditionalData() != null)
+        {
+            $xml .= "<additional-data>";
+            foreach ($this->getAdditionalData() as $key=>$value)
+            {
+                $xml .= "<param name='".$key."'>".$value."</param>";
+            }
+            $xml .="</additional-data>";
+        }
+
 		$xml .= '</transaction>';
 
 		return $xml;
@@ -840,8 +938,8 @@ class TxnInfo
 
 	private static function _constProduceQuery()
 	{
-		$sql = "SELECT t.id, typeid, countryid,currencyid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, extid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, cancelurl, callbackurl, iconurl, \"mode\", auto_capture, gomobileid,
-						t.clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, t.pspid, fee, captured, cardid, deviceid, mask, expiry, token, authoriginaldata,attempt,sessionid, producttype
+		$sql = "SELECT t.id, typeid, countryid,currencyid, amount, Coalesce(points, -1) AS points, Coalesce(reward, -1) AS reward, orderid, extid, mobile, operatorid, email, lang, logourl, cssurl, accepturl, declineurl, cancelurl, callbackurl, iconurl, \"mode\", auto_capture, gomobileid,
+						t.clientid, accountid, keywordid, Coalesce(euaid, -1) AS euaid, customer_ref, markup, refund, authurl, ip, description, t.pspid, fee, captured, cardid, deviceid, mask, expiry, token, authoriginaldata,attempt,sessionid, producttype,approval_action_code, t.created,virtualtoken
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl t";
 
 		return $sql;
@@ -861,7 +959,7 @@ class TxnInfo
 			$obj_ClientConfig = ClientConfig::produceConfig($obj, $RS["CLIENTID"], $RS["ACCOUNTID"], $RS["KEYWORDID"]);
 			$obj_CountryConfig = CountryConfig::produceConfig($obj, $RS["COUNTRYID"]);
 			$obj_CurrencyConfig = CurrencyConfig::produceConfig($obj, $RS["CURRENCYID"]);
-
+            $obj_AdditionaData = self::_produceAdditionalData($obj, $RS["ID"]);
             $paymentSession = null;
             if($RS["SESSIONID"] == -1){
                 $paymentSession = PaymentSession::Get($obj, $obj_ClientConfig,$obj_CountryConfig,$obj_CurrencyConfig,$RS["AMOUNT"], $RS["ORDERID"],"",$RS["MOBILE"], $RS["EMAIL"], $RS["EXTID"],$RS["DEVICEID"], $RS["IP"]);
@@ -870,7 +968,7 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj,$RS["SESSIONID"]);
             }
 
-			$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig,$obj_CurrencyConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["ATTEMPT"], $paymentSession, $RS["PRODUCTTYPE"],$RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["MASK"],$RS["EXPIRY"],$RS["TOKEN"],$RS["AUTHORIGINALDATA"]);
+			$obj_TxnInfo = new TxnInfo($RS["ID"], $RS["TYPEID"], $obj_ClientConfig, $obj_CountryConfig,$obj_CurrencyConfig, $RS["AMOUNT"], $RS["POINTS"], $RS["REWARD"], $RS["REFUND"], $RS["ORDERID"], $RS["EXTID"], $RS["MOBILE"], $RS["OPERATORID"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LOGOURL"], $RS["CSSURL"], $RS["ACCEPTURL"], $RS["DECLINEURL"], $RS["CANCELURL"], $RS["CALLBACKURL"], $RS["ICONURL"], $RS["AUTHURL"], $RS["LANG"], $RS["MODE"], $RS["AUTO_CAPTURE"], $RS["EUAID"], $RS["CUSTOMER_REF"], $RS["GOMOBILEID"], false, $RS["MARKUP"], $RS["DESCRIPTION"], $RS["IP"], $RS["ATTEMPT"], $paymentSession, $RS["PRODUCTTYPE"],$RS["PSPID"], $RS["FEE"], $RS["CAPTURED"],$RS["CARDID"],$RS["MASK"],$RS["EXPIRY"],$RS["TOKEN"],$RS["AUTHORIGINALDATA"],$RS["APPROVAL_ACTION_CODE"],$RS['CREATED'],$RS["VIRTUALTOKEN"], $obj_AdditionaData);
 		}
 		return $obj_TxnInfo;
 	}
@@ -916,6 +1014,7 @@ class TxnInfo
 			if (array_key_exists("logo-url", $misc) === false) { $misc["logo-url"] = $obj->getLogoURL(); }
 			if (array_key_exists("css-url", $misc) === false) { $misc["css-url"] = $obj->getCSSURL(); }
 			if (array_key_exists("accept-url", $misc) === false) { $misc["accept-url"] = $obj->getAcceptURL(); }
+            if (array_key_exists("decline-url", $misc) === false) { $misc["decline-url"] = $obj->getDeclineURL(); }
 			if (array_key_exists("cancel-url", $misc) === false) { $misc["cancel-url"] = $obj->getCancelURL(); }
 			if (array_key_exists("callback-url", $misc) === false) { $misc["callback-url"] = $obj->getCallbackURL(); }
 			if (array_key_exists("icon-url", $misc) === false) { $misc["icon-url"] = $obj->getIconURL(); }
@@ -935,11 +1034,17 @@ class TxnInfo
 			if (array_key_exists("fee", $misc) === false) { $misc["fee"] = $obj->getFee(); }
 			if (array_key_exists("captured-amount", $misc) === false) { $misc["captured-amount"] = $obj->getCapturedAmount(); }
             if (array_key_exists("device-id", $misc) === false) { $misc["device-id"] = NULL ; }
-            if (array_key_exists("attempt", $misc) === false) { $misc["attempt"] = 1 ; }
+            if (array_key_exists("attempt", $misc) === false) { $misc["attempt"] = 0 ; }
             if (array_key_exists("sessionid", $misc) === false) { $misc["sessionid"] = $obj->getSessionId(); }
             if (array_key_exists("sessiontype", $misc) === false) { $misc["sessiontype"] = 1; }
             if (array_key_exists("producttype", $misc) === false) { $misc["producttype"] = 100; }
-
+            if (array_key_exists("mask", $misc) === false) { $misc["mask"] = $obj->getCardMask(); }
+            if (array_key_exists("expiry", $misc) === false) { $misc["expiry"] = $obj->getCardExpiry(); }
+            if (array_key_exists("token", $misc) === false) { $misc["token"] = $obj->getToken(); }
+            if (array_key_exists("authoriginaldata", $misc) === false) { $misc["authoriginaldata"] = $obj->getAuthoriginalData(); }
+            if (array_key_exists("approval_action_code", $misc) === false) { $misc["approval_action_code"] = $obj->getApprovalActionCode(); }
+            if (array_key_exists("created", $misc) === false) { $misc["created"] = $obj->getCreatedTimestamp(); }
+            if (array_key_exists("additionaldata", $misc) === false) { $misc["additionaldata"] = $obj->getAdditionalData(); }
             $paymentSession = null;
             if( $misc["sessionid"] == -1){
                 $paymentSession = PaymentSession::Get($obj_db, $misc["client-config"],$misc["country-config"],$misc["currency-config"],$misc["amount"], $misc["orderid"],$misc["sessiontype"],$misc["mobile"], $misc["email"], $misc["extid"],$misc["device-id"], $misc["ip"]);
@@ -948,7 +1053,7 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj_db,$misc["sessionid"]);
             }
 
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["country-config"], $misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"],  $misc["device-id"],$misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"], $misc["psp-id"],  $misc["fee"], $misc["captured-amount"], $misc["card-id"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $misc["client-config"], $misc["country-config"], $misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"],  $misc["device-id"],$misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $misc["mode"], $misc["auto-capture"], $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"], $misc["psp-id"],  $misc["fee"], $misc["captured-amount"], $misc["card-id"],$misc["mask"],$misc["expiry"],$misc["token"],$misc["authoriginaldata"],$misc["approval_action_code"],$misc["created"],"",$misc["additionaldata"]);
 			break;
 		case ($obj instanceof ClientConfig):	// Instantiate from array of Client Input
 			if (array_key_exists("country-config", $misc) === false) { $misc["country-config"] = $obj->getCountryConfig(); }
@@ -976,7 +1081,7 @@ class TxnInfo
                 $paymentSession = PaymentSession::Get($obj_db,$misc["sessionid"]);
             }
 
-			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"]);
+			$obj_TxnInfo = new TxnInfo($id, $misc["typeid"], $obj, $misc["country-config"],$misc["currency-config"], $misc["amount"], $misc["points"], $misc["reward"], $misc["refund"], $misc["orderid"], $misc["extid"], $misc["mobile"], $misc["operator"], $misc["email"], $misc["device-id"], $misc["logo-url"], $misc["css-url"], $misc["accept-url"], $misc["decline-url"], $misc["cancel-url"], $misc["callback-url"], $misc["icon-url"], $misc["auth-url"], $misc["language"], $obj->getMode(), $obj->useAutoCapture(), $misc["accountid"], @$misc["customer-ref"], $misc["gomobileid"], $misc["auto-store-card"], $misc["markup"], $misc["description"], $misc["ip"], $misc["attempt"], $paymentSession, $misc["producttype"]);
 			break;
 		case ($obj_db instanceof RDB):		// Instantiate from Transaction Log
             $obj = $obj_db;
@@ -1004,6 +1109,7 @@ class TxnInfo
 			$RS = $obj->getName($sql);
 			$obj_TxnInfo = self::_produceFromResultSet($obj, $RS);
 
+
 			// Transaction found
 			if ( ($obj_TxnInfo instanceof TxnInfo) === false) { throw new TxnInfoException("Transaction with ID: ". $id ." not found". $sDebug, 1001); }
 			break;
@@ -1015,6 +1121,21 @@ class TxnInfo
 
 		return $obj_TxnInfo;
 	}
+
+	function  _produceAdditionalData($_OBJ_DB, $txnId)
+    {
+        $additionalData = [];
+        $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Transaction' and externalid=" . $txnId;
+        $rsa = $_OBJ_DB->getAllNames ( $sqlA );
+        if (empty($rsa) === false )
+        {
+            foreach ($rsa as $rs)
+            {
+                $additionalData[$rs["NAME"] ] = $rs ["VALUE"];
+            }
+        }
+        return $additionalData;
+    }
 
 	public function getMessageHistory(RDB $obj_DB,$testingRequset = false)
 	{
@@ -1328,5 +1449,64 @@ class TxnInfo
 	    return $this->_token;
     }
 
+    /**
+     * Returns the Card Mask.
+     *
+     * @return 	String
+     */
+    function getCardMask() {
+        return $this->_mask;
+    }
+
+    /**
+     * Returns the Card Expiry.
+     *
+     * @return 	String
+     */
+    function getCardExpiry() {
+        return $this->_expiry;
+    }
+
+    /**
+     * Returns the Auth original Data
+     *
+     * @return 	String
+     */
+    function getAuthoriginalData() {
+        return $this->_authOriginalData;
+    }
+
+    /**
+     * Returns the Approcal and action code.
+     *
+     * @return 	String
+     */
+    function getApprovalActionCode() {
+        return $this->_approvalCode. ":".$this->_actionCode;
+    }
+
+    /**
+     * Returns the Transaction created date and time.
+     *
+     * @return 	String
+     */
+    function getCreatedTimestamp() {
+        return $this->_createdTimestamp;
+    }
+
+    function updateCardDetails(RDB $obj_DB, $mask, $expiry)
+    {
+       try
+       {
+           $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+                    SET  mask='" . $mask . "' , expiry='" . $expiry . "'
+                    WHERE id=". $this->getID();
+           $obj_DB->query($sql);
+       }
+       catch (mPointException $e)
+       {
+            trigger_error("Failed to update card details (log.transaction_tbl)", E_USER_ERROR);
+       }
+    }
 }
 ?>
