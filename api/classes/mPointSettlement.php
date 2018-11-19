@@ -284,7 +284,8 @@ abstract class mPointSettlement
         $_OBJ_DB->query($sql);
     }
 
-    protected function _insertSettlementRecords($_OBJ_DB){
+    protected function _insertSettlementRecords($_OBJ_DB)
+    {
         $sql = "INSERT INTO log" . sSCHEMA_POSTFIX . ".settlement_record_tbl 
                    (settlementid, transactionid) 
                    VALUES ($this->_iSettlementId, ". $this->_arrayTransactionIds[0] .")";
@@ -320,7 +321,7 @@ abstract class mPointSettlement
     {
         $sql = "SELECT psp_id, client_id
                 FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl
-                WHERE status = '".Constants::sSETTLEMENT_REQUEST_WAITING."' 
+                WHERE status = '".Constants::sSETTLEMENT_REQUEST_WAITING."'
                 GROUP BY psp_id, client_id";
 
         $res = $_OBJ_DB->getName($sql);
@@ -335,6 +336,30 @@ abstract class mPointSettlement
 
     abstract protected function _parseConfirmationReport($_OBJ_DB, $response);
 
+    private function _getSettlementInProgress($_OBJ_DB)
+    {
+            $settlementInProgressXML = "";
+           $sql = "SELECT record_number, file_reference_number, file_sequence_number, created, to_char(now()-created,'dd/HH') as pending_from, description
+                           FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl
+                           WHERE status = '".Constants::sSETTLEMENT_REQUEST_WAITING."'
+                           and client_id= ".$this->_objClientConfig->getID()." and
+                           psp_id = ".$this->_iPspId."
+                           ";
+
+           $aRS = $_OBJ_DB->getAllNames($sql);
+
+           if (is_array($aRS) === true && count($aRS) > 0)
+           {
+               $settlementInProgressXML .= '<settlement-in-progress>';
+              foreach ($aRS as $rs)
+              {
+                  // pending-duration attribute describe duration of file from created date in format dd/HH
+                  $settlementInProgressXML .= '<file file-reference-number="'.$rs["FILE_REFERENCE_NUMBER"].'"  file_sequence_number="'.$rs["FILE_SEQUENCE_NUMBER"].'" description="'.$rs["DESCRIPTION"].'"  pending-duration="'.$rs["PENDING_FROM"].'" ></file>';
+              }
+               $settlementInProgressXML .= "</settlement-in-progress>";
+           }
+        return $settlementInProgressXML;
+    }
     public function getConfirmationReport($_OBJ_DB)
     {
         try
@@ -349,6 +374,7 @@ abstract class mPointSettlement
             $requestBody = '<?xml version="1.0" encoding="UTF-8"?><root><process-settlement>';
             $requestBody .= $this->_objClientConfig->toXML();
             $requestBody .= $this->_objPspConfig->toXML();
+            $requestBody .= $this->_getSettlementInProgress($_OBJ_DB);
             $requestBody .= '</process-settlement></root>';
 
             $obj_ConnInfo = $this->_constConnInfo($this->_objConnectionInfo["paths"]["process-settlement"]);
