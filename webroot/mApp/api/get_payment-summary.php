@@ -54,6 +54,8 @@ require_once(sCLASS_PATH ."/amexexpresscheckout.php");
 // Require specific Business logic for the Google Pay component
 require_once(sCLASS_PATH ."/googlepay.php");
 
+require_once(sCLASS_PATH ."/payment_processor.php");
+
 require_once(sCLASS_PATH ."/wallet_processor.php");
 
 ignore_user_abort(true);
