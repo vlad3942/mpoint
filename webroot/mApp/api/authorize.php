@@ -784,6 +784,11 @@ $iPrimaryRoute = $oRoute ;
                                                                             $xml .= '<status code="100">Payment authorized using  card</status>';
                                                                         }
                                                                         else if($code == "2000") { $xml .= '<status code="2000">Payment authorized using card</status>'; }
+                                                                        else if (strpos($code, '2005') !== false)
+                                                                        {
+                                                                            header("HTTP/1.1 303");
+                                                                            $xml .= $code;
+                                                                        }
                                                                         else if(is_null($token) == false) { $xml .= '<status code="'.$code.'">Globalcollect returned : '. $code .'</status>'; }
                                                                         // Error: Authorization declined
                                                                         else
@@ -858,6 +863,7 @@ $iPrimaryRoute = $oRoute ;
                                                                 $iTokenzationProcessor = intval($obj_mCard->getTokenizationRoute(intval(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ) ) );
                                                                 if(empty($iTokenzationProcessor) === false)
                                                                 {
+                                                                    $obj_TxnInfo = $obj_TxnInfo = TxnInfo::produceInfo( (integer) $obj_TxnInfo->getID(), $_OBJ_DB);
                                                                     $obj_TokenizationPSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($iTokenzationProcessor), $aHTTP_CONN_INFO);
                                                                     $sToken = $obj_TokenizationPSP->tokenize($aHTTP_CONN_INFO, $obj_Elem);
 

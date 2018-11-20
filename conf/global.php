@@ -409,7 +409,7 @@ $aHTTP_CONN_INFO["global-collect"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["global-collect"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["global-collect"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["global-collect"]["paths"]["initialize"] = "/mpoint/global-collect/initialize";
-$aHTTP_CONN_INFO["global-collect"]["paths"]["auth"] = "/mpoint/global-collect/authorize-payment";
+$aHTTP_CONN_INFO["global-collect"]["paths"]["auth"] = "/mpoint/global-collect/authorize";
 $aHTTP_CONN_INFO["global-collect"]["paths"]["capture"] = "/mpoint/global-collect/capture";
 $aHTTP_CONN_INFO["global-collect"]["paths"]["status"] = "/mpoint/global-collect/status";
 $aHTTP_CONN_INFO["global-collect"]["paths"]["refund"] = "/mpoint/global-collect/refund";
@@ -841,7 +841,7 @@ $aHTTP_CONN_INFO["eghl"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
 $aHTTP_CONN_INFO["eghl"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["eghl"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["eghl"]["contenttype"] = "text/xml";
-$aHTTP_CONN_INFO["eghl"]["paths"]["initialize"] = "/mpsp/eghl/initialize";
+$aHTTP_CONN_INFO["eghl"]["paths"]["initialize"] = "/mpoint/eghl/initialize";
 
 
 
