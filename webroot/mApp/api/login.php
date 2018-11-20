@@ -105,7 +105,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     $obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $iAccountID);
                                     $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
                                     //for existing accounts
-                                    if (empty($obj_Customer["customer-ref"]) === true) {
+                                    if (empty($obj_Customer["customer-ref"]) === true && count($obj_DOM->login[$i]->{'client-info'}->{'customer-ref'}) > 0) {
                                         $obj_Customer["customer-ref"] = (string) $obj_DOM->login[$i]->{'client-info'}->{'customer-ref'};
                                     }
 
