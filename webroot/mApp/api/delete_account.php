@@ -103,7 +103,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     $url = (string)$obj_DOM->{'delete-account'}[$i]->{'auth-url'};
                                 }
                                 if ($obj_Validator->valURL($url, $obj_ClientConfig->getAuthenticationURL()) == 10) {
-                                    $code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($url), CustomerInfo::produceInfo($_OBJ_DB, $iAccountID), trim($obj_DOM->{'delete-account'}[$i]->{'auth-token'}), intval($obj_DOM->{'delete-account'}[$i]["client-id"]));
+                                    $obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $iAccountID);
+                                    $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
+                                    //for existing accounts
+                                    if (empty($obj_Customer["customer-ref"]) === true && count($obj_DOM->{'delete-account'}[$i]->{'client-info'}->{'customer-ref'}) > 0) {
+                                        $obj_Customer["customer-ref"] = (string) $obj_DOM->{'delete-account'}[$i]->{'client-info'}->{'customer-ref'};
+                                    }
+
+                                    $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
+                                    $code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($url), $obj_CustomerInfo, trim($obj_DOM->{'delete-account'}[$i]->{'auth-token'}), intval($obj_DOM->{'delete-account'}[$i]["client-id"]));
                                 } else {
                                     $code = 8;
                                 }
