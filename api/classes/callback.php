@@ -846,6 +846,7 @@ abstract class Callback extends EndUserAccount
         $sBody .= "session-id=". $this->_obj_TxnInfo->getSessionId();
         $sBody .= "&orderid=". urlencode($this->_obj_TxnInfo->getOrderID() );
         $sBody .= "&status=". $sessionObj->getStateId();
+        $sBody .= "&amount=". $sessionObj->getAmount();
         $sBody .= "&mobile=". urlencode($this->_obj_TxnInfo->getMobile() );
         $sBody .= "&operator=". urlencode($this->_obj_TxnInfo->getOperator() );
         $sBody .= "&language=". urlencode($this->_obj_TxnInfo->getLanguage() );
