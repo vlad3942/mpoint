@@ -612,8 +612,8 @@ INSERT INTO client.cardaccess_tbl (clientid, cardid, pspid, countryid, stateid, 
 INSERT INTO client.cardaccess_tbl (clientid, cardid, pspid, countryid, stateid, enabled) VALUES (10007, 22, 52, 200, 1, true);
 
 -- Merchant MID configuration --
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10007, 52, 'nconline1', 'nconline1', '');
-UPDATE Client.MerchantAccount_Tbl set username = 'nconline1' WHERE clientid = 10007 AND pspid = 52;
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10007, 52, '', 'nconline1', 'nconline1');
+UPDATE Client.MerchantAccount_Tbl set username = 'nconline1',passwd = 'nconline1',name = '' WHERE clientid = 10007 AND pspid = 52;
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100007, 52, '-1');
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'USERNAME.PID', '355426', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=52;
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'PASSWORD.PID', 'CELLAIR1', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=52;
