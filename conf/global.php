@@ -859,6 +859,8 @@ $aHTTP_CONN_INFO["chase"]["paths"]["auth"] = "/mpsp/chase/authorize-payment";
 $aHTTP_CONN_INFO["chase"]["paths"]["initialize"] = "/mpsp/chase/initialize";
 $aHTTP_CONN_INFO["chase"]["paths"]["cancel"] = "/mpsp/chase/cancel";
 $aHTTP_CONN_INFO["chase"]["paths"]["authenticate"] = "/mpoint/authenticate";
+$aHTTP_CONN_INFO["chase"]["paths"]["settlement"] = "/mpsp/chase/payment-settlement";
+$aHTTP_CONN_INFO["chase"]["paths"]["process-settlement"] = "/mpsp/chase/process-settlement";
 
 
 
