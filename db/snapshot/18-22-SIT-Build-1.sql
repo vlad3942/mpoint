@@ -1,7 +1,7 @@
 -- Chase Payment Script --
 
 UPDATE System.PSP_Tbl set capture_method = 6 WHERE id = 52;
-UPDATE Client.MerchantAccount_Tbl set username = 'nconline1',passwd = 'nconline1',name = '' WHERE clientid = <> AND pspid = 52;
+UPDATE Client.MerchantAccount_Tbl set username = 'nconline1',passwd = 'nconline1',name = 'Chase Payment' WHERE clientid = <> AND pspid = 52;
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (124,52,'CAD');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (36,52,'AUD');
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (344,52,'HKD');
