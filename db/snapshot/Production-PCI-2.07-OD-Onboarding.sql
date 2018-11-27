@@ -17,7 +17,7 @@ INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) VALUES (764,48,'THB
 --Client Schema
 
 --Client
-INSERT INTO client.client_tbl (id, countryid, flowid, name, username, passwd, callbackurl, maxamount, lang, emailrcpt, method, terms, enabled, auto_capture, send_pspid, store_card, show_all_cards, max_cards, num_masked_digits, communicationchannels) VALUES (10018, 100, 1, 'Malindo Air', 'odMBE', '=4cj+H9Q,,^)z3MU', 'http://od.mretail.cellpointmobile.n/mOrder/sys/mpoint.php', 947483647, 'gb', false, 'mPoint', null, true, false, true, 3, false, 20, 2, 5);
+INSERT INTO client.client_tbl (id, countryid, flowid, name, username, passwd, callbackurl, maxamount, lang, emailrcpt, method, terms, enabled, auto_capture, send_pspid, store_card, show_all_cards, max_cards, num_masked_digits, communicationchannels) VALUES (10018, 100, 1, 'Malindo Air', 'odMBE', '=4cj+H9Q,,^)z3MU', 'http://od.mretail.cellpointmobile.net/mOrder/sys/mpoint.php', 947483647, 'gb', false, 'mPoint', null, true, false, true, 3, false, 20, 2, 5);
 INSERT INTO client.account_tbl (id, clientid, name, mobile, enabled, markup) VALUES (100181, 10018, 'Malindo - App', null, true, 'app');
 
 --Static Route
