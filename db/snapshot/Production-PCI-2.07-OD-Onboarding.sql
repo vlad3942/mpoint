@@ -2,15 +2,27 @@
 
 --PSP
 INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (48, 'CHUBB', 1);
+INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (51, 'eGHL',1);
+
+--Card
+INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength,paymenttype) VALUES (73, 'FPX', 23, -1, -1, -1,4);
 
 --psp card
 INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (8, 48, true);
 INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (7, 48, true);
+INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (73, 51, true);
+
+--Card prefix
+INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (73, 0, 0);
+
+--Card Pricing
+INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 73, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 458;
 
 --psp currency
 INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) VALUES (702,48,'SGD');
 INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) VALUES (840,48,'USD');
 INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) VALUES (764,48,'THB');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (458,51,'MYR');
 
 --Currency
 UPDATE system.country_tbl SET alpha2code = 'MM', alpha3code = 'MMR', code = 104, currencyid = 104 WHERE id = 652;
@@ -61,7 +73,7 @@ INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, 
 INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, position, preferred, psp_type) VALUES (10018, 8, true, 28, 613, 1, null, false, 1);
 INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, position, preferred, psp_type) VALUES (10018, 8, true, 28, 608, 1, null, false, 1);
 INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, position, preferred, psp_type) VALUES (10018, 8, true, 28, 652, 1, null, false, 1);
-
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, position, preferred, psp_type) VALUES (10018, 73,true, 51, 638, 1, null, false, 4);
 
 --countrycurrency
 
@@ -81,6 +93,7 @@ INSERT INTO client.merchantaccount_tbl (clientid, pspid, name, enabled, username
 INSERT INTO client.merchantaccount_tbl (clientid, pspid, name, enabled, username, passwd, stored_card) VALUES (10018, 28, '<name>', true, '<username>', '<password>', null);
 INSERT INTO client.merchantaccount_tbl (clientid, pspid, name, enabled, username, passwd, stored_card) VALUES (10018, 48, '<name>', true, '<username>', '<password>', null);
 INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10018, 36, 'mvault', '', '');
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10018, 51, '<name>','<username>', '<password>');
 
 --merchant sub account
 INSERT INTO client.merchantsubaccount_tbl (accountid, pspid, name, enabled) VALUES (100181, 1, '-1', true);
@@ -90,6 +103,7 @@ INSERT INTO client.merchantsubaccount_tbl (accountid, pspid, name, enabled) VALU
 INSERT INTO client.merchantsubaccount_tbl (accountid, pspid, name, enabled) VALUES (100181, 28, '-1', true);
 INSERT INTO client.merchantsubaccount_tbl (accountid, pspid, name, enabled) VALUES (100181, 48, '-1', true);
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name, enabled) VALUES (100181, 36, '-1', true);
+INSERT INTO client.merchantsubaccount_tbl (accountid, pspid, name, enabled) VALUES (100181, 51, '-1', true);
 
 --URL
 INSERT INTO client.url_tbl (urltypeid, clientid, url, enabled) VALUES (2, 10018, 'https://od.voyage.cellpointmobile.net/mpoint/mprofile/authenticate-user', true);
