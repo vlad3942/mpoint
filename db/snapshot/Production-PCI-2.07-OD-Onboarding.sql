@@ -145,5 +145,6 @@ INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type
 INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'pwd.7', '<PWD>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=27;
 INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'pwd.1', '<PWD>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=27;
 
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type) VALUES ('DR_SERVICE', 'true', true, 10018, 'client');
 
 INSERT INTO client.keyword_tbl (clientid, name, standard, enabled) VALUES (10018, 'OD', true, true);
