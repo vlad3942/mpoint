@@ -113,4 +113,4 @@ INSERT INTO client.url_tbl (urltypeid, clientid, url, enabled) VALUES (4, 10018,
 --additional property
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('mvault', 'true', 10018, 'client');
 
-
+INSERT INTO client.keyword_tbl (clientid, name, standard, enabled) VALUES (10018, 'OD', true, true);
