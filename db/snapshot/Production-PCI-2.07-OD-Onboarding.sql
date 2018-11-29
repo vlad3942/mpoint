@@ -112,28 +112,38 @@ INSERT INTO client.url_tbl (urltypeid, clientid, url, enabled) VALUES (4, 10018,
 
 --additional property
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('mvault', 'true', 10018, 'client');
-INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id , 'mid.7.MYR', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
-INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id , 'mid.7.HKD', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
-INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id , 'mid.7.SGD', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
-INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id , 'mid.7.AUD', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
-INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id , 'mid.7.LKR', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
-INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id , 'mid.7.CNY', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
-INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id , 'mid.7.THB', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
-INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id , 'mid.7.TWD', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
-INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id , 'mid.7.SAR', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
-INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id , 'mid.7.USD', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
-INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id , 'mid.7.IDR', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
-INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id , 'mid.8.MYR', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
-INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id , 'mid.8.HKD', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
-INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id , 'mid.8.SGD', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
-INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id , 'mid.8.AUD', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
-INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id , 'mid.8.LKR', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
-INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id , 'mid.8.CNY', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
-INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id , 'mid.8.THB', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
-INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id , 'mid.8.TWD', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
-INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id , 'mid.8.SAR', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
-INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id , 'mid.8.USD', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
-INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id , 'mid.8.IDR', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.7.MYR', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.7.HKD', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.7.SGD', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.7.AUD', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.7.LKR', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.7.CNY', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.7.THB', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.7.TWD', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.7.SAR', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.7.USD', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.7.IDR', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.8.MYR', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.8.HKD', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.8.SGD', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.8.AUD', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.8.LKR', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.8.CNY', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.8.THB', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.8.TWD', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.8.SAR', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.8.USD', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.8.IDR', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=28;
+
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'ccavenue.access.key', '<access key>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=25;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'ccavenue.working.key', '<working key>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=25;
+
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.8', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=27;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.7', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=27;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'mid.1', '<MID>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=27;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'pwd.8', '<PWD>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=27;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'pwd.7', '<PWD>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=27;
+INSERT INTO client.additionalproperty_tbl (externalid, key, value, enabled, type) SELECT id, 'pwd.1', '<PWD>', true, 'merchant' FROM client.merchantaccount_tbl WHERE clientid=10018 and pspid=27;
 
 
 INSERT INTO client.keyword_tbl (clientid, name, standard, enabled) VALUES (10018, 'OD', true, true);
