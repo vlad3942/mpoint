@@ -349,20 +349,27 @@ try
 		$aCallbackArgs = array("transact" => $obj_XML->callback->transaction["external-id"],
 							   "amount" => $obj_TxnInfo->getAmount(),
 							   "card-id" =>  $obj_XML->callback->transaction->card["type-id"]);
-		
-		$responseCode = $obj_mPoint->capture($obj_TxnInfo->getAmount());
-		
-		
-		if ($responseCode == 1000)
-		{				
-		//    array_push($aStateId,Constants::iPAYMENT_CAPTURED_STATE);
-			//$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
-		}
-		else
-		{
-            array_push($aStateId,Constants::iPAYMENT_DECLINED_STATE);
-			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, "Payment Declined (2010)");
-		}
+
+        try
+        {
+            $responseCode = $obj_mPoint->capture($obj_TxnInfo->getAmount());
+
+            if ($responseCode == 1000)
+            {
+                //    array_push($aStateId,Constants::iPAYMENT_CAPTURED_STATE);
+                //$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
+            }
+            else
+            {
+                array_push($aStateId,Constants::iPAYMENT_DECLINED_STATE);
+                $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, "Payment Declined (2010)");
+            }
+        }
+        catch (CallbackException $e)
+        {
+            //If capture is not supported for a PSP - log and continue
+            trigger_error($e->getMessage(), E_USER_WARNING);
+        }
 	}
 	
   }
