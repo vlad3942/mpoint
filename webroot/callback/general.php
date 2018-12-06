@@ -407,8 +407,9 @@ try
      $obj_mPoint->updateSessionState($iStateId, (integer)$obj_XML->callback->{'psp-config'}["id"], $obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, $obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData);
 
       //update captured amt when psp returns captured callback
-      if($obj_TxnInfo->useAutoCapture() === false && $iStateId == Constants::iPAYMENT_CAPTURED_STATE) {
-          $obj_mPoint->completeCapture($obj_XML->callback->transaction->amount, 0);
+      if($iStateId == Constants::iPAYMENT_CAPTURED_STATE) {
+          $obj_Capture = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_mPoint);
+          $obj_Capture->updateCapturedAmount( (integer) $obj_XML->callback->transaction->amount);
       }
    }
   else {
