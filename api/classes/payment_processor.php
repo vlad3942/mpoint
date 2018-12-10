@@ -112,7 +112,7 @@ class PaymentProcessor
         return $this->_objPSP->getPSPConfigForRoute($obj_Elem, $b);
     }
 
-    public function getStatus()
+    public function status()
     {
         return $this->_objPSP->status();
     }
