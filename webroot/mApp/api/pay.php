@@ -760,7 +760,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             break;
                                         case (Constants::iAMEX_ACQUIRER):
                                             $obj_PSP = new Amex($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["amex"]);
-                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
+                                            $token = '';
+                                            if (count($obj_DOM->pay[$i]->transaction->card->token) == 1)
+                                            {
+                                                $token = $obj_DOM->pay[$i]->transaction->card->token;
+                                            }
+
+                                            $billingAddress = null;
+                                            if (count($obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}) == 1)
+                                            {
+                                                $billingAddress = $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'};
+                                            }
+                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $token, $billingAddress);
 
                                             foreach ($obj_XML->children() as $obj_Elem)
                                             {
@@ -808,7 +819,18 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             break;
                                         case (Constants::iCHASE_ACQUIRER):
                                             $obj_PSP = new Chase($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["chase"]);
-                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
+                                             $token = '';
+                                            if (count($obj_DOM->pay[$i]->transaction->card->token) == 1)
+                                            {
+                                                $token = $obj_DOM->pay[$i]->transaction->card->token;
+                                            }
+
+                                            $billingAddress = null;
+                                            if (count($obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}) == 1)
+                                            {
+                                                $billingAddress = $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'};
+                                            }
+                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $token, $billingAddress);
 
                                             foreach ($obj_XML->children() as $obj_Elem)
                                             {
