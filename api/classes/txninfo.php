@@ -736,6 +736,12 @@ class TxnInfo
 	 */
 	public function setAccountID($id) { $this->_iAccountID = (integer) $id; }
 	/**
+	 * Updates the issuer approaval code
+	 *
+	 * @param 	integer $approvalCode 	Unique ID for the for the transaction
+	 */
+	public function setApprovalCode($approvalCode) { $this->_approvalCode = $approvalCode; }
+	/**
 	 * Returns Unique ID for the The card used for the transaction Defaults to -1.
 	 *
 	 * @return 	integer		Card id for the transaction
