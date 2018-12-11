@@ -324,12 +324,19 @@ abstract class mPointSettlement
                 WHERE status = '".Constants::sSETTLEMENT_REQUEST_WAITING."'
                 GROUP BY psp_id, client_id";
 
-        $res = $_OBJ_DB->getName($sql);
+        $aRS = $_OBJ_DB->getAllNames($sql);
+
         $settlementRecords = [];
         $index = 0;
-        if (is_array($res) === true && count($res) > 0) {
-            $settlementRecords[$index]["client"] = (int)$res["CLIENT_ID"];
-            $settlementRecords[$index]["psp"] = (int)$res["PSP_ID"];
+        if (is_array($aRS) === true && count($aRS) > 0)
+        {
+            foreach ($aRS as $res)
+            {
+                $settlementRecords[$index]["client"] = (int)$res["CLIENT_ID"];
+                $settlementRecords[$index]["psp"] = (int)$res["PSP_ID"];
+                $index++;
+            }
+
         }
         return $settlementRecords;
     }
