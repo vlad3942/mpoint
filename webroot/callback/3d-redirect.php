@@ -198,6 +198,12 @@ try
                             WHERE id = " . $obj_XML->{'threed-redirect'}->transaction['id'];
             //echo $sql ."\n";
             $_OBJ_DB->query($sql);
+            $additionalTxnData = [];
+            $additionalTxnData[0]['name'] = "eci";
+            $additionalTxnData[0]['value'] = (string)$card_obj->card->{'info-3d-secure'}->cryptogram["eci"];
+            $additionalTxnData[0]['type'] = 'Transaction';
+            $obj_TxnInfo->setAdditionalDetails($_OBJ_DB, $additionalTxnData,$obj_TxnInfo->getID());
+
 
             $code = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card);
 
