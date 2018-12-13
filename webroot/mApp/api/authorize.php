@@ -345,7 +345,7 @@ $iPrimaryRoute = $oRoute ;
 												}
 												if (strlen($obj_TxnInfo->getEMail() ) > 0) { $obj_Customer->email = $obj_TxnInfo->getEMail(); }
 												$obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
-												$code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($obj_TxnInfo->getAuthenticationURL() ), $obj_CustomerInfo, trim($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}),(integer) $obj_DOM->{'authorize-payment'}[$i]["client-id"] );
+												$code = $obj_mPoint->auth($obj_TxnInfo->getClientConfig(), $obj_CustomerInfo, trim($obj_DOM->{'authorize-payment'}[$i]->{'auth-token'}),(integer) $obj_DOM->{'authorize-payment'}[$i]["client-id"] );
 											}
 											// Authentication is not required for payment methods that are sending a token or Invoice
 											elseif ( (count($obj_DOM->{'authorize-payment'}[$i]->password) == 0 && count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->token) == 1) || 
@@ -800,6 +800,30 @@ $iPrimaryRoute = $oRoute ;
                                                                             $xml .= '<status code="92">Authorization failed, Globalcollect returned error: '. $code .'</status>';
                                                                         }
                                                                         break;
+                                                                        
+                                                                    case (Constants::iCHUBB_PSP): // CHUBB
+                                                                    	$obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iCHUBB_PSP);
+                                                                    	
+                                                                    	$obj_PSP = new CHUBB($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["chubb"]);
+                                                                    	
+                                                                    	$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem, $obj_DOM->{'authorize-payment'}[$i]->{'client-info'});
+                                                                    	
+                                                                    	// Authorization succeeded
+                                                                    	if ($code == "100")
+                                                                    	{
+                                                                    		$xml .= '<status code="100">Payment Authorized using stored card</status>';
+                                                                    	} else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
+                                                                    	else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and card stored.</status>'; }
+                                                                    	// Error: Authorization declined
+                                                                    	else
+                                                                    	{
+                                                                    		$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+                                                                    		
+                                                                    		header("HTTP/1.1 502 Bad Gateway");
+                                                                    		
+                                                                    		$xml .= '<status code="92">Authorization failed, CHUBB returned error: '. $code .'</status>';
+                                                                    	}
+                                                                    	break;
 
                                                                     default:	// Use Payment processor for PSP.
                                                                         try {
