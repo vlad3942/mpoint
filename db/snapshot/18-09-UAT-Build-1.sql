@@ -78,3 +78,19 @@ INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, 
 
 --- Datacash notification secret key for setting up https callback url
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'Notification-Secret', '379001F6E4852A832F8138F70190585A', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'mid.USD', 'SGBSABB01', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'mid.AED', 'SGBSABB01', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'mid.SAR', 'SGBSABB01', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
+----------- CTECH-934 Service Window --------
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'username.USD', 'merchant.SGBSABB01', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'password.USD', 'bebd68b2fa491f807e40462a6f85617e', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'username.AED', 'merchant.SGBSABB01', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'password.AED', 'bebd68b2fa491f807e40462a6f85617e', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'username.SAR', 'merchant.SGBSABB01', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'password.SAR', 'bebd68b2fa491f807e40462a6f85617e', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'HOST', 'test-gateway.mastercard.com', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10021 AND pspid=17 ;
+
+-----------END CTECH-934 Service Window --------

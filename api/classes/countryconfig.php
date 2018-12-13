@@ -139,6 +139,13 @@ class CountryConfig extends BasicConfig
      */
     private $_iNumericCode;
 
+    /**
+     * The country calling code or IDD
+     *
+     * @var integer
+     */
+    private $_iCountryCode;
+
 	/**
 	 * Default Constructor
 	 *
@@ -163,7 +170,7 @@ class CountryConfig extends BasicConfig
 	 * @param	string $a3code		The 3 Digit alphabetic code as per the ISO 3166 standards
 	 * @param	integer $a3code		The 3 Digit numeric code as per the ISO 3166 standards
 	 */
-	public function __construct($id, $name, $currency, CurrencyConfig &$oCC, $sym, $maxbal, $mt, $minmob, $maxmob, $ch, $pf, $dec, $als, $doi, $aca, $mpsms, $mpwd, $m2fa, $a2code, $a3code, $numcode)
+	public function __construct($id, $name, $currency, CurrencyConfig &$oCC, $sym, $maxbal, $mt, $minmob, $maxmob, $ch, $pf, $dec, $als, $doi, $aca, $mpsms, $mpwd, $m2fa, $a2code, $a3code, $numcode, $countrycode)
 	{
 		parent::__construct($id, $name);
 		
@@ -186,6 +193,7 @@ class CountryConfig extends BasicConfig
 		$this->_sAlpha2Code = trim($a2code);
 		$this->_sAlpha3Code = trim($a3code);
 		$this->_iNumericCode = (integer) $numcode;
+		$this->_iCountryCode = (integer) $countrycode;
 	}
 	
 	/**
@@ -292,6 +300,7 @@ class CountryConfig extends BasicConfig
 	public function getAlpha2code() { return $this->_sAlpha2Code; }
 	public function getAlpha3code() { return $this->_sAlpha3Code; }
 	public function getNumericCode() { return $this->_iNumericCode; }
+    public function getCountryCode() { return $this->_iCountryCode; }
 
 	/**
 	 * Constructs an XML Document with the Country Configuration.
@@ -337,6 +346,7 @@ class CountryConfig extends BasicConfig
 		$xml .= '<alpha2code>'. $this->_sAlpha2Code .'</alpha2code>';
 		$xml .= '<alpha3code>'. $this->_sAlpha3Code .'</alpha3code>';
 		$xml .= '<numeric-code>'. $this->_iNumericCode .'</numeric-code>';
+        $xml .= '<country-code>'. $this->_iCountryCode .'</country-code>';
 		$xml .= '</country-config>';
 		
 		return $xml;
@@ -354,7 +364,7 @@ class CountryConfig extends BasicConfig
 		$sql = "SELECT CT.id, CT.name, CUT.code AS currency, CT.symbol, CT.maxbalance, CT.mintransfer, CT.minmob, CT.maxmob, 
                 CT.channel, CT.priceformat, CUT.decimals,
 					CT.addr_lookup, CT.doi, CT.add_card_amount, CT.max_psms_amount, CT.min_pwd_amount, CT.min_2fa_amount, 
-					CT.alpha2code, CT.alpha3code, CT.code,CUT.id AS currencyid
+					CT.alpha2code, CT.alpha3code, CT.code,CUT.id AS currencyid, CT.country_calling_code
 				FROM System".sSCHEMA_POSTFIX.".Country_Tbl CT
 				INNER JOIN System".sSCHEMA_POSTFIX.".Currency_Tbl CUT ON CT.currencyid = CUT.id
 				WHERE CT.id = ". intval($id) ." AND CT.enabled = '1' AND CUT.enabled = '1'";
@@ -363,7 +373,7 @@ class CountryConfig extends BasicConfig
 		
 		$obj_CurrencyConfig = CurrencyConfig::produceConfig($oDB, $RS["CURRENCYID"]);
 		
-		return new CountryConfig($RS["ID"], $RS["NAME"],$RS["CURRENCY"], $obj_CurrencyConfig, $RS["SYMBOL"], $RS["MAXBALANCE"], $RS["MINTRANSFER"], $RS["MINMOB"], $RS["MAXMOB"], $RS["CHANNEL"], $RS["PRICEFORMAT"], $RS["DECIMALS"], $RS["ADDR_LOOKUP"], $RS["DOI"], $RS["ADD_CARD_AMOUNT"], $RS["MAX_PSMS_AMOUNT"], $RS["MIN_PWD_AMOUNT"], $RS["MIN_2FA_AMOUNT"], $RS['ALPHA2CODE'],$RS['ALPHA3CODE'],$RS['CODE']);
+		return new CountryConfig($RS["ID"], $RS["NAME"],$RS["CURRENCY"], $obj_CurrencyConfig, $RS["SYMBOL"], $RS["MAXBALANCE"], $RS["MINTRANSFER"], $RS["MINMOB"], $RS["MAXMOB"], $RS["CHANNEL"], $RS["PRICEFORMAT"], $RS["DECIMALS"], $RS["ADDR_LOOKUP"], $RS["DOI"], $RS["ADD_CARD_AMOUNT"], $RS["MAX_PSMS_AMOUNT"], $RS["MIN_PWD_AMOUNT"], $RS["MIN_2FA_AMOUNT"], $RS['ALPHA2CODE'],$RS['ALPHA3CODE'],$RS['CODE'],$RS['COUNTRY_CALLING_CODE']);
 	}
 	
 	/**

@@ -402,11 +402,13 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, $obj_HTTP->getReplyBody());
 				
 				// save ext id in database
-				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-						SET pspid = ". $obj_PSPConfig->getID() ."
-						WHERE id = ". $this->getTxnInfo()->getID();
-				$this->getDBConn()->query($sql);
-				
+                if($card_type_id !== -1)
+                {
+                    $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+						SET pspid = " . $obj_PSPConfig->getID() . "
+						WHERE id = " . $this->getTxnInfo()->getID();
+                    $this->getDBConn()->query($sql);
+                }
                /* if(count($obj_XML->{"hidden-fields"}) > 0){
                     $obj_XML->{"hidden-fields"}->{"store-card"} = parent::bool2xml($sc);
                     $obj_XML->{"hidden-fields"}->{"requested_currency_id"} = $this->getTxnInfo()->getCurrencyConfig()->getID() ;

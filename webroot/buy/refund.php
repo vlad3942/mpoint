@@ -93,6 +93,13 @@ require_once(sCLASS_PATH ."/ppro.php");
 require_once(sCLASS_PATH ."/citcon.php");
 // Require specific Business logic for the Amex component
 require_once(sCLASS_PATH ."/amex.php");
+// Require specific Business logic for the Paytabs component
+require_once(sCLASS_PATH ."/paytabs.php");
+// Require specific Business logic for the eGHL FPX component
+require_once(sCLASS_PATH ."/eghl.php");
+// Require specific Business logic for the chase component
+require_once(sCLASS_PATH ."/chase.php");
+
 header("Content-Type: application/x-www-form-urlencoded");
 
 // Require Business logic for the validating client Input
@@ -163,6 +170,10 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 							$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_REFUNDED_STATE, $args);
 						}
 					}
+                    else if ($code == 1100) {
+                        header("HTTP/1.0 200 OK");
+                        $aMsgCds[$code] = "Success";
+                    }
 					else
 					{
 						header("HTTP/1.0 502 Bad Gateway");

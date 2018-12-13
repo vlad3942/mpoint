@@ -17,6 +17,8 @@ class SettlementFactory
         {
             case Constants::iAMEX_ACQUIRER:
                 return new AmexSettlement($_OBJ_TXT,$clientId, $pspId, $connectionInfo);
+            case Constants::iCHASE_ACQUIRER:
+                return new ChaseSettlement($_OBJ_TXT,$clientId, $pspId, $connectionInfo);
             default:
                 NULL;
         }

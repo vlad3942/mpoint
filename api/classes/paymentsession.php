@@ -85,7 +85,7 @@ final class PaymentSession
 
         $this->_obj_ClientConfig = $clientConfig;
         $this->_obj_CountryConfig = $countryConfig;
-        $this->_obj_CurrencyConfig = $currencyConfig;
+
         $this->_orderId = $orderid;
         $this->_amount = $amount;
         $this->_externalId = $externalId;
@@ -105,6 +105,11 @@ final class PaymentSession
             $this->_expire = $expire;
         } else {
             $this->_expire = date("Y-m-d H:i:s.u", time() + (15 * 60));
+        }
+        $this->_obj_CurrencyConfig = $currencyConfig;
+        $currencyConfigId = $this->_obj_CurrencyConfig->getId();
+        if(empty($currencyConfigId) === true || ($this->_obj_CurrencyConfig instanceof CurrencyConfig) == false) {
+            $this->_obj_CurrencyConfig = CurrencyConfig::produceConfig($this->_obj_Db, $this->_iCurrencyId);
         }
         // New session will not be generated, if the session is partially complete(4031) for same order id. 
         if ($this->updateSessionDataFromOrderId() != true) {
@@ -244,17 +249,19 @@ final class PaymentSession
     public function getPendingAmount()
     {
         try {
-            $sql = "SELECT  DISTINCT txn.id,  txn.amount 
+            $amount = 0;
+            if (empty($this->_id) === false) {
+                $sql = "SELECT  DISTINCT txn.id,  txn.amount 
               FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn 
                 INNER JOIN log" . sSCHEMA_POSTFIX . ".message_tbl msg ON txn.id = msg.txnid 
               WHERE sessionid = " . $this->_id . " 
                 AND msg.stateid in (2000,2001,2007,2010,2011)
                 GROUP BY txn.id,msg.stateid";
-            //return $this->_pendingAmount;
-            $res = $this->_obj_Db->query($sql);
-            $amount = 0;
-            while ($RS = $this->_obj_Db->fetchName($res)) {
-                $amount = ($amount + intval($RS['AMOUNT']));
+                //return $this->_pendingAmount;
+                $res = $this->_obj_Db->query($sql);
+                while ($RS = $this->_obj_Db->fetchName($res)) {
+                    $amount = ($amount + intval($RS['AMOUNT']));
+                }
             }
             return $this->_amount - $amount;
         }
@@ -284,9 +291,6 @@ final class PaymentSession
     }
 
     public function getCurrencyConfig(){
-        if(($this->_obj_CurrencyConfig instanceof CurrencyConfig) == false) {
-            $this->_obj_CurrencyConfig = CurrencyConfig::produceConfig($this->_obj_Db, $this->_iCurrencyId);
-        }
         return $this->_obj_CurrencyConfig;
     }
 

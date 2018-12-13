@@ -414,6 +414,16 @@ abstract class Callback extends EndUserAccount
         if (strlen($this->_obj_TxnInfo->getApprovalCode()) >0){
         	$sBody .= "&approval-code=". $this->_obj_TxnInfo->getApprovalCode();
         }
+
+        $aTxnAdditionalData = $this->_obj_TxnInfo->getAdditionalData();
+        if($aTxnAdditionalData !== null)
+        {
+            foreach ($aTxnAdditionalData as $key => $value)
+            {
+				$sBody .= "&custom-field[".$key."]=". $value;
+            }
+        }
+
         /* ----- Construct Body End ----- */
         $this->performCallback($sBody, $obj_SurePay ,0 ,$sid);
 	}
@@ -782,7 +792,13 @@ abstract class Callback extends EndUserAccount
         case (Constants::iUATP_ACQUIRER):
             return new UATP($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["uatp"]);
 		case (Constants::iUATP_CARD_ACCOUNT):
-                return new UATPCardAccount($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["uatp"]);
+            return new UATPCardAccount($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["uatp"]);
+        case (Constants::iEGHL_PSP):
+            return new EGHL($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["eghl"]);
+        case (Constants::iGOOGLE_PAY_PSP) :
+            return new GooglePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["google-pay"]);
+        case (Constants::iCHASE_ACQUIRER):
+                return new Chase($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["chase"]);
         default:
 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
@@ -819,7 +835,7 @@ abstract class Callback extends EndUserAccount
     {
         $sessionObj = $this->getTxnInfo()->getPaymentSession();
         $isStateUpdated = $sessionObj->updateState();
-        if($isStateUpdated !== 1 )
+        if($isStateUpdated != 1)
         {
             return;
         }
@@ -830,6 +846,7 @@ abstract class Callback extends EndUserAccount
         $sBody .= "session-id=". $this->_obj_TxnInfo->getSessionId();
         $sBody .= "&orderid=". urlencode($this->_obj_TxnInfo->getOrderID() );
         $sBody .= "&status=". $sessionObj->getStateId();
+        $sBody .= "&amount=". $sessionObj->getAmount();
         $sBody .= "&mobile=". urlencode($this->_obj_TxnInfo->getMobile() );
         $sBody .= "&operator=". urlencode($this->_obj_TxnInfo->getOperator() );
         $sBody .= "&language=". urlencode($this->_obj_TxnInfo->getLanguage() );
