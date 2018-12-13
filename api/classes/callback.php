@@ -882,6 +882,7 @@ abstract class Callback extends EndUserAccount
         $sBody .= "&transaction-data[$transactionId][amount]=". $amt;
         $sBody .= "&transaction-data[$transactionId][currency]=". urlencode($this->_obj_TxnInfo->getCountryConfig()->getCurrency());
         $sBody .= "&transaction-data[$transactionId][fee]=". intval($fee);
+        $sBody .= "&transaction-data[$transactionId][issuer-approval-code]=". $this->_obj_TxnInfo->getApprovalCode();
 
         if (strlen($sAdditionalData) > 0) {
             $eData = explode('&', $sAdditionalData);
