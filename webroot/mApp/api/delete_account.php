@@ -111,7 +111,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     }
 
                                     $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
-                                    $code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($url), $obj_CustomerInfo, trim($obj_DOM->{'delete-account'}[$i]->{'auth-token'}), intval($obj_DOM->{'delete-account'}[$i]["client-id"]));
+                                    $code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, trim($obj_DOM->{'delete-account'}[$i]->{'auth-token'}), intval($obj_DOM->{'delete-account'}[$i]["client-id"]));
                                 } else {
                                     $code = 8;
                                 }

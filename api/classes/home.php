@@ -115,14 +115,14 @@ class Home extends General
 			return $this->_authInternal($aArgs[0], $aArgs[1]);
 			break;
 		case (3):
-			if ( ($aArgs[0] instanceof HTTPConnInfo) === true)
+			if ( ($aArgs[0] instanceof ClientConfig) === true)
 			{
 				return $this->_authExternal($aArgs[0], $aArgs[1], $aArgs[2]);
 			}
 			else { return $this->_authInternal($aArgs[0], $aArgs[1], $aArgs[2]); }
 			break;
 		case (4):
-			if ( ($aArgs[0] instanceof HTTPConnInfo) === true)
+			if ( ($aArgs[0] instanceof ClientConfig) === true)
 			{
 				return $this->_authExternal($aArgs[0], $aArgs[1], $aArgs[2], $aArgs[3]);
 			}
@@ -244,9 +244,12 @@ class Home extends General
 
 		return $code;
 	}
-	private function _authExternal(HTTPConnInfo &$oCI, CustomerInfo $obj_CustomerInfo, $pwd, $clientId=-1)
+	private function _authExternal(ClientConfig $obj_ClientConfig, CustomerInfo $obj_CustomerInfo, $pwd, $clientId=-1)
 	{
-		$obj_ConnInfo = new HTTPConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), "POST", "text/xml", $oCI->getUsername(), $oCI->getPassword() );
+        $aURLInfo = parse_url($obj_ClientConfig->getAuthenticationURL() );
+        $obj_ConnInfo = new HTTPConnInfo($aURLInfo["scheme"], $aURLInfo["host"], $aURLInfo["port"], "120", $aURLInfo["path"], "POST", "text/xml", $obj_ClientConfig->getUsername(), $obj_ClientConfig->getPassword() );
+
+		//$obj_ConnInfo = new HTTPConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), "POST", "text/xml", $oCI->getUsername(), $oCI->getPassword() );
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<login>';
@@ -265,18 +268,18 @@ class Home extends General
 			$obj_HTTP->disConnect();
 			if ($code == 200)
 			{
-				trigger_error("Authorization accepted by Authentication Service at: ". $oCI->toURL() ." with HTTP Code: ". $code, E_USER_NOTICE);
+				trigger_error("Authorization accepted by Authentication Service at: ". $obj_ConnInfo->toURL() ." with HTTP Code: ". $code, E_USER_NOTICE);
 				return 10;
 			}
 			else
 			{
-				trigger_error("Authentication Service at: ". $oCI->toURL() ." rejected authorization with HTTP Code: ". $code, E_USER_WARNING);
+				trigger_error("Authentication Service at: ". $obj_ConnInfo->toURL() ." rejected authorization with HTTP Code: ". $code, E_USER_WARNING);
 				return 1;
 			}
 		}
 		catch (HTTPException $e)
 		{
-			trigger_error("Authentication Service at: ". $oCI->toURL() ." is unavailable due to ". get_class($e), E_USER_WARNING);
+			trigger_error("Authentication Service at: ". $obj_ConnInfo->toURL() ." is unavailable due to ". get_class($e), E_USER_WARNING);
 			return 6;
 		}
 	}
