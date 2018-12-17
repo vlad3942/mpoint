@@ -106,7 +106,7 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name, enabled) VALU
 INSERT INTO client.merchantsubaccount_tbl (accountid, pspid, name, enabled) VALUES (100181, 51, '-1', true);
 
 --URL
-INSERT INTO client.url_tbl (urltypeid, clientid, url, enabled) VALUES (2, 10018, 'https://od.voyage.cellpointmobile.net/mpoint/mprofile/authenticate-user', true);
+INSERT INTO client.url_tbl (urltypeid, clientid, url, enabled) VALUES (2, 10018, 'http://internal-mesb:10080/mpoint/mprofile/authenticate-user', true);
 INSERT INTO client.url_tbl (urltypeid, clientid, url, enabled) VALUES (4, 10018, 'https://od.velocity.cellpointmobile.net', true);
 
 
