@@ -7,6 +7,7 @@ class DelCardAPIValidationTest extends baseAPITest
 {
 
     protected $_aMPOINT_CONN_INFO;
+    private $_authUrl = 'http://mpoint.local.cellpointmobile.com/login/sys/auth.php';
 
     public function __construct()
     {
@@ -53,6 +54,7 @@ class DelCardAPIValidationTest extends baseAPITest
     public function testUnknownCard()
     {
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.Url_Tbl (clientid, urltypeid, url) VALUES (113, 2, '. $this->_authUrl .' )");
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', 'profilePass', TRUE)");
@@ -74,6 +76,7 @@ class DelCardAPIValidationTest extends baseAPITest
 	public function testSuccessfulDeleteCard()
 	{
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.Url_Tbl (clientid, urltypeid, url) VALUES (113, 2, '. $this->_authUrl .' )");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', 'profilePass', TRUE)");
@@ -102,6 +105,7 @@ class DelCardAPIValidationTest extends baseAPITest
 		$authTime = date('c', time() - 1800); //-30 minutes
 	
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass', 3600)");
+        $this->queryDB("INSERT INTO Client.Url_Tbl (clientid, urltypeid, url) VALUES (113, 2, '. $this->_authUrl .' )");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', 'profilePass', TRUE)");
@@ -130,6 +134,7 @@ class DelCardAPIValidationTest extends baseAPITest
 		$authTime = date('c', time() - 1800); //-30 minutes
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass', 3600)");
+        $this->queryDB("INSERT INTO Client.Url_Tbl (clientid, urltypeid, url) VALUES (113, 2, '. $this->_authUrl .' )");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', 'profilePass', TRUE)");
@@ -166,6 +171,7 @@ class DelCardAPIValidationTest extends baseAPITest
 		$authTime = date('c', time() - 3660); //-61 minutes
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass', 3600)");
+        $this->queryDB("INSERT INTO Client.Url_Tbl (clientid, urltypeid, url) VALUES (113, 2, '. $this->_authUrl .' )");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', 'profilePass', TRUE)");
@@ -195,6 +201,7 @@ class DelCardAPIValidationTest extends baseAPITest
 		$authTime = date('c', time() - 1800); //-61 minutes
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass', 3600)");
+        $this->queryDB("INSERT INTO Client.Url_Tbl (clientid, urltypeid, url) VALUES (113, 2, '. $this->_authUrl .' )");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', 'profilePass', TRUE)");
@@ -225,6 +232,7 @@ class DelCardAPIValidationTest extends baseAPITest
 		$authTime = date('c', time() - 1800); //-61 minutes
 
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass', 3600)");
+        $this->queryDB("INSERT INTO Client.Url_Tbl (clientid, urltypeid, url) VALUES (113, 2, '. $this->_authUrl .' )");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', 'profilePass', TRUE)");
@@ -254,6 +262,7 @@ class DelCardAPIValidationTest extends baseAPITest
 	public function testTTLUnset()
 	{
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass')");
+        $this->queryDB("INSERT INTO Client.Url_Tbl (clientid, urltypeid, url) VALUES (113, 2, '. $this->_authUrl .' )");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', 'profilePass', TRUE)");
@@ -283,6 +292,7 @@ class DelCardAPIValidationTest extends baseAPITest
 		$authTime = date('c', time() - 1800); //-30 minutes
 	
 		$this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass', 3600)");
+        $this->queryDB("INSERT INTO Client.Url_Tbl (clientid, urltypeid, url) VALUES (113, 2, '. $this->_authUrl .' )");
 		$this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
 		$this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
 		$this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', 'profilePass', TRUE)");
