@@ -7,7 +7,7 @@ class DelCardAPIValidationTest extends baseAPITest
 {
 
     protected $_aMPOINT_CONN_INFO;
-    private $_authUrl = 'http://mpoint.local.cellpointmobile.com/_test/auth.php';
+    private $_authUrl = 'http://localhost/_test/auth.php';
 
     public function __construct()
     {
