@@ -88,8 +88,10 @@ class DelCardAPIValidationTest extends baseAPITest
 		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass');//, 5001, 'Tpass');
 
 		$this->_httpClient->connect();
-
-		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        $h = $this->constHTTPHeaders('Tuser', 'Tpass');
+        $secret = sha1('113Tpass');
+        $h .= "token: " . htmlspecialchars(General::genToken(5001, $secret));
+		$iStatus = $this->_httpClient->send($h, $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
 
 		$this->assertEquals(200, $iStatus);
@@ -117,8 +119,11 @@ class DelCardAPIValidationTest extends baseAPITest
 		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass');//, 5001, 'Tpass');
 	
 		$this->_httpClient->connect();
-	
-		$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        $h = $this->constHTTPHeaders('Tuser', 'Tpass');
+        $secret = sha1('113Tpass');
+        $h .= "token: " . htmlspecialchars(General::genToken(5001, $secret));
+        $iStatus = $this->_httpClient->send($h, $xml);
+		//$iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
 		$sReplyBody = $this->_httpClient->getReplyBody();
 	
 		$this->assertEquals(403, $iStatus);
