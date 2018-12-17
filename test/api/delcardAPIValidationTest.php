@@ -7,7 +7,7 @@ class DelCardAPIValidationTest extends baseAPITest
 {
 
     protected $_aMPOINT_CONN_INFO;
-    private $_authUrl = 'http://localhost/_test/auth.php';
+    private $_authUrl;
 
     public function __construct()
     {
@@ -21,6 +21,7 @@ class DelCardAPIValidationTest extends baseAPITest
         $aMPOINT_CONN_INFO["contenttype"] = "text/xml";
         $this->_aMPOINT_CONN_INFO = $aMPOINT_CONN_INFO;
         $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
+        $this->_authUrl = $this->_aMPOINT_CONN_INFO["protocol"].'://'. $this->_aMPOINT_CONN_INFO["host"] .'/_test/auth.php';
     }
 
 	protected function getDelCardDoc($client, $account, $cardid, $extAccountId, $passwd, $intAccountId=null, $clientpasswd=null)
