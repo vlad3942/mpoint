@@ -85,7 +85,7 @@ class DelCardAPIValidationTest extends baseAPITest
 		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, amount, ip, enabled, currencyid) VALUES (1001001, 100, 113, 1100, 100, 5000, '127.0.0.1', TRUE, 208)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 
-		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass', 5001, 'Tpass');
+		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass');//, 5001, 'Tpass');
 
 		$this->_httpClient->connect();
 
@@ -114,7 +114,7 @@ class DelCardAPIValidationTest extends baseAPITest
 		$this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, euaid, countryid, amount, ip, created, enabled, currencyid) VALUES (1001001, 100, 113, 1100, 5001, 100, 5000, '127.0.0.1', '". $authTime. "', TRUE, 208)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 	
-		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass', 5001, 'Tpass');
+		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass');//, 5001, 'Tpass');
 	
 		$this->_httpClient->connect();
 	
@@ -148,7 +148,7 @@ class DelCardAPIValidationTest extends baseAPITest
 		//$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 
-		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass', 5001, 'Tpass');
+		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass');//, 5001, 'Tpass');
 
 		$this->_httpClient->connect();
 
@@ -181,7 +181,7 @@ class DelCardAPIValidationTest extends baseAPITest
 		$this->queryDB("INSERT INTO EndUser.Transaction_Tbl (accountid, txnid, typeid) VALUES (5001, 1001001, 40)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 
-		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass', 5001, 'Tpass');
+		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass');//, 5001, 'Tpass');
 
 		$this->_httpClient->connect();
 
@@ -212,7 +212,7 @@ class DelCardAPIValidationTest extends baseAPITest
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_CAPTURED_STATE .")");
 
-		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass', 5001, 'Tpass');
+		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass');//, 5001, 'Tpass');
 
 		$this->_httpClient->connect();
 
@@ -244,7 +244,7 @@ class DelCardAPIValidationTest extends baseAPITest
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_CAPTURED_STATE .")");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_REFUNDED_STATE .")");
 
-		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass', 5001, 'Tpass');
+		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass');//, 5001, 'Tpass');
 
 		$this->_httpClient->connect();
 
@@ -272,7 +272,7 @@ class DelCardAPIValidationTest extends baseAPITest
 		$this->queryDB("INSERT INTO EndUser.Transaction_Tbl (accountid, txnid, typeid) VALUES (5001, 1001001, 40)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 
-		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass', 5001, 'Tpass');
+		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass');//, 5001, 'Tpass');
 
 		$this->_httpClient->connect();
 
@@ -303,7 +303,7 @@ class DelCardAPIValidationTest extends baseAPITest
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_REJECTED_STATE. ")");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_ACCEPTED_STATE. ")");
 	
-		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass', 5001, 'Tpass');
+		$xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass');//, 5001, 'Tpass');
 	
 		$this->_httpClient->connect();
 	
