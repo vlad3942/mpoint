@@ -1546,6 +1546,34 @@ class mConsole extends Admin
         return $sReponseXML;
 
 	}
+	
+	
+	public function getHourlyTxnData( $clientId, $startDate , $endDate ,$stateId) {
+		
+		$sql = "SELECT TO_CHAR(mt.created, 'yyyy-MM-dd HH24') AS hourSeg,COUNT(DISTINCT(mt.txnid))" ;
+        $sql .=  " FROM log.transaction_tbl tt INNER JOIN log.message_tbl mt ON (tt.id = mt.txnid AND tt.clientid = '".$clientId."' AND mt.stateid= ".$stateId." )";
+        //$sql .=  " FROM log.transaction_tbl tt INNER JOIN log.message_tbl mt ON (tt.id = mt.txnid  AND mt.stateid= ".$stateId." )";
+        $sql .=" WHERE '".$startDate."'<=tt.created AND '".$endDate."' >= tt.created";
+        $sql .= " GROUP BY hourSeg ORDER BY hourSeg ";
+
+		$res = $this->getDBConn()->query($sql);
+
+		if (is_resource($res) === true) {
+			while ($RS = $this->getDBConn()->fetchName($res)) {
+				$sSegments .=	'<hour-segment segment="'.$RS["HOURSEG"].'">'.$RS["COUNT"].'</hour-segment>';
+			}
+			$sReponseXML .= '<get-hourly-ticket-data-response>';
+			if($sSegments != '')
+			{
+				$sReponseXML .= '<hour-segments>';
+				$sReponseXML .= $sSegments ;
+				$sReponseXML .= '</hour-segments>';
+			}
+			$sReponseXML .= '</get-hourly-ticket-data-response>';
+		}
+		
+		return $sReponseXML ;
+	}
 
     }
 ?>
