@@ -836,7 +836,7 @@ abstract class Callback extends EndUserAccount
         $sessionObj = $this->getTxnInfo()->getPaymentSession();
         $isStateUpdated = $sessionObj->updateState();
         if($isStateUpdated == 1) {
-            $checkSessionCallback = $sessionObj->checkSessionCallback();
+            $checkSessionCallback = $sessionObj->checkSessionCompletion();
             if (empty($checkSessionCallback) === true) {
 				$sDeviceID = $this->_obj_TxnInfo->getDeviceID();
 				$sEmail = $this->_obj_TxnInfo->getEMail();
