@@ -50,7 +50,12 @@ if (array_key_exists ( "PHP_AUTH_USER", $_SERVER ) === true && array_key_exists 
 	
 	$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
 	
-	$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_TRANSACTION_STATISTICS, $aClientIDs);
+	$iClientID = intval ( $obj_DOM->{'get-hourly-transaction-data'} ['client-id'] );
+	
+	$aClientIDs=array($iClientID);
+	
+	$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_SEARCH_TRANSACTION_LOGS, $aClientIDs);
+	
 	switch ($code)
 	{
 		case (mConsole::iSERVICE_CONNECTION_TIMEOUT_ERROR):
@@ -80,7 +85,6 @@ if (array_key_exists ( "PHP_AUTH_USER", $_SERVER ) === true && array_key_exists 
 			break;
 		case (mConsole::iAUTHORIZATION_SUCCESSFUL):
 			
-			$iClientID = intval ( $obj_DOM->{'get-hourly-transaction-data'} ['client-id'] );
 			$start_date = $obj_DOM->{'get-hourly-transaction-data'}->{'start-date'} ;
 			$end_date =  $obj_DOM->{'get-hourly-transaction-data'}->{'end-date'} ;
 			$stateId = $obj_DOM->{'get-hourly-transaction-data'}->{'state-id'} ;
