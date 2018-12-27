@@ -323,7 +323,7 @@ $iPrimaryRoute = $oRoute ;
                                         $_SERVER['HTTP_X_FORWARDED_FOR']);
 
 										// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
-										if (strlen($obj_ClientConfig->getSalt() ) > 0)
+										if (strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties("sessiontype") != 2)
 										{
 
 											if ($obj_Validator->valHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]) ) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
