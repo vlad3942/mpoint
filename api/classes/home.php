@@ -822,7 +822,7 @@ class Home extends General
                         LEFT OUTER JOIN Client" . sSCHEMA_POSTFIX . ".Additionalproperty_Tbl AP ON AP.externalid = CL.id AND AP.key = 'googleAnalyticsId'";
 //		echo $sql ."\n";
         $RS = $this->getDBConn()->getName($sql);
-var_dump($RS);die;
+
         if(empty($RS) === false && count($RS) > 0) {
             $obj_ClientConfig = ClientConfig::produceConfig($this->getDBConn(), $RS["CLIENTID"]);
             $obj_TxnInfo = TxnInfo::produceInfo($RS["ID"],  $this->getDBConn());
