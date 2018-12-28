@@ -942,14 +942,36 @@
 						<xs:element name="transactions">
 						<xs:complexType>
 							<xs:sequence>
-								<xs:element name="transaction" minOccurs="1" maxOccurs="unbounded">
+								<xs:element name="transaction" minOccurs="0" maxOccurs="unbounded">
 									<xs:complexType>
-										<xs:all>
-											<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
-										</xs:all>
+											<xs:sequence>
+												<xs:sequence minOccurs="0" maxOccurs="unbounded">
+												<xs:element name="amount">
+													<xs:complexType>
+														<xs:simpleContent>
+															<xs:extension base="xs:string">
+																<xs:attribute name="country-id" type="xs:positiveInteger" use="optional" />
+																<xs:attribute name="type" type="xs:string" use="optional" />
+															</xs:extension>
+														</xs:simpleContent>
+													</xs:complexType>
+												</xs:element>
+												<xs:element name="additional-data">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element minOccurs="0" name="TDNR" type="xs:string" />
+															<xs:element minOccurs="0" name="CCAC" type="xs:string" />
+															<xs:element minOccurs="0" name="FPAM" type="xs:string" />
+															<xs:element minOccurs="0" name="CUTP" type="xs:string" />
+															<xs:element minOccurs="0" name="DBCR" type="xs:string" />
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+												</xs:sequence>
+											</xs:sequence>
 										<xs:attribute name="id" type="xs:positiveInteger" use="optional"/>
-										<xs:attribute name="order-no" use="optional" />
-										<xs:attribute name="token" use="optional" />
+										<xs:attribute name="order-no" type="xs:string" use="optional" />
+										<xs:attribute name="token" type="xs:string" use="optional" />
 									</xs:complexType>
 								</xs:element>
 							</xs:sequence>

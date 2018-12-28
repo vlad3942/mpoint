@@ -134,7 +134,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                         if (empty($obj_TxnInfo) === false) {
                             $obj_PSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_TxnInfo->getPSPID()), $aHTTP_CONN_INFO);
-                            $iAmount = intval($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount);
+                            $iAmount = 0;
+                            for ($j = 0; $j < count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount); $j++) {
+                                if($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount[$j]['type'] == 'DB')
+                                {
+                                    $iAmount += intval($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount[$j]);
+                                }
+                            }
                             $code = $obj_PSP->capture($iAmount);
 
                             $xml .= '<status id = "' . $obj_TxnInfo->getID() . '" code = "' . $code . '" />';
@@ -158,7 +164,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
             $xml = '<status code="415">Invalid XML Document</status>';
         } // Error: Wrong operation
-        elseif (count($obj_DOM->capture) == 0) {
+        elseif (count($obj_DOM->{'bulk-capture'}) == 0) {
             header("HTTP/1.1 400 Bad Request");
 
             $xml = '';
