@@ -124,11 +124,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
             for ($i = 0; $i < count($obj_DOM->{'bulk-capture'}->transactions->transaction); $i++) {
                 try {
                     try {
+                        $sToken = '';
                         if (isset($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]['id']) === true) {
+                            $sToken = $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]['id'];
                             $obj_TxnInfo = TxnInfo::produceInfo(intval($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]['id']), $_OBJ_DB);
                         } else if (isset($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]['order-no']) === true) {
+                            $sToken = $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]['order-no'];
                             $obj_TxnInfo = TxnInfo::produceInfoFromOrderNoAndMerchant($_OBJ_DB, $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]['order-no']);
                         } else if (isset($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]['token']) === true) {
+                            $sToken = $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]['token'];
                             $obj_TxnInfo = TxnInfo::produceTxnInfoFromToken($_OBJ_DB, $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]['token']);
                         }
 
@@ -143,7 +147,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             }
                             $code = $obj_PSP->capture($iAmount);
 
-                            $xml .= '<status id = "' . $obj_TxnInfo->getID() . '" code = "' . $code . '" />';
+                            $xml .= '<status id = "' . $sToken . '" code = "' . $code . '" >'
+                                . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->{'additional-data'}->asXML()
+                                . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount->asXML()
+                                . '</status>';
                         }
 
                     } catch (mPointException $e) {
@@ -155,7 +162,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     }
                 } catch (mPointControllerException $e) {
                     header(HTTP::getHTTPHeader($e->getHTTPCode()));
-                    $xml .= '<status code = "' . $e->getCode() . '">' . $e->getMessage() . '</status>';
+                    $xml .= '<status id = "' .$sToken. '" code = "' . $e->getCode() . '">' . $e->getMessage()
+                        . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->{'additional-data'}->asXML()
+                        . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount->asXML()
+                        . '</status>';
                 }
             }
             $xml .= '</bulk-capture-response>';

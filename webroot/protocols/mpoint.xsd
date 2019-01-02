@@ -961,6 +961,8 @@
 														<xs:sequence>
 															<xs:element minOccurs="0" name="TDNR" type="xs:string" />
 															<xs:element minOccurs="0" name="CCAC" type="xs:string" />
+															<xs:element minOccurs="0" name="CINN" type="xs:string" />
+															<xs:element minOccurs="0" name="SQNR" type="xs:string" />
 															<xs:element minOccurs="0" name="FPAM" type="xs:string" />
 															<xs:element minOccurs="0" name="CUTP" type="xs:string" />
 															<xs:element minOccurs="0" name="DBCR" type="xs:string" />
