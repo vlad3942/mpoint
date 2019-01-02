@@ -157,6 +157,9 @@ try
             $mvault = new MVault($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['mvault']);
 
             $xmlString = "<card id='" . $obj_XML->{'threed-redirect'}->transaction->card["type-id"] . "'><token>" . $obj_TxnInfo->getToken() . "</token></card>";
+            /* Reset the eua-id to contain txn-id which will be linked as external ref for the txn.
+            This is only applicable for Acq flow with MPI */
+            $obj_TxnInfo->setAccountID($obj_TxnInfo->getID());
 
             $obj_Elem = $mvault->getPaymentData($obj_PSPConfig, simplexml_load_string($xmlString));
             //var_dump($obj_Elem);die;
