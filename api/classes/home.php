@@ -804,7 +804,7 @@ class Home extends General
         $sql = "SELECT Txn.id, Txn.amount AS amount, C.id AS countryid, C.currencyid, C.symbol, C.priceformat, CL.id AS clientid,
                         Txn.id AS mpointid, Txn.orderid, TS.states,Txn.logourl,Txn.cssurl,Txn.accepturl,Txn.cancelurl, CL.salt, 
                         Txn.accountid AS end_user_id,Txn.lang,Txn.cardid,
-                        Txn.email, Txn.mobile,Txn.customer_ref,Txn.operatorid,Txn.markup,Txn.deviceid, Txn.sessionid, AP.value as googleAnalyticsId
+                        Txn.email, Txn.mobile,Txn.customer_ref,Txn.operatorid,Txn.markup,Txn.deviceid, Txn.sessionid
                         FROM (SELECT T.id, array_to_string(array_agg( DISTINCT M.stateid || ':' || S.name || ':' || M.rownum), ',') AS states
                         FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl T
                           INNER JOIN (SELECT stateid, txnid, row_number() OVER(ORDER BY id ASC) AS rownum, enabled 
@@ -818,8 +818,7 @@ class Home extends General
                         LEFT OUTER JOIN System" . sSCHEMA_POSTFIX . ".PSP_Tbl PSP ON Txn.pspid = PSP.id
                         LEFT OUTER JOIN Client" . sSCHEMA_POSTFIX . ".Client_Tbl CL ON Txn.clientid = CL.id
                         LEFT OUTER JOIN System" . sSCHEMA_POSTFIX . ".Country_Tbl C ON Txn.countryid = C.id
-                        LEFT OUTER JOIN System" . sSCHEMA_POSTFIX . ".Card_Tbl Card ON Txn.cardid = Card.id
-                        LEFT OUTER JOIN Client" . sSCHEMA_POSTFIX . ".Additionalproperty_Tbl AP ON AP.externalid = CL.id AND AP.key = 'googleAnalyticsId'";
+                        LEFT OUTER JOIN System" . sSCHEMA_POSTFIX . ".Card_Tbl Card ON Txn.cardid = Card.id";
 //		echo $sql ."\n";
         $RS = $this->getDBConn()->getName($sql);
 
@@ -856,13 +855,14 @@ class Home extends General
             }
 
             $sessionType = $obj_ClientConfig->getAdditionalProperties("sessiontype");
+            $googleAnalyticsId = $obj_ClientConfig->getAdditionalProperties("googleAnalyticsId");
             $xml = '<transaction id="' . $RS["ID"] . '" mpoint-id="' . $RS["MPOINTID"] . '" order-no="' . $RS["ORDERID"] . '" accoutid="' . $RS['END_USER_ID'] . '" clientid="' . $RS['CLIENTID'] . '" language="' . $RS['LANG'] . '"  card-id="' . $RS["CARDID"] . '" session-id="' . $RS["SESSIONID"] . '" session-type="' . $sessionType . '">';
             $xml .= '<amount country-id="' . $RS["COUNTRYID"] . '" currency="' . $RS['CURRENCYID'] . '" symbol="' . utf8_encode($RS['SYMBOL']) . '" format="' . $RS['PRICEFORMAT'] . '" pending = "' . $pendingAmount . '"  currency-code = "' . $obj_currencyConfig->getCode() . '" >' . htmlspecialchars($amount, ENT_NOQUOTES) . '</amount>';
             $xml .= '<accept-url>' . htmlspecialchars($RS["ACCEPTURL"], ENT_NOQUOTES) . '</accept-url>';
             $xml .= '<cancel-url>' . htmlspecialchars($RS["CANCELURL"], ENT_NOQUOTES) . '</cancel-url>';
             $xml .= '<css-url>' . htmlspecialchars($RS["CSSURL"], ENT_NOQUOTES) . '</css-url>';
             $xml .= '<logo-url>' . htmlspecialchars($RS["LOGOURL"], ENT_NOQUOTES) . '</logo-url>';
-            $xml .= '<google-analytics-id>' . $RS["GOOGLEANALYTICSID"] . '</google-analytics-id>';
+            $xml .= '<google-analytics-id>' . $googleAnalyticsId . '</google-analytics-id>';
             $xml .= '<status>' . implode("",$aStatusMessagesXML) . '</status>';
             $xml .= '<sign>' . md5($RS["CLIENTID"] . '&' . $RS["MPOINTID"] . '&' . $RS["ORDERID"] . '&' . $RS["CURRENCYID"] . '&' . htmlspecialchars($amount, ENT_NOQUOTES) . '&' . $RS["STATEID"] . '.' . $RS["SALT"]) . '</sign>';
             //  $xml .= '<pre-sign>'.  $RS["CLIENTID"] .','. $RS["MPOINTID"] .','. $RS["ORDERID"] .','. $RS["CURRENCY"] .','.  htmlspecialchars($amount, ENT_NOQUOTES) .','. $RS["STATEID"] .','. $RS["SALT"] .'</pre-sign>';
