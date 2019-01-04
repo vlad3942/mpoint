@@ -1551,7 +1551,7 @@ class mConsole extends Admin
 		
 		$sql = "SELECT TO_CHAR(mt.created, 'yyyy-MM-dd HH24') AS hourSeg,COUNT(DISTINCT(mt.txnid))" ;
         $sql .=  " FROM log.transaction_tbl tt INNER JOIN log.message_tbl mt ON (tt.id = mt.txnid AND tt.clientid = '".$clientId."' AND mt.stateid= ".$stateId." )";
-        $sql .=" WHERE '".$startDate."'<=tt.created AND '".$endDate."' >= tt.created";
+        $sql .=" WHERE '".$startDate."'<=mt.created AND '".$endDate."' >= mt.created";
         $sql .= " GROUP BY hourSeg ORDER BY hourSeg ";
 
 		$res = $this->getDBConn()->query($sql);
