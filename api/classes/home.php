@@ -854,12 +854,14 @@ class Home extends General
             }
 
             $sessionType = $obj_ClientConfig->getAdditionalProperties("sessiontype");
+            $googleAnalyticsId = $obj_ClientConfig->getAdditionalProperties("googleAnalyticsId");
             $xml = '<transaction id="' . $RS["ID"] . '" mpoint-id="' . $RS["MPOINTID"] . '" order-no="' . $RS["ORDERID"] . '" accoutid="' . $RS['END_USER_ID'] . '" clientid="' . $RS['CLIENTID'] . '" language="' . $RS['LANG'] . '"  card-id="' . $RS["CARDID"] . '" session-id="' . $RS["SESSIONID"] . '" session-type="' . $sessionType . '">';
             $xml .= '<amount country-id="' . $RS["COUNTRYID"] . '" currency="' . $RS['CURRENCYID'] . '" symbol="' . utf8_encode($RS['SYMBOL']) . '" format="' . $RS['PRICEFORMAT'] . '" pending = "' . $pendingAmount . '"  currency-code = "' . $obj_currencyConfig->getCode() . '" >' . htmlspecialchars($amount, ENT_NOQUOTES) . '</amount>';
             $xml .= '<accept-url>' . htmlspecialchars($RS["ACCEPTURL"], ENT_NOQUOTES) . '</accept-url>';
             $xml .= '<cancel-url>' . htmlspecialchars($RS["CANCELURL"], ENT_NOQUOTES) . '</cancel-url>';
             $xml .= '<css-url>' . htmlspecialchars($RS["CSSURL"], ENT_NOQUOTES) . '</css-url>';
             $xml .= '<logo-url>' . htmlspecialchars($RS["LOGOURL"], ENT_NOQUOTES) . '</logo-url>';
+            $xml .= '<google-analytics-id>' . $googleAnalyticsId . '</google-analytics-id>';
             $xml .= '<status>' . implode("",$aStatusMessagesXML) . '</status>';
             $xml .= '<sign>' . md5($RS["CLIENTID"] . '&' . $RS["MPOINTID"] . '&' . $RS["ORDERID"] . '&' . $RS["CURRENCYID"] . '&' . htmlspecialchars($amount, ENT_NOQUOTES) . '&' . $RS["STATEID"] . '.' . $RS["SALT"]) . '</sign>';
             //  $xml .= '<pre-sign>'.  $RS["CLIENTID"] .','. $RS["MPOINTID"] .','. $RS["ORDERID"] .','. $RS["CURRENCY"] .','.  htmlspecialchars($amount, ENT_NOQUOTES) .','. $RS["STATEID"] .','. $RS["SALT"] .'</pre-sign>';
