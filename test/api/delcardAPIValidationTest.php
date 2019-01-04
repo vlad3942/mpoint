@@ -113,9 +113,6 @@ class DelCardAPIValidationTest extends baseAPITest
 
         $this->_httpClient->connect();
 
-        /*$secret = sha1('113Tpass');
-        setcookie("token", htmlspecialchars(General::genToken(5001, $secret)), time()+1800);*/
-
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
 
@@ -311,6 +308,33 @@ class DelCardAPIValidationTest extends baseAPITest
         $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775");
         $this->assertTrue(is_resource($res));
         $this->assertTrue(pg_num_rows($res) == 1);
+    }
+
+    public function testEUASSOFailureWithAuthUrl()
+    {
+        $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd, transaction_ttl) VALUES (113, 1, 100, 'Test Client', 'Tuser', 'Tpass', 3600)");
+        //Simulate error by using a actual url returning 401 or non existing url.
+        $this->queryDB("INSERT INTO Client.URL_Tbl (urltypeid, clientid, url) VALUES (2, 113, 'http://mpoint.local.cellpointmobile.com/_test/simulators/auth-error.php')");
+        $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
+        $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', true)");
+        $this->queryDB("INSERT INTO EndUser.Account_Tbl (id, countryid, externalid, mobile, passwd, enabled) VALUES (5001, 100, 'abcExternal', '29612109', 'profilePass', TRUE)");
+        $this->queryDB("INSERT INTO EndUser.CLAccess_Tbl (clientid, accountid) VALUES (113, 5001)");
+        $this->queryDB("INSERT INTO EndUser.Card_Tbl (id, accountid, cardid, pspid, mask, expiry, preferred, clientid, name, ticket, card_holder_name) VALUES (61775, 5001, 2, 2, '5019********3742', '/', true, 113, NULL, '1767989 ### CELLPOINT ### 100 ### DKK', NULL);");
+
+        $xml = $this->getDelCardDoc(113, 1100, 61775, 'abcExternal', 'profilePass', 5001, 'Tpass');
+
+        $this->_httpClient->connect();
+
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        $sReplyBody = $this->_httpClient->getReplyBody();
+
+        $this->assertEquals(403, $iStatus);
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="31">Authentication failed</status></root>', $sReplyBody);
+
+        $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775");
+        $this->assertTrue(is_resource($res));
+        $this->assertTrue(pg_num_rows($res) == 1);
+        $this->bIgnoreErrors=true; //warning or error is expected.
     }
 
 }
