@@ -323,7 +323,7 @@ $iPrimaryRoute = $oRoute ;
                                         $_SERVER['HTTP_X_FORWARDED_FOR']);
 
 										// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
-										if (strlen($obj_ClientConfig->getSalt() ) > 0)
+										if (strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties("sessiontype") != 2)
 										{
 
 											if ($obj_Validator->valHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]) ) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
@@ -806,12 +806,15 @@ $iPrimaryRoute = $oRoute ;
 
                                                                             $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem["pspid"]), $aHTTP_CONN_INFO);
                                                                             $propertyValue = false;
+                                                                            $pspPropertyValue = true;
                                                                             if ($obj_Processor->getPSPConfig()->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER)
                                                                             {
                                                                                 $propertyValue = $obj_ClientConfig->getAdditionalProperties("3DVERIFICATION");
+                                                                                //psp property will be false in config if 3ds is not applicable
+                                                                                $pspPropertyValue = $obj_Processor->getPSPConfig()->getAdditionalProperties("3DVERIFICATION");
                                                                             }
 
-                                                                            if($propertyValue == 'true')
+                                                                            if($propertyValue == 'true' && $pspPropertyValue != 'false')
                                                                             {
                                                                                 $requset = str_replace("authorize-payment","authenticate",$HTTP_RAW_POST_DATA);
                                                                                 $code = $obj_Processor->authenticate($requset);
