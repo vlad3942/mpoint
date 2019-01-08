@@ -648,3 +648,7 @@ INSERT INTO "system".cardprefix_tbl ( cardid, min, max) VALUES( 7, 2700, 2730);
 -- End Merchant MID configuration --
 
 --== END CONFIGURE Chase Payment Acquirer ==--
+
+-- Update Citcon - Wechat Pay app token --
+UPDATE client.additionalproperty_tbl set value = 'CNYETHXNAR9U12N6IL0QNT39UNVHC3DM' WHERE  key = 'MERCHANT_API_TOKEN' AND externalid=<> ;
+-- END Update Citcon - Wechat Pay  app token --
