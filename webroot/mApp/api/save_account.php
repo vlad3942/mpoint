@@ -133,9 +133,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     }
 
 					// Success: Input Valid
-					if (count($aMsgCds) == 0)
-					{
-						$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile["country-id"]);
+					if (count($aMsgCds) == 0) {
+                        if (count($obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile["country-id"]) == 1) {
+
+                            $obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile["country-id"]);
+                        } else {
+                            $obj_CountryConfig = $obj_ClientConfig->getCountryConfig();
+                        }
 						// Construct Client Info
 						$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'save-account'}[$i]->{'client-info'}, $obj_CountryConfig, @$_SERVER['HTTP_X_FORWARDED_FOR']);
 
