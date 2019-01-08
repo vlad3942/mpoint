@@ -950,6 +950,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		
 		if(count($obj_Card->address) > 0)
 		{
+		    //Produce Country config based on the country id
+            CountryConfig::setISO3166Attributes($obj_Card->address, $this->getDBConn(), (int)$obj_Card->address["country-id"]);
 	        $b .= $obj_Card->address->asXML();
 		}
 		
@@ -986,7 +988,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		if(count($obj_Card->cvc) > 0) { $b .= '<cvc>'. $obj_Card->cvc .'</cvc>'; }		
 
 		$b .= '</card>';
-		
+
+		if(count($obj_Card->address) > 0)
+		{
+		    //Produce Country config based on the country id
+            CountryConfig::setISO3166Attributes($obj_Card->address, $this->getDBConn(), (int)$obj_Card->address["country-id"]);
+	        $b .= $obj_Card->address->asXML();
+		}
+
 		return $b;
 	}
     
