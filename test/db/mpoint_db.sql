@@ -7711,6 +7711,11 @@ INSERT INTO System.card_Tbl (id, name, position, paymenttype) VALUES (16, 'VISA 
 INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) SELECT 208, 18, 'DKK';
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 16, 18;
 
+INSERT INTO System.PSP_Tbl (id, name, system_type) VALUES (30, 'Alipay', 1);
+INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) SELECT 208, 30, 'DKK';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 8, 30;
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 2, 30;
+
 -- country calling code
 ALTER TABLE system.country_tbl ADD country_calling_code INTEGER NULL;
 update system.country_tbl set country_calling_code=297 where alpha3code='ABW';
