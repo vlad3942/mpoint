@@ -124,10 +124,13 @@ require_once(sCLASS_PATH ."/payment_processor.php");
 require_once(sCLASS_PATH . "/uatp.php");
 // Require specific Business logic for the UATP Card Account services
 require_once(sCLASS_PATH . "/uatp_card_account.php");
+// Require specific Business logic for the chase component
+require_once(sCLASS_PATH ."/chase.php");
 
 require_once(sCLASS_PATH ."/wallet_processor.php");
 
 require_once(sCLASS_PATH ."/post_auth_action.php");
+
 
 ignore_user_abort(true);
 set_time_limit(120);
@@ -158,10 +161,12 @@ $HTTP_RAW_POST_DATA .= '</client-info>';
 $HTTP_RAW_POST_DATA .= '</authorize-payment>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
+	
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 try
 {
+	
 	if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 	{
 		if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_DOM->{'authorize-payment'}) > 0)
@@ -318,7 +323,7 @@ $iPrimaryRoute = $oRoute ;
                                         $_SERVER['HTTP_X_FORWARDED_FOR']);
 
 										// Hash based Message Authentication Code (HMAC) enabled for client and payment transaction is not an attempt to simply save a card
-										if (strlen($obj_ClientConfig->getSalt() ) > 0)
+										if (strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties("sessiontype") != 2)
 										{
 
 											if ($obj_Validator->valHMAC(trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount), intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card->amount["country-id"]) ) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'authorize-payment'}[$i]->transaction->hmac); }
@@ -779,6 +784,11 @@ $iPrimaryRoute = $oRoute ;
                                                                             $xml .= '<status code="100">Payment authorized using  card</status>';
                                                                         }
                                                                         else if($code == "2000") { $xml .= '<status code="2000">Payment authorized using card</status>'; }
+                                                                        else if (strpos($code, '2005') !== false)
+                                                                        {
+                                                                            header("HTTP/1.1 303");
+                                                                            $xml .= $code;
+                                                                        }
                                                                         else if(is_null($token) == false) { $xml .= '<status code="'.$code.'">Globalcollect returned : '. $code .'</status>'; }
                                                                         // Error: Authorization declined
                                                                         else
@@ -790,82 +800,27 @@ $iPrimaryRoute = $oRoute ;
                                                                             $xml .= '<status code="92">Authorization failed, Globalcollect returned error: '. $code .'</status>';
                                                                         }
                                                                         break;
-                                                                    case (Constants::iNETS_ACQUIRER): // NETS
-                                                                        $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iNETS_ACQUIRER);
 
-                                                                        $obj_PSP = new Nets($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["nets"]);
-
-                                                                        $propertyValue = $obj_ClientConfig->getAdditionalProperties("3DVERIFICATION");
-                                                                        if(strtolower($propertyValue) == 'true')
-                                                                        {
-                                                                            $requset = str_replace("authorize-payment","authenticate",$HTTP_RAW_POST_DATA);
-                                                                            $code = $obj_PSP->authenticate($requset);
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            $code = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem);
-                                                                        }
-
-                                                                        // Authorization succeeded
-                                                                        if ($code == "100")
-                                                                        {
-                                                                            $xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
-                                                                        }
-                                                                        else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
-                                                                        else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and Card Details Stored.</status>'; }
-                                                                        else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml .= $code;}
-                                                                        // Error: Authorization declined
-
-                                                                        else
-                                                                        {
-                                                                            $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-
-                                                                            header("HTTP/1.1 502 Bad Gateway");
-
-                                                                            $xml .= '<status code="92">Authorization failed, NETS returned error: '. $code .'</status>';
-                                                                        }
-
-                                                                        break;
-                                                                    case (Constants::iAMEX_ACQUIRER): // AMEX
-                                                                        $obj_PSPConfig = PSPConfig::produceConfig($_OBJ_DB, $obj_TxnInfo->getClientConfig()->getID(), $obj_TxnInfo->getClientConfig()->getAccountConfig()->getID(), Constants::iAMEX_ACQUIRER);
-
-                                                                        $obj_PSP = new Amex($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["amex"]);
-
-                                                                        $propertyValue = $obj_ClientConfig->getAdditionalProperties("3DVERIFICATION");
-
-                                                                        if($propertyValue == true) {
-                                                                            $requset = str_replace("authorize-payment","authenticate",$HTTP_RAW_POST_DATA);
-                                                                            $code = $obj_PSP->authenticate($requset);
-                                                                        }
-                                                                        else {
-                                                                            $code = $obj_PSP->authorize($obj_PSPConfig, $obj_Elem);
-                                                                        }
-
-                                                                        // Authorization succeeded
-                                                                        if ($code == "100")
-                                                                        {
-                                                                            $xml .= '<status code="100">Payment Authorized Using Stored Card</status>';
-                                                                        }
-                                                                        else if($code == "2000") { $xml .= '<status code="2000">Payment authorized</status>'; }
-                                                                        else if($code == "2009") { $xml .= '<status code="2009">Payment authorized and Card Details Stored.</status>'; }
-                                                                        else if(strpos($code, '2005') !== false) { header("HTTP/1.1 303"); $xml .= $code;}
-                                                                        // Error: Authorization declined
-
-                                                                        else
-                                                                        {
-                                                                            $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-
-                                                                            header("HTTP/1.1 502 Bad Gateway");
-
-                                                                            $xml .= '<status code="92">Authorization failed, AMEX returned error: '. $code .'</status>';
-                                                                        }
-
-                                                                        break;
                                                                     default:	// Use Payment processor for PSP.
                                                                         try {
 
                                                                             $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_Elem["pspid"]), $aHTTP_CONN_INFO);
-                                                                            $code = $obj_Processor->authorize($obj_Elem);
+                                                                            $propertyValue = false;
+                                                                            $pspPropertyValue = true;
+                                                                            if ($obj_Processor->getPSPConfig()->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER)
+                                                                            {
+                                                                                $propertyValue = $obj_ClientConfig->getAdditionalProperties("3DVERIFICATION");
+                                                                                //psp property will be false in config if 3ds is not applicable
+                                                                                $pspPropertyValue = $obj_Processor->getPSPConfig()->getAdditionalProperties("3DVERIFICATION");
+                                                                            }
+
+                                                                            if($propertyValue == 'true' && $pspPropertyValue != 'false')
+                                                                            {
+                                                                                $requset = str_replace("authorize-payment","authenticate",$HTTP_RAW_POST_DATA);
+                                                                                $code = $obj_Processor->authenticate($requset);
+                                                                            }
+                                                                            else{ $code = $obj_Processor->authorize($obj_Elem); }
+
 
                                                                             // Authorization succeeded
                                                                             if ($code == "100") {
@@ -887,7 +842,7 @@ $iPrimaryRoute = $oRoute ;
 
                                                                                 header("HTTP/1.1 502 Bad Gateway");
 
-                                                                                $xml .= '<status code="92">Authorization failed, PSP returned error: ' . $code . '</status>';
+                                                                                $xml .= '<status code="92">Authorization failed, '.$obj_Processor->getPSPConfig()->getName().' returned error: ' . $code . '</status>';
                                                                             }
                                                                         }
                                                                         catch (PaymentProcessorException $e)
@@ -911,6 +866,7 @@ $iPrimaryRoute = $oRoute ;
                                                                 $iTokenzationProcessor = intval($obj_mCard->getTokenizationRoute(intval(intval($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"]) ) ) );
                                                                 if(empty($iTokenzationProcessor) === false)
                                                                 {
+                                                                    $obj_TxnInfo = $obj_TxnInfo = TxnInfo::produceInfo( (integer) $obj_TxnInfo->getID(), $_OBJ_DB);
                                                                     $obj_TokenizationPSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($iTokenzationProcessor), $aHTTP_CONN_INFO);
                                                                     $sToken = $obj_TokenizationPSP->tokenize($aHTTP_CONN_INFO, $obj_Elem);
 

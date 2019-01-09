@@ -67,9 +67,19 @@ class PaymentProcessor
         return new PaymentProcessor($oDB, $oTxt, $oTI, $iPSPID, $aConnInfo);
     }
 
+    public function initialize($cardTypeId=-1, $cardToken='', $billingAddress = NULL, $clientInfo = NULL)
+    {
+        return $this->_objPSP->initialize($this->_objPSPConfig,$this->_objPSP->getTxnInfo()->getAccountID(), false, $cardTypeId, $cardToken, $billingAddress, $clientInfo);
+    }
+
     public function authorize($obj_Elem)
     {
         return $this->_objPSP->authorize($this->_objPSPConfig, $obj_Elem);
+    }
+
+    public function authenticate($obj_Elem)
+    {
+            return $this->_objPSP->authenticate( $obj_Elem);
     }
 
     public function tokenize($aConnInfo, $obj_Elem)
@@ -87,6 +97,11 @@ class PaymentProcessor
         return $this->_objPSP->refund($iAmount);
     }
 
+    public function capture($iAmount=-1)
+    {
+        return $this->_objPSP->capture($iAmount);
+    }
+
     public function getPaymentData($obj_Elem, $mode = null)
     {
         if ($mode != null) {
@@ -100,5 +115,10 @@ class PaymentProcessor
     public function getPSPConfigForRoute($obj_Elem, $b)
     {
         return $this->_objPSP->getPSPConfigForRoute($obj_Elem, $b);
+    }
+
+    public function getStatus()
+    {
+        return $this->_objPSP->status();
     }
 }

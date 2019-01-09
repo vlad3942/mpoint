@@ -409,7 +409,7 @@ $aHTTP_CONN_INFO["global-collect"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["global-collect"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["global-collect"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["global-collect"]["paths"]["initialize"] = "/mpoint/global-collect/initialize";
-$aHTTP_CONN_INFO["global-collect"]["paths"]["auth"] = "/mpoint/global-collect/authorize-payment";
+$aHTTP_CONN_INFO["global-collect"]["paths"]["auth"] = "/mpoint/global-collect/authorize";
 $aHTTP_CONN_INFO["global-collect"]["paths"]["capture"] = "/mpoint/global-collect/capture";
 $aHTTP_CONN_INFO["global-collect"]["paths"]["status"] = "/mpoint/global-collect/status";
 $aHTTP_CONN_INFO["global-collect"]["paths"]["refund"] = "/mpoint/global-collect/refund";
@@ -711,6 +711,7 @@ $aHTTP_CONN_INFO["2c2p-alc"]["paths"]["refund"] = "/mpoint/2c2p-alc/refund";
 $aHTTP_CONN_INFO["2c2p-alc"]["paths"]["cancel"] = "/mpoint/2c2p-alc/cancel";
 $aHTTP_CONN_INFO["2c2p-alc"]["paths"]["callback"] = "/mpoint/2c2p-alc/callback";
 $aHTTP_CONN_INFO["2c2p-alc"]["paths"]["post-status"] = "/mpoint/2c2p-alc/post-status";
+$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["status"] = "/mpoint/2c2p-alc/status";
 
 
 /**
@@ -829,6 +830,40 @@ $aHTTP_CONN_INFO["uatp"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["uatp"]["paths"]["auth"] = "/mpsp/uatp/authorize-payment";
 $aHTTP_CONN_INFO["uatp"]["paths"]["initialize"] = "/mpsp/uatp/initialize";
 $aHTTP_CONN_INFO["uatp"]["paths"]["tokenize"] = "/mpoint/uatp/generate-suvtp";
+
+
+/**
+ * Connection info for connecting to eGHL-FPX
+ */
+$aHTTP_CONN_INFO["eghl"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["eghl"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["eghl"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["eghl"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["eghl"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["eghl"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["eghl"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["eghl"]["paths"]["initialize"] = "/mpoint/eghl/initialize";
+
+
+
+/**
+ * Connection info for connecting to Chase
+ */
+$aHTTP_CONN_INFO["chase"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["chase"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["chase"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["chase"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["chase"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["chase"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["chase"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["chase"]["paths"]["auth"] = "/mpsp/chase/authorize-payment";
+$aHTTP_CONN_INFO["chase"]["paths"]["initialize"] = "/mpsp/chase/initialize";
+$aHTTP_CONN_INFO["chase"]["paths"]["cancel"] = "/mpsp/chase/cancel";
+$aHTTP_CONN_INFO["chase"]["paths"]["authenticate"] = "/mpoint/authenticate";
+$aHTTP_CONN_INFO["chase"]["paths"]["settlement"] = "/mpsp/chase/payment-settlement";
+$aHTTP_CONN_INFO["chase"]["paths"]["process-settlement"] = "/mpsp/chase/process-settlement";
+
+
 
 /**
  * GoMobile Connection Info.

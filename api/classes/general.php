@@ -464,7 +464,7 @@ class General
 					orderid = '". $this->getDBConn()->escStr($oTI->getOrderID() ) ."', lang = '". $this->getDBConn()->escStr($oTI->getLanguage() ) ."',
 					mobile = ". floatval($oTI->getMobile() ) .", operatorid = ". $oTI->getOperator() .", email = '". $this->getDBConn()->escStr($oTI->getEMail() ) ."',
 					logourl = '". $this->getDBConn()->escStr($oTI->getLogoURL() ) ."', cssurl = '". $this->getDBConn()->escStr($oTI->getCSSURL() ) ."',
-					accepturl = '". $this->getDBConn()->escStr($oTI->getAcceptURL() ) ."', cancelurl = '". $this->getDBConn()->escStr($oTI->getCancelURL() ) ."',
+					accepturl = '". $this->getDBConn()->escStr($oTI->getAcceptURL() ) ."', declineurl = '". $this->getDBConn()->escStr($oTI->getDeclineURL() ) ."', cancelurl = '". $this->getDBConn()->escStr($oTI->getCancelURL() ) ."',
 					callbackurl = '". $this->getDBConn()->escStr($oTI->getCallbackURL() ) ."', iconurl = '". $this->getDBConn()->escStr($oTI->getIconURL() ) ."',
 					authurl = '". $this->getDBConn()->escStr($oTI->getAuthenticationURL() ) ."', customer_ref = '". $this->getDBConn()->escStr($oTI->getCustomerRef() ) ."',
 					gomobileid = ". $oTI->getGoMobileID() .", auto_capture = '". ($oTI->useAutoCapture() === true ? "1" : "0") ."', markup = '". $this->getDBConn()->escStr($oTI->getMarkupLanguage() ) ."',
@@ -1324,7 +1324,7 @@ class General
 
     public function getStaticRouteData($clientId = "")
     {
-        $sql = "SELECT clientid, pspid
+        $sql = "SELECT DISTINCT clientid, pspid
                     FROM client" . sSCHEMA_POSTFIX . ".cardaccess_tbl
                     WHERE pspid IN
                           (SELECT id

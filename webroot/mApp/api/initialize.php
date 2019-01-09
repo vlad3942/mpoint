@@ -45,6 +45,20 @@ require_once(sCLASS_PATH ."/validate.php");
 require_once(sCLASS_PATH ."/clientinfo.php");
 // Require Data Class for Client Account Information
 require_once(sCLASS_PATH ."/account_config.php");
+// Require Data class for Payment processor
+require_once(sCLASS_PATH ."/payment_processor.php");
+// Require Data class for Wallet processor
+require_once(sCLASS_PATH ."/wallet_processor.php");
+// Require specific Business logic for the VISA checkout component
+require_once(sCLASS_PATH ."/visacheckout.php");
+// Require specific Business logic for the Apple Pay component
+require_once(sCLASS_PATH ."/applepay.php");
+// Require specific Business logic for the Google Pay component
+require_once(sCLASS_PATH ."/googlepay.php");
+// Require specific Business logic for the Master Pass component
+require_once(sCLASS_PATH ."/masterpass.php");
+// Require specific Business logic for the mVault component
+require_once(sCLASS_PATH ."/mvault.php");
 
 $aMsgCds = array();
 
@@ -166,7 +180,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$data['accept-url'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->{'accept-url'};
 							}
 							else { $data['accept-url'] = $obj_ClientConfig->getAcceptURL(); }
-							
+
+							if (count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'decline-url'}) == 1)
+                            {
+                                $data['decline-url'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->{'decline-url'};
+                            }
+                            else { $data['decline-url'] = $obj_ClientConfig->getDeclineURL(); }
+
 							if (count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'cancel-url'}) == 1)
                             {
                                 $data['cancel-url'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->{'cancel-url'};
@@ -275,8 +295,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 for ($index = 0; $index < count($obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->children()); $index++)
                                 {
                                     $additionalTxnDataIndex++;
-                                    $additionalTxnData[$additionalTxnDataIndex]['name'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$additionalTxnDataIndex - 1]['name'];
-                                    $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$additionalTxnDataIndex - 1];
+                                    $additionalTxnData[$additionalTxnDataIndex]['name'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$index]['name'];
+                                    $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->{'additional-data'}->param[$index];
                                     $additionalTxnData[$additionalTxnDataIndex]['type'] = (string)'Transaction';
                                 }
                             }
@@ -302,11 +322,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 										$data['orders'][$j]['reward'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->reward;
 										$data['orders'][$j]['quantity'] = (float) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->quantity;
 
-                                        for ($k=0; $k<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->{'additional-data'}->children()); $k++ )
-                                        {
-                                            $data['orders'][$j]['additionaldata'][$k]['name'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->{'additional-data'}->param[$k]['name'];
-                                            $data['orders'][$j]['additionaldata'][$k]['value'] = (string) $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->{'additional-data'}->param[$k];
-                                            $data['orders'][$j]['additionaldata'][$k]['type'] = (string) 'Order';
+										if (isset($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->{'additional-data'})) {
+                                            for ($k = 0; $k < count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->{'additional-data'}->children()); $k++) {
+                                                $data['orders'][$j]['additionaldata'][$k]['name'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->{'additional-data'}->param[$k]['name'];
+                                                $data['orders'][$j]['additionaldata'][$k]['value'] = (string)$obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}[$j]->{'additional-data'}->param[$k];
+                                                $data['orders'][$j]['additionaldata'][$k]['type'] = (string)'Order';
+                                            }
                                         }
 
                                         $order_id = $obj_TxnInfo->setOrderDetails($_OBJ_DB, $data['orders']);
@@ -535,6 +556,38 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								}
 								$xml .= '</stored-cards>';
 							}
+
+							$walletsXML = '<wallets>';
+							for ($j=0; $j<count($obj_XML->item); $j++)
+							{
+                                if ($obj_XML->item[$j]["processor-type"] == Constants::iPROCESSOR_TYPE_WALLET)
+								{
+									if (in_array((integer) $obj_XML->item[$j]["pspid"], $aPSPs) === false) { $aPSPs[] = intval($obj_XML->item[$j]["pspid"] ); }
+									$walletsXML .= '<card id="'. $obj_XML->item[$j]["id"] .'" type-id="'. $obj_XML->item[$j]["type-id"] .'" psp-id="'. $obj_XML->item[$j]["pspid"] .'" min-length="'. $obj_XML->item[$j]["min-length"] .'" max-length="'. $obj_XML->item[$j]["max-length"] .'" cvc-length="'. $obj_XML->item[$j]["cvc-length"] .'" state-id="'. $obj_XML->item[$j]["state-id"] .'" payment-type="'. $obj_XML->item[$j]["payment-type"].'" preferred="'. $obj_XML->item[$j]["preferred"].'" enabled="'. $obj_XML->item[$j]["enabled"].'" processor-type="'. $obj_XML->item[$j]["processor-type"].'">';
+									$walletsXML .= '<name>'. htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) .'</name>';
+									$walletsXML .= $obj_XML->item[$j]->prefixes->asXML();
+									try
+                                    {
+                                        $obj_Processor = WalletProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_XML->item[$j]["id"]), $aHTTP_CONN_INFO);
+                                        if($obj_Processor !== false)
+                                        {
+                                            $initResponseXML = $obj_Processor->initialize();
+                                            foreach ($initResponseXML->children() as $obj_Elem)
+                                            {
+                                                if($obj_Elem->getName() !== "name")
+                                                {
+                                                    $walletsXML .= trim($obj_Elem->asXML());
+                                                }
+                                            }
+                                        }
+                                    }
+                                    catch (Exception $e){}
+                                    $walletsXML .= '</card>';
+								}
+							}
+							$walletsXML .= '</wallets>';
+                            $xml .=$walletsXML;
+
 							if ($obj_TxnInfo->getAccountID() > 0 && $obj_ClientConfig->getStoreCard() == 2)
 							{
 								$obj_XML = simplexml_load_string($obj_mPoint->getAccountInfo($obj_TxnInfo->getAccountID() ) );

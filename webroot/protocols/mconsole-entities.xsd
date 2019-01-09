@@ -313,6 +313,14 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
+				<xs:attribute name="decimals" type="xs:positiveInteger"
+							  use="required">
+					<xs:annotation>
+						<xs:documentation>
+							The decimal places for a currency
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 				<xs:attribute name="currency" use="required">
 					<xs:annotation>
 						<xs:documentation>

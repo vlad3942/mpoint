@@ -31,6 +31,7 @@
 						            	<xs:documentation>URL that is sent to the wallet API for redirecting the application after payment authorization.</xs:documentation>
 						            </xs:annotation>
 									</xs:element>
+									<xs:element name="decline-url" type="url" minOccurs="0" maxOccurs="1" />
 									<xs:element name="auth-url" type="url" minOccurs="0" maxOccurs="1" />
 									<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
 									<xs:element name="custom-variables" minOccurs="0" maxOccurs="1">
@@ -933,6 +934,29 @@
 					</xs:all>
 					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
 					<xs:attribute name="account" type="xs:positiveInteger" use="optional" />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="bulk-capture" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="transactions">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="transaction" minOccurs="1" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:all>
+											<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
+										</xs:all>
+										<xs:attribute name="id" type="xs:positiveInteger" use="optional"/>
+										<xs:attribute name="order-no" use="optional" />
+										<xs:attribute name="token" use="optional" />
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					</xs:sequence>
+					<xs:attribute name="client-id" type="xs:positiveInteger" use="required" />
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="void" minOccurs="1" maxOccurs="1">
