@@ -100,6 +100,7 @@
 												<xs:simpleContent>
 													<xs:extension base="xs:string">
 														<xs:attribute type="xs:byte" name="country-id"/>
+														<xs:attribute type="xs:byte" name="country-code"/>
 													</xs:extension>
 												</xs:simpleContent>
 											</xs:complexType>
@@ -119,6 +120,7 @@
 										<xs:element type="xs:string" name="css-url"/>
 										<xs:element type="xs:string" name="accept-url"/>
 										<xs:element type="xs:string" name="cancel-url"/>
+										<xs:element type="xs:string" name="decline-url"/>
 										<xs:element type="xs:anyURI" name="callback-url"/>
 										<xs:element type="xs:string" name="icon-url"/>
 										<xs:element type="xs:string" name="auth-url"/>
