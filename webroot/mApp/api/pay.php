@@ -253,7 +253,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if (count($obj_Elem) == 0) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled
                         if (strlen($obj_ClientConfig->getSalt() ) > 0)
                         {
-                            if(count($obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]) == 1) {
+                            if(count($obj_DOM->pay[$i]->{'client-info'}->mobile) == 1 && count($obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]) == 1) {
                                 $obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]);
                             }
                             $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'},
