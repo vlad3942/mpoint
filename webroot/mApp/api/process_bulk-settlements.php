@@ -94,14 +94,65 @@ require_once(sCLASS_PATH . "/payment_processor.php");
  $_SERVER['PHP_AUTH_PW'] = "DEMOisNO_2";
 
  $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <root>
-	<bulk-capture client-id = "10007">
+	<bulk-capture client-id="10007">
 		<transactions>
-			<transaction token = "165400018291651">
-				<amount country-id="100">10000</amount>
+			<transaction token="165400018651748">
+				<orders>
+					<line-item>
+						<amount country-id="200" type="DB">20000</amount>
+						<product sku="12345678920   ">
+							<airline-data>
+								<flight-detail>
+									<departure-date />
+									<additional-data>
+										<param name="TDNR">35412345678920</param>
+										<param name="CCAC">165400018651748</param>
+										<param name="CINN">3543201811</param>
+										<param name="SQNR">00000016</param>
+										<param name="FPAM">00000000020000</param>
+										<param name="CUTP">USD2</param>
+										<param name="DBCR">DB</param>
+									</additional-data>
+								</flight-detail>
+								<passenger-detail>
+									<title />
+									<first-name>Mejra</first-name>
+									<last-name>Causevic</last-name>
+								</passenger-detail>
+							</airline-data>
+						</product>
+					</line-item>
+				</orders>
 			</transaction>
-			<transaction  order-no="UAT-28577880" token = "165400018291651">
-				<amount country-id="100">10000</amount>
+			<transaction token="165400018653587">
+				<orders>
+					<line-item>
+						<amount country-id="200" type="DB">500000</amount>
+						<product sku="35420180509A  ">
+							<airline-data>
+								<flight-detail>
+									<departure-date />
+									<additional-data>
+										<param name="TDNR">35412345678900</param>
+										<param name="CCAC">165400018653587</param>
+										<param name="CINN">3543201811</param>
+										<param name="SQNR">00000017</param>
+										<param name="FPAM">00000000500000</param>
+										<param name="CUTP">USD2</param>
+										<param name="DBCR">DB</param>
+									</additional-data>
+								</flight-detail>
+								<passenger-detail>
+									<title />
+									<first-name>Jack</first-name>
+									<last-name>Frieh</last-name>
+								</passenger-detail>
+							</airline-data>
+						</product>
+					</line-item>
+				</orders>
 			</transaction>
 		</transactions>
 	</bulk-capture>
@@ -114,12 +165,12 @@ $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH,
 
 $obj_DOM = simpledom_load_string(file_get_contents("php://input"));
 
-if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
-{
-    $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'bulk-capture'}["client-id"]);
-    // Client successfully authenticated
-    if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']) ) {
-        if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH . "mpoint.xsd") === true && count($obj_DOM->{'bulk-capture'}) > 0) {
+if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true) {
+
+    if (($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH . "mpoint.xsd") === true && count($obj_DOM->{'bulk-capture'}) > 0) {
+        $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->{'bulk-capture'}["client-id"]);
+        // Client successfully authenticated
+        if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])) {
             $xml = '<bulk-capture-response>';
             for ($i = 0; $i < count($obj_DOM->{'bulk-capture'}->transactions->transaction); $i++) {
                 try {
@@ -139,18 +190,102 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         if (empty($obj_TxnInfo) === false) {
                             $obj_PSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_TxnInfo->getPSPID()), $aHTTP_CONN_INFO);
                             $iAmount = 0;
-                            for ($j = 0; $j < count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount); $j++) {
-                                if($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount[$j]['type'] == 'DB')
-                                {
-                                    $iAmount += intval($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount[$j]);
+                            if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders) == 1 && count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->children()) > 0) {
+                                for ($j = 0; $j < count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}); $j++) {
+                                    if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}) > 0) {
+                                        $data['orders'][$j]['product-sku'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product["sku"];
+                                        $data['orders'][$j]['product-name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->name;
+                                        $data['orders'][$j]['product-description'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->description;
+                                        $data['orders'][$j]['product-image-url'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'image-url'};
+                                        $data['orders'][$j]['amount'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->amount;
+                                        $data['orders'][$j]['country-id'] = $obj_TxnInfo->getCountryConfig()->getID();
+                                        $data['orders'][$j]['points'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->points;
+                                        $data['orders'][$j]['reward'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->reward;
+                                        $data['orders'][$j]['quantity'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->quantity;
+
+                                        if ($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->amount['type'] == 'DB') {
+                                            $iAmount += intval($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->amount);
+                                        }
+
+                                        if (isset($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'})) {
+                                            for ($j = 0; $k < count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->children()); $k++) {
+                                                $data['orders'][$j]['additionaldata'][$k]['name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->param[$k]['name'];
+                                                $data['orders'][$j]['additionaldata'][$k]['value'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->param[$k];
+                                                $data['orders'][$j]['additionaldata'][$k]['type'] = (string)'Order';
+                                            }
+                                        }
+                                        $order_id = $obj_TxnInfo->setOrderDetails($_OBJ_DB, $data['orders']);
+                                    }
+                                    if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}) > 0) {
+                                        for ($k = 0; $k < count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}); $k++) {
+                                            $data['flights']['service_class'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'service-class'};
+                                            $data['flights']['departure_airport'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'departure-airport'};
+                                            $data['flights']['arrival_airport'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'arrival-airport'};
+                                            $data['flights']['airline_code'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'airline-code'};
+                                            $data['flights']['arrival_date'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'arrival-date'};
+                                            $data['flights']['departure_date'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'departure-date'};
+                                            $data['flights']['order_id'] = $order_id;
+                                            $data['flights']['tag'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]['tag'];
+                                            $data['flights']['trip_count'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]['trip-count'];
+                                            $data['flights']['service_level'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]['service-level'];
+
+
+                                            if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}) > 0) {
+                                                for ($l = 0; $l < count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}->children()); $l++) {
+                                                    $data['additional'][$l]['name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}->param[$l]['name'];
+                                                    $data['additional'][$l]['value'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'additional-data'}->param[$l];
+                                                    $data['additional'][$l]['type'] = (string)"Flight";
+                                                }
+                                            } else {
+                                                $data['additional'] = array();
+                                            }
+
+                                            $flight = $obj_TxnInfo->setFlightDetails($_OBJ_DB, $data['flights'], $data['additional']);
+                                        }
+                                    }
+
+                                    if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}) > 0) {
+                                        for ($k = 0; $k < count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}); $k++) {
+                                            $data['passenger']['first_name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'first-name'};
+                                            $data['passenger']['last_name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'last-name'};
+                                            $data['passenger']['type'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'type'};
+                                            $data['passenger']['order_id'] = $order_id;
+                                            $data['passenger']['title'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'title'};
+                                            $data['passenger']['email'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'contact-info'}->email;
+                                            $data['passenger']['mobile'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'contact-info'}->mobile;
+                                            $data['passenger']['country_id'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'contact-info'}->mobile["country-id"];
+
+                                            if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'additional-data'}) > 0) {
+                                                for ($l = 0; $l < count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'additional-data'}->children()); $l++) {
+                                                    $data['additionalp'][$l]['name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'additional-data'}->param[$l]['name'];
+                                                    $data['additionalp'][$l]['value'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'passenger-detail'}[$k]->{'additional-data'}->param[$l];
+                                                    $data['additionalp'][$l]['type'] = (string)"Passenger";
+                                                }
+                                            } else {
+                                                $data['additionalp'] = array();
+                                            }
+                                            $passenger = $obj_TxnInfo->setPassengerDetails($_OBJ_DB, $data['passenger'], $data['additionalp']);
+                                        }
+                                    }
+
                                 }
                             }
-                            $code = $obj_PSP->capture($iAmount);
 
-                            $xml .= '<status id = "' . $sToken . '" code = "' . $code . '" >'
-                                . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->{'additional-data'}->asXML()
-                                . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount->asXML()
-                                . '</status>';
+                            $code = $obj_PSP->capture($iAmount);
+                            if (intval($code) == 1000)
+                            {
+                                $xml .= '<status id = "' . $sToken . '" code = "' . $code . '" >Capture Initialized'
+                                    . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->asXML()
+                                    . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount->asXML()
+                                    . '</status>';
+                            }
+                            else
+                            {
+                                $xml .= '<status id = "' . $sToken . '" code = "999" >Capture Declined'
+                                    . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->asXML()
+                                    . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount->asXML()
+                                    . '</status>';
+                            }
                         }
 
                     } catch (mPointException $e) {
@@ -161,45 +296,43 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         throw new mPointSimpleControllerException(HTTP::INTERNAL_SERVER_ERROR, $e->getCode(), $e->getMessage(), $e);
                     }
                 } catch (mPointControllerException $e) {
-                    header(HTTP::getHTTPHeader($e->getHTTPCode()));
-                    $xml .= '<status id = "' .$sToken. '" code = "' . $e->getCode() . '">' . $e->getMessage()
-                        . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->{'additional-data'}->asXML()
+                    $xml .= '<status id = "' . $sToken . '" code = "' . $e->getCode() . '">' . $e->getMessage()
+                        . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->asXML()
                         . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount->asXML()
                         . '</status>';
                 }
             }
             $xml .= '</bulk-capture-response>';
-        } elseif (($obj_DOM instanceof SimpleDOMElement) === false) {
-            header("HTTP/1.1 415 Unsupported Media Type");
+        }
+        else
+        {
+            header("HTTP/1.1 401 Unauthorized");
 
-            $xml = '<status code="415">Invalid XML Document</status>';
-        } // Error: Wrong operation
-        elseif (count($obj_DOM->{'bulk-capture'}) == 0) {
-            header("HTTP/1.1 400 Bad Request");
+            $xml = '<status code="401">Username / Password doesn\'t match</status>';
+        }
+    } elseif (($obj_DOM instanceof SimpleDOMElement) === false) {
+        header("HTTP/1.1 415 Unsupported Media Type");
 
-            $xml = '';
-            foreach ($obj_DOM->children() as $obj_Elem) {
-                $xml = '<status code="400">Wrong operation: ' . $obj_Elem->getName() . '</status>';
-            }
-        } // Error: Invalid Input
-        else {
-            header("HTTP/1.1 400 Bad Request");
-            $aObj_Errs = libxml_get_errors();
+        $xml = '<status code="415">Invalid XML Document</status>';
+    } // Error: Wrong operation
+    elseif (count($obj_DOM->{'bulk-capture'}) == 0) {
+        header("HTTP/1.1 400 Bad Request");
 
-            $xml = '';
-            for ($i = 0; $i < count($aObj_Errs); $i++) {
-                $xml = '<status code="400">' . htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES) . '</status>';
-            }
+        $xml = '';
+        foreach ($obj_DOM->children() as $obj_Elem) {
+            $xml = '<status code="400">Wrong operation: ' . $obj_Elem->getName() . '</status>';
+        }
+    } // Error: Invalid Input
+    else {
+        header("HTTP/1.1 400 Bad Request");
+        $aObj_Errs = libxml_get_errors();
+
+        $xml = '';
+        for ($i = 0; $i < count($aObj_Errs); $i++) {
+            $xml = '<status code="400">' . htmlspecialchars($aObj_Errs[$i]->message, ENT_NOQUOTES) . '</status>';
         }
     }
-    else
-    {
-        header("HTTP/1.1 401 Unauthorized");
-
-        $xml = '<status code="401">Username / Password doesn\'t match</status>';
-    }
 }
-
 else
 {
     header("HTTP/1.1 401 Unauthorized");
@@ -207,6 +340,7 @@ else
     $xml = '<status code="401">Authorization required</status>';
 }
 
+header("HTTP/1.0 200 OK");
 header("Content-Type: text/xml; charset=\"UTF-8\"");
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 echo '<root>';
