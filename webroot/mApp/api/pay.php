@@ -184,7 +184,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 //						$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->transaction->card[$j]->amount["country-id"]);
 //						if ( ($obj_CountryConfig instanceof CountryConfig) === false) { $obj_CountryConfig = $obj_ClientConfig->getCountryConfig(); }
-                        $obj_CountryConfig = $obj_ClientConfig->getCountryConfig();
 
 						if (count($obj_DOM->pay[$i]->transaction->card[$j]->{'issuer-identification-number'}) == 1)
 						{
@@ -253,11 +252,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						if (count($obj_Elem) == 0) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled
                         if (strlen($obj_ClientConfig->getSalt() ) > 0)
                         {
-                            if(count($obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]) == 1) {
-                                $obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]);
-                            }
                             $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'},
-                                $obj_CountryConfig,
+                                CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]),
                                 $_SERVER['HTTP_X_FORWARDED_FOR']);
                             if ($obj_Validator->valHMAC(trim($obj_DOM->{'pay'}[$i]->transaction->hmac), $obj_ClientConfig, $obj_ClientInfo, trim($obj_TxnInfo->getOrderID()), intval($obj_DOM->{'pay'}[$i]->transaction->card->amount), intval($obj_DOM->{'pay'}[$i]->transaction->card->amount["country-id"]) ) != 10) { $aMsgCds[210] = "Invalid HMAC:".trim($obj_DOM->{'pay'}[$i]->transaction->hmac); }
                         }
@@ -267,9 +263,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if ($code >= 10)
 							{
 								if ($obj_TxnInfo->getAccountID() == -1 && General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) {
-                                    if ($obj_TxnInfo->getOperator() > 0)
+                                    if (count($obj_DOM->{'pay'}[$i]->{'client-info'}->mobile)== 1 && count($obj_DOM->{'pay'}[$i]->{'client-info'}->mobile["country-id"])== 1)
                                     {
-                                        $obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, intval($obj_TxnInfo->getOperator() / 100));
+                                        $obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->{'pay'}[$i]->{'client-info'}->mobile["country-id"]);
+                                    } else {
+                                        $obj_CountryConfig = $obj_ClientConfig->getCountryConfig();
                                     }
 									$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, trim($obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}), (float) $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile, trim($obj_DOM->{'pay'}[$i]->{'client-info'}->email) );
 	
