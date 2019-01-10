@@ -35,9 +35,14 @@ class Amex extends CPMACQUIRER
 
     public function refund($iAmount = -1, $iStatus = null)
     {
-        if($this->getTxnInfo()->hasEitherState($this->getDBConn(), Constants::iPAYMENT_REFUND_INITIATED_STATE) === false)
+        
+        if (count($this->getMessageData($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURED_STATE, false) ) == 0)
         {
-            $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUND_INITIATED_STATE, "");
+            return parent::cancel();
+        }
+        else if($this->getTxnInfo()->hasEitherState($this->getDBConn(), Constants::iPAYMENT_REFUND_INITIATED_STATE) === false)
+        {
+            $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_REFUND_INITIATED_STATE, "Refund Initiated");
         }
         return 1000;
     }

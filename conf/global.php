@@ -711,6 +711,7 @@ $aHTTP_CONN_INFO["2c2p-alc"]["paths"]["refund"] = "/mpoint/2c2p-alc/refund";
 $aHTTP_CONN_INFO["2c2p-alc"]["paths"]["cancel"] = "/mpoint/2c2p-alc/cancel";
 $aHTTP_CONN_INFO["2c2p-alc"]["paths"]["callback"] = "/mpoint/2c2p-alc/callback";
 $aHTTP_CONN_INFO["2c2p-alc"]["paths"]["post-status"] = "/mpoint/2c2p-alc/post-status";
+$aHTTP_CONN_INFO["2c2p-alc"]["paths"]["status"] = "/mpoint/2c2p-alc/status";
 
 
 /**
@@ -859,6 +860,8 @@ $aHTTP_CONN_INFO["chase"]["paths"]["auth"] = "/mpsp/chase/authorize-payment";
 $aHTTP_CONN_INFO["chase"]["paths"]["initialize"] = "/mpsp/chase/initialize";
 $aHTTP_CONN_INFO["chase"]["paths"]["cancel"] = "/mpsp/chase/cancel";
 $aHTTP_CONN_INFO["chase"]["paths"]["authenticate"] = "/mpoint/authenticate";
+$aHTTP_CONN_INFO["chase"]["paths"]["settlement"] = "/mpsp/chase/payment-settlement";
+$aHTTP_CONN_INFO["chase"]["paths"]["process-settlement"] = "/mpsp/chase/process-settlement";
 
 
 
