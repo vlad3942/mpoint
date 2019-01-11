@@ -354,6 +354,14 @@ class TxnInfo
      */
     private $_aAdditionalData;
 
+
+    /*
+     *  Payment type based on card used for transaction
+     *
+     * @var integer
+     */
+    private $_iPaymentType = 0;
+
     /**
 	 * Default Constructor
 	 *
@@ -1514,5 +1522,51 @@ class TxnInfo
             trigger_error("Failed to update card details (log.transaction_tbl)", E_USER_ERROR);
        }
     }
+
+    /**
+     * @param RDB $obj_DB
+     * @return string
+     */
+    public function getPaymentMethod(RDB $obj_DB)
+    {
+        try
+        {
+            if($this->_iPaymentType == 0)
+            {
+                $query = "SELECT paymenttype FROM system" . sSCHEMA_POSTFIX . ".card_tbl WHERE id = '" . $this->_iCardID . "'";
+
+                $resultSet = $obj_DB->getNames($query);
+                if (is_array($resultSet) === true)
+                {
+                    $paymentType = $resultSet['paymenttype'];
+                    if($paymentType !== null && $paymentType !== '')
+                    {
+                        $this->_iPaymentTypeid = $paymentType;
+                    }
+                }
+            }
+
+        }
+        catch (mPointException $mPointException)
+        {
+            trigger_error("Failed to update card details (log.transaction_tbl)", E_USER_ERROR);
+        }
+        switch ($this->_iPaymentType)
+        {
+            case 1:
+                return 'CD';
+            case 2:
+                return 'CASH';
+            case 3:
+                return 'eWallet';
+            case 4:
+                return 'CASH';
+            case 7:
+                return 'DD';
+            default:
+                return 'CASH';
+        }
+    }
+
 }
 ?>

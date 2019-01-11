@@ -415,6 +415,14 @@ abstract class Callback extends EndUserAccount
         	$sBody .= "&approval-code=". $this->_obj_TxnInfo->getApprovalCode();
         }
 
+        $sBody .= '&payment-method=' . $this->_obj_TxnInfo->getPaymentMethod($this->getDBConn());
+
+        $shortCode = $this->_obj_PSPConfig->getAdditionalProperties('SHORT-CODE');
+        if($shortCode !== false)
+        {
+        	$sBody .= '&short-code='. $shortCode;
+        }
+
         $aTxnAdditionalData = $this->_obj_TxnInfo->getAdditionalData();
         if($aTxnAdditionalData !== null)
         {
