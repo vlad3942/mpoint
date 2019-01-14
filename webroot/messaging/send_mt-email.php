@@ -8,7 +8,7 @@ $actual_host = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP
 $xml = $h = '';
 
 $client = (integer)$obj_DOM->notify[0]["client-id"];
-if (empty($client) === true && !file_exists($actual_host . '/messaging/template/' . $client . '/email.html')) {
+if (empty($client) === true || !file_get_contents($actual_host . '/messaging/template/' . $client . '/email.html')) {
     $client = 'default';
 }
 
