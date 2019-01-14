@@ -1242,7 +1242,7 @@ class ClientConfig extends BasicConfig
 
             $sql  = "SELECT key,value
 					 FROM Client". sSCHEMA_POSTFIX .".AdditionalProperty_tbl
-					 WHERE externalid = ". intval($id) ." and type='client'";
+					 WHERE externalid = ". intval($id) ." and type='client' and enabled=true";
             //		echo $sql ."\n";
             $aRS = $oDB->getAllNames($sql);
             $aAdditionalProperties = array();

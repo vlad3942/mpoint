@@ -208,6 +208,27 @@ try
        $_OBJ_DB->query($sql);
     }
 
+    $sAdditionalData = (string) $obj_XML->callback->{'additional-data'};
+    if(isset($sAdditionalData))
+    {
+
+        $aAddtionalData = explode('&', $sAdditionalData);
+        $additionalTxnDataIndex = -1;
+        $additionalTxnData = [];
+        foreach ($aAddtionalData as $addtionalData)
+        {
+            $additionalTxnDataIndex++;
+            $txnData = explode('=', $addtionalData);
+            $additionalTxnData[$additionalTxnDataIndex]['name'] = (string)$txnData[0];;
+            $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$txnData[1];
+            $additionalTxnData[$additionalTxnDataIndex]['type'] = (string)'Transaction';
+        }
+        if($additionalTxnDataIndex > -1)
+        {
+            $obj_TxnInfo->setAdditionalDetails($_OBJ_DB,$additionalTxnData,$obj_TxnInfo->getID());
+        }
+    }
+
     if($iAccountValidation != 1)
 	{
         $saveCard = true;
