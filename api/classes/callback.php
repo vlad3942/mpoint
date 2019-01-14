@@ -433,12 +433,12 @@ abstract class Callback extends EndUserAccount
         }
 
         $dateTime = new DateTime($this->_obj_TxnInfo->getCreatedTimestamp());
-		$sBody .= '&date-time=' . $dateTime->format('Y-m-d T H:i:s Z');
+		$sBody .= '&date-time=' . $dateTime->format('c');
 		$timeZone = $this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties('TIMEZONE');
 		if($timeZone !== null && $timeZone !== '' && $timeZone !== false )
 		{
 			$dateTime->setTimezone(new DateTimeZone($timeZone));
-			$sBody .= '&local-date-time=' . $dateTime->format('Y-m-d T H:i:s Z');
+			$sBody .= '&local-date-time=' . $dateTime->format('c');
 		}
         /* ----- Construct Body End ----- */
         $this->performCallback($sBody, $obj_SurePay ,0 ,$sid);
@@ -982,12 +982,12 @@ abstract class Callback extends EndUserAccount
         			}
 
         			$dateTime = new DateTime($this->_obj_TxnInfo->getCreatedTimestamp());
-					$transactionData['date-time']= $dateTime->format('Y-m-d T H:i:s Z');
+					$transactionData['date-time']= $dateTime->format('c');
 					$timeZone = $this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties('TIMEZONE');
 					if($timeZone !== null && $timeZone !== '' && $timeZone !== false )
 					{
 						$dateTime->setTimezone(new DateTimeZone($timeZone));
-						$transactionData['local-date-time'] = $dateTime->format('Y-m-d T H:i:s Z');
+						$transactionData['local-date-time'] = $dateTime->format('c');
 					}
 
 					$aTransactionData['transaction-data'][$transactionId] = $transactionData;
