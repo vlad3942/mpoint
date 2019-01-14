@@ -1535,7 +1535,7 @@ class TxnInfo
             {
                 $query = "SELECT paymenttype FROM system" . sSCHEMA_POSTFIX . ".card_tbl WHERE id = '" . $this->_iCardID . "'";
 
-                $resultSet = $obj_DB->getNames($query);
+                $resultSet = $obj_DB->getName($query);
                 if (is_array($resultSet) === true)
                 {
                     $paymentType = $resultSet['paymenttype'];
@@ -1566,6 +1566,31 @@ class TxnInfo
             default:
                 return 'CASH';
         }
+    }
+
+    public function getLatestPaymentState(RDB $obj_DB)
+    {
+        $stateId = 0;
+        try
+        {
+            $query = "SELECT stateid FROM log" . sSCHEMA_POSTFIX . ".message_tbl WHERE txnid = '" . $this->getID() . "'";
+
+            $resultSet = $obj_DB->getName($query);
+            if (is_array($resultSet) === true)
+            {
+                $stateid = $resultSet['stateid'];
+                if($stateid !== null && $stateid !== '')
+                {
+                    $stateId = $stateId;
+                }
+            }
+
+        }
+        catch (mPointException $mPointException)
+        {
+            trigger_error("Failed to Get Transaction's Latest State (log.message_tbl)", E_USER_ERROR);
+        }
+        return $stateId;
     }
 
 }
