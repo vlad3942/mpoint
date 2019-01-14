@@ -6,3 +6,5 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 
 
 alter table log.additional_data_tbl alter column value type varchar(50) using value::varchar(50);
+
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type) VALUES ('TIMEZONE', 'Asia/Kuala_Lumpur', true, 10018, 'client');
