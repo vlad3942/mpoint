@@ -1538,10 +1538,10 @@ class TxnInfo
                 $resultSet = $obj_DB->getName($query);
                 if (is_array($resultSet) === true)
                 {
-                    $paymentType = $resultSet['paymenttype'];
+                    $paymentType = $resultSet['PAYMENTTYPE'];
                     if($paymentType !== null && $paymentType !== '')
                     {
-                        $this->_iPaymentTypeid = $paymentType;
+                        $this->_iPaymentType = $paymentType;
                     }
                 }
             }
