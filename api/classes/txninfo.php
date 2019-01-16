@@ -1507,13 +1507,25 @@ class TxnInfo
         return $this->_createdTimestamp;
     }
 
-    function updateCardDetails(RDB $obj_DB, $mask, $expiry)
+
+	/**
+	 * @param RDB $obj_DB
+	 * @param integer $cardid Card used for payment
+	 * @param string $mask Mask card number
+	 * @param string $expiry Expiry of card
+	 * @throws SQLQueryException
+	 */
+	function updateCardDetails(RDB $obj_DB, $cardid, $mask = null, $expiry= null)
     {
        try
        {
-           $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
-                    SET  mask='" . $mask . "' , expiry='" . $expiry . "'
-                    WHERE id=". $this->getID();
+           $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl SET cardid = " . intval($cardid);
+
+           if(empty($mask) ===false && empty($expiry) === false)
+           {
+			   $sql .= " ,mask = '" . $mask . "' , expiry = '" . $expiry . "'";
+		   }
+			$sql .= " WHERE id=". $this->getID();
            $obj_DB->query($sql);
        }
        catch (mPointException $e)
