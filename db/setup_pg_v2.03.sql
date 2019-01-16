@@ -640,6 +640,15 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'MID.IDR', '097333', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=52;
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'MID.PHP', '097335', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=52;
 
+-- Card Prefix for visa and Master --
+INSERT INTO "system".cardprefix_tbl ( cardid, min, max) VALUES( 7, 5110, 5210);
+INSERT INTO "system".cardprefix_tbl ( cardid, min, max) VALUES( 7, 2700, 2730);
+-- END Card Prefix for visa and Master --
+
 -- End Merchant MID configuration --
 
 --== END CONFIGURE Chase Payment Acquirer ==--
+
+-- Update Citcon - Wechat Pay app token --
+UPDATE client.additionalproperty_tbl set value = 'CNYETHXNAR9U12N6IL0QNT39UNVHC3DM' WHERE  key = 'MERCHANT_API_TOKEN' AND externalid=<> ;
+-- END Update Citcon - Wechat Pay  app token --
