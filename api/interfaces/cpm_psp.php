@@ -747,7 +747,16 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 */
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL)
 	{
-		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML() );
+        //If token is returned in the authorize call, we should update the wallet ID in mPoint's Log.Transaction_Tbl
+	    if($obj_PSPConfig->getID() > 0 )
+        {
+            $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+						SET walletid = " . $obj_PSPConfig->getID() . "
+						WHERE id = " . $this->getTxnInfo()->getID();
+            $this->getDBConn()->query($sql);
+        }
+
+	    $obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML() );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
