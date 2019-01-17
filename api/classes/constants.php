@@ -1243,7 +1243,7 @@ abstract class Constants
      *
      */
     const iFPX = 73;
-    
+
 	/**
 	 * Unique Fee Type ID for Top-Ups
 	 *
@@ -1327,8 +1327,8 @@ abstract class Constants
 	const iPROCESSOR_TYPE_GATEWAY = 7;
 	const iPROCESSOR_TYPE_TOKENIZATION = 8;
 
-	
-	
+
+
 	const iRETRIAL_TYPE_TIMEBASED = 1;
 	const iRETRIAL_TYPE_RESPONSEBASED = 2;
 	const iRETRIAL_TYPE_MAXATTEMPTBASED = 3;

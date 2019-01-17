@@ -199,7 +199,7 @@ class PSPConfig extends BasicConfig
 
             $sql  = "SELECT key,value
 					 FROM Client". sSCHEMA_POSTFIX .".AdditionalProperty_tbl
-					 WHERE externalid = ". intval($RS["MERCHANTID"]) ." and type='merchant'" ;
+					 WHERE externalid = ". intval($RS["MERCHANTID"]) ." and type='merchant' and enabled=true" ;
             //		echo $sql ."\n";
             $aRS = $oDB->getAllNames($sql);
             $aAdditionalProperties = array();

@@ -25,4 +25,3 @@ INSERT INTO client.cardaccess_tbl
 VALUES( 10018, 8, true, 28, 649, 1, NULL, false, 1);
 
 -- End Malindo Vietnam Static route
-

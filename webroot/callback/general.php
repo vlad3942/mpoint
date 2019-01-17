@@ -208,6 +208,27 @@ try
        $_OBJ_DB->query($sql);
     }
 
+    $sAdditionalData = (string) $obj_XML->callback->{'additional-data'};
+    if(isset($sAdditionalData))
+    {
+
+        $aAddtionalData = explode('&', $sAdditionalData);
+        $additionalTxnDataIndex = -1;
+        $additionalTxnData = [];
+        foreach ($aAddtionalData as $addtionalData)
+        {
+            $additionalTxnDataIndex++;
+            $txnData = explode('=', $addtionalData);
+            $additionalTxnData[$additionalTxnDataIndex]['name'] = (string)$txnData[0];;
+            $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$txnData[1];
+            $additionalTxnData[$additionalTxnDataIndex]['type'] = (string)'Transaction';
+        }
+        if($additionalTxnDataIndex > -1)
+        {
+            $obj_TxnInfo->setAdditionalDetails($_OBJ_DB,$additionalTxnData,$obj_TxnInfo->getID());
+        }
+    }
+
     if($iAccountValidation != 1)
 	{
         $saveCard = true;
@@ -404,6 +425,7 @@ try
              $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->{'psp-config'}["id"], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "additionaldata" => (string)$sAdditionalData));
         }
      }
+     $obj_TxnInfo->setApprovalCode($obj_XML->callback->{'approval-code'});
      $obj_mPoint->updateSessionState($iStateId, (integer)$obj_XML->callback->{'psp-config'}["id"], $obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, $obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData);
 
       //update captured amt when psp returns captured callback

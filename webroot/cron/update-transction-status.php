@@ -155,7 +155,7 @@ $query = "SELECT id, pspid
         {
             $obj_TxnInfo = TxnInfo::produceInfo(intval($RESULTSET['ID']), $_OBJ_DB);
             $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($RESULTSET['PSPID']), $aHTTP_CONN_INFO);
-            $obj_Processor->getStatus();
+            $obj_Processor->status();
         }
         catch (Exception $e)
         {
