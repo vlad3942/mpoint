@@ -9,7 +9,7 @@ $obj_XML = simpledom_load_string(file_get_contents('php://input') );
 if ($_SERVER['PHP_AUTH_USER'] == 'Tusername' && $_SERVER["PHP_AUTH_PW"] == 'Tpassword')
 {
 
-	if ($obj_XML->validate(dirname(__FILE__). '../xsd/status.xsd') )
+	if ($obj_XML->validate(dirname(__FILE__). '/../xsd/status.xsd') )
 	{
 		header("Content-Type: text/xml; charset=\"UTF-8\"");
 

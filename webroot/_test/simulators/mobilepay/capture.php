@@ -6,7 +6,7 @@ require_once(sAPI_CLASS_PATH ."/simpledom.php");
 
 $obj_XML = simpledom_load_string(file_get_contents('php://input') );
 
-if ($obj_XML->validate(dirname(__FILE__). '../xsd/capture.xsd') )
+if ($obj_XML->validate(dirname(__FILE__). '/../xsd/capture.xsd') )
 {
     header("Content-Type: text/xml; charset=\"UTF-8\"");
 
