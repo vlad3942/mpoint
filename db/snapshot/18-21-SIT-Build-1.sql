@@ -1,0 +1,2 @@
+-- Set googleAnalytics Tracking ID for Per client
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, enabled) VALUES ('googleAnalyticsId', 'UA-127114805-1', 10007, 'client', true);
