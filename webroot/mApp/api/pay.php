@@ -473,7 +473,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	
 											
 											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) , $obj_DOM->pay[$i]->transaction->card["type-id"], '',  $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_DOM->{'pay'}[$i]->{'client-info'});
-											if (General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, ""); }
 	
 											foreach ($obj_XML->children() as $obj_XMLElem)
 											{
