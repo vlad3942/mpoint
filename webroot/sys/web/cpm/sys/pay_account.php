@@ -111,7 +111,7 @@ if (count($aMsgCds) == 0)
 		{
 			$msg = $obj_mPoint->auth($_POST['euaid'], $_POST['pwd']);
 		}
-		else { $msg = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($_SESSION['obj_TxnInfo']->getAuthenticationURL() ), CustomerInfo::produceInfo($_OBJ_DB, $_POST['euaid']), $_SESSION['obj_Info']->getInfo("auth-token") ); }
+		else { $msg = $obj_mPoint->auth($_SESSION['obj_TxnInfo']->getClientConfig(), CustomerInfo::produceInfo($_OBJ_DB, $_POST['euaid']), $_SESSION['obj_Info']->getInfo("auth-token") ); }
 	}
 	else { $msg = 10; }
 	if ($msg >= 10)

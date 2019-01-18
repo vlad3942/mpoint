@@ -558,7 +558,7 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('HPP_HOST_URL', 'HPP_URL', 10007, 'client');
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('debug', 'true', 10007, 'client');
 
--- FPX Integration End --
+-- FPX Integration  --
 INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (51, 'eGHL',1);
 INSERT INTO System.Card_Tbl (id, name, position, minlength, maxlength, cvclength,paymenttype) VALUES (73, 'FPX', 23, -1, -1, -1,4);
 
@@ -566,6 +566,7 @@ INSERT INTO client.cardaccess_tbl ( clientid, cardid, enabled, pspid, countryid,
 INSERT INTO System.CardPrefix_Tbl (cardid, min, max) VALUES (73, 0, 0);
 INSERT INTO System.CardPricing_Tbl (cardid, pricepointid) SELECT 73, id FROM System.PricePoint_Tbl WHERE amount = -1 AND currencyid = 458;
 INSERT INTO system.pspcard_tbl (cardid, pspid, enabled) VALUES (73, 51, true);
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (458,51,'MYR');
 
 
 -- merchant config
@@ -640,9 +641,32 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'MID.IDR', '097333', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=52;
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'MID.PHP', '097335', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=52;
 
+-- Card Prefix for visa and Master --
+INSERT INTO "system".cardprefix_tbl ( cardid, min, max) VALUES( 7, 5110, 5210);
+INSERT INTO "system".cardprefix_tbl ( cardid, min, max) VALUES( 7, 2700, 2730);
+-- END Card Prefix for visa and Master --
+
 -- End Merchant MID configuration --
 
 --== END CONFIGURE Chase Payment Acquirer ==--
+
+-- Update Citcon - Wechat Pay app token --
+UPDATE client.additionalproperty_tbl set value = 'CNYETHXNAR9U12N6IL0QNT39UNVHC3DM' WHERE  key = 'MERCHANT_API_TOKEN' AND externalid=<> ;
+-- END Update Citcon - Wechat Pay  app token --
+--== END CONFIGURE Chase Payment Acquirer ==--
+
+--Datacash Start --
+--Edit notification secret value column for AED.
+-- Edit client id if required.
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('Notification-Secret.AED', '<notification-secret-from-SABBorDatacash>', (SELECT id FROM client.merchantaccount_tbl t WHERE clientid=10021 and pspid=17), 'merchant');
+
+--Existing entry with key 'Notification-Secret' should be updated as for SAR currency.
+UPDATE client.additionalproperty_tbl set  key='Notification-Secret.SAR' where key='Notification-Secret';
+
+--Generic sql for any new currency added for DC
+--Edit the currency code (3 char alpha code), notification secret value and client id.
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('Notification-Secret.<alpha3code>', '<notification-secret-from-SABBorDatacash>', (SELECT id FROM client.merchantaccount_tbl t WHERE clientid=10021 and pspid=17), 'merchant');
+--Datacash END --
 
 --Setup this additional property if 3DS is to be requested with every request to Adyen, the rules configured in Adyen will override
 --Do not add this if 3DS is not required

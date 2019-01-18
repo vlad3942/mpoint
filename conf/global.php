@@ -865,6 +865,7 @@ $aHTTP_CONN_INFO["chase"]["paths"]["process-settlement"] = "/mpsp/chase/process-
 
 
 
+
 /**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
