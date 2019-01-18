@@ -241,6 +241,20 @@ final class PaymentSession
         return 0;
     }
 
+    public function checkSessionCompletion() {
+        $result = FALSE;
+        $query = "SELECT COUNT(T.ID) FROM  LOG" . sSCHEMA_POSTFIX . ".TRANSACTION_TBL T
+                  INNER JOIN LOG" . sSCHEMA_POSTFIX . ".MESSAGE_TBL M
+                  ON (T.ID=M.TXnID AND M.STATEID=".Constants::iSESSION_COMPLETED." AND SESSIONID=".$this->_id.")";
+        $RS = $this->_obj_Db->getName($query);
+        if(is_array($RS) === true) {
+            if($RS["COUNT"] > 0) {
+                $result = TRUE;
+            }
+        }
+        return $result;
+    }
+
     public function getSessionType()
     {
         return $this->_sessionTypeId;
@@ -407,5 +421,27 @@ final class PaymentSession
             trigger_error ( "Session CallBack- ." . $e->getMessage(), E_USER_ERROR );
         }
         return $data;
+    }
+
+    public function getTransactions()
+    {
+        $aTransaction = [];
+        try
+        {
+            $sql = "SELECT id FROM log" . sSCHEMA_POSTFIX . ".Transaction_tbl WHERE sessionid = " . $this->getId();
+            $aRS = $this->_obj_Db->getAllNames($sql);
+            if (is_array($aRS) === true)
+            {
+                foreach ($aRS as $rs)
+                {
+                    array_push($aTransaction, $rs['ID']);
+                }
+            }
+        }
+        catch (mPointException $mPointException)
+        {
+            trigger_error ( "Get Transactions From Session error - ." . $mPointException->getMessage(), E_USER_ERROR );
+        }
+        return $aTransaction;
     }
 }

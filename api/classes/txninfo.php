@@ -354,6 +354,14 @@ class TxnInfo
      */
     private $_aAdditionalData;
 
+
+    /*
+     *  Payment type based on card used for transaction
+     *
+     * @var integer
+     */
+    private $_iPaymentType = 0;
+
     /**
 	 * Default Constructor
 	 *
@@ -846,7 +854,7 @@ class TxnInfo
 			$iHeight = iCLIENT_LOGO_SCALE ."%";
 		}
 
-		$xml  = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'" gmid="'. $this->_iGoMobileID .'" mode="'. $this->_iMode .'" eua-id="'. $this->_iAccountID .'" attempt="'. $this->_iAttempt.'" psp-id="'. $this->_iPSPID .'" card-id="'. $this->_iCardID .'" external-id="'. htmlspecialchars($this->getExternalID(), ENT_NOQUOTES) .'">';
+		$xml  = '<transaction id="'. $this->_iID .'" type="'. $this->_iTypeID .'" gmid="'. $this->_iGoMobileID .'" mode="'. $this->_iMode .'" eua-id="'. $this->_iAccountID .'" attempt="'. $this->_iAttempt.'" psp-id="'. $this->_iPSPID .'" card-id="'. $this->_iCardID .'" product-type="'. $this->_iProductType .'" external-id="'. htmlspecialchars($this->getExternalID(), ENT_NOQUOTES) .'">';
 		$xml .= '<captured-amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CurrencyConfig->getCode() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $this->_lCapturedAmount .'</captured-amount>';
 		$xml .= '<amount country-id="'. $this->_obj_CountryConfig->getID() .'" currency-id="'. $this->getCurrencyConfig()->getID() .'" currency="'.$this->getCurrencyConfig()->getCode() .'" decimals="'. $this->getCurrencyConfig()->getDecimals().'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'" alpha2code="'. $this->_obj_CountryConfig->getAlpha2code() .'" alpha3code="'. $this->_obj_CountryConfig->getAlpha3code() .'" code="'. $this->_obj_CountryConfig->getNumericCode() .'">'. $this->_lAmount .'</amount>';
 		$xml .= '<fee country-id="'. $this->_obj_CountryConfig->getID() .'" currency="'. $this->_obj_CurrencyConfig->getCode() .'" symbol="'. $this->_obj_CountryConfig->getSymbol() .'" format="'. $this->_obj_CountryConfig->getPriceFormat() .'">'. $this->_iFee .'</fee>';
@@ -1514,5 +1522,76 @@ class TxnInfo
             trigger_error("Failed to update card details (log.transaction_tbl)", E_USER_ERROR);
        }
     }
+
+    /**
+     * @param RDB $obj_DB
+     * @return string
+     */
+    public function getPaymentMethod(RDB $obj_DB)
+    {
+        try
+        {
+            if($this->_iPaymentType == 0)
+            {
+                $query = "SELECT paymenttype FROM system" . sSCHEMA_POSTFIX . ".card_tbl WHERE id = '" . $this->_iCardID . "'";
+
+                $resultSet = $obj_DB->getName($query);
+                if (is_array($resultSet) === true)
+                {
+                    $paymentType = $resultSet['PAYMENTTYPE'];
+                    if($paymentType !== null && $paymentType !== '')
+                    {
+                        $this->_iPaymentType = $paymentType;
+                    }
+                }
+            }
+
+        }
+        catch (mPointException $mPointException)
+        {
+            trigger_error("Failed to update card details (log.transaction_tbl)", E_USER_ERROR);
+        }
+        switch ($this->_iPaymentType)
+        {
+            case 1:
+                return 'CD';
+            case 2:
+                return 'CASH';
+            case 3:
+                return 'eWallet';
+            case 4:
+                return 'CASH';
+            case 7:
+                return 'DD';
+            default:
+                return 'CASH';
+        }
+    }
+
+    public function getLatestPaymentState(RDB $obj_DB)
+    {
+        $stateId = 0;
+        try
+        {
+            $query = "SELECT stateid FROM log" . sSCHEMA_POSTFIX . ".message_tbl WHERE txnid = '" . $this->getID() . "'";
+
+            $resultSet = $obj_DB->getName($query);
+            if (is_array($resultSet) === true)
+            {
+                $stateid = $resultSet['stateid'];
+                if($stateid !== null && $stateid !== '')
+                {
+                    $stateId = $stateId;
+                }
+            }
+
+        }
+        catch (mPointException $mPointException)
+        {
+            trigger_error("Failed to Get Transaction's Latest State (log.message_tbl)", E_USER_ERROR);
+        }
+        return $stateId;
+    }
+
 }
 ?>
