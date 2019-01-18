@@ -246,10 +246,9 @@ class Home extends General
 	}
 	private function _authExternal(ClientConfig $obj_ClientConfig, CustomerInfo $obj_CustomerInfo, $pwd, $clientId=-1)
 	{
-        $aURLInfo = parse_url($obj_ClientConfig->getAuthenticationURL() );
-        $obj_ConnInfo = new HTTPConnInfo($aURLInfo["scheme"], $aURLInfo["host"], $aURLInfo["port"], "120", $aURLInfo["path"], "POST", "text/xml", $obj_ClientConfig->getUsername(), $obj_ClientConfig->getPassword() );
+        $oCI = HTTPConnInfo::produceConnInfo($obj_ClientConfig->getAuthenticationURL());
+        $obj_ConnInfo = new HTTPConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), "POST", "text/xml", $obj_ClientConfig->getUsername(), $obj_ClientConfig->getPassword() );
 
-		//$obj_ConnInfo = new HTTPConnInfo($oCI->getProtocol(), $oCI->getHost(), $oCI->getPort(), $oCI->getTimeout(), $oCI->getPath(), "POST", "text/xml", $oCI->getUsername(), $oCI->getPassword() );
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<login>';
@@ -268,18 +267,18 @@ class Home extends General
 			$obj_HTTP->disConnect();
 			if ($code == 200)
 			{
-				trigger_error("Authorization accepted by Authentication Service at: ". $obj_ConnInfo->toURL() ." with HTTP Code: ". $code, E_USER_NOTICE);
+				trigger_error("Authorization accepted by Authentication Service at: ". $oCI->toURL() ." with HTTP Code: ". $code, E_USER_NOTICE);
 				return 10;
 			}
 			else
 			{
-				trigger_error("Authentication Service at: ". $obj_ConnInfo->toURL() ." rejected authorization with HTTP Code: ". $code, E_USER_WARNING);
+				trigger_error("Authentication Service at: ". $oCI->toURL() ." rejected authorization with HTTP Code: ". $code, E_USER_WARNING);
 				return 1;
 			}
 		}
 		catch (HTTPException $e)
 		{
-			trigger_error("Authentication Service at: ". $obj_ConnInfo->toURL() ." is unavailable due to ". get_class($e), E_USER_WARNING);
+			trigger_error("Authentication Service at: ". $oCI->toURL() ." is unavailable due to ". get_class($e), E_USER_WARNING);
 			return 6;
 		}
 	}

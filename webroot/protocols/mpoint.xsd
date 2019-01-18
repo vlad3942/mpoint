@@ -518,7 +518,7 @@
 			<xs:element name="get-account" minOccurs="1" maxOccurs="1">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:choice  minOccurs="1" maxOccurs="1">
+						<xs:choice  minOccurs="0" maxOccurs="1">
 							<xs:element name="mobile" type="mobile" />
 							<xs:element name="email" type="email" />
 						</xs:choice>
