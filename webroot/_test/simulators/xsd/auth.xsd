@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-
 	<xs:element name="root">
 		<xs:complexType>
 			<xs:all>
@@ -109,6 +108,7 @@
 										<xs:element name="expiry-year" type="xs:string" minOccurs="0" maxOccurs="1" />
 										<xs:element name="cvc" type="xs:string" minOccurs="0" maxOccurs="1" />
 										<xs:element name="masked_account_number" type="xs:string" minOccurs="0" maxOccurs="1" />
+										<xs:element type="xs:string" name="info-3d-secure" minOccurs="0" maxOccurs="1" />
 										<xs:element name="token" type="xs:string" minOccurs="0" maxOccurs="1" />
 									</xs:all>
 									<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
