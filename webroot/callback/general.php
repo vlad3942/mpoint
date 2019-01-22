@@ -196,7 +196,7 @@ try
             $_OBJ_DB->query($sql);
         }
     }
-    if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && !empty($obj_XML->callback->{'approval-code'})){
+    if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && empty($obj_XML->callback->{'approval-code'}) === false){
     	$sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
                             SET approval_action_code= '".$obj_XML->callback->{'approval-code'}."' WHERE id = " . $obj_XML->callback->transaction['id'];
     	$_OBJ_DB->query($sql);
