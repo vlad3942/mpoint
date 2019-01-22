@@ -87,7 +87,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
 
-		$code = 10;//$obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_TRANSACTION_STATISTICS, $aClientIDs);
+		$aClientIDs[] = array();
+        $aClientIDs[0] = $iClientID;
+
+		$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_CPM_AUTH_TOKEN'], mConsole::sPERMISSION_VISION_DASHBOARDS, $aClientIDs, true);
+
 		switch ($code)
 		{
 		case (mConsole::iSERVICE_CONNECTION_TIMEOUT_ERROR):
@@ -122,6 +126,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			$aAggregations = array();
 			$aColumns = array();
 			$limit = $obj_DOM->{'get-transaction-statistics-by-filter'}->limit;
+            $sTimeZoneOffset = "0";
+            if(count($obj_DOM->{'get-transaction-statistics-by-filter'}->UTCOffset)>0){ $sTimeZoneOffset = $obj_DOM->{'get-transaction-statistics-by-filter'}->UTCOffset;}
 			$orderby = array();
 			$orderby[(string)$obj_DOM->{'get-transaction-statistics-by-filter'}->orderby->key] = (string)$obj_DOM->{'get-transaction-statistics-by-filter'}->orderby->value;
 
@@ -152,7 +158,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                 $aColumns[] = $value;
             }
 
-			$sTransactionStats = $obj_mPoint->getTransactionStatsByFilter($iClientID, $aFilter, $aAggregations, $aColumns,$limit,$orderby);
+			$sTransactionStats = $obj_mPoint->getTransactionStatsByFilter($iClientID, $aFilter, $aAggregations, $aColumns,$limit,$orderby,$sTimeZoneOffset );
 			if(empty($sTransactionStats) === false)
 			{
 				$xml = $sTransactionStats;
@@ -180,7 +186,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$xml = '<status code="415">Invalid XML Document</status>';
 	}
 	// Error: Wrong operation
-	elseif (count($obj_DOM->{'get-transaction-statistics'}) == 0)
+	elseif (count($obj_DOM->{'get-transaction-statistics-by-filter'}) == 0)
 	{
 		header("HTTP/1.1 400 Bad Request");
 
