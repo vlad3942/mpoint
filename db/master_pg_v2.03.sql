@@ -17,3 +17,5 @@ ALTER TABLE system.country_tbl ADD country_calling_code INTEGER NULL;
 ALTER TABLE Log.Transaction_Tbl ADD declineurl VARCHAR(255);
 ALTER TABLE Log.Transaction_Tbl ADD declineurl VARCHAR(255);
 
+alter table log.additional_data_tbl alter column value type varchar(50) using value::varchar(50);
+

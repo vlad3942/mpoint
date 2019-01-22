@@ -354,6 +354,14 @@ class TxnInfo
      */
     private $_aAdditionalData;
 
+
+    /*
+     *  Payment type based on card used for transaction
+     *
+     * @var integer
+     */
+    private $_iPaymentType = 0;
+
     /**
 	 * Default Constructor
 	 *
@@ -1514,5 +1522,76 @@ class TxnInfo
             trigger_error("Failed to update card details (log.transaction_tbl)", E_USER_ERROR);
        }
     }
+
+    /**
+     * @param RDB $obj_DB
+     * @return string
+     */
+    public function getPaymentMethod(RDB $obj_DB)
+    {
+        try
+        {
+            if($this->_iPaymentType == 0)
+            {
+                $query = "SELECT paymenttype FROM system" . sSCHEMA_POSTFIX . ".card_tbl WHERE id = '" . $this->_iCardID . "'";
+
+                $resultSet = $obj_DB->getName($query);
+                if (is_array($resultSet) === true)
+                {
+                    $paymentType = $resultSet['PAYMENTTYPE'];
+                    if($paymentType !== null && $paymentType !== '')
+                    {
+                        $this->_iPaymentType = $paymentType;
+                    }
+                }
+            }
+
+        }
+        catch (mPointException $mPointException)
+        {
+            trigger_error("Failed to update card details (log.transaction_tbl)", E_USER_ERROR);
+        }
+        switch ($this->_iPaymentType)
+        {
+            case 1:
+                return 'CD';
+            case 2:
+                return 'CASH';
+            case 3:
+                return 'eWallet';
+            case 4:
+                return 'CASH';
+            case 7:
+                return 'DD';
+            default:
+                return 'CASH';
+        }
+    }
+
+    public function getLatestPaymentState(RDB $obj_DB)
+    {
+        $stateId = 0;
+        try
+        {
+            $query = "SELECT stateid FROM log" . sSCHEMA_POSTFIX . ".message_tbl WHERE txnid = '" . $this->getID() . "'";
+
+            $resultSet = $obj_DB->getName($query);
+            if (is_array($resultSet) === true)
+            {
+                $stateid = $resultSet['stateid'];
+                if($stateid !== null && $stateid !== '')
+                {
+                    $stateId = $stateId;
+                }
+            }
+
+        }
+        catch (mPointException $mPointException)
+        {
+            trigger_error("Failed to Get Transaction's Latest State (log.message_tbl)", E_USER_ERROR);
+        }
+        return $stateId;
+    }
+
 }
 ?>

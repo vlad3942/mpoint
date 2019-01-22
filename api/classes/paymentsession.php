@@ -422,4 +422,26 @@ final class PaymentSession
         }
         return $data;
     }
+
+    public function getTransactions()
+    {
+        $aTransaction = [];
+        try
+        {
+            $sql = "SELECT id FROM log" . sSCHEMA_POSTFIX . ".Transaction_tbl WHERE sessionid = " . $this->getId();
+            $aRS = $this->_obj_Db->getAllNames($sql);
+            if (is_array($aRS) === true)
+            {
+                foreach ($aRS as $rs)
+                {
+                    array_push($aTransaction, $rs['ID']);
+                }
+            }
+        }
+        catch (mPointException $mPointException)
+        {
+            trigger_error ( "Get Transactions From Session error - ." . $mPointException->getMessage(), E_USER_ERROR );
+        }
+        return $aTransaction;
+    }
 }
