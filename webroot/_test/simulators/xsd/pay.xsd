@@ -100,7 +100,7 @@
 								</xs:complexType>
 							</xs:element>
 							<xs:element name="order-attempt" type="xs:positiveInteger" minOccurs="0" />
-							<xs:element name="card" minOccurs="1" maxOccurs="1">
+							<xs:element name="card" minOccurs="0" maxOccurs="1">
 								<xs:complexType>
 									<xs:all>
 										<xs:element name="amount" type="amount" minOccurs="0" maxOccurs="1" />
