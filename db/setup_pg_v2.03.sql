@@ -667,11 +667,3 @@ UPDATE client.additionalproperty_tbl set  key='Notification-Secret.SAR' where ke
 --Edit the currency code (3 char alpha code), notification secret value and client id.
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) VALUES ('Notification-Secret.<alpha3code>', '<notification-secret-from-SABBorDatacash>', (SELECT id FROM client.merchantaccount_tbl t WHERE clientid=10021 and pspid=17), 'merchant');
 --Datacash END --
-
---Setup this additional property if 3DS is to be requested with every request to Adyen, the rules configured in Adyen will override
---Do not add this if 3DS is not required
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'MANUALTHREED', 'true', id, 'merchant' from client.merchantaccount_tbl where clientid=<clientid> and pspid=12;
-
---Setup this additional property if 3DS is to be requested to Adyen based on dynamic rules configured.
---Do not add this if 3DS is not required
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'DYNAMICTHREED', 'true', id, 'merchant' from client.merchantaccount_tbl where clientid=<clientid> and pspid=12;
