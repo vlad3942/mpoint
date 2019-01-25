@@ -95,7 +95,11 @@ require_once(sCLASS_PATH . "/mPointSettlement.php");
 require_once(sCLASS_PATH . "/amexSettlement.php");
 // Require specific Business logic for Settlement Factory component
 require_once(sCLASS_PATH . "/settlementFactory.php");
-
+// Require specific Business logic for Amex Settlement component
+require_once(sCLASS_PATH . "/ChaseSettlement.php");
+// Require specific Business logic for Amex Settlement component
+require_once(sCLASS_PATH . "/chase.php");
+ini_set('max_execution_time', 1000);
 // </editor-fold>
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true || true)

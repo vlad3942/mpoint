@@ -924,9 +924,10 @@ abstract class Callback extends EndUserAccount
 					{
 						$transactionData['card-id'] = $objTransaction->getCardID();
 					}
-					if (empty($objTransaction->getCardMask()) === false)
+					$cardMask = $objTransaction->getCardMask();
+					if (empty($cardMask) === false)
 					{
-						$transactionData['card-number'] = $objTransaction->getCardMask();
+						$transactionData['card-number'] = $cardMask;
 					}
 					if ($objTransaction->getClientConfig()->sendPSPID() === true)
 					{
@@ -945,15 +946,16 @@ abstract class Callback extends EndUserAccount
 						array_push($transactionData[$transactionId], $aVariables);
 					}
 
-					if(empty($objTransaction->getDeviceID()) === false)
+					$sDeviceID = $objTransaction->getDeviceID();
+					if(empty($sDeviceID) === false)
 					{
-						$transactionData['device-id']=$objTransaction->getDeviceID();
-
+						$transactionData['device-id']=$sDeviceID;
 					}
 
-					if(empty($objTransaction->getCardExpiry())===false)
+					$expiry = $objTransaction->getCardExpiry();
+					if(empty($expiry)===false)
 					{
-						$transactionData['expiry'] = $objTransaction->getCardExpiry();
+						$transactionData['expiry'] = $expiry;
 					}
 
 					if ($objTransaction->getApprovalCode() !== '')

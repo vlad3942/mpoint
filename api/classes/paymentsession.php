@@ -111,46 +111,42 @@ final class PaymentSession
         if(empty($currencyConfigId) === true || ($this->_obj_CurrencyConfig instanceof CurrencyConfig) == false) {
             $this->_obj_CurrencyConfig = CurrencyConfig::produceConfig($this->_obj_Db, $this->_iCurrencyId);
         }
-        // New session will not be generated, if the session is partially complete(4031) for same order id. 
-        if ($this->updateSessionDataFromOrderId() != true) {
-            try {
-                $sql = "INSERT INTO Log" . sSCHEMA_POSTFIX . ".session_tbl 
-                        (clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, sessiontypeid, externalid, expire) 
-                    VALUES 
-                        ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id;";
+        try {
+            $sql = "INSERT INTO Log" . sSCHEMA_POSTFIX . ".session_tbl 
+                    (clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, sessiontypeid, externalid, expire) 
+                VALUES 
+                    ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id;";
 
-                $res = $this->_obj_Db->prepare($sql);
-                if (is_resource($res) === true) {
-                    $aParams = array(
-                        $this->_iClientId,
-                        $this->_iAccountId,
-                        $this->_iCurrencyId,
-                        $this->_iCountryId,
-                        '4001',
-                        $orderid,
-                        $amount,
-                        $this->_sMobile,
-                        $this->_sDeviceId,
-                        $this->_sIp,
-                        $sessiontypeid,
-                        $externalId,
-                        $this->_expire
-                    );
+            $res = $this->_obj_Db->prepare($sql);
+            if (is_resource($res) === true) {
+                $aParams = array(
+                    $this->_iClientId,
+                    $this->_iAccountId,
+                    $this->_iCurrencyId,
+                    $this->_iCountryId,
+                    '4001',
+                    $orderid,
+                    $amount,
+                    $this->_sMobile,
+                    $this->_sDeviceId,
+                    $this->_sIp,
+                    $sessiontypeid,
+                    $externalId,
+                    $this->_expire
+                );
 
-                    $result = $this->_obj_Db->execute($res, $aParams);
+                $result = $this->_obj_Db->execute($res, $aParams);
 
-                    if ($result === false) {
-                        throw new Exception("Fail to create session", E_USER_ERROR);
-                    } else {
-                        $RS = $this->_obj_Db->fetchName($result);
-                        $this->_id = $RS["ID"];
-                    }
+                if ($result === false) {
+                    throw new Exception("Fail to create session", E_USER_ERROR);
+                } else {
+                    $RS = $this->_obj_Db->fetchName($result);
+                    $this->_id = $RS["ID"];
                 }
-            } catch (Exception $e) {
-                trigger_error ( "Failed to create a new session" . $e->getMessage(), E_USER_ERROR );
             }
+        } catch (Exception $e) {
+            trigger_error ( "Failed to create a new session" . $e->getMessage(), E_USER_ERROR );
         }
-
     }
 
     private function getSession($sessionid)
@@ -171,6 +167,9 @@ final class PaymentSession
             $this->_iStateId = $RS["STATEID"];
             $this->_id=$RS["ID"];
             $this->_expire = $RS["EXPIRE"];
+            if(($this->_obj_CurrencyConfig instanceof CurrencyConfig) == false) {
+                $this->_obj_CurrencyConfig = CurrencyConfig::produceConfig($this->_obj_Db, $this->_iCurrencyId);
+            }
             /* $RS["MOBILE"];
              $RS["DEVICEID"];
              $RS["IPADDRESS"];*/
@@ -269,9 +268,9 @@ final class PaymentSession
               FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn 
                 INNER JOIN log" . sSCHEMA_POSTFIX . ".message_tbl msg ON txn.id = msg.txnid 
               WHERE sessionid = " . $this->_id . " 
-                AND msg.stateid in (2000,2001,2007,2010,2011)
+                AND msg.stateid in (2000,2001,2007,2008)
                 GROUP BY txn.id,msg.stateid";
-                //return $this->_pendingAmount;
+
                 $res = $this->_obj_Db->query($sql);
                 while ($RS = $this->_obj_Db->fetchName($res)) {
                     $amount = ($amount + intval($RS['AMOUNT']));
@@ -313,26 +312,6 @@ final class PaymentSession
         $xml .= '<amount country-id="'. $this->getCountryConfig()->getID() .'" currency-id="'. $this->getCurrencyConfig()->getID() .'" currency="'.$this->getCurrencyConfig()->getCode() .'" symbol="'. $this->getCountryConfig()->getSymbol() .'" format="'. $this->getCountryConfig()->getPriceFormat() .'" alpha2code="'. $this->getCountryConfig()->getAlpha2code() .'" alpha3code="'. $this->getCountryConfig()->getAlpha3code() .'" code="'. $this->getCountryConfig()->getNumericCode() .'">'. $this->getPendingAmount() .'</amount>';
         $xml .= "</session>";
         return $xml;
-    }
-
-    private function updateSessionDataFromOrderId()
-    {
-        $status = false;
-        try {
-            $sql = "SELECT id, amount, stateid FROM log" . sSCHEMA_POSTFIX . ".session_tbl
-                    WHERE orderid = '" . $this->_orderId . "'
-                    AND stateid = '" . Constants::iSESSION_PARTIALLY_COMPLETED . "'
-                    ORDER BY id DESC LIMIT 1";
-
-            $RS = $this->_obj_Db->getName($sql);
-            if (is_array($RS) === true) {
-                $this->_id = $RS["ID"];
-                $status = true;
-            }
-        } catch (Exception $e) {
-            trigger_error ( "Update Session Data - ." . $e->getMessage(), E_USER_ERROR );
-        }
-        return $status;
     }
 
     public function getAmount()
