@@ -165,7 +165,11 @@ try
     }
     $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 
-	$year = substr(strftime("%Y"), 0, 2);
+    $year ='';
+    if(strlen($obj_XML->callback->transaction->card->expiry->year) === 2)
+    {
+        $year = substr(strftime("%Y"), 0, 2);
+    }
 	$sExpirydate =  $year.$obj_XML->callback->transaction->card->expiry->year ."-". $obj_XML->callback->transaction->card->expiry->month;
 	// If transaction is in Account Validated i.e 1998 state no action to be done
 
@@ -196,7 +200,7 @@ try
             $_OBJ_DB->query($sql);
         }
     }
-    if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && $obj_XML->callback->{'approval-code'} >0){
+    if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && empty($obj_XML->callback->{'approval-code'}) === false){
     	$sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
                             SET approval_action_code= '".$obj_XML->callback->{'approval-code'}."' WHERE id = " . $obj_XML->callback->transaction['id'];
     	$_OBJ_DB->query($sql);
@@ -206,6 +210,27 @@ try
        $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
                             SET attempt = attempt + 1 WHERE id = " . $obj_XML->callback->transaction['id'];
        $_OBJ_DB->query($sql);
+    }
+
+    $sAdditionalData = (string) $obj_XML->callback->{'additional-data'};
+    if(isset($sAdditionalData))
+    {
+
+        $aAddtionalData = explode('&', $sAdditionalData);
+        $additionalTxnDataIndex = -1;
+        $additionalTxnData = [];
+        foreach ($aAddtionalData as $addtionalData)
+        {
+            $additionalTxnDataIndex++;
+            $txnData = explode('=', $addtionalData);
+            $additionalTxnData[$additionalTxnDataIndex]['name'] = (string)$txnData[0];;
+            $additionalTxnData[$additionalTxnDataIndex]['value'] = (string)$txnData[1];
+            $additionalTxnData[$additionalTxnDataIndex]['type'] = (string)'Transaction';
+        }
+        if($additionalTxnDataIndex > -1)
+        {
+            $obj_TxnInfo->setAdditionalDetails($_OBJ_DB,$additionalTxnData,$obj_TxnInfo->getID());
+        }
     }
 
     if($iAccountValidation != 1)
@@ -349,20 +374,27 @@ try
 		$aCallbackArgs = array("transact" => $obj_XML->callback->transaction["external-id"],
 							   "amount" => $obj_TxnInfo->getAmount(),
 							   "card-id" =>  $obj_XML->callback->transaction->card["type-id"]);
-		
-		$responseCode = $obj_mPoint->capture($obj_TxnInfo->getAmount());
-		
-		
-		if ($responseCode == 1000)
-		{				
-		//    array_push($aStateId,Constants::iPAYMENT_CAPTURED_STATE);
-			//$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
-		}
-		else
-		{
-            array_push($aStateId,Constants::iPAYMENT_DECLINED_STATE);
-			$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, "Payment Declined (2010)");
-		}
+
+        try
+        {
+            $responseCode = $obj_mPoint->capture($obj_TxnInfo->getAmount());
+
+            if ($responseCode == 1000)
+            {
+                //    array_push($aStateId,Constants::iPAYMENT_CAPTURED_STATE);
+                //$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
+            }
+            else
+            {
+                array_push($aStateId,Constants::iPAYMENT_DECLINED_STATE);
+                $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_DECLINED_STATE, "Payment Declined (2010)");
+            }
+        }
+        catch (CallbackException $e)
+        {
+            //If capture is not supported for a PSP - log and continue
+            trigger_error($e->getMessage(), E_USER_WARNING);
+        }
 	}
 	
   }
@@ -399,6 +431,12 @@ try
      }
      $obj_TxnInfo->setApprovalCode($obj_XML->callback->{'approval-code'});
      $obj_mPoint->updateSessionState($iStateId, (integer)$obj_XML->callback->{'psp-config'}["id"], $obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, $obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData);
+
+      //update captured amt when psp returns captured callback
+      if($iStateId == Constants::iPAYMENT_CAPTURED_STATE) {
+          $obj_Capture = new Capture($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $obj_mPoint);
+          $obj_Capture->updateCapturedAmount( (integer) $obj_XML->callback->transaction->amount);
+      }
    }
   else {
       header("Content-Type: text/xml; charset=\"UTF-8\"");

@@ -406,6 +406,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                 {
                     $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
 						SET pspid = " . $obj_PSPConfig->getID() . "
+						, cardid = ". intval($card_type_id) . "
 						WHERE id = " . $this->getTxnInfo()->getID();
                     $this->getDBConn()->query($sql);
                 }
@@ -440,10 +441,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             {
                 $mask=str_replace(" ", "", $obj_Card->mask);
             }
-            if($mask != NULL)
-            {
-                $this->getTxnInfo()->updateCardDetails($this->getDBConn(), $mask, $obj_Card->expiry);
-            }
+            //In case of wallet payment flow mPoint get real card and card id in authorization
+            $this->getTxnInfo()->updateCardDetails($this->getDBConn(), $obj_Card['type-id'], $mask, $obj_Card->expiry);
         }
         catch (Exception $e)
         {
@@ -857,7 +856,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 */
 	public function getPSPConfigForRoute($cardid, $countryid)
 	{
-		$sql = "SELECT DISTINCT PSP.id, PSP.name,
+		$sql = "SELECT DISTINCT PSP.id, PSP.name, PSP.system_type,
 					MA.name AS ma, MA.username, MA.passwd AS password, MSA.name AS msa, CA.countryid
 				FROM System".sSCHEMA_POSTFIX.".PSP_Tbl PSP
 				INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl MA ON PSP.id = MA.pspid AND MA.enabled = '1'
@@ -868,10 +867,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				WHERE CL.id = ". intval($this->getClientConfig()->getID() ) ." AND CA.cardid = ". intval($cardid) ."
 					AND (CA.countryid = ". intval($countryid) ." OR CA.countryid IS NULL)
 				ORDER BY CA.countryid ASC";
-//		echo $sql ."\n";
-		$RS = $this->getDBConn()->getName($sql);	
 
-		if (is_array($RS) === true && count($RS) > 1) {	return new PSPConfig($RS["ID"], $RS["NAME"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], array()); }
+		$RS = $this->getDBConn()->getName($sql);
+		if (is_array($RS) === true && count($RS) > 1) {	return new PSPConfig($RS["ID"], $RS["NAME"], $RS["SYSTEM_TYPE"], $RS["MA"], $RS["MSA"], $RS["USERNAME"], $RS["PASSWORD"], array()); }
 		else { return null; }
 	}	
 	
@@ -951,6 +949,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		
 		if(count($obj_Card->address) > 0)
 		{
+		    //Produce Country config based on the country id
+            CountryConfig::setISO3166Attributes($obj_Card->address, $this->getDBConn(), (int)$obj_Card->address["country-id"]);
 	        $b .= $obj_Card->address->asXML();
 		}
 		
@@ -987,7 +987,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		if(count($obj_Card->cvc) > 0) { $b .= '<cvc>'. $obj_Card->cvc .'</cvc>'; }		
 
 		$b .= '</card>';
-		
+
+		if(count($obj_Card->address) > 0)
+		{
+		    //Produce Country config based on the country id
+            CountryConfig::setISO3166Attributes($obj_Card->address, $this->getDBConn(), (int)$obj_Card->address["country-id"]);
+	        $b .= $obj_Card->address->asXML();
+		}
+
 		return $b;
 	}
     
