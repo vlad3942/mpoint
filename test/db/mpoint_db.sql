@@ -4347,7 +4347,7 @@ INSERT INTO psp_tbl VALUES (6, 'Authorize.Net', '2011-11-28 22:45:42.587193', '2
 INSERT INTO psp_tbl VALUES (7, 'WannaFind', '2012-03-02 11:01:31.155778', '2012-03-02 11:44:10.417562', true);
 INSERT INTO psp_tbl VALUES (8, 'NetAxept', '2012-12-19 08:45:22.30609', '2012-12-19 08:46:09.28319', true);
 INSERT INTO psp_tbl VALUES (9, 'CPG', '2013-11-01 08:57:50.594616', '2013-11-01 08:57:50.594616', true);
-
+INSERT INTO psp_tbl VALUES (18, 'WireCard', '2013-11-01 08:57:50.594616', '2013-11-01 08:57:50.594616', true);
 
 --
 -- TOC entry 3193 (class 0 OID 0)
@@ -4433,7 +4433,16 @@ INSERT INTO pspcard_tbl VALUES (94, 9, 8, '2012-12-19 11:36:09.256163', '2012-12
 INSERT INTO pspcard_tbl VALUES (95, 2, 8, '2012-12-19 11:36:09.256163', '2012-12-19 11:36:09.256163', true);
 INSERT INTO pspcard_tbl VALUES (96, 7, 8, '2012-12-19 11:36:09.256163', '2012-12-19 11:36:09.256163', true);
 INSERT INTO pspcard_tbl VALUES (97, 8, 8, '2012-12-19 11:36:09.256163', '2012-12-19 11:36:09.256163', true);
-
+INSERT INTO pspcard_tbl VALUES (200, 6, 18, '2010-10-14 16:59:50.034982', '2010-10-14 16:59:50.034982', true);
+INSERT INTO pspcard_tbl VALUES (201, 9, 18, '2010-10-14 16:59:50.034982', '2010-10-14 16:59:50.034982', true);
+INSERT INTO pspcard_tbl VALUES (202, 0, 18, '2010-10-14 16:59:50.034982', '2010-10-14 16:59:50.034982', true);
+INSERT INTO pspcard_tbl VALUES (203, 3, 18, '2010-10-14 16:59:50.034982', '2010-10-14 16:59:50.034982', true);
+INSERT INTO pspcard_tbl VALUES (204, 7, 18, '2010-10-14 16:59:50.034982', '2010-10-14 16:59:50.034982', true);
+INSERT INTO pspcard_tbl VALUES (205, 5, 18, '2010-10-14 16:59:50.034982', '2010-10-14 16:59:50.034982', true);
+INSERT INTO pspcard_tbl VALUES (206, 4, 18, '2010-10-14 16:59:50.034982', '2010-10-14 16:59:50.034982', true);
+INSERT INTO pspcard_tbl VALUES (207, 8, 18, '2010-10-14 16:59:50.034982', '2010-10-14 16:59:50.034982', true);
+INSERT INTO pspcard_tbl VALUES (208, 2, 18, '2010-10-14 16:59:50.034982', '2010-10-14 16:59:50.034982', true);
+INSERT INTO pspcard_tbl VALUES (209, 1, 18, '2010-10-14 16:59:50.034982', '2010-10-14 16:59:50.034982', true);
 
 --
 -- TOC entry 3194 (class 0 OID 0)
@@ -4717,7 +4726,9 @@ INSERT INTO pspcurrency_tbl VALUES (417, 647, 9, 'AED', '2013-11-04 13:27:37.015
 INSERT INTO pspcurrency_tbl VALUES (418, 648, 9, 'UZS', '2013-11-04 13:27:37.01545', '2013-11-04 13:27:37.01545', true);
 INSERT INTO pspcurrency_tbl VALUES (419, 649, 9, 'VND', '2013-11-04 13:27:37.01545', '2013-11-04 13:27:37.01545', true);
 INSERT INTO pspcurrency_tbl VALUES (420, 650, 9, 'YER', '2013-11-04 13:27:37.01545', '2013-11-04 13:27:37.01545', true);
-
+INSERT INTO pspcurrency_tbl VALUES (522, 100, 18, 'DKK', '2010-10-14 16:59:50.034982', '2010-10-14 16:59:50.034982', true);
+INSERT INTO pspcurrency_tbl VALUES (523, 101, 18, 'SEK', '2010-10-14 16:59:50.034982', '2010-10-14 16:59:50.034982', true);
+INSERT INTO pspcurrency_tbl VALUES (524, 200, 18, 'USD', '2010-10-14 16:59:50.034982', '2010-10-14 16:59:50.034982', true);
 --
 -- TOC entry 3195 (class 0 OID 0)
 -- Dependencies: 240
@@ -4941,7 +4952,7 @@ CREATE TABLE address_tbl (
     accountid integer,
     cardid integer,
     countryid integer NOT NULL,
-    stateid integer NOT NULL,
+    state integer NOT NULL,
     firstname character varying(50),
     lastname character varying(50),
     company character varying(50),
@@ -5898,7 +5909,7 @@ ALTER TABLE ONLY address_tbl
 --
 
 ALTER TABLE ONLY address_tbl
-    ADD CONSTRAINT address2state_fk FOREIGN KEY (stateid) REFERENCES system.state_tbl(id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT address2state_fk FOREIGN KEY (state) REFERENCES system.state_tbl(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -7684,6 +7695,26 @@ INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2021 , 'Tokenizati
 DROP INDEX client.cardaccess_card_country_uq RESTRICT;
 
 CREATE UNIQUE INDEX cardaccess_card_country_uq ON client.cardaccess_tbl (clientid, cardid, countryid, psp_type) WHERE enabled='true';
+
+
+INSERT INTO System.PSP_Tbl (id, name, system_type) VALUES (17, 'Data Cash', 1);
+INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) SELECT 208, 17, 'DKK';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 8, 17;
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 2, 17;
+
+INSERT INTO System.PSP_Tbl (id, name, system_type) VALUES (13, 'VISA Checkout', 1);
+INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) SELECT 208, 13, 'DKK';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 8, 13;
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 2, 13;
+
+INSERT INTO System.card_Tbl (id, name, position, paymenttype) VALUES (16, 'VISA Checkout', 16, 3);
+INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) SELECT 208, 18, 'DKK';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 16, 18;
+
+INSERT INTO System.PSP_Tbl (id, name, system_type) VALUES (30, 'Alipay', 1);
+INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) SELECT 208, 30, 'DKK';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 8, 30;
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 2, 30;
 
 -- country calling code
 ALTER TABLE system.country_tbl ADD country_calling_code INTEGER NULL;

@@ -87,4 +87,58 @@ $aGM_CONN_INFO["path"] = "/_test/simulators/gomobile/send.php";
 $aGM_CONN_INFO["contenttype"] = "text/xml; charset=ISO-8859-1";
 $aGM_CONN_INFO["mode"] = 1;
 
+/**
+ * Connection info for connecting to Wire Card
+ */
+$aHTTP_CONN_INFO["wire-card"]["protocol"] = "http";
+$aHTTP_CONN_INFO["wire-card"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["wire-card"]["port"] = 80;
+$aHTTP_CONN_INFO["wire-card"]["timeout"] = 120;
+$aHTTP_CONN_INFO["wire-card"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["wire-card"]["method"] = "POST";
+$aHTTP_CONN_INFO["wire-card"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["wire-card"]["paths"]["initialize"] = "/_test/simulators/wire-card/init.php";
+$aHTTP_CONN_INFO["wire-card"]["paths"]["auth"] = "/_test/simulators/wire-card/auth.php";
+
+/**
+ * Connection info for connecting to DataCash
+ */
+$aHTTP_CONN_INFO["data-cash"]["protocol"] = "http";
+$aHTTP_CONN_INFO["data-cash"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["data-cash"]["port"] = 80;
+$aHTTP_CONN_INFO["data-cash"]["timeout"] = 120;
+$aHTTP_CONN_INFO["data-cash"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["data-cash"]["paths"]["auth"] = "/_test/simulators/datacash/auth.php";
+$aHTTP_CONN_INFO["data-cash"]["paths"]["pay"] = "/_test/simulators/datacash/pay.php";
+$aHTTP_CONN_INFO["data-cash"]["paths"]["initialize"] = "/_test/simulators/datacash/pay.php";
+$aHTTP_CONN_INFO["data-cash"]["path"] = $aHTTP_CONN_INFO["data-cash"]["paths"]["pay"];
+
+
+/**
+ * Connection info for connecting to VisaCheckout
+ */
+$aHTTP_CONN_INFO["visa-checkout"]["protocol"] = "http";
+$aHTTP_CONN_INFO["visa-checkout"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["visa-checkout"]["port"] = 80;
+$aHTTP_CONN_INFO["visa-checkout"]["timeout"] = 120;
+$aHTTP_CONN_INFO["visa-checkout"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["visa-checkout"]["paths"]["get-payment-data"] = "/_test/simulators/visacheckout/get-payment-data.php";
+$aHTTP_CONN_INFO["visa-checkout"]["paths"]["pay"] = "/_test/simulators/visacheckout/pay.php";
+$aHTTP_CONN_INFO["visa-checkout"]["paths"]["initialize"] = "/_test/simulators/visacheckout/pay.php";
+$aHTTP_CONN_INFO["visa-checkout"]["path"] = $aHTTP_CONN_INFO["visa-checkout"]["paths"]["pay"];
+
+
+/**
+ * Connection info for connecting to DataCash
+ */
+$aHTTP_CONN_INFO["alipay"]["protocol"] = "http";
+$aHTTP_CONN_INFO["alipay"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["alipay"]["port"] = 80;
+$aHTTP_CONN_INFO["alipay"]["timeout"] = 120;
+$aHTTP_CONN_INFO["alipay"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["alipay"]["paths"]["auth"] = "/_test/simulators/alipay/auth.php";
+$aHTTP_CONN_INFO["alipay"]["paths"]["pay"] = "/_test/simulators/alipay/pay.php";
+$aHTTP_CONN_INFO["alipay"]["paths"]["initialize"] = "/_test/simulators/alipay/pay.php";
+$aHTTP_CONN_INFO["alipay"]["path"] = $aHTTP_CONN_INFO["alipay"]["paths"]["pay"];
+
 ?>

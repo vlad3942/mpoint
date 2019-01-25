@@ -131,6 +131,7 @@ $aStateId = array();
 try
 {
 	$obj_TxnInfo = TxnInfo::produceInfo($id, $_OBJ_DB);
+	$obj_TxnInfo->produceOrderConfig($_OBJ_DB);
 	$iAccountValidation = $obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iPAYMENT_ACCOUNT_VALIDATED);
 	// Intialise Text Translation Object
 	$_OBJ_TXT = new TranslateText(array(sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/global.txt", sLANGUAGE_PATH . $obj_TxnInfo->getLanguage() ."/custom.txt"), sSYSTEM_PATH, 0, "UTF-8");
@@ -157,6 +158,9 @@ try
             $mvault = new MVault($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO['mvault']);
 
             $xmlString = "<card id='" . $obj_XML->{'threed-redirect'}->transaction->card["type-id"] . "'><token>" . $obj_TxnInfo->getToken() . "</token></card>";
+            /* Reset the eua-id to contain txn-id which will be linked as external ref for the txn.
+            This is only applicable for Acq flow with MPI */
+            $obj_TxnInfo->setAccountID($obj_TxnInfo->getID());
 
             $obj_Elem = $mvault->getPaymentData($obj_PSPConfig, simplexml_load_string($xmlString));
             //var_dump($obj_Elem);die;
@@ -167,6 +171,22 @@ try
             $cryptogram = $card_obj->card->{'info-3d-secure'}->addChild('cryptogram', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram);
             $cryptogram->addAttribute('eci', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['eci']);
             $cryptogram->addAttribute('algorithm-id', $obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->cryptogram['algorithm-id']);
+            if(count($obj_XML->{'threed-redirect'}->transaction->card->address) > 0 && count($card_obj->card->address->state) === 0)
+            {
+                $address = $card_obj->card->address;
+                foreach ($obj_XML->{'threed-redirect'}->transaction->card->address->attributes() as $name=>$value)
+                {
+                    $address->addAttribute($name,$value);
+                }
+                foreach ($obj_XML->xpath('threed-redirect/transaction/card/address/*') as $item)
+				{
+                    $node =$address->addChild($item->getName(),$item);
+                    foreach ($item->attributes() as $name=>$value)
+					{
+						$node->addAttribute($name,$value);
+					}
+                }
+            }
             if(count($obj_XML->{'threed-redirect'}->transaction->card->{'info-3d-secure'}->{'additional-data'}) > 0)
 			{
 				$additionalData = $card_obj->card->{'info-3d-secure'}->addChild('additional-data');
@@ -182,6 +202,12 @@ try
                             WHERE id = " . $obj_XML->{'threed-redirect'}->transaction['id'];
             //echo $sql ."\n";
             $_OBJ_DB->query($sql);
+            $additionalTxnData = [];
+            $additionalTxnData[0]['name'] = "eci";
+            $additionalTxnData[0]['value'] = (string)$card_obj->card->{'info-3d-secure'}->cryptogram["eci"];
+            $additionalTxnData[0]['type'] = 'Transaction';
+            $obj_TxnInfo->setAdditionalDetails($_OBJ_DB, $additionalTxnData,$obj_TxnInfo->getID());
+
 
             $code = $obj_mPoint->authorize($obj_PSPConfig, $card_obj->card);
 

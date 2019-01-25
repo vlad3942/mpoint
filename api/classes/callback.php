@@ -997,12 +997,17 @@ abstract class Callback extends EndUserAccount
 
 				$sBody .= '&' .http_build_query($aTransactionData);
 
-				if ($sessionObj->getStateId() !== Constants::iSESSION_CREATED) {
-					$this->newMessage($this->_obj_TxnInfo->getID(), $sessionObj->getStateId(), $sBody);
-				}
-				/* ----- Construct Body End ----- */
-				if ($sessionObj->getPendingAmount() === 0) {
-					$this->performCallback($sBody, $obj_SurePay);
+				 if ($sessionObj->getStateId() !== Constants::iSESSION_CREATED)
+				{
+					$iSessionStateValidation = $this->_obj_TxnInfo->hasEitherState($this->getDBConn(), $sessionObj->getStateId());
+					if ($iSessionStateValidation !== 1)
+					{
+						$this->newMessage($this->_obj_TxnInfo->getID(), $sessionObj->getStateId(), $sBody);
+						if ($sessionObj->getPendingAmount() === 0)
+						{
+							$this->performCallback($sBody, $obj_SurePay);
+						}
+					}
 				}
         	}
         }
