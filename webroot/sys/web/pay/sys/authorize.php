@@ -133,7 +133,7 @@ if($_POST['storedcard'] == true)
 	{
 		$msg = $obj_mPoint->auth($_SESSION['obj_TxnInfo']->getAccountID(), $_POST['pwd']);
 	}
-	else { $msg = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($_SESSION['obj_TxnInfo']->getAuthenticationURL() ), CustomerInfo::produceInfo($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAccountID()), $_SESSION['obj_Info']->getInfo("auth-token") ); }
+	else { $msg = $obj_mPoint->auth($_SESSION['obj_TxnInfo']->getClientConfig(), CustomerInfo::produceInfo($_OBJ_DB, $_SESSION['obj_TxnInfo']->getAccountID()), $_SESSION['obj_Info']->getInfo("auth-token") ); }
 }
 
 if (count($aMsgCds) == 0)

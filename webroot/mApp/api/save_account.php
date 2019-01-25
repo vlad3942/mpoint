@@ -133,9 +133,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                     }
 
 					// Success: Input Valid
-					if (count($aMsgCds) == 0)
-					{
-						$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile["country-id"]);
+					if (count($aMsgCds) == 0) {
+                        if (count($obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile["country-id"]) == 1) {
+
+                            $obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile["country-id"]);
+                        } else {
+                            $obj_CountryConfig = $obj_ClientConfig->getCountryConfig();
+                        }
 						// Construct Client Info
 						$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'save-account'}[$i]->{'client-info'}, $obj_CountryConfig, @$_SERVER['HTTP_X_FORWARDED_FOR']);
 
@@ -160,7 +164,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     $url = (string)$obj_DOM->{'save-account'}[$i]->{'auth-url'};
                                 }
                                 if ($obj_Validator->valURL($url, $obj_ClientConfig->getAuthenticationURL()) == 10) {
-                                    $code = $obj_mPoint->auth(HTTPConnInfo::produceConnInfo($url), CustomerInfo::produceInfo($_OBJ_DB, $iAccountID), trim($obj_DOM->{'save-account'}[$i]->{'auth-token'}), intval($obj_DOM->{'save-account'}[$i]["client-id"]));
+                                    $obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $iAccountID);
+                                    $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
+                                    //for existing accounts
+                                    if (empty($obj_Customer["customer-ref"]) === true && count($obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}) > 0) {
+                                        $obj_Customer["customer-ref"] = (string) $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'};
+                                    }
+
+                                    $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
+                                    $code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, trim($obj_DOM->{'save-account'}[$i]->{'auth-token'}), intval($obj_DOM->{'save-account'}[$i]["client-id"]));
                                 } else {
                                     $code = -1;
                                 }

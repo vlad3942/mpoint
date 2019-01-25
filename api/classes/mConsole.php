@@ -60,6 +60,7 @@ class mConsole extends Admin
 	const sPERMISSION_VOID_PAYMENTS = "mpoint.void-payments.get.x";
 	const sPERMISSION_CAPTURE_PAYMENTS = "mpoint.capture-payments.get.x";	
 	const sPERMISSION_GET_TRANSACTION_STATISTICS = "mpoint.dashboard.get.x";
+    const sPERMISSION_VISION_DASHBOARDS = "mconsole.cube.transaction.dashboard.x";
 
 	
 	public function saveClient($cc, $storecard, $autocapture, $name, $username, $password, $maxamt, $lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl, $salt, $channels, $id = -1)
@@ -540,13 +541,15 @@ class mConsole extends Admin
 	 * @param	string $authtoken		The user's authentication token which must be passed back to mConsole's Enterprise Security Manager
 	 * @param	string $permissioncode	mConsole's Permission Code which should be used authorization as part of Single Sign-On
 	 * @param	array $aClientIDs		A list of client IDs on which the operation is being executed
+     * @param   boolean $bIsVer2		Is mConsole Version 2.0
 	 * @return	integer
 	 */
-	public function singleSignOn(HTTPConnInfo &$oCI, $authtoken, $permissioncode, array $aClientIDs=array() )
+	public function singleSignOn(HTTPConnInfo &$oCI, $authtoken, $permissioncode, array $aClientIDs=array() , $bIsVer2 = false)
 	{
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<single-sign-on permission-code="'.htmlspecialchars($permissioncode, ENT_NOQUOTES) .'">';
+        if($bIsVer2 == true) { $b .= '<version>2.0</version>'; }
 		if (is_null($aClientIDs) == false && count($aClientIDs) > 0)
 		{
 			$b .= '<clients>';
@@ -568,7 +571,7 @@ class mConsole extends Admin
 			$obj_HTTP->connect();
 			$HTTPResponseCode = $obj_HTTP->send($h, $b);
 			$response = simpledom_load_string($obj_HTTP->getReplyBody());
-			/* foreach($response->attributes() as $key => $val) 
+		    foreach($response->attributes() as $key => $val) 
 			{
     			if($key == "code")
     			{
@@ -583,8 +586,7 @@ class mConsole extends Admin
 			else
 			{
 				$code = $HTTPResponseCode;
-			} */
-			$code = 200;
+			}  
 			switch ($code)
 			{
 			case (200):	// HTTP 200 OK
@@ -1355,8 +1357,9 @@ class mConsole extends Admin
      * @return array:resultSet
      */
 
-    public function getTransactionStatsByFilter($iClientID, $aFilters = array(), $aAggregations = array(), $aColumns = array(),$limit,$orderby = array())
+    public function getTransactionStatsByFilter($iClientID, $aFilters = array(), $aAggregations = array(), $aColumns = array(),$limit,$orderby = array(),$sTimeZoneOffset)
 	{
+	    $sAtTimeZone = " AT TIME ZONE 'UTC' AT TIME ZONE '".$sTimeZoneOffset."'::interval ";
 		$sql = 'SELECT ';
         $aSelector = array();
         $aSeriesSelector = array();
@@ -1370,15 +1373,16 @@ class mConsole extends Admin
 					$aSelector[] = 'COUNT(*) AS TRANSACTION_COUNT';
 					$aSeriesSelector[] = 'COALESCE(Q.TRANSACTION_COUNT,0) as TRANSACTION_COUNT';
 					$aOrderbyClauses[] = 'TRANSACTION_COUNT '.$orderby['TRANSACTION_COUNT'];
-
+                    if(in_array('state', $aColumns) === false)
+                    $aFiltersClauses[] = " AND M.STATEID IN (".Constants::iPAYMENT_CAPTURED_STATE.")";
 					break;
             	case 'hour':
-            		$aSelector[] = 'EXTRACT(hour FROM T.created) AS HOUR';
+            		$aSelector[] = 'EXTRACT(hour FROM M.created '.$sAtTimeZone.' ) AS HOUR';
 					$aSeriesSelector[] = 'number as HOUR';
 					$aOrderbyClauses[] = 'HOUR';
             		break;
 				case 'day':
-            		$aSelector[] = 'EXTRACT(day FROM T.created) AS DAY';
+            		$aSelector[] = 'EXTRACT(day FROM M.created '.$sAtTimeZone.') AS DAY';
 					$aSeriesSelector[] = 'number as DAY';
 					$aOrderbyClauses[] = 'DAY';
             		break;
@@ -1387,7 +1391,7 @@ class mConsole extends Admin
 					$aOrderbyClauses[] = 'STATE '.$orderby['currency'];//if value present the it will return value(asc or desc) or ''(empty)
 					break;
 				case 'revenue_count' :
-					$aSelector[] = 'round(sum(T.amount)/100,2) AS revenue_count';//Dividing by 100 to get actual transaction amount
+					$aSelector[] = 'SUM(T.amount/POWER(10,COALESCE(C.decimals,0))) AS revenue_count';//Dividing by 100 to get actual transaction amount
 					$aSeriesSelector[] = 'coalesce(Q.revenue_count,0) as revenue_count';
 					$aOrderbyClauses[] = 'revenue_count '.$orderby['revenue_count'];
 					$aFiltersClauses[] = " AND M.STATEID IN (".Constants::iPAYMENT_CAPTURED_STATE.")";
@@ -1419,12 +1423,8 @@ class mConsole extends Admin
 
 		$sql .= implode(", ", $aSelector);
 
-		$sql .= " FROM LOG".sSCHEMA_POSTFIX.".TRANSACTION_TBL AS T";
+		$sql .= " FROM LOG".sSCHEMA_POSTFIX.".TRANSACTION_TBL AS T INNER JOIN LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL AS M ON T.ID = M.TXNID ";
 
-		if (array_key_exists('state', $aFilters) === true || in_array('revenue_count', $aColumns) === true)
-        {
-            $sql .= " INNER JOIN LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL AS M ON T.ID = M.TXNID";
-        }
 
 		if(array_key_exists('paymenttypeid', $aFilters) === true)
 		{
@@ -1435,8 +1435,13 @@ class mConsole extends Admin
 		{
 			$sql .= " INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".CURRENCY_TBL AS C ON T.CURRENCYID = C.ID ";
 		}
+		else if(in_array('revenue_count', $aColumns) === true)
+        {
+                $sql .= " INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".CURRENCY_TBL AS C ON T.CURRENCYID = C.ID ";
+        }
 
-		if(in_array('country_id', $aColumns) === true)
+
+        if(in_array('country_id', $aColumns) === true)
 		{
 			$sql .= " INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".COUNTRY_TBL AS COUNTRY ON T.COUNTRYID = COUNTRY.ID ";
 		}
@@ -1447,10 +1452,10 @@ class mConsole extends Admin
         {
             switch(strtolower($key)){
                 case 'from' :
-                    $aFiltersClauses[] = " AND T.created >= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($value)))."'";
+                    $aFiltersClauses[] = " AND M.created ".$sAtTimeZone." >= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($value)))."'";
                     break;
                 case 'to':
-                    $aFiltersClauses[] = " AND T.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($value)))."'";
+                    $aFiltersClauses[] = " AND M.created ".$sAtTimeZone." <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($value)))."'";
                     break;
                 case 'state':
                     $aFiltersClauses[] = " AND M.STATEID in (".implode(",", $value).") AND M.ID IN (SELECT Max(id) FROM LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL	WHERE T.id = txnid and STATEID in (".implode(",", $value)."))";
@@ -1545,6 +1550,33 @@ class mConsole extends Admin
 
         return $sReponseXML;
 
+	}
+	
+	
+	public function getHourlyTxnData( $clientId, $startDate , $endDate ,$stateId) {
+		
+		$sql = "SELECT TO_CHAR(mt.created, 'yyyy-MM-dd HH24') AS hourSeg,COUNT(DISTINCT(mt.txnid))" ;
+        $sql .=  " FROM log.transaction_tbl tt INNER JOIN log.message_tbl mt ON (tt.id = mt.txnid AND tt.clientid = '".$clientId."' AND mt.stateid= ".$stateId." )";
+        $sql .=" WHERE '".$startDate."'<=mt.created AND '".$endDate."' >= mt.created";
+        $sql .= " GROUP BY hourSeg ORDER BY hourSeg ";
+
+		$res = $this->getDBConn()->query($sql);
+
+		if (is_resource($res) === true) {
+			while ($RS = $this->getDBConn()->fetchName($res)) {
+				$sSegments .=	'<hour-segment segment="'.$RS["HOURSEG"].'">'.$RS["COUNT"].'</hour-segment>';
+			}
+			$sReponseXML .= '<get-hourly-ticket-data-response>';
+			if($sSegments != '')
+			{
+				$sReponseXML .= '<hour-segments>';
+				$sReponseXML .= $sSegments ;
+				$sReponseXML .= '</hour-segments>';
+			}
+			$sReponseXML .= '</get-hourly-ticket-data-response>';
+		}
+		
+		return $sReponseXML ;
 	}
 
     }
