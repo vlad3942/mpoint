@@ -940,7 +940,7 @@ class TxnInfo
 		{
 			$sql .= " INNER JOIN Client".sSCHEMA_POSTFIX.".MerchantAccount_Tbl ma ON t.clientid = ma.clientid AND ma.name = '". $obj->escStr($merchant) ."' AND ma.enabled = true";
 		}
-		$sql .= " WHERE orderid = '". $obj->escStr($orderNo) ."'";
+        $sql .= " WHERE orderid = '". $obj->escStr($orderNo) ."'";
 //		echo $sql ."\n";
 
 		$RS = $obj->getName($sql);
@@ -948,6 +948,19 @@ class TxnInfo
 
 		if ( ($obj_TxnInfo instanceof TxnInfo) === false) { throw new TxnInfoException("Transaction with orderno: ". $orderNo. " not found", 1001); }
 		return self::produceInfo($obj_TxnInfo->getID(),  $obj, $obj_TxnInfo, $data);
+	}
+
+	public static function produceTxnInfoFromToken(RDB $obj, $sToken, array $data = array())
+	{
+		$sql = self::_constProduceQuery();
+
+		$sql .= " WHERE token = '". $obj->escStr($sToken) ."'";
+
+		$RS = $obj->getName($sql);
+		$obj_TxnInfo = self::_produceFromResultSet($obj, $RS);
+
+        if ( ($obj_TxnInfo instanceof TxnInfo) === false) { throw new TxnInfoException("Transaction with Token: ". $sToken. " not found", 1001); }
+        return self::produceInfo($obj_TxnInfo->getID(),  $obj, $obj_TxnInfo, $data);
 	}
 
 	private static function _constProduceQuery()

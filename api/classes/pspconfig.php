@@ -78,7 +78,7 @@ class PSPConfig extends BasicConfig
 	 * @param 	string $pw 		Client's Password for the Payment Service Provider
 	 * @param 	array $aMsgs 	List of messages that are sent to the Payment Service Provider
 	 */
-	public function __construct($id, $name, $system_type, $ma, $msa, $un, $pw, array $aMsgs=array(),$aAdditionalProperties )
+	public function __construct($id, $name, $system_type, $ma, $msa, $un, $pw, array $aMsgs=array(),$aAdditionalProperties=array() )
 	{
 		parent::__construct($id, $name);
 		$this->_sMerchantAccount = trim($ma);
