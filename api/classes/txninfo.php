@@ -456,7 +456,7 @@ class TxnInfo
         }
 
         $this->_obj_PaymentSession = $paymentSession;
-        $this->_obj_PaymentSession->updateTransaction($this->_iID);
+        $this->_obj_PaymentSession->updateTransaction($this->_iID, $this->_sOrderID);
 
         $this->_iProductType = (integer) $productType;
         $this->_createdTimestamp =$createdTimestamp;
