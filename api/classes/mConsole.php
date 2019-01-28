@@ -60,6 +60,7 @@ class mConsole extends Admin
 	const sPERMISSION_VOID_PAYMENTS = "mpoint.void-payments.get.x";
 	const sPERMISSION_CAPTURE_PAYMENTS = "mpoint.capture-payments.get.x";	
 	const sPERMISSION_GET_TRANSACTION_STATISTICS = "mpoint.dashboard.get.x";
+    const sPERMISSION_VISION_DASHBOARDS = "mconsole.cube.transaction.dashboard.x";
 
 	
 	public function saveClient($cc, $storecard, $autocapture, $name, $username, $password, $maxamt, $lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl, $salt, $channels, $id = -1)
@@ -540,13 +541,15 @@ class mConsole extends Admin
 	 * @param	string $authtoken		The user's authentication token which must be passed back to mConsole's Enterprise Security Manager
 	 * @param	string $permissioncode	mConsole's Permission Code which should be used authorization as part of Single Sign-On
 	 * @param	array $aClientIDs		A list of client IDs on which the operation is being executed
+     * @param   boolean $bIsVer2		Is mConsole Version 2.0
 	 * @return	integer
 	 */
-	public function singleSignOn(HTTPConnInfo &$oCI, $authtoken, $permissioncode, array $aClientIDs=array() )
+	public function singleSignOn(HTTPConnInfo &$oCI, $authtoken, $permissioncode, array $aClientIDs=array() , $bIsVer2 = false)
 	{
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<single-sign-on permission-code="'.htmlspecialchars($permissioncode, ENT_NOQUOTES) .'">';
+        if($bIsVer2 == true) { $b .= '<version>2.0</version>'; }
 		if (is_null($aClientIDs) == false && count($aClientIDs) > 0)
 		{
 			$b .= '<clients>';
@@ -1355,8 +1358,9 @@ class mConsole extends Admin
      * @return array:resultSet
      */
 
-    public function getTransactionStatsByFilter($iClientID, $aFilters = array(), $aAggregations = array(), $aColumns = array(),$limit,$orderby = array())
+    public function getTransactionStatsByFilter($iClientID, $aFilters = array(), $aAggregations = array(), $aColumns = array(),$limit,$orderby = array(),$sTimeZoneOffset)
 	{
+	    $sAtTimeZone = " AT TIME ZONE 'UTC' AT TIME ZONE '".$sTimeZoneOffset."'::interval ";
 		$sql = 'SELECT ';
         $aSelector = array();
         $aSeriesSelector = array();
@@ -1374,12 +1378,12 @@ class mConsole extends Admin
                     $aFiltersClauses[] = " AND M.STATEID IN (".Constants::iPAYMENT_CAPTURED_STATE.")";
 					break;
             	case 'hour':
-            		$aSelector[] = 'EXTRACT(hour FROM M.created ) AS HOUR';
+            		$aSelector[] = 'EXTRACT(hour FROM M.created '.$sAtTimeZone.' ) AS HOUR';
 					$aSeriesSelector[] = 'number as HOUR';
 					$aOrderbyClauses[] = 'HOUR';
             		break;
 				case 'day':
-            		$aSelector[] = 'EXTRACT(day FROM M.created) AS DAY';
+            		$aSelector[] = 'EXTRACT(day FROM M.created '.$sAtTimeZone.') AS DAY';
 					$aSeriesSelector[] = 'number as DAY';
 					$aOrderbyClauses[] = 'DAY';
             		break;
@@ -1449,10 +1453,10 @@ class mConsole extends Admin
         {
             switch(strtolower($key)){
                 case 'from' :
-                    $aFiltersClauses[] = " AND T.created >= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($value)))."'";
+                    $aFiltersClauses[] = " AND M.created ".$sAtTimeZone." >= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($value)))."'";
                     break;
                 case 'to':
-                    $aFiltersClauses[] = " AND T.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($value)))."'";
+                    $aFiltersClauses[] = " AND M.created ".$sAtTimeZone." <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($value)))."'";
                     break;
                 case 'state':
                     $aFiltersClauses[] = " AND M.STATEID in (".implode(",", $value).") AND M.ID IN (SELECT Max(id) FROM LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL	WHERE T.id = txnid and STATEID in (".implode(",", $value)."))";

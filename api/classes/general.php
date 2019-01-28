@@ -1324,7 +1324,7 @@ class General
 
     public function getStaticRouteData($clientId = "")
     {
-        $sql = "SELECT clientid, pspid
+        $sql = "SELECT DISTINCT clientid, pspid
                     FROM client" . sSCHEMA_POSTFIX . ".cardaccess_tbl
                     WHERE pspid IN
                           (SELECT id
