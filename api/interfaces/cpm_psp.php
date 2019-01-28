@@ -577,9 +577,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                 if($obj_XML->status['code'] == '100')
                 {
                     $sToken = $obj_XML->status->card->{'card-number'};
-                    $sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-						SET token = ".$sToken."
-						WHERE id = ". $this->getTxnInfo()->getID();
+                    $sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".ExternalReference_Tbl
+					        (txnid, externalid, pspid)
+				                VALUES
+					        (".$this->getTxnInfo()->getID().", ".$sToken.", ".$obj_PSPConfig->getID().")";
                     //echo $sql ."\n";
                     $this->getDBConn()->query($sql);
                     $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_TOKENIZATION_COMPLETE_STATE, $sToken. " generated for transactionID ". $this->getTxnInfo()->getID());

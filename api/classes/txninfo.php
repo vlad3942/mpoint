@@ -949,12 +949,13 @@ class TxnInfo
 		return self::produceInfo($obj_TxnInfo->getID(),  $obj, $obj_TxnInfo, $data);
 	}
 
-	public static function produceTxnInfoFromToken(RDB $obj, $sToken, array $data = array())
+	public static function produceTxnInfoFromExternalRef(RDB $obj, $sToken, array $data = array())
 	{
 		$sql = self::_constProduceQuery();
 
-		$sql .= " WHERE token = '". $obj->escStr($sToken) ."'";
-
+		$sql .= " INNER JOIN Log".sSCHEMA_POSTFIX.".ExternalReference_Tbl er
+		            ON t.id = er.txnid AND er.externalid = ". $obj->escStr($sToken);
+        //echo $sql; exit;
 		$RS = $obj->getName($sql);
 		$obj_TxnInfo = self::_produceFromResultSet($obj, $RS);
 
