@@ -415,15 +415,31 @@ abstract class Callback extends EndUserAccount
         	$sBody .= "&approval-code=". $this->_obj_TxnInfo->getApprovalCode();
         }
 
+        $sBody .= '&payment-method=' . $this->_obj_TxnInfo->getPaymentMethod($this->getDBConn());
+
+        $shortCode = $this->_obj_PSPConfig->getAdditionalProperties('SHORT-CODE');
+        if($shortCode !== false)
+        {
+        	$sBody .= '&short-code='. $shortCode;
+        }
+
         $aTxnAdditionalData = $this->_obj_TxnInfo->getAdditionalData();
         if($aTxnAdditionalData !== null)
         {
             foreach ($aTxnAdditionalData as $key => $value)
             {
-				$sBody .= "&custom-field[".$key."]=". $value;
+				$sBody .= '&' .$key. '=' . $value;
             }
         }
 
+        $dateTime = new DateTime($this->_obj_TxnInfo->getCreatedTimestamp());
+		$sBody .= '&date-time=' . $dateTime->format('c');
+		$timeZone = $this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties('TIMEZONE');
+		if($timeZone !== null && $timeZone !== '' && $timeZone !== false )
+		{
+			$dateTime->setTimezone(new DateTimeZone($timeZone));
+			$sBody .= '&local-date-time=' . $dateTime->format('c');
+		}
         /* ----- Construct Body End ----- */
         $this->performCallback($sBody, $obj_SurePay ,0 ,$sid);
 	}
@@ -489,13 +505,21 @@ abstract class Callback extends EndUserAccount
 	 *
 	 * @return 	string
 	 */
-	protected function getVariables()
+	protected function getVariables($transactionid = null)
 	{
+		if($transactionid === null)
+		{
+			$transactionId = $this->_obj_TxnInfo->getID();
+		}
+		else
+		{
+			$transactionId = intval($transactionid);
+		}
 		// Get custom Client Variables and Customer Input
-		$aClientVars = $this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iCLIENT_VARS_STATE);
-		$aProducts = $this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iPRODUCTS_STATE);
-		$aDeliveryInfo = $this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iDELIVERY_INFO_STATE);
-		$aShippingInfo = $this->getMessageData($this->_obj_TxnInfo->getID(), Constants::iSHIPPING_INFO_STATE);
+		$aClientVars = $this->getMessageData($transactionId, Constants::iCLIENT_VARS_STATE);
+		$aProducts = $this->getMessageData($transactionId, Constants::iPRODUCTS_STATE);
+		$aDeliveryInfo = $this->getMessageData($transactionId, Constants::iDELIVERY_INFO_STATE);
+		$aShippingInfo = $this->getMessageData($transactionId, Constants::iSHIPPING_INFO_STATE);
 
 		$sBody = "";
 		// Add custom Client Variables to Callback Body
@@ -877,37 +901,113 @@ abstract class Callback extends EndUserAccount
 					$obj_CustomerInfo = CustomerInfo::produceInfo($this->getDBConn(), $this->_obj_TxnInfo->getAccountID());
 					$sBody .= "&customer-country-id=" . $obj_CustomerInfo->getCountryID();
 				}
-				$transactionId = $this->_obj_TxnInfo->getID();
-				// TransactionData array
-				$sBody .= "&transaction-data[$transactionId][status]=" . $sid;
-				$sBody .= "&transaction-data[$transactionId][hmac]=" . urlencode($this->_obj_TxnInfo->getHMAC());
-				$sBody .= "&transaction-data[$transactionId][product-type]=" . $this->_obj_TxnInfo->getProductType();
-				$sBody .= "&transaction-data[$transactionId][amount]=" . $amt;
-				$sBody .= "&transaction-data[$transactionId][currency]=" . urlencode($this->_obj_TxnInfo->getCountryConfig()->getCurrency());
-				$sBody .= "&transaction-data[$transactionId][fee]=" . intval($fee);
-				$sBody .= "&transaction-data[$transactionId][issuer-approval-code]=" . $this->_obj_TxnInfo->getApprovalCode();
 
-				if (strlen($sAdditionalData) > 0) {
-					$eData = explode('&', $sAdditionalData);
 
-					foreach ($eData as $eResult) {
-						$txnData = explode('=', $eResult);
-						$txnKey = $txnData[0];
-						$sBody .= "&transaction-data[$transactionId][$txnKey] =" . $txnData[1];
+				$aTransaction = $this->_obj_TxnInfo->getPaymentSession()->getTransactions();
+
+				$aTransactionData = [];
+				$aTransactionData['transaction-data'] = [];
+				foreach ($aTransaction as $transactionId)
+				{
+					$transactionData =[];
+					$objTransaction = TxnInfo::produceInfo($transactionId, $this->getDBConn());
+
+					// TransactionData array
+					$transactionData['status']= $objTransaction->getLatestPaymentState($this->getDBConn());
+					$transactionData['hmac']= $objTransaction->getHMAC();
+					$transactionData['product-type']= $objTransaction->getProductType();
+					$transactionData['amount']= $objTransaction->getAmount();
+					$transactionData['currency']= $objTransaction->getCountryConfig()->getCurrency();
+					$transactionData['fee']= $objTransaction->getFee();
+					$transactionData['issuer-approval-code']= $objTransaction->getApprovalCode();
+					if (intval($objTransaction->getCardID()) > 0)
+					{
+						$transactionData['card-id'] = $objTransaction->getCardID();
 					}
+					$cardMask = $objTransaction->getCardMask();
+					if (empty($cardMask) === false)
+					{
+						$transactionData['card-number'] = $cardMask;
+					}
+					if ($objTransaction->getClientConfig()->sendPSPID() === true)
+					{
+						$transactionData['pspid']= $objTransaction->getPSPID();
+						$transactionData['psp-name']= $this->getPSPName($objTransaction->getPSPID());
+        			}
+					if ($objTransaction->getDescription() !== '')
+					{
+						$transactionData['description'] = $objTransaction->getDescription();
+					}
+					$sVariables = $this->getVariables();
+					if($sVariables !== '')
+					{
+						$aVariables = [];
+						parse_str($sVariables, $aVariables);
+						array_push($transactionData[$transactionId], $aVariables);
+					}
+
+					$sDeviceID = $objTransaction->getDeviceID();
+					if(empty($sDeviceID) === false)
+					{
+						$transactionData['device-id']=$sDeviceID;
+					}
+
+					$expiry = $objTransaction->getCardExpiry();
+					if(empty($expiry)===false)
+					{
+						$transactionData['expiry'] = $expiry;
+					}
+
+					if ($objTransaction->getApprovalCode() !== '')
+					{
+        				$transactionData['approval-code']= $objTransaction->getApprovalCode();
+        			}
+
+        			$transactionData['payment-method'] = $objTransaction->getPaymentMethod($this->getDBConn());
+
+					$shortCode = $this->getAdditionalPropertyFromDB('SHORT-CODE', $objTransaction->getClientConfig()->getID(),$objTransaction->getPSPID());
+        			if($shortCode !== false)
+        			{
+        				$transactionData['short-code']=  $shortCode;
+        			}
+
+        			$aTxnAdditionalData = $objTransaction->getAdditionalData();
+        			if($aTxnAdditionalData !== null)
+        			{
+            			foreach ($aTxnAdditionalData as $key => $value)
+            			{
+            				if($key !== '')
+            				{
+								$transactionData[$key] = $value;
+							}
+            			}
+        			}
+
+        			$dateTime = new DateTime($this->_obj_TxnInfo->getCreatedTimestamp());
+					$transactionData['date-time']= $dateTime->format('c');
+					$timeZone = $this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties('TIMEZONE');
+					if($timeZone !== null && $timeZone !== '' && $timeZone !== false )
+					{
+						$dateTime->setTimezone(new DateTimeZone($timeZone));
+						$transactionData['local-date-time'] = $dateTime->format('c');
+					}
+
+					$aTransactionData['transaction-data'][$transactionId] = $transactionData;
 				}
 
-				$data = $sessionObj->getSessionCallbackData();
-				if ($data != '') {
-					$sBody .= "&" . $data;
-				}
+				$sBody .= '&' .http_build_query($aTransactionData);
 
-				if ($sessionObj->getStateId() != Constants::iSESSION_CREATED) {
-					$this->newMessage($this->_obj_TxnInfo->getID(), $sessionObj->getStateId(), $sBody);
-				}
-				/* ----- Construct Body End ----- */
-				if ($sessionObj->getPendingAmount() == 0) {
-					$this->performCallback($sBody, $obj_SurePay);
+				 if ($sessionObj->getStateId() !== Constants::iSESSION_CREATED)
+				{
+					$iSessionStateValidation = $this->_obj_TxnInfo->hasEitherState($this->getDBConn(), $sessionObj->getStateId());
+					if ($iSessionStateValidation !== 1)
+					{
+						$this->newMessage($this->_obj_TxnInfo->getID(), $sessionObj->getStateId(), $sBody);
+						if ($sessionObj->getPendingAmount() === 0)
+						{
+							$this->performCallback($sBody, $obj_SurePay);
+						}
+					}
 				}
         	}
         }
