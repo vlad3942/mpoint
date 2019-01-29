@@ -54,7 +54,6 @@ $aReplaceVal = array($sCssUrl, $sLogo, $sBannerImage, $sMessageText, $sURL);
 
 // Function to replace string
 $sBody = str_replace($aSearchVal, $aReplaceVal, $sHtmlData);
-echo $sBody;die;
 
 $sFromEmail = (string)$obj_DOM->notify->{'from'};
 $sRecipientEmail = (string)$obj_DOM->notify->{'to'};
