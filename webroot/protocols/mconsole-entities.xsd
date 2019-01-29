@@ -2095,6 +2095,7 @@
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="limit" maxOccurs="unbounded" minOccurs="0"/>
+			<xs:element name="UTCOffset" maxOccurs="unbounded" minOccurs="0"/>
 
 			<xs:element name="orderby" maxOccurs="unbounded" minOccurs="0">
 				<xs:complexType>

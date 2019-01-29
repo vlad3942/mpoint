@@ -165,7 +165,11 @@ try
     }
     $obj_mPoint = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
 
-	$year = substr(strftime("%Y"), 0, 2);
+    $year ='';
+    if(strlen($obj_XML->callback->transaction->card->expiry->year) === 2)
+    {
+        $year = substr(strftime("%Y"), 0, 2);
+    }
 	$sExpirydate =  $year.$obj_XML->callback->transaction->card->expiry->year ."-". $obj_XML->callback->transaction->card->expiry->month;
 	// If transaction is in Account Validated i.e 1998 state no action to be done
 
