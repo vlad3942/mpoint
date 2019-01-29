@@ -60,7 +60,7 @@ class mConsole extends Admin
 	const sPERMISSION_VOID_PAYMENTS = "mpoint.void-payments.get.x";
 	const sPERMISSION_CAPTURE_PAYMENTS = "mpoint.capture-payments.get.x";	
 	const sPERMISSION_GET_TRANSACTION_STATISTICS = "mpoint.dashboard.get.x";
-    const sPERMISSION_VISION_DASHBOARDS = "mconsole.cube.transaction.dashboard.x";
+    const sPERMISSION_VISION_DASHBOARDS = "mconsole.cube.payment.dashboard.x";
 
 	
 	public function saveClient($cc, $storecard, $autocapture, $name, $username, $password, $maxamt, $lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl, $salt, $channels, $id = -1)
