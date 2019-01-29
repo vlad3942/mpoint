@@ -1,5 +1,8 @@
-<!DOCTYPE html>
-<html>
+<?php
+function getEmailData($passengerData = "", $flightData = "")
+{
+    return '<!DOCTYPE html>
+    <html>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -251,8 +254,7 @@
                                     <p style="text-align: left"><b>Dear Customer,</b> <br/>
                                         Thank you for choosing Ethiopian.<br>You can find below your complete travel
                                         itinerary.</p>
-                                {PASSENGER DETAIL}
-                                {FLIGHT DETAIL}
+'.getOrderData($passengerData, $flightData).'
                             <tr>
                                 <td valign="top" class="bodyContent">
                                     <p style="text-align: left">
@@ -261,7 +263,7 @@
                                         Please follow the link below to complete your booking.</p>
                                     <a class="blue-btn" href="{PAY NOW URL}"><strong>Pay now</strong></a>
                                     <small style="display: block; margin-top: 15px">You can reach us 24/7 on the direct
-                                        line for our China Call Center is <b>4008071787</b> and Support mail id is
+                                         line for our China Call Center is <b>4008071787</b> and Support mail id is
                                         <b>paymentsupport@ethiopianairlines.com.cn</b> for any reservation, ticketing and other
                                         queries you may have.
                                     </small>
@@ -298,4 +300,88 @@
     </tr>
 </table>
 </body>
-</html>
+</html>';
+}
+function getOrderData($passengerData, $flightData) {
+    $orderData = '';
+    if (empty($passengerData) === false) {
+        if (count($passengerData) > 1) {
+            foreach ($passengerData as $data) {
+                $orderData .= '<tr>
+                                <td valign="top"
+                                    style="color: #505050; font-size: 14px;  padding-right: 3.5em; padding-left: 3.5em; padding-bottom: 0;">
+                                    <p style="text-align: left;">
+                                        <b>Passenger Name:</b> <span style="color:#b9253b "> ' . $data->title . '. ' . $data->first_name . ' ' . $data->last_name . ' </span>
+                                    </p>
+                                </td>
+                            </tr>';
+            }
+        } else {
+            $orderData .= '<tr>
+                                <td valign="top"
+                                    style="color: #505050; font-size: 14px;  padding-right: 3.5em; padding-left: 3.5em; padding-bottom: 0;">
+                                    <p style="text-align: left;">
+                                        <b>Passenger Name:</b> <span style="color:#b9253b "> ' . $passengerData->title . '. ' . $passengerData->first_name . ' ' . $passengerData->last_name . ' </span>
+                                    </p>
+                                </td>
+                            </tr>';
+        }
+    }
+    if (empty($passengerData) === false) {
+        if (count($flightData) > 1) {
+
+            foreach ($flightData as $data) {
+                $orderData .= '<tr>
+          <td align="center" valign="top">
+            
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="color: #505050; font-size: 14px; line-height: 150%; text-align: center;margin-bottom: 5px">
+              <tr>
+                <td valign="top" style="color: #505050; font-size: 14px; line-height: 150%; padding-right: 3.5em; padding-left: 3.5em; padding-bottom: 0; text-align: center; background-color: #b9253b; color: #fff;"><h3>Flight No: '.$data->flight_number.'<br>' . $data->departure_airport . ' to '.$data->arrival_airport.'</h3></td>
+              </tr>
+              <tr>
+                <td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                      <th style="border: 1px solid #dddddd; text-align: left;padding: 8px 0 8px 8px; font-weight: normal; font-size: 12px;background: #308b50; color: #fff;">Departure Date & Time</th>
+                      <th style="border: 1px solid #dddddd; text-align: left;padding: 8px 0 8px 8px; font-weight: normal; font-size: 12px;background: #308b50; color: #fff;">Arrival Date & Time</th>
+                      <th style="border: 1px solid #dddddd; text-align: left;padding: 8px 0 8px 8px; font-weight: normal; font-size: 12px;background: #308b50; color: #fff;">Class</th>
+                    </tr>
+                    <tr>
+                      <td style="border: 1px solid #dddddd; text-align: left; padding: 8px 0 8px 8px; font-size: 14px; background: #bdbbbb; color: #000;">'.$data->departure_date.'</td>
+                      <td style="border: 1px solid #dddddd; text-align: left; padding: 8px 0 8px 8px; font-size: 14px; background: #bdbbbb; color: #000;">'.$data->arrival_date.'</td>
+                      <td style="border: 1px solid #dddddd; text-align: left; padding: 8px 0 8px 8px; font-size: 14px; background: #bdbbbb; color: #000;">'.$data->service_class.'</td>
+                    </tr>
+                  </table></td>
+              </tr>
+            </table></td>
+        </tr>';
+            }
+        } else {
+            $orderData .= '<tr>
+          <td align="center" valign="top"><!-- BEGIN BODY // -->
+            
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="color: #505050; font-size: 14px; line-height: 150%; text-align: center;margin-bottom: 5px">
+              <tr>
+                <td valign="top" style="color: #505050; font-size: 14px; line-height: 150%; padding-right: 3.5em; padding-left: 3.5em; padding-bottom: 0; text-align: center; background-color: #b9253b; color: #fff;"><h3>Flight No: '.$flightData->flight_number.'<br>' . $flightData->departure_airport . ' to '.$flightData->arrival_airport.'</h3></td>
+              </tr>
+              <tr>
+                <td><table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                      <th style="border: 1px solid #dddddd; text-align: left;padding: 8px 0 8px 8px; font-weight: normal; font-size: 12px;background: #308b50; color: #fff;">Departure Date & Time</th>
+                      <th style="border: 1px solid #dddddd; text-align: left;padding: 8px 0 8px 8px; font-weight: normal; font-size: 12px;background: #308b50; color: #fff;">Arrival Date & Time</th>
+                      <th style="border: 1px solid #dddddd; text-align: left;padding: 8px 0 8px 8px; font-weight: normal; font-size: 12px;background: #308b50; color: #fff;">Class</th>
+                    </tr>
+                    <tr>
+                      <td style="border: 1px solid #dddddd; text-align: left; padding: 8px 0 8px 8px; font-size: 14px; background: #bdbbbb; color: #000;">'.$flightData->departure_date.'</td>
+                      <td style="border: 1px solid #dddddd; text-align: left; padding: 8px 0 8px 8px; font-size: 14px; background: #bdbbbb; color: #000;">'.$flightData->arrival_date.'</td>
+                      <td style="border: 1px solid #dddddd; text-align: left; padding: 8px 0 8px 8px; font-size: 14px; background: #bdbbbb; color: #000;">'.$flightData->service_class.'</td>
+                    </tr>
+                  </table></td>
+              </tr>
+            </table></td>
+        </tr>';
+        }
+    }
+    return $orderData;
+}
+
+?>

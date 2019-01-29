@@ -8,7 +8,7 @@ $actual_host = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP
 $xml = $h = '';
 
 $client = (integer)$obj_DOM->notify[0]["client-id"];
-if (empty($client) === true || !file_get_contents($actual_host . '/messaging/template/' . $client . '/email.html')) {
+if (empty($client) === true || !file_get_contents(dirname(__FILE__).'/template/' . $client . '/email.php')) {
     $client = 'default';
 }
 
@@ -35,103 +35,26 @@ if(empty ($sURL) === false )
     $sMessageText = trim(substr($sPaymentURL, 0, strpos($sPaymentURL, $sURL) ) );
 }
 
+include(dirname(__FILE__) . '/template/' . $client . '/email.php');
 //order data
-
-$arrayData = xmlToArray($obj_DOM->notify->{'body'}->{'orders'});
-$orderData = json_decode(json_encode($arrayData));
-
-$passengerData = $orderData->orders->line_item->product->airline_data->passenger_detail;
-$flightData = $orderData->orders->line_item->product->airline_data->flight_detail;
-$passengerDetails = '';
-$flightDetails = '';
-if (isset($passengerData)) {
-    if (count($passengerData) > 1) {
-        foreach ($passengerData as $data) {
-            $passengerDetails .= '<tr>
-                                <td valign="top"
-                                    style="color: #505050; font-size: 14px;  padding-right: 3.5em; padding-left: 3.5em; padding-bottom: 0;">
-                                    <p style="text-align: left;">
-                                        <b>Passenger Name:</b> <span style="color:#b9253b "> ' . $data->title . '. ' . $data->first_name . ' ' . $data->last_name . ' </span>
-                                    </p>
-                                </td>
-                            </tr>';
-        }
-    } else {
-        $passengerDetails .= '<tr>
-                                <td valign="top"
-                                    style="color: #505050; font-size: 14px;  padding-right: 3.5em; padding-left: 3.5em; padding-bottom: 0;">
-                                    <p style="text-align: left;">
-                                        <b>Passenger Name:</b> <span style="color:#b9253b "> ' . $passengerData->title . '. ' . $passengerData->first_name . ' ' . $passengerData->last_name . ' </span>
-                                    </p>
-                                </td>
-                            </tr>';
-    }
+if (isset($obj_DOM->notify->{'body'}->{'orders'}) === true) {
+    $arrayData = xmlToArray($obj_DOM->notify->{'body'}->{'orders'});
+    $orderData = json_decode(json_encode($arrayData));
+    $passengerData = $orderData->orders->line_item->product->airline_data->passenger_detail;
+    $flightData = $orderData->orders->line_item->product->airline_data->flight_detail;
+    $sHtmlData = getEmailData($passengerData, $flightData);
+} else {
+    $sHtmlData = getEmailData();
 }
-if (isset($flightData)) {
-    if (count($flightData) > 1) {
-        foreach ($flightData as $data) {
-            $flightDetails .= '<tr>
-          <td align="center" valign="top"><!-- BEGIN BODY // -->
-            
-            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="color: #505050; font-size: 14px; line-height: 150%; text-align: center;margin-bottom: 5px">
-              <tr>
-                <td valign="top" style="color: #505050; font-size: 14px; line-height: 150%; padding-right: 3.5em; padding-left: 3.5em; padding-bottom: 0; text-align: center; background-color: #b9253b; color: #fff;"><h3>Flight No: '.$data->flight_number.'<br>' . $data->departure_airport . ' to '.$data->arrival_airport.'</h3></td>
-              </tr>
-              <tr>
-                <td><table border="0" cellpadding="0" cellspacing="0" width="100%">
-                    <tr>
-                      <th style="border: 1px solid #dddddd; text-align: left;padding: 8px 0 8px 8px; font-weight: normal; font-size: 12px;background: #308b50; color: #fff;">Departure Date & Time</th>
-                      <th style="border: 1px solid #dddddd; text-align: left;padding: 8px 0 8px 8px; font-weight: normal; font-size: 12px;background: #308b50; color: #fff;">Arrival Date & Time</th>
-                      <th style="border: 1px solid #dddddd; text-align: left;padding: 8px 0 8px 8px; font-weight: normal; font-size: 12px;background: #308b50; color: #fff;">Class</th>
-                    </tr>
-                    <tr>
-                      <td style="border: 1px solid #dddddd; text-align: left; padding: 8px 0 8px 8px; font-size: 14px; background: #bdbbbb; color: #000;">'.$data->departure_date.'</td>
-                      <td style="border: 1px solid #dddddd; text-align: left; padding: 8px 0 8px 8px; font-size: 14px; background: #bdbbbb; color: #000;">'.$data->arrival_date.'</td>
-                      <td style="border: 1px solid #dddddd; text-align: left; padding: 8px 0 8px 8px; font-size: 14px; background: #bdbbbb; color: #000;">'.$data->service_class.'</td>
-                    </tr>
-                  </table></td>
-              </tr>
-            </table></td>
-        </tr>';
-        }
-    } else {
-        $flightDetails .= '<tr>
-          <td align="center" valign="top"><!-- BEGIN BODY // -->
-            
-            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="color: #505050; font-size: 14px; line-height: 150%; text-align: center;margin-bottom: 5px">
-              <tr>
-                <td valign="top" style="color: #505050; font-size: 14px; line-height: 150%; padding-right: 3.5em; padding-left: 3.5em; padding-bottom: 0; text-align: center; background-color: #b9253b; color: #fff;"><h3>Flight No: '.$flightData->flight_number.'<br>' . $flightData->departure_airport . ' to '.$flightData->arrival_airport.'</h3></td>
-              </tr>
-              <tr>
-                <td><table border="0" cellpadding="0" cellspacing="0" width="100%">
-                    <tr>
-                      <th style="border: 1px solid #dddddd; text-align: left;padding: 8px 0 8px 8px; font-weight: normal; font-size: 12px;background: #308b50; color: #fff;">Departure Date & Time</th>
-                      <th style="border: 1px solid #dddddd; text-align: left;padding: 8px 0 8px 8px; font-weight: normal; font-size: 12px;background: #308b50; color: #fff;">Arrival Date & Time</th>
-                      <th style="border: 1px solid #dddddd; text-align: left;padding: 8px 0 8px 8px; font-weight: normal; font-size: 12px;background: #308b50; color: #fff;">Class</th>
-                    </tr>
-                    <tr>
-                      <td style="border: 1px solid #dddddd; text-align: left; padding: 8px 0 8px 8px; font-size: 14px; background: #bdbbbb; color: #000;">'.$flightData->departure_date.'</td>
-                      <td style="border: 1px solid #dddddd; text-align: left; padding: 8px 0 8px 8px; font-size: 14px; background: #bdbbbb; color: #000;">'.$flightData->arrival_date.'</td>
-                      <td style="border: 1px solid #dddddd; text-align: left; padding: 8px 0 8px 8px; font-size: 14px; background: #bdbbbb; color: #000;">'.$flightData->service_class.'</td>
-                    </tr>
-                  </table></td>
-              </tr>
-            </table></td>
-        </tr>';
-    }
-}
-// Input string
-$sHtmlData  = file_get_contents($actual_host.'/messaging/template/'.$client.'/email.html');
-
 // Array containing search string
-$aSearchVal = array("{CSS URL}","{LOGO IMAGE}", "{BANNER IMAGE}", "{MESSAGE TEXT}", "{PAY NOW URL}", "{PASSENGER DETAIL}", "{FLIGHT DETAIL}");
+$aSearchVal = array("{CSS URL}","{LOGO IMAGE}", "{BANNER IMAGE}", "{MESSAGE TEXT}", "{PAY NOW URL}");
 
 // Array containing replace string from search string
-$aReplaceVal = array($sCssUrl, $sLogo, $sBannerImage, $sMessageText, $sURL, $passengerDetails, $flightDetails);
+$aReplaceVal = array($sCssUrl, $sLogo, $sBannerImage, $sMessageText, $sURL);
 
 // Function to replace string
 $sBody = str_replace($aSearchVal, $aReplaceVal, $sHtmlData);
-
+echo $sBody;die;
 
 $sFromEmail = (string)$obj_DOM->notify->{'from'};
 $sRecipientEmail = (string)$obj_DOM->notify->{'to'};
@@ -257,5 +180,6 @@ function xmlToArray($xml, $options = array()) {
             $xml->getName() => $propertiesArray
         );
 }
+
 
 ?>
