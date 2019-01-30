@@ -925,10 +925,11 @@ class mConsole extends Admin
 						date("Y-m-d H:i:s", strtotime($RS["CREATED"]) ),
 						$aObj_Messages,
 						"",
-						$RS["CURRENCYCODE"]);
+						$RS["CURRENCYCODE"],
+                        OrderInfo::produceConfigurations($this->getDBConn(), $RS["ID"])
+                    );
 			}
 		}
-
 		return $aObj_TransactionLogs;
 	}
 	
