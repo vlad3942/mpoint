@@ -47,7 +47,7 @@ if (array_key_exists ( "PHP_AUTH_USER", $_SERVER ) === true && array_key_exists 
 		
 		$obj_ConnInfo = HTTPConnInfo::produceConnInfo ( $aHTTP_CONN_INFO ["mesb"] );
 		
-		$code = $obj_mPoint->singleSignOn ( $obj_ConnInfo, $_SERVER ['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_TRANSACTION_STATISTICS, $aClientIDs , $aClientIDs,$_SERVER['HTTP_VERSION']);
+		$code = $obj_mPoint->singleSignOn ( $obj_ConnInfo, $_SERVER ['HTTP_X_AUTH_TOKEN'], mConsole::sPERMISSION_GET_TRANSACTION_STATISTICS, $aClientIDs, $_SERVER['HTTP_VERSION']);
 		switch ($code) {
 			case (mConsole::iSERVICE_CONNECTION_TIMEOUT_ERROR) :
 				header ( "HTTP/1.1 504 Gateway Timeout" );

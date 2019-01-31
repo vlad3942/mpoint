@@ -90,7 +90,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		$aClientIDs[] = array();
         $aClientIDs[0] = $iClientID;
 
-		$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_CPM_AUTH_TOKEN'], mConsole::sPERMISSION_VISION_DASHBOARDS, $aClientIDs, $aClientIDs,$_SERVER['HTTP_VERSION']);
+		$code = $obj_mPoint->singleSignOn($obj_ConnInfo, $_SERVER['HTTP_X_CPM_AUTH_TOKEN'], mConsole::sPERMISSION_VISION_DASHBOARDS, $aClientIDs, $_SERVER['HTTP_VERSION']);
 
 		switch ($code)
 		{
