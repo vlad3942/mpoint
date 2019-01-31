@@ -283,19 +283,10 @@ final class PaymentSession
         }
     }
 
-    public function updateTransaction($txnId, $orderID)
+    public function updateTransaction($txnId)
     {
-        try {
-            $sql = "SELECT id FROM log" . sSCHEMA_POSTFIX . ".session_tbl
-                    WHERE id = " . intval($this->_id) ." AND orderid = '".$orderID."'";
-            $RS = $this->_obj_Db->getName($sql);
-            if (is_array($RS) === true) {
-                $sql_1 = "UPDATE log" . sSCHEMA_POSTFIX . ".transaction_tbl SET sessionid = " . $RS['ID'] . " WHERE id = " . intval($txnId);
-                $this->_obj_Db->query($sql_1);
-            }
-        } catch (Exception $e) {
-            trigger_error ( "Failed to update sessionId (log.transaction_tbl) ." . $e->getMessage(), E_USER_ERROR );
-        }
+        $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".transaction_tbl SET sessionid = " . $this->_id . " WHERE id = " . intval($txnId);
+        $this->_obj_Db->query($sql);
     }
 
     public function getClientConfig(){
