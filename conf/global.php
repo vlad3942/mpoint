@@ -273,7 +273,7 @@ $aHTTP_CONN_INFO["adyen"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["adyen"]["paths"]["initialize"] = "/mpoint/adyen/initialize";
 $aHTTP_CONN_INFO["adyen"]["paths"]["auth"] = "/mpoint/adyen/authorize-payment";
 $aHTTP_CONN_INFO["adyen"]["paths"]["capture"] = "/mpoint/adyen/capture";
-//$aHTTP_CONN_INFO["adyen"]["paths"]["status"] = "/mpoint/adyen/status";
+$aHTTP_CONN_INFO["adyen"]["paths"]["void"] = "/mpoint/adyen/void";
 $aHTTP_CONN_INFO["adyen"]["paths"]["cancel"] = "/mpoint/adyen/cancel";
 $aHTTP_CONN_INFO["adyen"]["paths"]["refund"] = "/mpoint/adyen/refund";
 
