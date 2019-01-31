@@ -60,7 +60,7 @@ class mConsole extends Admin
 	const sPERMISSION_VOID_PAYMENTS = "mpoint.void-payments.get.x";
 	const sPERMISSION_CAPTURE_PAYMENTS = "mpoint.capture-payments.get.x";	
 	const sPERMISSION_GET_TRANSACTION_STATISTICS = "mpoint.dashboard.get.x";
-    const sPERMISSION_VISION_DASHBOARDS = "mconsole.cube.transaction.dashboard.x";
+    const sPERMISSION_VISION_DASHBOARDS = "mconsole.cube.payment.dashboard.x";
 
 	
 	public function saveClient($cc, $storecard, $autocapture, $name, $username, $password, $maxamt, $lang, $smsrcpt, $emailrcpt, $mode, $method, $send_pspid, $identification, $transaction_ttl, $salt, $channels, $id = -1)
@@ -925,10 +925,11 @@ class mConsole extends Admin
 						date("Y-m-d H:i:s", strtotime($RS["CREATED"]) ),
 						$aObj_Messages,
 						"",
-						$RS["CURRENCYCODE"]);
+						$RS["CURRENCYCODE"],
+                        OrderInfo::produceConfigurations($this->getDBConn(), $RS["ID"])
+                    );
 			}
 		}
-
 		return $aObj_TransactionLogs;
 	}
 	
