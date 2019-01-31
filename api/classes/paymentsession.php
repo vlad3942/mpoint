@@ -268,7 +268,7 @@ final class PaymentSession
               FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn 
                 INNER JOIN log" . sSCHEMA_POSTFIX . ".message_tbl msg ON txn.id = msg.txnid 
               WHERE sessionid = " . $this->_id . " 
-                AND msg.stateid in (2000,2001,2007,2008)
+                AND msg.stateid in (2000,2001,2007)
                 GROUP BY txn.id,msg.stateid";
 
                 $res = $this->_obj_Db->query($sql);
