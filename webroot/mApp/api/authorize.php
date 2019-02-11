@@ -126,6 +126,8 @@ require_once(sCLASS_PATH . "/uatp.php");
 require_once(sCLASS_PATH . "/uatp_card_account.php");
 // Require specific Business logic for the chase component
 require_once(sCLASS_PATH ."/chase.php");
+// Require specific Business logic for the PayU component
+require_once(sCLASS_PATH ."/payu.php");
 
 require_once(sCLASS_PATH ."/wallet_processor.php");
 

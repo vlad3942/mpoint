@@ -128,6 +128,9 @@ require_once(sCLASS_PATH . "/eghl.php");
 
 // Require specific Business logic for the Chase component
 require_once(sCLASS_PATH ."/chase.php");
+// Require specific Business logic for the PayU component
+require_once(sCLASS_PATH ."/payu.php");
+
 $aMsgCds = array();
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
