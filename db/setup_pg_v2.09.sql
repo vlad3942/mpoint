@@ -32,7 +32,7 @@ INSERT INTO System.PSPCurrency_Tbl (pspid, name,currencyid) VALUES (44,'USD',840
 INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (44, 41);
 
 --Note: public need not be added to merchant account tbl.
-INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (<clientid>, 44, '<merchant name>', NULL, NULL);
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (<clientid>, 44, '<merchantid provided by google to merchant>', NULL, NULL);
 INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (<account id>, 44, 'Google Pay');
 
 --static route
