@@ -197,7 +197,7 @@ final class PaymentSession
         if ($stateId == null) {
             if ($this->getPendingAmount() == 0) {
 
-                $paymentAcceptStates = array(Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_WITH_VOUCHER_STATE,Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+                $paymentAcceptStates = array(Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_WITH_VOUCHER_STATE);
 
                 if ($this->getTransactionStatesWithAncillary($paymentAcceptStates , $paymentAcceptStates ) == true) {
                     $stateId = Constants::iSESSION_COMPLETED;
