@@ -409,7 +409,7 @@ class TxnInfo
 	 * @param	long $cptamt		The Full amount that has been captured for the Transaction
 	 *
 	 */
-	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt, $paymentSession = 1, $productType = 100, $installmentValue, $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[])
+	public function __construct($id, $tid, ClientConfig &$oClC, CountryConfig &$oCC, CurrencyConfig &$oCR=null, $amt, $pnt, $rwd, $rfnd, $orid, $extid, $addr, $oid, $email, $devid, $lurl, $cssurl, $accurl, $declineurl, $curl, $cburl, $iurl, $aurl, $l, $m, $ac, $accid=-1, $cr="", $gmid=-1, $asc=false, $mrk="xhtml", $desc="", $ip="",$attempt, $paymentSession = 1, $productType = 100, $installmentValue=0, $pspid=-1, $fee=0, $cptamt=0, $cardid = -1,$mask="",$expiry="",$token="",$authOriginalData="",$approvalActionCode="", $createdTimestamp = "",$virtualtoken = "", $additionalData=[])
 	{
 		if ($orid == -1) { $orid = $id; }
 		$this->_iID =  (integer) $id;
