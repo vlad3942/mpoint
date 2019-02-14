@@ -13,9 +13,6 @@ ALTER TABLE client.client_tbl ADD installment INT DEFAULT 0 NULL;
 COMMENT ON COLUMN client.client_tbl.installment IS 'Default to 0 installment not enabled
 1 - offline Installments';
 
-ALTER TABLE client.client_tbl ADD installment INT DEFAULT 0 NULL;
-COMMENT ON COLUMN client.client_tbl.installment IS 'Default to 0 installment not enabled
-1 - offline Installments';
 ALTER TABLE client.client_tbl ADD max_installments INT DEFAULT 0 NULL;
 COMMENT ON COLUMN client.client_tbl.max_installments IS 'Max number of installments allowed,
 Usually set by Acq';
