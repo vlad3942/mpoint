@@ -473,6 +473,9 @@ class General
 		if (strlen($oTI->getIP() ) > 0) { $sql .= " , ip = '". $this->getDBConn()->escStr( $oTI->getIP() ) ."'"; }
 		if ($oTI->getAccountID() > 0) { $sql .= ", euaid = ". $oTI->getAccountID(); }
 		elseif ($oTI->getAccountID() == -1) { $sql .= ", euaid = NULL"; }
+		if($oTI->getInstallmentValue()>0) {
+            $sql .= " , installment_value = '". $oTI->getInstallmentValue() ."'";
+        }
 		$sql .= "
 				WHERE id = ". $oTI->getID();
 //		echo $sql ."\n";
