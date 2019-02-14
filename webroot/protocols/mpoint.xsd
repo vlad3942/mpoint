@@ -112,6 +112,13 @@
 											<xs:attribute name="country-id" type="xs:positiveInteger" use="required" />
 										</xs:complexType>
 									</xs:element>
+									<xs:element name="installment" minOccurs="0" maxOccurs="1">
+										<xs:complexType>
+											<xs:all>
+												<xs:element name="value" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+											</xs:all>
+										</xs:complexType>
+									</xs:element>
 								</xs:sequence>
 								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 								<xs:attribute name="store-card" type="xs:boolean" use="optional" default="false" />
@@ -257,6 +264,13 @@
 										</xs:simpleType>
 									</xs:element>
 									<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
+									<xs:element name="installment" minOccurs="0" maxOccurs="1">
+										<xs:complexType>
+											<xs:all>
+												<xs:element name="value" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+											</xs:all>
+										</xs:complexType>
+									</xs:element>
 								</xs:sequence>
 								<xs:attribute name="id" type="xs:positiveInteger" use="required" />
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="1009" />
