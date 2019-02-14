@@ -6,6 +6,9 @@ INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 
 --Do not add this if 3DS is not required
 INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'DYNAMICTHREED', 'true', id, 'merchant' from client.merchantaccount_tbl where clientid=<clientid> and pspid=12;
 
+--enable Offline Installment option for a PSP - Adyen
+UPDATE system.psp_tbl SET installment = 1 WHERE id = 12;
+
 --  CMP-2810 Add Paypal STC related credentials to additional properties table linked to merchant config --
 INSERT INTO client.additionalproperty_tbl( key, value, externalid, type )
     SELECT 'PAYPAL_STC', 'true', id, 'merchant' FROM client.merchantaccount_tbl WHERE pspid=24;
