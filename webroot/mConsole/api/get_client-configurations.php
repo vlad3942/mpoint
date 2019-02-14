@@ -100,7 +100,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 				if ($obj_Config->getID() > 0)
 				{
 					$i++;
-					$xml .= $obj_Config->toFullXML();
+					$xml .= $obj_Config->toFullXML(Constants::iInternalProperty);
 				}
 			}
 			// No Client Configurations found

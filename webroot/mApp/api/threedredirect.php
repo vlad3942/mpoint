@@ -50,7 +50,7 @@ try
 	 $b = '<?xml version="1.0" encoding="UTF-8"?>';
 	 $b .= '<root>';
 	 $b .= $obj_TxnInfo->toXML();
-	 $b .= $obj_ClientConfig->toXML();
+	 $b .= $obj_ClientConfig->toXML(Constants::iPublicProperty);
 	 $b .= '<status code="'.$statuscode.'"></status>';
 	 $b .= '</root>';
 	 

@@ -35,7 +35,7 @@ Class CHUBB extends CPMPSP
         $b .= '<client-config>';
         $b .= '<additional-config>';
 
-        foreach ($this->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+        foreach ($this->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
         {
             $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
         }
