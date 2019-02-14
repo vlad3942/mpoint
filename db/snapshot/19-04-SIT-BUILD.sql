@@ -7,4 +7,4 @@ comment on column client.additionalproperty_tbl.scope is 'Scope of properties
 1 - Private
 2 - Public';
 
-update table client.additionalproperty_tbl set scope = 2;
+update client.additionalproperty_tbl set scope = 2;
