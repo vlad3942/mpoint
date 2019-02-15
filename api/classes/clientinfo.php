@@ -76,17 +76,11 @@ class ClientInfo
 	 */
 	private $_sLanguage;
 
-    /*
-     * Array that hold the Addotional Data in
-     * @var array
-     */
-    private $_aAdditionalProperties =array();
-
 	/**
 	 * Default Constructor.
 	 *
 	 */
-	public function __construct($appid, $pf, $ver, CountryConfig $oCC, $mob, $email, $dvc, $lang, $ip="",$aAdditionalProperties = array())
+	public function __construct($appid, $pf, $ver, CountryConfig $oCC, $mob, $email, $dvc, $lang, $ip="")
 	{
 		$this->_iAppID = (integer) $appid;
 		$this->_sPlatform = trim($pf);
@@ -97,7 +91,6 @@ class ClientInfo
 		$this->_sDeviceID = trim($dvc);
 		$this->_sIP = trim($ip);
 		$this->_sLanguage = trim($lang);
-        $this->_aAdditionalProperties=$aAdditionalProperties;
 	}
 	/**
 	 * Returns the ID of the App that the Client Info is constructed for:
@@ -164,12 +157,6 @@ class ClientInfo
 		$xml .= '<email>'. htmlspecialchars($this->_sEMail, ENT_NOQUOTES) .'</email>';
 		$xml .= '<device-id>'. htmlspecialchars($this->_sDeviceID, ENT_NOQUOTES) .'</device-id>';
 		$xml .= '<ip>'. htmlspecialchars($this->_sIP, ENT_NOQUOTES) .'</ip>';
-        $xml .= '<additional-config>';
-        foreach ($this->_aAdditionalProperties as $aAdditionalProperty)
-        {
-            $xml .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
-        }
-        $xml .= '</additional-config>';
 		$xml .= '</client-info>';
 		
 		return $xml;
@@ -213,23 +200,7 @@ class ClientInfo
 		{
 			$oCC = CountryConfig::produceConfig($oDB, $RS["COUNTRYID"], true);
 
-
-            $sql  = "SELECT key,value
-					 FROM Client". sSCHEMA_POSTFIX .".AdditionalProperty_tbl
-					 WHERE externalid = ". intval($RS["CLIENTID"]) ." and type='client'";
-            //		echo $sql ."\n";
-            $aRS = $oDB->getAllNames($sql);
-            $aAdditionalProperties = array();
-            if (is_array($aRS) === true && count($aRS) > 0)
-            {
-                for ($i=0; $i<count($aRS); $i++)
-                {
-                    $aAdditionalProperties[$i]["key"] =$aRS[$i]["KEY"];
-                    $aAdditionalProperties[$i]["value"] = $aRS[$i]["VALUE"];
-                }
-            }
-
-			return new ClientInfo(-1, $RS["PLATFORM"], $RS["VERSION"], $oCC, $RS["MOBILE"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LANGUAGE"], "",$aAdditionalProperties);
+			return new ClientInfo(-1, $RS["PLATFORM"], $RS["VERSION"], $oCC, $RS["MOBILE"], $RS["EMAIL"], $RS["DEVICEID"], $RS["LANGUAGE"], "");
 		}
 		else { return null; }
 	}
