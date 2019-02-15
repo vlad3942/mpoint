@@ -7918,3 +7918,6 @@ INSERT INTO log.state_tbl (id, name, module) VALUES (20104, 'Payment rejected. T
 
 -- URL where the customer may be redirected if txn fails.
 ALTER TABLE Log.Transaction_Tbl ADD declineurl VARCHAR(255);
+
+--default smsrcpt to false --SGAMBE-4207
+ALTER TABLE client.client_tbl ALTER COLUMN smsrcpt SET DEFAULT FALSE ;
