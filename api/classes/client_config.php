@@ -1018,7 +1018,7 @@ class ClientConfig extends BasicConfig
 	 */
 	public function getTransactionTTL() { return $this->_iTransactionTTL; }
 
-	public function toXML()
+	public function toXML($propertyScope = 2)
 	{
 		$xml = '<client-config id="'. $this->getID() .'" flow-id="'. $this->_iFlowID .'" mode="'. $this->_iMode .'" max-cards="'. $this->_iMaxCards .'" identification="'. $this->_iIdentification .'" masked-digits="'. $this->_iNumMaskedDigits .'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
@@ -1048,7 +1048,7 @@ class ClientConfig extends BasicConfig
 		}
 		$xml .= '</ip-list>';
 		$xml .= '<additional-config>';
-        foreach ($this->_aAdditionalProperties as $aAdditionalProperty)
+        foreach ($this->getAdditionalProperties($propertyScope) as $aAdditionalProperty)
         {
             $xml .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
         }
@@ -1059,7 +1059,7 @@ class ClientConfig extends BasicConfig
 		return $xml;
 	}
 	
-	public function toFullXML()
+	public function toFullXML($propertyScope=2)
 	{
 		$xml = '<client-config id="'. $this->getID() .'" auto-capture = "'. General::bool2xml($this->_bAutoCapture).'" country-id = "'.$this->getCountryConfig()->getID().'" language = "'.$this->_sLanguage.'" sms-receipt = "'.General::bool2xml($this->_bSMSReceipt).'" email-receipt = "'.General::bool2xml($this->_bEmailReceipt).'" mode="'. $this->_iMode .'" masked-digits="'. $this->_iNumMaskedDigits .'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
@@ -1114,7 +1114,7 @@ class ClientConfig extends BasicConfig
 		}
 		$xml .= '</dynamic-routing-gateways>';
         $xml .= '<additional-config>';
-        foreach ($this->_aAdditionalProperties as $aAdditionalProperty)
+        foreach ($this->getAdditionalProperties($propertyScope) as $aAdditionalProperty)
         {
             $xml .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
         }
@@ -1292,18 +1292,20 @@ class ClientConfig extends BasicConfig
 				}
 			}
 
-            $sql  = "SELECT key,value
+            $sql  = "SELECT key, value, scope 
 					 FROM Client". sSCHEMA_POSTFIX .".AdditionalProperty_tbl
 					 WHERE externalid = ". intval($id) ." and type='client' and enabled=true";
             //		echo $sql ."\n";
             $aRS = $oDB->getAllNames($sql);
             $aAdditionalProperties = array();
+            $iConstOfRows = count($aRS);
             if (is_array($aRS) === true && count($aRS) > 0)
             {
-                for ($i=0; $i<count($aRS); $i++)
+                for ($i=0; $i < $iConstOfRows; $i++)
                 {
                 	$aAdditionalProperties[$i]["key"] =$aRS[$i]["KEY"];
                 	$aAdditionalProperties[$i]["value"] = $aRS[$i]["VALUE"];
+                	$aAdditionalProperties[$i]["scope"] = $aRS[$i]["SCOPE"];
                 }
             }
             
@@ -1387,22 +1389,42 @@ class ClientConfig extends BasicConfig
 	 * If key is send as parameter then value of that key will return
 	 * Otherwise all properties will return
 	 *
+     * @param int scope
 	 * @param string key
 	 *
 	 * return string or array
 	 */
-    public function getAdditionalProperties($key = "")
+    public function getAdditionalProperties($scope, $key = '')
     {
-        if ($key == "")
-            return $this->_aAdditionalProperties;
-        else {
-            foreach ($this->_aAdditionalProperties as $aAdditionalProperty) {
-                if ($aAdditionalProperty['key'] == $key)
-                    return $aAdditionalProperty['value'];
+        $isAll = false;
+        $returnProperties = [];
+        if ($key == '')
+        {
+            $isAll = true;
+        }
+
+        foreach ($this->_aAdditionalProperties as $additionalProperty)
+        {
+            if ($isAll || $additionalProperty['key'] === $key)
+            {
+                $propertyScope = (integer)$additionalProperty['scope'];
+                if($propertyScope >= $scope)
+                {
+                    if($isAll === false)
+                    {
+                        return $additionalProperty['value'];
+                    }
+                    array_push($returnProperties,$additionalProperty);
+                }
             }
         }
+
+        if ($isAll)
+        {
+            return $returnProperties;
+        }
+
         return false;
     }
- 
 }
 ?>

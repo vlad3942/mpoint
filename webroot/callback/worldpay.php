@@ -109,12 +109,10 @@ try
 	}
 
     $saveCard = true;
-    foreach ($obj_TxnInfo->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+    $isMVault = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'mvault');
+    if ($isMVault == 'true')
     {
-        if ($aAdditionalProperty['key'] == 'mvault' && $aAdditionalProperty['value'] == 'true'){
-            $saveCard = false;
-            break;
-        }
+        $saveCard = false;
     }
 
 	// Save Ticket ID representing the End-User's stored Card Info

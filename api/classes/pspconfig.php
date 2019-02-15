@@ -133,7 +133,7 @@ class PSPConfig extends BasicConfig
 	 */
 	public function getMessage($lang) { return @$this->_aMessages[strtolower($lang)]; }
 
-	public function toXML()
+	public function toXML($propertyScope=2)
 	{
 		$xml  = '<psp-config id="'. $this->getID() .'" type="'. $this->getProcessorType().'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
@@ -148,7 +148,7 @@ class PSPConfig extends BasicConfig
 		}
 		$xml .= '</messages>';
         $xml .= '<additional-config>';
-        foreach ($this->_aAdditionalProperties as $aAdditionalProperty)
+        foreach ($this->getAdditionalProperties($propertyScope) as $aAdditionalProperty)
         {
             $xml .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
         }
@@ -197,18 +197,20 @@ class PSPConfig extends BasicConfig
 				}
 			}
 
-            $sql  = "SELECT key,value
+            $sql  = "SELECT key,value, scope
 					 FROM Client". sSCHEMA_POSTFIX .".AdditionalProperty_tbl
 					 WHERE externalid = ". intval($RS["MERCHANTID"]) ." and type='merchant' and enabled=true" ;
             //		echo $sql ."\n";
             $aRS = $oDB->getAllNames($sql);
             $aAdditionalProperties = array();
+            $iConstOfRows = count($aRS);
             if (is_array($aRS) === true && count($aRS) > 0)
             {
-                for ($i=0; $i<count($aRS); $i++)
+                for ($i=0; $i<$iConstOfRows; $i++)
                 {
                     $aAdditionalProperties[$i]["key"] =$aRS[$i]["KEY"];
                     $aAdditionalProperties[$i]["value"] = $aRS[$i]["VALUE"];
+                    $aAdditionalProperties[$i]["scope"] = $aRS[$i]["SCOPE"];
                 }
             }
 
@@ -222,25 +224,46 @@ class PSPConfig extends BasicConfig
 	}
 
     /*
-     * Get Additional properties
-     * If key is send as parameter then value of that key will return
-     * Otherwise all properties will return
-     *
-     * @param string key
-     *
-     * return string or array
-     */
-    public function getAdditionalProperties($key = "")
+	 * Get Additional properties
+	 * If key is send as parameter then value of that key will return
+	 * Otherwise all properties will return
+	 *
+     * @param int scope
+	 * @param string key
+	 *
+	 * return string or array
+	 */
+    public function getAdditionalProperties($scope, $key = '')
     {
-        if ($key == "")
-            return $this->_aAdditionalProperties;
-        else {
-            foreach ($this->_aAdditionalProperties as $aAdditionalProperty) {
-                if ($aAdditionalProperty['key'] == $key)
-                    return $aAdditionalProperty['value'];
+        $isAll = false;
+        $returnProperties = [];
+        if ($key == '')
+        {
+            $isAll = true;
+        }
+
+        foreach ($this->_aAdditionalProperties as $additionalProperty)
+        {
+            if ($isAll || $additionalProperty['key'] === $key)
+            {
+                $propertyScope = (integer)$additionalProperty['scope'];
+                if($propertyScope >= $scope)
+                {
+                    if($isAll === false)
+                    {
+                        return $additionalProperty['value'];
+                    }
+                    array_push($returnProperties,$additionalProperty);
+                }
             }
         }
-		return false;
+
+        if ($isAll)
+        {
+            return $returnProperties;
+        }
+
+        return false;
     }
 
 }
