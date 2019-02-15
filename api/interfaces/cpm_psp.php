@@ -406,6 +406,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                 {
                     $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
 						SET pspid = " . $obj_PSPConfig->getID() . "
+						, cardid = ". intval($card_type_id) . "
 						WHERE id = " . $this->getTxnInfo()->getID();
                     $this->getDBConn()->query($sql);
                 }
@@ -440,10 +441,8 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             {
                 $mask=str_replace(" ", "", $obj_Card->mask);
             }
-            if($mask != NULL)
-            {
-                $this->getTxnInfo()->updateCardDetails($this->getDBConn(), $mask, $obj_Card->expiry);
-            }
+            //In case of wallet payment flow mPoint get real card and card id in authorization
+            $this->getTxnInfo()->updateCardDetails($this->getDBConn(), $obj_Card['type-id'], $mask, $obj_Card->expiry);
         }
         catch (Exception $e)
         {

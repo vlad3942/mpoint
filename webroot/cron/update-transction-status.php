@@ -139,13 +139,24 @@ if(isset($_GET["interval"]))
     $interval = $_GET["interval"];
 }
 
-$query = "SELECT id, pspid
-            FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl
-            WHERE cardid ISNULL
-              AND pspid NOTNULL
-              AND sessionid NOTNULL 
-              AND created >= (now() - INTERVAL '". $interval ."');";
-
+$query = "SELECT txnid as id, pspid
+          FROM (
+                 SELECT DISTINCT ON (txnid)
+                   txnid,
+                   stateid,
+                   pspid
+                 FROM log.message_tbl msg
+                 INNER JOIN log.transaction_tbl txn
+                   ON txn.id = msg.txnid
+                   where
+                       pspid NOTNULL
+                    AND cardid NOTNULL
+                    AND sessionid NOTNULL
+                    AND txn.created >= (now() - INTERVAL '". $interval ."')
+                    AND stateid in (".Constants::iPAYMENT_INIT_WITH_PSP_STATE. ', ' .Constants::iPAYMENT_3DS_VERIFICATION_STATE. ', ' .Constants::iPAYMENT_ACCEPTED_STATE. ', ' .Constants::iPAYMENT_CAPTURED_STATE. ')
+                 ORDER BY txnid, msg.created DESC
+               ) sub
+          WHERE stateid IN ('.Constants::iPAYMENT_INIT_WITH_PSP_STATE. ', ' .Constants::iPAYMENT_3DS_VERIFICATION_STATE. ')';
 
     $resultObj = $_OBJ_DB->query($query);
 
@@ -155,7 +166,7 @@ $query = "SELECT id, pspid
         {
             $obj_TxnInfo = TxnInfo::produceInfo(intval($RESULTSET['ID']), $_OBJ_DB);
             $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($RESULTSET['PSPID']), $aHTTP_CONN_INFO);
-            $obj_Processor->getStatus();
+            $obj_Processor->status();
         }
         catch (Exception $e)
         {

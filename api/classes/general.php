@@ -473,6 +473,9 @@ class General
 		if (strlen($oTI->getIP() ) > 0) { $sql .= " , ip = '". $this->getDBConn()->escStr( $oTI->getIP() ) ."'"; }
 		if ($oTI->getAccountID() > 0) { $sql .= ", euaid = ". $oTI->getAccountID(); }
 		elseif ($oTI->getAccountID() == -1) { $sql .= ", euaid = NULL"; }
+		if($oTI->getInstallmentValue()>0) {
+            $sql .= " , installment_value = '". $oTI->getInstallmentValue() ."'";
+        }
 		$sql .= "
 				WHERE id = ". $oTI->getID();
 //		echo $sql ."\n";
@@ -1344,5 +1347,38 @@ class General
         return substr($cardno, 0, 6) . str_repeat("*", strlen($cardno) - 10) . substr($cardno, -4);
     }
 
+    public function getAdditionalPropertyFromDB($key, $clientId, $pspid=0)
+    {
+        try
+        {
+            $sql = "SELECT value FROM Client" . sSCHEMA_POSTFIX . ".AdditionalProperty_tbl ";
+
+            if ($pspid == 0)
+            {
+                $sql .= "WHERE externalid = " . intval($clientId) . " and type='client'";
+            }
+            else
+            {
+                $sql .= "WHERE externalid = (
+                    SELECT id FROM Client" . sSCHEMA_POSTFIX . ".MerchantAccount_tbl 
+                    WHERE pspid=" . intval($pspid) . " and clientid = " . intval($clientId) . ") and type='merchant'";
+            }
+            $sql .= " and key = '".$key."' and enabled=true";
+
+            $RS = $this->getDBConn()->getName($sql);
+            if (is_array($RS) === false)
+            {
+                return null;
+            }
+            else
+            {
+                return $RS["VALUE"];
+            }
+        }
+        catch (mPointException $mPointException)
+        {
+            trigger_error ( 'Get AdditionalProperty From DB error - .' . $mPointException->getMessage(), E_USER_ERROR );
+        }
+    }
 }
 ?>

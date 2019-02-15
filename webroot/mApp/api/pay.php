@@ -262,9 +262,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						{
 							if ($code >= 10)
 							{
-								if ($obj_TxnInfo->getAccountID() == -1 && General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true)
-								{
-									$obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, intval($obj_TxnInfo->getOperator()/100) );
+								if ($obj_TxnInfo->getAccountID() == -1 && General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) {
+                                    if (count($obj_DOM->{'pay'}[$i]->{'client-info'}->mobile)== 1 && count($obj_DOM->{'pay'}[$i]->{'client-info'}->mobile["country-id"])== 1)
+                                    {
+                                        $obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->{'pay'}[$i]->{'client-info'}->mobile["country-id"]);
+                                    } else {
+                                        $obj_CountryConfig = $obj_ClientConfig->getCountryConfig();
+                                    }
 									$iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, trim($obj_DOM->{'pay'}[$i]->{'client-info'}->{'customer-ref'}), (float) $obj_DOM->{'pay'}[$i]->{'client-info'}->mobile, trim($obj_DOM->{'pay'}[$i]->{'client-info'}->email) );
 	
 									//	Create a new user as some PSP's needs our End-User Account ID for storing cards
@@ -328,6 +332,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             $data['markup'] = $data['client-config']->getAccountConfig()->getMarkupLanguage();
                                         }
                                         $data['producttype'] = $obj_TxnInfo->getProductType();
+										$data['installment-value'] = (integer) $obj_DOM->pay[$i]->transaction->installment->value;
 										$oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
 										$obj_mPoint->logTransaction($oTI);
 										//getting order config with transaction to pass to particular psp for initialize with psp for AID
@@ -473,7 +478,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 	
 											
 											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) , $obj_DOM->pay[$i]->transaction->card["type-id"], '',  $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}, $obj_DOM->{'pay'}[$i]->{'client-info'});
-											if (General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, ""); }
 	
 											foreach ($obj_XML->children() as $obj_XMLElem)
 											{
@@ -571,7 +575,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 												break;
 										case (Constants::iSECURE_TRADING_PSP):
 											$obj_PSP = new SecureTrading($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["secure-trading"]);
-											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"] );
+											$obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"],'', NULL,$obj_DOM->{'pay'}[$i]->{'client-info'});
 												
 											foreach ($obj_XML->children() as $obj_Elem)
 											{
