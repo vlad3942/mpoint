@@ -956,14 +956,16 @@
 						<xs:element name="transactions">
 						<xs:complexType>
 							<xs:sequence>
-								<xs:element name="transaction" minOccurs="1" maxOccurs="unbounded">
+								<xs:element name="transaction" minOccurs="0" maxOccurs="unbounded">
 									<xs:complexType>
-										<xs:all>
-											<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
-										</xs:all>
+											<xs:sequence>
+												<xs:sequence minOccurs="0" maxOccurs="unbounded">
+													<xs:element ref="orders" minOccurs="0" maxOccurs="1" />
+												</xs:sequence>
+											</xs:sequence>
 										<xs:attribute name="id" type="xs:positiveInteger" use="optional"/>
-										<xs:attribute name="order-no" use="optional" />
-										<xs:attribute name="token" use="optional" />
+										<xs:attribute name="order-no" type="xs:string" use="optional" />
+										<xs:attribute name="token" type="xs:string" use="optional" />
 									</xs:complexType>
 								</xs:element>
 							</xs:sequence>
@@ -1150,6 +1152,9 @@
 		<xs:extension base="xs:decimal">
 			<xs:attribute name="country-id" type="xs:positiveInteger" use="optional" />
 			<xs:attribute name="currency-id" type="xs:positiveInteger" use="optional" />
+			<!--This attribute bears the type of amount whether debit / credit and hence invokes the required
+			operation on capture or refund. -->
+			<xs:attribute name="type" type="transactionType" use="optional" />
 		</xs:extension>
 	</xs:simpleContent>
 </xs:complexType>
@@ -1384,18 +1389,18 @@
                     	<xs:element name="product" minOccurs="1" maxOccurs="1">
                     		<xs:complexType>
                     		<xs:all>
-		                        <xs:element name="name" type="name" minOccurs="1" maxOccurs="1"/>
-		                        <xs:element name="description" type="name" minOccurs="1" maxOccurs="1"/>
+		                        <xs:element name="name" type="name" minOccurs="0" maxOccurs="1"/>
+		                        <xs:element name="description" type="name" minOccurs="0" maxOccurs="1"/>
 		                        <xs:element name="image-url" type="url" minOccurs="0" maxOccurs="1"/>
 		                        <xs:element name="airline-data" type="airline-data"  minOccurs="0" maxOccurs="1" />
 		                       </xs:all> 
 		                       <xs:attribute name="sku" use="required" type="xs:string"/>
 		                     </xs:complexType>
                         </xs:element>
-                        <xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
-                        <xs:element name="points" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
-                        <xs:element name="reward" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
-                        <xs:element name="quantity" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="amount" type="amount" minOccurs="0" maxOccurs="1" />
+                        <xs:element name="points" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+                        <xs:element name="reward" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+                        <xs:element name="quantity" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
 						<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
 					</xs:all>
                 </xs:complexType>
@@ -1415,13 +1420,13 @@
 <xs:element name="flight-detail">
 <xs:complexType>
  <xs:sequence>
-   <xs:element type="xs:string" name="service-class" minOccurs="1" maxOccurs="1" />
-   <xs:element type="xs:string" name="flight-number" minOccurs="1" maxOccurs="1" />
-   <xs:element type="xs:string" name="departure-airport" minOccurs="1" maxOccurs="1" />
-   <xs:element type="xs:string" name="arrival-airport" minOccurs="1" maxOccurs="1" />
-   <xs:element type="xs:string" name="airline-code" minOccurs="1" maxOccurs="1" />
-   <xs:element type="xs:string" name="departure-date" minOccurs="1" maxOccurs="1" />
-   <xs:element type="xs:string" name="arrival-date" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="service-class" minOccurs="0" maxOccurs="1" />
+   <xs:element type="xs:string" name="flight-number" minOccurs="0" maxOccurs="1" />
+   <xs:element type="xs:string" name="departure-airport" minOccurs="0" maxOccurs="1" />
+   <xs:element type="xs:string" name="arrival-airport" minOccurs="0" maxOccurs="1" />
+   <xs:element type="xs:string" name="airline-code" minOccurs="0" maxOccurs="1" />
+   <xs:element type="xs:string" name="departure-date" minOccurs="0" maxOccurs="1" />
+   <xs:element type="xs:string" name="arrival-date" minOccurs="0" maxOccurs="1" />
    <xs:element ref="additional-data" minOccurs="0" maxOccurs="1" /> 
  </xs:sequence>
 	<xs:attribute name="tag" use="optional" type="xs:positiveInteger"/>
@@ -1436,7 +1441,7 @@
    <xs:element type="xs:string" name="title" minOccurs="0" maxOccurs="1" />
    <xs:element type="xs:string" name="first-name" minOccurs="1"  maxOccurs="1" />
    <xs:element type="xs:string" name="last-name" minOccurs="1" maxOccurs="1" />
-   <xs:element type="xs:string" name="type" minOccurs="1" maxOccurs="1" />
+   <xs:element type="xs:string" name="type" minOccurs="0" maxOccurs="1" />
    <xs:element ref="contact-info" minOccurs="0" maxOccurs="1" />
    <xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
  </xs:sequence>
@@ -1515,6 +1520,13 @@
         <xs:enumeration value="false"/>
         <xs:enumeration value="true"/>
     </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "transactionType">
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="DB" />
+		<xs:enumeration value="CR" />
+	</xs:restriction>
 </xs:simpleType>
 
 <xs:simpleType name="state">

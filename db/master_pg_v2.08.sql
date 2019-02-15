@@ -1,15 +1,3 @@
--- CMP-2807
-alter table client.additionalproperty_tbl
-	add scope int default 0;
-
-comment on column client.additionalproperty_tbl.scope is 'Scope of properties
-0 - Internal
-1 - Private
-2 - Public';
-
-update client.additionalproperty_tbl set scope = 2;
-
-
 /* ==================== ADDING WALLET ID IN THE LOG.TRANSACTION_TBL START ==================== */
 ALTER TABLE Log.Transaction_Tbl ADD COLUMN walletid integer DEFAULT NULL;
 /* ==================== ADDING WALLET ID IN THE LOG.TRANSACTION_TBL END ==================== */
