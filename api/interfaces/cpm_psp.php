@@ -27,14 +27,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '<client-config>';
         $b .= '<additional-config>';
 
-        foreach ($this->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+        foreach ($this->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
         {
             $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
         }
 
         $b .= '</additional-config>';
         $b .= '</client-config>';
-        $b .= $this->getPSPConfig()->toXML();
+        $b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty);
         $b .= '<transactions>';
         $b .= $this->_constTxnXML($iAmount);
         $b .= '</transactions>';
@@ -105,14 +105,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $b .= '<client-config>';
             $b .= '<additional-config>';
 
-            foreach ($this->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+            foreach ($this->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
             {
                 $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
             }
 
             $b .= '</additional-config>';
             $b .= '</client-config>';
-			$b .= $this->getPSPConfig()->toXML();
+			$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty);
 			$b .= '<transactions>';
 			$b .= $this->_constTxnXML($iAmount);
 			$b .= '</transactions>';
@@ -171,14 +171,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '<client-config>';
         $b .= '<additional-config>';
 
-        foreach ($this->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+        foreach ($this->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
         {
             $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
         }
 
         $b .= '</additional-config>';
         $b .= '</client-config>';
-		$b .= $this->getPSPConfig()->toXML();
+		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty);
 		$b .= '<transactions>';
 		$b .= $this->_constTxnXML($iAmount);
 		$b .= '</transactions>';
@@ -234,14 +234,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '<client-config>';
         $b .= '<additional-config>';
 
-        foreach ($this->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+        foreach ($this->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
         {
             $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
         }
 
         $b .= '</additional-config>';
         $b .= '</client-config>';
-		$b .= $this->getPSPConfig()->toXML();
+		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty);
 		$b .= '<transactions>';
 		$b .= $this->_constTxnXML();
 		$b .= '</transactions>';
@@ -304,7 +304,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<status client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
-		$b .= $this->getPSPConfig()->toXML();
+		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty);
 		$b .= '<transactions>';
 		$b .= $this->_constTxnXML();
 		$b .= '</transactions>';
@@ -350,13 +350,13 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, $obj_ClientInfo = NULL)
 	{
-		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML() );
+		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML(Constants::iPrivateProperty) );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<initialize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '" store-card="'. parent::bool2xml($sc) .'">';
-		$b .= $obj_PSPConfig->toXML();
+		$b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty);
 		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 		$b .= $this->_constTxnXML();
 		$b .= $this->_constOrderDetails($this->getTxnInfo()) ;
@@ -382,7 +382,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		if(is_null($obj_ClientInfo) == false)
 		{
-		$b .= $obj_ClientInfo->asXML();
+		$b .= $obj_ClientInfo->asXML(Constants::iPrivateProperty);
 		}
 		$b .= '</initialize>';
 		$b .= '</root>';
@@ -456,7 +456,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '<client-config>';
         $b .= '<additional-config>';
 
-        foreach ($this->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+        foreach ($this->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
         {
             $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
         }
@@ -797,7 +797,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			$purchaseDateNode = "<PurchaseDate>".$purchaseDate."</PurchaseDate>";
 		}
 		
-		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML() );
+		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML(Constants::iPrivateProperty) );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
