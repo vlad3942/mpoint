@@ -101,6 +101,7 @@ require_once(sCLASS_PATH ."/eghl.php");
 require_once(sCLASS_PATH ."/chase.php");
 // Require specific Business logic for the Global Collect component
 require_once(sCLASS_PATH ."/globalcollect.php");
+require_once(sCLASS_PATH ."/worldpay.php");
 /**
  * Input XML format
  *
