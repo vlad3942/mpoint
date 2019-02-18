@@ -1346,5 +1346,12 @@ abstract class Constants
 	const sSETTLEMENT_REQUEST_ACTIVE = "active";
 	const sSETTLEMENT_REQUEST_WAITING = "waiting";
 	const sSETTLEMENT_REQUEST_FAIL = "fail";
+
+	/*
+	 * Additional Property Scope
+	 */
+	const iInternalProperty = 0;
+	const iPrivateProperty = 1;
+	const iPublicProperty = 2;
 }
 ?>

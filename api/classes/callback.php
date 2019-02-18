@@ -417,7 +417,7 @@ abstract class Callback extends EndUserAccount
 
         $sBody .= '&payment-method=' . $this->_obj_TxnInfo->getPaymentMethod($this->getDBConn());
 
-        $shortCode = $this->_obj_PSPConfig->getAdditionalProperties('SHORT-CODE');
+        $shortCode = $this->_obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, 'SHORT-CODE');
         if($shortCode !== false)
         {
         	$sBody .= '&short-code='. $shortCode;
@@ -434,7 +434,7 @@ abstract class Callback extends EndUserAccount
 
         $dateTime = new DateTime($this->_obj_TxnInfo->getCreatedTimestamp());
 		$sBody .= '&date-time=' . $dateTime->format('c');
-		$timeZone = $this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties('TIMEZONE');
+		$timeZone = $this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'TIMEZONE');
 		if($timeZone !== null && $timeZone !== '' && $timeZone !== false )
 		{
 			$dateTime->setTimezone(new DateTimeZone($timeZone));
@@ -987,7 +987,7 @@ abstract class Callback extends EndUserAccount
 
         			$dateTime = new DateTime($this->_obj_TxnInfo->getCreatedTimestamp());
 					$transactionData['date-time']= $dateTime->format('c');
-					$timeZone = $this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties('TIMEZONE');
+					$timeZone = $this->_obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty,'TIMEZONE');
 					if($timeZone !== null && $timeZone !== '' && $timeZone !== false )
 					{
 						$dateTime->setTimezone(new DateTimeZone($timeZone));

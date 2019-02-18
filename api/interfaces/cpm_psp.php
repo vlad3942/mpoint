@@ -27,14 +27,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '<client-config>';
         $b .= '<additional-config>';
 
-        foreach ($this->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+        foreach ($this->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
         {
             $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
         }
 
         $b .= '</additional-config>';
         $b .= '</client-config>';
-        $b .= $this->getPSPConfig()->toXML();
+        $b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty);
         $b .= '<transactions>';
         $b .= $this->_constTxnXML($iAmount);
         $b .= '</transactions>';
@@ -105,14 +105,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $b .= '<client-config>';
             $b .= '<additional-config>';
 
-            foreach ($this->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+            foreach ($this->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
             {
                 $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
             }
 
             $b .= '</additional-config>';
             $b .= '</client-config>';
-			$b .= $this->getPSPConfig()->toXML();
+			$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty);
 			$b .= '<transactions>';
 			$b .= $this->_constTxnXML($iAmount);
 			$b .= '</transactions>';
@@ -171,14 +171,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '<client-config>';
         $b .= '<additional-config>';
 
-        foreach ($this->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+        foreach ($this->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
         {
             $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
         }
 
         $b .= '</additional-config>';
         $b .= '</client-config>';
-		$b .= $this->getPSPConfig()->toXML();
+		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty);
 		$b .= '<transactions>';
 		$b .= $this->_constTxnXML($iAmount);
 		$b .= '</transactions>';
@@ -234,14 +234,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '<client-config>';
         $b .= '<additional-config>';
 
-        foreach ($this->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+        foreach ($this->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
         {
             $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
         }
 
         $b .= '</additional-config>';
         $b .= '</client-config>';
-		$b .= $this->getPSPConfig()->toXML();
+		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty);
 		$b .= '<transactions>';
 		$b .= $this->_constTxnXML();
 		$b .= '</transactions>';
@@ -304,7 +304,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<status client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
-		$b .= $this->getPSPConfig()->toXML();
+		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty);
 		$b .= '<transactions>';
 		$b .= $this->_constTxnXML();
 		$b .= '</transactions>';
@@ -350,13 +350,13 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, $obj_ClientInfo = NULL)
 	{
-		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML() );
+		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML(Constants::iPrivateProperty) );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<initialize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '" store-card="'. parent::bool2xml($sc) .'">';
-		$b .= $obj_PSPConfig->toXML();
+		$b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty);
 		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 		$b .= $this->_constTxnXML();
 		$b .= $this->_constOrderDetails($this->getTxnInfo()) ;
@@ -382,7 +382,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		if(is_null($obj_ClientInfo) == false)
 		{
-		$b .= $obj_ClientInfo->asXML();
+		$b .= $obj_ClientInfo->asXML(Constants::iPrivateProperty);
 		}
 		$b .= '</initialize>';
 		$b .= '</root>';
@@ -456,7 +456,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '<client-config>';
         $b .= '<additional-config>';
 
-        foreach ($this->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+        foreach ($this->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
         {
             $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
         }
@@ -576,9 +576,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                 if($obj_XML->status['code'] == '100')
                 {
                     $sToken = $obj_XML->status->card->{'card-number'};
-                    $sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
-						SET token = ".$sToken."
-						WHERE id = ". $this->getTxnInfo()->getID();
+                    $sql = "INSERT INTO Log".sSCHEMA_POSTFIX.".ExternalReference_Tbl
+					        (txnid, externalid, pspid)
+				                VALUES
+					        (".$this->getTxnInfo()->getID().", ".$sToken.", ".$obj_PSPConfig->getID().")";
                     //echo $sql ."\n";
                     $this->getDBConn()->query($sql);
                     $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_TOKENIZATION_COMPLETE_STATE, $sToken. " generated for transactionID ". $this->getTxnInfo()->getID());
@@ -746,7 +747,16 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 */
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL)
 	{
-		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML() );
+        //If token is returned in the authorize call, we should update the wallet ID in mPoint's Log.Transaction_Tbl
+	    if($obj_PSPConfig->getID() > 0 )
+        {
+            $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+						SET walletid = " . $obj_PSPConfig->getID() . "
+						WHERE id = " . $this->getTxnInfo()->getID();
+            $this->getDBConn()->query($sql);
+        }
+
+	    $obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML() );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -787,7 +797,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 			$purchaseDateNode = "<PurchaseDate>".$purchaseDate."</PurchaseDate>";
 		}
 		
-		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML() );
+		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML(Constants::iPrivateProperty) );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -866,6 +876,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON PSP.id = CA.pspid AND CL.id = CA.clientid AND CA.enabled = '1' 
 				WHERE CL.id = ". intval($this->getClientConfig()->getID() ) ." AND CA.cardid = ". intval($cardid) ."
 					AND (CA.countryid = ". intval($countryid) ." OR CA.countryid IS NULL)
+					AND CA.psp_type IN (".Constants::iPROCESSOR_TYPE_PSP.", ".Constants::iPROCESSOR_TYPE_ACQUIRER.")
 				ORDER BY CA.countryid ASC";
 
 		$RS = $this->getDBConn()->getName($sql);
