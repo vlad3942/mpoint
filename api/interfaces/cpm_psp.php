@@ -876,7 +876,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				INNER JOIN Client".sSCHEMA_POSTFIX.".CardAccess_Tbl CA ON PSP.id = CA.pspid AND CL.id = CA.clientid AND CA.enabled = '1' 
 				WHERE CL.id = ". intval($this->getClientConfig()->getID() ) ." AND CA.cardid = ". intval($cardid) ."
 					AND (CA.countryid = ". intval($countryid) ." OR CA.countryid IS NULL)
-					AND CA.psp_type IN (".Constants::iPROCESSOR_TYPE_PSP.", ".Constants::iPROCESSOR_TYPE_ACQUIRER.")
+					AND PSP.system_type IN (".Constants::iPROCESSOR_TYPE_PSP.", ".Constants::iPROCESSOR_TYPE_ACQUIRER.")
 				ORDER BY CA.countryid ASC";
 
 		$RS = $this->getDBConn()->getName($sql);
