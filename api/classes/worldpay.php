@@ -12,15 +12,13 @@
  * @version 1.00
  */
 
-/**
- * Model Class containing all the Business Logic for handling interaction with WorldPay
- *
- */
+/* ==================== WorldPayException Exception Classes Start ==================== */
+
 class WorldPayException extends CallbackException { }
-/* ==================== SecureTrading Exception Classes End ==================== */
+/* ==================== WorldPayException Exception Classes End ==================== */
 
 /**
- * Model Class containing all the Business Logic for the Payment Service Provider: CCAvenue
+ * Model Class containing all the Business Logic for the Payment Service Provider: WorldPay
  *
  */
 class WorldPay extends CPMPSP
