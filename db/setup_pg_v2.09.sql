@@ -47,3 +47,7 @@ INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid,countryid, psp_type) 
 INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (18, 41);
 
 /* ========== CONFIGURATION FOR GOOGLE PAY - END ========== */
+
+-- PAYU Integration --
+
+--End PayU Integration --
