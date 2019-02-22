@@ -332,8 +332,8 @@ class CountryConfig extends BasicConfig
 		$xml .= '<currency symbol="'. $this->_sSymbol .'">'. $this->_sCurrency .'</currency>';
 		$xml .= '<max-balance>'. $this->_iMaxBalance .'</max-balance>';
 		$xml .= '<min-transfer>'. $this->_iMinTransfer .'</min-transfer>';
-		$xml .= '<min-mobile>'. $this->_sMaxMobile .'</min-mobile>';
-		$xml .= '<max-mobile>'. $this->_sMinMobile .'</max-mobile>';
+		$xml .= '<min-mobile>'. $this->_sMinMobile .'</min-mobile>';
+		$xml .= '<max-mobile>'. $this->_sMaxMobile .'</max-mobile>';
 		$xml .= '<channel>'. $this->_sChannel .'</channel>';
 		$xml .= '<price-format>'. $this->_sPriceFormat .'</price-format>';
 		$xml .= '<num-decimals>'. $this->_iNumDecimals .'</num-decimals>';
