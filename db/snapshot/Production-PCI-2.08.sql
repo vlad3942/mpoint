@@ -18,3 +18,7 @@ INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type
 -- Card Prefix for visa and Master
 INSERT INTO "system".cardprefix_tbl ( cardid, min, max) VALUES( 7, 5110, 5210);
 INSERT INTO "system".cardprefix_tbl ( cardid, min, max) VALUES( 7, 2700, 2730);
+
+--default smsrcpt to false --SGAMBE-4207
+ALTER TABLE client.client_tbl ALTER COLUMN smsrcpt SET DEFAULT FALSE ;
+UPDATE client.client_tbl set smsrcpt=false where id=10021;
