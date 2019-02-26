@@ -280,8 +280,8 @@ try
 										
 										if(count($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}) > 0 && 
 											intval($obj_DOM->{'authorize-payment'}[$i]->transaction["type-id"]) === Constants::iNEW_CARD_PURCHASE_TYPE &&
-											$obj_Validator->valCardNumber($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}) != 10										
-										) {$aMsgCds[21] = "Invalid Card Number: ".$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}; }
+											$obj_Validator->valCardNumber($_OBJ_DB,(int)$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]["type-id"],  $obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}) !== 10)
+										{$aMsgCds[21] = "Invalid Card Number: ".$obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]->{'card-number'}; }
 
                                         if($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype") > 1 ){
                                             $pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
