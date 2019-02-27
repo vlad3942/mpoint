@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
 	<xs:element name="root">
 		<xs:complexType>
 			<xs:all>
-				<xs:element name="authorize">
+				<xs:element name="initialize">
 					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="client-config" type="client-info" minOccurs="1" maxOccurs="1"/>
+						<xs:all>
 							<xs:element name="psp-config">
 								<xs:complexType>
 									<xs:all>
@@ -36,6 +36,7 @@
 									<xs:attribute type="xs:positiveInteger" name="type" />
 								</xs:complexType>
 							</xs:element>
+							<xs:element name="client-config" type="client-info" minOccurs="1" maxOccurs="1"/>
 							<xs:element name="transaction" >
 								<xs:complexType>
 									<xs:all>
@@ -52,7 +53,7 @@
 												<xs:simpleContent>
 													<xs:extension base="xs:string">
 														<xs:attribute name="country-id" type="xs:integer"/>
-														<xs:attribute name="country-code" type="xs:integer"/>
+                                                        <xs:attribute name="country-code" type="xs:integer"/>
 													</xs:extension>
 												</xs:simpleContent>
 											</xs:complexType>
@@ -63,9 +64,9 @@
 										<xs:element name="logo" type="logo"/>
 										<xs:element name="css-url" type="xs:string"/>
 										<xs:element name="accept-url" type="xs:string"/>
-										<xs:element name="decline-url" type="xs:string"/>
 										<xs:element name="cancel-url" type="xs:string"/>
 										<xs:element name="callback-url" type="xs:string"/>
+                                        <xs:element name="decline-url" type="xs:string"/>
 										<xs:element name="icon-url" type="xs:string"/>
 										<xs:element name="auth-url" type="xs:string"/>
 										<xs:element name="auto-capture" type="xs:boolean"/>
@@ -91,87 +92,34 @@
 									<xs:attribute type="xs:integer" name="attempt"/>
 									<xs:attribute type="xs:integer" name="mode"/>
 									<xs:attribute type="xs:integer" name="eua-id"/>
-									<xs:attribute type="xs:integer" name="product-type"/>
 									<xs:attribute type="xs:positiveInteger" name="psp-id"/>
 									<xs:attribute type="xs:integer" name="card-id"/>
-									<xs:attribute type="xs:integer" name="wallet-id"/>
 									<xs:attribute type="xs:string" name="external-id"/>
 									<xs:attribute name="store-card" type="xs:boolean" use="optional" default="false" />
 								</xs:complexType>
 							</xs:element>
 							<xs:element name="order-attempt" type="xs:positiveInteger" minOccurs="0" />
-							<xs:element name="card" minOccurs="1" maxOccurs="1">
+							<xs:element name="card" minOccurs="0" maxOccurs="1">
 								<xs:complexType>
 									<xs:all>
-										<xs:element name="card-holder-name" type="xs:string" minOccurs="0" maxOccurs="1" />
-										<xs:element name="card-number" type="xs:string"	minOccurs="0" maxOccurs="1" />
-										<xs:element name="expiry-month" type="xs:string" minOccurs="0" maxOccurs="1" />
-										<xs:element name="expiry-year" type="xs:string" minOccurs="0" maxOccurs="1" />
-										<xs:element name="info-3d-secure">
-											<xs:complexType>
-												<xs:sequence>
-													<xs:element name="cryptogram">
-														<xs:complexType>
-															<xs:simpleContent>
-																<xs:extension base="xs:string">
-																	<xs:attribute type="xs:string" name="algorithm-id"/>
-																	<xs:attribute type="xs:byte" name="eci"/>
-																	<xs:attribute type="xs:string" name="type"/>
-																</xs:extension>
-															</xs:simpleContent>
-														</xs:complexType>
-													</xs:element>
-												</xs:sequence>
-											</xs:complexType>
+										<xs:element name="amount" type="amount" minOccurs="0" maxOccurs="1" />
+										<xs:element name="issuer-identification-number" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:positiveInteger">
+													<xs:minInclusive value="100000" />
+													<xs:maxInclusive value="999999" />
+												</xs:restriction>
+											</xs:simpleType>
 										</xs:element>
-										<xs:element name="cvc" type="xs:string" minOccurs="0" maxOccurs="1" />
-										<xs:element name="masked_account_number" type="xs:string" minOccurs="0" maxOccurs="1" />
+										<xs:element name="apple-pay-token" type="xs:string"	minOccurs="0" maxOccurs="1" />
 										<xs:element name="token" type="xs:string" minOccurs="0" maxOccurs="1" />
+										<xs:element name="visa-key" type="xs:string" minOccurs="0" maxOccurs="1" />
+										<xs:element name="visa-data" type="xs:string" minOccurs="0" maxOccurs="1" />
 									</xs:all>
 									<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
 								</xs:complexType>
 							</xs:element>
-							<!--<xs:element name="account" minOccurs="0" maxOccurs="1">
-								<xs:complexType>
-									<xs:all>
-										<xs:element name="first-name" type="xs:string"/>
-										<xs:element name="last-name" type="xs:string"/>
-										<xs:element name="mobile" type="xs:string">
-											<xs:complexType>
-												<xs:simpleContent>
-													<xs:extension base="xs:string">
-														<xs:attribute name="country-id" type="xs:integer"/>
-													</xs:extension>
-												</xs:simpleContent>
-											</xs:complexType>
-										</xs:element>
-										<xs:element name="email" type="xs:string"/>
-										<xs:element name="password" type="xs:string">
-											<xs:complexType>
-												<xs:simpleContent>
-													<xs:extension base="xs:string">
-														<xs:attribute name="mask" type="xs:string"/>
-													</xs:extension>
-												</xs:simpleContent>
-											</xs:complexType>
-										</xs:element>
-										<xs:element name="balance" type="xs:string">
-											<xs:complexType>
-												<xs:simpleContent>
-													<xs:extension base="xs:string">
-														<xs:attribute name="country-id" type="xs:integer"/>
-														<xs:attribute name="currency" type="xs:string"/>
-														<xs:attribute name="symbol" type="xs:string"/>
-														<xs:attribute name="format" type="xs:string"/>
-													</xs:extension>
-												</xs:simpleContent>
-											</xs:complexType>
-										</xs:element>
-									</xs:all>
-								</xs:complexType>
-							</xs:element>-->
-							<xs:any maxOccurs="1" processContents="skip"/>
-						</xs:sequence>
+						</xs:all>
 						<xs:attribute type="xs:positiveInteger" name="client-id" />
 						<xs:attribute type="xs:positiveInteger" name="account" />
 						<xs:attribute type="xs:string" name="store-card" />
@@ -224,14 +172,129 @@
 	</xs:element>
 
 	<xs:complexType name="client-info">
-	<xs:all>
-		<xs:element ref="additional-config" minOccurs="0" maxOccurs="1" />
-	</xs:all>
-	<xs:attribute name="app-id" type="xs:positiveInteger" use="optional" />
-	<xs:attribute name="platform" type="xs:string" use="optional" />
-	<xs:attribute name="version" type="xs:string" use="optional" />
-	<xs:attribute name="language" type="xs:string" use="optional" />
-	<xs:attribute name="pushid" type="xs:string" use="optional"/>
-</xs:complexType>
+		<xs:sequence>
+			<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1" />
+			<xs:element name="username" type="xs:string" minOccurs="0" maxOccurs="1" />
+			<xs:element name="max-amount">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="country-id" type="xs:integer"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="urls">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="url">
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:anyURI">
+										<xs:attribute type="xs:byte" name="id"/>
+										<xs:attribute type="xs:byte" name="type-id"/>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="keyword">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute type="xs:byte" name="id"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="payment-methods">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="payment-method">
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute type="xs:byte" name="id"/>
+										<xs:attribute type="xs:byte" name="type-id"/>
+										<xs:attribute type="xs:byte" name="state-id"/>
+										<xs:attribute type="xs:byte" name="country-id"/>
+										<xs:attribute type="xs:byte" name="psp-id"/>
+										<xs:attribute type="xs:string" name="enabled"/>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute type="xs:byte" name="store-card"/>
+					<xs:attribute type="xs:string" name="show-all-cards"/>
+					<xs:attribute type="xs:byte" name="max-stored-cards"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="account-configurations">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="account-config">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element type="xs:string" name="name"/>
+									<xs:element type="xs:string" name="markup"/>
+									<xs:element name="payment-service-providers">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="payment-service-provider">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element type="xs:byte" name="name"/>
+															<xs:element type="xs:dateTime" name="modified-date"/>
+														</xs:sequence>
+														<xs:attribute type="xs:byte" name="id"/>
+														<xs:attribute type="xs:byte" name="psp-id"/>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+								<xs:attribute type="xs:short" name="id"/>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element type="xs:string" name="gomobile-configuration-params"/>
+			<xs:element type="xs:string" name="communication-channels"/>
+			<xs:element name="callback-protocol">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute type="xs:string" name="send-psp-id"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element type="xs:byte" name="identification"/>
+			<xs:element type="xs:byte" name="transaction-time-to-live"/>
+			<xs:element type="xs:string" name="issuer-identification-number-ranges"/>
+			<xs:element type="xs:string" name="salt"/>
+			<xs:element type="xs:string" name="secret-key"/>
+			<xs:element type="xs:string" name="products"/>
+			<xs:element type="xs:string" name="dynamic-routing-gateways"/>
+			<xs:element type="xs:string" name="additional-config"/>
+		</xs:sequence>
+		<xs:attribute name="app-id" type="xs:positiveInteger" use="optional" />
+		<xs:attribute name="platform" type="xs:string" use="optional" />
+		<xs:attribute name="version" type="xs:string" use="optional" />
+		<xs:attribute name="language" type="xs:string" use="required" />
+		<xs:attribute name="pushid" type="xs:string" use="optional"/>
+		<xs:attribute name="id" type="xs:string" use="required" />
+		<xs:attribute name="auto-capture" type="xs:string" use="required" />
+		<xs:attribute name="country-id" type="xs:string" use="required" />
+		<xs:attribute name="sms-receipt" type="xs:string" use="required" />
+		<xs:attribute name="email-receipt" type="xs:string" use="required" />
+		<xs:attribute name="mode" type="xs:string" use="required" />
+		<xs:attribute name="masked-digits" type="xs:string" use="required" />
+	</xs:complexType>
 
 </xs:schema>

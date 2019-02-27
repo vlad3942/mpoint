@@ -7716,6 +7716,15 @@ INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) SELECT 208, 30, 'DK
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 8, 30;
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 2, 30;
 
+
+INSERT INTO System.PSP_Tbl (id, name, system_type) VALUES (14, 'Apple Pay', 3);
+INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) SELECT 208, 14, 'DKK';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 8, 14;
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 2, 14;
+
+INSERT INTO System.card_Tbl (id, name, position, paymenttype) VALUES (15, 'Apple Pay', 13, 3);
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 15, 18;
+
 -- country calling code
 ALTER TABLE system.country_tbl ADD country_calling_code INTEGER NULL;
 update system.country_tbl set country_calling_code=297 where alpha3code='ABW';
@@ -7990,3 +7999,13 @@ CREATE INDEX external_reference_index
   ON log.externalreference_tbl
   USING btree
   (externalid);
+
+INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (50, 'UATP CardAccount',8);
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (15, 50); /*With Apple-Pay*/
+
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (208,50,'DKK');
+
+
+
+
+
