@@ -209,9 +209,9 @@ abstract class mPointSettlement
                 $this->_getPSPConfiguration($_OBJ_DB);
             }
             $requestBody = '<?xml version="1.0" encoding="UTF-8"?><root><settlement>';
-            $requestBody .= $this->_objClientConfig->toXML();
+            $requestBody .= $this->_objClientConfig->toXML(Constants::iPrivateProperty);
             $requestBody .= $this->_toSettlementInfoXML();
-            $requestBody .= $this->_objPspConfig->toXML();
+            $requestBody .= $this->_objPspConfig->toXML(Constants::iPrivateProperty);
             $requestBody .= $this->_sTransactionXML;
             $requestBody .= '</settlement></root>';
 
@@ -379,8 +379,8 @@ abstract class mPointSettlement
                 $this->_getPSPConfiguration($_OBJ_DB);
             }
             $requestBody = '<?xml version="1.0" encoding="UTF-8"?><root><process-settlement>';
-            $requestBody .= $this->_objClientConfig->toXML();
-            $requestBody .= $this->_objPspConfig->toXML();
+            $requestBody .= $this->_objClientConfig->toXML(Constants::iPrivateProperty);
+            $requestBody .= $this->_objPspConfig->toXML(Constants::iPrivateProperty);
             $requestBody .= $this->_getSettlementInProgress($_OBJ_DB);
             $requestBody .= '</process-settlement></root>';
 
