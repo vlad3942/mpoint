@@ -15,9 +15,9 @@ abstract class mPointSettlement
 
     protected $_iClientId = NULL;
 
-    private $_objClientConfig = NULL;
+    protected $_objClientConfig = NULL;
 
-    private $_objPspConfig = NULL;
+    protected $_objPspConfig = NULL;
 
     protected $_objConnectionInfo = NULL;
 
@@ -71,12 +71,12 @@ abstract class mPointSettlement
         return $aAccounts;
     }
 
-    private function _getClientConfiguration($_OBJ_DB)
+    protected function _getClientConfiguration($_OBJ_DB)
     {
         $this->_objClientConfig = ClientConfig::produceConfig($_OBJ_DB, $this->_iClientId);
     }
 
-    private function _getPSPConfiguration($_OBJ_DB)
+    protected function _getPSPConfiguration($_OBJ_DB)
     {
         $accountIds = $this->_getAccountIds($_OBJ_DB);
         $this->_iAccountId =$accountIds[0];
@@ -412,4 +412,6 @@ abstract class mPointSettlement
             return $e->getCode();
         }
     }
+
+    public function createBulkSettlementEntry($_OBJ_DB){}
 }
