@@ -250,7 +250,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                             // Single Sign-On
                             $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
-                            if (empty($authenticationURL) === false)
+                            if (empty($authenticationURL) === false && count($obj_DOM->login[$i]->{'auth-token'}) == 1)
                             {
                                 $bIsSingleSingOnPass = false;
                                 $obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
@@ -261,7 +261,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     }
                                     if (floatval($obj_TxnInfo->getMobile()) > 0) {
                                         $obj_Customer->mobile = $obj_TxnInfo->getMobile();
-                                        $obj_Customer->mobile["country-id"] = intval($obj_TxnInfo->getCountryConfig()->getID());
+                                        $obj_Customer->mobile["country-id"] = intval($obj_CountryConfig->getID());
                                         $obj_Customer->mobile["operator-id"] = $obj_TxnInfo->getOperator();
                                     }
                                     if (strlen($obj_TxnInfo->getEMail()) > 0) {
