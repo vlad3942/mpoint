@@ -308,6 +308,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							//Test if the order/cart details are passed as part of the input XML request.
 							if(count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders) == 1 && count( $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->children()) > 0 )
 							{
+                                $sOrderXML = $obj_DOM->{'initialize-payment'}[$i]->transaction->orders->asXML();
 								for ($j=0; $j<count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}); $j++ )
 								{
 									if(count($obj_DOM->{'initialize-payment'}[$i]->transaction->orders->{'line-item'}) > 0)

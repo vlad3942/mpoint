@@ -158,6 +158,13 @@ class TransactionLogInfo
 	 * @var string
 	 */
 	private  $_sDescription;
+
+    /**
+     * OrderInfo obj
+     *
+     * @var object
+     */
+    private $_obj_OrderInfo;
 	
 	/**
 	 * Default constructor
@@ -184,8 +191,9 @@ class TransactionLogInfo
 	 * @param timestamp $ts				The timestamp when the transaction was created in the format: YYYY-MM-DD hh:mm:ss+00:00
 	 * @param array $aObj_Msgs			List of Message Information instances identifying which states the transaction has gone through
 	 * @param string $desc 				String that holds the description of an order
+     * @param OrderInfo $oOI 			OrderInfo object
 	 */
-	public function __construct($id, $tid, $ono, $extid, ClientConfig $oClient, BasicConfig $oSubAccount, BasicConfig $oPSP=null, BasicConfig $oPM=null, $sid, CountryConfig $oCC, $amt, $cptamt, $pnt, $rwd, $rfnd, $fee, $m, CustomerInfo $oCI, $ip, $ts, array $aObj_Msgs, $desc="", $currencyCode=null)
+	public function __construct($id, $tid, $ono, $extid, ClientConfig $oClient, BasicConfig $oSubAccount, BasicConfig $oPSP=null, BasicConfig $oPM=null, $sid, CountryConfig $oCC, $amt, $cptamt, $pnt, $rwd, $rfnd, $fee, $m, CustomerInfo $oCI, $ip, $ts, array $aObj_Msgs, $desc="", $currencyCode=null, OrderInfo $oOI)
 	{
 		$this->_iID =  (integer) $id;
 		$this->_iTypeID =  (integer) $tid;
@@ -216,6 +224,7 @@ class TransactionLogInfo
 		
 		$this->_aObj_MessageInfos = $aObj_Msgs;
 		$this->_sDescription = trim($desc);
+		$this->_obj_OrderInfo = $oOI;
 	}
 
 	public function getID() { return $this->_iID; }
@@ -247,6 +256,22 @@ class TransactionLogInfo
 	public function getRefundInfo() { return $this->_obj_Refund; }
 	public function getFeeInfo() { return $this->_obj_Fee; }
 	public function getCustomerInfo() { return $this->_obj_CustomerInfo; }
+    public function getOrdersXml() {
+        $xml = '';
+        if( empty($this->_obj_OrderInfo) === false )
+        {
+            $xml .= '<orders>';
+            foreach ($this->_obj_OrderInfo as $obj_OrderInfo)
+            {
+                if( ($obj_OrderInfo instanceof OrderInfo) === true )
+                {
+                    $xml .= $obj_OrderInfo->toXML();
+                }
+            }
+            $xml .= '</orders>';
+        }
+        return $xml;
+    }
 	/*
 	 * Returns the mode in which the Transaction is Processed
 	 * 	0. Production
@@ -296,6 +321,7 @@ class TransactionLogInfo
 			$xml .= '</messages>';
 		}
 		if (strlen($this->_sDescription) > 0) { $xml .= '<description>'. htmlspecialchars($this->_sDescription, ENT_NOQUOTES) .'</description>'; }
+        $xml .= $this->getOrdersXml();
 		$xml .= '</transaction>';
 
 		return $xml;

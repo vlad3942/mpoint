@@ -541,15 +541,15 @@ class mConsole extends Admin
 	 * @param	string $authtoken		The user's authentication token which must be passed back to mConsole's Enterprise Security Manager
 	 * @param	string $permissioncode	mConsole's Permission Code which should be used authorization as part of Single Sign-On
 	 * @param	array $aClientIDs		A list of client IDs on which the operation is being executed
-     * @param   boolean $bIsVer2		Is mConsole Version 2.0
+     * @param   string $sVersion		mConsole Version
 	 * @return	integer
 	 */
-	public function singleSignOn(HTTPConnInfo &$oCI, $authtoken, $permissioncode, array $aClientIDs=array() , $bIsVer2 = false)
+	public function singleSignOn(HTTPConnInfo &$oCI, $authtoken, $permissioncode, array $aClientIDs=array() , $sVersion = '1.0')
 	{
 		$b = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<single-sign-on permission-code="'.htmlspecialchars($permissioncode, ENT_NOQUOTES) .'">';
-        if($bIsVer2 == true) { $b .= '<version>2.0</version>'; }
+        $b .= '<version>'.$sVersion.'</version>';
 		if (is_null($aClientIDs) == false && count($aClientIDs) > 0)
 		{
 			$b .= '<clients>';
@@ -925,10 +925,11 @@ class mConsole extends Admin
 						date("Y-m-d H:i:s", strtotime($RS["CREATED"]) ),
 						$aObj_Messages,
 						"",
-						$RS["CURRENCYCODE"]);
+						$RS["CURRENCYCODE"],
+                        OrderInfo::produceConfigurations($this->getDBConn(), $RS["ID"])
+                    );
 			}
 		}
-
 		return $aObj_TransactionLogs;
 	}
 	
