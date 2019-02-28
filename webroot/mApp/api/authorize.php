@@ -608,55 +608,6 @@ try
                                                                             $xml .= '<status code="92">Authorization failed, Stripe returned error: '. $code .'</status>';
                                                                         }
                                                                         break;
-                                                                    case (Constants::iWORLDPAY_PSP):
-                                                                        // Authorise payment with PSP based on Ticket
-                                                                        $obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["worldpay"]);
-
-                                                                        if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["worldpay"]["host"] = str_replace("secure.", "secure-test.", $aHTTP_CONN_INFO["worldpay"]["host"]); }
-
-                                                                        // WorldPay doesn't enable support for 3D Secure on Mechant Codes intended for Recurring payments
-                                                                        if (empty($obj_DOM->{'authorize-payment'}[$i]->transaction->card[$j]['id']) == false)
-                                                                        {
-                                                                            $bStoredCard = true;
-                                                                        }
-                                                                        else { $bStoredCard = false; }
-
-                                                                        $aLogin = $obj_PSP->getMerchantLogin($obj_TxnInfo->getClientConfig()->getID(), Constants::iWORLDPAY_PSP, $bStoredCard);
-                                                                        $aHTTP_CONN_INFO["worldpay"]["username"] = $aLogin["username"];
-                                                                        $aHTTP_CONN_INFO["worldpay"]["password"] = $aLogin["password"];
-
-                                                                        $obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["worldpay"]);
-
-                                                                        $obj_XML = $obj_PSP->authTicket($obj_ConnInfo, $obj_Elem);
-                                                                        // Authorization succeeded
-                                                                        if (is_null($obj_XML) === false && ($obj_XML instanceof SimpleXMLElement) === true && intval($obj_XML["code"]) == Constants::iPAYMENT_ACCEPTED_STATE)
-                                                                        {
-                                                                            try
-                                                                            {
-                                                                                // Initialise Callback to Client
-                                                                                $aCPM_CONN_INFO["path"] = "/callback/worldpay.php";
-                                                                                $aCPM_CONN_INFO["contenttype"] = "text/xml";
-                                                                                $obj_PSP->initCallback(HTTPConnInfo::produceConnInfo($aCPM_CONN_INFO), $obj_XML);
-                                                                            }
-                                                                            catch (HTTPException $ignore) { /* Ignore */ }
-                                                                            if ($bStoredCard === true) {
-                                                                                $xml = '<status code="100">Payment Authorized using Stored Card</status>';
-                                                                            } else {
-                                                                                $xml = '<status code="2000">Payment authorized</status>';
-                                                                            }
-                                                                        }
-
-                                                                        else
-                                                                        {
-                                                                            $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-
-                                                                            header("HTTP/1.1 502 Bad Gateway");
-
-                                                                            $xml .= '<status code="92">Authorization failed, WorldPay returned error code: '. $obj_XML->reply->error["code"] .'</status>';
-
-                                                                            $obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_WITH_ACCOUNT_STATE);
-                                                                        }
-                                                                        break;
                                                                     case (Constants::iDIBS_PSP):	// DIBS
                                                                         // Authorise payment with PSP based on Ticket
 
