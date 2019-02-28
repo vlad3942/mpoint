@@ -250,7 +250,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                             // Single Sign-On
                             $authenticationURL = $obj_ClientConfig->getAuthenticationURL();
-                            if (empty($authenticationURL) === false && strlen($obj_ClientConfig->getSalt() ) > 0)
+                            if (empty($authenticationURL) === false)
                             {
                                 $bIsSingleSingOnPass = false;
                                 $obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $obj_TxnInfo->getAccountID() );
@@ -478,7 +478,12 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             }
                             $xml .= '</accounts>';
 							$xml .= '</client-config>';
-							$xml .= '<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. htmlspecialchars($obj_TxnInfo->getOrderID(), ENT_NOQUOTES) .'" type-id="'. $obj_TxnInfo->getTypeID() .'" eua-id="'. $obj_TxnInfo->getAccountID() .'" language="'. $obj_TxnInfo->getLanguage() .'" auto-capture="'. General::bool2xml($obj_TxnInfo->useAutoCapture() ) .'" mode="'. $obj_TxnInfo->getMode() .'">';
+							$euaId = -1;
+							if ($bIsSingleSingOnPass === true)
+                            {
+                                $euaId = $obj_TxnInfo->getAccountID();
+                            }
+							$xml .= '<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. htmlspecialchars($obj_TxnInfo->getOrderID(), ENT_NOQUOTES) .'" type-id="'. $obj_TxnInfo->getTypeID() .'" eua-id="'. $euaId .'" language="'. $obj_TxnInfo->getLanguage() .'" auto-capture="'. General::bool2xml($obj_TxnInfo->useAutoCapture() ) .'" mode="'. $obj_TxnInfo->getMode() .'">';
 							$xml .= $obj_XML->amount->asXML();
 							if (empty($sOrderXML) === false )  { $xml .= $sOrderXML; }
 							if ($obj_TxnInfo->getPoints() > 0) { $xml .= $obj_XML->points->asXML(); }
@@ -499,7 +504,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount(), $aFailedPMArray ), "SimpleXMLElement", LIBXML_COMPACT);
 
 							// End-User already has an account and payment with Account enabled
-							if ($obj_TxnInfo->getAccountID() > 0 && count($obj_XML->xpath("/cards/item[@type-id = 11]") ) == 1 && $bIsSingleSingOnPass == true)
+							if ($obj_TxnInfo->getAccountID() > 0 && count($obj_XML->xpath("/cards/item[@type-id = 11]") ) == 1 && $bIsSingleSingOnPass === true)
 							{
 								$obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
 								$aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($obj_TxnInfo->getAccountID(), $obj_ClientConfig), "SimpleXMLElement", LIBXML_COMPACT);
