@@ -257,7 +257,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							if ($code >= 10)
 							{
 								if ($obj_TxnInfo->getAccountID() == -1 && General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) {
-                                    if (count($obj_DOM->{'pay'}[$i]->{'client-info'}->mobile)== 1 && count($obj_DOM->{'pay'}[$i]->{'client-info'}->mobile["country-id"])== 1)
+                                    if (count($obj_DOM->{'pay'}[$i]->{'client-info'}->mobile)== 1)
                                     {
                                         $obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->{'pay'}[$i]->{'client-info'}->mobile["country-id"]);
                                     } else {

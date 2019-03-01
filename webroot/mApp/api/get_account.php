@@ -81,7 +81,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					// Success: Input Valid
 					if (count($aMsgCds) == 0)
 					{
-					    if(count($obj_DOM->{'get-account'}[$i]->{'client-info'}->mobile["country-id"]) == 1) {
+					    if(count($obj_DOM->{'get-account'}[$i]->{'client-info'}->mobile) == 1) {
                             $obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer)$obj_DOM->{'get-account'}[$i]->{'client-info'}->mobile["country-id"]);
                         } else {
                             $obj_CountryConfig = $obj_ClientConfig->getCountryConfig();
