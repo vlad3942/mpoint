@@ -144,14 +144,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'save-account'}[$i]->{'client-info'}, $obj_CountryConfig, @$_SERVER['HTTP_X_FORWARDED_FOR']);
 
                         //Auth SSO
-                            if (count($obj_DOM->{'save-account'}[$i]->{'auth-token'}) == 1
-                                && (count($obj_DOM->{'save-account'}[$i]->{'auth-url'}) == 1 || strlen($obj_ClientConfig->getAuthenticationURL()) > 0)
-                            ) {
-                                $url = $obj_ClientConfig->getAuthenticationURL();
-                                if (count($obj_DOM->{'save-account'}[$i]->{'auth-url'}) == 1) {
-                                    $url = (string)$obj_DOM->{'save-account'}[$i]->{'auth-url'};
-                                }
-                                if ($obj_Validator->valURL($url, $obj_ClientConfig->getAuthenticationURL()) == 10) {
+                        $url = $obj_ClientConfig->getAuthenticationURL();
+                        if (count($obj_DOM->{'save-account'}[$i]->{'auth-url'}) == 1) {
+                            $url = (string)$obj_DOM->{'save-account'}[$i]->{'auth-url'};
+                        }
+                        $authUrlCode = $obj_Validator->valURL($url, $obj_ClientConfig->getAuthenticationURL());
+                        if ($authUrlCode == 10)
+                        {
+                            if(count($obj_DOM->{'save-account'}[$i]->{'auth-token'}) == 1)
+                            {
                                     $obj_CustomerInfo = new CustomerInfo(0, (integer)$obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile["country-id"], $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, "", $obj_DOM->{'save-account'}[$i]->{'client-info'}["language"]);
                                     $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
                                     //for existing accounts
@@ -162,11 +163,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
                                     $code = $obj_mPoint->auth($obj_ClientConfig, $obj_CustomerInfo, trim($obj_DOM->{'save-account'}[$i]->{'auth-token'}), intval($obj_DOM->{'save-account'}[$i]["client-id"]));
                                 } else {
+                                //missing auth token
                                     $code = -1;
                                 }
-                            } else {
+                            } elseif($authUrlCode==1 && count($obj_DOM->{'save-account'}[$i]->{'auth-token'}) == 0)
+                            {
+                            //if no auth SSO is required.
                                 $code = 10;
-                            }
+                            } else {
+                            //all other invalid urls
+                            $code = $authUrlCode;
+                        }
 
                         //If auth sso is successful
                         if ($code == 10 || $code == 11)
