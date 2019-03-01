@@ -8005,10 +8005,8 @@ INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (15, 50); /*With Apple-Pay
 
 INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (208,50,'DKK');
 
-
-
-
-
+INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2030 , 'Tokenization complete - Virtual card created', 'Authorization', true);
+INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2031 , 'Tokenization Failed', 'Authorization', true);
 
 --default smsrcpt to false --SGAMBE-4207
 ALTER TABLE client.client_tbl ALTER COLUMN smsrcpt SET DEFAULT FALSE ;

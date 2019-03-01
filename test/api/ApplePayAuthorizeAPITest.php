@@ -69,8 +69,10 @@ class ApplePayAuthorizeAPITest extends AuthorizeAPITest
         $this->queryDB("INSERT INTO Client.Account_Tbl (id, clientid) VALUES (1100, 113)");
         $this->queryDB("INSERT INTO Client.Keyword_Tbl (id, clientid, name, standard) VALUES (1, 113, 'CPM', TRUE)");
         $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (1, 113, $pspID, '4216310')");
-        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (2, 113, 14, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (2, 113, $tokenizationPSPID, '4216310')");
+        $this->queryDB("INSERT INTO Client.MerchantAccount_Tbl (id, clientid, pspid, name) VALUES (3, 113, 14, '4216310')");
         $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
+        $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $tokenizationPSPID, '-1')");
         $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, 14, '-1')");
         $this->queryDB("INSERT INTO System.CardPricing_Tbl (pricepointid, cardid) VALUES (-208, 15)");
         //As per talk with Jona and Simon 2016-07-19 it should not be possible to authorize a disabled card, since the client can ignore flags sent from initialize
@@ -98,10 +100,11 @@ class ApplePayAuthorizeAPITest extends AuthorizeAPITest
             $aStates[] = $row["stateid"];
         }
 
-        $this->assertEquals(1, count($aStates) );
+        $this->assertEquals(2, count($aStates) );
 
         $s = 0;
         $this->assertEquals(Constants::iPAYMENT_WITH_ACCOUNT_STATE, $aStates[$s++]);
+        $this->assertEquals(Constants::iPAYMENT_TOKENIZATION_COMPLETE_STATE, $aStates[$s++]);
 
     }
 

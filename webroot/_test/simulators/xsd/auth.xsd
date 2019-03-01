@@ -110,7 +110,7 @@
 										<xs:element name="info-3d-secure" minOccurs="0" maxOccurs="1">
 											<xs:complexType>
 												<xs:sequence>
-													<xs:element name="cryptogram">
+													<xs:element name="cryptogram" minOccurs="0" maxOccurs="1">
 														<xs:complexType>
 															<xs:simpleContent>
 																<xs:extension base="xs:string">
