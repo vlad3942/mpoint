@@ -132,4 +132,14 @@ class ApplePayAuthorizeAPITest extends AuthorizeAPITest
 
         return $xml;
     }
+
+    public function testSuccessfulAuthorizeIncludingAutoCapture()
+    {
+
+    }
+
+    public function testSuccessfulAuthorizeWithCurrency()
+    {
+
+    }
 }
