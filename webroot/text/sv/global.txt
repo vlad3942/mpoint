@@ -1488,7 +1488,7 @@ msgstr @@@ Tack f�r att du anv�nder mPoint, du har betalat {PRICE} via din t
 msgid @@@ Stored Cards @@@
 msgstr @@@ Stored Cards @@@
 
-#: /api/classes/credit_card.php:139
+#: /api/classes/credit_card.php:131
 msgid @@@ My Account @@@
 msgstr @@@ My Account @@@
 
