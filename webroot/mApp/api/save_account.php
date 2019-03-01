@@ -140,22 +140,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         } else {
                             $obj_CountryConfig = $obj_ClientConfig->getCountryConfig();
                         }
-						// Construct Client Info
-						$obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'save-account'}[$i]->{'client-info'}, $obj_CountryConfig, @$_SERVER['HTTP_X_FORWARDED_FOR']);
+                        // Construct Client Info
+                        $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->{'save-account'}[$i]->{'client-info'}, $obj_CountryConfig, @$_SERVER['HTTP_X_FORWARDED_FOR']);
 
-						//check if account already exists, and auth-token is present
-                        $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
-
-                        if($iAccountID < 0) {
-                            //account needs to be enabled
-                            $result = EndUserAccount::enableAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
-                            if($result === true){
-                                $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
-                            }
-                        }
-
-
-                        if ($iAccountID > -1) {
+                        //Auth SSO
                             if (count($obj_DOM->{'save-account'}[$i]->{'auth-token'}) == 1
                                 && (count($obj_DOM->{'save-account'}[$i]->{'auth-url'}) == 1 || strlen($obj_ClientConfig->getAuthenticationURL()) > 0)
                             ) {
@@ -164,11 +152,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     $url = (string)$obj_DOM->{'save-account'}[$i]->{'auth-url'};
                                 }
                                 if ($obj_Validator->valURL($url, $obj_ClientConfig->getAuthenticationURL()) == 10) {
-                                    $obj_CustomerInfo = CustomerInfo::produceInfo($_OBJ_DB, $iAccountID);
+                                    $obj_CustomerInfo = new CustomerInfo(0, (integer)$obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile["country-id"], $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, "", $obj_DOM->{'save-account'}[$i]->{'client-info'}["language"]);
                                     $obj_Customer = simplexml_load_string($obj_CustomerInfo->toXML());
                                     //for existing accounts
                                     if (empty($obj_Customer["customer-ref"]) === true && count($obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}) > 0) {
-                                        $obj_Customer["customer-ref"] = (string) $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'};
+                                        $obj_Customer["customer-ref"] = (string)$obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'};
                                     }
 
                                     $obj_CustomerInfo = CustomerInfo::produceInfo($obj_Customer);
@@ -176,107 +164,112 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 } else {
                                     $code = -1;
                                 }
+                            } else {
+                                $code = 10;
                             }
-                        }
 
-                        if ($code > 0)
+                        //If auth sso is successful
+                        if ($code == 10 || $code == 11)
                         {
-                            //update or create new account
-                            $code = $obj_mPoint->savePassword((float)$obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'save-account'}[$i]->password, $obj_CountryConfig);
-                            //get the account id if new account was created
-                            if($iAccountID < 0)
-                            {
-                                $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
+
+                            //check if account already exists
+                            $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
+
+                            if ($iAccountID < 0) {
+                                //account needs to be enabled
+                                $result = EndUserAccount::enableAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
+                                if ($result === true) {
+                                    $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
+                                } else {
+                                    //update or create new account -- this should never be the case as we currently have no provision to update pwd from SDK or HPP
+                                    $code = $obj_mPoint->savePassword((float)$obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, (string)$obj_DOM->{'save-account'}[$i]->password, $obj_CountryConfig);
+                                    //get the account id if new account was created
+                                    if ($iAccountID < 0) {
+                                        $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, $obj_DOM->{'save-account'}[$i]->{'client-info'}->{'customer-ref'}, $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email);
+                                    }
+                                }
                             }
-                        }
-						// New Account automatically created when Password was saved
-						if ($code == 1 && $obj_ClientConfig->smsReceiptEnabled() === true)
-						{
+
+
+                        // New Account automatically created when Password was saved
+                        if ($code == 1 && $obj_ClientConfig->smsReceiptEnabled() === true) {
 //							$obj_mPoint->sendAccountInfo(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $_SESSION['obj_TxnInfo']);
-						}
-
-
-                        if (count($obj_DOM->{'save-account'}[$i]->card) == 1 && count($obj_DOM->{'save-account'}[$i]->{'card'}->name) > 0)
-                        {
-                            $obj_mPoint->saveCardName($iAccountID, $obj_DOM->{'save-account'}[$i]->card["type-id"], (string)$obj_DOM->{'save-account'}[$i]->{'card'}->name, true);
                         }
-                        else
-                        {
+
+                        //stored card name
+                        if (count($obj_DOM->{'save-account'}[$i]->card) == 1 && count($obj_DOM->{'save-account'}[$i]->{'card'}->name) > 0) {
+                            $obj_mPoint->saveCardName($iAccountID, $obj_DOM->{'save-account'}[$i]->card["type-id"], (string)$obj_DOM->{'save-account'}[$i]->{'card'}->name, true);
+                        } else {
                             $obj_mPoint->saveCardName($iAccountID, $obj_DOM->{'save-account'}[$i]->card["type-id"], (string)$obj_DOM->{'save-account'}[$i]->card, true);
                         }
 
-						// Success: Account Information Saved
-						if ($code >= 0)
-						{
-							if (count($obj_DOM->{'save-account'}[$i]->{'first-name'}) == 1 || count($obj_DOM->{'save-account'}[$i]->{'last-name'}) == 1)
-							{
-								$obj_mPoint->saveInfo($iAccountID, (string) $obj_DOM->{'save-account'}[$i]->{'first-name'}, (string) $obj_DOM->{'save-account'}[$i]->{'last-name'});
-							}
-							if (count($obj_DOM->{'save-account'}[$i]->{'client-info'}->email) == 1)
-							{
-								$obj_mPoint->saveEmail($obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_CountryConfig);
-							}
+                        // Success: Account Information Saved
+                        if ($code >= 0) {
+                            if (count($obj_DOM->{'save-account'}[$i]->{'first-name'}) == 1 || count($obj_DOM->{'save-account'}[$i]->{'last-name'}) == 1) {
+                                $obj_mPoint->saveInfo($iAccountID, (string)$obj_DOM->{'save-account'}[$i]->{'first-name'}, (string)$obj_DOM->{'save-account'}[$i]->{'last-name'});
+                            }
+                            if (count($obj_DOM->{'save-account'}[$i]->{'client-info'}->email) == 1) {
+                                $obj_mPoint->saveEmail($obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile, $obj_DOM->{'save-account'}[$i]->{'client-info'}->email, $obj_CountryConfig);
+                            }
 
-							// Customer Data should be imported from Client System
-							if ($obj_ClientConfig->getCustomerImportURL() != "")
-							{
-								$aURL_Info = parse_url($obj_ClientConfig->getCustomerImportURL() );
-								$aHTTP_CONN_INFO["mesb"]["protocol"] = $aURL_Info["scheme"];
-								$aHTTP_CONN_INFO["mesb"]["host"] = $aURL_Info["host"];
-								$aHTTP_CONN_INFO["mesb"]["port"] = $aURL_Info["port"];
-								$aHTTP_CONN_INFO["mesb"]["path"] = $aURL_Info["path"];
-								if (array_key_exists("query", $aURL_Info) === true) { $aHTTP_CONN_INFO["mesb"]["path"] .= "?". $aURL_Info["query"]; }
-								$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
-								try
-								{
-									$obj_mPoint->import($obj_ConnInfo, $obj_ClientInfo, $iAccountID, (float) $obj_DOM->{'save-account'}[$i]->{'social-security-number'});
-								}
-								// Error: No response received from External System
-								catch (HTTPSendException $e)
-								{
-									$code = 7;
-								}
-								// Error: Unable to connect to External System
-								catch (HTTPConnectionException $e)
-								{
-									$code = 6;
-								}
-							}
-							if ($obj_mPoint->getClientConfig()->smsReceiptEnabled() === true)
-							{
-                                try
-                                {
+                            // Customer Data should be imported from Client System
+                            if ($obj_ClientConfig->getCustomerImportURL() != "") {
+                                $aURL_Info = parse_url($obj_ClientConfig->getCustomerImportURL());
+                                $aHTTP_CONN_INFO["mesb"]["protocol"] = $aURL_Info["scheme"];
+                                $aHTTP_CONN_INFO["mesb"]["host"] = $aURL_Info["host"];
+                                $aHTTP_CONN_INFO["mesb"]["port"] = $aURL_Info["port"];
+                                $aHTTP_CONN_INFO["mesb"]["path"] = $aURL_Info["path"];
+                                if (array_key_exists("query", $aURL_Info) === true) {
+                                    $aHTTP_CONN_INFO["mesb"]["path"] .= "?" . $aURL_Info["query"];
+                                }
+                                $obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["mesb"]);
+                                try {
+                                    $obj_mPoint->import($obj_ConnInfo, $obj_ClientInfo, $iAccountID, (float)$obj_DOM->{'save-account'}[$i]->{'social-security-number'});
+                                } // Error: No response received from External System
+                                catch (HTTPSendException $e) {
+                                    $code = 7;
+                                } // Error: Unable to connect to External System
+                                catch (HTTPConnectionException $e) {
+                                    $code = 6;
+                                }
+                            }
+                            if ($obj_mPoint->getClientConfig()->smsReceiptEnabled() === true) {
+                                try {
                                     // One Time Password sent
-                                    if ($obj_mPoint->sendOneTimePassword(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $iAccountID, $obj_CountryConfig, (float) $obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile) == 200)
-                                    {
-                                        $xml = '<status code="'. ($code+110) .'" eua-id="'. intval($iAccountID) .'">Account information successfully saved and OTP sent</status>';
+                                    if ($obj_mPoint->sendOneTimePassword(GoMobileConnInfo::produceConnInfo($aGM_CONN_INFO), $iAccountID, $obj_CountryConfig, (float)$obj_DOM->{'save-account'}[$i]->{'client-info'}->mobile) == 200) {
+                                        $xml = '<status code="' . ($code + 110) . '" eua-id="' . intval($iAccountID) . '">Account information successfully saved and OTP sent</status>';
                                     } else {
                                         header("HTTP/1.1 500 Internal Server Error");
                                         $xml = '<status code="91">Unable to send One Time Password</status>';
                                     }
                                 } // Error: No response received from External System
-                                catch (HTTPSendException $e)
-                                {
+                                catch (HTTPSendException $e) {
                                     header("HTTP/1.1 500 Internal Server Error");
 
                                     $xml = '<status code="91">Unable to send One Time Password</status>';
                                 } // Error: Unable to connect to External System
-                                catch (HTTPConnectionException $e)
-                                {
+                                catch (HTTPConnectionException $e) {
                                     header("HTTP/1.1 500 Internal Server Error");
 
                                     $xml = '<status code="91">Unable to send One Time Password</status>';
                                 }
-							}
-							else { $xml = '<status code="'. ($code+100) .'" eua-id="'. intval($iAccountID) .'">Account information successfully saved</status>'; }
-						}
-						else
-						{
-							header("HTTP/1.1 500 Internal Server Error");
+                            } else {
+                                $xml = '<status code="' . ($code + 100) . '" eua-id="' . intval($iAccountID) . '">Account information successfully saved</status>';
+                            }
+                        }
+                        else
+                        {
+                            header("HTTP/1.1 500 Internal Server Error");
 
-							$xml = '<status code="90">Unable to save Account information</status>';
-						}
-					}
+                            $xml = '<status code="90">Unable to save Account information</status>';
+                        }
+                        }
+                        else
+                        {
+                            header("HTTP/1.1 403 Forbidden");
+                            $xml = '<status code="38">Invalid Auth Token: ' . (string)$obj_DOM->{'save-account'}[$i]->{'auth-token'} . '</status>';
+                        }
+                    }
 					else
 					{
 						header("HTTP/1.1 400 Bad Request");
