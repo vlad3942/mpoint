@@ -33,3 +33,8 @@ CREATE INDEX external_reference_index
   USING btree
   (externalid);
 /* ==================== ADDING A NEW SCHEMA FOR LOG.EXTERNALREFERENCE_TBL ======================== */
+--ODMBE-5192
+ALTER TABLE client.client_tbl ALTER COLUMN maxamount TYPE BIGINT USING maxamount::BIGINT;
+
+--default smsrcpt to false --SGAMBE-4207
+ALTER TABLE client.client_tbl ALTER COLUMN smsrcpt SET DEFAULT FALSE ;

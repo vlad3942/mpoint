@@ -8009,3 +8009,6 @@ INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (208,50,'DKK
 
 
 
+
+--default smsrcpt to false --SGAMBE-4207
+ALTER TABLE client.client_tbl ALTER COLUMN smsrcpt SET DEFAULT FALSE ;
