@@ -107,7 +107,7 @@
 										<xs:element name="card-number" type="xs:string"	minOccurs="0" maxOccurs="1" />
 										<xs:element name="expiry-month" type="xs:string" minOccurs="0" maxOccurs="1" />
 										<xs:element name="expiry-year" type="xs:string" minOccurs="0" maxOccurs="1" />
-										<xs:element name="info-3d-secure">
+										<xs:element name="info-3d-secure" minOccurs="0" maxOccurs="1">
 											<xs:complexType>
 												<xs:sequence>
 													<xs:element name="cryptogram">
