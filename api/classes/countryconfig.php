@@ -414,11 +414,11 @@ class CountryConfig extends BasicConfig
 
 		$alpha2code = $obj_CountryConfig->getAlpha2code();
 		$alpha3code = $obj_CountryConfig->getAlpha3code();
-		if(empty($alpha2code) === false)
+		if(empty($alpha2code) === false && isset($obj_XMLDOM["alpha2code"]) === false)
 		$obj_XMLDOM->addAttribute("alpha2code", $alpha2code);
-		if(empty($alpha3code) === false)
+		if(empty($alpha3code) === false && isset($obj_XMLDOM["alpha3code"]) === false)
 		$obj_XMLDOM->addAttribute("alpha3code", $alpha3code);
-		if($obj_CountryConfig->getNumericCode() > 0)
+		if($obj_CountryConfig->getNumericCode() > 0 && isset($obj_XMLDOM["code"]) === false)
 		$obj_XMLDOM->addAttribute("code", $obj_CountryConfig->getNumericCode());
 	}
 }
