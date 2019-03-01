@@ -197,7 +197,7 @@ final class PaymentSession
         if ($stateId == null) {
             if ($this->getPendingAmount() == 0) {
 
-                $paymentAcceptStates = array(Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_WITH_VOUCHER_STATE,Constants::iPAYMENT_WITH_ACCOUNT_STATE);
+                $paymentAcceptStates = array(Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_WITH_VOUCHER_STATE);
 
                 if ($this->getTransactionStatesWithAncillary($paymentAcceptStates , $paymentAcceptStates ) == true) {
                     $stateId = Constants::iSESSION_COMPLETED;
@@ -268,7 +268,7 @@ final class PaymentSession
               FROM log" . sSCHEMA_POSTFIX . ".transaction_tbl txn 
                 INNER JOIN log" . sSCHEMA_POSTFIX . ".message_tbl msg ON txn.id = msg.txnid 
               WHERE sessionid = " . $this->_id . " 
-                AND msg.stateid in (2000,2001,2007,2008)
+                AND msg.stateid in (2000,2001,2007)
                 GROUP BY txn.id,msg.stateid";
 
                 $res = $this->_obj_Db->query($sql);

@@ -141,4 +141,16 @@ $aHTTP_CONN_INFO["alipay"]["paths"]["pay"] = "/_test/simulators/alipay/pay.php";
 $aHTTP_CONN_INFO["alipay"]["paths"]["initialize"] = "/_test/simulators/alipay/pay.php";
 $aHTTP_CONN_INFO["alipay"]["path"] = $aHTTP_CONN_INFO["alipay"]["paths"]["pay"];
 
+/**
+ * Connection info for connecting to worldpay
+ */
+$aHTTP_CONN_INFO["worldpay"]["protocol"] = "http";
+$aHTTP_CONN_INFO["worldpay"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["worldpay"]["port"] = 80;
+$aHTTP_CONN_INFO["worldpay"]["timeout"] = 120;
+$aHTTP_CONN_INFO["worldpay"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["worldpay"]["method"] = "POST";
+$aHTTP_CONN_INFO["worldpay"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["worldpay"]["paths"]["initialize"] = "/_test/simulators/wire-card/init.php";//Files are same for most of PSP
+$aHTTP_CONN_INFO["worldpay"]["paths"]["auth"] = "/_test/simulators/wire-card/auth.php";//Files are same for most of PSP
 ?>

@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+<?php
+function getEmailData($passengerData = "", $flightData = "")
+{
+    return '<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -413,4 +416,6 @@
     </tr>
 </table>
 </body>
-</html>
+</html>';
+}
+?>

@@ -7990,3 +7990,6 @@ CREATE INDEX external_reference_index
   ON log.externalreference_tbl
   USING btree
   (externalid);
+
+--default smsrcpt to false --SGAMBE-4207
+ALTER TABLE client.client_tbl ALTER COLUMN smsrcpt SET DEFAULT FALSE ;
