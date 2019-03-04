@@ -272,13 +272,13 @@ class Home extends General
 			}
 			else
 			{
-				trigger_error("Authentication Service at: ". $oCI->toURL() ." rejected authorization with HTTP Code: ". $code, E_USER_WARNING);
+				trigger_error("Authentication Service at: ". $oCI->toURL() ." rejected authorization with HTTP Code: ". $code, E_USER_NOTICE);
 				return 1;
 			}
 		}
 		catch (HTTPException $e)
 		{
-			trigger_error("Authentication Service at: ". $oCI->toURL() ." is unavailable due to ". get_class($e), E_USER_WARNING);
+			trigger_error("Authentication Service at: ". $oCI->toURL() ." is unavailable due to ". get_class($e), E_USER_NOTICE);
 			return 6;
 		}
 	}

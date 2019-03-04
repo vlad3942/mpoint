@@ -99,6 +99,8 @@ require_once(sCLASS_PATH . "/settlementFactory.php");
 require_once(sCLASS_PATH . "/ChaseSettlement.php");
 // Require specific Business logic for Amex Settlement component
 require_once(sCLASS_PATH . "/chase.php");
+// Require specific Business logic for UATP Settlement component
+require_once(sCLASS_PATH . "/UATPSettlement.php");
 ini_set('max_execution_time', 1000);
 // </editor-fold>
 
