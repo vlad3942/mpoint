@@ -153,4 +153,5 @@ $aHTTP_CONN_INFO["worldpay"]["method"] = "POST";
 $aHTTP_CONN_INFO["worldpay"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["worldpay"]["paths"]["initialize"] = "/_test/simulators/wire-card/init.php";//Files are same for most of PSP
 $aHTTP_CONN_INFO["worldpay"]["paths"]["auth"] = "/_test/simulators/wire-card/auth.php";//Files are same for most of PSP
+$aHTTP_CONN_INFO["worldpay"]["paths"]["status"] = "/_test/simulators/status.php";
 ?>
