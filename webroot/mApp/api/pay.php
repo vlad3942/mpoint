@@ -191,7 +191,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						}
 						else { $code = 10; }
 
-						if($obj_ClientConfig->getAdditionalProperties("sessiontype") > 1 ){
+						if($obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype") > 1 ){
 						    $pendingAmount = $obj_TxnInfo->getPaymentSession()->getPendingAmount();
 						    if((integer)$obj_DOM->pay[$i]->transaction->card->amount > $pendingAmount)
                             {
@@ -215,15 +215,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 								$aMsgCds[56] = "Invalid Currency:".intval($obj_DOM->pay[$i]->transaction->card->amount["currency-id"]) ;
 							}
 						}
-
-						$drEnabled = false;
+						
 						$aRoutes = array();
-						foreach ( $obj_TxnInfo->getClientConfig ()->getAdditionalProperties () as $aAdditionalProperty ) {
-							if ($aAdditionalProperty ['key'] == 'DR_SERVICE' && $aAdditionalProperty ['value'] == 'true') {
-								$drEnabled = true;
-								break;
-							}
-						}
+						$drService = $obj_TxnInfo->getClientConfig()->getAdditionalProperties (Constants::iInternalProperty, 'DR_SERVICE');
 						
 						if ($drEnabled) {
 							$_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
@@ -250,7 +244,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 						$obj_Elem = $obj_CardXML->xpath("/cards/item[@type-id = ". intval($obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ." and @state-id=1]");
 						
 						if (count($obj_Elem) == 0) { $aMsgCds[24] = "The selected payment card is not available"; } // Card disabled
-                        if (strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties("sessiontype") != 2)
+                        if (strlen($obj_ClientConfig->getSalt() ) > 0 && $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"sessiontype") != 2)
                         {
                             $obj_ClientInfo = ClientInfo::produceInfo($obj_DOM->pay[$i]->{'client-info'},
                                 CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->pay[$i]->{'client-info'}->mobile["country-id"]),
@@ -332,6 +326,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             $data['markup'] = $data['client-config']->getAccountConfig()->getMarkupLanguage();
                                         }
                                         $data['producttype'] = $obj_TxnInfo->getProductType();
+										$data['installment-value'] = (integer) $obj_DOM->pay[$i]->transaction->installment->value;
 										$oTI = TxnInfo::produceInfo($obj_TxnInfo->getID(),$_OBJ_DB, $obj_TxnInfo, $data);
 										$obj_mPoint->logTransaction($oTI);
 										//getting order config with transaction to pass to particular psp for initialize with psp for AID
@@ -366,31 +361,14 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 											break;
 										case (Constants::iWORLDPAY_PSP):
 											
-											//TODO: Need to find some global logic for handling this condition.
-											if($obj_TxnInfo->getMarkupLanguage() != "html5")
-											{
-												// Construct list of cards supported by the Payment Service Provider
-												$aCards = array();
-												foreach ($obj_CardXML->children() as $obj_XMLElem)
-												{
-													if ($obj_PSPConfig->getID() == $obj_XMLElem["pspid"]) { $aCards[] = $obj_XMLElem["type-id"]; }
-												}
-												$obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["worldpay"]);
-												if ($obj_TxnInfo->getMode() > 0) { $aHTTP_CONN_INFO["worldpay"]["host"] = str_replace("secure.", "secure-test.", $aHTTP_CONN_INFO["worldpay"]["host"]); }
-												$aMerchantAccount =  $obj_PSP->getMerchantLogin($obj_DOM->pay[$i]["client-id"], Constants::iWORLDPAY_PSP);
-												$aHTTP_CONN_INFO["worldpay"]["username"] = $aMerchantAccount["username"];
-												$aHTTP_CONN_INFO["worldpay"]["password"] = $aMerchantAccount["password"];
-												$obj_ConnInfo = HTTPConnInfo::produceConnInfo($aHTTP_CONN_INFO["worldpay"]);
-												// Redirect XML API
-												$url = $obj_PSP->initialize($obj_ConnInfo, $aMerchantAccount["username"], $obj_PSPConfig->getMerchantSubAccount(), (string) $obj_Elem->currency, $aCards);
-		
-												$url .= "&preferredPaymentMethod=". $obj_PSP->getCardName( (integer) $obj_DOM->pay[$i]->transaction->card[$j]["type-id"]) ."&language=". $obj_TxnInfo->getLanguage();
-												$xml .= '<url method="get" content-type="none">'. htmlspecialchars($url, ENT_NOQUOTES) .'</url>';
-											} else { $xml .= '<url method="html5" />'; }
-											
-											if (General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]) === true) { $obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, ""); }
-											
-											break;
+											$obj_PSP = new WorldPay($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["worldpay"]);
+                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
+
+                                            foreach ($obj_XML->children() as $obj_Elem)
+                                            {
+                                                $xml .= trim($obj_Elem->asXML() );
+                                            }
+                                            break;
 										case (Constants::iPAYEX_PSP):
 											$obj_PSP = new PayEx($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["payex"]);
 	

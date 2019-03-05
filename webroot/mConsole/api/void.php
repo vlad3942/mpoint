@@ -140,7 +140,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 													  $obj_ClientConfig->getPassword(),
 													  (integer) $obj_DOM->{'void'}->transactions[$i]->transaction[$j]["id"],
 													  trim($obj_DOM->{'void'}->transactions[$i]->transaction[$j]["order-no"]),
-													  (integer) $obj_DOM->{'void'}->transactions[$i]->transaction[$j]->amount);														  
+													  (integer) $obj_DOM->{'void'}->transactions[$i]->transaction[$j]->amount,
+                                                        $iAccountID);
 						foreach ($aMsgCodes as $code)
 						{
 							switch ($code)

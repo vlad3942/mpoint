@@ -963,14 +963,19 @@ class mConsole extends Admin
 	 * @param integTer $txnid		The unique ID of the transaction that should be captured
 	 * @param string $ono			The order number for the transaction that should be captured
 	 * @param integer $amt			The amount that should be captured for the transaction
-	 * @return array
+	 * @param integer $accountid    he unique ID of the Account of Client on whose behalf the Capture operation is being performed
+     * @return array
 	 */
-	public function capture(HTTPConnInfo $oCI, $clientid, $txnid, $ono, $amt)
+	public function capture(HTTPConnInfo $oCI, $clientid, $txnid, $ono, $amt, $accountid = -1)
 	{
 		try
 		{
 			$h = str_replace("{METHOD}", "POST", $this->constHTTPHeaders() );
 			$b = "clientid=". intval($clientid) ."&mpointid=". intval($txnid) ."&orderid=". urlencode($ono) ."&amount=". intval($amt);
+			if($accountid !== -1)
+            {
+                $b .= '&account=' .$accountid;
+            }
 			
 			$obj_Client = new HTTPClient(new Template, $oCI);
 			$obj_Client->connect();
@@ -1045,15 +1050,19 @@ class mConsole extends Admin
 	 * @param integer $txnid		The unique ID of the transaction that should be captured
 	 * @param string $ono			The order number for the transaction that should be captured
 	 * @param integer $amt			The amount that should be captured for the transaction
+     * @param integer $accountid    he unique ID of the Account of Client on whose behalf the Capture operation is being performed
 	 * @return array
 	 */
-	public function void(HTTPConnInfo $oCI, $clientid, $username, $password, $txnid, $ono, $amt)
+	public function void(HTTPConnInfo $oCI, $clientid, $username, $password, $txnid, $ono, $amt, $accountid = -1)
 	{
 		try
 		{
 			$h = str_replace("{METHOD}", "POST", $this->constHTTPHeaders() );
 			$b = "clientid=". intval($clientid) ."&username=". urlencode($username) ."&password=". urlencode($password) ."&mpointid=". intval($txnid) ."&orderid=". urlencode($ono) ."&amount=". intval($amt);			
-			
+			if($accountid !== -1)
+            {
+                $b .= '&account=' .$accountid;
+            }
 			$obj_Client = new HTTPClient(new Template, $oCI);
 			$obj_Client->connect();
 			$code = $obj_Client->send($h, $b);

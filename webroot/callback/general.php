@@ -101,6 +101,7 @@ require_once(sCLASS_PATH ."/eghl.php");
 require_once(sCLASS_PATH ."/chase.php");
 // Require specific Business logic for the Global Collect component
 require_once(sCLASS_PATH ."/globalcollect.php");
+require_once(sCLASS_PATH ."/worldpay.php");
 /**
  * Input XML format
  *
@@ -174,7 +175,7 @@ try
 	// If transaction is in Account Validated i.e 1998 state no action to be done
 
     array_push($aStateId,$iStateID);
-    $propertyValue = $obj_TxnInfo->getClientConfig()->getAdditionalProperties("3DVERIFICATION");
+    $propertyValue = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION");
 
     if($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER && $propertyValue == true && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
         if($iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
@@ -236,16 +237,14 @@ try
     if($iAccountValidation != 1)
 	{
         $saveCard = true;
-        foreach ($obj_TxnInfo->getClientConfig()->getAdditionalProperties() as $aAdditionalProperty)
+        $isMVault = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, 'mvault');
+        if ($isMVault == 'true')
         {
-            if ($aAdditionalProperty['key'] == 'mvault' && $aAdditionalProperty['value'] == 'true'){
-                $saveCard = false;
-                break;
-            }
+            $saveCard = false;
         }
 
 	// Save Ticket ID representing the End-User's stored Card Info
-	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_XML->callback->transaction->card->token) == 1 && $saveCard)
+	if ($saveCard && $iStateID == Constants::iPAYMENT_ACCEPTED_STATE && count($obj_XML->callback->transaction->card->token) == 1)
 	{
 		$obj_mPoint->delMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE);
 		$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iTICKET_CREATED_STATE, "Ticket: ". $obj_XML->callback->transaction->card->token);

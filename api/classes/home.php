@@ -272,13 +272,13 @@ class Home extends General
 			}
 			else
 			{
-				trigger_error("Authentication Service at: ". $oCI->toURL() ." rejected authorization with HTTP Code: ". $code, E_USER_WARNING);
+				trigger_error("Authentication Service at: ". $oCI->toURL() ." rejected authorization with HTTP Code: ". $code, E_USER_NOTICE);
 				return 1;
 			}
 		}
 		catch (HTTPException $e)
 		{
-			trigger_error("Authentication Service at: ". $oCI->toURL() ." is unavailable due to ". get_class($e), E_USER_WARNING);
+			trigger_error("Authentication Service at: ". $oCI->toURL() ." is unavailable due to ". get_class($e), E_USER_NOTICE);
 			return 6;
 		}
 	}
@@ -853,8 +853,8 @@ class Home extends General
                 $aStatusMessagesXML[intval($aStatus[2])] = '<status-message id = "'.$aStatus[0].'" position = "'.$aStatus[2] .'">' . $aStatus[1] . '</status-message>';
             }
 
-            $sessionType = $obj_ClientConfig->getAdditionalProperties("sessiontype");
-            $googleAnalyticsId = $obj_ClientConfig->getAdditionalProperties("googleAnalyticsId");
+            $sessionType = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype");
+            $googleAnalyticsId = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"googleAnalyticsId");
             $xml = '<transaction id="' . $RS["ID"] . '" mpoint-id="' . $RS["MPOINTID"] . '" order-no="' . $RS["ORDERID"] . '" accoutid="' . $RS['END_USER_ID'] . '" clientid="' . $RS['CLIENTID'] . '" language="' . $RS['LANG'] . '"  card-id="' . $RS["CARDID"] . '" session-id="' . $RS["SESSIONID"] . '" session-type="' . $sessionType . '">';
             $xml .= '<amount country-id="' . $RS["COUNTRYID"] . '" currency="' . $RS['CURRENCYID'] . '" symbol="' . utf8_encode($RS['SYMBOL']) . '" format="' . $RS['PRICEFORMAT'] . '" pending = "' . $pendingAmount . '"  currency-code = "' . $obj_currencyConfig->getCode() . '" >' . htmlspecialchars($amount, ENT_NOQUOTES) . '</amount>';
             $xml .= '<accept-url>' . htmlspecialchars($RS["ACCEPTURL"], ENT_NOQUOTES) . '</accept-url>';

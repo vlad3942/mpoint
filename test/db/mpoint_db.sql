@@ -7716,6 +7716,15 @@ INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) SELECT 208, 30, 'DK
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 8, 30;
 INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 2, 30;
 
+
+INSERT INTO System.PSP_Tbl (id, name, system_type) VALUES (14, 'Apple Pay', 3);
+INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) SELECT 208, 14, 'DKK';
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 8, 14;
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 2, 14;
+
+INSERT INTO System.card_Tbl (id, name, position, paymenttype) VALUES (15, 'Apple Pay', 13, 3);
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) SELECT 15, 18;
+
 -- country calling code
 ALTER TABLE system.country_tbl ADD country_calling_code INTEGER NULL;
 update system.country_tbl set country_calling_code=297 where alpha3code='ABW';
@@ -7918,6 +7927,86 @@ INSERT INTO log.state_tbl (id, name, module) VALUES (20104, 'Payment rejected. T
 
 -- URL where the customer may be redirected if txn fails.
 ALTER TABLE Log.Transaction_Tbl ADD declineurl VARCHAR(255);
+
+
+ALTER TABLE system.psp_tbl ADD installment INT DEFAULT 0 NOT NULL;
+
+COMMENT ON COLUMN system.psp_tbl.installment
+IS
+'Default 0 - No installment option
+1 - Offline Installment';
+
+
+ALTER TABLE client.client_tbl ADD installment INT DEFAULT 0 NULL;
+COMMENT ON COLUMN client.client_tbl.installment IS 'Default to 0 installment not enabled
+1 - offline Installments';
+
+
+ALTER TABLE client.client_tbl ADD max_installments INT DEFAULT 0 NULL;
+COMMENT ON COLUMN client.client_tbl.max_installments IS 'Max number of installments allowed,
+Usually set by Acq';
+
+ALTER TABLE client.client_tbl ADD installment_frequency INT DEFAULT 0 NULL;
+COMMENT ON COLUMN client.client_tbl.installment_frequency IS 'defines the time frame for installment,
+like 1- monthly, 3 - quarterly, 6 - semiannual.
+For merchant financed is usually monthly ';
+
+ALTER TABLE log.transaction_tbl ADD installment_value INT DEFAULT 0 NULL;
+COMMENT ON COLUMN log.transaction_tbl.installment_value IS 'Installment value is the number of installments selected by the user';
+
+-- CMP-2807
+alter table client.additionalproperty_tbl
+	add scope int default 0;
+
+comment on column client.additionalproperty_tbl.scope is 'Scope of properties
+0 - Internal
+1 - Private
+2 - Public';
+
+update client.additionalproperty_tbl set scope = 2;
+
+/* ==================== ADDING WALLET ID IN THE LOG.TRANSACTION_TBL START ==================== */
+ALTER TABLE Log.Transaction_Tbl ADD COLUMN walletid integer DEFAULT NULL;
+/* ==================== ADDING WALLET ID IN THE LOG.TRANSACTION_TBL END ==================== */
+
+
+/* ==================== ADDING A NEW SCHEMA FOR LOG.EXTERNALREFERENCE_TBL ======================== */
+CREATE TABLE log.externalreference_tbl
+(
+  id serial NOT NULL,
+  txnid integer NOT NULL,
+  externalid bigint NOT NULL,
+  pspid integer NOT NULL,
+  created timestamp without time zone DEFAULT now(),
+  modified timestamp without time zone DEFAULT now(),
+  enabled boolean DEFAULT true,
+  CONSTRAINT externalreference_pk PRIMARY KEY (id),
+  CONSTRAINT externalref2txn_fk FOREIGN KEY (txnid)
+      REFERENCES log.transaction_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT externalref2psp_fk FOREIGN KEY (pspid)
+      REFERENCES system.psp_tbl (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE log.message_tbl
+  OWNER TO postgres;
+
+
+CREATE INDEX external_reference_index
+  ON log.externalreference_tbl
+  USING btree
+  (externalid);
+
+INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (50, 'UATP CardAccount',8);
+INSERT INTO System.PSPCard_Tbl (cardid, pspid) VALUES (15, 50); /*With Apple-Pay*/
+
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (208,50,'DKK');
+
+INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2030 , 'Tokenization complete - Virtual card created', 'Authorization', true);
+INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2031 , 'Tokenization Failed', 'Authorization', true);
 
 --default smsrcpt to false --SGAMBE-4207
 ALTER TABLE client.client_tbl ALTER COLUMN smsrcpt SET DEFAULT FALSE ;

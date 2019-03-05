@@ -148,7 +148,7 @@ try
 	// If transaction is in Account Validated i.e 1998 state no action to be done
 
     array_push($aStateId,$iStateID);
-    $propertyValue = $obj_TxnInfo->getClientConfig()->getAdditionalProperties("3DVERIFICATION");
+    $propertyValue = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, '3DVERIFICATION');
     //Log the incoming status code.
     $obj_mPoint->newMessage($obj_TxnInfo->getID(), $iStateID, $sRawXML);
     if($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER && $propertyValue == true && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {

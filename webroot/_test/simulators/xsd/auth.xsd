@@ -94,6 +94,7 @@
 									<xs:attribute type="xs:integer" name="product-type"/>
 									<xs:attribute type="xs:positiveInteger" name="psp-id"/>
 									<xs:attribute type="xs:integer" name="card-id"/>
+									<xs:attribute type="xs:integer" name="wallet-id"/>
 									<xs:attribute type="xs:string" name="external-id"/>
 									<xs:attribute name="store-card" type="xs:boolean" use="optional" default="false" />
 								</xs:complexType>
@@ -106,9 +107,25 @@
 										<xs:element name="card-number" type="xs:string"	minOccurs="0" maxOccurs="1" />
 										<xs:element name="expiry-month" type="xs:string" minOccurs="0" maxOccurs="1" />
 										<xs:element name="expiry-year" type="xs:string" minOccurs="0" maxOccurs="1" />
+										<xs:element name="info-3d-secure" minOccurs="0" maxOccurs="1">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="cryptogram" minOccurs="0" maxOccurs="1">
+														<xs:complexType>
+															<xs:simpleContent>
+																<xs:extension base="xs:string">
+																	<xs:attribute type="xs:string" name="algorithm-id"/>
+																	<xs:attribute type="xs:byte" name="eci"/>
+																	<xs:attribute type="xs:string" name="type"/>
+																</xs:extension>
+															</xs:simpleContent>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
 										<xs:element name="cvc" type="xs:string" minOccurs="0" maxOccurs="1" />
 										<xs:element name="masked_account_number" type="xs:string" minOccurs="0" maxOccurs="1" />
-										<xs:element type="xs:string" name="info-3d-secure" minOccurs="0" maxOccurs="1" />
 										<xs:element name="token" type="xs:string" minOccurs="0" maxOccurs="1" />
 									</xs:all>
 									<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />

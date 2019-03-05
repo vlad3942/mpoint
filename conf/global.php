@@ -167,15 +167,19 @@ $aHTTP_CONN_INFO["dibs"]["paths"]["status"] = "/transstatus.pml";
 /**
  * Connection info for connecting to WorldPay
  */
-$aHTTP_CONN_INFO["worldpay"]["protocol"] = "https";
-$aHTTP_CONN_INFO["worldpay"]["host"] = "secure.wp3.rbsworldpay.com";
-$aHTTP_CONN_INFO["worldpay"]["port"] = 443;
-$aHTTP_CONN_INFO["worldpay"]["timeout"] = 120;
-$aHTTP_CONN_INFO["worldpay"]["path"] = "/jsp/merchant/xml/paymentService.jsp";
-$aHTTP_CONN_INFO["worldpay"]["method"] = "POST";
+$aHTTP_CONN_INFO["worldpay"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["worldpay"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["worldpay"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["worldpay"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["worldpay"]["path"] =""; // Set by calling class
+$aHTTP_CONN_INFO["worldpay"]["method"] =  $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["worldpay"]["contenttype"] = "text/xml";
-//$aHTTP_CONN_INFO["worldpay"]["username"] = "";	// Set from the Client Configuration 
-$aHTTP_CONN_INFO["worldpay"]["password"] = "hspzr735abl";
+$aHTTP_CONN_INFO["worldpay"]["paths"]["initialize"] = "/mpoint/worldpay/initialize";
+$aHTTP_CONN_INFO["worldpay"]["paths"]["auth"] = "/mpoint/worldpay/authorize-payment";
+$aHTTP_CONN_INFO["worldpay"]["paths"]["capture"] = "/mpoint/worldpay/capture";
+$aHTTP_CONN_INFO["worldpay"]["paths"]["status"] = "/mpoint/worldpay/status";
+$aHTTP_CONN_INFO["worldpay"]["paths"]["cancel"] = "/mpoint/worldpay/cancel";
+$aHTTP_CONN_INFO["worldpay"]["paths"]["refund"] = "/mpoint/worldpay/refund";
 
 /**
  * Connection info for connecting to PayEx
@@ -830,6 +834,7 @@ $aHTTP_CONN_INFO["uatp"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["uatp"]["paths"]["auth"] = "/mpsp/uatp/authorize-payment";
 $aHTTP_CONN_INFO["uatp"]["paths"]["initialize"] = "/mpsp/uatp/initialize";
 $aHTTP_CONN_INFO["uatp"]["paths"]["tokenize"] = "/mpoint/uatp/generate-suvtp";
+$aHTTP_CONN_INFO["uatp"]["paths"]["process-settlement"] = "/mpsp/uatp/bulk-settlement";
 
 
 /**

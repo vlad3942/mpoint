@@ -127,6 +127,18 @@ $aHTTP_CONN_INFO["visa-checkout"]["paths"]["pay"] = "/_test/simulators/visacheck
 $aHTTP_CONN_INFO["visa-checkout"]["paths"]["initialize"] = "/_test/simulators/visacheckout/pay.php";
 $aHTTP_CONN_INFO["visa-checkout"]["path"] = $aHTTP_CONN_INFO["visa-checkout"]["paths"]["pay"];
 
+/**
+ * Connection info for connecting to ApplePay
+ */
+$aHTTP_CONN_INFO["apple-pay"]["protocol"] = "http";
+$aHTTP_CONN_INFO["apple-pay"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["apple-pay"]["port"] = 80;
+$aHTTP_CONN_INFO["apple-pay"]["timeout"] = 120;
+$aHTTP_CONN_INFO["apple-pay"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["apple-pay"]["paths"]["get-payment-data"] = "/_test/simulators/applepay/get-payment-data.php";
+$aHTTP_CONN_INFO["apple-pay"]["paths"]["pay"] = "/_test/simulators/applepay/pay.php";
+$aHTTP_CONN_INFO["apple-pay"]["paths"]["initialize"] = "/_test/simulators/applepay/pay.php";
+$aHTTP_CONN_INFO["apple-pay"]["path"] = $aHTTP_CONN_INFO["apple-pay"]["paths"]["pay"];
 
 /**
  * Connection info for connecting to DataCash
@@ -140,5 +152,27 @@ $aHTTP_CONN_INFO["alipay"]["paths"]["auth"] = "/_test/simulators/alipay/auth.php
 $aHTTP_CONN_INFO["alipay"]["paths"]["pay"] = "/_test/simulators/alipay/pay.php";
 $aHTTP_CONN_INFO["alipay"]["paths"]["initialize"] = "/_test/simulators/alipay/pay.php";
 $aHTTP_CONN_INFO["alipay"]["path"] = $aHTTP_CONN_INFO["alipay"]["paths"]["pay"];
+
+/**
+ * Connection info for connecting to worldpay
+ */
+$aHTTP_CONN_INFO["worldpay"]["protocol"] = "http";
+$aHTTP_CONN_INFO["worldpay"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["worldpay"]["port"] = 80;
+$aHTTP_CONN_INFO["worldpay"]["timeout"] = 120;
+$aHTTP_CONN_INFO["worldpay"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["worldpay"]["method"] = "POST";
+$aHTTP_CONN_INFO["worldpay"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["worldpay"]["paths"]["initialize"] = "/_test/simulators/wire-card/init.php";//Files are same for most of PSP
+$aHTTP_CONN_INFO["worldpay"]["paths"]["auth"] = "/_test/simulators/wire-card/auth.php";//Files are same for most of PSP
+/**
+ * Connection info for connecting to UATP
+ */
+$aHTTP_CONN_INFO["uatp"]["protocol"] = "http";
+$aHTTP_CONN_INFO["uatp"]["host"] = "mpoint.local.cellpointmobile.com";
+$aHTTP_CONN_INFO["uatp"]["port"] = 80;
+$aHTTP_CONN_INFO["uatp"]["timeout"] = 120;
+$aHTTP_CONN_INFO["uatp"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["uatp"]["paths"]["tokenize"] = "/_test/simulators/uatp/generate-suvtp.php";
 
 ?>

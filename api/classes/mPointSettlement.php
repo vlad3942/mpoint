@@ -15,9 +15,9 @@ abstract class mPointSettlement
 
     protected $_iClientId = NULL;
 
-    private $_objClientConfig = NULL;
+    protected $_objClientConfig = NULL;
 
-    private $_objPspConfig = NULL;
+    protected $_objPspConfig = NULL;
 
     protected $_objConnectionInfo = NULL;
 
@@ -71,12 +71,12 @@ abstract class mPointSettlement
         return $aAccounts;
     }
 
-    private function _getClientConfiguration($_OBJ_DB)
+    protected function _getClientConfiguration($_OBJ_DB)
     {
         $this->_objClientConfig = ClientConfig::produceConfig($_OBJ_DB, $this->_iClientId);
     }
 
-    private function _getPSPConfiguration($_OBJ_DB)
+    protected function _getPSPConfiguration($_OBJ_DB)
     {
         $accountIds = $this->_getAccountIds($_OBJ_DB);
         $this->_iAccountId =$accountIds[0];
@@ -209,9 +209,9 @@ abstract class mPointSettlement
                 $this->_getPSPConfiguration($_OBJ_DB);
             }
             $requestBody = '<?xml version="1.0" encoding="UTF-8"?><root><settlement>';
-            $requestBody .= $this->_objClientConfig->toXML();
+            $requestBody .= $this->_objClientConfig->toXML(Constants::iPrivateProperty);
             $requestBody .= $this->_toSettlementInfoXML();
-            $requestBody .= $this->_objPspConfig->toXML();
+            $requestBody .= $this->_objPspConfig->toXML(Constants::iPrivateProperty);
             $requestBody .= $this->_sTransactionXML;
             $requestBody .= '</settlement></root>';
 
@@ -379,8 +379,8 @@ abstract class mPointSettlement
                 $this->_getPSPConfiguration($_OBJ_DB);
             }
             $requestBody = '<?xml version="1.0" encoding="UTF-8"?><root><process-settlement>';
-            $requestBody .= $this->_objClientConfig->toXML();
-            $requestBody .= $this->_objPspConfig->toXML();
+            $requestBody .= $this->_objClientConfig->toXML(Constants::iPrivateProperty);
+            $requestBody .= $this->_objPspConfig->toXML(Constants::iPrivateProperty);
             $requestBody .= $this->_getSettlementInProgress($_OBJ_DB);
             $requestBody .= '</process-settlement></root>';
 
@@ -412,4 +412,6 @@ abstract class mPointSettlement
             return $e->getCode();
         }
     }
+
+    public function createBulkSettlementEntry($_OBJ_DB){}
 }
