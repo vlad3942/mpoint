@@ -68,7 +68,6 @@ class GetStatusAPITest extends baseAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tusername', 'Tpassword'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
 
-        echo $sReplyBody;
         $this->bIgnoreErrors = true;
         $this->assertEquals(200, $iStatus);
         $this->assertContains('state-id="2000', $sReplyBody);
@@ -101,7 +100,6 @@ class GetStatusAPITest extends baseAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tusername', 'Tpassword'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
 
-        echo $sReplyBody;
         $this->bIgnoreErrors = true;
         $this->assertEquals(200, $iStatus);
         $this->assertContains('state-id="2002', $sReplyBody);
@@ -133,7 +131,6 @@ class GetStatusAPITest extends baseAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tusername', 'Tpassword'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
 
-        echo $sReplyBody;
         $this->bIgnoreErrors = true;
         $this->assertEquals(200, $iStatus);
         $this->assertContains('state-id="2001', $sReplyBody);
