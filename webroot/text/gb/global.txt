@@ -1587,7 +1587,7 @@ msgstr @@@ Thank you for using mPoint, you've been charged {PRICE} through your 
 msgid @@@ Stored Cards @@@
 msgstr @@@ Use Stored Card @@@
 
-#: /api/classes/credit_card.php:139
+#: /api/classes/credit_card.php:131
 msgid @@@ My Account @@@
 msgstr @@@ My Account @@@
 

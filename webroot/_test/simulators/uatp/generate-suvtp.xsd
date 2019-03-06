@@ -1,0 +1,149 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="root">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="tokenize">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="psp-config">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element type="xs:string" name="name"/>
+										<xs:element type="xs:string" name="merchant-account"/>
+										<xs:element type="xs:byte" name="merchant-sub-account"/>
+										<xs:element type="xs:string" name="username"/>
+										<xs:element type="xs:string" name="password"/>
+										<xs:element type="xs:string" name="messages"/>
+										<xs:element type="xs:string" name="additional-config"/>
+									</xs:sequence>
+									<xs:attribute type="xs:byte" name="id"/>
+									<xs:attribute type="xs:byte" name="type"/>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="transaction" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:all>
+										<xs:element name="captured-amount" type="amount"/>
+										<xs:element name="authorized-amount" type="amount"/>
+										<xs:element name="fee" type="amount"/>
+										<xs:element name="price" type="xs:string"/>
+										<xs:element name="points" type="amount"/>
+										<xs:element name="reward" type="amount"/>
+										<xs:element name="refund" type="amount"/>
+										<xs:element name="orderid" type="xs:string"/>
+										<xs:element name="mobile">
+											<xs:complexType>
+												<xs:simpleContent>
+													<xs:extension base="xs:string">
+														<xs:attribute name="country-id" type="xs:integer"/>
+														<xs:attribute name="country-code" type="xs:integer"/>
+													</xs:extension>
+												</xs:simpleContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="operator" type="xs:integer"/>
+										<xs:element name="email" type="xs:string"/>
+										<xs:element name="device-id" type="xs:string"/>
+										<xs:element name="logo" type="logo"/>
+										<xs:element name="css-url" type="xs:string"/>
+										<xs:element name="accept-url" type="xs:string"/>
+										<xs:element name="decline-url" type="xs:string"/>
+										<xs:element name="cancel-url" type="xs:string"/>
+										<xs:element name="callback-url" type="xs:string"/>
+										<xs:element name="icon-url" type="xs:string"/>
+										<xs:element name="auth-url" type="xs:string"/>
+										<xs:element name="auto-capture" type="xs:boolean"/>
+										<xs:element name="auto-store-card" type="xs:boolean"/>
+										<xs:element name="markup-language" type="xs:string"/>
+										<xs:element name="customer-ref" type="xs:string"/>
+										<xs:element name="description" type="xs:string"/>
+										<xs:element name="ip" type="xs:string"/>
+										<xs:element name="hmac" type="xs:string"/>
+										<xs:element name="created-date" type="xs:string"/>
+										<xs:element name="created-time" type="xs:string"/>
+										<xs:element name="token" type="xs:string" minOccurs="0"/>
+										<xs:element name="card-mask" type="xs:string" minOccurs="0"/>
+										<xs:element name="expiry" type="xs:string" minOccurs="0"/>
+										<xs:element name="approval-code" type="xs:string" minOccurs="0"/>
+										<xs:element name="action-code" type="xs:string" minOccurs="0"/>
+										<xs:element name="auth-original-data" type="xs:string" minOccurs="0"/>
+										<xs:element name="language" type="xs:string"/>
+									</xs:all>
+									<xs:attribute type="xs:positiveInteger" name="id"/>
+									<xs:attribute type="xs:positiveInteger" name="type"/>
+									<xs:attribute type="xs:integer" name="gmid"/>
+									<xs:attribute type="xs:integer" name="attempt"/>
+									<xs:attribute type="xs:integer" name="mode"/>
+									<xs:attribute type="xs:integer" name="eua-id"/>
+									<xs:attribute type="xs:integer" name="product-type"/>
+									<xs:attribute type="xs:positiveInteger" name="psp-id"/>
+									<xs:attribute type="xs:integer" name="card-id" use="optional"/>
+									<xs:attribute type="xs:integer" name="wallet-id" use="optional"/>
+									<xs:attribute type="xs:string" name="external-id"/>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="card">
+								<xs:complexType>
+									<xs:all>
+										<xs:element type="xs:string" name="card-holder-name" minOccurs="0" maxOccurs="1" />
+										<xs:element type="xs:string" name="masked_account_number" minOccurs="0" maxOccurs="1" />
+										<xs:element type="xs:long" name="card-number" minOccurs="0" maxOccurs="1" />
+										<xs:element type="xs:byte" name="expiry-month" minOccurs="0" maxOccurs="1" />
+										<xs:element type="xs:short" name="expiry-year" minOccurs="0" maxOccurs="1" />
+										<xs:element name="info-3d-secure">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="cryptogram">
+														<xs:complexType>
+															<xs:simpleContent>
+																<xs:extension base="xs:string">
+																	<xs:attribute type="xs:string" name="algorithm-id"/>
+																	<xs:attribute type="xs:byte" name="eci"/>
+																	<xs:attribute type="xs:string" name="type"/>
+																</xs:extension>
+															</xs:simpleContent>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element type="xs:string" name="token" minOccurs="0" maxOccurs="1" />
+									</xs:all>
+									<xs:attribute type="xs:byte" name="type-id"/>
+								</xs:complexType>
+							</xs:element>
+							<xs:any maxOccurs="1" processContents="skip"/>
+						</xs:sequence>
+						<xs:attribute type="xs:integer" name="client-id"/>
+						<xs:attribute type="xs:integer" name="account"/>
+						<xs:attribute name="store-card" type="xs:boolean" use="optional" default="false" />
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="amount">
+		<xs:simpleContent>
+			<xs:extension base="xs:integer">
+				<xs:attribute name="country-id" type="xs:integer"/>
+				<xs:attribute name="currency" type="xs:string"/>
+				<xs:attribute name="symbol" type="xs:string"/>
+				<xs:attribute name="format" type="xs:string"/>
+				<xs:attribute name="code" type="xs:string"/>
+				<xs:attribute name="alpha3code" type="xs:string"/>
+				<xs:attribute name="alpha2code" type="xs:string"/>
+				<xs:attribute name="currency-id" type="xs:string"/>
+				<xs:attribute name="decimals" type="xs:positiveInteger"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="logo">
+		<xs:sequence>
+			<xs:element name="url" type="xs:string"/>
+			<xs:element name="width" type="xs:string"/>
+			<xs:element name="height" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

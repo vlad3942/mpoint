@@ -332,8 +332,8 @@ class CountryConfig extends BasicConfig
 		$xml .= '<currency symbol="'. $this->_sSymbol .'">'. $this->_sCurrency .'</currency>';
 		$xml .= '<max-balance>'. $this->_iMaxBalance .'</max-balance>';
 		$xml .= '<min-transfer>'. $this->_iMinTransfer .'</min-transfer>';
-		$xml .= '<min-mobile>'. $this->_sMaxMobile .'</min-mobile>';
-		$xml .= '<max-mobile>'. $this->_sMinMobile .'</max-mobile>';
+		$xml .= '<min-mobile>'. $this->_sMinMobile .'</min-mobile>';
+		$xml .= '<max-mobile>'. $this->_sMaxMobile .'</max-mobile>';
 		$xml .= '<channel>'. $this->_sChannel .'</channel>';
 		$xml .= '<price-format>'. $this->_sPriceFormat .'</price-format>';
 		$xml .= '<num-decimals>'. $this->_iNumDecimals .'</num-decimals>';
@@ -414,11 +414,11 @@ class CountryConfig extends BasicConfig
 
 		$alpha2code = $obj_CountryConfig->getAlpha2code();
 		$alpha3code = $obj_CountryConfig->getAlpha3code();
-		if(empty($alpha2code) === false)
+		if(empty($alpha2code) === false && isset($obj_XMLDOM["alpha2code"]) === false)
 		$obj_XMLDOM->addAttribute("alpha2code", $alpha2code);
-		if(empty($alpha3code) === false)
+		if(empty($alpha3code) === false && isset($obj_XMLDOM["alpha3code"]) === false)
 		$obj_XMLDOM->addAttribute("alpha3code", $alpha3code);
-		if($obj_CountryConfig->getNumericCode() > 0)
+		if($obj_CountryConfig->getNumericCode() > 0 && isset($obj_XMLDOM["code"]) === false)
 		$obj_XMLDOM->addAttribute("code", $obj_CountryConfig->getNumericCode());
 	}
 }
