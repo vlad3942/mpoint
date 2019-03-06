@@ -9,6 +9,7 @@ class GetStatusAPITest extends baseAPITest
 
 	public function __construct()
 	{
+        $this->bIgnoreErrors = true;
 		$this->constHTTPClient();
 	}
 
@@ -56,7 +57,7 @@ class GetStatusAPITest extends baseAPITest
 		$this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
 		$this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (113, 17, $pspID)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '1513-2001', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, created, enabled, keywordid, fee, currencyid, sessionid) VALUES (1001001, 100, 113, 1100, 100, $pspID, '1512', '1513-2001', '". $sCallbackURL. "', 5000, '127.0.0.1', '". $sCreated ."', TRUE, 1, 50, 208, 1)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, created, enabled, keywordid, fee, currencyid, sessionid) VALUES (1001001, 100, 113, 1100, 100, $pspID, '1512', '1513-2001', '', 5000, '127.0.0.1', '". $sCreated ."', TRUE, 1, 50, 208, 1)");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iINPUT_VALID_STATE. ")");
 		$this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001001, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE. ")");
 
@@ -68,8 +69,7 @@ class GetStatusAPITest extends baseAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tusername', 'Tpassword'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
 
-        echo $sReplyBody;
-        $this->bIgnoreErrors = true;
+
         $this->assertEquals(200, $iStatus);
         $this->assertContains('state-id="2000', $sReplyBody);
 
@@ -89,7 +89,7 @@ class GetStatusAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (113, 17, $pspID)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '1513-2001', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, created, enabled, keywordid, fee, currencyid, sessionid) VALUES (1001004, 100, 113, 1100, 100, $pspID, '1512', '1513-2001', '". $sCallbackURL. "', 5000, '127.0.0.1', '". $sCreated ."', TRUE, 1, 50, 208, 1)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, created, enabled, keywordid, fee, currencyid, sessionid) VALUES (1001004, 100, 113, 1100, 100, $pspID, '1512', '1513-2001', '', 5000, '127.0.0.1', '". $sCreated ."', TRUE, 1, 50, 208, 1)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001004, ". Constants::iINPUT_VALID_STATE. ")");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001004, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE. ")");
 
@@ -101,8 +101,6 @@ class GetStatusAPITest extends baseAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tusername', 'Tpassword'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
 
-        echo $sReplyBody;
-        $this->bIgnoreErrors = true;
         $this->assertEquals(200, $iStatus);
         $this->assertContains('state-id="2002', $sReplyBody);
 	}
@@ -110,7 +108,7 @@ class GetStatusAPITest extends baseAPITest
     public function testGetStatusForCapturedTransaction()
     {
         $pspID = Constants::iWORLDPAY_PSP;
-        $sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
+        //$sCallbackURL = $this->_aMPOINT_CONN_INFO["protocol"] ."://". $this->_aMPOINT_CONN_INFO["host"]. "/_test/simulators/mticket/callback.php";
         $sCreated = date("Y-m-d H:i:s", time()-3600*10); //Now -10 hours
 
         $this->queryDB("INSERT INTO Client.Client_Tbl (id, flowid, countryid, name, username, passwd) VALUES (113, 1, 100, 'Test Client', 'Tusername', 'Tpassword')");
@@ -121,7 +119,7 @@ class GetStatusAPITest extends baseAPITest
         $this->queryDB("INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (1100, $pspID, '-1')");
         $this->queryDB("INSERT INTO Client.CardAccess_Tbl (clientid, cardid, pspid) VALUES (113, 17, $pspID)");
         $this->queryDB("INSERT INTO log.session_tbl (id, clientid, accountid, currencyid, countryid, stateid, orderid, amount, mobile, deviceid, ipaddress, externalid, sessiontypeid) VALUES (1, 113, 1100, 208, 100, 4001, '1513-2001', 5000, 9876543210, '', '127.0.0.1', -1, 1);");
-        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, created, enabled, keywordid, fee, currencyid, sessionid) VALUES (1001002, 100, 113, 1100, 100, $pspID, '1512', '1513-2001', '". $sCallbackURL. "', 5000, '127.0.0.1', '". $sCreated ."', TRUE, 1, 50, 208, 1)");
+        $this->queryDB("INSERT INTO Log.Transaction_Tbl (id, typeid, clientid, accountid, countryid, pspid, extid, orderid, callbackurl, amount, ip, created, enabled, keywordid, fee, currencyid, sessionid) VALUES (1001002, 100, 113, 1100, 100, $pspID, '1512', '1513-2001', '', 5000, '127.0.0.1', '". $sCreated ."', TRUE, 1, 50, 208, 1)");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iINPUT_VALID_STATE. ")");
         $this->queryDB("INSERT INTO Log.Message_Tbl (txnid, stateid) VALUES (1001002, ". Constants::iPAYMENT_INIT_WITH_PSP_STATE. ")");
 
@@ -133,8 +131,6 @@ class GetStatusAPITest extends baseAPITest
         $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tusername', 'Tpassword'), $xml);
         $sReplyBody = $this->_httpClient->getReplyBody();
 
-        echo $sReplyBody;
-        $this->bIgnoreErrors = true;
         $this->assertEquals(200, $iStatus);
         $this->assertContains('state-id="2001', $sReplyBody);
     }
