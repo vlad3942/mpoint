@@ -1463,43 +1463,65 @@ class Validate extends ValidateBase
      * @param    integer $number       Card number
      * @return   integer
      */
-    public function valCardNumber($number)
+    public function valCardNumber(RDB &$oDB, $typeId, $number)
     {
     	
     	$code = 0;
     	
     	if (empty($number) === true) { $code = 1; }    	
-    	else {
-    	   		settype($number, 'string');	    	
-	    		
-    	   		$number = preg_replace("/[^0-9]/", "", $number);
-    	   		
-	    		if(strlen($number) < 13) { $code = 2; }
-	    		else if(strlen($number) > 16) { $code = 3; }
-	    		else
-	    		{
-	    			$checksum = 0;
-	    			for ($i=(2-(strlen($number) % 2)); $i<=strlen($number); $i+=2) 
-	    			{
-	    				$checksum += (int) ($number{$i-1});
-	    			}
+    	else
+        {
+            $number = (string)$number;
 
-	    			for ($i=(strlen($number)% 2) + 1; $i<strlen($number); $i+=2) 
-	    			{
-	    				$digit = (int) ($number{$i-1}) * 2;
-	    				if ($digit < 10) 
-	    				{
-	    					$checksum += $digit;
-	    				} 
-	    				else { $checksum += ($digit-9); }
-	    			}
-	    			
-	    			if (($checksum % 10) == 0) 
-	    			{
-	    				$code = 10;
-	    			} else { $code = 4; }
-	    		}
-	    	}
+            $minLength = 13;
+            $maxLength = 16;
+
+            try
+            {
+                $sql = 'SELECT minlength, maxlength
+                        FROM System' . sSCHEMA_POSTFIX . '.Card_Tbl
+                        WHERE id = ' . (int)$typeId;
+                $RS = $oDB->getName($sql);
+
+                if (is_array($RS) === true)
+                {
+                    $minLength = (int)$RS['MINLENGTH'];
+                    $maxLength = (int)$RS['MAXLENGTH'];
+                }
+            }
+            catch (Exception $exception)
+            {
+
+            }
+
+            $number = preg_replace("/[^0-9]/", "", $number);
+            $cardLength = strlen($number);
+            if(strlen($number) < $minLength) { $code = 2; }
+            else if(strlen($number) > $maxLength) { $code = 3; }
+            else
+            {
+                $checksum = 0;
+                for ($i=(2-(strlen($number) % 2)); $i<=$cardLength; $i+=2)
+                {
+                    $checksum += (int) ($number{$i-1});
+                }
+
+                for ($i=(strlen($number)% 2) + 1; $i<$cardLength; $i+=2)
+                {
+                    $digit = (int) ($number{$i-1}) * 2;
+                    if ($digit < 10)
+                    {
+                        $checksum += $digit;
+                    }
+                    else { $checksum += ($digit-9); }
+                }
+
+                if (($checksum % 10) == 0)
+                {
+                    $code = 10;
+                } else { $code = 4; }
+            }
+        }
    	
     	return $code;
     }
