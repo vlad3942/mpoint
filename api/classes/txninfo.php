@@ -1654,10 +1654,10 @@ class TxnInfo
             $resultSet = $obj_DB->getName($query);
             if (is_array($resultSet) === true)
             {
-                $stateid = $resultSet['stateid'];
+                $stateid = $resultSet['STATEID'];
                 if($stateid !== null && $stateid !== '')
                 {
-                    $stateId = $stateId;
+                    $stateId = $stateid;
                 }
             }
 
