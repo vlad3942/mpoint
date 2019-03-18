@@ -881,12 +881,8 @@ $aHTTP_CONN_INFO["payu"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["payu"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["payu"]["paths"]["initialize"] = "/mpoint/payu/initialize";
 $aHTTP_CONN_INFO["payu"]["paths"]["auth"] = "/mpoint/payu/authorize-payment";
-//$aHTTP_CONN_INFO["payu"]["paths"]["capture"] = "/mpoint/payu/capture";
-//$aHTTP_CONN_INFO["payu"]["paths"]["status"] = "/mpoint/payu/status";
 $aHTTP_CONN_INFO["payu"]["paths"]["refund"] = "/mpoint/payu/refund";
 $aHTTP_CONN_INFO["payu"]["paths"]["callback"] = "/mpoint/payu/callback";
-//$aHTTP_CONN_INFO["payu"]["paths"]["cancel"] = "/mpoint/payu/cancel";
-
 
 /**
  * GoMobile Connection Info.
