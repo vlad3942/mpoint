@@ -49,5 +49,47 @@ INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (18, 41);
 /* ========== CONFIGURATION FOR GOOGLE PAY - END ========== */
 
 -- PAYU Integration --
+INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (53, 'PayU',1);
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (53, 1);	-- American Express
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (53, 3);	-- Diners Club
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (53, 7);	-- MasterCard
+INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (53, 8);	-- VISA
+
+--Add currency support as required for client
+INSERT INTO System.PSPCurrency_Tbl (currencyid, pspid, name) VALUES (840,53,'USD');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (986,53,'BRL');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (32,53,'ARS');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (152,53,'CLP');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (170,53,'COP');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (604,53,'PEN');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (484,53,'MXN');
+INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (604,53,'PEN');
+
+-- Merchant MID configuration --
+--Sandbox env details.
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (10007, 53, 'PayU LATAM', '', '');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (100007, 53, '-1');
+--enable Offline Installment option for a PSP - payu if applicable for the client and route.
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, position, preferred, psp_type, installment) VALUES (10007, 8, true, 53, 403, 1, null, false, 1,1);
+
+-- Additional properties for API credentials per currency
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'app_id.BRL', 'com.cellpointmobile.cellpointdev', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=53;
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'private_key.BRL', '2c96253a-14e8-4e2f-817e-4ca7775ed08e', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=53;
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'public_key.BRL', '4fff7dd4-3ee1-4295-8c2e-cc35deaacec6', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=53;
+
+
+--production sql
+INSERT INTO Client.MerchantAccount_Tbl (clientid, pspid, name, username, passwd) VALUES (<clientid>, 53, <merchant name>, '', '');
+INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (<accountid>, 53, '-1');
+--edit if installment is to be enabled for specific SR, 0 means no installment option. 1 means installment is enabled.
+INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, position, preferred, psp_type, installment) VALUES (<clientid>, <cardid>, true, 53, <countryid>, 1, null, false, 1,1);
+-- Additional properties for API credentials per currency
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'app_id.BRL', <app-id from payu portal>, id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<clientid> AND pspid=53;
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'private_key.BRL', <privatekey from pay portal>, id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<clientid> AND pspid=53;
+
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'public_key.BRL', <public key from payu portal>, id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<clientid> AND pspid=53;
 
 --End PayU Integration --
