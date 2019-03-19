@@ -88,8 +88,11 @@ if (array_key_exists ( "PHP_AUTH_USER", $_SERVER ) === true && array_key_exists 
 			$start_date = $obj_DOM->{'get-hourly-transaction-data'}->{'start-date'} ;
 			$end_date =  $obj_DOM->{'get-hourly-transaction-data'}->{'end-date'} ;
 			$stateId = $obj_DOM->{'get-hourly-transaction-data'}->{'state-id'} ;
-			
-			$xml = $obj_mPoint->getHourlyTxnData($iClientID, $start_date, $end_date ,$stateId);
+
+            $sTimeZoneOffset = "0";
+            if(count($obj_DOM->{'get-hourly-transaction-data'}->UTCOffset)>0) { $sTimeZoneOffset = $obj_DOM->{'get-hourly-transaction-data'}->UTCOffset;}
+
+            $xml = $obj_mPoint->getHourlyTxnData($iClientID, $start_date, $end_date ,$stateId,$sTimeZoneOffset);
 			
 			break;
 		default:
