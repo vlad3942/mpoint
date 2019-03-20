@@ -11,13 +11,7 @@ if ($obj_XML->validate(dirname(__FILE__). '/generate-suvtp.xsd') )
     header("Content-Type: text/xml; charset=\"UTF-8\"");
 
     echo '<?xml version="1.0" encoding="UTF-8"?>
-                <root>
-                    <status code="100">
-                        <card>
-                            <card-number>165400018291891</card-number>
-                        </card>
-                    </status>
-                </root>';
+<root><status code="100"><card><card-number>165400418292788</card-number><expiry-month>03</expiry-month><expiry-year>2020</expiry-year></card></status></root>';
 }
 else
 {

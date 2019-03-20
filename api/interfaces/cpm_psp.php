@@ -566,6 +566,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         {
             $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["tokenize"]);
             $sToken = "";
+            $sResponseXML = "";
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
             $obj_HTTP->connect();
             $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
@@ -583,6 +584,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                     //echo $sql ."\n";
                     $this->getDBConn()->query($sql);
                     $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_TOKENIZATION_COMPLETE_STATE, $sToken. " generated for transactionID ". $this->getTxnInfo()->getID());
+                    $sResponseXML = $obj_XML->status->card->asXML();
                 }
             }
             else
@@ -601,7 +603,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             //re-throw the exception to the calling controller.
             throw $e;
         }
-        return $sToken;
+        return $sResponseXML;
     }
 
 	public function redeem($iVoucherID, $iAmount=-1)
