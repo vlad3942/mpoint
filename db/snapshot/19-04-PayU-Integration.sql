@@ -63,11 +63,11 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (10000
 INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, position, preferred, psp_type, installment) VALUES (10007, 8, true, 53, 403, 1, null, false, 1,1);
 
 -- Additional properties for API credentials per currency
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'app_id.BRL', 'com.cellpointmobile.cellpointdev', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=53;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) select 'app_id.BRL', 'com.cellpointmobile.cellpointdev', id, 'merchant', 1 from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=53;
 
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'private_key.BRL', '2c96253a-14e8-4e2f-817e-4ca7775ed08e', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=53;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) select 'private_key.BRL', '2c96253a-14e8-4e2f-817e-4ca7775ed08e', id, 'merchant', 1 from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=53;
 
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'public_key.BRL', '4fff7dd4-3ee1-4295-8c2e-cc35deaacec6', id, 'merchant' from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=53;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) select 'public_key.BRL', '4fff7dd4-3ee1-4295-8c2e-cc35deaacec6', id, 'merchant', 1 from client.merchantaccount_tbl WHERE clientid=10007 AND pspid=53;
 
 
 --production sql
@@ -76,10 +76,10 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (<acco
 --edit if installment is to be enabled for specific SR, 0 means no installment option. 1 means installment is enabled.
 INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, position, preferred, psp_type, installment) VALUES (<clientid>, <cardid>, true, 53, <countryid>, 1, null, false, 1,1);
 -- Additional properties for API credentials per currency
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'app_id.BRL', <app-id from payu portal>, id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<clientid> AND pspid=53;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) select app_id.<CUR>, <app-id from payu portal>, id, 'merchant', 1 from client.merchantaccount_tbl WHERE clientid=<clientid> AND pspid=53;
 
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'private_key.BRL', <privatekey from pay portal>, id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<clientid> AND pspid=53;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) select private_key.<CUR>, <privatekey from pay portal>, id, 'merchant', 1 from client.merchantaccount_tbl WHERE clientid=<clientid> AND pspid=53;
 
-INSERT INTO client.additionalproperty_tbl (key, value, externalid, type) select 'public_key.BRL', <public key from payu portal>, id, 'merchant' from client.merchantaccount_tbl WHERE clientid=<clientid> AND pspid=53;
+INSERT INTO client.additionalproperty_tbl (key, value, externalid, type, scope) select public_key.<CUR>, <public key from payu portal>, id, 'merchant', 1 from client.merchantaccount_tbl WHERE clientid=<clientid> AND pspid=53;
 
 
