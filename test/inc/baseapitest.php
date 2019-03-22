@@ -5,7 +5,7 @@ abstract class baseAPITest extends BaseDatabaseTest
 	protected $bIgnoreErrors = false;
 	private static $aVisited = array();
 
-    public function setUp()
+    public function setUp($isDBSetupRequired = true)
     {
         if (!file_exists(sLOG_PATH) )
         {
@@ -17,7 +17,7 @@ abstract class baseAPITest extends BaseDatabaseTest
 		file_put_contents(sERROR_LOG, '');
 
 		echo " ". get_class($this) ."::". $this->getName() ."()\n";
-		parent::setup();
+		parent::setup($isDBSetupRequired);
     }
 
     /**

@@ -9,12 +9,14 @@
  * File Name:ParserTest.php
  */
 
-include __DIR__ . '/../../api/classes/Parser.php';
+require_once __DIR__ . '/../../webroot/inc/include.php';
+require_once __DIR__ . '/../inc/testinclude.php';
+require_once __DIR__ . '/../../api/classes/Parser.php';
 
-class ParserTest extends PHPUnit_Framework_TestCase
+class ParserTest extends baseAPITest
 {
 
-    private $parser = null;
+    private $parser;
 
     public function testSetRule()
     {
@@ -225,9 +227,10 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(null, $output);
     }
 
-    protected function setUp()
+    public function setUp()
     {
-        parent::setUp();
+        $this->bIgnoreErrors = true;
+        parent::setUp(false);
         $this->parser = new \mPoint\Core\Parser();
 
         $context1 = '<?xml version="1.0" encoding="utf-8"?><root><authorize client-id="10007" account="100007"><psp-config id="21" type="1"><name>GlobalCollect</name><merchant-account>337</merchant-account><merchant-sub-account>-1</merchant-sub-account><username>d05f1d86bf1611f7</username><password>t91nuhCNWxVgRJNQK21CXRNAueGjkQT4zuiGPKF/opo=</password><messages></messages><additional-config></additional-config></psp-config><transaction id="1844619" type="30" gmid="-1" mode="0" eua-id="52365" attempt="0" psp-id="21" card-id="8" wallet-id="0" product-type="100" external-id=""><captured-amount country-id="604" currency="KWD" symbol="" format="" alpha2code="KW" alpha3code="KWT" code="414">0</captured-amount><fee country-id="604" currency="KWD" symbol="" format="">0</fee><price /><points country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">-1</points><reward country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">-1</reward><refund country-id="604" currency="KWD" symbol="" format="">0</refund><orderid>NYSI0O</orderid><mobile country-id="200" country-code="965">9876543210</mobile><operator>20000</operator><email>sagar@cellpointmobile.com</email><device-id /><logo><url>https://hpp-dev2.cellpointmobile.com/css/img/logo.jpg</url><width>100%</width><height>20%</height></logo><css-url>https://s3-ap-southeast-1.amazonaws.com/cpmassets/marchant/mpl/style.css</css-url><accept-url>http://dev2.cellpointmobile.com:8989/booking-confirmation</accept-url><cancel-url>http://dev2.cellpointmobile.com:8989/booking-confirmation</cancel-url><decline-url /><callback-url>https://webhook.site/f4f16c2f-9a98-4241-98ba-5fcc16092231</callback-url><icon-url /><auth-url>http://localhost:10081/mprofile/login</auth-url><language>us</language><auto-capture>false</auto-capture><auto-store-card>false</auto-store-card><markup-language>html5</markup-language><customer-ref /><description /><ip>::1</ip><hmac>df1c34c3ce2b5617a8f3eb7ed1f3145b55fc5e68</hmac><created-date>20190304</created-date><created-time>194856</created-time><authorized-amount country-id="604" currency-id="414" currency="KWD" decimals="3" symbol="" format="" alpha2code="KW" alpha3code="KWT" code="414">100</authorized-amount></transaction><order-attempt>1</order-attempt><card type-id="8"><card-holder-name>GC Test</card-holder-name><card-number>4567350000427977</card-number><expiry-month>12</expiry-month><expiry-year>2020</expiry-year><cvc>123</cvc></card><address country-id="640" alpha2code="PH" alpha3code="PHL" code="608"><full-name>First Last</full-name><company>Cellpoint Mobile</company><street>Place Street 2</street><postal-code>23456789</postal-code><city>Town City</city><state>Place State</state></address></authorize></root>';
