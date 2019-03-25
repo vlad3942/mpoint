@@ -104,4 +104,9 @@ abstract class BaseDatabaseTest extends PHPUnit_Framework_TestCase
         return $res;
     }
 
+    protected function getDBObj()
+    {
+        return RDB::produceDatabase($this->mPointDBInfo);
+    }
+
 }
