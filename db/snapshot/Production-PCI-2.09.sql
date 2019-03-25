@@ -61,7 +61,7 @@ WITH (
   OIDS=FALSE
 );
 ALTER TABLE log.message_tbl
-  OWNER TO postgres;
+  OWNER TO mpoint;
 
 
 CREATE INDEX external_reference_index
