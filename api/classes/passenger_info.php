@@ -68,7 +68,7 @@ class PassengerInfo {
 	/**
 	 * Default Constructor
 	 */
-	public function __construct($id, $fnm, $lnm, $type, $title, $email, $mobile, $countryId, $Adata) {
+	public function __construct($id, $fnm, $lnm, $type, $title, $email, $mobile, $countryId, $Adata = null) {
 		$this->_iID = ( integer ) $id;
 		$this->_First_Name = $fnm;
 		$this->_Last_Name = $lnm;
