@@ -7929,9 +7929,9 @@ INSERT INTO log.state_tbl (id, name, module) VALUES (20104, 'Payment rejected. T
 ALTER TABLE Log.Transaction_Tbl ADD declineurl VARCHAR(255);
 
 
-ALTER TABLE system.psp_tbl ADD installment INT DEFAULT 0 NOT NULL;
+ALTER TABLE  client.cardaccess_tbl ADD installment INT DEFAULT 0 NOT NULL;
 
-COMMENT ON COLUMN system.psp_tbl.installment
+COMMENT ON COLUMN  client.cardaccess_tbl.installment
 IS
 'Default 0 - No installment option
 1 - Offline Installment';
