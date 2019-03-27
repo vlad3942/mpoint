@@ -78,6 +78,7 @@
 										<xs:element name="hmac" type="xs:string"/>
 										<xs:element name="created-date" type="xs:string"/>
 										<xs:element name="created-time" type="xs:string"/>
+										<xs:element name="invoiceid" type="xs:string"/>
 										<xs:element name="token" type="xs:string" minOccurs="0"/>
 										<xs:element name="card-mask" type="xs:string" minOccurs="0"/>
 										<xs:element name="expiry" type="xs:string" minOccurs="0"/>
@@ -85,6 +86,7 @@
 										<xs:element name="action-code" type="xs:string" minOccurs="0"/>
 										<xs:element name="auth-original-data" type="xs:string" minOccurs="0"/>
 										<xs:element name="language" type="xs:string"/>
+										<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
 									</xs:all>
 									<xs:attribute type="xs:positiveInteger" name="id"/>
 									<xs:attribute type="xs:positiveInteger" name="type"/>
@@ -160,6 +162,14 @@
 			<xs:sequence>
 				<xs:element ref="param" minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="additional-data">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="param" minOccurs="1" maxOccurs="unbounded" />
+		 	</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 
