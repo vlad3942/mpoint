@@ -658,6 +658,7 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+            <xs:element name="UTCOffset" maxOccurs="1" minOccurs="0"/>
 		</xs:all>
 		<xs:attribute name="verbose" type="xs:boolean" use="required">
 			<xs:annotation>
@@ -2010,6 +2011,7 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="UTCOffset" maxOccurs="unbounded" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute type="xs:nonNegativeInteger" name="psp-id"
 			default="0" />

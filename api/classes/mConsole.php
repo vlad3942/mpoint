@@ -640,8 +640,11 @@ class mConsole extends Admin
 	 * @param integer $offset		The offset from which the results returned by the search should start, any results before the offset are skipped by the search
 	 * @return multitype:TransactionLogInfo
 	 */
-	public function searchTransactionLogs(array $aClientIDs, array $aAccountIDs, array $aPspIDs, array $aCardIDs, array $aStateIDs, $id=-1, $ono="", CustomerInfo $oCI=null, $start="", $end="", $verbose=false, $limit=100, $offset=0)
+	public function searchTransactionLogs($sTimeZoneOffset , array $aClientIDs, array $aAccountIDs, array $aPspIDs, array $aCardIDs, array $aStateIDs, $id=-1, $ono="", CustomerInfo $oCI=null, $start="", $end="", $verbose=false, $limit=100, $offset=0)
 	{
+	    if($sTimeZoneOffset == '0') { $sAtTimeZone = ""; }
+        else { $sAtTimeZone = " AT TIME ZONE 'UTC' AT TIME ZONE '".$sTimeZoneOffset."'::interval "; }
+
 		if (count($aStateIDs) == 0)
 		{
 			$aStateIDs = array(Constants::iINPUT_VALID_STATE,
@@ -687,13 +690,13 @@ class mConsole extends Admin
 		 UNION";
 		 }*/
 		$sql .= "WITH Txn AS (
-					SELECT Txn.id as txnid, Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created,
+					SELECT Txn.id as txnid, Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created ".$sAtTimeZone.",
 						Txn.operatorid as operatorid,
 						Txn.mobile as mobile, Txn.email as email, Txn.lang AS language,
 						Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description,
 						Txn.clientid, Txn.accountid, Txn.pspid, Txn.cardid, Txn.customer_ref, Txn.euaid,
 						Txn.currencyid as currencyid,
-						Msg.stateid, Msg.created AS createdfinal
+						Msg.stateid, Msg.created ".$sAtTimeZone."  AS createdfinal
 					FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
 					INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid
 					WHERE Txn.clientid IN (". implode(",", $aClientIDs) .")";
@@ -708,8 +711,8 @@ class mConsole extends Admin
 			if (strlen($oCI->getEMail() ) > 0) { $sql .= " AND Txn.email = '". $this->getDBConn()->escStr($oCI->getEMail() ) ."'"; }
 			if (strlen($oCI->getCustomerRef() ) > 0) { $sql .= " AND Txn.customer_ref = '". $this->getDBConn()->escStr($oCI->getCustomerRef() ) ."'"; }
 		}
-		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) ) ."' <= Txn.created"; }
-		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND Txn.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."'"; }
+		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) )  ." ' ".$sAtTimeZone."  <= Txn.created"; }
+		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND Txn.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."' ".$sAtTimeZone." "; }
 		$sql .= "
 						AND Msg.id = (SELECT Max(id)
 									  FROM Log.Message_Tbl
@@ -747,7 +750,7 @@ class mConsole extends Admin
 		//		echo $sql ."\n";
 		$stmt1 = $this->getDBConn()->prepare($sql);
 		
-		$sql = "SELECT id, stateid, data, created
+		$sql = "SELECT id, stateid, data, created ".$sAtTimeZone." 
 				FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
 				WHERE txnid = $1 and enabled = true";
 		
@@ -1118,8 +1121,11 @@ class mConsole extends Admin
 	 * @param int $cardid			Card id will be sent for more geting more granular results.
 	 * @return multitype:TransactionStatisticsInfo
 	 */
-	public function getTransactionStats(array $aClientIDs, $start, $end, array $aAccountIDs = array(), $pspid = 0, $cardid = 0 )
+	public function getTransactionStats($sTimeZoneOffset , array $aClientIDs, $start, $end, array $aAccountIDs = array(), $pspid = 0, $cardid = 0 )
 	{
+        if(  $sTimeZoneOffset == '0') { $sAtTimeZone = ""; }
+        else { $sAtTimeZone = " AT TIME ZONE 'UTC' AT TIME ZONE '".$sTimeZoneOffset."'::interval "; }
+
 		$aStateIDS = array(Constants::iINPUT_VALID_STATE, 
 		Constants::iPAYMENT_INIT_WITH_PSP_STATE, 
 		Constants::iPAYMENT_ACCEPTED_STATE, 
@@ -1177,7 +1183,7 @@ class mConsole extends Admin
 				$where.=" AND ";
 			}
 
-			$where .= "'". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) )."' <= Txn.created ";
+			$where .= "'". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) )."' ".$sAtTimeZone." <= Txn.created ";
 		}
 
 		if(empty($end) === false && strlen($end) > 0)
@@ -1187,7 +1193,7 @@ class mConsole extends Admin
 				$where.=" AND ";
 			}
 
-			$where .= " Txn.created <= '" .$this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ). "' ";
+			$where .= " Txn.created <= '" .$this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ). "' ".$sAtTimeZone."";
 		}
 
 
@@ -1198,7 +1204,7 @@ class mConsole extends Admin
 
 		//Date part will have values always hence $where will not be empty
 
-		$sql = "SELECT date(Msg.created) AS createddate, Msg.stateid AS stateid, Count(Msg.id) AS stateidcount
+		$sql = "SELECT date(Msg.created ".$sAtTimeZone.") AS createddate , Msg.stateid AS stateid, Count(Msg.id) AS stateidcount
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
 				INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid
 				".$where.
@@ -1563,11 +1569,14 @@ class mConsole extends Admin
 	}
 	
 	
-	public function getHourlyTxnData( $clientId, $startDate , $endDate ,$stateId) {
-		
-		$sql = "SELECT TO_CHAR(mt.created, 'yyyy-MM-dd HH24') AS hourSeg,COUNT(DISTINCT(mt.txnid))" ;
+	public function getHourlyTxnData( $clientId, $startDate , $endDate ,$stateId, $sTimeZoneOffset) {
+
+        if($sTimeZoneOffset == '0') { $sAtTimeZone = ""; }
+        else { $sAtTimeZone = " AT TIME ZONE 'UTC' AT TIME ZONE '".$sTimeZoneOffset."'::interval "; }
+
+		$sql = "SELECT TO_CHAR(mt.created ".$sAtTimeZone.", 'yyyy-MM-dd HH24') AS hourSeg,COUNT(DISTINCT(mt.txnid))" ;
         $sql .=  " FROM log.transaction_tbl tt INNER JOIN log.message_tbl mt ON (tt.id = mt.txnid AND tt.clientid = '".$clientId."' AND mt.stateid= ".$stateId." )";
-        $sql .=" WHERE '".$startDate."'<=mt.created AND '".$endDate."' >= mt.created";
+        $sql .=" WHERE '".$startDate."' ".$sAtTimeZone." <=mt.created AND '".$endDate."' ".$sAtTimeZone." >= mt.created";
         $sql .= " GROUP BY hourSeg ORDER BY hourSeg ";
 
 		$res = $this->getDBConn()->query($sql);

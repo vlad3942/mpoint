@@ -844,7 +844,7 @@ try
 
                                                                     if(empty($sToken) === false)
                                                                     {
-                                                                        $xml .= '<token>'.$sToken.'</token>';
+                                                                        $xml .= $sToken;
                                                                     }
 
                                                                 }

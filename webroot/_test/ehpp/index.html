@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="Hosted Payment Pages">
+  <meta name="keywords" content="">
+
+  <meta name="theme-color" content="#2361eb" />
+
+  <link rel="icon" href="favicon.png">
+  <title>Hosted Payment Page</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+  <link href="combine.css" rel="stylesheet">
+  <style>
+    .clientaccount{
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <section class="header">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col">
+          <a class="navbar-brand" href="#">
+            <img src="cpm-logo.png" class="d-inline-block align-top" alt="">
+          </a>
+        </div>
+        <div class="col col-md-auto">
+          <ol class="breadcrumb align-self-end mb-0">
+            <li class="breadcrumb-item"><a href="#">Flights</a></li>
+            <li class="breadcrumb-item"><a href="#">Ancillaries</a></li>
+            <li class="breadcrumb-item"><a href="#">Review order</a></li>
+            <li class="breadcrumb-item"><a href="#">Passenger Info</a></li>
+            <li class="breadcrumb-item active">Payment</li>
+            <li class="breadcrumb-item active">Booking Confirmation</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="main">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 flight-summary">
+          <h3 class="title">Flight Summary</h4>
+            <div class="row">
+              <div class="col-md-4 text-right">
+                <h1>18:00</h1>
+              </div>
+              <div class="col-md-6">
+                <p>From</p>
+                <h5>Mumbai (BOM)</h5>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4 text-right">
+                <h6>3h 50m</h6>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4 text-right">
+                <h1>21:50</h1>
+              </div>
+              <div class="col-md-6">
+                <p>To</p>
+                <h5>Dubai (DXB)</h5>
+              </div>
+            </div>
+            <hr>
+            <div class="row pt-4">
+             <div class="col-md-4 text-center" style="padding:0">
+                <p>Date</p>
+                <h5 id="date">3 Aug, 17</h5>
+              </div>
+              <div class="col-md-4 text-center">
+                <p>Class</p>
+                <h5>Business</h5>
+              </div>
+              <div class="col-md-4 text-center">
+                <p>Flight</p>
+                <h5>CP1234</h5>
+              </div>
+            </div>
+            <hr>
+            <div class="row pt-4">
+              <div class="col-md-12 text-center">
+                <p>Please read our <strong>Cancellation Policy</strong></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 fare-summary">
+            <h3 class="title">Fare Summary</h4>
+              <div class="row align-items-center">
+                <div class="col-md-7">
+                  <h5>Ticket</h5>
+                </div>
+                <div class="col-md-5 text-right">
+                  <h2 id="sub-amount">1</h2>
+                </div>
+              </div>
+              <div class="row align-items-center">
+                <div class="col-md-7">
+                  <h5>Excess Baggage</h5>
+                </div>
+                <div class="col-md-5 text-right">
+                  <h2>NA</h2>
+                </div>
+              </div>
+              <div class="row align-items-center">
+                <div class="col-md-7">
+                  <h5>Taxes</h5>
+                </div>
+                <div class="col-md-5 text-right">
+                  <h2>NA</h2>
+                </div>
+              </div>
+              <div class="row align-items-center">
+                <div class="col-md-7">
+                  <h5>Fuel Surcharge</h5>
+                </div>
+                <div class="col-md-5 text-right">
+                  <h2>NA</h2>
+                </div>
+              </div>
+              <div class="row align-items-center">
+                <div class="col-md-7">
+                  <h5>Premium Seat</h5>
+                </div>
+                <div class="col-md-5 text-right">
+                  <h2>NA</h2>
+                </div>
+              </div>
+              <hr>
+              <div class="row align-items-center">
+                <div class="col-md-6">
+                  <h5><strong>Total</strong></h5>
+                </div>
+                <div class="col-md-6 text-right">
+                  <h2 ><strong id="final-amount">1</strong>&nbsp;<strong id="currency-keyword">DKK</strong></h2>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 fare-summary border-0">
+              <h3 class="title">User Details</h4>
+                <div class="form-group">
+                  <label for="showchk">Show Account Details</label>
+                  <input type="checkbox"  id="showchk" onchange="infoChange();" value="false">
+                </div>
+
+                <form  id="post-order" method="post" action="https://hpp-uat-01.cellpointmobile.net/buy/web.php">
+                  <div class="form-group clientaccount" >
+                  <label for="clientid">Client</label>
+                  <input type="text" class="form-control" id="clientid" name="clientid" value="10054">
+                </div>
+                  <div class="form-group clientaccount">
+                  <label for="account">Account</label>
+                  <input type="text" class="form-control" id="account" name="account" value="100069">
+                </div>
+                  <div class="form-group">
+                    <label for="formGroupExampleInput2">Name</label>
+                    <input type="text" class="form-control" id="formGroupExampleInput" value="John Doe">
+                  </div>
+                  <div class="form-group">
+                    <label for="formGroupExampleInput2" >Email</label>
+                    <input type="email" class="form-control" id="email" name="email" value="pci_test@cellpointmobile.com">
+                  </div>
+                  <div class="form-group">
+                    <label for="formGroupExampleInput2" >Mobile</label>
+                    <input type="tel" class="form-control"  id="mobile" name="mobile" value="9870543123">
+                  </div>
+                  <div class="form-group">
+                    <label for="formGroupExampleInput2">Country</label>
+                   <select class="form-control" id="country" name="country" style="padding:0rem 1rem;"></select>
+                  </div>
+                  <div class="form-group">
+                    <label for="formGroupExampleInput2">Language</label>
+                    <select class="form-control" id="language" name="language" style="padding:0rem 1rem;">
+                      <option selected="selected" value="gb">English</option>
+                      <option value="us">English (US)</option>
+                      <option value="da">Danish </option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="formGroupExampleInput2">Currency Code</label>
+                    <select class="form-control" id="currency-code" name="currency-code" style="padding:0rem 1rem;"></select>
+                  </div>
+                  <div class="form-group">
+                    <label for="formGroupExampleInput2">Amount</label>
+                    <input  type="number" step="0.01" class="form-control"  id="amount" name="amount" value="1">
+                  </div>
+                  <div class="form-group">
+                    <label for="formGroupExampleInput2">Session Id</label>
+                    <input  type="text" class="form-control"  id="session-id" name="session-id" value="">
+                  </div>
+                  <div class="form-group">
+                    <label for="formGroupExampleInput2">Order Data</label>
+                    <textarea class="form-control" style="border-radius:1rem !important;" id="orderdata" name="orderdata"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label for="formGroupExampleInput2">Auth token</label>
+                    <textarea class="form-control" style="border-radius:1rem !important;" id="auth-token" name="auth-token"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label for="formGroupExampleInput2">HMAC</label>
+                    <textarea class="form-control" style="border-radius:1rem !important;" id="hmac" name="hmac"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label for="formGroupExampleInput2">Order Id</label>
+                    <input  type="text" class="form-control"  id="orderid" name="orderid" value="">
+                  </div>
+                  <br>
+                  <div class="form-group text-right">
+				   <a id="btn-click" class="btn btn-primary">Proceed to Payment</a>
+                  </div>
+                </form>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- jQuery first, then Tether, then Bootstrap JS. -->
+          <script src="jquery.min.js"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+          <script src="js/bootstrap-index.min.js"></script>
+		  	  
+  <script>
+	$(document).ready(function() {
+			$("#currency").val("1");
+			$("#sub-amount").html("1");
+			$("#final-amount").html("1");
+			$("#country").trigger("change");
+			
+			var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+			Date.prototype.addDays = function(days) {
+			  var dat = new Date(this.valueOf());
+			  dat.setDate(dat.getDate() + days);
+			  return dat;
+			}
+
+			var dat = new Date();
+			dat=dat.addDays(5);
+			$("#date").html(dat.getDate() + " " + monthNames[dat.getMonth()] + ", " + (dat.getFullYear()-2000));
+			
+			$("#showchk").change(function () {
+			    if($(this).prop("checked"))
+               $(".clientaccount").show();
+			    else
+                $(".clientaccount").hide();
+            });
+		});
+			html = "";
+        obj = [/*{"id":"0","name":"Select Country","currency":"NULL","symbol":"NULL"},*/{"id":"100","name":"Denmark","currency":"DKK","symbol":"Kr."},{"id":"101","name":"Sweden","currency":"SEK","symbol":"kr."},{"id":"102","name":"Norway","currency":"NOK","symbol":"NULL"},{"id":"103","name":"UK","currency":"GBP","symbol":"£"},{"id":"104","name":"Finland","currency":"EUR","symbol":"€"},{"id":"105","name":"Greece","currency":"EUR","symbol":"€"},{"id":"106","name":"Israel","currency":"ILS","symbol":"NULL"},{"id":"107","name":"Italy","currency":"EUR","symbol":"€"},{"id":"108","name":"France","currency":"EUR","symbol":"€"},{"id":"109","name":"Switzerland","currency":"CHW","symbol":"NULL"},{"id":"110","name":"Netherlands","currency":"EUR","symbol":"€"},{"id":"111","name":"Belgium","currency":"EUR","symbol":"€"},{"id":"112","name":"Poland","currency":"PLN","symbol":"NULL"},{"id":"113","name":"Spain","currency":"EUR","symbol":"€"},{"id":"114","name":"Austria","currency":"EUR","symbol":"€"},{"id":"115","name":"Germany","currency":"EUR","symbol":"€"},{"id":"116","name":"Afghanistan","currency":"AFN","symbol":"NULL"},{"id":"117","name":"Albania","currency":"ALL","symbol":"NULL"},{"id":"118","name":"Andorra","currency":"EUR","symbol":"€"},{"id":"119","name":"Armenia","currency":"AMD","symbol":"NULL"},{"id":"120","name":"Belarus","currency":"BYR","symbol":"NULL"},{"id":"121","name":"Bosnia and Herzegovina","currency":"BAM","symbol":"NULL"},{"id":"122","name":"Bulgaria","currency":"BGN","symbol":"NULL"},{"id":"123","name":"Croatia","currency":"HRK","symbol":"NULL"},{"id":"124","name":"Cyprus","currency":"EUR","symbol":"€"},{"id":"125","name":"Czech Republic","currency":"CZK","symbol":"NULL"},{"id":"126","name":"Estonia","currency":"EUR","symbol":"€"},{"id":"127","name":"Faroe Islands","currency":"DKK","symbol":"NULL"},{"id":"128","name":"Georgia","currency":"GBP","symbol":"£"},{"id":"129","name":"Gibraltar","currency":"GIP","symbol":"NULL"},{"id":"130","name":"Greenland","currency":"DKK","symbol":"NULL"},{"id":"131","name":"Hungary","currency":"HUF","symbol":"NULL"},{"id":"132","name":"Iceland","currency":"ISK","symbol":"NULL"},{"id":"133","name":"Ireland","currency":"EUR","symbol":"€"},{"id":"134","name":"Isle of Man","currency":"GBP","symbol":"£"},{"id":"135","name":"Latvia","currency":"LVL","symbol":"NULL"},{"id":"136","name":"Liechtenstein","currency":"CHF","symbol":"NULL"},{"id":"137","name":"Lithuania","currency":"LTL","symbol":"NULL"},{"id":"138","name":"Luxembourg","currency":"EUR","symbol":"€"},{"id":"139","name":"Malta","currency":"EUR","symbol":"€"},{"id":"140","name":"Moldova","currency":"MDL","symbol":"NULL"},{"id":"141","name":"Monaco","currency":"EUR","symbol":"€"},{"id":"142","name":"Montenegro","currency":"EUR","symbol":"€"},{"id":"143","name":"Republic of Macedonia","currency":"MKD","symbol":"NULL"},{"id":"144","name":"Monserrat","currency":"XCD","symbol":"NULL"},{"id":"145","name":"St. Pierre and Miquelon","currency":"EUR","symbol":"€"},{"id":"146","name":"Palestinian Territory","currency":"NIS","symbol":"NULL"},{"id":"147","name":"Portugal","currency":"EUR","symbol":"€"},{"id":"148","name":"Kosovo","currency":"EUR","symbol":"€"},{"id":"149","name":"Romania","currency":"RON","symbol":"NULL"},{"id":"150","name":"Republic of Serbia","currency":"RSD","symbol":"NULL"},{"id":"151","name":"San Marino","currency":"EUR","symbol":"€"},{"id":"152","name":"Slovakia","currency":"EUR","symbol":"€"},{"id":"153","name":"Slovenia","currency":"EUR","symbol":"€"},{"id":"154","name":"Turkey","currency":"TRY","symbol":"NULL"},{"id":"155","name":"Ukraine","currency":"UAH","symbol":"NULL"},{"id":"156","name":"Vatican City State","currency":"EUR","symbol":"€"},{"id":"200","name":"USA","currency":"USD","symbol":"$"},{"id":"201","name":"Mexico","currency":"MXN","symbol":"NULL"},{"id":"202","name":"Canada","currency":"CAD","symbol":"NULL"},{"id":"203","name":"Anguilla","currency":"XCD","symbol":"NULL"},{"id":"204","name":"Antigua and Barbuda","currency":"XCD","symbol":"NULL"},{"id":"205","name":"Barbados","currency":"BBD","symbol":"NULL"},{"id":"206","name":"British Virgin Islands","currency":"USD","symbol":"$"},{"id":"207","name":"Cayman Islands","currency":"KYD","symbol":"NULL"},{"id":"208","name":"Cuba","currency":"CUP","symbol":"NULL"},{"id":"209","name":"Dominican Republic","currency":"DOP","symbol":"NULL"},{"id":"210","name":"Guadeloupe","currency":"EUR","symbol":"€"},{"id":"211","name":"Haiti","currency":"USD","symbol":"$"},{"id":"212","name":"Jamaica","currency":"JMD","symbol":"NULL"},{"id":"213","name":"American Samoa","currency":"USD","symbol":"$"},{"id":"214","name":"Bermuda","currency":"BMD","symbol":"NULL"},{"id":"215","name":"Bahamas","currency":"BSD","symbol":"NULL"},{"id":"216","name":"Johnston Island","currency":"USD","symbol":"$"},{"id":"217","name":"Midway Island","currency":"USD","symbol":"$"},{"id":"218","name":"United States Minor Outlying Islands","currency":"USD","symbol":"$"},{"id":"300","name":"Algeria","currency":"DZD","symbol":"NULL"},{"id":"301","name":"Angola","currency":"AOA","symbol":"NULL"},{"id":"302","name":"Bangladesh","currency":"BDT","symbol":"NULL"},{"id":"303","name":"Benin","currency":"XOF","symbol":"NULL"},{"id":"304","name":"Bolivia","currency":"BOV","symbol":"NULL"},{"id":"305","name":"Botswana","currency":"BWP","symbol":"NULL"},{"id":"306","name":"Burkina Faso","currency":"XOF","symbol":"NULL"},{"id":"307","name":"Burundi","currency":"BIF","symbol":"NULL"},{"id":"308","name":"Cameroon","currency":"XAF","symbol":"NULL"},{"id":"309","name":"Cape Verde","currency":"CVE","symbol":"NULL"},{"id":"310","name":"Central African Republic","currency":"XAF","symbol":"NULL"},{"id":"311","name":"Chad","currency":"XAF","symbol":"NULL"},{"id":"312","name":"Comoros","currency":"KMF","symbol":"NULL"},{"id":"313","name":"Congo","currency":"XAF","symbol":"NULL"},{"id":"314","name":"Côte d'Ivoire","currency":"XOF","symbol":"NULL"},{"id":"315","name":"Democratic Republic of the Congo","currency":"CDF","symbol":"NULL"},{"id":"316","name":"Djibouti","currency":"DJF","symbol":"NULL"},{"id":"317","name":"Egypt","currency":"EGP","symbol":"NULL"},{"id":"318","name":"Equatorial Guinea","currency":"XAF","symbol":"NULL"},{"id":"319","name":"Ethiopia","currency":"ETB","symbol":"NULL"},{"id":"320","name":"Gabon","currency":"XAF","symbol":"NULL"},{"id":"321","name":"Gambia","currency":"GMD","symbol":"NULL"},{"id":"322","name":"Ghana","currency":"GHS","symbol":"NULL"},{"id":"323","name":"Guinea","currency":"GNF","symbol":"NULL"},{"id":"324","name":"Guinea-Bissau","currency":"XOF","symbol":"NULL"},{"id":"325","name":"Kenya","currency":"KES","symbol":"NULL"},{"id":"326","name":"Lesotho","currency":"LSL","symbol":"NULL"},{"id":"327","name":"Liberia","currency":"LRD","symbol":"NULL"},{"id":"328","name":"Madagascar","currency":"MGA","symbol":"NULL"},{"id":"329","name":"Malawi","currency":"MWK","symbol":"NULL"},{"id":"330","name":"Mali","currency":"XOF","symbol":"NULL"},{"id":"331","name":"Mauritania","currency":"MRO","symbol":"NULL"},{"id":"332","name":"Mauritius","currency":"MUR","symbol":"NULL"},{"id":"333","name":"Morocco","currency":"MAD","symbol":"NULL"},{"id":"334","name":"Mozambique","currency":"MZN","symbol":"NULL"},{"id":"335","name":"Tristan Da Cunha","currency":"GBP","symbol":"£"},{"id":"336","name":"Western Sahara","currency":"MAD","symbol":"NULL"},{"id":"337","name":"Eritrea","currency":"ERN","symbol":"NULL"},{"id":"338","name":"Libyan Arab Jamahiriya","currency":"LYD","symbol":"NULL"},{"id":"339","name":"Mayotte","currency":"EUR","symbol":"€"},{"id":"340","name":"Namibia","currency":"NAD","symbol":"NULL"},{"id":"341","name":"Niger","currency":"XOF","symbol":"NULL"},{"id":"342","name":"Nigeria","currency":"NGN","symbol":"NULL"},{"id":"343","name":"Reunion","currency":"EUR","symbol":"€"},{"id":"344","name":"Rwanda","currency":"RWF","symbol":"NULL"},{"id":"345","name":"Seychelles","currency":"SCR","symbol":"NULL"},{"id":"346","name":"Sudan","currency":"SDG","symbol":"NULL"},{"id":"347","name":"St. Helena","currency":"SHP","symbol":"NULL"},{"id":"348","name":"Sierra Leone","currency":"SLL","symbol":"NULL"},{"id":"349","name":"Sao Tome and Principe","currency":"STD","symbol":"NULL"},{"id":"350","name":"Swaziland","currency":"SZL","symbol":"NULL"},{"id":"351","name":"Togo","currency":"XOF","symbol":"NULL"},{"id":"352","name":"Tunisia","currency":"TND","symbol":"NULL"},{"id":"353","name":"Tanzania","currency":"TZS","symbol":"NULL"},{"id":"354","name":"Uganda","currency":"UGX","symbol":"NULL"},{"id":"355","name":"South Africa","currency":"ZAR","symbol":"NULL"},{"id":"356","name":"Zambia","currency":"ZMW","symbol":"NULL"},{"id":"357","name":"Zaire","currency":"XAF","symbol":"NULL"},{"id":"358","name":"Zimbabwe","currency":"USD","symbol":"$"},{"id":"400","name":"Argentina","currency":"ARS","symbol":"NULL"},{"id":"401","name":"Aruba","currency":"AWG","symbol":"NULL"},{"id":"402","name":"Belize","currency":"BZD","symbol":"NULL"},{"id":"403","name":"Brazil","currency":"BRL","symbol":"NULL"},{"id":"404","name":"Chile","currency":"CLP","symbol":"NULL"},{"id":"405","name":"Colombia","currency":"COP","symbol":"NULL"},{"id":"406","name":"Costa Rica","currency":"CRC","symbol":"NULL"},{"id":"407","name":"Ecuador","currency":"USD","symbol":"$"},{"id":"408","name":"El Salvador","currency":"USD","symbol":"$"},{"id":"409","name":"French Departments and Territories in the Indian Ocean","currency":"EUR","symbol":"€"},{"id":"410","name":"Guatemala","currency":"GTQ","symbol":"NULL"},{"id":"411","name":"Guyana","currency":"GYD","symbol":"NULL"},{"id":"412","name":"Honduras","currency":"HNL","symbol":"NULL"},{"id":"413","name":"Antarctica","currency":"AQD","symbol":"NULL"},{"id":"414","name":"Carriacou","currency":"XCD","symbol":"NULL"},{"id":"415","name":"Netherlands Antilles","currency":"CMG","symbol":"NULL"},{"id":"416","name":"Bouvet Island","currency":"NOK","symbol":"NULL"},{"id":"417","name":"Scott Base","currency":"NZD","symbol":"NULL"},{"id":"418","name":"Dominica","currency":"XCD","symbol":"NULL"},{"id":"419","name":"Falkland Islands","currency":"FKP","symbol":"NULL"},{"id":"420","name":"Grenada","currency":"XCD","symbol":"NULL"},{"id":"421","name":"French Guiana","currency":"EUR","symbol":"€"},{"id":"422","name":"South Georgia And IS","currency":"GBP","symbol":"£"},{"id":"423","name":"British International Ocean Territory","currency":"USD","symbol":"$"},{"id":"424","name":"St. Christopher (St. Kitts) Nevis","currency":"XCD","symbol":"NULL"},{"id":"425","name":"St. Lucia","currency":"XCD","symbol":"NULL"},{"id":"426","name":"Martinique","currency":"EUR","symbol":"€"},{"id":"427","name":"Nicaragua","currency":"NIO","symbol":"NULL"},{"id":"428","name":"Panama","currency":"USD","symbol":"$"},{"id":"429","name":"Peru","currency":"PEN","symbol":"NULL"},{"id":"430","name":"Pitcairn Island","currency":"NZD","symbol":"NULL"},{"id":"431","name":"Puerto Rico","currency":"USD","symbol":"$"},{"id":"432","name":"Paraguay","currency":"PYG","symbol":"NULL"},{"id":"433","name":"Senegal","currency":"XOF","symbol":"NULL"},{"id":"434","name":"Somalia","currency":"SOS","symbol":"NULL"},{"id":"435","name":"Suriname","currency":"SRD","symbol":"NULL"},{"id":"436","name":"St. Maarten","currency":"ANG","symbol":"NULL"},{"id":"437","name":"Turks and Caicos Islands","currency":"USD","symbol":"$"},{"id":"438","name":"Trinidad and Tobago","currency":"TTD","symbol":"NULL"},{"id":"439","name":"Uruguay","currency":"UYU","symbol":"NULL"},{"id":"440","name":"St. Vincent and The Grenadines","currency":"XCD","symbol":"NULL"},{"id":"441","name":"Venezuela","currency":"VEF","symbol":"NULL"},{"id":"442","name":"Virgin Islands, United States","currency":"USD","symbol":"$"},{"id":"500","name":"Australia","currency":"AUD","symbol":"NULL"},{"id":"501","name":"Brunei Darussalam","currency":"BND","symbol":"NULL"},{"id":"502","name":"Cook Islands","currency":"NZD","symbol":"NULL"},{"id":"503","name":"Fiji","currency":"FJD","symbol":"NULL"},{"id":"504","name":"French Polynesia","currency":"XPF","symbol":"NULL"},{"id":"505","name":"Indonesia","currency":"IDR","symbol":"NULL"},{"id":"506","name":"Micronesia","currency":"USD","symbol":"$"},{"id":"507","name":"Cocos (Keeling) Islands","currency":"AUD","symbol":"NULL"},{"id":"508","name":"Christmas Island","currency":"AUD","symbol":"NULL"},{"id":"509","name":"New Caledonia","currency":"XPF","symbol":"NULL"},{"id":"510","name":"Norfolk Island","currency":"AUD","symbol":"NULL"},{"id":"511","name":"Nauru","currency":"AUD","symbol":"NULL"},{"id":"512","name":"Niue","currency":"NZD","symbol":"NULL"},{"id":"513","name":"New Zealand","currency":"NZD","symbol":"NULL"},{"id":"514","name":"Solomon Islands","currency":"SBD","symbol":"NULL"},{"id":"515","name":"Tonga","currency":"TOP","symbol":"NULL"},{"id":"516","name":"Tuvalu","currency":"AUD","symbol":"NULL"},{"id":"517","name":"Vanuatu","currency":"VUV","symbol":"NULL"},{"id":"518","name":"Wallis and Futuna Islands","currency":"XPF","symbol":"NULL"},{"id":"519","name":"Samoa","currency":"WST","symbol":"NULL"},{"id":"600","name":"Abu Dhabi","currency":"AED","symbol":"NULL"},{"id":"601","name":"Bahrain","currency":"BHD","symbol":"NULL"},{"id":"602","name":"Dubai","currency":"AED","symbol":"NULL"},{"id":"603","name":"India","currency":"INR","symbol":"NULL"},{"id":"604","name":"Kuwait","currency":"KWD","symbol":"NULL"},{"id":"605","name":"Oman","currency":"OMR","symbol":"NULL"},{"id":"606","name":"Qatar","currency":"QAR","symbol":"NULL"},{"id":"607","name":"Russia","currency":"RUB","symbol":"NULL"},{"id":"608","name":"Saudi-Arabia","currency":"SAR","symbol":"NULL"},{"id":"609","name":"China","currency":"CNY","symbol":"NULL"},{"id":"610","name":"Pakistan","currency":"Rs.","symbol":"Rs."},{"id":"611","name":"Azerbaijan","currency":"AZN","symbol":"NULL"},{"id":"612","name":"Bhutan","currency":"BTN","symbol":"NULL"},{"id":"613","name":"Cambodia","currency":"KHR","symbol":"NULL"},{"id":"614","name":"Hong Kong","currency":"HKD","symbol":"NULL"},{"id":"615","name":"Iran","currency":"IRR","symbol":"NULL"},{"id":"616","name":"Japan","currency":"JPY","symbol":"NULL"},{"id":"617","name":"Jordan","currency":"JOD","symbol":"NULL"},{"id":"618","name":"Kazakhstan","currency":"KZT","symbol":"NULL"},{"id":"619","name":"Kyrgyzstan","currency":"KGS","symbol":"NULL"},{"id":"620","name":"Lao P.D.R.","currency":"LAK","symbol":"NULL"},{"id":"621","name":"Lebanon","currency":"LBP","symbol":"NULL"},{"id":"622","name":"Macao","currency":"MOP","symbol":"NULL"},{"id":"623","name":"Maldives","currency":"MVR","symbol":"NULL"},{"id":"624","name":"Mongolia","currency":"MNT","symbol":"NULL"},{"id":"625","name":"Burma","currency":"MMK","symbol":"NULL"},{"id":"626","name":"Diego Garcia","currency":"USD","symbol":"$"},{"id":"627","name":"Guam","currency":"USD","symbol":"$"},{"id":"628","name":"Iraq","currency":"IQD","symbol":"NULL"},{"id":"629","name":"Kerguelen Archipelago","currency":"EUR","symbol":"€"},{"id":"630","name":"Kiribati","currency":"AUD","symbol":"NULL"},{"id":"631","name":"North Korea","currency":"KPW","symbol":"NULL"},{"id":"632","name":"South Korea","currency":"KRW","symbol":"NULL"},{"id":"633","name":"Kazakstan","currency":"KZT","symbol":"NULL"},{"id":"634","name":"Sri Lanka","currency":"LKR","symbol":"NULL"},{"id":"635","name":"Marshall Islands","currency":"USD","symbol":"$"},{"id":"636","name":"Macau","currency":"MOP","symbol":"NULL"},{"id":"637","name":"Northern Mariana Islands","currency":"USD","symbol":"$"},{"id":"638","name":"Malaysia","currency":"MYR","symbol":"NULL"},{"id":"639","name":"Nepal","currency":"NPR","symbol":"NULL"},{"id":"640","name":"Philippines","currency":"PHP","symbol":"NULL"},{"id":"641","name":"Palau","currency":"USD","symbol":"$"},{"id":"642","name":"Singapore","currency":"SGD","symbol":"NULL"},{"id":"643","name":"Syrian Arab Republic","currency":"SYP","symbol":"NULL"},{"id":"644","name":"Thailand","currency":"THB","symbol":"NULL"},{"id":"645","name":"Turkmenistan","currency":"TMT","symbol":"NULL"},{"id":"646","name":"Taiwan","currency":"TWD","symbol":"NULL"},{"id":"647","name":"United Arab Emirates","currency":"AED","symbol":"NULL"},{"id":"648","name":"Uzbekistan","currency":"UZS","symbol":"NULL"},{"id":"649","name":"Vietnam","currency":"VND","symbol":"NULL"},{"id":"650","name":"Yemen","currency":"YER","symbol":"NULL"},{"id":"652","name":"Myanmar","currency":"MMK","symbol":"NULL"}];
+
+  currencyHtml = "";
+  currencyObj = [{"id":"1","code":"XXX"},{"id":"8","code":"ALL"},{"id":"12","code":"DZD"},{"id":"32","code":"ARS"},{"id":"36","code":"AUD"},{"id":"44","code":"BSD"},{"id":"48","code":"BHD"},{"id":"50","code":"BDT"},{"id":"51","code":"AMD"},{"id":"52","code":"BBD"},{"id":"60","code":"BMD"},{"id":"64","code":"BTN"},{"id":"68","code":"BOB"},{"id":"72","code":"BWP"},{"id":"84","code":"BZD"},{"id":"90","code":"SBD"},{"id":"96","code":"BND"},{"id":"104","code":"MMK"},{"id":"108","code":"BIF"},{"id":"116","code":"KHR"},{"id":"124","code":"CAD"},{"id":"132","code":"CVE"},{"id":"136","code":"KYD"},{"id":"144","code":"LKR"},{"id":"152","code":"CLP"},{"id":"156","code":"CNY"},{"id":"170","code":"COP"},{"id":"174","code":"KMF"},{"id":"188","code":"CRC"},{"id":"191","code":"HRK"},{"id":"192","code":"CUP"},{"id":"203","code":"CZK"},{"id":"208","code":"DKK"},{"id":"214","code":"DOP"},{"id":"222","code":"SVC"},{"id":"230","code":"ETB"},{"id":"232","code":"ERN"},{"id":"238","code":"FKP"},{"id":"242","code":"FJD"},{"id":"262","code":"DJF"},{"id":"270","code":"GMD"},{"id":"292","code":"GIP"},{"id":"320","code":"GTQ"},{"id":"324","code":"GNF"},{"id":"328","code":"GYD"},{"id":"332","code":"HTG"},{"id":"340","code":"HNL"},{"id":"344","code":"HKD"},{"id":"348","code":"HUF"},{"id":"352","code":"ISK"},{"id":"356","code":"INR"},{"id":"360","code":"IDR"},{"id":"364","code":"IRR"},{"id":"368","code":"IQD"},{"id":"376","code":"ILS"},{"id":"388","code":"JMD"},{"id":"392","code":"JPY"},{"id":"398","code":"KZT"},{"id":"400","code":"JOD"},{"id":"404","code":"KES"},{"id":"408","code":"KPW"},{"id":"410","code":"KRW"},{"id":"414","code":"KWD"},{"id":"417","code":"KGS"},{"id":"418","code":"LAK"},{"id":"422","code":"LBP"},{"id":"426","code":"LSL"},{"id":"430","code":"LRD"},{"id":"434","code":"LYD"},{"id":"446","code":"MOP"},{"id":"454","code":"MWK"},{"id":"458","code":"MYR"},{"id":"462","code":"MVR"},{"id":"478","code":"MRO"},{"id":"480","code":"MUR"},{"id":"484","code":"MXN"},{"id":"496","code":"MNT"},{"id":"498","code":"MDL"},{"id":"504","code":"MAD"},{"id":"512","code":"OMR"},{"id":"516","code":"NAD"},{"id":"524","code":"NPR"},{"id":"532","code":"ANG"},{"id":"533","code":"AWG"},{"id":"548","code":"VUV"},{"id":"554","code":"NZD"},{"id":"558","code":"NIO"},{"id":"566","code":"NGN"},{"id":"578","code":"NOK"},{"id":"586","code":"PKR"},{"id":"590","code":"PAB"},{"id":"598","code":"PGK"},{"id":"600","code":"PYG"},{"id":"604","code":"PEN"},{"id":"608","code":"PHP"},{"id":"634","code":"QAR"},{"id":"643","code":"RUB"},{"id":"646","code":"RWF"},{"id":"654","code":"SHP"},{"id":"678","code":"STD"},{"id":"682","code":"SAR"},{"id":"690","code":"SCR"},{"id":"694","code":"SLL"},{"id":"702","code":"SGD"},{"id":"704","code":"VND"},{"id":"706","code":"SOS"},{"id":"710","code":"ZAR"},{"id":"728","code":"SSP"},{"id":"748","code":"SZL"},{"id":"752","code":"SEK"},{"id":"756","code":"CHF"},{"id":"760","code":"SYP"},{"id":"764","code":"THB"},{"id":"776","code":"TOP"},{"id":"780","code":"TTD"},{"id":"784","code":"AED"},{"id":"788","code":"TND"},{"id":"800","code":"UGX"},{"id":"807","code":"MKD"},{"id":"818","code":"EGP"},{"id":"826","code":"GBP"},{"id":"834","code":"TZS"},{"id":"840","code":"USD"},{"id":"858","code":"UYU"},{"id":"860","code":"UZS"},{"id":"882","code":"WST"},{"id":"886","code":"YER"},{"id":"901","code":"TWD"},{"id":"931","code":"CUC"},{"id":"932","code":"ZWL"},{"id":"933","code":"BYN"},{"id":"934","code":"TMT"},{"id":"936","code":"GHS"},{"id":"937","code":"VEF"},{"id":"938","code":"SDG"},{"id":"940","code":"UYI"},{"id":"941","code":"RSD"},{"id":"943","code":"MZN"},{"id":"944","code":"AZN"},{"id":"946","code":"RON"},{"id":"947","code":"CHE"},{"id":"948","code":"CHW"},{"id":"949","code":"TRY"},{"id":"950","code":"XAF"},{"id":"951","code":"XCD"},{"id":"952","code":"XOF"},{"id":"953","code":"XPF"},{"id":"960","code":"XDR"},{"id":"965","code":"XUA"},{"id":"967","code":"ZMW"},{"id":"968","code":"SRD"},{"id":"969","code":"MGA"},{"id":"970","code":"COU"},{"id":"971","code":"AFN"},{"id":"972","code":"TJS"},{"id":"973","code":"AOA"},{"id":"975","code":"BGN"},{"id":"976","code":"CDF"},{"id":"977","code":"BAM"},{"id":"978","code":"EUR"},{"id":"979","code":"MXV"},{"id":"980","code":"UAH"},{"id":"981","code":"GEL"},{"id":"984","code":"BOV"},{"id":"985","code":"PLN"},{"id":"986","code":"BRL"},{"id":"990","code":"CLF"},{"id":"994","code":"XSU"},{"id":"997","code":"USN"}];
+
+    function predicateBy(prop){
+        return function(a,b){
+            if( a[prop] > b[prop]){
+                return 1;
+            }else if( a[prop] < b[prop] ){
+                return -1;
+            }
+            return 0;
+        }
+    }
+
+    //Usage
+    obj.sort( predicateBy("name") );
+
+		 for( i =0 ; i<obj.length;i++) {
+            html += "<option currency="+obj[i].currency +" symbol="+obj[i].symbol +" value=" + obj[i].id  + ">" +obj[i].name + "</option>"
+        }
+        document.getElementById("country").innerHTML = html;
+		  var d = new Date();
+          var n = d.getTime();
+
+    currencyObj.sort( predicateBy("code") );
+    for( i =0 ; i<currencyObj.length;i++) {
+        currencyHtml += "<option currency="+currencyObj[i].code +" value=" + currencyObj[i].id  + ">" +currencyObj[i].code + "</option>"
+    }
+    document.getElementById("currency-code").innerHTML = currencyHtml;
+    $('#orderid').val("CPM"+n);
+		var fields = {
+                 // "language": "us",
+				  //"orderid": "CPM"+n,
+				  "operator": 10300,
+				  "customer-ref": ""
+				};
+		for(var key in fields) {
+            $("#post-order").append("<input type='text' hidden class='form-control' type='hidden' id='" + key  + "' name='" + key  + "' value='" +fields[key] + "'/>");
+        }
+		$("#amount").keyup(function(){
+			var amt =$(this).val();
+			$("#sub-amount").html(amt);
+			$("#final-amount").html(amt);
+		});
+		
+		$("#country").change(function(){
+    	    var currencyCode = $('option:selected', this).attr('currency');
+			$("#operator").attr("value",$("#country option:selected").attr("value") * 100);
+			$("#currency-keyword").html($("#country option:selected").attr("currency"));
+            $("#currency-code option[currency="+currencyCode+"]").prop("selected","selected");
+		});
+		
+		
+		$("#btn-click").click(function(){
+			$("#customer-ref").val($("#email").val());
+			$("#post-order").submit();
+		});
+				
+		//$("#post-order").attr("action","web.php");
+        $("#country option[value=100]").prop("selected","selected");
+    </script>
+        </body>
+        </html>

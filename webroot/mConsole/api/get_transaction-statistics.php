@@ -121,8 +121,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 			$start_date = date( 'Y-m-d H:i:s', strtotime($obj_DOM->{'get-transaction-statistics'}->{'start-date'}));
 			
 			$end_date = date( 'Y-m-d H:i:s', strtotime($obj_DOM->{'get-transaction-statistics'}->{'end-date'}));
-			
-			$obj_TransactionStats = $obj_mPoint->getTransactionStats($aClientIDs, $start_date, $end_date, $aAccountIDs, $pspid, $cardid);
+
+            $sTimeZoneOffset = "0";
+            if(count($obj_DOM->{'get-transaction-statistics'}->UTCOffset)>0) { $sTimeZoneOffset = $obj_DOM->{'get-transaction-statistics'}->UTCOffset;}
+
+            $obj_TransactionStats = $obj_mPoint->getTransactionStats($sTimeZoneOffset , $aClientIDs, $start_date, $end_date, $aAccountIDs, $pspid, $cardid);
 			if($obj_TransactionStats instanceof TransactionStatisticsInfo)
 			{
 				$xml = $obj_TransactionStats->toXML();
