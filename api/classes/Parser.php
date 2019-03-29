@@ -9,6 +9,25 @@
  * File Name:Parser.php
  */
 
+/* Examples
+ * Context -  <?xml version="1.0" encoding="utf-8"?><root><authorize client-id="10007" account="100007"><psp-config id="21" type="1"><name>GlobalCollect</name><merchant-account>337</merchant-account><merchant-sub-account>-1</merchant-sub-account><username>d05f1d86bf1611f7</username><password>t91nuhCNWxVgRJNQK21CXRNAueGjkQT4zuiGPKF/opo=</password><messages></messages><additional-config></additional-config></psp-config><transaction id="1844619" type="30" gmid="-1" mode="0" eua-id="52365" attempt="0" psp-id="21" card-id="8" wallet-id="0" product-type="100" external-id=""><captured-amount country-id="604" currency="KWD" symbol="" format="" alpha2code="KW" alpha3code="KWT" code="414">0</captured-amount><fee country-id="604" currency="KWD" symbol="" format="">0</fee><price /><points country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">-1</points><reward country-id="0" currency="points" symbol="points" format="{PRICE} {CURRENCY}">-1</reward><refund country-id="604" currency="KWD" symbol="" format="">0</refund><orderid>NYSI0O</orderid><mobile country-id="200" country-code="965">9876543210</mobile><operator>20000</operator><email>sagar@cellpointmobile.com</email><device-id /><logo><url>https://hpp-dev2.cellpointmobile.com/css/img/logo.jpg</url><width>100%</width><height>20%</height></logo><css-url>https://s3-ap-southeast-1.amazonaws.com/cpmassets/marchant/mpl/style.css</css-url><accept-url>http://dev2.cellpointmobile.com:8989/booking-confirmation</accept-url><cancel-url>http://dev2.cellpointmobile.com:8989/booking-confirmation</cancel-url><decline-url /><callback-url>https://webhook.site/f4f16c2f-9a98-4241-98ba-5fcc16092231</callback-url><icon-url /><auth-url>http://localhost:10081/mprofile/login</auth-url><language>us</language><auto-capture>false</auto-capture><auto-store-card>false</auto-store-card><markup-language>html5</markup-language><customer-ref /><description /><ip>::1</ip><hmac>df1c34c3ce2b5617a8f3eb7ed1f3145b55fc5e68</hmac><created-date>20190304</created-date><created-time>194856</created-time><authorized-amount country-id="604" currency-id="414" currency="KWD" decimals="3" symbol="" format="" alpha2code="KW" alpha3code="KWT" code="414">100</authorized-amount></transaction><order-attempt>1</order-attempt><card type-id="8"><card-holder-name>GC Test</card-holder-name><card-number>4567350000427977</card-number><expiry-month>12</expiry-month><expiry-year>2020</expiry-year><cvc>123</cvc></card><address country-id="640" alpha2code="PH" alpha3code="PHL" code="608"><full-name>First Last</full-name><company>Cellpoint Mobile</company><street>Place Street 2</street><postal-code>23456789</postal-code><city>Town City</city><state>Place State</state></address></authorize></root>
+ * Rules
+ *  XPATH - orderid ::= (transaction.orderid)
+ *          attempt ::= (@attempt)
+ *  Variables - invoiceid ::= <orderid>"CPM"<transactionid><attempt>
+ *              orderid ::= (transaction.orderid)
+ *              transactionid ::= (transaction.@id)
+ *              attempt ::= (@attempt)
+ *  Constant - storefront ::=  "NMA"
+ *  Conditions - invoiceid ::=  <storefront>(orderid)(@attempt)
+ *               storefront ::=  (markup-language)=="html5"="web":"app"
+ *  Function - timestamp ::= {date.dmY.`timestamp`}  - '`' is placeholder
+ *  Variable In XPath And Fuction - invoiceid ::=  (orderid)(<attempt>){date."dmY"}{memory_get_usage}
+ *                                  attempt ::= "@attempt"
+ *
+ */
+
+
 namespace mPoint\Core {
     /**
      * Class Parser
@@ -18,16 +37,23 @@ namespace mPoint\Core {
     {
         /**
          * @var int
+         *
+         * _iVariableIndex is index which contains the count of rules
+         *
          */
         private $_iVariableIndex = -1;
 
         /**
          * @var array
+         * It contains the actual index for rule and values of rules
          */
         private $_aVariable = array();
 
         /**
          * @var array
+         *
+         * It contain the all rules
+         *
          */
         private $_aRule = array();
 
@@ -38,10 +64,16 @@ namespace mPoint\Core {
 
         /**
          * @var array
+         *
+         * It contains the context on which rule will execute
+         * A Context is a XML string
+         * This class support multiple context
          */
         private $_sContext = array();
 
         /**
+         * This function will set the a rule
+         *
          * @param $name
          * @param $rule
          */
@@ -56,6 +88,8 @@ namespace mPoint\Core {
         }
 
         /**
+         * This will set multiple rule at a time
+         *
          * @param $ruleString
          */
         public function setRules($ruleString)
@@ -74,6 +108,8 @@ namespace mPoint\Core {
         }
 
         /**
+         * This function will return all rules added in class
+         *
          * @return array
          */
         public function getRules()
@@ -87,6 +123,7 @@ namespace mPoint\Core {
         }
 
         /**
+         * This function will add context to class
          * @param $context
          */
         public function setContext($context)
@@ -98,10 +135,13 @@ namespace mPoint\Core {
         }
 
         /**
+         * This function will execute the all rules
+         *
          * @return bool|string
          */
         public function parse()
         {
+            //This loop will calculate the usage of each rule/variable
             foreach ($this->_aVariable as $name => $values) {
                 $index = $values['index'];
                 for ($ruleIndex = 0; $ruleIndex <= $this->_iVariableIndex; $ruleIndex++) {
@@ -112,10 +152,13 @@ namespace mPoint\Core {
                 }
             }
 
+            //This will sort the array, so that high usage count rule will execute first
             arsort($this->_aVariableUsageCount);
             end($this->_aVariableUsageCount);
+
             $lastElementOfArray = key($this->_aVariableUsageCount);
             $parseOutput = '';
+
             foreach ($this->_aVariableUsageCount as $index => $count) {
                 $rule = $this->_aRule[$index];
                 $output = $this->_parseInput($rule);
@@ -134,6 +177,7 @@ namespace mPoint\Core {
         }
 
         /**
+         * This function will parse the rule
          * @param $rule
          * @return bool|string
          */
@@ -145,7 +189,7 @@ namespace mPoint\Core {
                 $currentChar = $rule[$stringIndex];
                 $currentString = substr($rule, $stringIndex);
                 switch ($currentChar) {
-                    case '(' :
+                    case '(' :  // The string in ( and ) will be XPath and it will apply on XML context
                         $stringIndex++;
                         $xmlVariable = $this->_getSubstring($rule, ')', $stringIndex, $nextIndex);
 
@@ -157,24 +201,25 @@ namespace mPoint\Core {
                         $output .= $this->_getValueFromXMLContext($xmlVariable);
                         break;
 
-                    case '<' :
+                    case '<' : // The string in < and > will variable, it is already define in other rule
                         $stringIndex++;
                         $xmlVariable = $this->_getSubstring($rule, '>', $stringIndex, $nextIndex);
                         $stringIndex = $nextIndex;
                         $output .= $this->_aVariable[$xmlVariable]['value'];
                         break;
 
-                    case '"' :
+                    case '"' : // The string in " will be a constant and will be used as it is
                         $stringIndex++;
                         $xmlVariable = $this->_getSubstring($rule, '"', $stringIndex, $nextIndex);
                         $stringIndex = $nextIndex + 1;
                         $output .= $xmlVariable;
                         break;
 
-                    case strpos($currentString, '==') === 0;
+                    case strpos($currentString, '==') === 0; // == Operator will compare LHS with RHL
                         $stringIndex += 2;
                         $nextIndex = $stringIndex;
 
+                        // This will create a substring which need to compare
                         $xmlVariable = $this->_getSubstring($rule, array('=', 'AND', 'OR'), $stringIndex, $nextIndex);
                         if ($rule[$stringIndex] === '<' || $rule[$stringIndex] === '"' || $rule[$stringIndex] === '(') {
                             $xmlVariable = $this->_parseInput($xmlVariable);
@@ -187,7 +232,7 @@ namespace mPoint\Core {
                         $stringIndex = $nextIndex;
                         break;
 
-                    case strpos($currentString, 'AND') === 0;
+                    case strpos($currentString, 'AND') === 0; // AND is used to check all conditions are true or not
                         $stringIndex += 3;
                         $nextIndex = $stringIndex;
 
@@ -205,7 +250,7 @@ namespace mPoint\Core {
                         $stringIndex = $nextIndex;
                         break;
 
-                    case strpos($currentString, 'OR') === 0;
+                    case strpos($currentString, 'OR') === 0; // AND is used to check any conditions is true
                         $stringIndex += 2;
                         $nextIndex = $stringIndex;
 
@@ -223,7 +268,7 @@ namespace mPoint\Core {
                         $stringIndex = $nextIndex;
                         break;
 
-                    case '=' :
+                    case '=' : // if '==', 'AND' or 'OR' is true the it will assign the value next to '='
                         $stringIndex++;
                         if ($output === true) {
                             if ($rule[$stringIndex] === '<' || $rule[$stringIndex] === '"' || $rule[$stringIndex] === '(') {
@@ -239,7 +284,7 @@ namespace mPoint\Core {
                         }
                         break;
 
-                    case ':' :
+                    case ':' :// if '==', 'AND' or 'OR' is false the it will assign the value next to ':'
                         $stringIndex++;
                         if ($output === false) {
                             if ($rule[$stringIndex] === '<' || $rule[$stringIndex] === '"' || $rule[$stringIndex] === '(') {
@@ -254,7 +299,8 @@ namespace mPoint\Core {
                             $stringIndex = $nextIndex;
                         }
                         break;
-                    case '{' :
+                    case '{' : // string between '{' and '}' considered as system or class function
+                        //eg . {date.dmY} here date is a function and dmY is param
                         $stringIndex++;
                         $xmlVariable = $this->_getSubstring($rule, '}', $stringIndex, $nextIndex);
                         $stringIndex = $nextIndex;
@@ -282,6 +328,7 @@ namespace mPoint\Core {
         }
 
         /**
+         * This is used to create a substring
          * @param $subject
          * @param $needle
          * @param $startIndex
@@ -315,6 +362,7 @@ namespace mPoint\Core {
         }
 
         /**
+         * This function will execute the XPATH on context
          * @param $xpath
          * @return string
          */
@@ -337,6 +385,7 @@ namespace mPoint\Core {
         }
 
         /**
+         * This will return the value of a rule/variable
          * @param $variableName
          * @return null/string
          */
