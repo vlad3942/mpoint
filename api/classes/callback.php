@@ -826,9 +826,9 @@ abstract class Callback extends EndUserAccount
         case (Constants::iPAYU_PSP):
                 return new PayU($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["payu"]);
 		case (Constants::iCielo_ACQUIRER):
-                return new PayU($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cielo"]);
+                return new Cielo($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cielo"]);
         default:
-			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
+ 			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
 	}
 
