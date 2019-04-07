@@ -14,6 +14,6 @@ class Cielo extends CPMACQUIRER
 
     public function getPSPID()
     {
-        return Constants::iCielo_ACQUIRERs;
+        return Constants::iCielo_ACQUIRER;
     }
 }
