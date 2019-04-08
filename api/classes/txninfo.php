@@ -924,6 +924,11 @@ class TxnInfo
             $xml .= '<booking-ref>'. htmlspecialchars($this->getAdditionalData("booking-ref"), ENT_NOQUOTES) .'</booking-ref>';
         }
 
+        if($this->getAdditionalData('invoiceid') !== null)
+        {
+            $xml .= '<invoiceid>'. htmlspecialchars($this->getAdditionalData("invoiceid"), ENT_NOQUOTES) .'</invoiceid>';
+        }
+
 		if(!empty($this->_token))
             $xml .= '<token>'.htmlspecialchars($this->_token, ENT_NOQUOTES).'</token>';
 
@@ -1669,5 +1674,18 @@ class TxnInfo
         return $stateId;
     }
 
+    public function setInvoiceId(RDB $obj_DB, $invoiceId)
+    {
+    	if(isset($invoiceId))
+    	{
+
+	 		$additionalTxnData = [];
+            $additionalTxnData[0]['name'] = 'invoiceid';
+            $additionalTxnData[0]['value'] = $invoiceId;
+            $additionalTxnData[0]['type'] = 'Transaction';
+			$this->setAdditionalDetails($obj_DB, $additionalTxnData,$this->getID());
+			$this->_aAdditionalData['invoiceid'] = $invoiceId;
+		}
+    }
 }
 ?>
