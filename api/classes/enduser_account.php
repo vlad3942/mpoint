@@ -871,8 +871,8 @@ class EndUserAccount extends Home
 				SET enabled = '1' WHERE countryid = ". $oCC->getID() ."
 				AND ". $sql ." AND enabled = '0' AND length(passwd) = 0";
 //		echo $sql ."\n";
-
-        return is_resource($oDB->query($sql) );
+        $result = $oDB->query($sql);
+        return (is_resource($result)=== true && $oDB->countAffectedRows($result) == 1);
     }
 
 	/**

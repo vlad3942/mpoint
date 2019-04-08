@@ -44,7 +44,8 @@ require_once(sCLASS_PATH ."/account_config.php");
 require_once(sCLASS_PATH ."/payment_processor.php");
 // Require Data class for Wallet processor
 require_once(sCLASS_PATH ."/wallet_processor.php");
-
+// Require specific Business logic for the Google Pay component
+require_once(sCLASS_PATH ."/googlepay.php");
 $aMsgCds = array();
 
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
