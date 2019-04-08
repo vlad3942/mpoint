@@ -102,6 +102,8 @@ require_once(sCLASS_PATH ."/chase.php");
 // Require specific Business logic for the Global Collect component
 require_once(sCLASS_PATH ."/globalcollect.php");
 require_once(sCLASS_PATH ."/worldpay.php");
+// Require specific Business logic for the PayU component
+require_once(sCLASS_PATH ."/payu.php");
 /**
  * Input XML format
  *

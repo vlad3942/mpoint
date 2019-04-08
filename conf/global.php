@@ -869,7 +869,20 @@ $aHTTP_CONN_INFO["chase"]["paths"]["settlement"] = "/mpsp/chase/payment-settleme
 $aHTTP_CONN_INFO["chase"]["paths"]["process-settlement"] = "/mpsp/chase/process-settlement";
 
 
-
+/**
+ * Connection info for connecting to PayU
+ */
+$aHTTP_CONN_INFO["payu"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["payu"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["payu"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["payu"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["payu"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["payu"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["payu"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["payu"]["paths"]["initialize"] = "/mpoint/payu/initialize";
+$aHTTP_CONN_INFO["payu"]["paths"]["auth"] = "/mpoint/payu/authorize-payment";
+$aHTTP_CONN_INFO["payu"]["paths"]["refund"] = "/mpoint/payu/refund";
+$aHTTP_CONN_INFO["payu"]["paths"]["callback"] = "/mpoint/payu/callback";
 
 /**
  * GoMobile Connection Info.

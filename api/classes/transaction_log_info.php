@@ -224,7 +224,7 @@ class TransactionLogInfo
 		
 		$this->_aObj_MessageInfos = $aObj_Msgs;
 		$this->_sDescription = trim($desc);
-		$this->_obj_OrderInfo = $oOI;
+		$this->_obj_OrderInfo = (($oOI instanceof OrderInfo) === true)?$oOI:null;
 	}
 
 	public function getID() { return $this->_iID; }
