@@ -828,6 +828,19 @@ abstract class Constants
      *
      */
     const iCHASE_ACQUIRER = 52;
+
+    /**
+     * Unique ID for the Payment Service Provider: PayU
+     *
+     */
+    const iPAYU_PSP = 53;
+
+    /**
+     * Unique ID for the Payment Service Provider: Cielo
+     *
+     */
+    const iCielo_ACQUIRER = 54;
+
     /**
 	 * Unique ID for the Electronic Payment Flow
 	 *

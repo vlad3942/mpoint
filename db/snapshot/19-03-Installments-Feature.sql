@@ -1,14 +1,3 @@
-ALTER TABLE system.psp_tbl ADD installment INT DEFAULT 0 NOT NULL;
-
-COMMENT ON COLUMN system.psp_tbl.installment
-IS
-'Default 0 - No installment option
-1 - Offline Installment';
-
---enable Offline Installment option for a PSP - Adyen
-UPDATE system.psp_tbl SET installment = 1 WHERE id = 12;
-
-
 ALTER TABLE client.client_tbl ADD installment INT DEFAULT 0 NULL;
 COMMENT ON COLUMN client.client_tbl.installment IS 'Default to 0 installment not enabled
 1 - offline Installments';
@@ -23,3 +12,18 @@ For merchant financed is usually monthly ';
 
 ALTER TABLE log.transaction_tbl ADD installment_value INT DEFAULT 0 NULL;
 COMMENT ON COLUMN log.transaction_tbl.installment_value IS 'Installment value is the number of installments selected by the user';
+
+---
+
+ALTER TABLE system.psp_tbl DROP installment;
+
+ALTER TABLE  client.cardaccess_tbl ADD installment INT DEFAULT 0 NOT NULL;
+
+COMMENT ON COLUMN  client.cardaccess_tbl.installment
+IS
+'Default 0 - No installment option
+1 - Offline Installment';
+
+
+--Sandbox sql sample to enable Offline Installment option for a PSP - Adyen
+UPDATE client.cardaccess_tbl SET installment = 1 WHERE clientid = 10007 and pspid=12 and cardid = 8 and countryid=100 and enabled=true;

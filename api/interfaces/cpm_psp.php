@@ -1,5 +1,7 @@
 <?php
 
+require_once sCLASS_PATH .'/Parser.php';
+
 abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiadable, Redeemable, Invoiceable
 {
     private $_obj_ResponseXML = null;
@@ -350,6 +352,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, $obj_ClientInfo = NULL)
 	{
+	    $this->genInvoiceId();
 		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML(Constants::iPrivateProperty) );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
@@ -566,6 +569,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         {
             $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["tokenize"]);
             $sToken = "";
+            $sResponseXML = "";
             $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
             $obj_HTTP->connect();
             $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
@@ -583,6 +587,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                     //echo $sql ."\n";
                     $this->getDBConn()->query($sql);
                     $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_TOKENIZATION_COMPLETE_STATE, $sToken. " generated for transactionID ". $this->getTxnInfo()->getID());
+                    $sResponseXML = $obj_XML->status->card->asXML();
                 }
             }
             else
@@ -601,7 +606,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             //re-throw the exception to the calling controller.
             throw $e;
         }
-        return $sToken;
+        return $sResponseXML;
     }
 
 	public function redeem($iVoucherID, $iAmount=-1)
@@ -1060,4 +1065,34 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         }
         return $code;
     }
+
+    private function genInvoiceId()
+    {
+        if($this->getTxnInfo()->getAdditionalData('invoiceid') === null)
+        {
+            $context = '<root>';
+            $context .= $this->getPSPConfig()->toXML(Constants::iInternalProperty);
+
+            $context .= str_replace('<?xml version="1.0"?>', '', $this->getClientConfig()->toXML(Constants::iPrivateProperty));
+            $context .= $this->_constTxnXML();
+            $context .= $this->_constOrderDetails($this->getTxnInfo()) ;
+            $context .= '</root>';
+            $parser = new  \mPoint\Core\Parser();
+            $parser->setContext($context);
+
+            $rules = $this->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty);
+
+            foreach ($rules as $value )
+            {
+                if($value['scope'] == 0 && strpos($value['key'], 'rule') !== false)
+                {
+                    $parser->setRules($value['value']);
+                }
+            }
+
+            $output = $parser->parse();
+            $this->getTxnInfo()->setInvoiceId($this->getDBConn(),$output);
+        }
+    }
+
 }

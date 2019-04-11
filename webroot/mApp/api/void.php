@@ -91,6 +91,10 @@ require_once(sCLASS_PATH ."/citcon.php");
 require_once(sCLASS_PATH ."/paytabs.php");
 // Require specific Business logic for the eGHL FPX component
 require_once(sCLASS_PATH ."/eghl.php");
+// Require specific Business logic for the PayU component
+require_once(sCLASS_PATH ."/payu.php");
+// Require specific Business logic for the Cielo component
+require_once(sCLASS_PATH ."/cielo.php");
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
  

@@ -101,45 +101,35 @@ class PostAuthAction {
 			
 			$sql = "SELECT pg_advisory_lock(" . $ID . ")";
 			
-			$res = $oDB->query ( $sql );
+			$oDB->query ( $sql );
 			
 			$sql = "SELECT id
 				FROM Client" . sSCHEMA_POSTFIX . ".gatewaystat_tbl
 				WHERE clientid = " . intval ( $clientId ) . " AND gatewayid = " . intval ( $pspId ) . " AND statetypeid=1 AND enabled = '1'";
 			
-			// echo $sql ."\n";
 			$RS = $oDB->getName ( $sql );
 			
 			if (is_array ( $RS ) === true && intval ( $RS ["ID"] ) > 0) {
 				// Record exists, and counter to be increased
 				$sql = "UPDATE client" . sSCHEMA_POSTFIX . ".gatewaystat_tbl gt SET statvalue = statvalue + 1 WHERE id = " . intval ( $RS ["ID"] );
 				$res = $oDB->query ( $sql );
-				
-				if (is_resource ( $res ) === true) {
-					trigger_error ( "Updated count for transaction: " . $txnInfo->getID (), E_USER_NOTICE );
-				} else {
-					trigger_error ( "Failed to update count for transaction: " . $txnInfo->getID (), E_USER_ERROR );
+				if (is_resource ( $res ) === false) {
+                    trigger_error ( "Failed to update count for transaction: " . $txnInfo->getID (), E_USER_ERROR );
 				}
 			} else {
 				// No record exists and create a new one
 				$sql = "INSERT INTO client" . sSCHEMA_POSTFIX . ".gatewaystat_tbl( gatewayid, clientid, statetypeid, statvalue)" . " VALUES (" . $pspId . ", " . $clientId . ",1,1 )";
-				// echo $sql ;
 				$res = $oDB->query ( $sql );
-				if (is_resource ( $res ) === true) {
-					trigger_error ( "Inserted count for transaction: " . $txnInfo->getID (), E_USER_NOTICE );
-				} else {
-					trigger_error ( "Failed to insert count for transaction: " . $txnInfo->getID (), E_USER_ERROR );
+				if (is_resource ( $res ) === false) {
+                    trigger_error ( "Failed to insert count for transaction: " . $txnInfo->getID (), E_USER_ERROR );
 				}
 			}
 			$sql = "SELECT pg_advisory_unlock(" . $ID . ")";
-			
-			$res = $oDB->query ( $sql );
-			trigger_error ( "Unlocked Id :" . $ID, E_USER_NOTICE );
+			$oDB->query ( $sql );
 		} catch ( Exception $e ) {
 			$sql = "SELECT pg_advisory_unlock(" . $ID . ")";
-			
-			$res = $oDB->query ( $sql );
-			trigger_error ( "Unlocked Id :" . $ID, E_USER_NOTICE );
+			$oDB->query ( $sql );
+            trigger_error ( "Failed to insert/update count for transaction: " . $txnInfo->getID (), E_USER_ERROR );
 		}
 	}
 }
