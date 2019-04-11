@@ -885,6 +885,23 @@ $aHTTP_CONN_INFO["payu"]["paths"]["refund"] = "/mpoint/payu/refund";
 $aHTTP_CONN_INFO["payu"]["paths"]["callback"] = "/mpoint/payu/callback";
 
 /**
+ * Connection info for connecting to Cielo
+ */
+$aHTTP_CONN_INFO["cielo"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["cielo"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["cielo"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["cielo"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["cielo"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["cielo"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["cielo"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["cielo"]["paths"]["auth"] = "/mpsp/cielo/authorize-payment";
+$aHTTP_CONN_INFO["cielo"]["paths"]["capture"] = "/mpsp/cielo/capture";
+$aHTTP_CONN_INFO["cielo"]["paths"]["initialize"] = "/mpsp/cielo/initialize";
+$aHTTP_CONN_INFO["cielo"]["paths"]["refund"] = "/mpsp/cielo/void";
+$aHTTP_CONN_INFO["cielo"]["paths"]["cancel"] = "/mpsp/cielo/void";
+
+
+/**
  * GoMobile Connection Info.
  * The array should contain the following indexes:
  * <code>
