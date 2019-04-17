@@ -209,7 +209,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             $xml .= '<token>' . $token . '</token>';
                                         $xml .= '</card-tokens>';
                                     }
-                                } else if ($iDelStatus == 1) {
+                                } else if ($obj->status == 1) {
                                     header("HTTP/1.1 403 Forbidden");
 
                                     $xml = '<status code="51">Cannot Disable account</status>';
