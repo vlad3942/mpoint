@@ -10,7 +10,6 @@ class DeleteAccountAPITest extends baseAPITest
 
     public function __construct()
     {
-        date_default_timezone_set("Asia/Calcutta");
         $this->constHTTPClient();
     }
 
