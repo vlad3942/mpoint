@@ -133,14 +133,36 @@ class PSPConfig extends BasicConfig
 	 */
 	public function getMessage($lang) { return @$this->_aMessages[strtolower($lang)]; }
 
-	public function toXML($propertyScope=2)
+	public function toXML($propertyScope=2, $aMerchantAccountDetails = array())
 	{
 		$xml  = '<psp-config id="'. $this->getID() .'" type="'. $this->getProcessorType().'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
-		$xml .= '<merchant-account>'. htmlspecialchars($this->_sMerchantAccount, ENT_NOQUOTES) .'</merchant-account>';
 		$xml .= '<merchant-sub-account>'. htmlspecialchars($this->_sMerchantSubAccount, ENT_NOQUOTES) .'</merchant-sub-account>';
-		$xml .= '<username>'. htmlspecialchars($this->_sUsername, ENT_NOQUOTES) .'</username>';
-		$xml .= '<password>'. htmlspecialchars($this->_sPassword, ENT_NOQUOTES) .'</password>';
+		if (count($aMerchantAccountDetails) > 0)        {
+            $merchantaccount = $aMerchantAccountDetails['merchantaccount'];
+            $username = $aMerchantAccountDetails['username'];
+            $password = $aMerchantAccountDetails['password'];
+            if (isset($merchantaccount) === false || $merchantaccount === false || $merchantaccount === '' ) {
+                $merchantaccount = $this->_sMerchantAccount;
+            }
+
+            if (isset($username) === false || $username === false || $username === '') {
+                $username = $this->_sUsername;
+            }
+
+            if (isset($password) === false || $password === false || $password === '') {
+                $password = $this->_sPassword;
+            }
+
+            $xml .= '<merchant-account>' . htmlspecialchars($merchantaccount, ENT_NOQUOTES) . '</merchant-account>';
+            $xml .= '<username>' . htmlspecialchars($username, ENT_NOQUOTES) . '</username>';
+            $xml .= '<password>' . htmlspecialchars($password, ENT_NOQUOTES) . '</password>';
+        }
+		else {
+            $xml .= '<merchant-account>' . htmlspecialchars($this->_sMerchantAccount, ENT_NOQUOTES) . '</merchant-account>';
+            $xml .= '<username>' . htmlspecialchars($this->_sUsername, ENT_NOQUOTES) . '</username>';
+            $xml .= '<password>' . htmlspecialchars($this->_sPassword, ENT_NOQUOTES) . '</password>';
+        }
 		$xml .= '<messages>';
 		foreach ($this->_aMessages as $lang => $msg)
 		{
@@ -150,7 +172,9 @@ class PSPConfig extends BasicConfig
         $xml .= '<additional-config>';
         foreach ($this->getAdditionalProperties($propertyScope) as $aAdditionalProperty)
         {
-            $xml .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
+             if (strpos($aAdditionalProperty['key'], 'rule') === false) {
+                 $xml .= '<property name="' . $aAdditionalProperty['key'] . '">' . $aAdditionalProperty['value'] . '</property>';
+             }
         }
         $xml .= '</additional-config>';
 		$xml .= '</psp-config>';
@@ -237,7 +261,7 @@ class PSPConfig extends BasicConfig
     {
         $isAll = false;
         $returnProperties = [];
-        if ($key == '')
+        if ($key === '')
         {
             $isAll = true;
         }
@@ -265,6 +289,5 @@ class PSPConfig extends BasicConfig
 
         return false;
     }
-
 }
 ?>

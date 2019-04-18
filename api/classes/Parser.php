@@ -196,8 +196,18 @@ namespace mPoint\Core {
                         if ($rule[$stringIndex] === '<' || $rule[$stringIndex] === '"') {
                             $xmlVariable = $this->_parseInput($xmlVariable);
                         }
+                        else {
+                            $varPosition = strpos($rule, '<');
+                            if ($varPosition !== false) {
+                                $dummyNextPosition = 0;
+                                $xmlSubstr = $this->_getSubstring($rule, '>', $varPosition, $dummyNextPosition);
+                                $xmlVariable1 = $this->_parseInput($xmlSubstr . '>');
+                                $xmlVariable = str_replace($xmlSubstr.'>', $xmlVariable1, $xmlVariable);
+                            }
+                        }
                         $stringIndex = $nextIndex;
-                        $xmlVariable = str_replace('.', '/', $xmlVariable);
+                        $xmlVariable = preg_replace('~\[.*?\](*SKIP)(*FAIL)|\.~s', '/', $xmlVariable);
+                        //$xmlVariable = str_replace('.', '/', $xmlVariable);
                         $output .= $this->_getValueFromXMLContext($xmlVariable);
                         break;
 
