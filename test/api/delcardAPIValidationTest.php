@@ -90,7 +90,7 @@ class DelCardAPIValidationTest extends baseAPITest
         $this->assertEquals(200, $iStatus);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100" eua-id="5001">Card successfully deleted</status><token>1767989 ### CELLPOINT ### 100 ### DKK</token></root>', $sReplyBody);
 
-        $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775");
+        $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775 and enabled = '1'");
         $this->assertTrue(is_resource($res));
         $this->assertTrue(pg_num_rows($res) == 0);
     }
@@ -119,7 +119,7 @@ class DelCardAPIValidationTest extends baseAPITest
         $this->assertEquals(403, $iStatus);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="51">Cannot delete card with ongoing transactions</status></root>', $sReplyBody);
 
-        $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775");
+        $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775 and enabled = '1'");
         $this->assertTrue(is_resource($res));
         $this->assertTrue(pg_num_rows($res) == 1);
     }
@@ -152,12 +152,13 @@ class DelCardAPIValidationTest extends baseAPITest
         $this->assertEquals(200, $iStatus);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100" eua-id="5001">Card successfully deleted</status><token>1767989 ### CELLPOINT ### 100 ### DKK</token></root>', $sReplyBody);
 
-        $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl");
+        $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775 and enabled = '1'");
+        $this->assertTrue(is_resource($res));
+        $this->assertTrue(pg_num_rows($res) == 0);
+
+        $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61776 and enabled = '1'");
         $this->assertTrue(is_resource($res));
         $this->assertTrue(pg_num_rows($res) == 1);
-
-        $row = pg_fetch_assoc($res);
-        $this->assertEquals(61776, $row["id"]);
     }
 
     public function testExpiredOngoingTransaction()
@@ -184,7 +185,7 @@ class DelCardAPIValidationTest extends baseAPITest
         $this->assertEquals(200, $iStatus);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100" eua-id="5001">Card successfully deleted</status><token>1767989 ### CELLPOINT ### 100 ### DKK</token></root>', $sReplyBody);
 
-        $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775");
+        $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775 and enabled = '1'");
         $this->assertTrue(is_resource($res));
         $this->assertTrue(pg_num_rows($res) == 0);
     }
@@ -216,7 +217,7 @@ class DelCardAPIValidationTest extends baseAPITest
         $this->assertEquals(200, $iStatus);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100" eua-id="5001">Card successfully deleted</status><token>1767989 ### CELLPOINT ### 100 ### DKK</token></root>', $sReplyBody);
 
-        $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775");
+        $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775 and enabled = '1'");
         $this->assertTrue(is_resource($res));
         $this->assertTrue(pg_num_rows($res) == 0);
     }
@@ -247,7 +248,7 @@ class DelCardAPIValidationTest extends baseAPITest
         $this->assertEquals(200, $iStatus);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100" eua-id="5001">Card successfully deleted</status><token>1767989 ### CELLPOINT ### 100 ### DKK</token></root>', $sReplyBody);
 
-        $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775");
+        $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775 and enabled = '1'");
         $this->assertTrue(is_resource($res));
         $this->assertTrue(pg_num_rows($res) == 0);
     }
@@ -275,7 +276,7 @@ class DelCardAPIValidationTest extends baseAPITest
         $this->assertEquals(200, $iStatus);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="100" eua-id="5001">Card successfully deleted</status><token>1767989 ### CELLPOINT ### 100 ### DKK</token></root>', $sReplyBody);
 
-        $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775");
+        $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775 and enabled = '1'");
         $this->assertTrue(is_resource($res));
         $this->assertTrue(pg_num_rows($res) == 0);
     }
@@ -305,7 +306,7 @@ class DelCardAPIValidationTest extends baseAPITest
         //$this->assertEquals(403, $iStatus);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="51">Cannot delete card with ongoing transactions</status></root>', $sReplyBody);
 
-        $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775");
+        $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775 and enabled = '1'");
         $this->assertTrue(is_resource($res));
         $this->assertTrue(pg_num_rows($res) == 1);
     }
@@ -331,7 +332,7 @@ class DelCardAPIValidationTest extends baseAPITest
         $this->assertEquals(403, $iStatus);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?><root><status code="31">Authentication failed</status></root>', $sReplyBody);
 
-        $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775");
+        $res = $this->queryDB("SELECT * FROM EndUser.Card_Tbl WHERE id = 61775 and enabled = '1'");
         $this->assertTrue(is_resource($res));
         $this->assertTrue(pg_num_rows($res) == 1);
         $this->bIgnoreErrors=true; //warning or error is expected.
