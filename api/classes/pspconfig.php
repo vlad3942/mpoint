@@ -137,7 +137,6 @@ class PSPConfig extends BasicConfig
 	{
 		$xml  = '<psp-config id="'. $this->getID() .'" type="'. $this->getProcessorType().'">';
 		$xml .= '<name>'. htmlspecialchars($this->getName(), ENT_NOQUOTES) .'</name>';
-		$xml .= '<merchant-sub-account>'. htmlspecialchars($this->_sMerchantSubAccount, ENT_NOQUOTES) .'</merchant-sub-account>';
 		if (count($aMerchantAccountDetails) > 0)        {
             $merchantaccount = $aMerchantAccountDetails['merchantaccount'];
             $username = $aMerchantAccountDetails['username'];
@@ -155,11 +154,13 @@ class PSPConfig extends BasicConfig
             }
 
             $xml .= '<merchant-account>' . htmlspecialchars($merchantaccount, ENT_NOQUOTES) . '</merchant-account>';
+            $xml .= '<merchant-sub-account>'. htmlspecialchars($this->_sMerchantSubAccount, ENT_NOQUOTES) .'</merchant-sub-account>';
             $xml .= '<username>' . htmlspecialchars($username, ENT_NOQUOTES) . '</username>';
             $xml .= '<password>' . htmlspecialchars($password, ENT_NOQUOTES) . '</password>';
         }
 		else {
             $xml .= '<merchant-account>' . htmlspecialchars($this->_sMerchantAccount, ENT_NOQUOTES) . '</merchant-account>';
+            $xml .= '<merchant-sub-account>'. htmlspecialchars($this->_sMerchantSubAccount, ENT_NOQUOTES) .'</merchant-sub-account>';
             $xml .= '<username>' . htmlspecialchars($this->_sUsername, ENT_NOQUOTES) . '</username>';
             $xml .= '<password>' . htmlspecialchars($this->_sPassword, ENT_NOQUOTES) . '</password>';
         }
