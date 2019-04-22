@@ -1,0 +1,1 @@
+ALTER TABLE Log.ExternalReference_Tbl OWNER TO mpoint;

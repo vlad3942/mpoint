@@ -130,6 +130,8 @@ require_once(sCLASS_PATH . "/eghl.php");
 require_once(sCLASS_PATH ."/chase.php");
 // Require specific Business logic for the PayU component
 require_once(sCLASS_PATH ."/payu.php");
+// Require specific Business logic for the Cielo component
+require_once(sCLASS_PATH ."/cielo.php");
 
 $aMsgCds = array();
 
@@ -821,15 +823,35 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                               $xml .= trim($obj_Elem->asXML() );
                                             }
                                             break;
-                                            case (Constants::iPAYU_PSP):
-                                                $obj_PSP = new PayU($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["payu"]);
-                                                $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
+                                        case (Constants::iPAYU_PSP):
+                                            $obj_PSP = new PayU($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["payu"]);
+                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"]);
 
-                                                foreach ($obj_XML->children() as $obj_Elem)
-                                                {
-                                                    $xml .= trim($obj_Elem->asXML() );
-                                                }
-                                                break;
+                                            foreach ($obj_XML->children() as $obj_Elem)
+                                            {
+                                                $xml .= trim($obj_Elem->asXML() );
+                                            }
+                                            break;
+                                        case (Constants::iCielo_ACQUIRER):
+                                            $obj_PSP = new Cielo($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["cielo"]);
+                                            $token = '';
+                                            if (count($obj_DOM->pay[$i]->transaction->card->token) == 1)
+                                            {
+                                                $token = $obj_DOM->pay[$i]->transaction->card->token;
+                                            }
+
+                                            $billingAddress = null;
+                                            if (count($obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}) == 1)
+                                            {
+                                                $billingAddress = $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'};
+                                            }
+                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $token, $billingAddress);
+
+                                            foreach ($obj_XML->children() as $obj_Elem)
+                                            {
+                                                $xml .= trim($obj_Elem->asXML() );
+                                            }
+                                            break;
                                         }
 										$xml .= '<message language="'. htmlspecialchars($obj_TxnInfo->getLanguage(), ENT_NOQUOTES) .'">'. htmlspecialchars($obj_PSPConfig->getMessage($obj_TxnInfo->getLanguage() ), ENT_NOQUOTES) .'</message>';
 										$xml .= '</psp-info>';
