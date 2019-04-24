@@ -105,7 +105,8 @@ header("Content-Type: application/x-www-form-urlencoded");
 
 // Require Business logic for the validating client Input
 require_once(sCLASS_PATH ."/validate.php");
-
+// Require specific Business logic for the Cielo component
+require_once(sCLASS_PATH ."/cielo.php");
 set_time_limit(120);
 $aMsgCds = array();
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
