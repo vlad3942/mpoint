@@ -720,6 +720,7 @@ class mConsole extends Admin
 				)
 				SELECT Txn.*,
 					CT.code AS currencycode,
+					CT.id AS paymentcurrency,
 					CL.id AS clientid, CL.name AS client,
 					Acc.id AS accountid, Acc.name AS account,
 					PSP.id AS pspid, PSP.name AS psp,
@@ -809,7 +810,9 @@ class mConsole extends Admin
 					}
 				}
 			}
-			
+
+			$paymentCurrencyConfig = CurrencyConfig::produceConfig($this->getDBConn(),$RS["PAYMENTCURRENCY"]);
+
 			if(in_array( $RS["STATEID"], $aStateIDs ) == true)
 			{
 				$aObj_TransactionLogs[] = new TransactionLogInfo($RS["TXNID"],
@@ -834,7 +837,8 @@ class mConsole extends Admin
 						gmdate("Y-m-d H:i:sP", strtotime(substr($RS["CREATED"], 0, strpos($RS["CREATED"], ".") ) ) ),
 						$aObj_Messages,
 						"",
-						$RS["CURRENCYCODE"]);
+                        $paymentCurrencyConfig
+                        );
 			}
 		}
 		
@@ -865,7 +869,8 @@ class mConsole extends Admin
 					Txn.mobile as mobile, Txn.email as email, Txn.lang AS language,CL.id AS clientid, CL.name AS client, U1.url AS authurl,
 					Acc.id AS accountid, Acc.markup as markup, Acc.mobile as acc_mobile, Acc.name AS account,PSP.id AS pspid, PSP.name AS psp,
 					PM.id AS paymentmethodid, PM.name AS paymentmethod,Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description,
-					CT.code AS currencycode
+					CT.code AS currencycode,
+					CT.id AS paymentcurrency
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON Txn.accountid = Acc.id
@@ -895,13 +900,14 @@ class mConsole extends Admin
 		
 		$aObj_TransactionLogs = array();
 		$aObj_CountryConfigurations = array();
+
 		//trigger_error( $sql ."\n" );
 		// Construct XML Document with data for Transaction
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
 			if (array_key_exists($RS["COUNTRYID"], $aObj_CountryConfigurations) === false) { $aObj_CountryConfigurations[$RS["COUNTRYID"] ] = CountryConfig::produceConfig($this->getDBConn(), $RS["COUNTRYID"]); }
 			$aObj_Messages = array();
-	
+            $paymentCurrencyConfig = CurrencyConfig::produceConfig($this->getDBConn(),$RS["PAYMENTCURRENCY"]);
 			if(in_array( $RS["ASSTATEID"], $aStateIDs ) == true)
 			{
 				$aObj_TransactionLogs[] = new TransactionLogInfo($RS["ID"],
@@ -928,7 +934,7 @@ class mConsole extends Admin
 						date("Y-m-d H:i:s", strtotime($RS["CREATED"]) ),
 						$aObj_Messages,
 						"",
-						$RS["CURRENCYCODE"],
+                        $paymentCurrencyConfig,
                         OrderInfo::produceConfigurations($this->getDBConn(), $RS["ID"])
                     );
 			}
