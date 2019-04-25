@@ -350,9 +350,9 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		else { throw new UnexpectedValueException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 	}
 
-	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, $obj_ClientInfo = NULL)
+	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL)
 	{
-	    $this->genInvoiceId();
+	    $this->genInvoiceId($obj_ClientInfo);
 		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML(Constants::iPrivateProperty) );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
@@ -385,7 +385,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		if(is_null($obj_ClientInfo) == false)
 		{
-		$b .= $obj_ClientInfo->asXML(Constants::iPrivateProperty);
+		    $b .= $obj_ClientInfo->toXML();
 		}
 		$b .= '</initialize>';
 		$b .= '</root>';
@@ -431,7 +431,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		return $obj_XML;
 	}
 
-	public function authorize(PSPConfig $obj_PSPConfig, $obj_Card)
+	public function authorize(PSPConfig $obj_PSPConfig, $obj_Card, ClientInfo $clientInfo = null)
 	{
 	    try
         {
@@ -485,7 +485,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
         }
 
-
+        if($clientInfo !== null && $clientInfo instanceof ClientInfo)
+        {
+            $b .= $clientInfo->toXML();
+        }
         $b .= '</authorize>';
         $b .= '</root>';
 
@@ -1066,7 +1069,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         return $code;
     }
 
-    private function genInvoiceId()
+    private function genInvoiceId(ClientInfo $objClientInfo)
     {
         if($this->getTxnInfo()->getAdditionalData('invoiceid') === null)
         {
@@ -1076,6 +1079,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $context .= str_replace('<?xml version="1.0"?>', '', $this->getClientConfig()->toXML(Constants::iPrivateProperty));
             $context .= $this->_constTxnXML();
             $context .= $this->_constOrderDetails($this->getTxnInfo()) ;
+            if($objClientInfo !== null and $objClientInfo instanceof ClientInfo)
+            {
+                $context .= $objClientInfo->toXML();
+            }
             $context .= '</root>';
             $parser = new  \mPoint\Core\Parser();
             $parser->setContext($context);
