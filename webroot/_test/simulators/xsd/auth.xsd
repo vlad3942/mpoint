@@ -131,7 +131,6 @@
 									<xs:attribute name="type-id" type="xs:positiveInteger" use="required" />
 								</xs:complexType>
 							</xs:element>
-							<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1"/>
 							<!--<xs:element name="account" minOccurs="0" maxOccurs="1">
 								<xs:complexType>
 									<xs:all>
@@ -172,6 +171,7 @@
 								</xs:complexType>
 							</xs:element>-->
 							<xs:any maxOccurs="1" processContents="skip"/>
+							<xs:element name="client-info" type="client-info" minOccurs="1" maxOccurs="1"/>
 						</xs:sequence>
 						<xs:attribute type="xs:positiveInteger" name="client-id" />
 						<xs:attribute type="xs:positiveInteger" name="account" />
