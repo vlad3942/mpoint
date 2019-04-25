@@ -1436,6 +1436,11 @@ class mConsole extends Admin
         			$aSelector[] = 'COUNTRY.NAME AS country_id';
         			$aOrderbyClauses[] = 'country_id '.$orderby['country_id'];
         			break;
+                case 'psp' :
+                    $aSelector[] = 'P.NAME AS psp';
+                    $aSeriesSelector[] = "COALESCE(Q.psp,'') as psp";
+                    $aOrderbyClauses[] = 'psp '.$orderby['psp'];
+                    break;
 				default:
 					$aSelector[] = strtolower($column);
 					break;
@@ -1446,6 +1451,10 @@ class mConsole extends Admin
 
 		$sql .= " FROM LOG".sSCHEMA_POSTFIX.".TRANSACTION_TBL AS T INNER JOIN LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL AS M ON T.ID = M.TXNID ";
 
+        if(in_array('psp', $aColumns) === true )
+        {
+            $sql .= " INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".PSP_TBL AS P ON T.PSPID = P.ID ";
+        }
 
 		if(array_key_exists('paymenttypeid', $aFilters) === true)
 		{
