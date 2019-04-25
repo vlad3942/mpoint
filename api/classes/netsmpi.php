@@ -26,7 +26,7 @@ class NetsMpi extends CPMMPI
                             WHERE id = " . $this->getTxnInfo()->getID();
         //echo $sql ."\n";
         $this->getDBConn()->query($sql);
-
+        $aMerchantAccountDetails = $this->genMerchantAccountDetails();
         $code = 0;
         $b  = '<?xml version="1.0" encoding="UTF-8"?>';
         $b .= '<root>';
@@ -42,7 +42,7 @@ class NetsMpi extends CPMMPI
         $b .= '</additional-config>';
         $b .= '</client-config>';
 
-        $b .= $this->getPSPConfig()->toXML();
+        $b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty,$aMerchantAccountDetails);
 
         $txnXML = $this->_constTxnXML();
         $b .= $txnXML;

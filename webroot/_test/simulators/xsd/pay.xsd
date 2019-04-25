@@ -78,7 +78,7 @@
 										<xs:element name="hmac" type="xs:string"/>
 										<xs:element name="created-date" type="xs:string"/>
 										<xs:element name="created-time" type="xs:string"/>
-										<xs:element name="invoiceid" type="xs:string"/>
+										<xs:element name="invoiceid" type="xs:string" minOccurs="0"/>
 										<xs:element name="token" type="xs:string" minOccurs="0"/>
 										<xs:element name="card-mask" type="xs:string" minOccurs="0"/>
 										<xs:element name="expiry" type="xs:string" minOccurs="0"/>
