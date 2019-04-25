@@ -957,7 +957,9 @@ class TxnInfo
             $xml .= "<additional-data>";
             foreach ($this->getAdditionalData() as $key=>$value)
             {
-                $xml .= "<param name='".$key."'>".$value."</param>";
+            	 if (strpos($key, 'rule') === false) {
+					 $xml .= "<param name='" . $key . "'>" . $value . "</param>";
+				 }
             }
             $xml .="</additional-data>";
         }
