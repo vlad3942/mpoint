@@ -356,6 +356,18 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL)
 	{
+	    // save ext id in database
+        if($card_type_id !== -1)
+        {
+            $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+                SET pspid = " . $obj_PSPConfig->getID() . "
+                , cardid = ". intval($card_type_id) . "
+                WHERE id = " . $this->getTxnInfo()->getID();
+            $this->getDBConn()->query($sql);
+        }
+
+        $this->updateTxnInfoObject();
+
 	    $this->genInvoiceId($obj_ClientInfo);
 	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML(Constants::iPrivateProperty) );
@@ -408,16 +420,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
                 $this->_obj_ResponseXML =$obj_XML;
 				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, $obj_HTTP->getReplyBody());
-				
-				// save ext id in database
-                if($card_type_id !== -1)
-                {
-                    $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
-						SET pspid = " . $obj_PSPConfig->getID() . "
-						, cardid = ". intval($card_type_id) . "
-						WHERE id = " . $this->getTxnInfo()->getID();
-                    $this->getDBConn()->query($sql);
-                }
+
                /* if(count($obj_XML->{"hidden-fields"}) > 0){
                     $obj_XML->{"hidden-fields"}->{"store-card"} = parent::bool2xml($sc);
                     $obj_XML->{"hidden-fields"}->{"requested_currency_id"} = $this->getTxnInfo()->getCurrencyConfig()->getID() ;

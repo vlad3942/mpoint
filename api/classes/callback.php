@@ -73,6 +73,11 @@ abstract class Callback extends EndUserAccount
 		$this->_obj_PSPConfig = $oPSPConfig;
 	}
 
+	protected function updateTxnInfoObject()
+	{
+		$this->_obj_TxnInfo = TxnInfo::produceInfo( $this->_obj_TxnInfo->getID(), $this->getDBConn());
+	}
+
 	/**
 	 * Returns the Data object with the Transaction Information.
 	 *
