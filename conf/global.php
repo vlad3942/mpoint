@@ -915,7 +915,7 @@ $aHTTP_CONN_INFO["global-payments"]["paths"]["auth"] = "/mpoint/global-payments/
 $aHTTP_CONN_INFO["global-payments"]["paths"]["capture"] = "/mpoint/global-payments/capture";
 $aHTTP_CONN_INFO["global-payments"]["paths"]["initialize"] = "/mpoint/global-payments/initialize";
 $aHTTP_CONN_INFO["global-payments"]["paths"]["refund"] = "/mpoint/global-payments/refund";
-$aHTTP_CONN_INFO["global-payments"]["paths"]["cancel"] = "/mpoint/global-payments/void";
+$aHTTP_CONN_INFO["global-payments"]["paths"]["cancel"] = "/mpoint/global-payments/cancel";
 
 
 /**
