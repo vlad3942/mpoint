@@ -25,8 +25,8 @@ class PayUException extends CallbackException { }
 class PayU extends CPMPSP
 {
 	public function capture($iAmount=-1) { throw new PayUException("Method: capture is not supported by PayU"); }
-    public function void($iAmount=-1) { throw new PoliException("Method: void is not supported by PayU"); }
-    public function cancel() { throw new PoliException("Method: cancel is not supported by PayU"); }
+    public function void($iAmount=-1) { throw new PayUException("Method: void is not supported by PayU"); }
+    public function cancel() { throw new PayUException("Method: cancel is not supported by PayU"); }
 	public function getPaymentData(PSPConfig $obj_PSPConfig, SimpleXMLElement $obj_Card, $mode=Constants::sPAYMENT_DATA_FULL) { throw new PayUException("Method: getPaymentData is not supported by PayU."); }
 
 	public function getPSPID() { return Constants::iPAYU_PSP; }
