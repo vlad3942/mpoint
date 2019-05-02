@@ -1,4 +1,12 @@
 
+-- MID selection based on card id -
+-- 2c2p JCB card
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('MID.5', <MID>, true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = <client id> and pspid = <pspid>), 'merchant', 0);
+
+INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('mechantaccountrule', 'merchantaccount ::= (property[@name=''<midpath>''])   
+ midpath ::= "MID."(@card-id)', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = <client id> and pspid = <pspid>), 'merchant', 0);
+
+
 --  consolidate Cielo sqls -- execute if Cielo config is not present in the env.
 INSERT INTO System.PSP_Tbl (id, name,system_type) VALUES (54, 'Cielo',1);
 INSERT INTO System.PSPCard_Tbl (pspid, cardid) VALUES (54, 1);	-- American Express
