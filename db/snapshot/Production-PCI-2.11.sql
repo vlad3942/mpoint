@@ -4,7 +4,7 @@
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('MID.5', '764764000002012', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = <client id> and pspid = <pspid>), 'merchant', 0);
 
 INSERT INTO client.additionalproperty_tbl (key, value, enabled, externalid, type, scope) VALUES ('mechantaccountrule', 'merchantaccount ::= (property[@name=''<midpath>''])   
- midpath ::= "MID."(@card-id)', true, <id of merchantaccount_tbl>, 'merchant', 0);
+ midpath ::= "MID."(@card-id)', true, (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = <client id> and pspid = <pspid>), 'merchant', 0);
 
 
 --  consolidate Cielo sqls -- execute if Cielo config is not present in the env.
