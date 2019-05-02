@@ -134,6 +134,8 @@ require_once(sCLASS_PATH ."/cielo.php");
 require_once(sCLASS_PATH ."/wallet_processor.php");
 
 require_once(sCLASS_PATH ."/post_auth_action.php");
+// Require specific Business logic for the Global payments component
+require_once(sCLASS_PATH ."/global-payments.php");
 
 
 ignore_user_abort(true);
