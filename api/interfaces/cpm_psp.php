@@ -354,9 +354,21 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		else { throw new UnexpectedValueException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 	}
 
-	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, $obj_ClientInfo = NULL)
+	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL)
 	{
-	    $this->genInvoiceId();
+	    // save ext id in database
+        if($card_type_id !== -1)
+        {
+            $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+                SET pspid = " . $obj_PSPConfig->getID() . "
+                , cardid = ". intval($card_type_id) . "
+                WHERE id = " . $this->getTxnInfo()->getID();
+            $this->getDBConn()->query($sql);
+        }
+
+        $this->updateTxnInfoObject();
+
+	    $this->genInvoiceId($obj_ClientInfo);
 	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML(Constants::iPrivateProperty) );
 		unset ($obj_XML->password);
@@ -390,7 +402,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		if(is_null($obj_ClientInfo) == false)
 		{
-		$b .= $obj_ClientInfo->asXML(Constants::iPrivateProperty);
+		    $b .= $obj_ClientInfo->toXML();
 		}
 		$b .= '</initialize>';
 		$b .= '</root>';
@@ -408,16 +420,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
                 $this->_obj_ResponseXML =$obj_XML;
 				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, $obj_HTTP->getReplyBody());
-				
-				// save ext id in database
-                if($card_type_id !== -1)
-                {
-                    $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
-						SET pspid = " . $obj_PSPConfig->getID() . "
-						, cardid = ". intval($card_type_id) . "
-						WHERE id = " . $this->getTxnInfo()->getID();
-                    $this->getDBConn()->query($sql);
-                }
+
                /* if(count($obj_XML->{"hidden-fields"}) > 0){
                     $obj_XML->{"hidden-fields"}->{"store-card"} = parent::bool2xml($sc);
                     $obj_XML->{"hidden-fields"}->{"requested_currency_id"} = $this->getTxnInfo()->getCurrencyConfig()->getID() ;
@@ -436,7 +439,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		return $obj_XML;
 	}
 
-	public function authorize(PSPConfig $obj_PSPConfig, $obj_Card)
+	public function authorize(PSPConfig $obj_PSPConfig, $obj_Card, ClientInfo $clientInfo = null)
 	{
 	    try
         {
@@ -490,7 +493,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
         }
 
-
+        if($clientInfo !== null && $clientInfo instanceof ClientInfo)
+        {
+            $b .= $clientInfo->toXML();
+        }
         $b .= '</authorize>';
         $b .= '</root>';
 
@@ -1071,7 +1077,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         return $code;
     }
 
-    private function genInvoiceId()
+    private function genInvoiceId(ClientInfo $objClientInfo)
     {
         if($this->getTxnInfo()->getAdditionalData('invoiceid') === null)
         {
@@ -1082,6 +1088,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $context .= str_replace('<?xml version="1.0"?>', '', $this->getClientConfig()->toXML(Constants::iPrivateProperty));
             $context .= $this->_constTxnXML();
             $context .= $this->_constOrderDetails($this->getTxnInfo()) ;
+            if($objClientInfo !== null and $objClientInfo instanceof ClientInfo)
+            {
+                $context .= $objClientInfo->toXML();
+            }
             $context .= '</root>';
             $parser = new  \mPoint\Core\Parser();
             $parser->setContext($context);
