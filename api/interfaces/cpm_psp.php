@@ -245,7 +245,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '</client-config>';
 		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty);
 		$b .= '<transactions>';
-		$b .= $this->_constTxnXML();
+		$b .= $this->_constTxnXML($this->getTxnInfo()->getAmount());
 		$b .= '</transactions>';
 		$b .= '</cancel>';
 		$b .= '</root>';
