@@ -386,8 +386,9 @@ abstract class Callback extends EndUserAccount
 		if (empty($cardno) === false) { $sBody .= "&card-number=". urlencode($cardno); }
 		if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true)
 		{
-			$sBody .= "&pspid=". urlencode($pspid);
-			$sBody .= "&psp-name=". urlencode($this->getPSPName($pspid));
+			$pspId = $this->_obj_TxnInfo->getPSPID();
+			$sBody .= "&pspid=". urlencode($pspId);
+			$sBody .= "&psp-name=". urlencode($this->getPSPName($pspId));
         }
 		if ( strlen($this->_obj_TxnInfo->getDescription() ) > 0) { $sBody .= "&description=". urlencode($this->_obj_TxnInfo->getDescription() ); }
 		$sBody .= $this->getVariables();
