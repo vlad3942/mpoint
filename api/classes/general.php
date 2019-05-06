@@ -1329,10 +1329,7 @@ class General
     {
         $sql = "SELECT DISTINCT clientid, pspid
                     FROM client" . sSCHEMA_POSTFIX . ".cardaccess_tbl
-                    WHERE pspid IN
-                          (SELECT id
-                           FROM system.psp_tbl
-                           WHERE capture_method <> 0)
+                    WHERE capture_method <> 0 
                     AND enabled ";
          if($clientId !== "" )
          {
