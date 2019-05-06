@@ -14,16 +14,23 @@ abstract class BaseDatabaseTest extends PHPUnit_Framework_TestCase
 	 */
     protected $_httpClient;
 
+    /**
+     * @var _isDBSetuped bool
+     */
+    private $_isDBSetuped;
 
-    public function setup()
+    public function setup($isDBSetupRequired)
     {
         parent::setup();
-
+        $this->_isDBSetuped = $isDBSetupRequired;
         $this->applyTestConfiguration();
 
         global $aDB_CONN_INFO;
         $this->mPointDBInfo = $aDB_CONN_INFO["mpoint"];
-        $this->setupMpointDB();
+        if($isDBSetupRequired === true)
+        {
+            $this->setupMpointDB();
+        }
     }
 
     private function _constDBConnString()
@@ -51,10 +58,16 @@ abstract class BaseDatabaseTest extends PHPUnit_Framework_TestCase
 
     private function dropMpointDB()
     {
-        if (is_resource($this->_db) ) { @pg_close($this->_db); }
-        $conn = pg_connect($this->_constDBConnString() );
-        pg_query($conn, "DROP DATABASE ". $this->mPointDBInfo['path']);
-        pg_close($conn);
+        if($this->_isDBSetuped === true)
+        {
+            if (is_resource($this->_db))
+            {
+                @pg_close($this->_db);
+            }
+            $conn = pg_connect($this->_constDBConnString());
+            pg_query($conn, "DROP DATABASE " . $this->mPointDBInfo['path']);
+            pg_close($conn);
+        }
     }
 
     protected function applyTestConfiguration()
