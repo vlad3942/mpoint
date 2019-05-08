@@ -230,45 +230,60 @@ class MyAccount extends Home
 	 */
 	public function delStoredCard($enduserid, $cardid)
 	{
+	    //manage_card is the only unknown - eua id is not required in this call as we validate the stored card in del card api
 		$sql1 = "SELECT Card.id cardid, Cli.transaction_ttl ttl,Card.ticket
 				 FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl Card
 				 LEFT JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl Cli ON Cli.id = Card.clientid AND Cli.enabled = '1'
-				 WHERE Card.id = ". intval($cardid);
+				 WHERE Card.id = $1";
 //		echo $sql1 ."\n";
+        $selectresource = $this->getDBConn()->prepare($sql1);
 
-		$res1 = $this->getDBConn()->query($sql1);
+        $aParams = array(
+            intval($cardid)
+        );
 
-		if (is_resource($res1) === true )
-		{
-			$RS = $this->getDBConn()->fetchName($res1);
-			if (is_array($RS) === true)
-			{
-				$iTTL = intval($RS["TTL"]);
-				$this->_deletedCardToken =$RS["TICKET"];
-				if ($iTTL > 0)
-				{
-					$obj_Status = new Status($this->getDBConn(), $this->getText() );
-					$iTo = time();
-					$iFrom = $iTo-$iTTL;
-					$aTxns = array();
-					try
-					{
-						$aTxns = $obj_Status->getActiveTransactions($iFrom, $iTo, $enduserid);
-					} catch (mPointException $e) { trigger_error("An error occurred while trying to check the DB for active payment transactions", E_USER_WARNING); }
+        if (is_resource($selectresource) === true) {
+		    $res1 = $this->getDBConn()->execute($selectresource, $aParams);
 
-					// There is one or more active transactions
-					if (count($aTxns) > 0) { return 1; }
-				}
-			}
-			else { return 2; }
+            $RS = $this->getDBConn()->fetchName($res1);
+            if (is_array($RS) === true) {
+                $iTTL = intval($RS["TTL"]);
+                $this->_deletedCardToken = $RS["TICKET"];
+                if ($iTTL > 0) {
+                    $obj_Status = new Status($this->getDBConn(), $this->getText());
+                    $iTo = time();
+                    $iFrom = $iTo - $iTTL;
+                    $aTxns = array();
+                    try {
+                        $aTxns = $obj_Status->getActiveTransactions($iFrom, $iTo, $enduserid);
+                    } catch (mPointException $e) {
+                        trigger_error("An error occurred while trying to check the DB for active payment transactions", E_USER_WARNING);
+                    }
 
-			$sql2 = "DELETE FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
-					 WHERE id = ". intval($RS["CARDID"]);
-//			echo $sql ."\n";
+                    // There is one or more active transactions
+                    if (count($aTxns) > 0) {
+                        return 1;
+                    }
+                }
+            } else {
+                return 2;
+            }
 
-			$res2 = $this->getDBConn()->query($sql2);
-			if (is_resource($res2) === true && $this->getDBConn()->countAffectedRows($res2) > 0) { return 10; }
-		}
+            $sql2 = "Update EndUser" . sSCHEMA_POSTFIX . ".Card_Tbl set enabled = '0'
+					 WHERE id = $1";
+			//echo $sql2 ."\n";
+
+            $resource = $this->getDBConn()->prepare($sql2);
+
+            if (is_resource($resource) === true) {
+                //execute() returns resource and not boolean
+                $result = $this->getDBConn()->execute($resource, $aParams);
+                if (is_resource($result) === true && $this->getDBConn()->countAffectedRows($result) > 0)
+                {
+                    return 10;
+                }
+            }
+        }
 
 		return 3;
 	}
@@ -337,55 +352,78 @@ class MyAccount extends Home
 
 
     /**
-     * Deletes a stored card from an End-User Account And Disable Account.
+     * Disable stored card from an End-User Account And Disable Account.
      *
      * @param 	integer $enduserid	Unqiue ID of the End-User's Account
      * @return 	object
      */
     public function delStoredCardAndDisableAccount($enduserid)
     {
-        //$obj = ;
+        $obj = new stdClass();
         $obj->tokens = array();
-        $obj->status = -1;
-        $sql = "UPDATE EndUser".sSCHEMA_POSTFIX.".account_tbl 
-                SET enabled = FALSE 
-                WHERE id = ". intval($enduserid);
+        $obj->status = 1;
 
-        $res = $this->getDBConn()->query($sql);
-        if (is_resource($res) === true && $this->getDBConn()->countAffectedRows($res) > 0) {
+        $sql1 = "SELECT Card.id cardid, Card.ticket, client.transaction_ttl ttl
+                 FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl Card
+                 LEFT JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl client ON client.id = Card.clientid AND client.enabled = '1'
+                 WHERE Card.accountid = $1";
 
-            $sql1 = "SELECT id cardid,ticket
-                     FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
-                     WHERE accountid = ". intval($enduserid);
-    //		echo $sql1 ."\n";
+        $aParams = array(intval($enduserid));
 
-            $res1 = $this->getDBConn()->query($sql1);
+        $res = $this->getDBConn()->prepare($sql1);
+        if (is_resource($res) === true) {
+            $res1 = $this->getDBConn()->execute($res, $aParams);
 
-            if (is_resource($res1) === true )
-            {
-                while ($RS = $this->getDBConn()->fetchName($res1) )
-                {
-                    if(!empty($RS["TICKET"]))
-                    array_push($obj->tokens,$RS["TICKET"]);
+            while ($RS = $this->getDBConn()->fetchName($res1) ){
+                $iTTL = intval($RS["TTL"]);
+                if ($iTTL > 0) {
+                    $obj_Status = new Status($this->getDBConn(), $this->getText());
+                    $iTo = time();
+                    $iFrom = $iTo - $iTTL;
+                    $aTxns = array();
+                    try {
+                        $aTxns = $obj_Status->getActiveTransactions($iFrom, $iTo, $enduserid);
+                    } catch (mPointException $e) {
+                        trigger_error("An error occurred while trying to check the DB for active payment transactions", E_USER_WARNING);
+                    }
+
+                    // There is one or more active transactions
+                    if (count($aTxns) > 0) {
+                        $obj->status = 1;
+                        return $obj;
+                    }
                 }
 
-                $sql2 = "DELETE FROM EndUser".sSCHEMA_POSTFIX.".Card_Tbl
-                         WHERE accountid = ". intval($enduserid);
-    //			echo $sql ."\n";
+                if(empty($RS["TICKET"]) === false)
+                    array_push($obj->tokens,$RS["TICKET"]);
+            }
 
-                $res2 = $this->getDBConn()->query($sql2);
-                if (is_resource($res2) === true && $this->getDBConn()->countAffectedRows($res2) > 0) {
-                    $obj->status= 10;
-                }else {
-                    $obj->status=3;
+            // Disable stored card from an End-User Account And Disable Account
+            $sql2 = "UPDATE EndUser".sSCHEMA_POSTFIX.".Card_Tbl
+                     SET enabled = FALSE
+                     WHERE accountid = $1";
+
+            $resource = $this->getDBConn()->prepare($sql2);
+
+            if (is_resource($resource) === true) {
+                $result = $this->getDBConn()->execute($resource, $aParams);
+                if (is_resource($result) === true && $this->getDBConn()->countAffectedRows($result) > 0) {
+
+                    $sql3 = "UPDATE EndUser".sSCHEMA_POSTFIX.".account_tbl 
+                            SET enabled = FALSE 
+                            WHERE id = $1";
+
+                    $resource1 = $this->getDBConn()->prepare($sql3);
+                    $result2 = $this->getDBConn()->execute($resource1, $aParams);
+                    if (is_resource($result2) && $this->getDBConn()->countAffectedRows($result2) > 0) {
+                        $obj->status= 10;
+                    }
+                } else {
+                    $obj->status = 3;
                 }
             }
-            else { $obj->status= 10; }
         }
-        else {$obj->status=1;}
-
         return $obj;
-
     }
 }
 ?>
