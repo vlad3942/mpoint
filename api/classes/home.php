@@ -840,9 +840,9 @@ class Home extends General
             $obj_paymentSession = PaymentSession::Get($this->getDBConn(), $RS["SESSIONID"]);
             $pendingAmount = intval($obj_paymentSession->getPendingAmount());
             if ($pendingAmount > 0) {
-                $pendingAmount = $pendingAmount / 100;
+                $pendingAmount = $pendingAmount;
             }
-            $amount = ((integer)$RS["AMOUNT"]) / 100;
+            $amount = ((integer)$RS["AMOUNT"]);
 
             $obj_currencyConfig = CurrencyConfig::produceConfig($this->getDBConn(), $RS['CURRENCYID']);
 
@@ -857,7 +857,7 @@ class Home extends General
             $googleAnalyticsId = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"googleAnalyticsId");
             $paymentCompleteMethod = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"hppFormRedirectMethod");
             $xml = '<transaction id="' . $RS["ID"] . '" mpoint-id="' . $RS["MPOINTID"] . '" order-no="' . $RS["ORDERID"] . '" accoutid="' . $RS['END_USER_ID'] . '" clientid="' . $RS['CLIENTID'] . '" language="' . $RS['LANG'] . '"  card-id="' . $RS["CARDID"] . '" session-id="' . $RS["SESSIONID"] . '" session-type="' . $sessionType . '" extid="' . $RS["EXTID"] . '" approval-code="' . $RS["APPROVAL_ACTION_CODE"] . '">';
-            $xml .= '<amount country-id="' . $RS["COUNTRYID"] . '" currency="' . $RS['CURRENCYID'] . '" symbol="' . utf8_encode($RS['SYMBOL']) . '" format="' . $RS['PRICEFORMAT'] . '" pending = "' . $pendingAmount . '"  currency-code = "' . $obj_currencyConfig->getCode() . '" >' . htmlspecialchars($amount, ENT_NOQUOTES) . '</amount>';
+            $xml .= '<amount country-id="' . $RS["COUNTRYID"] . '" currency="' . $RS['CURRENCYID'] . '" symbol="' . utf8_encode($RS['SYMBOL']) . '" format="' . $RS['PRICEFORMAT'] . '" pending = "' . $pendingAmount . '"  currency-code = "' . $obj_currencyConfig->getCode() . '" decimals = "' . $obj_currencyConfig->getDecimals() . '">' . htmlspecialchars($amount, ENT_NOQUOTES) . '</amount>';
             $xml .= '<accept-url>' . htmlspecialchars($RS["ACCEPTURL"], ENT_NOQUOTES) . '</accept-url>';
             $xml .= '<cancel-url>' . htmlspecialchars($RS["CANCELURL"], ENT_NOQUOTES) . '</cancel-url>';
             $xml .= '<css-url>' . htmlspecialchars($RS["CSSURL"], ENT_NOQUOTES) . '</css-url>';
