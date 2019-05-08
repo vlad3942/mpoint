@@ -23,6 +23,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
      */
     public function capture($iAmount=-1)
     {
+        $aMerchantAccountDetails = $this->genMerchantAccountDetails();
         $b  = '<?xml version="1.0" encoding="UTF-8"?>';
         $b .= '<root>';
         $b .= '<capture client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
@@ -36,7 +37,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
         $b .= '</additional-config>';
         $b .= '</client-config>';
-        $b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty);
+        $b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
         $b .= '<transactions>';
         $b .= $this->_constTxnXML($iAmount);
         $b .= '</transactions>';
@@ -101,6 +102,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		else
 		{
+		    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 			$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 			$b .= '<root>';
 			$b .= '<refund client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
@@ -114,7 +116,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
             $b .= '</additional-config>';
             $b .= '</client-config>';
-			$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty);
+			$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 			$b .= '<transactions>';
 			$b .= $this->_constTxnXML($iAmount);
 			$b .= '</transactions>';
@@ -167,6 +169,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 */
 	public function void($iAmount=-1)
 	{
+	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<void client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
@@ -180,7 +183,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
         $b .= '</additional-config>';
         $b .= '</client-config>';
-		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty);
+		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 		$b .= '<transactions>';
 		$b .= $this->_constTxnXML($iAmount);
 		$b .= '</transactions>';
@@ -230,6 +233,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 	 */
 	public function cancel($iStatus=null)
 	{
+	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<cancel client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
@@ -243,7 +247,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
         $b .= '</additional-config>';
         $b .= '</client-config>';
-		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty);
+		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 		$b .= '<transactions>';
 		$b .= $this->_constTxnXML($this->getTxnInfo()->getAmount());
 		$b .= '</transactions>';
@@ -302,11 +306,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 	public function status()
 	{
-		
+		$aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<status client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
-		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty);
+		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 		$b .= '<transactions>';
 		$b .= $this->_constTxnXML();
 		$b .= '</transactions>';
@@ -350,18 +354,31 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		else { throw new UnexpectedValueException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 	}
 
-	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, $obj_ClientInfo = NULL)
+	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL)
 	{
-	    $this->genInvoiceId();
+	    // save ext id in database
+        if($card_type_id !== -1)
+        {
+            $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+                SET pspid = " . $obj_PSPConfig->getID() . "
+                , cardid = ". intval($card_type_id) . "
+                WHERE id = " . $this->getTxnInfo()->getID();
+            $this->getDBConn()->query($sql);
+        }
+
+        $this->updateTxnInfoObject();
+
+	    $this->genInvoiceId($obj_ClientInfo);
+	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML(Constants::iPrivateProperty) );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<initialize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '" store-card="'. parent::bool2xml($sc) .'">';
-		$b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty);
-		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
-		$b .= $this->_constTxnXML();
+        $b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
+        $b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
+        $b .= $this->_constTxnXML();
 		$b .= $this->_constOrderDetails($this->getTxnInfo()) ;
 		if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
 		if($card_type_id > 0) 
@@ -385,7 +402,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		if(is_null($obj_ClientInfo) == false)
 		{
-		$b .= $obj_ClientInfo->asXML(Constants::iPrivateProperty);
+		    $b .= $obj_ClientInfo->toXML();
 		}
 		$b .= '</initialize>';
 		$b .= '</root>';
@@ -403,16 +420,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
                 $this->_obj_ResponseXML =$obj_XML;
 				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, $obj_HTTP->getReplyBody());
-				
-				// save ext id in database
-                if($card_type_id !== -1)
-                {
-                    $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
-						SET pspid = " . $obj_PSPConfig->getID() . "
-						, cardid = ". intval($card_type_id) . "
-						WHERE id = " . $this->getTxnInfo()->getID();
-                    $this->getDBConn()->query($sql);
-                }
+
                /* if(count($obj_XML->{"hidden-fields"}) > 0){
                     $obj_XML->{"hidden-fields"}->{"store-card"} = parent::bool2xml($sc);
                     $obj_XML->{"hidden-fields"}->{"requested_currency_id"} = $this->getTxnInfo()->getCurrencyConfig()->getID() ;
@@ -431,7 +439,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		return $obj_XML;
 	}
 
-	public function authorize(PSPConfig $obj_PSPConfig, $obj_Card)
+	public function authorize(PSPConfig $obj_PSPConfig, $obj_Card, ClientInfo $clientInfo = null)
 	{
 	    try
         {
@@ -446,12 +454,13 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             }
             //In case of wallet payment flow mPoint get real card and card id in authorization
             $this->getTxnInfo()->updateCardDetails($this->getDBConn(), $obj_Card['type-id'], $mask, $obj_Card->expiry);
+            $this->updateTxnInfoObject();
         }
         catch (Exception $e)
         {
             trigger_error("Failed to update card details", E_USER_ERROR);
         }
-
+        $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$code = 0;
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
@@ -467,7 +476,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '</additional-config>';
         $b .= '</client-config>';
 
-        $b .= $obj_PSPConfig->toXML();
+        $b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 
         $txnXML = $this->_constTxnXML();
         $b .= $txnXML;
@@ -485,7 +494,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
         }
 
-
+        if($clientInfo !== null && $clientInfo instanceof ClientInfo)
+        {
+            $b .= $clientInfo->toXML();
+        }
         $b .= '</authorize>';
         $b .= '</root>';
 
@@ -534,8 +546,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					$str = str_replace("<root>","",$str);
 					$code = str_replace("</root>","",$str);
 				}
-                $this->getTxnInfo()->getPaymentSession()->updateState();
-				
+
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 						SET pspid = ". $obj_PSPConfig->getID() . $sql." ,token='" . $obj_Card->ticket . "' 
 						WHERE id = ". $this->getTxnInfo()->getID();
@@ -555,11 +566,11 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
     public function tokenize(array $aConnInfo, PSPConfig $obj_PSPConfig, $obj_Card)
     {
-
+        $aMerchantAccountDetails = $this->genMerchantAccountDetails();
         $b  = '<?xml version="1.0" encoding="UTF-8"?>';
         $b .= '<root>';
         $b .= '<tokenize client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '" store-card="'. parent::bool2xml($sc) .'">';
-        $b .= $obj_PSPConfig->toXML();
+        $b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
         $b .= $this->_constTxnXML();
         $b .= $this->_constNewCardAuthorizationRequest($obj_Card);
         $b .= '</tokenize>';
@@ -649,11 +660,12 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
 	public function initCallback(PSPConfig $obj_PSPConfig, TxnInfo $obj_TxnInfo, $iStateID, $sStateName, $iCardid)
 	{
+	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$code = 0;
 		$xml  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
 		$xml .= '<callback>';
-		$xml .= $obj_PSPConfig->toXML();
+		$xml .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 		$xml .= '	<transaction id="'. $obj_TxnInfo->getID() .'" order-no="'. $obj_TxnInfo->getOrderID() .'" external-id="'. $obj_TxnInfo->getExternalID() .'">';
 		$xml .= '     	<amount country-id="'. $obj_TxnInfo->getCountryConfig()->getID(). '" currency="'.$obj_TxnInfo->getCountryConfig()->getCurrency().'">'. $obj_TxnInfo->getAmount(). '</amount>';
 		$xml .= '		<card type-id="'.$iCardid.'" psp-id="'. $obj_TxnInfo->getPSPID() .'">';
@@ -760,14 +772,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 						WHERE id = " . $this->getTxnInfo()->getID();
             $this->getDBConn()->query($sql);
         }
-
+        $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 	    $obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML() );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<get-payment-data mode="'. $mode .'">';
-		$b .= $obj_PSPConfig->toXML();
+		$b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 		$b .= str_replace("</transaction>", str_replace('<?xml version="1.0"?>', '', $obj_Card->asXML() ). "</transaction>", $this->_constTxnXML() );
 		$b .= '</get-payment-data>';
@@ -801,14 +813,14 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		{
 			$purchaseDateNode = "<PurchaseDate>".$purchaseDate."</PurchaseDate>";
 		}
-		
+		$aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML(Constants::iPrivateProperty) );
 		unset ($obj_XML->password);
 		unset ($obj_XML->{'payment-service-providers'});
 		$b  = '<?xml version="1.0" encoding="UTF-8"?>';
 		$b .= '<root>';
 		$b .= '<callback>';
-		$b .= $obj_PSPConfig->toXML();
+		$b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 		$b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML() );
 		$b .= str_replace("</transaction>", str_replace('<?xml version="1.0"?>', '', $obj_Card->asXML().$purchaseDateNode ). "</transaction>", $this->_constTxnXML() );
 		$b .= str_replace('<?xml version="1.0"?>', '', $obj_Status->asXML() ) ;
@@ -1066,16 +1078,21 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         return $code;
     }
 
-    private function genInvoiceId()
+    private function genInvoiceId(ClientInfo $objClientInfo)
     {
         if($this->getTxnInfo()->getAdditionalData('invoiceid') === null)
         {
+            $aMerchantAccountDetails = $this->genMerchantAccountDetails();
             $context = '<root>';
-            $context .= $this->getPSPConfig()->toXML(Constants::iInternalProperty);
+            $context .= $this->getPSPConfig()->toXML(Constants::iInternalProperty, $aMerchantAccountDetails);
 
             $context .= str_replace('<?xml version="1.0"?>', '', $this->getClientConfig()->toXML(Constants::iPrivateProperty));
             $context .= $this->_constTxnXML();
             $context .= $this->_constOrderDetails($this->getTxnInfo()) ;
+            if($objClientInfo !== null and $objClientInfo instanceof ClientInfo)
+            {
+                $context .= $objClientInfo->toXML();
+            }
             $context .= '</root>';
             $parser = new  \mPoint\Core\Parser();
             $parser->setContext($context);
@@ -1090,9 +1107,53 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                 }
             }
 
-            $output = $parser->parse();
+            $parser->parse();
+            //Get value of invoiceid. $parser->parse() will return the value of first variable whose usage is less or none
+            $output = $parser->getValue('invoiceid');
             $this->getTxnInfo()->setInvoiceId($this->getDBConn(),$output);
         }
+    }
+
+    protected function genMerchantAccountDetails()
+    {
+        $context = '<root>';
+        $context .= $this->getPSPConfig()->toXML(Constants::iInternalProperty);
+
+        $context .= str_replace('<?xml version="1.0"?>', '', $this->getClientConfig()->toXML(Constants::iPrivateProperty));
+        $context .= $this->_constTxnXML();
+        $context .= $this->_constOrderDetails($this->getTxnInfo());
+        $context .= '</root>';
+        $parser = new  \mPoint\Core\Parser();
+        $parser->setContext($context);
+
+        $rules = $this->getPSPConfig()->getAdditionalProperties(Constants::iInternalProperty);
+
+        foreach ($rules as $value) {
+            if ($value['scope'] == 0 && strpos($value['key'], 'rule') !== false) {
+                $parser->setRules($value['value']);
+            }
+        }
+
+        $parser->parse();
+        $merchantaccount = $parser->getValue('merchantaccount');
+        $username = $parser->getValue('username');
+        $password = $parser->getValue('password');
+        $aMerchantAccountDetails = array();
+        if(isset($merchantaccount) && $merchantaccount !== false && $merchantaccount !== '')
+        {
+            $aMerchantAccountDetails['merchantaccount'] = $merchantaccount;
+        }
+        if(isset($username) && $username !== false && $username !== '')
+        {
+            $aMerchantAccountDetails['username'] = $username;
+        }
+        if(isset($password) && $password !== false && $password !== '')
+        {
+            $aMerchantAccountDetails['password'] = $password;
+        }
+
+        return $aMerchantAccountDetails;
+
     }
 
 }
