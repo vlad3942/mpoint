@@ -326,7 +326,14 @@ namespace mPoint\Core {
                                     $functionArg[$functionArgIndex] = $this->_parseInput($functionArg[$functionArgIndex]);
                                 }
                             }
-                            $output .= call_user_func_array($functionName, $functionArg);
+                            if(method_exists($this, $functionName))
+                            {
+                                $output .= call_user_func_array(array($this,$functionName), $functionArg);
+                            }
+                            else
+                            {
+                                $output .= call_user_func_array($functionName, $functionArg);
+                            }
                         } else {
                             $output .= $functionName();
                         }
@@ -348,8 +355,8 @@ namespace mPoint\Core {
         private function _getSubstring($subject, $needle, $startIndex, &$nextIndex)
         {
             $nextIndex = 0;
+            $input = substr($subject, $startIndex);
             if (is_array($needle) === true) {
-                $input = substr($subject, $startIndex);
                 $pattern = '/' . implode('|', array_map(function ($str) {
                         $pregQuote = preg_quote($str, '/');
                         if ($str === '=') {
@@ -364,7 +371,13 @@ namespace mPoint\Core {
                     $nextIndex = strlen($subject);
                 }
             } else {
-                $nextIndex = strpos($subject, $needle, $startIndex);
+                $pattern = '/(?<!\\\\)\\'.$needle.'/';
+                 if (preg_match($pattern, $input, $matches, PREG_OFFSET_CAPTURE)) {
+                    $nextIndex = $startIndex + $matches[0][1];
+                } else {
+                    $nextIndex = strlen($subject);
+                }
+                //$nextIndex = strpos($subject, $needle, $startIndex);
             }
 
             $substring = substr($subject, $startIndex, $nextIndex - $startIndex);
@@ -382,6 +395,7 @@ namespace mPoint\Core {
             for ($contextIndex = 0, $contextIndexMax = count($this->_sContext); $contextIndex < $contextIndexMax; $contextIndex++) {
                 $xmlElement = null;
                 try {
+                    $xpath = str_replace('\\','',$xpath);
                     $xmlElement = $this->_sContext[$contextIndex]->xpath('//' . $xpath);
                 } catch (\Exception $exception) {
                     //Invalid XPath
@@ -406,5 +420,13 @@ namespace mPoint\Core {
             }
             return null;
         }
+
+        public function contains($subject, $needle)
+            {
+                if (strpos($subject, $needle) !== false) {
+                    return "true";
+                }
+                return "false";
+            }
     }
 }
