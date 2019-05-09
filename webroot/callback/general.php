@@ -384,7 +384,7 @@ try
 
             if ($responseCode == 1000)
             {
-                //    array_push($aStateId,Constants::iPAYMENT_CAPTURED_STATE);
+                array_push($aStateId,Constants::iPAYMENT_CAPTURED_STATE);
                 //$obj_mPoint->newMessage($obj_TxnInfo->getID(), Constants::iPAYMENT_CAPTURED_STATE, "");
             }
             else
