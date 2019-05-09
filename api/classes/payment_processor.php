@@ -116,4 +116,8 @@ class PaymentProcessor
     {
         return $this->_objPSP->status();
     }
+    public function getPaymentMethods()
+    {
+        return $this->_objPSP->getPaymentMethods($this->_objPSPConfig);
+    }
 }

@@ -1156,4 +1156,38 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
     }
 
+    public function getPaymentMethods(PSPConfig $obj_PSPConfig)
+    {
+        $getPaymentMethodsURL = $this->aCONN_INFO["paths"]["get-payment-methods"];
+        if(isset($getPaymentMethodsURL) && empty($getPaymentMethodsURL) !== false) {
+            $obj_XML = simplexml_load_string($this->getClientConfig()->toXML(Constants::iPrivateProperty));
+            $b = '<?xml version="1.0" encoding="UTF-8"?>';
+            $b .= '<root>';
+            $b .= '<get-payment-method client-id="' . $this->getClientConfig()->getID() . '" account="' . $this->getClientConfig()->getAccountConfig()->getID() . '" store-card="' . parent::bool2xml($sc) . '">';
+            $b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML());
+            $b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty);
+            $b .= $this->_constTxnXML();
+            $b .= '</get-payment-method>';
+            $b .= '</root>';
+            $obj_XML = null;
+            try {
+                $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["get-payment-methods"]);
+
+                $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+                $obj_HTTP->connect();
+                $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+                $obj_HTTP->disConnect();
+                if ($code == 200) {
+                    $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
+                    $this->_obj_ResponseXML = $obj_XML;
+                } else {
+                    trigger_error("Error is get-payment-method for psp - " . $obj_PSPConfig->getID(), E_USER_ERROR);
+                }
+            } catch (mPointException $e) {
+                trigger_error("construct  XML of txn: " . $this->getTxnInfo()->getID() . " failed with code: " . $e->getCode() . " and message: " . $e->getMessage(), E_USER_ERROR);
+            }
+            return $obj_XML;
+        }
+        return null;
+    }
 }
