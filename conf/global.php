@@ -848,6 +848,7 @@ $aHTTP_CONN_INFO["eghl"]["path"] = ""; // Set by calling class
 $aHTTP_CONN_INFO["eghl"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
 $aHTTP_CONN_INFO["eghl"]["contenttype"] = "text/xml";
 $aHTTP_CONN_INFO["eghl"]["paths"]["initialize"] = "/mpoint/eghl/initialize";
+$aHTTP_CONN_INFO["eghl"]["paths"]["get-payment-methods"] = "/mpoint/eghl/get-payment-methods";
 
 
 

@@ -290,7 +290,7 @@ abstract class mPointSettlement
                    (settlementid, transactionid) 
                    VALUES ($this->_iSettlementId, ". $this->_arrayTransactionIds[0] .")";
 
-        for ($index = 1 ; $index < count($this->_arrayTransactionIds); $index++)
+        for ($index = 1, $indexMax = count($this->_arrayTransactionIds); $index < $indexMax; $index++)
         {
             $sql .= " , ( $this->_iSettlementId, ".$this->_arrayTransactionIds[$index].")";
         }
@@ -306,7 +306,7 @@ abstract class mPointSettlement
 
         $_OBJ_DB->query($sql);
 
-        for ($i=0; $i<count($replyBody->settlement->transactions->transaction); $i++)
+        for ($i=0, $iMax = count($replyBody->settlement->transactions->transaction); $i< $iMax; $i++)
         {
            $sql = "UPDATE log" . sSCHEMA_POSTFIX . ".settlement_record_tbl
                 SET description = '".$replyBody->settlement->transactions->transaction[$i]["description"]."' 

@@ -59,6 +59,8 @@ require_once(sCLASS_PATH ."/googlepay.php");
 require_once(sCLASS_PATH ."/masterpass.php");
 // Require specific Business logic for the mVault component
 require_once(sCLASS_PATH ."/mvault.php");
+// Require specific Business logic for the mVault component
+require_once(sCLASS_PATH ."/eghl.php");
 
 $aMsgCds = array();
 
@@ -527,6 +529,21 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 									$cardsXML .= '<name>'. htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) .'</name>';
 									$cardsXML .= $obj_XML->item[$j]->prefixes->asXML();
 									$cardsXML .= htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES);	// Backward compatibility
+
+                                    if(((int)$obj_XML->item[$j]["payment-type"]) === Constants::iPROCESSOR_TYPE_GATEWAY)
+                                    {
+                                        try
+                                    {
+                                        $obj_Processor = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_XML->item[$j]["pspid"]), $aHTTP_CONN_INFO);
+                                        if($obj_Processor !== false)
+                                        {
+                                            $activePaymentMenthodsResponseXML = $obj_Processor->getPaymentMethods();
+                                            $cardsXML .= $activePaymentMenthodsResponseXML->{'active-payment-menthods'}->asXML();
+                                        }
+                                    }
+                                    catch (Exception $e){}
+                                    }
+
 									$cardsXML .= '</card>';
 								}
 							}
