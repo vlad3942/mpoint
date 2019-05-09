@@ -23,57 +23,66 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
      */
     public function capture($iAmount=-1)
     {
-        $aMerchantAccountDetails = $this->genMerchantAccountDetails();
-        $b  = '<?xml version="1.0" encoding="UTF-8"?>';
-        $b .= '<root>';
-        $b .= '<capture client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
-        $b .= '<client-config>';
-        $b .= '<additional-config>';
-
-        foreach ($this->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
+        $captureMethod = $this->getCaptureMethod();
+        if ($captureMethod % 2 === 0  && $this->getTxnInfo()->hasEitherState($this->getDBConn(), Constants::iPAYMENT_CAPTURE_INITIATED_STATE) === false  )
         {
-            $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
+            $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURE_INITIATED_STATE, $iAmount);
+            return 1000; //Capture Initiated
         }
+        else
+        {
+            $aMerchantAccountDetails = $this->genMerchantAccountDetails();
+            $b  = '<?xml version="1.0" encoding="UTF-8"?>';
+            $b .= '<root>';
+            $b .= '<capture client-id="'. $this->getClientConfig()->getID(). '" account="'. $this->getClientConfig()->getAccountConfig()->getID(). '">';
+            $b .= '<client-config>';
+            $b .= '<additional-config>';
 
-        $b .= '</additional-config>';
-        $b .= '</client-config>';
-        $b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
-        $b .= '<transactions>';
-        $b .= $this->_constTxnXML($iAmount);
-        $b .= '</transactions>';
-        $b .= '</capture>';
-        $b .= '</root>';
-
-        try
-        {        	 
-            $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["capture"]);
-
-            $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
-            $obj_HTTP->connect();
-            $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
-            $obj_HTTP->disConnect();
-            
-            if ($code == 200)
+            foreach ($this->getClientConfig()->getAdditionalProperties(Constants::iPrivateProperty) as $aAdditionalProperty)
             {
-                $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
-                $this->_obj_ResponseXML =$obj_XML;
-                // Expect there is only one transaction in the reply
-                $obj_Txn = $obj_XML->transactions->transaction;
-                if ( (integer)$obj_Txn["id"] == $this->getTxnInfo()->getID() )
-                {
-                    $iStatusCode = (integer)$obj_Txn->status["code"];
-                    if ($iStatusCode == 1000) { $this->completeCapture($iAmount, 0, array($obj_HTTP->getReplyBody() ) ); }
-                    return $iStatusCode;
-                }
-                else { throw new CaptureException("The PSP gateway did not respond with a status document related to the transaction we want: ". $obj_HTTP->getReplyBody(). " for txn: ". $this->getTxnInfo()->getID(), 999); }
+                $b .= '<property name="'.$aAdditionalProperty['key'].'">'.$aAdditionalProperty['value'].'</property>';
             }
-            else { throw new CaptureException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
-        }
-        catch (CaptureException $e)
-        {
-            trigger_error("Capture of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
-            $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_DECLINED_STATE, $e->getMessage() );
-            return $e->getCode();
+
+            $b .= '</additional-config>';
+            $b .= '</client-config>';
+            $b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
+            $b .= '<transactions>';
+            $b .= $this->_constTxnXML($iAmount);
+            $b .= '</transactions>';
+            $b .= '</capture>';
+            $b .= '</root>';
+
+            try
+            {
+                $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["capture"]);
+
+                $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+                $obj_HTTP->connect();
+                $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+                $obj_HTTP->disConnect();
+
+                if ($code == 200)
+                {
+                    $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
+                    $this->_obj_ResponseXML =$obj_XML;
+                    // Expect there is only one transaction in the reply
+                    $obj_Txn = $obj_XML->transactions->transaction;
+                    if ( (integer)$obj_Txn["id"] == $this->getTxnInfo()->getID() )
+                    {
+                        $iStatusCode = (integer)$obj_Txn->status["code"];
+                        if ($iStatusCode == 1000) { $this->completeCapture($iAmount, 0, array($obj_HTTP->getReplyBody() ) ); }
+                        return $iStatusCode;
+                    }
+                    else { throw new CaptureException("The PSP gateway did not respond with a status document related to the transaction we want: ". $obj_HTTP->getReplyBody(). " for txn: ". $this->getTxnInfo()->getID(), 999); }
+                }
+                else { throw new CaptureException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
+            }
+            catch (CaptureException $e)
+            {
+                trigger_error("Capture of txn: ". $this->getTxnInfo()->getID(). " failed with code: ". $e->getCode(). " and message: ". $e->getMessage(), E_USER_ERROR);
+                $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_DECLINED_STATE, $e->getMessage() );
+                return $e->getCode();
+            }
         }
     }
 
@@ -249,7 +258,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         $b .= '</client-config>';
 		$b .= $this->getPSPConfig()->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
 		$b .= '<transactions>';
-		$b .= $this->_constTxnXML();
+		$b .= $this->_constTxnXML($this->getTxnInfo()->getAmount());
 		$b .= '</transactions>';
 		$b .= '</cancel>';
 		$b .= '</root>';
@@ -354,9 +363,21 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		else { throw new UnexpectedValueException("PSP gateway responded with HTTP status code: ". $code. " and body: ". $obj_HTTP->getReplyBody(), $code ); }
 	}
 
-	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, $obj_ClientInfo = NULL)
+	public function initialize(PSPConfig $obj_PSPConfig, $euaid=-1, $sc=false, $card_type_id=-1, $card_token='', $obj_BillingAddress = NULL, ClientInfo $obj_ClientInfo = NULL)
 	{
-	    $this->genInvoiceId();
+	    // save ext id in database
+        if($card_type_id !== -1)
+        {
+            $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
+                SET pspid = " . $obj_PSPConfig->getID() . "
+                , cardid = ". intval($card_type_id) . "
+                WHERE id = " . $this->getTxnInfo()->getID();
+            $this->getDBConn()->query($sql);
+        }
+
+        $this->updateTxnInfoObject();
+
+	    $this->genInvoiceId($obj_ClientInfo);
 	    $aMerchantAccountDetails = $this->genMerchantAccountDetails();
 		$obj_XML = simplexml_load_string($this->getClientConfig()->toFullXML(Constants::iPrivateProperty) );
 		unset ($obj_XML->password);
@@ -390,7 +411,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		}
 		if(is_null($obj_ClientInfo) == false)
 		{
-		$b .= $obj_ClientInfo->asXML(Constants::iPrivateProperty);
+		    $b .= $obj_ClientInfo->toXML();
 		}
 		$b .= '</initialize>';
 		$b .= '</root>';
@@ -408,16 +429,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 				$obj_XML = simplexml_load_string($obj_HTTP->getReplyBody() );
                 $this->_obj_ResponseXML =$obj_XML;
 				$this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_INIT_WITH_PSP_STATE, $obj_HTTP->getReplyBody());
-				
-				// save ext id in database
-                if($card_type_id !== -1)
-                {
-                    $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl
-						SET pspid = " . $obj_PSPConfig->getID() . "
-						, cardid = ". intval($card_type_id) . "
-						WHERE id = " . $this->getTxnInfo()->getID();
-                    $this->getDBConn()->query($sql);
-                }
+
                /* if(count($obj_XML->{"hidden-fields"}) > 0){
                     $obj_XML->{"hidden-fields"}->{"store-card"} = parent::bool2xml($sc);
                     $obj_XML->{"hidden-fields"}->{"requested_currency_id"} = $this->getTxnInfo()->getCurrencyConfig()->getID() ;
@@ -436,7 +448,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 		return $obj_XML;
 	}
 
-	public function authorize(PSPConfig $obj_PSPConfig, $obj_Card)
+	public function authorize(PSPConfig $obj_PSPConfig, $obj_Card, ClientInfo $clientInfo = null)
 	{
 	    try
         {
@@ -451,6 +463,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             }
             //In case of wallet payment flow mPoint get real card and card id in authorization
             $this->getTxnInfo()->updateCardDetails($this->getDBConn(), $obj_Card['type-id'], $mask, $obj_Card->expiry);
+            $this->updateTxnInfoObject();
         }
         catch (Exception $e)
         {
@@ -490,7 +503,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             if ($euaid > 0) { $b .= $this->getAccountInfo($euaid); }
         }
 
-
+        if($clientInfo !== null && $clientInfo instanceof ClientInfo)
+        {
+            $b .= $clientInfo->toXML();
+        }
         $b .= '</authorize>';
         $b .= '</root>';
 
@@ -539,8 +555,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 					$str = str_replace("<root>","",$str);
 					$code = str_replace("</root>","",$str);
 				}
-                $this->getTxnInfo()->getPaymentSession()->updateState();
-				
+
 				$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 						SET pspid = ". $obj_PSPConfig->getID() . $sql." ,token='" . $obj_Card->ticket . "' 
 						WHERE id = ". $this->getTxnInfo()->getID();
@@ -1072,7 +1087,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         return $code;
     }
 
-    private function genInvoiceId()
+    private function genInvoiceId(ClientInfo $objClientInfo)
     {
         if($this->getTxnInfo()->getAdditionalData('invoiceid') === null)
         {
@@ -1083,6 +1098,10 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
             $context .= str_replace('<?xml version="1.0"?>', '', $this->getClientConfig()->toXML(Constants::iPrivateProperty));
             $context .= $this->_constTxnXML();
             $context .= $this->_constOrderDetails($this->getTxnInfo()) ;
+            if($objClientInfo !== null and $objClientInfo instanceof ClientInfo)
+            {
+                $context .= $objClientInfo->toXML();
+            }
             $context .= '</root>';
             $parser = new  \mPoint\Core\Parser();
             $parser->setContext($context);
@@ -1146,4 +1165,38 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
 
     }
 
+    public function getPaymentMethods(PSPConfig $obj_PSPConfig)
+    {
+        $getPaymentMethodsURL = $this->aCONN_INFO["paths"]["get-payment-methods"];
+        if(isset($getPaymentMethodsURL) && empty($getPaymentMethodsURL) !== false) {
+            $obj_XML = simplexml_load_string($this->getClientConfig()->toXML(Constants::iPrivateProperty));
+            $b = '<?xml version="1.0" encoding="UTF-8"?>';
+            $b .= '<root>';
+            $b .= '<get-payment-method client-id="' . $this->getClientConfig()->getID() . '" account="' . $this->getClientConfig()->getAccountConfig()->getID() . '" store-card="' . parent::bool2xml($sc) . '">';
+            $b .= str_replace('<?xml version="1.0"?>', '', $obj_XML->asXML());
+            $b .= $obj_PSPConfig->toXML(Constants::iPrivateProperty);
+            $b .= $this->_constTxnXML();
+            $b .= '</get-payment-method>';
+            $b .= '</root>';
+            $obj_XML = null;
+            try {
+                $obj_ConnInfo = $this->_constConnInfo($this->aCONN_INFO["paths"]["get-payment-methods"]);
+
+                $obj_HTTP = new HTTPClient(new Template(), $obj_ConnInfo);
+                $obj_HTTP->connect();
+                $code = $obj_HTTP->send($this->constHTTPHeaders(), $b);
+                $obj_HTTP->disConnect();
+                if ($code == 200) {
+                    $obj_XML = simplexml_load_string($obj_HTTP->getReplyBody());
+                    $this->_obj_ResponseXML = $obj_XML;
+                } else {
+                    trigger_error("Error is get-payment-method for psp - " . $obj_PSPConfig->getID(), E_USER_ERROR);
+                }
+            } catch (mPointException $e) {
+                trigger_error("construct  XML of txn: " . $this->getTxnInfo()->getID() . " failed with code: " . $e->getCode() . " and message: " . $e->getMessage(), E_USER_ERROR);
+            }
+            return $obj_XML;
+        }
+        return null;
+    }
 }
