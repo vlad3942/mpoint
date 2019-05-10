@@ -132,6 +132,8 @@ require_once(sCLASS_PATH ."/payment_processor.php");
 require_once(sCLASS_PATH ."/wallet_processor.php");
 
 require_once(sCLASS_PATH ."/post_auth_action.php");
+// Require specific Business logic for the Cielo component
+require_once(sCLASS_PATH ."/cielo.php");
 
 $aMsgCds = array();
 
@@ -196,15 +198,15 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 							$obj_TxnInfo = TxnInfo::produceInfo( (integer) $t["id"], $_OBJ_DB, $misc);
 
-							if($obj_TxnInfo->getPSPID() !== null)
-							{
-                                $obj_PSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_TxnInfo->getPSPID() ), $aHTTP_CONN_INFO);
-                                $states = array(Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_DECLINED_STATE);
-                                if($obj_TxnInfo->hasEitherState($_OBJ_DB, $states) === false)
-                                {
-                                    $obj_PSP->status();
-                                }
-                            }
+//							if($obj_TxnInfo->getPSPID() !== null)
+//							{
+//                                $obj_PSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_TxnInfo->getPSPID() ), $aHTTP_CONN_INFO);
+//                                $states = array(Constants::iPAYMENT_ACCEPTED_STATE, Constants::iPAYMENT_CAPTURED_STATE, Constants::iPAYMENT_REJECTED_STATE, Constants::iPAYMENT_DECLINED_STATE);
+//                                if($obj_TxnInfo->hasEitherState($_OBJ_DB, $states) === false)
+//                                {
+//                                    $obj_PSP->status();
+//                                }
+//                            }
 
 							$aMessages = $obj_TxnInfo->getMessageHistory($_OBJ_DB,$testingRequset);
 							$obj_CountryConfig = $obj_TxnInfo->getCountryConfig();
