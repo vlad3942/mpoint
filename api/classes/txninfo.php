@@ -957,7 +957,9 @@ class TxnInfo
             $xml .= "<additional-data>";
             foreach ($this->getAdditionalData() as $key=>$value)
             {
-                $xml .= "<param name='".$key."'>".$value."</param>";
+            	 if (strpos($key, 'rule') === false) {
+					 $xml .= "<param name='" . $key . "'>" . $value . "</param>";
+				 }
             }
             $xml .="</additional-data>";
         }
@@ -1687,5 +1689,23 @@ class TxnInfo
 			$this->_aAdditionalData['invoiceid'] = $invoiceId;
 		}
     }
+
+    public function getMessageData(RDB $obj_DB,$stateIds)
+	{
+		if(empty($stateIds) === true ) return null;
+		$stateIds = implode(",", $stateIds);
+		$sql = "SELECT id, stateid, created, data 
+         		FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
+				WHERE txnid = ". $this->getID() ." AND enabled = '1'
+				AND stateid in (". $stateIds.")
+				ORDER BY id DESC";
+		$res = $obj_DB->query($sql);
+		$aMessages = array();
+		while ($RS = $obj_DB->fetchName($res) )
+		{
+			$aMessages[] = array_change_key_case($RS, CASE_LOWER);
+		}
+		return $aMessages;
+	}
 }
 ?>

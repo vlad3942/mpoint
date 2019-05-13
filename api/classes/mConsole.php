@@ -720,6 +720,7 @@ class mConsole extends Admin
 				)
 				SELECT Txn.*,
 					CT.code AS currencycode,
+					CT.id AS paymentcurrency,
 					CL.id AS clientid, CL.name AS client,
 					Acc.id AS accountid, Acc.name AS account,
 					PSP.id AS pspid, PSP.name AS psp,
@@ -809,7 +810,9 @@ class mConsole extends Admin
 					}
 				}
 			}
-			
+
+			$paymentCurrencyConfig = CurrencyConfig::produceConfig($this->getDBConn(),$RS["PAYMENTCURRENCY"]);
+
 			if(in_array( $RS["STATEID"], $aStateIDs ) == true)
 			{
 				$aObj_TransactionLogs[] = new TransactionLogInfo($RS["TXNID"],
@@ -834,7 +837,8 @@ class mConsole extends Admin
 						gmdate("Y-m-d H:i:sP", strtotime(substr($RS["CREATED"], 0, strpos($RS["CREATED"], ".") ) ) ),
 						$aObj_Messages,
 						"",
-						$RS["CURRENCYCODE"]);
+                        $paymentCurrencyConfig
+                        );
 			}
 		}
 		
@@ -865,7 +869,8 @@ class mConsole extends Admin
 					Txn.mobile as mobile, Txn.email as email, Txn.lang AS language,CL.id AS clientid, CL.name AS client, U1.url AS authurl,
 					Acc.id AS accountid, Acc.markup as markup, Acc.mobile as acc_mobile, Acc.name AS account,PSP.id AS pspid, PSP.name AS psp,
 					PM.id AS paymentmethodid, PM.name AS paymentmethod,Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description,
-					CT.code AS currencycode
+					CT.code AS currencycode,
+					CT.id AS paymentcurrency
 				FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Client_Tbl CL ON Txn.clientid = CL.id
 				INNER JOIN Client".sSCHEMA_POSTFIX.".Account_Tbl Acc ON Txn.accountid = Acc.id
@@ -895,13 +900,14 @@ class mConsole extends Admin
 		
 		$aObj_TransactionLogs = array();
 		$aObj_CountryConfigurations = array();
+
 		//trigger_error( $sql ."\n" );
 		// Construct XML Document with data for Transaction
 		while ($RS = $this->getDBConn()->fetchName($res) )
 		{
 			if (array_key_exists($RS["COUNTRYID"], $aObj_CountryConfigurations) === false) { $aObj_CountryConfigurations[$RS["COUNTRYID"] ] = CountryConfig::produceConfig($this->getDBConn(), $RS["COUNTRYID"]); }
 			$aObj_Messages = array();
-	
+            $paymentCurrencyConfig = CurrencyConfig::produceConfig($this->getDBConn(),$RS["PAYMENTCURRENCY"]);
 			if(in_array( $RS["ASSTATEID"], $aStateIDs ) == true)
 			{
 				$aObj_TransactionLogs[] = new TransactionLogInfo($RS["ID"],
@@ -928,7 +934,7 @@ class mConsole extends Admin
 						date("Y-m-d H:i:s", strtotime($RS["CREATED"]) ),
 						$aObj_Messages,
 						"",
-						$RS["CURRENCYCODE"],
+                        $paymentCurrencyConfig,
                         OrderInfo::produceConfigurations($this->getDBConn(), $RS["ID"])
                     );
 			}
@@ -1379,6 +1385,7 @@ class mConsole extends Admin
 		$sql = 'SELECT ';
         $aSelector = array();
         $aSeriesSelector = array();
+        $aStateSelector = array();
 		$aOrderbyClauses = array();
 		$aFiltersClauses = array();
 
@@ -1386,24 +1393,28 @@ class mConsole extends Admin
 		{
 			switch(strtolower($column)){
 				case 'transaction_count' :
-					$aSelector[] = 'COUNT(*) AS TRANSACTION_COUNT';
+                    if(in_array('state', $aColumns) === false) $aSelector[] = 'COUNT(*) AS TRANSACTION_COUNT';
+                    $aStateSelector[] = 'COUNT(*) AS TRANSACTION_COUNT';
 					$aSeriesSelector[] = 'COALESCE(Q.TRANSACTION_COUNT,0) as TRANSACTION_COUNT';
 					$aOrderbyClauses[] = 'TRANSACTION_COUNT '.$orderby['TRANSACTION_COUNT'];
                     if(in_array('state', $aColumns) === false)
                     $aFiltersClauses[] = " AND M.STATEID IN (".Constants::iPAYMENT_CAPTURED_STATE.")";
 					break;
             	case 'hour':
-            		$aSelector[] = 'EXTRACT(hour FROM M.created '.$sAtTimeZone.' ) AS HOUR';
+            		$aSelector[] = 'EXTRACT(hour FROM T.created '.$sAtTimeZone.' ) AS HOUR';
 					$aSeriesSelector[] = 'number as HOUR';
 					$aOrderbyClauses[] = 'HOUR';
             		break;
 				case 'day':
-            		$aSelector[] = 'EXTRACT(day FROM M.created '.$sAtTimeZone.') AS DAY';
+            		$aSelector[] = 'EXTRACT(day FROM T.created '.$sAtTimeZone.') AS DAY';
 					$aSeriesSelector[] = 'number as DAY';
+                    $aStateSelector[] = 'q.DAY AS DAY';
 					$aOrderbyClauses[] = 'DAY';
             		break;
 				case 'state':
 					$aSelector[] = 'M.STATEID AS STATE';
+                    $aStateSelector[] = 'q.STATE AS STATE';
+                    $aSelector[] = 'RANK() OVER(PARTITION BY M.txnid ORDER BY M.id desc) rn';
 					$aOrderbyClauses[] = 'STATE '.$orderby['currency'];//if value present the it will return value(asc or desc) or ''(empty)
 					break;
 				case 'revenue_count' :
@@ -1431,6 +1442,11 @@ class mConsole extends Admin
         			$aSelector[] = 'COUNTRY.NAME AS country_id';
         			$aOrderbyClauses[] = 'country_id '.$orderby['country_id'];
         			break;
+                case 'psp' :
+                    $aSelector[] = 'P.NAME AS psp';
+                    $aSeriesSelector[] = "COALESCE(Q.psp,'') as psp";
+                    $aOrderbyClauses[] = 'psp '.$orderby['psp'];
+                    break;
 				default:
 					$aSelector[] = strtolower($column);
 					break;
@@ -1441,6 +1457,10 @@ class mConsole extends Admin
 
 		$sql .= " FROM LOG".sSCHEMA_POSTFIX.".TRANSACTION_TBL AS T INNER JOIN LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL AS M ON T.ID = M.TXNID ";
 
+        if(in_array('psp', $aColumns) === true )
+        {
+            $sql .= " INNER JOIN SYSTEM".sSCHEMA_POSTFIX.".PSP_TBL AS P ON T.PSPID = P.ID ";
+        }
 
 		if(array_key_exists('paymenttypeid', $aFilters) === true)
 		{
@@ -1468,10 +1488,10 @@ class mConsole extends Admin
         {
             switch(strtolower($key)){
                 case 'from' :
-                    $aFiltersClauses[] = " AND M.created ".$sAtTimeZone." >= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($value)))."'";
+                    $aFiltersClauses[] = " AND T.created >= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($value)))."' ".$sAtTimeZone."";
                     break;
                 case 'to':
-                    $aFiltersClauses[] = " AND M.created ".$sAtTimeZone." <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($value)))."'";
+                    $aFiltersClauses[] = " AND T.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($value)))."' ".$sAtTimeZone." ";
                     break;
                 case 'state':
                     $aFiltersClauses[] = " AND M.STATEID in (".implode(",", $value).") AND M.ID IN (SELECT Max(id) FROM LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL	WHERE T.id = txnid and STATEID in (".implode(",", $value)."))";
@@ -1496,6 +1516,16 @@ class mConsole extends Admin
         }
 
         $sql .= implode(" ", $aFiltersClauses);
+
+        if(in_array('state', $aColumns) === true)
+        {
+            $outerSql = 'SELECT ';
+            $outerSql .= implode(", ", $aStateSelector);
+            $outerSql .= ' from (';
+            $outerSql .= $sql;
+            $outerSql .= ') q where q.rn=1  ';
+            $outerSql .= 'group by q.state,q.day';
+        }
 
         $sql .= ' GROUP BY ';
 
@@ -1546,9 +1576,11 @@ class mConsole extends Admin
         }
 
         $sReponseXML = '';
-
-        $res = $this->getDBConn()->query($sql);
-
+        if(in_array('state', $aColumns) === false)
+            $res = $this->getDBConn()->query($sql);
+        else
+            $res = $this->getDBConn()->query($outerSql);
+            
         if (is_resource($res) === true) {
 
             $sReponseXML .= '<result-set>';
