@@ -72,9 +72,9 @@ class PaymentProcessor
         return $this->_objPSP->initialize($this->_objPSPConfig,$this->_objPSP->getTxnInfo()->getAccountID(), false, $cardTypeId, $cardToken, $billingAddress, $clientInfo);
     }
 
-    public function authorize($obj_Elem)
+    public function authorize($obj_Elem, $obj_ClientInfo= null)
     {
-        return $this->_objPSP->authorize($this->_objPSPConfig, $obj_Elem);
+        return $this->_objPSP->authorize($this->_objPSPConfig, $obj_Elem, $obj_ClientInfo);
     }
 
     public function authenticate($obj_Elem)

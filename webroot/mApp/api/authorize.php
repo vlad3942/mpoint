@@ -723,7 +723,7 @@ try
                                                                             $obj_PSP->setAuthPath(true);
                                                                         }
 
-                                                                        $code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem);
+                                                                        $code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem, $obj_ClientInfo);
 
                                                                         // Authorization succeeded
                                                                         if ($code == "100")
@@ -756,7 +756,7 @@ try
                                                                     	
                                                                     	$obj_PSP = new CHUBB($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO["chubb"]);
                                                                     	
-                                                                    	$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem, $obj_DOM->{'authorize-payment'}[$i]->{'client-info'});
+                                                                    	$code = $obj_PSP->authorize($obj_PSPConfig , $obj_Elem, $obj_ClientInfo);
                                                                     	
                                                                     	// Authorization succeeded
                                                                     	if ($code == "100")
@@ -793,7 +793,7 @@ try
                                                                                 $requset = str_replace("authorize-payment","authenticate",$HTTP_RAW_POST_DATA);
                                                                                 $code = $obj_Processor->authenticate($requset);
                                                                             }
-                                                                            else{ $code = $obj_Processor->authorize($obj_Elem); }
+                                                                            else{ $code = $obj_Processor->authorize($obj_Elem, $obj_ClientInfo); }
 
 
                                                                             // Authorization succeeded
