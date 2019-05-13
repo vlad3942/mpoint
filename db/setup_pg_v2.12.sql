@@ -1,3 +1,5 @@
--- Get status Additional properties
-insert into client.additionalproperty_tbl (key,value,enabled,externalid,type,scope) values ('status_retry_count',3,true,<clientid>,'client',2);
-insert into client.additionalproperty_tbl (key,value,enabled,externalid,type,scope) values ('status_retry_interval',10,true,<clientid>,'client',2);
+-- Get status Additional properties 
+-- Retry count value should be integer 
+insert into client.additionalproperty_tbl (key,value,enabled,externalid,type,scope) values ('status_retry_count',<value>,true,<clientid>,'client',2);
+-- Retry count value should be integer and it will be seconds 
+insert into client.additionalproperty_tbl (key,value,enabled,externalid,type,scope) values ('status_retry_interval',<value>,true,<clientid>,'client',2);
