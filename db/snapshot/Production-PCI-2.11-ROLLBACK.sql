@@ -15,7 +15,7 @@ DELETE FROM client.additionalproperty_tbl
 WHERE key = 'mechantaccountrule'
 AND value = 'merchantaccount ::= (property[@name=''<midpath>''])
 midpath ::= "MID."(@card-id)'
-AND externalid = (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = 10007 and pspid = 18)
+AND externalid = (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = <client id> and pspid = <pspid>)
 AND type = 'merchant';
 
 
