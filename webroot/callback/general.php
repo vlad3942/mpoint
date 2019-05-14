@@ -106,6 +106,8 @@ require_once(sCLASS_PATH ."/worldpay.php");
 require_once(sCLASS_PATH ."/payu.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
+require_once(sCLASS_PATH ."/global-payments.php");
+
 /**
  * Input XML format
  *
