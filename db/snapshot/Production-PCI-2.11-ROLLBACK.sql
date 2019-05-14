@@ -3,7 +3,18 @@
 
 DELETE FROM client.additionalproperty_tbl 
 WHERE key = 'MID.5'
-AND  value = <MID> 
+AND value = <MID> 
+AND externalid = (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = <client id> and pspid = <pspid>)
+AND type = 'merchant';
+
+
+
+-- MID selection based on card id - Rollback
+
+DELETE FROM client.additionalproperty_tbl 
+WHERE key = 'mechantaccountrule'
+AND value = 'merchantaccount ::= (property[@name=''<midpath>''])
+midpath ::= "MID."(@card-id)'
 AND externalid = (SELECT ID FROM client.merchantaccount_tbl WHERE clientid = <client id> and pspid = <pspid>)
 AND type = 'merchant';
 
