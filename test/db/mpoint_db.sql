@@ -8007,9 +8007,19 @@ INSERT INTO system.pspcurrency_tbl (currencyid, pspid, name) VALUES (208,50,'DKK
 
 INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2030 , 'Tokenization complete - Virtual card created', 'Authorization', true);
 INSERT INTO log.state_tbl (id, name, module, enabled) VALUES (2031 , 'Tokenization Failed', 'Authorization', true);
+INSERT INTO log.state_tbl (id, name, module, func) VALUES (20032, 'Refund Initialized', 'Payment', 'refund');
+INSERT INTO log.state_tbl (id, name, module, func) VALUES (20022, 'Cancel Initialized', 'Payment', 'cancel');
+INSERT INTO log.state_tbl (id, name, module, func) VALUES (20012, 'Capture Initialized', 'Payment', 'capture');
+
 
 --default smsrcpt to false --SGAMBE-4207
 ALTER TABLE client.client_tbl ALTER COLUMN smsrcpt SET DEFAULT FALSE ;
+
+ALTER TABLE system.psp_tbl ADD capture_method int DEFAULT 0;
+COMMENT ON COLUMN system.psp_tbl.capture_method IS '0 - manual
+2 - bulk capture
+3 - bulk refund
+6 - bulk capture + bulk  refund';
 
 alter table client.cardaccess_tbl
     add capture_method integer default 0;

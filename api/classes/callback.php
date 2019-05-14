@@ -403,7 +403,7 @@ abstract class Callback extends EndUserAccount
 		if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true)
 		{
 			$pspId = $this->_obj_TxnInfo->getPSPID();
-			$sBody .= "&pspid=". urlencode($pspId);
+			$sBody .= "&pspid=". urlencode($pspid);
 			$sBody .= "&psp-name=". urlencode($this->getPSPName($pspId));
         }
 		if ( strlen($this->_obj_TxnInfo->getDescription() ) > 0) { $sBody .= "&description=". urlencode($this->_obj_TxnInfo->getDescription() ); }
@@ -954,7 +954,7 @@ abstract class Callback extends EndUserAccount
 					}
 					if ($objTransaction->getClientConfig()->sendPSPID() === true)
 					{
-						$transactionData['pspid']= $objTransaction->getPSPID();
+						$transactionData['pspid']= $objTransaction->getExternalID();
 						$transactionData['psp-name']= $this->getPSPName($objTransaction->getPSPID());
         			}
 					if ($objTransaction->getDescription() !== '')
@@ -1038,12 +1038,12 @@ abstract class Callback extends EndUserAccount
 
     public function getCaptureMethod()
 	{
-		if($this->_iCaptureMethod !== null) {
-			$sql = 'SELECT capture_method FROM client' . sSCHEMA_POSTFIX . '.cardaccess_Tbl
-				WHERE pspid = ' . $this->_obj_TxnInfo->getPSPID() . ' 
-				AND clientid = ' . $this->_obj_TxnInfo->getClientConfig()->getID() . ' 
-				AND accountid =' . $this->_obj_TxnInfo->getClientConfig()->getAccountConfig()->getID() . '
-				AND countryid = ' . $this->_obj_TxnInfo->getCountryConfig()->getID();
+		if($this->_iCaptureMethod === null) {
+			$sql = "SELECT capture_method FROM client" . sSCHEMA_POSTFIX . ".cardaccess_Tbl
+				WHERE pspid = " . $this->_obj_TxnInfo->getPSPID() . " 
+				AND clientid = " . $this->_obj_TxnInfo->getClientConfig()->getID() . "  			
+				AND (countryid = " . $this->_obj_TxnInfo->getCountryConfig()->getID() ." 
+				OR countryid IS NULL) AND enabled = '1'";
 			$res = $this->getDBConn()->query($sql);
 
 			if (is_resource($res) === true) {

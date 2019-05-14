@@ -24,7 +24,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
     public function capture($iAmount=-1)
     {
         $captureMethod = $this->getCaptureMethod();
-        if ($captureMethod % 2 === 0  && $this->getTxnInfo()->hasEitherState($this->getDBConn(), Constants::iPAYMENT_CAPTURE_INITIATED_STATE) === false  )
+        if ($captureMethod > 0 && $captureMethod % 2 === 0  && $this->getTxnInfo()->hasEitherState($this->getDBConn(), Constants::iPAYMENT_CAPTURE_INITIATED_STATE) === false  )
         {
             $this->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_CAPTURE_INITIATED_STATE, $iAmount);
             return 1000; //Capture Initiated
@@ -1168,7 +1168,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
     public function getPaymentMethods(PSPConfig $obj_PSPConfig)
     {
         $getPaymentMethodsURL = $this->aCONN_INFO["paths"]["get-payment-methods"];
-        if(isset($getPaymentMethodsURL) && empty($getPaymentMethodsURL) !== false) {
+        if(isset($getPaymentMethodsURL)) {
             $obj_XML = simplexml_load_string($this->getClientConfig()->toXML(Constants::iPrivateProperty));
             $b = '<?xml version="1.0" encoding="UTF-8"?>';
             $b .= '<root>';
