@@ -1037,11 +1037,11 @@ abstract class Callback extends EndUserAccount
     public function getCaptureMethod()
 	{
 		if($this->_iCaptureMethod === null) {
-			$sql = 'SELECT capture_method FROM client' . sSCHEMA_POSTFIX . '.cardaccess_Tbl
-				WHERE pspid = ' . $this->_obj_TxnInfo->getPSPID() . ' 
-				AND clientid = ' . $this->_obj_TxnInfo->getClientConfig()->getID() . ' 			
-				AND (countryid = ' . $this->_obj_TxnInfo->getCountryConfig()->getID() .' 
-				OR countryid IS NULL)';
+			$sql = "SELECT capture_method FROM client" . sSCHEMA_POSTFIX . ".cardaccess_Tbl
+				WHERE pspid = " . $this->_obj_TxnInfo->getPSPID() . " 
+				AND clientid = " . $this->_obj_TxnInfo->getClientConfig()->getID() . "  			
+				AND (countryid = " . $this->_obj_TxnInfo->getCountryConfig()->getID() ." 
+				OR countryid IS NULL) AND enabled = '1'";
 			$res = $this->getDBConn()->query($sql);
 
 			if (is_resource($res) === true) {

@@ -1168,7 +1168,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
     public function getPaymentMethods(PSPConfig $obj_PSPConfig)
     {
         $getPaymentMethodsURL = $this->aCONN_INFO["paths"]["get-payment-methods"];
-        if(isset($getPaymentMethodsURL) && empty($getPaymentMethodsURL) !== false) {
+        if(isset($getPaymentMethodsURL)) {
             $obj_XML = simplexml_load_string($this->getClientConfig()->toXML(Constants::iPrivateProperty));
             $b = '<?xml version="1.0" encoding="UTF-8"?>';
             $b .= '<root>';
