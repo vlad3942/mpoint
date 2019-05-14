@@ -52,7 +52,7 @@ class DIBSCallbackAPITest extends baseAPITest
         while ($row = pg_fetch_assoc($res) )
         {
             $aStates[] = $row["stateid"];
-			$this->assertEquals("15469928", $row["extid"]);
+			$this->assertEquals("2", $row["extid"]);
         }
 
         $this->assertTrue(is_int(array_search(Constants::iPAYMENT_ACCEPTED_STATE, $aStates) ) );

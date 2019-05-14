@@ -403,7 +403,7 @@ abstract class Callback extends EndUserAccount
 		if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true)
 		{
 			$pspId = $this->_obj_TxnInfo->getPSPID();
-			$sBody .= "&pspid=". urlencode($pspId);
+			$sBody .= "&pspid=". urlencode($pspid);
 			$sBody .= "&psp-name=". urlencode($this->getPSPName($pspId));
         }
 		if ( strlen($this->_obj_TxnInfo->getDescription() ) > 0) { $sBody .= "&description=". urlencode($this->_obj_TxnInfo->getDescription() ); }
@@ -952,7 +952,7 @@ abstract class Callback extends EndUserAccount
 					}
 					if ($objTransaction->getClientConfig()->sendPSPID() === true)
 					{
-						$transactionData['pspid']= $objTransaction->getPSPID();
+						$transactionData['pspid']= $objTransaction->getExternalID();
 						$transactionData['psp-name']= $this->getPSPName($objTransaction->getPSPID());
         			}
 					if ($objTransaction->getDescription() !== '')
