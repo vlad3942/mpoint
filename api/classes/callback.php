@@ -432,6 +432,11 @@ abstract class Callback extends EndUserAccount
         	$sBody .= "&approval-code=". $this->_obj_TxnInfo->getApprovalCode();
         }
 
+		if (($this->_obj_TxnInfo->getWalletID() > 0) === true )
+		{
+        	$sBody .= "&wallet-id=". $this->_obj_TxnInfo->getWalletID();
+        }
+
         $sBody .= '&payment-method=' . $this->_obj_TxnInfo->getPaymentMethod($this->getDBConn());
 
         $shortCode = $this->_obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, 'SHORT-CODE');
@@ -982,6 +987,11 @@ abstract class Callback extends EndUserAccount
 					if ($objTransaction->getApprovalCode() !== '')
 					{
         				$transactionData['approval-code']= $objTransaction->getApprovalCode();
+        			}
+
+					if (($objTransaction->getWalletID() > 0) === true )
+					{
+        				$transactionData['wallet-id']= $objTransaction->getWalletID();
         			}
 
         			$transactionData['payment-method'] = $objTransaction->getPaymentMethod($this->getDBConn());
