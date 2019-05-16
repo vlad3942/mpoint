@@ -52,9 +52,3 @@ INSERT INTO Client.MerchantSubAccount_Tbl (accountid, pspid, name) VALUES (<acco
 --edit if installment is to be enabled for specific SR, 0 means no installment option. 1 means installment is enabled.
 INSERT INTO client.cardaccess_tbl (clientid, cardid, enabled, pspid, countryid, stateid, position, preferred, psp_type, installment) VALUES (<clientid>, <cardid>, true, 56, <countryid>, 1, null, false, 1,<1|0>);
 
-
--- Get status Additional properties
--- Retry count value should be integer
-insert into client.additionalproperty_tbl (key,value,enabled,externalid,type,scope) values ('status_retry_count',<value>,true,<clientid>,'client',2);
--- Retry count value should be integer and it will be seconds
-insert into client.additionalproperty_tbl (key,value,enabled,externalid,type,scope) values ('status_retry_interval',<value>,true,<clientid>,'client',2);

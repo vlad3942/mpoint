@@ -132,6 +132,8 @@ require_once(sCLASS_PATH ."/chase.php");
 require_once(sCLASS_PATH ."/payu.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
+// Require specific Business logic for the Global Payments component
+require_once(sCLASS_PATH ."/global-payments.php");
 
 $aMsgCds = array();
 
@@ -844,6 +846,26 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             if (count($obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}) == 1)
                                             {
                                                 $billingAddress = $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'};
+                                            }
+                                            $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $token, $billingAddress);
+
+                                            foreach ($obj_XML->children() as $obj_Elem)
+                                            {
+                                                $xml .= trim($obj_Elem->asXML() );
+                                            }
+                                            break;
+                                        case (Constants::iGlobal_Payments_PSP):
+                                            $obj_PSP = new GlobalPayments($_OBJ_DB, $_OBJ_TXT, $oTI, $aHTTP_CONN_INFO["global-payments"]);
+                                            $token = '';
+                                            if (count($obj_DOM->pay[$i]->transaction->card->token) == 1)
+                                            {
+                                              $token = $obj_DOM->pay[$i]->transaction->card->token;
+                                            }
+
+                                            $billingAddress = null;
+                                            if (count($obj_DOM->{'pay'}[$i]->transaction->{'billing-address'}) == 1)
+                                            {
+                                               $billingAddress = $obj_DOM->{'pay'}[$i]->transaction->{'billing-address'};
                                             }
                                             $obj_XML = $obj_PSP->initialize($obj_PSPConfig, $obj_TxnInfo->getAccountID(), General::xml2bool($obj_DOM->pay[$i]->transaction["store-card"]), $obj_DOM->pay[$i]->transaction->card["type-id"], $token, $billingAddress);
 
