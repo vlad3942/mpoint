@@ -1585,13 +1585,14 @@ class TxnInfo
 	 * @param integer $cardid Card used for payment
 	 * @param string $mask Mask card number
 	 * @param string $expiry Expiry of card
+	 * @param integer $pspId
 	 * @throws SQLQueryException
 	 */
-	function updateCardDetails(RDB $obj_DB, $cardid, $mask = null, $expiry= null)
+	function updateCardDetails(RDB $obj_DB, $cardid, $mask = null, $expiry= null, $pspId = null)
     {
        try
        {
-           $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl SET cardid = " . intval($cardid);
+           $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl SET cardid = " . intval($cardid) .", pspid = ". $pspId;
 
            if(empty($mask) ===false && empty($expiry) === false)
            {
