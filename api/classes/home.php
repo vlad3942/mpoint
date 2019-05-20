@@ -803,7 +803,7 @@ class Home extends General
         $sql = "SELECT Txn.id, Txn.amount AS amount, C.id AS countryid, C.currencyid, C.symbol, C.priceformat, CL.id AS clientid,
                         Txn.id AS mpointid, Txn.orderid, TS.states,Txn.logourl,Txn.cssurl,Txn.accepturl,Txn.cancelurl, CL.salt, 
                         Txn.accountid AS end_user_id,Txn.lang,Txn.cardid,
-                        Txn.email, Txn.mobile,Txn.customer_ref,Txn.operatorid,Txn.markup,Txn.deviceid, Txn.sessionid, Txn.extid, Txn.approval_action_code
+                        Txn.email, Txn.mobile,Txn.customer_ref,Txn.operatorid,Txn.markup,Txn.deviceid, Txn.sessionid, Txn.extid, Txn.approval_action_code, Txn.walletid
                         FROM (SELECT T.id, array_to_string(array_agg( DISTINCT M.stateid || ':' || S.name || ':' || M.rownum), ',') AS states
                         FROM Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl T
                           INNER JOIN (SELECT stateid, txnid, row_number() OVER(ORDER BY id ASC) AS rownum, enabled 
@@ -856,7 +856,7 @@ class Home extends General
             $sessionType = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty, "sessiontype");
             $googleAnalyticsId = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"googleAnalyticsId");
             $paymentCompleteMethod = $obj_ClientConfig->getAdditionalProperties(Constants::iInternalProperty,"hppFormRedirectMethod");
-            $xml = '<transaction id="' . $RS["ID"] . '" mpoint-id="' . $RS["MPOINTID"] . '" order-no="' . $RS["ORDERID"] . '" accoutid="' . $RS['END_USER_ID'] . '" clientid="' . $RS['CLIENTID'] . '" language="' . $RS['LANG'] . '"  card-id="' . $RS["CARDID"] . '" session-id="' . $RS["SESSIONID"] . '" session-type="' . $sessionType . '" extid="' . $RS["EXTID"] . '" approval-code="' . $RS["APPROVAL_ACTION_CODE"] . '">';
+            $xml = '<transaction id="' . $RS["ID"] . '" mpoint-id="' . $RS["MPOINTID"] . '" order-no="' . $RS["ORDERID"] . '" accoutid="' . $RS['END_USER_ID'] . '" clientid="' . $RS['CLIENTID'] . '" language="' . $RS['LANG'] . '"  card-id="' . $RS["CARDID"] . '" session-id="' . $RS["SESSIONID"] . '" session-type="' . $sessionType . '" extid="' . $RS["EXTID"] . '" approval-code="' . $RS["APPROVAL_ACTION_CODE"] . '" walletid="' . $RS["WALLETID"] . '">';
             $xml .= '<amount country-id="' . $RS["COUNTRYID"] . '" currency="' . $RS['CURRENCYID'] . '" symbol="' . utf8_encode($RS['SYMBOL']) . '" format="' . $RS['PRICEFORMAT'] . '" pending = "' . $pendingAmount . '"  currency-code = "' . $obj_currencyConfig->getCode() . '" decimals = "' . $obj_currencyConfig->getDecimals() . '">' . htmlspecialchars($amount, ENT_NOQUOTES) . '</amount>';
             $xml .= '<accept-url>' . htmlspecialchars($RS["ACCEPTURL"], ENT_NOQUOTES) . '</accept-url>';
             $xml .= '<cancel-url>' . htmlspecialchars($RS["CANCELURL"], ENT_NOQUOTES) . '</cancel-url>';
