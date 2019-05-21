@@ -1494,7 +1494,7 @@ class mConsole extends Admin
                     $aFiltersClauses[] = " AND T.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($value)))."' ".$sAtTimeZone." ";
                     break;
                 case 'state':
-                    $aFiltersClauses[] = " AND M.STATEID in (".implode(",", $value).") AND M.ID IN (SELECT Max(id) FROM LOG".sSCHEMA_POSTFIX.".MESSAGE_TBL	WHERE T.id = txnid and STATEID in (".implode(",", $value)."))";
+                    $aFiltersClauses[] = " AND M.STATEID in (".implode(",", $value)."))";
                     // Sub query for getting latest state only
                     break;
 				case 'cardid':
