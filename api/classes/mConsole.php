@@ -812,7 +812,7 @@ class mConsole extends Admin
 			}
 
 			$paymentCurrencyConfig = CurrencyConfig::produceConfig($this->getDBConn(),$RS["PAYMENTCURRENCY"]);
-
+            $objOrderData = OrderInfo::produceConfigurations($this->getDBConn(), $RS["TXNID"]);
 			if(in_array( $RS["STATEID"], $aStateIDs ) == true)
 			{
 				$aObj_TransactionLogs[] = new TransactionLogInfo($RS["TXNID"],
@@ -837,7 +837,8 @@ class mConsole extends Admin
 						gmdate("Y-m-d H:i:sP", strtotime(substr($RS["CREATED"], 0, strpos($RS["CREATED"], ".") ) ) ),
 						$aObj_Messages,
 						"",
-                        $paymentCurrencyConfig
+                        $paymentCurrencyConfig,
+                    	$objOrderData
                         );
 			}
 		}

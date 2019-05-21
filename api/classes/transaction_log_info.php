@@ -164,7 +164,7 @@ class TransactionLogInfo
      *
      * @var object
      */
-    private $_obj_OrderInfo;
+    private $_aObj_OrderInfo;
 	
 	/**
 	 * Default constructor
@@ -193,7 +193,7 @@ class TransactionLogInfo
 	 * @param string $desc 				String that holds the description of an order
      * @param OrderInfo $oOI 			OrderInfo object
 	 */
-	public function __construct($id, $tid, $ono, $extid, ClientConfig $oClient, BasicConfig $oSubAccount, BasicConfig $oPSP=null, BasicConfig $oPM=null, $sid, CountryConfig $oCC, $amt, $cptamt, $pnt, $rwd, $rfnd, $fee, $m, CustomerInfo $oCI, $ip, $ts, array $aObj_Msgs, $desc="", CurrencyConfig $paymentCurrencyConfig=null, OrderInfo $oOI )
+	public function __construct($id, $tid, $ono, $extid, ClientConfig $oClient, BasicConfig $oSubAccount, BasicConfig $oPSP=null, BasicConfig $oPM=null, $sid, CountryConfig $oCC, $amt, $cptamt, $pnt, $rwd, $rfnd, $fee, $m, CustomerInfo $oCI, $ip, $ts, array $aObj_Msgs, $desc="", CurrencyConfig $paymentCurrencyConfig=null, array $aObjOI = array())
 	{
 		$this->_iID =  (integer) $id;
 		$this->_iTypeID =  (integer) $tid;
@@ -224,7 +224,7 @@ class TransactionLogInfo
 		
 		$this->_aObj_MessageInfos = $aObj_Msgs;
 		$this->_sDescription = trim($desc);
-		$this->_obj_OrderInfo = (($oOI instanceof OrderInfo) === true)?$oOI:null;
+		$this->_aObj_OrderInfo = $aObjOI;
 	}
 
 	public function getID() { return $this->_iID; }
@@ -258,10 +258,10 @@ class TransactionLogInfo
 	public function getCustomerInfo() { return $this->_obj_CustomerInfo; }
     public function getOrdersXml() {
         $xml = '';
-        if( empty($this->_obj_OrderInfo) === false )
+        if( empty($this->_aObj_OrderInfo) === false )
         {
             $xml .= '<orders>';
-            foreach ($this->_obj_OrderInfo as $obj_OrderInfo)
+            foreach ($this->_aObj_OrderInfo as $obj_OrderInfo)
             {
                 if( ($obj_OrderInfo instanceof OrderInfo) === true )
                 {
