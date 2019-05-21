@@ -835,6 +835,7 @@ $aHTTP_CONN_INFO["uatp"]["paths"]["auth"] = "/mpsp/uatp/authorize-payment";
 $aHTTP_CONN_INFO["uatp"]["paths"]["initialize"] = "/mpsp/uatp/initialize";
 $aHTTP_CONN_INFO["uatp"]["paths"]["tokenize"] = "/mpoint/uatp/generate-suvtp";
 $aHTTP_CONN_INFO["uatp"]["paths"]["process-settlement"] = "/mpsp/uatp/bulk-settlement";
+$aHTTP_CONN_INFO["uatp"]["paths"]["callback"] = "/mpoint/uatp/notify-client";
 
 
 /**
@@ -900,6 +901,23 @@ $aHTTP_CONN_INFO["cielo"]["paths"]["capture"] = "/mpsp/cielo/capture";
 $aHTTP_CONN_INFO["cielo"]["paths"]["initialize"] = "/mpsp/cielo/initialize";
 $aHTTP_CONN_INFO["cielo"]["paths"]["refund"] = "/mpsp/cielo/void";
 $aHTTP_CONN_INFO["cielo"]["paths"]["cancel"] = "/mpsp/cielo/void";
+
+
+/**
+ * Connection info for connecting to Global Payments
+ */
+$aHTTP_CONN_INFO["global-payments"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["global-payments"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["global-payments"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["global-payments"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["global-payments"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["global-payments"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["global-payments"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["global-payments"]["paths"]["auth"] = "/mpoint/global-payments/authorize-payment";
+$aHTTP_CONN_INFO["global-payments"]["paths"]["capture"] = "/mpoint/global-payments/capture";
+$aHTTP_CONN_INFO["global-payments"]["paths"]["initialize"] = "/mpoint/global-payments/initialize";
+$aHTTP_CONN_INFO["global-payments"]["paths"]["refund"] = "/mpoint/global-payments/refund";
+$aHTTP_CONN_INFO["global-payments"]["paths"]["cancel"] = "/mpoint/global-payments/cancel";
 
 
 /**

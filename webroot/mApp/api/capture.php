@@ -87,6 +87,8 @@ require_once(sCLASS_PATH ."/ccpp_alc.php");
 require_once(sCLASS_PATH ."/customer_info.php");
 // Require specific Business logic for the chase component
 require_once(sCLASS_PATH ."/chase.php");
+// Require specific Business logic for the global payments component
+require_once(sCLASS_PATH ."/global-payments.php");
 
 //header("Content-Type: application/x-www-form-urlencoded");
 

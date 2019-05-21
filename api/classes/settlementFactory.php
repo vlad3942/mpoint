@@ -22,7 +22,7 @@ class SettlementFactory
             case Constants::iUATP_CARD_ACCOUNT:
                 return new UATPSettlement($_OBJ_TXT,$clientId, $pspId, $connectionInfo);
             default:
-                NULL;
+                return new PSPSettlement($_OBJ_TXT,$clientId, $pspId, $connectionInfo);
         }
     }
 }

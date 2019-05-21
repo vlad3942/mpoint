@@ -86,6 +86,9 @@ require_once(sCLASS_PATH ."/amex.php");
 require_once(sCLASS_PATH ."/chase.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
+// Require specific Business logic for the global payments component
+require_once(sCLASS_PATH ."/global-payments.php");
+
 header("Content-Type: application/x-www-form-urlencoded");
 
 // Require Business logic for the validating client Input

@@ -1192,7 +1192,7 @@ class TxnInfo
 		return $obj_TxnInfo;
 	}
 
-	function  _produceAdditionalData($_OBJ_DB, $txnId)
+	public static function  _produceAdditionalData($_OBJ_DB, $txnId)
     {
         $additionalData = [];
         $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Transaction' and externalid=" . $txnId;
@@ -1689,5 +1689,23 @@ class TxnInfo
 			$this->_aAdditionalData['invoiceid'] = $invoiceId;
 		}
     }
+
+    public function getMessageData(RDB $obj_DB,$stateIds)
+	{
+		if(empty($stateIds) === true ) return null;
+		$stateIds = implode(",", $stateIds);
+		$sql = "SELECT id, stateid, created, data 
+         		FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
+				WHERE txnid = ". $this->getID() ." AND enabled = '1'
+				AND stateid in (". $stateIds.")
+				ORDER BY id DESC";
+		$res = $obj_DB->query($sql);
+		$aMessages = array();
+		while ($RS = $obj_DB->fetchName($res) )
+		{
+			$aMessages[] = array_change_key_case($RS, CASE_LOWER);
+		}
+		return $aMessages;
+	}
 }
 ?>

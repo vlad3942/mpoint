@@ -46,6 +46,17 @@ abstract class Callback extends EndUserAccount
 	 */
 	private $_obj_PSPConfig;
 
+	/*
+	 * Integer identifier to identify the Settlement Mode
+	 *
+	 *  0 - Real Time
+	 *	2 - bulk capture
+	 *	3 - bulk refund
+	 *	6 - bulk capture + bulk  refund
+	 *
+	 */
+	private $_iCaptureMethod = null;
+
 	/**
 	 * Default Constructor.
 	 *
@@ -71,6 +82,11 @@ abstract class Callback extends EndUserAccount
 
         if ($oPSPConfig == null) { $oPSPConfig = PSPConfig::produceConfig($oDB, $oTI->getClientConfig()->getID(), $oTI->getClientConfig()->getAccountConfig()->getID(), $pspID); }
 		$this->_obj_PSPConfig = $oPSPConfig;
+	}
+
+	protected function updateTxnInfoObject()
+	{
+		$this->_obj_TxnInfo = TxnInfo::produceInfo( $this->_obj_TxnInfo->getID(), $this->getDBConn());
 	}
 
 	/**
@@ -378,7 +394,7 @@ abstract class Callback extends EndUserAccount
 		$sBody .= "&desc=". urlencode($this->getStatusMessage($sid) );
 		$sBody .= "&amount=". $amt;
 		$sBody .= "&fee=". intval($fee);
-		$sBody .= "&currency=". urlencode($this->_obj_TxnInfo->getCountryConfig()->getCurrency() );
+		$sBody .= "&currency=". urlencode($this->_obj_TxnInfo->getCurrencyConfig()->getCode() );
 		$sBody .= "&mobile=". urlencode($this->_obj_TxnInfo->getMobile() );
 		$sBody .= "&operator=". urlencode($this->_obj_TxnInfo->getOperator() );
 		$sBody .= "&language=". urlencode($this->_obj_TxnInfo->getLanguage() );
@@ -386,8 +402,9 @@ abstract class Callback extends EndUserAccount
 		if (empty($cardno) === false) { $sBody .= "&card-number=". urlencode($cardno); }
 		if ($this->_obj_TxnInfo->getClientConfig()->sendPSPID() === true)
 		{
+			$pspId = $this->_obj_TxnInfo->getPSPID();
 			$sBody .= "&pspid=". urlencode($pspid);
-			$sBody .= "&psp-name=". urlencode($this->getPSPName($pspid));
+			$sBody .= "&psp-name=". urlencode($this->getPSPName($pspId));
         }
 		if ( strlen($this->_obj_TxnInfo->getDescription() ) > 0) { $sBody .= "&description=". urlencode($this->_obj_TxnInfo->getDescription() ); }
 		$sBody .= $this->getVariables();
@@ -413,6 +430,11 @@ abstract class Callback extends EndUserAccount
         }
         if (strlen($this->_obj_TxnInfo->getApprovalCode()) >0){
         	$sBody .= "&approval-code=". $this->_obj_TxnInfo->getApprovalCode();
+        }
+
+		if (($this->_obj_TxnInfo->getWalletID() > 0) === true )
+		{
+        	$sBody .= "&wallet-id=". $this->_obj_TxnInfo->getWalletID();
         }
 
         $sBody .= '&payment-method=' . $this->_obj_TxnInfo->getPaymentMethod($this->getDBConn());
@@ -736,7 +758,7 @@ abstract class Callback extends EndUserAccount
 
 	public static function producePSP(RDB $obj_DB, TranslateText $obj_Txt, TxnInfo $obj_TxnInfo, array $aConnInfo, PSPConfig $obj_PSPConfig=null)
 	{
-		if (isset($obj_PSPConfig) === true && intval($obj_PSPConfig->getID() ) > 0) { $iPSPID = $obj_PSPConfig->getID(); }
+		if (isset($obj_PSPConfig) == true && intval($obj_PSPConfig->getID() ) > 0) { $iPSPID = $obj_PSPConfig->getID(); }
 		else { $iPSPID = $obj_TxnInfo->getPSPID(); }
 
 		switch ($iPSPID)
@@ -822,11 +844,13 @@ abstract class Callback extends EndUserAccount
         case (Constants::iGOOGLE_PAY_PSP) :
             return new GooglePay($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["google-pay"]);
         case (Constants::iCHASE_ACQUIRER):
-                return new Chase($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["chase"]);
+            return new Chase($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["chase"]);
         case (Constants::iPAYU_PSP):
-                return new PayU($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["payu"]);
+            return new PayU($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["payu"]);
 		case (Constants::iCielo_ACQUIRER):
-                return new Cielo($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cielo"]);
+            return new Cielo($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["cielo"]);
+		case (Constants::iGlobal_Payments_PSP):
+			return new GlobalPayments($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["global-payments"]);
         default:
  			throw new CallbackException("Unkown Payment Service Provider: ". $obj_TxnInfo->getPSPID() ." for transaction: ". $obj_TxnInfo->getID(), 1001);
 		}
@@ -921,7 +945,7 @@ abstract class Callback extends EndUserAccount
 					$transactionData['hmac']= $objTransaction->getHMAC();
 					$transactionData['product-type']= $objTransaction->getProductType();
 					$transactionData['amount']= $objTransaction->getAmount();
-					$transactionData['currency']= $objTransaction->getCountryConfig()->getCurrency();
+					$transactionData['currency']= $objTransaction->getCurrencyConfig()->getCode();
 					$transactionData['fee']= $objTransaction->getFee();
 					$transactionData['issuer-approval-code']= $objTransaction->getApprovalCode();
 					if (intval($objTransaction->getCardID()) > 0)
@@ -935,7 +959,7 @@ abstract class Callback extends EndUserAccount
 					}
 					if ($objTransaction->getClientConfig()->sendPSPID() === true)
 					{
-						$transactionData['pspid']= $objTransaction->getPSPID();
+						$transactionData['pspid']= $objTransaction->getExternalID();
 						$transactionData['psp-name']= $this->getPSPName($objTransaction->getPSPID());
         			}
 					if ($objTransaction->getDescription() !== '')
@@ -965,6 +989,11 @@ abstract class Callback extends EndUserAccount
 					if ($objTransaction->getApprovalCode() !== '')
 					{
         				$transactionData['approval-code']= $objTransaction->getApprovalCode();
+        			}
+
+					if (($objTransaction->getWalletID() > 0) === true )
+					{
+        				$transactionData['wallet-id']= $objTransaction->getWalletID();
         			}
 
         			$transactionData['payment-method'] = $objTransaction->getPaymentMethod($this->getDBConn());
@@ -1016,5 +1045,22 @@ abstract class Callback extends EndUserAccount
         	}
         }
     }
+
+    public function getCaptureMethod()
+	{
+		if($this->_iCaptureMethod === null) {
+			$sql = "SELECT capture_method FROM client" . sSCHEMA_POSTFIX . ".cardaccess_Tbl
+				WHERE pspid = " . $this->_obj_TxnInfo->getPSPID() . " 
+				AND clientid = " . $this->_obj_TxnInfo->getClientConfig()->getID() . "  			
+				AND (countryid = " . $this->_obj_TxnInfo->getCountryConfig()->getID() ." 
+				OR countryid IS NULL) AND enabled = '1'";
+			$res = $this->getDBConn()->query($sql);
+
+			if (is_resource($res) === true) {
+				$this->_iCaptureMethod = $res['CAPTURE_METHOD'];
+			}
+		}
+		return $this->_iCaptureMethod;
+	}
 }
 ?>

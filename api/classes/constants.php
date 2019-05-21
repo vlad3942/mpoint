@@ -842,6 +842,12 @@ abstract class Constants
     const iCielo_ACQUIRER = 54;
 
     /**
+     * Unique ID for the Payment Service Provider: Global Payments
+     *
+     */
+    const iGlobal_Payments_PSP = 56;
+
+    /**
 	 * Unique ID for the Electronic Payment Flow
 	 *
 	 */
