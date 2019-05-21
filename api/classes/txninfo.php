@@ -1192,7 +1192,7 @@ class TxnInfo
 		return $obj_TxnInfo;
 	}
 
-	function  _produceAdditionalData($_OBJ_DB, $txnId)
+	public static function  _produceAdditionalData($_OBJ_DB, $txnId)
     {
         $additionalData = [];
         $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Transaction' and externalid=" . $txnId;
