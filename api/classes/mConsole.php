@@ -695,9 +695,10 @@ class mConsole extends Admin
 						Txn.mobile as mobile, Txn.email as email, Txn.lang AS language,
 						Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description,
 						Txn.clientid, Txn.accountid, Txn.pspid, Txn.cardid, Txn.customer_ref, Txn.euaid,
-						Txn.currencyid as currencyid,
+						Txn.currencyid as currencyid, ER.externalid as externaltoken, ER.pspid as externaltokenprocessor,
 						Msg.stateid, Msg.created ".$sAtTimeZone."  AS createdfinal
 					FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
+					INNER JOIN Log".sSCHEMA_POSTFIX.".ExternalReference_Tbl ER ON Txn.id = ER.txnid
 					INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid
 					WHERE Txn.clientid IN (". implode(",", $aClientIDs) .")";
 		if (count($aAccountIDs) > 0) { $sql .= " AND Txn.accountid IN (". implode(", ", $aAccountIDs) .")"; }
@@ -838,7 +839,8 @@ class mConsole extends Admin
 						$aObj_Messages,
 						"",
                         $paymentCurrencyConfig,
-                    	$objOrderData
+                    	$objOrderData,
+                        array($RS['EXTERNALTOKENPROCESSOR'] => $RS['EXTERNALTOKEN'])
                         );
 			}
 		}

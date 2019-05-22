@@ -160,12 +160,18 @@ class TransactionLogInfo
 	private  $_sDescription;
 
     /**
-     * OrderInfo obj
+     * Array of OrderInfo obj
      *
-     * @var object
+     * @var array()
      */
     private $_aObj_OrderInfo;
-	
+	/**
+     * array of additional data as (key,value) pairs
+     *
+     * @var array()
+     */
+    private $_aAdditonalData;
+
 	/**
 	 * Default constructor
 	 * 
@@ -191,9 +197,10 @@ class TransactionLogInfo
 	 * @param timestamp $ts				The timestamp when the transaction was created in the format: YYYY-MM-DD hh:mm:ss+00:00
 	 * @param array $aObj_Msgs			List of Message Information instances identifying which states the transaction has gone through
 	 * @param string $desc 				String that holds the description of an order
-     * @param OrderInfo $oOI 			OrderInfo object
+     * @param Array $aObjOI 		    Array of OrderInfo objects
+     * @param Array $aObjAD 		    Array of Additional Data
 	 */
-	public function __construct($id, $tid, $ono, $extid, ClientConfig $oClient, BasicConfig $oSubAccount, BasicConfig $oPSP=null, BasicConfig $oPM=null, $sid, CountryConfig $oCC, $amt, $cptamt, $pnt, $rwd, $rfnd, $fee, $m, CustomerInfo $oCI, $ip, $ts, array $aObj_Msgs, $desc="", CurrencyConfig $paymentCurrencyConfig=null, array $aObjOI = array())
+	public function __construct($id, $tid, $ono, $extid, ClientConfig $oClient, BasicConfig $oSubAccount, BasicConfig $oPSP=null, BasicConfig $oPM=null, $sid, CountryConfig $oCC, $amt, $cptamt, $pnt, $rwd, $rfnd, $fee, $m, CustomerInfo $oCI, $ip, $ts, array $aObj_Msgs, $desc="", CurrencyConfig $paymentCurrencyConfig=null, array $aObjOI = array(), array $aObjAD = array())
 	{
 		$this->_iID =  (integer) $id;
 		$this->_iTypeID =  (integer) $tid;
@@ -225,6 +232,7 @@ class TransactionLogInfo
 		$this->_aObj_MessageInfos = $aObj_Msgs;
 		$this->_sDescription = trim($desc);
 		$this->_aObj_OrderInfo = $aObjOI;
+		$this->_aAdditonalData = $aObjAD;
 	}
 
 	public function getID() { return $this->_iID; }
@@ -322,6 +330,17 @@ class TransactionLogInfo
 		}
 		if (strlen($this->_sDescription) > 0) { $xml .= '<description>'. htmlspecialchars($this->_sDescription, ENT_NOQUOTES) .'</description>'; }
         $xml .= $this->getOrdersXml();
+        if(count($this->_aAdditonalData) > 0)
+        {
+            $xml .= "<additional-data>";
+            foreach ($this->_aAdditonalData as $key=>$value)
+            {
+                if (strpos($key, 'rule') === false) {
+                    $xml .= "<param name='" . $key . "'>" . $value . "</param>";
+                }
+            }
+            $xml .="</additional-data>";
+        }
 		$xml .= '</transaction>';
 
 		return $xml;
