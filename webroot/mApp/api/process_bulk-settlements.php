@@ -86,6 +86,8 @@ require_once(sCLASS_PATH . "/customer_info.php");
 require_once(sCLASS_PATH . "/chase.php");
 // Require Processor Class for providing all Payment specific functionality.
 require_once(sCLASS_PATH . "/payment_processor.php");
+// Require specific Business logic for the Mada Mpgs component
+require_once(sCLASS_PATH ."/mada_mpgs.php");
 
 //header("Content-Type: application/x-www-form-urlencoded");
 

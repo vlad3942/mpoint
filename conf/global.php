@@ -370,6 +370,23 @@ $aHTTP_CONN_INFO["data-cash"]["paths"]["cancel"] = "/mpoint/data-cash/cancel";
 $aHTTP_CONN_INFO["data-cash"]["paths"]["refund"] = "/mpoint/data-cash/refund";
 
 /**
+ * Connection info for connecting to Data Cash
+ */
+$aHTTP_CONN_INFO["mada-mpgs"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
+$aHTTP_CONN_INFO["mada-mpgs"]["host"] = $aHTTP_CONN_INFO["mesb"]["host"];
+$aHTTP_CONN_INFO["mada-mpgs"]["port"] = $aHTTP_CONN_INFO["mesb"]["port"];
+$aHTTP_CONN_INFO["mada-mpgs"]["timeout"] = $aHTTP_CONN_INFO["mesb"]["timeout"];
+$aHTTP_CONN_INFO["mada-mpgs"]["path"] = ""; // Set by calling class
+$aHTTP_CONN_INFO["mada-mpgs"]["method"] = $aHTTP_CONN_INFO["mesb"]["method"];
+$aHTTP_CONN_INFO["mada-mpgs"]["contenttype"] = "text/xml";
+$aHTTP_CONN_INFO["mada-mpgs"]["paths"]["initialize"] = "/mpoint/data-cash/initialize";
+$aHTTP_CONN_INFO["mada-mpgs"]["paths"]["auth"] = "/mpoint/data-cash/authorize-payment";
+$aHTTP_CONN_INFO["mada-mpgs"]["paths"]["capture"] = "/mpoint/data-cash/capture";
+$aHTTP_CONN_INFO["mada-mpgs"]["paths"]["status"] = "/mpoint/data-cash/status";
+$aHTTP_CONN_INFO["mada-mpgs"]["paths"]["cancel"] = "/mpoint/data-cash/cancel";
+$aHTTP_CONN_INFO["mada-mpgs"]["paths"]["refund"] = "/mpoint/data-cash/refund";
+
+/**
  * Connection info for connecting to Wire Card
  */
 $aHTTP_CONN_INFO["wire-card"]["protocol"] = $aHTTP_CONN_INFO["mesb"]["protocol"];
