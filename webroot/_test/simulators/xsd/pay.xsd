@@ -212,6 +212,7 @@
 	<xs:attribute name="pushid" type="xs:string" use="optional"/>
 	<xs:attribute name="id" type="xs:string" use="required" />
 	<xs:attribute name="auto-capture" type="xs:string" use="required" />
+	<xs:attribute name="enable-cvv" type="xs:string" use="required" />
 	<xs:attribute name="country-id" type="xs:string" use="required" />
 	<xs:attribute name="sms-receipt" type="xs:string" use="required" />
 	<xs:attribute name="email-receipt" type="xs:string" use="required" />

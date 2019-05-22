@@ -8032,3 +8032,5 @@ comment on column client.cardaccess_tbl.capture_method is '0 - manual
 
 UPDATE client.cardaccess_tbl ca SET capture_method = p.capture_method FROM system.psp_tbl p WHERE ca.pspid = p.id;
 alter table system.psp_tbl drop column capture_method;
+
+ALTER TABLE client.client_tbl ADD COLUMN enable_cvv boolean DEFAULT true;
