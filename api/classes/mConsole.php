@@ -698,7 +698,7 @@ class mConsole extends Admin
 						Txn.currencyid as currencyid, ER.externalid as externaltoken, ER.pspid as externaltokenprocessor,
 						Msg.stateid, Msg.created ".$sAtTimeZone."  AS createdfinal
 					FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
-					INNER JOIN Log".sSCHEMA_POSTFIX.".ExternalReference_Tbl ER ON Txn.id = ER.txnid
+					LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".ExternalReference_Tbl ER ON Txn.id = ER.txnid
 					INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid
 					WHERE Txn.clientid IN (". implode(",", $aClientIDs) .")";
 		if (count($aAccountIDs) > 0) { $sql .= " AND Txn.accountid IN (". implode(", ", $aAccountIDs) .")"; }
@@ -840,7 +840,7 @@ class mConsole extends Admin
 						"",
                         $paymentCurrencyConfig,
                     	$objOrderData,
-                        array($RS['EXTERNALTOKENPROCESSOR'] => $RS['EXTERNALTOKEN'])
+                        (empty($RS['EXTERNALTOKENPROCESSOR']) === false)? array($RS['EXTERNALTOKENPROCESSOR'] => $RS['EXTERNALTOKEN']) : array()
                         );
 			}
 		}
