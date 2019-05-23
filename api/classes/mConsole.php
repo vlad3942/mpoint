@@ -695,10 +695,11 @@ class mConsole extends Admin
 						Txn.mobile as mobile, Txn.email as email, Txn.lang AS language,
 						Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description,
 						Txn.clientid, Txn.accountid, Txn.pspid, Txn.cardid, Txn.customer_ref, Txn.euaid,
-						Txn.currencyid as currencyid,
+						Txn.currencyid as currencyid, ER.externalid as externaltoken, ER.pspid as externaltokenprocessor,
 						Msg.stateid, Msg.created ".$sAtTimeZone."  AS createdfinal,
 						RANK() OVER(PARTITION BY Msg.txnid ORDER BY Msg.id desc) rn
 					FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
+					LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".ExternalReference_Tbl ER ON Txn.id = ER.txnid
 					INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid
 					WHERE Txn.clientid IN (". implode(",", $aClientIDs) .")";
 		if (count($aAccountIDs) > 0) { $sql .= " AND Txn.accountid IN (". implode(", ", $aAccountIDs) .")"; }
@@ -814,7 +815,7 @@ class mConsole extends Admin
 			}
 
 			$paymentCurrencyConfig = CurrencyConfig::produceConfig($this->getDBConn(),$RS["PAYMENTCURRENCY"]);
-
+            $objOrderData = OrderInfo::produceConfigurations($this->getDBConn(), $RS["TXNID"]);
 			if(in_array( $RS["STATEID"], $aStateIDs ) == true)
 			{
 				$aObj_TransactionLogs[] = new TransactionLogInfo($RS["TXNID"],
@@ -839,7 +840,9 @@ class mConsole extends Admin
 						gmdate("Y-m-d H:i:sP", strtotime(substr($RS["CREATED"], 0, strpos($RS["CREATED"], ".") ) ) ),
 						$aObj_Messages,
 						"",
-                        $paymentCurrencyConfig
+                        $paymentCurrencyConfig,
+                    	$objOrderData,
+                        (empty($RS['EXTERNALTOKENPROCESSOR']) === false)? array($RS['EXTERNALTOKENPROCESSOR'] => $RS['EXTERNALTOKEN']) : array()
                         );
 			}
 		}
