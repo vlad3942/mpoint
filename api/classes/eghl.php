@@ -31,4 +31,34 @@ class EGHL extends CPMPSP
 	public function authorize(PSPConfig $obj_PSPConfig, $ticket) { throw new EGHLException("Method: authTicket is not supported by eGHL-FPX"); }
 	public function getPSPID() { return Constants::iEGHL_PSP; }
     public function refund($iAmount=-1) { throw new EGHLException("Method: refund is not supported by eGHL-FPX"); }
+    public function getPaymentMethods(PSPConfig $obj_PSPConfig)
+    {
+        $activePaymentMethods =  parent::getPaymentMethods($obj_PSPConfig);
+        $aStatisticalData = $this->getStatisticalData('issuing_bank_%');
+        $sortable = array();
+          foreach($activePaymentMethods->{'active-payment-menthods'}->{'payment-method'} as $node) {
+              $issuingBank = strtolower($node->issuingBank);
+              $usageCount = (int)$aStatisticalData['issuing_bank_'.$issuingBank];
+              $node->addChild('usage', $usageCount);
+            $sortable[] = $node;
+          }
+        usort($sortable,   'compare_usage');
+          $newSortedList = "<root><active-payment-menthods>";
+        foreach ($sortable as $node)
+        {
+            unset($node->usage);
+            $newSortedList .= $node->asXML();
+        }
+        $newSortedList .= "</active-payment-menthods></root>";
+        $sxml = simplexml_load_string($newSortedList);
+        return $sxml;
+
+    }
+}
+
+function compare_usage($a, $b)
+{
+    if((int)$a->usage === (int)$b->usage)
+        return strnatcmp($a->displayName, $b->displayName);
+    return ((float) $a->usage < (float) $b->usage);
 }

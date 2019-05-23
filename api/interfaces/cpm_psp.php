@@ -1199,4 +1199,22 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         }
         return null;
     }
+
+    public function getStatisticalData($attribute)
+    {
+        $query  = "SELECT key, value
+                   FROM client.additionalproperty_tbl
+                   WHERE key like '".$attribute."'
+                     AND externalid = ".$this->getClientConfig()->getID() ."
+                     AND enabled";
+
+        $resultObj = $this->getDBConn()->query($query);
+
+        $aStatisticalData = [];
+        while ($rs = $this->getDBConn()->fetchName($resultObj)) {
+            $aStatisticalData[$rs['KEY']] = $rs['VALUE'];
+        }
+        return $aStatisticalData;
+    }
+
 }
