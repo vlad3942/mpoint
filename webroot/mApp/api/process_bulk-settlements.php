@@ -216,7 +216,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         }
 
                                         if (isset($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'})) {
-                                            for ($j = 0; $k < count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->children()); $k++) {
+                                            for ($k = 0; $k < count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->children()); $k++) {
                                                 $data['orders'][$j]['additionaldata'][$k]['name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->param[$k]['name'];
                                                 $data['orders'][$j]['additionaldata'][$k]['value'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->param[$k];
                                                 $data['orders'][$j]['additionaldata'][$k]['type'] = (string)'Order';
@@ -278,29 +278,34 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                                 }
                             }
-
-                            if($obj_TxnInfo->getAmount() == $iAmount)
+                            $sMessage = '';
+                            if((int)$obj_TxnInfo->getAmount() === (int)$iAmount)
                             {
-                                if ( ($iAmount - $iCRAmount) > 0 )
+                                if ( $iDBAmount > 0 )
                                 {
                                     $code = $obj_PSP->capture($iDBAmount);
                                 }
-                                elseif ( ($iAmount - $iCRAmount) == 0 )
+                                elseif ( $iDBAmount === 0 )
                                 {
                                     $code = $obj_PSP->refund($iCRAmount);
                                 }
+                                $sMessage = "PSP returned code ".$code;
+                            }
+                            else
+                            {
+                                $sMessage = 'Amount mismatch';
                             }
 
                             if (intval($code) == 1000)
                             {
-                                $xml .= '<status id = "' . $sToken . '" code = "' . $code . '" >Settlement Initialized'
+                                $xml .= '<status id = "' . $sToken . '" code = "' . $code . '" >Settlement Initialized, '.$sMessage
                                     . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->asXML()
                                     . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount->asXML()
                                     . '</status>';
                             }
                             else
                             {
-                                $xml .= '<status id = "' . $sToken . '" code = "999" >Settlement Failed'
+                                $xml .= '<status id = "' . $sToken . '" code = "999" >Settlement Failed, '.$sMessage
                                     . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->asXML()
                                     . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount->asXML()
                                     . '</status>';
