@@ -368,6 +368,13 @@ class TxnInfo
      */
     private $_iPaymentType = 0;
 
+    /*
+     *  Processor type based on psp used for transaction
+     *
+     * @var integer
+     */
+    private $_iProcessorType = 0;
+
     /**
      * User selected to pay in these many installments
      *
@@ -1606,6 +1613,33 @@ class TxnInfo
             trigger_error("Failed to update card details (log.transaction_tbl)", E_USER_ERROR);
        }
     }
+
+    public function getPSPType(RDB $obj_DB)
+	{
+		try
+        {
+            if($this->_iProcessorType === 0)
+            {
+                $query = "SELECT system_type FROM system" . sSCHEMA_POSTFIX . ".psp_tbl WHERE id = '" . $this->_iPSPID . "'";
+
+                $resultSet = $obj_DB->getName($query);
+                if (is_array($resultSet) === true)
+                {
+                    $processorType = $resultSet['SYSTEM_TYPE'];
+                    if($processorType !== null && $processorType !== '')
+                    {
+                        $this->_iProcessorType = $processorType;
+                    }
+                }
+            }
+
+        }
+        catch (mPointException $mPointException)
+        {
+            trigger_error("Failed to update psp details (log.transaction_tbl)", E_USER_ERROR);
+        }
+        return $this->_iProcessorType;
+	}
 
     /**
      * @param RDB $obj_DB

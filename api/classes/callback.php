@@ -442,6 +442,7 @@ abstract class Callback extends EndUserAccount
         }
 
         $sBody .= '&payment-method=' . $this->_obj_TxnInfo->getPaymentMethod($this->getDBConn());
+		$sBody .= '&payment-type=' . $this->_obj_TxnInfo->getPSPType($this->getDBConn());
 
         $shortCode = $this->_obj_PSPConfig->getAdditionalProperties(Constants::iInternalProperty, 'SHORT-CODE');
         if($shortCode !== false)
@@ -1003,6 +1004,7 @@ abstract class Callback extends EndUserAccount
         			}
 
         			$transactionData['payment-method'] = $objTransaction->getPaymentMethod($this->getDBConn());
+					$transactionData['payment-type'] = $objTransaction->getPSPType($this->getDBConn());
 
 					$shortCode = $this->getAdditionalPropertyFromDB('SHORT-CODE', $objTransaction->getClientConfig()->getID(),$objTransaction->getPSPID());
         			if($shortCode !== false)
