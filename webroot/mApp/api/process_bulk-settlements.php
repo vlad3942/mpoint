@@ -84,6 +84,8 @@ require_once(sCLASS_PATH . "/ccpp_alc.php");
 require_once(sCLASS_PATH . "/customer_info.php");
 // Require specific Business logic for the chase component
 require_once(sCLASS_PATH . "/chase.php");
+// Require specific Business logic for the UATP Rails component
+require_once(sCLASS_PATH . "/uatp_card_account.php");
 // Require Processor Class for providing all Payment specific functionality.
 require_once(sCLASS_PATH . "/payment_processor.php");
 // Require specific Business logic for the Mada Mpgs component
@@ -192,6 +194,8 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         if (empty($obj_TxnInfo) === false) {
                             $obj_PSP = PaymentProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_TxnInfo->getPSPID()), $aHTTP_CONN_INFO);
                             $iAmount = 0;
+                            $iDBAmount = 0;
+                            $iCRAmount = 0;
                             if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders) == 1 && count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->children()) > 0) {
                                 for ($j = 0; $j < count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}); $j++) {
                                     if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}) > 0) {
@@ -199,18 +203,22 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                         $data['orders'][$j]['product-name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->name;
                                         $data['orders'][$j]['product-description'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->description;
                                         $data['orders'][$j]['product-image-url'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'image-url'};
-                                        $data['orders'][$j]['amount'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->amount;
+                                        $data['orders'][$j]['amount'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount;
                                         $data['orders'][$j]['country-id'] = $obj_TxnInfo->getCountryConfig()->getID();
                                         $data['orders'][$j]['points'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->points;
                                         $data['orders'][$j]['reward'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->reward;
                                         $data['orders'][$j]['quantity'] = (float)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->quantity;
 
-                                        if ($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->amount['type'] == 'DB') {
-                                            $iAmount += intval($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->amount);
+                                        if ($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['type'] == 'DB') {
+                                            $iDBAmount += intval($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount);
+                                            $iAmount += intval($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount);
+                                        }elseif ($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['type'] == 'CR') {
+                                            $iCRAmount += intval($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount);
+                                            $iAmount += intval($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount);
                                         }
 
                                         if (isset($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'})) {
-                                            for ($j = 0; $k < count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->children()); $k++) {
+                                            for ($k = 0; $k < count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->children()); $k++) {
                                                 $data['orders'][$j]['additionaldata'][$k]['name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->param[$k]['name'];
                                                 $data['orders'][$j]['additionaldata'][$k]['value'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->{'additional-data'}->param[$k];
                                                 $data['orders'][$j]['additionaldata'][$k]['type'] = (string)'Order';
@@ -272,18 +280,34 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                                 }
                             }
+                            $sMessage = '';
+                            if((int)$obj_TxnInfo->getAmount() === (int)$iAmount)
+                            {
+                                if ( $iDBAmount > 0 )
+                                {
+                                    $code = $obj_PSP->capture($iDBAmount);
+                                }
+                                elseif ( $iDBAmount === 0 )
+                                {
+                                    $code = $obj_PSP->refund($iCRAmount);
+                                }
+                                $sMessage = "PSP returned code ".$code;
+                            }
+                            else
+                            {
+                                $sMessage = 'Amount mismatch';
+                            }
 
-                            $code = $obj_PSP->capture($iAmount);
                             if (intval($code) == 1000)
                             {
-                                $xml .= '<status id = "' . $sToken . '" code = "' . $code . '" >Capture Initialized'
+                                $xml .= '<status id = "' . $sToken . '" code = "' . $code . '" >Settlement Initialized, '.$sMessage
                                     . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->asXML()
                                     . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount->asXML()
                                     . '</status>';
                             }
                             else
                             {
-                                $xml .= '<status id = "' . $sToken . '" code = "999" >Capture Declined'
+                                $xml .= '<status id = "' . $sToken . '" code = "999" >Settlement Failed, '.$sMessage
                                     . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->asXML()
                                     . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount->asXML()
                                     . '</status>';
