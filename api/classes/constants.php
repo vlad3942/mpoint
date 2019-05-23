@@ -847,6 +847,12 @@ abstract class Constants
      */
     const iGlobal_Payments_PSP = 56;
 
+
+    /**
+     * Unique ID for the Payment Service Provider: MADA MPGS
+     *
+     */
+    const iMADA_MPGS_PSP = 57;
     /**
 	 * Unique ID for the Electronic Payment Flow
 	 *

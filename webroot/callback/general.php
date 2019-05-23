@@ -59,6 +59,8 @@ require_once(sCLASS_PATH ."/paypal.php");
 require_once(sCLASS_PATH ."/payfort.php");
 // Require specific Business logic for the DataCash component
 require_once(sCLASS_PATH ."/datacash.php");
+// Require specific Business logic for the Mada Mpgs component
+require_once(sCLASS_PATH ."/mada_mpgs.php");
 // Require specific Business logic for the 2C2P component
 require_once(sCLASS_PATH ."/ccpp.php");
 // Require specific Business logic for the MayBank component
@@ -180,7 +182,10 @@ try
 	$sExpirydate =  $year.$obj_XML->callback->transaction->card->expiry->year ."-". $obj_XML->callback->transaction->card->expiry->month;
 	// If transaction is in Account Validated i.e 1998 state no action to be done
 
-    array_push($aStateId,$iStateID);
+    if($obj_TxnInfo->hasEitherState($_OBJ_DB, $iStateID) === false){
+        array_push($aStateId,$iStateID);
+    }
+
     $propertyValue = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION");
 
     if($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER && $propertyValue == true && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
