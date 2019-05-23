@@ -791,6 +791,8 @@ abstract class Callback extends EndUserAccount
 			return new WireCard($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["wire-card"]);
 		case (Constants::iDATA_CASH_PSP):
 			return new DataCash($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["data-cash"]);
+		case (Constants::iMADA_MPGS_PSP):
+			return new MadaMpgs($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mada-mpgs"]);
 		case (Constants::iGLOBAL_COLLECT_PSP):
 			return new GlobalCollect($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["global-collect"]);
 		case (Constants::iSECURE_TRADING_PSP):
