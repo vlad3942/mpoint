@@ -162,12 +162,16 @@ abstract class Callback extends EndUserAccount
 	 * @return	integer
 	 * @throws 	CallbackException
 	 */
-	public function completeTransaction($pspid, $txnid, $cid, $sid, $fee=0, array $debug=null)
+	public function completeTransaction($pspid, $txnid, $cid, $sid, $fee=0, array $debug=null, $issuingbank=null)
 	{
 		if (intval($txnid) == -1) { $sql = ""; }
 		else { $sql = ", extid = '". $this->getDBConn()->escStr($txnid) ."'"; }
 		if ($this->_obj_TxnInfo->getAccountID() > 0) { $sql .= ", euaid = ". $this->_obj_TxnInfo->getAccountID(); }
 		else { $sql .= ", euaid = NULL"; }
+		if($issuingbank != '')
+		{
+			 $sql .= ", issuing_bank = '".$issuingbank."'";
+		}
 		
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET pspid = ". intval($pspid) .", cardid = ". intval($cid).", fee =".intval($fee) . $sql ."
@@ -791,6 +795,8 @@ abstract class Callback extends EndUserAccount
 			return new WireCard($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["wire-card"]);
 		case (Constants::iDATA_CASH_PSP):
 			return new DataCash($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["data-cash"]);
+		case (Constants::iMADA_MPGS_PSP):
+			return new MadaMpgs($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["mada-mpgs"]);
 		case (Constants::iGLOBAL_COLLECT_PSP):
 			return new GlobalCollect($obj_DB, $obj_Txt, $obj_TxnInfo, $aConnInfo["global-collect"]);
 		case (Constants::iSECURE_TRADING_PSP):
@@ -1051,6 +1057,7 @@ abstract class Callback extends EndUserAccount
 		if($this->_iCaptureMethod === null) {
 			$sql = "SELECT capture_method FROM client" . sSCHEMA_POSTFIX . ".cardaccess_Tbl
 				WHERE pspid = " . $this->_obj_TxnInfo->getPSPID() . " 
+				AND cardid = " . $this->_obj_TxnInfo->getCardID() . "  			
 				AND clientid = " . $this->_obj_TxnInfo->getClientConfig()->getID() . "  			
 				AND (countryid = " . $this->_obj_TxnInfo->getCountryConfig()->getID() ." 
 				OR countryid IS NULL) AND enabled = '1'";

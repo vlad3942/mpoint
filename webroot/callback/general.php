@@ -59,6 +59,8 @@ require_once(sCLASS_PATH ."/paypal.php");
 require_once(sCLASS_PATH ."/payfort.php");
 // Require specific Business logic for the DataCash component
 require_once(sCLASS_PATH ."/datacash.php");
+// Require specific Business logic for the Mada Mpgs component
+require_once(sCLASS_PATH ."/mada_mpgs.php");
 // Require specific Business logic for the 2C2P component
 require_once(sCLASS_PATH ."/ccpp.php");
 // Require specific Business logic for the MayBank component
@@ -290,12 +292,14 @@ try
 		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
 	}
 	$fee = 0;
+	$sIssuingBank = (string) $obj_XML->callback->{'issuing-bank'};
     $obj_mPoint->completeTransaction((integer)$obj_XML->callback->{'psp-config'}["id"],
         $obj_XML->callback->transaction["external-id"],
         (integer)$obj_XML->callback->transaction->card["type-id"],
         $iStateID,
         $fee,
-        array($HTTP_RAW_POST_DATA));
+        array($HTTP_RAW_POST_DATA),
+        $sIssuingBank);
 	// Payment Authorized: Perform a callback to the 3rd party Wallet if required
 	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 	{

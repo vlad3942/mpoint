@@ -44,12 +44,16 @@ class WireCard extends CPMPSP
 	 * @return	integer
 	 * @throws 	CallbackException
 	 */
-	public function completeTransaction($pspid, $txnid, $cid, $sid, $fee=0, array $debug=null)
+	public function completeTransaction($pspid, $txnid, $cid, $sid, $fee=0, array $debug=null, $issuingbank=null)
 	{
 		if (empty($txnid) == true) { $sql = ""; }
 		else { $sql = ", extid = '". $this->getDBConn()->escStr($txnid) ."'"; }
 		if ($this->getTxnInfo()->getAccountID() > 0) { $sql .= ", euaid = ". $this->getTxnInfo()->getAccountID(); }
 		else { $sql .= ", euaid = NULL"; }
+		if($issuingbank != '')
+		{
+			 $sql .= ", issuing_bank = '".$issuingbank."'";
+		}
 	
 		$sql = "UPDATE Log".sSCHEMA_POSTFIX.".Transaction_Tbl
 				SET pspid = ". intval($pspid) .", cardid = ". intval($cid).", fee =".intval($fee) . $sql ."
