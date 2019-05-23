@@ -102,7 +102,7 @@ require_once(sCLASS_PATH . "/chase.php");
 // Require specific Business logic for UATP Settlement component
 require_once(sCLASS_PATH . "/UATPSettlement.php");
 // Require specific Business logic for PSP Settlement component
-require_once(sCLASS_PATH . "/PSPSettlement.php");
+require_once(sCLASS_PATH . "/pspSettlement.php");
 ini_set('max_execution_time', 1000);
 // </editor-fold>
 
