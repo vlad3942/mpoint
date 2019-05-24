@@ -87,6 +87,7 @@ abstract class Callback extends EndUserAccount
 	protected function updateTxnInfoObject()
 	{
 		$this->_obj_TxnInfo = TxnInfo::produceInfo( $this->_obj_TxnInfo->getID(), $this->getDBConn());
+		$this->_obj_TxnInfo->produceOrderConfig($this->getDBConn());
 	}
 
 	/**
