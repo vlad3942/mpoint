@@ -689,15 +689,14 @@ class mConsole extends Admin
 		 $sql .= "
 		 UNION";
 		 }*/
-		$sql .= "WITH Txn1 AS (
-					SELECT Txn.id as txnid, Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created ,
+		$sql .= "WITH Txn AS (
+					SELECT Txn.id as txnid, Txn.orderid AS orderno, Txn.extid AS externalid, Txn.typeid, Txn.countryid, -1 AS toid, -1 AS fromid, Txn.created ".$sAtTimeZone.",
 						Txn.operatorid as operatorid,
 						Txn.mobile as mobile, Txn.email as email, Txn.lang AS language,
 						Txn.amount, Txn.captured, Txn.points, Txn.reward, Txn.refund, Txn.fee, Txn.mode, Txn.ip, Txn.description,
 						Txn.clientid, Txn.accountid, Txn.pspid, Txn.cardid, Txn.customer_ref, Txn.euaid,
 						Txn.currencyid as currencyid, ER.externalid as externaltoken, ER.pspid as externaltokenprocessor,
-						Msg.stateid, Msg.created ".$sAtTimeZone."  AS createdfinal,
-						RANK() OVER(PARTITION BY Msg.txnid ORDER BY Msg.id desc) rn
+						Msg.stateid, Msg.created ".$sAtTimeZone."  AS createdfinal
 					FROM Log".sSCHEMA_POSTFIX.".Transaction_Tbl Txn
 					LEFT OUTER JOIN Log".sSCHEMA_POSTFIX.".ExternalReference_Tbl ER ON Txn.id = ER.txnid
 					INNER JOIN Log".sSCHEMA_POSTFIX.".Message_Tbl Msg ON Txn.id = Msg.txnid
@@ -716,10 +715,10 @@ class mConsole extends Admin
 		if (empty($start) === false && strlen($start) > 0) { $sql .= " AND '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($start) ) )  ." ' ".$sAtTimeZone."  <= Txn.created"; }
 		if (empty($end) === false && strlen($end) > 0) { $sql .= " AND Txn.created <= '". $this->getDBConn()->escStr(date("Y-m-d H:i:s", strtotime($end) ) ) ."' ".$sAtTimeZone." "; }
 		$sql .= "
-						),
-		Txn
-		AS
-		(select Txn1.* from Txn1 where Txn1.rn=1)
+						AND Msg.id = (SELECT Max(id)
+									  FROM Log.Message_Tbl
+									  WHERE Txn.id = txnid AND stateid IN (". implode(", ", $aStateIDs) .") )
+				)
 				SELECT Txn.*,
 					CT.code AS currencycode,
 					CT.id AS paymentcurrency,
@@ -735,7 +734,6 @@ class mConsole extends Admin
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".PSP_Tbl PSP ON Txn.pspid = PSP.id
 				LEFT OUTER JOIN System".sSCHEMA_POSTFIX.".Card_Tbl PM ON Txn.cardid = PM.id
 				LEFT OUTER JOIN EndUser".sSCHEMA_POSTFIX.".Account_Tbl EUA ON Txn.euaid = EUA.id
-				WHERE Txn.rn=1
 				ORDER BY Txn.txnid DESC";
 		if (intval($limit) > 0 || intval($offset) > 0)
 		{
