@@ -368,6 +368,13 @@ class TxnInfo
      */
     private $_iPaymentType = 0;
 
+    /*
+     *  Processor type based on psp used for transaction
+     *
+     * @var integer
+     */
+    private $_iProcessorType = 0;
+
     /**
      * User selected to pay in these many installments
      *
@@ -1192,7 +1199,7 @@ class TxnInfo
 		return $obj_TxnInfo;
 	}
 
-	function  _produceAdditionalData($_OBJ_DB, $txnId)
+	public static function  _produceAdditionalData($_OBJ_DB, $txnId)
     {
         $additionalData = [];
         $sqlA = "SELECT name, value FROM log" . sSCHEMA_POSTFIX . ".additional_data_tbl WHERE type='Transaction' and externalid=" . $txnId;
@@ -1585,13 +1592,14 @@ class TxnInfo
 	 * @param integer $cardid Card used for payment
 	 * @param string $mask Mask card number
 	 * @param string $expiry Expiry of card
+	 * @param integer $pspId
 	 * @throws SQLQueryException
 	 */
-	function updateCardDetails(RDB $obj_DB, $cardid, $mask = null, $expiry= null)
+	function updateCardDetails(RDB $obj_DB, $cardid, $mask = null, $expiry= null, $pspId = null)
     {
        try
        {
-           $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl SET cardid = " . intval($cardid);
+           $sql = "UPDATE Log" . sSCHEMA_POSTFIX . ".Transaction_Tbl SET cardid = " . intval($cardid) .", pspid = ". $pspId;
 
            if(empty($mask) ===false && empty($expiry) === false)
            {
@@ -1605,6 +1613,33 @@ class TxnInfo
             trigger_error("Failed to update card details (log.transaction_tbl)", E_USER_ERROR);
        }
     }
+
+    public function getPSPType(RDB $obj_DB)
+	{
+		try
+        {
+            if($this->_iProcessorType === 0)
+            {
+                $query = "SELECT system_type FROM system" . sSCHEMA_POSTFIX . ".psp_tbl WHERE id = '" . $this->_iPSPID . "'";
+
+                $resultSet = $obj_DB->getName($query);
+                if (is_array($resultSet) === true)
+                {
+                    $processorType = $resultSet['SYSTEM_TYPE'];
+                    if($processorType !== null && $processorType !== '')
+                    {
+                        $this->_iProcessorType = $processorType;
+                    }
+                }
+            }
+
+        }
+        catch (mPointException $mPointException)
+        {
+            trigger_error("Failed to update psp details (log.transaction_tbl)", E_USER_ERROR);
+        }
+        return $this->_iProcessorType;
+	}
 
     /**
      * @param RDB $obj_DB
@@ -1689,5 +1724,23 @@ class TxnInfo
 			$this->_aAdditionalData['invoiceid'] = $invoiceId;
 		}
     }
+
+    public function getMessageData(RDB $obj_DB,$stateIds)
+	{
+		if(empty($stateIds) === true ) return null;
+		$stateIds = implode(",", $stateIds);
+		$sql = "SELECT id, stateid, created, data 
+         		FROM Log".sSCHEMA_POSTFIX.".Message_Tbl
+				WHERE txnid = ". $this->getID() ." AND enabled = '1'
+				AND stateid in (". $stateIds.")
+				ORDER BY id DESC";
+		$res = $obj_DB->query($sql);
+		$aMessages = array();
+		while ($RS = $obj_DB->fetchName($res) )
+		{
+			$aMessages[] = array_change_key_case($RS, CASE_LOWER);
+		}
+		return $aMessages;
+	}
 }
 ?>

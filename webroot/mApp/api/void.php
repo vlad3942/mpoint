@@ -50,6 +50,8 @@ require_once(sCLASS_PATH ."/adyen.php");
 require_once(sCLASS_PATH ."/visacheckout.php");
 // Require specific Business logic for the Data Cash component
 require_once(sCLASS_PATH ."/datacash.php");
+// Require specific Business logic for the Mada Mpgs component
+require_once(sCLASS_PATH ."/mada_mpgs.php");
 // Require specific Business logic for the Master Pass component
 require_once(sCLASS_PATH ."/masterpass.php");
 // Require specific Business logic for the AMEX Express Checkout component
@@ -95,6 +97,9 @@ require_once(sCLASS_PATH ."/eghl.php");
 require_once(sCLASS_PATH ."/payu.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
+// Require specific Business logic for the Global Payments component
+require_once(sCLASS_PATH ."/global-payments.php");
+
 // Add allowed min and max length for the password to the list of constants used for Text Tag Replacement
 $_OBJ_TXT->loadConstants(array("AUTH MIN LENGTH" => Constants::iAUTH_MIN_LENGTH, "AUTH MAX LENGTH" => Constants::iAUTH_MAX_LENGTH) );
  

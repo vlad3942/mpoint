@@ -63,6 +63,8 @@ require_once(sCLASS_PATH . "/paypal.php");
 require_once(sCLASS_PATH . "/payfort.php");
 // Require specific Business logic for the DataCash component
 require_once(sCLASS_PATH . "/datacash.php");
+// Require specific Business logic for the Mada Mpgs component
+require_once(sCLASS_PATH ."/mada_mpgs.php");
 // Require specific Business logic for the 2C2P component
 require_once(sCLASS_PATH . "/ccpp.php");
 // Require specific Business logic for the MayBank component
@@ -101,10 +103,12 @@ require_once(sCLASS_PATH . "/ChaseSettlement.php");
 require_once(sCLASS_PATH . "/chase.php");
 // Require specific Business logic for UATP Settlement component
 require_once(sCLASS_PATH . "/UATPSettlement.php");
+// Require specific Business logic for PSP Settlement component
+require_once(sCLASS_PATH . "/pspSettlement.php");
 ini_set('max_execution_time', 1000);
 // </editor-fold>
 
-if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true || true)
+if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
     try
     {

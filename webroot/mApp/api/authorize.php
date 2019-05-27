@@ -72,6 +72,8 @@ require_once(sCLASS_PATH ."/adyen.php");
 require_once(sCLASS_PATH ."/applepay.php");
 // Require specific Business logic for the Data Cash component
 require_once(sCLASS_PATH ."/datacash.php");
+// Require specific Business logic for the Mada Mpgs component
+require_once(sCLASS_PATH ."/mada_mpgs.php");
 // Require specific Business logic for the Master Pass component
 require_once(sCLASS_PATH ."/masterpass.php");
 // Require specific Business logic for the AMEX Express Checkout component
@@ -134,6 +136,8 @@ require_once(sCLASS_PATH ."/cielo.php");
 require_once(sCLASS_PATH ."/wallet_processor.php");
 
 require_once(sCLASS_PATH ."/post_auth_action.php");
+// Require specific Business logic for the Global payments component
+require_once(sCLASS_PATH ."/global-payments.php");
 
 
 ignore_user_abort(true);
