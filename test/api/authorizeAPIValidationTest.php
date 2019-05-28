@@ -526,7 +526,7 @@ class AuthorizeAPIValidationTest extends baseAPITest
 		$this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[5]);
 	}
 
-   public function testInvalidTransactionsAmount()
+   public function testInvalidTransactionAmount()
    {
         $xml = $this->getAuthDoc(113, 1100, 1, 100.99);
 

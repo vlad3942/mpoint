@@ -247,7 +247,7 @@ class PayAPIValidationTest extends baseAPITest
 		$this->assertEquals(200, $iStatus);
 	}
 
-    public function testInvalidTransactionsAmount()
+    public function testInvalidTransactionAmount()
     {
         $xml = $this->getPayDoc(113, 1100, 1, 100.99);
 

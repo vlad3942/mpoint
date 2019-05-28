@@ -402,7 +402,7 @@ class InitializeAPIValidationTest extends baseAPITest
 		$this->assertNotContains('<stored-cards><card id="61775" type-id="2" psp-id="2" preferred="true" state-id="2" charge-type-id="0" cvc-length="3" expired="false"><card-number-mask>5019 **** **** 3742 </card-number-mask><expiry>06/24</expiry></card></stored-cards>', $sReplyBody);
 	}
 
-    public function testInvalidTransactionsAmount()
+    public function testInvalidTransactionAmount()
     {
         $xml = $this->getInitDoc(113, 1100, 208, NULL, 100.99);
 
