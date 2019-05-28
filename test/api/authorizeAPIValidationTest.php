@@ -526,4 +526,18 @@ class AuthorizeAPIValidationTest extends baseAPITest
 		$this->assertEquals(Constants::iCB_ACCEPTED_STATE, $aStates[5]);
 	}
 
+   public function testInvalidTransactionsAmount()
+   {
+        $xml = $this->getAuthDoc(113, 1100, 1, 100.99);
+
+        $this->_httpClient->connect();
+
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        $sReplyBody = $this->_httpClient->getReplyBody();
+
+        $this->assertEquals(400, $iStatus);
+        $this->assertContains('Element \'amount\': \'100.99\' is not a valid value of the atomic type \'xs:nonNegativeInteger\'', $sReplyBody);
+    }
+
+
 }

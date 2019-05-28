@@ -22,7 +22,7 @@ class InitializeAPIValidationTest extends baseAPITest
         $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
     }
 
-	protected function getInitDoc($client, $account, $currecyid = null, $token=null)
+	protected function getInitDoc($client, $account, $currecyid = null, $token=null, $amount = 200)
 	{
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
@@ -31,7 +31,7 @@ class InitializeAPIValidationTest extends baseAPITest
 		$xml .= '<amount country-id="100"';
 		if(isset($currecyid) === true)
 		    $xml .= ' currency-id="'.$currecyid.'"';
-		$xml .= '>200</amount>';
+		$xml .= '>'.$amount.'</amount>';
 		$xml .= '<callback-url>http://cinema.mretail.localhost/mOrder/sys/mpoint.php</callback-url>';
 		$xml .= '</transaction>';
 		if(isset($token) === true)
@@ -401,4 +401,18 @@ class InitializeAPIValidationTest extends baseAPITest
 		$this->assertContains('eua-id="-1"', $sReplyBody);
 		$this->assertNotContains('<stored-cards><card id="61775" type-id="2" psp-id="2" preferred="true" state-id="2" charge-type-id="0" cvc-length="3" expired="false"><card-number-mask>5019 **** **** 3742 </card-number-mask><expiry>06/24</expiry></card></stored-cards>', $sReplyBody);
 	}
+
+    public function testInvalidTransactionsAmount()
+    {
+        $xml = $this->getInitDoc(113, 1100, 208, NULL, 100.99);
+
+       $this->_httpClient->connect();
+
+       $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+       $sReplyBody = $this->_httpClient->getReplyBody();
+
+       $this->assertEquals(400, $iStatus);
+       $this->assertContains('<?xml version="1.0" encoding="UTF-8"?><root><status code="400">Element \'amount\': \'100.99\' is not a valid value of the atomic type \'xs:nonNegativeInteger\'.</status></root>', $sReplyBody);
+    }
+
 }
