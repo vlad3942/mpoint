@@ -455,7 +455,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             {
                                 $aFailedPMArray = $obj_mPoint->getPreviousFailedAttempts($obj_TxnInfo->getOrderID(), (integer) $obj_DOM->{'initialize-payment'}[$i]["client-id"]);
                             }
-							$xml = '<client-config id="'. $obj_ClientConfig->getID() .'" account="'. $obj_ClientConfig->getAccountConfig()->getID() .'" store-card="'. $obj_ClientConfig->getStoreCard() .'" auto-capture="'. General::bool2xml($obj_ClientConfig->useAutoCapture() ) .'" mode="'. $obj_ClientConfig->getMode() .'">';
+							$xml = '<client-config id="'. $obj_ClientConfig->getID() .'" account="'. $obj_ClientConfig->getAccountConfig()->getID() .'" store-card="'. $obj_ClientConfig->getStoreCard() .'" auto-capture="'. General::bool2xml($obj_ClientConfig->useAutoCapture() ) .'" enable-cvv="'. General::bool2xml($obj_ClientConfig->getCVVenabled() ) .'" mode="'. $obj_ClientConfig->getMode() .'">';
                             if($obj_ClientConfig->getInstallment()>0)
                             {
                                 $xml .= '<installment type="' . htmlspecialchars($obj_ClientConfig->getInstallment(), ENT_NOQUOTES) . '" max-installments="' . htmlspecialchars($obj_ClientConfig->getMaxInstallments(), ENT_NOQUOTES) . '" frequency="' . htmlspecialchars($obj_ClientConfig->getInstallmentFrequency(), ENT_NOQUOTES) . '" />';
