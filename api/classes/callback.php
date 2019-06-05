@@ -1067,7 +1067,10 @@ abstract class Callback extends EndUserAccount
 			$res = $this->getDBConn()->query($sql);
 
 			if (is_resource($res) === true) {
-				$this->_iCaptureMethod = $res['CAPTURE_METHOD'];
+				while ($RS = $this->getDBConn()->fetchName($res) )
+                {
+                    $this->_iCaptureMethod =  $RS['CAPTURE_METHOD'];
+                }
 			}
 		}
 		return $this->_iCaptureMethod;
