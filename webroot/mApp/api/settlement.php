@@ -126,6 +126,8 @@ require_once(sCLASS_PATH . "/ChaseSettlement.php");
 require_once(sCLASS_PATH . "/UATPSettlement.php");
 // Require specific Business logic for PSP Settlement component
 require_once(sCLASS_PATH . "/pspSettlement.php");
+// Require specific Business logic for the Cielo component
+require_once(sCLASS_PATH ."/cielo.php");
 // </editor-fold>
 
 
