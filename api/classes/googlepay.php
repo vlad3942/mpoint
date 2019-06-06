@@ -32,4 +32,19 @@ class GooglePay extends CPMPSP
 	public function status() { throw new GooglePayException("Method: status is not supported by Google Pay"); }
 
 	public function getPSPID() { return Constants::iGOOGLE_PAY_PSP; }
+
+	public function getPaymentData($objPSPConfig, $obj_Elem, $mode = null)
+	{
+		// $paymentData = parent::getPaymentData($objPSPConfig, $obj_Elem, $mode);
+		$obj_XML = simpledom_load_string(parent::getPaymentData($objPSPConfig, $obj_Elem, $mode));
+		if($mode == Constants::sPAYMENT_DATA_SUMMARY){
+			unset($obj_XML->{'payment-data'}->card->{'card-number'});
+			unset($obj_XML->{'payment-data'}->card->{'expiry'});
+		}
+		$paymentData = $obj_XML->asXML();
+
+		return $paymentData;
+	}
 }
+
+
