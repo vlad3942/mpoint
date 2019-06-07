@@ -20,7 +20,7 @@ class UATPCardAccount extends CPMPSP
         $code = 0;
         $xml  = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<root>';
-        $xml .= '<callback>';
+        $xml .= '<callback client-id = "'.$obj_TxnInfo->getClientConfig()->getID().'" account-id = "'.$obj_TxnInfo->getAccountID().'">';
         $xml .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
         $xml .= $this->_constTxnXML();
         $xml .= '	<status code="'. $iStateID .'">'. $sStateName .'</status>';
