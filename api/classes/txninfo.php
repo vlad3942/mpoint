@@ -1360,6 +1360,12 @@ class TxnInfo
 		{
 			foreach ($aAdditionalData as $aAdditionalDataObj)
 			{
+			    $name = $aAdditionalDataObj["name"];
+			    $value = $aAdditionalDataObj["value"];
+			    if($name === null || empty($name) === true || $value === null || empty($value) === true)
+                {
+                    return $additional_id;
+                }
 				$sql = "SELECT Nextvalue('Log".sSCHEMA_POSTFIX.".additional_data_Tbl_id_seq') AS id FROM DUAL";
 				$RS = $obj_DB->getName($sql);
 				// Error: Unable to generate a new Additional Data ID
