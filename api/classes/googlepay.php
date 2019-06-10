@@ -35,7 +35,6 @@ class GooglePay extends CPMPSP
 
 	public function getPaymentData($objPSPConfig, $obj_Elem, $mode = null)
 	{
-		// $paymentData = parent::getPaymentData($objPSPConfig, $obj_Elem, $mode);
 		$obj_XML = simpledom_load_string(parent::getPaymentData($objPSPConfig, $obj_Elem, $mode));
 		if($mode == Constants::sPAYMENT_DATA_SUMMARY){
 			unset($obj_XML->{'payment-data'}->card->{'card-number'});
