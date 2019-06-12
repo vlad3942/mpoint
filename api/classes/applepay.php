@@ -32,4 +32,16 @@ class ApplePay extends CPMPSP
 	public function status() { throw new ApplePayException("Method: status is not supported by Apple Pay"); }
 
 	public function getPSPID() { return Constants::iAPPLE_PAY_PSP; }
+
+	public function getPaymentData($objPSPConfig, $obj_Elem, $mode = null)
+	{
+		$obj_XML = simpledom_load_string(parent::getPaymentData($objPSPConfig, $obj_Elem, $mode));
+		if($mode == Constants::sPAYMENT_DATA_SUMMARY){
+			unset($obj_XML->{'payment-data'}->card->{'card-number'});
+			unset($obj_XML->{'payment-data'}->card->{'expiry'});
+		}
+		$paymentData = $obj_XML->asXML();
+
+		return $paymentData;
+	}
 }
