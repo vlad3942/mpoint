@@ -208,6 +208,10 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 for ($j = 0, $jMax = count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}); $j < $jMax; $j++) {
                                     if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}) > 0) {
                                         if($isAIDAlreadyUpdated === false) {
+                                            if(intval($obj_TxnInfo->getCurrencyConfig()->getID()) != intval($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['currency-id']))
+                                            {
+                                                throw new mPointException("Currency mismatch for token : ".$sToken." expected ".intval($obj_TxnInfo->getCurrencyConfig()->getID() ), 999 );
+                                            }
                                             $data['orders'] = array();
                                             $data['orders'][0]['product-sku'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product["sku"];
                                             $data['orders'][0]['product-name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->name;
