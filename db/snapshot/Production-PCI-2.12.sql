@@ -11,15 +11,6 @@ UPDATE client.cardaccess_tbl ca SET capture_method = p.capture_method FROM syste
 
 alter table system.psp_tbl drop column capture_method;
 
-
---/db/snapshot/19-10-GetStatus.sql ::not sign off
--- Get status Additional properties
--- Retry count value should be integer
-insert into client.additionalproperty_tbl (key,value,enabled,externalid,type,scope) values ('status_retry_count',<value>,true,<clientid>,'client',2);
--- Retry count value should be integer and it will be seconds
-insert into client.additionalproperty_tbl (key,value,enabled,externalid,type,scope) values ('status_retry_interval',<value>,true,<clientid>,'client',2);
-
-
 --db/snapshot/19-10-SIT-Build.sql ::
 alter table log.transaction_tbl
 	add issuing_bank varchar(100);
