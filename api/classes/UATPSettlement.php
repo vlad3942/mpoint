@@ -120,7 +120,8 @@ class UATPSettlement extends mPointSettlement
     {
         $sql = "SELECT psp_id, client_id
                 FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl
-                WHERE status = '".Constants::sSETTLEMENT_REQUEST_WAITING."' AND file_sequence_number = ".intval(date("Ymd") )."
+                WHERE LOWER(status) IN ('".Constants::sSETTLEMENT_REQUEST_WAITING."','".Constants::sSETTLEMENT_REQUEST_ERROR."') 
+                AND file_sequence_number = ".intval(date("Ymd") )."
                 GROUP BY psp_id, client_id";
 
         $aRS = $_OBJ_DB->getAllNames($sql);

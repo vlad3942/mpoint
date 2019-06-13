@@ -462,7 +462,7 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
                 $mask=str_replace(" ", "", $obj_Card->mask);
             }
             //In case of wallet payment flow mPoint get real card and card id in authorization
-            $this->getTxnInfo()->updateCardDetails($this->getDBConn(), $obj_Card['type-id'], $mask, $obj_Card->expiry);
+            $this->getTxnInfo()->updateCardDetails($this->getDBConn(), $obj_Card['type-id'], $mask, $obj_Card->expiry, $obj_PSPConfig->getID());
             $this->updateTxnInfoObject();
         }
         catch (Exception $e)
@@ -1199,4 +1199,22 @@ abstract class CPMPSP extends Callback implements Captureable, Refundable, Voiad
         }
         return null;
     }
+
+    public function getStatisticalData($attribute)
+    {
+        $query  = "SELECT key, value
+                   FROM client.additionalproperty_tbl
+                   WHERE key like '".$attribute."'
+                     AND externalid = ".$this->getClientConfig()->getID() ."
+                     AND enabled";
+
+        $resultObj = $this->getDBConn()->query($query);
+
+        $aStatisticalData = [];
+        while ($rs = $this->getDBConn()->fetchName($resultObj)) {
+            $aStatisticalData[$rs['KEY']] = $rs['VALUE'];
+        }
+        return $aStatisticalData;
+    }
+
 }

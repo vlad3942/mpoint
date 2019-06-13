@@ -50,6 +50,8 @@ require_once(sCLASS_PATH ."/adyen.php");
 require_once(sCLASS_PATH ."/visacheckout.php");
 // Require specific Business logic for the Data Cash component
 require_once(sCLASS_PATH ."/datacash.php");
+// Require specific Business logic for the Mada Mpgs component
+require_once(sCLASS_PATH ."/mada_mpgs.php");
 // Require specific Business logic for the Master Pass component
 require_once(sCLASS_PATH ."/masterpass.php");
 // Require specific Business logic for the AMEX Express Checkout component
@@ -161,6 +163,11 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					header("HTTP/1.0 502 Bad Gateway");
 					
 					$aMsgCds[999] = "Declined";
+					//If capture is fail log 2011 state
+					if ($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_DECLINED_STATE) === true)
+					{
+                        $obj_mPoint->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_DECLINED_STATE, $e->getMessage() );
+                    }
 					// Perform callback to Client
 					if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
 					{

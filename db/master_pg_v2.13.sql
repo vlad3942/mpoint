@@ -1,0 +1,1 @@
+ALTER TABLE client.client_tbl ADD COLUMN enable_cvv boolean DEFAULT true;

@@ -59,6 +59,8 @@ require_once(sCLASS_PATH ."/paypal.php");
 require_once(sCLASS_PATH ."/payfort.php");
 // Require specific Business logic for the DataCash component
 require_once(sCLASS_PATH ."/datacash.php");
+// Require specific Business logic for the Mada Mpgs component
+require_once(sCLASS_PATH ."/mada_mpgs.php");
 // Require specific Business logic for the 2C2P component
 require_once(sCLASS_PATH ."/ccpp.php");
 // Require specific Business logic for the MayBank component
@@ -180,7 +182,10 @@ try
 	$sExpirydate =  $year.$obj_XML->callback->transaction->card->expiry->year ."-". $obj_XML->callback->transaction->card->expiry->month;
 	// If transaction is in Account Validated i.e 1998 state no action to be done
 
-    array_push($aStateId,$iStateID);
+    if($iStateID === Constants::iPAYMENT_REJECTED_STATE || $obj_TxnInfo->hasEitherState($_OBJ_DB, $iStateID) === false){
+        array_push($aStateId,$iStateID);
+    }
+
     $propertyValue = $obj_TxnInfo->getClientConfig()->getAdditionalProperties(Constants::iInternalProperty, "3DVERIFICATION");
 
     if($obj_PSPConfig->getProcessorType() === Constants::iPROCESSOR_TYPE_ACQUIRER && $propertyValue == true && $iStateID == Constants::iPAYMENT_3DS_SUCCESS_STATE) {
@@ -287,12 +292,14 @@ try
 		if ($obj_TxnInfo->getEMail() != "") { $obj_mPoint->saveEMail($obj_TxnInfo->getMobile(), $obj_TxnInfo->getEMail() ); }
 	}
 	$fee = 0;
+	$sIssuingBank = (string) $obj_XML->callback->{'issuing-bank'};
     $obj_mPoint->completeTransaction((integer)$obj_XML->callback->{'psp-config'}["id"],
         $obj_XML->callback->transaction["external-id"],
         (integer)$obj_XML->callback->transaction->card["type-id"],
         $iStateID,
         $fee,
-        array($HTTP_RAW_POST_DATA));
+        array($HTTP_RAW_POST_DATA),
+        $sIssuingBank);
 	// Payment Authorized: Perform a callback to the 3rd party Wallet if required
 	if ($iStateID == Constants::iPAYMENT_ACCEPTED_STATE)
 	{
@@ -420,22 +427,22 @@ try
 
      foreach ($aStateId as $iStateId) {
          if ($iStateId == 2000) {
-             $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "additionaldata" => (string)$sAdditionalData));
+             $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "additionaldata" => (string)$sAdditionalData));
          }
          else if ($iStateId == Constants::iPAYMENT_TIME_OUT_STATE){
          	$count = $obj_TxnInfo->hasEitherState($_OBJ_DB,Constants::iCB_ACCEPTED_TIME_OUT_STATE);
          	//Check whether a notification has already been sent to retail system with status 20109
          	// Sending duplicate 20109 status may end up to retail sending time out emails to customers more than once
          	if($count == 0)  {
-         		$obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "additionaldata" => (string)$sAdditionalData));
+         		$obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "expiry" => $sExpirydate , "additionaldata" => (string)$sAdditionalData));
          	}
          }
          else {
-             $obj_mPoint->notifyClient($iStateId, array("transact" => (integer)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "additionaldata" => (string)$sAdditionalData));
+             $obj_mPoint->notifyClient($iStateId, array("transact" => (string)$obj_XML->callback->transaction['external-id'], "amount" => $obj_XML->callback->transaction->amount, "card-no" => (string)$obj_XML->callback->transaction->card->{'card-number'}, "card-id" => $obj_XML->callback->transaction->card["type-id"], "additionaldata" => (string)$sAdditionalData));
         }
      }
      $obj_TxnInfo->setApprovalCode($obj_XML->callback->{'approval-code'});
-     $obj_mPoint->updateSessionState($iStateId, (integer)$obj_XML->callback->transaction['external-id'], $obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, $obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData);
+     $obj_mPoint->updateSessionState($iStateId, (string)$obj_XML->callback->transaction['external-id'], $obj_XML->callback->transaction->amount, (string)$obj_XML->callback->transaction->card->{'card-number'}, $obj_XML->callback->transaction->card["type-id"], $sExpirydate, (string)$sAdditionalData);
 
       //update captured amt when psp returns captured callback
       if($iStateId == Constants::iPAYMENT_CAPTURED_STATE) {
