@@ -105,6 +105,8 @@ require_once(sCLASS_PATH . "/chase.php");
 require_once(sCLASS_PATH . "/UATPSettlement.php");
 // Require specific Business logic for PSP Settlement component
 require_once(sCLASS_PATH . "/pspSettlement.php");
+// Require specific Business logic for the Cielo component
+require_once(sCLASS_PATH ."/cielo.php");
 ini_set('max_execution_time', 1000);
 // </editor-fold>
 

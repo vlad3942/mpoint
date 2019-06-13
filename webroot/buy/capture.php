@@ -163,6 +163,11 @@ if (Validate::valBasic($_OBJ_DB, $_REQUEST['clientid'], $_REQUEST['account']) ==
 					header("HTTP/1.0 502 Bad Gateway");
 					
 					$aMsgCds[999] = "Declined";
+					//If capture is fail log 2011 state
+					if ($obj_TxnInfo->hasEitherState($_OBJ_DB, Constants::iPAYMENT_DECLINED_STATE) === true)
+					{
+                        $obj_mPoint->newMessage($this->getTxnInfo()->getID(), Constants::iPAYMENT_DECLINED_STATE, $e->getMessage() );
+                    }
 					// Perform callback to Client
 					if (strlen($obj_TxnInfo->getCallbackURL() ) > 0)
 					{
