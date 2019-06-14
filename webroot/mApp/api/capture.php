@@ -219,6 +219,13 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 											$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
 										}
 									}
+                                    elseif ($code == 1002)
+                                    {
+                                        header("HTTP/1.0 200 OK");
+
+                                        $aMsgCds[1000] = "Success";
+                                        $xml .= '<status code="1000" ></status>';
+                                    }
 									else
 									{
 										header("HTTP/1.0 502 Bad Gateway");
