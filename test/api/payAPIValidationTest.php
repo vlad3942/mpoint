@@ -22,14 +22,14 @@ class PayAPIValidationTest extends baseAPITest
         $this->_httpClient = new HTTPClient(new Template(), HTTPConnInfo::produceConnInfo($aMPOINT_CONN_INFO) );
     }
 
-	protected function getPayDoc($client, $account, $txn=1)
+	protected function getPayDoc($client, $account, $txn=1, $amount = 200)
 	{
 		$xml = '<?xml version="1.0" encoding="UTF-8"?>';
 		$xml .= '<root>';
 		$xml .= '<pay client-id="'. $client .'" account="'. $account .'">';
 		$xml .= '<transaction id="'. $txn .'" store-card="false">';
 		$xml .= '<card type-id="7">';
-		$xml .= '<amount country-id="100">200</amount>';
+		$xml .= '<amount country-id="100">'.$amount.'</amount>';
 		$xml .= '</card>';
 		$xml .= '</transaction>';
 		$xml .= '<client-info platform="iOS" version="1.00" language="da">';
@@ -246,5 +246,19 @@ class PayAPIValidationTest extends baseAPITest
 		
 		$this->assertEquals(200, $iStatus);
 	}
+
+    public function testInvalidTransactionAmount()
+    {
+        $xml = $this->getPayDoc(113, 1100, 1, 100.99);
+
+        $this->_httpClient->connect();
+
+        $iStatus = $this->_httpClient->send($this->constHTTPHeaders('Tuser', 'Tpass'), $xml);
+        $sReplyBody = $this->_httpClient->getReplyBody();
+
+        $this->assertEquals(400, $iStatus);
+        $this->assertContains('Element \'amount\': \'100.99\' is not a valid value of the atomic type \'xs:nonNegativeInteger\'', $sReplyBody);
+
+    }
 
 }
