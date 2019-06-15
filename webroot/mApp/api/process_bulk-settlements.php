@@ -204,14 +204,38 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $iAmount = 0;
                             $iDBAmount = 0;
                             $iCRAmount = 0;
+
+                            if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->{'additional-data'}) > 0) {
+                            $txnAdditionalData = array();
+                            for ($txnAdditionalDataIndex = 0, $txnAdditionalDataIndexMax = count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->{'additional-data'}->children()); $txnAdditionalDataIndex < $txnAdditionalDataIndexMax; $txnAdditionalDataIndex++)
+                            {
+                                $name = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->{'additional-data'}->param[$txnAdditionalDataIndex]['name'];
+                                $value= (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->{'additional-data'}->param[$txnAdditionalDataIndex];
+                                if($name === 'booking-ref' && $value != '')
+                                {
+                                    $previousValue =  $obj_TxnInfo->getAdditionalData($name);
+                                    if($previousValue === null)
+                                    {
+                                        $txnAdditionalData[0] = array();
+                                        $txnAdditionalData[0]['name'] = $name;
+                                        $txnAdditionalData[0]['value'] = $value;
+                                        $txnAdditionalData[0]['type'] = 'Transaction';
+
+                                    }
+                                }
+
+                            }
+                            $obj_TxnInfo->setAdditionalDetails($_OBJ_DB,$txnAdditionalData,$obj_TxnInfo->getID());
+                        }
+
                             if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders) === 1 && count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->children()) > 0) {
                                 for ($j = 0, $jMax = count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}); $j < $jMax; $j++) {
                                     if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}) > 0) {
                                         if($isAIDAlreadyUpdated === false) {
-                                            /*if(intval($obj_TxnInfo->getCurrencyConfig()->getID()) != intval($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['currency-id']))
+                                            if($obj_TxnInfo->getCurrencyConfig()->getID() !== (int)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['currency-id'])
                                             {
-                                                throw new mPointException("Currency mismatch for token : ".$sToken." expected ".intval($obj_TxnInfo->getCurrencyConfig()->getID() ), 999 );
-                                            }*/
+                                                throw new mPointException("Currency mismatch for token : ".$sToken." expected ".$obj_TxnInfo->getCurrencyConfig()->getID(), 999 );
+                                            }
                                             $data['orders'] = array();
                                             $data['orders'][0]['product-sku'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product["sku"];
                                             $data['orders'][0]['product-name'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->name;
@@ -343,7 +367,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     . '</status>';
                             }
                         }
-
                     } catch (mPointException $e) {
                         trigger_error($e, E_USER_WARNING);
                         throw new mPointSimpleControllerException(HTTP::BAD_GATEWAY, $e->getCode(), $e->getMessage(), $e);
