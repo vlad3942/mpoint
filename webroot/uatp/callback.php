@@ -53,9 +53,20 @@ try
 
     $iStateID = (integer) $obj_XML->callback->status["code"];
     $obj_TxnInfo->produceOrderConfig($_OBJ_DB);
+    $aMessages = $obj_TxnInfo->getMessageHistory($_OBJ_DB);
+    $createdtimestamp = null;
+    foreach ($aMessages as $m) {
+        $iMessageID = (integer)$m["id"];
+        $iStateId = (integer)$m["stateid"];
+        if($iStateId === $iStateID)
+        {
+            $createdtimestamp = $m["created"];
+            break;
+        }
+    }
 
     $obj_UATP = Callback::producePSP($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, $aHTTP_CONN_INFO, $obj_PSPConfig);
-    $code = $obj_UATP->initCallback($obj_PSPConfig, $obj_TxnInfo, $iStateID, '',$obj_TxnInfo->getCardID());
+    $code = $obj_UATP->initCallback($obj_PSPConfig, $obj_TxnInfo, $iStateID, '',$obj_TxnInfo->getCardID(),$createdtimestamp);
 
     if($code === 1000)
     {
