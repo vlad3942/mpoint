@@ -97,6 +97,11 @@ class PaymentProcessor
         return $this->_objPSP->refund($iAmount);
     }
 
+    public function capture($iAmount=-1)
+    {
+        return $this->_objPSP->capture($iAmount);
+    }
+
     public function getPaymentData($obj_Elem, $mode = null)
     {
         if ($mode != null) {

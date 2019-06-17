@@ -51,7 +51,7 @@
 									</xs:element>
 									<xs:element ref="additional-data" minOccurs="0" maxOccurs="1" />
 								</xs:all>
-								<xs:attribute name="order-no" type="xs:string" use="optional" />
+								<xs:attribute name="order-no" type="order-no" use="optional" />
 								<xs:attribute name="type-id" type="xs:positiveInteger" use="optional" default="40" />
                                 <xs:attribute name="session-id" type="xs:positiveInteger" use="optional"/>
 								<xs:attribute name="product-type" type="xs:positiveInteger" use="optional" default="100" />
@@ -581,7 +581,7 @@
 									<xs:element name="transaction" minOccurs="1" maxOccurs="unbounded">
 										<xs:complexType>
 											<xs:attribute name="id" type="xs:positiveInteger" use="required" />
-											<xs:attribute name="order-no" type="xs:string" use="optional" />
+											<xs:attribute name="order-no" type="order-no" use="optional" />
 										</xs:complexType>
 									</xs:element>
 								</xs:sequence>
@@ -895,7 +895,7 @@
 						<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
 					  </xs:sequence>
 					  <xs:attribute type="xs:int" name="id" use="required"/>
-					  <xs:attribute type="xs:string" name="order-no" use="optional"/>
+					  <xs:attribute type="order-no" name="order-no" use="optional"/>
 					  <xs:attribute type="xs:string" name="external-id" use="required"/>
 					</xs:complexType>
 				  </xs:element>
@@ -923,7 +923,7 @@
 									<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
 								</xs:all>
 								<xs:attribute name="id" type="xs:positiveInteger" use="optional"/>
-								<xs:attribute name="order-no" type="xs:string" use="optional"/>
+								<xs:attribute name="order-no" type="order-no" use="optional"/>
 							</xs:complexType>
 						</xs:element>
 						<xs:element name="client-info" type="client-info" minOccurs="0" maxOccurs="1" />
@@ -941,7 +941,7 @@
 									<xs:element name="amount" type="amount" minOccurs="1" maxOccurs="1" />
 								</xs:all>
 							<xs:attribute name="id" type="xs:positiveInteger" use="required"/>
-							<xs:attribute name="order-no" use="optional"/>
+							<xs:attribute name="order-no" type="order-no" use="optional"/>
 							</xs:complexType>
 						</xs:element>
 						
@@ -961,10 +961,11 @@
 											<xs:sequence>
 												<xs:sequence minOccurs="0" maxOccurs="unbounded">
 													<xs:element ref="orders" minOccurs="0" maxOccurs="1" />
+													<xs:element ref="additional-data" minOccurs="0" maxOccurs="1"/>
 												</xs:sequence>
 											</xs:sequence>
 										<xs:attribute name="id" type="xs:positiveInteger" use="optional"/>
-										<xs:attribute name="order-no" type="xs:string" use="optional" />
+										<xs:attribute name="order-no" type="order-no" use="optional" />
 										<xs:attribute name="token" type="xs:string" use="optional" />
 									</xs:complexType>
 								</xs:element>
@@ -985,7 +986,7 @@
 									
 								</xs:all>
 							<xs:attribute name="id" type="xs:positiveInteger" use="required"/>
-							<xs:attribute name="order-no" use="optional"/>
+							<xs:attribute name="order-no" type="order-no" use="optional"/>
 							</xs:complexType>
 						</xs:element>
 					</xs:all>
@@ -1194,7 +1195,7 @@
 
 <xs:complexType name="voucher">
 	<xs:attribute name="id" type="xs:positiveInteger" use="required" />
-	<xs:attribute name="order-no" type="xs:string" use="required" />
+	<xs:attribute name="order-no" type="order-no" use="required" />
 </xs:complexType>
 
 <xs:group name="passwords">
@@ -1249,6 +1250,11 @@
 		</xs:restriction>
 	</xs:simpleType>
 
+	<xs:simpleType name="order-no">
+		<xs:restriction base="xs:string">
+			 <xs:pattern value="[a-zA-Z0-9._-]*"/>
+		</xs:restriction>
+	</xs:simpleType>
 <xs:element name="urls">
     <xs:complexType>
         <xs:sequence>

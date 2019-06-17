@@ -49,6 +49,8 @@ require_once(sCLASS_PATH ."/adyen.php");
 require_once(sCLASS_PATH ."/visacheckout.php");
 // Require specific Business logic for the Data Cash component
 require_once(sCLASS_PATH ."/datacash.php");
+// Require specific Business logic for the Mada Mpgs component
+require_once(sCLASS_PATH ."/mada_mpgs.php");
 // Require specific Business logic for the Master Pass component
 require_once(sCLASS_PATH ."/masterpass.php");
 // Require specific Business logic for the AMEX Express Checkout component
@@ -217,6 +219,13 @@ for ($i=0; $i<count($obj_DOM->capture); $i++)
 											$obj_mPoint->getPSP()->notifyClient(Constants::iPAYMENT_CAPTURED_STATE, $args);
 										}
 									}
+                                    elseif ($code == 1002)
+                                    {
+                                        header("HTTP/1.0 200 OK");
+
+                                        $aMsgCds[1000] = "Success";
+                                        $xml .= '<status code="1000" ></status>';
+                                    }
 									else
 									{
 										header("HTTP/1.0 502 Bad Gateway");

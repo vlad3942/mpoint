@@ -32,6 +32,8 @@ require_once(sINTERFACE_PATH ."/cpm_psp.php");
 require_once(sCLASS_PATH ."/wirecard.php");
 // Require specific Business logic for the datacash component
 require_once(sCLASS_PATH ."/datacash.php");
+// Require specific Business logic for the Mada Mpgs component
+require_once(sCLASS_PATH ."/mada_mpgs.php");
 // Require specific Business logic for the globalcollect component
 require_once(sCLASS_PATH ."/globalcollect.php");
 
