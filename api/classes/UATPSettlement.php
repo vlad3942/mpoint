@@ -81,8 +81,18 @@ class UATPSettlement extends mPointSettlement
         try
         {
             $xmlResponse =  simpledom_load_string($response);
+            $sStatus = Constants::sSETTLEMENT_REQUEST_WAITING;
             if(count($xmlResponse->status->Status) > 0)
             {
+                if(trim($xmlResponse->status->Status) == "ERROR")
+                {
+                    $sStatus = Constants::sSETTLEMENT_REQUEST_WAITING;
+                }
+                elseif (trim($xmlResponse->status->Status) == "OK")
+                {
+                    $sStatus = trim($xmlResponse->status->Status);
+                }
+
                 $sFileName = $this->_objClientConfig->getAdditionalProperties(Constants::iInternalProperty, 'UATP_SETTLEMENT_FILE_NAME');
                 $sql ="UPDATE log" . sSCHEMA_POSTFIX . ".settlement_tbl 
                                 SET status = $1 
@@ -91,7 +101,7 @@ class UATPSettlement extends mPointSettlement
                 $resource = $_OBJ_DB->prepare($sql);
                 if (is_resource($resource) === true) {
                     $aParam = array(
-                        (string)$xmlResponse->status->Status,
+                        (string)$sStatus,
                         $sFileName,
                         intval(date("Ymd") )
                     );
