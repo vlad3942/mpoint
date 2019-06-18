@@ -14,16 +14,20 @@ class UATPCardAccount extends CPMPSP
        return Constants::iUATP_CARD_ACCOUNT;
     }
 
-    public function initCallback(PSPConfig $obj_PSPConfig, TxnInfo $obj_TxnInfo, $iStateID, $sStateName, $iCardid)
+    public function initCallback(PSPConfig $obj_PSPConfig, TxnInfo $obj_TxnInfo, $iStateID, $sStateName, $iCardid, $operationDateTime = null)
     {
         $aMerchantAccountDetails = $this->genMerchantAccountDetails();
+        if($operationDateTime !== null)
+        {
+            $operationDateTime = 'timestamp= "' . $operationDateTime .'"';
+        }
         $code = 0;
         $xml  = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<root>';
         $xml .= '<callback client-id = "'.$obj_TxnInfo->getClientConfig()->getID().'" account-id = "'.$obj_TxnInfo->getAccountID().'">';
         $xml .= $obj_PSPConfig->toXML(Constants::iPrivateProperty, $aMerchantAccountDetails);
         $xml .= $this->_constTxnXML();
-        $xml .= '	<status code="'. $iStateID .'">'. $sStateName .'</status>';
+        $xml .= '	<status code="'. $iStateID .'" '.$operationDateTime.' >'. $sStateName .'</status>';
         $xml .= '</callback>';
         $xml .= '</root>';
 
