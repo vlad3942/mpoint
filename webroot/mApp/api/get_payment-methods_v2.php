@@ -67,8 +67,7 @@ $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
-	//if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."mpoint.xsd") === true && count($obj_DOM->{'get-payment-methods'}) > 0)
-	if ( ($obj_DOM instanceof SimpleDOMElement) === true && count($obj_DOM->{'get-payment-methods'}) > 0)
+	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."get_payment_methods.xsd") === true && count($obj_DOM->{'get-payment-methods'}) > 0)
 	{
 		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
 
