@@ -204,13 +204,37 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             $iAmount = 0;
                             $iDBAmount = 0;
                             $iCRAmount = 0;
+
+                            if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->{'additional-data'}) > 0) {
+                            $txnAdditionalData = array();
+                            for ($txnAdditionalDataIndex = 0, $txnAdditionalDataIndexMax = count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->{'additional-data'}->children()); $txnAdditionalDataIndex < $txnAdditionalDataIndexMax; $txnAdditionalDataIndex++)
+                            {
+                                $name = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->{'additional-data'}->param[$txnAdditionalDataIndex]['name'];
+                                $value= (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->{'additional-data'}->param[$txnAdditionalDataIndex];
+                                if($name === 'booking-ref' && $value != '')
+                                {
+                                    $previousValue =  $obj_TxnInfo->getAdditionalData($name);
+                                    if($previousValue === null)
+                                    {
+                                        $txnAdditionalData[0] = array();
+                                        $txnAdditionalData[0]['name'] = $name;
+                                        $txnAdditionalData[0]['value'] = $value;
+                                        $txnAdditionalData[0]['type'] = 'Transaction';
+
+                                    }
+                                }
+
+                            }
+                            $obj_TxnInfo->setAdditionalDetails($_OBJ_DB,$txnAdditionalData,$obj_TxnInfo->getID());
+                        }
+
                             if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders) === 1 && count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->children()) > 0) {
                                 for ($j = 0, $jMax = count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}); $j < $jMax; $j++) {
                                     if (count($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}) > 0) {
                                         if($isAIDAlreadyUpdated === false) {
-                                            if(intval($obj_TxnInfo->getCurrencyConfig()->getID()) != intval($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['currency-id']))
+                                            if($obj_TxnInfo->getCurrencyConfig()->getID() !== (int)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->amount['currency-id'])
                                             {
-                                                throw new mPointException("Currency mismatch for token : ".$sToken." expected ".intval($obj_TxnInfo->getCurrencyConfig()->getID() ), 999 );
+                                                throw new mPointException("Currency mismatch for token : ".$sToken." expected ".$obj_TxnInfo->getCurrencyConfig()->getID(), 999 );
                                             }
                                             $data['orders'] = array();
                                             $data['orders'][0]['product-sku'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product["sku"];
@@ -249,7 +273,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                             $data['flights']['arrival_airport'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'arrival-airport'};
                                             $data['flights']['airline_code'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'airline-code'};
                                             $data['flights']['arrival_date'] = (string)date('Y-m-d H:i:s', strtotime($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'arrival-date'}));
-                                            $data['flights']['departure_date'] = (string)date('Y-m-d H:i:s', strtotime($obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'departure-date'}));
+                                            $data['flights']['departure_date'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]->{'departure-date'};
                                             $data['flights']['order_id'] = $order_id;
                                             $data['flights']['tag'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]['tag'];
                                             $data['flights']['trip_count'] = (string)$obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->{'line-item'}[$j]->product->{'airline-data'}->{'flight-detail'}[$k]['trip-count'];
@@ -312,7 +336,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                             else if((int)$obj_TxnInfo->getAmount() === (int)$iDBAmount) {
 
                                 if ($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_CAPTURE_INITIATED_STATE)) === false) {
-                                    $code = $obj_PSP->capture($iDBAmount);
+                                    $code = (int)$obj_PSP->capture($iDBAmount);
                                 }
 
                                 $sMessage = "PSP returned code ".$code;
@@ -320,7 +344,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                             elseif ((int)$obj_TxnInfo->getAmount() === (int)$iCRAmount )
                             {
-                                $code = $obj_PSP->refund($iCRAmount);
+                                $code = (int)$obj_PSP->refund($iCRAmount);
                                 $sMessage = "PSP returned code ".$code;
                             }
                             else
@@ -328,22 +352,21 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $sMessage = 'Amount mismatch';
                             }
 
-                            if (intval($code) == 1000)
+                            if ($code === 1000 || $code === 1001)
                             {
-                                $xml .= '<status id = "' . $sToken . '" code = "' . $code . '" >Settlement Initialized, '.$sMessage
+                                $xml .= '<status id = "' . $sToken . '" code = "' . $code . '" >Operation Successful , '.$sMessage
                                     . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->asXML()
                                     . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount->asXML()
                                     . '</status>';
                             }
                             else
                             {
-                                $xml .= '<status id = "' . $sToken . '" code = "999" >Settlement Failed, '.$sMessage
+                                $xml .= '<status id = "' . $sToken . '" code = "999" >Operation Failed, '.$sMessage
                                     . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->asXML()
                                     . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount->asXML()
                                     . '</status>';
                             }
                         }
-
                     } catch (mPointException $e) {
                         trigger_error($e, E_USER_WARNING);
                         throw new mPointSimpleControllerException(HTTP::BAD_GATEWAY, $e->getCode(), $e->getMessage(), $e);

@@ -961,6 +961,7 @@
 											<xs:sequence>
 												<xs:sequence minOccurs="0" maxOccurs="unbounded">
 													<xs:element ref="orders" minOccurs="0" maxOccurs="1" />
+													<xs:element ref="additional-data" minOccurs="0" maxOccurs="1"/>
 												</xs:sequence>
 											</xs:sequence>
 										<xs:attribute name="id" type="xs:positiveInteger" use="optional"/>
