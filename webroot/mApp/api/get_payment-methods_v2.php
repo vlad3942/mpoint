@@ -131,7 +131,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
 
 						    
-                            $xml .= '';
+                            $xml .= '<payment_methods>';
                             $xml .= '<client-config>';
                             $xml .= '<id>'. $obj_ClientConfig->getID() .'</id>';
                             $xml .= '<account>'. $obj_ClientConfig->getAccountConfig()->getID() .'</account>';
@@ -307,8 +307,9 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                     }
                                 }
                                 $walletsXML .= '</wallets>';
-                                $xml .=$walletsXML;
+                                $xml .=$walletsXML;                                
                             }
+                            $xml .='</payment_methods>';
                         }
 						// Internal Error
 						catch (mPointException $e)
