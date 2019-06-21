@@ -158,7 +158,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							$xml .= '<accounts>';
                             foreach ($obj_ClientConfig->getAccountsConfigurations() as $obj_AccountConfig)
                             {
-                                // $xml .= '<account id= "'. $obj_AccountConfig->getID() .'" markup= "'. $obj_AccountConfig->getMarkupLanguage() .'">';
                                 $xml .= '<account>';
                                 $xml .= '<id>'. $obj_AccountConfig->getID() .'</id>';
                                 $xml .= '<markup>'. $obj_AccountConfig->getMarkupLanguage() .'</markup>';
@@ -224,46 +223,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 							$cardsXML .= '</cards>';
                             $xml .= $cardsXML;
-
-							// if(count($obj_DOM->{'get-payment-methods'}[$i]->{'client-info'}) > 0 )
-                            // {
-                            //     $iAccountID = -1;
-                            //     if(intval($obj_TxnInfo->getAccountID()) > 0)
-                            //     {
-                            //         $iAccountID = $obj_TxnInfo->getAccountID();
-                            //     }
-                            //     else
-                            //     {
-                            //         if (count($obj_DOM->{'get-payment-methods'}[$i]->{'client-info'}->{'customer-ref'}) == 1) { $iAccountID = EndUserAccount::getAccountIDFromExternalID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'get-payment-methods'}[$i]->{'client-info'}->{'customer-ref'}, ($obj_ClientConfig->getStoreCard() <= 3) ); }
-                            //         if ($iAccountID < 0 && count($obj_DOM->{'get-payment-methods'}[$i]->{'client-info'}->mobile) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'get-payment-methods'}[$i]->{'client-info'}->mobile, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
-                            //         if ($iAccountID < 0 && count($obj_DOM->{'get-payment-methods'}[$i]->{'client-info'}->email) == 1) { $iAccountID = EndUserAccount::getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'get-payment-methods'}[$i]->{'client-info'}->email, $obj_CountryConfig, ($obj_ClientConfig->getStoreCard() <= 3) ); }
-                            //         if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'get-payment-methods'}[$i]->{'client-info'}->mobile, $obj_CountryConfig); }
-                            //         if ($iAccountID < 0) { $iAccountID = $obj_mPoint->getAccountID($_OBJ_DB, $obj_ClientConfig, $obj_DOM->{'get-payment-methods'}[$i]->{'client-info'}->email, $obj_CountryConfig); }
-                            //     }
-
-                            //     if($iAccountID > 0 && count($obj_XML->xpath("/cards/item[@type-id = 11]") ) == 1)
-                            //     {
-                            //         $aObj_XML = simplexml_load_string($obj_mPoint->getStoredCards($iAccountID, $obj_ClientConfig), "SimpleXMLElement", LIBXML_COMPACT);
-                            //         if ($obj_ClientConfig->getStoreCard() <= 3) { $aObj_XML = $aObj_XML->xpath("/stored-cards/card[client/@id = ". $obj_ClientConfig->getID() ."]"); }
-                            //         else { $aObj_XML = $aObj_XML->xpath("/stored-cards/card"); }
-
-                            //         if (is_array($aObj_XML) === true && count($aObj_XML) > 0)
-                            //         {
-                            //             $xml .= '<stored-cards>';
-                            //             for ($j=0; $j<count($aObj_XML); $j++)
-                            //             {
-                            //                 $xml .= '<card id="'. $aObj_XML[$j]["id"] .'" type-id="'. $aObj_XML[$j]->type["id"] .'" psp-id="'. $aObj_XML[$j]["pspid"] .'" preferred="'. $aObj_XML[$j]["preferred"] .'" state-id="'. $aObj_XML[$j]["state-id"] .'" charge-type-id="'. $aObj_XML[$j]["charge-type-id"] .'">';
-                            //                 if (strlen($aObj_XML[$j]->name) > 0) { $xml .= $aObj_XML[$j]->name->asXML(); }
-                            //                 $xml .= '<card-number-mask>'. $aObj_XML[$j]->mask .'</card-number-mask>';
-                            //                 $xml .= $aObj_XML[$j]->expiry->asXML();
-                            //                 if (strlen($aObj_XML[$j]->{'card-holder-name'}) > 0) { $xml .= $aObj_XML[$j]->{'card-holder-name'}->asXML(); }
-                            //                 if (count($aObj_XML[$j]->address) == 1) { $xml .= $aObj_XML[$j]->address->asXML(); }
-                            //                 $xml .= '</card>';
-                            //             }
-                            //             $xml .= '</stored-cards>';
-                            //         }
-                            //     }
-                            // }
 
                             if ( ($obj_TxnInfo instanceof TxnInfo) === true){
                                 $walletsXML = '<wallets>';
