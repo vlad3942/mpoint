@@ -12,7 +12,8 @@
 												<xs:all>
 													<xs:element name="captured-amount" type="amount" minOccurs="0" />
 													<xs:element name="authorized-amount" type="amount" minOccurs="0" />
-													<xs:element name="amount" type="amount"/>
+													<xs:element name="amount_info" type="amount_info"/>
+													<xs:element name="amount" type="amount"/>													
 													<xs:element name="fee" type="amount"/>
 													<xs:element name="price" type="xs:string"/>
 													<xs:element name="points" type="amount"/>
@@ -87,6 +88,21 @@
 			</xs:all>
 		</xs:complexType>
 	</xs:element>
+
+	<xs:complexType name="amount_info">
+		<xs:all>
+			<xs:element name="country-id" type="xs:string"/>
+			<xs:element name="currency" type="xs:string"/>
+			<xs:element name="symbol" type="xs:string"/>
+			<xs:element name="format" type="xs:string"/>
+			<xs:element name="code" type="xs:string"/>
+			<xs:element name="alpha3code" type="xs:string"/>
+			<xs:element name="alpha2code" type="xs:string"/>
+			<xs:element name="currency-id" type="xs:string"/>
+			<xs:element name="decimals" type="xs:positiveInteger"/>
+			<xs:element name="amount" type="xs:positiveInteger"/>
+		</xs:all>
+	</xs:complexType>
 
 	<xs:complexType name="amount">
 		<xs:simpleContent>
