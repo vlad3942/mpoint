@@ -49,6 +49,18 @@ class ApplePayAuthorizeAPITest extends AuthorizeAPITest
             $aStates[] = $row["stateid"];
         }
 
+		$xml .= '<amount_info>';
+		$xml .= '<country-id>'. $this->_obj_CountryConfig->getID() .'</country-id>';
+		$xml .= '<currency-id>'. $this->getCurrencyConfig()->getID() .'</currency-id>';
+		$xml .= '<currency>'. $this->getCurrencyConfig()->getCode() .'</currency>';
+		$xml .= '<decimals>'. $this->getCurrencyConfig()->getDecimals() .'</decimals>';
+		$xml .= '<symbol>'. $this->_obj_CountryConfig->getSymbol() .'</symbol>';
+		$xml .= '<format>'. $this->_obj_CountryConfig->getPriceFormat() .'</format>';
+		$xml .= '<alpha2code>'. $this->_obj_CountryConfig->getAlpha2code() .'</alpha2code>';
+		$xml .= '<alpha3code>'. $this->_obj_CountryConfig->getAlpha3code() .'</alpha3code>';
+		$xml .= '<code>'. $this->_obj_CountryConfig->getNumericCode() .'</code>';
+		$xml .= '<amount>'. $this->_lAmount .'</amount>';
+		$xml .= '</amount_info>';
         $this->assertEquals(1, count($aStates) );
 
         $s = 0;
