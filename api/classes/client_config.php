@@ -1160,6 +1160,10 @@ class ClientConfig extends BasicConfig
         if ( ($this->_obj_MESBURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_MESBURL->toXML(); }
         if ( ($this->_obj_BaseImageURL instanceof ClientURLConfig) === true) { $xml .= $this->_obj_BaseImageURL->toXML(); }
         $xml .= '</urls>';
+        $embeddedHpp = $this->getAdditionalProperties(Constants::iInternalProperty,"isEmbeddedHpp");
+        if (empty($embeddedHpp) === false) {
+            $xml .= '<embedded-hpp>' . $embeddedHpp . '</embedded-hpp>';
+        }
         $xml .= '</client-config>';
 
         return $xml;
