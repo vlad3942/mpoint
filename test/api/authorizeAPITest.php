@@ -32,12 +32,6 @@ abstract class AuthorizeAPITest extends baseAPITest
 		if(isset($currecyid) === true)
 		    $xml .= ' currency-id="'.$currecyid.'"';
 		$xml .= '>'. $amount .'</amount>';
-		$xml .= '<amount_info>';
-        $xml .= '<country-id>100</country-id>';
-        if(isset($currecyid) === true)
-            $xml .= '<currency-id>'.$currecyid.'</currency-id>';
-        $xml .= '<amount>'. $amount .'</amount>';
-        $xml .= '</amount_info>';
 //		$xml .= '<card-number>5272342200069702</card-number>';
 //		$xml .= '<expiry>03/31</expiry>';
 //		$xml .= '<cryptogram type="3ds">AKh96OOsGf2HAIDEhKulAoABFA==</cryptogram>';
