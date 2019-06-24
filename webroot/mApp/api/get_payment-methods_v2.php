@@ -56,9 +56,12 @@ $_SERVER['PHP_AUTH_PW'] = "Ghdy4_ah1G";
 
 $HTTP_RAW_POST_DATA = '<?xml version="1.0" encoding="UTF-8"?>';
 $HTTP_RAW_POST_DATA .= '<root>';
-$HTTP_RAW_POST_DATA .= '<get-payment-methods client-id="10019" account="100026">';
+$HTTP_RAW_POST_DATA .= '<get-payment-methods>';
+$HTTP_RAW_POST_DATA .= '<client-id>10019</client-id>';
+$HTTP_RAW_POST_DATA .= '<account>100026</account>';
 $HTTP_RAW_POST_DATA .= '<transaction">';
-$HTTP_RAW_POST_DATA .= '<amount country-id="100">2400</amount>';
+$HTTP_RAW_POST_DATA .= '<country-id>100</country-id>';
+$HTTP_RAW_POST_DATA .= '<amount>100</amount>';
 $HTTP_RAW_POST_DATA .= '</transaction>';
 $HTTP_RAW_POST_DATA .= '</get-payment-methods>';
 $HTTP_RAW_POST_DATA .= '</root>';
@@ -69,39 +72,21 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 {
 	if ( ($obj_DOM instanceof SimpleDOMElement) === true && $obj_DOM->validate(sPROTOCOL_XSD_PATH ."get_payment_methods.xsd") === true && count($obj_DOM->{'get-payment-methods'}) > 0)
 	{
-		$obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
-
+        $obj_mPoint = new General($_OBJ_DB, $_OBJ_TXT);
+        
 		for ($i=0; $i<count($obj_DOM->{'get-payment-methods'}); $i++)
 		{
-
             // Validate basic information
             $code = Validate::valClient($_OBJ_DB, (integer) $obj_DOM->{'get-payment-methods'}[$i]->{'client-id'});
 			if ($code == 100)
 			{
-                if (isset($obj_DOM->{'get-payment-methods'}[$i]->transaction->id) === true)
-                {
-                    $iTxnID = intval($obj_DOM->{'get-payment-methods'}[$i]->transaction->id);
-                    $obj_TxnInfo = TxnInfo::produceInfo($iTxnID, $_OBJ_DB);
-                }
-                
-                
-                if ( ($obj_TxnInfo instanceof TxnInfo) === true){
-                    $obj_ClientConfig = $obj_TxnInfo->getClientConfig();
-                }else{
-                    $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'get-payment-methods'}[$i]->{"client-id"});
-                }
-
-                
-                if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW'])
-					&& $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true)
+                $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'get-payment-methods'}[$i]->{"client-id"});
+   
+                if ($obj_ClientConfig->getUsername() == trim($_SERVER['PHP_AUTH_USER']) && $obj_ClientConfig->getPassword() == trim($_SERVER['PHP_AUTH_PW']) && $obj_ClientConfig->hasAccess($_SERVER['REMOTE_ADDR']) === true)
 				{
 
-                    if ( ($obj_TxnInfo instanceof TxnInfo) === true){
-                        $obj_CountryConfig = $obj_TxnInfo->getCountryConfig();
-                    }else{
-                        $obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'get-payment-methods'}[$i]->transaction->{'country-id'});
-                    }
-					
+                    $obj_CountryConfig = CountryConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'get-payment-methods'}[$i]->transaction->{'country-id'});
+
                     $obj_Validator = new Validate($obj_ClientConfig->getCountryConfig() );
                     $iValResult = $obj_Validator->valPrice($obj_ClientConfig->getMaxAmount(), (integer) $obj_DOM->{'get-payment-methods'}[$i]->transaction->amount);
 					if ($obj_ClientConfig->getMaxAmount() > 0 && $iValResult != 10) { $aMsgCds[$iValResult + 50] = (string) $obj_DOM->{'get-payment-methods'}[$i]->transaction->amount; }
@@ -110,102 +95,17 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 					{
                         try {
 
-                            if ( ($obj_TxnInfo instanceof TxnInfo) === true){
-                                $sOrderXML = '';
-                                $aPSPs = array();
-                                $sOrderID = $obj_TxnInfo->getOrderID();
-                                if (empty($sOrderID) === false)
-                                {
-                                    $aObj_OrderInfoConfigs = OrderInfo::produceConfigurationsFromOrderID($_OBJ_DB, $obj_TxnInfo->getOrderID());
-                                    if (count($aObj_OrderInfoConfigs) > 0)
-                                    {
-                                        $sOrderXML .= '<orders>';
-                                        foreach ($aObj_OrderInfoConfigs as $obj_OrderInfo) {
-                                            $sOrderXML .= $obj_OrderInfo->toXML();
-                                        }
-                                        $sOrderXML .= '</orders>';
-                                    }
-                                }
-                                $obj_XML = simplexml_load_string($obj_TxnInfo->toXML(), "SimpleXMLElement", LIBXML_COMPACT);
-                            }
-
-
-						    
                             $xml .= '<payment_methods>';
-                            $xml .= '<client-config>';
-                            $xml .= '<id>'. $obj_ClientConfig->getID() .'</id>';
-                            $xml .= '<account>'. $obj_ClientConfig->getAccountConfig()->getID() .'</account>';
-                            $xml .= '<store-card>'. $obj_ClientConfig->getStoreCard() .'</store-card>';
-                            $xml .= '<auto-capture>'. General::bool2xml($obj_ClientConfig->useAutoCapture() ) .'</auto-capture>';
-                            $xml .= '<mode>'. $obj_ClientConfig->getMode() .'</mode>';
-                            $xml .= '<name>'. htmlspecialchars($obj_ClientConfig->getName(), ENT_NOQUOTES) .'</name>';
-                            $xml .= '<callback-url>'. htmlspecialchars($obj_ClientConfig->getCallbackURL(), ENT_NOQUOTES) .'</callback-url>';
-                            $xml .= '<accept-url>'. htmlspecialchars($obj_ClientConfig->getAcceptURL(), ENT_NOQUOTES) .'</accept-url>';
-                            $xml .= '<cancel-url>'. htmlspecialchars($obj_ClientConfig->getCancelURL(), ENT_NOQUOTES) .'</cancel-url>';
-                            $xml .= '<app-url>'. htmlspecialchars($obj_ClientConfig->getAppURL(), ENT_NOQUOTES) .'</app-url>';
-                            $xml .= '<css-url>'. htmlspecialchars($obj_ClientConfig->getCSSURL(), ENT_NOQUOTES) .'</css-url>';
-                            $xml .= '<logo-url>'. htmlspecialchars($obj_ClientConfig->getLogoURL(), ENT_NOQUOTES) .'</logo-url>';
-                            $xml .= '<base-image-url>'. htmlspecialchars($obj_ClientConfig->getBaseImageURL(), ENT_NOQUOTES) .'</base-image-url>';
-                            $xml .= '<additional-config>';
-                            foreach ($obj_ClientConfig->getAdditionalProperties(Constants::iPublicProperty) as $aAdditionalProperty)
-                            {
-                                $xml .= '<property>';
-                                $xml .= '<name>'.$aAdditionalProperty['key'].'</name>';
-                                $xml .= '<text>'.$aAdditionalProperty['value'].'</text>';
-                                $xml .= '</property>';
-                            }
-                            $xml .= '</additional-config>';
-							$xml .= '<accounts>';
-                            foreach ($obj_ClientConfig->getAccountsConfigurations() as $obj_AccountConfig)
-                            {
-                                $xml .= '<account>';
-                                $xml .= '<id>'. $obj_AccountConfig->getID() .'</id>';
-                                $xml .= '<markup>'. $obj_AccountConfig->getMarkupLanguage() .'</markup>';
-                                $xml .= '</account>';
-                            }
-                            $xml .= '</accounts>'; 
-                            $xml .= '</client-config>';
 
-                            if ( ($obj_TxnInfo instanceof TxnInfo) === true){
-                                $xml .= '<transaction>';
-                                $xml .= '<id>'. $obj_TxnInfo->getID() .'</id>';
-                                $xml .= '<order-no>'. htmlspecialchars($obj_TxnInfo->getOrderID(), ENT_NOQUOTES) .'</order-no>';
-                                $xml .= '<type-id>'. $obj_TxnInfo->getTypeID() .'</type-id>';
-                                $xml .= '<eua-id>'. $obj_TxnInfo->getAccountID() .'</eua-id>';
-                                $xml .= '<language>'. $obj_TxnInfo->getLanguage() .'</language>';
-                                $xml .= '<auto-capture>'. General::bool2xml($obj_TxnInfo->useAutoCapture() ) .'</auto-capture>';
-                                $xml .= '<mode>'. $obj_TxnInfo->getMode() .'</mode>';
-
-                                $xml .= $obj_XML->amount_info->asXML();
-
-                                if (empty($sOrderXML) === false )  { $xml .= $sOrderXML; }
-                                if ($obj_TxnInfo->getPoints() > 0) { $xml .= $obj_XML->points->asXML(); }
-                                if ($obj_TxnInfo->getReward() > 0) { $xml .= $obj_XML->reward->asXML(); }
-                                $xml .= '<mobile_info>';
-                                $xml .= '<country_id>'. $obj_CountryConfig->getID() .'</country_id>';
-                                $xml .= '<operator_id>'. $obj_TxnInfo->getOperator() .'</operator_id>';
-                                $xml .= '<contact_number>'. floatval($obj_TxnInfo->getMobile() ) .'</contact_number>';
-                                $xml .= '</mobile_info>';
-                                if (trim($obj_TxnInfo->getEMail() ) != "") { $xml .= $obj_XML->email->asXML(); }
-                                $xml .= $obj_XML->{'callback-url'}->asXML();
-                                $xml .= $obj_XML->{'accept-url'}->asXML();
-                                $xml .= '</transaction>';
-
-                                $obj_mPoint = new CreditCard($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo);
-							    $obj_XML = simplexml_load_string($obj_mPoint->getCards($obj_TxnInfo->getAmount() ), "SimpleXMLElement", LIBXML_COMPACT);
-                            }else{
-                                $objXml = ClientPaymentMethodConfig::getClientAccountPaymentMethods($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, (integer) $obj_DOM->{'get-payment-methods'}[$i]->transaction->amount);
-                                $obj_XML = simplexml_load_string($objXml, "SimpleXMLElement", LIBXML_COMPACT);
-                            }
+                            $objXml = ClientPaymentMethodConfig::getClientAccountPaymentMethods($_OBJ_DB, $obj_ClientConfig, $obj_CountryConfig, (integer) $obj_DOM->{'get-payment-methods'}[$i]->transaction->amount);
+                            $obj_XML = simplexml_load_string($objXml, "SimpleXMLElement", LIBXML_COMPACT);
 
                             $cardsXML = '<cards>';
 							for ($j=0; $j<count($obj_XML->item); $j++)
 							{
-								// Card does not represent "My Account" or the End-User has an acccount with Stored Cards or Stored Value Account is available
-								if ($obj_XML->item[$j]["type-id"] != 11
-									|| ($obj_TxnInfo->getAccountID() > 0 && (count($aObj_XML) > 0 || $obj_ClientConfig->getStoreCard() == 2) ) )
+								// Only payments methods will be returned.
+								if ($obj_XML->item[$j]["type-id"] != 11)
 								{
-									if (in_array((integer) $obj_XML->item[$j]["pspid"], $aPSPs) === false) { $aPSPs[] = intval($obj_XML->item[$j]["pspid"] ); }
                                     $cardsXML .= '<card>';
                                     $cardsXML .= '<id>'. $obj_XML->item[$j]["id"] .'</id>';
                                     $cardsXML .= '<type-id>'. $obj_XML->item[$j]["type-id"] .'</type-id>';
@@ -223,51 +123,6 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 							}
 							$cardsXML .= '</cards>';
                             $xml .= $cardsXML;
-
-                            if ( ($obj_TxnInfo instanceof TxnInfo) === true){
-                                $walletsXML = '<wallets>';
-                                for ($j=0; $j<count($obj_XML->item); $j++)
-                                {
-                                    if ($obj_XML->item[$j]["processor-type"] == Constants::iPROCESSOR_TYPE_WALLET)
-                                    {
-
-                                        if (in_array((integer) $obj_XML->item[$j]["pspid"], $aPSPs) === false) { $aPSPs[] = intval($obj_XML->item[$j]["pspid"] ); }
-                                        $walletsXML .= '<card>';
-                                        $walletsXML .= '<id>'. $obj_XML->item[$j]["id"] .'</id>';
-                                        $walletsXML .= '<type-id>'. $obj_XML->item[$j]["type-id"] .'</type-id>';
-                                        $walletsXML .= '<psp-id>'. $obj_XML->item[$j]["pspid"] .'</psp-id>';
-                                        $walletsXML .= '<min-length>'. $obj_XML->item[$j]["min-length"] .'</min-length>';
-                                        $walletsXML .= '<max-length>'. $obj_XML->item[$j]["max-length"] .'</max-length>';
-                                        $walletsXML .= '<cvc-length>'. $obj_XML->item[$j]["cvc-length"] .'</cvc-length>';
-                                        $walletsXML .= '<state-id>'. $obj_XML->item[$j]["state-id"] .'</state-id>';
-                                        $walletsXML .= '<payment-type>'. $obj_XML->item[$j]["payment-type"] .'</payment-type>';
-                                        $walletsXML .= '<preferred>'. $obj_XML->item[$j]["preferred"] .'</preferred>';
-                                        $walletsXML .= '<enabled>'. $obj_XML->item[$j]["enabled"] .'</enabled>';
-                                        $walletsXML .= '<processor-type>'. $obj_XML->item[$j]["processor-type"] .'</processor-type>';
-                                        $walletsXML .= '<name>'. htmlspecialchars($obj_XML->item[$j]->name, ENT_NOQUOTES) .'</name>';
-                                        $walletsXML .= $obj_XML->item[$j]->prefixes->asXML();
-                                        try
-                                        {
-                                            $obj_Processor = WalletProcessor::produceConfig($_OBJ_DB, $_OBJ_TXT, $obj_TxnInfo, intval($obj_XML->item[$j]["id"]), $aHTTP_CONN_INFO);
-                                            if($obj_Processor !== false)
-                                            {
-                                                $initResponseXML = $obj_Processor->initialize();
-                                                foreach ($initResponseXML->children() as $obj_Elem)
-                                                {
-                                                    if($obj_Elem->getName() !== "name")
-                                                    {
-                                                        $walletsXML .= trim($obj_Elem->asXML());
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        catch (Exception $e){}
-                                        $walletsXML .= '</card>';
-                                    }
-                                }
-                                $walletsXML .= '</wallets>';
-                                $xml .=$walletsXML;                                
-                            }
                             $xml .='</payment_methods>';
                         }
 						// Internal Error

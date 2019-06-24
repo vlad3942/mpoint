@@ -15,12 +15,9 @@
 								<xs:all>
 									<xs:element name="amount" minOccurs="1" maxOccurs="1" />
 									<xs:element name="country-id" minOccurs="1" maxOccurs="1" />
-									<xs:element name="order-no" type="order-no"  minOccurs="0" maxOccurs="1" />
-                                    <xs:element name="id" minOccurs="0" maxOccurs="1" />
 								</xs:all>
 							</xs:complexType>
 						</xs:element>
-						<xs:element name="client-info" type="client-info" minOccurs="0" maxOccurs="1" />
 						<xs:element name="client-id" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
 						<xs:element name="account" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
 					</xs:all>
@@ -30,11 +27,4 @@
 		</xs:choice>
 	</xs:complexType>
 </xs:element>
-
-<xs:simpleType name="order-no">
-	<xs:restriction base="xs:string">
-			<xs:pattern value="[a-zA-Z0-9._-]*"/>
-	</xs:restriction>
-</xs:simpleType>
-
 </xs:schema>
