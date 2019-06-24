@@ -84,6 +84,12 @@ class VisaCheckoutAuthorizeAPITest extends AuthorizeAPITest
         if(isset($currecyid) === true)
             $xml .= ' currency-id="'.$currecyid.'"';
         $xml .= '>'. $amount .'</amount>';
+        $xml .= '<amount_info>';
+        $xml .= '<country-id>100</country-id>';
+        if(isset($currecyid) === true)
+            $xml .= '<currency-id>'.$currecyid.'</currency-id>';
+        $xml .= '<amount>'. $amount .'</amount>';
+        $xml .= '</amount_info>';
         $xml .= '<token>6125070622746068102</token>';
         $xml .= '</card>';
         $xml .= '</transaction>';
