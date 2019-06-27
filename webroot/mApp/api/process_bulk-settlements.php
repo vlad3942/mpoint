@@ -327,14 +327,13 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 }
                             }
                             $sMessage = '';
-                            $txnAmount = (int)$obj_TxnInfo->getAmount();
                             //AS Discussion with UATP for now scope is full capture and cancel
-                            if(( $txnAmount=== $iDBAmount || $txnAmount === $iDBAmount-1 || $txnAmount === $iDBAmount+1) && ($iDBAmount === $iCRAmount)) {
+                            if(((int)$obj_TxnInfo->getAmount() === (int)$iDBAmount) && ((int)$iDBAmount === (int)$iCRAmount)) {
 
                                 $code = $obj_PSP->refund($iCRAmount);
                                 $sMessage = "PSP returned code ".$code;
                             }
-                            else if($txnAmount=== $iDBAmount || $txnAmount === $iDBAmount-1 || $txnAmount === $iDBAmount+1) {
+                            else if((int)$obj_TxnInfo->getAmount() === (int)$iDBAmount) {
 
                                 if ($obj_TxnInfo->hasEitherState($_OBJ_DB, array(Constants::iPAYMENT_CAPTURE_INITIATED_STATE)) === false) {
                                     $code = (int)$obj_PSP->capture($iDBAmount);
@@ -343,7 +342,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                                 $sMessage = "PSP returned code ".$code;
                             }
 
-                            elseif ($txnAmount=== $iCRAmount || $txnAmount === $iCRAmount-1 || $txnAmount === $iCRAmount+1)
+                            elseif ((int)$obj_TxnInfo->getAmount() === (int)$iCRAmount )
                             {
                                 $code = (int)$obj_PSP->refund($iCRAmount);
                                 $sMessage = "PSP returned code ".$code;
