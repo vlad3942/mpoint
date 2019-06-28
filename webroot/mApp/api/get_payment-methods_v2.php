@@ -77,7 +77,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 		for ($i=0; $i<count($obj_DOM->{'get-payment-methods'}); $i++)
 		{
             // Validate basic information
-            $code = Validate::valClient($_OBJ_DB, (integer) $obj_DOM->{'get-payment-methods'}[$i]->{'client-id'});
+			$code = Validate::valBasic($_OBJ_DB, (integer) $obj_DOM->{'get-payment-methods'}[$i]->{'client-id'}, (integer) $obj_DOM->{'get-payment-methods'}[$i]->{'account'});
 			if ($code == 100)
 			{
                 $obj_ClientConfig = ClientConfig::produceConfig($_OBJ_DB, (integer) $obj_DOM->{'get-payment-methods'}[$i]->{"client-id"});
