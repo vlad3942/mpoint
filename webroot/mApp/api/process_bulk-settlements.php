@@ -92,7 +92,7 @@ require_once(sCLASS_PATH . "/payment_processor.php");
 require_once(sCLASS_PATH ."/mada_mpgs.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
-
+ini_set('max_execution_time', 2000);
 //header("Content-Type: application/x-www-form-urlencoded");
 
 /*
