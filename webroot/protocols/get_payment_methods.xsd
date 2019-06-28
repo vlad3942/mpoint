@@ -13,8 +13,8 @@
 						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
 							<xs:complexType>
 								<xs:all>
-									<xs:element name="amount" minOccurs="1" maxOccurs="1" />
-									<xs:element name="country-id" minOccurs="1" maxOccurs="1" />
+									<xs:element name="amount" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+									<xs:element name="country-id" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
 								</xs:all>
 							</xs:complexType>
 						</xs:element>
