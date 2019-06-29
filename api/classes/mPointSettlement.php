@@ -85,6 +85,18 @@ abstract class mPointSettlement
 
     private function _getTransactions($_OBJ_DB, $aStateIds){
 
+        $this->_getPSPConfiguration($_OBJ_DB);
+
+        $sBatchLimitSQL = '';
+        $aAdditionalProperties = $this->_objPspConfig->getAdditionalProperties();
+        foreach($aAdditionalProperties as $sAdditionalProperty)
+        {
+            if(trim($sAdditionalProperty['key']) == 'SETTLEMENT_BATCH_LIMIT')
+            {
+                $sBatchLimitSQL = ' LIMIT '.(int)$sAdditionalProperty['value'];
+            }
+        }
+
         $stateIds = implode(",", $aStateIds);
         $sql = "SELECT record_number, status
                 FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl
@@ -116,7 +128,7 @@ abstract class mPointSettlement
                               AND stateid NOT IN (". Constants::iCB_ACCEPTED_STATE .", ". Constants::iCB_CONSTRUCTED_STATE .", ". Constants::iCB_CONNECTED_STATE .", ". Constants::iCB_CONN_FAILED_STATE .", ". Constants::iCB_REJECTED_STATE .",". Constants::iSESSION_COMPLETED .",". Constants::iSESSION_CREATED .", ". Constants::iSESSION_EXPIRED .", ". Constants::iSESSION_FAILED .", ". Constants::iPAYMENT_TOKENIZATION_COMPLETE_STATE .", ". Constants::iPAYMENT_TOKENIZATION_FAILURE_STATE .")
                          ORDER BY txnid, msg.created DESC
                        ) sub
-                  WHERE stateid IN ($stateIds);";
+                  WHERE stateid IN ($stateIds)".$sBatchLimitSQL;
 
         $aRS = $_OBJ_DB->getAllNames($sql);
         if (is_array($aRS) === true && count($aRS) > 0)
