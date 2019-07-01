@@ -87,16 +87,16 @@ abstract class mPointSettlement
 
         $this->_getPSPConfiguration($_OBJ_DB);
 
-        $sBatchLimitSQL = '';
-        $aAdditionalProperties = $this->_objPspConfig->getAdditionalProperties();
-        foreach($aAdditionalProperties as $sAdditionalProperty)
+        $iBatchLimit = 200;
+        $sSettlementBatchLimit = $this->_objPspConfig->getAdditionalProperties(Constants::iInternalProperty,'SETTLEMENT_BATCH_LIMIT');
+        if($sSettlementBatchLimit != '')
         {
-            if(trim($sAdditionalProperty['key']) == 'SETTLEMENT_BATCH_LIMIT')
-            {
-                $sBatchLimitSQL = ' LIMIT '.(int)$sAdditionalProperty['value'];
-            }
+            $iBatchLimit = (int)$sSettlementBatchLimit;
         }
-
+        if($iBatchLimit == 0)
+        {
+            $iBatchLimit=200;
+        }
         $stateIds = implode(",", $aStateIds);
         $sql = "SELECT record_number, status
                 FROM log" . sSCHEMA_POSTFIX . ".settlement_tbl
@@ -128,7 +128,7 @@ abstract class mPointSettlement
                               AND stateid NOT IN (". Constants::iCB_ACCEPTED_STATE .", ". Constants::iCB_CONSTRUCTED_STATE .", ". Constants::iCB_CONNECTED_STATE .", ". Constants::iCB_CONN_FAILED_STATE .", ". Constants::iCB_REJECTED_STATE .",". Constants::iSESSION_COMPLETED .",". Constants::iSESSION_CREATED .", ". Constants::iSESSION_EXPIRED .", ". Constants::iSESSION_FAILED .", ". Constants::iPAYMENT_TOKENIZATION_COMPLETE_STATE .", ". Constants::iPAYMENT_TOKENIZATION_FAILURE_STATE .")
                          ORDER BY txnid, msg.created DESC
                        ) sub
-                  WHERE stateid IN ($stateIds)".$sBatchLimitSQL;
+                  WHERE stateid IN ($stateIds)";
 
         $aRS = $_OBJ_DB->getAllNames($sql);
         if (is_array($aRS) === true && count($aRS) > 0)
@@ -157,6 +157,7 @@ abstract class mPointSettlement
         }
 
         $this->_arrayTransactionIds = array_values(array_diff($this->_arrayTransactionIds, $arrayTempTransactionIds));
+        $this->_arrayTransactionIds = array_slice($this->_arrayTransactionIds, 0, $iBatchLimit, false);
         $this->_sTransactionXML = "<transactions>";
 
         foreach ($this->_arrayTransactionIds as $transactionId)
@@ -166,7 +167,6 @@ abstract class mPointSettlement
             $this->_sTransactionXML .= $obj_TxnInfo->toXML();
             $this->_iTotalTransactionAmount += $obj_TxnInfo->getAmount();
         }
-
         $this->_sTransactionXML .= "</transactions>";
 
     }
