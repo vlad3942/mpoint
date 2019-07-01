@@ -162,6 +162,23 @@
 												</xs:simpleContent>
 											</xs:complexType>
 										</xs:element>
+										<xs:element name="amount_info">
+											<xs:complexType>
+												<xs:all>
+													<xs:element name="country-id" type="xs:string"/>
+													<xs:element name="currency" type="xs:string"/>
+													<xs:element name="symbol" type="xs:string"/>
+													<xs:element name="format" type="xs:string"/>
+													<xs:element name="code" type="xs:string"/>
+													<xs:element name="alpha3code" type="xs:string"/>
+													<xs:element name="alpha2code" type="xs:string"/>
+													<xs:element name="currency-id" type="xs:string"/>
+													<xs:element name="decimals" type="xs:positiveInteger"/>
+													<xs:element name="amount" type="xs:positiveInteger"/>
+													
+												</xs:all>
+											</xs:complexType>
+										</xs:element>
 										<xs:element name="fee">
 											<xs:complexType>
 												<xs:simpleContent>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+<xs:include schemaLocation="global.xsd" />
+
+<xs:element name="root">
+	<xs:complexType>
+		<xs:choice>
+            <!-- Get Payment Method Configuration -->
+			<xs:element name="get-payment-methods" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="transaction" minOccurs="1" maxOccurs="1">
+							<xs:complexType>
+								<xs:all>
+									<xs:element name="amount" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+									<xs:element name="country-id" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+								</xs:all>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="client-id" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+						<xs:element name="account" type="xs:positiveInteger" minOccurs="1" maxOccurs="1" />
+					</xs:all>
+				</xs:complexType>
+			</xs:element>
+			<!-- Get Payment Method Configuration -->
+		</xs:choice>
+	</xs:complexType>
+</xs:element>
+</xs:schema>

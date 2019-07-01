@@ -835,7 +835,7 @@ class mConsole extends Admin
 						$RS["MODE"],
 						new CustomerInfo($RS["CUSTOMERID"], $RS["OPERATORID"]/100, $RS["MOBILE"], $RS["EMAIL"], $RS["CUSTOMER_REF"], $RS["FIRSTNAME"] ." ". $RS["LASTNAME"], $RS["LANGUAGE"]),
 						$RS["IP"],
-						gmdate("Y-m-d H:i:sP", strtotime(substr($RS["CREATED"], 0, strpos($RS["CREATED"], ".") ) ) ),
+						gmdate("Y-m-d H:i:s", strtotime(substr($RS["CREATEDFINAL"], 0, strpos($RS["CREATEDFINAL"], ".") ) ) ),
 						$aObj_Messages,
 						"",
                         $paymentCurrencyConfig,
