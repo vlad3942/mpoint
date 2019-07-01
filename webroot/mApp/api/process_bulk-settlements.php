@@ -92,7 +92,7 @@ require_once(sCLASS_PATH . "/payment_processor.php");
 require_once(sCLASS_PATH ."/mada_mpgs.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
-ini_set('max_execution_time', 2000);
+ini_set('max_execution_time', 1200);
 //header("Content-Type: application/x-www-form-urlencoded");
 
 /*
@@ -354,17 +354,11 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
 
                             if ($code === 1000 || $code === 1001)
                             {
-                                $xml .= '<status id = "' . $sToken . '" code = "' . $code . '" >Operation Successful , '.$sMessage
-                                    . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->asXML()
-                                    . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount->asXML()
-                                    . '</status>';
+                                $xml .= '<status id = "' . $sToken . '" code = "' . $code . '" >Operation Successful , '.$sMessage. '</status>';
                             }
                             else
                             {
-                                $xml .= '<status id = "' . $sToken . '" code = "999" >Operation Failed, '.$sMessage
-                                    . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->asXML()
-                                    . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount->asXML()
-                                    . '</status>';
+                                $xml .= '<status id = "' . $sToken . '" code = "999" >Operation Failed, '.$sMessage. '</status>';
                             }
                         }
                     } catch (mPointException $e) {
@@ -375,10 +369,7 @@ if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PH
                         throw new mPointSimpleControllerException(HTTP::INTERNAL_SERVER_ERROR, $e->getCode(), $e->getMessage(), $e);
                     }
                 } catch (mPointControllerException $e) {
-                    $xml .= '<status id = "' . $sToken . '" code = "' . $e->getCode() . '">' . $e->getMessage()
-                        . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->orders->asXML()
-                        . $obj_DOM->{'bulk-capture'}->transactions->transaction[$i]->amount->asXML()
-                        . '</status>';
+                    $xml .= '<status id = "' . $sToken . '" code = "' . $e->getCode() . '">' . $e->getMessage(). '</status>';
                 }
             }
             $xml .= '</bulk-capture-response>';

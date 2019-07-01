@@ -107,7 +107,7 @@ require_once(sCLASS_PATH . "/UATPSettlement.php");
 require_once(sCLASS_PATH . "/pspSettlement.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
-ini_set('max_execution_time', 1000);
+ini_set('max_execution_time', 1200);
 // </editor-fold>
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
