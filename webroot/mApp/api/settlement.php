@@ -129,8 +129,7 @@ require_once(sCLASS_PATH . "/pspSettlement.php");
 // Require specific Business logic for the Cielo component
 require_once(sCLASS_PATH ."/cielo.php");
 // </editor-fold>
-
-
+ini_set('max_execution_time', 1200);
 
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
 
