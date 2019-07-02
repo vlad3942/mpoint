@@ -67,7 +67,6 @@ $HTTP_RAW_POST_DATA .= '</get-payment-methods>';
 $HTTP_RAW_POST_DATA .= '</root>';
 */
 $obj_DOM = simpledom_load_string($HTTP_RAW_POST_DATA);
-// print_r($obj_DOM);exit;
 
 if (array_key_exists("PHP_AUTH_USER", $_SERVER) === true && array_key_exists("PHP_AUTH_PW", $_SERVER) === true)
 {
